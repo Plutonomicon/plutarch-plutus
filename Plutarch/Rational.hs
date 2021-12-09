@@ -1,16 +1,20 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Plutarch.Rational (PTRational) where
+module Plutarch.Rational (PRational) where
   
 import Plutarch.Prelude
 
-type PTRational :: PType
-type PTRational = PTNew "rational-gqCBcr9I" (PTPair PTInteger PTInteger)
+-- TODO: Make easier way of making newtypes?
+data PRational
 
-pRational :: TermInterp exp => exp PTInteger -> exp PTInteger -> exp PTRational
-pRational x y = new $ pPair x y
+{-
+pRational :: Term (PPair PInteger PInteger) -> Term PRational
+pRational = pCoerce
 
-instance TermInterp exp => Num (exp PTRational) where
+pUnRational :: Term PRational -> Term (PPair PInteger PInteger)
+pUnRational = pCoerce
+
+instance Num (Term PTRational) where
   (+) = undefined
   (-) = undefined
   negate = undefined
@@ -18,8 +22,9 @@ instance TermInterp exp => Num (exp PTRational) where
   signum = undefined
   fromInteger n = pRational (fromInteger n) 1
   x * y =
-    pinl (pfst (unnew x)) $ \x1 ->
-    pinl (psnd (unnew x)) $ \x2 ->
-    pinl (pfst (unnew y)) $ \y1 ->
-    pinl (psnd (unnew y)) $ \y2 ->
+    pInl (pFst (pUnRational x)) $ \x1 ->
+    pInl (pSnd (pUnRational x)) $ \x2 ->
+    pInl (pFst (pUnRational y)) $ \y1 ->
+    pInl (pSnd (pUnRational y)) $ \y2 ->
     pRational (x1 * y1) (x2 * y2)
+    -}

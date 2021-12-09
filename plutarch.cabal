@@ -7,11 +7,20 @@ author: Las Safin <me@las.rs>
 extra-source-files: README.md
 
 library
-  exposed-modules:  Plutarch, Plutarch.Prelude, Plutarch.Rational, Plutarch.ScriptContext
+  exposed-modules:
+    Plutarch
+    Plutarch.Internal.Core
+    Plutarch.Prelude
+    Plutarch.Pair
+    Plutarch.Rational
+    Plutarch.ScriptContext
   build-depends:    base, plutus-core, plutus-ledger-api, text
   default-language: Haskell2010
   default-extensions:
     DataKinds
+    DeriveAnyClass
+    DerivingStrategies
+    LambdaCase
     -- poor man's GHC2021
     BangPatterns
     BinaryLiterals

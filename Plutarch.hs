@@ -1,182 +1,175 @@
-{-# OPTIONS_GHC -Wno-redundant-constraints #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
-module Plutarch (PTInteger, PTByteString, PTString, PTUnit, PTBool, PTList, PTPair, PTData, PTDelayed, PTOpaque, PTSum, PTNew, POrd, (£<=), PEq, (£==), pPair, pinl, pfst, psnd, new, unnew, fromText, PType(..), force, delay, perror, app, (£), (£$), plet, (:-->), (-->), coerce, lam, Term, TermInterp, RawTerm, compile) where
+module Plutarch (PEq(..), POrd(..), module PIC, printTerm, (£$), (£), pLam2, pLam3, pLam4, pLam5, pLet, pInl) where
   
-import qualified UntypedPlutusCore as UPLC
 import qualified PlutusCore as PLC
-import PlutusCore.DeBruijn (DeBruijn(DeBruijn), Index(Index))
+import Plutarch.Internal.Core (Term, PInteger, pApp, pBuiltin, pCoerce, pConstant, PBool, (:-->), pLam, pHoist, compile)
 import Plutus.V1.Ledger.Scripts (Script(Script))
-import Data.Kind (Type)
-import Numeric.Natural (Natural)
-import Data.Text (Text)
-import GHC.TypeLits (Symbol)
+import qualified Plutarch.Internal.Core as PIC
+import PlutusCore.Pretty
 
-type RawTerm = UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
-
-data PType where
-  PTInteger :: PType
-  PTByteString :: PType
-  PTString :: PType
-  PTUnit :: PType
-  PTBool :: PType
-  PTList :: PType -> PType
-  PTPair :: PType -> PType -> PType
-  PTFun :: PType -> PType -> PType
-  PTData :: PType
-  PTDelayed :: PType -> PType
-  PTOpaque :: PType -- We don't support any kind of abstraction over types after all
-  -- Each element represents a constructor and its parameters.
-  PTSum :: [[PType]] -> PType
-  PTNew :: Symbol -> PType -> PType
-
-type PTInteger = 'PTInteger
-type PTByteString = 'PTByteString
-type PTString = 'PTString
-type PTUnit = 'PTUnit
-type PTBool = 'PTBool
-type PTList = 'PTList
-type PTPair = 'PTPair
-type PTData = 'PTData
-type PTDelayed = 'PTDelayed
-type PTOpaque = 'PTOpaque
-type PTSum = 'PTSum
-type PTNew = 'PTNew
-
-type (:-->) :: PType -> PType -> PType
-type (:-->) = 'PTFun
-infixr 0 :-->
-
-(-->) :: PType -> PType -> PType
-(-->) = PTFun
-infixr 0 -->
-
-class PEq exp (t :: PType) where
-  (£==) :: exp t -> exp t -> exp 'PTBool
-
-class POrd exp (t :: PType) where
-  (£<=) :: exp t -> exp t -> exp 'PTBool
+class PEq t where
+  (£==) :: Term t -> Term t -> Term PBool
 
 infix 4 £==
 
--- We use a type class rather than a GADT, because this
--- makes it impossible to have exotic terms in cLam, that e.g. pattern
--- match on the argument.
---
--- We don't export the members such that we can change them.
-class
-  ( PEq exp 'PTInteger
-  , POrd exp 'PTInteger
-  , Num (exp 'PTInteger)
-  ) => TermInterp (exp :: PType -> Type) where
-  cLam :: (exp a -> exp b) -> exp ('PTFun a b)
-  cApp :: exp ('PTFun a b) -> exp a -> exp b
-  cForce :: exp a -> exp ('PTDelayed a)
-  cDelay :: exp ('PTDelayed a) -> exp a
-  cString :: Text -> exp 'PTString
-  cError :: exp a
-  cCoerce :: exp a -> exp b
-  cNew :: exp a -> exp ('PTNew s a)
-  cUnnew :: exp ('PTNew s a) -> exp a
-  cBuiltin :: UPLC.DefaultFun -> exp a
+class POrd t where
+  (£<=) :: Term t -> Term t -> Term PBool
+  (£<) :: Term t -> Term t -> Term PBool
 
-type Term a = forall exp. TermInterp exp => exp a
+infix 4 £<=
+infix 4 £<
 
--- Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
--- Thanks!
-newtype DB a = DB { unDB :: Natural -> RawTerm }
+instance PEq PInteger where
+  x £== y = pApp (pApp (pBuiltin PLC.EqualsInteger) x) y
 
-instance PEq DB 'PTInteger where
-  x £== y = cApp (cApp (cBuiltin PLC.EqualsInteger) x) y
+instance POrd PInteger where
+  x £<= y = pApp (pApp (pBuiltin PLC.LessThanEqualsInteger) x) y
+  x £< y = pApp (pApp (pBuiltin PLC.LessThanInteger) x) y
 
-instance POrd DB 'PTInteger where
-  x £<= y = cApp (cApp (cBuiltin PLC.LessThanEqualsInteger) x) y
-
-instance Num (DB 'PTInteger) where
-  x + y = cApp (cApp (cBuiltin PLC.AddInteger) x) y
-  x - y = cApp (cApp (cBuiltin PLC.SubtractInteger) x) y
-  x * y = cApp (cApp (cBuiltin PLC.MultiplyInteger) x) y
-  abs x = cApp (cApp (cApp (cBuiltin PLC.IfThenElse) (x £<= (-1))) (negate x)) x -- FIXME use let
-  negate x = x - 0
+instance Num (Term PInteger) where
+  x + y = pApp (pApp (pBuiltin PLC.AddInteger) x) y
+  x - y = pApp (pApp (pBuiltin PLC.SubtractInteger) x) y
+  x * y = pApp (pApp (pBuiltin PLC.MultiplyInteger) x) y
+  abs x = pApp (pApp (pApp (pBuiltin PLC.IfThenElse) (x £<= (-1))) (negate x)) x -- FIXME use let
+  negate x = 0 - x
   signum = undefined
-  fromInteger n = DB $ \_ -> UPLC.Constant () $ PLC.Some (PLC.ValueOf PLC.DefaultUniInteger n)
+  fromInteger n = pCoerce . pConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniInteger n
 
-instance TermInterp DB where
-  cLam f = DB $ \i ->
-    let v = DB $ \j -> UPLC.Var () (DeBruijn . Index $ j - (i + 1)) in
-    UPLC.LamAbs () undefined $ unDB (f v) (i + 1)
-  cApp x y = DB $ \i -> UPLC.Apply () (unDB x i) (unDB y i)
-  cForce x = DB $ \i -> UPLC.Force () (unDB x i)
-  cDelay x = DB $ \i -> UPLC.Delay () (unDB x i)
-  cError = DB $ \_ -> UPLC.Error ()
-  cCoerce (DB x) = DB x
-  cString s = DB $ \_ -> UPLC.Constant () $ PLC.Some (PLC.ValueOf PLC.DefaultUniString s)
-  cNew (DB x) = DB x
-  cUnnew (DB x) = DB x
-  cBuiltin f = DB $ \_ -> UPLC.Builtin () f
+-- TODO: Heavily improve. It's unreadable right now.
+printTerm :: Term a -> String
+printTerm term = show . prettyPlcReadableDebug . (\(Script s) -> s) . compile $ term
 
-compile :: Term a -> Script
-compile t = Script $ UPLC.Program () (PLC.defaultVersion ()) (unDB t 0)
+(£) :: Term (a :--> b) -> Term a -> Term b
+(£) = pApp
+infixl 8 £
 
--- utility
+(£$) :: Term (a :--> b) -> Term a -> Term b
+(£$) = pApp
+infixr 0 £$
+
+-- TODO: Replace with pLamN
+
+pLam2 :: ((Term a, Term b) -> Term c) -> Term (a :--> b :--> c)
+pLam2 f = pLam $ \x -> pLam $ \y -> f (x, y)
+
+pLam3 :: ((Term a, Term b, Term c) -> Term d) -> Term (a :--> b :--> c :--> d)
+pLam3 f = pLam $ \x -> pLam $ \y -> pLam $ \z -> f (x, y, z)
+
+pLam4 :: ((Term a, Term b, Term c, Term d) -> Term e) -> Term (a :--> b :--> c :--> d :--> e)
+pLam4 f = pLam $ \x -> pLam $ \y -> pLam $ \z -> pLam $ \w -> f (x, y, z, w)
+
+pLam5 :: ((Term a, Term b, Term c, Term d, Term e) -> Term f) -> Term (a :--> b :--> c :--> d :--> e :--> f)
+pLam5 f = pLam $ \x -> pLam $ \y -> pLam $ \z -> pLam $ \w -> pLam $ \w' -> f (x, y, z, w, w')
+
+pLet :: Term a -> (Term a -> Term b) -> Term b
+pLet v f = pApp (pLam f) v
+
+pInl :: Term a -> (Term a -> Term b) -> Term b
+pInl v f = f v
+
+_example1 :: Term (PInteger :--> PInteger)
+_example1 = pLam $ \x -> x
+
+_example2 :: Term (PInteger :--> PInteger :--> PInteger :--> PInteger)
+_example2 = pLam3 $ \(x, y, z) -> x + y * z
+
+_example3 :: Term (PInteger :--> PInteger :--> PInteger)
+_example3 =
+  pLam2 $ \(x, y) ->
+  let z = pHoist $ _example2 £ x £ y £ y in
+  z + z + 200
+
+_example4 :: Term (PInteger :--> PInteger :--> PInteger)
+_example4 =
+  pLam2 $ \(x, y) ->
+  pLet (_example2 £ x £ y £ y) $ \z ->
+  z + z + 200
+
+
+{-
+class FromData t where
+  fromData :: Term (PData :--> t)
+
+instance FromData PInteger where
+  fromData = cBuiltin PLC.UnIData
+
+instance FromData POpaque where
+  fromData = lam $ \x -> cCoerce x
+
+instance FromData PData where
+  fromData = lam $ \x -> x
 
 lam :: TermInterp exp => (exp a -> exp b) -> exp (a :--> b)
 lam = cLam
 
-plet :: TermInterp exp => exp a -> (exp a -> exp b) -> exp b
-plet v f = cApp (cLam f) v
+pUnConstrData :: Term (PData :--> PPair PInteger (PList PData))
+pUnConstrData = cBuiltin PLC.UnConstrData
 
--- Should err if `v` is used more than once
-pinl :: TermInterp exp => exp a -> (exp a -> exp b) -> exp b
-pinl v f = f v
+pFst :: Term (PPair a b :--> a)
+pFst = cBuiltin PLC.FstPair
 
-app :: TermInterp exp => exp (a :--> b) -> exp a -> exp b
-app = cApp
+pSnd :: Term (PPair a b :--> b)
+pSnd = cBuiltin PLC.SndPair
 
-perror :: TermInterp exp => exp a
-perror = cError
+pIf :: TermInterp exp => exp PBool -> exp a -> exp a -> exp a
+pIf b x y = cForce $ (cBuiltin PLC.IfThenElse) £ b £ cDelay x £ cDelay y
 
-(£) :: TermInterp exp => exp (a :--> b) -> exp a -> exp b
-(£) = cApp
-infixl 8 £
+pHead :: Term (PList a :--> a)
+pHead = cBuiltin PLC.HeadList
 
-(£$) :: TermInterp exp => exp (a :--> b) -> exp a -> exp b
-(£$) = cApp
-infixr 0 £$
+pError :: Term a
+pError = cError
 
-force :: TermInterp exp => exp a -> exp ('PTDelayed a)
-force = cForce
+pDelay :: TermInterp exp => exp a -> exp (PDelayed a)
+pDelay = cDelay
+pForce :: TermInterp exp => exp (PDelayed a) -> exp a
+pForce = cForce
 
-delay :: TermInterp exp => exp ('PTDelayed a) -> exp a
-delay = cDelay
+pCoerce :: TermInterp exp => exp a -> exp b
+pCoerce = cCoerce
 
-coerce :: TermInterp exp => exp a -> exp b
-coerce = cCoerce
+matchInt :: TermInterp exp => exp PInteger -> [exp a] -> exp a
+matchInt x' ys' = plet x' $ \x -> go 0 x ys'
+  where
+    go :: TermInterp exp => Integer -> exp PInteger -> [exp a] -> exp a
+    go _ _ [] = pError
+    go i x (y:ys) = pIf (x £== fromInteger i) y (go (i+1) x ys)
 
-new :: TermInterp exp => exp a -> exp ('PTNew s a)
-new = cNew
-unnew :: TermInterp exp => exp ('PTNew s a) -> exp a
-unnew = cUnnew
+type CurrencySymbol = POpaque
+type TxOutRef = POpaque
+type StakingCredential = POpaque
+type DCert = POpaque
 
-pfst :: TermInterp exp => exp ('PTPair a b) -> exp a
-pfst = undefined
+data ScriptPurpose exp where
+  Minting :: exp CurrencySymbol -> ScriptPurpose exp
+  Spending :: exp TxOutRef -> ScriptPurpose exp
+  Rewarding :: exp StakingCredential -> ScriptPurpose exp
+  Certifying :: exp DCert -> ScriptPurpose exp
 
-psnd :: TermInterp exp => exp ('PTPair a b) -> exp b
-psnd = undefined
+instance IsPD ScriptPurpose where
+  pmatch f =
+    plet (pUnConstrData £ cCoerce x) $ \p ->
+    plet (pFst £ p) $ \i ->
+    plet (pSnd £ p) $ \l ->
+    matchInt i
+      [ (f . Minting $ fromData £$ pHead £ l)
+      , (f . Spending $ fromData £$ pHead £ l)
+      , (f . Rewarding $ fromData £$ pHead £ l)
+      , (f . Certifying $ fromData £$ pHead £ l)
+      ]
 
-pPair :: TermInterp exp => exp a -> exp b -> exp ('PTPair a b)
-pPair _ _ = undefined
-
-fromText :: TermInterp exp => Text -> exp 'PTString
-fromText = cString
-
-_example1 :: Term ('PTInteger :--> 'PTInteger :--> 'PTInteger)
+_example1 :: Term (PInteger :--> PInteger :--> PInteger)
 _example1 = lam $ \x -> lam $ \y -> x + y + 200
 
-_example2 :: Term ('PTInteger :--> 'PTInteger :--> 'PTInteger)
-_example2 =
-  lam $ \x -> lam $ \y ->
-  plet (x + y) $ \z ->
-  z + z + 200
+_example2 :: Term (PD ScriptPurpose :--> PInteger)
+_example2 = lam $ \sp -> pmatch sp $ \case
+  Minting _ -> 0
+  Spending _ -> 0
+  Rewarding _ -> 0
+  Certifying _ -> 0
+
+{-
 
 _example3 :: Term 'PTInteger
 _example3 = _example1 £ 100 £ 100
@@ -186,3 +179,6 @@ _example4 = lam $ \x -> x + 1
 
 _example5 :: Term 'PTInteger
 _example5 = _example4 £$ _example4 £$ _example4 £ 44
+-}
+
+-}

@@ -1,5 +1,34 @@
-module Plutarch.Prelude (PTInteger, PTByteString, PTString, PTUnit, PTBool, PTList, PTPair, PTData, PTDelayed, PTOpaque, PTSum, PTNew, POrd, (£<=), PEq, (£==), pPair, pfst, psnd, pinl, new, unnew, fromText, PType(..), force, delay, perror, app, (£), (£$), plet, (:-->), (-->), coerce, lam, Term, TermInterp) where
+module Plutarch.Prelude
+  ( PInteger
+  , PBool
+  , (:-->)
+  , PDelayed
+  , POpaque
+  , PData
+  , Term
+  , pLam
+  , pApp
+  , pDelay
+  , pForce
+  , pHoist
+  , pError
+  , pCoerce
+  , pBuiltin
+  , pConstant
+  , PEq(..)
+  , POrd(..)
+  , printTerm
+  , (£$)
+  , (£)
+  , pLam2
+  , pLam3
+  , pLam4
+  , pLam5
+  , pLet
+  , pInl
+) where
 
 import Prelude ()
 
 import Plutarch
+import Plutarch.Internal.Core
