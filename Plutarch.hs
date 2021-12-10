@@ -1,7 +1,7 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Plutarch (PlutusType(..), module PIC, printTerm, (£$), (£), pLam2, pLam3, pLam4, pLam5, pLet, pInl, pCon, pMatch, pUnsafeFrom, pTo) where
+module Plutarch (PlutusType(..), PIC.Constant(..), module PIC, printTerm, (£$), (£), pLam2, pLam3, pLam4, pLam5, pLet, pInl, pCon, pMatch, pUnsafeFrom, pTo) where
   
 import Plutarch.Internal.Core (Term, pApp, pUnsafeBuiltin, pUnsafeCoerce, pUnsafeConstant, (:-->), pLam, pHoist, compile)
 import Plutus.V1.Ledger.Scripts (Script(Script))

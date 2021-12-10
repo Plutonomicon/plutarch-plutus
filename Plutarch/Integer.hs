@@ -2,7 +2,7 @@ module Plutarch.Integer (PInteger(..)) where
 
 import Plutarch.Prelude
 import Plutarch.Bool (PEq, (£<), (£==), (£<=), POrd, pIf)
-import Plutarch (PlutusType(PInner, pCon', pMatch'))
+import Plutarch (PlutusType(PInner, pCon', pMatch'), Constant(CInteger))
 import qualified PlutusCore as PLC
 import Plutarch.Opaque (POpaque)
 
@@ -32,5 +32,5 @@ instance Num (Term PInteger) where
       $ pIf (x £<= 0)
         (-1)
         1
-  fromInteger n = pUnsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniInteger n
+  fromInteger n = pUnsafeConstant . PLC.Some $ PLC.ValueOf CInteger n
 
