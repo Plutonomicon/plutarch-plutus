@@ -5,6 +5,7 @@ import qualified PlutusCore as PLC
 import PlutusCore.DeBruijn (DeBruijn(DeBruijn), Index(Index))
 import Plutus.V1.Ledger.Scripts (Script(Script))
 import Numeric.Natural (Natural)
+import Data.Kind (Type)
 
 data PInteger
 data PByteString
@@ -19,7 +20,7 @@ data PData
 
 -- Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
 -- Thanks!
-newtype Term (a :: *) = Term { asRawTerm :: Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun () }
+newtype Term (a :: Type) = Term { asRawTerm :: Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun () }
 
 pLam :: (Term a -> Term b) -> Term (a :--> b)
 pLam f = Term $ \i ->

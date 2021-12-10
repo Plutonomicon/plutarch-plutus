@@ -1,6 +1,7 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Plutarch (PlutusType(..), PEq(..), POrd(..), module PIC, printTerm, (£$), (£), pLam2, pLam3, pLam4, pLam5, pLet, pInl, pCon, pMatch, pWrap, pUnWrap) where
+module Plutarch (PlutusType(..), PEq(..), POrd(..), module PIC, printTerm, (£$), (£), pLam2, pLam3, pLam4, pLam5, pLet, pInl, pCon, pMatch, pUnsafeFrom, pTo) where
   
 import qualified PlutusCore as PLC
 import Plutarch.Internal.Core (Term, PInteger, pApp, pBuiltin, pUnsafeCoerce, pConstant, PBool, (:-->), pLam, pHoist, compile)
@@ -70,8 +71,8 @@ pInl v f = f v
 
 class PlutusType a where
   type PInner a b'
-  pCon' :: a -> Term (PInner a b)
-  pMatch' :: Term (PInner a b) -> (a -> Term b) -> Term b
+  pCon' :: a -> (forall b. Term (PInner a b))
+  pMatch' :: forall c. (forall b. Term (PInner a b)) -> (a -> Term c) -> Term c
 
 pCon :: PlutusType a => a -> Term a
 pCon = pUnsafeCoerce . pCon'
@@ -79,11 +80,11 @@ pCon = pUnsafeCoerce . pCon'
 pMatch :: PlutusType a => Term a -> (a -> Term b) -> Term b
 pMatch x f = pMatch' (pUnsafeCoerce x) f
 
-pWrap :: (forall b. Term (PInner a b)) -> Term a
-pWrap = pUnsafeCoerce
+pUnsafeFrom :: (forall b. Term (PInner a b)) -> Term a
+pUnsafeFrom = pUnsafeCoerce
 
-pUnWrap :: Term a -> (forall b. Term (PInner a b))
-pUnWrap = pUnsafeCoerce
+pTo :: Term a -> (forall b. Term (PInner a b))
+pTo = pUnsafeCoerce
 
 {-
 _example1 :: Term (PInteger :--> PInteger)

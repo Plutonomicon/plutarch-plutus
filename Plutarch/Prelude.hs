@@ -28,8 +28,8 @@ module Plutarch.Prelude
   , pInl
   , pCon
   , pMatch
-  , pWrap
-  , pUnWrap
+  , pUnsafeFrom
+  , pTo
 ) where
 
 import Prelude ()
