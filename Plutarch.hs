@@ -1,9 +1,9 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Plutarch (PEq(..), POrd(..), module PIC, printTerm, (£$), (£), pLam2, pLam3, pLam4, pLam5, pLet, pInl) where
+module Plutarch (PlutusType(..), PEq(..), POrd(..), module PIC, printTerm, (£$), (£), pLam2, pLam3, pLam4, pLam5, pLet, pInl, pCon, pMatch, pWrap, pUnWrap) where
   
 import qualified PlutusCore as PLC
-import Plutarch.Internal.Core (Term, PInteger, pApp, pBuiltin, pCoerce, pConstant, PBool, (:-->), pLam, pHoist, compile)
+import Plutarch.Internal.Core (Term, PInteger, pApp, pBuiltin, pUnsafeCoerce, pConstant, PBool, (:-->), pLam, pHoist, compile)
 import Plutus.V1.Ledger.Scripts (Script(Script))
 import qualified Plutarch.Internal.Core as PIC
 import PlutusCore.Pretty
@@ -34,7 +34,7 @@ instance Num (Term PInteger) where
   abs x = pApp (pApp (pApp (pBuiltin PLC.IfThenElse) (x £<= (-1))) (negate x)) x -- FIXME use let
   negate x = 0 - x
   signum = undefined
-  fromInteger n = pCoerce . pConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniInteger n
+  fromInteger n = pUnsafeCoerce . pConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniInteger n
 
 -- TODO: Heavily improve. It's unreadable right now.
 printTerm :: Term a -> String
@@ -68,6 +68,24 @@ pLet v f = pApp (pLam f) v
 pInl :: Term a -> (Term a -> Term b) -> Term b
 pInl v f = f v
 
+class PlutusType a where
+  type PInner a b'
+  pCon' :: a -> Term (PInner a b)
+  pMatch' :: Term (PInner a b) -> (a -> Term b) -> Term b
+
+pCon :: PlutusType a => a -> Term a
+pCon = pUnsafeCoerce . pCon'
+
+pMatch :: PlutusType a => Term a -> (a -> Term b) -> Term b
+pMatch x f = pMatch' (pUnsafeCoerce x) f
+
+pWrap :: (forall b. Term (PInner a b)) -> Term a
+pWrap = pUnsafeCoerce
+
+pUnWrap :: Term a -> (forall b. Term (PInner a b))
+pUnWrap = pUnsafeCoerce
+
+{-
 _example1 :: Term (PInteger :--> PInteger)
 _example1 = pLam $ \x -> x
 
@@ -85,6 +103,7 @@ _example4 =
   pLam2 $ \(x, y) ->
   pLet (_example2 £ x £ y £ y) $ \z ->
   z + z + 200
+-}
 
 
 {-
@@ -126,8 +145,8 @@ pDelay = cDelay
 pForce :: TermInterp exp => exp (PDelayed a) -> exp a
 pForce = cForce
 
-pCoerce :: TermInterp exp => exp a -> exp b
-pCoerce = cCoerce
+pUnsafeCoerce :: TermInterp exp => exp a -> exp b
+pUnsafeCoerce = cCoerce
 
 matchInt :: TermInterp exp => exp PInteger -> [exp a] -> exp a
 matchInt x' ys' = plet x' $ \x -> go 0 x ys'

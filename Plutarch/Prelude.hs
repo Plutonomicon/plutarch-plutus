@@ -12,7 +12,7 @@ module Plutarch.Prelude
   , pForce
   , pHoist
   , pError
-  , pCoerce
+  , pUnsafeCoerce
   , pBuiltin
   , pConstant
   , PEq(..)
@@ -26,6 +26,10 @@ module Plutarch.Prelude
   , pLam5
   , pLet
   , pInl
+  , pCon
+  , pMatch
+  , pWrap
+  , pUnWrap
 ) where
 
 import Prelude ()

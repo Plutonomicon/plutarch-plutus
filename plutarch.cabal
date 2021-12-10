@@ -21,6 +21,8 @@ library
     DeriveAnyClass
     DerivingStrategies
     LambdaCase
+    TypeFamilies
+    AllowAmbigiousTypes
     -- poor man's GHC2021
     BangPatterns
     BinaryLiterals

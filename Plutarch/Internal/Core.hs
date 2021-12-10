@@ -1,4 +1,4 @@
-module Plutarch.Internal.Core (PInteger, PByteString, PString, PBool, PList, (:-->), PDelayed, POpaque, PData, Term, pLam, pApp, pDelay, pForce, pHoist, pError, pCoerce, pBuiltin, pConstant, compile) where
+module Plutarch.Internal.Core (PInteger, PByteString, PString, PBool, PList, (:-->), PDelayed, POpaque, PData, Term, pLam, pApp, pDelay, pForce, pHoist, pError, pUnsafeCoerce, pBuiltin, pConstant, compile) where
 
 import qualified UntypedPlutusCore as UPLC
 import qualified PlutusCore as PLC
@@ -19,7 +19,7 @@ data PData
 
 -- Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
 -- Thanks!
-newtype Term a = Term { asRawTerm :: Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun () }
+newtype Term (a :: *) = Term { asRawTerm :: Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun () }
 
 pLam :: (Term a -> Term b) -> Term (a :--> b)
 pLam f = Term $ \i ->
@@ -38,8 +38,8 @@ pForce :: Term (PDelayed a) -> Term a
 pError :: Term a
 pError = Term $ \_ -> UPLC.Error ()
 
-pCoerce :: Term a -> Term b
-pCoerce (Term x) = Term x
+pUnsafeCoerce :: Term a -> Term b
+pUnsafeCoerce (Term x) = Term x
 
 pBuiltin :: UPLC.DefaultFun -> Term a
 pBuiltin f = Term $ \_ -> UPLC.Builtin () f

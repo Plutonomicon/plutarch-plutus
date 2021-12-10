@@ -2,17 +2,15 @@
 
 module Plutarch.Rational (PRational) where
   
-import Plutarch.Prelude
-
 -- TODO: Make easier way of making newtypes?
 data PRational
 
 {-
 pRational :: Term (PPair PInteger PInteger) -> Term PRational
-pRational = pCoerce
+pRational = pUnsafeCoerce
 
 pUnRational :: Term PRational -> Term (PPair PInteger PInteger)
-pUnRational = pCoerce
+pUnRational = pUnsafeCoerce
 
 instance Num (Term PTRational) where
   (+) = undefined
