@@ -1,10 +1,6 @@
 module Plutarch.Prelude
-  ( PInteger
-  , PBool
-  , (:-->)
+  ( (:-->)
   , PDelayed
-  , POpaque
-  , PData
   , Term
   , pLam
   , pApp
@@ -13,10 +9,8 @@ module Plutarch.Prelude
   , pHoist
   , pError
   , pUnsafeCoerce
-  , pBuiltin
-  , pConstant
-  , PEq(..)
-  , POrd(..)
+  , pUnsafeBuiltin
+  , pUnsafeConstant
   , printTerm
   , (£$)
   , (£)

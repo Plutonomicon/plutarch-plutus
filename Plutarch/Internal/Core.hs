@@ -1,4 +1,4 @@
-module Plutarch.Internal.Core (PInteger, PByteString, PString, PBool, PList, (:-->), PDelayed, POpaque, PData, Term, pLam, pApp, pDelay, pForce, pHoist, pError, pUnsafeCoerce, pBuiltin, pConstant, compile) where
+module Plutarch.Internal.Core ((:-->), PDelayed, Term, pLam, pApp, pDelay, pForce, pHoist, pError, pUnsafeCoerce, pUnsafeBuiltin, pUnsafeConstant, compile) where
 
 import qualified UntypedPlutusCore as UPLC
 import qualified PlutusCore as PLC
@@ -7,16 +7,9 @@ import Plutus.V1.Ledger.Scripts (Script(Script))
 import Numeric.Natural (Natural)
 import Data.Kind (Type)
 
-data PInteger
-data PByteString
-data PString
-data PBool
-data PList a
 data (:-->) x y
 infixr 0 :-->
 data PDelayed a
-data POpaque
-data PData
 
 -- Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
 -- Thanks!
@@ -42,11 +35,11 @@ pError = Term $ \_ -> UPLC.Error ()
 pUnsafeCoerce :: Term a -> Term b
 pUnsafeCoerce (Term x) = Term x
 
-pBuiltin :: UPLC.DefaultFun -> Term a
-pBuiltin f = Term $ \_ -> UPLC.Builtin () f
+pUnsafeBuiltin :: UPLC.DefaultFun -> Term a
+pUnsafeBuiltin f = Term $ \_ -> UPLC.Builtin () f
 
-pConstant :: PLC.Some (PLC.ValueOf PLC.DefaultUni) -> Term a
-pConstant c = Term $ \_ -> UPLC.Constant () c
+pUnsafeConstant :: PLC.Some (PLC.ValueOf PLC.DefaultUni) -> Term a
+pUnsafeConstant c = Term $ \_ -> UPLC.Constant () c
 
 -- FIXME: hoist
 pHoist :: Term a -> Term a
