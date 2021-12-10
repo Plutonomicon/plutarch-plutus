@@ -10,7 +10,7 @@ extra-source-files: README.md
 library
   exposed-modules:
     Plutarch
-    Plutarch.Internal.Core
+    Plutarch.Internal
     Plutarch.Prelude
     Plutarch.Pair
     Plutarch.Rational

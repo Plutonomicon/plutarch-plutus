@@ -29,4 +29,3 @@ module Plutarch.Prelude
 import Prelude ()
 
 import Plutarch
-import Plutarch.Internal.Core

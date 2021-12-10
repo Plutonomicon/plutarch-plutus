@@ -1,4 +1,4 @@
-module Plutarch.Internal.Core (Constant(..), (:-->), PDelayed, Term, pLam, pApp, pDelay, pForce, pHoist, pError, pUnsafeCoerce, pUnsafeBuiltin, pUnsafeConstant, compile) where
+module Plutarch.Internal (Constant(..), (:-->), PDelayed, Term, pLam, pApp, pDelay, pForce, pHoist, pError, pUnsafeCoerce, pUnsafeBuiltin, pUnsafeConstant, compile) where
 
 import qualified UntypedPlutusCore as UPLC
 import qualified PlutusCore as PLC
@@ -6,7 +6,7 @@ import PlutusCore (ValueOf(ValueOf), Some(Some))
 import PlutusCore.DeBruijn (DeBruijn(DeBruijn), Index(Index))
 import Plutus.V1.Ledger.Scripts (Script(Script))
 import Numeric.Natural (Natural)
-import Data.Hashable (Hashable, hashWithSalt, hash)
+import Data.Hashable (Hashable, hashWithSalt)
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import qualified Data.ByteString as BS
