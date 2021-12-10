@@ -1,4 +1,4 @@
-module Plutarch.Integer (PInteger) where
+module Plutarch.Integer (PInteger(..)) where
 
 import Plutarch.Prelude
 import Plutarch.Bool (PEq, (£<), (£==), (£<=), POrd, pIf)

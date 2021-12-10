@@ -1,4 +1,4 @@
-module Plutarch.Opaque (POpaque) where
+module Plutarch.Opaque (POpaque(..), pOpaque, pUnsafeFromOpaque) where
 
 import Plutarch.Prelude
 import Plutarch (PlutusType(PInner, pCon', pMatch'))
@@ -10,3 +10,9 @@ instance PlutusType POpaque where
   pCon' (POpaque x) = x
   pMatch' :: Term POpaque -> (POpaque -> Term b) -> Term b
   pMatch' x f = f (POpaque x)
+
+pOpaque :: Term a -> Term POpaque
+pOpaque = pUnsafeCoerce
+
+pUnsafeFromOpaque :: Term POpaque -> Term a
+pUnsafeFromOpaque = pUnsafeCoerce

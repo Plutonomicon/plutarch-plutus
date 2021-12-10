@@ -26,8 +26,8 @@ pApp x y = Term $ \i -> UPLC.Apply () (asRawTerm x i) (asRawTerm y i)
 pDelay :: Term a -> Term (PDelayed a)
 pDelay x = Term $ \i -> UPLC.Delay () (asRawTerm x i)
 
-pForce x = Term $ \i -> UPLC.Force () (asRawTerm x i)
 pForce :: Term (PDelayed a) -> Term a
+pForce x = Term $ \i -> UPLC.Force () (asRawTerm x i)
 
 pError :: Term a
 pError = Term $ \_ -> UPLC.Error ()

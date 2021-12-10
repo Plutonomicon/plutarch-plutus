@@ -1,4 +1,4 @@
-module Plutarch.Either (PEither) where
+module Plutarch.Either (PEither(..)) where
 
 import Plutarch.Prelude
 import Plutarch (PlutusType(PInner, pCon', pMatch'))

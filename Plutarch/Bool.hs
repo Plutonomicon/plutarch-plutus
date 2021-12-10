@@ -1,4 +1,4 @@
-module Plutarch.Bool (PBool, PEq(..), POrd(..), pIf) where
+module Plutarch.Bool (PBool(..), PEq(..), POrd(..), pIf) where
 
 import Plutarch.Prelude
 import Plutarch.Opaque (POpaque)

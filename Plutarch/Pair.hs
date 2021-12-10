@@ -1,4 +1,4 @@
-module Plutarch.Pair (PPair) where
+module Plutarch.Pair (PPair(..)) where
 
 import Plutarch.Prelude
 import Plutarch (PlutusType(PInner, pCon', pMatch'))
