@@ -51,17 +51,17 @@ infixr 0 £$
 
 -- TODO: Replace with pLamN
 
-pLam2 :: ((Term a, Term b) -> Term c) -> Term (a :--> b :--> c)
-pLam2 f = pLam $ \x -> pLam $ \y -> f (x, y)
+pLam2 :: (Term a -> Term b -> Term c) -> Term (a :--> b :--> c)
+pLam2 f = pLam $ \x -> pLam $ \y -> f x y
 
-pLam3 :: ((Term a, Term b, Term c) -> Term d) -> Term (a :--> b :--> c :--> d)
-pLam3 f = pLam $ \x -> pLam $ \y -> pLam $ \z -> f (x, y, z)
+pLam3 :: (Term a -> Term b -> Term c -> Term d) -> Term (a :--> b :--> c :--> d)
+pLam3 f = pLam $ \x -> pLam $ \y -> pLam $ \z -> f x y z
 
-pLam4 :: ((Term a, Term b, Term c, Term d) -> Term e) -> Term (a :--> b :--> c :--> d :--> e)
-pLam4 f = pLam $ \x -> pLam $ \y -> pLam $ \z -> pLam $ \w -> f (x, y, z, w)
+pLam4 :: (Term a -> Term b -> Term c -> Term d -> Term e) -> Term (a :--> b :--> c :--> d :--> e)
+pLam4 f = pLam $ \x -> pLam $ \y -> pLam $ \z -> pLam $ \w -> f x y z w
 
-pLam5 :: ((Term a, Term b, Term c, Term d, Term e) -> Term f) -> Term (a :--> b :--> c :--> d :--> e :--> f)
-pLam5 f = pLam $ \x -> pLam $ \y -> pLam $ \z -> pLam $ \w -> pLam $ \w' -> f (x, y, z, w, w')
+pLam5 :: (Term a -> Term b -> Term c -> Term d -> Term e -> Term f) -> Term (a :--> b :--> c :--> d :--> e :--> f)
+pLam5 f = pLam $ \x -> pLam $ \y -> pLam $ \z -> pLam $ \w -> pLam $ \w' -> f x y z w w'
 
 pLet :: Term a -> (Term a -> Term b) -> Term b
 pLet v f = pApp (pLam f) v
