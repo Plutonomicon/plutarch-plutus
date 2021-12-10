@@ -3,6 +3,7 @@ name:               plutarch
 version:            0.1.0
 
 author: Las Safin <me@las.rs>
+license: MIT
 
 extra-source-files: README.md
 
