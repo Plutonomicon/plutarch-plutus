@@ -7,28 +7,7 @@ license: MIT
 
 extra-source-files: README.md
 
-library
-  exposed-modules:
-    Plutarch
-    Plutarch.Internal
-    Plutarch.Prelude
-    Plutarch.Pair
-    Plutarch.Rational
-    Plutarch.Either
-    Plutarch.Integer
-    Plutarch.Bool
-    Plutarch.Opaque
-    Plutarch.Data
-    Plutarch.ScriptContext
-  build-depends:
-    , base
-    , plutus-core
-    , plutus-ledger-api
-    , text
-    , hashable
-    , bytestring
-    , containers
-    , cryptonite
+common c
   default-language: Haskell2010
   default-extensions:
     DataKinds
@@ -86,3 +65,42 @@ library
     -Wall -Wcompat -Wincomplete-uni-patterns -Wredundant-constraints
     -Wmissing-export-lists -Werror -Wincomplete-record-updates
     -Wmissing-deriving-strategies -Wno-name-shadowing
+
+library
+  import: c
+  exposed-modules:
+    Plutarch
+    Plutarch.Internal
+    Plutarch.Prelude
+    Plutarch.Pair
+    Plutarch.Rational
+    Plutarch.Either
+    Plutarch.Integer
+    Plutarch.Bool
+    Plutarch.Opaque
+    Plutarch.Data
+    Plutarch.ScriptContext
+    Plutarch.Evaluate
+  build-depends:
+    , base
+    , plutus-core
+    , plutus-ledger-api
+    , text
+    , hashable
+    , bytestring
+    , containers
+    , cryptonite
+    , plutus-tx
+    , mtl
+
+test-suite examples
+  import: c
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  hs-source-dirs: examples
+  other-modules:
+  build-depends:
+    , base
+    , plutarch
+    , tasty
+    , tasty-hunit
