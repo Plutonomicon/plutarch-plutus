@@ -6,7 +6,7 @@ import Plutarch (PlutusType(PInner, pCon', pMatch'), Constant(CInteger))
 import qualified PlutusCore as PLC
 import Plutarch.Opaque (POpaque)
 
-data PInteger = PInteger (Term POpaque)
+data PInteger s = PInteger (Term s POpaque)
 
 instance PlutusType PInteger where
   type PInner PInteger _ = POpaque
@@ -20,7 +20,7 @@ instance POrd PInteger where
   x £<= y = pUnsafeBuiltin PLC.LessThanEqualsInteger £ x £ y
   x £< y = pUnsafeBuiltin PLC.LessThanInteger £ x £ y
 
-instance Num (Term PInteger) where
+instance Num (Term s PInteger) where
   x + y = pUnsafeBuiltin PLC.AddInteger £ x £ y
   x - y = pUnsafeBuiltin PLC.SubtractInteger £ x £ y
   x * y = pUnsafeBuiltin PLC.MultiplyInteger £ x £ y

@@ -72,12 +72,12 @@ library
     Plutarch
     Plutarch.Internal
     Plutarch.Prelude
+    Plutarch.Opaque
     Plutarch.Pair
     Plutarch.Rational
     Plutarch.Either
     Plutarch.Integer
     Plutarch.Bool
-    Plutarch.Opaque
     Plutarch.Data
     Plutarch.ScriptContext
     Plutarch.Evaluate

@@ -1,4 +1,4 @@
-module Plutarch.Internal (Constant(..), (:-->), PDelayed, Term, pLam, pApp, pDelay, pForce, pHoistAcyclic, pError, pUnsafeCoerce, pUnsafeBuiltin, pUnsafeConstant, compile) where
+module Plutarch.Internal (Constant(..), (:-->), PDelayed, Term, pLam, pApp, pDelay, pForce, pHoistAcyclic, pError, pUnsafeCoerce, pUnsafeBuiltin, pUnsafeConstant, compile, ClosedTerm) where
 
 import qualified UntypedPlutusCore as UPLC
 import qualified PlutusCore as PLC
@@ -15,10 +15,6 @@ import PlutusCore.Data (Data)
 import Data.List (foldl')
 import qualified Data.Map.Lazy as M
 import Data.Maybe (fromJust)
-
-data (:-->) x y
-infixr 0 :-->
-data PDelayed a
 
 data Constant a where
   CInteger    :: Constant (PLC.Esc Integer)
@@ -94,9 +90,18 @@ instance Hashable RawTerm where
 -- Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
 -- Thanks!
 -- NB: Hoisted terms must be sorted such that the dependents are first and dependencies last.
-newtype Term (a :: Type) = Term { asRawTerm :: Natural -> (RawTerm, [HoistedTerm]) }
+--
+-- s: This parameter isn't ever instantiated with something concrete. It is merely here
+-- to ensure that `compile` and `pHoistAcyclic` only accept terms without any free variables.
+newtype Term (s :: k) (a :: k -> Type) = Term { asRawTerm :: Natural -> (RawTerm, [HoistedTerm]) }
 
-pLam :: (Term a -> Term b) -> Term (a :--> b)
+type ClosedTerm (a :: k -> Type) = forall (s :: k). Term s a
+
+data (:-->) (a :: k -> Type) (b :: k -> Type) (s :: k)
+infixr 0 :-->
+data PDelayed (a :: k -> Type) (s :: k)
+
+pLam :: (Term s a -> Term s b) -> Term s (a :--> b)
 pLam f = Term $ \i ->
   let
     v = Term $ \j -> (RVar (j - (i + 1)), [])
@@ -104,37 +109,37 @@ pLam f = Term $ \i ->
   in
   (RLamAbs $ t, deps)
 
-pApp :: Term (a :--> b) -> Term a -> Term b
+pApp :: Term s (a :--> b) -> Term s a -> Term s b
 pApp x y = Term $ \i ->
   let (x', deps) = asRawTerm x i in
   let (y', deps') = asRawTerm y i in
   (RApply x' y', deps ++ deps')
 
-pDelay :: Term a -> Term (PDelayed a)
+pDelay :: Term s a -> Term s (PDelayed a)
 pDelay x = Term $ \i ->
   let (x', deps) = asRawTerm x i in
   (RDelay x', deps)
 
-pForce :: Term (PDelayed a) -> Term a
+pForce :: Term s (PDelayed a) -> Term s a
 pForce x = Term $ \i ->
   let (x', deps) = asRawTerm x i in
   (RForce x', deps)
 
-pError :: Term a
+pError :: Term s a
 pError = Term $ \_ -> (RError, [])
 
-pUnsafeCoerce :: Term a -> Term b
+pUnsafeCoerce :: Term s a -> Term s b
 pUnsafeCoerce (Term x) = Term x
 
-pUnsafeBuiltin :: UPLC.DefaultFun -> Term a
+pUnsafeBuiltin :: UPLC.DefaultFun -> Term s a
 pUnsafeBuiltin f = Term $ \_ -> (RBuiltin f, [])
 
-pUnsafeConstant :: Some (ValueOf Constant) -> Term a
+pUnsafeConstant :: Some (ValueOf Constant) -> Term s a
 pUnsafeConstant c = Term $ \_ -> (RConstant c, [])
 
 -- FIXME: Give proper error message when term uses free variables.
 -- FIXME: Give proper error message when mutually recursive.
-pHoistAcyclic :: Term a -> Term a
+pHoistAcyclic :: ClosedTerm a -> Term s a
 pHoistAcyclic t = Term $ \_ ->
   let (t', deps) = asRawTerm t 0 in
   let t'' = HoistedTerm (hash t') t' in
@@ -151,7 +156,7 @@ rawTermToUPLC _ _ (RConstant c) = UPLC.Constant () (convertConstant c)
 rawTermToUPLC _ _ RError = UPLC.Error ()
 rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted - 1
 
-compile' :: Term a -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+compile' :: ClosedTerm a -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 compile' t =
   let
     (t', deps) = asRawTerm t 0
@@ -178,5 +183,5 @@ compile' t =
   in
   wrapped
 
-compile :: Term a -> Script
+compile :: ClosedTerm a -> Script
 compile t = Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' t)

@@ -23,8 +23,10 @@ module Plutarch.Prelude
   , pMatch
   , pUnsafeFrom
   , pTo
+  , Type
 ) where
 
 import Prelude ()
 
 import Plutarch
+import Data.Kind (Type)
