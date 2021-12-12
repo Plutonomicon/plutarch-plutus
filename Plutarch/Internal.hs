@@ -1,4 +1,4 @@
-module Plutarch.Internal (Constant(..), (:-->), PDelayed, Term, pLam, pApp, pDelay, pForce, pHoistAcyclic, pError, pUnsafeCoerce, pUnsafeBuiltin, pUnsafeConstant, compile, compile') where
+module Plutarch.Internal (Constant(..), (:-->), PDelayed, Term, pLam, pApp, pDelay, pForce, pHoistAcyclic, pError, pUnsafeCoerce, pUnsafeBuiltin, pUnsafeConstant, compile) where
 
 import qualified UntypedPlutusCore as UPLC
 import qualified PlutusCore as PLC

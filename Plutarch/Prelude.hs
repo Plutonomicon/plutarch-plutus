@@ -11,7 +11,6 @@ module Plutarch.Prelude
   , pUnsafeCoerce
   , pUnsafeBuiltin
   , pUnsafeConstant
-  , printTerm
   , (£$)
   , (£)
   , pLam2

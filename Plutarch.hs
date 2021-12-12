@@ -15,7 +15,6 @@ module Plutarch
   , PI.pUnsafeBuiltin
   , PI.pUnsafeConstant
   , PI.compile
-  , PI.compile'
   , PlutusType(..)
   , printTerm
   , (£$)
@@ -32,17 +31,16 @@ module Plutarch
   , pTo
 ) where
   
-import Plutarch.Internal (Term, pApp, pUnsafeCoerce, (:-->), pLam, compile')
+import Plutarch.Internal (Term, pApp, pUnsafeCoerce, (:-->), pLam, compile)
+import Plutus.V1.Ledger.Scripts (Script(Script))
 import qualified Plutarch.Internal as PI
 import PlutusCore.Pretty
-import qualified UntypedPlutusCore as UPLC
-import qualified PlutusCore.DeBruijn as PLC
 
 -- TODO: Heavily improve. It's unreadable right now.
+-- We could convert the de Bruijn indices into names.
+-- show . prettyPlcReadableDef . (\(Right p) -> p) . Scripts.mkTermToEvaluate . compile $ term
 printTerm :: Term a -> String
-printTerm term =
-  show . prettyPlcReadableDebug . UPLC.termMapNames PLC.fakeNameDeBruijn . compile' $ term
-
+printTerm term = show . prettyPlcReadableDebug . (\(Script s) -> s) . compile $ term
 
 (£) :: Term (a :--> b) -> Term a -> Term b
 (£) = pApp
