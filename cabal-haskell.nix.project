@@ -6,6 +6,9 @@ allow-newer: size-based:template-haskell
 
 -- constraints: deepseq == 1.4.6.0
 
+package plutus-tx-plugin
+  flags: +use-ghc-stub
+
 source-repository-package
   type: git
   location: https://github.com/input-output-hk/plutus.git

@@ -17,28 +17,14 @@
       nixpkgsFor = system: import nixpkgs { inherit system; overlays = [ haskell-nix.overlay ]; inherit (haskell-nix) config; };
 
       projectFor = system:
-        let
-          deferPluginErrors = true;
-          pkgs = nixpkgsFor system;
-
-          fakeSrc = pkgs.runCommand "real-source" {} ''
-            cp -rT ${self} $out
-            chmod u+w $out/cabal.project
-            cat $out/cabal-haskell.nix.project >> $out/cabal.project
-          '';
-        in
+        let pkgs = nixpkgsFor system; in
         (nixpkgsFor system).haskell-nix.cabalProject' {
-          src = fakeSrc.outPath;
+          src = ./.;
           compiler-nix-name = "ghc8107";
           cabalProjectFileName = "cabal.project";
+          cabalProjectLocal = builtins.readFile ./cabal-haskell.nix.project;
           modules = [{
             packages = {
-              marlowe.flags.defer-plugin-errors = deferPluginErrors;
-              plutus-use-cases.flags.defer-plugin-errors = deferPluginErrors;
-              plutus-ledger.flags.defer-plugin-errors = deferPluginErrors;
-              plutus-contract.flags.defer-plugin-errors = deferPluginErrors;
-              # This doesn't seem to do anything unfortunately.
-              plutus-tx-plugin.flags.use-ghc-stub = true;
               cardano-crypto-praos.components.library.pkgconfig =
                 nixpkgs.lib.mkForce [ [ (import plutus { inherit system; }).pkgs.libsodium-vrf ] ];
               cardano-crypto-class.components.library.pkgconfig =
