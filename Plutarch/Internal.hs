@@ -1,4 +1,4 @@
-module Plutarch.Internal (Constant(..), (:-->), PDelayed, Term, pLam, pApp, pDelay, pForce, pHoist, pError, pUnsafeCoerce, pUnsafeBuiltin, pUnsafeConstant, compile) where
+module Plutarch.Internal (Constant(..), (:-->), PDelayed, Term, pLam, pApp, pDelay, pForce, pHoistAcyclic, pError, pUnsafeCoerce, pUnsafeBuiltin, pUnsafeConstant, compile) where
 
 import qualified UntypedPlutusCore as UPLC
 import qualified PlutusCore as PLC
@@ -6,12 +6,15 @@ import PlutusCore (ValueOf(ValueOf), Some(Some))
 import PlutusCore.DeBruijn (DeBruijn(DeBruijn), Index(Index))
 import Plutus.V1.Ledger.Scripts (Script(Script))
 import Numeric.Natural (Natural)
-import Data.Hashable (Hashable, hashWithSalt)
+-- FIXME: Replace! Very bad. We need a good hashing algorithm, not this ad-hoc approach. Use blake2b.
+import Data.Hashable (Hashable, hashWithSalt, hash)
 import Data.Kind (Type)
-import GHC.Generics (Generic)
 import qualified Data.ByteString as BS
 import qualified Data.Text as Text
 import PlutusCore.Data (Data)
+import Data.List (foldl')
+import qualified Data.Map.Lazy as M
+import Data.Maybe (fromJust)
 
 data (:-->) x y
 infixr 0 :-->
@@ -29,13 +32,13 @@ data Constant a where
   CData       :: Constant (PLC.Esc Data)
 
 instance {-# OVERLAPPING #-} Hashable (Some (ValueOf Constant)) where
-  hashWithSalt s (Some (ValueOf CInteger x)) = s `hashWithSalt` x
-  hashWithSalt s (Some (ValueOf CByteString x)) = s `hashWithSalt` x
-  hashWithSalt s (Some (ValueOf CString x)) = s `hashWithSalt` x
-  hashWithSalt s (Some (ValueOf CUnit x)) = s `hashWithSalt` x
-  hashWithSalt s (Some (ValueOf CBool x)) = s `hashWithSalt` x
-  hashWithSalt _ (Some (ValueOf CData _)) = error "FIXME: Implement `Hashable Data`" -- s `hashWithSalt` x
-  hashWithSalt s (Some (ValueOf (CApplyC _ _) x)) = s `hashWithSalt` x
+  hashWithSalt s (Some (ValueOf CInteger x)) = s `hashWithSalt` (0 :: Int) `hashWithSalt` x
+  hashWithSalt s (Some (ValueOf CByteString x)) = s `hashWithSalt` (1 :: Int) `hashWithSalt` x
+  hashWithSalt s (Some (ValueOf CString x)) = s `hashWithSalt` (2 :: Int) `hashWithSalt` x
+  hashWithSalt s (Some (ValueOf CUnit x)) = s `hashWithSalt` (3 :: Int) `hashWithSalt` x
+  hashWithSalt s (Some (ValueOf CBool x)) = s `hashWithSalt` (4 :: Int) `hashWithSalt` x
+  hashWithSalt _ (Some (ValueOf CData _)) = error "FIXME: Implement `Hashable Data`" -- s `hashWithSalt` (5 :: Int) `hashWithSalt` x
+  hashWithSalt s (Some (ValueOf (CApplyC _ _) x)) = s `hashWithSalt` (6 :: Int) `hashWithSalt` x
 
 convertUni :: Constant a -> UPLC.DefaultUni a
 convertUni CInteger = PLC.DefaultUniInteger
@@ -51,6 +54,21 @@ convertUni CData = PLC.DefaultUniData
 convertConstant :: Some (ValueOf Constant) -> Some (ValueOf UPLC.DefaultUni)
 convertConstant (Some (ValueOf t v)) = Some (ValueOf (convertUni t) v)
 
+-- Explanation for hoisted terms:
+-- Hoisting is a convenient way of importing terms without duplicating them
+-- across your tree. Currently, hoisting is only supported on terms that do
+-- not refer to any free variables.
+--
+-- An RHoisted contains a term and its hash. A RawTerm will have a DAG
+-- of hoisted terms, where an edge represents a dependency.
+-- We topologically sort these hoisted terms, such that each has an index.
+--
+-- We wrap our RawTerm in RLamAbs and RApply in an order corresponding to the
+-- indices. Each level can refer to levels above it by the nature of De Bruijn naming,
+-- though the name is relative to the current level.
+
+data HoistedTerm = HoistedTerm Int RawTerm
+
 data RawTerm
   = RVar Natural
   | RLamAbs RawTerm
@@ -60,52 +78,105 @@ data RawTerm
   | RConstant (Some (ValueOf Constant))
   | RBuiltin PLC.DefaultFun
   | RError
-  deriving stock Generic
-  deriving anyclass Hashable
+  | RHoisted HoistedTerm
 
-rawTermToUPLC :: RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
-rawTermToUPLC (RVar i) = UPLC.Var () (DeBruijn . Index $ i)
-rawTermToUPLC (RLamAbs t) = UPLC.LamAbs () (DeBruijn . Index $ 0) (rawTermToUPLC t)
-rawTermToUPLC (RApply x y) = UPLC.Apply () (rawTermToUPLC x) (rawTermToUPLC y)
-rawTermToUPLC (RDelay t) = UPLC.Delay () (rawTermToUPLC t)
-rawTermToUPLC (RForce t) = UPLC.Force () (rawTermToUPLC t)
-rawTermToUPLC (RBuiltin f) = UPLC.Builtin () f
-rawTermToUPLC (RConstant c) = UPLC.Constant () (convertConstant c)
-rawTermToUPLC RError = UPLC.Error ()
+instance Hashable RawTerm where
+  hashWithSalt s (RVar x) = s `hashWithSalt` (0 :: Int) `hashWithSalt` x
+  hashWithSalt s (RLamAbs x) = s `hashWithSalt` (1 :: Int) `hashWithSalt` x
+  hashWithSalt s (RApply x y) = s `hashWithSalt` (2 :: Int) `hashWithSalt` x `hashWithSalt` y
+  hashWithSalt s (RForce x) = s `hashWithSalt` (3 :: Int) `hashWithSalt` x
+  hashWithSalt s (RDelay x) = s `hashWithSalt` (4 :: Int) `hashWithSalt` x
+  hashWithSalt s (RConstant x) = s `hashWithSalt` (5 :: Int) `hashWithSalt` x
+  hashWithSalt s (RBuiltin x) = s `hashWithSalt` (6 :: Int) `hashWithSalt` x
+  hashWithSalt s RError = s `hashWithSalt` (7 :: Int)
+  hashWithSalt s (RHoisted (HoistedTerm x _)) = s `hashWithSalt` (8 :: Int) `hashWithSalt` x
 
 -- Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
 -- Thanks!
-newtype Term (a :: Type) = Term { asRawTerm :: Natural -> RawTerm }
+-- NB: Hoisted terms must be sorted such that the dependents are first and dependencies last.
+newtype Term (a :: Type) = Term { asRawTerm :: Natural -> (RawTerm, [HoistedTerm]) }
 
 pLam :: (Term a -> Term b) -> Term (a :--> b)
 pLam f = Term $ \i ->
-  let v = Term $ \j -> RVar (j - (i + 1)) in
-  RLamAbs $ asRawTerm (f v) (i + 1)
+  let
+    v = Term $ \j -> (RVar (j - (i + 1)), [])
+    (t, deps) = asRawTerm (f v) (i + 1)
+  in
+  (RLamAbs $ t, deps)
 
 pApp :: Term (a :--> b) -> Term a -> Term b
-pApp x y = Term $ \i -> RApply (asRawTerm x i) (asRawTerm y i)
+pApp x y = Term $ \i ->
+  let (x', deps) = asRawTerm x i in
+  let (y', deps') = asRawTerm y i in
+  (RApply x' y', deps ++ deps')
 
 pDelay :: Term a -> Term (PDelayed a)
-pDelay x = Term $ \i -> RDelay (asRawTerm x i)
+pDelay x = Term $ \i ->
+  let (x', deps) = asRawTerm x i in
+  (RDelay x', deps)
 
 pForce :: Term (PDelayed a) -> Term a
-pForce x = Term $ \i -> RForce (asRawTerm x i)
+pForce x = Term $ \i ->
+  let (x', deps) = asRawTerm x i in
+  (RForce x', deps)
 
 pError :: Term a
-pError = Term $ \_ -> RError
+pError = Term $ \_ -> (RError, [])
 
 pUnsafeCoerce :: Term a -> Term b
 pUnsafeCoerce (Term x) = Term x
 
 pUnsafeBuiltin :: UPLC.DefaultFun -> Term a
-pUnsafeBuiltin f = Term $ \_ -> RBuiltin f
+pUnsafeBuiltin f = Term $ \_ -> (RBuiltin f, [])
 
 pUnsafeConstant :: Some (ValueOf Constant) -> Term a
-pUnsafeConstant c = Term $ \_ -> RConstant c
+pUnsafeConstant c = Term $ \_ -> (RConstant c, [])
 
--- FIXME: hoist
-pHoist :: Term a -> Term a
-pHoist = id
+-- FIXME: Give proper error message when term uses free variables.
+-- FIXME: Give proper error message when mutually recursive.
+pHoistAcyclic :: Term a -> Term a
+pHoistAcyclic t = Term $ \_ ->
+  let (t', deps) = asRawTerm t 0 in
+  let t'' = HoistedTerm (hash t') t' in
+  (RHoisted t'', t'' : deps)
+
+rawTermToUPLC :: (HoistedTerm -> Natural) -> Natural -> RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i)
+rawTermToUPLC m l (RLamAbs t) = UPLC.LamAbs () (DeBruijn . Index $ 0) (rawTermToUPLC m (l + 1) t)
+rawTermToUPLC m l (RApply x y) = UPLC.Apply () (rawTermToUPLC m l x) (rawTermToUPLC m l y)
+rawTermToUPLC m l (RDelay t) = UPLC.Delay () (rawTermToUPLC m l t)
+rawTermToUPLC m l (RForce t) = UPLC.Force () (rawTermToUPLC m l t)
+rawTermToUPLC _ _ (RBuiltin f) = UPLC.Builtin () f
+rawTermToUPLC _ _ (RConstant c) = UPLC.Constant () (convertConstant c)
+rawTermToUPLC _ _ RError = UPLC.Error ()
+rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted - 1
+
+compile' :: Term a -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+compile' t =
+  let
+    (t', deps) = asRawTerm t 0
+
+    f :: Natural -> Maybe Natural -> (Bool, Maybe Natural)
+    f n Nothing = (True, Just n)
+    f _ (Just n) = (False, Just n)
+
+    g :: HoistedTerm -> (M.Map Int Natural, [(Natural, RawTerm)], Natural) -> (M.Map Int Natural, [(Natural, RawTerm)], Natural)
+    g (HoistedTerm hash term) (map, defs, n) = case M.alterF (f n) hash map of
+      (True, map) -> (map, (n, term):defs, n+1)
+      (False, map) -> (map, defs, n)
+
+  -- map: term -> de Bruijn level
+  -- defs: the terms, level 0 is last
+  -- n: # of terms
+    (map, defs, n) = foldr g (M.empty, [], 0) deps
+
+    map' = fromJust . flip M.lookup map . (\(HoistedTerm hash _) -> hash)
+
+    body = rawTermToUPLC map' n t'
+
+    wrapped = foldl' (\b (lvl, def) -> UPLC.Apply () (UPLC.LamAbs () (DeBruijn . Index $ 0) b) (rawTermToUPLC map' lvl def)) body defs
+  in
+  wrapped
 
 compile :: Term a -> Script
-compile t = Script $ UPLC.Program () (PLC.defaultVersion ()) (rawTermToUPLC $ asRawTerm t 0)
+compile t = Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' t)

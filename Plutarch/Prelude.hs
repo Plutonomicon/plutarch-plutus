@@ -6,7 +6,7 @@ module Plutarch.Prelude
   , pApp
   , pDelay
   , pForce
-  , pHoist
+  , pHoistAcyclic
   , pError
   , pUnsafeCoerce
   , pUnsafeBuiltin

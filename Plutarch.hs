@@ -9,7 +9,7 @@ module Plutarch
   , PI.pApp
   , PI.pDelay
   , PI.pForce
-  , PI.pHoist
+  , PI.pHoistAcyclic
   , PI.pError
   , PI.pUnsafeCoerce
   , PI.pUnsafeBuiltin
@@ -31,7 +31,7 @@ module Plutarch
   , pTo
 ) where
   
-import Plutarch.Internal (Term, pApp, pUnsafeBuiltin, pUnsafeCoerce, pUnsafeConstant, (:-->), pLam, pHoist, compile)
+import Plutarch.Internal (Term, pApp, pUnsafeCoerce, (:-->), pLam, compile)
 import Plutus.V1.Ledger.Scripts (Script(Script))
 import qualified Plutarch.Internal as PI
 import PlutusCore.Pretty
