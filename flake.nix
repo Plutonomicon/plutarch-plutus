@@ -40,6 +40,10 @@
             # Eventually we will probably want to build these with haskell.nix.
             nativeBuildInputs = [ pkgs.cabal-install pkgs.hlint pkgs.haskellPackages.fourmolu ];
 
+            tools = {
+              haskell-language-server = {};  # Must use haskell.nix, because the compiler version should match
+            };
+
             additional = ps: [
               ps.plutus-ledger-api
             ];
