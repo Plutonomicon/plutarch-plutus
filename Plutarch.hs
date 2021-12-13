@@ -5,7 +5,7 @@ module Plutarch
   , (PI.:-->)
   , PI.PDelayed
   , PI.Term
-  , PI.plam
+  , PI.plam'
   , PI.papp
   , PI.pdelay
   , PI.pforce
@@ -20,10 +20,6 @@ module Plutarch
   , printTerm
   , (£$)
   , (£)
-  , plam2
-  , plam3
-  , plam4
-  , plam5
   , plet
   , pinl
   , pcon
@@ -34,9 +30,10 @@ module Plutarch
   , POpaque(..)
   , popaque
   , punsafeFromOpaque
+  , plam
 ) where
   
-import Plutarch.Internal (Term, papp, punsafeCoerce, (:-->), plam, compile, phoistAcyclic, ClosedTerm)
+import Plutarch.Internal (Term, papp, punsafeCoerce, (:-->), plam', compile, phoistAcyclic, ClosedTerm)
 import Plutus.V1.Ledger.Scripts (Script(Script))
 import qualified Plutarch.Internal as PI
 import PlutusCore.Pretty (prettyPlcReadableDebug)
@@ -56,19 +53,21 @@ infixl 8 £
 (£$) = papp
 infixr 0 £$
 
--- TODO: Replace with plamN
+-- TODO: Improve type inference when using plam
 
-plam2 :: (Term s a -> Term s b -> Term s c) -> Term s (a :--> b :--> c)
-plam2 f = plam $ \x -> plam $ \y -> f x y
+class PLam (s :: k) (b :: Type) where
+  type PLamOut b :: (k -> Type)
+  plam :: forall (a :: k -> Type). (Term s a -> b) -> Term s (a :--> PLamOut b)
 
-plam3 :: (Term s a -> Term s b -> Term s c -> Term s d) -> Term s (a :--> b :--> c :--> d)
-plam3 f = plam $ \x -> plam $ \y -> plam $ \z -> f x y z
+instance PLam s (Term s b) where
+  type PLamOut (Term s b) = b
+  plam :: forall a. (Term s a -> Term s b) -> Term s (a :--> b)
+  plam = plam'
 
-plam4 :: (Term s a -> Term s b -> Term s c -> Term s d -> Term s e) -> Term s (a :--> b :--> c :--> d :--> e)
-plam4 f = plam $ \x -> plam $ \y -> plam $ \z -> plam $ \w -> f x y z w
-
-plam5 :: (Term s a -> Term s b -> Term s c -> Term s d -> Term s e -> Term s f) -> Term s (a :--> b :--> c :--> d :--> e :--> f)
-plam5 f = plam $ \x -> plam $ \y -> plam $ \z -> plam $ \w -> plam $ \w' -> f x y z w w'
+instance PLam s c => PLam s (Term s b -> c) where
+  type PLamOut (Term s b -> c) = b :--> PLamOut c
+  plam :: forall a. (Term s a -> Term s b -> c) -> Term s (a :--> b :--> PLamOut c)
+  plam f = plam' $ \x -> plam (f x)
 
 plet :: Term s a -> (Term s a -> Term s b) -> Term s b
 plet v f = papp (plam f) v
@@ -80,7 +79,7 @@ class PlutusType (a :: k -> Type) where
   -- `b' :: k'` causes GHC to fail type checking at various places
   -- due to not being able to expand the type family.
   type PInner a (b' :: k -> Type) :: k -> Type
-  pcon' :: forall s. a s -> (forall b. Term s (PInner a b))
+  pcon' :: forall s. a s -> forall b. Term s (PInner a b)
   pmatch' :: forall s c. (forall b. Term s (PInner a b)) -> (a s -> Term s c) -> Term s c
 
 pcon :: PlutusType a => a s -> Term s a

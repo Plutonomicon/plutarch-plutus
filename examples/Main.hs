@@ -13,10 +13,10 @@ main :: IO ()
 main = defaultMain tests
 
 add1 :: Term s (PInteger :--> PInteger :--> PInteger)
-add1 = plam2 $ \x y -> x + y + 1
+add1 = plam $ \x y -> x + y + 1
 
 add1Hoisted :: Term s (PInteger :--> PInteger :--> PInteger)
-add1Hoisted = phoistAcyclic $ plam2 $ \x y -> x + y + 1
+add1Hoisted = phoistAcyclic $ plam $ \x y -> x + y + 1
 
 example1 :: Term s PInteger
 example1 = add1Hoisted £ 12 £ 32 + add1Hoisted £ 5 £ 4
@@ -27,7 +27,7 @@ example2 = plam $ \x -> pmatch x $ \case
   PRight n -> n - 1
 
 fib :: Term s (PInteger :--> PInteger)
-fib = pfix £$ plam2 $ \self n ->
+fib = pfix £$ plam $ \self n ->
   pif (n £== 0)
     0
     $ pif (n £== 1)

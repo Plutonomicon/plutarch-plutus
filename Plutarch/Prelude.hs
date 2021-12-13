@@ -10,10 +10,6 @@ module Plutarch.Prelude
   , perror
   , (£$)
   , (£)
-  , plam2
-  , plam3
-  , plam4
-  , plam5
   , plet
   , pinl
   , pcon

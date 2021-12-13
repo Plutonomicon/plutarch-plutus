@@ -1,4 +1,4 @@
-module Plutarch.Internal (Constant(..), (:-->), PDelayed, Term, plam, papp, pdelay, pforce, phoistAcyclic, perror, punsafeCoerce, punsafeBuiltin, punsafeConstant, compile, ClosedTerm) where
+module Plutarch.Internal (Constant(..), (:-->), PDelayed, Term, plam', papp, pdelay, pforce, phoistAcyclic, perror, punsafeCoerce, punsafeBuiltin, punsafeConstant, compile, ClosedTerm) where
 
 import qualified UntypedPlutusCore as UPLC
 import qualified PlutusCore as PLC
@@ -101,8 +101,8 @@ data (:-->) (a :: k -> Type) (b :: k -> Type) (s :: k)
 infixr 0 :-->
 data PDelayed (a :: k -> Type) (s :: k)
 
-plam :: (Term s a -> Term s b) -> Term s (a :--> b)
-plam f = Term $ \i ->
+plam' :: (Term s a -> Term s b) -> Term s (a :--> b)
+plam' f = Term $ \i ->
   let
     v = Term $ \j -> (RVar (j - (i + 1)), [])
     (t, deps) = asRawTerm (f v) (i + 1)
