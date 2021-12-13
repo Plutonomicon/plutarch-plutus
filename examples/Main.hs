@@ -5,7 +5,9 @@ import Test.Tasty.HUnit
 
 import Plutarch.Prelude
 import Plutarch.Integer (PInteger)
+import Plutarch.Opaque (POpaque)
 import Plutarch.Either (PEither(PLeft,PRight))
+import Plutarch.Bool (pIf, (£==))
 import Plutarch (printTerm)
 
 main :: IO ()
@@ -25,16 +27,32 @@ example2 = pLam $ \x -> pMatch x $ \case
   PLeft n -> n + 1
   PRight n -> n - 1
 
+fix :: Term s (((a :--> b) :--> a :--> b) :--> a :--> b)
+fix = pUnsafeCoerce $
+  pLam $ \f ->
+    (pLam $ \(x :: Term s POpaque) -> f £ (pLam $ \(v :: Term s POpaque) -> (pUnsafeCoerce x) £ x £ v))
+    £ pUnsafeCoerce (pLam $ \(x :: Term s POpaque) -> f £ (pLam $ \(v :: Term s POpaque) -> (pUnsafeCoerce x) £ x £ v))
+
+fib :: Term s (PInteger :--> PInteger)
+fib = fix £$ pLam2 $ \self n ->
+  pIf (n £== 0)
+    0
+    $ pIf (n £== 1)
+      1
+      $ (self £ (n - 1)) + (self £ (n - 2))
+
 -- FIXME: Make the below impossible using run-time checks.
 -- loop :: Term (PInteger :--> PInteger)
 -- loop = pLam $ \x -> loop £ x
 -- loopHoisted :: Term (PInteger :--> PInteger)
 -- loopHoisted = pHoistAcyclic $ pLam $ \x -> loop £ x
 
+-- FIXME: Use property tests
 tests :: TestTree
 tests = testGroup "unit tests"
   [ testCase "add1" $ (printTerm add1) @?= "(program 1.0.0 (\\i0 -> \\i0 -> addInteger (addInteger i1 i0) 1))"
   , testCase "add1Hoisted" $ (printTerm add1Hoisted) @?= "(program 1.0.0 ((\\i0 -> i0) (\\i0 -> \\i0 -> addInteger (addInteger i1 i0) 1)))"
   , testCase "example1" $ (printTerm example1) @?= "(program 1.0.0 ((\\i0 -> addInteger (i0 12 32) (i0 5 4)) (\\i0 -> \\i0 -> addInteger (addInteger i1 i0) 1)))"
   , testCase "example2" $ (printTerm example2) @?= "(program 1.0.0 (\\i0 -> i0 (\\i0 -> addInteger i0 1) (\\i0 -> subtractInteger i0 1)))"
+  , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> i1 (\\i0 -> i1 i1 i0)) (\\i0 -> i1 (\\i0 -> i1 i1 i0))) (\\i0 -> \\i0 -> force (ifThenElse (equalsInteger i0 0) (delay 0) (delay (force (ifThenElse (equalsInteger i0 1) (delay 1) (delay (addInteger (i1 (subtractInteger i0 1)) (i1 (subtractInteger i0 2)))))))))))"
   ]

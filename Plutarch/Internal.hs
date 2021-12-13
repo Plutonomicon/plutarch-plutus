@@ -137,7 +137,6 @@ pUnsafeBuiltin f = Term $ \_ -> (RBuiltin f, [])
 pUnsafeConstant :: Some (ValueOf Constant) -> Term s a
 pUnsafeConstant c = Term $ \_ -> (RConstant c, [])
 
--- FIXME: Give proper error message when term uses free variables.
 -- FIXME: Give proper error message when mutually recursive.
 pHoistAcyclic :: ClosedTerm a -> Term s a
 pHoistAcyclic t = Term $ \_ ->
