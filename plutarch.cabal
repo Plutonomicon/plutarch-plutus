@@ -80,6 +80,7 @@ library
     Plutarch.Data
     Plutarch.ScriptContext
     Plutarch.Evaluate
+    Plutarch.Maybe
   build-depends:
     , base
     , plutus-core
