@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -xe
+find . -name \*.hs | xargs fourmolu -m inplace
+
+# If we so desire, uncomment these:
+#nixpkgs-fmt *.nix
+#cabal-fmt -i *.cabal
