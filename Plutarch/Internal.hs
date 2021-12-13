@@ -1,54 +1,20 @@
-module Plutarch.Internal (Constant(..), (:-->), PDelayed, Term, plam', papp, pdelay, pforce, phoistAcyclic, perror, punsafeCoerce, punsafeBuiltin, punsafeConstant, compile, ClosedTerm) where
+module Plutarch.Internal ((:-->), PDelayed, Term, plam', papp, pdelay, pforce, phoistAcyclic, perror, punsafeCoerce, punsafeBuiltin, punsafeConstant, compile, ClosedTerm) where
 
 import qualified UntypedPlutusCore as UPLC
 import qualified PlutusCore as PLC
-import PlutusCore (ValueOf(ValueOf), Some(Some))
+import PlutusCore (ValueOf, Some)
 import PlutusCore.DeBruijn (DeBruijn(DeBruijn), Index(Index))
 import Plutus.V1.Ledger.Scripts (Script(Script))
 import Numeric.Natural (Natural)
--- FIXME: Replace! Very bad. We need a good hashing algorithm, not this ad-hoc approach. Use blake2b.
-import Data.Hashable (Hashable, hashWithSalt, hash)
 import Data.Kind (Type)
 import qualified Data.ByteString as BS
-import qualified Data.Text as Text
-import PlutusCore.Data (Data)
 import Data.List (foldl')
 import qualified Data.Map.Lazy as M
 import Data.Maybe (fromJust)
-
-data Constant a where
-  CInteger    :: Constant (PLC.Esc Integer)
-  CByteString :: Constant (PLC.Esc BS.ByteString)
-  CString     :: Constant (PLC.Esc Text.Text)
-  CUnit       :: Constant (PLC.Esc ())
-  CBool       :: Constant (PLC.Esc Bool)
-  CProtoList  :: Constant (PLC.Esc [])
-  CProtoPair  :: Constant (PLC.Esc (,))
-  CApplyC     :: (Hashable a, Hashable (f a)) => !(Constant (PLC.Esc f)) -> !(Constant (PLC.Esc a)) -> Constant (PLC.Esc (f a))
-  CData       :: Constant (PLC.Esc Data)
-
-instance {-# OVERLAPPING #-} Hashable (Some (ValueOf Constant)) where
-  hashWithSalt s (Some (ValueOf CInteger x)) = s `hashWithSalt` (0 :: Int) `hashWithSalt` x
-  hashWithSalt s (Some (ValueOf CByteString x)) = s `hashWithSalt` (1 :: Int) `hashWithSalt` x
-  hashWithSalt s (Some (ValueOf CString x)) = s `hashWithSalt` (2 :: Int) `hashWithSalt` x
-  hashWithSalt s (Some (ValueOf CUnit x)) = s `hashWithSalt` (3 :: Int) `hashWithSalt` x
-  hashWithSalt s (Some (ValueOf CBool x)) = s `hashWithSalt` (4 :: Int) `hashWithSalt` x
-  hashWithSalt _ (Some (ValueOf CData _)) = error "FIXME: Implement `Hashable Data`" -- s `hashWithSalt` (5 :: Int) `hashWithSalt` x
-  hashWithSalt s (Some (ValueOf (CApplyC _ _) x)) = s `hashWithSalt` (6 :: Int) `hashWithSalt` x
-
-convertUni :: Constant a -> UPLC.DefaultUni a
-convertUni CInteger = PLC.DefaultUniInteger
-convertUni CByteString = PLC.DefaultUniByteString
-convertUni CString = PLC.DefaultUniString
-convertUni CUnit = PLC.DefaultUniUnit
-convertUni CBool = PLC.DefaultUniBool
-convertUni CProtoList = PLC.DefaultUniProtoList
-convertUni CProtoPair = PLC.DefaultUniProtoPair
-convertUni (CApplyC f x) = PLC.DefaultUniApply (convertUni f) (convertUni x)
-convertUni CData = PLC.DefaultUniData
-
-convertConstant :: Some (ValueOf Constant) -> Some (ValueOf UPLC.DefaultUni)
-convertConstant (Some (ValueOf t v)) = Some (ValueOf (convertUni t) v)
+import Crypto.Hash.Algorithms (Blake2b_160)
+import Crypto.Hash (Context, Digest, hashInit, hashUpdate, hashFinalize)
+import Crypto.Hash.IO (HashAlgorithm)
+import qualified Flat.Run as F
 
 -- Explanation for hoisted terms:
 -- Hoisting is a convenient way of importing terms without duplicating them
@@ -63,7 +29,9 @@ convertConstant (Some (ValueOf t v)) = Some (ValueOf (convertUni t) v)
 -- indices. Each level can refer to levels above it by the nature of De Bruijn naming,
 -- though the name is relative to the current level.
 
-data HoistedTerm = HoistedTerm Int RawTerm
+type Dig = Digest Blake2b_160
+
+data HoistedTerm = HoistedTerm Dig RawTerm
 
 data RawTerm
   = RVar Natural
@@ -71,21 +39,24 @@ data RawTerm
   | RApply RawTerm RawTerm
   | RForce RawTerm
   | RDelay RawTerm
-  | RConstant (Some (ValueOf Constant))
+  | RConstant (Some (ValueOf PLC.DefaultUni))
   | RBuiltin PLC.DefaultFun
   | RError
   | RHoisted HoistedTerm
 
-instance Hashable RawTerm where
-  hashWithSalt s (RVar x) = s `hashWithSalt` (0 :: Int) `hashWithSalt` x
-  hashWithSalt s (RLamAbs x) = s `hashWithSalt` (1 :: Int) `hashWithSalt` x
-  hashWithSalt s (RApply x y) = s `hashWithSalt` (2 :: Int) `hashWithSalt` x `hashWithSalt` y
-  hashWithSalt s (RForce x) = s `hashWithSalt` (3 :: Int) `hashWithSalt` x
-  hashWithSalt s (RDelay x) = s `hashWithSalt` (4 :: Int) `hashWithSalt` x
-  hashWithSalt s (RConstant x) = s `hashWithSalt` (5 :: Int) `hashWithSalt` x
-  hashWithSalt s (RBuiltin x) = s `hashWithSalt` (6 :: Int) `hashWithSalt` x
-  hashWithSalt s RError = s `hashWithSalt` (7 :: Int)
-  hashWithSalt s (RHoisted (HoistedTerm x _)) = s `hashWithSalt` (8 :: Int) `hashWithSalt` x
+hashTerm' :: HashAlgorithm alg => RawTerm -> Context alg -> Context alg
+hashTerm' (RVar x) = flip hashUpdate ("0" :: BS.ByteString) . flip hashUpdate (F.flat (fromIntegral x :: Integer))
+hashTerm' (RLamAbs x) = flip hashUpdate ("1" :: BS.ByteString) . hashTerm' x
+hashTerm' (RApply x y) = flip hashUpdate ("2" :: BS.ByteString) . hashTerm' x . hashTerm' y
+hashTerm' (RForce x) = flip hashUpdate ("3" :: BS.ByteString) . hashTerm' x
+hashTerm' (RDelay x) = flip hashUpdate ("4" :: BS.ByteString) . hashTerm' x
+hashTerm' (RConstant x) = flip hashUpdate ("5" :: BS.ByteString) . flip hashUpdate (F.flat x)
+hashTerm' (RBuiltin x) = flip hashUpdate ("6" :: BS.ByteString) . flip hashUpdate (F.flat x)
+hashTerm' RError = flip hashUpdate ("7" :: BS.ByteString)
+hashTerm' (RHoisted (HoistedTerm hash _)) = flip hashUpdate ("8" :: BS.ByteString) . flip hashUpdate hash
+
+hashTerm :: RawTerm -> Dig
+hashTerm t = hashFinalize . hashTerm' t $ hashInit
 
 -- Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
 -- Thanks!
@@ -134,14 +105,14 @@ punsafeCoerce (Term x) = Term x
 punsafeBuiltin :: UPLC.DefaultFun -> Term s a
 punsafeBuiltin f = Term $ \_ -> (RBuiltin f, [])
 
-punsafeConstant :: Some (ValueOf Constant) -> Term s a
+punsafeConstant :: Some (ValueOf PLC.DefaultUni) -> Term s a
 punsafeConstant c = Term $ \_ -> (RConstant c, [])
 
 -- FIXME: Give proper error message when mutually recursive.
 phoistAcyclic :: ClosedTerm a -> Term s a
 phoistAcyclic t = Term $ \_ ->
   let (t', deps) = asRawTerm t 0 in
-  let t'' = HoistedTerm (hash t') t' in
+  let t'' = HoistedTerm (hashTerm t') t' in
   (RHoisted t'', t'' : deps)
 
 rawTermToUPLC :: (HoistedTerm -> Natural) -> Natural -> RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
@@ -151,7 +122,7 @@ rawTermToUPLC m l (RApply x y) = UPLC.Apply () (rawTermToUPLC m l x) (rawTermToU
 rawTermToUPLC m l (RDelay t) = UPLC.Delay () (rawTermToUPLC m l t)
 rawTermToUPLC m l (RForce t) = UPLC.Force () (rawTermToUPLC m l t)
 rawTermToUPLC _ _ (RBuiltin f) = UPLC.Builtin () f
-rawTermToUPLC _ _ (RConstant c) = UPLC.Constant () (convertConstant c)
+rawTermToUPLC _ _ (RConstant c) = UPLC.Constant () c
 rawTermToUPLC _ _ RError = UPLC.Error ()
 rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted - 1
 
@@ -164,7 +135,7 @@ compile' t =
     f n Nothing = (True, Just n)
     f _ (Just n) = (False, Just n)
 
-    g :: HoistedTerm -> (M.Map Int Natural, [(Natural, RawTerm)], Natural) -> (M.Map Int Natural, [(Natural, RawTerm)], Natural)
+    g :: HoistedTerm -> (M.Map Dig Natural, [(Natural, RawTerm)], Natural) -> (M.Map Dig Natural, [(Natural, RawTerm)], Natural)
     g (HoistedTerm hash term) (map, defs, n) = case M.alterF (f n) hash map of
       (True, map) -> (map, (n, term):defs, n+1)
       (False, map) -> (map, defs, n)

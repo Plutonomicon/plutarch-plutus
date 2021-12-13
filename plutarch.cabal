@@ -15,6 +15,7 @@ common c
     DerivingStrategies
     LambdaCase
     TypeFamilies
+    OverloadedStrings
     -- poor man's GHC2021
     BangPatterns
     BinaryLiterals
@@ -92,6 +93,7 @@ library
     , cryptonite
     , plutus-tx
     , mtl
+    , flat
 
 test-suite examples
   import: c

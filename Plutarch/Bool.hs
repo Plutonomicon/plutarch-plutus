@@ -1,15 +1,15 @@
 module Plutarch.Bool (PBool(..), PEq(..), POrd(..), pif) where
 
 import Plutarch.Prelude
-import Plutarch (PlutusType(PInner, pcon', pmatch'), Constant(CBool), punsafeConstant, punsafeBuiltin, POpaque)
+import Plutarch (PlutusType(PInner, pcon', pmatch'), punsafeConstant, punsafeBuiltin, POpaque)
 import qualified PlutusCore as PLC
 
 data PBool s = PTrue | PFalse
 
 instance PlutusType PBool where
   type PInner PBool _ = POpaque
-  pcon' PTrue = punsafeConstant . PLC.Some $ PLC.ValueOf CBool True
-  pcon' PFalse = punsafeConstant . PLC.Some $ PLC.ValueOf CBool False
+  pcon' PTrue = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniBool True
+  pcon' PFalse = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniBool False
   pmatch' b f = pforce $ (punsafeBuiltin PLC.IfThenElse) £ b £ (pdelay $ f PTrue) £ (pdelay $ f PFalse)
 
 class PEq t where

@@ -1,8 +1,7 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
 module Plutarch
-  ( PI.Constant(..)
-  , (PI.:-->)
+  ( (PI.:-->)
   , PI.PDelayed
   , PI.Term
   , PI.plam'
