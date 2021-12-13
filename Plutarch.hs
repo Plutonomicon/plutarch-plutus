@@ -30,6 +30,10 @@ module Plutarch
   , pMatch
   , pUnsafeFrom
   , pTo
+  , pFix
+  , POpaque(..)
+  , pOpaque
+  , pUnsafeFromOpaque
 ) where
   
 import Plutarch.Internal (Term, pApp, pUnsafeCoerce, (:-->), pLam, compile, ClosedTerm)
@@ -90,3 +94,22 @@ pUnsafeFrom = pUnsafeCoerce
 
 pTo :: Term s a -> (forall b. Term s (PInner a b))
 pTo = pUnsafeCoerce
+
+data POpaque s = POpaque (Term s POpaque)
+
+instance PlutusType POpaque where
+  type PInner POpaque _ = POpaque
+  pCon' (POpaque x) = x
+  pMatch' x f = f (POpaque x)
+
+pOpaque :: Term s a -> Term s POpaque
+pOpaque = pUnsafeCoerce
+
+pUnsafeFromOpaque :: Term s POpaque -> Term s a
+pUnsafeFromOpaque = pUnsafeCoerce
+
+pFix :: Term s (((a :--> b) :--> a :--> b) :--> a :--> b)
+pFix = pUnsafeCoerce $
+  pLam $ \f ->
+    (pLam $ \(x :: Term s POpaque) -> f £ (pLam $ \(v :: Term s POpaque) -> (pUnsafeCoerce x) £ x £ v))
+    £ pUnsafeCoerce (pLam $ \(x :: Term s POpaque) -> f £ (pLam $ \(v :: Term s POpaque) -> (pUnsafeCoerce x) £ x £ v))

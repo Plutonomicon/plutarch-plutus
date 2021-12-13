@@ -2,9 +2,8 @@ module Plutarch.Integer (PInteger(..)) where
 
 import Plutarch.Prelude
 import Plutarch.Bool (PEq, (£<), (£==), (£<=), POrd, pIf)
-import Plutarch (PlutusType(PInner, pCon', pMatch'), Constant(CInteger))
+import Plutarch (PlutusType(PInner, pCon', pMatch'), Constant(CInteger), pUnsafeBuiltin, pUnsafeConstant, POpaque)
 import qualified PlutusCore as PLC
-import Plutarch.Opaque (POpaque)
 
 data PInteger s = PInteger (Term s POpaque)
 

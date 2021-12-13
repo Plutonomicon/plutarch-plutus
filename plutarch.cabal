@@ -72,7 +72,6 @@ library
     Plutarch
     Plutarch.Internal
     Plutarch.Prelude
-    Plutarch.Opaque
     Plutarch.Pair
     Plutarch.Rational
     Plutarch.Either

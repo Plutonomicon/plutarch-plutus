@@ -5,7 +5,6 @@ import Test.Tasty.HUnit
 
 import Plutarch.Prelude
 import Plutarch.Integer (PInteger)
-import Plutarch.Opaque (POpaque)
 import Plutarch.Either (PEither(PLeft,PRight))
 import Plutarch.Bool (pIf, (£==))
 import Plutarch (printTerm)
@@ -27,14 +26,8 @@ example2 = pLam $ \x -> pMatch x $ \case
   PLeft n -> n + 1
   PRight n -> n - 1
 
-fix :: Term s (((a :--> b) :--> a :--> b) :--> a :--> b)
-fix = pUnsafeCoerce $
-  pLam $ \f ->
-    (pLam $ \(x :: Term s POpaque) -> f £ (pLam $ \(v :: Term s POpaque) -> (pUnsafeCoerce x) £ x £ v))
-    £ pUnsafeCoerce (pLam $ \(x :: Term s POpaque) -> f £ (pLam $ \(v :: Term s POpaque) -> (pUnsafeCoerce x) £ x £ v))
-
 fib :: Term s (PInteger :--> PInteger)
-fib = fix £$ pLam2 $ \self n ->
+fib = pFix £$ pLam2 $ \self n ->
   pIf (n £== 0)
     0
     $ pIf (n £== 1)

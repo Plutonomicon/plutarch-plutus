@@ -2,7 +2,7 @@ module Plutarch.ScriptContext (PScriptContext(..)) where
 
 import Plutarch.Prelude
 --import Plutarch (PlutusType(PInner, pCon', pMatch'))
-import Plutarch.Opaque (POpaque)
+import Plutarch (POpaque)
 
 data PScriptContext s = PScriptContext
   { txInfo :: Term s POpaque

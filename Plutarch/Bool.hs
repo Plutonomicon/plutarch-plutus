@@ -1,8 +1,7 @@
 module Plutarch.Bool (PBool(..), PEq(..), POrd(..), pIf) where
 
 import Plutarch.Prelude
-import Plutarch.Opaque (POpaque)
-import Plutarch (PlutusType(PInner, pCon', pMatch'), Constant(CBool))
+import Plutarch (PlutusType(PInner, pCon', pMatch'), Constant(CBool), pUnsafeConstant, pUnsafeBuiltin, POpaque)
 import qualified PlutusCore as PLC
 
 data PBool s = PTrue | PFalse

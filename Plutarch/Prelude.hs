@@ -8,9 +8,6 @@ module Plutarch.Prelude
   , pForce
   , pHoistAcyclic
   , pError
-  , pUnsafeCoerce
-  , pUnsafeBuiltin
-  , pUnsafeConstant
   , (£$)
   , (£)
   , pLam2
@@ -21,8 +18,8 @@ module Plutarch.Prelude
   , pInl
   , pCon
   , pMatch
-  , pUnsafeFrom
   , pTo
+  , pFix
   , Type
 ) where
 

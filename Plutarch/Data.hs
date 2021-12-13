@@ -1,8 +1,8 @@
 module Plutarch.Data (PData(..)) where
 
 import Plutarch.Prelude
-import Plutarch.Opaque (POpaque)
 import Plutarch.Integer (PInteger)
+import Plutarch (POpaque)
 --import Plutarch (PlutusType(PInner, pCon', pMatch'))
 --import qualified PlutusCore as PLC
 
