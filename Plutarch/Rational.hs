@@ -6,11 +6,11 @@ module Plutarch.Rational (PRational) where
 data PRational
 
 {-
-pRational :: Term (PPair PInteger PInteger) -> Term PRational
-pRational = pUnsafeCoerce
+prational :: Term (PPair PInteger PInteger) -> Term PRational
+prational = punsafeCoerce
 
-pUnRational :: Term PRational -> Term (PPair PInteger PInteger)
-pUnRational = pUnsafeCoerce
+punRational :: Term PRational -> Term (PPair PInteger PInteger)
+punRational = punsafeCoerce
 
 instance Num (Term PTRational) where
   (+) = undefined
@@ -18,11 +18,11 @@ instance Num (Term PTRational) where
   negate = undefined
   abs = undefined
   signum = undefined
-  fromInteger n = pRational (fromInteger n) 1
+  fromInteger n = prational (fromInteger n) 1
   x * y =
-    pInl (pFst (pUnRational x)) $ \x1 ->
-    pInl (pSnd (pUnRational x)) $ \x2 ->
-    pInl (pFst (pUnRational y)) $ \y1 ->
-    pInl (pSnd (pUnRational y)) $ \y2 ->
-    pRational (x1 * y1) (x2 * y2)
+    pinl (pfst (punRational x)) $ \x1 ->
+    pinl (psnd (punRational x)) $ \x2 ->
+    pinl (pfst (punRational y)) $ \y1 ->
+    pinl (psnd (punRational y)) $ \y2 ->
+    prational (x1 * y1) (x2 * y2)
     -}

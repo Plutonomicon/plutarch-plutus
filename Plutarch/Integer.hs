@@ -1,35 +1,35 @@
 module Plutarch.Integer (PInteger(..)) where
 
 import Plutarch.Prelude
-import Plutarch.Bool (PEq, (£<), (£==), (£<=), POrd, pIf)
-import Plutarch (PlutusType(PInner, pCon', pMatch'), Constant(CInteger), pUnsafeBuiltin, pUnsafeConstant, POpaque)
+import Plutarch.Bool (PEq, (£<), (£==), (£<=), POrd, pif)
+import Plutarch (PlutusType(PInner, pcon', pmatch'), Constant(CInteger), punsafeBuiltin, punsafeConstant, POpaque)
 import qualified PlutusCore as PLC
 
 data PInteger s = PInteger (Term s POpaque)
 
 instance PlutusType PInteger where
   type PInner PInteger _ = POpaque
-  pCon' (PInteger x) = x
-  pMatch' x f = f (PInteger x)
+  pcon' (PInteger x) = x
+  pmatch' x f = f (PInteger x)
 
 instance PEq PInteger where
-  x £== y = pUnsafeBuiltin PLC.EqualsInteger £ x £ y
+  x £== y = punsafeBuiltin PLC.EqualsInteger £ x £ y
 
 instance POrd PInteger where
-  x £<= y = pUnsafeBuiltin PLC.LessThanEqualsInteger £ x £ y
-  x £< y = pUnsafeBuiltin PLC.LessThanInteger £ x £ y
+  x £<= y = punsafeBuiltin PLC.LessThanEqualsInteger £ x £ y
+  x £< y = punsafeBuiltin PLC.LessThanInteger £ x £ y
 
 instance Num (Term s PInteger) where
-  x + y = pUnsafeBuiltin PLC.AddInteger £ x £ y
-  x - y = pUnsafeBuiltin PLC.SubtractInteger £ x £ y
-  x * y = pUnsafeBuiltin PLC.MultiplyInteger £ x £ y
-  abs x' = pLet x' $ \x -> pIf (x £<= -1) (negate x) x
+  x + y = punsafeBuiltin PLC.AddInteger £ x £ y
+  x - y = punsafeBuiltin PLC.SubtractInteger £ x £ y
+  x * y = punsafeBuiltin PLC.MultiplyInteger £ x £ y
+  abs x' = plet x' $ \x -> pif (x £<= -1) (negate x) x
   negate x = 0 - x
-  signum x' = pLet x' $ \x ->
-    pIf (x £== 0)
+  signum x' = plet x' $ \x ->
+    pif (x £== 0)
       0
-      $ pIf (x £<= 0)
+      $ pif (x £<= 0)
         (-1)
         1
-  fromInteger n = pUnsafeConstant . PLC.Some $ PLC.ValueOf CInteger n
+  fromInteger n = punsafeConstant . PLC.Some $ PLC.ValueOf CInteger n
 

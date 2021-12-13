@@ -5,38 +5,38 @@ module Plutarch
   , (PI.:-->)
   , PI.PDelayed
   , PI.Term
-  , PI.pLam
-  , PI.pApp
-  , PI.pDelay
-  , PI.pForce
-  , PI.pHoistAcyclic
-  , PI.pError
-  , PI.pUnsafeCoerce
-  , PI.pUnsafeBuiltin
-  , PI.pUnsafeConstant
+  , PI.plam
+  , PI.papp
+  , PI.pdelay
+  , PI.pforce
+  , PI.phoistAcyclic
+  , PI.perror
+  , PI.punsafeCoerce
+  , PI.punsafeBuiltin
+  , PI.punsafeConstant
   , PI.compile
   , PI.ClosedTerm
   , PlutusType(..)
   , printTerm
   , (£$)
   , (£)
-  , pLam2
-  , pLam3
-  , pLam4
-  , pLam5
-  , pLet
-  , pInl
-  , pCon
-  , pMatch
-  , pUnsafeFrom
-  , pTo
-  , pFix
+  , plam2
+  , plam3
+  , plam4
+  , plam5
+  , plet
+  , pinl
+  , pcon
+  , pmatch
+  , punsafeFrom
+  , pto
+  , pfix
   , POpaque(..)
-  , pOpaque
-  , pUnsafeFromOpaque
+  , popaque
+  , punsafeFromOpaque
 ) where
   
-import Plutarch.Internal (Term, pApp, pUnsafeCoerce, (:-->), pLam, compile, pHoistAcyclic, ClosedTerm)
+import Plutarch.Internal (Term, papp, punsafeCoerce, (:-->), plam, compile, phoistAcyclic, ClosedTerm)
 import Plutus.V1.Ledger.Scripts (Script(Script))
 import qualified Plutarch.Internal as PI
 import PlutusCore.Pretty (prettyPlcReadableDebug)
@@ -49,67 +49,67 @@ printTerm :: ClosedTerm a -> String
 printTerm term = show . prettyPlcReadableDebug . (\(Script s) -> s) $ compile term
 
 (£) :: Term s (a :--> b) -> Term s a -> Term s b
-(£) = pApp
+(£) = papp
 infixl 8 £
 
 (£$) :: Term s (a :--> b) -> Term s a -> Term s b
-(£$) = pApp
+(£$) = papp
 infixr 0 £$
 
--- TODO: Replace with pLamN
+-- TODO: Replace with plamN
 
-pLam2 :: (Term s a -> Term s b -> Term s c) -> Term s (a :--> b :--> c)
-pLam2 f = pLam $ \x -> pLam $ \y -> f x y
+plam2 :: (Term s a -> Term s b -> Term s c) -> Term s (a :--> b :--> c)
+plam2 f = plam $ \x -> plam $ \y -> f x y
 
-pLam3 :: (Term s a -> Term s b -> Term s c -> Term s d) -> Term s (a :--> b :--> c :--> d)
-pLam3 f = pLam $ \x -> pLam $ \y -> pLam $ \z -> f x y z
+plam3 :: (Term s a -> Term s b -> Term s c -> Term s d) -> Term s (a :--> b :--> c :--> d)
+plam3 f = plam $ \x -> plam $ \y -> plam $ \z -> f x y z
 
-pLam4 :: (Term s a -> Term s b -> Term s c -> Term s d -> Term s e) -> Term s (a :--> b :--> c :--> d :--> e)
-pLam4 f = pLam $ \x -> pLam $ \y -> pLam $ \z -> pLam $ \w -> f x y z w
+plam4 :: (Term s a -> Term s b -> Term s c -> Term s d -> Term s e) -> Term s (a :--> b :--> c :--> d :--> e)
+plam4 f = plam $ \x -> plam $ \y -> plam $ \z -> plam $ \w -> f x y z w
 
-pLam5 :: (Term s a -> Term s b -> Term s c -> Term s d -> Term s e -> Term s f) -> Term s (a :--> b :--> c :--> d :--> e :--> f)
-pLam5 f = pLam $ \x -> pLam $ \y -> pLam $ \z -> pLam $ \w -> pLam $ \w' -> f x y z w w'
+plam5 :: (Term s a -> Term s b -> Term s c -> Term s d -> Term s e -> Term s f) -> Term s (a :--> b :--> c :--> d :--> e :--> f)
+plam5 f = plam $ \x -> plam $ \y -> plam $ \z -> plam $ \w -> plam $ \w' -> f x y z w w'
 
-pLet :: Term s a -> (Term s a -> Term s b) -> Term s b
-pLet v f = pApp (pLam f) v
+plet :: Term s a -> (Term s a -> Term s b) -> Term s b
+plet v f = papp (plam f) v
 
-pInl :: Term s a -> (Term s a -> Term s b) -> Term s b
-pInl v f = f v
+pinl :: Term s a -> (Term s a -> Term s b) -> Term s b
+pinl v f = f v
 
 class PlutusType (a :: k -> Type) where
   -- `b' :: k'` causes GHC to fail type checking at various places
   -- due to not being able to expand the type family.
   type PInner a (b' :: k -> Type) :: k -> Type
-  pCon' :: forall s. a s -> (forall b. Term s (PInner a b))
-  pMatch' :: forall s c. (forall b. Term s (PInner a b)) -> (a s -> Term s c) -> Term s c
+  pcon' :: forall s. a s -> (forall b. Term s (PInner a b))
+  pmatch' :: forall s c. (forall b. Term s (PInner a b)) -> (a s -> Term s c) -> Term s c
 
-pCon :: PlutusType a => a s -> Term s a
-pCon = pUnsafeCoerce . pCon'
+pcon :: PlutusType a => a s -> Term s a
+pcon = punsafeCoerce . pcon'
 
-pMatch :: PlutusType a => Term s a -> (a s -> Term s b) -> Term s b
-pMatch x f = pMatch' (pUnsafeCoerce x) f
+pmatch :: PlutusType a => Term s a -> (a s -> Term s b) -> Term s b
+pmatch x f = pmatch' (punsafeCoerce x) f
 
-pUnsafeFrom :: (forall b. Term s (PInner a b)) -> Term s a
-pUnsafeFrom = pUnsafeCoerce
+punsafeFrom :: (forall b. Term s (PInner a b)) -> Term s a
+punsafeFrom = punsafeCoerce
 
-pTo :: Term s a -> (forall b. Term s (PInner a b))
-pTo = pUnsafeCoerce
+pto :: Term s a -> (forall b. Term s (PInner a b))
+pto = punsafeCoerce
 
 data POpaque s = POpaque (Term s POpaque)
 
 instance PlutusType POpaque where
   type PInner POpaque _ = POpaque
-  pCon' (POpaque x) = x
-  pMatch' x f = f (POpaque x)
+  pcon' (POpaque x) = x
+  pmatch' x f = f (POpaque x)
 
-pOpaque :: Term s a -> Term s POpaque
-pOpaque = pUnsafeCoerce
+popaque :: Term s a -> Term s POpaque
+popaque = punsafeCoerce
 
-pUnsafeFromOpaque :: Term s POpaque -> Term s a
-pUnsafeFromOpaque = pUnsafeCoerce
+punsafeFromOpaque :: Term s POpaque -> Term s a
+punsafeFromOpaque = punsafeCoerce
 
-pFix :: Term s (((a :--> b) :--> a :--> b) :--> a :--> b)
-pFix = pHoistAcyclic $ pUnsafeCoerce $
-  pLam $ \f ->
-    (pLam $ \(x :: Term s POpaque) -> f £ (pLam $ \(v :: Term s POpaque) -> (pUnsafeCoerce x) £ x £ v))
-    £ pUnsafeCoerce (pLam $ \(x :: Term s POpaque) -> f £ (pLam $ \(v :: Term s POpaque) -> (pUnsafeCoerce x) £ x £ v))
+pfix :: Term s (((a :--> b) :--> a :--> b) :--> a :--> b)
+pfix = phoistAcyclic $ punsafeCoerce $
+  plam $ \f ->
+    (plam $ \(x :: Term s POpaque) -> f £ (plam $ \(v :: Term s POpaque) -> (punsafeCoerce x) £ x £ v))
+    £ punsafeCoerce (plam $ \(x :: Term s POpaque) -> f £ (plam $ \(v :: Term s POpaque) -> (punsafeCoerce x) £ x £ v))

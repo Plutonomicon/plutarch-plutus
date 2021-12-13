@@ -1,4 +1,4 @@
-module Plutarch.Internal (Constant(..), (:-->), PDelayed, Term, pLam, pApp, pDelay, pForce, pHoistAcyclic, pError, pUnsafeCoerce, pUnsafeBuiltin, pUnsafeConstant, compile, ClosedTerm) where
+module Plutarch.Internal (Constant(..), (:-->), PDelayed, Term, plam, papp, pdelay, pforce, phoistAcyclic, perror, punsafeCoerce, punsafeBuiltin, punsafeConstant, compile, ClosedTerm) where
 
 import qualified UntypedPlutusCore as UPLC
 import qualified PlutusCore as PLC
@@ -92,7 +92,7 @@ instance Hashable RawTerm where
 -- NB: Hoisted terms must be sorted such that the dependents are first and dependencies last.
 --
 -- s: This parameter isn't ever instantiated with something concrete. It is merely here
--- to ensure that `compile` and `pHoistAcyclic` only accept terms without any free variables.
+-- to ensure that `compile` and `phoistAcyclic` only accept terms without any free variables.
 newtype Term (s :: k) (a :: k -> Type) = Term { asRawTerm :: Natural -> (RawTerm, [HoistedTerm]) }
 
 type ClosedTerm (a :: k -> Type) = forall (s :: k). Term s a
@@ -101,45 +101,45 @@ data (:-->) (a :: k -> Type) (b :: k -> Type) (s :: k)
 infixr 0 :-->
 data PDelayed (a :: k -> Type) (s :: k)
 
-pLam :: (Term s a -> Term s b) -> Term s (a :--> b)
-pLam f = Term $ \i ->
+plam :: (Term s a -> Term s b) -> Term s (a :--> b)
+plam f = Term $ \i ->
   let
     v = Term $ \j -> (RVar (j - (i + 1)), [])
     (t, deps) = asRawTerm (f v) (i + 1)
   in
   (RLamAbs $ t, deps)
 
-pApp :: Term s (a :--> b) -> Term s a -> Term s b
-pApp x y = Term $ \i ->
+papp :: Term s (a :--> b) -> Term s a -> Term s b
+papp x y = Term $ \i ->
   let (x', deps) = asRawTerm x i in
   let (y', deps') = asRawTerm y i in
   (RApply x' y', deps ++ deps')
 
-pDelay :: Term s a -> Term s (PDelayed a)
-pDelay x = Term $ \i ->
+pdelay :: Term s a -> Term s (PDelayed a)
+pdelay x = Term $ \i ->
   let (x', deps) = asRawTerm x i in
   (RDelay x', deps)
 
-pForce :: Term s (PDelayed a) -> Term s a
-pForce x = Term $ \i ->
+pforce :: Term s (PDelayed a) -> Term s a
+pforce x = Term $ \i ->
   let (x', deps) = asRawTerm x i in
   (RForce x', deps)
 
-pError :: Term s a
-pError = Term $ \_ -> (RError, [])
+perror :: Term s a
+perror = Term $ \_ -> (RError, [])
 
-pUnsafeCoerce :: Term s a -> Term s b
-pUnsafeCoerce (Term x) = Term x
+punsafeCoerce :: Term s a -> Term s b
+punsafeCoerce (Term x) = Term x
 
-pUnsafeBuiltin :: UPLC.DefaultFun -> Term s a
-pUnsafeBuiltin f = Term $ \_ -> (RBuiltin f, [])
+punsafeBuiltin :: UPLC.DefaultFun -> Term s a
+punsafeBuiltin f = Term $ \_ -> (RBuiltin f, [])
 
-pUnsafeConstant :: Some (ValueOf Constant) -> Term s a
-pUnsafeConstant c = Term $ \_ -> (RConstant c, [])
+punsafeConstant :: Some (ValueOf Constant) -> Term s a
+punsafeConstant c = Term $ \_ -> (RConstant c, [])
 
 -- FIXME: Give proper error message when mutually recursive.
-pHoistAcyclic :: ClosedTerm a -> Term s a
-pHoistAcyclic t = Term $ \_ ->
+phoistAcyclic :: ClosedTerm a -> Term s a
+phoistAcyclic t = Term $ \_ ->
   let (t', deps) = asRawTerm t 0 in
   let t'' = HoistedTerm (hash t') t' in
   (RHoisted t'', t'' : deps)

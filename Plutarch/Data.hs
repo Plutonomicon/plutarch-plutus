@@ -3,7 +3,7 @@ module Plutarch.Data (PData(..)) where
 import Plutarch.Prelude
 import Plutarch.Integer (PInteger)
 import Plutarch (POpaque)
---import Plutarch (PlutusType(PInner, pCon', pMatch'))
+--import Plutarch (PlutusType(PInner, pcon', pmatch'))
 --import qualified PlutusCore as PLC
 
 data PData s

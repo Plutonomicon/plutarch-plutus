@@ -1,16 +1,16 @@
-module Plutarch.Bool (PBool(..), PEq(..), POrd(..), pIf) where
+module Plutarch.Bool (PBool(..), PEq(..), POrd(..), pif) where
 
 import Plutarch.Prelude
-import Plutarch (PlutusType(PInner, pCon', pMatch'), Constant(CBool), pUnsafeConstant, pUnsafeBuiltin, POpaque)
+import Plutarch (PlutusType(PInner, pcon', pmatch'), Constant(CBool), punsafeConstant, punsafeBuiltin, POpaque)
 import qualified PlutusCore as PLC
 
 data PBool s = PTrue | PFalse
 
 instance PlutusType PBool where
   type PInner PBool _ = POpaque
-  pCon' PTrue = pUnsafeConstant . PLC.Some $ PLC.ValueOf CBool True
-  pCon' PFalse = pUnsafeConstant . PLC.Some $ PLC.ValueOf CBool False
-  pMatch' b f = pForce $ (pUnsafeBuiltin PLC.IfThenElse) £ b £ (pDelay $ f PTrue) £ (pDelay $ f PFalse)
+  pcon' PTrue = punsafeConstant . PLC.Some $ PLC.ValueOf CBool True
+  pcon' PFalse = punsafeConstant . PLC.Some $ PLC.ValueOf CBool False
+  pmatch' b f = pforce $ (punsafeBuiltin PLC.IfThenElse) £ b £ (pdelay $ f PTrue) £ (pdelay $ f PFalse)
 
 class PEq t where
   (£==) :: Term s t -> Term s t -> Term s PBool
@@ -24,7 +24,7 @@ class POrd t where
 infix 4 £<=
 infix 4 £<
 
-pIf :: Term s PBool -> Term s a -> Term s a -> Term s a
-pIf b case_true case_false = pMatch b $ \case
+pif :: Term s PBool -> Term s a -> Term s a -> Term s a
+pif b case_true case_false = pmatch b $ \case
   PTrue -> case_true
   PFalse -> case_false

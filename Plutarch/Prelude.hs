@@ -2,24 +2,24 @@ module Plutarch.Prelude
   ( (:-->)
   , PDelayed
   , Term
-  , pLam
-  , pApp
-  , pDelay
-  , pForce
-  , pHoistAcyclic
-  , pError
+  , plam
+  , papp
+  , pdelay
+  , pforce
+  , phoistAcyclic
+  , perror
   , (£$)
   , (£)
-  , pLam2
-  , pLam3
-  , pLam4
-  , pLam5
-  , pLet
-  , pInl
-  , pCon
-  , pMatch
-  , pTo
-  , pFix
+  , plam2
+  , plam3
+  , plam4
+  , plam5
+  , plet
+  , pinl
+  , pcon
+  , pmatch
+  , pto
+  , pfix
   , Type
 ) where
 
