@@ -36,7 +36,7 @@ module Plutarch
   , pUnsafeFromOpaque
 ) where
   
-import Plutarch.Internal (Term, pApp, pUnsafeCoerce, (:-->), pLam, compile, ClosedTerm)
+import Plutarch.Internal (Term, pApp, pUnsafeCoerce, (:-->), pLam, compile, pHoistAcyclic, ClosedTerm)
 import Plutus.V1.Ledger.Scripts (Script(Script))
 import qualified Plutarch.Internal as PI
 import PlutusCore.Pretty (prettyPlcReadableDebug)
@@ -109,7 +109,7 @@ pUnsafeFromOpaque :: Term s POpaque -> Term s a
 pUnsafeFromOpaque = pUnsafeCoerce
 
 pFix :: Term s (((a :--> b) :--> a :--> b) :--> a :--> b)
-pFix = pUnsafeCoerce $
+pFix = pHoistAcyclic $ pUnsafeCoerce $
   pLam $ \f ->
     (pLam $ \(x :: Term s POpaque) -> f £ (pLam $ \(v :: Term s POpaque) -> (pUnsafeCoerce x) £ x £ v))
     £ pUnsafeCoerce (pLam $ \(x :: Term s POpaque) -> f £ (pLam $ \(v :: Term s POpaque) -> (pUnsafeCoerce x) £ x £ v))
