@@ -52,6 +52,7 @@ data DataReprHandlers (out :: k -> Type) (def :: [[k -> Type]]) (s :: k) where
   DRHNil :: DataReprHandlers out '[] s
   DRHCons :: Maybe (Term s (PBuiltinHList def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def : defs) s
 
+-- FIXME: remove unnecessary final perror if all cases are matched
 punsafeMatchDataRepr' :: Integer -> DataReprHandlers out defs s -> Term s PInteger -> Term s (PBuiltinList PData) -> Term s out
 punsafeMatchDataRepr' _ DRHNil _ _ = perror
 punsafeMatchDataRepr' idx (DRHCons Nothing rest) constr args = punsafeMatchDataRepr' (idx + 1) rest constr args

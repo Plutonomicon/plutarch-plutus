@@ -1,10 +1,15 @@
 module Plutarch.ScriptContext () where
 
+import Plutarch.Prelude
+import Plutarch.DataRepr (PDataRepr, )
+import Plutarch.BuiltinHList (PBuiltinHList, pmatchDataRepr, DataReprHandlers(DRHNil, DRHCons))
+import Plutarch (PlutusType(pcon', pmatch', PInner))
+
+data PTxInfo s
+
+data PScriptPurpose s
+
 {-
-import Plutarch (POpaque)
-
-newtype PTxInfo s = PTxInfo (Term s POpaque)
-
 newtype PScriptPurpose s = PScriptPurpose (
     PDataRepr
       '[
@@ -19,37 +24,11 @@ newtype PScriptPurpose s = PScriptPurpose (
       ]
       s
   )
+  -}
 
-newtype PScriptContext s = PScriptContext (
-    PDataRepr
-      '[
-        '[
-          PTxInfo
-          PScriptPurpose
-        ]
-      ]
-      s
-  )
+newtype PScriptContext s = PScriptContext (PBuiltinHList '[PTxInfo, PScriptPurpose] s)
 
---import Plutarch.Prelude
-
---import Plutarch (PlutusType(PInner, pcon', pmatch'))
---import Plutarch (POpaque)
-
---data PScriptContext s = PScriptContext
---  { txInfo :: Term s POpaque
---  , purpose :: Term s POpaque
---  }
-
--- type PScriptContext = PBuiltinHList '[PTxInfo, PScriptPurpose]
-
-{-
-data PScriptPurpose (s :: k) = PMinting (Term s (PBuiltinHList '[POpaque])) | PSpending (Term s (PBuiltinHList '[PTxOutRef]))
-instance PlutusType PScriptPurpose where
-    PInner PScriptPurpose _ = PData
-    pcon' = undefined
-    pmatch' p f = pif (0 £== (pfst $ punsafeBuiltin PLC.UnConstrData £ p))
-      (f (PMinting $ psnd $ punsafeBuiltin PLC.UnConstrData £ p))
-      ---
- -}
- -}
+instance PlutusType PScriptContext where
+  type PInner PScriptContext _ = PDataRepr '[ '[ PTxInfo, PScriptPurpose ] ]
+  pcon' _ = error "FIXME"
+  pmatch' _ _ = error "FIXME"
