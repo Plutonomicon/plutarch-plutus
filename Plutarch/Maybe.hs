@@ -1,7 +1,7 @@
-module Plutarch.Maybe (PMaybe(..)) where
+module Plutarch.Maybe (PMaybe (..)) where
 
+import Plutarch (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.Prelude
-import Plutarch (PlutusType(PInner, pcon', pmatch'))
 
 data PMaybe (a :: k -> Type) (s :: k) = PJust (Term s a) | PNothing
 

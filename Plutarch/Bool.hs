@@ -1,7 +1,7 @@
-module Plutarch.Bool (PBool(..), PEq(..), POrd(..), pif) where
+module Plutarch.Bool (PBool (..), PEq (..), POrd (..), pif) where
 
+import Plutarch (POpaque, PlutusType (PInner, pcon', pmatch'), punsafeBuiltin, punsafeConstant)
 import Plutarch.Prelude
-import Plutarch (PlutusType(PInner, pcon', pmatch'), punsafeConstant, punsafeBuiltin, POpaque)
 import qualified PlutusCore as PLC
 
 data PBool s = PTrue | PFalse

@@ -1,42 +1,42 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
-module Plutarch
-  ( (PI.:-->)
-  , PI.PDelayed
-  , PI.Term
-  , PI.plam'
-  , PI.papp
-  , PI.pdelay
-  , PI.pforce
-  , PI.phoistAcyclic
-  , PI.perror
-  , PI.punsafeCoerce
-  , PI.punsafeBuiltin
-  , PI.punsafeConstant
-  , PI.compile
-  , PI.ClosedTerm
-  , PlutusType(..)
-  , printTerm
-  , (£$)
-  , (£)
-  , plet
-  , pinl
-  , pcon
-  , pmatch
-  , punsafeFrom
-  , pto
-  , pfix
-  , POpaque(..)
-  , popaque
-  , punsafeFromOpaque
-  , plam
+module Plutarch (
+  (PI.:-->),
+  PI.PDelayed,
+  PI.Term,
+  PI.plam',
+  PI.papp,
+  PI.pdelay,
+  PI.pforce,
+  PI.phoistAcyclic,
+  PI.perror,
+  PI.punsafeCoerce,
+  PI.punsafeBuiltin,
+  PI.punsafeConstant,
+  PI.compile,
+  PI.ClosedTerm,
+  PlutusType (..),
+  printTerm,
+  (£$),
+  (£),
+  plet,
+  pinl,
+  pcon,
+  pmatch,
+  punsafeFrom,
+  pto,
+  pfix,
+  POpaque (..),
+  popaque,
+  punsafeFromOpaque,
+  plam,
 ) where
-  
-import Plutarch.Internal (Term, papp, punsafeCoerce, (:-->), plam', compile, phoistAcyclic, ClosedTerm)
-import Plutus.V1.Ledger.Scripts (Script(Script))
-import qualified Plutarch.Internal as PI
-import PlutusCore.Pretty (prettyPlcReadableDebug)
+
 import Data.Kind (Type)
+import Plutarch.Internal (ClosedTerm, Term, compile, papp, phoistAcyclic, plam', punsafeCoerce, (:-->))
+import qualified Plutarch.Internal as PI
+import Plutus.V1.Ledger.Scripts (Script (Script))
+import PlutusCore.Pretty (prettyPlcReadableDebug)
 
 -- TODO: Heavily improve. It's unreadable right now.
 -- We could convert the de Bruijn indices into names.
@@ -107,7 +107,8 @@ punsafeFromOpaque :: Term s POpaque -> Term s a
 punsafeFromOpaque = punsafeCoerce
 
 pfix :: Term s (((a :--> b) :--> a :--> b) :--> a :--> b)
-pfix = phoistAcyclic $ punsafeCoerce $
-  plam $ \f ->
-    (plam $ \(x :: Term s POpaque) -> f £ (plam $ \(v :: Term s POpaque) -> (punsafeCoerce x) £ x £ v))
-    £ punsafeCoerce (plam $ \(x :: Term s POpaque) -> f £ (plam $ \(v :: Term s POpaque) -> (punsafeCoerce x) £ x £ v))
+pfix = phoistAcyclic $
+  punsafeCoerce $
+    plam $ \f ->
+      (plam $ \(x :: Term s POpaque) -> f £ (plam $ \(v :: Term s POpaque) -> (punsafeCoerce x) £ x £ v))
+        £ punsafeCoerce (plam $ \(x :: Term s POpaque) -> f £ (plam $ \(v :: Term s POpaque) -> (punsafeCoerce x) £ x £ v))

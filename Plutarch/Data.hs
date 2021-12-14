@@ -1,8 +1,9 @@
-module Plutarch.Data (PData(..)) where
+module Plutarch.Data (PData (..)) where
 
-import Plutarch.Prelude
-import Plutarch.Integer (PInteger)
 import Plutarch (POpaque)
+import Plutarch.Integer (PInteger)
+import Plutarch.Prelude
+
 --import Plutarch (PlutusType(PInner, pcon', pmatch'))
 --import qualified PlutusCore as PLC
 

@@ -1,0 +1,23 @@
+# This can be run manually like so:
+#
+#     gh workflow run ci.yml --ref <git_branch_name>
+#
+name: Continuous Integration
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    name: nix-build
+    runs-on: self-hosted
+    steps:
+
+    - name: Checkout repository to $GITHUB_WORKSPACE
+      uses: actions/checkout@v2.3.4
+
+    - run: nix develop --command "./bin/ci-format-check"
+    - run: nix develop --command cabal build all
+    - run: nix develop --command cabal test all
+    - name: Check Haskell Language Server 
+      run: nix develop --command haskell-language-server
