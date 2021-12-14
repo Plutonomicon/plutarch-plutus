@@ -68,6 +68,7 @@ instance PLam s c => PLam s (Term s b -> c) where
   plam :: forall a. (Term s a -> Term s b -> c) -> Term s (a :--> b :--> PLamOut c)
   plam f = plam' $ \x -> plam (f x)
 
+-- FIXME: If target is already an RVar, just return that.
 plet :: Term s a -> (Term s a -> Term s b) -> Term s b
 plet v f = papp (plam f) v
 
