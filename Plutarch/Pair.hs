@@ -1,10 +1,10 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Plutarch.Pair (PPair(..)) where
-  
+module Plutarch.Pair (PPair (..)) where
+
+import Plutarch (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.Prelude
-import Plutarch (PlutusType(PInner, pcon', pmatch'))
 
 data PPair (a :: k -> Type) (b :: k -> Type) (s :: k) = PPair (Term s a) (Term s b)
 

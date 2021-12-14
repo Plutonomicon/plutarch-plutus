@@ -1,20 +1,20 @@
 module Plutarch.Internal ((:-->), PDelayed, Term, plam', papp, pdelay, pforce, phoistAcyclic, perror, punsafeCoerce, punsafeBuiltin, punsafeConstant, compile, ClosedTerm) where
 
-import qualified UntypedPlutusCore as UPLC
-import qualified PlutusCore as PLC
-import PlutusCore (ValueOf, Some)
-import PlutusCore.DeBruijn (DeBruijn(DeBruijn), Index(Index))
-import Plutus.V1.Ledger.Scripts (Script(Script))
-import Numeric.Natural (Natural)
-import Data.Kind (Type)
+import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
+import Crypto.Hash.Algorithms (Blake2b_160)
+import Crypto.Hash.IO (HashAlgorithm)
 import qualified Data.ByteString as BS
+import Data.Kind (Type)
 import Data.List (foldl')
 import qualified Data.Map.Lazy as M
 import Data.Maybe (fromJust)
-import Crypto.Hash.Algorithms (Blake2b_160)
-import Crypto.Hash (Context, Digest, hashInit, hashUpdate, hashFinalize)
-import Crypto.Hash.IO (HashAlgorithm)
 import qualified Flat.Run as F
+import Numeric.Natural (Natural)
+import Plutus.V1.Ledger.Scripts (Script (Script))
+import PlutusCore (Some, ValueOf)
+import qualified PlutusCore as PLC
+import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
+import qualified UntypedPlutusCore as UPLC
 
 -- Explanation for hoisted terms:
 -- Hoisting is a convenient way of importing terms without duplicating them
@@ -64,7 +64,7 @@ hashTerm t = hashFinalize . hashTerm' t $ hashInit
 --
 -- s: This parameter isn't ever instantiated with something concrete. It is merely here
 -- to ensure that `compile` and `phoistAcyclic` only accept terms without any free variables.
-newtype Term (s :: k) (a :: k -> Type) = Term { asRawTerm :: Natural -> (RawTerm, [HoistedTerm]) }
+newtype Term (s :: k) (a :: k -> Type) = Term {asRawTerm :: Natural -> (RawTerm, [HoistedTerm])}
 
 type ClosedTerm (a :: k -> Type) = forall (s :: k). Term s a
 
@@ -74,27 +74,25 @@ data PDelayed (a :: k -> Type) (s :: k)
 
 plam' :: (Term s a -> Term s b) -> Term s (a :--> b)
 plam' f = Term $ \i ->
-  let
-    v = Term $ \j -> (RVar (j - (i + 1)), [])
-    (t, deps) = asRawTerm (f v) (i + 1)
-  in
-  (RLamAbs $ t, deps)
+  let v = Term $ \j -> (RVar (j - (i + 1)), [])
+      (t, deps) = asRawTerm (f v) (i + 1)
+   in (RLamAbs $ t, deps)
 
 papp :: Term s (a :--> b) -> Term s a -> Term s b
 papp x y = Term $ \i ->
-  let (x', deps) = asRawTerm x i in
-  let (y', deps') = asRawTerm y i in
-  (RApply x' y', deps ++ deps')
+  let (x', deps) = asRawTerm x i
+   in let (y', deps') = asRawTerm y i
+       in (RApply x' y', deps ++ deps')
 
 pdelay :: Term s a -> Term s (PDelayed a)
 pdelay x = Term $ \i ->
-  let (x', deps) = asRawTerm x i in
-  (RDelay x', deps)
+  let (x', deps) = asRawTerm x i
+   in (RDelay x', deps)
 
 pforce :: Term s (PDelayed a) -> Term s a
 pforce x = Term $ \i ->
-  let (x', deps) = asRawTerm x i in
-  (RForce x', deps)
+  let (x', deps) = asRawTerm x i
+   in (RForce x', deps)
 
 perror :: Term s a
 perror = Term $ \_ -> (RError, [])
@@ -111,9 +109,9 @@ punsafeConstant c = Term $ \_ -> (RConstant c, [])
 -- FIXME: Give proper error message when mutually recursive.
 phoistAcyclic :: ClosedTerm a -> Term s a
 phoistAcyclic t = Term $ \_ ->
-  let (t', deps) = asRawTerm t 0 in
-  let t'' = HoistedTerm (hashTerm t') t' in
-  (RHoisted t'', t'' : deps)
+  let (t', deps) = asRawTerm t 0
+   in let t'' = HoistedTerm (hashTerm t') t'
+       in (RHoisted t'', t'' : deps)
 
 rawTermToUPLC :: (HoistedTerm -> Natural) -> Natural -> RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i)
@@ -128,30 +126,28 @@ rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m ho
 
 compile' :: ClosedTerm a -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 compile' t =
-  let
-    (t', deps) = asRawTerm t 0
+  let (t', deps) = asRawTerm t 0
 
-    f :: Natural -> Maybe Natural -> (Bool, Maybe Natural)
-    f n Nothing = (True, Just n)
-    f _ (Just n) = (False, Just n)
+      f :: Natural -> Maybe Natural -> (Bool, Maybe Natural)
+      f n Nothing = (True, Just n)
+      f _ (Just n) = (False, Just n)
 
-    g :: HoistedTerm -> (M.Map Dig Natural, [(Natural, RawTerm)], Natural) -> (M.Map Dig Natural, [(Natural, RawTerm)], Natural)
-    g (HoistedTerm hash term) (map, defs, n) = case M.alterF (f n) hash map of
-      (True, map) -> (map, (n, term):defs, n+1)
-      (False, map) -> (map, defs, n)
+      g :: HoistedTerm -> (M.Map Dig Natural, [(Natural, RawTerm)], Natural) -> (M.Map Dig Natural, [(Natural, RawTerm)], Natural)
+      g (HoistedTerm hash term) (map, defs, n) = case M.alterF (f n) hash map of
+        (True, map) -> (map, (n, term) : defs, n + 1)
+        (False, map) -> (map, defs, n)
 
-  -- map: term -> de Bruijn level
-  -- defs: the terms, level 0 is last
-  -- n: # of terms
-    (map, defs, n) = foldr g (M.empty, [], 0) deps
+      -- map: term -> de Bruijn level
+      -- defs: the terms, level 0 is last
+      -- n: # of terms
+      (map, defs, n) = foldr g (M.empty, [], 0) deps
 
-    map' = fromJust . flip M.lookup map . (\(HoistedTerm hash _) -> hash)
+      map' = fromJust . flip M.lookup map . (\(HoistedTerm hash _) -> hash)
 
-    body = rawTermToUPLC map' n t'
+      body = rawTermToUPLC map' n t'
 
-    wrapped = foldl' (\b (lvl, def) -> UPLC.Apply () (UPLC.LamAbs () (DeBruijn . Index $ 0) b) (rawTermToUPLC map' lvl def)) body defs
-  in
-  wrapped
+      wrapped = foldl' (\b (lvl, def) -> UPLC.Apply () (UPLC.LamAbs () (DeBruijn . Index $ 0) b) (rawTermToUPLC map' lvl def)) body defs
+   in wrapped
 
 compile :: ClosedTerm a -> Script
 compile t = Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' t)

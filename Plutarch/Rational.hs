@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Rational (PRational) where
-  
+
 -- TODO: Make easier way of making newtypes?
 data PRational
 
