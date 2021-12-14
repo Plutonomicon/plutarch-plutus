@@ -78,8 +78,9 @@ library
     Plutarch.Either
     Plutarch.Integer
     Plutarch.Bool
-    Plutarch.Data
+    Plutarch.Builtin
     Plutarch.BuiltinHList
+    Plutarch.DataRepr
     Plutarch.ScriptContext
     Plutarch.Evaluate
     Plutarch.Maybe

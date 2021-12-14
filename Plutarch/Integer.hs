@@ -1,16 +1,11 @@
-module Plutarch.Integer (PInteger (..)) where
+module Plutarch.Integer (PInteger) where
 
 import Plutarch (POpaque, PlutusType (PInner, pcon', pmatch'), punsafeBuiltin, punsafeConstant)
 import Plutarch.Bool (PEq, POrd, pif, (£<), (£<=), (£==))
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
-data PInteger s = PInteger (Term s POpaque)
-
-instance PlutusType PInteger where
-  type PInner PInteger _ = POpaque
-  pcon' (PInteger x) = x
-  pmatch' x f = f (PInteger x)
+data PInteger s
 
 instance PEq PInteger where
   x £== y = punsafeBuiltin PLC.EqualsInteger £ x £ y
