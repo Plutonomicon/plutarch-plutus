@@ -1,6 +1,6 @@
 module Plutarch.Integer (PInteger) where
 
-import Plutarch (POpaque, PlutusType (PInner, pcon', pmatch'), punsafeBuiltin, punsafeConstant)
+import Plutarch (punsafeBuiltin, punsafeConstant)
 import Plutarch.Bool (PEq, POrd, pif, (£<), (£<=), (£==))
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
