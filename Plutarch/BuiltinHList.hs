@@ -1,14 +1,14 @@
 module Plutarch.BuiltinHList (PBuiltinHList (..), phhead, phtail) where
 
-import Plutarch (POpaque, PlutusType (PInner, pcon', pmatch'), punsafeBuiltin, punsafeConstant)
+import Plutarch (punsafeBuiltin)
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
-import Unsafe.Coerce (unsafeCoerce)
 
 data PBuiltinHList (as :: [k -> Type]) (s :: k) where
   PBuiltinHNil :: PBuiltinHList '[] s
   PBuiltinHCons :: Term s a -> Term s (PBuiltinHList as) -> PBuiltinHList (a : as) s
 
+{-
 instance PlutusType (PBuiltinHList as) where
   type PInner (PBuiltinHList _) _ = POpaque
 
@@ -31,6 +31,7 @@ instance PlutusType (PBuiltinHList as) where
                       ((phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList) £ l)
                       ((phoistAcyclic $ pforce $ punsafeBuiltin PLC.TailList) £ l)
             )
+-}
 
 phhead :: Term s (PBuiltinHList (a : as) :--> a)
 phhead = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList
