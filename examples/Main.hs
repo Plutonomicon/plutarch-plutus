@@ -3,9 +3,11 @@ module Main (main) where
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import Plutarch (printTerm)
+import Data.Either (isRight)
+import Plutarch (compile, printTerm)
 import Plutarch.Bool (pif, (£==))
 import Plutarch.Either (PEither (PLeft, PRight))
+import qualified Plutarch.Evaluate as Eval
 import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
 
@@ -58,4 +60,13 @@ tests =
     , testCase "pfix" $ (printTerm pfix) @?= "(program 1.0.0 ((\\i0 -> i0) (\\i0 -> (\\i0 -> i1 (\\i0 -> i1 i1 i0)) (\\i0 -> i1 (\\i0 -> i1 i1 i0)))))"
     , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> i0 (\\i0 -> \\i0 -> force (ifThenElse (equalsInteger i0 0) (delay 0) (delay (force (ifThenElse (equalsInteger i0 1) (delay 1) (delay (addInteger (i1 (subtractInteger i0 1)) (i1 (subtractInteger i0 2)))))))))) (\\i0 -> (\\i0 -> i1 (\\i0 -> i1 i1 i0)) (\\i0 -> i1 (\\i0 -> i1 i1 i0)))))"
     , testCase "uglyDouble" $ (printTerm uglyDouble) @?= "(program 1.0.0 (\\i0 -> addInteger i0 i0))"
+    , -- WIP: Actually evaluate a simple script
+      testCase "eval add1" $
+        let res = evalToResult [] (compile add1) -- TODO: Pass arguments (otherwise this'd return a lambda)
+         in isRight res @? ("Eval failure: " <> show res)
     ]
+  where
+    evalToResult args term =
+      case Eval.evalWithArgs args term of
+        Left err -> Left err
+        Right (_, _, res) -> Right res
