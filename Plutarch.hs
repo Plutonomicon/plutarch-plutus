@@ -5,6 +5,7 @@ module Plutarch (
   PI.PDelayed,
   PI.Term,
   PI.plam',
+  PI.plet,
   PI.papp,
   PI.pdelay,
   PI.pforce,
@@ -19,7 +20,6 @@ module Plutarch (
   printTerm,
   (£$),
   (£),
-  plet,
   pinl,
   pcon,
   pmatch,
@@ -67,10 +67,6 @@ instance PLam s c => PLam s (Term s b -> c) where
   type PLamOut (Term s b -> c) = b :--> PLamOut c
   plam :: forall a. (Term s a -> Term s b -> c) -> Term s (a :--> b :--> PLamOut c)
   plam f = plam' $ \x -> plam (f x)
-
--- FIXME: If target is already an RVar, just return that.
-plet :: Term s a -> (Term s a -> Term s b) -> Term s b
-plet v f = papp (plam f) v
 
 pinl :: Term s a -> (Term s a -> Term s b) -> Term s b
 pinl v f = f v

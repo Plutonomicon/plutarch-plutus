@@ -1,4 +1,4 @@
-module Plutarch.Internal ((:-->), PDelayed, Term, plam', papp, pdelay, pforce, phoistAcyclic, perror, punsafeCoerce, punsafeBuiltin, punsafeConstant, compile, ClosedTerm) where
+module Plutarch.Internal ((:-->), PDelayed, Term, plam', plet, papp, pdelay, pforce, phoistAcyclic, perror, punsafeCoerce, punsafeBuiltin, punsafeConstant, compile, ClosedTerm) where
 
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
@@ -77,6 +77,13 @@ plam' f = Term $ \i ->
   let v = Term $ \j -> (RVar (j - (i + 1)), [])
       (t, deps) = asRawTerm (f v) (i + 1)
    in (RLamAbs $ t, deps)
+
+-- TODO: This implementation is ugly. Perhaps Term should be different?
+plet :: Term s a -> (Term s a -> Term s b) -> Term s b
+plet v f = Term $ \i -> case asRawTerm v i of
+  -- Avoid double lets
+  (RVar _, _) -> asRawTerm (f v) i
+  _ -> asRawTerm (papp (plam' f) v) i
 
 papp :: Term s (a :--> b) -> Term s a -> Term s b
 papp x y = Term $ \i ->
