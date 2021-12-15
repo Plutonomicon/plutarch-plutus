@@ -1,4 +1,4 @@
-module Plutarch.Builtin (PData (..), pfstBuiltin, psndBuiltin, pasConstr, preadByteStr, PBuiltinPair, PBuiltinList, PBuiltinByteString, PBuiltinString) where
+module Plutarch.Builtin (PData (..), pfstBuiltin, psndBuiltin, pasConstr, phexByteStr, PBuiltinPair, PBuiltinList, PBuiltinByteString, PBuiltinString) where
 
 import qualified Data.ByteString as BS
 import Data.Char (toLower)
@@ -35,8 +35,8 @@ data ByteStringReadError = UnevenLength | InvalidHexDigit Char
   deriving stock (Eq, Ord, Read, Show)
 
 -- | Interpret a hex string as a PBuiltinByteString.
-preadByteStr :: String -> Either ByteStringReadError (Term s PBuiltinByteString)
-preadByteStr = fmap (punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByteString . BS.pack) . f
+phexByteStr :: String -> Either ByteStringReadError (Term s PBuiltinByteString)
+phexByteStr = fmap (punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByteString . BS.pack) . f
   where
     f "" = Right []
     f [_] = Left UnevenLength
