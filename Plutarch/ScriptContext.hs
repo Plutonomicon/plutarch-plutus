@@ -1,8 +1,7 @@
-module Plutarch.ScriptContext () where
+module Plutarch.ScriptContext (PScriptContext(..), PScriptPurpose, PTxInfo) where
 
-import Plutarch.Prelude
 import Plutarch.DataRepr (PDataRepr, )
-import Plutarch.BuiltinHList (PBuiltinHList, pmatchDataRepr, DataReprHandlers(DRHNil, DRHCons))
+import Plutarch.BuiltinHList (PBuiltinHList)
 import Plutarch (PlutusType(pcon', pmatch', PInner))
 
 data PTxInfo s
