@@ -1,6 +1,7 @@
 module Plutarch.Builtin (PData (..), pfstBuiltin, psndBuiltin, pasConstr, preadByteStr, PBuiltinPair, PBuiltinList, PBuiltinByteString, PBuiltinString) where
 
 import qualified Data.ByteString as BS
+import qualified Data.Text as Txt
 import Data.Char (toLower)
 import Data.String (IsString (..))
 import Data.Word (Word8)
@@ -23,6 +24,12 @@ instance POrd PBuiltinByteString where
   x £<= y = punsafeBuiltin PLC.LessThanEqualsByteString £ x £ y
   x £< y = punsafeBuiltin PLC.LessThanByteString £ x £ y
 
+instance Semigroup (Term s PBuiltinByteString) where
+  x <> y = punsafeBuiltin PLC.AppendByteString £ x £ y
+
+instance Monoid (Term s PBuiltinByteString) where
+  mempty = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniByteString BS.empty
+
 -- | Errors that may arise while using 'preadByteStr'.
 data ByteStringReadError = UnevenLength | InvalidHexDigit Char
   deriving stock (Eq, Ord, Read, Show)
@@ -42,10 +49,16 @@ preadByteStr = fmap (punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByte
 data PBuiltinString s
 
 instance IsString (Term s PBuiltinString) where
-  fromString = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniString . fromString
+  fromString = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniString . Txt.pack
 
 instance PEq PBuiltinString where
   x £== y = punsafeBuiltin PLC.EqualsString £ x £ y
+
+instance Semigroup (Term s PBuiltinString) where
+  x <> y = punsafeBuiltin PLC.AppendString £ x £ y
+
+instance Monoid (Term s PBuiltinString) where
+  mempty = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniString Txt.empty
 
 data PData s
   = PDataConstr (Term s (PBuiltinPair PInteger (PBuiltinList PData)))
