@@ -1,8 +1,8 @@
-module Plutarch.ScriptContext (PScriptContext(..), PScriptPurpose, PTxInfo) where
+module Plutarch.ScriptContext (PScriptContext (..), PScriptPurpose, PTxInfo) where
 
-import Plutarch.DataRepr (PDataRepr, )
+import Plutarch (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.BuiltinHList (PBuiltinHList)
-import Plutarch (PlutusType(pcon', pmatch', PInner))
+import Plutarch.DataRepr (PDataRepr)
 
 data PTxInfo s
 
@@ -28,6 +28,6 @@ newtype PScriptPurpose s = PScriptPurpose (
 newtype PScriptContext s = PScriptContext (PBuiltinHList '[PTxInfo, PScriptPurpose] s)
 
 instance PlutusType PScriptContext where
-  type PInner PScriptContext _ = PDataRepr '[ '[ PTxInfo, PScriptPurpose ] ]
+  type PInner PScriptContext _ = PDataRepr '[ '[PTxInfo, PScriptPurpose]]
   pcon' _ = error "FIXME"
   pmatch' _ _ = error "FIXME"

@@ -1,21 +1,21 @@
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 
 module Plutarch.Evaluate (evaluateScript) where
-  
+
 import Control.Monad.Except (runExceptT)
 import Data.Text (Text)
-import Plutus.V1.Ledger.Scripts (Script(Script))
+import Plutus.V1.Ledger.Scripts (Script (Script))
 import qualified Plutus.V1.Ledger.Scripts as Scripts
+import PlutusCore (FreeVariableError, defaultVersion)
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
 import PlutusTx.Evaluation (evaluateCekTrace)
 import UntypedPlutusCore (
-  Program(Program),
+  Program (Program),
   termMapNames,
-  unNameDeBruijn
+  unNameDeBruijn,
  )
-import qualified UntypedPlutusCore.Evaluation.Machine.Cek as UPLC
 import UntypedPlutusCore.DeBruijn (deBruijnTerm)
-import PlutusCore (defaultVersion, FreeVariableError)
+import qualified UntypedPlutusCore.Evaluation.Machine.Cek as UPLC
 
 -- Stolen from pluto, thanks Morgan
 
