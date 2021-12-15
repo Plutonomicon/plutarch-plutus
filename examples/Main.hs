@@ -60,12 +60,12 @@ tests :: TestTree
 tests =
   testGroup
     "unit tests"
-    [ testCase "add1" $ (printTerm add1) @?= "(program 1.0.0 (\\i0 -> \\i0 -> addInteger (addInteger i1 i0) 1))"
-    , testCase "add1Hoisted" $ (printTerm add1Hoisted) @?= "(program 1.0.0 ((\\i0 -> i0) (\\i0 -> \\i0 -> addInteger (addInteger i1 i0) 1)))"
-    , testCase "example1" $ (printTerm example1) @?= "(program 1.0.0 ((\\i0 -> addInteger (i0 12 32) (i0 5 4)) (\\i0 -> \\i0 -> addInteger (addInteger i1 i0) 1)))"
-    , testCase "example2" $ (printTerm example2) @?= "(program 1.0.0 (\\i0 -> i0 (\\i0 -> addInteger i0 1) (\\i0 -> subtractInteger i0 1)))"
-    , testCase "pfix" $ (printTerm pfix) @?= "(program 1.0.0 ((\\i0 -> i0) (\\i0 -> (\\i0 -> i1 (\\i0 -> i1 i1 i0)) (\\i0 -> i1 (\\i0 -> i1 i1 i0)))))"
-    , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> i0) (i0 (\\i0 -> \\i0 -> force (ifThenElse (equalsInteger i0 0) (delay 0) (delay (force (ifThenElse (equalsInteger i0 1) (delay 1) (delay (addInteger (i1 (subtractInteger i0 1)) (i1 (subtractInteger i0 2))))))))))) (\\i0 -> (\\i0 -> i1 (\\i0 -> i1 i1 i0)) (\\i0 -> i1 (\\i0 -> i1 i1 i0)))))"
-    , testCase "uglyDouble" $ (printTerm uglyDouble) @?= "(program 1.0.0 (\\i0 -> addInteger i0 i0))"
+    [ testCase "add1" $ (printTerm add1) @?= "(program 1.0.0 (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1))"
+    , testCase "add1Hoisted" $ (printTerm add1Hoisted) @?= "(program 1.0.0 ((\\i0 -> i0) (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1)))"
+    , testCase "example1" $ (printTerm example1) @?= "(program 1.0.0 ((\\i0 -> addInteger (i0 12 32) (i0 5 4)) (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1)))"
+    , testCase "example2" $ (printTerm example2) @?= "(program 1.0.0 (\\i0 -> i1 (\\i0 -> addInteger i1 1) (\\i0 -> subtractInteger i1 1)))"
+    , testCase "pfix" $ (printTerm pfix) @?= "(program 1.0.0 ((\\i0 -> i0) (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1)))))"
+    , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> i0) (i0 (\\i0 -> \\i0 -> force (ifThenElse (equalsInteger i1 0) (delay 0) (delay (force (ifThenElse (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2))))))))))) (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1)))))"
+    , testCase "uglyDouble" $ (printTerm uglyDouble) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
     , testCase "1 + 2 == 3" $ equal (1 + 2 :: Term s PInteger) (3 :: Term s PInteger)
     ]
