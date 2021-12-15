@@ -1,6 +1,9 @@
-module Plutarch.Builtin (PData (..), pfstBuiltin, psndBuiltin, pasConstr, PBuiltinPair, PBuiltinList, PBuiltinByteString) where
+module Plutarch.Builtin (PData (..), pfstBuiltin, psndBuiltin, pasConstr, preadByteStr, PBuiltinPair, PBuiltinList, PBuiltinByteString) where
 
-import Plutarch (punsafeBuiltin)
+import qualified Data.ByteString as BS
+import Data.Char (toLower)
+import Data.Word (Word8)
+import Plutarch (punsafeBuiltin, punsafeConstant)
 import Plutarch.Bool (PEq (..), POrd (..))
 import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
@@ -19,6 +22,22 @@ instance POrd PBuiltinByteString where
   x £<= y = punsafeBuiltin PLC.LessThanEqualsByteString £ x £ y
   x £< y = punsafeBuiltin PLC.LessThanByteString £ x £ y
 
+-- | Errors that may arise while using 'preadByteStr'.
+data ByteStringReadError = UnevenLength | InvalidHexDigit Char
+  deriving stock (Eq, Ord, Read, Show)
+
+-- | Interpret a hex string as a PBuiltinByteString.
+preadByteStr :: String -> Either ByteStringReadError (Term s PBuiltinByteString)
+preadByteStr = fmap (punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByteString . BS.pack) . f
+  where
+    f "" = Right []
+    f [_] = Left UnevenLength
+    f (x : y : rest) =
+      (\a b s -> (a * 16 + b) : s)
+        <$> hexDigitToWord8 x
+        <*> hexDigitToWord8 y
+        <*> f rest
+
 data PData s
   = PDataConstr (Term s (PBuiltinPair PInteger (PBuiltinList PData)))
   | PDataMap (Term s (PBuiltinList (PBuiltinPair PData PData)))
@@ -34,3 +53,23 @@ psndBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.SndPair
 
 pasConstr :: Term s (PData :--> PBuiltinPair PInteger (PBuiltinList PData))
 pasConstr = punsafeBuiltin PLC.UnConstrData
+
+hexDigitToWord8 :: Char -> Either ByteStringReadError Word8
+hexDigitToWord8 = f . toLower
+  where
+    f '0' = Right 0
+    f '2' = Right 2
+    f '3' = Right 3
+    f '4' = Right 4
+    f '5' = Right 5
+    f '6' = Right 6
+    f '7' = Right 7
+    f '8' = Right 8
+    f '9' = Right 9
+    f 'a' = Right 10
+    f 'b' = Right 11
+    f 'c' = Right 12
+    f 'd' = Right 13
+    f 'e' = Right 14
+    f 'f' = Right 15
+    f c = Left $ InvalidHexDigit c
