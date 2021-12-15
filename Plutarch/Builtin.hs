@@ -1,7 +1,8 @@
-module Plutarch.Builtin (PData (..), pfstBuiltin, psndBuiltin, pasConstr, preadByteStr, PBuiltinPair, PBuiltinList, PBuiltinByteString) where
+module Plutarch.Builtin (PData (..), pfstBuiltin, psndBuiltin, pasConstr, preadByteStr, PBuiltinPair, PBuiltinList, PBuiltinByteString, PBuiltinString) where
 
 import qualified Data.ByteString as BS
 import Data.Char (toLower)
+import Data.String (IsString (..))
 import Data.Word (Word8)
 import Plutarch (punsafeBuiltin, punsafeConstant)
 import Plutarch.Bool (PEq (..), POrd (..))
@@ -37,6 +38,14 @@ preadByteStr = fmap (punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByte
         <$> hexDigitToWord8 x
         <*> hexDigitToWord8 y
         <*> f rest
+
+data PBuiltinString s
+
+instance IsString (Term s PBuiltinString) where
+  fromString = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniString . fromString
+
+instance PEq PBuiltinString where
+  x £== y = punsafeBuiltin PLC.EqualsString £ x £ y
 
 data PData s
   = PDataConstr (Term s (PBuiltinPair PInteger (PBuiltinList PData)))
