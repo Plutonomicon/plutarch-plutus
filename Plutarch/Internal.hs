@@ -121,7 +121,7 @@ phoistAcyclic t = Term $ \_ ->
        in (RHoisted t'', t'' : deps)
 
 rawTermToUPLC :: (HoistedTerm -> Natural) -> Natural -> RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
-rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i)
+rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i + 1) -- Why the fuck does it start from 1 and not 0?
 rawTermToUPLC m l (RLamAbs t) = UPLC.LamAbs () (DeBruijn . Index $ 0) (rawTermToUPLC m (l + 1) t)
 rawTermToUPLC m l (RApply x y) = UPLC.Apply () (rawTermToUPLC m l x) (rawTermToUPLC m l y)
 rawTermToUPLC m l (RDelay t) = UPLC.Delay () (rawTermToUPLC m l t)
