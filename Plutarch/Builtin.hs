@@ -1,9 +1,9 @@
 module Plutarch.Builtin (PData (..), pfstBuiltin, psndBuiltin, pasConstr, preadByteStr, PBuiltinPair, PBuiltinList, PBuiltinByteString, PBuiltinString) where
 
 import qualified Data.ByteString as BS
-import qualified Data.Text as Txt
 import Data.Char (toLower)
 import Data.String (IsString (..))
+import qualified Data.Text as Txt
 import Data.Word (Word8)
 import Plutarch (punsafeBuiltin, punsafeConstant)
 import Plutarch.Bool (PEq (..), POrd (..))
