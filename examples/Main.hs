@@ -3,7 +3,8 @@ module Main (main) where
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import Plutarch (printTerm)
+import Plutarch (printTerm, printScript, compile, ClosedTerm)
+import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Bool (pif, (£==))
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Integer (PInteger)
@@ -40,6 +41,14 @@ fib = phoistAcyclic $
 uglyDouble :: Term s (PInteger :--> PInteger)
 uglyDouble = plam $ \n -> plet n $ \n1 -> plet n1 $ \n2 -> n2 + n2
 
+equal :: HasCallStack => ClosedTerm a -> ClosedTerm b -> Assertion
+equal x y =
+  let
+    Right (_, _, x') = evaluateScript $ compile x
+    Right (_, _, y') = evaluateScript $ compile y
+  in
+    printScript x' @?= printScript y'
+
 -- FIXME: Make the below impossible using run-time checks.
 -- loop :: Term (PInteger :--> PInteger)
 -- loop = plam $ \x -> loop £ x
@@ -58,4 +67,6 @@ tests =
     , testCase "pfix" $ (printTerm pfix) @?= "(program 1.0.0 ((\\i0 -> i0) (\\i0 -> (\\i0 -> i1 (\\i0 -> i1 i1 i0)) (\\i0 -> i1 (\\i0 -> i1 i1 i0)))))"
     , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> i0) (i0 (\\i0 -> \\i0 -> force (ifThenElse (equalsInteger i0 0) (delay 0) (delay (force (ifThenElse (equalsInteger i0 1) (delay 1) (delay (addInteger (i1 (subtractInteger i0 1)) (i1 (subtractInteger i0 2))))))))))) (\\i0 -> (\\i0 -> i1 (\\i0 -> i1 i1 i0)) (\\i0 -> i1 (\\i0 -> i1 i1 i0)))))"
     , testCase "uglyDouble" $ (printTerm uglyDouble) @?= "(program 1.0.0 (\\i0 -> addInteger i0 i0))"
+
+    , testCase "1 + 2 == 3" $ equal (1 + 2 :: Term s PInteger) (3 :: Term s PInteger)
     ]

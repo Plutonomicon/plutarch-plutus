@@ -18,6 +18,7 @@ module Plutarch (
   PI.ClosedTerm,
   PlutusType (..),
   printTerm,
+  printScript,
   (£$),
   (£),
   pinl,
@@ -38,11 +39,14 @@ import qualified Plutarch.Internal as PI
 import Plutus.V1.Ledger.Scripts (Script (Script))
 import PlutusCore.Pretty (prettyPlcReadableDebug)
 
+printScript :: Script -> String
+printScript = show . prettyPlcReadableDebug . (\(Script s) -> s)
+
 -- TODO: Heavily improve. It's unreadable right now.
 -- We could convert the de Bruijn indices into names.
 -- show . prettyPlcReadableDef . (\(Right p) -> p) . Scripts.mkTermToEvaluate . compile $ term
 printTerm :: ClosedTerm a -> String
-printTerm term = show . prettyPlcReadableDebug . (\(Script s) -> s) $ compile term
+printTerm term = printScript $ compile term
 
 (£) :: Term s (a :--> b) -> Term s a -> Term s b
 (£) = papp
