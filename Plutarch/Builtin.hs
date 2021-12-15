@@ -5,6 +5,7 @@ import Data.Char (toLower)
 import Data.String (IsString (..))
 import qualified Data.Text as Txt
 import Data.Word (Word8)
+import GHC.Stack (HasCallStack)
 import Plutarch (punsafeBuiltin, punsafeConstant)
 import Plutarch.Bool (PEq (..), POrd (..))
 import Plutarch.Integer (PInteger)
@@ -30,21 +31,13 @@ instance Semigroup (Term s PBuiltinByteString) where
 instance Monoid (Term s PBuiltinByteString) where
   mempty = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniByteString BS.empty
 
--- | Errors that may arise while using 'preadByteStr'.
-data ByteStringReadError = UnevenLength | InvalidHexDigit Char
-  deriving stock (Eq, Ord, Read, Show)
-
 -- | Interpret a hex string as a PBuiltinByteString.
-phexByteStr :: String -> Either ByteStringReadError (Term s PBuiltinByteString)
-phexByteStr = fmap (punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByteString . BS.pack) . f
+phexByteStr :: HasCallStack => String -> Term s PBuiltinByteString
+phexByteStr = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByteString . BS.pack . f
   where
-    f "" = Right []
-    f [_] = Left UnevenLength
-    f (x : y : rest) =
-      (\a b s -> (a * 16 + b) : s)
-        <$> hexDigitToWord8 x
-        <*> hexDigitToWord8 y
-        <*> f rest
+    f "" = []
+    f [_] = error "UnevenLength"
+    f (x : y : rest) = (hexDigitToWord8 x * 16 + hexDigitToWord8 y) : f rest
 
 data PBuiltinString s
 
@@ -76,22 +69,22 @@ psndBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.SndPair
 pasConstr :: Term s (PData :--> PBuiltinPair PInteger (PBuiltinList PData))
 pasConstr = punsafeBuiltin PLC.UnConstrData
 
-hexDigitToWord8 :: Char -> Either ByteStringReadError Word8
+hexDigitToWord8 :: HasCallStack => Char -> Word8
 hexDigitToWord8 = f . toLower
   where
-    f '0' = Right 0
-    f '2' = Right 2
-    f '3' = Right 3
-    f '4' = Right 4
-    f '5' = Right 5
-    f '6' = Right 6
-    f '7' = Right 7
-    f '8' = Right 8
-    f '9' = Right 9
-    f 'a' = Right 10
-    f 'b' = Right 11
-    f 'c' = Right 12
-    f 'd' = Right 13
-    f 'e' = Right 14
-    f 'f' = Right 15
-    f c = Left $ InvalidHexDigit c
+    f '0' = 0
+    f '2' = 2
+    f '3' = 3
+    f '4' = 4
+    f '5' = 5
+    f '6' = 6
+    f '7' = 7
+    f '8' = 8
+    f '9' = 9
+    f 'a' = 10
+    f 'b' = 11
+    f 'c' = 12
+    f 'd' = 13
+    f 'e' = 14
+    f 'f' = 15
+    f c = error $ "InvalidHexDigit " ++ [c]
