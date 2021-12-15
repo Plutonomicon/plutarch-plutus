@@ -1,6 +1,7 @@
 module Plutarch.Builtin (PData (..), pfstBuiltin, psndBuiltin, pasConstr, PBuiltinPair, PBuiltinList, PBuiltinByteString) where
 
 import Plutarch (punsafeBuiltin)
+import Plutarch.Bool (PEq (..), POrd (..))
 import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
@@ -10,6 +11,13 @@ data PBuiltinPair (a :: k -> Type) (b :: k -> Type) (s :: k)
 data PBuiltinList (a :: k -> Type) (s :: k)
 
 data PBuiltinByteString s
+
+instance PEq PBuiltinByteString where
+  x £== y = punsafeBuiltin PLC.EqualsByteString £ x £ y
+
+instance POrd PBuiltinByteString where
+  x £<= y = punsafeBuiltin PLC.LessThanEqualsByteString £ x £ y
+  x £< y = punsafeBuiltin PLC.LessThanByteString £ x £ y
 
 data PData s
   = PDataConstr (Term s (PBuiltinPair PInteger (PBuiltinList PData)))
