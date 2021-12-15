@@ -84,6 +84,7 @@ library
     Plutarch.ScriptContext
     Plutarch.Evaluate
     Plutarch.Maybe
+    Plutarch.Unit
   build-depends:
     , base
     , plutus-core
