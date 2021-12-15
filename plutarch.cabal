@@ -108,3 +108,4 @@ test-suite examples
     , plutarch
     , tasty
     , tasty-hunit
+    , plutus-ledger-api

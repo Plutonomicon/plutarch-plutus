@@ -39,7 +39,7 @@ evaluateScript s = do
         UPLC.UserEvaluationError evalError ->
           -- We use `show` here because plutus doesn't expose mkError
           Scripts.EvaluationError logOut (show (evalError, cause))
-  term' <- runExceptT @FreeVariableError (deBruijnTerm named) --  <$>
+  term' <- runExceptT @FreeVariableError (deBruijnTerm named)
   let Right term = term'
   let s' = Script $ Program () (defaultVersion ()) $ termMapNames unNameDeBruijn term
   pure (budget, logOut, s')

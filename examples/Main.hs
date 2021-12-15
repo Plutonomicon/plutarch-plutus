@@ -11,6 +11,7 @@ import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
+import qualified Plutus.V1.Ledger.Scripts as Scripts
 
 main :: IO ()
 main = defaultMain tests
@@ -49,6 +50,12 @@ equal x y =
       Right (_, _, y') = evaluateScript $ compile y
    in printScript x' @?= printScript y'
 
+fails :: HasCallStack => ClosedTerm a -> Assertion
+fails x =
+  case evaluateScript $ compile x of
+    Left (Scripts.EvaluationError _ _) -> mempty
+    e -> assertFailure $ "Script didn't err: " <> show e
+
 -- FIXME: Make the below impossible using run-time checks.
 -- loop :: Term (PInteger :--> PInteger)
 -- loop = plam $ \x -> loop £ x
@@ -68,4 +75,5 @@ tests =
     , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> i0) (i0 (\\i0 -> \\i0 -> force (ifThenElse (equalsInteger i1 0) (delay 0) (delay (force (ifThenElse (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2))))))))))) (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1)))))"
     , testCase "uglyDouble" $ (printTerm uglyDouble) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
     , testCase "1 + 2 == 3" $ equal (1 + 2 :: Term s PInteger) (3 :: Term s PInteger)
+    , testCase "fails: perror" $ fails perror
     ]
