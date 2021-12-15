@@ -1,7 +1,7 @@
 {-# LANGUAGE PartialTypeSignatures #-}
 {-# OPTIONS_GHC -Wno-partial-type-signatures #-}
 
-module Plutarch.DataRepr (PDataRepr, SNat (..), pIndexDataRepr, pmatchDataRepr) where
+module Plutarch.DataRepr (PDataRepr, SNat (..), punDataRepr, pindexDataRepr, pmatchDataRepr) where
 
 import Plutarch (punsafeCoerce)
 import Plutarch.Bool (pif, (£==))
@@ -34,8 +34,14 @@ type family IndexList (n :: Nat) (l :: [k]) :: k
 type instance IndexList 'N '[x] = x
 type instance IndexList ( 'S n) (x : xs) = IndexList n xs
 
-pIndexDataRepr :: SNat n -> Term s (PDataRepr defs :--> PBuiltinHList (IndexList n defs))
-pIndexDataRepr n = phoistAcyclic $
+punDataRepr :: Term s (PDataRepr '[def] :--> PBuiltinHList def)
+punDataRepr = phoistAcyclic $
+  plam $ \t ->
+    plet (pasConstr £$ pasData t) $ \d ->
+      (punsafeCoerce $ psndBuiltin £ d :: Term _ (PBuiltinHList def))
+
+pindexDataRepr :: SNat n -> Term s (PDataRepr (def : defs) :--> PBuiltinHList (IndexList n (def : defs)))
+pindexDataRepr n = phoistAcyclic $
   plam $ \t ->
     plet (pasConstr £$ pasData t) $ \d ->
       let i :: Term _ PInteger = pfstBuiltin £ d
