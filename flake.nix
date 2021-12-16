@@ -64,6 +64,22 @@
               = "Hesb5GXSx0IwKSIi42ofisVELcQNX6lwHcoZcbaDiqc=";
           };
         };
+
+        formatCheckFor = system:
+          let
+            pkgs = nixpkgsFor system;
+          in
+            pkgs.runCommand "format-check" {
+              nativeBuildInputs = [ pkgs.haskellPackages.fourmolu ];
+            } ''
+              export LC_CTYPE=C.UTF-8
+              export LC_ALL=C.UTF-8
+              export LANG=C.UTF-8
+              cd ${self}
+              ./bin/format || (echo "    Please run ./bin/format" ; exit 1)
+              mkdir $out
+            ''
+          ;
     in
     {
       project = perSystem projectFor;
@@ -71,7 +87,12 @@
 
       # this could be done automatically, but would reduce readability
       packages = perSystem (system: self.flake.${system}.packages);
-      checks = perSystem (system: self.flake.${system}.checks);
+      checks = perSystem (system:
+        self.flake.${system}.checks
+        // {
+          formatCheck = formatCheckFor system;
+        }
+      );
       check = perSystem (system:
         (nixpkgsFor system).runCommand "combined-test" {
           nativeBuildInputs = builtins.attrValues self.checks.${system};
