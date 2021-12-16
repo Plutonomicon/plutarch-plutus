@@ -93,7 +93,7 @@ tests =
     , testCase "PBuiltinByteString :: 0x12 <> 0x34 == 0x1234" $
         expect $
           (phexByteStr "12" <> phexByteStr "34") £== phexByteStr "1234"
-    , testCase "PBuiltinByteString :: \"ab\" <> \"cd\" == \"abcd\"" $
+    , testCase "PBuiltinString :: \"ab\" <> \"cd\" == \"abcd\"" $
         expect $
           ("ab" <> "cd") £== ("abcd" :: Term s PBuiltinString)
     , testCase "PBuiltinByteString mempty" $ expect $ mempty £== phexByteStr ""
