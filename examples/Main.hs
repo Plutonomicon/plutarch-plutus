@@ -59,7 +59,7 @@ fails x =
     Left (Scripts.EvaluationError _ _) -> mempty
     e -> assertFailure $ "Script didn't err: " <> show e
 
-expect :: HasCallStack => (forall s. Term s PBool) -> Assertion
+expect :: HasCallStack => ClosedTerm PBool -> Assertion
 expect = equal (pcon PTrue :: Term s PBool)
 
 -- FIXME: Make the below impossible using run-time checks.
