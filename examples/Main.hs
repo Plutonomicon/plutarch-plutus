@@ -6,12 +6,13 @@ import Test.Tasty
 import Test.Tasty.HUnit
 
 import Plutarch (ClosedTerm, compile, printScript, printTerm)
-import Plutarch.Bool (PBool (..), pif, (£==))
-import Plutarch.Builtin (PBuiltinString, phexByteStr)
+import Plutarch.Bool (PBool (PTrue), pif, (£==))
+import Plutarch.ByteString (phexByteStr)
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
+import Plutarch.String (PString, pfromText)
 import Plutarch.Unit
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 
@@ -58,7 +59,7 @@ fails x =
     Left (Scripts.EvaluationError _ _) -> mempty
     e -> assertFailure $ "Script didn't err: " <> show e
 
-expect :: HasCallStack => (forall s. Term s PBool) -> Assertion
+expect :: HasCallStack => ClosedTerm PBool -> Assertion
 expect = equal (pcon PTrue :: Term s PBool)
 
 -- FIXME: Make the below impossible using run-time checks.
@@ -83,19 +84,20 @@ tests =
     , testCase "fails: perror" $ fails perror
     , testCase "() == ()" $ expect $ pmatch (pcon PUnit) (\case PUnit -> (pcon PTrue))
     , testCase "0x02af == 0x02af" $ expect $ phexByteStr "02af" £== phexByteStr "02af"
-    , testCase "\"foo\" == \"foo\"" $ expect $ "foo" £== ("foo" :: Term s PBuiltinString)
-    , testCase "PBuiltinByteString :: mempty <> a == a <> mempty == a" $ do
+    , testCase "\"foo\" == \"foo\"" $ expect $ "foo" £== ("foo" :: Term s PString)
+    , testCase "PByteString :: mempty <> a == a <> mempty == a" $ do
         expect $ let a = phexByteStr "152a" in (mempty <> a) £== a
         expect $ let a = phexByteStr "4141" in (a <> mempty) £== a
-    , testCase "PBuiltinString :: mempty <> a == a <> mempty == a" $ do
-        expect $ let a = "foo" :: Term s PBuiltinString in (mempty <> a) £== a
-        expect $ let a = "bar" :: Term s PBuiltinString in (a <> mempty) £== a
-    , testCase "PBuiltinByteString :: 0x12 <> 0x34 == 0x1234" $
+    , testCase "PString :: mempty <> a == a <> mempty == a" $ do
+        expect $ let a = "foo" :: Term s PString in (mempty <> a) £== a
+        expect $ let a = "bar" :: Term s PString in (a <> mempty) £== a
+    , testCase "PByteString :: 0x12 <> 0x34 == 0x1234" $
         expect $
           (phexByteStr "12" <> phexByteStr "34") £== phexByteStr "1234"
-    , testCase "PBuiltinString :: \"ab\" <> \"cd\" == \"abcd\"" $
+    , testCase "PString :: \"ab\" <> \"cd\" == \"abcd\"" $
         expect $
-          ("ab" <> "cd") £== ("abcd" :: Term s PBuiltinString)
-    , testCase "PBuiltinByteString mempty" $ expect $ mempty £== phexByteStr ""
-    , testCase "PBuiltinString mempty" $ expect $ mempty £== ("" :: Term s PBuiltinString)
+          ("ab" <> "cd") £== ("abcd" :: Term s PString)
+    , testCase "PByteString mempty" $ expect $ mempty £== phexByteStr ""
+    , testCase "PString mempty" $ expect $ mempty £== ("" :: Term s PString)
+    , testCase "pfromText \"abc\" `equal` \"abc\"" $ equal (pfromText "abc") ("abc" :: Term s PString)
     ]

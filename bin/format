@@ -1,7 +1,5 @@
-#!/usr/bin/env bash
-set -xe
-find -type f -name '*.hs' ! -path '*/dist-newstyle/*' | xargs fourmolu -o-XTypeApplications -m inplace
+#!/bin/sh
 
-# If we so desire, uncomment these:
-#nixpkgs-fmt *.nix
-#cabal-fmt -i *.cabal
+set -xe
+
+find -type f -name '*.hs' ! -path '*/dist-newstyle/*' | xargs fourmolu -o-XTypeApplications -m inplace
