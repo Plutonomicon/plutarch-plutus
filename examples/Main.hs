@@ -6,11 +6,13 @@ import Test.Tasty
 import Test.Tasty.HUnit
 
 import Plutarch (ClosedTerm, compile, printScript, printTerm)
-import Plutarch.Bool (pif, (£==))
+import Plutarch.Bool (PBool (..), pif, (£==))
+import Plutarch.Builtin (PBuiltinString, phexByteStr)
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
+import Plutarch.Unit
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 
 main :: IO ()
@@ -56,6 +58,9 @@ fails x =
     Left (Scripts.EvaluationError _ _) -> mempty
     e -> assertFailure $ "Script didn't err: " <> show e
 
+expect :: HasCallStack => (forall s. Term s PBool) -> Assertion
+expect = equal (pcon PTrue :: Term s PBool)
+
 -- FIXME: Make the below impossible using run-time checks.
 -- loop :: Term (PInteger :--> PInteger)
 -- loop = plam $ \x -> loop £ x
@@ -76,4 +81,21 @@ tests =
     , testCase "uglyDouble" $ (printTerm uglyDouble) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
     , testCase "1 + 2 == 3" $ equal (1 + 2 :: Term s PInteger) (3 :: Term s PInteger)
     , testCase "fails: perror" $ fails perror
+    , testCase "() == ()" $ expect $ pmatch (pcon PUnit) (\case PUnit -> (pcon PTrue))
+    , testCase "0x02af == 0x02af" $ expect $ phexByteStr "02af" £== phexByteStr "02af"
+    , testCase "\"foo\" == \"foo\"" $ expect $ "foo" £== ("foo" :: Term s PBuiltinString)
+    , testCase "PBuiltinByteString :: mempty <> a == a <> mempty == a" $ do
+        expect $ let a = phexByteStr "152a" in (mempty <> a) £== a
+        expect $ let a = phexByteStr "4141" in (a <> mempty) £== a
+    , testCase "PBuiltinString :: mempty <> a == a <> mempty == a" $ do
+        expect $ let a = "foo" :: Term s PBuiltinString in (mempty <> a) £== a
+        expect $ let a = "bar" :: Term s PBuiltinString in (a <> mempty) £== a
+    , testCase "PBuiltinByteString :: 0x12 <> 0x34 == 0x1234" $
+        expect $
+          (phexByteStr "12" <> phexByteStr "34") £== phexByteStr "1234"
+    , testCase "PBuiltinByteString :: \"ab\" <> \"cd\" == \"abcd\"" $
+        expect $
+          ("ab" <> "cd") £== ("abcd" :: Term s PBuiltinString)
+    , testCase "PBuiltinByteString mempty" $ expect $ mempty £== phexByteStr ""
+    , testCase "PBuiltinString mempty" $ expect $ mempty £== ("" :: Term s PBuiltinString)
     ]
