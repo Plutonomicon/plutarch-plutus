@@ -78,6 +78,8 @@ library
     Plutarch.Either
     Plutarch.Integer
     Plutarch.Bool
+    Plutarch.String
+    Plutarch.ByteString
     Plutarch.Builtin
     Plutarch.BuiltinHList
     Plutarch.DataRepr
