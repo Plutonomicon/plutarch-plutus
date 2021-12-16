@@ -1,7 +1,7 @@
 {-# LANGUAGE PartialTypeSignatures #-}
 {-# OPTIONS_GHC -Wno-partial-type-signatures #-}
 
-module Plutarch.DataRepr (PDataRepr, SNat (..), pIndexDataRepr, pmatchDataRepr) where
+module Plutarch.DataRepr (PDataRepr, SNat (..), punDataRepr, pindexDataRepr, pmatchDataRepr) where
 
 import Plutarch (punsafeCoerce)
 import Plutarch.Bool (pif, (£==))
@@ -34,8 +34,14 @@ type family IndexList (n :: Nat) (l :: [k]) :: k
 type instance IndexList 'N '[x] = x
 type instance IndexList ( 'S n) (x : xs) = IndexList n xs
 
-pIndexDataRepr :: SNat n -> Term s (PDataRepr defs :--> PBuiltinHList (IndexList n defs))
-pIndexDataRepr n = phoistAcyclic $
+punDataRepr :: Term s (PDataRepr '[def] :--> PBuiltinHList def)
+punDataRepr = phoistAcyclic $
+  plam $ \t ->
+    plet (pasConstr £$ pasData t) $ \d ->
+      (punsafeCoerce $ psndBuiltin £ d :: Term _ (PBuiltinHList def))
+
+pindexDataRepr :: SNat n -> Term s (PDataRepr (def : defs) :--> PBuiltinHList (IndexList n (def : defs)))
+pindexDataRepr n = phoistAcyclic $
   plam $ \t ->
     plet (pasConstr £$ pasData t) $ \d ->
       let i :: Term _ PInteger = pfstBuiltin £ d
@@ -50,13 +56,12 @@ type instance LengthList (x : xs) = 'S (LengthList xs)
 
 data DataReprHandlers (out :: k -> Type) (def :: [[k -> Type]]) (s :: k) where
   DRHNil :: DataReprHandlers out '[] s
-  DRHCons :: Maybe (Term s (PBuiltinHList def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def : defs) s
+  DRHCons :: (Term s (PBuiltinHList def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def : defs) s
 
 -- FIXME: remove unnecessary final perror if all cases are matched
 punsafeMatchDataRepr' :: Integer -> DataReprHandlers out defs s -> Term s PInteger -> Term s (PBuiltinList PData) -> Term s out
 punsafeMatchDataRepr' _ DRHNil _ _ = perror
-punsafeMatchDataRepr' idx (DRHCons Nothing rest) constr args = punsafeMatchDataRepr' (idx + 1) rest constr args
-punsafeMatchDataRepr' idx (DRHCons (Just handler) rest) constr args =
+punsafeMatchDataRepr' idx (DRHCons handler rest) constr args =
   pif
     (fromInteger idx £== constr)
     (handler $ punsafeCoerce args)
