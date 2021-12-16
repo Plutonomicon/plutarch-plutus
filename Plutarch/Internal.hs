@@ -129,7 +129,7 @@ rawTermToUPLC m l (RForce t) = UPLC.Force () (rawTermToUPLC m l t)
 rawTermToUPLC _ _ (RBuiltin f) = UPLC.Builtin () f
 rawTermToUPLC _ _ (RConstant c) = UPLC.Constant () c
 rawTermToUPLC _ _ RError = UPLC.Error ()
-rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted - 1
+rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted
 
 compile' :: ClosedTerm a -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 compile' t =
