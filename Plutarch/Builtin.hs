@@ -73,6 +73,7 @@ hexDigitToWord8 :: HasCallStack => Char -> Word8
 hexDigitToWord8 = f . toLower
   where
     f '0' = 0
+    f '1' = 1
     f '2' = 2
     f '3' = 3
     f '4' = 4
