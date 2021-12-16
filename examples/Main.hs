@@ -7,7 +7,7 @@ import Test.Tasty.HUnit
 
 import Plutarch (ClosedTerm, compile, printScript, printTerm)
 import Plutarch.Bool (PBool (..), pif, (£==))
-import Plutarch.Builtin (PBuiltinString, phexByteStr)
+import Plutarch.Builtin (PBuiltinString, phexByteStr, pfromText)
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Integer (PInteger)
@@ -98,4 +98,5 @@ tests =
           ("ab" <> "cd") £== ("abcd" :: Term s PBuiltinString)
     , testCase "PBuiltinByteString mempty" $ expect $ mempty £== phexByteStr ""
     , testCase "PBuiltinString mempty" $ expect $ mempty £== ("" :: Term s PBuiltinString)
+    , testCase "pfromText \"abc\" `equal` \"abc\"" $ equal (pfromText "abc") ("abc" :: Term s PBuiltinString)
     ]

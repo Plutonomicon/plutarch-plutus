@@ -1,4 +1,4 @@
-module Plutarch.Builtin (PData (..), pfstBuiltin, psndBuiltin, pasConstr, phexByteStr, PBuiltinPair, PBuiltinList, PBuiltinByteString, PBuiltinString) where
+module Plutarch.Builtin (PData (..), pfstBuiltin, psndBuiltin, pasConstr, phexByteStr, PBuiltinPair, PBuiltinList, PBuiltinByteString, PBuiltinString, pfromText) where
 
 import qualified Data.ByteString as BS
 import Data.Char (toLower)
@@ -40,6 +40,9 @@ phexByteStr = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByteString 
     f (x : y : rest) = (hexDigitToWord8 x * 16 + hexDigitToWord8 y) : f rest
 
 data PBuiltinString s
+
+pfromText :: Txt.Text -> Term s PBuiltinString
+pfromText = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniString
 
 instance IsString (Term s PBuiltinString) where
   fromString = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniString . Txt.pack
