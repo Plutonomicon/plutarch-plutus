@@ -7,8 +7,9 @@
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
   inputs.haskell-nix.inputs.nixpkgs.follows = "haskell-nix/nixpkgs-2105";
   inputs.plutus.url = "github:input-output-hk/plutus"; # used for libsodium-vrf
+  inputs.flake-compat-ci.url = "github:hercules-ci/flake-compat-ci";
 
-  outputs = { self, nixpkgs, haskell-nix, plutus }:
+  outputs = { self, nixpkgs, haskell-nix, plutus, flake-compat-ci }:
     let
       supportedSystems = with nixpkgs.lib.systems.supported; tier1 ++ tier2 ++ tier3;
 
@@ -78,5 +79,10 @@
       );
       apps = perSystem (system: self.flake.${system}.apps);
       devShell = perSystem (system: self.flake.${system}.devShell);
+
+      nixCi = flake-compat-ci.lib.recurseIntoFlakeWith {
+        flake = self;
+        systems = [ "x86_64-linux" ];
+      };
     };
 }
