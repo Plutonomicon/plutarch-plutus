@@ -10,7 +10,7 @@ instance PlutusType PBool where
   type PInner PBool _ = POpaque
   pcon' PTrue = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniBool True
   pcon' PFalse = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniBool False
-  pmatch' b f = pforce $ (punsafeBuiltin PLC.IfThenElse) £ b £ (pdelay $ f PTrue) £ (pdelay $ f PFalse)
+  pmatch' b f = pforce $ pforce (punsafeBuiltin PLC.IfThenElse) £ b £ pdelay (f PTrue) £ pdelay (f PFalse)
 
 class PEq t where
   (£==) :: Term s t -> Term s t -> Term s PBool
