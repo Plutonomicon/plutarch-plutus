@@ -5,7 +5,8 @@ module Plutarch.DataRepr (PDataRepr, SNat (..), punDataRepr, pindexDataRepr, pma
 
 import Plutarch (punsafeBuiltin, punsafeCoerce)
 import Plutarch.Bool (pif, (£==))
-import Plutarch.Builtin (PData, PList)
+import Plutarch.Builtin (PList)
+import Plutarch.Builtin.Data.Type (PData)
 import qualified Plutarch.Builtin.Pair as BP
 import Plutarch.BuiltinHList (PBuiltinHList)
 import Plutarch.Integer (PInteger)

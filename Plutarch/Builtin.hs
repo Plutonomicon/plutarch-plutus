@@ -1,5 +1,4 @@
 module Plutarch.Builtin (
-  PData (..),
   pTrace,
   (#£),
   (!£),
@@ -13,20 +12,13 @@ import Data.Text (Text)
 import Data.Type.Nat
 import Plutarch
 import Plutarch.Bool
+import Plutarch.Builtin.Data.Type
 import Plutarch.Builtin.List.Type
 import Plutarch.Builtin.Pair.Type
-import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
 import Plutarch.String
 import qualified PlutusCore as PLC
-
-data PData s
-  = PDataConstr (Term s (PPair PInteger (PList PData)))
-  | PDataMap (Term s (PList (PPair PData PData)))
-  | PDataList (Term s (PList PData))
-  | PDataInteger (Term s PInteger)
-  | PDataByteString (Term s PByteString)
 
 {- | Type spec for PLC's untyped builtin functions
 
@@ -36,9 +28,10 @@ data PData s
  Example: (UnConstrData #£ someData)
 -}
 data PBuiltin (forces :: Nat) (args :: [k -> Type]) (res :: k -> Type) where
-  UnConstrData :: PBuiltin Nat0 '[POpaque] (PPair PInteger (PList POpaque))
+  UnConstrData :: PBuiltin Nat0 '[POpaque] (PPair PInteger (PList PData))
   UnListData :: PBuiltin Nat0 '[POpaque] (PList POpaque)
-  ConstrData :: PBuiltin Nat0 '[PPair PInteger (PList POpaque)] POpaque
+  ChooseData :: PBuiltin Nat0 '[POpaque, c, c, c, c, c] c
+  ConstrData :: PBuiltin Nat0 '[PPair PInteger (PList PData)] POpaque
   ListData :: PBuiltin Nat0 '[POpaque] POpaque
   MkPairData :: PBuiltin Nat0 '[a, b] (PPair a b)
   FstPair :: PBuiltin Nat2 '[PPair a b] a
@@ -67,7 +60,9 @@ pBuiltinTerm b =
       force @forces Proxy . punsafeBuiltin $ PLC.UnConstrData
     UnListData ->
       force @forces Proxy . punsafeBuiltin $ PLC.UnListData
-    ConstrData -> 
+    ChooseData ->
+      force @forces Proxy . punsafeBuiltin $ PLC.ChooseData
+    ConstrData ->
       force @forces Proxy . punsafeBuiltin $ PLC.ConstrData
     ListData ->
       force @forces Proxy . punsafeBuiltin $ PLC.ListData
