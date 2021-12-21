@@ -3,12 +3,14 @@
 
 module Plutarch.DataRepr (PDataRepr, SNat (..), punDataRepr, pindexDataRepr, pmatchDataRepr) where
 
-import Plutarch (punsafeCoerce)
+import Plutarch (punsafeBuiltin, punsafeCoerce)
 import Plutarch.Bool (pif, (£==))
-import Plutarch.Builtin (PBuiltinList, PData, pasConstr, pfstBuiltin, psndBuiltin)
+import Plutarch.Builtin (PData, PList)
+import qualified Plutarch.Builtin.Pair as BP
 import Plutarch.BuiltinHList (PBuiltinHList)
 import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
+import qualified PlutusCore as PLC
 
 type PDataRepr :: [[k -> Type]] -> k -> Type
 data PDataRepr (defs :: [[k -> Type]]) (s :: k)
@@ -38,16 +40,16 @@ punDataRepr :: Term s (PDataRepr '[def] :--> PBuiltinHList def)
 punDataRepr = phoistAcyclic $
   plam $ \t ->
     plet (pasConstr £$ pasData t) $ \d ->
-      (punsafeCoerce $ psndBuiltin £ d :: Term _ (PBuiltinHList def))
+      (punsafeCoerce $ BP.sndPair d :: Term _ (PBuiltinHList def))
 
 pindexDataRepr :: SNat n -> Term s (PDataRepr (def : defs) :--> PBuiltinHList (IndexList n (def : defs)))
 pindexDataRepr n = phoistAcyclic $
   plam $ \t ->
     plet (pasConstr £$ pasData t) $ \d ->
-      let i :: Term _ PInteger = pfstBuiltin £ d
+      let i :: Term _ PInteger = BP.fstPair d
        in pif
             (i £== (fromInteger . natToInteger . unSingleton $ n))
-            (punsafeCoerce $ psndBuiltin £ d :: Term _ (PBuiltinHList _))
+            (punsafeCoerce $ BP.sndPair d :: Term _ (PBuiltinHList _))
             perror
 
 type family LengthList (l :: [k]) :: Nat
@@ -59,7 +61,7 @@ data DataReprHandlers (out :: k -> Type) (def :: [[k -> Type]]) (s :: k) where
   DRHCons :: (Term s (PBuiltinHList def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def : defs) s
 
 -- FIXME: remove unnecessary final perror if all cases are matched
-punsafeMatchDataRepr' :: Integer -> DataReprHandlers out defs s -> Term s PInteger -> Term s (PBuiltinList PData) -> Term s out
+punsafeMatchDataRepr' :: Integer -> DataReprHandlers out defs s -> Term s PInteger -> Term s (PList PData) -> Term s out
 punsafeMatchDataRepr' _ DRHNil _ _ = perror
 punsafeMatchDataRepr' idx (DRHCons handler rest) constr args =
   pif
@@ -73,5 +75,11 @@ pmatchDataRepr handlers d =
    in punsafeMatchDataRepr'
         0
         handlers
-        (pfstBuiltin £ d')
-        (psndBuiltin £ d')
+        (BP.fstPair d')
+        (BP.sndPair d')
+
+-- TODO: Rewrite this to use Plutarch.Builtin instead of `punsafeBuiltin`. This
+-- may first require having Plutarch.Builtin use `PData` (in lieu of
+-- `POpaque``).
+pasConstr :: Term s (PData :--> BP.PPair PInteger (PList PData))
+pasConstr = punsafeBuiltin PLC.UnConstrData
