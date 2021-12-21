@@ -38,6 +38,8 @@ data PData s
 data PBuiltin (forces :: Nat) (args :: [k -> Type]) (res :: k -> Type) where
   UnConstrData :: PBuiltin Nat0 '[POpaque] (PPair PInteger (PList POpaque))
   UnListData :: PBuiltin Nat0 '[POpaque] (PList POpaque)
+  ConstrData :: PBuiltin Nat0 '[PPair PInteger (PList POpaque)] POpaque
+  ListData :: PBuiltin Nat0 '[POpaque] POpaque
   MkPairData :: PBuiltin Nat0 '[a, b] (PPair a b)
   FstPair :: PBuiltin Nat2 '[PPair a b] a
   SndPair :: PBuiltin Nat2 '[PPair a b] b
@@ -65,6 +67,10 @@ pBuiltinTerm b =
       force @forces Proxy . punsafeBuiltin $ PLC.UnConstrData
     UnListData ->
       force @forces Proxy . punsafeBuiltin $ PLC.UnListData
+    ConstrData -> 
+      force @forces Proxy . punsafeBuiltin $ PLC.ConstrData
+    ListData ->
+      force @forces Proxy . punsafeBuiltin $ PLC.ListData
     MkPairData ->
       force @forces Proxy . punsafeBuiltin $ PLC.MkPairData
     FstPair ->
