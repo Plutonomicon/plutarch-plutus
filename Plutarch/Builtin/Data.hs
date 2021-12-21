@@ -5,7 +5,8 @@ module Plutarch.Builtin.Data (
 
 import Data.Data
 import Plutarch
-import Plutarch.Builtin
+import Plutarch.Bool ( PEq(..) )
+import Plutarch.Builtin ( (#£) )
 import qualified Plutarch.Builtin as B
 import Plutarch.Builtin.Data.Type
 import Plutarch.Builtin.List.Type
@@ -37,3 +38,6 @@ instance PlutusType PData where
 instance ListElemUni PData where
   type ListElemType PData = PLC.Data
   listElemUni Proxy = PLC.DefaultUniData
+
+instance PEq PData where
+  a £== b = B.EqualsData #£ a £ b
