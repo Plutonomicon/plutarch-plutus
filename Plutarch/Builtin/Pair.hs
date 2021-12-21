@@ -9,8 +9,11 @@ module Plutarch.Builtin.Pair (
 ) where
 
 import Plutarch
-import Plutarch.Builtin
-import Plutarch.Builtin.Pair.Type
+import Plutarch.Builtin (
+  PBuiltin (FstPair, MkPairData, SndPair),
+  PPair (..),
+  (#£),
+ )
 import Plutarch.Prelude
 
 -- This instance is for Data only, because `MkPairData` is the only way to
@@ -22,6 +25,7 @@ instance (a ~ POpaque, b ~ POpaque) => PlutusType (PPair a b) where
     MkPairData #£ a £ b -- There is no MkPair
   pmatch' = matchPair
 
+-- | Match on a polymorphic pair of values
 matchPair ::
   forall a b s c.
   Term s (PPair a b) ->
@@ -39,6 +43,7 @@ fstPair = (FstPair #£)
 sndPair :: forall k (s :: k) (a :: k -> Type) (b :: k -> Type). Term s (PPair a b) -> Term s b
 sndPair = (SndPair #£)
 
+-- | Create a `Pair` of `Data` values.
 mkPairData ::
   forall k (s :: k) (a :: k -> Type) (b :: k -> Type).
   (a ~ POpaque, b ~ POpaque) =>

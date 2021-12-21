@@ -1,15 +1,20 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Builtin.List (
-  singleton,
-  hasElem,
-  atIndex,
-  append,
+  -- * List type
+  PList (..),
+
+  -- * List construction
   cons,
   nil,
   mkList,
+  singleton,
+  append,
+
+  -- * List access
   head,
-  PList (..),
+  contains,
+  atIndex,
 ) where
 
 import Data.Proxy
@@ -50,25 +55,29 @@ cons x xs = pcon' $ PCons x xs
 nil :: forall k (s :: k) (a :: k -> Type). ListElemUni a => Term s (PList a)
 nil = pcon' PNil
 
+-- | Build a polymorphic list from a list of PLC terms.
 mkList :: forall k (s :: k) (a :: k -> Type). ListElemUni a => [Term s a] -> Term s (PList a)
 mkList = \case
   [] -> nil
   (x : xs) -> cons x (mkList xs)
 
+-- | Return the head of a list; fails on empty list.
 head :: forall k (s :: k) (c :: k -> Type). Term s (PList c) -> Term s c
 head list =
   pmatchList list $ \case
     PNil -> perror
     PCons x _ -> x
 
+-- | Create a singleton list
 singleton :: ListElemUni a => Term s (a :--> PList a)
 singleton =
   plam $ \x ->
     pcon' (PCons x $ pcon' PNil)
 
-hasElem :: (PEq a, ListElemUni a) => ClosedTerm (a :--> PList a :--> PBool)
-hasElem =
-  pfix £$ plam $ \self k list ->
+-- | Return True if the list contains the given element.
+contains :: (PEq a, ListElemUni a) => ClosedTerm (PList a :--> a :--> PBool)
+contains =
+  pfix £$ plam $ \self list k ->
     pmatch' list $ \case
       PNil ->
         pcon PFalse
@@ -76,25 +85,26 @@ hasElem =
         pif
           (k £== x)
           (pcon PTrue)
-          (self £ k £ xs)
+          (self £ xs £ k)
 
+-- | Return the element at given index; fail otherwise.
 atIndex :: ListElemUni a => ClosedTerm (PInteger :--> PList a :--> a)
 atIndex =
   pfix £$ plam $ \self n' list ->
-    pmatch' ("plu:n" !£ list) $ \case
+    pmatch' list $ \case
       PNil ->
-        "plu:atIndex:err"
-          !£ perror
+        perror
       PCons x xs ->
         pif
           (n' £== 0)
           x
           (self £ (n' - 1) £ xs)
 
+-- | Append two lists
 append :: ListElemUni a => ClosedTerm (PList a :--> PList a :--> PList a)
 append =
   pfix £$ plam $ \self list1 list2 ->
-    pmatch' ("plu:l1" !£ list1) $ \case
+    pmatch' list1 $ \case
       PNil ->
         list2
       PCons x xs ->

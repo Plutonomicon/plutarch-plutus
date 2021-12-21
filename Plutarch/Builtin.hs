@@ -46,14 +46,12 @@ psndBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.SndPair
 pasConstr :: Term s (PData :--> PBuiltinPair PInteger (PBuiltinList PData))
 pasConstr = punsafeBuiltin PLC.UnConstrData
 
--- Builtins
+{- | Type spec for PLC's untyped builtin functions
 
-{- | Type spec for PLC's untyped builtin
+ Note: `forces` determines the repeated application of `FORCE` when evaluating
+ a polymorphic builtin function.
 
- The `forces` value determines the repeated application of `FORCE` when
- evaluating the builtin function.
-
- Example: UnConstrData #£ someData
+ Example: (UnConstrData #£ someData)
 -}
 data PBuiltin (forces :: Nat) (args :: [k -> Type]) (res :: k -> Type) where
   UnConstrData :: PBuiltin Nat0 '[POpaque] (PPair PInteger (PList POpaque))
@@ -70,6 +68,7 @@ data PBuiltin (forces :: Nat) (args :: [k -> Type]) (res :: k -> Type) where
   UnIData :: PBuiltin Nat0 '[POpaque] PInteger
   Trace :: PBuiltin Nat1 '[PString, a] a
 
+-- Haskell function type for a Plutus builtin.
 type family PBuiltinType (args :: [k -> Type]) (res :: k -> Type) where
   PBuiltinType '[] res = res
   PBuiltinType (a ': as) res = a :--> PBuiltinType as res

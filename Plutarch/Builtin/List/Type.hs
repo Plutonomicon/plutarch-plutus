@@ -3,18 +3,18 @@ module Plutarch.Builtin.List.Type (
   ListElemUni (..),
 ) where
 
-import Data.Proxy ( Proxy(..) )
-import Plutarch ( POpaque, Term )
+import qualified Data.ByteString as BS
+import Data.Proxy (Proxy (..))
+import Data.Text (Text)
+import Plutarch (POpaque, Term)
+import Plutarch.Bool (PBool)
+import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
-import Plutarch.Prelude ( Type )
+import Plutarch.Prelude (Type)
+import Plutarch.String (PString)
+import Plutarch.Unit (PUnit)
 import qualified PlutusCore as PLC
 import qualified PlutusCore.Data as PLC
-import Plutarch.String (PString)
-import Data.Text (Text)
-import Plutarch.ByteString (PByteString)
-import qualified Data.ByteString as BS
-import Plutarch.Unit (PUnit)
-import Plutarch.Bool (PBool)
 
 data PList a s
   = PNil
@@ -31,18 +31,18 @@ instance ListElemUni PInteger where
   type ListElemType PInteger = Integer
   listElemUni Proxy = PLC.DefaultUniInteger
 
-instance ListElemUni PString where 
+instance ListElemUni PString where
   type ListElemType PString = Text
   listElemUni Proxy = PLC.DefaultUniString
 
-instance ListElemUni PByteString where 
-  type ListElemType PByteString = BS.ByteString 
-  listElemUni Proxy = PLC.DefaultUniByteString 
+instance ListElemUni PByteString where
+  type ListElemType PByteString = BS.ByteString
+  listElemUni Proxy = PLC.DefaultUniByteString
 
-instance ListElemUni PUnit where 
+instance ListElemUni PUnit where
   type ListElemType PUnit = ()
-  listElemUni Proxy = PLC.DefaultUniUnit  
+  listElemUni Proxy = PLC.DefaultUniUnit
 
-instance ListElemUni PBool where 
+instance ListElemUni PBool where
   type ListElemType PBool = Bool
   listElemUni Proxy = PLC.DefaultUniBool

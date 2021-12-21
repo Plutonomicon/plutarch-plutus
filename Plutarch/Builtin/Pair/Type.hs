@@ -4,4 +4,5 @@ module Plutarch.Builtin.Pair.Type (
 
 import Plutarch (Term)
 
+-- | A builtin pair type.
 data PPair a b s = PPair (Term s a) (Term s b)
