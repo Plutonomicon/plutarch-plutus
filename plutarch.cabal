@@ -81,6 +81,10 @@ library
     Plutarch.String
     Plutarch.ByteString
     Plutarch.Builtin
+    Plutarch.Builtin.List
+    Plutarch.Builtin.List.Type
+    Plutarch.Builtin.Pair
+    Plutarch.Builtin.Pair.Type
     Plutarch.BuiltinHList
     Plutarch.DataRepr
     Plutarch.ScriptContext

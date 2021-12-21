@@ -8,21 +8,9 @@ module Plutarch.Builtin (
   pTrace,
   (#£),
   (!£),
-  singleton,
-  hasElem,
-  atIndex,
-  append,
-  cons,
-  nil,
-  mkList,
-  headL,
   PBuiltin (..),
   PList (..),
   PPair (..),
-  matchPair,
-  fstPair,
-  sndPair,
-  mkPairData,
 ) where
 
 import Data.Proxy
@@ -30,12 +18,13 @@ import Data.Text (Text)
 import Data.Type.Nat
 import Plutarch
 import Plutarch.Bool
+import Plutarch.Builtin.List.Type
+import Plutarch.Builtin.Pair.Type
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
 import Plutarch.String
 import qualified PlutusCore as PLC
-import qualified PlutusCore.Data as PLC
 
 data PBuiltinPair (a :: k -> Type) (b :: k -> Type) (s :: k)
 
@@ -150,134 +139,3 @@ pTrace s f = Trace #£ pfromText s £ f
 (!£) :: forall k (s :: k) (a :: k -> Type). Text -> Term s a -> Term s a
 (!£) = pTrace
 infixl 8 !£
-
--- | A builtin list of `Data`.
-data PList a s
-  = PNil
-  | PCons (Term s a) (Term s (PList a))
-
-class ListElemUni (a :: k -> Type) where
-  type ListElemType a :: Type
-  listElemUni :: Proxy a -> PLC.DefaultUni (PLC.Esc (ListElemType a))
-
-instance ListElemUni PInteger where
-  type ListElemType PInteger = Integer
-  listElemUni Proxy = PLC.DefaultUniInteger
-
-instance ListElemUni POpaque where
-  type ListElemType POpaque = PLC.Data
-  listElemUni Proxy = PLC.DefaultUniData
-
-instance ListElemUni (a :: k -> Type) => PlutusType (PList a) where
-  type PInner (PList a) _ = PList a
-  pcon' PNil =
-    punsafeConstant $
-      PLC.Some $
-        PLC.ValueOf (PLC.DefaultUniList $ listElemUni (Proxy :: Proxy a)) []
-  pcon' (PCons x xs) = MkCons #£ x £ xs
-  pmatch' = pmatchList
-
-pmatchList :: forall k (s :: k) (a :: k -> Type) (b :: k -> Type). Term s (PList a) -> (PList a s -> Term s b) -> Term s b
-pmatchList list f =
-  plet (NullList #£ list) $ \isEmpty ->
-    pif
-      (punsafeCoerce isEmpty)
-      (f PNil)
-      $ plet
-        (HeadList #£ list)
-        ( \head ->
-            plet (TailList #£ list) $ \tail ->
-              f $ PCons head tail
-        )
-
-cons :: forall k (s :: k) (a :: k -> Type). ListElemUni a => Term s a -> Term s (PList a) -> Term s (PList a)
-cons x xs = pcon' $ PCons x xs
-
-nil :: forall k (s :: k) (a :: k -> Type). ListElemUni a => Term s (PList a)
-nil = pcon' PNil
-
-mkList :: forall k (s :: k) (a :: k -> Type). ListElemUni a => [Term s a] -> Term s (PList a)
-mkList = \case
-  [] -> nil
-  (x : xs) -> cons x (mkList xs)
-
-headL :: forall k (s :: k) (c :: k -> Type). Term s (PList c) -> Term s c
-headL list =
-  pmatchList list $ \case
-    PNil -> perror
-    PCons x _ -> x
-
-singleton :: ListElemUni a => Term s (a :--> PList a)
-singleton =
-  plam $ \x ->
-    pcon' (PCons x $ pcon' PNil)
-
-hasElem :: (PEq a, ListElemUni a) => ClosedTerm (a :--> PList a :--> PBool)
-hasElem =
-  pfix £$ plam $ \self k list ->
-    pmatch' list $ \case
-      PNil ->
-        pcon PFalse
-      PCons x xs ->
-        pif
-          (k £== x)
-          (pcon PTrue)
-          (self £ k £ xs)
-
-atIndex :: ListElemUni a => ClosedTerm (PInteger :--> PList a :--> a)
-atIndex =
-  pfix £$ plam $ \self n' list ->
-    pmatch' ("plu:n" !£ list) $ \case
-      PNil ->
-        "plu:atIndex:err"
-          !£ perror
-      PCons x xs ->
-        pif
-          (n' £== 0)
-          x
-          (self £ (n' - 1) £ xs)
-
-append :: ListElemUni a => ClosedTerm (PList a :--> PList a :--> PList a)
-append =
-  pfix £$ plam $ \self list1 list2 ->
-    pmatch' ("plu:l1" !£ list1) $ \case
-      PNil ->
-        list2
-      PCons x xs ->
-        pcon' (PCons x $ self £ xs £ list2)
-
-data PPair a b s = PPair (Term s a) (Term s b)
-
--- This instance is for Data only, because `MkPairData` is the only way to
--- construct a pair. If you want to use a polymorphic pair, use `matchPair`
--- directly.
-instance (a ~ POpaque, b ~ POpaque) => PlutusType (PPair a b) where
-  type PInner (PPair a b) _ = PPair a b
-  pcon' (PPair a b) =
-    MkPairData #£ a £ b -- There is no MkPair
-  pmatch' = matchPair
-
-matchPair ::
-  forall a b s c.
-  Term s (PPair a b) ->
-  (PPair a b s -> Term s c) ->
-  Term s c
-matchPair pair f =
-  -- TODO: use delay/force to avoid evaluating `pair` twice?
-  plet (FstPair #£ pair) $ \a ->
-    plet (SndPair #£ pair) $ \b ->
-      f $ PPair a b
-
-fstPair :: forall k (s :: k) (a :: k -> Type) (b :: k -> Type). Term s (PPair a b) -> Term s a
-fstPair = (FstPair #£)
-
-sndPair :: forall k (s :: k) (a :: k -> Type) (b :: k -> Type). Term s (PPair a b) -> Term s b
-sndPair = (SndPair #£)
-
-mkPairData ::
-  forall k (s :: k) (a :: k -> Type) (b :: k -> Type).
-  (a ~ POpaque, b ~ POpaque) =>
-  Term s a ->
-  Term s b ->
-  Term s (PPair a b)
-mkPairData x y = pcon' $ PPair x y
