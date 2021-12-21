@@ -18,7 +18,11 @@ module Plutarch.Builtin (
   headL,
   PBuiltin (..),
   PList (..),
-  PPairData,
+  PPair (..),
+  matchPair,
+  fstPair,
+  sndPair,
+  mkPairData,
 ) where
 
 import Data.Proxy
@@ -63,11 +67,11 @@ pasConstr = punsafeBuiltin PLC.UnConstrData
  Example: UnConstrData #£ someData
 -}
 data PBuiltin (forces :: Nat) (args :: [k -> Type]) (res :: k -> Type) where
-  UnConstrData :: PBuiltin Nat0 '[POpaque] (PPairData PInteger (PList POpaque))
+  UnConstrData :: PBuiltin Nat0 '[POpaque] (PPair PInteger (PList POpaque))
   UnListData :: PBuiltin Nat0 '[POpaque] (PList POpaque)
-  MkPairData :: PBuiltin Nat0 '[a, b] (PPairData a b)
-  FstPair :: PBuiltin Nat2 '[PPairData a b] a
-  SndPair :: PBuiltin Nat2 '[PPairData a b] b
+  MkPairData :: PBuiltin Nat0 '[a, b] (PPair a b)
+  FstPair :: PBuiltin Nat2 '[PPair a b] a
+  SndPair :: PBuiltin Nat2 '[PPair a b] b
   MkCons :: PBuiltin Nat1 '[a, PList a] (PList a)
   NullList :: PBuiltin Nat1 '[a] PBool
   HeadList :: PBuiltin Nat1 '[PList a] a
@@ -169,7 +173,7 @@ instance ListElemUni (a :: k -> Type) => PlutusType (PList a) where
   pcon' PNil =
     punsafeConstant $
       PLC.Some $
-        PLC.ValueOf (PLC.DefaultUniProtoList `PLC.DefaultUniApply` listElemUni (Proxy :: Proxy a)) []
+        PLC.ValueOf (PLC.DefaultUniList $ listElemUni (Proxy :: Proxy a)) []
   pcon' (PCons x xs) = MkCons #£ x £ xs
   pmatch' = pmatchList
 
@@ -242,13 +246,38 @@ append =
       PCons x xs ->
         pcon' (PCons x $ self £ xs £ list2)
 
-data PPairData a b s = PPairData (Term s a) (Term s b)
+data PPair a b s = PPair (Term s a) (Term s b)
 
-instance PlutusType (PPairData a b) where
-  type PInner (PPairData a b) _ = PPairData a b
-  pcon' (PPairData a b) = MkPairData #£ a £ b -- There is no MkPair
-  pmatch' pair f =
-    -- TODO: use delay/force to avoid evaluating `pair` twice?
-    plet (FstPair #£ pair) $ \a ->
-      plet (SndPair #£ pair) $ \b ->
-        f $ PPairData a b
+-- This instance is for Data only, because `MkPairData` is the only way to
+-- construct a pair. If you want to use a polymorphic pair, use `matchPair`
+-- directly.
+instance (a ~ POpaque, b ~ POpaque) => PlutusType (PPair a b) where
+  type PInner (PPair a b) _ = PPair a b
+  pcon' (PPair a b) =
+    MkPairData #£ a £ b -- There is no MkPair
+  pmatch' = matchPair
+
+matchPair ::
+  forall a b s c.
+  Term s (PPair a b) ->
+  (PPair a b s -> Term s c) ->
+  Term s c
+matchPair pair f =
+  -- TODO: use delay/force to avoid evaluating `pair` twice?
+  plet (FstPair #£ pair) $ \a ->
+    plet (SndPair #£ pair) $ \b ->
+      f $ PPair a b
+
+fstPair :: forall k (s :: k) (a :: k -> Type) (b :: k -> Type). Term s (PPair a b) -> Term s a
+fstPair = (FstPair #£)
+
+sndPair :: forall k (s :: k) (a :: k -> Type) (b :: k -> Type). Term s (PPair a b) -> Term s b
+sndPair = (SndPair #£)
+
+mkPairData ::
+  forall k (s :: k) (a :: k -> Type) (b :: k -> Type).
+  (a ~ POpaque, b ~ POpaque) =>
+  Term s a ->
+  Term s b ->
+  Term s (PPair a b)
+mkPairData x y = pcon' $ PPair x y
