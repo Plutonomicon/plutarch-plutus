@@ -43,6 +43,7 @@
 
             tools = {
               haskell-language-server = {};  # Must use haskell.nix, because the compiler version should match
+              ghcid = {};
             };
 
             additional = ps: [
