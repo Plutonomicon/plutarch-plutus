@@ -5,9 +5,10 @@ module Main (main) where
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import Plutarch (ClosedTerm, POpaque, compile, printScript, printTerm)
+import Plutarch (ClosedTerm, compile, printScript, printTerm)
 import Plutarch.Bool (PBool (PTrue), pif, (£==))
 import qualified Plutarch.Builtin as B
+import Plutarch.Builtin.Data.Type
 import qualified Plutarch.Builtin.List as BL
 import qualified Plutarch.Builtin.Pair as BP
 import Plutarch.ByteString (phexByteStr)
@@ -62,7 +63,7 @@ fibs = phoistAcyclic $
               (BL.head a + BL.head b)
               a
 
-swap :: (a ~ POpaque, b ~ POpaque) => Term s (B.PPair a b :--> B.PPair b a)
+swap :: (a ~ PData, b ~ PData) => Term s (B.PPair a b :--> B.PPair b a)
 swap =
   plam $ \p ->
     BP.matchPair p $ \(B.PPair x y) ->
@@ -111,7 +112,7 @@ tests =
     , testCase "fibs 3 == [..]" $ equal (fibs £ 5) (BL.mkList (reverse [0, 1, 1, 2, 3, 5]) :: Term s (B.PList PInteger))
     , testCase "swap (1,2) == (2,1)" $
         let f n = B.IData B.#£ n
-         in equal (swap £ BP.mkPairData (f 1) (f 2)) (BP.mkPairData (f 2) (f 1) :: Term s (B.PPair POpaque POpaque))
+         in equal (swap £ BP.mkPairData (f 1) (f 2)) (BP.mkPairData (f 2) (f 1) :: Term s (B.PPair PData PData))
     , testCase "uglyDouble" $ (printTerm uglyDouble) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
     , testCase "1 + 2 == 3" $ equal (1 + 2 :: Term s PInteger) (3 :: Term s PInteger)
     , testCase "fails: perror" $ fails perror

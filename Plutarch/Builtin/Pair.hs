@@ -14,12 +14,13 @@ import Plutarch.Builtin (
   PPair (..),
   (#£),
  )
+import Plutarch.Builtin.Data.Type (PData)
 import Plutarch.Prelude
 
 -- This instance is for Data only, because `MkPairData` is the only way to
 -- construct a pair. If you want to use a polymorphic pair, use `matchPair`
 -- directly.
-instance (a ~ POpaque, b ~ POpaque) => PlutusType (PPair a b) where
+instance (a ~ PData, b ~ PData) => PlutusType (PPair a b) where
   type PInner (PPair a b) _ = PPair a b
   pcon' (PPair a b) =
     MkPairData #£ a £ b -- There is no MkPair
@@ -46,7 +47,7 @@ sndPair = (SndPair #£)
 -- | Create a `Pair` of `Data` values.
 mkPairData ::
   forall k (s :: k) (a :: k -> Type) (b :: k -> Type).
-  (a ~ POpaque, b ~ POpaque) =>
+  (a ~ PData, b ~ PData) =>
   Term s a ->
   Term s b ->
   Term s (PPair a b)

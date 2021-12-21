@@ -15,6 +15,7 @@ import Plutarch.Bool
 import Plutarch.Builtin.Data.Type
 import Plutarch.Builtin.List.Type
 import Plutarch.Builtin.Pair.Type
+import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
 import Plutarch.String
@@ -28,11 +29,13 @@ import qualified PlutusCore as PLC
  Example: (UnConstrData #£ someData)
 -}
 data PBuiltin (forces :: Nat) (args :: [k -> Type]) (res :: k -> Type) where
-  UnConstrData :: PBuiltin Nat0 '[POpaque] (PPair PInteger (PList PData))
-  UnListData :: PBuiltin Nat0 '[POpaque] (PList POpaque)
-  ChooseData :: forall c' c. (c ~ PDelayed c') => PBuiltin Nat1 '[POpaque, c, c, c, c, c] c
-  ConstrData :: PBuiltin Nat0 '[PPair PInteger (PList PData)] POpaque
-  ListData :: PBuiltin Nat0 '[POpaque] POpaque
+  UnConstrData :: PBuiltin Nat0 '[PData] (PPair PInteger (PList PData))
+  UnListData :: PBuiltin Nat0 '[PData] (PList PData)
+  UnMapData :: PBuiltin Nat0 '[PData] (PList (PPair PData PData))
+  ChooseData :: forall c' c. (c ~ PDelayed c') => PBuiltin Nat1 '[PData, c, c, c, c, c] c
+  ConstrData :: PBuiltin Nat0 '[PPair PInteger (PList PData)] PData
+  MapData :: PBuiltin Nat0 '[PList (PPair PData PData)] PData
+  ListData :: PBuiltin Nat0 '[PList PData] PData
   MkPairData :: PBuiltin Nat0 '[a, b] (PPair a b)
   FstPair :: PBuiltin Nat2 '[PPair a b] a
   SndPair :: PBuiltin Nat2 '[PPair a b] b
@@ -40,9 +43,11 @@ data PBuiltin (forces :: Nat) (args :: [k -> Type]) (res :: k -> Type) where
   NullList :: PBuiltin Nat1 '[a] PBool
   HeadList :: PBuiltin Nat1 '[PList a] a
   TailList :: PBuiltin Nat1 '[PList a] (PList a)
-  EqualsData :: PBuiltin Nat0 '[POpaque, POpaque] PBool
-  IData :: PBuiltin Nat0 '[PInteger] POpaque
-  UnIData :: PBuiltin Nat0 '[POpaque] PInteger
+  EqualsData :: PBuiltin Nat0 '[PData, PData] PBool
+  IData :: PBuiltin Nat0 '[PInteger] PData
+  BData :: PBuiltin Nat0 '[PByteString] PData
+  UnIData :: PBuiltin Nat0 '[PData] PInteger
+  UnBData :: PBuiltin Nat0 '[PData] PByteString
   Trace :: PBuiltin Nat1 '[PString, a] a
 
 -- Haskell function type for a Plutus builtin.
@@ -60,10 +65,14 @@ pBuiltinTerm b =
       force @forces Proxy . punsafeBuiltin $ PLC.UnConstrData
     UnListData ->
       force @forces Proxy . punsafeBuiltin $ PLC.UnListData
+    UnMapData ->
+      force @forces Proxy . punsafeBuiltin $ PLC.UnMapData
     ChooseData ->
       force @forces Proxy . punsafeBuiltin $ PLC.ChooseData
     ConstrData ->
       force @forces Proxy . punsafeBuiltin $ PLC.ConstrData
+    MapData ->
+      force @forces Proxy . punsafeBuiltin $ PLC.MapData
     ListData ->
       force @forces Proxy . punsafeBuiltin $ PLC.ListData
     MkPairData ->
@@ -84,8 +93,12 @@ pBuiltinTerm b =
       force @forces Proxy . punsafeBuiltin $ PLC.EqualsData
     IData ->
       force @forces Proxy . punsafeBuiltin $ PLC.IData
+    BData ->
+      force @forces Proxy . punsafeBuiltin $ PLC.BData
     UnIData ->
       force @forces Proxy . punsafeBuiltin $ PLC.UnIData
+    UnBData ->
+      force @forces Proxy . punsafeBuiltin $ PLC.UnBData
     Trace ->
       force @forces Proxy . punsafeBuiltin $ PLC.Trace
   where
