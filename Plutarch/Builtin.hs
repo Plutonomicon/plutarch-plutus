@@ -17,7 +17,7 @@ module Plutarch.Builtin (
   mkList,
   headL,
   PBuiltin (..),
-  PListData (..),
+  PList (..),
   PPairData,
 ) where
 
@@ -31,6 +31,7 @@ import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
 import Plutarch.String
 import qualified PlutusCore as PLC
+import qualified PlutusCore.Data as PLC
 
 data PBuiltinPair (a :: k -> Type) (b :: k -> Type) (s :: k)
 
@@ -62,15 +63,15 @@ pasConstr = punsafeBuiltin PLC.UnConstrData
  Example: UnConstrData #£ someData
 -}
 data PBuiltin (forces :: Nat) (args :: [k -> Type]) (res :: k -> Type) where
-  UnConstrData :: PBuiltin Nat0 '[POpaque] (PPairData PInteger (PListData POpaque))
-  UnListData :: PBuiltin Nat0 '[POpaque] (PListData POpaque)
+  UnConstrData :: PBuiltin Nat0 '[POpaque] (PPairData PInteger (PList POpaque))
+  UnListData :: PBuiltin Nat0 '[POpaque] (PList POpaque)
   MkPairData :: PBuiltin Nat0 '[a, b] (PPairData a b)
   FstPair :: PBuiltin Nat2 '[PPairData a b] a
   SndPair :: PBuiltin Nat2 '[PPairData a b] b
-  MkCons :: PBuiltin Nat1 '[a, PListData a] (PListData a)
+  MkCons :: PBuiltin Nat1 '[a, PList a] (PList a)
   NullList :: PBuiltin Nat1 '[a] PBool
-  HeadList :: PBuiltin Nat1 '[PListData a] a
-  TailList :: PBuiltin Nat1 '[PListData a] (PListData a)
+  HeadList :: PBuiltin Nat1 '[PList a] a
+  TailList :: PBuiltin Nat1 '[PList a] (PList a)
   EqualsData :: PBuiltin Nat0 '[POpaque, POpaque] PBool
   IData :: PBuiltin Nat0 '[PInteger] POpaque
   UnIData :: PBuiltin Nat0 '[POpaque] PInteger
@@ -147,52 +148,67 @@ pTrace s f = Trace #£ pfromText s £ f
 infixl 8 !£
 
 -- | A builtin list of `Data`.
-data PListData a s
+data PList a s
   = PNil
-  | PCons (Term s a) (Term s (PListData a))
+  | PCons (Term s a) (Term s (PList a))
 
-instance PlutusType (PListData a) where
-  type PInner (PListData a) _ = PListData a
+class ListElemUni (a :: k -> Type) where
+  type ListElemType a :: Type
+  listElemUni :: Proxy a -> PLC.DefaultUni (PLC.Esc (ListElemType a))
+
+instance ListElemUni PInteger where
+  type ListElemType PInteger = Integer
+  listElemUni Proxy = PLC.DefaultUniInteger
+
+instance ListElemUni POpaque where
+  type ListElemType POpaque = PLC.Data
+  listElemUni Proxy = PLC.DefaultUniData
+
+instance ListElemUni (a :: k -> Type) => PlutusType (PList a) where
+  type PInner (PList a) _ = PList a
   pcon' PNil =
     punsafeConstant $
       PLC.Some $
-        PLC.ValueOf (PLC.DefaultUniProtoList `PLC.DefaultUniApply` PLC.DefaultUniData) []
+        PLC.ValueOf (PLC.DefaultUniProtoList `PLC.DefaultUniApply` listElemUni (Proxy :: Proxy a)) []
   pcon' (PCons x xs) = MkCons #£ x £ xs
-  pmatch' list f =
-    plet (NullList #£ list) $ \isEmpty ->
-      pif
-        (punsafeCoerce isEmpty)
-        (f PNil)
-        $ plet
-          (HeadList #£ list)
-          ( \head ->
-              plet (TailList #£ list) $ \tail ->
-                f $ PCons head tail
-          )
+  pmatch' = pmatchList
 
-cons :: forall k (s :: k) (a :: k -> Type). Term s a -> Term s (PListData a) -> Term s (PListData a)
+pmatchList :: forall k (s :: k) (a :: k -> Type) (b :: k -> Type). Term s (PList a) -> (PList a s -> Term s b) -> Term s b
+pmatchList list f =
+  plet (NullList #£ list) $ \isEmpty ->
+    pif
+      (punsafeCoerce isEmpty)
+      (f PNil)
+      $ plet
+        (HeadList #£ list)
+        ( \head ->
+            plet (TailList #£ list) $ \tail ->
+              f $ PCons head tail
+        )
+
+cons :: forall k (s :: k) (a :: k -> Type). ListElemUni a => Term s a -> Term s (PList a) -> Term s (PList a)
 cons x xs = pcon' $ PCons x xs
 
-nil :: forall k (s :: k) (a :: k -> Type). Term s (PListData a)
+nil :: forall k (s :: k) (a :: k -> Type). ListElemUni a => Term s (PList a)
 nil = pcon' PNil
 
-mkList :: forall k (s :: k) (a :: k -> Type). [Term s a] -> Term s (PListData a)
+mkList :: forall k (s :: k) (a :: k -> Type). ListElemUni a => [Term s a] -> Term s (PList a)
 mkList = \case
   [] -> nil
   (x : xs) -> cons x (mkList xs)
 
-headL :: forall k (s :: k) (c :: k -> Type). Term s (PListData c) -> Term s c
+headL :: forall k (s :: k) (c :: k -> Type). Term s (PList c) -> Term s c
 headL list =
-  pmatch' list $ \case
+  pmatchList list $ \case
     PNil -> perror
     PCons x _ -> x
 
-singleton :: Term s (a :--> PListData a)
+singleton :: ListElemUni a => Term s (a :--> PList a)
 singleton =
   plam $ \x ->
     pcon' (PCons x $ pcon' PNil)
 
-hasElem :: PEq a => ClosedTerm (a :--> PListData a :--> PBool)
+hasElem :: (PEq a, ListElemUni a) => ClosedTerm (a :--> PList a :--> PBool)
 hasElem =
   pfix £$ plam $ \self k list ->
     pmatch' list $ \case
@@ -204,7 +220,7 @@ hasElem =
           (pcon PTrue)
           (self £ k £ xs)
 
-atIndex :: ClosedTerm (PInteger :--> PListData a :--> a)
+atIndex :: ListElemUni a => ClosedTerm (PInteger :--> PList a :--> a)
 atIndex =
   pfix £$ plam $ \self n' list ->
     pmatch' ("plu:n" !£ list) $ \case
@@ -217,7 +233,7 @@ atIndex =
           x
           (self £ (n' - 1) £ xs)
 
-append :: ClosedTerm (PListData a :--> PListData a :--> PListData a)
+append :: ListElemUni a => ClosedTerm (PList a :--> PList a :--> PList a)
 append =
   pfix £$ plam $ \self list1 list2 ->
     pmatch' ("plu:l1" !£ list1) $ \case
