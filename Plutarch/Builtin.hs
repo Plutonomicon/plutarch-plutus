@@ -30,7 +30,7 @@ import qualified PlutusCore as PLC
 data PBuiltin (forces :: Nat) (args :: [k -> Type]) (res :: k -> Type) where
   UnConstrData :: PBuiltin Nat0 '[POpaque] (PPair PInteger (PList PData))
   UnListData :: PBuiltin Nat0 '[POpaque] (PList POpaque)
-  ChooseData :: forall c' c. (c ~ PDelayed c') => PBuiltin Nat0 '[POpaque, c, c, c, c, c] c
+  ChooseData :: forall c' c. (c ~ PDelayed c') => PBuiltin Nat1 '[POpaque, c, c, c, c, c] c
   ConstrData :: PBuiltin Nat0 '[PPair PInteger (PList PData)] POpaque
   ListData :: PBuiltin Nat0 '[POpaque] POpaque
   MkPairData :: PBuiltin Nat0 '[a, b] (PPair a b)
