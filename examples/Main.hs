@@ -6,7 +6,7 @@ import Test.Tasty
 import Test.Tasty.HUnit
 
 import Plutarch (ClosedTerm, compile, printScript, printTerm)
-import Plutarch.Bool (PBool (PTrue), pif, (£==))
+import Plutarch.Bool (PBool (PTrue), pif, (#==))
 import Plutarch.ByteString (phexByteStr)
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Evaluate (evaluateScript)
@@ -26,7 +26,7 @@ add1Hoisted :: Term s (PInteger :--> PInteger :--> PInteger)
 add1Hoisted = phoistAcyclic $ plam $ \x y -> x + y + 1
 
 example1 :: Term s PInteger
-example1 = add1Hoisted £ 12 £ 32 + add1Hoisted £ 5 £ 4
+example1 = add1Hoisted # 12 # 32 + add1Hoisted # 5 # 4
 
 example2 :: Term s (PEither PInteger PInteger :--> PInteger)
 example2 = plam $ \x -> pmatch x $ \case
@@ -35,14 +35,14 @@ example2 = plam $ \x -> pmatch x $ \case
 
 fib :: Term s (PInteger :--> PInteger)
 fib = phoistAcyclic $
-  pfix £$ plam $ \self n ->
+  pfix #$ plam $ \self n ->
     pif
-      (n £== 0)
+      (n #== 0)
       0
       $ pif
-        (n £== 1)
+        (n #== 1)
         1
-        $ self £ (n - 1) + self £ (n - 2)
+        $ self # (n - 1) + self # (n - 2)
 
 uglyDouble :: Term s (PInteger :--> PInteger)
 uglyDouble = plam $ \n -> plet n $ \n1 -> plet n1 $ \n2 -> n2 + n2
@@ -64,9 +64,9 @@ expect = equal (pcon PTrue :: Term s PBool)
 
 -- FIXME: Make the below impossible using run-time checks.
 -- loop :: Term (PInteger :--> PInteger)
--- loop = plam $ \x -> loop £ x
+-- loop = plam $ \x -> loop # x
 -- loopHoisted :: Term (PInteger :--> PInteger)
--- loopHoisted = phoistAcyclic $ plam $ \x -> loop £ x
+-- loopHoisted = phoistAcyclic $ plam $ \x -> loop # x
 
 -- FIXME: Use property tests
 tests :: TestTree
@@ -79,26 +79,26 @@ tests =
     , testCase "example2" $ (printTerm example2) @?= "(program 1.0.0 (\\i0 -> i1 (\\i0 -> addInteger i1 1) (\\i0 -> subtractInteger i1 1)))"
     , testCase "pfix" $ (printTerm pfix) @?= "(program 1.0.0 ((\\i0 -> i1) (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1)))))"
     , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i1) (i1 (\\i0 -> \\i0 -> force (i4 (equalsInteger i1 0) (delay 0) (delay (force (i4 (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2))))))))))) (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1)))) (force ifThenElse)))"
-    , testCase "fib 9 == 34" $ equal (fib £ 9) (34 :: Term s PInteger)
+    , testCase "fib 9 == 34" $ equal (fib # 9) (34 :: Term s PInteger)
     , testCase "uglyDouble" $ (printTerm uglyDouble) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
     , testCase "1 + 2 == 3" $ equal (1 + 2 :: Term s PInteger) (3 :: Term s PInteger)
     , testCase "fails: perror" $ fails perror
     , testCase "() == ()" $ expect $ pmatch (pcon PUnit) (\case PUnit -> (pcon PTrue))
-    , testCase "0x02af == 0x02af" $ expect $ phexByteStr "02af" £== phexByteStr "02af"
-    , testCase "\"foo\" == \"foo\"" $ expect $ "foo" £== ("foo" :: Term s PString)
+    , testCase "0x02af == 0x02af" $ expect $ phexByteStr "02af" #== phexByteStr "02af"
+    , testCase "\"foo\" == \"foo\"" $ expect $ "foo" #== ("foo" :: Term s PString)
     , testCase "PByteString :: mempty <> a == a <> mempty == a" $ do
-        expect $ let a = phexByteStr "152a" in (mempty <> a) £== a
-        expect $ let a = phexByteStr "4141" in (a <> mempty) £== a
+        expect $ let a = phexByteStr "152a" in (mempty <> a) #== a
+        expect $ let a = phexByteStr "4141" in (a <> mempty) #== a
     , testCase "PString :: mempty <> a == a <> mempty == a" $ do
-        expect $ let a = "foo" :: Term s PString in (mempty <> a) £== a
-        expect $ let a = "bar" :: Term s PString in (a <> mempty) £== a
+        expect $ let a = "foo" :: Term s PString in (mempty <> a) #== a
+        expect $ let a = "bar" :: Term s PString in (a <> mempty) #== a
     , testCase "PByteString :: 0x12 <> 0x34 == 0x1234" $
         expect $
-          (phexByteStr "12" <> phexByteStr "34") £== phexByteStr "1234"
+          (phexByteStr "12" <> phexByteStr "34") #== phexByteStr "1234"
     , testCase "PString :: \"ab\" <> \"cd\" == \"abcd\"" $
         expect $
-          ("ab" <> "cd") £== ("abcd" :: Term s PString)
-    , testCase "PByteString mempty" $ expect $ mempty £== phexByteStr ""
-    , testCase "PString mempty" $ expect $ mempty £== ("" :: Term s PString)
+          ("ab" <> "cd") #== ("abcd" :: Term s PString)
+    , testCase "PByteString mempty" $ expect $ mempty #== phexByteStr ""
+    , testCase "PString mempty" $ expect $ mempty #== ("" :: Term s PString)
     , testCase "pfromText \"abc\" `equal` \"abc\"" $ equal (pfromText "abc") ("abc" :: Term s PString)
     ]

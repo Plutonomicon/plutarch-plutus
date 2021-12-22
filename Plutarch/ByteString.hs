@@ -6,21 +6,21 @@ import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Stack (HasCallStack)
 import Plutarch (punsafeBuiltin, punsafeConstant)
-import Plutarch.Bool (PEq, POrd, (£<), (£<=), (£==))
+import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
 data PByteString s
 
 instance PEq PByteString where
-  x £== y = punsafeBuiltin PLC.EqualsByteString £ x £ y
+  x #== y = punsafeBuiltin PLC.EqualsByteString # x # y
 
 instance POrd PByteString where
-  x £<= y = punsafeBuiltin PLC.LessThanEqualsByteString £ x £ y
-  x £< y = punsafeBuiltin PLC.LessThanByteString £ x £ y
+  x #<= y = punsafeBuiltin PLC.LessThanEqualsByteString # x # y
+  x #< y = punsafeBuiltin PLC.LessThanByteString # x # y
 
 instance Semigroup (Term s PByteString) where
-  x <> y = punsafeBuiltin PLC.AppendByteString £ x £ y
+  x <> y = punsafeBuiltin PLC.AppendByteString # x # y
 
 instance Monoid (Term s PByteString) where
   mempty = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniByteString BS.empty

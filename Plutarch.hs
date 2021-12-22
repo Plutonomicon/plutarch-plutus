@@ -19,8 +19,8 @@ module Plutarch (
   PlutusType (..),
   printTerm,
   printScript,
-  (£$),
-  (£),
+  (#$),
+  (#),
   pinl,
   pcon,
   pmatch,
@@ -48,13 +48,13 @@ printScript = show . prettyPlcReadableDebug . (\(Script s) -> s)
 printTerm :: ClosedTerm a -> String
 printTerm term = printScript $ compile term
 
-(£) :: Term s (a :--> b) -> Term s a -> Term s b
-(£) = papp
-infixl 8 £
+(#) :: Term s (a :--> b) -> Term s a -> Term s b
+(#) = papp
+infixl 8 #
 
-(£$) :: Term s (a :--> b) -> Term s a -> Term s b
-(£$) = papp
-infixr 0 £$
+(#$) :: Term s (a :--> b) -> Term s a -> Term s b
+(#$) = papp
+infixr 0 #$
 
 -- TODO: Improve type inference when using plam
 
@@ -111,5 +111,5 @@ pfix :: Term s (((a :--> b) :--> a :--> b) :--> a :--> b)
 pfix = phoistAcyclic $
   punsafeCoerce $
     plam $ \f ->
-      (plam $ \(x :: Term s POpaque) -> f £ (plam $ \(v :: Term s POpaque) -> (punsafeCoerce x) £ x £ v))
-        £ punsafeCoerce (plam $ \(x :: Term s POpaque) -> f £ (plam $ \(v :: Term s POpaque) -> (punsafeCoerce x) £ x £ v))
+      (plam $ \(x :: Term s POpaque) -> f # (plam $ \(v :: Term s POpaque) -> (punsafeCoerce x) # x # v))
+        # punsafeCoerce (plam $ \(x :: Term s POpaque) -> f # (plam $ \(v :: Term s POpaque) -> (punsafeCoerce x) # x # v))

@@ -4,7 +4,7 @@
 module Plutarch.DataRepr (PDataRepr, SNat (..), punDataRepr, pindexDataRepr, pmatchDataRepr) where
 
 import Plutarch (punsafeCoerce)
-import Plutarch.Bool (pif, (£==))
+import Plutarch.Bool (pif, (#==))
 import Plutarch.Builtin (PBuiltinList, PData, pasConstr, pfstBuiltin, psndBuiltin)
 import Plutarch.BuiltinHList (PBuiltinHList)
 import Plutarch.Integer (PInteger)
@@ -37,17 +37,17 @@ type instance IndexList ( 'S n) (x : xs) = IndexList n xs
 punDataRepr :: Term s (PDataRepr '[def] :--> PBuiltinHList def)
 punDataRepr = phoistAcyclic $
   plam $ \t ->
-    plet (pasConstr £$ pasData t) $ \d ->
-      (punsafeCoerce $ psndBuiltin £ d :: Term _ (PBuiltinHList def))
+    plet (pasConstr #$ pasData t) $ \d ->
+      (punsafeCoerce $ psndBuiltin # d :: Term _ (PBuiltinHList def))
 
 pindexDataRepr :: SNat n -> Term s (PDataRepr (def : defs) :--> PBuiltinHList (IndexList n (def : defs)))
 pindexDataRepr n = phoistAcyclic $
   plam $ \t ->
-    plet (pasConstr £$ pasData t) $ \d ->
-      let i :: Term _ PInteger = pfstBuiltin £ d
+    plet (pasConstr #$ pasData t) $ \d ->
+      let i :: Term _ PInteger = pfstBuiltin # d
        in pif
-            (i £== (fromInteger . natToInteger . unSingleton $ n))
-            (punsafeCoerce $ psndBuiltin £ d :: Term _ (PBuiltinHList _))
+            (i #== (fromInteger . natToInteger . unSingleton $ n))
+            (punsafeCoerce $ psndBuiltin # d :: Term _ (PBuiltinHList _))
             perror
 
 type family LengthList (l :: [k]) :: Nat
@@ -63,15 +63,15 @@ punsafeMatchDataRepr' :: Integer -> DataReprHandlers out defs s -> Term s PInteg
 punsafeMatchDataRepr' _ DRHNil _ _ = perror
 punsafeMatchDataRepr' idx (DRHCons handler rest) constr args =
   pif
-    (fromInteger idx £== constr)
+    (fromInteger idx #== constr)
     (handler $ punsafeCoerce args)
     $ punsafeMatchDataRepr' (idx + 1) rest constr args
 
 pmatchDataRepr :: DataReprHandlers out defs s -> Term s (PDataRepr defs) -> Term s out
 pmatchDataRepr handlers d =
-  let d' = pasConstr £$ pasData d
+  let d' = pasConstr #$ pasData d
    in punsafeMatchDataRepr'
         0
         handlers
-        (pfstBuiltin £ d')
-        (psndBuiltin £ d')
+        (pfstBuiltin # d')
+        (psndBuiltin # d')

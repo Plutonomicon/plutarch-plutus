@@ -12,6 +12,6 @@ plam2 = plam
 instance PlutusType (PEither a b) where
   type PInner (PEither a b) c = (a :--> c) :--> (b :--> c) :--> c
   pcon' :: forall s. PEither a b s -> forall c. Term s ((a :--> c) :--> (b :--> c) :--> c)
-  pcon' (PLeft x) = plam2 $ \f _ -> f £ x
-  pcon' (PRight y) = plam $ \_ g -> g £ y
-  pmatch' p f = p £ (plam $ \x -> f . PLeft $ x) £ (plam $ \y -> f . PRight $ y)
+  pcon' (PLeft x) = plam2 $ \f _ -> f # x
+  pcon' (PRight y) = plam $ \_ g -> g # y
+  pmatch' p f = p # (plam $ \x -> f . PLeft $ x) # (plam $ \y -> f . PRight $ y)

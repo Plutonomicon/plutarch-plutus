@@ -16,10 +16,10 @@ instance IsString (Term s PString) where
   fromString = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniString . Txt.pack
 
 instance PEq PString where
-  x £== y = punsafeBuiltin PLC.EqualsString £ x £ y
+  x #== y = punsafeBuiltin PLC.EqualsString # x # y
 
 instance Semigroup (Term s PString) where
-  x <> y = punsafeBuiltin PLC.AppendString £ x £ y
+  x <> y = punsafeBuiltin PLC.AppendString # x # y
 
 instance Monoid (Term s PString) where
   mempty = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniString Txt.empty
