@@ -1,5 +1,6 @@
-module Plutarch.ByteString (PByteString, phexByteStr) where
+module Plutarch.ByteString (PByteString, phexByteStr, pbyteStr) where
 
+import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import Data.Char (toLower)
 import Data.Word (Word8)
@@ -31,6 +32,10 @@ phexByteStr = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByteString 
     f "" = []
     f [_] = error "UnevenLength"
     f (x : y : rest) = (hexDigitToWord8 x * 16 + hexDigitToWord8 y) : f rest
+
+-- | Construct a PByteString term from a Haskell bytestring.
+pbyteStr :: ByteString -> Term s PByteString
+pbyteStr = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByteString
 
 hexDigitToWord8 :: HasCallStack => Char -> Word8
 hexDigitToWord8 = f . toLower
