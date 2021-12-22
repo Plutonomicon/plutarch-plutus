@@ -64,6 +64,12 @@ hashTerm t = hashFinalize . hashTerm' t $ hashInit
 --
 -- s: This parameter isn't ever instantiated with something concrete. It is merely here
 -- to ensure that `compile` and `phoistAcyclic` only accept terms without any free variables.
+--
+-- Explanation of how the unembedding works:
+-- Each term must be instantiated with its de-Bruijn level.
+-- `plam'`, given its own level, will create an `RVar` that figures out the
+-- de-Bruijn index needed to reach its own level given the level it itself is
+-- instantiated with.
 newtype Term (s :: k) (a :: k -> Type) = Term {asRawTerm :: Natural -> (RawTerm, [HoistedTerm])}
 
 type ClosedTerm (a :: k -> Type) = forall (s :: k). Term s a

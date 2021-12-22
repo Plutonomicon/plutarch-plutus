@@ -10,19 +10,19 @@ instance PlutusType PBool where
   type PInner PBool _ = PBool
   pcon' PTrue = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniBool True
   pcon' PFalse = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniBool False
-  pmatch' b f = pforce $ pif' £ b £ pdelay (f PTrue) £ pdelay (f PFalse)
+  pmatch' b f = pforce $ pif' # b # pdelay (f PTrue) # pdelay (f PFalse)
 
 class PEq t where
-  (£==) :: Term s t -> Term s t -> Term s PBool
+  (#==) :: Term s t -> Term s t -> Term s PBool
 
-infix 4 £==
+infix 4 #==
 
 class POrd t where
-  (£<=) :: Term s t -> Term s t -> Term s PBool
-  (£<) :: Term s t -> Term s t -> Term s PBool
+  (#<=) :: Term s t -> Term s t -> Term s PBool
+  (#<) :: Term s t -> Term s t -> Term s PBool
 
-infix 4 £<=
-infix 4 £<
+infix 4 #<=
+infix 4 #<
 
 {- | Strict version of 'pif'.
  Emits slightly less code.

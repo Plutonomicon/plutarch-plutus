@@ -14,22 +14,22 @@ instance PlutusType (PBuiltinHList as) where
 
   -- FIXME: Are built-in lists heterogeneous or homogeneous?
   pcon' PBuiltinHNil = punsafeConstant . PLC.Some $ PLC.ValueOf (PLC.DefaultUniApply PLC.DefaultUniProtoList PLC.DefaultUniData) []
-  pcon' (PBuiltinHCons x xs) = (phoistAcyclic $ pforce $ punsafeBuiltin PLC.MkCons) £ x £ xs
+  pcon' (PBuiltinHCons x xs) = (phoistAcyclic $ pforce $ punsafeBuiltin PLC.MkCons) # x # xs
 
   -- FIXME: we shouldn't actually use this because it's an HList
   pmatch' l f =
     pforce $
       plet l $ \l ->
         (pforce . pforce $ punsafeBuiltin PLC.ChooseList)
-          £ l
+          # l
           -- FIXME: Can we not use unsafeCoerce here? Very ugly.
-          £ (pdelay $ f (unsafeCoerce PBuiltinHNil)) -- nil case
-          £ ( pdelay $ -- cons case
+          # (pdelay $ f (unsafeCoerce PBuiltinHNil)) -- nil case
+          # ( pdelay $ -- cons case
                 f $
                   unsafeCoerce $
                     PBuiltinHCons
-                      ((phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList) £ l)
-                      ((phoistAcyclic $ pforce $ punsafeBuiltin PLC.TailList) £ l)
+                      ((phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList) # l)
+                      ((phoistAcyclic $ pforce $ punsafeBuiltin PLC.TailList) # l)
             )
 -}
 
