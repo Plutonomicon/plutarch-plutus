@@ -112,3 +112,4 @@ test-suite examples
     , tasty
     , tasty-hunit
     , plutus-ledger-api
+    , plutus-core
