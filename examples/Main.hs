@@ -1,13 +1,16 @@
 {-# LANGUAGE PartialTypeSignatures #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 {-# OPTIONS_GHC -Wno-partial-type-signatures #-}
 
-module Main (main) where
+module Main (main, iterateN, swap, fromScriptBuiltin, fromScriptData) where
 
+import Data.Function ((&))
 import Test.Tasty
 import Test.Tasty.HUnit
+import Flat qualified as Flat
 
-import Plutarch (ClosedTerm, POpaque, compile, printScript, printTerm, punsafeBuiltin, punsafeConstant)
+import Plutarch (ClosedTerm, POpaque, compile, printScript, printTerm, punsafeBuiltin, punsafeConstant, PlutusType (..))
 import Plutarch.Bool (PBool (PTrue), pif, (#==))
 import Plutarch.Builtin (PBuiltinList, PBuiltinPair)
 import Plutarch.ByteString (phexByteStr)
@@ -21,6 +24,9 @@ import Plutarch.Unit (PUnit (..))
 import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import qualified PlutusCore as PLC
+import UntypedPlutusCore.Core.Type qualified as UPLC
+import PlutusTx qualified as PTX
+import PlutusCore.Data ()
 
 main :: IO ()
 main = defaultMain tests
@@ -50,6 +56,38 @@ fib = phoistAcyclic $
         1
         $ self # (n - 1) + self # (n - 2)
 
+iterateN :: Term s (PInteger :--> (a :--> a) :--> a :--> a)
+iterateN = pfix # plam iterateN'
+  where
+    iterateN' :: 
+      Term s (PInteger :--> (a :--> a) :--> a :--> a) -> 
+      Term s PInteger ->
+      Term s (a :--> a) ->
+      Term s a ->
+      Term s a
+  
+    iterateN' self n f x = 
+      pif 
+        (n #== 0) 
+        x 
+        (self # (n - 1) # f #$ f # x)
+
+data AB (s :: k) = A | B
+  
+instance PlutusType AB where
+  type PInner AB _ = PInteger
+  
+  pcon' A = 0
+  pcon' B = 1
+
+  pmatch' x f = 
+    pif (x #== 0) (f A) (f B)
+
+swap :: Term s AB -> Term s AB
+swap x = pmatch x $ \case
+ A -> pcon B
+ B -> pcon A
+
 uglyDouble :: Term s (PInteger :--> PInteger)
 uglyDouble = plam $ \n -> plet n $ \n1 -> plet n1 $ \n2 -> n2 + n2
 
@@ -57,6 +95,28 @@ eval :: HasCallStack => ClosedTerm a -> IO Scripts.Script
 eval x = case evaluateScript $ compile x of
   Left e -> assertFailure $ "Script evaluation failed: " <> show e
   Right (_, _, x') -> pure x'
+
+fromScriptBuiltin :: 
+  forall a.
+  ( Flat.Flat a 
+  ) => Scripts.Script -> Maybe a
+fromScriptBuiltin s =
+  s 
+    & Scripts.unScript 
+    & UPLC.toTerm 
+    & Flat.flat 
+    & Flat.unflat @a
+    & \case 
+        (Right x) -> Just x
+        _ -> Nothing
+
+fromScriptData ::
+  forall a.
+  ( PTX.FromData a
+  ) => Scripts.Script -> Maybe a
+fromScriptData s =
+  fromScriptBuiltin @PTX.Data s
+    >>= PTX.fromData
 
 equal :: HasCallStack => ClosedTerm a -> ClosedTerm b -> Assertion
 equal x y = do
@@ -68,6 +128,7 @@ equal' :: HasCallStack => ClosedTerm a -> String -> Assertion
 equal' x y = do
   x' <- eval x
   printScript x' @?= y
+
 
 fails :: HasCallStack => ClosedTerm a -> Assertion
 fails x =
