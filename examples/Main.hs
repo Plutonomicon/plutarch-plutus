@@ -8,9 +8,9 @@ import Test.Tasty
 import Test.Tasty.HUnit
 
 import Plutarch (ClosedTerm, POpaque, compile, printScript, printTerm, punsafeBuiltin, punsafeConstant)
-import Plutarch.Bool (PBool (PTrue), pif, (#==))
+import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#<), (#<=), (#==))
 import Plutarch.Builtin (PBuiltinList, PBuiltinPair)
-import Plutarch.ByteString (phexByteStr)
+import Plutarch.ByteString (pconsByteStr, phexByteStr, pindexByteStr, plengthByteStr, psliceByteStr)
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Integer (PInteger)
@@ -109,7 +109,17 @@ plutarchTests =
     , testCase "uglyDouble" $ (printTerm uglyDouble) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
     , testCase "1 + 2 == 3" $ equal (1 + 2 :: Term s PInteger) (3 :: Term s PInteger)
     , testCase "fails: perror" $ fails perror
-    , testCase "() == ()" $ expect $ pmatch (pcon PUnit) (\case PUnit -> pcon PTrue)
+    , testCase "pnot" $ do
+        (pnot #$ pcon PTrue) `equal` pcon PFalse
+        (pnot #$ pcon PFalse) `equal` pcon PTrue
+    , testCase "() == ()" $ do
+        expect $ pmatch (pcon PUnit) (\case PUnit -> pcon PTrue)
+        expect $ pcon PUnit #== pcon PUnit
+        pcon PUnit `equal` pcon PUnit
+    , testCase "() < () == False" $ do
+        expect $ pnot #$ pcon PUnit #< pcon PUnit
+    , testCase "() <= () == True" $ do
+        expect $ pcon PUnit #<= pcon PUnit
     , testCase "0x02af == 0x02af" $ expect $ phexByteStr "02af" #== phexByteStr "02af"
     , testCase "\"foo\" == \"foo\"" $ expect $ "foo" #== ("foo" :: Term s PString)
     , testCase "PByteString :: mempty <> a == a <> mempty == a" $ do
@@ -125,8 +135,23 @@ plutarchTests =
         expect $
           ("ab" <> "cd") #== ("abcd" :: Term s PString)
     , testCase "PByteString mempty" $ expect $ mempty #== phexByteStr ""
+    , testCase "pconsByteStr" $
+        let xs = "5B1F"; b = "41"
+         in (pconsByteStr # fromInteger (read $ "0x" <> b) # phexByteStr xs) `equal` phexByteStr (b <> xs)
+    , testCase "plengthByteStr" $ do
+        (plengthByteStr # phexByteStr "012f") `equal` (2 :: Term s PInteger)
+        expect $ (plengthByteStr # phexByteStr "012f") #== 2
+        let xs = phexByteStr "48fCd1"
+        (plengthByteStr #$ pconsByteStr # 91 # xs)
+          `equal` (1 + plengthByteStr # xs)
+    , testCase "pindexByteStr" $
+        (pindexByteStr # phexByteStr "4102af" # 1) `equal` (0x02 :: Term s PInteger)
+    , testCase "psliceByteStr" $
+        (psliceByteStr # 1 # 3 # phexByteStr "4102afde5b2a") `equal` phexByteStr "02afde"
     , testCase "PString mempty" $ expect $ mempty #== ("" :: Term s PString)
-    , testCase "pfromText \"abc\" `equal` \"abc\"" $ equal (pfromText "abc") ("abc" :: Term s PString)
+    , testCase "pfromText \"abc\" == \"abc\"" $ do
+        pfromText "abc" `equal` ("abc" :: Term s PString)
+        expect $ pfromText "foo" #== "foo"
     ]
 
 uplcTests :: TestTree
@@ -138,21 +163,21 @@ uplcTests =
               punsafeConstant . PLC.Some $
                 PLC.ValueOf (PLC.DefaultUniApply PLC.DefaultUniProtoList PLC.DefaultUniInteger) [1]
             l' :: Term _ (PBuiltinList PInteger) =
-              (pforce $ punsafeBuiltin PLC.MkCons) # (2 :: Term _ PInteger) # l
+              pforce (punsafeBuiltin PLC.MkCons) # (2 :: Term _ PInteger) # l
          in equal' l' "(program 1.0.0 [2,1])"
     , testCase "[2,1]" $
         let l :: Term _ (PBuiltinList PInteger) =
               punsafeConstant . PLC.Some $
                 PLC.ValueOf (PLC.DefaultUniApply PLC.DefaultUniProtoList PLC.DefaultUniInteger) [1]
             l' :: Term _ (PBuiltinList PInteger) =
-              (pforce $ punsafeBuiltin PLC.MkCons) # (2 :: Term _ PInteger) # l
+              pforce (punsafeBuiltin PLC.MkCons) # (2 :: Term _ PInteger) # l
          in equal' l' "(program 1.0.0 [2,1])"
     , testCase "fails: True:[1]" $
         let l :: Term _ (PBuiltinList POpaque) =
               punsafeConstant . PLC.Some $
                 PLC.ValueOf (PLC.DefaultUniApply PLC.DefaultUniProtoList PLC.DefaultUniInteger) [1]
             l' :: Term _ (PBuiltinList POpaque) =
-              (pforce $ punsafeBuiltin PLC.MkCons) # (pcon PTrue) # l
+              pforce (punsafeBuiltin PLC.MkCons) # pcon PTrue # l
          in fails l'
     , testCase "(2,1)" $
         let p :: Term _ (PBuiltinPair PInteger PInteger) =
@@ -166,6 +191,6 @@ uplcTests =
          in equal' p "(program 1.0.0 (1, 2))"
     , testCase "fails: MkPair 1 2" $
         let p :: Term _ (PBuiltinPair PInteger PInteger) =
-              (punsafeBuiltin PLC.MkPairData) # (1 :: Term _ PInteger) # (2 :: Term _ PInteger)
+              punsafeBuiltin PLC.MkPairData # (1 :: Term _ PInteger) # (2 :: Term _ PInteger)
          in fails p
     ]
