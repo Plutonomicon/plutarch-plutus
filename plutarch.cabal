@@ -109,6 +109,7 @@ test-suite examples
   other-modules:
   build-depends:
     , base
+    , bytestring
     , plutarch
     , tasty
     , tasty-hunit

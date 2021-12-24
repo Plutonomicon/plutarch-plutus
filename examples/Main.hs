@@ -7,10 +7,12 @@ module Main (main) where
 import Test.Tasty
 import Test.Tasty.HUnit
 
+import qualified Data.ByteString as BS
 import Plutarch (ClosedTerm, POpaque, compile, printScript, printTerm, punsafeBuiltin, punsafeConstant)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#<), (#<=), (#==))
 import Plutarch.Builtin (PBuiltinList, PBuiltinPair)
-import Plutarch.ByteString (pconsByteStr, phexByteStr, pindexByteStr, plengthByteStr, psliceByteStr)
+import Plutarch.ByteString (phexByteStr, pbyteStr)
+import qualified Plutarch.ByteString as PBS
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Integer (PInteger)
@@ -137,17 +139,21 @@ plutarchTests =
     , testCase "PByteString mempty" $ expect $ mempty #== phexByteStr ""
     , testCase "pconsByteStr" $
         let xs = "5B1F"; b = "41"
-         in (pconsByteStr # fromInteger (read $ "0x" <> b) # phexByteStr xs) `equal` phexByteStr (b <> xs)
+         in (PBS.pcons # fromInteger (readByte b) # phexByteStr xs) `equal` phexByteStr (b <> xs)
     , testCase "plengthByteStr" $ do
-        (plengthByteStr # phexByteStr "012f") `equal` (2 :: Term s PInteger)
-        expect $ (plengthByteStr # phexByteStr "012f") #== 2
+        (PBS.plength # phexByteStr "012f") `equal` (2 :: Term s PInteger)
+        expect $ (PBS.plength # phexByteStr "012f") #== 2
         let xs = phexByteStr "48fCd1"
-        (plengthByteStr #$ pconsByteStr # 91 # xs)
-          `equal` (1 + plengthByteStr # xs)
+        (PBS.plength #$ PBS.pcons # 91 # xs)
+          `equal` (1 + PBS.plength # xs)
     , testCase "pindexByteStr" $
-        (pindexByteStr # phexByteStr "4102af" # 1) `equal` (0x02 :: Term s PInteger)
+        (PBS.pindex # phexByteStr "4102af" # 1) `equal` (0x02 :: Term s PInteger)
     , testCase "psliceByteStr" $
-        (psliceByteStr # 1 # 3 # phexByteStr "4102afde5b2a") `equal` phexByteStr "02afde"
+        (PBS.pslice # 1 # 3 # phexByteStr "4102afde5b2a") `equal` phexByteStr "02afde"
+    , testCase "pbyteStr - phexByteStr - PBS.pack relation" $ do
+        let a = ["42", "ab", "df", "c9"]
+        pbyteStr (BS.pack $ map readByte a) `equal` phexByteStr (concat a)
+        phexByteStr (concat a) `equal` PBS.ppack (map readByte a)
     , testCase "PString mempty" $ expect $ mempty #== ("" :: Term s PString)
     , testCase "pfromText \"abc\" == \"abc\"" $ do
         pfromText "abc" `equal` ("abc" :: Term s PString)
@@ -194,3 +200,11 @@ uplcTests =
               punsafeBuiltin PLC.MkPairData # (1 :: Term _ PInteger) # (2 :: Term _ PInteger)
          in fails p
     ]
+
+{- | Interpret a byte.
+
+>>> readByte "41"
+65
+-}
+readByte :: Num a => String -> a
+readByte a = fromInteger $ read $ "0x" <> a
