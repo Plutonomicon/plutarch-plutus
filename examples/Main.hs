@@ -1,6 +1,4 @@
-{-# LANGUAGE PartialTypeSignatures #-}
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
-{-# OPTIONS_GHC -Wno-partial-type-signatures #-}
 
 module Main (main) where
 
