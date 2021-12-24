@@ -1,4 +1,4 @@
-module Plutarch.Bool (PBool (..), PEq (..), POrd (..), pif, pif') where
+module Plutarch.Bool (PBool (..), PEq (..), POrd (..), pif, pif', pnot) where
 
 import Plutarch (PlutusType (PInner, pcon', pmatch'), punsafeBuiltin, punsafeConstant)
 import Plutarch.Prelude
@@ -35,3 +35,6 @@ pif :: Term s PBool -> Term s a -> Term s a -> Term s a
 pif b case_true case_false = pmatch b $ \case
   PTrue -> case_true
   PFalse -> case_false
+
+pnot :: Term s (PBool :--> PBool)
+pnot = phoistAcyclic $ plam $ \x -> pif x (pcon PFalse) $ pcon PTrue
