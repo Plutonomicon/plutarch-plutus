@@ -1,4 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch (
   (PI.:-->),
@@ -56,20 +58,31 @@ infixl 8 #
 (#$) = papp
 infixr 0 #$
 
--- TODO: Improve type inference when using plam
+class PLamN a b | a -> b where
+  plam :: a -> b
 
-class PLam (s :: k) (b :: Type) where
-  type PLamOut b :: (k -> Type)
-  plam :: forall (a :: k -> Type). (Term s a -> b) -> Term s (a :--> PLamOut b)
+-- FIXME: This piece of code doesn't work unless you do (_ :: Term _ _)
+{-
+f :: Term s ((a :--> b) :--> b :--> b)
+f = plam $ \f _ -> f # perror
+-}
 
-instance PLam s (Term s b) where
-  type PLamOut (Term s b) = b
-  plam :: forall a. (Term s a -> Term s b) -> Term s (a :--> b)
+instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b) => PLamN (a' -> b') (Term s (a :--> b)) where
   plam = plam'
 
-instance PLam s c => PLam s (Term s b -> c) where
-  type PLamOut (Term s b -> c) = b :--> PLamOut c
-  plam :: forall a. (Term s a -> Term s b -> c) -> Term s (a :--> b :--> PLamOut c)
+instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c) => PLamN (a' -> b' -> c') (Term s (a :--> b :--> c)) where
+  plam f = plam' $ \x -> plam (f x)
+
+instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d) => PLamN (a' -> b' -> c' -> d') (Term s (a :--> b :--> c :--> d)) where
+  plam f = plam' $ \x -> plam (f x)
+
+instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e) => PLamN (a' -> b' -> c' -> d' -> e') (Term s (a :--> b :--> c :--> d :--> e)) where
+  plam f = plam' $ \x -> plam (f x)
+
+instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f) => PLamN (a' -> b' -> c' -> d' -> e' -> f') (Term s (a :--> b :--> c :--> d :--> e :--> f)) where
+  plam f = plam' $ \x -> plam (f x)
+
+instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f, g' ~ Term s g) => PLamN (a' -> b' -> c' -> d' -> e' -> f' -> g') (Term s (a :--> b :--> c :--> d :--> e :--> f :--> g)) where
   plam f = plam' $ \x -> plam (f x)
 
 pinl :: Term s a -> (Term s a -> Term s b) -> Term s b

@@ -16,6 +16,7 @@ common c
     LambdaCase
     TypeFamilies
     OverloadedStrings
+    PartialTypeSignatures
     -- poor man's GHC2021
     BangPatterns
     BinaryLiterals
@@ -66,6 +67,7 @@ common c
     -Wall -Wcompat -Wincomplete-uni-patterns -Wredundant-constraints
     -Wmissing-export-lists -Werror -Wincomplete-record-updates
     -Wmissing-deriving-strategies -Wno-name-shadowing
+    -Wno-partial-type-signatures
 
 library
   import: c
