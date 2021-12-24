@@ -1,4 +1,4 @@
-module Plutarch.Bool (PBool (..), PEq (..), POrd (..), pif, pif', pnot) where
+module Plutarch.Bool (PBool (..), PEq (..), POrd (..), pif, pif', pnot, (#&&), (#||)) where
 
 import Plutarch (PlutusType (PInner, pcon', pmatch'), punsafeBuiltin, punsafeConstant)
 import Plutarch.Prelude
@@ -36,5 +36,18 @@ pif b case_true case_false = pmatch b $ \case
   PTrue -> case_true
   PFalse -> case_false
 
+-- | Boolean negation for 'PBool' terms.
 pnot :: Term s (PBool :--> PBool)
 pnot = phoistAcyclic $ plam $ \x -> pif x (pcon PFalse) $ pcon PTrue
+
+-- | Lazily evaluated boolean and for 'PBool' terms.
+infixr 3 #&&
+
+(#&&) :: Term s PBool -> Term s PBool -> Term s PBool
+x #&& y = pif x (pif y (pcon PTrue) $ pcon PFalse) $ pcon PFalse
+
+-- | Lazily evaluated boolean or for 'PBool' terms.
+infixr 2 #||
+
+(#||) :: Term s PBool -> Term s PBool -> Term s PBool
+x #|| y = pif x (pcon PTrue) $ pif y (pcon PTrue) $ pcon PFalse
