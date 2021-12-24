@@ -150,10 +150,9 @@ plutarchTests =
         (PBS.pindex # phexByteStr "4102af" # 1) `equal` (0x02 :: Term s PInteger)
     , testCase "psliceByteStr" $
         (PBS.pslice # 1 # 3 # phexByteStr "4102afde5b2a") `equal` phexByteStr "02afde"
-    , testCase "pbyteStr - phexByteStr - PBS.pack relation" $ do
+    , testCase "pbyteStr - phexByteStr relation" $ do
         let a = ["42", "ab", "df", "c9"]
         pbyteStr (BS.pack $ map readByte a) `equal` phexByteStr (concat a)
-        phexByteStr (concat a) `equal` PBS.ppack (map readByte a)
     , testCase "PString mempty" $ expect $ mempty #== ("" :: Term s PString)
     , testCase "pfromText \"abc\" == \"abc\"" $ do
         pfromText "abc" `equal` ("abc" :: Term s PString)

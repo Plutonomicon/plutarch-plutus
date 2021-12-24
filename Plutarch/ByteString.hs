@@ -6,7 +6,6 @@ module Plutarch.ByteString (
   pslice,
   plength,
   pindex,
-  ppack,
 ) where
 
 import Data.ByteString (ByteString)
@@ -69,10 +68,6 @@ plength = punsafeBuiltin PLC.LengthOfByteString
 -- | 'PByteString' indexing function.
 pindex :: Term s (PByteString :--> PInteger :--> PInteger)
 pindex = punsafeBuiltin PLC.IndexByteString
-
--- | Pack a list of bytes into a 'PByteString' term.
-ppack :: [Word8] -> Term s PByteString
-ppack = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByteString . BS.pack
 
 hexDigitToWord8 :: HasCallStack => Char -> Word8
 hexDigitToWord8 = f . toLower
