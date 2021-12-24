@@ -9,9 +9,9 @@ import Test.Tasty.HUnit
 
 import qualified Data.ByteString as BS
 import Plutarch (ClosedTerm, POpaque, compile, printScript, printTerm, punsafeBuiltin, punsafeConstant)
-import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#<), (#<=), (#==))
+import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
 import Plutarch.Builtin (PBuiltinList, PBuiltinPair)
-import Plutarch.ByteString (phexByteStr, pbyteStr)
+import Plutarch.ByteString (pbyteStr, phexByteStr)
 import qualified Plutarch.ByteString as PBS
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Evaluate (evaluateScript)
@@ -158,6 +158,19 @@ plutarchTests =
     , testCase "pfromText \"abc\" == \"abc\"" $ do
         pfromText "abc" `equal` ("abc" :: Term s PString)
         expect $ pfromText "foo" #== "foo"
+    , testCase "#&& - boolean and; #|| - boolean or" $ do
+        let ptrue = pcon PTrue
+            pfalse = pcon PFalse
+        -- AND tests
+        expect $ ptrue #&& ptrue
+        expect $ pnot #$ ptrue #&& pfalse
+        expect $ pnot #$ pfalse #&& ptrue
+        expect $ pnot #$ pfalse #&& pfalse
+        -- OR tests
+        expect $ ptrue #|| ptrue
+        expect $ ptrue #|| pfalse
+        expect $ pfalse #|| ptrue
+        expect $ pnot #$ pfalse #|| pfalse
     ]
 
 uplcTests :: TestTree
