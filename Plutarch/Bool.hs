@@ -1,4 +1,17 @@
-module Plutarch.Bool (PBool (..), PEq (..), POrd (..), pif, pif', pnot, (#&&), (#||)) where
+module Plutarch.Bool (
+  PBool (..),
+  PEq (..),
+  POrd (..),
+  pif,
+  pif',
+  pnot,
+  (#&&),
+  (#||),
+  por,
+  pand,
+  pand',
+  por',
+) where
 
 import Plutarch (PlutusType (PInner, pcon', pmatch'), punsafeBuiltin, punsafeConstant)
 import Plutarch.Prelude
@@ -44,10 +57,34 @@ pnot = phoistAcyclic $ plam $ \x -> pif x (pcon PFalse) $ pcon PTrue
 infixr 3 #&&
 
 (#&&) :: Term s PBool -> Term s PBool -> Term s PBool
-x #&& y = pif x (pif y (pcon PTrue) $ pcon PFalse) $ pcon PFalse
+x #&& y = pand # pdelay x # pdelay y
 
 -- | Lazily evaluated boolean or for 'PBool' terms.
 infixr 2 #||
 
 (#||) :: Term s PBool -> Term s PBool -> Term s PBool
-x #|| y = pif x (pcon PTrue) $ pif y (pcon PTrue) $ pcon PFalse
+x #|| y = por # pdelay x # pdelay y
+
+-- | Hoisted, Plutarch level, lazily evaluated boolean and function.
+pand :: Term s (PDelayed PBool :--> PDelayed PBool :--> PBool)
+pand = phoistAcyclic $
+  plam $
+    \x y -> pif' # pforce x # (pif' # pforce y # pcon PTrue # pcon PFalse) # pcon PFalse
+
+-- | Hoisted, Plutarch level, strictly evaluated boolean and function.
+pand' :: Term s (PBool :--> PBool :--> PBool)
+pand' = phoistAcyclic $
+  plam $
+    \x y -> pif' # x # (pif' # y # pcon PTrue # pcon PFalse) # pcon PFalse
+
+-- | Hoisted, Plutarch level, lazily evaluated boolean or function.
+por :: Term s (PDelayed PBool :--> PDelayed PBool :--> PBool)
+por = phoistAcyclic $
+  plam $
+    \x y -> pif' # pforce x # pcon PTrue #$ pif' # pforce y # pcon PTrue # pcon PFalse
+
+-- | Hoisted, Plutarch level, strictly evaluated boolean or function.
+por' :: Term s (PBool :--> PBool :--> PBool)
+por' = phoistAcyclic $
+  plam $
+    \x y -> pif' # x # pcon PTrue #$ pif' # y # pcon PTrue # pcon PFalse
