@@ -106,7 +106,7 @@ plutarchTests =
     , testCase "example1" $ (printTerm example1) @?= "(program 1.0.0 ((\\i0 -> addInteger (i1 12 32) (i1 5 4)) (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1)))"
     , testCase "example2" $ (printTerm example2) @?= "(program 1.0.0 (\\i0 -> i1 (\\i0 -> addInteger i1 1) (\\i0 -> subtractInteger i1 1)))"
     , testCase "pfix" $ (printTerm pfix) @?= "(program 1.0.0 ((\\i0 -> i1) (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1)))))"
-    , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i1) (i1 (\\i0 -> \\i0 -> force (i4 (equalsInteger i1 0) (delay 0) (delay (force (i4 (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2))))))))))) (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1)))) (force ifThenElse)))"
+    , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i1) (i1 (\\i0 -> \\i0 -> force (i4 (equalsInteger i1 0) (delay 0) (i4 (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2))))))))) (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1)))) (force ifThenElse)))"
     , testCase "fib 9 == 34" $ equal (fib # 9) (34 :: Term s PInteger)
     , testCase "uglyDouble" $ (printTerm uglyDouble) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
     , testCase "1 + 2 == 3" $ equal (1 + 2 :: Term s PInteger) (3 :: Term s PInteger)
@@ -145,6 +145,20 @@ plutarchTests =
               PMinting c -> popaque c
               _ -> perror
          in printTerm f @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> force (i4 (equalsInteger 0 i2) (delay i1) (delay error))) (i4 i2)) (i4 i1)) (unConstrData #d8799f58201111111111111111111111111111111111111111111111111111111111111111ff)) (force ifThenElse)) (force (force sndPair))) (force (force fstPair))))"
+    , testCase "error # 1 => error" $
+        printTerm (perror # (1 :: Term s PInteger)) @?= "(program 1.0.0 error)"
+    , testCase "fib error => error" $
+        printTerm (fib # perror) @?= "(program 1.0.0 error)"
+    , testCase "force (delay 0) => 0" $
+        printTerm (pforce . pdelay $ (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
+    , testCase "delay (force (delay 0)) => delay 0" $
+        printTerm (pdelay . pforce . pdelay $ (0 :: Term s PInteger)) @?= "(program 1.0.0 (delay 0))"
+    , testCase "id # 0 => 0" $
+        printTerm ((plam $ \x -> x) # (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
+    , testCase "hoist id 0 => 0" $
+        printTerm ((phoistAcyclic $ plam $ \x -> x) # (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
+    , testCase "hoist fstPair => fstPair" $
+        printTerm (phoistAcyclic (punsafeBuiltin PLC.FstPair)) @?= "(program 1.0.0 fstPair)"
     ]
 
 uplcTests :: TestTree
