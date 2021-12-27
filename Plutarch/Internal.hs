@@ -128,10 +128,12 @@ punsafeConstant c = Term $ \_ -> (RConstant c, [])
 
 -- FIXME: Give proper error message when mutually recursive.
 phoistAcyclic :: ClosedTerm a -> Term s a
-phoistAcyclic t = Term $ \_ ->
-  let (t', deps) = asRawTerm t 0
-   in let t'' = HoistedTerm (hashRawTerm t') t'
-       in (RHoisted t'', t'' : deps)
+phoistAcyclic t = Term $ \_ -> case asRawTerm t 0 of
+  -- FIXME: is this worth it?
+  t'@(RBuiltin _, _) -> t'
+  (t', deps) ->
+    let hoisted = HoistedTerm (hashRawTerm t') t'
+     in (RHoisted hoisted, hoisted : deps)
 
 rawTermToUPLC :: (HoistedTerm -> Natural) -> Natural -> RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i + 1) -- Why the fuck does it start from 1 and not 0?
