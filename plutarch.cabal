@@ -16,6 +16,7 @@ common c
     LambdaCase
     TypeFamilies
     OverloadedStrings
+    PartialTypeSignatures
     -- poor man's GHC2021
     BangPatterns
     BinaryLiterals
@@ -63,7 +64,7 @@ common c
     TypeOperators
     TypeSynonymInstances
   ghc-options:
-    -Wall -Wcompat -Wincomplete-uni-patterns -Wredundant-constraints
+    -Wall -Wcompat -Wincomplete-uni-patterns -Wno-partial-type-signatures
     -Wmissing-export-lists -Werror -Wincomplete-record-updates
     -Wmissing-deriving-strategies -Wno-name-shadowing
 
@@ -81,7 +82,6 @@ library
     Plutarch.String
     Plutarch.ByteString
     Plutarch.Builtin
-    Plutarch.BuiltinHList
     Plutarch.DataRepr
     Plutarch.ScriptContext
     Plutarch.Evaluate
@@ -115,3 +115,5 @@ test-suite examples
     , tasty-hunit
     , plutus-ledger-api
     , plutus-core
+    , aeson
+    , plutus-tx

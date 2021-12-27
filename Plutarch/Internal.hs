@@ -1,4 +1,4 @@
-module Plutarch.Internal ((:-->), PDelayed, Term, plam', plet, papp, pdelay, pforce, phoistAcyclic, perror, punsafeCoerce, punsafeBuiltin, punsafeConstant, compile, ClosedTerm) where
+module Plutarch.Internal ((:-->), PDelayed, Term, plam', plet, papp, pdelay, pforce, phoistAcyclic, perror, punsafeCoerce, punsafeBuiltin, punsafeConstant, compile, ClosedTerm, Dig, hashTerm, hashOpenTerm, TermCont (..)) where
 
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
@@ -44,19 +44,19 @@ data RawTerm
   | RError
   | RHoisted HoistedTerm
 
-hashTerm' :: HashAlgorithm alg => RawTerm -> Context alg -> Context alg
-hashTerm' (RVar x) = flip hashUpdate ("0" :: BS.ByteString) . flip hashUpdate (F.flat (fromIntegral x :: Integer))
-hashTerm' (RLamAbs x) = flip hashUpdate ("1" :: BS.ByteString) . hashTerm' x
-hashTerm' (RApply x y) = flip hashUpdate ("2" :: BS.ByteString) . hashTerm' x . hashTerm' y
-hashTerm' (RForce x) = flip hashUpdate ("3" :: BS.ByteString) . hashTerm' x
-hashTerm' (RDelay x) = flip hashUpdate ("4" :: BS.ByteString) . hashTerm' x
-hashTerm' (RConstant x) = flip hashUpdate ("5" :: BS.ByteString) . flip hashUpdate (F.flat x)
-hashTerm' (RBuiltin x) = flip hashUpdate ("6" :: BS.ByteString) . flip hashUpdate (F.flat x)
-hashTerm' RError = flip hashUpdate ("7" :: BS.ByteString)
-hashTerm' (RHoisted (HoistedTerm hash _)) = flip hashUpdate ("8" :: BS.ByteString) . flip hashUpdate hash
+hashRawTerm' :: HashAlgorithm alg => RawTerm -> Context alg -> Context alg
+hashRawTerm' (RVar x) = flip hashUpdate ("0" :: BS.ByteString) . flip hashUpdate (F.flat (fromIntegral x :: Integer))
+hashRawTerm' (RLamAbs x) = flip hashUpdate ("1" :: BS.ByteString) . hashRawTerm' x
+hashRawTerm' (RApply x y) = flip hashUpdate ("2" :: BS.ByteString) . hashRawTerm' x . hashRawTerm' y
+hashRawTerm' (RForce x) = flip hashUpdate ("3" :: BS.ByteString) . hashRawTerm' x
+hashRawTerm' (RDelay x) = flip hashUpdate ("4" :: BS.ByteString) . hashRawTerm' x
+hashRawTerm' (RConstant x) = flip hashUpdate ("5" :: BS.ByteString) . flip hashUpdate (F.flat x)
+hashRawTerm' (RBuiltin x) = flip hashUpdate ("6" :: BS.ByteString) . flip hashUpdate (F.flat x)
+hashRawTerm' RError = flip hashUpdate ("7" :: BS.ByteString)
+hashRawTerm' (RHoisted (HoistedTerm hash _)) = flip hashUpdate ("8" :: BS.ByteString) . flip hashUpdate hash
 
-hashTerm :: RawTerm -> Dig
-hashTerm t = hashFinalize . hashTerm' t $ hashInit
+hashRawTerm :: RawTerm -> Dig
+hashRawTerm t = hashFinalize . hashRawTerm' t $ hashInit
 
 -- Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
 -- Thanks!
@@ -123,7 +123,7 @@ punsafeConstant c = Term $ \_ -> (RConstant c, [])
 phoistAcyclic :: ClosedTerm a -> Term s a
 phoistAcyclic t = Term $ \_ ->
   let (t', deps) = asRawTerm t 0
-   in let t'' = HoistedTerm (hashTerm t') t'
+   in let t'' = HoistedTerm (hashRawTerm t') t'
        in (RHoisted t'', t'' : deps)
 
 rawTermToUPLC :: (HoistedTerm -> Natural) -> Natural -> RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
@@ -164,3 +164,32 @@ compile' t =
 
 compile :: ClosedTerm a -> Script
 compile t = Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' t)
+
+newtype TermCont s a = TermCont {runTermCont :: forall b. (a -> Term s b) -> Term s b}
+
+instance Functor (TermCont s) where
+  fmap f (TermCont g) = TermCont $ \h -> g (h . f)
+
+instance Applicative (TermCont s) where
+  pure x = TermCont $ \f -> f x
+  x <*> y = do
+    x <- x
+    y <- y
+    pure (x y)
+
+instance Monad (TermCont s) where
+  (TermCont f) >>= g = TermCont $ \h ->
+    f
+      ( \x ->
+          runTermCont (g x) h
+      )
+
+hashTerm :: ClosedTerm a -> Dig
+hashTerm t =
+  let (t', _) = asRawTerm t 0
+   in hashRawTerm t'
+
+hashOpenTerm :: Term s a -> TermCont s Dig
+hashOpenTerm x = TermCont $ \f -> Term $ \i ->
+  let inner = f $ hashRawTerm . fst $ asRawTerm x i
+   in asRawTerm inner i
