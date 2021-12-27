@@ -71,8 +71,9 @@ common c
 library
   import: c
   exposed-modules:
-    Plutarch
+    Plutarch.Evaluate
     Plutarch.Internal
+    Plutarch
     Plutarch.Prelude
     Plutarch.Pair
     Plutarch.Rational
@@ -84,7 +85,6 @@ library
     Plutarch.Builtin
     Plutarch.DataRepr
     Plutarch.ScriptContext
-    Plutarch.Evaluate
     Plutarch.Maybe
     Plutarch.Unit
     Plutarch.Crypto

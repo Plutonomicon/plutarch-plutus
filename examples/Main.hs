@@ -5,6 +5,7 @@ module Main (main) where
 import Test.Tasty
 import Test.Tasty.HUnit
 
+import Control.Exception (SomeException, try)
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
@@ -83,6 +84,12 @@ fails x =
 expect :: HasCallStack => ClosedTerm PBool -> Assertion
 expect = equal (pcon PTrue :: Term s PBool)
 
+throws :: ClosedTerm a -> Assertion
+throws x =
+  try @SomeException (putStrLn $ printScript $ compile x) >>= \case
+    Right _ -> assertFailure "Supposed to throw"
+    Left _ -> pure ()
+
 -- FIXME: Make the below impossible using run-time checks.
 -- loop :: Term (PInteger :--> PInteger)
 -- loop = plam $ \x -> loop # x
@@ -103,11 +110,11 @@ plutarchTests =
   testGroup
     "plutarch tests"
     [ testCase "add1" $ (printTerm add1) @?= "(program 1.0.0 (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1))"
-    , testCase "add1Hoisted" $ (printTerm add1Hoisted) @?= "(program 1.0.0 ((\\i0 -> i1) (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1)))"
+    , testCase "add1Hoisted" $ (printTerm add1Hoisted) @?= "(program 1.0.0 (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1))"
     , testCase "example1" $ (printTerm example1) @?= "(program 1.0.0 ((\\i0 -> addInteger (i1 12 32) (i1 5 4)) (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1)))"
     , testCase "example2" $ (printTerm example2) @?= "(program 1.0.0 (\\i0 -> i1 (\\i0 -> addInteger i1 1) (\\i0 -> subtractInteger i1 1)))"
-    , testCase "pfix" $ (printTerm pfix) @?= "(program 1.0.0 ((\\i0 -> i1) (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1)))))"
-    , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i1) (i1 (\\i0 -> \\i0 -> force (i4 (equalsInteger i1 0) (delay 0) (i4 (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2))))))))) (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1)))) (force ifThenElse)))"
+    , testCase "pfix" $ (printTerm pfix) @?= "(program 1.0.0 (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))))"
+    , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> force (i3 (equalsInteger i1 0) (delay 0) (i3 (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2)))))))) (force ifThenElse)))"
     , testCase "fib 9 == 34" $ equal (fib # 9) (34 :: Term s PInteger)
     , testCase "uglyDouble" $ (printTerm uglyDouble) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
     , testCase "1 + 2 == 3" $ equal (1 + 2 :: Term s PInteger) (3 :: Term s PInteger)
@@ -186,7 +193,7 @@ plutarchTests =
             f = pmatch d' $ \case
               PMinting c -> popaque c
               _ -> perror
-         in printTerm f @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> force (i4 (equalsInteger 0 i2) (delay i1) (delay error))) (i4 i2)) (i4 i1)) (unConstrData #d8799f58201111111111111111111111111111111111111111111111111111111111111111ff)) (force ifThenElse)) (force (force sndPair))) (force (force fstPair))))"
+         in printTerm f @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> force (force ifThenElse (equalsInteger 0 i2) (delay i1) (delay error))) (force (force sndPair) i2)) (force (force fstPair) i1)) (unConstrData #d8799f58201111111111111111111111111111111111111111111111111111111111111111ff)))"
     , testCase "error # 1 => error" $
         printTerm (perror # (1 :: Term s PInteger)) @?= "(program 1.0.0 error)"
     , testCase "fib error => error" $
@@ -201,6 +208,7 @@ plutarchTests =
         printTerm ((phoistAcyclic $ plam $ \x -> x) # (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
     , testCase "hoist fstPair => fstPair" $
         printTerm (phoistAcyclic (punsafeBuiltin PLC.FstPair)) @?= "(program 1.0.0 fstPair)"
+    , testCase "throws: hoist error" $ throws $ phoistAcyclic perror
     ]
 
 uplcTests :: TestTree

@@ -5,11 +5,13 @@ import Crypto.Hash.Algorithms (Blake2b_160)
 import Crypto.Hash.IO (HashAlgorithm)
 import qualified Data.ByteString as BS
 import Data.Kind (Type)
-import Data.List (foldl')
+import Data.List (foldl', groupBy, sortOn)
 import qualified Data.Map.Lazy as M
-import Data.Maybe (fromJust)
+import qualified Data.Set as S
 import qualified Flat.Run as F
+import GHC.Stack (HasCallStack)
 import Numeric.Natural (Natural)
+import Plutarch.Evaluate (evaluateScript)
 import Plutus.V1.Ledger.Scripts (Script (Script))
 import PlutusCore (Some, ValueOf)
 import qualified PlutusCore as PLC
@@ -126,16 +128,21 @@ punsafeBuiltin f = Term $ \_ -> (RBuiltin f, [])
 punsafeConstant :: Some (ValueOf PLC.DefaultUni) -> Term s a
 punsafeConstant c = Term $ \_ -> (RConstant c, [])
 
+asClosedRawTerm :: ClosedTerm a -> (RawTerm, [HoistedTerm])
+asClosedRawTerm = flip asRawTerm 0
+
 -- FIXME: Give proper error message when mutually recursive.
-phoistAcyclic :: ClosedTerm a -> Term s a
+phoistAcyclic :: HasCallStack => ClosedTerm a -> Term s a
 phoistAcyclic t = Term $ \_ -> case asRawTerm t 0 of
   -- FIXME: is this worth it?
   t'@(RBuiltin _, _) -> t'
-  (t', deps) ->
-    let hoisted = HoistedTerm (hashRawTerm t') t'
-     in (RHoisted hoisted, hoisted : deps)
+  (t', deps) -> case evaluateScript . Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' (t', deps)) of
+    Right _ ->
+      let hoisted = HoistedTerm (hashRawTerm t') t'
+       in (RHoisted hoisted, hoisted : deps)
+    Left e -> error $ "Hoisted term errs! " <> show e
 
-rawTermToUPLC :: (HoistedTerm -> Natural) -> Natural -> RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+rawTermToUPLC :: (HoistedTerm -> Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) -> Natural -> RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i + 1) -- Why the fuck does it start from 1 and not 0?
 rawTermToUPLC m l (RLamAbs t) = UPLC.LamAbs () (DeBruijn . Index $ 0) (rawTermToUPLC m (l + 1) t)
 rawTermToUPLC m l (RApply x y) = UPLC.Apply () (rawTermToUPLC m l x) (rawTermToUPLC m l y)
@@ -144,13 +151,12 @@ rawTermToUPLC m l (RForce t) = UPLC.Force () (rawTermToUPLC m l t)
 rawTermToUPLC _ _ (RBuiltin f) = UPLC.Builtin () f
 rawTermToUPLC _ _ (RConstant c) = UPLC.Constant () c
 rawTermToUPLC _ _ RError = UPLC.Error ()
-rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted
+--rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted
+rawTermToUPLC m l (RHoisted hoisted) = m hoisted l -- UPLC.Var () . DeBruijn . Index $ l - m hoisted
 
-compile' :: ClosedTerm a -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
-compile' t =
-  let (t', deps) = asRawTerm t 0
-
-      f :: Natural -> Maybe Natural -> (Bool, Maybe Natural)
+compile' :: (RawTerm, [HoistedTerm]) -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+compile' (t', deps) =
+  let f :: Natural -> Maybe Natural -> (Bool, Maybe Natural)
       f n Nothing = (True, Just n)
       f _ (Just n) = (False, Just n)
 
@@ -159,12 +165,17 @@ compile' t =
         (True, map) -> (map, (n, term) : defs, n + 1)
         (False, map) -> (map, defs, n)
 
+      toInline :: S.Set Dig
+      toInline = S.fromList . fmap (\(HoistedTerm hash _) -> hash) . (head <$>) . filter ((== 1) . length) . groupBy (\(HoistedTerm x _) (HoistedTerm y _) -> x == y) . sortOn (\(HoistedTerm hash _) -> hash) $ deps
+
       -- map: term -> de Bruijn level
       -- defs: the terms, level 0 is last
       -- n: # of terms
-      (map, defs, n) = foldr g (M.empty, [], 0) deps
+      (map, defs, n) = foldr g (M.empty, [], 0) $ filter (\(HoistedTerm hash _) -> not $ S.member hash toInline) deps
 
-      map' = fromJust . flip M.lookup map . (\(HoistedTerm hash _) -> hash)
+      map' (HoistedTerm hash term) l = case M.lookup hash map of
+        Just l' -> UPLC.Var () . DeBruijn . Index $ l - l'
+        Nothing -> rawTermToUPLC map' l term
 
       body = rawTermToUPLC map' n t'
 
@@ -172,7 +183,7 @@ compile' t =
    in wrapped
 
 compile :: ClosedTerm a -> Script
-compile t = Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' t)
+compile t = Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' $ asClosedRawTerm $ t)
 
 newtype TermCont s a = TermCont {runTermCont :: forall b. (a -> Term s b) -> Term s b}
 
