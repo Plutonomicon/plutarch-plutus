@@ -98,14 +98,16 @@ papp x y = Term $ \i -> case (asRawTerm x i, asRawTerm y i) of
   ((x', deps), (y', deps')) -> (RApply x' y', deps ++ deps')
 
 pdelay :: Term s a -> Term s (PDelayed a)
-pdelay x = Term $ \i ->
-  let (x', deps) = asRawTerm x i
-   in (RDelay x', deps)
+pdelay x = Term $ \i -> case asRawTerm x i of
+  -- A delay cancels a force
+  (RForce x', deps) -> (x', deps)
+  (x', deps) -> (RDelay x', deps)
 
 pforce :: Term s (PDelayed a) -> Term s a
-pforce x = Term $ \i ->
-  let (x', deps) = asRawTerm x i
-   in (RForce x', deps)
+pforce x = Term $ \i -> case asRawTerm x i of
+  -- A force cancels a delay
+  (RDelay x', deps) -> (x', deps)
+  (x', deps) -> (RForce x', deps)
 
 perror :: Term s a
 perror = Term $ \_ -> (RError, [])
