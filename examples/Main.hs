@@ -5,6 +5,7 @@ module Main (main) where
 import Test.Tasty
 import Test.Tasty.HUnit
 
+import Control.Exception (SomeException, try)
 import qualified Data.Aeson as Aeson
 import Data.Maybe (fromJust)
 import Plutarch (ClosedTerm, POpaque, compile, popaque, printScript, printTerm, punsafeBuiltin, punsafeCoerce, punsafeConstant)
@@ -81,6 +82,12 @@ fails x =
 
 expect :: HasCallStack => ClosedTerm PBool -> Assertion
 expect = equal (pcon PTrue :: Term s PBool)
+
+throws :: ClosedTerm a -> Assertion
+throws x =
+  try @SomeException (putStrLn $ printScript $ compile x) >>= \case
+    Right _ -> assertFailure "Supposed to throw"
+    Left _ -> pure ()
 
 -- FIXME: Make the below impossible using run-time checks.
 -- loop :: Term (PInteger :--> PInteger)
@@ -159,6 +166,7 @@ plutarchTests =
         printTerm ((phoistAcyclic $ plam $ \x -> x) # (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
     , testCase "hoist fstPair => fstPair" $
         printTerm (phoistAcyclic (punsafeBuiltin PLC.FstPair)) @?= "(program 1.0.0 fstPair)"
+    , testCase "throws: hoist error" $ throws $ phoistAcyclic perror
     ]
 
 uplcTests :: TestTree
