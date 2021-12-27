@@ -181,7 +181,7 @@ instance Monad (TermCont s) where
   (TermCont f) >>= g = TermCont $ \h ->
     f
       ( \x ->
-          runTermCont (g x) $ \y -> h y
+          runTermCont (g x) h
       )
 
 hashTerm :: ClosedTerm a -> Dig
