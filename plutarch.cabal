@@ -87,6 +87,7 @@ library
     Plutarch.Evaluate
     Plutarch.Maybe
     Plutarch.Unit
+    Plutarch.Crypto
   build-depends:
     , base
     , plutus-core
@@ -108,6 +109,7 @@ test-suite examples
   other-modules:
   build-depends:
     , base
+    , bytestring
     , plutarch
     , tasty
     , tasty-hunit
