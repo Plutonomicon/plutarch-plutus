@@ -2,10 +2,10 @@ module Plutarch.ByteString (
   PByteString,
   phexByteStr,
   pbyteStr,
-  pcons,
-  pslice,
-  plength,
-  pindex,
+  pconsBS,
+  psliceBS,
+  plengthBS,
+  pindexBS,
 ) where
 
 import Data.ByteString (ByteString)
@@ -51,23 +51,23 @@ pbyteStr = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByteString
 -----------------------------------------------------------
 
 -- | Prepend a byte, represented by a non negative 'PInteger', to a 'PBytestring'.
-pcons :: Term s (PInteger :--> PByteString :--> PByteString)
-pcons = punsafeBuiltin PLC.ConsByteString
+pconsBS :: Term s (PInteger :--> PByteString :--> PByteString)
+pconsBS = punsafeBuiltin PLC.ConsByteString
 
 {- | Slice a 'PByteString' with given start and end indices.
 
 >>> (pslice # 1 # 3 phexByteStr "4102afde5b2a") #== phexByteStr "02afde"
 -}
-pslice :: Term s (PInteger :--> PInteger :--> PByteString :--> PByteString)
-pslice = punsafeBuiltin PLC.SliceByteString
+psliceBS :: Term s (PInteger :--> PInteger :--> PByteString :--> PByteString)
+psliceBS = punsafeBuiltin PLC.SliceByteString
 
 -- | Find the length of a 'PByteString'.
-plength :: Term s (PByteString :--> PInteger)
-plength = punsafeBuiltin PLC.LengthOfByteString
+plengthBS :: Term s (PByteString :--> PInteger)
+plengthBS = punsafeBuiltin PLC.LengthOfByteString
 
 -- | 'PByteString' indexing function.
-pindex :: Term s (PByteString :--> PInteger :--> PInteger)
-pindex = punsafeBuiltin PLC.IndexByteString
+pindexBS :: Term s (PByteString :--> PInteger :--> PInteger)
+pindexBS = punsafeBuiltin PLC.IndexByteString
 
 hexDigitToWord8 :: HasCallStack => Char -> Word8
 hexDigitToWord8 = f . toLower

@@ -11,8 +11,7 @@ import Data.Maybe (fromJust)
 import Plutarch (ClosedTerm, POpaque, compile, popaque, printScript, printTerm, punsafeBuiltin, punsafeCoerce, punsafeConstant)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
 import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdataLiteral)
-import Plutarch.ByteString (pbyteStr, phexByteStr)
-import qualified Plutarch.ByteString as PBS
+import Plutarch.ByteString (pbyteStr, phexByteStr, psliceBS, pindexBS, plengthBS, pconsBS)
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Integer (PInteger)
@@ -141,17 +140,17 @@ plutarchTests =
     , testCase "PByteString mempty" $ expect $ mempty #== phexByteStr ""
     , testCase "pconsByteStr" $
         let xs = "5B1F"; b = "41"
-         in (PBS.pcons # fromInteger (readByte b) # phexByteStr xs) `equal` phexByteStr (b <> xs)
+         in (pconsBS # fromInteger (readByte b) # phexByteStr xs) `equal` phexByteStr (b <> xs)
     , testCase "plengthByteStr" $ do
-        (PBS.plength # phexByteStr "012f") `equal` (2 :: Term s PInteger)
-        expect $ (PBS.plength # phexByteStr "012f") #== 2
+        (plengthBS # phexByteStr "012f") `equal` (2 :: Term s PInteger)
+        expect $ (plengthBS # phexByteStr "012f") #== 2
         let xs = phexByteStr "48fCd1"
-        (PBS.plength #$ PBS.pcons # 91 # xs)
-          `equal` (1 + PBS.plength # xs)
+        (plengthBS #$ pconsBS # 91 # xs)
+          `equal` (1 + plengthBS # xs)
     , testCase "pindexByteStr" $
-        (PBS.pindex # phexByteStr "4102af" # 1) `equal` (0x02 :: Term s PInteger)
+        (pindexBS # phexByteStr "4102af" # 1) `equal` (0x02 :: Term s PInteger)
     , testCase "psliceByteStr" $
-        (PBS.pslice # 1 # 3 # phexByteStr "4102afde5b2a") `equal` phexByteStr "02afde"
+        (psliceBS # 1 # 3 # phexByteStr "4102afde5b2a") `equal` phexByteStr "02afde"
     , testCase "pbyteStr - phexByteStr relation" $ do
         let a = ["42", "ab", "df", "c9"]
         pbyteStr (BS.pack $ map readByte a) `equal` phexByteStr (concat a)
