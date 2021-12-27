@@ -164,3 +164,10 @@ compile' t =
 
 compile :: ClosedTerm a -> Script
 compile t = Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' t)
+
+{-
+isEqual :: Term s a -> Term s b -> (Bool -> Term s c) -> Term s c
+isEqual x y f = Term $ \i ->
+  let inner = f $ (hashTerm . fst $ asRawTerm x i) == (hashTerm . fst $ asRawTerm x i) in
+  asRawTerm inner i
+-}

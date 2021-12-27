@@ -5,17 +5,21 @@ module Main (main) where
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import Plutarch (ClosedTerm, POpaque, compile, printScript, printTerm, punsafeBuiltin, punsafeConstant)
+import qualified Data.Aeson as Aeson
+import Data.Maybe (fromJust)
+import Plutarch (ClosedTerm, POpaque, compile, printScript, printTerm, punsafeBuiltin, punsafeCoerce, punsafeConstant)
 import Plutarch.Bool (PBool (PTrue), pif, (#==))
-import Plutarch.Builtin (PBuiltinList, PBuiltinPair)
+import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdataLiteral)
 import Plutarch.ByteString (phexByteStr)
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Integer (PInteger)
+import Plutarch.ScriptContext (PScriptPurpose)
 import Plutarch.String (PString, pfromText)
 import Plutarch.Unit (PUnit (..))
-
--- FIXME:remove
+import Plutus.V1.Ledger.Value (CurrencySymbol (CurrencySymbol))
+import Plutus.V2.Ledger.Contexts (ScriptPurpose (Minting))
+import PlutusTx.IsData.Class (toData)
 import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import qualified PlutusCore as PLC
@@ -125,6 +129,21 @@ plutarchTests =
     , testCase "PByteString mempty" $ expect $ mempty #== phexByteStr ""
     , testCase "PString mempty" $ expect $ mempty #== ("" :: Term s PString)
     , testCase "pfromText \"abc\" `equal` \"abc\"" $ equal (pfromText "abc") ("abc" :: Term s PString)
+    , testCase "ScriptPurpose literal" $
+        let d :: ScriptPurpose
+            d = Minting dummyCurrency
+            f :: Term s PData
+            f = pdataLiteral $ toData d
+         in printTerm f @?= "(program 1.0.0 #d8799f58201111111111111111111111111111111111111111111111111111111111111111ff)"
+    , testCase "decode ScriptPurpose" $
+        let d :: ScriptPurpose
+            d = Minting dummyCurrency
+            d' :: Term s PScriptPurpose
+            d' = punsafeCoerce $ pdataLiteral $ toData d
+            f :: Term s POpaque
+            f = pmatch d' $ \case
+              _ -> perror
+         in printTerm f @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> force (i2 (equalsInteger 0 (i3 i1)) (delay error) (delay (force (i2 (equalsInteger 1 (i3 i1)) (delay error) (delay (force (i2 (equalsInteger 2 (i3 i1)) (delay error) (delay error))))))))) (unConstrData #d8799f58201111111111111111111111111111111111111111111111111111111111111111ff)) (force ifThenElse)) (force (force fstPair))))"
     ]
 
 uplcTests :: TestTree
@@ -167,3 +186,8 @@ uplcTests =
               (punsafeBuiltin PLC.MkPairData) # (1 :: Term _ PInteger) # (2 :: Term _ PInteger)
          in fails p
     ]
+
+dummyCurrency :: CurrencySymbol
+dummyCurrency =
+  CurrencySymbol . fromJust . Aeson.decode $
+    "\"1111111111111111111111111111111111111111111111111111111111111111\""

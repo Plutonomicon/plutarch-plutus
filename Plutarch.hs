@@ -24,8 +24,8 @@ module Plutarch (
   (#$),
   (#),
   pinl,
-  pcon,
-  pmatch,
+  PCon (..),
+  PMatch (..),
   punsafeFrom,
   pto,
   pfix,
@@ -88,18 +88,24 @@ instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ T
 pinl :: Term s a -> (Term s a -> Term s b) -> Term s b
 pinl v f = f v
 
-class PlutusType (a :: k -> Type) where
+class (PCon a, PMatch a) => PlutusType (a :: k -> Type) where
   -- `b' :: k'` causes GHC to fail type checking at various places
   -- due to not being able to expand the type family.
   type PInner a (b' :: k -> Type) :: k -> Type
   pcon' :: forall s. a s -> forall b. Term s (PInner a b)
   pmatch' :: forall s c. (forall b. Term s (PInner a b)) -> (a s -> Term s c) -> Term s c
 
-pcon :: PlutusType a => a s -> Term s a
-pcon = punsafeCoerce . pcon'
+instance {-# OVERLAPPABLE #-} PlutusType a => PMatch a where
+  pmatch x f = pmatch' (punsafeCoerce x) f
 
-pmatch :: PlutusType a => Term s a -> (a s -> Term s b) -> Term s b
-pmatch x f = pmatch' (punsafeCoerce x) f
+instance PlutusType a => PCon a where
+  pcon = punsafeCoerce . pcon'
+
+class PCon a where
+  pcon :: a s -> Term s a
+
+class PMatch a where
+  pmatch :: Term s a -> (a s -> Term s b) -> Term s b
 
 punsafeFrom :: (forall b. Term s (PInner a b)) -> Term s a
 punsafeFrom = punsafeCoerce
