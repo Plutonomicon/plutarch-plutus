@@ -5,14 +5,14 @@ module Plutarch.DataRepr (PDataRepr, SNat (..), punDataRepr, pindexDataRepr, pma
 import Data.List (groupBy, maximumBy, sortOn)
 import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoerce, runTermCont)
 import Plutarch.Bool (pif, (#==))
-import Plutarch.Builtin (PBuiltinList, PData, PIsData, pasConstr, pdata, pfromData, pfstBuiltin, psndBuiltin)
+import Plutarch.Builtin (PAsData, PBuiltinList, PData, PIsData, pasConstr, pdata, pfromData, pfstBuiltin, psndBuiltin)
 import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
 data PDataList (as :: [k -> Type]) (s :: k)
 
-pdhead :: Term s (PDataList (a : as) :--> a)
+pdhead :: Term s (PDataList (a : as) :--> PAsData a)
 pdhead = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList
 
 pdtail :: Term s (PDataList (a : as) :--> PDataList as)
