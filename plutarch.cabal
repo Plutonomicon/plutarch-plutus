@@ -67,6 +67,7 @@ common c
     -Wall -Wcompat -Wincomplete-uni-patterns -Wno-partial-type-signatures
     -Wmissing-export-lists -Werror -Wincomplete-record-updates
     -Wmissing-deriving-strategies -Wno-name-shadowing
+    -Wwarn
 
 library
   import: c

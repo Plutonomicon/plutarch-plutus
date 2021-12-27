@@ -1,5 +1,7 @@
 {-# LANGUAGE DerivingVia #-}
 
+-- Must correspond to V1 of Plutus.
+-- See https://staging.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Api.html
 module Plutarch.ScriptContext (PScriptContext (..), PScriptPurpose (..), PTxInfo (..)) where
 
 import Plutarch (PMatch, POpaque)
@@ -26,7 +28,6 @@ data PTxInfo s
                , POpaque -- withdrawals
                , POpaque -- range
                , PBuiltinList POpaque -- signatures
-               , POpaque -- redeemers
                , POpaque -- data map
                , POpaque -- tx id
                ]
@@ -44,7 +45,7 @@ instance PIsDataRepr PScriptPurpose where
   type PIsDataReprRepr PScriptPurpose = '[ '[POpaque], '[POpaque], '[POpaque], '[POpaque]]
   pmatchRepr dat f =
     pmatchDataRepr dat $
-      DRHCons (f . PMinting) $ DRHCons (f . PSpending) $ DRHCons (f . PRewarding) $ DRHCons (f . PCertifying) $ DRHNil
+      DRHCons (f . PMinting) $ DRHCons (f . PSpending) $ DRHCons (f . PRewarding) $ DRHCons (f . PCertifying) DRHNil
 
 data PScriptContext s = PScriptContext (Term s (PDataList '[PTxInfo, PScriptPurpose]))
   deriving (PMatch, PIsData) via (PIsDataReprInstances PScriptContext)

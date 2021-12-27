@@ -7,22 +7,22 @@ import Test.Tasty.HUnit
 
 import qualified Data.Aeson as Aeson
 import Data.Maybe (fromJust)
-import Plutarch (ClosedTerm, POpaque, compile, printScript, printTerm, punsafeBuiltin, punsafeCoerce, punsafeConstant)
+import Plutarch (ClosedTerm, POpaque, compile, popaque, printScript, printTerm, punsafeBuiltin, punsafeCoerce, punsafeConstant)
 import Plutarch.Bool (PBool (PTrue), pif, (#==))
 import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdataLiteral)
 import Plutarch.ByteString (phexByteStr)
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Integer (PInteger)
-import Plutarch.ScriptContext (PScriptPurpose)
+import Plutarch.Prelude
+import Plutarch.ScriptContext (PScriptPurpose (PMinting))
 import Plutarch.String (PString, pfromText)
 import Plutarch.Unit (PUnit (..))
+import qualified Plutus.V1.Ledger.Scripts as Scripts
 import Plutus.V1.Ledger.Value (CurrencySymbol (CurrencySymbol))
 import Plutus.V2.Ledger.Contexts (ScriptPurpose (Minting))
-import PlutusTx.IsData.Class (toData)
-import Plutarch.Prelude
-import qualified Plutus.V1.Ledger.Scripts as Scripts
 import qualified PlutusCore as PLC
+import PlutusTx.IsData.Class (toData)
 
 main :: IO ()
 main = defaultMain tests
@@ -142,8 +142,9 @@ plutarchTests =
             d' = punsafeCoerce $ pdataLiteral $ toData d
             f :: Term s POpaque
             f = pmatch d' $ \case
+              PMinting c -> popaque c
               _ -> perror
-         in printTerm f @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> force (i2 (equalsInteger 0 (i3 i1)) (delay error) (delay (force (i2 (equalsInteger 1 (i3 i1)) (delay error) (delay (force (i2 (equalsInteger 2 (i3 i1)) (delay error) (delay error))))))))) (unConstrData #d8799f58201111111111111111111111111111111111111111111111111111111111111111ff)) (force ifThenElse)) (force (force fstPair))))"
+         in printTerm f @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> force (i4 (equalsInteger 0 i2) (delay i1) (delay error))) (i4 i2)) (i4 i1)) (unConstrData #d8799f58201111111111111111111111111111111111111111111111111111111111111111ff)) (force ifThenElse)) (force (force sndPair))) (force (force fstPair))))"
     ]
 
 uplcTests :: TestTree
