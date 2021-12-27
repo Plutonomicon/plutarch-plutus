@@ -98,7 +98,8 @@ papp x y = Term $ \i -> case (asRawTerm x i, asRawTerm y i) of
   -- Applying an error to anything is an error.
   (_, (RError, _)) -> (RError, [])
   -- Applying to `id` changes nothing.
-  ((RLamAbs (RVar 0), _), rhs) -> rhs
+  ((RLamAbs (RVar 0), _), y') -> y'
+  ((RHoisted (HoistedTerm _ (RLamAbs (RVar 0))), _), y') -> y'
   ((x', deps), (y', deps')) -> (RApply x' y', deps ++ deps')
 
 pdelay :: Term s a -> Term s (PDelayed a)
