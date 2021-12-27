@@ -92,20 +92,27 @@ plet v f = Term $ \i -> case asRawTerm v i of
   _ -> asRawTerm (papp (plam' f) v) i
 
 papp :: Term s (a :--> b) -> Term s a -> Term s b
-papp x y = Term $ \i ->
-  let (x', deps) = asRawTerm x i
-   in let (y', deps') = asRawTerm y i
-       in (RApply x' y', deps ++ deps')
+papp x y = Term $ \i -> case (asRawTerm x i, asRawTerm y i) of
+  -- Applying anything to an error is an error.
+  ((RError, _), _) -> (RError, [])
+  -- Applying an error to anything is an error.
+  (_, (RError, _)) -> (RError, [])
+  -- Applying to `id` changes nothing.
+  ((RLamAbs (RVar 0), _), y') -> y'
+  ((RHoisted (HoistedTerm _ (RLamAbs (RVar 0))), _), y') -> y'
+  ((x', deps), (y', deps')) -> (RApply x' y', deps ++ deps')
 
 pdelay :: Term s a -> Term s (PDelayed a)
-pdelay x = Term $ \i ->
-  let (x', deps) = asRawTerm x i
-   in (RDelay x', deps)
+pdelay x = Term $ \i -> case asRawTerm x i of
+  -- A delay cancels a force
+  (RForce x', deps) -> (x', deps)
+  (x', deps) -> (RDelay x', deps)
 
 pforce :: Term s (PDelayed a) -> Term s a
-pforce x = Term $ \i ->
-  let (x', deps) = asRawTerm x i
-   in (RForce x', deps)
+pforce x = Term $ \i -> case asRawTerm x i of
+  -- A force cancels a delay
+  (RDelay x', deps) -> (x', deps)
+  (x', deps) -> (RForce x', deps)
 
 perror :: Term s a
 perror = Term $ \_ -> (RError, [])
@@ -121,10 +128,12 @@ punsafeConstant c = Term $ \_ -> (RConstant c, [])
 
 -- FIXME: Give proper error message when mutually recursive.
 phoistAcyclic :: ClosedTerm a -> Term s a
-phoistAcyclic t = Term $ \_ ->
-  let (t', deps) = asRawTerm t 0
-   in let t'' = HoistedTerm (hashRawTerm t') t'
-       in (RHoisted t'', t'' : deps)
+phoistAcyclic t = Term $ \_ -> case asRawTerm t 0 of
+  -- FIXME: is this worth it?
+  t'@(RBuiltin _, _) -> t'
+  (t', deps) ->
+    let hoisted = HoistedTerm (hashRawTerm t') t'
+     in (RHoisted hoisted, hoisted : deps)
 
 rawTermToUPLC :: (HoistedTerm -> Natural) -> Natural -> RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i + 1) -- Why the fuck does it start from 1 and not 0?

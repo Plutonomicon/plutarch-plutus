@@ -83,7 +83,7 @@ instance PIsData PData where
   pfromData = punsafeCoerce
   pdata = punsafeCoerce
 
-instance PIsData a => PIsData (PBuiltinList a) where
+instance PIsData a => PIsData (PBuiltinList (PAsData a)) where
   pfromData x = punsafeCoerce $ pasList # pforgetData x
   pdata x = punsafeBuiltin PLC.ListData # x
 
