@@ -92,10 +92,10 @@ plet v f = Term $ \i -> case asRawTerm v i of
   _ -> asRawTerm (papp (plam' f) v) i
 
 papp :: Term s (a :--> b) -> Term s a -> Term s b
-papp x y = Term $ \i ->
-  let (x', deps) = asRawTerm x i
-   in let (y', deps') = asRawTerm y i
-       in (RApply x' y', deps ++ deps')
+papp x y = Term $ \i -> case (asRawTerm x i, asRawTerm y i) of
+  ((RError, _), _) -> (RError, [])
+  (_, (RError, _)) -> (RError, [])
+  ((x', deps), (y', deps')) -> (RApply x' y', deps ++ deps')
 
 pdelay :: Term s a -> Term s (PDelayed a)
 pdelay x = Term $ \i ->

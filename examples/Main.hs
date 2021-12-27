@@ -145,6 +145,10 @@ plutarchTests =
               PMinting c -> popaque c
               _ -> perror
          in printTerm f @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> force (i4 (equalsInteger 0 i2) (delay i1) (delay error))) (i4 i2)) (i4 i1)) (unConstrData #d8799f58201111111111111111111111111111111111111111111111111111111111111111ff)) (force ifThenElse)) (force (force sndPair))) (force (force fstPair))))"
+    , testCase "error # 1 => error" $
+        printTerm (perror # (1 :: Term s PInteger)) @?= "(program 1.0.0 error)"
+    , testCase "fib error => error" $
+        printTerm (fib # perror) @?= "(program 1.0.0 error)"
     ]
 
 uplcTests :: TestTree
