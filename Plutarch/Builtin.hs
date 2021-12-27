@@ -97,4 +97,4 @@ instance PIsData PByteString where
 
 instance PIsData (PBuiltinPair PInteger (PBuiltinList PData)) where
   pfromData x = pasConstr # pforgetData x
-  pdata x = punsafeBuiltin PLC.ConstrData # x
+  pdata x = punsafeBuiltin PLC.ConstrData # (pfstBuiltin # x) #$ psndBuiltin # x
