@@ -93,8 +93,12 @@ plet v f = Term $ \i -> case asRawTerm v i of
 
 papp :: Term s (a :--> b) -> Term s a -> Term s b
 papp x y = Term $ \i -> case (asRawTerm x i, asRawTerm y i) of
+  -- Applying anything to an error is an error.
   ((RError, _), _) -> (RError, [])
+  -- Applying an error to anything is an error.
   (_, (RError, _)) -> (RError, [])
+  -- Applying to `id` changes nothing.
+  ((RLamAbs (RVar 0), _), rhs) -> rhs
   ((x', deps), (y', deps')) -> (RApply x' y', deps ++ deps')
 
 pdelay :: Term s a -> Term s (PDelayed a)

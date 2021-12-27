@@ -153,6 +153,8 @@ plutarchTests =
         printTerm (pforce . pdelay $ (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
     , testCase "delay (force (delay 0)) => delay 0" $
         printTerm (pdelay . pforce . pdelay $ (0 :: Term s PInteger)) @?= "(program 1.0.0 (delay 0))"
+    , testCase "id # 0 => 0" $
+        printTerm ((plam $ \x -> x) # (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
     ]
 
 uplcTests :: TestTree
