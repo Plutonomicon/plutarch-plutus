@@ -11,7 +11,7 @@ import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
 import Plutarch (ClosedTerm, POpaque, compile, popaque, printScript, printTerm, punsafeBuiltin, punsafeCoerce, punsafeConstant)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
-import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdataLiteral)
+import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdata, pdataLiteral)
 import Plutarch.ByteString (pbyteStr, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Evaluate (evaluateScript)
@@ -24,6 +24,7 @@ import qualified Plutus.V1.Ledger.Scripts as Scripts
 import Plutus.V1.Ledger.Value (CurrencySymbol (CurrencySymbol))
 import Plutus.V2.Ledger.Contexts (ScriptPurpose (Minting))
 import qualified PlutusCore as PLC
+import qualified PlutusTx
 import PlutusTx.IsData.Class (toData)
 
 main :: IO ()
@@ -209,6 +210,12 @@ plutarchTests =
     , testCase "hoist fstPair => fstPair" $
         printTerm (phoistAcyclic (punsafeBuiltin PLC.FstPair)) @?= "(program 1.0.0 fstPair)"
     , testCase "throws: hoist error" $ throws $ phoistAcyclic perror
+    , testCase "PData equality" $ do
+        expect $ let dat = pdataLiteral (PlutusTx.List [PlutusTx.Constr 1 [PlutusTx.I 0]]) in dat #== dat
+        expect $ pnot #$ pdataLiteral (PlutusTx.Constr 0 []) #== pdataLiteral (PlutusTx.I 42)
+    , testCase "PAsData equality" $ do
+        expect $ let dat = pdata @PInteger 42 in dat #== dat
+        expect $ pnot #$ pdata (phexByteStr "12") #== pdata (phexByteStr "ab")
     ]
 
 uplcTests :: TestTree
