@@ -106,6 +106,39 @@ executable foo-exe
   default-language: Haskell2010
 ```
 
+### Keep it generic
+If you're a library author, you may want to leave the instantiation to the user of your library. In this case, you should simply add `plutarch-tracing` as a dependency and use `Plutarch.Trace` in your code. Ignore other deps, ignore mixins.
+
+Library `.cabal` file-
+```cabal
+cabal-version: 3.0
+name: foo
+version: 1.0.0
+
+lib
+  hs-source-dirs:
+    src
+  exposed-modules:
+    Foo
+    Bar
+  build-depends:
+    base,
+    plutarch-trace
+  default-language: Haskell2010
+```
+
+You won't be able to load your project into the repl with this though. There is no interface file for the abstract `Plutarch.Trace` module. That will only exist after instantiation. See [Common Issues #2](#common-issues).
+
+Users of your must add your library in their `build-depends`, alongside `plutarch-trace:enable` or `plutarch-trace:disable` (or both), alongside the appropriate mixins-
+```cabal
+  mixins:
+    foo (Foo Bar) requires (Plutarch.TraceSig as Plutarch.Trace.Enable)
+```
+
+> Note that it's *the `foo` library* that is instantiated with the concrete implementation. Every dependency that uses a generic signature needs to be instantiated like this. If there are more dependencies that are generic (e.g a `plutarch-tracing` dependency), all of them need to be instantiated individually (unless you want generic use out of them and want to leave instantiating out to the next user above).
+
+`foo` is the package name that uses `plutarch-tracing` in a generic way. `(Foo, Bar)` is a comma separated list of all the modules that you want to make visible from `foo`.
+
 ## Contributing
 ### Learning Backpack
 * [really-small-backpack-example](https://github.com/danidiaz/really-small-backpack-example)
