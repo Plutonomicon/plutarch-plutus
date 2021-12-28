@@ -119,10 +119,7 @@ papp x y = Term $ \i -> case (asRawTerm x i, asRawTerm y i) of
   (x', y') -> mergeTerms RApply x' y'
 
 pdelay :: Term s a -> Term s (PDelayed a)
-pdelay x = Term $ \i -> case asRawTerm x i of
-  -- A delay cancels a force
-  t@(getTerm -> RForce t') -> t {getTerm = t'}
-  t -> mapTerm RDelay t
+pdelay x = Term $ \i -> mapTerm RDelay $ asRawTerm x i
 
 pforce :: Term s (PDelayed a) -> Term s a
 pforce x = Term $ \i -> case asRawTerm x i of
