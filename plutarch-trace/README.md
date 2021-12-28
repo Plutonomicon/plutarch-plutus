@@ -10,68 +10,68 @@ The next steps depend on whether or not you want tracing enabled.
 * Add `plutarch-trace:enable` to your `build-depends`.
 * Add a mixin similar to the following-
 
-  ```
+  ```cabal
   plutarch-trace (Plutarch.Trace) requires (Plutarch.TraceSig as Plutarch.Trace.Enable),
   ```
 
   This makes the `Plutarch.Trace` module available for you to access in your code - and it sets it up with the real tracing functions.
 
   You can rename the `Plutarch.Trace` module if you want, to something else-
-  ```
+  ```cabal
   plutarch-trace (Plutarch.Trace as FooBar) requires (Plutarch.TraceSig as Plutarch.Trace.Enable),
   ```
   This makes it so you import `Plutarch.Trace` as `FooBar`. This *will* hide the `Plutarch.Trace` module, meaning you can only import it as `FooBar`. Otherwise it's the exact same as just importing `Plutarch.Trace` without renaming.
 
 Example `.cabal` file-
-```hs
+```cabal
 cabal-version: 3.0
 name: foo
 version: 1.0.0
 
 executable foo-exe
-    main-is:
-        Main.hs
-    build-depends:
-        base,
-        plutarch-trace,
-        plutarch-trace:enable
-    mixins:
-        plutarch-trace (Plutarch.Trace) requires (Plutarch.TraceSig as Plutarch.Trace.Enable)
-    default-language: Haskell2010
+  main-is:
+    Main.hs
+  build-depends:
+    base,
+    plutarch-trace,
+    plutarch-trace:enable
+  mixins:
+    plutarch-trace (Plutarch.Trace) requires (Plutarch.TraceSig as Plutarch.Trace.Enable)
+  default-language: Haskell2010
 ```
 
 ### Disable Tracing
 * Add `plutarch-trace:disable` to your `build-depends`.
 * Add a mixin similar to the following-
 
-  ```
+  ```cabal
   plutarch-trace (Plutarch.Trace) requires (Plutarch.TraceSig as Plutarch.Trace.Disable),
   ```
 
   This makes the `Plutarch.Trace` module available for you to access in your code - and it sets it up with dummy functions that don't actually trace.
 
   You can rename the `Plutarch.Trace` module if you want, to something else-
-  ```
+  ```cabal
   plutarch-trace (Plutarch.Trace as FooBar) requires (Plutarch.TraceSig as Plutarch.Trace.Enable),
   ```
   This makes it so you import `Plutarch.Trace` as `FooBar`. This *will* hide the `Plutarch.Trace` module, meaning you can only import it as `FooBar`. Otherwise it's the exact same as just importing `Plutarch.Trace` without renaming.
 
 Example `.cabal` file-
-```hs
+```cabal
 cabal-version: 3.0
 name: foo
 version: 1.0.0
 
 executable foo-exe
-    main-is:
-        Main.hs
-    build-depends:
-        base,
-        plutarch-trace,
-        plutarch-trace:disable
-    mixins:
-        plutarch-trace (Plutarch.Trace as Plutarch.NoTrace) requires (Plutarch.TraceSig as Plutarch.Trace.Disable)
-    default-language: Haskell2010
+  main-is:
+    Main.hs
+  build-depends:
+    base,
+    plutarch-trace,
+    plutarch-trace:disable
+  mixins:
+    plutarch-trace (Plutarch.Trace as Plutarch.NoTrace) requires (Plutarch.TraceSig as Plutarch.Trace.Disable)
+  default-language: Haskell2010
 ```
 
 ### Both!
@@ -79,7 +79,7 @@ Yuo want both huh? Well you can do that too! You can import `Plutarch.Trace` wit
 * Add both `plutarch-trace:enable` and `plutarch-trace:disable` to your `build-depends`.
 * Add both mixins-
 
-  ```
+  ```cabal
   plutarch-trace (Plutarch.Trace) requires (Plutarch.TraceSig as Plutarch.Trace.Enable),
   plutarch-trace (Plutarch.Trace as Plutarch.NoTrace) requires (Plutarch.TraceSig as Plutarch.Trace.Disable)
   ```
@@ -87,23 +87,23 @@ Yuo want both huh? Well you can do that too! You can import `Plutarch.Trace` wit
   Here, we set the *tracing enabled* module as `Plutarch.Trace`, and rename the *tracing disabled* module as `Plutarch.NoTrace`. Of course, you need different names for them. So be sure to rename them using `as`.
 
 Example `.cabal` file-
-```hs
+```cabal
 cabal-version: 3.0
 name: foo
 version: 1.0.0
 
 executable foo-exe
-    main-is:
-        Main.hs
-    build-depends:
-        base,
-        plutarch-trace,
-        plutarch-trace:enable,
-        plutarch-trace:disable
-    mixins:
-        plutarch-trace (Plutarch.Trace) requires (Plutarch.TraceSig as Plutarch.Trace.Enable),
-        plutarch-trace (Plutarch.Trace as Plutarch.NoTrace) requires (Plutarch.TraceSig as Plutarch.Trace.Disable)
-    default-language: Haskell2010
+  main-is:
+    Main.hs
+  build-depends:
+    base,
+    plutarch-trace,
+    plutarch-trace:enable,
+    plutarch-trace:disable
+  mixins:
+    plutarch-trace (Plutarch.Trace) requires (Plutarch.TraceSig as Plutarch.Trace.Enable),
+    plutarch-trace (Plutarch.Trace as Plutarch.NoTrace) requires (Plutarch.TraceSig as Plutarch.Trace.Disable)
+  default-language: Haskell2010
 ```
 
 ## Contributing
