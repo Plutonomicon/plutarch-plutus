@@ -1,9 +1,11 @@
-cabal-version:      2.4
-name:               plutarch-tracing-enabled
+cabal-version:      3.0
+name:               plutarch-trace
 version:            1.0.0
 
-author: Chase <chase@mlabs.city>
+author: Las Safin <me@las.rs>, Chase <chase@mlabs.city>
 license: MIT
+
+extra-source-files: README.md
 
 common c
   default-language: Haskell2010
@@ -68,9 +70,36 @@ common c
 
 library
   import: c
+  hs-source-dirs: src
+  signatures:
+    Plutarch.TraceSig
   exposed-modules:
-    Plutarch.EnableTrace
+    Plutarch.Trace
+  build-depends:
+    , base
+    , plutarch
+
+library enable
+  import: c
+  hs-source-dirs:
+    impl
+  visibility:
+    public
+  exposed-modules:
+    Plutarch.Trace.Enable
   build-depends:
     , base
     , plutarch
     , plutus-core
+
+library disable
+  import: c
+  hs-source-dirs:
+    impl
+  visibility:
+    public
+  exposed-modules:
+    Plutarch.Trace.Disable
+  build-depends:
+    , base
+    , plutarch

@@ -1,0 +1,116 @@
+# plutarch-trace
+
+## Usage
+You **need** `cabal-install >= 3.0` for this. Your package's cabal file **must** use a `cabal-version` of 3.0 or higher.
+
+* Add `plutarch-trace` to your `build-depends`.
+
+The next steps depend on whether or not you want tracing enabled.
+### Enable Tracing
+* Add `plutarch-trace:enable` to your `build-depends`.
+* Add a mixin similar to the following-
+
+  ```
+  plutarch-trace (Plutarch.Trace) requires (Plutarch.TraceSig as Plutarch.Trace.Enable),
+  ```
+
+  This makes the `Plutarch.Trace` module available for you to access in your code - and it sets it up with the real tracing functions.
+
+  You can rename the `Plutarch.Trace` module if you want, to something else-
+  ```
+  plutarch-trace (Plutarch.Trace as FooBar) requires (Plutarch.TraceSig as Plutarch.Trace.Enable),
+  ```
+  This makes it so you import `Plutarch.Trace` as `FooBar`. This *will* hide the `Plutarch.Trace` module, meaning you can only import it as `FooBar`. Otherwise it's the exact same as just importing `Plutarch.Trace` without renaming.
+
+Example `.cabal` file-
+```hs
+cabal-version: 3.0
+name: foo
+version: 1.0.0
+
+executable foo-exe
+    main-is:
+        Main.hs
+    build-depends:
+        base,
+        plutarch-trace,
+        plutarch-trace:enable
+    mixins:
+        plutarch-trace (Plutarch.Trace) requires (Plutarch.TraceSig as Plutarch.Trace.Enable)
+    default-language: Haskell2010
+```
+
+### Disable Tracing
+* Add `plutarch-trace:disable` to your `build-depends`.
+* Add a mixin similar to the following-
+
+  ```
+  plutarch-trace (Plutarch.Trace) requires (Plutarch.TraceSig as Plutarch.Trace.Disable),
+  ```
+
+  This makes the `Plutarch.Trace` module available for you to access in your code - and it sets it up with dummy functions that don't actually trace.
+
+  You can rename the `Plutarch.Trace` module if you want, to something else-
+  ```
+  plutarch-trace (Plutarch.Trace as FooBar) requires (Plutarch.TraceSig as Plutarch.Trace.Enable),
+  ```
+  This makes it so you import `Plutarch.Trace` as `FooBar`. This *will* hide the `Plutarch.Trace` module, meaning you can only import it as `FooBar`. Otherwise it's the exact same as just importing `Plutarch.Trace` without renaming.
+
+Example `.cabal` file-
+```hs
+cabal-version: 3.0
+name: foo
+version: 1.0.0
+
+executable foo-exe
+    main-is:
+        Main.hs
+    build-depends:
+        base,
+        plutarch-trace,
+        plutarch-trace:disable
+    mixins:
+        plutarch-trace (Plutarch.Trace as Plutarch.NoTrace) requires (Plutarch.TraceSig as Plutarch.Trace.Disable)
+    default-language: Haskell2010
+```
+
+### Both!
+Yuo want both huh? Well you can do that too! You can import `Plutarch.Trace` with two different setups and alias them to two different names.
+* Add both `plutarch-trace:enable` and `plutarch-trace:disable` to your `build-depends`.
+* Add both mixins-
+
+  ```
+  plutarch-trace (Plutarch.Trace) requires (Plutarch.TraceSig as Plutarch.Trace.Enable),
+  plutarch-trace (Plutarch.Trace as Plutarch.NoTrace) requires (Plutarch.TraceSig as Plutarch.Trace.Disable)
+  ```
+
+  Here, we set the *tracing enabled* module as `Plutarch.Trace`, and rename the *tracing disabled* module as `Plutarch.NoTrace`. Of course, you need different names for them. So be sure to rename them using `as`.
+
+Example `.cabal` file-
+```hs
+cabal-version: 3.0
+name: foo
+version: 1.0.0
+
+executable foo-exe
+    main-is:
+        Main.hs
+    build-depends:
+        base,
+        plutarch-trace,
+        plutarch-trace:enable,
+        plutarch-trace:disable
+    mixins:
+        plutarch-trace (Plutarch.Trace) requires (Plutarch.TraceSig as Plutarch.Trace.Enable),
+        plutarch-trace (Plutarch.Trace as Plutarch.NoTrace) requires (Plutarch.TraceSig as Plutarch.Trace.Disable)
+    default-language: Haskell2010
+```
+
+## Contributing
+### Learning Backpack
+* [really-small-backpack-example](https://github.com/danidiaz/really-small-backpack-example)
+* [backpack-str](https://github.com/haskell-backpack/backpack-str)
+
+### Common Issues
+* Changed a few module names/structures and getting an error like "The library package ... does not require ..." or "The library package ... does not expose ..."? If you're sure you put the stuff in `signatures` and `exposed-modules` correctly - just do a `cabal clean` and rebuild.
+* If GHCi reports that it cannot find interface files for the signatures when loading into `cabal repl` - it means whatever package you're loading into is using a generic signature and not instantiating it with any implementation. You cannot use the repl on these generic packages. You must instantiate it with a concrete impl in your `mixins`.

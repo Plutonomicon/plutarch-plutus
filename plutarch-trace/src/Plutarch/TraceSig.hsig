@@ -1,0 +1,18 @@
+signature Plutarch.TraceSig (ptrace', ptrace, ptraceIfTrue, ptraceIfFalse) where
+
+import Prelude ()
+import Plutarch.Prelude (Term, (:-->))
+import Plutarch.String (PString)
+import Plutarch.Bool (PBool)
+
+-- | A strict version of 'ptrace'.
+ptrace' :: Term s (PString :--> a :--> a)
+
+-- | Trace a message, then evaluate and return given argument.
+ptrace :: Term s PString -> Term s a -> Term s a
+
+-- | Trace a message if given argument evaluates to true.
+ptraceIfTrue :: Term s (PString :--> PBool :--> PBool)
+
+-- | Trace a message if given argument evaluates to false.
+ptraceIfFalse :: Term s (PString :--> PBool :--> PBool)

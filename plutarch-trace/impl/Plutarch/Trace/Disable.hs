@@ -1,22 +1,24 @@
-module Plutarch.EnableTrace (ptrace', ptrace, ptraceIfTrue, ptraceIfFalse) where
+module Plutarch.Trace.Disable (ptrace', ptrace, ptraceIfTrue, ptraceIfFalse) where
 
-import Plutarch
-import Plutarch.Bool (PBool, pif)
+import Plutarch.Prelude
+import Plutarch.Bool (PBool)
 import Plutarch.String (PString)
-import qualified PlutusCore as PLC
+
+pf :: Term s (b :--> a :--> a)
+pf = phoistAcyclic $ plam $ \_ y -> y
 
 -- | A strict version of 'ptrace'.
 ptrace' :: Term s (PString :--> a :--> a)
-ptrace' = phoistAcyclic $ pforce $ punsafeBuiltin PLC.Trace
+ptrace' = pf
 
 -- | Trace a message, then evaluate and return given argument.
 ptrace :: Term s PString -> Term s a -> Term s a
-ptrace s a = pforce $ ptrace' # s # pdelay a
+ptrace _ a = a
 
 -- | Trace a message if given argument evaluates to true.
 ptraceIfTrue :: Term s (PString :--> PBool :--> PBool)
-ptraceIfTrue = phoistAcyclic $ plam $ \s a -> pif a (ptrace' # s # a) a
+ptraceIfTrue = pf
 
 -- | Trace a message if given argument evaluates to false.
 ptraceIfFalse :: Term s (PString :--> PBool :--> PBool)
-ptraceIfFalse = phoistAcyclic $ plam $ \s a -> pif a a $ ptrace' # s # a
+ptraceIfFalse = pf
