@@ -1,7 +1,7 @@
 module Plutarch.Trace.Disable (ptrace', ptrace, ptraceIfTrue, ptraceIfFalse) where
 
-import Plutarch.Prelude
 import Plutarch.Bool (PBool)
+import Plutarch.Prelude
 import Plutarch.String (PString)
 
 pf :: Term s (b :--> a :--> a)
