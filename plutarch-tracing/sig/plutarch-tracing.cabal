@@ -68,7 +68,6 @@ common c
 
 library
   import: c
-  visibility: public
   signatures:
     Plutarch.Trace
   build-depends:

@@ -68,7 +68,6 @@ common c
 
 library
   import: c
-  visibility: public
   exposed-modules:
     Plutarch.EnableTrace
   build-depends:
