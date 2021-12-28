@@ -7,6 +7,11 @@ license: MIT
 
 extra-source-files: README.md
 
+flag development
+  description: Enable tracing functions within plutarch.
+  manual: True
+  default: True
+
 common c
   default-language: Haskell2010
   default-extensions:
@@ -88,6 +93,7 @@ library
     Plutarch.Maybe
     Plutarch.Unit
     Plutarch.Crypto
+    Plutarch.Trace
   build-depends:
     , base
     , plutus-core
@@ -100,6 +106,9 @@ library
     , plutus-tx
     , mtl
     , flat
+
+  if flag(development)
+    cpp-options: -DDevelopment
 
 test-suite examples
   import: c
