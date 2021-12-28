@@ -60,6 +60,20 @@ hashRawTerm' (RHoisted (HoistedTerm hash _)) = flip hashUpdate ("8" :: BS.ByteSt
 hashRawTerm :: RawTerm -> Dig
 hashRawTerm t = hashFinalize . hashRawTerm' t $ hashInit
 
+data TermResult = TermResult
+  { getTerm :: RawTerm
+  , getDeps :: [HoistedTerm]
+  }
+
+mapTerm :: (RawTerm -> RawTerm) -> TermResult -> TermResult
+mapTerm f (TermResult t d) = TermResult (f t) d
+
+mergeTerms :: (RawTerm -> RawTerm -> RawTerm) -> TermResult -> TermResult -> TermResult
+mergeTerms f x y = TermResult (f (getTerm x) (getTerm y)) (getDeps x <> getDeps y)
+
+mkNew :: RawTerm -> TermResult
+mkNew r = TermResult r []
+
 -- Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
 -- Thanks!
 -- NB: Hoisted terms must be sorted such that the dependents are first and dependencies last.
@@ -72,7 +86,7 @@ hashRawTerm t = hashFinalize . hashRawTerm' t $ hashInit
 -- `plam'`, given its own level, will create an `RVar` that figures out the
 -- de-Bruijn index needed to reach its own level given the level it itself is
 -- instantiated with.
-newtype Term (s :: k) (a :: k -> Type) = Term {asRawTerm :: Natural -> (RawTerm, [HoistedTerm])}
+newtype Term (s :: k) (a :: k -> Type) = Term {asRawTerm :: Natural -> TermResult}
 
 type ClosedTerm (a :: k -> Type) = forall (s :: k). Term s a
 
@@ -82,64 +96,64 @@ data PDelayed (a :: k -> Type) (s :: k)
 
 plam' :: (Term s a -> Term s b) -> Term s (a :--> b)
 plam' f = Term $ \i ->
-  let v = Term $ \j -> (RVar (j - (i + 1)), [])
-      (t, deps) = asRawTerm (f v) (i + 1)
-   in (RLamAbs $ t, deps)
+  let v = Term $ \j -> TermResult (RVar (j - (i + 1))) []
+      t = asRawTerm (f v) (i + 1)
+   in mapTerm RLamAbs t
 
 -- TODO: This implementation is ugly. Perhaps Term should be different?
 plet :: Term s a -> (Term s a -> Term s b) -> Term s b
 plet v f = Term $ \i -> case asRawTerm v i of
   -- Avoid double lets
-  (RVar _, _) -> asRawTerm (f v) i
+  (getTerm -> RVar _) -> asRawTerm (f v) i
   _ -> asRawTerm (papp (plam' f) v) i
 
 papp :: Term s (a :--> b) -> Term s a -> Term s b
 papp x y = Term $ \i -> case (asRawTerm x i, asRawTerm y i) of
   -- Applying anything to an error is an error.
-  ((RError, _), _) -> (RError, [])
+  (getTerm -> RError, _) -> mkNew RError
   -- Applying an error to anything is an error.
-  (_, (RError, _)) -> (RError, [])
+  (_, getTerm -> RError) -> mkNew RError
   -- Applying to `id` changes nothing.
-  ((RLamAbs (RVar 0), _), y') -> y'
-  ((RHoisted (HoistedTerm _ (RLamAbs (RVar 0))), _), y') -> y'
-  ((x', deps), (y', deps')) -> (RApply x' y', deps ++ deps')
+  (getTerm -> RLamAbs (RVar 0), y') -> y'
+  (getTerm -> RHoisted (HoistedTerm _ (RLamAbs (RVar 0))), y') -> y'
+  (x', y') -> mergeTerms RApply x' y'
 
 pdelay :: Term s a -> Term s (PDelayed a)
 pdelay x = Term $ \i -> case asRawTerm x i of
   -- A delay cancels a force
-  (RForce x', deps) -> (x', deps)
-  (x', deps) -> (RDelay x', deps)
+  t@(getTerm -> RForce t') -> t {getTerm = t'}
+  t -> mapTerm RDelay t
 
 pforce :: Term s (PDelayed a) -> Term s a
 pforce x = Term $ \i -> case asRawTerm x i of
   -- A force cancels a delay
-  (RDelay x', deps) -> (x', deps)
-  (x', deps) -> (RForce x', deps)
+  t@(getTerm -> RDelay t') -> t {getTerm = t'}
+  t -> mapTerm RForce t
 
 perror :: Term s a
-perror = Term $ \_ -> (RError, [])
+perror = Term $ \_ -> mkNew RError
 
 punsafeCoerce :: Term s a -> Term s b
 punsafeCoerce (Term x) = Term x
 
 punsafeBuiltin :: UPLC.DefaultFun -> Term s a
-punsafeBuiltin f = Term $ \_ -> (RBuiltin f, [])
+punsafeBuiltin f = Term $ \_ -> mkNew $ RBuiltin f
 
 punsafeConstant :: Some (ValueOf PLC.DefaultUni) -> Term s a
-punsafeConstant c = Term $ \_ -> (RConstant c, [])
+punsafeConstant c = Term $ \_ -> mkNew $ RConstant c
 
-asClosedRawTerm :: ClosedTerm a -> (RawTerm, [HoistedTerm])
+asClosedRawTerm :: ClosedTerm a -> TermResult
 asClosedRawTerm = flip asRawTerm 0
 
 -- FIXME: Give proper error message when mutually recursive.
 phoistAcyclic :: HasCallStack => ClosedTerm a -> Term s a
 phoistAcyclic t = Term $ \_ -> case asRawTerm t 0 of
   -- FIXME: is this worth it?
-  t'@(RBuiltin _, _) -> t'
-  (t', deps) -> case evaluateScript . Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' (t', deps)) of
+  t'@(getTerm -> RBuiltin _) -> t'
+  t' -> case evaluateScript . Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' t') of
     Right _ ->
-      let hoisted = HoistedTerm (hashRawTerm t') t'
-       in (RHoisted hoisted, hoisted : deps)
+      let hoisted = HoistedTerm (hashRawTerm . getTerm $ t') (getTerm t')
+       in TermResult (RHoisted hoisted) (hoisted : getDeps t')
     Left e -> error $ "Hoisted term errs! " <> show e
 
 rawTermToUPLC :: (HoistedTerm -> Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) -> Natural -> RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
@@ -154,9 +168,12 @@ rawTermToUPLC _ _ RError = UPLC.Error ()
 --rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted
 rawTermToUPLC m l (RHoisted hoisted) = m hoisted l -- UPLC.Var () . DeBruijn . Index $ l - m hoisted
 
-compile' :: (RawTerm, [HoistedTerm]) -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
-compile' (t', deps) =
-  let f :: Natural -> Maybe Natural -> (Bool, Maybe Natural)
+compile' :: TermResult -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+compile' t =
+  let t' = getTerm t
+      deps = getDeps t
+
+      f :: Natural -> Maybe Natural -> (Bool, Maybe Natural)
       f n Nothing = (True, Just n)
       f _ (Just n) = (False, Just n)
 
@@ -206,10 +223,10 @@ instance Monad (TermCont s) where
 
 hashTerm :: ClosedTerm a -> Dig
 hashTerm t =
-  let (t', _) = asRawTerm t 0
-   in hashRawTerm t'
+  let t' = asRawTerm t 0
+   in hashRawTerm . getTerm $ t'
 
 hashOpenTerm :: Term s a -> TermCont s Dig
 hashOpenTerm x = TermCont $ \f -> Term $ \i ->
-  let inner = f $ hashRawTerm . fst $ asRawTerm x i
+  let inner = f $ hashRawTerm . getTerm $ asRawTerm x i
    in asRawTerm inner i
