@@ -19,7 +19,7 @@ module Plutarch.Builtin (
 ) where
 
 import Plutarch (punsafeBuiltin, punsafeCoerce, punsafeConstant)
-import Plutarch.Bool (PBool)
+import Plutarch.Bool (PBool, PEq, (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
@@ -45,6 +45,9 @@ data PData s
   | PDataList (Term s (PBuiltinList PData))
   | PDataInteger (Term s PInteger)
   | PDataByteString (Term s PByteString)
+
+instance PEq PData where
+  x #== y = punsafeBuiltin PLC.EqualsData # x # y
 
 pfstBuiltin :: Term s (PBuiltinPair a b :--> a)
 pfstBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.FstPair
@@ -98,3 +101,6 @@ instance PIsData PByteString where
 instance PIsData (PBuiltinPair PInteger (PBuiltinList PData)) where
   pfromData x = pasConstr # pforgetData x
   pdata x' = plet x' $ \x -> punsafeBuiltin PLC.ConstrData # (pfstBuiltin # x) #$ psndBuiltin # x
+
+instance PEq (PAsData a) where
+  x #== y = punsafeBuiltin PLC.EqualsData # x # y
