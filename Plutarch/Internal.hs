@@ -37,8 +37,8 @@ data HoistedTerm = HoistedTerm Dig RawTerm
 
 data RawTerm
   = RVar Natural
-  | RLamAbs RawTerm
-  | RApply RawTerm RawTerm
+  | RLamAbs Natural RawTerm
+  | RApply RawTerm [RawTerm]
   | RForce RawTerm
   | RDelay RawTerm
   | RConstant (Some (ValueOf PLC.DefaultUni))
@@ -48,8 +48,8 @@ data RawTerm
 
 hashRawTerm' :: HashAlgorithm alg => RawTerm -> Context alg -> Context alg
 hashRawTerm' (RVar x) = flip hashUpdate ("0" :: BS.ByteString) . flip hashUpdate (F.flat (fromIntegral x :: Integer))
-hashRawTerm' (RLamAbs x) = flip hashUpdate ("1" :: BS.ByteString) . hashRawTerm' x
-hashRawTerm' (RApply x y) = flip hashUpdate ("2" :: BS.ByteString) . hashRawTerm' x . hashRawTerm' y
+hashRawTerm' (RLamAbs n x) = flip hashUpdate ("1" :: BS.ByteString) . flip hashUpdate (F.flat (fromIntegral n :: Integer)) . hashRawTerm' x
+hashRawTerm' (RApply x y) = flip hashUpdate ("2" :: BS.ByteString) . hashRawTerm' x . flip (foldl' $ flip hashRawTerm') y
 hashRawTerm' (RForce x) = flip hashUpdate ("3" :: BS.ByteString) . hashRawTerm' x
 hashRawTerm' (RDelay x) = flip hashUpdate ("4" :: BS.ByteString) . hashRawTerm' x
 hashRawTerm' (RConstant x) = flip hashUpdate ("5" :: BS.ByteString) . flip hashUpdate (F.flat x)
@@ -67,9 +67,6 @@ data TermResult = TermResult
 
 mapTerm :: (RawTerm -> RawTerm) -> TermResult -> TermResult
 mapTerm f (TermResult t d) = TermResult (f t) d
-
-mergeTerms :: (RawTerm -> RawTerm -> RawTerm) -> TermResult -> TermResult -> TermResult
-mergeTerms f x y = TermResult (f (getTerm x) (getTerm y)) (getDeps x <> getDeps y)
 
 mkTermRes :: RawTerm -> TermResult
 mkTermRes r = TermResult r []
@@ -97,8 +94,9 @@ data PDelayed (a :: k -> Type) (s :: k)
 plam' :: (Term s a -> Term s b) -> Term s (a :--> b)
 plam' f = Term $ \i ->
   let v = Term $ \j -> mkTermRes $ RVar (j - (i + 1))
-      t = asRawTerm (f v) (i + 1)
-   in mapTerm RLamAbs t
+   in case asRawTerm (f v) (i + 1) of
+        t@(getTerm -> RLamAbs n t') -> t {getTerm = RLamAbs (n + 1) t'}
+        t -> mapTerm (RLamAbs 0) t
 
 -- TODO: This implementation is ugly. Perhaps Term should be different?
 plet :: Term s a -> (Term s a -> Term s b) -> Term s b
@@ -114,9 +112,10 @@ papp x y = Term $ \i -> case (asRawTerm x i, asRawTerm y i) of
   -- Applying an error to anything is an error.
   (_, getTerm -> RError) -> mkTermRes RError
   -- Applying to `id` changes nothing.
-  (getTerm -> RLamAbs (RVar 0), y') -> y'
-  (getTerm -> RHoisted (HoistedTerm _ (RLamAbs (RVar 0))), y') -> y'
-  (x', y') -> mergeTerms RApply x' y'
+  (getTerm -> RLamAbs 0 (RVar 0), y') -> y'
+  (getTerm -> RHoisted (HoistedTerm _ (RLamAbs 0 (RVar 0))), y') -> y'
+  (x'@(getTerm -> RApply x'l x'r), y') -> TermResult (RApply x'l (getTerm y' : x'r)) (getDeps x' <> getDeps y')
+  (x', y') -> TermResult (RApply (getTerm x') [getTerm y']) (getDeps x' <> getDeps y')
 
 pdelay :: Term s a -> Term s (PDelayed a)
 pdelay x = Term $ \i -> mapTerm RDelay $ asRawTerm x i
@@ -155,8 +154,8 @@ phoistAcyclic t = Term $ \_ -> case asRawTerm t 0 of
 
 rawTermToUPLC :: (HoistedTerm -> Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) -> Natural -> RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i + 1) -- Why the fuck does it start from 1 and not 0?
-rawTermToUPLC m l (RLamAbs t) = UPLC.LamAbs () (DeBruijn . Index $ 0) (rawTermToUPLC m (l + 1) t)
-rawTermToUPLC m l (RApply x y) = UPLC.Apply () (rawTermToUPLC m l x) (rawTermToUPLC m l y)
+rawTermToUPLC m l (RLamAbs n t) = foldr (.) id (replicate (fromIntegral $ n + 1) $ UPLC.LamAbs () (DeBruijn . Index $ 0)) $ (rawTermToUPLC m (l + n + 1) t)
+rawTermToUPLC m l (RApply x y) = foldr (.) id ((\y' t -> UPLC.Apply () t (rawTermToUPLC m l y')) <$> y) $ (rawTermToUPLC m l x)
 rawTermToUPLC m l (RDelay t) = UPLC.Delay () (rawTermToUPLC m l t)
 rawTermToUPLC m l (RForce t) = UPLC.Force () (rawTermToUPLC m l t)
 rawTermToUPLC _ _ (RBuiltin f) = UPLC.Builtin () f
