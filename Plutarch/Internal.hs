@@ -71,8 +71,8 @@ mapTerm f (TermResult t d) = TermResult (f t) d
 mergeTerms :: (RawTerm -> RawTerm -> RawTerm) -> TermResult -> TermResult -> TermResult
 mergeTerms f x y = TermResult (f (getTerm x) (getTerm y)) (getDeps x <> getDeps y)
 
-mkNew :: RawTerm -> TermResult
-mkNew r = TermResult r []
+mkTermRes :: RawTerm -> TermResult
+mkTermRes r = TermResult r []
 
 -- Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
 -- Thanks!
@@ -96,7 +96,7 @@ data PDelayed (a :: k -> Type) (s :: k)
 
 plam' :: (Term s a -> Term s b) -> Term s (a :--> b)
 plam' f = Term $ \i ->
-  let v = Term $ \j -> TermResult (RVar (j - (i + 1))) []
+  let v = Term $ \j -> mkTermRes $ RVar (j - (i + 1))
       t = asRawTerm (f v) (i + 1)
    in mapTerm RLamAbs t
 
@@ -110,9 +110,9 @@ plet v f = Term $ \i -> case asRawTerm v i of
 papp :: Term s (a :--> b) -> Term s a -> Term s b
 papp x y = Term $ \i -> case (asRawTerm x i, asRawTerm y i) of
   -- Applying anything to an error is an error.
-  (getTerm -> RError, _) -> mkNew RError
+  (getTerm -> RError, _) -> mkTermRes RError
   -- Applying an error to anything is an error.
-  (_, getTerm -> RError) -> mkNew RError
+  (_, getTerm -> RError) -> mkTermRes RError
   -- Applying to `id` changes nothing.
   (getTerm -> RLamAbs (RVar 0), y') -> y'
   (getTerm -> RHoisted (HoistedTerm _ (RLamAbs (RVar 0))), y') -> y'
@@ -128,16 +128,16 @@ pforce x = Term $ \i -> case asRawTerm x i of
   t -> mapTerm RForce t
 
 perror :: Term s a
-perror = Term $ \_ -> mkNew RError
+perror = Term $ \_ -> mkTermRes RError
 
 punsafeCoerce :: Term s a -> Term s b
 punsafeCoerce (Term x) = Term x
 
 punsafeBuiltin :: UPLC.DefaultFun -> Term s a
-punsafeBuiltin f = Term $ \_ -> mkNew $ RBuiltin f
+punsafeBuiltin f = Term $ \_ -> mkTermRes $ RBuiltin f
 
 punsafeConstant :: Some (ValueOf PLC.DefaultUni) -> Term s a
-punsafeConstant c = Term $ \_ -> mkNew $ RConstant c
+punsafeConstant c = Term $ \_ -> mkTermRes $ RConstant c
 
 asClosedRawTerm :: ClosedTerm a -> TermResult
 asClosedRawTerm = flip asRawTerm 0
