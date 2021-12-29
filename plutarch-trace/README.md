@@ -52,7 +52,7 @@ executable foo-exe
 
   You can rename the `Plutarch.Trace` module if you want, to something else-
   ```cabal
-  plutarch-trace (Plutarch.Trace as FooBar) requires (Plutarch.TraceSig as Plutarch.Trace.Enable),
+  plutarch-trace (Plutarch.Trace as FooBar) requires (Plutarch.TraceSig as Plutarch.Trace.Disable),
   ```
   This makes it so you import `Plutarch.Trace` as `FooBar`. This *will* hide the `Plutarch.Trace` module, meaning you can only import it as `FooBar`. Otherwise it's the exact same as just importing `Plutarch.Trace` without renaming.
 
