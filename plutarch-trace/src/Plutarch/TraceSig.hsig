@@ -12,7 +12,7 @@ ptrace' :: Term s (PString :--> a :--> a)
 ptrace :: Term s PString -> Term s a -> Term s a
 
 -- | Trace a message if given argument evaluates to true.
-ptraceIfTrue :: Term s (PString :--> PBool :--> PBool)
+ptraceIfTrue :: Term s PString -> Term s PBool -> Term s PBool
 
 -- | Trace a message if given argument evaluates to false.
-ptraceIfFalse :: Term s (PString :--> PBool :--> PBool)
+ptraceIfFalse :: Term s PString -> Term s PBool -> Term s PBool

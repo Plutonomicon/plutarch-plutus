@@ -12,8 +12,8 @@ ptrace' = phoistAcyclic $ pforce $ punsafeBuiltin PLC.Trace
 ptrace :: Term s PString -> Term s a -> Term s a
 ptrace s a = pforce $ ptrace' # s # pdelay a
 
-ptraceIfTrue :: Term s (PString :--> PBool :--> PBool)
-ptraceIfTrue = phoistAcyclic $ plam $ \s a -> pif a (ptrace' # s # a) a
+ptraceIfTrue :: Term s PString -> Term s PBool -> Term s PBool
+ptraceIfTrue s a = pif a (ptrace' # s # a) a
 
-ptraceIfFalse :: Term s (PString :--> PBool :--> PBool)
-ptraceIfFalse = phoistAcyclic $ plam $ \s a -> pif a a $ ptrace' # s # a
+ptraceIfFalse :: Term s PString -> Term s PBool -> Term s PBool
+ptraceIfFalse s a = pif a a $ ptrace' # s # a

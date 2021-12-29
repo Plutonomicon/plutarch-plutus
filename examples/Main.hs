@@ -229,13 +229,13 @@ plutarchTests =
         -- Real tracing functions
         PTrace.ptrace "foo" (pcon PUnit) `traces` ["foo"]
         PTrace.ptrace "foo" (PTrace.ptrace "bar" $ pcon PUnit) `traces` ["foo", "bar"]
-        (PTrace.ptraceIfTrue # "foo" # pcon PTrue) `traces` ["foo"]
-        (PTrace.ptraceIfTrue # "foo" # pcon PFalse) `traces` []
+        PTrace.ptraceIfTrue "foo" (pcon PTrue) `traces` ["foo"]
+        PTrace.ptraceIfTrue "foo" (pcon PFalse) `traces` []
         -- Dummy tracing functions
         PNoTrace.ptrace "foo" (pcon PUnit) `traces` []
         PNoTrace.ptrace "foo" (PNoTrace.ptrace "bar" $ pcon PUnit) `traces` []
-        (PNoTrace.ptraceIfTrue # "foo" # pcon PTrue) `traces` []
-        (PNoTrace.ptraceIfTrue # "foo" # pcon PFalse) `traces` []
+        PNoTrace.ptraceIfTrue "foo" (pcon PTrue) `traces` []
+        PNoTrace.ptraceIfTrue "foo" (pcon PFalse) `traces` []
     ]
 
 uplcTests :: TestTree

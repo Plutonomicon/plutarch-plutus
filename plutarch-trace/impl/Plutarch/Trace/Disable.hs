@@ -4,17 +4,14 @@ import Plutarch.Bool (PBool)
 import Plutarch.Prelude
 import Plutarch.String (PString)
 
-pf :: Term s (b :--> a :--> a)
-pf = phoistAcyclic $ plam $ \_ y -> y
-
 ptrace' :: Term s (PString :--> a :--> a)
-ptrace' = pf
+ptrace' = phoistAcyclic $ plam $ \_ y -> y
 
 ptrace :: Term s PString -> Term s a -> Term s a
 ptrace _ a = a
 
-ptraceIfTrue :: Term s (PString :--> PBool :--> PBool)
-ptraceIfTrue = pf
+ptraceIfTrue :: Term s PString -> Term s PBool -> Term s PBool
+ptraceIfTrue _ a = a
 
-ptraceIfFalse :: Term s (PString :--> PBool :--> PBool)
-ptraceIfFalse = pf
+ptraceIfFalse :: Term s PString -> Term s PBool -> Term s PBool
+ptraceIfFalse _ a = a
