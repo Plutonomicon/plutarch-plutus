@@ -139,9 +139,55 @@ Users of your must add your library in their `build-depends`, alongside `plutarc
 
 `foo` is the package name that uses `plutarch-trace` in a generic way. `(Foo, Bar)` is a comma separated list of all the modules that you want to make visible from `foo`. If you don't want to rename any of the modules, you can actually just leave out the module list in parens and just write `foo requires ...` to make all modules visible with their original name.
 
+### Using flags to enable/disable tracing
+One of the great things about backpack is that it interacts very well with cabal flags. You can keep your entire dependency hierarchy completely generic and only instantiate the roots of the depenedency hierarchy in your end-user executable/benchmark/test suite. While doing so, you might still want easy control over switching the tracing behavior.
+
+In this case, you can use a cabal flag to add the corresponding implementation dependency and mixins. Because backpack mixins are defined in the `.cabal` file, you can easily use `if` statements with a flag to control this-
+```hs
+cabal-version: 3.0
+name: foo
+version: 1.0.0
+
+flag development
+  description: Enable development mode (turns on tracing).
+  manual: True
+  default: True
+
+executable exm-exe
+  main-is:
+    Main.hs
+  build-depends:
+    base,
+    plutarch,
+    plutarch-trace,
+  if flag(development)
+    build-depends: plutarch-trace:enable
+  else
+    build-depends: plutarch-trace:disable
+  if flag(development)
+    mixins: plutarch-trace (Plutarch.Trace) requires (Plutarch.TraceSig as Plutarch.Trace.Enable)
+  else
+    mixins: plutarch-trace (Plutarch.Trace) requires (Plutarch.TraceSig as Plutarch.Trace.Disable)
+  default-language: Haskell2010
+```
+
+As you'd expect, you can use `cabal configure -f +development` and `cabal configure -f -development` to easily switch the tracing behaviors!
+
+### Hiding Backpack implementation details from your user
+Here's *another* neat thing about backpack - if you want, you can totally hide the backpack implementation details and let your users use good ol' cabal flags instead of `mixins`. This is actually one of the usecases noted in the [cabal user guide](https://cabal.readthedocs.io/en/3.6/cabal-package.html#backpack) itself.
+> You may also find it useful to use library:reexported-modules to reexport instantiated libraries to Backpack-unware users (e.g., Backpack can be used entirely as an implementation detail.)
+
+In essence, you would have a package that [instantiates both](#both) tracing behaviors as 2 modules and just re-exports them depending on cabal flags!
+
+
 ## Contributing
 ### Learning Backpack
 * [really-small-backpack-example](https://github.com/danidiaz/really-small-backpack-example)
+
+  lesson2 is very useful to immediately get up and running!
+* [cabal user guide for backpack](https://cabal.readthedocs.io/en/3.6/cabal-package.html#backpack)
+
+  I think this was recently added.
 * [backpack-str](https://github.com/haskell-backpack/backpack-str)
 
 ### Common Issues
