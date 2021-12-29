@@ -1,43 +1,30 @@
-cabal-version:      2.4
-name:               plutarch
+cabal-version:      3.0
+name:               plutarch-test
 version:            1.0.0
 
 author: Las Safin <me@las.rs>
 license: MIT
 
-extra-source-files: README.md
-
-library
-  exposed-modules:
-    Plutarch.Evaluate
-    Plutarch.Internal
-    Plutarch
-    Plutarch.Prelude
-    Plutarch.Pair
-    Plutarch.Rational
-    Plutarch.Either
-    Plutarch.Integer
-    Plutarch.Bool
-    Plutarch.String
-    Plutarch.ByteString
-    Plutarch.Builtin
-    Plutarch.DataRepr
-    Plutarch.ScriptContext
-    Plutarch.Maybe
-    Plutarch.Unit
-    Plutarch.Crypto
+test-suite examples
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
   build-depends:
     , base
-    , plutus-core
-    , plutus-ledger-api
-    , text
-    , hashable
     , bytestring
-    , containers
-    , cryptonite
+    , plutarch
+    , plutarch-trace
+    , plutarch-trace:enable
+    , plutarch-trace:disable
+    , tasty
+    , tasty-hunit
+    , plutus-ledger-api
+    , plutus-core
+    , aeson
     , plutus-tx
-    , mtl
-    , flat
+  mixins:
+    plutarch-trace (Plutarch.Trace) requires (Plutarch.TraceSig as Plutarch.Trace.Enable),
+    plutarch-trace (Plutarch.Trace as Plutarch.NoTrace) requires (Plutarch.TraceSig as Plutarch.Trace.Disable)
   default-language: Haskell2010
   default-extensions:
     DataKinds

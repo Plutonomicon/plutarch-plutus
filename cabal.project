@@ -2,3 +2,4 @@ index-state: 2021-11-18T00:00:00Z
 
 packages: ./.
           plutarch-trace
+          examples
