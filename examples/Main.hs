@@ -216,6 +216,14 @@ plutarchTests =
     , testCase "PAsData equality" $ do
         expect $ let dat = pdata @PInteger 42 in dat #== dat
         expect $ pnot #$ pdata (phexByteStr "12") #== pdata (phexByteStr "ab")
+    , testCase "λx y -> addInteger x y => addInteger" $
+        printTerm (plam $ \x y -> (x :: Term _ PInteger) + y) @?= "(program 1.0.0 addInteger)"
+    , testCase "λx y -> hoist (force mkCons) x y => force mkCons" $
+        printTerm (plam $ \x y -> (pforce $ punsafeBuiltin PLC.MkCons) # x # y) @?= "(program 1.0.0 (force mkCons))"
+    , testCase "λx y -> hoist mkCons x y => mkCons x y" $
+        printTerm (plam $ \x y -> (punsafeBuiltin PLC.MkCons) # x # y) @?= "(program 1.0.0 (\\i0 -> \\i0 -> mkCons i2 i1))"
+    , testCase "λx y -> hoist (λx y. x + y - y - x) x y => λx y. x + y - y - x" $
+        printTerm (plam $ \x y -> (phoistAcyclic $ plam $ \(x :: Term _ PInteger) y -> x + y - y - x) # x # y) @?= "(program 1.0.0 (\\i0 -> \\i0 -> subtractInteger (subtractInteger (addInteger i2 i1) i1) i2))"
     ]
 
 uplcTests :: TestTree

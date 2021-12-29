@@ -95,8 +95,77 @@ plam' :: (Term s a -> Term s b) -> Term s (a :--> b)
 plam' f = Term $ \i ->
   let v = Term $ \j -> mkTermRes $ RVar (j - (i + 1))
    in case asRawTerm (f v) (i + 1) of
+        -- arity 1
+        t@(getTerm -> RApply t'@(getArity -> Just _) [RVar 0]) -> t {getTerm = t'}
+        -- arity 2 + n
+        t@(getTerm -> RLamAbs n (RApply t'@(getArity -> Just n') args))
+          | (maybe False (== [0 .. n + 1]) $ traverse (\case RVar n -> Just n; _ -> Nothing) args)
+              && n' >= n + 1 ->
+            t {getTerm = t'}
         t@(getTerm -> RLamAbs n t') -> t {getTerm = RLamAbs (n + 1) t'}
         t -> mapTerm (RLamAbs 0) t
+  where
+    -- 0 is 1
+    getArity :: RawTerm -> Maybe Natural
+    -- We only do this if it's hoisted, since it's only safe if it doesn't
+    -- refer to any of the variables in the wrapping lambda.
+    getArity (RHoisted (HoistedTerm _ (RLamAbs n _))) = Just n
+    getArity (RHoisted (HoistedTerm _ t)) = getArityBuiltin t
+    getArity t = getArityBuiltin t
+
+    getArityBuiltin :: RawTerm -> Maybe Natural
+    getArityBuiltin (RBuiltin PLC.AddInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.SubtractInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.MultiplyInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.DivideInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.QuotientInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.RemainderInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.ModInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.EqualsInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.LessThanInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.LessThanEqualsInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.AppendByteString) = Just 1
+    getArityBuiltin (RBuiltin PLC.ConsByteString) = Just 1
+    getArityBuiltin (RBuiltin PLC.SliceByteString) = Just 2
+    getArityBuiltin (RBuiltin PLC.LengthOfByteString) = Just 0
+    getArityBuiltin (RBuiltin PLC.IndexByteString) = Just 1
+    getArityBuiltin (RBuiltin PLC.EqualsByteString) = Just 1
+    getArityBuiltin (RBuiltin PLC.LessThanByteString) = Just 1
+    getArityBuiltin (RBuiltin PLC.LessThanEqualsByteString) = Just 1
+    getArityBuiltin (RBuiltin PLC.Sha2_256) = Just 0
+    getArityBuiltin (RBuiltin PLC.Sha3_256) = Just 0
+    getArityBuiltin (RBuiltin PLC.Blake2b_256) = Just 0
+    getArityBuiltin (RBuiltin PLC.VerifySignature) = Just 2
+    getArityBuiltin (RBuiltin PLC.AppendString) = Just 1
+    getArityBuiltin (RBuiltin PLC.EqualsString) = Just 1
+    getArityBuiltin (RBuiltin PLC.EncodeUtf8) = Just 0
+    getArityBuiltin (RBuiltin PLC.DecodeUtf8) = Just 0
+    getArityBuiltin (RForce (RBuiltin PLC.IfThenElse)) = Just 2
+    getArityBuiltin (RForce (RBuiltin PLC.ChooseUnit)) = Just 1
+    getArityBuiltin (RForce (RBuiltin PLC.Trace)) = Just 1
+    getArityBuiltin (RForce (RForce (RBuiltin PLC.FstPair))) = Just 0
+    getArityBuiltin (RForce (RForce (RBuiltin PLC.SndPair))) = Just 0
+    getArityBuiltin (RForce (RForce (RBuiltin PLC.ChooseList))) = Just 2
+    getArityBuiltin (RForce (RBuiltin PLC.MkCons)) = Just 1
+    getArityBuiltin (RForce (RBuiltin PLC.HeadList)) = Just 0
+    getArityBuiltin (RForce (RBuiltin PLC.TailList)) = Just 0
+    getArityBuiltin (RForce (RBuiltin PLC.NullList)) = Just 0
+    getArityBuiltin (RForce (RBuiltin PLC.ChooseData)) = Just 5
+    getArityBuiltin (RBuiltin PLC.ConstrData) = Just 1
+    getArityBuiltin (RBuiltin PLC.MapData) = Just 0
+    getArityBuiltin (RBuiltin PLC.ListData) = Just 0
+    getArityBuiltin (RBuiltin PLC.IData) = Just 0
+    getArityBuiltin (RBuiltin PLC.BData) = Just 0
+    getArityBuiltin (RBuiltin PLC.UnConstrData) = Just 0
+    getArityBuiltin (RBuiltin PLC.UnMapData) = Just 0
+    getArityBuiltin (RBuiltin PLC.UnListData) = Just 0
+    getArityBuiltin (RBuiltin PLC.UnIData) = Just 0
+    getArityBuiltin (RBuiltin PLC.UnBData) = Just 0
+    getArityBuiltin (RBuiltin PLC.EqualsData) = Just 1
+    getArityBuiltin (RBuiltin PLC.MkPairData) = Just 1
+    getArityBuiltin (RBuiltin PLC.MkNilData) = Just 0
+    getArityBuiltin (RBuiltin PLC.MkNilPairData) = Just 0
+    getArityBuiltin _ = Nothing
 
 -- TODO: This implementation is ugly. Perhaps Term should be different?
 plet :: Term s a -> (Term s a -> Term s b) -> Term s b
