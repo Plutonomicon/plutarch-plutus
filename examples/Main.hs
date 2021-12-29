@@ -231,11 +231,21 @@ plutarchTests =
         PTrace.ptrace "foo" (PTrace.ptrace "bar" $ pcon PUnit) `traces` ["foo", "bar"]
         PTrace.ptraceIfTrue "foo" (pcon PTrue) `traces` ["foo"]
         PTrace.ptraceIfTrue "foo" (pcon PFalse) `traces` []
+        PTrace.ptraceIfTrue "foo" (PTrace.ptraceIfTrue "bar" $ pcon PTrue) `traces` ["bar", "foo"]
+        PTrace.ptraceIfTrue "foo" (PTrace.ptraceIfTrue "bar" $ pcon PFalse) `traces` []
+        PTrace.ptraceIfFalse "foo" (PTrace.ptraceIfTrue "bar" $ pcon PFalse) `traces` ["foo"]
+        PTrace.ptrace "foo" (PTrace.ptraceIfTrue "bar" (pcon PTrue)) `traces` ["foo", "bar"]
+        PTrace.ptrace "foo" (PTrace.ptraceIfTrue "bar" (pcon PFalse)) `traces` ["foo"]
         -- Dummy tracing functions
         PNoTrace.ptrace "foo" (pcon PUnit) `traces` []
         PNoTrace.ptrace "foo" (PNoTrace.ptrace "bar" $ pcon PUnit) `traces` []
         PNoTrace.ptraceIfTrue "foo" (pcon PTrue) `traces` []
         PNoTrace.ptraceIfTrue "foo" (pcon PFalse) `traces` []
+        PNoTrace.ptraceIfTrue "foo" (PNoTrace.ptraceIfTrue "bar" $ pcon PTrue) `traces` []
+        PNoTrace.ptraceIfTrue "foo" (PNoTrace.ptraceIfTrue "bar" $ pcon PFalse) `traces` []
+        PNoTrace.ptraceIfFalse "foo" (PNoTrace.ptraceIfTrue "bar" $ pcon PFalse) `traces` []
+        PNoTrace.ptrace "foo" (PNoTrace.ptraceIfTrue "bar" (pcon PTrue)) `traces` []
+        PNoTrace.ptrace "foo" (PNoTrace.ptraceIfTrue "bar" (pcon PFalse)) `traces` []
     ]
 
 uplcTests :: TestTree
