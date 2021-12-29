@@ -179,7 +179,6 @@ Here's *another* neat thing about backpack - if you want, you can totally hide t
 
 In essence, you would have a package that [instantiates both](#both) tracing behaviors as 2 modules and just re-exports them depending on cabal flags!
 
-
 ## Contributing
 ### Learning Backpack
 * [really-small-backpack-example](https://github.com/danidiaz/really-small-backpack-example)
