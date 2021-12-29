@@ -37,8 +37,8 @@ data HoistedTerm = HoistedTerm Dig RawTerm
 
 data RawTerm
   = RVar Natural
-  | RLamAbs RawTerm
-  | RApply RawTerm RawTerm
+  | RLamAbs Natural RawTerm
+  | RApply RawTerm [RawTerm]
   | RForce RawTerm
   | RDelay RawTerm
   | RConstant (Some (ValueOf PLC.DefaultUni))
@@ -48,8 +48,8 @@ data RawTerm
 
 hashRawTerm' :: HashAlgorithm alg => RawTerm -> Context alg -> Context alg
 hashRawTerm' (RVar x) = flip hashUpdate ("0" :: BS.ByteString) . flip hashUpdate (F.flat (fromIntegral x :: Integer))
-hashRawTerm' (RLamAbs x) = flip hashUpdate ("1" :: BS.ByteString) . hashRawTerm' x
-hashRawTerm' (RApply x y) = flip hashUpdate ("2" :: BS.ByteString) . hashRawTerm' x . hashRawTerm' y
+hashRawTerm' (RLamAbs n x) = flip hashUpdate ("1" :: BS.ByteString) . flip hashUpdate (F.flat (fromIntegral n :: Integer)) . hashRawTerm' x
+hashRawTerm' (RApply x y) = flip hashUpdate ("2" :: BS.ByteString) . hashRawTerm' x . flip (foldl' $ flip hashRawTerm') y
 hashRawTerm' (RForce x) = flip hashUpdate ("3" :: BS.ByteString) . hashRawTerm' x
 hashRawTerm' (RDelay x) = flip hashUpdate ("4" :: BS.ByteString) . hashRawTerm' x
 hashRawTerm' (RConstant x) = flip hashUpdate ("5" :: BS.ByteString) . flip hashUpdate (F.flat x)
@@ -67,9 +67,6 @@ data TermResult = TermResult
 
 mapTerm :: (RawTerm -> RawTerm) -> TermResult -> TermResult
 mapTerm f (TermResult t d) = TermResult (f t) d
-
-mergeTerms :: (RawTerm -> RawTerm -> RawTerm) -> TermResult -> TermResult -> TermResult
-mergeTerms f x y = TermResult (f (getTerm x) (getTerm y)) (getDeps x <> getDeps y)
 
 mkTermRes :: RawTerm -> TermResult
 mkTermRes r = TermResult r []
@@ -97,8 +94,78 @@ data PDelayed (a :: k -> Type) (s :: k)
 plam' :: (Term s a -> Term s b) -> Term s (a :--> b)
 plam' f = Term $ \i ->
   let v = Term $ \j -> mkTermRes $ RVar (j - (i + 1))
-      t = asRawTerm (f v) (i + 1)
-   in mapTerm RLamAbs t
+   in case asRawTerm (f v) (i + 1) of
+        -- arity 1
+        t@(getTerm -> RApply t'@(getArity -> Just _) [RVar 0]) -> t {getTerm = t'}
+        -- arity 2 + n
+        t@(getTerm -> RLamAbs n (RApply t'@(getArity -> Just n') args))
+          | (maybe False (== [0 .. n + 1]) $ traverse (\case RVar n -> Just n; _ -> Nothing) args)
+              && n' >= n + 1 ->
+            t {getTerm = t'}
+        t@(getTerm -> RLamAbs n t') -> t {getTerm = RLamAbs (n + 1) t'}
+        t -> mapTerm (RLamAbs 0) t
+  where
+    -- 0 is 1
+    getArity :: RawTerm -> Maybe Natural
+    -- We only do this if it's hoisted, since it's only safe if it doesn't
+    -- refer to any of the variables in the wrapping lambda.
+    getArity (RHoisted (HoistedTerm _ (RLamAbs n _))) = Just n
+    getArity (RHoisted (HoistedTerm _ t)) = getArityBuiltin t
+    getArity t = getArityBuiltin t
+
+    getArityBuiltin :: RawTerm -> Maybe Natural
+    getArityBuiltin (RBuiltin PLC.AddInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.SubtractInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.MultiplyInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.DivideInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.QuotientInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.RemainderInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.ModInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.EqualsInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.LessThanInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.LessThanEqualsInteger) = Just 1
+    getArityBuiltin (RBuiltin PLC.AppendByteString) = Just 1
+    getArityBuiltin (RBuiltin PLC.ConsByteString) = Just 1
+    getArityBuiltin (RBuiltin PLC.SliceByteString) = Just 2
+    getArityBuiltin (RBuiltin PLC.LengthOfByteString) = Just 0
+    getArityBuiltin (RBuiltin PLC.IndexByteString) = Just 1
+    getArityBuiltin (RBuiltin PLC.EqualsByteString) = Just 1
+    getArityBuiltin (RBuiltin PLC.LessThanByteString) = Just 1
+    getArityBuiltin (RBuiltin PLC.LessThanEqualsByteString) = Just 1
+    getArityBuiltin (RBuiltin PLC.Sha2_256) = Just 0
+    getArityBuiltin (RBuiltin PLC.Sha3_256) = Just 0
+    getArityBuiltin (RBuiltin PLC.Blake2b_256) = Just 0
+    getArityBuiltin (RBuiltin PLC.VerifySignature) = Just 2
+    getArityBuiltin (RBuiltin PLC.AppendString) = Just 1
+    getArityBuiltin (RBuiltin PLC.EqualsString) = Just 1
+    getArityBuiltin (RBuiltin PLC.EncodeUtf8) = Just 0
+    getArityBuiltin (RBuiltin PLC.DecodeUtf8) = Just 0
+    getArityBuiltin (RForce (RBuiltin PLC.IfThenElse)) = Just 2
+    getArityBuiltin (RForce (RBuiltin PLC.ChooseUnit)) = Just 1
+    getArityBuiltin (RForce (RBuiltin PLC.Trace)) = Just 1
+    getArityBuiltin (RForce (RForce (RBuiltin PLC.FstPair))) = Just 0
+    getArityBuiltin (RForce (RForce (RBuiltin PLC.SndPair))) = Just 0
+    getArityBuiltin (RForce (RForce (RBuiltin PLC.ChooseList))) = Just 2
+    getArityBuiltin (RForce (RBuiltin PLC.MkCons)) = Just 1
+    getArityBuiltin (RForce (RBuiltin PLC.HeadList)) = Just 0
+    getArityBuiltin (RForce (RBuiltin PLC.TailList)) = Just 0
+    getArityBuiltin (RForce (RBuiltin PLC.NullList)) = Just 0
+    getArityBuiltin (RForce (RBuiltin PLC.ChooseData)) = Just 5
+    getArityBuiltin (RBuiltin PLC.ConstrData) = Just 1
+    getArityBuiltin (RBuiltin PLC.MapData) = Just 0
+    getArityBuiltin (RBuiltin PLC.ListData) = Just 0
+    getArityBuiltin (RBuiltin PLC.IData) = Just 0
+    getArityBuiltin (RBuiltin PLC.BData) = Just 0
+    getArityBuiltin (RBuiltin PLC.UnConstrData) = Just 0
+    getArityBuiltin (RBuiltin PLC.UnMapData) = Just 0
+    getArityBuiltin (RBuiltin PLC.UnListData) = Just 0
+    getArityBuiltin (RBuiltin PLC.UnIData) = Just 0
+    getArityBuiltin (RBuiltin PLC.UnBData) = Just 0
+    getArityBuiltin (RBuiltin PLC.EqualsData) = Just 1
+    getArityBuiltin (RBuiltin PLC.MkPairData) = Just 1
+    getArityBuiltin (RBuiltin PLC.MkNilData) = Just 0
+    getArityBuiltin (RBuiltin PLC.MkNilPairData) = Just 0
+    getArityBuiltin _ = Nothing
 
 -- TODO: This implementation is ugly. Perhaps Term should be different?
 plet :: Term s a -> (Term s a -> Term s b) -> Term s b
@@ -114,9 +181,10 @@ papp x y = Term $ \i -> case (asRawTerm x i, asRawTerm y i) of
   -- Applying an error to anything is an error.
   (_, getTerm -> RError) -> mkTermRes RError
   -- Applying to `id` changes nothing.
-  (getTerm -> RLamAbs (RVar 0), y') -> y'
-  (getTerm -> RHoisted (HoistedTerm _ (RLamAbs (RVar 0))), y') -> y'
-  (x', y') -> mergeTerms RApply x' y'
+  (getTerm -> RLamAbs 0 (RVar 0), y') -> y'
+  (getTerm -> RHoisted (HoistedTerm _ (RLamAbs 0 (RVar 0))), y') -> y'
+  (x'@(getTerm -> RApply x'l x'r), y') -> TermResult (RApply x'l (getTerm y' : x'r)) (getDeps x' <> getDeps y')
+  (x', y') -> TermResult (RApply (getTerm x') [getTerm y']) (getDeps x' <> getDeps y')
 
 pdelay :: Term s a -> Term s (PDelayed a)
 pdelay x = Term $ \i -> mapTerm RDelay $ asRawTerm x i
@@ -155,8 +223,8 @@ phoistAcyclic t = Term $ \_ -> case asRawTerm t 0 of
 
 rawTermToUPLC :: (HoistedTerm -> Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) -> Natural -> RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i + 1) -- Why the fuck does it start from 1 and not 0?
-rawTermToUPLC m l (RLamAbs t) = UPLC.LamAbs () (DeBruijn . Index $ 0) (rawTermToUPLC m (l + 1) t)
-rawTermToUPLC m l (RApply x y) = UPLC.Apply () (rawTermToUPLC m l x) (rawTermToUPLC m l y)
+rawTermToUPLC m l (RLamAbs n t) = foldr (.) id (replicate (fromIntegral $ n + 1) $ UPLC.LamAbs () (DeBruijn . Index $ 0)) $ (rawTermToUPLC m (l + n + 1) t)
+rawTermToUPLC m l (RApply x y) = foldr (.) id ((\y' t -> UPLC.Apply () t (rawTermToUPLC m l y')) <$> y) $ (rawTermToUPLC m l x)
 rawTermToUPLC m l (RDelay t) = UPLC.Delay () (rawTermToUPLC m l t)
 rawTermToUPLC m l (RForce t) = UPLC.Force () (rawTermToUPLC m l t)
 rawTermToUPLC _ _ (RBuiltin f) = UPLC.Builtin () f
