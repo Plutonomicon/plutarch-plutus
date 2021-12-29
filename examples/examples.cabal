@@ -12,6 +12,7 @@ test-suite examples
   build-depends:
     , base
     , bytestring
+    , text
     , plutarch
     , plutarch-trace
     , plutarch-trace:enable
