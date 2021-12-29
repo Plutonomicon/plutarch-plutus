@@ -17,6 +17,7 @@ common c
     TypeFamilies
     OverloadedStrings
     PartialTypeSignatures
+    ViewPatterns
     -- poor man's GHC2021
     BangPatterns
     BinaryLiterals
