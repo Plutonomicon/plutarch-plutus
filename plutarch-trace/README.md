@@ -137,7 +137,7 @@ Users of your must add your library in their `build-depends`, alongside `plutarc
 
 > Note that it's *the `foo` library* that is instantiated with the concrete implementation. Every dependency that uses a generic signature needs to be instantiated like this. If there are more dependencies that are generic (e.g a `plutarch-trace` dependency), all of them need to be instantiated individually (unless you want generic use out of them and want to leave instantiating out to the next user above).
 
-`foo` is the package name that uses `plutarch-trace` in a generic way. `(Foo, Bar)` is a comma separated list of all the modules that you want to make visible from `foo`.
+`foo` is the package name that uses `plutarch-trace` in a generic way. `(Foo, Bar)` is a comma separated list of all the modules that you want to make visible from `foo`. If you don't want to rename any of the modules, you can actually just leave out the module list in parens and just write `foo requires ...` to make all modules visible with their original name.
 
 ## Contributing
 ### Learning Backpack
