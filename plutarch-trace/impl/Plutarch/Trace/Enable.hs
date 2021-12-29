@@ -13,7 +13,6 @@ ptrace :: Term s PString -> Term s a -> Term s a
 ptrace s a = pforce $ ptrace' # s # pdelay a
 
 ptraceIfTrue :: Term s PString -> Term s PBool -> Term s PBool
-ptraceIfTrue s a = pif a (ptrace' # s # a) a
-
+ptraceIfTrue s a' = plet a' $ \a -> pif a (ptrace' # s # a) a
 ptraceIfFalse :: Term s PString -> Term s PBool -> Term s PBool
-ptraceIfFalse s a = pif a a $ ptrace' # s # a
+ptraceIfFalse s a' = plet a' $ \a -> pif a a (ptrace' # s # a)
