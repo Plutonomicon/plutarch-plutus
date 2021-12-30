@@ -95,14 +95,16 @@ plam' :: (Term s a -> Term s b) -> Term s (a :--> b)
 plam' f = Term $ \i ->
   let v = Term $ \j -> mkTermRes $ RVar (j - (i + 1))
    in case asRawTerm (f v) (i + 1) of
-        -- arity 1
+        -- eta-reduce for arity 1
         t@(getTerm -> RApply t'@(getArity -> Just _) [RVar 0]) -> t {getTerm = t'}
-        -- arity 2 + n
+        -- eta-reduce for arity 2 + n
         t@(getTerm -> RLamAbs n (RApply t'@(getArity -> Just n') args))
           | (maybe False (== [0 .. n + 1]) $ traverse (\case RVar n -> Just n; _ -> Nothing) args)
               && n' >= n + 1 ->
             t {getTerm = t'}
+        -- increment arity
         t@(getTerm -> RLamAbs n t') -> t {getTerm = RLamAbs (n + 1) t'}
+        -- new lambda
         t -> mapTerm (RLamAbs 0) t
   where
     -- 0 is 1
@@ -167,11 +169,12 @@ plam' f = Term $ \i ->
     getArityBuiltin (RBuiltin PLC.MkNilPairData) = Just 0
     getArityBuiltin _ = Nothing
 
--- TODO: This implementation is ugly. Perhaps Term should be different?
 plet :: Term s a -> (Term s a -> Term s b) -> Term s b
 plet v f = Term $ \i -> case asRawTerm v i of
-  -- Avoid double lets
+  -- Inline sufficiently small terms in WHNF
   (getTerm -> RVar _) -> asRawTerm (f v) i
+  (getTerm -> RBuiltin _) -> asRawTerm (f v) i
+  (getTerm -> RHoisted _) -> asRawTerm (f v) i
   _ -> asRawTerm (papp (plam' f) v) i
 
 papp :: Term s (a :--> b) -> Term s a -> Term s b
@@ -183,7 +186,9 @@ papp x y = Term $ \i -> case (asRawTerm x i, asRawTerm y i) of
   -- Applying to `id` changes nothing.
   (getTerm -> RLamAbs 0 (RVar 0), y') -> y'
   (getTerm -> RHoisted (HoistedTerm _ (RLamAbs 0 (RVar 0))), y') -> y'
+  -- append argument
   (x'@(getTerm -> RApply x'l x'r), y') -> TermResult (RApply x'l (getTerm y' : x'r)) (getDeps x' <> getDeps y')
+  -- new RApply
   (x', y') -> TermResult (RApply (getTerm x') [getTerm y']) (getDeps x' <> getDeps y')
 
 pdelay :: Term s a -> Term s (PDelayed a)
@@ -233,6 +238,7 @@ rawTermToUPLC _ _ RError = UPLC.Error ()
 --rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted
 rawTermToUPLC m l (RHoisted hoisted) = m hoisted l -- UPLC.Var () . DeBruijn . Index $ l - m hoisted
 
+-- The logic is mostly for hoisting
 compile' :: TermResult -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 compile' t =
   let t' = getTerm t
