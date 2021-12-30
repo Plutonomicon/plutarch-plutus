@@ -246,6 +246,24 @@ plutarchTests =
         PNoTrace.ptraceIfFalse "foo" (PNoTrace.ptraceIfTrue "bar" $ pcon PFalse) `traces` []
         PNoTrace.ptrace "foo" (PNoTrace.ptraceIfTrue "bar" (pcon PTrue)) `traces` []
         PNoTrace.ptrace "foo" (PNoTrace.ptraceIfTrue "bar" (pcon PFalse)) `traces` []
+    , testCase "λx y -> addInteger x y => addInteger" $
+        printTerm (plam $ \x y -> (x :: Term _ PInteger) + y) @?= "(program 1.0.0 addInteger)"
+    , testCase "λx y -> hoist (force mkCons) x y => force mkCons" $
+        printTerm (plam $ \x y -> (pforce $ punsafeBuiltin PLC.MkCons) # x # y) @?= "(program 1.0.0 (force mkCons))"
+    , testCase "λx y -> hoist mkCons x y => mkCons x y" $
+        printTerm (plam $ \x y -> (punsafeBuiltin PLC.MkCons) # x # y) @?= "(program 1.0.0 (\\i0 -> \\i0 -> mkCons i2 i1))"
+    , testCase "λx y -> hoist (λx y. x + y - y - x) x y => λx y. x + y - y - x" $
+        printTerm (plam $ \x y -> (phoistAcyclic $ plam $ \(x :: Term _ PInteger) y -> x + y - y - x) # x # y) @?= "(program 1.0.0 (\\i0 -> \\i0 -> subtractInteger (subtractInteger (addInteger i2 i1) i1) i2))"
+    , testCase "λx y -> x + x" $
+        printTerm (plam $ \(x :: Term _ PInteger) (_ :: Term _ PInteger) -> x + x) @?= "(program 1.0.0 (\\i0 -> \\i0 -> addInteger i2 i2))"
+    , testCase "let x = addInteger in x 1 1" $
+        printTerm (plet (punsafeBuiltin PLC.AddInteger) $ \x -> x # (1 :: Term _ PInteger) # (1 :: Term _ PInteger)) @?= "(program 1.0.0 (addInteger 1 1))"
+    , testCase "let x = 0 in x => 0" $
+        printTerm (plet 0 $ \(x :: Term _ PInteger) -> x) @?= "(program 1.0.0 0)"
+    , testCase "let x = hoist (\\x -> x + x) in 0 => 0" $
+        printTerm (plet (phoistAcyclic $ plam $ \(x :: Term _ PInteger) -> x + x) $ \_ -> (0 :: Term _ PInteger)) @?= "(program 1.0.0 0)"
+    , testCase "let x = hoist (\\x -> x + x) in x" $
+        printTerm (plet (phoistAcyclic $ plam $ \(x :: Term _ PInteger) -> x + x) $ \x -> x) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
     ]
 
 uplcTests :: TestTree
