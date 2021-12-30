@@ -1,4 +1,4 @@
-module Plutarch.Trace.Enable (ptrace', ptrace, ptraceIfTrue, ptraceIfFalse) where
+module Plutarch.Trace.Enable (ptrace, ptraceIfTrue, ptraceIfFalse) where
 
 import Plutarch (punsafeBuiltin)
 import Plutarch.Bool (PBool, pif)
