@@ -47,6 +47,7 @@
 
             additional = ps: [
               ps.plutus-ledger-api
+							ps.shrinker
             ];
           };
           sha256map = {
@@ -62,6 +63,8 @@
               = "BtbT5UxOAADvQD4qTPNrGfnjQNgbYNO4EAJwH2ZsTQo=";
             "https://github.com/input-output-hk/Win32-network"."3825d3abf75f83f406c1f7161883c438dac7277d"
               = "Hesb5GXSx0IwKSIi42ofisVELcQNX6lwHcoZcbaDiqc=";
+            "https://github.com/Plutonomicon/Shrinker"."148bccdd472a44bb761cc19c4968039ab42ae54b"
+              = "6rC7PXKZlMPu0eW74tw5fM075VhWhiU1LehF+C9BeVU=";
           };
         };
 

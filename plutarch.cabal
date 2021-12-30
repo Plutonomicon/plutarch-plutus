@@ -101,6 +101,7 @@ library
     , plutus-tx
     , mtl
     , flat
+    , shrinker
 
 test-suite examples
   import: c

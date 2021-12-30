@@ -1,4 +1,4 @@
-module Plutarch.Internal ((:-->), PDelayed, Term, plam', plet, papp, pdelay, pforce, phoistAcyclic, perror, punsafeCoerce, punsafeBuiltin, punsafeConstant, compile, ClosedTerm, Dig, hashTerm, hashOpenTerm, TermCont (..)) where
+module Plutarch.Internal ((:-->), PDelayed, Term, plam', plet, papp, pdelay, pforce, phoistAcyclic, perror, punsafeCoerce, punsafeBuiltin, punsafeConstant, compile, compileAndShrink, ClosedTerm, Dig, hashTerm, hashOpenTerm, TermCont (..)) where
 
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
@@ -17,6 +17,7 @@ import PlutusCore (Some, ValueOf)
 import qualified PlutusCore as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
 import qualified UntypedPlutusCore as UPLC
+import Shrink (shrinkScript)
 
 -- Explanation for hoisted terms:
 -- Hoisting is a convenient way of importing terms without duplicating them
@@ -272,6 +273,9 @@ compile' t =
 
 compile :: ClosedTerm a -> Script
 compile t = Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' $ asClosedRawTerm $ t)
+
+compileAndShrink :: ClosedTerm a -> Script
+compileAndShrink t = shrinkScript (compile t)
 
 newtype TermCont s a = TermCont {runTermCont :: forall b. (a -> Term s b) -> Term s b}
 
