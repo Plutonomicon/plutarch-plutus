@@ -171,8 +171,10 @@ plam' f = Term $ \i ->
 
 plet :: Term s a -> (Term s a -> Term s b) -> Term s b
 plet v f = Term $ \i -> case asRawTerm v i of
-  -- Avoid double lets
+  -- Inline sufficiently small terms in WHNF
   (getTerm -> RVar _) -> asRawTerm (f v) i
+  (getTerm -> RBuiltin _) -> asRawTerm (f v) i
+  (getTerm -> RHoisted _) -> asRawTerm (f v) i
   _ -> asRawTerm (papp (plam' f) v) i
 
 papp :: Term s (a :--> b) -> Term s a -> Term s b
