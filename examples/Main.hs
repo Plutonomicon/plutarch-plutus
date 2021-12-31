@@ -9,7 +9,7 @@ import Control.Exception (SomeException, try)
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
-import Plutarch (ClosedTerm, POpaque, compile, popaque, printScript, printTerm, punsafeBuiltin, punsafeCoerce, punsafeConstant)
+import Plutarch (ClosedTerm, POpaque, compile, compileAndShrink, popaque, printScript, printTerm, punsafeBuiltin, punsafeCoerce, punsafeConstant)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
 import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdata, pdataLiteral)
 import Plutarch.ByteString (pbyteStr, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
@@ -58,10 +58,16 @@ fib = phoistAcyclic $
 uglyDouble :: Term s (PInteger :--> PInteger)
 uglyDouble = plam $ \n -> plet n $ \n1 -> plet n1 $ \n2 -> n2 + n2
 
-eval :: HasCallStack => ClosedTerm a -> IO Scripts.Script
-eval x = case evaluateScript $ compile x of
+evalBy :: HasCallStack => (ClosedTerm a -> Scripts.Script) -> ClosedTerm a -> IO Scripts.Script
+evalBy compiler x = case evaluateScript $ compiler x of
   Left e -> assertFailure $ "Script evaluation failed: " <> show e
   Right (_, _, x') -> pure x'
+
+eval :: HasCallStack => ClosedTerm a -> IO Scripts.Script
+eval = evalBy compile
+
+shrinkEval :: HasCallStack => ClosedTerm a -> IO Scripts.Script
+shrinkEval = evalBy compileAndShrink
 
 equal :: HasCallStack => ClosedTerm a -> ClosedTerm b -> Assertion
 equal x y = do
@@ -69,21 +75,45 @@ equal x y = do
   y' <- eval y
   printScript x' @?= printScript y'
 
+shrinkEqual :: HasCallStack => ClosedTerm a -> ClosedTerm b -> Assertion
+shrinkEqual x y = do
+  x' <- eval x
+  y' <- eval y
+  xs <- shrinkEval x
+  ys <- shrinkEval y
+  printScript x' @?= printScript xs
+  printScript y' @?= printScript ys
+  printScript xs @?= printScript ys
+
 equal' :: HasCallStack => ClosedTerm a -> String -> Assertion
 equal' x y = do
   x' <- eval x
   printScript x' @?= y
 
-fails :: HasCallStack => ClosedTerm a -> Assertion
-fails x =
-  case evaluateScript $ compile x of
+shrinkDoesntBreak :: HasCallStack => ClosedTerm a -> Assertion
+shrinkDoesntBreak x = do
+  xs' <- shrinkEval x
+  x' <- eval x
+  printScript xs' @?= printScript x'
+
+failsBy :: HasCallStack => (ClosedTerm a -> Scripts.Script) -> ClosedTerm a -> Assertion
+failsBy compiler x = case evaluateScript $ compiler x of
     Left (Scripts.EvaluationError _ _) -> mempty
     Left (Scripts.EvaluationException _ _) -> mempty
     Left e -> assertFailure $ "Script is malformed: " <> show e
     Right (_, _, s) -> assertFailure $ "Script didn't err: " <> printScript s
 
+fails :: HasCallStack => ClosedTerm a -> Assertion
+fails = failsBy compile
+
+shrinkFails :: HasCallStack => ClosedTerm a -> Assertion
+shrinkFails = failsBy compileAndShrink
+
 expect :: HasCallStack => ClosedTerm PBool -> Assertion
 expect = equal (pcon PTrue :: Term s PBool)
+
+shrinkExpect :: HasCallStack => ClosedTerm PBool -> Assertion
+shrinkExpect = shrinkEqual (pcon PTrue :: Term s PBool)
 
 throws :: ClosedTerm a -> Assertion
 throws x =
@@ -104,6 +134,7 @@ tests =
     "unit tests"
     [ plutarchTests
     , uplcTests
+    , shrinkerTests
     ]
 
 plutarchTests :: TestTree
@@ -289,3 +320,118 @@ dummyCurrency :: CurrencySymbol
 dummyCurrency =
   CurrencySymbol . fromJust . Aeson.decode $
     "\"1111111111111111111111111111111111111111111111111111111111111111\""
+
+shrinkerTests :: TestTree
+shrinkerTests =
+  testGroup
+    "shrinker tests"
+    [ testCase "add1" $ shrinkDoesntBreak (add1 # 5 # 7)
+    , testCase "add1Hoisted" $ shrinkDoesntBreak (add1Hoisted # 3 # 6)
+    , testCase "example1" $ shrinkDoesntBreak example1
+    , testCase "example2" $ shrinkDoesntBreak example2
+    --, testCase "pfix" $ shrinkDoesntBreak pfix
+    -- Fails with equivelent but not identical reduction
+    , testCase "fib1" $ (fib # 1) `shrinkEqual` (1 :: Term s PInteger)
+    , testCase "fib2" $ (fib # 9) `shrinkEqual` (34 :: Term s PInteger)
+    , testCase "uglyDouble" $ shrinkDoesntBreak uglyDouble
+    , testCase "1 + 2 == 3" $ shrinkDoesntBreak (1 + 2 :: Term s PInteger)
+    , testCase "perror" $ shrinkFails perror
+    , testCase "pnot" $ do
+        (pnot #$ pcon PTrue) `shrinkEqual` pcon PFalse
+        (pnot #$ pcon PFalse) `shrinkEqual` pcon PTrue
+    , testCase "() == ()" $ do
+        shrinkExpect $ pmatch (pcon PUnit) (\case PUnit -> pcon PTrue)
+        shrinkExpect $ pcon PUnit #== pcon PUnit
+    , testCase "() < () == False" $ do
+        shrinkExpect $ pnot #$ pcon PUnit #< pcon PUnit
+    , testCase "() <= () == True" $ do
+        shrinkExpect $ pcon PUnit #<= pcon PUnit
+    , testCase "0x02af == 0x02af" $ shrinkExpect $ phexByteStr "02af" #== phexByteStr "02af"
+    , testCase "\"foo\" == \"foo\"" $ shrinkExpect $ "foo" #== ("foo" :: Term s PString)
+    , testCase "PByteString :: mempty <> a == a <> mempty == a" $ do
+        shrinkExpect $ let a = phexByteStr "152a" in (mempty <> a) #== a
+        shrinkExpect $ let a = phexByteStr "4141" in (a <> mempty) #== a
+    , testCase "PString :: mempty <> a == a <> mempty == a" $ do
+        shrinkExpect $ let a = "foo" :: Term s PString in (mempty <> a) #== a
+        shrinkExpect $ let a = "bar" :: Term s PString in (a <> mempty) #== a
+    , testCase "PByteString :: 0x12 <> 0x34 == 0x1234" $
+        shrinkExpect $ (phexByteStr "12" <> phexByteStr "34") #== phexByteStr "1234"
+    , testCase "PString :: \"ab\" <> \"cd\" == \"abcd\"" $
+        shrinkExpect $
+          ("ab" <> "cd") #== ("abcd" :: Term s PString)
+    , testCase "PByteString mempty" $ shrinkDoesntBreak $ mempty #== phexByteStr ""
+    , testCase "pconsByteStr" $
+        let xs = "5B1F"; b = "41"
+         in (pconsBS # fromInteger (readByte b) # phexByteStr xs) `shrinkEqual` phexByteStr (b <> xs)
+    , testCase "plengthByteStr" $ do
+        (plengthBS # phexByteStr "012f") `equal` (2 :: Term s PInteger)
+        shrinkExpect $ (plengthBS # phexByteStr "012f") #== 2
+        let xs = phexByteStr "48fCd1"
+        (plengthBS #$ pconsBS # 91 # xs)
+          `shrinkEqual` (1 + plengthBS # xs)
+    , testCase "pindexByteStr" $
+        (pindexBS # phexByteStr "4102af" # 1) `shrinkEqual` (0x02 :: Term s PInteger)
+    , testCase "psliceByteStr" $
+        (psliceBS # 1 # 3 # phexByteStr "4102afde5b2a") `shrinkEqual` phexByteStr "02afde"
+    , testCase "pbyteStr - phexByteStr relation" $ do
+        let a = ["42", "ab", "df", "c9"]
+        pbyteStr (BS.pack $ map readByte a) `shrinkEqual` phexByteStr (concat a)
+    , testCase "PString mempty" $ shrinkExpect $ mempty #== ("" :: Term s PString)
+    , testCase "pfromText \"abc\" == \"abc\"" $ do
+        pfromText "abc" `shrinkEqual` ("abc" :: Term s PString)
+        shrinkExpect $ pfromText "foo" #== "foo"
+    , testCase "#&& - boolean and; #|| - boolean or" $ do
+        let ptrue = pcon PTrue
+            pfalse = pcon PFalse
+        -- AND tests
+        shrinkExpect $ ptrue #&& ptrue
+        shrinkExpect $ pnot #$ ptrue #&& pfalse
+        shrinkExpect $ pnot #$ pfalse #&& ptrue
+        shrinkExpect $ pnot #$ pfalse #&& pfalse
+        -- OR tests
+        shrinkExpect $ ptrue #|| ptrue
+        shrinkExpect $ ptrue #|| pfalse
+        shrinkExpect $ pfalse #|| ptrue
+        shrinkExpect $ pnot #$ pfalse #|| pfalse
+    , testCase "ScriptPurpose literal" $
+        let d :: ScriptPurpose
+            d = Minting dummyCurrency
+            f :: Term s PData
+            f = pdataLiteral $ toData d
+         in shrinkDoesntBreak f
+    , testCase "error # 1 => error" $
+        shrinkFails (perror # (1 :: Term s PInteger))
+    , testCase "fib error => error" $
+        shrinkFails (fib # perror)
+    , testCase "force (delay 0) => 0" $
+        shrinkDoesntBreak (pforce . pdelay $ (0 :: Term s PInteger))
+    , testCase "id # 0 => 0" $
+        shrinkDoesntBreak ((plam $ \x -> x) # (0 :: Term s PInteger))
+    , testCase "hoist id 0 => 0" $
+        shrinkDoesntBreak ((phoistAcyclic $ plam $ \x -> x) # (0 :: Term s PInteger))
+    , testCase "hoist fstPair => fstPair" $
+        shrinkDoesntBreak (phoistAcyclic (punsafeBuiltin PLC.FstPair))
+    , testCase "PData equality" $ do
+        shrinkExpect $ let dat = pdataLiteral (PlutusTx.List [PlutusTx.Constr 1 [PlutusTx.I 0]]) in dat #== dat
+    , testCase "PAsData equality" $ do
+        shrinkExpect $ let dat = pdata @PInteger 42 in dat #== dat
+        shrinkExpect $ pnot #$ pdata (phexByteStr "12") #== pdata (phexByteStr "ab")
+    , testCase "λx y -> addInteger x y => addInteger" $
+        shrinkDoesntBreak (plam $ \x y -> (x :: Term _ PInteger) + y)
+    , testCase "λx y -> hoist (force mkCons) x y => force mkCons" $
+        shrinkDoesntBreak (plam $ \x y -> (pforce $ punsafeBuiltin PLC.MkCons) # x # y)
+    , testCase "λx y -> hoist mkCons x y => mkCons x y" $
+        shrinkDoesntBreak (plam $ \x y -> (punsafeBuiltin PLC.MkCons) # x # y)
+    , testCase "λx y -> hoist (λx y. x + y - y - x) x y => λx y. x + y - y - x" $
+        shrinkDoesntBreak (plam $ \x y -> (phoistAcyclic $ plam $ \(x :: Term _ PInteger) y -> x + y - y - x) # x # y)
+    , testCase "λx y -> x + x" $
+        shrinkDoesntBreak (plam $ \(x :: Term _ PInteger) (_ :: Term _ PInteger) -> x + x)
+    , testCase "let x = addInteger in x 1 1" $
+        shrinkDoesntBreak (plet (punsafeBuiltin PLC.AddInteger) $ \x -> x # (1 :: Term _ PInteger) # (1 :: Term _ PInteger))
+    , testCase "let x = 0 in x => 0" $
+        shrinkDoesntBreak (plet 0 $ \(x :: Term _ PInteger) -> x)
+    , testCase "let x = hoist (\\x -> x + x) in 0 => 0" $
+        shrinkDoesntBreak (plet (phoistAcyclic $ plam $ \(x :: Term _ PInteger) -> x + x) $ \_ -> (0 :: Term _ PInteger))
+    , testCase "let x = hoist (\\x -> x + x) in x" $
+        shrinkDoesntBreak (plet (phoistAcyclic $ plam $ \(x :: Term _ PInteger) -> x + x) $ \x -> x)
+    ]
