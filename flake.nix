@@ -47,7 +47,7 @@
 
             additional = ps: [
               ps.plutus-ledger-api
-							ps.shrinker
+              ps.shrinker
             ];
           };
           sha256map = {
