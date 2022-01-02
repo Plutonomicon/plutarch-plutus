@@ -9,6 +9,7 @@ module Plutarch (
   PI.Dig,
   PI.hashOpenTerm,
   PI.hashTerm,
+  PI.letrec,
   PI.papp,
   PI.pdelay,
   PI.PDelayed,

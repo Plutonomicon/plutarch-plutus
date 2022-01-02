@@ -110,6 +110,8 @@ library
     , plutus-tx
     , mtl
     , flat
+    , rank2classes
+    , transformers
 
   if flag(development)
     cpp-options: -DDevelopment
@@ -130,6 +132,7 @@ test-suite examples
     , bytestring
     , text
     , plutarch
+    , rank2classes >= 1.4.4
     , tasty
     , tasty-hunit
     , text

@@ -20,6 +20,7 @@ module Plutarch.Internal (
   Dig,
   hashTerm,
   hashOpenTerm,
+  letrec,
   TermCont (..),
 ) where
 
@@ -31,6 +32,7 @@ import qualified Data.ByteString as BS
 import Data.Function ((&))
 import Data.Kind (Type)
 import Data.List (foldl', groupBy, sortOn)
+import Data.Monoid (Sum(Sum, getSum), Dual(Dual))
 import qualified Data.Map.Lazy as M
 import qualified Data.Set as S
 import qualified Flat.Run as F
@@ -43,6 +45,7 @@ import PlutusCore (Some, ValueOf)
 import qualified PlutusCore as PLC
 import qualified PlutusCore.Constant as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
+import qualified Rank2
 import qualified UntypedPlutusCore as UPLC
 
 {- $hoisted
@@ -63,6 +66,7 @@ import qualified UntypedPlutusCore as UPLC
 type Dig = Digest Blake2b_160
 
 data HoistedTerm = HoistedTerm Dig RawTerm
+  deriving stock Show
 
 data RawTerm
   = RVar Natural
@@ -74,6 +78,7 @@ data RawTerm
   | RBuiltin PLC.DefaultFun
   | RError
   | RHoisted HoistedTerm
+  deriving stock Show
 
 hashRawTerm' :: HashAlgorithm alg => RawTerm -> Context alg -> Context alg
 hashRawTerm' (RVar x) = flip hashUpdate ("0" :: BS.ByteString) . flip hashUpdate (F.flat (fromIntegral x :: Integer))
@@ -268,6 +273,30 @@ phoistAcyclic t = Term $ \_ -> case asRawTerm t 0 of
     Left e -> error $ "Hoisted term errs! " <> show e
 
 rawTermToUPLC :: (HoistedTerm -> Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) -> Natural -> RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+
+letrec :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => (r (Term s) -> r (Term s)) -> Term s _ -- (Const (r Ident))
+letrec r = Term term
+  where term n = TermResult{getTerm= RApply rfix [RLamAbs 1 $ RApply (RVar 0) $ rawTerms], getDeps= deps}
+          where (Dual rawTerms, deps) = Rank2.foldMap (rawResult . ($ n) . asRawTerm) (r selfReferring)
+        rawResult TermResult{getTerm, getDeps} = (Dual [getTerm], getDeps)
+        selfReferring = Rank2.cotraverse var id
+        var :: (r (Term s) -> Term s a) -> Term s a
+        var ref = ref ordered
+        ordered :: r (Term s)
+        ordered = evalState (Rank2.traverse next initial) fieldCount
+        initial :: r (Term s)
+        initial = r (error "recursion")
+        next :: f a -> State Natural (Term s a)
+        next _ = do {i <- get;
+                     let {i' = pred i};
+                     seq i' (put i');
+                     return (Term $ \depth-> TermResult{getTerm= RApply (RVar $ fieldCount + depth - 1) [RLamAbs (fieldCount - 1) $ RVar i'],
+                                                        getDeps= []})}
+        fieldCount :: Natural
+        fieldCount = getSum (Rank2.foldMap (const $ Sum 1) initial)
+rfix :: RawTerm
+rfix = RLamAbs 0 $ RApply (RLamAbs 0 $ RApply (RVar 1) [RApply (RVar 0) [RVar 0]]) [RLamAbs 0 $ RApply (RVar 1) [RApply (RVar 0) [RVar 0]]]
+
 rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i + 1) -- Why the fuck does it start from 1 and not 0?
 rawTermToUPLC m l (RLamAbs n t) = foldr (.) id (replicate (fromIntegral $ n + 1) $ UPLC.LamAbs () (DeBruijn . Index $ 0)) $ (rawTermToUPLC m (l + n + 1) t)
 rawTermToUPLC m l (RApply x y) = foldr (.) id ((\y' t -> UPLC.Apply () t (rawTermToUPLC m l y')) <$> y) $ (rawTermToUPLC m l x)
