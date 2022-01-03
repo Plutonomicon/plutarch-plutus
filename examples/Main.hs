@@ -3,7 +3,7 @@
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 {-# OPTIONS_GHC -Wno-partial-type-signatures #-}
 
-module Main (main, iterateN, swap, fromScriptBuiltin, fromScriptData) where
+module Main (main, iterateN, swap, fromScriptConstant) where
 
 import Data.Function ((&))
 import Test.Tasty
@@ -27,6 +27,7 @@ import qualified PlutusCore as PLC
 import UntypedPlutusCore.Core.Type qualified as UPLC
 import PlutusTx qualified as PTX
 import PlutusCore.Data ()
+import PlutusCore.Constant qualified as PLC
 
 main :: IO ()
 main = defaultMain tests
@@ -96,27 +97,28 @@ eval x = case evaluateScript $ compile x of
   Left e -> assertFailure $ "Script evaluation failed: " <> show e
   Right (_, _, x') -> pure x'
 
-fromScriptBuiltin :: 
+fromScriptConstant :: 
   forall a.
   ( Flat.Flat a 
+  , PLC.DefaultUni `PLC.Contains` a
   ) => Scripts.Script -> Maybe a
-fromScriptBuiltin s =
-  s 
-    & Scripts.unScript 
-    & UPLC.toTerm 
-    & Flat.flat 
-    & Flat.unflat @a
-    & \case 
-        (Right x) -> Just x
+fromScriptConstant s = do
+  (Scripts.unScript s)
+    & UPLC.toTerm
+    & \case
+  where
+    fromTerm 
+      (UPLC.Constant _ 
+        (PLC.Some (PLC.ValueOf termUni x))) = 
+      let exUni = PLC.knownUni @_ @PLC.DefaultUni @a
+      in
+      case termUni `PLC.geq` exUni of
+        (Just PLC.Refl) -> Just x
         _ -> Nothing
 
-fromScriptData ::
-  forall a.
-  ( PTX.FromData a
-  ) => Scripts.Script -> Maybe a
-fromScriptData s =
-  fromScriptBuiltin @PTX.Data s
-    >>= PTX.fromData
+    fromTerm _ = Nothing
+    
+
 
 equal :: HasCallStack => ClosedTerm a -> ClosedTerm b -> Assertion
 equal x y = do
