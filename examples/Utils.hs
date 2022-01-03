@@ -1,14 +1,14 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE ImplicitParams #-}
 
-module Utils (HasTester, standardTester, eval, equal, equal', fails, expect, throws, traces, shrinkTester) where
+module Utils (HasTester, standardTester, eval, equal, equalBudgeted, equal', fails, expect, throws, traces, shrinkTester) where
 
 import Control.Exception (SomeException, try)
 import Data.Kind (Type)
 import Data.Text (Text)
 import Plutarch (ClosedTerm, PCon (pcon), Term, compile, printScript)
 import Plutarch.Bool (PBool (PTrue))
-import Plutarch.Evaluate (evaluateScript)
+import Plutarch.Evaluate (evaluateBudgetedScript, evaluateScript)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import Shrink (shrinkScript)
 import Test.Tasty.HUnit
@@ -150,3 +150,21 @@ throws :: (HasCallStack, HasTester) => ClosedTerm a -> Assertion
 throws = runThrowsImpl (throwsImpl ?tester)
 traces :: (HasCallStack, HasTester) => ClosedTerm a -> [Text] -> Assertion
 traces = runTracesImpl (tracesImpl ?tester)
+
+evalBudgeted :: HasCallStack => ClosedTerm a -> IO Scripts.Script
+evalBudgeted x = case evaluateBudgetedScript (ExBudget maxCPU maxMemory) $ compile x of
+  Left e -> assertFailure $ "Script evaluation failed: " <> show e
+  Right (_, _, x') -> pure x'
+
+maxCPU :: ExMemory.ExCPU
+maxCPU = ExMemory.ExCPU 4000
+
+maxMemory :: ExMemory.ExMemory
+maxMemory = ExMemory.ExMemory 4000
+
+equalBudgeted :: HasCallStack => ClosedTerm a -> ClosedTerm b -> Assertion
+equalBudgeted x y = do
+  x' <- evalBudgeted x
+  y' <- evalBudgeted y
+  printScript x' @?= printScript y'
+
