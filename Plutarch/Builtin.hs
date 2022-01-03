@@ -1,3 +1,4 @@
+-- This should have been called Plutarch.Data...
 module Plutarch.Builtin (
   PData (..),
   pheadBuiltin,
@@ -12,17 +13,23 @@ module Plutarch.Builtin (
   pasByteStr,
   PBuiltinPair,
   PBuiltinList,
+  pdataLiteral,
+  PIsData (..),
+  PAsData,
 ) where
 
-import Plutarch (punsafeBuiltin)
-import Plutarch.Bool (PBool)
+import Plutarch (punsafeBuiltin, punsafeCoerce, punsafeConstant)
+import Plutarch.Bool (PBool, PEq, (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
+import PlutusTx (Data)
 
+-- | Plutus 'BuiltinPair'
 data PBuiltinPair (a :: k -> Type) (b :: k -> Type) (s :: k)
 
+-- | Plutus 'BuiltinList'
 data PBuiltinList (a :: k -> Type) (s :: k)
 
 pheadBuiltin :: Term s (PBuiltinList a :--> a)
@@ -40,6 +47,9 @@ data PData s
   | PDataList (Term s (PBuiltinList PData))
   | PDataInteger (Term s PInteger)
   | PDataByteString (Term s PByteString)
+
+instance PEq PData where
+  x #== y = punsafeBuiltin PLC.EqualsData # x # y
 
 pfstBuiltin :: Term s (PBuiltinPair a b :--> a)
 pfstBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.FstPair
@@ -61,3 +71,38 @@ pasInt = punsafeBuiltin PLC.UnIData
 
 pasByteStr :: Term s (PData :--> PByteString)
 pasByteStr = punsafeBuiltin PLC.UnBData
+
+pdataLiteral :: Data -> Term s PData
+pdataLiteral = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniData
+
+data PAsData (a :: k -> Type) (s :: k)
+
+pforgetData :: Term s (PAsData a) -> Term s PData
+pforgetData = punsafeCoerce
+
+class PIsData a where
+  pfromData :: Term s (PAsData a) -> Term s a
+  pdata :: Term s a -> Term s (PAsData a)
+
+instance PIsData PData where
+  pfromData = punsafeCoerce
+  pdata = punsafeCoerce
+
+instance PIsData a => PIsData (PBuiltinList (PAsData a)) where
+  pfromData x = punsafeCoerce $ pasList # pforgetData x
+  pdata x = punsafeBuiltin PLC.ListData # x
+
+instance PIsData PInteger where
+  pfromData x = pasInt # pforgetData x
+  pdata x = punsafeBuiltin PLC.IData # x
+
+instance PIsData PByteString where
+  pfromData x = pasByteStr # pforgetData x
+  pdata x = punsafeBuiltin PLC.BData # x
+
+instance PIsData (PBuiltinPair PInteger (PBuiltinList PData)) where
+  pfromData x = pasConstr # pforgetData x
+  pdata x' = plet x' $ \x -> punsafeBuiltin PLC.ConstrData # (pfstBuiltin # x) #$ psndBuiltin # x
+
+instance PEq (PAsData a) where
+  x #== y = punsafeBuiltin PLC.EqualsData # x # y

@@ -1,11 +1,24 @@
-module Plutarch.Integer (PInteger) where
+module Plutarch.Integer (PInteger, PIntegral (..)) where
 
 import Plutarch (punsafeBuiltin, punsafeConstant)
 import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
+-- | Plutus BuiltinInteger
 data PInteger s
+
+class PIntegral a where
+  pdiv :: Term s (a :--> a :--> a)
+  pmod :: Term s (a :--> a :--> a)
+  pquot :: Term s (a :--> a :--> a)
+  prem :: Term s (a :--> a :--> a)
+
+instance PIntegral PInteger where
+  pdiv = punsafeBuiltin PLC.DivideInteger
+  pmod = punsafeBuiltin PLC.ModInteger
+  pquot = punsafeBuiltin PLC.QuotientInteger
+  prem = punsafeBuiltin PLC.RemainderInteger
 
 instance PEq PInteger where
   x #== y = punsafeBuiltin PLC.EqualsInteger # x # y

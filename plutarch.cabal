@@ -16,6 +16,8 @@ common c
     LambdaCase
     TypeFamilies
     OverloadedStrings
+    PartialTypeSignatures
+    ViewPatterns
     -- poor man's GHC2021
     BangPatterns
     BinaryLiterals
@@ -63,15 +65,16 @@ common c
     TypeOperators
     TypeSynonymInstances
   ghc-options:
-    -Wall -Wcompat -Wincomplete-uni-patterns -Wredundant-constraints
+    -Wall -Wcompat -Wincomplete-uni-patterns -Wno-partial-type-signatures
     -Wmissing-export-lists -Werror -Wincomplete-record-updates
     -Wmissing-deriving-strategies -Wno-name-shadowing
 
 library
   import: c
   exposed-modules:
-    Plutarch
+    Plutarch.Evaluate
     Plutarch.Internal
+    Plutarch
     Plutarch.Prelude
     Plutarch.Pair
     Plutarch.Rational
@@ -81,12 +84,11 @@ library
     Plutarch.String
     Plutarch.ByteString
     Plutarch.Builtin
-    Plutarch.BuiltinHList
     Plutarch.DataRepr
     Plutarch.ScriptContext
-    Plutarch.Evaluate
     Plutarch.Maybe
     Plutarch.Unit
+    Plutarch.Crypto
   build-depends:
     , base
     , plutus-core
@@ -105,13 +107,17 @@ test-suite examples
   type: exitcode-stdio-1.0
   main-is: Main.hs
   hs-source-dirs: examples
-  other-modules:
+  other-modules: 
+    Examples.PlutusType
+    Utils
+    Examples.Recursion
   build-depends:
     , base
+    , bytestring
     , plutarch
     , tasty
     , tasty-hunit
     , plutus-ledger-api
     , plutus-core
-    , flat
+    , aeson
     , plutus-tx

@@ -1,29 +1,35 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch (
   (PI.:-->),
-  PI.PDelayed,
-  PI.Term,
-  PI.plam',
-  PI.plet,
+  PI.ClosedTerm,
+  PI.compile,
+  PI.Dig,
+  PI.hashOpenTerm,
+  PI.hashTerm,
   PI.papp,
   PI.pdelay,
+  PI.PDelayed,
+  PI.perror,
   PI.pforce,
   PI.phoistAcyclic,
-  PI.perror,
-  PI.punsafeCoerce,
+  PI.plam',
+  PI.plet,
   PI.punsafeBuiltin,
+  PI.punsafeCoerce,
   PI.punsafeConstant,
-  PI.compile,
-  PI.ClosedTerm,
+  PI.Term,
+  PI.TermCont (..),
   PlutusType (..),
   printTerm,
   printScript,
   (#$),
   (#),
   pinl,
-  pcon,
-  pmatch,
+  PCon (..),
+  PMatch (..),
   punsafeFrom,
   pto,
   pfix,
@@ -79,14 +85,12 @@ infixl 8 #
 (#$) = papp
 infixr 0 #$
 
--- TODO: Improve type inference when using plam
-class PLam (s :: k) (b :: Type) where
-  type PLamOut b :: (k -> Type)
+class PLamN a b | a -> b where
 
   {- | 
     Lambda abstraction.
 
-    The 'PLamOut' type family on the return type allows 
+    The 'PLamN' type-class allows
     currying to work as expected for any number of arguments.
 
     > id :: Term s (a :--> a)
@@ -96,16 +100,30 @@ class PLam (s :: k) (b :: Type) where
     > const = plam (\x y -> x)
    
   -}
-  plam :: forall (a :: k -> Type). (Term s a -> b) -> Term s (a :--> PLamOut b)
+  plam :: a -> b
 
-instance PLam s (Term s b) where
-  type PLamOut (Term s b) = b
-  plam :: forall a. (Term s a -> Term s b) -> Term s (a :--> b)
+-- FIXME: This piece of code doesn't work unless you do (_ :: Term _ _)
+{-
+f :: Term s ((a :--> b) :--> b :--> b)
+f = plam $ \f _ -> f # perror
+-}
+
+instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b) => PLamN (a' -> b') (Term s (a :--> b)) where
   plam = plam'
 
-instance PLam s c => PLam s (Term s b -> c) where
-  type PLamOut (Term s b -> c) = b :--> PLamOut c
-  plam :: forall a. (Term s a -> Term s b -> c) -> Term s (a :--> b :--> PLamOut c)
+instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c) => PLamN (a' -> b' -> c') (Term s (a :--> b :--> c)) where
+  plam f = plam' $ \x -> plam (f x)
+
+instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d) => PLamN (a' -> b' -> c' -> d') (Term s (a :--> b :--> c :--> d)) where
+  plam f = plam' $ \x -> plam (f x)
+
+instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e) => PLamN (a' -> b' -> c' -> d' -> e') (Term s (a :--> b :--> c :--> d :--> e)) where
+  plam f = plam' $ \x -> plam (f x)
+
+instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f) => PLamN (a' -> b' -> c' -> d' -> e' -> f') (Term s (a :--> b :--> c :--> d :--> e :--> f)) where
+  plam f = plam' $ \x -> plam (f x)
+
+instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f, g' ~ Term s g) => PLamN (a' -> b' -> c' -> d' -> e' -> f' -> g') (Term s (a :--> b :--> c :--> d :--> e :--> f :--> g)) where
   plam f = plam' $ \x -> plam (f x)
 
 pinl :: Term s a -> (Term s a -> Term s b) -> Term s b
@@ -116,7 +134,7 @@ pinl v f = f v
   The 'PlutusType' class allows encoding Haskell data-types as plutus terms
   via constructors and destructors.
 
-  A simple example, encoding a Sum type as an Enum via Integers.
+  A simple example, encoding a Sum type as an Enum via PInteger:
 
   > data AB (s :: k) = A | B
   >
@@ -130,29 +148,37 @@ pinl v f = f v
   >     pif (x #== 0) (f A) (f B)
   > 
 
-  Instead of using `pcon'` and `pmatch'` directly,
+  instead of using `pcon'` and `pmatch'` directly,
   use 'pcon' and 'pmatch', to hide the `PInner` type:
 
   > swap :: Term s AB -> Term s AB
   > swap x = pmatch x $ \case
   >  A -> pcon B
   >  B -> pcon A
+
+  Further examples can be found in examples/PlutusType.hs
   
 -}
-class PlutusType (a :: k -> Type) where
+class (PCon a, PMatch a) => PlutusType (a :: k -> Type) where
   -- `b' :: k'` causes GHC to fail type checking at various places
   -- due to not being able to expand the type family.
   type PInner a (b' :: k -> Type) :: k -> Type
   pcon' :: forall s. a s -> forall b. Term s (PInner a b)
   pmatch' :: forall s c. (forall b. Term s (PInner a b)) -> (a s -> Term s c) -> Term s c
 
--- | Construct a Plutus Term via a Haskell value
-pcon :: PlutusType a => a s -> Term s a
-pcon = punsafeCoerce . pcon'
+instance {-# OVERLAPPABLE #-} PlutusType a => PMatch a where
+  pmatch x f = pmatch' (punsafeCoerce x) f
 
--- | Pattern match over a Term via a Haskell function
-pmatch :: PlutusType a => Term s a -> (a s -> Term s b) -> Term s b
-pmatch x f = pmatch' (punsafeCoerce x) f
+instance PlutusType a => PCon a where
+  pcon = punsafeCoerce . pcon'
+
+class PCon a where
+  -- | Construct a Plutarch Term via a Haskell value
+  pcon :: a s -> Term s a
+
+class PMatch a where
+  -- | Construct a Plutarch Term via a Haskell value
+  pmatch :: Term s a -> (a s -> Term s b) -> Term s b
 
 {- | 
   Unsafely coerce from the 'PInner' representation of a Term,
@@ -201,6 +227,8 @@ punsafeFromOpaque = punsafeCoerce
   > iterateN :: Term s (PInteger :--> (a :--> a) :--> a :--> a)
   > iterateN = pfix #$ plam iterateN'
   >     
+
+  Further examples can be found in examples/Recursion.hs
 
 -}
 pfix :: Term s (((a :--> b) :--> a :--> b) :--> a :--> b)

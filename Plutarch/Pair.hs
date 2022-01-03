@@ -6,6 +6,12 @@ module Plutarch.Pair (PPair (..)) where
 import Plutarch (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.Prelude
 
+{- | 
+  Plutus encoding of Pairs.
+
+  Note: This is represented differently than 'BuiltinPair'
+
+-}
 data PPair (a :: k -> Type) (b :: k -> Type) (s :: k) = PPair (Term s a) (Term s b)
 
 instance PlutusType (PPair a b) where

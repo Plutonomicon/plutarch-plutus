@@ -1,4 +1,12 @@
-module Plutarch.ByteString (PByteString, phexByteStr, pbyteStr) where
+module Plutarch.ByteString (
+  PByteString,
+  phexByteStr,
+  pbyteStr,
+  pconsBS,
+  psliceBS,
+  plengthBS,
+  pindexBS,
+) where
 
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
@@ -7,9 +15,11 @@ import Data.Word (Word8)
 import GHC.Stack (HasCallStack)
 import Plutarch (punsafeBuiltin, punsafeConstant)
 import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
+import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
+-- | Plutus 'BuiltinByteString'
 data PByteString s
 
 instance PEq PByteString where
@@ -36,6 +46,29 @@ phexByteStr = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByteString 
 -- | Construct a PByteString term from a Haskell bytestring.
 pbyteStr :: ByteString -> Term s PByteString
 pbyteStr = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByteString
+
+-----------------------------------------------------------
+-- The following functions should be import qualified. --
+-----------------------------------------------------------
+
+-- | Prepend a byte, represented by a non negative 'PInteger', to a 'PBytestring'.
+pconsBS :: Term s (PInteger :--> PByteString :--> PByteString)
+pconsBS = punsafeBuiltin PLC.ConsByteString
+
+{- | Slice a 'PByteString' with given start and end indices.
+
+>>> (pslice # 1 # 3 phexByteStr "4102afde5b2a") #== phexByteStr "02afde"
+-}
+psliceBS :: Term s (PInteger :--> PInteger :--> PByteString :--> PByteString)
+psliceBS = punsafeBuiltin PLC.SliceByteString
+
+-- | Find the length of a 'PByteString'.
+plengthBS :: Term s (PByteString :--> PInteger)
+plengthBS = punsafeBuiltin PLC.LengthOfByteString
+
+-- | 'PByteString' indexing function.
+pindexBS :: Term s (PByteString :--> PInteger :--> PInteger)
+pindexBS = punsafeBuiltin PLC.IndexByteString
 
 hexDigitToWord8 :: HasCallStack => Char -> Word8
 hexDigitToWord8 = f . toLower
