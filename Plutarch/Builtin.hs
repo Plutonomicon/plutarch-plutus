@@ -17,8 +17,6 @@ module Plutarch.Builtin (
   PIsData (..),
   PAsData,
   pconsBuiltin,
-  pnilDataBuiltin,
-  pnilPairDataBuiltin,
   ppairDataBuiltin,
 ) where
 
@@ -58,20 +56,6 @@ ptailBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.TailList
 
 pnullBuiltin :: Term s (PBuiltinList a :--> PBool)
 pnullBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.NullList
-
-{- | A nil for builtin list of 'PData' elements.
-
-This uses 'PAsData' to preserve more information about the underlying 'PData'.
--}
-pnilDataBuiltin :: Term s (PBuiltinList (PAsData a))
-pnilDataBuiltin = punsafeConstant . PLC.Some $ PLC.ValueOf (PLC.DefaultUniList PLC.DefaultUniData) []
-
-{- | A nil for builtin list of builtin pairs of 'PData' elements.
-
-This uses 'PAsData' to preserve more information about the underlying 'PData'.
--}
-pnilPairDataBuiltin :: Term s (PBuiltinList (PBuiltinPair (PAsData a) (PAsData b)))
-pnilPairDataBuiltin = punsafeConstant . PLC.Some $ PLC.ValueOf (PLC.DefaultUniList $ PLC.DefaultUniPair PLC.DefaultUniData PLC.DefaultUniData) []
 
 data PData s
   = PDataConstr (Term s (PBuiltinPair PInteger (PBuiltinList PData)))
