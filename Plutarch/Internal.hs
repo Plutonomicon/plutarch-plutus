@@ -1,4 +1,4 @@
-module Plutarch.Internal ((:-->), PDelayed, Term, plam', plet, papp, pdelay, pforce, phoistAcyclic, perror, punsafeCoerce, punsafeBuiltin, punsafeConstant, compile, ClosedTerm, Dig, hashTerm, hashOpenTerm, TermCont (..)) where
+module Plutarch.Internal ((:-->), PDelayed, Term, plam', plet, papp, pdelay, pforce, phoistAcyclic, perror, punsafeCoerce, punsafeBuiltin, punsafeConstant, punsafeConstantInternal, compile, ClosedTerm, Dig, hashTerm, hashOpenTerm, TermCont (..)) where
 
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
@@ -209,8 +209,12 @@ punsafeCoerce (Term x) = Term x
 punsafeBuiltin :: UPLC.DefaultFun -> Term s a
 punsafeBuiltin f = Term $ \_ -> mkTermRes $ RBuiltin f
 
+{-# DEPRECATED punsafeConstant "Use `pconstant` instead." #-}
 punsafeConstant :: Some (ValueOf PLC.DefaultUni) -> Term s a
-punsafeConstant c = Term $ \_ -> mkTermRes $ RConstant c
+punsafeConstant = punsafeConstantInternal
+
+punsafeConstantInternal :: Some (ValueOf PLC.DefaultUni) -> Term s a
+punsafeConstantInternal c = Term $ \_ -> mkTermRes $ RConstant c
 
 asClosedRawTerm :: ClosedTerm a -> TermResult
 asClosedRawTerm = flip asRawTerm 0

@@ -12,6 +12,7 @@ import qualified PlutusCore as PLC
 
 data PString s
 
+{-# DEPRECATED pfromText "Use `pconstant` instead." #-}
 pfromText :: Txt.Text -> Term s PString
 pfromText = pconstant
 

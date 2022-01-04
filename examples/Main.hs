@@ -12,14 +12,14 @@ import Data.Maybe (fromJust)
 import Plutarch (ClosedTerm, POpaque, compile, pconstant, plift', popaque, printScript, printTerm, punsafeBuiltin, punsafeCoerce)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
 import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdata)
-import Plutarch.ByteString (pbyteStr, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
+import Plutarch.ByteString (PByteString, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal (punsafeConstant)
+import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude
 import Plutarch.ScriptContext (PScriptPurpose (PMinting))
-import Plutarch.String (PString, pfromText)
+import Plutarch.String (PString)
 import Plutarch.Unit (PUnit (..))
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import Plutus.V1.Ledger.Value (CurrencySymbol (CurrencySymbol))
@@ -169,13 +169,13 @@ plutarchTests =
         (pindexBS # phexByteStr "4102af" # 1) `equal` pconstant @PInteger 0x02
     , testCase "psliceByteStr" $
         (psliceBS # 1 # 3 # phexByteStr "4102afde5b2a") `equal` phexByteStr "02afde"
-    , testCase "pbyteStr - phexByteStr relation" $ do
+    , testCase "pconstant - phexByteStr relation" $ do
         let a = ["42", "ab", "df", "c9"]
-        pbyteStr (BS.pack $ map readByte a) `equal` phexByteStr (concat a)
+        pconstant @PByteString (BS.pack $ map readByte a) `equal` phexByteStr (concat a)
     , testCase "PString mempty" $ expect $ mempty #== pconstant @PString ""
-    , testCase "pfromText \"abc\" == \"abc\"" $ do
-        pfromText "abc" `equal` pconstant @PString "abc"
-        expect $ pfromText "foo" #== "foo"
+    , testCase "pconstant \"abc\" == \"abc\"" $ do
+        pconstant @PString "abc" `equal` pconstant @PString "abc"
+        expect $ pconstant @PString "foo" #== "foo"
     , testCase "#&& - boolean and; #|| - boolean or" $ do
         let ptrue = pcon PTrue
             pfalse = pcon PFalse
@@ -253,21 +253,21 @@ uplcTests =
     "uplc tests"
     [ testCase "2:[1]" $
         let l :: Term _ (PBuiltinList PInteger) =
-              punsafeConstant . PLC.Some $
+              punsafeConstantInternal . PLC.Some $
                 PLC.ValueOf (PLC.DefaultUniApply PLC.DefaultUniProtoList PLC.DefaultUniInteger) [1]
             l' :: Term _ (PBuiltinList PInteger) =
               pforce (punsafeBuiltin PLC.MkCons) # (2 :: Term _ PInteger) # l
          in equal' l' "(program 1.0.0 [2,1])"
     , testCase "fails: True:[1]" $
         let l :: Term _ (PBuiltinList POpaque) =
-              punsafeConstant . PLC.Some $
+              punsafeConstantInternal . PLC.Some $
                 PLC.ValueOf (PLC.DefaultUniApply PLC.DefaultUniProtoList PLC.DefaultUniInteger) [1]
             l' :: Term _ (PBuiltinList POpaque) =
               pforce (punsafeBuiltin PLC.MkCons) # pcon PTrue # l
          in fails l'
     , testCase "(2,1)" $
         let p :: Term _ (PBuiltinPair PInteger PInteger) =
-              punsafeConstant . PLC.Some $
+              punsafeConstantInternal . PLC.Some $
                 PLC.ValueOf
                   ( PLC.DefaultUniApply
                       (PLC.DefaultUniApply PLC.DefaultUniProtoPair PLC.DefaultUniInteger)

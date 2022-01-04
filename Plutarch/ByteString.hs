@@ -45,6 +45,8 @@ phexByteStr = pconstant . BS.pack . f
     f [_] = error "UnevenLength"
     f (x : y : rest) = (hexDigitToWord8 x * 16 + hexDigitToWord8 y) : f rest
 
+{-# DEPRECATED pbyteStr "Use `pconstant` instead." #-}
+
 -- | Construct a PByteString term from a Haskell bytestring.
 pbyteStr :: ByteString -> Term s PByteString
 pbyteStr = pconstant

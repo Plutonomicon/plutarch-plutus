@@ -19,7 +19,7 @@ import Plutarch.Internal (
   ClosedTerm,
   Term,
   compile,
-  punsafeConstant,
+  punsafeConstantInternal,
  )
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import qualified PlutusCore as PLC
@@ -59,7 +59,7 @@ plift prog = either (error . show) id $ plift' prog
 
 instance (PLC.DefaultUni `PLC.Contains` h, PDefaultUniType p ~ h) => PConstant p h where
   pconstant =
-    punsafeConstant . PLC.Some . PLC.ValueOf (PLC.knownUniOf (Proxy @h))
+    punsafeConstantInternal . PLC.Some . PLC.ValueOf (PLC.knownUniOf (Proxy @h))
 
 instance PLC.KnownTypeIn PLC.DefaultUni (UPLC.Term PLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) h => PLift h p where
   plift' prog =
