@@ -124,15 +124,6 @@ plutarchTests =
     , testCase "pnot" $ do
         (pnot #$ pcon PTrue) `equal` pcon PFalse
         (pnot #$ pcon PFalse) `equal` pcon PTrue
-    , testGroup
-        "Lift"
-        [ testCase "plift" $ do
-            plift' (pcon PTrue) @?= Right True
-            plift' (pcon PFalse) @?= Right False
-        , testCase "pconstant" $ do
-            plift' (pconstant @PBool False) @?= Right False
-            plift' (pconstant @PBool True) @?= Right True
-        ]
     , testCase "() == ()" $ do
         expect $ pmatch (pcon PUnit) (\case PUnit -> pcon PTrue)
         expect $ pcon PUnit #== pcon PUnit
@@ -244,6 +235,25 @@ plutarchTests =
         printTerm (plet (phoistAcyclic $ plam $ \(x :: Term _ PInteger) -> x + x) $ \_ -> (0 :: Term _ PInteger)) @?= "(program 1.0.0 0)"
     , testCase "let x = hoist (\\x -> x + x) in x" $
         printTerm (plet (phoistAcyclic $ plam $ \(x :: Term _ PInteger) -> x + x) $ \x -> x) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
+    , testGroup
+        "Lifting of constants"
+        [ testCase "plift on primitive types" $ do
+            plift' (pcon PTrue) @?= Right True
+            plift' (pcon PFalse) @?= Right False
+        , testCase "pconstant on primitive types" $ do
+            plift' (pconstant @PBool False) @?= Right False
+            plift' (pconstant @PBool True) @?= Right True
+        , testCase "plift on list and pair" $do 
+            plift' (pconstant @(PBuiltinList PInteger) [1, 2, 3]) @?= Right [1, 2, 3]
+            plift' (pconstant @(PBuiltinPair PString PInteger) ("IOHK", 42)) @?= Right ("IOHK", 42)
+        , testCase "plift on nested containers" $do 
+            -- List of pairs
+            let v1 = [("IOHK", 42), ("Plutus", 31)]
+            plift' (pconstant @(PBuiltinList (PBuiltinPair PString PInteger)) v1) @?= Right v1
+            -- List of pair of lists
+            let v2 = [("IOHK", [1, 2, 3]), ("Plutus", [9, 8, 7])]
+            plift' (pconstant @(PBuiltinList (PBuiltinPair PString (PBuiltinList PInteger))) v2) @?= Right v2
+        ]
     ]
 
 -- | Tests for the behaviour of UPLC itself.
