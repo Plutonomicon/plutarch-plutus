@@ -1,10 +1,9 @@
-{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Lift (
   Lift (..),
   Unlift (..),
-  PDefaultUni (..),
+  PDefaultUniType,
 ) where
 
 import Data.Data (Proxy (Proxy))
@@ -25,9 +24,12 @@ import PlutusCore.Pretty (Pretty, PrettyConst)
 import qualified UntypedPlutusCore as UPLC
 import UntypedPlutusCore.Evaluation.Machine.Cek (CekUserError)
 
-class Lift (h :: Type) p where
+class Lift p (h :: Type) where
   -- {-
   -- Create a Plutarch-level constant, from a Haskell value.
+  --
+  -- Example:
+  -- > pconstant @PInteger 42
   -- -}
   pconstant :: h -> Term s p
 
@@ -39,7 +41,7 @@ class Unlift (h :: Type) p where
   -- -}
   plift :: HasCallStack => ClosedTerm p -> h
 
-instance (PDefaultUni p, PDefaultUniType p ~ h) => Lift h p where
+instance (PLC.DefaultUni `PLC.Contains` h, PDefaultUniType p ~ h) => Lift p h where
   pconstant =
     punsafeConstant . PLC.Some . PLC.ValueOf (PLC.knownUniOf (Proxy @h))
 
@@ -57,9 +59,10 @@ showEvalException ::
   String
 showEvalException = show
 
-{- | Class of eDSL Types that map to Plutus builtin in its `DefaultUni`
+{- | Family of eDSL Types that map to Plutus builtin in its `DefaultUni`
 
  We use this in: PLC.knownUniOf $ Proxy @(PDefaultUniType a)
+
+ TODO: can we obviate this by using something from Plutus?
 -}
-class PLC.DefaultUni `PLC.Contains` PDefaultUniType a => PDefaultUni (a :: k -> Type) where
-  type PDefaultUniType a :: Type
+type family PDefaultUniType (a :: k -> Type) :: Type

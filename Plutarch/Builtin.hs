@@ -22,7 +22,7 @@ import Plutarch (punsafeBuiltin, punsafeCoerce)
 import Plutarch.Bool (PBool, PEq, (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
-import Plutarch.Lift (Lift (pconstant), PDefaultUni (..))
+import Plutarch.Lift (Lift (pconstant), PDefaultUniType)
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 import PlutusTx (Data)
@@ -50,8 +50,7 @@ data PData s
 instance PEq PData where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
 
-instance PDefaultUni PData where
-  type PDefaultUniType PData = Data
+type instance PDefaultUniType PData = Data
 
 pfstBuiltin :: Term s (PBuiltinPair a b :--> a)
 pfstBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.FstPair

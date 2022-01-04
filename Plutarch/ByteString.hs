@@ -35,8 +35,7 @@ instance Semigroup (Term s PByteString) where
 instance Monoid (Term s PByteString) where
   mempty = pconstant BS.empty
 
-instance PDefaultUni PByteString where
-  type PDefaultUniType PByteString = ByteString
+type instance PDefaultUniType PByteString = ByteString
 
 -- | Interpret a hex string as a PByteString.
 phexByteStr :: HasCallStack => String -> Term s PByteString

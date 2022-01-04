@@ -35,5 +35,4 @@ pencodeUtf8 = punsafeBuiltin PLC.EncodeUtf8
 pdecodeUtf8 :: Term s (PByteString :--> PString)
 pdecodeUtf8 = punsafeBuiltin PLC.DecodeUtf8
 
-instance PDefaultUni PString where
-  type PDefaultUniType PString = Text
+type instance PDefaultUniType PString = Text

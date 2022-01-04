@@ -24,5 +24,4 @@ instance Semigroup (Term s PUnit) where
 instance Monoid (Term s PUnit) where
   mempty = pcon PUnit
 
-instance PDefaultUni PUnit where
-  type PDefaultUniType PUnit = ()
+type instance PDefaultUniType PUnit = ()
