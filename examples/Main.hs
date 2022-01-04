@@ -236,18 +236,12 @@ plutarchTests =
         printTerm (plet (phoistAcyclic $ plam $ \(x :: Term _ PInteger) -> x + x) $ \x -> x) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
     ]
 
+-- | Tests for the behaviour of UPLC itself.
 uplcTests :: TestTree
 uplcTests =
   testGroup
     "uplc tests"
     [ testCase "2:[1]" $
-        let l :: Term _ (PBuiltinList PInteger) =
-              punsafeConstant . PLC.Some $
-                PLC.ValueOf (PLC.DefaultUniApply PLC.DefaultUniProtoList PLC.DefaultUniInteger) [1]
-            l' :: Term _ (PBuiltinList PInteger) =
-              pforce (punsafeBuiltin PLC.MkCons) # (2 :: Term _ PInteger) # l
-         in equal' l' "(program 1.0.0 [2,1])"
-    , testCase "[2,1]" $
         let l :: Term _ (PBuiltinList PInteger) =
               punsafeConstant . PLC.Some $
                 PLC.ValueOf (PLC.DefaultUniApply PLC.DefaultUniProtoList PLC.DefaultUniInteger) [1]
