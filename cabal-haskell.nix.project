@@ -67,4 +67,7 @@ source-repository-package
 source-repository-package
   type: git
   location: https://github.com/Plutonomicon/Shrinker
-  tag: 148bccdd472a44bb761cc19c4968039ab42ae54b
+  tag: 708e6ea0f4b0f182b2856c4bc63a295b7f591e2c
+  subdir:
+    .
+    testing

@@ -119,3 +119,5 @@ test-suite examples
     , plutus-core
     , aeson
     , plutus-tx
+    , free
+    , shrinker-testing
