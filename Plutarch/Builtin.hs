@@ -16,6 +16,10 @@ module Plutarch.Builtin (
   pdataLiteral,
   PIsData (..),
   PAsData,
+  pconsBuiltin,
+  pnilDataBuiltin,
+  pnilPairDataBuiltin,
+  ppairDataBuiltin,
 ) where
 
 import Plutarch (punsafeBuiltin, punsafeCoerce, punsafeConstant)
@@ -28,7 +32,23 @@ import PlutusTx (Data)
 
 data PBuiltinPair (a :: k -> Type) (b :: k -> Type) (s :: k)
 
+pfstBuiltin :: Term s (PBuiltinPair a b :--> a)
+pfstBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.FstPair
+
+psndBuiltin :: Term s (PBuiltinPair a b :--> b)
+psndBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.SndPair
+
+{- | Construct a builtin pair of 'PData' elements.
+
+Uses 'PAsData' to preserve more information about the underlying 'PData'.
+-}
+ppairDataBuiltin :: Term s (PAsData a :--> PAsData b :--> PBuiltinPair (PAsData a) (PAsData b))
+ppairDataBuiltin = punsafeBuiltin PLC.MkPairData
+
 data PBuiltinList (a :: k -> Type) (s :: k)
+
+pconsBuiltin :: Term s (a :--> PBuiltinList a :--> PBuiltinList a)
+pconsBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.MkCons
 
 pheadBuiltin :: Term s (PBuiltinList a :--> a)
 pheadBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList
@@ -39,6 +59,20 @@ ptailBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.TailList
 pnullBuiltin :: Term s (PBuiltinList a :--> PBool)
 pnullBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.NullList
 
+{- | A nil for builtin list of 'PData' elements.
+
+This uses 'PAsData' to preserve more information about the underlying 'PData'.
+-}
+pnilDataBuiltin :: Term s (PBuiltinList (PAsData a))
+pnilDataBuiltin = punsafeConstant . PLC.Some $ PLC.ValueOf (PLC.DefaultUniList PLC.DefaultUniData) []
+
+{- | A nil for builtin list of builtin pairs of 'PData' elements.
+
+This uses 'PAsData' to preserve more information about the underlying 'PData'.
+-}
+pnilPairDataBuiltin :: Term s (PBuiltinList (PBuiltinPair (PAsData a) (PAsData b)))
+pnilPairDataBuiltin = punsafeConstant . PLC.Some $ PLC.ValueOf (PLC.DefaultUniList $ PLC.DefaultUniPair PLC.DefaultUniData PLC.DefaultUniData) []
+
 data PData s
   = PDataConstr (Term s (PBuiltinPair PInteger (PBuiltinList PData)))
   | PDataMap (Term s (PBuiltinList (PBuiltinPair PData PData)))
@@ -48,12 +82,6 @@ data PData s
 
 instance PEq PData where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
-
-pfstBuiltin :: Term s (PBuiltinPair a b :--> a)
-pfstBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.FstPair
-
-psndBuiltin :: Term s (PBuiltinPair a b :--> b)
-psndBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.SndPair
 
 pasConstr :: Term s (PData :--> PBuiltinPair PInteger (PBuiltinList PData))
 pasConstr = punsafeBuiltin PLC.UnConstrData
