@@ -10,13 +10,17 @@ module Plutarch.Lift (
 
 import Data.Bifunctor (first)
 import Data.Data (Proxy (Proxy))
+import Data.Kind (Type)
 import Data.Text
 import qualified Data.Text as T
 import GHC.Stack (HasCallStack)
-import Plutarch
 import Plutarch.Evaluate (evaluateScript)
-import Plutarch.Internal (punsafeConstant)
-import Plutarch.Prelude
+import Plutarch.Internal (
+  ClosedTerm,
+  Term,
+  compile,
+  punsafeConstant,
+ )
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import qualified PlutusCore as PLC
 import PlutusCore.Constant (readKnownSelf)

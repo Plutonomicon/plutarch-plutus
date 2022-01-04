@@ -9,15 +9,14 @@ import Control.Exception (SomeException, try)
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
-import Plutarch (ClosedTerm, POpaque, compile, popaque, printScript, printTerm, punsafeBuiltin, punsafeCoerce)
+import Plutarch (ClosedTerm, POpaque, compile, pconstant, plift', popaque, printScript, printTerm, punsafeBuiltin, punsafeCoerce)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
-import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdata, pdataLiteral)
+import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdata)
 import Plutarch.ByteString (pbyteStr, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (punsafeConstant)
-import Plutarch.Lift
 import Plutarch.Prelude
 import Plutarch.ScriptContext (PScriptPurpose (PMinting))
 import Plutarch.String (PString, pfromText)
@@ -200,7 +199,7 @@ plutarchTests =
         let d :: ScriptPurpose
             d = Minting dummyCurrency
             d' :: Term s PScriptPurpose
-            d' = punsafeCoerce $ pdataLiteral $ toData d
+            d' = punsafeCoerce $ pconstant @PData $ toData d
             f :: Term s POpaque
             f = pmatch d' $ \case
               PMinting c -> popaque c
@@ -222,8 +221,8 @@ plutarchTests =
         printTerm (phoistAcyclic (punsafeBuiltin PLC.FstPair)) @?= "(program 1.0.0 fstPair)"
     , testCase "throws: hoist error" $ throws $ phoistAcyclic perror
     , testCase "PData equality" $ do
-        expect $ let dat = pdataLiteral (PlutusTx.List [PlutusTx.Constr 1 [PlutusTx.I 0]]) in dat #== dat
-        expect $ pnot #$ pdataLiteral (PlutusTx.Constr 0 []) #== pdataLiteral (PlutusTx.I 42)
+        expect $ let dat = pconstant @PData (PlutusTx.List [PlutusTx.Constr 1 [PlutusTx.I 0]]) in dat #== dat
+        expect $ pnot #$ pconstant @PData (PlutusTx.Constr 0 []) #== pconstant @PData (PlutusTx.I 42)
     , testCase "PAsData equality" $ do
         expect $ let dat = pdata @PInteger 42 in dat #== dat
         expect $ pnot #$ pdata (phexByteStr "12") #== pdata (phexByteStr "ab")
