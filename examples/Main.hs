@@ -125,6 +125,15 @@ plutarchTests =
     , testCase "pnot" $ do
         (pnot #$ pcon PTrue) `equal` pcon PFalse
         (pnot #$ pcon PFalse) `equal` pcon PTrue
+    , testGroup
+        "Lift"
+        [ testCase "plift" $ do
+            plift' (pcon PTrue) @?= Right True
+            plift' (pcon PFalse) @?= Right False
+        , testCase "pconstant" $ do
+            plift' (pconstant @PBool False) @?= Right False
+            plift' (pconstant @PBool True) @?= Right True
+        ]
     , testCase "() == ()" $ do
         expect $ pmatch (pcon PUnit) (\case PUnit -> pcon PTrue)
         expect $ pcon PUnit #== pcon PUnit
