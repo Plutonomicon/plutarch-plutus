@@ -38,9 +38,9 @@
     - [PBuiltinList](#pbuiltinlist)
     - [PBuiltinPair](#pbuiltinpair)
     - [PAsData](#pasdata)
+    - [PData](#pdata)
     - [PMaybe](#pmaybe)
     - [PEither](#peither)
-    - [PData](#pdata)
 - [Examples](#examples)
   - [Fibonacci number at given index](#fibonacci-number-at-given-index)
   - [Validator that always succeeds](#validator-that-always-succeeds)
@@ -50,18 +50,16 @@
   - [Manually extracting fields from `ScriptContext` (UNTYPED)](#manually-extracting-fields-from-scriptcontext-untyped)
 - [Thumb rules, Tips, and Tricks](#thumb-rules-tips-and-tricks)
   - [Plutarch functions are strict](#plutarch-functions-are-strict)
-  - [Don&#39;t duplicate work](#dont-duplicate-work)
+  - [Don't duplicate work](#dont-duplicate-work)
   - [Prefer Plutarch level functions](#prefer-plutarch-level-functions)
   - [Hoisting is great - but not a silver bullet](#hoisting-is-great---but-not-a-silver-bullet)
 - [Common Issues](#common-issues)
   - [`plam` fails to type infer correctly](#plam-fails-to-type-infer-correctly)
   - [Infinite loop / Infinite AST](#infinite-loop--infinite-ast)
-- [Developers&#39; Corner](#developers-corner)
+- [Developers' Corner](#developers-corner)
   - [Plutus Core constants](#plutus-core-constants)
   - [Plutus core builtin functions](#plutus-core-builtin-functions)
   - [Working with BuiltinData/Data/PData](#working-with-builtindatadatapdata)
-  - [Working with builtin lists (`PBuiltinList`)](#working-with-builtin-lists-pbuiltinlist)
-  - [Working with builtin pairs (`PBuiltinPair`)](#working-with-builtin-pairs-pbuiltinpair)
   - [Extracting `txInfoInputs` from `ScriptContext` manually (UNTYPED)](#extracting-txinfoinputs-from-scriptcontext-manually-untyped)
 - [Useful Links](#useful-links)
 </details>
@@ -98,7 +96,7 @@ evalWithArgs :: ClosedTerm a -> [Data] -> Either ScriptError (ExBudget, [Text], 
 evalWithArgs x args = fmap (\(a, b, s) -> (a, b, unScript s)) . evaluateScript . flip applyArguments args $ compile x
 ```
 
-The fields in the result triple correspond to execution budget (how much memory and CPU units were used), trace log, and script result - respectively. Often you&#39;re only interested in the script result, in that case you can use-
+The fields in the result triple correspond to execution budget (how much memory and CPU units were used), trace log, and script result - respectively. Often you're only interested in the script result, in that case you can use-
 
 ```haskell
 evalT :: ClosedTerm a -> Either ScriptError (Program DeBruijn DefaultUni DefaultFun ())
@@ -114,7 +112,7 @@ A Plutarch script is a `Term`. This can consist of-
 
 ### Constants
 
-These are either built using `pcon` (for types that have a `PlutusType` instance)-
+These are either built using `pcon` (for types that have a `PlutusType` or `PCon` instance)-
 
 ```haskell
 import Plutarch.Prelude
@@ -178,7 +176,7 @@ Guess what this Plutarch level function does-
 f :: Term s (PInteger :--> PString :--> a :--> a)
 ```
 
-That&#39;s right! It takes in an integer, a string, and a type `a` and returns the same type `a`. Notice that all of those types are Plutarch level types.
+That's right! It takes in an integer, a string, and a type `a` and returns the same type `a`. Notice that all of those types are Plutarch level types.
 
 This is the type of the Haskell level function, `plam`-
 
@@ -186,7 +184,7 @@ This is the type of the Haskell level function, `plam`-
 plam :: (Term s a -> Term s b) -> Term s (a :--> b)
 ```
 
-(That&#39;s actually a lie! But we are going to ignore the _real_  `plam` type for simplicity)
+(That's actually a lie! But we are going to ignore the _real_  `plam` type for simplicity)
 
 It just converts a Haskell level function, which operates on purely Plutarch terms, into a Plutarch level function.
 
@@ -235,11 +233,11 @@ f #$ foo # 1
 
 parses as - `f (foo 1)`
 
-(don&#39;t take the parens literally - after all `f` and `foo` are not Haskell level functions)
+(don't take the parens literally - after all `f` and `foo` are not Haskell level functions)
 
 > Aside: Remember that function application here is **strict**. The arguments _will be evaluated_ and then passed in.
 >
-> Rule of thumb: If you see `#` - you can quickly infer that a Plutarch level function is being applied and the arguments will be evaluated. Haskell level functions still have their usual semantics, which is why `pif` doesn&#39;t evaluate both branches. (if you want, you can use `pif'` - which is a Plutarch level function and therefore strict)
+> Rule of thumb: If you see `#` - you can quickly infer that a Plutarch level function is being applied and the arguments will be evaluated. Haskell level functions still have their usual semantics, which is why `pif` doesn't evaluate both branches. (if you want, you can use `pif'` - which is a Plutarch level function and therefore strict)
 
 ### Conditionals
 
@@ -249,7 +247,7 @@ You can simulate `if/then/else` at the Plutarch level using `pif`-
 pif :: Term s PBool -> Term s a -> Term s a -> Term s a
 ```
 
-This has similar semantics to Haskell&#39;s `if/then/else`. That is, only the branch for which the predicate holds - is evaluated.
+This has similar semantics to Haskell's `if/then/else`. That is, only the branch for which the predicate holds - is evaluated.
 
 ```haskell
 pif (pcon PTrue) 1 2
@@ -287,7 +285,7 @@ pfac = pfix #$ plam f
 -- (ignore the existence of non positives :D)
 ```
 
-There&#39;s a Plutarch level factorial function! Note how `f` takes in a `self` and just recurses on it. All you have to do, is create a Plutarch level function by using `plam` on `f` and `pfix` the result - and that `self` argument will be taken care of for you.
+There's a Plutarch level factorial function! Note how `f` takes in a `self` and just recurses on it. All you have to do, is create a Plutarch level function by using `plam` on `f` and `pfix` the result - and that `self` argument will be taken care of for you.
 
 ## Concepts
 
@@ -306,19 +304,19 @@ x :: Term s PInteger
 x = something complex
 ```
 
-Any use of `x` will inline the **full definition** of `x`. `x + x` will duplicate `something complex` in the AST. To avoid this, you should use `plet` in order to avoid duplicate work. Do note that this is **strictly evaluated, and hence isn&#39;t always the best solution.**
+Any use of `x` will inline the **full definition** of `x`. `x + x` will duplicate `something complex` in the AST. To avoid this, you should use `plet` in order to avoid duplicate work. Do note that this is **strictly evaluated, and hence isn't always the best solution.**
 
-There is however still a problem: What about top-level functions, like `fib`, `sum`, `filter`, and such? We can use `plet` to avoid duplicating the definition, but this error-prone, since to do this perfectly each function that generates part of the AST would need to have access to the `plet`&#39;ed definitions, meaning that we&#39;d likely have to put it into a record or typeclass.
+There is however still a problem: What about top-level functions, like `fib`, `sum`, `filter`, and such? We can use `plet` to avoid duplicating the definition, but this error-prone, since to do this perfectly each function that generates part of the AST would need to have access to the `plet`'ed definitions, meaning that we'd likely have to put it into a record or typeclass.
 
-To solve this problem, Plutarch supports _hoisting_. Hoisting only works for _closed terms_, that is, terms that don&#39;t reference any free variables (introduced by `plam`).
+To solve this problem, Plutarch supports _hoisting_. Hoisting only works for _closed terms_, that is, terms that don't reference any free variables (introduced by `plam`).
 
-Hoisted terms are essentially moved to a top-level `plet`, i.e. it&#39;s essentially common subexpression elimination. Do note that because of this, your hoisted term is **also strictly evaluated, meaning that you shouldn&#39;t hoist non-lazy complex computations (use e.g.** `pdelay` **to avoid this).**
+Hoisted terms are essentially moved to a top-level `plet`, i.e. it's essentially common subexpression elimination. Do note that because of this, your hoisted term is **also strictly evaluated, meaning that you shouldn't hoist non-lazy complex computations (use e.g.** `pdelay` **to avoid this).**
 
 ### What is the `s`?
 
 The `s` essentially represents the context, and is like the `s` of `ST`.
 
-It&#39;s used to distinguish between closed and open terms:
+It's used to distinguish between closed and open terms:
 
 - Closed term: `type ClosedTerm = forall s. Term s a`
 - Arbitrary term: `exists s. Term s a`
@@ -327,7 +325,7 @@ It&#39;s used to distinguish between closed and open terms:
 
 ### eDSL Types in Plutarch
 
-Most types prefixed with `P` are eDSL-level types, meaning that they&#39;re meant to be used with `Term`. They are merely used as a tag, and what Haskell value they can hold is not important. Their kind must be `(k → Type) → Type` .
+Most types prefixed with `P` are eDSL-level types, meaning that they're meant to be used with `Term`. They are merely used as a tag, and what Haskell value they can hold is not important. Their kind must be `(k → Type) → Type` .
 
 ### `plet` to avoid work duplication
 Sometimes, when writing Haskell level functions for generating Plutarch terms, you may find yourself needing to re-use the Haskell level function's argument multiple times-
@@ -508,7 +506,7 @@ class PMatch a where
 
 All `PlutusType` instances get `PCon` and `PMatch` instances for free!
 
-For types that cannot easily be both `PCon` and `PMatch` - feel free to implement just one of them!
+For types that cannot easily be both `PCon` and `PMatch` - feel free to implement just one of them! However, in general, **prefer implementing PlutusType**!
 
 ### PIsDataRepr & PDataList
 `PIsDataRepr` and `PDataList` are the user-facing parts of an absolute workhorse of a machinery for easily deconstructing `Constr` [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md) values. It allows fully type safe matching on `Data` values, without embedding type information within the generated script - unlike PlutusTx.
@@ -592,7 +590,6 @@ Right (ExBudget {exBudgetCPU = ExCPU 4293277, exBudgetMemory = ExMemory 9362},[]
 ```
 
 #### Implementing PIsDataRepr
-
 If you have a custom ADT that will actually be represented as a `Data` value (`PData`) under the hood, implementing `PIsDataRepr` for your ADT (and **all its fields**!) is all you need to get convenient type tracking throughout its usage. This is going to be your biggest weapon when making custom datums and redeemers!
 
 TODO
@@ -600,7 +597,6 @@ TODO
 ## Working with Types
 
 ### PInteger
-
 `Term s PInteger` has a convenient `Num` instance that allows you to construct Plutarch level integer terms from regular literals. It also means you have all the typical arithmetic operations available to you-
 
 ```haskell
@@ -719,14 +715,6 @@ You can also create a `PAsData` from a `PData`, but you lose specific type infor
 pdata :: Term s PData -> Term s (PAsData PData)
 ```
 
-### PMaybe
-
-TODO
-
-### PEither
-
-TODO
-
 ### PData
 This is a direct synonym to [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md). As such, it doesn't keep track of what "species" of `Data` it actually is. Is it an `I` data? Is it a `B` data? Nobody can tell for sure!
 
@@ -734,7 +722,13 @@ Consider using `PAsData` instead for simple cases, i.e cases other than `Constr`
 
 Consider using `PDataRepr` instead when dealing with ADTs, i.e `Constr` data values.
 
-You can find more information about `PData` at [Developers&#39; Corner](https://mlabs.slab.com/posts/plutarch-xlifp008#hvezd-developers-corner).
+You can find more information about `PData` at [Developers' Corner](https://mlabs.slab.com/posts/plutarch-xlifp008#hvezd-developers-corner).
+
+### PMaybe
+TODO
+
+### PEither
+TODO
 
 # Examples
 Be sure to check out [Compiling and Running](#compiling-and-running) first!
@@ -809,9 +803,9 @@ see: [Developers' corner](#extracting-txinfoinputs-from-scriptcontext-manually-u
 
 ## Plutarch functions are strict
 
-All Plutarch functions are strict. When you apply a Plutarch function to an argument using `#` or `#$` - the argument will be evaluated before being passed into to the function. If you don&#39;t want the argument to be evaluated, you can use `pdelay`.
+All Plutarch functions are strict. When you apply a Plutarch function to an argument using `#` or `#$` - the argument will be evaluated before being passed into to the function. If you don't want the argument to be evaluated, you can use `pdelay`.
 
-## Don&#39;t duplicate work
+## Don't duplicate work
 
 Consider the simple snippet-
 
@@ -820,7 +814,7 @@ pf :: Term s PInteger
 pf = let foo = 1 + 2 in pif (foo #== 3) foo 7
 ```
 
-If you use `printTerm` on this, you&#39;ll notice that the computation bound to `foo` is inlined twice-
+If you use `printTerm` on this, you'll notice that the computation bound to `foo` is inlined twice-
 
 ```
 (program 1.0.0 ((\\i0 -> force (i1 (equalsInteger (addInteger 1 2) 3) (delay (addInteger 1 2)) (delay 7))) (force ifThenElse)))
@@ -833,14 +827,14 @@ pf :: Term s PInteger
 pf = plet (1 + 3) $ \foo -> pif (foo #== 3) foo 7
 ```
 
-Here&#39;s another example of this, Haskell level functions-
+Here's another example of this, Haskell level functions-
 
 ```haskell
 abs :: Term s PInteger -> Term s PInteger
 abs x = pif (x #<= -1) (negate x) x
 ```
 
-`x` is going to be inlined _three_ times there. That&#39;s really bad if it&#39;s a big computation. This is what I should do instead-
+`x` is going to be inlined _three_ times there. That's really bad if it's a big computation. This is what I should do instead-
 
 ```haskell
 abs :: Term s PInteger -> Term s PInteger
@@ -895,7 +889,7 @@ phoistAcyclic $ pforce $ punsafeBuiltin PLC.UnListData
 
 Here, hoisting may be beneficial.
 
-You don&#39;t need to hoist the top level Plutarch function that you would just pass to `compile`.
+You don't need to hoist the top level Plutarch function that you would just pass to `compile`.
 
 # Common Issues
 
@@ -921,13 +915,13 @@ f = phoistAcyclic $ plam $ \n ->
     $ n + f # (n - 1)
 ```
 
-The issue here is that the AST is infinitely large. Plutarch will try to traverse this AST and will in the process not terminate, as there is no end to it. In this case you&#39;d fix it by using `pfix`.
+The issue here is that the AST is infinitely large. Plutarch will try to traverse this AST and will in the process not terminate, as there is no end to it. In this case you'd fix it by using `pfix`.
 
 Relevant issue: [#19](https://github.com/Plutonomicon/plutarch/issues/19)
 
-# Developers&#39; Corner
+# Developers' Corner
 
-Looking to contribute to Plutarch? Looking for functionalities that are not currently provided by Plutarch from a safe interface? You&#39;ve come to the right place!
+Looking to contribute to Plutarch? Looking for functionalities that are not currently provided by Plutarch from a safe interface? You've come to the right place!
 
 Even if certain functionalities are absent from the public facing API - you can always implement them using functions like `punsafeConstant` and `punsafeBuiltin` - these allow you to walk the lines between Plutus core and Plutarch.
 
@@ -935,7 +929,7 @@ A general familiarity with Plutus core is important. Though I (Chase) aim to cov
 
 ## Plutus Core constants
 
-Often, you will need to build a Plutus core constant. You can do this using `Some` and `ValueOf`. Here&#39;s how `pcon PTrue` creates a Plutarch term that actually evaluates to a Plutus core constant representing a boolean-
+Often, you will need to build a Plutus core constant. You can do this using `Some` and `ValueOf`. Here's how `pcon PTrue` creates a Plutarch term that actually evaluates to a Plutus core constant representing a boolean-
 
 ```haskell
 import qualified PlutusCore as PLC
@@ -944,13 +938,13 @@ pcon' PTrue = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniBool True
 pcon' PFalse = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniBool False
 ```
 
-There&#39;s a lot to unpack here - but the general pattern is always the same. First step is to construct the Plutus core constant-
+There's a lot to unpack here - but the general pattern is always the same. First step is to construct the Plutus core constant-
 
 ```haskell
 PLC.Some $ PLC.ValueOf PLC.DefaultUniBool True
 ```
 
-The only parts that you will need to change when creating other constants, are the type and the value. Here the type is `DefaultUniBool`. This means the next argument must be a `Bool`. Ensured by the type system - don&#39;t you worry :)
+The only parts that you will need to change when creating other constants, are the type and the value. Here the type is `DefaultUniBool`. This means the next argument must be a `Bool`. Ensured by the type system - don't you worry :)
 
 You can glance at the other types in the default universe (what you will be working with). Can you guess how to make a Plutus core string from a Haskell string, and represent it as a Plutarch term?
 
@@ -961,11 +955,11 @@ import qualified PlutusCore as PLC
 punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniString . Txt.pack
 ```
 
-(it&#39;s even pointfree!)
+(it's even pointfree!)
 
-And that&#39;s _exactly_ what the `IsString` implementation of `Term s PString` does. That is how your string literals end up as plutus core built in strings.
+And that's _exactly_ what the `IsString` implementation of `Term s PString` does. That is how your string literals end up as plutus core built in strings.
 
-One more, how about something complex - `DefaultUniProtoList`. This is a builtin list. But what is the element type? Well, you&#39;ll have to specify that yourself! You use `DefaultUniApply` to &quot;apply&quot; a type (from the default universe) over `DefaultUniProtoList`-
+One more, how about something complex - `DefaultUniProtoList`. This is a builtin list. But what is the element type? Well, you'll have to specify that yourself! You use `DefaultUniApply` to &quot;apply&quot; a type (from the default universe) over `DefaultUniProtoList`-
 
 ```haskell
 import qualified PlutusCore as PLC
@@ -975,20 +969,20 @@ PLC.Some . PLC.ValueOf (PLC.DefaultUniProtoList `PLC.DefaultUniApply` PLC.Defaul
 
 That right there converts a `[Integer]` into a Plutus core builtin list of builtin integers. Convenient!
 
-Actually, there&#39;s a convenient `pattern` synonym for `DefaultUniProtoList `DefaultUniApply` a`- `DefaultUniList a`. Using that, you can simplify the above to-
+Actually, there's a convenient `pattern` synonym for `DefaultUniProtoList `DefaultUniApply` a`- `DefaultUniList a`. Using that, you can simplify the above to-
 
 ```haskell
 PLC.Some . PLC.ValueOf (PLC.DefaultUniList PLC.DefaultUniInteger)
 ```
 
-Note that you will have to provide the correct type annotations yourself, as `punsafeConstant` just infers to a `Term s a`. That&#39;s why it&#39;s unsafe! Make sure to provide the correct annotations when using this unsafe function-
+Note that you will have to provide the correct type annotations yourself, as `punsafeConstant` just infers to a `Term s a`. That's why it's unsafe! Make sure to provide the correct annotations when using this unsafe function-
 
 ```haskell
 foo :: Bool -> Term s PBool
 foo = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniBool
 ```
 
-Of course, we represent Plutus core booleans as `Term s PBool` in Plutarch - so that&#39;s its type!
+Of course, we represent Plutus core booleans as `Term s PBool` in Plutarch - so that's its type!
 
 ## Plutus core builtin functions
 
@@ -996,7 +990,7 @@ This is what you will be wrangling with the most. Builtin functions are going to
 
 You create Plutarch synonyms to Plutus core builtin functions using `punsafeBuiltin`. It creates a Plutarch level function from a Plutus core builtin functions.
 
-Let&#39;s try making one, how about `AddInteger`?
+Let's try making one, how about `AddInteger`?
 
 ```haskell
 import qualified PlutusCore as PLC
@@ -1009,18 +1003,18 @@ Just like `punsafeConstant`, you have to provide the right annotation yourself. 
 
 You can use and apply this Plutarch function just like any other.
 
-Now here&#39;s where this goes off the rails, some builtin functions require _forces_ to be used. These builtin functions have inherent polymorphic type variables. The number of times you need to force them, depends on the number of type variables they have.
+Now here's where this goes off the rails, some builtin functions require _forces_ to be used. These builtin functions have inherent polymorphic type variables. The number of times you need to force them, depends on the number of type variables they have.
 
-Let&#39;s look at an example- `HeadList`. It&#39;s type can be thought of as - `forall a. [a] → a`. It has one type variable, so it needs to be forced once-
+Let's look at an example- `HeadList`. It's type can be thought of as - `forall a. [a] → a`. It has one type variable, so it needs to be forced once-
 
 ```haskell
 pheadBuiltin :: Term s (PBuiltinList a :--> a)
 pheadBuiltin = pforce $ punsafeBuiltin PLC.HeadList
 ```
 
-We force a Plutarch term using `pforce`, recall that `punsafeBuiltin` returns a term. You need to type it all yourself of course. `pforce` doesn&#39;t mean you need to get rid of the type variable in your Plutarch level type. It&#39;ll still work with any `a` - the forcing just has to happen at call site.
+We force a Plutarch term using `pforce`, recall that `punsafeBuiltin` returns a term. You need to type it all yourself of course. `pforce` doesn't mean you need to get rid of the type variable in your Plutarch level type. It'll still work with any `a` - the forcing just has to happen at call site.
 
-You can sort of do this blindly, `HeadList` takes 1 force, so just `pforce` once. `TailList` also takes 1 force. `ChooseList` takes 2 forces (`forall a b. [a] → b → b → b`). Here&#39;s how you would implement a Plutarch synonym for it-
+You can sort of do this blindly, `HeadList` takes 1 force, so just `pforce` once. `TailList` also takes 1 force. `ChooseList` takes 2 forces (`forall a b. [a] → b → b → b`). Here's how you would implement a Plutarch synonym for it-
 
 ```haskell
 pchooseList :: Term s (PBuiltinList a :--> b -> b -> b)
@@ -1033,27 +1027,14 @@ We have a [Plutus Core builtin functions reference](https://github.com/Plutonomi
 
 ## Working with BuiltinData/Data/PData
 
-Most of the time, you&#39;ll be working with `BuiltinData`/`Data` - this is the type of the arguments that will be passed onto your script from the outside. This is the type of the datum, the redeemer and the script context. This is also the type of arguments you will be able to pass to a `Script`.
+Most of the time, you'll be working with `BuiltinData`/`Data` - this is the type of the arguments that will be passed onto your script from the outside. This is the type of the datum, the redeemer and the script context. This is also the type of arguments you will be able to pass to a `Script`.
 
 Plutarch aims to hide these low level details from the user. Ideally, you will be using `PDataRepr` - this is essentially just `BuiltinData`, but it is typed at the Plutarch level.
 
 If you want to work with `BuiltinData` directly however, which you may have to do during developing Plutarch, you can find all that you need to know at [Plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md).
 
-## Working with builtin lists (`PBuiltinList`)
-
-TODO: Remove this and fill in `PBuiltinList` instead, with Plutarch synonyms.
-
-Certain functionalities and synonyms for working with builtin lists are missing from the user interface of Plutarch. You can learn how to use them at [Plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-lists.md) though!
-
-## Working with builtin pairs (`PBuiltinPair`)
-
-TODO: Remove this and fill in `PBuiltinPair` instead, with Plutarch synonyms.
-
-Certain functionalities and synonyms for working with builtin pairs are missing from the user interface of Plutarch. You can learn how to use them at [Plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-pairs.md) though!
-
 ## Extracting `txInfoInputs` from `ScriptContext` manually (UNTYPED)
-
-Here&#39;s a quick refresher on what `ScriptContext` looks like-
+Here's a quick refresher on what `ScriptContext` looks like-
 
 ```haskell
 data ScriptContext = ScriptContext
@@ -1070,9 +1051,9 @@ Constr 0 [PlutusTx.toData txInfo, PlutusTx.toData txPurpose]
 
 Where `txInfo` and `txPurpose` are values of type `TxInfo` and `ScriptPurpose` respectively.
 
-We are interested in that first field. That&#39;s easy, we do the following actions in sequence-
+We are interested in that first field. That's easy, we do the following actions in sequence-
 
-- `pasConstr` - yields a `PBuiltinPair PInteger (PBuiltinList PData)`. We know the constructor id is `0`. It doesn&#39;t matter, there&#39;s only one constructor.
+- `pasConstr` - yields a `PBuiltinPair PInteger (PBuiltinList PData)`. We know the constructor id is `0`. It doesn't matter, there's only one constructor.
 - `psndBuiltin` - yields `PBuiltinList PData`, the second element of the pair. These are the fields within `ScriptContext`.
 - `pheadBuiltin` - yields `PData`, the first field. We know this is our `TxInfo`.
 
@@ -1115,18 +1096,18 @@ Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf data (Constr 0 
 
 > Aside: You can find the definition of `evalWithArgsT` above - [Compiling and Running](https://mlabs.slab.com/posts/plutarch-xlifp008#h039n-compiling-and-running).
 
-But we&#39;re not done yet! We want `txInfoInputs`. You may have noticed where exactly it is located on the above output. See that `List …`? Inside the outermost `Constr`&#39;s fields? That&#39;s our `txInfoInputs`!
+But we're not done yet! We want `txInfoInputs`. You may have noticed where exactly it is located on the above output. See that `List …`? Inside the outermost `Constr`'s fields? That's our `txInfoInputs`!
 
-> Aside: Recall that `List` data values are simply wrappers around lists. Also recall that the fields in a `Constr` value must be all of type `Data`. So any of your list fields get translated to `List` data. Just remember not to confuse these with builtin lists (`PBuiltinList`)! Functions like `pheadBuiltin` don&#39;t work on `List` data values.
+> Aside: Recall that `List` data values are simply wrappers around lists. Also recall that the fields in a `Constr` value must be all of type `Data`. So any of your list fields get translated to `List` data. Just remember not to confuse these with builtin lists (`PBuiltinList`)! Functions like `pheadBuiltin` don't work on `List` data values.
 
 To obtain `txInfoInputs` from here, we do the following actions in sequence-
 
-- `pasConstr` - unpacks the `TxInfo`. There&#39;s only one constructor, `TxInfo` - we don&#39;t care about that. We need the fields.
+- `pasConstr` - unpacks the `TxInfo`. There's only one constructor, `TxInfo` - we don't care about that. We need the fields.
 - `psndBuiltin` - extracts the second member of the pair, the fields of `TxInfo`.
 - `pheadBuiltin` - extracts the first element of the list. This is our field, `txInfoInputs`.
 - (optional) `pasList` - takes out the builtin list from the `List` data value.
 
-And that&#39;s it! Putting it all together-
+And that's it! Putting it all together-
 
 ```haskell
 f :: Term s (PData :--> PBuiltinList PData)
@@ -1142,8 +1123,6 @@ Trying it on the same `mockCtx` yields-
 Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf list (data) [Constr 0 [Constr 0 [Constr 0 [B ""],I 1],Constr 0 [Constr 0 [Constr 0 [B "\SOH#"],Constr 1 []],Map [],Constr 1 []]]]))))
 ```
 
-
-
 Getting some of the boilerplate out of the way, this is what the value looks like-
 
 ```haskell
@@ -1155,10 +1134,9 @@ Some
   )
 ```
 
-There&#39;s just one element in `txInfoInputs` in this example, and there it is. Of course `TxInInfo`, the element type of this list, also gets translated to a `Constr` data with further fields. And that&#39;s what you see above.
+There's just one element in `txInfoInputs` in this example, and there it is. Of course `TxInInfo`, the element type of this list, also gets translated to a `Constr` data with further fields. And that's what you see above.
 
 # Useful Links
-
 - [Plutus builtin functions and types](https://staging.plutus.iohkdev.io/doc/haddock//plutus-tx/html/PlutusTx-Builtins-Internal.html)
 - [Plutus Core builtin function identifiers, aka `DefaultFun`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultFun)
 - [Plutus Core types, aka `DefaultUni`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)
