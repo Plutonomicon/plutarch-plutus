@@ -1,12 +1,11 @@
 module Utils (equal, equal', fails, eval, expect, throws) where
 
-import Plutarch (ClosedTerm, compile, printScript, Term, PCon (pcon))
-import Plutarch.Evaluate (evaluateScript)
-import Plutarch.Bool (PBool (PTrue))
-import qualified Plutus.V1.Ledger.Scripts as Scripts
 import Control.Exception (SomeException, try)
+import Plutarch (ClosedTerm, PCon (pcon), Term, compile, printScript)
+import Plutarch.Bool (PBool (PTrue))
+import Plutarch.Evaluate (evaluateScript)
+import qualified Plutus.V1.Ledger.Scripts as Scripts
 import Test.Tasty.HUnit
-
 
 eval :: HasCallStack => ClosedTerm a -> IO Scripts.Script
 eval x = case evaluateScript $ compile x of

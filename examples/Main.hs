@@ -24,9 +24,9 @@ import qualified PlutusCore as PLC
 import qualified PlutusTx
 import PlutusTx.IsData.Class (toData)
 
+import qualified Examples.PlutusType as PlutusType
+import qualified Examples.Recursion as Recursion
 import Utils
-import Examples.PlutusType qualified as PlutusType
-import Examples.Recursion qualified as Recursion
 
 main :: IO ()
 main = defaultMain tests
@@ -58,7 +58,6 @@ fib = phoistAcyclic $
 
 uglyDouble :: Term s (PInteger :--> PInteger)
 uglyDouble = plam $ \n -> plet n $ \n1 -> plet n1 $ \n2 -> n2 + n2
-
 
 -- FIXME: Make the below impossible using run-time checks.
 -- loop :: Term (PInteger :--> PInteger)

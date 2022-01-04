@@ -1,8 +1,8 @@
 module Examples.PlutusType (AB (..), swap, tests) where
 
 import Plutarch
-import Plutarch.Integer (PInteger)
 import Plutarch.Bool (pif, (#==))
+import Plutarch.Integer (PInteger)
 
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase)
@@ -13,18 +13,18 @@ import Utils
   A Sum type, which can be encoded as an Enum
 -}
 data AB (s :: k) = A | B
-  
-{- | 
+
+{- |
   AB is encoded as an Enum, using values of PInteger
   internally.
 -}
 instance PlutusType AB where
   type PInner AB _ = PInteger
-  
+
   pcon' A = 0
   pcon' B = 1
 
-  pmatch' x f = 
+  pmatch' x f =
     pif (x #== 0) (f A) (f B)
 
 {- |
@@ -33,13 +33,13 @@ instance PlutusType AB where
 -}
 swap :: Term s AB -> Term s AB
 swap x = pmatch x $ \case
- A -> pcon B
- B -> pcon A
-
+  A -> pcon B
+  B -> pcon A
 
 tests :: TestTree
-tests = 
-  testGroup "PlutusType examples" 
+tests =
+  testGroup
+    "PlutusType examples"
     [ testCase "A encoded as 0" $ do
         pcon A `equal` (0 :: Term s PInteger)
     , testCase "B encoded as 2" $ do
@@ -49,4 +49,3 @@ tests =
     , testCase "swap B == A" $ do
         swap (pcon B) `equal` pcon A
     ]
-
