@@ -9,7 +9,6 @@ import Control.Exception (SomeException, try)
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
-import Data.Text (Text)
 import Plutarch (ClosedTerm, POpaque, compile, popaque, printScript, printTerm, punsafeBuiltin, punsafeCoerce, punsafeConstant)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
 import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdata, pdataLiteral)
@@ -17,11 +16,10 @@ import Plutarch.ByteString (pbyteStr, pconsBS, phexByteStr, pindexBS, plengthBS,
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Integer (PInteger)
-import qualified Plutarch.NoTrace as PNoTrace
 import Plutarch.Prelude
 import Plutarch.ScriptContext (PScriptPurpose (PMinting))
+import Plutarch.Spec.Tracing (traceTests)
 import Plutarch.String (PString, pfromText)
-import qualified Plutarch.Trace as PTrace
 import Plutarch.Unit (PUnit (..))
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import Plutus.V1.Ledger.Value (CurrencySymbol (CurrencySymbol))
@@ -93,12 +91,6 @@ throws x =
   try @SomeException (putStrLn $ printScript $ compile x) >>= \case
     Right _ -> assertFailure "Supposed to throw"
     Left _ -> pure ()
-
-traces :: ClosedTerm a -> [Text] -> Assertion
-traces x sl =
-  case evaluateScript $ compile x of
-    Left e -> assertFailure $ "Script evaluation failed: " <> show e
-    Right (_, traceLog, _) -> traceLog @?= sl
 
 -- FIXME: Make the below impossible using run-time checks.
 -- loop :: Term (PInteger :--> PInteger)
@@ -225,27 +217,7 @@ plutarchTests =
     , testCase "PAsData equality" $ do
         expect $ let dat = pdata @PInteger 42 in dat #== dat
         expect $ pnot #$ pdata (phexByteStr "12") #== pdata (phexByteStr "ab")
-    , testCase "Tracing" $ do
-        -- Real tracing functions
-        PTrace.ptrace "foo" (pcon PUnit) `traces` ["foo"]
-        PTrace.ptrace "foo" (PTrace.ptrace "bar" $ pcon PUnit) `traces` ["foo", "bar"]
-        PTrace.ptraceIfTrue "foo" (pcon PTrue) `traces` ["foo"]
-        PTrace.ptraceIfTrue "foo" (pcon PFalse) `traces` []
-        PTrace.ptraceIfTrue "foo" (PTrace.ptraceIfTrue "bar" $ pcon PTrue) `traces` ["bar", "foo"]
-        PTrace.ptraceIfTrue "foo" (PTrace.ptraceIfTrue "bar" $ pcon PFalse) `traces` []
-        PTrace.ptraceIfFalse "foo" (PTrace.ptraceIfTrue "bar" $ pcon PFalse) `traces` ["foo"]
-        PTrace.ptrace "foo" (PTrace.ptraceIfTrue "bar" (pcon PTrue)) `traces` ["foo", "bar"]
-        PTrace.ptrace "foo" (PTrace.ptraceIfTrue "bar" (pcon PFalse)) `traces` ["foo"]
-        -- Dummy tracing functions
-        PNoTrace.ptrace "foo" (pcon PUnit) `traces` []
-        PNoTrace.ptrace "foo" (PNoTrace.ptrace "bar" $ pcon PUnit) `traces` []
-        PNoTrace.ptraceIfTrue "foo" (pcon PTrue) `traces` []
-        PNoTrace.ptraceIfTrue "foo" (pcon PFalse) `traces` []
-        PNoTrace.ptraceIfTrue "foo" (PNoTrace.ptraceIfTrue "bar" $ pcon PTrue) `traces` []
-        PNoTrace.ptraceIfTrue "foo" (PNoTrace.ptraceIfTrue "bar" $ pcon PFalse) `traces` []
-        PNoTrace.ptraceIfFalse "foo" (PNoTrace.ptraceIfTrue "bar" $ pcon PFalse) `traces` []
-        PNoTrace.ptrace "foo" (PNoTrace.ptraceIfTrue "bar" (pcon PTrue)) `traces` []
-        PNoTrace.ptrace "foo" (PNoTrace.ptraceIfTrue "bar" (pcon PFalse)) `traces` []
+    , testCase "Tracing" $ traceTests
     , testCase "λx y -> addInteger x y => addInteger" $
         printTerm (plam $ \x y -> (x :: Term _ PInteger) + y) @?= "(program 1.0.0 addInteger)"
     , testCase "λx y -> hoist (force mkCons) x y => force mkCons" $

@@ -7,37 +7,12 @@ license: MIT
 
 extra-source-files: README.md
 
-library
-  exposed-modules:
-    Plutarch.Evaluate
-    Plutarch.Internal
-    Plutarch
-    Plutarch.Prelude
-    Plutarch.Pair
-    Plutarch.Rational
-    Plutarch.Either
-    Plutarch.Integer
-    Plutarch.Bool
-    Plutarch.String
-    Plutarch.ByteString
-    Plutarch.Builtin
-    Plutarch.DataRepr
-    Plutarch.ScriptContext
-    Plutarch.Maybe
-    Plutarch.Unit
-    Plutarch.Crypto
-  build-depends:
-    , base
-    , plutus-core
-    , plutus-ledger-api
-    , text
-    , hashable
-    , bytestring
-    , containers
-    , cryptonite
-    , plutus-tx
-    , mtl
-    , flat
+flag development
+  description: Enable tracing functions within plutarch.
+  manual: True
+  default: False
+
+common c
   default-language: Haskell2010
   default-extensions:
     DataKinds
@@ -98,3 +73,62 @@ library
     -Wall -Wcompat -Wincomplete-uni-patterns -Wno-partial-type-signatures
     -Wmissing-export-lists -Werror -Wincomplete-record-updates
     -Wmissing-deriving-strategies -Wno-name-shadowing
+
+library
+  import: c
+  exposed-modules:
+    Plutarch.Evaluate
+    Plutarch.Internal
+    Plutarch
+    Plutarch.Prelude
+    Plutarch.Pair
+    Plutarch.Rational
+    Plutarch.Either
+    Plutarch.Integer
+    Plutarch.Bool
+    Plutarch.String
+    Plutarch.ByteString
+    Plutarch.Builtin
+    Plutarch.DataRepr
+    Plutarch.ScriptContext
+    Plutarch.Maybe
+    Plutarch.Unit
+    Plutarch.Crypto
+    Plutarch.Trace
+  build-depends:
+    , base
+    , plutus-core
+    , plutus-ledger-api
+    , text
+    , hashable
+    , bytestring
+    , containers
+    , cryptonite
+    , plutus-tx
+    , mtl
+    , flat
+
+  if flag(development)
+    cpp-options: -DDevelopment
+
+test-suite examples
+  import: c
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  hs-source-dirs: examples
+  other-modules:
+    Plutarch.Spec.Tracing
+  build-depends:
+    , base
+    , bytestring
+    , text
+    , plutarch
+    , tasty
+    , tasty-hunit
+    , plutus-ledger-api
+    , plutus-core
+    , aeson
+    , plutus-tx
+
+  if flag(development)
+    cpp-options: -DDevelopment
