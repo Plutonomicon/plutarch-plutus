@@ -31,6 +31,10 @@ data PBuiltinPair (a :: k -> Type) (b :: k -> Type) (s :: k)
 
 data PBuiltinList (a :: k -> Type) (s :: k)
 
+type instance PDefaultUniType (PBuiltinPair a b) = (PDefaultUniType a, PDefaultUniType b)
+
+type instance PDefaultUniType (PBuiltinList a) = [PDefaultUniType a]
+
 pheadBuiltin :: Term s (PBuiltinList a :--> a)
 pheadBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList
 
