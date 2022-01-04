@@ -4,6 +4,7 @@
 
 module Main (main) where
 
+import Rank2 qualified
 import Rank2.TH qualified
 
 import Test.Tasty
@@ -75,6 +76,9 @@ evenOddBuilder ~EvenOdd{even, odd} = EvenOdd{
 evenOdd :: Term s _
 evenOdd = letrec evenOddBuilder
 
+trivial :: forall s. Term s ((PInteger :--> PInteger) :--> PInteger)
+trivial = letrec $ \ ~(Rank2.Only _) -> Rank2.Only (4 :: Term s PInteger)
+
 ptrace' :: Term s (PString :--> a :--> a)
 ptrace' = phoistAcyclic $ pforce $ punsafeBuiltin PLC.Trace
 
@@ -134,8 +138,10 @@ plutarchTests =
     , testCase "add1Hoisted" $ (printTerm add1Hoisted) @?= "(program 1.0.0 (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1))"
     , testCase "example1" $ (printTerm example1) @?= "(program 1.0.0 ((\\i0 -> addInteger (i1 12 32) (i1 5 4)) (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1)))"
     , testCase "example2" $ (printTerm example2) @?= "(program 1.0.0 (\\i0 -> i1 (\\i0 -> addInteger i1 1) (\\i0 -> subtractInteger i1 1)))"
-    , testCase "even" $ (printTerm $ evenOdd # (plam $ \even _odd-> even)) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i2 (i1 i1)) (\\i0 -> i2 (i1 i1))) (\\i0 -> \\i0 -> i1 (\\i0 -> force (i4 (equalsInteger i1 0) (delay True) (delay (i3 (\\i0 -> \\i0 -> i1) (subtractInteger i1 1))))) (\\i0 -> force (i4 (equalsInteger i1 0) (delay False) (delay (i3 (\\i0 -> \\i0 -> i2) (subtractInteger i1 1)))))) (\\i0 -> \\i0 -> i2)) (force ifThenElse)))"
-    , testCase "even 0" $ (ptrace "evenOdd" $ evenOdd # (ptrace "\\even" $ plam $ \even-> plam $ \_odd-> even) # (0 :: Term s PInteger)) `equalBudgeted` pcon PTrue
+    , testCase "even" $ (printTerm $ evenOdd # (plam $ \even _odd-> even) # (0 :: Term s PInteger)) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i2 (i1 i1)) (\\i0 -> i2 (i1 i1))) (\\i0 -> \\i0 -> i1 (\\i0 -> force (i4 (equalsInteger i1 0) (delay True) (delay (i3 (\\i0 -> \\i0 -> i1) (subtractInteger i1 1))))) (\\i0 -> force (i4 (equalsInteger i1 0) (delay False) (delay (i3 (\\i0 -> \\i0 -> i2) (subtractInteger i1 1)))))) (\\i0 -> \\i0 -> i2)) (force ifThenElse)))"
+    , testCase "even 0" $ (evenOdd # (plam $ \even _odd-> even) # (0 :: Term s PInteger)) `equalBudgeted` pcon PTrue
+    , testCase "trivial" $ (printTerm $ trivial # plam id) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> i2 (i1 i1)) (\\i0 -> i2 (i1 i1))) (\\i0 -> \\i0 -> i1 4) (\\i0 -> i1)))"
+    , testCase "trivial value" $ (trivial # plam id) `equalBudgeted` (4 :: Term s PInteger)
     , testCase "pfix" $ (printTerm pfix) @?= "(program 1.0.0 (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))))"
     , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> force (i3 (equalsInteger i1 0) (delay 0) (delay (force (i3 (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2)))))))))) (force ifThenElse)))"
     , testCase "fib 9 == 34" $ equal (fib # 9) (pconstant @PInteger 34)
