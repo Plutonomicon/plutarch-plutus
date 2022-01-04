@@ -86,14 +86,12 @@ infixl 8 #
 infixr 0 #$
 
 class PLamN a b | a -> b where
-
   {- | 
     
     Lambda abstraction.
   
     The 'PLamN' type-class allows
     currying to work as expected for any number of arguments.
-  
 
     > id :: Term s (a :--> a)
     > id = plam (\x -> x)
