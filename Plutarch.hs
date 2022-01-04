@@ -19,7 +19,6 @@ module Plutarch (
   PI.plet,
   PI.punsafeBuiltin,
   PI.punsafeCoerce,
-  PI.punsafeConstant,
   PI.Term,
   PI.TermCont (..),
   PlutusType (..),

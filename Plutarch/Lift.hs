@@ -1,3 +1,4 @@
+{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Lift (
@@ -10,6 +11,7 @@ import Data.Data (Proxy (Proxy))
 import GHC.Stack (HasCallStack)
 import Plutarch
 import Plutarch.Evaluate (evaluateScript)
+import Plutarch.Internal (punsafeConstant)
 import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import qualified PlutusCore as PLC

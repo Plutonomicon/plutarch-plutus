@@ -1,15 +1,14 @@
 module Plutarch.Unit (PUnit (..)) where
 
-import Plutarch (POpaque, PlutusType (PInner, pcon', pmatch'), Term, pcon, punsafeConstant)
+import Plutarch (PlutusType (PInner, pcon', pmatch'), Term, pcon)
 import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Lift
-import qualified PlutusCore as PLC
 
 data PUnit s = PUnit
 
 instance PlutusType PUnit where
-  type PInner PUnit _ = POpaque
-  pcon' PUnit = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniUnit ()
+  type PInner PUnit _ = PUnit
+  pcon' PUnit = pconstant ()
   pmatch' _ f = f PUnit
 
 instance PEq PUnit where

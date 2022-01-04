@@ -18,10 +18,11 @@ module Plutarch.Builtin (
   PAsData,
 ) where
 
-import Plutarch (punsafeBuiltin, punsafeCoerce, punsafeConstant)
+import Plutarch (punsafeBuiltin, punsafeCoerce)
 import Plutarch.Bool (PBool, PEq, (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
+import Plutarch.Lift (Lift (pconstant), PDefaultUni (..))
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 import PlutusTx (Data)
@@ -49,6 +50,9 @@ data PData s
 instance PEq PData where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
 
+instance PDefaultUni PData where
+  type PDefaultUniType PData = Data
+
 pfstBuiltin :: Term s (PBuiltinPair a b :--> a)
 pfstBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.FstPair
 
@@ -71,7 +75,7 @@ pasByteStr :: Term s (PData :--> PByteString)
 pasByteStr = punsafeBuiltin PLC.UnBData
 
 pdataLiteral :: Data -> Term s PData
-pdataLiteral = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniData
+pdataLiteral = pconstant
 
 data PAsData (a :: k -> Type) (s :: k)
 

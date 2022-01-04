@@ -10,13 +10,14 @@ import qualified Data.Aeson as Aeson
 import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
 import Data.Text (Text)
-import Plutarch (ClosedTerm, POpaque, compile, popaque, printScript, printTerm, punsafeBuiltin, punsafeCoerce, punsafeConstant)
+import Plutarch (ClosedTerm, POpaque, compile, popaque, printScript, printTerm, punsafeBuiltin, punsafeCoerce)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
 import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdata, pdataLiteral)
 import Plutarch.ByteString (pbyteStr, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Integer (PInteger)
+import Plutarch.Internal (punsafeConstant)
 import Plutarch.Lift
 import Plutarch.Prelude
 import Plutarch.ScriptContext (PScriptPurpose (PMinting))

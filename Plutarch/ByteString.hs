@@ -13,7 +13,7 @@ import qualified Data.ByteString as BS
 import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Stack (HasCallStack)
-import Plutarch (punsafeBuiltin, punsafeConstant)
+import Plutarch (punsafeBuiltin)
 import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift
@@ -33,14 +33,14 @@ instance Semigroup (Term s PByteString) where
   x <> y = punsafeBuiltin PLC.AppendByteString # x # y
 
 instance Monoid (Term s PByteString) where
-  mempty = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniByteString BS.empty
+  mempty = pconstant BS.empty
 
 instance PDefaultUni PByteString where
   type PDefaultUniType PByteString = ByteString
 
 -- | Interpret a hex string as a PByteString.
 phexByteStr :: HasCallStack => String -> Term s PByteString
-phexByteStr = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByteString . BS.pack . f
+phexByteStr = pconstant . BS.pack . f
   where
     f "" = []
     f [_] = error "UnevenLength"
@@ -48,7 +48,7 @@ phexByteStr = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByteString 
 
 -- | Construct a PByteString term from a Haskell bytestring.
 pbyteStr :: ByteString -> Term s PByteString
-pbyteStr = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByteString
+pbyteStr = pconstant
 
 -----------------------------------------------------------
 -- The following functions should be import qualified. --
