@@ -14,6 +14,7 @@ module Plutarch.Bool (
 ) where
 
 import Plutarch (PlutusType (PInner, pcon', pmatch'), punsafeBuiltin, punsafeConstant)
+import Plutarch.Lift
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
@@ -36,6 +37,9 @@ class POrd t where
 
 infix 4 #<=
 infix 4 #<
+
+instance PDefaultUni PBool where
+  type PDefaultUniType PBool = Bool
 
 {- | Strict version of 'pif'.
  Emits slightly less code.

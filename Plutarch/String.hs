@@ -1,10 +1,12 @@
 module Plutarch.String (PString, pfromText, pencodeUtf8, pdecodeUtf8) where
 
 import Data.String (IsString, fromString)
+import Data.Text (Text)
 import qualified Data.Text as Txt
 import Plutarch (punsafeBuiltin, punsafeConstant)
 import Plutarch.Bool (PEq, (#==))
 import Plutarch.ByteString (PByteString)
+import Plutarch.Lift
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
@@ -32,3 +34,6 @@ pencodeUtf8 = punsafeBuiltin PLC.EncodeUtf8
 -- | Decode a 'PByteString' using UTF-8.
 pdecodeUtf8 :: Term s (PByteString :--> PString)
 pdecodeUtf8 = punsafeBuiltin PLC.DecodeUtf8
+
+instance PDefaultUni PString where
+  type PDefaultUniType PString = Text

@@ -16,6 +16,7 @@ import GHC.Stack (HasCallStack)
 import Plutarch (punsafeBuiltin, punsafeConstant)
 import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Integer (PInteger)
+import Plutarch.Lift
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
@@ -33,6 +34,9 @@ instance Semigroup (Term s PByteString) where
 
 instance Monoid (Term s PByteString) where
   mempty = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniByteString BS.empty
+
+instance PDefaultUni PByteString where
+  type PDefaultUniType PByteString = ByteString
 
 -- | Interpret a hex string as a PByteString.
 phexByteStr :: HasCallStack => String -> Term s PByteString

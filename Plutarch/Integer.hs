@@ -2,6 +2,7 @@ module Plutarch.Integer (PInteger, PIntegral (..)) where
 
 import Plutarch (punsafeBuiltin, punsafeConstant)
 import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
+import Plutarch.Lift (PDefaultUni (..))
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
@@ -41,3 +42,6 @@ instance Num (Term s PInteger) where
         (-1)
         1
   fromInteger n = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniInteger n
+
+instance PDefaultUni PInteger where
+  type PDefaultUniType PInteger = Integer

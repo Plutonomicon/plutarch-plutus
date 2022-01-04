@@ -3,6 +3,7 @@
 module Plutarch.Lift (
   Lift (..),
   Unlift (..),
+  PDefaultUni (..),
 ) where
 
 import Data.Data (Proxy (Proxy))
@@ -36,7 +37,7 @@ class Unlift (h :: Type) p where
   -- -}
   plift :: HasCallStack => ClosedTerm p -> h
 
-instance UPLC.DefaultUni `PLC.Contains` h => Lift h p where
+instance (PDefaultUni p, PDefaultUniType p ~ h) => Lift h p where
   pconstant =
     punsafeConstant . PLC.Some . PLC.ValueOf (PLC.knownUniOf (Proxy @h))
 
@@ -53,3 +54,10 @@ showEvalException ::
   EvaluationException CekUserError (MachineError fun) (UPLC.Term UPLC.DeBruijn uni fun ()) ->
   String
 showEvalException = show
+
+{- | Class of eDSL Types that map to Plutus builtin in its `DefaultUni`
+
+ We use this in: PLC.knownUniOf $ Proxy @(PDefaultUniType a)
+-}
+class PLC.DefaultUni `PLC.Contains` PDefaultUniType a => PDefaultUni (a :: k -> Type) where
+  type PDefaultUniType a :: Type
