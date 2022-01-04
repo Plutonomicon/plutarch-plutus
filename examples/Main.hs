@@ -243,10 +243,10 @@ plutarchTests =
         , testCase "pconstant on primitive types" $ do
             plift' (pconstant @PBool False) @?= Right False
             plift' (pconstant @PBool True) @?= Right True
-        , testCase "plift on list and pair" $do 
+        , testCase "plift on list and pair" $ do
             plift' (pconstant @(PBuiltinList PInteger) [1, 2, 3]) @?= Right [1, 2, 3]
             plift' (pconstant @(PBuiltinPair PString PInteger) ("IOHK", 42)) @?= Right ("IOHK", 42)
-        , testCase "plift on nested containers" $do 
+        , testCase "plift on nested containers" $ do
             -- List of pairs
             let v1 = [("IOHK", 42), ("Plutus", 31)]
             plift' (pconstant @(PBuiltinList (PBuiltinPair PString PInteger)) v1) @?= Right v1
