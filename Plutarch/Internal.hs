@@ -274,7 +274,8 @@ phoistAcyclic t = Term $ \_ -> case asRawTerm t 0 of
 
 rawTermToUPLC :: (HoistedTerm -> Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) -> Natural -> RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 
-letrec :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => (r (Term s) -> r (Term s)) -> Term s _ -- (Const (r Ident))
+-- | Recursive let construct, tying into knot the equations listed in the record fields.
+letrec :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => (r (Term s) -> r (Term s)) -> Term s _
 letrec r = Term term
   where term n = TermResult{getTerm= RApply rfix [RLamAbs 1 $ RApply (RVar 0) $ rawTerms], getDeps= deps}
           where (Dual rawTerms, deps) = Rank2.foldMap (rawResult . ($ n) . asRawTerm) (r selfReferring)
@@ -294,8 +295,11 @@ letrec r = Term term
                                                         getDeps= []})}
         fieldCount :: Natural
         fieldCount = getSum (Rank2.foldMap (const $ Sum 1) initial)
+
 rfix :: RawTerm
-rfix = RLamAbs 0 $ RApply (RLamAbs 0 $ RApply (RVar 1) [RApply (RVar 0) [RVar 0]]) [RLamAbs 0 $ RApply (RVar 1) [RApply (RVar 0) [RVar 0]]]
+-- The simplest variant of the Y combinator hangs the interpreter, so we use an eta-expanded version instead.
+-- rfix = RLamAbs 0 $ RApply (RLamAbs 0 $ RApply (RVar 1) [RApply (RVar 0) [RVar 0]]) [RLamAbs 0 $ RApply (RVar 1) [RApply (RVar 0) [RVar 0]]]
+rfix = RLamAbs 0 $ RApply (RLamAbs 0 $ RApply (RVar 1) [RLamAbs 0 $ RApply (RVar 1) [RVar 0, RVar 1]]) [RLamAbs 0 $ RApply (RVar 1) [RLamAbs 0 $ RApply (RVar 1) [RVar 0, RVar 1]]]
 
 rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i + 1) -- Why the fuck does it start from 1 and not 0?
 rawTermToUPLC m l (RLamAbs n t) = foldr (.) id (replicate (fromIntegral $ n + 1) $ UPLC.LamAbs () (DeBruijn . Index $ 0)) $ (rawTermToUPLC m (l + n + 1) t)

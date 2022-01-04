@@ -2,7 +2,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 
-module Main (main) where
+module Main (main, equalBudgeted) where
 
 import Rank2 qualified
 import Rank2.TH qualified
@@ -69,8 +69,8 @@ data EvenOdd f = EvenOdd {
 
 evenOddBuilder :: EvenOdd (Term s) -> EvenOdd (Term s)
 evenOddBuilder ~EvenOdd{even, odd} = EvenOdd{
-  even = plam $ \n -> ptrace "even" $ pif (n #== 0) (pcon PTrue) (odd #$ n - 1),
-  odd = plam $ \n -> ptrace "odd" $ pif (n #== 0) (pcon PFalse) (even #$ n - 1)
+  even = plam $ \n -> pif (n #== 0) (pcon PTrue) (odd #$ n - 1),
+  odd = plam $ \n -> pif (n #== 0) (pcon PFalse) (even #$ n - 1)
   }
 
 evenOdd :: Term s _
@@ -78,20 +78,6 @@ evenOdd = letrec evenOddBuilder
 
 trivial :: forall s. Term s ((PInteger :--> PInteger) :--> PInteger)
 trivial = letrec $ \ ~(Rank2.Only _) -> Rank2.Only (4 :: Term s PInteger)
-
-ptrace' :: Term s (PString :--> a :--> a)
-ptrace' = phoistAcyclic $ pforce $ punsafeBuiltin PLC.Trace
-
-ptrace :: Term s PString -> Term s a -> Term s a
-ptrace s a = pforce $ ptrace' # s # pdelay a
-
-{-
-traces :: ClosedTerm a -> [Text] -> Assertion
-traces x sl =
-  case evaluateScript $ compile x of
-    Left e -> assertFailure $ "Script evaluation failed: " <> show e
-    Right (_, traceLog, _) -> traceLog @?= sl
--}
 
 fib :: Term s (PInteger :--> PInteger)
 fib = phoistAcyclic $
@@ -138,10 +124,11 @@ plutarchTests =
     , testCase "add1Hoisted" $ (printTerm add1Hoisted) @?= "(program 1.0.0 (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1))"
     , testCase "example1" $ (printTerm example1) @?= "(program 1.0.0 ((\\i0 -> addInteger (i1 12 32) (i1 5 4)) (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1)))"
     , testCase "example2" $ (printTerm example2) @?= "(program 1.0.0 (\\i0 -> i1 (\\i0 -> addInteger i1 1) (\\i0 -> subtractInteger i1 1)))"
-    , testCase "even" $ (printTerm $ evenOdd # (plam $ \even _odd-> even) # (0 :: Term s PInteger)) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i2 (i1 i1)) (\\i0 -> i2 (i1 i1))) (\\i0 -> \\i0 -> i1 (\\i0 -> force (i4 (equalsInteger i1 0) (delay True) (delay (i3 (\\i0 -> \\i0 -> i1) (subtractInteger i1 1))))) (\\i0 -> force (i4 (equalsInteger i1 0) (delay False) (delay (i3 (\\i0 -> \\i0 -> i2) (subtractInteger i1 1)))))) (\\i0 -> \\i0 -> i2)) (force ifThenElse)))"
-    , testCase "even 0" $ (evenOdd # (plam $ \even _odd-> even) # (0 :: Term s PInteger)) `equalBudgeted` pcon PTrue
-    , testCase "trivial" $ (printTerm $ trivial # plam id) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> i2 (i1 i1)) (\\i0 -> i2 (i1 i1))) (\\i0 -> \\i0 -> i1 4) (\\i0 -> i1)))"
-    , testCase "trivial value" $ (trivial # plam id) `equalBudgeted` (4 :: Term s PInteger)
+    , testCase "even" $ (printTerm $ evenOdd # (plam $ \even _odd-> even)) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> i1 (\\i0 -> force (i4 (equalsInteger i1 0) (delay True) (delay (i3 (\\i0 -> \\i0 -> i1) (subtractInteger i1 1))))) (\\i0 -> force (i4 (equalsInteger i1 0) (delay False) (delay (i3 (\\i0 -> \\i0 -> i2) (subtractInteger i1 1)))))) (\\i0 -> \\i0 -> i2)) (force ifThenElse)))"
+    , testCase "even 4" $ equal' (evenOdd # (plam $ \even _odd-> even) # (4 :: Term s PInteger)) "(program 1.0.0 True)"
+    , testCase "even 5" $ equal' (evenOdd # (plam $ \even _odd-> even) # (5 :: Term s PInteger)) "(program 1.0.0 False)"
+    , testCase "trivial" $ (printTerm $ trivial # plam id) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> i1 4) (\\i0 -> i1)))"
+    , testCase "trivial value" $ equal' (trivial # plam id) "(program 1.0.0 4)"
     , testCase "pfix" $ (printTerm pfix) @?= "(program 1.0.0 (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))))"
     , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> force (i3 (equalsInteger i1 0) (delay 0) (delay (force (i3 (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2)))))))))) (force ifThenElse)))"
     , testCase "fib 9 == 34" $ equal (fib # 9) (pconstant @PInteger 34)
