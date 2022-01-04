@@ -1,10 +1,13 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Lift (
-  PConstant (..),
-  PLift (..),
+  -- * Converstion between Plutarch terms and Haskell types
+  pconstant,
   plift,
+  plift',
   LiftError (..),
+
+  -- * Internal use
   PDefaultUniType,
 ) where
 
@@ -32,21 +35,19 @@ import PlutusCore.Evaluation.Machine.Exception (
 import qualified UntypedPlutusCore as UPLC
 import UntypedPlutusCore.Evaluation.Machine.Cek (CekUserError)
 
-class PConstant p (h :: Type) where
-  -- {-
-  -- Create a Plutarch-level constant, from a Haskell value.
-  --
-  -- Example:
-  -- > pconstant @PInteger 42
-  -- -}
-  pconstant :: h -> Term s p
-
 data LiftError
   = LiftError_ScriptError Scripts.ScriptError
   | LiftError_EvalException T.Text -- Using Text, because there is no Eq possible with DeBruijn naming.
   deriving stock (Eq, Show)
 
-class PLift (h :: Type) p where
+class PLift p (h :: Type) where
+  -- {-
+  -- Create a Plutarch-level constant, from a Haskell value.
+  -- Example:
+  -- > pconstant @PInteger 42
+  -- -}
+  pconstant :: h -> Term s p
+
   -- {-
   -- Convert a Plutarch term to the associated Haskell value. Fail otherwise.
   -- This will fully evaluate the arbitrary closed expression, and convert the
@@ -54,14 +55,18 @@ class PLift (h :: Type) p where
   -- -}
   plift' :: ClosedTerm p -> Either LiftError h
 
-plift :: (PLift h p, HasCallStack) => ClosedTerm p -> h
+plift :: (PLift p h, HasCallStack) => ClosedTerm p -> h
 plift prog = either (error . show) id $ plift' prog
 
-instance (PLC.DefaultUni `PLC.Contains` h, PDefaultUniType p ~ h) => PConstant p h where
+instance
+  ( PLC.KnownTypeIn PLC.DefaultUni (UPLC.Term PLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) h
+  , PLC.DefaultUni `PLC.Contains` h
+  , PDefaultUniType p ~ h
+  ) =>
+  PLift p h
+  where
   pconstant =
     punsafeConstantInternal . PLC.Some . PLC.ValueOf (PLC.knownUniOf (Proxy @h))
-
-instance PLC.KnownTypeIn PLC.DefaultUni (UPLC.Term PLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) h => PLift h p where
   plift' prog =
     case evaluateScript (compile prog) of
       Left e -> Left $ LiftError_ScriptError e
