@@ -3,14 +3,12 @@
 -- This should have been called Plutarch.Data...
 module Plutarch.Builtin (
   PData (..),
-  pheadBuiltin,
-  ptailBuiltin,
-  pnullBuiltin,
   pfstBuiltin,
   psndBuiltin,
   pasConstr,
   pasMap,
   pasList,
+  pmkList,
   pasInt,
   pasByteStr,
   PBuiltinPair,
@@ -22,7 +20,7 @@ module Plutarch.Builtin (
 ) where
 
 import Plutarch (punsafeBuiltin, punsafeCoerce)
-import Plutarch.Bool (PBool, PEq, (#==))
+import Plutarch.Bool (PEq, (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift
@@ -62,15 +60,6 @@ deriving via
   instance
     PLC.DefaultUni `PLC.Contains` PHaskellType a => (PLift (PBuiltinList a))
 
-pheadBuiltin :: Term s (PBuiltinList a :--> a)
-pheadBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList
-
-ptailBuiltin :: Term s (PBuiltinList a :--> PBuiltinList a)
-ptailBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.TailList
-
-pnullBuiltin :: Term s (PBuiltinList a :--> PBool)
-pnullBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.NullList
-
 data PData s
   = PDataConstr (Term s (PBuiltinPair PInteger (PBuiltinList PData)))
   | PDataMap (Term s (PBuiltinList (PBuiltinPair PData PData)))
@@ -90,6 +79,9 @@ pasMap = punsafeBuiltin PLC.UnMapData
 
 pasList :: Term s (PData :--> PBuiltinList PData)
 pasList = punsafeBuiltin PLC.UnListData
+
+pmkList :: Term s (PBuiltinList PData :--> PData)
+pmkList = punsafeBuiltin PLC.ListData
 
 pasInt :: Term s (PData :--> PInteger)
 pasInt = punsafeBuiltin PLC.UnIData

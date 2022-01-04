@@ -92,6 +92,7 @@ library
     Plutarch.DataRepr
     Plutarch.ScriptContext
     Plutarch.Maybe
+    Plutarch.List
     Plutarch.Unit
     Plutarch.Crypto
     Plutarch.Lift

@@ -16,6 +16,8 @@ import Plutarch.ByteString (PByteString, pconsBS, phexByteStr, pindexBS, plength
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (punsafeConstantInternal)
+import Plutarch.Evaluate (evaluateScript)
+import Plutarch.List
 import Plutarch.Prelude
 import Plutarch.ScriptContext (PScriptPurpose (PMinting))
 import Plutarch.String (PString)
