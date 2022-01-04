@@ -42,7 +42,6 @@ common c
     GeneralisedNewtypeDeriving
     HexFloatLiterals
     ImplicitPrelude
-    ImportQualifiedPost
     InstanceSigs
     KindSignatures
     MonomorphismRestriction
