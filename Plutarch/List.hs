@@ -14,6 +14,7 @@ module Plutarch.List (
   -- * Query
   pelem,
   plength,
+  pnull,
 
   -- * Construction
   pnil,
@@ -30,12 +31,10 @@ module Plutarch.List (
   precList,
   punsafeHead,
   punsafeTail,
+  pfoldr,
 
   -- * Casting
-  plistLiteral,
   pforgetList,
-  punsafeCoerceList,
-  punsafeAsIntegerList,
 ) where
 
 import Plutarch
@@ -101,6 +100,14 @@ plength =
     )
     $ \go -> plam $ \xs -> go # xs # 0
 
+pnull :: PIsData a => Term s (PList a :--> PBool)
+pnull =
+  plam $ \xs ->
+    pmatch xs $ \case
+      PCons _ _ -> pcon PFalse
+      PNil -> pcon PTrue
+    
+
 --------------------------------------------------------------------------------
 
 -- | Meta recursive list eliminator
@@ -110,6 +117,14 @@ precList mcons mnil =
     pmatch xs $ \case
       PCons x xs -> mcons self x xs
       PNil -> mnil self
+
+-- | / O(n) /. Fold on a list right-associatively
+pfoldr :: PIsData a => Term s ((a :--> b :--> b) :--> b :--> PList a :--> b)
+pfoldr = phoistAcyclic $
+  plam $ \f z ->
+    precList
+      (\self x xs -> f # x # (self # xs))
+      (\_self -> z)
 
 punsafeHead :: PIsData a => Term s (PList a :--> a)
 punsafeHead =
@@ -170,15 +185,5 @@ pconcat =
 --------------------------------------------------------------------------------
 -- Casting
 
-plistLiteral :: PIsData a => [Term s (PAsData a)] -> Term s (PList a)
-plistLiteral [] = pnil
-plistLiteral (x : xs) = pcon (PCons (pfromData x) (plistLiteral xs))
-
 pforgetList :: PIsData a => Term s (PList a) -> Term s (PList PData)
 pforgetList = punsafeCoerce
-
-punsafeAsIntegerList :: Term s (PList PData) -> Term s (PList PInteger)
-punsafeAsIntegerList = punsafeCoerce
-
-punsafeCoerceList :: Term s (PList a) -> Term s (PList b)
-punsafeCoerceList = punsafeCoerce

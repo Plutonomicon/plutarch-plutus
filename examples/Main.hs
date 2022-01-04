@@ -13,6 +13,8 @@ import Plutarch (POpaque, pconstant, plift', popaque, printTerm, punsafeBuiltin)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
 import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdata)
 import Plutarch.ByteString (PByteString, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
+import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdata, pdataLiteral, pasList)
+import Plutarch.ByteString (pbyteStr, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (punsafeConstantInternal)
@@ -263,6 +265,10 @@ uplcTests =
               punsafeBuiltin PLC.MkPairData # (1 :: Term _ PInteger) # (2 :: Term _ PInteger)
          in fails p
     ]
+
+integerList :: [Integer] -> Term s (PList PInteger)
+integerList xs = punsafeCoerce $ pasList #$ pdataLiteral $ toData xs
+
 
 {- | Interpret a byte.
 
