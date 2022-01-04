@@ -88,6 +88,7 @@ library
     Plutarch.Maybe
     Plutarch.Unit
     Plutarch.Crypto
+    Plutarch.Lift
   build-depends:
     , base
     , plutus-core
@@ -113,6 +114,7 @@ test-suite examples
     , plutarch
     , tasty
     , tasty-hunit
+    , text
     , plutus-ledger-api
     , plutus-core
     , aeson

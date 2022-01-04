@@ -9,6 +9,7 @@ import Control.Exception (SomeException, try)
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
+import Data.Text (Text)
 import Plutarch (ClosedTerm, POpaque, compile, popaque, printScript, printTerm, punsafeBuiltin, punsafeCoerce, punsafeConstant)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
 import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdata, pdataLiteral)
@@ -16,6 +17,7 @@ import Plutarch.ByteString (pbyteStr, pconsBS, phexByteStr, pindexBS, plengthBS,
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Integer (PInteger)
+import Plutarch.Lift
 import Plutarch.Prelude
 import Plutarch.ScriptContext (PScriptPurpose (PMinting))
 import Plutarch.String (PString, pfromText)
@@ -118,7 +120,7 @@ plutarchTests =
     , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> force (i3 (equalsInteger i1 0) (delay 0) (delay (force (i3 (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2)))))))))) (force ifThenElse)))"
     , testCase "fib 9 == 34" $ equal (fib # 9) (34 :: Term s PInteger)
     , testCase "uglyDouble" $ (printTerm uglyDouble) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
-    , testCase "1 + 2 == 3" $ equal (1 + 2 :: Term s PInteger) (3 :: Term s PInteger)
+    , testCase "1 + 2 == 3" $ equal (1 + 2 :: Term s PInteger) (pconstant @Integer @PInteger 3)
     , testCase "fails: perror" $ fails perror
     , testCase "pnot" $ do
         (pnot #$ pcon PTrue) `equal` pcon PFalse
@@ -132,7 +134,7 @@ plutarchTests =
     , testCase "() <= () == True" $ do
         expect $ pcon PUnit #<= pcon PUnit
     , testCase "0x02af == 0x02af" $ expect $ phexByteStr "02af" #== phexByteStr "02af"
-    , testCase "\"foo\" == \"foo\"" $ expect $ "foo" #== ("foo" :: Term s PString)
+    , testCase "\"foo\" == \"foo\"" $ expect $ "foo" #== (pconstant @Text @PString "foo")
     , testCase "PByteString :: mempty <> a == a <> mempty == a" $ do
         expect $ let a = phexByteStr "152a" in (mempty <> a) #== a
         expect $ let a = phexByteStr "4141" in (a <> mempty) #== a
