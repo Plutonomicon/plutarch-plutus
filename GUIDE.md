@@ -513,9 +513,10 @@ For types that cannot easily be both `PCon` and `PMatch` - feel free to implemen
 ### PIsDataRepr & PDataList
 `PIsDataRepr` and `PDataList` are the user-facing parts of an absolute workhorse of a machinery for easily deconstructing `Constr` [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md) values. It allows fully type safe matching on `Data` values, without embedding type information within the generated script - unlike PlutusTx.
 
-For example, `PScriptContext` - which is the Plutarch synonym to `ScriptContext` - has a `PIsDataRepr` instance, this lets you easily keep track of its type and match on it-
+For example, `PScriptContext` - which is the Plutarch synonym to [`ScriptContext`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Contexts.html#t:ScriptContext) - has a `PIsDataRepr` instance, this lets you easily keep track of its type and match on it-
 ```hs
 import Plutarch.Prelude
+import Plutarch.DataRepr
 import Plutarch.ScriptContext
 
 foo :: Term s (PScriptContext :--> PString)
@@ -527,6 +528,43 @@ foo = plam $ \x -> pmatch x $ \(PScriptContext te) -> let purpose = pfromData $ 
     PCertifying _ -> "It's certifying!"
 ```
 Of course, just like `ScriptContext` - `PScriptContext` is represented as a `Data` value in Plutus Core. Plutarch just lets you keep track of the *exact representation* of it within the type system.
+
+First, we `pmatch` on `PScriptContext`-
+```hs
+pmatch :: Term s PScriptContext -> (PScriptContext s -> a) -> a
+```
+This allows us to pass in a Haskell function that works directly on the `PScriptContext` type, which is a familiar Haskell ADT-
+```hs
+data PScriptContext s = PScriptContext (Term s (PDataList '[PTxInfo, PScriptPurpose]))
+```
+We can match on that constructor and bind its field to `te`. Now, `te` is a Plutarch term - of course. But notice the `PDataList '[PTxInfo, PScriptPurpose]`. This is a heterogenous list! It represents all the fields in `PScriptContext` in order. Compare it to the real `ScriptContext`-
+```hs
+data ScriptContext = ScriptContext{scriptContextTxInfo :: TxInfo, scriptContextPurpose :: ScriptPurpose }
+```
+So, `te` is a *essentially* a Plutarch level heterogenous lists of fields. All of these fields are actually just `Data` (`PData`) under the hood - of course. You take apart a `PDataList` using `pdhead` and `pdtail`.
+
+We are interested in the second field, `PScriptPurpose`, synonymous to [`ScriptPurpose`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Contexts.html#t:ScriptPurpose). So we do `pdhead #$ pdtail # te`. This gives us a `PAsData PScriptPurpose`. Finally a `pfromData` will get you the `PScriptPurpose` directly. This is because `PScriptPurpose` has a `PIsData` instance! It is a `Data` value under the hood, after all.
+
+With that, you have `purpose :: Term s PScriptPurpose`. You can now `pmatch` on it and much like before, get at its Haskell level constructors!
+`PScriptPurpose` looks like-
+```hs
+data PScriptPurpose s
+  = PMinting (Term s (PDataList '[POpaque]))
+  | PSpending (Term s (PDataList '[POpaque]))
+  | PRewarding (Term s (PDataList '[POpaque]))
+  | PCertifying (Term s (PDataList '[POpaque]))
+```
+> Aside: Ignore the `POpaque` - it's subject to change as the types are filled in.
+
+Compare that to the real `ScriptPurpose`-
+```hs
+data ScriptPurpose
+  = Minting CurrencySymbol
+  | Spending TxOutRef
+  | Rewarding StakingCredential
+  | Certifying DCert
+```
+Cool! You now know how to use `pmatch` to get that convenient matching on your fully typed `Data` handling!
 
 Let's pass in a `ScriptContext` as a `Data` value from Haskell to this Plutarch script and see if it works!
 ```hs
