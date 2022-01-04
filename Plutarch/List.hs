@@ -50,15 +50,17 @@ data PList (a :: k -> Type) (s :: k)
   = PCons (Term s a) (Term s (PList a))
   | PNil
 
--- Instances
-
 instance PIsData a => PlutusType (PList a) where
   type PInner (PList a) b = PBuiltinList (PAsData a)
   pcon' :: forall s. PList a s -> forall b. Term s (PInner (PList a) b)
   pcon' (PCons x xs) = pconsBuiltin # (pdata x) # (pto xs)
-  pcon' PNil = pemptyList
+  pcon' PNil = pemptyListBuiltin
   pmatch' xs f =
-    pforce $ pif (pnullBuiltin # xs) (pdelay (f PNil)) (pdelay (f (PCons (pfromData $ pheadBuiltin # xs) (punsafeFrom $ ptailBuiltin # xs))))
+    pforce $
+      pchooseListBuiltin
+        # xs
+        # pdelay (f PNil)
+        # pdelay (f (PCons (pfromData $ pheadBuiltin # xs) (punsafeFrom $ ptailBuiltin # xs)))
 
 instance PEq a => PEq (PList a) where
   (#==) xs ys =
@@ -100,13 +102,9 @@ plength =
     )
     $ \go -> plam $ \xs -> go # xs # 0
 
+-- | / O(1) /. Check if a list is empty
 pnull :: PIsData a => Term s (PList a :--> PBool)
-pnull =
-  plam $ \xs ->
-    pmatch xs $ \case
-      PCons _ _ -> pcon PFalse
-      PNil -> pcon PTrue
-    
+pnull = plam $ \xs -> pnullBuiltin # punsafeCoerce xs
 
 --------------------------------------------------------------------------------
 
@@ -127,20 +125,10 @@ pfoldr = phoistAcyclic $
       (\_self -> z)
 
 punsafeHead :: PIsData a => Term s (PList a :--> a)
-punsafeHead =
-  phoistAcyclic $
-    plam $ \xs ->
-      pmatch xs $ \case
-        PCons x _ -> x
-        PNil -> perror
+punsafeHead = plam $ \xs -> pfromData $ pheadBuiltin # punsafeCoerce xs
 
 punsafeTail :: PIsData a => Term s (PList a :--> PList a)
-punsafeTail =
-  phoistAcyclic $
-    plam $ \xs ->
-      pmatch xs $ \case
-        PCons _ xs -> xs
-        PNil -> perror
+punsafeTail = plam $ \xs -> punsafeCoerce $ ptailBuiltin # punsafeCoerce xs
 
 -- | / O(n) /. Map a function over a list of elements
 pmap :: (PIsData a, PIsData b) => Term s ((a :--> b) :--> PList a :--> PList b)
