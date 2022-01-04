@@ -22,7 +22,7 @@ import Plutarch (punsafeBuiltin, punsafeCoerce)
 import Plutarch.Bool (PBool, PEq, (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
-import Plutarch.Lift (Lift (pconstant), PDefaultUniType)
+import Plutarch.Lift
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 import PlutusTx (Data)

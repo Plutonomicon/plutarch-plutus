@@ -1,8 +1,8 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Lift (
-  Lift (..),
-  Unlift (..),
+  PConstant (..),
+  PLift (..),
   PDefaultUniType,
 ) where
 
@@ -24,7 +24,7 @@ import PlutusCore.Pretty (Pretty, PrettyConst)
 import qualified UntypedPlutusCore as UPLC
 import UntypedPlutusCore.Evaluation.Machine.Cek (CekUserError)
 
-class Lift p (h :: Type) where
+class PConstant p (h :: Type) where
   -- {-
   -- Create a Plutarch-level constant, from a Haskell value.
   --
@@ -33,7 +33,7 @@ class Lift p (h :: Type) where
   -- -}
   pconstant :: h -> Term s p
 
-class Unlift (h :: Type) p where
+class PLift (h :: Type) p where
   -- {-
   -- Convert a Plutarch term to the associated Haskell value. Fail otherwise.
   -- This will fully evaluate the arbitrary closed expression, and convert the
@@ -41,11 +41,11 @@ class Unlift (h :: Type) p where
   -- -}
   plift :: HasCallStack => ClosedTerm p -> h
 
-instance (PLC.DefaultUni `PLC.Contains` h, PDefaultUniType p ~ h) => Lift p h where
+instance (PLC.DefaultUni `PLC.Contains` h, PDefaultUniType p ~ h) => PConstant p h where
   pconstant =
     punsafeConstant . PLC.Some . PLC.ValueOf (PLC.knownUniOf (Proxy @h))
 
-instance PLC.KnownTypeIn PLC.DefaultUni (UPLC.Term PLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) h => Unlift h p where
+instance PLC.KnownTypeIn PLC.DefaultUni (UPLC.Term PLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) h => PLift h p where
   plift prog =
     case evaluateScript (compile prog) of
       Left e -> error $ show e

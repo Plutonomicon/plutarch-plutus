@@ -2,7 +2,7 @@ module Plutarch.Integer (PInteger, PIntegral (..)) where
 
 import Plutarch (punsafeBuiltin)
 import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
-import Plutarch.Lift (Lift (pconstant), PDefaultUniType)
+import Plutarch.Lift
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
