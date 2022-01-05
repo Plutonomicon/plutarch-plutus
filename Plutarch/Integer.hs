@@ -8,6 +8,7 @@ import Plutarch.Lift
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
+-- | Plutus BuiltinInteger
 data PInteger s
   deriving (PLift) via PBuiltinType PInteger Integer
 

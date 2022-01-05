@@ -22,6 +22,7 @@ import Plutarch.Lift
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
+-- | Plutus 'BuiltinByteString'
 data PByteString s
   deriving (PLift) via PBuiltinType PByteString ByteString
 
@@ -60,9 +61,9 @@ pbyteStr = pconstant
 pconsBS :: Term s (PInteger :--> PByteString :--> PByteString)
 pconsBS = punsafeBuiltin PLC.ConsByteString
 
-{- | Slice a 'PByteString' with given start and end indices.
+{- | Slice a 'PByteString' with given start index and slice length.
 
->>> (pslice # 1 # 3 phexByteStr "4102afde5b2a") #== phexByteStr "02afde"
+>>> (pslice # 2 # 3 phexByteStr "4102afde5b2a") #== phexByteStr "afde5b"
 -}
 psliceBS :: Term s (PInteger :--> PInteger :--> PByteString :--> PByteString)
 psliceBS = punsafeBuiltin PLC.SliceByteString

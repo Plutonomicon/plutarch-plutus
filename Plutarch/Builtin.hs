@@ -29,6 +29,7 @@ import Plutarch.Prelude
 import qualified PlutusCore as PLC
 import PlutusTx (Data)
 
+-- | Plutus 'BuiltinPair'
 data PBuiltinPair (a :: k -> Type) (b :: k -> Type) (s :: k)
 
 deriving via
@@ -39,6 +40,7 @@ deriving via
     ) =>
     (PLift (PBuiltinPair a b))
 
+-- | Plutus 'BuiltinList'
 data PBuiltinList (a :: k -> Type) (s :: k)
 
 deriving via

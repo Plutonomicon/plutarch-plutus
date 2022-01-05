@@ -12,10 +12,13 @@ import Plutarch.Lift
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
+-- | Plutus 'BuiltinString' values
 data PString s
   deriving (PLift) via PBuiltinType PString Text
 
 {-# DEPRECATED pfromText "Use `pconstant` instead." #-}
+
+-- | Create a PString from 'Text'
 pfromText :: Txt.Text -> Term s PString
 pfromText = pconstant
 

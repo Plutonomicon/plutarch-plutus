@@ -5,16 +5,14 @@ module Main (main) where
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import Control.Exception (SomeException, try)
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
-import Plutarch (ClosedTerm, POpaque, compile, pconstant, plift', popaque, printScript, printTerm, punsafeBuiltin)
+import Plutarch (POpaque, pconstant, plift', popaque, printTerm, punsafeBuiltin)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
 import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdata)
 import Plutarch.ByteString (PByteString, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
 import Plutarch.Either (PEither (PLeft, PRight))
-import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude
@@ -22,11 +20,14 @@ import Plutarch.ScriptContext (PScriptPurpose (PMinting))
 import Plutarch.Spec.Tracing (traceTests)
 import Plutarch.String (PString)
 import Plutarch.Unit (PUnit (..))
-import qualified Plutus.V1.Ledger.Scripts as Scripts
 import Plutus.V1.Ledger.Value (CurrencySymbol (CurrencySymbol))
 import Plutus.V2.Ledger.Contexts (ScriptPurpose (Minting))
 import qualified PlutusCore as PLC
 import qualified PlutusTx
+
+import qualified Examples.PlutusType as PlutusType
+import qualified Examples.Recursion as Recursion
+import Utils
 
 main :: IO ()
 main = defaultMain tests
@@ -59,39 +60,6 @@ fib = phoistAcyclic $
 uglyDouble :: Term s (PInteger :--> PInteger)
 uglyDouble = plam $ \n -> plet n $ \n1 -> plet n1 $ \n2 -> n2 + n2
 
-eval :: HasCallStack => ClosedTerm a -> IO Scripts.Script
-eval x = case evaluateScript $ compile x of
-  Left e -> assertFailure $ "Script evaluation failed: " <> show e
-  Right (_, _, x') -> pure x'
-
-equal :: HasCallStack => ClosedTerm a -> ClosedTerm b -> Assertion
-equal x y = do
-  x' <- eval x
-  y' <- eval y
-  printScript x' @?= printScript y'
-
-equal' :: HasCallStack => ClosedTerm a -> String -> Assertion
-equal' x y = do
-  x' <- eval x
-  printScript x' @?= y
-
-fails :: HasCallStack => ClosedTerm a -> Assertion
-fails x =
-  case evaluateScript $ compile x of
-    Left (Scripts.EvaluationError _ _) -> mempty
-    Left (Scripts.EvaluationException _ _) -> mempty
-    Left e -> assertFailure $ "Script is malformed: " <> show e
-    Right (_, _, s) -> assertFailure $ "Script didn't err: " <> printScript s
-
-expect :: HasCallStack => ClosedTerm PBool -> Assertion
-expect = equal (pcon PTrue :: Term s PBool)
-
-throws :: ClosedTerm a -> Assertion
-throws x =
-  try @SomeException (putStrLn $ printScript $ compile x) >>= \case
-    Right _ -> assertFailure "Supposed to throw"
-    Left _ -> pure ()
-
 -- FIXME: Make the below impossible using run-time checks.
 -- loop :: Term (PInteger :--> PInteger)
 -- loop = plam $ \x -> loop # x
@@ -105,6 +73,8 @@ tests =
     "unit tests"
     [ plutarchTests
     , uplcTests
+    , PlutusType.tests
+    , Recursion.tests
     ]
 
 plutarchTests :: TestTree
@@ -159,7 +129,7 @@ plutarchTests =
     , testCase "pindexByteStr" $
         (pindexBS # phexByteStr "4102af" # 1) `equal` pconstant @PInteger 0x02
     , testCase "psliceByteStr" $
-        (psliceBS # 1 # 3 # phexByteStr "4102afde5b2a") `equal` phexByteStr "02afde"
+        (psliceBS # 2 # 3 # phexByteStr "4102afde5b2a") `equal` phexByteStr "afde5b"
     , testCase "pconstant - phexByteStr relation" $ do
         let a = ["42", "ab", "df", "c9"]
         pconstant @PByteString (BS.pack $ map readByte a) `equal` phexByteStr (concat a)

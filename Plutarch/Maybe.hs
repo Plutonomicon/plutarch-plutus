@@ -6,6 +6,7 @@ module Plutarch.Maybe (PMaybe (..)) where
 import Plutarch (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.Prelude
 
+-- | Plutus Maybe type, with Scott-encoded repr
 data PMaybe (a :: k -> Type) (s :: k) = PJust (Term s a) | PNothing
 
 instance PlutusType (PMaybe a) where

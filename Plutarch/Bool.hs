@@ -20,6 +20,7 @@ import Plutarch.Lift
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
+-- | Plutus 'BuiltinBool'
 data PBool s = PTrue | PFalse
   deriving (PLift) via PBuiltinType PBool Bool
 
