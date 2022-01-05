@@ -20,7 +20,11 @@ module Plutarch.Internal (
   Dig,
   hashTerm,
   hashOpenTerm,
+  accessors,
   letrec,
+  ScottArgument(..),
+  ScottEncoded,
+  ScottEncoding, 
   TermCont (..),
 ) where
 
@@ -275,24 +279,36 @@ phoistAcyclic t = Term $ \_ -> case asRawTerm t 0 of
 rawTermToUPLC :: (HoistedTerm -> Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) -> Natural -> RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 
 -- | Recursive let construct, tying into knot the equations listed in the record fields.
-letrec :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => (r (Term s) -> r (Term s)) -> Term s _
+letrec :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => (r (Term s) -> r (Term s)) -> Term s (ScottEncoding r)
 letrec r = Term term
   where term n = TermResult{getTerm= RApply rfix [RLamAbs 1 $ RApply (RVar 0) $ rawTerms], getDeps= deps}
           where (Dual rawTerms, deps) = Rank2.foldMap (rawResult . ($ n) . asRawTerm) (r selfReferring)
         rawResult TermResult{getTerm, getDeps} = (Dual [getTerm], getDeps)
-        selfReferring = Rank2.cotraverse var id
-        var :: (r (Term s) -> Term s a) -> Term s a
-        var ref = ref ordered
-        ordered :: r (Term s)
+        selfReferring = Rank2.fmap fromRecord accessors
+        fromRecord (ScottArgument (Term access)) = Term $ \depth-> mapTerm (\field-> RApply (RVar $ fieldCount + depth - 1) [field]) (access 0)
+        fieldCount :: Natural
+        fieldCount = getSum (Rank2.foldMap (const $ Sum 1) (accessors @r))
+
+type family ScottEncoded (r :: ((k -> Type) -> Type) -> Type) (a :: k -> Type) :: k -> Type
+
+newtype ScottArgument r s t = ScottArgument{getScott :: Term s (ScottEncoded r t)}
+newtype ScottEncoding r s = ScottEncoding{fromScott :: forall t. Term s (ScottEncoded r t :--> t)}
+
+-- | Provides a record of function terms that access each field out of a Scott-encoded record.
+accessors :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => r (ScottArgument r s)
+accessors = Rank2.cotraverse accessor id
+  where accessor :: (r (ScottArgument r s) -> ScottArgument r s a) -> ScottArgument r s a
+        accessor ref = ref ordered
+        ordered :: r (ScottArgument r s)
         ordered = evalState (Rank2.traverse next initial) fieldCount
-        initial :: r (Term s)
-        initial = r (error "recursion")
-        next :: f a -> State Natural (Term s a)
+        initial :: r (Compose Maybe (ScottArgument r s))
+        initial = Rank2.distribute Nothing
+        next :: f a -> State Natural (ScottArgument r s a)
         next _ = do {i <- get;
                      let {i' = pred i};
                      seq i' (put i');
-                     return (Term $ \depth-> TermResult{getTerm= RApply (RVar $ fieldCount + depth - 1) [RLamAbs (fieldCount - 1) $ RVar i'],
-                                                        getDeps= []})}
+                     return (ScottArgument $ phoistAcyclic $ Term $ const $ TermResult{getTerm= RLamAbs (fieldCount - 1) $ RVar i',
+                                                                                        getDeps= []})}
         fieldCount :: Natural
         fieldCount = getSum (Rank2.foldMap (const $ Sum 1) initial)
 

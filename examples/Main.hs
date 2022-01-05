@@ -15,7 +15,7 @@ import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
 import qualified Examples.List as List
 import Examples.Tracing (traceTests)
-import Plutarch (POpaque, pconstant, plift', popaque, printTerm, punsafeBuiltin)
+import Plutarch (POpaque, ScottEncoded, letrec, pconstant, plift', popaque, printTerm, punsafeBuiltin, (#.))
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
 import Plutarch.Builtin (PAsData, PBuiltinList (..), PBuiltinPair, PData, pdata)
 import Plutarch.ByteString (PByteString, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
@@ -56,28 +56,24 @@ example2 = plam $ \x -> pmatch x $ \case
   PLeft n -> n + 1
   PRight n -> n - 1
 
-{-
-even1, odd1 :: Term s (PInteger :--> PBool)
-even1 = plam $ \n -> pif (n #== 0) (pcon PTrue) (odd1 #$ n - 1)
-odd1 = plam $ \n -> pif (n #== 0) (pcon PFalse) (even1 #$ n - 1)
--}
-
 data EvenOdd f = EvenOdd {
   even :: f (PInteger :--> PBool),
   odd :: f (PInteger :--> PBool)
   }
 
+type instance ScottEncoded EvenOdd a = (PInteger :--> PBool) :--> (PInteger :--> PBool) :--> a
+
 evenOddBuilder :: EvenOdd (Term s) -> EvenOdd (Term s)
-evenOddBuilder ~EvenOdd{even, odd} = EvenOdd{
+evenOddBuilder EvenOdd{even, odd} = EvenOdd{
   even = plam $ \n -> pif (n #== 0) (pcon PTrue) (odd #$ n - 1),
   odd = plam $ \n -> pif (n #== 0) (pcon PFalse) (even #$ n - 1)
   }
 
-evenOdd :: Term s _
+evenOdd :: Term s (ScottEncoding EvenOdd)
 evenOdd = letrec evenOddBuilder
 
-trivial :: forall s. Term s ((PInteger :--> PInteger) :--> PInteger)
-trivial = letrec $ \ ~(Rank2.Only _) -> Rank2.Only (4 :: Term s PInteger)
+trivial :: forall s. Term s (ScottEncoding (Rank2.Only PInteger))
+trivial = letrec $ \Rank2.Only{} -> Rank2.Only (4 :: Term s PInteger)
 
 fib :: Term s (PInteger :--> PInteger)
 fib = phoistAcyclic $
@@ -124,11 +120,11 @@ plutarchTests =
     , testCase "add1Hoisted" $ (printTerm add1Hoisted) @?= "(program 1.0.0 (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1))"
     , testCase "example1" $ (printTerm example1) @?= "(program 1.0.0 ((\\i0 -> addInteger (i1 12 32) (i1 5 4)) (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1)))"
     , testCase "example2" $ (printTerm example2) @?= "(program 1.0.0 (\\i0 -> i1 (\\i0 -> addInteger i1 1) (\\i0 -> subtractInteger i1 1)))"
-    , testCase "even" $ (printTerm $ evenOdd # (plam $ \even _odd-> even)) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> i1 (\\i0 -> force (i4 (equalsInteger i1 0) (delay True) (delay (i3 (\\i0 -> \\i0 -> i1) (subtractInteger i1 1))))) (\\i0 -> force (i4 (equalsInteger i1 0) (delay False) (delay (i3 (\\i0 -> \\i0 -> i2) (subtractInteger i1 1)))))) (\\i0 -> \\i0 -> i2)) (force ifThenElse)))"
-    , testCase "even 4" $ equal' (evenOdd # (plam $ \even _odd-> even) # (4 :: Term s PInteger)) "(program 1.0.0 True)"
-    , testCase "even 5" $ equal' (evenOdd # (plam $ \even _odd-> even) # (5 :: Term s PInteger)) "(program 1.0.0 False)"
-    , testCase "trivial" $ (printTerm $ trivial # plam id) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> i1 4) (\\i0 -> i1)))"
-    , testCase "trivial value" $ equal' (trivial # plam id) "(program 1.0.0 4)"
+    , testCase "even" $ (printTerm $ evenOdd #. even) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> i1 (\\i0 -> force (i4 (equalsInteger i1 0) (delay True) (delay (i3 (\\i0 -> \\i0 -> i1) (subtractInteger i1 1))))) (\\i0 -> force (i4 (equalsInteger i1 0) (delay False) (delay (i3 (\\i0 -> \\i0 -> i2) (subtractInteger i1 1)))))) (\\i0 -> \\i0 -> i2)) (force ifThenElse)))"
+    , testCase "even 4" $ equal' (evenOdd #. even # (4 :: Term s PInteger)) "(program 1.0.0 True)"
+    , testCase "even 5" $ equal' (evenOdd #. even # (5 :: Term s PInteger)) "(program 1.0.0 False)"
+    , testCase "trivial" $ (printTerm $ trivial #. Rank2.fromOnly) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> i1 4) (\\i0 -> i1)))"
+    , testCase "trivial value" $ equal' (trivial #. Rank2.fromOnly) "(program 1.0.0 4)"
     , testCase "pfix" $ (printTerm pfix) @?= "(program 1.0.0 (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))))"
     , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> force (i3 (equalsInteger i1 0) (delay 0) (delay (force (i3 (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2)))))))))) (force ifThenElse)))"
     , testCase "fib 9 == 34" $ equal (fib # 9) (pconstant @PInteger 34)
