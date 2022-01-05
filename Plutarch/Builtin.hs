@@ -8,7 +8,6 @@ module Plutarch.Builtin (
   pasConstr,
   pasMap,
   pasList,
-  pmkList,
   pasInt,
   pnullBuiltin,
   pasByteStr,
@@ -107,6 +106,8 @@ instance PListLike PBuiltinList where
       PNil -> pforce match_nil
   pconsList = plam $ \x xs -> pcon (PCons x xs)
   pnilList = pcon PNil
+  punsafeHead = pheadBuiltin
+  punsafeTail = ptailBuiltin
 
 instance (PElemConstraint PBuiltinList a, PEq a) => PEq (PBuiltinList a) where
   (#==) xs ys = plistEquals # xs # ys
@@ -130,9 +131,6 @@ pasMap = punsafeBuiltin PLC.UnMapData
 
 pasList :: Term s (PData :--> PBuiltinList PData)
 pasList = punsafeBuiltin PLC.UnListData
-
-pmkList :: Term s (PBuiltinList PData :--> PData)
-pmkList = punsafeBuiltin PLC.ListData
 
 pasInt :: Term s (PData :--> PInteger)
 pasInt = punsafeBuiltin PLC.UnIData

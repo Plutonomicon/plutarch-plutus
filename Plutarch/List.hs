@@ -27,8 +27,6 @@ module Plutarch.List (
 
   -- * Catamorphisms
   precList,
-  punsafeHead,
-  punsafeTail,
   pfoldr,
   pfoldr',
   pall,
@@ -60,11 +58,31 @@ instance PEq a => PEq (PScottList a) where
 
 --------------------------------------------------------------------------------
 
+-- | Plutarch types that behave like lists. 
 class PListLike (list :: (k -> Type) -> k -> Type) where
   type PElemConstraint list :: (k -> Type) -> Constraint
+
+  -- | Canonical eliminator for list-likes.
+  --
+  -- Example:
+  -- > isEmpty :: PIsListLike list a => Term s (list a :--> PBool)
+  -- > isEmpty = pelimList (plam $ \ _x _xs -> pcon PFalse) (pdelay $ pcon PTrue)
   pelimList :: PElemConstraint list a => Term s (a :--> list a :--> r) -> Term s (PDelayed r) -> Term s (list a :--> r)
+
+  -- | / O(1) /. Cons an element onto an existing list.
   pconsList :: PElemConstraint list a => Term s (a :--> list a :--> list a)
+
+  -- | / O(1) /. The empty list
   pnilList :: PElemConstraint list a => Term s (list a)
+
+  -- | / O(1) /. Return the first element of a list. Partial, throws an error upon encountering an empty list.
+  punsafeHead :: PIsListLike list a => Term s (list a :--> a)
+  punsafeHead = pelimList (plam $ \x _xs -> x) (pdelay perror)
+
+  -- | / O(1) /. Take the tail of a list, meaning drop its head. Partial, throws an error upon encountering an empty list.
+  punsafeTail :: PIsListLike list a => Term s (list a :--> list a)
+  punsafeTail = pelimList (plam $ \_x xs -> xs) (pdelay perror)
+
 
 class EmptyConstraint x
 instance EmptyConstraint x
@@ -79,6 +97,7 @@ instance PListLike PScottList where
   pnilList = pcon PSNil
 
 type PIsListLike list a = (PListLike list, PElemConstraint list a)
+
 
 -- | / O(n) /. Convert from any ListLike to any ListLike, provided both lists' element constraints are met.
 pconvertLists :: (PElemConstraint f a, PElemConstraint g a, PListLike f, PListLike g) => Term s (f a :--> g a)
@@ -154,14 +173,6 @@ pall :: PIsListLike list a => Term s ((a :--> PBool) :--> list a :--> PBool)
 pall = phoistAcyclic $
   plam $ \predicate ->
     pfoldr # (plam $ \x acc -> predicate # x #&& acc) # (pcon PTrue)
-
--- | / O(1) /. Return the first element of a list. Partial, throws an error upon encountering an empty list.
-punsafeHead :: PIsListLike list a => Term s (list a :--> a)
-punsafeHead = pelimList (plam $ \x _xs -> x) (pdelay perror)
-
--- | / O(1) /. Take the tail of a list, meaning drop its head. Partial, throws an error upon encountering an empty list.
-punsafeTail :: PIsListLike list a => Term s (list a :--> list a)
-punsafeTail = pelimList (plam $ \_x xs -> xs) (pdelay perror)
 
 -- | / O(n) /. Map a function over a list of elements
 pmap :: (PListLike list, PElemConstraint list a, PElemConstraint list b) => Term s ((a :--> b) :--> list a :--> list b)
