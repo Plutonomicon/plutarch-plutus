@@ -22,6 +22,7 @@
     - [Tracing](#tracing)
     - [Raising errors](#raising-errors)
     - [Delay and Force](#delay-and-force)
+  - [Typeclasses](#typeclasses)
     - [Equality and Order](#equality-and-order)
     - [Monoids](#monoids)
     - [PIntegral](#pintegral)
@@ -385,6 +386,8 @@ pif cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay wh
 `pif'` is a direct synonym to the `IfThenElse` Plutus Core builtin function. Of course, it evaluates its arguments strictly but you often want an if-then-else that doesn't evaluate both its branches - only the one for which the condition holds. So, `pif`, as a haskell level function can take in both branches (without any concept of evaluating them), delay them and *then* apply it to `pif'`. Finally, a `pforce` will force the yielded branch that was previously delayed.
 
 Delay and Force will be one of your most useful tools while writing Plutarch. Make sure you get a grip on them!
+
+## Typeclasses
 
 ### Equality and Order
 
