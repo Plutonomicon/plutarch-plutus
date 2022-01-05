@@ -24,7 +24,7 @@ module Plutarch.Internal (
   letrec,
   ScottArgument(..),
   ScottEncoded,
-  ScottEncoding, 
+  ScottEncoding,
   TermCont (..),
 ) where
 
@@ -279,7 +279,7 @@ phoistAcyclic t = Term $ \_ -> case asRawTerm t 0 of
 rawTermToUPLC :: (HoistedTerm -> Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) -> Natural -> RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 
 -- | Recursive let construct, tying into knot the equations listed in the record fields.
-letrec :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => (r (Term s) -> r (Term s)) -> Term s (ScottEncoding r)
+letrec :: forall r s t. (Rank2.Distributive r, Rank2.Traversable r) => (r (Term s) -> r (Term s)) -> Term s (ScottEncoded r t :--> t)
 letrec r = Term term
   where term n = TermResult{getTerm= RApply rfix [RLamAbs 1 $ RApply (RVar 0) $ rawTerms], getDeps= deps}
           where (Dual rawTerms, deps) = Rank2.foldMap (rawResult . ($ n) . asRawTerm) (r selfReferring)
@@ -292,7 +292,7 @@ letrec r = Term term
 type family ScottEncoded (r :: ((k -> Type) -> Type) -> Type) (a :: k -> Type) :: k -> Type
 
 newtype ScottArgument r s t = ScottArgument{getScott :: Term s (ScottEncoded r t)}
-newtype ScottEncoding r s = ScottEncoding{fromScott :: forall t. Term s (ScottEncoded r t :--> t)}
+type ScottEncoding r t = ScottEncoded r t :--> t
 
 -- | Provides a record of function terms that access each field out of a Scott-encoded record.
 accessors :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => r (ScottArgument r s)

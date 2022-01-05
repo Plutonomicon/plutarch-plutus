@@ -9,8 +9,8 @@ module Plutarch (
   PI.compile,
   PI.ScottArgument,
   PI.ScottEncoded,
+  PI.ScottEncoding,
   PI.Dig,
-  PI.ScottEncoding(fromScott),
   PI.hashOpenTerm,
   PI.hashTerm,
   PI.letrec,
@@ -102,8 +102,9 @@ infixr 0 #$
   >>> record #. field
 -}
 (#.) :: (Rank2.Distributive r, Rank2.Traversable r)
-     => Term s (PI.ScottEncoding r) -> (r (PI.ScottArgument r s) -> PI.ScottArgument r s t) -> Term s t
-r #. f = punsafeCoerce r # PI.getScott (f PI.accessors)
+      => Term s (PI.ScottEncoded r t :--> t) -> (r (PI.ScottArgument r s) -> PI.ScottArgument r s t) -> Term s t
+r #. f = r # PI.getScott (f PI.accessors)
+
 infixl 9 #.
 
 {- $plam
