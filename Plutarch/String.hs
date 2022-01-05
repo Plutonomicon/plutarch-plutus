@@ -1,4 +1,3 @@
-{-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.String (PString, pfromText, pencodeUtf8, pdecodeUtf8) where

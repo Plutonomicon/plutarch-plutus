@@ -34,6 +34,7 @@ common c
     DeriveGeneric
     DeriveLift
     DeriveTraversable
+    DerivingVia
     DoAndIfThenElse
     EmptyCase
     EmptyDataDecls
