@@ -869,7 +869,7 @@ Right (ExBudget {exBudgetCPU = ExCPU 8969609, exBudgetMemory = ExMemory 17774},[
 TODO
 
 ## Manually extracting fields from `ScriptContext` (UNTYPED)
-see: [Developers' corner](#extracting-txinfoinputs-from-scriptcontext-manually-untyped)
+see: [Developers' corner](./DEVGUIDE.md#extracting-txinfoinputs-from-scriptcontext-manually-untyped)
 
 # Thumb rules, Tips, and Tricks
 
