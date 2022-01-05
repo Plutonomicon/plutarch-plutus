@@ -1,4 +1,3 @@
-{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Lift (
@@ -49,7 +48,7 @@ data LiftError
 instance IsString LiftError where
   fromString = LiftError_Custom . T.pack
 
-class PLift p (h :: Type) | p -> h where
+class PLift p (h :: Type) where
   -- {-
   -- Create a Plutarch-level constant, from a Haskell value.
   -- Example:
