@@ -124,7 +124,7 @@ data PDelayed (a :: k -> Type) (s :: k)
   Lambda abstraction.
 
   Only works with a single argument.
-  Use 'plam' instead, to support curryinh.
+  Use 'plam' instead, to support currying.
 -}
 plam' :: (Term s a -> Term s b) -> Term s (a :--> b)
 plam' f = Term $ \i ->
