@@ -799,7 +799,71 @@ Left (EvaluationError [] "(CekEvaluationFailure,Nothing)")
 ```
 
 ## Validator that checks whether a value is present within signatories
-TODO
+```hs
+-- | Filter a builtin list using a predicate.
+pelem :: PEq a => Term s (a :--> PBuiltinList a :--> PBool)
+pelem = phoistAcyclic $ plam $ \needle -> pfix #$ plam $
+  \self xs -> pif (pnullBuiltin # xs)
+      (pcon PFalse)
+      $ plet (pheadBuiltin # xs) $ \x ->
+        pif (x #== needle)
+          (pcon PTrue)
+          $ plet (ptailBuiltin # xs) $ \rest -> self # rest
+
+checkSignatory :: Term s (PPubKeyHash :--> PData :--> PData :--> PScriptContext :--> PUnit)
+checkSignatory = plam $ \ph (_ :: Term _ _) (_ :: Term _ _) ctx -> pmatch ctx $ \(PScriptContext ctxFields) ->
+  let
+    purpose = pfromData $ pdhead #$ pdtail # ctxFields
+    txInfo = pfromData $ pdhead # ctxFields
+  in pmatch purpose $ \case
+    PSpending _ -> pmatch txInfo $ \(PTxInfo txInfoFields) ->
+      let
+        {-
+          Yes, I know. WTF?!
+          This is a placeholder until we land 'pnth' or a better field accessor mechanism.
+        -}
+        signatories = pdhead #$ pdtail #$ pdtail #$ pdtail #$ pdtail
+          #$ pdtail #$ pdtail #$ pdtail # txInfoFields
+      in pif (pelem # pdata ph # pfromData signatories)
+        -- Success!
+        (pcon PUnit)
+        -- Signature not present.
+        perror
+    -- Script purpose should only be "Spending"
+    _           -> perror
+```
+> Note: The above snippet relies on having `PPubKeyHash` implemented and `TxInfo`'s signatories field correctly typed. As of now, Plutarch `main` doesn't have this. But this snippet should still be helpful to understand how to write fully typed validators!
+
+Once again, we ignore datum and redeemer so we can use `PData` as typing. Other than that, we match on the script purpose to see if its actually for *spending* - and we get the signatories field from `txInfo` (the 7th field), check if given pub key hash is present within the signatories and that's it!
+
+It's important that we pass a `PPubKeyHash` *prior* to treating `checkSignatory` as a validator script.
+```hs
+hashStr :: String
+hashStr = "abce0f123e"
+
+pubKeyHash :: Term s PPubKeyHash
+pubKeyHash = pcon $ PPubKeyHash $ phexByteStr hashStr
+
+mockCtx :: ScriptContext
+mockCtx =
+  ScriptContext
+    (TxInfo
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      (interval (POSIXTime 1) (POSIXTime 2))
+      [fromString hashStr, "f013", "ab45"]
+      mempty
+      ""
+    )
+    (Spending (TxOutRef "" 1))
+
+> evalWithArgsT (checkSignatory # pubKeyHash) [PlutusTx.toData (), PlutusTx.toData (), PlutusTx.toData mockCtx]
+Right (ExBudget {exBudgetCPU = ExCPU 8969609, exBudgetMemory = ExMemory 17774},[],Program () (Version () 1 0 0) (Constant () (Some (ValueOf unit ()))))
+```
 
 ## Using custom datum/redeemer in your Validator
 TODO
