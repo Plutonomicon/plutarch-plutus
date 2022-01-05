@@ -22,6 +22,9 @@ module Plutarch (
   PI.punsafeConstant,
   PI.Term,
   PI.TermCont (..),
+  PL.plift,
+  PL.pconstant,
+  PL.plift',
   PlutusType (..),
   printTerm,
   printScript,
@@ -43,6 +46,7 @@ module Plutarch (
 import Data.Kind (Type)
 import Plutarch.Internal (ClosedTerm, Term, compile, papp, phoistAcyclic, plam', punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
+import qualified Plutarch.Lift as PL
 import Plutus.V1.Ledger.Scripts (Script (Script))
 import PlutusCore.Pretty (prettyPlcReadableDebug)
 

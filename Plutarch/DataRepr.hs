@@ -7,7 +7,9 @@ import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoe
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Builtin (PAsData, PBuiltinList, PData, PIsData, pasConstr, pdata, pfromData, pfstBuiltin, psndBuiltin)
 import Plutarch.Integer (PInteger)
+import Plutarch.Lift
 import Plutarch.Prelude
+import qualified Plutus.V1.Ledger.Api as Ledger
 import qualified PlutusCore as PLC
 
 data PDataList (as :: [k -> Type]) (s :: k)
@@ -112,15 +114,25 @@ pmatchDataRepr d handlers =
               handler
               $ go common (idx + 1) rest constr
 
-newtype PIsDataReprInstances a s = PIsDataReprInstances (a s)
+newtype PIsDataReprInstances a h s = PIsDataReprInstances (a s)
 
 class (PMatch a, PIsData a) => PIsDataRepr (a :: k -> Type) where
   type PIsDataReprRepr a :: [[k -> Type]]
   pmatchRepr :: forall s b. Term s (PDataRepr (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
 
-instance PIsDataRepr a => PIsData (PIsDataReprInstances a) where
+instance PIsDataRepr a => PIsData (PIsDataReprInstances a h) where
   pdata = punsafeCoerce
   pfromData = punsafeCoerce
 
-instance PIsDataRepr a => PMatch (PIsDataReprInstances a) where
+instance PIsDataRepr a => PMatch (PIsDataReprInstances a h) where
   pmatch x f = pmatchRepr (punsafeCoerce x) (f . PIsDataReprInstances)
+
+instance (Ledger.FromData h, Ledger.ToData h, PIsData p) => PLift (PIsDataReprInstances p h) where
+  type PHaskellType (PIsDataReprInstances p h) = h
+  pconstant' =
+    punsafeCoerce . pconstant @PData . Ledger.toData
+  plift' t = do
+    h <- plift' @_ @PData (punsafeCoerce t)
+    maybeToRight "Failed to decode data" $ Ledger.fromData h
+    where
+      maybeToRight e = maybe (Left e) Right

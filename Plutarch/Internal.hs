@@ -14,6 +14,7 @@ module Plutarch.Internal (
   punsafeCoerce,
   punsafeBuiltin,
   punsafeConstant,
+  punsafeConstantInternal,
   compile,
   ClosedTerm,
   Dig,
@@ -273,8 +274,12 @@ punsafeCoerce (Term x) = Term x
 punsafeBuiltin :: UPLC.DefaultFun -> Term s a
 punsafeBuiltin f = Term $ \_ -> mkTermRes $ RBuiltin f
 
+{-# DEPRECATED punsafeConstant "Use `pconstant` instead." #-}
 punsafeConstant :: Some (ValueOf PLC.DefaultUni) -> Term s a
-punsafeConstant c = Term $ \_ -> mkTermRes $ RConstant c
+punsafeConstant = punsafeConstantInternal
+
+punsafeConstantInternal :: Some (ValueOf PLC.DefaultUni) -> Term s a
+punsafeConstantInternal c = Term $ \_ -> mkTermRes $ RConstant c
 
 asClosedRawTerm :: ClosedTerm a -> TermResult
 asClosedRawTerm = flip asRawTerm 0

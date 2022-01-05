@@ -1,12 +1,16 @@
+{-# LANGUAGE UndecidableInstances #-}
+
 module Plutarch.Integer (PInteger, PIntegral (..)) where
 
-import Plutarch (punsafeBuiltin, punsafeConstant)
+import Plutarch (punsafeBuiltin)
 import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
+import Plutarch.Lift
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
 -- | Plutus BuiltinInteger
 data PInteger s
+  deriving (PLift) via PBuiltinType PInteger Integer
 
 class PIntegral a where
   pdiv :: Term s (a :--> a :--> a)
@@ -41,4 +45,4 @@ instance Num (Term s PInteger) where
         (x #<= 0)
         (-1)
         1
-  fromInteger n = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniInteger n
+  fromInteger = pconstant
