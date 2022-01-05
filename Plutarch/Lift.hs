@@ -1,3 +1,4 @@
+{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Lift (
@@ -7,6 +8,9 @@ module Plutarch.Lift (
   plift',
   LiftError (..),
 
+  -- * Define your own conversion
+  PLift,
+
   -- * Internal use
   PDefaultUniType,
 ) where
@@ -14,6 +18,7 @@ module Plutarch.Lift (
 import Data.Bifunctor (first)
 import Data.Data (Proxy (Proxy))
 import Data.Kind (Type)
+import Data.String
 import Data.Text
 import qualified Data.Text as T
 import GHC.Stack (HasCallStack)
@@ -38,48 +43,47 @@ import UntypedPlutusCore.Evaluation.Machine.Cek (CekUserError)
 data LiftError
   = LiftError_ScriptError Scripts.ScriptError
   | LiftError_EvalException T.Text -- Using Text, because there is no Eq possible with DeBruijn naming.
+  | LiftError_Custom T.Text
   deriving stock (Eq, Show)
 
+instance IsString LiftError where
+  fromString = LiftError_Custom . T.pack
+
+class PLift p (h :: Type) | p -> h where
+  -- {-
+  -- Create a Plutarch-level constant, from a Haskell value.
+  -- Example:
+  -- > pconstant @PInteger 42
+  -- -}
+  pconstant :: h -> Term s p
+
+  -- {-
+  -- Convert a Plutarch term to the associated Haskell value. Fail otherwise.
+  -- This will fully evaluate the arbitrary closed expression, and convert the
+  -- resulting value.
+  -- -}
+  plift' :: ClosedTerm p -> Either LiftError h
+
 -- | Like `plift'` but fails on error.
-plift ::
-  forall p h.
-  ( PLC.KnownTypeIn PLC.DefaultUni (UPLC.Term PLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) h
-  , PLC.DefaultUni `PLC.Contains` h
-  , PDefaultUniType p ~ h
-  , HasCallStack
-  ) =>
-  ClosedTerm p ->
-  h
+plift :: (PLift p h, HasCallStack) => ClosedTerm p -> h
 plift prog = either (error . show) id $ plift' prog
 
--- {-
--- Create a Plutarch-level constant, from a Haskell value.
--- Example:
--- > pconstant @PInteger 42
--- -}
-pconstant :: forall p h s. (PLC.DefaultUni `PLC.Contains` h, PDefaultUniType p ~ h) => h -> Term s p
-pconstant =
-  punsafeConstantInternal . PLC.Some . PLC.ValueOf (PLC.knownUniOf (Proxy @h))
-
--- {-
--- Convert a Plutarch term to the associated Haskell value. Fail otherwise.
--- This will fully evaluate the arbitrary closed expression, and convert the
--- resulting value.
--- -}
-plift' ::
-  forall p h.
+instance
+  {-# OVERLAPPABLE #-}
   ( PLC.KnownTypeIn PLC.DefaultUni (UPLC.Term PLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) h
   , PLC.DefaultUni `PLC.Contains` h
   , PDefaultUniType p ~ h
   ) =>
-  ClosedTerm p ->
-  Either LiftError h
-plift' prog =
-  case evaluateScript (compile prog) of
-    Left e -> Left $ LiftError_ScriptError e
-    Right (_, _, Scripts.unScript -> UPLC.Program _ _ term) ->
-      first (LiftError_EvalException . showEvalException) $
-        readKnownSelf term
+  PLift p h
+  where
+  pconstant =
+    punsafeConstantInternal . PLC.Some . PLC.ValueOf (PLC.knownUniOf (Proxy @h))
+  plift' prog =
+    case evaluateScript (compile prog) of
+      Left e -> Left $ LiftError_ScriptError e
+      Right (_, _, Scripts.unScript -> UPLC.Program _ _ term) ->
+        first (LiftError_EvalException . showEvalException) $
+          readKnownSelf term
 
 showEvalException :: EvaluationException CekUserError (MachineError PLC.DefaultFun) (UPLC.Term UPLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) -> Text
 showEvalException = T.pack . show

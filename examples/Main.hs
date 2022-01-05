@@ -9,7 +9,7 @@ import Control.Exception (SomeException, try)
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
-import Plutarch (ClosedTerm, POpaque, compile, pconstant, plift', popaque, printScript, printTerm, punsafeBuiltin, punsafeCoerce)
+import Plutarch (ClosedTerm, POpaque, compile, pconstant, plift', popaque, printScript, printTerm, punsafeBuiltin)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
 import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdata)
 import Plutarch.ByteString (PByteString, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
@@ -26,7 +26,6 @@ import Plutus.V1.Ledger.Value (CurrencySymbol (CurrencySymbol))
 import Plutus.V2.Ledger.Contexts (ScriptPurpose (Minting))
 import qualified PlutusCore as PLC
 import qualified PlutusTx
-import PlutusTx.IsData.Class (toData)
 
 main :: IO ()
 main = defaultMain tests
@@ -183,14 +182,14 @@ plutarchTests =
     , testCase "ScriptPurpose literal" $
         let d :: ScriptPurpose
             d = Minting dummyCurrency
-            f :: Term s PData
-            f = pconstant $ toData d
+            f :: Term s PScriptPurpose
+            f = pconstant @PScriptPurpose d
          in printTerm f @?= "(program 1.0.0 #d8799f58201111111111111111111111111111111111111111111111111111111111111111ff)"
     , testCase "decode ScriptPurpose" $
         let d :: ScriptPurpose
             d = Minting dummyCurrency
             d' :: Term s PScriptPurpose
-            d' = punsafeCoerce $ pconstant @PData $ toData d
+            d' = pconstant @PScriptPurpose d
             f :: Term s POpaque
             f = pmatch d' $ \case
               PMinting c -> popaque c
