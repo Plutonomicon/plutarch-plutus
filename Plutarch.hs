@@ -175,7 +175,7 @@ class PCon a where
   pcon :: a s -> Term s a
 
 class PMatch a where
-  -- | Pattern match over Plutarch Terms via the Haskell representation
+  -- | Pattern match over Plutarch Terms via a Haskell datatype
   pmatch :: Term s a -> (a s -> Term s b) -> Term s b
 
 {- |
