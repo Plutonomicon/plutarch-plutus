@@ -312,6 +312,7 @@ accessors = Rank2.cotraverse accessor id
         fieldCount :: Natural
         fieldCount = getSum (Rank2.foldMap (const $ Sum 1) initial)
 
+-- | The raw Y-combinator term
 rfix :: RawTerm
 -- The simplest variant of the Y combinator hangs the interpreter, so we use an eta-expanded version instead.
 -- rfix = RLamAbs 0 $ RApply (RLamAbs 0 $ RApply (RVar 1) [RApply (RVar 0) [RVar 0]]) [RLamAbs 0 $ RApply (RVar 1) [RApply (RVar 0) [RVar 0]]]
