@@ -4,8 +4,8 @@
 -- See https://staging.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Api.html
 module Plutarch.ScriptContext (PScriptContext (..), PScriptPurpose (..), PTxInfo (..)) where
 
-import Plutarch (PMatch, POpaque, punsafeCoerce)
-import Plutarch.Builtin (PBuiltinList, PData, PIsData)
+import Plutarch (PMatch, POpaque)
+import Plutarch.Builtin (PBuiltinList, PIsData, pconstantData, pliftData)
 import Plutarch.DataRepr (DataReprHandlers (DRHCons, DRHNil), PDataList, PIsDataRepr, PIsDataReprInstances (PIsDataReprInstances), PIsDataReprRepr, pmatchDataRepr, pmatchRepr)
 import Plutarch.Lift
 import Plutarch.Prelude
@@ -44,12 +44,8 @@ data PScriptPurpose s
   deriving (PMatch, PIsData) via (PIsDataReprInstances PScriptPurpose)
 
 instance {-# OVERLAPPING #-} PLift PScriptPurpose Ledger.ScriptPurpose where
-  pconstant = punsafeCoerce . pconstant @PData . Ledger.toData
-  plift' t = do
-    h <- plift' @PData (punsafeCoerce t)
-    maybeToRight "Failed to decode data" $ Ledger.fromData h
-    where
-      maybeToRight e = maybe (Left e) Right
+  pconstant = pconstantData
+  plift' = pliftData
 
 instance PIsDataRepr PScriptPurpose where
   type PIsDataReprRepr PScriptPurpose = '[ '[POpaque], '[POpaque], '[POpaque], '[POpaque]]
@@ -59,6 +55,10 @@ instance PIsDataRepr PScriptPurpose where
 
 data PScriptContext s = PScriptContext (Term s (PDataList '[PTxInfo, PScriptPurpose]))
   deriving (PMatch, PIsData) via (PIsDataReprInstances PScriptContext)
+
+instance {-# OVERLAPPING #-} PLift PScriptContext Ledger.ScriptContext where
+  pconstant = pconstantData
+  plift' = pliftData
 
 instance PIsDataRepr PScriptContext where
   type PIsDataReprRepr PScriptContext = '[ '[PTxInfo, PScriptPurpose]]
