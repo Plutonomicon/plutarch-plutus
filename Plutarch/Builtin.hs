@@ -90,6 +90,14 @@ instance PIsData a => PIsData (PBuiltinList (PAsData a)) where
   pfromData x = punsafeCoerce $ pasList # pforgetData x
   pdata x = punsafeBuiltin PLC.ListData # x
 
+instance 
+  (PIsData k
+  , PIsData v
+   ) => 
+  PIsData (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))) where
+  pfromData x = punsafeCoerce $ pasMap # pforgetData x
+  pdata x = punsafeBuiltin PLC.MapData # x
+
 instance PIsData PInteger where
   pfromData x = pasInt # pforgetData x
   pdata x = punsafeBuiltin PLC.IData # x

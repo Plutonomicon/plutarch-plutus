@@ -90,7 +90,8 @@ library
     Plutarch.ByteString
     Plutarch.Builtin
     Plutarch.DataRepr
-    Plutarch.ScriptContext
+    Plutarch.Api.V1
+    Plutarch.Api.V2
     Plutarch.Maybe
     Plutarch.Unit
     Plutarch.Crypto
