@@ -26,8 +26,10 @@ import Plutarch.Prelude
 import qualified PlutusCore as PLC
 import PlutusTx (Data)
 
+-- | Plutus 'BuiltinPair'
 data PBuiltinPair (a :: k -> Type) (b :: k -> Type) (s :: k)
 
+-- | Plutus 'BuiltinList'
 data PBuiltinList (a :: k -> Type) (s :: k)
 
 pheadBuiltin :: Term s (PBuiltinList a :--> a)

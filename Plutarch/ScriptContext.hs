@@ -2,6 +2,12 @@
 
 -- Must correspond to V1 of Plutus.
 -- See https://staging.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Api.html
+
+{- |
+
+  Plutus V1 'ScriptContext' and 'TxInfo' encoded as 'PDataList',
+  matching the 'ToData'/'FromData' representation.
+-}
 module Plutarch.ScriptContext (PScriptContext (..), PScriptPurpose (..), PTxInfo (..)) where
 
 import Plutarch (PMatch, POpaque)
@@ -9,12 +15,16 @@ import Plutarch.Builtin (PBuiltinList, PIsData)
 import Plutarch.DataRepr (DataReprHandlers (DRHCons, DRHNil), PDataList, PIsDataRepr, PIsDataReprInstances (PIsDataReprInstances), PIsDataReprRepr, pmatchDataRepr, pmatchRepr)
 import Plutarch.Prelude
 
+-- | Tag for 'TxInInfo'
 data PTxInInfo s
 
+-- | Tag for 'TxOut'
 data PTxOut s
 
+-- | Tag for 'Value'
 data PValue s
 
+-- | 'TxInfo', encoded using 'PDataList'
 data PTxInfo s
   = PTxInfo
       ( Term
@@ -34,6 +44,7 @@ data PTxInfo s
           )
       )
 
+-- | 'ScriptPurpose' encoded as a Sum of 'PDataList' values
 data PScriptPurpose s
   = PMinting (Term s (PDataList '[POpaque]))
   | PSpending (Term s (PDataList '[POpaque]))

@@ -5,6 +5,7 @@ import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
+-- | Plutus BuiltinInteger
 data PInteger s
 
 class PIntegral a where

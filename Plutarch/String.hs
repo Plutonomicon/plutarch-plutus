@@ -8,8 +8,10 @@ import Plutarch.ByteString (PByteString)
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
+-- | Plutus 'BuiltinString' values
 data PString s
 
+-- | Create a PString from 'Text'
 pfromText :: Txt.Text -> Term s PString
 pfromText = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniString
 

@@ -17,6 +17,7 @@ import Plutarch (PlutusType (PInner, pcon', pmatch'), punsafeBuiltin, punsafeCon
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
+-- | Plutus 'BuiltinBool'
 data PBool s = PTrue | PFalse
 
 instance PlutusType PBool where

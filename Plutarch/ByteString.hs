@@ -19,6 +19,7 @@ import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
+-- | Plutus 'BuiltinByteString'
 data PByteString s
 
 instance PEq PByteString where
