@@ -171,11 +171,11 @@ instance PlutusType a => PCon a where
   pcon = punsafeCoerce . pcon'
 
 class PCon a where
-  -- | Construct a Plutarch Term via a Haskell value
+  -- | Construct a Plutarch Term via a Haskell datatype
   pcon :: a s -> Term s a
 
 class PMatch a where
-  -- | Construct a Plutarch Term via a Haskell value
+  -- | Pattern match over Plutarch Terms via the Haskell representation
   pmatch :: Term s a -> (a s -> Term s b) -> Term s b
 
 {- |
