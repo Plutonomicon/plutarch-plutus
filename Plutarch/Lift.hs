@@ -48,7 +48,7 @@ data LiftError
 instance IsString LiftError where
   fromString = LiftError_Custom . T.pack
 
-class PLift p (h :: Type) where
+class PLift (h :: Type) p where
   -- {-
   -- Create a Plutarch-level constant, from a Haskell value.
   -- Example:
@@ -64,7 +64,7 @@ class PLift p (h :: Type) where
   plift' :: ClosedTerm p -> Either LiftError h
 
 -- | Like `plift'` but fails on error.
-plift :: (PLift p h, HasCallStack) => ClosedTerm p -> h
+plift :: (PLift h p, HasCallStack) => ClosedTerm p -> h
 plift prog = either (error . show) id $ plift' prog
 
 instance
@@ -73,7 +73,7 @@ instance
   , PLC.DefaultUni `PLC.Contains` h
   , PDefaultUniType p ~ h
   ) =>
-  PLift p h
+  PLift h p
   where
   pconstant =
     punsafeConstantInternal . PLC.Some . PLC.ValueOf (PLC.knownUniOf (Proxy @h))

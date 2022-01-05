@@ -116,9 +116,9 @@ plutarchTests =
     , testCase "example2" $ (printTerm example2) @?= "(program 1.0.0 (\\i0 -> i1 (\\i0 -> addInteger i1 1) (\\i0 -> subtractInteger i1 1)))"
     , testCase "pfix" $ (printTerm pfix) @?= "(program 1.0.0 (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))))"
     , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> force (i3 (equalsInteger i1 0) (delay 0) (delay (force (i3 (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2)))))))))) (force ifThenElse)))"
-    , testCase "fib 9 == 34" $ equal (fib # 9) (pconstant @PInteger 34)
+    , testCase "fib 9 == 34" $ equal (fib # 9) (pconstant @_ @PInteger 34)
     , testCase "uglyDouble" $ (printTerm uglyDouble) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
-    , testCase "1 + 2 == 3" $ equal (pconstant @PInteger $ 1 + 2) (pconstant @PInteger 3)
+    , testCase "1 + 2 == 3" $ equal (pconstant @_ @PInteger $ 1 + 2) (pconstant @_ @PInteger 3)
     , testCase "fails: perror" $ fails perror
     , testCase "pnot" $ do
         (pnot #$ pcon PTrue) `equal` pcon PFalse
@@ -132,40 +132,40 @@ plutarchTests =
     , testCase "() <= () == True" $ do
         expect $ pcon PUnit #<= pcon PUnit
     , testCase "0x02af == 0x02af" $ expect $ phexByteStr "02af" #== phexByteStr "02af"
-    , testCase "\"foo\" == \"foo\"" $ expect $ "foo" #== pconstant @PString "foo"
+    , testCase "\"foo\" == \"foo\"" $ expect $ "foo" #== pconstant @_ @PString "foo"
     , testCase "PByteString :: mempty <> a == a <> mempty == a" $ do
         expect $ let a = phexByteStr "152a" in (mempty <> a) #== a
         expect $ let a = phexByteStr "4141" in (a <> mempty) #== a
     , testCase "PString :: mempty <> a == a <> mempty == a" $ do
-        expect $ let a = pconstant @PString "foo" in (mempty <> a) #== a
-        expect $ let a = pconstant @PString "bar" in (a <> mempty) #== a
+        expect $ let a = pconstant @_ @PString "foo" in (mempty <> a) #== a
+        expect $ let a = pconstant @_ @PString "bar" in (a <> mempty) #== a
     , testCase "PByteString :: 0x12 <> 0x34 == 0x1234" $
         expect $
           (phexByteStr "12" <> phexByteStr "34") #== phexByteStr "1234"
     , testCase "PString :: \"ab\" <> \"cd\" == \"abcd\"" $
         expect $
-          ("ab" <> "cd") #== (pconstant @PString "abcd")
+          ("ab" <> "cd") #== (pconstant @_ @PString "abcd")
     , testCase "PByteString mempty" $ expect $ mempty #== phexByteStr ""
     , testCase "pconsByteStr" $
         let xs = "5B1F"; b = "41"
          in (pconsBS # fromInteger (readByte b) # phexByteStr xs) `equal` phexByteStr (b <> xs)
     , testCase "plengthByteStr" $ do
-        (plengthBS # phexByteStr "012f") `equal` pconstant @PInteger 2
+        (plengthBS # phexByteStr "012f") `equal` pconstant @_ @PInteger 2
         expect $ (plengthBS # phexByteStr "012f") #== 2
         let xs = phexByteStr "48fCd1"
         (plengthBS #$ pconsBS # 91 # xs)
           `equal` (1 + plengthBS # xs)
     , testCase "pindexByteStr" $
-        (pindexBS # phexByteStr "4102af" # 1) `equal` pconstant @PInteger 0x02
+        (pindexBS # phexByteStr "4102af" # 1) `equal` pconstant @_ @PInteger 0x02
     , testCase "psliceByteStr" $
         (psliceBS # 1 # 3 # phexByteStr "4102afde5b2a") `equal` phexByteStr "02afde"
     , testCase "pconstant - phexByteStr relation" $ do
         let a = ["42", "ab", "df", "c9"]
-        pconstant @PByteString (BS.pack $ map readByte a) `equal` phexByteStr (concat a)
-    , testCase "PString mempty" $ expect $ mempty #== pconstant @PString ""
+        pconstant @_ @PByteString (BS.pack $ map readByte a) `equal` phexByteStr (concat a)
+    , testCase "PString mempty" $ expect $ mempty #== pconstant @_ @PString ""
     , testCase "pconstant \"abc\" == \"abc\"" $ do
-        pconstant @PString "abc" `equal` pconstant @PString "abc"
-        expect $ pconstant @PString "foo" #== "foo"
+        pconstant @_ @PString "abc" `equal` pconstant @_ @PString "abc"
+        expect $ pconstant @_ @PString "foo" #== "foo"
     , testCase "#&& - boolean and; #|| - boolean or" $ do
         let ptrue = pcon PTrue
             pfalse = pcon PFalse
@@ -183,13 +183,13 @@ plutarchTests =
         let d :: ScriptPurpose
             d = Minting dummyCurrency
             f :: Term s PScriptPurpose
-            f = pconstant @PScriptPurpose d
+            f = pconstant @_ @PScriptPurpose d
          in printTerm f @?= "(program 1.0.0 #d8799f58201111111111111111111111111111111111111111111111111111111111111111ff)"
     , testCase "decode ScriptPurpose" $
         let d :: ScriptPurpose
             d = Minting dummyCurrency
             d' :: Term s PScriptPurpose
-            d' = pconstant @PScriptPurpose d
+            d' = pconstant @_ @PScriptPurpose d
             f :: Term s POpaque
             f = pmatch d' $ \case
               PMinting c -> popaque c
@@ -211,8 +211,8 @@ plutarchTests =
         printTerm (phoistAcyclic (punsafeBuiltin PLC.FstPair)) @?= "(program 1.0.0 fstPair)"
     , testCase "throws: hoist error" $ throws $ phoistAcyclic perror
     , testCase "PData equality" $ do
-        expect $ let dat = pconstant @PData (PlutusTx.List [PlutusTx.Constr 1 [PlutusTx.I 0]]) in dat #== dat
-        expect $ pnot #$ pconstant @PData (PlutusTx.Constr 0 []) #== pconstant @PData (PlutusTx.I 42)
+        expect $ let dat = pconstant @_ @PData (PlutusTx.List [PlutusTx.Constr 1 [PlutusTx.I 0]]) in dat #== dat
+        expect $ pnot #$ pconstant @_ @PData (PlutusTx.Constr 0 []) #== pconstant @_ @PData (PlutusTx.I 42)
     , testCase "PAsData equality" $ do
         expect $ let dat = pdata @PInteger 42 in dat #== dat
         expect $ pnot #$ pdata (phexByteStr "12") #== pdata (phexByteStr "ab")
@@ -240,18 +240,18 @@ plutarchTests =
             plift' (pcon PTrue) @?= Right True
             plift' (pcon PFalse) @?= Right False
         , testCase "pconstant on primitive types" $ do
-            plift' (pconstant @PBool False) @?= Right False
-            plift' (pconstant @PBool True) @?= Right True
+            plift' (pconstant @_ @PBool False) @?= Right False
+            plift' (pconstant @_ @PBool True) @?= Right True
         , testCase "plift on list and pair" $ do
-            plift' (pconstant @(PBuiltinList PInteger) [1, 2, 3]) @?= Right [1, 2, 3]
-            plift' (pconstant @(PBuiltinPair PString PInteger) ("IOHK", 42)) @?= Right ("IOHK", 42)
+            plift' (pconstant @_ @(PBuiltinList PInteger) [1, 2, 3]) @?= Right [1, 2, 3]
+            plift' (pconstant @_ @(PBuiltinPair PString PInteger) ("IOHK", 42)) @?= Right ("IOHK", 42)
         , testCase "plift on nested containers" $ do
             -- List of pairs
             let v1 = [("IOHK", 42), ("Plutus", 31)]
-            plift' (pconstant @(PBuiltinList (PBuiltinPair PString PInteger)) v1) @?= Right v1
+            plift' (pconstant @_ @(PBuiltinList (PBuiltinPair PString PInteger)) v1) @?= Right v1
             -- List of pair of lists
             let v2 = [("IOHK", [1, 2, 3]), ("Plutus", [9, 8, 7])]
-            plift' (pconstant @(PBuiltinList (PBuiltinPair PString (PBuiltinList PInteger))) v2) @?= Right v2
+            plift' (pconstant @_ @(PBuiltinList (PBuiltinPair PString (PBuiltinList PInteger))) v2) @?= Right v2
         ]
     ]
 

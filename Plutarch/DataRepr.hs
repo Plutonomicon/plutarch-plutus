@@ -7,7 +7,9 @@ import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoe
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Builtin (PAsData, PBuiltinList, PData, PIsData, pasConstr, pdata, pfromData, pfstBuiltin, psndBuiltin)
 import Plutarch.Integer (PInteger)
+import Plutarch.Lift
 import Plutarch.Prelude
+import qualified Plutus.V1.Ledger.Api as Ledger
 import qualified PlutusCore as PLC
 
 data PDataList (as :: [k -> Type]) (s :: k)
@@ -124,3 +126,12 @@ instance PIsDataRepr a => PIsData (PIsDataReprInstances a) where
 
 instance PIsDataRepr a => PMatch (PIsDataReprInstances a) where
   pmatch x f = pmatchRepr (punsafeCoerce x) (f . PIsDataReprInstances)
+
+instance {-# OVERLAPPING #-} (Ledger.FromData h, Ledger.ToData h, PIsData p) => PLift h (PIsDataReprInstances p) where
+  pconstant =
+    punsafeCoerce . pconstant @_ @PData . Ledger.toData
+  plift' t = do
+    h <- plift' @_ @PData (punsafeCoerce t)
+    maybeToRight "Failed to decode data" $ Ledger.fromData h
+    where
+      maybeToRight e = maybe (Left e) Right

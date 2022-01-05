@@ -16,17 +16,14 @@ module Plutarch.Builtin (
   pdataLiteral,
   PIsData (..),
   PAsData,
-  pconstantData,
-  pliftData,
 ) where
 
-import Plutarch (ClosedTerm, punsafeBuiltin, punsafeCoerce)
+import Plutarch (punsafeBuiltin, punsafeCoerce)
 import Plutarch.Bool (PBool, PEq, (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift
 import Plutarch.Prelude
-import qualified Plutus.V1.Ledger.Api as Ledger
 import qualified PlutusCore as PLC
 import PlutusTx (Data)
 
@@ -54,15 +51,6 @@ data PData s
   | PDataInteger (Term s PInteger)
   | PDataByteString (Term s PByteString)
 
-pconstantData :: forall k (p :: k -> Type) h (s :: k). Ledger.ToData h => h -> Term s p
-pconstantData = punsafeCoerce . pconstant @PData . Ledger.toData
-
-pliftData :: forall k (p :: k -> Type) h. Ledger.FromData h => ClosedTerm p -> Either LiftError h
-pliftData t = do
-  h <- plift' @PData (punsafeCoerce t)
-  maybeToRight "Failed to decode data" $ Ledger.fromData h
-  where
-    maybeToRight e = maybe (Left e) Right
 instance PEq PData where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
 
