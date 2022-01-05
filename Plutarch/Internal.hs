@@ -23,21 +23,25 @@ module Plutarch.Internal (
   TermCont (..),
 ) where
 
+import Control.Monad (guard)
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
 import Crypto.Hash.IO (HashAlgorithm)
 import qualified Data.ByteString as BS
+import Data.Function ((&))
 import Data.Kind (Type)
 import Data.List (foldl', groupBy, sortOn)
 import qualified Data.Map.Lazy as M
 import qualified Data.Set as S
 import qualified Flat.Run as F
+import GHC.Natural (intToNatural)
 import GHC.Stack (HasCallStack)
 import Numeric.Natural (Natural)
 import Plutarch.Evaluate (evaluateScript)
 import Plutus.V1.Ledger.Scripts (Script (Script))
 import PlutusCore (Some, ValueOf)
 import qualified PlutusCore as PLC
+import qualified PlutusCore.Constant as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
 import qualified UntypedPlutusCore as UPLC
 
@@ -152,58 +156,25 @@ plam' f = Term $ \i ->
     getArity t = getArityBuiltin t
 
     getArityBuiltin :: RawTerm -> Maybe Natural
-    getArityBuiltin (RBuiltin PLC.AddInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.SubtractInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.MultiplyInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.DivideInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.QuotientInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.RemainderInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.ModInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.EqualsInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.LessThanInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.LessThanEqualsInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.AppendByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.ConsByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.SliceByteString) = Just 2
-    getArityBuiltin (RBuiltin PLC.LengthOfByteString) = Just 0
-    getArityBuiltin (RBuiltin PLC.IndexByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.EqualsByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.LessThanByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.LessThanEqualsByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.Sha2_256) = Just 0
-    getArityBuiltin (RBuiltin PLC.Sha3_256) = Just 0
-    getArityBuiltin (RBuiltin PLC.Blake2b_256) = Just 0
-    getArityBuiltin (RBuiltin PLC.VerifySignature) = Just 2
-    getArityBuiltin (RBuiltin PLC.AppendString) = Just 1
-    getArityBuiltin (RBuiltin PLC.EqualsString) = Just 1
-    getArityBuiltin (RBuiltin PLC.EncodeUtf8) = Just 0
-    getArityBuiltin (RBuiltin PLC.DecodeUtf8) = Just 0
-    getArityBuiltin (RForce (RBuiltin PLC.IfThenElse)) = Just 2
-    getArityBuiltin (RForce (RBuiltin PLC.ChooseUnit)) = Just 1
-    getArityBuiltin (RForce (RBuiltin PLC.Trace)) = Just 1
-    getArityBuiltin (RForce (RForce (RBuiltin PLC.FstPair))) = Just 0
-    getArityBuiltin (RForce (RForce (RBuiltin PLC.SndPair))) = Just 0
-    getArityBuiltin (RForce (RForce (RBuiltin PLC.ChooseList))) = Just 2
-    getArityBuiltin (RForce (RBuiltin PLC.MkCons)) = Just 1
-    getArityBuiltin (RForce (RBuiltin PLC.HeadList)) = Just 0
-    getArityBuiltin (RForce (RBuiltin PLC.TailList)) = Just 0
-    getArityBuiltin (RForce (RBuiltin PLC.NullList)) = Just 0
-    getArityBuiltin (RForce (RBuiltin PLC.ChooseData)) = Just 5
-    getArityBuiltin (RBuiltin PLC.ConstrData) = Just 1
-    getArityBuiltin (RBuiltin PLC.MapData) = Just 0
-    getArityBuiltin (RBuiltin PLC.ListData) = Just 0
-    getArityBuiltin (RBuiltin PLC.IData) = Just 0
-    getArityBuiltin (RBuiltin PLC.BData) = Just 0
-    getArityBuiltin (RBuiltin PLC.UnConstrData) = Just 0
-    getArityBuiltin (RBuiltin PLC.UnMapData) = Just 0
-    getArityBuiltin (RBuiltin PLC.UnListData) = Just 0
-    getArityBuiltin (RBuiltin PLC.UnIData) = Just 0
-    getArityBuiltin (RBuiltin PLC.UnBData) = Just 0
-    getArityBuiltin (RBuiltin PLC.EqualsData) = Just 1
-    getArityBuiltin (RBuiltin PLC.MkPairData) = Just 1
-    getArityBuiltin (RBuiltin PLC.MkNilData) = Just 0
-    getArityBuiltin (RBuiltin PLC.MkNilPairData) = Just 0
+    getArityBuiltin (RBuiltin builtin) =
+      guard (getPolyVarCount builtin == 0) >> pure (getArityBuiltin' builtin)
+    getArityBuiltin (RForce (RBuiltin builtin)) =
+      guard (getPolyVarCount builtin == 1) >> pure (getArityBuiltin' builtin)
+    getArityBuiltin (RForce (RForce (RBuiltin builtin))) =
+      guard (getPolyVarCount builtin == 2) >> pure (getArityBuiltin' builtin)
     getArityBuiltin _ = Nothing
+
+    getArityBuiltin' :: PLC.DefaultFun -> Natural
+    getArityBuiltin' builtin =
+      case PLC.toBuiltinMeaning @_ @_ @(PLC.Term PLC.TyName PLC.Name _ _ ()) builtin of
+        PLC.BuiltinMeaning sch _ _ -> intToNatural $ PLC.countTermArgs sch
+    getPolyVarCount :: PLC.DefaultFun -> Int
+    getPolyVarCount builtin =
+      case PLC.toBuiltinMeaning @_ @_ @(PLC.Term PLC.TyName PLC.Name _ _ ()) builtin of
+        PLC.BuiltinMeaning sch _ _ ->
+          PLC.getArity sch
+            & filter (== PLC.TypeArg)
+            & length
 
 {- |
   Let bindings.
