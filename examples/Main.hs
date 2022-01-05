@@ -18,6 +18,7 @@ import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
 import Plutarch.ScriptContext (PScriptPurpose (PMinting))
+import Plutarch.Spec.Tracing (traceTests)
 import Plutarch.String (PString, pfromText)
 import Plutarch.Unit (PUnit (..))
 import qualified Plutus.V1.Ledger.Scripts as Scripts
@@ -216,6 +217,7 @@ plutarchTests =
     , testCase "PAsData equality" $ do
         expect $ let dat = pdata @PInteger 42 in dat #== dat
         expect $ pnot #$ pdata (phexByteStr "12") #== pdata (phexByteStr "ab")
+    , testCase "Tracing" $ traceTests
     , testCase "λx y -> addInteger x y => addInteger" $
         printTerm (plam $ \x y -> (x :: Term _ PInteger) + y) @?= "(program 1.0.0 addInteger)"
     , testCase "λx y -> hoist (force mkCons) x y => force mkCons" $
