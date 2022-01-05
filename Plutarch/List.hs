@@ -2,8 +2,7 @@
 module Plutarch.List (
   PScottList (..),
   PListLike (..),
-  EmptyConstraint,
-  convertLists,
+  pconvertLists,
 
   -- * Comparison
   plistEquals,
@@ -82,8 +81,8 @@ instance PListLike PScottList where
 type PIsListLike list a = (PListLike list, PElemConstraint list a)
 
 -- | / O(n) /. Convert from any ListLike to any ListLike, provided both lists' element constraints are met.
-convertLists :: (PElemConstraint f a, PElemConstraint g a, PListLike f, PListLike g) => Term s (f a :--> g a)
-convertLists =
+pconvertLists :: (PElemConstraint f a, PElemConstraint g a, PListLike f, PListLike g) => Term s (f a :--> g a)
+pconvertLists =
   pfix #$ plam $ \self ->
     pelimList
       (plam $ \x xs -> pconsList # x # (self # xs))

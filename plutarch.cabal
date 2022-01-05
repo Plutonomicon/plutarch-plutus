@@ -93,7 +93,6 @@ library
     Plutarch.ScriptContext
     Plutarch.Maybe
     Plutarch.List
-    Plutarch.Builtin.List
     Plutarch.Unit
     Plutarch.Crypto
     Plutarch.Lift
