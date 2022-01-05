@@ -1,15 +1,12 @@
---------------------------------------------------------------------------------
-
-{- | Convenient lists for Plutarch
- All functions implicitly work on a PBuiltinList containing PData by using 'PList' wrapper.
- Conversions to and from PData are hidden away from interface. As a result, all functions require
- PIsData instances on the contents of the list.
-
- NOTE: In the future, if we have a typeclass for constants, we ought to implement an instance for
- > instance PConstant a b => PConstant [a] (PList b)
--}
+-- TODO: Scott-encoded lists, or a ListLike goes here.
 module Plutarch.List (
-  PList (..),
+  PScottList (..),
+  PListLike (..),
+  EmptyConstraint,
+  convertLists,
+
+  -- * Comparison
+  plistEquals,
 
   -- * Query
   pelem,
@@ -17,11 +14,13 @@ module Plutarch.List (
   pnull,
 
   -- * Construction
-  pnil,
   psingleton,
 
   -- * Combine
   pconcat,
+  pzipWith,
+  pzipWith',
+  pzip,
 
   -- * Traversals
   pmap,
@@ -32,58 +31,84 @@ module Plutarch.List (
   punsafeHead,
   punsafeTail,
   pfoldr,
-
-  -- * Casting
-  pforgetList,
+  pfoldr',
+  pall,
 ) where
 
 import Plutarch
-import Plutarch.Bool
-import Plutarch.Builtin
-import Plutarch.Integer
+import Plutarch.Bool (PBool (..), PEq (..), pif, (#&&))
+import Plutarch.Integer (PInteger)
+import Plutarch.Pair (PPair (..))
 import Plutarch.Prelude
-import qualified PlutusCore as PLC
+
+import Data.Kind
+
+data PScottList (a :: k -> Type) (s :: k)
+  = PSCons (Term s a) (Term s (PScottList a))
+  | PSNil
+
+instance PlutusType (PScottList a) where
+  type PInner (PScottList a) c = (a :--> PScottList a :--> c) :--> (PDelayed c) :--> c
+
+  pcon' :: forall s. PScottList a s -> forall b. Term s (PInner (PScottList a) b)
+  pcon' (PSCons x xs) = plam $ \match_cons (_ :: Term _ _) -> match_cons # x # xs
+  pcon' PSNil = plam $ \_match_cons match_nil -> pforce match_nil
+  pmatch' xs f =
+    xs # (plam $ \x xs -> f (PSCons x xs)) # pdelay (f PSNil)
+
+instance PEq a => PEq (PScottList a) where
+  (#==) xs ys = plistEquals # xs # ys
 
 --------------------------------------------------------------------------------
 
-data PList (a :: k -> Type) (s :: k)
-  = PCons (Term s a) (Term s (PList a))
-  | PNil
+class PListLike (list :: (k -> Type) -> k -> Type) where
+  type PElemConstraint list :: (k -> Type) -> Constraint
+  pelimList :: PElemConstraint list a => Term s (a :--> list a :--> r) -> Term s (PDelayed r) -> Term s (list a :--> r)
+  pconsList :: PElemConstraint list a => Term s (a :--> list a :--> list a)
+  pnilList :: PElemConstraint list a => Term s (list a)
 
-instance PIsData a => PlutusType (PList a) where
-  type PInner (PList a) b = PBuiltinList (PAsData a)
-  pcon' :: forall s. PList a s -> forall b. Term s (PInner (PList a) b)
-  pcon' (PCons x xs) = pconsBuiltin # (pdata x) # (pto xs)
-  pcon' PNil = pemptyListBuiltin
-  pmatch' xs f =
-    pforce $
-      pchooseListBuiltin
-        # xs
-        # pdelay (f PNil)
-        # pdelay (f (PCons (pfromData $ pheadBuiltin # xs) (punsafeFrom $ ptailBuiltin # xs)))
+class EmptyConstraint x
+instance EmptyConstraint x
 
-instance PEq a => PEq (PList a) where
-  (#==) xs ys =
-    punsafeBuiltin PLC.EqualsData
-      # (pmkList # punsafeCoerce xs)
-      # (pmkList # punsafeCoerce ys)
+instance PListLike PScottList where
+  type PElemConstraint PScottList = EmptyConstraint
+  pelimList match_cons match_nil =
+    plam $ \ls -> pmatch ls $ \case
+      PSCons x xs -> match_cons # x # xs
+      PSNil -> pforce match_nil
+  pconsList = plam $ \x xs -> pcon (PSCons x xs)
+  pnilList = pcon PSNil
+
+type PIsListLike list a = (PListLike list, PElemConstraint list a)
+
+-- | / O(n) /. Convert from any ListLike to any ListLike, provided both lists' element constraints are met.
+convertLists :: (PElemConstraint f a, PElemConstraint g a, PListLike f, PListLike g) => Term s (f a :--> g a)
+convertLists =
+  pfix #$ plam $ \self ->
+    pelimList
+      (plam $ \x xs -> pconsList # x # (self # xs))
+      (pdelay $ pnilList)
+
+-- | Like 'pelimList', but with a fixpoint recursion hatch.
+precList :: (PElemConstraint list a, PListLike list) => (Term s (list a :--> r) -> Term s a -> Term s (list a) -> Term s r) -> (Term s (list a :--> r) -> Term s r) -> Term s (list a :--> r)
+precList mcons mnil =
+  pfix #$ plam $ \self ->
+    pelimList
+      (plam $ \x xs -> mcons self x xs)
+      (pdelay $ mnil self)
 
 --------------------------------------------------------------------------------
 -- Construction
 
--- | Create a singleton list from an element
-psingleton :: PIsData a => Term s (a :--> PList a)
-psingleton = plam $ \x -> pcon (PCons x (pcon PNil))
-
--- | The empty list
-pnil :: PIsData a => Term s (PList a)
-pnil = pcon PNil
+-- | / O(1) /. Create a singleton list from an element
+psingleton :: PIsListLike list a => Term s (a :--> list a)
+psingleton = plam $ \x -> pconsList # x # pnilList
 
 --------------------------------------------------------------------------------
 -- Querying
 
 -- | / O(n) /. Check if element is in the list
-pelem :: (PIsData a, PEq a) => Term s (a :--> PList a :--> PBool)
+pelem :: (PIsListLike list a, PEq a) => Term s (a :--> list a :--> PBool)
 pelem =
   phoistAcyclic $
     plam $ \needle ->
@@ -92,50 +117,61 @@ pelem =
         (\_self -> pcon PFalse)
 
 -- | / O(n) /. Count the number of elements in the list
-plength :: PIsData a => Term s (PList a :--> PInteger)
+plength :: PIsListLike list a => Term s (list a :--> PInteger)
 plength =
   plet
     ( pfix #$ plam $ \self ls n ->
-        pmatch ls $ \case
-          PCons _x xs -> (self # xs # n + 1)
-          PNil -> n
+        pelimList
+          (plam $ \_x xs -> (self # xs # n + 1))
+          (pdelay n)
+          # ls
     )
     $ \go -> plam $ \xs -> go # xs # 0
 
 -- | / O(1) /. Check if a list is empty
-pnull :: PIsData a => Term s (PList a :--> PBool)
-pnull = plam $ \xs -> pnullBuiltin # punsafeCoerce xs
+pnull :: PIsListLike list a => Term s (list a :--> PBool)
+pnull = pelimList (plam $ \_ _ -> pcon PFalse) (pdelay $ pcon PTrue)
 
 --------------------------------------------------------------------------------
 
--- | Meta recursive list eliminator
-precList :: PIsData a => (Term s (PList a :--> r) -> Term s a -> Term s (PList a) -> Term s r) -> (Term s (PList a :--> r) -> Term s r) -> Term s (PList a :--> r)
-precList mcons mnil =
-  pfix #$ plam $ \self xs ->
-    pmatch xs $ \case
-      PCons x xs -> mcons self x xs
-      PNil -> mnil self
-
 -- | / O(n) /. Fold on a list right-associatively
-pfoldr :: PIsData a => Term s ((a :--> b :--> b) :--> b :--> PList a :--> b)
+pfoldr :: PIsListLike list a => Term s ((a :--> b :--> b) :--> b :--> list a :--> b)
 pfoldr = phoistAcyclic $
   plam $ \f z ->
     precList
       (\self x xs -> f # x # (self # xs))
       (\_self -> z)
 
-punsafeHead :: PIsData a => Term s (PList a :--> a)
-punsafeHead = plam $ \xs -> pfromData $ pheadBuiltin # punsafeCoerce xs
+-- | The same as 'pfoldr'', but with Haskell-level reduction function.
+pfoldr' :: PIsListLike list a => (forall s. Term s a -> Term s b -> Term s b) -> Term s (b :--> list a :--> b)
+pfoldr' f = phoistAcyclic $
+  plam $ \z ->
+    precList
+      (\self x xs -> f x (self # xs))
+      (\_self -> z)
 
-punsafeTail :: PIsData a => Term s (PList a :--> PList a)
-punsafeTail = plam $ \xs -> punsafeCoerce $ ptailBuiltin # punsafeCoerce xs
+-- | / O(n) /. Check that predicate holds for all elements in a list
+pall :: PIsListLike list a => Term s ((a :--> PBool) :--> list a :--> PBool)
+pall = phoistAcyclic $
+  plam $ \predicate ->
+    pfoldr # (plam $ \x acc -> predicate # x #&& acc) # (pcon PTrue)
+
+-- | / O(1) /. Return the first element of a list. Partial, throws an error upon encountering an empty list.
+punsafeHead :: PIsListLike list a => Term s (list a :--> a)
+punsafeHead = pelimList (plam $ \x _xs -> x) (pdelay perror)
+
+-- | / O(1) /. Take the tail of a list, meaning drop its head. Partial, throws an error upon encountering an empty list.
+punsafeTail :: PIsListLike list a => Term s (list a :--> list a)
+punsafeTail = pelimList (plam $ \_x xs -> xs) (pdelay perror)
 
 -- | / O(n) /. Map a function over a list of elements
-pmap :: (PIsData a, PIsData b) => Term s ((a :--> b) :--> PList a :--> PList b)
-pmap = phoistAcyclic $ plam $ \f -> precList (\self x xs -> pcon (PCons (f # x) (self # xs))) (\_self -> pcon PNil)
+pmap :: (PListLike list, PElemConstraint list a, PElemConstraint list b) => Term s ((a :--> b) :--> list a :--> list b)
+pmap = phoistAcyclic $
+  plam $ \f ->
+    precList (\self x xs -> pconsList # (f # x) # (self # xs)) (\_self -> pnilList)
 
 -- | / O(n) /. Filter elements from a list that don't match the predicate.
-pfilter :: (PIsData a) => Term s ((a :--> PBool) :--> PList a :--> PList a)
+pfilter :: PIsListLike list a => Term s ((a :--> PBool) :--> list a :--> list a)
 pfilter =
   phoistAcyclic $
     plam $ \predicate ->
@@ -143,10 +179,10 @@ pfilter =
         ( \self x xs ->
             pif
               (predicate # x)
-              (pcon (PCons x (self # xs)))
+              (pconsList # x # (self # xs))
               (self # xs)
         )
-        (\_self -> pnil)
+        (\_self -> pnilList)
 
 --------------------------------------------------------------------------------
 
@@ -159,19 +195,69 @@ pfilter =
  > forall x. pconcat # pnil # x == x
  > forall x. pconcat # x # pnil == x
 -}
-pconcat :: (PIsData a) => Term s (PList a :--> PList a :--> PList a)
+pconcat :: PIsListLike list a => Term s (list a :--> list a :--> list a)
 pconcat =
   phoistAcyclic $
     plam $ \xs ys ->
       precList
         ( \self x xs ->
-            pcon (PCons x (self # xs))
+            pconsList # x # (self # xs)
         )
         (\_self -> ys)
         # xs
 
---------------------------------------------------------------------------------
--- Casting
+-- | / O(min(n, m)) /. Zip two lists together with a passed function. If the lists are of differing lengths, cut to the shortest.
+pzipWith ::
+  ( PListLike list
+  , PElemConstraint list a
+  , PElemConstraint list b
+  , PElemConstraint list c
+  ) =>
+  Term s ((a :--> b :--> c) :--> list a :--> list b :--> list c)
+pzipWith =
+  phoistAcyclic $
+    plam $ \f ->
+      pfix #$ plam $ \self lx ly ->
+        pelimList
+          ( plam $ \x xs ->
+              pelimList
+                (plam $ \y ys -> pconsList # (f # x # y) # (self # xs # ys))
+                (pdelay pnilList)
+                # ly
+          )
+          (pdelay pnilList)
+          # lx
 
-pforgetList :: PIsData a => Term s (PList a) -> Term s (PList PData)
-pforgetList = punsafeCoerce
+-- | Like 'pzipWith' but with Haskell-level merge function.
+pzipWith' ::
+  ( PListLike list
+  , PElemConstraint list a
+  , PElemConstraint list b
+  , PElemConstraint list c
+  ) =>
+  (Term s a -> Term s b -> Term s c) ->
+  Term s (list a :--> list b :--> list c)
+pzipWith' f =
+  pfix #$ plam $ \self lx ly ->
+    pelimList
+      ( plam $ \x xs ->
+          pelimList
+            (plam $ \y ys -> pconsList # (f x y) # (self # xs # ys))
+            (pdelay pnilList)
+            # ly
+      )
+      (pdelay pnilList)
+      # lx
+
+-- | / O(min(n, m)) /. Zip two lists together, creating pairs of the elements. If the lists are of differing lengths, cut to the shortest.
+pzip ::
+  ( PListLike list
+  , PElemConstraint list a
+  , PElemConstraint list b
+  , PElemConstraint list (PPair a b)
+  ) =>
+  Term s (list a :--> list b :--> list (PPair a b))
+pzip = pzipWith' $ \x y -> pcon (PPair x y)
+
+plistEquals :: (PIsListLike list a, PElemConstraint list PBool, PEq a) => Term s (list a :--> list a :--> PBool)
+plistEquals = phoistAcyclic $ plam $ \xs ys -> pfoldr' (#&&) # (pcon PTrue) # (pzipWith' (#==) # xs # ys)
