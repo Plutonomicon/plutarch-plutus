@@ -461,14 +461,14 @@ pdiv # 6 # 3
 where `6` and `3` are `Term s PInteger`s yields `3` - also a `Term s PInteger`.
 
 ### PIsData
-The `PIsData` typeclass facilitates easy and safe conversion between `PAsData` and types that can represent `PData` - i.e [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md).
+The `PIsData` typeclass facilitates easy and type safe conversion between types and their corresponding `PData` representation - i.e [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md). It keeps track of the type information through [`PAsData`](#pasdata).
 ```hs
 class PIsData a where
   pfromData :: Term s (PAsData a) -> Term s a
   pdata :: Term s a -> Term s (PAsData a)
 ```
 
-`PInteger` has a `PIsData` instance-
+[`PInteger`](#pinteger) has a `PIsData` instance. The `PData` representation of `PInteger` is, of course, an `I` data. And you can get the `PInteger` back from an `I` data using `UnIData` (i.e `pasInt`).
 ```hs
 instance PIsData PInteger where
   pfromData x = pasInt # pforgetData x
@@ -476,7 +476,9 @@ instance PIsData PInteger where
 ```
 In essence, `pdata` wraps a `PInteger` into an `I` data value. Wheras `pfromData` simply unwraps the `I` data value to get a `PInteger`.
 
-> Aside: When implementing `PIsData` for your type, `a` - you can safely use `punsafeCoerce` for both `pdata` and `pfromData` if **you're sure** that `a` is actually a `Data` value under the hood (e.x `PData`).
+In the above case, `PInteger` is a type that *can be converted* to and from `Data` but is not `Data` itself (it's a builtin integer). What if you have a type that is already represented as a `Data` (`PData`) value under the hood (e.g `PScriptContext`)? In these cases, you should implement `PIsDataRepr` via `PIsDataReprInstances` and you'll get the `PIsData` instance for free!
+
+See: [Implementing `PIsDataRepr`](#implementing-pisdatarepr)
 
 ### PlutusType, PCon, and PMatch
 `PlutusType` lets you construct and deconstruct Plutus Core constants from Haskell ADTs. It's essentially a combination of `PCon` (for constant construction) and `PMatch` (for constant deconstruction).
