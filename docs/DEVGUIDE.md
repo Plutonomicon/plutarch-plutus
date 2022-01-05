@@ -120,7 +120,7 @@ data ScriptContext = ScriptContext
   }
 ```
 
-We are interested in `txInfoInputs`, which has type `TxInInfo`. It is the first field within `TxInfo`. If you have read [Working with `BuiltinData`](https://mlabs.slab.com/posts/plutarch-xlifp008#hydsx-working-with-builtin-data-data-p-data) already - you know that a `ScriptContext` translates to a `Data` value similar to-
+We are interested in `txInfoInputs`, which has type `TxInInfo`. It is the first field within `TxInfo`. If you have read [Working with `BuiltinData`](#working-with-builtindatadatapdata) already - you know that a `ScriptContext` translates to a `Data` value similar to-
 
 ```haskell
 Constr 0 [PlutusTx.toData txInfo, PlutusTx.toData txPurpose]
@@ -171,7 +171,7 @@ mockCtx =
 Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf data (Constr 0 [List [Constr 0 [Constr 0 [Constr 0 [B ""],I 1],Constr 0 [Constr 0 [Constr 0 [B "\SOH#"],Constr 1 []],Map [],Constr 1 []]]],List [],Map [],Map [],List [],List [],Constr 0 [Constr 0 [Constr 1 [I 1],Constr 1 []],Constr 0 [Constr 1 [I 2],Constr 1 []]],List [],List [],Constr 0 [B ""]])))))
 ```
 
-> Aside: You can find the definition of `evalWithArgsT` above - [Compiling and Running](https://mlabs.slab.com/posts/plutarch-xlifp008#h039n-compiling-and-running).
+> Aside: You can find the definition of `evalWithArgsT` above - [Compiling and Running](./GUIDE.md#compiling-and-running).
 
 But we're not done yet! We want `txInfoInputs`. You may have noticed where exactly it is located on the above output. See that `List …`? Inside the outermost `Constr`'s fields? That's our `txInfoInputs`!
 
@@ -214,7 +214,10 @@ Some
 There's just one element in `txInfoInputs` in this example, and there it is. Of course `TxInInfo`, the element type of this list, also gets translated to a `Constr` data with further fields. And that's what you see above.
 
 # Useful Links
+- [Builtin lists](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-lists.md)
+- [Builtin pairs](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-pairs.md)
+- [Builtin functions](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-functions.md)
+- [Builtin data](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md)
 - [Plutus builtin functions and types](https://staging.plutus.iohkdev.io/doc/haddock//plutus-tx/html/PlutusTx-Builtins-Internal.html)
 - [Plutus Core builtin function identifiers, aka `DefaultFun`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultFun)
 - [Plutus Core types, aka `DefaultUni`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)
-- [Plutonomicon](https://github.com/Plutonomicon/plutonomicon)

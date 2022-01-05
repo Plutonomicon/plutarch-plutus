@@ -730,7 +730,7 @@ Consider using `PAsData` instead for simple cases, i.e cases other than `Constr`
 
 Consider using `PDataRepr` instead when dealing with ADTs, i.e `Constr` data values.
 
-You can find more information about `PData` at [Developers' Corner](https://mlabs.slab.com/posts/plutarch-xlifp008#hvezd-developers-corner).
+You can find more information about `PData` at [Developers' Corner](./DEVGUIDE.md).
 
 ### PMaybe
 TODO
@@ -853,7 +853,7 @@ Of course, what you _really_ should do , is prefer Plutarch level functions when
 
 ## Prefer Plutarch level functions
 
-Plutarch level functions have a lot of advantages - they can be hoisted; they are strict so you can [use their arguments however many times you like without duplicating work](https://mlabs.slab.com/posts/plutarch-xlifp008#hoy4m-dont-duplicate-work); they are required for Plutarch level higher order functions etc. Unless you _really_ need laziness, like `pif` does, try to use Plutarch level functions.
+Plutarch level functions have a lot of advantages - they can be hoisted; they are strict so you can [use their arguments however many times you like without duplicating work](#dont-duplicate-work); they are required for Plutarch level higher order functions etc. Unless you _really_ need laziness, like `pif` does, try to use Plutarch level functions.
 
 What about convenient Haskell operators? Well, these must be Haskell level functions working on Plutarch terms. This is the case for `+`, `-`, `#==` and many more.
 
