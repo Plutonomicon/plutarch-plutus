@@ -22,6 +22,7 @@
     - [Tracing](#tracing)
     - [Raising errors](#raising-errors)
     - [Delay and Force](#delay-and-force)
+    - [Unsafe functions](#unsafe-functions)
   - [Typeclasses](#typeclasses)
     - [Equality and Order](#equality-and-order)
     - [Monoids](#monoids)
@@ -386,6 +387,13 @@ pif cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay wh
 `pif'` is a direct synonym to the `IfThenElse` Plutus Core builtin function. Of course, it evaluates its arguments strictly but you often want an if-then-else that doesn't evaluate both its branches - only the one for which the condition holds. So, `pif`, as a haskell level function can take in both branches (without any concept of evaluating them), delay them and *then* apply it to `pif'`. Finally, a `pforce` will force the yielded branch that was previously delayed.
 
 Delay and Force will be one of your most useful tools while writing Plutarch. Make sure you get a grip on them!
+
+### Unsafe functions
+There are internal functions such as `punsafeCoerce`, `punsafeConstant` etc. that give you terms without their specific type. These **should not** be used by Plutarch users. It is the duty of the user of these unsafe functions to get the type right - and it is very easy to get the type wrong. You can easily make the type system believe you're creating a `Term s PInteger`, when in reality, you created a function.
+
+Things will go very wrong during script evaluation if you do that kind of thing.
+
+The good thing is that unsafe functions all have explicit indicators through the names, as long as you don't use any `punsafe*` functions - you should be fine!
 
 ## Typeclasses
 
