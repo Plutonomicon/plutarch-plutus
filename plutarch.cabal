@@ -116,8 +116,11 @@ test-suite examples
   type: exitcode-stdio-1.0
   main-is: Main.hs
   hs-source-dirs: examples
-  other-modules:
+  other-modules: 
     Plutarch.Spec.Tracing
+    Examples.PlutusType
+    Utils
+    Examples.Recursion
   build-depends:
     , base
     , bytestring
