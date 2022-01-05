@@ -1,3 +1,6 @@
+{-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE UndecidableInstances #-}
+
 module Plutarch.Unit (PUnit (..)) where
 
 import Plutarch (PlutusType (PInner, pcon', pmatch'), Term, pcon)
@@ -5,6 +8,7 @@ import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Lift
 
 data PUnit s = PUnit
+  deriving (PLift) via PBuiltinType PUnit ()
 
 instance PlutusType PUnit where
   type PInner PUnit _ = PUnit
@@ -23,5 +27,3 @@ instance Semigroup (Term s PUnit) where
 
 instance Monoid (Term s PUnit) where
   mempty = pcon PUnit
-
-type instance PDefaultUniType PUnit = ()

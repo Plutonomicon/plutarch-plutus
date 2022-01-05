@@ -1,4 +1,5 @@
 {-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 -- Must correspond to V1 of Plutus.
 -- See https://staging.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Api.html
@@ -41,7 +42,7 @@ data PScriptPurpose s
   | PSpending (Term s (PDataList '[POpaque]))
   | PRewarding (Term s (PDataList '[POpaque]))
   | PCertifying (Term s (PDataList '[POpaque]))
-  deriving (PMatch, PIsData, PLift Ledger.ScriptPurpose) via (PIsDataReprInstances PScriptPurpose)
+  deriving (PMatch, PIsData, PLift) via (PIsDataReprInstances PScriptPurpose Ledger.ScriptPurpose)
 
 instance PIsDataRepr PScriptPurpose where
   type PIsDataReprRepr PScriptPurpose = '[ '[POpaque], '[POpaque], '[POpaque], '[POpaque]]
@@ -50,7 +51,7 @@ instance PIsDataRepr PScriptPurpose where
       DRHCons (f . PMinting) $ DRHCons (f . PSpending) $ DRHCons (f . PRewarding) $ DRHCons (f . PCertifying) DRHNil
 
 data PScriptContext s = PScriptContext (Term s (PDataList '[PTxInfo, PScriptPurpose]))
-  deriving (PMatch, PIsData, PLift Ledger.ScriptContext) via (PIsDataReprInstances PScriptContext)
+  deriving (PMatch, PIsData, PLift) via (PIsDataReprInstances PScriptContext Ledger.ScriptContext)
 
 instance PIsDataRepr PScriptContext where
   type PIsDataReprRepr PScriptContext = '[ '[PTxInfo, PScriptPurpose]]

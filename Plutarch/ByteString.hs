@@ -1,3 +1,6 @@
+{-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE UndecidableInstances #-}
+
 module Plutarch.ByteString (
   PByteString,
   phexByteStr,
@@ -21,6 +24,7 @@ import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
 data PByteString s
+  deriving (PLift) via PBuiltinType PByteString ByteString
 
 instance PEq PByteString where
   x #== y = punsafeBuiltin PLC.EqualsByteString # x # y
@@ -34,8 +38,6 @@ instance Semigroup (Term s PByteString) where
 
 instance Monoid (Term s PByteString) where
   mempty = pconstant BS.empty
-
-type instance PDefaultUniType PByteString = ByteString
 
 -- | Interpret a hex string as a PByteString.
 phexByteStr :: HasCallStack => String -> Term s PByteString

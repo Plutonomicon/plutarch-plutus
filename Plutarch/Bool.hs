@@ -1,3 +1,6 @@
+{-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE UndecidableInstances #-}
+
 module Plutarch.Bool (
   PBool (..),
   PEq (..),
@@ -19,6 +22,7 @@ import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
 data PBool s = PTrue | PFalse
+  deriving (PLift) via PBuiltinType PBool Bool
 
 instance PlutusType PBool where
   type PInner PBool _ = PBool
@@ -37,8 +41,6 @@ class POrd t where
 
 infix 4 #<=
 infix 4 #<
-
-type instance PDefaultUniType PBool = Bool
 
 {- | Strict version of 'pif'.
  Emits slightly less code.

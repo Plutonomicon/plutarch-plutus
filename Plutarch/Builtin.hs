@@ -1,3 +1,6 @@
+{-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE UndecidableInstances #-}
+
 -- This should have been called Plutarch.Data...
 module Plutarch.Builtin (
   PData (..),
@@ -29,11 +32,20 @@ import PlutusTx (Data)
 
 data PBuiltinPair (a :: k -> Type) (b :: k -> Type) (s :: k)
 
+deriving via
+  PBuiltinType (PBuiltinPair a b) (PHaskellType a, PHaskellType b)
+  instance
+    ( PLC.DefaultUni `PLC.Contains` PHaskellType a
+    , PLC.DefaultUni `PLC.Contains` PHaskellType b
+    ) =>
+    (PLift (PBuiltinPair a b))
+
 data PBuiltinList (a :: k -> Type) (s :: k)
 
-type instance PDefaultUniType (PBuiltinPair a b) = (PDefaultUniType a, PDefaultUniType b)
-
-type instance PDefaultUniType (PBuiltinList a) = [PDefaultUniType a]
+deriving via
+  PBuiltinType (PBuiltinList a) [PHaskellType a]
+  instance
+    PLC.DefaultUni `PLC.Contains` PHaskellType a => (PLift (PBuiltinList a))
 
 pheadBuiltin :: Term s (PBuiltinList a :--> a)
 pheadBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList
@@ -50,11 +62,10 @@ data PData s
   | PDataList (Term s (PBuiltinList PData))
   | PDataInteger (Term s PInteger)
   | PDataByteString (Term s PByteString)
+  deriving (PLift) via PBuiltinType PData Data
 
 instance PEq PData where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
-
-type instance PDefaultUniType PData = Data
 
 pfstBuiltin :: Term s (PBuiltinPair a b :--> a)
 pfstBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.FstPair
