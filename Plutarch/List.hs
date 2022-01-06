@@ -63,10 +63,6 @@ class PListLike (list :: (k -> Type) -> k -> Type) where
   type PElemConstraint list :: (k -> Type) -> Constraint
 
   -- | Canonical eliminator for list-likes.
-  --
-  -- Example:
-  -- > isEmpty :: PIsListLike list a => Term s (list a :--> PBool)
-  -- > isEmpty = pelimList (plam $ \ _x _xs -> pcon PFalse) (pdelay $ pcon PTrue)
   pelimList :: PElemConstraint list a => Term s (a :--> list a :--> r) -> Term s (PDelayed r) -> Term s (list a :--> r)
 
   -- | Cons an element onto an existing list.
@@ -83,7 +79,6 @@ class PListLike (list :: (k -> Type) -> k -> Type) where
   ptail :: PIsListLike list a => Term s (list a :--> list a)
   ptail = pelimList (plam $ \_x xs -> xs) (pdelay perror)
 
-
 class EmptyConstraint x
 instance EmptyConstraint x
 
@@ -97,7 +92,6 @@ instance PListLike PList where
   pnil = pcon PSNil
 
 type PIsListLike list a = (PListLike list, PElemConstraint list a)
-
 
 -- | / O(n) /. Convert from any ListLike to any ListLike, provided both lists' element constraints are met.
 pconvertLists :: forall f g a s. (PElemConstraint f a, PElemConstraint g a, PListLike f, PListLike g) => Term s (f a :--> g a)
@@ -272,6 +266,7 @@ pzip = pzipWith' $ \x y -> pcon (PPair x y)
 -- Horribly inefficient.
 plistEquals :: (PIsListLike list a, PElemConstraint list PBool, PEq a) => Term s (list a :--> list a :--> PBool)
 plistEquals =
-  phoistAcyclic $ plam $ \xs ys ->
-    plength # xs #== plength # ys
-      #&& pfoldr' (#&&) # (pcon PTrue) # (pzipWith' (#==) # xs # ys)
+  phoistAcyclic $
+    plam $ \xs ys ->
+      plength # xs #== plength # ys
+        #&& pfoldr' (#&&) # (pcon PTrue) # (pzipWith' (#==) # xs # ys)
