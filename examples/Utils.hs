@@ -11,6 +11,8 @@ import Plutarch.Bool (PBool (PTrue))
 import Plutarch.Evaluate (evaluateBudgetedScript, evaluateScript)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import Shrink (shrinkScript)
+import qualified PlutusCore.Evaluation.Machine.ExMemory as ExMemory
+import PlutusCore.Evaluation.Machine.ExBudget (ExBudget(ExBudget))
 import Test.Tasty.HUnit
 
 newtype EvalImpl = EvalImpl {runEvalImpl :: forall k (a :: k -> Type). HasCallStack => ClosedTerm a -> IO Scripts.Script}

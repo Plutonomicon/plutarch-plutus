@@ -29,8 +29,6 @@ import Plutarch.Unit (PUnit (..))
 import Plutus.V1.Ledger.Value (CurrencySymbol (CurrencySymbol))
 import Plutus.V2.Ledger.Contexts (ScriptPurpose (Minting))
 import qualified PlutusCore as PLC
-import qualified PlutusCore.Evaluation.Machine.ExMemory as ExMemory
-import PlutusCore.Evaluation.Machine.ExBudget (ExBudget(ExBudget))
 import qualified PlutusTx
 
 import qualified Examples.PlutusType as PlutusType

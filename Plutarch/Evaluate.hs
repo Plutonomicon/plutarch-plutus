@@ -8,7 +8,7 @@ import Plutus.V1.Ledger.Scripts (Script (Script))
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import qualified PlutusCore as PLC
 import PlutusCore (FreeVariableError, defaultVersion)
-import PlutusCore.Evaluation.Machine.ExMemory qualified as ExMemory
+import qualified PlutusCore.Evaluation.Machine.ExMemory as ExMemory
 import PlutusCore.Evaluation.Machine.ExBudget (
   ExBudget(ExBudget),
   ExRestrictingBudget(ExRestrictingBudget),
