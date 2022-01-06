@@ -3,6 +3,9 @@ module Plutarch.Crypto (
   psha3_256,
   pblake2b_256,
   pverifySignature,
+  PPubKey (..),
+  PPubKeyHash (..),
+  PSignature (..),
 ) where
 
 import Plutarch (punsafeBuiltin)
@@ -10,6 +13,8 @@ import Plutarch.Bool (PBool)
 import Plutarch.ByteString (PByteString)
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
+import Plutarch.API.V1 (PPubKey (..), PSignature (..), PPubKeyHash (..), PDatumHash)
+
 
 -- | Hash a 'PByteString' using SHA-256.
 psha2_256 :: Term s (PByteString :--> PByteString)
@@ -24,5 +29,5 @@ pblake2b_256 :: Term s (PByteString :--> PByteString)
 pblake2b_256 = punsafeBuiltin PLC.Blake2b_256
 
 -- | Verify the signature against the public key and message.
-pverifySignature :: Term s (PByteString :--> PByteString :--> PByteString :--> PBool)
+pverifySignature :: Term s (PPubKey :--> PDatumHash :--> PSignature :--> PBool)
 pverifySignature = punsafeBuiltin PLC.VerifySignature

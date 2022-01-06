@@ -1,21 +1,12 @@
 {-# LANGUAGE CPP #-}
 
-module Plutarch.Spec.Tracing (traceTests) where
+module Examples.Tracing (traceTests) where
 
-import Test.Tasty.HUnit
-
-import Data.Text (Text)
 import Plutarch
 import Plutarch.Bool (PBool (PFalse, PTrue))
-import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Trace (ptrace, ptraceIfFalse, ptraceIfTrue)
 import Plutarch.Unit (PUnit (PUnit))
-
-traces :: ClosedTerm a -> [Text] -> Assertion
-traces x sl =
-  case evaluateScript $ compile x of
-    Left e -> assertFailure $ "Script evaluation failed: " <> show e
-    Right (_, traceLog, _) -> traceLog @?= sl
+import Utils (traces)
 
 traceTests :: IO ()
 traceTests = do

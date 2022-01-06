@@ -34,6 +34,7 @@ common c
     DeriveGeneric
     DeriveLift
     DeriveTraversable
+    DerivingVia
     DoAndIfThenElse
     EmptyCase
     EmptyDataDecls
@@ -47,7 +48,6 @@ common c
     GeneralisedNewtypeDeriving
     HexFloatLiterals
     ImplicitPrelude
-    ImportQualifiedPost
     InstanceSigs
     KindSignatures
     MonomorphismRestriction
@@ -94,6 +94,7 @@ library
     Plutarch.Maybe
     Plutarch.Unit
     Plutarch.Crypto
+    Plutarch.Lift
     Plutarch.Trace
   build-depends:
     , base
@@ -117,7 +118,10 @@ test-suite examples
   main-is: Main.hs
   hs-source-dirs: examples
   other-modules:
-    Plutarch.Spec.Tracing
+    Examples.Tracing
+    Examples.PlutusType
+    Utils
+    Examples.Recursion
   build-depends:
     , base
     , bytestring
@@ -125,6 +129,7 @@ test-suite examples
     , plutarch
     , tasty
     , tasty-hunit
+    , text
     , plutus-ledger-api
     , plutus-core
     , aeson

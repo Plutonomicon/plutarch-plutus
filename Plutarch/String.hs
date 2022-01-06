@@ -1,20 +1,29 @@
+{-# LANGUAGE UndecidableInstances #-}
+
 module Plutarch.String (PString, pfromText, pencodeUtf8, pdecodeUtf8) where
 
 import Data.String (IsString, fromString)
+import Data.Text (Text)
 import qualified Data.Text as Txt
-import Plutarch (punsafeBuiltin, punsafeConstant)
+import Plutarch (punsafeBuiltin)
 import Plutarch.Bool (PEq, (#==))
 import Plutarch.ByteString (PByteString)
+import Plutarch.Lift
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
+-- | Plutus 'BuiltinString' values
 data PString s
+  deriving (PLift) via PBuiltinType PString Text
 
+{-# DEPRECATED pfromText "Use `pconstant` instead." #-}
+
+-- | Create a PString from 'Text'
 pfromText :: Txt.Text -> Term s PString
-pfromText = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniString
+pfromText = pconstant
 
 instance IsString (Term s PString) where
-  fromString = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniString . Txt.pack
+  fromString = pconstant . Txt.pack
 
 instance PEq PString where
   x #== y = punsafeBuiltin PLC.EqualsString # x # y
@@ -23,7 +32,7 @@ instance Semigroup (Term s PString) where
   x <> y = punsafeBuiltin PLC.AppendString # x # y
 
 instance Monoid (Term s PString) where
-  mempty = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniString Txt.empty
+  mempty = pconstant Txt.empty
 
 -- | Encode a 'PString' using UTF-8.
 pencodeUtf8 :: Term s (PString :--> PByteString)
