@@ -18,6 +18,7 @@ module Plutarch.Builtin (
   pdataLiteral,
   PIsData (..),
   PAsData,
+  ppairDataBuiltin,
 ) where
 
 import Plutarch (punsafeBuiltin, punsafeCoerce)
@@ -39,6 +40,19 @@ deriving via
     , PLC.DefaultUni `PLC.Contains` PHaskellType b
     ) =>
     (PLift (PBuiltinPair a b))
+
+pfstBuiltin :: Term s (PBuiltinPair a b :--> a)
+pfstBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.FstPair
+
+psndBuiltin :: Term s (PBuiltinPair a b :--> b)
+psndBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.SndPair
+
+{- | Construct a builtin pair of 'PData' elements.
+
+Uses 'PAsData' to preserve more information about the underlying 'PData'.
+-}
+ppairDataBuiltin :: Term s (PAsData a :--> PAsData b :--> PBuiltinPair (PAsData a) (PAsData b))
+ppairDataBuiltin = punsafeBuiltin PLC.MkPairData
 
 -- | Plutus 'BuiltinList'
 data PBuiltinList (a :: k -> Type) (s :: k)
@@ -67,12 +81,6 @@ data PData s
 
 instance PEq PData where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
-
-pfstBuiltin :: Term s (PBuiltinPair a b :--> a)
-pfstBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.FstPair
-
-psndBuiltin :: Term s (PBuiltinPair a b :--> b)
-psndBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.SndPair
 
 pasConstr :: Term s (PData :--> PBuiltinPair PInteger (PBuiltinList PData))
 pasConstr = punsafeBuiltin PLC.UnConstrData

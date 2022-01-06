@@ -8,6 +8,7 @@ import Test.Tasty.HUnit
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
+import Examples.Tracing (traceTests)
 import Plutarch (POpaque, pconstant, plift', popaque, printTerm, punsafeBuiltin)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
 import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdata)
@@ -17,7 +18,6 @@ import Plutarch.Integer (PInteger)
 import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude
 import Plutarch.ScriptContext (PScriptPurpose (PMinting))
-import Plutarch.Spec.Tracing (traceTests)
 import Plutarch.String (PString)
 import Plutarch.Unit (PUnit (..))
 import Plutus.V1.Ledger.Value (CurrencySymbol (CurrencySymbol))
