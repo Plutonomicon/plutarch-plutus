@@ -101,10 +101,10 @@ instance PListLike PBuiltinList where
     plam $ \ls -> pmatch ls $ \case
       PCons x xs -> match_cons # x # xs
       PNil -> pforce match_nil
-  pconsList = plam $ \x xs -> pcon (PCons x xs)
-  pnilList = pcon PNil
-  punsafeHead = pheadBuiltin
-  punsafeTail = ptailBuiltin
+  pcons = plam $ \x xs -> pcon (PCons x xs)
+  pnil = pcon PNil
+  phead = pheadBuiltin
+  ptail = ptailBuiltin
 
 instance (PElemConstraint PBuiltinList a, PEq a) => PEq (PBuiltinList a) where
   (#==) xs ys = plistEquals # xs # ys

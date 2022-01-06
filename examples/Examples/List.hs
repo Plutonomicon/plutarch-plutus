@@ -6,32 +6,32 @@ import Test.Tasty.HUnit
 import Utils
 
 import Plutarch
-import Plutarch.Bool (pnot, (#==), (#<))
+import Plutarch.Bool (pnot, (#<), (#==))
+import Plutarch.Builtin (PBuiltinList (..))
 import Plutarch.Integer
 import Plutarch.List
-import Plutarch.Builtin (PBuiltinList(..))
 
 --------------------------------------------------------------------------------
 
-integerList :: [Integer] -> Term s (PScottList PInteger)
+integerList :: [Integer] -> Term s (PList PInteger)
 integerList xs = pconvertLists #$ pconstant @(PBuiltinList PInteger) xs
 
 tests :: TestTree
 tests = do
   testGroup "List tests" $
     [ testCase "pconcat identities" $ do
-        let xs :: Term s (PScottList PInteger)
+        let xs :: Term s (PList PInteger)
             xs = psingleton # (fromInteger @(Term _ PInteger) 0)
-        expect $ (pconcat # xs # pnilList) #== xs
+        expect $ (pconcat # xs # pnil) #== xs
     , testCase "pmap" $ do
-        let xs :: Term _ (PScottList PInteger)
+        let xs :: Term _ (PList PInteger)
             xs = integerList [1 .. 10]
         expect $
           pmap # (plam $ \x -> x + x) # xs
             #== (integerList $ fmap (* 2) [1 .. 10])
-        expect $ pmap @PScottList # (plam $ \(x :: Term _ PInteger) -> x) # pnilList #== pnilList
+        expect $ pmap @PList # (plam $ \(x :: Term _ PInteger) -> x) # pnil #== pnil
     , testCase "pfilter" $ do
-        let xs :: Term _ (PScottList PInteger)
+        let xs :: Term _ (PList PInteger)
             xs = integerList [1 .. 10]
         expect $
           (pfilter # (plam $ \x -> pmod # x # 2 #== 0) # xs)
@@ -39,14 +39,15 @@ tests = do
         expect $
           (pfilter # (plam $ \x -> 5 #< x) # xs)
             #== (integerList [6 .. 10])
-    , testCase "punsafeHead" $
-        expect $ (punsafeHead # integerList [1 .. 10]) #== 1
-    , testCase "punsafeTail" $
-        expect $ (punsafeTail # integerList [1 .. 10]) #== integerList [2 .. 10]
+    , testCase "phead" $
+        expect $ (phead # integerList [1 .. 10]) #== 1
+    , testCase "ptail" $
+        expect $ (ptail # integerList [1 .. 10]) #== integerList [2 .. 10]
     , testCase "pnull" $ do
         expect $ pnot #$ pnull # integerList [1 .. 10]
         expect $ pnull # integerList []
     , testCase "pzipWith" $ do
-        expect $ (pzipWith' (+) # integerList [1..10] # integerList [1..10])
-             #== integerList (fmap (*2) [1..10])
+        expect $
+          (pzipWith' (+) # integerList [1 .. 10] # integerList [1 .. 10])
+            #== integerList (fmap (* 2) [1 .. 10])
     ]

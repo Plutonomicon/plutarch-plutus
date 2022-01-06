@@ -1,6 +1,6 @@
 -- | Scott-encoded lists and ListLike typeclass
 module Plutarch.List (
-  PScottList (..),
+  PList (..),
   PListLike (..),
   pconvertLists,
 
@@ -40,20 +40,20 @@ import Plutarch.Prelude
 
 import Data.Kind
 
-data PScottList (a :: k -> Type) (s :: k)
-  = PSCons (Term s a) (Term s (PScottList a))
+data PList (a :: k -> Type) (s :: k)
+  = PSCons (Term s a) (Term s (PList a))
   | PSNil
 
-instance PlutusType (PScottList a) where
-  type PInner (PScottList a) c = (a :--> PScottList a :--> c) :--> (PDelayed c) :--> c
+instance PlutusType (PList a) where
+  type PInner (PList a) c = (a :--> PList a :--> c) :--> (PDelayed c) :--> c
 
-  pcon' :: forall s. PScottList a s -> forall b. Term s (PInner (PScottList a) b)
+  pcon' :: forall s. PList a s -> forall b. Term s (PInner (PList a) b)
   pcon' (PSCons x xs) = plam $ \match_cons (_ :: Term _ _) -> match_cons # x # xs
   pcon' PSNil = plam $ \_match_cons match_nil -> pforce match_nil
   pmatch' xs f =
     xs # (plam $ \x xs -> f (PSCons x xs)) # pdelay (f PSNil)
 
-instance PEq a => PEq (PScottList a) where
+instance PEq a => PEq (PList a) where
   (#==) xs ys = plistEquals # xs # ys
 
 --------------------------------------------------------------------------------
@@ -69,32 +69,32 @@ class PListLike (list :: (k -> Type) -> k -> Type) where
   -- > isEmpty = pelimList (plam $ \ _x _xs -> pcon PFalse) (pdelay $ pcon PTrue)
   pelimList :: PElemConstraint list a => Term s (a :--> list a :--> r) -> Term s (PDelayed r) -> Term s (list a :--> r)
 
-  -- | / O(1) /. Cons an element onto an existing list.
-  pconsList :: PElemConstraint list a => Term s (a :--> list a :--> list a)
+  -- | Cons an element onto an existing list.
+  pcons :: PElemConstraint list a => Term s (a :--> list a :--> list a)
 
-  -- | / O(1) /. The empty list
-  pnilList :: PElemConstraint list a => Term s (list a)
+  -- | The empty list
+  pnil :: PElemConstraint list a => Term s (list a)
 
-  -- | / O(1) /. Return the first element of a list. Partial, throws an error upon encountering an empty list.
-  punsafeHead :: PIsListLike list a => Term s (list a :--> a)
-  punsafeHead = pelimList (plam $ \x _xs -> x) (pdelay perror)
+  -- | Return the first element of a list. Partial, throws an error upon encountering an empty list.
+  phead :: PIsListLike list a => Term s (list a :--> a)
+  phead = pelimList (plam $ \x _xs -> x) (pdelay perror)
 
-  -- | / O(1) /. Take the tail of a list, meaning drop its head. Partial, throws an error upon encountering an empty list.
-  punsafeTail :: PIsListLike list a => Term s (list a :--> list a)
-  punsafeTail = pelimList (plam $ \_x xs -> xs) (pdelay perror)
+  -- | Take the tail of a list, meaning drop its head. Partial, throws an error upon encountering an empty list.
+  ptail :: PIsListLike list a => Term s (list a :--> list a)
+  ptail = pelimList (plam $ \_x xs -> xs) (pdelay perror)
 
 
 class EmptyConstraint x
 instance EmptyConstraint x
 
-instance PListLike PScottList where
-  type PElemConstraint PScottList = EmptyConstraint
+instance PListLike PList where
+  type PElemConstraint PList = EmptyConstraint
   pelimList match_cons match_nil =
     plam $ \ls -> pmatch ls $ \case
       PSCons x xs -> match_cons # x # xs
       PSNil -> pforce match_nil
-  pconsList = plam $ \x xs -> pcon (PSCons x xs)
-  pnilList = pcon PSNil
+  pcons = plam $ \x xs -> pcon (PSCons x xs)
+  pnil = pcon PSNil
 
 type PIsListLike list a = (PListLike list, PElemConstraint list a)
 
@@ -104,8 +104,8 @@ pconvertLists :: forall f g a s. (PElemConstraint f a, PElemConstraint g a, PLis
 pconvertLists =
   pfix #$ plam $ \self ->
     pelimList
-      (plam $ \x xs -> pconsList # x # (self # xs))
-      (pdelay $ pnilList)
+      (plam $ \x xs -> pcons # x # (self # xs))
+      (pdelay pnil)
 
 -- | Like 'pelimList', but with a fixpoint recursion hatch.
 precList :: (PElemConstraint list a, PListLike list) => (Term s (list a :--> r) -> Term s a -> Term s (list a) -> Term s r) -> (Term s (list a :--> r) -> Term s r) -> Term s (list a :--> r)
@@ -120,7 +120,7 @@ precList mcons mnil =
 
 -- | / O(1) /. Create a singleton list from an element
 psingleton :: PIsListLike list a => Term s (a :--> list a)
-psingleton = plam $ \x -> pconsList # x # pnilList
+psingleton = plam $ \x -> pcons # x # pnil
 
 --------------------------------------------------------------------------------
 -- Querying
@@ -178,7 +178,7 @@ pall = phoistAcyclic $
 pmap :: (PListLike list, PElemConstraint list a, PElemConstraint list b) => Term s ((a :--> b) :--> list a :--> list b)
 pmap = phoistAcyclic $
   plam $ \f ->
-    precList (\self x xs -> pconsList # (f # x) # (self # xs)) (\_self -> pnilList)
+    precList (\self x xs -> pcons # (f # x) # (self # xs)) (\_self -> pnil)
 
 -- | / O(n) /. Filter elements from a list that don't match the predicate.
 pfilter :: PIsListLike list a => Term s ((a :--> PBool) :--> list a :--> list a)
@@ -189,10 +189,10 @@ pfilter =
         ( \self x xs ->
             pif
               (predicate # x)
-              (pconsList # x # (self # xs))
+              (pcons # x # (self # xs))
               (self # xs)
         )
-        (\_self -> pnilList)
+        (\_self -> pnil)
 
 --------------------------------------------------------------------------------
 
@@ -211,7 +211,7 @@ pconcat =
     plam $ \xs ys ->
       precList
         ( \self x xs ->
-            pconsList # x # (self # xs)
+            pcons # x # (self # xs)
         )
         (\_self -> ys)
         # xs
@@ -231,11 +231,11 @@ pzipWith =
         pelimList
           ( plam $ \x xs ->
               pelimList
-                (plam $ \y ys -> pconsList # (f # x # y) # (self # xs # ys))
-                (pdelay pnilList)
+                (plam $ \y ys -> pcons # (f # x # y) # (self # xs # ys))
+                (pdelay pnil)
                 # ly
           )
-          (pdelay pnilList)
+          (pdelay pnil)
           # lx
 
 -- | Like 'pzipWith' but with Haskell-level merge function.
@@ -252,11 +252,11 @@ pzipWith' f =
     pelimList
       ( plam $ \x xs ->
           pelimList
-            (plam $ \y ys -> pconsList # (f x y) # (self # xs # ys))
-            (pdelay pnilList)
+            (plam $ \y ys -> pcons # (f x y) # (self # xs # ys))
+            (pdelay pnil)
             # ly
       )
-      (pdelay pnilList)
+      (pdelay pnil)
       # lx
 
 -- | / O(min(n, m)) /. Zip two lists together, creating pairs of the elements. If the lists are of differing lengths, cut to the shortest.
