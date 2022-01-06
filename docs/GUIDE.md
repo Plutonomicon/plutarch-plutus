@@ -468,7 +468,7 @@ pdiv # 6 # 3
 where `6` and `3` are `Term s PInteger`s yields `3` - also a `Term s PInteger`.
 
 ### PIsData
-The `PIsData` typeclass facilitates easy and type safe conversion between types and their corresponding `PData` representation - i.e [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md). It keeps track of the type information through [`PAsData`](#pasdata).
+The `PIsData` typeclass facilitates easy and type safe conversion between Plutarch types and their corresponding `PData` representation - i.e [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md). It keeps track of the type information through [`PAsData`](#pasdata).
 ```hs
 class PIsData a where
   pfromData :: Term s (PAsData a) -> Term s a
@@ -483,9 +483,7 @@ instance PIsData PInteger where
 ```
 In essence, `pdata` wraps a `PInteger` into an `I` data value. Wheras `pfromData` simply unwraps the `I` data value to get a `PInteger`.
 
-In the above case, `PInteger` is a type that *can be converted* to and from `Data` but is not `Data` itself (it's a builtin integer). What if you have a type that is already represented as a `Data` (`PData`) value under the hood (e.g `PScriptContext`)? In these cases, you should implement `PIsDataRepr` via `PIsDataReprInstances` and you'll get the `PIsData` instance for free!
-
-See: [Implementing `PIsDataRepr`](#implementing-pisdatarepr)
+In the above case, `PInteger` is a type that *can be converted* to and from `Data` but is not `Data` itself (it's a builtin integer). What if you have a type that is already represented as a `Data` (`PData`) value under the hood (e.g `PScriptContext`)? In these cases, you should implement `PIsDataRepr` via `PIsDataReprInstances` and you'll get the `PIsData` instance for free! See: [Implementing `PIsDataRepr`](#implementing-pisdatarepr)
 
 ### PLift
 `PLift` establishes a bridge between a Plutarch level type (that is represented as a builtin type, i.e [`DefaultUni`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) and its corresponding Haskell synonym. The details of `PLift` are not too useful to users, but you can read all about it if you want at [Developers' corner]().
