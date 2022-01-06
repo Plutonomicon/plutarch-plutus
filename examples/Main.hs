@@ -5,27 +5,29 @@ module Main (main) where
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import Control.Exception (SomeException, try)
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
-import Plutarch (ClosedTerm, POpaque, compile, popaque, printScript, printTerm, punsafeBuiltin, punsafeCoerce, punsafeConstant)
+import Plutarch (POpaque, pconstant, plift', popaque, printTerm, punsafeBuiltin)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
-import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdata, pdataLiteral)
-import Plutarch.ByteString (pbyteStr, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
+import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdata)
+import Plutarch.ByteString (PByteString, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
 import Plutarch.Either (PEither (PLeft, PRight))
-import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Integer (PInteger)
+import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude
 import Plutarch.ScriptContext (PScriptPurpose (PMinting))
-import Plutarch.String (PString, pfromText)
+import Plutarch.Spec.Tracing (traceTests)
+import Plutarch.String (PString)
 import Plutarch.Unit (PUnit (..))
-import qualified Plutus.V1.Ledger.Scripts as Scripts
 import Plutus.V1.Ledger.Value (CurrencySymbol (CurrencySymbol))
 import Plutus.V2.Ledger.Contexts (ScriptPurpose (Minting))
 import qualified PlutusCore as PLC
 import qualified PlutusTx
-import PlutusTx.IsData.Class (toData)
+
+import qualified Examples.PlutusType as PlutusType
+import qualified Examples.Recursion as Recursion
+import Utils
 
 main :: IO ()
 main = defaultMain tests
@@ -58,39 +60,6 @@ fib = phoistAcyclic $
 uglyDouble :: Term s (PInteger :--> PInteger)
 uglyDouble = plam $ \n -> plet n $ \n1 -> plet n1 $ \n2 -> n2 + n2
 
-eval :: HasCallStack => ClosedTerm a -> IO Scripts.Script
-eval x = case evaluateScript $ compile x of
-  Left e -> assertFailure $ "Script evaluation failed: " <> show e
-  Right (_, _, x') -> pure x'
-
-equal :: HasCallStack => ClosedTerm a -> ClosedTerm b -> Assertion
-equal x y = do
-  x' <- eval x
-  y' <- eval y
-  printScript x' @?= printScript y'
-
-equal' :: HasCallStack => ClosedTerm a -> String -> Assertion
-equal' x y = do
-  x' <- eval x
-  printScript x' @?= y
-
-fails :: HasCallStack => ClosedTerm a -> Assertion
-fails x =
-  case evaluateScript $ compile x of
-    Left (Scripts.EvaluationError _ _) -> mempty
-    Left (Scripts.EvaluationException _ _) -> mempty
-    Left e -> assertFailure $ "Script is malformed: " <> show e
-    Right (_, _, s) -> assertFailure $ "Script didn't err: " <> printScript s
-
-expect :: HasCallStack => ClosedTerm PBool -> Assertion
-expect = equal (pcon PTrue :: Term s PBool)
-
-throws :: ClosedTerm a -> Assertion
-throws x =
-  try @SomeException (putStrLn $ printScript $ compile x) >>= \case
-    Right _ -> assertFailure "Supposed to throw"
-    Left _ -> pure ()
-
 -- FIXME: Make the below impossible using run-time checks.
 -- loop :: Term (PInteger :--> PInteger)
 -- loop = plam $ \x -> loop # x
@@ -104,6 +73,8 @@ tests =
     "unit tests"
     [ plutarchTests
     , uplcTests
+    , PlutusType.tests
+    , Recursion.tests
     ]
 
 plutarchTests :: TestTree
@@ -116,9 +87,9 @@ plutarchTests =
     , testCase "example2" $ (printTerm example2) @?= "(program 1.0.0 (\\i0 -> i1 (\\i0 -> addInteger i1 1) (\\i0 -> subtractInteger i1 1)))"
     , testCase "pfix" $ (printTerm pfix) @?= "(program 1.0.0 (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))))"
     , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> force (i3 (equalsInteger i1 0) (delay 0) (delay (force (i3 (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2)))))))))) (force ifThenElse)))"
-    , testCase "fib 9 == 34" $ equal (fib # 9) (34 :: Term s PInteger)
+    , testCase "fib 9 == 34" $ equal (fib # 9) (pconstant @PInteger 34)
     , testCase "uglyDouble" $ (printTerm uglyDouble) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
-    , testCase "1 + 2 == 3" $ equal (1 + 2 :: Term s PInteger) (3 :: Term s PInteger)
+    , testCase "1 + 2 == 3" $ equal (pconstant @PInteger $ 1 + 2) (pconstant @PInteger 3)
     , testCase "fails: perror" $ fails perror
     , testCase "pnot" $ do
         (pnot #$ pcon PTrue) `equal` pcon PFalse
@@ -132,40 +103,40 @@ plutarchTests =
     , testCase "() <= () == True" $ do
         expect $ pcon PUnit #<= pcon PUnit
     , testCase "0x02af == 0x02af" $ expect $ phexByteStr "02af" #== phexByteStr "02af"
-    , testCase "\"foo\" == \"foo\"" $ expect $ "foo" #== ("foo" :: Term s PString)
+    , testCase "\"foo\" == \"foo\"" $ expect $ "foo" #== pconstant @PString "foo"
     , testCase "PByteString :: mempty <> a == a <> mempty == a" $ do
         expect $ let a = phexByteStr "152a" in (mempty <> a) #== a
         expect $ let a = phexByteStr "4141" in (a <> mempty) #== a
     , testCase "PString :: mempty <> a == a <> mempty == a" $ do
-        expect $ let a = "foo" :: Term s PString in (mempty <> a) #== a
-        expect $ let a = "bar" :: Term s PString in (a <> mempty) #== a
+        expect $ let a = pconstant @PString "foo" in (mempty <> a) #== a
+        expect $ let a = pconstant @PString "bar" in (a <> mempty) #== a
     , testCase "PByteString :: 0x12 <> 0x34 == 0x1234" $
         expect $
           (phexByteStr "12" <> phexByteStr "34") #== phexByteStr "1234"
     , testCase "PString :: \"ab\" <> \"cd\" == \"abcd\"" $
         expect $
-          ("ab" <> "cd") #== ("abcd" :: Term s PString)
+          ("ab" <> "cd") #== (pconstant @PString "abcd")
     , testCase "PByteString mempty" $ expect $ mempty #== phexByteStr ""
     , testCase "pconsByteStr" $
         let xs = "5B1F"; b = "41"
          in (pconsBS # fromInteger (readByte b) # phexByteStr xs) `equal` phexByteStr (b <> xs)
     , testCase "plengthByteStr" $ do
-        (plengthBS # phexByteStr "012f") `equal` (2 :: Term s PInteger)
+        (plengthBS # phexByteStr "012f") `equal` pconstant @PInteger 2
         expect $ (plengthBS # phexByteStr "012f") #== 2
         let xs = phexByteStr "48fCd1"
         (plengthBS #$ pconsBS # 91 # xs)
           `equal` (1 + plengthBS # xs)
     , testCase "pindexByteStr" $
-        (pindexBS # phexByteStr "4102af" # 1) `equal` (0x02 :: Term s PInteger)
+        (pindexBS # phexByteStr "4102af" # 1) `equal` pconstant @PInteger 0x02
     , testCase "psliceByteStr" $
-        (psliceBS # 1 # 3 # phexByteStr "4102afde5b2a") `equal` phexByteStr "02afde"
-    , testCase "pbyteStr - phexByteStr relation" $ do
+        (psliceBS # 2 # 3 # phexByteStr "4102afde5b2a") `equal` phexByteStr "afde5b"
+    , testCase "pconstant - phexByteStr relation" $ do
         let a = ["42", "ab", "df", "c9"]
-        pbyteStr (BS.pack $ map readByte a) `equal` phexByteStr (concat a)
-    , testCase "PString mempty" $ expect $ mempty #== ("" :: Term s PString)
-    , testCase "pfromText \"abc\" == \"abc\"" $ do
-        pfromText "abc" `equal` ("abc" :: Term s PString)
-        expect $ pfromText "foo" #== "foo"
+        pconstant @PByteString (BS.pack $ map readByte a) `equal` phexByteStr (concat a)
+    , testCase "PString mempty" $ expect $ mempty #== pconstant @PString ""
+    , testCase "pconstant \"abc\" == \"abc\"" $ do
+        pconstant @PString "abc" `equal` pconstant @PString "abc"
+        expect $ pconstant @PString "foo" #== "foo"
     , testCase "#&& - boolean and; #|| - boolean or" $ do
         let ptrue = pcon PTrue
             pfalse = pcon PFalse
@@ -182,14 +153,14 @@ plutarchTests =
     , testCase "ScriptPurpose literal" $
         let d :: ScriptPurpose
             d = Minting dummyCurrency
-            f :: Term s PData
-            f = pdataLiteral $ toData d
+            f :: Term s PScriptPurpose
+            f = pconstant @PScriptPurpose d
          in printTerm f @?= "(program 1.0.0 #d8799f58201111111111111111111111111111111111111111111111111111111111111111ff)"
     , testCase "decode ScriptPurpose" $
         let d :: ScriptPurpose
             d = Minting dummyCurrency
             d' :: Term s PScriptPurpose
-            d' = punsafeCoerce $ pdataLiteral $ toData d
+            d' = pconstant @PScriptPurpose d
             f :: Term s POpaque
             f = pmatch d' $ \case
               PMinting c -> popaque c
@@ -211,11 +182,12 @@ plutarchTests =
         printTerm (phoistAcyclic (punsafeBuiltin PLC.FstPair)) @?= "(program 1.0.0 fstPair)"
     , testCase "throws: hoist error" $ throws $ phoistAcyclic perror
     , testCase "PData equality" $ do
-        expect $ let dat = pdataLiteral (PlutusTx.List [PlutusTx.Constr 1 [PlutusTx.I 0]]) in dat #== dat
-        expect $ pnot #$ pdataLiteral (PlutusTx.Constr 0 []) #== pdataLiteral (PlutusTx.I 42)
+        expect $ let dat = pconstant @PData (PlutusTx.List [PlutusTx.Constr 1 [PlutusTx.I 0]]) in dat #== dat
+        expect $ pnot #$ pconstant @PData (PlutusTx.Constr 0 []) #== pconstant @PData (PlutusTx.I 42)
     , testCase "PAsData equality" $ do
         expect $ let dat = pdata @PInteger 42 in dat #== dat
         expect $ pnot #$ pdata (phexByteStr "12") #== pdata (phexByteStr "ab")
+    , testCase "Tracing" $ traceTests
     , testCase "λx y -> addInteger x y => addInteger" $
         printTerm (plam $ \x y -> (x :: Term _ PInteger) + y) @?= "(program 1.0.0 addInteger)"
     , testCase "λx y -> hoist (force mkCons) x y => force mkCons" $
@@ -234,36 +206,49 @@ plutarchTests =
         printTerm (plet (phoistAcyclic $ plam $ \(x :: Term _ PInteger) -> x + x) $ \_ -> (0 :: Term _ PInteger)) @?= "(program 1.0.0 0)"
     , testCase "let x = hoist (\\x -> x + x) in x" $
         printTerm (plet (phoistAcyclic $ plam $ \(x :: Term _ PInteger) -> x + x) $ \x -> x) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
+    , testGroup
+        "Lifting of constants"
+        [ testCase "plift on primitive types" $ do
+            plift' (pcon PTrue) @?= Right True
+            plift' (pcon PFalse) @?= Right False
+        , testCase "pconstant on primitive types" $ do
+            plift' (pconstant @PBool False) @?= Right False
+            plift' (pconstant @PBool True) @?= Right True
+        , testCase "plift on list and pair" $ do
+            plift' (pconstant @(PBuiltinList PInteger) [1, 2, 3]) @?= Right [1, 2, 3]
+            plift' (pconstant @(PBuiltinPair PString PInteger) ("IOHK", 42)) @?= Right ("IOHK", 42)
+        , testCase "plift on nested containers" $ do
+            -- List of pairs
+            let v1 = [("IOHK", 42), ("Plutus", 31)]
+            plift' (pconstant @(PBuiltinList (PBuiltinPair PString PInteger)) v1) @?= Right v1
+            -- List of pair of lists
+            let v2 = [("IOHK", [1, 2, 3]), ("Plutus", [9, 8, 7])]
+            plift' (pconstant @(PBuiltinList (PBuiltinPair PString (PBuiltinList PInteger))) v2) @?= Right v2
+        ]
     ]
 
+-- | Tests for the behaviour of UPLC itself.
 uplcTests :: TestTree
 uplcTests =
   testGroup
     "uplc tests"
     [ testCase "2:[1]" $
         let l :: Term _ (PBuiltinList PInteger) =
-              punsafeConstant . PLC.Some $
-                PLC.ValueOf (PLC.DefaultUniApply PLC.DefaultUniProtoList PLC.DefaultUniInteger) [1]
-            l' :: Term _ (PBuiltinList PInteger) =
-              pforce (punsafeBuiltin PLC.MkCons) # (2 :: Term _ PInteger) # l
-         in equal' l' "(program 1.0.0 [2,1])"
-    , testCase "[2,1]" $
-        let l :: Term _ (PBuiltinList PInteger) =
-              punsafeConstant . PLC.Some $
+              punsafeConstantInternal . PLC.Some $
                 PLC.ValueOf (PLC.DefaultUniApply PLC.DefaultUniProtoList PLC.DefaultUniInteger) [1]
             l' :: Term _ (PBuiltinList PInteger) =
               pforce (punsafeBuiltin PLC.MkCons) # (2 :: Term _ PInteger) # l
          in equal' l' "(program 1.0.0 [2,1])"
     , testCase "fails: True:[1]" $
         let l :: Term _ (PBuiltinList POpaque) =
-              punsafeConstant . PLC.Some $
+              punsafeConstantInternal . PLC.Some $
                 PLC.ValueOf (PLC.DefaultUniApply PLC.DefaultUniProtoList PLC.DefaultUniInteger) [1]
             l' :: Term _ (PBuiltinList POpaque) =
               pforce (punsafeBuiltin PLC.MkCons) # pcon PTrue # l
          in fails l'
     , testCase "(2,1)" $
         let p :: Term _ (PBuiltinPair PInteger PInteger) =
-              punsafeConstant . PLC.Some $
+              punsafeConstantInternal . PLC.Some $
                 PLC.ValueOf
                   ( PLC.DefaultUniApply
                       (PLC.DefaultUniApply PLC.DefaultUniProtoPair PLC.DefaultUniInteger)

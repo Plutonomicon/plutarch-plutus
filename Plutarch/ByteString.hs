@@ -1,3 +1,5 @@
+{-# LANGUAGE UndecidableInstances #-}
+
 module Plutarch.ByteString (
   PByteString,
   phexByteStr,
@@ -13,13 +15,16 @@ import qualified Data.ByteString as BS
 import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Stack (HasCallStack)
-import Plutarch (punsafeBuiltin, punsafeConstant)
+import Plutarch (punsafeBuiltin)
 import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Integer (PInteger)
+import Plutarch.Lift
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
+-- | Plutus 'BuiltinByteString'
 data PByteString s
+  deriving (PLift) via PBuiltinType PByteString ByteString
 
 instance PEq PByteString where
   x #== y = punsafeBuiltin PLC.EqualsByteString # x # y
@@ -32,19 +37,21 @@ instance Semigroup (Term s PByteString) where
   x <> y = punsafeBuiltin PLC.AppendByteString # x # y
 
 instance Monoid (Term s PByteString) where
-  mempty = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniByteString BS.empty
+  mempty = pconstant BS.empty
 
 -- | Interpret a hex string as a PByteString.
 phexByteStr :: HasCallStack => String -> Term s PByteString
-phexByteStr = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByteString . BS.pack . f
+phexByteStr = pconstant . BS.pack . f
   where
     f "" = []
     f [_] = error "UnevenLength"
     f (x : y : rest) = (hexDigitToWord8 x * 16 + hexDigitToWord8 y) : f rest
 
+{-# DEPRECATED pbyteStr "Use `pconstant` instead." #-}
+
 -- | Construct a PByteString term from a Haskell bytestring.
 pbyteStr :: ByteString -> Term s PByteString
-pbyteStr = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByteString
+pbyteStr = pconstant
 
 -----------------------------------------------------------
 -- The following functions should be import qualified. --
@@ -54,9 +61,9 @@ pbyteStr = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniByteString
 pconsBS :: Term s (PInteger :--> PByteString :--> PByteString)
 pconsBS = punsafeBuiltin PLC.ConsByteString
 
-{- | Slice a 'PByteString' with given start and end indices.
+{- | Slice a 'PByteString' with given start index and slice length.
 
->>> (pslice # 1 # 3 phexByteStr "4102afde5b2a") #== phexByteStr "02afde"
+>>> (pslice # 2 # 3 phexByteStr "4102afde5b2a") #== phexByteStr "afde5b"
 -}
 psliceBS :: Term s (PInteger :--> PInteger :--> PByteString :--> PByteString)
 psliceBS = punsafeBuiltin PLC.SliceByteString
