@@ -29,6 +29,7 @@
     - [PIntegral](#pintegral)
     - [PIsData](#pisdata)
     - [PlutusType, PCon, and PMatch](#plutustype-pcon-and-pmatch)
+    - [PLift](#plift)
     - [PIsDataRepr & PDataList](#pisdatarepr--pdatalist)
       - [Implementing PIsDataRepr](#implementing-pisdatarepr)
   - [Working with Types](#working-with-types)
@@ -109,22 +110,33 @@ A Plutarch script is a `Term`. This can consist of-
 
 ### Constants
 
-These are either built using `pcon` (for types that have a `PlutusType` or `PCon` instance)-
-
-```haskell
+These can be either built directly from Haskell synonyms using `pconstant` (requires [`PLift`](#plift) instance). `pconstant` always takes in a regular Haskell value to create its Plutarch synonym.
+```hs
 import Plutarch.Prelude
-import Plutarch.Bool (PBool (PTrue))
+import Plutarch.Bool (PBool)
 
 -- | A plutarch level boolean. Its value is "True", in this case.
 x :: Term s PBool
-x = pcon PTrue
--- Note that 'PBool' has a 'PlutusType' instance.
+x = pconstant True
 ```
+> Aside: Sometimes, you might find `pconstant` raise "Ambiguous type variable" error. In this case, you should use `TypeApplications` to help GHC realize what **Plutarch type** you're trying to construct. e.g `pconstant @PInteger 42`
+
+Or from Plutarch terms within other constructors using `pcon` (requires [`PlutusType`/`PCon`](#plutustype-pcon-and-pmatch) instance)-
+```haskell
+import Plutarch.Prelude
+import Plutarch.Maybe (PMaybe (PJust))
+
+-- | Create a plutarch level optional value from given value.
+f :: Term s (a :--> PMaybe a)
+f = plam $ \x -> pcon $ PJust x
+-- Note that 'PMaybe' has a 'PlutusType' instance.
+```
+> Aside: Notice how `PJust` contains Plutarch term. This is where `PlutusType` is especially useful - for building up Plutarch terms *dynamically* - i.e, from arbitrary Plutarch terms. You should prefer `pconstant` when you can build something up entirely from Haskell level constants.
 
 Or by using literals-
-
 ```haskell
 {-# LANGUAGE OverloadedStrings #-}
+
 import Plutarch.Prelude
 import Plutarch.Integer (PInteger)
 import Plutarch.String (PString)
@@ -138,8 +150,7 @@ y :: Term s PString
 y = "foobar"
 ```
 
-Or by using other constructor functions provided by Plutarch-
-
+Or by using other, miscellaneous functions provided by Plutarch-
 ```haskell
 import qualified Data.ByteString as BS
 import Plutarch.Prelude
@@ -149,11 +160,6 @@ import Plutarch.ByteString (PByteString, phexByteStr, pbyteStr)
 x :: Term s PByteString
 x = phexByteStr "41"
 -- ^ 'phexByteStr' interprets a hex string as a bytestring. 0x41 is 65 - of course.
-
--- | A plutarch level bytestring. Its value is [65], in this case.
-y :: Term s PByteString
-y = pbyteStr $ BS.pack [65]
--- ^ pbyteStr lifts a Haskell level bytestring into Plutarch.
 ```
 
 ### Lambdas
@@ -516,6 +522,9 @@ All `PlutusType` instances get `PCon` and `PMatch` instances for free!
 
 For types that cannot easily be both `PCon` and `PMatch` - feel free to implement just one of them! However, in general, **prefer implementing PlutusType**!
 
+### PLift
+TODO
+
 ### PIsDataRepr & PDataList
 `PIsDataRepr` and `PDataList` are the user-facing parts of an absolute workhorse of a machinery for easily deconstructing `Constr` [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md) values. It allows fully type safe matching on `Data` values, without embedding type information within the generated script - unlike PlutusTx.
 
@@ -756,7 +765,7 @@ fib = phoistAcyclic $
         1
         $ self # (n - 1) + self # (n - 2)
 ```
-from [examples](./examples/Main.hs).
+from [examples](../examples).
 
 Execution-
 ```hs
