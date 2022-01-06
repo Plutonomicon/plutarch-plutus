@@ -91,7 +91,6 @@ library
     Plutarch.Builtin
     Plutarch.DataRepr
     Plutarch.Api.V1
-    Plutarch.Api.V2
     Plutarch.Maybe
     Plutarch.Unit
     Plutarch.Crypto
