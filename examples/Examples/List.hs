@@ -6,18 +6,15 @@ import Test.Tasty.HUnit
 import Utils
 
 import Plutarch
-import Plutarch.Bool
+import Plutarch.Bool (pnot, (#==), (#<))
 import Plutarch.Integer
 import Plutarch.List
+import Plutarch.Builtin (PBuiltinList(..))
 
 --------------------------------------------------------------------------------
 
 integerList :: [Integer] -> Term s (PScottList PInteger)
-integerList [] = pnilList
-integerList (x : xs) =
-  pconsList
-    # (pconstant @PInteger x)
-    # integerList xs
+integerList xs = pconvertLists #$ pconstant @(PBuiltinList PInteger) xs
 
 tests :: TestTree
 tests = do
@@ -49,4 +46,7 @@ tests = do
     , testCase "pnull" $ do
         expect $ pnot #$ pnull # integerList [1 .. 10]
         expect $ pnull # integerList []
+    , testCase "pzipWith" $ do
+        expect $ (pzipWith' (+) # integerList [1..10] # integerList [1..10])
+             #== integerList (fmap (*2) [1..10])
     ]

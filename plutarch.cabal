@@ -119,12 +119,11 @@ test-suite examples
   main-is: Main.hs
   hs-source-dirs: examples
   other-modules:
-    Plutarch.Spec.Tracing
     Examples.Tracing
     Examples.PlutusType
+    Examples.List
     Utils
     Examples.Recursion
-    Plutarch.Spec.List
   build-depends:
     , base
     , bytestring

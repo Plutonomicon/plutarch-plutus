@@ -55,15 +55,13 @@ ppairDataBuiltin = punsafeBuiltin PLC.MkPairData
 
 -- | Plutus 'BuiltinList'
 data PBuiltinList (a :: k -> Type) (s :: k)
+  = PCons (Term s a) (Term s (PBuiltinList a))
+  | PNil
 
 deriving via
   PBuiltinType (PBuiltinList a) [PHaskellType a]
   instance
     PLC.DefaultUni `PLC.Contains` PHaskellType a => (PLift (PBuiltinList a))
-
-data PBuiltinList (a :: k -> Type) (s :: k)
-  = PCons (Term s a) (Term s (PBuiltinList a))
-  | PNil
 
 pheadBuiltin :: Term s (PBuiltinList a :--> a)
 pheadBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList

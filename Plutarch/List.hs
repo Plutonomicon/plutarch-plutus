@@ -100,7 +100,7 @@ type PIsListLike list a = (PListLike list, PElemConstraint list a)
 
 
 -- | / O(n) /. Convert from any ListLike to any ListLike, provided both lists' element constraints are met.
-pconvertLists :: (PElemConstraint f a, PElemConstraint g a, PListLike f, PListLike g) => Term s (f a :--> g a)
+pconvertLists :: forall f g a s. (PElemConstraint f a, PElemConstraint g a, PListLike f, PListLike g) => Term s (f a :--> g a)
 pconvertLists =
   pfix #$ plam $ \self ->
     pelimList
@@ -269,5 +269,9 @@ pzip ::
   Term s (list a :--> list b :--> list (PPair a b))
 pzip = pzipWith' $ \x y -> pcon (PPair x y)
 
+-- Horribly inefficient.
 plistEquals :: (PIsListLike list a, PElemConstraint list PBool, PEq a) => Term s (list a :--> list a :--> PBool)
-plistEquals = phoistAcyclic $ plam $ \xs ys -> pfoldr' (#&&) # (pcon PTrue) # (pzipWith' (#==) # xs # ys)
+plistEquals =
+  phoistAcyclic $ plam $ \xs ys ->
+    plength # xs #== plength # ys
+      #&& pfoldr' (#&&) # (pcon PTrue) # (pzipWith' (#==) # xs # ys)
