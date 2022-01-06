@@ -1,6 +1,7 @@
-module Utils (equal, equal', fails, eval, expect, throws) where
+module Utils (equal, equal', fails, eval, expect, throws, traces) where
 
 import Control.Exception (SomeException, try)
+import Data.Text (Text)
 import Plutarch (ClosedTerm, PCon (pcon), Term, compile, printScript)
 import Plutarch.Bool (PBool (PTrue))
 import Plutarch.Evaluate (evaluateScript)
@@ -39,3 +40,9 @@ throws x =
   try @SomeException (putStrLn $ printScript $ compile x) >>= \case
     Right _ -> assertFailure "Supposed to throw"
     Left _ -> pure ()
+
+traces :: ClosedTerm a -> [Text] -> Assertion
+traces x sl =
+  case evaluateScript $ compile x of
+    Left e -> assertFailure $ "Script evaluation failed: " <> show e
+    Right (_, traceLog, _) -> traceLog @?= sl
