@@ -29,6 +29,7 @@
     - [PIntegral](#pintegral)
     - [PIsData](#pisdata)
     - [PLift](#plift)
+      - [Implementing `PLift`](#implementing-plift)
     - [PlutusType, PCon, and PMatch](#plutustype-pcon-and-pmatch)
     - [PIsDataRepr & PDataList](#pisdatarepr--pdatalist)
       - [Implementing PIsDataRepr](#implementing-pisdatarepr)
@@ -485,7 +486,56 @@ In the above case, `PInteger` is a type that *can be converted* to and from `Dat
 See: [Implementing `PIsDataRepr`](#implementing-pisdatarepr)
 
 ### PLift
-TODO
+`PLift` establishes a bridge between a Plutarch level type (that is represented as a builtin type, i.e [`DefaultUni`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) and its corresponding Haskell synonym. The details of `PLift` are not too useful to users, but you can read all about it if you want at [Developers' corner]().
+
+What's more important, are the abilities that `PLift` instances have-
+```hs
+pconstant :: PLift p => PHaskellType p -> Term s p
+
+plift :: (PLift p, HasCallStack) => ClosedTerm p -> PHaskellType p
+```
+`pconstant` lets you build a Plutarch value from its corresponding Haskell synonym. For example, the haskell synonym of [`PBool`](#pbool) is [`Bool`](https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Bool.html#t:Bool).
+```hs
+b :: Term s PBool
+b = pconstant False
+```
+Other than simple builtin types - you can also use `pconstant` to create [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md) values! Usually, you'll want to keep the type information though - so here's an example of creating a `PScriptPurpose` from a familiar `ScriptPurpose` constant-
+```hs
+import Plutus.V1.Ledger.Contexts
+
+purp :: Term s PScriptPurpose
+purp = pconstant $ Minting ""
+```
+
+On the other end, `plift` lets you obtain the Haskell synonym of a Plutarch value (that is represented as a builtin value, i.e [`DefaultUni`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni))-
+```hs
+import Plutus.V1.Ledger.Contexts
+
+purp :: Term s PScriptPurpose
+purp = pconstant $ Minting "be"
+
+> plift purp
+Minting "be"
+```
+
+#### Implementing `PLift`
+If your custom Plutarch type is represented by a builtin type under the hood (i.e not scott encoded - rather [`DefaultUni`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) - you can easily implement `PLift` for it by using the provided machinery.
+
+This comes in 2 flavors. If your type is represented by a builtin type that **is not** `Data` (`DefaultUniData`), you can derive `PLift` via `PBuiltinType`. `PBuiltinType` takes in two types - the first being your Plutarch type, the second being the Haskell synonym for it. The Haskell synonym dictates how your Plutarch type is represented under the hood, in Plutus Core.
+```hs
+data PBool s
+  deriving (PLift) via PBuiltinType PBool Bool
+```
+In this case, `PBool` is represented as a builtin boolean in Plutus Core, as [`Bool`](https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Bool.html#t:Bool) corresponds to builtin boolean.
+This lets you do `pconstant True` to obtain a `Term s PBool`. And `plift $ pconstant True` to obtain a `Bool`.
+
+On the other hand, if your type is represented as a `Data` under the hood (`DefaultUniData`) - you can use `PIsDataReprInstances`.
+```hs
+data PScriptPurpose s
+  deriving (PLift) via (PIsDataReprInstances PScriptPurpose Ledger.ScriptPurpose)
+```
+> Aside: `PDataReprInstances` also lets you derive `PMatch` and `PIsDataRepr` for your type!
+Similar to `PBuiltinType`, `PIsDataReprInstances` also takes in two types - the Plutarch type and its corresponding Haskell synonym.
 
 ### PlutusType, PCon, and PMatch
 `PlutusType` lets you construct and deconstruct Plutus Core constants from from a Plutarch type's constructors (possibly containing other Plutarch terms). It's essentially a combination of `PCon` (for constant construction) and `PMatch` (for constant deconstruction).
