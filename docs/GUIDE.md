@@ -57,6 +57,7 @@
   - [Don't duplicate work](#dont-duplicate-work)
   - [Prefer Plutarch level functions](#prefer-plutarch-level-functions)
   - [Hoisting is great - but not a silver bullet](#hoisting-is-great---but-not-a-silver-bullet)
+  - [The difference between `PlutusType`/`PCon` and `PLift`'s `pconstant`](#the-difference-between-plutustypepcon-and-plifts-pconstant)
 - [Common Issues](#common-issues)
   - [`plam` fails to type infer correctly](#plam-fails-to-type-infer-correctly)
   - [Infinite loop / Infinite AST](#infinite-loop--infinite-ast)
@@ -561,7 +562,9 @@ instance PlutusType (PMaybe a) where
 ```
 This is a scott encoded representation of the familiar `Maybe` data type. As you can see, `PInner` of `PMaybe` is actually a Plutarch level function. And that's exactly why `pcon'` creates a *function*. `pmatch'`, then, simply "matches" on the function - scott encoding fashion.
 
-> Aside: Notice how `PJust` contains Plutarch term. This is where `PlutusType` is especially useful - for building up Plutarch terms *dynamically* - i.e, from arbitrary Plutarch terms. You should prefer `pconstant` (from [`PLift`](#plift)) when you can build something up entirely from Haskell level constants.
+> Aside: Notice how `PJust` contains Plutarch term. This is where `PlutusType` is especially useful - for building up Plutarch terms *dynamically* - i.e, from arbitrary Plutarch terms.
+>
+> You should prefer `pconstant` (from [`PLift`](#plift)) when you can build something up entirely from Haskell level constants.
 
 You should always use `pcon` and `pmatch` instead of `pcon'` and `pmatch'` - these are provided by the `PCon` and `PMatch` typeclasses-
 ```hs
@@ -777,6 +780,8 @@ pdata :: Term s PByteString -> Term s (PAsData PByteString)
 
 pdata :: Term s (PBuiltinList (PAsData a)) -> Term s (PAsData (PBuiltinList (PAsData a)))
 ```
+
+In general, if `PIsData T => T` is a Plutarch type (that can be converted to and from `Data`), `PAsData T` is its `Data` representation.
 
 You can also create a `PAsData` from a `PData`, but you lose specific type information along the way-
 ```hs
@@ -1022,6 +1027,23 @@ phoistAcyclic $ pforce $ punsafeBuiltin PLC.UnListData
 Here, hoisting may be beneficial.
 
 You don't need to hoist the top level Plutarch function that you would just pass to `compile`.
+
+## The difference between `PlutusType`/`PCon` and `PLift`'s `pconstant`
+`PlutusType` is especially useful for building up Plutarch terms *dynamically* - i.e, from arbitrary Plutarch terms. This is when your Plutarch type's constructors contain other Plutarch terms.
+
+Another case `PlutusType` is useful is when you want to give your Plutarch type a custom representation, scott encoding, enum - what have you. From the `PlutusType` haddock example-
+```hs
+data AB = A | B
+
+instance PlutusType AB where
+  type PInner AB _ = PInteger
+  pcon' A = 0
+  pcon' B = 1
+  pmatch' x f = pif (x #== 0) (f A) (f B)
+```
+You can use the `A` and `B` constructors during building, but still have your type be represented as integers under the hood! You cannot do this with `pconstant`.
+
+You should prefer `pconstant` (from [`PLift`](#plift)) when you can build something up entirely from Haskell level constants and that *something* has the same representation as the Haskell constant.
 
 # Common Issues
 
