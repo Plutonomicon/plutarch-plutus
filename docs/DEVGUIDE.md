@@ -1,5 +1,7 @@
 Looking to contribute to Plutarch? Looking for functionalities that are not currently provided by Plutarch from a safe interface? You've come to the right place!
 
+> Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high quality documentation for Plutarch developers!
+
 Even if certain functionalities are absent from the public facing API - you can always implement them using functions like `punsafeConstant` and `punsafeBuiltin` - these allow you to walk the lines between Plutus core and Plutarch.
 
 A general familiarity with Plutus core is important. You can learn all of that through the following documents-
