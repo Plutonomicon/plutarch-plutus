@@ -28,8 +28,8 @@
     - [Monoids](#monoids)
     - [PIntegral](#pintegral)
     - [PIsData](#pisdata)
-    - [PlutusType, PCon, and PMatch](#plutustype-pcon-and-pmatch)
     - [PLift](#plift)
+    - [PlutusType, PCon, and PMatch](#plutustype-pcon-and-pmatch)
     - [PIsDataRepr & PDataList](#pisdatarepr--pdatalist)
       - [Implementing PIsDataRepr](#implementing-pisdatarepr)
   - [Working with Types](#working-with-types)
@@ -131,7 +131,6 @@ f :: Term s (a :--> PMaybe a)
 f = plam $ \x -> pcon $ PJust x
 -- Note that 'PMaybe' has a 'PlutusType' instance.
 ```
-> Aside: Notice how `PJust` contains Plutarch term. This is where `PlutusType` is especially useful - for building up Plutarch terms *dynamically* - i.e, from arbitrary Plutarch terms. You should prefer `pconstant` when you can build something up entirely from Haskell level constants.
 
 Or by using literals-
 ```haskell
@@ -163,7 +162,6 @@ x = phexByteStr "41"
 ```
 
 ### Lambdas
-
 You can create Plutarch level lambdas by apply `plam` over a Haskell level lambda/function.
 
 ```haskell
@@ -486,8 +484,11 @@ In the above case, `PInteger` is a type that *can be converted* to and from `Dat
 
 See: [Implementing `PIsDataRepr`](#implementing-pisdatarepr)
 
+### PLift
+TODO
+
 ### PlutusType, PCon, and PMatch
-`PlutusType` lets you construct and deconstruct Plutus Core constants from Haskell ADTs. It's essentially a combination of `PCon` (for constant construction) and `PMatch` (for constant deconstruction).
+`PlutusType` lets you construct and deconstruct Plutus Core constants from from a Plutarch type's constructors (possibly containing other Plutarch terms). It's essentially a combination of `PCon` (for constant construction) and `PMatch` (for constant deconstruction).
 
 ```hs
 class (PCon a, PMatch a) => PlutusType (a :: k -> Type) where
@@ -497,17 +498,20 @@ class (PCon a, PMatch a) => PlutusType (a :: k -> Type) where
 ```
 `PInner` is meant to represent the "inner" type of `a` - the Plutarch type representing the Plutus Core constant used to represent `a`.
 
-Here's the `PlutusType` instance for `PBool`-
+Here's the `PlutusType` instance for `PMaybe`-
 ```hs
-data PBool s = PTrue | PFalse
+data PMaybe a s = PJust (Term s a) | PNothing
 
-instance PlutusType PBool where
-  type PInner PBool _ = PBool
-  pcon' PTrue = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniBool True
-  pcon' PFalse = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniBool False
-  pmatch' b f = pforce $ pif' # b # pdelay (f PTrue) # pdelay (f PFalse)
+instance PlutusType (PMaybe a) where
+  type PInner (PMaybe a) b = (a :--> b) :--> PDelayed b :--> b
+  pcon' :: forall s. PMaybe a s -> forall b. Term s (PInner (PMaybe a) b)
+  pcon' (PJust x) = plam $ \f (_ :: Term _ _) -> f # x
+  pcon' PNothing = plam $ \_ g -> pforce g
+  pmatch' x f = x # (plam $ \inner -> f (PJust inner)) # (pdelay $ f PNothing)
 ```
-There's a lot of jazz in here - but in essence, booleans are represented as Plutus Core booleans in that `pcon'` and they're deconstructed using `pif'` - which is just a synonym to the builtin function, `IfThenElse`.
+This is a scott encoded representation of the familiar `Maybe` data type. As you can see, `PInner` of `PMaybe` is actually a Plutarch level function. And that's exactly why `pcon'` creates a *function*. `pmatch'`, then, simply "matches" on the function - scott encoding fashion.
+
+> Aside: Notice how `PJust` contains Plutarch term. This is where `PlutusType` is especially useful - for building up Plutarch terms *dynamically* - i.e, from arbitrary Plutarch terms. You should prefer `pconstant` (from [`PLift`](#plift)) when you can build something up entirely from Haskell level constants.
 
 You should always use `pcon` and `pmatch` instead of `pcon'` and `pmatch'` - these are provided by the `PCon` and `PMatch` typeclasses-
 ```hs
@@ -521,9 +525,6 @@ class PMatch a where
 All `PlutusType` instances get `PCon` and `PMatch` instances for free!
 
 For types that cannot easily be both `PCon` and `PMatch` - feel free to implement just one of them! However, in general, **prefer implementing PlutusType**!
-
-### PLift
-TODO
 
 ### PIsDataRepr & PDataList
 `PIsDataRepr` and `PDataList` are the user-facing parts of an absolute workhorse of a machinery for easily deconstructing `Constr` [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md) values. It allows fully type safe matching on `Data` values, without embedding type information within the generated script - unlike PlutusTx.
