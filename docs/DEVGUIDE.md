@@ -2,9 +2,15 @@ Looking to contribute to Plutarch? Looking for functionalities that are not curr
 
 Even if certain functionalities are absent from the public facing API - you can always implement them using functions like `punsafeConstant` and `punsafeBuiltin` - these allow you to walk the lines between Plutus core and Plutarch.
 
-A general familiarity with Plutus core is important. Though I (Chase) aim to cover most of what you need to know in another guide on Pluto. Right now, we will discuss a few things to get you started.
+A general familiarity with Plutus core is important. You can learn all of that through the following documents-
+* [Builtin lists](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-lists.md)
+* [Builtin pairs](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-pairs.md)
+* [Builtin functions](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-functions.md)
+* [Builtin data](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md)
 
-# Plutus Core constants
+Parts of the [Pluto guide](https://github.com/Plutonomicon/pluto/blob/main/GUIDE.md) may also prove useful.
+
+# Plutus Core constants (UNSAFE)
 
 Often, you will need to build a Plutus core constant. You can do this using `Some` and `ValueOf`. Here's how `pcon PTrue` creates a Plutarch term that actually evaluates to a Plutus core constant representing a boolean-
 
@@ -34,7 +40,7 @@ punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniString . Txt.pack
 
 (it's even pointfree!)
 
-And that's _exactly_ what the `IsString` implementation of `Term s PString` does. That is how your string literals end up as plutus core built in strings.
+And that's _essentially_ what the `IsString` implementation of `Term s PString` does. That is how your string literals end up as plutus core built in strings.
 
 One more, how about something complex - `DefaultUniProtoList`. This is a builtin list. But what is the element type? Well, you'll have to specify that yourself! You use `DefaultUniApply` to &quot;apply&quot; a type (from the default universe) over `DefaultUniProtoList`-
 
@@ -46,7 +52,7 @@ PLC.Some . PLC.ValueOf (PLC.DefaultUniProtoList `PLC.DefaultUniApply` PLC.Defaul
 
 That right there converts a `[Integer]` into a Plutus core builtin list of builtin integers. Convenient!
 
-Actually, there's a convenient `pattern` synonym for `DefaultUniProtoList `DefaultUniApply` a`- `DefaultUniList a`. Using that, you can simplify the above to-
+Actually, there's a convenient `pattern` synonym for ``DefaultUniProtoList `DefaultUniApply` a``- `DefaultUniList a`. Using that, you can simplify the above to-
 
 ```haskell
 PLC.Some . PLC.ValueOf (PLC.DefaultUniList PLC.DefaultUniInteger)
