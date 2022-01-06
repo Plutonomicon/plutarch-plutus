@@ -60,6 +60,7 @@
   - [The difference between `PlutusType`/`PCon` and `PLift`'s `pconstant`](#the-difference-between-plutustypepcon-and-plifts-pconstant)
 - [Common Issues](#common-issues)
   - [`plam` fails to type infer correctly](#plam-fails-to-type-infer-correctly)
+  - [Ambiguous type variable arising from a use of `pconstant`](#ambiguous-type-variable-arising-from-a-use-of-pconstant)
   - [Infinite loop / Infinite AST](#infinite-loop--infinite-ast)
 - [Useful Links](#useful-links)
 </details>
@@ -1056,6 +1057,22 @@ Sometimes, GHC will not be able to infer the type of an argument within a lambda
 Giving unused arguments the type `_ :: Term _ _` should fix the issue generally.
 
 Because of this, you might want to enable  `PartialTypeSignatures`.
+
+## Ambiguous type variable arising from a use of `pconstant`
+Sometimes, you might find `pconstant` raise "Ambiguous type variable error" without an explicit type annotation-
+```hs
+pconstant $ Minting "be"
+-- ^ Ambiguous type variable ‘p0’ arising from a use of ‘pconstant’
+```
+In this case, you should either give the whole thing an explicit type annotation-
+```hs
+x :: Term s PScriptPurpose
+x = pconstant $ Minting "be"
+```
+or, you can use `TypeApplications` to indicate the Plutarch type you're trying to construct-
+```hs
+pconstant @PScriptPurpose $ Minting "be"
+```
 
 ## Infinite loop / Infinite AST
 
