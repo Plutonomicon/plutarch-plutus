@@ -3,28 +3,28 @@
 -- This should have been called Plutarch.Data...
 module Plutarch.Builtin (
   PData (..),
-  pheadBuiltin,
-  ptailBuiltin,
-  pnullBuiltin,
   pfstBuiltin,
   psndBuiltin,
   pasConstr,
   pasMap,
   pasList,
   pasInt,
+  pnullBuiltin,
   pasByteStr,
   PBuiltinPair,
-  PBuiltinList,
+  PBuiltinList (..),
   pdataLiteral,
   PIsData (..),
   PAsData,
+  ppairDataBuiltin,
 ) where
 
-import Plutarch (punsafeBuiltin, punsafeCoerce)
-import Plutarch.Bool (PBool, PEq, (#==))
+import Plutarch (PlutusType (..), punsafeBuiltin, punsafeCoerce, punsafeFrom)
+import Plutarch.Bool (PBool (..), PEq, (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift
+import Plutarch.List (PListLike (..), plistEquals)
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 import PlutusTx (Data)
@@ -40,8 +40,23 @@ deriving via
     ) =>
     (PLift (PBuiltinPair a b))
 
+pfstBuiltin :: Term s (PBuiltinPair a b :--> a)
+pfstBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.FstPair
+
+psndBuiltin :: Term s (PBuiltinPair a b :--> b)
+psndBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.SndPair
+
+{- | Construct a builtin pair of 'PData' elements.
+
+Uses 'PAsData' to preserve more information about the underlying 'PData'.
+-}
+ppairDataBuiltin :: Term s (PAsData a :--> PAsData b :--> PBuiltinPair (PAsData a) (PAsData b))
+ppairDataBuiltin = punsafeBuiltin PLC.MkPairData
+
 -- | Plutus 'BuiltinList'
 data PBuiltinList (a :: k -> Type) (s :: k)
+  = PCons (Term s a) (Term s (PBuiltinList a))
+  | PNil
 
 deriving via
   PBuiltinType (PBuiltinList a) [PHaskellType a]
@@ -54,8 +69,45 @@ pheadBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList
 ptailBuiltin :: Term s (PBuiltinList a :--> PBuiltinList a)
 ptailBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.TailList
 
+pchooseListBuiltin :: Term s (PBuiltinList a :--> b :--> b :--> b)
+pchooseListBuiltin = pforce $ pforce $ punsafeBuiltin PLC.ChooseList
+
 pnullBuiltin :: Term s (PBuiltinList a :--> PBool)
 pnullBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.NullList
+
+pconsBuiltin :: Term s (a :--> PBuiltinList a :--> PBuiltinList a)
+pconsBuiltin = pforce $ punsafeBuiltin PLC.MkCons
+
+--------------------------------------------------------------------------------
+
+instance PLC.DefaultUni `PLC.Contains` PHaskellType a => PlutusType (PBuiltinList a) where
+  type PInner (PBuiltinList a) b = PBuiltinList a
+  pcon' :: forall s. PBuiltinList a s -> forall b. Term s (PInner (PBuiltinList a) b)
+  pcon' (PCons x xs) = pconsBuiltin # x # (pto xs)
+  pcon' PNil = pconstant @(PBuiltinList a) []
+  pmatch' xs f =
+    pforce $
+      pchooseListBuiltin
+        # xs
+        # pdelay (f PNil)
+        # pdelay (f (PCons (pheadBuiltin # xs) (punsafeFrom $ ptailBuiltin # xs)))
+
+class PLC.Contains PLC.DefaultUni (PHaskellType a) => InDefaultUni a
+instance PLC.Contains PLC.DefaultUni (PHaskellType a) => InDefaultUni a
+
+instance PListLike PBuiltinList where
+  type PElemConstraint PBuiltinList = InDefaultUni
+  pelimList match_cons match_nil =
+    plam $ \ls -> pmatch ls $ \case
+      PCons x xs -> match_cons # x # xs
+      PNil -> pforce match_nil
+  pcons = plam $ \x xs -> pcon (PCons x xs)
+  pnil = pcon PNil
+  phead = pheadBuiltin
+  ptail = ptailBuiltin
+
+instance (PElemConstraint PBuiltinList a, PEq a) => PEq (PBuiltinList a) where
+  (#==) xs ys = plistEquals # xs # ys
 
 data PData s
   = PDataConstr (Term s (PBuiltinPair PInteger (PBuiltinList PData)))
@@ -67,12 +119,6 @@ data PData s
 
 instance PEq PData where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
-
-pfstBuiltin :: Term s (PBuiltinPair a b :--> a)
-pfstBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.FstPair
-
-psndBuiltin :: Term s (PBuiltinPair a b :--> b)
-psndBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.SndPair
 
 pasConstr :: Term s (PData :--> PBuiltinPair PInteger (PBuiltinList PData))
 pasConstr = punsafeBuiltin PLC.UnConstrData
