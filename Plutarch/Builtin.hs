@@ -86,7 +86,6 @@ instance PLC.DefaultUni `PLC.Contains` PHaskellType a => PlutusType (PBuiltinLis
   type PInner (PBuiltinList a) b = PBuiltinList a
   pcon' :: forall s. PBuiltinList a s -> forall b. Term s (PInner (PBuiltinList a) b)
   pcon' (PCons x xs) = pconsBuiltin # x # (pto xs)
-  -- TODO: this only supports PData, fix after #62
   pcon' PNil = pconstant @(PBuiltinList a) []
   pmatch' xs f =
     pforce $

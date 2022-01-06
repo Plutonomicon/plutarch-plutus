@@ -1,4 +1,4 @@
--- TODO: Scott-encoded lists, or a ListLike goes here.
+-- | Scott-encoded lists and ListLike typeclass
 module Plutarch.List (
   PScottList (..),
   PListLike (..),
@@ -58,7 +58,7 @@ instance PEq a => PEq (PScottList a) where
 
 --------------------------------------------------------------------------------
 
--- | Plutarch types that behave like lists. 
+-- | Plutarch types that behave like lists.
 class PListLike (list :: (k -> Type) -> k -> Type) where
   type PElemConstraint list :: (k -> Type) -> Constraint
 
