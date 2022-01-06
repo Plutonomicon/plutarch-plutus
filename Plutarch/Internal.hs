@@ -167,7 +167,8 @@ plam' f = Term $ \i ->
     getArityBuiltin' :: PLC.DefaultFun -> Natural
     getArityBuiltin' builtin =
       case PLC.toBuiltinMeaning @_ @_ @(PLC.Term PLC.TyName PLC.Name _ _ ()) builtin of
-        PLC.BuiltinMeaning sch _ _ -> intToNatural $ PLC.countTermArgs sch
+        PLC.BuiltinMeaning sch _ _ ->
+          intToNatural $ PLC.countTermArgs sch - 1
     getPolyVarCount :: PLC.DefaultFun -> Int
     getPolyVarCount builtin =
       case PLC.toBuiltinMeaning @_ @_ @(PLC.Term PLC.TyName PLC.Name _ _ ()) builtin of
