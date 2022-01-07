@@ -10,7 +10,6 @@ module Plutarch.List (
   -- * Query
   pelem,
   plength,
-  pnull,
 
   -- * Construction
   psingleton,
@@ -79,6 +78,10 @@ class PListLike (list :: (k -> Type) -> k -> Type) where
   ptail :: PIsListLike list a => Term s (list a :--> list a)
   ptail = pelimList (plam $ \_x xs -> xs) (pdelay perror)
 
+  -- | / O(1) /. Check if a list is empty
+  pnull :: PIsListLike list a => Term s (list a :--> PBool)
+  pnull = phoistAcyclic $ pelimList (plam $ \_ _ -> pconstant False) $ pdelay (pconstant True)
+
 class EmptyConstraint x
 instance EmptyConstraint x
 
@@ -139,10 +142,6 @@ plength =
           # ls
     )
     $ \go -> plam $ \xs -> go # xs # 0
-
--- | / O(1) /. Check if a list is empty
-pnull :: PIsListLike list a => Term s (list a :--> PBool)
-pnull = pelimList (plam $ \_ _ -> pcon PFalse) (pdelay $ pcon PTrue)
 
 --------------------------------------------------------------------------------
 

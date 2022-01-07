@@ -9,7 +9,6 @@ module Plutarch.Builtin (
   pasMap,
   pasList,
   pasInt,
-  pnullBuiltin,
   pasByteStr,
   PBuiltinPair,
   PBuiltinList (..),
@@ -106,6 +105,7 @@ instance PListLike PBuiltinList where
   pnil = pcon PNil
   phead = pheadBuiltin
   ptail = ptailBuiltin
+  pnull = pnullBuiltin
 
 instance (PElemConstraint PBuiltinList a, PEq a) => PEq (PBuiltinList a) where
   (#==) xs ys = plistEquals # xs # ys
