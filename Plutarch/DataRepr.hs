@@ -95,7 +95,7 @@ pmatchDataRepr d handlers =
 
     applyHandlers :: Term s (PBuiltinList PData) -> DataReprHandlers out defs s -> [Term s out]
     applyHandlers _ DRHNil = []
-    applyHandlers args (DRHCons handler rest) = (handler $ punsafeCoerce args) : applyHandlers args rest
+    applyHandlers args (DRHCons handler rest) = handler (punsafeCoerce args) : applyHandlers args rest
 
     go ::
       (Dig, Term s out) ->

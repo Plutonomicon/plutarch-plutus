@@ -9,14 +9,15 @@ module Plutarch.Builtin (
   pasMap,
   pasList,
   pasInt,
-  pnullBuiltin,
   pasByteStr,
   PBuiltinPair,
   PBuiltinList (..),
   pdataLiteral,
   PIsData (..),
   PAsData,
+  pforgetData,
   ppairDataBuiltin,
+  InDefaultUni,
 ) where
 
 import Plutarch (PlutusType (..), punsafeBuiltin, punsafeCoerce, punsafeFrom)
@@ -29,14 +30,17 @@ import Plutarch.Prelude
 import qualified PlutusCore as PLC
 import PlutusTx (Data)
 
+-- | Constraint 'PHaskellType' of 'a' to be a Plutus Core builtin type (i.e 'PLC.DefaultUni').
+type InDefaultUni a = PLC.Contains PLC.DefaultUni (PHaskellType a)
+
 -- | Plutus 'BuiltinPair'
 data PBuiltinPair (a :: k -> Type) (b :: k -> Type) (s :: k)
 
 deriving via
   PBuiltinType (PBuiltinPair a b) (PHaskellType a, PHaskellType b)
   instance
-    ( PLC.DefaultUni `PLC.Contains` PHaskellType a
-    , PLC.DefaultUni `PLC.Contains` PHaskellType b
+    ( InDefaultUni a
+    , InDefaultUni b
     ) =>
     (PLift (PBuiltinPair a b))
 
@@ -61,7 +65,7 @@ data PBuiltinList (a :: k -> Type) (s :: k)
 deriving via
   PBuiltinType (PBuiltinList a) [PHaskellType a]
   instance
-    PLC.DefaultUni `PLC.Contains` PHaskellType a => (PLift (PBuiltinList a))
+    InDefaultUni a => (PLift (PBuiltinList a))
 
 pheadBuiltin :: Term s (PBuiltinList a :--> a)
 pheadBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList
@@ -70,20 +74,20 @@ ptailBuiltin :: Term s (PBuiltinList a :--> PBuiltinList a)
 ptailBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.TailList
 
 pchooseListBuiltin :: Term s (PBuiltinList a :--> b :--> b :--> b)
-pchooseListBuiltin = pforce $ pforce $ punsafeBuiltin PLC.ChooseList
+pchooseListBuiltin = phoistAcyclic $ pforce $ pforce $ punsafeBuiltin PLC.ChooseList
 
 pnullBuiltin :: Term s (PBuiltinList a :--> PBool)
 pnullBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.NullList
 
 pconsBuiltin :: Term s (a :--> PBuiltinList a :--> PBuiltinList a)
-pconsBuiltin = pforce $ punsafeBuiltin PLC.MkCons
+pconsBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.MkCons
 
 --------------------------------------------------------------------------------
 
-instance PLC.DefaultUni `PLC.Contains` PHaskellType a => PlutusType (PBuiltinList a) where
+instance InDefaultUni a => PlutusType (PBuiltinList a) where
   type PInner (PBuiltinList a) b = PBuiltinList a
   pcon' :: forall s. PBuiltinList a s -> forall b. Term s (PInner (PBuiltinList a) b)
-  pcon' (PCons x xs) = pconsBuiltin # x # (pto xs)
+  pcon' (PCons x xs) = pconsBuiltin # x # pto xs
   pcon' PNil = pconstant @(PBuiltinList a) []
   pmatch' xs f =
     pforce $
@@ -92,19 +96,16 @@ instance PLC.DefaultUni `PLC.Contains` PHaskellType a => PlutusType (PBuiltinLis
         # pdelay (f PNil)
         # pdelay (f (PCons (pheadBuiltin # xs) (punsafeFrom $ ptailBuiltin # xs)))
 
-class PLC.Contains PLC.DefaultUni (PHaskellType a) => InDefaultUni a
-instance PLC.Contains PLC.DefaultUni (PHaskellType a) => InDefaultUni a
-
 instance PListLike PBuiltinList where
-  type PElemConstraint PBuiltinList = InDefaultUni
-  pelimList match_cons match_nil =
-    plam $ \ls -> pmatch ls $ \case
-      PCons x xs -> match_cons # x # xs
-      PNil -> pforce match_nil
+  type PElemConstraint PBuiltinList a = InDefaultUni a
+  pelimList match_cons match_nil ls = pmatch ls $ \case
+    PCons x xs -> match_cons x xs
+    PNil -> match_nil
   pcons = plam $ \x xs -> pcon (PCons x xs)
   pnil = pcon PNil
   phead = pheadBuiltin
   ptail = ptailBuiltin
+  pnull = pnullBuiltin
 
 instance (PElemConstraint PBuiltinList a, PEq a) => PEq (PBuiltinList a) where
   (#==) xs ys = plistEquals # xs # ys
