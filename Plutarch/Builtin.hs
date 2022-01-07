@@ -70,13 +70,13 @@ ptailBuiltin :: Term s (PBuiltinList a :--> PBuiltinList a)
 ptailBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.TailList
 
 pchooseListBuiltin :: Term s (PBuiltinList a :--> b :--> b :--> b)
-pchooseListBuiltin = pforce $ pforce $ punsafeBuiltin PLC.ChooseList
+pchooseListBuiltin = phoistAcyclic $ pforce $ pforce $ punsafeBuiltin PLC.ChooseList
 
 pnullBuiltin :: Term s (PBuiltinList a :--> PBool)
 pnullBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.NullList
 
 pconsBuiltin :: Term s (a :--> PBuiltinList a :--> PBuiltinList a)
-pconsBuiltin = pforce $ punsafeBuiltin PLC.MkCons
+pconsBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.MkCons
 
 --------------------------------------------------------------------------------
 
