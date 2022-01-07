@@ -1,5 +1,10 @@
 index-state: 2021-11-18T00:00:00Z
 
+allow-newer: size-based:template-haskell
+
+package plutus-tx-plugin
+  flags: +use-ghc-stub
+
 packages: ./.
 
 tests: true

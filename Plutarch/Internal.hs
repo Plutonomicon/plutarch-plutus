@@ -1,36 +1,64 @@
-module Plutarch.Internal ((:-->), PDelayed, Term, plam', plet, papp, pdelay, pforce, phoistAcyclic, perror, punsafeCoerce, punsafeBuiltin, punsafeConstant, compile, compileAndShrink, ClosedTerm, Dig, hashTerm, hashOpenTerm, TermCont (..)) where
+module Plutarch.Internal (
+  -- | $hoisted
+  (:-->),
+  PDelayed,
+  -- | $term
+  Term,
+  plam',
+  plet,
+  papp,
+  pdelay,
+  pforce,
+  phoistAcyclic,
+  perror,
+  punsafeCoerce,
+  punsafeBuiltin,
+  punsafeConstant,
+  punsafeConstantInternal,
+  compile,
+  ClosedTerm,
+  Dig,
+  hashTerm,
+  hashOpenTerm,
+  TermCont (..),
+) where
 
+import Control.Monad (guard)
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
 import Crypto.Hash.IO (HashAlgorithm)
 import qualified Data.ByteString as BS
+import Data.Function ((&))
 import Data.Kind (Type)
 import Data.List (foldl', groupBy, sortOn)
 import qualified Data.Map.Lazy as M
 import qualified Data.Set as S
 import qualified Flat.Run as F
+import GHC.Natural (intToNatural)
 import GHC.Stack (HasCallStack)
 import Numeric.Natural (Natural)
 import Plutarch.Evaluate (evaluateScript)
 import Plutus.V1.Ledger.Scripts (Script (Script))
 import PlutusCore (Some, ValueOf)
 import qualified PlutusCore as PLC
+import qualified PlutusCore.Constant as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
 import qualified UntypedPlutusCore as UPLC
-import Shrink (shrinkScript)
 
--- Explanation for hoisted terms:
--- Hoisting is a convenient way of importing terms without duplicating them
--- across your tree. Currently, hoisting is only supported on terms that do
--- not refer to any free variables.
---
--- An RHoisted contains a term and its hash. A RawTerm will have a DAG
--- of hoisted terms, where an edge represents a dependency.
--- We topologically sort these hoisted terms, such that each has an index.
---
--- We wrap our RawTerm in RLamAbs and RApply in an order corresponding to the
--- indices. Each level can refer to levels above it by the nature of De Bruijn naming,
--- though the name is relative to the current level.
+{- $hoisted
+ __Explanation for hoisted terms:__
+ Hoisting is a convenient way of importing terms without duplicating them
+ across your tree. Currently, hoisting is only supported on terms that do
+ not refer to any free variables.
+
+ An RHoisted contains a term and its hash. A RawTerm will have a DAG
+ of hoisted terms, where an edge represents a dependency.
+ We topologically sort these hoisted terms, such that each has an index.
+
+ We wrap our RawTerm in RLamAbs and RApply in an order corresponding to the
+ indices. Each level can refer to levels above it by the nature of De Bruijn naming,
+ though the name is relative to the current level.
+-}
 
 type Dig = Digest Blake2b_160
 
@@ -71,27 +99,38 @@ mapTerm f (TermResult t d) = TermResult (f t) d
 
 mkTermRes :: RawTerm -> TermResult
 mkTermRes r = TermResult r []
+{- $term
+ Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
+ Thanks!
+ NB: Hoisted terms must be sorted such that the dependents are first and dependencies last.
 
--- Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
--- Thanks!
--- NB: Hoisted terms must be sorted such that the dependents are first and dependencies last.
---
--- s: This parameter isn't ever instantiated with something concrete. It is merely here
--- to ensure that `compile` and `phoistAcyclic` only accept terms without any free variables.
---
--- Explanation of how the unembedding works:
--- Each term must be instantiated with its de-Bruijn level.
--- `plam'`, given its own level, will create an `RVar` that figures out the
--- de-Bruijn index needed to reach its own level given the level it itself is
--- instantiated with.
+ s: This parameter isn't ever instantiated with something concrete. It is merely here
+ to ensure that `compile` and `phoistAcyclic` only accept terms without any free variables.
+
+ __Explanation of how the unembedding works:__
+ Each term must be instantiated with its de-Bruijn level.
+ `plam'`, given its own level, will create an `RVar` that figures out the
+ de-Bruijn index needed to reach its own level given the level it itself is
+ instantiated with.
+-}
 newtype Term (s :: k) (a :: k -> Type) = Term {asRawTerm :: Natural -> TermResult}
 
+{- |
+  *Closed* terms with no free variables.
+-}
 type ClosedTerm (a :: k -> Type) = forall (s :: k). Term s a
 
 data (:-->) (a :: k -> Type) (b :: k -> Type) (s :: k)
 infixr 0 :-->
+
 data PDelayed (a :: k -> Type) (s :: k)
 
+{- |
+  Lambda abstraction.
+
+  Only works with a single argument.
+  Use 'plam' instead, to support currying.
+-}
 plam' :: (Term s a -> Term s b) -> Term s (a :--> b)
 plam' f = Term $ \i ->
   let v = Term $ \j -> mkTermRes $ RVar (j - (i + 1))
@@ -117,59 +156,36 @@ plam' f = Term $ \i ->
     getArity t = getArityBuiltin t
 
     getArityBuiltin :: RawTerm -> Maybe Natural
-    getArityBuiltin (RBuiltin PLC.AddInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.SubtractInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.MultiplyInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.DivideInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.QuotientInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.RemainderInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.ModInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.EqualsInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.LessThanInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.LessThanEqualsInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.AppendByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.ConsByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.SliceByteString) = Just 2
-    getArityBuiltin (RBuiltin PLC.LengthOfByteString) = Just 0
-    getArityBuiltin (RBuiltin PLC.IndexByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.EqualsByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.LessThanByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.LessThanEqualsByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.Sha2_256) = Just 0
-    getArityBuiltin (RBuiltin PLC.Sha3_256) = Just 0
-    getArityBuiltin (RBuiltin PLC.Blake2b_256) = Just 0
-    getArityBuiltin (RBuiltin PLC.VerifySignature) = Just 2
-    getArityBuiltin (RBuiltin PLC.AppendString) = Just 1
-    getArityBuiltin (RBuiltin PLC.EqualsString) = Just 1
-    getArityBuiltin (RBuiltin PLC.EncodeUtf8) = Just 0
-    getArityBuiltin (RBuiltin PLC.DecodeUtf8) = Just 0
-    getArityBuiltin (RForce (RBuiltin PLC.IfThenElse)) = Just 2
-    getArityBuiltin (RForce (RBuiltin PLC.ChooseUnit)) = Just 1
-    getArityBuiltin (RForce (RBuiltin PLC.Trace)) = Just 1
-    getArityBuiltin (RForce (RForce (RBuiltin PLC.FstPair))) = Just 0
-    getArityBuiltin (RForce (RForce (RBuiltin PLC.SndPair))) = Just 0
-    getArityBuiltin (RForce (RForce (RBuiltin PLC.ChooseList))) = Just 2
-    getArityBuiltin (RForce (RBuiltin PLC.MkCons)) = Just 1
-    getArityBuiltin (RForce (RBuiltin PLC.HeadList)) = Just 0
-    getArityBuiltin (RForce (RBuiltin PLC.TailList)) = Just 0
-    getArityBuiltin (RForce (RBuiltin PLC.NullList)) = Just 0
-    getArityBuiltin (RForce (RBuiltin PLC.ChooseData)) = Just 5
-    getArityBuiltin (RBuiltin PLC.ConstrData) = Just 1
-    getArityBuiltin (RBuiltin PLC.MapData) = Just 0
-    getArityBuiltin (RBuiltin PLC.ListData) = Just 0
-    getArityBuiltin (RBuiltin PLC.IData) = Just 0
-    getArityBuiltin (RBuiltin PLC.BData) = Just 0
-    getArityBuiltin (RBuiltin PLC.UnConstrData) = Just 0
-    getArityBuiltin (RBuiltin PLC.UnMapData) = Just 0
-    getArityBuiltin (RBuiltin PLC.UnListData) = Just 0
-    getArityBuiltin (RBuiltin PLC.UnIData) = Just 0
-    getArityBuiltin (RBuiltin PLC.UnBData) = Just 0
-    getArityBuiltin (RBuiltin PLC.EqualsData) = Just 1
-    getArityBuiltin (RBuiltin PLC.MkPairData) = Just 1
-    getArityBuiltin (RBuiltin PLC.MkNilData) = Just 0
-    getArityBuiltin (RBuiltin PLC.MkNilPairData) = Just 0
+    getArityBuiltin (RBuiltin builtin) =
+      guard (getPolyVarCount builtin == 0) >> pure (getArityBuiltin' builtin)
+    getArityBuiltin (RForce (RBuiltin builtin)) =
+      guard (getPolyVarCount builtin == 1) >> pure (getArityBuiltin' builtin)
+    getArityBuiltin (RForce (RForce (RBuiltin builtin))) =
+      guard (getPolyVarCount builtin == 2) >> pure (getArityBuiltin' builtin)
     getArityBuiltin _ = Nothing
 
+    getArityBuiltin' :: PLC.DefaultFun -> Natural
+    getArityBuiltin' builtin =
+      case PLC.toBuiltinMeaning @_ @_ @(PLC.Term PLC.TyName PLC.Name _ _ ()) builtin of
+        PLC.BuiltinMeaning sch _ _ ->
+          intToNatural $ PLC.countTermArgs sch - 1
+    getPolyVarCount :: PLC.DefaultFun -> Int
+    getPolyVarCount builtin =
+      case PLC.toBuiltinMeaning @_ @_ @(PLC.Term PLC.TyName PLC.Name _ _ ()) builtin of
+        PLC.BuiltinMeaning sch _ _ ->
+          PLC.getArity sch
+            & filter (== PLC.TypeArg)
+            & length
+
+{- |
+  Let bindings.
+
+  This is appoximately a shorthand for a lambda and application:
+
+  @plet v f@ == @ papp (plam f) v@
+
+  But sufficiently small terms in WHNF may be inlined for efficiency.
+-}
 plet :: Term s a -> (Term s a -> Term s b) -> Term s b
 plet v f = Term $ \i -> case asRawTerm v i of
   -- Inline sufficiently small terms in WHNF
@@ -178,6 +194,7 @@ plet v f = Term $ \i -> case asRawTerm v i of
   (getTerm -> RHoisted _) -> asRawTerm (f v) i
   _ -> asRawTerm (papp (plam' f) v) i
 
+-- | Lambda Application.
 papp :: Term s (a :--> b) -> Term s a -> Term s b
 papp x y = Term $ \i -> case (asRawTerm x i, asRawTerm y i) of
   -- Applying anything to an error is an error.
@@ -192,26 +209,49 @@ papp x y = Term $ \i -> case (asRawTerm x i, asRawTerm y i) of
   -- new RApply
   (x', y') -> TermResult (RApply (getTerm x') [getTerm y']) (getDeps x' <> getDeps y')
 
+{- |
+  Plutus \'delay\', used for laziness.
+-}
 pdelay :: Term s a -> Term s (PDelayed a)
 pdelay x = Term $ \i -> mapTerm RDelay $ asRawTerm x i
 
+{- |
+  Plutus \'force\',
+  used to force evaluation of 'PDelayed' terms.
+-}
 pforce :: Term s (PDelayed a) -> Term s a
 pforce x = Term $ \i -> case asRawTerm x i of
   -- A force cancels a delay
   t@(getTerm -> RDelay t') -> t {getTerm = t'}
   t -> mapTerm RForce t
 
+{- |
+  Plutus \'error\'.
+
+  When using this explicitly, it should be ensured that
+  the containing term is delayed, avoiding premature evaluation.
+-}
 perror :: Term s a
 perror = Term $ \_ -> mkTermRes RError
 
+{- |
+  Unsafely coerce the type-tag of a Term.
+
+  This should mostly be avoided, though it can be safely
+  used to assert known types of Datums, Redeemers or ScriptContext.
+-}
 punsafeCoerce :: Term s a -> Term s b
 punsafeCoerce (Term x) = Term x
 
 punsafeBuiltin :: UPLC.DefaultFun -> Term s a
 punsafeBuiltin f = Term $ \_ -> mkTermRes $ RBuiltin f
 
+{-# DEPRECATED punsafeConstant "Use `pconstant` instead." #-}
 punsafeConstant :: Some (ValueOf PLC.DefaultUni) -> Term s a
-punsafeConstant c = Term $ \_ -> mkTermRes $ RConstant c
+punsafeConstant = punsafeConstantInternal
+
+punsafeConstantInternal :: Some (ValueOf PLC.DefaultUni) -> Term s a
+punsafeConstantInternal c = Term $ \_ -> mkTermRes $ RConstant c
 
 asClosedRawTerm :: ClosedTerm a -> TermResult
 asClosedRawTerm = flip asRawTerm 0
@@ -271,11 +311,9 @@ compile' t =
       wrapped = foldl' (\b (lvl, def) -> UPLC.Apply () (UPLC.LamAbs () (DeBruijn . Index $ 0) b) (rawTermToUPLC map' lvl def)) body defs
    in wrapped
 
+-- | Compile a (closed) Plutus Term to a usable script
 compile :: ClosedTerm a -> Script
 compile t = Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' $ asClosedRawTerm $ t)
-
-compileAndShrink :: ClosedTerm a -> Script
-compileAndShrink t = shrinkScript (compile t)
 
 newtype TermCont s a = TermCont {runTermCont :: forall b. (a -> Term s b) -> Term s b}
 

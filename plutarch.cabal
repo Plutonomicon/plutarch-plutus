@@ -7,6 +7,11 @@ license: MIT
 
 extra-source-files: README.md
 
+flag development
+  description: Enable tracing functions within plutarch.
+  manual: True
+  default: False
+
 common c
   default-language: Haskell2010
   default-extensions:
@@ -29,6 +34,7 @@ common c
     DeriveGeneric
     DeriveLift
     DeriveTraversable
+    DerivingVia
     DoAndIfThenElse
     EmptyCase
     EmptyDataDecls
@@ -42,7 +48,6 @@ common c
     GeneralisedNewtypeDeriving
     HexFloatLiterals
     ImplicitPrelude
-    ImportQualifiedPost
     InstanceSigs
     KindSignatures
     MonomorphismRestriction
@@ -87,8 +92,11 @@ library
     Plutarch.DataRepr
     Plutarch.ScriptContext
     Plutarch.Maybe
+    Plutarch.List
     Plutarch.Unit
     Plutarch.Crypto
+    Plutarch.Lift
+    Plutarch.Trace
   build-depends:
     , base
     , plutus-core
@@ -103,21 +111,34 @@ library
     , flat
     , shrinker
 
+  if flag(development)
+    cpp-options: -DDevelopment
+
 test-suite examples
   import: c
   type: exitcode-stdio-1.0
   main-is: Main.hs
   hs-source-dirs: examples
   other-modules:
+    Examples.Tracing
+    Examples.PlutusType
+    Examples.List
+    Utils
+    Examples.Recursion
   build-depends:
     , base
     , bytestring
+    , text
     , plutarch
     , tasty
     , tasty-hunit
+    , text
     , plutus-ledger-api
     , plutus-core
     , aeson
     , plutus-tx
     , free
     , shrinker-testing
+
+  if flag(development)
+    cpp-options: -DDevelopment
