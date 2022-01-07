@@ -17,6 +17,7 @@ module Plutarch.Builtin (
   PAsData,
   pforgetData,
   ppairDataBuiltin,
+  InDefaultUni,
 ) where
 
 import Plutarch (PlutusType (..), punsafeBuiltin, punsafeCoerce, punsafeFrom)
@@ -29,14 +30,17 @@ import Plutarch.Prelude
 import qualified PlutusCore as PLC
 import PlutusTx (Data)
 
+-- | Constraint 'PHaskellType' of 'a' to be a Plutus Core builtin type (i.e 'PLC.DefaultUni').
+type InDefaultUni a = PLC.Contains PLC.DefaultUni (PHaskellType a)
+
 -- | Plutus 'BuiltinPair'
 data PBuiltinPair (a :: k -> Type) (b :: k -> Type) (s :: k)
 
 deriving via
   PBuiltinType (PBuiltinPair a b) (PHaskellType a, PHaskellType b)
   instance
-    ( PLC.DefaultUni `PLC.Contains` PHaskellType a
-    , PLC.DefaultUni `PLC.Contains` PHaskellType b
+    ( InDefaultUni a
+    , InDefaultUni b
     ) =>
     (PLift (PBuiltinPair a b))
 
@@ -61,7 +65,7 @@ data PBuiltinList (a :: k -> Type) (s :: k)
 deriving via
   PBuiltinType (PBuiltinList a) [PHaskellType a]
   instance
-    PLC.DefaultUni `PLC.Contains` PHaskellType a => (PLift (PBuiltinList a))
+    InDefaultUni a => (PLift (PBuiltinList a))
 
 pheadBuiltin :: Term s (PBuiltinList a :--> a)
 pheadBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList
@@ -80,7 +84,7 @@ pconsBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.MkCons
 
 --------------------------------------------------------------------------------
 
-instance PLC.DefaultUni `PLC.Contains` PHaskellType a => PlutusType (PBuiltinList a) where
+instance InDefaultUni a => PlutusType (PBuiltinList a) where
   type PInner (PBuiltinList a) b = PBuiltinList a
   pcon' :: forall s. PBuiltinList a s -> forall b. Term s (PInner (PBuiltinList a) b)
   pcon' (PCons x xs) = pconsBuiltin # x # pto xs
@@ -92,11 +96,8 @@ instance PLC.DefaultUni `PLC.Contains` PHaskellType a => PlutusType (PBuiltinLis
         # pdelay (f PNil)
         # pdelay (f (PCons (pheadBuiltin # xs) (punsafeFrom $ ptailBuiltin # xs)))
 
-class PLC.Contains PLC.DefaultUni (PHaskellType a) => InDefaultUni a
-instance PLC.Contains PLC.DefaultUni (PHaskellType a) => InDefaultUni a
-
 instance PListLike PBuiltinList where
-  type PElemConstraint PBuiltinList = InDefaultUni
+  type PElemConstraint PBuiltinList a = InDefaultUni a
   pelimList match_cons match_nil =
     plam $ \ls -> pmatch ls $ \case
       PCons x xs -> match_cons # x # xs

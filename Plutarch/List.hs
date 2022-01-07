@@ -59,7 +59,7 @@ instance PEq a => PEq (PList a) where
 
 -- | Plutarch types that behave like lists.
 class PListLike (list :: (k -> Type) -> k -> Type) where
-  type PElemConstraint list :: (k -> Type) -> Constraint
+  type PElemConstraint list (a :: k -> Type) :: Constraint
 
   -- | Canonical eliminator for list-likes.
   pelimList :: PElemConstraint list a => Term s (a :--> list a :--> r) -> Term s r -> Term s (list a :--> r)
@@ -82,11 +82,10 @@ class PListLike (list :: (k -> Type) -> k -> Type) where
   pnull :: PIsListLike list a => Term s (list a :--> PBool)
   pnull = phoistAcyclic $ pelimList (plam $ \_ _ -> pconstant False) $ pconstant True
 
-class EmptyConstraint x
-instance EmptyConstraint x
+type EmptyConstraint = 'True ~ 'True
 
 instance PListLike PList where
-  type PElemConstraint PList = EmptyConstraint
+  type PElemConstraint PList _ = EmptyConstraint
   pelimList match_cons match_nil =
     plam $ \ls -> pmatch ls $ \case
       PSCons x xs -> match_cons # x # xs
