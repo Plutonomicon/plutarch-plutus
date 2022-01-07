@@ -1,12 +1,11 @@
 module Examples.Api (tests) where
 
 import Plutarch
---import Plutarch.Bool (pif, (#==))
---import Plutarch.Integer (PInteger)
-import Plutarch.Builtin (PAsData)
-import Plutarch.DataRepr (SNat (..), pindexDataList)
+import Plutarch.Builtin (PAsData, pfromData )
+import Data.Proxy (Proxy (..))
+import Plutarch.DataRepr (pindexDataList)
 import Plutarch.Api.V1 
-  (PScriptContext (..), PTxInfo (..))
+  (PScriptContext (..), PTxInfo (..), PValue (..))
 
 import Plutus.V1.Ledger.Api 
   (ScriptContext (..), Value, TxOut (..), TxInInfo (..), Address (..)
@@ -91,7 +90,13 @@ sym = "c0"
 getTxInfo :: Term s (PScriptContext :--> PAsData PTxInfo)
 getTxInfo =
   plam $ \x -> pmatch x $ \case 
-    (PScriptContext c) -> pindexDataList @0 # c
+    (PScriptContext c) -> pindexDataList (Proxy @0) # c
+
+
+getMint :: Term s (PAsData PTxInfo :--> PAsData PValue)
+getMint =
+  plam $ \x -> pmatch (pfromData x) $ \case 
+    (PTxInfo c) -> pindexDataList (Proxy @3) # c
 
 tests :: TestTree
 tests =
@@ -101,6 +106,10 @@ tests =
         ctx `equal'` ctx_compiled
     , testCase "getting txInfo" $ do
         plift (getTxInfo # ctx) @?= info
+    , testCase "getting mint" $ do
+        plift (getMint #$ getTxInfo # ctx) @?= mint
+    , testCase "lift value" $ do
+        plift (pconstant @PValue mint) @?= mint
     ]
 
 ctx_compiled :: String 

@@ -9,12 +9,16 @@ module Plutarch.Lift (
   -- * Define your own conversion
   PLift (..),
 
+  -- * Deriving Helpers
+  PLiftVia (..),
+
   -- * Internal use
   PBuiltinType (..),
 ) where
 
 import Data.Bifunctor (first)
 import Data.Data (Proxy (Proxy))
+import Data.Coerce (Coercible, coerce)
 import Data.Kind (Type)
 import Data.String
 import Data.Text
@@ -25,6 +29,7 @@ import Plutarch.Internal (
   ClosedTerm,
   Term,
   compile,
+  punsafeCoerce,
   punsafeConstantInternal,
  )
 import qualified Plutus.V1.Ledger.Scripts as Scripts
@@ -107,3 +112,28 @@ instance
 
 showEvalException :: EvaluationException CekUserError (MachineError PLC.DefaultFun) (UPLC.Term UPLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) -> Text
 showEvalException = T.pack . show
+
+{- | 
+  DerivingVia wrapper for deriving `PLift` instances
+  via the wrapped type, while lifting to a coercible Haskell type.
+
+-}
+newtype PLiftVia (p :: k -> Type) (h :: Type) s = PLiftVia (p s)
+
+instance 
+  ( PLift p
+  , Coercible (PHaskellType p) h
+  ) => PLift (PLiftVia p h) where
+  type PHaskellType (PLiftVia p h) = h
+
+  pconstant' :: h -> Term s (PLiftVia p h)
+  pconstant' x = punsafeCoerce $ pconstant @p (coerce x)
+
+  plift' :: ClosedTerm (PLiftVia p h) -> Either LiftError h
+  plift' t = coerce $ plift' t'
+    where 
+      t' :: ClosedTerm p 
+      t' = punsafeCoerce t
+    
+
+    
