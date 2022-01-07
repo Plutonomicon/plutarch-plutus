@@ -32,6 +32,7 @@
     - [PLift](#plift)
       - [Implementing `PLift`](#implementing-plift)
     - [PlutusType, PCon, and PMatch](#plutustype-pcon-and-pmatch)
+    - [PListLike](#plistlike)
     - [PIsDataRepr & PDataList](#pisdatarepr--pdatalist)
       - [Implementing PIsDataRepr](#implementing-pisdatarepr)
   - [Working with Types](#working-with-types)
@@ -41,6 +42,7 @@
     - [PByteString](#pbytestring)
     - [PUnit](#punit)
     - [PBuiltinList](#pbuiltinlist)
+    - [PList](#plist)
     - [PBuiltinPair](#pbuiltinpair)
     - [PAsData](#pasdata)
     - [PData](#pdata)
@@ -62,6 +64,7 @@
 - [Common Issues](#common-issues)
   - [`plam` fails to type infer correctly](#plam-fails-to-type-infer-correctly)
   - [Ambiguous type variable arising from a use of `pconstant`](#ambiguous-type-variable-arising-from-a-use-of-pconstant)
+  - [No instance for `PLC.Contains DefaultUni (PHaskellType a)`](#no-instance-for-plccontains-defaultuni-phaskelltype-a)
   - [Infinite loop / Infinite AST](#infinite-loop--infinite-ast)
 - [Useful Links](#useful-links)
 </details>
@@ -579,6 +582,55 @@ All `PlutusType` instances get `PCon` and `PMatch` instances for free!
 
 For types that cannot easily be both `PCon` and `PMatch` - feel free to implement just one of them! However, in general, **prefer implementing PlutusType**!
 
+### PListLike
+The `PListLike` typeclass bestows beautiful, and familiar, list utilities to its instances. Plutarch has two list types- [`PBuiltinList`](#pbuiltinlist) and [`PList`](#plist). Both have `PListLike` instances! However, `PBuiltinList` can only contain builtin types. It cannot contain Plutarch functions. The element type of `PBuiltinList` can be constrained using `InDefaultUni a => PBuiltinList a`.
+
+> Note: `InDefaultUni` is exported from `Plutarch.Builtin`.
+
+As long as it's a `InDefaultUni a => PBuiltinList a` or `PList a` - it has access to all the `PListLike` goodies, out of the box. It helps to look into some of these functions at [`Plutarch.List`](./../Plutarch/List.hs).
+
+Along the way, you might be confronted by 2 big mean baddies ...err, constraints-
+```hs
+PIsListLike list a
+```
+This just means that the type `list a`, is *indeed* a valid `PListLike` containing valid elements! Of course, all `PList a`s are valid `PListLike`, but we have to think about `PBuiltinList` since it can only contain `InDefaultUni a => a` elements! So, in essence a function declared as-
+```hs
+pfoo :: PIsListLike list a => Term s (list a :--> list a)
+```
+when specialized to `PBuiltinList`, can be simplified as-
+```hs
+pfoo :: InDefaultUni a => Term s (PBuiltinList a :--> PBuiltinList a)
+```
+That's all it is. Don't be scared of it!
+
+What about this one-
+```hs
+PElemConstraint list a
+```
+This one ensures that the element type `a` can indeed be contained within the list type - `list`. For `PList`, this constraint means nothing - it's always true. For `PBuiltinList`, it can be simplified as `InDefaultUni a`. Easy!
+
+Here's two of my favorite `PListLike` utilites (not biased)-
+```hs
+-- | Cons an element onto an existing list.
+pcons :: PElemConstraint list a => Term s (a :--> list a :--> list a)
+
+-- | The empty list
+pnil :: PElemConstraint list a => Term s (list a)
+```
+What would life be without cons and nil?
+
+Let's build a `PBuiltinList` of `PInteger`s with that-
+```hs
+x :: Term s (PBuiltinList PInteger)
+x = pcons # 1 #$ pcons # 2 #$ pcons # 3 # pnil
+```
+Wooo! Let's not leave `PList` alone in the corner though-
+```hs
+x :: Term s (PList PInteger)
+x = pcons # 1 #$ pcons # 2 #$ pcons # 3 # pnil
+```
+The code is the same, we just changed the type annotation. Cool!
+
 ### PIsDataRepr & PDataList
 `PIsDataRepr` and `PDataList` are the user-facing parts of an absolute workhorse of a machinery for easily deconstructing `Constr` [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md) values. It allows fully type safe matching on `Data` values, without embedding type information within the generated script - unlike PlutusTx.
 
@@ -741,9 +793,55 @@ The Plutarch level unit term can be constructed using `pcon PUnit`.
 This is synonymous to Plutus Core [builtin unit](https://staging.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins-Internal.html#t:BuiltinUnit).
 
 ### PBuiltinList
-You'll be using builtin lists quite a lot in Plutarch. Plutarch comes with utilities and synonyms to make this easier.
+You'll be using builtin lists quite a lot in Plutarch. `PBuiltinList` has a [`PListLike`](#plistlike) instance, giving you access to all the goodies from there! However, `PBuiltinList` can only contain builtin types. In particular, it cannot contain Plutarch functions.
 
-Generally, you'll just be working with builtin functions (or rather, Plutarch synonyms to builtin functions) while working with lists. You can find everything about that in [builtin-lists](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-lists.md). Feel free to only read the `Plutarch` examples.
+You can express the constraint of "only builtin types" using `InDefaultUni`, exported from `Plutarch.Builtin`-`
+```hs
+validBuiltinList :: InDefaultUni a => PBuiltinList a
+```
+As mentioned before, `PBuiltinList` gets access to all the `PListLike` utilities. Other than that, `InDefaultUni a => PBuiltinList a` also has a [`PlutusType`](#plutustype-pcon-and-pmatch) instance. You can construct a `PBuiltinList` using `pcon` (but you should prefer using `pcons` from `PListLike`)-
+```hs
+> pcon $ PCons (phexByteStr "fe") $ pcon PNil
+```
+would yield a `PBuiltinList PByteString` with one element - `0xfe`. Of course, you could have done that with ``pcons # phexByteStr "fe" # pnil`` instead!
+
+You can also use `pmatch` to match on a list-
+```hs
+pmatch (pcon $ PCons (phexByteStr "fe") $ pcon PNil) $ \case
+  PNil -> "hey hey there's nothing here!"
+  PCons _ _ -> "oooo fancy!"
+```
+But you should prefer `pelimList` from `PListLike` instead-
+```hs
+pelimList (\_ _ -> "oooo fancy") "hey hey there's nothing here!" $ pcon $ PCons (phexByteStr "fe") $ pcon PNil
+```
+The first argument is a function that is invoked for the `PCons` case, with the head and tail of the list as arguments.
+
+The second argument is the value to return when the list is empty. It's *only evaluated* **if the list is empty**.
+
+The final argument is, of course, the list itself.
+
+> Aside: Interested in the lower level details of `PBuiltinList` (i.e Plutus Core builtin lists)? You can find all you need to know about it at [plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-lists.md).
+
+### PList
+Here's the scott encoded cousin of `PBuiltinList`. What does that mean? Well, in practice, it just means that `PList` can contain *any arbitrary* term - not just builtin types. `PList` also has a [`PListLike`](#plistlike) instance - so you won't be missing any of those utilities here!
+
+`PList` also has a [`PlutusType`](#plutustype-pcon-and-pmatch) instance. You can construct a `PList` using `pcon` (but you should prefer using `pcons` from `PListLike`)-
+```hs
+> pcon $ PSCons (phexByteStr "fe") $ pcon PSNil
+```
+would yield a `PList PByteString` with one element - `0xfe`. Of course, you could have done that with ``pcons # phexByteStr "fe" # pnil`` instead!
+
+You can also use `pmatch` to match on a list-
+```hs
+pmatch (pcon $ PSCons (phexByteStr "fe") $ pcon PSNil) $ \case
+  PSNil -> "hey hey there's nothing here!"
+  PSCons _ _ -> "oooo fancy!"
+```
+But you should prefer `pelimList` from `PListLike` instead-
+```hs
+pelimList (\_ _ -> "oooo fancy") "hey hey there's nothing here!" $ pcon $ PSCons (phexByteStr "fe") $ pcon PSNil
+```
 
 ### PBuiltinPair
 Much like in the case of builtin lists, you'll just be working with builtin functions (or rather, Plutarch synonyms to builtin functions) here. You can find everything about that in [builtin-pairs](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-pairs.md). Feel free to only read the `Plutarch` examples.
@@ -865,15 +963,12 @@ Left (EvaluationError [] "(CekEvaluationFailure,Nothing)")
 
 ## Validator that checks whether a value is present within signatories
 ```hs
--- | Filter a builtin list using a predicate.
-pelem :: PEq a => Term s (a :--> PBuiltinList a :--> PBool)
-pelem = phoistAcyclic $ plam $ \needle -> pfix #$ plam $
-  \self xs -> pif (pnullBuiltin # xs)
-      (pcon PFalse)
-      $ plet (pheadBuiltin # xs) $ \x ->
-        pif (x #== needle)
-          (pcon PTrue)
-          $ plet (ptailBuiltin # xs) $ \rest -> self # rest
+import Plutarch
+import Plutarch.Builtin
+import Plutarch.List
+import Plutarh.Prelude
+import Plutarch.ScriptContext
+import Plutarh.Unit
 
 checkSignatory :: Term s (PPubKeyHash :--> PData :--> PData :--> PScriptContext :--> PUnit)
 checkSignatory = plam $ \ph (_ :: Term _ _) (_ :: Term _ _) ctx -> pmatch ctx $ \(PScriptContext ctxFields) ->
@@ -1072,6 +1167,11 @@ or, you can use `TypeApplications` to indicate the Plutarch type you're trying t
 ```hs
 pconstant @PScriptPurpose $ Minting "be"
 ```
+
+## No instance for `PLC.Contains DefaultUni (PHaskellType a)`
+This just means that the polymorphic Plutarch type variable `a`, is not constrained to be a builtin type. To fix this, simply add `InDefaultUni a =>` to your binding context. It'll ensure that the polymorphic Plutarch type `a`, is indeed represented by a builtin type under the hood.
+
+> Note: `InDefaultUni` is exported from `Plutarch.Builtin`
 
 ## Infinite loop / Infinite AST
 
