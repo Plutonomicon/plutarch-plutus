@@ -15,7 +15,7 @@ import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
 import qualified Examples.List as List
 import Examples.Tracing (traceTests)
-import Plutarch (POpaque, ScottEncoded, letrec, pconstant, plift', popaque, printTerm, punsafeBuiltin, (#.))
+import Plutarch (POpaque, pconstant, plift', popaque, printTerm, punsafeBuiltin)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
 import Plutarch.Builtin (PAsData, PBuiltinList (..), PBuiltinPair, PData, pdata)
 import Plutarch.ByteString (PByteString, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
@@ -23,6 +23,7 @@ import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude
+import Plutarch.Rec (PRecord(PRecord), ScottEncoded, letrec, (#.))
 import Plutarch.ScriptContext (PScriptPurpose (PMinting))
 import Plutarch.String (PString)
 import Plutarch.Unit (PUnit (..))
@@ -61,23 +62,14 @@ data SampleRecord f = SampleRecord {
 
 type instance ScottEncoded SampleRecord a = PBool :--> PInteger :--> PString :--> a
 
-newtype PRecord r s = PRecord{_getRecord :: r (Term s)}
-
-psample :: PRecord SampleRecord s
-psample = PRecord SampleRecord{
+sampleRecord :: PRecord SampleRecord s
+sampleRecord = PRecord SampleRecord{
   sampleBool = pcon PFalse,
   sampleInt = 6,
   sampleString = "Salut, Monde!"}
 
-instance PlutusType (PRecord SampleRecord) where
-  type PInner (PRecord SampleRecord) a = ScottEncoding SampleRecord a
-  pcon' :: forall a s. PRecord SampleRecord s -> Term s (ScottEncoding SampleRecord a)
-  pcon' (PRecord (SampleRecord b i s)) = plam (\f-> f # b # i # s :: Term s a)
-  pmatch' :: forall s c. (forall b. Term s (ScottEncoding SampleRecord b)) -> (PRecord SampleRecord s -> Term s c) -> Term s c
-  pmatch' r f = r #$ plam $ \b i s -> f (PRecord $ SampleRecord b i s)
-
-sampleRec :: Term s (ScottEncoding SampleRecord t)
-sampleRec = letrec $ const SampleRecord{
+sampleRecur :: Term s (PRecord SampleRecord)
+sampleRecur = letrec $ const SampleRecord{
   sampleBool = pcon PTrue,
   sampleInt = 12,
   sampleString = "Hello, World!"}
@@ -95,10 +87,10 @@ evenOddBuilder EvenOdd{even, odd} = EvenOdd{
   odd = plam $ \n -> pif (n #== 0) (pcon PFalse) (even #$ n - 1)
   }
 
-evenOdd :: Term s (ScottEncoding EvenOdd t)
+evenOdd :: Term s (PRecord EvenOdd)
 evenOdd = letrec evenOddBuilder
 
-trivial :: Term s (ScottEncoding (Rank2.Only PInteger) t)
+trivial :: Term s (PRecord (Rank2.Only PInteger))
 trivial = letrec $ \Rank2.Only{} -> Rank2.Only (4 :: Term s PInteger)
 
 fib :: Term s (PInteger :--> PInteger)
@@ -146,14 +138,14 @@ plutarchTests =
     , testCase "add1Hoisted" $ (printTerm add1Hoisted) @?= "(program 1.0.0 (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1))"
     , testCase "example1" $ (printTerm example1) @?= "(program 1.0.0 ((\\i0 -> addInteger (i1 12 32) (i1 5 4)) (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1)))"
     , testCase "example2" $ (printTerm example2) @?= "(program 1.0.0 (\\i0 -> i1 (\\i0 -> addInteger i1 1) (\\i0 -> subtractInteger i1 1)))"
-    , testCase "record" $ (printTerm $ sampleRec #. sampleInt) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> i1 True 12 \"Hello, World!\") (\\i0 -> \\i0 -> \\i0 -> i2)))"
-    , testCase "precord" $ (printTerm $ pcon' psample #. sampleInt) @?= "(program 1.0.0 ((\\i0 -> i1 False 6 \"Salut, Monde!\") (\\i0 -> \\i0 -> \\i0 -> i2)))"
-    , testCase "record field" $ equal' (sampleRec #. sampleInt) "(program 1.0.0 12)"
+    , testCase "record" $ (printTerm $ sampleRecur #. sampleInt) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> i1 True 12 \"Hello, World!\") (\\i0 -> \\i0 -> \\i0 -> i2)))"
+    , testCase "precord" $ (printTerm $ pcon sampleRecord #. sampleInt) @?= "(program 1.0.0 ((\\i0 -> i1 False 6 \"Salut, Monde!\") (\\i0 -> \\i0 -> \\i0 -> i2)))"
+    , testCase "record field" $ equal' (sampleRecur #. sampleInt) "(program 1.0.0 12)"
     , testCase "even" $ (printTerm $ evenOdd #. even) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> i1 (\\i0 -> force (i4 (equalsInteger i1 0) (delay True) (delay (i3 (\\i0 -> \\i0 -> i1) (subtractInteger i1 1))))) (\\i0 -> force (i4 (equalsInteger i1 0) (delay False) (delay (i3 i5 (subtractInteger i1 1)))))) i2) (force ifThenElse)) (\\i0 -> \\i0 -> i2)))"
     , testCase "even 4" $ equal' (evenOdd #. even # (4 :: Term s PInteger)) "(program 1.0.0 True)"
     , testCase "even 5" $ equal' (evenOdd #. even # (5 :: Term s PInteger)) "(program 1.0.0 False)"
-    , testCase "trivial" $ (printTerm $ trivial @_ @PInteger #. Rank2.fromOnly) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> i1 4) (\\i0 -> i1)))"
-    , testCase "trivial value" $ equal' (trivial @_ @PInteger #. Rank2.fromOnly) "(program 1.0.0 4)"
+    , testCase "trivial" $ (printTerm $ trivial #. Rank2.fromOnly) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> i1 4) (\\i0 -> i1)))"
+    , testCase "trivial value" $ equal' (trivial #. Rank2.fromOnly) "(program 1.0.0 4)"
     , testCase "pfix" $ (printTerm pfix) @?= "(program 1.0.0 (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))))"
     , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> force (i3 (equalsInteger i1 0) (delay 0) (delay (force (i3 (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2)))))))))) (force ifThenElse)))"
     , testCase "fib 9 == 34" $ equal (fib # 9) (pconstant @PInteger 34)

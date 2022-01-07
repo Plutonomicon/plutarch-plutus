@@ -84,6 +84,7 @@ library
     Plutarch.Prelude
     Plutarch.Pair
     Plutarch.Rational
+    Plutarch.Rec
     Plutarch.Either
     Plutarch.Integer
     Plutarch.Bool

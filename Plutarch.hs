@@ -5,15 +5,10 @@
 module Plutarch (
   (PI.:-->),
   PI.ClosedTerm,
-  PI.accessors,
   PI.compile,
-  PI.ScottArgument,
-  PI.ScottEncoded,
-  PI.ScottEncoding,
   PI.Dig,
   PI.hashOpenTerm,
   PI.hashTerm,
-  PI.letrec,
   PI.papp,
   PI.pdelay,
   PI.PDelayed,
@@ -34,7 +29,6 @@ module Plutarch (
   printTerm,
   printScript,
   (#$),
-  (#.),
   (#),
   pinl,
   PCon (..),
@@ -55,7 +49,6 @@ import qualified Plutarch.Internal as PI
 import qualified Plutarch.Lift as PL
 import Plutus.V1.Ledger.Scripts (Script (Script))
 import PlutusCore.Pretty (prettyPlcReadableDebug)
-import qualified Rank2
 
 -- | Prettyprint a compiled Script via the PLC pretty printer
 printScript :: Script -> String
@@ -95,17 +88,6 @@ infixl 8 #
 (#$) = papp
 
 infixr 0 #$
-
-{- |
-  Highest precedence infixl operator, to be used like record field accessor. e.g.:
-
-  >>> record #. field
--}
-(#.) :: (Rank2.Distributive r, Rank2.Traversable r)
-      => Term s (PI.ScottEncoded r t :--> t) -> (r (PI.ScottArgument r s) -> PI.ScottArgument r s t) -> Term s t
-r #. f = r # PI.getScott (f PI.accessors)
-
-infixl 9 #.
 
 {- $plam
  Lambda abstraction.
