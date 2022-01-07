@@ -62,7 +62,7 @@ class PListLike (list :: (k -> Type) -> k -> Type) where
   type PElemConstraint list :: (k -> Type) -> Constraint
 
   -- | Canonical eliminator for list-likes.
-  pelimList :: PElemConstraint list a => Term s (a :--> list a :--> r) -> Term s (PDelayed r) -> Term s (list a :--> r)
+  pelimList :: PElemConstraint list a => Term s (a :--> list a :--> r) -> Term s r -> Term s (list a :--> r)
 
   -- | Cons an element onto an existing list.
   pcons :: PElemConstraint list a => Term s (a :--> list a :--> list a)
@@ -72,15 +72,15 @@ class PListLike (list :: (k -> Type) -> k -> Type) where
 
   -- | Return the first element of a list. Partial, throws an error upon encountering an empty list.
   phead :: PIsListLike list a => Term s (list a :--> a)
-  phead = pelimList (plam $ \x _xs -> x) (pdelay perror)
+  phead = pelimList (plam $ \x _xs -> x) perror
 
   -- | Take the tail of a list, meaning drop its head. Partial, throws an error upon encountering an empty list.
   ptail :: PIsListLike list a => Term s (list a :--> list a)
-  ptail = pelimList (plam $ \_x xs -> xs) (pdelay perror)
+  ptail = pelimList (plam $ \_x xs -> xs) perror
 
   -- | / O(1) /. Check if a list is empty
   pnull :: PIsListLike list a => Term s (list a :--> PBool)
-  pnull = phoistAcyclic $ pelimList (plam $ \_ _ -> pconstant False) $ pdelay (pconstant True)
+  pnull = phoistAcyclic $ pelimList (plam $ \_ _ -> pconstant False) $ pconstant True
 
 class EmptyConstraint x
 instance EmptyConstraint x
@@ -90,7 +90,7 @@ instance PListLike PList where
   pelimList match_cons match_nil =
     plam $ \ls -> pmatch ls $ \case
       PSCons x xs -> match_cons # x # xs
-      PSNil -> pforce match_nil
+      PSNil -> match_nil
   pcons = plam $ \x xs -> pcon (PSCons x xs)
   pnil = pcon PSNil
 
@@ -102,7 +102,7 @@ pconvertLists =
   pfix #$ plam $ \self ->
     pelimList
       (plam $ \x xs -> pcons # x # (self # xs))
-      (pdelay pnil)
+      pnil
 
 -- | Like 'pelimList', but with a fixpoint recursion hatch.
 precList :: (PElemConstraint list a, PListLike list) => (Term s (list a :--> r) -> Term s a -> Term s (list a) -> Term s r) -> (Term s (list a :--> r) -> Term s r) -> Term s (list a :--> r)
@@ -110,7 +110,7 @@ precList mcons mnil =
   pfix #$ plam $ \self ->
     pelimList
       (plam $ \x xs -> mcons self x xs)
-      (pdelay $ mnil self)
+      (mnil self)
 
 --------------------------------------------------------------------------------
 -- Construction
@@ -138,7 +138,7 @@ plength =
     ( pfix #$ plam $ \self ls n ->
         pelimList
           (plam $ \_x xs -> (self # xs # n + 1))
-          (pdelay n)
+          n
           # ls
     )
     $ \go -> plam $ \xs -> go # xs # 0
@@ -225,10 +225,10 @@ pzipWith =
           ( plam $ \x xs ->
               pelimList
                 (plam $ \y ys -> pcons # (f # x # y) # (self # xs # ys))
-                (pdelay pnil)
+                pnil
                 # ly
           )
-          (pdelay pnil)
+          pnil
           # lx
 
 -- | Like 'pzipWith' but with Haskell-level merge function.
@@ -246,10 +246,10 @@ pzipWith' f =
       ( plam $ \x xs ->
           pelimList
             (plam $ \y ys -> pcons # (f x y) # (self # xs # ys))
-            (pdelay pnil)
+            pnil
             # ly
       )
-      (pdelay pnil)
+      pnil
       # lx
 
 -- | / O(min(n, m)) /. Zip two lists together, creating pairs of the elements. If the lists are of differing lengths, cut to the shortest.
