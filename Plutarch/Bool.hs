@@ -23,9 +23,12 @@ import qualified PlutusCore as PLC
 -- | Plutus 'BuiltinBool'
 type PBool :: forall k. k -> Type
 data PBool s = PTrue | PFalse
-  deriving (PLift Bool) via PBuiltinType PBool Bool
 
-_testExplict :: forall k (s :: k). Term @k s (PBool @k)
+deriving 
+  via PBuiltinType PBool Bool
+  instance (PLift Bool) 
+
+_testExplicit :: forall k (s :: k). Term @k s (PBool @k)
 _testExplicit = pconstant True
 
 -- TODO: we want this to work

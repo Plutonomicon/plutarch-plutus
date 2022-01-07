@@ -13,7 +13,7 @@ module Plutarch.Lift (
   PBuiltinType (..),
 ) where
 
-import Data.Bifunctor (first)
+import Data.Bifunctor (bimap)
 import Data.Data (Proxy (Proxy))
 import Data.Kind (Type, Constraint)
 import Data.String
@@ -95,20 +95,21 @@ plift prog = either (error . show) id $ plift' prog
 newtype PBuiltinType (p :: forall k. k -> Type) (h :: Type) = PBuiltinType h
 
 instance
+  forall k p h.
   ( PLC.KnownTypeIn PLC.DefaultUni (UPLC.Term PLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) h
   , PLC.DefaultUni `PLC.Contains` h
   ) =>
-  PLift (PBuiltinType p h)
+  PLift (PBuiltinType (p :: forall k. k -> Type) h)
   where
   -- type PHaskellType (PBuiltinType p h) = h
   type PlutarchType (PBuiltinType p h) = p
-  pconstant' =
-    punsafeConstantInternal . PLC.Some . PLC.ValueOf (PLC.knownUniOf (Proxy @h))
+  pconstant' (PBuiltinType h) =
+    punsafeConstantInternal . PLC.Some . PLC.ValueOf (PLC.knownUniOf (Proxy @h)) $h
   plift' prog =
     case evaluateScript (compile prog) of
       Left e -> Left $ LiftError_ScriptError e
       Right (_, _, Scripts.unScript -> UPLC.Program _ _ term) ->
-        first (LiftError_EvalException . showEvalException) $
+        bimap (LiftError_EvalException . showEvalException) PBuiltinType $
           readKnownSelf term
 
 showEvalException :: EvaluationException CekUserError (MachineError PLC.DefaultFun) (UPLC.Term UPLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) -> Text
