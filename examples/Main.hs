@@ -1,3 +1,4 @@
+{-# LANGUAGE ImplicitParams #-}
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 
 module Main (main) where
@@ -31,7 +32,7 @@ import qualified Examples.Recursion as Recursion
 import Utils
 
 main :: IO ()
-main = defaultMain tests
+main = defaultMain $ testGroup "all tests" [standardTests] -- , shrinkTests ]
 
 add1 :: Term s (PInteger :--> PInteger :--> PInteger)
 add1 = plam $ \x y -> x + y + 1
@@ -67,8 +68,13 @@ uglyDouble = plam $ \n -> plet n $ \n1 -> plet n1 $ \n2 -> n2 + n2
 -- loopHoisted :: Term (PInteger :--> PInteger)
 -- loopHoisted = phoistAcyclic $ plam $ \x -> loop # x
 
--- FIXME: Use property tests
-tests :: TestTree
+_shrinkTests :: TestTree
+_shrinkTests = testGroup "shrink tests" [let ?tester = shrinkTester in tests]
+
+standardTests :: TestTree
+standardTests = testGroup "standard tests" [let ?tester = standardTester in tests]
+
+tests :: HasTester => TestTree
 tests =
   testGroup
     "unit tests"
@@ -79,7 +85,7 @@ tests =
     , List.tests
     ]
 
-plutarchTests :: TestTree
+plutarchTests :: HasTester => TestTree
 plutarchTests =
   testGroup
     "plutarch tests"
@@ -239,7 +245,7 @@ plutarchTests =
     ]
 
 -- | Tests for the behaviour of UPLC itself.
-uplcTests :: TestTree
+uplcTests :: HasTester => TestTree
 uplcTests =
   testGroup
     "uplc tests"

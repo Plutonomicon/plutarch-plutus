@@ -17,6 +17,8 @@
   inputs.flat.flake = false;
   inputs.Win32-network.url = "github:input-output-hk/Win32-network?rev=3825d3abf75f83f406c1f7161883c438dac7277d";
   inputs.Win32-network.flake = false;
+  inputs.Shrinker.url = "github:Plutonomicon/Shrinker";
+  inputs.Shrinker.flake = false;
 
   outputs = inputs@{ self, nixpkgs, haskell-nix, plutus, flake-compat-ci, ... }:
     let
@@ -82,6 +84,10 @@
                 "stubs/plutus-ghc-stub"
               ];
             }
+            {
+              src = inputs.Shrinker;
+              subdirs = [ "." "testing" ];
+            }
           ];
           modules = [{
             packages = {
@@ -106,6 +112,8 @@
 
             additional = ps: [
               ps.plutus-ledger-api
+              ps.shrinker
+              ps.shrinker-testing
             ];
           };
         };

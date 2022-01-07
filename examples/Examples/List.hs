@@ -16,7 +16,7 @@ import Plutarch.List
 integerList :: [Integer] -> Term s (PList PInteger)
 integerList xs = pconvertLists #$ pconstant @(PBuiltinList PInteger) xs
 
-tests :: TestTree
+tests :: HasTester => TestTree
 tests = do
   testGroup "List tests" $
     [ testCase "pconcat identities" $ do

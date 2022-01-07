@@ -6,9 +6,9 @@ import Plutarch
 import Plutarch.Bool (PBool (PFalse, PTrue))
 import Plutarch.Trace (ptrace, ptraceIfFalse, ptraceIfTrue)
 import Plutarch.Unit (PUnit (PUnit))
-import Utils (traces)
+import Utils (HasTester, traces)
 
-traceTests :: IO ()
+traceTests :: HasTester => IO ()
 traceTests = do
 
 -- CPP support isn't great in fourmolu.

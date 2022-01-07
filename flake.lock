@@ -16,6 +16,22 @@
         "type": "github"
       }
     },
+    "Shrinker": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1641477919,
+        "narHash": "sha256-D6Rl2/2ABrHwBdoU8U4iNU8gVC4MTy14heh4ouCjQE4=",
+        "owner": "Plutonomicon",
+        "repo": "Shrinker",
+        "rev": "37bf56e83d0d568232ff2be1ae4daf1946a81189",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Plutonomicon",
+        "repo": "Shrinker",
+        "type": "github"
+      }
+    },
     "Win32-network": {
       "flake": false,
       "locked": {
@@ -524,6 +540,7 @@
     },
     "root": {
       "inputs": {
+        "Shrinker": "Shrinker",
         "Win32-network": "Win32-network",
         "cardano-base": "cardano-base",
         "cardano-crypto": "cardano-crypto",

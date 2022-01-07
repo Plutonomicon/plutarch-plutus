@@ -136,6 +136,7 @@ test-suite examples
     , plutus-core
     , aeson
     , plutus-tx
+    , shrinker
 
   if flag(development)
     cpp-options: -DDevelopment
