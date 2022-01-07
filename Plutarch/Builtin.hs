@@ -83,7 +83,7 @@ pconsBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.MkCons
 instance PLC.DefaultUni `PLC.Contains` PHaskellType a => PlutusType (PBuiltinList a) where
   type PInner (PBuiltinList a) b = PBuiltinList a
   pcon' :: forall s. PBuiltinList a s -> forall b. Term s (PInner (PBuiltinList a) b)
-  pcon' (PCons x xs) = pconsBuiltin # x # (pto xs)
+  pcon' (PCons x xs) = pconsBuiltin # x # pto xs
   pcon' PNil = pconstant @(PBuiltinList a) []
   pmatch' xs f =
     pforce $
