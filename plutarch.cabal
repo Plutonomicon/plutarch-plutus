@@ -109,7 +109,6 @@ library
     , plutus-tx
     , mtl
     , flat
-    , shrinker
 
   if flag(development)
     cpp-options: -DDevelopment
@@ -137,7 +136,6 @@ test-suite examples
     , plutus-core
     , aeson
     , plutus-tx
-    , free
     , shrinker-testing
 
   if flag(development)

@@ -6,7 +6,6 @@ module Plutarch (
   (PI.:-->),
   PI.ClosedTerm,
   PI.compile,
-  PI.compileAndShrink,
   PI.Dig,
   PI.hashOpenTerm,
   PI.hashTerm,
