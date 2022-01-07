@@ -171,3 +171,11 @@ instance PIsData (PBuiltinPair PInteger (PBuiltinList PData)) where
 
 instance PEq (PAsData a) where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
+
+instance (PLift p, PIsData p) => PLift (PAsData p) where
+  type PHaskellType (PAsData p) = (PHaskellType p)
+  pconstant' =
+    pdata . pconstant @p
+
+  plift' t =
+    plift' $ pfromData t

@@ -13,7 +13,7 @@ import qualified Examples.List as List
 import Examples.Tracing (traceTests)
 import Plutarch (POpaque, pconstant, plift', popaque, printTerm, punsafeBuiltin)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
-import Plutarch.Builtin (PBuiltinList (..), PBuiltinPair, PData, pdata)
+import Plutarch.Builtin (PAsData, PBuiltinList (..), PBuiltinPair, PData, pdata)
 import Plutarch.ByteString (PByteString, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Integer (PInteger)
@@ -234,6 +234,14 @@ plutarchTests =
         , testCase "plift on list and pair" $ do
             plift' (pconstant @(PBuiltinList PInteger) [1, 2, 3]) @?= Right [1, 2, 3]
             plift' (pconstant @(PBuiltinPair PString PInteger) ("IOHK", 42)) @?= Right ("IOHK", 42)
+        , testCase "plift on data" $ do
+            let d :: PlutusTx.Data
+                d = PlutusTx.toData @(Either Bool Bool) $ Right False
+            plift' (pconstant @(PData) d) @?= Right d
+        , testCase "plift on PAsData" $ do
+            let n :: Integer
+                n = 1
+            plift' (pconstant @(PAsData PInteger) n) @?= Right n
         , testCase "plift on nested containers" $ do
             -- List of pairs
             let v1 = [("IOHK", 42), ("Plutus", 31)]
