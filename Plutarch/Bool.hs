@@ -21,8 +21,15 @@ import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinBool'
+type PBool :: forall k. k -> Type
 data PBool s = PTrue | PFalse
-  deriving (PLift) via PBuiltinType PBool Bool
+  deriving (PLift Bool) via PBuiltinType PBool Bool
+
+_testExplict :: forall k (s :: k). Term @k s (PBool @k)
+_testExplicit = pconstant True
+
+-- TODO: we want this to work
+_testInferred = pconstant True
 
 instance PlutusType PBool where
   type PInner PBool _ = PBool

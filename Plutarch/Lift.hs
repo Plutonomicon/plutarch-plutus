@@ -15,7 +15,7 @@ module Plutarch.Lift (
 
 import Data.Bifunctor (first)
 import Data.Data (Proxy (Proxy))
-import Data.Kind (Type)
+import Data.Kind (Type, Constraint)
 import Data.String
 import Data.Text
 import qualified Data.Text as T
@@ -50,32 +50,36 @@ instance IsString LiftError where
 
 {- | Class of Plutarch types `p` that can be converted to/from a Haskell type.
 
-The Haskell type is determined by `PHaskellType p`.
+The Haskell type is determined by `h`.
+
+Laws:
+- `plift' . pconstant' = Right`
 -}
-class PLift (p :: k -> Type) where
-  -- | The associated Haskell type for `p`
-  type PHaskellType p :: Type
+type PLift :: Type -> Constraint
+class PLift h where
+  -- | The associated Plutarch type for `h`
+  type PlutarchType h :: forall k. k -> Type
 
   -- {-
   -- Create a Plutarch-level constant, from a Haskell value.
   -- Example:
   -- > pconstant @PInteger 42
   -- -}
-  pconstant' :: PHaskellType p -> Term s p
+  pconstant' :: h -> Term s (PlutarchType h)
 
   -- {-
   -- Convert a Plutarch term to the associated Haskell value. Fail otherwise.
   -- This will fully evaluate the arbitrary closed expression, and convert the
   -- resulting value.
   -- -}
-  plift' :: ClosedTerm p -> Either LiftError (PHaskellType p)
+  plift' :: ClosedTerm (PlutarchType h) -> Either LiftError h
 
 -- | Like `pconstant'` but TypeApplication-friendly
-pconstant :: forall p s. PLift p => PHaskellType p -> Term s p
+pconstant :: forall h s. PLift h => h -> Term s (PlutarchType h)  
 pconstant = pconstant'
 
 -- | Like `plift'` but fails on error.
-plift :: (PLift p, HasCallStack) => ClosedTerm p -> PHaskellType p
+plift :: (PLift h, HasCallStack) => ClosedTerm (PlutarchType h) -> h
 plift prog = either (error . show) id $ plift' prog
 
 {- | DerivingVia representation to auto-derive `PLift` for Plutarch types
@@ -87,7 +91,8 @@ plift prog = either (error . show) id $ plift' prog
 
  See instance below.
 -}
-newtype PBuiltinType (p :: k -> Type) (h :: Type) s = PBuiltinType (p s)
+-- newtype PBuiltinType (p :: k -> Type) (h :: Type) s = PBuiltinType (p s)
+newtype PBuiltinType (p :: forall k. k -> Type) (h :: Type) = PBuiltinType h
 
 instance
   ( PLC.KnownTypeIn PLC.DefaultUni (UPLC.Term PLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) h
@@ -95,7 +100,8 @@ instance
   ) =>
   PLift (PBuiltinType p h)
   where
-  type PHaskellType (PBuiltinType p h) = h
+  -- type PHaskellType (PBuiltinType p h) = h
+  type PlutarchType (PBuiltinType p h) = p
   pconstant' =
     punsafeConstantInternal . PLC.Some . PLC.ValueOf (PLC.knownUniOf (Proxy @h))
   plift' prog =
