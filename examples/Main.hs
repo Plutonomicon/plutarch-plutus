@@ -17,7 +17,7 @@ import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude
-import Plutarch.ScriptContext (PScriptPurpose (PMinting))
+import Plutarch.Api.V1 (PScriptPurpose (PMinting))
 import Plutarch.String (PString)
 import Plutarch.Unit (PUnit (..))
 import Plutus.V1.Ledger.Value (CurrencySymbol (CurrencySymbol))
@@ -27,6 +27,7 @@ import qualified PlutusTx
 
 import qualified Examples.PlutusType as PlutusType
 import qualified Examples.Recursion as Recursion
+import qualified Examples.Api as Api
 import Utils
 
 main :: IO ()
@@ -75,6 +76,7 @@ tests =
     , uplcTests
     , PlutusType.tests
     , Recursion.tests
+    , Api.tests
     ]
 
 plutarchTests :: TestTree

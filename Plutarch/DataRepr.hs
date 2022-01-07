@@ -1,16 +1,22 @@
 {-# OPTIONS_GHC -Wno-orphans -Wno-redundant-constraints #-}
+{-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE UndecidableInstances #-}
 
-module Plutarch.DataRepr (PDataRepr, SNat (..), punDataRepr, pindexDataRepr, pmatchDataRepr, DataReprHandlers (..), PDataList, pdhead, pdtail, PIsDataRepr (..), PIsDataReprInstances (..)) where
+module Plutarch.DataRepr (PDataRepr, punDataRepr, pindexDataRepr, pmatchDataRepr, DataReprHandlers (..), PDataList, pdhead, pdtail, PIsDataRepr (..), PIsDataReprInstances (..), punsafeIndex, pindexDataList) where
 
+import GHC.TypeLits (Nat, KnownNat, natVal, type (-))
+import Data.Proxy (Proxy)
 import Data.List (groupBy, maximumBy, sortOn)
 import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoerce, runTermCont)
 import Plutarch.Bool (pif, (#==))
-import Plutarch.Builtin (PAsData, PBuiltinList, PData, PIsData, pasConstr, pdata, pfromData, pfstBuiltin, psndBuiltin)
+import Plutarch.Builtin 
+  (PAsData, PBuiltinList, PData, PIsData, pasConstr, pdata, pfromData, pfstBuiltin, psndBuiltin, ptailBuiltin, pheadBuiltin)
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift
 import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Api as Ledger
 import qualified PlutusCore as PLC
+
 
 data PDataList (as :: [k -> Type]) (s :: k)
 
@@ -26,23 +32,23 @@ data PDataRepr (defs :: [[k -> Type]]) (s :: k)
 pasData :: Term s (PDataRepr _) -> Term s PData
 pasData = punsafeCoerce
 
-data Nat = N | S Nat
+--data Nat = N | S Nat
+--
+--data SNat :: Nat -> Type where
+--  SN :: SNat 'N
+--  SS :: SNat n -> SNat ( 'S n)
+--
+--unSingleton :: SNat n -> Nat
+--unSingleton SN = N
+--unSingleton (SS n) = S $ unSingleton n
+--
+--natToInteger :: Nat -> Integer
+--natToInteger N = 0
+--natToInteger (S n) = 1 + natToInteger n
 
-data SNat :: Nat -> Type where
-  SN :: SNat 'N
-  SS :: SNat n -> SNat ( 'S n)
-
-unSingleton :: SNat n -> Nat
-unSingleton SN = N
-unSingleton (SS n) = S $ unSingleton n
-
-natToInteger :: Nat -> Integer
-natToInteger N = 0
-natToInteger (S n) = 1 + natToInteger n
-
-type family IndexList (n :: Nat) (l :: [k]) :: k
-type instance IndexList 'N '[x] = x
-type instance IndexList ( 'S n) (x : xs) = IndexList n xs
+type family IndexList (n :: Nat) (l :: [k]) :: k where
+  IndexList 0 (x ': _) = x
+  IndexList n (x : xs) = IndexList (n - 1) xs
 
 punDataRepr :: Term s (PDataRepr '[def] :--> PDataList def)
 punDataRepr = phoistAcyclic $
@@ -50,19 +56,41 @@ punDataRepr = phoistAcyclic $
     plet (pasConstr #$ pasData t) $ \d ->
       (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataList def))
 
-pindexDataRepr :: SNat n -> Term s (PDataRepr (def : defs) :--> PDataList (IndexList n (def : defs)))
+pindexDataRepr :: (KnownNat n) => Proxy n -> Term s (PDataRepr (def : defs) :--> PDataList (IndexList n (def : defs)))
 pindexDataRepr n = phoistAcyclic $
   plam $ \t ->
     plet (pasConstr #$ pasData t) $ \d ->
       let i :: Term _ PInteger = pfstBuiltin # d
        in pif
-            (i #== (fromInteger . natToInteger . unSingleton $ n))
+            (i #== (fromInteger $ toInteger $ natVal $ n))
             (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataList _))
             perror
 
-type family LengthList (l :: [k]) :: Nat
-type instance LengthList '[] = 'N
-type instance LengthList (x : xs) = 'S (LengthList xs)
+-- | Safely index a DataList
+pindexDataList :: (KnownNat n) => Proxy n -> Term s (PDataList xs :--> PAsData (IndexList n xs))
+pindexDataList n = 
+  phoistAcyclic $ punsafeCoerce $ 
+    punsafeIndex # ind
+  where
+    ind :: Term s PInteger
+    ind = fromInteger $ toInteger $ natVal n
+
+{- | 
+  Unsafely index a BuiltinList, failing if
+  the index is out of bounds.
+-}
+punsafeIndex :: Term s (PInteger :--> PBuiltinList a :--> a)
+punsafeIndex = phoistAcyclic $
+  pfix #$ plam
+    \self n xs ->
+      pif
+        (n #== 0)
+        (pheadBuiltin # xs)
+        (self # (n - 1) #$ ptailBuiltin # xs)
+
+--type family LengthList (l :: [k]) :: Nat
+--type instance LengthList '[] = 'N
+--type instance LengthList (x : xs) = 'S (LengthList xs)
 
 data DataReprHandlers (out :: k -> Type) (def :: [[k -> Type]]) (s :: k) where
   DRHNil :: DataReprHandlers out '[] s

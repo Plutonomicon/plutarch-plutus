@@ -13,7 +13,7 @@ import Plutarch.Bool (PBool)
 import Plutarch.ByteString (PByteString)
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
-import Plutarch.API.V1 (PPubKey (..), PSignature (..), PPubKeyHash (..), PDatumHash)
+import Plutarch.Api.V1 (PPubKey (..), PSignature (..), PPubKeyHash (..), PDatumHash)
 
 
 -- | Hash a 'PByteString' using SHA-256.

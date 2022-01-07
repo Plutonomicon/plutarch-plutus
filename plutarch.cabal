@@ -120,6 +120,7 @@ test-suite examples
   other-modules:
     Examples.Tracing
     Examples.PlutusType
+    Examples.Api
     Utils
     Examples.Recursion
   build-depends:
