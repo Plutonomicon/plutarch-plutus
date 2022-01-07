@@ -82,10 +82,8 @@ class PListLike (list :: (k -> Type) -> k -> Type) where
   pnull :: PIsListLike list a => Term s (list a :--> PBool)
   pnull = phoistAcyclic $ pelimList (plam $ \_ _ -> pconstant False) $ pconstant True
 
-type EmptyConstraint = 'True ~ 'True
-
 instance PListLike PList where
-  type PElemConstraint PList _ = EmptyConstraint
+  type PElemConstraint PList _ = ()
   pelimList match_cons match_nil =
     plam $ \ls -> pmatch ls $ \case
       PSCons x xs -> match_cons # x # xs
