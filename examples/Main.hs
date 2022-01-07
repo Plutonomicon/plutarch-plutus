@@ -32,7 +32,7 @@ import qualified Examples.Recursion as Recursion
 import Utils
 
 main :: IO ()
-main = let ?tester = standardTester in defaultMain tests
+main = defaultMain $ testGroup "all tests" [ standardTests ] -- , shrinkTests ]
 
 add1 :: Term s (PInteger :--> PInteger :--> PInteger)
 add1 = plam $ \x y -> x + y + 1
@@ -68,7 +68,12 @@ uglyDouble = plam $ \n -> plet n $ \n1 -> plet n1 $ \n2 -> n2 + n2
 -- loopHoisted :: Term (PInteger :--> PInteger)
 -- loopHoisted = phoistAcyclic $ plam $ \x -> loop # x
 
--- FIXME: Use property tests
+shrinkTests :: TestTree
+shrinkTests = testGroup "shrink tests" [ let ?tester = shrinkTester in tests ]
+
+standardTests :: TestTree
+standardTests = testGroup "standard tests" [ let ?tester = standardTester in tests ]
+
 tests :: HasTester => TestTree
 tests =
   testGroup

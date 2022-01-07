@@ -1,7 +1,7 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE ImplicitParams #-}
 
-module Utils (Tester, HasTester, standardTester, eval, equal, equal', fails, expect, throws, traces) where
+module Utils (HasTester, standardTester, eval, equal, equal', fails, expect, throws, traces, shrinkTester) where
 
 import Control.Exception (SomeException, try)
 import Data.Kind (Type)
@@ -87,6 +87,55 @@ standardTester =
         Left e -> assertFailure $ "Script evalImpluation failed: " <> show e
         Right (_, traceLog, _) -> traceLog @?= sl
 
+shrinkTester :: Tester
+shrinkTester =
+  Tester
+    { evalImpl = EvalImpl evalImpl
+    , equalImpl = EqualImpl equalImpl
+    , equal'Impl = Equal'Impl equal'Impl
+    , failsImpl = FailsImpl failsImpl
+    , expectImpl = ExpectImpl expectImpl
+    , throwsImpl = ThrowsImpl throwsImpl
+    , tracesImpl = TracesImpl tracesImpl
+    }
+  where
+    evalImpl :: HasCallStack => ClosedTerm a -> IO Scripts.Script
+    evalImpl x = eval' . shrinkScript $ compile x
+
+    equalImpl :: HasCallStack => ClosedTerm a -> ClosedTerm b -> Assertion
+    equalImpl x y = do
+      x' <- evalImpl x
+      y' <- evalImpl y
+      printScript x' @?= printScript y'
+
+    equal'Impl :: HasCallStack => ClosedTerm a -> String -> Assertion
+    equal'Impl x y = do
+      x' <- let ?tester = standardTester in eval x
+      printScript x' @?= y
+
+    failsImpl :: HasCallStack => ClosedTerm a -> Assertion
+    failsImpl x =
+      case evaluateScript . shrinkScript $ compile x of
+        Left (Scripts.EvaluationError _ _) -> mempty
+        Left (Scripts.EvaluationException _ _) -> mempty
+        Left e -> assertFailure $ "Script is malformed: " <> show e
+        Right (_, _, s) -> assertFailure $ "Script didn't err: " <> printScript s
+
+    expectImpl :: HasCallStack => ClosedTerm PBool -> Assertion
+    expectImpl = equalImpl (pcon PTrue :: Term s PBool)
+
+    throwsImpl :: HasCallStack => ClosedTerm a -> Assertion
+    throwsImpl x =
+      try @SomeException (putStrLn . printScript . shrinkScript $ compile x) >>= \case
+        Right _ -> assertFailure "Supposed to throw"
+        Left _ -> pure ()
+
+    tracesImpl :: HasCallStack => ClosedTerm a -> [Text] -> Assertion
+    tracesImpl x sl =
+      case evaluateScript . shrinkScript $ compile x of
+        Left e -> assertFailure $ "Script evalImpluation failed: " <> show e
+        Right (_, traceLog, _) -> traceLog @?= sl
+
 eval :: (HasCallStack, HasTester) => ClosedTerm a -> IO Scripts.Script
 eval = runEvalImpl (evalImpl ?tester)
 equal :: forall k (a :: k -> Type) (b :: k -> Type). (HasCallStack, HasTester) => ClosedTerm @k a -> ClosedTerm @k b -> Assertion
@@ -101,43 +150,3 @@ throws :: (HasCallStack, HasTester) => ClosedTerm a -> Assertion
 throws = runThrowsImpl (throwsImpl ?tester)
 traces :: (HasCallStack, HasTester) => ClosedTerm a -> [Text] -> Assertion
 traces = runTracesImpl (tracesImpl ?tester)
-
-{-
-instance Tester ShrinkTester where
-  evalImpl :: HasCallStack => ClosedTerm a -> IO Scripts.Script
-  evalImpl x = eval'Impl . shrinkScript $ compile x
-
-  equalImpl :: HasCallStack => ClosedTerm a -> ClosedTerm b -> Assertion
-  equalImpl x y = do
-    x' <- evalImpl x
-    y' <- evalImpl y
-    printScript x' @?= printScript y'
-
-  equal'Impl :: HasCallStack => ClosedTerm a -> String -> Assertion
-  equal'Impl x y = do
-    x' <- evalImpl x
-    printScript x' @?= y
-
-  failsImpl :: HasCallStack => ClosedTerm a -> Assertion
-  failsImpl x =
-    case evalImpluateScript $ compile x of
-      Left (Scripts.EvaluationError _ _) -> mempty
-      Left (Scripts.EvaluationException _ _) -> mempty
-      Left e -> assertFailure $ "Script is malformed: " <> show e
-      Right (_, _, s) -> assertFailure $ "Script didn't err: " <> printScript s
-
-  expectImpl :: HasCallStack => ClosedTerm PBool -> Assertion
-  expectImpl = equalImpl (pcon PTrue :: Term s PBool)
-
-  throwsImpl :: ClosedTerm a -> Assertion
-  throwsImpl x =
-    try @SomeException (putStrLn $ printScript $ compile x) >>= \case
-      Right _ -> assertFailure "Supposed to throw"
-      Left _ -> pure ()
-
-  tracesImpl :: ClosedTerm a -> [Text] -> Assertion
-  tracesImpl x sl =
-    case evalImpluateScript $ compile x of
-      Left e -> assertFailure $ "Script evalImpluation failed: " <> show e
-      Right (_, traceLog, _) -> traceLog @?= sl
-      -}
