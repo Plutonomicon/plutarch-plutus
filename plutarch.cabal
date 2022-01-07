@@ -63,7 +63,7 @@ common c
     ScopedTypeVariables
     StandaloneDeriving
     StandaloneKindSignatures
-    StarIsType
+    NoStarIsType
     TraditionalRecordSyntax
     TupleSections
     TypeApplications
