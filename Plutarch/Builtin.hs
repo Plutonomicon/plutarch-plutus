@@ -16,6 +16,7 @@ module Plutarch.Builtin (
   pdataLiteral,
   PIsData (..),
   PAsData,
+  pforgetData,
   ppairDataBuiltin,
 ) where
 
