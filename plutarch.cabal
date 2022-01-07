@@ -72,7 +72,8 @@ common c
   ghc-options:
     -Wall -Wcompat -Wincomplete-uni-patterns -Wno-partial-type-signatures
     -Wmissing-export-lists -Werror -Wincomplete-record-updates
-    -Wmissing-deriving-strategies -Wno-name-shadowing
+    -Wmissing-deriving-strategies -Wno-name-shadowing -Wunused-foralls
+    -fprint-explicit-foralls -fprint-explicit-kinds
 
 library
   import: c
