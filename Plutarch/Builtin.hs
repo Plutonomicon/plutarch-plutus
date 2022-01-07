@@ -98,10 +98,9 @@ instance InDefaultUni a => PlutusType (PBuiltinList a) where
 
 instance PListLike PBuiltinList where
   type PElemConstraint PBuiltinList a = InDefaultUni a
-  pelimList match_cons match_nil =
-    plam $ \ls -> pmatch ls $ \case
-      PCons x xs -> match_cons # x # xs
-      PNil -> match_nil
+  pelimList match_cons match_nil ls = pmatch ls $ \case
+    PCons x xs -> match_cons x xs
+    PNil -> match_nil
   pcons = plam $ \x xs -> pcon (PCons x xs)
   pnil = pcon PNil
   phead = pheadBuiltin

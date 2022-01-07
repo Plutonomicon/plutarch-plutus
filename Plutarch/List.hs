@@ -62,7 +62,12 @@ class PListLike (list :: (k -> Type) -> k -> Type) where
   type PElemConstraint list (a :: k -> Type) :: Constraint
 
   -- | Canonical eliminator for list-likes.
-  pelimList :: PElemConstraint list a => Term s (a :--> list a :--> r) -> Term s r -> Term s (list a :--> r)
+  pelimList ::
+    PElemConstraint list a =>
+    (Term s a -> Term s (list a) -> Term s r) ->
+    Term s r ->
+    Term s (list a) ->
+    Term s r
 
   -- | Cons an element onto an existing list.
   pcons :: PElemConstraint list a => Term s (a :--> list a :--> list a)
@@ -72,41 +77,47 @@ class PListLike (list :: (k -> Type) -> k -> Type) where
 
   -- | Return the first element of a list. Partial, throws an error upon encountering an empty list.
   phead :: PIsListLike list a => Term s (list a :--> a)
-  phead = phoistAcyclic $ pelimList (plam $ \x _xs -> x) perror
+  phead = phoistAcyclic $ plam $ pelimList const perror
 
   -- | Take the tail of a list, meaning drop its head. Partial, throws an error upon encountering an empty list.
   ptail :: PIsListLike list a => Term s (list a :--> list a)
-  ptail = phoistAcyclic $ pelimList (plam $ \_x xs -> xs) perror
+  ptail = phoistAcyclic $ plam $ pelimList (\_ xs -> xs) perror
 
   -- | / O(1) /. Check if a list is empty
   pnull :: PIsListLike list a => Term s (list a :--> PBool)
-  pnull = phoistAcyclic $ pelimList (plam $ \_ _ -> pconstant False) $ pconstant True
+  pnull = phoistAcyclic $ plam $ pelimList (\_ _ -> pconstant False) $ pconstant True
 
 instance PListLike PList where
   type PElemConstraint PList _ = ()
-  pelimList match_cons match_nil =
-    plam $ \ls -> pmatch ls $ \case
-      PSCons x xs -> match_cons # x # xs
-      PSNil -> match_nil
+  pelimList match_cons match_nil ls = pmatch ls $ \case
+    PSCons x xs -> match_cons x xs
+    PSNil -> match_nil
   pcons = plam $ \x xs -> pcon (PSCons x xs)
   pnil = pcon PSNil
 
 type PIsListLike list a = (PListLike list, PElemConstraint list a)
 
 -- | / O(n) /. Convert from any ListLike to any ListLike, provided both lists' element constraints are met.
-pconvertLists :: forall f g a s. (PElemConstraint f a, PElemConstraint g a, PListLike f, PListLike g) => Term s (f a :--> g a)
+pconvertLists ::
+  forall f g a s.
+  (PElemConstraint f a, PElemConstraint g a, PListLike f, PListLike g) =>
+  Term s (f a :--> g a)
 pconvertLists = phoistAcyclic $
   pfix #$ plam $ \self ->
     pelimList
-      (plam $ \x xs -> pcons # x # (self # xs))
+      (\x xs -> pcons # x #$ self # xs)
       pnil
 
 -- | Like 'pelimList', but with a fixpoint recursion hatch.
-precList :: (PElemConstraint list a, PListLike list) => (Term s (list a :--> r) -> Term s a -> Term s (list a) -> Term s r) -> (Term s (list a :--> r) -> Term s r) -> Term s (list a :--> r)
+precList ::
+  (PElemConstraint list a, PListLike list) =>
+  (Term s (list a :--> r) -> Term s a -> Term s (list a) -> Term s r) ->
+  (Term s (list a :--> r) -> Term s r) ->
+  Term s (list a :--> r)
 precList mcons mnil =
   pfix #$ plam $ \self ->
     pelimList
-      (plam $ \x xs -> mcons self x xs)
+      (mcons self)
       (mnil self)
 
 --------------------------------------------------------------------------------
@@ -134,9 +145,9 @@ plength = phoistAcyclic $
   plet
     ( pfix #$ plam $ \self ls n ->
         pelimList
-          (plam $ \_x xs -> self # xs # n + 1)
+          (\_ xs -> self # xs # n + 1)
           n
-          # ls
+          ls
     )
     $ \go -> plam $ \xs -> go # xs # 0
 
@@ -176,7 +187,7 @@ pfilter =
   phoistAcyclic $
     plam $ \predicate ->
       precList
-        ( \self x xs ->
+        ( \self x' xs -> plet x' $ \x ->
             pif
               (predicate # x)
               (pcons # x # (self # xs))
@@ -206,7 +217,10 @@ pconcat =
         (const ys)
         # xs
 
--- | / O(min(n, m)) /. Zip two lists together with a passed function. If the lists are of differing lengths, cut to the shortest.
+{- | / O(min(n, m)) /. Zip two lists together with a passed function.
+
+If the lists are of differing lengths, cut to the shortest.
+-}
 pzipWith ::
   ( PListLike list
   , PElemConstraint list a
@@ -219,14 +233,14 @@ pzipWith =
     plam $ \f ->
       pfix #$ plam $ \self lx ly ->
         pelimList
-          ( plam $ \x xs ->
+          ( \x xs ->
               pelimList
-                (plam $ \y ys -> pcons # (f # x # y) # (self # xs # ys))
+                (\y ys -> pcons # (f # x # y) # (self # xs # ys))
                 pnil
-                # ly
+                ly
           )
           pnil
-          # lx
+          lx
 
 -- | Like 'pzipWith' but with Haskell-level merge function.
 pzipWith' ::
@@ -240,16 +254,19 @@ pzipWith' ::
 pzipWith' f =
   pfix #$ plam $ \self lx ly ->
     pelimList
-      ( plam $ \x xs ->
+      ( \x xs ->
           pelimList
-            (plam $ \y ys -> pcons # f x y # (self # xs # ys))
+            (\y ys -> pcons # f x y # (self # xs # ys))
             pnil
-            # ly
+            ly
       )
       pnil
-      # lx
+      lx
 
--- | / O(min(n, m)) /. Zip two lists together, creating pairs of the elements. If the lists are of differing lengths, cut to the shortest.
+{- | / O(min(n, m)) /. Zip two lists together, creating pairs of the elements.
+
+If the lists are of differing lengths, cut to the shortest.
+-}
 pzip ::
   ( PListLike list
   , PElemConstraint list a
