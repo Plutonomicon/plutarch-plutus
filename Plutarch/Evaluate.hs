@@ -60,11 +60,15 @@ evaluateBudgetedScript totalBudget s = do
  output.
 -}
 evaluateCekBudgetedTrace ::
-  (uni ~ PLC.DefaultUni, fun ~ PLC.DefaultFun) =>
   -- | The resource budget which must not be exceeded during evaluation
   ExBudget ->
-  Program PLC.Name uni fun () ->
-  ([Text], ExBudget, Either (UPLC.CekEvaluationException uni fun) (Term PLC.Name uni fun ()))
+  Program PLC.Name PLC.DefaultUni PLC.DefaultFun () ->
+  ( [Text]
+  , ExBudget
+  , Either
+      (UPLC.CekEvaluationException PLC.DefaultUni PLC.DefaultFun)
+      (Term PLC.Name PLC.DefaultUni PLC.DefaultFun ())
+  )
 evaluateCekBudgetedTrace budget (Program _ _ t) =
   case UPLC.runCek PLC.defaultCekParameters (UPLC.restricting (ExRestrictingBudget budget)) UPLC.logEmitter t of
     (errOrRes, UPLC.RestrictingSt (ExRestrictingBudget final), logs) -> (logs, budget `minusExBudget` final, errOrRes)
