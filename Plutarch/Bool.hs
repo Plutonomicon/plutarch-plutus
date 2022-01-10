@@ -74,7 +74,7 @@ x #|| y = por # pdelay x # pdelay y
 pand :: Term s (PDelayed PBool :--> PDelayed PBool :--> PBool)
 pand = phoistAcyclic $
   plam $
-    \x y -> pif' # pforce x # (pif' # pforce y # pcon PTrue # pcon PFalse) # pcon PFalse
+    \x y -> pif (pforce x) (pif' # pforce y # pcon PTrue # pcon PFalse) (pcon PFalse)
 
 -- | Hoisted, Plutarch level, strictly evaluated boolean and function.
 pand' :: Term s (PBool :--> PBool :--> PBool)
@@ -86,7 +86,7 @@ pand' = phoistAcyclic $
 por :: Term s (PDelayed PBool :--> PDelayed PBool :--> PBool)
 por = phoistAcyclic $
   plam $
-    \x y -> pif' # pforce x # pcon PTrue #$ pif' # pforce y # pcon PTrue # pcon PFalse
+    \x y -> pif (pforce x) (pcon PTrue) (pif' # pforce y # pcon PTrue # pcon PFalse)
 
 -- | Hoisted, Plutarch level, strictly evaluated boolean or function.
 por' :: Term s (PBool :--> PBool :--> PBool)
