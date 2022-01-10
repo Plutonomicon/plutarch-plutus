@@ -3,7 +3,7 @@ module Plutarch.Internal (
   (:-->),
   PDelayed,
   -- | $term
-  Term(Term, asRawTerm),
+  Term (Term, asRawTerm),
   mapTerm,
   plam',
   plet,
@@ -21,7 +21,7 @@ module Plutarch.Internal (
   Dig,
   hashTerm,
   hashOpenTerm,
-  RawTerm(..),
+  RawTerm (..),
   TermCont (..),
   TermResult (TermResult, getDeps, getTerm),
 ) where
@@ -66,7 +66,7 @@ import qualified UntypedPlutusCore as UPLC
 type Dig = Digest Blake2b_160
 
 data HoistedTerm = HoistedTerm Dig RawTerm
-  deriving stock Show
+  deriving stock (Show)
 
 data RawTerm
   = RVar Natural
@@ -78,7 +78,7 @@ data RawTerm
   | RBuiltin PLC.DefaultFun
   | RError
   | RHoisted HoistedTerm
-  deriving stock Show
+  deriving stock (Show)
 
 hashRawTerm' :: HashAlgorithm alg => RawTerm -> Context alg -> Context alg
 hashRawTerm' (RVar x) = flip hashUpdate ("0" :: BS.ByteString) . flip hashUpdate (F.flat (fromIntegral x :: Integer))
@@ -273,7 +273,6 @@ phoistAcyclic t = Term $ \_ -> case asRawTerm t 0 of
     Left e -> error $ "Hoisted term errs! " <> show e
 
 rawTermToUPLC :: (HoistedTerm -> Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) -> Natural -> RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
-
 rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i + 1) -- Why the fuck does it start from 1 and not 0?
 rawTermToUPLC m l (RLamAbs n t) = foldr (.) id (replicate (fromIntegral $ n + 1) $ UPLC.LamAbs () (DeBruijn . Index $ 0)) $ (rawTermToUPLC m (l + n + 1) t)
 rawTermToUPLC m l (RApply x y) = foldr (.) id ((\y' t -> UPLC.Apply () t (rawTermToUPLC m l y')) <$> y) $ (rawTermToUPLC m l x)

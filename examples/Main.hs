@@ -23,7 +23,7 @@ import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude
-import Plutarch.Rec (PRecord(PRecord), ScottEncoded, letrec, (#.))
+import Plutarch.Rec (PRecord (PRecord), ScottEncoded, letrec, (#.))
 import Plutarch.ScriptContext (PScriptPurpose (PMinting))
 import Plutarch.String (PString)
 import Plutarch.Unit (PUnit (..))
@@ -55,43 +55,52 @@ example2 = plam $ \x -> pmatch x $ \case
   PLeft n -> n + 1
   PRight n -> n - 1
 
-data SampleRecord f = SampleRecord {
-  sampleBool :: f PBool,
-  sampleInt :: f PInteger,
-  sampleString :: f PString}
+data SampleRecord f = SampleRecord
+  { sampleBool :: f PBool
+  , sampleInt :: f PInteger
+  , sampleString :: f PString
+  }
 
 type instance ScottEncoded SampleRecord a = PBool :--> PInteger :--> PString :--> a
 
 sampleRecord :: PRecord SampleRecord s
-sampleRecord = PRecord SampleRecord{
-  sampleBool = pcon PFalse,
-  sampleInt = 6,
-  sampleString = "Salut, Monde!"}
+sampleRecord =
+  PRecord
+    SampleRecord
+      { sampleBool = pcon PFalse
+      , sampleInt = 6
+      , sampleString = "Salut, Monde!"
+      }
 
 sampleRecur :: Term s (PRecord SampleRecord)
-sampleRecur = letrec $ const SampleRecord{
-  sampleBool = pcon PTrue,
-  sampleInt = 12,
-  sampleString = "Hello, World!"}
+sampleRecur =
+  letrec $
+    const
+      SampleRecord
+        { sampleBool = pcon PTrue
+        , sampleInt = 12
+        , sampleString = "Hello, World!"
+        }
 
-data EvenOdd f = EvenOdd {
-  even :: f (PInteger :--> PBool),
-  odd :: f (PInteger :--> PBool)
+data EvenOdd f = EvenOdd
+  { even :: f (PInteger :--> PBool)
+  , odd :: f (PInteger :--> PBool)
   }
 
 type instance ScottEncoded EvenOdd a = (PInteger :--> PBool) :--> (PInteger :--> PBool) :--> a
 
 evenOddBuilder :: EvenOdd (Term s) -> EvenOdd (Term s)
-evenOddBuilder EvenOdd{even, odd} = EvenOdd{
-  even = plam $ \n -> pif (n #== 0) (pcon PTrue) (odd #$ n - 1),
-  odd = plam $ \n -> pif (n #== 0) (pcon PFalse) (even #$ n - 1)
-  }
+evenOddBuilder EvenOdd {even, odd} =
+  EvenOdd
+    { even = plam $ \n -> pif (n #== 0) (pcon PTrue) (odd #$ n - 1)
+    , odd = plam $ \n -> pif (n #== 0) (pcon PFalse) (even #$ n - 1)
+    }
 
 evenOdd :: Term s (PRecord EvenOdd)
 evenOdd = letrec evenOddBuilder
 
 trivial :: Term s (PRecord (Rank2.Only PInteger))
-trivial = letrec $ \Rank2.Only{} -> Rank2.Only (4 :: Term s PInteger)
+trivial = letrec $ \Rank2.Only {} -> Rank2.Only (4 :: Term s PInteger)
 
 fib :: Term s (PInteger :--> PInteger)
 fib = phoistAcyclic $

@@ -10,9 +10,9 @@ import Plutarch (ClosedTerm, PCon (pcon), Term, compile, printScript)
 import Plutarch.Bool (PBool (PTrue))
 import Plutarch.Evaluate (evaluateBudgetedScript, evaluateScript)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
-import Shrink (shrinkScript)
+import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
 import qualified PlutusCore.Evaluation.Machine.ExMemory as ExMemory
-import PlutusCore.Evaluation.Machine.ExBudget (ExBudget(ExBudget))
+import Shrink (shrinkScript)
 import Test.Tasty.HUnit
 
 newtype EvalImpl = EvalImpl {runEvalImpl :: forall k (a :: k -> Type). HasCallStack => ClosedTerm a -> IO Scripts.Script}
@@ -169,4 +169,3 @@ equalBudgeted x y = do
   x' <- evalBudgeted x
   y' <- evalBudgeted y
   printScript x' @?= printScript y'
-
