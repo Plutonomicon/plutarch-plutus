@@ -16,7 +16,7 @@ import Data.Maybe (fromJust)
 import qualified Examples.List as List
 import Examples.Tracing (traceTests)
 import Plutarch (POpaque, pconstant, plift', popaque, printTerm, punsafeBuiltin)
-import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
+import Plutarch.Bool (PBool (PFalse, PTrue), pand, pif, pnot, por, (#&&), (#<), (#<=), (#==), (#||))
 import Plutarch.Builtin (PAsData, PBuiltinList (..), PBuiltinPair, PData, pdata)
 import Plutarch.ByteString (PByteString, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
 import Plutarch.Either (PEither (PLeft, PRight))
@@ -312,6 +312,19 @@ plutarchTests =
             -- List of pair of lists
             let v2 = [("IOHK", [1, 2, 3]), ("Plutus", [9, 8, 7])]
             plift' (pconstant @(PBuiltinList (PBuiltinPair PString (PBuiltinList PInteger))) v2) @?= Right v2
+        ]
+    , testGroup
+        "Boolean operations"
+        [ testCase "True && False ≡ False" $ equal (pcon PTrue #&& pcon PFalse) (pcon PFalse)
+        , testCase "False && True ≡ False" $ equal (pcon PFalse #&& pcon PTrue) (pcon PFalse)
+        , testCase "False && perror ≡ False" $ equal (pcon PFalse #&& perror) (pcon PFalse)
+        , testCase "fails: pand False perror" $ fails $ pand # pcon PFalse # perror
+        , testCase "pand False (pdelay perror) ≡ False" $ equal (pand # pcon PFalse # pdelay perror) (pdelay $ pcon PFalse)
+        , testCase "True || False ≡ True" $ equal (pcon PTrue #|| pcon PFalse) (pcon PTrue)
+        , testCase "False || True ≡ True" $ equal (pcon PFalse #|| pcon PTrue) (pcon PTrue)
+        , testCase "True || perror ≡ True" $ equal (pcon PTrue #|| perror) (pcon PTrue)
+        , testCase "fails: por True perror" $ fails $ por # pcon PFalse # perror
+        , testCase "por True (pdelay perror) ≡ True" $ equal (por # pcon PTrue # pdelay perror) (pdelay $ pcon PTrue)
         ]
     ]
 
