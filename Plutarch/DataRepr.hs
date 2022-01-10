@@ -1,13 +1,16 @@
 {-# OPTIONS_GHC -Wno-orphans -Wno-redundant-constraints #-}
 {-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
 
-module Plutarch.DataRepr (PDataRepr, punDataRepr, pindexDataRepr, pmatchDataRepr, DataReprHandlers (..), PDataList, pdhead, pdtail, PIsDataRepr (..), PIsDataReprInstances (..), punsafeIndex, pindexDataList) where
+module Plutarch.DataRepr 
+  (PDataRepr, punDataRepr, pindexDataRepr, pmatchDataRepr, DataReprHandlers (..), PDataList, pdhead, pdtail, PIsDataRepr (..), PIsDataReprInstances (..), punsafeIndex, pindexDataList, PLiftVia (..)) where
 
 import GHC.TypeLits (Nat, KnownNat, natVal, type (-))
 import Data.Proxy (Proxy)
+import Data.Coerce (Coercible, coerce)
 import Data.List (groupBy, maximumBy, sortOn)
-import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoerce, runTermCont)
+import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoerce, runTermCont, PlutusType (..), ClosedTerm)
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Builtin 
   (PAsData, PBuiltinList, PData, PIsData, pasConstr, pdata, pfromData, pfstBuiltin, psndBuiltin, ptailBuiltin, pheadBuiltin)
@@ -31,20 +34,6 @@ data PDataRepr (defs :: [[k -> Type]]) (s :: k)
 
 pasData :: Term s (PDataRepr _) -> Term s PData
 pasData = punsafeCoerce
-
---data Nat = N | S Nat
---
---data SNat :: Nat -> Type where
---  SN :: SNat 'N
---  SS :: SNat n -> SNat ( 'S n)
---
---unSingleton :: SNat n -> Nat
---unSingleton SN = N
---unSingleton (SS n) = S $ unSingleton n
---
---natToInteger :: Nat -> Integer
---natToInteger N = 0
---natToInteger (S n) = 1 + natToInteger n
 
 type family IndexList (n :: Nat) (l :: [k]) :: k where
   IndexList 0 (x ': _) = x
@@ -164,3 +153,30 @@ instance (Ledger.FromData h, Ledger.ToData h, PIsData p) => PLift (PIsDataReprIn
     maybeToRight "Failed to decode data" $ Ledger.fromData h
     where
       maybeToRight e = maybe (Left e) Right
+
+{- | 
+  DerivingVia wrapper for deriving `PLift` instances
+  via the wrapped type, while lifting to a coercible Haskell type.
+
+-}
+newtype PLiftVia (p :: k -> Type) (h :: Type) s = PLiftVia (p s)
+
+instance 
+  ( PLift p
+  , Coercible (PHaskellType p) h
+  ) => PLift (PLiftVia p h) where
+  type PHaskellType (PLiftVia p h) = h
+
+  pconstant' :: h -> Term s (PLiftVia p h)
+  pconstant' x = punsafeCoerce $ pconstant @p (coerce x)
+
+  plift' :: ClosedTerm (PLiftVia p h) -> Either LiftError h
+  plift' t = coerce $ plift' t'
+    where 
+      t' :: ClosedTerm p 
+      t' = punsafeCoerce t
+
+instance (Coercible (p s) (Term s p)) => PlutusType (PLiftVia p h) where
+  type PInner (PLiftVia p h) = p
+  pcon' (PLiftVia x) = coerce x  
+  pmatch' t f = f $ PLiftVia $ coerce t

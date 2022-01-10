@@ -59,9 +59,10 @@ module Plutarch.Api.V1 (
 
 --------------------------------------------------------------------------------
 
-import Plutarch (PMatch)
-import Plutarch.Lift (PLift (..), PHaskellType, PLiftVia, PBuiltinType)
-import Plutarch.Builtin (PBuiltinList, PIsData, PData, PAsData, PBuiltinPair)
+import Plutarch (PMatch, punsafeCoerce)
+import Plutarch.Tuple (PTuple)
+import Plutarch.Lift (PLift (..), PHaskellType, PLiftVia, PBuiltinType, pconstant)
+import Plutarch.Builtin (PBuiltinList, PIsData, PData, PAsData, PBuiltinPair, type PBuiltinMap, PList)
 import Plutarch.DataRepr 
   (DataReprHandlers (DRHCons, DRHNil), PDataList, PIsDataRepr, PIsDataReprInstances (PIsDataReprInstances), PIsDataReprRepr, pmatchDataRepr, pmatchRepr)
 import Plutarch.Integer (PInteger, PIntegral)
@@ -79,37 +80,32 @@ import Plutarch.Prelude
 ---------- V1 Specific types, Incompatible with V2
 
 newtype PTxInfo (s :: k)
-  = PTxInfo
-      ( Term
-          s
-          ( PDataList
-              '[ PBuiltinList PTxInInfo
-               , PBuiltinList PTxOut
-               , PValue
-               , PValue
-               , PBuiltinList PDCert
-               , PBuiltinList (PBuiltinPair PStakingCredential PInteger)
-               , PPOSIXTimeRange
-               , PBuiltinList PPubKeyHash
-               , PBuiltinList (PBuiltinPair PDatumHash PDatum)
-               , PTxId
-               ]
-          )
-      )
+  = PTxInfo (Term s (PDataList 
+    '[PList PTxInInfo,
+     PList PTxOut,
+     PValue,
+     PValue,
+     PList PDCert,
+     PList (PTuple '[PStakingCredential, PInteger]),
+     PPOSIXTimeRange,
+     PList PPubKeyHash,
+     PList (PTuple '[PDatumHash, PDatum]),
+     PTxId]))
   deriving (PMatch, PIsData, PLift) via PIsDataReprInstances PTxInfo Plutus.TxInfo
 
 instance PIsDataRepr PTxInfo where
+
   type
     PIsDataReprRepr PTxInfo =
-      '[ '[ PBuiltinList PTxInInfo
-          , PBuiltinList PTxOut
+      '[ '[ PList PTxInInfo
+          , PList PTxOut
           , PValue
           , PValue
-          , PBuiltinList PDCert
-          , PBuiltinList (PBuiltinPair PStakingCredential PInteger)
+          , PList PDCert
+          , PList (PTuple '[PStakingCredential, PInteger])
           , PPOSIXTimeRange
-          , PBuiltinList PPubKeyHash
-          , PBuiltinList (PBuiltinPair PDatumHash PDatum)
+          , PList PPubKeyHash
+          , PList (PTuple '[PDatumHash, PDatum])
           , PTxId
           ]
        ]
@@ -542,25 +538,32 @@ instance PIsDataRepr PDCert where
 ---------- AssocMap
 
 newtype PMap k v (s :: kn) = 
-  PMap (Term s (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))))
+  PMap (Term s (PBuiltinMap k v))
   deriving 
     (PIsData) via (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v)))
 
-instance 
-  ( PIsData k
-  , PIsData v
-  , Plutus.FromData (PHaskellType k)
+-- AssocMap.Map isn't exported, or we could use PLiftVia
+instance
+  ( Plutus.FromData (PHaskellType k)
   , Plutus.FromData (PHaskellType v)
   , Plutus.ToData (PHaskellType k)
   , Plutus.ToData (PHaskellType v)
   ) => PLift (PMap k v) where
     type PHaskellType (PMap k v) = 
       AssocMap.Map (PHaskellType k) (PHaskellType v)
-    pconstant' x = punsafeCoerce $ 
-      pconstant @(PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))) $ AssocMap.toList x
 
-    plift' t = AssocMap.fromList $ 
-      plift' @(PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))) t
+    pconstant' = 
+      punsafeCoerce 
+        . pconstant 
+            @(PBuiltinType (PBuiltinMap k v) [((PHaskellType k), (PHaskellType v))])
+        . AssocMap.toList
+
+    plift' t = do
+      let 
+        t' :: Term s (PBuiltinType (PBuiltinMap k v) [(PHaskellType k, PHaskellType v)])
+        t' = punsafeCoerce t 
+      
+      AssocMap.fromList <$> plift' t'
 
 ---------- Others
 

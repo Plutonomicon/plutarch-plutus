@@ -95,6 +95,7 @@ library
     Plutarch.Unit
     Plutarch.Crypto
     Plutarch.Lift
+    Plutarch.Tuple
     Plutarch.Trace
   build-depends:
     , base

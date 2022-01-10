@@ -1,11 +1,13 @@
 module Examples.Api (tests) where
 
 import Plutarch
-import Plutarch.Builtin (PAsData, pfromData )
+import Plutarch.Builtin (PAsData, pfromData, PList, pheadBuiltin)
 import Data.Proxy (Proxy (..))
 import Plutarch.DataRepr (pindexDataList)
 import Plutarch.Api.V1 
-  (PScriptContext (..), PTxInfo (..), PValue (..))
+  ( PScriptContext (..), PTxInfo (..), PValue (..), PTxOut (..), PTxInInfo (..), PValidatorHash (..)
+  , PCredential (..), PAddress (..)
+  )
 
 import Plutus.V1.Ledger.Api 
   (ScriptContext (..), Value, TxOut (..), TxInInfo (..), Address (..)
@@ -93,10 +95,26 @@ getTxInfo =
     (PScriptContext c) -> pindexDataList (Proxy @0) # c
 
 
-getMint :: Term s (PAsData PTxInfo :--> PAsData PValue)
+getMint :: Term s (PTxInfo :--> PAsData PValue)
 getMint =
-  plam $ \x -> pmatch (pfromData x) $ \case 
-    (PTxInfo c) -> pindexDataList (Proxy @3) # c
+  plam $ \x -> pmatch x $ \case 
+    (PTxInfo i) -> pindexDataList (Proxy @3) # i
+
+getInputs :: Term s (PTxInfo :--> PAsData (PList PTxInInfo))
+getInputs = 
+  plam $ \x -> pmatch x $ \case
+    (PTxInfo i) -> pindexDataList (Proxy @0) # i
+
+-- | Get first validator from TxInInfo
+getValidator :: Term s (PList PTxInInfo :--> PAsData (PValidatorHash))
+getValidator =
+  plam $ \xs ->
+    pmatch (pfromData $ pheadBuiltin # xs) $ \case
+      (PTxInInfo i) -> pmatch (pfromData $ pindexDataList (Proxy @1) # i) $ \case
+        (PTxOut o) -> pmatch (pfromData $ pindexDataList (Proxy @0) # o) $ \case
+          (PAddress a) -> pmatch (pfromData $ pindexDataList (Proxy @0) # a) $ \case
+            (PPubKeyCredential _) -> perror
+            (PScriptCredential v) -> pindexDataList (Proxy @0) # v
 
 tests :: TestTree
 tests =
@@ -107,9 +125,10 @@ tests =
     , testCase "getting txInfo" $ do
         plift (getTxInfo # ctx) @?= info
     , testCase "getting mint" $ do
-        plift (getMint #$ getTxInfo # ctx) @?= mint
-    , testCase "lift value" $ do
-        plift (pconstant @PValue mint) @?= mint
+        plift (getMint #$ pfromData $ getTxInfo # ctx) @?= mint
+    , testCase "getting validator" $ do
+        plift (getValidator #$ pfromData $ getInputs #$ pfromData $ getTxInfo # ctx)
+          @?= validator
     ]
 
 ctx_compiled :: String 
