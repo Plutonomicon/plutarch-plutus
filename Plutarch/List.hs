@@ -2,6 +2,7 @@
 module Plutarch.List (
   PList (..),
   PListLike (..),
+  PIsListLike,
   pconvertLists,
 
   -- * Comparison
@@ -57,6 +58,9 @@ instance PEq a => PEq (PList a) where
 
 --------------------------------------------------------------------------------
 
+-- | 'PIsListLike list a' constraints 'list' be a 'PListLike' with valid element type, 'a'.
+type PIsListLike list a = (PListLike list, PElemConstraint list a)
+
 -- | Plutarch types that behave like lists.
 class PListLike (list :: (k -> Type) -> k -> Type) where
   type PElemConstraint list (a :: k -> Type) :: Constraint
@@ -94,8 +98,6 @@ instance PListLike PList where
     PSNil -> match_nil
   pcons = plam $ \x xs -> pcon (PSCons x xs)
   pnil = pcon PSNil
-
-type PIsListLike list a = (PListLike list, PElemConstraint list a)
 
 -- | / O(n) /. Convert from any ListLike to any ListLike, provided both lists' element constraints are met.
 pconvertLists ::
