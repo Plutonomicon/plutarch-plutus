@@ -80,15 +80,15 @@ class PListLike (list :: (k -> Type) -> k -> Type) where
   pnil :: PElemConstraint list a => Term s (list a)
 
   -- | Return the first element of a list. Partial, throws an error upon encountering an empty list.
-  phead :: PIsListLike list a => Term s (list a :--> a)
+  phead :: PElemConstraint list a => Term s (list a :--> a)
   phead = phoistAcyclic $ plam $ pelimList const perror
 
   -- | Take the tail of a list, meaning drop its head. Partial, throws an error upon encountering an empty list.
-  ptail :: PIsListLike list a => Term s (list a :--> list a)
+  ptail :: PElemConstraint list a => Term s (list a :--> list a)
   ptail = phoistAcyclic $ plam $ pelimList (\_ xs -> xs) perror
 
   -- | / O(1) /. Check if a list is empty
-  pnull :: PIsListLike list a => Term s (list a :--> PBool)
+  pnull :: PElemConstraint list a => Term s (list a :--> PBool)
   pnull = phoistAcyclic $ plam $ pelimList (\_ _ -> pconstant False) $ pconstant True
 
 instance PListLike PList where
@@ -102,7 +102,7 @@ instance PListLike PList where
 -- | / O(n) /. Convert from any ListLike to any ListLike, provided both lists' element constraints are met.
 pconvertLists ::
   forall f g a s.
-  (PElemConstraint f a, PElemConstraint g a, PListLike f, PListLike g) =>
+  (PIsListLike f a, PIsListLike g a) =>
   Term s (f a :--> g a)
 pconvertLists = phoistAcyclic $
   pfix #$ plam $ \self ->
@@ -112,7 +112,7 @@ pconvertLists = phoistAcyclic $
 
 -- | Like 'pelimList', but with a fixpoint recursion hatch.
 precList ::
-  (PElemConstraint list a, PListLike list) =>
+  PIsListLike list a =>
   (Term s (list a :--> r) -> Term s a -> Term s (list a) -> Term s r) ->
   (Term s (list a :--> r) -> Term s r) ->
   Term s (list a :--> r)
@@ -279,7 +279,9 @@ pzip ::
 pzip = phoistAcyclic $ pzipWith' $ \x y -> pcon (PPair x y)
 
 -- Horribly inefficient.
-plistEquals :: (PIsListLike list a, PElemConstraint list PBool, PEq a) => Term s (list a :--> list a :--> PBool)
+plistEquals ::
+  (PListLike list, PElemConstraint list PBool, PElemConstraint list a, PEq a) =>
+  Term s (list a :--> list a :--> PBool)
 plistEquals =
   phoistAcyclic $
     plam $ \xs ys ->
