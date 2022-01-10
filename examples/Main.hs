@@ -24,6 +24,7 @@ import Plutarch.Integer (PInteger)
 import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude
 import Plutarch.Rec (PRecord (PRecord), ScottEncoded, letrec, (#.))
+import Plutarch.Rec.TH (deriveScottEncoded)
 import Plutarch.ScriptContext (PScriptPurpose (PMinting))
 import Plutarch.String (PString)
 import Plutarch.Unit (PUnit (..))
@@ -61,7 +62,7 @@ data SampleRecord f = SampleRecord
   , sampleString :: f PString
   }
 
-type instance ScottEncoded SampleRecord a = PBool :--> PInteger :--> PString :--> a
+--type instance ScottEncoded SampleRecord a = PBool :--> PInteger :--> PString :--> a
 
 sampleRecord :: PRecord SampleRecord s
 sampleRecord =
@@ -364,3 +365,4 @@ dummyCurrency =
 
 $(Rank2.TH.deriveAll ''EvenOdd)
 $(Rank2.TH.deriveAll ''SampleRecord)
+$(deriveScottEncoded ''SampleRecord)

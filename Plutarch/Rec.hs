@@ -18,7 +18,8 @@ import Plutarch.Internal (
   RawTerm (RApply, RLamAbs, RVar),
   Term (Term, asRawTerm),
   TermResult (TermResult, getDeps, getTerm),
-  mapTerm)
+  mapTerm,
+ )
 import qualified Rank2
 
 {- |

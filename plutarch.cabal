@@ -85,6 +85,7 @@ library
     Plutarch.Pair
     Plutarch.Rational
     Plutarch.Rec
+    Plutarch.Rec.TH
     Plutarch.Either
     Plutarch.Integer
     Plutarch.Bool
@@ -112,6 +113,7 @@ library
     , mtl
     , flat
     , rank2classes
+    , template-haskell
     , transformers
 
   if flag(development)
