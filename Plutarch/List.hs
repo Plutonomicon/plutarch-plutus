@@ -30,10 +30,11 @@ module Plutarch.List (
   pfoldr,
   pfoldr',
   pall,
+  pany,
 ) where
 
 import Plutarch
-import Plutarch.Bool (PBool (..), PEq (..), pif, (#&&))
+import Plutarch.Bool (PBool (..), PEq (..), pif, (#&&), (#||))
 import Plutarch.Integer (PInteger)
 import Plutarch.Pair (PPair (..))
 import Plutarch.Prelude
@@ -167,11 +168,17 @@ pfoldr' f = phoistAcyclic $
       (\self x xs -> f x (self # xs))
       (const z)
 
--- | / O(n) /. Check that predicate holds for all elements in a list
+-- | / O(n) /. Check that predicate holds for all elements in a list.
 pall :: PIsListLike list a => Term s ((a :--> PBool) :--> list a :--> PBool)
 pall = phoistAcyclic $
   plam $ \predicate ->
-    pfoldr # plam (\x acc -> predicate # x #&& acc) # pcon PTrue
+    precList (\self x xs -> predicate # x #&& self # xs) (const $ pconstant True)
+
+-- | / O(n) /. Check that predicate holds for any element in a list.
+pany :: PIsListLike list a => Term s ((a :--> PBool) :--> list a :--> PBool)
+pany = phoistAcyclic $
+  plam $ \predicate ->
+    precList (\self x xs -> predicate # x #|| self # xs) (const $ pconstant False)
 
 -- | / O(n) /. Map a function over a list of elements
 pmap :: (PListLike list, PElemConstraint list a, PElemConstraint list b) => Term s ((a :--> b) :--> list a :--> list b)
