@@ -96,7 +96,7 @@ instance PListLike PList where
   pelimList match_cons match_nil ls = pmatch ls $ \case
     PSCons x xs -> match_cons x xs
     PSNil -> match_nil
-  pcons = plam $ \x xs -> pcon (PSCons x xs)
+  pcons = phoistAcyclic $ plam $ \x xs -> pcon (PSCons x xs)
   pnil = pcon PSNil
 
 -- | / O(n) /. Convert from any ListLike to any ListLike, provided both lists' element constraints are met.
@@ -127,7 +127,7 @@ precList mcons mnil =
 
 -- | / O(1) /. Create a singleton list from an element
 psingleton :: PIsListLike list a => Term s (a :--> list a)
-psingleton = plam $ \x -> pcons # x # pnil
+psingleton = phoistAcyclic $ plam $ \x -> pcons # x # pnil
 
 --------------------------------------------------------------------------------
 -- Querying
