@@ -98,18 +98,18 @@ library
     Plutarch.Crypto
     Plutarch.Lift
     Plutarch.Trace
-  build-depends:
-    , base
-    , plutus-core
-    , plutus-ledger-api
-    , text
-    , hashable
-    , bytestring
-    , containers
-    , cryptonite
-    , plutus-tx
-    , mtl
-    , flat
+--  build-depends:
+--    , base
+--    , plutus-core
+--    , plutus-ledger-api
+--    , text
+--    , hashable
+--    , bytestring
+--    , containers
+--    , cryptonite
+--    , plutus-tx
+--    , mtl
+--    , flat
 
   if flag(development)
     cpp-options: -DDevelopment
@@ -125,19 +125,19 @@ test-suite examples
     Examples.List
     Utils
     Examples.Recursion
-  build-depends:
-    , base
-    , bytestring
-    , text
-    , plutarch
-    , tasty
-    , tasty-hunit
-    , text
-    , plutus-ledger-api
-    , plutus-core
-    , aeson
-    , plutus-tx
-    , shrinker
+--  build-depends:
+--    , base
+--    , bytestring
+--    , text
+--    , plutarch
+--    , tasty
+--    , tasty-hunit
+--    , text
+--    , plutus-ledger-api
+--    , plutus-core
+--    , aeson
+--    , plutus-tx
+--    , shrinker
 
   if flag(development)
     cpp-options: -DDevelopment
