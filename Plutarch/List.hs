@@ -152,12 +152,15 @@ plength = phoistAcyclic $
 
 --------------------------------------------------------------------------------
 
--- | / O(n) /. Fold on a list right-associatively
-pfoldr :: PIsListLike list a => Term s ((a :--> b :--> b) :--> b :--> list a :--> b)
+{- | / O(n) /. Fold on a list right-associatively.
+
+May short circuit if given reducer function is lazy in its second argument.
+-}
+pfoldr :: PIsListLike list a => Term s ((a :--> PDelayed b :--> b) :--> b :--> list a :--> b)
 pfoldr = phoistAcyclic $
   plam $ \f z ->
     precList
-      (\self x xs -> f # x # (self # xs))
+      (\self x xs -> f # x # pdelay (self # xs))
       (const z)
 
 -- | The same as 'pfoldr'', but with Haskell-level reduction function.
