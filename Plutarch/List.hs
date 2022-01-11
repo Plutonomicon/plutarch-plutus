@@ -274,12 +274,14 @@ pzip ::
   Term s (list a :--> list b :--> list (PPair a b))
 pzip = phoistAcyclic $ pzipWith' $ \x y -> pcon (PPair x y)
 
--- Horribly inefficient.
-plistEquals ::
-  (PListLike list, PElemConstraint list PBool, PElemConstraint list a, PEq a) =>
-  Term s (list a :--> list a :--> PBool)
+-- | / O(min(n, m)) /. Check if two lists are equal.
+plistEquals :: (PIsListLike list a, PEq a) => Term s (list a :--> list a :--> PBool)
 plistEquals =
   phoistAcyclic $
-    plam $ \xs ys ->
-      plength # xs #== plength # ys
-        #&& pfoldr' (#&&) # pcon PTrue # (pzipWith' (#==) # xs # ys)
+    pfix #$ plam $ \self xlist ylist ->
+      pelimList
+        ( \x xs ->
+            pelimList (\y ys -> pif (x #== y) (self # xs # ys) (pconstant False)) (pconstant False) ylist
+        )
+        (pelimList (\_ _ -> pconstant False) (pconstant True) ylist)
+        xlist
