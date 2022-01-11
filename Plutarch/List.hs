@@ -31,6 +31,8 @@ module Plutarch.List (
   pfoldr',
   pall,
   pany,
+  pfoldl,
+  pfoldl',
 ) where
 
 import Plutarch
@@ -151,6 +153,25 @@ plength = phoistAcyclic $
      in go # xs # 0
 
 --------------------------------------------------------------------------------
+
+-- | / O(n) /. Fold on a list left-associatively
+pfoldl :: PIsListLike list a => Term s ((b :--> a :--> b) :--> b :--> list a :--> b)
+pfoldl = phoistAcyclic $
+  plam $ \f ->
+    pfix #$ plam $ \self z l ->
+      pelimList
+        (\x xs -> self # (f # z # x) # xs)
+        z
+        l
+
+-- | The same as 'pfoldl', but with Haskell-level reduction function.
+pfoldl' :: PIsListLike list a => (forall s. Term s b -> Term s a -> Term s b) -> Term s (b :--> list a :--> b)
+pfoldl' f = phoistAcyclic $
+  pfix #$ plam $ \self z l ->
+    pelimList
+      (\x xs -> self # f z x # xs)
+      z
+      l
 
 {- | / O(n) /. Fold on a list right-associatively.
 
