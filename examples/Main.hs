@@ -1,11 +1,7 @@
 {-# LANGUAGE ImplicitParams #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 
-module Main (main, equalBudgeted) where
-
-import qualified Rank2
-import qualified Rank2.TH
+module Main (main) where
 
 import Test.Tasty
 import Test.Tasty.HUnit
@@ -23,8 +19,6 @@ import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude
-import Plutarch.Rec (PRecord (PRecord), ScottEncoded, letrec, (#.))
-import Plutarch.Rec.TH (deriveScottEncoded)
 import Plutarch.ScriptContext (PScriptPurpose (PMinting))
 import Plutarch.String (PString)
 import Plutarch.Unit (PUnit (..))
@@ -33,11 +27,10 @@ import Plutus.V2.Ledger.Contexts (ScriptPurpose (Minting))
 import qualified PlutusCore as PLC
 import qualified PlutusTx
 
+import qualified Examples.LetRec as LetRec
 import qualified Examples.PlutusType as PlutusType
 import qualified Examples.Recursion as Recursion
 import Utils
-
-import Prelude hiding (even, odd)
 
 main :: IO ()
 main = defaultMain $ testGroup "all tests" [standardTests] -- , shrinkTests ]
@@ -55,53 +48,6 @@ example2 :: Term s (PEither PInteger PInteger :--> PInteger)
 example2 = plam $ \x -> pmatch x $ \case
   PLeft n -> n + 1
   PRight n -> n - 1
-
-data SampleRecord f = SampleRecord
-  { sampleBool :: f PBool
-  , sampleInt :: f PInteger
-  , sampleString :: f PString
-  }
-
---type instance ScottEncoded SampleRecord a = PBool :--> PInteger :--> PString :--> a
-
-sampleRecord :: PRecord SampleRecord s
-sampleRecord =
-  PRecord
-    SampleRecord
-      { sampleBool = pcon PFalse
-      , sampleInt = 6
-      , sampleString = "Salut, Monde!"
-      }
-
-sampleRecur :: Term s (PRecord SampleRecord)
-sampleRecur =
-  letrec $
-    const
-      SampleRecord
-        { sampleBool = pcon PTrue
-        , sampleInt = 12
-        , sampleString = "Hello, World!"
-        }
-
-data EvenOdd f = EvenOdd
-  { even :: f (PInteger :--> PBool)
-  , odd :: f (PInteger :--> PBool)
-  }
-
-type instance ScottEncoded EvenOdd a = (PInteger :--> PBool) :--> (PInteger :--> PBool) :--> a
-
-evenOddBuilder :: EvenOdd (Term s) -> EvenOdd (Term s)
-evenOddBuilder EvenOdd {even, odd} =
-  EvenOdd
-    { even = plam $ \n -> pif (n #== 0) (pcon PTrue) (odd #$ n - 1)
-    , odd = plam $ \n -> pif (n #== 0) (pcon PFalse) (even #$ n - 1)
-    }
-
-evenOdd :: Term s (PRecord EvenOdd)
-evenOdd = letrec evenOddBuilder
-
-trivial :: Term s (PRecord (Rank2.Only PInteger))
-trivial = letrec $ \Rank2.Only {} -> Rank2.Only (4 :: Term s PInteger)
 
 fib :: Term s (PInteger :--> PInteger)
 fib = phoistAcyclic $
@@ -138,6 +84,7 @@ tests =
     , PlutusType.tests
     , Recursion.tests
     , List.tests
+    , LetRec.tests
     ]
 
 plutarchTests :: HasTester => TestTree
@@ -148,14 +95,6 @@ plutarchTests =
     , testCase "add1Hoisted" $ (printTerm add1Hoisted) @?= "(program 1.0.0 (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1))"
     , testCase "example1" $ (printTerm example1) @?= "(program 1.0.0 ((\\i0 -> addInteger (i1 12 32) (i1 5 4)) (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1)))"
     , testCase "example2" $ (printTerm example2) @?= "(program 1.0.0 (\\i0 -> i1 (\\i0 -> addInteger i1 1) (\\i0 -> subtractInteger i1 1)))"
-    , testCase "record" $ (printTerm $ sampleRecur #. sampleInt) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> i1 True 12 \"Hello, World!\") (\\i0 -> \\i0 -> \\i0 -> i2)))"
-    , testCase "precord" $ (printTerm $ pcon sampleRecord #. sampleInt) @?= "(program 1.0.0 ((\\i0 -> i1 False 6 \"Salut, Monde!\") (\\i0 -> \\i0 -> \\i0 -> i2)))"
-    , testCase "record field" $ equal' (sampleRecur #. sampleInt) "(program 1.0.0 12)"
-    , testCase "even" $ (printTerm $ evenOdd #. even) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> i1 (\\i0 -> force (i4 (equalsInteger i1 0) (delay True) (delay (i3 (\\i0 -> \\i0 -> i1) (subtractInteger i1 1))))) (\\i0 -> force (i4 (equalsInteger i1 0) (delay False) (delay (i3 i5 (subtractInteger i1 1)))))) i2) (force ifThenElse)) (\\i0 -> \\i0 -> i2)))"
-    , testCase "even 4" $ equal' (evenOdd #. even # (4 :: Term s PInteger)) "(program 1.0.0 True)"
-    , testCase "even 5" $ equal' (evenOdd #. even # (5 :: Term s PInteger)) "(program 1.0.0 False)"
-    , testCase "trivial" $ (printTerm $ trivial #. Rank2.fromOnly) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> i1 4) (\\i0 -> i1)))"
-    , testCase "trivial value" $ equal' (trivial #. Rank2.fromOnly) "(program 1.0.0 4)"
     , testCase "pfix" $ (printTerm pfix) @?= "(program 1.0.0 (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))))"
     , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> force (i3 (equalsInteger i1 0) (delay 0) (delay (force (i3 (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2)))))))))) (force ifThenElse)))"
     , testCase "fib 9 == 34" $ equal (fib # 9) (pconstant @PInteger 34)
@@ -375,7 +314,3 @@ dummyCurrency :: CurrencySymbol
 dummyCurrency =
   CurrencySymbol . fromJust . Aeson.decode $
     "\"1111111111111111111111111111111111111111111111111111111111111111\""
-
-$(Rank2.TH.deriveAll ''EvenOdd)
-$(Rank2.TH.deriveAll ''SampleRecord)
-$(deriveScottEncoded ''SampleRecord)
