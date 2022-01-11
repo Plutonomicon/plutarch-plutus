@@ -8,7 +8,14 @@
   Plutus V1 'ScriptContext' and 'TxInfo' encoded as 'PDataList',
   matching the 'ToData'/'FromData' representation.
 -}
-module Plutarch.ScriptContext (PScriptContext (..), PScriptPurpose (..), PTxInfo (..)) where
+module Plutarch.ScriptContext (
+  PScriptContext (..),
+  PScriptPurpose (..),
+  PTxInfo (..),
+  PTxInInfo,
+  PTxOut,
+  PValue,
+) where
 
 import Plutarch (PMatch, POpaque)
 import Plutarch.Builtin (PBuiltinList, PIsData)
