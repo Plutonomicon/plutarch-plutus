@@ -48,15 +48,15 @@ data EvenOdd f = EvenOdd
 
 type instance ScottEncoded EvenOdd a = (PInteger :--> PBool) :--> (PInteger :--> PBool) :--> a
 
-evenOddBuilder :: EvenOdd (Term s) -> EvenOdd (Term s)
-evenOddBuilder EvenOdd {even, odd} =
-  EvenOdd
-    { even = plam $ \n -> pif (n #== 0) (pcon PTrue) (odd #$ n - 1)
-    , odd = plam $ \n -> pif (n #== 0) (pcon PFalse) (even #$ n - 1)
-    }
-
 evenOdd :: Term s (PRecord EvenOdd)
-evenOdd = letrec evenOddBuilder
+evenOdd = letrec evenOddRecursion
+  where
+    evenOddRecursion :: EvenOdd (Term s) -> EvenOdd (Term s)
+    evenOddRecursion EvenOdd {even, odd} =
+      EvenOdd
+        { even = plam $ \n -> pif (n #== 0) (pcon PTrue) (odd #$ n - 1)
+        , odd = plam $ \n -> pif (n #== 0) (pcon PFalse) (even #$ n - 1)
+        }
 
 trivial :: Term s (PRecord (Rank2.Only PInteger))
 trivial = letrec $ \Rank2.Only {} -> Rank2.Only (4 :: Term s PInteger)
