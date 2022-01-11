@@ -1,11 +1,10 @@
 module Plutarch.Rec (
   PRecord (PRecord, getRecord),
-  ScottArgument,
   ScottEncoded,
   ScottEncoding,
-  accessors,
+  field,
   letrec,
-  (#.),
+  pletrec,
 ) where
 
 import Control.Monad.Trans.State.Lazy (State, evalState, get, put)
@@ -22,21 +21,6 @@ import Plutarch.Internal (
  )
 import qualified Rank2
 
-{- |
-  Highest precedence infixl operator, to be used like record field accessor. e.g.:
-
-  >>> record #. field
--}
-(#.) ::
-  forall r s t.
-  (Rank2.Distributive r, Rank2.Traversable r) =>
-  Term s (PRecord r) ->
-  (r (ScottArgument r s) -> ScottArgument r s t) ->
-  Term s t
-r #. f = (punsafeCoerce r :: Term s (ScottEncoding r t)) # getScott (f accessors)
-
-infixl 9 #.
-
 newtype PRecord r s = PRecord {getRecord :: r (Term s)}
 
 type family ScottEncoded (r :: ((k -> Type) -> Type) -> Type) (a :: k -> Type) :: k -> Type
@@ -45,7 +29,6 @@ type ScottEncoding r t = ScottEncoded r t :--> t
 
 instance {-# OVERLAPS #-} Rank2.Foldable r => PCon (PRecord r) where
   pcon :: forall s. PRecord r s -> Term s (PRecord r)
-  --  pcon (PRecord (SampleRecord b i s)) = punsafeCoerce (plam (\f-> f # b # i # s :: Term s a))
   pcon = punsafeCoerce . rcon . getRecord
 
 rcon :: forall r s t. Rank2.Foldable r => r (Term s) -> Term s (ScottEncoding r t)
@@ -53,12 +36,13 @@ rcon r = plam (\f -> punsafeCoerce $ appEndo (getDual $ Rank2.foldMap (Dual . En
   where
     applyField x f = punsafeCoerce f # x
 
--- | Recursive let construct, tying into knot the recursive equations specified in the record fields.
-letrec :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => (r (Term s) -> r (Term s)) -> Term s (PRecord r)
-letrec = punsafeCoerce . letrec'
+-- | Wrapped recursive let construct, tying into knot the recursive equations specified in the record fields.
+pletrec :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => (r (Term s) -> r (Term s)) -> Term s (PRecord r)
+pletrec = punsafeCoerce . letrec
 
-letrec' :: forall r s t. (Rank2.Distributive r, Rank2.Traversable r) => (r (Term s) -> r (Term s)) -> Term s (ScottEncoding r t)
-letrec' r = Term term
+-- | Recursive let construct, tying into knot the recursive equations specified in the record fields.
+letrec :: forall r s t. (Rank2.Distributive r, Rank2.Traversable r) => (r (Term s) -> r (Term s)) -> Term s (ScottEncoding r t)
+letrec r = Term term
   where
     term n = TermResult {getTerm = RApply rfix [RLamAbs 1 $ RApply (RVar 0) $ rawTerms], getDeps = deps}
       where
@@ -68,6 +52,11 @@ letrec' r = Term term
     fromRecord (ScottArgument (Term access)) = Term $ \depth -> mapTerm (\field -> RApply (RVar $ fieldCount + depth - 1) [field]) (access 0)
     fieldCount :: Natural
     fieldCount = getSum (Rank2.foldMap (const $ Sum 1) (accessors @r))
+
+-- | Converts a Haskell field function to a Scott-encoded record field accessor.
+field :: forall r s t. (Rank2.Distributive r, Rank2.Traversable r)
+      => (r (ScottArgument r s) -> ScottArgument r s t) -> Term s (ScottEncoded r t)
+field f = getScott (f accessors)
 
 -- | Provides a record of function terms that access each field out of a Scott-encoded record.
 accessors :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => r (ScottArgument r s)
