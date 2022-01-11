@@ -1,12 +1,12 @@
 module Examples.Api (tests) where
 
 import Plutarch
-import Plutarch.Builtin (PAsData, pfromData, PList, pheadBuiltin)
+import Plutarch.Builtin (PAsData, pfromData, PList, pheadBuiltin, pfstBuiltin)
 import Data.Proxy (Proxy (..))
 import Plutarch.DataRepr (pindexDataList)
 import Plutarch.Api.V1 
   ( PScriptContext (..), PTxInfo (..), PValue (..), PTxOut (..), PTxInInfo (..), PValidatorHash (..)
-  , PCredential (..), PAddress (..)
+  , PCredential (..), PAddress (..), PCurrencySymbol (..)
   )
 
 import Plutus.V1.Ledger.Api 
@@ -116,6 +116,13 @@ getValidator =
             (PPubKeyCredential _) -> perror
             (PScriptCredential v) -> pindexDataList (Proxy @0) # v
 
+-- | Get first CurrencySymbol from Value
+getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
+getSym =
+  plam $ \v ->
+    (pfstBuiltin #$ pheadBuiltin #$ pto $ pto v)
+    
+
 tests :: TestTree
 tests =
   testGroup
@@ -129,6 +136,9 @@ tests =
     , testCase "getting validator" $ do
         plift (getValidator #$ pfromData $ getInputs #$ pfromData $ getTxInfo # ctx)
           @?= validator
+    , testCase "getting sym" $ do
+        plift (getSym #$ pfromData $ getMint #$ pfromData $ getTxInfo # ctx)
+          @?= sym
     ]
 
 ctx_compiled :: String 

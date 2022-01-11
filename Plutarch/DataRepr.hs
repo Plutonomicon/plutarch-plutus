@@ -4,7 +4,7 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
 module Plutarch.DataRepr 
-  (PDataRepr, punDataRepr, pindexDataRepr, pmatchDataRepr, DataReprHandlers (..), PDataList, pdhead, pdtail, PIsDataRepr (..), PIsDataReprInstances (..), punsafeIndex, pindexDataList, PLiftVia (..)) where
+  (PDataRepr, punDataRepr, pindexDataRepr, pmatchDataRepr, DataReprHandlers (..), PDataList, pdhead, pdtail, PIsDataRepr (..), PIsDataReprInstances (..), punsafeIndex, pindexDataList, PVia (..)) where
 
 import GHC.TypeLits (Nat, KnownNat, natVal, type (-))
 import Data.Proxy (Proxy)
@@ -159,24 +159,25 @@ instance (Ledger.FromData h, Ledger.ToData h, PIsData p) => PLift (PIsDataReprIn
   via the wrapped type, while lifting to a coercible Haskell type.
 
 -}
-newtype PLiftVia (p :: k -> Type) (h :: Type) s = PLiftVia (p s)
+newtype PVia (p :: k -> Type) (h :: Type) (s :: k) = PVia (Term s p)
 
 instance 
   ( PLift p
   , Coercible (PHaskellType p) h
-  ) => PLift (PLiftVia p h) where
-  type PHaskellType (PLiftVia p h) = h
+  ) => PLift (PVia p h) where
+  type PHaskellType (PVia p h) = h
 
-  pconstant' :: h -> Term s (PLiftVia p h)
+  pconstant' :: h -> Term s (PVia p h)
   pconstant' x = punsafeCoerce $ pconstant @p (coerce x)
 
-  plift' :: ClosedTerm (PLiftVia p h) -> Either LiftError h
+  plift' :: ClosedTerm (PVia p h) -> Either LiftError h
   plift' t = coerce $ plift' t'
     where 
       t' :: ClosedTerm p 
       t' = punsafeCoerce t
 
-instance (Coercible (p s) (Term s p)) => PlutusType (PLiftVia p h) where
-  type PInner (PLiftVia p h) = p
-  pcon' (PLiftVia x) = coerce x  
-  pmatch' t f = f $ PLiftVia $ coerce t
+instance PlutusType (PVia p h) where
+  type PInner (PVia p h) _ = p
+
+  pcon' (PVia x) = x
+  pmatch' t f = f $ PVia t
