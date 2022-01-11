@@ -144,14 +144,10 @@ pelem =
 -- | / O(n) /. Count the number of elements in the list
 plength :: PIsListLike list a => Term s (list a :--> PInteger)
 plength = phoistAcyclic $
-  plet
-    ( pfix #$ plam $ \self ls n ->
-        pelimList
-          (\_ xs -> self # xs # n + 1)
-          n
-          ls
-    )
-    $ \go -> plam $ \xs -> go # xs # 0
+  plam $ \xs ->
+    let go :: PIsListLike list a => Term s (list a :--> PInteger :--> PInteger)
+        go = (pfix #$ plam $ \self ls n -> pelimList (\_ xs -> self # xs # n + 1) n ls)
+     in go # xs # 0
 
 --------------------------------------------------------------------------------
 
