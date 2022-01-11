@@ -5,7 +5,8 @@
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
   inputs.flake-compat-ci.url = "github:hercules-ci/flake-compat-ci";
 
-  inputs.plutus.url = "github:input-output-hk/plutus?rev=6d8d25d1e84b2a4278da1036aab23da4161b8df8";
+  #inputs.plutus.url = "github:input-output-hk/plutus?rev=6d8d25d1e84b2a4278da1036aab23da4161b8df8";
+  inputs.plutus.url = "git+file:///work/plutus";
   # https://github.com/input-output-hk/cardano-prelude/pull/162
   inputs.cardano-prelude.url = "github:locallycompact/cardano-prelude?rev=93f95047bb36a055bdd56fb0cafd887c072cdce2";
   inputs.cardano-prelude.flake = false;
@@ -144,16 +145,40 @@
           */
           modules = [{
             packages = {
-              cardano-crypto-praos.components.library.pkgconfig =
-                nixpkgs.lib.mkForce [ [ (import plutus { inherit system; }).pkgs.libsodium-vrf ] ];
-              cardano-crypto-class.components.library.pkgconfig =
-                nixpkgs.lib.mkForce [ [ (import plutus { inherit system; }).pkgs.libsodium-vrf ] ];
-              cardano-crypto-class.ghcOptions = [ "-Wwarn" ];
-              cardano-crypto-class.doHaddock = false;
-              cardano-prelude.ghcOptions = [ "-Wwarn" ];
-              cardano-prelude.doHaddock = false; # somehow above options are not applied?
-              cardano-binary.ghcOptions = [ "-Wwarn" ];
+              basement.src = "${inputs.foundation}/basement";
+              basement.components.library.postUnpack = "\n";
               cardano-binary.doHaddock = false;
+              cardano-binary.ghcOptions = [ "-Wwarn" ];
+              cardano-binary.src = "${inputs.cardano-base}/binary";
+              cardano-binary.components.library.postUnpack = "\n";
+              cardano-crypto-class.components.library.pkgconfig = nixpkgs.lib.mkForce [ [ (import plutus { inherit system; }).pkgs.libsodium-vrf ] ];
+              cardano-crypto-class.doHaddock = false;
+              cardano-crypto-class.ghcOptions = [ "-Wwarn" ];
+              cardano-crypto-class.src = "${inputs.cardano-base}/cardano-crypto-class";
+              cardano-crypto-class.components.library.postUnpack = "\n";
+              cardano-crypto-praos.components.library.pkgconfig = nixpkgs.lib.mkForce [ [ (import plutus { inherit system; }).pkgs.libsodium-vrf ] ];
+              cardano-crypto.src = "${inputs.cardano-crypto}";
+              cardano-crypto.components.library.postUnpack = "\n";
+              cardano-prelude.doHaddock = false; # somehow above options are not applied?
+              cardano-prelude.ghcOptions = [ "-Wwarn" ];
+              cardano-prelude.src = "${inputs.cardano-prelude}/cardano-prelude";
+              cardano-prelude.components.library.postUnpack = "\n";
+              cryptonite.src = "${inputs.cryptonite}";
+              cryptonite.components.library.postUnpack = "\n";
+              flat.src = "${inputs.flat}";
+              flat.components.library.postUnpack = "\n";
+              foundation.src = "${inputs.foundation}/foundation";
+              foundation.components.library.postUnpack = "\n";
+              memory.src = "${inputs.hs-memory}";
+              memory.components.library.postUnpack = "\n";
+              plutus-core.src = "${inputs.plutus}/plutus-core";
+              plutus-core.components.library.postUnpack = "\n";
+              #prettyprinter-configurable.src = "${inputs.plutus}/prettyprinter-configurable";
+              #prettyprinter-configurable.components.library.postUnpack = "\n";
+              protolude.src = "${inputs.protolude}";
+              protolude.components.library.postUnpack = "\n";
+              word-array.src = "${inputs.plutus}/word-array";
+              word-array.components.library.postUnpack = "\n";
             };
           }];
           shell = {
@@ -172,11 +197,7 @@
             # };
 
             additional = ps: [
-              ps.cardano-prelude
-              ps.cardano-crypto
-              ps.flat
               ps.plutus-core
-              ps.cardano-binary
               #ps.plutus-ledger-api
               #ps.shrinker
               #ps.shrinker-testing

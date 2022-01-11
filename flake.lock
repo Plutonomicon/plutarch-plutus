@@ -576,18 +576,14 @@
         "stackage-nix": "stackage-nix"
       },
       "locked": {
-        "lastModified": 1641470019,
-        "narHash": "sha256-o8m86TkI1dTo74YbE9CPPNrBfSDSrf//DMq+v2+woEY=",
-        "owner": "input-output-hk",
-        "repo": "plutus",
-        "rev": "6d8d25d1e84b2a4278da1036aab23da4161b8df8",
-        "type": "github"
+        "lastModified": 1641667456,
+        "narHash": "sha256-/TJshirGt2CviomElgsBvsLK+X1szqQUvDV85ZS2Qjo=",
+        "type": "git",
+        "url": "file:///work/plutus"
       },
       "original": {
-        "owner": "input-output-hk",
-        "repo": "plutus",
-        "rev": "6d8d25d1e84b2a4278da1036aab23da4161b8df8",
-        "type": "github"
+        "type": "git",
+        "url": "file:///work/plutus"
       }
     },
     "pre-commit-hooks-nix": {
