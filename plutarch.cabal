@@ -125,6 +125,7 @@ test-suite examples
     Examples.List
     Utils
     Examples.Recursion
+    Examples.Rationals
   build-depends:
     , base
     , bytestring

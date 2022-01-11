@@ -29,6 +29,7 @@ import qualified PlutusTx
 
 import qualified Examples.PlutusType as PlutusType
 import qualified Examples.Recursion as Recursion
+import qualified Examples.Rationals as Rationals
 import Utils
 
 main :: IO ()
@@ -83,6 +84,7 @@ tests =
     , PlutusType.tests
     , Recursion.tests
     , List.tests
+    , Rationals.tests
     ]
 
 plutarchTests :: HasTester => TestTree

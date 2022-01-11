@@ -46,3 +46,4 @@ instance Num (Term s PInteger) where
         (-1)
         1
   fromInteger = pconstant
+
