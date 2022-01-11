@@ -185,17 +185,17 @@
     "cryptonite": {
       "flake": false,
       "locked": {
-        "lastModified": 1635610652,
-        "narHash": "sha256-uR6xtxEiqHKHCNPY2Iar898ii4OSTj4rrd2Fb3nH4F0=",
+        "lastModified": 1639749289,
+        "narHash": "sha256-/KS2S0f9r4c/q+IUGwkFOY9jbZkyK3dl0xMpDbULeqc=",
         "owner": "haskell-crypto",
         "repo": "cryptonite",
-        "rev": "3b081e3ad027b0550fc87f171dffecbb20dedafe",
+        "rev": "cec291d988f0f17828384f3358214ab9bf724a13",
         "type": "github"
       },
       "original": {
         "owner": "haskell-crypto",
         "repo": "cryptonite",
-        "rev": "3b081e3ad027b0550fc87f171dffecbb20dedafe",
+        "rev": "cec291d988f0f17828384f3358214ab9bf724a13",
         "type": "github"
       }
     },

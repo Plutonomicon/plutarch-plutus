@@ -29,8 +29,8 @@
   # https://github.com/vincenthz/hs-memory/pull/87
   inputs.hs-memory.url = "github:vincenthz/hs-memory?rev=3cf661a8a9a8ac028df77daa88e8d65c55a3347a";
   inputs.hs-memory.flake = false;
-  # https://github.com/haskell-crypto/cryptonite/pull/354
-  inputs.cryptonite.url = "github:haskell-crypto/cryptonite?rev=3b081e3ad027b0550fc87f171dffecbb20dedafe";
+  # https://github.com/haskell-crypto/cryptonite/issues/357
+  inputs.cryptonite.url = "github:haskell-crypto/cryptonite?rev=cec291d988f0f17828384f3358214ab9bf724a13";
   inputs.cryptonite.flake = false;
   # https://github.com/JonasDuregard/sized-functors/pull/10
   inputs.sized-functors.url = "github:JonasDuregard/sized-functors?rev=fe6bf78a1b97ff7429630d0e8974c9bc40945dcf";
