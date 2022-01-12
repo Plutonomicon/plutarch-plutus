@@ -144,7 +144,7 @@ test-suite examples
     , plutus-ledger-api
     , plutus-tx
     , rank2classes       >=1.4.4
-    , shrinker
+    --, shrinker
     , tasty
     , tasty-hunit
     , text

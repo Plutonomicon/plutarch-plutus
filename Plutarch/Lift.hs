@@ -94,6 +94,10 @@ plift prog = either (error . show) id $ plift' prog
 -}
 newtype PBuiltinType (p :: k -> Type) (h :: Type) s = PBuiltinType (p s)
 
+instance {-# OVERLAPPABLE #-} PLift (PBuiltinType p h) where
+  type PHaskellType (PBuiltinType p h) = h
+
+{-
 instance
   {-# OVERLAPS #-}
   ( PLC.KnownTypeIn PLC.DefaultUni (UPLC.Term PLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) h
@@ -110,6 +114,7 @@ instance
       Right (_, _, Scripts.unScript -> UPLC.Program _ _ term) ->
         first (LiftError_EvalException . showEvalException) $
           readKnownSelf term
+-}
 
 showEvalException :: EvaluationException CekUserError (MachineError PLC.DefaultFun) (UPLC.Term UPLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) -> Text
 showEvalException = T.pack . show

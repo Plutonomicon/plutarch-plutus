@@ -77,6 +77,7 @@ import Plutarch.DataRepr (
  )
 import Plutarch.Integer (PInteger, PIntegral)
 import Plutarch.Lift (AsDefaultUni, PBuiltinType, PHaskellType, PLift (..), pconstant)
+
 -- ctor in-scope for deriving
 import Plutarch.Prelude
 import Plutarch.Tuple (PTuple)
