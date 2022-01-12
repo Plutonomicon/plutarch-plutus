@@ -63,7 +63,7 @@ module Plutarch.Api.V1 (
 import Data.Void
 import Plutarch (PMatch, PlutusType, punsafeCoerce)
 import Plutarch.Bool (PBool, PEq, POrd)
-import Plutarch.Builtin (PData, PIsData, PList, type PBuiltinMap)
+import Plutarch.Builtin (PAsData, PBuiltinList, PData, PIsData, type PBuiltinMap)
 import Plutarch.ByteString (PByteString)
 import Plutarch.DataRepr (
   DataReprHandlers (DRHCons, DRHNil),
@@ -96,15 +96,15 @@ newtype PTxInfo (s :: k)
       ( Term
           s
           ( PDataList
-              '[ PList PTxInInfo
-               , PList PTxOut
+              '[ PBuiltinList (PAsData PTxInInfo)
+               , PBuiltinList (PAsData PTxOut)
                , PValue
                , PValue
-               , PList PDCert
-               , PList (PTuple '[PStakingCredential, PInteger])
+               , PBuiltinList (PAsData PDCert)
+               , PBuiltinList (PAsData (PTuple '[PStakingCredential, PInteger]))
                , PPOSIXTimeRange
-               , PList PPubKeyHash
-               , PList (PTuple '[PDatumHash, PDatum])
+               , PBuiltinList (PAsData PPubKeyHash)
+               , PBuiltinList (PAsData (PTuple '[PDatumHash, PDatum]))
                , PTxId
                ]
           )
@@ -116,15 +116,15 @@ newtype PTxInfo (s :: k)
 instance PIsDataRepr PTxInfo where
   type
     PIsDataReprRepr PTxInfo =
-      '[ '[ PList PTxInInfo
-          , PList PTxOut
+      '[ '[ PBuiltinList (PAsData PTxInInfo)
+          , PBuiltinList (PAsData PTxOut)
           , PValue
           , PValue
-          , PList PDCert
-          , PList (PTuple '[PStakingCredential, PInteger])
+          , PBuiltinList (PAsData PDCert)
+          , PBuiltinList (PAsData (PTuple '[PStakingCredential, PInteger]))
           , PPOSIXTimeRange
-          , PList PPubKeyHash
-          , PList (PTuple '[PDatumHash, PDatum])
+          , PBuiltinList (PAsData PPubKeyHash)
+          , PBuiltinList (PAsData (PTuple '[PDatumHash, PDatum]))
           , PTxId
           ]
        ]

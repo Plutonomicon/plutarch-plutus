@@ -20,7 +20,6 @@ module Plutarch.Builtin (
   pforgetData,
   ppairDataBuiltin,
   type PBuiltinMap,
-  type PList,
   InDefaultUni,
 ) where
 
@@ -151,9 +150,6 @@ instance PEq PData where
   Not to be confused with `PlutusTx.AssocMap.Map` / `PMap`
 -}
 type PBuiltinMap a b = (PBuiltinList (PBuiltinPair (PAsData a) (PAsData b)))
-
--- | List type used for Plutus `Data`'s List constructor.
-type PList a = PBuiltinList (PAsData a)
 
 pasConstr :: Term s (PData :--> PBuiltinPair PInteger (PBuiltinList PData))
 pasConstr = punsafeBuiltin PLC.UnConstrData
