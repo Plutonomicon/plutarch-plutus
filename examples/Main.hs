@@ -28,8 +28,8 @@ import qualified PlutusCore as PLC
 import qualified PlutusTx
 
 import qualified Examples.PlutusType as PlutusType
-import qualified Examples.Recursion as Recursion
 import qualified Examples.Rationals as Rationals
+import qualified Examples.Recursion as Recursion
 import Utils
 
 main :: IO ()
