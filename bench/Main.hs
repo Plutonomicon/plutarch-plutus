@@ -25,10 +25,16 @@ main = do
           [ -- Calling add twice
             benchGroup
               "add(2)"
-              [ bench "inlined" $ addInlined 12 32 + addInlined 5 4
-              , bench "unhoist" $ addUnhoisted # 12 # 32 + addUnhoisted # 5 # 4
-              , bench "hoisted" $ addHoisted # 12 # 32 + addHoisted # 5 # 4
-              ]
+              $ let addInlined :: Term s PInteger -> Term s PInteger -> Term s PInteger
+                    addInlined x y = x + y + 1
+                    addUnhoisted :: Term s (PInteger :--> PInteger :--> PInteger)
+                    addUnhoisted = plam $ \x y -> x + y + 1
+                    addHoisted :: Term s (PInteger :--> PInteger :--> PInteger)
+                    addHoisted = phoistAcyclic $ plam $ \x y -> x + y + 1
+                 in [ bench "inlined" $ addInlined 12 32 + addInlined 5 4
+                    , bench "unhoist" $ addUnhoisted # 12 # 32 + addUnhoisted # 5 # 4
+                    , bench "hoisted" $ addHoisted # 12 # 32 + addHoisted # 5 # 4
+                    ]
           ]
       , benchGroup "bool" $
           let true = pconstant @PBool True
@@ -70,15 +76,6 @@ main = do
                     ]
                 ]
       ]
-
-addInlined :: Term s PInteger -> Term s PInteger -> Term s PInteger
-addInlined x y = x + y + 1
-
-addUnhoisted :: Term s (PInteger :--> PInteger :--> PInteger)
-addUnhoisted = plam $ \x y -> x + y + 1
-
-addHoisted :: Term s (PInteger :--> PInteger :--> PInteger)
-addHoisted = phoistAcyclic $ plam $ \x y -> x + y + 1
 
 benchGroup :: String -> [[NamedBenchmark]] -> [NamedBenchmark]
 benchGroup groupName bs =
