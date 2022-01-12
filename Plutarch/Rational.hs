@@ -234,10 +234,15 @@ ptruncate :: Term s (PRational :--> PInteger)
 ptruncate = phoistAcyclic $
   plam $ \x ->
     pmatch x $ \(PRational a b) ->
-      pdiv # a # b
+      plet (pdiv # a # b) $ \q ->
+      pif (0 #<= a)
+        q
+        (q + pif (pmod # a # b #== 0) 0 1)
 
 pproperFraction :: Term s (PRational :--> PPair PInteger PRational)
 pproperFraction = phoistAcyclic $
   plam $ \x ->
-    pmatch x $ \(PRational a b) ->
-      pcon $ PPair (pdiv # a # b) (pcon $ PRational (pmod # a # b) b)
+      plet (ptruncate # x) $ \q ->
+        pcon $ PPair q (x - pfromInteger # q)
+
+
