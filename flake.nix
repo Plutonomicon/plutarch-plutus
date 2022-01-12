@@ -144,6 +144,7 @@
         self.flake.${system}.checks
         // {
           formatCheck = formatCheckFor system;
+          benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
         }
       );
       check = perSystem (system:
@@ -151,7 +152,15 @@
           nativeBuildInputs = builtins.attrValues self.checks.${system};
         } "touch $out"
       );
-      apps = perSystem (system: self.flake.${system}.apps);
+      apps = perSystem (system: 
+        self.flake.${system}.apps
+        // {
+            benchmark = {
+            type = "app";
+            program = "${self.flake.${system}.packages."plutarch:bench:perf"}/bin/perf";
+          };
+        }
+      );
       devShell = perSystem (system: self.flake.${system}.devShell);
 
       nixCi = flake-compat-ci.lib.recurseIntoFlakeWith {
