@@ -84,6 +84,8 @@ library
     Plutarch.Prelude
     Plutarch.Pair
     Plutarch.Rational
+    Plutarch.Rec
+    Plutarch.Rec.TH
     Plutarch.Either
     Plutarch.Integer
     Plutarch.Bool
@@ -110,6 +112,9 @@ library
     , plutus-tx
     , mtl
     , flat
+    , rank2classes
+    , template-haskell
+    , transformers
 
   if flag(development)
     cpp-options: -DDevelopment
@@ -123,6 +128,7 @@ test-suite examples
     Examples.Tracing
     Examples.PlutusType
     Examples.List
+    Examples.LetRec
     Utils
     Examples.Recursion
     Examples.Rationals
@@ -131,6 +137,7 @@ test-suite examples
     , bytestring
     , text
     , plutarch
+    , rank2classes >= 1.4.4
     , tasty
     , tasty-hunit
     , text
