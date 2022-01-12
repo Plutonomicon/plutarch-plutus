@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Rational (
@@ -11,11 +12,32 @@ module Plutarch.Rational (
 import Plutarch.Prelude
 
 import Data.Ratio (denominator, numerator)
-import Plutarch (PlutusType (..))
+import Plutarch (PlutusType (..), punsafeCoerce)
 import Plutarch.Bool (PEq (..), POrd (..), pif)
+import Plutarch.Builtin (
+  PAsData,
+  PBuiltinList,
+  PIsData (..),
+  pasInt,
+  pasList,
+  pforgetData,
+ )
 import Plutarch.Integer (PInteger, PIntegral (pdiv, pmod))
+import Plutarch.List (PListLike (pcons, phead, pnil, ptail), pmap)
 
 data PRational s = PRational (Term s PInteger) (Term s PInteger)
+
+instance PIsData PRational where
+  pfromData x = pListToRat #$ pmap # pasInt #$ pasList # pforgetData x
+  pdata x =
+    (punsafeCoerce :: Term _ (PAsData (PBuiltinList (PAsData PInteger))) -> Term _ (PAsData PRational)) $
+      pdata $ pmap # plam pdata #$ pRatToList # x
+
+pRatToList :: Term s (PRational :--> PBuiltinList PInteger)
+pRatToList = plam $ \x -> pmatch x $ \(PRational a b) -> pcons # a #$ pcons # b #$ pnil
+
+pListToRat :: Term s (PBuiltinList PInteger :--> PRational)
+pListToRat = plam $ \x -> pcon $ PRational (phead # x) (phead #$ ptail # x)
 
 instance PlutusType PRational where
   type PInner PRational c = (PInteger :--> PInteger :--> c) :--> c
