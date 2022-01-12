@@ -9,10 +9,16 @@ module Benchmark (
   ScriptSizeBytes (..),
   -- | * Benchmark an arbitraty Plutus script
   benchmarkScript,
+  -- | * Benchmark entrypoints
+  bench,
+  benchGroup,
+  benchMain,
 ) where
 
 import Codec.Serialise qualified as Codec
 import Control.Arrow ((&&&))
+import Data.ByteString.Lazy qualified as BSL
+import Text.PrettyPrint.Boxes qualified as B
 
 import Data.ByteString.Lazy qualified as LB
 import Data.ByteString.Short qualified as SBS
@@ -24,14 +30,17 @@ import Data.Csv (
   namedRecord,
   (.=),
  )
+import Data.Csv qualified as Csv
 import Data.Int (Int64)
+import Data.List qualified as List
 import Data.Maybe (fromJust)
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
+import Plutarch (ClosedTerm, compile)
 import Plutus.V1.Ledger.Api (
   ExBudget (ExBudget),
-  ExCPU,
-  ExMemory,
+  ExCPU (ExCPU),
+  ExMemory (ExMemory),
   Script,
  )
 import Plutus.V1.Ledger.Api qualified as Plutus
@@ -84,3 +93,27 @@ instance ToNamedRecord NamedBenchmark where
 
 instance DefaultOrdered NamedBenchmark where
   headerOrder _ = header ["name", "cpu", "mem", "size"]
+
+benchGroup :: String -> [[NamedBenchmark]] -> [NamedBenchmark]
+benchGroup groupName bs =
+  [NamedBenchmark (groupName ++ ":" ++ name, benchmark) | NamedBenchmark (name, benchmark) <- concat bs]
+
+bench :: String -> ClosedTerm a -> [NamedBenchmark]
+bench name prog =
+  [benchmarkScript name $ compile prog]
+
+benchMain :: [NamedBenchmark] -> IO ()
+benchMain benchmarks = do
+  let csv = Csv.encodeDefaultOrderedByName benchmarks
+  BSL.writeFile "bench.csv" csv
+  putStrLn "Wrote to bench.csv:"
+  putStrLn $ B.render $ renderNamedBudgets benchmarks
+  where
+    renderNamedBudgets :: [NamedBenchmark] -> B.Box
+    renderNamedBudgets bs =
+      let cols =
+            List.transpose $
+              [ [name, show cpu <> "(cpu)", show mem <> "(mem)", show sz <> "(bytes)"]
+              | NamedBenchmark (name, Benchmark (ExCPU cpu) (ExMemory mem) (ScriptSizeBytes sz)) <- bs
+              ]
+       in B.hsep 2 B.left . map (B.vcat B.left . map B.text) $ cols
