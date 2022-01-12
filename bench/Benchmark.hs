@@ -6,6 +6,7 @@ module Benchmark (
   -- | * Types
   Benchmark (..),
   NamedBenchmark (..),
+  ScriptSizeBytes (..),
   -- | * Benchmark an arbitraty Plutus script
   benchmarkScript,
 ) where
