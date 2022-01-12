@@ -5,8 +5,8 @@
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
   inputs.flake-compat-ci.url = "github:hercules-ci/flake-compat-ci";
 
-  #inputs.plutus.url = "github:input-output-hk/plutus?rev=6d8d25d1e84b2a4278da1036aab23da4161b8df8";
-  inputs.plutus.url = "git+file:///work/plutus";
+  # https://github.com/input-output-hk/plutus/pull/4328
+  inputs.plutus.url = "github:L-as/plutus?ref=master";
   # https://github.com/input-output-hk/cardano-prelude/pull/162
   inputs.cardano-prelude.url = "github:locallycompact/cardano-prelude?rev=93f95047bb36a055bdd56fb0cafd887c072cdce2";
   inputs.cardano-prelude.flake = false;
@@ -121,9 +121,9 @@
                 #"plutus-benchmark"
                 "plutus-core"
                 #"plutus-errors"
-                #"plutus-ledger-api"
+                "plutus-ledger-api"
                 #"plutus-metatheory"
-                #"plutus-tx"
+                "plutus-tx"
                 #"plutus-tx-plugin"
                 "prettyprinter-configurable"
                 "word-array"
@@ -173,6 +173,10 @@
               memory.components.library.postUnpack = "\n";
               plutus-core.src = "${inputs.plutus}/plutus-core";
               plutus-core.components.library.postUnpack = "\n";
+              plutus-tx.src = "${inputs.plutus}/plutus-tx";
+              plutus-tx.components.library.postUnpack = "\n";
+              plutus-ledger-api.src = "${inputs.plutus}/plutus-ledger-api";
+              plutus-ledger-api.components.library.postUnpack = "\n";
               #prettyprinter-configurable.src = "${inputs.plutus}/prettyprinter-configurable";
               #prettyprinter-configurable.components.library.postUnpack = "\n";
               protolude.src = "${inputs.protolude}";
@@ -197,7 +201,8 @@
             # };
 
             additional = ps: [
-              ps.plutus-core
+              ps.plutus-ledger-api
+              #ps.plutus-tx
               #ps.plutus-ledger-api
               #ps.shrinker
               #ps.shrinker-testing
