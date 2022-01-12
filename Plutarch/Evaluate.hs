@@ -1,16 +1,22 @@
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 
-module Plutarch.Evaluate (evaluateScript) where
+module Plutarch.Evaluate (evaluateBudgetedScript, evaluateScript) where
 
 import Control.Monad.Except (runExceptT)
 import Data.Text (Text)
 import Plutus.V1.Ledger.Scripts (Script (Script))
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import PlutusCore (FreeVariableError, defaultVersion)
-import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
-import PlutusTx.Evaluation (evaluateCekTrace)
+import qualified PlutusCore as PLC
+import PlutusCore.Evaluation.Machine.ExBudget (
+  ExBudget (ExBudget),
+  ExRestrictingBudget (ExRestrictingBudget),
+  minusExBudget,
+ )
+import qualified PlutusCore.Evaluation.Machine.ExMemory as ExMemory
 import UntypedPlutusCore (
   Program (Program),
+  Term,
   termMapNames,
   unNameDeBruijn,
  )
@@ -25,11 +31,16 @@ import qualified UntypedPlutusCore.Evaluation.Machine.Cek as UPLC
  result as well.
 -}
 evaluateScript :: Script -> Either Scripts.ScriptError (ExBudget, [Text], Script)
-evaluateScript s = do
+evaluateScript = evaluateBudgetedScript $ ExBudget (ExMemory.ExCPU maxInt) (ExMemory.ExMemory maxInt)
+  where
+    maxInt = fromIntegral (maxBound :: Int)
+
+evaluateBudgetedScript :: ExBudget -> Script -> Either Scripts.ScriptError (ExBudget, [Text], Script)
+evaluateBudgetedScript totalBudget s = do
   p <- case Scripts.mkTermToEvaluate s of
     Right p -> pure p
     Left e -> Left . Scripts.MalformedScript $ show e
-  let (logOut, UPLC.TallyingSt _ budget, result) = evaluateCekTrace p
+  let (logOut, usedBudget, result) = evaluateCekBudgetedTrace totalBudget p
   named <- case result of
     Right term -> pure term
     Left errWithCause@(UPLC.ErrorWithCause err cause) ->
@@ -42,4 +53,22 @@ evaluateScript s = do
   term' <- runExceptT @FreeVariableError (deBruijnTerm named)
   let Right term = term'
   let s' = Script $ Program () (defaultVersion ()) $ termMapNames unNameDeBruijn term
-  pure (budget, logOut, s')
+  pure (usedBudget, logOut, s')
+
+{- | Evaluate a program in the CEK machine against the given budget, with the
+ usual text dynamic builtins and tracing, additionally returning the trace
+ output.
+-}
+evaluateCekBudgetedTrace ::
+  -- | The resource budget which must not be exceeded during evaluation
+  ExBudget ->
+  Program PLC.Name PLC.DefaultUni PLC.DefaultFun () ->
+  ( [Text]
+  , ExBudget
+  , Either
+      (UPLC.CekEvaluationException PLC.DefaultUni PLC.DefaultFun)
+      (Term PLC.Name PLC.DefaultUni PLC.DefaultFun ())
+  )
+evaluateCekBudgetedTrace budget (Program _ _ t) =
+  case UPLC.runCek PLC.defaultCekParameters (UPLC.restricting (ExRestrictingBudget budget)) UPLC.logEmitter t of
+    (errOrRes, UPLC.RestrictingSt (ExRestrictingBudget final), logs) -> (logs, budget `minusExBudget` final, errOrRes)

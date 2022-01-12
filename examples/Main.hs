@@ -27,6 +27,7 @@ import Plutus.V2.Ledger.Contexts (ScriptPurpose (Minting))
 import qualified PlutusCore as PLC
 import qualified PlutusTx
 
+import qualified Examples.LetRec as LetRec
 import qualified Examples.PlutusType as PlutusType
 import qualified Examples.Recursion as Recursion
 import Utils
@@ -83,6 +84,7 @@ tests =
     , PlutusType.tests
     , Recursion.tests
     , List.tests
+    , LetRec.tests
     ]
 
 plutarchTests :: HasTester => TestTree
