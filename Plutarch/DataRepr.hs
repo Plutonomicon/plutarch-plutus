@@ -1,13 +1,31 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans -Wno-redundant-constraints #-}
 
-module Plutarch.DataRepr (PDataRepr, SNat (..), punDataRepr, pindexDataRepr, pmatchDataRepr, DataReprHandlers (..), PDataList, pdhead, pdtail, PIsDataRepr (..), PIsDataReprInstances (..)) where
+module Plutarch.DataRepr (PDataRepr, punDataRepr, pindexDataRepr, pmatchDataRepr, DataReprHandlers (..), PDataList, pdhead, pdtail, PIsDataRepr (..), PIsDataReprInstances (..), punsafeIndex, pindexDataList, PVia (..)) where
 
+import Data.Coerce (Coercible, coerce)
 import Data.List (groupBy, maximumBy, sortOn)
-import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoerce, runTermCont)
+import Data.Proxy (Proxy)
+import GHC.TypeLits (KnownNat, Nat, natVal, type (-))
+import Plutarch (ClosedTerm, Dig, PMatch, PlutusType (..), TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoerce, runTermCont)
 import Plutarch.Bool (pif, (#==))
-import Plutarch.Builtin (PAsData, PBuiltinList, PData, PIsData, pasConstr, pdata, pfromData, pfstBuiltin, psndBuiltin)
+import Plutarch.Builtin (
+  PAsData,
+  PBuiltinList,
+  PBuiltinPair,
+  PData,
+  PIsData,
+  pasConstr,
+  pdata,
+  pfromData,
+  pfstBuiltin,
+  psndBuiltin,
+ )
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift
+import Plutarch.List (punsafeIndex)
 import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Api as Ledger
 import qualified PlutusCore as PLC
@@ -26,23 +44,9 @@ data PDataRepr (defs :: [[k -> Type]]) (s :: k)
 pasData :: Term s (PDataRepr _) -> Term s PData
 pasData = punsafeCoerce
 
-data Nat = N | S Nat
-
-data SNat :: Nat -> Type where
-  SN :: SNat 'N
-  SS :: SNat n -> SNat ( 'S n)
-
-unSingleton :: SNat n -> Nat
-unSingleton SN = N
-unSingleton (SS n) = S $ unSingleton n
-
-natToInteger :: Nat -> Integer
-natToInteger N = 0
-natToInteger (S n) = 1 + natToInteger n
-
-type family IndexList (n :: Nat) (l :: [k]) :: k
-type instance IndexList 'N '[x] = x
-type instance IndexList ( 'S n) (x : xs) = IndexList n xs
+type family IndexList (n :: Nat) (l :: [k]) :: k where
+  IndexList 0 (x ': _) = x
+  IndexList n (x : xs) = IndexList (n - 1) xs
 
 punDataRepr :: Term s (PDataRepr '[def] :--> PDataList def)
 punDataRepr = phoistAcyclic $
@@ -50,19 +54,29 @@ punDataRepr = phoistAcyclic $
     plet (pasConstr #$ pasData t) $ \d ->
       (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataList def))
 
-pindexDataRepr :: SNat n -> Term s (PDataRepr (def : defs) :--> PDataList (IndexList n (def : defs)))
+pindexDataRepr :: (KnownNat n) => Proxy n -> Term s (PDataRepr (def : defs) :--> PDataList (IndexList n (def : defs)))
 pindexDataRepr n = phoistAcyclic $
   plam $ \t ->
     plet (pasConstr #$ pasData t) $ \d ->
       let i :: Term _ PInteger = pfstBuiltin # d
        in pif
-            (i #== (fromInteger . natToInteger . unSingleton $ n))
+            (i #== (fromInteger $ toInteger $ natVal $ n))
             (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataList _))
             perror
 
-type family LengthList (l :: [k]) :: Nat
-type instance LengthList '[] = 'N
-type instance LengthList (x : xs) = 'S (LengthList xs)
+-- | Safely index a DataList
+pindexDataList :: (KnownNat n) => Proxy n -> Term s (PDataList xs :--> PAsData (IndexList n xs))
+pindexDataList n =
+  phoistAcyclic $
+    punsafeCoerce $
+      punsafeIndex @PBuiltinList @PData # ind
+  where
+    ind :: Term s PInteger
+    ind = fromInteger $ toInteger $ natVal n
+
+--type family LengthList (l :: [k]) :: Nat
+--type instance LengthList '[] = 'N
+--type instance LengthList (x : xs) = 'S (LengthList xs)
 
 data DataReprHandlers (out :: k -> Type) (def :: [[k -> Type]]) (s :: k) where
   DRHNil :: DataReprHandlers out '[] s
@@ -116,6 +130,11 @@ pmatchDataRepr d handlers =
 
 newtype PIsDataReprInstances a h s = PIsDataReprInstances (a s)
 
+instance AsDefaultUni (PIsDataReprInstances a h) where
+  type
+    DefaultUniType (PIsDataReprInstances a h) =
+      (DefaultUniType (PBuiltinPair PInteger PData))
+
 class (PMatch a, PIsData a) => PIsDataRepr (a :: k -> Type) where
   type PIsDataReprRepr a :: [[k -> Type]]
   pmatchRepr :: forall s b. Term s (PDataRepr (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
@@ -127,7 +146,7 @@ instance PIsDataRepr a => PIsData (PIsDataReprInstances a h) where
 instance PIsDataRepr a => PMatch (PIsDataReprInstances a h) where
   pmatch x f = pmatchRepr (punsafeCoerce x) (f . PIsDataReprInstances)
 
-instance (Ledger.FromData h, Ledger.ToData h, PIsData p) => PLift (PIsDataReprInstances p h) where
+instance {-# OVERLAPPABLE #-} (Ledger.FromData h, Ledger.ToData h, PIsData p) => PLift (PIsDataReprInstances p h) where
   type PHaskellType (PIsDataReprInstances p h) = h
   pconstant' =
     punsafeCoerce . pconstant @PData . Ledger.toData
@@ -136,3 +155,38 @@ instance (Ledger.FromData h, Ledger.ToData h, PIsData p) => PLift (PIsDataReprIn
     maybeToRight "Failed to decode data" $ Ledger.fromData h
     where
       maybeToRight e = maybe (Left e) Right
+
+{- |
+  DerivingVia wrapper for deriving `PLift` instances
+  via the wrapped type, while lifting to a coercible Haskell type.
+-}
+newtype PVia (p :: k -> Type) (h :: Type) (s :: k) = PVia (Term s p)
+
+instance
+  (HasDefaultUni p) =>
+  AsDefaultUni (PVia p h)
+  where
+  type DefaultUniType (PVia p h) = (DefaultUniType p)
+
+instance
+  ( PLift p
+  , Coercible (PHaskellType p) h
+  ) =>
+  PLift (PVia p h)
+  where
+  type PHaskellType (PVia p h) = h
+
+  pconstant' :: h -> Term s (PVia p h)
+  pconstant' x = punsafeCoerce $ pconstant @p (coerce x)
+
+  plift' :: ClosedTerm (PVia p h) -> Either LiftError h
+  plift' t = coerce $ plift' t'
+    where
+      t' :: ClosedTerm p
+      t' = punsafeCoerce t
+
+instance PlutusType (PVia p h) where
+  type PInner (PVia p h) _ = p
+
+  pcon' (PVia x) = x
+  pmatch' t f = f $ PVia t

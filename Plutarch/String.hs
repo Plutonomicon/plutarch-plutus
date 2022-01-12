@@ -14,7 +14,7 @@ import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinString' values
 data PString s
-  deriving (PLift) via PBuiltinType PString Text
+  deriving (PLift, AsDefaultUni) via PBuiltinType PString Text
 
 {-# DEPRECATED pfromText "Use `pconstant` instead." #-}
 
