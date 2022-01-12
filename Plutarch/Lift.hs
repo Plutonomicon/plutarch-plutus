@@ -94,7 +94,7 @@ plift prog = either (error . show) id $ plift' prog
 -}
 newtype PBuiltinType (p :: k -> Type) (h :: Type) s = PBuiltinType (p s)
 
-instance PLift (PBuiltinType p h) where
+instance {-# OVERLAPPABLE #-} PLift (PBuiltinType p h) where
   type PHaskellType (PBuiltinType p h) = h
 
 {-

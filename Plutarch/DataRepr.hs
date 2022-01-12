@@ -128,12 +128,10 @@ pmatchDataRepr d handlers =
               handler
               $ go common (idx + 1) rest constr
 
-newtype PIsDataReprInstances a h s = PIsDataReprInstances (a s)
+newtype PIsDataReprInstances (a :: k -> Type) (h :: Type) (s :: k) = PIsDataReprInstances (a s)
 
 instance AsDefaultUni (PIsDataReprInstances a h) where
-  type
-    DefaultUniType (PIsDataReprInstances a h) =
-      (DefaultUniType (PBuiltinPair PInteger PData))
+  type DefaultUniType (PIsDataReprInstances a h) = ()
 
 class (PMatch a, PIsData a) => PIsDataRepr (a :: k -> Type) where
   type PIsDataReprRepr a :: [[k -> Type]]
