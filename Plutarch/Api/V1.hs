@@ -62,7 +62,7 @@ module Plutarch.Api.V1 (
 import Data.Void
 import Plutarch (PMatch, punsafeCoerce, PlutusType)
 import Plutarch.Tuple (PTuple)
-import Plutarch.Lift (PLift (..), PHaskellType, PBuiltinType, pconstant)
+import Plutarch.Lift (PLift (..), PHaskellType, PBuiltinType, pconstant, AsDefaultUni)
 import Plutarch.Builtin (PIsData, PData, type PBuiltinMap, PList)
 import Plutarch.DataRepr 
   (DataReprHandlers (DRHCons, DRHNil), PDataList, PIsDataRepr, PIsDataReprInstances (PIsDataReprInstances), PIsDataReprRepr, pmatchDataRepr, pmatchRepr, PVia (..))
@@ -92,7 +92,8 @@ newtype PTxInfo (s :: k)
      PList PPubKeyHash,
      PList (PTuple '[PDatumHash, PDatum]),
      PTxId]))
-  deriving (PMatch, PIsData, PLift) via PIsDataReprInstances PTxInfo Plutus.TxInfo
+  deriving (PMatch, PIsData, PLift, AsDefaultUni) 
+    via PIsDataReprInstances PTxInfo Plutus.TxInfo
 
 instance PIsDataRepr PTxInfo where
 
@@ -115,7 +116,8 @@ instance PIsDataRepr PTxInfo where
 
 newtype PScriptContext (s :: k)
   = PScriptContext (Term s (PDataList '[PTxInfo, PScriptPurpose]))
-  deriving (PMatch, PIsData, PLift) via PIsDataReprInstances PScriptContext Plutus.ScriptContext
+  deriving (PMatch, PIsData, PLift, AsDefaultUni) via 
+    PIsDataReprInstances PScriptContext Plutus.ScriptContext
 
 instance PIsDataRepr PScriptContext where
   type
@@ -134,7 +136,8 @@ data PScriptPurpose (s :: k)
   | PSpending (Term s (PDataList '[PTxOutRef]))
   | PRewarding (Term s (PDataList '[PStakingCredential]))
   | PCertifying (Term s (PDataList '[PDCert]))
-  deriving (PMatch, PIsData, PLift) via (PIsDataReprInstances PScriptPurpose Plutus.ScriptPurpose)
+  deriving (PMatch, PIsData, PLift, AsDefaultUni) 
+    via (PIsDataReprInstances PScriptPurpose Plutus.ScriptPurpose)
 
 instance PIsDataRepr PScriptPurpose where
   type
@@ -158,31 +161,34 @@ instance PIsDataRepr PScriptPurpose where
 
 newtype PDatum (s :: k) = PDatum (Term s PData)
   deriving (PIsData, PEq) via PData
-  deriving (PLift, PlutusType) via (PVia PData Plutus.Datum)
+  deriving (PLift, PlutusType, AsDefaultUni) via (PVia PData Plutus.Datum)
 
 newtype PRedeemer (s :: k) = PRedeemer (Term s PData)
   deriving (PIsData, PEq) via PData
-  deriving (PLift, PlutusType) via (PVia PData Plutus.Redeemer)
+  deriving (PLift, PlutusType, AsDefaultUni) via (PVia PData Plutus.Redeemer)
 
 newtype PDatumHash (s :: k)
   = PDatumHash (Term s PByteString)
   deriving (PEq, POrd, PIsData) via PByteString
-  deriving (PLift, PlutusType) via (PVia PByteString Plutus.DatumHash)
+  deriving (PLift, PlutusType, AsDefaultUni) via (PVia PByteString Plutus.DatumHash)
 
 newtype PStakeValidatorHash (s :: k)
   = PStakeValidatorHash (Term s PByteString)
   deriving (PEq, POrd, PIsData) via PByteString
-  deriving (PLift, PlutusType) via (PVia PByteString Plutus.StakeValidatorHash)
+  deriving (PLift, PlutusType, AsDefaultUni) via 
+    (PVia PByteString Plutus.StakeValidatorHash)
 
 newtype PRedeemerHash (s :: k)
   = PRedeemerHash (Term s PByteString)
   deriving (PEq, POrd, PIsData) via PByteString
-  deriving (PLift, PlutusType) via (PVia PByteString Plutus.RedeemerHash)
+  deriving (PLift, PlutusType, AsDefaultUni) via 
+    (PVia PByteString Plutus.RedeemerHash)
 
 newtype PValidatorHash (s :: k)
   = PValidatorHash (Term s PByteString)
   deriving (PEq, POrd, PIsData) via PByteString
-  deriving (PLift, PlutusType) via (PVia PByteString Plutus.ValidatorHash)
+  deriving (PLift, PlutusType, AsDefaultUni) via 
+    (PVia PByteString Plutus.ValidatorHash)
 
 ---------- Value
 
@@ -190,12 +196,12 @@ newtype PTokenName (s :: k)
   = PTokenName (Term s PByteString)
   deriving (PEq, POrd, PIsData) via (PByteString)
   deriving newtype (Semigroup, Monoid)
-  deriving (PLift, PlutusType) via (PVia PByteString Plutus.TokenName)
+  deriving (PLift, PlutusType, AsDefaultUni) via (PVia PByteString Plutus.TokenName)
 
 newtype PValue (s :: k)
   = PValue (Term s (PMap PCurrencySymbol (PMap PTokenName PInteger)))
   deriving (PIsData) via (PMap PCurrencySymbol (PMap PTokenName PInteger))
-  deriving (PLift, PlutusType) via 
+  deriving (PLift, PlutusType, AsDefaultUni) via 
     PVia
       (PMap PCurrencySymbol (PMap PTokenName PInteger))
       Plutus.Value
@@ -203,24 +209,28 @@ newtype PValue (s :: k)
 newtype PCurrencySymbol (s :: k)
   = PCurrencySymbol (Term s PByteString)
   deriving (PEq, POrd, PIsData) via PByteString
-  deriving (PLift, PlutusType) via (PVia PByteString Plutus.CurrencySymbol)
+  deriving (PLift, PlutusType, AsDefaultUni) 
+    via (PVia PByteString Plutus.CurrencySymbol)
 
 ---------- Crypto
 
 newtype PPubKeyHash (s :: k)
   = PPubKeyHash (Term s PByteString)
   deriving (PEq, POrd, PIsData) via PByteString
-  deriving (PLift, PlutusType) via (PVia PByteString Plutus.PubKeyHash)
+  deriving (PLift, PlutusType, AsDefaultUni) 
+    via (PVia PByteString Plutus.PubKeyHash)
 
 newtype PPubKey (s :: k)
   = PPubKey (Term s PByteString)
   deriving (PEq, POrd, PIsData) via PByteString
-  deriving (PLift, PlutusType) via (PVia PByteString Plutus.PubKey)
+  deriving (PLift, PlutusType, AsDefaultUni) 
+    via (PVia PByteString Plutus.PubKey)
 
 newtype PSignature (s :: k)
   = PSignature (Term s PByteString)
   deriving (PEq, POrd, PIsData) via PByteString
-  deriving (PLift, PlutusType) via (PVia PByteString Plutus.Signature)
+  deriving (PLift, PlutusType, AsDefaultUni) 
+    via (PVia PByteString Plutus.Signature)
 
 ---------- Time
 
@@ -228,7 +238,7 @@ newtype PPOSIXTime (s :: k)
   = PPOSIXTime (Term s PInteger)
   deriving (POrd, PEq, PIntegral, PIsData) via (PInteger)
   deriving newtype (Num)
-  deriving (PLift, PlutusType) via (PVia PInteger Plutus.POSIXTime)
+  deriving (PLift, PlutusType, AsDefaultUni) via (PVia PInteger Plutus.POSIXTime)
 
 type PPOSIXTimeRange = PInterval PPOSIXTime
 
@@ -249,6 +259,7 @@ newtype PInterval a (s :: k)
   deriving
     ( PMatch
     , PIsData
+    , AsDefaultUni
     )
     via 
       PIsDataReprInstances 
@@ -282,6 +293,7 @@ newtype PLowerBound a (s :: k)
   deriving
     ( PMatch
     , PIsData
+    , AsDefaultUni
     )
     via 
       (PIsDataReprInstances 
@@ -314,6 +326,7 @@ newtype PUpperBound a (s :: k)
   deriving
     ( PMatch
     , PIsData
+    , AsDefaultUni
     )
     via 
       (PIsDataReprInstances 
@@ -347,6 +360,7 @@ data PExtended a (s :: k)
   deriving
     ( PMatch
     , PIsData
+    , AsDefaultUni
     )
     via 
     (PIsDataReprInstances 
@@ -375,7 +389,7 @@ instance PIsDataRepr (PExtended a) where
 data PCredential (s :: k)
   = PPubKeyCredential (Term s (PDataList '[PPubKeyHash]))
   | PScriptCredential (Term s (PDataList '[PValidatorHash]))
-  deriving (PMatch, PIsData, PLift) 
+  deriving (PMatch, PIsData, PLift, AsDefaultUni) 
     via (PIsDataReprInstances PCredential Plutus.Credential)
 
 instance PIsDataRepr PCredential where
@@ -399,6 +413,7 @@ data PStakingCredential (s :: k)
     ( PMatch
     , PIsData
     , PLift
+    , AsDefaultUni
     )
     via PIsDataReprInstances PStakingCredential Plutus.StakingCredential
 
@@ -423,7 +438,7 @@ newtype PAddress (s :: k)
                ]
           )
       )
-  deriving (PMatch, PIsData, PLift) 
+  deriving (PMatch, PIsData, PLift, AsDefaultUni) 
     via PIsDataReprInstances PAddress Plutus.Address
 
 instance PIsDataRepr PAddress where
@@ -442,7 +457,7 @@ instance PIsDataRepr PAddress where
 
 newtype PTxId (s :: k)
   = PTxId (Term s (PDataList '[PByteString]))
-  deriving (PMatch, PIsData, PLift) 
+  deriving (PMatch, PIsData, PLift, AsDefaultUni) 
     via PIsDataReprInstances PTxId Plutus.TxId
 
 instance PIsDataRepr PTxId where
@@ -454,7 +469,7 @@ instance PIsDataRepr PTxId where
 
 newtype PTxOutRef (s :: k)
   = PTxOutRef (Term s (PDataList '[PTxId, PInteger]))
-  deriving (PMatch, PIsData, PLift) 
+  deriving (PMatch, PIsData, PLift, AsDefaultUni) 
     via PIsDataReprInstances PTxOutRef Plutus.TxOutRef
 
 instance PIsDataRepr PTxOutRef where
@@ -466,7 +481,7 @@ instance PIsDataRepr PTxOutRef where
 
 newtype PTxInInfo (s :: k)
   = PTxInInfo (Term s (PDataList '[PTxOutRef, PTxOut]))
-  deriving (PMatch, PIsData, PLift) 
+  deriving (PMatch, PIsData, PLift, AsDefaultUni) 
     via PIsDataReprInstances PTxInInfo Plutus.TxInfo
 
 instance PIsDataRepr PTxInInfo where
@@ -487,7 +502,7 @@ newtype PTxOut (s :: k)
                ]
           )
       )
-  deriving (PMatch, PIsData, PLift) 
+  deriving (PMatch, PIsData, PLift, AsDefaultUni) 
     via (PIsDataReprInstances PTxOut Plutus.TxOut)
 
 instance PIsDataRepr PTxOut where
@@ -511,7 +526,7 @@ data PDCert (s :: k)
   | PDCertPoolRetire (Term s (PDataList '[PPubKeyHash, PInteger]))
   | PDCertGenesis (Term s (PDataList '[]))
   | PDCertMir (Term s (PDataList '[]))
-  deriving (PMatch, PIsData, PLift) 
+  deriving (PMatch, PIsData, PLift, AsDefaultUni) 
     via (PIsDataReprInstances PDCert (Plutus.DCert))
 
 instance PIsDataRepr PDCert where
@@ -541,7 +556,7 @@ instance PIsDataRepr PDCert where
 newtype PMap (a :: k -> Type) (b :: k -> Type) (s :: k) = 
   PMap (Term s (PBuiltinMap a b))
   deriving (PIsData) via (PBuiltinMap a b)
-  deriving (PlutusType) via PVia (PBuiltinMap a b) Void
+  deriving (PlutusType, AsDefaultUni) via PVia (PBuiltinMap a b) Void
 
 -- AssocMap.Map isn't exported, or we could use PVia
 instance
@@ -572,7 +587,7 @@ data PMaybe a (s :: k)
   = PNothing (Term s (PDataList '[]))
   | PJust (Term s (PDataList '[a]))
   deriving 
-    (PMatch, PIsData) 
+    (PMatch, PIsData, AsDefaultUni) 
       via PIsDataReprInstances 
       (PMaybe a) (PlutusTx.Maybe (PHaskellType a))
 
@@ -600,6 +615,7 @@ data PEither a b (s :: k)
   deriving
     ( PMatch
     , PIsData
+    , AsDefaultUni
     )
     via 
       PIsDataReprInstances 

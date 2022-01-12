@@ -13,7 +13,8 @@ import Data.List (groupBy, maximumBy, sortOn)
 import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoerce, runTermCont, PlutusType (..), ClosedTerm)
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Builtin 
-  (PAsData, PBuiltinList, PData, PIsData, pasConstr, pdata, pfromData, pfstBuiltin, psndBuiltin, ptailBuiltin, pheadBuiltin)
+  (PAsData, PBuiltinList, PData, PIsData, pasConstr, pdata, pfromData, pfstBuiltin, psndBuiltin, PBuiltinPair)
+import Plutarch.List (punsafeIndex)
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift
 import Plutarch.Prelude
@@ -59,23 +60,10 @@ pindexDataRepr n = phoistAcyclic $
 pindexDataList :: (KnownNat n) => Proxy n -> Term s (PDataList xs :--> PAsData (IndexList n xs))
 pindexDataList n = 
   phoistAcyclic $ punsafeCoerce $ 
-    punsafeIndex # ind
+    punsafeIndex @PBuiltinList @PData # ind
   where
     ind :: Term s PInteger
     ind = fromInteger $ toInteger $ natVal n
-
-{- | 
-  Unsafely index a BuiltinList, failing if
-  the index is out of bounds.
--}
-punsafeIndex :: Term s (PInteger :--> PBuiltinList a :--> a)
-punsafeIndex = phoistAcyclic $
-  pfix #$ plam
-    \self n xs ->
-      pif
-        (n #== 0)
-        (pheadBuiltin # xs)
-        (self # (n - 1) #$ ptailBuiltin # xs)
 
 --type family LengthList (l :: [k]) :: Nat
 --type instance LengthList '[] = 'N
@@ -112,7 +100,7 @@ pmatchDataRepr d handlers =
 
     applyHandlers :: Term s (PBuiltinList PData) -> DataReprHandlers out defs s -> [Term s out]
     applyHandlers _ DRHNil = []
-    applyHandlers args (DRHCons handler rest) = (handler $ punsafeCoerce args) : applyHandlers args rest
+    applyHandlers args (DRHCons handler rest) = handler (punsafeCoerce args) : applyHandlers args rest
 
     go ::
       (Dig, Term s out) ->
@@ -133,6 +121,10 @@ pmatchDataRepr d handlers =
 
 newtype PIsDataReprInstances a h s = PIsDataReprInstances (a s)
 
+instance AsDefaultUni (PIsDataReprInstances a h) where
+  type DefaultUniType (PIsDataReprInstances a h) = 
+    (DefaultUniType (PBuiltinPair PInteger PData)) 
+
 class (PMatch a, PIsData a) => PIsDataRepr (a :: k -> Type) where
   type PIsDataReprRepr a :: [[k -> Type]]
   pmatchRepr :: forall s b. Term s (PDataRepr (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
@@ -144,7 +136,8 @@ instance PIsDataRepr a => PIsData (PIsDataReprInstances a h) where
 instance PIsDataRepr a => PMatch (PIsDataReprInstances a h) where
   pmatch x f = pmatchRepr (punsafeCoerce x) (f . PIsDataReprInstances)
 
-instance (Ledger.FromData h, Ledger.ToData h, PIsData p) => PLift (PIsDataReprInstances p h) where
+instance {-# OVERLAPPABLE #-}
+  (Ledger.FromData h, Ledger.ToData h, PIsData p) => PLift (PIsDataReprInstances p h) where
   type PHaskellType (PIsDataReprInstances p h) = h
   pconstant' =
     punsafeCoerce . pconstant @PData . Ledger.toData
@@ -160,6 +153,11 @@ instance (Ledger.FromData h, Ledger.ToData h, PIsData p) => PLift (PIsDataReprIn
 
 -}
 newtype PVia (p :: k -> Type) (h :: Type) (s :: k) = PVia (Term s p)
+
+instance 
+  (HasDefaultUni p) =>
+  AsDefaultUni (PVia p h) where
+  type DefaultUniType (PVia p h) = (DefaultUniType p)
 
 instance 
   ( PLift p

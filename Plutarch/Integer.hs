@@ -10,7 +10,7 @@ import qualified PlutusCore as PLC
 
 -- | Plutus BuiltinInteger
 data PInteger s
-  deriving (PLift) via PBuiltinType PInteger Integer
+  deriving (PLift, AsDefaultUni) via PBuiltinType PInteger Integer
 
 class PIntegral a where
   pdiv :: Term s (a :--> a :--> a)

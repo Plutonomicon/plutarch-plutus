@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE DefaultSignatures #-}
 
 module Plutarch.Lift (
   -- * Converstion between Plutarch terms and Haskell types
@@ -11,6 +12,8 @@ module Plutarch.Lift (
 
   -- * Internal use
   PBuiltinType (..),
+  AsDefaultUni (..),
+  type HasDefaultUni,
 ) where
 
 import Data.Bifunctor (first)
@@ -78,6 +81,9 @@ pconstant = pconstant'
 plift :: (PLift p, HasCallStack) => ClosedTerm p -> PHaskellType p
 plift prog = either (error . show) id $ plift' prog
 
+--------------------------------------------------------------------------------
+
+
 {- | DerivingVia representation to auto-derive `PLift` for Plutarch types
  representing builtin Plutus types in the `DefaultUni`.
 
@@ -89,7 +95,6 @@ plift prog = either (error . show) id $ plift' prog
 -}
 newtype PBuiltinType (p :: k -> Type) (h :: Type) s = PBuiltinType (p s)
 
--- Overlapping PAsData instances
 instance {-# OVERLAPS #-}
   ( PLC.KnownTypeIn PLC.DefaultUni (UPLC.Term PLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) h
   , PLC.DefaultUni `PLC.Contains` h
@@ -108,3 +113,22 @@ instance {-# OVERLAPS #-}
 
 showEvalException :: EvaluationException CekUserError (MachineError PLC.DefaultFun) (UPLC.Term UPLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) -> Text
 showEvalException = T.pack . show
+
+--------------------------------------------------------------------------------
+
+class AsDefaultUni (a :: k -> Type) where
+  type DefaultUniType a :: Type
+
+  pdefaultUniConstant :: 
+    DefaultUniType a -> Term s a
+  default pdefaultUniConstant :: 
+    (PLC.DefaultUni `PLC.Contains` (DefaultUniType a)) => DefaultUniType a -> Term s a
+  pdefaultUniConstant = 
+    punsafeConstantInternal 
+      . PLC.Some . PLC.ValueOf (PLC.knownUniOf (Proxy @(DefaultUniType a))) 
+
+type HasDefaultUni a = PLC.Contains PLC.DefaultUni (DefaultUniType a)
+
+instance (PLC.DefaultUni `PLC.Contains` h) =>
+  AsDefaultUni (PBuiltinType p h) where
+  type DefaultUniType (PBuiltinType p h) = h

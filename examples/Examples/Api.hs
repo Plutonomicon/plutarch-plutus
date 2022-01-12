@@ -1,9 +1,10 @@
 module Examples.Api (tests) where
 
 import Plutarch
-import Plutarch.Builtin (PAsData, pfromData, PList, pheadBuiltin, pfstBuiltin)
+import Plutarch.Builtin (PAsData, pfromData, PList, pfstBuiltin)
 import Data.Proxy (Proxy (..))
 import Plutarch.DataRepr (pindexDataList)
+import Plutarch.List (PListLike (phead))
 import Plutarch.Api.V1 
   ( PScriptContext (..), PTxInfo (..), PValue (..), PTxOut (..), PTxInInfo (..), PValidatorHash (..)
   , PCredential (..), PAddress (..), PCurrencySymbol (..)
@@ -94,7 +95,6 @@ getTxInfo =
   plam $ \x -> pmatch x $ \case 
     (PScriptContext c) -> pindexDataList (Proxy @0) # c
 
-
 getMint :: Term s (PTxInfo :--> PAsData PValue)
 getMint =
   plam $ \x -> pmatch x $ \case 
@@ -109,7 +109,7 @@ getInputs =
 getValidator :: Term s (PList PTxInInfo :--> PAsData (PValidatorHash))
 getValidator =
   plam $ \xs ->
-    pmatch (pfromData $ pheadBuiltin # xs) $ \case
+    pmatch (pfromData $ phead # xs) $ \case
       (PTxInInfo i) -> pmatch (pfromData $ pindexDataList (Proxy @1) # i) $ \case
         (PTxOut o) -> pmatch (pfromData $ pindexDataList (Proxy @0) # o) $ \case
           (PAddress a) -> pmatch (pfromData $ pindexDataList (Proxy @0) # a) $ \case
@@ -120,10 +120,10 @@ getValidator =
 getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
 getSym =
   plam $ \v ->
-    (pfstBuiltin #$ pheadBuiltin #$ pto $ pto v)
+    (pfstBuiltin #$ phead #$ pto $ pto v)
     
 
-tests :: TestTree
+tests :: HasTester => TestTree
 tests =
   testGroup
     "Api examples"

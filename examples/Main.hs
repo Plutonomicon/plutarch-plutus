@@ -1,3 +1,4 @@
+{-# LANGUAGE ImplicitParams #-}
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 
 module Main (main) where
@@ -8,10 +9,11 @@ import Test.Tasty.HUnit
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
+import qualified Examples.List as List
 import Examples.Tracing (traceTests)
 import Plutarch (POpaque, pconstant, plift', popaque, printTerm, punsafeBuiltin)
-import Plutarch.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&), (#<), (#<=), (#==), (#||))
-import Plutarch.Builtin (PBuiltinList, PBuiltinPair, PData, pdata)
+import Plutarch.Bool (PBool (PFalse, PTrue), pand, pif, pnot, por, (#&&), (#<), (#<=), (#==), (#||))
+import Plutarch.Builtin (PAsData, PBuiltinList (..), PBuiltinPair, PData, pdata)
 import Plutarch.ByteString (PByteString, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Integer (PInteger)
@@ -31,7 +33,7 @@ import qualified Examples.Api as Api
 import Utils
 
 main :: IO ()
-main = defaultMain tests
+main = defaultMain $ testGroup "all tests" [standardTests] -- , shrinkTests ]
 
 add1 :: Term s (PInteger :--> PInteger :--> PInteger)
 add1 = plam $ \x y -> x + y + 1
@@ -67,8 +69,13 @@ uglyDouble = plam $ \n -> plet n $ \n1 -> plet n1 $ \n2 -> n2 + n2
 -- loopHoisted :: Term (PInteger :--> PInteger)
 -- loopHoisted = phoistAcyclic $ plam $ \x -> loop # x
 
--- FIXME: Use property tests
-tests :: TestTree
+_shrinkTests :: TestTree
+_shrinkTests = testGroup "shrink tests" [let ?tester = shrinkTester in tests]
+
+standardTests :: TestTree
+standardTests = testGroup "standard tests" [let ?tester = standardTester in tests]
+
+tests :: HasTester => TestTree
 tests =
   testGroup
     "unit tests"
@@ -77,9 +84,10 @@ tests =
     , PlutusType.tests
     , Recursion.tests
     , Api.tests
+    , List.tests
     ]
 
-plutarchTests :: TestTree
+plutarchTests :: HasTester => TestTree
 plutarchTests =
   testGroup
     "plutarch tests"
@@ -228,6 +236,14 @@ plutarchTests =
         , testCase "plift on list and pair" $ do
             plift' (pconstant @(PBuiltinList PInteger) [1, 2, 3]) @?= Right [1, 2, 3]
             plift' (pconstant @(PBuiltinPair PString PInteger) ("IOHK", 42)) @?= Right ("IOHK", 42)
+        , testCase "plift on data" $ do
+            let d :: PlutusTx.Data
+                d = PlutusTx.toData @(Either Bool Bool) $ Right False
+            plift' (pconstant @(PData) d) @?= Right d
+        , testCase "plift on PAsData" $ do
+            let n :: Integer
+                n = 1
+            plift' (pconstant @(PAsData PInteger) n) @?= Right n
         , testCase "plift on nested containers" $ do
             -- List of pairs
             let v1 = [("IOHK", 42), ("Plutus", 31)]
@@ -236,10 +252,23 @@ plutarchTests =
             let v2 = [("IOHK", [1, 2, 3]), ("Plutus", [9, 8, 7])]
             plift' (pconstant @(PBuiltinList (PBuiltinPair PString (PBuiltinList PInteger))) v2) @?= Right v2
         ]
+    , testGroup
+        "Boolean operations"
+        [ testCase "True && False ≡ False" $ equal (pcon PTrue #&& pcon PFalse) (pcon PFalse)
+        , testCase "False && True ≡ False" $ equal (pcon PFalse #&& pcon PTrue) (pcon PFalse)
+        , testCase "False && perror ≡ False" $ equal (pcon PFalse #&& perror) (pcon PFalse)
+        , testCase "fails: pand False perror" $ fails $ pand # pcon PFalse # perror
+        , testCase "pand False (pdelay perror) ≡ False" $ equal (pand # pcon PFalse # pdelay perror) (pdelay $ pcon PFalse)
+        , testCase "True || False ≡ True" $ equal (pcon PTrue #|| pcon PFalse) (pcon PTrue)
+        , testCase "False || True ≡ True" $ equal (pcon PFalse #|| pcon PTrue) (pcon PTrue)
+        , testCase "True || perror ≡ True" $ equal (pcon PTrue #|| perror) (pcon PTrue)
+        , testCase "fails: por True perror" $ fails $ por # pcon PFalse # perror
+        , testCase "por True (pdelay perror) ≡ True" $ equal (por # pcon PTrue # pdelay perror) (pdelay $ pcon PTrue)
+        ]
     ]
 
 -- | Tests for the behaviour of UPLC itself.
-uplcTests :: TestTree
+uplcTests :: HasTester => TestTree
 uplcTests =
   testGroup
     "uplc tests"

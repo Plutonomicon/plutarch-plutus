@@ -36,7 +36,7 @@ swap x = pmatch x $ \case
   A -> pcon B
   B -> pcon A
 
-tests :: TestTree
+tests :: HasTester => TestTree
 tests =
   testGroup
     "PlutusType examples"

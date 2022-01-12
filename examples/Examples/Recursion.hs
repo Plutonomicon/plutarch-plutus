@@ -32,7 +32,7 @@ iterateN_comp :: String
 iterateN_comp =
   "(program 1.0.0 ((\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> \\i0 -> \\i0 -> force (force ifThenElse (equalsInteger i3 0) (delay i1) (delay (i4 (subtractInteger i3 1) i2 (i2 i1)))))))"
 
-tests :: TestTree
+tests :: HasTester => TestTree
 tests =
   testGroup
     "Recursion examples"

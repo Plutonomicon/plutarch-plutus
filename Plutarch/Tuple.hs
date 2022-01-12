@@ -5,7 +5,7 @@ module Plutarch.Tuple (PTuple (..)) where
 
 import Plutarch.Prelude
 import Plutarch (PMatch)
-import Plutarch.Lift (PLift (..))
+import Plutarch.Lift (PLift (..), AsDefaultUni)
 import Plutarch.Builtin (PIsData)
 import Plutarch.DataRepr 
   (PIsDataReprInstances (..), pmatchDataRepr, DataReprHandlers (..), PIsDataRepr (..), PDataList)
@@ -22,7 +22,7 @@ import qualified PlutusTx
 -}
 newtype PTuple (as :: [k -> Type]) (s :: k) 
   = PTuple (Term s (PDataList as))
-  deriving (PMatch, PIsData) via
+  deriving (PMatch, PIsData, AsDefaultUni) via
     PIsDataReprInstances (PTuple as) [PlutusTx.Data] -- second param is unused
 
 instance PIsDataRepr (PTuple as) where

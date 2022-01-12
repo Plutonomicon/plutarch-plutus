@@ -14,4 +14,4 @@ instance PlutusType (PMaybe a) where
   pcon' :: forall s. PMaybe a s -> forall b. Term s (PInner (PMaybe a) b)
   pcon' (PJust x) = plam $ \f (_ :: Term _ _) -> f # x
   pcon' PNothing = plam $ \_ g -> pforce g
-  pmatch' x f = x # (plam $ \inner -> f (PJust inner)) # (pdelay $ f PNothing)
+  pmatch' x f = x # plam (f . PJust) # pdelay (f PNothing)

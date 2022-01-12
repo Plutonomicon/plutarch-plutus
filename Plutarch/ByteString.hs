@@ -24,7 +24,7 @@ import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinByteString'
 data PByteString s
-  deriving (PLift) via PBuiltinType PByteString ByteString
+  deriving (PLift, AsDefaultUni) via PBuiltinType PByteString ByteString
 
 instance PEq PByteString where
   x #== y = punsafeBuiltin PLC.EqualsByteString # x # y
