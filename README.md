@@ -40,5 +40,23 @@ package plutarch
 # Usage
 Read the [Plutarch guide](./docs/GUIDE.md) to get started!
 
+# Benchmarks
+
+Note: Benchmarks are work in progress; we intend to benchmark all examples in CI.
+
+```
+cabal bench
+```
+
+This will write the benchmark report to `bench.*`.
+
+## Benchmarking a commit
+
+To run benchmarks on a particular commit,
+
+```
+nix run github:Plutonomicon/plutarch/<COMMIT-GOES-HERE>#benchmark
+```
+
 # Contributing
 Contributions are more than welcome! Alongside the [User guide](#usage) above, you may also find the [Developers' guide](./docs/DEVGUIDE.md) useful for understanding the codebase.
