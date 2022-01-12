@@ -1,3 +1,4 @@
+{-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Lift (
@@ -11,6 +12,8 @@ module Plutarch.Lift (
 
   -- * Internal use
   PBuiltinType (..),
+  AsDefaultUni (..),
+  type HasDefaultUni,
 ) where
 
 import Data.Bifunctor (first)
@@ -78,6 +81,8 @@ pconstant = pconstant'
 plift :: (PLift p, HasCallStack) => ClosedTerm p -> PHaskellType p
 plift prog = either (error . show) id $ plift' prog
 
+--------------------------------------------------------------------------------
+
 {- | DerivingVia representation to auto-derive `PLift` for Plutarch types
  representing builtin Plutus types in the `DefaultUni`.
 
@@ -94,8 +99,8 @@ instance PLift (PBuiltinType p h) where
 
 {-
 instance
-  ( PLC.KnownTypeAst PLC.DefaultUni h
-  , PLC.KnownTypeIn PLC.DefaultUni (UPLC.Term PLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) h
+  {-# OVERLAPS #-}
+  ( PLC.KnownTypeIn PLC.DefaultUni (UPLC.Term PLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) h
   , PLC.DefaultUni `PLC.Contains` h
   ) =>
   PLift (PBuiltinType p h)
@@ -113,3 +118,30 @@ instance
 
 showEvalException :: EvaluationException CekUserError (MachineError PLC.DefaultFun) (UPLC.Term UPLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) -> Text
 showEvalException = T.pack . show
+
+--------------------------------------------------------------------------------
+
+{- |
+  Class to give Plutarch types an encoding in the Plutus `DefaultUni`.
+
+  Used as a helper for `PListLike`.
+-}
+class AsDefaultUni (a :: k -> Type) where
+  type DefaultUniType a :: Type
+
+  pdefaultUniConstant ::
+    DefaultUniType a -> Term s a
+  default pdefaultUniConstant ::
+    (PLC.DefaultUni `PLC.Contains` (DefaultUniType a)) => DefaultUniType a -> Term s a
+  pdefaultUniConstant =
+    punsafeConstantInternal
+      . PLC.Some
+      . PLC.ValueOf (PLC.knownUniOf (Proxy @(DefaultUniType a)))
+
+type HasDefaultUni a = PLC.Contains PLC.DefaultUni (DefaultUniType a)
+
+instance
+  (PLC.DefaultUni `PLC.Contains` h) =>
+  AsDefaultUni (PBuiltinType p h)
+  where
+  type DefaultUniType (PBuiltinType p h) = h

@@ -3,7 +3,8 @@ module Plutarch.Internal (
   (:-->),
   PDelayed,
   -- | $term
-  Term,
+  Term (Term, asRawTerm),
+  mapTerm,
   plam',
   plet,
   papp,
@@ -20,7 +21,9 @@ module Plutarch.Internal (
   Dig,
   hashTerm,
   hashOpenTerm,
+  RawTerm (..),
   TermCont (..),
+  TermResult (TermResult, getDeps, getTerm),
 ) where
 
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
@@ -59,6 +62,7 @@ import qualified UntypedPlutusCore as UPLC
 type Dig = Digest Blake2b_160
 
 data HoistedTerm = HoistedTerm Dig RawTerm
+  deriving stock (Show)
 
 data RawTerm
   = RVar Natural
@@ -70,6 +74,7 @@ data RawTerm
   | RBuiltin PLC.DefaultFun
   | RError
   | RHoisted HoistedTerm
+  deriving stock (Show)
 
 hashRawTerm' :: HashAlgorithm alg => RawTerm -> Context alg -> Context alg
 hashRawTerm' (RVar x) = flip hashUpdate ("0" :: BS.ByteString) . flip hashUpdate (F.flat (fromIntegral x :: Integer))
