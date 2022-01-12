@@ -116,6 +116,12 @@ showEvalException = T.pack . show
 
 --------------------------------------------------------------------------------
 
+{- |
+  Class to give Plutarch types an encoding in the Plutus `DefaultUni`.
+  
+  Used as a helper for `PListLike`.
+
+-}
 class AsDefaultUni (a :: k -> Type) where
   type DefaultUniType a :: Type
 
