@@ -41,13 +41,12 @@ package plutarch
 Read the [Plutarch guide](./docs/GUIDE.md) to get started!
 
 # Benchmarks
-Note: Benchmarks are work in progress; we intend to benchmark all examples in CI.
 
 ```
 cabal bench
 ```
 
-This will write the benchmark report to `bench.*`.
+This will write the benchmark report to `bench.csv` as well as output a table view of the same.
 
 ## Benchmarking a commit
 To run benchmarks on a particular commit,
@@ -55,6 +54,8 @@ To run benchmarks on a particular commit,
 ```
 nix run github:Plutonomicon/plutarch/<COMMIT-GOES-HERE>#benchmark
 ```
+
+Eventually we will have PR integration for running benchmarks.
 
 # Contributing
 Contributions are more than welcome! Alongside the [User guide](#usage) above, you may also find the [Developers' guide](./docs/DEVGUIDE.md) useful for understanding the codebase.

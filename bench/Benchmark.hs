@@ -14,7 +14,6 @@ module Benchmark (
 import Codec.Serialise qualified as Codec
 import Control.Arrow ((&&&))
 
--- import Control.Monad.Freer qualified as Freer
 import Data.ByteString.Lazy qualified as LB
 import Data.ByteString.Short qualified as SBS
 import Data.Csv (
