@@ -32,7 +32,13 @@ tests = do
     , testCase "round 4/3" $
         expect $ pround # (4 / 3) #== 1
     , testCase "round 5/2" $
-        expect $ pround # (5 / 2) #== 3
+        expect $ pround # (5 / 2) #== 2
+    , testCase "round 7/2" $
+        expect $ pround # (7 / 2) #== 4
+    , testCase "round 9/2" $
+        expect $ pround # (9 / 2) #== 4
+    , testCase "round 11/2" $
+        expect $ pround # (11 / 2) #== 6
     , testCase "round 9/4" $
         expect $ pround # (9 / 4) #== 2
     , testCase "round 11/4" $

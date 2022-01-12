@@ -217,8 +217,18 @@ pround :: Term s (PRational :--> PInteger)
 pround = phoistAcyclic $
   plam $ \x ->
     pmatch x $ \(PRational a b) ->
-      (pdiv # a # b)
-        + pif (pdiv # b # 2 + pmod # b # 2 #<= pmod # a # b) 1 0
+      plet (pdiv # a # b) $ \base ->
+        plet (pmod # a # b) $ \rem ->
+        base +
+            pif (pmod # b # 2 #== 1)
+              (pif (pdiv # b # 2 #< rem) 1 0)
+              (pif (pdiv # b # 2 #== rem)
+                   (pmod # base # 2)
+                   (pif (rem #< pdiv # b # 2) 0 1)
+              )
+
+
+        --(pdiv # b # 2 + pmod # b # 2 #<= pmod # a # b) 1 0
 
 ptruncate :: Term s (PRational :--> PInteger)
 ptruncate = phoistAcyclic $
