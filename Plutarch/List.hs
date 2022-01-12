@@ -152,8 +152,8 @@ plength = phoistAcyclic $
     )
     $ \go -> plam $ \xs -> go # xs # 0
 
-{- | 
-  Unsafely index a BuiltinList, 
+{- |
+  Unsafely index a BuiltinList,
   throwing an error if the index is out of bounds.
 -}
 punsafeIndex :: (PIsListLike list a) => Term s (PInteger :--> list a :--> a)
@@ -299,4 +299,3 @@ plistEquals =
         #&& pfoldr' (#&&) # pcon PTrue # (pzipWith' (#==) # xs # ys)
 
 --------------------------------------------------------------------------------
-
