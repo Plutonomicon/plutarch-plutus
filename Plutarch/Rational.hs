@@ -7,6 +7,9 @@ module Plutarch.Rational (
   pnumerator,
   pdenominator,
   pfromInteger,
+  pround,
+  ptruncate,
+  pproperFraction,
 ) where
 
 import Plutarch.Prelude
@@ -17,6 +20,7 @@ import Plutarch.Bool (PEq (..), POrd (..), pif)
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
+  PData,
   PIsData (..),
   pasInt,
   pasList,
@@ -24,6 +28,7 @@ import Plutarch.Builtin (
  )
 import Plutarch.Integer (PInteger, PIntegral (pdiv, pmod))
 import Plutarch.List (PListLike (pcons, phead, pnil, ptail), pmap)
+import Plutarch.Pair (PPair (..))
 
 data PRational s = PRational (Term s PInteger) (Term s PInteger)
 
@@ -31,10 +36,11 @@ instance PIsData PRational where
   pfromData x = pListToRat #$ pmap # pasInt #$ pasList # pforgetData x
   pdata x =
     (punsafeCoerce :: Term _ (PAsData (PBuiltinList (PAsData PInteger))) -> Term _ (PAsData PRational)) $
-      pdata $ pmap # plam pdata #$ pRatToList # x
+      pdata $ pRatToList # x
 
-pRatToList :: Term s (PRational :--> PBuiltinList PInteger)
-pRatToList = plam $ \x -> pmatch x $ \(PRational a b) -> pcons # a #$ pcons # b #$ pnil
+pRatToList :: Term s (PRational :--> PBuiltinList (PAsData PInteger))
+pRatToList = plam $ \x -> pmatch x $ \(PRational a b) ->
+  pcons # pdata a #$ pcons # pdata b #$ punsafeCoerce (pnil :: Term s (PBuiltinList PData))
 
 pListToRat :: Term s (PBuiltinList PInteger :--> PRational)
 pListToRat = plam $ \x -> pcon $ PRational (phead # x) (phead #$ ptail # x)
@@ -208,3 +214,22 @@ pdenominator = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational _ d) -> d
 
 pfromInteger :: Term s (PInteger :--> PRational)
 pfromInteger = phoistAcyclic $ plam $ \n -> pcon $ PRational n 1
+
+pround :: Term s (PRational :--> PInteger)
+pround = phoistAcyclic $
+  plam $ \x ->
+    pmatch x $ \(PRational a b) ->
+      (pdiv # a # b)
+        + pif (pdiv # b # 2 + pmod # b # 2 #<= pmod # a # b) 1 0
+
+ptruncate :: Term s (PRational :--> PInteger)
+ptruncate = phoistAcyclic $
+  plam $ \x ->
+    pmatch x $ \(PRational a b) ->
+      pdiv # a # b
+
+pproperFraction :: Term s (PRational :--> PPair PInteger PRational)
+pproperFraction = phoistAcyclic $
+  plam $ \x ->
+    pmatch x $ \(PRational a b) ->
+      pcon $ PPair (pdiv # a # b) (pcon $ PRational (pmod # a # b) b)
