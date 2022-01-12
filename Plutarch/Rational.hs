@@ -1,6 +1,3 @@
-{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
-
 module Plutarch.Rational (
   PRational,
   preduce,
@@ -33,10 +30,11 @@ import Plutarch.Pair (PPair (..))
 data PRational s = PRational (Term s PInteger) (Term s PInteger)
 
 instance PIsData PRational where
-  pfromData x = pListToRat #$ pmap # pasInt #$ pasList # pforgetData x
-  pdata x =
+  pfromData x' = phoistAcyclic (plam $ \x -> pListToRat #$ pmap # pasInt #$ pasList # pforgetData x) # x'
+  pdata x' = phoistAcyclic (plam $ \x ->
     (punsafeCoerce :: Term _ (PAsData (PBuiltinList (PAsData PInteger))) -> Term _ (PAsData PRational)) $
       pdata $ pRatToList # x
+                           ) # x'
 
 pRatToList :: Term s (PRational :--> PBuiltinList (PAsData PInteger))
 pRatToList = plam $ \x -> pmatch x $ \(PRational a b) ->
