@@ -63,9 +63,9 @@ tests =
     "Records"
     [ testGroup
         "Simple"
-        [ testCase "precord"
-          $ printTerm (punsafeCoerce (pcon sampleRecord) # field sampleInt)
-          @?= "(program 1.0.0 ((\\i0 -> i1 False 6 \"Salut, Monde!\") (\\i0 -> \\i0 -> \\i0 -> i2)))"
+        [ testCase "precord" $
+            printTerm (punsafeCoerce (pcon sampleRecord) # field sampleInt)
+              @?= "(program 1.0.0 ((\\i0 -> i1 False 6 \"Salut, Monde!\") (\\i0 -> \\i0 -> \\i0 -> i2)))"
         ]
     , testGroup
         "Letrec"

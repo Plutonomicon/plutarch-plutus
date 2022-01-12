@@ -54,8 +54,11 @@ letrec r = Term term
     fieldCount = getSum (Rank2.foldMap (const $ Sum 1) (accessors @r))
 
 -- | Converts a Haskell field function to a Scott-encoded record field accessor.
-field :: forall r s t. (Rank2.Distributive r, Rank2.Traversable r)
-      => (r (ScottArgument r s) -> ScottArgument r s t) -> Term s (ScottEncoded r t)
+field ::
+  forall r s t.
+  (Rank2.Distributive r, Rank2.Traversable r) =>
+  (r (ScottArgument r s) -> ScottArgument r s t) ->
+  Term s (ScottEncoded r t)
 field f = getScott (f accessors)
 
 -- | Provides a record of function terms that access each field out of a Scott-encoded record.
