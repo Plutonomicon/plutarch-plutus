@@ -2,7 +2,7 @@
 
 module Examples.LetRec (tests) where
 
-import Plutarch (printTerm, punsafeCoerce)
+import Plutarch (pcon', pmatch', printTerm)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, (#==))
 import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
@@ -67,9 +67,13 @@ tests =
     "Records"
     [ testGroup
         "Simple"
-        [ testCase "precord" $
-            printTerm (punsafeCoerce (pcon sampleRecord) # field sampleInt)
+        [ testCase "record construction" $
+            printTerm (pcon' sampleRecord # field sampleInt)
               @?= "(program 1.0.0 ((\\i0 -> i1 False 6 \"Salut, Monde!\") (\\i0 -> \\i0 -> \\i0 -> i2)))"
+        , testCase "record field" $
+            equal' (pcon' sampleRecord # field sampleInt) "(program 1.0.0 6)"
+        , testCase "record match" $
+            equal' (pmatch' (pcon' sampleRecord) $ \(PRecord r) -> sampleString r) "(program 1.0.0 \"Salut, Monde!\")"
         ]
     , testGroup
         "Letrec"
