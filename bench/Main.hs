@@ -84,8 +84,8 @@ intListBench =
             bench "ChooseList" $
               pmatch numList $ \case
                 PNil -> perror
-                PCons x _xs ->
-                  x
+                PCons _x xs ->
+                  xs
           , -- Retrieving head and tail of a list
             bench "head-and-tail" $
               plet (List.phead # numList) $ \_x ->
