@@ -77,6 +77,27 @@ intListBench =
                     PCons y _ ->
                       x + y
           ]
+      , -- Various ways to uncons a list
+        benchGroup
+          "uncons"
+          [ -- ChooseList builtin, like uncons but fails on null lists
+            bench "ChooseList" $
+              pmatch numList $ \case
+                PNil -> perror
+                PCons x _xs ->
+                  x
+          , -- Retrieving head and tail of a list
+            bench "head-and-tail" $
+              plet (List.phead # numList) $ \_x ->
+                List.ptail # numList
+          , -- Retrieve head and tail using builtins, but fail on null lists.
+            bench "head-and-tail-and-null" $
+              plet (List.pnull # numList) $ \isEmpty ->
+                pmatch' isEmpty $ \case
+                  PTrue -> perror
+                  PFalse -> plet (List.phead # numList) $ \_x ->
+                    List.ptail # numList
+          ]
       , benchGroup
           "plength"
           [ bench "lam" $ List.plength @PBuiltinList @PInteger
