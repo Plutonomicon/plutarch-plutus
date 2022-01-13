@@ -19,7 +19,7 @@ benchmarks =
     "types"
     [ benchGroup "int" integerBench
     , benchGroup "bool" boolBench
-    , benchGroup "builtin:list" listBench
+    , benchGroup "builtin:intlist" intListBench
     ]
 
 integerBench :: [[NamedBenchmark]]
@@ -58,8 +58,8 @@ boolBench =
           ]
       ]
 
-listBench :: [[NamedBenchmark]]
-listBench =
+intListBench :: [[NamedBenchmark]]
+intListBench =
   let numList = pconstant @(PBuiltinList PInteger) [1 .. 5]
    in [ bench "phead" $ List.phead # numList
       , bench "ptail" $ List.ptail # numList
@@ -78,5 +78,30 @@ listBench =
                     PNil -> perror
                     PCons y _ ->
                       x + y
+          ]
+      , benchGroup
+          "plength"
+          [ bench "lam" $ List.plength @PBuiltinList @PInteger
+          , bench "app" $ List.plength # pconstant @(PBuiltinList PInteger) [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+          ]
+      , benchGroup
+          "pelem"
+          [ bench "lam" $ List.pelem @PBuiltinList @PInteger
+          , bench "app" $ List.pelem # 1 # pconstant @(PBuiltinList PInteger) [5, 2, 3, 4, 7, 5, 1, 6, 2]
+          ]
+      , benchGroup
+          "pall"
+          [ bench "lam" $ List.pall @PBuiltinList @PInteger
+          , bench "app" $ List.pall @PBuiltinList @PInteger # plam (const $ pconstant @PBool False) # pconstant [1, 2, 3, 4, 5, 6]
+          ]
+      , benchGroup
+          "plistEquals"
+          [ bench "lam" $ List.plistEquals @PBuiltinList @PInteger
+          , benchGroup
+              "app"
+              [ bench "==(n=3)" $ List.plistEquals @PBuiltinList @PInteger # pconstant [1, 2, 3] # pconstant [1, 2, 3]
+              , bench "/=(n=4)" $ List.plistEquals @PBuiltinList @PInteger # pconstant [1, 2, 3, 4] # pconstant [1, 2, 3]
+              , bench "/=(empty;n=3)" $ List.plistEquals @PBuiltinList @PInteger # pconstant [] # pconstant [1, 2, 3]
+              ]
           ]
       ]
