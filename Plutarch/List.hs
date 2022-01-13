@@ -11,6 +11,7 @@ module Plutarch.List (
   -- * Query
   pelem,
   plength,
+  punsafeIndex,
 
   -- * Construction
   psingleton,
@@ -154,6 +155,19 @@ plength = phoistAcyclic $
     let go :: PIsListLike list a => Term s (list a :--> PInteger :--> PInteger)
         go = (pfix #$ plam $ \self ls n -> pelimList (\_ xs -> self # xs # n + 1) n ls)
      in go # xs # 0
+
+{- |
+  Unsafely index a BuiltinList,
+  throwing an error if the index is out of bounds.
+-}
+punsafeIndex :: (PIsListLike list a) => Term s (PInteger :--> list a :--> a)
+punsafeIndex = phoistAcyclic $
+  pfix #$ plam $
+    \self n xs ->
+      pif
+        (n #== 0)
+        (phead # xs)
+        (self # (n - 1) #$ ptail # xs)
 
 --------------------------------------------------------------------------------
 
