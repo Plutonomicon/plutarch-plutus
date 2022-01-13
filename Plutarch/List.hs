@@ -2,6 +2,7 @@
 module Plutarch.List (
   PList (..),
   PListLike (..),
+  PIsListLike,
   pconvertLists,
 
   -- * Comparison
@@ -29,11 +30,17 @@ module Plutarch.List (
   precList,
   pfoldr,
   pfoldr',
+  pfoldrLazy,
+  pfoldl,
+  pfoldl',
+
+  -- * Special Folds
   pall,
+  pany,
 ) where
 
 import Plutarch
-import Plutarch.Bool (PBool (..), PEq (..), pif, (#&&))
+import Plutarch.Bool (PBool (..), PEq (..), pif, (#&&), (#||))
 import Plutarch.Integer (PInteger)
 import Plutarch.Pair (PPair (..))
 import Plutarch.Prelude
@@ -58,6 +65,9 @@ instance PEq a => PEq (PList a) where
 
 --------------------------------------------------------------------------------
 
+-- | 'PIsListLike list a' constraints 'list' be a 'PListLike' with valid element type, 'a'.
+type PIsListLike list a = (PListLike list, PElemConstraint list a)
+
 -- | Plutarch types that behave like lists.
 class PListLike (list :: (k -> Type) -> k -> Type) where
   type PElemConstraint list (a :: k -> Type) :: Constraint
@@ -77,15 +87,15 @@ class PListLike (list :: (k -> Type) -> k -> Type) where
   pnil :: PElemConstraint list a => Term s (list a)
 
   -- | Return the first element of a list. Partial, throws an error upon encountering an empty list.
-  phead :: PIsListLike list a => Term s (list a :--> a)
+  phead :: PElemConstraint list a => Term s (list a :--> a)
   phead = phoistAcyclic $ plam $ pelimList const perror
 
   -- | Take the tail of a list, meaning drop its head. Partial, throws an error upon encountering an empty list.
-  ptail :: PIsListLike list a => Term s (list a :--> list a)
+  ptail :: PElemConstraint list a => Term s (list a :--> list a)
   ptail = phoistAcyclic $ plam $ pelimList (\_ xs -> xs) perror
 
   -- | / O(1) /. Check if a list is empty
-  pnull :: PIsListLike list a => Term s (list a :--> PBool)
+  pnull :: PElemConstraint list a => Term s (list a :--> PBool)
   pnull = phoistAcyclic $ plam $ pelimList (\_ _ -> pconstant False) $ pconstant True
 
 instance PListLike PList where
@@ -93,15 +103,13 @@ instance PListLike PList where
   pelimList match_cons match_nil ls = pmatch ls $ \case
     PSCons x xs -> match_cons x xs
     PSNil -> match_nil
-  pcons = plam $ \x xs -> pcon (PSCons x xs)
+  pcons = phoistAcyclic $ plam $ \x xs -> pcon (PSCons x xs)
   pnil = pcon PSNil
-
-type PIsListLike list a = (PListLike list, PElemConstraint list a)
 
 -- | / O(n) /. Convert from any ListLike to any ListLike, provided both lists' element constraints are met.
 pconvertLists ::
   forall f g a s.
-  (PElemConstraint f a, PElemConstraint g a, PListLike f, PListLike g) =>
+  (PIsListLike f a, PIsListLike g a) =>
   Term s (f a :--> g a)
 pconvertLists = phoistAcyclic $
   pfix #$ plam $ \self ->
@@ -111,7 +119,7 @@ pconvertLists = phoistAcyclic $
 
 -- | Like 'pelimList', but with a fixpoint recursion hatch.
 precList ::
-  (PElemConstraint list a, PListLike list) =>
+  PIsListLike list a =>
   (Term s (list a :--> r) -> Term s a -> Term s (list a) -> Term s r) ->
   (Term s (list a :--> r) -> Term s r) ->
   Term s (list a :--> r)
@@ -126,7 +134,7 @@ precList mcons mnil =
 
 -- | / O(1) /. Create a singleton list from an element
 psingleton :: PIsListLike list a => Term s (a :--> list a)
-psingleton = plam $ \x -> pcons # x # pnil
+psingleton = phoistAcyclic $ plam $ \x -> pcons # x # pnil
 
 --------------------------------------------------------------------------------
 -- Querying
@@ -143,14 +151,10 @@ pelem =
 -- | / O(n) /. Count the number of elements in the list
 plength :: PIsListLike list a => Term s (list a :--> PInteger)
 plength = phoistAcyclic $
-  plet
-    ( pfix #$ plam $ \self ls n ->
-        pelimList
-          (\_ xs -> self # xs # n + 1)
-          n
-          ls
-    )
-    $ \go -> plam $ \xs -> go # xs # 0
+  plam $ \xs ->
+    let go :: PIsListLike list a => Term s (list a :--> PInteger :--> PInteger)
+        go = (pfix #$ plam $ \self ls n -> pelimList (\_ xs -> self # xs # n + 1) n ls)
+     in go # xs # 0
 
 {- |
   Unsafely index a BuiltinList,
@@ -167,7 +171,26 @@ punsafeIndex = phoistAcyclic $
 
 --------------------------------------------------------------------------------
 
--- | / O(n) /. Fold on a list right-associatively
+-- | / O(n) /. Fold on a list left-associatively.
+pfoldl :: PIsListLike list a => Term s ((b :--> a :--> b) :--> b :--> list a :--> b)
+pfoldl = phoistAcyclic $
+  plam $ \f ->
+    pfix #$ plam $ \self z l ->
+      pelimList
+        (\x xs -> self # (f # z # x) # xs)
+        z
+        l
+
+-- | The same as 'pfoldl', but with Haskell-level reduction function.
+pfoldl' :: PIsListLike list a => (forall s. Term s b -> Term s a -> Term s b) -> Term s (b :--> list a :--> b)
+pfoldl' f = phoistAcyclic $
+  pfix #$ plam $ \self z l ->
+    pelimList
+      (\x xs -> self # f z x # xs)
+      z
+      l
+
+-- | / O(n) /. Fold on a list right-associatively.
 pfoldr :: PIsListLike list a => Term s ((a :--> b :--> b) :--> b :--> list a :--> b)
 pfoldr = phoistAcyclic $
   plam $ \f z ->
@@ -183,11 +206,28 @@ pfoldr' f = phoistAcyclic $
       (\self x xs -> f x (self # xs))
       (const z)
 
--- | / O(n) /. Check that predicate holds for all elements in a list
+{- | / O(n) /. Fold on a list right-associatively, with opportunity for short circuting.
+
+May short circuit when given reducer function is lazy in its second argument.
+-}
+pfoldrLazy :: PIsListLike list a => Term s ((a :--> PDelayed b :--> b) :--> b :--> list a :--> b)
+pfoldrLazy = phoistAcyclic $
+  plam $ \f z ->
+    precList
+      (\self x xs -> f # x # pdelay (self # xs))
+      (const z)
+
+-- | / O(n) /. Check that predicate holds for all elements in a list.
 pall :: PIsListLike list a => Term s ((a :--> PBool) :--> list a :--> PBool)
 pall = phoistAcyclic $
   plam $ \predicate ->
-    pfoldr # plam (\x acc -> predicate # x #&& acc) # pcon PTrue
+    precList (\self x xs -> predicate # x #&& self # xs) (const $ pconstant True)
+
+-- | / O(n) /. Check that predicate holds for any element in a list.
+pany :: PIsListLike list a => Term s ((a :--> PBool) :--> list a :--> PBool)
+pany = phoistAcyclic $
+  plam $ \predicate ->
+    precList (\self x xs -> predicate # x #|| self # xs) (const $ pconstant False)
 
 -- | / O(n) /. Map a function over a list of elements
 pmap :: (PListLike list, PElemConstraint list a, PElemConstraint list b) => Term s ((a :--> b) :--> list a :--> list b)
@@ -290,12 +330,14 @@ pzip ::
   Term s (list a :--> list b :--> list (PPair a b))
 pzip = phoistAcyclic $ pzipWith' $ \x y -> pcon (PPair x y)
 
--- Horribly inefficient.
-plistEquals :: (PIsListLike list a, PElemConstraint list PBool, PEq a) => Term s (list a :--> list a :--> PBool)
+-- | / O(min(n, m)) /. Check if two lists are equal.
+plistEquals :: (PIsListLike list a, PEq a) => Term s (list a :--> list a :--> PBool)
 plistEquals =
   phoistAcyclic $
-    plam $ \xs ys ->
-      plength # xs #== plength # ys
-        #&& pfoldr' (#&&) # pcon PTrue # (pzipWith' (#==) # xs # ys)
-
---------------------------------------------------------------------------------
+    pfix #$ plam $ \self xlist ylist ->
+      pelimList
+        ( \x xs ->
+            pelimList (\y ys -> pif (x #== y) (self # xs # ys) (pconstant False)) (pconstant False) ylist
+        )
+        (pelimList (\_ _ -> pconstant False) (pconstant True) ylist)
+        xlist
