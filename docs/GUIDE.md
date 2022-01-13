@@ -328,13 +328,13 @@ For the sake of convenience, you often would want to use operators - which must 
 Choosing convenience over efficiency is difficult, but if you notice that your operator uses complex logic and may end up creating big terms - you can trivially factor out the logic into a Plutarch level function, hoist it, and simply apply that function within the operator.
 
 Consider boolean or-
-```haskell
+```hs
 (#||) :: Term s PBool -> Term s PBool -> Term s PBool
 x #|| y = pif x (pcon PTrue) $ pif y (pcon PTrue) $ pcon PFalse
 ```
 You can factor out most of the logic to a Plutarch level function, and apply that in the operator definition-
 
-```haskell
+```hs
 (#||) :: Term s PBool -> Term s PBool -> Term s PBool
 x #|| y = por # x # pdelay y
 
@@ -344,16 +344,16 @@ por = phoistAcyclic $ plam $ \x y -> pif' # x # pcon PTrue # pforce y
 
 In general the pattern goes like this-
 ```hs
-(<operator>) :: Term s x -> Term s y -> Term s z
-x <operator> y = f # x # y
+(<//>) :: Term s x -> Term s y -> Term s z
+x <//> y = f # x # y
 
 f :: Term s (x :--> y :--> z)
 f = phoistAcyclic $ plam $ \x y -> <complex computation>
 ```
 (OR, simply inlined)
 ```hs
-(<operator>) :: Term s x -> Term s y -> Term s z
-x <operator> y = (\f -> f # x # y) $ phoistAcyclic $ plam $ \x y -> <complex computation>
+(<//>) :: Term s x -> Term s y -> Term s z
+x <//> y = (\f -> f # x # y) $ phoistAcyclic $ plam $ \x y -> <complex computation>
 ```
 
 > Note: You don't even need to export the Plutarch level function or anything! You can simply have that complex logic factored out into a *hoisted, internal Plutarch function* and everything will work just fine!
