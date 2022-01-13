@@ -107,13 +107,20 @@ benchMain benchmarks = do
   let csv = Csv.encodeDefaultOrderedByName benchmarks
   BSL.writeFile "bench.csv" csv
   putStrLn "Wrote to bench.csv:"
-  putStrLn $ B.render $ renderNamedBudgets benchmarks
+  putStrLn $ B.render . renderBudgetTable $ benchmarks
   where
-    renderNamedBudgets :: [NamedBenchmark] -> B.Box
-    renderNamedBudgets bs =
-      let cols =
-            List.transpose $
-              [ [name, show cpu <> "(cpu)", show mem <> "(mem)", show sz <> "(bytes)"]
-              | NamedBenchmark (name, Benchmark (ExCPU cpu) (ExMemory mem) (ScriptSizeBytes sz)) <- bs
+    -- Renders a neat tabular representation of the benchmarks
+    renderBudgetTable :: [NamedBenchmark] -> B.Box
+    renderBudgetTable bs =
+      let rows =
+            [ [ B.text name
+              , B.text $ show cpu <> "(cpu)"
+              , B.text $ show mem <> "(mem)"
+              , B.text $ show sz <> "(bytes)"
               ]
-       in B.hsep 2 B.left . map (B.vcat B.left . map B.text) $ cols
+            | NamedBenchmark (name, Benchmark (ExCPU cpu) (ExMemory mem) (ScriptSizeBytes sz)) <- bs
+            ]
+          alignments =
+            -- Align all but the first column to the right, because they represent numeric values.
+            B.left : repeat B.right
+       in B.hsep 2 B.left . fmap (uncurry B.vcat) $ zip alignments (List.transpose rows)
