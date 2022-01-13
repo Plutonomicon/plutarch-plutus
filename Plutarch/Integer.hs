@@ -4,13 +4,13 @@ module Plutarch.Integer (PInteger, PIntegral (..)) where
 
 import Plutarch (punsafeBuiltin)
 import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
-import Plutarch.Lift
+import Plutarch.Lift (DerivePLiftViaCoercible, PUnsafeLiftDecl, pconstant)
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
 -- | Plutus BuiltinInteger
 data PInteger s
-  deriving (PLift, AsDefaultUni) via PBuiltinType PInteger Integer
+  deriving (PUnsafeLiftDecl Integer) via (DerivePLiftViaCoercible Integer PInteger Integer)
 
 class PIntegral a where
   pdiv :: Term s (a :--> a :--> a)

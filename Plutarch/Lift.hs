@@ -1,147 +1,69 @@
-{-# LANGUAGE DefaultSignatures #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE UndecidableSuperClasses #-}
 
-module Plutarch.Lift (
-  -- * Converstion between Plutarch terms and Haskell types
-  pconstant,
-  plift,
-  LiftError (..),
+module Plutarch.Lift (PUnsafeLiftDecl (..), PLift, pconstant, plift, plift', LiftError, DerivePLiftViaCoercible (..)) where
 
-  -- * Define your own conversion
-  PLift (..),
-
-  -- * Internal use
-  PBuiltinType (..),
-  AsDefaultUni (..),
-  type HasDefaultUni,
-) where
-
-import Data.Bifunctor (first)
-import Data.Data (Proxy (Proxy))
+import Data.Coerce
 import Data.Kind (Type)
-import Data.String
-import Data.Text
-import qualified Data.Text as T
 import GHC.Stack (HasCallStack)
 import Plutarch.Evaluate (evaluateScript)
-import Plutarch.Internal (
-  ClosedTerm,
-  Term,
-  compile,
-  punsafeConstantInternal,
- )
+import Plutarch.Internal (ClosedTerm, Term, compile, punsafeConstantInternal)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import qualified PlutusCore as PLC
-import PlutusCore.Constant (readKnownSelf)
-import qualified PlutusCore.Constant as PLC
-import PlutusCore.Evaluation.Machine.Exception (
-  EvaluationException,
-  MachineError,
- )
+import PlutusCore.Constant (readKnownConstant)
+import PlutusCore.Evaluation.Machine.Exception (MachineError)
 import qualified UntypedPlutusCore as UPLC
-import UntypedPlutusCore.Evaluation.Machine.Cek (CekUserError)
+
+-- FIXME: `h -> p`
+class (PLifted p ~ h, PLC.DefaultUni `PLC.Includes` PLiftedRepr p) => PUnsafeLiftDecl (h :: Type) (p :: k -> Type) | p -> h where
+  type PLiftedRepr p :: Type
+  type PLifted p :: Type
+  pliftToRepr :: h -> PLiftedRepr p
+  pliftFromRepr :: PLiftedRepr p -> Maybe h
+
+class PUnsafeLiftDecl (PLifted p) p => PLift (p :: k -> Type)
+instance PUnsafeLiftDecl (PLifted p) p => PLift (p :: k -> Type)
+
+newtype DerivePLiftViaCoercible (h :: Type) (p :: k -> Type) (r :: Type) (s :: k) = DerivePLiftViaCoercible (p s)
+
+instance (Coercible h r, PLC.DefaultUni `PLC.Includes` r) => PUnsafeLiftDecl h (DerivePLiftViaCoercible h p r) where
+  type PLiftedRepr (DerivePLiftViaCoercible h p r) = r
+  type PLifted (DerivePLiftViaCoercible h p r) = h
+  pliftToRepr = coerce
+  pliftFromRepr = Just . coerce
+
+pconstant :: forall p h s. PUnsafeLiftDecl h p => h -> Term s p
+pconstant x = punsafeConstantInternal $ PLC.someValue @(PLiftedRepr p) @PLC.DefaultUni $ pliftToRepr @_ @h @p x
 
 -- | Error during script evaluation.
-data LiftError
-  = LiftError_ScriptError Scripts.ScriptError
-  | LiftError_EvalException T.Text -- Using Text, because there is no Eq possible with DeBruijn naming.
-  | LiftError_Custom T.Text
-  deriving stock (Eq, Show)
+data LiftError = LiftError deriving stock (Eq, Show)
 
-instance IsString LiftError where
-  fromString = LiftError_Custom . T.pack
+plift' :: forall p h. PUnsafeLiftDecl h p => ClosedTerm p -> Either LiftError h
+plift' prog = case evaluateScript (compile prog) of
+  Right (_, _, Scripts.unScript -> UPLC.Program _ _ term) ->
+    case readKnownConstant @_ @(PLiftedRepr p) @(MachineError PLC.DefaultFun) Nothing term of
+      Right r -> case pliftFromRepr @_ @h @p r of
+        Just h -> Right h
+        Nothing -> Left LiftError
+      Left _ -> Left LiftError
+  Left _ -> Left LiftError
 
-{- | Class of Plutarch types `p` that can be converted to/from a Haskell type.
+plift :: forall p h. (HasCallStack, PUnsafeLiftDecl h p) => ClosedTerm p -> h
+plift prog = case plift' prog of
+  Right x -> x
+  Left _ -> error "plift failed"
 
-The Haskell type is determined by `PHaskellType p`.
--}
-class PLift (p :: k -> Type) where
-  -- | The associated Haskell type for `p`
-  type PHaskellType p :: Type
-
-  -- {-
-  -- Create a Plutarch-level constant, from a Haskell value.
-  -- Example:
-  -- > pconstant @PInteger 42
-  -- -}
-  pconstant' :: PHaskellType p -> Term s p
-
-  -- {-
-  -- Convert a Plutarch term to the associated Haskell value. Fail otherwise.
-  -- This will fully evaluate the arbitrary closed expression, and convert the
-  -- resulting value.
-  -- -}
-  plift' :: ClosedTerm p -> Either LiftError (PHaskellType p)
-
--- | Like `pconstant'` but TypeApplication-friendly
-pconstant :: forall p s. PLift p => PHaskellType p -> Term s p
-pconstant = pconstant'
-
--- | Like `plift'` but fails on error.
-plift :: (PLift p, HasCallStack) => ClosedTerm p -> PHaskellType p
-plift prog = either (error . show) id $ plift' prog
-
---------------------------------------------------------------------------------
-
-{- | DerivingVia representation to auto-derive `PLift` for Plutarch types
- representing builtin Plutus types in the `DefaultUni`.
-
- The `h` parameter is the Haskell type associated with `p`. Example use:
-
- > deriving PLift via (PBuiltinType PInteger Integer)
-
- See instance below.
--}
-newtype PBuiltinType (p :: k -> Type) (h :: Type) s = PBuiltinType (p s)
-
-instance {-# OVERLAPPABLE #-} PLift (PBuiltinType p h) where
-  type PHaskellType (PBuiltinType p h) = h
-
+-- FIXME: improve error messages using below code
 {-
-instance
-  {-# OVERLAPS #-}
-  ( PLC.KnownTypeIn PLC.DefaultUni (UPLC.Term PLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) h
-  , PLC.DefaultUni `PLC.Contains` h
-  ) =>
-  PLift (PBuiltinType p h)
-  where
-  type PHaskellType (PBuiltinType p h) = h
-  pconstant' =
-    punsafeConstantInternal . PLC.Some . PLC.ValueOf (PLC.knownUniOf (Proxy @h))
   plift' prog =
     case evaluateScript (compile prog) of
       Left e -> Left $ LiftError_ScriptError e
       Right (_, _, Scripts.unScript -> UPLC.Program _ _ term) ->
         first (LiftError_EvalException . showEvalException) $
           readKnownSelf term
--}
 
 showEvalException :: EvaluationException CekUserError (MachineError PLC.DefaultFun) (UPLC.Term UPLC.DeBruijn PLC.DefaultUni PLC.DefaultFun ()) -> Text
 showEvalException = T.pack . show
-
---------------------------------------------------------------------------------
-
-{- |
-  Class to give Plutarch types an encoding in the Plutus `DefaultUni`.
-
-  Used as a helper for `PListLike`.
 -}
-class AsDefaultUni (a :: k -> Type) where
-  type DefaultUniType a :: Type
-
-  pdefaultUniConstant ::
-    DefaultUniType a -> Term s a
-  default pdefaultUniConstant ::
-    (PLC.DefaultUni `PLC.Contains` (DefaultUniType a)) => DefaultUniType a -> Term s a
-  pdefaultUniConstant =
-    punsafeConstantInternal
-      . PLC.Some
-      . PLC.ValueOf (PLC.knownUniOf (Proxy @(DefaultUniType a)))
-
-type HasDefaultUni a = PLC.Contains PLC.DefaultUni (DefaultUniType a)
-
-instance
-  (PLC.DefaultUni `PLC.Contains` h) =>
-  AsDefaultUni (PBuiltinType p h)
-  where
-  type DefaultUniType (PBuiltinType p h) = h

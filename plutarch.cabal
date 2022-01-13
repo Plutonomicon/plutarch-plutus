@@ -66,8 +66,6 @@ common c
     TypeOperators
     TypeSynonymInstances
     ViewPatterns
-
-  -- poor man's GHC2021
   ghc-options:
     -Wall -Wcompat -Wincomplete-uni-patterns
     -Wno-partial-type-signatures -Wmissing-export-lists -Werror
@@ -99,7 +97,6 @@ library
     Plutarch.Rec.TH
     Plutarch.String
     Plutarch.Trace
-    Plutarch.Tuple
     Plutarch.Unit
 
   build-depends:

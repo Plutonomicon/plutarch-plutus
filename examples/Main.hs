@@ -14,7 +14,7 @@ import Examples.Tracing (traceTests)
 import Plutarch (POpaque, pconstant, plift', popaque, printTerm, punsafeBuiltin)
 import Plutarch.Api.V1 (PScriptPurpose (PMinting))
 import Plutarch.Bool (PBool (PFalse, PTrue), pand, pif, pnot, por, (#&&), (#<), (#<=), (#==), (#||))
-import Plutarch.Builtin (PAsData, PBuiltinList (..), PBuiltinPair, PData, pdata)
+import Plutarch.Builtin (PBuiltinList (..), PBuiltinPair, PData, pdata)
 import Plutarch.ByteString (PByteString, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Integer (PInteger)
@@ -70,8 +70,8 @@ uglyDouble = plam $ \n -> plet n $ \n1 -> plet n1 $ \n2 -> n2 + n2
 -- loopHoisted :: Term (PInteger :--> PInteger)
 -- loopHoisted = phoistAcyclic $ plam $ \x -> loop # x
 
-_shrinkTests :: TestTree
-_shrinkTests = testGroup "shrink tests" [let ?tester = shrinkTester in tests]
+--_shrinkTests :: TestTree
+--_shrinkTests = testGroup "shrink tests" [let ?tester = shrinkTester in tests]
 
 standardTests :: TestTree
 standardTests = testGroup "standard tests" [let ?tester = standardTester in tests]
@@ -242,10 +242,6 @@ plutarchTests =
             let d :: PlutusTx.Data
                 d = PlutusTx.toData @(Either Bool Bool) $ Right False
             plift' (pconstant @(PData) d) @?= Right d
-        , testCase "plift on PAsData" $ do
-            let n :: Integer
-                n = 1
-            plift' (pconstant @(PAsData PInteger) n) @?= Right n
         , testCase "plift on nested containers" $ do
             -- List of pairs
             let v1 = [("IOHK", 42), ("Plutus", 31)]

@@ -4,10 +4,10 @@ module Plutarch.Unit (PUnit (..)) where
 
 import Plutarch (PlutusType (PInner, pcon', pmatch'), Term, pcon)
 import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, (#<), (#<=), (#==))
-import Plutarch.Lift
+import Plutarch.Lift (DerivePLiftViaCoercible, PUnsafeLiftDecl, pconstant)
 
 data PUnit s = PUnit
-  deriving (PLift) via PBuiltinType PUnit ()
+  deriving (PUnsafeLiftDecl ()) via (DerivePLiftViaCoercible () PUnit ())
 
 instance PlutusType PUnit where
   type PInner PUnit _ = PUnit
