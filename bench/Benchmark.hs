@@ -1,12 +1,11 @@
-{-# LANGUAGE ImportQualifiedPost #-}
 {-# LANGUAGE RecordWildCards #-}
 
 -- | Benchmark (exbudget and script size) for Plutus scripts
 module Benchmark (
   -- | * Types
-  Benchmark (..),
-  NamedBenchmark (..),
-  ScriptSizeBytes (..),
+  Benchmark,
+  NamedBenchmark,
+  ScriptSizeBytes,
   -- | * Benchmark an arbitraty Plutus script
   benchmarkScript,
   -- | * Benchmark entrypoints
@@ -15,24 +14,24 @@ module Benchmark (
   benchMain,
 ) where
 
-import Codec.Serialise qualified as Codec
+import qualified Codec.Serialise as Codec
 import Control.Arrow ((&&&))
-import Data.ByteString.Lazy qualified as BSL
-import Text.PrettyPrint.Boxes qualified as B
+import qualified Data.ByteString.Lazy as BSL
+import qualified Text.PrettyPrint.Boxes as B
 
-import Data.ByteString.Lazy qualified as LB
-import Data.ByteString.Short qualified as SBS
+import qualified Data.ByteString.Lazy as LB
+import qualified Data.ByteString.Short as SBS
 import Data.Csv (
-  DefaultOrdered (..),
+  DefaultOrdered,
   ToField,
-  ToNamedRecord (..),
+  ToNamedRecord,
   header,
   namedRecord,
   (.=),
  )
-import Data.Csv qualified as Csv
+import qualified Data.Csv as Csv
 import Data.Int (Int64)
-import Data.List qualified as List
+import qualified Data.List as List
 import Data.Maybe (fromJust)
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
@@ -43,7 +42,7 @@ import Plutus.V1.Ledger.Api (
   ExMemory (ExMemory),
   Script,
  )
-import Plutus.V1.Ledger.Api qualified as Plutus
+import qualified Plutus.V1.Ledger.Api as Plutus
 
 -- | Benchmark the given script
 benchmarkScript :: String -> Script -> NamedBenchmark
