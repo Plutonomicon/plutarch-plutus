@@ -98,29 +98,19 @@ intListBench =
                   PFalse -> plet (List.phead # numList) $ \_x ->
                     List.ptail # numList
           ]
-      , benchGroup
+      , bench
           "plength"
-          [ bench "lam" $ List.plength @PBuiltinList @PInteger
-          , bench "app" $ List.plength # pconstant @(PBuiltinList PInteger) [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
-          ]
-      , benchGroup
+          $ List.plength # pconstant @(PBuiltinList PInteger) [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+      , bench
           "pelem"
-          [ bench "lam" $ List.pelem @PBuiltinList @PInteger
-          , bench "app" $ List.pelem # 1 # pconstant @(PBuiltinList PInteger) [5, 2, 3, 4, 7, 5, 1, 6, 2]
-          ]
-      , benchGroup
+          $ List.pelem # 1 # pconstant @(PBuiltinList PInteger) [5, 2, 3, 4, 7, 5, 1, 6, 2]
+      , bench
           "pall"
-          [ bench "lam" $ List.pall @PBuiltinList @PInteger
-          , bench "app" $ List.pall @PBuiltinList @PInteger # plam (const $ pconstant @PBool False) # pconstant [1, 2, 3, 4, 5, 6]
-          ]
+          $ List.pall @PBuiltinList @PInteger # plam (const $ pconstant @PBool False) # pconstant [1, 2, 3, 4, 5, 6]
       , benchGroup
           "plistEquals"
-          [ bench "lam" $ List.plistEquals @PBuiltinList @PInteger
-          , benchGroup
-              "app"
-              [ bench "==(n=3)" $ List.plistEquals @PBuiltinList @PInteger # pconstant [1, 2, 3] # pconstant [1, 2, 3]
-              , bench "/=(n=4)" $ List.plistEquals @PBuiltinList @PInteger # pconstant [1, 2, 3, 4] # pconstant [1, 2, 3]
-              , bench "/=(empty;n=3)" $ List.plistEquals @PBuiltinList @PInteger # pconstant [] # pconstant [1, 2, 3]
-              ]
+          [ bench "==(n=3)" $ List.plistEquals @PBuiltinList @PInteger # pconstant [1, 2, 3] # pconstant [1, 2, 3]
+          , bench "/=(n=4)" $ List.plistEquals @PBuiltinList @PInteger # pconstant [1, 2, 3, 4] # pconstant [1, 2, 3]
+          , bench "/=(empty;n=3)" $ List.plistEquals @PBuiltinList @PInteger # pconstant [] # pconstant [1, 2, 3]
           ]
       ]
