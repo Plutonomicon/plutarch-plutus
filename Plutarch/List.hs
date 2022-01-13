@@ -29,10 +29,13 @@ module Plutarch.List (
   precList,
   pfoldr,
   pfoldr',
-  pall,
-  pany,
+  pfoldrLazy,
   pfoldl,
   pfoldl',
+
+  -- * Special Folds
+  pall,
+  pany,
 ) where
 
 import Plutarch
@@ -154,7 +157,7 @@ plength = phoistAcyclic $
 
 --------------------------------------------------------------------------------
 
--- | / O(n) /. Fold on a list left-associatively
+-- | / O(n) /. Fold on a list left-associatively.
 pfoldl :: PIsListLike list a => Term s ((b :--> a :--> b) :--> b :--> list a :--> b)
 pfoldl = phoistAcyclic $
   plam $ \f ->
@@ -173,15 +176,12 @@ pfoldl' f = phoistAcyclic $
       z
       l
 
-{- | / O(n) /. Fold on a list right-associatively.
-
-May short circuit if given reducer function is lazy in its second argument.
--}
-pfoldr :: PIsListLike list a => Term s ((a :--> PDelayed b :--> b) :--> b :--> list a :--> b)
+-- | / O(n) /. Fold on a list right-associatively.
+pfoldr :: PIsListLike list a => Term s ((a :--> b :--> b) :--> b :--> list a :--> b)
 pfoldr = phoistAcyclic $
   plam $ \f z ->
     precList
-      (\self x xs -> f # x # pdelay (self # xs))
+      (\self x xs -> f # x # (self # xs))
       (const z)
 
 -- | The same as 'pfoldr'', but with Haskell-level reduction function.
@@ -190,6 +190,17 @@ pfoldr' f = phoistAcyclic $
   plam $ \z ->
     precList
       (\self x xs -> f x (self # xs))
+      (const z)
+
+{- | / O(n) /. Fold on a list right-associatively, with opportunity for short circuting.
+
+May short circuit when given reducer function is lazy in its second argument.
+-}
+pfoldrLazy :: PIsListLike list a => Term s ((a :--> PDelayed b :--> b) :--> b :--> list a :--> b)
+pfoldrLazy = phoistAcyclic $
+  plam $ \f z ->
+    precList
+      (\self x xs -> f # x # pdelay (self # xs))
       (const z)
 
 -- | / O(n) /. Check that predicate holds for all elements in a list.
