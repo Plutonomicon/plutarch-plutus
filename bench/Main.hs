@@ -61,7 +61,7 @@ intListBench =
   let numList = pconstant @(PBuiltinList PInteger) [1 .. 5]
    in [ bench "phead" $ List.phead # numList
       , bench "ptail" $ List.ptail # numList
-      , -- Accessing the first two elements
+      , -- Accessing the first two elements, and adds them.
         benchGroup
           "x1+x2"
           [ -- Via HeadList and TailList only
