@@ -55,7 +55,9 @@ To run benchmarks on a particular commit,
 nix run github:Plutonomicon/plutarch/<COMMIT-GOES-HERE>#benchmark
 ```
 
-Eventually we will have PR integration for running benchmarks.
+Note that you can also view these benchmarks on a per-commit basis by looking at Hercules CI logs. Go to the Hercules CI job run for a given commit, and navigate to the `nixCi.checks.x86_64-linux.benchmark` page in the Attributes table, and then click on the "Log" header to view its output.
+
+Eventually we will have PR integration for running benchmarks. 
 
 # Contributing
 Contributions are more than welcome! Alongside the [User guide](#usage) above, you may also find the [Developers' guide](./docs/DEVGUIDE.md) useful for understanding the codebase.
