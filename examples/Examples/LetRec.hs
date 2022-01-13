@@ -7,7 +7,7 @@ import Plutarch.Bool (PBool (PFalse, PTrue), pif, (#==))
 import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
 import Plutarch.Rec (PRecord (PRecord), ScottEncoded, ScottEncoding, field, letrec)
-import Plutarch.Rec.TH (deriveScottEncoded)
+import Plutarch.Rec.TH (deriveAll)
 import Plutarch.String (PString)
 import qualified Rank2.TH
 import Test.Tasty (TestTree, testGroup)
@@ -21,14 +21,15 @@ data SampleRecord f = SampleRecord
   , sampleString :: f PString
   }
 
-sampleRecord :: PRecord SampleRecord s
+sampleRecord :: Term (s :: k) (ScottEncoding SampleRecord (t :: k -> Type))
 sampleRecord =
-  PRecord
-    SampleRecord
-      { sampleBool = pcon PFalse
-      , sampleInt = 6
-      , sampleString = "Salut, Monde!"
-      }
+  pcon' $
+    PRecord
+      SampleRecord
+        { sampleBool = pcon PFalse
+        , sampleInt = 6
+        , sampleString = "Salut, Monde!"
+        }
 
 data EvenOdd f = EvenOdd
   { even :: f (PInteger :--> PBool)
@@ -37,9 +38,8 @@ data EvenOdd f = EvenOdd
 
 type instance ScottEncoded EvenOdd a = (PInteger :--> PBool) :--> (PInteger :--> PBool) :--> a
 
-$(deriveScottEncoded ''SampleRecord)
-$(Rank2.TH.deriveAll ''SampleRecord)
 $(Rank2.TH.deriveAll ''EvenOdd)
+$(deriveAll ''SampleRecord) -- also autoderives the @type instance ScottEncoded@
 
 sampleRecur :: Term (s :: S) (ScottEncoding SampleRecord (t :: PType))
 sampleRecur =
@@ -68,12 +68,12 @@ tests =
     [ testGroup
         "Simple"
         [ testCase "record construction" $
-            printTerm (pcon' sampleRecord # field sampleInt)
+            printTerm (sampleRecord # field sampleInt)
               @?= "(program 1.0.0 ((\\i0 -> i1 False 6 \"Salut, Monde!\") (\\i0 -> \\i0 -> \\i0 -> i2)))"
         , testCase "record field" $
-            equal' (pcon' sampleRecord # field sampleInt) "(program 1.0.0 6)"
+            equal' (sampleRecord # field sampleInt) "(program 1.0.0 6)"
         , testCase "record match" $
-            equal' (pmatch' (pcon' sampleRecord) $ \(PRecord r) -> sampleString r) "(program 1.0.0 \"Salut, Monde!\")"
+            equal' (pmatch' sampleRecord $ \(PRecord r) -> sampleString r) "(program 1.0.0 \"Salut, Monde!\")"
         ]
     , testGroup
         "Letrec"
