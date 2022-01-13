@@ -10,6 +10,7 @@ module Plutarch.List (
   -- * Query
   pelem,
   plength,
+  punsafeIndex,
 
   -- * Construction
   psingleton,
@@ -151,6 +152,19 @@ plength = phoistAcyclic $
     )
     $ \go -> plam $ \xs -> go # xs # 0
 
+{- |
+  Unsafely index a BuiltinList,
+  throwing an error if the index is out of bounds.
+-}
+punsafeIndex :: (PIsListLike list a) => Term s (PInteger :--> list a :--> a)
+punsafeIndex = phoistAcyclic $
+  pfix #$ plam $
+    \self n xs ->
+      pif
+        (n #== 0)
+        (phead # xs)
+        (self # (n - 1) #$ ptail # xs)
+
 --------------------------------------------------------------------------------
 
 -- | / O(n) /. Fold on a list right-associatively
@@ -283,3 +297,5 @@ plistEquals =
     plam $ \xs ys ->
       plength # xs #== plength # ys
         #&& pfoldr' (#&&) # pcon PTrue # (pzipWith' (#==) # xs # ys)
+
+--------------------------------------------------------------------------------

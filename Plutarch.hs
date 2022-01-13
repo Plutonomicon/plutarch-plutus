@@ -172,7 +172,7 @@ instance {-# OVERLAPPABLE #-} PlutusType a => PMatch a where
   pmatch x f = pmatch' (punsafeCoerce x) f
 
 instance PlutusType a => PCon a where
-  pcon = punsafeCoerce . pcon'
+  pcon x = punsafeCoerce (pcon' x)
 
 class PCon a where
   -- | Construct a Plutarch Term via a Haskell datatype
@@ -187,13 +187,13 @@ class PMatch a where
   assuming that the value is a safe construction of the Term.
 -}
 punsafeFrom :: (forall b. Term s (PInner a b)) -> Term s a
-punsafeFrom = punsafeCoerce
+punsafeFrom x = punsafeCoerce x
 
 {- |
   Safely coerce from a Term to it's 'PInner' representation.
 -}
 pto :: Term s a -> (forall b. Term s (PInner a b))
-pto = punsafeCoerce
+pto x = punsafeCoerce x
 
 -- | An Arbitrary Term with an unknown type
 data POpaque s = POpaque (Term s POpaque)

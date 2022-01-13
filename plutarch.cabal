@@ -1,39 +1,32 @@
 cabal-version:      2.4
 name:               plutarch
 version:            1.0.0
-
-author: Las Safin <me@las.rs>
-license: MIT
-
+author:             Las Safin <me@las.rs>
+license:            MIT
 extra-source-files: README.md
 
 flag development
   description: Enable tracing functions within plutarch.
-  manual: True
-  default: False
+  manual:      True
+  default:     False
 
 common c
-  default-language: Haskell2010
+  default-language:   Haskell2010
   default-extensions:
-    DataKinds
-    DeriveAnyClass
-    DerivingStrategies
-    LambdaCase
-    TypeFamilies
-    OverloadedStrings
-    PartialTypeSignatures
-    ViewPatterns
-    -- poor man's GHC2021
+    NoStarIsType
     BangPatterns
     BinaryLiterals
     ConstrainedClassMethods
     ConstraintKinds
+    DataKinds
+    DeriveAnyClass
     DeriveDataTypeable
     DeriveFoldable
     DeriveFunctor
     DeriveGeneric
     DeriveLift
     DeriveTraversable
+    DerivingStrategies
     DerivingVia
     DoAndIfThenElse
     EmptyCase
@@ -50,11 +43,14 @@ common c
     ImplicitPrelude
     InstanceSigs
     KindSignatures
+    LambdaCase
     MonomorphismRestriction
     MultiParamTypeClasses
     NamedFieldPuns
     NamedWildCards
     NumericUnderscores
+    OverloadedStrings
+    PartialTypeSignatures
     PatternGuards
     PolyKinds
     PostfixOperators
@@ -63,89 +59,96 @@ common c
     ScopedTypeVariables
     StandaloneDeriving
     StandaloneKindSignatures
-    NoStarIsType
     TraditionalRecordSyntax
     TupleSections
     TypeApplications
+    TypeFamilies
     TypeOperators
     TypeSynonymInstances
+    ViewPatterns
+
+  -- poor man's GHC2021
   ghc-options:
-    -Wall -Wcompat -Wincomplete-uni-patterns -Wno-partial-type-signatures
-    -Wmissing-export-lists -Werror -Wincomplete-record-updates
-    -Wmissing-deriving-strategies -Wno-name-shadowing -Wunused-foralls
-    -fprint-explicit-foralls -fprint-explicit-kinds
+    -Wall -Wcompat -Wincomplete-uni-patterns
+    -Wno-partial-type-signatures -Wmissing-export-lists -Werror
+    -Wincomplete-record-updates -Wmissing-deriving-strategies
+    -Wno-name-shadowing -Wunused-foralls -fprint-explicit-foralls
+    -fprint-explicit-kinds
 
 library
-  import: c
+  import:          c
   exposed-modules:
-    Plutarch.Evaluate
-    Plutarch.Internal
     Plutarch
-    Plutarch.Prelude
+    Plutarch.Api.V1
+    Plutarch.Bool
+    Plutarch.Builtin
+    Plutarch.ByteString
+    Plutarch.Crypto
+    Plutarch.DataRepr
+    Plutarch.Either
+    Plutarch.Evaluate
+    Plutarch.Integer
+    Plutarch.Internal
+    Plutarch.Lift
+    Plutarch.List
+    Plutarch.Maybe
     Plutarch.Pair
+    Plutarch.Prelude
     Plutarch.Rational
     Plutarch.Rec
     Plutarch.Rec.TH
-    Plutarch.Either
-    Plutarch.Integer
-    Plutarch.Bool
     Plutarch.String
-    Plutarch.ByteString
-    Plutarch.Builtin
-    Plutarch.DataRepr
-    Plutarch.ScriptContext
-    Plutarch.Maybe
-    Plutarch.List
-    Plutarch.Unit
-    Plutarch.Crypto
-    Plutarch.Lift
     Plutarch.Trace
+    Plutarch.Tuple
+    Plutarch.Unit
+
   build-depends:
     , base
-    , plutus-core
-    , plutus-ledger-api
-    , text
-    , hashable
     , bytestring
     , containers
     , cryptonite
-    , plutus-tx
-    , mtl
     , flat
+    , hashable
+    , mtl
+    , plutus-core
+    , plutus-ledger-api
+    , plutus-tx
     , rank2classes
     , template-haskell
+    , text
     , transformers
 
   if flag(development)
     cpp-options: -DDevelopment
 
 test-suite examples
-  import: c
-  type: exitcode-stdio-1.0
-  main-is: Main.hs
+  import:         c
+  type:           exitcode-stdio-1.0
+  main-is:        Main.hs
   hs-source-dirs: examples
   other-modules:
-    Examples.Tracing
-    Examples.PlutusType
-    Examples.List
+    Examples.Api
     Examples.LetRec
-    Utils
+    Examples.List
+    Examples.PlutusType
     Examples.Recursion
     Examples.Rationals
+    Examples.Tracing
+    Utils
+
   build-depends:
+    , aeson
     , base
     , bytestring
-    , text
     , plutarch
-    , rank2classes >= 1.4.4
+    , plutus-core
+    , plutus-ledger-api
+    , plutus-tx
+    , rank2classes       >=1.4.4
+    --, shrinker
     , tasty
     , tasty-hunit
     , text
-    , plutus-ledger-api
-    , plutus-core
-    , aeson
-    , plutus-tx
-    , shrinker
 
   if flag(development)
     cpp-options: -DDevelopment

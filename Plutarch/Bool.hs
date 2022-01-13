@@ -22,7 +22,7 @@ import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinBool'
 data PBool s = PTrue | PFalse
-  deriving (PLift) via PBuiltinType PBool Bool
+  deriving (PLift, AsDefaultUni) via PBuiltinType PBool Bool
 
 instance PlutusType PBool where
   type PInner PBool _ = PBool
