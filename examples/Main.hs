@@ -30,6 +30,7 @@ import qualified PlutusTx
 import qualified Examples.Api as Api
 import qualified Examples.LetRec as LetRec
 import qualified Examples.PlutusType as PlutusType
+import qualified Examples.Rationals as Rationals
 import qualified Examples.Recursion as Recursion
 import Utils
 
@@ -86,6 +87,7 @@ tests =
     , Recursion.tests
     , Api.tests
     , List.tests
+    , Rationals.tests
     , LetRec.tests
     ]
 

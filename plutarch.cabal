@@ -132,6 +132,7 @@ test-suite examples
     Examples.List
     Examples.PlutusType
     Examples.Recursion
+    Examples.Rationals
     Examples.Tracing
     Utils
 
