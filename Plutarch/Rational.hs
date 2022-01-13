@@ -31,10 +31,13 @@ data PRational s = PRational (Term s PInteger) (Term s PInteger)
 
 instance PIsData PRational where
   pfromData x' = phoistAcyclic (plam $ \x -> pListToRat #$ pmap # pasInt #$ pasList # pforgetData x) # x'
-  pdata x' = phoistAcyclic (plam $ \x ->
-    (punsafeCoerce :: Term _ (PAsData (PBuiltinList (PAsData PInteger))) -> Term _ (PAsData PRational)) $
-      pdata $ pRatToList # x
-                           ) # x'
+  pdata x' =
+    phoistAcyclic
+      ( plam $ \x ->
+          (punsafeCoerce :: Term _ (PAsData (PBuiltinList (PAsData PInteger))) -> Term _ (PAsData PRational)) $
+            pdata $ pRatToList # x
+      )
+      # x'
 
 pRatToList :: Term s (PRational :--> PBuiltinList (PAsData PInteger))
 pRatToList = plam $ \x -> pmatch x $ \(PRational a b) ->
@@ -219,30 +222,30 @@ pround = phoistAcyclic $
     pmatch x $ \(PRational a b) ->
       plet (pdiv # a # b) $ \base ->
         plet (pmod # a # b) $ \rem ->
-        base +
-            pif (pmod # b # 2 #== 1)
+          base
+            + pif
+              (pmod # b # 2 #== 1)
               (pif (pdiv # b # 2 #< rem) 1 0)
-              (pif (pdiv # b # 2 #== rem)
-                   (pmod # base # 2)
-                   (pif (rem #< pdiv # b # 2) 0 1)
+              ( pif
+                  (pdiv # b # 2 #== rem)
+                  (pmod # base # 2)
+                  (pif (rem #< pdiv # b # 2) 0 1)
               )
 
-
-        --(pdiv # b # 2 + pmod # b # 2 #<= pmod # a # b) 1 0
+--(pdiv # b # 2 + pmod # b # 2 #<= pmod # a # b) 1 0
 
 ptruncate :: Term s (PRational :--> PInteger)
 ptruncate = phoistAcyclic $
   plam $ \x ->
     pmatch x $ \(PRational a b) ->
       plet (pdiv # a # b) $ \q ->
-      pif (0 #<= a)
-        q
-        (q + pif (pmod # a # b #== 0) 0 1)
+        pif
+          (0 #<= a)
+          q
+          (q + pif (pmod # a # b #== 0) 0 1)
 
 pproperFraction :: Term s (PRational :--> PPair PInteger PRational)
 pproperFraction = phoistAcyclic $
   plam $ \x ->
-      plet (ptruncate # x) $ \q ->
-        pcon $ PPair q (x - pfromInteger # q)
-
-
+    plet (ptruncate # x) $ \q ->
+      pcon $ PPair q (x - pfromInteger # q)

@@ -20,7 +20,7 @@ tests = do
     [ testCase "1/2 + 1/2 = 1" $
         expect $ 1 / 2 + 1 / 2 #== (1 :: Term s PRational)
     , testCase "(1 - 3/2) * (2 - 5/2) == 1/4" $
-        expect $ (1 - 3/2) * (2 - 5/2) #== (1/4 :: Term s PRational)
+        expect $ (1 - 3 / 2) * (2 - 5 / 2) #== (1 / 4 :: Term s PRational)
     , testCase "1/2 - 1/3 = 1/6" $
         expect $ 1 / 2 - 1 / 3 #== (1 / 6 :: Term s PRational)
     , testCase "2/9 < 3/10" $
