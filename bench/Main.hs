@@ -93,7 +93,7 @@ intListBench =
           , -- Retrieve head and tail using builtins, but fail on null lists.
             bench "head-and-tail-and-null" $
               plet (List.pnull # numList) $ \isEmpty ->
-                pmatch' isEmpty $ \case
+                pmatch isEmpty $ \case
                   PTrue -> perror
                   PFalse -> plet (List.phead # numList) $ \_x ->
                     List.ptail # numList
