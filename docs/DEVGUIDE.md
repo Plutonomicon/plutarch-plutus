@@ -3,6 +3,12 @@ Looking to contribute to Plutarch? Looking for functionalities that are not curr
 <details>
 <summary> Table of Contents </summary>
 
+- [Code Style](#code-style)
+- [Pre-commit checks](#pre-commit-checks)
+- [Concepts](#concepts)
+  - [Plutus Core constants (UNSAFE)](#plutus-core-constants-unsafe)
+  - [Plutus core builtin functions](#plutus-core-builtin-functions)
+  - [Working with BuiltinData/Data/PData](#working-with-builtindatadatapdata)
 - [Lower Level Examples](#lower-level-examples)
   - [Extracting `txInfoInputs` from `ScriptContext` manually (UNTYPED)](#extracting-txinfoinputs-from-scriptcontext-manually-untyped)
 - [Useful Links](#useful-links)
@@ -10,17 +16,17 @@ Looking to contribute to Plutarch? Looking for functionalities that are not curr
 
 > Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high quality documentation for Plutarch developers!
 
-## Code Style
+# Code Style
 You should generally follow the [MLabs style guide](https://github.com/mlabs-haskell/styleguide), credit to [@Koz Ross](https://github.com/kozross).
 
 **Discouraged Extensions**
 * `ImportQualifiedPost`
 * `RecordWildCards`
 
-## Pre-commit checks
+# Pre-commit checks
 Remember to run `./bin/format` to format your code and `cabal test` to make sure all the tests pass prior to making a PR!
 
-## Concepts
+# Concepts
 Even if certain functionalities are absent from the public facing API - you can always implement them using functions like `punsafeConstant` and `punsafeBuiltin` - these allow you to walk the lines between Plutus core and Plutarch.
 
 A general familiarity with Plutus core is important. You can learn all of that through the following documents-
