@@ -3,18 +3,16 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans -Wno-redundant-constraints #-}
 
-module Plutarch.DataRepr (PDataRepr, punDataRepr, pindexDataRepr, pmatchDataRepr, DataReprHandlers (..), PDataList, pdhead, pdtail, PIsDataRepr (..), PIsDataReprInstances (..), punsafeIndex, pindexDataList, PVia (..)) where
+module Plutarch.DataRepr (PDataRepr, punDataRepr, pindexDataRepr, pmatchDataRepr, DataReprHandlers (..), PDataList, pdhead, pdtail, PIsDataRepr (..), PIsDataReprInstances (..), punsafeIndex, pindexDataList) where
 
-import Data.Coerce (Coercible, coerce)
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy)
 import GHC.TypeLits (KnownNat, Nat, natVal, type (-))
-import Plutarch (ClosedTerm, Dig, PMatch, PlutusType (..), TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoerce, runTermCont)
+import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoerce, runTermCont)
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
-  PBuiltinPair,
   PData,
   PIsData,
   pasConstr,
@@ -24,7 +22,7 @@ import Plutarch.Builtin (
   psndBuiltin,
  )
 import Plutarch.Integer (PInteger)
-import Plutarch.Lift
+import Plutarch.Lift (PLifted, PLiftedRepr, PUnsafeLiftDecl, pliftFromRepr, pliftToRepr)
 import Plutarch.List (punsafeIndex)
 import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Api as Ledger
@@ -73,10 +71,6 @@ pindexDataList n =
   where
     ind :: Term s PInteger
     ind = fromInteger $ toInteger $ natVal n
-
---type family LengthList (l :: [k]) :: Nat
---type instance LengthList '[] = 'N
---type instance LengthList (x : xs) = 'S (LengthList xs)
 
 data DataReprHandlers (out :: k -> Type) (def :: [[k -> Type]]) (s :: k) where
   DRHNil :: DataReprHandlers out '[] s
@@ -130,9 +124,6 @@ pmatchDataRepr d handlers =
 
 newtype PIsDataReprInstances (a :: k -> Type) (h :: Type) (s :: k) = PIsDataReprInstances (a s)
 
-instance AsDefaultUni (PIsDataReprInstances a h) where
-  type DefaultUniType (PIsDataReprInstances a h) = ()
-
 class (PMatch a, PIsData a) => PIsDataRepr (a :: k -> Type) where
   type PIsDataReprRepr a :: [[k -> Type]]
   pmatchRepr :: forall s b. Term s (PDataRepr (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
@@ -144,47 +135,8 @@ instance PIsDataRepr a => PIsData (PIsDataReprInstances a h) where
 instance PIsDataRepr a => PMatch (PIsDataReprInstances a h) where
   pmatch x f = pmatchRepr (punsafeCoerce x) (f . PIsDataReprInstances)
 
-instance {-# OVERLAPPABLE #-} (Ledger.FromData h, Ledger.ToData h, PIsData p) => PLift (PIsDataReprInstances p h) where
-  type PHaskellType (PIsDataReprInstances p h) = h
-  pconstant' =
-    punsafeCoerce . pconstant @PData . Ledger.toData
-  plift' t = do
-    h <- plift' @_ @PData (punsafeCoerce t)
-    maybeToRight "Failed to decode data" $ Ledger.fromData h
-    where
-      maybeToRight e = maybe (Left e) Right
-
-{- |
-  DerivingVia wrapper for deriving `PLift` instances
-  via the wrapped type, while lifting to a coercible Haskell type.
--}
-newtype PVia (p :: k -> Type) (h :: Type) (s :: k) = PVia (Term s p)
-
-instance
-  (HasDefaultUni p) =>
-  AsDefaultUni (PVia p h)
-  where
-  type DefaultUniType (PVia p h) = (DefaultUniType p)
-
-instance
-  ( PLift p
-  , Coercible (PHaskellType p) h
-  ) =>
-  PLift (PVia p h)
-  where
-  type PHaskellType (PVia p h) = h
-
-  pconstant' :: h -> Term s (PVia p h)
-  pconstant' x = punsafeCoerce $ pconstant @p (coerce x)
-
-  plift' :: ClosedTerm (PVia p h) -> Either LiftError h
-  plift' t = coerce $ plift' t'
-    where
-      t' :: ClosedTerm p
-      t' = punsafeCoerce t
-
-instance PlutusType (PVia p h) where
-  type PInner (PVia p h) _ = p
-
-  pcon' (PVia x) = x
-  pmatch' t f = f $ PVia t
+instance {-# OVERLAPPABLE #-} (Ledger.FromData h, Ledger.ToData h, PIsData p) => PUnsafeLiftDecl h (PIsDataReprInstances p h) where
+  type PLifted (PIsDataReprInstances p h) = h
+  type PLiftedRepr (PIsDataReprInstances p h) = Ledger.Data
+  pliftToRepr = Ledger.toData
+  pliftFromRepr = Ledger.fromData

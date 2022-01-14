@@ -18,13 +18,13 @@ import GHC.Stack (HasCallStack)
 import Plutarch (punsafeBuiltin)
 import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Integer (PInteger)
-import Plutarch.Lift
+import Plutarch.Lift (DerivePLiftViaCoercible, PUnsafeLiftDecl, pconstant)
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinByteString'
 data PByteString s
-  deriving (PLift, AsDefaultUni) via PBuiltinType PByteString ByteString
+  deriving (PUnsafeLiftDecl ByteString) via (DerivePLiftViaCoercible ByteString PByteString ByteString)
 
 instance PEq PByteString where
   x #== y = punsafeBuiltin PLC.EqualsByteString # x # y

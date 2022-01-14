@@ -1,7 +1,7 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE ImplicitParams #-}
 
-module Utils (HasTester, standardTester, eval, equal, equalBudgeted, equal', fails, expect, throws, traces, shrinkTester) where
+module Utils (HasTester, standardTester, eval, equal, equalBudgeted, equal', fails, expect, throws, traces) where
 
 import Control.Exception (SomeException, try)
 import Data.Kind (Type)
@@ -12,7 +12,8 @@ import Plutarch.Evaluate (evaluateBudgetedScript, evaluateScript)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
 import qualified PlutusCore.Evaluation.Machine.ExMemory as ExMemory
-import Shrink (shrinkScript)
+
+--import Shrink (shrinkScript)
 import Test.Tasty.HUnit
 
 newtype EvalImpl = EvalImpl {runEvalImpl :: forall k (a :: k -> Type). HasCallStack => ClosedTerm a -> IO Scripts.Script}
@@ -89,6 +90,7 @@ standardTester =
         Left e -> assertFailure $ "Script evalImpluation failed: " <> show e
         Right (_, traceLog, _) -> traceLog @?= sl
 
+{-
 shrinkTester :: Tester
 shrinkTester =
   Tester
@@ -137,6 +139,7 @@ shrinkTester =
       case evaluateScript . shrinkScript $ compile x of
         Left e -> assertFailure $ "Script evalImpluation failed: " <> show e
         Right (_, traceLog, _) -> traceLog @?= sl
+-}
 
 eval :: (HasCallStack, HasTester) => ClosedTerm a -> IO Scripts.Script
 eval = runEvalImpl (evalImpl ?tester)

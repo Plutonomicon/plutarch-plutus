@@ -8,13 +8,13 @@ import qualified Data.Text as Txt
 import Plutarch (punsafeBuiltin)
 import Plutarch.Bool (PEq, (#==))
 import Plutarch.ByteString (PByteString)
-import Plutarch.Lift
+import Plutarch.Lift (DerivePLiftViaCoercible, PUnsafeLiftDecl, pconstant)
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinString' values
 data PString s
-  deriving (PLift, AsDefaultUni) via PBuiltinType PString Text
+  deriving (PUnsafeLiftDecl Text) via (DerivePLiftViaCoercible Text PString Text)
 
 {-# DEPRECATED pfromText "Use `pconstant` instead." #-}
 

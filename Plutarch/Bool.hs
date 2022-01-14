@@ -16,13 +16,13 @@ module Plutarch.Bool (
 ) where
 
 import Plutarch (PlutusType (PInner, pcon', pmatch'), punsafeBuiltin)
-import Plutarch.Lift
+import Plutarch.Lift (DerivePLiftViaCoercible, PUnsafeLiftDecl, pconstant)
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinBool'
 data PBool s = PTrue | PFalse
-  deriving (PLift, AsDefaultUni) via PBuiltinType PBool Bool
+  deriving (PUnsafeLiftDecl Bool) via (DerivePLiftViaCoercible Bool PBool Bool)
 
 instance PlutusType PBool where
   type PInner PBool _ = PBool
