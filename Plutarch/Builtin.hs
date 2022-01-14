@@ -152,6 +152,14 @@ pdataLiteral = pconstant
 
 data PAsData (a :: k -> Type) (s :: k)
 
+data PAsDataLifted (a :: k -> Type)
+
+instance PUnsafeLiftDecl (PAsDataLifted a) (PAsData a) where
+  type PLifted (PAsData a) = PAsDataLifted a
+  type PLiftedRepr (PAsData a) = Data
+  pliftToRepr = \case
+  pliftFromRepr _ = Nothing
+
 pforgetData :: Term s (PAsData a) -> Term s PData
 pforgetData = punsafeCoerce
 
