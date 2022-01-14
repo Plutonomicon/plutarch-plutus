@@ -12,7 +12,7 @@ import Utils
 {- |
   A Sum type, which can be encoded as an Enum
 -}
-data AB (s :: k) = A | B
+data AB (s :: S) = A | B
 
 {- |
   AB is encoded as an Enum, using values of PInteger

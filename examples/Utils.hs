@@ -16,13 +16,13 @@ import qualified PlutusCore.Evaluation.Machine.ExMemory as ExMemory
 --import Shrink (shrinkScript)
 import Test.Tasty.HUnit
 
-newtype EvalImpl = EvalImpl {runEvalImpl :: forall k (a :: k -> Type). HasCallStack => ClosedTerm a -> IO Scripts.Script}
-newtype EqualImpl = EqualImpl {runEqualImpl :: forall k (a :: k -> Type) (b :: k -> Type). HasCallStack => ClosedTerm a -> ClosedTerm b -> Assertion}
-newtype Equal'Impl = Equal'Impl {runEqual'Impl :: forall k (a :: k -> Type). HasCallStack => ClosedTerm a -> String -> Assertion}
-newtype FailsImpl = FailsImpl {runFailsImpl :: forall k (a :: k -> Type). HasCallStack => ClosedTerm a -> Assertion}
+newtype EvalImpl = EvalImpl {runEvalImpl :: forall k (a :: PType). HasCallStack => ClosedTerm a -> IO Scripts.Script}
+newtype EqualImpl = EqualImpl {runEqualImpl :: forall k (a :: PType) (b :: PType). HasCallStack => ClosedTerm a -> ClosedTerm b -> Assertion}
+newtype Equal'Impl = Equal'Impl {runEqual'Impl :: forall k (a :: PType). HasCallStack => ClosedTerm a -> String -> Assertion}
+newtype FailsImpl = FailsImpl {runFailsImpl :: forall k (a :: PType). HasCallStack => ClosedTerm a -> Assertion}
 newtype ExpectImpl = ExpectImpl {runExpectImpl :: forall (k :: Type). HasCallStack => ClosedTerm @k PBool -> Assertion}
-newtype ThrowsImpl = ThrowsImpl {runThrowsImpl :: forall k (a :: k -> Type). ClosedTerm a -> Assertion}
-newtype TracesImpl = TracesImpl {runTracesImpl :: forall k (a :: k -> Type). ClosedTerm a -> [Text] -> Assertion}
+newtype ThrowsImpl = ThrowsImpl {runThrowsImpl :: forall k (a :: PType). ClosedTerm a -> Assertion}
+newtype TracesImpl = TracesImpl {runTracesImpl :: forall k (a :: PType). ClosedTerm a -> [Text] -> Assertion}
 
 data Tester = Tester
   { evalImpl :: EvalImpl
@@ -143,7 +143,7 @@ shrinkTester =
 
 eval :: (HasCallStack, HasTester) => ClosedTerm a -> IO Scripts.Script
 eval = runEvalImpl (evalImpl ?tester)
-equal :: forall k (a :: k -> Type) (b :: k -> Type). (HasCallStack, HasTester) => ClosedTerm @k a -> ClosedTerm @k b -> Assertion
+equal :: forall k (a :: PType) (b :: PType). (HasCallStack, HasTester) => ClosedTerm @k a -> ClosedTerm @k b -> Assertion
 equal x y = runEqualImpl (equalImpl ?tester) x y
 equal' :: (HasCallStack, HasTester) => ClosedTerm a -> String -> Assertion
 equal' = runEqual'Impl (equal'Impl ?tester)

@@ -22,6 +22,8 @@ module Plutarch (
   PI.punsafeConstant,
   PI.Term,
   PI.TermCont (..),
+  PI.S,
+  PI.PType,
   PlutusType (..),
   printTerm,
   printScript,
@@ -37,11 +39,9 @@ module Plutarch (
   popaque,
   punsafeFromOpaque,
   plam,
-  -- $plam
 ) where
 
-import Data.Kind (Type)
-import Plutarch.Internal (ClosedTerm, Term, compile, papp, phoistAcyclic, plam', punsafeCoerce, (:-->))
+import Plutarch.Internal (ClosedTerm, PType, Term, compile, papp, phoistAcyclic, plam', punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
 import Plutus.V1.Ledger.Scripts (Script (Script))
 import PlutusCore.Pretty (prettyPlcReadableDebug)
@@ -135,7 +135,7 @@ pinl v f = f v
 
   A simple example, encoding a Sum type as an Enum via PInteger:
 
-  > data AB (s :: k) = A | B
+  > data AB (s :: S) = A | B
   >
   > instance PlutusType AB where
   >   type PInner AB _ = PInteger
@@ -157,10 +157,10 @@ pinl v f = f v
 
   Further examples can be found in examples/PlutusType.hs
 -}
-class (PCon a, PMatch a) => PlutusType (a :: k -> Type) where
+class (PCon a, PMatch a) => PlutusType (a :: PType) where
   -- `b' :: k'` causes GHC to fail type checking at various places
   -- due to not being able to expand the type family.
-  type PInner a (b' :: k -> Type) :: k -> Type
+  type PInner a (b' :: PType) :: PType
   pcon' :: forall s. a s -> forall b. Term s (PInner a b)
   pmatch' :: forall s c. (forall b. Term s (PInner a b)) -> (a s -> Term s c) -> Term s c
 

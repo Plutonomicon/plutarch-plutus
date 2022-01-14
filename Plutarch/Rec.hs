@@ -14,6 +14,7 @@ import Data.Monoid (Dual (Dual, getDual), Endo (Endo, appEndo), Sum (Sum, getSum
 import Numeric.Natural (Natural)
 import Plutarch (PCon, pcon, phoistAcyclic, plam, punsafeCoerce, (#), (:-->))
 import Plutarch.Internal (
+  PType,
   RawTerm (RApply, RLamAbs, RVar),
   Term (Term, asRawTerm),
   TermResult (TermResult, getDeps, getTerm),
@@ -23,7 +24,7 @@ import qualified Rank2
 
 newtype PRecord r s = PRecord {getRecord :: r (Term s)}
 
-type family ScottEncoded (r :: ((k -> Type) -> Type) -> Type) (a :: k -> Type) :: k -> Type
+type family ScottEncoded (r :: ((PType) -> Type) -> Type) (a :: PType) :: PType
 newtype ScottArgument r s t = ScottArgument {getScott :: Term s (ScottEncoded r t)}
 type ScottEncoding r t = ScottEncoded r t :--> t
 
