@@ -6,3 +6,5 @@ package plutus-tx-plugin
   flags: +use-ghc-stub
 
 packages: ./.
+
+benchmarks: true
