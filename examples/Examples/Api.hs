@@ -10,6 +10,7 @@ import Plutarch.Api.V1 (
  )
 import Plutarch.Builtin (PAsData, PBuiltinList)
 import Plutarch.DataRepr (pindexDataList)
+import Plutarch.Lift (pconstant)
 
 import Plutus.V1.Ledger.Api (
   Address (..),

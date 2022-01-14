@@ -9,6 +9,7 @@ import Plutarch
 import Plutarch.Bool (pnot, (#<), (#==))
 import Plutarch.Builtin (PBuiltinList (..))
 import Plutarch.Integer
+import Plutarch.Lift
 import Plutarch.List
 
 --------------------------------------------------------------------------------

@@ -11,7 +11,7 @@ import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
 import qualified Examples.List as List
 import Examples.Tracing (traceTests)
-import Plutarch (POpaque, pconstant, plift', popaque, printTerm, punsafeBuiltin)
+import Plutarch (POpaque, popaque, printTerm, punsafeBuiltin)
 import Plutarch.Api.V1 (PScriptPurpose (PMinting))
 import Plutarch.Bool (PBool (PFalse, PTrue), pand, pif, pnot, por, (#&&), (#<), (#<=), (#==), (#||))
 import Plutarch.Builtin (PBuiltinList (..), PBuiltinPair, PData, pdata)
@@ -19,6 +19,7 @@ import Plutarch.ByteString (PByteString, pconsBS, phexByteStr, pindexBS, plength
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (punsafeConstantInternal)
+import Plutarch.Lift (pconstant, plift')
 import Plutarch.Prelude
 import Plutarch.String (PString)
 import Plutarch.Unit (PUnit (..))
