@@ -3,7 +3,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE UndecidableSuperClasses #-}
 
-module Plutarch.Lift (PUnsafeLiftDecl (..), PLift, pconstant, plift, plift', LiftError, DerivePLiftViaCoercible (..)) where
+module Plutarch.Lift (PConstant (..), PUnsafeLiftDecl (..), PLift, pconstant, plift, plift', LiftError, DerivePLiftViaCoercible (..), DerivePConstant) where
 
 import Data.Coerce
 import Data.Kind (Type)
@@ -16,41 +16,46 @@ import PlutusCore.Constant (readKnownConstant)
 import PlutusCore.Evaluation.Machine.Exception (MachineError)
 import qualified UntypedPlutusCore as UPLC
 
--- FIXME: `h -> p`
-class (PLifted p ~ h, PLC.DefaultUni `PLC.Includes` PLiftedRepr p) => PUnsafeLiftDecl (h :: Type) (p :: PType) | p -> h where
+class (PConstant (PLifted p), PConstanted (PLifted p) ~ p, PLC.DefaultUni `PLC.Includes` PLiftedRepr p) => PUnsafeLiftDecl (p :: PType) where
   type PLiftedRepr p :: Type
   type PLifted p :: Type
-  pliftToRepr :: h -> PLiftedRepr p
-  pliftFromRepr :: PLiftedRepr p -> Maybe h
+  pliftToRepr :: PLifted p -> PLiftedRepr p
+  pliftFromRepr :: PLiftedRepr p -> Maybe (PLifted p)
 
-class PUnsafeLiftDecl (PLifted p) p => PLift (p :: PType)
-instance PUnsafeLiftDecl (PLifted p) p => PLift (p :: PType)
+class (PLift (PConstanted h), PLifted (PConstanted h) ~ h) => PConstant (h :: Type) where
+  type PConstanted h :: PType
+
+type PLift = PUnsafeLiftDecl
 
 newtype DerivePLiftViaCoercible (h :: Type) (p :: PType) (r :: Type) (s :: S) = DerivePLiftViaCoercible (p s)
+newtype DerivePConstant (h :: Type) (p :: PType) = DerivePConstant h
 
-instance (Coercible h r, PLC.DefaultUni `PLC.Includes` r) => PUnsafeLiftDecl h (DerivePLiftViaCoercible h p r) where
+instance (PConstant h, PConstanted h ~ DerivePLiftViaCoercible h p r, Coercible h r, PLC.DefaultUni `PLC.Includes` r) => PUnsafeLiftDecl (DerivePLiftViaCoercible h p r) where
   type PLiftedRepr (DerivePLiftViaCoercible h p r) = r
   type PLifted (DerivePLiftViaCoercible h p r) = h
   pliftToRepr = coerce
   pliftFromRepr = Just . coerce
 
-pconstant :: forall p h s. PUnsafeLiftDecl h p => h -> Term s p
-pconstant x = punsafeConstantInternal $ PLC.someValue @(PLiftedRepr p) @PLC.DefaultUni $ pliftToRepr @h @p x
+instance (PLift p, PLifted p ~ DerivePConstant h p) => PConstant (DerivePConstant h p) where
+  type PConstanted (DerivePConstant h p) = p
+
+pconstant :: forall p s. PUnsafeLiftDecl p => PLifted p -> Term s p
+pconstant x = punsafeConstantInternal $ PLC.someValue @(PLiftedRepr p) @PLC.DefaultUni $ pliftToRepr x
 
 -- | Error during script evaluation.
 data LiftError = LiftError deriving stock (Eq, Show)
 
-plift' :: forall p h. PUnsafeLiftDecl h p => ClosedTerm p -> Either LiftError h
+plift' :: forall p. PUnsafeLiftDecl p => ClosedTerm p -> Either LiftError (PLifted p)
 plift' prog = case evaluateScript (compile prog) of
   Right (_, _, Scripts.unScript -> UPLC.Program _ _ term) ->
     case readKnownConstant @_ @(PLiftedRepr p) @(MachineError PLC.DefaultFun) Nothing term of
-      Right r -> case pliftFromRepr @h @p r of
+      Right r -> case pliftFromRepr r of
         Just h -> Right h
         Nothing -> Left LiftError
       Left _ -> Left LiftError
   Left _ -> Left LiftError
 
-plift :: forall p h. (HasCallStack, PUnsafeLiftDecl h p) => ClosedTerm p -> h
+plift :: forall p. (HasCallStack, PUnsafeLiftDecl p) => ClosedTerm p -> (PLifted p)
 plift prog = case plift' prog of
   Right x -> x
   Left _ -> error "plift failed"
