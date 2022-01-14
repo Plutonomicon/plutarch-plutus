@@ -39,15 +39,16 @@ module Plutarch.List (
   pany,
 ) where
 
-import Plutarch
-import Plutarch.Bool (PBool (..), PEq (..), pif, (#&&), (#||))
+import Plutarch (PInner, PlutusType, pcon', pmatch')
+import Plutarch.Bool (PBool (PFalse, PTrue), PEq, pif, (#&&), (#==), (#||))
 import Plutarch.Integer (PInteger)
-import Plutarch.Pair (PPair (..))
+import Plutarch.Lift (pconstant)
+import Plutarch.Pair (PPair (PPair))
 import Plutarch.Prelude
 
 import Data.Kind
 
-data PList (a :: k -> Type) (s :: k)
+data PList (a :: PType) (s :: S)
   = PSCons (Term s a) (Term s (PList a))
   | PSNil
 
@@ -69,8 +70,8 @@ instance PEq a => PEq (PList a) where
 type PIsListLike list a = (PListLike list, PElemConstraint list a)
 
 -- | Plutarch types that behave like lists.
-class PListLike (list :: (k -> Type) -> k -> Type) where
-  type PElemConstraint list (a :: k -> Type) :: Constraint
+class PListLike (list :: (PType) -> PType) where
+  type PElemConstraint list (a :: PType) :: Constraint
 
   -- | Canonical eliminator for list-likes.
   pelimList ::

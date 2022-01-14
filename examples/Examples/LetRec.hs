@@ -41,7 +41,7 @@ $(deriveScottEncoded ''SampleRecord)
 $(Rank2.TH.deriveAll ''SampleRecord)
 $(Rank2.TH.deriveAll ''EvenOdd)
 
-sampleRecur :: Term (s :: k) (ScottEncoding SampleRecord (t :: k -> Type))
+sampleRecur :: Term (s :: S) (ScottEncoding SampleRecord (t :: PType))
 sampleRecur =
   letrec $
     const
@@ -51,7 +51,7 @@ sampleRecur =
         , sampleString = "Hello, World!"
         }
 
-evenOdd :: Term (s :: k) (ScottEncoding EvenOdd (t :: k -> Type))
+evenOdd :: Term (s :: S) (ScottEncoding EvenOdd (t :: PType))
 evenOdd = letrec evenOddRecursion
   where
     evenOddRecursion :: EvenOdd (Term s) -> EvenOdd (Term s)

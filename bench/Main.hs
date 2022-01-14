@@ -5,6 +5,7 @@ import Plutarch
 import Plutarch.Bool
 import Plutarch.Builtin
 import Plutarch.Integer
+import Plutarch.Lift
 import qualified Plutarch.List as List
 
 main :: IO ()
