@@ -21,16 +21,6 @@ data SampleRecord f = SampleRecord
   , sampleString :: f PString
   }
 
-sampleRecord :: Term (s :: k) (ScottEncoding SampleRecord (t :: k -> Type))
-sampleRecord =
-  pcon' $
-    PRecord
-      SampleRecord
-        { sampleBool = pcon PFalse
-        , sampleInt = 6
-        , sampleString = "Salut, Monde!"
-        }
-
 data EvenOdd f = EvenOdd
   { even :: f (PInteger :--> PBool)
   , odd :: f (PInteger :--> PBool)
@@ -40,6 +30,16 @@ type instance ScottEncoded EvenOdd a = (PInteger :--> PBool) :--> (PInteger :-->
 
 $(Rank2.TH.deriveAll ''EvenOdd)
 $(deriveAll ''SampleRecord) -- also autoderives the @type instance ScottEncoded@
+
+sampleRecord :: Term (s :: S) (ScottEncoding SampleRecord (t :: PType))
+sampleRecord =
+  pcon' $
+    PRecord
+      SampleRecord
+        { sampleBool = pcon PFalse
+        , sampleInt = 6
+        , sampleString = "Salut, Monde!"
+        }
 
 sampleRecur :: Term (s :: S) (ScottEncoding SampleRecord (t :: PType))
 sampleRecur =
