@@ -17,6 +17,7 @@
     - [Recursion](#recursion)
   - [Concepts](#concepts)
     - [Hoisting, metaprogramming,  and fundamentals](#hoisting-metaprogramming--and-fundamentals)
+      - [Hoisting Operators](#hoisting-operators)
     - [What is the `s`?](#what-is-the-s)
     - [eDSL Types in Plutarch](#edsl-types-in-plutarch)
     - [`plet` to avoid work duplication](#plet-to-avoid-work-duplication)
@@ -320,6 +321,42 @@ There is however still a problem: What about top-level functions, like `fib`, `s
 To solve this problem, Plutarch supports _hoisting_. Hoisting only works for _closed terms_, that is, terms that don't reference any free variables (introduced by `plam`).
 
 Hoisted terms are essentially moved to a top-level `plet`, i.e. it's essentially common subexpression elimination. Do note that because of this, your hoisted term is **also strictly evaluated, meaning that you shouldn't hoist non-lazy complex computations (use e.g.** `pdelay` **to avoid this).**
+
+#### Hoisting Operators
+For the sake of convenience, you often would want to use operators - which must be Haskell level functions. This is the case for `+`, `-`, `#==` and many more.
+
+Choosing convenience over efficiency is difficult, but if you notice that your operator uses complex logic and may end up creating big terms - you can trivially factor out the logic into a Plutarch level function, hoist it, and simply apply that function within the operator.
+
+Consider boolean or-
+```hs
+(#||) :: Term s PBool -> Term s PBool -> Term s PBool
+x #|| y = pif x (pcon PTrue) $ pif y (pcon PTrue) $ pcon PFalse
+```
+You can factor out most of the logic to a Plutarch level function, and apply that in the operator definition-
+
+```hs
+(#||) :: Term s PBool -> Term s PBool -> Term s PBool
+x #|| y = por # x # pdelay y
+
+por :: Term s (PBool :--> PDelayed PBool :--> PBool)
+por = phoistAcyclic $ plam $ \x y -> pif' # x # pcon PTrue # pforce y
+```
+
+In general the pattern goes like this-
+```hs
+(<//>) :: Term s x -> Term s y -> Term s z
+x <//> y = f # x # y
+
+f :: Term s (x :--> y :--> z)
+f = phoistAcyclic $ plam $ \x y -> <complex computation>
+```
+(OR, simply inlined)
+```hs
+(<//>) :: Term s x -> Term s y -> Term s z
+x <//> y = (\f -> f # x # y) $ phoistAcyclic $ plam $ \x y -> <complex computation>
+```
+
+> Note: You don't even need to export the Plutarch level function or anything! You can simply have that complex logic factored out into a *hoisted, internal Plutarch function* and everything will work just fine!
 
 ### What is the `s`?
 
@@ -1080,28 +1117,7 @@ Of course, what you _really_ should do , is prefer Plutarch level functions when
 
 Plutarch level functions have a lot of advantages - they can be hoisted; they are strict so you can [use their arguments however many times you like without duplicating work](#dont-duplicate-work); they are required for Plutarch level higher order functions etc. Unless you _really_ need laziness, like `pif` does, try to use Plutarch level functions.
 
-What about convenient Haskell operators? Well, these must be Haskell level functions working on Plutarch terms. This is the case for `+`, `-`, `#==` and many more.
-
-Choosing convenience over efficiency is difficult, but if you notice that your operator uses complex logic and may end up creating big terms, like in this case-
-
-```haskell
-(#||) :: Term s PBool -> Term s PBool -> Term s PBool
-x #|| y = pif x (pcon PTrue) $ pif y (pcon PTrue) $ pcon PFalse
-```
-
-You can factor out most of the logic to a Plutarch level function, and apply that in the operator definition-
-
-```haskell
-(#||) :: Term s PBool -> Term s PBool -> Term s PBool
-x #|| y = por # pdelay x # pdelay y
-
-por :: Term s (PDelayed PBool :--> PDelayed PBool :--> PBool)
-por = phoistAcyclic $
-  plam $
-    \x y -> pif' # pforce x # pcon PTrue #$ pif' # pforce y # pcon PTrue # pcon PFalse
-```
-
-The necessity of workarounds like these will be significantly reduced once we figure out [eta reductions (#32)](https://github.com/Plutonomicon/plutarch/issues/32) though!
+Also see: [Hoisting](#hoisting-metaprogramming--and-fundamentals).
 
 ## When to use Haskell level functions?
 Although you should generally [prefer Plutarch level functions](#prefer-plutarch-level-functions), there are times when a Haskell level function is actually much better. However, figuring out *when* that is the case is a delicate art.
