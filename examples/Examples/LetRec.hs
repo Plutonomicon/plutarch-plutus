@@ -2,9 +2,6 @@
 
 module Examples.LetRec (tests) where
 
-import Test.Tasty (TestTree, testGroup)
-
-{-
 import Plutarch (printTerm, punsafeCoerce)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, (#==))
 import Plutarch.Integer (PInteger)
@@ -13,6 +10,7 @@ import Plutarch.Rec (PRecord (PRecord), ScottEncoded, ScottEncoding, field, letr
 import Plutarch.Rec.TH (deriveScottEncoded)
 import Plutarch.String (PString)
 import qualified Rank2.TH
+import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))
 import Utils
 import Prelude hiding (even, odd)
@@ -32,6 +30,17 @@ sampleRecord =
       , sampleString = "Salut, Monde!"
       }
 
+data EvenOdd f = EvenOdd
+  { even :: f (PInteger :--> PBool)
+  , odd :: f (PInteger :--> PBool)
+  }
+
+type instance ScottEncoded EvenOdd a = (PInteger :--> PBool) :--> (PInteger :--> PBool) :--> a
+
+$(deriveScottEncoded ''SampleRecord)
+$(Rank2.TH.deriveAll ''SampleRecord)
+$(Rank2.TH.deriveAll ''EvenOdd)
+
 sampleRecur :: Term (s :: k) (ScottEncoding SampleRecord (t :: k -> Type))
 sampleRecur =
   letrec $
@@ -41,13 +50,6 @@ sampleRecur =
         , sampleInt = 12
         , sampleString = "Hello, World!"
         }
-
-data EvenOdd f = EvenOdd
-  { even :: f (PInteger :--> PBool)
-  , odd :: f (PInteger :--> PBool)
-  }
-
-type instance ScottEncoded EvenOdd a = (PInteger :--> PBool) :--> (PInteger :--> PBool) :--> a
 
 evenOdd :: Term (s :: k) (ScottEncoding EvenOdd (t :: k -> Type))
 evenOdd = letrec evenOddRecursion
@@ -78,11 +80,3 @@ tests =
         , testCase "even 5" $ equal' (evenOdd # field even # (5 :: Term s PInteger)) "(program 1.0.0 False)"
         ]
     ]
-
-$(Rank2.TH.deriveAll ''EvenOdd)
-$(Rank2.TH.deriveAll ''SampleRecord)
-$(deriveScottEncoded ''SampleRecord)
--}
-
-tests :: TestTree
-tests = testGroup "FIXME letrec" []
