@@ -23,7 +23,7 @@ module Plutarch.Builtin (
 ) where
 
 import Plutarch (PlutusType (..), punsafeBuiltin, punsafeCoerce)
-import Plutarch.Bool (PBool (..), PEq, (#==))
+import Plutarch.Bool (PBool (..), PEq, pif', (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (DerivePLiftViaCoercible, PLift, PLifted, PLiftedRepr, PUnsafeLiftDecl, pconstant, pliftFromRepr, pliftToRepr)
@@ -183,6 +183,37 @@ instance PIsData PInteger where
 instance PIsData PByteString where
   pfromData x = pasByteStr # pforgetData x
   pdata x = punsafeBuiltin PLC.BData # x
+
+{- |
+  Instance for PBool following the Plutus IsData repr
+  given by @makeIsDataIndexed ''Bool [('False,0),('True,1)]@,
+  which is used in 'TxInfo' via 'Closure'.
+-}
+instance PIsData PBool where
+  pfromData x =
+    (phoistAcyclic $ plam $ \d -> toBool #$ tag # d)
+      # pforgetData x
+    where
+      toBool :: Term s (PInteger :--> PBool)
+      toBool = phoistAcyclic $ plam (#== 1)
+
+      tag :: Term s (PData :--> PInteger)
+      tag = phoistAcyclic $ plam $ \d -> pfstBuiltin #$ pasConstr # d
+
+  pdata x =
+    (phoistAcyclic $ plam $ \b -> constr #$ toInt # b)
+      # x
+    where
+      toInt :: Term s (PBool :--> PInteger)
+      toInt = phoistAcyclic $ plam $ \b -> pif' # b # 1 # 0
+
+      nil :: Term s (PBuiltinList PData)
+      nil = pnil
+
+      constr :: Term s (PInteger :--> PAsData PBool)
+      constr = phoistAcyclic $
+        plam $ \x ->
+          punsafeBuiltin PLC.ConstrData # x # nil
 
 instance PIsData (PBuiltinPair PInteger (PBuiltinList PData)) where
   pfromData x = pasConstr # pforgetData x

@@ -14,7 +14,7 @@ import Examples.Tracing (traceTests)
 import Plutarch (POpaque, pconstant, plift', popaque, printTerm, punsafeBuiltin)
 import Plutarch.Api.V1 (PScriptPurpose (PMinting))
 import Plutarch.Bool (PBool (PFalse, PTrue), pand, pif, pnot, por, (#&&), (#<), (#<=), (#==), (#||))
-import Plutarch.Builtin (PBuiltinList (..), PBuiltinPair, PData, pdata)
+import Plutarch.Builtin (PBuiltinList (..), PBuiltinPair, PData, PIsData (..), pdata)
 import Plutarch.ByteString (PByteString, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Integer (PInteger)
@@ -262,6 +262,8 @@ plutarchTests =
         , testCase "True || perror ≡ True" $ equal (pcon PTrue #|| perror) (pcon PTrue)
         , testCase "fails: por True perror" $ fails $ por # pcon PFalse # perror
         , testCase "por True (pdelay perror) ≡ True" $ equal (por # pcon PTrue # pdelay perror) (pdelay $ pcon PTrue)
+        , testCase "pfromData (pdata True) = True" $ equal (pfromData $ pdata $ pcon PTrue) (pcon PTrue)
+        , testCase "pfromData (pdata False) = False" $ equal (pfromData $ pdata $ pcon PFalse) (pcon PFalse)
         ]
     ]
 
