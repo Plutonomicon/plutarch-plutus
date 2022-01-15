@@ -1,3 +1,5 @@
+{-# LANGUAGE QualifiedDo #-}
+
 module Examples.List (tests) where
 
 import Test.Tasty
@@ -11,6 +13,7 @@ import Plutarch.Builtin (PBuiltinList (..))
 import Plutarch.Integer
 import Plutarch.Lift
 import Plutarch.List
+import qualified Plutarch.Monadic as P
 
 --------------------------------------------------------------------------------
 
@@ -64,4 +67,10 @@ tests = do
         expect $
           (pfoldl' (-) # 0 # integerList [])
             #== pconstant 0
+    , testCase "pmatch" $ do
+        let
+          t = P.do
+            _ <- integerList [1, 3, 1]
+            perror
+         in printTerm t @?= ""
     ]

@@ -1,3 +1,5 @@
+{-# LANGUAGE QualifiedDo #-}
+
 module Examples.Api (tests) where
 
 import Data.Proxy (Proxy (..))
@@ -11,6 +13,7 @@ import Plutarch.Api.V1 (
 import Plutarch.Builtin (PAsData, PBuiltinList)
 import Plutarch.DataRepr (pindexDataList)
 import Plutarch.Lift (pconstant)
+import qualified Plutarch.Monadic as P
 
 import Plutus.V1.Ledger.Api (
   Address (..),
@@ -96,19 +99,19 @@ sym = "c0"
 --------------------------------------------------------------------------------
 
 _getTxInfo :: Term s (PScriptContext :--> PAsData PTxInfo)
-_getTxInfo =
-  plam $ \x -> pmatch x $ \case
-    (PScriptContext c) -> pindexDataList (Proxy @0) # c
+_getTxInfo = plam $ \x -> P.do
+  PScriptContext c <- x
+  pindexDataList (Proxy @0) # c
 
 _getMint :: Term s (PTxInfo :--> PAsData PValue)
-_getMint =
-  plam $ \x -> pmatch x $ \case
-    (PTxInfo i) -> pindexDataList (Proxy @3) # i
+_getMint = plam $ \x -> P.do
+  PTxInfo i <- x
+  pindexDataList (Proxy @3) # i
 
 _getInputs :: Term s (PTxInfo :--> PAsData (PBuiltinList (PAsData PTxInInfo)))
-_getInputs =
-  plam $ \x -> pmatch x $ \case
-    (PTxInfo i) -> pindexDataList (Proxy @0) # i
+_getInputs = plam $ \x -> P.do
+  PTxInfo i <- x
+  pindexDataList (Proxy @0) # i
 
 {-
 -- | Get first validator from TxInInfo

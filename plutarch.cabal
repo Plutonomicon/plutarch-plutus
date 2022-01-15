@@ -90,6 +90,7 @@ library
     Plutarch.Lift
     Plutarch.List
     Plutarch.Maybe
+    Plutarch.Monadic
     Plutarch.Pair
     Plutarch.Prelude
     Plutarch.Rational
