@@ -81,16 +81,16 @@
         {
           src = inputs.cardano-base;
           subdirs = [
-           # "base-deriving-via"
+            # "base-deriving-via"
             "binary"
-           # "binary/test"
-           "cardano-crypto-class"
-           # "cardano-crypto-praos"
-           # "cardano-crypto-tests"
-           # "measures"
-           # "orphans-deriving-via"
-           # "slotting"
-           # "strict-containers"
+            # "binary/test"
+            "cardano-crypto-class"
+            # "cardano-crypto-praos"
+            # "cardano-crypto-tests"
+            # "measures"
+            # "orphans-deriving-via"
+            # "slotting"
+            # "strict-containers"
           ];
         }
         {
@@ -198,27 +198,28 @@
           };
         };
 
-        formatCheckFor = system:
-          let
-            pkgs = nixpkgsFor' system;
-          in
-            pkgs.runCommand "format-check" {
-              nativeBuildInputs = [ pkgs.haskellPackages.fourmolu ];
-            } ''
-              export LC_CTYPE=C.UTF-8
-              export LC_ALL=C.UTF-8
-              export LANG=C.UTF-8
-              cd ${self}
-              ./bin/format || (echo "    Please run ./bin/format" ; exit 1)
-              mkdir $out
-            ''
-          ;
+      formatCheckFor = system:
+        let
+          pkgs = nixpkgsFor system;
+        in
+        pkgs.runCommand "format-check"
+          {
+            nativeBuildInputs = [ pkgs.haskellPackages.fourmolu ];
+          } ''
+          export LC_CTYPE=C.UTF-8
+          export LC_ALL=C.UTF-8
+          export LANG=C.UTF-8
+          cd ${self}
+          ./bin/format || (echo "    Please run ./bin/format" ; exit 1)
+          mkdir $out
+        ''
+      ;
     in
     {
       inherit extraSources;
 
       project = perSystem projectFor;
-      flake = perSystem (system: (projectFor system).flake {});
+      flake = perSystem (system: (projectFor system).flake { });
 
       # this could be done automatically, but would reduce readability
       packages = perSystem (system: self.flake.${system}.packages);
@@ -230,14 +231,15 @@
         }
       );
       check = perSystem (system:
-        (nixpkgsFor system).runCommand "combined-test" {
-          nativeBuildInputs = builtins.attrValues self.checks.${system};
-        } "touch $out"
+        (nixpkgsFor system).runCommand "combined-test"
+          {
+            nativeBuildInputs = builtins.attrValues self.checks.${system};
+          } "touch $out"
       );
-      apps = perSystem (system: 
+      apps = perSystem (system:
         self.flake.${system}.apps
         // {
-            benchmark = {
+          benchmark = {
             type = "app";
             program = "${self.flake.${system}.packages."plutarch:bench:perf"}/bin/perf";
           };
