@@ -7,10 +7,15 @@ import Plutarch.Api.V1 (
   PTxInInfo (..),
   PTxInfo (..),
   PValue (..),
+  PScriptContext (..),
+  PAddress (..),
+  PTxOut (..),
+  PValidatorHash (..),
+  PCredential (..)
  )
-import Plutarch.Builtin (PAsData, PBuiltinList)
+import Plutarch.Builtin (PAsData, PBuiltinList, PIsData (..))
 import Plutarch.DataRepr (pindexDataList)
-
+import Plutarch.List (PListLike (..))
 import Plutus.V1.Ledger.Api (
   Address (..),
   Credential (..),
@@ -109,7 +114,6 @@ _getInputs =
   plam $ \x -> pmatch x $ \case
     (PTxInfo i) -> pindexDataList (Proxy @0) # i
 
-{-
 -- | Get first validator from TxInInfo
 getValidator :: Term s (PBuiltinList (PAsData PTxInInfo) :--> PAsData PValidatorHash)
 getValidator =
@@ -120,7 +124,6 @@ getValidator =
           (PAddress a) -> pmatch (pfromData $ pindexDataList (Proxy @0) # a) $ \case
             (PPubKeyCredential _) -> perror
             (PScriptCredential v) -> pindexDataList (Proxy @0) # v
--}
 
 ---- | Get first CurrencySymbol from Value
 --getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
