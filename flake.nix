@@ -182,7 +182,7 @@
 
             # We use the ones from Nixpkgs, since they are cached reliably.
             # Eventually we will probably want to build these with haskell.nix.
-            nativeBuildInputs = [ pkgs.cabal-install pkgs.hlint pkgs.haskellPackages.fourmolu pkgs.haskellPackages.cabal-fmt pkgs.nixpkgs-fmt ];
+            nativeBuildInputs = [ pkgs'.cabal-install pkgs'.hlint pkgs'.haskellPackages.fourmolu pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt ];
 
             # FIXME: add HLS back
             # Use https://github.com/haskell/haskell-language-server/pull/2503 ?
