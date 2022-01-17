@@ -1,6 +1,7 @@
 {-# LANGUAGE DefaultSignatures #-}
 
 module Plutarch.Rec (
+  DataReader(DataReader, readData),
   PRecord (PRecord, getRecord),
   ScottEncoded,
   ScottEncoding,
@@ -8,14 +9,15 @@ module Plutarch.Rec (
   field,
   letrec,
   pletrec,
+  recordFromFieldReaders,
 ) where
 
 import Control.Monad.Trans.State.Lazy (State, evalState, get, put)
-import Data.Functor.Compose (Compose)
+import Data.Functor.Compose (Compose(Compose, getCompose))
 import Data.Kind (Type)
 import Data.Monoid (Dual (Dual, getDual), Endo (Endo, appEndo), Sum (Sum, getSum))
 import Numeric.Natural (Natural)
-import Plutarch (PlutusType (PInner, pcon', pmatch'), phoistAcyclic, plam, plet, punsafeCoerce, (#), (:-->))
+import Plutarch (PlutusType (PInner, pcon', pmatch'), pcon, phoistAcyclic, plam, plet, punsafeCoerce, (#), (:-->))
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Builtin (PAsData, PBuiltinList, PData, pasConstr, pforgetData, pfstBuiltin, psndBuiltin)
 import Plutarch.Internal (
@@ -107,7 +109,21 @@ variables = Rank2.cotraverse var id
               , getDeps = []
               }
 
+newtype DataReader s a = DataReader {readData :: Term s (PAsData a) -> Term s a}
 newtype FocusFromData s a b = FocusFromData {getFocus :: Term s (PAsData a :--> PAsData b)}
+newtype FocusFromDataList s a = FocusFromDataList {getItem :: Term s (PBuiltinList PData) -> Term s (PAsData a)}
+
+-- | Converts a record of field DataReaders to a DataReader of the whole
+-- record. If you only need a single field or two, use `fieldFromData`
+-- instead.
+recordFromFieldReaders :: forall r s. (Rank2.Apply r, Rank2.Distributive r, Rank2.Traversable r, FieldsFromData r)
+                       => r (DataReader s) -> DataReader s (PRecord r)
+recordFromFieldReaders reader = DataReader $ verifySoleConstructor readRecord
+  where
+    readRecord :: Term s (PBuiltinList PData) -> Term s (PRecord r)
+    readRecord dat = pcon $ PRecord $ Rank2.liftA2 (flip readData . getCompose) (fields dat) reader
+    fields :: Term s (PBuiltinList PData) -> r (Compose (Term s) PAsData)
+    fields bis = (\f-> Compose $ getItem f bis) Rank2.<$> fieldListFoci
 
 class FieldsFromData r where
   -- | Converts a Haskell field function to a function term that extracts the 'Data' encoding of the field from the
@@ -125,20 +141,30 @@ fieldFoci = Rank2.cotraverse focus id
     focus :: (r (FocusFromData s (PRecord r)) -> FocusFromData s (PRecord r) a) -> FocusFromData s (PRecord r) a
     focus ref = ref ordered
     ordered :: r (FocusFromData s (PRecord r))
+    ordered = fieldsFromRecord Rank2.<$> fieldListFoci
+    fieldsFromRecord :: FocusFromDataList s a -> FocusFromData s (PRecord r) a
+    fieldsFromRecord (FocusFromDataList f) = FocusFromData $ plam $ verifySoleConstructor f
+
+fieldListFoci :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => r (FocusFromDataList s)
+fieldListFoci = Rank2.cotraverse focus id
+  where
+    focus :: (r (FocusFromDataList s) -> FocusFromDataList s a) -> FocusFromDataList s a
+    focus ref = ref ordered
+    ordered :: r (FocusFromDataList s)
     ordered = evalState (Rank2.traverse next $ initial @r) id
-    next :: f a -> State (Term s (PBuiltinList PData) -> Term s (PBuiltinList PData)) (FocusFromData s (PRecord r) a)
+    next :: f a -> State (Term s (PBuiltinList PData) -> Term s (PBuiltinList PData)) (FocusFromDataList s a)
     next _ = do
       rest <- get
       put ((ptail #) . rest)
-      return $
-        FocusFromData $ punsafeCoerce $ fromFields ((phead #) . rest)
-    fromFields :: (Term s (PBuiltinList PData) -> Term s a) -> Term s (PAsData (PRecord r) :--> a)
-    fromFields f = plam $ \d->
-      plet (pasConstr # pforgetData d) $ \constr ->
-        pif
-          (pfstBuiltin # constr #== 0)
-          (f $ psndBuiltin # constr)
-          (ptraceError "fieldFromData expects a sole constructor")
+      return $ FocusFromDataList (punsafeCoerce . (phead #) . rest)
+
+verifySoleConstructor :: (Term s (PBuiltinList PData) -> Term s a) -> (Term s (PAsData (PRecord r)) -> Term s a)
+verifySoleConstructor f d =
+  plet (pasConstr # pforgetData d) $ \constr ->
+    pif
+      (pfstBuiltin # constr #== 0)
+      (f $ psndBuiltin # constr)
+      (ptraceError "verifySoleConstructor failed")
 
 initial :: Rank2.Distributive r => r (Compose Maybe (Term s))
 initial = Rank2.distribute Nothing

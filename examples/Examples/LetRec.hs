@@ -4,11 +4,11 @@ module Examples.LetRec (tests) where
 
 import Plutarch (pcon', pmatch', printTerm, punsafeBuiltin, punsafeCoerce)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, (#==))
-import Plutarch.Builtin (PAsData, PBuiltinList (PNil), PData, PIsData, pasConstr, pdata, pforgetData, pfromData, pfstBuiltin, psndBuiltin)
+import Plutarch.Builtin (PAsData, PBuiltinList (PNil), PIsData, pdata, pforgetData, pfromData)
 import Plutarch.Integer (PInteger)
-import Plutarch.List (phead, ptail)
 import Plutarch.Prelude
-import Plutarch.Rec (FieldsFromData, PRecord (PRecord), ScottEncoded, ScottEncoding, field, fieldFromData, letrec)
+import Plutarch.Rec (DataReader(DataReader, readData), FieldsFromData, PRecord (PRecord), ScottEncoded, ScottEncoding,
+                     field, fieldFromData, letrec, recordFromFieldReaders)
 import Plutarch.Rec.TH (deriveAll)
 import Plutarch.String (PString, pdecodeUtf8, pencodeUtf8)
 import qualified PlutusCore as PLC
@@ -36,7 +36,7 @@ $(deriveAll ''SampleRecord) -- also autoderives the @type instance ScottEncoded@
 instance FieldsFromData SampleRecord
 
 instance PIsData (PRecord SampleRecord) where
-  pfromData = strictRecordFromData
+  pfromData = readData (recordFromFieldReaders sampleReader)
   pdata = recordData
 
 --recordData :: (forall t. Term s (ScottEncoding SampleRecord t)) -> Term s (PAsData (PRecord SampleRecord))
@@ -51,27 +51,11 @@ recordData r = pmatch r $ \(PRecord SampleRecord{sampleBool, sampleInt, sampleSt
 pconsBuiltin :: Term s (a :--> PBuiltinList a :--> PBuiltinList a)
 pconsBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.MkCons
 
-strictRecordFromData :: Term s (PAsData (PRecord SampleRecord)) -> Term s (PRecord SampleRecord)
-strictRecordFromData d =
-  plet (pasConstr # pforgetData d) $ \constr ->
-    pif
-      (pfstBuiltin # constr #== 0)
-      (fillInFields #$ psndBuiltin # constr)
-      perror
-  where
-    fillInFields :: Term s (PBuiltinList PData :--> PRecord SampleRecord)
-    fillInFields = plam $ \bis ->
-      plet (phead # bis) $ \b ->
-        plet (ptail # bis) $ \is ->
-          plet (phead # is) $ \i ->
-            plet (phead #$ ptail # is) $ \s ->
-              pcon
-                ( PRecord $
-                    SampleRecord
-                      (pfromData $ punsafeCoerce b)
-                      (pfromData $ punsafeCoerce i)
-                      (pdecodeUtf8 #$ pfromData $ punsafeCoerce s)
-                )
+sampleReader :: SampleRecord (DataReader s)
+sampleReader = SampleRecord{
+  sampleBool = DataReader pfromData,
+  sampleInt = DataReader pfromData,
+  sampleString = DataReader $ \d-> pdecodeUtf8 #$ pfromData $ punsafeCoerce d}
 
 sampleRecord :: Term (s :: S) (ScottEncoding SampleRecord (t :: PType))
 sampleRecord =
@@ -133,5 +117,6 @@ tests =
         [ testCase "pdata" $ printTerm sampleData @?= "(program 1.0.0 ((\\i0 -> i1 False 6 \"Salut, Monde!\") (\\i0 -> \\i0 -> \\i0 -> constrData 0 (force mkCons ((\\i0 -> constrData (force ifThenElse i1 1 0) [  ]) i3) (force mkCons (iData i2) (force mkCons (bData (encodeUtf8 i1)) [  ]))))))"
         , testCase "fieldFromData term" $ (printTerm $ plam $ \dat-> plam pfromData #$ fieldFromData sampleInt # dat) @?= "(program 1.0.0 (\\i0 -> unIData ((\\i0 -> (\\i0 -> force (force ifThenElse (equalsInteger (force (force fstPair) i1) 0) (delay (force headList (force tailList (force (force sndPair) i1)))) (delay error))) (unConstrData i1)) i1)))"
         , testCase "fieldFromData value" $ equal' (fieldFromData sampleInt # sampleData) "(program 1.0.0 #06)"
+        , testCase "pfromData" $ (printTerm $ plam $ \d-> punsafeCoerce (pfromData d :: Term _ (PRecord SampleRecord)) # field sampleInt) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> force (force ifThenElse (equalsInteger (i3 i1) 0) (delay (\\i0 -> i1 ((\\i0 -> equalsInteger (i5 (unConstrData i1)) 1) (i5 (i7 i2))) (unIData (i5 (i6 (i7 i2)))) (decodeUtf8 (unBData (i5 (i6 (i6 (i7 i2)))))))) (delay error))) (unConstrData i1) (\\i0 -> \\i0 -> \\i0 -> i2)) (force (force fstPair))) (force headList)) (force tailList)) (force (force sndPair))))"
         ]
     ]
