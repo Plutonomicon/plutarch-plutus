@@ -125,12 +125,15 @@
       nixpkgsFor = system: import nixpkgs { inherit system; overlays = [ haskell-nix.overlay ]; inherit (haskell-nix) config; };
       nixpkgsFor' = system: import nixpkgs { inherit system; inherit (haskell-nix) config; };
 
+      ghcVersion = "ghc921";
+      tools.fourmolu = {};
+
       projectFor = system:
         let pkgs = nixpkgsFor system; in
         let pkgs' = nixpkgsFor' system; in
         (nixpkgsFor system).haskell-nix.cabalProject' {
           src = ./.;
-          compiler-nix-name = "ghc921";
+          compiler-nix-name = ghcVersion;
           cabalProjectFileName = "cabal.project";
           inherit extraSources;
           modules = [{
@@ -190,7 +193,7 @@
             #   haskell-language-server = {};  # Must use haskell.nix, because the compiler version should match
             # };
 
-            tools.fourmolu = {};
+            inherit tools;
 
             additional = ps: [
               ps.plutus-ledger-api
@@ -202,10 +205,10 @@
 
         formatCheckFor = system:
           let
-            pkgs = nixpkgsFor' system;
+            pkgs = nixpkgsFor system;
           in
             pkgs.runCommand "format-check" {
-              nativeBuildInputs = [ pkgs.haskellPackages.fourmolu ];
+              nativeBuildInputs = [ (pkgs.haskell-nix.tools ghcVersion { inherit (tools) fourmolu; }).fourmolu ];
             } ''
               export LC_CTYPE=C.UTF-8
               export LC_ALL=C.UTF-8
