@@ -22,10 +22,8 @@ import Plutarch.Builtin (
   psndBuiltin,
  )
 import Plutarch.Integer (PInteger)
-import Plutarch.Lift (PLifted, PLiftedRepr, PUnsafeLiftDecl, pliftFromRepr, pliftToRepr)
 import Plutarch.List (punsafeIndex)
 import Plutarch.Prelude
-import qualified Plutus.V1.Ledger.Api as Ledger
 import qualified PlutusCore as PLC
 
 data PDataList (as :: [PType]) (s :: S)
@@ -122,21 +120,15 @@ pmatchDataRepr d handlers =
               handler
               $ go common (idx + 1) rest constr
 
-newtype PIsDataReprInstances (a :: PType) (h :: Type) (s :: S) = PIsDataReprInstances (a s)
+newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
 
 class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PType]]
   pmatchRepr :: forall s b. Term s (PDataRepr (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
 
-instance PIsDataRepr a => PIsData (PIsDataReprInstances a h) where
+instance PIsDataRepr a => PIsData (PIsDataReprInstances a) where
   pdata = punsafeCoerce
   pfromData = punsafeCoerce
 
-instance PIsDataRepr a => PMatch (PIsDataReprInstances a h) where
+instance PIsDataRepr a => PMatch (PIsDataReprInstances a) where
   pmatch x f = pmatchRepr (punsafeCoerce x) (f . PIsDataReprInstances)
-
-instance {-# OVERLAPPABLE #-} (Ledger.FromData h, Ledger.ToData h, PIsData p) => PUnsafeLiftDecl h (PIsDataReprInstances p h) where
-  type PLifted (PIsDataReprInstances p h) = h
-  type PLiftedRepr (PIsDataReprInstances p h) = Ledger.Data
-  pliftToRepr = Ledger.toData
-  pliftFromRepr = Ledger.fromData
