@@ -14,6 +14,7 @@ import Plutarch.Builtin (PAsData, PBuiltinList)
 import Plutarch.DataRepr (pindexDataList)
 import Plutarch.Lift (pconstant)
 import qualified Plutarch.Monadic as P
+import Plutarch.Trace (ptrace)
 
 import Plutus.V1.Ledger.Api (
   Address (..),
@@ -111,6 +112,7 @@ _getMint = plam $ \x -> P.do
 _getInputs :: Term s (PTxInfo :--> PAsData (PBuiltinList (PAsData PTxInInfo)))
 _getInputs = plam $ \x -> P.do
   PTxInfo i <- pmatch x
+  ptrace "xhuawdhauywhd"
   i' <- plet i
   pindexDataList (Proxy @0) # i'
 
