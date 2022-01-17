@@ -1,13 +1,14 @@
-{-# LANGUAGE CPP, QualifiedDo #-}
+{-# LANGUAGE CPP #-}
+{-# LANGUAGE QualifiedDo #-}
 
 module Examples.Tracing (traceTests) where
 
 import Plutarch
 import Plutarch.Bool (PBool (PFalse, PTrue))
+import qualified Plutarch.Monadic as P
 import Plutarch.Trace (ptrace, ptraceIfFalse, ptraceIfTrue)
 import Plutarch.Unit (PUnit (PUnit))
 import Utils (HasTester, traces)
-import qualified Plutarch.Monadic as P
 
 traceTests :: HasTester => IO ()
 traceTests = do

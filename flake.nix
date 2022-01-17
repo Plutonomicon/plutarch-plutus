@@ -206,10 +206,11 @@
       formatCheckFor = system:
         let
           pkgs = nixpkgsFor system;
+          pkgs' = nixpkgsFor' system;
         in
         pkgs.runCommand "format-check"
           {
-            nativeBuildInputs = [ (pkgs.haskell-nix.tools ghcVersion { inherit (tools) fourmolu; }).fourmolu ];
+            nativeBuildInputs = [ pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt (pkgs.haskell-nix.tools ghcVersion { inherit (tools) fourmolu; }).fourmolu ];
           } ''
           export LC_CTYPE=C.UTF-8
           export LC_ALL=C.UTF-8
@@ -226,7 +227,6 @@
       project = perSystem projectFor;
       flake = perSystem (system: (projectFor system).flake { });
 
-      # this could be done automatically, but would reduce readability
       packages = perSystem (system: self.flake.${system}.packages);
       checks = perSystem (system:
         self.flake.${system}.checks
@@ -238,8 +238,12 @@
       check = perSystem (system:
         (nixpkgsFor system).runCommand "combined-test"
           {
-            nativeBuildInputs = builtins.attrValues self.checks.${system};
-          } "touch $out"
+            checksss = builtins.attrValues self.checks.${system};
+          } ''
+          echo $checksss
+
+          touch $out
+        ''
       );
       apps = perSystem (system:
         self.flake.${system}.apps
