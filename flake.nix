@@ -104,7 +104,7 @@
 
             # We use the ones from Nixpkgs, since they are cached reliably.
             # Eventually we will probably want to build these with haskell.nix.
-            nativeBuildInputs = [ pkgs.cabal-install pkgs.hlint pkgs.haskellPackages.fourmolu ];
+            nativeBuildInputs = [ pkgs.cabal-install pkgs.hlint pkgs.haskellPackages.fourmolu pkgs.haskellPackages.cabal-fmt pkgs.nixpkgs-fmt ];
 
             tools = {
               haskell-language-server = {};  # Must use haskell.nix, because the compiler version should match
