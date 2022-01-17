@@ -1,7 +1,7 @@
 {-# LANGUAGE DefaultSignatures #-}
 
 module Plutarch.Rec (
-  DataReader(DataReader, readData),
+  DataReader (DataReader, readData),
   PRecord (PRecord, getRecord),
   ScottEncoded,
   ScottEncoding,
@@ -14,7 +14,7 @@ module Plutarch.Rec (
 ) where
 
 import Control.Monad.Trans.State.Lazy (State, evalState, get, put)
-import Data.Functor.Compose (Compose(Compose, getCompose))
+import Data.Functor.Compose (Compose (Compose, getCompose))
 import Data.Kind (Type)
 import Data.Monoid (Dual (Dual, getDual), Endo (Endo, appEndo), Sum (Sum, getSum))
 import Numeric.Natural (Natural)
@@ -114,33 +114,42 @@ newtype DataReader s a = DataReader {readData :: Term s (PAsData a) -> Term s a}
 newtype FocusFromData s a b = FocusFromData {getFocus :: Term s (PAsData a :--> PAsData b)}
 newtype FocusFromDataList s a = FocusFromDataList {getItem :: Term s (PBuiltinList PData) -> Term s (PAsData a)}
 
--- | Converts a record of field DataReaders to a DataReader of the whole
--- record. If you only need a single field or two, use `fieldFromData`
--- instead.
-recordFromFieldReaders :: forall r s. (Rank2.Apply r, RecordFromData r)
-                       => r (DataReader s) -> DataReader s (PRecord r)
+{- | Converts a record of field DataReaders to a DataReader of the whole
+ record. If you only need a single field or two, use `fieldFromData`
+ instead.
+-}
+recordFromFieldReaders ::
+  forall r s.
+  (Rank2.Apply r, RecordFromData r) =>
+  r (DataReader s) ->
+  DataReader s (PRecord r)
 recordFromFieldReaders reader = DataReader $ verifySoleConstructor readRecord
   where
     readRecord :: Term s (PBuiltinList PData) -> Term s (PRecord r)
     readRecord dat = pcon $ PRecord $ Rank2.liftA2 (flip readData . getCompose) (fields dat) reader
     fields :: Term s (PBuiltinList PData) -> r (Compose (Term s) PAsData)
-    fields bis = (\f-> Compose $ getItem f bis) Rank2.<$> fieldListFoci
+    fields bis = (\f -> Compose $ getItem f bis) Rank2.<$> fieldListFoci
 
--- | Converts a Haskell field function to a function term that extracts the 'Data' encoding of the field from the
--- encoding of the whole record.
-fieldFromData :: RecordFromData r
-              => (r (FocusFromData s (PRecord r)) -> FocusFromData s (PRecord r) t)
-              -> Term s (PAsData (PRecord r) :--> PAsData t)
+{- | Converts a Haskell field function to a function term that extracts the 'Data' encoding of the field from the
+ encoding of the whole record.
+-}
+fieldFromData ::
+  RecordFromData r =>
+  (r (FocusFromData s (PRecord r)) -> FocusFromData s (PRecord r) t) ->
+  Term s (PAsData (PRecord r) :--> PAsData t)
 fieldFromData f = getFocus (f fieldFoci)
 
--- | Instances of this class must know how to focus on individual fields of
--- the data-encoded record. If the declared order of the record fields doesn't
--- match the encoding order, you must override the method defaults.
+{- | Instances of this class must know how to focus on individual fields of
+ the data-encoded record. If the declared order of the record fields doesn't
+ match the encoding order, you must override the method defaults.
+-}
 class (Rank2.Distributive r, Rank2.Traversable r) => RecordFromData r where
   -- | Given the encoding of the whole record, every field focuses on its own encoding.
   fieldFoci :: r (FocusFromData s (PRecord r))
+
   -- | Given the encoding of the list of all fields, every field focuses on its own encoding.
   fieldListFoci :: r (FocusFromDataList s)
+
   fieldFoci = Rank2.cotraverse focus id
     where
       focus :: (r (FocusFromData s (PRecord r)) -> FocusFromData s (PRecord r) a) -> FocusFromData s (PRecord r) a
