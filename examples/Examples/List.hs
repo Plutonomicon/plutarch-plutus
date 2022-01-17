@@ -9,6 +9,7 @@ import Plutarch
 import Plutarch.Bool (pnot, (#<), (#==))
 import Plutarch.Builtin (PBuiltinList (..))
 import Plutarch.Integer
+import Plutarch.Lift
 import Plutarch.List
 
 --------------------------------------------------------------------------------
@@ -50,4 +51,17 @@ tests = do
         expect $
           (pzipWith' (+) # integerList [1 .. 10] # integerList [1 .. 10])
             #== integerList (fmap (* 2) [1 .. 10])
+    , testCase "pfoldl" $ do
+        expect $
+          (pfoldl # plam (-) # 0 # integerList [1 .. 10])
+            #== pconstant (foldl (-) 0 [1 .. 10])
+        expect $
+          (pfoldl' (-) # 0 # integerList [1 .. 10])
+            #== pconstant (foldl (-) 0 [1 .. 10])
+        expect $
+          (pfoldl # plam (-) # 0 # integerList [])
+            #== pconstant 0
+        expect $
+          (pfoldl' (-) # 0 # integerList [])
+            #== pconstant 0
     ]

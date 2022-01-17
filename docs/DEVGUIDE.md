@@ -1,7 +1,32 @@
 Looking to contribute to Plutarch? Looking for functionalities that are not currently provided by Plutarch from a safe interface? You've come to the right place!
 
+<details>
+<summary> Table of Contents </summary>
+
+- [Code Style](#code-style)
+- [Pre-commit checks](#pre-commit-checks)
+- [Concepts](#concepts)
+  - [Plutus Core constants (UNSAFE)](#plutus-core-constants-unsafe)
+  - [Plutus core builtin functions](#plutus-core-builtin-functions)
+  - [Working with BuiltinData/Data/PData](#working-with-builtindatadatapdata)
+- [Lower Level Examples](#lower-level-examples)
+  - [Extracting `txInfoInputs` from `ScriptContext` manually (UNTYPED)](#extracting-txinfoinputs-from-scriptcontext-manually-untyped)
+- [Useful Links](#useful-links)
+</details>
+
 > Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high quality documentation for Plutarch developers!
 
+# Code Style
+You should generally follow the [MLabs style guide](https://github.com/mlabs-haskell/styleguide), credit to [@Koz Ross](https://github.com/kozross).
+
+**Discouraged Extensions**
+* `ImportQualifiedPost`
+* `RecordWildCards`
+
+# Pre-commit checks
+Remember to run `./bin/format` to format your code and `cabal test` to make sure all the tests pass prior to making a PR!
+
+# Concepts
 Even if certain functionalities are absent from the public facing API - you can always implement them using functions like `punsafeConstant` and `punsafeBuiltin` - these allow you to walk the lines between Plutus core and Plutarch.
 
 A general familiarity with Plutus core is important. You can learn all of that through the following documents-
@@ -12,7 +37,7 @@ A general familiarity with Plutus core is important. You can learn all of that t
 
 Parts of the [Pluto guide](https://github.com/Plutonomicon/pluto/blob/main/GUIDE.md) may also prove useful.
 
-# Plutus Core constants (UNSAFE)
+## Plutus Core constants (UNSAFE)
 
 > **NOTE**: The following information is almost never necessary with the existence of `pconstant`. Refer to [constant building](./GUIDE.md#constants) and [`PLift`](./GUIDE.md#plift) section of the Plutarch user guide.
 
@@ -71,7 +96,7 @@ foo = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniBool
 
 Of course, we represent Plutus core booleans as `Term s PBool` in Plutarch - so that's its type!
 
-# Plutus core builtin functions
+## Plutus core builtin functions
 
 This is what you will be wrangling with the most. Builtin functions are going to be the foundation of _everything_ you do. And the documentation on them is….. sparse.
 
@@ -112,7 +137,7 @@ pchooseList = pforce $ pforce $ punsafeBuiltin PLC.ChooseList
 
 We have a [Plutus Core builtin functions reference](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-functions.md) for everything you need to know about them. Including types, usage, and forcing.
 
-# Working with BuiltinData/Data/PData
+## Working with BuiltinData/Data/PData
 
 Most of the time, you'll be working with `BuiltinData`/`Data` - this is the type of the arguments that will be passed onto your script from the outside. This is the type of the datum, the redeemer and the script context. This is also the type of arguments you will be able to pass to a `Script`.
 
@@ -120,7 +145,8 @@ Plutarch aims to hide these low level details from the user. Ideally, you will b
 
 If you want to work with `BuiltinData` directly however, which you may have to do during developing Plutarch, you can find all that you need to know at [Plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md).
 
-# Extracting `txInfoInputs` from `ScriptContext` manually (UNTYPED)
+# Lower Level Examples
+## Extracting `txInfoInputs` from `ScriptContext` manually (UNTYPED)
 Here's a quick refresher on what `ScriptContext` looks like-
 
 ```haskell

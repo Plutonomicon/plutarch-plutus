@@ -86,7 +86,7 @@ type PTuple = PDataList
 
 ---------- V1 Specific types, Incompatible with V2
 
-newtype PTxInfo (s :: k)
+newtype PTxInfo (s :: S)
   = PTxInfo
       ( Term
           s
@@ -126,7 +126,7 @@ instance PIsDataRepr PTxInfo where
   pmatchRepr dat f =
     (pmatchDataRepr dat) ((DRHCons (f . PTxInfo)) $ DRHNil)
 
-newtype PScriptContext (s :: k)
+newtype PScriptContext (s :: S)
   = PScriptContext (Term s (PDataList '[PTxInfo, PScriptPurpose]))
   deriving
     (PMatch, PIsData, PUnsafeLiftDecl Plutus.ScriptContext)
@@ -144,7 +144,7 @@ instance PIsDataRepr PScriptContext where
 
 -- General types, used by V1 and V2
 
-data PScriptPurpose (s :: k)
+data PScriptPurpose (s :: S)
   = PMinting (Term s (PDataList '[PCurrencySymbol]))
   | PSpending (Term s (PDataList '[PTxOutRef]))
   | PRewarding (Term s (PDataList '[PStakingCredential]))
@@ -173,60 +173,60 @@ instance PIsDataRepr PScriptPurpose where
 
 ---------- Scripts
 
-newtype PDatum (s :: k) = PDatum (Term s PData)
+newtype PDatum (s :: S) = PDatum (Term s PData)
   deriving (PIsData, PEq) via PData
 
-newtype PRedeemer (s :: k) = PRedeemer (Term s PData)
+newtype PRedeemer (s :: S) = PRedeemer (Term s PData)
   deriving (PIsData, PEq) via PData
 
-newtype PDatumHash (s :: k)
+newtype PDatumHash (s :: S)
   = PDatumHash (Term s PByteString)
   deriving (PEq, POrd, PIsData) via PByteString
 
-newtype PStakeValidatorHash (s :: k)
+newtype PStakeValidatorHash (s :: S)
   = PStakeValidatorHash (Term s PByteString)
   deriving (PEq, POrd, PIsData) via PByteString
 
-newtype PRedeemerHash (s :: k)
+newtype PRedeemerHash (s :: S)
   = PRedeemerHash (Term s PByteString)
   deriving (PEq, POrd, PIsData) via PByteString
 
-newtype PValidatorHash (s :: k)
+newtype PValidatorHash (s :: S)
   = PValidatorHash (Term s PByteString)
   deriving (PEq, POrd, PIsData) via PByteString
 
 ---------- Value
 
-newtype PTokenName (s :: k)
+newtype PTokenName (s :: S)
   = PTokenName (Term s PByteString)
   deriving (PEq, POrd, PIsData) via (PByteString)
   deriving newtype (Semigroup, Monoid)
 
-newtype PValue (s :: k)
+newtype PValue (s :: S)
   = PValue (Term s (PMap PCurrencySymbol (PMap PTokenName PInteger)))
   deriving (PIsData) via (PMap PCurrencySymbol (PMap PTokenName PInteger))
 
-newtype PCurrencySymbol (s :: k)
+newtype PCurrencySymbol (s :: S)
   = PCurrencySymbol (Term s PByteString)
   deriving (PEq, POrd, PIsData) via PByteString
 
 ---------- Crypto
 
-newtype PPubKeyHash (s :: k)
+newtype PPubKeyHash (s :: S)
   = PPubKeyHash (Term s PByteString)
   deriving (PEq, POrd, PIsData) via PByteString
 
-newtype PPubKey (s :: k)
+newtype PPubKey (s :: S)
   = PPubKey (Term s PByteString)
   deriving (PEq, POrd, PIsData) via PByteString
 
-newtype PSignature (s :: k)
+newtype PSignature (s :: S)
   = PSignature (Term s PByteString)
   deriving (PEq, POrd, PIsData) via PByteString
 
 ---------- Time
 
-newtype PPOSIXTime (s :: k)
+newtype PPOSIXTime (s :: S)
   = PPOSIXTime (Term s PInteger)
   deriving (POrd, PEq, PIntegral, PIsData) via (PInteger)
   deriving newtype (Num)
@@ -237,7 +237,7 @@ type PPOSIXTimeRange = PInterval PPOSIXTime
 
 type PClosure = PBool
 
-newtype PInterval a (s :: k)
+newtype PInterval a (s :: S)
   = PInterval
       ( Term
           s
@@ -267,7 +267,7 @@ instance PIsDataRepr (PInterval a) where
     pmatchDataRepr dat $
       DRHCons (f . PInterval) DRHNil
 
-newtype PLowerBound a (s :: k)
+newtype PLowerBound a (s :: S)
   = PLowerBound (Term s (PDataList '[PExtended a, PClosure]))
   deriving
     ( PMatch
@@ -290,7 +290,7 @@ instance PIsDataRepr (PLowerBound a) where
     pmatchDataRepr dat $
       DRHCons (f . PLowerBound) DRHNil
 
-newtype PUpperBound a (s :: k)
+newtype PUpperBound a (s :: S)
   = PUpperBound (Term s (PDataList '[PExtended a, PClosure]))
   deriving
     ( PMatch
@@ -312,7 +312,7 @@ instance PIsDataRepr (PUpperBound a) where
     pmatchDataRepr dat $
       DRHCons (f . PUpperBound) DRHNil
 
-data PExtended a (s :: k)
+data PExtended a (s :: S)
   = PNegInf (Term s (PDataList '[]))
   | PFinite (Term s (PDataList '[a]))
   | PPosInf (Term s (PDataList '[]))
@@ -335,7 +335,7 @@ instance PIsDataRepr (PExtended a) where
 
 ---------- Tx/Address
 
-data PCredential (s :: k)
+data PCredential (s :: S)
   = PPubKeyCredential (Term s (PDataList '[PPubKeyHash]))
   | PScriptCredential (Term s (PDataList '[PValidatorHash]))
   deriving
@@ -356,7 +356,7 @@ instance PIsDataRepr PCredential where
           (f . PScriptCredential)
           DRHNil
 
-data PStakingCredential (s :: k)
+data PStakingCredential (s :: S)
   = PStakingHash (Term s (PDataList '[PCredential]))
   | PStakingPtr (Term s (PDataList '[PInteger, PInteger, PInteger]))
   deriving
@@ -377,7 +377,7 @@ instance PIsDataRepr PStakingCredential where
       DRHCons (f . PStakingHash) $
         DRHCons (f . PStakingPtr) DRHNil
 
-newtype PAddress (s :: k)
+newtype PAddress (s :: S)
   = PAddress
       ( Term
           s
@@ -405,7 +405,7 @@ instance PIsDataRepr PAddress where
 
 ---------- Tx
 
-newtype PTxId (s :: k)
+newtype PTxId (s :: S)
   = PTxId (Term s (PDataList '[PByteString]))
   deriving
     (PMatch, PIsData, PUnsafeLiftDecl Plutus.TxId)
@@ -418,7 +418,7 @@ instance PIsDataRepr PTxId where
     pmatchDataRepr dat $
       DRHCons (f . PTxId) DRHNil
 
-newtype PTxOutRef (s :: k)
+newtype PTxOutRef (s :: S)
   = PTxOutRef (Term s (PDataList '[PTxId, PInteger]))
   deriving
     (PMatch, PIsData, PUnsafeLiftDecl Plutus.TxOutRef)
@@ -431,7 +431,7 @@ instance PIsDataRepr PTxOutRef where
     pmatchDataRepr dat $
       DRHCons (f . PTxOutRef) DRHNil
 
-newtype PTxInInfo (s :: k)
+newtype PTxInInfo (s :: S)
   = PTxInInfo (Term s (PDataList '[PTxOutRef, PTxOut]))
   deriving
     (PMatch, PIsData, PUnsafeLiftDecl Plutus.TxInfo)
@@ -444,7 +444,7 @@ instance PIsDataRepr PTxInInfo where
     pmatchDataRepr dat $
       DRHCons (f . PTxInInfo) DRHNil
 
-newtype PTxOut (s :: k)
+newtype PTxOut (s :: S)
   = PTxOut
       ( Term
           s
@@ -472,7 +472,7 @@ instance PIsDataRepr PTxOut where
     pmatchDataRepr dat $
       DRHCons (f . PTxOut) DRHNil
 
-data PDCert (s :: k)
+data PDCert (s :: S)
   = PDCertDelegRegKey (Term s (PDataList '[PStakingCredential]))
   | PDCertDelegDeRegKey (Term s (PDataList '[PStakingCredential]))
   | PDCertDelegDelegate (Term s (PDataList '[PStakingCredential, PPubKeyHash]))
@@ -508,13 +508,13 @@ instance PIsDataRepr PDCert where
 
 ---------- AssocMap
 
-newtype PMap (a :: k -> Type) (b :: k -> Type) (s :: k)
+newtype PMap (a :: PType) (b :: PType) (s :: S)
   = PMap (Term s (PBuiltinMap a b))
   deriving (PIsData) via (PBuiltinMap a b)
 
 ---------- Others
 
-data PMaybe a (s :: k)
+data PMaybe a (s :: S)
   = PNothing (Term s (PDataList '[]))
   | PJust (Term s (PDataList '[a]))
   deriving
@@ -531,7 +531,7 @@ instance PIsDataRepr (PMaybe a) where
       DRHCons (f . PNothing) $
         DRHCons (f . PJust) DRHNil
 
-data PEither a b (s :: k)
+data PEither a b (s :: S)
   = PLeft (Term s (PDataList '[a]))
   | PRight (Term s (PDataList '[b]))
   deriving

@@ -17,6 +17,8 @@ module Plutarch.Prelude (
   pto,
   pfix,
   Type,
+  S,
+  PType,
 ) where
 
 import Prelude ()

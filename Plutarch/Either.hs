@@ -3,7 +3,7 @@ module Plutarch.Either (PEither (..)) where
 import Plutarch (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.Prelude
 
-data PEither (a :: k -> Type) (b :: k -> Type) (s :: k) = PLeft (Term s a) | PRight (Term s b)
+data PEither (a :: PType) (b :: PType) (s :: S) = PLeft (Term s a) | PRight (Term s b)
 
 instance PlutusType (PEither a b) where
   type PInner (PEither a b) c = (a :--> c) :--> (b :--> c) :--> c

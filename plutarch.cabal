@@ -129,6 +129,7 @@ test-suite examples
     Examples.List
     Examples.PlutusType
     Examples.Recursion
+    Examples.Rationals
     Examples.Tracing
     Utils
 
@@ -148,3 +149,25 @@ test-suite examples
 
   if flag(development)
     cpp-options: -DDevelopment
+
+benchmark perf
+  import:         c 
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: bench
+  main-is:        Main.hs 
+  other-modules: Benchmark
+  build-depends:
+    , base
+    , boxes
+    , bytestring
+    , cassava
+    , foldl
+    , mtl
+    , plutarch
+    , serialise
+    , plutus-core
+    , plutus-ledger-api
+    , text
+    , flat
+    , data-default
+

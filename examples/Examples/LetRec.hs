@@ -2,17 +2,15 @@
 
 module Examples.LetRec (tests) where
 
-import Test.Tasty (TestTree, testGroup)
-
-{-
-import Plutarch (printTerm, punsafeCoerce)
+import Plutarch (pcon', pmatch', printTerm)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, (#==))
 import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
 import Plutarch.Rec (PRecord (PRecord), ScottEncoded, ScottEncoding, field, letrec)
-import Plutarch.Rec.TH (deriveScottEncoded)
+import Plutarch.Rec.TH (deriveAll)
 import Plutarch.String (PString)
 import qualified Rank2.TH
+import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))
 import Utils
 import Prelude hiding (even, odd)
@@ -23,16 +21,27 @@ data SampleRecord f = SampleRecord
   , sampleString :: f PString
   }
 
-sampleRecord :: PRecord SampleRecord s
-sampleRecord =
-  PRecord
-    SampleRecord
-      { sampleBool = pcon PFalse
-      , sampleInt = 6
-      , sampleString = "Salut, Monde!"
-      }
+data EvenOdd f = EvenOdd
+  { even :: f (PInteger :--> PBool)
+  , odd :: f (PInteger :--> PBool)
+  }
 
-sampleRecur :: Term (s :: k) (ScottEncoding SampleRecord (t :: k -> Type))
+type instance ScottEncoded EvenOdd a = (PInteger :--> PBool) :--> (PInteger :--> PBool) :--> a
+
+$(Rank2.TH.deriveAll ''EvenOdd)
+$(deriveAll ''SampleRecord) -- also autoderives the @type instance ScottEncoded@
+
+sampleRecord :: Term (s :: S) (ScottEncoding SampleRecord (t :: PType))
+sampleRecord =
+  pcon' $
+    PRecord
+      SampleRecord
+        { sampleBool = pcon PFalse
+        , sampleInt = 6
+        , sampleString = "Salut, Monde!"
+        }
+
+sampleRecur :: Term (s :: S) (ScottEncoding SampleRecord (t :: PType))
 sampleRecur =
   letrec $
     const
@@ -42,14 +51,7 @@ sampleRecur =
         , sampleString = "Hello, World!"
         }
 
-data EvenOdd f = EvenOdd
-  { even :: f (PInteger :--> PBool)
-  , odd :: f (PInteger :--> PBool)
-  }
-
-type instance ScottEncoded EvenOdd a = (PInteger :--> PBool) :--> (PInteger :--> PBool) :--> a
-
-evenOdd :: Term (s :: k) (ScottEncoding EvenOdd (t :: k -> Type))
+evenOdd :: Term (s :: S) (ScottEncoding EvenOdd (t :: PType))
 evenOdd = letrec evenOddRecursion
   where
     evenOddRecursion :: EvenOdd (Term s) -> EvenOdd (Term s)
@@ -65,9 +67,13 @@ tests =
     "Records"
     [ testGroup
         "Simple"
-        [ testCase "precord" $
-            printTerm (punsafeCoerce (pcon sampleRecord) # field sampleInt)
+        [ testCase "record construction" $
+            printTerm (sampleRecord # field sampleInt)
               @?= "(program 1.0.0 ((\\i0 -> i1 False 6 \"Salut, Monde!\") (\\i0 -> \\i0 -> \\i0 -> i2)))"
+        , testCase "record field" $
+            equal' (sampleRecord # field sampleInt) "(program 1.0.0 6)"
+        , testCase "record match" $
+            equal' (pmatch' sampleRecord $ \(PRecord r) -> sampleString r) "(program 1.0.0 \"Salut, Monde!\")"
         ]
     , testGroup
         "Letrec"
@@ -78,11 +84,3 @@ tests =
         , testCase "even 5" $ equal' (evenOdd # field even # (5 :: Term s PInteger)) "(program 1.0.0 False)"
         ]
     ]
-
-$(Rank2.TH.deriveAll ''EvenOdd)
-$(Rank2.TH.deriveAll ''SampleRecord)
-$(deriveScottEncoded ''SampleRecord)
--}
-
-tests :: TestTree
-tests = testGroup "FIXME letrec" []

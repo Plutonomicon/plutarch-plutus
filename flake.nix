@@ -43,6 +43,81 @@
 
   outputs = inputs@{ self, nixpkgs, haskell-nix, plutus, flake-compat-ci, ... }:
     let
+      extraSources = [
+        {
+          src = inputs.protolude;
+          subdirs = [ "." ];
+        }
+        {
+          src = inputs.foundation;
+          subdirs = [
+            "foundation"
+            "basement"
+          ];
+        }
+        {
+          src = inputs.cardano-prelude;
+          subdirs = [
+            "cardano-prelude"
+            # "cardano-prelude-test"
+          ];
+        }
+        {
+          src = inputs.hs-memory;
+          subdirs = [ "." ];
+        }
+        {
+          src = inputs.cardano-crypto;
+          subdirs = [ "." ];
+        }
+        {
+          src = inputs.cryptonite;
+          subdirs = [ "." ];
+        }
+        {
+          src = inputs.flat;
+          subdirs = [ "." ];
+        }
+        {
+          src = inputs.cardano-base;
+          subdirs = [
+           # "base-deriving-via"
+            "binary"
+           # "binary/test"
+           "cardano-crypto-class"
+           # "cardano-crypto-praos"
+           # "cardano-crypto-tests"
+           # "measures"
+           # "orphans-deriving-via"
+           # "slotting"
+           # "strict-containers"
+          ];
+        }
+        {
+          src = inputs.sized-functors;
+          subdirs = [ "." ];
+        }
+        {
+          src = inputs.th-extras;
+          subdirs = [ "." ];
+        }
+        {
+          src = inputs.plutus;
+          subdirs = [
+            #"plutus-benchmark"
+            "plutus-core"
+            #"plutus-errors"
+            "plutus-ledger-api"
+            #"plutus-metatheory"
+            "plutus-tx"
+            #"plutus-tx-plugin"
+            "prettyprinter-configurable"
+            "word-array"
+            #"stubs/plutus-ghc-stub"
+          ];
+        }
+      ];
+
       supportedSystems = with nixpkgs.lib.systems.supported; tier1 ++ tier2 ++ tier3;
 
       perSystem = nixpkgs.lib.genAttrs supportedSystems;
@@ -57,92 +132,7 @@
           src = ./.;
           compiler-nix-name = "ghc921";
           cabalProjectFileName = "cabal.project";
-          extraSources = [
-            {
-              src = inputs.protolude;
-              subdirs = [ "." ];
-            }
-            {
-              src = inputs.foundation;
-              subdirs = [
-                "foundation"
-                "basement"
-              ];
-            }
-            {
-              src = inputs.cardano-prelude;
-              subdirs = [
-                "cardano-prelude"
-                # "cardano-prelude-test"
-              ];
-            }
-            {
-              src = inputs.hs-memory;
-              subdirs = [ "." ];
-            }
-            {
-              src = inputs.cardano-crypto;
-              subdirs = [ "." ];
-            }
-            {
-              src = inputs.cryptonite;
-              subdirs = [ "." ];
-            }
-            {
-              src = inputs.flat;
-              subdirs = [ "." ];
-            }
-            {
-              src = inputs.cardano-base;
-              subdirs = [
-               # "base-deriving-via"
-                "binary"
-               # "binary/test"
-               "cardano-crypto-class"
-               # "cardano-crypto-praos"
-               # "cardano-crypto-tests"
-               # "measures"
-               # "orphans-deriving-via"
-               # "slotting"
-               # "strict-containers"
-              ];
-            }
-            {
-              src = inputs.sized-functors;
-              subdirs = [ "." ];
-            }
-            {
-              src = inputs.th-extras;
-              subdirs = [ "." ];
-            }
-            {
-              src = inputs.plutus;
-              subdirs = [
-                #"plutus-benchmark"
-                "plutus-core"
-                #"plutus-errors"
-                "plutus-ledger-api"
-                #"plutus-metatheory"
-                "plutus-tx"
-                #"plutus-tx-plugin"
-                "prettyprinter-configurable"
-                "word-array"
-                #"stubs/plutus-ghc-stub"
-              ];
-            }
-          ];
-          /*
-          extraSources = [
-            {
-              src = inputs.Win32-network;
-              subdirs = [ "." ];
-            }
-            {
-              src = inputs.Shrinker;
-              subdirs = [ "." "testing" ];
-            }
-          ];
-          */
+          inherit extraSources;
           modules = [{
             packages = {
               basement.src = "${inputs.foundation}/basement";
@@ -202,8 +192,6 @@
 
             additional = ps: [
               ps.plutus-ledger-api
-              #ps.plutus-tx
-              #ps.plutus-ledger-api
               #ps.shrinker
               #ps.shrinker-testing
             ];
@@ -227,6 +215,8 @@
           ;
     in
     {
+      inherit extraSources;
+
       project = perSystem projectFor;
       flake = perSystem (system: (projectFor system).flake {});
 
@@ -236,6 +226,7 @@
         self.flake.${system}.checks
         // {
           formatCheck = formatCheckFor system;
+          benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
         }
       );
       check = perSystem (system:
@@ -243,7 +234,15 @@
           nativeBuildInputs = builtins.attrValues self.checks.${system};
         } "touch $out"
       );
-      apps = perSystem (system: self.flake.${system}.apps);
+      apps = perSystem (system: 
+        self.flake.${system}.apps
+        // {
+            benchmark = {
+            type = "app";
+            program = "${self.flake.${system}.packages."plutarch:bench:perf"}/bin/perf";
+          };
+        }
+      );
       devShell = perSystem (system: self.flake.${system}.devShell);
 
       nixCi = flake-compat-ci.lib.recurseIntoFlakeWith {
