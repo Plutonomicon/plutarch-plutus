@@ -182,13 +182,15 @@
 
             # We use the ones from Nixpkgs, since they are cached reliably.
             # Eventually we will probably want to build these with haskell.nix.
-            nativeBuildInputs = [ pkgs'.cabal-install pkgs'.hlint pkgs'.haskellPackages.fourmolu ];
+            nativeBuildInputs = [ pkgs'.cabal-install pkgs'.hlint ];
 
             # FIXME: add HLS back
             # Use https://github.com/haskell/haskell-language-server/pull/2503 ?
             # tools = {
             #   haskell-language-server = {};  # Must use haskell.nix, because the compiler version should match
             # };
+
+            tools.fourmolu = {};
 
             additional = ps: [
               ps.plutus-ledger-api

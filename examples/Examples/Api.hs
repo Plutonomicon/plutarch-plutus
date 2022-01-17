@@ -127,8 +127,8 @@ getValidator =
 -}
 
 ---- | Get first CurrencySymbol from Value
---getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
---getSym =
+-- getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
+-- getSym =
 --  plam $ \v -> pfstBuiltin #$ phead #$ v
 
 tests :: HasTester => TestTree
@@ -138,14 +138,14 @@ tests =
     [ testCase "ScriptContext" $ do
         ctx `equal'` ctx_compiled
         -- FIXME
-        --, testCase "getting txInfo" $ do
+        -- , testCase "getting txInfo" $ do
         --    plift (getTxInfo # ctx) @?= info
-        --, testCase "getting mint" $ do
+        -- , testCase "getting mint" $ do
         --    plift (getMint #$ pfromData $ getTxInfo # ctx) @?= mint
-        --, testCase "getting validator" $ do
+        -- , testCase "getting validator" $ do
         --    plift (getValidator #$ pfromData $ getInputs #$ pfromData $ getTxInfo # ctx)
         --      @?= validator
-        --, testCase "getting sym" $ do
+        -- , testCase "getting sym" $ do
         --    plift (getSym #$ pfromData $ getMint #$ pfromData $ getTxInfo # ctx)
         --      @?= sym
     ]

@@ -2,4 +2,4 @@
 
 set -xe
 
-find -type f -name '*.hs' ! -path '*/dist-newstyle/*' | xargs fourmolu -o-XTypeApplications -m inplace
+find -type f -name '*.hs' ! -path '*/dist-newstyle/*' | xargs fourmolu -o-XTypeApplications -o-XQualifiedDo -m inplace

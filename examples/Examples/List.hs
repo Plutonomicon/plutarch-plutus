@@ -68,9 +68,8 @@ tests = do
           (pfoldl' (-) # 0 # integerList [])
             #== pconstant 0
     , testCase "pmatch" $ do
-        let
-          t = P.do
-            _ <- integerList [1, 3, 1]
-            perror
+        let t = P.do
+              _ <- integerList [1, 3, 1]
+              perror
          in printTerm t @?= ""
     ]

@@ -72,8 +72,8 @@ uglyDouble = plam $ \n -> plet n $ \n1 -> plet n1 $ \n2 -> n2 + n2
 -- loopHoisted :: Term (PInteger :--> PInteger)
 -- loopHoisted = phoistAcyclic $ plam $ \x -> loop # x
 
---_shrinkTests :: TestTree
---_shrinkTests = testGroup "shrink tests" [let ?tester = shrinkTester in tests]
+-- _shrinkTests :: TestTree
+-- _shrinkTests = testGroup "shrink tests" [let ?tester = shrinkTester in tests]
 
 standardTests :: TestTree
 standardTests = testGroup "standard tests" [let ?tester = standardTester in tests]

@@ -151,7 +151,7 @@ plam' f = Term $ \i ->
         t@(getTerm -> RLamAbs n (RApply t'@(getArity -> Just n') args))
           | (maybe False (== [0 .. n + 1]) $ traverse (\case RVar n -> Just n; _ -> Nothing) args)
               && n' >= n + 1 ->
-            t {getTerm = t'}
+              t {getTerm = t'}
         -- increment arity
         t@(getTerm -> RLamAbs n t') -> t {getTerm = RLamAbs (n + 1) t'}
         -- new lambda
@@ -318,7 +318,7 @@ rawTermToUPLC m l (RForce t) = UPLC.Force () (rawTermToUPLC m l t)
 rawTermToUPLC _ _ (RBuiltin f) = UPLC.Builtin () f
 rawTermToUPLC _ _ (RConstant c) = UPLC.Constant () c
 rawTermToUPLC _ _ RError = UPLC.Error ()
---rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted
+-- rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted
 rawTermToUPLC m l (RHoisted hoisted) = m hoisted l -- UPLC.Var () . DeBruijn . Index $ l - m hoisted
 
 -- The logic is mostly for hoisting
