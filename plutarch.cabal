@@ -68,7 +68,7 @@ common c
     ViewPatterns
 
   ghc-options:
-    -Wall -Wcompat -Wincomplete-uni-patterns
+    -Wall -Wcompat -Wincomplete-uni-patterns -Wno-unused-do-bind
     -Wno-partial-type-signatures -Wmissing-export-lists -Werror
     -Wincomplete-record-updates -Wmissing-deriving-strategies
     -Wno-name-shadowing -Wunused-foralls -fprint-explicit-foralls
@@ -91,6 +91,7 @@ library
     Plutarch.Lift
     Plutarch.List
     Plutarch.Maybe
+    Plutarch.Monadic
     Plutarch.Pair
     Plutarch.Prelude
     Plutarch.Rational

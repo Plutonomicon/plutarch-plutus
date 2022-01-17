@@ -1,3 +1,5 @@
+{-# LANGUAGE QualifiedDo #-}
+
 module Examples.Api (tests) where
 
 import Data.Proxy (Proxy (..))
@@ -11,6 +13,8 @@ import Plutarch.Api.V1 (
 import Plutarch.Builtin (PAsData, PBuiltinList)
 import Plutarch.DataRepr (pindexDataList)
 import Plutarch.Lift (pconstant)
+import qualified Plutarch.Monadic as P
+import Plutarch.Trace (ptrace)
 
 import Plutus.V1.Ledger.Api (
   Address (..),
@@ -96,19 +100,21 @@ sym = "c0"
 --------------------------------------------------------------------------------
 
 _getTxInfo :: Term s (PScriptContext :--> PAsData PTxInfo)
-_getTxInfo =
-  plam $ \x -> pmatch x $ \case
-    (PScriptContext c) -> pindexDataList (Proxy @0) # c
+_getTxInfo = plam $ \x -> P.do
+  PScriptContext c <- pmatch x
+  pindexDataList (Proxy @0) # c
 
 _getMint :: Term s (PTxInfo :--> PAsData PValue)
-_getMint =
-  plam $ \x -> pmatch x $ \case
-    (PTxInfo i) -> pindexDataList (Proxy @3) # i
+_getMint = plam $ \x -> P.do
+  PTxInfo i <- pmatch x
+  pindexDataList (Proxy @3) # i
 
 _getInputs :: Term s (PTxInfo :--> PAsData (PBuiltinList (PAsData PTxInInfo)))
-_getInputs =
-  plam $ \x -> pmatch x $ \case
-    (PTxInfo i) -> pindexDataList (Proxy @0) # i
+_getInputs = plam $ \x -> P.do
+  PTxInfo i <- pmatch x
+  ptrace "xhuawdhauywhd"
+  i' <- plet i
+  pindexDataList (Proxy @0) # i'
 
 {-
 -- | Get first validator from TxInInfo
@@ -124,8 +130,8 @@ getValidator =
 -}
 
 ---- | Get first CurrencySymbol from Value
---getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
---getSym =
+-- getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
+-- getSym =
 --  plam $ \v -> pfstBuiltin #$ phead #$ v
 
 tests :: HasTester => TestTree
@@ -135,14 +141,14 @@ tests =
     [ testCase "ScriptContext" $ do
         ctx `equal'` ctx_compiled
         -- FIXME
-        --, testCase "getting txInfo" $ do
+        -- , testCase "getting txInfo" $ do
         --    plift (getTxInfo # ctx) @?= info
-        --, testCase "getting mint" $ do
+        -- , testCase "getting mint" $ do
         --    plift (getMint #$ pfromData $ getTxInfo # ctx) @?= mint
-        --, testCase "getting validator" $ do
+        -- , testCase "getting validator" $ do
         --    plift (getValidator #$ pfromData $ getInputs #$ pfromData $ getTxInfo # ctx)
         --      @?= validator
-        --, testCase "getting sym" $ do
+        -- , testCase "getting sym" $ do
         --    plift (getSym #$ pfromData $ getMint #$ pfromData $ getTxInfo # ctx)
         --      @?= sym
     ]

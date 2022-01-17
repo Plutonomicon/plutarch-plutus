@@ -11,7 +11,7 @@ import Plutarch.Builtin
 import Plutarch.Pair
 import Plutarch.Rational
 
---import Data.Ratio ((%))
+-- import Data.Ratio ((%))
 
 tests :: HasTester => TestTree
 tests = do

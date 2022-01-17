@@ -157,7 +157,7 @@ data PAsDataLifted (a :: PType)
 instance PUnsafeLiftDecl (PAsDataLifted a) (PAsData a) where
   type PLifted (PAsData a) = PAsDataLifted a
   type PLiftedRepr (PAsData a) = Data
-  pliftToRepr = \case
+  pliftToRepr = \case {}
   pliftFromRepr _ = Nothing
 
 pforgetData :: Term s (PAsData a) -> Term s PData

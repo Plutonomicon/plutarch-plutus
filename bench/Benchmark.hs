@@ -66,12 +66,12 @@ benchmarkScript' =
             Right exbudget -> exbudget
 
 data Benchmark = Benchmark
-  { -- | CPU budget used by the script
-    exBudgetCPU :: ExCPU
-  , -- | Memory budget used by the script
-    exBudgetMemory :: ExMemory
-  , -- | Size of Plutus script in bytes
-    scriptSizeBytes :: ScriptSizeBytes
+  { exBudgetCPU :: ExCPU
+  -- ^ CPU budget used by the script
+  , exBudgetMemory :: ExMemory
+  -- ^ Memory budget used by the script
+  , scriptSizeBytes :: ScriptSizeBytes
+  -- ^ Size of Plutus script in bytes
   }
   deriving stock (Show, Generic)
 
