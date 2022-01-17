@@ -100,18 +100,19 @@ sym = "c0"
 
 _getTxInfo :: Term s (PScriptContext :--> PAsData PTxInfo)
 _getTxInfo = plam $ \x -> P.do
-  PScriptContext c <- x
+  PScriptContext c <- pmatch x
   pindexDataList (Proxy @0) # c
 
 _getMint :: Term s (PTxInfo :--> PAsData PValue)
 _getMint = plam $ \x -> P.do
-  PTxInfo i <- x
+  PTxInfo i <- pmatch x
   pindexDataList (Proxy @3) # i
 
 _getInputs :: Term s (PTxInfo :--> PAsData (PBuiltinList (PAsData PTxInInfo)))
 _getInputs = plam $ \x -> P.do
-  PTxInfo i <- x
-  pindexDataList (Proxy @0) # i
+  PTxInfo i <- pmatch x
+  i' <- plet i
+  pindexDataList (Proxy @0) # i'
 
 {-
 -- | Get first validator from TxInInfo
