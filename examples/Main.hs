@@ -14,7 +14,7 @@ import Examples.Tracing (traceTests)
 import Plutarch (POpaque, popaque, printTerm, punsafeBuiltin)
 import Plutarch.Api.V1 (PScriptPurpose (PMinting))
 import Plutarch.Bool (PBool (PFalse, PTrue), pand, pif, pnot, por, (#&&), (#<), (#<=), (#==), (#||))
-import Plutarch.Builtin (PBuiltinList (..), PBuiltinPair, PData, PIsData (..), pdata)
+import Plutarch.Builtin (PBuiltinList (..), PBuiltinPair, PData, pdata)
 import Plutarch.ByteString (PByteString, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Integer (PInteger)
@@ -30,6 +30,7 @@ import qualified PlutusTx
 
 import qualified Examples.Api as Api
 import qualified Examples.LetRec as LetRec
+import qualified Examples.PIsData as PIsData
 import qualified Examples.PlutusType as PlutusType
 import qualified Examples.Rationals as Rationals
 import qualified Examples.Recursion as Recursion
@@ -90,6 +91,7 @@ tests =
     , List.tests
     , Rationals.tests
     , LetRec.tests
+    , PIsData.tests
     ]
 
 plutarchTests :: HasTester => TestTree
@@ -265,8 +267,6 @@ plutarchTests =
         , testCase "True || perror ≡ True" $ equal (pcon PTrue #|| perror) (pcon PTrue)
         , testCase "fails: por True perror" $ fails $ por # pcon PFalse # perror
         , testCase "por True (pdelay perror) ≡ True" $ equal (por # pcon PTrue # pdelay perror) (pdelay $ pcon PTrue)
-        , testCase "pfromData (pdata True) = True" $ equal (pfromData $ pdata $ pcon PTrue) (pcon PTrue)
-        , testCase "pfromData (pdata False) = False" $ equal (pfromData $ pdata $ pcon PFalse) (pcon PFalse)
         ]
     ]
 

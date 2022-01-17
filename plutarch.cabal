@@ -66,6 +66,7 @@ common c
     TypeOperators
     TypeSynonymInstances
     ViewPatterns
+
   ghc-options:
     -Wall -Wcompat -Wincomplete-uni-patterns
     -Wno-partial-type-signatures -Wmissing-export-lists -Werror
@@ -127,9 +128,10 @@ test-suite examples
     Examples.Api
     Examples.LetRec
     Examples.List
+    Examples.PIsData
     Examples.PlutusType
-    Examples.Recursion
     Examples.Rationals
+    Examples.Recursion
     Examples.Tracing
     Utils
 
@@ -142,11 +144,11 @@ test-suite examples
     , plutus-ledger-api
     , plutus-tx
     , rank2classes       >=1.4.4
-    --, shrinker
     , tasty
     , tasty-hunit
     , text
 
+  --, shrinker
   if flag(development)
     cpp-options: -DDevelopment
 
@@ -155,19 +157,18 @@ benchmark perf
   type:           exitcode-stdio-1.0
   hs-source-dirs: bench
   main-is:        Main.hs 
-  other-modules: Benchmark
+  other-modules:  Benchmark
   build-depends:
     , base
     , boxes
     , bytestring
     , cassava
+    , data-default
+    , flat
     , foldl
     , mtl
     , plutarch
-    , serialise
     , plutus-core
     , plutus-ledger-api
+    , serialise
     , text
-    , flat
-    , data-default
-

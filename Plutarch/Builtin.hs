@@ -199,29 +199,22 @@ instance PIsData PByteString where
 -}
 instance PIsData PBool where
   pfromData x =
-    (phoistAcyclic $ plam $ \d -> toBool #$ tag # d)
-      # pforgetData x
+    (phoistAcyclic $ plam toBool) # pforgetData x
     where
-      toBool :: Term s (PInteger :--> PBool)
-      toBool = phoistAcyclic $ plam (#== 1)
-
-      tag :: Term s (PData :--> PInteger)
-      tag = phoistAcyclic $ plam $ \d -> pfstBuiltin #$ pasConstr # d
+      toBool :: Term s PData -> Term s PBool
+      toBool d = pfstBuiltin # (pasConstr # d) #== 1
 
   pdata x =
-    (phoistAcyclic $ plam $ \b -> constr #$ toInt # b)
-      # x
+    (phoistAcyclic $ plam toData) # x
     where
-      toInt :: Term s (PBool :--> PInteger)
-      toInt = phoistAcyclic $ plam $ \b -> pif' # b # 1 # 0
+      toData :: Term s PBool -> Term s (PAsData PBool)
+      toData b =
+        punsafeBuiltin PLC.ConstrData
+          # (pif' # b # 1 # (0 :: Term s PInteger))
+          # nil
 
       nil :: Term s (PBuiltinList PData)
       nil = pnil
-
-      constr :: Term s (PInteger :--> PAsData PBool)
-      constr = phoistAcyclic $
-        plam $ \x ->
-          punsafeBuiltin PLC.ConstrData # x # nil
 
 instance PIsData (PBuiltinPair PInteger (PBuiltinList PData)) where
   pfromData x = pasConstr # pforgetData x
