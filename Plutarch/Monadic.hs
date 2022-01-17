@@ -4,7 +4,7 @@ import Prelude hiding (fail, (>>), (>>=))
 
 import Data.String (fromString)
 import Plutarch.Prelude
-import Plutarch.Trace (ptrace)
+import Plutarch.Trace (ptraceError)
 
 (>>=) :: a -> a
 (>>=) = id
@@ -13,4 +13,4 @@ import Plutarch.Trace (ptrace)
 (>>) = id
 
 fail :: String -> Term s a
-fail msg = ptrace (fromString msg) perror
+fail msg = ptraceError (fromString msg)
