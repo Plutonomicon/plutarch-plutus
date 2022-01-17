@@ -30,6 +30,7 @@ import qualified PlutusTx
 
 import qualified Examples.Api as Api
 import qualified Examples.LetRec as LetRec
+import qualified Examples.PIsData as PIsData
 import qualified Examples.PlutusType as PlutusType
 import qualified Examples.Rationals as Rationals
 import qualified Examples.Recursion as Recursion
@@ -90,6 +91,7 @@ tests =
     , List.tests
     , Rationals.tests
     , LetRec.tests
+    , PIsData.tests
     ]
 
 plutarchTests :: HasTester => TestTree
