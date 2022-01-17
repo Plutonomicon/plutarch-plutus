@@ -40,6 +40,8 @@
   inputs.th-extras.flake = false;
   inputs.Shrinker.url = "github:Plutonomicon/Shrinker";
   inputs.Shrinker.flake = false;
+  inputs.haskell-language-server.url = "github:haskell/haskell-language-server";
+  inputs.haskell-language-server.flake = false;
 
   outputs = inputs@{ self, nixpkgs, haskell-nix, plutus, flake-compat-ci, ... }:
     let
@@ -59,7 +61,6 @@
           src = inputs.cardano-prelude;
           subdirs = [
             "cardano-prelude"
-            # "cardano-prelude-test"
           ];
         }
         {
@@ -81,16 +82,8 @@
         {
           src = inputs.cardano-base;
           subdirs = [
-            # "base-deriving-via"
             "binary"
-            # "binary/test"
             "cardano-crypto-class"
-            # "cardano-crypto-praos"
-            # "cardano-crypto-tests"
-            # "measures"
-            # "orphans-deriving-via"
-            # "slotting"
-            # "strict-containers"
           ];
         }
         {
@@ -104,16 +97,11 @@
         {
           src = inputs.plutus;
           subdirs = [
-            #"plutus-benchmark"
             "plutus-core"
-            #"plutus-errors"
             "plutus-ledger-api"
-            #"plutus-metatheory"
             "plutus-tx"
-            #"plutus-tx-plugin"
             "prettyprinter-configurable"
             "word-array"
-            #"stubs/plutus-ghc-stub"
           ];
         }
       ];
@@ -126,7 +114,50 @@
       nixpkgsFor' = system: import nixpkgs { inherit system; inherit (haskell-nix) config; };
 
       ghcVersion = "ghc921";
+
       tools.fourmolu = { };
+      tools.haskell-language-server = {
+        version = "latest";
+        modules = [{
+          packages = {
+            haskell-language-server = {
+              src = "${inputs.haskell-language-server}";
+              flags = {
+                pedantic = true;
+                ignore-plugins-ghc-bounds = true;
+                alternateNumberFormat = false;
+                brittany = false;
+                callhierarchy = false;
+                class = false;
+                eval = false;
+                floskell = false;
+                fourmolu = false;
+                haddockComments = false;
+                hlint = false;
+                importLens = false;
+                ormolu = false;
+                refineImports = false;
+                retrie = false;
+                splice = false;
+                stylishhaskell = false;
+                tactic = false;
+              };
+            };
+            hie-compat.src = "${inputs.haskell-language-server}/hie-compat";
+            hls-graph.src = "${inputs.haskell-language-server}/hls-graph";
+            ghcide.src = "${inputs.haskell-language-server}/ghcide";
+            hls-plugin-api.src = "${inputs.haskell-language-server}/hls-plugin-api";
+            hls-test-utils.src = "${inputs.haskell-language-server}/hls-test-utils";
+            shake-bench.src = "${inputs.haskell-language-server}/shake-bench";
+            hls-call-hierarchy-plugin.src = "${inputs.haskell-language-server}/plugins/hls-call-hierarchy-plugin";
+            hls-class-plugins.src = "${inputs.haskell-language-server}/plugins/hls-class-plugins";
+            hls-explicit-imports-plugin.src = "${inputs.haskell-language-server}/plugins/hls-explicit-imports-plugin";
+            hls-qualify-imported-names-plugin.src = "${inputs.haskell-language-server}/plugins/hls-qualify-imported-names-plugin";
+            hls-pragmas-plugin.src = "${inputs.haskell-language-server}/plugins/hls-pragmas-plugin";
+            hls-module-name-plugin.src = "${inputs.haskell-language-server}/plugins/hls-module-name-plugin";
+          };
+        }];
+      };
 
       projectFor = system:
         let pkgs = nixpkgsFor system; in
@@ -187,12 +218,6 @@
             # Eventually we will probably want to build these with haskell.nix.
             nativeBuildInputs = [ pkgs'.cabal-install pkgs'.hlint pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt ];
 
-            # FIXME: add HLS back
-            # Use https://github.com/haskell/haskell-language-server/pull/2503 ?
-            # tools = {
-            #   haskell-language-server = {};  # Must use haskell.nix, because the compiler version should match
-            # };
-
             inherit tools;
 
             additional = ps: [
@@ -207,10 +232,11 @@
         let
           pkgs = nixpkgsFor system;
           pkgs' = nixpkgsFor' system;
+          t = pkgs.haskell-nix.tools ghcVersion { inherit (tools) fourmolu haskell-language-server; };
         in
         pkgs.runCommand "format-check"
           {
-            nativeBuildInputs = [ pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt (pkgs.haskell-nix.tools ghcVersion { inherit (tools) fourmolu; }).fourmolu ];
+            nativeBuildInputs = [ pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt t.fourmolu ];
           } ''
           export LC_CTYPE=C.UTF-8
           export LC_ALL=C.UTF-8
