@@ -1,18 +1,23 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Plutarch.Rec.TH (deriveScottEncoded) where
+module Plutarch.Rec.TH (deriveAll, deriveScottEncoded) where
 
 import Language.Haskell.TH (Q)
 import qualified Language.Haskell.TH as TH
 import Plutarch ((:-->))
 import Plutarch.Rec (ScottEncoded)
+import qualified Rank2.TH
 
+-- | Use as a TH splice for all necessary @instance@ declarations.
+deriveAll :: TH.Name -> Q [TH.Dec]
+deriveAll name = (<>) <$> deriveScottEncoded name <*> Rank2.TH.deriveAll name
+
+-- | Use as a TH splice for @type instance ScottEncoded@ declarations.
 deriveScottEncoded :: TH.Name -> Q [TH.Dec]
 deriveScottEncoded name = do
   con <- reifyConstructor name
   a <- TH.newName "a"
   let qa = pure (TH.VarT a)
-  --   _ <- [d| type instance ScottEncoded $(pure $ TH.ConT name) $qa = $(genScottEncoded con qa) |] >>= error . show
   [d|type instance ScottEncoded $(pure $ TH.ConT name) $qa = $(genScottEncoded con qa)|]
 
 genScottEncoded :: TH.Con -> Q TH.Type -> Q TH.Type

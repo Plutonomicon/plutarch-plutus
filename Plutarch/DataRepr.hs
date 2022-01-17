@@ -28,7 +28,7 @@ import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Api as Ledger
 import qualified PlutusCore as PLC
 
-data PDataList (as :: [k -> Type]) (s :: k)
+data PDataList (as :: [PType]) (s :: S)
 
 pdhead :: Term s (PDataList (a : as) :--> PAsData a)
 pdhead = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList
@@ -36,8 +36,8 @@ pdhead = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList
 pdtail :: Term s (PDataList (a : as) :--> PDataList as)
 pdtail = phoistAcyclic $ pforce $ punsafeBuiltin PLC.TailList
 
-type PDataRepr :: [[k -> Type]] -> k -> Type
-data PDataRepr (defs :: [[k -> Type]]) (s :: k)
+type PDataRepr :: [[PType]] -> PType
+data PDataRepr (defs :: [[PType]]) (s :: S)
 
 pasData :: Term s (PDataRepr _) -> Term s PData
 pasData = punsafeCoerce
@@ -72,7 +72,7 @@ pindexDataList n =
     ind :: Term s PInteger
     ind = fromInteger $ toInteger $ natVal n
 
-data DataReprHandlers (out :: k -> Type) (def :: [[k -> Type]]) (s :: k) where
+data DataReprHandlers (out :: PType) (def :: [[PType]]) (s :: S) where
   DRHNil :: DataReprHandlers out '[] s
   DRHCons :: (Term s (PDataList def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def : defs) s
 
@@ -122,10 +122,10 @@ pmatchDataRepr d handlers =
               handler
               $ go common (idx + 1) rest constr
 
-newtype PIsDataReprInstances (a :: k -> Type) (h :: Type) (s :: k) = PIsDataReprInstances (a s)
+newtype PIsDataReprInstances (a :: PType) (h :: Type) (s :: S) = PIsDataReprInstances (a s)
 
-class (PMatch a, PIsData a) => PIsDataRepr (a :: k -> Type) where
-  type PIsDataReprRepr a :: [[k -> Type]]
+class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
+  type PIsDataReprRepr a :: [[PType]]
   pmatchRepr :: forall s b. Term s (PDataRepr (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
 
 instance PIsDataRepr a => PIsData (PIsDataReprInstances a h) where

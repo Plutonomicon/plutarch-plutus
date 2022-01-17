@@ -7,3 +7,5 @@ packages: ./.
 
 constraints:
   aeson > 2
+
+benchmarks: true

@@ -15,7 +15,7 @@ import Plutarch.Api.V1 (
  )
 import Plutarch.Builtin (PAsData, PBuiltinList, PIsData (..))
 import Plutarch.DataRepr (pindexDataList)
-import Plutarch.List (PListLike (..))
+import Plutarch.Lift (pconstant)
 import Plutus.V1.Ledger.Api (
   Address (..),
   Credential (..),

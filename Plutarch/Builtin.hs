@@ -23,7 +23,7 @@ module Plutarch.Builtin (
 ) where
 
 import Plutarch (PlutusType (..), punsafeBuiltin, punsafeCoerce)
-import Plutarch.Bool (PBool (..), PEq, (#==))
+import Plutarch.Bool (PBool (..), PEq, pif', (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (DerivePLiftViaCoercible, PLift, PLifted, PLiftedRepr, PUnsafeLiftDecl, pconstant, pliftFromRepr, pliftToRepr)
@@ -33,16 +33,16 @@ import qualified PlutusCore as PLC
 import PlutusTx (Data)
 
 -- | Plutus 'BuiltinPair'
-data PBuiltinPair (a :: k -> Type) (b :: k -> Type) (s :: k)
+data PBuiltinPair (a :: PType) (b :: PType) (s :: S)
 
 -- FIXME: figure out good way of deriving this
 instance (PUnsafeLiftDecl ah a, PUnsafeLiftDecl bh b) => PUnsafeLiftDecl (ah, bh) (PBuiltinPair a b) where
   type PLiftedRepr (PBuiltinPair a b) = (PLiftedRepr a, PLiftedRepr b)
   type PLifted (PBuiltinPair a b) = (PLifted a, PLifted b)
-  pliftToRepr (x, y) = (pliftToRepr @_ @_ @a x, pliftToRepr @_ @_ @b y)
+  pliftToRepr (x, y) = (pliftToRepr @_ @a x, pliftToRepr @_ @b y)
   pliftFromRepr (x, y) = do
-    x' <- pliftFromRepr @_ @_ @a x
-    y' <- pliftFromRepr @_ @_ @b y
+    x' <- pliftFromRepr @_ @a x
+    y' <- pliftFromRepr @_ @b y
     Just (x', y')
 
 pfstBuiltin :: Term s (PBuiltinPair a b :--> a)
@@ -59,7 +59,7 @@ ppairDataBuiltin :: Term s (PAsData a :--> PAsData b :--> PBuiltinPair (PAsData 
 ppairDataBuiltin = punsafeBuiltin PLC.MkPairData
 
 -- | Plutus 'BuiltinList'
-data PBuiltinList (a :: k -> Type) (s :: k)
+data PBuiltinList (a :: PType) (s :: S)
   = PCons (Term s a) (Term s (PBuiltinList a))
   | PNil
 
@@ -81,8 +81,8 @@ pconsBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.MkCons
 instance PUnsafeLiftDecl ah a => PUnsafeLiftDecl [ah] (PBuiltinList a) where
   type PLifted (PBuiltinList a) = [PLifted a]
   type PLiftedRepr (PBuiltinList a) = [PLiftedRepr a]
-  pliftToRepr x = pliftToRepr @_ @_ @a <$> x
-  pliftFromRepr x = traverse (pliftFromRepr @_ @_ @a) x
+  pliftToRepr x = pliftToRepr @_ @a <$> x
+  pliftFromRepr x = traverse (pliftFromRepr @_ @a) x
 
 instance PLift a => PlutusType (PBuiltinList a) where
   type PInner (PBuiltinList a) _ = PBuiltinList a
@@ -150,7 +150,15 @@ pasByteStr = punsafeBuiltin PLC.UnBData
 pdataLiteral :: Data -> Term s PData
 pdataLiteral = pconstant
 
-data PAsData (a :: k -> Type) (s :: k)
+data PAsData (a :: PType) (s :: S)
+
+data PAsDataLifted (a :: PType)
+
+instance PUnsafeLiftDecl (PAsDataLifted a) (PAsData a) where
+  type PLifted (PAsData a) = PAsDataLifted a
+  type PLiftedRepr (PAsData a) = Data
+  pliftToRepr = \case
+  pliftFromRepr _ = Nothing
 
 pforgetData :: Term s (PAsData a) -> Term s PData
 pforgetData = punsafeCoerce
@@ -183,6 +191,30 @@ instance PIsData PInteger where
 instance PIsData PByteString where
   pfromData x = pasByteStr # pforgetData x
   pdata x = punsafeBuiltin PLC.BData # x
+
+{- |
+  Instance for PBool following the Plutus IsData repr
+  given by @makeIsDataIndexed ''Bool [('False,0),('True,1)]@,
+  which is used in 'TxInfo' via 'Closure'.
+-}
+instance PIsData PBool where
+  pfromData x =
+    (phoistAcyclic $ plam toBool) # pforgetData x
+    where
+      toBool :: Term s PData -> Term s PBool
+      toBool d = pfstBuiltin # (pasConstr # d) #== 1
+
+  pdata x =
+    (phoistAcyclic $ plam toData) # x
+    where
+      toData :: Term s PBool -> Term s (PAsData PBool)
+      toData b =
+        punsafeBuiltin PLC.ConstrData
+          # (pif' # b # 1 # (0 :: Term s PInteger))
+          # nil
+
+      nil :: Term s (PBuiltinList PData)
+      nil = pnil
 
 instance PIsData (PBuiltinPair PInteger (PBuiltinList PData)) where
   pfromData x = pasConstr # pforgetData x

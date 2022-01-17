@@ -24,6 +24,8 @@ module Plutarch.Internal (
   RawTerm (..),
   TermCont (..),
   TermResult (TermResult, getDeps, getTerm),
+  S,
+  PType,
 ) where
 
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
@@ -100,6 +102,13 @@ mapTerm f (TermResult t d) = TermResult (f t) d
 
 mkTermRes :: RawTerm -> TermResult
 mkTermRes r = TermResult r []
+
+-- | Type of `s`.
+data S
+
+-- | Shorthand for Plutarch types.
+type PType = S -> Type
+
 {- $term
  Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
  Thanks!
@@ -114,17 +123,17 @@ mkTermRes r = TermResult r []
  de-Bruijn index needed to reach its own level given the level it itself is
  instantiated with.
 -}
-newtype Term (s :: k) (a :: k -> Type) = Term {asRawTerm :: Natural -> TermResult}
+newtype Term (s :: S) (a :: PType) = Term {asRawTerm :: Natural -> TermResult}
 
 {- |
   *Closed* terms with no free variables.
 -}
-type ClosedTerm (a :: k -> Type) = forall (s :: k). Term s a
+type ClosedTerm (a :: PType) = forall (s :: S). Term s a
 
-data (:-->) (a :: k -> Type) (b :: k -> Type) (s :: k)
+data (:-->) (a :: PType) (b :: PType) (s :: S)
 infixr 0 :-->
 
-data PDelayed (a :: k -> Type) (s :: k)
+data PDelayed (a :: PType) (s :: S)
 
 {- |
   Lambda abstraction.
