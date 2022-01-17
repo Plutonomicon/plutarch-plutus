@@ -7,7 +7,7 @@ import Plutarch.Bool (PBool (PFalse, PTrue), pif, (#==))
 import Plutarch.Builtin (PAsData, PBuiltinList (PNil), PIsData, pdata, pforgetData, pfromData)
 import Plutarch.Integer (PInteger)
 import Plutarch.Prelude
-import Plutarch.Rec (DataReader(DataReader, readData), FieldsFromData, PRecord (PRecord), ScottEncoded, ScottEncoding,
+import Plutarch.Rec (DataReader(DataReader, readData), RecordFromData, PRecord (PRecord), ScottEncoded, ScottEncoding,
                      field, fieldFromData, letrec, recordFromFieldReaders)
 import Plutarch.Rec.TH (deriveAll)
 import Plutarch.String (PString, pdecodeUtf8, pencodeUtf8)
@@ -33,13 +33,12 @@ type instance ScottEncoded EvenOdd a = (PInteger :--> PBool) :--> (PInteger :-->
 
 $(Rank2.TH.deriveAll ''EvenOdd)
 $(deriveAll ''SampleRecord) -- also autoderives the @type instance ScottEncoded@
-instance FieldsFromData SampleRecord
+instance RecordFromData SampleRecord
 
 instance PIsData (PRecord SampleRecord) where
   pfromData = readData (recordFromFieldReaders sampleReader)
   pdata = recordData
 
---recordData :: (forall t. Term s (ScottEncoding SampleRecord t)) -> Term s (PAsData (PRecord SampleRecord))
 recordData :: forall s. Term s (PRecord SampleRecord) -> Term s (PAsData (PRecord SampleRecord))
 recordData r = pmatch r $ \(PRecord SampleRecord{sampleBool, sampleInt, sampleString})->
   punsafeBuiltin PLC.ConstrData # (0 :: Term s PInteger) #$

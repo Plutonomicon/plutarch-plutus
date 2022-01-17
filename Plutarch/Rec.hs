@@ -5,8 +5,9 @@ module Plutarch.Rec (
   PRecord (PRecord, getRecord),
   ScottEncoded,
   ScottEncoding,
-  FieldsFromData (fieldFromData),
+  RecordFromData (fieldFoci, fieldListFoci),
   field,
+  fieldFromData,
   letrec,
   pletrec,
   recordFromFieldReaders,
@@ -116,7 +117,7 @@ newtype FocusFromDataList s a = FocusFromDataList {getItem :: Term s (PBuiltinLi
 -- | Converts a record of field DataReaders to a DataReader of the whole
 -- record. If you only need a single field or two, use `fieldFromData`
 -- instead.
-recordFromFieldReaders :: forall r s. (Rank2.Apply r, Rank2.Distributive r, Rank2.Traversable r, FieldsFromData r)
+recordFromFieldReaders :: forall r s. (Rank2.Apply r, RecordFromData r)
                        => r (DataReader s) -> DataReader s (PRecord r)
 recordFromFieldReaders reader = DataReader $ verifySoleConstructor readRecord
   where
@@ -125,38 +126,40 @@ recordFromFieldReaders reader = DataReader $ verifySoleConstructor readRecord
     fields :: Term s (PBuiltinList PData) -> r (Compose (Term s) PAsData)
     fields bis = (\f-> Compose $ getItem f bis) Rank2.<$> fieldListFoci
 
-class FieldsFromData r where
-  -- | Converts a Haskell field function to a function term that extracts the 'Data' encoding of the field from the
-  -- encoding of the whole record.
-  fieldFromData :: (r (FocusFromData s (PRecord r)) -> FocusFromData s (PRecord r) t)
-                -> Term s (PAsData (PRecord r) :--> PAsData t)
-  default fieldFromData :: (Rank2.Distributive r, Rank2.Traversable r)
-                        => (r (FocusFromData s (PRecord r)) -> FocusFromData s (PRecord r) t)
-                        -> Term s (PAsData (PRecord r) :--> PAsData t)
-  fieldFromData f = getFocus (f fieldFoci)
+-- | Converts a Haskell field function to a function term that extracts the 'Data' encoding of the field from the
+-- encoding of the whole record.
+fieldFromData :: RecordFromData r
+              => (r (FocusFromData s (PRecord r)) -> FocusFromData s (PRecord r) t)
+              -> Term s (PAsData (PRecord r) :--> PAsData t)
+fieldFromData f = getFocus (f fieldFoci)
 
-fieldFoci :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => r (FocusFromData s (PRecord r))
-fieldFoci = Rank2.cotraverse focus id
-  where
-    focus :: (r (FocusFromData s (PRecord r)) -> FocusFromData s (PRecord r) a) -> FocusFromData s (PRecord r) a
-    focus ref = ref ordered
-    ordered :: r (FocusFromData s (PRecord r))
-    ordered = fieldsFromRecord Rank2.<$> fieldListFoci
-    fieldsFromRecord :: FocusFromDataList s a -> FocusFromData s (PRecord r) a
-    fieldsFromRecord (FocusFromDataList f) = FocusFromData $ plam $ verifySoleConstructor f
-
-fieldListFoci :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => r (FocusFromDataList s)
-fieldListFoci = Rank2.cotraverse focus id
-  where
-    focus :: (r (FocusFromDataList s) -> FocusFromDataList s a) -> FocusFromDataList s a
-    focus ref = ref ordered
-    ordered :: r (FocusFromDataList s)
-    ordered = evalState (Rank2.traverse next $ initial @r) id
-    next :: f a -> State (Term s (PBuiltinList PData) -> Term s (PBuiltinList PData)) (FocusFromDataList s a)
-    next _ = do
-      rest <- get
-      put ((ptail #) . rest)
-      return $ FocusFromDataList (punsafeCoerce . (phead #) . rest)
+-- | Instances of this class must know how to focus on individual fields of
+-- the data-encoded record. If the declared order of the record fields doesn't
+-- match the encoding order, you must override the method defaults.
+class (Rank2.Distributive r, Rank2.Traversable r) => RecordFromData r where
+  -- | Given the encoding of the whole record, every field focuses on its own encoding.
+  fieldFoci :: r (FocusFromData s (PRecord r))
+  -- | Given the encoding of the list of all fields, every field focuses on its own encoding.
+  fieldListFoci :: r (FocusFromDataList s)
+  fieldFoci = Rank2.cotraverse focus id
+    where
+      focus :: (r (FocusFromData s (PRecord r)) -> FocusFromData s (PRecord r) a) -> FocusFromData s (PRecord r) a
+      focus ref = ref foci
+      foci :: r (FocusFromData s (PRecord r))
+      foci = fieldsFromRecord Rank2.<$> fieldListFoci
+      fieldsFromRecord :: FocusFromDataList s a -> FocusFromData s (PRecord r) a
+      fieldsFromRecord (FocusFromDataList f) = FocusFromData $ plam $ verifySoleConstructor f
+  fieldListFoci = Rank2.cotraverse focus id
+    where
+      focus :: (r (FocusFromDataList s) -> FocusFromDataList s a) -> FocusFromDataList s a
+      focus ref = ref foci
+      foci :: r (FocusFromDataList s)
+      foci = evalState (Rank2.traverse next $ initial @r) id
+      next :: f a -> State (Term s (PBuiltinList PData) -> Term s (PBuiltinList PData)) (FocusFromDataList s a)
+      next _ = do
+        rest <- get
+        put ((ptail #) . rest)
+        return $ FocusFromDataList (punsafeCoerce . (phead #) . rest)
 
 verifySoleConstructor :: (Term s (PBuiltinList PData) -> Term s a) -> (Term s (PAsData (PRecord r)) -> Term s a)
 verifySoleConstructor f d =
