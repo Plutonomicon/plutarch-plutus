@@ -1,18 +1,26 @@
+{-# LANGUAGE DefaultSignatures #-}
+
 module Plutarch.Rec (
+  DataReader (DataReader, readData),
   PRecord (PRecord, getRecord),
   ScottEncoded,
   ScottEncoding,
+  RecordFromData (fieldFoci, fieldListFoci),
   field,
+  fieldFromData,
   letrec,
   pletrec,
+  recordFromFieldReaders,
 ) where
 
 import Control.Monad.Trans.State.Lazy (State, evalState, get, put)
-import Data.Functor.Compose (Compose)
+import Data.Functor.Compose (Compose (Compose, getCompose))
 import Data.Kind (Type)
 import Data.Monoid (Dual (Dual, getDual), Endo (Endo, appEndo), Sum (Sum, getSum))
 import Numeric.Natural (Natural)
-import Plutarch (PCon, pcon, phoistAcyclic, plam, punsafeCoerce, (#), (:-->))
+import Plutarch (PlutusType (PInner, pcon', pmatch'), pcon, phoistAcyclic, plam, plet, punsafeCoerce, (#), (:-->))
+import Plutarch.Bool (pif, (#==))
+import Plutarch.Builtin (PAsData, PBuiltinList, PData, pasConstr, pforgetData, pfstBuiltin, psndBuiltin)
 import Plutarch.Internal (
   PType,
   RawTerm (RApply, RLamAbs, RVar),
@@ -20,6 +28,8 @@ import Plutarch.Internal (
   TermResult (TermResult, getDeps, getTerm),
   mapTerm,
  )
+import Plutarch.List (phead, ptail)
+import Plutarch.Trace (ptraceError)
 import qualified Rank2
 
 newtype PRecord r s = PRecord {getRecord :: r (Term s)}
@@ -28,9 +38,17 @@ type family ScottEncoded (r :: ((PType) -> Type) -> Type) (a :: PType) :: PType
 newtype ScottArgument r s t = ScottArgument {getScott :: Term s (ScottEncoded r t)}
 type ScottEncoding r t = ScottEncoded r t :--> t
 
-instance {-# OVERLAPS #-} Rank2.Foldable r => PCon (PRecord r) where
-  pcon :: forall s. PRecord r s -> Term s (PRecord r)
-  pcon = punsafeCoerce . rcon . getRecord
+instance (Rank2.Distributive r, Rank2.Traversable r) => PlutusType (PRecord r) where
+  type PInner (PRecord r) t = ScottEncoding r t
+  pcon' :: forall s. PRecord r s -> forall t. Term s (ScottEncoding r t)
+  pcon' (PRecord r) = rcon r
+  pmatch' :: forall s t. (forall t. Term s (ScottEncoding r t)) -> (PRecord r s -> Term s t) -> Term s t
+  pmatch' p f = p # arg
+    where
+      arg :: Term s (ScottEncoded r t)
+      arg = Term (\i -> TermResult (RLamAbs (fieldCount (initial @r) - 1) $ rawArg i) [])
+      rawArg :: Natural -> RawTerm
+      rawArg depth = getTerm $ asRawTerm (f $ PRecord variables) $ depth + fieldCount (initial @r)
 
 rcon :: forall r s t. Rank2.Foldable r => r (Term s) -> Term s (ScottEncoding r t)
 rcon r = plam (\f -> punsafeCoerce $ appEndo (getDual $ Rank2.foldMap (Dual . Endo . applyField) r) f)
@@ -50,9 +68,9 @@ letrec r = Term term
         (Dual rawTerms, deps) = Rank2.foldMap (rawResult . ($ n) . asRawTerm) (r selfReferring)
     rawResult TermResult {getTerm, getDeps} = (Dual [getTerm], getDeps)
     selfReferring = Rank2.fmap fromRecord accessors
-    fromRecord (ScottArgument (Term access)) = Term $ \depth -> mapTerm (\field -> RApply (RVar $ fieldCount + depth - 1) [field]) (access 0)
-    fieldCount :: Natural
-    fieldCount = getSum (Rank2.foldMap (const $ Sum 1) (accessors @r))
+    fromRecord :: ScottArgument r s a -> Term s a
+    fromRecord (ScottArgument (Term access)) =
+      Term $ \depth -> mapTerm (\field -> RApply (RVar $ fieldCount (initial @r) + depth - 1) [field]) (access 0)
 
 -- | Converts a Haskell field function to a Scott-encoded record field accessor.
 field ::
@@ -64,31 +82,107 @@ field f = getScott (f accessors)
 
 -- | Provides a record of function terms that access each field out of a Scott-encoded record.
 accessors :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => r (ScottArgument r s)
-accessors = Rank2.cotraverse accessor id
+accessors = abstract Rank2.<$> variables
   where
-    accessor :: (r (ScottArgument r s) -> ScottArgument r s a) -> ScottArgument r s a
-    accessor ref = ref ordered
-    ordered :: r (ScottArgument r s)
-    ordered = evalState (Rank2.traverse next initial) fieldCount
-    initial :: r (Compose Maybe (ScottArgument r s))
-    initial = Rank2.distribute Nothing
-    next :: f a -> State Natural (ScottArgument r s a)
+    abstract :: Term s a -> ScottArgument r s a
+    abstract (Term t) = ScottArgument (phoistAcyclic $ Term $ mapTerm (RLamAbs $ fieldCount (initial @r) - 1) . t)
+
+{- | A record of terms that each accesses a different variable in scope,
+ outside in following the field order.
+-}
+variables :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => r (Term s)
+variables = Rank2.cotraverse var id
+  where
+    var :: (r (Term s) -> Term s a) -> Term s a
+    var ref = ref ordered
+    ordered :: r (Term s)
+    ordered = evalState (Rank2.traverse next $ initial @r) (fieldCount $ initial @r)
+    next :: f a -> State Natural (Term s a)
     next _ = do
       i <- get
       let i' = pred i
       seq i' (put i')
-      return
-        ( ScottArgument $
-            phoistAcyclic $
-              Term $
-                const $
-                  TermResult
-                    { getTerm = RLamAbs (fieldCount - 1) $ RVar i'
-                    , getDeps = []
-                    }
-        )
-    fieldCount :: Natural
-    fieldCount = getSum (Rank2.foldMap (const $ Sum 1) initial)
+      return $
+        Term $
+          const $
+            TermResult
+              { getTerm = RVar i'
+              , getDeps = []
+              }
+
+newtype DataReader s a = DataReader {readData :: Term s (PAsData a) -> Term s a}
+newtype FocusFromData s a b = FocusFromData {getFocus :: Term s (PAsData a :--> PAsData b)}
+newtype FocusFromDataList s a = FocusFromDataList {getItem :: Term s (PBuiltinList PData) -> Term s (PAsData a)}
+
+{- | Converts a record of field DataReaders to a DataReader of the whole
+ record. If you only need a single field or two, use `fieldFromData`
+ instead.
+-}
+recordFromFieldReaders ::
+  forall r s.
+  (Rank2.Apply r, RecordFromData r) =>
+  r (DataReader s) ->
+  DataReader s (PRecord r)
+recordFromFieldReaders reader = DataReader $ verifySoleConstructor readRecord
+  where
+    readRecord :: Term s (PBuiltinList PData) -> Term s (PRecord r)
+    readRecord dat = pcon $ PRecord $ Rank2.liftA2 (flip readData . getCompose) (fields dat) reader
+    fields :: Term s (PBuiltinList PData) -> r (Compose (Term s) PAsData)
+    fields bis = (\f -> Compose $ getItem f bis) Rank2.<$> fieldListFoci
+
+{- | Converts a Haskell field function to a function term that extracts the 'Data' encoding of the field from the
+ encoding of the whole record.
+-}
+fieldFromData ::
+  RecordFromData r =>
+  (r (FocusFromData s (PRecord r)) -> FocusFromData s (PRecord r) t) ->
+  Term s (PAsData (PRecord r) :--> PAsData t)
+fieldFromData f = getFocus (f fieldFoci)
+
+{- | Instances of this class must know how to focus on individual fields of
+ the data-encoded record. If the declared order of the record fields doesn't
+ match the encoding order, you must override the method defaults.
+-}
+class (Rank2.Distributive r, Rank2.Traversable r) => RecordFromData r where
+  -- | Given the encoding of the whole record, every field focuses on its own encoding.
+  fieldFoci :: r (FocusFromData s (PRecord r))
+
+  -- | Given the encoding of the list of all fields, every field focuses on its own encoding.
+  fieldListFoci :: r (FocusFromDataList s)
+
+  fieldFoci = Rank2.cotraverse focus id
+    where
+      focus :: (r (FocusFromData s (PRecord r)) -> FocusFromData s (PRecord r) a) -> FocusFromData s (PRecord r) a
+      focus ref = ref foci
+      foci :: r (FocusFromData s (PRecord r))
+      foci = fieldsFromRecord Rank2.<$> fieldListFoci
+      fieldsFromRecord :: FocusFromDataList s a -> FocusFromData s (PRecord r) a
+      fieldsFromRecord (FocusFromDataList f) = FocusFromData $ plam $ verifySoleConstructor f
+  fieldListFoci = Rank2.cotraverse focus id
+    where
+      focus :: (r (FocusFromDataList s) -> FocusFromDataList s a) -> FocusFromDataList s a
+      focus ref = ref foci
+      foci :: r (FocusFromDataList s)
+      foci = evalState (Rank2.traverse next $ initial @r) id
+      next :: f a -> State (Term s (PBuiltinList PData) -> Term s (PBuiltinList PData)) (FocusFromDataList s a)
+      next _ = do
+        rest <- get
+        put ((ptail #) . rest)
+        return $ FocusFromDataList (punsafeCoerce . (phead #) . rest)
+
+verifySoleConstructor :: (Term s (PBuiltinList PData) -> Term s a) -> (Term s (PAsData (PRecord r)) -> Term s a)
+verifySoleConstructor f d =
+  plet (pasConstr # pforgetData d) $ \constr ->
+    pif
+      (pfstBuiltin # constr #== 0)
+      (f $ psndBuiltin # constr)
+      (ptraceError "verifySoleConstructor failed")
+
+initial :: Rank2.Distributive r => r (Compose Maybe (Term s))
+initial = Rank2.distribute Nothing
+
+fieldCount :: Rank2.Foldable r => r f -> Natural
+fieldCount = getSum . Rank2.foldMap (const $ Sum 1)
 
 -- | The raw Y-combinator term
 rfix :: RawTerm

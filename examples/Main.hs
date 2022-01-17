@@ -30,6 +30,7 @@ import qualified PlutusTx
 
 import qualified Examples.Api as Api
 import qualified Examples.LetRec as LetRec
+import qualified Examples.PIsData as PIsData
 import qualified Examples.PlutusType as PlutusType
 import qualified Examples.Rationals as Rationals
 import qualified Examples.Recursion as Recursion
@@ -74,8 +75,8 @@ uglyDouble = plam $ \n -> plet n $ \n1 -> plet n1 $ \n2 -> n2 + n2
 -- loopHoisted :: Term (PInteger :--> PInteger)
 -- loopHoisted = phoistAcyclic $ plam $ \x -> loop # x
 
---_shrinkTests :: TestTree
---_shrinkTests = testGroup "shrink tests" [let ?tester = shrinkTester in tests]
+-- _shrinkTests :: TestTree
+-- _shrinkTests = testGroup "shrink tests" [let ?tester = shrinkTester in tests]
 
 standardTests :: TestTree
 standardTests = testGroup "standard tests" [let ?tester = standardTester in tests]
@@ -92,6 +93,7 @@ tests =
     , List.tests
     , Rationals.tests
     , LetRec.tests
+    , PIsData.tests
     ]
 
 plutarchTests :: HasTester => TestTree

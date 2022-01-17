@@ -81,16 +81,16 @@
         {
           src = inputs.cardano-base;
           subdirs = [
-           # "base-deriving-via"
+            # "base-deriving-via"
             "binary"
-           # "binary/test"
-           "cardano-crypto-class"
-           # "cardano-crypto-praos"
-           # "cardano-crypto-tests"
-           # "measures"
-           # "orphans-deriving-via"
-           # "slotting"
-           # "strict-containers"
+            # "binary/test"
+            "cardano-crypto-class"
+            # "cardano-crypto-praos"
+            # "cardano-crypto-tests"
+            # "measures"
+            # "orphans-deriving-via"
+            # "slotting"
+            # "strict-containers"
           ];
         }
         {
@@ -125,12 +125,15 @@
       nixpkgsFor = system: import nixpkgs { inherit system; overlays = [ haskell-nix.overlay ]; inherit (haskell-nix) config; };
       nixpkgsFor' = system: import nixpkgs { inherit system; inherit (haskell-nix) config; };
 
+      ghcVersion = "ghc921";
+      tools.fourmolu = { };
+
       projectFor = system:
         let pkgs = nixpkgsFor system; in
         let pkgs' = nixpkgsFor' system; in
         (nixpkgsFor system).haskell-nix.cabalProject' {
           src = ./.;
-          compiler-nix-name = "ghc921";
+          compiler-nix-name = ghcVersion;
           cabalProjectFileName = "cabal.project";
           inherit extraSources;
           modules = [{
@@ -182,13 +185,15 @@
 
             # We use the ones from Nixpkgs, since they are cached reliably.
             # Eventually we will probably want to build these with haskell.nix.
-            nativeBuildInputs = [ pkgs'.cabal-install pkgs'.hlint pkgs'.haskellPackages.fourmolu ];
+            nativeBuildInputs = [ pkgs'.cabal-install pkgs'.hlint pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt ];
 
             # FIXME: add HLS back
             # Use https://github.com/haskell/haskell-language-server/pull/2503 ?
             # tools = {
             #   haskell-language-server = {};  # Must use haskell.nix, because the compiler version should match
             # };
+
+            inherit tools;
 
             additional = ps: [
               ps.plutus-ledger-api
@@ -198,29 +203,30 @@
           };
         };
 
-        formatCheckFor = system:
-          let
-            pkgs = nixpkgsFor' system;
-          in
-            pkgs.runCommand "format-check" {
-              nativeBuildInputs = [ pkgs.haskellPackages.fourmolu ];
-            } ''
-              export LC_CTYPE=C.UTF-8
-              export LC_ALL=C.UTF-8
-              export LANG=C.UTF-8
-              cd ${self}
-              ./bin/format || (echo "    Please run ./bin/format" ; exit 1)
-              mkdir $out
-            ''
-          ;
+      formatCheckFor = system:
+        let
+          pkgs = nixpkgsFor system;
+          pkgs' = nixpkgsFor' system;
+        in
+        pkgs.runCommand "format-check"
+          {
+            nativeBuildInputs = [ pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt (pkgs.haskell-nix.tools ghcVersion { inherit (tools) fourmolu; }).fourmolu ];
+          } ''
+          export LC_CTYPE=C.UTF-8
+          export LC_ALL=C.UTF-8
+          export LANG=C.UTF-8
+          cd ${self}
+          ./bin/format || (echo "    Please run ./bin/format" ; exit 1)
+          mkdir $out
+        ''
+      ;
     in
     {
       inherit extraSources;
 
       project = perSystem projectFor;
-      flake = perSystem (system: (projectFor system).flake {});
+      flake = perSystem (system: (projectFor system).flake { });
 
-      # this could be done automatically, but would reduce readability
       packages = perSystem (system: self.flake.${system}.packages);
       checks = perSystem (system:
         self.flake.${system}.checks
@@ -230,14 +236,19 @@
         }
       );
       check = perSystem (system:
-        (nixpkgsFor system).runCommand "combined-test" {
-          nativeBuildInputs = builtins.attrValues self.checks.${system};
-        } "touch $out"
+        (nixpkgsFor system).runCommand "combined-test"
+          {
+            checksss = builtins.attrValues self.checks.${system};
+          } ''
+          echo $checksss
+
+          touch $out
+        ''
       );
-      apps = perSystem (system: 
+      apps = perSystem (system:
         self.flake.${system}.apps
         // {
-            benchmark = {
+          benchmark = {
             type = "app";
             program = "${self.flake.${system}.packages."plutarch:bench:perf"}/bin/perf";
           };
