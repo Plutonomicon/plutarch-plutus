@@ -1,7 +1,10 @@
+{-# LANGUAGE DefaultSignatures #-}
+
 module Plutarch.Rec (
   PRecord (PRecord, getRecord),
   ScottEncoded,
   ScottEncoding,
+  FieldsFromData (fieldFromData),
   field,
   letrec,
   pletrec,
@@ -12,7 +15,9 @@ import Data.Functor.Compose (Compose)
 import Data.Kind (Type)
 import Data.Monoid (Dual (Dual, getDual), Endo (Endo, appEndo), Sum (Sum, getSum))
 import Numeric.Natural (Natural)
-import Plutarch (PlutusType (PInner, pcon', pmatch'), phoistAcyclic, plam, punsafeCoerce, (#), (:-->))
+import Plutarch (PlutusType (PInner, pcon', pmatch'), phoistAcyclic, plam, plet, punsafeCoerce, (#), (:-->))
+import Plutarch.Bool (pif, (#==))
+import Plutarch.Builtin (PAsData, PBuiltinList, PData, pasConstr, pforgetData, pfstBuiltin, psndBuiltin)
 import Plutarch.Internal (
   PType,
   RawTerm (RApply, RLamAbs, RVar),
@@ -20,6 +25,8 @@ import Plutarch.Internal (
   TermResult (TermResult, getDeps, getTerm),
   mapTerm,
  )
+import Plutarch.List (phead, ptail)
+import Plutarch.Trace (ptraceError)
 import qualified Rank2
 
 newtype PRecord r s = PRecord {getRecord :: r (Term s)}
@@ -99,6 +106,39 @@ variables = Rank2.cotraverse var id
               { getTerm = RVar i'
               , getDeps = []
               }
+
+newtype FocusFromData s a b = FocusFromData {getFocus :: Term s (PAsData a :--> PAsData b)}
+
+class FieldsFromData r where
+  -- | Converts a Haskell field function to a function term that extracts the 'Data' encoding of the field from the
+  -- encoding of the whole record.
+  fieldFromData :: (r (FocusFromData s (PRecord r)) -> FocusFromData s (PRecord r) t)
+                -> Term s (PAsData (PRecord r) :--> PAsData t)
+  default fieldFromData :: (Rank2.Distributive r, Rank2.Traversable r)
+                        => (r (FocusFromData s (PRecord r)) -> FocusFromData s (PRecord r) t)
+                        -> Term s (PAsData (PRecord r) :--> PAsData t)
+  fieldFromData f = getFocus (f fieldFoci)
+
+fieldFoci :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => r (FocusFromData s (PRecord r))
+fieldFoci = Rank2.cotraverse focus id
+  where
+    focus :: (r (FocusFromData s (PRecord r)) -> FocusFromData s (PRecord r) a) -> FocusFromData s (PRecord r) a
+    focus ref = ref ordered
+    ordered :: r (FocusFromData s (PRecord r))
+    ordered = evalState (Rank2.traverse next $ initial @r) id
+    next :: f a -> State (Term s (PBuiltinList PData) -> Term s (PBuiltinList PData)) (FocusFromData s (PRecord r) a)
+    next _ = do
+      rest <- get
+      put ((ptail #) . rest)
+      return $
+        FocusFromData $ punsafeCoerce $ fromFields ((phead #) . rest)
+    fromFields :: (Term s (PBuiltinList PData) -> Term s a) -> Term s (PAsData (PRecord r) :--> a)
+    fromFields f = plam $ \d->
+      plet (pasConstr # pforgetData d) $ \constr ->
+        pif
+          (pfstBuiltin # constr #== 0)
+          (f $ psndBuiltin # constr)
+          (ptraceError "fieldFromData expects a sole constructor")
 
 initial :: Rank2.Distributive r => r (Compose Maybe (Term s))
 initial = Rank2.distribute Nothing
