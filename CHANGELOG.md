@@ -20,14 +20,15 @@
 - More complete `Plutarch.Api.V1`.
 
 Thanks to:
-- @TotallyNotChase
-- @emiflake
-- @t1lde
-- @kozross
-- @Geometer1729
-- @srid
 - @blamario
+- @emiflake
+- @Geometer1729
+- @kozross
+- @L-as
 - @sergesku
+- @srid
+- @t1lde
+- @TotallyNotChase
 
 # 1.0.0
 
