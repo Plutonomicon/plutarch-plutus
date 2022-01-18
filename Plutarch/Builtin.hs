@@ -27,7 +27,18 @@ import Plutarch (PlutusType (..), punsafeBuiltin, punsafeCoerce)
 import Plutarch.Bool (PBool (..), PEq, pif', (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
-import Plutarch.Lift (DerivePConstantViaCoercible (DerivePConstantViaCoercible), PConstant, PConstantRepr, PConstanted, PLift, PLifted, PUnsafeLiftDecl, pconstant, pconstantFromRepr, pconstantToRepr)
+import Plutarch.Lift (
+  DerivePConstantViaCoercible (DerivePConstantViaCoercible),
+  PConstant,
+  PConstantRepr,
+  PConstanted,
+  PLift,
+  PLifted,
+  PUnsafeLiftDecl,
+  pconstant,
+  pconstantFromRepr,
+  pconstantToRepr,
+ )
 import Plutarch.List (PListLike (..), plistEquals)
 import Plutarch.Prelude
 import qualified PlutusCore as PLC

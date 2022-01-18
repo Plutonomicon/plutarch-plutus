@@ -9,7 +9,13 @@ import qualified Data.Text as Txt
 import Plutarch (punsafeBuiltin)
 import Plutarch.Bool (PEq, (#==))
 import Plutarch.ByteString (PByteString)
-import Plutarch.Lift (DerivePConstantViaCoercible (DerivePConstantViaCoercible), PConstant, PLifted, PUnsafeLiftDecl, pconstant)
+import Plutarch.Lift (
+  DerivePConstantViaCoercible (DerivePConstantViaCoercible),
+  PConstant,
+  PLifted,
+  PUnsafeLiftDecl,
+  pconstant,
+ )
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
