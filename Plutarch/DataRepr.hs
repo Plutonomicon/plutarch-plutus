@@ -3,7 +3,21 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans -Wno-redundant-constraints #-}
 
-module Plutarch.DataRepr (PDataRepr, punDataRepr, pindexDataRepr, pmatchDataRepr, DataReprHandlers (..), PDataList, pdhead, pdtail, PIsDataRepr (..), PIsDataReprInstances (..), punsafeIndex, pindexDataList, DerivePConstantViaData (..)) where
+module Plutarch.DataRepr (
+  PDataRepr,
+  punDataRepr,
+  pindexDataRepr,
+  pmatchDataRepr,
+  DataReprHandlers (..),
+  PDataList,
+  pdhead,
+  pdtail,
+  PIsDataRepr (..),
+  PIsDataReprInstances (..),
+  punsafeIndex,
+  pindexDataList,
+  DerivePConstantViaData (..),
+) where
 
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy)

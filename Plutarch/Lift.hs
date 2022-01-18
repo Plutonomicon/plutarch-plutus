@@ -83,8 +83,8 @@ plift' prog = case evaluateScript (compile prog) of
       Left e -> Left $ LiftError_EvalException e
   Left e -> Left $ LiftError_ScriptError e
 
--- | Like `plift'` but fails on error.
-plift :: forall p. (HasCallStack, PLift p) => ClosedTerm p -> (PLifted p)
+-- | Like `plift'` but throws on failure.
+plift :: forall p. (HasCallStack, PLift p) => ClosedTerm p -> PLifted p
 plift prog = case plift' prog of
   Right x -> x
   Left e -> error $ "plift failed: " <> show e

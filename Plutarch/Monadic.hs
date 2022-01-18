@@ -9,14 +9,15 @@ import Plutarch.Trace (ptraceError)
 {- | Bind function used within do syntax.
 
 Enables elegant usage of 'pmatch' and similar.
+@P.do { y <- x ; z }@ is equivalent to @x $ \y -> z@.
 
 @
   import qualified Plutarch.Monadic as P
 
   f :: Term s (PTxInfo :--> PBuiltinList (PAsData PTxInInfo))
   f = plam $ \x -> P.do
-  PTxInfo txInfoFields <- pmatch x
-  pfromData $ pdhead # txInfoFields
+    PTxInfo txInfoFields <- pmatch x
+    pfromData $ pdhead # txInfoFields
 @
 -}
 (>>=) :: (x -> Term s a) -> x -> Term s a
@@ -25,6 +26,7 @@ Enables elegant usage of 'pmatch' and similar.
 {- | Forgetful bind function used within do syntax.
 
 Enables elegant usage of 'ptrace' and similar.
+@P.do { x ; y }@ is equivalent to @x y@.
 
 @
   import qualified Plutarch.Monadic as P
