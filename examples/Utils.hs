@@ -13,7 +13,7 @@ import qualified Plutus.V1.Ledger.Scripts as Scripts
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
 import qualified PlutusCore.Evaluation.Machine.ExMemory as ExMemory
 
---import Shrink (shrinkScript)
+-- import Shrink (shrinkScript)
 import Test.Tasty.HUnit
 
 newtype EvalImpl = EvalImpl {runEvalImpl :: forall (a :: PType). HasCallStack => ClosedTerm a -> IO Scripts.Script}

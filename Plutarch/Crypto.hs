@@ -7,7 +7,7 @@ module Plutarch.Crypto (
 
 import Plutarch (punsafeBuiltin)
 
---import Plutarch.Api.V1 (PDatumHash, PPubKey (..), PPubKeyHash (..), PSignature (..))
+-- import Plutarch.Api.V1 (PDatumHash, PPubKey (..), PPubKeyHash (..), PSignature (..))
 import Plutarch.Bool (PBool)
 import Plutarch.ByteString (PByteString)
 import Plutarch.Prelude
