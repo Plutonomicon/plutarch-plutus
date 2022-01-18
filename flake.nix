@@ -295,7 +295,6 @@
           , optparse-applicative ^>= 0.16.1.0
           , parallel ^>= 3.2.2.0
           , parser-combinators ^>= 1.3.0
-          , plutarch ^>= 1.0.0
           , plutus-core ^>= 0.1.0.0
           , plutus-ledger-api ^>= 0.1.0.0
           , plutus-tx ^>= 0.1.0.0
