@@ -52,6 +52,7 @@ punDataRepr = phoistAcyclic $
     plet (pasConstr #$ pasData t) $ \d ->
       (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataList def))
 
+
 pindexDataRepr :: (KnownNat n) => Proxy n -> Term s (PDataRepr (def : defs) :--> PDataList (IndexList n (def : defs)))
 pindexDataRepr n = phoistAcyclic $
   plam $ \t ->
@@ -127,6 +128,9 @@ newtype PIsDataReprInstances (a :: PType) (h :: Type) (s :: S) = PIsDataReprInst
 class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PType]]
   pmatchRepr :: forall s b. Term s (PDataRepr (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
+
+pasDataRepr :: (PIsDataRepr a) => Term s a -> Term s (PDataRepr (PIsDataReprRepr a))
+pasDataRepr = punsafeCoerce
 
 instance PIsDataRepr a => PIsData (PIsDataReprInstances a h) where
   pdata = punsafeCoerce
