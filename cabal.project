@@ -1,11 +1,3 @@
-allow-newer: *:*
-
-package plutus-tx-plugin
-  flags: +use-ghc-stub
-
 packages: ./.
-
-constraints:
-  aeson > 2
 
 benchmarks: true
