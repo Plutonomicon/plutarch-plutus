@@ -72,7 +72,7 @@ pindexDataRepr n = phoistAcyclic $
     plet (pasConstr #$ pasData t) $ \d ->
       let i :: Term _ PInteger = pfstBuiltin # d
        in pif
-            (i #== (fromInteger $ natVal $ n))
+            (i #== fromInteger (natVal n))
             (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataList _))
             perror
 

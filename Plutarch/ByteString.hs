@@ -19,7 +19,13 @@ import GHC.Stack (HasCallStack)
 import Plutarch (punsafeBuiltin)
 import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Integer (PInteger)
-import Plutarch.Lift (DerivePConstantViaCoercible (DerivePConstantViaCoercible), PConstant, PLifted, PUnsafeLiftDecl, pconstant)
+import Plutarch.Lift (
+  DerivePConstantViaCoercible (DerivePConstantViaCoercible),
+  PConstant,
+  PLifted,
+  PUnsafeLiftDecl,
+  pconstant,
+ )
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
