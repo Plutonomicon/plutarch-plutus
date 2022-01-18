@@ -5,7 +5,13 @@ module Plutarch.Unit (PUnit (..)) where
 
 import Plutarch (PlutusType (PInner, pcon', pmatch'), Term, pcon)
 import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, (#<), (#<=), (#==))
-import Plutarch.Lift (DerivePConstantViaCoercible (DerivePConstantViaCoercible), PConstant, PLifted, PUnsafeLiftDecl, pconstant)
+import Plutarch.Lift (
+  DerivePConstantViaCoercible (DerivePConstantViaCoercible),
+  PConstant,
+  PLifted,
+  PUnsafeLiftDecl,
+  pconstant,
+ )
 
 data PUnit s = PUnit
 instance PUnsafeLiftDecl PUnit where type PLifted PUnit = ()

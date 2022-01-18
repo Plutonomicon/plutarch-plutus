@@ -17,7 +17,13 @@ module Plutarch.Bool (
 ) where
 
 import Plutarch (PlutusType (PInner, pcon', pmatch'), punsafeBuiltin)
-import Plutarch.Lift (DerivePConstantViaCoercible (DerivePConstantViaCoercible), PConstant, PLifted, PUnsafeLiftDecl, pconstant)
+import Plutarch.Lift (
+  DerivePConstantViaCoercible (DerivePConstantViaCoercible),
+  PConstant,
+  PLifted,
+  PUnsafeLiftDecl,
+  pconstant,
+ )
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 

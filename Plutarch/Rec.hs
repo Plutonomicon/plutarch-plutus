@@ -60,7 +60,11 @@ pletrec :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => (r (Term s
 pletrec = punsafeCoerce . letrec
 
 -- | Recursive let construct, tying into knot the recursive equations specified in the record fields.
-letrec :: forall r s t. (Rank2.Distributive r, Rank2.Traversable r) => (r (Term s) -> r (Term s)) -> Term s (ScottEncoding r t)
+letrec ::
+  forall r s t.
+  (Rank2.Distributive r, Rank2.Traversable r) =>
+  (r (Term s) -> r (Term s)) ->
+  Term s (ScottEncoding r t)
 letrec r = Term term
   where
     term n = TermResult {getTerm = RApply rfix [RLamAbs 1 $ RApply (RVar 0) $ rawTerms], getDeps = deps}
@@ -188,4 +192,8 @@ fieldCount = getSum . Rank2.foldMap (const $ Sum 1)
 rfix :: RawTerm
 -- The simplest variant of the Y combinator hangs the interpreter, so we use an eta-expanded version instead.
 -- rfix = RLamAbs 0 $ RApply (RLamAbs 0 $ RApply (RVar 1) [RApply (RVar 0) [RVar 0]]) [RLamAbs 0 $ RApply (RVar 1) [RApply (RVar 0) [RVar 0]]]
-rfix = RLamAbs 0 $ RApply (RLamAbs 0 $ RApply (RVar 1) [RLamAbs 0 $ RApply (RVar 1) [RVar 0, RVar 1]]) [RLamAbs 0 $ RApply (RVar 1) [RLamAbs 0 $ RApply (RVar 1) [RVar 0, RVar 1]]]
+rfix =
+  RLamAbs 0 $
+    RApply
+      (RLamAbs 0 $ RApply (RVar 1) [RLamAbs 0 $ RApply (RVar 1) [RVar 0, RVar 1]])
+      [RLamAbs 0 $ RApply (RVar 1) [RLamAbs 0 $ RApply (RVar 1) [RVar 0, RVar 1]]]

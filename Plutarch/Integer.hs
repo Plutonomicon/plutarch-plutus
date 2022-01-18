@@ -5,7 +5,13 @@ module Plutarch.Integer (PInteger, PIntegral (..)) where
 
 import Plutarch (punsafeBuiltin)
 import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
-import Plutarch.Lift (DerivePConstantViaCoercible (DerivePConstantViaCoercible), PConstant, PLifted, PUnsafeLiftDecl, pconstant)
+import Plutarch.Lift (
+  DerivePConstantViaCoercible (DerivePConstantViaCoercible),
+  PConstant,
+  PLifted,
+  PUnsafeLiftDecl,
+  pconstant,
+ )
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
