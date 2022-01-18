@@ -3,7 +3,21 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans -Wno-redundant-constraints #-}
 
-module Plutarch.DataRepr (PDataRepr, punDataRepr, pindexDataRepr, pmatchDataRepr, DataReprHandlers (..), PDataList, pdhead, pdtail, PIsDataRepr (..), PIsDataReprInstances (..), punsafeIndex, pindexDataList, DerivePConstantViaData (..)) where
+module Plutarch.DataRepr (
+  PDataRepr,
+  punDataRepr,
+  pindexDataRepr,
+  pmatchDataRepr,
+  DataReprHandlers (..),
+  PDataList,
+  pdhead,
+  pdtail,
+  PIsDataRepr (..),
+  PIsDataReprInstances (..),
+  punsafeIndex,
+  pindexDataList,
+  DerivePConstantViaData (..),
+) where
 
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy)
@@ -58,7 +72,7 @@ pindexDataRepr n = phoistAcyclic $
     plet (pasConstr #$ pasData t) $ \d ->
       let i :: Term _ PInteger = pfstBuiltin # d
        in pif
-            (i #== (fromInteger $ toInteger $ natVal $ n))
+            (i #== (fromInteger $ natVal $ n))
             (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataList _))
             perror
 
@@ -70,7 +84,7 @@ pindexDataList n =
       punsafeIndex @PBuiltinList @PData # ind
   where
     ind :: Term s PInteger
-    ind = fromInteger $ toInteger $ natVal n
+    ind = fromInteger $ natVal n
 
 data DataReprHandlers (out :: PType) (def :: [[PType]]) (s :: S) where
   DRHNil :: DataReprHandlers out '[] s

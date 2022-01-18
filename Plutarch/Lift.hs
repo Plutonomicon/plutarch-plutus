@@ -27,6 +27,7 @@ class (PUnsafeLiftDecl (PConstanted h), PLC.DefaultUni `PLC.Includes` PConstantR
 
 type PLift = PUnsafeLiftDecl
 
+-- | Convert a Haskell value into a Plutarch value.
 pconstant :: forall p s. PLift p => PLifted p -> Term s p
 pconstant x = punsafeConstantInternal $ PLC.someValue @(PConstantRepr (PLifted p)) @PLC.DefaultUni $ pconstantToRepr x
 
@@ -38,6 +39,7 @@ data LiftError
   | LiftError_WrongRepr
   deriving stock (Eq, Show)
 
+-- | Convert a Plutarch value into a Haskell value.
 plift' :: forall p. PUnsafeLiftDecl p => ClosedTerm p -> Either LiftError (PLifted p)
 plift' prog = case evaluateScript (compile prog) of
   Right (_, _, Scripts.unScript -> UPLC.Program _ _ term) ->
@@ -48,7 +50,8 @@ plift' prog = case evaluateScript (compile prog) of
       Left e -> Left $ LiftError_EvalException e
   Left e -> Left $ LiftError_ScriptError e
 
-plift :: forall p. (HasCallStack, PLift p) => ClosedTerm p -> (PLifted p)
+-- | Like `plift'` but throws on failure.
+plift :: forall p. (HasCallStack, PLift p) => ClosedTerm p -> PLifted p
 plift prog = case plift' prog of
   Right x -> x
   Left e -> error $ "plift failed: " <> show e
