@@ -6,10 +6,10 @@ import Data.String (fromString)
 import Plutarch.Prelude
 import Plutarch.Trace (ptraceError)
 
-(>>=) :: a -> a
+(>>=) :: (x -> Term s a) -> x -> Term s a
 (>>=) = id
 
-(>>) :: a -> a
+(>>) :: (x -> Term s a) -> x -> Term s a
 (>>) = id
 
 fail :: String -> Term s a
