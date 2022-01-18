@@ -3,7 +3,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans -Wno-redundant-constraints #-}
 
-module Plutarch.DataRepr (PDataRepr, punDataRepr, pindexDataRepr, pmatchDataRepr, DataReprHandlers (..), PDataList, pdhead, pdtail, PIsDataRepr (..), PIsDataReprInstances (..), punsafeIndex, pindexDataList) where
+module Plutarch.DataRepr (PDataRepr, punDataRepr, pindexDataRepr, pmatchDataRepr, DataReprHandlers (..), PDataList, pdhead, pdtail, PIsDataRepr (..), PIsDataReprInstances (..), punsafeIndex, pindexDataList, DerivePConstantViaData (..)) where
 
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy)
@@ -22,8 +22,10 @@ import Plutarch.Builtin (
   psndBuiltin,
  )
 import Plutarch.Integer (PInteger)
+import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (punsafeIndex)
 import Plutarch.Prelude
+import qualified Plutus.V1.Ledger.Api as Ledger
 import qualified PlutusCore as PLC
 
 data PDataList (as :: [PType]) (s :: S)
@@ -132,3 +134,11 @@ instance PIsDataRepr a => PIsData (PIsDataReprInstances a) where
 
 instance PIsDataRepr a => PMatch (PIsDataReprInstances a) where
   pmatch x f = pmatchRepr (punsafeCoerce x) (f . PIsDataReprInstances)
+
+newtype DerivePConstantViaData (h :: Type) (p :: PType) = DerivePConstantViaData h
+
+instance (PIsDataRepr p, PLift p, Ledger.FromData h, Ledger.ToData h) => PConstant (DerivePConstantViaData h p) where
+  type PConstantRepr (DerivePConstantViaData h p) = Ledger.Data
+  type PConstanted (DerivePConstantViaData h p) = p
+  pconstantToRepr (DerivePConstantViaData x) = Ledger.toData x
+  pconstantFromRepr x = DerivePConstantViaData <$> Ledger.fromData x

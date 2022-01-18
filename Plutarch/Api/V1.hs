@@ -66,6 +66,7 @@ import Plutarch.Builtin (PAsData, PBuiltinList, PData, PIsData, type PBuiltinMap
 import Plutarch.ByteString (PByteString)
 import Plutarch.DataRepr (
   DataReprHandlers (DRHCons, DRHNil),
+  DerivePConstantViaData (DerivePConstantViaData),
   PDataList,
   PIsDataRepr,
   PIsDataReprInstances (PIsDataReprInstances),
@@ -74,7 +75,7 @@ import Plutarch.DataRepr (
   pmatchRepr,
  )
 import Plutarch.Integer (PInteger, PIntegral)
-import Plutarch.Lift (DerivePConstantViaData (DerivePConstantViaData), DerivePConstantViaNewtype (DerivePConstantViaNewtype), PConstant, PLifted, PUnsafeLiftDecl)
+import Plutarch.Lift (DerivePConstantViaNewtype (DerivePConstantViaNewtype), PConstant, PLifted, PUnsafeLiftDecl)
 
 -- ctor in-scope for deriving
 import Plutarch.Prelude
@@ -185,19 +186,37 @@ instance PIsDataRepr PScriptPurpose where
 
 newtype PDatum (s :: S) = PDatum (Term s PData)
 
+instance PUnsafeLiftDecl PDatum where type PLifted PDatum = Plutus.Datum
+deriving via (DerivePConstantViaNewtype Plutus.Datum PDatum PData) instance (PConstant Plutus.Datum)
+
 newtype PRedeemer (s :: S) = PRedeemer (Term s PData)
+
+instance PUnsafeLiftDecl PRedeemer where type PLifted PRedeemer = Plutus.Redeemer
+deriving via (DerivePConstantViaNewtype Plutus.Redeemer PRedeemer PData) instance (PConstant Plutus.Redeemer)
 
 newtype PDatumHash (s :: S)
   = PDatumHash (Term s PByteString)
 
+instance PUnsafeLiftDecl PDatumHash where type PLifted PDatumHash = Plutus.DatumHash
+deriving via (DerivePConstantViaNewtype Plutus.DatumHash PDatumHash PByteString) instance (PConstant Plutus.DatumHash)
+
 newtype PStakeValidatorHash (s :: S)
   = PStakeValidatorHash (Term s PByteString)
+
+instance PUnsafeLiftDecl PStakeValidatorHash where type PLifted PStakeValidatorHash = Plutus.StakeValidatorHash
+deriving via (DerivePConstantViaNewtype Plutus.StakeValidatorHash PStakeValidatorHash PByteString) instance (PConstant Plutus.StakeValidatorHash)
 
 newtype PRedeemerHash (s :: S)
   = PRedeemerHash (Term s PByteString)
 
+instance PUnsafeLiftDecl PRedeemerHash where type PLifted PRedeemerHash = Plutus.RedeemerHash
+deriving via (DerivePConstantViaNewtype Plutus.RedeemerHash PRedeemerHash PByteString) instance (PConstant Plutus.RedeemerHash)
+
 newtype PValidatorHash (s :: S)
   = PValidatorHash (Term s PByteString)
+
+instance PUnsafeLiftDecl PValidatorHash where type PLifted PValidatorHash = Plutus.ValidatorHash
+deriving via (DerivePConstantViaNewtype Plutus.ValidatorHash PValidatorHash PByteString) instance (PConstant Plutus.ValidatorHash)
 
 ---------- Value
 
@@ -210,9 +229,6 @@ deriving via
   instance
     (PConstant Plutus.TokenName)
 
-newtype PValue (s :: S)
-  = PValue (Term s (PMap PCurrencySymbol (PMap PTokenName PInteger)))
-
 newtype PCurrencySymbol (s :: S)
   = PCurrencySymbol (Term s PByteString)
 instance PUnsafeLiftDecl PCurrencySymbol where type PLifted PCurrencySymbol = Plutus.CurrencySymbol
@@ -220,6 +236,9 @@ deriving via
   (DerivePConstantViaNewtype Plutus.CurrencySymbol PCurrencySymbol PByteString)
   instance
     (PConstant Plutus.CurrencySymbol)
+
+newtype PValue (s :: S)
+  = PValue (Term s (PMap PCurrencySymbol (PMap PTokenName PInteger)))
 
 ---------- Crypto
 
@@ -346,9 +365,6 @@ data PCredential (s :: S)
     (PMatch, PIsData)
     via (PIsDataReprInstances PCredential)
 
-instance PUnsafeLiftDecl PDatum where type PLifted PDatum = Plutus.Datum
-deriving via (DerivePConstantViaData Plutus.Datum PDatum) instance (PConstant Plutus.Datum)
-
 instance PIsDataRepr PCredential where
   type
     PIsDataReprRepr PCredential =
@@ -397,9 +413,6 @@ newtype PAddress (s :: S)
     (PMatch, PIsData)
     via PIsDataReprInstances PAddress
 
-instance PUnsafeLiftDecl PRedeemer where type PLifted PRedeemer = Plutus.Redeemer
-deriving via (DerivePConstantViaData Plutus.Redeemer PRedeemer) instance (PConstant Plutus.Redeemer)
-
 instance PIsDataRepr PAddress where
   type
     PIsDataReprRepr PAddress =
@@ -420,9 +433,6 @@ newtype PTxId (s :: S)
     (PMatch, PIsData)
     via PIsDataReprInstances PTxId
 
-instance PUnsafeLiftDecl PDatumHash where type PLifted PDatumHash = Plutus.DatumHash
-deriving via (DerivePConstantViaData Plutus.DatumHash PDatumHash) instance (PConstant Plutus.DatumHash)
-
 instance PIsDataRepr PTxId where
   type PIsDataReprRepr PTxId = '[ '[PByteString]]
 
@@ -436,9 +446,6 @@ newtype PTxOutRef (s :: S)
     (PMatch, PIsData)
     via PIsDataReprInstances PTxOutRef
 
-instance PUnsafeLiftDecl PStakeValidatorHash where type PLifted PStakeValidatorHash = Plutus.StakeValidatorHash
-deriving via (DerivePConstantViaData Plutus.StakeValidatorHash PStakeValidatorHash) instance (PConstant Plutus.StakeValidatorHash)
-
 instance PIsDataRepr PTxOutRef where
   type PIsDataReprRepr PTxOutRef = '[ '[PTxId, PInteger]]
 
@@ -451,9 +458,6 @@ newtype PTxInInfo (s :: S)
   deriving
     (PMatch, PIsData)
     via PIsDataReprInstances PTxInInfo
-
-instance PUnsafeLiftDecl PRedeemerHash where type PLifted PRedeemerHash = Plutus.RedeemerHash
-deriving via (DerivePConstantViaData Plutus.RedeemerHash PRedeemerHash) instance (PConstant Plutus.RedeemerHash)
 
 instance PIsDataRepr PTxInInfo where
   type PIsDataReprRepr PTxInInfo = '[ '[PTxOutRef, PTxOut]]
@@ -476,9 +480,6 @@ newtype PTxOut (s :: S)
   deriving
     (PMatch, PIsData)
     via (PIsDataReprInstances PTxOut)
-
-instance PUnsafeLiftDecl PValidatorHash where type PLifted PValidatorHash = Plutus.ValidatorHash
-deriving via (DerivePConstantViaData Plutus.ValidatorHash PValidatorHash) instance (PConstant Plutus.ValidatorHash)
 
 instance PIsDataRepr PTxOut where
   type

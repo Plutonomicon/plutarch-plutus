@@ -3,14 +3,13 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE UndecidableSuperClasses #-}
 
-module Plutarch.Lift (PConstant (..), PUnsafeLiftDecl (..), PLift, pconstant, plift, plift', LiftError, DerivePConstantViaCoercible (..), DerivePConstantViaData (..), DerivePConstantViaNewtype (..)) where
+module Plutarch.Lift (PConstant (..), PUnsafeLiftDecl (..), PLift, pconstant, plift, plift', LiftError, DerivePConstantViaCoercible (..), DerivePConstantViaNewtype (..)) where
 
 import Data.Coerce
 import Data.Kind (Type)
 import GHC.Stack (HasCallStack)
 import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Internal (ClosedTerm, PType, Term, compile, punsafeConstantInternal)
-import qualified Plutus.V1.Ledger.Api as Ledger
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import qualified PlutusCore as PLC
 import PlutusCore.Constant (readKnownConstant)
@@ -61,14 +60,6 @@ instance (PLift p, Coercible h r, PLC.DefaultUni `PLC.Includes` r) => PConstant 
   type PConstanted (DerivePConstantViaCoercible h p r) = p
   pconstantToRepr = coerce
   pconstantFromRepr = Just . coerce
-
-newtype DerivePConstantViaData (h :: Type) (p :: PType) = DerivePConstantViaData h
-
-instance (PLift p, Ledger.FromData h, Ledger.ToData h) => PConstant (DerivePConstantViaData h p) where
-  type PConstantRepr (DerivePConstantViaData h p) = Ledger.Data
-  type PConstanted (DerivePConstantViaData h p) = p
-  pconstantToRepr (DerivePConstantViaData x) = Ledger.toData x
-  pconstantFromRepr x = DerivePConstantViaData <$> Ledger.fromData x
 
 newtype DerivePConstantViaNewtype (h :: Type) (p :: PType) (p' :: PType) = DerivePConstantViaNewtype h
 
