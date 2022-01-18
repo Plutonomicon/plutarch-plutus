@@ -19,7 +19,7 @@ import Plutarch.ByteString (PByteString, pconsBS, phexByteStr, pindexBS, plength
 import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (punsafeConstantInternal)
-import Plutarch.Lift (pconstant, plift')
+import Plutarch.Lift (pconstant, plift)
 import Plutarch.Prelude
 import Plutarch.String (PString)
 import Plutarch.Unit (PUnit (..))
@@ -35,6 +35,8 @@ import qualified Examples.PlutusType as PlutusType
 import qualified Examples.Rationals as Rationals
 import qualified Examples.Recursion as Recursion
 import Utils
+
+import Data.Text (Text)
 
 main :: IO ()
 main = defaultMain $ testGroup "all tests" [standardTests] -- , shrinkTests ]
@@ -235,25 +237,25 @@ plutarchTests =
     , testGroup
         "Lifting of constants"
         [ testCase "plift on primitive types" $ do
-            plift' (pcon PTrue) @?= Right True
-            plift' (pcon PFalse) @?= Right False
+            plift (pcon PTrue) @?= True
+            plift (pcon PFalse) @?= False
         , testCase "pconstant on primitive types" $ do
-            plift' (pconstant @PBool False) @?= Right False
-            plift' (pconstant @PBool True) @?= Right True
+            plift (pconstant @PBool False) @?= False
+            plift (pconstant @PBool True) @?= True
         , testCase "plift on list and pair" $ do
-            plift' (pconstant @(PBuiltinList PInteger) [1, 2, 3]) @?= Right [1, 2, 3]
-            plift' (pconstant @(PBuiltinPair PString PInteger) ("IOHK", 42)) @?= Right ("IOHK", 42)
+            plift (pconstant ([1, 2, 3] :: [Integer])) @?= [1, 2, 3]
+            plift (pconstant ("IOHK" :: Text, 42 :: Integer)) @?= ("IOHK", 42)
         , testCase "plift on data" $ do
             let d :: PlutusTx.Data
                 d = PlutusTx.toData @(Either Bool Bool) $ Right False
-            plift' (pconstant @(PData) d) @?= Right d
+            plift (pconstant d) @?= d
         , testCase "plift on nested containers" $ do
             -- List of pairs
-            let v1 = [("IOHK", 42), ("Plutus", 31)]
-            plift' (pconstant @(PBuiltinList (PBuiltinPair PString PInteger)) v1) @?= Right v1
+            let v1 = [("IOHK", 42), ("Plutus", 31)] :: [(Text, Integer)]
+            plift (pconstant v1) @?= v1
             -- List of pair of lists
-            let v2 = [("IOHK", [1, 2, 3]), ("Plutus", [9, 8, 7])]
-            plift' (pconstant @(PBuiltinList (PBuiltinPair PString (PBuiltinList PInteger))) v2) @?= Right v2
+            let v2 = [("IOHK", [1, 2, 3]), ("Plutus", [9, 8, 7])] :: [(Text, [Integer])]
+            plift (pconstant v2) @?= v2
         ]
     , testGroup
         "Boolean operations"

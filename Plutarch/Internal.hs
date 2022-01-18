@@ -1,3 +1,5 @@
+{-# LANGUAGE RoleAnnotations #-}
+
 module Plutarch.Internal (
   -- | $hoisted
   (:-->),
@@ -108,6 +110,8 @@ data S
 
 -- | Shorthand for Plutarch types.
 type PType = S -> Type
+
+type role Term phantom representational
 
 {- $term
  Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop

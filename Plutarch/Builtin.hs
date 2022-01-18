@@ -1,6 +1,7 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 -- This should have been called Plutarch.Data...
 module Plutarch.Builtin (
@@ -26,7 +27,7 @@ import Plutarch (PlutusType (..), punsafeBuiltin, punsafeCoerce)
 import Plutarch.Bool (PBool (..), PEq, pif', (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
-import Plutarch.Lift (DerivePLiftViaCoercible, PLift, PLifted, PLiftedRepr, PUnsafeLiftDecl, pconstant, pliftFromRepr, pliftToRepr)
+import Plutarch.Lift (DerivePConstantViaCoercible (DerivePConstantViaCoercible), PConstant, PConstantRepr, PConstanted, PLift, PLifted, PUnsafeLiftDecl, pconstant, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (PListLike (..), plistEquals)
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
@@ -35,14 +36,17 @@ import PlutusTx (Data)
 -- | Plutus 'BuiltinPair'
 data PBuiltinPair (a :: PType) (b :: PType) (s :: S)
 
--- FIXME: figure out good way of deriving this
-instance (PUnsafeLiftDecl ah a, PUnsafeLiftDecl bh b) => PUnsafeLiftDecl (ah, bh) (PBuiltinPair a b) where
-  type PLiftedRepr (PBuiltinPair a b) = (PLiftedRepr a, PLiftedRepr b)
+instance (PLift a, PLift b) => PUnsafeLiftDecl (PBuiltinPair a b) where
   type PLifted (PBuiltinPair a b) = (PLifted a, PLifted b)
-  pliftToRepr (x, y) = (pliftToRepr @_ @a x, pliftToRepr @_ @b y)
-  pliftFromRepr (x, y) = do
-    x' <- pliftFromRepr @_ @a x
-    y' <- pliftFromRepr @_ @b y
+
+-- FIXME: figure out good way of deriving this
+instance (PConstant a, PConstant b) => PConstant (a, b) where
+  type PConstantRepr (a, b) = (PConstantRepr a, PConstantRepr b)
+  type PConstanted (a, b) = PBuiltinPair (PConstanted a) (PConstanted b)
+  pconstantToRepr (x, y) = (pconstantToRepr x, pconstantToRepr y)
+  pconstantFromRepr (x, y) = do
+    x' <- pconstantFromRepr @a x
+    y' <- pconstantFromRepr @b y
     Just (x', y')
 
 pfstBuiltin :: Term s (PBuiltinPair a b :--> a)
@@ -78,11 +82,14 @@ pnullBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.NullList
 pconsBuiltin :: Term s (a :--> PBuiltinList a :--> PBuiltinList a)
 pconsBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.MkCons
 
-instance PUnsafeLiftDecl ah a => PUnsafeLiftDecl [ah] (PBuiltinList a) where
+instance PConstant a => PConstant [a] where
+  type PConstantRepr [a] = [PConstantRepr a]
+  type PConstanted [a] = PBuiltinList (PConstanted a)
+  pconstantToRepr x = pconstantToRepr <$> x
+  pconstantFromRepr x = traverse (pconstantFromRepr @a) x
+
+instance PUnsafeLiftDecl a => PUnsafeLiftDecl (PBuiltinList a) where
   type PLifted (PBuiltinList a) = [PLifted a]
-  type PLiftedRepr (PBuiltinList a) = [PLiftedRepr a]
-  pliftToRepr x = pliftToRepr @_ @a <$> x
-  pliftFromRepr x = traverse (pliftFromRepr @_ @a) x
 
 instance PLift a => PlutusType (PBuiltinList a) where
   type PInner (PBuiltinList a) _ = PBuiltinList a
@@ -116,7 +123,9 @@ data PData s
   | PDataList (Term s (PBuiltinList PData))
   | PDataInteger (Term s PInteger)
   | PDataByteString (Term s PByteString)
-  deriving (PUnsafeLiftDecl Data) via (DerivePLiftViaCoercible Data PData Data)
+
+instance PUnsafeLiftDecl PData where type PLifted PData = Data
+deriving via (DerivePConstantViaCoercible Data PData Data) instance (PConstant Data)
 
 instance PEq PData where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
@@ -154,11 +163,13 @@ data PAsData (a :: PType) (s :: S)
 
 data PAsDataLifted (a :: PType)
 
-instance PUnsafeLiftDecl (PAsDataLifted a) (PAsData a) where
-  type PLifted (PAsData a) = PAsDataLifted a
-  type PLiftedRepr (PAsData a) = Data
-  pliftToRepr = \case {}
-  pliftFromRepr _ = Nothing
+instance PConstant (PAsDataLifted a) where
+  type PConstantRepr (PAsDataLifted a) = Data
+  type PConstanted (PAsDataLifted a) = PAsData a
+  pconstantToRepr = \case {}
+  pconstantFromRepr _ = Nothing
+
+instance PUnsafeLiftDecl (PAsData a) where type PLifted (PAsData a) = PAsDataLifted a
 
 pforgetData :: Term s (PAsData a) -> Term s PData
 pforgetData = punsafeCoerce

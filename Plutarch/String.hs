@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.String (PString, pfromText, pencodeUtf8, pdecodeUtf8) where
 
@@ -8,13 +9,15 @@ import qualified Data.Text as Txt
 import Plutarch (punsafeBuiltin)
 import Plutarch.Bool (PEq, (#==))
 import Plutarch.ByteString (PByteString)
-import Plutarch.Lift (DerivePLiftViaCoercible, PUnsafeLiftDecl, pconstant)
+import Plutarch.Lift (DerivePConstantViaCoercible (DerivePConstantViaCoercible), PConstant, PLifted, PUnsafeLiftDecl, pconstant)
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinString' values
 data PString s
-  deriving (PUnsafeLiftDecl Text) via (DerivePLiftViaCoercible Text PString Text)
+
+instance PUnsafeLiftDecl PString where type PLifted PString = Text
+deriving via (DerivePConstantViaCoercible Text PString Text) instance (PConstant Text)
 
 {-# DEPRECATED pfromText "Use `pconstant` instead." #-}
 
