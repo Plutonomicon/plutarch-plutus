@@ -123,6 +123,7 @@ These can be either built directly from Haskell synonyms using `pconstant` (requ
 ```hs
 import Plutarch.Prelude
 import Plutarch.Bool (PBool)
+import Plutarch.Lift (pconstant)
 
 -- | A plutarch level boolean. Its value is "True", in this case.
 x :: Term s PBool
