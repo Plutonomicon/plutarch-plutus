@@ -15,6 +15,7 @@
     - [Applying functions](#applying-functions)
     - [Conditionals](#conditionals)
     - [Recursion](#recursion)
+    - [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](#do-syntax-with-qualifieddo-and-plutarchmonadic)
   - [Concepts](#concepts)
     - [Hoisting, metaprogramming,  and fundamentals](#hoisting-metaprogramming--and-fundamentals)
       - [Hoisting Operators](#hoisting-operators)
@@ -296,6 +297,33 @@ pfac = pfix #$ plam f
 ```
 
 There's a Plutarch level factorial function! Note how `f` takes in a `self` and just recurses on it. All you have to do, is create a Plutarch level function by using `plam` on `f` and `pfix` the result - and that `self` argument will be taken care of for you.
+
+### Do syntax with `QualifiedDo` and `Plutarch.Monadic`
+The `Plutarch.Monadic` module provides convenient do syntax on common usage scenarios. It requires the `QualifiedDo` extension.
+
+```hs
+{-# LANGUAGE QualifiedDo #-}
+
+import qualified Plutarch.Monadic as P
+
+f :: Term s (PTxInfo :--> PBuiltinList (PAsData PTxInInfo))
+f = plam $ \x -> P.do
+  PTxInfo txInfoFields <- pmatch x
+  ptrace "yielding first field from tx info"
+  pfromData $ pdhead # txInfoFields
+```
+In essence, `P.do { x; y }` simply translates to `x y`; where `x :: (a -> Term s b) -> a -> Term s b` and `y :: a`.
+
+Similarly, `P.do { y <- x; z }` translates to `x $ \case { y -> z; _ -> ptraceError <msg> }`. Of course, if `y` is a fully exhaustive pattern match (e.g, singular constructor), the extra `_ -> ..` case will not be generated at all and you'd simply get `x $ \y -> z`.
+
+Finally, `P.do { x }` is just `x`.
+
+These semantics make it *extremely* convenient for [`pmatch`](#plutustype-pcon-and-pmatch) and [`ptrace`](#tracing) usage.
+```hs
+pmatch :: Term s a -> (a s -> Term s b) -> Term s b
+
+ptrace :: Term s PString -> Term s a -> Term s a
+```
 
 ## Concepts
 
