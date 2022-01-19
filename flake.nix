@@ -4,6 +4,7 @@
   inputs.haskell-nix.url = "github:L-as/haskell.nix?ref=master";
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
   inputs.flake-compat-ci.url = "github:hercules-ci/flake-compat-ci";
+  inputs.hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
   inputs.flake-compat = {
     url = "github:edolstra/flake-compat";
     flake = false;
@@ -45,7 +46,7 @@
   inputs.Shrinker.url = "github:Plutonomicon/Shrinker";
   inputs.Shrinker.flake = false;
 
-  outputs = inputs@{ self, nixpkgs, haskell-nix, plutus, flake-compat, flake-compat-ci, ... }:
+  outputs = inputs@{ self, nixpkgs, haskell-nix, plutus, flake-compat, flake-compat-ci, hercules-ci-effects, ... }:
     let
       extraSources = [
         {
@@ -455,9 +456,42 @@
       );
       devShell = perSystem (system: self.flake.${system}.devShell);
 
-      ciNix = flake-compat-ci.lib.recurseIntoFlakeWith {
+      effects = { src }:
+        let
+          pkgs = nixpkgs.legacyPackages.x86_64-linux;
+          hci-effects = hercules-ci-effects.lib.withPkgs pkgs;
+        in
+        {
+          benchmark-diff = hci-effects.runIf (src.ref == "refs/heads/staging") (
+            hci-effects.mkEffect {
+              src = self;
+              buildInputs = with pkgs; [ git nixFlakes ];
+              effectScript = ''
+                git clone https://github.com/Plutonomicon/plutarch.git plutarch
+                cd plutarch
+
+                git checkout $(git merge-base origin/staging ${src.rev})
+                nix --extra-experimental-features 'nix-command flakes' run .#benchmark > before.csv
+
+                git checkout ${src.rev}
+                nix --extra-experimental-features 'nix-command flakes' run .#benchmark > after.csv
+
+                echo
+                echo
+                echo "Benchmark diff between $(git merge-base origin/staging ${src.rev}) and ${src.rev}:"
+                echo
+                echo
+
+                diff before.csv after.csv
+              '';
+            }
+          );
+        };
+
+      ciNix = args@{ src }: flake-compat-ci.lib.recurseIntoFlakeWith {
         flake = self;
         systems = [ "x86_64-linux" ];
+        effectsArgs = args;
       };
     };
 }
