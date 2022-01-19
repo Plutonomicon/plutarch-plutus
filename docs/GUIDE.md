@@ -563,7 +563,7 @@ pconstant :: PLift p => PLifted p -> Term s p
 
 plift :: (PLift p, HasCallStack) => ClosedTerm p -> PLifted p
 ```
-> Aside: `PLifted p` represents the Haskell synonym to the Plutarch type, `p`. Similarly, there is also `PConstanted h` - which represents the Plutarch synonym corresponding to a Haskell type. These type families may only be used for Plutarch types implementing `PConstant`/`PLift`.
+> Aside: `PLifted p` represents the Haskell synonym to the Plutarch type, `p`. Similarly, there is also `PConstanted h` - which represents the Plutarch synonym corresponding to the Haskell type, `h`. These type families may only be used for Plutarch types implementing `PConstant`/`PLift`.
 
 `pconstant` lets you build a Plutarch value from its corresponding Haskell synonym. For example, the haskell synonym of [`PBool`](#pbool) is [`Bool`](https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Bool.html#t:Bool).
 ```hs
@@ -648,8 +648,10 @@ deriving via (DerivePConstantViaNewtype Plutus.ValidatorHash PValidatorHash PByt
 `DerivePConstantViaNewtype` also takes in 3 type parameters-
 * The Haskell newtype itself, for which `PConstant` is being implemented for.
 * The Plutarch synonym to the Haskell type.
-* The actual type contained within the newtype.
-During runtime, `ValidatorHash` is actually just a `PByteString`, the same applies for `PValidatorHash`. So we give it the `newtype` treatment with `DerivePConstantViaNewtype`!
+* The actual Plutarch type corresponding to the Haskell type contained within the newtype.
+
+  E.g `ValidatorHash` is a newtype to a `ByteString`, which is synonymous to `PByteString`. In the same way, `PValidatorHash` is actually just a newtype to a `PByteString` term.
+During runtime, `ValidatorHash` is actually just a `ByteString`, the same applies for `PValidatorHash`. So we give it the `newtype` treatment with `DerivePConstantViaNewtype`!
 
 Finally, we have `DerivePConstantViaData` for `Data` values-
 ```hs
