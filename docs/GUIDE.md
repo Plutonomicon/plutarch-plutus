@@ -66,7 +66,7 @@
 - [Common Issues](#common-issues)
   - [`plam` fails to type infer correctly](#plam-fails-to-type-infer-correctly)
   - [Ambiguous type variable arising from a use of `pconstant`](#ambiguous-type-variable-arising-from-a-use-of-pconstant)
-  - [No instance for `PLC.Contains DefaultUni (PHaskellType a)`](#no-instance-for-plccontains-defaultuni-phaskelltype-a)
+  - [No instance for (PUnsafeLiftDecl a)](#no-instance-for-punsafeliftdecl-a)
   - [Infinite loop / Infinite AST](#infinite-loop--infinite-ast)
 - [Useful Links](#useful-links)
 </details>
@@ -712,23 +712,23 @@ All `PlutusType` instances get `PCon` and `PMatch` instances for free!
 For types that cannot easily be both `PCon` and `PMatch` - feel free to implement just one of them! However, in general, **prefer implementing PlutusType**!
 
 ### PListLike
-The `PListLike` typeclass bestows beautiful, and familiar, list utilities to its instances. Plutarch has two list types- [`PBuiltinList`](#pbuiltinlist) and [`PList`](#plist). Both have `PListLike` instances! However, `PBuiltinList` can only contain builtin types. It cannot contain Plutarch functions. The element type of `PBuiltinList` can be constrained using `InDefaultUni a => PBuiltinList a`.
+The `PListLike` typeclass bestows beautiful, and familiar, list utilities to its instances. Plutarch has two list types- [`PBuiltinList`](#pbuiltinlist) and [`PList`](#plist). Both have `PListLike` instances! However, `PBuiltinList` can only contain builtin types. It cannot contain Plutarch functions. The element type of `PBuiltinList` can be constrained using `PLift a => PBuiltinList a`.
 
-> Note: `InDefaultUni` is exported from `Plutarch.Builtin`.
+> Note: `PLift` is exported from `Plutarch.Lift`.
 
-As long as it's a `InDefaultUni a => PBuiltinList a` or `PList a` - it has access to all the `PListLike` goodies, out of the box. It helps to look into some of these functions at [`Plutarch.List`](./../Plutarch/List.hs).
+As long as it's a `PLift a => PBuiltinList a` or `PList a` - it has access to all the `PListLike` goodies, out of the box. It helps to look into some of these functions at [`Plutarch.List`](./../Plutarch/List.hs).
 
 Along the way, you might be confronted by 2 big mean baddies ...err, constraints-
 ```hs
 PIsListLike list a
 ```
-This just means that the type `list a`, is *indeed* a valid `PListLike` containing valid elements! Of course, all `PList a`s are valid `PListLike`, but we have to think about `PBuiltinList` since it can only contain `InDefaultUni a => a` elements! So, in essence a function declared as-
+This just means that the type `list a`, is *indeed* a valid `PListLike` containing valid elements! Of course, all `PList a`s are valid `PListLike`, but we have to think about `PBuiltinList` since it can only contain `PLift a => a` elements! So, in essence a function declared as-
 ```hs
 pfoo :: PIsListLike list a => Term s (list a :--> list a)
 ```
 when specialized to `PBuiltinList`, can be simplified as-
 ```hs
-pfoo :: InDefaultUni a => Term s (PBuiltinList a :--> PBuiltinList a)
+pfoo :: PLift a => Term s (PBuiltinList a :--> PBuiltinList a)
 ```
 That's all it is. Don't be scared of it!
 
@@ -736,7 +736,7 @@ What about this one-
 ```hs
 PElemConstraint list a
 ```
-This one ensures that the element type `a` can indeed be contained within the list type - `list`. For `PList`, this constraint means nothing - it's always true. For `PBuiltinList`, it can be simplified as `InDefaultUni a`. Easy!
+This one ensures that the element type `a` can indeed be contained within the list type - `list`. For `PList`, this constraint means nothing - it's always true. For `PBuiltinList`, it can be simplified as `PLift a`. Easy!
 
 Here's two of my favorite `PListLike` utilites (not biased)-
 ```hs
@@ -924,11 +924,11 @@ This is synonymous to Plutus Core [builtin unit](https://staging.plutus.iohkdev.
 ### PBuiltinList
 You'll be using builtin lists quite a lot in Plutarch. `PBuiltinList` has a [`PListLike`](#plistlike) instance, giving you access to all the goodies from there! However, `PBuiltinList` can only contain builtin types. In particular, it cannot contain Plutarch functions.
 
-You can express the constraint of "only builtin types" using `InDefaultUni`, exported from `Plutarch.Builtin`-`
+You can express the constraint of "only builtin types" using `PLift`, exported from `Plutarch.Builtin`-`
 ```hs
-validBuiltinList :: InDefaultUni a => PBuiltinList a
+validBuiltinList :: PLift a => PBuiltinList a
 ```
-As mentioned before, `PBuiltinList` gets access to all the `PListLike` utilities. Other than that, `InDefaultUni a => PBuiltinList a` also has a [`PlutusType`](#plutustype-pcon-and-pmatch) instance. You can construct a `PBuiltinList` using `pcon` (but you should prefer using `pcons` from `PListLike`)-
+As mentioned before, `PBuiltinList` gets access to all the `PListLike` utilities. Other than that, `PLift a => PBuiltinList a` also has a [`PlutusType`](#plutustype-pcon-and-pmatch) instance. You can construct a `PBuiltinList` using `pcon` (but you should prefer using `pcons` from `PListLike`)-
 ```hs
 > pcon $ PCons (phexByteStr "fe") $ pcon PNil
 ```
@@ -1218,7 +1218,7 @@ Outside of that straightforward usecase, figuring out when to use Haskell level 
 
 However, if the function is used *only once*, and making it Plutarch level causes extra `plam`s and `#`s to be introduced - you should just make it Haskell level. For example, consider the `pelimList` implementation-
 ```hs
-pelimList :: InDefaultUni a => Term s (a :--> PBuiltinList a :--> r) -> Term s r -> Term s (PBuiltinList a) -> Term s r
+pelimList :: PLift a => Term s (a :--> PBuiltinList a :--> r) -> Term s r -> Term s (PBuiltinList a) -> Term s r
 pelimList match_cons match_nil ls = pmatch ls $ \case
   PCons x xs -> match_cons # x # xs
   PNil -> match_nil
@@ -1238,7 +1238,7 @@ pmatch ls $ \case
 ```
 Extra `plam`s and `#`s have been introduced. Really, `pelimList` could have taken a Haskell level function instead-
 ```hs
-pelimList :: InDefaultUni a => (Term s a -> Term s (PBuiltinList a) :--> Term s r) -> Term s r -> Term s (PBuiltinList a) -> Term s r
+pelimList :: PLift a => (Term s a -> Term s (PBuiltinList a) :--> Term s r) -> Term s r -> Term s (PBuiltinList a) -> Term s r
 pelimList match_cons match_nil ls = pmatch ls $ \case
   PCons x xs -> match_cons x xs
   PNil -> match_nil
@@ -1326,10 +1326,8 @@ or, you can use `TypeApplications` to indicate the Plutarch type you're trying t
 pconstant @PScriptPurpose $ Minting "be"
 ```
 
-## No instance for `PLC.Contains DefaultUni (PHaskellType a)`
-This just means that the polymorphic Plutarch type variable `a`, is not constrained to be a builtin type. To fix this, simply add `InDefaultUni a =>` to your binding context. It'll ensure that the polymorphic Plutarch type `a`, is indeed represented by a builtin type under the hood.
-
-> Note: `InDefaultUni` is exported from `Plutarch.Builtin`
+## No instance for (PUnsafeLiftDecl a)
+You should add `PLift a` to the context! `PLift` is just a synonym to `PUnsafeLiftDecl`.
 
 ## Infinite loop / Infinite AST
 
