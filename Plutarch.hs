@@ -125,6 +125,21 @@ instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ T
 instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f, g' ~ Term s g) => PLamN (a' -> b' -> c' -> d' -> e' -> f' -> g') (Term s (a :--> b :--> c :--> d :--> e :--> f :--> g)) where
   plam f = plam' $ \x -> plam (f x)
 
+instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c) => PLamN ((a', b') -> c') (Term s (a :--> b :--> c)) where
+  plam f = plam $ \x y -> f (x, y)
+
+instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d) => PLamN ((a', b', c') -> d') (Term s (a :--> b :--> c :--> d)) where
+  plam f = plam $ \x y z -> f (x, y, z)
+
+instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e) => PLamN ((a', b', c', d') -> e') (Term s (a :--> b :--> c :--> d :--> e)) where
+  plam f = plam $ \x y z w -> f (x, y, z, w)
+
+instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f) => PLamN ((a', b', c', d', e') -> f') (Term s (a :--> b :--> c :--> d :--> e :--> f)) where
+  plam f = plam $ \x y z w w' -> f (x, y, z, w, w')
+
+instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f, g' ~ Term s g) => PLamN ((a', b', c', d', e', f') -> g') (Term s (a :--> b :--> c :--> d :--> e :--> f :--> g)) where
+  plam f = plam $ \x1 x2 x3 x4 x5 x6 -> f (x1, x2, x3, x4, x5, x6)
+
 pinl :: Term s a -> (Term s a -> Term s b) -> Term s b
 pinl v f = f v
 

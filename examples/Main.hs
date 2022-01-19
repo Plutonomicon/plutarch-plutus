@@ -210,7 +210,7 @@ plutarchTests =
     , testGroup
         "η-reduction optimisations"
         [ testCase "λx y. addInteger x y => addInteger" $
-            printTerm (plam $ \x y -> (x :: Term _ PInteger) + y) @?= "(program 1.0.0 addInteger)"
+            printTerm (plam $ \(x, y) -> (x :: Term _ PInteger) + y) @?= "(program 1.0.0 addInteger)"
         , testCase "λx y. hoist (force mkCons) x y => force mkCons" $
             printTerm (plam $ \x y -> (pforce $ punsafeBuiltin PLC.MkCons) # x # y) @?= "(program 1.0.0 (force mkCons))"
         , testCase "λx y. hoist mkCons x y => mkCons x y" $
