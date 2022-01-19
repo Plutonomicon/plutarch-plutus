@@ -2,7 +2,7 @@
 
 module Examples.LetRec (tests) where
 
-import Plutarch (pcon', pmatch', printTerm, punsafeBuiltin, punsafeCoerce)
+import Plutarch (pcon', pmatch', printTerm, punsafeBuiltin, punsafeCoerce, punsafeFrom)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, (#==))
 import Plutarch.Builtin (PAsData, PBuiltinList (PNil), PIsData, pdata, pforgetData, pfromData)
 import Plutarch.Integer (PInteger)
@@ -16,7 +16,9 @@ import Plutarch.Rec (
   field,
   fieldFromData,
   letrec,
+  rcon,
   recordFromFieldReaders,
+  rmatch,
  )
 import Plutarch.Rec.TH (deriveAll)
 import Plutarch.String (PString, pdecodeUtf8, pencodeUtf8)
@@ -68,14 +70,20 @@ sampleReader =
     }
 
 sampleRecord :: Term (s :: S) (ScottEncoding SampleRecord (t :: PType))
-sampleRecord =
-  pcon' $
-    PRecord
-      SampleRecord
-        { sampleBool = pcon PFalse
-        , sampleInt = 6
-        , sampleString = "Salut, Monde!"
-        }
+sampleRecord = rcon rawRecord
+
+sampleRecord' :: Term (s :: S) (ScottEncoding SampleRecord (t :: PType))
+sampleRecord' = pcon' $ PRecord rawRecord
+
+sampleRecord'' :: Term (s :: S) (PRecord SampleRecord :: PType)
+sampleRecord'' = pcon $ PRecord rawRecord
+
+rawRecord :: SampleRecord (Term s)
+rawRecord = SampleRecord
+      { sampleBool = pcon PFalse
+      , sampleInt = 6
+      , sampleString = "Salut, Monde!"
+      }
 
 sampleRecur :: Term (s :: S) (ScottEncoding SampleRecord (t :: PType))
 sampleRecur =
@@ -98,7 +106,7 @@ evenOdd = letrec evenOddRecursion
         }
 
 sampleData :: Term s (PAsData (PRecord SampleRecord))
-sampleData = pdata (punsafeCoerce sampleRecord)
+sampleData = pdata (punsafeFrom sampleRecord)
 
 tests :: HasTester => TestTree
 tests =
@@ -106,13 +114,21 @@ tests =
     "Records"
     [ testGroup
         "Simple"
-        [ testCase "record construction" $
+        [ testCase "record construction with pcon" $
+            printTerm (punsafeCoerce sampleRecord'' # field sampleInt)
+              @?= "(program 1.0.0 ((\\i0 -> i1 False 6 \"Salut, Monde!\") (\\i0 -> \\i0 -> \\i0 -> i2)))"
+        , testCase "record construction with pcon'" $
+            printTerm (sampleRecord' # field sampleInt)
+              @?= "(program 1.0.0 ((\\i0 -> i1 False 6 \"Salut, Monde!\") (\\i0 -> \\i0 -> \\i0 -> i2)))"
+        , testCase "record construction with rcon" $
             printTerm (sampleRecord # field sampleInt)
               @?= "(program 1.0.0 ((\\i0 -> i1 False 6 \"Salut, Monde!\") (\\i0 -> \\i0 -> \\i0 -> i2)))"
         , testCase "record field" $
             equal' (sampleRecord # field sampleInt) "(program 1.0.0 6)"
-        , testCase "record match" $
+        , testCase "record pmatch'" $
             equal' (pmatch' sampleRecord $ \(PRecord r) -> sampleString r) "(program 1.0.0 \"Salut, Monde!\")"
+        , testCase "rmatch" $
+            equal' (rmatch sampleRecord $ \SampleRecord{sampleString= s} -> s) "(program 1.0.0 \"Salut, Monde!\")"
         ]
     , testGroup
         "Letrec"

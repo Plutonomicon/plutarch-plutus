@@ -10,7 +10,9 @@ module Plutarch.Rec (
   fieldFromData,
   letrec,
   pletrec,
+  rcon,
   recordFromFieldReaders,
+  rmatch,
 ) where
 
 import Control.Monad.Trans.State.Lazy (State, evalState, get, put)
@@ -43,17 +45,23 @@ instance (Rank2.Distributive r, Rank2.Traversable r) => PlutusType (PRecord r) w
   pcon' :: forall s. PRecord r s -> forall t. Term s (ScottEncoding r t)
   pcon' (PRecord r) = rcon r
   pmatch' :: forall s t. (forall t. Term s (ScottEncoding r t)) -> (PRecord r s -> Term s t) -> Term s t
-  pmatch' p f = p # arg
-    where
-      arg :: Term s (ScottEncoded r t)
-      arg = Term (\i -> TermResult (RLamAbs (fieldCount (initial @r) - 1) $ rawArg i) [])
-      rawArg :: Natural -> RawTerm
-      rawArg depth = getTerm $ asRawTerm (f $ PRecord variables) $ depth + fieldCount (initial @r)
+  pmatch' p f = rmatch p (f . PRecord)
 
+-- | Convert a Haskell record value to a Scott-encoded record.
 rcon :: forall r s t. Rank2.Foldable r => r (Term s) -> Term s (ScottEncoding r t)
 rcon r = plam (\f -> punsafeCoerce $ appEndo (getDual $ Rank2.foldMap (Dual . Endo . applyField) r) f)
   where
     applyField x f = punsafeCoerce f # x
+
+-- | Match a Scott-encoded record using a function that takes a Haskell record value.
+rmatch :: forall r s t. (Rank2.Distributive r, Rank2.Traversable r)
+       => (forall t. Term s (ScottEncoding r t)) -> (r (Term s) -> Term s t) -> Term s t
+rmatch p f = p # arg
+  where
+    arg :: Term s (ScottEncoded r t)
+    arg = Term (\i -> TermResult (RLamAbs (fieldCount (initial @r) - 1) $ rawArg i) [])
+    rawArg :: Natural -> RawTerm
+    rawArg depth = getTerm $ asRawTerm (f variables) $ depth + fieldCount (initial @r)
 
 -- | Wrapped recursive let construct, tying into knot the recursive equations specified in the record fields.
 pletrec :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => (r (Term s) -> r (Term s)) -> Term s (PRecord r)
