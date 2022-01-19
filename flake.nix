@@ -4,6 +4,10 @@
   inputs.haskell-nix.url = "github:L-as/haskell.nix?ref=master";
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
   inputs.flake-compat-ci.url = "github:hercules-ci/flake-compat-ci";
+  inputs.flake-compat = {
+    url = "github:edolstra/flake-compat";
+    flake = false;
+  };
 
   # https://github.com/input-output-hk/plutus/pull/4328
   inputs.plutus.url = "github:L-as/plutus?ref=master";
@@ -41,7 +45,7 @@
   inputs.Shrinker.url = "github:Plutonomicon/Shrinker";
   inputs.Shrinker.flake = false;
 
-  outputs = inputs@{ self, nixpkgs, haskell-nix, plutus, flake-compat-ci, ... }:
+  outputs = inputs@{ self, nixpkgs, haskell-nix, plutus, flake-compat, flake-compat-ci, ... }:
     let
       extraSources = [
         {
@@ -451,7 +455,7 @@
       );
       devShell = perSystem (system: self.flake.${system}.devShell);
 
-      nixCi = flake-compat-ci.lib.recurseIntoFlakeWith {
+      ciNix = flake-compat-ci.lib.recurseIntoFlakeWith {
         flake = self;
         systems = [ "x86_64-linux" ];
       };
