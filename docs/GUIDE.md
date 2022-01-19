@@ -633,7 +633,7 @@ deriving via (DerivePConstantViaCoercible Integer PInteger Integer) instance (PC
 `DerivePConstantViaCoercible` takes in 3 type parameters-
 * The Haskell type itself, for which `PConstant` is being implemented for.
 * The **direct** Plutarch synonym to the Haskell type.
-* Another Haskell type that the first param can be coerced into. TODO: more info
+* The Haskell type that the first param is *actually represented as*. The first param must be coercible to this type.
 
 Pretty simple! Let's check out `DerivePConstantViaNewtype` now-
 ```hs
