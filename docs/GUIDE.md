@@ -35,7 +35,7 @@
       - [Implementing `PLift`](#implementing-plift)
     - [PlutusType, PCon, and PMatch](#plutustype-pcon-and-pmatch)
     - [PListLike](#plistlike)
-    - [PIsDataRepr & PDataList](#pisdatarepr--pdatalist)
+    - [PIsDataRepr](#pisdatarepr)
       - [Implementing PIsDataRepr](#implementing-pisdatarepr)
   - [Working with Types](#working-with-types)
     - [PInteger](#pinteger)
@@ -47,9 +47,8 @@
     - [PList](#plist)
     - [PBuiltinPair](#pbuiltinpair)
     - [PAsData](#pasdata)
+    - [PDataRepr & PDataList](#pdatarepr--pdatalist)
     - [PData](#pdata)
-    - [PMaybe](#pmaybe)
-    - [PEither](#peither)
 - [Examples](#examples)
   - [Fibonacci number at given index](#fibonacci-number-at-given-index)
   - [Validator that always succeeds](#validator-that-always-succeeds)
@@ -604,7 +603,7 @@ On the other hand, if your type is represented as a `Data` under the hood (`Defa
 data PScriptPurpose s
   deriving (PLift) via (PIsDataReprInstances PScriptPurpose Ledger.ScriptPurpose)
 ```
-> Aside: `PDataReprInstances` also lets you derive `PMatch` and `PIsDataRepr` for your type!
+> Aside: `PIsDataReprInstances` also lets you derive `PMatch` and `PIsDataRepr` for your type!
 Similar to `PBuiltinType`, `PIsDataReprInstances` also takes in two types - the Plutarch type and its corresponding Haskell synonym.
 
 ### PlutusType, PCon, and PMatch
@@ -697,7 +696,7 @@ x = pcons # 1 #$ pcons # 2 #$ pcons # 3 # pnil
 ```
 The code is the same, we just changed the type annotation. Cool!
 
-### PIsDataRepr & PDataList
+### PIsDataRepr
 `PIsDataRepr` and `PDataList` are the user-facing parts of an absolute workhorse of a machinery for easily deconstructing `Constr` [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md) values. It allows fully type safe matching on `Data` values, without embedding type information within the generated script - unlike PlutusTx.
 
 For example, `PScriptContext` - which is the Plutarch synonym to [`ScriptContext`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Contexts.html#t:ScriptContext) - has a `PIsDataRepr` instance, this lets you easily keep track of its type and match on it-
@@ -952,20 +951,19 @@ You can also create a `PAsData` from a `PData`, but you lose specific type infor
 pdata :: Term s PData -> Term s (PAsData PData)
 ```
 
+### PDataRepr & PDataList
+TODO
+
+See: [`PIsDataRepr`](#pisdatarepr)
+
 ### PData
 This is a direct synonym to [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md). As such, it doesn't keep track of what "species" of `Data` it actually is. Is it an `I` data? Is it a `B` data? Nobody can tell for sure!
 
-Consider using `PAsData` instead for simple cases, i.e cases other than `Constr`.
+Consider using [`PAsData`](#pasdata) instead for simple cases, i.e cases other than `Constr`.
 
-Consider using `PDataRepr` instead when dealing with ADTs, i.e `Constr` data values.
+Consider using [`PDataRepr`/`PDataList`](#pdatarepr--pdatalist) instead when dealing with ADTs, i.e `Constr` data values.
 
 You can find more information about `PData` at [Developers' Corner](./DEVGUIDE.md).
-
-### PMaybe
-TODO
-
-### PEither
-TODO
 
 # Examples
 Be sure to check out [Compiling and Running](#compiling-and-running) first!
