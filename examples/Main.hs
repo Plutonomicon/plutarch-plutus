@@ -29,6 +29,7 @@ import qualified PlutusCore as PLC
 import qualified PlutusTx
 
 import qualified Examples.Api as Api
+import qualified Examples.Field as Field
 import qualified Examples.LetRec as LetRec
 import qualified Examples.PIsData as PIsData
 import qualified Examples.PlutusType as PlutusType
@@ -92,6 +93,7 @@ tests =
     , Rationals.tests
     , LetRec.tests
     , PIsData.tests
+    , Field.tests
     ]
 
 plutarchTests :: HasTester => TestTree

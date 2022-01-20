@@ -3,11 +3,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans -Wno-redundant-constraints #-}
 
-module Plutarch.DataRepr (PDataRepr, punDataRepr, pindexDataRepr, pmatchDataRepr, DataReprHandlers (..), PDataList, pdhead, pdtail, PIsDataRepr (..), PIsDataReprInstances (..), punsafeIndex, pindexDataList) where
+module Plutarch.DataRepr (PDataRepr, punDataRepr, pindexDataRepr, pmatchDataRepr, DataReprHandlers (..), PDataRecord, PLabeled (..), type PTypes, type PNames, pdhead, pdtail, PIsDataRepr (..), PIsDataReprInstances (..), punsafeIndex, pindexDataRecord) where
 
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy)
-import GHC.TypeLits (KnownNat, Nat, natVal, type (-))
+import GHC.TypeLits (KnownNat, Symbol, natVal)
 import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoerce, runTermCont)
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Builtin (
@@ -21,6 +21,7 @@ import Plutarch.Builtin (
   pfstBuiltin,
   psndBuiltin,
  )
+import Plutarch.Field.HList (type IndexList)
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (PLifted, PLiftedRepr, PUnsafeLiftDecl, pliftFromRepr, pliftToRepr)
 import Plutarch.List (punsafeIndex)
@@ -28,44 +29,49 @@ import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Api as Ledger
 import qualified PlutusCore as PLC
 
-data PDataList (as :: [PType]) (s :: S)
+data PDataRecord (as :: [PLabeled]) (s :: S)
 
-pdhead :: Term s (PDataList (a : as) :--> PAsData a)
+data PLabeled = Symbol := PType
+
+pdhead :: Term s (PDataRecord ((l ':= a) : as) :--> PAsData a)
 pdhead = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList
 
-pdtail :: Term s (PDataList (a : as) :--> PDataList as)
+pdtail :: Term s (PDataRecord (a ': as) :--> PDataRecord as)
 pdtail = phoistAcyclic $ pforce $ punsafeBuiltin PLC.TailList
 
-type PDataRepr :: [[PType]] -> PType
-data PDataRepr (defs :: [[PType]]) (s :: S)
+type family PTypes (as :: [PLabeled]) :: [PType] where
+  PTypes '[] = '[]
+  PTypes ((l ':= t) ': as) = t ': (PTypes as)
+
+type family PNames (as :: [PLabeled]) :: [Symbol] where
+  PNames '[] = '[]
+  PNames ((l ':= t) ': as) = l ': (PNames as)
+
+type PDataRepr :: [[PLabeled]] -> PType
+data PDataRepr (defs :: [[PLabeled]]) (s :: S)
 
 pasData :: Term s (PDataRepr _) -> Term s PData
 pasData = punsafeCoerce
 
-type family IndexList (n :: Nat) (l :: [k]) :: k where
-  IndexList 0 (x ': _) = x
-  IndexList n (x : xs) = IndexList (n - 1) xs
-
-punDataRepr :: Term s (PDataRepr '[def] :--> PDataList def)
+punDataRepr :: Term s (PDataRepr '[def] :--> PDataRecord def)
 punDataRepr = phoistAcyclic $
   plam $ \t ->
     plet (pasConstr #$ pasData t) $ \d ->
-      (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataList def))
+      (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataRecord def))
 
-
-pindexDataRepr :: (KnownNat n) => Proxy n -> Term s (PDataRepr (def : defs) :--> PDataList (IndexList n (def : defs)))
+pindexDataRepr :: (KnownNat n) => Proxy n -> Term s (PDataRepr (def : defs) :--> PDataRecord (IndexList n (def : defs)))
 pindexDataRepr n = phoistAcyclic $
   plam $ \t ->
     plet (pasConstr #$ pasData t) $ \d ->
       let i :: Term _ PInteger = pfstBuiltin # d
        in pif
             (i #== (fromInteger $ toInteger $ natVal $ n))
-            (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataList _))
+            (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataRecord _))
             perror
 
--- | Safely index a DataList
-pindexDataList :: (KnownNat n) => Proxy n -> Term s (PDataList xs :--> PAsData (IndexList n xs))
-pindexDataList n =
+-- | Safely index a DataRecord
+pindexDataRecord :: (KnownNat n) => Proxy n -> Term s (PDataRecord xs :--> PAsData (IndexList n (PTypes xs)))
+pindexDataRecord n =
   phoistAcyclic $
     punsafeCoerce $
       punsafeIndex @PBuiltinList @PData # ind
@@ -73,9 +79,9 @@ pindexDataList n =
     ind :: Term s PInteger
     ind = fromInteger $ toInteger $ natVal n
 
-data DataReprHandlers (out :: PType) (def :: [[PType]]) (s :: S) where
+data DataReprHandlers (out :: PType) (def :: [[PLabeled]]) (s :: S) where
   DRHNil :: DataReprHandlers out '[] s
-  DRHCons :: (Term s (PDataList def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def : defs) s
+  DRHCons :: (Term s (PDataRecord def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def : defs) s
 
 pmatchDataRepr :: Term s (PDataRepr (def : defs)) -> DataReprHandlers out (def : defs) s -> Term s out
 pmatchDataRepr d handlers =
@@ -126,11 +132,8 @@ pmatchDataRepr d handlers =
 newtype PIsDataReprInstances (a :: PType) (h :: Type) (s :: S) = PIsDataReprInstances (a s)
 
 class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
-  type PIsDataReprRepr a :: [[PType]]
+  type PIsDataReprRepr a :: [[PLabeled]]
   pmatchRepr :: forall s b. Term s (PDataRepr (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
-
-pasDataRepr :: (PIsDataRepr a) => Term s a -> Term s (PDataRepr (PIsDataReprRepr a))
-pasDataRepr = punsafeCoerce
 
 instance PIsDataRepr a => PIsData (PIsDataReprInstances a h) where
   pdata = punsafeCoerce

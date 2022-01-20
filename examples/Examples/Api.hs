@@ -1,6 +1,7 @@
+{-# LANGUAGE OverloadedRecordDot #-}
+{-# LANGUAGE OverloadedLabels #-}
 module Examples.Api (tests) where
 
-import Data.Proxy (Proxy (..))
 import Plutarch
 import Plutarch.Api.V1 (
   PScriptContext (..),
@@ -8,14 +9,13 @@ import Plutarch.Api.V1 (
   PTxInfo (..),
   PValue (..),
   PScriptContext (..),
-  PAddress (..),
-  PTxOut (..),
-  PValidatorHash (..),
   PCredential (..)
  )
-import Plutarch.Builtin (PAsData, PBuiltinList, PIsData (..))
-import Plutarch.DataRepr (pindexDataList)
-import Plutarch.Lift (pconstant)
+import Plutarch.Builtin 
+  (PAsData, PBuiltinList, PIsData (..), PData, pforgetData, pasConstr, psndBuiltin)
+import Plutarch.Field (pfield)
+import Plutarch.Lift (pconstant, plift)
+import Plutarch.List (phead, pmap)
 import Plutus.V1.Ledger.Api (
   Address (..),
   Credential (..),
@@ -29,11 +29,12 @@ import Plutus.V1.Ledger.Api (
   TxOutRef (..),
   ValidatorHash,
   Value,
+  toData
  )
 import qualified Plutus.V1.Ledger.Interval as Interval
 import qualified Plutus.V1.Ledger.Value as Value
 import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit (testCase)
+import Test.Tasty.HUnit (testCase, (@?=))
 
 import Utils
 
@@ -99,32 +100,39 @@ sym = "c0"
 
 --------------------------------------------------------------------------------
 
-_getTxInfo :: Term s (PScriptContext :--> PAsData PTxInfo)
-_getTxInfo =
-  plam $ \x -> pmatch x $ \case
-    (PScriptContext c) -> pindexDataList (Proxy @0) # c
+getTxInfo :: Term s (PScriptContext :--> PAsData PTxInfo)
+getTxInfo =
+  plam $ \ctx -> 
+    pfield @"txInfo" # ctx
 
-_getMint :: Term s (PTxInfo :--> PAsData PValue)
-_getMint =
-  plam $ \x -> pmatch x $ \case
-    (PTxInfo i) -> pindexDataList (Proxy @3) # i
+getMint :: Term s (PAsData PTxInfo :--> PAsData PValue)
+getMint =
+ plam $ \info ->
+   pfield @"mint" # info
 
-_getInputs :: Term s (PTxInfo :--> PAsData (PBuiltinList (PAsData PTxInInfo)))
-_getInputs =
-  plam $ \x -> pmatch x $ \case
-    (PTxInfo i) -> pindexDataList (Proxy @0) # i
+-- | Get validator from first input in ScriptContext's TxInfo
+getCredentials :: Term s PScriptContext -> Term s (PBuiltinList PData)
+getCredentials ctx = 
+  let inp = pfield @"inputs" #$ pfield @"txInfo" # ctx in
+  pmap # inputCredentialHash # pfromData inp
 
--- | Get first validator from TxInInfo
-getValidator :: Term s (PBuiltinList (PAsData PTxInInfo) :--> PAsData PValidatorHash)
-getValidator =
-  plam $ \xs ->
-    pmatch (pfromData $ phead # xs) $ \case
-      (PTxInInfo i) -> pmatch (pfromData $ pindexDataList (Proxy @1) # i) $ \case
-        (PTxOut o) -> pmatch (pfromData $ pindexDataList (Proxy @0) # o) $ \case
-          (PAddress a) -> pmatch (pfromData $ pindexDataList (Proxy @0) # a) $ \case
-            (PPubKeyCredential _) -> perror
-            (PScriptCredential v) -> pindexDataList (Proxy @0) # v
-
+{- | 
+  Get the hash of the Credential in an input, treating 
+  PubKey & ValidatorHash identically.
+-}
+inputCredentialHash :: Term s (PAsData PTxInInfo :--> PData)
+inputCredentialHash =
+  phoistAcyclic $ plam $ \inp ->
+    --pfield @"resolved" # inp
+    let 
+      credential :: Term _ (PAsData PCredential)
+      credential = 
+        (pfield @"credential")
+          #$ (pfield @"address") 
+          #$ (pfield @"resolved" # inp)
+    in 
+      phead #$ psndBuiltin #$ pasConstr # pforgetData credential
+      
 ---- | Get first CurrencySymbol from Value
 --getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
 --getSym =
@@ -136,17 +144,18 @@ tests =
     "Api examples"
     [ testCase "ScriptContext" $ do
         ctx `equal'` ctx_compiled
-        -- FIXME
-        --, testCase "getting txInfo" $ do
-        --    plift (getTxInfo # ctx) @?= info
-        --, testCase "getting mint" $ do
-        --    plift (getMint #$ pfromData $ getTxInfo # ctx) @?= mint
-        --, testCase "getting validator" $ do
-        --    plift (getValidator #$ pfromData $ getInputs #$ pfromData $ getTxInfo # ctx)
-        --      @?= validator
-        --, testCase "getting sym" $ do
-        --    plift (getSym #$ pfromData $ getMint #$ pfromData $ getTxInfo # ctx)
-        --      @?= sym
+    , testCase "getting txInfo" $ do
+        plift (pfromData $ getTxInfo # ctx)
+          @?= info
+    , testCase "getting mint" $ do
+        plift (pforgetData $ getMint #$ getTxInfo # ctx)
+          @?= toData mint
+    , testCase "getting credentials" $ do
+        plift (getCredentials ctx)
+          @?= [toData validator]
+    --, testCase "getting sym" $ do
+    --   plift (getSym #$ pfromData $ getMint #$ pfromData $ getTxInfo # ctx)
+    --    @?= sym
     ]
 
 ctx_compiled :: String
