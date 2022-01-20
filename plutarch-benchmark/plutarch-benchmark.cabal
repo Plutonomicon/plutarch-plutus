@@ -1,14 +1,9 @@
 cabal-version:      2.4
-name:               plutarch
+name:               plutarch-benchmark
 version:            1.1.0
 author:             Las Safin <me@las.rs>
 license:            MIT
 extra-source-files: README.md
-
-flag development
-  description: Enable tracing functions within plutarch.
-  manual:      True
-  default:     False
 
 common c
   default-language:   Haskell2010
@@ -76,79 +71,50 @@ common c
 
 library
   import:          c
+
   exposed-modules:
-    Plutarch
-    Plutarch.Api.V1
-    Plutarch.Bool
-    Plutarch.Builtin
-    Plutarch.ByteString
-    Plutarch.Crypto
-    Plutarch.DataRepr
-    Plutarch.Either
-    Plutarch.Evaluate
-    Plutarch.Integer
-    Plutarch.Internal
-    Plutarch.Lift
-    Plutarch.List
-    Plutarch.Maybe
-    Plutarch.Monadic
-    Plutarch.Pair
-    Plutarch.Prelude
-    Plutarch.Rational
-    Plutarch.Rec
-    Plutarch.Rec.TH
-    Plutarch.String
-    Plutarch.Trace
-    Plutarch.Unit
+    Plutarch.Benchmark
 
   build-depends:
     , base
+    , boxes
     , bytestring
+    , cassava
     , containers
-    , cryptonite
+    , data-default
     , flat
-    , hashable
+    , foldl
     , mtl
-    , plutus-core
-    , plutus-ledger-api
-    , plutus-tx
-    , rank2classes
-    , template-haskell
-    , text
-    , transformers
-
-  if flag(development)
-    cpp-options: -DDevelopment
-
-test-suite examples
-  import:         c
-  type:           exitcode-stdio-1.0
-  main-is:        Main.hs
-  hs-source-dirs: examples
-  other-modules:
-    Examples.Api
-    Examples.LetRec
-    Examples.List
-    Examples.PIsData
-    Examples.PlutusType
-    Examples.Rationals
-    Examples.Recursion
-    Examples.Tracing
-    Utils
-
-  build-depends:
-    , aeson
-    , base
-    , bytestring
     , plutarch
     , plutus-core
     , plutus-ledger-api
-    , plutus-tx
-    , rank2classes       >=1.4.4
-    , tasty
-    , tasty-hunit
+    , serialise
     , text
+    , these
+    , vector
 
-  --, shrinker
-  if flag(development)
-    cpp-options: -DDevelopment
+  hs-source-dirs: src
+
+
+benchmark perf
+  import:         c
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: bench
+  main-is:        Main.hs
+  build-depends:
+    , base
+    , plutarch
+    , plutarch-benchmark
+
+executable perf-diff
+  import:         c
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: perf-diff
+  main-is:        Main.hs
+  build-depends:
+    , base
+    , boxes
+    , bytestring
+    , cassava
+    , plutarch
+    , plutarch-benchmark
