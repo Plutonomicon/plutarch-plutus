@@ -130,7 +130,7 @@
       nixpkgsFor = system: import nixpkgs { inherit system; overlays = [ haskell-nix.overlay ]; inherit (haskell-nix) config; };
       nixpkgsFor' = system: import nixpkgs { inherit system; inherit (haskell-nix) config; };
 
-      ghcVersion = "ghc921";
+      ghcVersion = "ghc8107";
       tools.fourmolu = { };
 
       haskellModule = system: {
