@@ -1,17 +1,24 @@
 {-# LANGUAGE OverloadedRecordDot #-}
+
 module Examples.Api (tests) where
 
 import Plutarch
 import Plutarch.Api.V1 (
+  PCredential (..),
   PScriptContext (..),
   PTxInInfo (..),
   PTxInfo (..),
   PValue (..),
-  PScriptContext (..),
-  PCredential (..)
  )
-import Plutarch.Builtin 
-  (PAsData, PBuiltinList, PIsData (..), PData, pforgetData, pasConstr, psndBuiltin)
+import Plutarch.Builtin (
+  PAsData,
+  PBuiltinList,
+  PData,
+  PIsData (..),
+  pasConstr,
+  pforgetData,
+  psndBuiltin,
+ )
 import Plutarch.Field (pfield)
 import Plutarch.Lift (pconstant, plift)
 import Plutarch.List (phead, pmap)
@@ -28,7 +35,7 @@ import Plutus.V1.Ledger.Api (
   TxOutRef (..),
   ValidatorHash,
   Value,
-  toData
+  toData,
  )
 import qualified Plutus.V1.Ledger.Interval as Interval
 import qualified Plutus.V1.Ledger.Value as Value
@@ -101,37 +108,36 @@ sym = "c0"
 
 getTxInfo :: Term s (PScriptContext :--> PAsData PTxInfo)
 getTxInfo =
-  plam $ \ctx -> 
+  plam $ \ctx ->
     pfield @"txInfo" # ctx
 
 getMint :: Term s (PAsData PTxInfo :--> PAsData PValue)
 getMint =
- plam $ \info ->
-   pfield @"mint" # info
+  plam $ \info ->
+    pfield @"mint" # info
 
 -- | Get validator from first input in ScriptContext's TxInfo
 getCredentials :: Term s PScriptContext -> Term s (PBuiltinList PData)
-getCredentials ctx = 
-  let inp = pfield @"inputs" #$ pfield @"txInfo" # ctx in
-  pmap # inputCredentialHash # pfromData inp
+getCredentials ctx =
+  let inp = pfield @"inputs" #$ pfield @"txInfo" # ctx
+   in pmap # inputCredentialHash # pfromData inp
 
-{- | 
-  Get the hash of the Credential in an input, treating 
+{- |
+  Get the hash of the Credential in an input, treating
   PubKey & ValidatorHash identically.
 -}
 inputCredentialHash :: Term s (PAsData PTxInInfo :--> PData)
 inputCredentialHash =
-  phoistAcyclic $ plam $ \inp ->
-    --pfield @"resolved" # inp
-    let 
-      credential :: Term _ (PAsData PCredential)
-      credential = 
-        (pfield @"credential")
-          #$ (pfield @"address") 
-          #$ (pfield @"resolved" # inp)
-    in 
-      phead #$ psndBuiltin #$ pasConstr # pforgetData credential
-      
+  phoistAcyclic $
+    plam $ \inp ->
+      -- pfield @"resolved" # inp
+      let credential :: Term _ (PAsData PCredential)
+          credential =
+            (pfield @"credential")
+              #$ (pfield @"address")
+              #$ (pfield @"resolved" # inp)
+       in phead #$ psndBuiltin #$ pasConstr # pforgetData credential
+
 ---- | Get first CurrencySymbol from Value
 -- getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
 -- getSym =
@@ -152,9 +158,9 @@ tests =
     , testCase "getting credentials" $ do
         plift (getCredentials ctx)
           @?= [toData validator]
-    --, testCase "getting sym" $ do
-    --   plift (getSym #$ pfromData $ getMint #$ pfromData $ getTxInfo # ctx)
-    --    @?= sym
+          -- , testCase "getting sym" $ do
+          --   plift (getSym #$ pfromData $ getMint #$ pfromData $ getTxInfo # ctx)
+          --    @?= sym
     ]
 
 ctx_compiled :: String
