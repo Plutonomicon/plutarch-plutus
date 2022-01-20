@@ -3,6 +3,7 @@ module Plutarch.Prelude (
   PDelayed,
   Term,
   plam,
+  plam',
   papp,
   pdelay,
   pforce,
