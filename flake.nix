@@ -389,11 +389,9 @@
 
             # FIXME: add HLS back
             # Use https://github.com/haskell/haskell-language-server/pull/2503 ?
-            # tools = {
-            #   haskell-language-server = {};  # Must use haskell.nix, because the compiler version should match
-            # };
-
-            inherit tools;
+            tools = {
+              haskell-language-server = {};  # Must use haskell.nix, because the compiler version should match
+            };
 
             additional = ps: [
               ps.plutus-ledger-api
