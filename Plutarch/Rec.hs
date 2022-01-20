@@ -61,7 +61,7 @@ rmatch p f = p # arg
     arg :: Term s (ScottEncoded r t)
     arg = Term (\i -> TermResult (RLamAbs (fieldCount (initial @r) - 1) $ rawArg i) [])
     rawArg :: Natural -> RawTerm
-    rawArg depth = getTerm $ asRawTerm (f variables) $ depth + fieldCount (initial @r)
+    rawArg depth = getTerm $ asRawTerm (f $ variables depth) $ depth + fieldCount (initial @r)
 
 -- | Wrapped recursive let construct, tying into knot the recursive equations specified in the record fields.
 pletrec :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => (r (Term s) -> r (Term s)) -> Term s (PRecord r)
@@ -94,31 +94,32 @@ field f = getScott (f accessors)
 
 -- | Provides a record of function terms that access each field out of a Scott-encoded record.
 accessors :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => r (ScottArgument r s)
-accessors = abstract Rank2.<$> variables
+accessors = abstract Rank2.<$> variables 0
   where
     abstract :: Term s a -> ScottArgument r s a
-    abstract (Term t) = ScottArgument (phoistAcyclic $ Term $ mapTerm (RLamAbs $ fieldCount (initial @r) - 1) . t)
+    abstract (Term t) = ScottArgument (phoistAcyclic $ Term $ mapTerm (RLamAbs $ depth - 1) . t . (depth +))
+    depth = fieldCount (initial @r)
 
 {- | A record of terms that each accesses a different variable in scope,
  outside in following the field order.
 -}
-variables :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => r (Term s)
-variables = Rank2.cotraverse var id
+variables :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => Natural -> r (Term s)
+variables baseDepth = Rank2.cotraverse var id
   where
     var :: (r (Term s) -> Term s a) -> Term s a
     var ref = ref ordered
     ordered :: r (Term s)
-    ordered = evalState (Rank2.traverse next $ initial @r) (fieldCount $ initial @r)
+    ordered = evalState (Rank2.traverse next $ initial @r) 0
     next :: f a -> State Natural (Term s a)
     next _ = do
       i <- get
-      let i' = pred i
+      let i' = succ i
       seq i' (put i')
       return $
         Term $
-          const $
+          \depth->
             TermResult
-              { getTerm = RVar i'
+              { getTerm = RVar (depth - baseDepth - i')
               , getDeps = []
               }
 

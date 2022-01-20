@@ -115,20 +115,30 @@ tests =
     [ testGroup
         "Simple"
         [ testCase "record construction with pcon" $
-            printTerm (punsafeCoerce sampleRecord'' # field sampleInt)
-              @?= "(program 1.0.0 ((\\i0 -> i1 False 6 \"Salut, Monde!\") (\\i0 -> \\i0 -> \\i0 -> i2)))"
+            printTerm sampleRecord''
+              @?= "(program 1.0.0 (\\i0 -> i1 False 6 \"Salut, Monde!\"))"
         , testCase "record construction with pcon'" $
-            printTerm (sampleRecord' # field sampleInt)
-              @?= "(program 1.0.0 ((\\i0 -> i1 False 6 \"Salut, Monde!\") (\\i0 -> \\i0 -> \\i0 -> i2)))"
+            printTerm sampleRecord'
+              @?= "(program 1.0.0 (\\i0 -> i1 False 6 \"Salut, Monde!\"))"
         , testCase "record construction with rcon" $
-            printTerm (sampleRecord # field sampleInt)
+            printTerm sampleRecord
+              @?= "(program 1.0.0 (\\i0 -> i1 False 6 \"Salut, Monde!\"))"
+        , testCase "field access from pcon'" $
+            printTerm (sampleRecord' # field sampleInt)
               @?= "(program 1.0.0 ((\\i0 -> i1 False 6 \"Salut, Monde!\") (\\i0 -> \\i0 -> \\i0 -> i2)))"
         , testCase "record field" $
             equal' (sampleRecord # field sampleInt) "(program 1.0.0 6)"
-        , testCase "record pmatch'" $
+        , testCase "pmatch" $
+            equal' (pmatch sampleRecord'' $ \(PRecord r) -> sampleString r) "(program 1.0.0 \"Salut, Monde!\")"
+        , testCase "pmatch'" $
             equal' (pmatch' sampleRecord $ \(PRecord r) -> sampleString r) "(program 1.0.0 \"Salut, Monde!\")"
         , testCase "rmatch" $
             equal' (rmatch sampleRecord $ \SampleRecord{sampleString= s} -> s) "(program 1.0.0 \"Salut, Monde!\")"
+        , testCase "record reconstruction with pcon" $
+            printTerm (pmatch' sampleRecord' (pcon @(PRecord SampleRecord)))
+              @?= "(program 1.0.0 ((\\i0 -> i1 False 6 \"Salut, Monde!\") (\\i0 -> \\i0 -> \\i0 -> \\i0 -> i1 i4 i3 i2)))"
+        , testCase "reconstructed field access" $
+            equal' (pto (pmatch' sampleRecord' (pcon @(PRecord SampleRecord))) # field sampleInt)  "(program 1.0.0 6)"
         ]
     , testGroup
         "Letrec"
