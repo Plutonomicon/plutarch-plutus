@@ -12,6 +12,6 @@ data PMaybe (a :: PType) (s :: S) = PJust (Term s a) | PNothing
 instance PlutusType (PMaybe a) where
   type PInner (PMaybe a) b = (a :--> b) :--> PDelayed b :--> b
   pcon' :: forall s. PMaybe a s -> forall b. Term s (PInner (PMaybe a) b)
-  pcon' (PJust x) = plam $ \f (_ :: Term _ _) -> f # x
+  pcon' (PJust x) = plam $ \f _ -> f # x
   pcon' PNothing = plam $ \_ g -> pforce g
   pmatch' x f = x # plam (f . PJust) # pdelay (f PNothing)
