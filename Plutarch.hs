@@ -248,7 +248,7 @@ where 'PBar' has a 'PIsData' instance, you can derive 'PlutusType' and 'PIsData'
 
 This will make 'PFoo' simply be represnted as 'PBar' under the hood.
 -}
-newtype DerivePNewtype a (b :: PType) s = DerivePNewtype (a s)
+newtype DerivePNewtype (a :: PType) (b :: PType) (s :: PI.S) = DerivePNewtype (a s)
 
 instance (forall (s :: PI.S). Coercible (a s) (Term s b)) => PlutusType (DerivePNewtype a b) where
   type PInner (DerivePNewtype a b) _ = b
