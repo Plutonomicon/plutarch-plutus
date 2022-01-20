@@ -1,7 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE IncoherentInstances #-}
 
 module Plutarch (
   (PI.:-->),
