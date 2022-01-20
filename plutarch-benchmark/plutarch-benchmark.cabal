@@ -71,10 +71,7 @@ common c
 
 library
   import:          c
-
-  exposed-modules:
-    Plutarch.Benchmark
-
+  exposed-modules: Plutarch.Benchmark
   build-depends:
     , base
     , boxes
@@ -93,8 +90,7 @@ library
     , these
     , vector
 
-  hs-source-dirs: src
-
+  hs-source-dirs:  src
 
 benchmark perf
   import:         c
