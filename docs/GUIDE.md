@@ -1221,6 +1221,8 @@ Giving unused arguments the type `_ :: Term _ _` should fix the issue generally.
 
 Because of this, you might want to enable  `PartialTypeSignatures`.
 
+It's also a good idea to give explicit type signatures to either the result of `plam` or the lambda passed to `plam`. Often, this will also give you significantly better error messages.
+
 ## Ambiguous type variable arising from a use of `pconstant`
 Sometimes, you might find `pconstant` raise "Ambiguous type variable error" without an explicit type annotation-
 ```hs
