@@ -1,5 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE RoleAnnotations #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
@@ -24,6 +25,7 @@ module Plutarch.Builtin (
   type PBuiltinMap,
 ) where
 
+import Data.Coerce (Coercible, coerce)
 import Plutarch (PlutusType (..), punsafeBuiltin, punsafeCoerce)
 import Plutarch.Bool (PBool (..), PEq, pif', (#==))
 import Plutarch.ByteString (PByteString)
@@ -246,3 +248,19 @@ instance PIsData (PBuiltinPair PInteger (PBuiltinList PData)) where
 
 instance PEq (PAsData a) where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
+
+instance (forall (s :: S). Coercible (a s) (Term s b), PIsData b) => PIsData (DerivePNewtype a b) where
+  pfromData x = pcon . DerivePNewtype $ ptypeOuter target
+    where
+      target :: Term _ b
+      target = pfromData $ pinnerData x
+  pdata x = pouterData . pdata $ pto x
+
+pinnerData :: Term s (PAsData a) -> Term s (PAsData (PInner a b))
+pinnerData = punsafeCoerce
+
+pouterData :: Term s (PAsData (PInner a b)) -> Term s (PAsData a)
+pouterData = punsafeCoerce
+
+ptypeOuter :: forall (x :: PType) y s. Coercible (x s) (Term s y) => Term s y -> x s
+ptypeOuter = coerce

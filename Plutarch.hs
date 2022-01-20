@@ -1,5 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch (
@@ -39,8 +40,10 @@ module Plutarch (
   popaque,
   punsafeFromOpaque,
   plam,
+  DerivePNewtype (DerivePNewtype),
 ) where
 
+import Data.Coerce (Coercible, coerce)
 import Plutarch.Internal (ClosedTerm, PType, Term, compile, papp, phoistAcyclic, plam', punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
 import Plutus.V1.Ledger.Scripts (Script (Script))
@@ -234,3 +237,26 @@ pfix = phoistAcyclic $
     plam $ \f ->
       (plam $ \(x :: Term s POpaque) -> f # (plam $ \(v :: Term s POpaque) -> (punsafeCoerce x) # x # v))
         # punsafeCoerce (plam $ \(x :: Term s POpaque) -> f # (plam $ \(v :: Term s POpaque) -> (punsafeCoerce x) # x # v))
+
+{- | Facilitates deriving 'PlutusType' and 'PIsData' for newtypes.
+
+For any newtype represented as-
+> newtype PFoo (s :: S) = PFoo (Term s PBar)
+
+where 'PBar' has a 'PIsData' instance, you can derive 'PlutusType' and 'PIsData' using-
+> deriving (PlutusType, PIsData) via (DerivePNewtype PFoo PBar)
+
+This will make 'PFoo' simply be represnted as 'PBar' under the hood.
+-}
+newtype DerivePNewtype (a :: PType) (b :: PType) (s :: PI.S) = DerivePNewtype (a s)
+
+instance (forall (s :: PI.S). Coercible (a s) (Term s b)) => PlutusType (DerivePNewtype a b) where
+  type PInner (DerivePNewtype a b) _ = b
+  pcon' (DerivePNewtype t) = ptypeInner t
+  pmatch' x f = f . DerivePNewtype $ ptypeOuter x
+
+ptypeInner :: forall (x :: PType) y s. Coercible (x s) (Term s y) => x s -> Term s y
+ptypeInner = coerce
+
+ptypeOuter :: forall (x :: PType) y s. Coercible (x s) (Term s y) => Term s y -> x s
+ptypeOuter = coerce
