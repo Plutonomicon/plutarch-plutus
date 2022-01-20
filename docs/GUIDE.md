@@ -123,6 +123,7 @@ These can be either built directly from Haskell synonyms using `pconstant` (requ
 ```hs
 import Plutarch.Prelude
 import Plutarch.Bool (PBool)
+import Plutarch.Lift (pconstant)
 
 -- | A plutarch level boolean. Its value is "True", in this case.
 x :: Term s PBool
@@ -341,7 +342,7 @@ x :: Term s PInteger
 x = something complex
 ```
 
-Any use of `x` will inline the **full definition** of `x`. `x + x` will duplicate `something complex` in the AST. To avoid this, you should use `plet` in order to avoid duplicate work. Do note that this is **strictly evaluated, and hence isn't always the best solution.**
+Any use of `x` will inline the **full definition** of `x`. `x + x` will duplicate `something complex` in the AST. To avoid this, you should [use `plet` in order to avoid duplicate work](#plet-to-avoid-work-duplication). Do note that this is **strictly evaluated, and hence isn't always the best solution.**
 
 There is however still a problem: What about top-level functions, like `fib`, `sum`, `filter`, and such? We can use `plet` to avoid duplicating the definition, but this error-prone, since to do this perfectly each function that generates part of the AST would need to have access to the `plet`'ed definitions, meaning that we'd likely have to put it into a record or typeclass.
 
@@ -534,7 +535,7 @@ Using these functions, you can do division/modulus etc on Plutarch level values-
 ```hs
 pdiv # 6 # 3
 ```
-where `6` and `3` are `Term s PInteger`s yields `3` - also a `Term s PInteger`.
+where `6` and `3` are `Term s PInteger`s yields `2` - also a `Term s PInteger`.
 
 ### PIsData
 The `PIsData` typeclass facilitates easy and type safe conversion between Plutarch types and their corresponding `PData` representation - i.e [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md). It keeps track of the type information through [`PAsData`](#pasdata).
@@ -740,7 +741,7 @@ PElemConstraint list a
 ```
 This one ensures that the element type `a` can indeed be contained within the list type - `list`. For `PList`, this constraint means nothing - it's always true. For `PBuiltinList`, it can be simplified as `PLift a`. Easy!
 
-Here's two of my favorite `PListLike` utilites (not biased)-
+Here's two of my favorite `PListLike` utilities (not biased)-
 ```hs
 -- | Cons an element onto an existing list.
 pcons :: PElemConstraint list a => Term s (a :--> list a :--> list a)
@@ -1311,6 +1312,8 @@ Sometimes, GHC will not be able to infer the type of an argument within a lambda
 Giving unused arguments the type `_ :: Term _ _` should fix the issue generally.
 
 Because of this, you might want to enable  `PartialTypeSignatures`.
+
+It's also a good idea to give explicit type signatures to either the result of `plam` or the lambda passed to `plam`. Often, this will also give you significantly better error messages.
 
 ## Ambiguous type variable arising from a use of `pconstant`
 Sometimes, you might find `pconstant` raise "Ambiguous type variable error" without an explicit type annotation-
