@@ -5,14 +5,19 @@ module Examples.Api (tests) where
 import Data.Proxy (Proxy (..))
 import Plutarch
 import Plutarch.Api.V1 (
-  PScriptContext (..),
-  PTxInInfo (..),
-  PTxInfo (..),
-  PValue (..),
+  PAddress (PAddress),
+  PCredential (PScriptCredential),
+  PScriptContext (PScriptContext),
+  PTxInInfo (PTxInInfo),
+  PTxInfo (PTxInfo),
+  PTxOut (PTxOut),
+  PValidatorHash,
+  PValue,
  )
-import Plutarch.Builtin (PAsData, PBuiltinList)
+import Plutarch.Builtin (PAsData, PBuiltinList, pfromData)
 import Plutarch.DataRepr (pindexDataList)
-import Plutarch.Lift (pconstant)
+import Plutarch.Lift (pconstant, plift)
+import Plutarch.List (phead)
 import qualified Plutarch.Monadic as P
 import Plutarch.Trace (ptrace)
 
@@ -33,7 +38,7 @@ import Plutus.V1.Ledger.Api (
 import qualified Plutus.V1.Ledger.Interval as Interval
 import qualified Plutus.V1.Ledger.Value as Value
 import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit (testCase)
+import Test.Tasty.HUnit (testCase, (@?=))
 
 import Utils
 
@@ -99,8 +104,8 @@ sym = "c0"
 
 --------------------------------------------------------------------------------
 
-_getTxInfo :: Term s (PScriptContext :--> PAsData PTxInfo)
-_getTxInfo = plam $ \x -> P.do
+getTxInfo :: Term s (PScriptContext :--> PAsData PTxInfo)
+getTxInfo = plam $ \x -> P.do
   PScriptContext c <- pmatch x
   pindexDataList (Proxy @0) # c
 
@@ -109,30 +114,28 @@ _getMint = plam $ \x -> P.do
   PTxInfo i <- pmatch x
   pindexDataList (Proxy @3) # i
 
-_getInputs :: Term s (PTxInfo :--> PAsData (PBuiltinList (PAsData PTxInInfo)))
-_getInputs = plam $ \x -> P.do
+getInputs :: Term s (PTxInfo :--> PAsData (PBuiltinList (PAsData PTxInInfo)))
+getInputs = plam $ \x -> P.do
   PTxInfo i <- pmatch x
   ptrace "xhuawdhauywhd"
   i' <- plet i
   pindexDataList (Proxy @0) # i'
 
-{-
 -- | Get first validator from TxInInfo
 getValidator :: Term s (PBuiltinList (PAsData PTxInInfo) :--> PAsData PValidatorHash)
 getValidator =
-  plam $ \xs ->
-    pmatch (pfromData $ phead # xs) $ \case
-      (PTxInInfo i) -> pmatch (pfromData $ pindexDataList (Proxy @1) # i) $ \case
-        (PTxOut o) -> pmatch (pfromData $ pindexDataList (Proxy @0) # o) $ \case
-          (PAddress a) -> pmatch (pfromData $ pindexDataList (Proxy @0) # a) $ \case
-            (PPubKeyCredential _) -> perror
-            (PScriptCredential v) -> pindexDataList (Proxy @0) # v
--}
+  plam $ \xs -> P.do
+    PTxInInfo i <- pmatch . pfromData $ phead # xs
+    PTxOut o <- pmatch . pfromData $ pindexDataList (Proxy @1) # i
+    PAddress a <- pmatch . pfromData $ pindexDataList (Proxy @0) # o
+    PScriptCredential v <- pmatch (pfromData $ pindexDataList (Proxy @0) # a)
+    pindexDataList (Proxy @0) # v
 
+-- FIXME: 'PMap' needs 'PlutusType' instance.
 ---- | Get first CurrencySymbol from Value
 -- getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
 -- getSym =
---  plam $ \v -> pfstBuiltin #$ phead #$ v
+--   plam $ \v -> pfstBuiltin #$ phead # pinner (pinner v)
 
 tests :: HasTester => TestTree
 tests =
@@ -140,17 +143,18 @@ tests =
     "Api examples"
     [ testCase "ScriptContext" $ do
         ctx `equal'` ctx_compiled
-        -- FIXME
-        -- , testCase "getting txInfo" $ do
-        --    plift (getTxInfo # ctx) @?= info
-        -- , testCase "getting mint" $ do
-        --    plift (getMint #$ pfromData $ getTxInfo # ctx) @?= mint
-        -- , testCase "getting validator" $ do
-        --    plift (getValidator #$ pfromData $ getInputs #$ pfromData $ getTxInfo # ctx)
-        --      @?= validator
-        -- , testCase "getting sym" $ do
-        --    plift (getSym #$ pfromData $ getMint #$ pfromData $ getTxInfo # ctx)
-        --      @?= sym
+    , testCase "getting txInfo" $ do
+        plift (pfromData $ getTxInfo # ctx) @?= info
+    -- FIXME: Need 'PConstant' etc. instance for 'PValue'
+    -- , testCase "getting mint" $ do
+    --     plift (pfromData $ getMint #$ pfromData $ getTxInfo # ctx) @?= mint
+    , testCase "getting validator" $ do
+        plift (pfromData $ getValidator #$ pfromData $ getInputs #$ pfromData $ getTxInfo # ctx)
+          @?= validator
+    -- FIXME: Need 'PlutusType' etc. instance for 'PMap'
+    -- , testCase "getting sym" $ do
+    --     plift (pfromData $ getSym #$ pfromData $ getMint #$ pfromData $ getTxInfo # ctx)
+    --       @?= sym
     ]
 
 ctx_compiled :: String
