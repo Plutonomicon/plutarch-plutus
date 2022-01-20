@@ -131,7 +131,7 @@
       nixpkgsFor' = system: import nixpkgs { inherit system; inherit (haskell-nix) config; };
 
       ghcVersion = "ghc8107";
-      tools.fourmolu = { };
+      tools = { };
 
       haskellModule = system: {
         packages = {
@@ -410,7 +410,7 @@
         in
         pkgs.runCommand "format-check"
           {
-            nativeBuildInputs = [ pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt (pkgs.haskell-nix.tools ghcVersion { inherit (tools) fourmolu; }).fourmolu ];
+            nativeBuildInputs = [ pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt ];
           } ''
           export LC_CTYPE=C.UTF-8
           export LC_ALL=C.UTF-8
