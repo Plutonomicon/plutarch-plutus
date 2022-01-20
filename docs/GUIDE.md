@@ -315,7 +315,7 @@ x :: Term s PInteger
 x = something complex
 ```
 
-Any use of `x` will inline the **full definition** of `x`. `x + x` will duplicate `something complex` in the AST. To avoid this, you should use `plet` in order to avoid duplicate work. Do note that this is **strictly evaluated, and hence isn't always the best solution.**
+Any use of `x` will inline the **full definition** of `x`. `x + x` will duplicate `something complex` in the AST. To avoid this, you should [use `plet` in order to avoid duplicate work](#plet-to-avoid-work-duplication). Do note that this is **strictly evaluated, and hence isn't always the best solution.**
 
 There is however still a problem: What about top-level functions, like `fib`, `sum`, `filter`, and such? We can use `plet` to avoid duplicating the definition, but this error-prone, since to do this perfectly each function that generates part of the AST would need to have access to the `plet`'ed definitions, meaning that we'd likely have to put it into a record or typeclass.
 
@@ -1220,6 +1220,8 @@ Sometimes, GHC will not be able to infer the type of an argument within a lambda
 Giving unused arguments the type `_ :: Term _ _` should fix the issue generally.
 
 Because of this, you might want to enable  `PartialTypeSignatures`.
+
+It's also a good idea to give explicit type signatures to either the result of `plam` or the lambda passed to `plam`. Often, this will also give you significantly better error messages.
 
 ## Ambiguous type variable arising from a use of `pconstant`
 Sometimes, you might find `pconstant` raise "Ambiguous type variable error" without an explicit type annotation-
