@@ -431,7 +431,7 @@
       checks = perSystem (system:
         self.flake.${system}.checks
         // {
-          formatCheck = formatCheckFor system;
+          # formatCheck = formatCheckFor system;
           benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
         }
       );
