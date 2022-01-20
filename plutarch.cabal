@@ -92,6 +92,8 @@ library
     Plutarch.List
     Plutarch.Maybe
     Plutarch.Monadic
+    Plutarch.Natural
+    Plutarch.Numeric
     Plutarch.Pair
     Plutarch.Prelude
     Plutarch.Rational
