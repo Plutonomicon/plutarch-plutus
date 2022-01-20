@@ -19,6 +19,7 @@ module Plutarch.Prelude (
   Type,
   S,
   PType,
+  DerivePNewtype (DerivePNewtype),
 ) where
 
 import Prelude ()

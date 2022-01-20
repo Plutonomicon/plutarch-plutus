@@ -84,7 +84,6 @@ library
     Plutarch.ByteString
     Plutarch.Crypto
     Plutarch.DataRepr
-    Plutarch.Deriver.PNewtype
     Plutarch.Either
     Plutarch.Evaluate
     Plutarch.Integer
