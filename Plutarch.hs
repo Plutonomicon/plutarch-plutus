@@ -1,5 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch (
@@ -39,8 +40,10 @@ module Plutarch (
   popaque,
   punsafeFromOpaque,
   plam,
+  DerivePNewtype (DerivePNewtype),
 ) where
 
+import Data.Coerce (Coercible, coerce)
 import Plutarch.Internal (ClosedTerm, PType, Term, compile, papp, phoistAcyclic, plam', punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
 import Plutus.V1.Ledger.Scripts (Script (Script))
@@ -101,28 +104,22 @@ infixr 0 #$
 class PLamN a b | a -> b where
   plam :: a -> b
 
--- FIXME: This piece of code doesn't work unless you do (_ :: Term _ _)
-{-
-f :: Term s ((a :--> b) :--> b :--> b)
-f = plam $ \f _ -> f # perror
--}
-
-instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b) => PLamN (a' -> b') (Term s (a :--> b)) where
+instance (a' ~ Term s a, b' ~ Term s b) => PLamN (a' -> b') (Term s (a :--> b)) where
   plam = plam'
 
-instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c) => PLamN (a' -> b' -> c') (Term s (a :--> b :--> c)) where
+instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c) => PLamN (a' -> b' -> c') (Term s (a :--> b :--> c)) where
   plam f = plam' $ \x -> plam (f x)
 
-instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d) => PLamN (a' -> b' -> c' -> d') (Term s (a :--> b :--> c :--> d)) where
+instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d) => PLamN (a' -> b' -> c' -> d') (Term s (a :--> b :--> c :--> d)) where
   plam f = plam' $ \x -> plam (f x)
 
-instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e) => PLamN (a' -> b' -> c' -> d' -> e') (Term s (a :--> b :--> c :--> d :--> e)) where
+instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e) => PLamN (a' -> b' -> c' -> d' -> e') (Term s (a :--> b :--> c :--> d :--> e)) where
   plam f = plam' $ \x -> plam (f x)
 
-instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f) => PLamN (a' -> b' -> c' -> d' -> e' -> f') (Term s (a :--> b :--> c :--> d :--> e :--> f)) where
+instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f) => PLamN (a' -> b' -> c' -> d' -> e' -> f') (Term s (a :--> b :--> c :--> d :--> e :--> f)) where
   plam f = plam' $ \x -> plam (f x)
 
-instance {-# INCOHERENT #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f, g' ~ Term s g) => PLamN (a' -> b' -> c' -> d' -> e' -> f' -> g') (Term s (a :--> b :--> c :--> d :--> e :--> f :--> g)) where
+instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f, g' ~ Term s g) => PLamN (a' -> b' -> c' -> d' -> e' -> f' -> g') (Term s (a :--> b :--> c :--> d :--> e :--> f :--> g)) where
   plam f = plam' $ \x -> plam (f x)
 
 pinl :: Term s a -> (Term s a -> Term s b) -> Term s b
@@ -234,3 +231,26 @@ pfix = phoistAcyclic $
     plam $ \f ->
       (plam $ \(x :: Term s POpaque) -> f # (plam $ \(v :: Term s POpaque) -> (punsafeCoerce x) # x # v))
         # punsafeCoerce (plam $ \(x :: Term s POpaque) -> f # (plam $ \(v :: Term s POpaque) -> (punsafeCoerce x) # x # v))
+
+{- | Facilitates deriving 'PlutusType' and 'PIsData' for newtypes.
+
+For any newtype represented as-
+> newtype PFoo (s :: S) = PFoo (Term s PBar)
+
+where 'PBar' has a 'PIsData' instance, you can derive 'PlutusType' and 'PIsData' using-
+> deriving (PlutusType, PIsData) via (DerivePNewtype PFoo PBar)
+
+This will make 'PFoo' simply be represnted as 'PBar' under the hood.
+-}
+newtype DerivePNewtype (a :: PType) (b :: PType) (s :: PI.S) = DerivePNewtype (a s)
+
+instance (forall (s :: PI.S). Coercible (a s) (Term s b)) => PlutusType (DerivePNewtype a b) where
+  type PInner (DerivePNewtype a b) _ = b
+  pcon' (DerivePNewtype t) = ptypeInner t
+  pmatch' x f = f . DerivePNewtype $ ptypeOuter x
+
+ptypeInner :: forall (x :: PType) y s. Coercible (x s) (Term s y) => x s -> Term s y
+ptypeInner = coerce
+
+ptypeOuter :: forall (x :: PType) y s. Coercible (x s) (Term s y) => Term s y -> x s
+ptypeOuter = coerce

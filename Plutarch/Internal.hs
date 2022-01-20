@@ -1,3 +1,5 @@
+{-# LANGUAGE RoleAnnotations #-}
+
 module Plutarch.Internal (
   -- | $hoisted
   (:-->),
@@ -80,8 +82,10 @@ data RawTerm
 
 hashRawTerm' :: HashAlgorithm alg => RawTerm -> Context alg -> Context alg
 hashRawTerm' (RVar x) = flip hashUpdate ("0" :: BS.ByteString) . flip hashUpdate (F.flat (fromIntegral x :: Integer))
-hashRawTerm' (RLamAbs n x) = flip hashUpdate ("1" :: BS.ByteString) . flip hashUpdate (F.flat (fromIntegral n :: Integer)) . hashRawTerm' x
-hashRawTerm' (RApply x y) = flip hashUpdate ("2" :: BS.ByteString) . hashRawTerm' x . flip (foldl' $ flip hashRawTerm') y
+hashRawTerm' (RLamAbs n x) =
+  flip hashUpdate ("1" :: BS.ByteString) . flip hashUpdate (F.flat (fromIntegral n :: Integer)) . hashRawTerm' x
+hashRawTerm' (RApply x y) =
+  flip hashUpdate ("2" :: BS.ByteString) . hashRawTerm' x . flip (foldl' $ flip hashRawTerm') y
 hashRawTerm' (RForce x) = flip hashUpdate ("3" :: BS.ByteString) . hashRawTerm' x
 hashRawTerm' (RDelay x) = flip hashUpdate ("4" :: BS.ByteString) . hashRawTerm' x
 hashRawTerm' (RConstant x) = flip hashUpdate ("5" :: BS.ByteString) . flip hashUpdate (F.flat x)
@@ -103,11 +107,13 @@ mapTerm f (TermResult t d) = TermResult (f t) d
 mkTermRes :: RawTerm -> TermResult
 mkTermRes r = TermResult r []
 
--- | Type of `s`.
+-- | Type of `s` in `Term s a`. See: "What is the `s`?" section on the Plutarch guide.
 data S
 
 -- | Shorthand for Plutarch types.
 type PType = S -> Type
+
+type role Term phantom representational
 
 {- $term
  Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
@@ -151,7 +157,7 @@ plam' f = Term $ \i ->
         t@(getTerm -> RLamAbs n (RApply t'@(getArity -> Just n') args))
           | (maybe False (== [0 .. n + 1]) $ traverse (\case RVar n -> Just n; _ -> Nothing) args)
               && n' >= n + 1 ->
-            t {getTerm = t'}
+              t {getTerm = t'}
         -- increment arity
         t@(getTerm -> RLamAbs n t') -> t {getTerm = RLamAbs (n + 1) t'}
         -- new lambda
@@ -309,16 +315,26 @@ phoistAcyclic t = Term $ \_ -> case asRawTerm t 0 of
        in TermResult (RHoisted hoisted) (hoisted : getDeps t')
     Left e -> error $ "Hoisted term errs! " <> show e
 
-rawTermToUPLC :: (HoistedTerm -> Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) -> Natural -> RawTerm -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+rawTermToUPLC ::
+  (HoistedTerm -> Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) ->
+  Natural ->
+  RawTerm ->
+  UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i + 1) -- Why the fuck does it start from 1 and not 0?
-rawTermToUPLC m l (RLamAbs n t) = foldr (.) id (replicate (fromIntegral $ n + 1) $ UPLC.LamAbs () (DeBruijn . Index $ 0)) $ (rawTermToUPLC m (l + n + 1) t)
-rawTermToUPLC m l (RApply x y) = foldr (.) id ((\y' t -> UPLC.Apply () t (rawTermToUPLC m l y')) <$> y) $ (rawTermToUPLC m l x)
+rawTermToUPLC m l (RLamAbs n t) =
+  foldr
+    (.)
+    id
+    (replicate (fromIntegral $ n + 1) $ UPLC.LamAbs () (DeBruijn . Index $ 0))
+    $ (rawTermToUPLC m (l + n + 1) t)
+rawTermToUPLC m l (RApply x y) =
+  foldr (.) id ((\y' t -> UPLC.Apply () t (rawTermToUPLC m l y')) <$> y) $ (rawTermToUPLC m l x)
 rawTermToUPLC m l (RDelay t) = UPLC.Delay () (rawTermToUPLC m l t)
 rawTermToUPLC m l (RForce t) = UPLC.Force () (rawTermToUPLC m l t)
 rawTermToUPLC _ _ (RBuiltin f) = UPLC.Builtin () f
 rawTermToUPLC _ _ (RConstant c) = UPLC.Constant () c
 rawTermToUPLC _ _ RError = UPLC.Error ()
---rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted
+-- rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted
 rawTermToUPLC m l (RHoisted hoisted) = m hoisted l -- UPLC.Var () . DeBruijn . Index $ l - m hoisted
 
 -- The logic is mostly for hoisting
@@ -331,13 +347,23 @@ compile' t =
       f n Nothing = (True, Just n)
       f _ (Just n) = (False, Just n)
 
-      g :: HoistedTerm -> (M.Map Dig Natural, [(Natural, RawTerm)], Natural) -> (M.Map Dig Natural, [(Natural, RawTerm)], Natural)
+      g ::
+        HoistedTerm ->
+        (M.Map Dig Natural, [(Natural, RawTerm)], Natural) ->
+        (M.Map Dig Natural, [(Natural, RawTerm)], Natural)
       g (HoistedTerm hash term) (map, defs, n) = case M.alterF (f n) hash map of
         (True, map) -> (map, (n, term) : defs, n + 1)
         (False, map) -> (map, defs, n)
 
       toInline :: S.Set Dig
-      toInline = S.fromList . fmap (\(HoistedTerm hash _) -> hash) . (head <$>) . filter ((== 1) . length) . groupBy (\(HoistedTerm x _) (HoistedTerm y _) -> x == y) . sortOn (\(HoistedTerm hash _) -> hash) $ deps
+      toInline =
+        S.fromList
+          . fmap (\(HoistedTerm hash _) -> hash)
+          . (head <$>)
+          . filter ((== 1) . length)
+          . groupBy (\(HoistedTerm x _) (HoistedTerm y _) -> x == y)
+          . sortOn (\(HoistedTerm hash _) -> hash)
+          $ deps
 
       -- map: term -> de Bruijn level
       -- defs: the terms, level 0 is last
@@ -350,7 +376,11 @@ compile' t =
 
       body = rawTermToUPLC map' n t'
 
-      wrapped = foldl' (\b (lvl, def) -> UPLC.Apply () (UPLC.LamAbs () (DeBruijn . Index $ 0) b) (rawTermToUPLC map' lvl def)) body defs
+      wrapped =
+        foldl'
+          (\b (lvl, def) -> UPLC.Apply () (UPLC.LamAbs () (DeBruijn . Index $ 0) b) (rawTermToUPLC map' lvl def))
+          body
+          defs
    in wrapped
 
 -- | Compile a (closed) Plutus Term to a usable script

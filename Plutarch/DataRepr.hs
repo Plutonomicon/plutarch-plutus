@@ -3,7 +3,24 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans -Wno-redundant-constraints #-}
 
-module Plutarch.DataRepr (PDataRepr, punDataRepr, pindexDataRepr, pmatchDataRepr, DataReprHandlers (..), PDataRecord, PLabeled (..), type PTypes, type PNames, pdhead, pdtail, PIsDataRepr (..), PIsDataReprInstances (..), punsafeIndex, pindexDataRecord) where
+module Plutarch.DataRepr (
+  PDataRepr,
+  punDataRepr,
+  pindexDataRepr,
+  pmatchDataRepr,
+  DataReprHandlers (..),
+  PDataRecord,
+  PLabeled (..),
+  type PTypes,
+  type PNames,
+  pdhead,
+  pdtail,
+  PIsDataRepr (..),
+  PIsDataReprInstances (..),
+  punsafeIndex,
+  pindexDataRecord,
+  DerivePConstantViaData (..),
+) where
 
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy)
@@ -23,7 +40,7 @@ import Plutarch.Builtin (
  )
 import Plutarch.Field.HList (type IndexList)
 import Plutarch.Integer (PInteger)
-import Plutarch.Lift (PLifted, PLiftedRepr, PUnsafeLiftDecl, pliftFromRepr, pliftToRepr)
+import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (punsafeIndex)
 import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Api as Ledger
@@ -65,7 +82,7 @@ pindexDataRepr n = phoistAcyclic $
     plet (pasConstr #$ pasData t) $ \d ->
       let i :: Term _ PInteger = pfstBuiltin # d
        in pif
-            (i #== (fromInteger $ toInteger $ natVal $ n))
+            (i #== fromInteger (natVal n))
             (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataRecord _))
             perror
 
@@ -77,7 +94,7 @@ pindexDataRecord n =
       punsafeIndex @PBuiltinList @PData # ind
   where
     ind :: Term s PInteger
-    ind = fromInteger $ toInteger $ natVal n
+    ind = fromInteger $ natVal n
 
 data DataReprHandlers (out :: PType) (def :: [[PLabeled]]) (s :: S) where
   DRHNil :: DataReprHandlers out '[] s
@@ -129,21 +146,23 @@ pmatchDataRepr d handlers =
               handler
               $ go common (idx + 1) rest constr
 
-newtype PIsDataReprInstances (a :: PType) (h :: Type) (s :: S) = PIsDataReprInstances (a s)
+newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
 
 class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PLabeled]]
   pmatchRepr :: forall s b. Term s (PDataRepr (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
 
-instance PIsDataRepr a => PIsData (PIsDataReprInstances a h) where
+instance PIsDataRepr a => PIsData (PIsDataReprInstances a) where
   pdata = punsafeCoerce
   pfromData = punsafeCoerce
 
-instance PIsDataRepr a => PMatch (PIsDataReprInstances a h) where
+instance PIsDataRepr a => PMatch (PIsDataReprInstances a) where
   pmatch x f = pmatchRepr (punsafeCoerce x) (f . PIsDataReprInstances)
 
-instance {-# OVERLAPPABLE #-} (Ledger.FromData h, Ledger.ToData h, PIsData p) => PUnsafeLiftDecl h (PIsDataReprInstances p h) where
-  type PLifted (PIsDataReprInstances p h) = h
-  type PLiftedRepr (PIsDataReprInstances p h) = Ledger.Data
-  pliftToRepr = Ledger.toData
-  pliftFromRepr = Ledger.fromData
+newtype DerivePConstantViaData (h :: Type) (p :: PType) = DerivePConstantViaData h
+
+instance (PIsDataRepr p, PLift p, Ledger.FromData h, Ledger.ToData h) => PConstant (DerivePConstantViaData h p) where
+  type PConstantRepr (DerivePConstantViaData h p) = Ledger.Data
+  type PConstanted (DerivePConstantViaData h p) = p
+  pconstantToRepr (DerivePConstantViaData x) = Ledger.toData x
+  pconstantFromRepr x = DerivePConstantViaData <$> Ledger.fromData x

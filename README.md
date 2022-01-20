@@ -55,9 +55,35 @@ To run benchmarks on a particular commit,
 nix run github:Plutonomicon/plutarch/<COMMIT-GOES-HERE>#benchmark
 ```
 
-Note that you can also view these benchmarks on a per-commit basis by looking at Hercules CI logs. Go to the Hercules CI job run for a given commit, and navigate to the `nixCi.checks.x86_64-linux.benchmark` page in the Attributes table, and then click on the "Log" header to view its output.
+Note that you can also view these benchmarks on a per-commit basis by looking at Hercules CI logs. Go to the Hercules CI job run for a given commit, and navigate to the `checks.x86_64-linux.benchmark` page in the Attributes table, and then click on the "Log" header to view its output.
 
 Eventually we will have PR integration for running benchmarks. 
 
 # Contributing
 Contributions are more than welcome! Alongside the [User guide](#usage) above, you may also find the [Developers' guide](./docs/DEVGUIDE.md) useful for understanding the codebase.
+
+# License
+
+```
+Copyright (c) 2021-2022 Ardana Labs
+Copyright (c) 2021-2022 Cardax B.V.
+Copyright (c) 2021-2022 Minswap Team
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```

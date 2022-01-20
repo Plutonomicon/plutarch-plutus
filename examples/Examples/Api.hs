@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedRecordDot #-}
-{-# LANGUAGE OverloadedLabels #-}
 module Examples.Api (tests) where
 
 import Plutarch
@@ -134,8 +133,8 @@ inputCredentialHash =
       phead #$ psndBuiltin #$ pasConstr # pforgetData credential
       
 ---- | Get first CurrencySymbol from Value
---getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
---getSym =
+-- getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
+-- getSym =
 --  plam $ \v -> pfstBuiltin #$ phead #$ v
 
 tests :: HasTester => TestTree

@@ -3,6 +3,7 @@ module Plutarch.Prelude (
   PDelayed,
   Term,
   plam,
+  plam',
   papp,
   pdelay,
   pforce,
@@ -19,6 +20,7 @@ module Plutarch.Prelude (
   Type,
   S,
   PType,
+  DerivePNewtype (DerivePNewtype),
 ) where
 
 import Prelude ()

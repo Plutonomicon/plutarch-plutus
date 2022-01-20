@@ -1,6 +1,6 @@
 cabal-version:      2.4
 name:               plutarch
-version:            1.0.0
+version:            1.1.0
 author:             Las Safin <me@las.rs>
 license:            MIT
 extra-source-files: README.md
@@ -68,7 +68,7 @@ common c
     ViewPatterns
 
   ghc-options:
-    -Wall -Wcompat -Wincomplete-uni-patterns
+    -Wall -Wcompat -Wincomplete-uni-patterns -Wno-unused-do-bind
     -Wno-partial-type-signatures -Wmissing-export-lists -Werror
     -Wincomplete-record-updates -Wmissing-deriving-strategies
     -Wno-name-shadowing -Wunused-foralls -fprint-explicit-foralls
@@ -91,6 +91,7 @@ library
     Plutarch.Lift
     Plutarch.List
     Plutarch.Maybe
+    Plutarch.Monadic
     Plutarch.Pair
     Plutarch.Prelude
     Plutarch.Rational
@@ -156,10 +157,10 @@ test-suite examples
     cpp-options: -DDevelopment
 
 benchmark perf
-  import:         c 
+  import:         c
   type:           exitcode-stdio-1.0
   hs-source-dirs: bench
-  main-is:        Main.hs 
+  main-is:        Main.hs
   other-modules:  Benchmark
   build-depends:
     , base
