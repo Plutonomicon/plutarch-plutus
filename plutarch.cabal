@@ -84,6 +84,7 @@ library
     Plutarch.ByteString
     Plutarch.Crypto
     Plutarch.DataRepr
+    Plutarch.Deriver.PNewtype
     Plutarch.Either
     Plutarch.Evaluate
     Plutarch.Integer
@@ -154,10 +155,10 @@ test-suite examples
     cpp-options: -DDevelopment
 
 benchmark perf
-  import:         c 
+  import:         c
   type:           exitcode-stdio-1.0
   hs-source-dirs: bench
-  main-is:        Main.hs 
+  main-is:        Main.hs
   other-modules:  Benchmark
   build-depends:
     , base
