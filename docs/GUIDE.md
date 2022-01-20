@@ -648,7 +648,7 @@ PElemConstraint list a
 ```
 This one ensures that the element type `a` can indeed be contained within the list type - `list`. For `PList`, this constraint means nothing - it's always true. For `PBuiltinList`, it can be simplified as `InDefaultUni a`. Easy!
 
-Here's two of my favorite `PListLike` utilites (not biased)-
+Here's two of my favorite `PListLike` utilities (not biased)-
 ```hs
 -- | Cons an element onto an existing list.
 pcons :: PElemConstraint list a => Term s (a :--> list a :--> list a)
