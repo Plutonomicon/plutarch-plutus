@@ -1,5 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE RoleAnnotations #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -170,6 +171,7 @@ pasByteStr = punsafeBuiltin PLC.UnBData
 pdataLiteral :: Data -> Term s PData
 pdataLiteral = pconstant
 
+type role PAsData representational phantom
 data PAsData (a :: PType) (s :: S)
 
 data PAsDataLifted (a :: PType)
