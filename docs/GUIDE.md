@@ -508,7 +508,7 @@ Using these functions, you can do division/modulus etc on Plutarch level values-
 ```hs
 pdiv # 6 # 3
 ```
-where `6` and `3` are `Term s PInteger`s yields `3` - also a `Term s PInteger`.
+where `6` and `3` are `Term s PInteger`s yields `2` - also a `Term s PInteger`.
 
 ### PIsData
 The `PIsData` typeclass facilitates easy and type safe conversion between Plutarch types and their corresponding `PData` representation - i.e [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md). It keeps track of the type information through [`PAsData`](#pasdata).
