@@ -7,25 +7,30 @@ import Plutarch
 import Plutarch.Api.V1 (
   PAddress (PAddress),
   PCredential (PScriptCredential),
+  PPubKeyHash,
   PScriptContext (PScriptContext),
+  PScriptPurpose (PSpending),
   PTxInInfo (PTxInInfo),
   PTxInfo (PTxInfo),
   PTxOut (PTxOut),
   PValidatorHash,
   PValue,
  )
-import Plutarch.Builtin (PAsData, PBuiltinList, pfromData)
+import Plutarch.Bool (pif)
+import Plutarch.Builtin (PAsData, PBuiltinList, pdata, pfromData)
 import Plutarch.DataRepr (pindexDataList)
 import Plutarch.Lift (pconstant, plift)
-import Plutarch.List (phead)
+import Plutarch.List (pelem, phead)
 import qualified Plutarch.Monadic as P
 import Plutarch.Trace (ptrace)
+import Plutarch.Unit (PUnit)
 
 import Plutus.V1.Ledger.Api (
   Address (..),
   Credential (..),
   CurrencySymbol,
   DatumHash,
+  PubKeyHash,
   ScriptContext (..),
   ScriptPurpose (..),
   TxInInfo (..),
@@ -64,7 +69,7 @@ info =
     , txInfoDCert = []
     , txInfoWdrl = []
     , txInfoValidRange = Interval.always
-    , txInfoSignatories = []
+    , txInfoSignatories = signatories
     , txInfoData = []
     , txInfoId = "b0"
     }
@@ -102,6 +107,9 @@ datum = "d0"
 sym :: CurrencySymbol
 sym = "c0"
 
+signatories :: [PubKeyHash]
+signatories = ["ab01fe235c", "123014", "abcdef"]
+
 --------------------------------------------------------------------------------
 
 getTxInfo :: Term s (PScriptContext :--> PAsData PTxInfo)
@@ -137,6 +145,19 @@ getValidator =
 -- getSym =
 --   plam $ \v -> pfstBuiltin #$ phead # pinner (pinner v)
 
+checkSignatory :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
+checkSignatory = plam $ \ph ctx -> P.do
+  PScriptContext ctxFields <- pmatch ctx
+  PSpending _ <- pmatch . pfromData $ pindexDataList (Proxy @1) # ctxFields
+  PTxInfo txInfoFields <- pmatch . pfromData $ pindexDataList (Proxy @0) # ctxFields
+  let signatories = pindexDataList (Proxy @7) # txInfoFields
+  pif
+    (pelem # pdata ph # pfromData signatories)
+    -- Success!
+    (pconstant ())
+    -- Signature not present.
+    perror
+
 tests :: HasTester => TestTree
 tests =
   testGroup
@@ -151,11 +172,14 @@ tests =
       testCase "getting validator" $ do
         plift (pfromData $ getValidator #$ pfromData $ getInputs #$ pfromData $ getTxInfo # ctx)
           @?= validator
-          -- FIXME: Need 'PlutusType' etc. instance for 'PMap'
-          -- , testCase "getting sym" $ do
-          --     plift (pfromData $ getSym #$ pfromData $ getMint #$ pfromData $ getTxInfo # ctx)
-          --       @?= sym
+    , -- FIXME: Need 'PlutusType' etc. instance for 'PMap'
+      -- , testCase "getting sym" $ do
+      --     plift (pfromData $ getSym #$ pfromData $ getMint #$ pfromData $ getTxInfo # ctx)
+      --       @?= sym
+      testCase "signatory validator" $ do
+        () <$ traverse (\x -> succeeds $ checkSignatory # pconstant x # ctx) signatories
+        fails $ checkSignatory # pconstant "41" # ctx
     ]
 
 ctx_compiled :: String
-ctx_compiled = "(program 1.0.0 #d8799fd8799f9fd8799fd8799fd8799f41a0ff00ffd8799fd8799fd87a9f41a1ffd87a80ffa0d8799f41d0ffffffff80a0a141c0a149736f6d65746f6b656e018080d8799fd8799fd87980d87a80ffd8799fd87b80d87a80ffff8080d8799f41b0ffffd87a9fd8799fd8799f41a0ff00ffffff)"
+ctx_compiled = "(program 1.0.0 #d8799fd8799f9fd8799fd8799fd8799f41a0ff00ffd8799fd8799fd87a9f41a1ffd87a80ffa0d8799f41d0ffffffff80a0a141c0a149736f6d65746f6b656e018080d8799fd8799fd87980d87a80ffd8799fd87b80d87a80ffff9f45ab01fe235c4312301443abcdefff80d8799f41b0ffffd87a9fd8799fd8799f41a0ff00ffffff)"
