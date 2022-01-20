@@ -11,8 +11,6 @@ import Generics.SOP
 import Plutarch.Builtin
 import Plutarch.Bool
 import Plutarch.DataRepr
-import Data.Foldable ( maximumBy )
-import Data.List ( sortOn, groupBy )
 import Data.SOP.Constraint (AllZipF)
 import Plutarch.Prelude
 import Plutarch
@@ -186,54 +184,8 @@ instance
   where
   type PIsDataReprRepr s f = UnSOP (PSOP (Rep (f s)) s)
   pmatchRepr dat mk =
-    pmatchDataRepr' dat $
+    pmatchDataRepr dat $
       mkDataReprHandlers @f @s @'[] @(NS (NP (Term s)) (UnSOP (PSOP (Rep (f s)) s))) mk
-
-pmatchDataRepr' :: Term s (PDataRepr defs) -> DataReprHandlers out defs s -> Term s out
-pmatchDataRepr' d handlers =
-  plet (pasConstr #$ punsafeCoerce d) $ \d' ->
-    plet (pfstBuiltin # d') $ \constr ->
-      plet (psndBuiltin # d') $ \args ->
-        let handlers' = applyHandlers args handlers
-         in runTermCont (findCommon handlers') $ \common ->
-              go
-                common
-                0
-                handlers'
-                constr
-  where
-    hashHandlers :: [Term s out] -> TermCont s [(Dig, Term s out)]
-    hashHandlers [] = pure []
-    hashHandlers (handler : rest) = do
-      hash <- hashOpenTerm handler
-      hashes <- hashHandlers rest
-      pure $ (hash, handler) : hashes
-
-    findCommon :: [Term s out] -> TermCont s (Dig, Term s out)
-    findCommon handlers' = do
-      l <- hashHandlers handlers'
-      pure $ head . maximumBy (\x y -> length x `compare` length y) . groupBy (\x y -> fst x == fst y) . sortOn fst $ l
-
-    applyHandlers :: Term s (PBuiltinList PData) -> DataReprHandlers out defs s -> [Term s out]
-    applyHandlers _ DRHNil = []
-    applyHandlers args (DRHCons handler rest) = handler (punsafeCoerce args) : applyHandlers args rest
-
-    go ::
-      (Dig, Term s out) ->
-      Integer ->
-      [Term s out] ->
-      Term s PInteger ->
-      Term s out
-    go common _ [] _ = snd common
-    go common idx (handler : rest) constr =
-      runTermCont (hashOpenTerm handler) $ \hhash ->
-        if hhash == fst common
-          then go common (idx + 1) rest constr
-          else
-            pif
-              (fromInteger idx #== constr)
-              handler
-              $ go common (idx + 1) rest constr
 
 {-
 instance PIsDataRepr Color where
