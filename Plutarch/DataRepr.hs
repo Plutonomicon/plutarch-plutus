@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans -Wno-redundant-constraints #-}
@@ -138,20 +139,21 @@ pmatchDataRepr d handlers =
 
 newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
 
-class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
-  type PIsDataReprRepr a :: [[PType]]
-  pmatchRepr :: forall s b. Term s (PDataRepr (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
+class (PMatch s a, PIsData a) => PIsDataRepr s a where
+  type PIsDataReprRepr s a :: [[PType]]
+  pmatchRepr :: forall b. Term s (PDataRepr (PIsDataReprRepr s a)) -> (a s -> Term s b) -> Term s b
 
-instance PIsDataRepr a => PIsData (PIsDataReprInstances a) where
+
+instance PIsDataRepr s a => PIsData (PIsDataReprInstances a) where
   pdata = punsafeCoerce
   pfromData = punsafeCoerce
 
-instance PIsDataRepr a => PMatch (PIsDataReprInstances a) where
-  pmatch x f = pmatchRepr (punsafeCoerce x) (f . PIsDataReprInstances)
+instance PIsDataRepr s a => PMatch s (PIsDataReprInstances a) where
+  pmatch x f = pmatchRepr @s (punsafeCoerce x) (f . PIsDataReprInstances)
 
 newtype DerivePConstantViaData (h :: Type) (p :: PType) = DerivePConstantViaData h
 
-instance (PIsDataRepr p, PLift p, Ledger.FromData h, Ledger.ToData h) => PConstant (DerivePConstantViaData h p) where
+instance (PIsDataRepr s p, PLift p, Ledger.FromData h, Ledger.ToData h) => PConstant (DerivePConstantViaData h p) where
   type PConstantRepr (DerivePConstantViaData h p) = Ledger.Data
   type PConstanted (DerivePConstantViaData h p) = p
   pconstantToRepr (DerivePConstantViaData x) = Ledger.toData x

@@ -64,16 +64,13 @@ import Plutarch (PMatch, PlutusType)
 import Plutarch.Bool (PBool)
 import Plutarch.Builtin (PAsData, PBuiltinList, PData, PIsData, type PBuiltinMap)
 import Plutarch.ByteString (PByteString)
-import Plutarch.DataRepr (
-  DataReprHandlers (DRHCons, DRHNil),
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataList,
-  PIsDataRepr,
-  PIsDataReprInstances (PIsDataReprInstances),
-  PIsDataReprRepr,
-  pmatchDataRepr,
-  pmatchRepr,
- )
+import Plutarch.DataRepr
+    ( DerivePConstantViaData(..),
+      PIsDataRepr(..),
+      PIsDataReprInstances(..),
+      DataReprHandlers(DRHNil, DRHCons),
+      PDataList,
+      pmatchDataRepr ) 
 import Plutarch.Integer (PInteger, PIntegral)
 import Plutarch.Lift (DerivePConstantViaNewtype (DerivePConstantViaNewtype), PConstant, PLifted, PUnsafeLiftDecl)
 
@@ -108,15 +105,16 @@ newtype PTxInfo (s :: S)
           )
       )
   deriving
-    (PMatch, PIsData)
+    (PIsData)
     via PIsDataReprInstances PTxInfo
 
+deriving via (PIsDataReprInstances PTxInfo) instance (PMatch s PTxInfo)
 instance PUnsafeLiftDecl PTxInfo where type PLifted PTxInfo = Plutus.TxInfo
 deriving via (DerivePConstantViaData Plutus.TxInfo PTxInfo) instance (PConstant Plutus.TxInfo)
 
-instance PIsDataRepr PTxInfo where
+instance PIsDataRepr s PTxInfo where
   type
-    PIsDataReprRepr PTxInfo =
+    PIsDataReprRepr s PTxInfo =
       '[ '[ PBuiltinList (PAsData PTxInInfo)
           , PBuiltinList (PAsData PTxOut)
           , PValue
@@ -135,15 +133,16 @@ instance PIsDataRepr PTxInfo where
 newtype PScriptContext (s :: S)
   = PScriptContext (Term s (PDataList '[PTxInfo, PScriptPurpose]))
   deriving
-    (PMatch, PIsData)
+    (PIsData)
     via PIsDataReprInstances PScriptContext
 
+deriving via (PIsDataReprInstances PScriptContext) instance (PMatch s PScriptContext)
 instance PUnsafeLiftDecl PScriptContext where type PLifted PScriptContext = Plutus.ScriptContext
 deriving via (DerivePConstantViaData Plutus.ScriptContext PScriptContext) instance (PConstant Plutus.ScriptContext)
 
-instance PIsDataRepr PScriptContext where
+instance PIsDataRepr s PScriptContext where
   type
-    PIsDataReprRepr PScriptContext =
+    PIsDataReprRepr s PScriptContext =
       '[ '[ PTxInfo
           , PScriptPurpose
           ]
@@ -159,15 +158,16 @@ data PScriptPurpose (s :: S)
   | PRewarding (Term s (PDataList '[PStakingCredential]))
   | PCertifying (Term s (PDataList '[PDCert]))
   deriving
-    (PMatch, PIsData)
+    (PIsData)
     via (PIsDataReprInstances PScriptPurpose)
 
+deriving via (PIsDataReprInstances PScriptPurpose) instance (PMatch s PScriptPurpose)
 instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
 deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) instance (PConstant Plutus.ScriptPurpose)
 
-instance PIsDataRepr PScriptPurpose where
+instance PIsDataRepr s PScriptPurpose where
   type
-    PIsDataReprRepr PScriptPurpose =
+    PIsDataReprRepr s PScriptPurpose =
       '[ '[PCurrencySymbol]
        , '[PTxOutRef]
        , '[PStakingCredential]
@@ -186,38 +186,44 @@ instance PIsDataRepr PScriptPurpose where
 ---------- Scripts
 
 newtype PDatum (s :: S) = PDatum (Term s PData)
-  deriving (PlutusType, PIsData) via (DerivePNewtype PDatum PData)
+  deriving (PIsData) via (DerivePNewtype PDatum PData)
 
+deriving via (DerivePNewtype PDatum PData) instance (PlutusType s PDatum)
 instance PUnsafeLiftDecl PDatum where type PLifted PDatum = Plutus.Datum
 deriving via (DerivePConstantViaNewtype Plutus.Datum PDatum PData) instance (PConstant Plutus.Datum)
 
 newtype PRedeemer (s :: S) = PRedeemer (Term s PData)
-  deriving (PlutusType, PIsData) via (DerivePNewtype PRedeemer PData)
+  deriving (PIsData) via (DerivePNewtype PRedeemer PData)
 
+deriving via (DerivePNewtype PRedeemer PData) instance (PlutusType s PRedeemer )
 instance PUnsafeLiftDecl PRedeemer where type PLifted PRedeemer = Plutus.Redeemer
 deriving via (DerivePConstantViaNewtype Plutus.Redeemer PRedeemer PData) instance (PConstant Plutus.Redeemer)
 
 newtype PDatumHash (s :: S) = PDatumHash (Term s PByteString)
-  deriving (PlutusType, PIsData) via (DerivePNewtype PDatumHash PByteString)
+  deriving (PIsData) via (DerivePNewtype PDatumHash PByteString)
 
+deriving via (DerivePNewtype PDatumHash PByteString) instance (PlutusType s PDatumHash)
 instance PUnsafeLiftDecl PDatumHash where type PLifted PDatumHash = Plutus.DatumHash
 deriving via (DerivePConstantViaNewtype Plutus.DatumHash PDatumHash PByteString) instance (PConstant Plutus.DatumHash)
 
 newtype PStakeValidatorHash (s :: S) = PStakeValidatorHash (Term s PByteString)
-  deriving (PlutusType, PIsData) via (DerivePNewtype PStakeValidatorHash PByteString)
+  deriving (PIsData) via (DerivePNewtype PStakeValidatorHash PByteString)
 
+deriving via (DerivePNewtype PStakeValidatorHash PByteString) instance (PlutusType s PStakeValidatorHash)
 instance PUnsafeLiftDecl PStakeValidatorHash where type PLifted PStakeValidatorHash = Plutus.StakeValidatorHash
 deriving via (DerivePConstantViaNewtype Plutus.StakeValidatorHash PStakeValidatorHash PByteString) instance (PConstant Plutus.StakeValidatorHash)
 
 newtype PRedeemerHash (s :: S) = PRedeemerHash (Term s PByteString)
-  deriving (PlutusType, PIsData) via (DerivePNewtype PRedeemerHash PByteString)
+  deriving (PIsData) via (DerivePNewtype PRedeemerHash PByteString)
 
+deriving via (DerivePNewtype PRedeemerHash PByteString) instance (PlutusType s PRedeemerHash)
 instance PUnsafeLiftDecl PRedeemerHash where type PLifted PRedeemerHash = Plutus.RedeemerHash
 deriving via (DerivePConstantViaNewtype Plutus.RedeemerHash PRedeemerHash PByteString) instance (PConstant Plutus.RedeemerHash)
 
 newtype PValidatorHash (s :: S) = PValidatorHash (Term s PByteString)
-  deriving (PlutusType, PIsData) via (DerivePNewtype PValidatorHash PByteString)
+  deriving (PIsData) via (DerivePNewtype PValidatorHash PByteString)
 
+deriving via (DerivePNewtype PValidatorHash PByteString) instance (PlutusType s PValidatorHash)
 instance PUnsafeLiftDecl PValidatorHash where type PLifted PValidatorHash = Plutus.ValidatorHash
 deriving via (DerivePConstantViaNewtype Plutus.ValidatorHash PValidatorHash PByteString) instance (PConstant Plutus.ValidatorHash)
 
@@ -225,8 +231,9 @@ deriving via (DerivePConstantViaNewtype Plutus.ValidatorHash PValidatorHash PByt
 
 newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
   deriving newtype (Semigroup, Monoid)
-  deriving (PlutusType, PIsData) via (DerivePNewtype PTokenName PByteString)
+  deriving (PIsData) via (DerivePNewtype PTokenName PByteString)
 
+deriving via (DerivePNewtype PTokenName PByteString) instance (PlutusType s PTokenName)
 instance PUnsafeLiftDecl PTokenName where type PLifted PTokenName = Plutus.TokenName
 deriving via
   (DerivePConstantViaNewtype Plutus.TokenName PTokenName PByteString)
@@ -234,8 +241,9 @@ deriving via
     (PConstant Plutus.TokenName)
 
 newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
-  deriving (PlutusType, PIsData) via (DerivePNewtype PCurrencySymbol PByteString)
+  deriving (PIsData) via (DerivePNewtype PCurrencySymbol PByteString)
 
+deriving via (DerivePNewtype PCurrencySymbol PByteString) instance (PlutusType s PCurrencySymbol)
 instance PUnsafeLiftDecl PCurrencySymbol where type PLifted PCurrencySymbol = Plutus.CurrencySymbol
 deriving via
   (DerivePConstantViaNewtype Plutus.CurrencySymbol PCurrencySymbol PByteString)
@@ -244,12 +252,13 @@ deriving via
 
 newtype PValue (s :: S) = PValue (Term s (PMap PCurrencySymbol (PMap PTokenName PInteger)))
   deriving
-    ( PlutusType
+    ( 
     -- FIXME: This requires `PIsData` instance for `PMap`.
     -- , PIsData
     )
     via (DerivePNewtype PValue (PMap PCurrencySymbol (PMap PTokenName PInteger)))
 
+deriving via (DerivePNewtype PValue (PMap PCurrencySymbol (PMap PTokenName PInteger)))  instance (PlutusType s PValue)
 -- FIXME: This fails typecheck.
 -- instance PUnsafeLiftDecl PValue where type PLifted PValue = Plutus.Value
 -- deriving via
@@ -260,8 +269,9 @@ newtype PValue (s :: S) = PValue (Term s (PMap PCurrencySymbol (PMap PTokenName 
 ---------- Crypto
 
 newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
-  deriving (PlutusType, PIsData) via (DerivePNewtype PPubKeyHash PByteString)
+  deriving (PIsData) via (DerivePNewtype PPubKeyHash PByteString)
 
+deriving via (DerivePNewtype PPubKeyHash PByteString) instance (PlutusType s PPubKeyHash)
 instance PUnsafeLiftDecl PPubKeyHash where type PLifted PPubKeyHash = Plutus.PubKeyHash
 deriving via
   (DerivePConstantViaNewtype Plutus.PubKeyHash PPubKeyHash PByteString)
@@ -269,8 +279,9 @@ deriving via
     (PConstant Plutus.PubKeyHash)
 
 newtype PPubKey (s :: S) = PPubKey (Term s PByteString)
-  deriving (PlutusType, PIsData) via (DerivePNewtype PPubKey PByteString)
+  deriving (PIsData) via (DerivePNewtype PPubKey PByteString)
 
+deriving via (DerivePNewtype PPubKey PByteString) instance (PlutusType s PPubKey)
 instance PUnsafeLiftDecl PPubKey where type PLifted PPubKey = PlutusCrpyto.PubKey
 deriving via
   (DerivePConstantViaNewtype PlutusCrpyto.PubKey PPubKey PByteString)
@@ -278,8 +289,9 @@ deriving via
     (PConstant PlutusCrpyto.PubKey)
 
 newtype PSignature (s :: S) = PSignature (Term s PByteString)
-  deriving (PlutusType, PIsData) via (DerivePNewtype PSignature PByteString)
+  deriving (PIsData) via (DerivePNewtype PSignature PByteString)
 
+deriving via (DerivePNewtype PSignature PByteString) instance (PlutusType s PSignature)
 instance PUnsafeLiftDecl PSignature where type PLifted PSignature = PlutusCrpyto.Signature
 deriving via
   (DerivePConstantViaNewtype PlutusCrpyto.Signature PSignature PByteString)
@@ -292,8 +304,9 @@ newtype PPOSIXTime (s :: S)
   = PPOSIXTime (Term s PInteger)
   deriving (PIntegral) via (PInteger)
   deriving newtype (Num)
-  deriving (PlutusType, PIsData) via (DerivePNewtype PPOSIXTime PInteger)
+  deriving (PIsData) via (DerivePNewtype PPOSIXTime PInteger)
 
+deriving via (DerivePNewtype PPOSIXTime PInteger) instance (PlutusType s PPOSIXTime)
 instance PUnsafeLiftDecl PPOSIXTime where type PLifted PPOSIXTime = Plutus.POSIXTime
 deriving via
   (DerivePConstantViaNewtype Plutus.POSIXTime PPOSIXTime PInteger)
@@ -317,15 +330,16 @@ newtype PInterval a (s :: S)
           )
       )
   deriving
-    ( PMatch
-    , PIsData
+    ( PIsData
     )
     via PIsDataReprInstances
           (PInterval a)
 
-instance PIsDataRepr (PInterval a) where
+deriving via PIsDataReprInstances (PInterval a) instance (PMatch s (PInterval a))
+
+instance PIsDataRepr s (PInterval a) where
   type
-    PIsDataReprRepr (PInterval a) =
+    PIsDataReprRepr s (PInterval a) =
       '[ '[ PLowerBound a
           , PUpperBound a
           ]
@@ -338,16 +352,17 @@ instance PIsDataRepr (PInterval a) where
 newtype PLowerBound a (s :: S)
   = PLowerBound (Term s (PDataList '[PExtended a, PClosure]))
   deriving
-    ( PMatch
-    , PIsData
+    ( PIsData
     )
     via ( PIsDataReprInstances
             (PLowerBound a)
         )
 
-instance PIsDataRepr (PLowerBound a) where
+deriving via PIsDataReprInstances (PLowerBound a) instance (PMatch s (PLowerBound a))
+
+instance PIsDataRepr s (PLowerBound a) where
   type
-    PIsDataReprRepr (PLowerBound a) =
+    PIsDataReprRepr s (PLowerBound a) =
       '[ '[ PExtended a
           , PClosure
           ]
@@ -360,16 +375,17 @@ instance PIsDataRepr (PLowerBound a) where
 newtype PUpperBound a (s :: S)
   = PUpperBound (Term s (PDataList '[PExtended a, PClosure]))
   deriving
-    ( PMatch
-    , PIsData
+    ( PIsData
     )
     via ( PIsDataReprInstances
             (PUpperBound a)
         )
 
-instance PIsDataRepr (PUpperBound a) where
+deriving via PIsDataReprInstances (PUpperBound a) instance (PMatch s (PUpperBound a))
+
+instance PIsDataRepr s (PUpperBound a) where
   type
-    PIsDataReprRepr (PUpperBound a) =
+    PIsDataReprRepr s (PUpperBound a) =
       '[ '[ PExtended a
           , PClosure
           ]
@@ -383,15 +399,15 @@ data PExtended a (s :: S)
   | PFinite (Term s (PDataList '[a]))
   | PPosInf (Term s (PDataList '[]))
   deriving
-    ( PMatch
-    , PIsData
+    ( PIsData
     )
     via ( PIsDataReprInstances
             (PExtended a)
         )
 
-instance PIsDataRepr (PExtended a) where
-  type PIsDataReprRepr (PExtended a) = '[ '[], '[a], '[]]
+deriving via (PIsDataReprInstances (PExtended a)) instance (PMatch s (PExtended a))
+instance PIsDataRepr s (PExtended a) where
+  type PIsDataReprRepr s (PExtended a) = '[ '[], '[a], '[]]
   pmatchRepr dat f =
     pmatchDataRepr dat $
       DRHCons (f . PNegInf) $
@@ -404,12 +420,14 @@ data PCredential (s :: S)
   = PPubKeyCredential (Term s (PDataList '[PPubKeyHash]))
   | PScriptCredential (Term s (PDataList '[PValidatorHash]))
   deriving
-    (PMatch, PIsData)
+    (PIsData)
     via (PIsDataReprInstances PCredential)
 
-instance PIsDataRepr PCredential where
+deriving via (PIsDataReprInstances PCredential) instance (PMatch s PCredential)
+
+instance PIsDataRepr s PCredential where
   type
-    PIsDataReprRepr PCredential =
+    PIsDataReprRepr s PCredential =
       '[ '[PPubKeyHash]
        , '[PValidatorHash]
        ]
@@ -425,14 +443,16 @@ data PStakingCredential (s :: S)
   = PStakingHash (Term s (PDataList '[PCredential]))
   | PStakingPtr (Term s (PDataList '[PInteger, PInteger, PInteger]))
   deriving
-    ( PMatch
-    , PIsData
+    ( PIsData
     )
     via PIsDataReprInstances PStakingCredential
 
-instance PIsDataRepr PStakingCredential where
+deriving via (PIsDataReprInstances PStakingCredential) instance (PMatch s PStakingCredential)
+
+
+instance PIsDataRepr s PStakingCredential where
   type
-    PIsDataReprRepr PStakingCredential =
+    PIsDataReprRepr s PStakingCredential =
       '[ '[PCredential]
        , '[PInteger, PInteger, PInteger]
        ]
@@ -452,12 +472,14 @@ newtype PAddress (s :: S)
           )
       )
   deriving
-    (PMatch, PIsData)
+    (PIsData)
     via PIsDataReprInstances PAddress
 
-instance PIsDataRepr PAddress where
+deriving via (PIsDataReprInstances PAddress) instance (PMatch s PAddress)
+
+instance PIsDataRepr s PAddress where
   type
-    PIsDataReprRepr PAddress =
+    PIsDataReprRepr s PAddress =
       '[ '[ PCredential
           , PMaybe PStakingCredential
           ]
@@ -472,11 +494,13 @@ instance PIsDataRepr PAddress where
 newtype PTxId (s :: S)
   = PTxId (Term s (PDataList '[PByteString]))
   deriving
-    (PMatch, PIsData)
+    (PIsData)
     via PIsDataReprInstances PTxId
 
-instance PIsDataRepr PTxId where
-  type PIsDataReprRepr PTxId = '[ '[PByteString]]
+deriving via (PIsDataReprInstances PTxId) instance (PMatch s PTxId)
+
+instance PIsDataRepr s PTxId where
+  type PIsDataReprRepr s PTxId = '[ '[PByteString]]
 
   pmatchRepr dat f =
     pmatchDataRepr dat $
@@ -485,11 +509,14 @@ instance PIsDataRepr PTxId where
 newtype PTxOutRef (s :: S)
   = PTxOutRef (Term s (PDataList '[PTxId, PInteger]))
   deriving
-    (PMatch, PIsData)
+    (PIsData)
     via PIsDataReprInstances PTxOutRef
 
-instance PIsDataRepr PTxOutRef where
-  type PIsDataReprRepr PTxOutRef = '[ '[PTxId, PInteger]]
+deriving via (PIsDataReprInstances PTxOutRef) instance (PMatch s PTxOutRef)
+
+
+instance PIsDataRepr s PTxOutRef where
+  type PIsDataReprRepr s PTxOutRef = '[ '[PTxId, PInteger]]
 
   pmatchRepr dat f =
     pmatchDataRepr dat $
@@ -498,11 +525,14 @@ instance PIsDataRepr PTxOutRef where
 newtype PTxInInfo (s :: S)
   = PTxInInfo (Term s (PDataList '[PTxOutRef, PTxOut]))
   deriving
-    (PMatch, PIsData)
+    (PIsData)
     via PIsDataReprInstances PTxInInfo
 
-instance PIsDataRepr PTxInInfo where
-  type PIsDataReprRepr PTxInInfo = '[ '[PTxOutRef, PTxOut]]
+deriving via (PIsDataReprInstances PTxInInfo) instance (PMatch s PTxInInfo)
+
+
+instance PIsDataRepr s PTxInInfo where
+  type PIsDataReprRepr s PTxInInfo = '[ '[PTxOutRef, PTxOut]]
 
   pmatchRepr dat f =
     pmatchDataRepr dat $
@@ -520,12 +550,15 @@ newtype PTxOut (s :: S)
           )
       )
   deriving
-    (PMatch, PIsData)
+    (PIsData)
     via (PIsDataReprInstances PTxOut)
 
-instance PIsDataRepr PTxOut where
+deriving via (PIsDataReprInstances PTxOut) instance (PMatch s PTxOut)
+
+
+instance PIsDataRepr s PTxOut where
   type
-    PIsDataReprRepr PTxOut =
+    PIsDataReprRepr s PTxOut =
       '[ '[ PAddress
           , PValue
           , PMaybe PDatumHash
@@ -545,12 +578,15 @@ data PDCert (s :: S)
   | PDCertGenesis (Term s (PDataList '[]))
   | PDCertMir (Term s (PDataList '[]))
   deriving
-    (PMatch, PIsData)
+    (PIsData)
     via (PIsDataReprInstances PDCert)
 
-instance PIsDataRepr PDCert where
+deriving via (PIsDataReprInstances PDCert) instance (PMatch s PDCert)
+
+
+instance PIsDataRepr s PDCert where
   type
-    PIsDataReprRepr PDCert =
+    PIsDataReprRepr s PDCert =
       '[ '[PStakingCredential]
        , '[PStakingCredential]
        , '[PStakingCredential, PPubKeyHash]
@@ -583,12 +619,15 @@ data PMaybe a (s :: S)
   = PNothing (Term s (PDataList '[]))
   | PJust (Term s (PDataList '[a]))
   deriving
-    (PMatch, PIsData)
+    (PIsData)
     via PIsDataReprInstances
           (PMaybe a)
 
-instance PIsDataRepr (PMaybe a) where
-  type PIsDataReprRepr (PMaybe a) = '[ '[], '[a]]
+deriving via (PIsDataReprInstances (PMaybe a)) instance (PMatch s (PMaybe a))
+
+
+instance PIsDataRepr s (PMaybe a) where
+  type PIsDataReprRepr s (PMaybe a) = '[ '[], '[a]]
 
   pmatchRepr dat f =
     pmatchDataRepr dat $
@@ -599,15 +638,15 @@ data PEither a b (s :: S)
   = PLeft (Term s (PDataList '[a]))
   | PRight (Term s (PDataList '[b]))
   deriving
-    ( PMatch
-    , PIsData
+    ( PIsData
     )
     via PIsDataReprInstances
           (PEither a b)
 
-instance PIsDataRepr (PEither a b) where
+deriving via (PIsDataReprInstances (PEither a b)) instance (PMatch s (PEither a b))
+instance PIsDataRepr s (PEither a b) where
   type
-    PIsDataReprRepr (PEither a b) =
+    PIsDataReprRepr s (PEither a b) =
       '[ '[a], '[b]]
 
   pmatchRepr dat f =

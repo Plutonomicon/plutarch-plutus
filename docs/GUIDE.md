@@ -677,7 +677,7 @@ And that's all you need to know to implement `PConstant` and `PLift`!
 `PlutusType` lets you construct and deconstruct Plutus Core constants from from a Plutarch type's constructors (possibly containing other Plutarch terms). It's essentially a combination of `PCon` (for constant construction) and `PMatch` (for constant deconstruction).
 
 ```hs
-class (PCon a, PMatch a) => PlutusType (a :: k -> Type) where
+class (PCon s a, PMatch s a) => PlutusType s (a :: k -> Type) where
   type PInner a (b' :: k -> Type) :: k -> Type
   pcon' :: forall s. a s -> forall b. Term s (PInner a b)
   pmatch' :: forall s c. (forall b. Term s (PInner a b)) -> (a s -> Term s c) -> Term s c
@@ -688,7 +688,7 @@ Here's the `PlutusType` instance for `PMaybe`-
 ```hs
 data PMaybe a s = PJust (Term s a) | PNothing
 
-instance PlutusType (PMaybe a) where
+instance PlutusType s (PMaybe a) where
   type PInner (PMaybe a) b = (a :--> b) :--> PDelayed b :--> b
   pcon' :: forall s. PMaybe a s -> forall b. Term s (PInner (PMaybe a) b)
   pcon' (PJust x) = plam $ \f (_ :: Term _ _) -> f # x
@@ -703,10 +703,10 @@ This is a scott encoded representation of the familiar `Maybe` data type. As you
 
 You should always use `pcon` and `pmatch` instead of `pcon'` and `pmatch'` - these are provided by the `PCon` and `PMatch` typeclasses-
 ```hs
-class PCon a where
+class PCon s a where
   pcon :: a s -> Term s a
 
-class PMatch a where
+class PMatch s a where
   pmatch :: Term s a -> (a s -> Term s b) -> Term s b
 ```
 
@@ -1291,7 +1291,7 @@ Another case `PlutusType` is useful is when you want to give your Plutarch type 
 ```hs
 data AB = A | B
 
-instance PlutusType AB where
+instance PlutusType s AB where
   type PInner AB _ = PInteger
   pcon' A = 0
   pcon' B = 1

@@ -46,7 +46,7 @@ pRatToList = plam $ \x -> pmatch x $ \(PRational a b) ->
 pListToRat :: Term s (PBuiltinList PInteger :--> PRational)
 pListToRat = plam $ \x -> pcon $ PRational (phead # x) (phead #$ ptail # x)
 
-instance PlutusType PRational where
+instance PlutusType s PRational where
   type PInner PRational c = (PInteger :--> PInteger :--> c) :--> c
   pcon' (PRational x y) = plam $ \f -> f # x # y
   pmatch' p f = p #$ plam $ \x y -> f (PRational x y)

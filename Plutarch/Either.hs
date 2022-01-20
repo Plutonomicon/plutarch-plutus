@@ -5,7 +5,7 @@ import Plutarch.Prelude
 
 data PEither (a :: PType) (b :: PType) (s :: S) = PLeft (Term s a) | PRight (Term s b)
 
-instance PlutusType (PEither a b) where
+instance PlutusType s (PEither a b) where
   type PInner (PEither a b) c = (a :--> c) :--> (b :--> c) :--> c
   pcon' (PLeft x) = plam $ \f _ -> f # x
   pcon' (PRight y) = plam $ \_ g -> g # y

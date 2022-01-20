@@ -134,7 +134,7 @@ pinl v f = f v
 
   > data AB (s :: S) = A | B
   >
-  > instance PlutusType AB where
+  > instance PlutusType s AB where
   >   type PInner AB _ = PInteger
   >
   >   pcon' A = 0
@@ -154,24 +154,24 @@ pinl v f = f v
 
   Further examples can be found in examples/PlutusType.hs
 -}
-class (PCon a, PMatch a) => PlutusType (a :: PType) where
+class (PCon s a, PMatch s a) => PlutusType s (a :: PType) where
   -- `b' :: k'` causes GHC to fail type checking at various places
   -- due to not being able to expand the type family.
   type PInner a (b' :: PType) :: PType
-  pcon' :: forall s. a s -> forall b. Term s (PInner a b)
-  pmatch' :: forall s c. (forall b. Term s (PInner a b)) -> (a s -> Term s c) -> Term s c
+  pcon' :: a s -> forall b. Term s (PInner a b)
+  pmatch' :: forall c. (forall b. Term s (PInner a b)) -> (a s -> Term s c) -> Term s c
 
-instance {-# OVERLAPPABLE #-} PlutusType a => PMatch a where
+instance {-# OVERLAPPABLE #-} PlutusType s a => PMatch s a where
   pmatch x f = pmatch' (punsafeCoerce x) f
 
-instance PlutusType a => PCon a where
+instance PlutusType s a => PCon s a where
   pcon x = punsafeCoerce (pcon' x)
 
-class PCon a where
+class PCon s a where
   -- | Construct a Plutarch Term via a Haskell datatype
   pcon :: a s -> Term s a
 
-class PMatch a where
+class PMatch s a where
   -- | Pattern match over Plutarch Terms via a Haskell datatype
   pmatch :: Term s a -> (a s -> Term s b) -> Term s b
 
@@ -191,7 +191,7 @@ pto x = punsafeCoerce x
 -- | An Arbitrary Term with an unknown type
 data POpaque s = POpaque (Term s POpaque)
 
-instance PlutusType POpaque where
+instance PlutusType s POpaque where
   type PInner POpaque _ = POpaque
   pcon' (POpaque x) = x
   pmatch' x f = f (POpaque x)
@@ -244,7 +244,7 @@ This will make 'PFoo' simply be represnted as 'PBar' under the hood.
 -}
 newtype DerivePNewtype (a :: PType) (b :: PType) (s :: PI.S) = DerivePNewtype (a s)
 
-instance (forall (s :: PI.S). Coercible (a s) (Term s b)) => PlutusType (DerivePNewtype a b) where
+instance (forall (s :: PI.S). Coercible (a s) (Term s b)) => PlutusType s (DerivePNewtype a b) where
   type PInner (DerivePNewtype a b) _ = b
   pcon' (DerivePNewtype t) = ptypeInner t
   pmatch' x f = f . DerivePNewtype $ ptypeOuter x

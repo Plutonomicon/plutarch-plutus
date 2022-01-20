@@ -52,7 +52,7 @@ data PList (a :: PType) (s :: S)
   = PSCons (Term s a) (Term s (PList a))
   | PSNil
 
-instance PlutusType (PList a) where
+instance PlutusType s (PList a) where
   type PInner (PList a) c = (a :--> PList a :--> c) :--> PDelayed c :--> c
 
   pcon' :: forall s. PList a s -> forall b. Term s (PInner (PList a) b)

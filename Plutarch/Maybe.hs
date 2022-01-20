@@ -9,7 +9,7 @@ import Plutarch.Prelude
 -- | Plutus Maybe type, with Scott-encoded repr
 data PMaybe (a :: PType) (s :: S) = PJust (Term s a) | PNothing
 
-instance PlutusType (PMaybe a) where
+instance PlutusType s (PMaybe a) where
   type PInner (PMaybe a) b = (a :--> b) :--> PDelayed b :--> b
   pcon' :: forall s. PMaybe a s -> forall b. Term s (PInner (PMaybe a) b)
   pcon' (PJust x) = plam $ \f _ -> f # x

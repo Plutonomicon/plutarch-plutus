@@ -18,7 +18,7 @@ data AB (s :: S) = A | B
   AB is encoded as an Enum, using values of PInteger
   internally.
 -}
-instance PlutusType AB where
+instance PlutusType s AB where
   type PInner AB _ = PInteger
 
   pcon' A = 0
@@ -39,7 +39,7 @@ swap x = pmatch x $ \case
 tests :: HasTester => TestTree
 tests =
   testGroup
-    "PlutusType examples"
+    "PlutusType s examples"
     [ testCase "A encoded as 0" $ do
         pcon A `equal` (0 :: Term s PInteger)
     , testCase "B encoded as 2" $ do

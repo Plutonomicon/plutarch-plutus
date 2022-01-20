@@ -105,7 +105,7 @@ instance PConstant a => PConstant [a] where
 instance PUnsafeLiftDecl a => PUnsafeLiftDecl (PBuiltinList a) where
   type PLifted (PBuiltinList a) = [PLifted a]
 
-instance PLift a => PlutusType (PBuiltinList a) where
+instance PLift a => PlutusType s (PBuiltinList a) where
   type PInner (PBuiltinList a) _ = PBuiltinList a
   pcon' (PCons x xs) = pconsBuiltin # x # xs
   pcon' PNil = pconstant []

@@ -38,7 +38,7 @@ type family ScottEncoded (r :: ((PType) -> Type) -> Type) (a :: PType) :: PType
 newtype ScottArgument r s t = ScottArgument {getScott :: Term s (ScottEncoded r t)}
 type ScottEncoding r t = ScottEncoded r t :--> t
 
-instance (Rank2.Distributive r, Rank2.Traversable r) => PlutusType (PRecord r) where
+instance (Rank2.Distributive r, Rank2.Traversable r) => PlutusType s (PRecord r) where
   type PInner (PRecord r) t = ScottEncoding r t
   pcon' :: forall s. PRecord r s -> forall t. Term s (ScottEncoding r t)
   pcon' (PRecord r) = rcon r

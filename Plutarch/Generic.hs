@@ -1,9 +1,8 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Plutarch.Generic (
   Color(..),
-  -- test
-  PIsDataRepr'(..)
 ) where
     
 import Plutarch.Integer
@@ -12,7 +11,6 @@ import Generics.SOP
 import Plutarch.Builtin
 import Plutarch.Bool
 import Plutarch.DataRepr
-import Data.Constraint
 import Data.Foldable ( maximumBy )
 import Data.List ( sortOn, groupBy )
 import Data.SOP.Constraint (AllZipF)
@@ -114,14 +112,6 @@ type family ToPType2 as where
 type family PSOP sop s where
   PSOP (SOP I xss) s = SOP (Term s) (ToPType2 xss)
 
--- | Fork of `PIsDataRepr'` with an explicit `S`
---
--- Because `PSOP` takes the same `S`.
-type PIsDataRepr' :: S -> PType -> Constraint
-class (PMatch a, PIsData a) => PIsDataRepr' s a where
-  type PIsDataReprRepr' s a :: [[PType]]
-  pmatchRepr' :: forall b. Term s (PDataRepr (PIsDataReprRepr' s a)) -> (a s -> Term s b) -> Term s b
-
 -- `smus` is the previous sum constructors in reverse order (already traversed).
 -- `sums` is the rest of the sum constructors. `mkDataReprHandlers` will
 -- recursively construct DataReprHandlers.
@@ -188,14 +178,14 @@ type family UnSOP a where
 instance
   ( Generic (f s),
     PIsData f,
-    PlutusType f,
+    PlutusType s f,
     MkDataReprHandlers f s '[] (NS (NP (Term s)) (UnSOP (PSOP (Rep (f s)) s))),
     DataReprTypes f s '[] (NS (NP (Term s)) (ToPType2 (Code (f s)))) ~ ToPType2 (Code (f s))
   ) =>
-  PIsDataRepr' s f
+  PIsDataRepr s f
   where
-  type PIsDataReprRepr' s f = UnSOP (PSOP (Rep (f s)) s)
-  pmatchRepr' dat mk =
+  type PIsDataReprRepr s f = UnSOP (PSOP (Rep (f s)) s)
+  pmatchRepr dat mk =
     pmatchDataRepr' dat $
       mkDataReprHandlers @f @s @'[] @(NS (NP (Term s)) (UnSOP (PSOP (Rep (f s)) s))) mk
 
@@ -266,7 +256,7 @@ instance PIsDataRepr Color where
             DRHNil
 -}
 
-instance PlutusType Color where
+instance PlutusType s Color where
   -- Scott-encode inner representation
   type PInner Color c = c :--> c :--> (PInteger :--> c) :--> c
 

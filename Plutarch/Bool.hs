@@ -33,7 +33,7 @@ data PBool (s :: S) = PTrue | PFalse
 instance PUnsafeLiftDecl PBool where type PLifted PBool = Bool
 deriving via (DerivePConstantViaCoercible Bool PBool Bool) instance (PConstant Bool)
 
-instance PlutusType PBool where
+instance PlutusType s PBool where
   type PInner PBool _ = PBool
   pcon' PTrue = pconstant True
   pcon' PFalse = pconstant False

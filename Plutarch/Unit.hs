@@ -17,7 +17,7 @@ data PUnit s = PUnit
 instance PUnsafeLiftDecl PUnit where type PLifted PUnit = ()
 deriving via (DerivePConstantViaCoercible () PUnit ()) instance (PConstant ())
 
-instance PlutusType PUnit where
+instance PlutusType s PUnit where
   type PInner PUnit _ = PUnit
   pcon' PUnit = pconstant ()
   pmatch' _ f = f PUnit
