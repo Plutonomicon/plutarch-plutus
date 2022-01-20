@@ -145,16 +145,16 @@ tests =
         ctx `equal'` ctx_compiled
     , testCase "getting txInfo" $ do
         plift (pfromData $ getTxInfo # ctx) @?= info
-    -- FIXME: Need 'PConstant' etc. instance for 'PValue'
-    -- , testCase "getting mint" $ do
-    --     plift (pfromData $ getMint #$ pfromData $ getTxInfo # ctx) @?= mint
-    , testCase "getting validator" $ do
+    , -- FIXME: Need 'PConstant' etc. instance for 'PValue'
+      -- , testCase "getting mint" $ do
+      --     plift (pfromData $ getMint #$ pfromData $ getTxInfo # ctx) @?= mint
+      testCase "getting validator" $ do
         plift (pfromData $ getValidator #$ pfromData $ getInputs #$ pfromData $ getTxInfo # ctx)
           @?= validator
-    -- FIXME: Need 'PlutusType' etc. instance for 'PMap'
-    -- , testCase "getting sym" $ do
-    --     plift (pfromData $ getSym #$ pfromData $ getMint #$ pfromData $ getTxInfo # ctx)
-    --       @?= sym
+          -- FIXME: Need 'PlutusType' etc. instance for 'PMap'
+          -- , testCase "getting sym" $ do
+          --     plift (pfromData $ getSym #$ pfromData $ getMint #$ pfromData $ getTxInfo # ctx)
+          --       @?= sym
     ]
 
 ctx_compiled :: String
