@@ -23,7 +23,7 @@ module Plutarch (
   PI.punsafeConstant,
   PI.Term,
   PI.TermCont (..),
-  PI.S,
+  PI.S (PI.SI),
   PI.PType,
   PlutusType (..),
   printTerm,

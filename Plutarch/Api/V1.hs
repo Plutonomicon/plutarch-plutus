@@ -90,6 +90,10 @@ import Plutarch.Lift (
  )
 
 -- ctor in-scope for deriving
+
+import qualified GHC.Generics as GHC
+import Generics.SOP (Generic (Code))
+import Plutarch.Generic (GetPDataRecordArgs)
 import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified Plutus.V1.Ledger.Crypto as PlutusCrpyto
@@ -123,6 +127,7 @@ newtype PTxInfo (s :: S)
                ]
           )
       )
+  deriving stock (GHC.Generic)
   deriving
     (PMatch, PIsData)
     via PIsDataReprInstances PTxInfo
@@ -130,22 +135,11 @@ newtype PTxInfo (s :: S)
 
 instance PUnsafeLiftDecl PTxInfo where type PLifted PTxInfo = Plutus.TxInfo
 deriving via (DerivePConstantViaData Plutus.TxInfo PTxInfo) instance (PConstant Plutus.TxInfo)
+deriving anyclass instance Generic (PTxInfo s)
 
 instance PIsDataRepr PTxInfo where
-  type
-    PIsDataReprRepr PTxInfo =
-      '[ '[ "inputs" ':= PBuiltinList (PAsData PTxInInfo)
-          , "outputs" ':= PBuiltinList (PAsData PTxOut)
-          , "fee" ':= PValue
-          , "mint" ':= PValue
-          , "dcert" ':= PBuiltinList (PAsData PDCert)
-          , "wdrl" ':= PBuiltinList (PAsData (PTuple PStakingCredential PInteger))
-          , "validRange" ':= PPOSIXTimeRange
-          , "signatories" ':= PBuiltinList (PAsData PPubKeyHash)
-          , "data" ':= PBuiltinList (PAsData (PTuple PDatumHash PDatum))
-          , "id" ':= PTxId
-          ]
-       ]
+  type PIsDataReprRepr PTxInfo = '[GetPDataRecordArgs (Code (PTxInfo 'SI))]
+
   pmatchRepr dat f =
     (pmatchDataRepr dat) ((DRHCons (f . PTxInfo)) $ DRHNil)
 
