@@ -450,7 +450,7 @@
         // {
           benchmark = {
             type = "app";
-            program = "${self.flake.${system}.packages."plutarch:bench:perf"}/bin/perf";
+            program = "${self.flake.${system}.packages."plutarch-benchmark:bench:perf"}/bin/perf";
           };
         }
       );
