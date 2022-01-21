@@ -55,14 +55,15 @@ tests = do
           (pzipWith' (+) # integerList [1 .. 10] # integerList [1 .. 10])
             #== integerList (fmap (* 2) [1 .. 10])
     , testCase "pfoldl" $ do
+        let m :: Term _ (PInteger :--> PInteger :--> PInteger) = plam $ \x y -> x - y
         expect $
-          (pfoldl # plam (-) # 0 # integerList [1 .. 10])
+          (pfoldl # m # 0 # integerList [1 .. 10])
             #== pconstant (foldl (-) 0 [1 .. 10])
         expect $
           (pfoldl' (-) # 0 # integerList [1 .. 10])
             #== pconstant (foldl (-) 0 [1 .. 10])
         expect $
-          (pfoldl # plam (-) # 0 # integerList [])
+          (pfoldl # m # 0 # integerList [])
             #== pconstant 0
         expect $
           (pfoldl' (-) # 0 # integerList [])
