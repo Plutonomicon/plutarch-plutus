@@ -2,14 +2,14 @@
 
 module Examples.LetRec (tests) where
 
-import Plutarch (pcon', pmatch', printTerm, punsafeBuiltin, punsafeCoerce, punsafeFrom)
+import Plutarch (pcon', pmatch', printTerm, punsafeCoerce, punsafeFrom)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, (#==))
-import Plutarch.Builtin (PAsData, PBuiltinList (PNil), PIsData, pasConstr, pdata, pforgetData, pfromData, psndBuiltin)
+import Plutarch.Builtin (PAsData, PIsData, pasConstr, pdata, pforgetData, pfromData)
 import Plutarch.Integer (PInteger)
-import Plutarch.List (pconcat, pcons)
 import Plutarch.Prelude
 import Plutarch.Rec (
   DataReader (DataReader, readData),
+  DataWriter (DataWriter, writeData),
   PRecord (PRecord),
   RecordFromData,
   ScottEncoded,
@@ -18,12 +18,12 @@ import Plutarch.Rec (
   fieldFromData,
   letrec,
   rcon,
+  recordDataFromFieldWriters,
   recordFromFieldReaders,
   rmatch,
  )
 import Plutarch.Rec.TH (deriveAll)
 import Plutarch.String (PString, pdecodeUtf8, pencodeUtf8)
-import qualified PlutusCore as PLC
 import qualified Rank2.TH
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))
@@ -69,43 +69,15 @@ instance RecordFromData ShallowOuterRecord
 
 instance PIsData (PRecord SampleRecord) where
   pfromData = readData (recordFromFieldReaders sampleReader)
-  pdata = recordToData
+  pdata = writeData (recordDataFromFieldWriters sampleWriter)
 
 instance PIsData (PRecord FlatOuterRecord) where
   pfromData = readData (recordFromFieldReaders flatOuterReader)
-  pdata = flatOuterToData
+  pdata = writeData (recordDataFromFieldWriters flatOuterWriter)
 
 instance PIsData (PRecord ShallowOuterRecord) where
   pfromData = readData (recordFromFieldReaders shallowOuterReader)
-  pdata = shallowOuterToData
-
-recordToData :: forall s. Term s (PRecord SampleRecord) -> Term s (PAsData (PRecord SampleRecord))
-recordToData r = pmatch r $ \(PRecord SampleRecord {sampleBool, sampleInt, sampleString}) ->
-  punsafeBuiltin PLC.ConstrData # (0 :: Term s PInteger)
-    #$ pcons # pforgetData (pdata sampleBool)
-    #$ pcons # pforgetData (pdata sampleInt)
-    #$ pcons # pforgetData (pdata $ pencodeUtf8 # sampleString)
-    #$ pcon PNil
-
-flatOuterToData :: forall s. Term s (PRecord FlatOuterRecord) -> Term s (PAsData (PRecord FlatOuterRecord))
-flatOuterToData r = pmatch r $ \(PRecord FlatOuterRecord {..})->
-  punsafeBuiltin PLC.ConstrData # (0 :: Term s PInteger)
-    #$ pcons # pforgetData (pdata flatOuterBool)
-    #$ pconcat # (psndBuiltin #$ pasConstr #$ pforgetData $ pdata $ pcon $ PRecord flatInner1)
-    #$ pcons # pforgetData (pdata flatOuterInt)
-    #$ pconcat # (psndBuiltin #$ pasConstr #$ pforgetData $ pdata $ pcon $ PRecord flatInner2)
-    #$ pcons # pforgetData (pdata $ pencodeUtf8 # flatOuterString)
-    #$ pcon PNil
-
-shallowOuterToData :: forall s. Term s (PRecord ShallowOuterRecord) -> Term s (PAsData (PRecord ShallowOuterRecord))
-shallowOuterToData r = pmatch r $ \(PRecord ShallowOuterRecord {..}) ->
-  punsafeBuiltin PLC.ConstrData # (0 :: Term s PInteger)
-    #$ pcons # pforgetData (pdata shallowOuterBool)
-    #$ pcons # pforgetData (pdata shallowInner1)
-    #$ pcons # pforgetData (pdata shallowOuterInt)
-    #$ pcons # pforgetData (pdata shallowInner2)
-    #$ pcons # pforgetData (pdata $ pencodeUtf8 # shallowOuterString)
-    #$ pcon PNil
+  pdata = writeData (recordDataFromFieldWriters shallowOuterWriter)
 
 sampleReader :: SampleRecord (DataReader s)
 sampleReader =
@@ -113,6 +85,14 @@ sampleReader =
     { sampleBool = DataReader pfromData
     , sampleInt = DataReader pfromData
     , sampleString = DataReader $ \d -> pdecodeUtf8 #$ pfromData $ punsafeCoerce d
+    }
+
+sampleWriter :: SampleRecord (DataWriter s)
+sampleWriter =
+  SampleRecord
+    { sampleBool = DataWriter pdata
+    , sampleInt = DataWriter pdata
+    , sampleString = DataWriter $ \s -> punsafeCoerce $ pdata $ pencodeUtf8 # s
     }
 
 flatOuterReader :: FlatOuterRecord (DataReader s)
@@ -125,6 +105,16 @@ flatOuterReader =
     , flatOuterString = DataReader $ \d -> pdecodeUtf8 #$ pfromData $ punsafeCoerce d
     }
 
+flatOuterWriter :: FlatOuterRecord (DataWriter s)
+flatOuterWriter =
+  FlatOuterRecord
+    { flatOuterBool = DataWriter pdata
+    , flatInner1 = sampleWriter
+    , flatOuterInt = DataWriter pdata
+    , flatInner2 = sampleWriter
+    , flatOuterString = DataWriter $ \s -> punsafeCoerce $ pdata $ pencodeUtf8 # s
+    }
+
 shallowOuterReader :: ShallowOuterRecord (DataReader s)
 shallowOuterReader =
   ShallowOuterRecord
@@ -133,6 +123,16 @@ shallowOuterReader =
     , shallowOuterInt = DataReader pfromData
     , shallowInner2 = DataReader pfromData
     , shallowOuterString = DataReader $ \d -> pdecodeUtf8 #$ pfromData $ punsafeCoerce d
+    }
+
+shallowOuterWriter :: ShallowOuterRecord (DataWriter s)
+shallowOuterWriter =
+  ShallowOuterRecord
+    { shallowOuterBool = DataWriter pdata
+    , shallowInner1 = DataWriter pdata
+    , shallowOuterInt = DataWriter pdata
+    , shallowInner2 = DataWriter pdata
+    , shallowOuterString = DataWriter $ \s -> punsafeCoerce $ pdata $ pencodeUtf8 # s
     }
 
 sampleFlatOuter :: Term (s :: S) (ScottEncoding FlatOuterRecord (t :: PType))

@@ -2,6 +2,7 @@
 
 module Plutarch.Rec (
   DataReader (DataReader, readData),
+  DataWriter (DataWriter, writeData),
   PRecord (PRecord, getRecord),
   ScottEncoded,
   ScottEncoding,
@@ -11,6 +12,7 @@ module Plutarch.Rec (
   letrec,
   pletrec,
   rcon,
+  recordDataFromFieldWriters,
   recordFromFieldReaders,
   rmatch,
 ) where
@@ -20,9 +22,11 @@ import Data.Functor.Compose (Compose (Compose, getCompose))
 import Data.Kind (Type)
 import Data.Monoid (Dual (Dual, getDual), Endo (Endo, appEndo), Sum (Sum, getSum))
 import Numeric.Natural (Natural)
-import Plutarch (PlutusType (PInner, pcon', pmatch'), pcon, phoistAcyclic, plam, plet, punsafeCoerce, (#), (:-->))
+import Plutarch (PlutusType (PInner, pcon', pmatch'),
+                 pcon, phoistAcyclic, plam, plet, pmatch, punsafeBuiltin, punsafeCoerce, (#), (:-->))
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Builtin (PAsData, PBuiltinList, PData, pasConstr, pforgetData, pfstBuiltin, psndBuiltin)
+import Plutarch.Integer (PInteger)
 import Plutarch.Internal (
   PType,
   RawTerm (RApply, RLamAbs, RVar),
@@ -30,8 +34,9 @@ import Plutarch.Internal (
   TermResult (TermResult, getDeps, getTerm),
   mapTerm,
  )
-import Plutarch.List (phead, ptail)
+import Plutarch.List (pcons, phead, ptail, pnil)
 import Plutarch.Trace (ptraceError)
+import qualified PlutusCore as PLC
 import qualified Rank2
 
 newtype PRecord r s = PRecord {getRecord :: r (Term s)}
@@ -124,6 +129,7 @@ variables baseDepth = Rank2.cotraverse var id
               }
 
 newtype DataReader s a = DataReader {readData :: Term s (PAsData a) -> Term s a}
+newtype DataWriter s a = DataWriter {writeData :: Term s a -> Term s (PAsData a)}
 newtype FocusFromData s a b = FocusFromData {getFocus :: Term s (PAsData a :--> PAsData b)}
 newtype FocusFromDataList s a = FocusFromDataList {getItem :: Term s (PBuiltinList PData) -> Term s (PAsData a)}
 
@@ -142,6 +148,22 @@ recordFromFieldReaders reader = DataReader $ verifySoleConstructor readRecord
     readRecord dat = pcon $ PRecord $ Rank2.liftA2 (flip readData . getCompose) (fields dat) reader
     fields :: Term s (PBuiltinList PData) -> r (Compose (Term s) PAsData)
     fields bis = (\f -> Compose $ getItem f bis) Rank2.<$> fieldListFoci
+
+recordDataFromFieldWriters ::
+  forall r s.
+  (Rank2.Apply r, RecordFromData r) =>
+  r (DataWriter s) ->
+  DataWriter s (PRecord r)
+recordDataFromFieldWriters writer = DataWriter (`pmatch` writeRecord)
+  where
+    writeRecord :: PRecord r s -> Term s (PAsData (PRecord r))
+    writeRecord (PRecord r) =
+      punsafeBuiltin PLC.ConstrData # (0 :: Term s PInteger) #
+      appEndo (Rank2.foldMap (Endo . consField) (Rank2.liftA2 writeField writer r)) pnil
+    consField :: Compose (Term s) PAsData a -> Term s (PBuiltinList PData) -> Term s (PBuiltinList PData)
+    consField (Compose h) t = pcons # pforgetData h # t
+    writeField :: DataWriter s a -> Term s a -> Compose (Term s) PAsData a
+    writeField w r = Compose (writeData w r)
 
 {- | Converts a Haskell field function to a function term that extracts the 'Data' encoding of the field from the
  encoding of the whole record.
