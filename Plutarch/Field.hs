@@ -1,6 +1,4 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Field (
@@ -237,8 +235,7 @@ pfield ::
   , fs ~ (PNames (PFields p))
   , n ~ (IndexOf f fs)
   , KnownNat n
-  , -- , KnownSymbol f
-    a ~ (IndexList n as)
+  , a ~ (IndexList n as)
   ) =>
   Term s (p :--> PAsData a)
 pfield =
@@ -256,8 +253,7 @@ pfield' ::
   , fs ~ (PNames (PFields p))
   , n ~ (IndexOf f fs)
   , KnownNat n
-  , -- , KnownSymbol f
-    a ~ (IndexList n as)
+  , a ~ (IndexList n as)
   ) =>
   Term s p ->
   Term s (PAsData a)
