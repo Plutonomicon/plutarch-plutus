@@ -8,6 +8,7 @@ import Plutarch (PlutusType (..), punsafeCoerce)
 import Plutarch.Bool (
   PEq ((#==)),
   POrd ((#<), (#<=)),
+  pif,
  )
 import Plutarch.Builtin (
   PAsData,
@@ -16,6 +17,8 @@ import Plutarch.Builtin (
   pforgetData,
  )
 import Plutarch.Integer (PInteger)
+import Plutarch.Lift (pconstant)
+import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Prelude
 
 newtype PNatural (s :: S) = PNatural (Term s PInteger)
@@ -24,7 +27,9 @@ instance PIsData PNatural where
   pfromData x =
     phoistAcyclic
       ( plam $ \x' ->
-          pnatFromInt $ pasInt # pforgetData x'
+          pmatch (pnatFromInt $ pasInt # pforgetData x') $ \case
+            PJust n -> n
+            PNothing -> perror
       )
       # x
   pdata x =
@@ -72,5 +77,13 @@ instance POrd PNatural where
 pnatToInt :: Term s PNatural -> Term s PInteger
 pnatToInt nat = phoistAcyclic (plam $ \x -> pmatch x $ \(PNatural n) -> n) # nat
 
-pnatFromInt :: Term s PInteger -> Term s PNatural
-pnatFromInt = pcon . PNatural
+pnatFromInt :: Term s PInteger -> Term s (PMaybe PNatural)
+pnatFromInt x =
+  phoistAcyclic
+    ( plam $ \i ->
+        pif
+          (i #< pconstant 0)
+          (pcon PNothing)
+          (pcon . PJust . pcon . PNatural $ i)
+    )
+    # x

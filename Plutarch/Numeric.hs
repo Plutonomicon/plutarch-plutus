@@ -11,7 +11,7 @@ module Plutarch.Numeric (
   PEuclideanClosed (..),
   PMultiplicativeGroup (..),
   PIntegralDomain (..),
-  
+
   -- * Helper types
   PField,
   PHemifield,
@@ -27,21 +27,22 @@ module Plutarch.Numeric (
   peven,
   (#^-),
   (#^),
-
 ) where
 
+import Plutarch (punsafeBuiltin)
 import Plutarch.Bool (
   PBool,
   PEq ((#==)),
   POrd ((#<), (#<=)),
   pif,
  )
-import Plutarch.Maybe (PMaybe (PJust, PNothing))
-import Plutarch.Pair (PPair (PPair))
-import Plutarch.Natural (PNatural (PNatural), pnatToInt, pnatFromInt)
 import Plutarch.Integer (PInteger)
-import qualified Plutarch.Integer as PInteger (pquot, prem)
+import Plutarch.Lift (pconstant)
+import Plutarch.Maybe (PMaybe (PJust, PNothing))
+import Plutarch.Natural (PNatural (PNatural), pnatFromInt, pnatToInt)
+import Plutarch.Pair (PPair (PPair))
 import Plutarch.Prelude
+import qualified PlutusCore as PLC
 
 {- | A Plutrch level 'Semigroup' that it is sensible to describe
  using addition.
@@ -52,13 +53,13 @@ class PAdditiveSemigroup a where
 infixl 6 #+
 
 instance PAdditiveSemigroup PInteger where
-  (#+) = (+)
+  x #+ y = punsafeBuiltin PLC.AddInteger # x # y
 
 instance PAdditiveSemigroup PNatural where
   (#+) x y =
     phoistAcyclic
       ( plam $ \x' y' ->
-          pnatFromInt $ pnatToInt x' + pnatToInt y'
+          pnatFromIntUnsafe $ pnatToInt x' #+ pnatToInt y'
       )
       # x
       # y
@@ -70,10 +71,10 @@ class PAdditiveSemigroup a => PAdditiveMonoid a where
   pzero :: Term s a
 
 instance PAdditiveMonoid PInteger where
-  pzero = 0
+  pzero = pconstant 0
 
 instance PAdditiveMonoid PNatural where
-  pzero = pnatFromInt 0
+  pzero = pnatFromIntUnsafe pzero
 
 {- | A Plutarch level 'Group' that it is sensible to describe
  using addition, pzero, and subtraction.
@@ -82,7 +83,7 @@ class PAdditiveMonoid a => PAdditiveGroup a where
   (#-) :: Term s a -> Term s a -> Term s a
 
 instance PAdditiveGroup PInteger where
-  (#-) = (-)
+  x #- y = punsafeBuiltin PLC.SubtractInteger # x # y
 
 infixl 6 #-
 
@@ -98,13 +99,13 @@ class PMultiplicativeSemigroup a where
 infixl 7 #*
 
 instance PMultiplicativeSemigroup PInteger where
-  (#*) = (*)
+  x #* y = punsafeBuiltin PLC.MultiplyInteger # x # y
 
 instance PMultiplicativeSemigroup PNatural where
   (#*) x y =
     phoistAcyclic
       ( plam $ \x' y' ->
-          pnatFromInt $ pnatToInt x' * pnatToInt y'
+          pnatFromIntUnsafe $ pnatToInt x' #* pnatToInt y'
       )
       # x
       # y
@@ -116,10 +117,10 @@ class PMultiplicativeSemigroup a => PMultiplicativeMonoid a where
   pone :: Term s a
 
 instance PMultiplicativeMonoid PInteger where
-  pone = 1
+  pone = pconstant 1
 
 instance PMultiplicativeMonoid PNatural where
-  pone = pnatFromInt 1
+  pone = pnatFromIntUnsafe pone
 
 -- | A Plutarch level semiring.
 type PSemiring a = (PAdditiveMonoid a, PMultiplicativeMonoid a)
@@ -137,8 +138,8 @@ instance PAdditiveHemigroup PNatural where
       ( plam $ \n1 n2 ->
           plet (pnatToInt n1) $ \n1' ->
             plet (pnatToInt n2) $ \n2' ->
-              pnatFromInt $
-                pif (n1' #<= n2') 0 (n1' - n2')
+              pnatFromIntUnsafe $
+                pif (n1' #<= n2') pzero (n1' #- n2')
       )
       # x
       # y
@@ -155,19 +156,27 @@ instance PEuclideanClosed PInteger where
   pdivMod =
     phoistAcyclic
       ( plam $ \x y ->
-          pif (y #== pzero)
+          pif
+            (y #== pzero)
             (pcon $ PPair pzero x)
-            (pcon $ PPair (PInteger.pquot # x # y) (PInteger.prem # x # y))
+            ( pcon $
+                PPair
+                  (punsafeBuiltin PLC.QuotientInteger # x # y)
+                  (punsafeBuiltin PLC.RemainderInteger # x # y)
+            )
       )
-      
+
 instance PEuclideanClosed PNatural where
   pdivMod =
     phoistAcyclic $
       ( plam $ \x y ->
           pmatch (pdivMod # (pnatToInt x) # (pnatToInt y)) $ \(PPair d r) ->
-            pcon $ PPair (pnatFromInt d) (pnatFromInt r)
+            pcon $
+              PPair
+                (pnatFromIntUnsafe d)
+                (pnatFromIntUnsafe r)
       )
-             
+
 {- | A 'PMultiplicativeMonoid' with a notion of multiplicative inverse (for
  non-zero values).
 
@@ -186,11 +195,12 @@ class (PMultiplicativeMonoid a) => PMultiplicativeGroup a where
 ppowInteger :: PMultiplicativeGroup a => Term s a -> Term s PInteger -> Term s a
 ppowInteger a i =
   phoistAcyclic
-    ( plam $ \ x i -> 
-        pif (i #== 0) pone $
-          pif (i #== 1) x $
-            plet (pexpBySquaring # x) $ \ sqX ->
-              pif (i #< 0)
+    ( plam $ \x i ->
+        pif (i #== pzero) pone $
+          pif (i #== pone) x $
+            plet (pexpBySquaring # x) $ \sqX ->
+              pif
+                (i #< pzero)
                 (preciprocal $ sqX #$ pabs i)
                 (sqX # i)
     )
@@ -208,7 +218,6 @@ type PHemifield a = (PAdditiveHemigroup a, PMultiplicativeGroup a)
  example, the \'additive restriction\' of 'PInteger' is 'PNatural', and the
  \'additive restricton\' of 'PRational' is 'PNatRatio'. This gives us the
  ability to move between these two types while preserving magnitude.
-
 -}
 class (PEq a, POrd a, PRing a) => PIntegralDomain a r | a -> r, r -> a where
   pabs :: Term s a -> Term s a
@@ -216,30 +225,36 @@ class (PEq a, POrd a, PRing a) => PIntegralDomain a r | a -> r, r -> a where
   paddExtend :: Term s r -> Term s a
   prestrictMay :: Term s a -> Term s (PMaybe r)
   prestrictMay x =
-    phoistAcyclic 
+    phoistAcyclic
       ( plam $ \x ->
-          pif (pabs x #== x)
+          pif
+            (pabs x #== x)
             (pcon . PJust $ pprojectAbs x)
             (pcon PNothing)
       )
       # x
   psignum :: Term s a -> Term s a
-  psignum x =
+  psignum x' =
     phoistAcyclic
       ( plam $ \x ->
           pif (x #== pzero) pzero $
             pif (x #< pzero) (pnegate pone) (pone)
       )
-      # x
+      # x'
 
 instance PIntegralDomain PInteger PNatural where
-  pabs = abs
-  pprojectAbs = pnatFromInt . abs
+  pprojectAbs = pnatFromIntUnsafe . pabs
   paddExtend = pnatToInt
-  psignum = signum
+  prestrictMay = pnatFromInt
+  pabs x' =
+    phoistAcyclic
+      ( plam $ \x ->
+          pif (x #< pzero) (negate x) x
+      )
+      # x'
 
 -- | Operator version of 'pmonus'.
-(#^-) :: (PAdditiveHemigroup a) =>  Term s a -> Term s a -> Term s a
+(#^-) :: (PAdditiveHemigroup a) => Term s a -> Term s a -> Term s a
 x #^- y = pmonus x y
 
 infixl 6 #^-
@@ -248,7 +263,7 @@ infixl 6 #^-
 pdiv :: (PEuclideanClosed a) => Term s a -> Term s a -> Term s a
 pdiv a1 a2 =
   phoistAcyclic
-    ( plam $ \x y -> pmatch (pdivMod # x # y) $ \(PPair d _) -> d )
+    (plam $ \x y -> pmatch (pdivMod # x # y) $ \(PPair d _) -> d)
     # a1
     # a2
 
@@ -256,7 +271,7 @@ pdiv a1 a2 =
 prem :: (PEuclideanClosed a) => Term s a -> Term s a -> Term s a
 prem a1 a2 =
   phoistAcyclic
-    ( plam $ \x y -> pmatch (pdivMod # x # y) $ \(PPair _ r) -> r )
+    (plam $ \x y -> pmatch (pdivMod # x # y) $ \(PPair _ r) -> r)
     # a1
     # a2
 
@@ -275,9 +290,11 @@ pscaleNat ::
   Term s a
 pscaleNat n a =
   phoistAcyclic
-    ( pfix #$
-        plam $ \self nat x ->
-          pif (nat #== pzero)
+    ( pfix
+        #$ plam
+        $ \self nat x ->
+          pif
+            (nat #== pzero)
             pzero
             (x #+ (self # (nat #^- pone) # x))
     )
@@ -289,7 +306,8 @@ ppowNat :: (PMultiplicativeMonoid a) => Term s a -> Term s PNatural -> Term s a
 ppowNat a nat =
   phoistAcyclic
     ( plam $ \x n ->
-        pif (n #== pzero)
+        pif
+          (n #== pzero)
           pone
           (pmatch n $ \(PNatural i) -> pexpBySquaring # x # i)
     )
@@ -305,7 +323,17 @@ peven =
 
 -- Helpers
 
--- We secretly know that i is always positive.
+pnatFromIntUnsafe :: Term s PInteger -> Term s PNatural
+pnatFromIntUnsafe x =
+  phoistAcyclic
+    ( plam $ \i ->
+        pif
+          (i #< pzero)
+          perror
+          (pcon . PNatural $ i)
+    )
+    # x
+
 pexpBySquaring ::
   forall s a.
   (PMultiplicativeMonoid a) =>
@@ -314,6 +342,6 @@ pexpBySquaring = pfix #$ plam f
   where
     f :: Term s (a :--> PInteger :--> a) -> Term s a -> Term s PInteger -> Term s a
     f self acc i =
-        pif (i #== 1) acc $
-            plet (self # (acc #* acc) # (pdiv i 2)) $ \x ->
-              pif (peven # i) x (acc #* x)
+      pif (i #== pone) acc $
+        plet (self # (acc #* acc) # (pdiv i (pconstant 2))) $ \x ->
+          pif (peven # i) x (acc #* x)
