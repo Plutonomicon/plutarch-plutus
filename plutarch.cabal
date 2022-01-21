@@ -88,7 +88,6 @@ library
     Plutarch.Evaluate
     Plutarch.Field
     Plutarch.Field.HList
-    Plutarch.Generic
     Plutarch.Integer
     Plutarch.Internal
     Plutarch.Lift

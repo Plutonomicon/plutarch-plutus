@@ -25,7 +25,8 @@ module Plutarch.DataRepr (
 
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy)
-import GHC.TypeLits (KnownNat, Symbol, natVal)
+import GHC.TypeLits (ErrorMessage (Text), KnownNat, Symbol, TypeError, natVal)
+import Generics.SOP (Code)
 import Numeric.Natural (Natural)
 import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoerce, runTermCont)
 import Plutarch.Bool (pif, (#==))
@@ -42,6 +43,7 @@ import Plutarch.Builtin (
  )
 import Plutarch.Field.HList (type Drop, type IndexList)
 import Plutarch.Integer (PInteger)
+import Plutarch.Internal (S (SI))
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (pdrop, punsafeIndex, punsafeIndex')
 import Plutarch.Prelude
@@ -65,6 +67,25 @@ type family PTypes (as :: [PLabeled]) :: [PType] where
 type family PNames (as :: [PLabeled]) :: [Symbol] where
   PNames '[] = '[]
   PNames ((l ':= t) ': as) = l ': (PNames as)
+
+type family GetPDataRecordArgs (a :: PType) :: [[PLabeled]] where
+  GetPDataRecordArgs x = GetPDataRecordArgs' (Code (x 'SI))
+
+type family GetPDataRecordArgs' (a :: [[Type]]) :: [[PLabeled]] where
+  GetPDataRecordArgs' xs = ToPLabeled2 xs
+
+type ToPLabeled :: [Type] -> [PLabeled]
+type family ToPLabeled as where
+  ToPLabeled '[] = '[]
+  ToPLabeled '[Term s (PDataRecord fs)] = fs
+  ToPLabeled '[_] = TypeError ( 'Text "Expected PDataRecord")
+  ToPLabeled _ = TypeError ( 'Text "Must have 0 or 1 argument in sum constructor")
+
+-- Unfortunately we can't write a generic FMap due to ghc's arity limitations.
+type ToPLabeled2 :: [[Type]] -> [[PLabeled]]
+type family ToPLabeled2 as where
+  ToPLabeled2 '[] = '[]
+  ToPLabeled2 (a ': as) = ToPLabeled a ': ToPLabeled2 as
 
 type PDataRepr :: [[PLabeled]] -> PType
 data PDataRepr (defs :: [[PLabeled]]) (s :: S)
@@ -170,6 +191,7 @@ newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
 
 class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PLabeled]]
+  type PIsDataReprRepr a = GetPDataRecordArgs a
   pmatchRepr :: forall s b. Term s (PDataRepr (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
 
 instance PIsDataRepr a => PIsData (PIsDataReprInstances a) where
