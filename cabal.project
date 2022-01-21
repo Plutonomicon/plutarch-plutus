@@ -1,3 +1,5 @@
-packages: ./.
+packages:
+  ./.
+  ./plutarch-benchmark/plutarch-benchmark.cabal
 
 benchmarks: true
