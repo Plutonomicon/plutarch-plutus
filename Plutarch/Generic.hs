@@ -8,12 +8,17 @@ module Plutarch.Generic (
 ) where
 
 import GHC.TypeLits (ErrorMessage (Text), TypeError)
+import Generics.SOP
 import Plutarch.DataRepr (PDataRecord, PLabeled)
+import Plutarch.Internal
 import Plutarch.Prelude
 
--- TODO: Default type instance in PIsDataRepr
-type family GetPDataRecordArgs (a :: [[Type]]) :: [[PLabeled]] where
-  GetPDataRecordArgs xs = ToPLabeled2 xs
+-- TODO: Move to default type instance in PIsDataRepr?
+type family GetPDataRecordArgs (a :: PType) :: [[PLabeled]] where
+  GetPDataRecordArgs x = GetPDataRecordArgs' (Code (x 'SI))
+
+type family GetPDataRecordArgs' (a :: [[Type]]) :: [[PLabeled]] where
+  GetPDataRecordArgs' xs = ToPLabeled2 xs
 
 type ToPLabeled :: [Type] -> [PLabeled]
 type family ToPLabeled as where

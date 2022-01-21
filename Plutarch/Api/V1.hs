@@ -92,9 +92,8 @@ import Plutarch.Lift (
 -- ctor in-scope for deriving
 
 import qualified GHC.Generics as GHC
-import Generics.SOP (Generic (Code))
+import Generics.SOP (Generic)
 import Plutarch.Generic (GetPDataRecordArgs)
-import Plutarch.Internal (S (SI))
 import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified Plutus.V1.Ledger.Crypto as PlutusCrpyto
@@ -139,7 +138,7 @@ instance PUnsafeLiftDecl PTxInfo where type PLifted PTxInfo = Plutus.TxInfo
 deriving via (DerivePConstantViaData Plutus.TxInfo PTxInfo) instance (PConstant Plutus.TxInfo)
 
 instance PIsDataRepr PTxInfo where
-  type PIsDataReprRepr PTxInfo = GetPDataRecordArgs (Code (PTxInfo 'SI))
+  type PIsDataReprRepr PTxInfo = GetPDataRecordArgs PTxInfo
 
   pmatchRepr dat f =
     (pmatchDataRepr dat) ((DRHCons (f . PTxInfo)) $ DRHNil)
@@ -190,7 +189,7 @@ instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plut
 deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) instance (PConstant Plutus.ScriptPurpose)
 
 instance PIsDataRepr PScriptPurpose where
-  type PIsDataReprRepr PScriptPurpose = GetPDataRecordArgs (Code (PScriptPurpose 'SI))
+  type PIsDataReprRepr PScriptPurpose = GetPDataRecordArgs PScriptPurpose
 
   pmatchRepr dat f =
     pmatchDataRepr dat $
