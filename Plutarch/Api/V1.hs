@@ -89,7 +89,6 @@ import Plutarch.Lift (
  )
 
 -- ctor in-scope for deriving
-
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic)
 import Plutarch.Prelude

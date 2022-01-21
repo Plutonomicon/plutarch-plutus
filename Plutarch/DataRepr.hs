@@ -141,7 +141,7 @@ data DataReprHandlers (out :: PType) (def :: [[PLabeled]]) (s :: S) where
   DRHNil :: DataReprHandlers out '[] s
   DRHCons :: (Term s (PDataRecord def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def : defs) s
 
-pmatchDataRepr :: Term s (PDataRepr defs) -> DataReprHandlers out defs s -> Term s out
+pmatchDataRepr :: Term s (PDataRepr (def : defs)) -> DataReprHandlers out (def : defs) s -> Term s out
 pmatchDataRepr d handlers =
   plet (pasConstr #$ pasData d) $ \d' ->
     plet (pfstBuiltin # d') $ \constr ->
