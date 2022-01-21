@@ -337,6 +337,7 @@ newtype PInterval a (s :: S)
     )
     via PIsDataReprInstances
           (PInterval a)
+  deriving (PDataFields) via (DerivePDataFields (PInterval a))
 
 instance PIsDataRepr (PInterval a) where
   type
@@ -367,6 +368,7 @@ newtype PLowerBound a (s :: S)
     via ( PIsDataReprInstances
             (PLowerBound a)
         )
+  deriving (PDataFields) via (DerivePDataFields (PLowerBound a))
 
 instance PIsDataRepr (PLowerBound a) where
   type
@@ -397,6 +399,7 @@ newtype PUpperBound a (s :: S)
     via ( PIsDataReprInstances
             (PUpperBound a)
         )
+  deriving (PDataFields) via (DerivePDataFields (PUpperBound a))
 
 instance PIsDataRepr (PUpperBound a) where
   type
@@ -420,6 +423,7 @@ data PExtended a (s :: S)
     via ( PIsDataReprInstances
             (PExtended a)
         )
+  deriving (PDataFields) via (DerivePDataFields (PExtended a))
 
 instance PIsDataRepr (PExtended a) where
   type
@@ -440,6 +444,7 @@ data PCredential (s :: S)
     (PMatch, PIsData)
     via (PIsDataReprInstances PCredential)
   deriving (PDataFields) via (DerivePDataFields PCredential)
+
 instance PIsDataRepr PCredential where
   type
     PIsDataReprRepr PCredential =
@@ -471,6 +476,7 @@ data PStakingCredential (s :: S)
     , PIsData
     )
     via PIsDataReprInstances PStakingCredential
+  deriving (PDataFields) via (DerivePDataFields PStakingCredential)
 
 instance PIsDataRepr PStakingCredential where
   type
@@ -520,6 +526,7 @@ newtype PTxId (s :: S)
   deriving
     (PMatch, PIsData)
     via PIsDataReprInstances PTxId
+  deriving (PDataFields) via (DerivePDataFields PTxId)
 
 instance PIsDataRepr PTxId where
   type PIsDataReprRepr PTxId = '[ '["_0" ':= PByteString]]
@@ -541,6 +548,7 @@ newtype PTxOutRef (s :: S)
   deriving
     (PMatch, PIsData)
     via PIsDataReprInstances PTxOutRef
+  deriving (PDataFields) via (DerivePDataFields PTxOutRef)
 
 instance PIsDataRepr PTxOutRef where
   type
@@ -679,6 +687,7 @@ data PMaybe a (s :: S)
     (PMatch, PIsData)
     via PIsDataReprInstances
           (PMaybe a)
+  deriving (PDataFields) via (DerivePDataFields (PMaybe a))
 
 instance PIsDataRepr (PMaybe a) where
   type PIsDataReprRepr (PMaybe a) = '[ '[], '["_0" ':= a]]
@@ -697,6 +706,7 @@ data PEither a b (s :: S)
     )
     via PIsDataReprInstances
           (PEither a b)
+  deriving (PDataFields) via (DerivePDataFields (PEither a b))
 
 instance PIsDataRepr (PEither a b) where
   type
