@@ -86,6 +86,8 @@ library
     Plutarch.DataRepr
     Plutarch.Either
     Plutarch.Evaluate
+    Plutarch.Field
+    Plutarch.Field.HList
     Plutarch.Integer
     Plutarch.Internal
     Plutarch.Lift
@@ -100,8 +102,6 @@ library
     Plutarch.String
     Plutarch.Trace
     Plutarch.Unit
-    Plutarch.Field
-    Plutarch.Field.HList
 
   build-depends:
     , base
@@ -129,6 +129,7 @@ test-suite examples
   hs-source-dirs: examples
   other-modules:
     Examples.Api
+    Examples.Field
     Examples.LetRec
     Examples.List
     Examples.PIsData
@@ -136,7 +137,6 @@ test-suite examples
     Examples.Rationals
     Examples.Recursion
     Examples.Tracing
-    Examples.Field
     Utils
 
   build-depends:

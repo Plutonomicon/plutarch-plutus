@@ -1,5 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wwarn=orphans #-}
 
 module Plutarch.Api.V1 (
   -- * V1 Specific types
@@ -66,12 +66,8 @@ import Plutarch.Builtin (PAsData, PBuiltinList, PData, PIsData, type PBuiltinMap
 import Plutarch.ByteString (PByteString)
 import Plutarch.DataRepr (
   DataReprHandlers (DRHCons, DRHNil),
-<<<<<<< HEAD
-  PDataRecord,
-=======
   DerivePConstantViaData (DerivePConstantViaData),
-  PDataList,
->>>>>>> origin/staging
+  PDataRecord,
   PIsDataRepr,
   PIsDataReprInstances (PIsDataReprInstances),
   PIsDataReprRepr,
@@ -79,7 +75,7 @@ import Plutarch.DataRepr (
   pmatchDataRepr,
   pmatchRepr,
  )
-import Plutarch.Field (DerivePDataFields, PDataFields (..))
+import Plutarch.Field (DerivePDataFields (..), PDataFields (..))
 import Plutarch.Integer (PInteger, PIntegral)
 import Plutarch.Lift (DerivePConstantViaNewtype (DerivePConstantViaNewtype), PConstant, PLifted, PUnsafeLiftDecl)
 
@@ -117,17 +113,12 @@ newtype PTxInfo (s :: S)
           )
       )
   deriving
-<<<<<<< HEAD
-    (PMatch, PIsData, PUnsafeLiftDecl Plutus.TxInfo)
-    via PIsDataReprInstances PTxInfo Plutus.TxInfo
-  deriving (PDataFields) via (DerivePDataFields PTxInfo)
-=======
     (PMatch, PIsData)
     via PIsDataReprInstances PTxInfo
+  deriving (PDataFields) via (DerivePDataFields PTxInfo)
 
 instance PUnsafeLiftDecl PTxInfo where type PLifted PTxInfo = Plutus.TxInfo
 deriving via (DerivePConstantViaData Plutus.TxInfo PTxInfo) instance (PConstant Plutus.TxInfo)
->>>>>>> origin/staging
 
 instance PIsDataRepr PTxInfo where
   type
@@ -158,17 +149,12 @@ newtype PScriptContext (s :: S)
           )
       )
   deriving
-<<<<<<< HEAD
-    (PMatch, PIsData, PUnsafeLiftDecl Plutus.ScriptContext)
-    via PIsDataReprInstances PScriptContext Plutus.ScriptContext
-  deriving (PDataFields) via (DerivePDataFields PScriptContext)
-=======
     (PMatch, PIsData)
     via PIsDataReprInstances PScriptContext
+  deriving (PDataFields) via (DerivePDataFields PScriptContext)
 
 instance PUnsafeLiftDecl PScriptContext where type PLifted PScriptContext = Plutus.ScriptContext
 deriving via (DerivePConstantViaData Plutus.ScriptContext PScriptContext) instance (PConstant Plutus.ScriptContext)
->>>>>>> origin/staging
 
 instance PIsDataRepr PScriptContext where
   type
@@ -188,17 +174,12 @@ data PScriptPurpose (s :: S)
   | PRewarding (Term s (PDataRecord '["_0" ':= PStakingCredential]))
   | PCertifying (Term s (PDataRecord '["_0" ':= PDCert]))
   deriving
-<<<<<<< HEAD
-    (PMatch, PIsData, PUnsafeLiftDecl Plutus.ScriptPurpose)
-    via (PIsDataReprInstances PScriptPurpose Plutus.ScriptPurpose)
-  deriving (PDataFields) via (DerivePDataFields PScriptPurpose)
-=======
     (PMatch, PIsData)
     via (PIsDataReprInstances PScriptPurpose)
+  deriving (PDataFields) via (DerivePDataFields PScriptPurpose)
 
 instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
 deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) instance (PConstant Plutus.ScriptPurpose)
->>>>>>> origin/staging
 
 instance PIsDataRepr PScriptPurpose where
   type
@@ -457,15 +438,9 @@ data PCredential (s :: S)
   = PPubKeyCredential (Term s (PDataRecord '["_0" ':= PPubKeyHash]))
   | PScriptCredential (Term s (PDataRecord '["_0" ':= PValidatorHash]))
   deriving
-<<<<<<< HEAD
-    (PMatch, PIsData, PUnsafeLiftDecl Plutus.Credential)
-    via (PIsDataReprInstances PCredential Plutus.Credential)
-  deriving (PDataFields) via (DerivePDataFields PCredential)
-=======
     (PMatch, PIsData)
     via (PIsDataReprInstances PCredential)
->>>>>>> origin/staging
-
+  deriving (PDataFields) via (DerivePDataFields PCredential)
 instance PIsDataRepr PCredential where
   type
     PIsDataReprRepr PCredential =
@@ -523,14 +498,9 @@ newtype PAddress (s :: S)
           )
       )
   deriving
-<<<<<<< HEAD
-    (PMatch, PIsData, PUnsafeLiftDecl Plutus.Address)
-    via PIsDataReprInstances PAddress Plutus.Address
-  deriving (PDataFields) via (DerivePDataFields PAddress)
-=======
     (PMatch, PIsData)
     via PIsDataReprInstances PAddress
->>>>>>> origin/staging
+  deriving (PDataFields) via (DerivePDataFields PAddress)
 
 instance PIsDataRepr PAddress where
   type
@@ -596,14 +566,9 @@ newtype PTxInInfo (s :: S)
           )
       )
   deriving
-<<<<<<< HEAD
-    (PMatch, PIsData, PUnsafeLiftDecl Plutus.TxInInfo)
-    via PIsDataReprInstances PTxInInfo Plutus.TxInInfo
-  deriving (PDataFields) via (DerivePDataFields PTxInInfo)
-=======
     (PMatch, PIsData)
     via PIsDataReprInstances PTxInInfo
->>>>>>> origin/staging
+  deriving (PDataFields) via (DerivePDataFields PTxInInfo)
 
 instance PIsDataRepr PTxInInfo where
   type
@@ -629,14 +594,9 @@ newtype PTxOut (s :: S)
           )
       )
   deriving
-<<<<<<< HEAD
-    (PMatch, PIsData, PUnsafeLiftDecl Plutus.TxOut)
-    via (PIsDataReprInstances PTxOut Plutus.TxOut)
-  deriving (PDataFields) via (DerivePDataFields PTxOut)
-=======
     (PMatch, PIsData)
     via (PIsDataReprInstances PTxOut)
->>>>>>> origin/staging
+  deriving (PDataFields) via (DerivePDataFields PTxOut)
 
 instance PIsDataRepr PTxOut where
   type

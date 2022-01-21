@@ -13,7 +13,12 @@ module Examples.Field (
   by,
   dotPlus,
   tripSum',
-  someFields,
+  nFields,
+  dropFields,
+  dropFields',
+  getY,
+  getY',
+  rangeFields,
 
   -- * Testing
   tests,
@@ -31,7 +36,16 @@ import Plutarch.DataRepr (
   PLabeled (..),
   pmatchDataRepr,
  )
-import Plutarch.Field (DerivePDataFields, PDataFields, pfield, pletFields, pletNFields)
+import Plutarch.Field (
+  DerivePDataFields (..),
+  PDataFields,
+  pfield,
+  pfield',
+  pletDropFields,
+  pletFields,
+  pletNFields,
+  pletRangeFields,
+ )
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (plift)
 import Plutarch.List (PListLike (..))
@@ -64,7 +78,7 @@ newtype Triplet (a :: PType) (s :: S)
       )
   deriving
     (PMatch, PIsData)
-    via (PIsDataReprInstances (Triplet a) ())
+    via (PIsDataReprInstances (Triplet a))
   deriving
     (PDataFields)
     via (DerivePDataFields (Triplet a))
@@ -146,6 +160,16 @@ by :: Term s PInteger
 by = pfromData $ pfield @"y" # tripB
 
 {- |
+  Depending on what terms can be shared with hoisting,
+  `pfield'` may be more efficient than `pfield`.
+-}
+getY :: Term s (Triplet PInteger :--> PAsData PInteger)
+getY = pfield @"y"
+
+getY' :: Term s (Triplet PInteger :--> PAsData PInteger)
+getY' = plam $ pfield' @"y"
+
+{- |
   Due to the instance @(PDataFields a) -> PDataFields (PAsData a)@,
 
   we can conveniently chain 'pletFields' & 'pfield' within
@@ -178,13 +202,39 @@ type SomeFields =
    ]
 
 {- |
-  We can also bind over a 'PDataRecord'.
+  We can also bind over a 'PDataRecord' directly.
+
+  'pletNFields' will more efficiently bind the first N fields
+  of a PRecord.
 -}
-someFields :: Term s (PDataRecord SomeFields :--> PInteger)
-someFields =
-  plam $ \r -> pletNFields @5 r $ \fs ->
-    pfromData fs._3
-      + pfromData fs._4
+nFields :: Term s (PDataRecord SomeFields :--> PInteger)
+nFields =
+  plam $ \r -> pletNFields @2 r $ \fs ->
+    pfromData fs._0
+      + pfromData fs._1
+
+{- |
+  'pletDropFields' will bind fields, dropping the first N.
+-}
+dropFields :: Term s (PDataRecord SomeFields :--> PInteger)
+dropFields =
+  plam $ \r -> pletDropFields @8 r $ \fs ->
+    pfromData fs._8
+      + pfromData fs._9
+
+-- | Without using 'pletDropFields', the code generated is a little less efficient
+dropFields' :: Term s (PDataRecord SomeFields :--> PInteger)
+dropFields' =
+  plam $ \r -> pletFields r $ \fs ->
+    pfromData fs._8
+      + pfromData fs._9
+
+-- | 'pletRangeFields' will bind fields in a specific range
+rangeFields :: Term s (PDataRecord SomeFields :--> PInteger)
+rangeFields =
+  plam $ \r -> pletRangeFields @5 @6 r $ \fs ->
+    pfromData fs._5
+      + pfromData fs._6
 
 ---------- Tests
 
@@ -194,8 +244,18 @@ tests =
     "Field examples"
     [ testCase "tripSum compilation" $
         tripSum `equal'` tripSumComp
-    , testCase "someFields compilation" $
-        someFields `equal'` someFieldsComp
+    , testCase "nFields compilation" $
+        nFields `equal'` nFieldsComp
+    , testCase "dropFields compilation" $
+        dropFields `equal'` dropFieldsComp
+    , testCase "dropFields' compilation" $
+        dropFields' `equal'` dropFields'Comp
+    , testCase "rangeFields compilation" $
+        rangeFields `equal'` rangeFieldsComp
+    , testCase "getY compilation" $
+        getY `equal'` getYComp
+    , testCase "getY' compilation" $
+        getY' `equal'` getY'Comp
     , testCase "tripSum # tripA = 1000" $
         plift (tripSum # tripA)
           @?= 1000
@@ -215,5 +275,20 @@ tripSumComp :: String
 tripSumComp =
   "(program 1.0.0 (\\i0 -> (\\i0 -> (\\i0 -> addInteger (addInteger (unIData (force headList i2)) (unIData (force headList i1))) (unIData (force headList (force tailList i1)))) (force tailList i1)) ((\\i0 -> force (force sndPair) (unConstrData i1)) i1)))"
 
-someFieldsComp :: String
-someFieldsComp = "(program 1.0.0 (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))) (force tailList i1)) (force tailList i1)) (force tailList i1)))"
+nFieldsComp :: String
+nFieldsComp = "(program 1.0.0 (\\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))))"
+
+dropFieldsComp :: String
+dropFieldsComp = "(program 1.0.0 (\\i0 -> (\\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))) ((\\i0 -> force tailList (force tailList (force tailList (force tailList (force tailList (force tailList (force tailList (force tailList i1)))))))) i1)))"
+
+dropFields'Comp :: String
+dropFields'Comp = "(program 1.0.0 (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))) (force tailList i1)) (force tailList i1)) (force tailList i1)) (force tailList i1)) (force tailList i1)) (force tailList i1)) (force tailList i1)) (force tailList i1)))"
+
+rangeFieldsComp :: String
+rangeFieldsComp = "(program 1.0.0 (\\i0 -> (\\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))) ((\\i0 -> force tailList (force tailList (force tailList (force tailList (force tailList (force tailList i1)))))) i1)))"
+
+getYComp :: String
+getYComp = "(program 1.0.0 (\\i0 -> (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> \\i0 -> force (force ifThenElse (equalsInteger i2 0) (delay (force headList i1)) (delay (i3 (subtractInteger i2 1) (force tailList i1))))) 1 ((\\i0 -> force (force sndPair) (unConstrData i1)) i1)))"
+
+getY'Comp :: String
+getY'Comp = "(program 1.0.0 (\\i0 -> force headList (force tailList ((\\i0 -> force (force sndPair) (unConstrData i1)) i1))))"

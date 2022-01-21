@@ -16,6 +16,9 @@ module Plutarch.Field.HList (
   type IndexList,
   type IndexOf,
   type SingleItem,
+  type Take,
+  type Drop,
+  type Range,
 
   -- * Internal utils
   Elem (..),
@@ -103,6 +106,17 @@ type family IndexOf (x :: k) (xs :: [k]) :: Nat where
 -- | Return the single item from a singleton list
 type family SingleItem (as :: [k]) :: k where
   SingleItem '[a] = a
+
+type family Take (n :: Nat) (as :: [k]) :: [k] where
+  Take 0 xs = '[]
+  Take n (x ': xs) = x ': (Take (n - 1) xs)
+
+type family Drop (n :: Nat) (as :: [k]) :: [k] where
+  Drop 0 xs = xs
+  Drop n (x ': xs) = Drop (n - 1) xs
+
+type family Range (from :: Nat) (to :: Nat) (as :: [k]) :: [k] where
+  Range from to xs = Take (to - from + 1) (Drop from xs)
 
 ---------- Internal utils
 

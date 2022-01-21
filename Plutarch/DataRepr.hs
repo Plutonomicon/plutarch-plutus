@@ -17,14 +17,16 @@ module Plutarch.DataRepr (
   pdtail,
   PIsDataRepr (..),
   PIsDataReprInstances (..),
-  punsafeIndex,
   pindexDataRecord,
+  pindexDataRecord',
+  pdropDataRecord,
   DerivePConstantViaData (..),
 ) where
 
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy)
 import GHC.TypeLits (KnownNat, Symbol, natVal)
+import Numeric.Natural (Natural)
 import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoerce, runTermCont)
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Builtin (
@@ -38,10 +40,10 @@ import Plutarch.Builtin (
   pfstBuiltin,
   psndBuiltin,
  )
-import Plutarch.Field.HList (type IndexList)
+import Plutarch.Field.HList (type Drop, type IndexList)
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstantFromRepr, pconstantToRepr)
-import Plutarch.List (punsafeIndex)
+import Plutarch.List (pdrop, punsafeIndex, punsafeIndex')
 import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Api as Ledger
 import qualified PlutusCore as PLC
@@ -94,6 +96,24 @@ pindexDataRecord n =
       punsafeIndex @PBuiltinList @PData # ind
   where
     ind :: Term s PInteger
+    ind = fromInteger $ natVal n
+
+-- | Version of 'pindexDataRecord' using repeated applications of 'ptail'.
+pindexDataRecord' :: (KnownNat n) => Proxy n -> Term s (PDataRecord xs) -> Term s (PAsData (IndexList n (PTypes xs)))
+pindexDataRecord' n xs =
+  punsafeCoerce $
+    punsafeIndex' @PBuiltinList @PData ind (punsafeCoerce xs)
+  where
+    ind :: Natural
+    ind = fromInteger $ natVal n
+
+-- | Safely drop the first n items of a PDataRecord.
+pdropDataRecord :: (KnownNat n) => Proxy n -> Term s (PDataRecord xs) -> Term s (PDataRecord (Drop n xs))
+pdropDataRecord n xs =
+  punsafeCoerce $
+    pdrop @PBuiltinList @PData ind (punsafeCoerce xs)
+  where
+    ind :: Natural
     ind = fromInteger $ natVal n
 
 data DataReprHandlers (out :: PType) (def :: [[PLabeled]]) (s :: S) where
