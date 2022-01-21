@@ -1,7 +1,15 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Plutarch.Integer (PInteger, ppowInteger, (#^)) where
+module Plutarch.Integer (
+  PInteger,
+  ppowInteger,
+  (#^),
+  pdivideInteger,
+  pmodInteger,
+  pquotientInteger,
+  premainderInteger,
+) where
 
 import Plutarch (punsafeBuiltin)
 import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
@@ -93,6 +101,18 @@ ppowInteger a int =
 (#^) = ppowInteger
 
 infixr 8 #^
+
+pdivideInteger :: Term s (PInteger :--> PInteger :--> PInteger)
+pdivideInteger = punsafeBuiltin PLC.DivideInteger
+
+pmodInteger :: Term s (PInteger :--> PInteger :--> PInteger)
+pmodInteger = punsafeBuiltin PLC.ModInteger
+
+pquotientInteger :: Term s (PInteger :--> PInteger :--> PInteger)
+pquotientInteger = punsafeBuiltin PLC.QuotientInteger
+
+premainderInteger :: Term s (PInteger :--> PInteger :--> PInteger)
+premainderInteger = punsafeBuiltin PLC.RemainderInteger
 
 -- Helpers
 
