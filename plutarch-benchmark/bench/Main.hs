@@ -1,7 +1,7 @@
 module Main (main) where
 
-import Benchmark
 import Plutarch
+import Plutarch.Benchmark (NamedBenchmark, bench, benchGroup, benchMain)
 import Plutarch.Bool
 import Plutarch.Builtin
 import Plutarch.Integer

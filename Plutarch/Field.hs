@@ -218,7 +218,6 @@ instance {-# OVERLAPS #-} BindFields ((l ':= a) ': '[]) where
 instance {-# OVERLAPPABLE #-} (BindFields as) => BindFields ((l ':= a) ': as) where
   bindFields t = do
     t' <- TermCont $ plet t
-    -- tail <- TermCont $ plet $ pdtail # t
     xs <- bindFields @as (pdtail # t')
     pure $ HCons (pdhead # t') xs
 
