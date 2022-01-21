@@ -18,7 +18,7 @@ module Plutarch.Prelude (
   pto,
   pfix,
   Type,
-  S (SI),
+  S,
   PType,
   DerivePNewtype (DerivePNewtype),
 ) where

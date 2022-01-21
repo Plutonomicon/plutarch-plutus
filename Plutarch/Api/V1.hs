@@ -94,6 +94,7 @@ import Plutarch.Lift (
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic (Code))
 import Plutarch.Generic (GetPDataRecordArgs)
+import Plutarch.Internal (S (SI))
 import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified Plutus.V1.Ledger.Crypto as PlutusCrpyto
@@ -128,6 +129,7 @@ newtype PTxInfo (s :: S)
           )
       )
   deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
   deriving
     (PMatch, PIsData)
     via PIsDataReprInstances PTxInfo
@@ -135,7 +137,6 @@ newtype PTxInfo (s :: S)
 
 instance PUnsafeLiftDecl PTxInfo where type PLifted PTxInfo = Plutus.TxInfo
 deriving via (DerivePConstantViaData Plutus.TxInfo PTxInfo) instance (PConstant Plutus.TxInfo)
-deriving anyclass instance Generic (PTxInfo s)
 
 instance PIsDataRepr PTxInfo where
   type PIsDataReprRepr PTxInfo = GetPDataRecordArgs (Code (PTxInfo 'SI))
@@ -179,6 +180,7 @@ data PScriptPurpose (s :: S)
   | PRewarding (Term s (PDataRecord '["_0" ':= PStakingCredential]))
   | PCertifying (Term s (PDataRecord '["_0" ':= PDCert]))
   deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
   deriving
     (PMatch, PIsData)
     via (PIsDataReprInstances PScriptPurpose)
@@ -186,7 +188,6 @@ data PScriptPurpose (s :: S)
 
 instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
 deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) instance (PConstant Plutus.ScriptPurpose)
-deriving anyclass instance Generic (PScriptPurpose s)
 
 instance PIsDataRepr PScriptPurpose where
   type PIsDataReprRepr PScriptPurpose = GetPDataRecordArgs (Code (PScriptPurpose 'SI))

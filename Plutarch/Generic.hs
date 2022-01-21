@@ -7,7 +7,7 @@ module Plutarch.Generic (
   GetPDataRecordArgs,
 ) where
 
-import GHC.TypeLits
+import GHC.TypeLits (ErrorMessage (Text), TypeError)
 import Plutarch.DataRepr (PDataRecord, PLabeled)
 import Plutarch.Prelude
 
