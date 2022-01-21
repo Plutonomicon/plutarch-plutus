@@ -75,13 +75,23 @@ import Plutarch.DataRepr (
   pmatchRepr,
  )
 import Plutarch.Integer (PInteger, PIntegral)
-import Plutarch.Lift (DerivePConstantViaNewtype (DerivePConstantViaNewtype), PConstant, PConstantRepr, PConstanted, PLift, PLifted, PUnsafeLiftDecl, pconstantFromRepr, pconstantToRepr)
+import Plutarch.Lift (
+  DerivePConstantViaNewtype (DerivePConstantViaNewtype),
+  PConstant,
+  PConstantRepr,
+  PConstanted,
+  PLift,
+  PLifted,
+  PUnsafeLiftDecl,
+  pconstantFromRepr,
+  pconstantToRepr,
+ )
 
 -- ctor in-scope for deriving
 import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified Plutus.V1.Ledger.Crypto as PlutusCrpyto
-import qualified PlutusTx.AssocMap as Map
+import qualified PlutusTx.AssocMap as PlutusMap
 import qualified PlutusTx.Builtins.Internal as PT
 
 --------------------------------------------------------------------------------
@@ -584,7 +594,7 @@ instance
   ) =>
   PUnsafeLiftDecl (PMap k v)
   where
-  type PLifted (PMap k v) = Map.Map (PLifted k) (PLifted v)
+  type PLifted (PMap k v) = PlutusMap.Map (PLifted k) (PLifted v)
 
 instance
   ( PLifted (PConstanted k) ~ k
@@ -598,13 +608,12 @@ instance
   , Plutus.ToData v
   , PConstant v
   ) =>
-  PConstant (Map.Map k v)
+  PConstant (PlutusMap.Map k v)
   where
-  type PConstantRepr (Map.Map k v) = [(Plutus.Data, Plutus.Data)]
-  type PConstanted (Map.Map k v) = PMap (PConstanted k) (PConstanted v)
-  pconstantToRepr m = (\(x, y) -> (Plutus.toData x, Plutus.toData y)) <$> Map.toList m
-  pconstantFromRepr :: [(Plutus.Data, Plutus.Data)] -> Maybe (Map.Map k v)
-  pconstantFromRepr m = (Map.fromList <$>) $
+  type PConstantRepr (PlutusMap.Map k v) = [(Plutus.Data, Plutus.Data)]
+  type PConstanted (PlutusMap.Map k v) = PMap (PConstanted k) (PConstanted v)
+  pconstantToRepr m = (\(x, y) -> (Plutus.toData x, Plutus.toData y)) <$> PlutusMap.toList m
+  pconstantFromRepr m = fmap PlutusMap.fromList $
     flip traverse m $ \(x, y) -> do
       x' <- Plutus.fromData x
       y' <- Plutus.fromData y
