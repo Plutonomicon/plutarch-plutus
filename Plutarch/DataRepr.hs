@@ -68,11 +68,8 @@ type family PNames (as :: [PLabeled]) :: [Symbol] where
   PNames '[] = '[]
   PNames ((l ':= t) ': as) = l ': (PNames as)
 
-type family GetPDataRecordArgs (a :: PType) :: [[PLabeled]] where
-  GetPDataRecordArgs x = GetPDataRecordArgs' (Code (x 'SI))
-
-type family GetPDataRecordArgs' (a :: [[Type]]) :: [[PLabeled]] where
-  GetPDataRecordArgs' xs = ToPLabeled2 xs
+type family GetPDataRecordArgs (a :: [[Type]]) :: [[PLabeled]] where
+  GetPDataRecordArgs xs = ToPLabeled2 xs
 
 type ToPLabeled :: [Type] -> [PLabeled]
 type family ToPLabeled as where
@@ -191,7 +188,7 @@ newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
 
 class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PLabeled]]
-  type PIsDataReprRepr a = GetPDataRecordArgs a
+  type PIsDataReprRepr a = GetPDataRecordArgs (Code (a 'SI))
   pmatchRepr :: forall s b. Term s (PDataRepr (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
 
 instance PIsDataRepr a => PIsData (PIsDataReprInstances a) where
