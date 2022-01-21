@@ -101,7 +101,7 @@ infixr 0 #$
  > const = plam (\x y -> x)
 -}
 
-class PLamN a b | a -> b where
+class PLamN a b | a -> b, b -> a where
   plam :: a -> b
 
 instance (a' ~ Term s a, b' ~ Term s b) => PLamN (a' -> b') (Term s (a :--> b)) where
