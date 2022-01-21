@@ -7,6 +7,7 @@ import Plutarch
 import Plutarch.Api.V1 (
   PAddress (PAddress),
   PCredential (PScriptCredential),
+  PCurrencySymbol,
   PPubKeyHash,
   PScriptContext (PScriptContext),
   PScriptPurpose (PSpending),
@@ -17,7 +18,7 @@ import Plutarch.Api.V1 (
   PValue,
  )
 import Plutarch.Bool (pif)
-import Plutarch.Builtin (PAsData, PBuiltinList, pdata, pfromData)
+import Plutarch.Builtin (PAsData, PBuiltinList, pdata, pfromData, pfstBuiltin)
 import Plutarch.DataRepr (pindexDataList)
 import Plutarch.Lift (pconstant, plift)
 import Plutarch.List (pelem, phead)
@@ -117,8 +118,8 @@ getTxInfo = plam $ \x -> P.do
   PScriptContext c <- pmatch x
   pindexDataList (Proxy @0) # c
 
-_getMint :: Term s (PTxInfo :--> PAsData PValue)
-_getMint = plam $ \x -> P.do
+getMint :: Term s (PTxInfo :--> PAsData PValue)
+getMint = plam $ \x -> P.do
   PTxInfo i <- pmatch x
   pindexDataList (Proxy @3) # i
 
@@ -139,11 +140,10 @@ getValidator =
     PScriptCredential v <- pmatch (pfromData $ pindexDataList (Proxy @0) # a)
     pindexDataList (Proxy @0) # v
 
--- FIXME: 'PMap' needs 'PlutusType' instance.
----- | Get first CurrencySymbol from Value
--- getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
--- getSym =
---   plam $ \v -> pfstBuiltin #$ phead # pinner (pinner v)
+-- | Get first CurrencySymbol from Value
+getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
+getSym =
+  plam $ \v -> pfstBuiltin #$ phead # pto (pto v)
 
 checkSignatory :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatory = plam $ \ph ctx -> P.do
@@ -172,11 +172,9 @@ tests =
       testCase "getting validator" $ do
         plift (pfromData $ getValidator #$ pfromData $ getInputs #$ pfromData $ getTxInfo # ctx)
           @?= validator
-    , -- FIXME: Need 'PlutusType' etc. instance for 'PMap'
-      -- , testCase "getting sym" $ do
-      --     plift (pfromData $ getSym #$ pfromData $ getMint #$ pfromData $ getTxInfo # ctx)
-      --       @?= sym
-      testCase "signatory validator" $ do
+    , testCase "getting sym" $ do
+        plift (pfromData $ getSym #$ pfromData $ getMint #$ pfromData $ getTxInfo # ctx) @?= sym
+    , testCase "signatory validator" $ do
         () <$ traverse (\x -> succeeds $ checkSignatory # pconstant x # ctx) signatories
         fails $ checkSignatory # pconstant "41" # ctx
     ]
