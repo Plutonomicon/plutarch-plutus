@@ -75,12 +75,23 @@ import Plutarch.DataRepr (
   pmatchRepr,
  )
 import Plutarch.Integer (PInteger, PIntegral)
-import Plutarch.Lift (DerivePConstantViaNewtype (DerivePConstantViaNewtype), PConstant, PLifted, PUnsafeLiftDecl)
+import Plutarch.Lift (
+  DerivePConstantViaNewtype (DerivePConstantViaNewtype),
+  PConstant,
+  PConstantRepr,
+  PConstanted,
+  PLift,
+  PLifted,
+  PUnsafeLiftDecl,
+  pconstantFromRepr,
+  pconstantToRepr,
+ )
 
 -- ctor in-scope for deriving
 import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified Plutus.V1.Ledger.Crypto as PlutusCrpyto
+import qualified PlutusTx.AssocMap as PlutusMap
 import qualified PlutusTx.Builtins.Internal as PT
 
 --------------------------------------------------------------------------------
@@ -249,12 +260,11 @@ newtype PValue (s :: S) = PValue (Term s (PMap PCurrencySymbol (PMap PTokenName 
     )
     via (DerivePNewtype PValue (PMap PCurrencySymbol (PMap PTokenName PInteger)))
 
--- FIXME: This fails typecheck. Representations do not match.
--- instance PUnsafeLiftDecl PValue where type PLifted PValue = Plutus.Value
--- deriving via
---   (DerivePConstantViaNewtype Plutus.Value PValue (PMap PCurrencySymbol (PMap PTokenName PInteger)))
---   instance
---     (PConstant Plutus.Value)
+instance PUnsafeLiftDecl PValue where type PLifted PValue = Plutus.Value
+deriving via
+  (DerivePConstantViaNewtype Plutus.Value PValue (PMap PCurrencySymbol (PMap PTokenName PInteger)))
+  instance
+    (PConstant Plutus.Value)
 
 ---------- Crypto
 
@@ -574,12 +584,40 @@ instance PIsDataRepr PDCert where
 newtype PMap (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinMap k v))
   deriving (PlutusType, PIsData) via (DerivePNewtype (PMap k v) (PBuiltinMap k v))
 
--- FIXME: This fails typecheck. "Illegal type synonym family application ‘PLifted k’ in instance"
--- instance PUnsafeLiftDecl (PMap k v) where type PLifted (PMap k v) = PlutusMap.Map (PLifted k) (PLifted v)
--- deriving via
---   (DerivePConstantViaNewtype (PlutusMap.Map (PLifted k) (PLifted v)) (PMap k v) (PBuiltinMap k v))
---   instance
---     (PConstant (PlutusMap.Map (PLifted k) (PLifted v)))
+instance
+  ( Plutus.ToData (PLifted v)
+  , Plutus.ToData (PLifted k)
+  , Plutus.FromData (PLifted v)
+  , Plutus.FromData (PLifted k)
+  , PLift k
+  , PLift v
+  ) =>
+  PUnsafeLiftDecl (PMap k v)
+  where
+  type PLifted (PMap k v) = PlutusMap.Map (PLifted k) (PLifted v)
+
+instance
+  ( PLifted (PConstanted k) ~ k
+  , Plutus.ToData v
+  , Plutus.FromData v
+  , Plutus.ToData k
+  , Plutus.FromData k
+  , PConstant k
+  , PLifted (PConstanted v) ~ v
+  , Plutus.FromData v
+  , Plutus.ToData v
+  , PConstant v
+  ) =>
+  PConstant (PlutusMap.Map k v)
+  where
+  type PConstantRepr (PlutusMap.Map k v) = [(Plutus.Data, Plutus.Data)]
+  type PConstanted (PlutusMap.Map k v) = PMap (PConstanted k) (PConstanted v)
+  pconstantToRepr m = (\(x, y) -> (Plutus.toData x, Plutus.toData y)) <$> PlutusMap.toList m
+  pconstantFromRepr m = fmap PlutusMap.fromList $
+    flip traverse m $ \(x, y) -> do
+      x' <- Plutus.fromData x
+      y' <- Plutus.fromData y
+      Just (x', y')
 
 ---------- Others
 

@@ -201,12 +201,7 @@ instance PIsData a => PIsData (PBuiltinList (PAsData a)) where
   pfromData x = punsafeCoerce $ pasList # pforgetData x
   pdata x = punsafeBuiltin PLC.ListData # x
 
-instance
-  ( PIsData k
-  , PIsData v
-  ) =>
-  PIsData (PBuiltinMap k v)
-  where
+instance PIsData (PBuiltinMap k v) where
   pfromData x = punsafeCoerce $ pasMap # pforgetData x
   pdata x = punsafeBuiltin PLC.MapData # x
 
