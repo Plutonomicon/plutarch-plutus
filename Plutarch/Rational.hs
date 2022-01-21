@@ -7,6 +7,7 @@ module Plutarch.Rational (
   pround,
   ptruncate,
   pproperFraction,
+  (#%),
 ) where
 
 import Plutarch.Prelude
@@ -22,7 +23,11 @@ import Plutarch.Builtin (
   pasList,
   pforgetData,
  )
-import Plutarch.Integer (PInteger)
+import Plutarch.Integer (
+  PInteger,
+  pquotientInteger,
+  premainderInteger,
+ )
 import Plutarch.Lift (pconstant)
 import Plutarch.List (PListLike (pcons, phead, pnil, ptail), pmap)
 import Plutarch.Natural ()
@@ -35,6 +40,8 @@ import Plutarch.Numeric (
   PMultiplicativeMonoid (pone),
   PMultiplicativeSemigroup ((#*)),
   pdiv,
+  peven,
+  pnegate,
   prem,
  )
 import Plutarch.Pair (PPair (..))
@@ -191,39 +198,38 @@ pdenominator = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational _ d) -> d
 pratFromInt :: Term s (PInteger :--> PRational)
 pratFromInt = phoistAcyclic $ plam $ \n -> pcon $ PRational n pone
 
+pratFromIntsUnsafe :: Term s (PInteger :--> PInteger :--> PRational)
+pratFromIntsUnsafe =
+  phoistAcyclic $ plam $ \n d -> pcon $ PRational n d
+
+(#%) :: Term s PInteger -> Term s PInteger -> Term s PRational
+n #% d = pratFromIntsUnsafe # n # d
+
 pround :: Term s (PRational :--> PInteger)
 pround = phoistAcyclic $
   plam $ \x ->
-    pmatch x $ \(PRational a b) ->
-      plet (pdiv a b) $ \base ->
-        plet (prem a b) $ \rem ->
-          base
-            #+ pif
-              (prem b (pconstant 2) #== pone)
-              (pif (pdiv b (pconstant 2) #< rem) pone pzero)
-              ( pif
-                  (pdiv b (pconstant 2) #== rem)
-                  (prem base (pconstant 2))
-                  (pif (rem #< pdiv b (pconstant 2)) pzero pone)
-              )
-
--- (pdiv # b # 2 + pmod # b # 2 #<= pmod # a # b) 1 0
+    pmatch (pproperFraction # x) $ \(PPair n r) ->
+      plet (pif (r #< pzero) (n #- pone) (n #+ pone)) $ \m ->
+        -- Temp binding untill we have IntegralDomain Rational NatRatio
+        plet (pif (r #< pzero) (pnegate r) r) $ \absr ->
+          plet (absr #- (pcon $ PRational (pconstant 1) (pconstant 2))) $ \flag ->
+            pif (flag #< pzero) n $
+              pif (flag #== pzero) (pif (peven # n) n m) m
 
 ptruncate :: Term s (PRational :--> PInteger)
 ptruncate = phoistAcyclic $
   plam $ \x ->
-    pmatch x $ \(PRational a b) ->
-      plet (pdiv a b) $ \q ->
-        pif
-          (pzero #<= a)
-          q
-          (q #+ pif (prem a b #== pzero) pzero pone)
+    pmatch x $ \(PRational a b) -> pquotientInteger # a # b
 
 pproperFraction :: Term s (PRational :--> PPair PInteger PRational)
-pproperFraction = phoistAcyclic $
-  plam $ \x ->
-    plet (ptruncate # x) $ \q ->
-      pcon $ PPair q (x #- pratFromInt # q)
+pproperFraction =
+  phoistAcyclic $
+    plam $ \x ->
+      pmatch x $ \(PRational n d) ->
+        pcon $
+          PPair
+            (pquotientInteger # n # d)
+            (pcon $ PRational (premainderInteger # n # d) d)
 
 pRatToList :: Term s (PRational :--> PBuiltinList (PAsData PInteger))
 pRatToList =
