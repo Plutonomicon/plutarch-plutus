@@ -1,11 +1,5 @@
-allow-newer: *:*
-
-package plutus-tx-plugin
-  flags: +use-ghc-stub
-
-packages: ./.
-
-constraints:
-  aeson > 2
+packages:
+  ./.
+  ./plutarch-benchmark/plutarch-benchmark.cabal
 
 benchmarks: true

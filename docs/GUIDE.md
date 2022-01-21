@@ -15,6 +15,7 @@
     - [Applying functions](#applying-functions)
     - [Conditionals](#conditionals)
     - [Recursion](#recursion)
+    - [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](#do-syntax-with-qualifieddo-and-plutarchmonadic)
   - [Concepts](#concepts)
     - [Hoisting, metaprogramming,  and fundamentals](#hoisting-metaprogramming--and-fundamentals)
       - [Hoisting Operators](#hoisting-operators)
@@ -30,11 +31,11 @@
     - [Monoids](#monoids)
     - [PIntegral](#pintegral)
     - [PIsData](#pisdata)
-    - [PLift](#plift)
-      - [Implementing `PLift`](#implementing-plift)
+    - [PConstant & PLift](#pconstant--plift)
+      - [Implementing `PConstant` & `PLift`](#implementing-pconstant--plift)
     - [PlutusType, PCon, and PMatch](#plutustype-pcon-and-pmatch)
     - [PListLike](#plistlike)
-    - [PIsDataRepr & PDataList](#pisdatarepr--pdatalist)
+    - [PIsDataRepr](#pisdatarepr)
       - [Implementing PIsDataRepr](#implementing-pisdatarepr)
   - [Working with Types](#working-with-types)
     - [PInteger](#pinteger)
@@ -46,9 +47,8 @@
     - [PList](#plist)
     - [PBuiltinPair](#pbuiltinpair)
     - [PAsData](#pasdata)
+    - [PDataRepr & PDataList](#pdatarepr--pdatalist)
     - [PData](#pdata)
-    - [PMaybe](#pmaybe)
-    - [PEither](#peither)
 - [Examples](#examples)
   - [Fibonacci number at given index](#fibonacci-number-at-given-index)
   - [Validator that always succeeds](#validator-that-always-succeeds)
@@ -66,7 +66,7 @@
 - [Common Issues](#common-issues)
   - [`plam` fails to type infer correctly](#plam-fails-to-type-infer-correctly)
   - [Ambiguous type variable arising from a use of `pconstant`](#ambiguous-type-variable-arising-from-a-use-of-pconstant)
-  - [No instance for `PLC.Contains DefaultUni (PHaskellType a)`](#no-instance-for-plccontains-defaultuni-phaskelltype-a)
+  - [No instance for (PUnsafeLiftDecl a)](#no-instance-for-punsafeliftdecl-a)
   - [Infinite loop / Infinite AST](#infinite-loop--infinite-ast)
 - [Useful Links](#useful-links)
 </details>
@@ -123,6 +123,7 @@ These can be either built directly from Haskell synonyms using `pconstant` (requ
 ```hs
 import Plutarch.Prelude
 import Plutarch.Bool (PBool)
+import Plutarch.Lift (pconstant)
 
 -- | A plutarch level boolean. Its value is "True", in this case.
 x :: Term s PBool
@@ -297,6 +298,33 @@ pfac = pfix #$ plam f
 
 There's a Plutarch level factorial function! Note how `f` takes in a `self` and just recurses on it. All you have to do, is create a Plutarch level function by using `plam` on `f` and `pfix` the result - and that `self` argument will be taken care of for you.
 
+### Do syntax with `QualifiedDo` and `Plutarch.Monadic`
+The `Plutarch.Monadic` module provides convenient do syntax on common usage scenarios. It requires the `QualifiedDo` extension.
+
+```hs
+{-# LANGUAGE QualifiedDo #-}
+
+import qualified Plutarch.Monadic as P
+
+f :: Term s (PTxInfo :--> PBuiltinList (PAsData PTxInInfo))
+f = plam $ \x -> P.do
+  PTxInfo txInfoFields <- pmatch x
+  ptrace "yielding first field from tx info"
+  pfromData $ pdhead # txInfoFields
+```
+In essence, `P.do { x; y }` simply translates to `x y`; where `x :: (a -> Term s b) -> a -> Term s b` and `y :: a`.
+
+Similarly, `P.do { y <- x; z }` translates to `x $ \case { y -> z; _ -> ptraceError <msg> }`. Of course, if `y` is a fully exhaustive pattern match (e.g, singular constructor), the extra `_ -> ..` case will not be generated at all and you'd simply get `x $ \y -> z`.
+
+Finally, `P.do { x }` is just `x`.
+
+These semantics make it *extremely* convenient for [`pmatch`](#plutustype-pcon-and-pmatch) and [`ptrace`](#tracing) usage.
+```hs
+pmatch :: Term s a -> (a s -> Term s b) -> Term s b
+
+ptrace :: Term s PString -> Term s a -> Term s a
+```
+
 ## Concepts
 
 ### Hoisting, metaprogramming,  and fundamentals
@@ -314,7 +342,7 @@ x :: Term s PInteger
 x = something complex
 ```
 
-Any use of `x` will inline the **full definition** of `x`. `x + x` will duplicate `something complex` in the AST. To avoid this, you should use `plet` in order to avoid duplicate work. Do note that this is **strictly evaluated, and hence isn't always the best solution.**
+Any use of `x` will inline the **full definition** of `x`. `x + x` will duplicate `something complex` in the AST. To avoid this, you should [use `plet` in order to avoid duplicate work](#plet-to-avoid-work-duplication). Do note that this is **strictly evaluated, and hence isn't always the best solution.**
 
 There is however still a problem: What about top-level functions, like `fib`, `sum`, `filter`, and such? We can use `plet` to avoid duplicating the definition, but this error-prone, since to do this perfectly each function that generates part of the AST would need to have access to the `plet`'ed definitions, meaning that we'd likely have to put it into a record or typeclass.
 
@@ -507,7 +535,7 @@ Using these functions, you can do division/modulus etc on Plutarch level values-
 ```hs
 pdiv # 6 # 3
 ```
-where `6` and `3` are `Term s PInteger`s yields `3` - also a `Term s PInteger`.
+where `6` and `3` are `Term s PInteger`s yields `2` - also a `Term s PInteger`.
 
 ### PIsData
 The `PIsData` typeclass facilitates easy and type safe conversion between Plutarch types and their corresponding `PData` representation - i.e [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md). It keeps track of the type information through [`PAsData`](#pasdata).
@@ -527,15 +555,17 @@ In essence, `pdata` wraps a `PInteger` into an `I` data value. Wheras `pfromData
 
 In the above case, `PInteger` is a type that *can be converted* to and from `Data` but is not `Data` itself (it's a builtin integer). What if you have a type that is already represented as a `Data` (`PData`) value under the hood (e.g `PScriptContext`)? In these cases, you should implement `PIsDataRepr` via `PIsDataReprInstances` and you'll get the `PIsData` instance for free! See: [Implementing `PIsDataRepr`](#implementing-pisdatarepr)
 
-### PLift
-`PLift` establishes a bridge between a Plutarch level type (that is represented as a builtin type, i.e [`DefaultUni`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) and its corresponding Haskell synonym. The details of `PLift` are not too useful to users, but you can read all about it if you want at [Developers' corner](TODO: LINK - to PLift developer's guide).
+### PConstant & PLift
+These 2 closely tied together typeclasses establish a bridge between a Plutarch level type (that is represented as a builtin type, i.e [`DefaultUni`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) and its corresponding Haskell synonym. The gory details of these two are not too useful to users, but you can read all about it if you want at [Developers' corner](TODO: LINK - to PLift developer's guide).
 
-What's more important, are the abilities that `PLift` instances have-
+What's more important, are the abilities that `PConstant`/`PLift` instances have-
 ```hs
-pconstant :: PLift p => PHaskellType p -> Term s p
+pconstant :: PLift p => PLifted p -> Term s p
 
-plift :: (PLift p, HasCallStack) => ClosedTerm p -> PHaskellType p
+plift :: (PLift p, HasCallStack) => ClosedTerm p -> PLifted p
 ```
+> Aside: `PLifted p` represents the Haskell synonym to the Plutarch type, `p`. Similarly, there is also `PConstanted h` - which represents the Plutarch synonym corresponding to the Haskell type, `h`. These type families may only be used for Plutarch types implementing `PConstant`/`PLift`.
+
 `pconstant` lets you build a Plutarch value from its corresponding Haskell synonym. For example, the haskell synonym of [`PBool`](#pbool) is [`Bool`](https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Bool.html#t:Bool).
 ```hs
 b :: Term s PBool
@@ -560,24 +590,88 @@ purp = pconstant $ Minting "be"
 Minting "be"
 ```
 
-#### Implementing `PLift`
+#### Implementing `PConstant` & `PLift`
 If your custom Plutarch type is represented by a builtin type under the hood (i.e not scott encoded - rather [`DefaultUni`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) - you can easily implement `PLift` for it by using the provided machinery.
 
-This comes in 2 flavors. If your type is represented by a builtin type that **is not** `Data` (`DefaultUniData`), you can derive `PLift` via `PBuiltinType`. `PBuiltinType` takes in two types - the first being your Plutarch type, the second being the Haskell synonym for it. The Haskell synonym dictates how your Plutarch type is represented under the hood, in Plutus Core.
-```hs
-data PBool s
-  deriving (PLift) via PBuiltinType PBool Bool
-```
-In this case, `PBool` is represented as a builtin boolean in Plutus Core, as [`Bool`](https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Bool.html#t:Bool) corresponds to builtin boolean.
-This lets you do `pconstant True` to obtain a `Term s PBool`. And `plift $ pconstant True` to obtain a `Bool`.
+This comes in 3 flavors.
+* Plutarch type represented **directly** by a builtin type that **is not** `Data` (`DefaultUniData`) ==> `DerivePConstantViaCoercible`
 
-On the other hand, if your type is represented as a `Data` under the hood (`DefaultUniData`) - you can use `PIsDataReprInstances`.
+  Ex: `PInteger` is directly represented as a builtin integer.
+* Plutarch type represented **indirectly** by a builtin type that **is not** `Data` (`DefaultUniData`) ==> `DerivePConstantViaNewtype`
+
+  Ex: `PPubKeyHash` is a newtype to a `PByteString`, `PByteString` is *directly* represented as a builtin bytestring.
+* Plutarch type represented by `Data` (`DefaultUniData`) ==> `DerivePConstantViaData`
+
+  Ex: `PScriptPurpose` is represented as a `Data` value. It is synonymous to `ScriptPurpose` from the Plutus ledger api.
+
+Whichever path you need to go down, there is one common part- implementing `PLift`, or rather `PUnsafeLiftDecl`. See, `PLift` is actually just a type synonym to `PUnsafeLiftDecl`. Essentially an empty typeclass with an associated type family that provides insight on the relationship between a Plutarch type and its Haskell synonym.
 ```hs
-data PScriptPurpose s
-  deriving (PLift) via (PIsDataReprInstances PScriptPurpose Ledger.ScriptPurpose)
+instance PUnsafeLiftDecl YourPlutarchType where type PLifted YourPlutarchType = YourHaskellType
 ```
-> Aside: `PDataReprInstances` also lets you derive `PMatch` and `PIsDataRepr` for your type!
-Similar to `PBuiltinType`, `PIsDataReprInstances` also takes in two types - the Plutarch type and its corresponding Haskell synonym.
+You're tasked with assigning the correct Haskell synonym to your Plutarch type, and what an important task it is! Recall that `pconstant`'s argument type will depend on your assignment here. In particular: `pconstant :: YourHaskellType -> YourPlutarchType`.
+
+Some examples:-
+* for `YourPlutarchType` = `PInteger`, `YourHaskellType` = `Integer`
+
+  ```hs
+  instance PUnsafeLiftDecl PInteger where type PLifted PInteger = Integer
+  ```
+* for `YourPlutarchType` = `PValidatorHash`, `YourHaskellType` = `ValidatorHash`
+
+  ```hs
+  instance PUnsafeLiftDecl PValidatorHash where type PLifted PValidatorHash = Plutus.ValidatorHash
+  ```
+* for `YourPlutarchType` = `PScriptPurpose`, `YourHaskellType` = `ScriptPurpose`
+
+  ```hs
+  instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
+  ```
+
+Now, let's get to implementing `PConstant` for the Haskell synonym, via the 3 methods. The first of which is `DerivePConstantViaCoercible`-
+```hs
+deriving via (DerivePConstantViaCoercible Integer PInteger Integer) instance (PConstant Integer)
+```
+`DerivePConstantViaCoercible` takes in 3 type parameters-
+* The Haskell type itself, for which `PConstant` is being implemented for.
+* The **direct** Plutarch synonym to the Haskell type.
+* The Haskell type that the first param is *actually represented as*. The first param must be coercible to this type.
+
+Pretty simple! Let's check out `DerivePConstantViaNewtype` now-
+```hs
+import qualified Plutus.V1.Ledger.Api as Plutus
+
+newtype PValidatorHash (s :: S) = PValidatorHash (Term s PByteString)
+
+...
+
+deriving via (DerivePConstantViaNewtype Plutus.ValidatorHash PValidatorHash PByteString) instance (PConstant Plutus.ValidatorHash)
+```
+`DerivePConstantViaNewtype` also takes in 3 type parameters-
+* The Haskell newtype itself, for which `PConstant` is being implemented for.
+* The Plutarch synonym to the Haskell type.
+* The actual Plutarch type corresponding to the Haskell type contained within the newtype.
+
+  E.g `ValidatorHash` is a newtype to a `ByteString`, which is synonymous to `PByteString`. In the same way, `PValidatorHash` is actually just a newtype to a `PByteString` term.
+During runtime, `ValidatorHash` is actually just a `ByteString`, the same applies for `PValidatorHash`. So we give it the `newtype` treatment with `DerivePConstantViaNewtype`!
+
+Finally, we have `DerivePConstantViaData` for `Data` values-
+```hs
+import qualified Plutus.V1.Ledger.Api as Plutus
+
+data PScriptPurpose (s :: S)
+  = PMinting (Term s (PDataList '[PCurrencySymbol]))
+  | PSpending (Term s (PDataList '[PTxOutRef]))
+  | PRewarding (Term s (PDataList '[PStakingCredential]))
+  | PCertifying (Term s (PDataList '[PDCert]))
+
+...
+
+deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) instance (PConstant Plutus.ScriptPurpose)
+```
+`DerivePConstantViaData` takes in 2 type parameters-
+* The Haskell type itself, for which `PConstant` is being implemented for.
+* The Plutarch synonym to the Haskell type.
+And that's all you need to know to implement `PConstant` and `PLift`!
 
 ### PlutusType, PCon, and PMatch
 `PlutusType` lets you construct and deconstruct Plutus Core constants from from a Plutarch type's constructors (possibly containing other Plutarch terms). It's essentially a combination of `PCon` (for constant construction) and `PMatch` (for constant deconstruction).
@@ -621,23 +715,23 @@ All `PlutusType` instances get `PCon` and `PMatch` instances for free!
 For types that cannot easily be both `PCon` and `PMatch` - feel free to implement just one of them! However, in general, **prefer implementing PlutusType**!
 
 ### PListLike
-The `PListLike` typeclass bestows beautiful, and familiar, list utilities to its instances. Plutarch has two list types- [`PBuiltinList`](#pbuiltinlist) and [`PList`](#plist). Both have `PListLike` instances! However, `PBuiltinList` can only contain builtin types. It cannot contain Plutarch functions. The element type of `PBuiltinList` can be constrained using `InDefaultUni a => PBuiltinList a`.
+The `PListLike` typeclass bestows beautiful, and familiar, list utilities to its instances. Plutarch has two list types- [`PBuiltinList`](#pbuiltinlist) and [`PList`](#plist). Both have `PListLike` instances! However, `PBuiltinList` can only contain builtin types. It cannot contain Plutarch functions. The element type of `PBuiltinList` can be constrained using `PLift a => PBuiltinList a`.
 
-> Note: `InDefaultUni` is exported from `Plutarch.Builtin`.
+> Note: `PLift` is exported from `Plutarch.Lift`.
 
-As long as it's a `InDefaultUni a => PBuiltinList a` or `PList a` - it has access to all the `PListLike` goodies, out of the box. It helps to look into some of these functions at [`Plutarch.List`](./../Plutarch/List.hs).
+As long as it's a `PLift a => PBuiltinList a` or `PList a` - it has access to all the `PListLike` goodies, out of the box. It helps to look into some of these functions at [`Plutarch.List`](./../Plutarch/List.hs).
 
 Along the way, you might be confronted by 2 big mean baddies ...err, constraints-
 ```hs
 PIsListLike list a
 ```
-This just means that the type `list a`, is *indeed* a valid `PListLike` containing valid elements! Of course, all `PList a`s are valid `PListLike`, but we have to think about `PBuiltinList` since it can only contain `InDefaultUni a => a` elements! So, in essence a function declared as-
+This just means that the type `list a`, is *indeed* a valid `PListLike` containing valid elements! Of course, all `PList a`s are valid `PListLike`, but we have to think about `PBuiltinList` since it can only contain `PLift a => a` elements! So, in essence a function declared as-
 ```hs
 pfoo :: PIsListLike list a => Term s (list a :--> list a)
 ```
 when specialized to `PBuiltinList`, can be simplified as-
 ```hs
-pfoo :: InDefaultUni a => Term s (PBuiltinList a :--> PBuiltinList a)
+pfoo :: PLift a => Term s (PBuiltinList a :--> PBuiltinList a)
 ```
 That's all it is. Don't be scared of it!
 
@@ -645,9 +739,9 @@ What about this one-
 ```hs
 PElemConstraint list a
 ```
-This one ensures that the element type `a` can indeed be contained within the list type - `list`. For `PList`, this constraint means nothing - it's always true. For `PBuiltinList`, it can be simplified as `InDefaultUni a`. Easy!
+This one ensures that the element type `a` can indeed be contained within the list type - `list`. For `PList`, this constraint means nothing - it's always true. For `PBuiltinList`, it can be simplified as `PLift a`. Easy!
 
-Here's two of my favorite `PListLike` utilites (not biased)-
+Here's two of my favorite `PListLike` utilities (not biased)-
 ```hs
 -- | Cons an element onto an existing list.
 pcons :: PElemConstraint list a => Term s (a :--> list a :--> list a)
@@ -669,7 +763,7 @@ x = pcons # 1 #$ pcons # 2 #$ pcons # 3 # pnil
 ```
 The code is the same, we just changed the type annotation. Cool!
 
-### PIsDataRepr & PDataList
+### PIsDataRepr
 `PIsDataRepr` and `PDataList` are the user-facing parts of an absolute workhorse of a machinery for easily deconstructing `Constr` [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md) values. It allows fully type safe matching on `Data` values, without embedding type information within the generated script - unlike PlutusTx.
 
 For example, `PScriptContext` - which is the Plutarch synonym to [`ScriptContext`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Contexts.html#t:ScriptContext) - has a `PIsDataRepr` instance, this lets you easily keep track of its type and match on it-
@@ -833,11 +927,11 @@ This is synonymous to Plutus Core [builtin unit](https://staging.plutus.iohkdev.
 ### PBuiltinList
 You'll be using builtin lists quite a lot in Plutarch. `PBuiltinList` has a [`PListLike`](#plistlike) instance, giving you access to all the goodies from there! However, `PBuiltinList` can only contain builtin types. In particular, it cannot contain Plutarch functions.
 
-You can express the constraint of "only builtin types" using `InDefaultUni`, exported from `Plutarch.Builtin`-`
+You can express the constraint of "only builtin types" using `PLift`, exported from `Plutarch.Builtin`-`
 ```hs
-validBuiltinList :: InDefaultUni a => PBuiltinList a
+validBuiltinList :: PLift a => PBuiltinList a
 ```
-As mentioned before, `PBuiltinList` gets access to all the `PListLike` utilities. Other than that, `InDefaultUni a => PBuiltinList a` also has a [`PlutusType`](#plutustype-pcon-and-pmatch) instance. You can construct a `PBuiltinList` using `pcon` (but you should prefer using `pcons` from `PListLike`)-
+As mentioned before, `PBuiltinList` gets access to all the `PListLike` utilities. Other than that, `PLift a => PBuiltinList a` also has a [`PlutusType`](#plutustype-pcon-and-pmatch) instance. You can construct a `PBuiltinList` using `pcon` (but you should prefer using `pcons` from `PListLike`)-
 ```hs
 > pcon $ PCons (phexByteStr "fe") $ pcon PNil
 ```
@@ -924,20 +1018,19 @@ You can also create a `PAsData` from a `PData`, but you lose specific type infor
 pdata :: Term s PData -> Term s (PAsData PData)
 ```
 
+### PDataRepr & PDataList
+TODO
+
+See: [`PIsDataRepr`](#pisdatarepr)
+
 ### PData
 This is a direct synonym to [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md). As such, it doesn't keep track of what "species" of `Data` it actually is. Is it an `I` data? Is it a `B` data? Nobody can tell for sure!
 
-Consider using `PAsData` instead for simple cases, i.e cases other than `Constr`.
+Consider using [`PAsData`](#pasdata) instead for simple cases, i.e cases other than `Constr`.
 
-Consider using `PDataRepr` instead when dealing with ADTs, i.e `Constr` data values.
+Consider using [`PDataRepr`/`PDataList`](#pdatarepr--pdatalist) instead when dealing with ADTs, i.e `Constr` data values.
 
 You can find more information about `PData` at [Developers' Corner](./DEVGUIDE.md).
-
-### PMaybe
-TODO
-
-### PEither
-TODO
 
 # Examples
 Be sure to check out [Compiling and Running](#compiling-and-running) first!
@@ -1128,7 +1221,7 @@ Outside of that straightforward usecase, figuring out when to use Haskell level 
 
 However, if the function is used *only once*, and making it Plutarch level causes extra `plam`s and `#`s to be introduced - you should just make it Haskell level. For example, consider the `pelimList` implementation-
 ```hs
-pelimList :: InDefaultUni a => Term s (a :--> PBuiltinList a :--> r) -> Term s r -> Term s (PBuiltinList a) -> Term s r
+pelimList :: PLift a => Term s (a :--> PBuiltinList a :--> r) -> Term s r -> Term s (PBuiltinList a) -> Term s r
 pelimList match_cons match_nil ls = pmatch ls $ \case
   PCons x xs -> match_cons # x # xs
   PNil -> match_nil
@@ -1148,7 +1241,7 @@ pmatch ls $ \case
 ```
 Extra `plam`s and `#`s have been introduced. Really, `pelimList` could have taken a Haskell level function instead-
 ```hs
-pelimList :: InDefaultUni a => (Term s a -> Term s (PBuiltinList a) :--> Term s r) -> Term s r -> Term s (PBuiltinList a) -> Term s r
+pelimList :: PLift a => (Term s a -> Term s (PBuiltinList a) :--> Term s r) -> Term s r -> Term s (PBuiltinList a) -> Term s r
 pelimList match_cons match_nil ls = pmatch ls $ \case
   PCons x xs -> match_cons x xs
   PNil -> match_nil
@@ -1220,6 +1313,8 @@ Giving unused arguments the type `_ :: Term _ _` should fix the issue generally.
 
 Because of this, you might want to enable  `PartialTypeSignatures`.
 
+It's also a good idea to give explicit type signatures to either the result of `plam` or the lambda passed to `plam`. Often, this will also give you significantly better error messages.
+
 ## Ambiguous type variable arising from a use of `pconstant`
 Sometimes, you might find `pconstant` raise "Ambiguous type variable error" without an explicit type annotation-
 ```hs
@@ -1236,10 +1331,8 @@ or, you can use `TypeApplications` to indicate the Plutarch type you're trying t
 pconstant @PScriptPurpose $ Minting "be"
 ```
 
-## No instance for `PLC.Contains DefaultUni (PHaskellType a)`
-This just means that the polymorphic Plutarch type variable `a`, is not constrained to be a builtin type. To fix this, simply add `InDefaultUni a =>` to your binding context. It'll ensure that the polymorphic Plutarch type `a`, is indeed represented by a builtin type under the hood.
-
-> Note: `InDefaultUni` is exported from `Plutarch.Builtin`
+## No instance for (PUnsafeLiftDecl a)
+You should add `PLift a` to the context! `PLift` is just a synonym to `PUnsafeLiftDecl`.
 
 ## Infinite loop / Infinite AST
 
