@@ -245,12 +245,11 @@ deriving via
 newtype PValue (s :: S) = PValue (Term s (PMap PCurrencySymbol (PMap PTokenName PInteger)))
   deriving
     ( PlutusType
-    -- FIXME: This requires `PIsData` instance for `PMap`.
-    -- , PIsData
+    , PIsData
     )
     via (DerivePNewtype PValue (PMap PCurrencySymbol (PMap PTokenName PInteger)))
 
--- FIXME: This fails typecheck.
+-- FIXME: This fails typecheck. Representations do not match.
 -- instance PUnsafeLiftDecl PValue where type PLifted PValue = Plutus.Value
 -- deriving via
 --   (DerivePConstantViaNewtype Plutus.Value PValue (PMap PCurrencySymbol (PMap PTokenName PInteger)))
@@ -572,10 +571,15 @@ instance PIsDataRepr PDCert where
 
 ---------- AssocMap
 
-newtype PMap (a :: PType) (b :: PType) (s :: S)
-  = PMap (Term s (PBuiltinMap a b))
+newtype PMap (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinMap k v))
+  deriving (PlutusType, PIsData) via (DerivePNewtype (PMap k v) (PBuiltinMap k v))
 
--- TODO: PMap needs instances for PConstant/PLift, PlutusType, and PIsData.
+-- FIXME: This fails typecheck. "Illegal type synonym family application ‘PLifted k’ in instance"
+-- instance PUnsafeLiftDecl (PMap k v) where type PLifted (PMap k v) = PlutusMap.Map (PLifted k) (PLifted v)
+-- deriving via
+--   (DerivePConstantViaNewtype (PlutusMap.Map (PLifted k) (PLifted v)) (PMap k v) (PBuiltinMap k v))
+--   instance
+--     (PConstant (PlutusMap.Map (PLifted k) (PLifted v)))
 
 ---------- Others
 
