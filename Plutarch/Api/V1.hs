@@ -74,7 +74,7 @@ import Plutarch.DataRepr (
   pmatchDataRepr,
   pmatchRepr,
  )
-import Plutarch.Integer (PInteger, PIntegral)
+import Plutarch.Integer (PInteger)
 import Plutarch.Lift (DerivePConstantViaNewtype (DerivePConstantViaNewtype), PConstant, PLifted, PUnsafeLiftDecl)
 
 -- ctor in-scope for deriving
@@ -290,8 +290,6 @@ deriving via
 
 newtype PPOSIXTime (s :: S)
   = PPOSIXTime (Term s PInteger)
-  deriving (PIntegral) via (PInteger)
-  deriving newtype (Num)
   deriving (PlutusType, PIsData) via (DerivePNewtype PPOSIXTime PInteger)
 
 instance PUnsafeLiftDecl PPOSIXTime where type PLifted PPOSIXTime = Plutus.POSIXTime

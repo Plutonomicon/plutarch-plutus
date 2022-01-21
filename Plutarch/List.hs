@@ -43,6 +43,12 @@ import Plutarch (PInner, PlutusType, pcon', pmatch')
 import Plutarch.Bool (PBool (PFalse, PTrue), PEq, pif, (#&&), (#==), (#||))
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (pconstant)
+import Plutarch.Numeric (
+  PAdditiveGroup ((#-)),
+  PAdditiveMonoid (pzero),
+  PAdditiveSemigroup ((#+)),
+  PMultiplicativeMonoid (pone),
+ )
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.Prelude
 
@@ -154,8 +160,8 @@ plength :: PIsListLike list a => Term s (list a :--> PInteger)
 plength = phoistAcyclic $
   plam $ \xs ->
     let go :: PIsListLike list a => Term s (list a :--> PInteger :--> PInteger)
-        go = (pfix #$ plam $ \self ls n -> pelimList (\_ xs -> self # xs # n + 1) n ls)
-     in go # xs # 0
+        go = (pfix #$ plam $ \self ls n -> pelimList (\_ xs -> self # xs # n #+ pone) n ls)
+     in go # xs # pzero
 
 {- |
   Unsafely index a BuiltinList,
@@ -166,9 +172,9 @@ punsafeIndex = phoistAcyclic $
   pfix #$ plam $
     \self n xs ->
       pif
-        (n #== 0)
+        (n #== pzero)
         (phead # xs)
-        (self # (n - 1) #$ ptail # xs)
+        (self # (n #- pone) #$ ptail # xs)
 
 --------------------------------------------------------------------------------
 

@@ -3,7 +3,7 @@ module Plutarch.Rational (
   preduce,
   pnumerator,
   pdenominator,
-  pfromInteger,
+  pratFromInt,
   pround,
   ptruncate,
   pproperFraction,
@@ -11,7 +11,6 @@ module Plutarch.Rational (
 
 import Plutarch.Prelude
 
-import Data.Ratio (denominator, numerator)
 import Plutarch (PlutusType (..), punsafeCoerce)
 import Plutarch.Bool (PEq (..), POrd (..), pif)
 import Plutarch.Builtin (
@@ -23,28 +22,42 @@ import Plutarch.Builtin (
   pasList,
   pforgetData,
  )
-import Plutarch.Integer (PInteger, PIntegral (pdiv, pmod))
+import Plutarch.Integer (PInteger)
+import Plutarch.Lift (pconstant)
 import Plutarch.List (PListLike (pcons, phead, pnil, ptail), pmap)
+import Plutarch.Natural ()
+import Plutarch.Numeric (
+  PAdditiveGroup ((#-)),
+  PAdditiveMonoid (pzero),
+  PAdditiveSemigroup ((#+)),
+  PIntegralDomain (pabs, psignum),
+  PMultiplicativeGroup (preciprocal),
+  PMultiplicativeMonoid (pone),
+  PMultiplicativeSemigroup ((#*)),
+  pdiv,
+  prem,
+ )
 import Plutarch.Pair (PPair (..))
 
 data PRational s = PRational (Term s PInteger) (Term s PInteger)
 
 instance PIsData PRational where
-  pfromData x' = phoistAcyclic (plam $ \x -> pListToRat #$ pmap # pasInt #$ pasList # pforgetData x) # x'
+  pfromData x' =
+    phoistAcyclic
+      ( plam $ \x ->
+          pListToRat #$ pmap # pasInt #$ pasList # pforgetData x
+      )
+      # x'
   pdata x' =
     phoistAcyclic
       ( plam $ \x ->
-          (punsafeCoerce :: Term _ (PAsData (PBuiltinList (PAsData PInteger))) -> Term _ (PAsData PRational)) $
-            pdata $ pRatToList # x
+          ( punsafeCoerce ::
+              Term _ (PAsData (PBuiltinList (PAsData PInteger))) ->
+              Term _ (PAsData PRational)
+          )
+            $ pdata $ pRatToList # x
       )
       # x'
-
-pRatToList :: Term s (PRational :--> PBuiltinList (PAsData PInteger))
-pRatToList = plam $ \x -> pmatch x $ \(PRational a b) ->
-  pcons # pdata a #$ pcons # pdata b #$ punsafeCoerce (pnil :: Term s (PBuiltinList PData))
-
-pListToRat :: Term s (PBuiltinList PInteger :--> PRational)
-pListToRat = plam $ \x -> pcon $ PRational (phead # x) (phead #$ ptail # x)
 
 instance PlutusType PRational where
   type PInner PRational c = (PInteger :--> PInteger :--> c) :--> c
@@ -57,7 +70,7 @@ instance PEq PRational where
       ( plam $ \l r ->
           pmatch l $ \(PRational ln ld) ->
             pmatch r $ \(PRational rn rd) ->
-              rd * ln #== rn * ld
+              rd #* ln #== rn #* ld
       )
       # l'
       # r'
@@ -68,7 +81,7 @@ instance POrd PRational where
       ( plam $ \l r ->
           pmatch l $ \(PRational ln ld) ->
             pmatch r $ \(PRational rn rd) ->
-              rd * ln #<= rn * ld
+              rd #* ln #<= rn #* ld
       )
       # l'
       # r'
@@ -78,80 +91,57 @@ instance POrd PRational where
       ( plam $ \l r ->
           pmatch l $ \(PRational ln ld) ->
             pmatch r $ \(PRational rn rd) ->
-              rd * ln #< rn * ld
+              rd #* ln #< rn #* ld
       )
       # l'
       # r'
 
-instance Num (Term s PRational) where
-  x' + y' =
+instance PAdditiveSemigroup PRational where
+  x' #+ y' =
     phoistAcyclic
       ( plam $ \x y ->
           preduce #$ pmatch x $
             \(PRational xn xd) ->
               pmatch y $ \(PRational yn yd) ->
-                pcon $ PRational (xn * yd + yn * xd) (xd * yd)
+                pcon $ PRational (xn #* yd #+ yn #* xd) (xd #* yd)
       )
       # x'
       # y'
 
-  x' - y' =
+instance PAdditiveMonoid PRational where
+  pzero = phoistAcyclic (pcon $ PRational pzero pone)
+
+instance PAdditiveGroup PRational where
+  x' #- y' =
     phoistAcyclic
       ( plam $ \x y ->
           preduce
             #$ pmatch x
             $ \(PRational xn xd) ->
               pmatch y $ \(PRational yn yd) ->
-                pcon $ PRational (xn * yd - yn * xd) (xd * yd)
+                pcon $ PRational (xn #* yd #- yn #* xd) (xd #* yd)
       )
       # x'
       # y'
 
-  x' * y' =
+instance PMultiplicativeSemigroup PRational where
+  x' #* y' =
     phoistAcyclic
       ( plam $ \x y ->
           preduce
             #$ pmatch x
             $ \(PRational xn xd) ->
               pmatch y $ \(PRational yn yd) ->
-                pcon $ PRational (xn * yn) (xd * yd)
+                pcon $ PRational (xn #* yn) (xd #* yd)
       )
       # x'
       # y'
 
-  negate x' =
-    phoistAcyclic
-      ( plam $ \x ->
-          pmatch x $ \(PRational xn xd) ->
-            pcon $ PRational (negate xn) xd
-      )
-      # x'
+instance PMultiplicativeMonoid PRational where
+  pone = phoistAcyclic (pcon $ PRational pone pone)
 
-  abs x' =
-    phoistAcyclic
-      ( plam $ \x ->
-          pmatch x $ \(PRational xn xd) ->
-            pcon $ PRational (abs xn) (abs xd)
-      )
-      # x'
-
-  signum x'' =
-    phoistAcyclic
-      ( plam $ \x' -> plet x' $ \x ->
-          pif
-            (x #== 0)
-            0
-            $ pif
-              (x #< 0)
-              (-1)
-              1
-      )
-      # x''
-
-  fromInteger n = pcon $ PRational (fromInteger n) 1
-
-instance Fractional (Term s PRational) where
-  recip x' =
+instance PMultiplicativeGroup PRational where
+  preciprocal x' =
     phoistAcyclic
       ( plam $ \x ->
           pmatch x $ \(PRational xn xd) ->
@@ -159,34 +149,19 @@ instance Fractional (Term s PRational) where
       )
       # x'
 
-  x' / y' =
-    phoistAcyclic
-      ( plam $ \x y ->
-          preduce
-            #$ pmatch x
-            $ \(PRational xn xd) ->
-              pmatch y $ \(PRational yn yd) ->
-                pcon (PRational (xn * yd) (xd * yn))
-      )
-      # x'
-      # y'
-
-  fromRational r =
-    pcon $ PRational (fromInteger $ numerator r) (fromInteger $ denominator r)
-
 preduce :: Term s (PRational :--> PRational)
 preduce = phoistAcyclic $
   plam $ \x ->
     pmatch x $ \(PRational xn xd) ->
       plet (pgcd # xn # xd) $ \r ->
-        plet (signum xd) $ \s ->
-          pcon $ PRational (s * pdiv # xn # r) (s * pdiv # xd # r)
+        plet (psignum xd) $ \s ->
+          pcon $ PRational (s #* pdiv xn r) (s #* pdiv xd r)
 
 pgcd :: Term s (PInteger :--> PInteger :--> PInteger)
 pgcd = phoistAcyclic $
   plam $ \x' y' ->
-    plet (abs x') $ \x ->
-      plet (abs y') $ \y ->
+    plet (pabs x') $ \x ->
+      plet (pabs y') $ \y ->
         plet (pmax # x # y) $ \a ->
           plet (pmin # x # y) $ \b ->
             pgcd' # a # b
@@ -197,9 +172,9 @@ pgcd' = phoistAcyclic $ pfix #$ plam $ f
   where
     f self a b =
       pif
-        (b #== 0)
+        (b #== pzero)
         a
-        $ self # b #$ pmod # a # b
+        $ self # b #$ prem a b
 
 pmin :: POrd a => Term s (a :--> a :--> a)
 pmin = phoistAcyclic $ plam $ \a b -> pif (a #<= b) a b
@@ -213,23 +188,23 @@ pnumerator = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational n _) -> n
 pdenominator :: Term s (PRational :--> PInteger)
 pdenominator = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational _ d) -> d
 
-pfromInteger :: Term s (PInteger :--> PRational)
-pfromInteger = phoistAcyclic $ plam $ \n -> pcon $ PRational n 1
+pratFromInt :: Term s (PInteger :--> PRational)
+pratFromInt = phoistAcyclic $ plam $ \n -> pcon $ PRational n pone
 
 pround :: Term s (PRational :--> PInteger)
 pround = phoistAcyclic $
   plam $ \x ->
     pmatch x $ \(PRational a b) ->
-      plet (pdiv # a # b) $ \base ->
-        plet (pmod # a # b) $ \rem ->
+      plet (pdiv a b) $ \base ->
+        plet (prem a b) $ \rem ->
           base
-            + pif
-              (pmod # b # 2 #== 1)
-              (pif (pdiv # b # 2 #< rem) 1 0)
+            #+ pif
+              (prem b (pconstant 2) #== pone)
+              (pif (pdiv b (pconstant 2) #< rem) pone pzero)
               ( pif
-                  (pdiv # b # 2 #== rem)
-                  (pmod # base # 2)
-                  (pif (rem #< pdiv # b # 2) 0 1)
+                  (pdiv b (pconstant 2) #== rem)
+                  (prem base (pconstant 2))
+                  (pif (rem #< pdiv b (pconstant 2)) pzero pone)
               )
 
 -- (pdiv # b # 2 + pmod # b # 2 #<= pmod # a # b) 1 0
@@ -238,14 +213,25 @@ ptruncate :: Term s (PRational :--> PInteger)
 ptruncate = phoistAcyclic $
   plam $ \x ->
     pmatch x $ \(PRational a b) ->
-      plet (pdiv # a # b) $ \q ->
+      plet (pdiv a b) $ \q ->
         pif
-          (0 #<= a)
+          (pzero #<= a)
           q
-          (q + pif (pmod # a # b #== 0) 0 1)
+          (q #+ pif (prem a b #== pzero) pzero pone)
 
 pproperFraction :: Term s (PRational :--> PPair PInteger PRational)
 pproperFraction = phoistAcyclic $
   plam $ \x ->
     plet (ptruncate # x) $ \q ->
-      pcon $ PPair q (x - pfromInteger # q)
+      pcon $ PPair q (x #- pratFromInt # q)
+
+pRatToList :: Term s (PRational :--> PBuiltinList (PAsData PInteger))
+pRatToList =
+  plam $ \x ->
+    pmatch x $ \(PRational a b) ->
+      pcons # pdata a
+        #$ pcons # pdata b
+        #$ punsafeCoerce (pnil :: Term s (PBuiltinList PData))
+
+pListToRat :: Term s (PBuiltinList PInteger :--> PRational)
+pListToRat = plam $ \x -> pcon $ PRational (phead # x) (phead #$ ptail # x)

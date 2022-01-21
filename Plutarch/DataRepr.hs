@@ -36,7 +36,15 @@ import Plutarch.Builtin (
   psndBuiltin,
  )
 import Plutarch.Integer (PInteger)
-import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstantFromRepr, pconstantToRepr)
+import Plutarch.Lift (
+  PConstant,
+  PConstantRepr,
+  PConstanted,
+  PLift,
+  pconstant,
+  pconstantFromRepr,
+  pconstantToRepr,
+ )
 import Plutarch.List (punsafeIndex)
 import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Api as Ledger
@@ -66,13 +74,16 @@ punDataRepr = phoistAcyclic $
     plet (pasConstr #$ pasData t) $ \d ->
       (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataList def))
 
-pindexDataRepr :: (KnownNat n) => Proxy n -> Term s (PDataRepr (def : defs) :--> PDataList (IndexList n (def : defs)))
+pindexDataRepr ::
+  (KnownNat n) =>
+  Proxy n ->
+  Term s (PDataRepr (def : defs) :--> PDataList (IndexList n (def : defs)))
 pindexDataRepr n = phoistAcyclic $
   plam $ \t ->
     plet (pasConstr #$ pasData t) $ \d ->
       let i :: Term _ PInteger = pfstBuiltin # d
        in pif
-            (i #== fromInteger (natVal n))
+            (i #== pconstant (natVal n))
             (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataList _))
             perror
 
@@ -84,7 +95,7 @@ pindexDataList n =
       punsafeIndex @PBuiltinList @PData # ind
   where
     ind :: Term s PInteger
-    ind = fromInteger $ natVal n
+    ind = pconstant $ natVal n
 
 data DataReprHandlers (out :: PType) (def :: [[PType]]) (s :: S) where
   DRHNil :: DataReprHandlers out '[] s
@@ -132,7 +143,7 @@ pmatchDataRepr d handlers =
           then go common (idx + 1) rest constr
           else
             pif
-              (fromInteger idx #== constr)
+              (pconstant idx #== constr)
               handler
               $ go common (idx + 1) rest constr
 

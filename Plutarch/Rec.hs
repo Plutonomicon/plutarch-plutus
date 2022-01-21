@@ -29,6 +29,7 @@ import Plutarch.Internal (
   mapTerm,
  )
 import Plutarch.List (phead, ptail)
+import Plutarch.Numeric (PAdditiveMonoid (pzero))
 import Plutarch.Trace (ptraceError)
 import qualified Rank2
 
@@ -178,7 +179,7 @@ verifySoleConstructor :: (Term s (PBuiltinList PData) -> Term s a) -> (Term s (P
 verifySoleConstructor f d =
   plet (pasConstr # pforgetData d) $ \constr ->
     pif
-      (pfstBuiltin # constr #== 0)
+      (pfstBuiltin # constr #== pzero)
       (f $ psndBuiltin # constr)
       (ptraceError "verifySoleConstructor failed")
 
