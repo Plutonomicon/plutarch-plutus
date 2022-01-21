@@ -1,5 +1,4 @@
 {-# LANGUAGE CPP #-}
-{-# LANGUAGE QualifiedDo #-}
 
 module Examples.Tracing (traceTests) where
 

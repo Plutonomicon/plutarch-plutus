@@ -123,10 +123,14 @@ library
     cpp-options: -DDevelopment
 
 test-suite examples
-  import:         c
-  type:           exitcode-stdio-1.0
-  main-is:        Main.hs
-  hs-source-dirs: examples
+  import:             c
+  type:               exitcode-stdio-1.0
+  main-is:            Main.hs
+  hs-source-dirs:     examples
+  default-extensions:
+    OverloadedRecordDot
+    QualifiedDo
+
   other-modules:
     Examples.Api
     Examples.Field

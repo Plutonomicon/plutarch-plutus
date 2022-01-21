@@ -1,6 +1,3 @@
-{-# LANGUAGE OverloadedRecordDot #-}
-{-# LANGUAGE QualifiedDo #-}
-
 module Examples.Api (tests) where
 
 import Plutarch
@@ -153,8 +150,8 @@ getSym =
 checkSignatory :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatory = plam $ \ph ctx' ->
   pletFields ctx' $ \ctx -> P.do
-    PSpending _ <- pmatch . pfromData $ ctx.purpose
-    let signatories = pfield @"signatories" # ctx.txInfo
+    PSpending _ <- pmatch . pfromData $ ctx . purpose
+    let signatories = pfield @"signatories" # ctx . txInfo
     pif
       (pelem # pdata ph # pfromData signatories)
       -- Success!
