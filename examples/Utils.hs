@@ -1,7 +1,19 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE ImplicitParams #-}
 
-module Utils (HasTester, standardTester, eval, equal, equalBudgeted, equal', fails, expect, throws, traces) where
+module Utils (
+  HasTester,
+  standardTester,
+  eval,
+  equal,
+  equalBudgeted,
+  equal',
+  fails,
+  expect,
+  throws,
+  traces,
+  succeeds,
+) where
 
 import Control.Exception (SomeException, try)
 import Data.Text (Text)
@@ -9,6 +21,7 @@ import Plutarch (ClosedTerm, compile, printScript)
 import Plutarch.Bool (PBool (PTrue))
 import Plutarch.Evaluate (evaluateBudgetedScript, evaluateScript)
 import Plutarch.Prelude
+import Plutarch.Unit (PUnit)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
 import qualified PlutusCore.Evaluation.Machine.ExMemory as ExMemory
@@ -23,6 +36,7 @@ newtype FailsImpl = FailsImpl {runFailsImpl :: forall (a :: PType). HasCallStack
 newtype ExpectImpl = ExpectImpl {runExpectImpl :: HasCallStack => ClosedTerm PBool -> Assertion}
 newtype ThrowsImpl = ThrowsImpl {runThrowsImpl :: forall (a :: PType). ClosedTerm a -> Assertion}
 newtype TracesImpl = TracesImpl {runTracesImpl :: forall (a :: PType). ClosedTerm a -> [Text] -> Assertion}
+newtype SucceedsImpl = SucceedsImpl {runSucceedsImpl :: ClosedTerm PUnit -> Assertion}
 
 data Tester = Tester
   { evalImpl :: EvalImpl
@@ -32,6 +46,7 @@ data Tester = Tester
   , expectImpl :: ExpectImpl
   , throwsImpl :: ThrowsImpl
   , tracesImpl :: TracesImpl
+  , succeedsImpl :: SucceedsImpl
   }
 
 type HasTester = (?tester :: Tester)
@@ -51,6 +66,7 @@ standardTester =
     , expectImpl = ExpectImpl expectImpl
     , throwsImpl = ThrowsImpl throwsImpl
     , tracesImpl = TracesImpl tracesImpl
+    , succeedsImpl = SucceedsImpl succeedsImpl
     }
   where
     evalImpl :: HasCallStack => ClosedTerm a -> IO Scripts.Script
@@ -89,6 +105,11 @@ standardTester =
       case evaluateScript $ compile x of
         Left e -> assertFailure $ "Script evalImpluation failed: " <> show e
         Right (_, traceLog, _) -> traceLog @?= sl
+
+    succeedsImpl :: HasCallStack => ClosedTerm PUnit -> Assertion
+    succeedsImpl x = case evaluateScript $ compile x of
+      Left e -> assertFailure $ "Script evaluation failed: " <> show e
+      Right _ -> pure ()
 
 {-
 shrinkTester :: Tester
@@ -155,6 +176,8 @@ throws :: (HasCallStack, HasTester) => ClosedTerm a -> Assertion
 throws = runThrowsImpl (throwsImpl ?tester)
 traces :: (HasCallStack, HasTester) => ClosedTerm a -> [Text] -> Assertion
 traces = runTracesImpl (tracesImpl ?tester)
+succeeds :: (HasCallStack, HasTester) => ClosedTerm PUnit -> Assertion
+succeeds = runSucceedsImpl (succeedsImpl ?tester)
 
 evalBudgeted :: HasCallStack => ClosedTerm a -> IO Scripts.Script
 evalBudgeted x = case evaluateBudgetedScript (ExBudget maxCPU maxMemory) $ compile x of

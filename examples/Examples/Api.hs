@@ -1,32 +1,36 @@
 {-# LANGUAGE OverloadedRecordDot #-}
+{-# LANGUAGE QualifiedDo #-}
 
 module Examples.Api (tests) where
 
 import Plutarch
 import Plutarch.Api.V1 (
   PCredential (..),
+  PCurrencySymbol,
+  PPubKeyHash,
   PScriptContext (..),
+  PScriptPurpose (PSpending),
   PTxInInfo (..),
   PTxInfo (..),
   PValue (..),
  )
-import Plutarch.Builtin (
-  PAsData,
-  PBuiltinList,
-  PData,
-  PIsData (..),
-  pasConstr,
-  pforgetData,
-  psndBuiltin,
- )
-import Plutarch.Field (pfield)
+import Plutarch.Bool (pif)
+import Plutarch.Builtin (PAsData, PBuiltinList, PData, PIsData (..), pasConstr, pforgetData, pfstBuiltin, psndBuiltin)
+import Plutarch.Field (pfield, pletFields)
+import Plutarch.List (pmap)
+
+-- import Plutarch.DataRepr (pindexDataList)
 import Plutarch.Lift (pconstant, plift)
-import Plutarch.List (phead, pmap)
+import Plutarch.List (pelem, phead)
+import qualified Plutarch.Monadic as P
+import Plutarch.Unit (PUnit)
+
 import Plutus.V1.Ledger.Api (
   Address (..),
   Credential (..),
   CurrencySymbol,
   DatumHash,
+  PubKeyHash,
   ScriptContext (..),
   ScriptPurpose (..),
   TxInInfo (..),
@@ -34,7 +38,7 @@ import Plutus.V1.Ledger.Api (
   TxOut (..),
   TxOutRef (..),
   ValidatorHash,
-  Value,
+  Value (..),
   toData,
  )
 import qualified Plutus.V1.Ledger.Interval as Interval
@@ -66,7 +70,7 @@ info =
     , txInfoDCert = []
     , txInfoWdrl = []
     , txInfoValidRange = Interval.always
-    , txInfoSignatories = []
+    , txInfoSignatories = signatories
     , txInfoData = []
     , txInfoId = "b0"
     }
@@ -104,6 +108,9 @@ datum = "d0"
 sym :: CurrencySymbol
 sym = "c0"
 
+signatories :: [PubKeyHash]
+signatories = ["ab01fe235c", "123014", "abcdef"]
+
 --------------------------------------------------------------------------------
 
 getTxInfo :: Term s (PScriptContext :--> PAsData PTxInfo)
@@ -138,10 +145,22 @@ inputCredentialHash =
               #$ (pfield @"resolved" # inp)
        in phead #$ psndBuiltin #$ pasConstr # pforgetData credential
 
----- | Get first CurrencySymbol from Value
--- getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
--- getSym =
---  plam $ \v -> pfstBuiltin #$ phead #$ v
+-- | Get first CurrencySymbol from Value
+getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
+getSym =
+  plam $ \v -> pfstBuiltin #$ phead # pto (pto v)
+
+checkSignatory :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
+checkSignatory = plam $ \ph ctx' ->
+  pletFields ctx' $ \ctx -> P.do
+    PSpending _ <- pmatch . pfromData $ ctx.purpose
+    let signatories = pfield @"signatories" # ctx.txInfo
+    pif
+      (pelem # pdata ph # pfromData signatories)
+      -- Success!
+      (pconstant ())
+      -- Signature not present.
+      perror
 
 tests :: HasTester => TestTree
 tests =
@@ -158,10 +177,12 @@ tests =
     , testCase "getting credentials" $ do
         plift (getCredentials ctx)
           @?= [toData validator]
-          -- , testCase "getting sym" $ do
-          --   plift (getSym #$ pfromData $ getMint #$ pfromData $ getTxInfo # ctx)
-          --    @?= sym
+    , testCase "getting sym" $ do
+        plift (pfromData $ getSym #$ pfromData $ getMint #$ getTxInfo # ctx) @?= sym
+    , testCase "signatory validator" $ do
+        () <$ traverse (\x -> succeeds $ checkSignatory # pconstant x # ctx) signatories
+        fails $ checkSignatory # pconstant "41" # ctx
     ]
 
 ctx_compiled :: String
-ctx_compiled = "(program 1.0.0 #d8799fd8799f9fd8799fd8799fd8799f41a0ff00ffd8799fd8799fd87a9f41a1ffd87a80ffa0d8799f41d0ffffffff80a0a141c0a149736f6d65746f6b656e018080d8799fd8799fd87980d87a80ffd8799fd87b80d87a80ffff8080d8799f41b0ffffd87a9fd8799fd8799f41a0ff00ffffff)"
+ctx_compiled = "(program 1.0.0 #d8799fd8799f9fd8799fd8799fd8799f41a0ff00ffd8799fd8799fd87a9f41a1ffd87a80ffa0d8799f41d0ffffffff80a0a141c0a149736f6d65746f6b656e018080d8799fd8799fd87980d87a80ffd8799fd87b80d87a80ffff9f45ab01fe235c4312301443abcdefff80d8799f41b0ffffd87a9fd8799fd8799f41a0ff00ffffff)"
