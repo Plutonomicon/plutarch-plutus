@@ -138,7 +138,7 @@ deriving via (DerivePConstantViaData Plutus.TxInfo PTxInfo) instance (PConstant 
 deriving anyclass instance Generic (PTxInfo s)
 
 instance PIsDataRepr PTxInfo where
-  type PIsDataReprRepr PTxInfo = '[GetPDataRecordArgs (Code (PTxInfo 'SI))]
+  type PIsDataReprRepr PTxInfo = GetPDataRecordArgs (Code (PTxInfo 'SI))
 
   pmatchRepr dat f =
     (pmatchDataRepr dat) ((DRHCons (f . PTxInfo)) $ DRHNil)
@@ -178,6 +178,7 @@ data PScriptPurpose (s :: S)
   | PSpending (Term s (PDataRecord '["_0" ':= PTxOutRef]))
   | PRewarding (Term s (PDataRecord '["_0" ':= PStakingCredential]))
   | PCertifying (Term s (PDataRecord '["_0" ':= PDCert]))
+  deriving stock (GHC.Generic)
   deriving
     (PMatch, PIsData)
     via (PIsDataReprInstances PScriptPurpose)
@@ -185,15 +186,10 @@ data PScriptPurpose (s :: S)
 
 instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
 deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) instance (PConstant Plutus.ScriptPurpose)
+deriving anyclass instance Generic (PScriptPurpose s)
 
 instance PIsDataRepr PScriptPurpose where
-  type
-    PIsDataReprRepr PScriptPurpose =
-      '[ '["_0" ':= PCurrencySymbol]
-       , '["_0" ':= PTxOutRef]
-       , '["_0" ':= PStakingCredential]
-       , '["_0" ':= PDCert]
-       ]
+  type PIsDataReprRepr PScriptPurpose = GetPDataRecordArgs (Code (PScriptPurpose 'SI))
 
   pmatchRepr dat f =
     pmatchDataRepr dat $
