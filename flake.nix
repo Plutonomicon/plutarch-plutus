@@ -450,11 +450,11 @@
         // {
           benchmark = {
             type = "app";
-            program = "${self.flake.${system}.packages."plutarch-benchmark:bench:perf"}/bin/perf";
+            program = "${self.flake.${system}.packages."plutarch-benchmark:bench:benchmark"}/bin/benchmark";
           };
-          perf-diff = {
+          benchmark-diff = {
             type = "app";
-            program = "${self.flake.${system}.packages."plutarch-benchmark:exe:perf-diff"}/bin/perf-diff";
+            program = "${self.flake.${system}.packages."plutarch-benchmark:exe:benchmark-diff"}/bin/benchmark-diff";
           };
         }
       );
@@ -486,7 +486,7 @@
                 echo
                 echo
 
-                nix --extra-experimental-features 'nix-command flakes' run .#perf-diff -- before.csv after.csv
+                nix --extra-experimental-features 'nix-command flakes' run .#benchmark-diff -- before.csv after.csv
               '';
             }
           );
