@@ -166,10 +166,9 @@ tests =
         ctx `equal'` ctx_compiled
     , testCase "getting txInfo" $ do
         plift (pfromData $ getTxInfo # ctx) @?= info
-    , -- FIXME: Need 'PConstant' etc. instance for 'PValue'
-      -- , testCase "getting mint" $ do
-      --     plift (pfromData $ getMint #$ pfromData $ getTxInfo # ctx) @?= mint
-      testCase "getting validator" $ do
+    , testCase "getting mint" $ do
+        plift (pfromData $ getMint #$ pfromData $ getTxInfo # ctx) @?= mint
+    , testCase "getting validator" $ do
         plift (pfromData $ getValidator #$ pfromData $ getInputs #$ pfromData $ getTxInfo # ctx)
           @?= validator
     , testCase "getting sym" $ do
