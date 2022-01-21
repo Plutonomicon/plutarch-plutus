@@ -3,6 +3,7 @@ module Examples.PlutusType (AB (..), swap, tests) where
 import Plutarch
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Integer (PInteger)
+import Plutarch.Lift (pconstant)
 
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase)
@@ -21,11 +22,11 @@ data AB (s :: S) = A | B
 instance PlutusType AB where
   type PInner AB _ = PInteger
 
-  pcon' A = 0
-  pcon' B = 1
+  pcon' A = pconstant 0
+  pcon' B = pconstant 1
 
   pmatch' x f =
-    pif (x #== 0) (f A) (f B)
+    pif (x #== pconstant 0) (f A) (f B)
 
 {- |
   Instead of using `pcon'` and `pmatch'` directly,
@@ -41,9 +42,9 @@ tests =
   testGroup
     "PlutusType examples"
     [ testCase "A encoded as 0" $ do
-        pcon A `equal` (0 :: Term s PInteger)
+        pcon A `equal` (pconstant 0 :: Term s PInteger)
     , testCase "B encoded as 2" $ do
-        pcon B `equal` (1 :: Term s PInteger)
+        pcon B `equal` (pconstant 1 :: Term s PInteger)
     , testCase "swap A == B" $ do
         swap (pcon A) `equal` pcon B
     , testCase "swap B == A" $ do

@@ -73,17 +73,17 @@ pBool :: HasTester => TestTree
 pBool =
   testGroup
     "Builtin PIsData instances: PBool"
-    [ testCase "pfromData (pdata True) ≡ True" $
+    [ testCase "pfromData (pdata True) = True" $
         testPToFrom @PBool True
-    , testCase "pfromData (pdata False) ≡ False" $
+    , testCase "pfromData (pdata False) = False" $
         testPToFrom @PBool False
-    , testCase "pfromData (PlutusTx.toData True) ≡ True" $
+    , testCase "pfromData (PlutusTx.toData True) = True" $
         testPFromDataCompat @PBool True
-    , testCase "pfromData (PlutusTx.toData False) ≡ False" $
+    , testCase "pfromData (PlutusTx.toData False) = False" $
         testPFromDataCompat @PBool False
-    , testCase "PlutusTx.fromData (pdata True) ≡ Just True" $
+    , testCase "PlutusTx.fromData (pdata True) = Just True" $
         testPDataCompat @PBool True
-    , testCase "PlutusTx.fromData (pdata False) ≡ Just False" $
+    , testCase "PlutusTx.fromData (pdata False) = Just False" $
         testPDataCompat @PBool False
     ]
 
@@ -91,10 +91,10 @@ pInteger :: HasTester => TestTree
 pInteger =
   testGroup
     "PInteger"
-    [ testCase "pfromData (pdata 100) ≡ 100" $
+    [ testCase "pfromData (pdata 100) = 100" $
         testPToFrom @PInteger 100
-    , testCase "pfromData (PlutusTx.toData 100) ≡ 100" $
+    , testCase "pfromData (PlutusTx.toData 100) = 100" $
         testPFromDataCompat @PInteger 100
-    , testCase "PlutusTx.fromData (pdata 100) ≡ Just 100" $
+    , testCase "PlutusTx.fromData (pdata 100) = Just 100" $
         testPFromDataCompat @PInteger 100
     ]

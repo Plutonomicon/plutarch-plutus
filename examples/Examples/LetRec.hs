@@ -6,6 +6,8 @@ import Plutarch (pcon', pmatch', printTerm, punsafeBuiltin, punsafeCoerce)
 import Plutarch.Bool (PBool (PFalse, PTrue), pif, (#==))
 import Plutarch.Builtin (PAsData, PBuiltinList (PNil), PIsData, pdata, pforgetData, pfromData)
 import Plutarch.Integer (PInteger)
+import Plutarch.Lift (pconstant)
+import Plutarch.Numeric (PAdditiveGroup ((#-)))
 import Plutarch.Prelude
 import Plutarch.Rec (
   DataReader (DataReader, readData),
@@ -50,7 +52,7 @@ instance PIsData (PRecord SampleRecord) where
 
 recordData :: forall s. Term s (PRecord SampleRecord) -> Term s (PAsData (PRecord SampleRecord))
 recordData r = pmatch r $ \(PRecord SampleRecord {sampleBool, sampleInt, sampleString}) ->
-  punsafeBuiltin PLC.ConstrData # (0 :: Term s PInteger)
+  punsafeBuiltin PLC.ConstrData # (pconstant 0 :: Term s PInteger)
     #$ pconsBuiltin # pforgetData (pdata sampleBool)
     #$ pconsBuiltin # pforgetData (pdata sampleInt)
     #$ pconsBuiltin # pforgetData (pdata $ pencodeUtf8 # sampleString)
@@ -73,7 +75,7 @@ sampleRecord =
     PRecord
       SampleRecord
         { sampleBool = pcon PFalse
-        , sampleInt = 6
+        , sampleInt = pconstant 6
         , sampleString = "Salut, Monde!"
         }
 
@@ -83,7 +85,7 @@ sampleRecur =
     const
       SampleRecord
         { sampleBool = pcon PTrue
-        , sampleInt = 12
+        , sampleInt = pconstant 12
         , sampleString = "Hello, World!"
         }
 
@@ -93,8 +95,8 @@ evenOdd = letrec evenOddRecursion
     evenOddRecursion :: EvenOdd (Term s) -> EvenOdd (Term s)
     evenOddRecursion EvenOdd {even, odd} =
       EvenOdd
-        { even = plam $ \n -> pif (n #== 0) (pcon PTrue) (odd #$ n - 1)
-        , odd = plam $ \n -> pif (n #== 0) (pcon PFalse) (even #$ n - 1)
+        { even = plam $ \n -> pif (n #== pconstant 0) (pcon PTrue) (odd #$ n #- pconstant 1)
+        , odd = plam $ \n -> pif (n #== pconstant 0) (pcon PFalse) (even #$ n #- pconstant 1)
         }
 
 sampleData :: Term s (PAsData (PRecord SampleRecord))
@@ -119,8 +121,8 @@ tests =
         [ testCase "record" $ (printTerm $ sampleRecur # field sampleInt) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> i1 True 12 \"Hello, World!\") (\\i0 -> \\i0 -> \\i0 -> i2)))"
         , testCase "record field" $ equal' (sampleRecur # field sampleInt) "(program 1.0.0 12)"
         , testCase "even" $ (printTerm $ evenOdd # field even) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> i1 (\\i0 -> force (i4 (equalsInteger i1 0) (delay True) (delay (i3 (\\i0 -> \\i0 -> i1) (subtractInteger i1 1))))) (\\i0 -> force (i4 (equalsInteger i1 0) (delay False) (delay (i3 i5 (subtractInteger i1 1)))))) i2) (force ifThenElse)) (\\i0 -> \\i0 -> i2)))"
-        , testCase "even 4" $ equal' (evenOdd # field even # (4 :: Term s PInteger)) "(program 1.0.0 True)"
-        , testCase "even 5" $ equal' (evenOdd # field even # (5 :: Term s PInteger)) "(program 1.0.0 False)"
+        , testCase "even 4" $ equal' (evenOdd # field even # (pconstant 4 :: Term s PInteger)) "(program 1.0.0 True)"
+        , testCase "even 5" $ equal' (evenOdd # field even # (pconstant 5 :: Term s PInteger)) "(program 1.0.0 False)"
         ]
     , testGroup
         "Data"

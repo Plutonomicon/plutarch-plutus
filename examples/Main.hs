@@ -20,6 +20,10 @@ import Plutarch.Either (PEither (PLeft, PRight))
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Lift (pconstant, plift)
+import Plutarch.Numeric (
+  PAdditiveGroup ((#-)),
+  PAdditiveSemigroup ((#+)),
+ )
 import Plutarch.Prelude
 import Plutarch.String (PString)
 import Plutarch.Unit (PUnit (..))
@@ -42,32 +46,32 @@ main :: IO ()
 main = defaultMain $ testGroup "all tests" [standardTests] -- , shrinkTests ]
 
 add1 :: Term s (PInteger :--> PInteger :--> PInteger)
-add1 = plam $ \x y -> x + y + 1
+add1 = plam $ \x y -> x #+ y #+ pconstant 1
 
 add1Hoisted :: Term s (PInteger :--> PInteger :--> PInteger)
-add1Hoisted = phoistAcyclic $ plam $ \x y -> x + y + 1
+add1Hoisted = phoistAcyclic $ plam $ \x y -> x #+ y #+ pconstant 1
 
 example1 :: Term s PInteger
-example1 = add1Hoisted # 12 # 32 + add1Hoisted # 5 # 4
+example1 = add1Hoisted # pconstant 12 # pconstant 32 #+ add1Hoisted # pconstant 5 # pconstant 4
 
 example2 :: Term s (PEither PInteger PInteger :--> PInteger)
 example2 = plam $ \x -> pmatch x $ \case
-  PLeft n -> n + 1
-  PRight n -> n - 1
+  PLeft n -> n #+ pconstant 1
+  PRight n -> n #- pconstant 1
 
 fib :: Term s (PInteger :--> PInteger)
 fib = phoistAcyclic $
   pfix #$ plam $ \self n ->
     pif
-      (n #== 0)
-      0
+      (n #== pconstant 0)
+      (pconstant 0)
       $ pif
-        (n #== 1)
-        1
-        $ self # (n - 1) + self # (n - 2)
+        (n #== pconstant 1)
+        (pconstant 1)
+        $ self # (n #- pconstant 1) #+ self # (n #- pconstant 2)
 
 uglyDouble :: Term s (PInteger :--> PInteger)
-uglyDouble = plam $ \n -> plet n $ \n1 -> plet n1 $ \n2 -> n2 + n2
+uglyDouble = plam $ \n -> plet n $ \n1 -> plet n1 $ \n2 -> n2 #+ n2
 
 -- FIXME: Make the below impossible using run-time checks.
 -- loop :: Term (PInteger :--> PInteger)
@@ -106,7 +110,7 @@ plutarchTests =
     , testCase "example2" $ (printTerm example2) @?= "(program 1.0.0 (\\i0 -> i1 (\\i0 -> addInteger i1 1) (\\i0 -> subtractInteger i1 1)))"
     , testCase "pfix" $ (printTerm pfix) @?= "(program 1.0.0 (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))))"
     , testCase "fib" $ (printTerm fib) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> force (i3 (equalsInteger i1 0) (delay 0) (delay (force (i3 (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2)))))))))) (force ifThenElse)))"
-    , testCase "fib 9 == 34" $ equal (fib # 9) (pconstant @PInteger 34)
+    , testCase "fib 9 == 34" $ equal (fib # pconstant 9) (pconstant @PInteger 34)
     , testCase "uglyDouble" $ (printTerm uglyDouble) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
     , testCase "1 + 2 == 3" $ equal (pconstant @PInteger $ 1 + 2) (pconstant @PInteger 3)
     , testCase "fails: perror" $ fails perror
@@ -138,17 +142,17 @@ plutarchTests =
     , testCase "PByteString mempty" $ expect $ mempty #== phexByteStr ""
     , testCase "pconsByteStr" $
         let xs = "5B1F"; b = "41"
-         in (pconsBS # fromInteger (readByte b) # phexByteStr xs) `equal` phexByteStr (b <> xs)
+         in (pconsBS # pconstant (readByte b) # phexByteStr xs) `equal` phexByteStr (b <> xs)
     , testCase "plengthByteStr" $ do
         (plengthBS # phexByteStr "012f") `equal` pconstant @PInteger 2
-        expect $ (plengthBS # phexByteStr "012f") #== 2
+        expect $ (plengthBS # phexByteStr "012f") #== pconstant 2
         let xs = phexByteStr "48fCd1"
-        (plengthBS #$ pconsBS # 91 # xs)
-          `equal` (1 + plengthBS # xs)
+        (plengthBS #$ pconsBS # pconstant 91 # xs)
+          `equal` (pconstant 1 #+ plengthBS # xs)
     , testCase "pindexByteStr" $
-        (pindexBS # phexByteStr "4102af" # 1) `equal` pconstant @PInteger 0x02
+        (pindexBS # phexByteStr "4102af" # pconstant 1) `equal` pconstant @PInteger 0x02
     , testCase "psliceByteStr" $
-        (psliceBS # 2 # 3 # phexByteStr "4102afde5b2a") `equal` phexByteStr "afde5b"
+        (psliceBS # pconstant 2 # pconstant 3 # phexByteStr "4102afde5b2a") `equal` phexByteStr "afde5b"
     , testCase "pconstant - phexByteStr relation" $ do
         let a = ["42", "ab", "df", "c9"]
         pconstant @PByteString (BS.pack $ map readByte a) `equal` phexByteStr (concat a)
@@ -186,17 +190,17 @@ plutarchTests =
               _ -> perror
          in printTerm f @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> force (force ifThenElse (equalsInteger 0 i2) (delay i1) (delay error))) (force (force sndPair) i2)) (force (force fstPair) i1)) (unConstrData #d8799f58201111111111111111111111111111111111111111111111111111111111111111ff)))"
     , testCase "error # 1 => error" $
-        printTerm (perror # (1 :: Term s PInteger)) @?= "(program 1.0.0 error)"
+        printTerm (perror # (pconstant 1 :: Term s PInteger)) @?= "(program 1.0.0 error)"
     , testCase "fib error => error" $
         printTerm (fib # perror) @?= "(program 1.0.0 error)"
     , testCase "force (delay 0) => 0" $
-        printTerm (pforce . pdelay $ (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
+        printTerm (pforce . pdelay $ (pconstant 0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
     , testCase "delay (force (delay 0)) => delay 0" $
-        printTerm (pdelay . pforce . pdelay $ (0 :: Term s PInteger)) @?= "(program 1.0.0 (delay 0))"
+        printTerm (pdelay . pforce . pdelay $ (pconstant 0 :: Term s PInteger)) @?= "(program 1.0.0 (delay 0))"
     , testCase "id # 0 => 0" $
-        printTerm ((plam' $ \x -> x) # (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
+        printTerm ((plam' $ \x -> x) # (pconstant 0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
     , testCase "hoist id 0 => 0" $
-        printTerm ((phoistAcyclic $ plam' $ \x -> x) # (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
+        printTerm ((phoistAcyclic $ plam' $ \x -> x) # (pconstant 0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
     , testCase "hoist fstPair => fstPair" $
         printTerm (phoistAcyclic (punsafeBuiltin PLC.FstPair)) @?= "(program 1.0.0 fstPair)"
     , testCase "throws: hoist error" $ throws $ phoistAcyclic perror
@@ -204,34 +208,34 @@ plutarchTests =
         expect $ let dat = pconstant @PData (PlutusTx.List [PlutusTx.Constr 1 [PlutusTx.I 0]]) in dat #== dat
         expect $ pnot #$ pconstant @PData (PlutusTx.Constr 0 []) #== pconstant @PData (PlutusTx.I 42)
     , testCase "PAsData equality" $ do
-        expect $ let dat = pdata @PInteger 42 in dat #== dat
+        expect $ let dat = pdata @PInteger (pconstant 42) in dat #== dat
         expect $ pnot #$ pdata (phexByteStr "12") #== pdata (phexByteStr "ab")
     , testCase "Tracing" $ traceTests
     , testGroup
-        "η-reduction optimisations"
-        [ testCase "λx y. addInteger x y => addInteger" $
-            printTerm (plam $ \x y -> (x :: Term _ PInteger) + y) @?= "(program 1.0.0 addInteger)"
-        , testCase "λx y. hoist (force mkCons) x y => force mkCons" $
+        "n-reduction optimisations"
+        [ testCase "\\x y. addInteger x y => addInteger" $
+            printTerm (plam $ \x y -> (x :: Term _ PInteger) #+ y) @?= "(program 1.0.0 addInteger)"
+        , testCase "\\x y. hoist (force mkCons) x y => force mkCons" $
             printTerm (plam $ \x y -> (pforce $ punsafeBuiltin PLC.MkCons) # x # y) @?= "(program 1.0.0 (force mkCons))"
-        , testCase "λx y. hoist mkCons x y => mkCons x y" $
+        , testCase "\\x y. hoist mkCons x y => mkCons x y" $
             printTerm (plam $ \x y -> (punsafeBuiltin PLC.MkCons) # x # y) @?= "(program 1.0.0 (\\i0 -> \\i0 -> mkCons i2 i1))"
-        , testCase "λx y. hoist (λx y. x + y - y - x) x y => λx y. x + y - y - x" $
-            printTerm (plam $ \x y -> (phoistAcyclic $ plam $ \(x :: Term _ PInteger) y -> x + y - y - x) # x # y) @?= "(program 1.0.0 (\\i0 -> \\i0 -> subtractInteger (subtractInteger (addInteger i2 i1) i1) i2))"
-        , testCase "λx y. x + x" $
-            printTerm (plam $ \(x :: Term _ PInteger) (_ :: Term _ PInteger) -> x + x) @?= "(program 1.0.0 (\\i0 -> \\i0 -> addInteger i2 i2))"
+        , testCase "\\x y. hoist (\\x y. x + y - y - x) x y => \\x y. x + y - y - x" $
+            printTerm (plam $ \x y -> (phoistAcyclic $ plam $ \(x :: Term _ PInteger) y -> x #+ y #- y #- x) # x # y) @?= "(program 1.0.0 (\\i0 -> \\i0 -> subtractInteger (subtractInteger (addInteger i2 i1) i1) i2))"
+        , testCase "\\x y. x + x" $
+            printTerm (plam $ \(x :: Term _ PInteger) (_ :: Term _ PInteger) -> x #+ x) @?= "(program 1.0.0 (\\i0 -> \\i0 -> addInteger i2 i2))"
         , testCase "let x = addInteger in x 1 1" $
-            printTerm (plet (punsafeBuiltin PLC.AddInteger) $ \x -> x # (1 :: Term _ PInteger) # (1 :: Term _ PInteger)) @?= "(program 1.0.0 (addInteger 1 1))"
+            printTerm (plet (punsafeBuiltin PLC.AddInteger) $ \x -> x # (pconstant 1 :: Term _ PInteger) # (pconstant 1 :: Term _ PInteger)) @?= "(program 1.0.0 (addInteger 1 1))"
         , testCase "let x = 0 in x => 0" $
-            printTerm (plet 0 $ \(x :: Term _ PInteger) -> x) @?= "(program 1.0.0 0)"
-        , testCase "let x = hoist (λx. x + x) in 0 => 0" $
-            printTerm (plet (phoistAcyclic $ plam $ \(x :: Term _ PInteger) -> x + x) $ \_ -> (0 :: Term _ PInteger)) @?= "(program 1.0.0 0)"
-        , testCase "let x = hoist (λx. x + x) in x" $
-            printTerm (plet (phoistAcyclic $ plam $ \(x :: Term _ PInteger) -> x + x) $ \x -> x) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
-        , testCase "λx y. sha2_256 x y =>!" $
+            printTerm (plet (pconstant 0) $ \(x :: Term _ PInteger) -> x) @?= "(program 1.0.0 0)"
+        , testCase "let x = hoist (\\x. x + x) in 0 => 0" $
+            printTerm (plet (phoistAcyclic $ plam $ \(x :: Term _ PInteger) -> x #+ x) $ \_ -> (pconstant 0 :: Term _ PInteger)) @?= "(program 1.0.0 0)"
+        , testCase "let x = hoist (\\x. x + x) in x" $
+            printTerm (plet (phoistAcyclic $ plam $ \(x :: Term _ PInteger) -> x #+ x) $ \x -> x) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
+        , testCase "\\x y. sha2_256 x y =>!" $
             printTerm ((plam $ \x y -> punsafeBuiltin PLC.Sha2_256 # x # y)) @?= "(program 1.0.0 (\\i0 -> \\i0 -> sha2_256 i2 i1))"
-        , testCase "let f = hoist (λx. x) in λx y. f x y => λx y. x y" $
+        , testCase "let f = hoist (\\x. x) in \\x y. f x y => \\x y. x y" $
             printTerm ((plam $ \x y -> (phoistAcyclic $ plam' $ \x -> x) # x # y)) @?= "(program 1.0.0 (\\i0 -> \\i0 -> i2 i1))"
-        , testCase "let f = hoist (λx. x True) in λx y. f x y => λx y. (λz. z True) x y" $
+        , testCase "let f = hoist (\\x. x True) in \\x y. f x y => \\x y. (\\z. z True) x y" $
             printTerm ((plam $ \x y -> ((phoistAcyclic $ plam $ \x -> x # pcon PTrue)) # x # y)) @?= "(program 1.0.0 (\\i0 -> \\i0 -> (\\i0 -> i1 True) i2 i1))"
         ]
     , testGroup
@@ -259,16 +263,16 @@ plutarchTests =
         ]
     , testGroup
         "Boolean operations"
-        [ testCase "True && False ≡ False" $ equal (pcon PTrue #&& pcon PFalse) (pcon PFalse)
-        , testCase "False && True ≡ False" $ equal (pcon PFalse #&& pcon PTrue) (pcon PFalse)
-        , testCase "False && perror ≡ False" $ equal (pcon PFalse #&& perror) (pcon PFalse)
+        [ testCase "True && False = False" $ equal (pcon PTrue #&& pcon PFalse) (pcon PFalse)
+        , testCase "False && True = False" $ equal (pcon PFalse #&& pcon PTrue) (pcon PFalse)
+        , testCase "False && perror = False" $ equal (pcon PFalse #&& perror) (pcon PFalse)
         , testCase "fails: pand False perror" $ fails $ pand # pcon PFalse # perror
-        , testCase "pand False (pdelay perror) ≡ False" $ equal (pand # pcon PFalse # pdelay perror) (pdelay $ pcon PFalse)
-        , testCase "True || False ≡ True" $ equal (pcon PTrue #|| pcon PFalse) (pcon PTrue)
-        , testCase "False || True ≡ True" $ equal (pcon PFalse #|| pcon PTrue) (pcon PTrue)
-        , testCase "True || perror ≡ True" $ equal (pcon PTrue #|| perror) (pcon PTrue)
+        , testCase "pand False (pdelay perror) = False" $ equal (pand # pcon PFalse # pdelay perror) (pdelay $ pcon PFalse)
+        , testCase "True || False = True" $ equal (pcon PTrue #|| pcon PFalse) (pcon PTrue)
+        , testCase "False || True = True" $ equal (pcon PFalse #|| pcon PTrue) (pcon PTrue)
+        , testCase "True || perror = True" $ equal (pcon PTrue #|| perror) (pcon PTrue)
         , testCase "fails: por True perror" $ fails $ por # pcon PFalse # perror
-        , testCase "por True (pdelay perror) ≡ True" $ equal (por # pcon PTrue # pdelay perror) (pdelay $ pcon PTrue)
+        , testCase "por True (pdelay perror) = True" $ equal (por # pcon PTrue # pdelay perror) (pdelay $ pcon PTrue)
         ]
     ]
 
@@ -282,7 +286,7 @@ uplcTests =
               punsafeConstantInternal . PLC.Some $
                 PLC.ValueOf (PLC.DefaultUniApply PLC.DefaultUniProtoList PLC.DefaultUniInteger) [1]
             l' :: Term _ (PBuiltinList PInteger) =
-              pforce (punsafeBuiltin PLC.MkCons) # (2 :: Term _ PInteger) # l
+              pforce (punsafeBuiltin PLC.MkCons) # (pconstant 2 :: Term _ PInteger) # l
          in equal' l' "(program 1.0.0 [2,1])"
     , testCase "fails: True:[1]" $
         let l :: Term _ (PBuiltinList POpaque) =
@@ -303,7 +307,7 @@ uplcTests =
          in equal' p "(program 1.0.0 (1, 2))"
     , testCase "fails: MkPair 1 2" $
         let p :: Term _ (PBuiltinPair PInteger PInteger) =
-              punsafeBuiltin PLC.MkPairData # (1 :: Term _ PInteger) # (2 :: Term _ PInteger)
+              punsafeBuiltin PLC.MkPairData # (pconstant 1 :: Term _ PInteger) # (pconstant 2 :: Term _ PInteger)
          in fails p
     ]
 

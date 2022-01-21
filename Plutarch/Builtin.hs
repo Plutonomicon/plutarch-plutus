@@ -43,10 +43,6 @@ import Plutarch.Lift (
   pconstantToRepr,
  )
 import Plutarch.List (PListLike (..), plistEquals)
-import Plutarch.Numeric (
-  PAdditiveMonoid (pzero),
-  PMultiplicativeMonoid (pone),
- )
 import Plutarch.Prelude
 import qualified PlutusCore as PLC
 import PlutusTx (Data)
@@ -232,7 +228,7 @@ instance PIsData PBool where
     (phoistAcyclic $ plam toBool) # pforgetData x
     where
       toBool :: Term s PData -> Term s PBool
-      toBool d = pfstBuiltin # (pasConstr # d) #== pone
+      toBool d = pfstBuiltin # (pasConstr # d) #== pconstant 1
 
   pdata x =
     (phoistAcyclic $ plam toData) # x
@@ -240,7 +236,7 @@ instance PIsData PBool where
       toData :: Term s PBool -> Term s (PAsData PBool)
       toData b =
         punsafeBuiltin PLC.ConstrData
-          # (pif' # b # pone # (pzero :: Term s PInteger))
+          # (pif' # b # pconstant 1 # (pconstant 0 :: Term s PInteger))
           # nil
 
       nil :: Term s (PBuiltinList PData)
