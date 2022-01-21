@@ -452,6 +452,10 @@
             type = "app";
             program = "${self.flake.${system}.packages."plutarch-benchmark:bench:perf"}/bin/perf";
           };
+          perf-diff = {
+            type = "app";
+            program = "${self.flake.${system}.packages."plutarch-benchmark:exe:perf-diff"}/bin/perf-diff";
+          };
         }
       );
       devShell = perSystem (system: self.flake.${system}.devShell);
@@ -471,10 +475,10 @@
                 cd plutarch
 
                 git checkout $(git merge-base origin/staging ${src.rev})
-                nix --extra-experimental-features 'nix-command flakes' run .#benchmark > before.csv
+                nix --extra-experimental-features 'nix-command flakes' run .#benchmark -- --csv > before.csv
 
                 git checkout ${src.rev}
-                nix --extra-experimental-features 'nix-command flakes' run .#benchmark > after.csv
+                nix --extra-experimental-features 'nix-command flakes' run .#benchmark -- --csv > after.csv
 
                 echo
                 echo
@@ -482,7 +486,7 @@
                 echo
                 echo
 
-                diff before.csv after.csv
+                nix --extra-experimental-features 'nix-command flakes' run .#perf-diff -- before.csv after.csv
               '';
             }
           );
