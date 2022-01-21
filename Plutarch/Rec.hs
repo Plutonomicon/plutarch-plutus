@@ -22,8 +22,18 @@ import Data.Functor.Compose (Compose (Compose, getCompose))
 import Data.Kind (Type)
 import Data.Monoid (Dual (Dual, getDual), Endo (Endo, appEndo), Sum (Sum, getSum))
 import Numeric.Natural (Natural)
-import Plutarch (PlutusType (PInner, pcon', pmatch'),
-                 pcon, phoistAcyclic, plam, plet, pmatch, punsafeBuiltin, punsafeCoerce, (#), (:-->))
+import Plutarch (
+  PlutusType (PInner, pcon', pmatch'),
+  pcon,
+  phoistAcyclic,
+  plam,
+  plet,
+  pmatch,
+  punsafeBuiltin,
+  punsafeCoerce,
+  (#),
+  (:-->),
+ )
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Builtin (PAsData, PBuiltinList, PData, pasConstr, pforgetData, pfstBuiltin, psndBuiltin)
 import Plutarch.Integer (PInteger)
@@ -34,7 +44,7 @@ import Plutarch.Internal (
   TermResult (TermResult, getDeps, getTerm),
   mapTerm,
  )
-import Plutarch.List (pcons, phead, ptail, pnil)
+import Plutarch.List (pcons, phead, pnil, ptail)
 import Plutarch.Trace (ptraceError)
 import qualified PlutusCore as PLC
 import qualified Rank2
@@ -59,8 +69,12 @@ rcon r = plam (\f -> punsafeCoerce $ appEndo (getDual $ Rank2.foldMap (Dual . En
     applyField x f = punsafeCoerce f # x
 
 -- | Match a Scott-encoded record using a function that takes a Haskell record value.
-rmatch :: forall r s t. (Rank2.Distributive r, Rank2.Traversable r)
-       => (forall t. Term s (ScottEncoding r t)) -> (r (Term s) -> Term s t) -> Term s t
+rmatch ::
+  forall r s t.
+  (Rank2.Distributive r, Rank2.Traversable r) =>
+  (forall t. Term s (ScottEncoding r t)) ->
+  (r (Term s) -> Term s t) ->
+  Term s t
 rmatch p f = p # arg
   where
     arg :: Term s (ScottEncoded r t)
@@ -122,7 +136,7 @@ variables baseDepth = Rank2.cotraverse var id
       seq i' (put i')
       return $
         Term $
-          \depth->
+          \depth ->
             TermResult
               { getTerm = RVar (depth - baseDepth - i')
               , getDeps = []
@@ -158,8 +172,8 @@ recordDataFromFieldWriters writer = DataWriter (`pmatch` writeRecord)
   where
     writeRecord :: PRecord r s -> Term s (PAsData (PRecord r))
     writeRecord (PRecord r) =
-      punsafeBuiltin PLC.ConstrData # (0 :: Term s PInteger) #
-      appEndo (Rank2.foldMap (Endo . consField) (Rank2.liftA2 writeField writer r)) pnil
+      punsafeBuiltin PLC.ConstrData # (0 :: Term s PInteger)
+        # appEndo (Rank2.foldMap (Endo . consField) (Rank2.liftA2 writeField writer r)) pnil
     consField :: Compose (Term s) PAsData a -> Term s (PBuiltinList PData) -> Term s (PBuiltinList PData)
     consField (Compose h) t = pcons # pforgetData h # t
     writeField :: DataWriter s a -> Term s a -> Compose (Term s) PAsData a
