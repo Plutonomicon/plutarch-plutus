@@ -132,9 +132,9 @@ tripSum :: Term s ((Triplet PInteger) :--> PInteger)
 tripSum =
   plam $ \x -> pletFields x $
     \fs ->
-      pfromData fs . x
-        + pfromData fs . y
-        + pfromData fs . z
+      pfromData fs.x
+        + pfromData fs.y
+        + pfromData fs.z
 
 {- |
   We can also bind the first N fields with 'pletNFields',
@@ -147,8 +147,8 @@ tripSum' :: Term s ((Triplet PInteger) :--> PInteger)
 tripSum' =
   plam $ \x -> pletNFields @2 x $
     \fs ->
-      pfromData fs . x
-        + pfromData fs . y
+      pfromData fs.x
+        + pfromData fs.y
 
 {- |
   When accessing only a single field, we can use
@@ -177,15 +177,15 @@ getY' = plam $ pfield' @"y"
 dotPlus :: Term s PInteger
 dotPlus =
   pletFields tripTrip $ \ts ->
-    pletFields (ts . x) $ \a ->
-      pletFields (ts . y) $ \b ->
-        pletFields (ts . z) $ \c ->
-          (pfromData a . x * pfromData b . x)
-            + (pfromData a . y * pfromData b . y)
-            + (pfromData a . z * pfromData b . z)
-            + pfromData c . x
-            + pfromData c . y
-            + pfromData c . z
+    pletFields (ts.x) $ \a ->
+      pletFields (ts.y) $ \b ->
+        pletFields (ts.z) $ \c ->
+          (pfromData a.x * pfromData b.x)
+            + (pfromData a.y * pfromData b.y)
+            + (pfromData a.z * pfromData b.z)
+            + pfromData c.x
+            + pfromData c.y
+            + pfromData c.z
 
 type SomeFields =
   '[ "_0" ':= PInteger
@@ -209,8 +209,8 @@ type SomeFields =
 nFields :: Term s (PDataRecord SomeFields :--> PInteger)
 nFields =
   plam $ \r -> pletNFields @2 r $ \fs ->
-    pfromData fs . _0
-      + pfromData fs . _1
+    pfromData fs._0
+      + pfromData fs._1
 
 {- |
   'pletDropFields' will bind fields, dropping the first N.
@@ -218,22 +218,22 @@ nFields =
 dropFields :: Term s (PDataRecord SomeFields :--> PInteger)
 dropFields =
   plam $ \r -> pletDropFields @8 r $ \fs ->
-    pfromData fs . _8
-      + pfromData fs . _9
+    pfromData fs._8
+      + pfromData fs._9
 
 -- | Without using 'pletDropFields', the code generated is a little less efficient
 dropFields' :: Term s (PDataRecord SomeFields :--> PInteger)
 dropFields' =
   plam $ \r -> pletFields r $ \fs ->
-    pfromData fs . _8
-      + pfromData fs . _9
+    pfromData fs._8
+      + pfromData fs._9
 
 -- | 'pletRangeFields' will bind fields in a specific range
 rangeFields :: Term s (PDataRecord SomeFields :--> PInteger)
 rangeFields =
   plam $ \r -> pletRangeFields @5 @6 r $ \fs ->
-    pfromData fs . _5
-      + pfromData fs . _6
+    pfromData fs._5
+      + pfromData fs._6
 
 ---------- Tests
 
