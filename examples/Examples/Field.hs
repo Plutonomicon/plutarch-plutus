@@ -30,12 +30,10 @@ import Generics.SOP (Generic)
 import Plutarch
 import Plutarch.Builtin (PAsData, PBuiltinList, PIsData (..))
 import Plutarch.DataRepr (
-  DataReprHandlers (..),
   PDataRecord,
   PIsDataRepr (..),
   PIsDataReprInstances (..),
   PLabeled (..),
-  pmatchDataRepr,
  )
 import Plutarch.Field (
   DerivePDataFields (..),
@@ -86,17 +84,7 @@ newtype Triplet (a :: PType) (s :: S)
     (PDataFields)
     via (DerivePDataFields (Triplet a))
 
--- | The usual PIsDataRepr instance for a Record type...
-instance PIsDataRepr (Triplet a) where
-  type
-    PIsDataReprRepr (Triplet a) =
-      '[ '[ "x" ':= a
-          , "y" ':= a
-          , "z" ':= a
-          ]
-       ]
-  pmatchRepr dat f =
-    pmatchDataRepr dat $ DRHCons (f . Triplet) DRHNil
+instance PIsDataRepr (Triplet a)
 
 mkTrip ::
   forall a s. (PIsData a) => Term s a -> Term s a -> Term s a -> Term s (Triplet a)
