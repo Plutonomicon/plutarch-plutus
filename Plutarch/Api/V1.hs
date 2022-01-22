@@ -65,14 +65,11 @@ import Plutarch.Bool (PBool)
 import Plutarch.Builtin (PAsData, PBuiltinList, PData, PIsData, type PBuiltinMap)
 import Plutarch.ByteString (PByteString)
 import Plutarch.DataRepr (
-  DataReprHandlers (DRHCons, DRHNil),
   DerivePConstantViaData (DerivePConstantViaData),
   PDataRecord,
-  PIsDataRepr,
+  PIsDataRepr (..),
   PIsDataReprInstances (PIsDataReprInstances),
   PLabeled (..),
-  pmatchDataRepr,
-  pmatchRepr,
  )
 import Plutarch.Field (DerivePDataFields (..), PDataFields (..))
 import Plutarch.Integer (PInteger, PIntegral)
@@ -134,9 +131,7 @@ newtype PTxInfo (s :: S)
 instance PUnsafeLiftDecl PTxInfo where type PLifted PTxInfo = Plutus.TxInfo
 deriving via (DerivePConstantViaData Plutus.TxInfo PTxInfo) instance (PConstant Plutus.TxInfo)
 
-instance PIsDataRepr PTxInfo where
-  pmatchRepr dat f =
-    (pmatchDataRepr dat) ((DRHCons (f . PTxInfo)) $ DRHNil)
+instance PIsDataRepr PTxInfo
 
 newtype PScriptContext (s :: S)
   = PScriptContext
@@ -158,9 +153,7 @@ newtype PScriptContext (s :: S)
 instance PUnsafeLiftDecl PScriptContext where type PLifted PScriptContext = Plutus.ScriptContext
 deriving via (DerivePConstantViaData Plutus.ScriptContext PScriptContext) instance (PConstant Plutus.ScriptContext)
 
-instance PIsDataRepr PScriptContext where
-  pmatchRepr dat f =
-    (pmatchDataRepr dat) ((DRHCons (f . PScriptContext)) $ DRHNil)
+instance PIsDataRepr PScriptContext
 
 -- General types, used by V1 and V2
 
@@ -179,15 +172,7 @@ data PScriptPurpose (s :: S)
 instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
 deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) instance (PConstant Plutus.ScriptPurpose)
 
-instance PIsDataRepr PScriptPurpose where
-  pmatchRepr dat f =
-    pmatchDataRepr dat $
-      DRHCons (f . PMinting) $
-        DRHCons (f . PSpending) $
-          DRHCons (f . PRewarding) $
-            DRHCons
-              (f . PCertifying)
-              DRHNil
+instance PIsDataRepr PScriptPurpose
 
 ---------- Scripts
 
@@ -330,10 +315,7 @@ newtype PInterval a (s :: S)
           (PInterval a)
   deriving (PDataFields) via (DerivePDataFields (PInterval a))
 
-instance PIsDataRepr (PInterval a) where
-  pmatchRepr dat f =
-    pmatchDataRepr dat $
-      DRHCons (f . PInterval) DRHNil
+instance PIsDataRepr (PInterval a)
 
 newtype PLowerBound a (s :: S)
   = PLowerBound
@@ -356,10 +338,7 @@ newtype PLowerBound a (s :: S)
         )
   deriving (PDataFields) via (DerivePDataFields (PLowerBound a))
 
-instance PIsDataRepr (PLowerBound a) where
-  pmatchRepr dat f =
-    pmatchDataRepr dat $
-      DRHCons (f . PLowerBound) DRHNil
+instance PIsDataRepr (PLowerBound a)
 
 newtype PUpperBound a (s :: S)
   = PUpperBound
@@ -382,10 +361,7 @@ newtype PUpperBound a (s :: S)
         )
   deriving (PDataFields) via (DerivePDataFields (PUpperBound a))
 
-instance PIsDataRepr (PUpperBound a) where
-  pmatchRepr dat f =
-    pmatchDataRepr dat $
-      DRHCons (f . PUpperBound) DRHNil
+instance PIsDataRepr (PUpperBound a)
 
 data PExtended a (s :: S)
   = PNegInf (Term s (PDataRecord '[]))
@@ -402,12 +378,7 @@ data PExtended a (s :: S)
         )
   deriving (PDataFields) via (DerivePDataFields (PExtended a))
 
-instance PIsDataRepr (PExtended a) where
-  pmatchRepr dat f =
-    pmatchDataRepr dat $
-      DRHCons (f . PNegInf) $
-        DRHCons (f . PFinite) $
-          DRHCons (f . PPosInf) DRHNil
+instance PIsDataRepr (PExtended a)
 
 ---------- Tx/Address
 
@@ -421,13 +392,7 @@ data PCredential (s :: S)
     via (PIsDataReprInstances PCredential)
   deriving (PDataFields) via (DerivePDataFields PCredential)
 
-instance PIsDataRepr PCredential where
-  pmatchRepr dat f =
-    pmatchDataRepr dat $
-      DRHCons (f . PPubKeyCredential) $
-        DRHCons
-          (f . PScriptCredential)
-          DRHNil
+instance PIsDataRepr PCredential
 
 data PStakingCredential (s :: S)
   = PStakingHash (Term s (PDataRecord '["_0" ':= PCredential]))
@@ -450,11 +415,7 @@ data PStakingCredential (s :: S)
     via PIsDataReprInstances PStakingCredential
   deriving (PDataFields) via (DerivePDataFields PStakingCredential)
 
-instance PIsDataRepr PStakingCredential where
-  pmatchRepr dat f =
-    pmatchDataRepr dat $
-      DRHCons (f . PStakingHash) $
-        DRHCons (f . PStakingPtr) DRHNil
+instance PIsDataRepr PStakingCredential
 
 newtype PAddress (s :: S)
   = PAddress
@@ -473,10 +434,7 @@ newtype PAddress (s :: S)
     via PIsDataReprInstances PAddress
   deriving (PDataFields) via (DerivePDataFields PAddress)
 
-instance PIsDataRepr PAddress where
-  pmatchRepr dat f =
-    pmatchDataRepr dat $
-      DRHCons (f . PAddress) DRHNil
+instance PIsDataRepr PAddress
 
 ---------- Tx
 
@@ -489,10 +447,7 @@ newtype PTxId (s :: S)
     via PIsDataReprInstances PTxId
   deriving (PDataFields) via (DerivePDataFields PTxId)
 
-instance PIsDataRepr PTxId where
-  pmatchRepr dat f =
-    pmatchDataRepr dat $
-      DRHCons (f . PTxId) DRHNil
+instance PIsDataRepr PTxId
 
 newtype PTxOutRef (s :: S)
   = PTxOutRef
@@ -511,10 +466,7 @@ newtype PTxOutRef (s :: S)
     via PIsDataReprInstances PTxOutRef
   deriving (PDataFields) via (DerivePDataFields PTxOutRef)
 
-instance PIsDataRepr PTxOutRef where
-  pmatchRepr dat f =
-    pmatchDataRepr dat $
-      DRHCons (f . PTxOutRef) DRHNil
+instance PIsDataRepr PTxOutRef
 
 newtype PTxInInfo (s :: S)
   = PTxInInfo
@@ -533,10 +485,7 @@ newtype PTxInInfo (s :: S)
     via PIsDataReprInstances PTxInInfo
   deriving (PDataFields) via (DerivePDataFields PTxInInfo)
 
-instance PIsDataRepr PTxInInfo where
-  pmatchRepr dat f =
-    pmatchDataRepr dat $
-      DRHCons (f . PTxInInfo) DRHNil
+instance PIsDataRepr PTxInInfo
 
 newtype PTxOut (s :: S)
   = PTxOut
@@ -556,10 +505,7 @@ newtype PTxOut (s :: S)
     via (PIsDataReprInstances PTxOut)
   deriving (PDataFields) via (DerivePDataFields PTxOut)
 
-instance PIsDataRepr PTxOut where
-  pmatchRepr dat f =
-    pmatchDataRepr dat $
-      DRHCons (f . PTxOut) DRHNil
+instance PIsDataRepr PTxOut
 
 data PDCert (s :: S)
   = PDCertDelegRegKey (Term s (PDataRecord '["_0" ':= PStakingCredential]))
@@ -583,16 +529,7 @@ data PDCert (s :: S)
     (PMatch, PIsData)
     via (PIsDataReprInstances PDCert)
 
-instance PIsDataRepr PDCert where
-  pmatchRepr dat f =
-    pmatchDataRepr dat $
-      DRHCons (f . PDCertDelegRegKey) $
-        DRHCons (f . PDCertDelegDeRegKey) $
-          DRHCons (f . PDCertDelegDelegate) $
-            DRHCons (f . PDCertPoolRegister) $
-              DRHCons (f . PDCertPoolRetire) $
-                DRHCons (f . PDCertGenesis) $
-                  DRHCons (f . PDCertMir) DRHNil
+instance PIsDataRepr PDCert
 
 ---------- AssocMap
 
@@ -647,11 +584,7 @@ data PMaybe a (s :: S)
           (PMaybe a)
   deriving (PDataFields) via (DerivePDataFields (PMaybe a))
 
-instance PIsDataRepr (PMaybe a) where
-  pmatchRepr dat f =
-    pmatchDataRepr dat $
-      DRHCons (f . PNothing) $
-        DRHCons (f . PJust) DRHNil
+instance PIsDataRepr (PMaybe a)
 
 data PEither a b (s :: S)
   = PLeft (Term s (PDataRecord '["_0" ':= a]))
@@ -666,8 +599,4 @@ data PEither a b (s :: S)
           (PEither a b)
   deriving (PDataFields) via (DerivePDataFields (PEither a b))
 
-instance PIsDataRepr (PEither a b) where
-  pmatchRepr dat f =
-    pmatchDataRepr dat $
-      DRHCons (f . PLeft) $
-        DRHCons (f . PRight) DRHNil
+instance PIsDataRepr (PEither a b)

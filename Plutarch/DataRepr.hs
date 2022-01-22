@@ -1,5 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans -Wno-redundant-constraints #-}
 
@@ -26,7 +27,7 @@ module Plutarch.DataRepr (
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy)
 import GHC.TypeLits (ErrorMessage (Text), KnownNat, Symbol, TypeError, natVal)
-import Generics.SOP (Code)
+import Generics.SOP (Code, Generic, I (I), NP (Nil, (:*)), NS (S, Z), SOP (SOP), to)
 import Numeric.Natural (Natural)
 import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoerce, runTermCont)
 import Plutarch.Bool (pif, (#==))
@@ -134,11 +135,11 @@ pdropDataRecord n xs =
     ind :: Natural
     ind = fromInteger $ natVal n
 
-data DataReprHandlers (out :: PType) (def :: [[PLabeled]]) (s :: S) where
+data DataReprHandlers (out :: PType) (defs :: [[PLabeled]]) (s :: S) where
   DRHNil :: DataReprHandlers out '[] s
   DRHCons :: (Term s (PDataRecord def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def : defs) s
 
-pmatchDataRepr :: Term s (PDataRepr (def : defs)) -> DataReprHandlers out (def : defs) s -> Term s out
+pmatchDataRepr :: Term s (PDataRepr defs) -> DataReprHandlers out defs s -> Term s out
 pmatchDataRepr d handlers =
   plet (pasConstr #$ pasData d) $ \d' ->
     plet (pfstBuiltin # d') $ \constr ->
@@ -189,7 +190,68 @@ newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
 class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PLabeled]]
   type PIsDataReprRepr a = GetPDataRecordArgs (Code (a 'SI))
+  pmatchDataReprHandlers :: forall s out. (a s -> Term s out) -> DataReprHandlers out (PIsDataReprRepr a) s
+  default pmatchDataReprHandlers ::
+    forall s out.
+    ( ToPLabeled2 (Code (a s)) ~ PIsDataReprRepr a
+    , MkDataReprHandler s a '[] (Code (a s))
+    ) =>
+    (a s -> Term s out) ->
+    DataReprHandlers out (PIsDataReprRepr a) s
+  pmatchDataReprHandlers = mkDataReprHandler @s @a @'[] @(Code (a s))
+
   pmatchRepr :: forall s b. Term s (PDataRepr (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
+  pmatchRepr dat f = pmatchDataRepr dat $ pmatchDataReprHandlers @a @s @b f
+
+class MkDataReprHandler (s :: S) (a :: PType) (ssp :: [[Type]]) (pss :: [[Type]]) where
+  mkDataReprHandler :: forall out. (a s -> Term s out) -> DataReprHandlers out (GetPDataRecordArgs pss) s
+
+instance MkDataReprHandler s a ssp '[] where
+  mkDataReprHandler _ = DRHNil
+
+instance
+  ( x ~ Term s (PDataRecord fs)
+  , Code (a s) ~ (Append (Reverse sx) ('[x] ': rest))
+  , Generic (a s)
+  , MkSum sx '[x] rest
+  , MkDataReprHandler s a ('[x] ': sx) rest
+  ) =>
+  MkDataReprHandler s a sx ('[x] ': rest)
+  where
+  mkDataReprHandler f =
+    DRHCons (\(datRec :: x) -> f $ to $ SOP $ mkSum' @sx @'[x] @rest $ I datRec :* Nil) $
+      mkDataReprHandler @s @a @('[x] ': sx) @rest f
+
+-- | TODO: Use the injections from `generics-sop`.
+class MkSum (before :: [[Type]]) (x :: [Type]) (xs :: [[Type]]) where
+  mkSum' :: NP I x -> NS (NP I) (Append (Reverse before) (x ': xs))
+
+instance MkSum '[] x xs where
+  mkSum' = Z
+
+instance MkSum '[p1] x xs where
+  mkSum' = S . Z
+
+instance MkSum '[p1, p2] x xs where
+  mkSum' = S . S . Z
+instance MkSum '[p1, p2, p3] x xs where
+  mkSum' = S . S . S . Z
+instance MkSum '[p1, p2, p3, p4] x xs where
+  mkSum' = S . S . S . S . Z
+
+instance MkSum '[p1, p2, p3, p4, p5] x xs where
+  mkSum' = S . S . S . S . S . Z
+
+instance MkSum '[p1, p2, p3, p4, p5, p7] x xs where
+  mkSum' = S . S . S . S . S . S . Z
+
+type family Append (a :: [as]) (b :: [as]) :: [as] where
+  Append '[] b = b
+  Append (a ': as) b = a ': Append as b
+
+type family Reverse (a :: [as]) :: [as] where
+  Reverse '[] = '[]
+  Reverse (a ': as) = Append (Reverse as) ('[a])
 
 instance PIsDataRepr a => PIsData (PIsDataReprInstances a) where
   pdata = punsafeCoerce

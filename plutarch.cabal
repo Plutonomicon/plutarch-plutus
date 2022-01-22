@@ -150,6 +150,7 @@ test-suite examples
     , aeson
     , base
     , bytestring
+    , generics-sop
     , plutarch
     , plutus-core
     , plutus-ledger-api

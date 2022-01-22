@@ -25,6 +25,8 @@ module Examples.Field (
 
 --------------------------------------------------------------------------------
 
+import qualified GHC.Generics as GHC
+import Generics.SOP (Generic)
 import Plutarch
 import Plutarch.Builtin (PAsData, PBuiltinList, PIsData (..))
 import Plutarch.DataRepr (
@@ -75,6 +77,8 @@ newtype Triplet (a :: PType) (s :: S)
                ]
           )
       )
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
   deriving
     (PMatch, PIsData)
     via (PIsDataReprInstances (Triplet a))
