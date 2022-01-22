@@ -92,7 +92,7 @@ library
 
   hs-source-dirs:  src
 
-benchmark perf
+benchmark benchmark
   import:         c
   type:           exitcode-stdio-1.0
   hs-source-dirs: bench
@@ -102,10 +102,9 @@ benchmark perf
     , plutarch
     , plutarch-benchmark
 
-executable perf-diff
+executable benchmark-diff
   import:         c
-  type:           exitcode-stdio-1.0
-  hs-source-dirs: perf-diff
+  hs-source-dirs: benchmark-diff
   main-is:        Main.hs
   build-depends:
     , base
