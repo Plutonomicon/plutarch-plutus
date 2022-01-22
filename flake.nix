@@ -122,46 +122,70 @@
 
       tools.fourmolu = { };
       tools.haskell-language-server = {
-        version = "latest";
         modules = [{
-          packages = {
-            haskell-language-server = {
-              src = "${inputs.haskell-language-server}";
-              flags = {
-                pedantic = true;
-                ignore-plugins-ghc-bounds = true;
-                alternateNumberFormat = false;
-                brittany = false;
-                callhierarchy = false;
-                class = false;
-                eval = false;
-                floskell = false;
-                fourmolu = false;
-                haddockComments = false;
-                hlint = false;
-                importLens = false;
-                ormolu = false;
-                refineImports = false;
-                retrie = false;
-                splice = false;
-                stylishhaskell = false;
-                tactic = false;
-              };
-            };
-            hie-compat.src = "${inputs.haskell-language-server}/hie-compat";
-            hls-graph.src = "${inputs.haskell-language-server}/hls-graph";
-            ghcide.src = "${inputs.haskell-language-server}/ghcide";
-            hls-plugin-api.src = "${inputs.haskell-language-server}/hls-plugin-api";
-            hls-test-utils.src = "${inputs.haskell-language-server}/hls-test-utils";
-            shake-bench.src = "${inputs.haskell-language-server}/shake-bench";
-            hls-call-hierarchy-plugin.src = "${inputs.haskell-language-server}/plugins/hls-call-hierarchy-plugin";
-            hls-class-plugins.src = "${inputs.haskell-language-server}/plugins/hls-class-plugins";
-            hls-explicit-imports-plugin.src = "${inputs.haskell-language-server}/plugins/hls-explicit-imports-plugin";
-            hls-qualify-imported-names-plugin.src = "${inputs.haskell-language-server}/plugins/hls-qualify-imported-names-plugin";
-            hls-pragmas-plugin.src = "${inputs.haskell-language-server}/plugins/hls-pragmas-plugin";
-            hls-module-name-plugin.src = "${inputs.haskell-language-server}/plugins/hls-module-name-plugin";
-          };
+          # https://github.com/input-output-hk/haskell.nix/issues/1177
+          nonReinstallablePkgs = [
+            "rts"
+            "ghc-heap"
+            "ghc-prim"
+            "integer-gmp"
+            "integer-simple"
+            "base"
+            "deepseq"
+            "array"
+            "ghc-boot-th"
+            "pretty"
+            "template-haskell"
+            # ghcjs custom packages
+            "ghcjs-prim"
+            "ghcjs-th"
+            "ghc-bignum"
+            "exceptions"
+            "stm"
+            "ghc-boot"
+            "ghc"
+            "Cabal"
+            "Win32"
+            "array"
+            "binary"
+            "bytestring"
+            "containers"
+            "directory"
+            "filepath"
+            "ghc-boot"
+            "ghc-compact"
+            "ghc-prim"
+            # "ghci" "haskeline"
+            "hpc"
+            "mtl"
+            "parsec"
+            "process"
+            "text"
+            "time"
+            "transformers"
+            "unix"
+            "xhtml"
+            "terminfo"
+          ];
         }];
+        compiler-nix-name = ghcVersion;
+        # For some reason it doesn't use the latest version automatically.
+        index-state =
+          let l = builtins.attrNames (import "${haskell-nix.inputs.hackage}/index-state-hashes.nix"); in
+          builtins.elemAt l (builtins.length l - 1);
+        name = "haskell-language-server";
+        version = "latest";
+        cabalProjectLocal = ''
+          allow-newer: *:*
+
+          constraints:
+            primitive-unlifted < 1.0.0.0
+
+          package haskell-language-server
+            flags: +use-ghc-stub +pedantic +ignore-plugins-ghc-bounds -alternateNumberFormat -brittany -callhierarchy -class -eval -floskell -fourmolu -haddockComments -hlint -importLens -ormolu -refineImports -retrie -splice -stylishhaskell -tactic -importLens
+
+        '';
+        src = "${inputs.haskell-language-server}";
       };
 
       haskellModule = system: {
