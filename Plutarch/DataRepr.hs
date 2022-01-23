@@ -228,21 +228,17 @@ class MkSum (before :: [[Type]]) (x :: [Type]) (xs :: [[Type]]) where
 
 instance MkSum '[] x xs where
   mkSum' = Z
-
 instance MkSum '[p1] x xs where
   mkSum' = S . Z
-
 instance MkSum '[p1, p2] x xs where
   mkSum' = S . S . Z
 instance MkSum '[p1, p2, p3] x xs where
   mkSum' = S . S . S . Z
 instance MkSum '[p1, p2, p3, p4] x xs where
   mkSum' = S . S . S . S . Z
-
 instance MkSum '[p1, p2, p3, p4, p5] x xs where
   mkSum' = S . S . S . S . S . Z
-
-instance MkSum '[p1, p2, p3, p4, p5, p7] x xs where
+instance MkSum '[p1, p2, p3, p4, p5, p6] x xs where
   mkSum' = S . S . S . S . S . S . Z
 
 type family Append (a :: [as]) (b :: [as]) :: [as] where
