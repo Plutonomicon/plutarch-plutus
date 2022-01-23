@@ -77,14 +77,13 @@ newtype Triplet (a :: PType) (s :: S)
       )
   deriving stock (GHC.Generic)
   deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData)
     via (PIsDataReprInstances (Triplet a))
   deriving
     (PDataFields)
     via (DerivePDataFields (Triplet a))
-
-instance PIsDataRepr (Triplet a)
 
 mkTrip ::
   forall a s. (PIsData a) => Term s a -> Term s a -> Term s a -> Term s (Triplet a)

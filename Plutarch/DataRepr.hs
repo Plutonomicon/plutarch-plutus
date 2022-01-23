@@ -24,10 +24,11 @@ module Plutarch.DataRepr (
   DerivePConstantViaData (..),
 ) where
 
+import Data.Fin
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy)
 import GHC.TypeLits (ErrorMessage (Text), KnownNat, Symbol, TypeError, natVal)
-import Generics.SOP (Code, Generic, I (I), NP (Nil, (:*)), NS (S, Z), SOP (SOP), to)
+import Generics.SOP hiding (Proxy)
 import Numeric.Natural (Natural)
 import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoerce, runTermCont)
 import Plutarch.Bool (pif, (#==))
@@ -43,6 +44,7 @@ import Plutarch.Builtin (
   psndBuiltin,
  )
 import Plutarch.Field.HList (type Drop, type IndexList)
+import Plutarch.Generic
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (S (SI))
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstantFromRepr, pconstantToRepr)
@@ -194,60 +196,50 @@ class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
   default pmatchDataReprHandlers ::
     forall s out.
     ( ToPLabeled2 (Code (a s)) ~ PIsDataReprRepr a
-    , MkDataReprHandler s a '[] (Code (a s))
+    , MkDataReprHandler s a ( 'FZ @(Length (Code (a s)))) (Code (a s)) (Code (a s))
     ) =>
     (a s -> Term s out) ->
     DataReprHandlers out (PIsDataReprRepr a) s
-  pmatchDataReprHandlers = mkDataReprHandler @s @a @'[] @(Code (a s))
+  pmatchDataReprHandlers =
+    mkDataReprHandler
+      @_
+      @s
+      @a
+      @( 'FZ @(Length (Code (a s))))
+      @(Code (a s))
+      @(Code (a s))
 
   pmatchRepr :: forall s b. Term s (PDataRepr (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
-  pmatchRepr dat f = pmatchDataRepr dat $ pmatchDataReprHandlers @a @s @b f
+  pmatchRepr dat = pmatchDataRepr dat . pmatchDataReprHandlers @a @s @b
 
-class MkDataReprHandler (s :: S) (a :: PType) (ssp :: [[Type]]) (pss :: [[Type]]) where
-  mkDataReprHandler :: forall out. (a s -> Term s out) -> DataReprHandlers out (GetPDataRecordArgs pss) s
+class (Tail idx pss ~ rest) => MkDataReprHandler (s :: S) (a :: PType) (idx :: Fin n) (rest :: [[Type]]) (pss :: [[Type]]) where
+  mkDataReprHandler :: forall out. (a s -> Term s out) -> DataReprHandlers out (Tail idx (GetPDataRecordArgs pss)) s
 
-instance MkDataReprHandler s a ssp '[] where
+instance (Tail idx (ToPLabeled2 pss) ~ '[], Tail idx pss ~ '[]) => MkDataReprHandler s a idx '[] pss where
   mkDataReprHandler _ = DRHNil
 
 instance
-  ( x ~ Term s (PDataRecord fs)
-  , Code (a s) ~ (Append (Reverse sx) ('[x] ': rest))
+  ( r ~ TypeAt idx pss
+  , r ~ '[Term s (PDataRecord fs)]
   , Generic (a s)
-  , MkSum sx '[x] rest
-  , MkDataReprHandler s a ('[x] ': sx) rest
+  , Code (a s) ~ pss
+  , ToPLabeled r ~ fs
+  , ToPLabeled2 rs ~ (Tail ( 'FS idx) (GetPDataRecordArgs pss))
+  , Tail idx pss ~ (r ': rs)
+  , Tail idx (ToPLabeled2 pss) ~ ToPLabeled2 (r ': rs)
+  , MkSum idx pss
+  , MkDataReprHandler s a ( 'FS idx) rs pss
   ) =>
-  MkDataReprHandler s a sx ('[x] ': rest)
+  MkDataReprHandler s a idx (r ': rs) pss
   where
   mkDataReprHandler f =
-    DRHCons (\(datRec :: x) -> f $ to $ SOP $ mkSum' @sx @'[x] @rest $ I datRec :* Nil) $
-      mkDataReprHandler @s @a @('[x] ': sx) @rest f
-
--- | TODO: Use the injections from `generics-sop`.
-class MkSum (before :: [[Type]]) (x :: [Type]) (xs :: [[Type]]) where
-  mkSum' :: NP I x -> NS (NP I) (Append (Reverse before) (x ': xs))
-
-instance MkSum '[] x xs where
-  mkSum' = Z
-instance MkSum '[p1] x xs where
-  mkSum' = S . Z
-instance MkSum '[p1, p2] x xs where
-  mkSum' = S . S . Z
-instance MkSum '[p1, p2, p3] x xs where
-  mkSum' = S . S . S . Z
-instance MkSum '[p1, p2, p3, p4] x xs where
-  mkSum' = S . S . S . S . Z
-instance MkSum '[p1, p2, p3, p4, p5] x xs where
-  mkSum' = S . S . S . S . S . Z
-instance MkSum '[p1, p2, p3, p4, p5, p6] x xs where
-  mkSum' = S . S . S . S . S . S . Z
-
-type family Append (a :: [as]) (b :: [as]) :: [as] where
-  Append '[] b = b
-  Append (a ': as) b = a ': Append as b
-
-type family Reverse (a :: [as]) :: [as] where
-  Reverse '[] = '[]
-  Reverse (a ': as) = Append (Reverse as) ('[a])
+    DRHCons (f . to . mkSOP . mkProduct) $
+      mkDataReprHandler @_ @s @a @( 'FS idx) @rs @pss f
+    where
+      mkProduct :: Term s (PDataRecord fs) -> NP I r
+      mkProduct x = I x :* Nil
+      mkSOP :: NP I r -> SOP I (Code (a s))
+      mkSOP = SOP . mkSum @_ @idx @pss
 
 instance PIsDataRepr a => PIsData (PIsDataReprInstances a) where
   pdata = punsafeCoerce
