@@ -47,7 +47,7 @@
     - [PList](#plist)
     - [PBuiltinPair](#pbuiltinpair)
     - [PAsData](#pasdata)
-    - [PDataRepr & PDataList](#pdatarepr--pdatalist)
+    - [PDataSum & PDataList](#PDataSum--pdatalist)
     - [PData](#pdata)
 - [Examples](#examples)
   - [Fibonacci number at given index](#fibonacci-number-at-given-index)
@@ -1018,7 +1018,7 @@ You can also create a `PAsData` from a `PData`, but you lose specific type infor
 pdata :: Term s PData -> Term s (PAsData PData)
 ```
 
-### PDataRepr & PDataList
+### PDataSum & PDataList
 TODO
 
 See: [`PIsDataRepr`](#pisdatarepr)
@@ -1028,7 +1028,7 @@ This is a direct synonym to [`BuiltinData`/`Data`](https://github.com/Plutonomic
 
 Consider using [`PAsData`](#pasdata) instead for simple cases, i.e cases other than `Constr`.
 
-Consider using [`PDataRepr`/`PDataList`](#pdatarepr--pdatalist) instead when dealing with ADTs, i.e `Constr` data values.
+Consider using [`PDataSum`/`PDataList`](#PDataSum--pdatalist) instead when dealing with ADTs, i.e `Constr` data values.
 
 You can find more information about `PData` at [Developers' Corner](./DEVGUIDE.md).
 

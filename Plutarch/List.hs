@@ -12,6 +12,7 @@ module Plutarch.List (
   pelem,
   plength,
   punsafeIndex,
+  pdrop,
 
   -- * Construction
   psingleton,
@@ -38,6 +39,8 @@ module Plutarch.List (
   pall,
   pany,
 ) where
+
+import Numeric.Natural (Natural)
 
 import Plutarch (PInner, PlutusType, pcon', pmatch')
 import Plutarch.Bool (PBool (PFalse, PTrue), PEq, pif, (#&&), (#==), (#||))
@@ -161,14 +164,21 @@ plength = phoistAcyclic $
   Unsafely index a BuiltinList,
   throwing an error if the index is out of bounds.
 -}
-punsafeIndex :: (PIsListLike list a) => Term s (PInteger :--> list a :--> a)
-punsafeIndex = phoistAcyclic $
-  pfix #$ plam $
-    \self n xs ->
-      pif
-        (n #== 0)
-        (phead # xs)
-        (self # (n - 1) #$ ptail # xs)
+punsafeIndex :: (PIsListLike list a) => Natural -> Term s (list a) -> Term s a
+punsafeIndex n xs = phead # (pdrop n xs)
+
+{- |
+  Drop the first n fields of a List.
+
+  The term will be statically generated as
+  repeated applications of 'ptail', which will be more
+  efficient in many circumstances.
+-}
+pdrop :: (PIsListLike list a) => Natural -> Term s (list a) -> Term s (list a)
+pdrop n xs = (phoistAcyclic $ plam $ \x -> pdrop' n x) # xs
+  where
+    pdrop' 0 xs' = xs'
+    pdrop' n' xs' = pdrop' (n' - 1) (ptail # xs')
 
 --------------------------------------------------------------------------------
 

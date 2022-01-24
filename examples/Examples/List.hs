@@ -1,5 +1,3 @@
-{-# LANGUAGE QualifiedDo #-}
-
 module Examples.List (tests) where
 
 import Test.Tasty

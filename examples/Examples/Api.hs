@@ -1,45 +1,42 @@
-{-# LANGUAGE QualifiedDo #-}
-
 module Examples.Api (tests) where
 
-import Data.Proxy (Proxy (..))
 import Plutarch
 import Plutarch.Api.V1 (
-  PAddress (PAddress),
-  PCredential (PScriptCredential),
+  PCredential,
   PCurrencySymbol,
   PPubKeyHash,
-  PScriptContext (PScriptContext),
+  PScriptContext,
   PScriptPurpose (PSpending),
-  PTxInInfo (PTxInInfo),
-  PTxInfo (PTxInfo),
-  PTxOut (PTxOut),
-  PValidatorHash,
+  PTxInInfo,
+  PTxInfo,
   PValue,
  )
 import Plutarch.Bool (pif)
-import Plutarch.Builtin (PAsData, PBuiltinList, pdata, pfromData, pfstBuiltin)
-import Plutarch.DataRepr (pindexDataList)
+import Plutarch.Builtin (PAsData, PBuiltinList, PData, PIsData (..), pasConstr, pforgetData, pfstBuiltin, psndBuiltin)
+import Plutarch.DataRepr (pfield, pletFields)
+import Plutarch.List (pmap)
+
+-- import Plutarch.DataRepr (pindexDataList)
 import Plutarch.Lift (pconstant, plift)
 import Plutarch.List (pelem, phead)
 import qualified Plutarch.Monadic as P
-import Plutarch.Trace (ptrace)
 import Plutarch.Unit (PUnit)
 
 import Plutus.V1.Ledger.Api (
-  Address (..),
-  Credential (..),
+  Address (Address),
+  Credential (ScriptCredential),
   CurrencySymbol,
   DatumHash,
   PubKeyHash,
-  ScriptContext (..),
-  ScriptPurpose (..),
-  TxInInfo (..),
-  TxInfo (..),
-  TxOut (..),
-  TxOutRef (..),
+  ScriptContext (ScriptContext),
+  ScriptPurpose (Spending),
+  TxInInfo (TxInInfo, txInInfoOutRef, txInInfoResolved),
+  TxInfo (TxInfo, txInfoDCert, txInfoData, txInfoFee, txInfoId, txInfoInputs, txInfoMint, txInfoOutputs, txInfoSignatories, txInfoValidRange, txInfoWdrl),
+  TxOut (TxOut, txOutAddress, txOutDatumHash, txOutValue),
+  TxOutRef (TxOutRef),
   ValidatorHash,
   Value,
+  toData,
  )
 import qualified Plutus.V1.Ledger.Interval as Interval
 import qualified Plutus.V1.Ledger.Value as Value
@@ -114,31 +111,36 @@ signatories = ["ab01fe235c", "123014", "abcdef"]
 --------------------------------------------------------------------------------
 
 getTxInfo :: Term s (PScriptContext :--> PAsData PTxInfo)
-getTxInfo = plam $ \x -> P.do
-  PScriptContext c <- pmatch x
-  pindexDataList (Proxy @0) # c
+getTxInfo =
+  plam $ \ctx ->
+    pfield @"txInfo" # ctx
 
-getMint :: Term s (PTxInfo :--> PAsData PValue)
-getMint = plam $ \x -> P.do
-  PTxInfo i <- pmatch x
-  pindexDataList (Proxy @3) # i
+getMint :: Term s (PAsData PTxInfo :--> PAsData PValue)
+getMint =
+  plam $ \info ->
+    pfield @"mint" # info
 
-getInputs :: Term s (PTxInfo :--> PAsData (PBuiltinList (PAsData PTxInInfo)))
-getInputs = plam $ \x -> P.do
-  PTxInfo i <- pmatch x
-  ptrace "xhuawdhauywhd"
-  i' <- plet i
-  pindexDataList (Proxy @0) # i'
+-- | Get validator from first input in ScriptContext's TxInfo
+getCredentials :: Term s PScriptContext -> Term s (PBuiltinList PData)
+getCredentials ctx =
+  let inp = pfield @"inputs" #$ pfield @"txInfo" # ctx
+   in pmap # inputCredentialHash # pfromData inp
 
--- | Get first validator from TxInInfo
-getValidator :: Term s (PBuiltinList (PAsData PTxInInfo) :--> PAsData PValidatorHash)
-getValidator =
-  plam $ \xs -> P.do
-    PTxInInfo i <- pmatch . pfromData $ phead # xs
-    PTxOut o <- pmatch . pfromData $ pindexDataList (Proxy @1) # i
-    PAddress a <- pmatch . pfromData $ pindexDataList (Proxy @0) # o
-    PScriptCredential v <- pmatch (pfromData $ pindexDataList (Proxy @0) # a)
-    pindexDataList (Proxy @0) # v
+{- |
+  Get the hash of the Credential in an input, treating
+  PubKey & ValidatorHash identically.
+-}
+inputCredentialHash :: Term s (PAsData PTxInInfo :--> PData)
+inputCredentialHash =
+  phoistAcyclic $
+    plam $ \inp ->
+      -- pfield @"resolved" # inp
+      let credential :: Term _ (PAsData PCredential)
+          credential =
+            (pfield @"credential")
+              #$ (pfield @"address")
+              #$ (pfield @"resolved" # inp)
+       in phead #$ psndBuiltin #$ pasConstr # pforgetData credential
 
 -- | Get first CurrencySymbol from Value
 getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
@@ -146,17 +148,16 @@ getSym =
   plam $ \v -> pfstBuiltin #$ phead # pto (pto v)
 
 checkSignatory :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
-checkSignatory = plam $ \ph ctx -> P.do
-  PScriptContext ctxFields <- pmatch ctx
-  PSpending _ <- pmatch . pfromData $ pindexDataList (Proxy @1) # ctxFields
-  PTxInfo txInfoFields <- pmatch . pfromData $ pindexDataList (Proxy @0) # ctxFields
-  let signatories = pindexDataList (Proxy @7) # txInfoFields
-  pif
-    (pelem # pdata ph # pfromData signatories)
-    -- Success!
-    (pconstant ())
-    -- Signature not present.
-    perror
+checkSignatory = plam $ \ph ctx' ->
+  pletFields ctx' $ \ctx -> P.do
+    PSpending _ <- pmatch . pfromData $ ctx.purpose
+    let signatories = pfield @"signatories" # ctx.txInfo
+    pif
+      (pelem # pdata ph # pfromData signatories)
+      -- Success!
+      (pconstant ())
+      -- Signature not present.
+      perror
 
 tests :: HasTester => TestTree
 tests =
@@ -165,14 +166,16 @@ tests =
     [ testCase "ScriptContext" $ do
         ctx `equal'` ctx_compiled
     , testCase "getting txInfo" $ do
-        plift (pfromData $ getTxInfo # ctx) @?= info
+        plift (pfromData $ getTxInfo # ctx)
+          @?= info
     , testCase "getting mint" $ do
-        plift (pfromData $ getMint #$ pfromData $ getTxInfo # ctx) @?= mint
-    , testCase "getting validator" $ do
-        plift (pfromData $ getValidator #$ pfromData $ getInputs #$ pfromData $ getTxInfo # ctx)
-          @?= validator
+        plift (pforgetData $ getMint #$ getTxInfo # ctx)
+          @?= toData mint
+    , testCase "getting credentials" $ do
+        plift (getCredentials ctx)
+          @?= [toData validator]
     , testCase "getting sym" $ do
-        plift (pfromData $ getSym #$ pfromData $ getMint #$ pfromData $ getTxInfo # ctx) @?= sym
+        plift (pfromData $ getSym #$ pfromData $ getMint #$ getTxInfo # ctx) @?= sym
     , testCase "signatory validator" $ do
         () <$ traverse (\x -> succeeds $ checkSignatory # pconstant x # ctx) signatories
         fails $ checkSignatory # pconstant "41" # ctx
