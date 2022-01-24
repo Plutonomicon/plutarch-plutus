@@ -1,4 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Examples.LetRec (tests) where
@@ -276,20 +275,20 @@ tests =
         , testCase "nested record access term" $
             printTerm
               ( pmatch' (rcon rawFlatOuter) $
-                  \(PRecord FlatOuterRecord {..}) -> pcon $ PRecord flatInner1
+                  \(PRecord FlatOuterRecord {flatInner1}) -> pcon $ PRecord flatInner1
               )
               @?= "(program 1.0.0 ((\\i0 -> i1 False False 6 \"Salut, Monde!\" 4 False 9 \"Salut, Monde!\" \"Hola, Mundo!\") (\\i0 -> \\i0 -> \\i0 -> \\i0 -> \\i0 -> \\i0 -> \\i0 -> \\i0 -> \\i0 -> \\i0 -> i1 i9 i8 i7)))"
         , testCase "nested match term" $
             printTerm
-              ( rmatch (rcon rawFlatOuter) $ \(FlatOuterRecord {..}) ->
-                  rmatch (rcon flatInner2) $ \(SampleRecord {..}) ->
+              ( rmatch (rcon rawFlatOuter) $ \(FlatOuterRecord {flatInner2}) ->
+                  rmatch (rcon flatInner2) $ \(SampleRecord {sampleString}) ->
                     sampleString
               )
               @?= "(program 1.0.0 ((\\i0 -> i1 False False 6 \"Salut, Monde!\" 4 False 9 \"Salut, Monde!\" \"Hola, Mundo!\") (\\i0 -> \\i0 -> \\i0 -> \\i0 -> \\i0 -> \\i0 -> \\i0 -> \\i0 -> \\i0 -> (\\i0 -> i1 i5 i4 i3) (\\i0 -> \\i0 -> \\i0 -> i1))))"
         , testCase "nested match value" $
             equal'
-              ( rmatch (rcon rawFlatOuter) $ \(FlatOuterRecord {..}) ->
-                  rmatch (rcon flatInner2) $ \(SampleRecord {..}) ->
+              ( rmatch (rcon rawFlatOuter) $ \(FlatOuterRecord {flatInner2}) ->
+                  rmatch (rcon flatInner2) $ \(SampleRecord {sampleString}) ->
                     sampleString
               )
               "(program 1.0.0 \"Salut, Monde!\")"
@@ -318,19 +317,19 @@ tests =
         , testCase "reconstruction nested field value" $
             equal' (pto (pto (pmatch' sampleShallowOuter (pcon @(PRecord ShallowOuterRecord))) # field shallowInner2) # field sampleInt) "(program 1.0.0 9)"
         , testCase "nested record access term" $
-            printTerm (pmatch' sampleShallowOuter $ \(PRecord ShallowOuterRecord {..}) -> shallowInner1)
+            printTerm (pmatch' sampleShallowOuter $ \(PRecord ShallowOuterRecord {shallowInner1}) -> shallowInner1)
               @?= "(program 1.0.0 ((\\i0 -> i1 False (\\i0 -> i1 False 6 \"Salut, Monde!\") 4 (\\i0 -> i1 False 9 \"Salut, Monde!\") \"Hola, Mundo!\") (\\i0 -> \\i0 -> \\i0 -> \\i0 -> \\i0 -> i4)))"
         , testCase "nested match term" $
             printTerm
-              ( pmatch' sampleShallowOuter $ \(PRecord ShallowOuterRecord {..}) ->
-                  pmatch shallowInner2 $ \(PRecord SampleRecord {..}) ->
+              ( pmatch' sampleShallowOuter $ \(PRecord ShallowOuterRecord {shallowInner2}) ->
+                  pmatch shallowInner2 $ \(PRecord SampleRecord {sampleString}) ->
                     sampleString
               )
               @?= "(program 1.0.0 ((\\i0 -> i1 False (\\i0 -> i1 False 6 \"Salut, Monde!\") 4 (\\i0 -> i1 False 9 \"Salut, Monde!\") \"Hola, Mundo!\") (\\i0 -> \\i0 -> \\i0 -> \\i0 -> \\i0 -> i2 (\\i0 -> \\i0 -> \\i0 -> i1))))"
         , testCase "nested match value" $
             equal'
-              ( pmatch' sampleShallowOuter $ \(PRecord ShallowOuterRecord {..}) ->
-                  pmatch shallowInner2 $ \(PRecord SampleRecord {..}) ->
+              ( pmatch' sampleShallowOuter $ \(PRecord ShallowOuterRecord {shallowInner2}) ->
+                  pmatch shallowInner2 $ \(PRecord SampleRecord {sampleString}) ->
                     sampleString
               )
               "(program 1.0.0 \"Salut, Monde!\")"
