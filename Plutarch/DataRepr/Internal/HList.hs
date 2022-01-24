@@ -11,7 +11,6 @@ module Plutarch.DataRepr.Internal.HList (
   hrecField,
 
   -- * Type families
-  type Length,
   type IndexList,
   type IndexOf,
   type SingleItem,
@@ -75,11 +74,6 @@ hrecField ::
 hrecField (HRec xs) = indexHList xs $ fieldElem @f @fs
 
 ---------- Type families
-
--- | Length of a list
-type family Length (xs :: [k]) :: Nat where
-  Length '[] = 0
-  Length (_ ': xs) = 1 + Length xs
 
 -- | Indexing type-level lists
 type family IndexList (n :: Nat) (l :: [k]) :: k where
