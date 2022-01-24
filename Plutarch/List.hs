@@ -11,7 +11,7 @@ module Plutarch.List (
   -- * Query
   pelem,
   plength,
-  punsafeIndex,
+  ptryIndex,
   pdrop,
 
   -- * Construction
@@ -160,12 +160,9 @@ plength = phoistAcyclic $
         go = (pfix #$ plam $ \self ls n -> pelimList (\_ xs -> self # xs # n + 1) n ls)
      in go # xs # 0
 
-{- |
-  Unsafely index a BuiltinList,
-  throwing an error if the index is out of bounds.
--}
-punsafeIndex :: (PIsListLike list a) => Natural -> Term s (list a) -> Term s a
-punsafeIndex n xs = phead # (pdrop n xs)
+-- | Index a BuiltinList, throwing an error if the index is out of bounds.
+ptryIndex :: (PIsListLike list a) => Natural -> Term s (list a) -> Term s a
+ptryIndex n xs = phead # (pdrop n xs)
 
 {- |
   Drop the first n fields of a List.

@@ -84,8 +84,8 @@ library
     Plutarch.ByteString
     Plutarch.Crypto
     Plutarch.DataRepr
-    Plutarch.DataRepr.Field
     Plutarch.DataRepr.Internal
+    Plutarch.DataRepr.Internal.Field
     Plutarch.DataRepr.Internal.Generic
     Plutarch.DataRepr.Internal.HList
     Plutarch.Either
