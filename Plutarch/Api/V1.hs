@@ -68,6 +68,7 @@ import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
   PDataRecord,
+  PDataSum,
   PIsDataRepr,
   PIsDataReprInstances (PIsDataReprInstances),
   PLabeledType ((:=)),
@@ -96,9 +97,10 @@ import qualified PlutusTx.Builtins.Internal as PT
 
 --------------------------------------------------------------------------------
 type PTuple a b =
-  PDataRecord
-    '[ "_0" ':= a
-     , "_1" ':= b
+  PDataSum
+    '[ '[ "_0" ':= a
+        , "_1" ':= b
+        ]
      ]
 
 ---------- V1 Specific types, Incompatible with V2
