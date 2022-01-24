@@ -196,9 +196,9 @@ plutarchTests =
     , testCase "delay (force (delay 0)) => delay 0" $
         printTerm (pdelay . pforce . pdelay $ (0 :: Term s PInteger)) @?= "(program 1.0.0 (delay 0))"
     , testCase "id # 0 => 0" $
-        printTerm ((plam' $ \x -> x) # (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
+        printTerm ((plam $ \x -> x) # (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
     , testCase "hoist id 0 => 0" $
-        printTerm ((phoistAcyclic $ plam' $ \x -> x) # (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
+        printTerm ((phoistAcyclic $ plam $ \x -> x) # (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
     , testCase "hoist fstPair => fstPair" $
         printTerm (phoistAcyclic (punsafeBuiltin PLC.FstPair)) @?= "(program 1.0.0 fstPair)"
     , testCase "throws: hoist error" $ throws $ phoistAcyclic perror
@@ -232,7 +232,7 @@ plutarchTests =
         , testCase "λx y. sha2_256 x y =>!" $
             printTerm ((plam $ \x y -> punsafeBuiltin PLC.Sha2_256 # x # y)) @?= "(program 1.0.0 (\\i0 -> \\i0 -> sha2_256 i2 i1))"
         , testCase "let f = hoist (λx. x) in λx y. f x y => λx y. x y" $
-            printTerm ((plam $ \x y -> (phoistAcyclic $ plam' $ \x -> x) # x # y)) @?= "(program 1.0.0 (\\i0 -> \\i0 -> i2 i1))"
+            printTerm ((plam $ \x y -> (phoistAcyclic $ plam $ \x -> x) # x # y)) @?= "(program 1.0.0 (\\i0 -> \\i0 -> i2 i1))"
         , testCase "let f = hoist (λx. x True) in λx y. f x y => λx y. (λz. z True) x y" $
             printTerm ((plam $ \x y -> ((phoistAcyclic $ plam $ \x -> x # pcon PTrue)) # x # y)) @?= "(program 1.0.0 (\\i0 -> \\i0 -> (\\i0 -> i1 True) i2 i1))"
         ]

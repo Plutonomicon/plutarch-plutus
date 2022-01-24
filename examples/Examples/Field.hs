@@ -16,7 +16,6 @@ module Examples.Field (
   dropFields,
   dropFields',
   getY,
-  getY',
   rangeFields,
 
   -- * Testing
@@ -30,16 +29,12 @@ import Generics.SOP (Generic)
 import Plutarch
 import Plutarch.Builtin (PAsData, PBuiltinList, PIsData (..))
 import Plutarch.DataRepr (
-  PDataRecord,
-  PIsDataRepr (..),
-  PIsDataReprInstances (..),
-  PLabeled (..),
- )
-import Plutarch.Field (
-  DerivePDataFields (..),
   PDataFields,
+  PDataRecord,
+  PIsDataRepr,
+  PIsDataReprInstances (PIsDataReprInstances),
+  PLabeledType ((:=)),
   pfield,
-  pfield',
   pletDropFields,
   pletFields,
   pletNFields,
@@ -47,7 +42,7 @@ import Plutarch.Field (
  )
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (plift)
-import Plutarch.List (PListLike (..))
+import Plutarch.List (PListLike (pcons, pnil))
 
 import qualified PlutusCore as PLC
 
@@ -60,7 +55,6 @@ import Utils
 
 {- |
   We can defined a data-type using PDataRecord, with labeled fields.
-
   With an appropriate instance of 'PIsDataRepr', we can automatically
   derive 'PDataFields'.
 -}
@@ -79,11 +73,8 @@ newtype Triplet (a :: PType) (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PMatch, PIsData, PDataFields)
     via (PIsDataReprInstances (Triplet a))
-  deriving
-    (PDataFields)
-    via (DerivePDataFields (Triplet a))
 
 mkTrip ::
   forall a s. (PIsData a) => Term s a -> Term s a -> Term s a -> Term s (Triplet a)
@@ -115,7 +106,6 @@ tripTrip = mkTrip tripA tripB tripC
 
 {- |
   We can bind all fields to a 'HRec' at once with 'pletFields'.
-
   The fields in the 'HRec' can them be accessed with
   RecordDotSyntax.
 -}
@@ -130,7 +120,6 @@ tripSum =
 {- |
   We can also bind the first N fields with 'pletNFields',
   this saves some code in binding the tails for additional fields.
-
   The fields in the 'HRec' can them be accessed with
   RecordDotSyntax.
 -}
@@ -149,19 +138,11 @@ tripSum' =
 by :: Term s PInteger
 by = pfromData $ pfield @"y" # tripB
 
-{- |
-  Depending on what terms can be shared with hoisting,
-  `pfield'` may be more efficient than `pfield`.
--}
 getY :: Term s (Triplet PInteger :--> PAsData PInteger)
 getY = pfield @"y"
 
-getY' :: Term s (Triplet PInteger :--> PAsData PInteger)
-getY' = plam $ pfield' @"y"
-
 {- |
   Due to the instance @(PDataFields a) -> PDataFields (PAsData a)@,
-
   we can conveniently chain 'pletFields' & 'pfield' within
   nested structures:
 -}
@@ -193,7 +174,6 @@ type SomeFields =
 
 {- |
   We can also bind over a 'PDataRecord' directly.
-
   'pletNFields' will more efficiently bind the first N fields
   of a PRecord.
 -}
@@ -244,8 +224,6 @@ tests =
         rangeFields `equal'` rangeFieldsComp
     , testCase "getY compilation" $
         getY `equal'` getYComp
-    , testCase "getY' compilation" $
-        getY' `equal'` getY'Comp
     , testCase "tripSum # tripA = 1000" $
         plift (tripSum # tripA)
           @?= 1000
@@ -278,7 +256,4 @@ rangeFieldsComp :: String
 rangeFieldsComp = "(program 1.0.0 (\\i0 -> (\\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))) ((\\i0 -> force tailList (force tailList (force tailList (force tailList (force tailList (force tailList i1)))))) i1)))"
 
 getYComp :: String
-getYComp = "(program 1.0.0 (\\i0 -> (\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> \\i0 -> force (force ifThenElse (equalsInteger i2 0) (delay (force headList i1)) (delay (i3 (subtractInteger i2 1) (force tailList i1))))) 1 ((\\i0 -> force (force sndPair) (unConstrData i1)) i1)))"
-
-getY'Comp :: String
-getY'Comp = "(program 1.0.0 (\\i0 -> force headList (force tailList ((\\i0 -> force (force sndPair) (unConstrData i1)) i1))))"
+getYComp = "(program 1.0.0 (\\i0 -> force headList (force tailList ((\\i0 -> force (force sndPair) (unConstrData i1)) i1))))"

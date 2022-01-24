@@ -500,7 +500,11 @@
         // {
           benchmark = {
             type = "app";
-            program = "${self.flake.${system}.packages."plutarch-benchmark:bench:perf"}/bin/perf";
+            program = "${self.flake.${system}.packages."plutarch-benchmark:bench:benchmark"}/bin/benchmark";
+          };
+          benchmark-diff = {
+            type = "app";
+            program = "${self.flake.${system}.packages."plutarch-benchmark:exe:benchmark-diff"}/bin/benchmark-diff";
           };
         }
       );
@@ -521,10 +525,10 @@
                 cd plutarch
 
                 git checkout $(git merge-base origin/staging ${src.rev})
-                nix --extra-experimental-features 'nix-command flakes' run .#benchmark > before.csv
+                nix --extra-experimental-features 'nix-command flakes' run .#benchmark -- --csv > before.csv
 
                 git checkout ${src.rev}
-                nix --extra-experimental-features 'nix-command flakes' run .#benchmark > after.csv
+                nix --extra-experimental-features 'nix-command flakes' run .#benchmark -- --csv > after.csv
 
                 echo
                 echo
@@ -532,7 +536,7 @@
                 echo
                 echo
 
-                diff before.csv after.csv
+                nix --extra-experimental-features 'nix-command flakes' run .#benchmark-diff -- before.csv after.csv
               '';
             }
           );

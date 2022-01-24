@@ -2,13 +2,12 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Plutarch.Field.HList (
+module Plutarch.DataRepr.Internal.HList (
   -- * HList and HRec types
   HList (..),
   HRec (..),
 
   -- * Field indexing functions
-  hlistField,
   hrecField,
 
   -- * Type families
@@ -21,7 +20,6 @@ module Plutarch.Field.HList (
 
   -- * Internal utils
   Elem (..),
-  indexHList,
   NatElem (..),
 ) where
 
@@ -55,23 +53,6 @@ data Elem (x :: k) (xs :: [k]) where
   There :: Elem x xs -> Elem x (y ': xs)
 
 ---------- Field indexing functions
-
-{- |
-  Index a HList with a field in a provided list of fields.
-
-  >>> xs = HCons 1 (HCons 2 (HCons 3 HNil))
-  >>> hlistField @"y" @["x", "y", "z"] xs
-  >>> 2
--}
-hlistField ::
-  forall f fs x xs n.
-  ( (IndexOf f fs ~ n)
-  , (IndexList n xs) ~ x
-  , NatElem n x xs
-  ) =>
-  HList xs ->
-  x
-hlistField xs = indexHList xs $ fieldElem @f @fs
 
 {- |
   Index a HList with a field in a provided list of fields.
@@ -166,7 +147,7 @@ class
   --    There (There (There Here))
   natElem :: Elem x xs
 
-instance {-# OVERLAPS #-} NatElem 0 x (x ': xs) where
+instance {-# OVERLAPPING #-} NatElem 0 x (x ': xs) where
   natElem :: Elem x (x ': xs)
   natElem = Here
 

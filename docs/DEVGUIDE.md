@@ -141,7 +141,7 @@ We have a [Plutus Core builtin functions reference](https://github.com/Plutonomi
 
 Most of the time, you'll be working with `BuiltinData`/`Data` - this is the type of the arguments that will be passed onto your script from the outside. This is the type of the datum, the redeemer and the script context. This is also the type of arguments you will be able to pass to a `Script`.
 
-Plutarch aims to hide these low level details from the user. Ideally, you will be using `PDataRepr`/`PDataList` and `PAsData` - these are essentially just `BuiltinData`, but it is typed at the Plutarch level.
+Plutarch aims to hide these low level details from the user. Ideally, you will be using `PDataSum`/`PDataList` and `PAsData` - these are essentially just `BuiltinData`, but it is typed at the Plutarch level.
 
 If you want to work with `BuiltinData` directly however, which you may have to do during developing Plutarch, you can find all that you need to know at [Plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md).
 

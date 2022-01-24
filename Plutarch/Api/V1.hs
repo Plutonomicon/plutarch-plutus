@@ -1,5 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
-{-# OPTIONS_GHC -Wwarn=orphans #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Api.V1 (
   -- * V1 Specific types
@@ -66,12 +66,12 @@ import Plutarch.Builtin (PAsData, PBuiltinList, PData, PIsData, type PBuiltinMap
 import Plutarch.ByteString (PByteString)
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
+  PDataFields,
   PDataRecord,
-  PIsDataRepr (..),
+  PIsDataRepr,
   PIsDataReprInstances (PIsDataReprInstances),
-  PLabeled (..),
+  PLabeledType (..),
  )
-import Plutarch.Field (DerivePDataFields (..), PDataFields (..))
 import Plutarch.Integer (PInteger, PIntegral)
 import Plutarch.Lift (
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
@@ -125,9 +125,8 @@ newtype PTxInfo (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PMatch, PIsData, PDataFields)
     via PIsDataReprInstances PTxInfo
-  deriving (PDataFields) via (DerivePDataFields PTxInfo)
 
 instance PUnsafeLiftDecl PTxInfo where type PLifted PTxInfo = Plutus.TxInfo
 deriving via (DerivePConstantViaData Plutus.TxInfo PTxInfo) instance (PConstant Plutus.TxInfo)
@@ -146,9 +145,8 @@ newtype PScriptContext (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PMatch, PIsData, PDataFields)
     via PIsDataReprInstances PScriptContext
-  deriving (PDataFields) via (DerivePDataFields PScriptContext)
 
 instance PUnsafeLiftDecl PScriptContext where type PLifted PScriptContext = Plutus.ScriptContext
 deriving via (DerivePConstantViaData Plutus.ScriptContext PScriptContext) instance (PConstant Plutus.ScriptContext)
@@ -164,9 +162,8 @@ data PScriptPurpose (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PMatch, PIsData, PDataFields)
     via (PIsDataReprInstances PScriptPurpose)
-  deriving (PDataFields) via (DerivePDataFields PScriptPurpose)
 
 instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
 deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) instance (PConstant Plutus.ScriptPurpose)
@@ -306,12 +303,8 @@ newtype PInterval a (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    ( PMatch
-    , PIsData
-    )
-    via PIsDataReprInstances
-          (PInterval a)
-  deriving (PDataFields) via (DerivePDataFields (PInterval a))
+    (PMatch, PIsData, PDataFields)
+    via PIsDataReprInstances (PInterval a)
 
 newtype PLowerBound a (s :: S)
   = PLowerBound
@@ -327,13 +320,8 @@ newtype PLowerBound a (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    ( PMatch
-    , PIsData
-    )
-    via ( PIsDataReprInstances
-            (PLowerBound a)
-        )
-  deriving (PDataFields) via (DerivePDataFields (PLowerBound a))
+    (PMatch, PIsData, PDataFields)
+    via (PIsDataReprInstances (PLowerBound a))
 
 newtype PUpperBound a (s :: S)
   = PUpperBound
@@ -349,13 +337,8 @@ newtype PUpperBound a (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    ( PMatch
-    , PIsData
-    )
-    via ( PIsDataReprInstances
-            (PUpperBound a)
-        )
-  deriving (PDataFields) via (DerivePDataFields (PUpperBound a))
+    (PMatch, PIsData, PDataFields)
+    via (PIsDataReprInstances (PUpperBound a))
 
 data PExtended a (s :: S)
   = PNegInf (Term s (PDataRecord '[]))
@@ -365,13 +348,8 @@ data PExtended a (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    ( PMatch
-    , PIsData
-    )
-    via ( PIsDataReprInstances
-            (PExtended a)
-        )
-  deriving (PDataFields) via (DerivePDataFields (PExtended a))
+    (PMatch, PIsData, PDataFields)
+    via (PIsDataReprInstances (PExtended a))
 
 ---------- Tx/Address
 
@@ -382,9 +360,8 @@ data PCredential (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PMatch, PIsData, PDataFields)
     via (PIsDataReprInstances PCredential)
-  deriving (PDataFields) via (DerivePDataFields PCredential)
 
 data PStakingCredential (s :: S)
   = PStakingHash (Term s (PDataRecord '["_0" ':= PCredential]))
@@ -402,11 +379,8 @@ data PStakingCredential (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    ( PMatch
-    , PIsData
-    )
+    (PMatch, PIsData, PDataFields)
     via PIsDataReprInstances PStakingCredential
-  deriving (PDataFields) via (DerivePDataFields PStakingCredential)
 
 newtype PAddress (s :: S)
   = PAddress
@@ -422,9 +396,8 @@ newtype PAddress (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PMatch, PIsData, PDataFields)
     via PIsDataReprInstances PAddress
-  deriving (PDataFields) via (DerivePDataFields PAddress)
 
 ---------- Tx
 
@@ -434,9 +407,8 @@ newtype PTxId (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PMatch, PIsData, PDataFields)
     via PIsDataReprInstances PTxId
-  deriving (PDataFields) via (DerivePDataFields PTxId)
 
 newtype PTxOutRef (s :: S)
   = PTxOutRef
@@ -452,9 +424,8 @@ newtype PTxOutRef (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PMatch, PIsData, PDataFields)
     via PIsDataReprInstances PTxOutRef
-  deriving (PDataFields) via (DerivePDataFields PTxOutRef)
 
 newtype PTxInInfo (s :: S)
   = PTxInInfo
@@ -470,9 +441,8 @@ newtype PTxInInfo (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PMatch, PIsData, PDataFields)
     via PIsDataReprInstances PTxInInfo
-  deriving (PDataFields) via (DerivePDataFields PTxInInfo)
 
 newtype PTxOut (s :: S)
   = PTxOut
@@ -489,9 +459,8 @@ newtype PTxOut (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PMatch, PIsData, PDataFields)
     via (PIsDataReprInstances PTxOut)
-  deriving (PDataFields) via (DerivePDataFields PTxOut)
 
 data PDCert (s :: S)
   = PDCertDelegRegKey (Term s (PDataRecord '["_0" ':= PStakingCredential]))
@@ -513,7 +482,7 @@ data PDCert (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PMatch, PIsData, PDataFields)
     via (PIsDataReprInstances PDCert)
 
 ---------- AssocMap
@@ -565,10 +534,8 @@ data PMaybe a (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
-    via PIsDataReprInstances
-          (PMaybe a)
-  deriving (PDataFields) via (DerivePDataFields (PMaybe a))
+    (PMatch, PIsData, PDataFields)
+    via PIsDataReprInstances (PMaybe a)
 
 data PEither a b (s :: S)
   = PLeft (Term s (PDataRecord '["_0" ':= a]))
@@ -577,9 +544,5 @@ data PEither a b (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    ( PMatch
-    , PIsData
-    )
-    via PIsDataReprInstances
-          (PEither a b)
-  deriving (PDataFields) via (DerivePDataFields (PEither a b))
+    (PMatch, PIsData, PDataFields)
+    via PIsDataReprInstances (PEither a b)
