@@ -16,6 +16,7 @@ module Plutarch.DataRepr.Internal (
   pdhead,
   pdtail,
   PIsDataRepr (..),
+  pmatchRepr,
   PIsDataReprInstances (..),
   pindexDataRecord,
   pdropDataRecord,
@@ -193,8 +194,8 @@ class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
   pmatchDataReprHandlers =
     mkDataReprHandler @s @a @0 @code
 
-  pmatchRepr :: forall s b. Term s (PDataSum (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
-  pmatchRepr dat = pmatchDataRepr dat . pmatchDataReprHandlers @a @s @b
+pmatchRepr :: forall s a b. PIsDataRepr a => Term s (PDataSum (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
+pmatchRepr dat = pmatchDataRepr dat . pmatchDataReprHandlers @a @s @b
 
 -- | Create a `DataReprhandlers` starting from `n`th sum constructor
 class MkDataReprHandler (s :: S) (a :: PType) (n :: Nat) (rest :: [[Type]]) where
