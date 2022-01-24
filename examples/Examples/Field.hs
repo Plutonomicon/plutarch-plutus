@@ -38,7 +38,7 @@ import Plutarch.DataRepr (
   pletFields,
   pletNFields,
   pletRangeFields,
-  pmatchDataRepr,
+  pmatchDataSum,
  )
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (plift)
@@ -84,7 +84,7 @@ instance PIsDataRepr (Triplet a) where
           ]
        ]
   pmatchRepr dat f =
-    pmatchDataRepr dat $ DRHCons (f . Triplet) DRHNil
+    pmatchDataSum dat $ DRHCons (f . Triplet) DRHNil
 
 mkTrip ::
   forall a s. (PIsData a) => Term s a -> Term s a -> Term s a -> Term s (Triplet a)
