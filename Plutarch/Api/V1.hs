@@ -70,7 +70,7 @@ import Plutarch.DataRepr (
   PDataRecord,
   PIsDataRepr,
   PIsDataReprInstances (PIsDataReprInstances),
-  PLabeledType (..),
+  PLabeledType ((:=)),
  )
 import Plutarch.Integer (PInteger, PIntegral)
 import Plutarch.Lift (

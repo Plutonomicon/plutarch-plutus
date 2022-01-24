@@ -55,6 +55,7 @@ import Utils
 
 {- |
   We can defined a data-type using PDataRecord, with labeled fields.
+
   With an appropriate instance of 'PIsDataRepr', we can automatically
   derive 'PDataFields'.
 -}
