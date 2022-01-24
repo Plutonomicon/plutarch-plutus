@@ -183,7 +183,7 @@ data PScriptPurpose (s :: S)
   | PRewarding (Term s (PDataRecord '["_0" ':= PStakingCredential]))
   | PCertifying (Term s (PDataRecord '["_0" ':= PDCert]))
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PMatch, PIsData)
     via (PIsDataReprInstances PScriptPurpose)
 
 instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
@@ -410,7 +410,7 @@ data PExtended a (s :: S)
   | PFinite (Term s (PDataRecord '["_0" ':= a]))
   | PPosInf (Term s (PDataRecord '[]))
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PMatch, PIsData)
     via (PIsDataReprInstances (PExtended a))
 
 instance PIsDataRepr (PExtended a) where
@@ -429,7 +429,7 @@ data PCredential (s :: S)
   = PPubKeyCredential (Term s (PDataRecord '["_0" ':= PPubKeyHash]))
   | PScriptCredential (Term s (PDataRecord '["_0" ':= PValidatorHash]))
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PMatch, PIsData)
     via (PIsDataReprInstances PCredential)
 
 instance PIsDataRepr PCredential where
@@ -459,7 +459,7 @@ data PStakingCredential (s :: S)
           )
       )
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PMatch, PIsData)
     via PIsDataReprInstances PStakingCredential
 
 instance PIsDataRepr PStakingCredential where
@@ -614,7 +614,7 @@ data PDCert (s :: S)
   | PDCertGenesis (Term s (PDataRecord '[]))
   | PDCertMir (Term s (PDataRecord '[]))
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PMatch, PIsData)
     via (PIsDataReprInstances PDCert)
 
 instance PIsDataRepr PDCert where
@@ -691,7 +691,7 @@ data PMaybe a (s :: S)
   = PNothing (Term s (PDataRecord '[]))
   | PJust (Term s (PDataRecord '["_0" ':= a]))
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PMatch, PIsData)
     via PIsDataReprInstances (PMaybe a)
 
 instance PIsDataRepr (PMaybe a) where
@@ -706,7 +706,7 @@ data PEither a b (s :: S)
   = PLeft (Term s (PDataRecord '["_0" ':= a]))
   | PRight (Term s (PDataRecord '["_0" ':= b]))
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PMatch, PIsData)
     via PIsDataReprInstances (PEither a b)
 
 instance PIsDataRepr (PEither a b) where

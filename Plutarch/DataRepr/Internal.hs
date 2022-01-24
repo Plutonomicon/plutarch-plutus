@@ -17,6 +17,7 @@ module Plutarch.DataRepr.Internal (
   pindexDataRecord,
   pdropDataRecord,
   DerivePConstantViaData (..),
+  pasDataSum,
 ) where
 
 import Data.List (groupBy, maximumBy, sortOn)
@@ -159,6 +160,9 @@ newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
 class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PLabeledType]]
   pmatchRepr :: forall s b. Term s (PDataSum (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
+
+pasDataSum :: PIsDataRepr a => Term s a -> Term s (PDataSum (PIsDataReprRepr a))
+pasDataSum = punsafeCoerce
 
 instance PIsDataRepr a => PIsData (PIsDataReprInstances a) where
   pdata = punsafeCoerce

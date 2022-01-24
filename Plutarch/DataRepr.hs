@@ -12,6 +12,7 @@ module Plutarch.DataRepr (
   I.pindexDataRecord,
   I.pdropDataRecord,
   I.DerivePConstantViaData (DerivePConstantViaData),
+  I.pasDataSum,
 
   -- * Fields
   F.PDataFields (ptoFields, type PFields),
@@ -24,5 +25,5 @@ module Plutarch.DataRepr (
   F.HRec,
 ) where
 
-import qualified Plutarch.DataRepr.Field as F
 import qualified Plutarch.DataRepr.Internal as I
+import qualified Plutarch.DataRepr.Internal.Field as F

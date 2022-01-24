@@ -1,7 +1,7 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Plutarch.DataRepr.Field (
+module Plutarch.DataRepr.Internal.Field (
   -- * PDataField class & deriving utils
   PDataFields (..),
   pletFields,
@@ -26,18 +26,17 @@ import GHC.TypeLits (KnownNat)
 
 import Plutarch.Builtin (
   PAsData,
-  PData,
   PIsData (pfromData),
-  pasConstr,
-  psndBuiltin,
  )
 import Plutarch.DataRepr.Internal (
   PDataRecord,
   PIsDataRepr (type PIsDataReprRepr),
   PIsDataReprInstances,
   PLabeledType ((:=)),
+  pasDataSum,
   pdropDataRecord,
   pindexDataRecord,
+  punDataSum,
   type PLabel,
   type PUnLabel,
  )
@@ -74,8 +73,10 @@ instance PDataFields (PDataRecord as) where
   ptoFields = id
 
 instance
-  forall a.
+  forall a fields.
   ( PIsDataRepr a
+  , PIsDataReprRepr a ~ '[fields]
+  , SingleItem (PIsDataReprRepr a) ~ fields
   ) =>
   PDataFields (PIsDataReprInstances a)
   where
@@ -83,9 +84,7 @@ instance
     PFields (PIsDataReprInstances a) =
       SingleItem (PIsDataReprRepr a)
 
-  ptoFields t =
-    (punsafeCoerce $ phoistAcyclic $ plam $ \d -> psndBuiltin #$ pasConstr # d)
-      # (punsafeCoerce t :: Term _ PData)
+  ptoFields x = punDataSum #$ pasDataSum (punsafeCoerce x :: Term _ a)
 
 instance
   forall a.
