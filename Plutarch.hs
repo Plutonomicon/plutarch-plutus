@@ -1,4 +1,3 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -44,7 +43,8 @@ module Plutarch (
 ) where
 
 import Data.Coerce (Coercible, coerce)
-import Plutarch.Internal (ClosedTerm, PType, Term, compile, papp, phoistAcyclic, plam', punsafeCoerce, (:-->))
+import Data.Kind (Type)
+import Plutarch.Internal (ClosedTerm, PType, S, Term, compile, papp, phoistAcyclic, plam', punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
 import Plutus.V1.Ledger.Scripts (Script (Script))
 import PlutusCore.Pretty (prettyPlcReadableDebug)
@@ -101,28 +101,13 @@ infixr 0 #$
  > const = plam (\x y -> x)
 -}
 
-class PLamN a b s | a -> b, s b -> a where
+class PLamN (a :: Type) (b :: PType) (s :: S) | a -> b, s b -> a where
   plam :: forall c. (Term s c -> a) -> Term s (c :--> b)
 
 instance (a' ~ Term s a) => PLamN a' a s where
   plam = plam'
 
-instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b) => PLamN (a' -> b') (a :--> b) s where
-  plam f = plam' $ \x -> plam (f x)
-
-instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c) => PLamN (a' -> b' -> c') (a :--> b :--> c) s where
-  plam f = plam' $ \x -> plam (f x)
-
-instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d) => PLamN (a' -> b' -> c' -> d') (a :--> b :--> c :--> d) s where
-  plam f = plam' $ \x -> plam (f x)
-
-instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e) => PLamN (a' -> b' -> c' -> d' -> e') (a :--> b :--> c :--> d :--> e) s where
-  plam f = plam' $ \x -> plam (f x)
-
-instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f) => PLamN (a' -> b' -> c' -> d' -> e' -> f') (a :--> b :--> c :--> d :--> e :--> f) s where
-  plam f = plam' $ \x -> plam (f x)
-
-instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f, g' ~ Term s g) => PLamN (a' -> b' -> c' -> d' -> e' -> f' -> g') (a :--> b :--> c :--> d :--> e :--> f :--> g) s where
+instance {-# OVERLAPPING #-} (a' ~ Term s a, PLamN b' b s) => PLamN (a' -> b') (a :--> b) s where
   plam f = plam' $ \x -> plam (f x)
 
 pinl :: Term s a -> (Term s a -> Term s b) -> Term s b

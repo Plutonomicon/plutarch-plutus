@@ -270,6 +270,12 @@ plutarchTests =
         , testCase "fails: por True perror" $ fails $ por # pcon PFalse # perror
         , testCase "por True (pdelay perror) ≡ True" $ equal (por # pcon PTrue # pdelay perror) (pdelay $ pcon PTrue)
         ]
+    , testGroup
+        "plam"
+        [ testCase "flip const" $ printTerm (plam $ \_ y -> y) @?= "(program 1.0.0 (\\i0 -> \\i0 -> i1))"
+        , testCase "id" $ printTerm (plam $ \x -> x) @?= "(program 1.0.0 (\\i0 -> i1))"
+        , testCase "plet" $ printTerm (plam $ \x _ -> plet x $ \_ -> perror) @?= "(program 1.0.0 (\\i0 -> \\i0 -> error))"
+        ]
     ]
 
 -- | Tests for the behaviour of UPLC itself.
