@@ -26,6 +26,7 @@ import Data.Coerce (coerce)
 import qualified Data.Map.Strict as Map
 import Data.Vector (Vector, (!))
 import qualified Data.Vector as Vector
+import System.Environment (getArgs)
 import Text.PrettyPrint.Boxes ((//))
 import qualified Text.PrettyPrint.Boxes as B
 
@@ -222,8 +223,11 @@ renderBudgetTable bs =
     ]
 
 benchMain :: [NamedBenchmark] -> IO ()
-benchMain benchmarks = do
-  let csv = Csv.encodeDefaultOrderedByName benchmarks
-  BSL.writeFile "bench.csv" csv
-  putStrLn "Wrote to bench.csv:"
-  putStrLn . B.render $ renderBudgetTable benchmarks
+benchMain benchmarks =
+  getArgs >>= \case
+    ["--csv"] -> BSL.putStr $ Csv.encodeDefaultOrderedByName benchmarks
+    _ -> do
+      let csv = Csv.encodeDefaultOrderedByName benchmarks
+      BSL.writeFile "bench.csv" csv
+      putStrLn "Wrote to bench.csv:"
+      putStrLn . B.render $ renderBudgetTable benchmarks

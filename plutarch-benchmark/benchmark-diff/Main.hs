@@ -20,4 +20,4 @@ main =
 
 usage :: IO ()
 usage =
-  putStrLn "usage: perf-diff [old] [new]"
+  putStrLn "usage: benchmark-diff [old] [new]"

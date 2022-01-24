@@ -45,6 +45,8 @@
   inputs.th-extras.flake = false;
   inputs.Shrinker.url = "github:Plutonomicon/Shrinker";
   inputs.Shrinker.flake = false;
+  inputs.haskell-language-server.url = "github:haskell/haskell-language-server";
+  inputs.haskell-language-server.flake = false;
 
   outputs = inputs@{ self, nixpkgs, haskell-nix, plutus, flake-compat, flake-compat-ci, hercules-ci-effects, ... }:
     let
@@ -64,7 +66,6 @@
           src = inputs.cardano-prelude;
           subdirs = [
             "cardano-prelude"
-            # "cardano-prelude-test"
           ];
         }
         {
@@ -86,16 +87,8 @@
         {
           src = inputs.cardano-base;
           subdirs = [
-            # "base-deriving-via"
             "binary"
-            # "binary/test"
             "cardano-crypto-class"
-            # "cardano-crypto-praos"
-            # "cardano-crypto-tests"
-            # "measures"
-            # "orphans-deriving-via"
-            # "slotting"
-            # "strict-containers"
           ];
         }
         {
@@ -109,16 +102,11 @@
         {
           src = inputs.plutus;
           subdirs = [
-            #"plutus-benchmark"
             "plutus-core"
-            #"plutus-errors"
             "plutus-ledger-api"
-            #"plutus-metatheory"
             "plutus-tx"
-            #"plutus-tx-plugin"
             "prettyprinter-configurable"
             "word-array"
-            #"stubs/plutus-ghc-stub"
           ];
         }
       ];
@@ -131,7 +119,74 @@
       nixpkgsFor' = system: import nixpkgs { inherit system; inherit (haskell-nix) config; };
 
       ghcVersion = "ghc921";
+
       tools.fourmolu = { };
+      tools.haskell-language-server = {
+        modules = [{
+          # https://github.com/input-output-hk/haskell.nix/issues/1177
+          nonReinstallablePkgs = [
+            "rts"
+            "ghc-heap"
+            "ghc-prim"
+            "integer-gmp"
+            "integer-simple"
+            "base"
+            "deepseq"
+            "array"
+            "ghc-boot-th"
+            "pretty"
+            "template-haskell"
+            # ghcjs custom packages
+            "ghcjs-prim"
+            "ghcjs-th"
+            "ghc-bignum"
+            "exceptions"
+            "stm"
+            "ghc-boot"
+            "ghc"
+            "Cabal"
+            "Win32"
+            "array"
+            "binary"
+            "bytestring"
+            "containers"
+            "directory"
+            "filepath"
+            "ghc-boot"
+            "ghc-compact"
+            "ghc-prim"
+            # "ghci" "haskeline"
+            "hpc"
+            "mtl"
+            "parsec"
+            "process"
+            "text"
+            "time"
+            "transformers"
+            "unix"
+            "xhtml"
+            "terminfo"
+          ];
+        }];
+        compiler-nix-name = ghcVersion;
+        # For some reason it doesn't use the latest version automatically.
+        index-state =
+          let l = builtins.attrNames (import "${haskell-nix.inputs.hackage}/index-state-hashes.nix"); in
+          builtins.elemAt l (builtins.length l - 1);
+        name = "haskell-language-server";
+        version = "latest";
+        cabalProjectLocal = ''
+          allow-newer: *:*
+
+          constraints:
+            primitive-unlifted < 1.0.0.0
+
+          package haskell-language-server
+            flags: +use-ghc-stub +pedantic +ignore-plugins-ghc-bounds -alternateNumberFormat -brittany -callhierarchy -class -eval -floskell -fourmolu -haddockComments -hlint -importLens -ormolu -refineImports -retrie -splice -stylishhaskell -tactic -importLens
+
+        '';
+        src = "${inputs.haskell-language-server}";
+      };
 
       haskellModule = system: {
         packages = {
@@ -387,12 +442,6 @@
             # Eventually we will probably want to build these with haskell.nix.
             nativeBuildInputs = [ pkgs'.cabal-install pkgs'.hlint pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt ];
 
-            # FIXME: add HLS back
-            # Use https://github.com/haskell/haskell-language-server/pull/2503 ?
-            # tools = {
-            #   haskell-language-server = {};  # Must use haskell.nix, because the compiler version should match
-            # };
-
             inherit tools;
 
             additional = ps: [
@@ -407,10 +456,11 @@
         let
           pkgs = nixpkgsFor system;
           pkgs' = nixpkgsFor' system;
+          t = pkgs.haskell-nix.tools ghcVersion { inherit (tools) fourmolu haskell-language-server; };
         in
         pkgs.runCommand "format-check"
           {
-            nativeBuildInputs = [ pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt (pkgs.haskell-nix.tools ghcVersion { inherit (tools) fourmolu; }).fourmolu ];
+            nativeBuildInputs = [ pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt t.fourmolu ];
           } ''
           export LC_CTYPE=C.UTF-8
           export LC_ALL=C.UTF-8
@@ -450,7 +500,11 @@
         // {
           benchmark = {
             type = "app";
-            program = "${self.flake.${system}.packages."plutarch:bench:perf"}/bin/perf";
+            program = "${self.flake.${system}.packages."plutarch-benchmark:bench:benchmark"}/bin/benchmark";
+          };
+          benchmark-diff = {
+            type = "app";
+            program = "${self.flake.${system}.packages."plutarch-benchmark:exe:benchmark-diff"}/bin/benchmark-diff";
           };
         }
       );
@@ -471,10 +525,10 @@
                 cd plutarch
 
                 git checkout $(git merge-base origin/staging ${src.rev})
-                nix --extra-experimental-features 'nix-command flakes' run .#benchmark > before.csv
+                nix --extra-experimental-features 'nix-command flakes' run .#benchmark -- --csv > before.csv
 
                 git checkout ${src.rev}
-                nix --extra-experimental-features 'nix-command flakes' run .#benchmark > after.csv
+                nix --extra-experimental-features 'nix-command flakes' run .#benchmark -- --csv > after.csv
 
                 echo
                 echo
@@ -482,7 +536,7 @@
                 echo
                 echo
 
-                diff before.csv after.csv
+                nix --extra-experimental-features 'nix-command flakes' run .#benchmark-diff -- before.csv after.csv
               '';
             }
           );
