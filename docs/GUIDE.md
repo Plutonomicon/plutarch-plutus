@@ -1060,8 +1060,8 @@ Plutarch.Rec.TH.deriveAll ''Circle
 Each field type needs to be wrapped into the type parameter `f` of kind `PType -> Type`. This is a slight modification
 of a common coding style known as Higher-Kinded Data.
 
-With this definition, `PRecord Circle` will be an instance of the [PlutusType](#plutustype-pcon-and-pmatch) class, so
-you can use the usual `pcon` and `pcon'` to construct its value and `pmatch` and `pmatch'` to de-construct it:
+With this definition, `PRecord Circle` will be an instance of [PlutusType](#plutustype-pcon-and-pmatch), so you can use
+the usual `pcon` and `pcon'` to construct its value and `pmatch` and `pmatch'` to de-construct it:
 
 ```hs
 circle :: Term s (PRecord Circle)
@@ -1070,9 +1070,9 @@ circle = pcon $ PRecord Circle{
   y = 100,
   radius = 50
   }
-  
-distanceFromOrigin :: Term s (PRecord Circle :--> PInteger)
-distanceFromOrigin = plam $ flip pmatch $ \(PRecord Circle{x, y})-> sqrt # (x * x + y * y)
+
+distanceFromOrigin :: Term s (PRecord Circle :--> PNatural)
+distanceFromOrigin = plam $ flip pmatch $ \(PRecord Circle{x, y})-> sqrt #$ projectAbs #$ x * x + y * y
 ```
 
 You may also find `rcon` and `rmatch` from `Plutarch.Rec` a bit more convenient because they don't require the `PRecord`
@@ -1080,8 +1080,8 @@ wrapper. Alternatively, instead of using `pmatch` or its alternatives you can ac
 accessor from the same module:
 
 ```hs
-includesOrigin :: Term s (PRecord Circle :--> PBool)
-includesOrigin = plam $ \c-> distanceFromOrigin # c #< pto c # field radius
+containsOrigin :: Term s (PRecord Circle :--> PBool)
+containsOrigin = plam $ \c-> distanceFromOrigin # c #< pto c # field radius
 ```
 
 #### letrec
@@ -1123,8 +1123,6 @@ only on individual fields. You can focus on a single field using the function `f
 radiusFromCircleData :: Term s (PAsData (PRecord Circle) :--> PAsData PNatural)
 radiusFromCircleData = fieldFromData radius
 ```
-
-* `pmatch circle
 
 # Examples
 Be sure to check out [Compiling and Running](#compiling-and-running) first!
