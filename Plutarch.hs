@@ -101,25 +101,28 @@ infixr 0 #$
  > const = plam (\x y -> x)
 -}
 
-class PLamN a b | a -> b, b -> a where
-  plam :: a -> b
+class PLamN a b s | a -> b where
+  plam :: forall c. (Term s c -> a) -> Term s (c :--> b)
 
-instance (a' ~ Term s a, b' ~ Term s b) => PLamN (a' -> b') (Term s (a :--> b)) where
+instance (a' ~ Term s a) => PLamN a' a s where
   plam = plam'
 
-instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c) => PLamN (a' -> b' -> c') (Term s (a :--> b :--> c)) where
+instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b) => PLamN (a' -> b') (a :--> b) s where
   plam f = plam' $ \x -> plam (f x)
 
-instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d) => PLamN (a' -> b' -> c' -> d') (Term s (a :--> b :--> c :--> d)) where
+instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c) => PLamN (a' -> b' -> c') (a :--> b :--> c) s where
   plam f = plam' $ \x -> plam (f x)
 
-instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e) => PLamN (a' -> b' -> c' -> d' -> e') (Term s (a :--> b :--> c :--> d :--> e)) where
+instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d) => PLamN (a' -> b' -> c' -> d') (a :--> b :--> c :--> d) s where
   plam f = plam' $ \x -> plam (f x)
 
-instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f) => PLamN (a' -> b' -> c' -> d' -> e' -> f') (Term s (a :--> b :--> c :--> d :--> e :--> f)) where
+instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e) => PLamN (a' -> b' -> c' -> d' -> e') (a :--> b :--> c :--> d :--> e) s where
   plam f = plam' $ \x -> plam (f x)
 
-instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f, g' ~ Term s g) => PLamN (a' -> b' -> c' -> d' -> e' -> f' -> g') (Term s (a :--> b :--> c :--> d :--> e :--> f :--> g)) where
+instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f) => PLamN (a' -> b' -> c' -> d' -> e' -> f') (a :--> b :--> c :--> d :--> e :--> f) s where
+  plam f = plam' $ \x -> plam (f x)
+
+instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f, g' ~ Term s g) => PLamN (a' -> b' -> c' -> d' -> e' -> f' -> g') (a :--> b :--> c :--> d :--> e :--> f :--> g) s where
   plam f = plam' $ \x -> plam (f x)
 
 pinl :: Term s a -> (Term s a -> Term s b) -> Term s b
