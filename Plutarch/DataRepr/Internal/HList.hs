@@ -3,16 +3,16 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.DataRepr.Internal.HList (
-  -- * HList and HRec types
-  HList (..),
-  HRec (..),
+  -- * HRec and Label types
+  HRec (HNil, HCons),
+  Labeled (Labeled, unLabeled),
 
   -- * Field indexing functions
   hrecField,
 
   -- * Type families
   type IndexList,
-  type IndexOf,
+  type IndexLabel,
   type SingleItem,
   type Take,
   type Drop,
@@ -20,7 +20,7 @@ module Plutarch.DataRepr.Internal.HList (
 
   -- * Internal utils
   Elem (..),
-  NatElem (..),
+  ElemOf (..),
 ) where
 
 import Data.Kind (Type)
@@ -37,24 +37,24 @@ import GHC.TypeLits (
 --------------------------------------------------------------------------------
 ---------- HList and HRec types
 
--- | Usual GADT Heterogenous List encoding
-data HList (xs :: [Type]) where
-  HNil :: HList '[]
-  HCons :: x -> HList xs -> HList (x ': xs)
+newtype Labeled sym a = Labeled {unLabeled :: a}
 
-{- |
-  Heterogenous Record, using a list of symbols as a
-  set of corresponding indices by position.
--}
-newtype HRec (fs :: [Symbol]) (as :: [Type])
-  = HRec (HList as)
+data HRec (as :: [Type]) where
+  HNil :: HRec '[]
+  HCons :: (Labeled name a) -> HRec as -> HRec ((Labeled name a) ': as)
 
 -- | GADT proof-witness of HList membership, usable as an index
-data Elem (x :: k) (xs :: [k]) where
-  Here :: Elem x (x ': xs)
-  There :: Elem x xs -> Elem x (y ': xs)
+data Elem (a :: k) (as :: [k]) where
+  Here :: Elem a (a ': as)
+  There :: Elem a as -> Elem a (b ': as)
 
 ---------- Field indexing functions
+
+-- | Index HRec using Elem
+indexHRec :: HRec as -> (forall a. Elem a as -> a)
+indexHRec (HCons x _) Here = x
+indexHRec (HCons _ xs) (There i) = indexHRec xs i
+indexHRec HNil impossible = case impossible of {}
 
 {- |
   Index a HList with a field in a provided list of fields.
@@ -64,14 +64,13 @@ data Elem (x :: k) (xs :: [k]) where
   >>> 2
 -}
 hrecField ::
-  forall f fs x xs n.
-  ( (IndexOf f fs ~ n)
-  , (IndexList n xs) ~ x
-  , NatElem n x xs
+  forall name a as.
+  ( (IndexLabel name as ~ a)
+  , ElemOf name a as
   ) =>
-  HRec fs xs ->
-  x
-hrecField (HRec xs) = indexHList xs $ fieldElem @f @fs
+  HRec as ->
+  a
+hrecField xs = unLabeled $ indexHRec xs $ elemOf @name @a @as
 
 ---------- Type families
 
@@ -81,10 +80,10 @@ type family IndexList (n :: Nat) (l :: [k]) :: k where
   IndexList 0 (x ': _) = x
   IndexList n (x : xs) = IndexList (n - 1) xs
 
--- | Get the Index of a type in a list
-type family IndexOf (x :: k) (xs :: [k]) :: Nat where
-  IndexOf x (x ': _) = 0
-  IndexOf x (y ': xs) = (IndexOf x xs + 1)
+-- | Indexing list of labeled types by label
+type family IndexLabel (name :: Symbol) (as :: [Type]) :: Type where
+  IndexLabel name ((Labeled name a) ': _) = a
+  IndexLabel name (_ ': as) = IndexLabel name as
 
 -- | Return the single item from a singleton list
 type family SingleItem (as :: [k]) :: k where
@@ -103,31 +102,6 @@ type family Range (from :: Nat) (to :: Nat) (as :: [k]) :: [k] where
 
 ---------- Internal utils
 
--- | Index HList using Elem
-indexHList :: HList xs -> (forall x. Elem x xs -> x)
-indexHList (HCons x _) Here = x
-indexHList (HCons _ xs) (There i) = indexHList xs i
-indexHList HNil impossible = case impossible of {}
-
-{- |
-  Construct an Elem via the position of a given type
-  in a type-level list.
-
-  The intended use is to 'lookup' the index of a
-  field name:
-
-  >>> fieldElem @"z" @["x", "y", "z", "w"]
-  >>> There (There Here))
--}
-fieldElem ::
-  forall f fs x xs n.
-  ( (IndexOf f fs ~ n)
-  , (IndexList n xs) ~ x
-  , NatElem n x xs
-  ) =>
-  Elem x xs
-fieldElem = natElem @_ @n
-
 {- |
   Construct an `Elem` via Nat.
 
@@ -135,9 +109,9 @@ fieldElem = natElem @_ @n
   but perhaps the `Elem` encoding will be useful.
 -}
 class
-  (IndexList n xs ~ x) =>
-  NatElem (n :: Nat) (x :: k) (xs :: [k])
-    | xs n -> x
+  (IndexLabel name as ~ a) =>
+  ElemOf (name :: Symbol) (a :: Type) (as :: [Type])
+    | as name -> a
   where
   -- | Construct the `Elem` corresponding to a Nat index.
   --
@@ -148,30 +122,29 @@ class
   --
   --    >>> natElem @_ @3
   --    There (There (There Here))
-  natElem :: Elem x xs
+  elemOf :: Elem (Labeled name a) as
 
-instance {-# OVERLAPPING #-} NatElem 0 x (x ': xs) where
-  natElem :: Elem x (x ': xs)
-  natElem = Here
+instance {-# OVERLAPPING #-} ElemOf name a ((Labeled name a) ': as) where
+  elemOf :: Elem (Labeled name a) ((Labeled name a) ': as)
+  elemOf = Here
 
 instance
   {-# OVERLAPPABLE #-}
-  ( IndexList n (y ': xs) ~ x
-  , NatElem (n - 1) x xs
+  ( IndexLabel name (b ': as) ~ a
+  , ElemOf name a as
   ) =>
-  NatElem n x (y ': xs)
+  ElemOf name a (b ': as)
   where
-  natElem :: Elem x (y ': xs)
-  natElem = There (natElem @_ @(n - 1) @x @xs)
+  elemOf :: Elem (Labeled name a) (b ': as)
+  elemOf = There (elemOf @name @a @as)
 
 ---------- HasField instances
 
 instance
-  forall f fs a as n.
-  ( (IndexOf f fs ~ n)
-  , (IndexList n as) ~ a
-  , NatElem n a as
+  forall name a as.
+  ( (IndexLabel name as) ~ a
+  , ElemOf name a as
   ) =>
-  HasField f (HRec fs as) a
+  HasField name (HRec as) a
   where
-  getField = hrecField @f
+  getField = hrecField @name

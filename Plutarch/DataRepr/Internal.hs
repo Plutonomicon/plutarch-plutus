@@ -11,8 +11,8 @@ module Plutarch.DataRepr.Internal (
   DataReprHandlers (..),
   PDataRecord,
   PLabeledType (..),
+  type PLabelIndex,
   type PUnLabel,
-  type PLabel,
   pdhead,
   pdtail,
   PIsDataRepr (..),
@@ -23,8 +23,17 @@ module Plutarch.DataRepr.Internal (
 ) where
 
 import Data.List (groupBy, maximumBy, sortOn)
-import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), KnownNat, Nat, Symbol, TypeError, natVal, type (+))
-import Generics.SOP (Code, Generic, I (I), NP (Nil, (:*)), Proxy, SOP (SOP), to)
+import Data.Proxy (Proxy)
+import GHC.TypeLits (
+  ErrorMessage (ShowType, Text, (:<>:)),
+  KnownNat,
+  Nat,
+  Symbol,
+  TypeError,
+  natVal,
+  type (+),
+ )
+import Generics.SOP (Code, Generic, I (I), NP (Nil, (:*)), SOP (SOP), to)
 import Numeric.Natural (Natural)
 import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoerce, runTermCont)
 import Plutarch.Bool (pif, (#==))
@@ -71,19 +80,18 @@ type family PDataRecordFields2 as where
   PDataRecordFields2 '[] = '[]
   PDataRecordFields2 (a ': as) = PDataRecordFields a ': PDataRecordFields2 as
 
+type family PLabelIndex (name :: Symbol) (as :: [PLabeledType]) :: Nat where
+  PLabelIndex name ((name ':= a) ': as) = 0
+  PLabelIndex name (_' : as) = (PLabelIndex name as) + 1
+
+type family PUnLabel (a :: PLabeledType) :: PType where
+  PUnLabel (name ':= a) = a
+
 pdhead :: Term s (PDataRecord ((l ':= a) : as) :--> PAsData a)
 pdhead = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList
 
 pdtail :: Term s (PDataRecord (a ': as) :--> PDataRecord as)
 pdtail = phoistAcyclic $ pforce $ punsafeBuiltin PLC.TailList
-
-type family PUnLabel (as :: [PLabeledType]) :: [PType] where
-  PUnLabel '[] = '[]
-  PUnLabel ((l ':= t) ': as) = t ': (PUnLabel as)
-
-type family PLabel (as :: [PLabeledType]) :: [Symbol] where
-  PLabel '[] = '[]
-  PLabel ((l ':= t) ': as) = l ': (PLabel as)
 
 type PDataSum :: [[PLabeledType]] -> PType
 data PDataSum (defs :: [[PLabeledType]]) (s :: S)
@@ -108,7 +116,7 @@ pindexDataRepr n = phoistAcyclic $
             perror
 
 -- | Safely index a 'PDataRecord'
-pindexDataRecord :: (KnownNat n) => Proxy n -> Term s (PDataRecord xs) -> Term s (PAsData (IndexList n (PUnLabel xs)))
+pindexDataRecord :: (KnownNat n) => Proxy n -> Term s (PDataRecord as) -> Term s (PAsData (PUnLabel (IndexList n as)))
 pindexDataRecord n xs =
   punsafeCoerce $
     punsafeIndex @PBuiltinList @PData ind (punsafeCoerce xs)
