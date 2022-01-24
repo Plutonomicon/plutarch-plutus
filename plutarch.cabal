@@ -86,10 +86,10 @@ library
     Plutarch.DataRepr
     Plutarch.DataRepr.Field
     Plutarch.DataRepr.Internal
+    Plutarch.DataRepr.Internal.Generic
     Plutarch.DataRepr.Internal.HList
     Plutarch.Either
     Plutarch.Evaluate
-    Plutarch.Generic
     Plutarch.Integer
     Plutarch.Internal
     Plutarch.Lift

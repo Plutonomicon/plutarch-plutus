@@ -2,7 +2,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 -- | Common generics-sop utilities for use in Plutarch.
-module Plutarch.Generic (
+module Plutarch.DataRepr.Internal.Generic (
   MkSum (..),
 ) where
 
