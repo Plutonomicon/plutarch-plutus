@@ -31,6 +31,7 @@ import Plutarch.Builtin (
  )
 import Plutarch.DataRepr.Internal (
   PDataRecord,
+  PDataSum,
   PIsDataRepr (type PIsDataReprRepr),
   PIsDataReprInstances,
   PLabeledType ((:=)),
@@ -71,6 +72,10 @@ class PDataFields (a :: PType) where
 instance PDataFields (PDataRecord as) where
   type PFields (PDataRecord as) = as
   ptoFields = id
+
+instance PDataFields (PDataSum '[as]) where
+  type PFields (PDataSum '[as]) = as
+  ptoFields = (punDataSum #)
 
 instance
   forall a fields.
