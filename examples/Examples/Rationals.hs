@@ -8,8 +8,10 @@ import Utils
 import Plutarch
 import Plutarch.Bool
 import Plutarch.Builtin
+import Plutarch.Lift (pconstant, plift)
 import Plutarch.Pair
 import Plutarch.Rational
+import qualified PlutusTx.Ratio as H
 
 -- import Data.Ratio ((%))
 
@@ -17,7 +19,9 @@ tests :: HasTester => TestTree
 tests = do
   testGroup
     "rational tests"
-    [ testCase "1/2 + 1/2 = 1" $
+    [ testCase "pconstant" $
+        plift (pconstant (H.fromGHC $ 1 / 2)) @?= H.fromGHC (1 / 2)
+    , testCase "1/2 + 1/2 = 1" $
         expect $ 1 / 2 + 1 / 2 #== (1 :: Term s PRational)
     , testCase "(1 - 3/2) * (2 - 5/2) == 1/4" $
         expect $ (1 - 3 / 2) * (2 - 5 / 2) #== (1 / 4 :: Term s PRational)
