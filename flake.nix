@@ -516,7 +516,7 @@
           hci-effects = hercules-ci-effects.lib.withPkgs pkgs;
         in
         {
-          benchmark-diff = hci-effects.runIf (src.ref == "refs/heads/staging") (
+          benchmark-diff = hci-effects.runIf (src.ref != "refs/heads/master") (
             hci-effects.mkEffect {
               src = self;
               buildInputs = with pkgs; [ git nixFlakes ];
