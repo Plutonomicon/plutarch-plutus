@@ -67,12 +67,12 @@ import Plutarch.ByteString (PByteString)
 import Plutarch.DataRepr (
   DataReprHandlers (DRHCons, DRHNil),
   DerivePConstantViaData (DerivePConstantViaData),
+  PDataFields,
   PDataRecord,
   PIsDataRepr,
   PIsDataReprInstances (PIsDataReprInstances),
   PIsDataReprRepr,
   PLabeledType ((:=)),
-  PDataFields,
   pmatchDataRepr,
   pmatchRepr,
  )
@@ -364,7 +364,7 @@ newtype PLowerBound a (s :: S)
                ]
           )
       )
-  deriving 
+  deriving
     (PMatch, PIsData, PDataFields)
     via (PIsDataReprInstances (PLowerBound a))
 
@@ -392,7 +392,7 @@ newtype PUpperBound a (s :: S)
       )
   deriving
     (PMatch, PIsData, PDataFields)
-    via ( PIsDataReprInstances (PUpperBound a))
+    via (PIsDataReprInstances (PUpperBound a))
 
 instance PIsDataRepr (PUpperBound a) where
   type
@@ -459,7 +459,7 @@ data PStakingCredential (s :: S)
           )
       )
   deriving
-    ( PMatch, PIsData, PDataFields)
+    (PMatch, PIsData, PDataFields)
     via PIsDataReprInstances PStakingCredential
 
 instance PIsDataRepr PStakingCredential where

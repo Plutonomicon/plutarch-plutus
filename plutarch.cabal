@@ -84,11 +84,11 @@ library
     Plutarch.ByteString
     Plutarch.Crypto
     Plutarch.DataRepr
-    Plutarch.Either
-    Plutarch.Evaluate
     Plutarch.DataRepr.Field
     Plutarch.DataRepr.Internal
     Plutarch.DataRepr.Internal.HList
+    Plutarch.Either
+    Plutarch.Evaluate
     Plutarch.Integer
     Plutarch.Internal
     Plutarch.Lift

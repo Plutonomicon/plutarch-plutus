@@ -76,7 +76,7 @@ instance PDataFields (PDataRecord as) where
   ptoFields = id
 
 instance
-  forall a .
+  forall a.
   ( PIsDataRepr a
   ) =>
   PDataFields (PIsDataReprInstances a)

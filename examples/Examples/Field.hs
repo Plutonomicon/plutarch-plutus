@@ -28,17 +28,17 @@ import Plutarch
 import Plutarch.Builtin (PAsData, PBuiltinList, PIsData (..))
 import Plutarch.DataRepr (
   DataReprHandlers (DRHCons, DRHNil),
+  PDataFields,
   PDataRecord,
   PIsDataRepr (pmatchRepr, type PIsDataReprRepr),
   PIsDataReprInstances (PIsDataReprInstances),
   PLabeledType ((:=)),
-  pmatchDataRepr,
-  PDataFields,
   pfield,
   pletDropFields,
   pletFields,
   pletNFields,
   pletRangeFields,
+  pmatchDataRepr,
  )
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (plift)
