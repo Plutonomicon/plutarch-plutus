@@ -18,6 +18,7 @@
 - Benchmarks.
 - `letrec` and records.
 - More complete `Plutarch.Api.V1`.
+- Add generic deriving for `PIsDataRepr`
 
 Thanks to:
 - @blamario

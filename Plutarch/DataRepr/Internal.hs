@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans -Wno-redundant-constraints #-}
 
@@ -10,8 +11,8 @@ module Plutarch.DataRepr.Internal (
   DataReprHandlers (..),
   PDataRecord,
   PLabeledType (..),
+  type PLabelIndex,
   type PUnLabel,
-  type PLabel,
   PIsDataRepr (..),
   PIsDataReprInstances (..),
   pindexDataRecord,
@@ -22,7 +23,16 @@ module Plutarch.DataRepr.Internal (
 
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy)
-import GHC.TypeLits (KnownNat, Symbol, natVal)
+import GHC.TypeLits (
+  ErrorMessage (ShowType, Text, (:<>:)),
+  KnownNat,
+  Nat,
+  Symbol,
+  TypeError,
+  natVal,
+  type (+),
+ )
+import Generics.SOP (Code, Generic, I (I), NP (Nil, (:*)), SOP (SOP), to)
 import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeCoerce, runTermCont)
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Builtin (
@@ -37,8 +47,10 @@ import Plutarch.Builtin (
   pfstBuiltin,
   psndBuiltin,
  )
+import Plutarch.DataRepr.Internal.Generic (MkSum (mkSum))
 import Plutarch.DataRepr.Internal.HList (type Drop, type IndexList)
 import Plutarch.Integer (PInteger)
+import Plutarch.Internal (S (SI))
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (pdrop, ptryIndex)
 import Plutarch.Prelude
@@ -51,13 +63,30 @@ data PDataRecord (as :: [PLabeledType]) (s :: S)
 
 data PLabeledType = Symbol := PType
 
-type family PUnLabel (as :: [PLabeledType]) :: [PType] where
-  PUnLabel '[] = '[]
-  PUnLabel ((l ':= t) ': as) = t ': (PUnLabel as)
+{- Get the product types of a data record sum constructor
+-}
+type PDataRecordFields :: [Type] -> [PLabeledType]
+type family PDataRecordFields as where
+  PDataRecordFields '[] = '[]
+  PDataRecordFields '[Term s (PDataRecord fs)] = fs
+  PDataRecordFields '[t] = TypeError ( 'Text "Expected PDataRecord" ':<>: 'Text "but got" ':<>: 'ShowType t)
+  PDataRecordFields ts = TypeError ( 'Text "Expected none or PDataRecord" ':<>: 'Text "but got" ':<>: 'ShowType ts)
 
-type family PLabel (as :: [PLabeledType]) :: [Symbol] where
-  PLabel '[] = '[]
-  PLabel ((l ':= t) ': as) = l ': (PLabel as)
+{- Return the table of data records for a sum type.
+
+NOTE: Unfortunately we can't write a generic FMap due to ghc's arity limitations.
+-}
+type PDataRecordFields2 :: [[Type]] -> [[PLabeledType]]
+type family PDataRecordFields2 as where
+  PDataRecordFields2 '[] = '[]
+  PDataRecordFields2 (a ': as) = PDataRecordFields a ': PDataRecordFields2 as
+
+type family PLabelIndex (name :: Symbol) (as :: [PLabeledType]) :: Nat where
+  PLabelIndex name ((name ':= a) ': as) = 0
+  PLabelIndex name (_' : as) = (PLabelIndex name as) + 1
+
+type family PUnLabel (a :: PLabeledType) :: PType where
+  PUnLabel (name ':= a) = a
 
 {- | A sum of 'PDataRecord's. The underlying representation is the `PDataConstr` constructor,
  where the integer is the index of the variant and the list is the record.
@@ -89,7 +118,7 @@ ptryIndexDataSum n = phoistAcyclic $
             perror
 
 -- | Safely index a 'PDataRecord'.
-pindexDataRecord :: (KnownNat n) => Proxy n -> Term s (PDataRecord xs) -> Term s (PAsData (IndexList n (PUnLabel xs)))
+pindexDataRecord :: (KnownNat n) => Proxy n -> Term s (PDataRecord as) -> Term s (PAsData (PUnLabel (IndexList n as)))
 pindexDataRecord n xs =
   punsafeCoerce $
     ptryIndex @PBuiltinList @PData (fromInteger $ natVal n) (punsafeCoerce xs)
@@ -101,12 +130,12 @@ pdropDataRecord n xs =
     pdrop @PBuiltinList @PData (fromInteger $ natVal n) (punsafeCoerce xs)
 
 -- | This is used to define the handlers for 'pmatchDataSum'.
-data DataReprHandlers (out :: PType) (def :: [[PLabeledType]]) (s :: S) where
+data DataReprHandlers (out :: PType) (defs :: [[PLabeledType]]) (s :: S) where
   DRHNil :: DataReprHandlers out '[] s
   DRHCons :: (Term s (PDataRecord def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def : defs) s
 
 -- | Pattern match on a 'PDataSum' manually. The common case only appears once in the generated code.
-pmatchDataSum :: Term s (PDataSum (def : defs)) -> DataReprHandlers out (def : defs) s -> Term s out
+pmatchDataSum :: Term s (PDataSum defs) -> DataReprHandlers out defs s -> Term s out
 pmatchDataSum d handlers =
   plet (pasConstr #$ pforgetData $ pdata d) $ \d' ->
     plet (pfstBuiltin # d') $ \constr ->
@@ -159,7 +188,46 @@ newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
 
 class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PLabeledType]]
+  type PIsDataReprRepr a = PDataRecordFields2 (Code (a 'SI))
+
   pmatchRepr :: forall s b. Term s (PDataSum (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
+  default pmatchRepr ::
+    forall s b code.
+    ( code ~ Code (a s)
+    , PDataRecordFields2 code ~ PIsDataReprRepr a
+    , MkDataReprHandler s a 0 code
+    ) =>
+    Term s (PDataSum (PIsDataReprRepr a)) ->
+    (a s -> Term s b) ->
+    Term s b
+  pmatchRepr dat =
+    pmatchDataSum dat . mkDataReprHandler @s @a @0 @code
+
+-- | Create a `DataReprhandlers` starting from `n`th sum constructor
+class MkDataReprHandler (s :: S) (a :: PType) (n :: Nat) (rest :: [[Type]]) where
+  mkDataReprHandler :: forall out. (a s -> Term s out) -> DataReprHandlers out (PDataRecordFields2 rest) s
+
+instance MkDataReprHandler s a n '[] where
+  mkDataReprHandler _ = DRHNil
+
+instance
+  ( Generic (a s)
+  , code ~ Code (a s)
+  , r ~ IndexList n code
+  , r ~ '[Term s (PDataRecord fs)]
+  , MkSum n code
+  , MkDataReprHandler s a (n + 1) rs
+  ) =>
+  MkDataReprHandler s a n (r ': rs)
+  where
+  mkDataReprHandler f =
+    DRHCons (f . to . mkSOP . mkProduct) $
+      mkDataReprHandler @s @a @(n + 1) @rs f
+    where
+      mkProduct :: Term s (PDataRecord fs) -> NP I r
+      mkProduct x = I x :* Nil
+      mkSOP :: NP I r -> SOP I (Code (a s))
+      mkSOP = SOP . mkSum @n @code
 
 pasDataSum :: PIsDataRepr a => Term s a -> Term s (PDataSum (PIsDataReprRepr a))
 pasDataSum = punsafeCoerce

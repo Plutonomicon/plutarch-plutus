@@ -65,16 +65,12 @@ import Plutarch.Bool (PBool)
 import Plutarch.Builtin (PAsData, PBuiltinList, PData, PIsData, type PBuiltinMap)
 import Plutarch.ByteString (PByteString)
 import Plutarch.DataRepr (
-  DataReprHandlers (DRHCons, DRHNil),
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
   PDataRecord,
   PIsDataRepr,
   PIsDataReprInstances (PIsDataReprInstances),
-  PIsDataReprRepr,
   PLabeledType ((:=)),
-  pmatchDataSum,
-  pmatchRepr,
  )
 import Plutarch.Integer (PInteger, PIntegral)
 import Plutarch.Lift (
@@ -90,6 +86,8 @@ import Plutarch.Lift (
  )
 
 -- ctor in-scope for deriving
+import qualified GHC.Generics as GHC
+import Generics.SOP (Generic)
 import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified Plutus.V1.Ledger.Crypto as PlutusCrpyto
@@ -123,30 +121,15 @@ newtype PTxInfo (s :: S)
                ]
           )
       )
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData, PDataFields)
     via PIsDataReprInstances PTxInfo
 
 instance PUnsafeLiftDecl PTxInfo where type PLifted PTxInfo = Plutus.TxInfo
 deriving via (DerivePConstantViaData Plutus.TxInfo PTxInfo) instance (PConstant Plutus.TxInfo)
-
-instance PIsDataRepr PTxInfo where
-  type
-    PIsDataReprRepr PTxInfo =
-      '[ '[ "inputs" ':= PBuiltinList (PAsData PTxInInfo)
-          , "outputs" ':= PBuiltinList (PAsData PTxOut)
-          , "fee" ':= PValue
-          , "mint" ':= PValue
-          , "dcert" ':= PBuiltinList (PAsData PDCert)
-          , "wdrl" ':= PBuiltinList (PAsData (PTuple PStakingCredential PInteger))
-          , "validRange" ':= PPOSIXTimeRange
-          , "signatories" ':= PBuiltinList (PAsData PPubKeyHash)
-          , "data" ':= PBuiltinList (PAsData (PTuple PDatumHash PDatum))
-          , "id" ':= PTxId
-          ]
-       ]
-  pmatchRepr dat f =
-    (pmatchDataSum dat) ((DRHCons (f . PTxInfo)) $ DRHNil)
 
 newtype PScriptContext (s :: S)
   = PScriptContext
@@ -158,22 +141,15 @@ newtype PScriptContext (s :: S)
                ]
           )
       )
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData, PDataFields)
     via PIsDataReprInstances PScriptContext
 
 instance PUnsafeLiftDecl PScriptContext where type PLifted PScriptContext = Plutus.ScriptContext
 deriving via (DerivePConstantViaData Plutus.ScriptContext PScriptContext) instance (PConstant Plutus.ScriptContext)
-
-instance PIsDataRepr PScriptContext where
-  type
-    PIsDataReprRepr PScriptContext =
-      '[ '[ "txInfo" ':= PTxInfo
-          , "purpose" ':= PScriptPurpose
-          ]
-       ]
-  pmatchRepr dat f =
-    (pmatchDataSum dat) ((DRHCons (f . PScriptContext)) $ DRHNil)
 
 -- General types, used by V1 and V2
 
@@ -182,30 +158,15 @@ data PScriptPurpose (s :: S)
   | PSpending (Term s (PDataRecord '["_0" ':= PTxOutRef]))
   | PRewarding (Term s (PDataRecord '["_0" ':= PStakingCredential]))
   | PCertifying (Term s (PDataRecord '["_0" ':= PDCert]))
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData)
     via (PIsDataReprInstances PScriptPurpose)
 
 instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
 deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) instance (PConstant Plutus.ScriptPurpose)
-
-instance PIsDataRepr PScriptPurpose where
-  type
-    PIsDataReprRepr PScriptPurpose =
-      '[ '["_0" ':= PCurrencySymbol]
-       , '["_0" ':= PTxOutRef]
-       , '["_0" ':= PStakingCredential]
-       , '["_0" ':= PDCert]
-       ]
-
-  pmatchRepr dat f =
-    pmatchDataSum dat $
-      DRHCons (f . PMinting) $
-        DRHCons (f . PSpending) $
-          DRHCons (f . PRewarding) $
-            DRHCons
-              (f . PCertifying)
-              DRHNil
 
 ---------- Scripts
 
@@ -338,21 +299,12 @@ newtype PInterval a (s :: S)
                ]
           )
       )
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData, PDataFields)
     via PIsDataReprInstances (PInterval a)
-
-instance PIsDataRepr (PInterval a) where
-  type
-    PIsDataReprRepr (PInterval a) =
-      '[ '[ "from" ':= PLowerBound a
-          , "to" ':= PUpperBound a
-          ]
-       ]
-
-  pmatchRepr dat f =
-    pmatchDataSum dat $
-      DRHCons (f . PInterval) DRHNil
 
 newtype PLowerBound a (s :: S)
   = PLowerBound
@@ -364,21 +316,12 @@ newtype PLowerBound a (s :: S)
                ]
           )
       )
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData, PDataFields)
     via (PIsDataReprInstances (PLowerBound a))
-
-instance PIsDataRepr (PLowerBound a) where
-  type
-    PIsDataReprRepr (PLowerBound a) =
-      '[ '[ "_0" ':= PExtended a
-          , "_1" ':= PClosure
-          ]
-       ]
-
-  pmatchRepr dat f =
-    pmatchDataSum dat $
-      DRHCons (f . PLowerBound) DRHNil
 
 newtype PUpperBound a (s :: S)
   = PUpperBound
@@ -390,61 +333,35 @@ newtype PUpperBound a (s :: S)
                ]
           )
       )
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData, PDataFields)
     via (PIsDataReprInstances (PUpperBound a))
-
-instance PIsDataRepr (PUpperBound a) where
-  type
-    PIsDataReprRepr (PUpperBound a) =
-      '[ '[ "_0" ':= PExtended a
-          , "_1" ':= PClosure
-          ]
-       ]
-  pmatchRepr dat f =
-    pmatchDataSum dat $
-      DRHCons (f . PUpperBound) DRHNil
 
 data PExtended a (s :: S)
   = PNegInf (Term s (PDataRecord '[]))
   | PFinite (Term s (PDataRecord '["_0" ':= a]))
   | PPosInf (Term s (PDataRecord '[]))
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData)
     via (PIsDataReprInstances (PExtended a))
-
-instance PIsDataRepr (PExtended a) where
-  type
-    PIsDataReprRepr (PExtended a) =
-      '[ '[], '["_0" ':= a], '[]]
-  pmatchRepr dat f =
-    pmatchDataSum dat $
-      DRHCons (f . PNegInf) $
-        DRHCons (f . PFinite) $
-          DRHCons (f . PPosInf) DRHNil
 
 ---------- Tx/Address
 
 data PCredential (s :: S)
   = PPubKeyCredential (Term s (PDataRecord '["_0" ':= PPubKeyHash]))
   | PScriptCredential (Term s (PDataRecord '["_0" ':= PValidatorHash]))
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData)
     via (PIsDataReprInstances PCredential)
-
-instance PIsDataRepr PCredential where
-  type
-    PIsDataReprRepr PCredential =
-      '[ '["_0" ':= PPubKeyHash]
-       , '["_0" ':= PValidatorHash]
-       ]
-
-  pmatchRepr dat f =
-    pmatchDataSum dat $
-      DRHCons (f . PPubKeyCredential) $
-        DRHCons
-          (f . PScriptCredential)
-          DRHNil
 
 data PStakingCredential (s :: S)
   = PStakingHash (Term s (PDataRecord '["_0" ':= PCredential]))
@@ -458,23 +375,12 @@ data PStakingCredential (s :: S)
                ]
           )
       )
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData)
     via PIsDataReprInstances PStakingCredential
-
-instance PIsDataRepr PStakingCredential where
-  type
-    PIsDataReprRepr PStakingCredential =
-      '[ '["_0" ':= PCredential]
-       , '[ "_0" ':= PInteger
-          , "_1" ':= PInteger
-          , "_2" ':= PInteger
-          ]
-       ]
-  pmatchRepr dat f =
-    pmatchDataSum dat $
-      DRHCons (f . PStakingHash) $
-        DRHCons (f . PStakingPtr) DRHNil
 
 newtype PAddress (s :: S)
   = PAddress
@@ -486,36 +392,23 @@ newtype PAddress (s :: S)
                ]
           )
       )
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData, PDataFields)
     via PIsDataReprInstances PAddress
-
-instance PIsDataRepr PAddress where
-  type
-    PIsDataReprRepr PAddress =
-      '[ '[ "credential" ':= PCredential
-          , "stakingCredential" ':= (PMaybe PStakingCredential)
-          ]
-       ]
-
-  pmatchRepr dat f =
-    pmatchDataSum dat $
-      DRHCons (f . PAddress) DRHNil
 
 ---------- Tx
 
 newtype PTxId (s :: S)
   = PTxId (Term s (PDataRecord '["_0" ':= PByteString]))
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData, PDataFields)
     via PIsDataReprInstances PTxId
-
-instance PIsDataRepr PTxId where
-  type PIsDataReprRepr PTxId = '[ '["_0" ':= PByteString]]
-
-  pmatchRepr dat f =
-    pmatchDataSum dat $
-      DRHCons (f . PTxId) DRHNil
 
 newtype PTxOutRef (s :: S)
   = PTxOutRef
@@ -527,21 +420,12 @@ newtype PTxOutRef (s :: S)
                ]
           )
       )
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData, PDataFields)
     via PIsDataReprInstances PTxOutRef
-
-instance PIsDataRepr PTxOutRef where
-  type
-    PIsDataReprRepr PTxOutRef =
-      '[ '[ "id" ':= PTxId
-          , "idx" ':= PInteger
-          ]
-       ]
-
-  pmatchRepr dat f =
-    pmatchDataSum dat $
-      DRHCons (f . PTxOutRef) DRHNil
 
 newtype PTxInInfo (s :: S)
   = PTxInInfo
@@ -553,21 +437,12 @@ newtype PTxInInfo (s :: S)
                ]
           )
       )
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData, PDataFields)
     via PIsDataReprInstances PTxInInfo
-
-instance PIsDataRepr PTxInInfo where
-  type
-    PIsDataReprRepr PTxInInfo =
-      '[ '[ "outRef" ':= PTxOutRef
-          , "resolved" ':= PTxOut
-          ]
-       ]
-
-  pmatchRepr dat f =
-    pmatchDataSum dat $
-      DRHCons (f . PTxInInfo) DRHNil
 
 newtype PTxOut (s :: S)
   = PTxOut
@@ -580,22 +455,12 @@ newtype PTxOut (s :: S)
                ]
           )
       )
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData, PDataFields)
     via (PIsDataReprInstances PTxOut)
-
-instance PIsDataRepr PTxOut where
-  type
-    PIsDataReprRepr PTxOut =
-      '[ '[ "address" ':= PAddress
-          , "value" ':= PValue
-          , "datumHash" ':= PMaybe PDatumHash
-          ]
-       ]
-
-  pmatchRepr dat f =
-    pmatchDataSum dat $
-      DRHCons (f . PTxOut) DRHNil
 
 data PDCert (s :: S)
   = PDCertDelegRegKey (Term s (PDataRecord '["_0" ':= PStakingCredential]))
@@ -613,37 +478,12 @@ data PDCert (s :: S)
   | PDCertPoolRetire (Term s (PDataRecord '["_0" ':= PPubKeyHash, "_1" ':= PInteger]))
   | PDCertGenesis (Term s (PDataRecord '[]))
   | PDCertMir (Term s (PDataRecord '[]))
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData)
     via (PIsDataReprInstances PDCert)
-
-instance PIsDataRepr PDCert where
-  type
-    PIsDataReprRepr PDCert =
-      '[ '["_0" ':= PStakingCredential]
-       , '["_0" ':= PStakingCredential]
-       , '[ "_0" ':= PStakingCredential
-          , "_1" ':= PPubKeyHash
-          ]
-       , '[ "_0" ':= PPubKeyHash
-          , "_1" ':= PPubKeyHash
-          ]
-       , '[ "_0" ':= PPubKeyHash
-          , "_1" ':= PInteger
-          ]
-       , '[]
-       , '[]
-       ]
-
-  pmatchRepr dat f =
-    pmatchDataSum dat $
-      DRHCons (f . PDCertDelegRegKey) $
-        DRHCons (f . PDCertDelegDeRegKey) $
-          DRHCons (f . PDCertDelegDelegate) $
-            DRHCons (f . PDCertPoolRegister) $
-              DRHCons (f . PDCertPoolRetire) $
-                DRHCons (f . PDCertGenesis) $
-                  DRHCons (f . PDCertMir) DRHNil
 
 ---------- AssocMap
 
@@ -690,31 +530,19 @@ instance
 data PMaybe a (s :: S)
   = PNothing (Term s (PDataRecord '[]))
   | PJust (Term s (PDataRecord '["_0" ':= a]))
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData)
     via PIsDataReprInstances (PMaybe a)
 
-instance PIsDataRepr (PMaybe a) where
-  type PIsDataReprRepr (PMaybe a) = '[ '[], '["_0" ':= a]]
-
-  pmatchRepr dat f =
-    pmatchDataSum dat $
-      DRHCons (f . PNothing) $
-        DRHCons (f . PJust) DRHNil
-
 data PEither a b (s :: S)
   = PLeft (Term s (PDataRecord '["_0" ':= a]))
   | PRight (Term s (PDataRecord '["_0" ':= b]))
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData)
     via PIsDataReprInstances (PEither a b)
-
-instance PIsDataRepr (PEither a b) where
-  type
-    PIsDataReprRepr (PEither a b) =
-      '[ '["_0" ':= a], '["_0" ':= b]]
-
-  pmatchRepr dat f =
-    pmatchDataSum dat $
-      DRHCons (f . PLeft) $
-        DRHCons (f . PRight) DRHNil
