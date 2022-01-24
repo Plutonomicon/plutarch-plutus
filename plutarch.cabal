@@ -106,15 +106,18 @@ library
   build-depends:
     , base
     , bytestring
+    , constraints
     , containers
     , cryptonite
     , flat
+    , generics-sop
     , hashable
     , mtl
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
     , rank2classes
+    , sop-core
     , template-haskell
     , text
     , transformers
