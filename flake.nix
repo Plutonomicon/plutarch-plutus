@@ -516,7 +516,12 @@
           hci-effects = hercules-ci-effects.lib.withPkgs pkgs;
         in
         {
-          benchmark-diff = hci-effects.runIf (src.ref == "refs/heads/staging") (
+          # Hercules 0.9 will allow us to calculate the merge-base so we can test all PRs.
+          # Right now we just hardcode this effect to test every commit against
+          # origin/staging. We set != "refs/head/master" so that merges into master don't
+          # cause a lot of unnecessary bogus benchmarks to appear in CI for the time
+          # being.
+          benchmark-diff = hci-effects.runIf (src.ref != "refs/heads/master") (
             hci-effects.mkEffect {
               src = self;
               buildInputs = with pkgs; [ git nixFlakes ];
