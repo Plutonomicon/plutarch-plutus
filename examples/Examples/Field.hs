@@ -106,6 +106,7 @@ tripTrip = mkTrip tripA tripB tripC
 
 {- |
   We can bind all fields to a 'HRec' at once with 'pletFields'.
+
   The fields in the 'HRec' can them be accessed with
   RecordDotSyntax.
 -}
@@ -120,6 +121,7 @@ tripSum =
 {- |
   We can also bind the first N fields with 'pletNFields',
   this saves some code in binding the tails for additional fields.
+
   The fields in the 'HRec' can them be accessed with
   RecordDotSyntax.
 -}
@@ -143,6 +145,7 @@ getY = pfield @"y"
 
 {- |
   Due to the instance @(PDataFields a) -> PDataFields (PAsData a)@,
+
   we can conveniently chain 'pletFields' & 'pfield' within
   nested structures:
 -}
@@ -174,6 +177,7 @@ type SomeFields =
 
 {- |
   We can also bind over a 'PDataRecord' directly.
+
   'pletNFields' will more efficiently bind the first N fields
   of a PRecord.
 -}

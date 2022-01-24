@@ -20,12 +20,11 @@ module Plutarch.DataRepr.Internal (
   pindexDataRecord,
   pdropDataRecord,
   DerivePConstantViaData (..),
-  GetPDataRecordArgs,
 ) where
 
-import Data.Fin
+import Data.Fin (Fin (FS, FZ))
 import Data.List (groupBy, maximumBy, sortOn)
-import GHC.TypeLits (ErrorMessage (Text), KnownNat, Symbol, TypeError, natVal)
+import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), KnownNat, Symbol, TypeError, natVal)
 import Generics.SOP
 import Numeric.Natural (Natural)
 import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoerce, runTermCont)
@@ -55,21 +54,23 @@ data PDataRecord (as :: [PLabeledType]) (s :: S)
 
 data PLabeledType = Symbol := PType
 
-type family GetPDataRecordArgs (a :: [[Type]]) :: [[PLabeledType]] where
-  GetPDataRecordArgs xs = ToPLabeled2 xs
+{- Get the product types of a data record sum constructor
+-}
+type PDataRecordFields :: [Type] -> [PLabeledType]
+type family PDataRecordFields as where
+  PDataRecordFields '[] = '[]
+  PDataRecordFields '[Term s (PDataRecord fs)] = fs
+  PDataRecordFields '[t] = TypeError ( 'Text "Expected PDataRecord" ':<>: 'Text "but got" ':<>: 'ShowType t)
+  PDataRecordFields ts = TypeError ( 'Text "Expected none or PDataRecord" ':<>: 'Text "but got" ':<>: 'ShowType ts)
 
-type ToPLabeled :: [Type] -> [PLabeledType]
-type family ToPLabeled as where
-  ToPLabeled '[] = '[]
-  ToPLabeled '[Term s (PDataRecord fs)] = fs
-  ToPLabeled '[_] = TypeError ( 'Text "Expected PDataRecord")
-  ToPLabeled _ = TypeError ( 'Text "Must have 0 or 1 argument in sum constructor")
+{- Return the table of data records for a sum type.
 
--- Unfortunately we can't write a generic FMap due to ghc's arity limitations.
-type ToPLabeled2 :: [[Type]] -> [[PLabeledType]]
-type family ToPLabeled2 as where
-  ToPLabeled2 '[] = '[]
-  ToPLabeled2 (a ': as) = ToPLabeled a ': ToPLabeled2 as
+NOTE: Unfortunately we can't write a generic FMap due to ghc's arity limitations.
+-}
+type PDataRecordFields2 :: [[Type]] -> [[PLabeledType]]
+type family PDataRecordFields2 as where
+  PDataRecordFields2 '[] = '[]
+  PDataRecordFields2 (a ': as) = PDataRecordFields a ': PDataRecordFields2 as
 
 pdhead :: Term s (PDataRecord ((l ':= a) : as) :--> PAsData a)
 pdhead = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList
@@ -179,31 +180,26 @@ newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
 
 class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PLabeledType]]
-  type PIsDataReprRepr a = GetPDataRecordArgs (Code (a 'SI))
+  type PIsDataReprRepr a = PDataRecordFields2 (Code (a 'SI))
   pmatchDataReprHandlers :: forall s out. (a s -> Term s out) -> DataReprHandlers out (PIsDataReprRepr a) s
   default pmatchDataReprHandlers ::
-    forall s out.
-    ( ToPLabeled2 (Code (a s)) ~ PIsDataReprRepr a
-    , MkDataReprHandler s a ( 'FZ @(Length (Code (a s)))) (Code (a s)) (Code (a s))
+    forall s out code.
+    ( PDataRecordFields2 (Code (a s)) ~ PIsDataReprRepr a
+    , code ~ Code (a s)
+    , MkDataReprHandler s a ( 'FZ @(Length code)) code code
     ) =>
     (a s -> Term s out) ->
     DataReprHandlers out (PIsDataReprRepr a) s
   pmatchDataReprHandlers =
-    mkDataReprHandler
-      @_
-      @s
-      @a
-      @( 'FZ @(Length (Code (a s))))
-      @(Code (a s))
-      @(Code (a s))
+    mkDataReprHandler @_ @s @a @( 'FZ @(Length code)) @code @code
 
   pmatchRepr :: forall s b. Term s (PDataSum (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
   pmatchRepr dat = pmatchDataRepr dat . pmatchDataReprHandlers @a @s @b
 
 class (Tail idx pss ~ rest) => MkDataReprHandler (s :: S) (a :: PType) (idx :: Fin n) (rest :: [[Type]]) (pss :: [[Type]]) where
-  mkDataReprHandler :: forall out. (a s -> Term s out) -> DataReprHandlers out (Tail idx (GetPDataRecordArgs pss)) s
+  mkDataReprHandler :: forall out. (a s -> Term s out) -> DataReprHandlers out (Tail idx (PDataRecordFields2 pss)) s
 
-instance (Tail idx (ToPLabeled2 pss) ~ '[], Tail idx pss ~ '[]) => MkDataReprHandler s a idx '[] pss where
+instance (Tail idx (PDataRecordFields2 pss) ~ '[], Tail idx pss ~ '[]) => MkDataReprHandler s a idx '[] pss where
   mkDataReprHandler _ = DRHNil
 
 instance
@@ -211,10 +207,10 @@ instance
   , r ~ '[Term s (PDataRecord fs)]
   , Generic (a s)
   , Code (a s) ~ pss
-  , ToPLabeled r ~ fs
-  , ToPLabeled2 rs ~ (Tail ( 'FS idx) (GetPDataRecordArgs pss))
+  , PDataRecordFields r ~ fs
+  , PDataRecordFields2 rs ~ (Tail ( 'FS idx) (PDataRecordFields2 pss))
   , Tail idx pss ~ (r ': rs)
-  , Tail idx (ToPLabeled2 pss) ~ ToPLabeled2 (r ': rs)
+  , Tail idx (PDataRecordFields2 pss) ~ PDataRecordFields2 (r ': rs)
   , MkSum idx pss
   , MkDataReprHandler s a ( 'FS idx) rs pss
   ) =>
