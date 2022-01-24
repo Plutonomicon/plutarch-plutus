@@ -16,7 +16,6 @@ module Plutarch.DataRepr.Internal (
   pdhead,
   pdtail,
   PIsDataRepr (..),
-  pmatchRepr,
   PIsDataReprInstances (..),
   pindexDataRecord,
   pdropDataRecord,
@@ -182,20 +181,18 @@ class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PLabeledType]]
   type PIsDataReprRepr a = PDataRecordFields2 (Code (a 'SI))
 
-  pmatchDataReprHandlers :: forall s out. (a s -> Term s out) -> DataReprHandlers out (PIsDataReprRepr a) s
-  default pmatchDataReprHandlers ::
-    forall s out code.
+  pmatchRepr :: forall s b. Term s (PDataSum (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
+  default pmatchRepr ::
+    forall s b code.
     ( code ~ Code (a s)
     , PDataRecordFields2 code ~ PIsDataReprRepr a
     , MkDataReprHandler s a 0 code
     ) =>
-    (a s -> Term s out) ->
-    DataReprHandlers out (PIsDataReprRepr a) s
-  pmatchDataReprHandlers =
-    mkDataReprHandler @s @a @0 @code
-
-pmatchRepr :: forall s a b. PIsDataRepr a => Term s (PDataSum (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
-pmatchRepr dat = pmatchDataRepr dat . pmatchDataReprHandlers @a @s @b
+    Term s (PDataSum (PIsDataReprRepr a)) ->
+    (a s -> Term s b) ->
+    Term s b
+  pmatchRepr dat =
+    pmatchDataRepr dat . mkDataReprHandler @s @a @0 @code
 
 -- | Create a `DataReprhandlers` starting from `n`th sum constructor
 class MkDataReprHandler (s :: S) (a :: PType) (n :: Nat) (rest :: [[Type]]) where

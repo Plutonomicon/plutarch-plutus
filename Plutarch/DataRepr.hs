@@ -8,7 +8,7 @@ module Plutarch.DataRepr (
   I.PLabeledType ((:=)),
   I.pdhead,
   I.pdtail,
-  I.PIsDataRepr (type PIsDataReprRepr, pmatchDataReprHandlers),
+  I.PIsDataRepr (type PIsDataReprRepr, pmatchRepr),
   I.pmatchDataRepr,
   I.PIsDataReprInstances (PIsDataReprInstances),
   I.pindexDataRecord,
