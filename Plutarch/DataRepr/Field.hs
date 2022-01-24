@@ -18,6 +18,7 @@ module Plutarch.DataRepr.Field (
 
   -- * Re-exports
   HRec (..),
+  Labeled (Labeled, unLabeled),
   hrecField,
 ) where
 
@@ -40,16 +41,15 @@ import Plutarch.DataRepr.Internal (
   pdropDataRecord,
   pdtail,
   pindexDataRecord,
-  type PLabel,
+  type PLabelIndex,
   type PUnLabel,
  )
 import Plutarch.DataRepr.Internal.HList (
-  HList (HCons, HNil),
-  HRec (HRec),
+  HRec (HCons, HNil),
+  Labeled (Labeled, unLabeled),
   hrecField,
   type Drop,
   type IndexList,
-  type IndexOf,
   type Range,
   type SingleItem,
   type Take,
@@ -103,37 +103,36 @@ instance
   Bind a HRec of named fields from a compatible type.
 -}
 pletFields ::
-  forall a b s.
+  forall a b as s.
   ( PDataFields a
-  , BindFields (PFields a)
+  , as ~ (PFields a)
+  , BindFields as
   ) =>
   Term s a ->
-  (HRec (PLabel (PFields a)) (TermsOf s (PUnLabel (PFields a))) -> Term s b) ->
+  (HRec (TermsOf s as) -> Term s b) ->
   Term s b
 pletFields t =
   runTermCont $
-    fmap (HRec @(PLabel (PFields a))) $ bindFields $ ptoFields t
+    bindFields $ ptoFields t
 
 {- | Bind a HRec of the first N fields.
 
   Always more efficient than binding all fields.
 -}
 pletNFields ::
-  forall n a b s fs ns as.
+  forall n a b s as.
   ( PDataFields a
-  , fs ~ (Take n (PFields a))
-  , ns ~ (PLabel fs)
-  , as ~ (PUnLabel fs)
-  , BindFields fs
+  , as ~ (Take n (PFields a))
+  , BindFields as
   ) =>
   Term s a ->
-  ((HRec ns) (TermsOf s as) -> Term s b) ->
+  (HRec (TermsOf s as) -> Term s b) ->
   Term s b
 pletNFields t =
   runTermCont $
-    fmap (HRec @ns) $ bindFields $ to $ ptoFields t
+    bindFields $ to $ ptoFields t
   where
-    to :: Term s (PDataRecord (PFields a)) -> Term s (PDataRecord fs)
+    to :: Term s (PDataRecord (PFields a)) -> Term s (PDataRecord as)
     to = punsafeCoerce
 
 {- | Bind a HRec, dropping the first N fields.
@@ -141,22 +140,20 @@ pletNFields t =
   Usually more efficient than binding all fields.
 -}
 pletDropFields ::
-  forall n a b s fs ns as.
+  forall n a b s as.
   ( PDataFields a
-  , fs ~ (Drop n (PFields a))
-  , ns ~ (PLabel fs)
-  , as ~ (PUnLabel fs)
-  , BindFields fs
+  , as ~ (Drop n (PFields a))
+  , BindFields as
   , KnownNat n
   ) =>
   Term s a ->
-  ((HRec ns) (TermsOf s as) -> Term s b) ->
+  (HRec (TermsOf s as) -> Term s b) ->
   Term s b
 pletDropFields t =
   runTermCont $
-    fmap (HRec @ns) $ bindFields $ to $ ptoFields t
+    bindFields $ to $ ptoFields t
   where
-    to :: Term s (PDataRecord (PFields a)) -> Term s (PDataRecord fs)
+    to :: Term s (PDataRecord (PFields a)) -> Term s (PDataRecord as)
     to = pdropDataRecord (Proxy @n)
 
 {- | Bind a HRec,
@@ -164,29 +161,27 @@ pletDropFields t =
   Usually more efficient than binding all fields.
 -}
 pletRangeFields ::
-  forall to from a b s fs ns as.
+  forall to from a b s as.
   ( PDataFields a
-  , fs ~ (Range to from (PFields a))
-  , ns ~ (PLabel fs)
-  , as ~ (PUnLabel fs)
-  , BindFields fs
+  , as ~ (Range to from (PFields a))
+  , BindFields as
   , KnownNat to
   , KnownNat from
   ) =>
   Term s a ->
-  ((HRec ns) (TermsOf s as) -> Term s b) ->
+  ((HRec (TermsOf s as)) -> Term s b) ->
   Term s b
 pletRangeFields t =
   runTermCont $
-    fmap (HRec @ns) $ bindFields $ to $ ptoFields t
+    bindFields @as $ to $ ptoFields t
   where
     to :: Term s (PDataRecord (PFields a)) -> Term s (PDataRecord fs)
     to r = punsafeCoerce $ pdropDataRecord (Proxy @from) r
 
 -- | Map a list of 'PUnLabel' to the Terms that will be bound by 'bindFields'
-type family TermsOf (s :: S) (as :: [PType]) :: [Type] where
+type family TermsOf (s :: S) (as :: [PLabeledType]) :: [Type] where
   TermsOf _ '[] = '[]
-  TermsOf s (x ': xs) = Term s (PAsData x) ': TermsOf s xs
+  TermsOf s ((name ':= a) ': as) = (Labeled name (Term s (PAsData a))) ': TermsOf s as
 
 class BindFields (as :: [PLabeledType]) where
   -- |
@@ -195,17 +190,17 @@ class BindFields (as :: [PLabeledType]) where
   --
   --    A continuation is returned to enable sharing of
   --    the generated bound-variables.
-  bindFields :: Term s (PDataRecord as) -> TermCont s (HList (TermsOf s (PUnLabel as)))
+  bindFields :: Term s (PDataRecord as) -> TermCont s (HRec (TermsOf s as))
 
 instance {-# OVERLAPPING #-} BindFields ((l ':= a) ': '[]) where
   bindFields t =
-    pure $ HCons (pdhead # t) HNil
+    pure $ HCons (Labeled $ pdhead # t) HNil
 
 instance {-# OVERLAPPABLE #-} (BindFields as) => BindFields ((l ':= a) ': as) where
   bindFields t = do
     t' <- TermCont $ plet t
     xs <- bindFields @as (pdtail # t')
-    pure $ HCons (pdhead # t') xs
+    pure $ HCons (Labeled $ pdhead # t') xs
 
 --
 --------------------------------------------------------------------------------
@@ -217,15 +212,14 @@ instance {-# OVERLAPPABLE #-} (BindFields as) => BindFields ((l ':= a) ': as) wh
   'letFields'
 -}
 pfield ::
-  forall f p fs a as n s.
+  forall name p s a as n.
   ( PDataFields p
-  , as ~ (PUnLabel (PFields p))
-  , fs ~ (PLabel (PFields p))
-  , n ~ (IndexOf f fs)
+  , as ~ (PFields p)
+  , n ~ (PLabelIndex name as)
   , KnownNat n
-  , a ~ (IndexList n as)
+  , a ~ (PUnLabel (IndexList n as))
   ) =>
   Term s (p :--> PAsData a)
 pfield =
   plam $ \t ->
-    pindexDataRecord (Proxy @n) $ ptoFields t
+    pindexDataRecord (Proxy @n) $ ptoFields @p t

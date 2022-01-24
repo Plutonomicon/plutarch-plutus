@@ -162,7 +162,7 @@ data PScriptPurpose (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PMatch, PIsData)
     via (PIsDataReprInstances PScriptPurpose)
 
 instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
@@ -348,7 +348,7 @@ data PExtended a (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PMatch, PIsData)
     via (PIsDataReprInstances (PExtended a))
 
 ---------- Tx/Address
@@ -360,7 +360,7 @@ data PCredential (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PMatch, PIsData)
     via (PIsDataReprInstances PCredential)
 
 data PStakingCredential (s :: S)
@@ -379,7 +379,7 @@ data PStakingCredential (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PMatch, PIsData)
     via PIsDataReprInstances PStakingCredential
 
 newtype PAddress (s :: S)
@@ -482,7 +482,7 @@ data PDCert (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PMatch, PIsData)
     via (PIsDataReprInstances PDCert)
 
 ---------- AssocMap
@@ -534,7 +534,7 @@ data PMaybe a (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PMatch, PIsData)
     via PIsDataReprInstances (PMaybe a)
 
 data PEither a b (s :: S)
@@ -544,5 +544,5 @@ data PEither a b (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PMatch, PIsData)
     via PIsDataReprInstances (PEither a b)
