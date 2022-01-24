@@ -197,7 +197,7 @@ class BindFields (as :: [PLabeledType]) where
   --    the generated bound-variables.
   bindFields :: Term s (PDataRecord as) -> TermCont s (HList (TermsOf s (PUnLabel as)))
 
-instance {-# OVERLAPS #-} BindFields ((l ':= a) ': '[]) where
+instance {-# OVERLAPPING #-} BindFields ((l ':= a) ': '[]) where
   bindFields t =
     pure $ HCons (pdhead # t) HNil
 
