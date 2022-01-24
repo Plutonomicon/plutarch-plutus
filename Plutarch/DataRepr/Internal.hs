@@ -41,7 +41,7 @@ import Plutarch.Builtin (
   psndBuiltin,
  )
 import Plutarch.DataRepr.Internal.HList (type Drop, type IndexList)
-import Plutarch.Generic
+import Plutarch.Generic (MkSum (mkSum))
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (S (SI))
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstantFromRepr, pconstantToRepr)
