@@ -26,8 +26,10 @@ module Plutarch.DataRepr.Internal.HList (
 import Data.Kind (Type)
 import GHC.Records (HasField (..))
 import GHC.TypeLits (
+  ErrorMessage (Text),
   Nat,
   Symbol,
+  TypeError,
   type (+),
   type (-),
  )
@@ -75,6 +77,7 @@ hrecField (HRec xs) = indexHList xs $ fieldElem @f @fs
 
 -- | Indexing type-level lists
 type family IndexList (n :: Nat) (l :: [k]) :: k where
+  IndexList _ '[] = TypeError ( 'Text "IndexList: index out of bounds")
   IndexList 0 (x ': _) = x
   IndexList n (x : xs) = IndexList (n - 1) xs
 

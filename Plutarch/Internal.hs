@@ -26,7 +26,7 @@ module Plutarch.Internal (
   RawTerm (..),
   TermCont (..),
   TermResult (TermResult, getDeps, getTerm),
-  S,
+  S (SI),
   PType,
 ) where
 
@@ -107,8 +107,12 @@ mapTerm f (TermResult t d) = TermResult (f t) d
 mkTermRes :: RawTerm -> TermResult
 mkTermRes r = TermResult r []
 
--- | Type of `s` in `Term s a`. See: "What is the `s`?" section on the Plutarch guide.
-data S
+{- Type of `s` in `Term s a`. See: "What is the `s`?" section on the Plutarch guide.
+
+`SI` is the identity type of kind `S`. It is used in type class/family instances
+to "forget" the `s`.
+-}
+data S = SI
 
 -- | Shorthand for Plutarch types.
 type PType = S -> Type
