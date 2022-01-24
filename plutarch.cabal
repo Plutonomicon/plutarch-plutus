@@ -86,8 +86,9 @@ library
     Plutarch.DataRepr
     Plutarch.Either
     Plutarch.Evaluate
-    Plutarch.Field
-    Plutarch.Field.HList
+    Plutarch.DataRepr.Field
+    Plutarch.DataRepr.Internal
+    Plutarch.DataRepr.Internal.HList
     Plutarch.Integer
     Plutarch.Internal
     Plutarch.Lift

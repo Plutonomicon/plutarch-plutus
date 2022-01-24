@@ -2,7 +2,7 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Plutarch.Field.HList (
+module Plutarch.DataRepr.Internal.HList (
   -- * HList and HRec types
   HList (..),
   HRec (..),

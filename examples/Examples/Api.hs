@@ -2,18 +2,18 @@ module Examples.Api (tests) where
 
 import Plutarch
 import Plutarch.Api.V1 (
-  PCredential (..),
+  PCredential,
   PCurrencySymbol,
   PPubKeyHash,
-  PScriptContext (..),
+  PScriptContext,
   PScriptPurpose (PSpending),
-  PTxInInfo (..),
-  PTxInfo (..),
-  PValue (..),
+  PTxInInfo,
+  PTxInfo,
+  PValue,
  )
 import Plutarch.Bool (pif)
 import Plutarch.Builtin (PAsData, PBuiltinList, PData, PIsData (..), pasConstr, pforgetData, pfstBuiltin, psndBuiltin)
-import Plutarch.Field (pfield, pletFields)
+import Plutarch.DataRepr (pfield, pletFields)
 import Plutarch.List (pmap)
 
 -- import Plutarch.DataRepr (pindexDataList)
@@ -23,19 +23,19 @@ import qualified Plutarch.Monadic as P
 import Plutarch.Unit (PUnit)
 
 import Plutus.V1.Ledger.Api (
-  Address (..),
-  Credential (..),
+  Address (Address),
+  Credential (ScriptCredential),
   CurrencySymbol,
   DatumHash,
   PubKeyHash,
-  ScriptContext (..),
-  ScriptPurpose (..),
-  TxInInfo (..),
-  TxInfo (..),
-  TxOut (..),
-  TxOutRef (..),
+  ScriptContext (ScriptContext),
+  ScriptPurpose (Spending),
+  TxInInfo (TxInInfo, txInInfoResolved, txInInfoOutRef),
+  TxInfo (TxInfo, txInfoId, txInfoData, txInfoSignatories, txInfoValidRange, txInfoWdrl, txInfoDCert, txInfoMint, txInfoFee, txInfoOutputs, txInfoInputs),
+  TxOut (TxOut, txOutDatumHash, txOutValue, txOutAddress),
+  TxOutRef (TxOutRef),
   ValidatorHash,
-  Value (..),
+  Value,
   toData,
  )
 import qualified Plutus.V1.Ledger.Interval as Interval
