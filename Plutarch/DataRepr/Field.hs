@@ -36,9 +36,7 @@ import Plutarch.DataRepr.Internal (
   PIsDataRepr (type PIsDataReprRepr),
   PIsDataReprInstances,
   PLabeledType ((:=)),
-  pdhead,
   pdropDataRecord,
-  pdtail,
   pindexDataRecord,
   type PLabel,
   type PUnLabel,
@@ -199,13 +197,13 @@ class BindFields (as :: [PLabeledType]) where
 
 instance {-# OVERLAPPING #-} BindFields ((l ':= a) ': '[]) where
   bindFields t =
-    pure $ HCons (pdhead # t) HNil
+    pure $ HCons (pindexDataRecord (Proxy @0) t) HNil
 
 instance {-# OVERLAPPABLE #-} (BindFields as) => BindFields ((l ':= a) ': as) where
   bindFields t = do
     t' <- TermCont $ plet t
-    xs <- bindFields @as (pdtail # t')
-    pure $ HCons (pdhead # t') xs
+    xs <- bindFields @as (pdropDataRecord (Proxy @1) t')
+    pure $ HCons (pindexDataRecord (Proxy @0) t') xs
 
 --
 --------------------------------------------------------------------------------

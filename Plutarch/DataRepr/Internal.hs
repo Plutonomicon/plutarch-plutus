@@ -4,16 +4,14 @@
 
 module Plutarch.DataRepr.Internal (
   PDataSum,
-  punDataRepr,
-  pindexDataRepr,
-  pmatchDataRepr,
+  punDataSum,
+  ptryIndexDataSum,
+  pmatchDataSum,
   DataReprHandlers (..),
   PDataRecord,
   PLabeledType (..),
   type PUnLabel,
   type PLabel,
-  pdhead,
-  pdtail,
   PIsDataRepr (..),
   PIsDataReprInstances (..),
   pindexDataRecord,
@@ -24,8 +22,7 @@ module Plutarch.DataRepr.Internal (
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy)
 import GHC.TypeLits (KnownNat, Symbol, natVal)
-import Numeric.Natural (Natural)
-import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoerce, runTermCont)
+import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeCoerce, runTermCont)
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Builtin (
   PAsData,
@@ -34,6 +31,7 @@ import Plutarch.Builtin (
   PIsData,
   pasConstr,
   pdata,
+  pforgetData,
   pfromData,
   pfstBuiltin,
   psndBuiltin,
@@ -41,20 +39,16 @@ import Plutarch.Builtin (
 import Plutarch.DataRepr.Internal.HList (type Drop, type IndexList)
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstantFromRepr, pconstantToRepr)
-import Plutarch.List (pdrop, punsafeIndex)
+import Plutarch.List (pdrop, ptryIndex)
 import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Api as Ledger
-import qualified PlutusCore as PLC
 
+{- | A "record" of `exists a. PAsData a`. The underlying representation is
+ `PBuiltinList PData`.
+-}
 data PDataRecord (as :: [PLabeledType]) (s :: S)
 
 data PLabeledType = Symbol := PType
-
-pdhead :: Term s (PDataRecord ((l ':= a) : as) :--> PAsData a)
-pdhead = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList
-
-pdtail :: Term s (PDataRecord (a ': as) :--> PDataRecord as)
-pdtail = phoistAcyclic $ pforce $ punsafeBuiltin PLC.TailList
 
 type family PUnLabel (as :: [PLabeledType]) :: [PType] where
   PUnLabel '[] = '[]
@@ -64,53 +58,56 @@ type family PLabel (as :: [PLabeledType]) :: [Symbol] where
   PLabel '[] = '[]
   PLabel ((l ':= t) ': as) = l ': (PLabel as)
 
+{- | A sum of 'PDataRecord's. The underlying representation is the `PDataConstr` constructor,
+ where the integer is the index of the variant and the list is the record.
+
+ This is how most data structures are stored on-chain.
+-}
 type PDataSum :: [[PLabeledType]] -> PType
 data PDataSum (defs :: [[PLabeledType]]) (s :: S)
 
-pasData :: Term s (PDataSum _) -> Term s PData
-pasData = punsafeCoerce
+instance PIsData (PDataSum defs) where
+  pdata = punsafeCoerce
+  pfromData = punsafeCoerce
 
-punDataRepr :: Term s (PDataSum '[def] :--> PDataRecord def)
-punDataRepr = phoistAcyclic $
+-- | If there is only a single variant, then we can safely extract it.
+punDataSum :: Term s (PDataSum '[def] :--> PDataRecord def)
+punDataSum = phoistAcyclic $
   plam $ \t ->
-    plet (pasConstr #$ pasData t) $ \d ->
-      (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataRecord def))
+    (punsafeCoerce $ psndBuiltin # (pasConstr #$ pforgetData $ pdata t) :: Term _ (PDataRecord def))
 
-pindexDataRepr :: (KnownNat n) => Proxy n -> Term s (PDataSum (def : defs) :--> PDataRecord (IndexList n (def : defs)))
-pindexDataRepr n = phoistAcyclic $
+-- | Try getting the nth variant. Errs if it's another variant.
+ptryIndexDataSum :: (KnownNat n) => Proxy n -> Term s (PDataSum (def : defs) :--> PDataRecord (IndexList n (def : defs)))
+ptryIndexDataSum n = phoistAcyclic $
   plam $ \t ->
-    plet (pasConstr #$ pasData t) $ \d ->
+    plet (pasConstr #$ pforgetData $ pdata t) $ \d ->
       let i :: Term _ PInteger = pfstBuiltin # d
        in pif
             (i #== fromInteger (natVal n))
             (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataRecord _))
             perror
 
--- | Safely index a 'PDataRecord'
+-- | Safely index a 'PDataRecord'.
 pindexDataRecord :: (KnownNat n) => Proxy n -> Term s (PDataRecord xs) -> Term s (PAsData (IndexList n (PUnLabel xs)))
 pindexDataRecord n xs =
   punsafeCoerce $
-    punsafeIndex @PBuiltinList @PData ind (punsafeCoerce xs)
-  where
-    ind :: Natural
-    ind = fromInteger $ natVal n
+    ptryIndex @PBuiltinList @PData (fromInteger $ natVal n) (punsafeCoerce xs)
 
--- | Safely drop the first n items of a PDataRecord.
+-- | Safely drop the first n items of a 'PDataRecord'.
 pdropDataRecord :: (KnownNat n) => Proxy n -> Term s (PDataRecord xs) -> Term s (PDataRecord (Drop n xs))
 pdropDataRecord n xs =
   punsafeCoerce $
-    pdrop @PBuiltinList @PData ind (punsafeCoerce xs)
-  where
-    ind :: Natural
-    ind = fromInteger $ natVal n
+    pdrop @PBuiltinList @PData (fromInteger $ natVal n) (punsafeCoerce xs)
 
+-- | This is used to define the handlers for 'pmatchDataSum'.
 data DataReprHandlers (out :: PType) (def :: [[PLabeledType]]) (s :: S) where
   DRHNil :: DataReprHandlers out '[] s
   DRHCons :: (Term s (PDataRecord def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def : defs) s
 
-pmatchDataRepr :: Term s (PDataSum (def : defs)) -> DataReprHandlers out (def : defs) s -> Term s out
-pmatchDataRepr d handlers =
-  plet (pasConstr #$ pasData d) $ \d' ->
+-- | Pattern match on a 'PDataSum' manually. The common case only appears once in the generated code.
+pmatchDataSum :: Term s (PDataSum (def : defs)) -> DataReprHandlers out (def : defs) s -> Term s out
+pmatchDataSum d handlers =
+  plet (pasConstr #$ pforgetData $ pdata d) $ \d' ->
     plet (pfstBuiltin # d') $ \constr ->
       plet (psndBuiltin # d') $ \args ->
         let handlers' = applyHandlers args handlers
@@ -154,6 +151,9 @@ pmatchDataRepr d handlers =
               handler
               $ go common (idx + 1) rest constr
 
+{- | Use this for implementing the necessary instances for getting the `Data` representation.
+ You must implement 'PIsDataRepr' to use this.
+-}
 newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
 
 class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where

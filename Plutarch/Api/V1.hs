@@ -73,7 +73,7 @@ import Plutarch.DataRepr (
   PIsDataReprInstances (PIsDataReprInstances),
   PIsDataReprRepr,
   PLabeledType ((:=)),
-  pmatchDataRepr,
+  pmatchDataSum,
   pmatchRepr,
  )
 import Plutarch.Integer (PInteger, PIntegral)
@@ -146,7 +146,7 @@ instance PIsDataRepr PTxInfo where
           ]
        ]
   pmatchRepr dat f =
-    (pmatchDataRepr dat) ((DRHCons (f . PTxInfo)) $ DRHNil)
+    (pmatchDataSum dat) ((DRHCons (f . PTxInfo)) $ DRHNil)
 
 newtype PScriptContext (s :: S)
   = PScriptContext
@@ -173,7 +173,7 @@ instance PIsDataRepr PScriptContext where
           ]
        ]
   pmatchRepr dat f =
-    (pmatchDataRepr dat) ((DRHCons (f . PScriptContext)) $ DRHNil)
+    (pmatchDataSum dat) ((DRHCons (f . PScriptContext)) $ DRHNil)
 
 -- General types, used by V1 and V2
 
@@ -199,7 +199,7 @@ instance PIsDataRepr PScriptPurpose where
        ]
 
   pmatchRepr dat f =
-    pmatchDataRepr dat $
+    pmatchDataSum dat $
       DRHCons (f . PMinting) $
         DRHCons (f . PSpending) $
           DRHCons (f . PRewarding) $
@@ -351,7 +351,7 @@ instance PIsDataRepr (PInterval a) where
        ]
 
   pmatchRepr dat f =
-    pmatchDataRepr dat $
+    pmatchDataSum dat $
       DRHCons (f . PInterval) DRHNil
 
 newtype PLowerBound a (s :: S)
@@ -377,7 +377,7 @@ instance PIsDataRepr (PLowerBound a) where
        ]
 
   pmatchRepr dat f =
-    pmatchDataRepr dat $
+    pmatchDataSum dat $
       DRHCons (f . PLowerBound) DRHNil
 
 newtype PUpperBound a (s :: S)
@@ -402,7 +402,7 @@ instance PIsDataRepr (PUpperBound a) where
           ]
        ]
   pmatchRepr dat f =
-    pmatchDataRepr dat $
+    pmatchDataSum dat $
       DRHCons (f . PUpperBound) DRHNil
 
 data PExtended a (s :: S)
@@ -418,7 +418,7 @@ instance PIsDataRepr (PExtended a) where
     PIsDataReprRepr (PExtended a) =
       '[ '[], '["_0" ':= a], '[]]
   pmatchRepr dat f =
-    pmatchDataRepr dat $
+    pmatchDataSum dat $
       DRHCons (f . PNegInf) $
         DRHCons (f . PFinite) $
           DRHCons (f . PPosInf) DRHNil
@@ -440,7 +440,7 @@ instance PIsDataRepr PCredential where
        ]
 
   pmatchRepr dat f =
-    pmatchDataRepr dat $
+    pmatchDataSum dat $
       DRHCons (f . PPubKeyCredential) $
         DRHCons
           (f . PScriptCredential)
@@ -472,7 +472,7 @@ instance PIsDataRepr PStakingCredential where
           ]
        ]
   pmatchRepr dat f =
-    pmatchDataRepr dat $
+    pmatchDataSum dat $
       DRHCons (f . PStakingHash) $
         DRHCons (f . PStakingPtr) DRHNil
 
@@ -499,7 +499,7 @@ instance PIsDataRepr PAddress where
        ]
 
   pmatchRepr dat f =
-    pmatchDataRepr dat $
+    pmatchDataSum dat $
       DRHCons (f . PAddress) DRHNil
 
 ---------- Tx
@@ -514,7 +514,7 @@ instance PIsDataRepr PTxId where
   type PIsDataReprRepr PTxId = '[ '["_0" ':= PByteString]]
 
   pmatchRepr dat f =
-    pmatchDataRepr dat $
+    pmatchDataSum dat $
       DRHCons (f . PTxId) DRHNil
 
 newtype PTxOutRef (s :: S)
@@ -540,7 +540,7 @@ instance PIsDataRepr PTxOutRef where
        ]
 
   pmatchRepr dat f =
-    pmatchDataRepr dat $
+    pmatchDataSum dat $
       DRHCons (f . PTxOutRef) DRHNil
 
 newtype PTxInInfo (s :: S)
@@ -566,7 +566,7 @@ instance PIsDataRepr PTxInInfo where
        ]
 
   pmatchRepr dat f =
-    pmatchDataRepr dat $
+    pmatchDataSum dat $
       DRHCons (f . PTxInInfo) DRHNil
 
 newtype PTxOut (s :: S)
@@ -594,7 +594,7 @@ instance PIsDataRepr PTxOut where
        ]
 
   pmatchRepr dat f =
-    pmatchDataRepr dat $
+    pmatchDataSum dat $
       DRHCons (f . PTxOut) DRHNil
 
 data PDCert (s :: S)
@@ -636,7 +636,7 @@ instance PIsDataRepr PDCert where
        ]
 
   pmatchRepr dat f =
-    pmatchDataRepr dat $
+    pmatchDataSum dat $
       DRHCons (f . PDCertDelegRegKey) $
         DRHCons (f . PDCertDelegDeRegKey) $
           DRHCons (f . PDCertDelegDelegate) $
@@ -698,7 +698,7 @@ instance PIsDataRepr (PMaybe a) where
   type PIsDataReprRepr (PMaybe a) = '[ '[], '["_0" ':= a]]
 
   pmatchRepr dat f =
-    pmatchDataRepr dat $
+    pmatchDataSum dat $
       DRHCons (f . PNothing) $
         DRHCons (f . PJust) DRHNil
 
@@ -715,6 +715,6 @@ instance PIsDataRepr (PEither a b) where
       '[ '["_0" ':= a], '["_0" ':= b]]
 
   pmatchRepr dat f =
-    pmatchDataRepr dat $
+    pmatchDataSum dat $
       DRHCons (f . PLeft) $
         DRHCons (f . PRight) DRHNil

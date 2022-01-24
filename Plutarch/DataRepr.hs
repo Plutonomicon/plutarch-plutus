@@ -1,15 +1,13 @@
 module Plutarch.DataRepr (
   -- * DataRepr
   I.PDataSum,
-  I.punDataRepr,
-  I.pindexDataRepr,
+  I.punDataSum,
+  I.ptryIndexDataSum,
   I.DataReprHandlers (DRHNil, DRHCons),
   I.PDataRecord,
   I.PLabeledType ((:=)),
-  I.pdhead,
-  I.pdtail,
   I.PIsDataRepr (type PIsDataReprRepr, pmatchRepr),
-  I.pmatchDataRepr,
+  I.pmatchDataSum,
   I.PIsDataReprInstances (PIsDataReprInstances),
   I.pindexDataRecord,
   I.pdropDataRecord,
