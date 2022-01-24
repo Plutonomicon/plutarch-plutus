@@ -180,7 +180,8 @@ recordDataFromFieldWriters writer = DataWriter (`pmatch` writeRecord)
     writeField w r = Compose (writeData w r)
 
 {- | Converts a Haskell field function to a function term that extracts the 'Data' encoding of the field from the
- encoding of the whole record.
+ encoding of the whole record. If you need to access most of the record fields, it's more efficient to decode the
+ entire record at once with `recordFromFieldReaders`.
 -}
 fieldFromData ::
   RecordFromData r =>
