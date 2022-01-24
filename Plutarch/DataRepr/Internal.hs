@@ -241,7 +241,7 @@ instance PIsDataRepr a => PMatch (PIsDataReprInstances a) where
 
 newtype DerivePConstantViaData (h :: Type) (p :: PType) = DerivePConstantViaData h
 
-instance (PIsDataRepr p, PLift p, Ledger.FromData h, Ledger.ToData h) => PConstant (DerivePConstantViaData h p) where
+instance (PLift p, Ledger.FromData h, Ledger.ToData h) => PConstant (DerivePConstantViaData h p) where
   type PConstantRepr (DerivePConstantViaData h p) = Ledger.Data
   type PConstanted (DerivePConstantViaData h p) = p
   pconstantToRepr (DerivePConstantViaData x) = Ledger.toData x

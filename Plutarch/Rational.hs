@@ -1,3 +1,6 @@
+{-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
+
 module Plutarch.Rational (
   PRational,
   preduce,
@@ -10,6 +13,7 @@ module Plutarch.Rational (
 ) where
 
 import Plutarch.Prelude
+import Prelude hiding (Rational)
 
 import Data.Ratio (denominator, numerator)
 import Plutarch (PlutusType (..), punsafeCoerce)
@@ -23,12 +27,23 @@ import Plutarch.Builtin (
   pasList,
   pforgetData,
  )
+import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
 import Plutarch.Integer (PInteger, PIntegral (pdiv, pmod))
+import Plutarch.Lift (PConstant, PLifted, PUnsafeLiftDecl)
 import Plutarch.List (PListLike (pcons, phead, pnil, ptail), pmap)
-import Plutarch.Pair (PPair (..))
+import Plutarch.Pair (PPair (PPair))
+import PlutusTx.Ratio (Rational)
 
-data PRational s = PRational (Term s PInteger) (Term s PInteger)
+data PRational s
+  = PRational (Term s PInteger) (Term s PInteger)
 
+instance PUnsafeLiftDecl PRational where type PLifted PRational = Rational
+deriving via (DerivePConstantViaData Rational PRational) instance (PConstant Rational)
+
+{- Rational numbers are decoded to/ encoded from a Plutus List of integers.
+
+Note that Plutus Data does not have pairs, so we must use a list.
+-}
 instance PIsData PRational where
   pfromData x' = phoistAcyclic (plam $ \x -> pListToRat #$ pmap # pasInt #$ pasList # pforgetData x) # x'
   pdata x' =
