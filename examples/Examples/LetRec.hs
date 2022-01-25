@@ -2,7 +2,7 @@
 
 module Examples.LetRec (tests) where
 
-import Plutarch (pcon', pmatch', printTerm)
+import Plutarch (printTerm)
 import Plutarch.Builtin (pasConstr, pforgetData)
 import Plutarch.Prelude
 import Plutarch.Rec (

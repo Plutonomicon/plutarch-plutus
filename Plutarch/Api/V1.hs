@@ -62,6 +62,7 @@ module Plutarch.Api.V1 (
 
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
+  PDataFields,
   PIsDataReprInstances (PIsDataReprInstances),
   PLabeledType ((:=)),
  )
