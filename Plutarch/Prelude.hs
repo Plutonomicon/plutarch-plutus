@@ -105,7 +105,6 @@ module Plutarch.Prelude (
   PBuiltinMap,
 
   -- * DataRepr and related functions
-  PDataFields,
   PDataRecord,
   PDataSum,
   PIsDataRepr,
