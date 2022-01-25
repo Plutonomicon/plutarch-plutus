@@ -2,7 +2,7 @@
 
 module Examples.LetRec (tests) where
 
-import Plutarch (pcon', pmatch', printTerm, punsafeCoerce, punsafeFrom)
+import Plutarch (pcon', pmatch', printTerm)
 import Plutarch.Builtin (pasConstr, pforgetData)
 import Plutarch.Prelude
 import Plutarch.Rec (
@@ -21,6 +21,7 @@ import Plutarch.Rec (
   rmatch,
  )
 import Plutarch.Rec.TH (deriveAll)
+import Plutarch.Unsafe (punsafeCoerce, punsafeFrom)
 import qualified Rank2.TH
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))

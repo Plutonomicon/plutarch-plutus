@@ -47,7 +47,6 @@ import Plutarch (
   plam,
   plet,
   pmatch,
-  punsafeCoerce,
   runTermCont,
   (#),
   (#$),
@@ -72,6 +71,7 @@ import Plutarch.Integer (PInteger)
 import Plutarch.Internal (S (SI))
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (pdrop, ptryIndex)
+import Plutarch.Unsafe (punsafeCoerce)
 import qualified Plutus.V1.Ledger.Api as Ledger
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is

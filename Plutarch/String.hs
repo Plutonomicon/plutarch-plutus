@@ -8,7 +8,6 @@ import Data.Text (Text)
 import qualified Data.Text as Txt
 import Plutarch (
   Term,
-  punsafeBuiltin,
   (#),
   type (:-->),
  )
@@ -21,6 +20,7 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
   pconstant,
  )
+import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinString' values

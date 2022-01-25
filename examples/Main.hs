@@ -11,11 +11,12 @@ import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
 import qualified Examples.List as List
 import Examples.Tracing (traceTests)
-import Plutarch (POpaque, popaque, printTerm, punsafeBuiltin)
+import Plutarch (POpaque, popaque, printTerm)
 import Plutarch.Api.V1 (PScriptPurpose (PMinting))
 import Plutarch.Bool (pand, por)
 import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude
+import Plutarch.Unsafe (punsafeBuiltin)
 import Plutus.V1.Ledger.Value (CurrencySymbol (CurrencySymbol))
 import Plutus.V2.Ledger.Contexts (ScriptPurpose (Minting))
 import qualified PlutusCore as PLC

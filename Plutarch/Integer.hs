@@ -6,7 +6,6 @@ module Plutarch.Integer (PInteger, PIntegral (..)) where
 import Plutarch (
   Term,
   plet,
-  punsafeBuiltin,
   (#),
   type (:-->),
  )
@@ -18,6 +17,7 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
   pconstant,
  )
+import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
 
 -- | Plutus BuiltinInteger

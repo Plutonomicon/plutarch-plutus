@@ -18,9 +18,6 @@ module Plutarch (
   PI.phoistAcyclic,
   PI.plam',
   PI.plet,
-  PI.punsafeBuiltin,
-  PI.punsafeCoerce,
-  PI.punsafeConstant,
   PI.Term,
   PI.TermCont (..),
   PI.S,
@@ -33,12 +30,10 @@ module Plutarch (
   pinl,
   PCon (..),
   PMatch (..),
-  punsafeFrom,
   pto,
   pfix,
   POpaque (..),
   popaque,
-  punsafeFromOpaque,
   plam,
   DerivePNewtype (DerivePNewtype),
 ) where
@@ -165,13 +160,6 @@ class PMatch a where
   pmatch :: Term s a -> (a s -> Term s b) -> Term s b
 
 {- |
-  Unsafely coerce from the 'PInner' representation of a Term,
-  assuming that the value is a safe construction of the Term.
--}
-punsafeFrom :: (forall b. Term s (PInner a b)) -> Term s a
-punsafeFrom x = punsafeCoerce x
-
-{- |
   Safely coerce from a Term to it's 'PInner' representation.
 -}
 pto :: Term s a -> (forall b. Term s (PInner a b))
@@ -188,12 +176,6 @@ instance PlutusType POpaque where
 -- | Erase the type of a Term
 popaque :: Term s a -> Term s POpaque
 popaque = punsafeCoerce
-
-{- |
-  Unsafely coerce from an Opaque term to another type.
--}
-punsafeFromOpaque :: Term s POpaque -> Term s a
-punsafeFromOpaque = punsafeCoerce
 
 {- |
   Fixpoint recursion. Used to encode recursive functions.

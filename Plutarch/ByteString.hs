@@ -18,7 +18,6 @@ import Data.Word (Word8)
 import GHC.Stack (HasCallStack)
 import Plutarch (
   Term,
-  punsafeBuiltin,
   (#),
   type (:-->),
  )
@@ -31,6 +30,7 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
   pconstant,
  )
+import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinByteString'

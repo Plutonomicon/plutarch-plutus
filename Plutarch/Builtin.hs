@@ -43,9 +43,6 @@ import Plutarch (
   pmatch,
   pmatch',
   pto,
-  punsafeBuiltin,
-  punsafeCoerce,
-  punsafeFrom,
   (#),
   (#$),
   type (:-->),
@@ -66,6 +63,7 @@ import Plutarch.Lift (
   pconstantToRepr,
  )
 import Plutarch.List (PListLike (..), plistEquals)
+import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeFrom)
 import qualified PlutusCore as PLC
 import PlutusTx (Data)
 

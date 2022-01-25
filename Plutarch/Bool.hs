@@ -30,7 +30,6 @@ import Plutarch (
   plam,
   pmatch,
   pto,
-  punsafeBuiltin,
   (#),
   type (:-->),
  )
@@ -41,6 +40,7 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
   pconstant,
  )
+import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinBool'

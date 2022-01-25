@@ -19,7 +19,6 @@ import Plutarch (
   plam,
   plet,
   pmatch,
-  punsafeCoerce,
   (#),
   (#$),
   type (:-->),
@@ -37,6 +36,7 @@ import Plutarch.Builtin (
 import Plutarch.Integer (PInteger, PIntegral (pdiv, pmod))
 import Plutarch.List (PListLike (pcons, phead, pnil, ptail), pmap)
 import Plutarch.Pair (PPair (..))
+import Plutarch.Unsafe (punsafeCoerce)
 
 data PRational s = PRational (Term s PInteger) (Term s PInteger)
 
