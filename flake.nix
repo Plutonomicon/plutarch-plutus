@@ -482,7 +482,7 @@
 
       packages = perSystem (system: self.flake.${system}.packages);
       checks = perSystem (system:
-        let ghc810 = ((projectFor system).flake { }).packages; # We don't run the tests, we just check that it builds.
+        let ghc810 = ((projectFor810 system).flake { }).packages; # We don't run the tests, we just check that it builds.
         in
         self.flake.${system}.checks
         // {
