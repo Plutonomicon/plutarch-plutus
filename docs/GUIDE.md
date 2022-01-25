@@ -47,8 +47,11 @@
     - [PList](#plist)
     - [PBuiltinPair](#pbuiltinpair)
     - [PAsData](#pasdata)
-    - [PDataSum & PDataList](#PDataSum--pdatalist)
+    - [PDataSum & PDataList](#pdatasum--pdatalist)
     - [PData](#pdata)
+    - [PRecord](#precord)
+      - [letrec](#letrec)
+      - [Record Data](#record-data)
 - [Examples](#examples)
   - [Fibonacci number at given index](#fibonacci-number-at-given-index)
   - [Validator that always succeeds](#validator-that-always-succeeds)
@@ -594,7 +597,7 @@ Minting "be"
 If your custom Plutarch type is represented by a builtin type under the hood (i.e not scott encoded - rather [`DefaultUni`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) - you can easily implement `PLift` for it by using the provided machinery.
 
 This comes in 3 flavors.
-* Plutarch type represented **directly** by a builtin type that **is not** `Data` (`DefaultUniData`) ==> `DerivePConstantViaCoercible`
+* Plutarch type represented **directly** by a builtin type that **is not** `Data` (`DefaultUniData`) ==> `DerivePConstantDirect`
 
   Ex: `PInteger` is directly represented as a builtin integer.
 * Plutarch type represented **indirectly** by a builtin type that **is not** `Data` (`DefaultUniData`) ==> `DerivePConstantViaNewtype`
@@ -627,14 +630,13 @@ Some examples:-
   instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
   ```
 
-Now, let's get to implementing `PConstant` for the Haskell synonym, via the 3 methods. The first of which is `DerivePConstantViaCoercible`-
+Now, let's get to implementing `PConstant` for the Haskell synonym, via the 3 methods. The first of which is `DerivePConstantDirect`-
 ```hs
-deriving via (DerivePConstantViaCoercible Integer PInteger Integer) instance (PConstant Integer)
+deriving via (DerivePConstantDirect Integer PInteger) instance (PConstant Integer)
 ```
-`DerivePConstantViaCoercible` takes in 3 type parameters-
+`DerivePConstantDirect` takes in 2 type parameters-
 * The Haskell type itself, for which `PConstant` is being implemented for.
 * The **direct** Plutarch synonym to the Haskell type.
-* The Haskell type that the first param is *actually represented as*. The first param must be coercible to this type.
 
 Pretty simple! Let's check out `DerivePConstantViaNewtype` now-
 ```hs
@@ -1031,6 +1033,95 @@ Consider using [`PAsData`](#pasdata) instead for simple cases, i.e cases other t
 Consider using [`PDataSum`/`PDataList`](#PDataSum--pdatalist) instead when dealing with ADTs, i.e `Constr` data values.
 
 You can find more information about `PData` at [Developers' Corner](./DEVGUIDE.md).
+
+### PRecord
+
+You can define and use product ADTs, including records with named fields in Plutarch similar to Haskell's records. For a
+Haskell data type like
+
+```hs
+data Circle = Circle{
+  x, y :: Integer,
+  radius :: Natural
+  }
+```
+
+the equivalent in Plutarch would be
+
+```hs
+data Circle f = Circle{
+  x, y :: f PInteger,
+  radius :: f PNatural
+  }
+Plutarch.Rec.TH.deriveAll ''Circle
+```
+
+Each field type needs to be wrapped into the type parameter `f` of kind `PType -> Type`. This is a slight modification
+of a common coding style known as Higher-Kinded Data.
+
+With this definition, `PRecord Circle` will be an instance of [PlutusType](#plutustype-pcon-and-pmatch), so you can use
+the usual `pcon` and `pcon'` to construct its value and `pmatch` and `pmatch'` to de-construct it:
+
+```hs
+circle :: Term s (PRecord Circle)
+circle = pcon $ PRecord Circle{
+  x = 100,
+  y = 100,
+  radius = 50
+  }
+
+distanceFromOrigin :: Term s (PRecord Circle :--> PNatural)
+distanceFromOrigin = plam $ flip pmatch $ \(PRecord Circle{x, y})-> sqrt #$ projectAbs #$ x * x + y * y
+```
+
+You may also find `rcon` and `rmatch` from `Plutarch.Rec` a bit more convenient because they don't require the `PRecord`
+wrapper. Alternatively, instead of using `pmatch` or its alternatives you can access individual fields using the `field`
+accessor from the same module:
+
+```hs
+containsOrigin :: Term s (PRecord Circle :--> PBool)
+containsOrigin = plam $ \c-> distanceFromOrigin # c #< pto c # field radius
+```
+
+#### letrec
+
+You can use records to define mutually-recursive functions, or more generally (but less usefully) mutually-recursive values.
+
+```hs
+circleFixedPoint :: Term s (PRecord Circle)
+circleFixedPoint = punsafeFrom $ letrec $ \Circle{y, radius}-> Circle{
+  x = y,
+  y = 2 * radius,
+  radius = 50
+  }
+```
+
+#### Record Data
+
+You can provide a `PIsData` instance for `PRecord Circle` using the following definition:
+
+```hs
+instance RecordFromData Circle
+instance PIsData (PRecord Circle) where
+  pfromData = readData $ recordFromFieldReaders Circle{
+    x = DataReader pfromData,
+    y = DataReader pfromData,
+    radius = DataReader pfromData
+    }
+  pdata = writeData $ recordDataFromFieldWriters Circle{
+    x = DataWriter pdata,
+    y = DataWriter pdata,
+    radius = DataWriter pdata
+    }
+```
+
+If your record has many fields and you only need to a couple of them from `Data`, it's more efficient to use `pfromData`
+only on individual fields. You can focus on a single field using the function `fieldFromData`:
+
+```hs
+radiusFromCircleData :: Term s (PAsData (PRecord Circle) :--> PAsData PNatural)
+radiusFromCircleData = fieldFromData radius
+```
 
 # Examples
 Be sure to check out [Compiling and Running](#compiling-and-running) first!

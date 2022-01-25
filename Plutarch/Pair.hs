@@ -3,8 +3,19 @@
 
 module Plutarch.Pair (PPair (..)) where
 
-import Plutarch (PlutusType (PInner, pcon', pmatch'))
-import Plutarch.Prelude
+import Plutarch (
+  PInner,
+  PType,
+  PlutusType,
+  S,
+  Term,
+  pcon',
+  plam,
+  pmatch',
+  (#),
+  (#$),
+  type (:-->),
+ )
 
 {- |
   Plutus encoding of Pairs.

@@ -18,9 +18,6 @@ module Plutarch (
   PI.phoistAcyclic,
   PI.plam',
   PI.plet,
-  PI.punsafeBuiltin,
-  PI.punsafeCoerce,
-  PI.punsafeConstant,
   PI.Term,
   PI.TermCont (..),
   PI.S,
@@ -33,18 +30,17 @@ module Plutarch (
   pinl,
   PCon (..),
   PMatch (..),
-  punsafeFrom,
   pto,
   pfix,
   POpaque (..),
   popaque,
-  punsafeFromOpaque,
   plam,
   DerivePNewtype (DerivePNewtype),
 ) where
 
 import Data.Coerce (Coercible, coerce)
-import Plutarch.Internal (ClosedTerm, PType, Term, compile, papp, phoistAcyclic, plam', punsafeCoerce, (:-->))
+import Data.Kind (Type)
+import Plutarch.Internal (ClosedTerm, PType, S, Term, compile, papp, phoistAcyclic, plam', punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
 import Plutus.V1.Ledger.Scripts (Script (Script))
 import PlutusCore.Pretty (prettyPlcReadableDebug)
@@ -101,25 +97,13 @@ infixr 0 #$
  > const = plam (\x y -> x)
 -}
 
-class PLamN a b | a -> b, b -> a where
-  plam :: a -> b
+class PLamN (a :: Type) (b :: PType) (s :: S) | a -> b, s b -> a where
+  plam :: forall c. (Term s c -> a) -> Term s (c :--> b)
 
-instance (a' ~ Term s a, b' ~ Term s b) => PLamN (a' -> b') (Term s (a :--> b)) where
+instance (a' ~ Term s a) => PLamN a' a s where
   plam = plam'
 
-instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c) => PLamN (a' -> b' -> c') (Term s (a :--> b :--> c)) where
-  plam f = plam' $ \x -> plam (f x)
-
-instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d) => PLamN (a' -> b' -> c' -> d') (Term s (a :--> b :--> c :--> d)) where
-  plam f = plam' $ \x -> plam (f x)
-
-instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e) => PLamN (a' -> b' -> c' -> d' -> e') (Term s (a :--> b :--> c :--> d :--> e)) where
-  plam f = plam' $ \x -> plam (f x)
-
-instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f) => PLamN (a' -> b' -> c' -> d' -> e' -> f') (Term s (a :--> b :--> c :--> d :--> e :--> f)) where
-  plam f = plam' $ \x -> plam (f x)
-
-instance {-# OVERLAPPING #-} (a' ~ Term s a, b' ~ Term s b, c' ~ Term s c, d' ~ Term s d, e' ~ Term s e, f' ~ Term s f, g' ~ Term s g) => PLamN (a' -> b' -> c' -> d' -> e' -> f' -> g') (Term s (a :--> b :--> c :--> d :--> e :--> f :--> g)) where
+instance {-# OVERLAPPING #-} (a' ~ Term s a, PLamN b' b s) => PLamN (a' -> b') (a :--> b) s where
   plam f = plam' $ \x -> plam (f x)
 
 pinl :: Term s a -> (Term s a -> Term s b) -> Term s b
@@ -176,13 +160,6 @@ class PMatch a where
   pmatch :: Term s a -> (a s -> Term s b) -> Term s b
 
 {- |
-  Unsafely coerce from the 'PInner' representation of a Term,
-  assuming that the value is a safe construction of the Term.
--}
-punsafeFrom :: (forall b. Term s (PInner a b)) -> Term s a
-punsafeFrom x = punsafeCoerce x
-
-{- |
   Safely coerce from a Term to it's 'PInner' representation.
 -}
 pto :: Term s a -> (forall b. Term s (PInner a b))
@@ -199,12 +176,6 @@ instance PlutusType POpaque where
 -- | Erase the type of a Term
 popaque :: Term s a -> Term s POpaque
 popaque = punsafeCoerce
-
-{- |
-  Unsafely coerce from an Opaque term to another type.
--}
-punsafeFromOpaque :: Term s POpaque -> Term s a
-punsafeFromOpaque = punsafeCoerce
 
 {- |
   Fixpoint recursion. Used to encode recursive functions.
@@ -249,8 +220,26 @@ instance (forall (s :: PI.S). Coercible (a s) (Term s b)) => PlutusType (DeriveP
   pcon' (DerivePNewtype t) = ptypeInner t
   pmatch' x f = f . DerivePNewtype $ ptypeOuter x
 
+instance Semigroup (Term s b) => Semigroup (Term s (DerivePNewtype a b)) where
+  x <> y = punsafeFrom $ pto x <> pto y
+
+instance Monoid (Term s b) => Monoid (Term s (DerivePNewtype a b)) where
+  mempty = punsafeFrom $ mempty @(Term s b)
+
+instance Num (Term s b) => Num (Term s (DerivePNewtype a b)) where
+  x + y = punsafeFrom $ pto x + pto y
+  x - y = punsafeFrom $ pto x - pto y
+  x * y = punsafeFrom $ pto x * pto y
+  abs x = punsafeFrom $ abs $ pto x
+  negate x = punsafeFrom $ negate $ pto x
+  signum x = punsafeFrom $ signum $ pto x
+  fromInteger x = punsafeFrom $ fromInteger @(Term s b) x
+
 ptypeInner :: forall (x :: PType) y s. Coercible (x s) (Term s y) => x s -> Term s y
 ptypeInner = coerce
 
 ptypeOuter :: forall (x :: PType) y s. Coercible (x s) (Term s y) => Term s y -> x s
 ptypeOuter = coerce
+
+punsafeFrom :: (forall b. Term s (PInner a b)) -> Term s a
+punsafeFrom x = PI.punsafeCoerce x

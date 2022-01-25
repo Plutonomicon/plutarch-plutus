@@ -4,7 +4,6 @@ import Prelude hiding (fail, (>>), (>>=))
 
 import Data.String (fromString)
 import Plutarch.Prelude
-import Plutarch.Trace (ptraceError)
 
 {- | Bind function used within do syntax.
 

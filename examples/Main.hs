@@ -11,18 +11,12 @@ import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
 import qualified Examples.List as List
 import Examples.Tracing (traceTests)
-import Plutarch (POpaque, popaque, printTerm, punsafeBuiltin)
+import Plutarch (POpaque, popaque, printTerm)
 import Plutarch.Api.V1 (PScriptPurpose (PMinting))
-import Plutarch.Bool (PBool (PFalse, PTrue), pand, pif, pnot, por, (#&&), (#<), (#<=), (#==), (#||))
-import Plutarch.Builtin (PBuiltinList (..), PBuiltinPair, PData, pdata)
-import Plutarch.ByteString (PByteString, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
-import Plutarch.Either (PEither (PLeft, PRight))
-import Plutarch.Integer (PInteger)
+import Plutarch.Bool (pand, por)
 import Plutarch.Internal (punsafeConstantInternal)
-import Plutarch.Lift (pconstant, plift)
 import Plutarch.Prelude
-import Plutarch.String (PString)
-import Plutarch.Unit (PUnit (..))
+import Plutarch.Unsafe (punsafeBuiltin)
 import Plutus.V1.Ledger.Value (CurrencySymbol (CurrencySymbol))
 import Plutus.V2.Ledger.Contexts (ScriptPurpose (Minting))
 import qualified PlutusCore as PLC
@@ -196,9 +190,9 @@ plutarchTests =
     , testCase "delay (force (delay 0)) => delay 0" $
         printTerm (pdelay . pforce . pdelay $ (0 :: Term s PInteger)) @?= "(program 1.0.0 (delay 0))"
     , testCase "id # 0 => 0" $
-        printTerm ((plam' $ \x -> x) # (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
+        printTerm ((plam $ \x -> x) # (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
     , testCase "hoist id 0 => 0" $
-        printTerm ((phoistAcyclic $ plam' $ \x -> x) # (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
+        printTerm ((phoistAcyclic $ plam $ \x -> x) # (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
     , testCase "hoist fstPair => fstPair" $
         printTerm (phoistAcyclic (punsafeBuiltin PLC.FstPair)) @?= "(program 1.0.0 fstPair)"
     , testCase "throws: hoist error" $ throws $ phoistAcyclic perror
@@ -232,7 +226,7 @@ plutarchTests =
         , testCase "λx y. sha2_256 x y =>!" $
             printTerm ((plam $ \x y -> punsafeBuiltin PLC.Sha2_256 # x # y)) @?= "(program 1.0.0 (\\i0 -> \\i0 -> sha2_256 i2 i1))"
         , testCase "let f = hoist (λx. x) in λx y. f x y => λx y. x y" $
-            printTerm ((plam $ \x y -> (phoistAcyclic $ plam' $ \x -> x) # x # y)) @?= "(program 1.0.0 (\\i0 -> \\i0 -> i2 i1))"
+            printTerm ((plam $ \x y -> (phoistAcyclic $ plam $ \x -> x) # x # y)) @?= "(program 1.0.0 (\\i0 -> \\i0 -> i2 i1))"
         , testCase "let f = hoist (λx. x True) in λx y. f x y => λx y. (λz. z True) x y" $
             printTerm ((plam $ \x y -> ((phoistAcyclic $ plam $ \x -> x # pcon PTrue)) # x # y)) @?= "(program 1.0.0 (\\i0 -> \\i0 -> (\\i0 -> i1 True) i2 i1))"
         ]
@@ -271,6 +265,12 @@ plutarchTests =
         , testCase "True || perror ≡ True" $ equal (pcon PTrue #|| perror) (pcon PTrue)
         , testCase "fails: por True perror" $ fails $ por # pcon PFalse # perror
         , testCase "por True (pdelay perror) ≡ True" $ equal (por # pcon PTrue # pdelay perror) (pdelay $ pcon PTrue)
+        ]
+    , testGroup
+        "plam"
+        [ testCase "flip const" $ printTerm (plam $ \_ y -> y) @?= "(program 1.0.0 (\\i0 -> \\i0 -> i1))"
+        , testCase "id" $ printTerm (plam $ \x -> x) @?= "(program 1.0.0 (\\i0 -> i1))"
+        , testCase "plet" $ printTerm (plam $ \x _ -> plet x $ \_ -> perror) @?= "(program 1.0.0 (\\i0 -> \\i0 -> error))"
         ]
     ]
 

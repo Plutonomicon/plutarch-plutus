@@ -11,7 +11,7 @@ module Plutarch.List (
   -- * Query
   pelem,
   plength,
-  punsafeIndex,
+  ptryIndex,
   pdrop,
 
   -- * Construction
@@ -42,12 +42,32 @@ module Plutarch.List (
 
 import Numeric.Natural (Natural)
 
-import Plutarch (PInner, PlutusType, pcon', pmatch')
+import Plutarch (
+  PDelayed,
+  PInner,
+  PType,
+  PlutusType,
+  S,
+  Term,
+  pcon,
+  pcon',
+  pdelay,
+  perror,
+  pfix,
+  pforce,
+  phoistAcyclic,
+  plam,
+  plet,
+  pmatch,
+  pmatch',
+  (#),
+  (#$),
+  type (:-->),
+ )
 import Plutarch.Bool (PBool (PFalse, PTrue), PEq, pif, (#&&), (#==), (#||))
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (pconstant)
 import Plutarch.Pair (PPair (PPair))
-import Plutarch.Prelude
 
 import Data.Kind
 
@@ -160,12 +180,9 @@ plength = phoistAcyclic $
         go = (pfix #$ plam $ \self ls n -> pelimList (\_ xs -> self # xs # n + 1) n ls)
      in go # xs # 0
 
-{- |
-  Unsafely index a BuiltinList,
-  throwing an error if the index is out of bounds.
--}
-punsafeIndex :: (PIsListLike list a) => Natural -> Term s (list a) -> Term s a
-punsafeIndex n xs = phead # (pdrop n xs)
+-- | Index a BuiltinList, throwing an error if the index is out of bounds.
+ptryIndex :: (PIsListLike list a) => Natural -> Term s (list a) -> Term s a
+ptryIndex n xs = phead # (pdrop n xs)
 
 {- |
   Drop the first n fields of a List.

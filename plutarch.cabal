@@ -84,8 +84,9 @@ library
     Plutarch.ByteString
     Plutarch.Crypto
     Plutarch.DataRepr
-    Plutarch.DataRepr.Field
     Plutarch.DataRepr.Internal
+    Plutarch.DataRepr.Internal.Field
+    Plutarch.DataRepr.Internal.Generic
     Plutarch.DataRepr.Internal.HList
     Plutarch.Either
     Plutarch.Evaluate
@@ -103,19 +104,23 @@ library
     Plutarch.String
     Plutarch.Trace
     Plutarch.Unit
+    Plutarch.Unsafe
 
   build-depends:
     , base
     , bytestring
+    , constraints
     , containers
     , cryptonite
     , flat
+    , generics-sop
     , hashable
     , mtl
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
     , rank2classes
+    , sop-core
     , template-haskell
     , text
     , transformers
@@ -148,6 +153,7 @@ test-suite examples
     , aeson
     , base
     , bytestring
+    , generics-sop
     , plutarch
     , plutus-core
     , plutus-ledger-api

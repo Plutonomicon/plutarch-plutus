@@ -1,31 +1,57 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans -Wno-redundant-constraints #-}
 
 module Plutarch.DataRepr.Internal (
   PDataSum,
-  punDataRepr,
-  pindexDataRepr,
-  pmatchDataRepr,
+  punDataSum,
+  ptryIndexDataSum,
+  pmatchDataSum,
   DataReprHandlers (..),
   PDataRecord,
   PLabeledType (..),
   type PLabelIndex,
   type PUnLabel,
-  pdhead,
-  pdtail,
   PIsDataRepr (..),
   PIsDataReprInstances (..),
   pindexDataRecord,
   pdropDataRecord,
   DerivePConstantViaData (..),
+  pasDataSum,
 ) where
 
+import Data.Kind (Type)
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy)
-import GHC.TypeLits (KnownNat, Nat, Symbol, natVal, type (+))
-import Numeric.Natural (Natural)
-import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeBuiltin, punsafeCoerce, runTermCont)
+import GHC.TypeLits (
+  ErrorMessage (ShowType, Text, (:<>:)),
+  KnownNat,
+  Nat,
+  Symbol,
+  TypeError,
+  natVal,
+  type (+),
+ )
+import Generics.SOP (Code, Generic, I (I), NP (Nil, (:*)), SOP (SOP), to)
+import Plutarch (
+  Dig,
+  PMatch,
+  PType,
+  S,
+  Term,
+  TermCont,
+  hashOpenTerm,
+  perror,
+  phoistAcyclic,
+  plam,
+  plet,
+  pmatch,
+  runTermCont,
+  (#),
+  (#$),
+  type (:-->),
+ )
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Builtin (
   PAsData,
@@ -34,21 +60,44 @@ import Plutarch.Builtin (
   PIsData,
   pasConstr,
   pdata,
+  pforgetData,
   pfromData,
   pfstBuiltin,
   psndBuiltin,
  )
+import Plutarch.DataRepr.Internal.Generic (MkSum (mkSum))
 import Plutarch.DataRepr.Internal.HList (type Drop, type IndexList)
 import Plutarch.Integer (PInteger)
+import Plutarch.Internal (S (SI))
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstantFromRepr, pconstantToRepr)
-import Plutarch.List (pdrop, punsafeIndex)
-import Plutarch.Prelude
+import Plutarch.List (pdrop, ptryIndex)
+import Plutarch.Unsafe (punsafeCoerce)
 import qualified Plutus.V1.Ledger.Api as Ledger
-import qualified PlutusCore as PLC
 
+{- | A "record" of `exists a. PAsData a`. The underlying representation is
+ `PBuiltinList PData`.
+-}
 data PDataRecord (as :: [PLabeledType]) (s :: S)
 
 data PLabeledType = Symbol := PType
+
+{- Get the product types of a data record sum constructor
+-}
+type PDataRecordFields :: [Type] -> [PLabeledType]
+type family PDataRecordFields as where
+  PDataRecordFields '[] = '[]
+  PDataRecordFields '[Term s (PDataRecord fs)] = fs
+  PDataRecordFields '[t] = TypeError ( 'Text "Expected PDataRecord" ':<>: 'Text "but got" ':<>: 'ShowType t)
+  PDataRecordFields ts = TypeError ( 'Text "Expected none or PDataRecord" ':<>: 'Text "but got" ':<>: 'ShowType ts)
+
+{- Return the table of data records for a sum type.
+
+NOTE: Unfortunately we can't write a generic FMap due to ghc's arity limitations.
+-}
+type PDataRecordFields2 :: [[Type]] -> [[PLabeledType]]
+type family PDataRecordFields2 as where
+  PDataRecordFields2 '[] = '[]
+  PDataRecordFields2 (a ': as) = PDataRecordFields a ': PDataRecordFields2 as
 
 type family PLabelIndex (name :: Symbol) (as :: [PLabeledType]) :: Nat where
   PLabelIndex name ((name ':= a) ': as) = 0
@@ -57,59 +106,56 @@ type family PLabelIndex (name :: Symbol) (as :: [PLabeledType]) :: Nat where
 type family PUnLabel (a :: PLabeledType) :: PType where
   PUnLabel (name ':= a) = a
 
-pdhead :: Term s (PDataRecord ((l ':= a) : as) :--> PAsData a)
-pdhead = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList
+{- | A sum of 'PDataRecord's. The underlying representation is the `PDataConstr` constructor,
+ where the integer is the index of the variant and the list is the record.
 
-pdtail :: Term s (PDataRecord (a ': as) :--> PDataRecord as)
-pdtail = phoistAcyclic $ pforce $ punsafeBuiltin PLC.TailList
-
+ This is how most data structures are stored on-chain.
+-}
 type PDataSum :: [[PLabeledType]] -> PType
 data PDataSum (defs :: [[PLabeledType]]) (s :: S)
 
-pasData :: Term s (PDataSum _) -> Term s PData
-pasData = punsafeCoerce
+instance PIsData (PDataSum defs) where
+  pdata = punsafeCoerce
+  pfromData = punsafeCoerce
 
-punDataRepr :: Term s (PDataSum '[def] :--> PDataRecord def)
-punDataRepr = phoistAcyclic $
+-- | If there is only a single variant, then we can safely extract it.
+punDataSum :: Term s (PDataSum '[def] :--> PDataRecord def)
+punDataSum = phoistAcyclic $
   plam $ \t ->
-    plet (pasConstr #$ pasData t) $ \d ->
-      (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataRecord def))
+    (punsafeCoerce $ psndBuiltin # (pasConstr #$ pforgetData $ pdata t) :: Term _ (PDataRecord def))
 
-pindexDataRepr :: (KnownNat n) => Proxy n -> Term s (PDataSum (def : defs) :--> PDataRecord (IndexList n (def : defs)))
-pindexDataRepr n = phoistAcyclic $
+-- | Try getting the nth variant. Errs if it's another variant.
+ptryIndexDataSum :: (KnownNat n) => Proxy n -> Term s (PDataSum (def : defs) :--> PDataRecord (IndexList n (def : defs)))
+ptryIndexDataSum n = phoistAcyclic $
   plam $ \t ->
-    plet (pasConstr #$ pasData t) $ \d ->
+    plet (pasConstr #$ pforgetData $ pdata t) $ \d ->
       let i :: Term _ PInteger = pfstBuiltin # d
        in pif
             (i #== fromInteger (natVal n))
             (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataRecord _))
             perror
 
--- | Safely index a 'PDataRecord'
+-- | Safely index a 'PDataRecord'.
 pindexDataRecord :: (KnownNat n) => Proxy n -> Term s (PDataRecord as) -> Term s (PAsData (PUnLabel (IndexList n as)))
 pindexDataRecord n xs =
   punsafeCoerce $
-    punsafeIndex @PBuiltinList @PData ind (punsafeCoerce xs)
-  where
-    ind :: Natural
-    ind = fromInteger $ natVal n
+    ptryIndex @PBuiltinList @PData (fromInteger $ natVal n) (punsafeCoerce xs)
 
--- | Safely drop the first n items of a PDataRecord.
+-- | Safely drop the first n items of a 'PDataRecord'.
 pdropDataRecord :: (KnownNat n) => Proxy n -> Term s (PDataRecord xs) -> Term s (PDataRecord (Drop n xs))
 pdropDataRecord n xs =
   punsafeCoerce $
-    pdrop @PBuiltinList @PData ind (punsafeCoerce xs)
-  where
-    ind :: Natural
-    ind = fromInteger $ natVal n
+    pdrop @PBuiltinList @PData (fromInteger $ natVal n) (punsafeCoerce xs)
 
-data DataReprHandlers (out :: PType) (def :: [[PLabeledType]]) (s :: S) where
+-- | This is used to define the handlers for 'pmatchDataSum'.
+data DataReprHandlers (out :: PType) (defs :: [[PLabeledType]]) (s :: S) where
   DRHNil :: DataReprHandlers out '[] s
   DRHCons :: (Term s (PDataRecord def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def : defs) s
 
-pmatchDataRepr :: Term s (PDataSum (def : defs)) -> DataReprHandlers out (def : defs) s -> Term s out
-pmatchDataRepr d handlers =
-  plet (pasConstr #$ pasData d) $ \d' ->
+-- | Pattern match on a 'PDataSum' manually. The common case only appears once in the generated code.
+pmatchDataSum :: Term s (PDataSum defs) -> DataReprHandlers out defs s -> Term s out
+pmatchDataSum d handlers =
+  plet (pasConstr #$ pforgetData $ pdata d) $ \d' ->
     plet (pfstBuiltin # d') $ \constr ->
       plet (psndBuiltin # d') $ \args ->
         let handlers' = applyHandlers args handlers
@@ -153,11 +199,56 @@ pmatchDataRepr d handlers =
               handler
               $ go common (idx + 1) rest constr
 
+{- | Use this for implementing the necessary instances for getting the `Data` representation.
+ You must implement 'PIsDataRepr' to use this.
+-}
 newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
 
 class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PLabeledType]]
+  type PIsDataReprRepr a = PDataRecordFields2 (Code (a 'SI))
+
   pmatchRepr :: forall s b. Term s (PDataSum (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
+  default pmatchRepr ::
+    forall s b code.
+    ( code ~ Code (a s)
+    , PDataRecordFields2 code ~ PIsDataReprRepr a
+    , MkDataReprHandler s a 0 code
+    ) =>
+    Term s (PDataSum (PIsDataReprRepr a)) ->
+    (a s -> Term s b) ->
+    Term s b
+  pmatchRepr dat =
+    pmatchDataSum dat . mkDataReprHandler @s @a @0 @code
+
+-- | Create a `DataReprhandlers` starting from `n`th sum constructor
+class MkDataReprHandler (s :: S) (a :: PType) (n :: Nat) (rest :: [[Type]]) where
+  mkDataReprHandler :: forall out. (a s -> Term s out) -> DataReprHandlers out (PDataRecordFields2 rest) s
+
+instance MkDataReprHandler s a n '[] where
+  mkDataReprHandler _ = DRHNil
+
+instance
+  ( Generic (a s)
+  , code ~ Code (a s)
+  , r ~ IndexList n code
+  , r ~ '[Term s (PDataRecord fs)]
+  , MkSum n code
+  , MkDataReprHandler s a (n + 1) rs
+  ) =>
+  MkDataReprHandler s a n (r ': rs)
+  where
+  mkDataReprHandler f =
+    DRHCons (f . to . mkSOP . mkProduct) $
+      mkDataReprHandler @s @a @(n + 1) @rs f
+    where
+      mkProduct :: Term s (PDataRecord fs) -> NP I r
+      mkProduct x = I x :* Nil
+      mkSOP :: NP I r -> SOP I (Code (a s))
+      mkSOP = SOP . mkSum @n @code
+
+pasDataSum :: PIsDataRepr a => Term s a -> Term s (PDataSum (PIsDataReprRepr a))
+pasDataSum = punsafeCoerce
 
 instance PIsDataRepr a => PIsData (PIsDataReprInstances a) where
   pdata = punsafeCoerce

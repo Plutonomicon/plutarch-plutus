@@ -29,13 +29,14 @@ module Examples.Field (
 
 --------------------------------------------------------------------------------
 
+import qualified GHC.Generics as GHC
+import Generics.SOP (Generic)
 import Plutarch
 import Plutarch.Builtin (PAsData, PBuiltinList, PIsData (..))
 import Plutarch.DataRepr (
-  DataReprHandlers (DRHCons, DRHNil),
   PDataFields,
   PDataRecord,
-  PIsDataRepr (pmatchRepr, type PIsDataReprRepr),
+  PIsDataRepr,
   PIsDataReprInstances (PIsDataReprInstances),
   PLabeledType ((:=)),
   pfield,
@@ -44,11 +45,11 @@ import Plutarch.DataRepr (
   pletFields,
   pletNFields,
   pletRangeFields,
-  pmatchDataRepr,
  )
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (pconstant, plift)
 import Plutarch.List (PListLike (pcons, pnil))
+import Plutarch.Unsafe (punsafeBuiltin)
 
 import qualified PlutusCore as PLC
 import qualified PlutusTx
@@ -77,21 +78,12 @@ newtype Triplet (a :: PType) (s :: S)
                ]
           )
       )
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData, PDataFields)
     via (PIsDataReprInstances (Triplet a))
-
--- | The usual PIsDataRepr instance for a Record type...
-instance PIsDataRepr (Triplet a) where
-  type
-    PIsDataReprRepr (Triplet a) =
-      '[ '[ "x" ':= a
-          , "y" ':= a
-          , "z" ':= a
-          ]
-       ]
-  pmatchRepr dat f =
-    pmatchDataRepr dat $ DRHCons (f . Triplet) DRHNil
 
 mkTrip ::
   forall a s. (PIsData a) => Term s a -> Term s a -> Term s a -> Term s (Triplet a)

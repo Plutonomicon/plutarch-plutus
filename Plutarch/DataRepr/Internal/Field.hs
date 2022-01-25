@@ -1,7 +1,7 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Plutarch.DataRepr.Field (
+module Plutarch.DataRepr.Internal.Field (
   -- * PDataField class & deriving utils
   PDataFields (..),
   pletAllFields,
@@ -32,22 +32,22 @@ import GHC.TypeLits (
   type (+),
  )
 
+import Data.Kind (Type)
+import Plutarch (PType, S, Term, plam, plet, (#), (#$), type (:-->))
 import Plutarch.Builtin (
   PAsData,
-  PData,
   PIsData (pfromData),
-  pasConstr,
-  psndBuiltin,
  )
 import Plutarch.DataRepr.Internal (
   PDataRecord,
+  PDataSum,
   PIsDataRepr (type PIsDataReprRepr),
   PIsDataReprInstances,
   PLabeledType ((:=)),
-  pdhead,
+  pasDataSum,
   pdropDataRecord,
-  pdtail,
   pindexDataRecord,
+  punDataSum,
   type PLabelIndex,
   type PUnLabel,
  )
@@ -63,7 +63,6 @@ import Plutarch.DataRepr.Internal.HList (
   type Take,
  )
 import Plutarch.Internal (TermCont (TermCont, runTermCont), punsafeCoerce)
-import Plutarch.Prelude
 
 --------------------------------------------------------------------------------
 ---------- PDataField class & deriving utils
@@ -83,9 +82,15 @@ instance PDataFields (PDataRecord as) where
   type PFields (PDataRecord as) = as
   ptoFields = id
 
+instance PDataFields (PDataSum '[as]) where
+  type PFields (PDataSum '[as]) = as
+  ptoFields = (punDataSum #)
+
 instance
-  forall a.
+  forall a fields.
   ( PIsDataRepr a
+  , PIsDataReprRepr a ~ '[fields]
+  , SingleItem (PIsDataReprRepr a) ~ fields
   ) =>
   PDataFields (PIsDataReprInstances a)
   where
@@ -93,9 +98,7 @@ instance
     PFields (PIsDataReprInstances a) =
       SingleItem (PIsDataReprRepr a)
 
-  ptoFields t =
-    (punsafeCoerce $ phoistAcyclic $ plam $ \d -> psndBuiltin #$ pasConstr # d)
-      # (punsafeCoerce t :: Term _ PData)
+  ptoFields x = punDataSum #$ pasDataSum (punsafeCoerce x :: Term _ a)
 
 instance
   forall a.
@@ -249,13 +252,13 @@ class BindFields (as :: [PLabeledType]) where
 
 instance {-# OVERLAPPING #-} BindFields ((l ':= a) ': '[]) where
   bindFields t =
-    pure $ HCons (Labeled $ pdhead # t) HNil
+    pure $ HCons (Labeled $ pindexDataRecord (Proxy @0) t) HNil
 
 instance {-# OVERLAPPABLE #-} (BindFields as) => BindFields ((l ':= a) ': as) where
   bindFields t = do
     t' <- TermCont $ plet t
-    xs <- bindFields @as (pdtail # t')
-    pure $ HCons (Labeled $ pdhead # t') xs
+    xs <- bindFields @as (pdropDataRecord (Proxy @1) t')
+    pure $ HCons (Labeled $ pindexDataRecord (Proxy @0) t') xs
 
 --
 --------------------------------------------------------------------------------
