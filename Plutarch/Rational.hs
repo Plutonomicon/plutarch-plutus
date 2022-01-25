@@ -9,10 +9,20 @@ module Plutarch.Rational (
   pproperFraction,
 ) where
 
-import Plutarch.Prelude
-
 import Data.Ratio (denominator, numerator)
-import Plutarch (PlutusType (..), punsafeCoerce)
+import Plutarch (
+  PlutusType (..),
+  Term,
+  pcon,
+  pfix,
+  phoistAcyclic,
+  plam,
+  plet,
+  pmatch,
+  (#),
+  (#$),
+  type (:-->),
+ )
 import Plutarch.Bool (PEq (..), POrd (..), pif)
 import Plutarch.Builtin (
   PAsData,
@@ -26,6 +36,7 @@ import Plutarch.Builtin (
 import Plutarch.Integer (PInteger, PIntegral (pdiv, pmod))
 import Plutarch.List (PListLike (pcons, phead, pnil, ptail), pmap)
 import Plutarch.Pair (PPair (..))
+import Plutarch.Unsafe (punsafeCoerce)
 
 data PRational s = PRational (Term s PInteger) (Term s PInteger)
 

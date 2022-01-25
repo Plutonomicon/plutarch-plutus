@@ -12,6 +12,7 @@ import Plutarch.Bool
 import Plutarch.Builtin
 import Plutarch.Integer
 import Plutarch.Lift
+import Plutarch.Unsafe (punsafeCoerce)
 
 import qualified PlutusTx
 

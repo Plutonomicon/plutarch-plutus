@@ -104,6 +104,7 @@ library
     Plutarch.String
     Plutarch.Trace
     Plutarch.Unit
+    Plutarch.Unsafe
 
   build-depends:
     , base

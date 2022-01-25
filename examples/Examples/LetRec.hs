@@ -2,10 +2,8 @@
 
 module Examples.LetRec (tests) where
 
-import Plutarch (pcon', pmatch', printTerm, punsafeCoerce, punsafeFrom)
-import Plutarch.Bool (PBool (PFalse, PTrue), pif, (#==))
-import Plutarch.Builtin (PAsData, PIsData, pasConstr, pdata, pforgetData, pfromData)
-import Plutarch.Integer (PInteger)
+import Plutarch (printTerm)
+import Plutarch.Builtin (pasConstr, pforgetData)
 import Plutarch.Prelude
 import Plutarch.Rec (
   DataReader (DataReader, readData),
@@ -23,7 +21,7 @@ import Plutarch.Rec (
   rmatch,
  )
 import Plutarch.Rec.TH (deriveAll)
-import Plutarch.String (PString, pdecodeUtf8, pencodeUtf8)
+import Plutarch.Unsafe (punsafeCoerce, punsafeFrom)
 import qualified Rank2.TH
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))

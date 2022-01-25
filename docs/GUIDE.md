@@ -47,7 +47,7 @@
     - [PList](#plist)
     - [PBuiltinPair](#pbuiltinpair)
     - [PAsData](#pasdata)
-    - [PDataSum & PDataList](#PDataSum--pdatalist)
+    - [PDataSum & PDataList](#pdatasum--pdatalist)
     - [PData](#pdata)
     - [PRecord](#precord)
       - [letrec](#letrec)
@@ -597,7 +597,7 @@ Minting "be"
 If your custom Plutarch type is represented by a builtin type under the hood (i.e not scott encoded - rather [`DefaultUni`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) - you can easily implement `PLift` for it by using the provided machinery.
 
 This comes in 3 flavors.
-* Plutarch type represented **directly** by a builtin type that **is not** `Data` (`DefaultUniData`) ==> `DerivePConstantViaCoercible`
+* Plutarch type represented **directly** by a builtin type that **is not** `Data` (`DefaultUniData`) ==> `DerivePConstantDirect`
 
   Ex: `PInteger` is directly represented as a builtin integer.
 * Plutarch type represented **indirectly** by a builtin type that **is not** `Data` (`DefaultUniData`) ==> `DerivePConstantViaNewtype`
@@ -630,14 +630,13 @@ Some examples:-
   instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
   ```
 
-Now, let's get to implementing `PConstant` for the Haskell synonym, via the 3 methods. The first of which is `DerivePConstantViaCoercible`-
+Now, let's get to implementing `PConstant` for the Haskell synonym, via the 3 methods. The first of which is `DerivePConstantDirect`-
 ```hs
-deriving via (DerivePConstantViaCoercible Integer PInteger Integer) instance (PConstant Integer)
+deriving via (DerivePConstantDirect Integer PInteger) instance (PConstant Integer)
 ```
-`DerivePConstantViaCoercible` takes in 3 type parameters-
+`DerivePConstantDirect` takes in 2 type parameters-
 * The Haskell type itself, for which `PConstant` is being implemented for.
 * The **direct** Plutarch synonym to the Haskell type.
-* The Haskell type that the first param is *actually represented as*. The first param must be coercible to this type.
 
 Pretty simple! Let's check out `DerivePConstantViaNewtype` now-
 ```hs
