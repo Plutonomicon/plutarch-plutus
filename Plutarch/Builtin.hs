@@ -54,7 +54,7 @@ import Plutarch.Bool (PBool (..), PEq, pif', (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (
-  DerivePConstantViaCoercible (DerivePConstantViaCoercible),
+  DerivePConstantDirect (DerivePConstantDirect),
   PConstant,
   PConstantRepr,
   PConstanted,
@@ -161,7 +161,7 @@ data PData s
   | PDataByteString (Term s PByteString)
 
 instance PUnsafeLiftDecl PData where type PLifted PData = Data
-deriving via (DerivePConstantViaCoercible Data PData Data) instance (PConstant Data)
+deriving via (DerivePConstantDirect Data PData) instance (PConstant Data)
 
 instance PEq PData where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y

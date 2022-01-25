@@ -35,7 +35,7 @@ import Plutarch (
   type (:-->),
  )
 import Plutarch.Lift (
-  DerivePConstantViaCoercible (DerivePConstantViaCoercible),
+  DerivePConstantDirect (DerivePConstantDirect),
   PConstant,
   PLifted,
   PUnsafeLiftDecl,
@@ -47,7 +47,7 @@ import qualified PlutusCore as PLC
 data PBool (s :: S) = PTrue | PFalse
 
 instance PUnsafeLiftDecl PBool where type PLifted PBool = Bool
-deriving via (DerivePConstantViaCoercible Bool PBool Bool) instance (PConstant Bool)
+deriving via (DerivePConstantDirect Bool PBool) instance (PConstant Bool)
 
 instance PlutusType PBool where
   type PInner PBool _ = PBool

@@ -13,7 +13,7 @@ import Plutarch (
  )
 import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
 import Plutarch.Lift (
-  DerivePConstantViaCoercible (DerivePConstantViaCoercible),
+  DerivePConstantDirect (DerivePConstantDirect),
   PConstant,
   PLifted,
   PUnsafeLiftDecl,
@@ -25,7 +25,7 @@ import qualified PlutusCore as PLC
 data PInteger s
 
 instance PUnsafeLiftDecl PInteger where type PLifted PInteger = Integer
-deriving via (DerivePConstantViaCoercible Integer PInteger Integer) instance (PConstant Integer)
+deriving via (DerivePConstantDirect Integer PInteger) instance (PConstant Integer)
 
 class PIntegral a where
   pdiv :: Term s (a :--> a :--> a)

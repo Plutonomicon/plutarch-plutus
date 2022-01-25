@@ -25,7 +25,7 @@ import Plutarch (
 import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (
-  DerivePConstantViaCoercible (DerivePConstantViaCoercible),
+  DerivePConstantDirect (DerivePConstantDirect),
   PConstant,
   PLifted,
   PUnsafeLiftDecl,
@@ -37,7 +37,7 @@ import qualified PlutusCore as PLC
 data PByteString s
 
 instance PUnsafeLiftDecl PByteString where type PLifted PByteString = ByteString
-deriving via (DerivePConstantViaCoercible ByteString PByteString ByteString) instance (PConstant ByteString)
+deriving via (DerivePConstantDirect ByteString PByteString) instance (PConstant ByteString)
 
 instance PEq PByteString where
   x #== y = punsafeBuiltin PLC.EqualsByteString # x # y
