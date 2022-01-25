@@ -13,7 +13,7 @@ import Plutarch.Api.V1 (
  )
 import Plutarch.Bool (pif)
 import Plutarch.Builtin (PAsData, PBuiltinList, PData, PIsData (..), pasConstr, pforgetData, pfstBuiltin, psndBuiltin)
-import Plutarch.DataRepr (pfield, pletAllFields)
+import Plutarch.DataRepr (pfield, pletFields)
 import Plutarch.List (pmap)
 
 -- import Plutarch.DataRepr (pindexDataList)
@@ -160,7 +160,7 @@ getSym =
 
 checkSignatory :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatory = plam $ \ph ctx' ->
-  pletAllFields ctx' $ \ctx -> P.do
+  pletFields @["txInfo", "purpose"] ctx' $ \ctx -> P.do
     PSpending _ <- pmatch . pfromData $ ctx.purpose
     let signatories = pfield @"signatories" # ctx.txInfo
     pif

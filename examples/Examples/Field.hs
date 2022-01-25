@@ -14,10 +14,8 @@ module Examples.Field (
   tripZY,
   by,
   dotPlus,
-  tripSum',
   nFields,
   dropFields,
-  dropFields',
   getY,
   rangeFields,
   letSomeFields,
@@ -40,11 +38,7 @@ import Plutarch.DataRepr (
   PIsDataReprInstances (PIsDataReprInstances),
   PLabeledType ((:=)),
   pfield,
-  pletAllFields,
-  pletDropFields,
   pletFields,
-  pletNFields,
-  pletRangeFields,
  )
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (pconstant, plift)
@@ -114,36 +108,22 @@ tripTrip :: Term s (Triplet (Triplet PInteger))
 tripTrip = mkTrip tripA tripB tripC
 
 {- |
-  We can bind all fields to a 'HRec' at once with 'pletAllFields'.
+  'pletFields' generates efficient bindings for the specified fields,
+  as a 'HRec' of fields.
 
   The fields in the 'HRec' can them be accessed with
   RecordDotSyntax.
 -}
 tripSum :: Term s ((Triplet PInteger) :--> PInteger)
 tripSum =
-  plam $ \x -> pletAllFields x $
+  plam $ \x -> pletFields @["x", "y", "z"] x $
     \fs ->
       pfromData fs.x
         + pfromData fs.y
         + pfromData fs.z
 
 {- |
-  We can also bind the first N fields with 'pletNFields',
-  this saves some code in binding the tails for additional fields.
-
-  The fields in the 'HRec' can them be accessed with
-  RecordDotSyntax.
--}
-tripSum' :: Term s ((Triplet PInteger) :--> PInteger)
-tripSum' =
-  plam $ \x -> pletNFields @2 x $
-    \fs ->
-      pfromData fs.x
-        + pfromData fs.y
-
-{- |
-  'pletFields' can also be used to bind the relevant fields,
-  without knowing their range.
+   A subset of fields can be specified.
 -}
 tripYZ :: Term s ((Triplet PInteger) :--> PInteger)
 tripYZ =
@@ -162,9 +142,10 @@ tripZY =
       pfromData fs.y + pfromData fs.z
 
 {- |
-  When accessing only a single field, we can use
-  'pfield', which can end up generating smaller code when used frequently
-  in a script.
+  When accessing only a single field, we can use 'pfield'.
+
+  This should be used carefully - if more than one field is needed,
+  'pletFields' is more efficient.
 -}
 by :: Term s PInteger
 by = pfromData $ pfield @"y" # tripB
@@ -180,10 +161,10 @@ getY = pfield @"y"
 -}
 dotPlus :: Term s PInteger
 dotPlus =
-  pletAllFields tripTrip $ \ts ->
-    pletAllFields (ts.x) $ \a ->
-      pletAllFields (ts.y) $ \b ->
-        pletAllFields (ts.z) $ \c ->
+  pletFields @["x", "y", "z"] tripTrip $ \ts ->
+    pletFields @["x", "y", "z"] (ts.x) $ \a ->
+      pletFields @["x", "y", "z"] (ts.y) $ \b ->
+        pletFields @["x", "y", "z"] (ts.z) $ \c ->
           (pfromData a.x * pfromData b.x)
             + (pfromData a.y * pfromData b.y)
             + (pfromData a.z * pfromData b.z)
@@ -212,62 +193,21 @@ someFields =
 
 {- |
   We can also bind over a 'PDataRecord' directly.
-
-  'pletNFields' will more efficiently bind the first N fields
-  of a PRecord.
 -}
 nFields :: Term s (PDataRecord SomeFields :--> PInteger)
 nFields =
-  plam $ \r -> pletNFields @2 r $ \fs ->
-    pfromData fs._0
-      + pfromData fs._1
-
-{- |
-  Or equivalently, with 'pletFields'
--}
-nFieldsLet :: Term s (PDataRecord SomeFields :--> PInteger)
-nFieldsLet =
   plam $ \r -> pletFields @["_0", "_1"] r $ \fs ->
     pfromData fs._0
       + pfromData fs._1
 
-{- |
-  'pletDropFields' will bind fields, dropping the first N.
--}
 dropFields :: Term s (PDataRecord SomeFields :--> PInteger)
 dropFields =
-  plam $ \r -> pletDropFields @8 r $ \fs ->
-    pfromData fs._8
-      + pfromData fs._9
-
-{- |
-  Or equivalently, with 'pletFields'
--}
-dropFieldsLet :: Term s (PDataRecord SomeFields :--> PInteger)
-dropFieldsLet =
   plam $ \r -> pletFields @["_8", "_9"] r $ \fs ->
     pfromData fs._8
       + pfromData fs._9
 
--- | Without using 'pletDropFields', the code generated is a little less efficient
-dropFields' :: Term s (PDataRecord SomeFields :--> PInteger)
-dropFields' =
-  plam $ \r -> pletAllFields r $ \fs ->
-    pfromData fs._8
-      + pfromData fs._9
-
--- | 'pletRangeFields' will bind fields in a specific range
 rangeFields :: Term s (PDataRecord SomeFields :--> PInteger)
 rangeFields =
-  plam $ \r -> pletRangeFields @5 @6 r $ \fs ->
-    pfromData fs._5
-      + pfromData fs._6
-
-{- |
-  Or equivalently, with 'pletFields'
--}
-rangeFieldsLet :: Term s (PDataRecord SomeFields :--> PInteger)
-rangeFieldsLet =
   plam $ \r -> pletFields @["_5", "_6"] r $ \fs ->
     pfromData fs._5
       + pfromData fs._6
@@ -303,18 +243,10 @@ tests =
         tripSum `equal'` tripSumComp
     , testCase "nFields compilation" $
         nFields `equal'` nFieldsComp
-    , testCase "nFieldsLet = nFields" $
-        nFieldsLet `equal` nFields
     , testCase "dropFields compilation" $
         dropFields `equal'` dropFieldsComp
-    , testCase "dropFieldsLet = dropFields" $
-        dropFieldsLet `equal` dropFields
-    , testCase "dropFields' compilation" $
-        dropFields' `equal'` dropFields'Comp
     , testCase "rangeFields compilation" $
         rangeFields `equal'` rangeFieldsComp
-    , testCase "rangeFieldsLet = rangeFields" $
-        rangeFieldsLet `equal` rangeFields
     , testCase "letSomeFields compilation" $
         letSomeFields `equal'` letSomeFieldsComp
     , testCase "letSomeFields = letSomeFields'" $
@@ -361,9 +293,6 @@ nFieldsComp = "(program 1.0.0 (\\i0 -> addInteger (unIData (force headList i1)) 
 
 dropFieldsComp :: String
 dropFieldsComp = "(program 1.0.0 (\\i0 -> (\\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))) ((\\i0 -> force tailList (force tailList (force tailList (force tailList (force tailList (force tailList (force tailList (force tailList i1)))))))) i1)))"
-
-dropFields'Comp :: String
-dropFields'Comp = "(program 1.0.0 (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))) (force tailList i1)) (force tailList i1)) (force tailList i1)) (force tailList i1)) (force tailList i1)) (force tailList i1)) (force tailList i1)) (force tailList i1)))"
 
 rangeFieldsComp :: String
 rangeFieldsComp = "(program 1.0.0 (\\i0 -> (\\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))) ((\\i0 -> force tailList (force tailList (force tailList (force tailList (force tailList i1))))) i1)))"
