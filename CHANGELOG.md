@@ -144,7 +144,7 @@
   * [#114](https://github.com/Plutonomicon/plutarch/pull/114)
   * [#125](https://github.com/Plutonomicon/plutarch/pull/125)
   * [#175](https://github.com/Plutonomicon/plutarch/pull/175)
-- The Plutus V1 ledger api implemented in Plutarch!
+- The Plutus V1 ledger api types implemented in Plutarch!
 
   Module: `Plutarch.Api.V1`
 
