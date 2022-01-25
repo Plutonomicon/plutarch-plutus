@@ -129,7 +129,7 @@ pletFields ::
   Term s a ->
   (HRec (TermsOf s as) -> Term s b) ->
   Term s b
-pletFields t = 
+pletFields t =
   runTermCont $
     bindFields @as $ to $ ptoFields t
   where
@@ -181,10 +181,9 @@ instance {-# OVERLAPPABLE #-} (BindFields as) => BindFields ((l ':= a) ': as) wh
 {- |
   Get a single field from a Term.
 
-  *NB*: If you access more than one field from 
+  *NB*: If you access more than one field from
   the same value you should use 'pletFields' instead,
   which will generate the bindings more efficiently.
-
 -}
 pfield ::
   forall name p s a as n.
