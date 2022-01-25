@@ -423,14 +423,12 @@
           , word-array ^>= 0.1.0.0
       '';
 
-      projectFor = system:
+      projectForGhc = ghcName: system:
         let pkgs = nixpkgsFor system; in
         let pkgs' = nixpkgsFor' system; in
-        (nixpkgsFor system).haskell-nix.cabalProject' {
+        (nixpkgsFor system).haskell-nix.cabalProject' ({
           src = ./.;
-          compiler-nix-name = ghcVersion;
-          cabalProjectFileName = "cabal.project";
-          inherit cabalProjectLocal;
+          compiler-nix-name = ghcName;
           inherit extraSources;
           modules = [ (haskellModule system) ];
           shell = {
@@ -450,7 +448,12 @@
               #ps.shrinker-testing
             ];
           };
-        };
+        } // (if ghcName == ghcVersion then {
+          inherit cabalProjectLocal;
+        } else { }));
+
+      projectFor = projectForGhc ghcVersion;
+      projectFor810 = projectForGhc "ghc8107";
 
       formatCheckFor = system:
         let
@@ -483,6 +486,7 @@
         // {
           formatCheck = formatCheckFor system;
           benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
+          ghc810 = ((projectFor system).flake { }).packages; # We don't run the tests, we just check that it builds.
         }
       );
       check = perSystem (system:
