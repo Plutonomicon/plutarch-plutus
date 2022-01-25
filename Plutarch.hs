@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -36,10 +37,14 @@ module Plutarch (
   popaque,
   plam,
   DerivePNewtype (DerivePNewtype),
+  ScottEncoding,
+  ScottArg,
+  Fn,
 ) where
 
 import Data.Coerce (Coercible, coerce)
 import Data.Kind (Type)
+import Generics.SOP
 import Plutarch.Internal (ClosedTerm, PType, S, Term, compile, papp, phoistAcyclic, plam', punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
 import Plutus.V1.Ledger.Scripts (Script (Script))
@@ -109,6 +114,22 @@ instance {-# OVERLAPPING #-} (a' ~ Term s a, PLamN b' b s) => PLamN (a' -> b') (
 pinl :: Term s a -> (Term s a -> Term s b) -> Term s b
 pinl v f = f v
 
+type ScottEncoding :: [[Type]] -> PType -> PType
+type family ScottEncoding xss b where
+  ScottEncoding '[] b = b
+  ScottEncoding (xs ': xss) b = ScottArg xs b :--> ScottEncoding xss b
+
+type ScottArg :: [Type] -> PType -> PType
+type family ScottArg xs b where
+  ScottArg '[] b = b
+  ScottArg (Term s x ': xs) b = x :--> ScottArg xs b
+
+-- | Fn '[a, b] c -> (a :--> b :--> c)
+type Fn :: [PType] -> PType -> PType
+type family Fn xs b where
+  Fn '[] b = b
+  Fn (x ': xs) b = x :--> Fn xs b
+
 {- |
 
   The 'PlutusType' class allows encoding Haskell data-types as plutus terms
@@ -142,6 +163,7 @@ class (PCon a, PMatch a) => PlutusType (a :: PType) where
   -- `b' :: k'` causes GHC to fail type checking at various places
   -- due to not being able to expand the type family.
   type PInner a (b' :: PType) :: PType
+  type PInner a (b' :: PType) = ScottEncoding (Code (a 'PI.SI)) b'
   pcon' :: forall s. a s -> forall b. Term s (PInner a b)
   pmatch' :: forall s c. (forall b. Term s (PInner a b)) -> (a s -> Term s c) -> Term s c
 
