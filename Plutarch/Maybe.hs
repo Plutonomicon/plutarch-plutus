@@ -3,28 +3,31 @@
 
 module Plutarch.Maybe (PMaybe (..)) where
 
+import qualified GHC.Generics as GHC
+import Generics.SOP
 import Plutarch (
-  PDelayed,
   PInner,
   PType,
   PlutusType,
   S,
   Term,
+  gpcon,
   pcon',
   pdelay,
-  pforce,
   plam,
   pmatch',
   (#),
-  type (:-->),
  )
 
 -- | Plutus Maybe type, with Scott-encoded repr
-data PMaybe (a :: PType) (s :: S) = PJust (Term s a) | PNothing
+data PMaybe (a :: PType) (s :: S)
+  = PJust (Term s a)
+  | PNothing
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
 
 instance PlutusType (PMaybe a) where
-  type PInner (PMaybe a) b = (a :--> b) :--> PDelayed b :--> b
   pcon' :: forall s. PMaybe a s -> forall b. Term s (PInner (PMaybe a) b)
-  pcon' (PJust x) = plam $ \f _ -> f # x
-  pcon' PNothing = plam $ \_ g -> pforce g
+  pcon' x = gpcon @(PMaybe a) @s @_ @(Code (PMaybe a s)) $ from x
+
   pmatch' x f = x # plam (f . PJust) # pdelay (f PNothing)

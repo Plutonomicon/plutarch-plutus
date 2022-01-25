@@ -43,7 +43,7 @@ module Plutarch (
 import Data.Coerce (Coercible, coerce)
 import Data.Kind (Type)
 import Generics.SOP
-import Plutarch.Internal (ClosedTerm, PType, S, Term, compile, papp, phoistAcyclic, plam', punsafeCoerce, (:-->))
+import Plutarch.Internal (ClosedTerm, PType, S, Term, compile, papp, pforce, phoistAcyclic, plam', punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
 import Plutus.V1.Ledger.Scripts (Script (Script))
 import PlutusCore.Pretty (prettyPlcReadableDebug)
@@ -260,7 +260,7 @@ gpcon ::
   , pcode ~ ToPType2 code
   , GPCon pcode c s
   , PLamL (ScottList s pcode c) c s
-  , Fn (ScottList s pcode c) c ~ ScottEncoding (Code (a 'PI.SI)) c
+  , Fn' (ScottList s pcode c) c ~ ScottEncoding (Code (a 'PI.SI)) c
   , AllZipN (Prod SOP) (LiftedCoercible I (Term s)) code pcode
   ) =>
   SOP I (Code (a s)) ->
@@ -273,7 +273,7 @@ gpcon val =
     pSop :: AllZipN (Prod SOP) (LiftedCoercible I (Term s)) xss (ToPType2 xss) => SOP I xss -> SOP (Term s) (ToPType2 xss)
     pSop = hcoerce
 
--- | '[a :--> c, b :--> c]
+-- | '[a :--> c, b :--> c, PDelayed c]
 type ScottList :: S -> [[PType]] -> PType -> [PType]
 type family ScottList s code c where
   ScottList _ '[] c = '[]
@@ -296,13 +296,22 @@ class AppL (c :: PType) (xs :: [PType]) where
   appL :: Term s (Fn xs c) -> NP (Term s) xs -> Term s c
 
 instance AppL c '[] where
-  appL f Nil = f
+  appL f Nil = pforce f
 
-instance AppL c xs => AppL c (x ': xs) where
-  appL f (x :* xs) = (f # x) `appL` xs
+instance (AppL' c xs, AppL c xs) => AppL c (x ': xs) where
+  appL f (x :* xs) = (f # x) `appL'` xs
+
+class AppL' (c :: PType) (xs :: [PType]) where
+  appL' :: Term s (Fn' xs c) -> NP (Term s) xs -> Term s c
+
+instance AppL' c '[] where
+  appL' f Nil = f
+
+instance AppL' c xs => AppL' c (x ': xs) where
+  appL' f (x :* xs) = (f # x) `appL'` xs
 
 class PLamL (as :: [PType]) (b :: PType) (s :: S) where
-  plamL :: (NP (Term s) as -> Term s b) -> Term s (Fn as b)
+  plamL :: (NP (Term s) as -> Term s b) -> Term s (Fn' as b)
 
 instance PLamL '[] b s where
   plamL f = f Nil
@@ -332,11 +341,23 @@ type family ScottEncoding xss b where
 
 type ScottArg :: [Type] -> PType -> PType
 type family ScottArg xs b where
-  ScottArg '[] b = b
-  ScottArg (Term s x ': xs) b = x :--> ScottArg xs b
+  ScottArg '[] b = PI.PDelayed b
+  ScottArg (Term s x ': xs) b = x :--> ScottArg' xs b
 
--- | Fn '[a, b] c -> (a :--> b :--> c)
+type ScottArg' :: [Type] -> PType -> PType
+type family ScottArg' xs b where
+  ScottArg' '[] b = b
+  ScottArg' (Term s x ': xs) b = x :--> ScottArg' xs b
+
+{- | Fn '[a, b] c -> (a :--> b :--> c)
+   Fn '[] c -> (PDelayed c)
+-}
 type Fn :: [PType] -> PType -> PType
 type family Fn xs b where
-  Fn '[] b = b
-  Fn (x ': xs) b = x :--> Fn xs b
+  Fn '[] b = PI.PDelayed b
+  Fn (x ': xs) b = x :--> Fn' xs b
+
+type Fn' :: [PType] -> PType -> PType
+type family Fn' xs b where
+  Fn' '[] b = b
+  Fn' (x ': xs) b = x :--> Fn' xs b
