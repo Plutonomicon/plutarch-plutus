@@ -13,14 +13,14 @@ import Plutarch.Pair
 import Plutarch.Rational
 import qualified PlutusTx.Ratio as H
 
--- import Data.Ratio ((%))
-
 tests :: HasTester => TestTree
 tests = do
   testGroup
     "rational tests"
-    [ testCase "pconstant" $
+    [ testCase "pconstant" $ do
         plift (pconstant (H.fromGHC $ 1 / 2)) @?= H.fromGHC (1 / 2)
+        expect $ pround # pconstant (H.fromGHC $ 11 / 2) #== 6
+        plift (pround # pconstant (H.fromGHC $ 11 / 2)) @?= 6
     , testCase "1/2 + 1/2 = 1" $
         expect $ 1 / 2 + 1 / 2 #== (1 :: Term s PRational)
     , testCase "(1 - 3/2) * (2 - 5/2) == 1/4" $
