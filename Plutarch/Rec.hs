@@ -29,8 +29,6 @@ import Plutarch (
   plam,
   plet,
   pmatch,
-  punsafeBuiltin,
-  punsafeCoerce,
   (#),
   (:-->),
  )
@@ -46,6 +44,7 @@ import Plutarch.Internal (
  )
 import Plutarch.List (pcons, phead, pnil, ptail)
 import Plutarch.Trace (ptraceError)
+import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import qualified PlutusCore as PLC
 import qualified Rank2
 

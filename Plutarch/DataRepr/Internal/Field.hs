@@ -25,6 +25,8 @@ module Plutarch.DataRepr.Internal.Field (
 import Data.Proxy (Proxy (Proxy))
 import GHC.TypeLits (KnownNat)
 
+import Data.Kind (Type)
+import Plutarch (PType, S, Term, plam, plet, (#), (#$), type (:-->))
 import Plutarch.Builtin (
   PAsData,
   PIsData (pfromData),
@@ -53,7 +55,6 @@ import Plutarch.DataRepr.Internal.HList (
   type Take,
  )
 import Plutarch.Internal (TermCont (TermCont, runTermCont), punsafeCoerce)
-import Plutarch.Prelude
 
 --------------------------------------------------------------------------------
 ---------- PDataField class & deriving utils

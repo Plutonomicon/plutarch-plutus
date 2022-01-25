@@ -6,24 +6,28 @@ module Plutarch.String (PString, pfromText, pencodeUtf8, pdecodeUtf8) where
 import Data.String (IsString, fromString)
 import Data.Text (Text)
 import qualified Data.Text as Txt
-import Plutarch (punsafeBuiltin)
+import Plutarch (
+  Term,
+  (#),
+  type (:-->),
+ )
 import Plutarch.Bool (PEq, (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Lift (
-  DerivePConstantViaCoercible (DerivePConstantViaCoercible),
+  DerivePConstantDirect (DerivePConstantDirect),
   PConstant,
   PLifted,
   PUnsafeLiftDecl,
   pconstant,
  )
-import Plutarch.Prelude
+import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinString' values
 data PString s
 
 instance PUnsafeLiftDecl PString where type PLifted PString = Text
-deriving via (DerivePConstantViaCoercible Text PString Text) instance (PConstant Text)
+deriving via (DerivePConstantDirect Text PString) instance (PConstant Text)
 
 {-# DEPRECATED pfromText "Use `pconstant` instead." #-}
 

@@ -13,7 +13,7 @@ module Plutarch.Lift (
   -- * Define your own conversion
   PConstant (..),
   PLift,
-  DerivePConstantViaCoercible (..),
+  DerivePConstantDirect (..),
   DerivePConstantViaNewtype (..),
 
   -- * Internal use
@@ -90,14 +90,14 @@ plift prog = case plift' prog of
   Left e -> error $ "plift failed: " <> show e
 
 -- TODO: Add haddock
-newtype DerivePConstantViaCoercible (h :: Type) (p :: PType) (r :: Type) = DerivePConstantViaCoercible h
+newtype DerivePConstantDirect (h :: Type) (p :: PType) = DerivePConstantDirect h
 
 instance
-  (PLift p, Coercible h r, PLC.DefaultUni `PLC.Includes` r) =>
-  PConstant (DerivePConstantViaCoercible h p r)
+  (PLift p, PLC.DefaultUni `PLC.Includes` h) =>
+  PConstant (DerivePConstantDirect h p)
   where
-  type PConstantRepr (DerivePConstantViaCoercible h p r) = r
-  type PConstanted (DerivePConstantViaCoercible h p r) = p
+  type PConstantRepr (DerivePConstantDirect h p) = h
+  type PConstanted (DerivePConstantDirect h p) = p
   pconstantToRepr = coerce
   pconstantFromRepr = Just . coerce
 

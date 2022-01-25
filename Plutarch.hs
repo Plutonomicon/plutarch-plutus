@@ -18,9 +18,6 @@ module Plutarch (
   PI.phoistAcyclic,
   PI.plam',
   PI.plet,
-  PI.punsafeBuiltin,
-  PI.punsafeCoerce,
-  PI.punsafeConstant,
   PI.Term,
   PI.TermCont (..),
   PI.S,
@@ -33,12 +30,10 @@ module Plutarch (
   pinl,
   PCon (..),
   PMatch (..),
-  punsafeFrom,
   pto,
   pfix,
   POpaque (..),
   popaque,
-  punsafeFromOpaque,
   plam,
   DerivePNewtype (DerivePNewtype),
 ) where
@@ -165,13 +160,6 @@ class PMatch a where
   pmatch :: Term s a -> (a s -> Term s b) -> Term s b
 
 {- |
-  Unsafely coerce from the 'PInner' representation of a Term,
-  assuming that the value is a safe construction of the Term.
--}
-punsafeFrom :: (forall b. Term s (PInner a b)) -> Term s a
-punsafeFrom x = punsafeCoerce x
-
-{- |
   Safely coerce from a Term to it's 'PInner' representation.
 -}
 pto :: Term s a -> (forall b. Term s (PInner a b))
@@ -188,12 +176,6 @@ instance PlutusType POpaque where
 -- | Erase the type of a Term
 popaque :: Term s a -> Term s POpaque
 popaque = punsafeCoerce
-
-{- |
-  Unsafely coerce from an Opaque term to another type.
--}
-punsafeFromOpaque :: Term s POpaque -> Term s a
-punsafeFromOpaque = punsafeCoerce
 
 {- |
   Fixpoint recursion. Used to encode recursive functions.
@@ -238,8 +220,26 @@ instance (forall (s :: PI.S). Coercible (a s) (Term s b)) => PlutusType (DeriveP
   pcon' (DerivePNewtype t) = ptypeInner t
   pmatch' x f = f . DerivePNewtype $ ptypeOuter x
 
+instance Semigroup (Term s b) => Semigroup (Term s (DerivePNewtype a b)) where
+  x <> y = punsafeFrom $ pto x <> pto y
+
+instance Monoid (Term s b) => Monoid (Term s (DerivePNewtype a b)) where
+  mempty = punsafeFrom $ mempty @(Term s b)
+
+instance Num (Term s b) => Num (Term s (DerivePNewtype a b)) where
+  x + y = punsafeFrom $ pto x + pto y
+  x - y = punsafeFrom $ pto x - pto y
+  x * y = punsafeFrom $ pto x * pto y
+  abs x = punsafeFrom $ abs $ pto x
+  negate x = punsafeFrom $ negate $ pto x
+  signum x = punsafeFrom $ signum $ pto x
+  fromInteger x = punsafeFrom $ fromInteger @(Term s b) x
+
 ptypeInner :: forall (x :: PType) y s. Coercible (x s) (Term s y) => x s -> Term s y
 ptypeInner = coerce
 
 ptypeOuter :: forall (x :: PType) y s. Coercible (x s) (Term s y) => Term s y -> x s
 ptypeOuter = coerce
+
+punsafeFrom :: (forall b. Term s (PInner a b)) -> Term s a
+punsafeFrom x = PI.punsafeCoerce x

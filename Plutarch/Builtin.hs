@@ -25,13 +25,33 @@ module Plutarch.Builtin (
   type PBuiltinMap,
 ) where
 
-import Data.Coerce (Coercible, coerce)
-import Plutarch (PlutusType (..), punsafeBuiltin, punsafeCoerce)
+import Data.Coerce (Coercible)
+import Plutarch (
+  DerivePNewtype,
+  PInner,
+  PType,
+  PlutusType,
+  S,
+  Term,
+  pcon,
+  pcon',
+  pdelay,
+  pforce,
+  phoistAcyclic,
+  plam,
+  plet,
+  pmatch,
+  pmatch',
+  pto,
+  (#),
+  (#$),
+  type (:-->),
+ )
 import Plutarch.Bool (PBool (..), PEq, pif', (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (
-  DerivePConstantViaCoercible (DerivePConstantViaCoercible),
+  DerivePConstantDirect (DerivePConstantDirect),
   PConstant,
   PConstantRepr,
   PConstanted,
@@ -43,7 +63,7 @@ import Plutarch.Lift (
   pconstantToRepr,
  )
 import Plutarch.List (PListLike (..), plistEquals)
-import Plutarch.Prelude
+import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeFrom)
 import qualified PlutusCore as PLC
 import PlutusTx (Data)
 
@@ -139,7 +159,7 @@ data PData s
   | PDataByteString (Term s PByteString)
 
 instance PUnsafeLiftDecl PData where type PLifted PData = Data
-deriving via (DerivePConstantViaCoercible Data PData Data) instance (PConstant Data)
+deriving via (DerivePConstantDirect Data PData) instance (PConstant Data)
 
 instance PEq PData where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
@@ -245,7 +265,7 @@ instance PEq (PAsData a) where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
 
 instance (forall (s :: S). Coercible (a s) (Term s b), PIsData b) => PIsData (DerivePNewtype a b) where
-  pfromData x = pcon . DerivePNewtype $ ptypeOuter target
+  pfromData x = punsafeFrom target
     where
       target :: Term _ b
       target = pfromData $ pinnerData x
@@ -256,6 +276,3 @@ pinnerData = punsafeCoerce
 
 pouterData :: Term s (PAsData (PInner a b)) -> Term s (PAsData a)
 pouterData = punsafeCoerce
-
-ptypeOuter :: forall (x :: PType) y s. Coercible (x s) (Term s y) => Term s y -> x s
-ptypeOuter = coerce

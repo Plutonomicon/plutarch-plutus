@@ -1,3 +1,4 @@
+{-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -16,22 +17,37 @@ module Plutarch.Bool (
   por',
 ) where
 
-import Plutarch (PlutusType (PInner, pcon', pmatch'), punsafeBuiltin)
+import Plutarch (
+  DerivePNewtype,
+  PDelayed,
+  PlutusType (PInner, pcon', pmatch'),
+  S,
+  Term,
+  pcon,
+  pdelay,
+  pforce,
+  phoistAcyclic,
+  plam,
+  pmatch,
+  pto,
+  (#),
+  type (:-->),
+ )
 import Plutarch.Lift (
-  DerivePConstantViaCoercible (DerivePConstantViaCoercible),
+  DerivePConstantDirect (DerivePConstantDirect),
   PConstant,
   PLifted,
   PUnsafeLiftDecl,
   pconstant,
  )
-import Plutarch.Prelude
+import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinBool'
 data PBool (s :: S) = PTrue | PFalse
 
 instance PUnsafeLiftDecl PBool where type PLifted PBool = Bool
-deriving via (DerivePConstantViaCoercible Bool PBool Bool) instance (PConstant Bool)
+deriving via (DerivePConstantDirect Bool PBool) instance (PConstant Bool)
 
 instance PlutusType PBool where
   type PInner PBool _ = PBool
@@ -50,6 +66,13 @@ class POrd t where
 
 infix 4 #<=
 infix 4 #<
+
+instance PEq b => PEq (DerivePNewtype a b) where
+  x #== y = pto x #== pto y
+
+instance POrd b => POrd (DerivePNewtype a b) where
+  x #<= y = pto x #<= pto y
+  x #< y = pto x #< pto y
 
 {- | Strict version of 'pif'.
  Emits slightly less code.

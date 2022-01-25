@@ -3,8 +3,21 @@
 
 module Plutarch.Maybe (PMaybe (..)) where
 
-import Plutarch (PlutusType (PInner, pcon', pmatch'))
-import Plutarch.Prelude
+import Plutarch (
+  PDelayed,
+  PInner,
+  PType,
+  PlutusType,
+  S,
+  Term,
+  pcon',
+  pdelay,
+  pforce,
+  plam,
+  pmatch',
+  (#),
+  type (:-->),
+ )
 
 -- | Plutus Maybe type, with Scott-encoded repr
 data PMaybe (a :: PType) (s :: S) = PJust (Term s a) | PNothing
