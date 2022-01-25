@@ -25,9 +25,9 @@ module Plutarch.Builtin (
   type PBuiltinMap,
 ) where
 
-import Data.Coerce (Coercible, coerce)
+import Data.Coerce (Coercible)
 import Plutarch (
-  DerivePNewtype (DerivePNewtype),
+  DerivePNewtype,
   PInner,
   PType,
   PlutusType,
@@ -45,6 +45,7 @@ import Plutarch (
   pto,
   punsafeBuiltin,
   punsafeCoerce,
+  punsafeFrom,
   (#),
   (#$),
   type (:-->),
@@ -266,7 +267,7 @@ instance PEq (PAsData a) where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
 
 instance (forall (s :: S). Coercible (a s) (Term s b), PIsData b) => PIsData (DerivePNewtype a b) where
-  pfromData x = pcon . DerivePNewtype $ ptypeOuter target
+  pfromData x = punsafeFrom target
     where
       target :: Term _ b
       target = pfromData $ pinnerData x
@@ -277,6 +278,3 @@ pinnerData = punsafeCoerce
 
 pouterData :: Term s (PAsData (PInner a b)) -> Term s (PAsData a)
 pouterData = punsafeCoerce
-
-ptypeOuter :: forall (x :: PType) y s. Coercible (x s) (Term s y) => Term s y -> x s
-ptypeOuter = coerce

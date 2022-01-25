@@ -1,3 +1,4 @@
+{-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -17,6 +18,7 @@ module Plutarch.Bool (
 ) where
 
 import Plutarch (
+  DerivePNewtype,
   PDelayed,
   PlutusType (PInner, pcon', pmatch'),
   S,
@@ -27,6 +29,7 @@ import Plutarch (
   phoistAcyclic,
   plam,
   pmatch,
+  pto,
   punsafeBuiltin,
   (#),
   type (:-->),
@@ -63,6 +66,13 @@ class POrd t where
 
 infix 4 #<=
 infix 4 #<
+
+instance PEq b => PEq (DerivePNewtype a b) where
+  x #== y = pto x #== pto y
+
+instance POrd b => POrd (DerivePNewtype a b) where
+  x #<= y = pto x #<= pto y
+  x #< y = pto x #< pto y
 
 {- | Strict version of 'pif'.
  Emits slightly less code.
