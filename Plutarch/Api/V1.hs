@@ -209,7 +209,6 @@ deriving via
 ---------- Value
 
 newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
-  deriving newtype (Semigroup, Monoid)
   deriving (PlutusType, PIsData, PEq, POrd) via (DerivePNewtype PTokenName PByteString)
 
 instance PUnsafeLiftDecl PTokenName where type PLifted PTokenName = Plutus.TokenName
