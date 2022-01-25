@@ -220,8 +220,26 @@ instance (forall (s :: PI.S). Coercible (a s) (Term s b)) => PlutusType (DeriveP
   pcon' (DerivePNewtype t) = ptypeInner t
   pmatch' x f = f . DerivePNewtype $ ptypeOuter x
 
+instance Semigroup (Term s b) => Semigroup (Term s (DerivePNewtype a b)) where
+  x <> y = punsafeFrom $ pto x <> pto y
+
+instance Monoid (Term s b) => Monoid (Term s (DerivePNewtype a b)) where
+  mempty = punsafeFrom $ mempty @(Term s b)
+
+instance Num (Term s b) => Num (Term s (DerivePNewtype a b)) where
+  x + y = punsafeFrom $ pto x + pto y
+  x - y = punsafeFrom $ pto x - pto y
+  x * y = punsafeFrom $ pto x * pto y
+  abs x = punsafeFrom $ abs $ pto x
+  negate x = punsafeFrom $ negate $ pto x
+  signum x = punsafeFrom $ signum $ pto x
+  fromInteger x = punsafeFrom $ fromInteger @(Term s b) x
+
 ptypeInner :: forall (x :: PType) y s. Coercible (x s) (Term s y) => x s -> Term s y
 ptypeInner = coerce
 
 ptypeOuter :: forall (x :: PType) y s. Coercible (x s) (Term s y) => Term s y -> x s
 ptypeOuter = coerce
+
+punsafeFrom :: (forall b. Term s (PInner a b)) -> Term s a
+punsafeFrom x = PI.punsafeCoerce x

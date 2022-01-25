@@ -274,8 +274,7 @@ deriving via
 
 newtype PPOSIXTime (s :: S)
   = PPOSIXTime (Term s PInteger)
-  deriving (PIntegral) via (PInteger)
-  deriving (PlutusType, PIsData, PEq, POrd) via (DerivePNewtype PPOSIXTime PInteger)
+  deriving (PlutusType, PIsData, PEq, POrd, PIntegral) via (DerivePNewtype PPOSIXTime PInteger)
 
 instance PUnsafeLiftDecl PPOSIXTime where type PLifted PPOSIXTime = Plutus.POSIXTime
 deriving via
