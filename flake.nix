@@ -427,7 +427,13 @@
         let pkgs = nixpkgsFor system; in
         let pkgs' = nixpkgsFor' system; in
         (nixpkgsFor system).haskell-nix.cabalProject' ({
-          src = ./.;
+          # This is truly a horrible hack but is necessary. We can't disable tests otherwise in haskell.nix.
+          src = if ghcName == ghcVersion then ./. else
+          pkgs.runCommand "fake-src" { } ''
+            cp -rT ${./.} $out
+            chmod u+w $out $out/plutarch.cabal
+            sed -i '/-- Everything below this line is deleted for GHC 8.10/,$d' $out/plutarch.cabal
+          '';
           compiler-nix-name = ghcName;
           inherit extraSources;
           modules = [ (haskellModule system) ];
@@ -478,7 +484,9 @@
       inherit extraSources cabalProjectLocal haskellModule;
 
       project = perSystem projectFor;
+      project810 = perSystem projectFor810;
       flake = perSystem (system: (projectFor system).flake { });
+      flake810 = perSystem (system: (projectFor810 system).flake { });
 
       packages = perSystem (system: self.flake.${system}.packages);
       checks = perSystem (system:
