@@ -49,7 +49,7 @@ import Plutarch.DataRepr (
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (pconstant, plift)
 import Plutarch.List (PListLike (pcons, pnil))
-import Plutarch.Unsafe (punsafeBuiltin)
+import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 
 import qualified PlutusCore as PLC
 import qualified PlutusTx
