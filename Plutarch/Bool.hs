@@ -16,7 +16,21 @@ module Plutarch.Bool (
   por',
 ) where
 
-import Plutarch (PlutusType (PInner, pcon', pmatch'), punsafeBuiltin)
+import Plutarch (
+  PDelayed,
+  PlutusType (PInner, pcon', pmatch'),
+  S,
+  Term,
+  pcon,
+  pdelay,
+  pforce,
+  phoistAcyclic,
+  plam,
+  pmatch,
+  punsafeBuiltin,
+  (#),
+  type (:-->),
+ )
 import Plutarch.Lift (
   DerivePConstantViaCoercible (DerivePConstantViaCoercible),
   PConstant,
@@ -24,7 +38,6 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
   pconstant,
  )
-import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinBool'

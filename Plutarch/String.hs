@@ -6,7 +6,12 @@ module Plutarch.String (PString, pfromText, pencodeUtf8, pdecodeUtf8) where
 import Data.String (IsString, fromString)
 import Data.Text (Text)
 import qualified Data.Text as Txt
-import Plutarch (punsafeBuiltin)
+import Plutarch (
+  Term,
+  punsafeBuiltin,
+  (#),
+  type (:-->),
+ )
 import Plutarch.Bool (PEq, (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Lift (
@@ -16,7 +21,6 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
   pconstant,
  )
-import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinString' values

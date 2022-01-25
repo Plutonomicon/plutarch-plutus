@@ -26,7 +26,29 @@ module Plutarch.Builtin (
 ) where
 
 import Data.Coerce (Coercible, coerce)
-import Plutarch (PlutusType (..), punsafeBuiltin, punsafeCoerce)
+import Plutarch (
+  DerivePNewtype (DerivePNewtype),
+  PInner,
+  PType,
+  PlutusType,
+  S,
+  Term,
+  pcon,
+  pcon',
+  pdelay,
+  pforce,
+  phoistAcyclic,
+  plam,
+  plet,
+  pmatch,
+  pmatch',
+  pto,
+  punsafeBuiltin,
+  punsafeCoerce,
+  (#),
+  (#$),
+  type (:-->),
+ )
 import Plutarch.Bool (PBool (..), PEq, pif', (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
@@ -43,7 +65,6 @@ import Plutarch.Lift (
   pconstantToRepr,
  )
 import Plutarch.List (PListLike (..), plistEquals)
-import Plutarch.Prelude
 import qualified PlutusCore as PLC
 import PlutusTx (Data)
 

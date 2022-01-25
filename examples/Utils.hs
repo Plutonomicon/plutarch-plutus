@@ -18,10 +18,8 @@ module Utils (
 import Control.Exception (SomeException, try)
 import Data.Text (Text)
 import Plutarch (ClosedTerm, compile, printScript)
-import Plutarch.Bool (PBool (PTrue))
 import Plutarch.Evaluate (evaluateBudgetedScript, evaluateScript)
 import Plutarch.Prelude
-import Plutarch.Unit (PUnit)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
 import qualified PlutusCore.Evaluation.Machine.ExMemory as ExMemory

@@ -42,12 +42,32 @@ module Plutarch.List (
 
 import Numeric.Natural (Natural)
 
-import Plutarch (PInner, PlutusType, pcon', pmatch')
+import Plutarch (
+  PDelayed,
+  PInner,
+  PType,
+  PlutusType,
+  S,
+  Term,
+  pcon,
+  pcon',
+  pdelay,
+  perror,
+  pfix,
+  pforce,
+  phoistAcyclic,
+  plam,
+  plet,
+  pmatch,
+  pmatch',
+  (#),
+  (#$),
+  type (:-->),
+ )
 import Plutarch.Bool (PBool (PFalse, PTrue), PEq, pif, (#&&), (#==), (#||))
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (pconstant)
 import Plutarch.Pair (PPair (PPair))
-import Plutarch.Prelude
 
 import Data.Kind
 

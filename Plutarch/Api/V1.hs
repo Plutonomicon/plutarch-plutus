@@ -60,26 +60,15 @@ module Plutarch.Api.V1 (
 
 --------------------------------------------------------------------------------
 
-import Plutarch (PMatch, PlutusType)
-import Plutarch.Bool (PBool)
-import Plutarch.Builtin (PAsData, PBuiltinList, PData, PIsData, type PBuiltinMap)
-import Plutarch.ByteString (PByteString)
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
-  PDataRecord,
-  PDataSum,
-  PIsDataRepr,
   PIsDataReprInstances (PIsDataReprInstances),
   PLabeledType ((:=)),
  )
-import Plutarch.Integer (PInteger, PIntegral)
 import Plutarch.Lift (
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
-  PConstant,
   PConstantRepr,
   PConstanted,
-  PLift,
   PLifted,
   PUnsafeLiftDecl,
   pconstantFromRepr,
@@ -89,9 +78,9 @@ import Plutarch.Lift (
 -- ctor in-scope for deriving
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic)
-import Plutarch.Prelude
+import Plutarch.Prelude hiding (PEither (..), PMaybe (..))
 import qualified Plutus.V1.Ledger.Api as Plutus
-import qualified Plutus.V1.Ledger.Crypto as PlutusCrpyto
+import qualified Plutus.V1.Ledger.Crypto as PlutusCrypto
 import qualified PlutusTx.AssocMap as PlutusMap
 import qualified PlutusTx.Builtins.Internal as PT
 
@@ -256,20 +245,20 @@ deriving via
 newtype PPubKey (s :: S) = PPubKey (Term s PByteString)
   deriving (PlutusType, PIsData) via (DerivePNewtype PPubKey PByteString)
 
-instance PUnsafeLiftDecl PPubKey where type PLifted PPubKey = PlutusCrpyto.PubKey
+instance PUnsafeLiftDecl PPubKey where type PLifted PPubKey = PlutusCrypto.PubKey
 deriving via
-  (DerivePConstantViaNewtype PlutusCrpyto.PubKey PPubKey PByteString)
+  (DerivePConstantViaNewtype PlutusCrypto.PubKey PPubKey PByteString)
   instance
-    (PConstant PlutusCrpyto.PubKey)
+    (PConstant PlutusCrypto.PubKey)
 
 newtype PSignature (s :: S) = PSignature (Term s PByteString)
   deriving (PlutusType, PIsData) via (DerivePNewtype PSignature PByteString)
 
-instance PUnsafeLiftDecl PSignature where type PLifted PSignature = PlutusCrpyto.Signature
+instance PUnsafeLiftDecl PSignature where type PLifted PSignature = PlutusCrypto.Signature
 deriving via
-  (DerivePConstantViaNewtype PlutusCrpyto.Signature PSignature PByteString)
+  (DerivePConstantViaNewtype PlutusCrypto.Signature PSignature PByteString)
   instance
-    (PConstant PlutusCrpyto.Signature)
+    (PConstant PlutusCrypto.Signature)
 
 ---------- Time
 

@@ -9,10 +9,21 @@ module Plutarch.Rational (
   pproperFraction,
 ) where
 
-import Plutarch.Prelude
-
 import Data.Ratio (denominator, numerator)
-import Plutarch (PlutusType (..), punsafeCoerce)
+import Plutarch (
+  PlutusType (..),
+  Term,
+  pcon,
+  pfix,
+  phoistAcyclic,
+  plam,
+  plet,
+  pmatch,
+  punsafeCoerce,
+  (#),
+  (#$),
+  type (:-->),
+ )
 import Plutarch.Bool (PEq (..), POrd (..), pif)
 import Plutarch.Builtin (
   PAsData,

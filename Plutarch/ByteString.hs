@@ -16,7 +16,12 @@ import qualified Data.ByteString as BS
 import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Stack (HasCallStack)
-import Plutarch (punsafeBuiltin)
+import Plutarch (
+  Term,
+  punsafeBuiltin,
+  (#),
+  type (:-->),
+ )
 import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (
@@ -26,7 +31,6 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
   pconstant,
  )
-import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinByteString'

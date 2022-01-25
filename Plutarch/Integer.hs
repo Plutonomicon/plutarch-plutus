@@ -3,7 +3,13 @@
 
 module Plutarch.Integer (PInteger, PIntegral (..)) where
 
-import Plutarch (punsafeBuiltin)
+import Plutarch (
+  Term,
+  plet,
+  punsafeBuiltin,
+  (#),
+  type (:-->),
+ )
 import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
 import Plutarch.Lift (
   DerivePConstantViaCoercible (DerivePConstantViaCoercible),
@@ -12,7 +18,6 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
   pconstant,
  )
-import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
 -- | Plutus BuiltinInteger

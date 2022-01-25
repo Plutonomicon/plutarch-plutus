@@ -21,6 +21,7 @@ module Plutarch.DataRepr.Internal (
   pasDataSum,
 ) where
 
+import Data.Kind (Type)
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy)
 import GHC.TypeLits (
@@ -33,7 +34,25 @@ import GHC.TypeLits (
   type (+),
  )
 import Generics.SOP (Code, Generic, I (I), NP (Nil, (:*)), SOP (SOP), to)
-import Plutarch (Dig, PMatch, TermCont, hashOpenTerm, punsafeCoerce, runTermCont)
+import Plutarch (
+  Dig,
+  PMatch,
+  PType,
+  S,
+  Term,
+  TermCont,
+  hashOpenTerm,
+  perror,
+  phoistAcyclic,
+  plam,
+  plet,
+  pmatch,
+  punsafeCoerce,
+  runTermCont,
+  (#),
+  (#$),
+  type (:-->),
+ )
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Builtin (
   PAsData,
@@ -53,7 +72,6 @@ import Plutarch.Integer (PInteger)
 import Plutarch.Internal (S (SI))
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (pdrop, ptryIndex)
-import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Api as Ledger
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is

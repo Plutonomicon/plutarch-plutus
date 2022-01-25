@@ -1,7 +1,14 @@
 module Plutarch.Either (PEither (..)) where
 
-import Plutarch (PlutusType (PInner, pcon', pmatch'))
-import Plutarch.Prelude
+import Plutarch (
+  PType,
+  PlutusType (PInner, pcon', pmatch'),
+  S,
+  Term,
+  plam,
+  (#),
+  type (:-->),
+ )
 
 data PEither (a :: PType) (b :: PType) (s :: S) = PLeft (Term s a) | PRight (Term s b)
 
