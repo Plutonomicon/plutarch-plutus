@@ -101,8 +101,6 @@ module Plutarch.Prelude (
   PBuiltinList (..),
   PIsData (pfromData, pdata),
   PAsData,
-  ppairDataBuiltin,
-  PBuiltinMap,
 
   -- * DataRepr and related functions
   PDataRecord,

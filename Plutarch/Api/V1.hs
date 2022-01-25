@@ -79,6 +79,7 @@ import Plutarch.Lift (
 -- ctor in-scope for deriving
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic)
+import Plutarch.Builtin (PBuiltinMap)
 import Plutarch.Prelude hiding (PEither (..), PMaybe (..))
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified Plutus.V1.Ledger.Crypto as PlutusCrypto
