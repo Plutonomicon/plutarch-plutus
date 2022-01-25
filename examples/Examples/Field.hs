@@ -3,12 +3,15 @@
 module Examples.Field (
   -- * Examples
   Triplet (..),
+  type SomeFields,
   mkTrip,
   tripA,
   tripB,
   tripC,
   tripTrip,
   tripSum,
+  tripYZ,
+  tripZY,
   by,
   dotPlus,
   tripSum',
@@ -17,6 +20,8 @@ module Examples.Field (
   dropFields',
   getY,
   rangeFields,
+  letSomeFields,
+  letSomeFields',
 
   -- * Testing
   tests,
@@ -34,6 +39,7 @@ import Plutarch.DataRepr (
   PIsDataReprInstances (PIsDataReprInstances),
   PLabeledType ((:=)),
   pfield,
+  pletAllFields,
   pletDropFields,
   pletFields,
   pletNFields,
@@ -41,10 +47,11 @@ import Plutarch.DataRepr (
   pmatchDataRepr,
  )
 import Plutarch.Integer (PInteger)
-import Plutarch.Lift (plift)
+import Plutarch.Lift (pconstant, plift)
 import Plutarch.List (PListLike (pcons, pnil))
 
 import qualified PlutusCore as PLC
+import qualified PlutusTx
 
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))
@@ -115,14 +122,14 @@ tripTrip :: Term s (Triplet (Triplet PInteger))
 tripTrip = mkTrip tripA tripB tripC
 
 {- |
-  We can bind all fields to a 'HRec' at once with 'pletFields'.
+  We can bind all fields to a 'HRec' at once with 'pletAllFields'.
 
   The fields in the 'HRec' can them be accessed with
   RecordDotSyntax.
 -}
 tripSum :: Term s ((Triplet PInteger) :--> PInteger)
 tripSum =
-  plam $ \x -> pletFields x $
+  plam $ \x -> pletAllFields x $
     \fs ->
       pfromData fs.x
         + pfromData fs.y
@@ -143,6 +150,26 @@ tripSum' =
         + pfromData fs.y
 
 {- |
+  'pletFields' can also be used to bind the relevant fields,
+  without knowing their range.
+-}
+tripYZ :: Term s ((Triplet PInteger) :--> PInteger)
+tripYZ =
+  plam $ \x -> pletFields @["y", "z"] x $
+    \fs ->
+      pfromData fs.y + pfromData fs.z
+
+{- |
+  The ordering of fields specified is irrelevant,
+  this is equivalent to 'tripYZ'.
+-}
+tripZY :: Term s ((Triplet PInteger) :--> PInteger)
+tripZY =
+  plam $ \x -> pletFields @["z", "y"] x $
+    \fs ->
+      pfromData fs.y + pfromData fs.z
+
+{- |
   When accessing only a single field, we can use
   'pfield', which can end up generating smaller code when used frequently
   in a script.
@@ -156,15 +183,15 @@ getY = pfield @"y"
 {- |
   Due to the instance @(PDataFields a) -> PDataFields (PAsData a)@,
 
-  we can conveniently chain 'pletFields' & 'pfield' within
+  we can conveniently chain 'pletAllFields' & 'pfield' within
   nested structures:
 -}
 dotPlus :: Term s PInteger
 dotPlus =
-  pletFields tripTrip $ \ts ->
-    pletFields (ts.x) $ \a ->
-      pletFields (ts.y) $ \b ->
-        pletFields (ts.z) $ \c ->
+  pletAllFields tripTrip $ \ts ->
+    pletAllFields (ts.x) $ \a ->
+      pletAllFields (ts.y) $ \b ->
+        pletAllFields (ts.z) $ \c ->
           (pfromData a.x * pfromData b.x)
             + (pfromData a.y * pfromData b.y)
             + (pfromData a.z * pfromData b.z)
@@ -185,6 +212,12 @@ type SomeFields =
    , "_9" ':= PInteger
    ]
 
+someFields :: Term s (PDataRecord SomeFields)
+someFields =
+  punsafeCoerce $
+    pconstant $
+      fmap (PlutusTx.toData @Integer) [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
 {- |
   We can also bind over a 'PDataRecord' directly.
 
@@ -198,6 +231,15 @@ nFields =
       + pfromData fs._1
 
 {- |
+  Or equivalently, with 'pletFields'
+-}
+nFieldsLet :: Term s (PDataRecord SomeFields :--> PInteger)
+nFieldsLet =
+  plam $ \r -> pletFields @["_0", "_1"] r $ \fs ->
+    pfromData fs._0
+      + pfromData fs._1
+
+{- |
   'pletDropFields' will bind fields, dropping the first N.
 -}
 dropFields :: Term s (PDataRecord SomeFields :--> PInteger)
@@ -206,10 +248,19 @@ dropFields =
     pfromData fs._8
       + pfromData fs._9
 
+{- |
+  Or equivalently, with 'pletFields'
+-}
+dropFieldsLet :: Term s (PDataRecord SomeFields :--> PInteger)
+dropFieldsLet =
+  plam $ \r -> pletFields @["_8", "_9"] r $ \fs ->
+    pfromData fs._8
+      + pfromData fs._9
+
 -- | Without using 'pletDropFields', the code generated is a little less efficient
 dropFields' :: Term s (PDataRecord SomeFields :--> PInteger)
 dropFields' =
-  plam $ \r -> pletFields r $ \fs ->
+  plam $ \r -> pletAllFields r $ \fs ->
     pfromData fs._8
       + pfromData fs._9
 
@@ -219,6 +270,36 @@ rangeFields =
   plam $ \r -> pletRangeFields @5 @6 r $ \fs ->
     pfromData fs._5
       + pfromData fs._6
+
+{- |
+  Or equivalently, with 'pletFields'
+-}
+rangeFieldsLet :: Term s (PDataRecord SomeFields :--> PInteger)
+rangeFieldsLet =
+  plam $ \r -> pletFields @["_5", "_6"] r $ \fs ->
+    pfromData fs._5
+      + pfromData fs._6
+
+{- |
+  'pletFields' makes it convenient to pick out
+  any amount of desired fields, efficiently.
+-}
+letSomeFields :: Term s (PDataRecord SomeFields :--> PInteger)
+letSomeFields =
+  plam $ \r -> pletFields @["_3", "_4", "_7"] r $ \fs ->
+    pfromData fs._3
+      + pfromData fs._4
+      + pfromData fs._7
+
+{- |
+  Ordering of fields is irrelevant
+-}
+letSomeFields' :: Term s (PDataRecord SomeFields :--> PInteger)
+letSomeFields' =
+  plam $ \r -> pletFields @["_7", "_3", "_4"] r $ \fs ->
+    pfromData fs._3
+      + pfromData fs._4
+      + pfromData fs._7
 
 ---------- Tests
 
@@ -230,14 +311,40 @@ tests =
         tripSum `equal'` tripSumComp
     , testCase "nFields compilation" $
         nFields `equal'` nFieldsComp
+    , testCase "nFieldsLet = nFields" $
+        nFieldsLet `equal` nFields
     , testCase "dropFields compilation" $
         dropFields `equal'` dropFieldsComp
+    , testCase "dropFieldsLet = dropFields" $
+        dropFieldsLet `equal` dropFields
     , testCase "dropFields' compilation" $
         dropFields' `equal'` dropFields'Comp
     , testCase "rangeFields compilation" $
         rangeFields `equal'` rangeFieldsComp
+    , testCase "rangeFieldsLet = rangeFields" $
+        rangeFieldsLet `equal` rangeFields
+    , testCase "letSomeFields compilation" $
+        letSomeFields `equal'` letSomeFieldsComp
+    , testCase "letSomeFields = letSomeFields'" $
+        letSomeFields `equal` letSomeFields'
+    , testCase "nFields someFields = 1" $
+        plift (nFields # someFields)
+          @?= 1
+    , testCase "dropFields someFields = 17" $
+        plift (dropFields # someFields)
+          @?= 17
+    , testCase "rangeFields someFields = 11" $
+        plift (rangeFields # someFields)
+          @?= 11
+    , testCase "letSomeFields someFields = 14" $
+        plift (letSomeFields # someFields)
+          @?= 14
     , testCase "getY compilation" $
         getY `equal'` getYComp
+    , testCase "tripYZ compilation" $
+        tripYZ `equal'` tripYZComp
+    , testCase "tripYZ = tripZY" $
+        tripZY `equal` tripYZ
     , testCase "tripSum # tripA = 1000" $
         plift (tripSum # tripA)
           @?= 1000
@@ -267,7 +374,13 @@ dropFields'Comp :: String
 dropFields'Comp = "(program 1.0.0 (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))) (force tailList i1)) (force tailList i1)) (force tailList i1)) (force tailList i1)) (force tailList i1)) (force tailList i1)) (force tailList i1)) (force tailList i1)))"
 
 rangeFieldsComp :: String
-rangeFieldsComp = "(program 1.0.0 (\\i0 -> (\\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))) ((\\i0 -> force tailList (force tailList (force tailList (force tailList (force tailList (force tailList i1)))))) i1)))"
+rangeFieldsComp = "(program 1.0.0 (\\i0 -> (\\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))) ((\\i0 -> force tailList (force tailList (force tailList (force tailList (force tailList i1))))) i1)))"
 
 getYComp :: String
 getYComp = "(program 1.0.0 (\\i0 -> force headList (force tailList ((\\i0 -> force (force sndPair) (unConstrData i1)) i1))))"
+
+tripYZComp :: String
+tripYZComp = "(program 1.0.0 (\\i0 -> (\\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))) (force tailList ((\\i0 -> force (force sndPair) (unConstrData i1)) i1))))"
+
+letSomeFieldsComp :: String
+letSomeFieldsComp = "(program 1.0.0 (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> addInteger (addInteger (unIData (force headList i4)) (unIData (force headList i3))) (unIData (force headList (force tailList i1)))) (force tailList i1)) (force tailList i1)) (force tailList i1)) ((\\i0 -> force tailList (force tailList (force tailList i1))) i1)))"

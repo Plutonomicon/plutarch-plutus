@@ -4,6 +4,7 @@
 module Plutarch.DataRepr.Field (
   -- * PDataField class & deriving utils
   PDataFields (..),
+  pletAllFields,
   pletFields,
   pletNFields,
   pletDropFields,
@@ -15,6 +16,7 @@ module Plutarch.DataRepr.Field (
   type TermsOf,
   type Take,
   type Drop,
+  type FieldsRange,
 
   -- * Re-exports
   HRec (..),
@@ -23,7 +25,12 @@ module Plutarch.DataRepr.Field (
 ) where
 
 import Data.Proxy (Proxy (Proxy))
-import GHC.TypeLits (KnownNat)
+import GHC.TypeLits (
+  KnownNat,
+  Nat,
+  Symbol,
+  type (+),
+ )
 
 import Plutarch.Builtin (
   PAsData,
@@ -49,6 +56,7 @@ import Plutarch.DataRepr.Internal.HList (
   Labeled (Labeled, unLabeled),
   hrecField,
   type Drop,
+  type FindMinMax,
   type IndexList,
   type Range,
   type SingleItem,
@@ -101,8 +109,15 @@ instance
 
 {- |
   Bind a HRec of named fields from a compatible type.
+
+  *NB:*
+  This will generate `plet` bindings for *all* fields.
+
+  For efficiency, prefer one of 'pletFields', 'pletNFields',
+  'pletRangeFields', 'pletDropFields' or 'pfield', depending on your
+  usage.
 -}
-pletFields ::
+pletAllFields ::
   forall a b as s.
   ( PDataFields a
   , as ~ (PFields a)
@@ -111,9 +126,34 @@ pletFields ::
   Term s a ->
   (HRec (TermsOf s as) -> Term s b) ->
   Term s b
-pletFields t =
+pletAllFields t =
   runTermCont $
     bindFields $ ptoFields t
+
+{- |
+  Bind a HRec of named fields containing (at least) all the specified
+  fields.
+  This will bind the hull of the subset of fields provided,
+
+  for example, suppose that:
+  @PFields x ~ '["x" ':= x, "y" ':= y, "z" ':= z, "w" ':= w]@,
+
+  then:
+  @pletFields @["y", "w"]@ will bind the fields @'["y", "z", "w"]@.
+-}
+pletFields ::
+  forall fs a b as s from to.
+  ( PDataFields a
+  , '(from, to) ~ (FieldsRange fs (PFields a))
+  , KnownNat from
+  , KnownNat to
+  , as ~ (Range from to (PFields a))
+  , BindFields as
+  ) =>
+  Term s a ->
+  (HRec (TermsOf s as) -> Term s b) ->
+  Term s b
+pletFields = pletRangeFields @from @to
 
 {- | Bind a HRec of the first N fields.
 
@@ -161,9 +201,9 @@ pletDropFields t =
   Usually more efficient than binding all fields.
 -}
 pletRangeFields ::
-  forall to from a b s as.
+  forall from to a b s as.
   ( PDataFields a
-  , as ~ (Range to from (PFields a))
+  , as ~ (Range from to (PFields a))
   , BindFields as
   , KnownNat to
   , KnownNat from
@@ -182,6 +222,21 @@ pletRangeFields t =
 type family TermsOf (s :: S) (as :: [PLabeledType]) :: [Type] where
   TermsOf _ '[] = '[]
   TermsOf s ((name ':= a) ': as) = (Labeled name (Term s (PAsData a))) ': TermsOf s as
+
+-- | Get the index of (either kind of) labeled term
+type LabelIndex :: Symbol -> [k] -> Nat
+type family LabelIndex (name :: Symbol) (as :: [k]) :: Nat where
+  LabelIndex name ((name ':= _) ': _) = 0
+  LabelIndex name ((Labeled name _) ': _) = 0
+  LabelIndex name (_ ': as) = (LabelIndex name as) + 1
+
+type AllIndices :: [Symbol] -> [k] -> [Nat]
+type family AllIndices (ns :: [Symbol]) (as :: [k]) :: [Nat] where
+  AllIndices '[] _ = '[]
+  AllIndices (n ': ns) as = (LabelIndex n as) ': (AllIndices ns as)
+
+type family FieldsRange (ns :: [Symbol]) (as :: [k]) :: (Nat, Nat) where
+  FieldsRange ns as = FindMinMax (AllIndices ns as)
 
 class BindFields (as :: [PLabeledType]) where
   -- |

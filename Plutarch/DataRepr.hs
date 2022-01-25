@@ -17,8 +17,9 @@ module Plutarch.DataRepr (
 
   -- * Fields
   F.PDataFields (ptoFields, type PFields),
-  F.pletFields,
+  F.pletAllFields,
   F.pletNFields,
+  F.pletFields,
   F.pletDropFields,
   F.pletRangeFields,
   F.pfield,
