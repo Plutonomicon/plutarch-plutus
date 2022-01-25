@@ -1,3 +1,5 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
+
 module Plutarch.Unsafe (
   PI.punsafeBuiltin,
   PI.punsafeCoerce,
