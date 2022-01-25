@@ -482,11 +482,14 @@
 
       packages = perSystem (system: self.flake.${system}.packages);
       checks = perSystem (system:
+        let ghc810 = ((projectFor system).flake { }).packages; # We don't run the tests, we just check that it builds.
+        in
         self.flake.${system}.checks
         // {
           formatCheck = formatCheckFor system;
           benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
-          ghc810 = ((projectFor system).flake { }).packages; # We don't run the tests, we just check that it builds.
+        } // {
+          "ghc810-plutarch:lib:plutarch" = ghc810."plutarch:lib:plutarch";
         }
       );
       check = perSystem (system:
