@@ -34,8 +34,7 @@ import Plutarch.List (PListLike (pcons, phead, pnil, ptail), pmap)
 import Plutarch.Pair (PPair (PPair))
 import PlutusTx.Ratio (Rational)
 
-data PRational s
-  = PRational (Term s PInteger) (Term s PInteger)
+data PRational s = PRational (Term s PInteger) (Term s PInteger)
 
 instance PUnsafeLiftDecl PRational where type PLifted PRational = Rational
 deriving via (DerivePConstantViaData Rational PRational) instance (PConstant Rational)
