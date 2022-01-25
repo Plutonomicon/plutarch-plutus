@@ -39,7 +39,8 @@ and converted to a Plutarch type.
 
 The Plutarch type is determined by `PConstanted h`. Its Plutus Core representation is given by `PConstantRepr h`.
 
-This typeclass is closely tied with 'PLift'.
+This typeclass is closely tied with 'PLift'. The `PUnsafeLiftDecl` constraint states that if we can build a PLC value
+out of a Haskell value, the reverse conversion must also be possible.
 -}
 class (PUnsafeLiftDecl (PConstanted h), PLC.DefaultUni `PLC.Includes` PConstantRepr h) => PConstant (h :: Type) where
   type PConstantRepr h :: Type
