@@ -54,8 +54,8 @@ module Plutarch.Api.V1 (
   PMap (..),
 
   -- ** Others
-  PMaybe (..),
-  PEither (..),
+  PMaybeData (..),
+  PEitherData (..),
 ) where
 
 --------------------------------------------------------------------------------
@@ -80,7 +80,7 @@ import Plutarch.Lift (
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic)
 import Plutarch.Builtin (PBuiltinMap)
-import Plutarch.Prelude hiding (PEither (..), PMaybe (..))
+import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified Plutus.V1.Ledger.Crypto as PlutusCrypto
 import qualified PlutusTx.AssocMap as PlutusMap
@@ -387,7 +387,7 @@ newtype PAddress (s :: S)
           s
           ( PDataRecord
               '[ "credential" ':= PCredential
-               , "stakingCredential" ':= (PMaybe PStakingCredential)
+               , "stakingCredential" ':= (PMaybeData PStakingCredential)
                ]
           )
       )
@@ -450,7 +450,7 @@ newtype PTxOut (s :: S)
           ( PDataRecord
               '[ "address" ':= PAddress
                , "value" ':= PValue
-               , "datumHash" ':= PMaybe PDatumHash
+               , "datumHash" ':= PMaybeData PDatumHash
                ]
           )
       )
@@ -526,22 +526,24 @@ instance
 
 ---------- Others
 
-data PMaybe a (s :: S)
-  = PNothing (Term s (PDataRecord '[]))
-  | PJust (Term s (PDataRecord '["_0" ':= a]))
+-- | Data encoded Maybe type. Used in various ledger api types.
+data PMaybeData a (s :: S)
+  = PDNothing (Term s (PDataRecord '[]))
+  | PDJust (Term s (PDataRecord '["_0" ':= a]))
   deriving stock (GHC.Generic)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData)
-    via PIsDataReprInstances (PMaybe a)
+    via PIsDataReprInstances (PMaybeData a)
 
-data PEither a b (s :: S)
-  = PLeft (Term s (PDataRecord '["_0" ':= a]))
-  | PRight (Term s (PDataRecord '["_0" ':= b]))
+-- | Data encoded Either type. Used in various ledger api types.
+data PEitherData a b (s :: S)
+  = PDLeft (Term s (PDataRecord '["_0" ':= a]))
+  | PDRight (Term s (PDataRecord '["_0" ':= b]))
   deriving stock (GHC.Generic)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
     (PMatch, PIsData)
-    via PIsDataReprInstances (PEither a b)
+    via PIsDataReprInstances (PEitherData a b)
