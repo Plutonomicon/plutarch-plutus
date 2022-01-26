@@ -12,7 +12,7 @@ data PEither (a :: PType) (b :: PType) (s :: S)
 
 instance PlutusType (PEither a b) where
   pcon' x = gpcon @(PEither a b) $ from x
-  pmatch' scott f = gpmatch @(PEither a b) scott (f . to)
+  pmatch' x f = gpmatch @(PEither a b) x (f . to)
 
 {-
 -- | Specialized

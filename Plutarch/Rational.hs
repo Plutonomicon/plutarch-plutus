@@ -10,9 +10,13 @@ module Plutarch.Rational (
 ) where
 
 import Data.Ratio (denominator, numerator)
+import qualified GHC.Generics as GHC
+import Generics.SOP
 import Plutarch (
   PlutusType (..),
   Term,
+  gpcon,
+  gpmatch,
   pcon,
   pfix,
   phoistAcyclic,
@@ -38,7 +42,10 @@ import Plutarch.List (PListLike (pcons, phead, pnil, ptail), pmap)
 import Plutarch.Pair (PPair (..))
 import Plutarch.Unsafe (punsafeCoerce)
 
-data PRational s = PRational (Term s PInteger) (Term s PInteger)
+data PRational s
+  = PRational (Term s PInteger) (Term s PInteger)
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
 
 instance PIsData PRational where
   pfromData x' = phoistAcyclic (plam $ \x -> pListToRat #$ pmap # pasInt #$ pasList # pforgetData x) # x'
@@ -58,9 +65,8 @@ pListToRat :: Term s (PBuiltinList PInteger :--> PRational)
 pListToRat = plam $ \x -> pcon $ PRational (phead # x) (phead #$ ptail # x)
 
 instance PlutusType PRational where
-  type PInner PRational c = (PInteger :--> PInteger :--> c) :--> c
-  pcon' (PRational x y) = plam $ \f -> f # x # y
-  pmatch' p f = p #$ plam $ \x y -> f (PRational x y)
+  pcon' x = gpcon @PRational $ from x
+  pmatch' x f = gpmatch @PRational x (f . to)
 
 instance PEq PRational where
   l' #== r' =
