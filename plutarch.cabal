@@ -92,12 +92,12 @@ library
     Plutarch.Evaluate
     Plutarch.Integer
     Plutarch.Internal
+    Plutarch.Internal.PLam
     Plutarch.Lift
     Plutarch.List
     Plutarch.Maybe
     Plutarch.Monadic
     Plutarch.Pair
-    Plutarch.PLam
     Plutarch.PlutusType
     Plutarch.Prelude
     Plutarch.Rational

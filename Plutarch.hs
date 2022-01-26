@@ -42,7 +42,7 @@ module Plutarch (
 import Data.Coerce (Coercible, coerce)
 import Plutarch.Internal (ClosedTerm, PType, Term, compile, phoistAcyclic, punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
-import Plutarch.PLam (pinl, plam, (#), (#$))
+import Plutarch.Internal.PLam (pinl, plam, (#), (#$))
 import Plutarch.PlutusType (PCon (pcon), PMatch (pmatch), PlutusType (PInner, pcon', pmatch'))
 import Plutus.V1.Ledger.Scripts (Script (Script))
 import PlutusCore.Pretty (prettyPlcReadableDebug)

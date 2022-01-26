@@ -31,7 +31,7 @@ import Plutarch.DataRepr.Internal.Generic (MkSum (mkSum))
 import Plutarch.DataRepr.Internal.HList (IndexList)
 import Plutarch.Internal (PType, S, Term, pforce, plam', punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
-import Plutarch.PLam ((#))
+import Plutarch.Internal.PLam ((#))
 
 {- |
 
