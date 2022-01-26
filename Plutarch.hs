@@ -40,9 +40,9 @@ module Plutarch (
 ) where
 
 import Data.Coerce (Coercible, coerce)
-import Plutarch.Internal (ClosedTerm, compile, punsafeCoerce)
+import Plutarch.Internal (ClosedTerm, PType, Term, compile, phoistAcyclic, punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
-import Plutarch.PLam
+import Plutarch.PLam (pinl, plam, (#), (#$))
 import Plutarch.PlutusType
 import Plutus.V1.Ledger.Scripts (Script (Script))
 import PlutusCore.Pretty (prettyPlcReadableDebug)

@@ -11,7 +11,7 @@ module Plutarch.Rational (
 
 import Data.Ratio (denominator, numerator)
 import qualified GHC.Generics as GHC
-import Generics.SOP
+import Generics.SOP (Generic, I (I))
 import Plutarch (
   PlutusType (..),
   Term,
@@ -43,8 +43,7 @@ import Plutarch.Unsafe (punsafeCoerce)
 data PRational s
   = PRational (Term s PInteger) (Term s PInteger)
   deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PlutusType)
+  deriving anyclass (Generic, PlutusType)
 
 instance PIsData PRational where
   pfromData x' = phoistAcyclic (plam $ \x -> pListToRat #$ pmap # pasInt #$ pasList # pforgetData x) # x'

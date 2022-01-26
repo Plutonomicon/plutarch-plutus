@@ -73,18 +73,18 @@ class (PCon a, PMatch a) => PlutusType (a :: PType) where
     ( code ~ Code (a s)
     , pcode ~ ToPType2 code
     , Generic (a s)
+    , GPCon pcode b s
+    , PLamL (ScottList' s pcode b) b s
     , ScottFn' (ScottList s pcode b) b ~ PInner a b
     , ScottFn (ScottList' s pcode b) b ~ PInner a b
     , AllZipF (AllZip (LiftedCoercible I (Term s))) code pcode
     , SameShapeAs code pcode
     , SameShapeAs pcode code
-    , GPCon pcode b s
-    , PLamL (ScottList' s pcode b) b s
     , All Top pcode
     ) =>
     a s ->
     Term s (PInner a b)
-  pcon' x = gpcon @a @s @b $ from x
+  pcon' x = gpcon @a @b $ from x
 
   pmatch' :: forall s b. (Term s (PInner a b)) -> (a s -> Term s b) -> Term s b
   default pmatch' ::
@@ -93,13 +93,13 @@ class (PCon a, PMatch a) => PlutusType (a :: PType) where
     , pcode ~ ToPType2 code
     , Generic (a s)
     , AppL b (ScottList' s pcode b)
-    , MkMatchList a 0 code b s
+    , GPMatch a 0 code b s
     , PInner a b ~ ScottFn (ScottList' s pcode b) b
     ) =>
     (Term s (PInner a b)) ->
     (a s -> Term s b) ->
     Term s b
-  pmatch' x f = gpmatch @a @s @b x (f . to)
+  pmatch' x f = gpmatch @a x (f . to)
 
 instance {-# OVERLAPPABLE #-} PlutusType a => PMatch a where
   pmatch x f = pmatch' (punsafeCoerce x) f
@@ -115,50 +115,9 @@ class PMatch a where
   -- | Pattern match over Plutarch Terms via a Haskell datatype
   pmatch :: Term s a -> (a s -> Term s b) -> Term s b
 
-{- |
-  Generic version of `pmatch'`
--}
-gpmatch ::
-  forall a s c code pcode.
-  ( Generic (a s)
-  , code ~ Code (a s)
-  , pcode ~ ToPType2 code
-  , AppL c (ScottList' s pcode c)
-  , MkMatchList a 0 code c s
-  ) =>
-  Term s (ScottFn (ScottList' s pcode c) c) ->
-  (SOP I (Code (a s)) -> Term s c) ->
-  Term s c
-gpmatch scott f =
-  scott `appL` mkMatchList @a @0 @code @c @s f
-
-class MkMatchList (a :: PType) (n :: Nat) (xss :: [[Type]]) (c :: PType) (s :: S) where
-  mkMatchList :: (SOP I (Code (a s)) -> Term s c) -> NP (Term s) (ScottList' s (ToPType2 xss) c)
-
-instance MkMatchList a n '[] c s where
-  mkMatchList _ = Nil
-
-instance
-  ( code ~ Code (a s)
-  , xs ~ IndexList n code
-  , MkMatchList a (n + 1) xss c s
-  , PLamL (ToPType xs) c s
-  , MkSum n (Code (a s))
-  , AllZipF (LiftedCoercible (Term s) I) (ToPType xs) xs
-  , SameShapeAs xs (ToPType xs)
-  , SameShapeAs (ToPType xs) xs
-  , All Top (ToPType xs)
-  , All Top xs
-  ) =>
-  MkMatchList a n (xs : xss) c s
-  where
-  mkMatchList f =
-    plamL @(ToPType xs) @c (\xargs -> f $ SOP $ mkSum @n @(Code (a s)) $ unPsop xargs)
-      :* mkMatchList @a @(n + 1) @xss @c @s f
-
 -- | Generic version of `pcon'`
 gpcon ::
-  forall a s c code pcode.
+  forall a c s code pcode.
   ( PlutusType a
   , Generic (a s)
   , code ~ Code (a s)
@@ -174,20 +133,9 @@ gpcon val =
   plamL @(ScottList' s pcode c) @c $ \(f :: NP (Term s) (ScottList' s pcode c)) ->
     gpcon' @pcode @c @s f $
       unSOP $ pSop val
-
-pSop :: AllZipN (Prod SOP) (LiftedCoercible I (Term s)) xss (ToPType2 xss) => SOP I xss -> SOP (Term s) (ToPType2 xss)
-pSop = hcoerce
-
-unPsop ::
-  ( AllZipF (LiftedCoercible (Term s) I) (ToPType xs) xs
-  , SameShapeAs xs (ToPType xs)
-  , SameShapeAs (ToPType xs) xs
-  , All Top (ToPType xs)
-  , All Top xs
-  ) =>
-  NP (Term s) (ToPType xs) ->
-  NP I xs
-unPsop = hcoerce
+  where
+    pSop :: AllZipN (Prod SOP) (LiftedCoercible I (Term s)) xss (ToPType2 xss) => SOP I xss -> SOP (Term s) (ToPType2 xss)
+    pSop = hcoerce
 
 {- |
   `gpcon'`, given an *partial* scott encoding (as a `PLamL`) and a sum choice, applies
@@ -209,14 +157,68 @@ instance (GPCon xs c s, AppL c x) => GPCon (x ': xs) c s where
     S xs -> gpcon' fs xs
 
 {- |
+  Generic version of `pmatch'`
+-}
+gpmatch ::
+  forall a s c code pcode.
+  ( Generic (a s)
+  , code ~ Code (a s)
+  , pcode ~ ToPType2 code
+  , AppL c (ScottList' s pcode c)
+  , GPMatch a 0 code c s
+  ) =>
+  Term s (ScottFn (ScottList' s pcode c) c) ->
+  (SOP I (Code (a s)) -> Term s c) ->
+  Term s c
+gpmatch x f =
+  x `appL` gpmatch' @a @0 @code @c @s f
+
+{- |
+  `gpmatch'` returns a hlist of lambdas (or delayed terms) to be applied on the
+  scott encoding function.
+-}
+class GPMatch (a :: PType) (n :: Nat) (xss :: [[Type]]) (c :: PType) (s :: S) where
+  gpmatch' :: (SOP I (Code (a s)) -> Term s c) -> NP (Term s) (ScottList' s (ToPType2 xss) c)
+
+instance GPMatch a n '[] c s where
+  gpmatch' _ = Nil
+
+instance
+  ( code ~ Code (a s)
+  , xs ~ IndexList n code
+  , GPMatch a (n + 1) xss c s
+  , PLamL (ToPType xs) c s
+  , MkSum n (Code (a s))
+  , AllZipF (LiftedCoercible (Term s) I) (ToPType xs) xs
+  , SameShapeAs xs (ToPType xs)
+  , SameShapeAs (ToPType xs) xs
+  , All Top (ToPType xs)
+  , All Top xs
+  ) =>
+  GPMatch a n (xs : xss) c s
+  where
+  gpmatch' f =
+    plamL @(ToPType xs) @c (\xargs -> f $ SOP $ mkSum @n @(Code (a s)) $ unPsop xargs)
+      :* gpmatch' @a @(n + 1) @xss @c @s f
+    where
+      unPsop ::
+        ( AllZipF (LiftedCoercible (Term s) I) (ToPType xs) xs
+        , SameShapeAs xs (ToPType xs)
+        , SameShapeAs (ToPType xs) xs
+        , All Top (ToPType xs)
+        , All Top xs
+        ) =>
+        NP (Term s) (ToPType xs) ->
+        NP I xs
+      unPsop = hcoerce
+
+{- |
   `appL` is like `appL'`, but pforce's the 0-arity case.
 
   ```
   f = plamL $ \Nil -> pdelay $ pcon 42
   g = f `appL` Ni
   ```
-
-  TODO: Write a test to test laziness case: https://github.com/Plutonomicon/plutarch/issues/193
 -}
 class AppL (c :: PType) (xs :: [PType]) where
   appL :: Term s (ScottFn xs c) -> NP (Term s) xs -> Term s c
@@ -261,7 +263,7 @@ instance PLamL' as b s => PLamL (a ': as) b s where
   plamL f = plam' $ \a -> plamL' $ \as -> f (a :* as)
 
 {- |
-  `plamL` is like `plam`, but takes a HList of Plutarch terms as arguments.
+  `plamL'` produces a plam, but taking a HList of Plutarch terms as arguments.
 
   ```
   plamL $ \(x :* y :* Nil) ->
@@ -314,7 +316,7 @@ type family ScottFn' xs b where
   ScottFn' '[] b = b
   ScottFn' (x ': xs) b = x :--> ScottFn' xs b
 
--- Unfortunately we can't write a generic FMap due to ghc's arity limitations.
+-- | Convert a list of `Term s a` to a list of `a`.
 type ToPType :: [Type] -> [PType]
 type family ToPType as where
   ToPType '[] = '[]

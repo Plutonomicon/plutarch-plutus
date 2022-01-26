@@ -2,17 +2,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.PLam (
-  (PI.:-->),
-  PI.perror,
-  PI.pforce,
-  PI.phoistAcyclic,
-  PI.plam',
   plam,
-  PI.plet,
-  PI.Term,
-  PI.TermCont (..),
-  PI.S,
-  PI.PType,
   (#$),
   (#),
   pinl,
@@ -20,7 +10,6 @@ module Plutarch.PLam (
 
 import Data.Kind (Type)
 import Plutarch.Internal (PType, S, Term, papp, plam', (:-->))
-import qualified Plutarch.Internal as PI
 
 {- |
   High precedence infixl synonym of 'papp', to be used like

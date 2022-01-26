@@ -43,7 +43,7 @@ module Plutarch.List (
 import Numeric.Natural (Natural)
 
 import qualified GHC.Generics as GHC
-import Generics.SOP
+import Generics.SOP (Generic, I (I))
 import Plutarch (
   PDelayed,
   PType,
@@ -73,8 +73,7 @@ data PList (a :: PType) (s :: S)
   = PSCons (Term s a) (Term s (PList a))
   | PSNil
   deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PlutusType)
+  deriving anyclass (Generic, PlutusType)
 
 instance PEq a => PEq (PList a) where
   (#==) xs ys = plistEquals # xs # ys
