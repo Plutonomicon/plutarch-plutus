@@ -128,6 +128,8 @@ library
   if flag(development)
     cpp-options: -DDevelopment
 
+-- Everything below this line is deleted for GHC 8.10
+
 test-suite examples
   import:             c
   type:               exitcode-stdio-1.0

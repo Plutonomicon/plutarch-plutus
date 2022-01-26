@@ -423,14 +423,18 @@
           , word-array ^>= 0.1.0.0
       '';
 
-      projectFor = system:
+      projectForGhc = ghcName: system:
         let pkgs = nixpkgsFor system; in
         let pkgs' = nixpkgsFor' system; in
-        (nixpkgsFor system).haskell-nix.cabalProject' {
-          src = ./.;
-          compiler-nix-name = ghcVersion;
-          cabalProjectFileName = "cabal.project";
-          inherit cabalProjectLocal;
+        (nixpkgsFor system).haskell-nix.cabalProject' ({
+          # This is truly a horrible hack but is necessary. We can't disable tests otherwise in haskell.nix.
+          src = if ghcName == ghcVersion then ./. else
+          pkgs.runCommand "fake-src" { } ''
+            cp -rT ${./.} $out
+            chmod u+w $out $out/plutarch.cabal
+            sed -i '/-- Everything below this line is deleted for GHC 8.10/,$d' $out/plutarch.cabal
+          '';
+          compiler-nix-name = ghcName;
           inherit extraSources;
           modules = [ (haskellModule system) ];
           shell = {
@@ -450,7 +454,12 @@
               #ps.shrinker-testing
             ];
           };
-        };
+        } // (if ghcName == ghcVersion then {
+          inherit cabalProjectLocal;
+        } else { }));
+
+      projectFor = projectForGhc ghcVersion;
+      projectFor810 = projectForGhc "ghc8107";
 
       formatCheckFor = system:
         let
@@ -475,14 +484,20 @@
       inherit extraSources cabalProjectLocal haskellModule;
 
       project = perSystem projectFor;
+      project810 = perSystem projectFor810;
       flake = perSystem (system: (projectFor system).flake { });
+      flake810 = perSystem (system: (projectFor810 system).flake { });
 
       packages = perSystem (system: self.flake.${system}.packages);
       checks = perSystem (system:
+        let ghc810 = ((projectFor810 system).flake { }).packages; # We don't run the tests, we just check that it builds.
+        in
         self.flake.${system}.checks
         // {
           formatCheck = formatCheckFor system;
           benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
+        } // {
+          "ghc810-plutarch:lib:plutarch" = ghc810."plutarch:lib:plutarch";
         }
       );
       check = perSystem (system:
