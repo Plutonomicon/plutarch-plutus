@@ -145,6 +145,7 @@ test-suite examples
     Examples.LetRec
     Examples.List
     Examples.PIsData
+    Examples.SeaBug
     Examples.PlutusType
     Examples.Rationals
     Examples.Recursion
