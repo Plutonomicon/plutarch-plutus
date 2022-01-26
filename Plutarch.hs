@@ -37,8 +37,6 @@ module Plutarch (
   popaque,
   plam,
   DerivePNewtype (DerivePNewtype),
-  gpcon,
-  gpmatch,
 ) where
 
 import Data.Coerce (Coercible, coerce)

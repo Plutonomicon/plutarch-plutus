@@ -56,9 +56,9 @@ type ScottEncoding r t = ScottEncoded r t :--> t
 
 instance (Rank2.Distributive r, Rank2.Traversable r) => PlutusType (PRecord r) where
   type PInner (PRecord r) t = ScottEncoding r t
-  pcon' :: forall s. PRecord r s -> forall t. Term s (ScottEncoding r t)
+  pcon' :: forall s t. PRecord r s -> Term s (ScottEncoding r t)
   pcon' (PRecord r) = rcon r
-  pmatch' :: forall s t. (forall t. Term s (ScottEncoding r t)) -> (PRecord r s -> Term s t) -> Term s t
+  pmatch' :: forall s t. (Term s (ScottEncoding r t)) -> (PRecord r s -> Term s t) -> Term s t
   pmatch' p f = rmatch p (f . PRecord)
 
 -- | Convert a Haskell record value to a Scott-encoded record.
@@ -71,7 +71,7 @@ rcon r = plam (\f -> punsafeCoerce $ appEndo (getDual $ Rank2.foldMap (Dual . En
 rmatch ::
   forall r s t.
   (Rank2.Distributive r, Rank2.Traversable r) =>
-  (forall t. Term s (ScottEncoding r t)) ->
+  (Term s (ScottEncoding r t)) ->
   (r (Term s) -> Term s t) ->
   Term s t
 rmatch p f = p # arg

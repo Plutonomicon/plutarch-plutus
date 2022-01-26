@@ -8,8 +8,6 @@ module Plutarch.PlutusType (
   PlutusType (..),
   PCon (..),
   PMatch (..),
-  gpcon,
-  gpmatch,
 ) where
 
 import Data.Kind (Type)
@@ -56,9 +54,39 @@ class (PCon a, PMatch a) => PlutusType (a :: PType) where
   -- due to not being able to expand the type family.
   type PInner a (b' :: PType) :: PType
   type PInner a (b' :: PType) = ScottFn (ScottList 'PI.SI (ToPType2 (Code (a 'PI.SI))) b') b'
-  pcon' :: forall s. a s -> forall b. Term s (PInner a b)
+  pcon' :: forall s b. a s -> Term s (PInner a b)
+  default pcon' ::
+    forall s b code pcode.
+    ( code ~ Code (a s)
+    , pcode ~ ToPType2 code
+    , Generic (a s)
+    , ScottFn' (ScottList s pcode b) b ~ PInner a b
+    , ScottFn (ScottList' s pcode b) b ~ PInner a b
+    , AllZipF (AllZip (LiftedCoercible I (Term s))) code pcode
+    , SameShapeAs code pcode
+    , SameShapeAs pcode code
+    , GPCon pcode b s
+    , PLamL (ScottList' s pcode b) b s
+    , All Top pcode
+    ) =>
+    a s ->
+    Term s (PInner a b)
+  pcon' x = gpcon @a @s @b $ from x
 
-  pmatch' :: forall s c. (forall b. Term s (PInner a b)) -> (a s -> Term s c) -> Term s c
+  pmatch' :: forall s b. (Term s (PInner a b)) -> (a s -> Term s b) -> Term s b
+  default pmatch' ::
+    forall s b code pcode.
+    ( code ~ Code (a s)
+    , pcode ~ ToPType2 code
+    , Generic (a s)
+    , AppL b (ScottList' s pcode b)
+    , MkMatchList a 0 code b s
+    , PInner a b ~ ScottFn (ScottList' s pcode b) b
+    ) =>
+    (Term s (PInner a b)) ->
+    (a s -> Term s b) ->
+    Term s b
+  pmatch' x f = gpmatch @a @s @b x (f . to)
 
 instance {-# OVERLAPPABLE #-} PlutusType a => PMatch a where
   pmatch x f = pmatch' (punsafeCoerce x) f

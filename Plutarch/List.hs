@@ -50,10 +50,7 @@ import Plutarch (
   PlutusType,
   S,
   Term,
-  gpcon,
-  gpmatch,
   pcon,
-  pcon',
   pdelay,
   perror,
   pfix,
@@ -61,7 +58,6 @@ import Plutarch (
   plam,
   plet,
   pmatch,
-  pmatch',
   (#),
   (#$),
   type (:-->),
@@ -78,10 +74,7 @@ data PList (a :: PType) (s :: S)
   | PSNil
   deriving stock (GHC.Generic)
   deriving anyclass (Generic)
-
-instance PlutusType (PList a) where
-  pcon' x = gpcon @(PList a) $ from x
-  pmatch' x f = gpmatch @(PList a) x (f . to)
+  deriving anyclass (PlutusType)
 
 {-
 type PInner (PList a) c = (a :--> PList a :--> c) :--> PDelayed c :--> c

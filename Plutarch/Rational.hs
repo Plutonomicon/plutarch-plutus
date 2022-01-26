@@ -15,8 +15,6 @@ import Generics.SOP
 import Plutarch (
   PlutusType (..),
   Term,
-  gpcon,
-  gpmatch,
   pcon,
   pfix,
   phoistAcyclic,
@@ -46,6 +44,7 @@ data PRational s
   = PRational (Term s PInteger) (Term s PInteger)
   deriving stock (GHC.Generic)
   deriving anyclass (Generic)
+  deriving anyclass (PlutusType)
 
 instance PIsData PRational where
   pfromData x' = phoistAcyclic (plam $ \x -> pListToRat #$ pmap # pasInt #$ pasList # pforgetData x) # x'
@@ -63,10 +62,6 @@ pRatToList = plam $ \x -> pmatch x $ \(PRational a b) ->
 
 pListToRat :: Term s (PBuiltinList PInteger :--> PRational)
 pListToRat = plam $ \x -> pcon $ PRational (phead # x) (phead #$ ptail # x)
-
-instance PlutusType PRational where
-  pcon' x = gpcon @PRational $ from x
-  pmatch' x f = gpmatch @PRational x (f . to)
 
 instance PEq PRational where
   l' #== r' =
