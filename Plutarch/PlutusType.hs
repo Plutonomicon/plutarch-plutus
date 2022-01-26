@@ -1,7 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE DefaultSignatures #-}
-{-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.PlutusType (
@@ -11,10 +9,25 @@ module Plutarch.PlutusType (
 ) where
 
 import Data.Kind (Type)
-import Data.SOP.Constraint
-import GHC.TypeLits
-import Generics.SOP
-import Plutarch.DataRepr.Internal.Generic
+import Data.SOP.Constraint (AllZipF)
+import GHC.TypeLits (ErrorMessage (Text), Nat, TypeError, type (+))
+import Generics.SOP (
+  All,
+  AllZip,
+  AllZipN,
+  Generic (..),
+  I,
+  LiftedCoercible,
+  NP (..),
+  NS (..),
+  Prod,
+  SOP (SOP),
+  SameShapeAs,
+  Top,
+  hcoerce,
+  unSOP,
+ )
+import Plutarch.DataRepr.Internal.Generic (MkSum (mkSum))
 import Plutarch.DataRepr.Internal.HList (IndexList)
 import Plutarch.Internal (PType, S, Term, pforce, plam', punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
@@ -175,18 +188,25 @@ unPsop ::
   NP (Term s) (ToPType xs) ->
   NP I xs
 unPsop = hcoerce
+
+{- |
+  `gpcon'`, given an *partial* scott encoding (as a `PLamL`) and a sum choice, applies
+  that encoding to the sum choice.
+
+  The partial encoding is the tail of full scott encoded function, such that its
+  head corresponds to the sum choice.
+-}
 class GPCon (xss :: [[PType]]) (c :: PType) (s :: S) where
   gpcon' :: NP (Term s) (ScottList' s xss c) -> NS (NP (Term s)) xss -> Term s c
 
-instance {-# OVERLAPPABLE #-} (AppL c x) => GPCon (x ': '[]) c s where
-  gpcon' (f :* Nil) = \case
-    Z x -> appL f x
-    S _sum' -> undefined -- This sucks, can we avoid it at type-level?
+instance GPCon '[] c s where
+  gpcon' Nil = \case {}
 
-instance {-# OVERLAPPING #-} (GPCon (x1 ': xs) c s, AppL c x) => GPCon (x ': x1 ': xs) c s where
+-- | The case for the last sum choice.
+instance (GPCon xs c s, AppL c x) => GPCon (x ': xs) c s where
   gpcon' (f :* fs) = \case
-    Z x -> appL f x
-    S sum' -> gpcon' fs sum'
+    Z x -> f `appL` x
+    S xs -> gpcon' fs xs
 
 {- |
   `appL` is like `appL'`, but pforce's the 0-arity case.
@@ -261,22 +281,6 @@ instance PLamL' as b s => PLamL' (a ': as) b s where
   plamL' f = plam' $ \a -> plamL' $ \as -> f (a :* as)
 
 {- |
-  An individual constructor function of a Scott encoding.
-
-   ScottFn '[a, b] c = (a :--> b :--> c)
-   ScottFn '[] c = PDelayed c
--}
-type ScottFn :: [PType] -> PType -> PType
-type family ScottFn xs b where
-  ScottFn '[] b = PI.PDelayed b
-  ScottFn (x ': xs) b = x :--> ScottFn' xs b
-
-type ScottFn' :: [PType] -> PType -> PType
-type family ScottFn' xs b where
-  ScottFn' '[] b = b
-  ScottFn' (x ': xs) b = x :--> ScottFn' xs b
-
-{- |
   List of scott-encoded constructors of a Plutarch type (represented by `Code`)
 
   ScottList s (Code (PEither a b s)) c = '[a :--> c, b :--> c]
@@ -292,10 +296,21 @@ type family ScottList' s code c where
   ScottList' _ '[] c = '[]
   ScottList' s (xs ': xss) c = ScottFn xs c ': ScottList' s xss c
 
--- TODO: clean these up
-type UnTerm :: Type -> PType
-type family UnTerm x where
-  UnTerm (Term s a) = a
+{- |
+  An individual constructor function of a Scott encoding.
+
+   ScottFn '[a, b] c = (a :--> b :--> c)
+   ScottFn '[] c = PDelayed c
+-}
+type ScottFn :: [PType] -> PType -> PType
+type family ScottFn xs b where
+  ScottFn '[] b = PI.PDelayed b
+  ScottFn (x ': xs) b = x :--> ScottFn' xs b
+
+type ScottFn' :: [PType] -> PType -> PType
+type family ScottFn' xs b where
+  ScottFn' '[] b = b
+  ScottFn' (x ': xs) b = x :--> ScottFn' xs b
 
 -- Unfortunately we can't write a generic FMap due to ghc's arity limitations.
 type ToPType :: [Type] -> [PType]
@@ -307,3 +322,7 @@ type ToPType2 :: [[Type]] -> [[PType]]
 type family ToPType2 as where
   ToPType2 '[] = '[]
   ToPType2 (a ': as) = ToPType a ': ToPType2 as
+
+type UnTerm :: Type -> PType
+type family UnTerm x where
+  UnTerm (Term s a) = a

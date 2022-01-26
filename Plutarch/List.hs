@@ -76,16 +76,6 @@ data PList (a :: PType) (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PlutusType)
 
-{-
-type PInner (PList a) c = (a :--> PList a :--> c) :--> PDelayed c :--> c
-
-pcon' :: forall s. PList a s -> forall b. Term s (PInner (PList a) b)
-pcon' (PSCons x xs) = plam $ \match_cons (_ :: Term _ _) -> match_cons # x # xs
-pcon' PSNil = plam $ \_match_cons match_nil -> pforce match_nil
-pmatch' xs f =
-  xs # plam (\x xs -> f (PSCons x xs)) # pdelay (f PSNil)
--}
-
 instance PEq a => PEq (PList a) where
   (#==) xs ys = plistEquals # xs # ys
 
