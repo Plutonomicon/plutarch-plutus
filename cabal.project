@@ -1,5 +1,6 @@
 packages:
   ./.
   ./plutarch-benchmark/plutarch-benchmark.cabal
+  ./plutarch-ffi-tests/plutarch-ffi-tests.cabal
 
 benchmarks: true

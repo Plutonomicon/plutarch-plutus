@@ -1,6 +1,7 @@
 {
   description = "plutarch";
 
+  # inputs.haskell-nix.url = "github:input-output-hk/haskell.nix?rev=4aeeba8d713d0b98c92c8c717df24da17d463c1d";
   inputs.haskell-nix.url = "github:L-as/haskell.nix?ref=master";
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
   inputs.flake-compat-ci.url = "github:hercules-ci/flake-compat-ci";
@@ -11,6 +12,7 @@
   };
 
   # https://github.com/input-output-hk/plutus/pull/4328
+  # inputs.plutus.url = "github:input-output-hk/plutus?rev=6d8d25d1e84b2a4278da1036aab23da4161b8df8";
   inputs.plutus.url = "github:L-as/plutus?ref=master";
   # https://github.com/input-output-hk/cardano-prelude/pull/162
   inputs.cardano-prelude.url = "github:locallycompact/cardano-prelude?rev=93f95047bb36a055bdd56fb0cafd887c072cdce2";
@@ -105,7 +107,9 @@
             "plutus-core"
             "plutus-ledger-api"
             "plutus-tx"
+            "plutus-tx-plugin"
             "prettyprinter-configurable"
+            "stubs/plutus-ghc-stub"
             "word-array"
           ];
         }
@@ -220,6 +224,10 @@
           plutus-core.components.library.postUnpack = "\n";
           plutus-tx.src = "${inputs.plutus}/plutus-tx";
           plutus-tx.components.library.postUnpack = "\n";
+          plutus-tx-plugin.src = "${inputs.plutus}/plutus-tx-plugin";
+          plutus-tx-plugin.components.library.postUnpack = "\n";
+          plutus-ghc-stub.src = "${inputs.plutus}/stubs/plutus-ghc-stub";
+          plutus-ghc-stub.components.library.postUnpack = "\n";
           plutus-ledger-api.src = "${inputs.plutus}/plutus-ledger-api";
           plutus-ledger-api.components.library.postUnpack = "\n";
           #prettyprinter-configurable.src = "${inputs.plutus}/prettyprinter-configurable";
@@ -356,8 +364,10 @@
           , parallel ^>= 3.2.2.0
           , parser-combinators ^>= 1.3.0
           , plutus-core ^>= 0.1.0.0
+          , plutus-ghc-stub ^>= 8.6
           , plutus-ledger-api ^>= 0.1.0.0
           , plutus-tx ^>= 0.1.0.0
+          , plutus-tx-plugin ^>= 0.1.0.0
           , pretty-show ^>= 1.10
           , prettyprinter ^>= 1.7.1
           , prettyprinter-configurable ^>= 0.1.0.0
@@ -520,6 +530,12 @@
           benchmark-diff = {
             type = "app";
             program = "${self.flake.${system}.packages."plutarch-benchmark:exe:benchmark-diff"}/bin/benchmark-diff";
+          };
+          ffi = {
+            type = "app";
+            program =
+              let ghc810 = ((projectFor810 system).flake { }).packages;
+              in "${ghc810."plutarch-ffi-tests:test:examples"}/bin/examples";
           };
         }
       );
