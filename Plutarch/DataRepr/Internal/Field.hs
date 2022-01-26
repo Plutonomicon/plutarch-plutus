@@ -9,10 +9,8 @@ module Plutarch.DataRepr.Internal.Field (
 
   -- * BindFields class mechanism
   BindFields (..),
-  type TermsOf,
-  type Take,
+  type BoundTerms,
   type Drop,
-  type FieldsRange,
 
   -- * Re-exports
   HRec (..),
@@ -23,9 +21,7 @@ module Plutarch.DataRepr.Internal.Field (
 import Data.Proxy (Proxy (Proxy))
 import GHC.TypeLits (
   KnownNat,
-  Nat,
   Symbol,
-  type (+),
  )
 
 import Data.Kind (Type)
@@ -52,11 +48,8 @@ import Plutarch.DataRepr.Internal.HList (
   Labeled (Labeled, unLabeled),
   hrecField,
   type Drop,
-  type FindMinMax,
   type IndexList,
-  type Range,
   type SingleItem,
-  type Take,
  )
 import Plutarch.Internal (TermCont (TermCont, runTermCont), punsafeCoerce)
 
@@ -118,64 +111,75 @@ instance
   @pletFields @["y", "w"]@ will bind the fields @'["y", "z", "w"]@.
 -}
 pletFields ::
-  forall fs a b as s from to.
+  forall fs a s b ps bs.
   ( PDataFields a
-  , '(from, to) ~ (FieldsRange fs (PFields a))
-  , KnownNat from
-  , KnownNat to
-  , as ~ (Range from to (PFields a))
-  , BindFields as
+  , ps ~ (PFields a)
+  , bs ~ (Bindings ps fs)
+  , BindFields ps bs
   ) =>
   Term s a ->
-  (HRec (TermsOf s as) -> Term s b) ->
+  (HRec (BoundTerms ps bs s) -> Term s b) ->
   Term s b
 pletFields t =
   runTermCont $
-    bindFields @as $ to $ ptoFields t
-  where
-    to :: Term s (PDataRecord (PFields a)) -> Term s (PDataRecord as)
-    to r = punsafeCoerce $ pdropDataRecord (Proxy @from) r
+    bindFields @ps @bs $ ptoFields @a t
 
--- | Map a list of 'PUnLabel' to the Terms that will be bound by 'bindFields'
-type family TermsOf (s :: S) (as :: [PLabeledType]) :: [Type] where
-  TermsOf _ '[] = '[]
-  TermsOf s ((name ':= a) ': as) = (Labeled name (Term s (PAsData a))) ': TermsOf s as
+data ToBind = Bind | Skip
 
--- | Get the index of (either kind of) labeled term
-type LabelIndex :: Symbol -> [k] -> Nat
-type family LabelIndex (name :: Symbol) (as :: [k]) :: Nat where
-  LabelIndex name ((name ':= _) ': _) = 0
-  LabelIndex name ((Labeled name _) ': _) = 0
-  LabelIndex name (_ ': as) = (LabelIndex name as) + 1
+{- | Get whether a field should be bound based on its inclusion in a
+     list of fields.
+-}
+type family BindField (p :: Symbol) (fs :: [Symbol]) :: ToBind where
+  BindField _ '[] = 'Skip
+  BindField name (name ': _) = 'Bind
+  BindField name (_ ': as) = BindField name as
 
-type AllIndices :: [Symbol] -> [k] -> [Nat]
-type family AllIndices (ns :: [Symbol]) (as :: [k]) :: [Nat] where
-  AllIndices '[] _ = '[]
-  AllIndices (n ': ns) as = (LabelIndex n as) ': (AllIndices ns as)
+-- | Map 'BindField' over @[PLabeledType]@, with 'Skips' removed at tail
+type family Bindings (ps :: [PLabeledType]) (fs :: [Symbol]) :: [ToBind] where
+  Bindings '[] _ = '[]
+  Bindings ((name ':= _) ': ps) fs = (BindField name fs) ': (CutSkip (Bindings ps fs))
 
-type family FieldsRange (ns :: [Symbol]) (as :: [k]) :: (Nat, Nat) where
-  FieldsRange ns as = FindMinMax (AllIndices ns as)
+-- | Remove 'Skip's at tail
+type family CutSkip (bs :: [ToBind]) :: [ToBind] where
+  CutSkip '[ 'Skip] = '[]
+  CutSkip bs = bs
 
-class BindFields (as :: [PLabeledType]) where
+{- |
+  Get the 'Term' representations to be bound based on the
+  result of 'Bindings'.
+-}
+type family BoundTerms (ps :: [PLabeledType]) (bs :: [ToBind]) (s :: S) :: [Type] where
+  BoundTerms '[] _ _ = '[]
+  BoundTerms _ '[] _ = '[]
+  BoundTerms (_ ': ps) ( 'Skip ': bs) s = BoundTerms ps bs s
+  BoundTerms ((name ':= p) ': ps) ( 'Bind ': bs) s = (Labeled name (Term s (PAsData p))) ': (BoundTerms ps bs s)
+
+class BindFields (ps :: [PLabeledType]) (bs :: [ToBind]) where
   -- |
   --    Bind all the fields in a 'PDataList' term to a corresponding
   --    HList of Terms.
   --
   --    A continuation is returned to enable sharing of
   --    the generated bound-variables.
-  bindFields :: Term s (PDataRecord as) -> TermCont s (HRec (TermsOf s as))
+  bindFields :: Term s (PDataRecord ps) -> TermCont s (HRec (BoundTerms ps bs s))
 
-instance {-# OVERLAPPING #-} BindFields ((l ':= a) ': '[]) where
+-- instance BindFields '[] '[] where
+--  bindFields _ = pure HNil
+
+instance {-# OVERLAPPING #-} BindFields ((l ':= p) ': ps) ( 'Bind ': '[]) where
   bindFields t =
     pure $ HCons (Labeled $ pindexDataRecord (Proxy @0) t) HNil
 
-instance {-# OVERLAPPABLE #-} (BindFields as) => BindFields ((l ':= a) ': as) where
+instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields ((l ':= p) ': ps) ( 'Bind ': bs) where
   bindFields t = do
     t' <- TermCont $ plet t
-    xs <- bindFields @as (pdropDataRecord (Proxy @1) t')
+    xs <- bindFields @ps @bs (pdropDataRecord (Proxy @1) t')
     pure $ HCons (Labeled $ pindexDataRecord (Proxy @0) t') xs
 
---
+instance (BindFields ps bs) => BindFields (p ': ps) ( 'Skip ': bs) where
+  bindFields t = do
+    bindFields @ps @bs $ pdropDataRecord (Proxy @1) t
+
 --------------------------------------------------------------------------------
 
 {- |

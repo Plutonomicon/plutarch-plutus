@@ -14,13 +14,7 @@ module Plutarch.DataRepr.Internal.HList (
   type IndexList,
   type IndexLabel,
   type SingleItem,
-  type Take,
   type Drop,
-  type Range,
-  type Min,
-  type Max,
-  type FindMinMax',
-  type FindMinMax,
 
   -- * Internal utils
   Elem (..),
@@ -28,16 +22,13 @@ module Plutarch.DataRepr.Internal.HList (
 ) where
 
 import Data.Kind (Type)
-import Data.Type.Bool (type If)
 import GHC.Records (HasField (..))
 import GHC.TypeLits (
   ErrorMessage (Text),
   Nat,
   Symbol,
   TypeError,
-  type (+),
   type (-),
-  type (<=?),
  )
 
 --------------------------------------------------------------------------------
@@ -95,29 +86,9 @@ type family IndexLabel (name :: Symbol) (as :: [Type]) :: Type where
 type family SingleItem (as :: [k]) :: k where
   SingleItem '[a] = a
 
-type family Take (n :: Nat) (as :: [k]) :: [k] where
-  Take 0 xs = '[]
-  Take n (x ': xs) = x ': (Take (n - 1) xs)
-
 type family Drop (n :: Nat) (as :: [k]) :: [k] where
   Drop 0 xs = xs
   Drop n (x ': xs) = Drop (n - 1) xs
-
-type family Range (from :: Nat) (to :: Nat) (as :: [k]) :: [k] where
-  Range from to xs = Take (to - from + 1) (Drop from xs)
-
-type family Min (a :: Nat) (b :: Nat) :: Nat where
-  Min a b = If (a <=? b) a b
-
-type family Max (a :: Nat) (b :: Nat) :: Nat where
-  Max a b = If (a <=? b) b a
-
-type family FindMinMax' (min :: Nat) (max :: Nat) (as :: [Nat]) :: (Nat, Nat) where
-  FindMinMax' min max '[] = '(min, max)
-  FindMinMax' min max (a ': as) = FindMinMax' (Min min a) (Max max a) as
-
-type family FindMinMax (as :: [Nat]) :: (Nat, Nat) where
-  FindMinMax (a ': as) = FindMinMax' a a (a ': as)
 
 ---------- Internal utils
 
