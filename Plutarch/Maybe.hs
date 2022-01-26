@@ -1,6 +1,3 @@
-{-# LANGUAGE PartialTypeSignatures #-}
-{-# OPTIONS_GHC -Wno-partial-type-signatures #-}
-
 module Plutarch.Maybe (PMaybe (..)) where
 
 import qualified GHC.Generics as GHC
@@ -11,11 +8,9 @@ import Plutarch (
   S,
   Term,
   gpcon,
+  gpmatch,
   pcon',
-  pdelay,
-  plam,
   pmatch',
-  (#),
  )
 
 -- | Plutus Maybe type, with Scott-encoded repr
@@ -27,5 +22,4 @@ data PMaybe (a :: PType) (s :: S)
 
 instance PlutusType (PMaybe a) where
   pcon' x = gpcon @(PMaybe a) $ from x
-
-  pmatch' x f = x # plam (f . PJust) # pdelay (f PNothing)
+  pmatch' x f' = gpmatch @(PMaybe a) x (f' . to)
