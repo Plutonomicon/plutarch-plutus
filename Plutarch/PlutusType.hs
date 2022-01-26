@@ -38,7 +38,20 @@ import Plutarch.PLam ((#))
   The 'PlutusType' class allows encoding Haskell data-types as plutus terms
   via constructors and destructors.
 
-  A simple example, encoding a Sum type as an Enum via PInteger:
+  Typically, you want to use scott encoding to represent the data type, which
+  can be automatically derived as follows:
+
+  > import qualified GHC.Generics as GHC
+  > import Generics.SOP
+  >
+  > data MyType (a :: PType) (b :: PType) (s :: S)
+  >   = One (Term s a)
+  >   | Two (Term s b)
+  >   deriving stock (GHC.Generic)
+  >   deriving anyclass (Generic, PlutusType)
+
+  Alternative, you may derive it by hand as well. A simple example, encoding a
+  Sum type as an Enum via PInteger:
 
   > data AB (s :: S) = A | B
   >
