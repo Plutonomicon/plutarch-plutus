@@ -260,7 +260,7 @@ gpcon ::
   , pcode ~ ToPType2 code
   , GPCon pcode c s
   , PLamL (ScottList s pcode c) c s
-  , Fn' (ScottList s pcode c) c ~ ScottEncoding (Code (a 'PI.SI)) c
+  , Fn (ScottList s pcode c) c ~ ScottEncoding (Code (a 'PI.SI)) c
   , AllZipN (Prod SOP) (LiftedCoercible I (Term s)) code pcode
   ) =>
   SOP I (Code (a s)) ->
@@ -294,8 +294,7 @@ instance {-# OVERLAPPING #-} (GPCon (x1 ': xs) c s, AppL c x) => GPCon (x ': x1 
   g = f `appL` Ni
   ```
 
-  TODO: Why do we not use `pdelay` in the associated PLamL? We probably should.
-  Write a test: https://github.com/Plutonomicon/plutarch/issues/193
+  TODO: Write a test to test laziness case: https://github.com/Plutonomicon/plutarch/issues/193
 -}
 class AppL (c :: PType) (xs :: [PType]) where
   appL :: Term s (Fn xs c) -> NP (Term s) xs -> Term s c
@@ -325,6 +324,21 @@ instance AppL' c xs => AppL' c (x ': xs) where
   appL' f (x :* xs) = (f # x) `appL'` xs
 
 {- |
+  `plamL` is like `plamL'`, but pdelays the 0-arity case.
+
+  ```
+  plamL $ \Nil -> pcon 42 -- Equivalent to: `pdelay (pcon 42)`.
+-}
+class PLamL (as :: [PType]) (b :: PType) (s :: S) where
+  plamL :: (NP (Term s) as -> Term s b) -> Term s (Fn as b)
+
+instance PLamL '[] b s where
+  plamL f = PI.pdelay $ f Nil
+
+instance PLamL' as b s => PLamL (a ': as) b s where
+  plamL f = plam' $ \a -> plamL' $ \as -> f (a :* as)
+
+{- |
   `plamL` is like `plam`, but takes a HList of Plutarch terms as arguments.
 
   ```
@@ -335,14 +349,14 @@ instance AppL' c xs => AppL' c (x ': xs) where
   - `NP (Term s) '[x, y]` corresponds to `x :* y :* Nil`.
   - `Fn' '[x, y] b` corresponds to `x :--> y :--> b`.
 -}
-class PLamL (as :: [PType]) (b :: PType) (s :: S) where
-  plamL :: (NP (Term s) as -> Term s b) -> Term s (Fn' as b)
+class PLamL' (as :: [PType]) (b :: PType) (s :: S) where
+  plamL' :: (NP (Term s) as -> Term s b) -> Term s (Fn' as b)
 
-instance PLamL '[] b s where
-  plamL f = f Nil
+instance PLamL' '[] b s where
+  plamL' f = f Nil
 
-instance PLamL as b s => PLamL (a ': as) b s where
-  plamL f = plam' $ \a -> plamL $ \as -> f (a :* as)
+instance PLamL' as b s => PLamL' (a ': as) b s where
+  plamL' f = plam' $ \a -> plamL' $ \as -> f (a :* as)
 
 type UnTerm :: Type -> PType
 type family UnTerm x where
