@@ -124,6 +124,7 @@
   * [#173](https://github.com/Plutonomicon/plutarch/pull/173)
   * [#176](https://github.com/Plutonomicon/plutarch/pull/176)
   * [#171](https://github.com/Plutonomicon/plutarch/pull/171)
+  * [#185](https://github.com/Plutonomicon/plutarch/pull/185)
 - Add `PLift` and `PConstant` - enabling conversion between Plutarch terms and Haskell types.
 
   This comes with convenient derivers. See the relevant section on the guide.
