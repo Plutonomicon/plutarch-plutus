@@ -2,14 +2,17 @@
 
 # 1.1.0
 
-- Repo changes (not visible on the user side)
+- General repository changes.
   - The Plutarch repo has moved to GHC 9.2.1 (GHC 8.10.7 should still be able to depend on Plutarch).
 
     Relevant PR: [#86](https://github.com/Plutonomicon/plutarch/pull/86)
   - Major nix updates.
+
+    Started by: [#75](https://github.com/Plutonomicon/plutarch/pull/75)
   - Benchmarks and perf diffing on PRs to keep track of performance regressions.
 
     Worked on through:
+    * [#102](https://github.com/Plutonomicon/plutarch/pull/102)
     * [#144](https://github.com/Plutonomicon/plutarch/pull/144)
     * [#146](https://github.com/Plutonomicon/plutarch/pull/146)
     * [#164](https://github.com/Plutonomicon/plutarch/pull/164)
