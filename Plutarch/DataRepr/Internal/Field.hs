@@ -100,15 +100,8 @@ instance
   ptoFields = ptoFields . pfromData
 
 {- |
-  Bind a HRec of named fields containing (at least) all the specified
+  Bind a HRec of named fields containing all the specified
   fields.
-  This will bind the hull of the subset of fields provided,
-
-  for example, suppose that:
-  @PFields x ~ '["x" ':= x, "y" ':= y, "z" ':= z, "w" ':= w]@,
-
-  then:
-  @pletFields @["y", "w"]@ will bind the fields @'["y", "z", "w"]@.
 -}
 pletFields ::
   forall fs a s b ps bs.
@@ -162,9 +155,6 @@ class BindFields (ps :: [PLabeledType]) (bs :: [ToBind]) where
   --    A continuation is returned to enable sharing of
   --    the generated bound-variables.
   bindFields :: Term s (PDataRecord ps) -> TermCont s (HRec (BoundTerms ps bs s))
-
--- instance BindFields '[] '[] where
---  bindFields _ = pure HNil
 
 instance {-# OVERLAPPING #-} BindFields ((l ':= p) ': ps) ( 'Bind ': '[]) where
   bindFields t =

@@ -86,6 +86,7 @@ type family IndexLabel (name :: Symbol) (as :: [Type]) :: Type where
 type family SingleItem (as :: [k]) :: k where
   SingleItem '[a] = a
 
+-- | Drop first n fields of a list
 type family Drop (n :: Nat) (as :: [k]) :: [k] where
   Drop 0 xs = xs
   Drop n (x ': xs) = Drop (n - 1) xs
