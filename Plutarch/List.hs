@@ -42,24 +42,22 @@ module Plutarch.List (
 
 import Numeric.Natural (Natural)
 
+import qualified GHC.Generics as GHC
+import Generics.SOP (Generic, I (I))
 import Plutarch (
   PDelayed,
-  PInner,
   PType,
   PlutusType,
   S,
   Term,
   pcon,
-  pcon',
   pdelay,
   perror,
   pfix,
-  pforce,
   phoistAcyclic,
   plam,
   plet,
   pmatch,
-  pmatch',
   (#),
   (#$),
   type (:-->),
@@ -74,15 +72,8 @@ import Data.Kind
 data PList (a :: PType) (s :: S)
   = PSCons (Term s a) (Term s (PList a))
   | PSNil
-
-instance PlutusType (PList a) where
-  type PInner (PList a) c = (a :--> PList a :--> c) :--> PDelayed c :--> c
-
-  pcon' :: forall s. PList a s -> forall b. Term s (PInner (PList a) b)
-  pcon' (PSCons x xs) = plam $ \match_cons (_ :: Term _ _) -> match_cons # x # xs
-  pcon' PSNil = plam $ \_match_cons match_nil -> pforce match_nil
-  pmatch' xs f =
-    xs # plam (\x xs -> f (PSCons x xs)) # pdelay (f PSNil)
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic, PlutusType)
 
 instance PEq a => PEq (PList a) where
   (#==) xs ys = plistEquals # xs # ys

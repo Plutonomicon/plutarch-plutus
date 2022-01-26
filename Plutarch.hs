@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -39,9 +40,10 @@ module Plutarch (
 ) where
 
 import Data.Coerce (Coercible, coerce)
-import Data.Kind (Type)
-import Plutarch.Internal (ClosedTerm, PType, S, Term, compile, papp, phoistAcyclic, plam', punsafeCoerce, (:-->))
+import Plutarch.Internal (ClosedTerm, PType, Term, compile, phoistAcyclic, punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
+import Plutarch.Internal.PLam (pinl, plam, (#), (#$))
+import Plutarch.Internal.PlutusType (PCon (pcon), PMatch (pmatch), PlutusType (PInner, pcon', pmatch'))
 import Plutus.V1.Ledger.Scripts (Script (Script))
 import PlutusCore.Pretty (prettyPlcReadableDebug)
 
@@ -59,105 +61,6 @@ printScript = show . prettyPlcReadableDebug . (\(Script s) -> s)
 -}
 printTerm :: ClosedTerm a -> String
 printTerm term = printScript $ compile term
-
-{- |
-  High precedence infixl synonym of 'papp', to be used like
-  function juxtaposition. e.g.:
-
-  >>> f # x # y
-  f x y
--}
-(#) :: Term s (a :--> b) -> Term s a -> Term s b
-(#) = papp
-
-infixl 8 #
-
-{- |
-  Low precedence infixr synonym of 'papp', to be used like
-  '$', in combination with '#'. e.g.:
-
-  >>> f # x #$ g # y # z
-  f x (g y z)
--}
-(#$) :: Term s (a :--> b) -> Term s a -> Term s b
-(#$) = papp
-
-infixr 0 #$
-
-{- $plam
- Lambda abstraction.
-
- The 'PLamN' constraint allows
- currying to work as expected for any number of arguments.
-
- > id :: Term s (a :--> a)
- > id = plam (\x -> x)
-
- > const :: Term s (a :--> b :-> a)
- > const = plam (\x y -> x)
--}
-
-class PLamN (a :: Type) (b :: PType) (s :: S) | a -> b, s b -> a where
-  plam :: forall c. (Term s c -> a) -> Term s (c :--> b)
-
-instance (a' ~ Term s a) => PLamN a' a s where
-  plam = plam'
-
-instance {-# OVERLAPPING #-} (a' ~ Term s a, PLamN b' b s) => PLamN (a' -> b') (a :--> b) s where
-  plam f = plam' $ \x -> plam (f x)
-
-pinl :: Term s a -> (Term s a -> Term s b) -> Term s b
-pinl v f = f v
-
-{- |
-
-  The 'PlutusType' class allows encoding Haskell data-types as plutus terms
-  via constructors and destructors.
-
-  A simple example, encoding a Sum type as an Enum via PInteger:
-
-  > data AB (s :: S) = A | B
-  >
-  > instance PlutusType AB where
-  >   type PInner AB _ = PInteger
-  >
-  >   pcon' A = 0
-  >   pcon' B = 1
-  >
-  >   pmatch' x f =
-  >     pif (x #== 0) (f A) (f B)
-  >
-
-  instead of using `pcon'` and `pmatch'` directly,
-  use 'pcon' and 'pmatch', to hide the `PInner` type:
-
-  > swap :: Term s AB -> Term s AB
-  > swap x = pmatch x $ \case
-  >  A -> pcon B
-  >  B -> pcon A
-
-  Further examples can be found in examples/PlutusType.hs
--}
-class (PCon a, PMatch a) => PlutusType (a :: PType) where
-  -- `b' :: k'` causes GHC to fail type checking at various places
-  -- due to not being able to expand the type family.
-  type PInner a (b' :: PType) :: PType
-  pcon' :: forall s. a s -> forall b. Term s (PInner a b)
-  pmatch' :: forall s c. (forall b. Term s (PInner a b)) -> (a s -> Term s c) -> Term s c
-
-instance {-# OVERLAPPABLE #-} PlutusType a => PMatch a where
-  pmatch x f = pmatch' (punsafeCoerce x) f
-
-instance PlutusType a => PCon a where
-  pcon x = punsafeCoerce (pcon' x)
-
-class PCon a where
-  -- | Construct a Plutarch Term via a Haskell datatype
-  pcon :: a s -> Term s a
-
-class PMatch a where
-  -- | Pattern match over Plutarch Terms via a Haskell datatype
-  pmatch :: Term s a -> (a s -> Term s b) -> Term s b
 
 {- |
   Safely coerce from a Term to it's 'PInner' representation.

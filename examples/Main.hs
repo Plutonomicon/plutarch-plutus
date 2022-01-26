@@ -106,6 +106,22 @@ plutarchTests =
     , testCase "uglyDouble" $ (printTerm uglyDouble) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
     , testCase "1 + 2 == 3" $ equal (pconstant @PInteger $ 1 + 2) (pconstant @PInteger 3)
     , testCase "fails: perror" $ fails perror
+    , testGroup
+        "PlutusType scott encoding "
+        [ testCase "PMaybe" $ do
+            let a = 42 :: Term s PInteger
+            let x = pmatch (pcon $ PJust a) $ \case
+                  PJust x -> x
+                  -- We expect this perror not to be evaluated eagerly when mx
+                  -- is a PJust.
+                  PNothing -> perror
+            printTerm x @?= "(program 1.0.0 ((\\i0 -> \\i0 -> i2 42) (\\i0 -> i1) (delay error)))"
+        , testCase "PPair" $ do
+            let a = 42 :: Term s PInteger
+                b = "Universe" :: Term s PString
+            let x = pmatch (pcon (PPair a b) :: Term s (PPair PInteger PString)) $ \(PPair _ y) -> y
+            printTerm x @?= "(program 1.0.0 ((\\i0 -> i1 42 \"Universe\") (\\i0 -> \\i0 -> i1)))"
+        ]
     , testCase "pnot" $ do
         (pnot #$ pcon PTrue) `equal` pcon PFalse
         (pnot #$ pcon PFalse) `equal` pcon PTrue
