@@ -3,9 +3,11 @@
 # 1.1.0
 
 - General repository changes.
-  - The Plutarch repo has moved to GHC 9.2.1 (Projects using GHC 8.10.7 should still be able to depend on Plutarch).
+  - The Plutarch repo has moved to GHC 9.2.1. Projects using GHC 8.10.7 should still be able to depend on Plutarch. There is CI in place to ensure compatibility.
 
     Relevant PR: [#86](https://github.com/Plutonomicon/plutarch/pull/86)
+
+    CI added by: [#188](https://github.com/Plutonomicon/plutarch/pull/188)
   - Major nix updates.
 
     Started by: [#75](https://github.com/Plutonomicon/plutarch/pull/75)
