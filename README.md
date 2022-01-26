@@ -53,6 +53,8 @@ Contributions are more than welcome! Alongside the [User guide](#usage) above, y
 Copyright (c) 2021-2022 Ardana Labs
 Copyright (c) 2021-2022 Cardax B.V.
 Copyright (c) 2021-2022 Minswap Team
+Copyright (c) 2021-2022 Liqwid Labs
+Copyright (c) 2021-2022 MLabs
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
