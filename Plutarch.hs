@@ -273,12 +273,6 @@ gpcon val =
     pSop :: AllZipN (Prod SOP) (LiftedCoercible I (Term s)) xss (ToPType2 xss) => SOP I xss -> SOP (Term s) (ToPType2 xss)
     pSop = hcoerce
 
--- | '[a :--> c, b :--> c, PDelayed c]
-type ScottList :: S -> [[PType]] -> PType -> [PType]
-type family ScottList s code c where
-  ScottList _ '[] c = '[]
-  ScottList s (xs ': xss) c = Fn xs c ': ScottList s xss c
-
 class GPCon (xss :: [[PType]]) (c :: PType) (s :: S) where
   gpcon' :: NP (Term s) (ScottList s xss c) -> NS (NP (Term s)) xss -> Term s c
 
@@ -292,6 +286,17 @@ instance {-# OVERLAPPING #-} (GPCon (x1 ': xs) c s, AppL c x) => GPCon (x ': x1 
     Z x -> appL f x
     S sum' -> gpcon' fs sum'
 
+{- |
+  `appL` is like `appL'`, but pforce's the 0-arity case.
+
+  ```
+  f = plamL $ \Nil -> pdelay $ pcon 42
+  g = f `appL` Ni
+  ```
+
+  TODO: Why do we not use `pdelay` in the associated PLamL? We probably should.
+  Write a test: https://github.com/Plutonomicon/plutarch/issues/193
+-}
 class AppL (c :: PType) (xs :: [PType]) where
   appL :: Term s (Fn xs c) -> NP (Term s) xs -> Term s c
 
@@ -301,6 +306,15 @@ instance AppL c '[] where
 instance (AppL' c xs, AppL c xs) => AppL c (x ': xs) where
   appL f (x :* xs) = (f # x) `appL'` xs
 
+{- |
+  `appL'` takes a multi-argument lambda (usually created by `plamL`) and applies
+  it to the associated list of values.
+
+  ```
+  f = plamL $ \(x :* y :* z :* Nil) -> x + y + z
+  g = f `appL'` (1 :* 2 :* 3 :* Nil)
+  ```
+-}
 class AppL' (c :: PType) (xs :: [PType]) where
   appL' :: Term s (Fn' xs c) -> NP (Term s) xs -> Term s c
 
@@ -310,6 +324,17 @@ instance AppL' c '[] where
 instance AppL' c xs => AppL' c (x ': xs) where
   appL' f (x :* xs) = (f # x) `appL'` xs
 
+{- |
+  `plamL` is like `plam`, but takes a HList of Plutarch terms as arguments.
+
+  ```
+  plamL $ \(x :* y :* Nil) ->
+    x + y
+  ```
+
+  - `NP (Term s) '[x, y]` corresponds to `x :* y :* Nil`.
+  - `Fn' '[x, y] b` corresponds to `x :--> y :--> b`.
+-}
 class PLamL (as :: [PType]) (b :: PType) (s :: S) where
   plamL :: (NP (Term s) as -> Term s b) -> Term s (Fn' as b)
 
@@ -334,11 +359,21 @@ type family ToPType2 as where
   ToPType2 '[] = '[]
   ToPType2 (a ': as) = ToPType a ': ToPType2 as
 
+{- |
+  The scott-encoded function type for a given `Code (a s)` and `b`.
+
+  ```
+  ScottEncoding (Code (PMaybe a s)) b = (a :--> b) :--> :--> PDelayed b :--> b
+  ```
+-}
 type ScottEncoding :: [[Type]] -> PType -> PType
 type family ScottEncoding xss b where
   ScottEncoding '[] b = b
   ScottEncoding (xs ': xss) b = ScottArg xs b :--> ScottEncoding xss b
 
+{- |
+  Individual function argument of `ScottEncoding`.
+-}
 type ScottArg :: [Type] -> PType -> PType
 type family ScottArg xs b where
   ScottArg '[] b = PI.PDelayed b
@@ -349,8 +384,11 @@ type family ScottArg' xs b where
   ScottArg' '[] b = b
   ScottArg' (Term s x ': xs) b = x :--> ScottArg' xs b
 
-{- | Fn '[a, b] c -> (a :--> b :--> c)
-   Fn '[] c -> (PDelayed c)
+{- |
+  Like `ScottArg`, but without the `Term s` wrapper.
+
+   Fn '[a, b] c = (a :--> b :--> c)
+   Fn '[] c = PDelayed c
 -}
 type Fn :: [PType] -> PType -> PType
 type family Fn xs b where
@@ -361,3 +399,15 @@ type Fn' :: [PType] -> PType -> PType
 type family Fn' xs b where
   Fn' '[] b = b
   Fn' (x ': xs) b = x :--> Fn' xs b
+
+{- |
+  `ScottEncoding` broken up as a list of functions, without the `Term s`.
+
+  ScottList s (Code (PEither a b s)) c = '[a :--> c, b :--> c]
+
+  TODO: Re-use this to define `ScottEncoding`.
+-}
+type ScottList :: S -> [[PType]] -> PType -> [PType]
+type family ScottList s code c where
+  ScottList _ '[] c = '[]
+  ScottList s (xs ': xss) c = Fn xs c ': ScottList s xss c

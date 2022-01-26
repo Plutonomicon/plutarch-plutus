@@ -6,7 +6,6 @@ module Plutarch.Maybe (PMaybe (..)) where
 import qualified GHC.Generics as GHC
 import Generics.SOP
 import Plutarch (
-  PInner,
   PType,
   PlutusType,
   S,
@@ -27,7 +26,6 @@ data PMaybe (a :: PType) (s :: S)
   deriving anyclass (Generic)
 
 instance PlutusType (PMaybe a) where
-  pcon' :: forall s. PMaybe a s -> forall b. Term s (PInner (PMaybe a) b)
-  pcon' x = gpcon @(PMaybe a) @s @_ @(Code (PMaybe a s)) $ from x
+  pcon' x = gpcon @(PMaybe a) $ from x
 
   pmatch' x f = x # plam (f . PJust) # pdelay (f PNothing)
