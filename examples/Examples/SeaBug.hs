@@ -6,24 +6,15 @@ module Examples.SeaBug (mkPolicy) where
 
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic)
-import Plutarch (ClosedTerm, PMatch)
+import Plutarch (ClosedTerm)
 import Plutarch.Prelude
-import Plutarch.Unit
-import Plutarch.Builtin
-import Plutarch.Integer
-import Plutarch.ByteString
 import Plutarch.DataRepr
-import Plutarch.Rec
-import Plutarch.Rec.TH
-import Plutarch.Pair
 import qualified Plutarch.Monadic as P
 
 import Plutarch.Api.V1 hiding (PMaybe)
 import Prelude
 
 type PNatural = PInteger
-
-type PAssetClass = PPair PCurrencySymbol PTokenName
 
 data NftId (s :: S) =
   NftId (Term s (PDataRecord
