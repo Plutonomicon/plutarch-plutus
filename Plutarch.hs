@@ -385,7 +385,7 @@ type family ScottArg' xs b where
   ScottArg' (Term s x ': xs) b = x :--> ScottArg' xs b
 
 {- |
-  Like `ScottArg`, but without the `Term s` wrapper.
+  Like `ScottArg`, but hlist is without `Term s` wrapper.
 
    Fn '[a, b] c = (a :--> b :--> c)
    Fn '[] c = PDelayed c
@@ -401,7 +401,7 @@ type family Fn' xs b where
   Fn' (x ': xs) b = x :--> Fn' xs b
 
 {- |
-  `ScottEncoding` broken up as a list of functions, without the `Term s`.
+  `ScottEncoding` broken up as a list of functions.
 
   ScottList s (Code (PEither a b s)) c = '[a :--> c, b :--> c]
 
