@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Examples.LetRec (tests) where
@@ -349,9 +350,17 @@ tests =
             ]
         , testGroup
             "fieldFromData term"
-            [ testCase "simple record" $ (printTerm $ plam $ \dat -> plam pfromData #$ fieldFromData sampleInt # dat) @?= "(program 1.0.0 (\\i0 -> unIData ((\\i0 -> (\\i0 -> force (force ifThenElse (equalsInteger (force (force fstPair) i1) 0) (delay (force headList (force tailList (force (force sndPair) i1)))) (delay error))) (unConstrData i1)) i1)))"
-            , testCase "flat nested" $ (printTerm $ plam $ \dat -> plam pfromData #$ fieldFromData (sampleInt . flatInner2) # dat) @?= "(program 1.0.0 ((\\i0 -> \\i0 -> unIData ((\\i0 -> (\\i0 -> force (force ifThenElse (equalsInteger (force (force fstPair) i1) 0) (delay (force headList (i4 (i4 (i4 (i4 (i4 (i4 (force (force sndPair) i1))))))))) (delay error))) (unConstrData i1)) i1)) (force tailList)))"
-            , testCase "shallow nested" $ (printTerm $ plam $ \dat -> pto (plam pfromData #$ fieldFromData shallowInner2 # dat) # field sampleInt) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> (\\i0 -> force (i4 (equalsInteger (i5 i1) 0) (delay (\\i0 -> i1 ((\\i0 -> equalsInteger (i7 (unConstrData i1)) 1) (i7 (i9 i2))) (unIData (i7 (i8 (i9 i2)))) (decodeUtf8 (unBData (i7 (i8 (i8 (i9 i2)))))))) (delay error))) (unConstrData i1)) ((\\i0 -> (\\i0 -> force (i4 (equalsInteger (i5 i1) 0) (delay (i6 (i7 (i7 (i7 (i8 i1)))))) (delay error))) (unConstrData i1)) i1) (\\i0 -> \\i0 -> \\i0 -> i2)) (force ifThenElse)) (force (force fstPair))) (force headList)) (force tailList)) (force (force sndPair))))"
+            [ testCase "simple record" $
+                (printTerm $ plam $ \dat -> plam pfromData #$ fieldFromData sampleInt # dat)
+                  @?= result_fieldFromDataTerm'simpleRecord
+            , testCase "flat nested" $
+                (printTerm $ plam $ \dat -> plam pfromData #$ fieldFromData (sampleInt . flatInner2) # dat)
+                  @?= result_fieldFromDataTerm'flatNested
+            , testCase "shallow nested" $
+                ( printTerm $
+                    plam $ \dat -> pto (plam pfromData #$ fieldFromData shallowInner2 # dat) # field sampleInt
+                )
+                  @?= result_fieldFromDataTerm'shallowNested
             ]
         , testGroup
             "fieldFromData value"
@@ -359,6 +368,43 @@ tests =
             , testCase "flat nested" $ equal' (fieldFromData (sampleInt . flatInner2) # flatOuterData) "(program 1.0.0 #09)"
             , testCase "shallow nested" $ equal' (fieldFromData sampleInt #$ fieldFromData shallowInner2 #$ shallowOuterData) "(program 1.0.0 #09)"
             ]
-        , testCase "pfromData term" $ (printTerm $ plam $ \d -> punsafeCoerce (pfromData d :: Term _ (PRecord SampleRecord)) # field sampleInt) @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> force (force ifThenElse (equalsInteger (i3 i1) 0) (delay (\\i0 -> i1 ((\\i0 -> equalsInteger (i5 (unConstrData i1)) 1) (i5 (i7 i2))) (unIData (i5 (i6 (i7 i2)))) (decodeUtf8 (unBData (i5 (i6 (i6 (i7 i2)))))))) (delay error))) (unConstrData i1) (\\i0 -> \\i0 -> \\i0 -> i2)) (force (force fstPair))) (force headList)) (force tailList)) (force (force sndPair))))"
+        , testCase "pfromData term" $
+            (printTerm $ plam $ \d -> punsafeCoerce (pfromData d :: Term _ (PRecord SampleRecord)) # field sampleInt)
+              @?= result_fieldFromDataValue'shallowNested
         ]
     ]
+
+-- CPP support isn't great in fourmolu.
+{- ORMOLU_DISABLE -}
+
+result_fieldFromDataTerm'simpleRecord :: String
+result_fieldFromDataTerm'simpleRecord =
+#ifdef Development
+  "(program 1.0.0 (\\i0 -> unIData ((\\i0 -> (\\i0 -> force (force ifThenElse (equalsInteger (force (force fstPair) i1) 0) (delay (force headList (force tailList (force (force sndPair) i1)))) (delay (force (force trace \"verifySoleConstructor failed\" (delay error)))))) (unConstrData i1)) i1)))"
+#else
+  "(program 1.0.0 (\\i0 -> unIData ((\\i0 -> (\\i0 -> force (force ifThenElse (equalsInteger (force (force fstPair) i1) 0) (delay (force headList (force tailList (force (force sndPair) i1)))) (delay error))) (unConstrData i1)) i1)))"
+#endif
+
+result_fieldFromDataTerm'flatNested :: String
+result_fieldFromDataTerm'flatNested =
+#ifdef Development
+  "(program 1.0.0 ((\\i0 -> \\i0 -> unIData ((\\i0 -> (\\i0 -> force (force ifThenElse (equalsInteger (force (force fstPair) i1) 0) (delay (force headList (i4 (i4 (i4 (i4 (i4 (i4 (force (force sndPair) i1))))))))) (delay (force (force trace \"verifySoleConstructor failed\" (delay error)))))) (unConstrData i1)) i1)) (force tailList)))"
+#else
+  "(program 1.0.0 ((\\i0 -> \\i0 -> unIData ((\\i0 -> (\\i0 -> force (force ifThenElse (equalsInteger (force (force fstPair) i1) 0) (delay (force headList (i4 (i4 (i4 (i4 (i4 (i4 (force (force sndPair) i1))))))))) (delay error))) (unConstrData i1)) i1)) (force tailList)))"
+#endif
+
+result_fieldFromDataTerm'shallowNested :: String
+result_fieldFromDataTerm'shallowNested =
+#ifdef Development
+  "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> (\\i0 -> force (i4 (equalsInteger (i5 i1) 0) (delay (\\i0 -> i1 ((\\i0 -> equalsInteger (i7 (unConstrData i1)) 1) (i7 (i9 i2))) (unIData (i7 (i8 (i9 i2)))) (decodeUtf8 (unBData (i7 (i8 (i8 (i9 i2)))))))) (delay (force (i9 \"verifySoleConstructor failed\" (delay error)))))) (unConstrData i1)) ((\\i0 -> (\\i0 -> force (i4 (equalsInteger (i5 i1) 0) (delay (i6 (i7 (i7 (i7 (i8 i1)))))) (delay (force (i9 \"verifySoleConstructor failed\" (delay error)))))) (unConstrData i1)) i1) (\\i0 -> \\i0 -> \\i0 -> i2)) (force ifThenElse)) (force (force fstPair))) (force headList)) (force tailList)) (force (force sndPair))) (force trace)))"
+#else
+  "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> (\\i0 -> force (i4 (equalsInteger (i5 i1) 0) (delay (\\i0 -> i1 ((\\i0 -> equalsInteger (i7 (unConstrData i1)) 1) (i7 (i9 i2))) (unIData (i7 (i8 (i9 i2)))) (decodeUtf8 (unBData (i7 (i8 (i8 (i9 i2)))))))) (delay error))) (unConstrData i1)) ((\\i0 -> (\\i0 -> force (i4 (equalsInteger (i5 i1) 0) (delay (i6 (i7 (i7 (i7 (i8 i1)))))) (delay error))) (unConstrData i1)) i1) (\\i0 -> \\i0 -> \\i0 -> i2)) (force ifThenElse)) (force (force fstPair))) (force headList)) (force tailList)) (force (force sndPair))))"
+#endif
+
+result_fieldFromDataValue'shallowNested :: String
+result_fieldFromDataValue'shallowNested =
+#ifdef Development
+  "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> force (force ifThenElse (equalsInteger (i3 i1) 0) (delay (\\i0 -> i1 ((\\i0 -> equalsInteger (i5 (unConstrData i1)) 1) (i5 (i7 i2))) (unIData (i5 (i6 (i7 i2)))) (decodeUtf8 (unBData (i5 (i6 (i6 (i7 i2)))))))) (delay (force (force trace \"verifySoleConstructor failed\" (delay error)))))) (unConstrData i1) (\\i0 -> \\i0 -> \\i0 -> i2)) (force (force fstPair))) (force headList)) (force tailList)) (force (force sndPair))))"
+#else
+  "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> force (force ifThenElse (equalsInteger (i3 i1) 0) (delay (\\i0 -> i1 ((\\i0 -> equalsInteger (i5 (unConstrData i1)) 1) (i5 (i7 i2))) (unIData (i5 (i6 (i7 i2)))) (decodeUtf8 (unBData (i5 (i6 (i6 (i7 i2)))))))) (delay error))) (unConstrData i1) (\\i0 -> \\i0 -> \\i0 -> i2)) (force (force fstPair))) (force headList)) (force tailList)) (force (force sndPair))))"
+#endif

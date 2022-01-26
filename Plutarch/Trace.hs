@@ -7,7 +7,7 @@ module Plutarch.Trace (ptrace, ptraceIfTrue, ptraceIfFalse, ptraceError) where
 
 import Plutarch (Term, perror)
 #ifdef Development
-import Plutarch (punsafeBuiltin, type (:-->))
+import Plutarch (type (:-->), (#), phoistAcyclic, plet, pforce, pdelay)
 #endif
 #ifdef Development
 import Plutarch.Bool (PBool, pif)
@@ -17,6 +17,7 @@ import Plutarch.Bool (PBool)
 import Plutarch.String (PString)
 
 #ifdef Development
+import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
 #endif
 
