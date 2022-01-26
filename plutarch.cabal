@@ -97,6 +97,8 @@ library
     Plutarch.Maybe
     Plutarch.Monadic
     Plutarch.Pair
+    Plutarch.PLam
+    Plutarch.PlutusType
     Plutarch.Prelude
     Plutarch.Rational
     Plutarch.Rec
