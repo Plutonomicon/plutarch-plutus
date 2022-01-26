@@ -264,32 +264,32 @@ gpmatch ::
   ( Generic (a s)
   , code ~ Code (a s)
   , pcode ~ ToPType2 code
-  , AppL c (ScottList 'PI.SI pcode c)
+  , AppL c (ScottList' s pcode c)
   , MkMatchList a 0 code c s
   ) =>
-  Term s (ScottFn (ScottList 'PI.SI (ToPType2 (Code (a s))) c) c) ->
+  Term s (ScottFn (ScottList' s pcode c) c) ->
   (SOP I (Code (a s)) -> Term s c) ->
   Term s c
 gpmatch scott f =
   scott `appL` mkMatchList @a @0 @code @c @s f
 
 class MkMatchList (a :: PType) (n :: Nat) (xss :: [[Type]]) (c :: PType) (s :: S) where
-  mkMatchList :: (SOP I (Code (a s)) -> Term s c) -> NP (Term s) (ScottList 'PI.SI (ToPType2 xss) c)
+  mkMatchList :: (SOP I (Code (a s)) -> Term s c) -> NP (Term s) (ScottList' s (ToPType2 xss) c)
 
 instance MkMatchList a n '[] c s where
   mkMatchList _ = Nil
 
 instance
-  ( ToPType xs ~ ToPType (IndexList n (Code (a s)))
+  ( code ~ Code (a s)
+  , xs ~ IndexList n code
   , MkMatchList a (n + 1) xss c s
-  , ps ~ IndexList n (Code (a s))
-  , PLamL (ToPType ps) c s
+  , PLamL (ToPType xs) c s
   , MkSum n (Code (a s))
-  , AllZipF (LiftedCoercible (Term s) I) (ToPType ps) ps
-  , SameShapeAs ps (ToPType ps)
-  , SameShapeAs (ToPType ps) ps
-  , All Top (ToPType ps)
-  , All Top ps
+  , AllZipF (LiftedCoercible (Term s) I) (ToPType xs) xs
+  , SameShapeAs xs (ToPType xs)
+  , SameShapeAs (ToPType xs) xs
+  , All Top (ToPType xs)
+  , All Top xs
   ) =>
   MkMatchList a n (xs : xss) c s
   where
@@ -305,13 +305,14 @@ gpcon ::
   , code ~ Code (a s)
   , pcode ~ ToPType2 code
   , GPCon pcode c s
-  , PLamL (ScottList s pcode c) c s
+  , PLamL (ScottList' s pcode c) c s
+  , ScottFn (ScottList' s pcode c) c ~ ScottFn' (ScottList s pcode c) c
   , AllZipN (Prod SOP) (LiftedCoercible I (Term s)) code pcode
   ) =>
   SOP I (Code (a s)) ->
-  Term s (ScottFn (ScottList s pcode c) c)
+  Term s (ScottFn' (ScottList s pcode c) c)
 gpcon val =
-  plamL @(ScottList s pcode c) @c $ \(f :: NP (Term s) (ScottList s pcode c)) ->
+  plamL @(ScottList' s pcode c) @c $ \(f :: NP (Term s) (ScottList' s pcode c)) ->
     gpcon' @pcode @c @s f $
       unSOP $ pSop val
 
@@ -329,7 +330,7 @@ unPsop ::
   NP I xs
 unPsop = hcoerce
 class GPCon (xss :: [[PType]]) (c :: PType) (s :: S) where
-  gpcon' :: NP (Term s) (ScottList s xss c) -> NS (NP (Term s)) xss -> Term s c
+  gpcon' :: NP (Term s) (ScottList' s xss c) -> NS (NP (Term s)) xss -> Term s c
 
 instance {-# OVERLAPPABLE #-} (AppL c x) => GPCon (x ': '[]) c s where
   gpcon' (f :* Nil) = \case
@@ -414,7 +415,7 @@ instance PLamL' as b s => PLamL' (a ': as) b s where
   plamL' f = plam' $ \a -> plamL' $ \as -> f (a :* as)
 
 {- |
-  Scott-encoding of a Plutarch type, given its ScottList.
+  An individual constructor function of a Scott encoding.
 
    ScottFn '[a, b] c = (a :--> b :--> c)
    ScottFn '[] c = PDelayed c
@@ -430,14 +431,20 @@ type family ScottFn' xs b where
   ScottFn' (x ': xs) b = x :--> ScottFn' xs b
 
 {- |
-  List of scott-encoded constructors of a Plutarch type, represented by `Code`
+  List of scott-encoded constructors of a Plutarch type (represented by `Code`)
 
   ScottList s (Code (PEither a b s)) c = '[a :--> c, b :--> c]
 -}
 type ScottList :: S -> [[PType]] -> PType -> [PType]
 type family ScottList s code c where
-  ScottList _ '[] c = '[]
-  ScottList s (xs ': xss) c = ScottFn xs c ': ScottList s xss c
+  ScottList _ '[] c = TypeError ( 'Text "Scott encoding: Data type without constructors not accepted")
+  ScottList _ '[ '[_]] c = TypeError ( 'Text "Scott encoding: Data type with unary constructor not accepted; use newtype!")
+  ScottList s (xs ': xss) c = ScottFn xs c ': ScottList' s xss c
+
+type ScottList' :: S -> [[PType]] -> PType -> [PType]
+type family ScottList' s code c where
+  ScottList' _ '[] c = '[]
+  ScottList' s (xs ': xss) c = ScottFn xs c ': ScottList' s xss c
 
 -- TODO: clean these up
 type UnTerm :: Type -> PType
