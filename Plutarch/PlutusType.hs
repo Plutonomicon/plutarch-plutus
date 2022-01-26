@@ -287,8 +287,10 @@ instance PLamL' as b s => PLamL' (a ': as) b s where
 -}
 type ScottList :: S -> [[PType]] -> PType -> [PType]
 type family ScottList s code c where
-  ScottList _ '[] c = TypeError ( 'Text "Scott encoding: Data type without constructors not accepted")
-  ScottList _ '[ '[_]] c = TypeError ( 'Text "Scott encoding: Data type with unary constructor not accepted; use newtype!")
+-- We disallow certain shapes because Scott encoding is not appropriate for them.
+  ScottList _ '[] c = TypeError ( 'Text "PlutusType(scott encoding): Data type without constructors not accepted")
+  ScottList _ '[ '[]] c = TypeError ( 'Text "PlutusType(scott encoding): Data type with single nullary constructor not accepted")
+  ScottList _ '[ '[_]] c = TypeError ( 'Text "PlutusType(scott encoding): Data type with single unary constructor not accepted; use newtype!")
   ScottList s (xs ': xss) c = ScottFn xs c ': ScottList' s xss c
 
 type ScottList' :: S -> [[PType]] -> PType -> [PType]
