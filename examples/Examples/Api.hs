@@ -146,7 +146,6 @@ inputCredentialHash :: Term s (PAsData PTxInInfo :--> PData)
 inputCredentialHash =
   phoistAcyclic $
     plam $ \inp ->
-      -- pfield @"resolved" # inp
       let credential :: Term _ (PAsData PCredential)
           credential =
             (pfield @"credential")
@@ -161,7 +160,7 @@ getSym =
 
 checkSignatory :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatory = plam $ \ph ctx' ->
-  pletFields ctx' $ \ctx -> P.do
+  pletFields @["txInfo", "purpose"] ctx' $ \ctx -> P.do
     PSpending _ <- pmatch . pfromData $ ctx.purpose
     let signatories = pfield @"signatories" # ctx.txInfo
     pif
