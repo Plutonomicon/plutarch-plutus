@@ -240,15 +240,15 @@ tests =
   testGroup
     "Field examples"
     [ testCase "tripSum compilation" $
-        tripSum `equal'` tripSumComp
+        printTerm tripSum @?= tripSumComp
     , testCase "nFields compilation" $
-        nFields `equal'` nFieldsComp
+        printTerm nFields @?= nFieldsComp
     , testCase "dropFields compilation" $
-        dropFields `equal'` dropFieldsComp
+        printTerm dropFields @?= dropFieldsComp
     , testCase "rangeFields compilation" $
-        rangeFields `equal'` rangeFieldsComp
+        printTerm rangeFields @?= rangeFieldsComp
     , testCase "letSomeFields compilation" $
-        letSomeFields `equal'` letSomeFieldsComp
+        printTerm letSomeFields @?= letSomeFieldsComp
     , testCase "letSomeFields = letSomeFields'" $
         letSomeFields `equal` letSomeFields'
     , testCase "nFields someFields = 1" $
@@ -264,9 +264,9 @@ tests =
         plift (letSomeFields # someFields)
           @?= 14
     , testCase "getY compilation" $
-        getY `equal'` getYComp
+        printTerm getY @?= getYComp
     , testCase "tripYZ compilation" $
-        tripYZ `equal'` tripYZComp
+        printTerm tripYZ @?= tripYZComp
     , testCase "tripYZ = tripZY" $
         tripZY `equal` tripYZ
     , testCase "tripSum # tripA = 1000" $
@@ -286,22 +286,22 @@ tests =
 
 tripSumComp :: String
 tripSumComp =
-  "(program 1.0.0 (\\i0 -> (\\i0 -> (\\i0 -> addInteger (addInteger (unIData (force headList i2)) (unIData (force headList i1))) (unIData (force headList (force tailList i1)))) (force tailList i1)) ((\\i0 -> force (force sndPair) (unConstrData i1)) i1)))"
+  "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> (\\i0 -> addInteger (addInteger (unIData (i4 i2)) (unIData (i4 i1))) (unIData (i4 (i5 i1)))) (i4 i1)) ((\\i0 -> force (force sndPair) (unConstrData i1)) i1)) (force headList)) i1) (force tailList)))"
 
 nFieldsComp :: String
-nFieldsComp = "(program 1.0.0 (\\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))))"
+nFieldsComp = "(program 1.0.0 ((\\i0 -> \\i0 -> addInteger (unIData (i2 i1)) (unIData (i2 (force tailList i1)))) (force headList)))"
 
 dropFieldsComp :: String
-dropFieldsComp = "(program 1.0.0 (\\i0 -> (\\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))) (force tailList (force tailList (force tailList (force tailList (force tailList (force tailList (force tailList (force tailList i1))))))))))"
+dropFieldsComp = "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> addInteger (unIData (i3 i1)) (unIData (i3 (i4 i1)))) (i3 (i3 (i3 (i3 (i3 (i3 (i3 (i3 i1))))))))) (force headList)) i1) (force tailList)))"
 
 rangeFieldsComp :: String
-rangeFieldsComp = "(program 1.0.0 (\\i0 -> (\\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))) (force tailList (force tailList (force tailList (force tailList (force tailList i1)))))))"
+rangeFieldsComp = "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> addInteger (unIData (i3 i1)) (unIData (i3 (i4 i1)))) (i3 (i3 (i3 (i3 (i3 i1)))))) (force headList)) i1) (force tailList)))"
 
 getYComp :: String
 getYComp = "(program 1.0.0 (\\i0 -> force headList (force tailList ((\\i0 -> force (force sndPair) (unConstrData i1)) i1))))"
 
 tripYZComp :: String
-tripYZComp = "(program 1.0.0 (\\i0 -> (\\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))) (force tailList ((\\i0 -> force (force sndPair) (unConstrData i1)) i1))))"
+tripYZComp = "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> addInteger (unIData (i3 i1)) (unIData (i3 (i4 i1)))) (i3 ((\\i0 -> force (force sndPair) (unConstrData i1)) i1))) (force headList)) i1) (force tailList)))"
 
 letSomeFieldsComp :: String
-letSomeFieldsComp = "(program 1.0.0 (\\i0 -> (\\i0 -> (\\i0 -> addInteger (addInteger (unIData (force headList i2)) (unIData (force headList i1))) (unIData (force headList (force tailList (force tailList (force tailList i1)))))) (force tailList i1)) (force tailList (force tailList (force tailList i1)))))"
+letSomeFieldsComp = "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> (\\i0 -> addInteger (addInteger (unIData (i4 i2)) (unIData (i4 i1))) (unIData (i4 (i5 (i5 (i5 i1)))))) (i4 i1)) (i3 (i3 (i3 i1)))) (force headList)) i1) (force tailList)))"
