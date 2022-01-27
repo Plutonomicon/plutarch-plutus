@@ -286,22 +286,22 @@ tests =
 
 tripSumComp :: String
 tripSumComp =
-  "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> (\\i0 -> addInteger (addInteger (unIData (i4 i2)) (unIData (i4 i1))) (unIData (i4 (i5 i1)))) (i4 i1)) ((\\i0 -> force (force sndPair) (unConstrData i1)) i1)) (force headList)) i1) (force tailList)))"
+  "(program 1.0.0 ((\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> (\\i0 -> addInteger (addInteger (unIData (i4 i2)) (unIData (i4 i1))) (unIData (i4 (i5 i1)))) (i4 i1)) (force (force sndPair) (unConstrData i1))) (force headList)) (force tailList)))"
 
 nFieldsComp :: String
 nFieldsComp = "(program 1.0.0 ((\\i0 -> \\i0 -> addInteger (unIData (i2 i1)) (unIData (i2 (force tailList i1)))) (force headList)))"
 
 dropFieldsComp :: String
-dropFieldsComp = "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> addInteger (unIData (i3 i1)) (unIData (i3 (i4 i1)))) (i3 (i3 (i3 (i3 (i3 (i3 (i3 (i3 i1))))))))) (force headList)) i1) (force tailList)))"
+dropFieldsComp = "(program 1.0.0 ((\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> addInteger (unIData (i3 i1)) (unIData (i3 (i4 i1)))) (i3 (i3 (i3 (i3 (i3 (i3 (i3 (i3 i1))))))))) (force headList)) (force tailList)))"
 
 rangeFieldsComp :: String
-rangeFieldsComp = "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> addInteger (unIData (i3 i1)) (unIData (i3 (i4 i1)))) (i3 (i3 (i3 (i3 (i3 i1)))))) (force headList)) i1) (force tailList)))"
+rangeFieldsComp = "(program 1.0.0 ((\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> addInteger (unIData (i3 i1)) (unIData (i3 (i4 i1)))) (i3 (i3 (i3 (i3 (i3 i1)))))) (force headList)) (force tailList)))"
 
 getYComp :: String
-getYComp = "(program 1.0.0 (\\i0 -> force headList (force tailList ((\\i0 -> force (force sndPair) (unConstrData i1)) i1))))"
+getYComp = "(program 1.0.0 (\\i0 -> force headList (force tailList (force (force sndPair) (unConstrData i1)))))"
 
 tripYZComp :: String
-tripYZComp = "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> addInteger (unIData (i3 i1)) (unIData (i3 (i4 i1)))) (i3 ((\\i0 -> force (force sndPair) (unConstrData i1)) i1))) (force headList)) i1) (force tailList)))"
+tripYZComp = "(program 1.0.0 ((\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> addInteger (unIData (i3 i1)) (unIData (i3 (i4 i1)))) (i3 (force (force sndPair) (unConstrData i1)))) (force headList)) (force tailList)))"
 
 letSomeFieldsComp :: String
-letSomeFieldsComp = "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> (\\i0 -> addInteger (addInteger (unIData (i4 i2)) (unIData (i4 i1))) (unIData (i4 (i5 (i5 (i5 i1)))))) (i4 i1)) (i3 (i3 (i3 i1)))) (force headList)) i1) (force tailList)))"
+letSomeFieldsComp = "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> (\\i0 -> addInteger (addInteger (unIData (i4 i2)) (unIData (i4 i1))) (unIData (i4 (i5 (i6 i1))))) (i5 i1)) (i4 (i3 i1))) (force headList)) (\\i0 -> i2 (i2 i1))) (force tailList)))"

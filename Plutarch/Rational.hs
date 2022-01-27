@@ -1,5 +1,5 @@
 module Plutarch.Rational (
-  PRational,
+  PRational (..),
   preduce,
   pnumerator,
   pdenominator,

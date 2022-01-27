@@ -1,12 +1,11 @@
 module Main (main) where
 
-import Plutarch
-import Plutarch.Benchmark (NamedBenchmark, bench, benchGroup, benchMain)
+import Data.ByteString (ByteString)
+import Plutarch.Benchmark (NamedBenchmark, bench, bench', benchGroup, benchMain)
 import Plutarch.Bool
 import Plutarch.Builtin
-import Plutarch.Integer
-import Plutarch.Lift
 import qualified Plutarch.List as List
+import Plutarch.Prelude
 
 main :: IO ()
 main = do
@@ -113,5 +112,21 @@ intListBench =
           [ bench "==(n=3)" $ List.plistEquals @PBuiltinList @PInteger # pconstant [1, 2, 3] # pconstant [1, 2, 3]
           , bench "/=(n=4)" $ List.plistEquals @PBuiltinList @PInteger # pconstant [1, 2, 3, 4] # pconstant [1, 2, 3]
           , bench "/=(empty;n=3)" $ List.plistEquals @PBuiltinList @PInteger # pconstant [] # pconstant [1, 2, 3]
+          ]
+      , benchGroup
+          "primitives"
+          [ bench' $ plam $ \_ -> pconstant True
+          , bench' $ plam $ \_ -> (0 :: Term _ PInteger)
+          , bench' $ plam $ \_ -> (1 :: Term _ PInteger)
+          , bench' $ plam $ \_ -> (512 :: Term _ PInteger)
+          , bench' $ plam $ \_ -> (1048576 :: Term _ PInteger)
+          , bench' $ plam $ \_ -> pconstant ("1" :: ByteString)
+          , bench' $ plam $ \_ -> pconstant ("1111111" :: ByteString)
+          , bench' $ plam $ \_ -> pconstant ([()] :: [()])
+          , bench' $ plam $ \_ -> pconstant ()
+          , bench' $ pconstant ()
+          , bench' $ plam $ \x -> x
+          , bench' $ plam $ \_ -> (plam (+) :: Term _ (PInteger :--> PInteger :--> PInteger))
+          , bench' $ (plam (+) :: Term _ (PInteger :--> PInteger :--> PInteger))
           ]
       ]
