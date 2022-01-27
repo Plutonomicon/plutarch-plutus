@@ -1,7 +1,6 @@
 {
   description = "plutarch";
 
-  # inputs.haskell-nix.url = "github:input-output-hk/haskell.nix?rev=4aeeba8d713d0b98c92c8c717df24da17d463c1d";
   inputs.haskell-nix.url = "github:L-as/haskell.nix?ref=master";
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
   inputs.flake-compat-ci.url = "github:hercules-ci/flake-compat-ci";
@@ -12,7 +11,6 @@
   };
 
   # https://github.com/input-output-hk/plutus/pull/4328
-  # inputs.plutus.url = "github:input-output-hk/plutus?rev=6d8d25d1e84b2a4278da1036aab23da4161b8df8";
   inputs.plutus.url = "github:L-as/plutus?ref=master";
   # https://github.com/input-output-hk/cardano-prelude/pull/162
   inputs.cardano-prelude.url = "github:locallycompact/cardano-prelude?rev=93f95047bb36a055bdd56fb0cafd887c072cdce2";
@@ -433,16 +431,16 @@
           , word-array ^>= 0.1.0.0
       '';
 
-      projectForGhc = ghcName: system:
+      projectForGhc = ghcName: cabalDir: system:
         let pkgs = nixpkgsFor system; in
         let pkgs' = nixpkgsFor' system; in
         (nixpkgsFor system).haskell-nix.cabalProject' ({
           # This is truly a horrible hack but is necessary. We can't disable tests otherwise in haskell.nix.
-          src = if ghcName == ghcVersion then ./. else
+          src = if ghcName == ghcVersion then cabalDir else
           pkgs.runCommand "fake-src" { } ''
-            cp -rT ${./.} $out
-            chmod u+w $out $out/plutarch.cabal
-            sed -i '/-- Everything below this line is deleted for GHC 8.10/,$d' $out/plutarch.cabal
+            cp -rT ${cabalDir} $out
+            chmod u+w $out $out/*.cabal
+            sed -i '/-- Everything below this line is deleted for GHC 8.10/,$d' $out/*.cabal
           '';
           compiler-nix-name = ghcName;
           inherit extraSources;
@@ -458,18 +456,24 @@
 
             inherit tools;
 
-            additional = ps: [
+            additional = ps: if ghcName == ghcVersion then [
               ps.plutus-ledger-api
               #ps.shrinker
               #ps.shrinker-testing
+            ]
+            else [
+              ps.plutus-ledger-api
+              ps.plutus-tx
+              ps.plutus-tx-plugin
             ];
           };
-        } // (if ghcName == ghcVersion then {
+        } // (if ghcName == ghcVersion || cabalDir != ./. then {
           inherit cabalProjectLocal;
         } else { }));
 
-      projectFor = projectForGhc ghcVersion;
-      projectFor810 = projectForGhc "ghc8107";
+      projectFor = projectForGhc ghcVersion ./.;
+      projectFor810 = projectForGhc "ghc8107" ./.;
+      projectFor810alt = projectForGhc "ghc8107";
 
       formatCheckFor = system:
         let
@@ -534,7 +538,7 @@
           ffi = {
             type = "app";
             program =
-              let ghc810 = ((projectFor810 system).flake { }).packages;
+              let ghc810 = ((projectFor810alt ./plutarch-ffi-tests system).flake { }).packages;
               in "${ghc810."plutarch-ffi-tests:test:examples"}/bin/examples";
           };
         }
