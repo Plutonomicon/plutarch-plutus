@@ -1,11 +1,12 @@
+{-# LANGUAGE CPP #-}
+
 module Examples.PlutusType (AB (..), swap, tests) where
 
 import Plutarch
-import Plutarch.Bool (pif, (#==))
-import Plutarch.Integer (PInteger)
+import Plutarch.Prelude
 
 import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit (testCase)
+import Test.Tasty.HUnit (Assertion, testCase)
 
 import Utils
 
@@ -39,13 +40,36 @@ swap x = pmatch x $ \case
 tests :: HasTester => TestTree
 tests =
   testGroup
-    "PlutusType examples"
-    [ testCase "A encoded as 0" $ do
-        pcon A `equal` (0 :: Term s PInteger)
-    , testCase "B encoded as 2" $ do
-        pcon B `equal` (1 :: Term s PInteger)
-    , testCase "swap A == B" $ do
-        swap (pcon A) `equal` pcon B
-    , testCase "swap B == A" $ do
-        swap (pcon B) `equal` pcon A
+    "PlutusType tests"
+    [ testGroup
+        "PlutusType examples"
+        [ testCase "A encoded as 0" $ do
+            pcon A `equal` (0 :: Term s PInteger)
+        , testCase "B encoded as 2" $ do
+            pcon B `equal` (1 :: Term s PInteger)
+        , testCase "swap A == B" $ do
+            swap (pcon A) `equal` pcon B
+        , testCase "swap B == A" $ do
+            swap (pcon B) `equal` pcon A
+        ]
+    , testGroup
+        "PlutusType instances sanity"
+        -- TODO: Add more sanity tests here!
+        [ testCase "PBuiltinList" $ do
+            pmatchTargetEval $ pconstant [1 :: Integer, 2, 3, 4]
+        ]
     ]
+
+-- CPP support isn't great in fourmolu.
+{- ORMOLU_DISABLE -}
+
+-- | Make sure the target of 'pmatch' is only evaluated once.
+pmatchTargetEval :: HasTester => PlutusType p => ClosedTerm p -> Assertion
+pmatchTargetEval target = pmatch (ptrace (pconstant tag) target) (\x -> plet (pcon x) $ \_ -> pconstant ())
+#ifdef Development
+  `traces` replicate 1 tag
+#else
+  `traces` []
+#endif
+  where
+    tag = "evaluating"
