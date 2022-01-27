@@ -310,13 +310,13 @@ asClosedRawTerm t = asRawTerm t 0
 
 -- FIXME: Give proper error message when mutually recursive.
 phoistAcyclic :: HasCallStack => ClosedTerm a -> Term s a
-phoistAcyclic t = Term $ \_ -> case asRawTerm t 0 of
+phoistAcyclic t = case asRawTerm t 0 of
   -- FIXME: is this worth it?
-  t'@(getTerm -> RBuiltin _) -> t'
+  t'@(getTerm -> RBuiltin _) -> Term $ \_ -> t'
   t' -> case evaluateScript . Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' t') of
     Right _ ->
       let hoisted = HoistedTerm (hashRawTerm . getTerm $ t') (getTerm t')
-       in TermResult (RHoisted hoisted) (hoisted : getDeps t')
+       in Term $ \_ -> TermResult (RHoisted hoisted) (hoisted : getDeps t')
     Left e -> error $ "Hoisted term errs! " <> show e
 
 rawTermToUPLC ::
