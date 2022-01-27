@@ -6,6 +6,7 @@ module Examples.SeaBug (mkPolicy) where
 
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic)
+import Control.Monad.Trans.Cont (cont, runCont)
 import Plutarch (ClosedTerm)
 import Plutarch.Prelude
 import Plutarch.DataRepr
@@ -69,6 +70,9 @@ hash = perror
 passert :: forall (s :: S) (a :: PType). Term s PBool -> Term s a -> Term s a
 passert b inp = pif b inp perror
 
+passert' :: forall (s :: S) (a :: PType). Term s PBool -> (() -> Term s a) -> Term s a
+passert' b inp = pif b (inp ()) perror
+
 checkMint :: Term s (PCurrencySymbol :--> NftId :--> PValue :--> PUnit)
 checkMint = plam $ \ownCS nftData mintedValue -> P.do
   newName <- plet $ hash # nftData
@@ -81,6 +85,19 @@ checkMint = plam $ \ownCS nftData mintedValue -> P.do
   passert $ pfstBuiltin # pair #== pdata (pcon $ PTokenName newName)
   passert $ psndBuiltin # pair #== pdata 1
   pcon PUnit
+
+checkMintCont :: Term s (PCurrencySymbol :--> NftId :--> PValue :--> PUnit)
+checkMintCont = plam $ \ownCS nftData mintedValue -> (`runCont` id) $ do
+  newName <- cont $ plet $ hash # nftData
+  csMap <- cont $ plet $ pto $ pto mintedValue
+  filteredCSMap <- cont $ plet $ pfilter # (plam $ \(pfromData . (pfstBuiltin #) -> cs) -> cs #== ownCS) # csMap
+  tokenNameMap <- cont $ plet $ pfromData $ psndBuiltin #$ phead # filteredCSMap
+  cont $ passert' $ plength # pto tokenNameMap #== 1
+  pair <- cont $ plet $ phead # pto tokenNameMap
+
+  cont $ passert' $ pfstBuiltin # pair #== pdata (pcon $ PTokenName newName)
+  cont $ passert' $ psndBuiltin # pair #== pdata 1
+  cont $ const $ pcon PUnit
 
 -- PRecord NftId
 
@@ -122,4 +139,5 @@ mkPolicy collectionNftCs lockingScript author authorShare marketplaceScript mark
 
           (pfromData -> nftRecord) <- plet $ pfield @"nftId" # nftId
           
+          _ <- plet $ checkMintCont # ownCS # nftRecord # mintValue
           checkMint # ownCS # nftRecord # mintValue
