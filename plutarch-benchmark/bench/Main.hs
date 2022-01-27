@@ -114,7 +114,7 @@ intListBench =
           , bench "/=(empty;n=3)" $ List.plistEquals @PBuiltinList @PInteger # pconstant [] # pconstant [1, 2, 3]
           ]
       , benchGroup
-          "pconstant"
+          "primitives"
           [ bench' $ plam $ \_ -> pconstant True
           , bench' $ plam $ \_ -> (0 :: Term _ PInteger)
           , bench' $ plam $ \_ -> (1 :: Term _ PInteger)

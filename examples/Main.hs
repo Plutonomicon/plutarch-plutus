@@ -244,7 +244,9 @@ plutarchTests =
         , testCase "let f = hoist (λx. x) in λx y. f x y => λx y. x y" $
             printTerm ((plam $ \x y -> (phoistAcyclic $ plam $ \x -> x) # x # y)) @?= "(program 1.0.0 (\\i0 -> \\i0 -> i2 i1))"
         , testCase "let f = hoist (λx. x True) in λx y. f x y => λx y. (λz. z True) x y" $
-            printTerm ((plam $ \x y -> ((phoistAcyclic $ plam $ \x -> x # pcon PTrue)) # x # y)) @?= "(program 1.0.0 (\\i0 -> \\i0 -> (\\i0 -> i1 True) i2 i1))"
+            printTerm ((plam $ \x y -> ((phoistAcyclic $ plam $ \x -> x # pcon PTrue)) # x # y)) @?= "(program 1.0.0 (\\i0 -> \\i0 -> i2 True i1))"
+        , testCase "λy. (λx. x + x) y" $
+            printTerm (plam $ \y -> (plam $ \(x :: Term _ PInteger) -> x + x) # y) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
         ]
     , testGroup
         "Lifting of constants"
