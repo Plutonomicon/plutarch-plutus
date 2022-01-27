@@ -481,7 +481,7 @@
       ;
     in
     {
-      inherit extraSources cabalProjectLocal haskellModule;
+      inherit extraSources cabalProjectLocal haskellModule tools;
 
       project = perSystem projectFor;
       project810 = perSystem projectFor810;
