@@ -19,7 +19,7 @@ module Plutarch.Prelude (
   Type,
   S,
   PType,
-  PlutusType (PInner, pcon', pmatch'),
+  PlutusType (PInner),
   PCon (pcon),
   PMatch (pmatch),
 

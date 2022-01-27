@@ -5,7 +5,6 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
--- This should have been called Plutarch.Data...
 module Plutarch.Builtin (
   PData (..),
   pfstBuiltin,
