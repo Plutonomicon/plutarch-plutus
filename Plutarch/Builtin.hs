@@ -128,7 +128,7 @@ instance PLift a => PlutusType (PBuiltinList a) where
   type PInner (PBuiltinList a) _ = PBuiltinList a
   pcon' (PCons x xs) = pconsBuiltin # x # xs
   pcon' PNil = pconstant []
-  pmatch' xs f =
+  pmatch' xs' f = plet xs' $ \xs ->
     pforce $
       pchooseListBuiltin
         # xs
