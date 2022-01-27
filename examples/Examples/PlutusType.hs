@@ -56,30 +56,16 @@ tests =
         "PlutusType instances sanity"
         -- TODO: Add more sanity tests here!
         [ testCase "PBuiltinList" $ do
-            pmatchTargetEvalBList $ pconstant [1 :: Integer, 2, 3, 4]
+            pmatchTargetEval $ pconstant [1 :: Integer, 2, 3, 4]
         ]
     ]
 
 -- CPP support isn't great in fourmolu.
 {- ORMOLU_DISABLE -}
 
--- | Make sure the target builtin list of 'pmatch' is not evaluated multiple times.
-pmatchTargetEvalBList :: (HasTester, PLift a) => ClosedTerm (PBuiltinList a) -> Assertion
-pmatchTargetEvalBList target = pmatch (ptrace (pconstant tag) target) (\case
-  PCons x xs -> plet x $ \_ -> plet xs $ \_ -> pconstant ()
-  PNil -> pconstant ())
-#ifdef Development
-  `traces` replicate 1 tag
-#else
-  `traces` []
-#endif
-  where
-    tag = "evaluating"
-
--- FIXME: This needs to fully "evaluate" (e.g evaluate in UPLC) the `x` within the `pmatch` handler.
 -- | Make sure the target of 'pmatch' is only evaluated once.
-_pmatchTargetEval :: HasTester => PlutusType p => ClosedTerm p -> Assertion
-_pmatchTargetEval target = pmatch (ptrace (pconstant tag) target) (\_ -> perror)
+pmatchTargetEval :: HasTester => PlutusType p => ClosedTerm p -> Assertion
+pmatchTargetEval target = pmatch (ptrace (pconstant tag) target) (\x -> plet (pcon x) $ \_ -> pconstant ())
 #ifdef Development
   `traces` replicate 1 tag
 #else
