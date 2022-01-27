@@ -101,6 +101,7 @@ benchmark benchmark
     , base
     , plutarch
     , plutarch-benchmark
+    , bytestring
 
 executable benchmark-diff
   import:         c

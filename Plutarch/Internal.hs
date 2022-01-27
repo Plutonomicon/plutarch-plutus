@@ -43,7 +43,7 @@ import GHC.Stack (HasCallStack)
 import Numeric.Natural (Natural)
 import Plutarch.Evaluate (evaluateScript)
 import Plutus.V1.Ledger.Scripts (Script (Script))
-import PlutusCore (Some, ValueOf)
+import PlutusCore (Some (Some), ValueOf (ValueOf))
 import qualified PlutusCore as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
 import qualified UntypedPlutusCore as UPLC
@@ -303,7 +303,15 @@ punsafeConstant :: Some (ValueOf PLC.DefaultUni) -> Term s a
 punsafeConstant = punsafeConstantInternal
 
 punsafeConstantInternal :: Some (ValueOf PLC.DefaultUni) -> Term s a
-punsafeConstantInternal c = Term $ \_ -> mkTermRes $ RConstant c
+punsafeConstantInternal c = Term $ \_ ->
+  case c of
+    -- These constants are smaller than variable references.
+    Some (ValueOf PLC.DefaultUniBool _) -> mkTermRes $ RConstant c
+    Some (ValueOf PLC.DefaultUniUnit _) -> mkTermRes $ RConstant c
+    Some (ValueOf PLC.DefaultUniInteger n) | n < 256 -> mkTermRes $ RConstant c
+    _ ->
+      let hoisted = HoistedTerm (hashRawTerm $ RConstant c) (RConstant c)
+       in TermResult (RHoisted hoisted) [hoisted]
 
 asClosedRawTerm :: ClosedTerm a -> TermResult
 asClosedRawTerm t = asRawTerm t 0
@@ -311,7 +319,7 @@ asClosedRawTerm t = asRawTerm t 0
 -- FIXME: Give proper error message when mutually recursive.
 phoistAcyclic :: HasCallStack => ClosedTerm a -> Term s a
 phoistAcyclic t = case asRawTerm t 0 of
-  -- FIXME: is this worth it?
+  -- Built-ins are smaller than variable references
   t'@(getTerm -> RBuiltin _) -> Term $ \_ -> t'
   t' -> case evaluateScript . Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' t') of
     Right _ ->
