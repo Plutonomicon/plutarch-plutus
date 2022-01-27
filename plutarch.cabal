@@ -177,6 +177,7 @@ test-suite examples
     , tasty
     , tasty-hunit
     , text
+    , transformers
 
   --, shrinker
   if flag(development)
