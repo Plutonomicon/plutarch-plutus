@@ -1,6 +1,9 @@
 # `plutarch-benchmark`
 
-```
+```sh
+# If running from repo root:
+cabal bench plutarch-benchmark
+# Or, if running from this sub directory:
 cabal bench
 ```
 
