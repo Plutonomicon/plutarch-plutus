@@ -5,6 +5,7 @@ module Examples.LetRec (tests) where
 
 import Plutarch (printTerm)
 import Plutarch.Builtin (pasConstr, pforgetData)
+import Plutarch.Internal.PlutusType (pcon', pmatch')
 import Plutarch.Prelude
 import Plutarch.Rec (
   DataReader (DataReader, readData),
