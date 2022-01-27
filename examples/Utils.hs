@@ -1,27 +1,40 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE ImplicitParams #-}
 
-module Utils (HasTester, standardTester, eval, equal, equalBudgeted, equal', fails, expect, throws, traces, shrinkTester) where
+module Utils (
+  HasTester,
+  standardTester,
+  eval,
+  equal,
+  equalBudgeted,
+  equal',
+  fails,
+  expect,
+  throws,
+  traces,
+  succeeds,
+) where
 
 import Control.Exception (SomeException, try)
-import Data.Kind (Type)
 import Data.Text (Text)
-import Plutarch (ClosedTerm, PCon (pcon), Term, compile, printScript)
-import Plutarch.Bool (PBool (PTrue))
+import Plutarch (ClosedTerm, compile, printScript)
 import Plutarch.Evaluate (evaluateBudgetedScript, evaluateScript)
+import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
 import qualified PlutusCore.Evaluation.Machine.ExMemory as ExMemory
-import Shrink (shrinkScript)
+
+-- import Shrink (shrinkScript)
 import Test.Tasty.HUnit
 
-newtype EvalImpl = EvalImpl {runEvalImpl :: forall k (a :: k -> Type). HasCallStack => ClosedTerm a -> IO Scripts.Script}
-newtype EqualImpl = EqualImpl {runEqualImpl :: forall k (a :: k -> Type) (b :: k -> Type). HasCallStack => ClosedTerm a -> ClosedTerm b -> Assertion}
-newtype Equal'Impl = Equal'Impl {runEqual'Impl :: forall k (a :: k -> Type). HasCallStack => ClosedTerm a -> String -> Assertion}
-newtype FailsImpl = FailsImpl {runFailsImpl :: forall k (a :: k -> Type). HasCallStack => ClosedTerm a -> Assertion}
-newtype ExpectImpl = ExpectImpl {runExpectImpl :: forall (k :: Type). HasCallStack => ClosedTerm @k PBool -> Assertion}
-newtype ThrowsImpl = ThrowsImpl {runThrowsImpl :: forall k (a :: k -> Type). ClosedTerm a -> Assertion}
-newtype TracesImpl = TracesImpl {runTracesImpl :: forall k (a :: k -> Type). ClosedTerm a -> [Text] -> Assertion}
+newtype EvalImpl = EvalImpl {runEvalImpl :: forall (a :: PType). HasCallStack => ClosedTerm a -> IO Scripts.Script}
+newtype EqualImpl = EqualImpl {runEqualImpl :: forall (a :: PType) (b :: PType). HasCallStack => ClosedTerm a -> ClosedTerm b -> Assertion}
+newtype Equal'Impl = Equal'Impl {runEqual'Impl :: forall (a :: PType). HasCallStack => ClosedTerm a -> String -> Assertion}
+newtype FailsImpl = FailsImpl {runFailsImpl :: forall (a :: PType). HasCallStack => ClosedTerm a -> Assertion}
+newtype ExpectImpl = ExpectImpl {runExpectImpl :: HasCallStack => ClosedTerm PBool -> Assertion}
+newtype ThrowsImpl = ThrowsImpl {runThrowsImpl :: forall (a :: PType). ClosedTerm a -> Assertion}
+newtype TracesImpl = TracesImpl {runTracesImpl :: forall (a :: PType). ClosedTerm a -> [Text] -> Assertion}
+newtype SucceedsImpl = SucceedsImpl {runSucceedsImpl :: ClosedTerm PUnit -> Assertion}
 
 data Tester = Tester
   { evalImpl :: EvalImpl
@@ -31,6 +44,7 @@ data Tester = Tester
   , expectImpl :: ExpectImpl
   , throwsImpl :: ThrowsImpl
   , tracesImpl :: TracesImpl
+  , succeedsImpl :: SucceedsImpl
   }
 
 type HasTester = (?tester :: Tester)
@@ -50,6 +64,7 @@ standardTester =
     , expectImpl = ExpectImpl expectImpl
     , throwsImpl = ThrowsImpl throwsImpl
     , tracesImpl = TracesImpl tracesImpl
+    , succeedsImpl = SucceedsImpl succeedsImpl
     }
   where
     evalImpl :: HasCallStack => ClosedTerm a -> IO Scripts.Script
@@ -89,6 +104,12 @@ standardTester =
         Left e -> assertFailure $ "Script evalImpluation failed: " <> show e
         Right (_, traceLog, _) -> traceLog @?= sl
 
+    succeedsImpl :: HasCallStack => ClosedTerm PUnit -> Assertion
+    succeedsImpl x = case evaluateScript $ compile x of
+      Left e -> assertFailure $ "Script evaluation failed: " <> show e
+      Right _ -> pure ()
+
+{-
 shrinkTester :: Tester
 shrinkTester =
   Tester
@@ -137,10 +158,11 @@ shrinkTester =
       case evaluateScript . shrinkScript $ compile x of
         Left e -> assertFailure $ "Script evalImpluation failed: " <> show e
         Right (_, traceLog, _) -> traceLog @?= sl
+-}
 
 eval :: (HasCallStack, HasTester) => ClosedTerm a -> IO Scripts.Script
 eval = runEvalImpl (evalImpl ?tester)
-equal :: forall k (a :: k -> Type) (b :: k -> Type). (HasCallStack, HasTester) => ClosedTerm @k a -> ClosedTerm @k b -> Assertion
+equal :: forall (a :: PType) (b :: PType). (HasCallStack, HasTester) => ClosedTerm a -> ClosedTerm b -> Assertion
 equal x y = runEqualImpl (equalImpl ?tester) x y
 equal' :: (HasCallStack, HasTester) => ClosedTerm a -> String -> Assertion
 equal' = runEqual'Impl (equal'Impl ?tester)
@@ -152,6 +174,8 @@ throws :: (HasCallStack, HasTester) => ClosedTerm a -> Assertion
 throws = runThrowsImpl (throwsImpl ?tester)
 traces :: (HasCallStack, HasTester) => ClosedTerm a -> [Text] -> Assertion
 traces = runTracesImpl (tracesImpl ?tester)
+succeeds :: (HasCallStack, HasTester) => ClosedTerm PUnit -> Assertion
+succeeds = runSucceedsImpl (succeedsImpl ?tester)
 
 evalBudgeted :: HasCallStack => ClosedTerm a -> IO Scripts.Script
 evalBudgeted x = case evaluateBudgetedScript (ExBudget maxCPU maxMemory) $ compile x of

@@ -9,7 +9,9 @@ import Plutarch
 import Plutarch.Bool (pnot, (#<), (#==))
 import Plutarch.Builtin (PBuiltinList (..))
 import Plutarch.Integer
+import Plutarch.Lift
 import Plutarch.List
+import qualified Plutarch.Monadic as P
 
 --------------------------------------------------------------------------------
 
@@ -50,4 +52,22 @@ tests = do
         expect $
           (pzipWith' (+) # integerList [1 .. 10] # integerList [1 .. 10])
             #== integerList (fmap (* 2) [1 .. 10])
+    , testCase "pfoldl" $ do
+        expect $
+          (pfoldl # plam (-) # 0 # integerList [1 .. 10])
+            #== pconstant (foldl (-) 0 [1 .. 10])
+        expect $
+          (pfoldl' (-) # 0 # integerList [1 .. 10])
+            #== pconstant (foldl (-) 0 [1 .. 10])
+        expect $
+          (pfoldl # plam (-) # 0 # integerList [])
+            #== pconstant 0
+        expect $
+          (pfoldl' (-) # 0 # integerList [])
+            #== pconstant 0
+    , testCase "pmatch" $ do
+        let t = P.do
+              _ <- pmatch $ integerList [1, 3, 1]
+              perror
+         in printTerm t @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> i2 (\\i0 -> i2 i2 i1)) (\\i0 -> i2 (\\i0 -> i2 i2 i1))) (\\i0 -> \\i0 -> force (force (force chooseList) i1 (delay (\\i0 -> \\i0 -> force i1)) (delay ((\\i0 -> \\i0 -> \\i0 -> \\i0 -> i2 i4 i3) (force headList i1) (i2 (force tailList i1)))))) [1,3,1] (\\i0 -> \\i0 -> error) (delay error)))"
     ]

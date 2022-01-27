@@ -1,20 +1,33 @@
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.String (PString, pfromText, pencodeUtf8, pdecodeUtf8) where
 
 import Data.String (IsString, fromString)
 import Data.Text (Text)
 import qualified Data.Text as Txt
-import Plutarch (punsafeBuiltin)
+import Plutarch (
+  Term,
+  (#),
+  type (:-->),
+ )
 import Plutarch.Bool (PEq, (#==))
 import Plutarch.ByteString (PByteString)
-import Plutarch.Lift
-import Plutarch.Prelude
+import Plutarch.Lift (
+  DerivePConstantDirect (DerivePConstantDirect),
+  PConstant,
+  PLifted,
+  PUnsafeLiftDecl,
+  pconstant,
+ )
+import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinString' values
 data PString s
-  deriving (PLift) via PBuiltinType PString Text
+
+instance PUnsafeLiftDecl PString where type PLifted PString = Text
+deriving via (DerivePConstantDirect Text PString) instance (PConstant Text)
 
 {-# DEPRECATED pfromText "Use `pconstant` instead." #-}
 

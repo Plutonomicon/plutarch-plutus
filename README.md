@@ -6,7 +6,7 @@
 [Herc badge]: https://img.shields.io/badge/ci--by--hercules-green.svg
 [Herc link]: https://hercules-ci.com/github/Plutonomicon/plutarch
 [Cachix badge]: https://img.shields.io/badge/cachix-public--plutonomicon-blue.svg
-[Cachix link]: https://public-plutonomicon.cachix.org 
+[Cachix link]: https://public-plutonomicon.cachix.org
 
 Plutarch is a typed eDSL in Haskell for writing efficient Plutus Core validators.
 
@@ -37,27 +37,12 @@ package plutarch
   flags: +development
 ```
 
-# Usage
-Read the [Plutarch guide](./docs/GUIDE.md) to get started!
-
 # Benchmarks
 
-```
-cabal bench
-```
+See the [`plutarch-benchmark`](./plutarch-benchmark) library for how to benchmark plutarch, and benchmarking your own scripts.
 
-This will write the benchmark report to `bench.csv` as well as output a table view of the same.
-
-## Benchmarking a commit
-To run benchmarks on a particular commit,
-
-```
-nix run github:Plutonomicon/plutarch/<COMMIT-GOES-HERE>#benchmark
-```
-
-Note that you can also view these benchmarks on a per-commit basis by looking at Hercules CI logs. Go to the Hercules CI job run for a given commit, and navigate to the `nixCi.checks.x86_64-linux.benchmark` page in the Attributes table, and then click on the "Log" header to view its output.
-
-Eventually we will have PR integration for running benchmarks. 
+# Usage
+Read the [Plutarch guide](./docs/GUIDE.md) to get started!
 
 # Contributing
 Contributions are more than welcome! Alongside the [User guide](#usage) above, you may also find the [Developers' guide](./docs/DEVGUIDE.md) useful for understanding the codebase.

@@ -1,16 +1,34 @@
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Integer (PInteger, PIntegral (..)) where
 
-import Plutarch (punsafeBuiltin)
+import Plutarch (
+  DerivePNewtype,
+  Term,
+  phoistAcyclic,
+  plam,
+  plet,
+  pto,
+  (#),
+  type (:-->),
+ )
 import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
-import Plutarch.Lift
-import Plutarch.Prelude
+import Plutarch.Lift (
+  DerivePConstantDirect (DerivePConstantDirect),
+  PConstant,
+  PLifted,
+  PUnsafeLiftDecl,
+  pconstant,
+ )
+import Plutarch.Unsafe (punsafeBuiltin, punsafeFrom)
 import qualified PlutusCore as PLC
 
 -- | Plutus BuiltinInteger
 data PInteger s
-  deriving (PLift) via PBuiltinType PInteger Integer
+
+instance PUnsafeLiftDecl PInteger where type PLifted PInteger = Integer
+deriving via (DerivePConstantDirect Integer PInteger) instance (PConstant Integer)
 
 class PIntegral a where
   pdiv :: Term s (a :--> a :--> a)
@@ -46,3 +64,9 @@ instance Num (Term s PInteger) where
         (-1)
         1
   fromInteger = pconstant
+
+instance PIntegral b => PIntegral (DerivePNewtype a b) where
+  pdiv = phoistAcyclic $ plam $ \x y -> punsafeFrom $ pdiv # pto x # pto y
+  pmod = phoistAcyclic $ plam $ \x y -> punsafeFrom $ pmod # pto x # pto y
+  pquot = phoistAcyclic $ plam $ \x y -> punsafeFrom $ pquot # pto x # pto y
+  prem = phoistAcyclic $ plam $ \x y -> punsafeFrom $ prem # pto x # pto y

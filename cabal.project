@@ -1,10 +1,5 @@
-index-state: 2022-01-03T00:00:00Z
-
-allow-newer: size-based:template-haskell
-
-package plutus-tx-plugin
-  flags: +use-ghc-stub
-
-packages: ./.
+packages:
+  ./.
+  ./plutarch-benchmark/plutarch-benchmark.cabal
 
 benchmarks: true

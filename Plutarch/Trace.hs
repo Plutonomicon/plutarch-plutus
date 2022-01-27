@@ -5,18 +5,19 @@ module Plutarch.Trace (ptrace, ptraceIfTrue, ptraceIfFalse, ptraceError) where
 -- CPP support isn't great in fourmolu.
 {- ORMOLU_DISABLE -}
 
+import Plutarch (Term, perror)
 #ifdef Development
-import Plutarch (punsafeBuiltin)
+import Plutarch (type (:-->), (#), phoistAcyclic, plet, pforce, pdelay)
 #endif
 #ifdef Development
 import Plutarch.Bool (PBool, pif)
 #else
 import Plutarch.Bool (PBool)
 #endif
-import Plutarch.Prelude
 import Plutarch.String (PString)
 
 #ifdef Development
+import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
 #endif
 

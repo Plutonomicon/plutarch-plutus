@@ -11,26 +11,27 @@ import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
 import qualified Examples.List as List
 import Examples.Tracing (traceTests)
-import Plutarch (POpaque, pconstant, plift', popaque, printTerm, punsafeBuiltin)
-import Plutarch.Bool (PBool (PFalse, PTrue), pand, pif, pnot, por, (#&&), (#<), (#<=), (#==), (#||))
-import Plutarch.Builtin (PAsData, PBuiltinList (..), PBuiltinPair, PData, pdata)
-import Plutarch.ByteString (PByteString, pconsBS, phexByteStr, pindexBS, plengthBS, psliceBS)
-import Plutarch.Either (PEither (PLeft, PRight))
-import Plutarch.Integer (PInteger)
+import Plutarch (POpaque, popaque, printTerm)
+import Plutarch.Api.V1 (PScriptPurpose (PMinting))
+import Plutarch.Bool (pand, por)
 import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude
-import Plutarch.ScriptContext (PScriptPurpose (PMinting))
-import Plutarch.String (PString)
-import Plutarch.Unit (PUnit (..))
+import Plutarch.Unsafe (punsafeBuiltin)
 import Plutus.V1.Ledger.Value (CurrencySymbol (CurrencySymbol))
 import Plutus.V2.Ledger.Contexts (ScriptPurpose (Minting))
 import qualified PlutusCore as PLC
 import qualified PlutusTx
 
+import qualified Examples.Api as Api
+import qualified Examples.Field as Field
 import qualified Examples.LetRec as LetRec
+import qualified Examples.PIsData as PIsData
 import qualified Examples.PlutusType as PlutusType
+import qualified Examples.Rationals as Rationals
 import qualified Examples.Recursion as Recursion
 import Utils
+
+import Data.Text (Text)
 
 main :: IO ()
 main = defaultMain $ testGroup "all tests" [standardTests] -- , shrinkTests ]
@@ -69,8 +70,8 @@ uglyDouble = plam $ \n -> plet n $ \n1 -> plet n1 $ \n2 -> n2 + n2
 -- loopHoisted :: Term (PInteger :--> PInteger)
 -- loopHoisted = phoistAcyclic $ plam $ \x -> loop # x
 
-_shrinkTests :: TestTree
-_shrinkTests = testGroup "shrink tests" [let ?tester = shrinkTester in tests]
+-- _shrinkTests :: TestTree
+-- _shrinkTests = testGroup "shrink tests" [let ?tester = shrinkTester in tests]
 
 standardTests :: TestTree
 standardTests = testGroup "standard tests" [let ?tester = standardTester in tests]
@@ -83,8 +84,12 @@ tests =
     , uplcTests
     , PlutusType.tests
     , Recursion.tests
+    , Api.tests
     , List.tests
+    , Rationals.tests
     , LetRec.tests
+    , PIsData.tests
+    , Field.tests
     ]
 
 plutarchTests :: HasTester => TestTree
@@ -101,6 +106,22 @@ plutarchTests =
     , testCase "uglyDouble" $ (printTerm uglyDouble) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
     , testCase "1 + 2 == 3" $ equal (pconstant @PInteger $ 1 + 2) (pconstant @PInteger 3)
     , testCase "fails: perror" $ fails perror
+    , testGroup
+        "PlutusType scott encoding "
+        [ testCase "PMaybe" $ do
+            let a = 42 :: Term s PInteger
+            let x = pmatch (pcon $ PJust a) $ \case
+                  PJust x -> x
+                  -- We expect this perror not to be evaluated eagerly when mx
+                  -- is a PJust.
+                  PNothing -> perror
+            printTerm x @?= "(program 1.0.0 ((\\i0 -> \\i0 -> i2 42) (\\i0 -> i1) (delay error)))"
+        , testCase "PPair" $ do
+            let a = 42 :: Term s PInteger
+                b = "Universe" :: Term s PString
+            let x = pmatch (pcon (PPair a b) :: Term s (PPair PInteger PString)) $ \(PPair _ y) -> y
+            printTerm x @?= "(program 1.0.0 ((\\i0 -> i1 42 \"Universe\") (\\i0 -> \\i0 -> i1)))"
+        ]
     , testCase "pnot" $ do
         (pnot #$ pcon PTrue) `equal` pcon PFalse
         (pnot #$ pcon PFalse) `equal` pcon PTrue
@@ -228,29 +249,25 @@ plutarchTests =
     , testGroup
         "Lifting of constants"
         [ testCase "plift on primitive types" $ do
-            plift' (pcon PTrue) @?= Right True
-            plift' (pcon PFalse) @?= Right False
+            plift (pcon PTrue) @?= True
+            plift (pcon PFalse) @?= False
         , testCase "pconstant on primitive types" $ do
-            plift' (pconstant @PBool False) @?= Right False
-            plift' (pconstant @PBool True) @?= Right True
+            plift (pconstant @PBool False) @?= False
+            plift (pconstant @PBool True) @?= True
         , testCase "plift on list and pair" $ do
-            plift' (pconstant @(PBuiltinList PInteger) [1, 2, 3]) @?= Right [1, 2, 3]
-            plift' (pconstant @(PBuiltinPair PString PInteger) ("IOHK", 42)) @?= Right ("IOHK", 42)
+            plift (pconstant ([1, 2, 3] :: [Integer])) @?= [1, 2, 3]
+            plift (pconstant ("IOHK" :: Text, 42 :: Integer)) @?= ("IOHK", 42)
         , testCase "plift on data" $ do
             let d :: PlutusTx.Data
                 d = PlutusTx.toData @(Either Bool Bool) $ Right False
-            plift' (pconstant @(PData) d) @?= Right d
-        , testCase "plift on PAsData" $ do
-            let n :: Integer
-                n = 1
-            plift' (pconstant @(PAsData PInteger) n) @?= Right n
+            plift (pconstant d) @?= d
         , testCase "plift on nested containers" $ do
             -- List of pairs
-            let v1 = [("IOHK", 42), ("Plutus", 31)]
-            plift' (pconstant @(PBuiltinList (PBuiltinPair PString PInteger)) v1) @?= Right v1
+            let v1 = [("IOHK", 42), ("Plutus", 31)] :: [(Text, Integer)]
+            plift (pconstant v1) @?= v1
             -- List of pair of lists
-            let v2 = [("IOHK", [1, 2, 3]), ("Plutus", [9, 8, 7])]
-            plift' (pconstant @(PBuiltinList (PBuiltinPair PString (PBuiltinList PInteger))) v2) @?= Right v2
+            let v2 = [("IOHK", [1, 2, 3]), ("Plutus", [9, 8, 7])] :: [(Text, [Integer])]
+            plift (pconstant v2) @?= v2
         ]
     , testGroup
         "Boolean operations"
@@ -264,6 +281,12 @@ plutarchTests =
         , testCase "True || perror ≡ True" $ equal (pcon PTrue #|| perror) (pcon PTrue)
         , testCase "fails: por True perror" $ fails $ por # pcon PFalse # perror
         , testCase "por True (pdelay perror) ≡ True" $ equal (por # pcon PTrue # pdelay perror) (pdelay $ pcon PTrue)
+        ]
+    , testGroup
+        "plam"
+        [ testCase "flip const" $ printTerm (plam $ \_ y -> y) @?= "(program 1.0.0 (\\i0 -> \\i0 -> i1))"
+        , testCase "id" $ printTerm (plam $ \x -> x) @?= "(program 1.0.0 (\\i0 -> i1))"
+        , testCase "plet" $ printTerm (plam $ \x _ -> plet x $ \_ -> perror) @?= "(program 1.0.0 (\\i0 -> \\i0 -> error))"
         ]
     ]
 

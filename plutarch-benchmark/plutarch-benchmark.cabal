@@ -1,0 +1,115 @@
+cabal-version:      2.4
+name:               plutarch-benchmark
+version:            1.1.0
+author:             Las Safin <me@las.rs>
+license:            MIT
+extra-source-files: README.md
+
+common c
+  default-language:   Haskell2010
+  default-extensions:
+    NoStarIsType
+    BangPatterns
+    BinaryLiterals
+    ConstrainedClassMethods
+    ConstraintKinds
+    DataKinds
+    DeriveAnyClass
+    DeriveDataTypeable
+    DeriveFoldable
+    DeriveFunctor
+    DeriveGeneric
+    DeriveLift
+    DeriveTraversable
+    DerivingStrategies
+    DerivingVia
+    DoAndIfThenElse
+    EmptyCase
+    EmptyDataDecls
+    EmptyDataDeriving
+    ExistentialQuantification
+    ExplicitForAll
+    FlexibleContexts
+    FlexibleInstances
+    ForeignFunctionInterface
+    GADTSyntax
+    GeneralisedNewtypeDeriving
+    HexFloatLiterals
+    ImplicitPrelude
+    InstanceSigs
+    KindSignatures
+    LambdaCase
+    MonomorphismRestriction
+    MultiParamTypeClasses
+    NamedFieldPuns
+    NamedWildCards
+    NumericUnderscores
+    OverloadedStrings
+    PartialTypeSignatures
+    PatternGuards
+    PolyKinds
+    PostfixOperators
+    RankNTypes
+    RelaxedPolyRec
+    ScopedTypeVariables
+    StandaloneDeriving
+    StandaloneKindSignatures
+    TraditionalRecordSyntax
+    TupleSections
+    TypeApplications
+    TypeFamilies
+    TypeOperators
+    TypeSynonymInstances
+    ViewPatterns
+
+  ghc-options:
+    -Wall -Wcompat -Wincomplete-uni-patterns -Wno-unused-do-bind
+    -Wno-partial-type-signatures -Wmissing-export-lists -Werror
+    -Wincomplete-record-updates -Wmissing-deriving-strategies
+    -Wno-name-shadowing -Wunused-foralls -fprint-explicit-foralls
+    -fprint-explicit-kinds
+
+library
+  import:          c
+  exposed-modules: Plutarch.Benchmark
+  build-depends:
+    , base
+    , boxes
+    , bytestring
+    , cassava
+    , containers
+    , data-default
+    , flat
+    , foldl
+    , mtl
+    , plutarch
+    , plutus-core
+    , plutus-ledger-api
+    , serialise
+    , text
+    , these
+    , vector
+
+  hs-source-dirs:  src
+
+benchmark benchmark
+  import:         c
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: bench
+  main-is:        Main.hs
+  build-depends:
+    , base
+    , plutarch
+    , plutarch-benchmark
+
+executable benchmark-diff
+  import:         c
+  hs-source-dirs: benchmark-diff
+  main-is:        Main.hs
+  build-depends:
+    , base
+    , boxes
+    , bytestring
+    , cassava
+    , plutarch
+    , plutarch-benchmark

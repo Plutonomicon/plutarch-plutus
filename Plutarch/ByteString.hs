@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.ByteString (
   PByteString,
@@ -15,16 +16,28 @@ import qualified Data.ByteString as BS
 import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Stack (HasCallStack)
-import Plutarch (punsafeBuiltin)
+import Plutarch (
+  Term,
+  (#),
+  type (:-->),
+ )
 import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Integer (PInteger)
-import Plutarch.Lift
-import Plutarch.Prelude
+import Plutarch.Lift (
+  DerivePConstantDirect (DerivePConstantDirect),
+  PConstant,
+  PLifted,
+  PUnsafeLiftDecl,
+  pconstant,
+ )
+import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinByteString'
 data PByteString s
-  deriving (PLift) via PBuiltinType PByteString ByteString
+
+instance PUnsafeLiftDecl PByteString where type PLifted PByteString = ByteString
+deriving via (DerivePConstantDirect ByteString PByteString) instance (PConstant ByteString)
 
 instance PEq PByteString where
   x #== y = punsafeBuiltin PLC.EqualsByteString # x # y
