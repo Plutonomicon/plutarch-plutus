@@ -192,6 +192,9 @@
 
   Added in: [#181](https://github.com/Plutonomicon/plutarch/pull/181)
 - Move out `punsafe*` functions from `Plutarch` and into `Plutarch.Unsafe`.
+- Add generic deriving for `PlutusType` with scott encoding representation.
+
+  Added in: [#189](https://github.com/Plutonomicon/plutarch/pull/189)
 
 Thanks to:
 - @blamario
