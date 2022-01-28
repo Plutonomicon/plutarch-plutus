@@ -150,59 +150,46 @@ deconstrBench =
       "matching"
       [ benchGroup
           "typed"
-          [ bench "pmatch on newtype" $ P.do
+          [ bench "newtype" $ P.do
               PAddress addrFields <- pmatch $ pconstant $ Address (PubKeyCredential "ab") Nothing
               addrFields
-          , bench "pmatch on sum type, ignoring fields" $ P.do
+          , bench "sumtype(ignore-fields)" $ P.do
               PMinting _ <- pmatch $ pconstant $ Minting ""
               pconstant ()
-          , bench "pmatch on sum type, partial match" $ P.do
+          , bench "sumtype(partial-match)" $ P.do
               PMinting hs <- pmatch $ pconstant $ Minting ""
               hs
-          , bench "pmatch on sum type, full usage, ignoring fields" $ P.do
-              purp <- pmatch $ pconstant $ Spending (TxOutRef "ab" 0)
-              case purp of
-                PMinting _ -> phexByteStr "01"
-                PSpending _ -> phexByteStr "02"
-                PRewarding _ -> phexByteStr "03"
-                PCertifying _ -> phexByteStr "04"
-          , bench "pmatch on sum type, full usage, evaluating fields" $ P.do
+          , bench "sumtype(exhaustive)" $ P.do
               purp <- pmatch $ pconstant $ Spending (TxOutRef "ab" 0)
               case purp of
                 PMinting f -> plet f $ const $ phexByteStr "01"
                 PSpending f -> plet f $ const $ phexByteStr "02"
                 PRewarding f -> plet f $ const $ phexByteStr "03"
                 PCertifying f -> plet f $ const $ phexByteStr "04"
+          , bench "sumtype(exhaustive)(ignore-fields)" $ P.do
+              purp <- pmatch $ pconstant $ Spending (TxOutRef "ab" 0)
+              case purp of
+                PMinting _ -> phexByteStr "01"
+                PSpending _ -> phexByteStr "02"
+                PRewarding _ -> phexByteStr "03"
+                PCertifying _ -> phexByteStr "04"
           ]
       , benchGroup
           "raw"
-          [ bench "pasConstr on newtype" $
+          [ bench "newtype" $
               psndBuiltin #$ pasConstr #$ pconstant $ toData $ Address (PubKeyCredential "ab") Nothing
-          , bench "pasConstr on sum type, ignoring fields" $
+          , bench "sumtype(ignore-fields)" $
               pif
                 ((pfstBuiltin #$ pasConstr #$ pconstant $ toData $ Minting "") #== 0)
                 (pconstant ())
                 perror
-          , bench "pmatch on sum type, partial match" $
+          , bench "sumtype(partial-match)" $
               plet (pasConstr #$ pconstant $ toData $ Minting "") $ \d ->
                 pif
                   (pfstBuiltin # d #== 0)
                   (psndBuiltin # d)
                   perror
-          , bench "pmatch on sum type, full usage, ignoring fields" $ P.do
-              d <- plet $ pasConstr #$ pconstant $ toData $ Spending (TxOutRef "ab" 0)
-              constr <- plet $ pfstBuiltin # d
-              pif
-                (constr #== 0)
-                (phexByteStr "01")
-                $ pif
-                  (constr #== 1)
-                  (phexByteStr "02")
-                  $ pif
-                    (constr #== 2)
-                    (phexByteStr "03")
-                    $ phexByteStr "04"
-          , bench "pmatch on sum type, full usage, evaluating fields" $ P.do
+          , bench "sumtype(exhaustive)" $ P.do
               d <- plet $ pasConstr #$ pconstant $ toData $ Spending (TxOutRef "ab" 0)
               constr <- plet $ pfstBuiltin # d
               fields <- plet $ psndBuiltin # d
@@ -216,6 +203,19 @@ deconstrBench =
                     (constr #== 2)
                     (plet fields $ const $ phexByteStr "03")
                     $ plet fields $ const $ phexByteStr "04"
+          , bench "sumtype(exhaustive)(ignore-fields)" $ P.do
+              d <- plet $ pasConstr #$ pconstant $ toData $ Spending (TxOutRef "ab" 0)
+              constr <- plet $ pfstBuiltin # d
+              pif
+                (constr #== 0)
+                (phexByteStr "01")
+                $ pif
+                  (constr #== 1)
+                  (phexByteStr "02")
+                  $ pif
+                    (constr #== 2)
+                    (phexByteStr "03")
+                    $ phexByteStr "04"
           ]
       ]
   ]
