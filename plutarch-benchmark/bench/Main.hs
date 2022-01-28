@@ -189,98 +189,100 @@ deconstrBench :: [[NamedBenchmark]]
 deconstrBench =
   [ benchGroup
       "matching"
-      [ benchGroup
-          "typed"
-          [ bench "newtype" $ P.do
-              PAddress addrFields <- pmatch $ pconstant $ Address (PubKeyCredential "ab") Nothing
-              addrFields
-          , bench "sumtype(ignore-fields)" $ P.do
-              PMinting _ <- pmatch $ pconstant $ Minting ""
-              pconstant ()
-          , bench "sumtype(partial-match)" $ P.do
-              PMinting hs <- pmatch $ pconstant $ Minting ""
-              hs
-          , bench "sumtype(exhaustive)" $ P.do
-              purp <- pmatch $ pconstant $ Spending (TxOutRef "ab" 0)
-              case purp of
-                PMinting f -> plet f $ const $ phexByteStr "01"
-                PSpending f -> plet f $ const $ phexByteStr "02"
-                PRewarding f -> plet f $ const $ phexByteStr "03"
-                PCertifying f -> plet f $ const $ phexByteStr "04"
-          , bench "sumtype(exhaustive)(ignore-fields)" $ P.do
-              purp <- pmatch $ pconstant $ Spending (TxOutRef "ab" 0)
-              case purp of
-                PMinting _ -> phexByteStr "01"
-                PSpending _ -> phexByteStr "02"
-                PRewarding _ -> phexByteStr "03"
-                PCertifying _ -> phexByteStr "04"
-          ]
-      , benchGroup
-          "raw"
-          [ bench "newtype" $
-              psndBuiltin #$ pasConstr #$ pconstant $ toData $ Address (PubKeyCredential "ab") Nothing
-          , bench "sumtype(ignore-fields)" $
-              pif
-                ((pfstBuiltin #$ pasConstr #$ pconstant $ toData $ Minting "") #== 0)
-                (pconstant ())
-                perror
-          , bench "sumtype(partial-match)" $
-              plet (pasConstr #$ pconstant $ toData $ Minting "") $ \d ->
-                pif
-                  (pfstBuiltin # d #== 0)
-                  (psndBuiltin # d)
-                  perror
-          , bench "sumtype(exhaustive)" $ P.do
-              d <- plet $ pasConstr #$ pconstant $ toData $ Spending (TxOutRef "ab" 0)
-              constr <- plet $ pfstBuiltin # d
-              fields <- plet $ psndBuiltin # d
-              pif
-                (constr #== 0)
-                (plet fields $ const $ phexByteStr "01")
-                $ pif
-                  (constr #== 1)
-                  (plet fields $ const $ phexByteStr "02")
-                  $ pif
-                    (constr #== 2)
-                    (plet fields $ const $ phexByteStr "03")
-                    $ plet fields $ const $ phexByteStr "04"
-          , bench "sumtype(exhaustive)(ignore-fields)" $ P.do
-              d <- plet $ pasConstr #$ pconstant $ toData $ Spending (TxOutRef "ab" 0)
-              constr <- plet $ pfstBuiltin # d
-              pif
-                (constr #== 0)
-                (phexByteStr "01")
-                $ pif
-                  (constr #== 1)
-                  (phexByteStr "02")
-                  $ pif
-                    (constr #== 2)
-                    (phexByteStr "03")
-                    $ phexByteStr "04"
-          ]
-      ]
+      $ let addr = Address (PubKeyCredential "ab") Nothing
+            minting = Minting ""
+            spending = Spending (TxOutRef "ab" 0)
+         in [ benchGroup
+                "typed"
+                [ bench "newtype" $ P.do
+                    PAddress addrFields <- pmatch $ pconstant addr
+                    addrFields
+                , bench "sumtype(ignore-fields)" $ P.do
+                    PMinting _ <- pmatch $ pconstant minting
+                    pconstant ()
+                , bench "sumtype(partial-match)" $ P.do
+                    PMinting hs <- pmatch $ pconstant minting
+                    hs
+                , bench "sumtype(exhaustive)" $ P.do
+                    purp <- pmatch $ pconstant spending
+                    case purp of
+                      PMinting f -> plet f $ const $ phexByteStr "01"
+                      PSpending f -> plet f $ const $ phexByteStr "02"
+                      PRewarding f -> plet f $ const $ phexByteStr "03"
+                      PCertifying f -> plet f $ const $ phexByteStr "04"
+                , bench "sumtype(exhaustive)(ignore-fields)" $ P.do
+                    purp <- pmatch $ pconstant spending
+                    case purp of
+                      PMinting _ -> phexByteStr "01"
+                      PSpending _ -> phexByteStr "02"
+                      PRewarding _ -> phexByteStr "03"
+                      PCertifying _ -> phexByteStr "04"
+                ]
+            , benchGroup
+                "raw"
+                [ bench "newtype" $
+                    psndBuiltin #$ pasConstr #$ pconstant $ toData addr
+                , bench "sumtype(ignore-fields)" $
+                    pif
+                      ((pfstBuiltin #$ pasConstr #$ pconstant $ toData minting) #== 0)
+                      (pconstant ())
+                      perror
+                , bench "sumtype(partial-match)" $
+                    plet (pasConstr #$ pconstant $ toData minting) $ \d ->
+                      pif
+                        (pfstBuiltin # d #== 0)
+                        (psndBuiltin # d)
+                        perror
+                , bench "sumtype(exhaustive)" $ P.do
+                    d <- plet $ pasConstr #$ pconstant $ toData spending
+                    constr <- plet $ pfstBuiltin # d
+                    fields <- plet $ psndBuiltin # d
+                    pif
+                      (constr #== 0)
+                      (plet fields $ const $ phexByteStr "01")
+                      $ pif
+                        (constr #== 1)
+                        (plet fields $ const $ phexByteStr "02")
+                        $ pif
+                          (constr #== 2)
+                          (plet fields $ const $ phexByteStr "03")
+                          $ plet fields $ const $ phexByteStr "04"
+                , bench "sumtype(exhaustive)(ignore-fields)" $ P.do
+                    d <- plet $ pasConstr #$ pconstant $ toData spending
+                    constr <- plet $ pfstBuiltin # d
+                    pif
+                      (constr #== 0)
+                      (phexByteStr "01")
+                      $ pif
+                        (constr #== 1)
+                        (phexByteStr "02")
+                        $ pif
+                          (constr #== 2)
+                          (phexByteStr "03")
+                          $ phexByteStr "04"
+                ]
+            ]
   , benchGroup
       "combined"
-      [ benchGroup
-          "typed"
-          [ bench "toValidatorHash" $ P.do
-              let addr = pconstant $ Address (ScriptCredential "ab") Nothing
-              cred <- pmatch . pfromData $ pfield @"credential" # addr
-              case cred of
-                PPubKeyCredential _ -> pcon PNothing
-                PScriptCredential credFields -> pcon . PJust $ pto $ pfromData $ pfield @"_0" # credFields
-          ]
-      , benchGroup
-          "raw"
-          [ bench "toValidatorHash" $
-              let addr = pconstant $ toData $ Address (ScriptCredential "ab") Nothing
-                  cred = phead #$ psndBuiltin #$ pasConstr # addr
-               in P.do
-                 deconstrCred <- plet $ pasConstr # cred
-                 pif
-                    (pfstBuiltin # deconstrCred #== 0)
-                    (pcon PNothing)
-                    $ pcon . PJust $ pasByteStr #$ phead #$ psndBuiltin # deconstrCred
-          ]
-      ]
+      $ let addr = Address (ScriptCredential "ab") Nothing
+         in [ benchGroup
+                "typed"
+                [ bench "toValidatorHash" $ P.do
+                    cred <- pmatch . pfromData $ pfield @"credential" # pconstant addr
+                    case cred of
+                      PPubKeyCredential _ -> pcon PNothing
+                      PScriptCredential credFields -> pcon . PJust $ pto $ pfromData $ pfield @"_0" # credFields
+                ]
+            , benchGroup
+                "raw"
+                [ bench "toValidatorHash" $
+                    let cred = phead #$ psndBuiltin #$ pasConstr # pconstant (toData addr)
+                     in P.do
+                          deconstrCred <- plet $ pasConstr # cred
+                          pif
+                            (pfstBuiltin # deconstrCred #== 0)
+                            (pcon PNothing)
+                            $ pcon . PJust $ pasByteStr #$ phead #$ psndBuiltin # deconstrCred
+                ]
+            ]
   ]
