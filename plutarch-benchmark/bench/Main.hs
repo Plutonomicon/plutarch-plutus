@@ -273,17 +273,17 @@ deconstrBench =
                       ( \x -> P.do
                           d <- plet $ pasConstr # x
                           constr <- plet $ pfstBuiltin # d
-                          fields <- plet $ psndBuiltin # d
+                          _ <- plet $ psndBuiltin # d
                           pif
                             (constr #== 0)
-                            (plet fields $ const $ phexByteStr "01")
+                            (phexByteStr "01")
                             $ pif
                               (constr #== 1)
-                              (plet fields $ const $ phexByteStr "02")
+                              (phexByteStr "02")
                               $ pif
                                 (constr #== 2)
-                                (plet fields $ const $ phexByteStr "03")
-                                $ plet fields $ const $ phexByteStr "04"
+                                (phexByteStr "03")
+                                $ phexByteStr "04"
                       )
                       #$ pconstant
                       $ toData spending
