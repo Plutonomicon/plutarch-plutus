@@ -290,8 +290,7 @@ deconstrBench =
                 , bench "sumtype(exhaustive)(ignore-fields)" $
                     plam
                       ( \x -> P.do
-                          d <- plet $ pasConstr # x
-                          constr <- plet $ pfstBuiltin # d
+                          constr <- plet $ pfstBuiltin #$ pasConstr # x
                           pif
                             (constr #== 0)
                             (phexByteStr "01")
