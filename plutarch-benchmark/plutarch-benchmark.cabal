@@ -101,6 +101,7 @@ benchmark benchmark
     , base
     , plutarch
     , plutarch-benchmark
+    , plutus-ledger-api
     , bytestring
 
 executable benchmark-diff
