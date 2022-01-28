@@ -26,7 +26,7 @@ benchmarks =
     [ benchGroup "int" integerBench
     , benchGroup "bool" boolBench
     , benchGroup "builtin:intlist" intListBench
-    , benchGroup "deconstruction:data" deconstrBench
+    , benchGroup "data" dataBench
     ]
 
 integerBench :: [[NamedBenchmark]]
@@ -139,6 +139,30 @@ intListBench =
           , bench' $ (plam (+) :: Term _ (PInteger :--> PInteger :--> PInteger))
           ]
       ]
+
+dataBench :: [[NamedBenchmark]]
+dataBench =
+  [ benchGroup "deconstruction" deconstrBench
+  , benchGroup
+      "pmatch-pfield"
+      -- These two should ideally have the exact same efficiency.
+      [ benchGroup
+          "pmatch"
+          [ bench "newtype" $ P.do
+              let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+              PAddress addrFields <- pmatch addr
+              y <- pletFields @'["credential", "stakingCredential"] addrFields
+              ppairDataBuiltin # hrecField @"credential" y # hrecField @"stakingCredential" y
+          ]
+      , benchGroup
+          "pfield"
+          [ bench "newtype" $ P.do
+              let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+              y <- pletFields @'["credential", "stakingCredential"] addr
+              ppairDataBuiltin # hrecField @"credential" y # hrecField @"stakingCredential" y
+          ]
+      ]
+  ]
 
 {- | For comparing typed and untyped data deconstruction approaches.
 
