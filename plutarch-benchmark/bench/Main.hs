@@ -263,6 +263,20 @@ deconstrBench =
                 ]
             ]
   , benchGroup
+      "fields"
+      $ let addr = Address (ScriptCredential "ab") Nothing
+         in [ benchGroup
+                "typed"
+                [ bench "extract-single" $
+                    pfield @"credential" # pconstant addr
+                ]
+            , benchGroup
+                "raw"
+                [ bench "extract-single" $
+                    phead #$ psndBuiltin #$ pasConstr # pconstant (toData addr)
+                ]
+            ]
+  , benchGroup
       "combined"
       $ let addr = Address (ScriptCredential "ab") Nothing
          in [ benchGroup
