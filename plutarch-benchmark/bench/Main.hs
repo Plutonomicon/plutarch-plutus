@@ -162,6 +162,23 @@ dataBench =
               ppairDataBuiltin # hrecField @"credential" y # hrecField @"stakingCredential" y
           ]
       ]
+  , benchGroup
+      "pfield-pletFields"
+      -- These two should ideally have the exact same efficiency.
+      [ benchGroup
+          "pfield"
+          [ bench "single" $ P.do
+              let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+              pfromData $ pfield @"credential" # addr
+          ]
+      , benchGroup
+          "pletFields"
+          [ bench "single" $ P.do
+              let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+              y <- pletFields @'["credential"] addr
+              pfromData $ hrecField @"credential" y
+          ]
+      ]
   ]
 
 {- | For comparing typed and untyped data deconstruction approaches.
