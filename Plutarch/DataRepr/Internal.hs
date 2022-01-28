@@ -154,7 +154,7 @@ data DataReprHandlers (out :: PType) (defs :: [[PLabeledType]]) (s :: S) where
 
 -- | Pattern match on a 'PDataSum' manually. The common case only appears once in the generated code.
 pmatchDataSum :: Term s (PDataSum defs) -> DataReprHandlers out defs s -> Term s out
-pmatchDataSum d (DRHCons handler DRHNil) = handler $ punDataSum # (punsafeCoerce d)
+pmatchDataSum d (DRHCons handler DRHNil) = handler $ punDataSum # d
 pmatchDataSum d handlers =
   plet (pasConstr #$ pforgetData $ pdata d) $ \d' ->
     plet (pfstBuiltin # d') $ \constr ->
