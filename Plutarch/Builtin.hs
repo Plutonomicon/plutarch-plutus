@@ -133,7 +133,10 @@ instance PLift a => PlutusType (PBuiltinList a) where
       pchooseListBuiltin
         # xs
         # pdelay (f PNil)
-        # pdelay (f (PCons (pheadBuiltin # xs) (ptailBuiltin # xs)))
+        # pdelay
+          ( plet (phead # xs) $ \h -> plet (ptail # xs) $
+              \t -> f (PCons h t)
+          )
 
 instance PListLike PBuiltinList where
   type PElemConstraint PBuiltinList a = PLift a
