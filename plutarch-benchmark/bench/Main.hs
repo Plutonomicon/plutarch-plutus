@@ -13,7 +13,7 @@ import Plutarch.Prelude
 import Plutus.V1.Ledger.Address (Address (Address))
 import Plutus.V1.Ledger.Api (toData)
 import Plutus.V1.Ledger.Contexts (ScriptPurpose (Minting, Spending), TxOutRef (TxOutRef))
-import Plutus.V1.Ledger.Credential (Credential (PubKeyCredential))
+import Plutus.V1.Ledger.Credential (Credential (PubKeyCredential, ScriptCredential))
 
 main :: IO ()
 main = do
@@ -257,6 +257,30 @@ deconstrBench =
                     (constr #== 2)
                     (phexByteStr "03")
                     $ phexByteStr "04"
+          ]
+      ]
+  , benchGroup
+      "combined"
+      [ benchGroup
+          "typed"
+          [ bench "toValidatorHash" $ P.do
+              let addr = pconstant $ Address (ScriptCredential "ab") Nothing
+              cred <- pmatch . pfromData $ pfield @"credential" # addr
+              case cred of
+                PPubKeyCredential _ -> pcon PNothing
+                PScriptCredential credFields -> pcon . PJust $ pto $ pfromData $ pfield @"_0" # credFields
+          ]
+      , benchGroup
+          "raw"
+          [ bench "toValidatorHash" $
+              let addr = pconstant $ toData $ Address (ScriptCredential "ab") Nothing
+                  cred = phead #$ psndBuiltin #$ pasConstr # addr
+               in P.do
+                 deconstrCred <- plet $ pasConstr # cred
+                 pif
+                    (pfstBuiltin # deconstrCred #== 0)
+                    (pcon PNothing)
+                    $ pcon . PJust $ pasByteStr #$ phead #$ psndBuiltin # deconstrCred
           ]
       ]
   ]
