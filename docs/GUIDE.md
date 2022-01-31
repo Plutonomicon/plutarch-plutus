@@ -571,7 +571,9 @@ instance PIsData PInteger where
 ```
 In essence, `pdata` wraps a `PInteger` into an `I` data value. Wheras `pfromData` simply unwraps the `I` data value to get a `PInteger`.
 
-In the above case, `PInteger` is a type that *can be converted* to and from `Data` but is not `Data` itself (it's a builtin integer). What if you have a type that is already represented as a `Data` (`PData`) value under the hood (e.g `PScriptContext`)? In these cases, you should implement `PIsDataRepr` via `PIsDataReprInstances` and you'll get the `PIsData` instance for free! See: [Implementing `PIsDataRepr`](#implementing-pisdatarepr)
+> Aside: You might be asking, what's an "`I` data value"? This is referring to the different constructors of `Data`/`BuiltinData`. You can find a full explanation of this at [plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md).
+
+For the simple constructors that merely wrap a builtin type into `Data`, e.g integers, bytestrings, lists, and map, `PIsData` works in much the same way as above. However, what about `Constr` data values? When you have an ADT that doesn't correspond to those simple builtin types directly - but you still need to encode it as `Data` (e.g `PScriptContext`). In this case, you should [implement `PIsDataRepr`](#implementing-pisdatarepr) and you'll get the `PIsData` instance for free!
 
 ### PConstant & PLift
 These 2 closely tied together typeclasses establish a bridge between a Plutarch level type (that is represented as a builtin type, i.e [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) and its corresponding Haskell synonym. The gory details of these two are not too useful to users, but you can read all about it if you want at [Developers' corner](TODO: LINK - to PLift developer's guide).
@@ -996,6 +998,8 @@ Much like in the case of builtin lists, you'll just be working with builtin func
 
 ### PAsData
 This is a typed way of representing [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md). It is highly encouraged you use `PAsData` to keep track of what "species" of `Data` value you actually have. `Data` can be a `Constr` (for sum of products - ADTs), `Map` (for wrapping assoc maps of Data to Data), `List` (for wrapping builtin lists of data), `I` (for wrapping builtin integers), and `B` (for wrapping builtin bytestrings).
+
+> Aside: You might be asking, what's an "`I` data value"? This is referring to the different constructors of `Data`/`BuiltinData`. You can find a full explanation of this at [plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md).
 
 Consider a function that takes in and returns a `B` data value - aka `ByteString` as a `Data` value. If you use the direct Plutarch synonym to `Data` - `PData`, you'd have-
 ```hs
