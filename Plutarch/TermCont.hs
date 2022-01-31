@@ -1,4 +1,4 @@
-module Plutarch.Internal.TermCont (
+module Plutarch.TermCont (
   hashOpenTerm,
   TermCont (TermCont, runTermCont),
 ) where

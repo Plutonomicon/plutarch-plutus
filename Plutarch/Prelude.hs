@@ -145,12 +145,12 @@ import Plutarch.Crypto
 import Plutarch.DataRepr
 import Plutarch.Either
 import Plutarch.Integer
-import Plutarch.Internal.TermCont
 import Plutarch.Lift
 import Plutarch.List
 import Plutarch.Maybe
 import Plutarch.Pair
 import Plutarch.Rational
 import Plutarch.String
+import Plutarch.TermCont
 import Plutarch.Trace
 import Plutarch.Unit

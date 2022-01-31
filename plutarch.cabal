@@ -105,7 +105,6 @@ library
     Plutarch.Internal
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType
-    Plutarch.Internal.TermCont
     Plutarch.Lift
     Plutarch.List
     Plutarch.Maybe
@@ -116,6 +115,7 @@ library
     Plutarch.Rec
     Plutarch.Rec.TH
     Plutarch.String
+    Plutarch.TermCont
     Plutarch.Trace
     Plutarch.Unit
     Plutarch.Unsafe

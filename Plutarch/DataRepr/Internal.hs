@@ -66,9 +66,9 @@ import Plutarch.DataRepr.Internal.Generic (MkSum (mkSum))
 import Plutarch.DataRepr.Internal.HList (type Drop, type IndexList)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (S (SI))
-import Plutarch.Internal.TermCont (TermCont (runTermCont), hashOpenTerm)
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (pdrop, ptryIndex)
+import Plutarch.TermCont (TermCont (runTermCont), hashOpenTerm)
 import Plutarch.Unsafe (punsafeCoerce)
 import qualified Plutus.V1.Ledger.Api as Ledger
 
