@@ -815,7 +815,44 @@ All `PlutusType` instances get `PCon` and `PMatch` instances for free!
 For types that cannot easily be both `PCon` and `PMatch` - feel free to implement just one of them! However, in general, **prefer implementing PlutusType**!
 
 #### Implementing `PlutusType` for your own types
-TODO
+If you want to represent your data type with [scott encoding](#data-encoding-and-scott-encoding) (and therefore not let it be `Data` encoded), you should simply derive it generically-
+```hs
+import qualified GHC.Generics as GHC
+import Generics.SOP
+import Plutarch.Prelude
+
+data MyType (a :: PType) (b :: PType) (s :: S)
+  = One (Term s a)
+  | Two (Term s b)
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic, PlutusType)
+```
+> Note: This requires the `generics-sop` package.
+
+If you want to represent your data type as some simple builtin type (e.g integer, bytestrings, string/text, list, or assoc map), you can define your datatype as a `newtype` to the underlying builtin term and derive `PlutusType` using [`DerivePNewtype`](#deriving-typeclasses-for-newtypes).
+```hs
+import Plutarch.Prelude
+
+newtype MyInt (s :: S) = MyInt (Term s PInteger)
+  deriving (PlutusType) via (DerivePNewtype MyInt PInteger)
+```
+
+If you don't want it to be a newtype, but rather - an ADT, and still have it be represented as some simple builtin type - you can do so by implementing `PlutusType` manually. Here's an example of encoding a Sum type as an Enum via `PInteger`-
+```hs
+import Plutarch
+import Plutarch.Prelude
+
+data AB (s :: S) = A | B
+
+instance PlutusType AB where
+  type PInner AB _ = PInteger
+
+  pcon' A = 0
+  pcon' B = 1
+
+  pmatch' x f =
+    pif (x #== 0) (f A) (f B)
+```
 
 ### PListLike
 The `PListLike` typeclass bestows beautiful, and familiar, list utilities to its instances. Plutarch has two list types- [`PBuiltinList`](#pbuiltinlist) and [`PList`](#plist). Both have `PListLike` instances! However, `PBuiltinList` can only contain builtin types. It cannot contain Plutarch functions. The element type of `PBuiltinList` can be constrained using `PLift a => PBuiltinList a`.
