@@ -28,6 +28,7 @@
     - [Tracing](#tracing)
     - [Raising errors](#raising-errors)
     - [Delay and Force](#delay-and-force)
+    - [Data encoding and Scott encoding](#data-encoding-and-scott-encoding)
     - [Unsafe functions](#unsafe-functions)
   - [Typeclasses](#typeclasses)
     - [Equality and Order](#equality-and-order)
@@ -71,10 +72,11 @@
   - [Hoisting is great - but not a silver bullet](#hoisting-is-great---but-not-a-silver-bullet)
   - [The difference between `PlutusType`/`PCon` and `PLift`'s `pconstant`](#the-difference-between-plutustypepcon-and-plifts-pconstant)
 - [Common Issues](#common-issues)
-  - [`plam` fails to type infer correctly](#plam-fails-to-type-infer-correctly)
-  - [Ambiguous type variable arising from a use of `pconstant`](#ambiguous-type-variable-arising-from-a-use-of-pconstant)
   - [No instance for (PUnsafeLiftDecl a)](#no-instance-for-punsafeliftdecl-a)
   - [Infinite loop / Infinite AST](#infinite-loop--infinite-ast)
+  - [Couldn't match type `Plutarch.DataRepr.Internal.PUnLabel ...` arising from a use of `pfield` (or `hrecField`, or `pletFields`)](#couldnt-match-type-plutarchdatareprinternalpunlabel--arising-from-a-use-of-pfield-or-hrecfield-or-pletfields)
+  - [Expected a type, but "fieldName" has kind `GHC.Types.Symbol`](#expected-a-type-but-fieldname-has-kind-ghctypessymbol)
+  - [Lifting `PAsData`](#lifting-pasdata)
 - [Useful Links](#useful-links)
 </details>
 
@@ -539,6 +541,9 @@ pif cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay wh
 `pif'` is a direct synonym to the `IfThenElse` Plutus Core builtin function. Of course, it evaluates its arguments strictly but you often want an if-then-else that doesn't evaluate both its branches - only the one for which the condition holds. So, `pif`, as a haskell level function can take in both branches (without any concept of evaluating them), delay them and *then* apply it to `pif'`. Finally, a `pforce` will force the yielded branch that was previously delayed.
 
 Delay and Force will be one of your most useful tools while writing Plutarch. Make sure you get a grip on them!
+
+### Data encoding and Scott encoding
+In Plutus Core, there are really two ways to represent non-trivial ADTs.
 
 ### Unsafe functions
 There are internal functions such as `punsafeCoerce`, `punsafeConstant` etc. that give you terms without their specific type. These **should not** be used by Plutarch users. It is the duty of the user of these unsafe functions to get the type right - and it is very easy to get the type wrong. You can easily make the type system believe you're creating a `Term s PInteger`, when in reality, you created a function.
@@ -1466,34 +1471,6 @@ You should prefer `pconstant` (from [`PConstant`/`PLift`](#pconstant--plift)) wh
 
 # Common Issues
 
-## `plam` fails to type infer correctly
-
-This is a known issue, see: [#2](https://github.com/Plutonomicon/plutarch/issues/2)
-
-Sometimes, GHC will not be able to infer the type of an argument within a lambda you pass to `plam`. This happens most often when the argument is unused.
-
-Giving unused arguments the type `_ :: Term _ _` should fix the issue generally.
-
-Because of this, you might want to enable  `PartialTypeSignatures`.
-
-It's also a good idea to give explicit type signatures to either the result of `plam` or the lambda passed to `plam`. Often, this will also give you significantly better error messages.
-
-## Ambiguous type variable arising from a use of `pconstant`
-Sometimes, you might find `pconstant` raise "Ambiguous type variable error" without an explicit type annotation-
-```hs
-pconstant $ Minting "be"
--- ^ Ambiguous type variable ‘p0’ arising from a use of ‘pconstant’
-```
-In this case, you should either give the whole thing an explicit type annotation-
-```hs
-x :: Term s PScriptPurpose
-x = pconstant $ Minting "be"
-```
-or, you can use `TypeApplications` to indicate the Plutarch type you're trying to construct-
-```hs
-pconstant @PScriptPurpose $ Minting "be"
-```
-
 ## No instance for (PUnsafeLiftDecl a)
 You should add `PLift a` to the context! `PLift` is just a synonym to `PUnsafeLiftDecl`.
 
@@ -1512,6 +1489,17 @@ f = phoistAcyclic $ plam $ \n ->
 The issue here is that the AST is infinitely large. Plutarch will try to traverse this AST and will in the process not terminate, as there is no end to it. In this case you'd fix it by using `pfix`.
 
 Relevant issue: [#19](https://github.com/Plutonomicon/plutarch/issues/19)
+
+## Couldn't match type `Plutarch.DataRepr.Internal.PUnLabel ...` arising from a use of `pfield` (or `hrecField`, or `pletFields`)
+You might get some weird errors when using `pfield`/`hrecField`/`pletFields` like the above. Don't be scared! It just means that the type application you used is incorrect. Specifically, the type application names a non-existent field. Re-check the field name string you used in the type application for typos!
+
+## Expected a type, but "fieldName" has kind `GHC.Types.Symbol`
+This just means the argument of a type application wasn't correctly promoted. Most likely arising from a usage of `pfield`/`hrecField`/`pletFields`. In the case of `pfield` and `hrecField`, the argument of type application should have kind `Symbol`. A simple string literal representing the field name should work in this case. In the case of `pletFields`, the argument of type application should have kind `[Symbol]` - a type level list of types with kind `Symbol`. When you use a singleton list here, like `["foo"]` - it's actually parsed as a *regular* list (like `[a]`). A regular list, of course, has kind `Type`.
+
+All you need to do, is put a `'` (quote) infront of the list, like so- `@'["foo"]`. This will promote the `[a]` to the type level.
+
+## Lifting `PAsData`
+Don't try to lift a `PAsData` term! It's intentionally blocked and partial. The `PLift` instance for `PAsData` is only there to make some important functionality work correctly. But the instance methods will simply error if used. Instead, you should extract the `Term s a` out of `Term s (PAsData a)` using `pfromData` and `plift` that instead!
 
 # Useful Links
 - [Plutonomicon](https://github.com/Plutonomicon/plutonomicon)
