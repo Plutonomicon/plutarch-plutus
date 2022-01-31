@@ -16,6 +16,7 @@
     - [Conditionals](#conditionals)
     - [Recursion](#recursion)
     - [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](#do-syntax-with-qualifieddo-and-plutarchmonadic)
+      - [Translating `do` syntax to GHC 8](#translating-do-syntax-to-ghc-8)
   - [Concepts](#concepts)
     - [Hoisting, metaprogramming,  and fundamentals](#hoisting-metaprogramming--and-fundamentals)
       - [Hoisting Operators](#hoisting-operators)
@@ -327,6 +328,7 @@ pmatch :: Term s a -> (a s -> Term s b) -> Term s b
 ptrace :: Term s PString -> Term s a -> Term s a
 ```
 
+#### Translating `do` syntax to GHC 8
 For convenience, most examples in this guide will be utilizing this `do` syntax. However, since `QualifiedDo` is available pre GHC 9 - we'll discuss how to translate those examples to GHC 8.
 
 There are three ways to do this-
@@ -1166,7 +1168,7 @@ Right (ExBudget {exBudgetCPU = ExCPU 8289456, exBudgetMemory = ExMemory 19830},[
 import Plutarch.Prelude
 import Plutarch.Api.Contexts
 
-alwaysSucceeds :: Term s (PData :--> PData :--> PScriptContext :--> PUnit)
+alwaysSucceeds :: Term s (PDatum :--> PRedeemer :--> PScriptContext :--> PUnit)
 alwaysSucceeds = plam $ \datm redm ctx -> pconstant ()
 ```
 All the arguments are ignored. We use `PData` here for `datm` and `redm` since we're not using them - so we don't need specific type information about them. Any `Data` value is fine.
@@ -1181,8 +1183,9 @@ Right (ExBudget {exBudgetCPU = ExCPU 297830, exBudgetMemory = ExMemory 1100},[],
 ```hs
 import Plutarch.Prelude
 import Plutarch.Api.Contexts
+import Plutarch.Api.Scripts
 
-alwaysFails :: Term s (PData :--> PData :--> PScriptContext :--> PUnit)
+alwaysFails :: Term s (PDatum :--> PRedeemer :--> PScriptContext :--> PUnit)
 alwaysFails = plam $ \datm redm ctx -> perror
 ```
 Similar to the example above.
@@ -1195,33 +1198,31 @@ Left (EvaluationError [] "(CekEvaluationFailure,Nothing)")
 
 ## Validator that checks whether a value is present within signatories
 ```hs
+-- NOTE: REQUIRES GHC 9!
+{-# LANGUAGE QualifiedDo #-}
+{-# LANGUAGE RecordDotSyntax #-}
+
 import Plutarh.Prelude
 import Plutarch.Api.Contexts
 import Plutarch.Api.Crypto
+import Plutarch.Api.Scripts
+import qualified Plutarch.Monadic as P
 
-checkSignatory :: Term s (PPubKeyHash :--> PData :--> PData :--> PScriptContext :--> PUnit)
-checkSignatory = plam $ \ph (_ :: Term _ _) (_ :: Term _ _) ctx -> pmatch ctx $ \(PScriptContext ctxFields) ->
+checkSignatory :: Term s (PPubKeyHash :--> PDatum :--> PRedeemer :--> PScriptContext :--> PUnit)
+checkSignatory = plam $ \ph _ _ ctx' -> P.do
+  ctx <- pletFields @["txInfo", "purpose"] ctx'
   let
-    purpose = pfromData $ pdhead #$ pdtail # ctxFields
-    txInfo = pfromData $ pdhead # ctxFields
-  in pmatch purpose $ \case
-    PSpending _ -> pmatch txInfo $ \(PTxInfo txInfoFields) ->
-      let
-        {-
-          Yes, I know. WTF?!
-          This is a placeholder until we land 'pnth' or a better field accessor mechanism.
-        -}
-        signatories = pdhead #$ pdtail #$ pdtail #$ pdtail #$ pdtail
-          #$ pdtail #$ pdtail #$ pdtail # txInfoFields
-      in pif (pelem # pdata ph # pfromData signatories)
-        -- Success!
-        (pconstant ())
-        -- Signature not present.
-        perror
-    -- Script purpose should only be "Spending"
-    _           -> perror
+    purpose = pfromData ctx.purpose
+    txInfo = pfromData ctx.txInfo
+  PSpending _ <- pmatch purpose
+  let signatories = pfromData $ pfield @"signatories" # txInfo
+  pif (pelem # pdata ph # signatories)
+    -- Success!
+    (pconstant ())
+    -- Signature not present.
+    perror
 ```
-> Note: The above snippet relies on having `PPubKeyHash` implemented and `TxInfo`'s signatories field correctly typed. As of now, Plutarch `main` doesn't have this. But this snippet should still be helpful to understand how to write fully typed validators!
+> Note: The above snippet usages GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8) and [alternatives to `RecordDotSyntax`](TODO: LINK).
 
 Once again, we ignore datum and redeemer so we can use `PData` as typing. Other than that, we match on the script purpose to see if its actually for *spending* - and we get the signatories field from `txInfo` (the 7th field), check if given pub key hash is present within the signatories and that's it!
 
