@@ -1,5 +1,6 @@
 module Examples.Api (tests) where
 
+import Control.Monad.Trans.Cont (cont, runCont)
 import Plutarch
 import Plutarch.Api.V1 (
   PAddress (PAddress),
@@ -170,6 +171,20 @@ checkSignatory = plam $ \ph ctx' ->
       -- Signature not present.
       perror
 
+checkSignatoryCont :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
+checkSignatoryCont = plam $ \ph ctx' ->
+  pletFields @["txInfo", "purpose"] ctx' $ \ctx -> (`runCont` id) $ do
+    _ <- cont $ pmatch . pfromData $ ctx.purpose
+    let signatories = pfield @"signatories" # ctx.txInfo
+    cont $
+      const $
+        pif
+          (pelem # pdata ph # pfromData signatories)
+          -- Success!
+          (pconstant ())
+          -- Signature not present.
+          perror
+
 getFields :: Term s (PData :--> PBuiltinList PData)
 getFields = phoistAcyclic $ plam $ \addr -> psndBuiltin #$ pasConstr # addr
 
@@ -198,6 +213,9 @@ tests =
         plift (pfromData $ getSym #$ pfromData $ getMint #$ getTxInfo # ctx) @?= sym
     , testCase "signatory validator" $ do
         () <$ traverse (\x -> succeeds $ checkSignatory # pconstant x # ctx) signatories
+        fails $ checkSignatory # pconstant "41" # ctx
+    , testCase "signatory validator with Cont" $ do
+        () <$ traverse (\x -> succeeds $ checkSignatoryCont # pconstant x # ctx) signatories
         fails $ checkSignatory # pconstant "41" # ctx
     , testCase "getFields" $
         printTerm getFields @?= getFields_compiled
