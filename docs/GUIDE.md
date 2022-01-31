@@ -65,7 +65,6 @@
   - [Validator that always fails](#validator-that-always-fails)
   - [Validator that checks whether a value is present within signatories](#validator-that-checks-whether-a-value-is-present-within-signatories)
   - [Using custom datum/redeemer in your Validator](#using-custom-datumredeemer-in-your-validator)
-  - [Manually extracting fields from `ScriptContext` (UNTYPED)](#manually-extracting-fields-from-scriptcontext-untyped)
 - [Thumb rules, Tips, and Tricks](#thumb-rules-tips-and-tricks)
   - [Plutarch functions are strict](#plutarch-functions-are-strict)
   - [Don't duplicate work](#dont-duplicate-work)
@@ -1459,14 +1458,11 @@ Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf unit ()))))
 ## Using custom datum/redeemer in your Validator
 TODO
 
-## Manually extracting fields from `ScriptContext` (UNTYPED)
-see: [Developers' corner](./DEVGUIDE.md#extracting-txinfoinputs-from-scriptcontext-manually-untyped)
-
 # Thumb rules, Tips, and Tricks
 
 ## Plutarch functions are strict
 
-All Plutarch functions are strict. When you apply a Plutarch function to an argument using `#` or `#$` - the argument will be evaluated before being passed into to the function. If you don't want the argument to be evaluated, you can use `pdelay`.
+All Plutarch functions are strict. When you apply a Plutarch function to an argument using `papp` (or `#`/`#$` - synonyms to `papp`) - the argument will be evaluated before being passed into to the function. If you don't want the argument to be evaluated, you can use `pdelay`.
 
 ## Don't duplicate work
 
@@ -1497,7 +1493,7 @@ abs :: Term s PInteger -> Term s PInteger
 abs x = pif (x #<= -1) (negate x) x
 ```
 
-`x` is going to be inlined _three_ times there. That's really bad if it's a big computation. This is what I should do instead-
+`x` is going to be inlined _three_ times there. That's really bad if it's a big computation. This is what you should do instead-
 
 ```haskell
 abs :: Term s PInteger -> Term s PInteger
