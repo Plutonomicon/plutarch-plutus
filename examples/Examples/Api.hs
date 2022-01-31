@@ -171,19 +171,22 @@ checkSignatory = plam $ \ph ctx' ->
       -- Signature not present.
       perror
 
+-- | `checkSignatory` implemented using `runCont`
 checkSignatoryCont :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatoryCont = plam $ \ph ctx' ->
   pletFields @["txInfo", "purpose"] ctx' $ \ctx -> (`runCont` id) $ do
-    _ <- cont $ pmatch . pfromData $ ctx.purpose
-    let signatories = pfield @"signatories" # ctx.txInfo
-    cont $
-      const $
-        pif
-          (pelem # pdata ph # pfromData signatories)
-          -- Success!
-          (pconstant ())
-          -- Signature not present.
-          perror
+    cont (pmatch . pfromData $ ctx.purpose) >>= \case
+      PSpending _ -> do
+        let signatories = pfield @"signatories" # ctx.txInfo
+        pure $
+          pif
+            (pelem # pdata ph # pfromData signatories)
+            -- Success!
+            (pconstant ())
+            -- Signature not present.
+            perror
+      _ ->
+        pure $ ptraceError "checkSignatoryCont: not a spending tx"
 
 getFields :: Term s (PData :--> PBuiltinList PData)
 getFields = phoistAcyclic $ plam $ \addr -> psndBuiltin #$ pasConstr # addr
