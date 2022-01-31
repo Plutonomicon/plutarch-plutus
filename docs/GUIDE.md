@@ -316,7 +316,7 @@ f = plam $ \x -> P.do
 ```
 In essence, `P.do { x; y }` simply translates to `x y`; where `x :: (a -> Term s b) -> a -> Term s b` and `y :: a`.
 
-Similarly, `P.do { y <- x; z }` translates to `x $ \case { y -> z; _ -> ptraceError <msg> }`. Of course, if `y` is a fully exhaustive pattern match (e.g, singular constructor), the extra `_ -> ..` case will not be generated at all and you'd simply get `x $ \y -> z`.
+Similarly, `P.do { y <- x; z }` translates to `x $ \case { y -> z; _ -> ptraceError <msg> }`. Of course, if `y` is a fully exhaustive pattern match (e.g, singular constructor), the extra `_ -> ptraceError <msg>` case will not be generated at all and you'd simply get `x $ \y -> z`.
 
 Finally, `P.do { x }` is just `x`.
 
@@ -326,6 +326,20 @@ pmatch :: Term s a -> (a s -> Term s b) -> Term s b
 
 ptrace :: Term s PString -> Term s a -> Term s a
 ```
+
+For convenience, most examples in this guide will be utilizing this `do` syntax. However, since `QualifiedDo` is available pre GHC 9 - we'll discuss how to translate those examples to GHC 8.
+
+There are three ways to do this-
+* Use [`RebindableSyntax`](https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/rebindable_syntax.html). You can replace the `>>=`, `>>`, and `fail` functions in your scope with the ones from `Plutarch.Monadic` using `RebindableSyntax`. This is arguably a bad practice but the choice is there. This will let you use the `do` syntax word for word. Although you wouldn't be qualifying your `do` keyword (like `P.do`), you'd just be using `do`.
+* Use the `Cont` monad. You can utilize this to also use regular `do` syntax by simply applying `cont` over functions such as `pmatch`, `pletFields` and similar utilities that take in a continuation function. There is an example of this [here](./../examples/Examples/Api.hs). Notice how `checkSignatory` has been translated to `Cont` monad usage in `checkSignatoryCont`.
+* Don't use do syntax at all. You can easily translate the `do` syntax to regular continuation chains. Here's how you'd translate the above `f` function-
+
+  ```hs
+  f :: Term s (PTxInfo :--> PBuiltinList (PAsData PTxInInfo))
+  f = plam $ \x -> pmatch x $ \(PTxInfo txInfoFields) ->
+    ptrace "yielding first field from tx info" $ pfromData $ pdhead # txInfoFields
+  ```
+  Simply put, functions like `pmatch`, `pletFields` take in a continuation. The `do` syntax enables you to bind the argument of the continuation using `<-`, and simply use flat code, rather than nested function calls.
 
 ## Concepts
 
