@@ -1,12 +1,10 @@
-{-# OPTIONS_GHC -Wno-unused-imports #-}
-
 module Plutarch.Internal.TermCont (
   hashOpenTerm,
   TermCont (TermCont, runTermCont),
 ) where
 
 import Data.String (fromString)
-import Plutarch.Internal
+import Plutarch.Internal (Dig, Term (Term), asRawTerm, getTerm, hashRawTerm)
 import Plutarch.Trace (ptraceError)
 
 newtype TermCont s a = TermCont {runTermCont :: forall b. (a -> Term s b) -> Term s b}
