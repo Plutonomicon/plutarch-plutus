@@ -263,7 +263,7 @@ pif :: Term s PBool -> Term s a -> Term s a -> Term s a
 This has similar semantics to Haskell's `if/then/else`. That is, only the branch for which the predicate holds - is evaluated.
 
 ```haskell
-pif (pcon PTrue) 1 2
+pif (pconstant True) 1 2
 ```
 
 The above evaluates to `1`, which has type `Term s PInteger`
@@ -374,7 +374,7 @@ Choosing convenience over efficiency is difficult, but if you notice that your o
 Consider boolean or-
 ```hs
 (#||) :: Term s PBool -> Term s PBool -> Term s PBool
-x #|| y = pif x (pcon PTrue) $ pif y (pcon PTrue) $ pcon PFalse
+x #|| y = pif x (pconstant PTrue) $ pif y (pconstant PTrue) $ pconstant PFalse
 ```
 You can factor out most of the logic to a Plutarch level function, and apply that in the operator definition-
 
@@ -383,7 +383,7 @@ You can factor out most of the logic to a Plutarch level function, and apply tha
 x #|| y = por # x # pdelay y
 
 por :: Term s (PBool :--> PDelayed PBool :--> PBool)
-por = phoistAcyclic $ plam $ \x y -> pif' # x # pcon PTrue # pforce y
+por = phoistAcyclic $ plam $ \x y -> pif' # x # pconstant PTrue # pforce y
 ```
 
 In general the pattern goes like this-
@@ -884,10 +884,10 @@ This is synonymous to Plutus Core [builtin integer](https://playground.plutus.io
 
 ### PBool
 
-Plutarch level boolean terms can be constructed using `pcon Ptrue` and `pcon PFalse`. `PBool` itself is just `data PBool = PFalse | PTrue`. It has a `PlutusType` instance, allowing you to use `pcon` to construct Plutarch terms using Haskell constructors.
+Plutarch level boolean terms can be constructed using `pconstant True` and `pconstant False`.
 
 ```haskell
-pif (pcon PFalse) 7 42
+pif (pconstant PFalse) 7 42
 -- evaluates to 42
 ```
 You can combine Plutarch booleans terms using `#&&` and `#||`, which are synonyms to `&&` and `||`. These are haskell level operators and therefore have short circuiting. If you don't need short circuiting, you can use the Plutarch level alternatives- `pand'` and `por'` respectively.
@@ -934,7 +934,7 @@ This is synonymous to Plutus Core [builtin bytestring](https://playground.plutus
 
 ### PUnit
 
-The Plutarch level unit term can be constructed using `pcon PUnit`.
+The Plutarch level unit term can be constructed using `pconstant ()`.
 
 This is synonymous to Plutus Core [builtin unit](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins-Internal.html#t:BuiltinUnit).
 
@@ -949,7 +949,7 @@ As mentioned before, `PBuiltinList` gets access to all the `PListLike` utilities
 ```hs
 > pcon $ PCons (phexByteStr "fe") $ pcon PNil
 ```
-would yield a `PBuiltinList PByteString` with one element - `0xfe`. Of course, you could have done that with ``pcons # phexByteStr "fe" # pnil`` instead!
+would yield a `PBuiltinList PByteString` with one element - `0xfe`. Of course, you could have done that with `pcons # phexByteStr "fe" # pnil` instead!
 
 You can also use `pmatch` to match on a list-
 ```hs
@@ -1215,7 +1215,7 @@ checkSignatory = plam $ \ph (_ :: Term _ _) (_ :: Term _ _) ctx -> pmatch ctx $ 
           #$ pdtail #$ pdtail #$ pdtail # txInfoFields
       in pif (pelem # pdata ph # pfromData signatories)
         -- Success!
-        (pcon PUnit)
+        (pconstant ())
         -- Signature not present.
         perror
     -- Script purpose should only be "Spending"
