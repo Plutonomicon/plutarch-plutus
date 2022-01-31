@@ -605,7 +605,7 @@ just :: a -> Maybe a
 just x = \f _ -> f x
 
 nothing :: Maybe a
-nothing = \_ n = n
+nothing = \_ n -> n
 
 foo :: Maybe a ->
 foo mb = mb (\x -> x + 42) 0
