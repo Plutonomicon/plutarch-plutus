@@ -418,12 +418,12 @@ foo x' = plet x' $ \x -> x <> x
 Also see: [Don't duplicate work](#dont-duplicate-work).
 
 ### Tracing
-You can use the functions `ptrace`, `ptraceError`, `ptraceIfFalse`, `ptraceIfTrue` (from `Plutarch.Trace`) for tracing. These behave similarly to the ones you're used to from [PlutusTx](https://staging.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Trace.html).
+You can use the functions `ptrace`, `ptraceError`, `ptraceIfFalse`, `ptraceIfTrue` (from `Plutarch.Trace`) for tracing. These behave similarly to the ones you're used to from [PlutusTx](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Trace.html).
 
 If you have the `development` flag for `plutarch` turned on - you'll see the trace messages appear in the trace log during script evaluation. When not in development mode - these functions basically do nothing.
 
 ### Raising errors
-In Plutus Tx, you'd signal validation failure with the [`error`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Prelude.html#v:error) function. You can do the same in Plutarch using `perror`.
+In Plutus Tx, you'd signal validation failure with the [`error`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Prelude.html#v:error) function. You can do the same in Plutarch using `perror`.
 ```hs
 fails :: Term s (PData :--> PData :--> PData :--> PUnit)
 fails = plam $ \_ _ _ -> perror
@@ -558,7 +558,7 @@ In essence, `pdata` wraps a `PInteger` into an `I` data value. Wheras `pfromData
 In the above case, `PInteger` is a type that *can be converted* to and from `Data` but is not `Data` itself (it's a builtin integer). What if you have a type that is already represented as a `Data` (`PData`) value under the hood (e.g `PScriptContext`)? In these cases, you should implement `PIsDataRepr` via `PIsDataReprInstances` and you'll get the `PIsData` instance for free! See: [Implementing `PIsDataRepr`](#implementing-pisdatarepr)
 
 ### PConstant & PLift
-These 2 closely tied together typeclasses establish a bridge between a Plutarch level type (that is represented as a builtin type, i.e [`DefaultUni`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) and its corresponding Haskell synonym. The gory details of these two are not too useful to users, but you can read all about it if you want at [Developers' corner](TODO: LINK - to PLift developer's guide).
+These 2 closely tied together typeclasses establish a bridge between a Plutarch level type (that is represented as a builtin type, i.e [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) and its corresponding Haskell synonym. The gory details of these two are not too useful to users, but you can read all about it if you want at [Developers' corner](TODO: LINK - to PLift developer's guide).
 
 What's more important, are the abilities that `PConstant`/`PLift` instances have-
 ```hs
@@ -581,7 +581,7 @@ purp :: Term s PScriptPurpose
 purp = pconstant $ Minting ""
 ```
 
-On the other end, `plift` lets you obtain the Haskell synonym of a Plutarch value (that is represented as a builtin value, i.e [`DefaultUni`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni))-
+On the other end, `plift` lets you obtain the Haskell synonym of a Plutarch value (that is represented as a builtin value, i.e [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni))-
 ```hs
 import Plutus.V1.Ledger.Contexts
 
@@ -593,7 +593,7 @@ Minting "be"
 ```
 
 #### Implementing `PConstant` & `PLift`
-If your custom Plutarch type is represented by a builtin type under the hood (i.e not scott encoded - rather [`DefaultUni`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) - you can easily implement `PLift` for it by using the provided machinery.
+If your custom Plutarch type is represented by a builtin type under the hood (i.e not scott encoded - rather [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) - you can easily implement `PLift` for it by using the provided machinery.
 
 This comes in 3 flavors.
 * Plutarch type represented **directly** by a builtin type that **is not** `Data` (`DefaultUniData`) ==> `DerivePConstantDirect`
@@ -767,7 +767,7 @@ The code is the same, we just changed the type annotation. Cool!
 ### PIsDataRepr
 `PIsDataRepr` and `PDataList` are the user-facing parts of an absolute workhorse of a machinery for easily deconstructing `Constr` [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md) values. It allows fully type safe matching on `Data` values, without embedding type information within the generated script - unlike PlutusTx.
 
-For example, `PScriptContext` - which is the Plutarch synonym to [`ScriptContext`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Contexts.html#t:ScriptContext) - has a `PIsDataRepr` instance, this lets you easily keep track of its type and match on it-
+For example, `PScriptContext` - which is the Plutarch synonym to [`ScriptContext`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Contexts.html#t:ScriptContext) - has a `PIsDataRepr` instance, this lets you easily keep track of its type and match on it-
 ```hs
 import Plutarch.Prelude
 import Plutarch.DataRepr
@@ -797,7 +797,7 @@ data ScriptContext = ScriptContext{scriptContextTxInfo :: TxInfo, scriptContextP
 ```
 So, `te` is a *essentially* a Plutarch level heterogenous lists of fields. All of these fields are actually just `Data` (`PData`) under the hood - of course. You take apart a `PDataList` using `pdhead` and `pdtail`.
 
-We are interested in the second field, `PScriptPurpose`, synonymous to [`ScriptPurpose`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Contexts.html#t:ScriptPurpose). So we do `pdhead #$ pdtail # te`. This gives us a `PAsData PScriptPurpose`. Finally a `pfromData` will get you the `PScriptPurpose` directly. This is because `PScriptPurpose` has a `PIsData` instance! It is a `Data` value under the hood, after all.
+We are interested in the second field, `PScriptPurpose`, synonymous to [`ScriptPurpose`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Contexts.html#t:ScriptPurpose). So we do `pdhead #$ pdtail # te`. This gives us a `PAsData PScriptPurpose`. Finally a `pfromData` will get you the `PScriptPurpose` directly. This is because `PScriptPurpose` has a `PIsData` instance! It is a `Data` value under the hood, after all.
 
 With that, you have `purpose :: Term s PScriptPurpose`. You can now `pmatch` on it and much like before, get at its Haskell level constructors!
 `PScriptPurpose` looks like-
@@ -867,7 +867,7 @@ It also has a `PEq` and `POrd` instance, allowing you to do Plutarch level equal
 
 It **does not** have a `PlutusType` instance.
 
-This is synonymous to Plutus Core [builtin integer](https://staging.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins.html#t:Integer).
+This is synonymous to Plutus Core [builtin integer](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins.html#t:Integer).
 
 ### PBool
 
@@ -879,7 +879,7 @@ pif (pcon PFalse) 7 42
 ```
 You can combine Plutarch booleans terms using `#&&` and `#||`, which are synonyms to `&&` and `||`. These are haskell level operators and therefore have short circuiting. If you don't need short circuiting, you can use the Plutarch level alternatives- `pand'` and `por'` respectively.
 
-This is synonymous to Plutus Core [builtin boolean](https://staging.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins-Internal.html#t:BuiltinBool).
+This is synonymous to Plutus Core [builtin boolean](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins-Internal.html#t:BuiltinBool).
 
 ### PString
 
@@ -897,7 +897,7 @@ It also has a `PEq` instance. And its terms have  `Semigroup` and `Monoid` insta
 
 It **does not** have a `PlutusType` instance.
 
-This is synonymous to Plutus Core [builtin string](https://staging.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins.html#t:BuiltinString) (actually Text).
+This is synonymous to Plutus Core [builtin string](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins.html#t:BuiltinString) (actually Text).
 
 ### PByteString
 
@@ -917,13 +917,13 @@ Similar to `PString`, it has a `PEq` instance. As well as `Semigroup` and `Monoi
 
 It **does not** have a `PlutusType` instance.
 
-This is synonymous to Plutus Core [builtin bytestring](https://staging.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins.html#t:BuiltinByteString).
+This is synonymous to Plutus Core [builtin bytestring](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins.html#t:BuiltinByteString).
 
 ### PUnit
 
 The Plutarch level unit term can be constructed using `pcon PUnit`.
 
-This is synonymous to Plutus Core [builtin unit](https://staging.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins-Internal.html#t:BuiltinUnit).
+This is synonymous to Plutus Core [builtin unit](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins-Internal.html#t:BuiltinUnit).
 
 ### PBuiltinList
 You'll be using builtin lists quite a lot in Plutarch. `PBuiltinList` has a [`PListLike`](#plistlike) instance, giving you access to all the goodies from there! However, `PBuiltinList` can only contain builtin types. In particular, it cannot contain Plutarch functions.
