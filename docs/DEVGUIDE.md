@@ -178,7 +178,7 @@ We are interested in that first field. That's easy, we do the following actions 
 
 - `pasConstr` - yields a `PBuiltinPair PInteger (PBuiltinList PData)`. We know the constructor id is `0`. It doesn't matter, there's only one constructor.
 - `psndBuiltin` - yields `PBuiltinList PData`, the second element of the pair. These are the fields within `ScriptContext`.
-- `pheadBuiltin` - yields `PData`, the first field. We know this is our `TxInfo`.
+- `phead` - yields `PData`, the first field. We know this is our `TxInfo`.
 
 Combining that all up would give you-
 
@@ -187,7 +187,7 @@ import Plutarch.Prelude
 import Plutarch.Builtin
 
 f :: Term s (PData :--> PData)
-f = plam $ \x -> pheadBuiltin #$ psndBuiltin #$ pasConstr # x
+f = plam $ \x -> phead #$ psndBuiltin #$ pasConstr # x
 ```
 
 And if you test it with a mock context value, it does work-
@@ -227,7 +227,7 @@ To obtain `txInfoInputs` from here, we do the following actions in sequence-
 
 - `pasConstr` - unpacks the `TxInfo`. There's only one constructor, `TxInfo` - we don't care about that. We need the fields.
 - `psndBuiltin` - extracts the second member of the pair, the fields of `TxInfo`.
-- `pheadBuiltin` - extracts the first element of the list. This is our field, `txInfoInputs`.
+- `phead` - extracts the first element of the list. This is our field, `txInfoInputs`.
 - (optional) `pasList` - takes out the builtin list from the `List` data value.
 
 And that's it! Putting it all together-
@@ -235,8 +235,8 @@ And that's it! Putting it all together-
 ```haskell
 f :: Term s (PData :--> PBuiltinList PData)
 f = plam $ \x ->
-  let txInfo = pheadBuiltin #$ psndBuiltin #$ pasConstr # x
-  in pasList #$ pheadBuiltin #$ psndBuiltin #$ pasConstr # txInfo
+  let txInfo = phead #$ psndBuiltin #$ pasConstr # x
+  in pasList #$ phead #$ psndBuiltin #$ pasConstr # txInfo
 ```
 
 Trying it on the same `mockCtx` yields-

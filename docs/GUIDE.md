@@ -288,7 +288,6 @@ The first argument is &quot;self&quot;, or the function you want to recurse with
 
 ```haskell
 import Plutarch.Prelude
-import Plutarch.Integer (PInteger)
 
 pfac :: Term s (PInteger :--> PInteger)
 pfac = pfix #$ plam f
@@ -301,9 +300,10 @@ pfac = pfix #$ plam f
 There's a Plutarch level factorial function! Note how `f` takes in a `self` and just recurses on it. All you have to do, is create a Plutarch level function by using `plam` on `f` and `pfix` the result - and that `self` argument will be taken care of for you.
 
 ### Do syntax with `QualifiedDo` and `Plutarch.Monadic`
-The `Plutarch.Monadic` module provides convenient do syntax on common usage scenarios. It requires the `QualifiedDo` extension.
+The `Plutarch.Monadic` module provides convenient do syntax on common usage scenarios. It requires the `QualifiedDo` extension, which is only available in GHC 9.
 
 ```hs
+-- NOTE: REQUIRES GHC 9!
 {-# LANGUAGE QualifiedDo #-}
 
 import qualified Plutarch.Monadic as P
@@ -320,7 +320,7 @@ Similarly, `P.do { y <- x; z }` translates to `x $ \case { y -> z; _ -> ptraceEr
 
 Finally, `P.do { x }` is just `x`.
 
-These semantics make it *extremely* convenient for [`pmatch`](#plutustype-pcon-and-pmatch) and [`ptrace`](#tracing) usage.
+These semantics make it *extremely* convenient for usage of [`pmatch`](#plutustype-pcon-and-pmatch), [`ptrace`](#tracing) etc.
 ```hs
 pmatch :: Term s a -> (a s -> Term s b) -> Term s b
 
@@ -770,8 +770,7 @@ The code is the same, we just changed the type annotation. Cool!
 For example, `PScriptContext` - which is the Plutarch synonym to [`ScriptContext`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Contexts.html#t:ScriptContext) - has a `PIsDataRepr` instance, this lets you easily keep track of its type and match on it-
 ```hs
 import Plutarch.Prelude
-import Plutarch.DataRepr
-import Plutarch.ScriptContext
+import Plutarch.Api.Contexts
 
 foo :: Term s (PScriptContext :--> PString)
 foo = plam $ \x -> pmatch x $ \(PScriptContext te) -> let purpose = pfromData $ pdhead #$ pdtail # te
@@ -1151,11 +1150,10 @@ Right (ExBudget {exBudgetCPU = ExCPU 8289456, exBudgetMemory = ExMemory 19830},[
 ## Validator that always succeeds
 ```hs
 import Plutarch.Prelude
-import Plutarch.Unit
-import Plutarch.ScriptContext
+import Plutarch.Api.Contexts
 
 alwaysSucceeds :: Term s (PData :--> PData :--> PScriptContext :--> PUnit)
-alwaysSucceeds = plam $ \datm redm ctx -> pcon PUnit
+alwaysSucceeds = plam $ \datm redm ctx -> pconstant ()
 ```
 All the arguments are ignored. We use `PData` here for `datm` and `redm` since we're not using them - so we don't need specific type information about them. Any `Data` value is fine.
 
@@ -1168,8 +1166,7 @@ Right (ExBudget {exBudgetCPU = ExCPU 297830, exBudgetMemory = ExMemory 1100},[],
 ## Validator that always fails
 ```hs
 import Plutarch.Prelude
-import Plutarch.Unit
-import Plutarch.ScriptContext
+import Plutarch.Api.Contexts
 
 alwaysFails :: Term s (PData :--> PData :--> PScriptContext :--> PUnit)
 alwaysFails = plam $ \datm redm ctx -> perror
@@ -1184,12 +1181,9 @@ Left (EvaluationError [] "(CekEvaluationFailure,Nothing)")
 
 ## Validator that checks whether a value is present within signatories
 ```hs
-import Plutarch
-import Plutarch.Builtin
-import Plutarch.List
 import Plutarh.Prelude
-import Plutarch.ScriptContext
-import Plutarh.Unit
+import Plutarch.Api.Contexts
+import Plutarch.Api.Crypto
 
 checkSignatory :: Term s (PPubKeyHash :--> PData :--> PData :--> PScriptContext :--> PUnit)
 checkSignatory = plam $ \ph (_ :: Term _ _) (_ :: Term _ _) ctx -> pmatch ctx $ \(PScriptContext ctxFields) ->
