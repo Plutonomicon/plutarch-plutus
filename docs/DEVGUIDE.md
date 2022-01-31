@@ -34,7 +34,7 @@ If your PR makes a change to some user facing functionality - please summarize t
 # Targeting branch for PR
 More often than not, you'll be making PRs directly to `master`.
 
-However, sometimes, there is a release cycle going on and the state of the repository is in flux. Everything is unstable as rapid changes are occuring. In this case, all the development will take place in the `staging` branch - all the PRs will also be targeting `staging` at this point in time. The most recent example of this workflow is the Plutarch 1.1 release cycle.
+However, sometimes, there is a release cycle going on and the state of the repository is in flux. Everything is unstable as rapid changes are occuring. In this case, all development take place in the `staging` branch - all the PRs are based on top off `staging`, and they all target `staging`. This is the workflow that took place during the Plutarch 1.1 release cycle.
 
 # Concepts
 Even if certain functionalities are absent from the public facing API - you can always implement them using functions like `punsafeConstant` and `punsafeBuiltin` - these allow you to walk the lines between Plutus core and Plutarch.
