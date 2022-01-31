@@ -151,7 +151,29 @@ f = plam $ \x -> pcon $ PJust x
 ```
 > `PMaybe` declaration: `data PMaybe a s = PJust (Term s a) | PNothing`
 
-> Aside: Notice that `pcon` actually takes in a Plutarch type to create a Plutarch term. In particular, `PJust x` (`x :: Term s a`), has type `PMaybe a s`. Thus, this `pcon` usage has type `PMaybe a s -> Term s (PMaybe a)`. Similarly, `pcon PNothing` would yield `forall x. Term s (PMaybe x)`. As `PNothing` has type `PMaybe x s`.
+> Aside: Notice that `pcon` actually takes in a Plutarch type to create a Plutarch term.
+>
+> In particular, `PJust x`, where `x :: Term s a`, has type `PMaybe a s`.
+>
+> ```hs
+> -- Example
+> > :t x
+> Term s PInteger
+> > :t PJust x
+> PMaybe PInteger s
+> > :t pcon (PJust x)
+> Term s (PMaybe PInteger)
+> ```
+>
+> Thus, within the `f` definition above, `pcon` has type `PMaybe a s -> Term s (PMaybe a)`. Similarly, `pcon PNothing` would yield `forall x. Term s (PMaybe x)`. Since `PNothing` has type `PMaybe x s`.
+>
+> ```hs
+> -- Example
+> > :t PNothing
+> PMaybe a s
+> > :t pcon PNothing
+> Term s (PMaybe a)
+> ```
 
 Or by using literals-
 ```haskell
