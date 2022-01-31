@@ -190,9 +190,9 @@ checkSignatoryCont = plam $ \ph ctx' ->
 
 -- | `checkSignatory` implemented using `runTermCont`
 checkSignatoryTermCont :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
-checkSignatoryTermCont = plam $ \ph ctx' -> rtc $ do
-  ctx <- TermCont $ pletFields @["txInfo", "purpose"] ctx'
-  PSpending _ <- TermCont (pmatch . pfromData $ ctx.purpose)
+checkSignatoryTermCont = plam $ \ph ctx' -> runTermContId $ do
+  ctx <- tcont $ pletFields @["txInfo", "purpose"] ctx'
+  PSpending _ <- tcont (pmatch . pfromData $ ctx.purpose)
   let signatories = pfield @"signatories" # ctx.txInfo
   pure $
     pif
@@ -201,8 +201,6 @@ checkSignatoryTermCont = plam $ \ph ctx' -> rtc $ do
       (pconstant ())
       -- Signature not present.
       perror
-  where
-    rtc x = runTermCont x id
 
 getFields :: Term s (PData :--> PBuiltinList PData)
 getFields = phoistAcyclic $ plam $ \addr -> psndBuiltin #$ pasConstr # addr

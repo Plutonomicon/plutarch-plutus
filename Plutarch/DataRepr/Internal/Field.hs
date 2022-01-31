@@ -52,7 +52,7 @@ import Plutarch.DataRepr.Internal.HList (
   type SingleItem,
  )
 import Plutarch.Internal (punsafeCoerce)
-import Plutarch.TermCont (TermCont (TermCont, runTermCont))
+import Plutarch.TermCont (TermCont, runTermCont, pattern TermCont)
 
 --------------------------------------------------------------------------------
 ---------- PDataField class & deriving utils
@@ -155,7 +155,7 @@ class BindFields (ps :: [PLabeledType]) (bs :: [ToBind]) where
   --
   --    A continuation is returned to enable sharing of
   --    the generated bound-variables.
-  bindFields :: Term s (PDataRecord ps) -> TermCont s (HRec (BoundTerms ps bs s))
+  bindFields :: Term s (PDataRecord ps) -> TermCont r s (HRec (BoundTerms ps bs s))
 
 instance {-# OVERLAPPING #-} BindFields ((l ':= p) ': ps) ( 'Bind ': '[]) where
   bindFields t =

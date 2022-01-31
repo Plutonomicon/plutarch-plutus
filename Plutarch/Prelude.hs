@@ -132,6 +132,8 @@ module Plutarch.Prelude (
 
   -- * Continuation monad
   TermCont (TermCont, runTermCont),
+  runTermContId,
+  tcont,
 ) where
 
 import Prelude ()

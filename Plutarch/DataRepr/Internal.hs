@@ -68,7 +68,7 @@ import Plutarch.Integer (PInteger)
 import Plutarch.Internal (S (SI))
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (pdrop, ptryIndex)
-import Plutarch.TermCont (TermCont (runTermCont), hashOpenTerm)
+import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont)
 import Plutarch.Unsafe (punsafeCoerce)
 import qualified Plutus.V1.Ledger.Api as Ledger
 
@@ -165,14 +165,14 @@ pmatchDataSum d handlers =
                 handlers'
                 constr
   where
-    hashHandlers :: [Term s out] -> TermCont s [(Dig, Term s out)]
+    hashHandlers :: [Term s out] -> TermCont r s [(Dig, Term s out)]
     hashHandlers [] = pure []
     hashHandlers (handler : rest) = do
       hash <- hashOpenTerm handler
       hashes <- hashHandlers rest
       pure $ (hash, handler) : hashes
 
-    findCommon :: [Term s out] -> TermCont s (Dig, Term s out)
+    findCommon :: [Term s out] -> TermCont r s (Dig, Term s out)
     findCommon handlers = do
       l <- hashHandlers handlers
       pure $ head . maximumBy (\x y -> length x `compare` length y) . groupBy (\x y -> fst x == fst y) . sortOn fst $ l
