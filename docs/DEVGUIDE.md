@@ -11,6 +11,7 @@ Looking to contribute to Plutarch? Looking for functionalities that are not curr
   - [Plutus Core constants (UNSAFE)](#plutus-core-constants-unsafe)
   - [Plutus core builtin functions](#plutus-core-builtin-functions)
   - [Working with BuiltinData/Data/PData](#working-with-builtindatadatapdata)
+  - [`PConstant` and `PLift`](#pconstant-and-plift)
 - [Lower Level Examples](#lower-level-examples)
   - [Extracting `txInfoInputs` from `ScriptContext` manually (UNTYPED)](#extracting-txinfoinputs-from-scriptcontext-manually-untyped)
 - [Useful Links](#useful-links)
@@ -154,6 +155,9 @@ Most of the time, you'll be working with `BuiltinData`/`Data` - this is the type
 Plutarch aims to hide these low level details from the user. Ideally, you will be using `PDataSum`/`PDataList` and `PAsData` - these are essentially just `BuiltinData`, but it is typed at the Plutarch level.
 
 If you want to work with `BuiltinData` directly however, which you may have to do during developing Plutarch, you can find all that you need to know at [Plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md).
+
+## `PConstant` and `PLift`
+TODO
 
 # Lower Level Examples
 ## Extracting `txInfoInputs` from `ScriptContext` manually (UNTYPED)
