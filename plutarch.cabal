@@ -105,6 +105,7 @@ library
     Plutarch.Internal
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType
+    Plutarch.Internal.TermCont
     Plutarch.Lift
     Plutarch.List
     Plutarch.Maybe

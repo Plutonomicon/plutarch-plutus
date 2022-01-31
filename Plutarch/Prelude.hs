@@ -129,6 +129,9 @@ module Plutarch.Prelude (
 
   -- * Typeclass derivers.
   DerivePNewtype (DerivePNewtype),
+
+  -- * Continuation monad
+  TermCont (TermCont, runTermCont),
 ) where
 
 import Prelude ()
@@ -142,6 +145,7 @@ import Plutarch.Crypto
 import Plutarch.DataRepr
 import Plutarch.Either
 import Plutarch.Integer
+import Plutarch.Internal.TermCont
 import Plutarch.Lift
 import Plutarch.List
 import Plutarch.Maybe
