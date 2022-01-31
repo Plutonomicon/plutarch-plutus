@@ -52,7 +52,7 @@
     - [PList](#plist)
     - [PBuiltinPair](#pbuiltinpair)
     - [PAsData](#pasdata)
-    - [PDataSum & PDataList](#pdatasum--pdatalist)
+    - [PDataSum & PDataRecord](#pdatasum--pdatarecord)
     - [PData](#pdata)
     - [PRecord](#precord)
       - [letrec](#letrec)
@@ -130,7 +130,7 @@ A Plutarch script is a `Term`. This can consist of-
 
 ### Constants
 
-These can be either built directly from Haskell synonyms using `pconstant` (requires [`PConstant`/`PLift`](#pconstant--plift) instance). `pconstant` always takes in a regular Haskell value to create its Plutarch synonym.
+These can be built directly from Haskell synonyms using `pconstant` (requires [`PConstant`/`PLift`](#pconstant--plift) instance). `pconstant` always takes in a regular Haskell value to create its Plutarch synonym.
 ```hs
 import Plutarch.Prelude
 
@@ -138,7 +138,6 @@ import Plutarch.Prelude
 x :: Term s PBool
 x = pconstant True
 ```
-> Aside: Sometimes, you might find `pconstant` raise "Ambiguous type variable" error. In this case, you should use `TypeApplications` to help GHC realize what **Plutarch type** you're trying to construct. e.g `pconstant @PInteger 42`
 
 Or from Plutarch terms within other constructors using `pcon` (requires [`PlutusType`/`PCon`](#plutustype-pcon-and-pmatch) instance)-
 ```haskell
@@ -418,7 +417,9 @@ data MyType (a :: PType) (b :: PType) (s :: S)
   deriving stock (GHC.Generic)
   deriving anyclass (Generic, PlutusType)
 ```
-This will use a [scott encoding representation](TODO - Scott encoding) for `MyType`, which is typically what you want. However, this will forbid you from representing your type as a `Data` value and as a result - you cannot implement `PIsData` for it. (Well, you can if you try hard enough - but you *really really really* shouldn't)
+> Note: This requires the `generics-sop` package.
+
+This will use a [scott encoding representation](#data-encoding-and-scott-encoding) for `MyType`, which is typically what you want. However, this will forbid you from representing your type as a `Data` value and as a result - you cannot implement `PIsData` for it. (Well, you can if you try hard enough - but you *really really really* shouldn't)
 
 Currently, generic deriving supports the following typeclasses:-
 * [`PlutusType`](#implementing-plutustype-for-your-own-types) (scott encoding only)
@@ -498,7 +499,7 @@ It's used to distinguish between closed and open terms:
 
 ### eDSL Types in Plutarch
 
-Most types prefixed with `P` are eDSL-level types, meaning that they're meant to be used with `Term`. They are merely used as a tag, and what Haskell value they can hold is not important. Their kind must be `(k → Type) → Type` .
+Most types prefixed with `P` are eDSL-level types, meaning that they're meant to be used with `Term`. They are merely used as a tag, and what Haskell value they can hold is not important. Their kind must be `PType`.
 
 ### `plet` to avoid work duplication
 Sometimes, when writing Haskell level functions for generating Plutarch terms, you may find yourself needing to re-use the Haskell level function's argument multiple times-
@@ -660,7 +661,7 @@ In essence, `pdata` wraps a `PInteger` into an `I` data value. Wheras `pfromData
 For the simple constructors that merely wrap a builtin type into `Data`, e.g integers, bytestrings, lists, and map, `PIsData` works in much the same way as above. However, what about `Constr` data values? When you have an ADT that doesn't correspond to those simple builtin types directly - but you still need to encode it as `Data` (e.g `PScriptContext`). In this case, you should [implement `PIsDataRepr`](#implementing-pisdatarepr) and you'll get the `PIsData` instance for free!
 
 ### PConstant & PLift
-These 2 closely tied together typeclasses establish a bridge between a Plutarch level type (that is represented as a builtin type, i.e [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) and its corresponding Haskell synonym. The gory details of these two are not too useful to users, but you can read all about it if you want at [Developers' corner](TODO: LINK - to PLift developer's guide).
+These 2 closely tied together typeclasses establish a bridge between a Plutarch level type (that is represented as a builtin type, i.e [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) and its corresponding Haskell synonym. The gory details of these two are not too useful to users, but you can read all about it if you want at [Developers' corner](./DEVGUIDE.md#pconstant-and-plift).
 
 What's more important, are the abilities that `PConstant`/`PLift` instances have-
 ```hs
@@ -798,11 +799,7 @@ instance PlutusType (PMaybe a) where
   pcon' PNothing = plam $ \_ g -> pforce g
   pmatch' x f = x # (plam $ \inner -> f (PJust inner)) # (pdelay $ f PNothing)
 ```
-This is a scott encoded representation of the familiar `Maybe` data type. As you can see, `PInner` of `PMaybe` is actually a Plutarch level function. And that's exactly why `pcon'` creates a *function*. `pmatch'`, then, simply "matches" on the function - scott encoding fashion.
-
-> Aside: Notice how `PJust` contains Plutarch term. This is where `PlutusType` is especially useful - for building up Plutarch terms *dynamically* - i.e, from arbitrary Plutarch terms.
->
-> You should prefer `pconstant` (from [`PConstant`/`PLift`](#pconstant--plift)) when you can build something up entirely from Haskell level constants.
+This is a [scott encoded representation of the familiar `Maybe` data type](TODO - Scott encoding link). As you can see, `PInner` of `PMaybe` is actually a Plutarch level function. And that's exactly why `pcon'` creates a *function*. `pmatch'`, then, simply "matches" on the function - scott encoding fashion.
 
 You should always use `pcon` and `pmatch` instead of `pcon'` and `pmatch'` - these are provided by the `PCon` and `PMatch` typeclasses-
 ```hs
@@ -946,7 +943,7 @@ mockCtx =
     (Minting (CurrencySymbol ""))
 
 > foo `evalWithArgsT` [PlutusTx.toData mockCtx]
-Right (ExBudget {exBudgetCPU = ExCPU 4293277, exBudgetMemory = ExMemory 9362},[],Program () (Version () 1 0 0) (Constant () (Some (ValueOf string "It's minting!"))))
+Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf string "It's minting!"))))
 ```
 
 #### Implementing PIsDataRepr
@@ -1125,7 +1122,7 @@ You can also create a `PAsData` from a `PData`, but you lose specific type infor
 pdata :: Term s PData -> Term s (PAsData PData)
 ```
 
-### PDataSum & PDataList
+### PDataSum & PDataRecord
 TODO
 
 See: [`PIsDataRepr`](#pisdatarepr)
@@ -1251,7 +1248,7 @@ from [examples](../examples).
 Execution-
 ```hs
 > evalT $ fib # 2
-Right (ExBudget {exBudgetCPU = ExCPU 8289456, exBudgetMemory = ExMemory 19830},[],Program () (Version () 1 0 0) (Constant () (Some (ValueOf integer 2))))
+Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf integer 2))))
 ```
 
 ## Validator that always succeeds
@@ -1267,7 +1264,7 @@ All the arguments are ignored. We use `PData` here for `datm` and `redm` since w
 Execution-
 ```hs
 > alwaysSucceeds `evalWithArgsT` [PlutusTx.toData (), PlutusTx.toData (), PlutusTx.toData ()]
-Right (ExBudget {exBudgetCPU = ExCPU 297830, exBudgetMemory = ExMemory 1100},[],Program () (Version () 1 0 0) (Constant () (Some (ValueOf unit ()))))
+Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf unit ()))))
 ```
 
 ## Validator that always fails
@@ -1343,7 +1340,7 @@ mockCtx =
     (Spending (TxOutRef "" 1))
 
 > evalWithArgsT (checkSignatory # pubKeyHash) [PlutusTx.toData (), PlutusTx.toData (), PlutusTx.toData mockCtx]
-Right (ExBudget {exBudgetCPU = ExCPU 8969609, exBudgetMemory = ExMemory 17774},[],Program () (Version () 1 0 0) (Constant () (Some (ValueOf unit ()))))
+Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf unit ()))))
 ```
 
 ## Using custom datum/redeemer in your Validator
