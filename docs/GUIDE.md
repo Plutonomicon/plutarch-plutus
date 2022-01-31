@@ -17,6 +17,8 @@
     - [Recursion](#recursion)
     - [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](#do-syntax-with-qualifieddo-and-plutarchmonadic)
       - [Translating `do` syntax to GHC 8](#translating-do-syntax-to-ghc-8)
+    - [Deriving typeclasses for `newtype`s](#deriving-typeclasses-for-newtypes)
+    - [Deriving typeclasses with generics](#deriving-typeclasses-with-generics)
   - [Concepts](#concepts)
     - [Hoisting, metaprogramming,  and fundamentals](#hoisting-metaprogramming--and-fundamentals)
       - [Hoisting Operators](#hoisting-operators)
@@ -35,6 +37,7 @@
     - [PConstant & PLift](#pconstant--plift)
       - [Implementing `PConstant` & `PLift`](#implementing-pconstant--plift)
     - [PlutusType, PCon, and PMatch](#plutustype-pcon-and-pmatch)
+      - [Implementing `PlutusType` for your own types](#implementing-plutustype-for-your-own-types)
     - [PListLike](#plistlike)
     - [PIsDataRepr](#pisdatarepr)
       - [Implementing PIsDataRepr](#implementing-pisdatarepr)
@@ -342,6 +345,60 @@ There are three ways to do this-
     ptrace "yielding first field from tx info" $ pfromData $ pdhead # txInfoFields
   ```
   Simply put, functions like `pmatch`, `pletFields` take in a continuation. The `do` syntax enables you to bind the argument of the continuation using `<-`, and simply use flat code, rather than nested function calls.
+
+### Deriving typeclasses for `newtype`s
+If you're defining a `newtype` to an existing Plutarch type, like so-
+```hs
+newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
+```
+You ideally want to just have this `newtype` be represetned as a `PByteString` under the hood. Therefore, all the typeclass instances of `PByteString` make sense for `PPubKeyHash` as well. In this case, you can simply derive all those typeclasses for your `PPubKeyHash` type as well! Via `DerivePNewtype`-
+```hs
+newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
+  deriving (PlutusType, PIsData, PEq, POrd) via (DerivePNewtype PPubKeyHash PByteString)
+```
+`DerivePNewtype` takes two type parameters. Both of them are Plutarch types (i.e types with kind `PType`). The first one is the type you're deriving the instances for, while the second one is the *inner* type (whatever `PPubKeyHash` is a newtype to).
+
+> Note: It's important to note that the contents of a `newtype` *that aims to be a Plutarch type* (i.e can be represented as a Plutarch term), must also be Plutarch terms. The type `PByteString s` simply doesn't exist in the Plutus Core world after compilation. It's all just `Term`s. So, when you say `Term s PPubKeyHash`, you're really just describing a `Term s PByteString` under the hood - since that's what it *is* during runtime.
+
+> Aside: You can access the inner type using `pto` (assuming it's a `PlutusType` instance). For example, `pto x`, where `x :: Term s PPubKeyHash`, would give you `Term s PByteString`. `pto` converts a [`PlutusType`](#plutustype-pcon-and-pmatch) term to its inner type. This is very useful, for example, when you need to use a function that operates on bytestring terms, but all you have is a `Term s PPubKeyHash`. You *know* it's literally a bytestring under the hood anyway - but how do you obtain that? Using `pto`!
+
+Currently, `DerivePNewType` can let you derive the following typeclasses for your Plutarch *types*:-
+* `PlutusType`
+* `PIsData`
+* `PEq`
+* `POrd`
+* `PIntegral`
+
+You can also derive the following typeclasses for Plutarch *terms*:-
+* `Num`
+* `Semigroup`
+* `Monoid`
+
+What does this mean? Well, `Num` would actually be implemented for `Term s a`, where `a` is a Plutarch type. For example, if you wanted to implement `Semigroup` for `Term s PPubKeyHash` (`Term s PByteString` already has a `Semigroup` instance), you can write-
+```hs
+{-# LANGUAGE StandaloneDeriving #-}
+
+deriving via (Term s (DerivePNewtype PPubKeyHash PByteString)) instance Semigroup (Term s PPubKeyHash)
+```
+
+### Deriving typeclasses with generics
+Plutarch also provides sophisticated generic deriving support for completely custom types. In particular, you can easily derive `PlutusType` for your own type-
+```hs
+import qualified GHC.Generics as GHC
+import Generics.SOP
+import Plutarch.Prelude
+
+data MyType (a :: PType) (b :: PType) (s :: S)
+  = One (Term s a)
+  | Two (Term s b)
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic, PlutusType)
+```
+This will use a [scott encoding representation](TODO - Scott encoding) for `MyType`, which is typically what you want. However, this will forbid you from representing your type as a `Data` value and as a result - you cannot implement `PIsData` for it. (Well, you can if you try hard enough - but you *really really really* shouldn't)
+
+Currently, generic deriving supports the following typeclasses:-
+* [`PlutusType`](#implementing-plutustype-for-your-own-types) (scott encoding only)
+* [`PIsDataRepr`](#implementing-pisdatarepr)
 
 ## Concepts
 
@@ -732,6 +789,9 @@ class PMatch a where
 All `PlutusType` instances get `PCon` and `PMatch` instances for free!
 
 For types that cannot easily be both `PCon` and `PMatch` - feel free to implement just one of them! However, in general, **prefer implementing PlutusType**!
+
+#### Implementing `PlutusType` for your own types
+TODO
 
 ### PListLike
 The `PListLike` typeclass bestows beautiful, and familiar, list utilities to its instances. Plutarch has two list types- [`PBuiltinList`](#pbuiltinlist) and [`PList`](#plist). Both have `PListLike` instances! However, `PBuiltinList` can only contain builtin types. It cannot contain Plutarch functions. The element type of `PBuiltinList` can be constrained using `PLift a => PBuiltinList a`.
