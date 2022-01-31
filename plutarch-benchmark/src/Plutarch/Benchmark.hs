@@ -10,6 +10,7 @@ module Plutarch.Benchmark (
   benchmarkScript,
   -- | * Benchmark entrypoints
   bench,
+  bench',
   benchGroup,
   benchMain,
   -- | * Working with benchmark results
@@ -47,7 +48,7 @@ import qualified Data.List as List
 import Data.Maybe (fromJust)
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
-import Plutarch (ClosedTerm, compile)
+import Plutarch (ClosedTerm, compile, printTerm)
 import Plutus.V1.Ledger.Api (
   ExBudget (ExBudget),
   ExCPU (ExCPU),
@@ -116,6 +117,10 @@ benchGroup groupName bs =
 bench :: String -> ClosedTerm a -> [NamedBenchmark]
 bench name prog =
   [coerce . benchmarkScript name $ compile prog]
+
+-- | Create a benchmark with itself as name
+bench' :: ClosedTerm a -> [NamedBenchmark]
+bench' prog = bench (init . drop (length ("(program 1.0.0 " :: String)) $ printTerm prog) prog
 
 -- | Decode benchmark results from a CSV file
 decodeBenchmarks :: LB.ByteString -> Either String [NamedBenchmark]

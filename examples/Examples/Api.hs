@@ -3,25 +3,23 @@ module Examples.Api (tests) where
 import Control.Monad.Trans.Cont (cont, runCont)
 import Plutarch
 import Plutarch.Api.V1 (
+  PAddress (PAddress),
   PCredential,
   PCurrencySymbol,
+  PMaybeData,
   PPubKeyHash,
   PScriptContext,
   PScriptPurpose (PSpending),
+  PStakingCredential,
   PTxInInfo,
   PTxInfo,
   PValue,
  )
-import Plutarch.Bool (pif)
-import Plutarch.Builtin (PAsData, PBuiltinList, PData, PIsData (..), pasConstr, pforgetData, pfstBuiltin, psndBuiltin)
-import Plutarch.DataRepr (pfield, pletFields)
-import Plutarch.List (pmap)
+import Plutarch.Builtin (pasConstr, pforgetData)
+import Plutarch.DataRepr (PLabeledType ((:=)))
 
 -- import Plutarch.DataRepr (pindexDataList)
-import Plutarch.Lift (pconstant, plift)
-import Plutarch.List (pelem, phead)
 import qualified Plutarch.Monadic as P
-import Plutarch.Unit (PUnit)
 
 import Plutus.V1.Ledger.Api (
   Address (Address),
@@ -51,6 +49,8 @@ import Plutus.V1.Ledger.Api (
   Value,
   toData,
  )
+
+import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Interval as Interval
 import qualified Plutus.V1.Ledger.Value as Value
 import Test.Tasty (TestTree, testGroup)
@@ -185,6 +185,15 @@ checkSignatoryCont = plam $ \ph ctx' ->
           -- Signature not present.
           perror
 
+getFields :: Term s (PData :--> PBuiltinList PData)
+getFields = phoistAcyclic $ plam $ \addr -> psndBuiltin #$ pasConstr # addr
+
+getFields' :: Term s (PAddress :--> PDataRecord '["credential" ':= PCredential, "stakingCredential" ':= PMaybeData PStakingCredential])
+getFields' = phoistAcyclic $
+  plam $ \addr -> P.do
+    PAddress addrFields <- pmatch addr
+    addrFields
+
 tests :: HasTester => TestTree
 tests =
   testGroup
@@ -208,7 +217,14 @@ tests =
     , testCase "signatory validator with Cont" $ do
         () <$ traverse (\x -> succeeds $ checkSignatoryCont # pconstant x # ctx) signatories
         fails $ checkSignatory # pconstant "41" # ctx
+    , testCase "getFields" $
+        printTerm getFields @?= getFields_compiled
+    , testCase "getFields'" $
+        printTerm getFields' @?= getFields_compiled
     ]
 
 ctx_compiled :: String
 ctx_compiled = "(program 1.0.0 #d8799fd8799f9fd8799fd8799fd8799f41a0ff00ffd8799fd8799fd87a9f41a1ffd87a80ffa0d8799f41d0ffffffff80a0a141c0a149736f6d65746f6b656e018080d8799fd8799fd87980d87a80ffd8799fd87b80d87a80ffff9f45ab01fe235c4312301443abcdefff80d8799f41b0ffffd87a9fd8799fd8799f41a0ff00ffffff)"
+
+getFields_compiled :: String
+getFields_compiled = "(program 1.0.0 (\\i0 -> force (force sndPair) (unConstrData i1)))"

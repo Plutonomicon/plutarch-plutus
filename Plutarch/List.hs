@@ -45,6 +45,7 @@ import Numeric.Natural (Natural)
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic, I (I))
 import Plutarch (
+  ClosedTerm,
   PDelayed,
   PType,
   PlutusType,
@@ -183,10 +184,12 @@ ptryIndex n xs = phead # (pdrop n xs)
   efficient in many circumstances.
 -}
 pdrop :: (PIsListLike list a) => Natural -> Term s (list a) -> Term s (list a)
-pdrop n xs = (phoistAcyclic $ plam $ \x -> pdrop' n x) # xs
+pdrop n xs = pdrop' n # xs
   where
-    pdrop' 0 xs' = xs'
-    pdrop' n' xs' = pdrop' (n' - 1) (ptail # xs')
+    pdrop' :: (PIsListLike list a) => Natural -> ClosedTerm (list a :--> list a)
+    pdrop' 0 = plam $ \x -> x
+    pdrop' 1 = ptail
+    pdrop' n' = phoistAcyclic $ plam $ \x -> ptail #$ pdrop' (n' - 1) # x
 
 --------------------------------------------------------------------------------
 

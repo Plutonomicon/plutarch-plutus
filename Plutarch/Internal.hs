@@ -43,7 +43,7 @@ import GHC.Stack (HasCallStack)
 import Numeric.Natural (Natural)
 import Plutarch.Evaluate (evaluateScript)
 import Plutus.V1.Ledger.Scripts (Script (Script))
-import PlutusCore (Some, ValueOf)
+import PlutusCore (Some (Some), ValueOf (ValueOf))
 import qualified PlutusCore as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
 import qualified UntypedPlutusCore as UPLC
@@ -303,21 +303,40 @@ punsafeConstant :: Some (ValueOf PLC.DefaultUni) -> Term s a
 punsafeConstant = punsafeConstantInternal
 
 punsafeConstantInternal :: Some (ValueOf PLC.DefaultUni) -> Term s a
-punsafeConstantInternal c = Term $ \_ -> mkTermRes $ RConstant c
+punsafeConstantInternal c = Term $ \_ ->
+  case c of
+    -- These constants are smaller than variable references.
+    Some (ValueOf PLC.DefaultUniBool _) -> mkTermRes $ RConstant c
+    Some (ValueOf PLC.DefaultUniUnit _) -> mkTermRes $ RConstant c
+    Some (ValueOf PLC.DefaultUniInteger n) | n < 256 -> mkTermRes $ RConstant c
+    _ ->
+      let hoisted = HoistedTerm (hashRawTerm $ RConstant c) (RConstant c)
+       in TermResult (RHoisted hoisted) [hoisted]
 
 asClosedRawTerm :: ClosedTerm a -> TermResult
 asClosedRawTerm t = asRawTerm t 0
 
 -- FIXME: Give proper error message when mutually recursive.
 phoistAcyclic :: HasCallStack => ClosedTerm a -> Term s a
-phoistAcyclic t = Term $ \_ -> case asRawTerm t 0 of
-  -- FIXME: is this worth it?
-  t'@(getTerm -> RBuiltin _) -> t'
+phoistAcyclic t = case asRawTerm t 0 of
+  -- Built-ins are smaller than variable references
+  t'@(getTerm -> RBuiltin _) -> Term $ \_ -> t'
   t' -> case evaluateScript . Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' t') of
     Right _ ->
       let hoisted = HoistedTerm (hashRawTerm . getTerm $ t') (getTerm t')
-       in TermResult (RHoisted hoisted) (hoisted : getDeps t')
+       in Term $ \_ -> TermResult (RHoisted hoisted) (hoisted : getDeps t')
     Left e -> error $ "Hoisted term errs! " <> show e
+
+-- Couldn't find a definition for this in plutus-core
+subst :: Natural -> (Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun () -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+subst idx x (UPLC.Apply () yx yy) = UPLC.Apply () (subst idx x yx) (subst idx x yy)
+subst idx x (UPLC.LamAbs () name y) = UPLC.LamAbs () name (subst (idx + 1) x y)
+subst idx x (UPLC.Delay () y) = UPLC.Delay () (subst idx x y)
+subst idx x (UPLC.Force () y) = UPLC.Force () (subst idx x y)
+subst idx x (UPLC.Var () (DeBruijn (Index idx'))) | idx == idx' = x idx
+subst idx _ y@(UPLC.Var () (DeBruijn (Index idx'))) | idx > idx' = y
+subst idx _ (UPLC.Var () (DeBruijn (Index idx'))) | idx < idx' = UPLC.Var () (DeBruijn . Index $ idx' - 1)
+subst _ _ y = y
 
 rawTermToUPLC ::
   (HoistedTerm -> Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) ->
@@ -332,7 +351,15 @@ rawTermToUPLC m l (RLamAbs n t) =
     (replicate (fromIntegral $ n + 1) $ UPLC.LamAbs () (DeBruijn . Index $ 0))
     $ (rawTermToUPLC m (l + n + 1) t)
 rawTermToUPLC m l (RApply x y) =
-  foldr (.) id ((\y' t -> UPLC.Apply () t (rawTermToUPLC m l y')) <$> y) $ (rawTermToUPLC m l x)
+  let f y t@(UPLC.LamAbs () _ body) =
+        case rawTermToUPLC m l y of
+          -- Inline unconditionally if it's a variable or built-in.
+          -- These terms are very small and are always WHNF.
+          UPLC.Var () (DeBruijn (Index idx)) -> subst 1 (\lvl -> UPLC.Var () (DeBruijn . Index $ idx + lvl - 1)) body
+          arg@UPLC.Builtin {} -> subst 1 (\_ -> arg) body
+          arg -> UPLC.Apply () t arg
+      f y t = UPLC.Apply () t (rawTermToUPLC m l y)
+   in foldr (.) id (f <$> y) $ (rawTermToUPLC m l x)
 rawTermToUPLC m l (RDelay t) = UPLC.Delay () (rawTermToUPLC m l t)
 rawTermToUPLC m l (RForce t) = UPLC.Force () (rawTermToUPLC m l t)
 rawTermToUPLC _ _ (RBuiltin f) = UPLC.Builtin () f

@@ -166,9 +166,33 @@ instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields ((l ':= p) ': ps)
     xs <- bindFields @ps @bs (pdropDataRecord (Proxy @1) t')
     pure $ HCons (Labeled $ pindexDataRecord (Proxy @0) t') xs
 
-instance (BindFields ps bs) => BindFields (p ': ps) ( 'Skip ': bs) where
+instance {-# OVERLAPPING #-} (BindFields ps bs) => BindFields (p1 ': ps) ( 'Skip ': bs) where
   bindFields t = do
     bindFields @ps @bs $ pdropDataRecord (Proxy @1) t
+
+instance {-# OVERLAPPING #-} (BindFields ps bs) => BindFields (p1 ': p2 ': ps) ( 'Skip ': 'Skip ': bs) where
+  bindFields t = do
+    bindFields @ps @bs $ pdropDataRecord (Proxy @2) t
+
+instance {-# OVERLAPPING #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': ps) ( 'Skip ': 'Skip ': 'Skip ': bs) where
+  bindFields t = do
+    bindFields @ps @bs $ pdropDataRecord (Proxy @3) t
+
+instance {-# OVERLAPPING #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': ps) ( 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
+  bindFields t = do
+    bindFields @ps @bs $ pdropDataRecord (Proxy @4) t
+
+instance {-# OVERLAPPING #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': p5 ': ps) ( 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
+  bindFields t = do
+    bindFields @ps @bs $ pdropDataRecord (Proxy @5) t
+
+instance {-# OVERLAPPING #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': p5 ': p6 ': ps) ( 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
+  bindFields t = do
+    bindFields @ps @bs $ pdropDataRecord (Proxy @6) t
+
+instance {-# OVERLAPPING #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': p5 ': p6 ': p7 ': ps) ( 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
+  bindFields t = do
+    bindFields @ps @bs $ pdropDataRecord (Proxy @7) t
 
 --------------------------------------------------------------------------------
 
