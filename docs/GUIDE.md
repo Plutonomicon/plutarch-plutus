@@ -41,6 +41,8 @@
       - [Implementing `PlutusType` for your own types](#implementing-plutustype-for-your-own-types)
     - [PListLike](#plistlike)
     - [PIsDataRepr](#pisdatarepr)
+      - [All about extracting fields](#all-about-extracting-fields)
+        - [Alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax)
       - [Implementing PIsDataRepr](#implementing-pisdatarepr)
   - [Working with Types](#working-with-types)
     - [PInteger](#pinteger)
@@ -949,6 +951,8 @@ First, we extract the `purpose` field using `pfield @"purpose"`-
 ```hs
 pfield :: Term s (PScriptContext :--> PAsData PScriptPurpose)
 ```
+> Note: When extracting several fields from the same variable, you should instead use `pletFields`. See: [Extracting fields](#all-about-extracting-fields)
+
 Now, we can grab the `PScriptPurpose` from within the `PAsData` using `pfromData`-
 ```hs
 pfromData :: Term s (PAsData PScriptPurpose) -> Term s PScriptPurpose
@@ -993,6 +997,67 @@ mockCtx =
 > foo `evalWithArgsT` [PlutusTx.toData mockCtx]
 Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf string "It's minting!"))))
 ```
+
+#### All about extracting fields
+We caught a glimpse of field extraction in the example above, thanks to `pfield`. However, that barely touched the surface.
+
+Field extraction is done with 3 functions-
+* `pletFields`
+* `pfield`
+* `hrecField` (when not using `RecordDotSyntax` or record dot preprocessor)
+
+Each has its own purpose. However, `pletFields` is arguably the most general purpose and most efficient. Whenever you need to extract several fields from the same variable, you should use `pletFields`-
+```hs
+-- NOTE: REQUIRES GHC 9!
+{-# LANGUAGE QualifiedDo #-}
+{-# LANGUAGE RecordDotSyntax #-}
+
+import Plutarch.Prelude
+import Plutarch.Api.Contexts
+import qualified Plutarch.Monadic as P
+
+foo :: Term s (PScriptContext :--> PUnit)
+foo = plam $ \ctx' -> P.do
+  ctx <- pletFields @["txInfo", "purpose"] ctx'
+  let
+    purpose = ctx.purpose
+    txInfo = ctx.txInfo
+  <use purpose and txInfo here>
+  pconstant ()
+```
+> Note: The above snippet usages GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
+
+In essence, `pletFields` takes in a type level list of the field names that you want to access and a continuation function that takes in an `HRec`. This `HRec` is essentially a collection of the bound fields. You don't have to worry too much about the details of `HRec`. This particular usage has type-
+```hs
+pletFields :: Term s PScriptContext
+  -> (HRec
+        (BoundTerms
+           '[ "txInfo" ':= PTxInfo, "purpose" ':= PScriptPurpose]
+           '[ 'Bind, 'Bind]
+           s)
+      -> Term s PUnit)
+  -> Term s PUnit
+```
+> Aside: Of course, we used the convenient `do` syntax provided to us by `Plutarch.Monadic` to write the continuation merely as a `<-` bind. Without do notation, you'd have to write-
+>
+> ```hs
+> pletFields @["txInfo", "purpose"] ctx' $ \ctx ->
+>   let
+>     purpose = ctx.purpose
+>     txInfo = ctx.txInfo
+>   in pconstant ()
+> ```
+
+You can then access the fields on this `HRec` using `RecordDotSyntax`.
+
+Next up is `pfield`. You should *only ever* use this if you just want one field from a variable and no more. It's usage is simply `pfield @"fieldName" # variable`. You can, however, also use `pletFields` in this case (e.g `pletFoelds @'["fieldName"] variable`). `pletFields` with a singular field has the same efficiency as `pfield`!
+
+Finally, `hrecField` is merely there to supplement the lack of record dot syntax. See: [Alternative to `RecordDotSyntax`](#alternative-to-recorddotsyntax).
+
+##### Alternatives to `RecordDotSyntax`
+If `RecordDotSyntax` is not available, you can also try using the [record dot preprocessor plugin](https://hackage.haskell.org/package/record-dot-preprocessor).
+
+If you don't want to use either, you can simply use `hrecField`. In fact, `ctx.purpose` above just translates to `hrecField @"purpose" ctx`. Nothing magical there!
 
 #### Implementing PIsDataRepr
 If you have a custom ADT that will actually be represented as a `Data` value (`PData`) under the hood, implementing `PIsDataRepr` for your ADT (and **all its fields**!) is all you need to get convenient type tracking throughout its usage. This is going to be your biggest weapon when making custom datums and redeemers!
@@ -1358,7 +1423,7 @@ checkSignatory = plam $ \ph _ _ ctx' -> P.do
     -- Signature not present.
     perror
 ```
-> Note: The above snippet usages GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8) and [alternatives to `RecordDotSyntax`](TODO: LINK).
+> Note: The above snippet usages GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
 
 Once again, we ignore datum and redeemer so we can use `PData` as typing. Other than that, we match on the script purpose to see if its actually for *spending* - and we get the signatories field from `txInfo` (the 7th field), check if given pub key hash is present within the signatories and that's it!
 
