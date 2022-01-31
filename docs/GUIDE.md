@@ -116,6 +116,8 @@ evalWithArgsT :: ClosedTerm a -> [Data] -> Either ScriptError (Program DeBruijn 
 evalWithArgsT x args = fmap (\(_, _, s) -> unScript s) . evaluateScript . flip applyArguments args $ compile x
 ```
 
+> Note: You can pretty much ignore the UPLC types involved here. All it really means is that the result is a "UPLC program". When it's printed, it's pretty legible - especially for debugging purposes. Although not necessary to use Plutarch, you may find the [Plutonomicon UPLC guide](https://github.com/Plutonomicon/plutonomicon/blob/main/uplc.md) useful.
+
 ## Syntax
 
 A Plutarch script is a `Term`. This can consist of-
