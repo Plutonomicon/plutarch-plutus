@@ -2,11 +2,11 @@
 
 # Unreleased
 
-- `TermCont`: add `MonadFail` instance.
+- `TermCont`: Parametrize by result type; add `MonadFail` instance; etc.
 
   Also, export from `Plutarch.TermCont`, and then from `Plutarch.Prelude` (TermCont is no longer exported by `Plutarch.Internal`).
 
-  Started by: [#225](https://github.com/Plutonomicon/plutarch/pull/225)
+  Started by: [#226](https://github.com/Plutonomicon/plutarch/pull/226)
 
 # 1.1.0
 

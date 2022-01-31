@@ -52,7 +52,7 @@ import Plutarch.DataRepr.Internal.HList (
   type SingleItem,
  )
 import Plutarch.Internal (punsafeCoerce)
-import Plutarch.TermCont (TermCont, runTermCont, pattern TermCont)
+import Plutarch.TermCont (TermCont (TermCont), runTermCont)
 
 --------------------------------------------------------------------------------
 ---------- PDataField class & deriving utils
