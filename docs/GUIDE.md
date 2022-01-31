@@ -165,7 +165,7 @@ f = plam $ \x -> pcon $ PJust x
 > Term s (PMaybe PInteger)
 > ```
 >
-> Thus, within the `f` definition above, `pcon` has type `PMaybe a s -> Term s (PMaybe a)`. Similarly, `pcon PNothing` would yield `forall x. Term s (PMaybe x)`. Since `PNothing` has type `PMaybe x s`.
+> Thus, within the `f` definition above, `pcon` has type `PMaybe a s -> Term s (PMaybe a)`. Similarly, `pcon PNothing` would yield `forall x. Term s (PMaybe x)`, since `PNothing` has type `PMaybe x s`.
 >
 > ```hs
 > -- Example
