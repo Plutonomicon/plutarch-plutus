@@ -1,5 +1,13 @@
 # Revision history for plutarch
 
+# Unreleased
+
+- `TermCont`: add `MonadFail` instance.
+
+  Also, export from `Plutarch.TermCont`, and then from `Plutarch.Prelude` (TermCont is no longer exported by `Plutarch.Internal`).
+
+  Started by: [#225](https://github.com/Plutonomicon/plutarch/pull/225)
+
 # 1.1.0
 
 - General repository changes.
