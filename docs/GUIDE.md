@@ -802,7 +802,7 @@ instance PlutusType (PMaybe a) where
   pcon' PNothing = plam $ \_ g -> pforce g
   pmatch' x f = x # (plam $ \inner -> f (PJust inner)) # (pdelay $ f PNothing)
 ```
-This is a [scott encoded representation of the familiar `Maybe` data type](TODO - Scott encoding link). As you can see, `PInner` of `PMaybe` is actually a Plutarch level function. And that's exactly why `pcon'` creates a *function*. `pmatch'`, then, simply "matches" on the function - scott encoding fashion.
+This is a [scott encoded representation of the familiar `Maybe` data type](#data-encoding-and-scott-encoding). As you can see, `PInner` of `PMaybe` is actually a Plutarch level function. And that's exactly why `pcon'` creates a *function*. `pmatch'`, then, simply "matches" on the function - scott encoding fashion.
 
 You should always use `pcon` and `pmatch` instead of `pcon'` and `pmatch'` - these are provided by the `PCon` and `PMatch` typeclasses-
 ```hs
