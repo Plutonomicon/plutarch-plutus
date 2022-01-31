@@ -127,8 +127,6 @@ A Plutarch script is a `Term`. This can consist of-
 These can be either built directly from Haskell synonyms using `pconstant` (requires [`PConstant`/`PLift`](#pconstant--plift) instance). `pconstant` always takes in a regular Haskell value to create its Plutarch synonym.
 ```hs
 import Plutarch.Prelude
-import Plutarch.Bool (PBool)
-import Plutarch.Lift (pconstant)
 
 -- | A plutarch level boolean. Its value is "True", in this case.
 x :: Term s PBool
@@ -139,21 +137,21 @@ x = pconstant True
 Or from Plutarch terms within other constructors using `pcon` (requires [`PlutusType`/`PCon`](#plutustype-pcon-and-pmatch) instance)-
 ```haskell
 import Plutarch.Prelude
-import Plutarch.Maybe (PMaybe (PJust))
 
 -- | Create a plutarch level optional value from given value.
 f :: Term s (a :--> PMaybe a)
 f = plam $ \x -> pcon $ PJust x
 -- Note that 'PMaybe' has a 'PlutusType' instance.
 ```
+> `PMaybe` declaration: `data PMaybe a s = PJust (Term s a) | PNothing`
+
+> Aside: Notice that `pcon` actually takes in a Plutarch type to create a Plutarch term. In particular, `PJust x` (`x :: Term s a`), has type `PMaybe a s`. Thus, this `pcon` usage has type `PMaybe a s -> Term s (PMaybe a)`. Similarly, `pcon PNothing` would yield `forall x. Term s (PMaybe x)`. As `PNothing` has type `PMaybe x s`.
 
 Or by using literals-
 ```haskell
 {-# LANGUAGE OverloadedStrings #-}
 
 import Plutarch.Prelude
-import Plutarch.Integer (PInteger)
-import Plutarch.String (PString)
 
 -- | A plutarch level integer. Its value is 1, in this case.
 x :: Term s PInteger
@@ -168,7 +166,6 @@ Or by using other, miscellaneous functions provided by Plutarch-
 ```haskell
 import qualified Data.ByteString as BS
 import Plutarch.Prelude
-import Plutarch.ByteString (PByteString, phexByteStr, pbyteStr)
 
 -- | A plutarch level bytestring. Its value is [65], in this case.
 x :: Term s PByteString
