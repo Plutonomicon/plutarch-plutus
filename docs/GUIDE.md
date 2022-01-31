@@ -122,7 +122,7 @@ A Plutarch script is a `Term`. This can consist of-
 
 ### Constants
 
-These can be either built directly from Haskell synonyms using `pconstant` (requires [`PLift`](#plift) instance). `pconstant` always takes in a regular Haskell value to create its Plutarch synonym.
+These can be either built directly from Haskell synonyms using `pconstant` (requires [`PConstant`/`PLift`](#pconstant--plift) instance). `pconstant` always takes in a regular Haskell value to create its Plutarch synonym.
 ```hs
 import Plutarch.Prelude
 import Plutarch.Bool (PBool)
@@ -701,7 +701,7 @@ This is a scott encoded representation of the familiar `Maybe` data type. As you
 
 > Aside: Notice how `PJust` contains Plutarch term. This is where `PlutusType` is especially useful - for building up Plutarch terms *dynamically* - i.e, from arbitrary Plutarch terms.
 >
-> You should prefer `pconstant` (from [`PLift`](#plift)) when you can build something up entirely from Haskell level constants.
+> You should prefer `pconstant` (from [`PConstant`/`PLift`](#pconstant--plift)) when you can build something up entirely from Haskell level constants.
 
 You should always use `pcon` and `pmatch` instead of `pcon'` and `pmatch'` - these are provided by the `PCon` and `PMatch` typeclasses-
 ```hs
@@ -1390,7 +1390,7 @@ instance PlutusType AB where
 ```
 You can use the `A` and `B` constructors during building, but still have your type be represented as integers under the hood! You cannot do this with `pconstant`.
 
-You should prefer `pconstant` (from [`PLift`](#plift)) when you can build something up entirely from Haskell level constants and that *something* has the same representation as the Haskell constant.
+You should prefer `pconstant` (from [`PConstant`/`PLift`](#pconstant--plift)) when you can build something up entirely from Haskell level constants and that *something* has the same representation as the Haskell constant.
 
 # Common Issues
 
