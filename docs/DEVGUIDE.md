@@ -5,6 +5,8 @@ Looking to contribute to Plutarch? Looking for functionalities that are not curr
 
 - [Code Style](#code-style)
 - [Pre-commit checks](#pre-commit-checks)
+- [Updating Changelog](#updating-changelog)
+- [Targeting branch for PR](#targeting-branch-for-pr)
 - [Concepts](#concepts)
   - [Plutus Core constants (UNSAFE)](#plutus-core-constants-unsafe)
   - [Plutus core builtin functions](#plutus-core-builtin-functions)
@@ -24,7 +26,15 @@ You should generally follow the [MLabs style guide](https://github.com/mlabs-has
 * `RecordWildCards`
 
 # Pre-commit checks
-Remember to run `./bin/format` to format your code and `cabal test` to make sure all the tests pass prior to making a PR!
+Remember to run `./bin/format` to format your code and `cabal test`, alongside `cabal test -f development`, to make sure all the tests pass prior to making a PR!
+
+# Updating Changelog
+If your PR makes a change to some user facing functionality - please summarize the change(s) and add it to `CHANGELOG.md`.
+
+# Targeting branch for PR
+More often than not, you'll be making PRs directly to `master`.
+
+However, sometimes, there is a release cycle going on and the state of the repository is in flux. Everything is unstable as rapid changes are occuring. In this case, all development take place in the `staging` branch - all the PRs are based on top off `staging`, and they all target `staging`. This is the workflow that took place during the Plutarch 1.1 release cycle.
 
 # Concepts
 Even if certain functionalities are absent from the public facing API - you can always implement them using functions like `punsafeConstant` and `punsafeBuiltin` - these allow you to walk the lines between Plutus core and Plutarch.
@@ -39,7 +49,7 @@ Parts of the [Pluto guide](https://github.com/Plutonomicon/pluto/blob/main/GUIDE
 
 ## Plutus Core constants (UNSAFE)
 
-> **NOTE**: The following information is almost never necessary with the existence of `pconstant`. Refer to [constant building](./GUIDE.md#constants) and [`PLift`](./GUIDE.md#plift) section of the Plutarch user guide.
+> **NOTE**: The following information is almost never necessary with the existence of `pconstant`. Refer to [constant building](./GUIDE.md#constants) and [`PConstant`/`PLift`](./GUIDE.md#pconstant--plift) section of the Plutarch user guide.
 
 Often, you will need to build a Plutus core constant. You can do this using `Some` and `ValueOf`. Here's how `pcon PTrue` creates a Plutarch term that actually evaluates to a Plutus core constant representing a boolean-
 
