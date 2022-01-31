@@ -567,9 +567,66 @@ pif cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay wh
 Delay and Force will be one of your most useful tools while writing Plutarch. Make sure you get a grip on them!
 
 ### Data encoding and Scott encoding
-In Plutus Core, there are really two ways to represent non-trivial ADTs.
+In Plutus Core, there are really two (conflicting) ways to represent non-trivial ADTs- `Constr` data encoding, or Scott encoding. You can (you should!) only use one of these representations for your non-trivial types.
 
-TODO
+> Aside: What's a "trivial" type? The non-data builtin types! `PInteger`, `PByteString`, `PBuiltinList`, `PBuiltinPair`, and `PMap` (actually just a builtin list of builtin pairs).
+
+`Constr` data is essentially a sum-of-products representation. However, it can only contain other `Data` values (not necessarily just `Constr` data, could be `I` data, `B` data etc.) as its fields. Plutus Core famously lacks the ability to represent functions using this encoding, and thus - `Constr` encoded values simply cannot contain functions.
+
+> Note: You can find out more about the deep details of `Data`/`BuiltinData` at [plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md).
+
+With that said, `Data` encoding is *ubiquitous* on the chain. It's the encoding used by the ledger api types, it's the type of the arguments that can be passed to a script on the chain etc. As a result, your datum and redeemers *must* use data encoding.
+
+On the opposite (and conflicting) end, is scott encoding. [The internet](https://crypto.stanford.edu/~blynn/compiler/scott.html) can explain scott encoding way better than I can. But I'll be demonstrating scott encoding with an example anyway.
+
+Firstly, what good is scott encoding? Well it doesn't share the limitation of not being able to contain functions! However, you cannot use scott encoded types within, for example, your datums and redeemers.
+
+Briefly, scott encoding is a way to represent data with functions. The scott encoded representation of `Maybe a` would be-
+```hs
+(a -> b) -> b -> b
+```
+`Just 42`, for example, would be represented as this function-
+```hs
+\f _ -> f 42
+```
+Whereas `Nothing` would be represented as this function-
+```hs
+\_ n -> n
+```
+> Aside: Seems familiar? It's the [`maybe`]() catamorphism!
+
+We covered construction. What about usage/deconstruction? That's also just as simple. Let's say you have a function, `foo :: Maybe Integer -> Integer`, it takes in a scott encoded `Maybe Integer`, adds `42` to its `Just` value. If it's `Nothing`, it just returns 0.
+```hs
+{-# LANGUAGE RankNTypes #-}
+
+type Maybe a = forall b. (a -> b) -> b -> b
+
+just :: a -> Maybe a
+just x = \f _ -> f x
+
+nothing :: Maybe a
+nothing = \_ n = n
+
+foo :: Maybe a ->
+foo mb = mb (\x -> x + 42) 0
+```
+How does that work? Recall that `mb` is really just a function. Here's what the application of `f` would work like-
+```hs
+foo (just 1)
+foo (\f _ -> f 1)
+(\f _ -> f 1) (\x -> x + 42) 0
+(\x -> x + 42) 1
+43
+```
+```hs
+foo nothing
+foo (\_ n -> n)
+(\_ n -> n) (\x -> x + 42) 0
+0
+```
+How cool is that?
+
+This is the same recipe followed in the implementation of `PMaybe`. See its [PlutusType impl](#plutustype-pcon-and-pmatch) below!
 
 ### Unsafe functions
 There are internal functions such as `punsafeCoerce`, `punsafeConstant` etc. that give you terms without their specific type. These **should not** be used by Plutarch users. It is the duty of the user of these unsafe functions to get the type right - and it is very easy to get the type wrong. You can easily make the type system believe you're creating a `Term s PInteger`, when in reality, you created a function.
