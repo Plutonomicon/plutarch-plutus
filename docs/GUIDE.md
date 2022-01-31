@@ -40,10 +40,10 @@
     - [PlutusType, PCon, and PMatch](#plutustype-pcon-and-pmatch)
       - [Implementing `PlutusType` for your own types](#implementing-plutustype-for-your-own-types)
     - [PListLike](#plistlike)
-    - [PIsDataRepr](#pisdatarepr)
+    - [PIsDataRepr & PDataFields](#pisdatarepr--pdatafields)
       - [All about extracting fields](#all-about-extracting-fields)
         - [Alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax)
-      - [Implementing PIsDataRepr](#implementing-pisdatarepr)
+      - [Implementing PIsDataRepr and friends](#implementing-pisdatarepr-and-friends)
   - [Working with Types](#working-with-types)
     - [PInteger](#pinteger)
     - [PBool](#pbool)
@@ -55,10 +55,10 @@
     - [PBuiltinPair](#pbuiltinpair)
     - [PAsData](#pasdata)
     - [PDataSum & PDataRecord](#pdatasum--pdatarecord)
-    - [PData](#pdata)
     - [PRecord](#precord)
       - [letrec](#letrec)
       - [Record Data](#record-data)
+    - [PData](#pdata)
 - [Examples](#examples)
   - [Fibonacci number at given index](#fibonacci-number-at-given-index)
   - [Validator that always succeeds](#validator-that-always-succeeds)
@@ -569,6 +569,8 @@ Delay and Force will be one of your most useful tools while writing Plutarch. Ma
 ### Data encoding and Scott encoding
 In Plutus Core, there are really two ways to represent non-trivial ADTs.
 
+TODO
+
 ### Unsafe functions
 There are internal functions such as `punsafeCoerce`, `punsafeConstant` etc. that give you terms without their specific type. These **should not** be used by Plutarch users. It is the duty of the user of these unsafe functions to get the type right - and it is very easy to get the type wrong. You can easily make the type system believe you're creating a `Term s PInteger`, when in reality, you created a function.
 
@@ -904,12 +906,12 @@ x = pcons # 1 #$ pcons # 2 #$ pcons # 3 # pnil
 ```
 The code is the same, we just changed the type annotation. Cool!
 
-### PIsDataRepr
-`PIsDataRepr` allows for easily deconstructing `Constr` [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md) values. It allows fully type safe matching on `Data` values, without embedding type information within the generated script - unlike PlutusTx.
+### PIsDataRepr & PDataFields
+`PIsDataRepr` allows for easily deconstructing `Constr` [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md) values. It allows fully type safe matching on `Data` values, without embedding type information within the generated script - unlike PlutusTx. `PDataFields`, on top of that, allows for ergonomic field access.
 
 > Aside: What's a `Constr` data value? Briefly, it's how Plutus Core encodes non-trivial ADTs into `Data`/`BuiltinData`. It's essentially a sum-of-products encoding. But you don't have to care too much about any of this. Essentially, whenever you have a custom non-trivial ADT (that isn't just an integer, bytestring, string/text, list, or assoc map), you should implement `PIsDataRepr` for it.
 
-For example, `PScriptContext` - which is the Plutarch synonym to [`ScriptContext`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Contexts.html#t:ScriptContext) - has a `PIsDataRepr` instance, this lets you easily keep track of its type, match on it, deconstruct it - you name it!
+For example, `PScriptContext` - which is the Plutarch synonym to [`ScriptContext`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Contexts.html#t:ScriptContext) - has the necessary instances. This lets you easily keep track of its type, match on it, deconstruct it - you name it!
 ```hs
 -- NOTE: REQUIRES GHC 9!
 {-# LANGUAGE QualifiedDo #-}
@@ -919,7 +921,7 @@ import Plutarch.Api.Contexts
 import qualified Plutarch.Monadic as P
 
 foo :: Term s (PScriptContext :--> PString)
-foo = plam $ \ctx -> do
+foo = plam $ \ctx -> P.do
   purpose <- pmatch . pfromData $ pfield @"purpose" # ctx
   case purpose of
     PMinting _ -> "It's minting!"
@@ -927,7 +929,7 @@ foo = plam $ \ctx -> do
     PRewarding _ -> "It's rewarding!"
     PCertifying _ -> "It's certifying!"
 ```
-> Note: The above snippet usages GHC 9 features (`QualifiedDo`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8).
+> Note: The above snippet uses GHC 9 features (`QualifiedDo`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8).
 
 Of course, just like `ScriptContext` - `PScriptContext` is represented as a `Data` value in Plutus Core. Plutarch just lets you keep track of the *exact representation* of it within the type system.
 
@@ -1000,7 +1002,7 @@ Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf string "It's mi
 #### All about extracting fields
 We caught a glimpse of field extraction in the example above, thanks to `pfield`. However, that barely touched the surface.
 
-Field extraction is done with 3 functions-
+Once a type has a `PDataFields` instance, field extraction can be done with these 3 functions-
 * `pletFields`
 * `pfield`
 * `hrecField` (when not using `RecordDotSyntax` or record dot preprocessor)
@@ -1024,7 +1026,7 @@ foo = plam $ \ctx' -> P.do
   <use purpose and txInfo here>
   pconstant ()
 ```
-> Note: The above snippet usages GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
+> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
 
 In essence, `pletFields` takes in a type level list of the field names that you want to access and a continuation function that takes in an `HRec`. This `HRec` is essentially a collection of the bound fields. You don't have to worry too much about the details of `HRec`. This particular usage has type-
 ```hs
@@ -1058,10 +1060,90 @@ If `RecordDotSyntax` is not available, you can also try using the [record dot pr
 
 If you don't want to use either, you can simply use `hrecField`. In fact, `ctx.purpose` above just translates to `hrecField @"purpose" ctx`. Nothing magical there!
 
-#### Implementing PIsDataRepr
-If you have a custom ADT that will actually be represented as a `Data` value (`PData`) under the hood, implementing `PIsDataRepr` for your ADT (and **all its fields**!) is all you need to get convenient type tracking throughout its usage. This is going to be your biggest weapon when making custom datums and redeemers!
+#### Implementing PIsDataRepr and friends
+Implement these is rather simple with generic deriving + `PIsDataReprInstances`. All you need is a well formed type using `PDataRecord`. For example, suppose you wanted to implement `PIsDataRepr` the Plutarch version of this Haskell type-
+```hs
+data Vehicle
+  = FourWheeler Integer Integer Integer Integer
+  | TwoWheeler Integer Integer
+  | ImmovableBox
+```
+You'd declare the corresponding Plutarch type as-
+```hs
+import Plutarch.Prelude
 
-TODO
+data PVehicle (s :: S)
+  = FourWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger, "_3" ':= PInteger, "_4" ':= PInteger]))
+  | TwoWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
+  | ImmovableBox (Term s (PDataRecord '[]))
+```
+And you'd simply derive `PIsDataRepr` using generics. But that's not all! You should also derive `PMatch`, `PIsData` using `PIsDataReprInstances`.
+
+> Aside: If your type is *not* a sumtype, but rather a newtype with a single constructor - you should also derive `PDataFields`. In the case of sumtypes, the existing `PDataFields` instance for `PDataRecord` will be enough.
+
+Combine all that, and you have-
+```hs
+import qualified GHC.Generics as GHC
+import Generics.SOP (Generic)
+
+import Plutarch.Prelude
+import Plutarch.DataRepr
+
+data PVehicle (s :: S)
+  = PFourWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger, "_2" ':= PInteger, "_3" ':= PInteger]))
+  | PTwoWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
+  | PImmovableBox (Term s (PDataRecord '[]))
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
+  deriving
+    (PMatch, PIsData)
+    via PIsDataReprInstances PVehicle
+```
+> Note: You cannot implement `PIsDataRepr` for types that are represented using [scott encoding](#data-encoding-and-scott-encoding). Your types must be well formed and should be using `PDataRecord` terms instead.
+
+That's it! Now you can represent `PVehicle` as a `Data` value, as well as deconstruct and access its fields super ergonomically. Let's try it!
+```hs
+-- NOTE: REQUIRES GHC 9!
+{-# LANGUAGE QualifiedDo #-}
+{-# LANGUAGE RecordDotSyntax #-}
+
+import qualified Plutarch.Monadic as P
+import Plutarch.Prelude
+
+test :: Term s (PVehicle :--> PInteger)
+test = plam $ \veh' -> P.do
+  veh <- pmatch veh'
+  case veh of
+    PFourWheeler fwh' -> P.do
+      fwh <- pletFields @'["_0", "_1", "_2", "_3"] fwh'
+      pfromData fwh._0 + pfromData fwh._1 + pfromData fwh._2 + pfromData fwh._3
+    PTwoWheeler twh' -> P.do
+      twh <- pletFields @'["_0", "_1"] twh'
+      pfromData twh._0 + pfromData twh._1
+    PImmovableBox _ -> 0
+```
+> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
+
+What about types with singular constructors? It's quite similar to the sum type case. Here's how it looks-
+```hs
+{-# LANGUAGE UndecidableInstances #-}
+
+import qualified GHC.Generics as GHC
+import Generics.SOP (Generic)
+
+import Plutarch.Prelude
+import Plutarch.DataRepr
+
+newtype PFoo (s :: S) = PMkFoo (Term s (PDataRecord '["foo" ':= PByteString]))
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
+  deriving
+    (PMatch, PIsData, PDataFields)
+    via PIsDataReprInstances PFoo
+```
+Just an extra `PDataFields` derivation compared to the sum type usage! (oh and also the ominous `UndecidableInstances`)
 
 ## Working with Types
 
@@ -1235,18 +1317,30 @@ pdata :: Term s PData -> Term s (PAsData PData)
 ```
 
 ### PDataSum & PDataRecord
-TODO
+Plutarch sum and product types are represented using `PDataSum` and `PDataRecord` respectively. These types are crucial to the [`PIsDataRepr`](#pisdatarepr) machinery.
 
-See: [`PIsDataRepr`](#pisdatarepr)
+Whenever you need to represent a non-trivial ADT using [`Data` encoding](#data-encoding-and-scott-encoding), you'll likely be reaching for these.
 
-### PData
-This is a direct synonym to [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md). As such, it doesn't keep track of what "species" of `Data` it actually is. Is it an `I` data? Is it a `B` data? Nobody can tell for sure!
+More often than not, you'll be using `PDataRecord`. This is used to denote all the fields of a constructor-
+```hs
+import Plutarch.Prelude
 
-Consider using [`PAsData`](#pasdata) instead for simple cases, i.e cases other than `Constr`.
+newtype Foo (s :: S) = Foo (Term s (PDataRecord '["fooField" ':= PInteger]))
+```
+`Foo` is a Plutarch type with a single constructor with a single field, named `fooField`, of type `PInteger`. You can [implement `PIsDataRepr`](#implementing-pisdatarepr) for it so that `PAsData Foo` is represented as a `Constr` encoded data value.
 
-Consider using [`PDataSum`/`PDataList`](#PDataSum--pdatalist) instead when dealing with ADTs, i.e `Constr` data values.
-
-You can find more information about `PData` at [Developers' Corner](./DEVGUIDE.md).
+`PDataSum` then, is more "free-standing". In particular, the following type-
+```hs
+PDataSum
+  [ '[ "_0" ':= PInteger
+     , "_1" ':= PByteString
+     ]
+  , '[ "myField" ':= PBool
+     ]
+  ]
+```
+represents a sum type with 2 unnamed constructors. The first constructor has 2 fields- `_0`, and `_1`, with types `PInteger` and `PByteString` respectively. The second constructor has one field- `myField`, with type `PBool`.
+> Note: It's convention to give names like `_0`, `_1` etc. to fields that don't have a canonically meaningful name. They are merely the "0th field", "1st field" etc.
 
 ### PRecord
 
@@ -1337,6 +1431,15 @@ radiusFromCircleData :: Term s (PAsData (PRecord Circle) :--> PAsData PNatural)
 radiusFromCircleData = fieldFromData radius
 ```
 
+### PData
+This is a direct synonym to [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md). As such, it doesn't keep track of what "species" of `Data` it actually is. Is it an `I` data? Is it a `B` data? Nobody can tell for sure!
+
+Consider using [`PAsData`](#pasdata) instead for simple cases, i.e cases other than `Constr`.
+
+Consider using [`PDataSum`/`PDataList`](#PDataSum--pdatalist) instead when dealing with ADTs, i.e `Constr` data values.
+
+You can find more information about `PData` at [Developers' Corner](./DEVGUIDE.md).
+
 # Examples
 Be sure to check out [Compiling and Running](#compiling-and-running) first!
 
@@ -1422,7 +1525,7 @@ checkSignatory = plam $ \ph _ _ ctx' -> P.do
     -- Signature not present.
     perror
 ```
-> Note: The above snippet usages GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
+> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
 
 Once again, we ignore datum and redeemer so we can use `PData` as typing. Other than that, we match on the script purpose to see if its actually for *spending* - and we get the signatories field from `txInfo` (the 7th field), check if given pub key hash is present within the signatories and that's it!
 
