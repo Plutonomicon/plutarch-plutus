@@ -16,7 +16,7 @@
     - [Conditionals](#conditionals)
     - [Recursion](#recursion)
     - [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](#do-syntax-with-qualifieddo-and-plutarchmonadic)
-      - [Translating `do` syntax to GHC 8](#translating-do-syntax-to-ghc-8)
+      - [Translating `do` syntax with `QualifiedDo` to GHC 8](#translating-do-syntax-with-qualifieddo-to-ghc-8)
     - [Do syntax with `TermCont`](#do-syntax-with-termcont)
     - [Deriving typeclasses for `newtype`s](#deriving-typeclasses-for-newtypes)
     - [Deriving typeclasses with generics](#deriving-typeclasses-with-generics)
@@ -363,7 +363,7 @@ ptrace :: Term s PString -> Term s a -> Term s a
 
 Of course, as long as the semantics of the `do` notation allows it, you can make your own utility functions that take in continuations - and they can utilize `do` syntax just the same.
 
-#### Translating `do` syntax to GHC 8
+#### Translating `do` syntax with `QualifiedDo` to GHC 8
 For convenience, most examples in this guide will be utilizing this `do` syntax. However, since `QualifiedDo` is available pre GHC 9 - we'll discuss how to translate those examples to GHC 8.
 
 There are several ways to do this-
@@ -1067,7 +1067,7 @@ foo = plam $ \ctx -> P.do
     PRewarding _ -> "It's rewarding!"
     PCertifying _ -> "It's certifying!"
 ```
-> Note: The above snippet uses GHC 9 features (`QualifiedDo`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8).
+> Note: The above snippet uses GHC 9 features (`QualifiedDo`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-with-qualifieddo-to-ghc-8).
 
 Of course, just like `ScriptContext` - `PScriptContext` is represented as a `Data` value in Plutus Core. Plutarch just lets you keep track of the *exact representation* of it within the type system.
 
@@ -1164,7 +1164,7 @@ foo = plam $ \ctx' -> P.do
   -- <use purpose and txInfo here>
   pconstant ()
 ```
-> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
+> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-with-qualifieddo-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
 
 In essence, `pletFields` takes in a type level list of the field names that you want to access and a continuation function that takes in an `HRec`. This `HRec` is essentially a collection of the bound fields. You don't have to worry too much about the details of `HRec`. This particular usage has type-
 ```hs
@@ -1261,7 +1261,7 @@ test = plam $ \veh' -> P.do
       pfromData twh._0 + pfromData twh._1
     PImmovableBox _ -> 0
 ```
-> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
+> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-with-qualifieddo-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
 
 What about types with singular constructors? It's quite similar to the sum type case. Here's how it looks-
 ```hs
@@ -1664,7 +1664,7 @@ checkSignatory = plam $ \ph _ _ ctx' -> P.do
     -- Signature not present.
     perror
 ```
-> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
+> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-with-qualifieddo-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
 
 We match on the script purpose to see if its actually for *spending* - and we get the signatories field from `txInfo` (the 7th field), check if given pub key hash is present within the signatories and that's it!
 
