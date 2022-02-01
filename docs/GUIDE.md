@@ -429,8 +429,7 @@ import Plutarch.Prelude
 f :: Term s (PScriptPurpose :--> PUnit)
 f = plam $ \x -> unTermCont $ do
   PSpending _ <- tcont $ pmatch x
-  ptrace "matched spending script purpose"
-  pconstant ()
+  pure $ ptrace "matched spending script purpose" $ pconstant ()
 ```
 
 The best part is that this doesn't require `QualifiedDo`! So you don't need GHC 9.
