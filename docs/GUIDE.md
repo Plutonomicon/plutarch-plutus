@@ -334,21 +334,23 @@ The `Plutarch.Monadic` module provides convenient do syntax on common usage scen
 -- NOTE: REQUIRES GHC 9!
 {-# LANGUAGE QualifiedDo #-}
 
+import Plutarch.Api.Contexts
 import qualified Plutarch.Monadic as P
+import Plutarch.Prelude
 
-f :: Term s (PTxInfo :--> PBuiltinList (PAsData PTxInInfo))
+f :: Term s (PScriptPurpose :--> PUnit)
 f = plam $ \x -> P.do
-  PTxInfo txInfoFields <- pmatch x
-  ptrace "yielding first field from tx info"
-  pfromData $ pdhead # txInfoFields
+  PSpending _ <- pmatch x
+  ptrace "matched spending script purpose"
+  pconstant ()
 ```
-In essence, `P.do { x; y }` simply translates to `x y`; where `x :: (a -> Term s b) -> a -> Term s b` and `y :: a`.
+In essence, `P.do { x; y }` simply translates to `x y`; where `x :: a -> Term s b` and `y :: a`.
 
-Similarly, `P.do { y <- x; z }` translates to `x $ \case { y -> z; _ -> ptraceError <msg> }`. Of course, if `y` is a fully exhaustive pattern match (e.g, singular constructor), the extra `_ -> ptraceError <msg>` case will not be generated at all and you'd simply get `x $ \y -> z`.
+Similarly, `P.do { y <- x; z }` translates to `x $ \case { y -> z; _ -> ptraceError <msg> }`; where `x :: (a -> Term s b) -> Term s b`, `y :: a`, and `z :: Term s b`. Of course, if `y` is a fully exhaustive pattern match (e.g, singular constructor), the extra `_ -> ptraceError <msg>` case will not be generated at all and you'd simply get `x $ \y -> z`.
 
 Finally, `P.do { x }` is just `x`.
 
-These semantics make it *extremely* convenient for usage of [`pmatch`](#plutustype-pcon-and-pmatch), [`ptrace`](#tracing) etc.
+These semantics make it *extremely* convenient for usage with [`pmatch`](#plutustype-pcon-and-pmatch), [`plet`](#plet-to-avoid-work-duplication), [`pletFields`](#all-about-extracting-fields), and [`ptrace`](#tracing) etc.
 ```hs
 pmatch :: Term s a -> (a s -> Term s b) -> Term s b
 
@@ -364,9 +366,10 @@ There are three ways to do this-
 * Don't use do syntax at all. You can easily translate the `do` syntax to regular continuation chains. Here's how you'd translate the above `f` function-
 
   ```hs
-  f :: Term s (PTxInfo :--> PBuiltinList (PAsData PTxInInfo))
-  f = plam $ \x -> pmatch x $ \(PTxInfo txInfoFields) ->
-    ptrace "yielding first field from tx info" $ pfromData $ pdhead # txInfoFields
+  f :: Term s (PScriptPurpose :--> PUnit)
+  f = plam $ \x -> pmatch x $ \case
+    PSpending _ -> ptrace "matched spending script purpose" $ pconstant ()
+    _ -> ptraceError "incorrect script purpose"
   ```
   Simply put, functions like `pmatch`, `pletFields` take in a continuation. The `do` syntax enables you to bind the argument of the continuation using `<-`, and simply use flat code, rather than nested function calls.
 
