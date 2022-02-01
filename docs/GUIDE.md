@@ -68,10 +68,13 @@
 - [Thumb rules, Tips, and Tricks](#thumb-rules-tips-and-tricks)
   - [Plutarch functions are strict](#plutarch-functions-are-strict)
   - [Don't duplicate work](#dont-duplicate-work)
+    - [Where should arguments be `plet`ed?](#where-should-arguments-be-pleted)
   - [Prefer Plutarch level functions](#prefer-plutarch-level-functions)
   - [When to use Haskell level functions?](#when-to-use-haskell-level-functions)
   - [Hoisting is great - but not a silver bullet](#hoisting-is-great---but-not-a-silver-bullet)
   - [The difference between `PlutusType`/`PCon` and `PLift`'s `pconstant`](#the-difference-between-plutustypepcon-and-plifts-pconstant)
+  - [List iteration is strict](#list-iteration-is-strict)
+  - [Let Haskell level functions take responsibility of evaluation](#let-haskell-level-functions-take-responsibility-of-evaluation)
 - [Common Issues](#common-issues)
   - [No instance for (PUnsafeLiftDecl a)](#no-instance-for-punsafeliftdecl-a)
   - [Infinite loop / Infinite AST](#infinite-loop--infinite-ast)
@@ -362,8 +365,44 @@ For convenience, most examples in this guide will be utilizing this `do` syntax.
 
 There are three ways to do this-
 * Use [`RebindableSyntax`](https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/rebindable_syntax.html). You can replace the `>>=`, `>>`, and `fail` functions in your scope with the ones from `Plutarch.Monadic` using `RebindableSyntax`. This is arguably a bad practice but the choice is there. This will let you use the `do` syntax word for word. Although you wouldn't be qualifying your `do` keyword (like `P.do`), you'd just be using `do`.
-* Use the `Cont` monad. You can utilize this to also use regular `do` syntax by simply applying `cont` over functions such as `pmatch`, `pletFields` and similar utilities that take in a continuation function. There is an example of this [here](./../examples/Examples/Api.hs). Notice how `checkSignatory` has been translated to `Cont` monad usage in `checkSignatoryCont`.
-* Don't use do syntax at all. You can easily translate the `do` syntax to regular continuation chains. Here's how you'd translate the above `f` function-
+
+  Here's how you'd translate the above `f` function-
+  ```hs
+  {-# LANGUAGE RebindableSyntax #-}
+
+  import Prelude hiding ((>>=), (>>), fail)
+
+  import Plutarch.Prelude
+  import Plutarch.Monadic ((>>=), (>>), fail)
+  import Plutarch.Api.Contexts
+
+  f :: Term s (PScriptPurpose :--> PUnit)
+  f = plam $ \x -> do
+    PSpending _ <- pmatch x
+    ptrace "matched spending script purpose"
+    pconstant ()
+  ```
+* Use the `Cont` monad. You can utilize this to also use regular `do` syntax by simply applying `cont` over functions such as `pmatch`, `pletFields` and similar utilities that take in a continuation function. There is an example of this [here](https://github.com/Plutonomicon/plutarch/blob/6b7dd254e4aaf366eb716dd3e18788426b3d1e2a/examples/Examples/Api.hs#L175-L189). Notice how `checkSignatory` has been translated to `Cont` monad usage in `checkSignatoryCont`.
+
+  Here's how you'd translate the above `f` function-
+  ```hs
+  import Control.Monad.Trans.Cont (cont, runCont)
+
+  import Plutarch.Prelude
+  import Plutarch.Api.Contexts
+
+  f :: Term s (PScriptPurpose :--> PUnit)
+  f = plam $ \x -> (`runCont` id) $ do
+    purpose <- cont $ pmatch x
+    pure $ case purpose of
+      PSpending _ -> ptrace "matched spending script purpose" $ pconstant ()
+      _ -> ptraceError "invalid script purpose"
+  ```
+
+  Note that you have to translate the pattern matching manually, as `Cont` doesn't have a `MonadFail` instance.
+* Don't use do syntax at all. You can easily translate the `do` syntax to regular continuation chains.
+
+  Here's how you'd translate the above `f` function-
 
   ```hs
   f :: Term s (PScriptPurpose :--> PUnit)
@@ -389,7 +428,7 @@ newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
 
 > Aside: You can access the inner type using `pto` (assuming it's a `PlutusType` instance). For example, `pto x`, where `x :: Term s PPubKeyHash`, would give you `Term s PByteString`. `pto` converts a [`PlutusType`](#plutustype-pcon-and-pmatch) term to its inner type. This is very useful, for example, when you need to use a function that operates on bytestring terms, but all you have is a `Term s PPubKeyHash`. You *know* it's literally a bytestring under the hood anyway - but how do you obtain that? Using `pto`!
 
-Currently, `DerivePNewType` can let you derive the following typeclasses for your Plutarch *types*:-
+Currently, `DerivePNewtype` lets you derive the following typeclasses for your Plutarch *types*:-
 * `PlutusType`
 * `PIsData`
 * `PEq`
@@ -542,8 +581,7 @@ Program () (Version () 1 0 0) (Delay () (Constant () (Some (ValueOf bytestring "
 ```
 The function application is "delayed". It will not be evaluated (and therefore computed) until it is *forced*.
 
-Plutarch level function application is strictly evaluated in Plutarch.
-All of your function arguments are evaluated **before** the function is called.
+Plutarch level function application is strict. All of your function arguments are evaluated **before** the function is called.
 
 This is often undesirable, and you want to create a delayed term instead that you want to force *only* when you need to compute it.
 
@@ -596,7 +634,6 @@ Whereas `Nothing` would be represented as this function-
 ```hs
 \_ n -> n
 ```
-> Aside: Seems familiar? It's the [`maybe`]() catamorphism!
 
 We covered construction. What about usage/deconstruction? That's also just as simple. Let's say you have a function, `foo :: Maybe Integer -> Integer`, it takes in a scott encoded `Maybe Integer`, adds `42` to its `Just` value. If it's `Nothing`, it just returns 0.
 ```hs
@@ -1083,7 +1120,7 @@ foo = plam $ \ctx' -> P.do
   let
     purpose = ctx.purpose
     txInfo = ctx.txInfo
-  <use purpose and txInfo here>
+  -- <use purpose and txInfo here>
   pconstant ()
 ```
 > Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
@@ -1121,7 +1158,7 @@ If `RecordDotSyntax` is not available, you can also try using the [record dot pr
 If you don't want to use either, you can simply use `hrecField`. In fact, `ctx.purpose` above just translates to `hrecField @"purpose" ctx`. Nothing magical there!
 
 #### Implementing PIsDataRepr and friends
-Implement these is rather simple with generic deriving + `PIsDataReprInstances`. All you need is a well formed type using `PDataRecord`. For example, suppose you wanted to implement `PIsDataRepr` the Plutarch version of this Haskell type-
+Implementing these is rather simple with generic deriving + `PIsDataReprInstances`. All you need is a well formed type using `PDataRecord`. For example, suppose you wanted to implement `PIsDataRepr` for the Plutarch version of this Haskell type-
 ```hs
 data Vehicle
   = FourWheeler Integer Integer Integer Integer
@@ -1133,9 +1170,9 @@ You'd declare the corresponding Plutarch type as-
 import Plutarch.Prelude
 
 data PVehicle (s :: S)
-  = FourWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger, "_3" ':= PInteger, "_4" ':= PInteger]))
-  | TwoWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
-  | ImmovableBox (Term s (PDataRecord '[]))
+  = PFourWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger, "_2" ':= PInteger, "_3" ':= PInteger]))
+  | PTwoWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
+  | PImmovableBox (Term s (PDataRecord '[]))
 ```
 And you'd simply derive `PIsDataRepr` using generics. But that's not all! You should also derive `PMatch`, `PIsData` using `PIsDataReprInstances`.
 
@@ -1530,11 +1567,12 @@ Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf integer 2))))
 ```hs
 import Plutarch.Prelude
 import Plutarch.Api.Contexts
+import Plutarch.Api.Scripts
 
 alwaysSucceeds :: Term s (PDatum :--> PRedeemer :--> PScriptContext :--> PUnit)
 alwaysSucceeds = plam $ \datm redm ctx -> pconstant ()
 ```
-All the arguments are ignored. We use `PData` here for `datm` and `redm` since we're not using them - so we don't need specific type information about them. Any `Data` value is fine.
+All the arguments are ignored. So we use the generic `PDatum` and `PRedeemer` types.
 
 Execution-
 ```hs
@@ -1587,7 +1625,7 @@ checkSignatory = plam $ \ph _ _ ctx' -> P.do
 ```
 > Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
 
-Once again, we ignore datum and redeemer so we can use `PData` as typing. Other than that, we match on the script purpose to see if its actually for *spending* - and we get the signatories field from `txInfo` (the 7th field), check if given pub key hash is present within the signatories and that's it!
+We match on the script purpose to see if its actually for *spending* - and we get the signatories field from `txInfo` (the 7th field), check if given pub key hash is present within the signatories and that's it!
 
 It's important that we pass a `PPubKeyHash` *prior* to treating `checkSignatory` as a validator script.
 ```hs
@@ -1665,6 +1703,15 @@ abs x' = plet x' $ \x -> pif (x #<= -1) (negate x) x
 
 Of course, what you _really_ should do , is prefer Plutarch level functions whenever possible.
 
+### Where should arguments be `plet`ed?
+You don't have to worry about work duplication on arguments in *every single scenario*. In particular, the argument to `plam` is also a Haskell function, isn't it? But you don't need to worry about `plet`ing your arguments there since it becomes a Plutarch level function through `plam` - thus, all the arguments are evaluated before being passed in.
+
+Where else is `plet` unnecessary? Continuation functions! Specifically, the functions you pass to `plet` (duh), `pmatch`, `pletFields` and the like. This also means that when you use a `case` expression within the `pmatch` continuation function - you don't need to `plet` the fields within your pattern match. It should all be evaluated before being passed in to your continuation function.
+
+You should also `plet` local bindings! In particular, if you applied a function (whether it be Plutarch level or Haskell level) to obtain a value, bound the value to a variable (using `let` or `where`) - don't use it multiple times! The binding will simply get inlined as the function application - and it'll keep getting re-evaluated. You should `plet` it first!
+
+This also applies to field accesses using `RecordDotSyntax`. When you do `ctx.purpose`, it really gets translated to `hrecField @"purpose" ctx` - that's a function call! If you use the field multiple times, `plet` it first.
+
 ## Prefer Plutarch level functions
 
 Plutarch level functions have a lot of advantages - they can be hoisted; they are strict so you can [use their arguments however many times you like without duplicating work](#dont-duplicate-work); they are required for Plutarch level higher order functions etc. Unless you _really_ need laziness, like `pif` does, try to use Plutarch level functions.
@@ -1672,7 +1719,7 @@ Plutarch level functions have a lot of advantages - they can be hoisted; they ar
 Also see: [Hoisting](#hoisting-metaprogramming--and-fundamentals).
 
 ## When to use Haskell level functions?
-Although you should generally [prefer Plutarch level functions](#prefer-plutarch-level-functions), there are times when a Haskell level function is actually much better. However, figuring out *when* that is the case is a delicate art.
+Although you should generally [prefer Plutarch level functions](#prefer-plutarch-level-functions), there are times when a Haskell level function is actually much better. However, figuring out *when* that is the case - is a delicate art.
 
 There is one simple and straightforward usecase though, when you want a function argument to be lazily evaluated. In such a case, you should use a Haskell level functions that `pdelay`s the argument before calling some Plutarch level function. Recall that [Plutarch level functions are strict](#plutarch-functions-are-strict).
 
@@ -1724,7 +1771,7 @@ However, **not all higher order functions** benefit from taking Haskell level fu
 
 ## Hoisting is great - but not a silver bullet
 
-Hoisting is only beneficial for sufficiently large lambdas. Hoisting a builtin function, for example - is not very useful-
+Hoisting is only beneficial for sufficiently large terms. Hoisting a builtin function, for example - is not very useful-
 
 ```haskell
 import Plutarch
@@ -1759,6 +1806,22 @@ instance PlutusType AB where
 You can use the `A` and `B` constructors during building, but still have your type be represented as integers under the hood! You cannot do this with `pconstant`.
 
 You should prefer `pconstant` (from [`PConstant`/`PLift`](#pconstant--plift)) when you can build something up entirely from Haskell level constants and that *something* has the same representation as the Haskell constant.
+
+## List iteration is strict
+Chained list operations (e.g a filter followed by a map) are not very efficient in Plutus Core. In fact, the iteration is not lazy at all! For example, if you did a `pfilter`, followed by a `pmap`, on a builtin list - the entire `pmap` operation would be computed first, the whole list would be iterated through, and *only then* the `pfilter` would start computing. Ridiculous!
+
+## Let Haskell level functions take responsibility of evaluation
+We've discussed how a Haskell level function that operates on Plutarch level terms needs to [be careful](#dont-duplicate-work) about [work duplication](#plet-to-avoid-work-duplication). Related to this point, it's good practice to design your Haskell level functions so that *it takes responsibility* for evaluation.
+
+The user of your Haskell level function doesn't know how many times it uses the argument it has been passed! If it uses the argument multiple times without `plet`ing it - there's duplicate work! There's 2 solutions to this-
+* The user `plet`s the argument before passing it to the Haskell level function.
+* The Haskell level function takes responsibility of its argument and `plet`s it itself.
+
+The former is problematic since it's based on *assumption*. What if the Haskell level function is a good rule follower, and correctly `plet`s its argument if using it multiple times? Well, then there's a `plet` by the caller *and* the callee. It won't evaluate the computation twice, so that's good! But it does increase the execution units and the script size a bit!
+
+Instead, try to offload the responsbility of evaluation to the Haskell level function - so that it only `plet`s when it needs to.
+
+Of course, this is not applicable for recursive Haskell level functions!
 
 # Common Issues
 
