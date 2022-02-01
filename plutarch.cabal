@@ -103,6 +103,7 @@ library
     Plutarch.Evaluate
     Plutarch.Integer
     Plutarch.Internal
+    Plutarch.Internal.Other
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType
     Plutarch.Lift
