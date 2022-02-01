@@ -398,7 +398,7 @@ syntaxBench =
                       PSNil -> pure perror
                   PSNil -> pure perror
           , bench "termcont" $
-              runTermContId $ do
+              unTermCont $ do
                 PSCons _ xs' <- TermCont $ pmatch xs
                 PSCons _ xs'' <- TermCont $ pmatch xs'
                 pure xs''

@@ -32,7 +32,7 @@ module Plutarch (
   PT.TermCont (TermCont),
   PT.hashOpenTerm,
   PT.runTermCont,
-  PT.runTermContId,
+  PT.unTermCont,
 ) where
 
 import Plutarch.Internal.Other

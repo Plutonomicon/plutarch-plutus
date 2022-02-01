@@ -190,7 +190,7 @@ checkSignatoryCont = plam $ \ph ctx' ->
 
 -- | `checkSignatory` implemented using `runTermCont`
 checkSignatoryTermCont :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
-checkSignatoryTermCont = plam $ \ph ctx' -> runTermContId $ do
+checkSignatoryTermCont = plam $ \ph ctx' -> unTermCont $ do
   ctx <- tcont $ pletFields @["txInfo", "purpose"] ctx'
   PSpending _ <- tcont (pmatch . pfromData $ ctx.purpose)
   let signatories = pfield @"signatories" # ctx.txInfo

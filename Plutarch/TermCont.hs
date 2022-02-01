@@ -4,7 +4,7 @@ module Plutarch.TermCont (
   hashOpenTerm,
   TermCont (TermCont),
   runTermCont,
-  runTermContId,
+  unTermCont,
   tcont,
 ) where
 
@@ -16,8 +16,8 @@ import Plutarch.Trace (ptraceError)
 newtype TermCont :: forall (r :: PType). S -> Type -> Type where
   TermCont :: forall r s a. {runTermCont :: ((a -> Term s r) -> Term s r)} -> TermCont @r s a
 
-runTermContId :: TermCont @a s (Term s a) -> Term s a
-runTermContId t = runTermCont t id
+unTermCont :: TermCont @a s (Term s a) -> Term s a
+unTermCont t = runTermCont t id
 
 instance Functor (TermCont s) where
   fmap f (TermCont g) = TermCont $ \h -> g (h . f)
