@@ -17,7 +17,7 @@ module Plutarch.Bool (
   por',
 ) where
 
-import Plutarch (
+import Plutarch.Internal.Other (
   DerivePNewtype,
   PDelayed,
   PlutusType (PInner, pcon', pmatch'),

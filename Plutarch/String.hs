@@ -6,13 +6,13 @@ module Plutarch.String (PString, pfromText, pencodeUtf8, pdecodeUtf8) where
 import Data.String (IsString, fromString)
 import Data.Text (Text)
 import qualified Data.Text as Txt
-import Plutarch (
+import Plutarch.Bool (PEq, (#==))
+import Plutarch.ByteString (PByteString)
+import Plutarch.Internal.Other (
   Term,
   (#),
   type (:-->),
  )
-import Plutarch.Bool (PEq, (#==))
-import Plutarch.ByteString (PByteString)
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstant,
