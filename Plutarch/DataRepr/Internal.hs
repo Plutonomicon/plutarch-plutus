@@ -40,14 +40,11 @@ import Plutarch (
   PType,
   S,
   Term,
-  TermCont,
-  hashOpenTerm,
   perror,
   phoistAcyclic,
   plam,
   plet,
   pmatch,
-  runTermCont,
   (#),
   (#$),
   type (:-->),
@@ -71,6 +68,7 @@ import Plutarch.Integer (PInteger)
 import Plutarch.Internal (S (SI))
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (pdrop, ptryIndex)
+import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont)
 import Plutarch.Unsafe (punsafeCoerce)
 import qualified Plutus.V1.Ledger.Api as Ledger
 

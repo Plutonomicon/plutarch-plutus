@@ -22,9 +22,8 @@ module Plutarch.Internal (
   ClosedTerm,
   Dig,
   hashTerm,
-  hashOpenTerm,
+  hashRawTerm,
   RawTerm (..),
-  TermCont (..),
   TermResult (TermResult, getDeps, getTerm),
   S (SI),
   PType,
@@ -418,31 +417,7 @@ compile' t =
 compile :: ClosedTerm a -> Script
 compile t = Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' $ asClosedRawTerm $ t)
 
-newtype TermCont s a = TermCont {runTermCont :: forall b. (a -> Term s b) -> Term s b}
-
-instance Functor (TermCont s) where
-  fmap f (TermCont g) = TermCont $ \h -> g (h . f)
-
-instance Applicative (TermCont s) where
-  pure x = TermCont $ \f -> f x
-  x <*> y = do
-    x <- x
-    y <- y
-    pure (x y)
-
-instance Monad (TermCont s) where
-  (TermCont f) >>= g = TermCont $ \h ->
-    f
-      ( \x ->
-          runTermCont (g x) h
-      )
-
 hashTerm :: ClosedTerm a -> Dig
 hashTerm t =
   let t' = asRawTerm t 0
    in hashRawTerm . getTerm $ t'
-
-hashOpenTerm :: Term s a -> TermCont s Dig
-hashOpenTerm x = TermCont $ \f -> Term $ \i ->
-  let inner = f $ hashRawTerm . getTerm $ asRawTerm x i
-   in asRawTerm inner i

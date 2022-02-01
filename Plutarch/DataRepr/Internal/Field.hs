@@ -51,7 +51,8 @@ import Plutarch.DataRepr.Internal.HList (
   type IndexList,
   type SingleItem,
  )
-import Plutarch.Internal (TermCont (TermCont, runTermCont), punsafeCoerce)
+import Plutarch.Internal (punsafeCoerce)
+import Plutarch.TermCont (TermCont (TermCont), runTermCont)
 
 --------------------------------------------------------------------------------
 ---------- PDataField class & deriving utils

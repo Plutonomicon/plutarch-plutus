@@ -129,6 +129,11 @@ module Plutarch.Prelude (
 
   -- * Typeclass derivers.
   DerivePNewtype (DerivePNewtype),
+
+  -- * Continuation monad
+  TermCont (TermCont, runTermCont),
+  unTermCont,
+  tcont,
 ) where
 
 import Prelude ()
@@ -148,5 +153,6 @@ import Plutarch.Maybe
 import Plutarch.Pair
 import Plutarch.Rational
 import Plutarch.String
+import Plutarch.TermCont
 import Plutarch.Trace
 import Plutarch.Unit
