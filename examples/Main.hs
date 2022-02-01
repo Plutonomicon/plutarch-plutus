@@ -11,6 +11,7 @@ import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
 import qualified Examples.List as List
 import Examples.Tracing (traceTests)
+import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Plutarch (POpaque, popaque, printTerm)
 import Plutarch.Api.V1 (PScriptPurpose (PMinting))
 import Plutarch.Bool (pand, por)
@@ -34,7 +35,9 @@ import Utils
 import Data.Text (Text)
 
 main :: IO ()
-main = defaultMain $ testGroup "all tests" [standardTests] -- , shrinkTests ]
+main = do
+  setLocaleEncoding utf8
+  defaultMain $ testGroup "all tests" [standardTests] -- , shrinkTests ]
 
 add1 :: Term s (PInteger :--> PInteger :--> PInteger)
 add1 = plam $ \x y -> x + y + 1
