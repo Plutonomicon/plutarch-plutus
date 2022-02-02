@@ -16,7 +16,8 @@
     - [Conditionals](#conditionals)
     - [Recursion](#recursion)
     - [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](#do-syntax-with-qualifieddo-and-plutarchmonadic)
-      - [Translating `do` syntax to GHC 8](#translating-do-syntax-to-ghc-8)
+      - [Translating `do` syntax with `QualifiedDo` to GHC 8](#translating-do-syntax-with-qualifieddo-to-ghc-8)
+    - [Do syntax with `TermCont`](#do-syntax-with-termcont)
     - [Deriving typeclasses for `newtype`s](#deriving-typeclasses-for-newtypes)
     - [Deriving typeclasses with generics](#deriving-typeclasses-with-generics)
   - [Concepts](#concepts)
@@ -360,28 +361,24 @@ pmatch :: Term s a -> (a s -> Term s b) -> Term s b
 ptrace :: Term s PString -> Term s a -> Term s a
 ```
 
-#### Translating `do` syntax to GHC 8
+Of course, as long as the semantics of the `do` notation allows it, you can make your own utility functions that take in continuations - and they can utilize `do` syntax just the same.
+
+#### Translating `do` syntax with `QualifiedDo` to GHC 8
 For convenience, most examples in this guide will be utilizing this `do` syntax. However, since `QualifiedDo` is available pre GHC 9 - we'll discuss how to translate those examples to GHC 8.
 
-There are three ways to do this-
-* Use [`RebindableSyntax`](https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/rebindable_syntax.html). You can replace the `>>=`, `>>`, and `fail` functions in your scope with the ones from `Plutarch.Monadic` using `RebindableSyntax`. This is arguably a bad practice but the choice is there. This will let you use the `do` syntax word for word. Although you wouldn't be qualifying your `do` keyword (like `P.do`), you'd just be using `do`.
+There are several ways to do this-
+* Use [`TermCont`](#do-syntax-with-termcont).
+* Don't use do syntax at all. You can easily translate the `do` syntax to regular continuation chains.
 
   Here's how you'd translate the above `f` function-
+
   ```hs
-  {-# LANGUAGE RebindableSyntax #-}
-
-  import Prelude hiding ((>>=), (>>), fail)
-
-  import Plutarch.Prelude
-  import Plutarch.Monadic ((>>=), (>>), fail)
-  import Plutarch.Api.Contexts
-
   f :: Term s (PScriptPurpose :--> PUnit)
-  f = plam $ \x -> do
-    PSpending _ <- pmatch x
-    ptrace "matched spending script purpose"
-    pconstant ()
+  f = plam $ \x -> pmatch x $ \case
+    PSpending _ -> ptrace "matched spending script purpose" $ pconstant ()
+    _ -> ptraceError "incorrect script purpose"
   ```
+  Simply put, functions like `pmatch`, `pletFields` take in a continuation. The `do` syntax enables you to bind the argument of the continuation using `<-`, and simply use flat code, rather than nested function calls.
 * Use the `Cont` monad. You can utilize this to also use regular `do` syntax by simply applying `cont` over functions such as `pmatch`, `pletFields` and similar utilities that take in a continuation function. There is an example of this [here](https://github.com/Plutonomicon/plutarch/blob/6b7dd254e4aaf366eb716dd3e18788426b3d1e2a/examples/Examples/Api.hs#L175-L189). Notice how `checkSignatory` has been translated to `Cont` monad usage in `checkSignatoryCont`.
 
   Here's how you'd translate the above `f` function-
@@ -400,17 +397,60 @@ There are three ways to do this-
   ```
 
   Note that you have to translate the pattern matching manually, as `Cont` doesn't have a `MonadFail` instance.
-* Don't use do syntax at all. You can easily translate the `do` syntax to regular continuation chains.
+* Use [`RebindableSyntax`](https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/rebindable_syntax.html). You can replace the `>>=`, `>>`, and `fail` functions in your scope with the ones from `Plutarch.Monadic` using `RebindableSyntax`. This is arguably a bad practice but the choice is there. This will let you use the `do` syntax word for word. Although you wouldn't be qualifying your `do` keyword (like `P.do`), you'd just be using `do`.
 
   Here's how you'd translate the above `f` function-
-
   ```hs
+  {-# LANGUAGE RebindableSyntax #-}
+
+  import Prelude hiding ((>>=), (>>), fail)
+
+  import Plutarch.Prelude
+  import Plutarch.Monadic ((>>=), (>>), fail)
+  import Plutarch.Api.Contexts
+
   f :: Term s (PScriptPurpose :--> PUnit)
-  f = plam $ \x -> pmatch x $ \case
-    PSpending _ -> ptrace "matched spending script purpose" $ pconstant ()
-    _ -> ptraceError "incorrect script purpose"
+  f = plam $ \x -> do
+    PSpending _ <- pmatch x
+    ptrace "matched spending script purpose"
+    pconstant ()
   ```
-  Simply put, functions like `pmatch`, `pletFields` take in a continuation. The `do` syntax enables you to bind the argument of the continuation using `<-`, and simply use flat code, rather than nested function calls.
+
+### Do syntax with `TermCont`
+You can mostly replicate the `do` syntax from `Plutarch.Monadic` using `TermCont`. In particular, the continuation accepting functions like `plet`, `pletFields`, `pmatch` and so on can utilize regular `do` syntax with `TermCont` as the underlying monad.
+
+`TermCont @b s a` essentially represents `(a -> Term s b) -> Term s b`. `a` being the input to the continuation, and `Term s b` being the output. Notice the type application - `b` must have been brought into scope through another binding first.
+
+Here's how you'd write the [above example](#do-syntax-with-qualifieddo-and-plutarchmonadic) with `TermCont` instead.
+```hs
+import Plutarch.Api.Contexts
+import Plutarch.Prelude
+
+f :: Term s (PScriptPurpose :--> PUnit)
+f = plam $ \x -> unTermCont $ do
+  PSpending _ <- tcont $ pmatch x
+  pure $ ptrace "matched spending script purpose" $ pconstant ()
+```
+
+The best part is that this doesn't require `QualifiedDo`! So you don't need GHC 9.
+
+Furthermore, this is very similar to the `Cont` monad - it just operates on Plutarch level terms. This means you can draw parallels to utilities and patterns one would use when utilizing the `Cont` monad. Here's an example-
+```hs
+import Plutarch.Prelude
+
+-- | Terminate with given value on empty list, otherwise continue with head and tail.
+nonEmpty :: Term s r -> PList a s -> TermCont @r s (Term s a, Term s (PList a))
+nonEmpty x0 list = TermCont $ \k ->
+  case list of
+    PSCons x xs -> k (x, xs)
+    PSNil -> x0
+
+foo :: Term s (PList PInteger :--> PInteger)
+foo = plam $ \l -> unTermCont $ do
+  (x, xs) <- nonEmpty 0 =<< tcont (pmatch l)
+  pure $ x + plength # xs
+```
+`foo` adds up the first element of the given list with the length of its tail. Unless the list was empty, in which case, it just returns 0. It uses continuations with the `do` syntax to elegantly utilize short circuiting!
 
 ### Deriving typeclasses for `newtype`s
 If you're defining a `newtype` to an existing Plutarch type, like so-
@@ -1026,7 +1066,7 @@ foo = plam $ \ctx -> P.do
     PRewarding _ -> "It's rewarding!"
     PCertifying _ -> "It's certifying!"
 ```
-> Note: The above snippet uses GHC 9 features (`QualifiedDo`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8).
+> Note: The above snippet uses GHC 9 features (`QualifiedDo`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-with-qualifieddo-to-ghc-8).
 
 Of course, just like `ScriptContext` - `PScriptContext` is represented as a `Data` value in Plutus Core. Plutarch just lets you keep track of the *exact representation* of it within the type system.
 
@@ -1123,7 +1163,7 @@ foo = plam $ \ctx' -> P.do
   -- <use purpose and txInfo here>
   pconstant ()
 ```
-> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
+> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-with-qualifieddo-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
 
 In essence, `pletFields` takes in a type level list of the field names that you want to access and a continuation function that takes in an `HRec`. This `HRec` is essentially a collection of the bound fields. You don't have to worry too much about the details of `HRec`. This particular usage has type-
 ```hs
@@ -1220,7 +1260,7 @@ test = plam $ \veh' -> P.do
       pfromData twh._0 + pfromData twh._1
     PImmovableBox _ -> 0
 ```
-> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
+> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-with-qualifieddo-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
 
 What about types with singular constructors? It's quite similar to the sum type case. Here's how it looks-
 ```hs
@@ -1623,7 +1663,7 @@ checkSignatory = plam $ \ph _ _ ctx' -> P.do
     -- Signature not present.
     perror
 ```
-> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
+> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-with-qualifieddo-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
 
 We match on the script purpose to see if its actually for *spending* - and we get the signatories field from `txInfo` (the 7th field), check if given pub key hash is present within the signatories and that's it!
 
