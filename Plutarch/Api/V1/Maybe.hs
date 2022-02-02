@@ -13,8 +13,8 @@ import Plutarch.Prelude
 
 -- | Data encoded Maybe type. Used in various ledger api types.
 data PMaybeData a (s :: S)
-  = PDNothing (Term s (PDataRecord '[]))
-  | PDJust (Term s (PDataRecord '["_0" ':= a]))
+  = PDJust (Term s (PDataRecord '["_0" ':= a]))
+  | PDNothing (Term s (PDataRecord '[]))
   deriving stock (GHC.Generic)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
