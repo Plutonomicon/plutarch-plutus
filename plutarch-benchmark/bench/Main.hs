@@ -229,16 +229,17 @@ deconstrBench =
                           PRewarding f -> plet f $ const $ phexByteStr "03"
                           PCertifying f -> plet f $ const $ phexByteStr "04"
                     )
-            , benchGroup "sumtype(exhaustive)(ignore-fields)" $ benchPurpose $
-                plam
-                  ( \x -> P.do
-                      purp <- pmatch x
-                      case purp of
-                        PMinting _ -> phexByteStr "01"
-                        PSpending _ -> phexByteStr "02"
-                        PRewarding _ -> phexByteStr "03"
-                        PCertifying _ -> phexByteStr "04"
-                  )
+            , benchGroup "sumtype(exhaustive)(ignore-fields)" $
+                benchPurpose $
+                  plam
+                    ( \x -> P.do
+                        purp <- pmatch x
+                        case purp of
+                          PMinting _ -> phexByteStr "01"
+                          PSpending _ -> phexByteStr "02"
+                          PRewarding _ -> phexByteStr "03"
+                          PCertifying _ -> phexByteStr "04"
+                    )
             ]
         , benchGroup
             "raw"
@@ -270,38 +271,40 @@ deconstrBench =
                   )
                   #$ pconstant
                   $ toData minting
-            , benchGroup "sumtype(exhaustive)" $ benchPurpose' $
-                plam
-                  ( \x -> P.do
-                      d <- plet $ pasConstr # x
-                      constr <- plet $ pfstBuiltin # d
-                      _ <- plet $ psndBuiltin # d
-                      pif
-                        (constr #== 1)
-                        (phexByteStr "02")
-                        $ pif
-                          (constr #== 2)
-                          (phexByteStr "03")
+            , benchGroup "sumtype(exhaustive)" $
+                benchPurpose' $
+                  plam
+                    ( \x -> P.do
+                        d <- plet $ pasConstr # x
+                        constr <- plet $ pfstBuiltin # d
+                        _ <- plet $ psndBuiltin # d
+                        pif
+                          (constr #== 1)
+                          (phexByteStr "02")
                           $ pif
-                            (constr #== 3)
-                            (phexByteStr "04")
-                            $ phexByteStr "01"
-                  )
-            , benchGroup "sumtype(exhaustive)(ignore-fields)" $ benchPurpose' $
-                plam
-                  ( \x -> P.do
-                      constr <- plet $ pfstBuiltin #$ pasConstr # x
-                      pif
-                        (constr #== 1)
-                        (phexByteStr "02")
-                        $ pif
-                          (constr #== 2)
-                          (phexByteStr "03")
+                            (constr #== 2)
+                            (phexByteStr "03")
+                            $ pif
+                              (constr #== 3)
+                              (phexByteStr "04")
+                              $ phexByteStr "01"
+                    )
+            , benchGroup "sumtype(exhaustive)(ignore-fields)" $
+                benchPurpose' $
+                  plam
+                    ( \x -> P.do
+                        constr <- plet $ pfstBuiltin #$ pasConstr # x
+                        pif
+                          (constr #== 1)
+                          (phexByteStr "02")
                           $ pif
-                            (constr #== 3)
-                            (phexByteStr "04")
-                            $ phexByteStr "01"
-                  )
+                            (constr #== 2)
+                            (phexByteStr "03")
+                            $ pif
+                              (constr #== 3)
+                              (phexByteStr "04")
+                              $ phexByteStr "01"
+                    )
             ]
         ]
   , benchGroup
@@ -365,7 +368,7 @@ deconstrBench =
     spending = Spending (TxOutRef "ab" 0)
     rewarding = Rewarding (StakingPtr 42 0 7)
     certifying = Certifying DCertGenesis
-    -- | Bench given function feeding in all 4 types of script purpose (typed).
+    -- Bench given function feeding in all 4 types of script purpose (typed).
     benchPurpose :: ClosedTerm (PScriptPurpose :--> PByteString) -> [[NamedBenchmark]]
     benchPurpose f =
       [ bench "minting" $ f # pconstant minting
@@ -374,7 +377,7 @@ deconstrBench =
       , bench "certifying" $ f # pconstant certifying
       ]
 
-    -- | Bench given function feeding in all 4 types of script purpose (untyped).
+    -- Bench given function feeding in all 4 types of script purpose (untyped).
     benchPurpose' :: ClosedTerm (PData :--> PByteString) -> [[NamedBenchmark]]
     benchPurpose' f =
       [ bench "minting" $ f #$ pconstant $ toData minting
