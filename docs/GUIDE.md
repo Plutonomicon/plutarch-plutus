@@ -1201,7 +1201,7 @@ If you don't want to use either, you can simply use `hrecField`. In fact, `ctx.p
 #### Implementing PIsDataRepr and friends
 Implementing these is rather simple with generic deriving + `PIsDataReprInstances`. All you need is a well formed type using `PDataRecord`. For example, suppose you wanted to implement `PIsDataRepr` for the Plutarch version of this Haskell type-
 ```hs
-data FourWheeler
+data Vehicle
   = FourWheeler Integer Integer Integer Integer
   | TwoWheeler Integer Integer
   | ImmovableBox
