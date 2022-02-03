@@ -131,6 +131,7 @@
             "integer-gmp"
             "integer-simple"
             "base"
+            "Boolean"
             "deepseq"
             "array"
             "ghc-boot-th"
@@ -252,6 +253,7 @@
           , protolude:hashable
           , protolude:bytestring
           , size-based:template-haskell
+          , Boolean
 
         constraints:
           OneTuple ^>= 0.3.1
@@ -267,6 +269,7 @@
           , assoc ^>= 1.0.2
           , async ^>= 2.2.4
           , attoparsec ^>= 0.14.4
+          , Boolean ^>= 0.2.4
           , barbies ^>= 2.0.3.1
           , base-compat ^>= 0.12.1
           , base-compat-batteries ^>= 0.12.1

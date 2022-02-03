@@ -15,6 +15,18 @@ module Plutarch.Bool (
   pand,
   pand',
   por',
+  -- * Reexport for Booleans
+  Boolean(..),
+  BooleanOf,
+  IfB(..),
+  EqB(..),
+  OrdB(..),
+  boolean,
+  minB,
+  maxB,
+  sort2B,
+  guardedB,
+  caseB,
 ) where
 
 import Plutarch.Internal.Other (
@@ -42,12 +54,44 @@ import Plutarch.Lift (
  )
 import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
+import Data.Boolean (
+  Boolean(..),
+  BooleanOf,
+  IfB(..),
+  EqB(..),
+  OrdB(..),
+  boolean,
+  minB,
+  maxB,
+  sort2B,
+  guardedB,
+  caseB,
+ )
 
 -- | Plutus 'BuiltinBool'
 data PBool (s :: S) = PTrue | PFalse
 
 instance PUnsafeLiftDecl PBool where type PLifted PBool = Bool
 deriving via (DerivePConstantDirect Bool PBool) instance (PConstant Bool)
+
+instance Boolean (Term s PBool) where
+  true = pconstant True
+  false = pconstant False
+  (&&*) = (#&&)
+  (||*) = (#||)
+  notB a = pnot # a
+
+type instance BooleanOf (Term s a) = Term s PBool
+
+instance IfB (Term s a) where
+  ifB = pif
+
+instance PEq a => EqB (Term s a) where
+  (==*) = (#==)
+
+instance POrd a => OrdB (Term s a) where
+  (<*) = (#<)
+  (<=*) = (#<=)
 
 instance PlutusType PBool where
   type PInner PBool _ = PBool

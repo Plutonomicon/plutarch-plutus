@@ -123,6 +123,7 @@ library
 
   build-depends:
     , base
+    , Boolean
     , bytestring
     , constraints
     , containers
