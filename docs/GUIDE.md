@@ -76,6 +76,7 @@
   - [The difference between `PlutusType`/`PCon` and `PLift`'s `pconstant`](#the-difference-between-plutustypepcon-and-plifts-pconstant)
   - [List iteration is strict](#list-iteration-is-strict)
   - [Let Haskell level functions take responsibility of evaluation](#let-haskell-level-functions-take-responsibility-of-evaluation)
+  - [The isomorphism between `makeIsDataIndexed`, Haskell ADTs, and `PIsDataRepr`](#the-isomorphism-between-makeisdataindexed-haskell-adts-and-pisdatarepr)
 - [Common Issues](#common-issues)
   - [No instance for (PUnsafeLiftDecl a)](#no-instance-for-punsafeliftdecl-a)
   - [Infinite loop / Infinite AST](#infinite-loop--infinite-ast)
@@ -1200,7 +1201,7 @@ If you don't want to use either, you can simply use `hrecField`. In fact, `ctx.p
 #### Implementing PIsDataRepr and friends
 Implementing these is rather simple with generic deriving + `PIsDataReprInstances`. All you need is a well formed type using `PDataRecord`. For example, suppose you wanted to implement `PIsDataRepr` for the Plutarch version of this Haskell type-
 ```hs
-data Vehicle
+data FourWheeler
   = FourWheeler Integer Integer Integer Integer
   | TwoWheeler Integer Integer
   | ImmovableBox
@@ -1214,6 +1215,14 @@ data PVehicle (s :: S)
   | PTwoWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
   | PImmovableBox (Term s (PDataRecord '[]))
 ```
+> Note: The constructor ordering in `PVehicle` matters! If you used [`makeIsDataIndexed`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed) on `Vehicle` to assign an index to each constructor - the Plutarch type's constructor must follow the same indexing order.
+>
+> In this case, `PFourWheeler` is at the 0th index, `PTwoWheeler` is at the 1st index, and `PImmovableBox` is at the 3rd index. Thus, the corresponding `makeIsDataIndexed` usage should be-
+>
+> ```hs
+> PlutusTx.makeIsDataIndexed ''FourWheeler [('FourWheeler,0),('TwoWheeler,1),('ImmovableBox,2)]
+> ```
+> Also see: [Isomorphism between Haskell ADTs and `PIsDataRepr`](#the-isomorphism-between-makeisdataindexed-haskell-adts-and-pisdatarepr)
 And you'd simply derive `PIsDataRepr` using generics. But that's not all! You should also derive `PMatch`, `PIsData` using `PIsDataReprInstances`.
 
 > Aside: If your type is *not* a sumtype, but rather a newtype with a single constructor - you should also derive `PDataFields`. In the case of sumtypes, the existing `PDataFields` instance for `PDataRecord` will be enough.
@@ -1862,6 +1871,70 @@ The former is problematic since it's based on *assumption*. What if the Haskell 
 Instead, try to offload the responsbility of evaluation to the Haskell level function - so that it only `plet`s when it needs to.
 
 Of course, this is not applicable for recursive Haskell level functions!
+
+## The isomorphism between `makeIsDataIndexed`, Haskell ADTs, and `PIsDataRepr`
+When [implementing `PIsDataRepr`](#implementing-pisdatarepr-and-friends) for a Plutarch type, if the Plutarch type also has a Haskell synonym (e.g `ScriptContext` is the haskell synonym to `PScriptContext`) that uses [`makeIsDataIndexed`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed) - you must make sure the constructor ordering is correct.
+
+> Aside: What's a "Haskell synonym"? It's simply the Haskell type that *is supposed to* correspond to a Plutarch type. There doesn't *necessarily* have to be some sort of concrete connection (though there can be, using [`PLift`/`PConstant`](#pconstant--plift)) - it's merely a connection you can establish mentally.
+>
+> This detail does come into play in concrete use cases though. After compiling your Plutarch code to a `Script`, when you pass Haskell data types as arguments to the `Script` - they obviously need to correspond to the actual arguments of the Plutarch code. For example, if the Plutarch code is a function taking `PScriptContext`, after compilation to `Script`, you *should* pass in the Haskell data type that actually shares the same representation as `PScriptContext` - the "Haskell synonym", so to speak. In this case, that's `ScriptContext`.
+
+In particular, with `makeIsDataIndexed`, you can assign *indices* to your Haskell ADT's constructors. This determines how the ADT will be represented in Plutus Core. It's important to ensure that the corresponding Plutarch type *knows* about these indices so it can decode the ADT correctly - in case you passed it into Plutarch code, through Haskell.
+
+For example, consider `Maybe`. Plutus assigns these indices to its constructors-
+```hs
+makeIsDataIndexed ''Maybe [('Just, 0), ('Nothing, 1)]
+```
+0 to `Just`, 1 to `Nothing`. So the corresponding Plutarch type, `PMaybeData` is defined as-
+```hs
+data PMaybeData a (s :: S)
+  = PDJust (Term s (PDataRecord '["_0" ':= a]))
+  | PDNothing (Term s (PDataRecord '[]))
+```
+It'd be a very subtle mistake to instead define it as-
+```hs
+data PMaybeData a (s :: S)
+  = PDNothing (Term s (PDataRecord '[]))
+  | PDJust (Term s (PDataRecord '["_0" ':= a]))
+```
+The constructor ordering is wrong!
+
+It's not just constructor ordering that matters - field ordering does too! Though this is self explanatory. Notice how `PTxInfo` shares the exact same field ordering as its Haskell synonym - `TxInfo`.
+```hs
+newtype PTxInfo (s :: S)
+  = PTxInfo
+      ( Term
+          s
+          ( PDataRecord
+              '[ "inputs" ':= PBuiltinList (PAsData PTxInInfo)
+               , "outputs" ':= PBuiltinList (PAsData PTxOut)
+               , "fee" ':= PValue
+               , "mint" ':= PValue
+               , "dcert" ':= PBuiltinList (PAsData PDCert)
+               , "wdrl" ':= PBuiltinList (PAsData (PTuple PStakingCredential PInteger))
+               , "validRange" ':= PPOSIXTimeRange
+               , "signatories" ':= PBuiltinList (PAsData PPubKeyHash)
+               , "data" ':= PBuiltinList (PAsData (PTuple PDatumHash PDatum))
+               , "id" ':= PTxId
+               ]
+          )
+      )
+```
+```hs
+data TxInfo = TxInfo
+  { txInfoInputs      :: [TxInInfo]
+  , txInfoOutputs     :: [TxOut]
+  , txInfoFee         :: Value
+  , txInfoMint        :: Value
+  , txInfoDCert       :: [DCert]
+  , txInfoWdrl        :: [(StakingCredential, Integer)]
+  , txInfoValidRange  :: POSIXTimeRange
+  , txInfoSignatories :: [PubKeyHash]
+  , txInfoData        :: [(DatumHash, Datum)]
+  , txInfoId          :: TxId
+  }
+```
+The *field names* don't matter though. They are merely labels that don't exist in runtime.
 
 # Common Issues
 
