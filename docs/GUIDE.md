@@ -1215,7 +1215,7 @@ data PVehicle (s :: S)
   | PTwoWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
   | PImmovableBox (Term s (PDataRecord '[]))
 ```
-> Note: The constructor ordering in `PVehicle` matters! If you used [`makeIsDataIndexed`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed) on `Vehicle` to assign an index to each constructor - the Plutarch type's constructor must follow the same indexing order.
+> Note: The constructor ordering in `PVehicle` matters! If you used [`makeIsDataIndexed`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed) on `Vehicle` to assign an index to each constructor - the Plutarch type's constructors must follow the same indexing order.
 >
 > In this case, `PFourWheeler` is at the 0th index, `PTwoWheeler` is at the 1st index, and `PImmovableBox` is at the 3rd index. Thus, the corresponding `makeIsDataIndexed` usage should be-
 >
@@ -1223,6 +1223,7 @@ data PVehicle (s :: S)
 > PlutusTx.makeIsDataIndexed ''FourWheeler [('FourWheeler,0),('TwoWheeler,1),('ImmovableBox,2)]
 > ```
 > Also see: [Isomorphism between Haskell ADTs and `PIsDataRepr`](#the-isomorphism-between-makeisdataindexed-haskell-adts-and-pisdatarepr)
+
 And you'd simply derive `PIsDataRepr` using generics. But that's not all! You should also derive `PMatch`, `PIsData` using `PIsDataReprInstances`.
 
 > Aside: If your type is *not* a sumtype, but rather a newtype with a single constructor - you should also derive `PDataFields`. In the case of sumtypes, the existing `PDataFields` instance for `PDataRecord` will be enough.
