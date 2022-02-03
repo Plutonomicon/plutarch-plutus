@@ -287,6 +287,7 @@ parses as - `f (foo 1)`
 ### Conditionals
 
 You can simulate `if/then/else` at the Plutarch level using `pif`-
+Also we can use instance of `IfB` class from the `Boolean` package.
 
 ```haskell
 pif :: Term s PBool -> Term s a -> Term s a -> Term s a
@@ -1310,8 +1311,11 @@ pif (pconstant PFalse) 7 42
 -- evaluates to 42
 ```
 You can combine Plutarch booleans terms using `#&&` and `#||`, which are synonyms to `&&` and `||`. These are haskell level operators and therefore have short circuiting. If you don't need short circuiting, you can use the Plutarch level alternatives- `pand'` and `por'` respectively.
+Also we can use methods of the `Boolean` class (`true`, `false`, `notB`, `&&*`, `||*`). 
 
 This is synonymous to Plutus Core [builtin boolean](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins-Internal.html#t:BuiltinBool).
+Also we can use instance for `Boolean` class from the `Boolean` package.
+
 
 ### PString
 
