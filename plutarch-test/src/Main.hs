@@ -1,29 +1,28 @@
-
 module Main (main) where
 
 import Test.Tasty
-import Test.Tasty.HUnit
 
-import qualified Data.ByteString as BS
 import Plutarch
 import Plutarch.Prelude
-import Test.Tasty.Golden
-import Data.Text.Encoding
-import qualified Data.Text as T
+import Plutarch.Test
+
+import qualified Plutarch.BoolSpec as BoolSpec
 
 main :: IO ()
 main =
-  defaultMain $ testGroup "all tests" [newTests] 
+  defaultMain tests
+
+tests :: TestTree
+tests =
+  testGroup
+    "main"
+    [ testGroup "add1" $
+        mconcat
+          [ goldens "add1" add1
+          , goldens "add1.app" $ add1 # 1 # 2
+          ]
+    , BoolSpec.tests
+    ]
 
 add1 :: Term s (PInteger :--> PInteger :--> PInteger)
 add1 = plam $ \x y -> x + y + 1
-
-newTests :: TestTree
-newTests =
-  testGroup
-    "sridplay"
-    [ testCase "add1" $ do 
-        (printTerm add1) @?= "(program 1.0.0 (\\i0 -> \\i0 -> addInteger (addInteger i2 i1) 1))"
-    , goldenVsString "foo" "examples/goldens/foo.uplc.golden" $ do 
-        pure $ BS.fromStrict . encodeUtf8 . T.pack $ printTerm add1
-    ]
