@@ -23,7 +23,6 @@ module Plutarch.DataRepr.Internal (
 
 import Data.Kind (Type)
 import Data.List (groupBy, maximumBy, sortOn)
-import Data.Proxy (Proxy)
 import GHC.TypeLits (
   ErrorMessage (ShowType, Text, (:<>:)),
   KnownNat,
@@ -33,18 +32,21 @@ import GHC.TypeLits (
   natVal,
   type (+),
  )
-import Generics.SOP (Code, Generic, I (I), NP (Nil, (:*)), SOP (SOP), to)
+import Generics.SOP
 import Plutarch (
   Dig,
+  PInner,
   PMatch,
   PType,
+  PlutusType,
   S,
   Term,
+  pcon',
   perror,
   phoistAcyclic,
   plam,
   plet,
-  pmatch,
+  pmatch',
   (#),
   (#$),
   type (:-->),
@@ -53,6 +55,7 @@ import Plutarch.Bool (pif, (#==))
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
+  PBuiltinPair,
   PData,
   PIsData,
   pasConstr,
@@ -65,12 +68,14 @@ import Plutarch.Builtin (
 import Plutarch.DataRepr.Internal.Generic (MkSum (mkSum))
 import Plutarch.DataRepr.Internal.HList (type Drop, type IndexList)
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal (S (SI))
-import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstantFromRepr, pconstantToRepr)
+import Plutarch.Internal (S (SI), punsafeBuiltin)
+import Plutarch.Internal.TypeFamily (ToPType2)
+import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstant, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (pdrop, ptryIndex)
 import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont)
 import Plutarch.Unsafe (punsafeCoerce)
 import qualified Plutus.V1.Ledger.Api as Ledger
+import qualified PlutusCore as PLC
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is
  `PBuiltinList PData`.
@@ -203,9 +208,28 @@ pmatchDataSum d handlers =
 -}
 newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
 
+-- Q: Why are these superclass constraints here?
 class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PLabeledType]]
   type PIsDataReprRepr a = PDataRecordFields2 (Code (a 'SI))
+
+  pconRepr :: a s -> Term s (PDataSum (PIsDataReprRepr a))
+  default pconRepr ::
+    forall s code pcode.
+    ( Generic (a s)
+    , code ~ Code (a s)
+    , pcode ~ ToPType2 code
+    , All SListI pcode
+    , All Singleton code
+    , All2 IsBuiltinList pcode
+    , AllZipN POP (LiftedCoercible I (Term s)) code pcode
+    ) =>
+    a s ->
+    Term s (PDataSum (PIsDataReprRepr a))
+  pconRepr x = punsafeCoerce expected
+    where
+      expected :: Term _ (PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
+      expected = gpconRepr @a $ from x
 
   pmatchRepr :: forall s b. Term s (PDataSum (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
   default pmatchRepr ::
@@ -219,6 +243,23 @@ class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
     Term s b
   pmatchRepr dat =
     pmatchDataSum dat . mkDataReprHandler @s @a @0 @code
+
+gpconRepr ::
+  forall a s code pcode.
+  ( Generic (a s)
+  , code ~ Code (a s)
+  , pcode ~ ToPType2 code
+  , All SListI pcode
+  , All Singleton code
+  , All2 IsBuiltinList pcode
+  , AllZipN POP (LiftedCoercible I (Term s)) code pcode
+  ) =>
+  SOP I (Code (a s)) ->
+  Term s (PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
+gpconRepr x = pconstrBuiltin # pconstant (toInteger $ hindex sop) # head (hcollapse sop)
+  where
+    sop :: SOP (K (Term s (PBuiltinList PData))) pcode
+    sop = hcmap (Proxy @IsBuiltinList) (K . dataListFrom) $ hfromI x
 
 -- | Create a `DataReprhandlers` starting from `n`th sum constructor
 class MkDataReprHandler (s :: S) (a :: PType) (n :: Nat) (rest :: [[Type]]) where
@@ -253,8 +294,10 @@ instance PIsDataRepr a => PIsData (PIsDataReprInstances a) where
   pdata = punsafeCoerce
   pfromData = punsafeCoerce
 
-instance PIsDataRepr a => PMatch (PIsDataReprInstances a) where
-  pmatch x f = pmatchRepr (punsafeCoerce x) (f . PIsDataReprInstances)
+instance PIsDataRepr a => PlutusType (PIsDataReprInstances a) where
+  type PInner (PIsDataReprInstances a) _ = PDataSum (PIsDataReprRepr a)
+  pcon' (PIsDataReprInstances x) = pconRepr x
+  pmatch' x f = pmatchRepr x (f . PIsDataReprInstances)
 
 newtype DerivePConstantViaData (h :: Type) (p :: PType) = DerivePConstantViaData h
 
@@ -263,3 +306,16 @@ instance (PIsDataRepr p, PLift p, Ledger.FromData h, Ledger.ToData h) => PConsta
   type PConstanted (DerivePConstantViaData h p) = p
   pconstantToRepr (DerivePConstantViaData x) = Ledger.toData x
   pconstantFromRepr x = DerivePConstantViaData <$> Ledger.fromData x
+
+-- I wish type families could be applied partially....
+class Singleton a
+instance Singleton (x ': '[])
+
+class IsBuiltinList a where
+  dataListFrom :: Term s a -> Term s (PBuiltinList PData)
+
+instance IsBuiltinList (PDataRecord l) where
+  dataListFrom = punsafeCoerce
+
+pconstrBuiltin :: Term s (PInteger :--> PBuiltinList PData :--> PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
+pconstrBuiltin = punsafeBuiltin $ PLC.MkCons
