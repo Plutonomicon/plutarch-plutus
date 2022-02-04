@@ -7,6 +7,7 @@ import Plutarch
 import Plutarch.Prelude
 import Plutarch.Test
 
+-- TODO: Finish boolean tests
 tests :: TestTree
 tests =
   testGroup "bool" $
@@ -15,8 +16,8 @@ tests =
           [ goldens "pnot" pnot
           , goldens "pnot.app" (pnot #$ pcon PTrue)
           ,
-            [ testCase "pnot.true" $ (pnot #$ pcon PTrue) `equal` pcon PFalse
-            , testCase "pnot.false" $ (pnot #$ pcon PFalse) `equal` pcon PTrue
+            [ testCase "pnot.true" $ (pnot #$ pcon PTrue) #@?= pcon PFalse
+            , testCase "pnot.false" $ (pnot #$ pcon PFalse) #@?= pcon PTrue
             ]
           ]
     , testGroup
@@ -27,10 +28,10 @@ tests =
               , goldens "lazy.pand.ft" (pcon PFalse #&& pcon PTrue)
               , goldens "lazy.pand.tt" (pcon PTrue #&& pcon PTrue)
               ,
-                [ testCase "tf" $ (pcon PTrue #&& pcon PFalse) `equal` pcon PFalse
-                , testCase "ft" $ (pcon PFalse #&& pcon PTrue) `equal` pcon PFalse
-                , testCase "tt" $ (pcon PTrue #&& pcon PTrue) `equal` pcon PTrue
-                , testCase "ff" $ (pcon PFalse #&& pcon PFalse) `equal` pcon PFalse
+                [ testCase "tf" $ (pcon PTrue #&& pcon PFalse) #@?= pcon PFalse
+                , testCase "ft" $ (pcon PFalse #&& pcon PTrue) #@?= pcon PFalse
+                , testCase "tt" $ (pcon PTrue #&& pcon PTrue) #@?= pcon PTrue
+                , testCase "ff" $ (pcon PFalse #&& pcon PFalse) #@?= pcon PFalse
                 ]
               ]
         ]

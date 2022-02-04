@@ -1,6 +1,12 @@
 {-# LANGUAGE ImpredicativeTypes #-}
 
-module Plutarch.Test (equal, goldens) where
+module Plutarch.Test (
+  -- | Plutarch specific test assertion operators
+  (#@?=),
+  passert,
+  -- | Golden testing
+  goldens,
+) where
 
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString as BS
@@ -13,6 +19,7 @@ import Test.Tasty.HUnit
 
 import Plutarch
 import Plutarch.Benchmark
+import Plutarch.Bool
 import Plutarch.Evaluate
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 
@@ -28,6 +35,13 @@ equal x y = do
   p1 @?= p2
   where
     uplcE = fmap printScript . eval . compile
+
+-- | Like `@?=` but for Plutarch terms
+(#@?=) :: forall (a :: PType) (b :: PType). ClosedTerm a -> ClosedTerm b -> Assertion
+(#@?=) = equal
+
+passert :: forall (a :: PType). ClosedTerm a -> Assertion
+passert p = p #@?= pcon PTrue
 
 -- | Golden tests for a Plutarch program.
 goldens :: String -> ClosedTerm a -> [TestTree]
