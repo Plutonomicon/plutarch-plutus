@@ -500,6 +500,7 @@
         // {
           formatCheck = formatCheckFor system;
           benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
+          test = (nixpkgsFor system).runCommand "test" { } "cd ${self}/plutarch-test; ${self.apps.${system}.test.program} | tee $out";
         } // {
           "ghc810-plutarch:lib:plutarch" = ghc810."plutarch:lib:plutarch";
         }
@@ -517,6 +518,10 @@
       apps = perSystem (system:
         self.flake.${system}.apps
         // {
+          test = {
+            type = "app";
+            program = "${self.flake.${system}.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test";
+          };
           benchmark = {
             type = "app";
             program = "${self.flake.${system}.packages."plutarch-benchmark:bench:benchmark"}/bin/benchmark";
