@@ -6,16 +6,29 @@ module Plutarch.FFI (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Internal (ClosedTerm, PType, RawTerm (RCompiled), Term (Term), TermResult (TermResult), asClosedRawTerm, compile', (:-->))
-import Plutarch.Lift (PLifted)
+import GHC.TypeLits (ErrorMessage (Text), TypeError)
+import qualified Generics.SOP as SOP
+import Plutarch.Integer (PInteger)
+import Plutarch.Internal (
+  ClosedTerm,
+  PType,
+  RawTerm (RCompiled),
+  Term (Term),
+  TermResult (TermResult),
+  asClosedRawTerm,
+  compile',
+  (:-->),
+ )
+import Plutarch.Internal.PlutusType (PlutusType (PInner))
 import Plutus.V1.Ledger.Scripts (Script (unScript), fromCompiledCode)
 import PlutusTx.Code (CompiledCode, CompiledCodeIn (DeserializedCode))
 import UntypedPlutusCore (fakeNameDeBruijn)
 import qualified UntypedPlutusCore as UPLC
 
-data ForallPhantom
+data ForallPhantom :: Type
+data PhorallPhantom :: PType
 
-foreignExport :: PlutarchInner p ForallPhantom ~ PlutusTxInner t ForallPhantom => ClosedTerm p -> CompiledCode t
+foreignExport :: PlutarchInner p PhorallPhantom ~ PlutusTxInner t ForallPhantom => ClosedTerm p -> CompiledCode t
 foreignExport t = DeserializedCode program Nothing mempty
   where
     program =
@@ -24,14 +37,45 @@ foreignExport t = DeserializedCode program Nothing mempty
           compile' $
             asClosedRawTerm t
 
-foreignImport :: PlutarchInner p ForallPhantom ~ PlutusTxInner t ForallPhantom => CompiledCode t -> ClosedTerm p
+foreignImport :: PlutarchInner p PhorallPhantom ~ PlutusTxInner t ForallPhantom => CompiledCode t -> ClosedTerm p
 foreignImport c = Term $ const $ TermResult (RCompiled $ UPLC.toTerm $ unScript $ fromCompiledCode c) []
 
-type family PlutarchInner (p :: PType) (any :: Type) :: Type where
+type family PlutarchInner (p :: PType) (any :: PType) :: Type where
+  PlutarchInner PInteger _ = Integer
   PlutarchInner (a :--> b) x = PlutarchInner a x -> PlutarchInner b x
-  PlutarchInner p _ = PLifted p
+  PlutarchInner p x = PlutarchInner (PInner p x) x
 
 type family PlutusTxInner (t :: Type) (any :: Type) :: Type where
   PlutusTxInner Bool _ = Bool
   PlutusTxInner Integer _ = Integer
   PlutusTxInner (a -> b) x = PlutusTxInner a x -> PlutusTxInner b x
+  PlutusTxInner a x = PlutusTxInner (ScottFn (ScottList (SOP.Code a) x) x) x
+
+{- |
+  List of scott-encoded constructors of a Haskell type (represented by 'SOP.Code')
+
+  ScottList (Code (Either a b)) c = '[a -> c, b -> c]
+-}
+type ScottList :: [[Type]] -> Type -> [Type]
+type family ScottList code c where
+-- We disallow certain shapes because Scott encoding is not appropriate for them.
+  ScottList '[] c = TypeError ( 'Text "PlutusType(scott encoding): Data type without constructors not accepted")
+  ScottList '[ '[]] c = TypeError ( 'Text "PlutusType(scott encoding): Data type with single nullary constructor not accepted")
+  ScottList '[ '[_]] c = TypeError ( 'Text "PlutusType(scott encoding): Data type with single unary constructor not accepted; use newtype!")
+  ScottList (xs ': xss) c = ScottFn xs c ': ScottList' xss c
+
+type ScottList' :: [[Type]] -> Type -> [Type]
+type family ScottList' code c where
+  ScottList' '[] c = '[]
+  ScottList' (xs ': xss) c = ScottFn xs c ': ScottList' xss c
+
+{- |
+  An individual constructor function of a Scott encoding.
+
+   ScottFn '[a, b] c = (a -> b -> c)
+   ScottFn '[] c = c
+-}
+type ScottFn :: [Type] -> Type -> Type
+type family ScottFn xs b where
+  ScottFn '[] b = b
+  ScottFn (x ': xs) b = x -> ScottFn xs b
