@@ -101,6 +101,7 @@ library
     Plutarch.DataRepr.Internal.HList
     Plutarch.Either
     Plutarch.Evaluate
+    Plutarch.FFI
     Plutarch.Integer
     Plutarch.Internal
     Plutarch.Internal.Other
