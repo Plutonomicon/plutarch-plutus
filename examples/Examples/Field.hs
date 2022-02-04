@@ -28,7 +28,7 @@ module Examples.Field (
 --------------------------------------------------------------------------------
 
 import qualified GHC.Generics as GHC
-import Generics.SOP (Generic)
+import Generics.SOP (Generic, I (I))
 import Plutarch
 import Plutarch.Builtin (PAsData, PBuiltinList, PIsData (..))
 import Plutarch.DataRepr (

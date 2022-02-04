@@ -1,9 +1,11 @@
+{-# LANGUAGE UndecidableInstances #-}
+
 module Plutarch.Api.V1.Maybe (
   PMaybeData (PDJust, PDNothing),
 ) where
 
 import qualified GHC.Generics as GHC
-import Generics.SOP (Generic)
+import Generics.SOP (Generic, I (I))
 
 import Plutarch.DataRepr (
   PIsDataReprInstances (PIsDataReprInstances),
@@ -19,5 +21,5 @@ data PMaybeData a (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PlutusType, PIsData)
     via PIsDataReprInstances (PMaybeData a)

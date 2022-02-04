@@ -9,7 +9,7 @@ module Plutarch.Api.V1.Contexts (
 ) where
 
 import qualified GHC.Generics as GHC
-import Generics.SOP (Generic)
+import Generics.SOP (Generic, I (I))
 
 import qualified Plutus.V1.Ledger.Api as Plutus
 
@@ -63,7 +63,7 @@ newtype PTxInfo (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields)
     via PIsDataReprInstances PTxInfo
 
 instance PUnsafeLiftDecl PTxInfo where type PLifted PTxInfo = Plutus.TxInfo
@@ -83,7 +83,7 @@ newtype PScriptContext (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields)
     via PIsDataReprInstances PScriptContext
 
 instance PUnsafeLiftDecl PScriptContext where type PLifted PScriptContext = Plutus.ScriptContext
@@ -100,7 +100,7 @@ data PScriptPurpose (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PlutusType, PIsData)
     via (PIsDataReprInstances PScriptPurpose)
 
 instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
