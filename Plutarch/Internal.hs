@@ -6,6 +6,7 @@ module Plutarch.Internal (
   PDelayed,
   -- | $term
   Term (Term, asRawTerm),
+  asClosedRawTerm,
   mapTerm,
   plam',
   plet,
@@ -19,6 +20,7 @@ module Plutarch.Internal (
   punsafeConstant,
   punsafeConstantInternal,
   compile,
+  compile',
   ClosedTerm,
   Dig,
   hashTerm,
