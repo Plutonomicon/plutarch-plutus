@@ -432,7 +432,11 @@
           pkgs.runCommand "fake-src" { } ''
             cp -rT ${./.} $out
             chmod u+w $out $out/plutarch.cabal
+            # Remove stanzas from .cabal that won't work in GHC 8.10
             sed -i '/-- Everything below this line is deleted for GHC 8.10/,$d' $out/plutarch.cabal
+            # Remove packages that won't work in GHC 8.10 (yet)
+            chmod -R u+w $out/plutarch-test
+            rm -rf $out/plutarch-test
           '';
           compiler-nix-name = ghcName;
           inherit extraSources;

@@ -1,5 +1,5 @@
 cabal-version: 2.4
-name:          plutarch-cabal
+name:          plutarch-test
 version:       1.1.0
 
 common c
@@ -66,7 +66,7 @@ common c
     -Wno-name-shadowing -Wunused-foralls -fprint-explicit-foralls
     -fprint-explicit-kinds
 
-test-suite test
+executable plutarch-test
   import:             c
   type:               exitcode-stdio-1.0
   main-is:            Main.hs
