@@ -23,6 +23,7 @@ module Plutarch.DataRepr.Internal (
 
 import Data.Kind (Type)
 import Data.List (groupBy, maximumBy, sortOn)
+import Data.Proxy (Proxy (Proxy))
 import GHC.TypeLits (
   ErrorMessage (ShowType, Text, (:<>:)),
   KnownNat,
@@ -32,7 +33,26 @@ import GHC.TypeLits (
   natVal,
   type (+),
  )
-import Generics.SOP
+import Generics.SOP (
+  All,
+  All2,
+  AllZipN,
+  Code,
+  Generic,
+  I (I),
+  K (K),
+  LiftedCoercible,
+  NP (Nil, (:*)),
+  POP,
+  SListI,
+  SOP (SOP),
+  from,
+  hcmap,
+  hcollapse,
+  hfromI,
+  hindex,
+  to,
+ )
 import Plutarch (
   Dig,
   PInner,
