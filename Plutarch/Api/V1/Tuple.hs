@@ -1,10 +1,8 @@
-module Plutarch.Api.V1.Tuple (PTuple, ptuple) where
+module Plutarch.Api.V1.Tuple (PTuple, ptuple, ptupleFromBuiltin, pbuiltinPairFromTuple) where
 
-import Plutarch.Builtin (pforgetData)
-import Plutarch.DataRepr (PLabeledType ((:=)))
+import Plutarch.Builtin (pconstrBuiltin, pforgetData)
 import Plutarch.Prelude
-import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
-import qualified PlutusCore.Default as PLC
+import Plutarch.Unsafe (punsafeCoerce)
 
 type PTuple a b =
   PDataSum
@@ -20,5 +18,8 @@ ptuple = phoistAcyclic $
         target = pconstrBuiltin # 0 #$ pcons # pforgetData x #$ pcons # pforgetData y # pnil
      in punsafeCoerce target
 
-pconstrBuiltin :: Term s (PInteger :--> PBuiltinList PData :--> PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
-pconstrBuiltin = punsafeBuiltin $ PLC.MkCons
+ptupleFromBuiltin :: Term s (PAsData (PBuiltinPair (PAsData a) (PAsData b))) -> Term s (PTuple a b)
+ptupleFromBuiltin = punsafeCoerce
+
+pbuiltinPairFromTuple :: Term s (PTuple a b) -> Term s (PAsData (PBuiltinPair (PAsData a) (PAsData b)))
+pbuiltinPairFromTuple = punsafeCoerce
