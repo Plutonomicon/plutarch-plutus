@@ -106,6 +106,7 @@ module Plutarch.Prelude (
   PDataRecord,
   PDataSum,
   PIsDataRepr,
+  PLabeledType ((:=)),
   pfield,
   pletFields,
   hrecField,

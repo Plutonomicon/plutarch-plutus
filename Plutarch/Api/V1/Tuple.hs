@@ -1,7 +1,6 @@
 module Plutarch.Api.V1.Tuple (PTuple, ptuple) where
 
 import Plutarch.Builtin (pforgetData)
-import Plutarch.DataRepr (PLabeledType ((:=)))
 import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import qualified PlutusCore.Default as PLC
