@@ -20,6 +20,7 @@ import Plutarch.Api.V1.Crypto (PPubKeyHash)
 import Plutarch.Api.V1.DCert (PDCert)
 import Plutarch.Api.V1.Scripts (PDatum, PDatumHash)
 import Plutarch.Api.V1.Time (PPOSIXTimeRange)
+import Plutarch.Api.V1.Tuple (PTuple)
 import Plutarch.Api.V1.Tx (PTxId, PTxInInfo, PTxOut, PTxOutRef)
 import Plutarch.Api.V1.Value (PCurrencySymbol, PValue)
 import Plutarch.DataRepr (
@@ -32,13 +33,6 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
  )
 import Plutarch.Prelude
-
-type PTuple a b =
-  PDataSum
-    '[ '[ "_0" ':= a
-        , "_1" ':= b
-        ]
-     ]
 
 newtype PTxInfo (s :: S)
   = PTxInfo
