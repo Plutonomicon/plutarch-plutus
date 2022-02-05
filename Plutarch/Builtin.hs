@@ -13,6 +13,7 @@ module Plutarch.Builtin (
   pasMap,
   pasList,
   pasInt,
+  pconstrBuiltin,
   pasByteStr,
   PBuiltinPair,
   PBuiltinList (..),
@@ -62,9 +63,10 @@ import Plutarch.Lift (
   pconstantToRepr,
  )
 import Plutarch.List (PListLike (..), plistEquals)
+import Plutarch.Unit (PUnit)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeFrom)
 import qualified PlutusCore as PLC
-import PlutusTx (Data)
+import PlutusTx (Data (Constr))
 
 -- | Plutus 'BuiltinPair'
 data PBuiltinPair (a :: PType) (b :: PType) (s :: S)
@@ -256,9 +258,28 @@ instance PIsData PBool where
       nil :: Term s (PBuiltinList PData)
       nil = pnil
 
+-- | NB: `PAsData (PBuiltinPair (PAsData a) (PAsData b))` and `PTuple a b` have the same representation.
+instance PIsData (PBuiltinPair (PAsData a) (PAsData b)) where
+  pfromData x = f # x
+    where
+      f = phoistAcyclic $
+        plam $ \pairDat -> plet (psndBuiltin #$ pasConstr # pforgetData pairDat) $
+          \pd -> ppairDataBuiltin # punsafeCoerce (phead # pd) #$ punsafeCoerce (phead #$ ptail # pd)
+  pdata x = punsafeCoerce target
+    where
+      target :: Term _ (PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
+      target = f # punsafeCoerce x
+      f = phoistAcyclic $
+        plam $ \pair -> pconstrBuiltin # 0 #$ pcons # (pfstBuiltin # pair) #$ pcons # (psndBuiltin # pair) # pnil
+
+instance PIsData PUnit where
+  pfromData _ = pconstant ()
+  pdata _ = punsafeCoerce $ pconstant (Constr 0 [])
+
+-- This instance is kind of useless. There's no safe way to use 'pdata'.
 instance PIsData (PBuiltinPair PInteger (PBuiltinList PData)) where
   pfromData x = pasConstr # pforgetData x
-  pdata x' = plet x' $ \x -> punsafeBuiltin PLC.ConstrData # (pfstBuiltin # x) #$ psndBuiltin # x
+  pdata x' = plet x' $ \x -> pconstrBuiltin # (pfstBuiltin # x) #$ psndBuiltin # x
 
 instance PEq (PAsData a) where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
@@ -275,3 +296,6 @@ pinnerData = punsafeCoerce
 
 pouterData :: Term s (PAsData (PInner a b)) -> Term s (PAsData a)
 pouterData = punsafeCoerce
+
+pconstrBuiltin :: Term s (PInteger :--> PBuiltinList PData :--> PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
+pconstrBuiltin = punsafeBuiltin $ PLC.MkCons
