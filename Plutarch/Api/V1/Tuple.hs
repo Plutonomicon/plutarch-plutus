@@ -18,8 +18,8 @@ ptuple = phoistAcyclic $
         target = pconstrBuiltin # 0 #$ pcons # pforgetData x #$ pcons # pforgetData y # pnil
      in punsafeCoerce target
 
-ptupleFromBuiltin :: Term s (PAsData (PBuiltinPair (PAsData a) (PAsData b))) -> Term s (PTuple a b)
+ptupleFromBuiltin :: Term s (PAsData (PBuiltinPair (PAsData a) (PAsData b))) -> Term s (PAsData (PTuple a b))
 ptupleFromBuiltin = punsafeCoerce
 
-pbuiltinPairFromTuple :: Term s (PTuple a b) -> Term s (PAsData (PBuiltinPair (PAsData a) (PAsData b)))
+pbuiltinPairFromTuple :: Term s (PAsData (PTuple a b)) -> Term s (PAsData (PBuiltinPair (PAsData a) (PAsData b)))
 pbuiltinPairFromTuple = punsafeCoerce
