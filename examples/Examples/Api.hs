@@ -1,19 +1,17 @@
 module Examples.Api (tests) where
 
 import Control.Monad.Trans.Cont (cont, runCont)
-import Data.String (fromString)
-import Data.Text.Encoding (encodeUtf8)
 import Plutarch
 import Plutarch.Api.V1 (
   PAddress (PAddress),
   PCredential,
-  PCurrencySymbol (PCurrencySymbol),
+  PCurrencySymbol,
   PMaybeData,
   PPubKeyHash,
   PScriptContext,
   PScriptPurpose (PSpending),
   PStakingCredential,
-  PTokenName (PTokenName),
+  PTokenName,
   PTxInInfo,
   PTxInfo,
   PValue,
@@ -246,15 +244,15 @@ tests =
     , testCase "getFields'" $
         printTerm getFields' @?= getFields_compiled
     , testCase "assetClass plift/pconstant" $ do
-        let currSymB = "c1"
-        let tokNameB = "foo"
-        let x = AssetClass (fromString currSymB, fromString tokNameB)
-        let pcurr :: Term s PCurrencySymbol
-            pcurr = pcon $ PCurrencySymbol $ phexByteStr currSymB
-            ptok :: Term s PTokenName
-            ptok = pcon $ PTokenName $ pconstant $ encodeUtf8 $ fromString tokNameB
+        let currSym = "c1"
+        let tokName = "foo"
+        let x = AssetClass (currSym, tokName)
+        let pcurr :: Term s (PAsData PCurrencySymbol)
+            pcurr = pconstantData currSym
+            ptok :: Term s (PAsData PTokenName)
+            ptok = pconstantData tokName
             px :: Term s PAssetClass
-            px = pcon $ PAssetClass $ ppairDataBuiltin # pdata pcurr # pdata ptok
+            px = pcon $ PAssetClass $ ppairDataBuiltin # pcurr # ptok
         plift (pconstant x) @?= x
         printTerm (pconstant x) @?= assetClass_compiled
         plift px @?= x
