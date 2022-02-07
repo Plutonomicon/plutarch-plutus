@@ -68,6 +68,7 @@ import Plutarch.Unit (PUnit)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeFrom)
 import qualified PlutusCore as PLC
 import PlutusTx (Data (Constr), ToData)
+import qualified PlutusTx
 
 -- | Plutus 'BuiltinPair'
 data PBuiltinPair (a :: PType) (b :: PType) (s :: S)
@@ -306,4 +307,4 @@ Example:
 > pconstantData @PInteger 42
 -}
 pconstantData :: forall p h s. (ToData h, PLifted p ~ h, PConstanted h ~ p) => h -> Term s (PAsData p)
-pconstantData x = punsafeCoerce $ pconstant $ toData x
+pconstantData x = punsafeCoerce $ pconstant $ PlutusTx.toData x
