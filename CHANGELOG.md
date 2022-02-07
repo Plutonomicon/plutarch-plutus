@@ -8,6 +8,62 @@
 
   Started by: [#226](https://github.com/Plutonomicon/plutarch/pull/226)
 
+- Add `PlutusType` generic deriving support for data encoded Plutarch types, via `PIsDataRepr` and `PIsDataReprInstances`.
+
+  All existing ledger api types now have `PlutusType` instances - not just `PMatch`.
+
+  Started by: [#242](https://github.com/Plutonomicon/plutarch/pull/242)
+
+- Add more of the ledger api types. The following types have been added:-
+
+  * `PAda`
+  * `PLedgerBytes`
+  * `PScriptHash`
+  * `PMintingPolicyHash`
+  * `PSlot`
+  * `PSlotRange`
+  * `PDiffMilliSeconds`
+  * `PAssetClass`
+
+  Added by: [#242](https://github.com/Plutonomicon/plutarch/pull/242)
+
+- Add `PDataRecord` construction utilities, necessary for full usage of data encoded `PlutusType` instances.
+
+  In particular, you can build `PDataRecord`s with `pdcon` and `pdnil` - refer to the guide for more info.
+
+  `pdcon` and `pdnil` are also exported from `Plutarch.Prelude`.
+
+  Module: `Plutarch.DataRepr`
+
+  Started by: [#242](https://github.com/Plutonomicon/plutarch/pull/242)
+
+
+- Add `PTuple` construction and related utilities.
+
+  Module: `Plutarch.Api.V1.Tuple`
+
+  Added by: [#242](https://github.com/Plutonomicon/plutarch/pull/242)
+
+- Add `pconstantData` - an efficient way of building data encoded constants directly.
+
+  This is semantically equivalent to `pdata . pconstant` but does not do any extra builtin function call.
+
+  Module: `Plutarch.Builtin`
+
+  Added by: [#242](https://github.com/Plutonomicon/plutarch/pull/242)
+
+- Export `PLabeledType ((:=))` from `Plutarch.Prelude`.
+
+  Added by: [#242](https://github.com/Plutonomicon/plutarch/pull/242)
+
+- Add `PIsData` instances for `PUnit` and `PBuiltinPair (PAsData a) (PAsData b)`.
+
+  It's helpful to mentally note that `PTuple a b`, `PAsData (PTuple a b)` and `PBuiltinPair (PAsData a) (PAsData b)` all have the exact same underlying representation. See `Plutarch.Api.V1.Tuple` for no-op conversion functions.
+
+  Module: `Plutarch.Builtin`
+
+  Added by: [#242](https://github.com/Plutonomicon/plutarch/pull/242)
+
 # 1.1.0
 
 - General repository changes.
