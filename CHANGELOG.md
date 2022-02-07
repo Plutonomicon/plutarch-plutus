@@ -8,6 +8,14 @@
 
   Started by: [#226](https://github.com/Plutonomicon/plutarch/pull/226)
 
+- Add `pconstantData` - an efficient way of building data encoded constants directly.
+
+  This is semantically equivalent to `pdata . pconstant` but does not do any extra builtin function call.
+
+  Module: `Plutarch.Builtin`
+
+  Added by: [#242](https://github.com/Plutonomicon/plutarch/pull/242)
+
 # 1.1.0
 
 - General repository changes.
