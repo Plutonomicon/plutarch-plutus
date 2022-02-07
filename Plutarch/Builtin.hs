@@ -305,5 +305,5 @@ pconstrBuiltin = punsafeBuiltin $ PLC.ConstrData
 Example:
 > pconstantData @PInteger 42
 -}
-pconstantData :: forall p s. (PlutusTx.ToData (PLifted p)) => PLifted p -> Term s (PAsData p)
+pconstantData :: forall p h s. (PlutusTx.ToData h, PLifted p ~ h, PConstanted h ~ p) => h -> Term s (PAsData p)
 pconstantData x = punsafeCoerce $ pconstant $ PlutusTx.toData x
