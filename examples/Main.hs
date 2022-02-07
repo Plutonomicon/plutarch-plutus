@@ -26,11 +26,11 @@ import qualified PlutusTx
 import qualified Examples.Api as Api
 import qualified Examples.Field as Field
 import qualified Examples.LetRec as LetRec
+import qualified Examples.Lift as Lift
 import qualified Examples.PIsData as PIsData
 import qualified Examples.PlutusType as PlutusType
 import qualified Examples.Rationals as Rationals
 import qualified Examples.Recursion as Recursion
-import qualified Examples.Lift as Lift
 import Utils
 
 import Data.Text (Text)
