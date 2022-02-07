@@ -338,4 +338,4 @@ instance IsBuiltinList (PDataRecord l) where
   dataListFrom = punsafeCoerce
 
 pconstrBuiltin :: Term s (PInteger :--> PBuiltinList PData :--> PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
-pconstrBuiltin = punsafeBuiltin $ PLC.MkCons
+pconstrBuiltin = punsafeBuiltin $ PLC.ConstrData
