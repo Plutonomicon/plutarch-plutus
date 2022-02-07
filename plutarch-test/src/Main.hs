@@ -16,8 +16,8 @@ tests :: TestTree
 tests =
   runTestTreeM "main" $ do
     ttGroup "add1" $ do
-      golden "add1" add1
-      golden "add1.app" $ add1 # 1 # 2
+      golden "" add1
+      golden "app" $ add1 # 1 # 2
     BoolSpec.tests
 
 add1 :: Term s (PInteger :--> PInteger :--> PInteger)
