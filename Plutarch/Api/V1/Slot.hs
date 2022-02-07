@@ -1,7 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Plutarch.Api.V1.Slot (PSlot (PSlot), SlotRange) where
+module Plutarch.Api.V1.Slot (PSlot (PSlot), PSlotRange) where
 
 import Plutarch.Api.V1.Interval
 import Plutarch.Lift (DerivePConstantViaNewtype (DerivePConstantViaNewtype), PLifted, PUnsafeLiftDecl)
@@ -14,4 +14,4 @@ newtype PSlot (s :: S) = PSlot (Term s PInteger)
 instance PUnsafeLiftDecl PSlot where type PLifted PSlot = PlutusSlot.Slot
 deriving via (DerivePConstantViaNewtype PlutusSlot.Slot PSlot PInteger) instance (PConstant PlutusSlot.Slot)
 
-type SlotRange = PInterval PSlot
+type PSlotRange = PInterval PSlot

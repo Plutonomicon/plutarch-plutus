@@ -4,6 +4,8 @@
 module Plutarch.Api.V1.Scripts (
   PDatum (PDatum),
   PDatumHash (PDatumHash),
+  PScriptHash (PScriptHash),
+  PMintingPolicyHash (PMintingPolicyHash),
   PRedeemer (PRedeemer),
   PRedeemerHash (PRedeemerHash),
   PStakeValidatorHash (PStakeValidatorHash),
