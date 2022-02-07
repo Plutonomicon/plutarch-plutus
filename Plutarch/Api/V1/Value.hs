@@ -55,9 +55,7 @@ deriving via
 
 newtype PAssetClass (s :: S) = PAssetClass (Term s (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName)))
   deriving
-    ( PlutusType
-    , PIsData
-    )
+    (PlutusType, PIsData)
     via (DerivePNewtype PAssetClass (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName)))
 
 instance PUnsafeLiftDecl PAssetClass where type PLifted PAssetClass = PlutusValue.AssetClass
