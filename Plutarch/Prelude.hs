@@ -107,6 +107,8 @@ module Plutarch.Prelude (
   PDataSum,
   PIsDataRepr,
   PLabeledType ((:=)),
+  pdcons,
+  pdnil,
   pfield,
   pletFields,
   hrecField,
