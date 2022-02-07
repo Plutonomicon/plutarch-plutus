@@ -21,7 +21,6 @@ import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
   PIsDataReprInstances (PIsDataReprInstances),
-  PLabeledType ((:=)),
  )
 import Plutarch.Lift (
   PLifted,

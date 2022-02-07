@@ -23,12 +23,8 @@ import Plutarch.Api.V1.Crypto (PPubKeyHash)
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PIsDataReprInstances (PIsDataReprInstances),
-  PLabeledType ((:=)),
  )
-import Plutarch.Lift (
-  PLifted,
-  PUnsafeLiftDecl,
- )
+import Plutarch.Lift (PLifted, PUnsafeLiftDecl)
 import Plutarch.Prelude
 
 data PDCert (s :: S)

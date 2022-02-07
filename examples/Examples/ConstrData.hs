@@ -13,6 +13,7 @@ import Utils
 
 import Plutarch.Api.V1
 import Plutarch.DataRepr (PDataFields, PIsDataReprInstances (PIsDataReprInstances))
+import Plutarch.Lift (PConstanted, PLifted)
 import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeCoerce)
 
@@ -63,6 +64,13 @@ data PEnumType (s :: S)
   deriving
     (PlutusType, PIsData)
     via PIsDataReprInstances PEnumType
+
+pconstantData ::
+  forall p h s.
+  (PlutusTx.ToData h, PLift p, PIsData p, PLifted p ~ h, PConstanted h ~ p) =>
+  h ->
+  Term s (PAsData p)
+pconstantData = pdata . pconstant
 
 tests :: HasTester => TestTree
 tests =

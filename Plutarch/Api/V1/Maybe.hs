@@ -7,10 +7,7 @@ module Plutarch.Api.V1.Maybe (
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic, I (I))
 
-import Plutarch.DataRepr (
-  PIsDataReprInstances (PIsDataReprInstances),
-  PLabeledType ((:=)),
- )
+import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
 import Plutarch.Prelude
 
 -- | Data encoded Maybe type. Used in various ledger api types.

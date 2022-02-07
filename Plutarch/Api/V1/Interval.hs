@@ -11,11 +11,7 @@ module Plutarch.Api.V1.Interval (
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic, I (I))
 
-import Plutarch.DataRepr (
-  PDataFields,
-  PIsDataReprInstances (PIsDataReprInstances),
-  PLabeledType ((:=)),
- )
+import Plutarch.DataRepr (PDataFields, PIsDataReprInstances (PIsDataReprInstances))
 import Plutarch.Prelude
 
 type PClosure = PBool
