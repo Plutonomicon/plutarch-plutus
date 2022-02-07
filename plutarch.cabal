@@ -157,6 +157,7 @@ test-suite examples
 
   other-modules:
     Examples.Api
+    Examples.ConstrData
     Examples.Field
     Examples.LetRec
     Examples.List
