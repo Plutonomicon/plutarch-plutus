@@ -775,7 +775,7 @@ This is similar to the `Integral` typeclass. However, it only has the following 
 * `pdiv` - similar to `div`
 * `pmod` - similar to `mod`
 * `pquot` - similar to `quot`
-* `prem` - similar to `prem`
+* `prem` - similar to `rem`
 
 Using these functions, you can do division/modulus etc on Plutarch level values-
 ```hs
