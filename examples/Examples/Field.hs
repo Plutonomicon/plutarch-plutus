@@ -76,7 +76,7 @@ newtype Triplet (a :: PType) (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields)
     via (PIsDataReprInstances (Triplet a))
 
 mkTrip ::
