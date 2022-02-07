@@ -81,14 +81,12 @@ library
     Plutarch.Api.V1
     Plutarch.Api.V1.Address
     Plutarch.Api.V1.AssocMap
-    Plutarch.Api.V1.Bytes
     Plutarch.Api.V1.Contexts
     Plutarch.Api.V1.Crypto
     Plutarch.Api.V1.DCert
     Plutarch.Api.V1.Interval
     Plutarch.Api.V1.Maybe
     Plutarch.Api.V1.Scripts
-    Plutarch.Api.V1.Slot
     Plutarch.Api.V1.Time
     Plutarch.Api.V1.Tx
     Plutarch.Api.V1.Value
