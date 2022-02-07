@@ -18,8 +18,8 @@ tests =
     "main"
     [ testGroup "add1" $
         mconcat
-          [ goldens "add1" add1
-          , goldens "add1.app" $ add1 # 1 # 2
+          [ golden "add1" add1
+          , golden "add1.app" $ add1 # 1 # 2
           ]
     , BoolSpec.tests
     ]

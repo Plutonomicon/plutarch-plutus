@@ -1,1 +1,1 @@
-(program 1.0.0 (\i0 -> force (force ifThenElse i1 (delay False) (delay True))))
+0 (program 1.0.0 (\i0 -> force (force ifThenElse i1 (delay False) (delay True))))

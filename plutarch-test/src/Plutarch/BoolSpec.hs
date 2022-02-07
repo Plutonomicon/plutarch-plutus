@@ -13,8 +13,8 @@ tests =
   testGroup "bool" $
     [ testGroup "pnot" $
         mconcat
-          [ goldens "pnot" pnot
-          , goldens "pnot.app" (pnot #$ pcon PTrue)
+          [ golden "pnot" pnot
+          , golden "pnot.app" (pnot #$ pcon PTrue)
           ,
             [ testCase "pnot.true" $ (pnot #$ pcon PTrue) #@?= pcon PFalse
             , testCase "pnot.false" $ (pnot #$ pcon PFalse) #@?= pcon PTrue
@@ -24,9 +24,13 @@ tests =
         "lazy"
         [ testGroup "pand" $
             mconcat
-              [ goldens "lazy.pand.tf" (pcon PTrue #&& pcon PFalse)
-              , goldens "lazy.pand.ft" (pcon PFalse #&& pcon PTrue)
-              , goldens "lazy.pand.tt" (pcon PTrue #&& pcon PTrue)
+              [ goldens
+                  "lazy.pand"
+                  [ ("tf", pcon PTrue #&& pcon PFalse)
+                  , ("ft", pcon PFalse #&& pcon PTrue)
+                  , ("tt", pcon PTrue #&& pcon PTrue)
+                  , ("ff", pcon PFalse #&& pcon PFalse)
+                  ]
               ,
                 [ testCase "tf" $ (pcon PTrue #&& pcon PFalse) #@?= pcon PFalse
                 , testCase "ft" $ (pcon PFalse #&& pcon PTrue) #@?= pcon PFalse
