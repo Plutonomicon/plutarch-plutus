@@ -14,15 +14,11 @@ main =
 
 tests :: TestTree
 tests =
-  testGroup
-    "main"
-    [ testGroup "add1" $
-        mconcat
-          [ golden "add1" add1
-          , golden "add1.app" $ add1 # 1 # 2
-          ]
-    , BoolSpec.tests
-    ]
+  runTestTreeM "main" $ do
+    ttGroup "add1" $ do
+      golden "add1" add1
+      golden "add1.app" $ add1 # 1 # 2
+    BoolSpec.tests
 
 add1 :: Term s (PInteger :--> PInteger :--> PInteger)
 add1 = plam $ \x y -> x + y + 1
