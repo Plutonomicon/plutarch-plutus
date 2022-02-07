@@ -51,7 +51,21 @@ import Plutarch.Internal.TypeFamily (ToPType, ToPType2)
   >   deriving stock (GHC.Generic)
   >   deriving anyclass (Generic, PlutusType)
 
-  Alternative, you may derive it by hand as well. A simple example, encoding a
+  If you instead want to use data encoding, you should first implement "Plutarch.PDataRepr.PIsDataRepr", and then
+  derive 'PlutusType' via "Plutarch.PDataRepr.PIsDataReprInstances":
+
+  > import qualified GHC.Generics as GHC
+  > import Generics.SOP
+  > import Plutarch.DataRepr
+  >
+  > data MyType (a :: PType) (b :: PType) (s :: S)
+  >   = One (Term s (PDataRecord '[ "_0" ':= a ]))
+  >   | Two (Term s (PDataRecord '[ "_0" ':= b ]))
+  >   deriving stock (GHC.Generic)
+  >   deriving anyclass (Generic, PIsDataRepr)
+  >   deriving (PlutusType, PIsData) via PIsDataReprInstances (MyType a b)
+
+  Alternatively, you may derive 'PlutusType' by hand as well. A simple example, encoding a
   Sum type as an Enum via PInteger:
 
   > data AB (s :: S) = A | B
