@@ -300,7 +300,7 @@ pouterData :: Term s (PAsData (PInner a b)) -> Term s (PAsData a)
 pouterData = punsafeCoerce
 
 pconstrBuiltin :: Term s (PInteger :--> PBuiltinList PData :--> PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
-pconstrBuiltin = punsafeBuiltin $ PLC.MkCons
+pconstrBuiltin = punsafeBuiltin $ PLC.ConstrData
 
 {- | Create a Plutarch-level 'PAsData' constant, from a Haskell value.
 Example:
