@@ -5,7 +5,7 @@ module Plutarch.FFI (
   foreignImport,
 ) where
 
-import Data.Kind (Type)
+import Data.Kind (Constraint, Type)
 import Data.Text (Text)
 import GHC.TypeLits (TypeError)
 import qualified GHC.TypeLits as TypeLits
@@ -14,6 +14,7 @@ import Plutarch.Bool (PBool)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (
   ClosedTerm,
+  PDelayed,
   PType,
   RawTerm (RCompiled),
   Term (Term),
@@ -33,7 +34,7 @@ import qualified UntypedPlutusCore as UPLC
 data ForallPhantom :: Type
 data PhorallPhantom :: PType
 
-foreignExport :: PlutarchInner p PhorallPhantom ~ PlutusTxInner t ForallPhantom => ClosedTerm p -> CompiledCode t
+foreignExport :: PlutarchInner p PhorallPhantom ~~ PlutusTxInner t ForallPhantom => ClosedTerm p -> CompiledCode t
 foreignExport t = DeserializedCode program Nothing mempty
   where
     program =
@@ -42,21 +43,29 @@ foreignExport t = DeserializedCode program Nothing mempty
           compile' $
             asClosedRawTerm t
 
-foreignImport :: PlutarchInner p PhorallPhantom ~ PlutusTxInner t ForallPhantom => CompiledCode t -> ClosedTerm p
+foreignImport :: PlutarchInner p PhorallPhantom ~~ PlutusTxInner t ForallPhantom => CompiledCode t -> ClosedTerm p
 foreignImport c = Term $ const $ TermResult (RCompiled $ UPLC.toTerm $ unScript $ fromCompiledCode c) []
+
+type family a ~~ b :: Constraint where
+  ForallPhantom ~~ _ = ()
+  _ ~~ ForallPhantom = ()
+  a ~~ b = a ~ b
 
 type family PlutarchInner (p :: PType) (any :: PType) :: Type where
   PlutarchInner PBool _ = Bool
   PlutarchInner PInteger _ = Integer
   PlutarchInner PString _ = Text
-  PlutarchInner (a :--> b) x = PlutarchInner a x -> PlutarchInner b x
+  PlutarchInner PhorallPhantom _ = ForallPhantom
+  PlutarchInner (a :--> b) x = PlutarchInner a b -> PlutarchInner b x -- hack to support Scott encodings
+  PlutarchInner (PDelayed a) x = PlutarchInner a x
   PlutarchInner p x = PlutarchInner (PInner p x) x
 
 type family PlutusTxInner (t :: Type) (any :: Type) :: Type where
   PlutusTxInner Bool _ = Bool
   PlutusTxInner Integer _ = Integer
   PlutusTxInner BuiltinString _ = Text
-  PlutusTxInner (a -> b) x = PlutusTxInner a x -> PlutusTxInner b x
+  PlutusTxInner ForallPhantom _ = ForallPhantom
+  PlutusTxInner (a -> b) x = PlutusTxInner a b -> PlutusTxInner b x -- hack to support Scott encodings
   PlutusTxInner a x = PlutusTxInner (ScottFn (ScottList (SOP.Code a) x) x) x
 
 {- |
