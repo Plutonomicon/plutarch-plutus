@@ -67,7 +67,7 @@ import Plutarch.List (PListLike (..), plistEquals)
 import Plutarch.Unit (PUnit)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeFrom)
 import qualified PlutusCore as PLC
-import qualified PlutusTx
+import PlutusTx (Data (Constr), ToData)
 
 -- | Plutus 'BuiltinPair'
 data PBuiltinPair (a :: PType) (b :: PType) (s :: S)
@@ -160,14 +160,14 @@ data PData s
   | PDataInteger (Term s PInteger)
   | PDataByteString (Term s PByteString)
 
-instance PUnsafeLiftDecl PData where type PLifted PData = PlutusTx.Data
-deriving via (DerivePConstantDirect PlutusTx.Data PData) instance (PConstant PlutusTx.Data)
+instance PUnsafeLiftDecl PData where type PLifted PData = Data
+deriving via (DerivePConstantDirect Data PData) instance (PConstant Data)
 
 instance PEq PData where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
 
 {- |
-  Map type used for Plutus `PlutusTx.Data`'s Map constructor.
+  Map type used for Plutus `Data`'s Map constructor.
 
   Note that the Plutus API doesn't use this most of the time,
   instead encoding as a List of Tuple constructors.
@@ -192,7 +192,7 @@ pasByteStr :: Term s (PData :--> PByteString)
 pasByteStr = punsafeBuiltin PLC.UnBData
 
 {-# DEPRECATED pdataLiteral "Use `pconstant` instead." #-}
-pdataLiteral :: PlutusTx.Data -> Term s PData
+pdataLiteral :: Data -> Term s PData
 pdataLiteral = pconstant
 
 type role PAsData representational phantom
@@ -201,7 +201,7 @@ data PAsData (a :: PType) (s :: S)
 data PAsDataLifted (a :: PType)
 
 instance PConstant (PAsDataLifted a) where
-  type PConstantRepr (PAsDataLifted a) = PlutusTx.Data
+  type PConstantRepr (PAsDataLifted a) = Data
   type PConstanted (PAsDataLifted a) = PAsData a
   pconstantToRepr = \case {}
   pconstantFromRepr _ = Nothing
@@ -275,7 +275,7 @@ instance PIsData (PBuiltinPair (PAsData a) (PAsData b)) where
 
 instance PIsData PUnit where
   pfromData _ = pconstant ()
-  pdata _ = punsafeCoerce $ pconstant (PlutusTx.Constr 0 [])
+  pdata _ = punsafeCoerce $ pconstant (Constr 0 [])
 
 -- This instance is kind of useless. There's no safe way to use 'pdata'.
 instance PIsData (PBuiltinPair PInteger (PBuiltinList PData)) where
@@ -305,5 +305,5 @@ pconstrBuiltin = punsafeBuiltin $ PLC.ConstrData
 Example:
 > pconstantData @PInteger 42
 -}
-pconstantData :: forall p h s. (PlutusTx.ToData h, PLifted p ~ h, PConstanted h ~ p) => h -> Term s (PAsData p)
-pconstantData x = punsafeCoerce $ pconstant $ PlutusTx.toData x
+pconstantData :: forall p h s. (ToData h, PLifted p ~ h, PConstanted h ~ p) => h -> Term s (PAsData p)
+pconstantData x = punsafeCoerce $ pconstant $ toData x

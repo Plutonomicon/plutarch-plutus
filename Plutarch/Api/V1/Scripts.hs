@@ -71,7 +71,7 @@ newtype PScriptHash (s :: S) = PScriptHash (Term s PByteString)
 
 instance PUnsafeLiftDecl PScriptHash where type PLifted PScriptHash = PlutusScript.ScriptHash
 deriving via
-  (DerivePConstantViaNewtype Plutus.ValidatorHash PScriptHash PByteString)
+  (DerivePConstantViaNewtype PlutusScript.ScriptHash PScriptHash PByteString)
   instance
     (PConstant PlutusScript.ScriptHash)
 
@@ -80,6 +80,6 @@ newtype PMintingPolicyHash (s :: S) = PMintingPolicyHash (Term s PByteString)
 
 instance PUnsafeLiftDecl PMintingPolicyHash where type PLifted PMintingPolicyHash = PlutusScript.MintingPolicyHash
 deriving via
-  (DerivePConstantViaNewtype Plutus.ValidatorHash PMintingPolicyHash PByteString)
+  (DerivePConstantViaNewtype PlutusScript.MintingPolicyHash PMintingPolicyHash PByteString)
   instance
     (PConstant PlutusScript.MintingPolicyHash)
