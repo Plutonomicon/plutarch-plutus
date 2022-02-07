@@ -1,13 +1,13 @@
 module Examples.Lift (tests) where
 
 import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit (testCase, (@?=), Assertion)
+import Test.Tasty.HUnit (Assertion, testCase, (@?=))
 
 import Utils
 
-import Plutarch.Prelude
 import Plutarch (printTerm)
 import Plutarch.Lift (PLifted)
+import Plutarch.Prelude
 import Plutus.V1.Ledger.Api
 import qualified PlutusTx
 
