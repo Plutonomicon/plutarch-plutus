@@ -24,12 +24,12 @@ module Plutarch.DataRepr (
   F.HRec,
 ) where
 
-import Plutarch
-import Plutarch.Builtin
+import Plutarch (Term, type (:-->))
+import Plutarch.Builtin (PAsData, PBuiltinList, PData)
 import qualified Plutarch.DataRepr.Internal as I
 import qualified Plutarch.DataRepr.Internal.Field as F
-import Plutarch.Internal
-import Plutarch.List
+import Plutarch.Internal (punsafeCoerce)
+import Plutarch.List (pcons, pnil)
 
 {- | Cons a field to a data record.
 
