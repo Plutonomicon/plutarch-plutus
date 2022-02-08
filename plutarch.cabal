@@ -160,6 +160,7 @@ test-suite examples
     Examples.ConstrData
     Examples.Field
     Examples.LetRec
+    Examples.Lift
     Examples.List
     Examples.PIsData
     Examples.PlutusType

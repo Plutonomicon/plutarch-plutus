@@ -65,13 +65,6 @@ data PEnumType (s :: S)
     (PlutusType, PIsData)
     via PIsDataReprInstances PEnumType
 
-pconstantData ::
-  forall p h s.
-  (PlutusTx.ToData h, PLift p, PIsData p, PLifted p ~ h, PConstanted h ~ p) =>
-  h ->
-  Term s (PAsData p)
-pconstantData = pdata . pconstant
-
 tests :: HasTester => TestTree
 tests =
   testGroup

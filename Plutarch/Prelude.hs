@@ -126,6 +126,7 @@ module Plutarch.Prelude (
 
   -- * Converstion between Plutarch terms and Haskell types
   pconstant,
+  pconstantData,
   plift,
   PConstant,
   PLift,
