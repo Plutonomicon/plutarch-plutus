@@ -15,8 +15,9 @@ module Plutarch.Test (
   goldens,
 ) where
 
+import Data.ByteString (ByteString)
 import qualified Data.Text as T
-import Data.Text.Encoding
+import Data.Text.Encoding (encodeUtf8)
 import System.FilePath
 import Test.Syd (Spec, describe, getTestDescriptionPath, it, pureGoldenByteStringFile)
 import Test.Tasty.HUnit
@@ -50,13 +51,14 @@ equal x y = do
 passert :: forall (a :: PType). ClosedTerm a -> Assertion
 passert p = p #@?= pcon PTrue
 
+-- TODO: remove the empty string hack
 golden :: ClosedTerm a -> Spec
 golden = golden' ""
 
 -- | Make golden tests for the given Plutarch program.
-golden' :: String -> ClosedTerm a -> Spec
+golden' :: forall a. String -> ClosedTerm a -> Spec
 golden' k p =
-  goldens' k [("0", p)]
+  goldens' k [("0", popaque p)]
 
 {- | Like `golden` but for multiple programs
 
@@ -68,9 +70,9 @@ goldens = goldens' ""
 
 goldens' :: String -> [(String, ClosedTerm a)] -> Spec
 goldens' k ps = do
-  testAncestors <- fmap reverse $ getTestDescriptionPath
+  testAncestors <- fmap (drop 1 . reverse) $ getTestDescriptionPath
   let name = T.unpack $ T.intercalate "." testAncestors
-  let goldenKey = if null k then "golden" else k <> ".golden"
+      goldenKey = if null k then "golden" else k <> ".golden"
   describe goldenKey $ do
     let k' = if null k then "" else "." <> k
         nUplc = name <> k' <> ".uplc.golden"
@@ -86,11 +88,12 @@ goldens' k ps = do
         -- TODO: Do both variants somehow: `compile` and `shrink . compile`.
         multiGolden ps $ \p ->
           TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compile p
-  where
-    multiGolden xs f =
-      encodeUtf8 $
-        T.intercalate "\n" $
-          (\(s, x) -> T.pack s <> " " <> f x) <$> xs
+
+multiGolden :: forall a. [(String, a)] -> (a -> T.Text) -> ByteString
+multiGolden xs f =
+  encodeUtf8 $
+    T.intercalate "\n" $
+      (\(s, x) -> T.pack s <> " " <> f x) <$> xs
 
 _shrink :: ClosedTerm a -> ClosedTerm a
 _shrink = id -- TODO
