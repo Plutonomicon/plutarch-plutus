@@ -13,7 +13,6 @@ import Utils
 
 import Plutarch.Api.V1
 import Plutarch.DataRepr (PDataFields, PIsDataReprInstances (PIsDataReprInstances))
-import Plutarch.Lift (PConstanted, PLifted)
 import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeCoerce)
 
@@ -38,8 +37,7 @@ newtype Triplet (a :: PType) (s :: S)
           )
       )
   deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
+  deriving anyclass (Generic, PIsDataRepr)
   deriving
     (PlutusType, PIsData, PDataFields)
     via (PIsDataReprInstances (Triplet a))
@@ -49,8 +47,7 @@ data PVehicle (s :: S)
   | PTwoWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
   | PImmovableBox (Term s (PDataRecord '[]))
   deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
+  deriving anyclass (Generic, PIsDataRepr)
   deriving
     (PlutusType, PIsData)
     via PIsDataReprInstances PVehicle
@@ -59,8 +56,7 @@ data PEnumType (s :: S)
   = PA (Term s (PDataRecord '[]))
   | PB (Term s (PDataRecord '[]))
   deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
+  deriving anyclass (Generic, PIsDataRepr)
   deriving
     (PlutusType, PIsData)
     via PIsDataReprInstances PEnumType

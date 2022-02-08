@@ -6,6 +6,7 @@ import Test.Tasty.HUnit (Assertion, testCase, (@?=))
 import Utils
 
 import Plutarch (printTerm)
+import Plutarch.Api.V1 ()
 import Plutarch.Lift (PLifted)
 import Plutarch.Prelude
 import Plutus.V1.Ledger.Api

@@ -1008,8 +1008,7 @@ data MyType (a :: PType) (b :: PType) (s :: S)
   = One (Term s (PDataRecord '[ "_0" ':= a ]))
   | Two (Term s (PDataRecord '[ "_0" ':= b ]))
   deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
+  deriving anyclass (Generic, PIsDataRepr)
   deriving
     (PlutusType, PIsData)
     via PIsDataReprInstances (MyType a b)
@@ -1298,8 +1297,7 @@ data PVehicle (s :: S)
   | PTwoWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
   | PImmovableBox (Term s (PDataRecord '[]))
   deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
+  deriving anyclass (Generic, PIsDataRepr)
   deriving
     (PlutusType, PIsData)
     via PIsDataReprInstances PVehicle
@@ -1341,8 +1339,7 @@ import Plutarch.DataRepr
 
 newtype PFoo (s :: S) = PMkFoo (Term s (PDataRecord '["foo" ':= PByteString]))
   deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
+  deriving anyclass (Generic, PIsDataRepr)
   deriving
     (PlutusType, PIsData, PDataFields)
     via PIsDataReprInstances PFoo
