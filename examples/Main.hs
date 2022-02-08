@@ -24,6 +24,7 @@ import qualified PlutusCore as PLC
 import qualified PlutusTx
 
 import qualified Examples.Api as Api
+import qualified Examples.ConstrData as ConstrData
 import qualified Examples.Field as Field
 import qualified Examples.LetRec as LetRec
 import qualified Examples.Lift as Lift
@@ -94,6 +95,7 @@ tests =
     , LetRec.tests
     , PIsData.tests
     , Field.tests
+    , ConstrData.tests
     , Lift.tests
     ]
 

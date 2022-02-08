@@ -106,6 +106,7 @@ library
     Plutarch.Internal.Other
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType
+    Plutarch.Internal.TypeFamily
     Plutarch.Lift
     Plutarch.List
     Plutarch.Maybe
@@ -156,6 +157,7 @@ test-suite examples
 
   other-modules:
     Examples.Api
+    Examples.ConstrData
     Examples.Field
     Examples.LetRec
     Examples.Lift

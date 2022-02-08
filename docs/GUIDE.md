@@ -39,11 +39,13 @@
     - [PConstant & PLift](#pconstant--plift)
       - [Implementing `PConstant` & `PLift`](#implementing-pconstant--plift)
     - [PlutusType, PCon, and PMatch](#plutustype-pcon-and-pmatch)
-      - [Implementing `PlutusType` for your own types](#implementing-plutustype-for-your-own-types)
+      - [Implementing `PlutusType` for your own types (Scott Encoding)](#implementing-plutustype-for-your-own-types-scott-encoding)
+      - [Implementing `PlutusType` for your own types (Data Encoding)](#implementing-plutustype-for-your-own-types-data-encoding)
     - [PListLike](#plistlike)
     - [PIsDataRepr & PDataFields](#pisdatarepr--pdatafields)
       - [All about extracting fields](#all-about-extracting-fields)
         - [Alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax)
+      - [All about constructing data values](#all-about-constructing-data-values)
       - [Implementing PIsDataRepr and friends](#implementing-pisdatarepr-and-friends)
   - [Working with Types](#working-with-types)
     - [PInteger](#pinteger)
@@ -953,9 +955,9 @@ class PMatch a where
 
 All `PlutusType` instances get `PCon` and `PMatch` instances for free!
 
-For types that cannot easily be both `PCon` and `PMatch` - feel free to implement just one of them! However, in general, **prefer implementing PlutusType**!
+For types that cannot easily be both `PCon` and `PMatch` - feel free to implement just one of them! However, in general, **prefer implementing `PlutusType`**!
 
-#### Implementing `PlutusType` for your own types
+#### Implementing `PlutusType` for your own types (Scott Encoding)
 If you want to represent your data type with [scott encoding](#data-encoding-and-scott-encoding) (and therefore not let it be `Data` encoded), you should simply derive it generically-
 ```hs
 import qualified GHC.Generics as GHC
@@ -993,6 +995,23 @@ instance PlutusType AB where
 
   pmatch' x f =
     pif (x #== 0) (f A) (f B)
+```
+#### Implementing `PlutusType` for your own types (Data Encoding)
+If your type is supposed to be represented using [`Data` encoding](#data-encoding-and-scott-encoding) instead (i.e has a [`PIsDataRepr`](#pisdatarepr--pdatafields) instance), you can derive `PlutusType` via `PIsDataReprInstances`
+```hs
+import qualified GHC.Generics as GHC
+import Generics.SOP
+import Plutarch.Prelude
+import Plutarch.DataRepr
+
+data MyType (a :: PType) (b :: PType) (s :: S)
+  = One (Term s (PDataRecord '[ "_0" ':= a ]))
+  | Two (Term s (PDataRecord '[ "_0" ':= b ]))
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic, PIsDataRepr)
+  deriving
+    (PlutusType, PIsData)
+    via PIsDataReprInstances (MyType a b)
 ```
 
 ### PListLike
@@ -1045,7 +1064,7 @@ x = pcons # 1 #$ pcons # 2 #$ pcons # 3 # pnil
 The code is the same, we just changed the type annotation. Cool!
 
 ### PIsDataRepr & PDataFields
-`PIsDataRepr` allows for easily deconstructing `Constr` [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md) values. It allows fully type safe matching on `Data` values, without embedding type information within the generated script - unlike PlutusTx. `PDataFields`, on top of that, allows for ergonomic field access.
+`PIsDataRepr` allows for easily constructing *and* deconstructing `Constr` [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md) values. It allows fully type safe matching on `Data` values, without embedding type information within the generated script - unlike PlutusTx. `PDataFields`, on top of that, allows for ergonomic field access.
 
 > Aside: What's a `Constr` data value? Briefly, it's how Plutus Core encodes non-trivial ADTs into `Data`/`BuiltinData`. It's essentially a sum-of-products encoding. But you don't have to care too much about any of this. Essentially, whenever you have a custom non-trivial ADT (that isn't just an integer, bytestring, string/text, list, or assoc map), you should implement `PIsDataRepr` for it.
 
@@ -1198,6 +1217,43 @@ If `RecordDotSyntax` is not available, you can also try using the [record dot pr
 
 If you don't want to use either, you can simply use `hrecField`. In fact, `ctx.purpose` above just translates to `hrecField @"purpose" ctx`. Nothing magical there!
 
+#### All about constructing data values
+We learned about type safe matching (through `PlutusType`) as well as type safe field access (through `PDataFields`) - how about construction? Since `PIsDataRepr` allows you to derive [`PlutusType`](#plutustype-pcon-and-pmatch), and `PlutusType` bestows the ability to not only *deconstruct*, but also **construct** values - you can do that just as easily!
+
+Let's see how we could build a `PMinting` `PScriptPurpose` given a `PCurrencySymbol`-
+```hs
+import Plutarch.Prelude
+import Plutarch.Api.V1
+
+currSym :: Term s PCurrencySymbol
+```
+```hs
+purpose :: Term s PScriptPurpose
+purpose = pcon $ PMinting fields
+  where
+    currSymDat :: Term _ (PAsData PCurrencySymbol)
+    currSymDat = pdata currSym
+    fields :: Term _ (PDataRecord '[ "_0" ':= PCurrencySymbol ])
+    fields = pdcons # currSymDat # pdnil
+```
+All the type annotations are here to help!
+
+This is just like regular `pcon` usage you've [seen above](#plutustype-pcon-and-pmatch). It takes in the Haskell ADT of your Plutarch type and gives back a Plutarch term.
+
+What's more interesting, is the `fields` binding. Recall that `PMinting` is a constructor with one argument, that argument is a [`PDataRecord`](#pdatasum--pdatarecord) term. In particular, we want: `Term s (PDataRecord '["_0" ':= PCurrencySymbol ])`. It encodes the exact type, position, and name of the field. So, all we have to do is create a `PDataRecord` term!
+
+Of course, we do that using `pdcons` - which is just the familiar `cons` specialized for `PDataRecord` terms.
+```hs
+pdcons :: forall label a l s. Term s (PAsData a :--> PDataRecord l :--> PDataRecord ((label ':= a) ': l))
+```
+It takes a `PAsData a` and adds that `a` to the `PDataRecord` heterogenous list. We feed it a `PAsData PCurrencySymbol` and `pdnil` - the empty data record. That should give us-
+```hs
+pdcons # currSymDat # pdnil :: Term _ (PDataRecord '[ label ':= PCurrencySymbol ])
+```
+Cool! Wait, what's `label`? It's the field name associated with the field, in our case, we want the field name to be `_0` - because that's what the `PMinting` constructor wants. You can either specify the label with a type application or you can just have a type annotation for the binding (which is what we do here). Or you can let GHC try and match up the `label` with the surrounding environment!
+
+Now that we have `fields`, we can use it with `PMinting` to build a `PScriptPurpose s` and feed it to `pcon` - we're done!
+
 #### Implementing PIsDataRepr and friends
 Implementing these is rather simple with generic deriving + `PIsDataReprInstances`. All you need is a well formed type using `PDataRecord`. For example, suppose you wanted to implement `PIsDataRepr` for the Plutarch version of this Haskell type-
 ```hs
@@ -1224,7 +1280,7 @@ data PVehicle (s :: S)
 > ```
 > Also see: [Isomorphism between Haskell ADTs and `PIsDataRepr`](#the-isomorphism-between-makeisdataindexed-haskell-adts-and-pisdatarepr)
 
-And you'd simply derive `PIsDataRepr` using generics. But that's not all! You should also derive `PMatch`, `PIsData` using `PIsDataReprInstances`.
+And you'd simply derive `PIsDataRepr` using generics. However, you **must** also derive `PIsData` using `PIsDataReprInstances`. Moreover, you should also derive `PlutusType`. For single constructor data types, you should also derive `PDataFields`.
 
 > Aside: If your type is *not* a sumtype, but rather a newtype with a single constructor - you should also derive `PDataFields`. In the case of sumtypes, the existing `PDataFields` instance for `PDataRecord` will be enough.
 
@@ -1241,10 +1297,9 @@ data PVehicle (s :: S)
   | PTwoWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
   | PImmovableBox (Term s (PDataRecord '[]))
   deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
+  deriving anyclass (Generic, PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PlutusType, PIsData)
     via PIsDataReprInstances PVehicle
 ```
 > Note: You cannot implement `PIsDataRepr` for types that are represented using [scott encoding](#data-encoding-and-scott-encoding). Your types must be well formed and should be using `PDataRecord` terms instead.
@@ -1284,10 +1339,9 @@ import Plutarch.DataRepr
 
 newtype PFoo (s :: S) = PMkFoo (Term s (PDataRecord '["foo" ':= PByteString]))
   deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
+  deriving anyclass (Generic, PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields)
     via PIsDataReprInstances PFoo
 ```
 Just an extra `PDataFields` derivation compared to the sum type usage! (oh and also the ominous `UndecidableInstances`)
@@ -1476,7 +1530,21 @@ newtype Foo (s :: S) = Foo (Term s (PDataRecord '["fooField" ':= PInteger]))
 ```
 `Foo` is a Plutarch type with a single constructor with a single field, named `fooField`, of type `PInteger`. You can [implement `PIsDataRepr`](#implementing-pisdatarepr-and-friends) for it so that `PAsData Foo` is represented as a `Constr` encoded data value.
 
-`PDataSum` then, is more "free-standing". In particular, the following type-
+You can build `PDataRecord` terms using `pdcons` and `pdnil`. These are the familiar `cons` and `nil` specialized to `PDataRecord` terms.
+```hs
+pdcons :: forall label a l s. Term s (PAsData a :--> PDataRecord l :--> PDataRecord ((label ':= a) ': l))
+
+pdnil :: Term s (PDataRecord '[])
+```
+To add an `a` to the `PDataRecord` term, you must have a `PAsData a`. The other type variable of interest, is `label`. This is just the name of the field you're adding. You can either use type application to specify the field, or use a type annotation, or let GHC match up the types.
+
+Here's how you'd build a `PDataRecord` with two integer fields, one is named `foo`, the other is named `bar`-
+```hs
+test ::
+test = pdcons @"foo" @PInteger # 7 #$ pdcons @"bar" @PInteger # 42 # pnil
+```
+
+`PDataSum` on the other hand, is more "free-standing". In particular, the following type-
 ```hs
 PDataSum
   [ '[ "_0" ':= PInteger
@@ -1486,7 +1554,7 @@ PDataSum
      ]
   ]
 ```
-represents a sum type with 2 unnamed constructors. The first constructor has 2 fields- `_0`, and `_1`, with types `PInteger` and `PByteString` respectively. The second constructor has one field- `myField`, with type `PBool`.
+represents a sum type with 2 constructors. The first constructor has 2 fields- `_0`, and `_1`, with types `PInteger` and `PByteString` respectively. The second constructor has one field- `myField`, with type `PBool`.
 > Note: It's convention to give names like `_0`, `_1` etc. to fields that don't have a canonically meaningful name. They are merely the "0th field", "1st field" etc.
 
 ### PRecord

@@ -8,13 +8,35 @@
 
   Started by: [#226](https://github.com/Plutonomicon/plutarch/pull/226)
 
+- Add `PlutusType` generic deriving support for data encoded Plutarch types, via `PIsDataRepr` and `PIsDataReprInstances`.
+
+  All existing ledger api types now have `PlutusType` instances - not just `PMatch`.
+
+  Started by: [#250](https://github.com/Plutonomicon/plutarch/pull/250)
+
+- Add `PDataRecord` construction utilities, necessary for full usage of data encoded `PlutusType` instances.
+
+  In particular, you can build `PDataRecord`s with `pdcons` and `pdnil` - refer to the guide for more info.
+
+  `pdcons` and `pdnil` are also exported from `Plutarch.Prelude`.
+
+  Also add `PlutusType` instance for `PDataRecord`.
+
+  Module: `Plutarch.DataRepr.Internal`
+
+  Started by: [#250](https://github.com/Plutonomicon/plutarch/pull/250)
+
+- Export `PLabeledType ((:=))` from `Plutarch.Prelude`.
+
+  Added by: [#250](https://github.com/Plutonomicon/plutarch/pull/250)
+
 - Add `pconstantData` - an efficient way of building data encoded constants directly.
 
   This is semantically equivalent to `pdata . pconstant` but does not do any extra builtin function call.
 
   Module: `Plutarch.Builtin`
 
-  Added by: [#242](https://github.com/Plutonomicon/plutarch/pull/242)
+  Added by: [#251](https://github.com/Plutonomicon/plutarch/pull/251)
 
 # 1.1.0
 

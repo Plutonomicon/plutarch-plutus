@@ -9,7 +9,7 @@ module Plutarch.Api.V1.Tx (
 ) where
 
 import qualified GHC.Generics as GHC
-import Generics.SOP (Generic)
+import Generics.SOP (Generic, I (I))
 
 import qualified Plutus.V1.Ledger.Api as Plutus
 
@@ -21,7 +21,6 @@ import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
   PIsDataReprInstances (PIsDataReprInstances),
-  PLabeledType ((:=)),
  )
 import Plutarch.Lift (
   PLifted,
@@ -35,7 +34,7 @@ newtype PTxId (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields)
     via PIsDataReprInstances PTxId
 
 instance PUnsafeLiftDecl PTxId where type PLifted PTxId = Plutus.TxId
@@ -55,7 +54,7 @@ newtype PTxOutRef (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields)
     via PIsDataReprInstances PTxOutRef
 
 instance PUnsafeLiftDecl PTxOutRef where type PLifted PTxOutRef = Plutus.TxOutRef
@@ -75,7 +74,7 @@ newtype PTxInInfo (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields)
     via PIsDataReprInstances PTxInInfo
 
 instance PUnsafeLiftDecl PTxInInfo where type PLifted PTxInInfo = Plutus.TxInInfo
@@ -96,7 +95,7 @@ newtype PTxOut (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields)
     via (PIsDataReprInstances PTxOut)
 
 instance PUnsafeLiftDecl PTxOut where type PLifted PTxOut = Plutus.TxOut
