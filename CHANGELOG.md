@@ -16,9 +16,9 @@
 
 - Add `PDataRecord` construction utilities, necessary for full usage of data encoded `PlutusType` instances.
 
-  In particular, you can build `PDataRecord`s with `pdcon` and `pdnil` - refer to the guide for more info.
+  In particular, you can build `PDataRecord`s with `pdcons` and `pdnil` - refer to the guide for more info.
 
-  `pdcon` and `pdnil` are also exported from `Plutarch.Prelude`.
+  `pdcons` and `pdnil` are also exported from `Plutarch.Prelude`.
 
   Also add `PlutusType` instance for `PDataRecord`.
 
