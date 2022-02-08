@@ -15,15 +15,15 @@ module Plutarch.Test (
   goldens,
 ) where
 
+import qualified Data.Aeson.Text as Aeson
 import Data.ByteString (ByteString)
 import qualified Data.Text as T
 import Data.Text.Encoding (encodeUtf8)
+import qualified Data.Text.Lazy as TL
 import System.FilePath
 import Test.Syd (Spec, describe, getTestDescriptionPath, it, pureGoldenByteStringFile)
 import Test.Tasty.HUnit
 
-import qualified Data.Aeson.Text as Aeson
-import qualified Data.Text.Lazy as TL
 import Plutarch
 import Plutarch.Benchmark
 import Plutarch.Bool
