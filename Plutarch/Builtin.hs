@@ -13,6 +13,7 @@ module Plutarch.Builtin (
   pasMap,
   pasList,
   pasInt,
+  pconstantData,
   pasByteStr,
   PBuiltinPair,
   PBuiltinList (..),
@@ -64,7 +65,8 @@ import Plutarch.Lift (
 import Plutarch.List (PListLike (..), plistEquals)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeFrom)
 import qualified PlutusCore as PLC
-import PlutusTx (Data)
+import PlutusTx (Data, ToData)
+import qualified PlutusTx
 
 -- | Plutus 'BuiltinPair'
 data PBuiltinPair (a :: PType) (b :: PType) (s :: S)
@@ -256,6 +258,7 @@ instance PIsData PBool where
       nil :: Term s (PBuiltinList PData)
       nil = pnil
 
+-- This instance is kind of useless. There's no safe way to use 'pdata'.
 instance PIsData (PBuiltinPair PInteger (PBuiltinList PData)) where
   pfromData x = pasConstr # pforgetData x
   pdata x' = plet x' $ \x -> punsafeBuiltin PLC.ConstrData # (pfstBuiltin # x) #$ psndBuiltin # x
@@ -275,3 +278,10 @@ pinnerData = punsafeCoerce
 
 pouterData :: Term s (PAsData (PInner a b)) -> Term s (PAsData a)
 pouterData = punsafeCoerce
+
+{- | Create a Plutarch-level 'PAsData' constant, from a Haskell value.
+Example:
+> pconstantData @PInteger 42
+-}
+pconstantData :: forall p h s. (ToData h, PLifted p ~ h, PConstanted h ~ p) => h -> Term s (PAsData p)
+pconstantData x = punsafeCoerce $ pconstant $ PlutusTx.toData x

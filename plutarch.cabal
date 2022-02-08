@@ -158,6 +158,7 @@ test-suite examples
     Examples.Api
     Examples.Field
     Examples.LetRec
+    Examples.Lift
     Examples.List
     Examples.PIsData
     Examples.PlutusType
