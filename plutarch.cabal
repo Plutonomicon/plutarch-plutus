@@ -79,7 +79,6 @@ library
   exposed-modules:
     Plutarch
     Plutarch.Api.V1
-    Plutarch.Api.V1.Ada
     Plutarch.Api.V1.Address
     Plutarch.Api.V1.AssocMap
     Plutarch.Api.V1.Contexts

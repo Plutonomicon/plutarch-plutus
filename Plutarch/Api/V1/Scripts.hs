@@ -4,8 +4,6 @@
 module Plutarch.Api.V1.Scripts (
   PDatum (PDatum),
   PDatumHash (PDatumHash),
-  PScriptHash (PScriptHash),
-  PMintingPolicyHash (PMintingPolicyHash),
   PRedeemer (PRedeemer),
   PRedeemerHash (PRedeemerHash),
   PStakeValidatorHash (PStakeValidatorHash),
@@ -13,7 +11,6 @@ module Plutarch.Api.V1.Scripts (
 ) where
 
 import qualified Plutus.V1.Ledger.Api as Plutus
-import qualified Plutus.V1.Ledger.Scripts as PlutusScript
 import qualified PlutusTx.Builtins.Internal as PT
 
 import Plutarch.Lift (
@@ -67,21 +64,3 @@ deriving via
   (DerivePConstantViaNewtype Plutus.ValidatorHash PValidatorHash PByteString)
   instance
     (PConstant Plutus.ValidatorHash)
-
-newtype PScriptHash (s :: S) = PScriptHash (Term s PByteString)
-  deriving (PlutusType, PIsData, PEq, POrd) via (DerivePNewtype PScriptHash PByteString)
-
-instance PUnsafeLiftDecl PScriptHash where type PLifted PScriptHash = PlutusScript.ScriptHash
-deriving via
-  (DerivePConstantViaNewtype PlutusScript.ScriptHash PScriptHash PByteString)
-  instance
-    (PConstant PlutusScript.ScriptHash)
-
-newtype PMintingPolicyHash (s :: S) = PMintingPolicyHash (Term s PByteString)
-  deriving (PlutusType, PIsData, PEq, POrd) via (DerivePNewtype PMintingPolicyHash PByteString)
-
-instance PUnsafeLiftDecl PMintingPolicyHash where type PLifted PMintingPolicyHash = PlutusScript.MintingPolicyHash
-deriving via
-  (DerivePConstantViaNewtype PlutusScript.MintingPolicyHash PMintingPolicyHash PByteString)
-  instance
-    (PConstant PlutusScript.MintingPolicyHash)

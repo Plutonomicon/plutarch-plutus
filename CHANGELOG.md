@@ -36,19 +36,6 @@
 
   Module: `Plutarch.Builtin`
 
-- Add more of the ledger api types. The following types have been added:-
-
-  * `PAda`
-  * `PLedgerBytes`
-  * `PScriptHash`
-  * `PMintingPolicyHash`
-  * `PSlot`
-  * `PSlotRange`
-  * `PDiffMilliSeconds`
-  * `PAssetClass`
-
-  Added by: [#255](https://github.com/Plutonomicon/plutarch/pull/255)
-
 - Add `PTuple` construction and related utilities.
 
   Module: `Plutarch.Api.V1.Tuple`

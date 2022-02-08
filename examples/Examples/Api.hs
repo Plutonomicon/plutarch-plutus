@@ -1,25 +1,21 @@
 module Examples.Api (tests) where
 
 import Control.Monad.Trans.Cont (cont, runCont)
-import Data.String (fromString)
-import Data.Text.Encoding (encodeUtf8)
 import Plutarch
 import Plutarch.Api.V1 (
   PAddress (PAddress),
   PCredential,
-  PCurrencySymbol (PCurrencySymbol),
+  PCurrencySymbol,
   PMaybeData,
   PPubKeyHash,
   PScriptContext,
   PScriptPurpose (PSpending),
   PStakingCredential,
-  PTokenName (PTokenName),
   PTxInInfo,
   PTxInfo,
   PValue,
  )
-import Plutarch.Api.V1.Value (PAssetClass (PAssetClass))
-import Plutarch.Builtin (pasConstr, pforgetData, ppairDataBuiltin)
+import Plutarch.Builtin (pasConstr, pforgetData)
 
 -- import Plutarch.DataRepr (pindexDataList)
 import qualified Plutarch.Monadic as P
@@ -52,7 +48,6 @@ import Plutus.V1.Ledger.Api (
   Value,
   toData,
  )
-import Plutus.V1.Ledger.Value (AssetClass (AssetClass))
 
 import Plutarch.Prelude
 import qualified Plutus.V1.Ledger.Interval as Interval
@@ -245,19 +240,6 @@ tests =
         printTerm getFields @?= getFields_compiled
     , testCase "getFields'" $
         printTerm getFields' @?= getFields_compiled
-    , testCase "assetClass plift/pconstant" $ do
-        let currSymB = "c1"
-        let tokNameB = "foo"
-        let x = AssetClass (fromString currSymB, fromString tokNameB)
-        let pcurr :: Term s PCurrencySymbol
-            pcurr = pcon $ PCurrencySymbol $ phexByteStr currSymB
-            ptok :: Term s PTokenName
-            ptok = pcon $ PTokenName $ pconstant $ encodeUtf8 $ fromString tokNameB
-            px :: Term s PAssetClass
-            px = pcon $ PAssetClass $ ppairDataBuiltin # pdata pcurr # pdata ptok
-        plift (pconstant x) @?= x
-        printTerm (pconstant x) @?= assetClass_compiled
-        plift px @?= x
     ]
 
 ctx_compiled :: String
@@ -265,6 +247,3 @@ ctx_compiled = "(program 1.0.0 #d8799fd8799f9fd8799fd8799fd8799f41a0ff00ffd8799f
 
 getFields_compiled :: String
 getFields_compiled = "(program 1.0.0 (\\i0 -> force (force sndPair) (unConstrData i1)))"
-
-assetClass_compiled :: String
-assetClass_compiled = "(program 1.0.0 (#41c1, #43666f6f))"
