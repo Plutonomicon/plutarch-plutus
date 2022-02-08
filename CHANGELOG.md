@@ -36,6 +36,8 @@
 
   Module: `Plutarch.Builtin`
 
+  Added by: [#251](https://github.com/Plutonomicon/plutarch/pull/251)
+
 - Add `PTuple` construction and related utilities.
 
   Module: `Plutarch.Api.V1.Tuple`
