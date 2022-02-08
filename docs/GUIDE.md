@@ -688,7 +688,7 @@ just x = \f _ -> f x
 nothing :: Maybe a
 nothing = \_ n -> n
 
-foo :: Maybe a ->
+foo :: Maybe Integer -> Integer
 foo mb = mb (\x -> x + 42) 0
 ```
 How does that work? Recall that `mb` is really just a function. Here's what the application of `f` would work like-
