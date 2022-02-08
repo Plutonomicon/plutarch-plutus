@@ -58,7 +58,6 @@ import Generics.SOP (
 import Plutarch (
   Dig,
   PInner,
-  PMatch,
   PType,
   PlutusType,
   S,
@@ -276,8 +275,7 @@ pmatchDataSum d handlers =
 -}
 newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
 
--- Q: Why are these superclass constraints here?
-class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
+class (PlutusType a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PLabeledType]]
   type PIsDataReprRepr a = PDataRecordFields2 (Code (a 'SI))
 
