@@ -51,14 +51,13 @@ equal x y = do
 passert :: forall (a :: PType). ClosedTerm a -> Assertion
 passert p = p #@?= pcon PTrue
 
--- TODO: remove the empty string hack
 golden :: ClosedTerm a -> Spec
-golden = golden' ""
+golden = golden' Nothing
 
 -- | Make golden tests for the given Plutarch program.
-golden' :: forall a. String -> ClosedTerm a -> Spec
-golden' k p =
-  goldens' k [("0", popaque p)]
+golden' :: forall a. Maybe String -> ClosedTerm a -> Spec
+golden' mk p =
+  goldens' mk [("0", popaque p)]
 
 {- | Like `golden` but for multiple programs
 
@@ -66,17 +65,17 @@ golden' k p =
   keyword with a space.
 -}
 goldens :: [(String, ClosedTerm a)] -> Spec
-goldens = goldens' ""
+goldens = goldens' Nothing
 
-goldens' :: String -> [(String, ClosedTerm a)] -> Spec
-goldens' k ps = do
+goldens' :: Maybe String -> [(String, ClosedTerm a)] -> Spec
+goldens' mk ps = do
   testAncestors <- fmap (drop 1 . reverse) $ getTestDescriptionPath
   let name = T.unpack $ T.intercalate "." testAncestors
-      goldenKey = if null k then "golden" else k <> ".golden"
+      goldenKey = maybe "golden" (<> ".golden") mk
   describe goldenKey $ do
-    let k' = if null k then "" else "." <> k
-        nUplc = name <> k' <> ".uplc.golden"
-        nBench = name <> k' <> ".bench.golden"
+    let k = maybe "" ("." <>) mk
+        nUplc = name <> k <> ".uplc.golden"
+        nBench = name <> k <> ".bench.golden"
     -- Golden test for UPLC
     it "uplc" $
       pureGoldenByteStringFile ("goldens" </> nUplc) $
