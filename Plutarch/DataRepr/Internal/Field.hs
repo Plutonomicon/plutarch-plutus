@@ -7,6 +7,9 @@ module Plutarch.DataRepr.Internal.Field (
   pletFields,
   pfield,
 
+  -- * Utils that automatically pfromData
+  pfdfield,
+
   -- * BindFields class mechanism
   BindFields (..),
   type BoundTerms,
@@ -216,3 +219,15 @@ pfield ::
 pfield =
   plam $ \t ->
     pindexDataRecord (Proxy @n) $ ptoFields @p t
+
+pfdfield :: 
+  forall name p s a as n. 
+  ( PDataFields p 
+  , as ~ PFields p 
+  , n ~ (PLabelIndex name as)
+  , KnownNat n 
+  , a ~ (PUnLabel (IndexList n as))
+  , PIsData a
+  ) => 
+  Term s p -> Term s a
+pfdfield t = pfromData $ pfield @name # t
