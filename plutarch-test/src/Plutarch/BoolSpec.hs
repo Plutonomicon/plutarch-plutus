@@ -1,42 +1,33 @@
-module Plutarch.BoolSpec (tests) where
+module Plutarch.BoolSpec (spec) where
 
-import Test.Tasty
-import Test.Tasty.HUnit
+import Test.Syd
 
 import Plutarch
 import Plutarch.Prelude
 import Plutarch.Test
 
 -- TODO: Finish boolean tests
-tests :: TestTree
-tests =
-  testGroup "bool" $
-    [ testGroup "pnot" $
-        mconcat
-          [ golden "pnot" pnot
-          , golden "pnot.app" (pnot #$ pcon PTrue)
-          ,
-            [ testCase "pnot.true" $ (pnot #$ pcon PTrue) #@?= pcon PFalse
-            , testCase "pnot.false" $ (pnot #$ pcon PFalse) #@?= pcon PTrue
-            ]
-          ]
-    , testGroup
-        "lazy"
-        [ testGroup "pand" $
-            mconcat
-              [ goldens
-                  "lazy.pand"
-                  [ ("tf", pcon PTrue #&& pcon PFalse)
-                  , ("ft", pcon PFalse #&& pcon PTrue)
-                  , ("tt", pcon PTrue #&& pcon PTrue)
-                  , ("ff", pcon PFalse #&& pcon PFalse)
-                  ]
-              ,
-                [ testCase "tf" $ (pcon PTrue #&& pcon PFalse) #@?= pcon PFalse
-                , testCase "ft" $ (pcon PFalse #&& pcon PTrue) #@?= pcon PFalse
-                , testCase "tt" $ (pcon PTrue #&& pcon PTrue) #@?= pcon PTrue
-                , testCase "ff" $ (pcon PFalse #&& pcon PFalse) #@?= pcon PFalse
-                ]
-              ]
+spec :: Spec
+spec = do
+  describe "bool" $ do
+    describe "pnot" $ do
+      goldens
+        [ ("lam", popaque pnot)
+        , ("app", popaque $ pnot #$ pcon PTrue)
         ]
-    ]
+      it "true" $
+        (pnot #$ pcon PTrue) #@?= pcon PFalse
+      it "false" $
+        (pnot #$ pcon PFalse) #@?= pcon PTrue
+    describe "lazy" $ do
+      describe "pand" $ do
+        goldens
+          [ ("tf", popaque $ pcon PTrue #&& pcon PFalse)
+          , ("ft", popaque $ pcon PFalse #&& pcon PTrue)
+          , ("tt", popaque $ pcon PTrue #&& pcon PTrue)
+          , ("ff", popaque $ pcon PFalse #&& pcon PFalse)
+          ]
+        it "tf" $ (pcon PTrue #&& pcon PFalse) #@?= pcon PFalse
+        it "ft" $ (pcon PFalse #&& pcon PTrue) #@?= pcon PFalse
+        it "tt" $ (pcon PTrue #&& pcon PTrue) #@?= pcon PTrue
+        it "ff" $ (pcon PFalse #&& pcon PFalse) #@?= pcon PFalse

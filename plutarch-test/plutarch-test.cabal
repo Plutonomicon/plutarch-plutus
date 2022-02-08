@@ -76,13 +76,17 @@ executable plutarch-test
     QualifiedDo
 
   other-modules:
+    Spec
     Plutarch.BoolSpec
+    Plutarch.IntegerSpec
     Plutarch.Test
 
   build-depends:
-    , aeson
+    , aeson >= 2.0
     , base
     , bytestring
+    , sydtest
+    , sydtest-discover
     , filepath
     , generics-sop
     , plutarch
@@ -96,3 +100,6 @@ executable plutarch-test
     , tasty-hunit
     , text
     , transformers
+
+  ghc-options:
+    -threaded -rtsopts -with-rtsopts=-N
