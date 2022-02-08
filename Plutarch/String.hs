@@ -6,7 +6,7 @@ module Plutarch.String (PString, pfromText, pencodeUtf8, pdecodeUtf8) where
 import Data.String (IsString, fromString)
 import Data.Text (Text)
 import qualified Data.Text as Txt
-import Plutarch.Bool (PEq, (#==))
+import Plutarch.Bool (PEq, fromBuiltinBool, (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Internal.Other (
   Term,
@@ -39,7 +39,7 @@ instance IsString (Term s PString) where
   fromString = pconstant . Txt.pack
 
 instance PEq PString where
-  x #== y = punsafeBuiltin PLC.EqualsString # x # y
+  x #== y = fromBuiltinBool # (punsafeBuiltin PLC.EqualsString # x # y)
 
 instance Semigroup (Term s PString) where
   x <> y = punsafeBuiltin PLC.AppendString # x # y

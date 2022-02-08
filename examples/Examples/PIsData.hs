@@ -8,7 +8,6 @@ import Test.Tasty.HUnit
 import Utils
 
 import Plutarch
-import Plutarch.Bool
 import Plutarch.Builtin
 import Plutarch.Integer
 import Plutarch.Lift
@@ -44,6 +43,7 @@ testPFromDataCompat x =
   plift (pfromData $ constPAsData @p x)
     @?= x
 
+{-
 testPDataCompat ::
   forall p.
   ( PLift p
@@ -57,6 +57,7 @@ testPDataCompat ::
 testPDataCompat x =
   PlutusTx.fromData @(PLifted p) (plift $ pforgetData $ pdata $ pconstant @p x)
     @?= Just x
+-}
 
 constPAsData :: forall p s. (PlutusTx.ToData (PLifted p)) => PLifted p -> Term s (PAsData p)
 constPAsData x = punsafeCoerce $ pconstant @PData $ PlutusTx.toData x
@@ -68,8 +69,9 @@ tests :: HasTester => TestTree
 tests =
   testGroup
     "Builtin PIsData instances"
-    [pBool, pInteger]
+    [pInteger]
 
+{-
 pBool :: HasTester => TestTree
 pBool =
   testGroup
@@ -87,6 +89,7 @@ pBool =
     , testCase "PlutusTx.fromData (pdata False) ≡ Just False" $
         testPDataCompat @PBool False
     ]
+-}
 
 pInteger :: HasTester => TestTree
 pInteger =

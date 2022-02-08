@@ -65,7 +65,6 @@ import Plutarch (
  )
 import Plutarch.Bool (PBool (PFalse, PTrue), PEq, pif, (#&&), (#==), (#||))
 import Plutarch.Integer (PInteger)
-import Plutarch.Lift (pconstant)
 import Plutarch.Pair (PPair (PPair))
 
 import Data.Kind
@@ -112,7 +111,7 @@ class PListLike (list :: (PType) -> PType) where
 
   -- | / O(1) /. Check if a list is empty
   pnull :: PElemConstraint list a => Term s (list a :--> PBool)
-  pnull = phoistAcyclic $ plam $ pelimList (\_ _ -> pconstant False) $ pconstant True
+  pnull = phoistAcyclic $ plam $ pelimList (\_ _ -> pcon PFalse) $ pcon PTrue
 
 instance PListLike PList where
   type PElemConstraint PList _ = ()
@@ -243,13 +242,13 @@ pfoldrLazy = phoistAcyclic $
 pall :: PIsListLike list a => Term s ((a :--> PBool) :--> list a :--> PBool)
 pall = phoistAcyclic $
   plam $ \predicate ->
-    precList (\self x xs -> predicate # x #&& self # xs) (const $ pconstant True)
+    precList (\self x xs -> predicate # x #&& self # xs) (const $ pcon PTrue)
 
 -- | / O(n) /. Check that predicate holds for any element in a list.
 pany :: PIsListLike list a => Term s ((a :--> PBool) :--> list a :--> PBool)
 pany = phoistAcyclic $
   plam $ \predicate ->
-    precList (\self x xs -> predicate # x #|| self # xs) (const $ pconstant False)
+    precList (\self x xs -> predicate # x #|| self # xs) (const $ pcon PFalse)
 
 -- | / O(n) /. Map a function over a list of elements
 pmap :: (PListLike list, PElemConstraint list a, PElemConstraint list b) => Term s ((a :--> b) :--> list a :--> list b)
@@ -359,7 +358,7 @@ plistEquals =
     pfix #$ plam $ \self xlist ylist ->
       pelimList
         ( \x xs ->
-            pelimList (\y ys -> pif (x #== y) (self # xs # ys) (pconstant False)) (pconstant False) ylist
+            pelimList (\y ys -> pif (x #== y) (self # xs # ys) (pcon PFalse)) (pcon PFalse) ylist
         )
-        (pelimList (\_ _ -> pconstant False) (pconstant True) ylist)
+        (pelimList (\_ _ -> pcon PFalse) (pcon PTrue) ylist)
         xlist

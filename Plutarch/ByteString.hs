@@ -16,7 +16,7 @@ import qualified Data.ByteString as BS
 import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Stack (HasCallStack)
-import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
+import Plutarch.Bool (PEq, POrd, fromBuiltinBool, (#<), (#<=), (#==))
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal.Other (
   Term,
@@ -40,11 +40,11 @@ instance PUnsafeLiftDecl PByteString where type PLifted PByteString = ByteString
 deriving via (DerivePConstantDirect ByteString PByteString) instance (PConstant ByteString)
 
 instance PEq PByteString where
-  x #== y = punsafeBuiltin PLC.EqualsByteString # x # y
+  x #== y = fromBuiltinBool # (punsafeBuiltin PLC.EqualsByteString # x # y)
 
 instance POrd PByteString where
-  x #<= y = punsafeBuiltin PLC.LessThanEqualsByteString # x # y
-  x #< y = punsafeBuiltin PLC.LessThanByteString # x # y
+  x #<= y = fromBuiltinBool # (punsafeBuiltin PLC.LessThanEqualsByteString # x # y)
+  x #< y = fromBuiltinBool # (punsafeBuiltin PLC.LessThanByteString # x # y)
 
 instance Semigroup (Term s PByteString) where
   x <> y = punsafeBuiltin PLC.AppendByteString # x # y

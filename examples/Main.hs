@@ -250,19 +250,9 @@ plutarchTests =
         ]
     , testGroup
         "Lifting of constants"
-        [ testCase "plift on primitive types" $ do
-            plift (pcon PTrue) @?= True
-            plift (pcon PFalse) @?= False
-        , testCase "pconstant on primitive types" $ do
-            plift (pconstant @PBool False) @?= False
-            plift (pconstant @PBool True) @?= True
-        , testCase "plift on list and pair" $ do
+        [ testCase "plift on list and pair" $ do
             plift (pconstant ([1, 2, 3] :: [Integer])) @?= [1, 2, 3]
             plift (pconstant ("IOHK" :: Text, 42 :: Integer)) @?= ("IOHK", 42)
-        , testCase "plift on data" $ do
-            let d :: PlutusTx.Data
-                d = PlutusTx.toData @(Either Bool Bool) $ Right False
-            plift (pconstant d) @?= d
         , testCase "plift on nested containers" $ do
             -- List of pairs
             let v1 = [("IOHK", 42), ("Plutus", 31)] :: [(Text, Integer)]

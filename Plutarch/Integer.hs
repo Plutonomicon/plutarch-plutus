@@ -3,7 +3,7 @@
 
 module Plutarch.Integer (PInteger, PIntegral (..)) where
 
-import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
+import Plutarch.Bool (PEq, POrd, fromBuiltinBool, pif, (#<), (#<=), (#==))
 import Plutarch.Internal.Other (
   DerivePNewtype,
   Term,
@@ -43,11 +43,11 @@ instance PIntegral PInteger where
   prem = punsafeBuiltin PLC.RemainderInteger
 
 instance PEq PInteger where
-  x #== y = punsafeBuiltin PLC.EqualsInteger # x # y
+  x #== y = fromBuiltinBool # (punsafeBuiltin PLC.EqualsInteger # x # y)
 
 instance POrd PInteger where
-  x #<= y = punsafeBuiltin PLC.LessThanEqualsInteger # x # y
-  x #< y = punsafeBuiltin PLC.LessThanInteger # x # y
+  x #<= y = fromBuiltinBool # (punsafeBuiltin PLC.LessThanEqualsInteger # x # y)
+  x #< y = fromBuiltinBool # (punsafeBuiltin PLC.LessThanInteger # x # y)
 
 instance Num (Term s PInteger) where
   x + y = punsafeBuiltin PLC.AddInteger # x # y

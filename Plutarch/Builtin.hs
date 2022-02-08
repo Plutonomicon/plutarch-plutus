@@ -46,7 +46,7 @@ import Plutarch (
   (#$),
   type (:-->),
  )
-import Plutarch.Bool (PBool (..), PEq, pif', (#==))
+import Plutarch.Bool (PBool (..), PEq, fromBuiltinBool, pif', (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (
@@ -161,7 +161,7 @@ instance PUnsafeLiftDecl PData where type PLifted PData = Data
 deriving via (DerivePConstantDirect Data PData) instance (PConstant Data)
 
 instance PEq PData where
-  x #== y = punsafeBuiltin PLC.EqualsData # x # y
+  x #== y = fromBuiltinBool # (punsafeBuiltin PLC.EqualsData # x # y)
 
 {- |
   Map type used for Plutus `Data`'s Map constructor.

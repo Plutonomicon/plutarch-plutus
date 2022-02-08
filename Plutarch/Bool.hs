@@ -6,6 +6,7 @@ module Plutarch.Bool (
   PBool (..),
   PEq (..),
   POrd (..),
+  fromBuiltinBool,
   pif,
   pif',
   pnot,
@@ -33,27 +34,18 @@ import Plutarch.Internal.Other (
   (#),
   type (:-->),
  )
-import Plutarch.Lift (
-  DerivePConstantDirect (DerivePConstantDirect),
-  PConstant,
-  PLifted,
-  PUnsafeLiftDecl,
-  pconstant,
- )
 import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinBool'
 data PBool (s :: S) = PTrue | PFalse
 
-instance PUnsafeLiftDecl PBool where type PLifted PBool = Bool
-deriving via (DerivePConstantDirect Bool PBool) instance (PConstant Bool)
-
 instance PlutusType PBool where
-  type PInner PBool _ = PBool
-  pcon' PTrue = pconstant True
-  pcon' PFalse = pconstant False
-  pmatch' b f = pforce $ pif' # b # pdelay (f PTrue) # pdelay (f PFalse)
+  type PInner PBool a = PDelayed a :--> PDelayed a :--> PDelayed a
+  pcon' PTrue = plam const
+  pcon' PFalse = plam (flip const)
+  pmatch' :: Term s (PDelayed a :--> PDelayed a :--> PDelayed a) -> (PBool s -> Term s a) -> Term s a
+  pmatch' b f = pforce $ b # pdelay (f PTrue) # pdelay (f PFalse)
 
 class PEq t where
   (#==) :: Term s t -> Term s t -> Term s PBool
@@ -74,11 +66,14 @@ instance POrd b => POrd (DerivePNewtype a b) where
   x #<= y = pto x #<= pto y
   x #< y = pto x #< pto y
 
+fromBuiltinBool :: Term s (PBool :--> PBool)
+fromBuiltinBool = phoistAcyclic $ pforce $ punsafeBuiltin PLC.IfThenElse
+
 {- | Strict version of 'pif'.
  Emits slightly less code.
 -}
 pif' :: Term s (PBool :--> a :--> a :--> a)
-pif' = phoistAcyclic $ pforce $ punsafeBuiltin PLC.IfThenElse
+pif' = plam pif
 
 -- | Lazy if-then-else.
 pif :: Term s PBool -> Term s a -> Term s a -> Term s a
