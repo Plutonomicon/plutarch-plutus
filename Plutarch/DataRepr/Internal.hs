@@ -70,6 +70,7 @@ import Plutarch (
   plet,
   pmatch,
   pmatch',
+  pto,
   (#),
   (#$),
   type (:-->),
@@ -113,7 +114,7 @@ data PDataRecord (as :: [PLabeledType]) (s :: S) where
 
 instance PlutusType (PDataRecord ((name ':= x) ': xs)) where
   type PInner (PDataRecord ((name ':= x) ': xs)) _ = PBuiltinList PData
-  pcon' (PDCons x xs) = punsafeCoerce result
+  pcon' (PDCons x xs) = pto result
     where
       result :: Term _ (PDataRecord ((name ':= x) ': xs))
       result = pdcons # x # xs
