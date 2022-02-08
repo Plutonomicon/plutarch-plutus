@@ -58,6 +58,7 @@ import Generics.SOP (
 import Plutarch (
   Dig,
   PInner,
+  PMatch,
   PType,
   PlutusType,
   S,
@@ -272,7 +273,8 @@ pmatchDataSum d handlers =
 -}
 newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
 
-class (PlutusType a, PIsData a) => PIsDataRepr (a :: PType) where
+-- TODO: This 'PMatch' constraint needs to be changed to 'PlutusType (breaking change).
+class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PLabeledType]]
   type PIsDataReprRepr a = PDataRecordFields2 (Code (a 'SI))
 
