@@ -67,7 +67,6 @@ import Plutarch (
   phoistAcyclic,
   plam,
   plet,
-  pmatch,
   pmatch',
   pto,
   (#),
@@ -77,7 +76,7 @@ import Plutarch (
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Builtin (
   PAsData,
-  PBuiltinList (PCons, PNil),
+  PBuiltinList,
   PBuiltinPair,
   PData,
   PIsData,
@@ -94,7 +93,7 @@ import Plutarch.Integer (PInteger)
 import Plutarch.Internal (S (SI), punsafeBuiltin)
 import Plutarch.Internal.TypeFamily (ToPType2)
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstant, pconstantFromRepr, pconstantToRepr)
-import Plutarch.List (PListLike (pnil), pcons, pdrop, ptryIndex)
+import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont)
 import Plutarch.Unsafe (punsafeCoerce)
 import qualified Plutus.V1.Ledger.Api as Ledger
@@ -117,14 +116,12 @@ instance PlutusType (PDataRecord ((name ':= x) ': xs)) where
     where
       result :: Term _ (PDataRecord ((name ':= x) ': xs))
       result = pdcons # x # xs
-  pmatch' x f = pmatch x $ \case
-    PCons x' xs' ->
-      let x :: Term _ (PAsData x)
-          x = punsafeCoerce x'
-          xs :: Term _ (PDataRecord xs)
-          xs = punsafeCoerce xs'
-       in f $ PDCons x xs
-    PNil -> error "PDataRecord:pmatch':PNil:absurd"
+  pmatch' l' f = plet l' $ \l ->
+    let x :: Term _ (PAsData x)
+        x = punsafeCoerce $ phead # l
+        xs :: Term _ (PDataRecord xs)
+        xs = punsafeCoerce $ ptail # l
+     in f $ PDCons x xs
 
 instance PlutusType (PDataRecord '[]) where
   type PInner (PDataRecord '[]) _ = PBuiltinList PData
