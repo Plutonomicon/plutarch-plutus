@@ -8,8 +8,10 @@ module Plutarch.DataRepr.Internal (
   punDataSum,
   ptryIndexDataSum,
   pmatchDataSum,
+  pdcons,
+  pdnil,
   DataReprHandlers (..),
-  PDataRecord,
+  PDataRecord (..),
   PLabeledType (..),
   type PLabelIndex,
   type PUnLabel,
@@ -66,6 +68,7 @@ import Plutarch (
   phoistAcyclic,
   plam,
   plet,
+  pmatch,
   pmatch',
   (#),
   (#$),
@@ -74,7 +77,7 @@ import Plutarch (
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Builtin (
   PAsData,
-  PBuiltinList,
+  PBuiltinList (PCons, PNil),
   PBuiltinPair,
   PData,
   PIsData,
@@ -91,7 +94,7 @@ import Plutarch.Integer (PInteger)
 import Plutarch.Internal (S (SI), punsafeBuiltin)
 import Plutarch.Internal.TypeFamily (ToPType2)
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstant, pconstantFromRepr, pconstantToRepr)
-import Plutarch.List (pdrop, ptryIndex)
+import Plutarch.List (PListLike (pnil), pcons, pdrop, ptryIndex)
 import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont)
 import Plutarch.Unsafe (punsafeCoerce)
 import qualified Plutus.V1.Ledger.Api as Ledger
@@ -100,7 +103,51 @@ import qualified PlutusCore as PLC
 {- | A "record" of `exists a. PAsData a`. The underlying representation is
  `PBuiltinList PData`.
 -}
-data PDataRecord (as :: [PLabeledType]) (s :: S)
+data PDataRecord (as :: [PLabeledType]) (s :: S) where
+  PDCons ::
+    forall name x xs s.
+    Term s (PAsData x) ->
+    (Term s (PDataRecord xs)) ->
+    PDataRecord ((name ':= x) ': xs) s
+  PDNil :: PDataRecord '[] s
+
+instance PlutusType (PDataRecord ((name ':= x) ': xs)) where
+  type PInner (PDataRecord ((name ':= x) ': xs)) _ = PBuiltinList PData
+  pcon' (PDCons x xs) = punsafeCoerce result
+    where
+      result :: Term _ (PDataRecord ((name ':= x) ': xs))
+      result = pdcons # x # xs
+  pmatch' x f = pmatch x $ \case
+    PCons x' xs' ->
+      let x :: Term _ (PAsData x)
+          x = punsafeCoerce x'
+          xs :: Term _ (PDataRecord xs)
+          xs = punsafeCoerce xs'
+       in f $ PDCons x xs
+    PNil -> error "PDataRecord:pmatch':PNil:absurd"
+
+instance PlutusType (PDataRecord '[]) where
+  type PInner (PDataRecord '[]) _ = PBuiltinList PData
+  pcon' PDNil = pnil
+  pmatch' _ f = f PDNil
+
+{- | Cons a field to a data record.
+
+You can specify the label to associate with the field using type applications-
+
+@
+
+foo :: Term s (PDataRecord '[ "fooField" ':= PByteString ])
+foo = pdcons @"fooField" # pdata (phexByteStr "ab") # pdnil
+
+@
+-}
+pdcons :: forall label a l s. Term s (PAsData a :--> PDataRecord l :--> PDataRecord ((label ':= a) ': l))
+pdcons = punsafeCoerce $ pcons @PBuiltinList @PData
+
+-- | An empty 'PDataRecord'.
+pdnil :: Term s (PDataRecord '[])
+pdnil = punsafeCoerce $ pnil @PBuiltinList @PData
 
 data PLabeledType = Symbol := PType
 

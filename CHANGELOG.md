@@ -20,7 +20,9 @@
 
   `pdcon` and `pdnil` are also exported from `Plutarch.Prelude`.
 
-  Module: `Plutarch.DataRepr`
+  Also add `PlutusType` instance for `PDataRecord`.
+
+  Module: `Plutarch.DataRepr.Internal`
 
   Started by: [#250](https://github.com/Plutonomicon/plutarch/pull/250)
 
