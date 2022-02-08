@@ -3,7 +3,8 @@
 
 module Plutarch.Integer (PInteger, PIntegral (..)) where
 
-import Plutarch (
+import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
+import Plutarch.Internal.Other (
   DerivePNewtype,
   Term,
   phoistAcyclic,
@@ -13,7 +14,6 @@ import Plutarch (
   (#),
   type (:-->),
  )
-import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstant,

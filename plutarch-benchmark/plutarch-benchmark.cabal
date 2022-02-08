@@ -103,6 +103,7 @@ benchmark benchmark
     , plutarch-benchmark
     , plutus-ledger-api
     , bytestring
+    , transformers
 
 executable benchmark-diff
   import:         c

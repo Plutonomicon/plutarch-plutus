@@ -14,7 +14,7 @@ module Plutarch.Api.V1.DCert (
 ) where
 
 import qualified GHC.Generics as GHC
-import Generics.SOP (Generic)
+import Generics.SOP (Generic, I (I))
 
 import qualified Plutus.V1.Ledger.Api as Plutus
 
@@ -23,12 +23,8 @@ import Plutarch.Api.V1.Crypto (PPubKeyHash)
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PIsDataReprInstances (PIsDataReprInstances),
-  PLabeledType ((:=)),
  )
-import Plutarch.Lift (
-  PLifted,
-  PUnsafeLiftDecl,
- )
+import Plutarch.Lift (PLifted, PUnsafeLiftDecl)
 import Plutarch.Prelude
 
 data PDCert (s :: S)
@@ -51,7 +47,7 @@ data PDCert (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PlutusType, PIsData)
     via (PIsDataReprInstances PDCert)
 
 instance PUnsafeLiftDecl PDCert where type PLifted PDCert = Plutus.DCert

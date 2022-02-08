@@ -11,6 +11,7 @@ import qualified Data.ByteString as BS
 import Data.Maybe (fromJust)
 import qualified Examples.List as List
 import Examples.Tracing (traceTests)
+import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Plutarch (POpaque, popaque, printTerm)
 import Plutarch.Api.V1 (PScriptPurpose (PMinting))
 import Plutarch.Bool (pand, por)
@@ -23,8 +24,10 @@ import qualified PlutusCore as PLC
 import qualified PlutusTx
 
 import qualified Examples.Api as Api
+import qualified Examples.ConstrData as ConstrData
 import qualified Examples.Field as Field
 import qualified Examples.LetRec as LetRec
+import qualified Examples.Lift as Lift
 import qualified Examples.PIsData as PIsData
 import qualified Examples.PlutusType as PlutusType
 import qualified Examples.Rationals as Rationals
@@ -34,7 +37,9 @@ import Utils
 import Data.Text (Text)
 
 main :: IO ()
-main = defaultMain $ testGroup "all tests" [standardTests] -- , shrinkTests ]
+main = do
+  setLocaleEncoding utf8
+  defaultMain $ testGroup "all tests" [standardTests] -- , shrinkTests ]
 
 add1 :: Term s (PInteger :--> PInteger :--> PInteger)
 add1 = plam $ \x y -> x + y + 1
@@ -90,6 +95,8 @@ tests =
     , LetRec.tests
     , PIsData.tests
     , Field.tests
+    , ConstrData.tests
+    , Lift.tests
     ]
 
 plutarchTests :: HasTester => TestTree

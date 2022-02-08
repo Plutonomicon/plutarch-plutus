@@ -7,12 +7,9 @@ import Test.Tasty.HUnit
 
 import Utils
 
-import Plutarch
-import Plutarch.Bool
-import Plutarch.Builtin
-import Plutarch.Integer
-import Plutarch.Lift
-import Plutarch.Unsafe (punsafeCoerce)
+import Plutarch.Builtin (pforgetData)
+import Plutarch.Lift (PLifted)
+import Plutarch.Prelude
 
 import qualified PlutusTx
 
@@ -41,7 +38,7 @@ testPFromDataCompat ::
   PLifted p ->
   Assertion
 testPFromDataCompat x =
-  plift (pfromData $ constPAsData @p x)
+  plift (pfromData $ pconstantData @p x)
     @?= x
 
 testPDataCompat ::
@@ -57,9 +54,6 @@ testPDataCompat ::
 testPDataCompat x =
   PlutusTx.fromData @(PLifted p) (plift $ pforgetData $ pdata $ pconstant @p x)
     @?= Just x
-
-constPAsData :: forall p s. (PlutusTx.ToData (PLifted p)) => PLifted p -> Term s (PAsData p)
-constPAsData x = punsafeCoerce $ pconstant @PData $ PlutusTx.toData x
 
 --------------------------------------------------------------------------------
 -- TODO: These shoutld probably be property tests instead...

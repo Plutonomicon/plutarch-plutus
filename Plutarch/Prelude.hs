@@ -106,6 +106,9 @@ module Plutarch.Prelude (
   PDataRecord,
   PDataSum,
   PIsDataRepr,
+  PLabeledType ((:=)),
+  pdcons,
+  pdnil,
   pfield,
   pletFields,
   hrecField,
@@ -123,12 +126,18 @@ module Plutarch.Prelude (
 
   -- * Converstion between Plutarch terms and Haskell types
   pconstant,
+  pconstantData,
   plift,
   PConstant,
   PLift,
 
   -- * Typeclass derivers.
   DerivePNewtype (DerivePNewtype),
+
+  -- * Continuation monad
+  TermCont (TermCont, runTermCont),
+  unTermCont,
+  tcont,
 ) where
 
 import Prelude ()
@@ -148,5 +157,6 @@ import Plutarch.Maybe
 import Plutarch.Pair
 import Plutarch.Rational
 import Plutarch.String
+import Plutarch.TermCont
 import Plutarch.Trace
 import Plutarch.Unit
