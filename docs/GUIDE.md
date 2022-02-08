@@ -1684,8 +1684,8 @@ Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf integer 2))))
 ## Validator that always succeeds
 ```hs
 import Plutarch.Prelude
-import Plutarch.Api.Contexts
-import Plutarch.Api.Scripts
+import Plutarch.Api.V1.Contexts
+import Plutarch.Api.V1.Scripts
 
 alwaysSucceeds :: Term s (PDatum :--> PRedeemer :--> PScriptContext :--> PUnit)
 alwaysSucceeds = plam $ \datm redm ctx -> pconstant ()
@@ -1721,10 +1721,10 @@ Left (EvaluationError [] "(CekEvaluationFailure,Nothing)")
 {-# LANGUAGE QualifiedDo #-}
 {-# LANGUAGE RecordDotSyntax #-}
 
-import Plutarh.Prelude
-import Plutarch.Api.Contexts
-import Plutarch.Api.Crypto
-import Plutarch.Api.Scripts
+import Plutarch.Prelude
+import Plutarch.Api.V1.Contexts
+import Plutarch.Api.V1.Crypto
+import Plutarch.Api.V1.Scripts
 import qualified Plutarch.Monadic as P
 
 checkSignatory :: Term s (PPubKeyHash :--> PDatum :--> PRedeemer :--> PScriptContext :--> PUnit)
