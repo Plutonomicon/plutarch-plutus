@@ -1,6 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.FFI (
+  Delayed,
   foreignExport,
   foreignImport,
   unsafeForeignExport,
@@ -37,6 +38,8 @@ import qualified UntypedPlutusCore as UPLC
 data ForallPhantom :: Type
 data PhorallPhantom :: PType
 
+data Delayed :: Type -> Type
+
 foreignExport :: PlutarchInner p PhorallPhantom ~~ PlutusTxInner t ForallPhantom => ClosedTerm p -> CompiledCode t
 foreignExport = unsafeForeignExport
 
@@ -58,6 +61,7 @@ unsafeForeignImport c = Term $ const $ TermResult (RCompiled $ UPLC.toTerm $ unS
 type family a ~~ b :: Constraint where
   ForallPhantom ~~ _ = ()
   _ ~~ ForallPhantom = ()
+  Delayed a ~~ Delayed b = a ~~ b
   a ~~ b = a ~ b
 
 type family PlutarchInner (p :: PType) (any :: PType) :: Type where
@@ -66,7 +70,7 @@ type family PlutarchInner (p :: PType) (any :: PType) :: Type where
   PlutarchInner PString _ = Text
   PlutarchInner PhorallPhantom _ = ForallPhantom
   PlutarchInner (a :--> b) x = PlutarchInner a b -> PlutarchInner b x -- hack to support Scott encodings
-  PlutarchInner (PDelayed a) x = PlutarchInner a x
+  PlutarchInner (PDelayed a) x = Delayed (PlutarchInner a x)
   PlutarchInner p x = PlutarchInner (PInner p x) x
 
 type family PlutusTxInner (t :: Type) (any :: Type) :: Type where
@@ -75,7 +79,8 @@ type family PlutusTxInner (t :: Type) (any :: Type) :: Type where
   PlutusTxInner BuiltinString _ = Text
   PlutusTxInner ForallPhantom _ = ForallPhantom
   PlutusTxInner (a -> b) x = PlutusTxInner a b -> PlutusTxInner b x -- hack to support Scott encodings
-  PlutusTxInner a x = PlutusTxInner (ScottFn (ScottList (SOP.Code a) x) x) x
+  PlutusTxInner (Delayed a) x = Delayed (PlutusTxInner a x)
+  PlutusTxInner a x = Delayed (PlutusTxInner (ScottFn (ScottList (SOP.Code a) x) x) x)
 
 {- |
   List of scott-encoded constructors of a Haskell type (represented by 'SOP.Code')
