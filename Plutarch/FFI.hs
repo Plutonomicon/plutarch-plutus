@@ -28,6 +28,7 @@ import Plutarch.Internal (
 import Plutarch.Internal.PlutusType (PlutusType (PInner))
 import Plutarch.String (PString)
 import Plutus.V1.Ledger.Scripts (Script (unScript), fromCompiledCode)
+import PlutusTx.Builtins.Internal (BuiltinBool)
 import PlutusTx.Code (CompiledCode, CompiledCodeIn (DeserializedCode))
 import PlutusTx.Prelude (BuiltinString)
 import UntypedPlutusCore (fakeNameDeBruijn)
@@ -60,7 +61,7 @@ type family a ~~ b :: Constraint where
   a ~~ b = a ~ b
 
 type family PlutarchInner (p :: PType) (any :: PType) :: Type where
-  PlutarchInner PBool _ = Bool
+  PlutarchInner PBool _ = BuiltinBool
   PlutarchInner PInteger _ = Integer
   PlutarchInner PString _ = Text
   PlutarchInner PhorallPhantom _ = ForallPhantom
@@ -69,7 +70,7 @@ type family PlutarchInner (p :: PType) (any :: PType) :: Type where
   PlutarchInner p x = PlutarchInner (PInner p x) x
 
 type family PlutusTxInner (t :: Type) (any :: Type) :: Type where
-  PlutusTxInner Bool _ = Bool
+  PlutusTxInner BuiltinBool _ = BuiltinBool
   PlutusTxInner Integer _ = Integer
   PlutusTxInner BuiltinString _ = Text
   PlutusTxInner ForallPhantom _ = ForallPhantom
