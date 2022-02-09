@@ -524,8 +524,6 @@
     {
       inherit extraSources cabalProjectLocal haskellModule tools;
 
-      nixpkgsDebug = perSystem nixpkgsFor;
-
       project = perSystem projectFor;
       project810 = perSystem projectFor810;
       flake = perSystem (system: (projectFor system).flake { });
