@@ -67,10 +67,10 @@ tests :: HasTester => TestTree
 tests =
   testGroup
     "Builtin PIsData instances"
-    [pBool, pInteger, pUnit, pPair]
+    [pboolTests, pintegerTests, punitTests, ppairTests]
 
-pBool :: HasTester => TestTree
-pBool =
+pboolTests :: HasTester => TestTree
+pboolTests =
   testGroup
     "Builtin PIsData instances: PBool"
     [ testCase "pfromData (pdata True) ≡ True" $
@@ -87,8 +87,8 @@ pBool =
         testPDataCompat @PBool False
     ]
 
-pInteger :: HasTester => TestTree
-pInteger =
+pintegerTests :: HasTester => TestTree
+pintegerTests =
   testGroup
     "PInteger"
     [ testCase "pfromData (pdata 100) ≡ 100" $
@@ -99,8 +99,8 @@ pInteger =
         testPFromDataCompat @PInteger 100
     ]
 
-pUnit :: HasTester => TestTree
-pUnit =
+punitTests :: HasTester => TestTree
+punitTests =
   testGroup
     "Builtin PIsData instances: PUnit"
     [ testCase "pfromData (pdata ()) ≡ ()" $
@@ -111,8 +111,8 @@ pUnit =
         testPDataCompat @PUnit ()
     ]
 
-pPair :: HasTester => TestTree
-pPair =
+ppairTests :: HasTester => TestTree
+ppairTests =
   testGroup
     "Builtin PIsData instances: PBuiltinPair & PTuple"
     [ testCase "pfromData (pdata (I 1, B 0x41)) ≡ (I 1, I 2)" $
