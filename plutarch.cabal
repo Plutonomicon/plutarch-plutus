@@ -88,6 +88,7 @@ library
     Plutarch.Api.V1.Maybe
     Plutarch.Api.V1.Scripts
     Plutarch.Api.V1.Time
+    Plutarch.Api.V1.Tuple
     Plutarch.Api.V1.Tx
     Plutarch.Api.V1.Value
     Plutarch.Bool

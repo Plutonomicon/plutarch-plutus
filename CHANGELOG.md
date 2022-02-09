@@ -38,6 +38,20 @@
 
   Added by: [#251](https://github.com/Plutonomicon/plutarch/pull/251)
 
+- Add `PTuple` construction and related utilities.
+
+  Module: `Plutarch.Api.V1.Tuple`
+
+  Added by: [#255](https://github.com/Plutonomicon/plutarch/pull/255)
+
+- Add `PIsData` instances for `PUnit` and `PBuiltinPair (PAsData a) (PAsData b)`.
+
+  It's helpful to mentally note that `PTuple a b`, `PAsData (PTuple a b)` and `PBuiltinPair (PAsData a) (PAsData b)` all have the exact same underlying representation. See `Plutarch.Api.V1.Tuple` for no-op conversion functions.
+
+  Module: `Plutarch.Builtin`
+
+  Added by: [#255](https://github.com/Plutonomicon/plutarch/pull/255)
+
 # 1.1.0
 
 - General repository changes.
