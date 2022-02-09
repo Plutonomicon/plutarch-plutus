@@ -3,6 +3,8 @@
 module Plutarch.FFI (
   foreignExport,
   foreignImport,
+  unsafeForeignExport,
+  unsafeForeignImport,
 ) where
 
 import Data.Kind (Constraint, Type)
@@ -35,7 +37,13 @@ data ForallPhantom :: Type
 data PhorallPhantom :: PType
 
 foreignExport :: PlutarchInner p PhorallPhantom ~~ PlutusTxInner t ForallPhantom => ClosedTerm p -> CompiledCode t
-foreignExport t = DeserializedCode program Nothing mempty
+foreignExport = unsafeForeignExport
+
+foreignImport :: PlutarchInner p PhorallPhantom ~~ PlutusTxInner t ForallPhantom => CompiledCode t -> ClosedTerm p
+foreignImport = unsafeForeignImport
+
+unsafeForeignExport :: ClosedTerm p -> CompiledCode t
+unsafeForeignExport t = DeserializedCode program Nothing mempty
   where
     program =
       UPLC.Program () (UPLC.Version () 1 0 0) $
@@ -43,8 +51,8 @@ foreignExport t = DeserializedCode program Nothing mempty
           compile' $
             asClosedRawTerm t
 
-foreignImport :: PlutarchInner p PhorallPhantom ~~ PlutusTxInner t ForallPhantom => CompiledCode t -> ClosedTerm p
-foreignImport c = Term $ const $ TermResult (RCompiled $ UPLC.toTerm $ unScript $ fromCompiledCode c) []
+unsafeForeignImport :: CompiledCode t -> ClosedTerm p
+unsafeForeignImport c = Term $ const $ TermResult (RCompiled $ UPLC.toTerm $ unScript $ fromCompiledCode c) []
 
 type family a ~~ b :: Constraint where
   ForallPhantom ~~ _ = ()
