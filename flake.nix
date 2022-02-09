@@ -489,14 +489,10 @@
             ghc = pkgs.haskell-nix.compiler.${ghcVersion};
             inherit (sphinxcontrib-haddock) sphinxcontrib-haddock;
           };
-          # FIXME: > Couldn't get the project and version from the html
-          # hspkgs = builtins.map (x: x.library) (
-          #   builtins.filter (x: x ? library) (
-          #     builtins.map (x: x.components) (
-          #       builtins.filter (x: x ? components) (
-          #         builtins.attrValues self.project.${system}.hsPkgs
-          #       )
-          #     )
+          # If you use this, filter out pretty-show, it doesn't work if not.
+          # hspkgs = builtins.map (x: x.components.library) (
+          #   builtins.filter (x: x ? components && x.components ? library) (
+          #     builtins.attrValues self.project.${system}.hsPkgs
           #   )
           # );
           hspkgs = builtins.map (x: self.project.${system}.hsPkgs.${x}.components.library) [
