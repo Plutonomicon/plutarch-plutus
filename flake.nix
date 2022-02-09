@@ -479,16 +479,61 @@
           mkdir $out
         ''
       ;
+
+      haddock = system:
+        let
+          pkgs = nixpkgsFor system;
+          sphinxcontrib-haddock =
+            pkgs.callPackage plutus.inputs.sphinxcontrib-haddock { pythonPackages = pkgs.python3Packages; };
+          haddock-combine = pkgs.callPackage "${inputs.plutus}/nix/lib/haddock-combine.nix" {
+            ghc = pkgs.haskell-nix.compiler.${ghcVersion};
+            inherit (sphinxcontrib-haddock) sphinxcontrib-haddock;
+          };
+          # FIXME: > Couldn't get the project and version from the html
+          # hspkgs = builtins.map (x: x.library) (
+          #   builtins.filter (x: x ? library) (
+          #     builtins.map (x: x.components) (
+          #       builtins.filter (x: x ? components) (
+          #         builtins.attrValues self.project.${system}.hsPkgs
+          #       )
+          #     )
+          #   )
+          # );
+          hspkgs = builtins.map (x: self.project.${system}.hsPkgs.${x}.components.library) [
+            "plutarch"
+            "plutus-core"
+            "plutus-tx"
+            "plutus-ledger-api"
+          ];
+        in
+        haddock-combine {
+          inherit hspkgs;
+          prologue = pkgs.writeTextFile {
+            name = "prologue";
+            text = ''
+              = Combined documentation for Plutarch
+
+              == Handy module entrypoints
+
+                * "Plutarch.Prelude"
+                * "Plutarch"
+            '';
+          };
+        };
     in
     {
       inherit extraSources cabalProjectLocal haskellModule tools;
+
+      nixpkgsDebug = perSystem nixpkgsFor;
 
       project = perSystem projectFor;
       project810 = perSystem projectFor810;
       flake = perSystem (system: (projectFor system).flake { });
       flake810 = perSystem (system: (projectFor810 system).flake { });
 
-      packages = perSystem (system: self.flake.${system}.packages);
+      packages = perSystem (system: self.flake.${system}.packages // {
+        haddock = haddock system;
+      });
       checks = perSystem (system:
         let ghc810 = ((projectFor810 system).flake { }).packages; # We don't run the tests, we just check that it builds.
         in
