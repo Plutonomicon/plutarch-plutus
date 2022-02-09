@@ -7,12 +7,17 @@ module Plutarch.List (
 
   -- * Comparison
   plistEquals,
+  psort,
+  mergesort,
+  timSort,
 
   -- * Query
   pelem,
   plength,
   ptryIndex,
   pdrop,
+  pfind,
+  pelemAt,
 
   -- * Construction
   psingleton,
@@ -26,6 +31,7 @@ module Plutarch.List (
   -- * Traversals
   pmap,
   pfilter,
+  preverse,
 
   -- * Catamorphisms
   precList,
@@ -38,6 +44,8 @@ module Plutarch.List (
   -- * Special Folds
   pall,
   pany,
+
+
 ) where
 
 import Numeric.Natural (Natural)
@@ -63,7 +71,8 @@ import Plutarch (
   (#$),
   type (:-->),
  )
-import Plutarch.Bool (PBool (PFalse, PTrue), PEq, pif, (#&&), (#==), (#||))
+import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, pif, pnot, (#&&), (#==), (#<=), (#<), (#||))
+import Plutarch.Maybe (PMaybe(PJust,PNothing))
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (pconstant)
 import Plutarch.Pair (PPair (PPair))
@@ -363,3 +372,134 @@ plistEquals =
         )
         (pelimList (\_ _ -> pconstant False) (pconstant True) ylist)
         xlist
+
+preverse :: (PIsListLike l a) => Term s (l a :--> l a)
+preverse = phoistAcyclic $
+  plam $ \xs -> pfoldl # plam (\ys y -> pcons # y # ys) # pnil # xs
+
+pelemAt :: (PIsListLike l a) => Term s (PInteger :--> l a :--> a)
+pelemAt = phoistAcyclic $
+  plam $ \n xs ->
+    pif
+      (n #< 0)
+      perror
+      (pelemAt' # n # xs)
+
+pelemAt' :: (PIsListLike l a) => Term s (PInteger :--> l a :--> a)
+pelemAt' = phoistAcyclic $
+  pfix #$ plam $ \self n xs ->
+    pif
+      (n #== 0)
+      (phead # xs)
+      (self # (n -1) #$ ptail # xs)
+
+pfind :: (PIsListLike l a) => Term s ((a :--> PBool) :--> l a :--> PMaybe a)
+pfind = phoistAcyclic $
+  pfix #$ plam $ \self f xs ->
+    pelimList
+      ( \y ys ->
+          pif
+            (f # y)
+            (pcon $ PJust y)
+            (self # f # ys)
+      )
+      (pcon PNothing)
+      xs
+
+psort :: POrd a => Term s (PList a :--> PList a)
+psort = timSort
+
+-- TODO: decide on default sort
+-- probably by benchmarking them
+
+mergesort :: POrd a => Term s (PList a :--> PList a)
+mergesort = phoistAcyclic $
+  pfix #$ plam $ \self xs ->
+    pmatch xs $ \case
+      PSNil -> pcon PSNil
+      PSCons x t ->
+        pmatch t $ \case
+          PSNil -> psingleton # x
+          PSCons _ _ -> pmatch (splitList # xs) $
+            \(PPair l r) ->
+              merge # (self # l) # (self # r)
+
+splitList :: Term s (PList a :--> PPair (PList a) (PList a))
+splitList = phoistAcyclic $
+  pfix #$ plam $ \self xs -> pmatch xs $ \case
+    PSNil -> pcon $ PPair pnil pnil
+    PSCons x xs' ->
+      pmatch xs' $ \case
+        PSNil -> pcon $ PPair (psingleton # x) pnil
+        PSCons y ys -> pmatch (self # ys) $
+          \(PPair l r) ->
+            pcon $ PPair (pcons # x # l) (pcons # y # r)
+
+merge :: POrd a => Term s (PList a :--> PList a :--> PList a)
+merge = phoistAcyclic $
+  pfix #$ plam $ \self xs ys ->
+    pmatch xs $ \case
+      PSNil -> ys
+      PSCons x xs' ->
+        pmatch ys $ \case
+          PSNil -> xs
+          PSCons y ys' ->
+            pif
+              (x #<= y)
+              (pcons # x #$ self # xs' # ys)
+              (pcons # y #$ self # xs # ys')
+
+-- most of the tricks from timsort are not implemented here
+-- just the central strategy of finding runs of
+-- consecutive data and then merging them together
+timSort :: POrd a => Term s (PList a :--> PList a)
+timSort = phoistAcyclic $
+  plam $ \xs -> merge2 #$ timSplit # xs
+
+timSplit :: POrd a => Term s (PList a :--> PList (PList a))
+timSplit = phoistAcyclic $ timSplit' # pcon PTrue # pnil
+
+timSplit' :: POrd a => Term s (PBool :--> PList a :--> PList a :--> PList (PList a))
+timSplit' = phoistAcyclic $
+  pfix #$ plam $ \self increasing state xs ->
+    pmatch state $ \case
+      PSNil -> pmatch xs $ \case
+        PSCons x xs' -> self # increasing # (psingleton # x) # xs'
+        PSNil -> pnil
+      PSCons y _ ->
+        pmatch xs $ \case
+          PSNil ->
+            pif
+              increasing
+              (psingleton #$ preverse # state)
+              (psingleton # state)
+          PSCons x xs' ->
+            pif
+              ((increasing #&& (y #<= x)) #|| ((pnot # increasing) #&& (x #<= y)))
+              (self # increasing # (pcons # x # state) # xs')
+              ( pcons
+                  # pif increasing (preverse # state) state
+                  # (self # (pnot # increasing) # (psingleton # x) # xs')
+              )
+
+merge2 :: POrd a => Term s (PList (PList a) :--> PList a)
+merge2 = phoistAcyclic $
+  pfix #$ plam $ \self xss ->
+    pmatch xss $ \case
+      PSNil -> pnil
+      PSCons xs xss' ->
+        pmatch xss' $ \case
+          PSNil -> xs
+          PSCons _ _ ->
+            self #$ merge2' # xss
+
+merge2' :: POrd a => Term s (PList (PList a) :--> PList (PList a))
+merge2' = phoistAcyclic $
+  pfix #$ plam $ \self xss ->
+    pmatch xss $ \case
+      PSNil -> pnil
+      PSCons xs1 xss' ->
+        pmatch xss' $ \case
+          PSNil -> psingleton # xs1
+          PSCons xs2 xss'' ->
+            pcons # (merge # xs1 # xs2) #$ self # xss''
