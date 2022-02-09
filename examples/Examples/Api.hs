@@ -162,7 +162,7 @@ getSym =
 checkSignatory :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatory = plam $ \ph ctx' ->
   pletFields @["txInfo", "purpose"] ctx' $ \ctx -> P.do
-    PSpending _ <- pmatch . pfromData $ ctx.purpose
+    PSpending _ <- pmatch $ ctx.purpose
     let signatories = pfield @"signatories" # ctx.txInfo
     pif
       (pelem # pdata ph # pfromData signatories)
@@ -175,7 +175,7 @@ checkSignatory = plam $ \ph ctx' ->
 checkSignatoryCont :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatoryCont = plam $ \ph ctx' ->
   pletFields @["txInfo", "purpose"] ctx' $ \ctx -> (`runCont` id) $ do
-    purpose <- cont (pmatch . pfromData $ ctx.purpose)
+    purpose <- cont (pmatch $ ctx.purpose)
     pure $ case purpose of
       PSpending _ ->
         let signatories = pfield @"signatories" # ctx.txInfo
@@ -192,7 +192,7 @@ checkSignatoryCont = plam $ \ph ctx' ->
 checkSignatoryTermCont :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatoryTermCont = plam $ \ph ctx' -> unTermCont $ do
   ctx <- tcont $ pletFields @["txInfo", "purpose"] ctx'
-  PSpending _ <- tcont (pmatch . pfromData $ ctx.purpose)
+  PSpending _ <- tcont (pmatch $ ctx.purpose)
   let signatories = pfield @"signatories" # ctx.txInfo
   pure $
     pif

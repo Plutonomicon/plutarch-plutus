@@ -22,7 +22,6 @@ module Plutarch.DataRepr.Internal.HList (
 ) where
 
 import Data.Kind (Type)
-import GHC.Records (HasField (..))
 import GHC.TypeLits (
   ErrorMessage (Text),
   Nat,
@@ -128,14 +127,3 @@ instance
   where
   elemOf :: Elem (Labeled name a) (b ': as)
   elemOf = There (elemOf @name @a @as)
-
----------- HasField instances
-
-instance
-  forall name a as.
-  ( (IndexLabel name as) ~ a
-  , ElemOf name a as
-  ) =>
-  HasField name (HRec as) a
-  where
-  getField = hrecField @name
