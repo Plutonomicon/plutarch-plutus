@@ -90,6 +90,7 @@ library
     Plutarch.Api.V1.Time
     Plutarch.Api.V1.Tx
     Plutarch.Api.V1.Value
+    Plutarch.Api.Internal.Scripts
     Plutarch.Bool
     Plutarch.Builtin
     Plutarch.ByteString
@@ -140,6 +141,8 @@ library
     , template-haskell
     , text
     , transformers
+    , memory
+    , serialise
 
   if flag(development)
     cpp-options: -DDevelopment
@@ -181,6 +184,7 @@ test-suite examples
     , rank2classes       >=1.4.4
     , tasty
     , tasty-hunit
+    , tasty-golden
     , text
     , transformers
 
