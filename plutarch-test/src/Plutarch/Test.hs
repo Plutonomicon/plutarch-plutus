@@ -6,6 +6,7 @@ module Plutarch.Test (
   (#@?=),
   passert,
   pfails,
+  psucceeds,
   -- | Golden testing
   --
   -- Typically you want to use `golden`. For grouping multiple goldens, use
@@ -55,6 +56,12 @@ printTermEvaluated = fmap printScript . eval . compile
 {- Asserts the term to be true -}
 passert :: forall (a :: PType). ClosedTerm a -> Assertion
 passert p = p #@?= pcon PTrue
+
+psucceeds :: forall (a :: PType). ClosedTerm a -> Assertion
+psucceeds p =
+  case evaluateScript (compile p) of
+    Left _ -> assertFailure $ "Term failed to evaluate"
+    Right _ -> pure ()
 
 {- Asserts the term evaluates without success -}
 pfails :: forall (a :: PType). ClosedTerm a -> Assertion

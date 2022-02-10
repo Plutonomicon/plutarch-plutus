@@ -85,12 +85,14 @@ executable plutarch-test
     Plutarch.PLamSpec
     Plutarch.RationalSpec
     Plutarch.ListSpec
+    Plutarch.ApiSpec
     Plutarch.Test
 
   build-depends:
     , aeson >= 2.0
     , base
     , bytestring
+    , transformers
     , sydtest
     , sydtest-discover
     , filepath
