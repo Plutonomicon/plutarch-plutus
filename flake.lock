@@ -423,7 +423,6 @@
         "hpc-coveralls": "hpc-coveralls",
         "nix-tools": "nix-tools",
         "nixpkgs": [
-          "haskell-nix",
           "nixpkgs-2111"
         ],
         "nixpkgs-2003": "nixpkgs-2003",
@@ -685,6 +684,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-2111_2": {
+      "locked": {
+        "lastModified": 1644461159,
+        "narHash": "sha256-TdTr4xJdElXOmdNPoyfLIqp7FguMmSo+LdYexHInUdQ=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "457e70297b0e2d5b25b1268af7851695d32b8770",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-21.11-darwin",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-nixops": {
       "locked": {
         "lastModified": 1630248577,
@@ -864,6 +879,7 @@
           "haskell-nix",
           "nixpkgs-unstable"
         ],
+        "nixpkgs-2111": "nixpkgs-2111_2",
         "plutus": "plutus",
         "protolude": "protolude",
         "sized-functors": "sized-functors",
