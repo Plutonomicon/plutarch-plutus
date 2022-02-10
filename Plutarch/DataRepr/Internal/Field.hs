@@ -1,7 +1,7 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
-{-# OPTIONS_GHC -Wno-orphans#-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.DataRepr.Internal.Field (
   -- * PDataField class & deriving utils
