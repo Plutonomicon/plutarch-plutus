@@ -2049,12 +2049,14 @@ Here's an example, let's say you want to build a `PScriptPurpose` - `PMinting "f
 ```hs
 import Plutarch.Prelude
 import Plutarch.Api.V1.Contexts
+import Plutarch.Api.V1.Value
 
 import Plutus.V1.Ledger.Api
 
 pconstant (Minting "f1e301")
 -- (or)
-pcon $ PMinting $ phexByteStr "f1e301"
+let currSym = pcon $ PCurrencySymbol $ phexByteStr "f1e301"
+ in pcon $ PMinting $ pdcons # pdata currSym # pdnil
 ```
 The semantics are both are the same. But the former (`pconstant`) compiles to a constant term directly. Whereas the latter compiles to some code that *builds* the constant during Plutus Core runtime.
 > Aside: Remember that Haskell runtime is actually compile-time for Plutarch! Even if you have a dynamically computed variable in the Haskell world, it's still a *constant* in the Plutarch world. So you can use it just as well as an argument to `pconstant`!
