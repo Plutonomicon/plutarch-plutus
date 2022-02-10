@@ -6,7 +6,7 @@
 - [Overview](#overview)
   - [Compiling and Running](#compiling-and-running)
     - [Common Extensions and GHC options](#common-extensions-and-ghc-options)
-    - [Code](#code)
+    - [Evaluation](#evaluation)
   - [Syntax](#syntax)
     - [Constants](#constants)
     - [Lambdas](#lambdas)
@@ -98,7 +98,7 @@
 
 You generally want to adhere to the same extensions and GHC options the [Plutarch repo](https://github.com/Plutonomicon/plutarch/blob/master/plutarch.cabal) uses.
 
-### Code
+### Evaluation
 
 You can compile a Plutarch term using `compile`(from `Plutarch` module), making sure it has no free variables. `compile` returns a `Script`- you can use this as you would any other Plutus script. The API in `Plutus.V1.Ledger.Scripts` should prove helpful.
 
