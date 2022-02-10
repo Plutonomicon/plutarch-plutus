@@ -172,15 +172,17 @@ checkSignatory = plam $ \ph ctx' ->
       perror
 
 -- | `checkSignatory` implemented using `runCont`
-checkSignatoryCont :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
+checkSignatoryCont :: forall s. Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatoryCont = plam $ \ph ctx' ->
   pletFields @["txInfo", "purpose"] ctx' $ \ctx -> (`runCont` id) $ do
     purpose <- cont (pmatch $ ctx.purpose)
     pure $ case purpose of
       PSpending _ ->
-        let signatories = pfield @"signatories" # ctx.txInfo
+        let 
+          signatories :: Term s (PBuiltinList (PAsData PPubKeyHash))
+          signatories = pfield @"signatories" # ctx.txInfo
          in pif
-              (pelem # pdata ph # pfromData signatories)
+              (pelem # pdata ph # signatories)
               -- Success!
               (pconstant ())
               -- Signature not present.
