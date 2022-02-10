@@ -147,16 +147,13 @@ instance {-# OVERLAPPABLE #-} a ~ PAsData b => PNoAsData a b  where
     pmaybeFromAsData (pdata 3 :: (Term s (PAsData PInteger))) :: (Term (s::S) (PAsData PInteger))
     :: forall (s :: S). Term s (PAsData (PInteger @{S}))
 -}
-
-class PFromDataable (a :: PType) (b::PType) | a -> b where
+class PFromDataable (a :: PType) (b::PType) | b -> a, a -> b where
   pmaybeFromAsData :: Term s (PAsData a) -> Term s b 
 
-instance {-# OVERLAPPABLE #-} (PAsData a) ~ b => PFromDataable a b where 
-  pmaybeFromAsData :: Term s (PAsData a) -> Term s (PAsData a)
+instance {-# OVERLAPS #-} PFromDataable a (PAsData a) where 
   pmaybeFromAsData = id
 
-instance {-# OVERLAPPABLE #-} PIsData a => PFromDataable a a where 
-  pmaybeFromAsData :: Term s (PAsData a) -> Term s a
+instance {-# OVERLAPPABLE #-} (PIsData a, b ~ a) => PFromDataable a b where 
   pmaybeFromAsData = pfromData
 
 {- |
@@ -264,14 +261,15 @@ instance {-# OVERLAPPING #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ':
   which will generate the bindings more efficiently.
 -}
 pfield ::
-  forall name p s a as n.
+  forall name p s a as n b.
   ( PDataFields p
   , as ~ (PFields p)
   , n ~ (PLabelIndex name as)
   , KnownNat n
   , a ~ (PUnLabel (IndexList n as))
+  , PFromDataable a b
   ) =>
-  Term s (p :--> PAsData a)
+  Term s (p :--> b)
 pfield = plam $ \i -> 
    pmaybeFromAsData $ pindexDataRecord (Proxy @n) $ ptoFields @p i
 

@@ -137,7 +137,7 @@ getMint =
 getCredentials :: Term s PScriptContext -> Term s (PBuiltinList PData)
 getCredentials ctx =
   let inp = pfield @"inputs" #$ pfield @"txInfo" # ctx
-   in pmap # inputCredentialHash # pfromData inp
+   in pmap # inputCredentialHash # inp
 
 {- |
   Get the hash of the Credential in an input, treating
