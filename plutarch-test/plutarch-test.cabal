@@ -78,6 +78,7 @@ executable plutarch-test
   other-modules:
     Spec
     Plutarch.BoolSpec
+    Plutarch.UnitSpec
     Plutarch.IntegerSpec
     Plutarch.Test
 

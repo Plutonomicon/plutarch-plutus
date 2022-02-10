@@ -171,7 +171,7 @@ test-suite examples
     Utils
 
   build-depends:
-    , aeson              >=2.0
+    , aeson
     , base
     , bytestring
     , generics-sop

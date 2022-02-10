@@ -1,5 +1,6 @@
 packages:
   ./.
-  ./plutarch-*
+  ./plutarch-test
+  ./plutarch-benchmark
 
 benchmarks: true

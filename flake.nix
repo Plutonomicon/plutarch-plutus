@@ -47,6 +47,8 @@
   inputs.Shrinker.flake = false;
   inputs.haskell-language-server.url = "github:haskell/haskell-language-server";
   inputs.haskell-language-server.flake = false;
+
+  # These use the PRs from https://github.com/NorfairKing/sydtest/issues/35
   inputs.sydtest.url = "github:srid/sydtest/ghc921";
   inputs.sydtest.flake = false;
   inputs.validity.url = "github:srid/validity/ghc921";
@@ -499,6 +501,8 @@
 
             additional = ps: [
               ps.plutus-ledger-api
+
+              # sydtest dependencies
               ps.sydtest
               ps.sydtest-discover
               ps.validity
@@ -588,9 +592,7 @@
           };
         }
       );
-      devShell = perSystem (system:
-        self.flake.${system}.devShell
-      );
+      devShell = perSystem (system: self.flake.${system}.devShell);
 
       effects = { src }:
         let

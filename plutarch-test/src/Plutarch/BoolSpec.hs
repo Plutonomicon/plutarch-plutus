@@ -12,6 +12,7 @@ spec = do
   describe "bool" $ do
     describe "pnot" $ do
       goldens
+        All
         [ ("lam", popaque pnot)
         , ("app", popaque $ pnot #$ pcon PTrue)
         ]
@@ -22,6 +23,7 @@ spec = do
     describe "lazy" $ do
       describe "pand" $ do
         goldens
+          All
           [ ("tf", popaque $ pcon PTrue #&& pcon PFalse)
           , ("ft", popaque $ pcon PFalse #&& pcon PTrue)
           , ("tt", popaque $ pcon PTrue #&& pcon PTrue)

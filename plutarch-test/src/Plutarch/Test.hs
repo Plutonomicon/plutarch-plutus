@@ -13,8 +13,10 @@ module Plutarch.Test (
   golden,
   golden',
   goldens,
+  PlutarchGolden (All, Bench, PrintTerm),
 ) where
 
+import Control.Monad (when)
 import qualified Data.Aeson.Text as Aeson
 import Data.ByteString (ByteString)
 import qualified Data.Text as T
@@ -51,24 +53,40 @@ equal x y = do
 passert :: forall (a :: PType). ClosedTerm a -> Assertion
 passert p = p #@?= pcon PTrue
 
-golden :: ClosedTerm a -> Spec
-golden = golden' Nothing
+data PlutarchGolden
+  = All
+  | Bench
+  | PrintTerm
+  deriving stock (Eq, Show)
+
+hasBenchGolden :: PlutarchGolden -> Bool
+hasBenchGolden = \case
+  PrintTerm -> False
+  _ -> True
+
+hasPrintTermGolden :: PlutarchGolden -> Bool
+hasPrintTermGolden = \case
+  Bench -> False
+  _ -> True
+
+golden :: PlutarchGolden -> ClosedTerm a -> Spec
+golden pg = golden' pg Nothing
 
 -- | Make golden tests for the given Plutarch program.
-golden' :: forall a. Maybe String -> ClosedTerm a -> Spec
-golden' mk p =
-  goldens' mk [("0", popaque p)]
+golden' :: forall a. PlutarchGolden -> Maybe String -> ClosedTerm a -> Spec
+golden' pg mk p =
+  goldens' pg mk [("0", popaque p)]
 
 {- | Like `golden` but for multiple programs
 
   Multiple programs use a single golden file. Each output separated from the
   keyword with a space.
 -}
-goldens :: [(String, ClosedTerm a)] -> Spec
-goldens = goldens' Nothing
+goldens :: PlutarchGolden -> [(String, ClosedTerm a)] -> Spec
+goldens pg = goldens' pg Nothing
 
-goldens' :: Maybe String -> [(String, ClosedTerm a)] -> Spec
-goldens' mk ps = do
+goldens' :: PlutarchGolden -> Maybe String -> [(String, ClosedTerm a)] -> Spec
+goldens' pg mk ps = do
   testAncestors <- fmap (drop 1 . reverse) $ getTestDescriptionPath
   let name = T.unpack $ T.intercalate "." testAncestors
       goldenKey = maybe "golden" (<> ".golden") mk
@@ -77,22 +95,20 @@ goldens' mk ps = do
         nUplc = name <> k <> ".uplc.golden"
         nBench = name <> k <> ".bench.golden"
     -- Golden test for UPLC
-    it "uplc" $
-      pureGoldenByteStringFile ("goldens" </> nUplc) $
-        multiGolden ps $ \p ->
-          T.pack $ printTerm p
+    when (hasPrintTermGolden pg) $
+      it "uplc" $
+        pureGoldenByteStringFile ("goldens" </> nUplc) $
+          multiGolden ps $ \p ->
+            T.pack $ printTerm p
     -- Golden test for Plutus benchmarks
-    it "bench" $
-      pureGoldenByteStringFile ("goldens" </> nBench) $
-        -- TODO: Do both variants somehow: `compile` and `shrink . compile`.
-        multiGolden ps $ \p ->
-          TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compile p
+    when (hasBenchGolden pg) $
+      it "bench" $
+        pureGoldenByteStringFile ("goldens" </> nBench) $
+          multiGolden ps $ \p ->
+            TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compile p
 
 multiGolden :: forall a. [(String, a)] -> (a -> T.Text) -> ByteString
 multiGolden xs f =
   encodeUtf8 $
     T.intercalate "\n" $
       (\(s, x) -> T.pack s <> " " <> f x) <$> xs
-
-_shrink :: ClosedTerm a -> ClosedTerm a
-_shrink = id -- TODO
