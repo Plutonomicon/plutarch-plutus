@@ -82,6 +82,7 @@
   - [Prefer statically building constants whenever possible](#prefer-statically-building-constants-whenever-possible)
 - [Common Issues](#common-issues)
   - [No instance for (PUnsafeLiftDecl a)](#no-instance-for-punsafeliftdecl-a)
+  - [Couldn't match representation of type: ... arising from the 'deriving' clause](#couldnt-match-representation-of-type--arising-from-the-deriving-clause)
   - [Infinite loop / Infinite AST](#infinite-loop--infinite-ast)
   - [Couldn't match type `Plutarch.DataRepr.Internal.PUnLabel ...` arising from a use of `pfield` (or `hrecField`, or `pletFields`)](#couldnt-match-type-plutarchdatareprinternalpunlabel--arising-from-a-use-of-pfield-or-hrecfield-or-pletfields)
   - [Expected a type, but "fieldName" has kind `GHC.Types.Symbol`](#expected-a-type-but-fieldname-has-kind-ghctypessymbol)
@@ -2042,6 +2043,16 @@ Whenever you need to build a Plutarch term of type `a`, from a Haskell value, us
 
 ## No instance for (PUnsafeLiftDecl a)
 You should add `PLift a` to the context! `PLift` is just a synonym to `PUnsafeLiftDecl`.
+
+## Couldn't match representation of type: ... arising from the 'deriving' clause
+If you're getting these errors when deriving typeclasses using the machinery provided by Plutarch (e.g generic deriving, deriving via `PIsDataReprInstances`, `DerivePConstantViaData` etc.) - it means you're missing a constructor import.
+
+If you get this while using `DerivingVia`, make sure you have imported the constructor of the type you're *deriving via*.
+
+If you get this while utilizing generic deriving, make sure you have imported the `I` constructor (or any other related constructor)-
+```hs
+import Generics.SOP (Generic, I (I))
+```
 
 ## Infinite loop / Infinite AST
 
