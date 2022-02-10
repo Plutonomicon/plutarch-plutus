@@ -558,6 +558,9 @@
           "ghc810-plutarch:lib:plutarch" = ghc810."plutarch:lib:plutarch";
         }
       );
+      # Because `nix flake check` does not work with haskell.nix (due to IFD), 
+      # we provide this attribute for running the checks locally, using:
+      #   nix build .#check.x86_64-linux
       check = perSystem (system:
         (nixpkgsFor system).runCommand "combined-test"
           {

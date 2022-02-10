@@ -106,6 +106,9 @@ module Plutarch.Prelude (
   PDataRecord,
   PDataSum,
   PIsDataRepr,
+  PLabeledType ((:=)),
+  pdcons,
+  pdnil,
   pfield,
   pletFields,
   hrecField,
@@ -123,6 +126,7 @@ module Plutarch.Prelude (
 
   -- * Converstion between Plutarch terms and Haskell types
   pconstant,
+  pconstantData,
   plift,
   PConstant,
   PLift,

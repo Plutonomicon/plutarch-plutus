@@ -9,13 +9,9 @@ module Plutarch.Api.V1.Interval (
 ) where
 
 import qualified GHC.Generics as GHC
-import Generics.SOP (Generic)
+import Generics.SOP (Generic, I (I))
 
-import Plutarch.DataRepr (
-  PDataFields,
-  PIsDataReprInstances (PIsDataReprInstances),
-  PLabeledType ((:=)),
- )
+import Plutarch.DataRepr (PDataFields, PIsDataReprInstances (PIsDataReprInstances))
 import Plutarch.Prelude
 
 type PClosure = PBool
@@ -34,7 +30,7 @@ newtype PInterval a (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields)
     via PIsDataReprInstances (PInterval a)
 
 newtype PLowerBound a (s :: S)
@@ -51,7 +47,7 @@ newtype PLowerBound a (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields)
     via (PIsDataReprInstances (PLowerBound a))
 
 newtype PUpperBound a (s :: S)
@@ -68,7 +64,7 @@ newtype PUpperBound a (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields)
     via (PIsDataReprInstances (PUpperBound a))
 
 data PExtended a (s :: S)
@@ -79,5 +75,5 @@ data PExtended a (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PlutusType, PIsData)
     via (PIsDataReprInstances (PExtended a))
