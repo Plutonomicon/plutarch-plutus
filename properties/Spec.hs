@@ -1,5 +1,5 @@
-import Test.Tasty (TestTree, defaultMain, testGroup)
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
+import Test.Tasty (TestTree, defaultMain, testGroup)
 
 import Tests.List (listTests)
 
