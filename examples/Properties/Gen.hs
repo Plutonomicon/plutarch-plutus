@@ -1,4 +1,4 @@
-module Gen (
+module Properties.Gen (
   rationalGen,
   mapGen,
   smallDomainMapGen,

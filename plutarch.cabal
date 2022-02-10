@@ -167,19 +167,27 @@ test-suite examples
     Examples.Rationals
     Examples.Recursion
     Examples.Tracing
+    Properties.Gen
+    Properties.Spec
+    Properties.Tests.List
+    Properties.Utils
     Utils
 
   build-depends:
     , aeson
     , base
     , bytestring
+    , containers
     , generics-sop
+    , hedgehog
+    , mtl
     , plutarch
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
     , rank2classes       >=1.4.4
     , tasty
+    , tasty-hedgehog
     , tasty-hunit
     , text
     , transformers
@@ -187,27 +195,3 @@ test-suite examples
   --, shrinker
   if flag(development)
     cpp-options: -DDevelopment
-
-test-suite properties
-  import:         c
-  main-is:        Spec.hs
-  type:           exitcode-stdio-1.0
-  hs-source-dirs: properties
-  other-modules:
-    Gen
-    Tests.List
-    Util
-
-  build-depends:
-    , base
-    , bytestring
-    , containers
-    , hedgehog
-    , mtl
-    , plutarch
-    , plutus-core
-    , plutus-ledger-api
-    , tasty
-    , tasty-hedgehog
-    , tasty-hunit
-    , text

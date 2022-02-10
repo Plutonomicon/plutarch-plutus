@@ -1,4 +1,4 @@
-module Tests.List (listTests) where
+module Properties.Tests.List (listTests) where
 
 import Hedgehog (Gen, Property)
 import Test.Tasty (TestTree, testGroup)
@@ -9,8 +9,8 @@ import Plutarch.Prelude
 
 import Data.List (find, sort)
 
-import Gen (genList, integerGen)
-import Util (haskPlutEquiv, viaBothPartial, viaPEq)
+import Properties.Gen (genList, integerGen)
+import Properties.Utils (haskPlutEquiv, viaBothPartial, viaPEq)
 
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range

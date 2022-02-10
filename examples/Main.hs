@@ -22,6 +22,7 @@ import Plutus.V1.Ledger.Value (CurrencySymbol (CurrencySymbol))
 import Plutus.V2.Ledger.Contexts (ScriptPurpose (Minting))
 import qualified PlutusCore as PLC
 import qualified PlutusTx
+import Properties.Spec (propertyTests)
 
 import qualified Examples.Api as Api
 import qualified Examples.ConstrData as ConstrData
@@ -39,7 +40,7 @@ import Data.Text (Text)
 main :: IO ()
 main = do
   setLocaleEncoding utf8
-  defaultMain $ testGroup "all tests" [standardTests] -- , shrinkTests ]
+  defaultMain $ testGroup "all tests" [standardTests, propertyTests] -- , shrinkTests ]
 
 add1 :: Term s (PInteger :--> PInteger :--> PInteger)
 add1 = plam $ \x y -> x + y + 1

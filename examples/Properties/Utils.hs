@@ -1,7 +1,7 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Util (
+module Properties.Utils (
   Marshal (marshal),
   haskPlutEquiv,
   leftInverse,
@@ -204,7 +204,6 @@ testPEq x y =
       annotateShow x'
       annotateShow y'
       testOutputEq (pcon PTrue) (x #== y)
-    (Left _, Left _) -> assert True
     _ -> assert False
 
 -- testing equality of Scott encoded types
