@@ -47,9 +47,6 @@ module Plutarch.Api.V1.Scripts (
   validatorHash,
   mintingPolicySymbol,
   stakeValidatorHash,
-
-  -- * Datum Hashing
-  datumHash,
 ) where
 
 import qualified Data.ByteString.Lazy as Lazy
@@ -61,7 +58,6 @@ import qualified PlutusTx.Builtins.Internal as PT
 
 import Plutarch (ClosedTerm, POpaque, compile, popaque)
 import Plutarch.Api.Internal.Scripts (
-  datumHash,
   hashScriptWithPrefix,
   serialiseScript,
  )

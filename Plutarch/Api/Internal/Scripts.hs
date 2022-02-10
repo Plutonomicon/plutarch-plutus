@@ -1,14 +1,12 @@
 module Plutarch.Api.Internal.Scripts (
   serialiseScript,
   hashScriptWithPrefix,
-  datumHash,
 ) where
 
 import Codec.Serialise (serialise)
 import Crypto.Hash (hashWith)
 import Crypto.Hash.Algorithms (
   Blake2b_224 (Blake2b_224),
-  Blake2b_256 (Blake2b_256),
  )
 import Data.ByteArray (convert)
 import Data.ByteString (ByteString)
@@ -30,12 +28,3 @@ hashScriptWithPrefix prefix scr =
       convert @_ @ByteString $
         hashWith Blake2b_224 $
           prefix <> (Lazy.toStrict $ serialiseScript scr)
-
--- | Hash a Plutus Datum
-datumHash :: (PlutusTx.ToData d) => d -> Plutus.DatumHash
-datumHash d =
-  Plutus.DatumHash $
-    PlutusTx.toBuiltin $
-      convert @_ @ByteString $
-        hashWith Blake2b_256 $
-          Lazy.toStrict $ serialise $ PlutusTx.toData d
