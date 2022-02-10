@@ -6,7 +6,6 @@ import Plutarch
 import Plutarch.Prelude
 import Plutarch.Test
 
--- TODO: Finish boolean tests
 spec :: Spec
 spec = do
   describe "unit" $ do
