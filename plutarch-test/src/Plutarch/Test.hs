@@ -5,6 +5,7 @@ module Plutarch.Test (
   -- | Plutarch specific `Assertion` operators
   (#@?=),
   passert,
+  pfails,
   -- | Golden testing
   --
   -- Typically you want to use `golden`. For grouping multiple goldens, use
@@ -39,19 +40,28 @@ eval s = case evaluateScript s of
 
 equal :: ClosedTerm a -> ClosedTerm b -> Assertion
 equal x y = do
-  p1 <- uplcE x
-  p2 <- uplcE y
+  p1 <- printTermEvaluated x
+  p2 <- printTermEvaluated y
   p1 @?= p2
-  where
-    -- TODO: Do both variants somehow: `compile` and `shrink . compile`.
-    uplcE = fmap printScript . eval . compile
+
+{- Like `printTerm` but the prints evaluated output of it -}
+printTermEvaluated :: ClosedTerm a -> IO String
+printTermEvaluated = fmap printScript . eval . compile
 
 -- | Like `@?=` but for Plutarch terms
 (#@?=) :: forall (a :: PType) (b :: PType). ClosedTerm a -> ClosedTerm b -> Assertion
 (#@?=) = equal
 
+{- Asserts the term to be true -}
 passert :: forall (a :: PType). ClosedTerm a -> Assertion
 passert p = p #@?= pcon PTrue
+
+{- Asserts the term evaluates without success -}
+pfails :: forall (a :: PType). ClosedTerm a -> Assertion
+pfails p = do
+  case evaluateScript (compile p) of
+    Left _ -> pure ()
+    Right _ -> assertFailure $ "Term succeeded"
 
 data PlutarchGolden
   = All
