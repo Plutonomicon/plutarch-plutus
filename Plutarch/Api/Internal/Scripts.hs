@@ -13,7 +13,6 @@ import Data.ByteString (ByteString)
 import qualified Data.ByteString.Lazy as Lazy
 
 import qualified Plutus.V1.Ledger.Scripts as Plutus
-import qualified PlutusTx
 import qualified PlutusTx.Builtins as PlutusTx
 
 -- | Serialise a Script to (Lazy) ByteString

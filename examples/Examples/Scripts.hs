@@ -102,10 +102,10 @@ authorizedStakeValidator authHash _redeemer ctx =
         perror
 
 adminPubKey :: Plutus.PubKey
-adminPubKey = ""
+adminPubKey = "11661a8aca9b09bb93eefda295b5da2be3f944d1f4253ab29da17db580f50d02d26218e33fbba5e0cc1b0c0cadfb67a5f9a90157dcc19eecd7c9373b0415c888"
 
 adminPubKeyHash :: Plutus.PubKeyHash
-adminPubKeyHash = ""
+adminPubKeyHash = "cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f"
 
 {- |
   We can compile a `Validator` using `mkValidator` &
