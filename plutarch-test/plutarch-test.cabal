@@ -82,6 +82,9 @@ executable plutarch-test
     Plutarch.IntegerSpec
     Plutarch.StringSpec
     Plutarch.ByteStringSpec
+    Plutarch.PLamSpec
+    Plutarch.RationalSpec
+    Plutarch.ListSpec
     Plutarch.Test
 
   build-depends:
