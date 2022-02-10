@@ -88,6 +88,7 @@ library
     Plutarch.Api.V1.Maybe
     Plutarch.Api.V1.Scripts
     Plutarch.Api.V1.Time
+    Plutarch.Api.V1.Tuple
     Plutarch.Api.V1.Tx
     Plutarch.Api.V1.Value
     Plutarch.Bool
@@ -106,6 +107,7 @@ library
     Plutarch.Internal.Other
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType
+    Plutarch.Internal.TypeFamily
     Plutarch.Lift
     Plutarch.List
     Plutarch.Maybe
@@ -156,8 +158,10 @@ test-suite examples
 
   other-modules:
     Examples.Api
+    Examples.ConstrData
     Examples.Field
     Examples.LetRec
+    Examples.Lift
     Examples.List
     Examples.PIsData
     Examples.PlutusType

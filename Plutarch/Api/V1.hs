@@ -1,6 +1,5 @@
 module Plutarch.Api.V1 (
   -- * Contexts
-  type Contexts.PTuple,
   Contexts.PScriptContext (PScriptContext),
   Contexts.PTxInfo (PTxInfo),
   Contexts.PScriptPurpose (PMinting, PSpending, PRewarding, PCertifying),
@@ -61,6 +60,10 @@ module Plutarch.Api.V1 (
 
   -- ** Others
   Maybe.PMaybeData (PDJust, PDNothing),
+  type Tuple.PTuple,
+
+  -- ** Utility functions
+  Tuple.ptuple,
 ) where
 
 --------------------------------------------------------------------------------
@@ -74,5 +77,6 @@ import qualified Plutarch.Api.V1.Interval as Interval
 import qualified Plutarch.Api.V1.Maybe as Maybe
 import qualified Plutarch.Api.V1.Scripts as Scripts
 import qualified Plutarch.Api.V1.Time as Time
+import qualified Plutarch.Api.V1.Tuple as Tuple
 import qualified Plutarch.Api.V1.Tx as Tx
 import qualified Plutarch.Api.V1.Value as Value

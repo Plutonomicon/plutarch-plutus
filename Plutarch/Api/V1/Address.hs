@@ -8,7 +8,7 @@ module Plutarch.Api.V1.Address (
 ) where
 
 import qualified GHC.Generics as GHC
-import Generics.SOP (Generic)
+import Generics.SOP (Generic, I (I))
 
 import qualified Plutus.V1.Ledger.Api as Plutus
 
@@ -19,7 +19,6 @@ import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
   PIsDataReprInstances (PIsDataReprInstances),
-  PLabeledType ((:=)),
  )
 import Plutarch.Lift (
   PLifted,
@@ -34,7 +33,7 @@ data PCredential (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PlutusType, PIsData)
     via (PIsDataReprInstances PCredential)
 
 instance PUnsafeLiftDecl PCredential where type PLifted PCredential = Plutus.Credential
@@ -56,7 +55,7 @@ data PStakingCredential (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PlutusType, PIsData)
     via PIsDataReprInstances PStakingCredential
 
 instance PUnsafeLiftDecl PStakingCredential where type PLifted PStakingCredential = Plutus.StakingCredential
@@ -76,7 +75,7 @@ newtype PAddress (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields)
     via PIsDataReprInstances PAddress
 
 instance PUnsafeLiftDecl PAddress where type PLifted PAddress = Plutus.Address

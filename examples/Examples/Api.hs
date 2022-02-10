@@ -16,7 +16,6 @@ import Plutarch.Api.V1 (
   PValue,
  )
 import Plutarch.Builtin (pasConstr, pforgetData)
-import Plutarch.DataRepr (PLabeledType ((:=)))
 
 -- import Plutarch.DataRepr (pindexDataList)
 import qualified Plutarch.Monadic as P
