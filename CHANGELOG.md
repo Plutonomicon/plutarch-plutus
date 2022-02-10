@@ -38,6 +38,26 @@
 
   Added by: [#251](https://github.com/Plutonomicon/plutarch/pull/251)
 
+- Added APIs for constructing, compiling, serialising & hashing Plutarch scripts.
+
+  `Validator`, `StakeValidator`, `MintingPolicy` types, analogous to Plutus API types, but also including the Plutarch `ClosedTerm`s.
+
+  `pwrapValidatorWith` and related functions, for conveniently wrapping the argument types of scripts, ala `wrapValidator` and co.
+
+  `serialiseValidator` and related functions, to conveniently serialise via `Codec.Serialise`.
+  
+  `validatorHash` and related functions, to obtain script hashes.
+
+  Module: `Plutarch.V1.Api.Scripts`
+
+  `punsafeFromData`, `punsafeAsData` - for unsafely converting from `PData`.
+
+  Module: `Plutarch.Builtin`
+
+  See: `Examples.Scripts` for examples.
+
+  Added by: [#267](https://github.com/Plutonomicon/plutarch/pull/267)
+
 # 1.1.0
 
 - General repository changes.
