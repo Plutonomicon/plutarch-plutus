@@ -69,7 +69,7 @@ type family PlutarchInner (p :: PType) (any :: PType) :: Type where
   PlutarchInner PInteger _ = Integer
   PlutarchInner PString _ = Text
   PlutarchInner PhorallPhantom _ = ForallPhantom
-  PlutarchInner (a :--> b) x = PlutarchInner a b -> PlutarchInner b x -- hack to support Scott encodings
+  PlutarchInner (a :--> b) x = PlutarchInner a x -> PlutarchInner b x
   PlutarchInner (PDelayed a) x = Delayed (PlutarchInner a x)
   PlutarchInner p x = PlutarchInner (PInner p x) x
 
@@ -78,7 +78,7 @@ type family PlutusTxInner (t :: Type) (any :: Type) :: Type where
   PlutusTxInner Integer _ = Integer
   PlutusTxInner BuiltinString _ = Text
   PlutusTxInner ForallPhantom _ = ForallPhantom
-  PlutusTxInner (a -> b) x = PlutusTxInner a b -> PlutusTxInner b x -- hack to support Scott encodings
+  PlutusTxInner (a -> b) x = PlutusTxInner a x -> PlutusTxInner b x
   PlutusTxInner (Delayed a) x = Delayed (PlutusTxInner a x)
   PlutusTxInner a x = Delayed (PlutusTxInner (ScottFn (ScottList (SOP.Code a) x) x) x)
 
