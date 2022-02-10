@@ -14,6 +14,7 @@ module Plutarch.DataRepr.Internal.Field (
   type BoundTerms,
   type Drop,
 
+  -- * Utils to remove PAsData implicitly
   PFromDataable,
   pmaybeFromAsData,  
   PNoAsData,
