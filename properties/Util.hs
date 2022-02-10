@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE FunctionalDependencies #-}
 
 module Util (
   Marshal (marshal),
@@ -35,7 +36,7 @@ import Hedgehog (Gen, Property, PropertyT, annotate, annotateShow, assert, forAl
 -- Ideally the Marshal class would be replaced with or integrated with the PLift class
 -- currentlly this doesn't seem to work
 -- because PLift works with builtins instead of Scott encodings
-class Marshal h (p :: PType) where
+class Marshal h (p :: PType) | h -> p where
   marshal :: h -> ClosedTerm p
 
 data EquivalenceMethod
@@ -58,7 +59,7 @@ data EquivalenceMethod
     -- if either test fails
     And EquivalenceMethod EquivalenceMethod
 
-class HaskellPlutarchEquivelence (e :: EquivalenceMethod) h (p :: PType) args where
+class HaskellPlutarchEquivelence (e :: EquivalenceMethod) h (p :: PType) args | h -> p where
   runTest :: Proxy e -> h -> ClosedTerm p -> args -> PropertyT IO ()
 
 {-
@@ -224,7 +225,7 @@ testOutputEq x y =
 run :: ClosedTerm h -> Either ScriptError (ExBudget, [Text], Script)
 run t = evaluateScript $ compile t
 
-instance (PListLike l, Marshal ha pa, PElemConstraint l pa) => Marshal [ha] (l pa) where
+instance Marshal ha pa => Marshal [ha] (PList pa) where
   marshal xs = foldr (\h t -> pcons # marshal h # t) pnil xs
 
 instance Marshal ha pa => Marshal (Maybe ha) (PMaybe pa) where

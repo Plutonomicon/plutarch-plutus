@@ -30,8 +30,8 @@ findTest :: Property
 findTest =
   haskPlutEquiv
     viaPEq
-    (find even :: [Integer] -> Maybe Integer)
-    (pfind # peven :: Term s (PList PInteger :--> PMaybe PInteger))
+    (find @[] @Integer even)
+    (pfind # peven)
     (genList integerGen)
   where
     peven :: Term s (PInteger :--> PBool)
@@ -41,16 +41,16 @@ reverseTest :: Property
 reverseTest =
   haskPlutEquiv
     viaPEq
-    (reverse :: [Integer] -> [Integer])
-    (preverse :: Term s (PList PInteger :--> PList PInteger))
+    (reverse @Integer)
+    preverse
     (genList integerGen)
 
 elemAtTest :: Property
 elemAtTest =
   haskPlutEquiv
     viaBothPartial
-    (elemAt :: Integer -> [Integer] -> Integer)
-    (pelemAt :: Term s (PInteger :--> PList PInteger :--> PInteger))
+    elemAt
+    pelemAt
     (Gen.integral $ Range.linear (-10) 100 :: Gen Integer, Gen.list (Range.linear 0 100) integerGen)
 
 elemAt :: Integer -> [Integer] -> Integer
@@ -60,14 +60,14 @@ mergesortTest :: Property
 mergesortTest =
   haskPlutEquiv
     viaPEq
-    (sort :: [Integer] -> [Integer])
-    (mergesort :: Term s (PList PInteger :--> PList PInteger))
+    (sort @Integer)
+    mergesort
     (genList integerGen)
 
 timsortTest :: Property
 timsortTest =
   haskPlutEquiv
     viaPEq
-    (sort :: [Integer] -> [Integer])
-    (timSort :: Term s (PList PInteger :--> PList PInteger))
+    (sort @Integer)
+    timSort
     (genList integerGen)
