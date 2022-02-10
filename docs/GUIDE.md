@@ -79,6 +79,7 @@
   - [List iteration is strict](#list-iteration-is-strict)
   - [Let Haskell level functions take responsibility of evaluation](#let-haskell-level-functions-take-responsibility-of-evaluation)
   - [The isomorphism between `makeIsDataIndexed`, Haskell ADTs, and `PIsDataRepr`](#the-isomorphism-between-makeisdataindexed-haskell-adts-and-pisdatarepr)
+  - [Prefer statically building constants whenever possible](#prefer-statically-building-constants-whenever-possible)
 - [Common Issues](#common-issues)
   - [No instance for (PUnsafeLiftDecl a)](#no-instance-for-punsafeliftdecl-a)
   - [Infinite loop / Infinite AST](#infinite-loop--infinite-ast)
@@ -146,6 +147,7 @@ import Plutarch.Prelude
 x :: Term s PBool
 x = pconstant True
 ```
+> Aside: Did you know you could also build `PAsData` constant terms directly? If you wanted to build a `Term s (PAsData PBool)` from a Haskell boolean - you should use `pconstantData True`. Although `pdata (pconstant True)` would achieve the same thing - it won't actually be as efficient! See, `pconstantData` builds a constant directly - wheras `pdata` *potentially* dispatches to a builtin function call. Also see: [Prefer statically building constants](#prefer-statically-building-constants-whenever-possible).
 
 Or from Plutarch terms within other constructors using `pcon` (requires [`PlutusType`/`PCon`](#plutustype-pcon-and-pmatch) instance)-
 ```haskell
@@ -544,7 +546,7 @@ Choosing convenience over efficiency is difficult, but if you notice that your o
 Consider boolean or-
 ```hs
 (#||) :: Term s PBool -> Term s PBool -> Term s PBool
-x #|| y = pif x (pconstant PTrue) $ pif y (pconstant PTrue) $ pconstant PFalse
+x #|| y = pif x (pconstant True) $ pif y (pconstant True) $ pconstant False
 ```
 You can factor out most of the logic to a Plutarch level function, and apply that in the operator definition-
 
@@ -553,7 +555,7 @@ You can factor out most of the logic to a Plutarch level function, and apply tha
 x #|| y = por # x # pdelay y
 
 por :: Term s (PBool :--> PDelayed PBool :--> PBool)
-por = phoistAcyclic $ plam $ \x y -> pif' # x # pconstant PTrue # pforce y
+por = phoistAcyclic $ plam $ \x y -> pif' # x # pconstant True # pforce y
 ```
 
 In general the pattern goes like this-
@@ -837,6 +839,14 @@ purp = pconstant $ Minting "be"
 > plift purp
 Minting "be"
 ```
+
+There's also another handy utility, `pconstantData`-
+```hs
+pconstantData :: (PLift p, ToData (PLifted p)) => PLifted p -> Term s (PAsData p)
+```
+> Note: This isn't the actual type of `pconstantData` - it's simplified here for the sake of documentation ;)
+
+It's simply the `PAsData` building cousin of `pconstant`!
 
 #### Implementing `PConstant` & `PLift`
 If your custom Plutarch type is represented by a builtin type under the hood (i.e not scott encoded - rather [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) - you can easily implement `PLift` for it by using the provided machinery.
@@ -2006,6 +2016,27 @@ data TxInfo = TxInfo
   }
 ```
 The *field names* don't matter though. They are merely labels that don't exist in runtime.
+
+## Prefer statically building constants whenever possible
+Whenever you can build a Plutarch constant out of a pure Haskell value - do it! Functions such as `pconstant`, `phexByteStr` operate on regular Haskell synonyms of Plutarch types. Unlike `pcon`, which potentially work on Plutarch terms (ex: `pcon $ PJust x`, `x` is a `Term s a`). A Plutarch term is an entirely "runtime" concept. "Runtime" as in "Plutus Core Runtime". They only get evaluated during runtime!
+
+On the other hand, whenever you transform a Haskell synonym to its corresponding Plutarch type using `pconstant`, `phexByteStr` etc. - you're *directly* building a Plutus Core constant. This is entirely static! There are no runtime function calls, no runtime building, it's just *there*, inside the compiled script.
+
+Here's an example, let's say you want to build a `PScriptPurpose` - `PMinting "f1e301"`. Which snippet, do you think, is better?
+```hs
+import Plutarch.Prelude
+import Plutarch.Api.V1.Contexts
+
+import Plutus.V1.Ledger.Api
+
+pconstant (Minting "f1e301")
+-- (or)
+pcon $ PMinting $ phexByteStr "f1e301"
+```
+The semantics are both are the same. But the former (`pconstant`) compiles to a constant term directly. Whereas the latter compiles to some code that *builds* the constant during Plutus Core runtime.
+> Aside: Remember that Haskell runtime is actually compile-time for Plutarch! Even if you have a dynamically computed variable in the Haskell world, it's still a *constant* in the Plutarch world. So you can use it just as well as an argument to `pconstant`!
+
+Whenever you need to build a Plutarch term of type `a`, from a Haskell value, use `pconstant`. Whenever you need to build a Plutarch term of type `PAsData a`, use `pconstantData`!
 
 # Common Issues
 
