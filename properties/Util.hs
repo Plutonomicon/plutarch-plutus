@@ -111,7 +111,7 @@ instance
 {-
  - the next few instances provide less cluttered options for args
  - when ha is
- - pa , (bp :--> pa) , (pc :--> pb :--> pa) , (pd :--> pc :--> pb :--> pa)
+ - pa , (pb :--> pa) , (pc :--> pb :--> pa) , (pd :--> pc :--> pb :--> pa)
  - args can now be
  - () , Gen hb       , (Gen hc,Gen hb)      , (Gen hd,Gen hc,Gen hb)
  - and finally (Gen he,Gen hd,Gen hc,Gen hb)
@@ -139,8 +139,8 @@ instance
   runTest e hf pf (a, b, c, d) = runTest e hf pf (a, (b, c, d))
 
 {-
-- the functions haskPlutEquivViaData and haskPlutEquivViaPEq
-- are exposed in the module (test and the HaskellPlutarchEquivelence class are not)
+- the function haskPlutEquiv and the EquivalenceMethods viaData viaPEq etc
+- are exposed in the module (runTest and the HaskellPlutarchEquivelence class are not)
 - and are the intended way to indicate which sort
 - of test to use and to run haskell agreement tests in general
 -}
