@@ -23,7 +23,6 @@ module Plutarch.Builtin (
   pforgetData,
   punsafeAsData,
   punsafeFromData,
-  pconstantData,
   ppairDataBuiltin,
   type PBuiltinMap,
 ) where
@@ -210,17 +209,14 @@ instance PConstant (PAsDataLifted a) where
 
 instance PUnsafeLiftDecl (PAsData a) where type PLifted (PAsData a) = PAsDataLifted a
 
-pconstantData :: (PLift p) => PLifted p -> Term s (PAsData p)
-pconstantData = punsafeAsData . PlutusTx.toData
-
 pforgetData :: Term s (PAsData a) -> Term s PData
 pforgetData = punsafeCoerce
 
 punsafeAsData :: Term s PData -> Term s (PAsData p)
-punsafeAsData = punsafeCoerce 
+punsafeAsData = punsafeCoerce
 
 punsafeFromData :: (PIsData p) => Term s PData -> Term s p
-punsafeFromData = pfromData . punsafeAsData 
+punsafeFromData = pfromData . punsafeAsData
 
 class PIsData a where
   pfromData :: Term s (PAsData a) -> Term s a

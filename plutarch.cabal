@@ -78,6 +78,7 @@ library
   import:          c
   exposed-modules:
     Plutarch
+    Plutarch.Api.Internal.Scripts
     Plutarch.Api.V1
     Plutarch.Api.V1.Address
     Plutarch.Api.V1.AssocMap
@@ -90,7 +91,6 @@ library
     Plutarch.Api.V1.Time
     Plutarch.Api.V1.Tx
     Plutarch.Api.V1.Value
-    Plutarch.Api.Internal.Scripts
     Plutarch.Bool
     Plutarch.Builtin
     Plutarch.ByteString
@@ -132,17 +132,17 @@ library
     , flat
     , generics-sop
     , hashable
+    , memory
     , mtl
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
     , rank2classes
+    , serialise
     , sop-core
     , template-haskell
     , text
     , transformers
-    , memory
-    , serialise
 
   if flag(development)
     cpp-options: -DDevelopment
@@ -169,6 +169,7 @@ test-suite examples
     Examples.PlutusType
     Examples.Rationals
     Examples.Recursion
+    Examples.Scripts
     Examples.Tracing
     Utils
 
@@ -182,9 +183,10 @@ test-suite examples
     , plutus-ledger-api
     , plutus-tx
     , rank2classes       >=1.4.4
+    , serialise
     , tasty
-    , tasty-hunit
     , tasty-golden
+    , tasty-hunit
     , text
     , transformers
 

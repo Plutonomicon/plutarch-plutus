@@ -32,6 +32,7 @@ import qualified Examples.PIsData as PIsData
 import qualified Examples.PlutusType as PlutusType
 import qualified Examples.Rationals as Rationals
 import qualified Examples.Recursion as Recursion
+import qualified Examples.Scripts as Scripts
 import Utils
 
 import Data.Text (Text)
@@ -97,6 +98,7 @@ tests =
     , Field.tests
     , ConstrData.tests
     , Lift.tests
+    , Scripts.tests
     ]
 
 plutarchTests :: HasTester => TestTree

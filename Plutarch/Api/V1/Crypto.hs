@@ -44,7 +44,3 @@ deriving via
   (DerivePConstantViaNewtype PlutusCrypto.Signature PSignature PByteString)
   instance
     (PConstant PlutusCrypto.Signature)
-
--- | Verify the signature of a message signed by a PubKey
-pverifySignedMessage :: Term s (PPubKey :--> PByteString :--> PSignature :--> PBool)
-pverifySignedMessage = punsafeCoerce pverifySignature
