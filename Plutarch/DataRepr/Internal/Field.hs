@@ -133,8 +133,8 @@ class PNoAsData (a::PType) (b::PType) | a -> b where
 instance {-# OVERLAPPABLE #-} PNoAsData a a where 
   premoveAsData = id
 
-instance {-# OVERLAPPABLE #-} a ~ PAsData b => PNoAsData a b  where  
-  premoveAsData = punsafeCoerce
+instance {-# OVERLAPPABLE #-} (PIsData b, a ~ PAsData b) => PNoAsData a b  where  
+  premoveAsData = pfromData
 
 {- | 
     removes the PAsData if the hole requires it but leaves it 
