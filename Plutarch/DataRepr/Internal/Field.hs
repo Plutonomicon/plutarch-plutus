@@ -1,7 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.DataRepr.Internal.Field (
   -- * PDataField class & deriving utils
@@ -14,21 +13,13 @@ module Plutarch.DataRepr.Internal.Field (
   type BoundTerms,
   type Drop,
 
-  -- * Utils to remove PAsData implicitly
-  PFromDataable,
-  pmaybeFromAsData,  
-  PNoAsData,
-  premoveAsData, 
-
   -- * Re-exports
   HRec (..),
   Labeled (Labeled, unLabeled),
   hrecField,
-  hrecdField,
 ) where
 
 import Data.Proxy (Proxy (Proxy))
-import GHC.Records (HasField (..))
 import GHC.TypeLits (
   KnownNat,
   Symbol,
@@ -63,12 +54,11 @@ import Plutarch.DataRepr.Internal (
   type PLabelIndex,
   type PUnLabel,
  )
+import Plutarch.DataRepr.Internal.FromData (PFromDataable, pmaybeFromAsData)
 import Plutarch.DataRepr.Internal.HList (
   HRec (HCons, HNil),
   Labeled (Labeled, unLabeled),
   hrecField,
-  ElemOf, 
-  type IndexLabel,
   type Drop,
   type IndexList,
   type SingleItem,
@@ -121,41 +111,6 @@ instance
   where
   type PFields (PAsData a) = PFields a
   ptoFields = ptoFields . pfromData
-
-
-{- | 
-    always makes sure the result is not wrapped in PAsData, 
-    even if the result it not originally wrapped into it 
--}
-class PNoAsData (a::PType) (b::PType) | a -> b where 
-  premoveAsData :: Term s a -> Term s b
-
-instance {-# OVERLAPPABLE #-} PNoAsData a a where 
-  premoveAsData = id
-
-instance {-# OVERLAPPABLE #-} (PIsData b, a ~ PAsData b) => PNoAsData a b  where  
-  premoveAsData = pfromData
-
-{- | 
-    removes the PAsData if the hole requires it but leaves it 
-    there if it doesn't 
-
-    >>> :t pmaybeFromAsData (pdata 3 :: (Term s (PAsData PInteger))) :: (Term (s::S) PInteger)
-    pmaybeFromAsData (pdata 3 :: (Term s (PAsData PInteger))) :: (Term (s::S) PInteger)
-    :: forall (s :: S). Term s (PInteger @{S})
-
-    >>> :t pmaybeFromAsData (pdata 3 :: (Term s (PAsData PInteger))) :: (Term (s::S) (PAsData PInteger))
-    pmaybeFromAsData (pdata 3 :: (Term s (PAsData PInteger))) :: (Term (s::S) (PAsData PInteger))
-    :: forall (s :: S). Term s (PAsData (PInteger @{S}))
--}
-class PFromDataable (a :: PType) (b::PType) | b -> a, a -> b where
-  pmaybeFromAsData :: Term s (PAsData a) -> Term s b 
-
-instance {-# OVERLAPS #-} PFromDataable a (PAsData a) where 
-  pmaybeFromAsData = id
-
-instance {-# OVERLAPPABLE #-} (PIsData a, b ~ a) => PFromDataable a b where 
-  pmaybeFromAsData = pfromData
 
 {- |
   Bind a HRec of named fields containing all the specified
@@ -271,31 +226,5 @@ pfield ::
   , PFromDataable a b
   ) =>
   Term s (p :--> b)
-pfield = plam $ \i -> 
-   pmaybeFromAsData $ pindexDataRecord (Proxy @n) $ ptoFields @p i
-
-{- |
-    An hrecfield version that implicitly removed the PAsData. 
-    This is what the Overloaded Record Dot uses
--}
-hrecdField :: 
-  forall name a as b c s. 
-  ( IndexLabel name as ~ a
-  , ElemOf name a as 
-  , Term s (PAsData b) ~ a
-  , PFromDataable b c
-  ) => 
-  HRec as -> Term s c
-hrecdField xs = pmaybeFromAsData $ hrecField @name xs
-
----------- HasField instances
-instance
-  forall name a as b c s. 
-  ( IndexLabel name as ~ a
-  , ElemOf name a as 
-  , Term s (PAsData b) ~ a
-  , PFromDataable b c
-  ) =>
-  HasField name (HRec as) (Term s c)
-  where
-    getField = hrecdField @name
+pfield = plam $ \i ->
+  pmaybeFromAsData $ pindexDataRecord (Proxy @n) $ ptoFields @p i

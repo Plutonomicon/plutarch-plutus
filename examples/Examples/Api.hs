@@ -177,9 +177,8 @@ checkSignatoryCont = plam $ \ph ctx' ->
     purpose <- cont (pmatch $ ctx.purpose)
     pure $ case purpose of
       PSpending _ ->
-        let 
-          signatories :: Term s (PBuiltinList (PAsData PPubKeyHash))
-          signatories = pfield @"signatories" # ctx.txInfo
+        let signatories :: Term s (PBuiltinList (PAsData PPubKeyHash))
+            signatories = pfield @"signatories" # ctx.txInfo
          in pif
               (pelem # pdata ph # signatories)
               -- Success!
