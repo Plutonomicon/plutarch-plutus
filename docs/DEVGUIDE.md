@@ -1,5 +1,7 @@
 Looking to contribute to Plutarch? Looking for functionalities that are not currently provided by Plutarch from a safe interface? You've come to the right place!
 
+> Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high quality documentation for Plutarch developers!
+
 <details>
 <summary> Table of Contents </summary>
 
@@ -17,7 +19,6 @@ Looking to contribute to Plutarch? Looking for functionalities that are not curr
 - [Useful Links](#useful-links)
 </details>
 
-> Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high quality documentation for Plutarch developers!
 
 # Code Style
 You should generally follow the [MLabs style guide](https://github.com/mlabs-haskell/styleguide), credit to [@Koz Ross](https://github.com/kozross).
