@@ -44,7 +44,7 @@
     - [PListLike](#plistlike)
     - [PIsDataRepr & PDataFields](#pisdatarepr--pdatafields)
       - [All about extracting fields](#all-about-extracting-fields)
-        - [Alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax)
+        - [Alternatives to `OverloadedRecordDot`](#alternatives-to-overloadedrecorddot)
       - [All about constructing data values](#all-about-constructing-data-values)
       - [Implementing PIsDataRepr and friends](#implementing-pisdatarepr-and-friends)
   - [Working with Types](#working-with-types)
@@ -1162,13 +1162,13 @@ We caught a glimpse of field extraction in the example above, thanks to `pfield`
 Once a type has a `PDataFields` instance, field extraction can be done with these 3 functions-
 * `pletFields`
 * `pfield`
-* `hrecField` (when not using `RecordDotSyntax` or record dot preprocessor)
+* `hrecField` (when not using `OverloadedRecordDot` or record dot preprocessor)
 
 Each has its own purpose. However, `pletFields` is arguably the most general purpose and most efficient. Whenever you need to extract several fields from the same variable, you should use `pletFields`-
 ```hs
 -- NOTE: REQUIRES GHC 9!
 {-# LANGUAGE QualifiedDo #-}
-{-# LANGUAGE RecordDotSyntax #-}
+{-# LANGUAGE OverloadedRecordDot #-}
 
 import Plutarch.Prelude
 import Plutarch.Api.Contexts
@@ -1183,7 +1183,7 @@ foo = plam $ \ctx' -> P.do
   -- <use purpose and txInfo here>
   pconstant ()
 ```
-> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-with-qualifieddo-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
+> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `OverloadedRecordDot`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-with-qualifieddo-to-ghc-8) and [alternatives to `OverloadedRecordDot`](#alternatives-to-overloadedrecorddot).
 
 In essence, `pletFields` takes in a type level list of the field names that you want to access and a continuation function that takes in an `HRec`. This `HRec` is essentially a collection of the bound fields. You don't have to worry too much about the details of `HRec`. This particular usage has type-
 ```hs
@@ -1206,14 +1206,14 @@ pletFields :: Term s PScriptContext
 >   in pconstant ()
 > ```
 
-You can then access the fields on this `HRec` using `RecordDotSyntax`.
+You can then access the fields on this `HRec` using `OverloadedRecordDot`.
 
 Next up is `pfield`. You should *only ever* use this if you just want one field from a variable and no more. It's usage is simply `pfield @"fieldName" # variable`. You can, however, also use `pletFields` in this case (e.g `pletFoelds @'["fieldName"] variable`). `pletFields` with a singular field has the same efficiency as `pfield`!
 
-Finally, `hrecField` is merely there to supplement the lack of record dot syntax. See: [Alternative to `RecordDotSyntax`](#alternative-to-recorddotsyntax).
+Finally, `hrecField` is merely there to supplement the lack of record dot syntax. See: [Alternative to `OverloadedRecordDot`](#alternative-to-overloadedrecorddot).
 
-##### Alternatives to `RecordDotSyntax`
-If `RecordDotSyntax` is not available, you can also try using the [record dot preprocessor plugin](https://hackage.haskell.org/package/record-dot-preprocessor).
+##### Alternatives to `OverloadedRecordDot`
+If `OverloadedRecordDot` is not available, you can also try using the [record dot preprocessor plugin](https://hackage.haskell.org/package/record-dot-preprocessor).
 
 If you don't want to use either, you can simply use `hrecField`. In fact, `ctx.purpose` above just translates to `hrecField @"purpose" ctx`. Nothing magical there!
 
@@ -1308,7 +1308,7 @@ That's it! Now you can represent `PVehicle` as a `Data` value, as well as decons
 ```hs
 -- NOTE: REQUIRES GHC 9!
 {-# LANGUAGE QualifiedDo #-}
-{-# LANGUAGE RecordDotSyntax #-}
+{-# LANGUAGE OverloadedRecordDot #-}
 
 import qualified Plutarch.Monadic as P
 import Plutarch.Prelude
@@ -1325,7 +1325,7 @@ test = plam $ \veh' -> P.do
       pfromData twh._0 + pfromData twh._1
     PImmovableBox _ -> 0
 ```
-> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-with-qualifieddo-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
+> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `OverloadedRecordDot`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-with-qualifieddo-to-ghc-8) and [alternatives to `OverloadedRecordDot`](#alternatives-to-overloadedrecorddot).
 
 What about types with singular constructors? It's quite similar to the sum type case. Here's how it looks-
 ```hs
@@ -1719,7 +1719,7 @@ Left (EvaluationError [] "(CekEvaluationFailure,Nothing)")
 ```hs
 -- NOTE: REQUIRES GHC 9!
 {-# LANGUAGE QualifiedDo #-}
-{-# LANGUAGE RecordDotSyntax #-}
+{-# LANGUAGE OverloadedRecordDot #-}
 
 import Plutarch.Prelude
 import Plutarch.Api.V1.Contexts
@@ -1741,7 +1741,7 @@ checkSignatory = plam $ \ph _ _ ctx' -> P.do
     -- Signature not present.
     perror
 ```
-> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `RecordDotSyntax`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-with-qualifieddo-to-ghc-8) and [alternatives to `RecordDotSyntax`](#alternatives-to-recorddotsyntax).
+> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `OverloadedRecordDot`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-with-qualifieddo-to-ghc-8) and [alternatives to `OverloadedRecordDot`](#alternatives-to-overloadedrecorddot).
 
 We match on the script purpose to see if its actually for *spending* - and we get the signatories field from `txInfo` (the 7th field), check if given pub key hash is present within the signatories and that's it!
 
@@ -1828,7 +1828,7 @@ Where else is `plet` unnecessary? Continuation functions! Specifically, the func
 
 You should also `plet` local bindings! In particular, if you applied a function (whether it be Plutarch level or Haskell level) to obtain a value, bound the value to a variable (using `let` or `where`) - don't use it multiple times! The binding will simply get inlined as the function application - and it'll keep getting re-evaluated. You should `plet` it first!
 
-This also applies to field accesses using `RecordDotSyntax`. When you do `ctx.purpose`, it really gets translated to `hrecField @"purpose" ctx` - that's a function call! If you use the field multiple times, `plet` it first.
+This also applies to field accesses using `OverloadedRecordDot`. When you do `ctx.purpose`, it really gets translated to `hrecField @"purpose" ctx` - that's a function call! If you use the field multiple times, `plet` it first.
 
 ## Prefer Plutarch level functions
 

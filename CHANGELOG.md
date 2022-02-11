@@ -38,6 +38,7 @@
 
   Added by: [#251](https://github.com/Plutonomicon/plutarch/pull/251)
 
+<<<<<<< HEAD
 - Added APIs for constructing, compiling, serialising & hashing Plutarch scripts.
 
   `Validator`, `StakeValidator`, `MintingPolicy` types, analogous to Plutus API types, but also including the Plutarch `ClosedTerm`s.
@@ -57,6 +58,21 @@
   See: `Examples.Scripts` for examples.
 
   Added by: [#267](https://github.com/Plutonomicon/plutarch/pull/267)
+=======
+- Add `PTuple` construction and related utilities.
+
+  Module: `Plutarch.Api.V1.Tuple`
+
+  Added by: [#255](https://github.com/Plutonomicon/plutarch/pull/255)
+
+- Add `PIsData` instances for `PUnit` and `PBuiltinPair (PAsData a) (PAsData b)`.
+
+  It's helpful to mentally note that `PTuple a b`, `PAsData (PTuple a b)` and `PBuiltinPair (PAsData a) (PAsData b)` all have the exact same underlying representation. See `Plutarch.Api.V1.Tuple` for no-op conversion functions.
+
+  Module: `Plutarch.Builtin`
+
+  Added by: [#255](https://github.com/Plutonomicon/plutarch/pull/255)
+>>>>>>> 74c49514b0221373ede1948b30b9bf5f5f046f5b
 
 # 1.1.0
 

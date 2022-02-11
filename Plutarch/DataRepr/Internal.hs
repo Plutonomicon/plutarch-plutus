@@ -82,6 +82,7 @@ import Plutarch.Builtin (
   PData,
   PIsData,
   pasConstr,
+  pconstrBuiltin,
   pdata,
   pforgetData,
   pfromData,
@@ -91,14 +92,13 @@ import Plutarch.Builtin (
 import Plutarch.DataRepr.Internal.Generic (MkSum (mkSum))
 import Plutarch.DataRepr.Internal.HList (type Drop, type IndexList)
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal (S (SI), punsafeBuiltin)
+import Plutarch.Internal (S (SI))
 import Plutarch.Internal.TypeFamily (ToPType2)
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstant, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont)
 import Plutarch.Unsafe (punsafeCoerce)
 import qualified Plutus.V1.Ledger.Api as Ledger
-import qualified PlutusCore as PLC
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is
  `PBuiltinList PData`.
@@ -381,6 +381,3 @@ class IsBuiltinList a where
 
 instance IsBuiltinList (PDataRecord l) where
   dataListFrom = punsafeCoerce
-
-pconstrBuiltin :: Term s (PInteger :--> PBuiltinList PData :--> PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
-pconstrBuiltin = punsafeBuiltin $ PLC.ConstrData
