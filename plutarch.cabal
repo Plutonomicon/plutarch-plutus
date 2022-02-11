@@ -179,7 +179,6 @@ test-suite examples
     , bytestring
     , generics-sop
     , hedgehog
-    , mtl
     , plutarch
     , plutus-core
     , plutus-ledger-api

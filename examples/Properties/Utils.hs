@@ -23,7 +23,7 @@ import Plutarch (ClosedTerm, compile)
 import Plutarch.Evaluate (evaluateScript)
 
 import Control.Exception (SomeException, evaluate, try)
-import Control.Monad.Trans (lift)
+import Control.Monad.IO.Class (liftIO)
 import Data.Proxy (Proxy (..))
 import Data.Text (Text)
 
@@ -188,7 +188,7 @@ testDataEq x y = testOutputEq (pdata x) (pdata y)
 
 testPartial :: (h -> ClosedTerm p -> PropertyT IO ()) -> h -> ClosedTerm p -> PropertyT IO ()
 testPartial baseTest h p =
-  lift (try $ evaluate h) >>= \case
+  liftIO (try $ evaluate h) >>= \case
     Left (_ :: SomeException) ->
       case run p of
         Left _ -> assert True
