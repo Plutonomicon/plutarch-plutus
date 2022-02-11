@@ -1,7 +1,7 @@
 {
   description = "plutarch";
 
-  inputs.nixpkgs-2111.url = "github:NixOS/nixpkgs/nixpkgs-21.11-darwin";
+  inputs.nixpkgs-2111 = { url = "github:NixOS/nixpkgs/nixpkgs-21.11-darwin"; };
   inputs.haskell-nix.url = "github:L-as/haskell.nix?ref=master";
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
   inputs.flake-compat-ci.url = "github:hercules-ci/flake-compat-ci";
