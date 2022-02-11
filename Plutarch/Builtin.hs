@@ -22,8 +22,6 @@ module Plutarch.Builtin (
   PIsData (..),
   PAsData,
   pforgetData,
-  punsafeAsData,
-  punsafeFromData,
   ppairDataBuiltin,
   type PBuiltinMap,
 ) where
@@ -213,12 +211,6 @@ instance PUnsafeLiftDecl (PAsData a) where type PLifted (PAsData a) = PAsDataLif
 
 pforgetData :: Term s (PAsData a) -> Term s PData
 pforgetData = punsafeCoerce
-
-punsafeAsData :: Term s PData -> Term s (PAsData p)
-punsafeAsData = punsafeCoerce
-
-punsafeFromData :: (PIsData p) => Term s PData -> Term s p
-punsafeFromData = pfromData . punsafeAsData
 
 class PIsData a where
   pfromData :: Term s (PAsData a) -> Term s a

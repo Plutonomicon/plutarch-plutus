@@ -3,49 +3,41 @@ module Examples.Scripts (
   authorizedPolicy,
   authorizedStakeValidator,
   authValidatorCompiled,
+  validatorEncoded,
+  validatorHashEncoded,
   authValidatorHash,
   authStakeValidatorCompiled,
+  stakeValidatorEncoded,
   authStakeValidatorHash,
+  stakeValidatorHashEncoded,
   authPolicyCompiled,
+  policyEncoded,
+  policySymEncoded,
   authPolicySymbol,
-  writeValidator,
-  writePolicy,
-  writeStakeValidator,
   tests,
 ) where
 
-import Codec.Serialise (Serialise, serialise)
-import qualified Data.ByteString.Lazy as BS
 import Data.Text (Text)
-import qualified Data.Text.IO as Text
 
-import Data.Aeson.Extras (encodeByteString)
+import Data.Aeson.Extras (encodeSerialise)
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified Plutus.V1.Ledger.Crypto as Plutus
 
-import Plutarch (ClosedTerm)
-import Plutarch.Api.V1 (PScriptContext)
-import Plutarch.Api.V1.Crypto (PPubKey, PPubKeyHash, PSignature)
-import Plutarch.Api.V1.Scripts (
-  MintingPolicy,
-  StakeValidator,
-  Validator,
+import Plutarch (ClosedTerm, POpaque, popaque)
+import Plutarch.Api.V1 (
+  PScriptContext,
   mintingPolicySymbol,
   mkMintingPolicy,
   mkStakeValidator,
   mkValidator,
-  pwrapMintingPolicyFromData,
-  pwrapStakeValidatorFromData,
-  pwrapValidatorFromData,
-  serialiseMintingPolicy,
-  serialiseStakeValidator,
-  serialiseValidator,
   stakeValidatorHash,
   validatorHash,
  )
+import Plutarch.Api.V1.Crypto (PPubKey, PPubKeyHash, PSignature (PSignature))
+import Plutarch.Builtin (pasByteStr)
 import Plutarch.Prelude
-import Test.Tasty (TestTree, localOption, testGroup)
-import Test.Tasty.Golden (DeleteOutputFile (OnPass), goldenVsFile)
+import Test.Tasty (TestTree, testGroup)
+import Test.Tasty.HUnit (testCase, (@?=))
 
 import Utils
 
@@ -58,11 +50,11 @@ authorizedValidator ::
   Term s PByteString ->
   Term s PSignature ->
   Term s PScriptContext ->
-  Term s PUnit
+  Term s POpaque
 authorizedValidator authKey datumMessage redeemerSig _ctx =
   pif
     (pverifySignature # pto authKey # datumMessage # pto redeemerSig)
-    (pcon PUnit)
+    (popaque $ pcon PUnit)
     perror
 
 {- |
@@ -74,13 +66,13 @@ authorizedPolicy ::
   ClosedTerm (PAsData PPubKeyHash) ->
   Term s PData ->
   Term s PScriptContext ->
-  Term s PUnit
+  Term s POpaque
 authorizedPolicy authHash _redeemer ctx =
   let sigs :: Term s (PBuiltinList (PAsData PPubKeyHash))
       sigs = pfromData (pfield @"signatories" #$ pfield @"txInfo" # ctx)
    in pif
         (pelem # authHash # sigs)
-        (pcon PUnit)
+        (popaque $ pcon PUnit)
         perror
 
 {- |
@@ -92,13 +84,13 @@ authorizedStakeValidator ::
   ClosedTerm (PAsData PPubKeyHash) ->
   Term s PData ->
   Term s PScriptContext ->
-  Term s PUnit
+  Term s POpaque
 authorizedStakeValidator authHash _redeemer ctx =
   let sigs :: Term s (PBuiltinList (PAsData PPubKeyHash))
       sigs = pfromData (pfield @"signatories" #$ pfield @"txInfo" # ctx)
    in pif
         (pelem # authHash # sigs)
-        (pcon PUnit)
+        (popaque $ pcon PUnit)
         perror
 
 adminPubKey :: Plutus.PubKey
@@ -111,22 +103,29 @@ adminPubKeyHash = "cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f"
   We can compile a `Validator` using `mkValidator` &
   `pwrapValidatorFromData`
 -}
-authValidatorCompiled :: Validator
+authValidatorCompiled :: Plutus.Validator
 authValidatorCompiled =
   mkValidator $
-    pwrapValidatorFromData $
-      authorizedValidator $ pconstant adminPubKey
+    plam $ \datum redeemer ctx ->
+      authorizedValidator
+        (pconstant adminPubKey)
+        (pasByteStr # datum)
+        (pcon $ PSignature $ pasByteStr # redeemer)
+        ctx
 
 -- | `validatorHash` gets the Plutus `ValidatorHash`
 authValidatorHash :: Plutus.ValidatorHash
 authValidatorHash = validatorHash authValidatorCompiled
 
 -- | Similarly, for a MintingPolicy
-authPolicyCompiled :: MintingPolicy
+authPolicyCompiled :: Plutus.MintingPolicy
 authPolicyCompiled =
   mkMintingPolicy $
-    pwrapMintingPolicyFromData $
-      authorizedPolicy $ pconstantData adminPubKeyHash
+    plam $ \redeemer ctx ->
+      authorizedPolicy
+        (pconstantData adminPubKeyHash)
+        redeemer
+        ctx
 
 -- | `mintingPolicySymbol` gets the Plutus `CurrencySymbol`
 authPolicySymbol :: Plutus.CurrencySymbol
@@ -134,115 +133,86 @@ authPolicySymbol =
   mintingPolicySymbol authPolicyCompiled
 
 -- | ...And for a StakeValidator
-authStakeValidatorCompiled :: StakeValidator
+authStakeValidatorCompiled :: Plutus.StakeValidator
 authStakeValidatorCompiled =
   mkStakeValidator $
-    pwrapStakeValidatorFromData $
-      authorizedStakeValidator $ pconstantData adminPubKeyHash
+    plam $ \redeemer ctx ->
+      authorizedStakeValidator
+        (pconstantData adminPubKeyHash)
+        redeemer
+        ctx
 
 -- | `stakeValidatorHash` gets the Plutus `StakeValidatorHash`
 authStakeValidatorHash :: Plutus.StakeValidatorHash
 authStakeValidatorHash = stakeValidatorHash authStakeValidatorCompiled
 
--- | Serializing & hex-encoding a Validator to a file
-writeValidator :: FilePath -> Validator -> IO ()
-writeValidator path validator = do
-  Text.writeFile path $
-    encodeHex $
-      serialiseValidator validator
+-- | `encodeSerialise` will get the hex-encoded serialisation of a script
+validatorEncoded :: Text
+validatorEncoded = encodeSerialise authValidatorCompiled
 
--- | Serialising & hex-encoding a Validator to a file
-writePolicy :: FilePath -> MintingPolicy -> IO ()
-writePolicy path policy = do
-  Text.writeFile path $
-    encodeHex $
-      serialiseMintingPolicy policy
+validatorEncoded' :: Text
+validatorEncoded' = "585901000022253335734666e552214011661a8aca9b09bb93eefda295b5da2be3f944d1f4253ab29da17db580f50d02d26218e33fbba5e0cc1b0c0cadfb67a5f9a90157dcc19eecd7c9373b0415c88800375c0066eb8008526161"
 
--- | Serialising & hex-encoding a Validator to a file
-writeStakeValidator :: FilePath -> StakeValidator -> IO ()
-writeStakeValidator path stakeValidator = do
-  Text.writeFile path $
-    encodeHex $
-      serialiseStakeValidator stakeValidator
+-- | Similarly, with a `MintingPolicy`
+policyEncoded :: Text
+policyEncoded = encodeSerialise authPolicyCompiled
 
-{- |
-  Convert a ByteString to a Base16 encoding, using
-  `Data.Aeson.Extras.encodeByteString` from plutus-ledger-api.
+policyEncoded' :: Text
+policyEncoded' = "588e010000323232323222533300333232323002233002002001230022330020020012253335573e002294054ccc018cdd798040008018a511300230070014c11e581ccc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f00375864600c64600c600c600c600c600c600c600c002600e002600a600c0022930b2b9a5744ae848c008dd5000aab9e01"
 
-  Note that there is an extra 4-hexit tag prepended to
-  the output - due to the Serialise instance tags.
--}
-encodeHex :: BS.ByteString -> Text
-encodeHex = encodeByteString . BS.toStrict
+-- | And with a `StakeValidator`
+stakeValidatorEncoded :: Text
+stakeValidatorEncoded = encodeSerialise authStakeValidatorCompiled
+
+stakeValidatorEncoded' :: Text
+stakeValidatorEncoded' = "588e010000323232323222533300333232323002233002002001230022330020020012253335573e002294054ccc018cdd798040008018a511300230070014c11e581ccc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f00375864600c64600c600c600c600c600c600c600c002600e002600a600c0022930b2b9a5744ae848c008dd5000aab9e01"
 
 {- |
-  Serializing & writing a script hash to a file.
+  We can also encode `ValidatorHash` the same way.
 
-  NB: the `Serialise` instances will prepend a 4-hexit
-  tag on the output repr.
-  This is also different from the Cardano `addr1`
-  (CIP-0019/bech32) format.
+  NB:
+  The serialisation from Codec.Serialise will prepend a 4-hexit prefix,
+  tagging the type, so this will differ slightly from the encoding
+  of the `Show` & `IsString` instances.
+  Also note that this is not the addr1/CIP-0019 Address encoding of the script.
 -}
-writeHash :: (Serialise hash) => FilePath -> hash -> IO ()
-writeHash path hash = do
-  Text.writeFile path $
-    encodeHex $
-      serialise hash
+validatorHashEncoded :: Text
+validatorHashEncoded = encodeSerialise authValidatorHash
+
+validatorHashEncoded' :: Text
+validatorHashEncoded' = "581cb8c68ee0b38d3c830ae47aec8154b1c35eeabaceaf2c00bea1f33865"
+
+-- | The same goes for `CurrencySymbol`
+policySymEncoded :: Text
+policySymEncoded = encodeSerialise authPolicySymbol
+
+policySymEncoded' :: Text
+policySymEncoded' = encodeSerialise authPolicySymbol
+
+-- | ... And `StakeValidatorHash`
+stakeValidatorHashEncoded :: Text
+stakeValidatorHashEncoded = encodeSerialise authStakeValidatorHash
+
+stakeValidatorHashEncoded' :: Text
+stakeValidatorHashEncoded' = "581cb9f49b1f51a0c1c285c9fde6b1da21e7094f7c19efb6eeace1ada858"
 
 tests :: HasTester => TestTree
 tests =
-  localOption (OnPass) $
-    testGroup
-      "Script compiling, serializing & hashing tests"
-      [ goldenVsFile
-          "authValidator serialize"
-          validatorGolden
-          validator
-          (writeValidator validator authValidatorCompiled)
-      , goldenVsFile
-          "authPolicy serialize"
-          policyGolden
-          policy
-          (writePolicy policy authPolicyCompiled)
-      , goldenVsFile
-          "authStakeValidator serialize"
-          stakeGolden
-          stake
-          (writeStakeValidator stake authStakeValidatorCompiled)
-      , goldenVsFile
-          "authValidator hash"
-          validatorHashGolden
-          validatorHash
-          (writeHash validatorHash authValidatorHash)
-      , goldenVsFile
-          "authPolicy hash"
-          policyHashGolden
-          policyHash
-          (writeHash policyHash authPolicySymbol)
-      , goldenVsFile
-          "authStakeValidator hash"
-          stakeHashGolden
-          stakeHash
-          (writeHash stakeHash authStakeValidatorHash)
-      ]
-  where
-    validator = goldenPath "authValidator.plutus"
-    validatorGolden = goldenSuffix validator
-
-    policy = goldenPath "authPolicy.plutus"
-    policyGolden = goldenSuffix policy
-
-    stake = goldenPath "authStakeValidator.plutus"
-    stakeGolden = goldenSuffix stake
-
-    validatorHash = goldenPath "authValidator.hash"
-    validatorHashGolden = goldenSuffix validatorHash
-
-    policyHash = goldenPath "authPolicy.hash"
-    policyHashGolden = goldenSuffix policyHash
-
-    stakeHash = goldenPath "authStakeValidator.hash"
-    stakeHashGolden = goldenSuffix stakeHash
-
-    goldenPath = ("./examples/golden/" <>)
-    goldenSuffix = (<> ".golden")
+  testGroup
+    "Script compiling, serializing & hashing tests"
+    [ testCase "authValidator serialize" $
+        validatorEncoded @?= validatorEncoded'
+    , testCase "authPolicy serialize" $
+        policyEncoded @?= policyEncoded'
+    , testCase "stakeValidator serialize" $
+        stakeValidatorEncoded @?= stakeValidatorEncoded'
+    , testCase
+        "authValidator hash encoding"
+        $ validatorHashEncoded @?= validatorHashEncoded'
+    , testCase
+        "authPolicy hash encoding"
+        $ policySymEncoded @?= policySymEncoded'
+    , testCase
+        "authStakeValidator hash encoding"
+        $ stakeValidatorHashEncoded @?= stakeValidatorHashEncoded'
+    ]

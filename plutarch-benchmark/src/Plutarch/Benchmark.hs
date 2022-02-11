@@ -19,6 +19,7 @@ module Plutarch.Benchmark (
   renderDiffTable,
 ) where
 
+import Codec.Serialise (serialise)
 import Control.Arrow ((&&&))
 import Control.Monad (mzero)
 import qualified Data.ByteString.Lazy as BSL
@@ -48,7 +49,6 @@ import Data.Maybe (fromJust)
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
 import Plutarch (ClosedTerm, compile, printTerm)
-import Plutarch.Api.V1.Scripts (serialiseScript)
 import Plutus.V1.Ledger.Api (
   ExBudget (ExBudget),
   ExCPU (ExCPU),
@@ -71,7 +71,7 @@ benchmarkScript' =
     mkBenchmark (ExBudget cpu mem) = Benchmark cpu mem . ScriptSizeBytes
 
     serialiseScriptShort :: Script -> SBS.ShortByteString
-    serialiseScriptShort = SBS.toShort . LB.toStrict . serialiseScript -- Using `flat` here breaks `evalScriptCounting`
+    serialiseScriptShort = SBS.toShort . LB.toStrict . serialise -- Using `flat` here breaks `evalScriptCounting`
     evalScriptCounting :: HasCallStack => Plutus.SerializedScript -> Plutus.ExBudget
     evalScriptCounting script =
       let costModel = fromJust Plutus.defaultCostModelParams
