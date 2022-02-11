@@ -52,6 +52,10 @@
 
   Added by: [#255](https://github.com/Plutonomicon/plutarch/pull/255)
 
+- Add implicit `pfromData` for `hrecField` and the record dot. Add implicit `pfromData` for `pfield`.
+
+  Added by: [#235](https://github.com/Plutonomicon/plutarch/pull/270)
+
 # 1.1.0
 
 - General repository changes.

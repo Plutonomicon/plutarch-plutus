@@ -1517,6 +1517,11 @@ You can also create a `PAsData` from a `PData`, but you lose specific type infor
 pdata :: Term s PData -> Term s (PAsData PData)
 ```
 
+To remove boilerplate uses of `pfromData` a new class has been added that tries to implicitly convert from `PIsData a => Term s (PAsData a)` to `Term s a` when using 
+`hrecField` (or the overloaded record dot) or `pfield`. This will not break instances where `pfromData` is used explicitly. It is important to note that there are 
+cases where GHC is not able to figure out the instance to remove the `PAsData`, in those cases the usage remains the same, i.e. just add a `pfromData`. This can also be
+avoided by adding a type signature. 
+
 ### PDataSum & PDataRecord
 Plutarch sum and product types are represented using `PDataSum` and `PDataRecord` respectively. These types are crucial to the [`PIsDataRepr`](#pisdatarepr) machinery.
 
