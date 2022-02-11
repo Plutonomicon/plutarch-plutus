@@ -112,6 +112,7 @@ module Plutarch.Prelude (
   pfield,
   pletFields,
   hrecField,
+  hrecdField,
 
   -- * Tracing
   ptrace,
