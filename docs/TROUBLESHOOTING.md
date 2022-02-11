@@ -1,0 +1,53 @@
+> Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high quality documentation for Plutarch users!
+
+<details>
+<summary> Table of Contents </summary>
+
+- [No instance for (PUnsafeLiftDecl a)](#no-instance-for-punsafeliftdecl-a)
+- [Couldn't match representation of type: ... arising from the 'deriving' clause](#couldnt-match-representation-of-type--arising-from-the-deriving-clause)
+- [Infinite loop / Infinite AST](#infinite-loop--infinite-ast)
+- [Couldn't match type `Plutarch.DataRepr.Internal.PUnLabel ...` arising from a use of `pfield` (or `hrecField`, or `pletFields`)](#couldnt-match-type-plutarchdatareprinternalpunlabel--arising-from-a-use-of-pfield-or-hrecfield-or-pletfields)
+- [Expected a type, but "fieldName" has kind `GHC.Types.Symbol`](#expected-a-type-but-fieldname-has-kind-ghctypessymbol)
+- [Lifting `PAsData`](#lifting-pasdata)
+
+</details>
+
+# No instance for (PUnsafeLiftDecl a)
+You should add `PLift a` to the context! `PLift` is just a synonym to `PUnsafeLiftDecl`.
+
+# Couldn't match representation of type: ... arising from the 'deriving' clause
+If you're getting these errors when deriving typeclasses using the machinery provided by Plutarch (e.g generic deriving, deriving via `PIsDataReprInstances`, `DerivePConstantViaData` etc.) - it means you're missing a constructor import.
+
+If you get this while using `DerivingVia`, make sure you have imported the constructor of the type you're *deriving via*.
+
+If you get this while utilizing generic deriving, make sure you have imported the `I` constructor (or any other related constructor)-
+```hs
+import Generics.SOP (Generic, I (I))
+```
+
+# Infinite loop / Infinite AST
+
+While maybe not immediately obvious, things like the following are a no-go in Plutarch:
+
+```haskell
+f :: Term s (PInteger :--> PInteger)
+f = phoistAcyclic $ plam $ \n ->
+  pif (n #== 0)
+    0
+    $ n + f # (n - 1)
+```
+
+The issue here is that the AST is infinitely large. Plutarch will try to traverse this AST and will in the process not terminate, as there is no end to it. In this case you'd fix it by using `pfix`.
+
+Relevant issue: [#19](https://github.com/Plutonomicon/plutarch/issues/19)
+
+# Couldn't match type `Plutarch.DataRepr.Internal.PUnLabel ...` arising from a use of `pfield` (or `hrecField`, or `pletFields`)
+You might get some weird errors when using `pfield`/`hrecField`/`pletFields` like the above. Don't be scared! It just means that the type application you used is incorrect. Specifically, the type application names a non-existent field. Re-check the field name string you used in the type application for typos!
+
+# Expected a type, but "fieldName" has kind `GHC.Types.Symbol`
+This just means the argument of a type application wasn't correctly promoted. Most likely arising from a usage of `pfield`/`hrecField`/`pletFields`. In the case of `pfield` and `hrecField`, the argument of type application should have kind `Symbol`. A simple string literal representing the field name should work in this case. In the case of `pletFields`, the argument of type application should have kind `[Symbol]` - a type level list of types with kind `Symbol`. When you use a singleton list here, like `["foo"]` - it's actually parsed as a *regular* list (like `[a]`). A regular list, of course, has kind `Type`.
+
+All you need to do, is put a `'` (quote) infront of the list, like so- `@'["foo"]`. This will promote the `[a]` to the type level.
+
+# Lifting `PAsData`
+Don't try to lift a `PAsData` term! It's intentionally blocked and partial. The `PLift` instance for `PAsData` is only there to make some important functionality work correctly. But the instance methods will simply error if used. Instead, you should extract the `Term s a` out of `Term s (PAsData a)` using `pfromData` and `plift` that instead!
