@@ -8,8 +8,8 @@ module Plutarch.List (
   -- * Comparison
   plistEquals,
   psort,
-  mergesort,
-  timSort,
+  pmergesort,
+  ptimSort,
 
   -- * Query
   pelem,
@@ -405,13 +405,13 @@ pfind = phoistAcyclic $
       xs
 
 psort :: POrd a => Term s (PList a :--> PList a)
-psort = timSort
+psort = ptimSort
 
 -- TODO: decide on default sort
 -- probably by benchmarking them
 
-mergesort :: POrd a => Term s (PList a :--> PList a)
-mergesort = phoistAcyclic $
+pmergesort :: POrd a => Term s (PList a :--> PList a)
+pmergesort = phoistAcyclic $
   pfix #$ plam $ \self xs ->
     pmatch xs $ \case
       PSNil -> pcon PSNil
@@ -450,8 +450,8 @@ merge = phoistAcyclic $
 -- most of the tricks from timsort are not implemented here
 -- just the central strategy of finding runs of
 -- consecutive data and then merging them together
-timSort :: POrd a => Term s (PList a :--> PList a)
-timSort = phoistAcyclic $
+ptimSort :: POrd a => Term s (PList a :--> PList a)
+ptimSort = phoistAcyclic $
   plam $ \xs -> merge2 #$ timSplit # xs
 
 timSplit :: POrd a => Term s (PList a :--> PList (PList a))

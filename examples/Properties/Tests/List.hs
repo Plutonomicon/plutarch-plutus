@@ -4,7 +4,7 @@ import Hedgehog (Gen, Property)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.Hedgehog (testProperty)
 
-import Plutarch.List (mergesort, pelemAt, pfind, preverse, timSort)
+import Plutarch.List (pelemAt, pfind, pmergesort, preverse, ptimSort)
 import Plutarch.Prelude
 
 import Data.List (find, sort)
@@ -61,7 +61,7 @@ mergesortTest =
   haskPlutEquiv
     viaPEq
     (sort @Integer)
-    mergesort
+    pmergesort
     (genList integerGen)
 
 timsortTest :: Property
@@ -69,5 +69,5 @@ timsortTest =
   haskPlutEquiv
     viaPEq
     (sort @Integer)
-    timSort
+    ptimSort
     (genList integerGen)
