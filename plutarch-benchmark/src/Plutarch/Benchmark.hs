@@ -8,8 +8,11 @@ module Plutarch.Benchmark (
   ScriptSizeBytes,
   -- | * Benchmark an arbitraty Plutus script
   benchmarkScript,
+  benchmarkScriptUnapplied,
+  benchmarkScriptWithArgs,
   -- | * Benchmark entrypoints
   bench,
+  benchWithApply,
   bench',
   benchGroup,
   benchMain,
@@ -20,7 +23,6 @@ module Plutarch.Benchmark (
 ) where
 
 import qualified Codec.Serialise as Codec
-import Control.Arrow ((&&&))
 import Control.Monad (mzero)
 import qualified Data.ByteString.Lazy as BSL
 import Data.Coerce (coerce)
@@ -55,23 +57,56 @@ import Plutus.V1.Ledger.Api (
   ExMemory (ExMemory),
   Script,
  )
+import qualified Plutus.V1.Ledger.Scripts as Plutus
 import qualified Plutus.V1.Ledger.Api as Plutus
 
 --------------------------------------------------------------------------------
 
 -- | Benchmark the given script
 benchmarkScript :: String -> Script -> NamedBenchmark
-benchmarkScript name = NamedBenchmark . (name,) . benchmarkScript'
+benchmarkScript name = 
+  NamedBenchmark . (name,) . benchmarkScript' Nothing
 
-benchmarkScript' :: Script -> Benchmark
-benchmarkScript' =
-  uncurry mkBenchmark . (evalScriptCounting &&& (fromInteger . toInteger . SBS.length)) . serialiseScript
+{- | Benchmark the given script, 
+  with a provided un-applied version for sizing
+-}
+benchmarkScriptUnapplied :: String -> Script -> Script -> NamedBenchmark
+benchmarkScriptUnapplied name unApplied = 
+  NamedBenchmark . (name,) . benchmarkScript' (Just unApplied)
+
+{- | 
+  Benchmark the given script, applying the provided
+  `Data` args, measuring the size of the un-applied version.
+-}
+benchmarkScriptWithArgs :: String -> Script -> [Plutus.Data] -> NamedBenchmark
+benchmarkScriptWithArgs name unApplied args =
+  benchmarkScriptUnapplied name unApplied $ Plutus.applyArguments unApplied args
+
+{- | 
+  Benchmark a script, with an (optional) version without args 
+    applied to measure the size.
+-}
+benchmarkScript' :: Maybe (Script) -> Script -> Benchmark
+benchmarkScript' unAppliedScript script =
+  mkBenchmark 
+    (evalScriptCounting applied) 
+    (scriptSize unApplied)
   where
+    applied :: SBS.ShortByteString
+    applied = serialiseScript script
+
+    unApplied :: SBS.ShortByteString
+    unApplied = maybe applied serialiseScript unAppliedScript
+
     mkBenchmark :: ExBudget -> Int64 -> Benchmark
     mkBenchmark (ExBudget cpu mem) = Benchmark cpu mem . ScriptSizeBytes
 
+    scriptSize :: SBS.ShortByteString -> Int64
+    scriptSize = fromInteger . toInteger . SBS.length
+
     serialiseScript :: Script -> SBS.ShortByteString
     serialiseScript = SBS.toShort . LB.toStrict . Codec.serialise -- Using `flat` here breaks `evalScriptCounting`
+
     evalScriptCounting :: HasCallStack => Plutus.SerializedScript -> Plutus.ExBudget
     evalScriptCounting script =
       let costModel = fromJust Plutus.defaultCostModelParams
@@ -117,6 +152,22 @@ benchGroup groupName bs =
 bench :: String -> ClosedTerm a -> [NamedBenchmark]
 bench name prog =
   [coerce . benchmarkScript name $ compile prog]
+
+{- | 
+  Create a benchmark, given a function to apply the args
+  to a Term. 
+  The un-applied version is used to measure the compiled size.
+
+-}
+benchWithApply
+  :: String 
+  -> ClosedTerm a 
+  -> (ClosedTerm a -> ClosedTerm result) 
+  -> [NamedBenchmark]
+benchWithApply name unApplied appArgs =
+  [ benchmarkScriptUnapplied name (compile unApplied) 
+      $ compile $ appArgs unApplied
+  ]
 
 -- | Create a benchmark with itself as name
 bench' :: ClosedTerm a -> [NamedBenchmark]
