@@ -1,13 +1,10 @@
 {-# LANGUAGE ImpredicativeTypes #-}
-{-# OPTIONS_GHC -Wno-unused-imports #-}
-{-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
 module Plutarch.ApiSpec (spec) where
 
 import Test.Syd
 import Test.Tasty.HUnit
 
-import Control.Monad
 import Control.Monad.Trans.Cont (cont, runCont)
 import Plutus.V1.Ledger.Api
 import qualified Plutus.V1.Ledger.Interval as Interval
@@ -15,11 +12,8 @@ import qualified Plutus.V1.Ledger.Value as Value
 
 import Plutarch.Api.V1
 import Plutarch.Builtin (pasConstr, pforgetData)
-import Plutarch.Internal (ClosedTerm)
-import Plutarch.Internal.Other (POpaque, popaque)
 import qualified Plutarch.Monadic as P
 import Plutarch.Prelude
-import Plutarch.Rational
 import Plutarch.Test
 
 spec :: Spec
