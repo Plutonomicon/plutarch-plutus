@@ -8,9 +8,9 @@ This document describes various core Plutarch usage concepts.
 - [Applying functions](#applying-functions)
 - [Conditionals](#conditionals)
 - [Recursion](#recursion)
+- [Do syntax with `TermCont`](#do-syntax-with-termcont)
 - [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](#do-syntax-with-qualifieddo-and-plutarchmonadic)
   - [Translating `do` syntax with `QualifiedDo` to GHC 8](#translating-do-syntax-with-qualifieddo-to-ghc-8)
-- [Do syntax with `TermCont`](#do-syntax-with-termcont)
 - [Deriving typeclasses for `newtype`s](#deriving-typeclasses-for-newtypes)
 - [Deriving typeclasses with generics](#deriving-typeclasses-with-generics)
 
@@ -100,6 +100,43 @@ pfac = pfix #$ plam f
 
 There's a Plutarch level factorial function! Note how `f` takes in a `self` and just recurses on it. All you have to do, is create a Plutarch level function by using `plam` on `f` and `pfix` the result - and that `self` argument will be taken care of for you.
 
+# Do syntax with `TermCont`
+You can mostly replicate the `do` syntax from `Plutarch.Monadic` using `TermCont`. In particular, the continuation accepting functions like `plet`, `pletFields`, `pmatch` and so on can utilize regular `do` syntax with `TermCont` as the underlying monad.
+
+`TermCont @b s a` essentially represents `(a -> Term s b) -> Term s b`. `a` being the input to the continuation, and `Term s b` being the output. Notice the type application - `b` must have been brought into scope through another binding first.
+
+TODO: REWORK (not above example, example has been moved below)
+Here's how you'd write the [above example](#do-syntax-with-qualifieddo-and-plutarchmonadic) with `TermCont` instead.
+```hs
+import Plutarch.Api.Contexts
+import Plutarch.Prelude
+
+f :: Term s (PScriptPurpose :--> PUnit)
+f = plam $ \x -> unTermCont $ do
+  PSpending _ <- tcont $ pmatch x
+  pure $ ptrace "matched spending script purpose" $ pconstant ()
+```
+
+The best part is that this doesn't require `QualifiedDo`! So you don't need GHC 9.
+
+Furthermore, this is very similar to the `Cont` monad - it just operates on Plutarch level terms. This means you can draw parallels to utilities and patterns one would use when utilizing the `Cont` monad. Here's an example-
+```hs
+import Plutarch.Prelude
+
+-- | Terminate with given value on empty list, otherwise continue with head and tail.
+nonEmpty :: Term s r -> PList a s -> TermCont @r s (Term s a, Term s (PList a))
+nonEmpty x0 list = TermCont $ \k ->
+  case list of
+    PSCons x xs -> k (x, xs)
+    PSNil -> x0
+
+foo :: Term s (PList PInteger :--> PInteger)
+foo = plam $ \l -> unTermCont $ do
+  (x, xs) <- nonEmpty 0 =<< tcont (pmatch l)
+  pure $ x + plength # xs
+```
+`foo` adds up the first element of the given list with the length of its tail. Unless the list was empty, in which case, it just returns 0. It uses continuations with the `do` syntax to elegantly utilize short circuiting!
+
 # Do syntax with `QualifiedDo` and `Plutarch.Monadic`
 The `Plutarch.Monadic` module provides convenient do syntax on common usage scenarios. It requires the `QualifiedDo` extension, which is only available in GHC 9.
 
@@ -123,7 +160,7 @@ Similarly, `P.do { y <- x; z }` translates to `x $ \case { y -> z; _ -> ptraceEr
 
 Finally, `P.do { x }` is just `x`.
 
-These semantics make it *extremely* convenient for usage with [`pmatch`](#plutustype-pcon-and-pmatch), [`plet`](#plet-to-avoid-work-duplication), [`pletFields`](#all-about-extracting-fields), and [`ptrace`](#tracing) etc.
+These semantics make it *extremely* convenient for usage with [`pmatch`](./TYPECLASSES.md#plutustype-pcon-and-pmatch), [`plet`](./CONCEPTS.md#plet-to-avoid-work-duplication), [`pletFields`](./TYPECLASSES.md#all-about-extracting-fields), and [`ptrace`](./CONCEPTS.md#tracing) etc.
 ```hs
 pmatch :: Term s a -> (a s -> Term s b) -> Term s b
 
@@ -185,42 +222,6 @@ There are several ways to do this-
     pconstant ()
   ```
 
-# Do syntax with `TermCont`
-You can mostly replicate the `do` syntax from `Plutarch.Monadic` using `TermCont`. In particular, the continuation accepting functions like `plet`, `pletFields`, `pmatch` and so on can utilize regular `do` syntax with `TermCont` as the underlying monad.
-
-`TermCont @b s a` essentially represents `(a -> Term s b) -> Term s b`. `a` being the input to the continuation, and `Term s b` being the output. Notice the type application - `b` must have been brought into scope through another binding first.
-
-Here's how you'd write the [above example](#do-syntax-with-qualifieddo-and-plutarchmonadic) with `TermCont` instead.
-```hs
-import Plutarch.Api.Contexts
-import Plutarch.Prelude
-
-f :: Term s (PScriptPurpose :--> PUnit)
-f = plam $ \x -> unTermCont $ do
-  PSpending _ <- tcont $ pmatch x
-  pure $ ptrace "matched spending script purpose" $ pconstant ()
-```
-
-The best part is that this doesn't require `QualifiedDo`! So you don't need GHC 9.
-
-Furthermore, this is very similar to the `Cont` monad - it just operates on Plutarch level terms. This means you can draw parallels to utilities and patterns one would use when utilizing the `Cont` monad. Here's an example-
-```hs
-import Plutarch.Prelude
-
--- | Terminate with given value on empty list, otherwise continue with head and tail.
-nonEmpty :: Term s r -> PList a s -> TermCont @r s (Term s a, Term s (PList a))
-nonEmpty x0 list = TermCont $ \k ->
-  case list of
-    PSCons x xs -> k (x, xs)
-    PSNil -> x0
-
-foo :: Term s (PList PInteger :--> PInteger)
-foo = plam $ \l -> unTermCont $ do
-  (x, xs) <- nonEmpty 0 =<< tcont (pmatch l)
-  pure $ x + plength # xs
-```
-`foo` adds up the first element of the given list with the length of its tail. Unless the list was empty, in which case, it just returns 0. It uses continuations with the `do` syntax to elegantly utilize short circuiting!
-
 # Deriving typeclasses for `newtype`s
 If you're defining a `newtype` to an existing Plutarch type, like so-
 ```hs
@@ -235,7 +236,7 @@ newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
 
 > Note: It's important to note that the contents of a `newtype` *that aims to be a Plutarch type* (i.e can be represented as a Plutarch term), must also be Plutarch terms. The type `PByteString s` simply doesn't exist in the Plutus Core world after compilation. It's all just `Term`s. So, when you say `Term s PPubKeyHash`, you're really just describing a `Term s PByteString` under the hood - since that's what it *is* during runtime.
 
-> Aside: You can access the inner type using `pto` (assuming it's a `PlutusType` instance). For example, `pto x`, where `x :: Term s PPubKeyHash`, would give you `Term s PByteString`. `pto` converts a [`PlutusType`](#plutustype-pcon-and-pmatch) term to its inner type. This is very useful, for example, when you need to use a function that operates on bytestring terms, but all you have is a `Term s PPubKeyHash`. You *know* it's literally a bytestring under the hood anyway - but how do you obtain that? Using `pto`!
+> Aside: You can access the inner type using `pto` (assuming it's a `PlutusType` instance). For example, `pto x`, where `x :: Term s PPubKeyHash`, would give you `Term s PByteString`. `pto` converts a [`PlutusType`](./TYPECLASSES.md#plutustype-pcon-and-pmatch) term to its inner type. This is very useful, for example, when you need to use a function that operates on bytestring terms, but all you have is a `Term s PPubKeyHash`. You *know* it's literally a bytestring under the hood anyway - but how do you obtain that? Using `pto`!
 
 Currently, `DerivePNewtype` lets you derive the following typeclasses for your Plutarch *types*:-
 * `PlutusType`
@@ -271,8 +272,8 @@ data MyType (a :: PType) (b :: PType) (s :: S)
 ```
 > Note: This requires the `generics-sop` package.
 
-This will use a [scott encoding representation](#data-encoding-and-scott-encoding) for `MyType`, which is typically what you want. However, this will forbid you from representing your type as a `Data` value and as a result - you cannot implement `PIsData` for it. (Well, you can if you try hard enough - but you *really really really* shouldn't)
+This will use a [scott encoding representation](./CONCEPTS.md#data-encoding-and-scott-encoding) for `MyType`, which is typically what you want. However, this will forbid you from representing your type as a `Data` value and as a result - you cannot implement `PIsData` for it. (Well, you can if you try hard enough - but you *really really really* shouldn't)
 
 Currently, generic deriving supports the following typeclasses:-
-* [`PlutusType`](#implementing-plutustype-for-your-own-types) (scott encoding only)
-* [`PIsDataRepr`](#implementing-pisdatarepr-and-friends)
+* [`PlutusType`](./TYPECLASSES.md#implementing-plutustype-for-your-own-types) (scott encoding only)
+* [`PIsDataRepr`](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)
