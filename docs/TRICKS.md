@@ -66,7 +66,7 @@ You don't have to worry about work duplication on arguments in *every single sce
 
 Where else is `plet` unnecessary? Functions taking in continuations, such as `plet` (duh) and `pletFields`, always pre-evaluate the binding. An exception, however, is `pmatch`. In certain cases, you don't need to `plet` bindings within the `pmatch` case handler. For example, if you use `pmatch` on a `PList`, the `x` and `xs` in the `PSCons x xs` *will always be pre-evaluated*. On the other hand, if you use `pmatch` on a `PBuiltinList`, the `x` and `xs` in the `PCons x xs` *are **not** pre-evaluated*. Be sure to `plet` them if you use them several times!
 
-In general, `plet`ing something back to back several times will be optimized to a singular `plet` anyway. However, you should know that for data encoded types (types that follow "[implementing `PIsDataRepr` and friends](#implementing-pisdatarepr-and-friends)") and scott encoded types, `pmatch` handlers get pre-evaluated bindings. For `PBuiltinList`, and `PDataRecord` - the bindings are not pre-evaluated.
+In general, `plet`ing something back to back several times will be optimized to a singular `plet` anyway. However, you should know that for data encoded types (types that follow "[implementing `PIsDataRepr` and friends](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)") and scott encoded types, `pmatch` handlers get pre-evaluated bindings. For `PBuiltinList`, and `PDataRecord` - the bindings are not pre-evaluated.
 
 You should also `plet` local bindings! In particular, if you applied a function (whether it be Plutarch level or Haskell level) to obtain a value, bound the value to a variable (using `let` or `where`) - don't use it multiple times! The binding will simply get inlined as the function application - and it'll keep getting re-evaluated. You should `plet` it first!
 
@@ -76,7 +76,7 @@ This also applies to field accesses using `OverloadedRecordDot`. When you do `ct
 
 Plutarch level functions have a lot of advantages - they can be hoisted; they are strict so you can [use their arguments however many times you like without duplicating work](#dont-duplicate-work); they are required for Plutarch level higher order functions etc. Unless you _really_ need laziness, like `pif` does, try to use Plutarch level functions.
 
-Also see: [Hoisting](#hoisting-metaprogramming--and-fundamentals).
+Also see: [Hoisting](./CONCEPTS.md#hoisting-metaprogramming--and-fundamentals).
 
 # When to use Haskell level functions?
 Although you should generally [prefer Plutarch level functions](#prefer-plutarch-level-functions), there are times when a Haskell level function is actually much better. However, figuring out *when* that is the case - is a delicate art.
@@ -165,13 +165,13 @@ instance PlutusType AB where
 ```
 You can use the `A` and `B` constructors during building, but still have your type be represented as integers under the hood! You cannot do this with `pconstant`.
 
-You should prefer `pconstant` (from [`PConstant`/`PLift`](#pconstant--plift)) when you can build something up entirely from Haskell level constants and that *something* has the same representation as the Haskell constant.
+You should prefer `pconstant` (from [`PConstant`/`PLift`](./TYPECLASSES.md#pconstant--plift)) when you can build something up entirely from Haskell level constants and that *something* has the same representation as the Haskell constant.
 
 # List iteration is strict
 Chained list operations (e.g a filter followed by a map) are not very efficient in Plutus Core. In fact, the iteration is not lazy at all! For example, if you did a `pfilter`, followed by a `pmap`, on a builtin list - the entire `pmap` operation would be computed first, the whole list would be iterated through, and *only then* the `pfilter` would start computing. Ridiculous!
 
 # Let Haskell level functions take responsibility of evaluation
-We've discussed how a Haskell level function that operates on Plutarch level terms needs to [be careful](#dont-duplicate-work) about [work duplication](#plet-to-avoid-work-duplication). Related to this point, it's good practice to design your Haskell level functions so that *it takes responsibility* for evaluation.
+We've discussed how a Haskell level function that operates on Plutarch level terms needs to [be careful](#dont-duplicate-work) about [work duplication](./CONCEPTS.md#plet-to-avoid-work-duplication). Related to this point, it's good practice to design your Haskell level functions so that *it takes responsibility* for evaluation.
 
 The user of your Haskell level function doesn't know how many times it uses the argument it has been passed! If it uses the argument multiple times without `plet`ing it - there's duplicate work! There's 2 solutions to this-
 * The user `plet`s the argument before passing it to the Haskell level function.
@@ -186,7 +186,7 @@ Of course, this is not applicable for recursive Haskell level functions!
 # The isomorphism between `makeIsDataIndexed`, Haskell ADTs, and `PIsDataRepr`
 When [implementing `PIsDataRepr`](#implementing-pisdatarepr-and-friends) for a Plutarch type, if the Plutarch type also has a Haskell synonym (e.g `ScriptContext` is the haskell synonym to `PScriptContext`) that uses [`makeIsDataIndexed`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed) - you must make sure the constructor ordering is correct.
 
-> Aside: What's a "Haskell synonym"? It's simply the Haskell type that *is supposed to* correspond to a Plutarch type. There doesn't *necessarily* have to be some sort of concrete connection (though there can be, using [`PLift`/`PConstant`](#pconstant--plift)) - it's merely a connection you can establish mentally.
+> Aside: What's a "Haskell synonym"? It's simply the Haskell type that *is supposed to* correspond to a Plutarch type. There doesn't *necessarily* have to be some sort of concrete connection (though there can be, using [`PLift`/`PConstant`](./TYPECLASSES.md#pconstant--plift)) - it's merely a connection you can establish mentally.
 >
 > This detail does come into play in concrete use cases though. After compiling your Plutarch code to a `Script`, when you pass Haskell data types as arguments to the `Script` - they obviously need to correspond to the actual arguments of the Plutarch code. For example, if the Plutarch code is a function taking `PScriptContext`, after compilation to `Script`, you *should* pass in the Haskell data type that actually shares the same representation as `PScriptContext` - the "Haskell synonym", so to speak. In this case, that's `ScriptContext`.
 
