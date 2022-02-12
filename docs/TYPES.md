@@ -130,7 +130,7 @@ The final argument is, of course, the list itself.
 # PList
 Here's the scott encoded cousin of `PBuiltinList`. What does that mean? Well, in practice, it just means that `PList` can contain *any arbitrary* term - not just builtin types. `PList` also has a [`PListLike`](#plistlike) instance - so you won't be missing any of those utilities here!
 
-`PList` also has a [`PlutusType`](#plutustype-pcon-and-pmatch) instance. You can construct a `PList` using `pcon` (but you should prefer using `pcons` from `PListLike`)-
+`PList` also has a [`PlutusType`](./TYPECLASSES.md#plutustype-pcon-and-pmatch) instance. You can construct a `PList` using `pcon` (but you should prefer using `pcons` from `PListLike`)-
 ```hs
 > pcon $ PSCons (phexByteStr "fe") $ pcon PSNil
 ```
@@ -162,7 +162,7 @@ These are data encoded pairs. You can build `PTuple`s using `ptuple`-
 ```hs
 ptuple :: Term s (PAsData a :--> PAsData b :--> PTuple a b)
 ```
-`PTuple` has a [`PDataFields`](#all-about-extracting-fields) instance. As such, you can extract its fields using `pletFields` or `pfield`.
+`PTuple` has a [`PDataFields`](./TYPECLASSES.md#all-about-extracting-fields) instance. As such, you can extract its fields using `pletFields` or `pfield`.
 
 Since `PAsData (PBuiltinPair (PAsData a) (PAsData b))` and `PAsData (PTuple a b)` have the same representation - you can safely convert between them at no cost-
 ```hs
@@ -216,7 +216,7 @@ pdata :: Term s PData -> Term s (PAsData PData)
 # PDataSum & PDataRecord
 Plutarch sum and product types are represented using `PDataSum` and `PDataRecord` respectively. These types are crucial to the [`PIsDataRepr`](#pisdatarepr) machinery.
 
-Whenever you need to represent a non-trivial ADT using [`Data` encoding](#data-encoding-and-scott-encoding), you'll likely be reaching for these.
+Whenever you need to represent a non-trivial ADT using [`Data` encoding](./CONCEPTS.md#data-encoding-and-scott-encoding), you'll likely be reaching for these.
 
 More often than not, you'll be using `PDataRecord`. This is used to denote all the fields of a constructor-
 ```hs
@@ -224,7 +224,7 @@ import Plutarch.Prelude
 
 newtype Foo (s :: S) = Foo (Term s (PDataRecord '["fooField" ':= PInteger]))
 ```
-`Foo` is a Plutarch type with a single constructor with a single field, named `fooField`, of type `PInteger`. You can [implement `PIsDataRepr`](#implementing-pisdatarepr-and-friends) for it so that `PAsData Foo` is represented as a `Constr` encoded data value.
+`Foo` is a Plutarch type with a single constructor with a single field, named `fooField`, of type `PInteger`. You can [implement `PIsDataRepr`](./TYPECLASSES.md#implementing-pisdatarepr-and-friends) for it so that `PAsData Foo` is represented as a `Constr` encoded data value.
 
 You can build `PDataRecord` terms using `pdcons` and `pdnil`. These are the familiar `cons` and `nil` specialized to `PDataRecord` terms.
 ```hs
@@ -278,7 +278,7 @@ Plutarch.Rec.TH.deriveAll ''Circle
 Each field type needs to be wrapped into the type parameter `f` of kind `PType -> Type`. This is a slight modification
 of a common coding style known as Higher-Kinded Data.
 
-With this definition, `PRecord Circle` will be an instance of [PlutusType](#plutustype-pcon-and-pmatch), so you can use
+With this definition, `PRecord Circle` will be an instance of [PlutusType](./TYPECLASSES.md#plutustype-pcon-and-pmatch), so you can use
 the usual `pcon` and `pcon'` to construct its value and `pmatch` and `pmatch'` to de-construct it:
 
 ```hs
@@ -347,6 +347,6 @@ This is a direct synonym to [`BuiltinData`/`Data`](https://github.com/Plutonomic
 
 Consider using [`PAsData`](#pasdata) instead for simple cases, i.e cases other than `Constr`.
 
-Consider using [`PDataSum`/`PDataList`](#PDataSum--pdatalist) instead when dealing with ADTs, i.e `Constr` data values.
+Consider using [`PDataSum`/`PDataList`](#pdatasum--pdatarecord) instead when dealing with ADTs, i.e `Constr` data values.
 
 You can find more information about `PData` at [Developers' Corner](./DEVGUIDE.md).
