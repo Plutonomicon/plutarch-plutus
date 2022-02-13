@@ -1,0 +1,63 @@
+cabal-version:      3.0
+name:               plutarch-numeric
+version:            1.0
+author:             Koz Ross <koz@mlabs.city>
+license:            MIT
+extra-source-files:
+  CHANGELOG.md
+  LICENSE
+  README.md
+
+common lang
+  default-language:   Haskell2010
+  default-extensions:
+    BangPatterns
+    BinaryLiterals
+    ConstraintKinds
+    DataKinds
+    DeriveFunctor
+    DeriveGeneric
+    DeriveTraversable
+    DerivingStrategies
+    DerivingVia
+    DuplicateRecordFields
+    EmptyCase
+    FlexibleContexts
+    FlexibleInstances
+    GADTs
+    GeneralizedNewtypeDeriving
+    HexFloatLiterals
+    ImportQualifiedPost
+    InstanceSigs
+    KindSignatures
+    LambdaCase
+    MultiParamTypeClasses
+    NumericUnderscores
+    OverloadedStrings
+    ScopedTypeVariables
+    StandaloneDeriving
+    TupleSections
+    TypeApplications
+    TypeOperators
+    TypeSynonymInstances
+    UndecidableInstances
+
+  ghc-options:
+    -Wall -Wcompat -Wincomplete-uni-patterns -Wredundant-constraints
+    -Wmissing-export-lists -Werror -Wincomplete-record-updates
+    -Wmissing-deriving-strategies
+
+library
+  import:          lang
+  exposed-modules: Plutarch.Numeric
+  other-modules:
+    Plutarch.Numeric.Natural
+    Plutarch.Numeric.NZInteger
+    Plutarch.Numeric.NZNatural
+
+  build-depends:
+    , base         >=4.14
+    , plutarch     ^>=1.1
+    , plutus-core
+
+  hs-source-dirs:  src
