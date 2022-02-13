@@ -84,6 +84,7 @@ executable plutarch-test
     Plutarch.IntegerSpec
     Plutarch.ListSpec
     Plutarch.PLamSpec
+    Plutarch.PlutusTypeSpec
     Plutarch.RationalSpec
     Plutarch.RecursionSpec
     Plutarch.StringSpec
