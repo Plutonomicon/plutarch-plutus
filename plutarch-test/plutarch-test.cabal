@@ -66,8 +66,41 @@ common c
     -Wno-name-shadowing -Wunused-foralls -fprint-explicit-foralls
     -fprint-explicit-kinds
 
+common deps 
+  build-depends:
+    , aeson >= 2.0
+    , base
+    , bytestring
+    , transformers
+    , sydtest
+    , sydtest-discover
+    , filepath
+    , generics-sop
+    , plutarch
+    , plutarch-benchmark
+    , plutus-core
+    , plutus-ledger-api
+    , plutus-tx
+    , rank2classes        >=1.4.4
+    , tasty
+    , tasty-golden
+    , tasty-hunit
+    , tasty-quickcheck
+    , text
+    , transformers
+
+
+
+library
+  import: c, deps
+  hs-source-dirs: src
+  default-extensions:
+    OverloadedRecordDot
+    QualifiedDo
+  exposed-modules: Plutarch.Test
+
 executable plutarch-test
-  import:             c
+  import:             c, deps
   type:               exitcode-stdio-1.0
   main-is:            Main.hs
   hs-source-dirs:     src
@@ -91,28 +124,6 @@ executable plutarch-test
     Plutarch.StringSpec
     Plutarch.Test
     Plutarch.UnitSpec
-
-  build-depends:
-    , aeson >= 2.0
-    , base
-    , bytestring
-    , transformers
-    , sydtest
-    , sydtest-discover
-    , filepath
-    , generics-sop
-    , plutarch
-    , plutarch-benchmark
-    , plutus-core
-    , plutus-ledger-api
-    , plutus-tx
-    , rank2classes        >=1.4.4
-    , tasty
-    , tasty-golden
-    , tasty-hunit
-    , tasty-quickcheck
-    , text
-    , transformers
 
   ghc-options:
     -threaded -rtsopts -with-rtsopts=-N
