@@ -1,15 +1,16 @@
 {-# LANGUAGE CPP #-}
-module Plutarch.PlutusTypeSpec (spec) where 
+
+module Plutarch.PlutusTypeSpec (spec) where
 
 import Test.Syd
 
-import Plutarch 
-import Plutarch.Prelude 
+import Plutarch
+import Plutarch.Prelude
 
 import Plutarch.Test
 
 spec :: Spec
-spec = do 
+spec = do
   describe "plutustype" $ do
     describe "example" $ do
       describe "A encoded as 0" $ do
@@ -24,15 +25,16 @@ spec = do
         it "works" $ swap (pcon A) #@?= pcon B
       describe "swap B == A" $ do
         it "works" $ swap (pcon B) #@?= pcon A
-    {- TODO: 
-        - move over the testcase with pmatchTargetEval
-        - add more sanity checks
-    describe "sanity checks" $ do 
-      describe "PBuiltinList" $ do
-        let p :: Term s (PBuiltinList PInteger)
-            p = pconstant [1,2,3,4]
-        it "works" $ 
-     -}
+
+{- TODO:
+    - move over the testcase with pmatchTargetEval
+    - add more sanity checks
+describe "sanity checks" $ do
+  describe "PBuiltinList" $ do
+    let p :: Term s (PBuiltinList PInteger)
+        p = pconstant [1,2,3,4]
+    it "works" $
+ -}
 
 {- |
   A Sum type, which can be encoded as an Enum

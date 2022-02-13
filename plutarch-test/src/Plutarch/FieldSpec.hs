@@ -1,5 +1,6 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Plutarch.FieldSpec (spec) where 
+
+module Plutarch.FieldSpec (spec) where
 
 import Test.Syd
 import Test.Tasty.HUnit
@@ -19,23 +20,20 @@ import qualified PlutusTx
 import Plutarch.Prelude
 import Plutarch.Test
 
-
-
-
 spec :: Spec
-spec = do 
-  describe "field" $ do 
+spec = do
+  describe "field" $ do
     -- example: Trips
-    describe "trips" $ do 
+    describe "trips" $ do
       -- compilation
-      describe "tripSum" $ do 
+      describe "tripSum" $ do
         golden All tripSum
-      describe "getY" $ do 
+      describe "getY" $ do
         golden All getY
-      describe "tripYZ" $ do 
+      describe "tripYZ" $ do
         golden All tripYZ
       -- tests
-      describe "tripSum # tripA = 1000" $ do 
+      describe "tripSum # tripA = 1000" $ do
         let p = 1000
         it "works" $ plift (tripSum # tripA) @?= p
       describe "tripSum # tripB = 100" $ do
@@ -44,21 +42,21 @@ spec = do
       describe "tripSum # tripC = 10" $ do
         let p = 10
         it "works" $ plift (tripSum # tripC) @?= p
-      describe "tripYZ = tripZY" $ 
-        it "works" $ tripZY #@?= tripYZ 
-    -- rangeFields 
+      describe "tripYZ = tripZY" $
+        it "works" $ tripZY #@?= tripYZ
+    -- rangeFields
     describe "rangeFields" $ do
       -- compilation
-      describe "rangeFields" $ do 
+      describe "rangeFields" $ do
         golden All rangeFields
       -- tests
       describe "rangeFields someFields = 11" $ do
         let p = 11
         it "works" $ plift (rangeFields # someFields) @?= p
-    --dropFields
+    -- dropFields
     describe "dropFields" $ do
       -- compilation
-      describe "dropFields" $ do 
+      describe "dropFields" $ do
         golden All dropFields
       -- tests
       describe "dropFields someFields = 17" $ do
@@ -67,17 +65,17 @@ spec = do
     -- pletFields
     describe "pletFields" $ do
       -- compilation
-      describe "letSomeFields" $ do 
+      describe "letSomeFields" $ do
         golden All letSomeFields
-      describe "nFields" $ do 
+      describe "nFields" $ do
         golden All nFields
       -- tests
-      describe "letSomeFields = letSomeFields'" $ do 
+      describe "letSomeFields = letSomeFields'" $ do
         it "works" $ letSomeFields #@?= letSomeFields'
       describe "letSomeFields someFields = 14" $ do
         let p = 14
         it "works" $ plift (letSomeFields # someFields) @?= p
-      describe "nFields someFields = 1" $ do 
+      describe "nFields someFields = 1" $ do
         let p = 1
         it "works" $ plift (nFields # someFields) @?= p
     describe "other" $ do
