@@ -7,6 +7,7 @@ module Plutarch.Test (
   passert,
   pfails,
   psucceeds,
+  pshouldBe,
   -- | Golden testing
   --
   -- Typically you want to use `golden`. For grouping multiple goldens, use
@@ -25,7 +26,7 @@ import qualified Data.Text as T
 import Data.Text.Encoding (encodeUtf8)
 import qualified Data.Text.Lazy as TL
 import System.FilePath
-import Test.Syd (Spec, describe, getTestDescriptionPath, it, pureGoldenByteStringFile)
+import Test.Syd (Spec, Expectation, describe, getTestDescriptionPath, it, pureGoldenByteStringFile, shouldBe)
 import Test.Tasty.HUnit
 
 import Plutarch
@@ -33,6 +34,15 @@ import Plutarch.Benchmark
 import Plutarch.Bool
 import Plutarch.Evaluate
 import qualified Plutus.V1.Ledger.Scripts as Scripts
+
+{- | 
+    like `shouldBe` but but for `PTypes`s
+-}
+pshouldBe :: forall (a :: PType) (b :: PType). ClosedTerm a -> ClosedTerm b -> Expectation
+pshouldBe x y = do 
+  p1 <- printTermEvaluated x 
+  p2 <- printTermEvaluated y
+  p1 `shouldBe` p2 
 
 eval :: Scripts.Script -> IO Scripts.Script
 eval s = case evaluateScript s of

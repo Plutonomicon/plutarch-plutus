@@ -83,6 +83,7 @@ executable plutarch-test
     Plutarch.FieldSpec
     Plutarch.IntegerSpec
     Plutarch.ListSpec
+    Plutarch.PIsDataSpec
     Plutarch.PLamSpec
     Plutarch.PlutusTypeSpec
     Plutarch.RationalSpec
@@ -109,6 +110,7 @@ executable plutarch-test
     , tasty
     , tasty-golden
     , tasty-hunit
+    , tasty-quickcheck
     , text
     , transformers
 
