@@ -1,13 +1,15 @@
 {-# LANGUAGE ImpredicativeTypes #-}
 
--- | Common functions for testing Plutarch code
+{- | Common functions for testing Plutarch code
+ TODO: Move this to plutarch-test library.
+-}
 module Plutarch.Test (
   -- | Plutarch specific `Assertion` operators
-  (#@?=),
   passert,
   pfails,
   psucceeds,
   pshouldBe,
+  (#@?=),
   -- | Golden testing
   --
   -- Typically you want to use `golden`. For grouping multiple goldens, use
@@ -44,24 +46,18 @@ pshouldBe x y = do
   p2 <- printTermEvaluated y
   p1 `shouldBe` p2
 
+{- Like `@?=` but for Plutarch terms -}
+(#@?=) :: forall (a :: PType) (b :: PType). ClosedTerm a -> ClosedTerm b -> Assertion
+(#@?=) = pshouldBe
+
 eval :: Scripts.Script -> IO Scripts.Script
 eval s = case evaluateScript s of
   Left e -> assertFailure $ "Script evaluation failed: " <> show e
   Right (_, _, x') -> pure x'
 
-equal :: ClosedTerm a -> ClosedTerm b -> Assertion
-equal x y = do
-  p1 <- printTermEvaluated x
-  p2 <- printTermEvaluated y
-  p1 @?= p2
-
 {- Like `printTerm` but the prints evaluated output of it -}
 printTermEvaluated :: ClosedTerm a -> IO String
 printTermEvaluated = fmap printScript . eval . compile
-
--- | Like `@?=` but for Plutarch terms
-(#@?=) :: forall (a :: PType) (b :: PType). ClosedTerm a -> ClosedTerm b -> Assertion
-(#@?=) = equal
 
 {- Asserts the term to be true -}
 passert :: forall (a :: PType). ClosedTerm a -> Assertion
@@ -80,6 +76,7 @@ pfails p = do
     Left _ -> pure ()
     Right _ -> assertFailure $ "Term succeeded"
 
+{- Whether to run all or a particular golden test -}
 data PlutarchGolden
   = All
   | Bench
@@ -96,6 +93,7 @@ hasPrintTermGolden = \case
   Bench -> False
   _ -> True
 
+{- Run golden tests on the given Plutarch program -}
 golden :: PlutarchGolden -> ClosedTerm a -> Spec
 golden pg = golden' pg Nothing
 
