@@ -77,16 +77,17 @@ executable plutarch-test
 
   other-modules:
     Spec
+    Plutarch.ApiSpec
     Plutarch.BoolSpec
-    Plutarch.UnitSpec
-    Plutarch.IntegerSpec
-    Plutarch.StringSpec
     Plutarch.ByteStringSpec
+    Plutarch.FieldSpec
+    Plutarch.IntegerSpec
+    Plutarch.ListSpec
     Plutarch.PLamSpec
     Plutarch.RationalSpec
-    Plutarch.ListSpec
-    Plutarch.ApiSpec
+    Plutarch.StringSpec
     Plutarch.Test
+    Plutarch.UnitSpec
 
   build-depends:
     , aeson >= 2.0
