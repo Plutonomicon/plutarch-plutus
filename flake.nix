@@ -47,6 +47,7 @@
   inputs.Shrinker.flake = false;
   inputs.haskell-language-server.url = "github:haskell/haskell-language-server";
   inputs.haskell-language-server.flake = false;
+  inputs.nixpkgs-2111.url = "github:NixOS/nixpkgs/nixpkgs-21.11-darwin";
 
   outputs = inputs@{ self, nixpkgs, haskell-nix, plutus, flake-compat, flake-compat-ci, hercules-ci-effects, ... }:
     let
