@@ -77,16 +77,20 @@ executable plutarch-test
 
   other-modules:
     Spec
-    Plutarch.BoolSpec
-    Plutarch.UnitSpec
-    Plutarch.IntegerSpec
-    Plutarch.StringSpec
-    Plutarch.ByteStringSpec
-    Plutarch.PLamSpec
-    Plutarch.RationalSpec
-    Plutarch.ListSpec
     Plutarch.ApiSpec
+    Plutarch.BoolSpec
+    Plutarch.ByteStringSpec
+    Plutarch.FieldSpec
+    Plutarch.IntegerSpec
+    Plutarch.ListSpec
+    Plutarch.PIsDataSpec
+    Plutarch.PLamSpec
+    Plutarch.PlutusTypeSpec
+    Plutarch.RationalSpec
+    Plutarch.RecursionSpec
+    Plutarch.StringSpec
     Plutarch.Test
+    Plutarch.UnitSpec
 
   build-depends:
     , aeson >= 2.0
@@ -106,6 +110,7 @@ executable plutarch-test
     , tasty
     , tasty-golden
     , tasty-hunit
+    , tasty-quickcheck
     , text
     , transformers
 
