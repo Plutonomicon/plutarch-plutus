@@ -64,21 +64,20 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 
 ## Typeclasses
 
-- [Equality and Order](./TYPECLASSES.md#equality-and-order)
-- [Monoids](./TYPECLASSES.md#monoids)
-- [PIntegral](./TYPECLASSES.md#pintegral)
-- [PIsData](./TYPECLASSES.md#pisdata)
-- [PConstant & PLift](./TYPECLASSES.md#pconstant--plift)
+- [`PEq` & `PORd`](./TYPECLASSES.md./TYPECLASSES.md#peq--pord)
+- [`PIntegral`](./TYPECLASSES.md#pintegral)
+- [`PIsData`](./TYPECLASSES.md#pisdata)
+- [`PConstant` & `PLift`](./TYPECLASSES.md#pconstant--plift)
   - [Implementing `PConstant` & `PLift`](./TYPECLASSES.md#implementing-pconstant--plift)
-- [PlutusType, PCon, and PMatch](./TYPECLASSES.md#plutustype-pcon-and-pmatch)
+- [`PlutusType`, `PCon`, and `PMatch`](./TYPECLASSES.md#plutustype-pcon-and-pmatch)
   - [Implementing `PlutusType` for your own types (Scott Encoding)](./TYPECLASSES.md#implementing-plutustype-for-your-own-types-scott-encoding)
-  - [Implementing `PlutusType` for your own types (Data Encoding)](./TYPECLASSES.md#implementing-plutustype-for-your-own-types-data-encoding)
-- [PListLike](./TYPECLASSES.md#plistlike)
-- [PIsDataRepr & PDataFields](./TYPECLASSES.md#pisdatarepr--pdatafields)
+  - [Implementing `PlutusType` for your own types (`Data` Encoding)](./TYPECLASSES.md#implementing-plutustype-for-your-own-types-data-encoding)
+- [`PListLike`](./TYPECLASSES.md#plistlike)
+- [`PIsDataRepr` & `PDataFields`](./TYPECLASSES.md#pisdatarepr--pdatafields)
   - [All about extracting fields](./TYPECLASSES.md#all-about-extracting-fields)
     - [Alternatives to `OverloadedRecordDot`](./TYPECLASSES.md#alternatives-to-overloadedrecorddot)
   - [All about constructing data values](./TYPECLASSES.md#all-about-constructing-data-values)
-  - [Implementing PIsDataRepr and friends](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)
+  - [Implementing `PIsDataRepr` and friends](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)
 
 ## Working with Types
 
