@@ -21,12 +21,11 @@ module Plutarch.Test (
 
 import Control.Monad (when)
 import qualified Data.Aeson.Text as Aeson
-import Data.ByteString (ByteString)
+import Data.Text (Text)
 import qualified Data.Text as T
-import Data.Text.Encoding (encodeUtf8)
 import qualified Data.Text.Lazy as TL
 import System.FilePath
-import Test.Syd (Expectation, Spec, describe, getTestDescriptionPath, it, pureGoldenByteStringFile, shouldBe)
+import Test.Syd (Expectation, Spec, describe, getTestDescriptionPath, it, pureGoldenTextFile, shouldBe)
 import Test.Tasty.HUnit
 
 import Plutarch
@@ -120,18 +119,17 @@ goldens' pg mk ps = do
     -- Golden test for UPLC
     when (hasPrintTermGolden pg) $
       it "uplc" $
-        pureGoldenByteStringFile ("goldens" </> nUplc) $
+        pureGoldenTextFile ("goldens" </> nUplc) $
           multiGolden ps $ \p ->
             T.pack $ printTerm p
     -- Golden test for Plutus benchmarks
     when (hasBenchGolden pg) $
       it "bench" $
-        pureGoldenByteStringFile ("goldens" </> nBench) $
+        pureGoldenTextFile ("goldens" </> nBench) $
           multiGolden ps $ \p ->
             TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compile p
 
-multiGolden :: forall a. [(String, a)] -> (a -> T.Text) -> ByteString
+multiGolden :: forall a. [(String, a)] -> (a -> T.Text) -> Text
 multiGolden xs f =
-  encodeUtf8 $
-    T.intercalate "\n" $
-      (\(s, x) -> T.pack s <> " " <> f x) <$> xs
+  T.intercalate "\n" $
+    (\(s, x) -> T.pack s <> " " <> f x) <$> xs
