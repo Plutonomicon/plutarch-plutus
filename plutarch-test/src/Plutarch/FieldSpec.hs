@@ -1,57 +1,91 @@
 {-# LANGUAGE UndecidableInstances #-}
 
-module Examples.Field (
-  -- * Examples
-  Triplet (..),
-  type SomeFields,
-  mkTrip,
-  tripA,
-  tripB,
-  tripC,
-  tripTrip,
-  tripSum,
-  tripYZ,
-  tripZY,
-  by,
-  dotPlus,
-  nFields,
-  dropFields,
-  getY,
-  rangeFields,
-  letSomeFields,
-  letSomeFields',
+module Plutarch.FieldSpec (spec) where
 
-  -- * Testing
-  tests,
-) where
-
---------------------------------------------------------------------------------
+import Test.Syd
+import Test.Tasty.HUnit
 
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic, I (I))
 import Plutarch
-import Plutarch.Builtin (PAsData, PBuiltinList, PIsData (..))
 import Plutarch.DataRepr (
   PDataFields,
-  PDataRecord,
-  PIsDataRepr,
   PIsDataReprInstances (PIsDataReprInstances),
-  PLabeledType ((:=)),
-  pfield,
-  pletFields,
  )
-import Plutarch.Integer (PInteger)
-import Plutarch.Lift (pconstant, plift)
-import Plutarch.List (PListLike (pcons, pnil))
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 
 import qualified PlutusCore as PLC
 import qualified PlutusTx
 
-import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit (testCase, (@?=))
+import Plutarch.Prelude
+import Plutarch.Test
 
-import Utils
+spec :: Spec
+spec = do
+  describe "field" $ do
+    -- example: Trips
+    describe "trips" $ do
+      -- compilation
+      describe "tripSum" $ do
+        golden All tripSum
+      describe "getY" $ do
+        golden All getY
+      describe "tripYZ" $ do
+        golden All tripYZ
+      -- tests
+      describe "tripSum # tripA = 1000" $ do
+        let p = 1000
+        it "works" $ plift (tripSum # tripA) @?= p
+      describe "tripSum # tripB = 100" $ do
+        let p = 100
+        it "works" $ plift (tripSum # tripB) @?= p
+      describe "tripSum # tripC = 10" $ do
+        let p = 10
+        it "works" $ plift (tripSum # tripC) @?= p
+      describe "tripYZ = tripZY" $
+        it "works" $ tripZY #@?= tripYZ
+    -- rangeFields
+    describe "rangeFields" $ do
+      -- compilation
+      describe "rangeFields" $ do
+        golden All rangeFields
+      -- tests
+      describe "rangeFields someFields = 11" $ do
+        let p = 11
+        it "works" $ plift (rangeFields # someFields) @?= p
+    -- dropFields
+    describe "dropFields" $ do
+      -- compilation
+      describe "dropFields" $ do
+        golden All dropFields
+      -- tests
+      describe "dropFields someFields = 17" $ do
+        let p = 17
+        it "works" $ plift (dropFields # someFields) @?= p
+    -- pletFields
+    describe "pletFields" $ do
+      -- compilation
+      describe "letSomeFields" $ do
+        golden All letSomeFields
+      describe "nFields" $ do
+        golden All nFields
+      -- tests
+      describe "letSomeFields = letSomeFields'" $ do
+        it "works" $ letSomeFields #@?= letSomeFields'
+      describe "letSomeFields someFields = 14" $ do
+        let p = 14
+        it "works" $ plift (letSomeFields # someFields) @?= p
+      describe "nFields someFields = 1" $ do
+        let p = 1
+        it "works" $ plift (nFields # someFields) @?= p
+    describe "other" $ do
+      -- tests
+      describe "by = 10" $ do
+        let p = 10
+        it "works" $ plift by @?= p
+      describe "dotPlus = 19010" $ do
+        let p = 19010
+        it "works" $ plift dotPlus @?= p
 
 --------------------------------------------------------------------------------
 
@@ -232,76 +266,3 @@ letSomeFields' =
     pfromData fs._3
       + pfromData fs._4
       + pfromData fs._7
-
----------- Tests
-
-tests :: HasTester => TestTree
-tests =
-  testGroup
-    "Field examples"
-    [ testCase "tripSum compilation" $
-        printTerm tripSum @?= tripSumComp
-    , testCase "nFields compilation" $
-        printTerm nFields @?= nFieldsComp
-    , testCase "dropFields compilation" $
-        printTerm dropFields @?= dropFieldsComp
-    , testCase "rangeFields compilation" $
-        printTerm rangeFields @?= rangeFieldsComp
-    , testCase "letSomeFields compilation" $
-        printTerm letSomeFields @?= letSomeFieldsComp
-    , testCase "letSomeFields = letSomeFields'" $
-        letSomeFields `equal` letSomeFields'
-    , testCase "nFields someFields = 1" $
-        plift (nFields # someFields)
-          @?= 1
-    , testCase "dropFields someFields = 17" $
-        plift (dropFields # someFields)
-          @?= 17
-    , testCase "rangeFields someFields = 11" $
-        plift (rangeFields # someFields)
-          @?= 11
-    , testCase "letSomeFields someFields = 14" $
-        plift (letSomeFields # someFields)
-          @?= 14
-    , testCase "getY compilation" $
-        printTerm getY @?= getYComp
-    , testCase "tripYZ compilation" $
-        printTerm tripYZ @?= tripYZComp
-    , testCase "tripYZ = tripZY" $
-        tripZY `equal` tripYZ
-    , testCase "tripSum # tripA = 1000" $
-        plift (tripSum # tripA)
-          @?= 1000
-    , testCase "tripSum # tripB = 100" $
-        plift (tripSum # tripB)
-          @?= 100
-    , testCase "tripSum # tripC = 10" $
-        plift (tripSum # tripC)
-          @?= 10
-    , testCase "by = 10" $
-        plift by @?= 10
-    , testCase "dotPlus = 19010" $
-        plift dotPlus @?= 19010
-    ]
-
-tripSumComp :: String
-tripSumComp =
-  "(program 1.0.0 ((\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> (\\i0 -> addInteger (addInteger (unIData (i4 i2)) (unIData (i4 i1))) (unIData (i4 (i5 i1)))) (i4 i1)) (force (force sndPair) (unConstrData i1))) (force headList)) (force tailList)))"
-
-nFieldsComp :: String
-nFieldsComp = "(program 1.0.0 ((\\i0 -> \\i0 -> addInteger (unIData (i2 i1)) (unIData (i2 (force tailList i1)))) (force headList)))"
-
-dropFieldsComp :: String
-dropFieldsComp = "(program 1.0.0 ((\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> addInteger (unIData (i3 i1)) (unIData (i3 (i4 i1)))) (i3 (i3 (i3 (i3 (i3 (i3 (i3 (i3 i1))))))))) (force headList)) (force tailList)))"
-
-rangeFieldsComp :: String
-rangeFieldsComp = "(program 1.0.0 ((\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> addInteger (unIData (i3 i1)) (unIData (i3 (i4 i1)))) (i3 (i3 (i3 (i3 (i3 i1)))))) (force headList)) (force tailList)))"
-
-getYComp :: String
-getYComp = "(program 1.0.0 (\\i0 -> force headList (force tailList (force (force sndPair) (unConstrData i1)))))"
-
-tripYZComp :: String
-tripYZComp = "(program 1.0.0 ((\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> addInteger (unIData (i3 i1)) (unIData (i3 (i4 i1)))) (i3 (force (force sndPair) (unConstrData i1)))) (force headList)) (force tailList)))"
-
-letSomeFieldsComp :: String
-letSomeFieldsComp = "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> (\\i0 -> addInteger (addInteger (unIData (i4 i2)) (unIData (i4 i1))) (unIData (i4 (i5 (i6 i1))))) (i5 i1)) (i4 (i3 i1))) (force headList)) (\\i0 -> i2 (i2 i1))) (force tailList)))"

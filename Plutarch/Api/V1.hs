@@ -20,6 +20,9 @@ module Plutarch.Api.V1 (
   mkValidator,
   mkStakeValidator,
   mkMintingPolicy,
+  type PValidator,
+  type PMintingPolicy,
+  type PStakeValidator,
 
   -- ** Value
   Value.PValue (PValue),

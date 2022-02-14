@@ -6,7 +6,7 @@
 - [Overview](#overview)
   - [Compiling and Running](#compiling-and-running)
     - [Common Extensions and GHC options](#common-extensions-and-ghc-options)
-    - [Code](#code)
+    - [Evaluation](#evaluation)
   - [Syntax](#syntax)
     - [Constants](#constants)
     - [Lambdas](#lambdas)
@@ -56,6 +56,7 @@
     - [PBuiltinList](#pbuiltinlist)
     - [PList](#plist)
     - [PBuiltinPair](#pbuiltinpair)
+    - [PTuple](#ptuple)
     - [PAsData](#pasdata)
     - [PDataSum & PDataRecord](#pdatasum--pdatarecord)
     - [PRecord](#precord)
@@ -79,8 +80,10 @@
   - [List iteration is strict](#list-iteration-is-strict)
   - [Let Haskell level functions take responsibility of evaluation](#let-haskell-level-functions-take-responsibility-of-evaluation)
   - [The isomorphism between `makeIsDataIndexed`, Haskell ADTs, and `PIsDataRepr`](#the-isomorphism-between-makeisdataindexed-haskell-adts-and-pisdatarepr)
+  - [Prefer statically building constants whenever possible](#prefer-statically-building-constants-whenever-possible)
 - [Common Issues](#common-issues)
   - [No instance for (PUnsafeLiftDecl a)](#no-instance-for-punsafeliftdecl-a)
+  - [Couldn't match representation of type: ... arising from the 'deriving' clause](#couldnt-match-representation-of-type--arising-from-the-deriving-clause)
   - [Infinite loop / Infinite AST](#infinite-loop--infinite-ast)
   - [Couldn't match type `Plutarch.DataRepr.Internal.PUnLabel ...` arising from a use of `pfield` (or `hrecField`, or `pletFields`)](#couldnt-match-type-plutarchdatareprinternalpunlabel--arising-from-a-use-of-pfield-or-hrecfield-or-pletfields)
   - [Expected a type, but "fieldName" has kind `GHC.Types.Symbol`](#expected-a-type-but-fieldname-has-kind-ghctypessymbol)
@@ -96,7 +99,7 @@
 
 You generally want to adhere to the same extensions and GHC options the [Plutarch repo](https://github.com/Plutonomicon/plutarch/blob/master/plutarch.cabal) uses.
 
-### Code
+### Evaluation
 
 You can compile a Plutarch term using `compile`(from `Plutarch` module), making sure it has no free variables. `compile` returns a `Script`- you can use this as you would any other Plutus script. The API in `Plutus.V1.Ledger.Scripts` should prove helpful.
 
@@ -146,6 +149,7 @@ import Plutarch.Prelude
 x :: Term s PBool
 x = pconstant True
 ```
+> Aside: Did you know you could also build `PAsData` constant terms directly? If you wanted to build a `Term s (PAsData PBool)` from a Haskell boolean - you should use `pconstantData True`. Although `pdata (pconstant True)` would achieve the same thing - it won't actually be as efficient! See, `pconstantData` builds a constant directly - wheras `pdata` *potentially* dispatches to a builtin function call. Also see: [Prefer statically building constants](#prefer-statically-building-constants-whenever-possible).
 
 Or from Plutarch terms within other constructors using `pcon` (requires [`PlutusType`/`PCon`](#plutustype-pcon-and-pmatch) instance)-
 ```haskell
@@ -544,7 +548,7 @@ Choosing convenience over efficiency is difficult, but if you notice that your o
 Consider boolean or-
 ```hs
 (#||) :: Term s PBool -> Term s PBool -> Term s PBool
-x #|| y = pif x (pconstant PTrue) $ pif y (pconstant PTrue) $ pconstant PFalse
+x #|| y = pif x (pconstant True) $ pif y (pconstant True) $ pconstant False
 ```
 You can factor out most of the logic to a Plutarch level function, and apply that in the operator definition-
 
@@ -553,7 +557,7 @@ You can factor out most of the logic to a Plutarch level function, and apply tha
 x #|| y = por # x # pdelay y
 
 por :: Term s (PBool :--> PDelayed PBool :--> PBool)
-por = phoistAcyclic $ plam $ \x y -> pif' # x # pconstant PTrue # pforce y
+por = phoistAcyclic $ plam $ \x y -> pif' # x # pconstant True # pforce y
 ```
 
 In general the pattern goes like this-
@@ -837,6 +841,14 @@ purp = pconstant $ Minting "be"
 > plift purp
 Minting "be"
 ```
+
+There's also another handy utility, `pconstantData`-
+```hs
+pconstantData :: (PLift p, ToData (PLifted p)) => PLifted p -> Term s (PAsData p)
+```
+> Note: This isn't the actual type of `pconstantData` - it's simplified here for the sake of documentation ;)
+
+It's simply the `PAsData` building cousin of `pconstant`!
 
 #### Implementing `PConstant` & `PLift`
 If your custom Plutarch type is represented by a builtin type under the hood (i.e not scott encoded - rather [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) - you can easily implement `PLift` for it by using the provided machinery.
@@ -1475,6 +1487,27 @@ pelimList (\_ _ -> "oooo fancy") "hey hey there's nothing here!" $ pcon $ PSCons
 ### PBuiltinPair
 Much like in the case of builtin lists, you'll just be working with builtin functions (or rather, Plutarch synonyms to builtin functions) here. You can find everything about that in [builtin-pairs](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-pairs.md). Feel free to only read the `Plutarch` examples.
 
+In particular, you can deconstruct `PBuiltinPair` using `pfstBuiltin` and `psndBuiltin`. You can build `PBuiltinPair (PAsData a) (PAsData b)` terms with `ppairDataBuiltin`-
+```hs
+ppairDataBuiltin :: Term s (PAsData a :--> PAsData b :--> PBuiltinPair (PAsData a) (PAsData b))
+```
+
+It's also helpful to note that `PAsData (PBuiltinPair (PAsData a) (PAsData b))` and `PAsData (PTuple a b)` actually have the same representation under the hood. See [`PTuple`](#ptuple)
+
+### PTuple
+These are data encoded pairs. You can build `PTuple`s using `ptuple`-
+```hs
+ptuple :: Term s (PAsData a :--> PAsData b :--> PTuple a b)
+```
+`PTuple` has a [`PDataFields`](#all-about-extracting-fields) instance. As such, you can extract its fields using `pletFields` or `pfield`.
+
+Since `PAsData (PBuiltinPair (PAsData a) (PAsData b))` and `PAsData (PTuple a b)` have the same representation - you can safely convert between them at no cost-
+```hs
+ptupleFromBuiltin :: Term s (PAsData (PBuiltinPair (PAsData a) (PAsData b))) -> Term s (PAsData (PTuple a b))
+
+pbuiltinPairFromTuple :: Term s (PAsData (PTuple a b)) -> Term s (PAsData (PBuiltinPair (PAsData a) (PAsData b)))
+```
+
 ### PAsData
 This is a typed way of representing [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md). It is highly encouraged you use `PAsData` to keep track of what "species" of `Data` value you actually have. `Data` can be a `Constr` (for sum of products - ADTs), `Map` (for wrapping assoc maps of Data to Data), `List` (for wrapping builtin lists of data), `I` (for wrapping builtin integers), and `B` (for wrapping builtin bytestrings).
 
@@ -1824,7 +1857,9 @@ Of course, what you _really_ should do , is prefer Plutarch level functions when
 ### Where should arguments be `plet`ed?
 You don't have to worry about work duplication on arguments in *every single scenario*. In particular, the argument to `plam` is also a Haskell function, isn't it? But you don't need to worry about `plet`ing your arguments there since it becomes a Plutarch level function through `plam` - thus, all the arguments are evaluated before being passed in.
 
-Where else is `plet` unnecessary? Continuation functions! Specifically, the functions you pass to `plet` (duh), `pmatch`, `pletFields` and the like. This also means that when you use a `case` expression within the `pmatch` continuation function - you don't need to `plet` the fields within your pattern match. It should all be evaluated before being passed in to your continuation function.
+Where else is `plet` unnecessary? Functions taking in continuations, such as `plet` (duh) and `pletFields`, always pre-evaluate the binding. An exception, however, is `pmatch`. In certain cases, you don't need to `plet` bindings within the `pmatch` case handler. For example, if you use `pmatch` on a `PList`, the `x` and `xs` in the `PSCons x xs` *will always be pre-evaluated*. On the other hand, if you use `pmatch` on a `PBuiltinList`, the `x` and `xs` in the `PCons x xs` *are **not** pre-evaluated*. Be sure to `plet` them if you use them several times!
+
+In general, `plet`ing something back to back several times will be optimized to a singular `plet` anyway. However, you should know that for data encoded types (types that follow "[implementing `PIsDataRepr` and friends](#implementing-pisdatarepr-and-friends)") and scott encoded types, `pmatch` handlers get pre-evaluated bindings. For `PBuiltinList`, and `PDataRecord` - the bindings are not pre-evaluated.
 
 You should also `plet` local bindings! In particular, if you applied a function (whether it be Plutarch level or Haskell level) to obtain a value, bound the value to a variable (using `let` or `where`) - don't use it multiple times! The binding will simply get inlined as the function application - and it'll keep getting re-evaluated. You should `plet` it first!
 
@@ -2005,10 +2040,43 @@ data TxInfo = TxInfo
 ```
 The *field names* don't matter though. They are merely labels that don't exist in runtime.
 
+## Prefer statically building constants whenever possible
+Whenever you can build a Plutarch constant out of a pure Haskell value - do it! Functions such as `pconstant`, `phexByteStr` operate on regular Haskell synonyms of Plutarch types. Unlike `pcon`, which potentially work on Plutarch terms (ex: `pcon $ PJust x`, `x` is a `Term s a`). A Plutarch term is an entirely "runtime" concept. "Runtime" as in "Plutus Core Runtime". They only get evaluated during runtime!
+
+On the other hand, whenever you transform a Haskell synonym to its corresponding Plutarch type using `pconstant`, `phexByteStr` etc. - you're *directly* building a Plutus Core constant. This is entirely static! There are no runtime function calls, no runtime building, it's just *there*, inside the compiled script.
+
+Here's an example, let's say you want to build a `PScriptPurpose` - `PMinting "f1e301"`. Which snippet, do you think, is better?
+```hs
+import Plutarch.Prelude
+import Plutarch.Api.V1.Contexts
+import Plutarch.Api.V1.Value
+
+import Plutus.V1.Ledger.Api
+
+pconstant (Minting "f1e301")
+-- (or)
+let currSym = pcon $ PCurrencySymbol $ phexByteStr "f1e301"
+ in pcon $ PMinting $ pdcons # pdata currSym # pdnil
+```
+The semantics are both are the same. But the former (`pconstant`) compiles to a constant term directly. Whereas the latter compiles to some code that *builds* the constant during Plutus Core runtime.
+> Aside: Remember that Haskell runtime is actually compile-time for Plutarch! Even if you have a dynamically computed variable in the Haskell world, it's still a *constant* in the Plutarch world. So you can use it just as well as an argument to `pconstant`!
+
+Whenever you need to build a Plutarch term of type `a`, from a Haskell value, use `pconstant`. Whenever you need to build a Plutarch term of type `PAsData a`, use `pconstantData`!
+
 # Common Issues
 
 ## No instance for (PUnsafeLiftDecl a)
 You should add `PLift a` to the context! `PLift` is just a synonym to `PUnsafeLiftDecl`.
+
+## Couldn't match representation of type: ... arising from the 'deriving' clause
+If you're getting these errors when deriving typeclasses using the machinery provided by Plutarch (e.g generic deriving, deriving via `PIsDataReprInstances`, `DerivePConstantViaData` etc.) - it means you're missing a constructor import.
+
+If you get this while using `DerivingVia`, make sure you have imported the constructor of the type you're *deriving via*.
+
+If you get this while utilizing generic deriving, make sure you have imported the `I` constructor (or any other related constructor)-
+```hs
+import Generics.SOP (Generic, I (I))
+```
 
 ## Infinite loop / Infinite AST
 

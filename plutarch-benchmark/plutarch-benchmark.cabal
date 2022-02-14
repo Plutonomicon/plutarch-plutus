@@ -75,6 +75,7 @@ library
   build-depends:
     , base
     , boxes
+    , aeson
     , bytestring
     , cassava
     , containers

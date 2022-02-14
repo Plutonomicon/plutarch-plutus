@@ -48,6 +48,16 @@
   inputs.haskell-language-server.url = "github:haskell/haskell-language-server";
   inputs.haskell-language-server.flake = false;
 
+  # These use the PRs from https://github.com/NorfairKing/sydtest/issues/35
+  inputs.sydtest.url = "github:srid/sydtest/ghc921";
+  inputs.sydtest.flake = false;
+  inputs.validity.url = "github:srid/validity/ghc921";
+  inputs.validity.flake = false;
+  inputs.safe-coloured-text.url = "github:srid/safe-coloured-text/ghc921";
+  inputs.safe-coloured-text.flake = false;
+  inputs.autodocodec.url = "github:srid/autodocodec/ghc921";
+  inputs.autodocodec.flake = false;
+
   outputs = inputs@{ self, nixpkgs, haskell-nix, plutus, flake-compat, flake-compat-ci, hercules-ci-effects, ... }:
     let
       extraSources = [
@@ -107,6 +117,28 @@
             "plutus-tx"
             "prettyprinter-configurable"
             "word-array"
+          ];
+        }
+        {
+          src = inputs.sydtest;
+          subdirs = [
+            "sydtest"
+            "sydtest-discover"
+          ];
+        }
+        {
+          src = inputs.validity;
+          subdirs = [
+            "validity"
+            "validity-aeson"
+          ];
+        }
+        {
+          src = inputs.autodocodec;
+          subdirs = [
+            "autodocodec"
+            "autodocodec-schema"
+            "autodocodec-yaml"
           ];
         }
       ];
@@ -426,17 +458,30 @@
       projectForGhc = ghcName: system:
         let pkgs = nixpkgsFor system; in
         let pkgs' = nixpkgsFor' system; in
-        (nixpkgsFor system).haskell-nix.cabalProject' ({
+        let pkgSet = (nixpkgsFor system).haskell-nix.cabalProject' ({
           # This is truly a horrible hack but is necessary. We can't disable tests otherwise in haskell.nix.
           src = if ghcName == ghcVersion then ./. else
           pkgs.runCommand "fake-src" { } ''
             cp -rT ${./.} $out
             chmod u+w $out $out/plutarch.cabal
+            # Remove stanzas from .cabal that won't work in GHC 8.10
             sed -i '/-- Everything below this line is deleted for GHC 8.10/,$d' $out/plutarch.cabal
+            # Remove packages that won't work in GHC 8.10 (yet)
+            chmod -R u+w $out/plutarch-test
+            rm -rf $out/plutarch-test
           '';
           compiler-nix-name = ghcName;
           inherit extraSources;
-          modules = [ (haskellModule system) ];
+          modules = [
+            (haskellModule system)
+            {
+              # Workaround missing support for build-tools:
+              # https://github.com/input-output-hk/haskell.nix/issues/231
+              packages.plutarch-test.components.exes.plutarch-test.build-tools = [
+                pkgSet.hsPkgs.sydtest-discover
+              ];
+            }
+          ];
           shell = {
             withHoogle = true;
 
@@ -444,19 +489,35 @@
 
             # We use the ones from Nixpkgs, since they are cached reliably.
             # Eventually we will probably want to build these with haskell.nix.
-            nativeBuildInputs = [ pkgs'.cabal-install pkgs'.hlint pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt ];
+            nativeBuildInputs = [
+              pkgs'.cabal-install
+              pkgs'.hlint
+              pkgs'.haskellPackages.cabal-fmt
+              pkgs'.nixpkgs-fmt
+              pkgSet.hsPkgs.sydtest-discover.components.exes.sydtest-discover
+            ];
 
             inherit tools;
 
             additional = ps: [
               ps.plutus-ledger-api
+
+              # sydtest dependencies
+              ps.sydtest
+              ps.sydtest-discover
+              ps.validity
+              ps.validity-aeson
+              ps.autodocodec
+              ps.autodocodec-schema
+              ps.autodocodec-yaml
               #ps.shrinker
               #ps.shrinker-testing
             ];
           };
         } // (if ghcName == ghcVersion then {
           inherit cabalProjectLocal;
-        } else { }));
+        } else { })); in
+        pkgSet;
 
       projectFor = projectForGhc ghcVersion;
       projectFor810 = projectForGhc "ghc8107";
@@ -535,6 +596,7 @@
         // {
           formatCheck = formatCheckFor system;
           benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
+          test = (nixpkgsFor system).runCommand "test" { } "cd ${self}/plutarch-test; ${self.apps.${system}.test.program} | tee $out";
         } // {
           "ghc810-plutarch:lib:plutarch" = ghc810."plutarch:lib:plutarch";
         }
@@ -555,6 +617,10 @@
       apps = perSystem (system:
         self.flake.${system}.apps
         // {
+          test = {
+            type = "app";
+            program = "${self.flake.${system}.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test";
+          };
           benchmark = {
             type = "app";
             program = "${self.flake.${system}.packages."plutarch-benchmark:bench:benchmark"}/bin/benchmark";

@@ -160,17 +160,10 @@ test-suite examples
     QualifiedDo
 
   other-modules:
-    Examples.Api
     Examples.ConstrData
-    Examples.Field
     Examples.LetRec
     Examples.Lift
-    Examples.List
-    Examples.PIsData
     Examples.PlutusType
-    Examples.Rationals
-    Examples.Recursion
-    Examples.Scripts
     Examples.Tracing
     Utils
 
