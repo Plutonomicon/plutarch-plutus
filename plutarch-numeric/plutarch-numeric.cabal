@@ -49,7 +49,14 @@ common lang
 
 library
   import:          lang
-  exposed-modules: Plutarch.Numeric
+  exposed-modules:
+    Plutarch.Numeric
+    Plutarch.Numeric.Additive
+    Plutarch.Numeric.Division
+    Plutarch.Numeric.Group
+    Plutarch.Numeric.Multiplicative
+    Plutarch.Numeric.Ring
+
   other-modules:
     Plutarch.Numeric.Natural
     Plutarch.Numeric.NZInteger

@@ -64,15 +64,15 @@ class (Eq a) => AdditiveSemigroup a where
   scaleNZNatural :: a -> NZNatural -> a
 ```
 
-`(+)` must commute and associate. Furthermore, `scaleNZNatural` must obey the
-following recurrence:
+`(+)` must commute and associate. Furthermore, `scaleNZNatural` must follow
+these laws:
 
-```
-scaleNZNatural x one = x
-scaleNZNatural x n = x + scaleNZNatural x (n ^- one)
-```
+* `scaleNZNatural x one = x`
+* `scaleNZNatural x (n + n') = scaleNZNatural x n + scaleNZNatural x n'`
+* `scaleNZNatural x (n * n') = scaleNZNatural (scaleNZNatural x n) n'`
 
-Lastly, if `a` is also `Fractionable`, `scale n x = scaleNZNatural n x`.
+Lastly, if `a` is also an instance of `Fractionable`, `scaleNZNatural x n =
+scale n x`.
 
 Instances:
 
@@ -96,12 +96,11 @@ class (Eq a) => MultiplicativeSemigroup a where
 ```
 
 `(*)` must associate (but not necessarily commute). Furthermore, `powNZNatural`
-must obey the following recurrence:
+must follow these laws:
 
-```
-powNZNatural x one = x
-powNZNatural x n = x * powNZNatural x (n ^- one)
-```
+* `powNZNatural x one = x`
+* `powNZNatural x (n + n') = powNZNatural x n * powNZNatural x n'`
+* `powNZNatural x (n * n') = powNZNatural (powNZNatural x n) n'`
 
 Instances:
 
@@ -138,7 +137,6 @@ Instances:
 class (AdditiveSemigroup a) => AdditiveMonoid a where
   {-# MINIMAL zero #-}
   zero :: a
-  abs :: a -> a
   scaleNatural :: a -> Natural -> a
 ```
 
