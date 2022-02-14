@@ -456,7 +456,7 @@
           , word-array ^>= 0.1.0.0
       '';
 
-      projectForGhc = ghcName: flagDeveloment: system:
+      projectForGhc = ghcName: flagDevelopment: system:
         let pkgs = nixpkgsFor system; in
         let pkgs' = nixpkgsFor' system; in
         let pkgSet = (nixpkgsFor system).haskell-nix.cabalProject' ({
@@ -481,8 +481,8 @@
               packages.plutarch-test.components.exes.plutarch-test.build-tools = [
                 pkgSet.hsPkgs.sydtest-discover
               ];
-              packages.plutarch-test.flags.development = flagDeveloment;
-              packages.plutarch.flags.development = flagDeveloment;
+              packages.plutarch-test.flags.development = flagDevelopment;
+              packages.plutarch.flags.development = flagDevelopment;
             }
           ];
           shell = {
