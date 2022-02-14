@@ -9,7 +9,11 @@ module Plutarch.Benchmark (
   -- | * Benchmark an arbitraty Plutus script
   benchmarkScript,
   benchmarkScriptUnapplied,
-  benchmarkScriptWithArgs,
+  benchmarkScriptWithApply,
+  benchmarkValidator,
+  benchmarkMintingPolicy,
+  benchmarkStakeValidator,
+  benchmarkScript',
   -- | * Benchmark entrypoints
   bench,
   benchWithApply,
@@ -24,6 +28,7 @@ module Plutarch.Benchmark (
 
 import qualified Codec.Serialise as Codec
 import Control.Monad (mzero)
+import Data.Aeson (ToJSON)
 import qualified Data.ByteString.Lazy as BSL
 import Data.Coerce (coerce)
 import qualified Data.Map.Strict as Map
@@ -75,12 +80,47 @@ benchmarkScriptUnapplied name unApplied =
   NamedBenchmark . (name,) . benchmarkScript' (Just unApplied)
 
 {- | 
-  Benchmark the given script, applying the provided
-  `Data` args, measuring the size of the un-applied version.
+  Benchmark the given script, using a function to apply arguments.
 -}
-benchmarkScriptWithArgs :: String -> Script -> [Plutus.Data] -> NamedBenchmark
-benchmarkScriptWithArgs name unApplied args =
-  benchmarkScriptUnapplied name unApplied $ Plutus.applyArguments unApplied args
+benchmarkScriptWithApply :: String -> Script -> (Script -> Script) -> NamedBenchmark
+benchmarkScriptWithApply name unApplied applyArgs =
+  benchmarkScriptUnapplied name unApplied $ applyArgs unApplied
+
+-- | Benchmark a Validator with the provided arguments
+benchmarkValidator :: 
+  ( Plutus.ToData d
+  , Plutus.ToData r
+  ) =>
+  String -> Plutus.Validator -> d -> r -> Plutus.ScriptContext -> NamedBenchmark
+benchmarkValidator name (Plutus.Validator unApplied) datum redeemer ctx =
+  benchmarkScriptUnapplied name unApplied $
+    Plutus.applyArguments unApplied 
+      [ Plutus.toData datum
+      , Plutus.toData redeemer
+      , Plutus.toData ctx
+      ]
+
+-- | Benchmark a MintingPolicy with the provided arguments
+benchmarkMintingPolicy :: 
+  ( Plutus.ToData r ) =>
+  String -> Plutus.MintingPolicy -> r -> Plutus.ScriptContext -> NamedBenchmark
+benchmarkMintingPolicy name (Plutus.MintingPolicy unApplied) redeemer ctx =
+  benchmarkScriptUnapplied name unApplied $
+    Plutus.applyArguments unApplied 
+      [ Plutus.toData redeemer
+      , Plutus.toData ctx
+      ]
+
+-- | Benchmark a StakeValidator with the provided arguments
+benchmarkStakeValidator :: 
+  ( Plutus.ToData r ) =>
+  String -> Plutus.StakeValidator -> r -> Plutus.ScriptContext -> NamedBenchmark
+benchmarkStakeValidator name (Plutus.StakeValidator unApplied) redeemer ctx =
+  benchmarkScriptUnapplied name unApplied $
+    Plutus.applyArguments unApplied 
+      [ Plutus.toData redeemer
+      , Plutus.toData ctx
+      ]
 
 {- | 
   Benchmark a script, with an (optional) version without args 
@@ -124,10 +164,12 @@ data Benchmark = Benchmark
   -- ^ Size of Plutus script in bytes
   }
   deriving stock (Show, Generic)
+  deriving anyclass (ToJSON)
 
 newtype ScriptSizeBytes = ScriptSizeBytes Int64
   deriving stock (Eq, Ord, Show, Generic)
   deriving newtype (Num, ToField)
+  deriving newtype (ToJSON)
 
 {- | A `Benchmark` with a name.
 
@@ -135,6 +177,7 @@ newtype ScriptSizeBytes = ScriptSizeBytes Int64
 -}
 newtype NamedBenchmark = NamedBenchmark (String, Benchmark)
   deriving stock (Show, Generic)
+  deriving newtype (ToJSON)
 
 instance ToNamedRecord NamedBenchmark where
   toNamedRecord (NamedBenchmark (name, Benchmark {..})) =

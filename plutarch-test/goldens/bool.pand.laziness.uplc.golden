@@ -1,0 +1,2 @@
+pand (program 1.0.0 ((\i0 -> \i0 -> force ifThenElse i2 i1 (delay False)) False (delay error)))
+op (program 1.0.0 (force ((\i0 -> \i0 -> force ifThenElse i2 i1 (delay False)) False (delay error))))

@@ -1,61 +1,68 @@
-module Examples.Api (tests) where
+{-# LANGUAGE ImpredicativeTypes #-}
+
+module Plutarch.ApiSpec (spec) where
+
+import Test.Syd
+import Test.Tasty.HUnit
 
 import Control.Monad.Trans.Cont (cont, runCont)
-import Plutarch
-import Plutarch.Api.V1 (
-  PAddress (PAddress),
-  PCredential,
-  PCurrencySymbol,
-  PMaybeData,
-  PPubKeyHash,
-  PScriptContext,
-  PScriptPurpose (PSpending),
-  PStakingCredential,
-  PTxInInfo,
-  PTxInfo,
-  PValue,
- )
-import Plutarch.Builtin (pasConstr, pforgetData)
-
--- import Plutarch.DataRepr (pindexDataList)
-import qualified Plutarch.Monadic as P
-
-import Plutus.V1.Ledger.Api (
-  Address (Address),
-  Credential (ScriptCredential),
-  CurrencySymbol,
-  DatumHash,
-  PubKeyHash,
-  ScriptContext (ScriptContext),
-  ScriptPurpose (Spending),
-  TxInInfo (TxInInfo, txInInfoOutRef, txInInfoResolved),
-  TxInfo (
-    TxInfo,
-    txInfoDCert,
-    txInfoData,
-    txInfoFee,
-    txInfoId,
-    txInfoInputs,
-    txInfoMint,
-    txInfoOutputs,
-    txInfoSignatories,
-    txInfoValidRange,
-    txInfoWdrl
-  ),
-  TxOut (TxOut, txOutAddress, txOutDatumHash, txOutValue),
-  TxOutRef (TxOutRef),
-  ValidatorHash,
-  Value,
-  toData,
- )
-
-import Plutarch.Prelude
+import Plutus.V1.Ledger.Api
 import qualified Plutus.V1.Ledger.Interval as Interval
 import qualified Plutus.V1.Ledger.Value as Value
-import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit (testCase, (@?=))
 
-import Utils
+import Plutarch.Api.V1
+import Plutarch.Builtin (pasConstr, pforgetData)
+import qualified Plutarch.Monadic as P
+import Plutarch.Prelude
+import Plutarch.Test
+
+spec :: Spec
+spec = do
+  describe "api" $ do
+    describe "ctx" $ do
+      golden PrintTerm ctx
+      describe "get" $ do
+        describe "txInfo" $ do
+          let p = pfromData $ getTxInfo # ctx
+          golden All p
+          it "works" $ plift p @?= info
+        describe "mint" $ do
+          let p = pforgetData $ getMint #$ getTxInfo # ctx
+          golden All p
+          it "works" $ plift p @?= toData mint
+        describe "credentials" $ do
+          let p = getCredentials ctx
+          golden All p
+          it "works" $ plift p @?= [toData validator]
+        describe "sym" $ do
+          let p = pfromData $ getSym #$ pfromData $ getMint #$ getTxInfo # ctx
+          golden All p
+          it "works" $ plift p @?= sym
+    describe "example" $ do
+      describe "signatory" $ do
+        let aSig :: PubKeyHash = "ab01fe235c"
+        describe "haskell" $ do
+          let p = checkSignatory # pconstant aSig # ctx
+              pe = checkSignatory # pconstant "41" # ctx
+          golden All p
+          it "succeeds" $ psucceeds p
+          it "fails" $ pfails pe
+        describe "cont" $ do
+          let p = checkSignatoryCont # pconstant aSig # ctx
+              pe = checkSignatoryCont # pconstant "41" # ctx
+          golden All p
+          it "succeeds" $ psucceeds p
+          it "fails" $ pfails pe
+        describe "termcont" $ do
+          let p = checkSignatoryTermCont # pconstant aSig # ctx
+              pe = checkSignatoryTermCont # pconstant "41" # ctx
+          golden All p
+          it "succeeds" $ psucceeds p
+          it "fails" $ pfails pe
+      describe "getFields" $
+        golden PrintTerm getFields
+      describe "getFields'" $
+        golden PrintTerm getFields'
 
 --------------------------------------------------------------------------------
 
@@ -209,41 +216,3 @@ getFields' = phoistAcyclic $
   plam $ \addr -> P.do
     PAddress addrFields <- pmatch addr
     addrFields
-
-tests :: HasTester => TestTree
-tests =
-  testGroup
-    "Api examples"
-    [ testCase "ScriptContext" $ do
-        ctx `equal'` ctx_compiled
-    , testCase "getting txInfo" $ do
-        plift (pfromData $ getTxInfo # ctx)
-          @?= info
-    , testCase "getting mint" $ do
-        plift (pforgetData $ getMint #$ getTxInfo # ctx)
-          @?= toData mint
-    , testCase "getting credentials" $ do
-        plift (getCredentials ctx)
-          @?= [toData validator]
-    , testCase "getting sym" $ do
-        plift (pfromData $ getSym #$ pfromData $ getMint #$ getTxInfo # ctx) @?= sym
-    , testCase "signatory validator" $ do
-        () <$ traverse (\x -> succeeds $ checkSignatory # pconstant x # ctx) signatories
-        fails $ checkSignatory # pconstant "41" # ctx
-    , testCase "signatory validator with Cont" $ do
-        () <$ traverse (\x -> succeeds $ checkSignatoryCont # pconstant x # ctx) signatories
-        fails $ checkSignatory # pconstant "41" # ctx
-    , testCase "signatory validator with TermCont" $ do
-        () <$ traverse (\x -> succeeds $ checkSignatoryTermCont # pconstant x # ctx) signatories
-        fails $ checkSignatory # pconstant "41" # ctx
-    , testCase "getFields" $
-        printTerm getFields @?= getFields_compiled
-    , testCase "getFields'" $
-        printTerm getFields' @?= getFields_compiled
-    ]
-
-ctx_compiled :: String
-ctx_compiled = "(program 1.0.0 #d8799fd8799f9fd8799fd8799fd8799f41a0ff00ffd8799fd8799fd87a9f41a1ffd87a80ffa0d8799f41d0ffffffff80a0a141c0a149736f6d65746f6b656e018080d8799fd8799fd87980d87a80ffd8799fd87b80d87a80ffff9f45ab01fe235c4312301443abcdefff80d8799f41b0ffffd87a9fd8799fd8799f41a0ff00ffffff)"
-
-getFields_compiled :: String
-getFields_compiled = "(program 1.0.0 (\\i0 -> force (force sndPair) (unConstrData i1)))"
