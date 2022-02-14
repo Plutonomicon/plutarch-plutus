@@ -71,6 +71,14 @@
 
   Added by: [#235](https://github.com/Plutonomicon/plutarch/pull/270)
 
+- Added functions to `Plutarch.Benchmark` to account for script-sizing without arguments applied.
+
+  `benchmarkValidator`, `benchmarkMintingPolicy`, `bechmarkStakeValidator`, `benchmarkScriptUnapplied`, `benchmarkScriptWithApply` for benchmarking Plutus API script types.
+
+  `benchWithApply`, `benchPValidator`, `benchPMintingPolicy` & `benchPStakeValidator` for Plutarch API script types.
+
+  Module: `Plutarch.Benchmark`
+
 # 1.1.0
 
 - General repository changes.

@@ -20,7 +20,6 @@ module Plutarch.Benchmark (
   benchPValidator,
   benchPStakeValidator,
   benchPMintingPolicy,
-
   bench',
   benchGroup,
   benchMain,
@@ -60,38 +59,38 @@ import Data.Maybe (fromJust)
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
 import Plutarch (ClosedTerm, compile, printTerm)
+import Plutarch.Api.V1 (
+  PScriptContext,
+  type PMintingPolicy,
+  type PStakeValidator,
+  type PValidator,
+ )
+import Plutarch.Prelude
+import Plutarch.Unsafe (punsafeCoerce)
 import Plutus.V1.Ledger.Api (
   ExBudget (ExBudget),
   ExCPU (ExCPU),
   ExMemory (ExMemory),
   Script,
  )
-import qualified Plutus.V1.Ledger.Scripts as Plutus
 import qualified Plutus.V1.Ledger.Api as Plutus
-import Plutarch.Unsafe (punsafeCoerce)
-import Plutarch.Prelude
-import Plutarch.Api.V1 
-  ( type PValidator
-  , type PMintingPolicy
-  , type PStakeValidator
-  , PScriptContext
-  )
+import qualified Plutus.V1.Ledger.Scripts as Plutus
 
 --------------------------------------------------------------------------------
 
 -- | Benchmark the given script
 benchmarkScript :: String -> Script -> NamedBenchmark
-benchmarkScript name = 
+benchmarkScript name =
   NamedBenchmark . (name,) . benchmarkScript' Nothing
 
-{- | Benchmark the given script, 
+{- | Benchmark the given script,
   with a provided un-applied version for sizing
 -}
 benchmarkScriptUnapplied :: String -> Script -> Script -> NamedBenchmark
-benchmarkScriptUnapplied name unApplied = 
+benchmarkScriptUnapplied name unApplied =
   NamedBenchmark . (name,) . benchmarkScript' (Just unApplied)
 
-{- | 
+{- |
   Benchmark the given script, using a function to apply arguments.
 -}
 benchmarkScriptWithApply :: String -> Script -> (Script -> Script) -> NamedBenchmark
@@ -99,49 +98,65 @@ benchmarkScriptWithApply name unApplied applyArgs =
   benchmarkScriptUnapplied name unApplied $ applyArgs unApplied
 
 -- | Benchmark a Validator with the provided arguments
-benchmarkValidator :: 
+benchmarkValidator ::
   ( Plutus.ToData d
   , Plutus.ToData r
   ) =>
-  String -> Plutus.Validator -> d -> r -> Plutus.ScriptContext -> NamedBenchmark
+  String ->
+  Plutus.Validator ->
+  d ->
+  r ->
+  Plutus.ScriptContext ->
+  NamedBenchmark
 benchmarkValidator name (Plutus.Validator unApplied) datum redeemer ctx =
   benchmarkScriptUnapplied name unApplied $
-    Plutus.applyArguments unApplied 
+    Plutus.applyArguments
+      unApplied
       [ Plutus.toData datum
       , Plutus.toData redeemer
       , Plutus.toData ctx
       ]
 
 -- | Benchmark a MintingPolicy with the provided arguments
-benchmarkMintingPolicy :: 
-  ( Plutus.ToData r ) =>
-  String -> Plutus.MintingPolicy -> r -> Plutus.ScriptContext -> NamedBenchmark
+benchmarkMintingPolicy ::
+  (Plutus.ToData r) =>
+  String ->
+  Plutus.MintingPolicy ->
+  r ->
+  Plutus.ScriptContext ->
+  NamedBenchmark
 benchmarkMintingPolicy name (Plutus.MintingPolicy unApplied) redeemer ctx =
   benchmarkScriptUnapplied name unApplied $
-    Plutus.applyArguments unApplied 
+    Plutus.applyArguments
+      unApplied
       [ Plutus.toData redeemer
       , Plutus.toData ctx
       ]
 
 -- | Benchmark a StakeValidator with the provided arguments
-benchmarkStakeValidator :: 
-  ( Plutus.ToData r ) =>
-  String -> Plutus.StakeValidator -> r -> Plutus.ScriptContext -> NamedBenchmark
+benchmarkStakeValidator ::
+  (Plutus.ToData r) =>
+  String ->
+  Plutus.StakeValidator ->
+  r ->
+  Plutus.ScriptContext ->
+  NamedBenchmark
 benchmarkStakeValidator name (Plutus.StakeValidator unApplied) redeemer ctx =
   benchmarkScriptUnapplied name unApplied $
-    Plutus.applyArguments unApplied 
+    Plutus.applyArguments
+      unApplied
       [ Plutus.toData redeemer
       , Plutus.toData ctx
       ]
 
-{- | 
-  Benchmark a script, with an (optional) version without args 
+{- |
+  Benchmark a script, with an (optional) version without args
     applied to measure the size.
 -}
 benchmarkScript' :: Maybe (Script) -> Script -> Benchmark
 benchmarkScript' unAppliedScript script =
-  mkBenchmark 
-    (evalScriptCounting applied) 
+  mkBenchmark
+    (evalScriptCounting applied)
     (scriptSize unApplied)
   where
     applied :: SBS.ShortByteString
@@ -158,7 +173,6 @@ benchmarkScript' unAppliedScript script =
 
     serialiseScript :: Script -> SBS.ShortByteString
     serialiseScript = SBS.toShort . LB.toStrict . serialise -- Using `flat` here breaks `evalScriptCounting`
-
     evalScriptCounting :: HasCallStack => Plutus.SerializedScript -> Plutus.ExBudget
     evalScriptCounting script =
       let costModel = fromJust Plutus.defaultCostModelParams
@@ -208,57 +222,56 @@ bench :: String -> ClosedTerm a -> [NamedBenchmark]
 bench name prog =
   [coerce . benchmarkScript name $ compile prog]
 
-{- | 
+{- |
   Create a benchmark, given a function to apply the args
-  to a Term. 
+  to a Term.
   The un-applied version is used to measure the compiled size.
-
 -}
-benchWithApply
-  :: String 
-  -> ClosedTerm a 
-  -> (ClosedTerm a -> ClosedTerm result) 
-  -> [NamedBenchmark]
+benchWithApply ::
+  String ->
+  ClosedTerm a ->
+  (ClosedTerm a -> ClosedTerm result) ->
+  [NamedBenchmark]
 benchWithApply name unApplied appArgs =
-  [ benchmarkScriptUnapplied name (compile unApplied) 
-      $ compile $ appArgs unApplied
+  [ benchmarkScriptUnapplied name (compile unApplied) $
+      compile $ appArgs unApplied
   ]
 
 -- | Create a benchmark for a PValidator term, using the provided args
-benchPValidator 
-  :: String 
-  -> ClosedTerm PValidator
-  -> ClosedTerm PData
-  -> ClosedTerm PData
-  -> ClosedTerm PScriptContext
-  -> [NamedBenchmark]
+benchPValidator ::
+  String ->
+  ClosedTerm PValidator ->
+  ClosedTerm PData ->
+  ClosedTerm PData ->
+  ClosedTerm PScriptContext ->
+  [NamedBenchmark]
 benchPValidator name script datum redeemer ctx =
-  [ benchmarkScriptUnapplied name (compile script) 
-      $ compile $ script # datum # redeemer #$ punsafeCoerce ctx
+  [ benchmarkScriptUnapplied name (compile script) $
+      compile $ script # datum # redeemer #$ punsafeCoerce ctx
   ]
 
 -- | Create a benchmark for a PMintingPolicy term, using the provided args
-benchPMintingPolicy 
-  :: String 
-  -> ClosedTerm PMintingPolicy
-  -> ClosedTerm PData
-  -> ClosedTerm PScriptContext
-  -> [NamedBenchmark]
+benchPMintingPolicy ::
+  String ->
+  ClosedTerm PMintingPolicy ->
+  ClosedTerm PData ->
+  ClosedTerm PScriptContext ->
+  [NamedBenchmark]
 benchPMintingPolicy name script redeemer ctx =
-  [ benchmarkScriptUnapplied name (compile script) 
-      $ compile $ script # redeemer #$ punsafeCoerce ctx
+  [ benchmarkScriptUnapplied name (compile script) $
+      compile $ script # redeemer #$ punsafeCoerce ctx
   ]
 
 -- | Create a benchmark for a PStakeValidator term, using the provided args
-benchPStakeValidator
-  :: String 
-  -> ClosedTerm PStakeValidator
-  -> ClosedTerm PData
-  -> ClosedTerm PScriptContext
-  -> [NamedBenchmark]
+benchPStakeValidator ::
+  String ->
+  ClosedTerm PStakeValidator ->
+  ClosedTerm PData ->
+  ClosedTerm PScriptContext ->
+  [NamedBenchmark]
 benchPStakeValidator name script redeemer ctx =
-  [ benchmarkScriptUnapplied name (compile script) 
-      $ compile $ script # redeemer #$ punsafeCoerce ctx
+  [ benchmarkScriptUnapplied name (compile script) $
+      compile $ script # redeemer #$ punsafeCoerce ctx
   ]
 
 -- | Create a benchmark with itself as name
