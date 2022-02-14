@@ -5,7 +5,7 @@ This document describes various concepts applicable in Plutarch.
 <details>
 <summary> Table of Contents </summary>
 
-- [Hoisting, metaprogramming,  and fundamentals](#hoisting-metaprogramming--and-fundamentals)
+- [Hoisting, metaprogramming, and fundamentals](#hoisting-metaprogramming-and-fundamentals)
   - [Hoisting Operators](#hoisting-operators)
 - [What is the `s`?](#what-is-the-s)
 - [eDSL Types in Plutarch](#edsl-types-in-plutarch)
@@ -18,7 +18,7 @@ This document describes various concepts applicable in Plutarch.
 
 </details>
 
-# Hoisting, metaprogramming,  and fundamentals
+# Hoisting, metaprogramming, and fundamentals
 
 What is essentially happening here, is that we have a 2-stage compilation process.
 
@@ -35,7 +35,7 @@ x = something complex
 
 Any use of `x` will inline the **full definition** of `x`. `x + x` will duplicate `something complex` in the AST. To avoid this, you should [use `plet` in order to avoid duplicate work](#plet-to-avoid-work-duplication). Do note that this is **strictly evaluated, and hence isn't always the best solution.**
 
-There is however still a problem: What about top-level functions, like `fib`, `sum`, `filter`, and such? We can use `plet` to avoid duplicating the definition, but this error-prone, since to do this perfectly each function that generates part of the AST would need to have access to the `plet`'ed definitions, meaning that we'd likely have to put it into a record or typeclass.
+There is however still a problem: What about top-level functions, like `fib`, `sum`, `filter`, and such? We can use `plet` to avoid duplicating the definition, but this is error-prone, since to do this perfectly each function that generates part of the AST would need to have access to the `plet`'ed definitions, meaning that we'd likely have to put it into a record or typeclass.
 
 To solve this problem, Plutarch supports _hoisting_. Hoisting only works for _closed terms_, that is, terms that don't reference any free variables (introduced by `plam`).
 
