@@ -592,7 +592,6 @@
       inherit extraSources cabalProjectLocal haskellModule tools;
 
       # Build matrix. Plutarch is built against different GHC versions, and 'development' flag.
-      # project = perSystem (projectFor false);
       flakeMatrix = {
         ghc9 = {
           nodev = perSystem (system: (projectFor false system).flake { });
