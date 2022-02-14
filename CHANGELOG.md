@@ -40,13 +40,15 @@
 
 - Added APIs for constructing, compiling, serialising & hashing Plutarch scripts.
 
-  `serialiseValidator` and related functions, to conveniently serialise via `Codec.Serialise`.
+  Type synonyms for Plutarch-typed scripts `PValidator`,`PMintingPolicy` & `PStakeValidator`.
   
-  `validatorHash` and related functions, to obtain script hashes.
+  `mkValidator`, `mkStakeValidator` & `mkMintingPolicy` functions, for creating Plutus API compatible scripts.
+
+  `validatorHash`, `mintingPolicySymbol` & `stakeValidatorHash` to obtain script hashes.
 
   Module: `Plutarch.V1.Api`
 
-  See: `Examples.Scripts` for usage examples.
+  See: `Plutarch.ScriptsSpec` in `plutarch-test` for usage examples.
 
   Added by: [#267](https://github.com/Plutonomicon/plutarch/pull/267)
 - Add `PTuple` construction and related utilities.
