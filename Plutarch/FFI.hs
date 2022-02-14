@@ -14,6 +14,7 @@ import GHC.TypeLits (TypeError)
 import qualified GHC.TypeLits as TypeLits
 import qualified Generics.SOP as SOP
 import Plutarch.Bool (PBool)
+import Plutarch.Builtin (PData)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (
   ClosedTerm,
@@ -29,7 +30,7 @@ import Plutarch.Internal (
 import Plutarch.Internal.PlutusType (PlutusType (PInner))
 import Plutarch.String (PString)
 import Plutus.V1.Ledger.Scripts (Script (unScript), fromCompiledCode)
-import PlutusTx.Builtins.Internal (BuiltinBool)
+import PlutusTx.Builtins.Internal (BuiltinBool, BuiltinData)
 import PlutusTx.Code (CompiledCode, CompiledCodeIn (DeserializedCode))
 import PlutusTx.Prelude (BuiltinString)
 import UntypedPlutusCore (fakeNameDeBruijn)
@@ -68,6 +69,7 @@ type family PlutarchInner (p :: PType) (any :: PType) :: Type where
   PlutarchInner PBool _ = BuiltinBool
   PlutarchInner PInteger _ = Integer
   PlutarchInner PString _ = Text
+  PlutarchInner PData _ = BuiltinData
   PlutarchInner PhorallPhantom _ = ForallPhantom
   PlutarchInner (a :--> b) x = PlutarchInner a x -> PlutarchInner b x
   PlutarchInner (PDelayed a) x = Delayed (PlutarchInner a x)
@@ -77,6 +79,7 @@ type family PlutusTxInner (t :: Type) (any :: Type) :: Type where
   PlutusTxInner BuiltinBool _ = BuiltinBool
   PlutusTxInner Integer _ = Integer
   PlutusTxInner BuiltinString _ = Text
+  PlutusTxInner BuiltinData _ = BuiltinData
   PlutusTxInner ForallPhantom _ = ForallPhantom
   PlutusTxInner (a -> b) x = PlutusTxInner a x -> PlutusTxInner b x
   PlutusTxInner (Delayed a) x = Delayed (PlutusTxInner a x)
