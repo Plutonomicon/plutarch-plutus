@@ -14,7 +14,7 @@ import GHC.TypeLits (TypeError)
 import qualified GHC.TypeLits as TypeLits
 import qualified Generics.SOP as SOP
 import Plutarch.Bool (PBool)
-import Plutarch.Builtin (PData)
+import Plutarch.Builtin (PAsData, PData)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (
   ClosedTerm,
@@ -71,6 +71,8 @@ type family PlutarchInner (p :: PType) (any :: PType) :: Type where
   PlutarchInner PString _ = Text
   PlutarchInner PData _ = BuiltinData
   PlutarchInner PhorallPhantom _ = ForallPhantom
+  PlutarchInner (PAsData a :--> PAsData b) x = PlutarchInner (PData :--> PData) x
+  PlutarchInner (PAsData a :--> b) x = PlutarchInner (PData :--> b) x
   PlutarchInner (a :--> b) x = PlutarchInner a x -> PlutarchInner b x
   PlutarchInner (PDelayed a) x = Delayed (PlutarchInner a x)
   PlutarchInner p x = PlutarchInner (PInner p x) x
