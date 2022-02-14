@@ -19,6 +19,8 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 
 </details>
 
+> Aside: Not interested in the details? Skip straight to [examples](#examples)!
+
 # Overview
 
 ## Compiling and Running
@@ -99,10 +101,10 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 # Examples
 Be sure to check out [Compiling and Running](#compiling-and-running) first!
 
-- [Basic examples](./examples/BASIC.md)
-- [Validator & Minting policies](./examples/VALIDATOR.md)
+- [Basic examples](https://github.com/Plutonomicon/plutarch/tree/master/examples/BASIC.md)
+- [Validator & Minting policies](https://github.com/Plutonomicon/plutarch/tree/master/examples/VALIDATOR.md)
 
-Also see: [examples](./examples/).
+Also see: [examples](https://github.com/Plutonomicon/plutarch/tree/master/examples).
 
 # Thumb rules, Tips, and Tricks
 Outside of the fundamental user guide, there are thumb rules and general guidelines you can follow to improve your Plutarch experience. In this section, we discuss ways of writing efficient and high quality Plutarch code, as well as rules that can help auditing Plutarch easier.

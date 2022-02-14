@@ -17,7 +17,7 @@ fib = phoistAcyclic $
         1
         $ self # (n - 1) + self # (n - 2)
 ```
-from [examples](../examples).
+from [examples](https://github.com/Plutonomicon/plutarch/tree/master/examples).
 
 Execution-
 ```hs
