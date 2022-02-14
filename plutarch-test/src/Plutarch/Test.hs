@@ -17,7 +17,7 @@ module Plutarch.Test (
   -- `goldens`.
   golden,
   goldens,
-  PlutarchGolden (All, Bench, PrintTerm),
+  PlutarchGolden (All, Bench, PrintTerm, PrintTermNoEval),
 ) where
 
 import Control.Monad (when)
@@ -53,9 +53,10 @@ pshouldBe x y = do
   p1 <- printTermEvaluated x
   p2 <- printTermEvaluated y
   p1 `shouldBe` p2
-  where
-    printTermEvaluated :: forall a. ClosedTerm a -> IO String
-    printTermEvaluated = fmap printScript . eval . compile
+
+-- | Like `printTerm` but evaluates the term beforehand.
+printTermEvaluated :: forall a. ClosedTerm a -> IO String
+printTermEvaluated = fmap printScript . eval . compile
 
 {- Like `@?=` but for Plutarch terms -}
 (#@?=) :: forall (a :: PType) (b :: PType). ClosedTerm a -> ClosedTerm b -> Expectation
@@ -122,21 +123,41 @@ pfails p = do
     Left _ -> pure ()
     Right _ -> expectationFailure $ "Term succeeded"
 
-{- Whether to run all or a particular golden test -}
+{- Whether to run all or a particular golden test
+
+  Typically you want to use `All` -- this produces printTerm and benchmark
+  goldens.
+
+  Occasionally you want `PrintTerm` because you don't care to benchmark that
+  program. Use `PrintTermNoEval` if you know the term to always fail.
+
+  Use `Bench` to only benchmark the program.
+-}
 data PlutarchGolden
   = All
   | Bench
   | PrintTerm
+  | -- | Like `PrintTerm` but does not generate UPLC golden for evaluated term.
+    --
+    -- Use this if the program is expected to `perror`.
+    PrintTermNoEval
   deriving stock (Eq, Show)
 
 hasBenchGolden :: PlutarchGolden -> Bool
 hasBenchGolden = \case
   PrintTerm -> False
+  PrintTermNoEval -> False
   _ -> True
 
 hasPrintTermGolden :: PlutarchGolden -> Bool
 hasPrintTermGolden = \case
   Bench -> False
+  _ -> True
+
+hasPrintTermEvaluatedGolden :: PlutarchGolden -> Bool
+hasPrintTermEvaluatedGolden = \case
+  Bench -> False
+  PrintTermNoEval -> False
   _ -> True
 
 {- Run golden tests on the given Plutarch program -}
@@ -163,18 +184,23 @@ goldens' pg mk ps = do
       goldenKey = maybe "golden" (<> ".golden") mk
   describe goldenKey $ do
     let k = maybe "" ("." <>) mk
-        nUplc = name <> k <> ".uplc.golden"
-        nBench = name <> k <> ".bench.golden"
     -- Golden test for UPLC
-    when (hasPrintTermGolden pg) $
+    when (hasPrintTermGolden pg) $ do
       it "uplc" $
-        pureGoldenTextFile ("goldens" </> nUplc) $
+        pureGoldenTextFile ("goldens" </> name <> k <> ".uplc.golden") $
           multiGolden ps $ \p ->
             T.pack $ printTerm p
+    when (hasPrintTermEvaluatedGolden pg) $ do
+      it "uplc.eval" $ do
+        evaluateds <- flip traverse ps $ \(s, p) ->
+          (s,) <$> printTermEvaluated p
+        pure $
+          pureGoldenTextFile ("goldens" </> name <> k <> ".uplc.eval.golden") $
+            multiGolden evaluateds T.pack
     -- Golden test for Plutus benchmarks
     when (hasBenchGolden pg) $
       it "bench" $
-        pureGoldenTextFile ("goldens" </> nBench) $
+        pureGoldenTextFile ("goldens" </> name <> k <> ".bench.golden") $
           multiGolden ps $ \p ->
             TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compile p
 

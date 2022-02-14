@@ -16,7 +16,7 @@ spec = do
         xs10 = integerList [1 .. 10]
     describe "pmatch" $ do
       let p = pmatch (integerList [1, 3, 1]) $ \_ -> perror
-      golden PrintTerm p
+      golden PrintTermNoEval p
     describe "phead" $ do
       let p = phead # xs10
       golden All p
