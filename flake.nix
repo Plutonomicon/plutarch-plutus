@@ -124,6 +124,7 @@
           subdirs = [
             "sydtest"
             "sydtest-discover"
+            "sydtest-aeson"
           ];
         }
         {
@@ -505,6 +506,7 @@
               # sydtest dependencies
               ps.sydtest
               ps.sydtest-discover
+              ps.sydtest-aeson
               ps.validity
               ps.validity-aeson
               ps.autodocodec
