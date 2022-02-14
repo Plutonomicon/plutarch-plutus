@@ -456,7 +456,7 @@
           , word-array ^>= 0.1.0.0
       '';
 
-      projectForGhc = ghcName: system:
+      projectForGhc = ghcName: flagDeveloment: system:
         let pkgs = nixpkgsFor system; in
         let pkgs' = nixpkgsFor' system; in
         let pkgSet = (nixpkgsFor system).haskell-nix.cabalProject' ({
@@ -481,6 +481,8 @@
               packages.plutarch-test.components.exes.plutarch-test.build-tools = [
                 pkgSet.hsPkgs.sydtest-discover
               ];
+              packages.plutarch-test.flags.development = flagDeveloment;
+              packages.plutarch.flags.development = flagDeveloment;
             }
           ];
           shell = {
@@ -579,30 +581,45 @@
             '';
           };
         };
+
+      # Checks the shell script using ShellCheck
+      checkedShellScript = system: name: text:
+        ((nixpkgsFor system).writeShellApplication {
+          inherit name text;
+        }) + "/bin/${name}";
     in
-    {
+    rec {
       inherit extraSources cabalProjectLocal haskellModule tools;
 
-      project = perSystem projectFor;
-      project810 = perSystem projectFor810;
-      flake = perSystem (system: (projectFor system).flake { });
-      flake810 = perSystem (system: (projectFor810 system).flake { });
+      # Build matrix. Plutarch is built against different GHC versions, and 'development' flag.
+      # project = perSystem (projectFor false);
+      flakeMatrix = {
+        ghc9 = {
+          nodev = perSystem (system: (projectFor false system).flake { });
+          dev = perSystem (system: (projectFor true system).flake { });
+        };
+        ghc810 = {
+          nodev = perSystem (system: (projectFor810 false system).flake { });
+          dev = perSystem (system: (projectFor810 true system).flake { });
+        };
+      };
+      flake = flakeMatrix.ghc9.nodev; # Default build configuration for flake.
 
       packages = perSystem (system: self.flake.${system}.packages // {
         haddock = haddock system;
       });
-      checks = perSystem (system:
-        let ghc810 = ((projectFor810 system).flake { }).packages; # We don't run the tests, we just check that it builds.
-        in
-        self.flake.${system}.checks
-        // {
-          formatCheck = formatCheckFor system;
-          benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
-          test = (nixpkgsFor system).runCommand "test" { } "cd ${self}/plutarch-test; ${self.apps.${system}.test.program} | tee $out";
-        } // {
-          "ghc810-plutarch:lib:plutarch" = ghc810."plutarch:lib:plutarch";
-        }
-      );
+      checks = perSystem
+        (system:
+          self.flake.${system}.checks
+            // {
+            formatCheck = formatCheckFor system;
+            benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
+            test-ghc9-nodev = (nixpkgsFor system).runCommand "test-nodev" { } "${self.apps.${system}.test.program} | tee $out";
+            test-ghc9-dev = (nixpkgsFor system).runCommand "test-dev" { } "${self.apps.${system}.test-dev.program} | tee $out";
+          }) // {
+        # We don't run the tests, we just check that it builds.
+        "ghc810-plutarch:lib:plutarch" = flakeMatrix.ghc810.nodev.packages."plutarch:lib:plutarch";
+      };
       # Because `nix flake check` does not work with haskell.nix (due to IFD), 
       # we provide this attribute for running the checks locally, using:
       #   nix build .#check.x86_64-linux
@@ -621,7 +638,19 @@
         // {
           test = {
             type = "app";
-            program = "${self.flake.${system}.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test";
+            program = checkedShellScript system "plutatch-test-nondev"
+              ''
+                cd ${self}/plutarch-test
+                ${self.flakeMatrix.ghc9.nodev.${system}.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test;
+              '';
+          };
+          test-dev = {
+            type = "app";
+            program = checkedShellScript system "plutarch-test-dev"
+              ''
+                cd ${self}/plutarch-test
+                ${self.flakeMatrix.ghc9.dev.${system}.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test
+              '';
           };
           benchmark = {
             type = "app";
