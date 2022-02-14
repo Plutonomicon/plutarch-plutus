@@ -22,6 +22,8 @@ All the arguments are ignored. So we use the generic `PDatum` and `PRedeemer` ty
 
 Execution-
 ```hs
+import qualified PlutusTx
+
 > alwaysSucceeds `evalWithArgsT` [PlutusTx.toData (), PlutusTx.toData (), PlutusTx.toData ()]
 Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf unit ()))))
 ```
@@ -39,6 +41,8 @@ Similar to the example above.
 
 Execution-
 ```hs
+import qualified PlutusTx
+
 > alwaysFails `evalWithArgsT` [PlutusTx.toData (), PlutusTx.toData (), PlutusTx.toData ()]
 Left (EvaluationError [] "(CekEvaluationFailure,Nothing)")
 ```
@@ -79,6 +83,7 @@ It's important that we pass a `PPubKeyHash` *prior* to treating `checkSignatory`
 
 import Plutus.V1.Ledger.Api
 import Plutus.V1.Ledger.Interval
+import qualified PlutusTx
 
 hashStr :: PubKeyHash
 hashStr = "abce0f123e"
