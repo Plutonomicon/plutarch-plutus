@@ -46,36 +46,36 @@ import Test.Syd (Spec, describe, it, pureGoldenTextFile)
 
 spec :: Spec
 spec = do
-  describe "Scripts API" $ do
-    describe "auth validator" $ do
+  describe "scripts" $ do
+    describe "auth_validator" $ do
       golden PrintTerm authValidatorTerm
       it "serialization" $
         pureGoldenTextFile
-          ("goldens" </> "authValidator.plutus.golden")
+          ("goldens" </> "scripts.auth_validator.plutus.golden")
           validatorEncoded
       it "hash" $
         pureGoldenTextFile
-          ("goldens" </> "authValidator.hash.golden")
+          ("goldens" </> "scripts.auth_validator.hash.golden")
           validatorHashEncoded
-    describe "auth policy" $ do
+    describe "auth_policy" $ do
       golden PrintTerm authPolicyTerm
       it "serialization" $
         pureGoldenTextFile
-          ("goldens" </> "authPolicy.plutus.golden")
+          ("goldens" </> "scripts.auth_policy.plutus.golden")
           policyEncoded
       it "hash" $
         pureGoldenTextFile
-          ("goldens" </> "authPolicy.hash.golden")
+          ("goldens" </> "scripts.auth_policy.hash.golden")
           policySymEncoded
     describe "auth stake validator" $ do
       golden PrintTerm authStakeValidatorTerm
       it "serialization" $
         pureGoldenTextFile
-          ("goldens" </> "authStakeValidator.plutus.golden")
+          ("goldens" </> "scripts.auth_stake_validator.plutus.golden")
           stakeValidatorEncoded
       it "hash" $
         pureGoldenTextFile
-          ("goldens" </> "authStakeValidator.hash.golden")
+          ("goldens" </> "scripts.auth_stake_validator.hash.golden")
           stakeValidatorHashEncoded
 
 {- |
