@@ -25,6 +25,18 @@ spec = do
         it "works" $ swap (pcon A) #@?= pcon B
       describe "swap B == A" $ do
         it "works" $ swap (pcon B) #@?= pcon A
+    describe "instances-sanity" $ do
+      plutarchDevFlagDescribe $ do
+        it "PBuiltinList" $ do
+          pmatchTargetEval $ pconstant [1 :: Integer, 2, 3, 4]
+
+-- | Make sure the target of 'pmatch' is only evaluated once.
+pmatchTargetEval :: PlutusType p => ClosedTerm p -> Expectation
+pmatchTargetEval target =
+  pmatch (ptrace (pconstant tag) target) (\x -> plet (pcon x) $ \_ -> pconstant ())
+    `ptraces` replicate 1 tag
+  where
+    tag = "evaluating"
 
 {- TODO:
     - move over the testcase with pmatchTargetEval

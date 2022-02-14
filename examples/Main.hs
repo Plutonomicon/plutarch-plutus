@@ -22,7 +22,6 @@ import qualified PlutusTx
 import qualified Examples.ConstrData as ConstrData
 import qualified Examples.LetRec as LetRec
 import qualified Examples.Lift as Lift
-import qualified Examples.PlutusType as PlutusType
 import Utils
 
 import Data.Text (Text)
@@ -50,7 +49,6 @@ tests =
     "unit tests"
     [ plutarchTests
     , uplcTests
-    , PlutusType.tests
     , LetRec.tests
     , ConstrData.tests
     , Lift.tests
