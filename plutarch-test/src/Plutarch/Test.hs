@@ -130,7 +130,7 @@ goldens' pg mk ps = do
       it "bench" $
         pureGoldenByteStringFile ("goldens" </> nBench) $
           multiGolden ps $ \p ->
-            TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compile p
+            TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' Nothing $ compile p
 
 multiGolden :: forall a. [(String, a)] -> (a -> T.Text) -> ByteString
 multiGolden xs f =
