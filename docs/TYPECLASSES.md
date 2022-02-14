@@ -109,6 +109,7 @@ For the simple constructors that merely wrap a builtin type into `Data`, e.g int
 # PConstant & PLift
 These 2 closely tied together typeclasses establish a bridge between a Plutarch level type (that is represented as a builtin type, i.e [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) and its corresponding Haskell synonym. The gory details of these two are not too useful to users, but you can read all about it if you want at [Developers' corner](./DEVGUIDE.md#pconstant-and-plift).
 
+
 What's more important, are the abilities that `PConstant`/`PLift` instances have-
 ```hs
 pconstant :: PLift p => PLifted p -> Term s p
