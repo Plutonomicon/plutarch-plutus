@@ -8,8 +8,8 @@ module Plutarch.Unsafe (
   punsafeFromOpaque,
 ) where
 
-import Plutarch (PInner, POpaque, Term)
 import qualified Plutarch.Internal as PI
+import Plutarch.Internal.Other (PInner, POpaque, Term)
 
 {- |
   Unsafely coerce from an Opaque term to another type.

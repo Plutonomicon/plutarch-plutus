@@ -88,6 +88,7 @@ library
     Plutarch.Api.V1.Maybe
     Plutarch.Api.V1.Scripts
     Plutarch.Api.V1.Time
+    Plutarch.Api.V1.Tuple
     Plutarch.Api.V1.Tx
     Plutarch.Api.V1.Value
     Plutarch.Bool
@@ -97,14 +98,18 @@ library
     Plutarch.DataRepr
     Plutarch.DataRepr.Internal
     Plutarch.DataRepr.Internal.Field
+    Plutarch.DataRepr.Internal.FromData
     Plutarch.DataRepr.Internal.Generic
     Plutarch.DataRepr.Internal.HList
+    Plutarch.DataRepr.Internal.HList.Utils
     Plutarch.Either
     Plutarch.Evaluate
     Plutarch.Integer
     Plutarch.Internal
+    Plutarch.Internal.Other
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType
+    Plutarch.Internal.TypeFamily
     Plutarch.Lift
     Plutarch.List
     Plutarch.Maybe
@@ -115,6 +120,7 @@ library
     Plutarch.Rec
     Plutarch.Rec.TH
     Plutarch.String
+    Plutarch.TermCont
     Plutarch.Trace
     Plutarch.Unit
     Plutarch.Unsafe
@@ -154,8 +160,10 @@ test-suite examples
 
   other-modules:
     Examples.Api
+    Examples.ConstrData
     Examples.Field
     Examples.LetRec
+    Examples.Lift
     Examples.List
     Examples.PIsData
     Examples.PlutusType

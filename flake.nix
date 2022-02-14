@@ -479,6 +479,43 @@
           mkdir $out
         ''
       ;
+
+      haddock = system:
+        let
+          pkgs = nixpkgsFor system;
+          sphinxcontrib-haddock =
+            pkgs.callPackage plutus.inputs.sphinxcontrib-haddock { pythonPackages = pkgs.python3Packages; };
+          haddock-combine = pkgs.callPackage "${inputs.plutus}/nix/lib/haddock-combine.nix" {
+            ghc = pkgs.haskell-nix.compiler.${ghcVersion};
+            inherit (sphinxcontrib-haddock) sphinxcontrib-haddock;
+          };
+          # If you use this, filter out pretty-show, it doesn't work if not.
+          # hspkgs = builtins.map (x: x.components.library) (
+          #   builtins.filter (x: x ? components && x.components ? library) (
+          #     builtins.attrValues self.project.${system}.hsPkgs
+          #   )
+          # );
+          hspkgs = builtins.map (x: self.project.${system}.hsPkgs.${x}.components.library) [
+            "plutarch"
+            "plutus-core"
+            "plutus-tx"
+            "plutus-ledger-api"
+          ];
+        in
+        haddock-combine {
+          inherit hspkgs;
+          prologue = pkgs.writeTextFile {
+            name = "prologue";
+            text = ''
+              = Combined documentation for Plutarch
+
+              == Handy module entrypoints
+
+                * "Plutarch.Prelude"
+                * "Plutarch"
+            '';
+          };
+        };
     in
     {
       inherit extraSources cabalProjectLocal haskellModule tools;
@@ -488,7 +525,9 @@
       flake = perSystem (system: (projectFor system).flake { });
       flake810 = perSystem (system: (projectFor810 system).flake { });
 
-      packages = perSystem (system: self.flake.${system}.packages);
+      packages = perSystem (system: self.flake.${system}.packages // {
+        haddock = haddock system;
+      });
       checks = perSystem (system:
         let ghc810 = ((projectFor810 system).flake { }).packages; # We don't run the tests, we just check that it builds.
         in
@@ -500,6 +539,9 @@
           "ghc810-plutarch:lib:plutarch" = ghc810."plutarch:lib:plutarch";
         }
       );
+      # Because `nix flake check` does not work with haskell.nix (due to IFD), 
+      # we provide this attribute for running the checks locally, using:
+      #   nix build .#check.x86_64-linux
       check = perSystem (system:
         (nixpkgsFor system).runCommand "combined-test"
           {
@@ -558,6 +600,32 @@
 
                 nix --extra-experimental-features 'nix-command flakes' run .#benchmark-diff -- before.csv after.csv
               '';
+            }
+          );
+          gh-pages = hci-effects.runIf (src.ref == "refs/heads/master") (
+            hci-effects.mkEffect {
+              src = self;
+              buildInputs = with pkgs; [ openssh git ];
+              secretsMap = {
+                "ssh" = "ssh";
+              };
+              effectScript =
+                let
+                  githubHostKey = "github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==";
+                in
+                ''
+                  writeSSHKey
+                  echo ${githubHostKey} >> ~/.ssh/known_hosts
+                  export GIT_AUTHOR_NAME="Hercules-CI Effects"
+                  export GIT_COMMITTER_NAME="Hercules-CI Effects"
+                  export EMAIL="github@croughan.sh"
+                  cp -r --no-preserve=mode ${self.packages.x86_64-linux.haddock}/share/doc ./gh-pages && cd gh-pages
+                  git init -b gh-pages
+                  git remote add origin git@github.com:Plutonomicon/plutarch.git
+                  git add .
+                  git commit -m "Deploy to gh-pages"
+                  git push -f origin gh-pages:gh-pages
+                '';
             }
           );
         };

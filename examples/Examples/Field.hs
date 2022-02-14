@@ -28,7 +28,7 @@ module Examples.Field (
 --------------------------------------------------------------------------------
 
 import qualified GHC.Generics as GHC
-import Generics.SOP (Generic)
+import Generics.SOP (Generic, I (I))
 import Plutarch
 import Plutarch.Builtin (PAsData, PBuiltinList, PIsData (..))
 import Plutarch.DataRepr (
@@ -76,7 +76,7 @@ newtype Triplet (a :: PType) (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields)
     via (PIsDataReprInstances (Triplet a))
 
 mkTrip ::
@@ -148,7 +148,7 @@ tripZY =
   'pletFields' is more efficient.
 -}
 by :: Term s PInteger
-by = pfromData $ pfield @"y" # tripB
+by = pfield @"y" # tripB
 
 getY :: Term s (Triplet PInteger :--> PAsData PInteger)
 getY = pfield @"y"

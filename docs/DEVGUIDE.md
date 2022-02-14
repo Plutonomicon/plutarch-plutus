@@ -11,6 +11,7 @@ Looking to contribute to Plutarch? Looking for functionalities that are not curr
   - [Plutus Core constants (UNSAFE)](#plutus-core-constants-unsafe)
   - [Plutus core builtin functions](#plutus-core-builtin-functions)
   - [Working with BuiltinData/Data/PData](#working-with-builtindatadatapdata)
+  - [`PConstant` and `PLift`](#pconstant-and-plift)
 - [Lower Level Examples](#lower-level-examples)
   - [Extracting `txInfoInputs` from `ScriptContext` manually (UNTYPED)](#extracting-txinfoinputs-from-scriptcontext-manually-untyped)
 - [Useful Links](#useful-links)
@@ -34,7 +35,7 @@ If your PR makes a change to some user facing functionality - please summarize t
 # Targeting branch for PR
 More often than not, you'll be making PRs directly to `master`.
 
-However, sometimes, there is a release cycle going on and the state of the repository is in flux. Everything is unstable as rapid changes are occuring. In this case, all development take place in the `staging` branch - all the PRs are based on top off `staging`, and they all target `staging`. This is the workflow that took place during the Plutarch 1.1 release cycle.
+However, sometimes, there is a release cycle going on and the state of the repository is in flux. There will usually be a `master <- staging` PR open during this time. As long as the `staging` PR is open, you should base most new branches on top of it and merge back into it. Bug fixes, for bugs present in `master`, are exempt from this requirement.
 
 # Concepts
 Even if certain functionalities are absent from the public facing API - you can always implement them using functions like `punsafeConstant` and `punsafeBuiltin` - these allow you to walk the lines between Plutus core and Plutarch.
@@ -155,6 +156,9 @@ Plutarch aims to hide these low level details from the user. Ideally, you will b
 
 If you want to work with `BuiltinData` directly however, which you may have to do during developing Plutarch, you can find all that you need to know at [Plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md).
 
+## `PConstant` and `PLift`
+TODO
+
 # Lower Level Examples
 ## Extracting `txInfoInputs` from `ScriptContext` manually (UNTYPED)
 Here's a quick refresher on what `ScriptContext` looks like-
@@ -178,7 +182,7 @@ We are interested in that first field. That's easy, we do the following actions 
 
 - `pasConstr` - yields a `PBuiltinPair PInteger (PBuiltinList PData)`. We know the constructor id is `0`. It doesn't matter, there's only one constructor.
 - `psndBuiltin` - yields `PBuiltinList PData`, the second element of the pair. These are the fields within `ScriptContext`.
-- `pheadBuiltin` - yields `PData`, the first field. We know this is our `TxInfo`.
+- `phead` - yields `PData`, the first field. We know this is our `TxInfo`.
 
 Combining that all up would give you-
 
@@ -187,7 +191,7 @@ import Plutarch.Prelude
 import Plutarch.Builtin
 
 f :: Term s (PData :--> PData)
-f = plam $ \x -> pheadBuiltin #$ psndBuiltin #$ pasConstr # x
+f = plam $ \x -> phead #$ psndBuiltin #$ pasConstr # x
 ```
 
 And if you test it with a mock context value, it does work-
@@ -227,7 +231,7 @@ To obtain `txInfoInputs` from here, we do the following actions in sequence-
 
 - `pasConstr` - unpacks the `TxInfo`. There's only one constructor, `TxInfo` - we don't care about that. We need the fields.
 - `psndBuiltin` - extracts the second member of the pair, the fields of `TxInfo`.
-- `pheadBuiltin` - extracts the first element of the list. This is our field, `txInfoInputs`.
+- `phead` - extracts the first element of the list. This is our field, `txInfoInputs`.
 - (optional) `pasList` - takes out the builtin list from the `List` data value.
 
 And that's it! Putting it all together-
@@ -235,8 +239,8 @@ And that's it! Putting it all together-
 ```haskell
 f :: Term s (PData :--> PBuiltinList PData)
 f = plam $ \x ->
-  let txInfo = pheadBuiltin #$ psndBuiltin #$ pasConstr # x
-  in pasList #$ pheadBuiltin #$ psndBuiltin #$ pasConstr # txInfo
+  let txInfo = phead #$ psndBuiltin #$ pasConstr # x
+  in pasList #$ phead #$ psndBuiltin #$ pasConstr # txInfo
 ```
 
 Trying it on the same `mockCtx` yields-
@@ -264,6 +268,6 @@ There's just one element in `txInfoInputs` in this example, and there it is. Of 
 - [Builtin pairs](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-pairs.md)
 - [Builtin functions](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-functions.md)
 - [Builtin data](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md)
-- [Plutus builtin functions and types](https://staging.plutus.iohkdev.io/doc/haddock//plutus-tx/html/PlutusTx-Builtins-Internal.html)
-- [Plutus Core builtin function identifiers, aka `DefaultFun`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultFun)
-- [Plutus Core types, aka `DefaultUni`](https://staging.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)
+- [Plutus builtin functions and types](https://playground.plutus.iohkdev.io/doc/haddock//plutus-tx/html/PlutusTx-Builtins-Internal.html)
+- [Plutus Core builtin function identifiers, aka `DefaultFun`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultFun)
+- [Plutus Core types, aka `DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)

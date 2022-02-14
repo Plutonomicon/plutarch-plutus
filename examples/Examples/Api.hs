@@ -16,7 +16,6 @@ import Plutarch.Api.V1 (
   PValue,
  )
 import Plutarch.Builtin (pasConstr, pforgetData)
-import Plutarch.DataRepr (PLabeledType ((:=)))
 
 -- import Plutarch.DataRepr (pindexDataList)
 import qualified Plutarch.Monadic as P
@@ -137,7 +136,7 @@ getMint =
 getCredentials :: Term s PScriptContext -> Term s (PBuiltinList PData)
 getCredentials ctx =
   let inp = pfield @"inputs" #$ pfield @"txInfo" # ctx
-   in pmap # inputCredentialHash # pfromData inp
+   in pmap # inputCredentialHash # inp
 
 {- |
   Get the hash of the Credential in an input, treating
@@ -162,7 +161,7 @@ getSym =
 checkSignatory :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatory = plam $ \ph ctx' ->
   pletFields @["txInfo", "purpose"] ctx' $ \ctx -> P.do
-    PSpending _ <- pmatch . pfromData $ ctx.purpose
+    PSpending _ <- pmatch $ ctx.purpose
     let signatories = pfield @"signatories" # ctx.txInfo
     pif
       (pelem # pdata ph # pfromData signatories)
@@ -171,19 +170,37 @@ checkSignatory = plam $ \ph ctx' ->
       -- Signature not present.
       perror
 
-checkSignatoryCont :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
+-- | `checkSignatory` implemented using `runCont`
+checkSignatoryCont :: forall s. Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatoryCont = plam $ \ph ctx' ->
   pletFields @["txInfo", "purpose"] ctx' $ \ctx -> (`runCont` id) $ do
-    _ <- cont $ pmatch . pfromData $ ctx.purpose
-    let signatories = pfield @"signatories" # ctx.txInfo
-    cont $
-      const $
-        pif
-          (pelem # pdata ph # pfromData signatories)
-          -- Success!
-          (pconstant ())
-          -- Signature not present.
-          perror
+    purpose <- cont (pmatch $ ctx.purpose)
+    pure $ case purpose of
+      PSpending _ ->
+        let signatories :: Term s (PBuiltinList (PAsData PPubKeyHash))
+            signatories = pfield @"signatories" # ctx.txInfo
+         in pif
+              (pelem # pdata ph # signatories)
+              -- Success!
+              (pconstant ())
+              -- Signature not present.
+              perror
+      _ ->
+        ptraceError "checkSignatoryCont: not a spending tx"
+
+-- | `checkSignatory` implemented using `runTermCont`
+checkSignatoryTermCont :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
+checkSignatoryTermCont = plam $ \ph ctx' -> unTermCont $ do
+  ctx <- tcont $ pletFields @["txInfo", "purpose"] ctx'
+  PSpending _ <- tcont (pmatch $ ctx.purpose)
+  let signatories = pfield @"signatories" # ctx.txInfo
+  pure $
+    pif
+      (pelem # pdata ph # pfromData signatories)
+      -- Success!
+      (pconstant ())
+      -- Signature not present.
+      perror
 
 getFields :: Term s (PData :--> PBuiltinList PData)
 getFields = phoistAcyclic $ plam $ \addr -> psndBuiltin #$ pasConstr # addr
@@ -216,6 +233,9 @@ tests =
         fails $ checkSignatory # pconstant "41" # ctx
     , testCase "signatory validator with Cont" $ do
         () <$ traverse (\x -> succeeds $ checkSignatoryCont # pconstant x # ctx) signatories
+        fails $ checkSignatory # pconstant "41" # ctx
+    , testCase "signatory validator with TermCont" $ do
+        () <$ traverse (\x -> succeeds $ checkSignatoryTermCont # pconstant x # ctx) signatories
         fails $ checkSignatory # pconstant "41" # ctx
     , testCase "getFields" $
         printTerm getFields @?= getFields_compiled

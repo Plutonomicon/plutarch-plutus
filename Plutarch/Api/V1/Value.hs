@@ -38,9 +38,7 @@ deriving via
 
 newtype PValue (s :: S) = PValue (Term s (PMap PCurrencySymbol (PMap PTokenName PInteger)))
   deriving
-    ( PlutusType
-    , PIsData
-    )
+    (PlutusType, PIsData)
     via (DerivePNewtype PValue (PMap PCurrencySymbol (PMap PTokenName PInteger)))
 
 instance PUnsafeLiftDecl PValue where type PLifted PValue = Plutus.Value

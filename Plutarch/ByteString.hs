@@ -16,13 +16,13 @@ import qualified Data.ByteString as BS
 import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Stack (HasCallStack)
-import Plutarch (
+import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
+import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Other (
   Term,
   (#),
   type (:-->),
  )
-import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
-import Plutarch.Integer (PInteger)
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstant,

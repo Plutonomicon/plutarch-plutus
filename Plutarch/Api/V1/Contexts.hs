@@ -9,7 +9,7 @@ module Plutarch.Api.V1.Contexts (
 ) where
 
 import qualified GHC.Generics as GHC
-import Generics.SOP (Generic)
+import Generics.SOP (Generic, I (I))
 
 import qualified Plutus.V1.Ledger.Api as Plutus
 
@@ -20,26 +20,19 @@ import Plutarch.Api.V1.Crypto (PPubKeyHash)
 import Plutarch.Api.V1.DCert (PDCert)
 import Plutarch.Api.V1.Scripts (PDatum, PDatumHash)
 import Plutarch.Api.V1.Time (PPOSIXTimeRange)
+import Plutarch.Api.V1.Tuple (PTuple)
 import Plutarch.Api.V1.Tx (PTxId, PTxInInfo, PTxOut, PTxOutRef)
 import Plutarch.Api.V1.Value (PCurrencySymbol, PValue)
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
   PIsDataReprInstances (PIsDataReprInstances),
-  PLabeledType ((:=)),
  )
 import Plutarch.Lift (
   PLifted,
   PUnsafeLiftDecl,
  )
 import Plutarch.Prelude
-
-type PTuple a b =
-  PDataSum
-    '[ '[ "_0" ':= a
-        , "_1" ':= b
-        ]
-     ]
 
 newtype PTxInfo (s :: S)
   = PTxInfo
@@ -63,7 +56,7 @@ newtype PTxInfo (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields)
     via PIsDataReprInstances PTxInfo
 
 instance PUnsafeLiftDecl PTxInfo where type PLifted PTxInfo = Plutus.TxInfo
@@ -83,7 +76,7 @@ newtype PScriptContext (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields)
     via PIsDataReprInstances PScriptContext
 
 instance PUnsafeLiftDecl PScriptContext where type PLifted PScriptContext = Plutus.ScriptContext
@@ -100,7 +93,7 @@ data PScriptPurpose (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PMatch, PIsData)
+    (PlutusType, PIsData)
     via (PIsDataReprInstances PScriptPurpose)
 
 instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
