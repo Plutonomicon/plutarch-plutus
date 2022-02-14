@@ -6,4 +6,4 @@ benchmarks: true
 
 -- Enabling the flag here allows TraceSpec.hs and such tests to actually test
 -- the `ptrace` family of functions.
-flags: -development
+-- flags: +development

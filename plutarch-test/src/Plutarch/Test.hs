@@ -77,7 +77,7 @@ psucceeds p =
     Left _ -> expectationFailure $ "Term failed to evaluate"
     Right _ -> pure ()
 
-{- | Asserts the term evaluates successfully with the given trace sequence
+{- | Asserts that the term evaluates successfully with the given trace sequence
 
   See also: `plutarchDevFlagDescribe`
 -}
@@ -97,11 +97,11 @@ ptraces p develTraces =
 
 {- | Like `describe`, but determines description from `Development` CPP flag
 
-  Useful to create two sets of othersise identifical group of tests that differ
+  Useful to create two sets of othersise identical group of tests that differ
   only by `Development` flag. This has the effect of creating two sets of golden
   tests (with different filepaths) for corresponding flag values.
 
-  Typically to be used in conjunction with `ptraces`.
+  Typically meant to be used in conjunction with `ptraces`.
 -}
 plutarchDevFlagDescribe :: forall (outers :: [Type]) inner. TestDefM outers inner () -> TestDefM outers inner ()
 
