@@ -86,7 +86,7 @@ It's used to distinguish between closed and open terms:
 - Closed term: `type ClosedTerm = forall s. Term s a`
 - Arbitrary term: `exists s. Term s a`
 - NB: `(exists s. Term s a) -> b` is isomorphic to
-- `forall s. Term s a → b`
+- `forall s. Term s a -> b`
 
 # eDSL Types in Plutarch
 
@@ -106,7 +106,7 @@ foo x' = plet x' $ \x -> x <> x
 
 > Aside: How do you know whether something is "actually represented by a big unevaluated computation"? Well, it depends on the callsite and the usage! There's no real way to know while writing a function. The rule of thumb is to `plet` the argument in a Haskell level function regardless (only if it's used multiple times). Duplicate `plet`s back to back are actually optimized to a singular `plet` anyway.
 
-Also see: [Don't duplicate work](#dont-duplicate-work).
+Also see: [Don't duplicate work](./TRICKS.md#dont-duplicate-work).
 
 # Tracing
 You can use the functions `ptrace`, `ptraceError`, `ptraceIfFalse`, `ptraceIfTrue` (from `Plutarch.Trace` or `Plutarch.Prelude`) for tracing. These behave similarly to the ones you're used to from [PlutusTx](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Trace.html).
@@ -218,7 +218,7 @@ foo (\_ n -> n)
 ```
 Neat!
 
-This is the same recipe followed in the implementation of `PMaybe`. See its [PlutusType impl below](#plutustype-pcon-and-pmatch)!
+This is the same recipe followed in the implementation of `PMaybe`. See its [PlutusType impl](./TYPECLASSES.md#plutustype-pcon-and-pmatch)!
 
 # Unsafe functions
 There are internal functions such as `punsafeCoerce`, `punsafeConstant` etc. that give you terms without their specific type. These **should not** be used by Plutarch users. It is the duty of the user of these unsafe functions to get the type right - and it is very easy to get the type wrong. You can easily make the type system believe you're creating a `Term s PInteger`, when in reality, you created a function.
