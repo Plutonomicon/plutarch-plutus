@@ -104,10 +104,12 @@ foo :: Term s PString -> Term s PString
 foo x' = plet x' $ \x -> x <> x
 ```
 
+> Aside: How do you know whether something is "actually represented by a big unevaluated computation"? Well, it depends on the callsite and the usage! There's no real way to know while writing a function. The rule of thumb is to `plet` the argument in a Haskell level function regardless (only if it's used multiple times). Duplicate `plet`s back to back are actually optimized to a singular `plet` anyway.
+
 Also see: [Don't duplicate work](#dont-duplicate-work).
 
 # Tracing
-You can use the functions `ptrace`, `ptraceError`, `ptraceIfFalse`, `ptraceIfTrue` (from `Plutarch.Trace`) for tracing. These behave similarly to the ones you're used to from [PlutusTx](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Trace.html).
+You can use the functions `ptrace`, `ptraceError`, `ptraceIfFalse`, `ptraceIfTrue` (from `Plutarch.Trace` or `Plutarch.Prelude`) for tracing. These behave similarly to the ones you're used to from [PlutusTx](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Trace.html).
 
 If you have the `development` flag for `plutarch` turned on - you'll see the trace messages appear in the trace log during script evaluation. When not in development mode - these functions basically do nothing.
 
@@ -129,9 +131,7 @@ Program () (Version () 1 0 0) (Delay () (Constant () (Some (ValueOf bytestring "
 ```
 The function application is "delayed". It will not be evaluated (and therefore computed) until it is *forced*.
 
-Plutarch level function application is strict. All of your function arguments are evaluated **before** the function is called.
-
-This is often undesirable, and you want to create a delayed term instead that you want to force *only* when you need to compute it.
+Plutarch level function application is strict. All of your function arguments are evaluated **before** the function is called. This is often undesirable, and you want to create a delayed term instead that you want to force *only* when you need to compute it.
 
 You can force a previously delayed expression using pforce-
 ```hs
@@ -152,6 +152,8 @@ pif cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay wh
 ```
 
 `pif'` is a direct synonym to the `IfThenElse` Plutus Core builtin function. Of course, it evaluates its arguments strictly but you often want an if-then-else that doesn't evaluate both its branches - only the one for which the condition holds. So, `pif`, as a haskell level function can take in both branches (without any concept of evaluating them), delay them and *then* apply it to `pif'`. Finally, a `pforce` will force the yielded branch that was previously delayed.
+
+> Aside: Be careful of `pforce`ing the same delayed term twice. Unlike Haskell's handling of laziness - where forcing a thunk twice never duplicates computation - UPLC (Untyped Plutus Core) will happily duplicate the computation each time you force it.
 
 Delay and Force will be one of your most useful tools while writing Plutarch. Make sure you get a grip on them!
 
@@ -183,9 +185,11 @@ Whereas `Nothing` would be represented as this function-
 \_ n -> n
 ```
 
-We covered construction. What about usage/deconstruction? That's also just as simple. Let's say you have a function, `foo :: Maybe Integer -> Integer`, it takes in a scott encoded `Maybe Integer`, adds `42` to its `Just` value. If it's `Nothing`, it just returns 0.
+We covered construction. What about usage/deconstruction? That's also just as simple. Let's say you have a function, `foo :: Maybe Integer -> Integer`, it takes in a scott encoded `Maybe Integer`, and adds `42` to its `Just` value. If it's `Nothing`, it just returns 0.
 ```hs
 {-# LANGUAGE RankNTypes #-}
+
+import Prelude (Integer, (+))
 
 type Maybe a = forall b. (a -> b) -> b -> b
 
@@ -198,7 +202,7 @@ nothing = \_ n -> n
 foo :: Maybe Integer -> Integer
 foo mb = mb (\x -> x + 42) 0
 ```
-How does that work? Recall that `mb` is really just a function. Here's what the application of `f` would work like-
+How does that work? Recall that `mb` is really just a function. Here's how the application of `f` would work-
 ```hs
 foo (just 1)
 foo (\f _ -> f 1)
@@ -212,9 +216,9 @@ foo (\_ n -> n)
 (\_ n -> n) (\x -> x + 42) 0
 0
 ```
-How cool is that?
+Neat!
 
-This is the same recipe followed in the implementation of `PMaybe`. See its [PlutusType impl](#plutustype-pcon-and-pmatch) below!
+This is the same recipe followed in the implementation of `PMaybe`. See its [PlutusType impl below](#plutustype-pcon-and-pmatch)!
 
 # Unsafe functions
 There are internal functions such as `punsafeCoerce`, `punsafeConstant` etc. that give you terms without their specific type. These **should not** be used by Plutarch users. It is the duty of the user of these unsafe functions to get the type right - and it is very easy to get the type wrong. You can easily make the type system believe you're creating a `Term s PInteger`, when in reality, you created a function.
@@ -222,3 +226,5 @@ There are internal functions such as `punsafeCoerce`, `punsafeConstant` etc. tha
 Things will go very wrong during script evaluation if you do that kind of thing.
 
 The good thing is that unsafe functions all have explicit indicators through the names, as long as you don't use any `punsafe*` functions - you should be fine!
+
+Of course, these have legitimate use cases. Most often, we use these functions to convert between types that *truly* have the same internal representation in UPLC - but the type system simply isn't expressive enough to infer that.
