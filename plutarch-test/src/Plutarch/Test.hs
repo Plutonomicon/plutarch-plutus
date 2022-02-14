@@ -1,8 +1,6 @@
 {-# LANGUAGE ImpredicativeTypes #-}
 
-{- | Common functions for testing Plutarch code
- TODO: Move this to plutarch-test library.
--}
+-- | Common functions for testing Plutarch code
 module Plutarch.Test (
   -- | Plutarch specific `Assertion` operators
   passert,
