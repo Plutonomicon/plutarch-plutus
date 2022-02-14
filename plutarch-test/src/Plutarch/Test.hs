@@ -17,7 +17,7 @@ module Plutarch.Test (
   -- `goldens`.
   golden,
   goldens,
-  PlutarchGolden (All, Bench, PrintTerm, PrintTermNoEval),
+  PlutarchGolden (All, Bench, PrintTerm),
 ) where
 
 import Control.Monad (when)
@@ -50,22 +50,18 @@ import qualified Plutus.V1.Ledger.Scripts as Scripts
 -}
 pshouldBe :: forall (a :: PType) (b :: PType). ClosedTerm a -> ClosedTerm b -> Expectation
 pshouldBe x y = do
-  p1 <- printTermEvaluated x
-  p2 <- printTermEvaluated y
+  p1 <- fmap printScript $ eval $ compile x
+  p2 <- fmap printScript $ eval $ compile y
   p1 `shouldBe` p2
-
--- | Like `printTerm` but evaluates the term beforehand.
-printTermEvaluated :: forall a. ClosedTerm a -> IO String
-printTermEvaluated = fmap printScript . eval . compile
+  where
+    eval :: Scripts.Script -> IO Scripts.Script
+    eval s = case evaluateScript s of
+      Left e -> expectationFailure $ "Script evaluation failed: " <> show e
+      Right (_, _, x') -> pure x'
 
 {- Like `@?=` but for Plutarch terms -}
 (#@?=) :: forall (a :: PType) (b :: PType). ClosedTerm a -> ClosedTerm b -> Expectation
 (#@?=) = pshouldBe
-
-eval :: Scripts.Script -> IO Scripts.Script
-eval s = case evaluateScript s of
-  Left e -> expectationFailure $ "Script evaluation failed: " <> show e
-  Right (_, _, x') -> pure x'
 
 {- Asserts the term to be true -}
 passert :: forall (a :: PType). ClosedTerm a -> Expectation
@@ -77,6 +73,19 @@ psucceeds p =
   case evaluateScript (compile p) of
     Left _ -> expectationFailure $ "Term failed to evaluate"
     Right _ -> pure ()
+
+{- Like `printTerm` but evaluates the term beforehand.
+
+  All evaluation failures are treated as equivalent to a `perror`. Plutus does
+  not provide an accurate way to tell if the program evalutes to `Error` or not;
+  see https://github.com/input-output-hk/plutus/issues/4270
+
+-}
+printTermEvaluated :: forall a. ClosedTerm a -> String
+printTermEvaluated p =
+  case evaluateScript (compile p) of
+    Left _ -> printTerm perror
+    Right (_, _, x) -> printScript x
 
 {- | Asserts that the term evaluates successfully with the given trace sequence
 
@@ -129,7 +138,7 @@ pfails p = do
   goldens.
 
   Occasionally you want `PrintTerm` because you don't care to benchmark that
-  program. Use `PrintTermNoEval` if you know the term to always fail.
+  program.
 
   Use `Bench` to only benchmark the program.
 -}
@@ -137,27 +146,16 @@ data PlutarchGolden
   = All
   | Bench
   | PrintTerm
-  | -- | Like `PrintTerm` but does not generate UPLC golden for evaluated term.
-    --
-    -- Use this if the program is expected to `perror`.
-    PrintTermNoEval
   deriving stock (Eq, Show)
 
 hasBenchGolden :: PlutarchGolden -> Bool
 hasBenchGolden = \case
   PrintTerm -> False
-  PrintTermNoEval -> False
   _ -> True
 
 hasPrintTermGolden :: PlutarchGolden -> Bool
 hasPrintTermGolden = \case
   Bench -> False
-  _ -> True
-
-hasPrintTermEvaluatedGolden :: PlutarchGolden -> Bool
-hasPrintTermEvaluatedGolden = \case
-  Bench -> False
-  PrintTermNoEval -> False
   _ -> True
 
 {- Run golden tests on the given Plutarch program -}
@@ -190,13 +188,10 @@ goldens' pg mk ps = do
         pureGoldenTextFile ("goldens" </> name <> k <> ".uplc.golden") $
           multiGolden ps $ \p ->
             T.pack $ printTerm p
-    when (hasPrintTermEvaluatedGolden pg) $ do
-      it "uplc.eval" $ do
-        evaluateds <- flip traverse ps $ \(s, p) ->
-          (s,) <$> printTermEvaluated p
-        pure $
-          pureGoldenTextFile ("goldens" </> name <> k <> ".uplc.eval.golden") $
-            multiGolden evaluateds T.pack
+      it "uplc.eval" $
+        let evaluateds = flip fmap ps $ \(s, p) -> (s, printTermEvaluated p)
+         in pureGoldenTextFile ("goldens" </> name <> k <> ".uplc.eval.golden") $
+              multiGolden evaluateds T.pack
     -- Golden test for Plutus benchmarks
     when (hasBenchGolden pg) $
       it "bench" $
