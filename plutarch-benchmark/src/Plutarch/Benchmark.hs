@@ -17,6 +17,10 @@ module Plutarch.Benchmark (
   -- | * Benchmark entrypoints
   bench,
   benchWithApply,
+  benchPValidator,
+  benchPStakeValidator,
+  benchPMintingPolicy,
+
   bench',
   benchGroup,
   benchMain,
@@ -26,7 +30,7 @@ module Plutarch.Benchmark (
   renderDiffTable,
 ) where
 
-import qualified Codec.Serialise as Codec
+import Codec.Serialise (serialise)
 import Control.Monad (mzero)
 import Data.Aeson (ToJSON)
 import qualified Data.ByteString.Lazy as BSL
@@ -64,6 +68,14 @@ import Plutus.V1.Ledger.Api (
  )
 import qualified Plutus.V1.Ledger.Scripts as Plutus
 import qualified Plutus.V1.Ledger.Api as Plutus
+import Plutarch.Unsafe (punsafeCoerce)
+import Plutarch.Prelude
+import Plutarch.Api.V1 
+  ( type PValidator
+  , type PMintingPolicy
+  , type PStakeValidator
+  , PScriptContext
+  )
 
 --------------------------------------------------------------------------------
 
@@ -145,7 +157,7 @@ benchmarkScript' unAppliedScript script =
     scriptSize = fromInteger . toInteger . SBS.length
 
     serialiseScript :: Script -> SBS.ShortByteString
-    serialiseScript = SBS.toShort . LB.toStrict . Codec.serialise -- Using `flat` here breaks `evalScriptCounting`
+    serialiseScript = SBS.toShort . LB.toStrict . serialise -- Using `flat` here breaks `evalScriptCounting`
 
     evalScriptCounting :: HasCallStack => Plutus.SerializedScript -> Plutus.ExBudget
     evalScriptCounting script =
@@ -210,6 +222,43 @@ benchWithApply
 benchWithApply name unApplied appArgs =
   [ benchmarkScriptUnapplied name (compile unApplied) 
       $ compile $ appArgs unApplied
+  ]
+
+-- | Create a benchmark for a PValidator term, using the provided args
+benchPValidator 
+  :: String 
+  -> ClosedTerm PValidator
+  -> ClosedTerm PData
+  -> ClosedTerm PData
+  -> ClosedTerm PScriptContext
+  -> [NamedBenchmark]
+benchPValidator name script datum redeemer ctx =
+  [ benchmarkScriptUnapplied name (compile script) 
+      $ compile $ script # datum # redeemer #$ punsafeCoerce ctx
+  ]
+
+-- | Create a benchmark for a PMintingPolicy term, using the provided args
+benchPMintingPolicy 
+  :: String 
+  -> ClosedTerm PMintingPolicy
+  -> ClosedTerm PData
+  -> ClosedTerm PScriptContext
+  -> [NamedBenchmark]
+benchPMintingPolicy name script redeemer ctx =
+  [ benchmarkScriptUnapplied name (compile script) 
+      $ compile $ script # redeemer #$ punsafeCoerce ctx
+  ]
+
+-- | Create a benchmark for a PStakeValidator term, using the provided args
+benchPStakeValidator
+  :: String 
+  -> ClosedTerm PStakeValidator
+  -> ClosedTerm PData
+  -> ClosedTerm PScriptContext
+  -> [NamedBenchmark]
+benchPStakeValidator name script redeemer ctx =
+  [ benchmarkScriptUnapplied name (compile script) 
+      $ compile $ script # redeemer #$ punsafeCoerce ctx
   ]
 
 -- | Create a benchmark with itself as name

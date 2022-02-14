@@ -2,6 +2,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Api.V1.Scripts (
+  -- * Plutus API Types
   PDatum (PDatum),
   PDatumHash (PDatumHash),
   PRedeemer (PRedeemer),
@@ -64,3 +65,5 @@ deriving via
   (DerivePConstantViaNewtype Plutus.ValidatorHash PValidatorHash PByteString)
   instance
     (PConstant Plutus.ValidatorHash)
+
+-----------------------------

@@ -38,6 +38,17 @@
 
   Added by: [#251](https://github.com/Plutonomicon/plutarch/pull/251)
 
+- Added APIs for constructing, compiling, serialising & hashing Plutarch scripts.
+
+  `serialiseValidator` and related functions, to conveniently serialise via `Codec.Serialise`.
+  
+  `validatorHash` and related functions, to obtain script hashes.
+
+  Module: `Plutarch.V1.Api`
+
+  See: `Examples.Scripts` for usage examples.
+
+  Added by: [#267](https://github.com/Plutonomicon/plutarch/pull/267)
 - Add `PTuple` construction and related utilities.
 
   Module: `Plutarch.Api.V1.Tuple`

@@ -124,6 +124,7 @@ executable plutarch-test
     Plutarch.StringSpec
     Plutarch.Test
     Plutarch.UnitSpec
+    Plutarch.ScriptsSpec
 
   ghc-options:
     -threaded -rtsopts -with-rtsopts=-N
