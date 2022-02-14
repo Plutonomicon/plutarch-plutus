@@ -39,7 +39,9 @@ spec = do
           golden All p
           it "works" $ plift p @?= sym
     describe "example" $ do
-      describe "signatory" $ do
+      -- The checkSignatory family of functions implicitly use tracing due to
+      -- monadic syntax, and as such we need two sets of tests here.
+      describe "signatory" . plutarchDevFlagDescribe $ do
         let aSig :: PubKeyHash = "ab01fe235c"
         describe "haskell" $ do
           let p = checkSignatory # pconstant aSig # ctx
