@@ -38,3 +38,13 @@ spec = do
         ]
       it "true" $ p1 `ptraces` []
       it "false" $ p2 `ptraces` ["foo"]
+    describe "more traces" $ do
+      it "false.true.false" $
+        ptraceIfFalse "foo" (ptraceIfTrue "bar" $ pcon PFalse)
+          `ptraces` ["foo"]
+      it "ptrace.true.false" $
+        ptrace "foo" (ptraceIfTrue "bar" $ pcon PFalse)
+          `ptraces` ["foo"]
+      it "ptrace.true.true" $
+        ptrace "foo" (ptraceIfTrue "bar" $ pcon PTrue)
+          `ptraces` ["foo", "bar"]

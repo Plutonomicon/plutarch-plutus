@@ -163,7 +163,6 @@ test-suite examples
     Examples.LetRec
     Examples.Lift
     Examples.PlutusType
-    Examples.Tracing
     Utils
 
   build-depends:
