@@ -40,7 +40,11 @@ class PEq t where
 
 That would yield a `Term s PBool`, which you would probably use with `pif` (or similar)
 
+> Jack: missing full stop.
+
 There is also a synonym to  `Ord`, `POrd`-
+
+> Jack: synonym _of_
 
 ```haskell
 class POrd t where
