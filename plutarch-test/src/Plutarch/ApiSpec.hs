@@ -1,4 +1,6 @@
 {-# LANGUAGE ImpredicativeTypes #-}
+{-# LANGUAGE QualifiedDo #-}
+{-# LANGUAGE OverloadedRecordDot #-}
 
 module Plutarch.ApiSpec (spec) where
 

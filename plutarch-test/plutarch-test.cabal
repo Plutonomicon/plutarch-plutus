@@ -106,9 +106,6 @@ executable plutarch-test
   type:               exitcode-stdio-1.0
   main-is:            Main.hs
   hs-source-dirs:     src
-  default-extensions:
-    OverloadedRecordDot
-    QualifiedDo
 
   other-modules:
     Spec
