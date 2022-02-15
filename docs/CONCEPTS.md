@@ -18,7 +18,7 @@ This document describes various concepts applicable in Plutarch.
 
 </details>
 
-# Hoisting, metaprogramming,  and fundamentals
+# Hoisting, metaprogramming, and fundamentals
 
 What is essentially happening here, is that we have a 2-stage compilation process.
 
@@ -37,7 +37,7 @@ x = something complex
 
 Any use of `x` will inline the **full definition** of `x`. `x + x` will duplicate `something complex` in the AST. To avoid this, you should [use `plet` in order to avoid duplicate work](#plet-to-avoid-work-duplication). Do note that this is **strictly evaluated, and hence isn't always the best solution.**
 
-There is however still a problem: What about top-level functions, like `fib`, `sum`, `filter`, and such? We can use `plet` to avoid duplicating the definition, but this error-prone, since to do this perfectly each function that generates part of the AST would need to have access to the `plet`'ed definitions, meaning that we'd likely have to put it into a record or typeclass.
+There is however still a problem: What about top-level functions, like `fib`, `sum`, `filter`, and such? We can use `plet` to avoid duplicating the definition, but this is error-prone, since to do this perfectly each function that generates part of the AST would need to have access to the `plet`'ed definitions, meaning that we'd likely have to put it into a record or typeclass.
 
 > Jack: problem: what...
 
@@ -100,7 +100,7 @@ It's used to distinguish between closed and open terms:
 -   Closed term: `type ClosedTerm = forall s. Term s a`
 -   Arbitrary term: `exists s. Term s a`
 -   NB: `(exists s. Term s a) -> b` is isomorphic to
--   `forall s. Term s a → b`
+-   `forall s. Term s a -> b`
 
 # eDSL Types in Plutarch
 
@@ -124,11 +124,12 @@ foo :: Term s PString -> Term s PString
 foo x' = plet x' $ \x -> x <> x
 ```
 
-Also see: [Don't duplicate work](#dont-duplicate-work).
+> Aside: How do you know whether something is "actually represented by a big unevaluated computation"? Well, it depends on the callsite and the usage! There's no real way to know while writing a function. The rule of thumb is to `plet` the argument in a Haskell level function regardless (only if it's used multiple times). Duplicate `plet`s back to back are actually optimized to a singular `plet` anyway.
+
+Also see: [Don't duplicate work](./TRICKS.md#dont-duplicate-work).
 
 # Tracing
-
-You can use the functions `ptrace`, `ptraceError`, `ptraceIfFalse`, `ptraceIfTrue` (from `Plutarch.Trace`) for tracing. These behave similarly to the ones you're used to from [PlutusTx](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Trace.html).
+You can use the functions `ptrace`, `ptraceError`, `ptraceIfFalse`, `ptraceIfTrue` (from `Plutarch.Trace` or `Plutarch.Prelude`) for tracing. These behave similarly to the ones you're used to from [PlutusTx](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Trace.html).
 
 If you have the `development` flag for `plutarch` turned on - you'll see the trace messages appear in the trace log during script evaluation. When not in development mode - these functions basically do nothing.
 
@@ -157,9 +158,7 @@ Compiling and evaluating it yields-
 
 The function application is "delayed". It will not be evaluated (and therefore computed) until it is _forced_.
 
-Plutarch level function application is strict. All of your function arguments are evaluated **before** the function is called.
-
-This is often undesirable, and you want to create a delayed term instead that you want to force _only_ when you need to compute it.
+Plutarch level function application is strict. All of your function arguments are evaluated **before** the function is called. This is often undesirable, and you want to create a delayed term instead that you want to force _only_ when you need to compute it.
 
 You can force a previously delayed expression using pforce-
 
@@ -186,6 +185,8 @@ pif cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay wh
 > Jack: Capitalize Haskell.
 
 > Jack: apply _them_ to `pif'`.
+
+> Aside: Be careful of `pforce`ing the same delayed term twice. Unlike Haskell's handling of laziness - where forcing a thunk twice never duplicates computation - UPLC (Untyped Plutus Core) will happily duplicate the computation each time you force it.
 
 Delay and Force will be one of your most useful tools while writing Plutarch. Make sure you get a grip on them!
 
@@ -229,12 +230,14 @@ Whereas `Nothing` would be represented as this function-
 \_ n -> n
 ```
 
-We covered construction. What about usage/deconstruction? That's also just as simple. Let's say you have a function, `foo :: Maybe Integer -> Integer`, it takes in a scott encoded `Maybe Integer`, adds `42` to its `Just` value. If it's `Nothing`, it just returns 0.
+We covered construction. What about usage/deconstruction? That's also just as simple. Let's say you have a function, `foo :: Maybe Integer -> Integer`, it takes in a scott encoded `Maybe Integer`, and adds `42` to its `Just` value. If it's `Nothing`, it just returns 0.
 
 > Jack: consider zero or `0`.
 
 ```hs
 {-# LANGUAGE RankNTypes #-}
+
+import Prelude (Integer, (+))
 
 type Maybe a = forall b. (a -> b) -> b -> b
 
@@ -247,9 +250,7 @@ nothing = \_ n -> n
 foo :: Maybe Integer -> Integer
 foo mb = mb (\x -> x + 42) 0
 ```
-
-How does that work? Recall that `mb` is really just a function. Here's what the application of `f` would work like-
-
+How does that work? Recall that `mb` is really just a function. Here's how the application of `f` would work-
 ```hs
 foo (just 1)
 foo (\f _ -> f 1)
@@ -264,10 +265,9 @@ foo (\_ n -> n)
 (\_ n -> n) (\x -> x + 42) 0
 0
 ```
+Neat!
 
-How cool is that?
-
-This is the same recipe followed in the implementation of `PMaybe`. See its [PlutusType impl](#plutustype-pcon-and-pmatch) below!
+This is the same recipe followed in the implementation of `PMaybe`. See its [PlutusType impl](./TYPECLASSES.md#plutustype-pcon-and-pmatch)!
 
 # Unsafe functions
 
@@ -276,3 +276,5 @@ There are internal functions such as `punsafeCoerce`, `punsafeConstant` etc. tha
 Things will go very wrong during script evaluation if you do that kind of thing.
 
 The good thing is that unsafe functions all have explicit indicators through the names, as long as you don't use any `punsafe*` functions - you should be fine!
+
+Of course, these have legitimate use cases. Most often, we use these functions to convert between types that *truly* have the same internal representation in UPLC - but the type system simply isn't expressive enough to infer that.

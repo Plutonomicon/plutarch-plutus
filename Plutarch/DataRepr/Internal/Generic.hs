@@ -9,7 +9,7 @@ module Plutarch.DataRepr.Internal.Generic (
 import Data.Kind (Type)
 import GHC.TypeLits (Nat, type (-))
 import Generics.SOP (I, NP, NS (S, Z))
-import Plutarch.DataRepr.Internal.HList (IndexList)
+import Plutarch.DataRepr.Internal.HList.Utils (IndexList)
 
 {- |
 Infrastructure to create a single sum constructor given its type index and value.
