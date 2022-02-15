@@ -60,6 +60,8 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 - [Raising errors](./CONCEPTS.md#raising-errors)
 - [Delay and Force](./CONCEPTS.md#delay-and-force)
 - [Data encoding and Scott encoding](./CONCEPTS.md#data-encoding-and-scott-encoding)
+    - [Data encoding](./CONCEPTS.md#data-encoding)
+    - [Scott encoding](./CONCEPTS.md#scott-encoding)
 - [Unsafe functions](./CONCEPTS.md#unsafe-functions)
 
 ## Typeclasses

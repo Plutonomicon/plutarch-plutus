@@ -14,6 +14,8 @@ This document describes various concepts applicable in Plutarch.
 - [Raising errors](#raising-errors)
 - [Delay and Force](#delay-and-force)
 - [Data encoding and Scott encoding](#data-encoding-and-scott-encoding)
+  - [Data encoding](#data-encoding)
+  - [Scott encoding](#scott-encoding)
 - [Unsafe functions](#unsafe-functions)
 
 </details>
@@ -158,16 +160,18 @@ pif cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay wh
 Delay and Force will be one of your most useful tools while writing Plutarch. Make sure you get a grip on them!
 
 # Data encoding and Scott encoding
-In Plutus Core, there are really two (conflicting) ways to represent non-trivial ADTs- `Constr` data encoding, or Scott encoding. You can (you should!) only use one of these representations for your non-trivial types.
+In Plutus Core, there are really two (conflicting) ways to represent non-trivial ADTs- [`Constr`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:Data) data encoding, or Scott encoding. You can (you should!) only use one of these representations for your non-trivial types.
 
-> Aside: What's a "trivial" type? The non-data builtin types! `PInteger`, `PByteString`, `PBuiltinList`, `PBuiltinPair`, and `PMap` (actually just a builtin list of builtin pairs).
+> Aside: What's a "trivial" type? The non-data builtin types! `PInteger`, `PByteString`, `PBuiltinList`, `PBuiltinPair`, and `PMap` (actually just a builtin list of builtin pairs). It's important to note that [`Data`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:Data) (`Constr` or otherwise) is also a builtin type.
 
+## Data encoding
 `Constr` data is essentially a sum-of-products representation. However, it can only contain other `Data` values (not necessarily just `Constr` data, could be `I` data, `B` data etc.) as its fields. Plutus Core famously lacks the ability to represent functions using this encoding, and thus - `Constr` encoded values simply cannot contain functions.
 
 > Note: You can find out more about the deep details of `Data`/`BuiltinData` at [plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md).
 
 With that said, `Data` encoding is *ubiquitous* on the chain. It's the encoding used by the ledger api types, it's the type of the arguments that can be passed to a script on the chain etc. As a result, your datum and redeemers *must* use data encoding.
 
+## Scott encoding
 On the opposite (and conflicting) end, is scott encoding. [The internet](https://crypto.stanford.edu/~blynn/compiler/scott.html) can explain scott encoding way better than I can. But I'll be demonstrating scott encoding with an example anyway.
 
 Firstly, what good is scott encoding? Well it doesn't share the limitation of not being able to contain functions! However, you cannot use scott encoded types within, for example, your datums and redeemers.
