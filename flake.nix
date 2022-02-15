@@ -590,6 +590,22 @@
         ((nixpkgsFor system).writeShellApplication {
           inherit name text;
         }) + "/bin/${name}";
+
+      # Take a flake app, and return a derivation that runs it in compile phase.
+      #
+      # In effect, this allows us to run an 'app' as part of the build process (eg: in CI).
+      flakeApp2Derivation = system: appName:
+        (nixpkgsFor system).runCommand appName { } "${self.apps.${system}.${appName}.program} | tee $out";
+
+      plutarchTestApp = system: name: flake:
+        {
+          type = "app";
+          program = checkedShellScript system "plutatch-test-${name}"
+            ''
+              cd ${self}/plutarch-test
+              ${flake.${system}.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test;
+            '';
+        };
     in
     rec {
       inherit extraSources cabalProjectLocal haskellModule tools;
@@ -617,8 +633,9 @@
             // {
             formatCheck = formatCheckFor system;
             benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
-            test-ghc9 = (nixpkgsFor system).runCommand "test" { } "${self.apps.${system}.test.program} | tee $out";
-            test-ghc810 = (nixpkgsFor system).runCommand "test-ghc810" { } "${self.apps.${system}.test-ghc810.program} | tee $out";
+            test-ghc9 = flakeApp2Derivation system "test";
+            test-ghc810 = flakeApp2Derivation system "test-ghc810";
+            # ghc810 = (nixpkgsFor system).runCommand "test-ghc810" { } "${self.apps.${system}.test-ghc810.program} | tee $out";
           }) // {
         # We don't run the tests, we just check that it builds.
         "ghc810-plutarch:lib:plutarch" = flakeMatrix.ghc810.nodev.packages."plutarch:lib:plutarch";
