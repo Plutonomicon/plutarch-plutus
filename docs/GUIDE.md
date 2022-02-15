@@ -64,7 +64,7 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 
 ## Typeclasses
 
-- [`PEq` & `PORd`](./TYPECLASSES.md./TYPECLASSES.md#peq--pord)
+- [`PEq` & `PORd`](./TYPECLASSES.md#peq--pord)
 - [`PIntegral`](./TYPECLASSES.md#pintegral)
 - [`PIsData`](./TYPECLASSES.md#pisdata)
 - [`PConstant` & `PLift`](./TYPECLASSES.md#pconstant--plift)
