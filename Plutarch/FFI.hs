@@ -32,8 +32,9 @@ import Plutarch.Internal (
  )
 import Plutarch.Internal.PlutusType (PlutusType (PInner))
 import Plutarch.String (PString)
+import Plutarch.Unit (PUnit)
 import Plutus.V1.Ledger.Scripts (Script (unScript), fromCompiledCode)
-import PlutusTx.Builtins.Internal (BuiltinBool, BuiltinByteString, BuiltinData)
+import PlutusTx.Builtins.Internal (BuiltinBool, BuiltinByteString, BuiltinData, BuiltinUnit)
 import PlutusTx.Code (CompiledCode, CompiledCodeIn (DeserializedCode))
 import PlutusTx.Prelude (BuiltinString)
 import UntypedPlutusCore (fakeNameDeBruijn)
@@ -81,6 +82,7 @@ type family PlutarchInner (p :: PType) (any :: PType) :: Type where
   PlutarchInner PString _ = Text
   PlutarchInner PByteString _ = ByteString
   PlutarchInner PData _ = BuiltinData
+  PlutarchInner PUnit _ = ()
   PlutarchInner PhorallPhantom _ = ForallPhantom
   PlutarchInner (PAsData a :--> PAsData b) x = PlutarchInner (PData :--> PData) x
   PlutarchInner (PAsData a :--> b) x = PlutarchInner (PData :--> b) x
@@ -94,6 +96,7 @@ type family PlutusTxInner (t :: Type) (any :: Type) :: Type where
   PlutusTxInner BuiltinString _ = Text
   PlutusTxInner BuiltinByteString _ = ByteString
   PlutusTxInner BuiltinData _ = BuiltinData
+  PlutusTxInner BuiltinUnit _ = ()
   PlutusTxInner ForallPhantom _ = ForallPhantom
   PlutusTxInner (a -> b) x = PlutusTxInner a x -> PlutusTxInner b x
   PlutusTxInner (Delayed a) x = Delayed (PlutusTxInner a x)
