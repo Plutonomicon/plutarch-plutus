@@ -7,19 +7,23 @@ Examples of validators and minting policies written in Plutarch.
 - [Validator that checks whether a value is present within signatories](#validator-that-checks-whether-a-value-is-present-within-signatories)
 - [Using custom datum/redeemer in your Validator](#using-custom-datumredeemer-in-your-validator)
 
+> Aside: Be sure to check out [Compiling and Running](./../GUIDE.md#compiling-and-running) first!
+
 # Validator that always succeeds
 ```hs
 import Plutarch.Prelude
 import Plutarch.Api.V1.Contexts
 import Plutarch.Api.V1.Scripts
 
-alwaysSucceeds :: Term s (PDatum :--> PRedeemer :--> PScriptContext :--> PUnit)
+alwaysSucceeds :: Term s (PAsData PDatum :--> PAsData PRedeemer :--> PAsData PScriptContext :--> PUnit)
 alwaysSucceeds = plam $ \datm redm ctx -> pconstant ()
 ```
 All the arguments are ignored. So we use the generic `PDatum` and `PRedeemer` types.
 
 Execution-
 ```hs
+import qualified PlutusTx
+
 > alwaysSucceeds `evalWithArgsT` [PlutusTx.toData (), PlutusTx.toData (), PlutusTx.toData ()]
 Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf unit ()))))
 ```
@@ -27,16 +31,18 @@ Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf unit ()))))
 # Validator that always fails
 ```hs
 import Plutarch.Prelude
-import Plutarch.Api.Contexts
-import Plutarch.Api.Scripts
+import Plutarch.Api.V1.Contexts
+import Plutarch.Api.V1.Scripts
 
-alwaysFails :: Term s (PDatum :--> PRedeemer :--> PScriptContext :--> PUnit)
+alwaysFails :: Term s (PAsData PDatum :--> PAsData PRedeemer :--> PAsData PScriptContext :--> PUnit)
 alwaysFails = plam $ \datm redm ctx -> perror
 ```
 Similar to the example above.
 
 Execution-
 ```hs
+import qualified PlutusTx
+
 > alwaysFails `evalWithArgsT` [PlutusTx.toData (), PlutusTx.toData (), PlutusTx.toData ()]
 Left (EvaluationError [] "(CekEvaluationFailure,Nothing)")
 ```
@@ -44,40 +50,46 @@ Left (EvaluationError [] "(CekEvaluationFailure,Nothing)")
 # Validator that checks whether a value is present within signatories
 ```hs
 -- NOTE: REQUIRES GHC 9!
-{-# LANGUAGE QualifiedDo #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 
 import Plutarch.Prelude
 import Plutarch.Api.V1.Contexts
 import Plutarch.Api.V1.Crypto
 import Plutarch.Api.V1.Scripts
-import qualified Plutarch.Monadic as P
 
-checkSignatory :: Term s (PPubKeyHash :--> PDatum :--> PRedeemer :--> PScriptContext :--> PUnit)
-checkSignatory = plam $ \ph _ _ ctx' -> P.do
-  ctx <- pletFields @["txInfo", "purpose"] ctx'
-  let
-    purpose = pfromData ctx.purpose
-    txInfo = pfromData ctx.txInfo
-  PSpending _ <- pmatch purpose
-  let signatories = pfromData $ pfield @"signatories" # txInfo
-  pif (pelem # pdata ph # signatories)
-    -- Success!
-    (pconstant ())
-    -- Signature not present.
-    perror
+pmatchC :: PlutusType a => Term s a -> TermCont s (a s)
+pmatchC = tcont . pmatch
+
+checkSignatory :: Term s (PPubKeyHash :--> PAsData PDatum :--> PAsData PRedeemer :--> PAsData PScriptContext :--> PUnit)
+checkSignatory = plam $ \ph _ _ ctx' -> unTermCont $ do
+  ctx <- tcont $ pletFields @["txInfo", "purpose"] ctx'
+  PSpending _ <- pmatchC ctx.purpose
+  let signatories = pfield @"signatories" # ctx.txInfo
+  pure $
+    pif
+      (pelem # pdata ph # pfromData signatories)
+      -- Success!
+      (pconstant ())
+      -- Signature not present.
+      perror
 ```
-> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `OverloadedRecordDot`). Be sure to check out [how to translate the do syntax to GHC 8](#translating-do-syntax-with-qualifieddo-to-ghc-8) and [alternatives to `OverloadedRecordDot`](#alternatives-to-overloadedrecorddot).
+> Note: The above snippet uses GHC 9 features (`OverloadedRecordDot`). Be sure to check out [alternatives to `OverloadedRecordDot`](#alternatives-to-overloadedrecorddot).
 
 We match on the script purpose to see if its actually for *spending* - and we get the signatories field from `txInfo` (the 7th field), check if given pub key hash is present within the signatories and that's it!
 
 It's important that we pass a `PPubKeyHash` *prior* to treating `checkSignatory` as a validator script.
 ```hs
-hashStr :: String
+{-# LANGUAGE OverloadedStrings #-}
+
+import Plutus.V1.Ledger.Api
+import Plutus.V1.Ledger.Interval
+import qualified PlutusTx
+
+hashStr :: PubKeyHash
 hashStr = "abce0f123e"
 
 pubKeyHash :: Term s PPubKeyHash
-pubKeyHash = pcon $ PPubKeyHash $ phexByteStr hashStr
+pubKeyHash = pconstant hashStr
 
 mockCtx :: ScriptContext
 mockCtx =

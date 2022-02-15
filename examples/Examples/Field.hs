@@ -148,7 +148,7 @@ tripZY =
   'pletFields' is more efficient.
 -}
 by :: Term s PInteger
-by = pfromData $ pfield @"y" # tripB
+by = pfield @"y" # tripB
 
 getY :: Term s (Triplet PInteger :--> PAsData PInteger)
 getY = pfield @"y"
