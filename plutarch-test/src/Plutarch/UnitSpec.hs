@@ -21,9 +21,9 @@ spec = do
           pLe = pcon PUnit #<= pcon PUnit
       goldens
         Bench
-        [ ("==", popaque pEq)
-        , ("<", popaque pLt)
-        , ("<=", popaque pLe)
+        [ ("==", pEq)
+        , ("<", pLt)
+        , ("<=", pLe)
         ]
       it "==" $ passert pEq
       it "<" $ passert $ pnot # pLt

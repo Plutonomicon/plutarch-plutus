@@ -20,10 +20,10 @@ spec = do
     describe "pand" $ do
       goldens
         All
-        [ ("tf", popaque $ pcon PTrue #&& pcon PFalse)
-        , ("ft", popaque $ pcon PFalse #&& pcon PTrue)
-        , ("tt", popaque $ pcon PTrue #&& pcon PTrue)
-        , ("ff", popaque $ pcon PFalse #&& pcon PFalse)
+        [ ("tf", pcon PTrue #&& pcon PFalse)
+        , ("ft", pcon PFalse #&& pcon PTrue)
+        , ("tt", pcon PTrue #&& pcon PTrue)
+        , ("ff", pcon PFalse #&& pcon PFalse)
         ]
       it "tf" $ (pcon PTrue #&& pcon PFalse) #@?= pcon PFalse
       it "ft" $ (pcon PFalse #&& pcon PTrue) #@?= pcon PFalse
@@ -42,10 +42,10 @@ spec = do
     describe "por" $ do
       goldens
         All
-        [ ("tf", popaque $ pcon PTrue #|| pcon PFalse)
-        , ("ft", popaque $ pcon PFalse #|| pcon PTrue)
-        , ("tt", popaque $ pcon PTrue #|| pcon PTrue)
-        , ("ff", popaque $ pcon PFalse #|| pcon PFalse)
+        [ ("tf", pcon PTrue #|| pcon PFalse)
+        , ("ft", pcon PFalse #|| pcon PTrue)
+        , ("tt", pcon PTrue #|| pcon PTrue)
+        , ("ff", pcon PFalse #|| pcon PFalse)
         ]
       it "tf" $ (pcon PTrue #|| pcon PFalse) #@?= pcon PTrue
       it "ft" $ (pcon PFalse #|| pcon PTrue) #@?= pcon PTrue
