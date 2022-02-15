@@ -13,6 +13,7 @@ This document describes the primary typeclasses used in Plutarch.
 - [`PlutusType`, `PCon`, and `PMatch`](#plutustype-pcon-and-pmatch)
   - [Implementing `PlutusType` for your own types (Scott Encoding)](#implementing-plutustype-for-your-own-types-scott-encoding)
   - [Implementing `PlutusType` for your own types (`Data` Encoding)](#implementing-plutustype-for-your-own-types-data-encoding)
+  - [Implementing `PlutusType` for your own types (`newtype`)](#implementing-plutustype-for-your-own-types-newtype)
 - [`PListLike`](#plistlike)
 - [`PIsDataRepr` & `PDataFields`](#pisdatarepr--pdatafields)
   - [All about extracting fields](#all-about-extracting-fields)
@@ -106,13 +107,6 @@ plift :: (PLift p, HasCallStack) => ClosedTerm p -> PLifted p
 b :: Term s PBool
 b = pconstant False
 ```
-Other than simple builtin types - you can also use `pconstant` to create [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md) values! Usually, you'll want to keep the type information though - so here's an example of creating a `PScriptPurpose` from a familiar `ScriptPurpose` constant-
-```hs
-import Plutus.V1.Ledger.Contexts
-
-purp :: Term s PScriptPurpose
-purp = pconstant $ Minting ""
-```
 
 On the other end, `plift` lets you obtain the Haskell synonym of a Plutarch value (that is represented as a builtin value, i.e [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni))-
 ```hs
@@ -134,7 +128,7 @@ pconstantData :: (PLift p, ToData (PLifted p)) => PLifted p -> Term s (PAsData p
 It's simply the `PAsData` building cousin of `pconstant`!
 
 ## Implementing `PConstant` & `PLift`
-If your custom Plutarch type is represented by a builtin type under the hood (i.e not scott encoded - rather [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) - you can easily implement `PLift` for it by using the provided machinery.
+If your custom Plutarch type is represented by a builtin type under the hood (i.e not [scott encoded](CONCEPTS.md#data-encoding-and-scott-encoding) - rather one of the [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni) types) - you can implement `PLift` for it by using the provided machinery.
 
 This comes in 3 flavors.
 * Plutarch type represented **directly** by a builtin type that **is not** `Data` (`DefaultUniData`) ==> `DerivePConstantDirect`
@@ -143,7 +137,7 @@ This comes in 3 flavors.
 * Plutarch type represented **indirectly** by a builtin type that **is not** `Data` (`DefaultUniData`) ==> `DerivePConstantViaNewtype`
 
   Ex: `PPubKeyHash` is a newtype to a `PByteString`, and `PByteString` is *directly* represented as a builtin bytestring.
-* Plutarch type represented by `Data` (`DefaultUniData`) ==> `DerivePConstantViaData`
+* Plutarch type represented by `Data`, i.e. [data encoded](./CONCEPTS.md#data-encoding-and-scott-encoding) (`DefaultUniData`) ==> `DerivePConstantViaData`
 
   Ex: `PScriptPurpose` is represented as a `Data` value. It is synonymous to `ScriptPurpose` from the Plutus ledger api.
 
@@ -232,7 +226,7 @@ deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) instan
 And that's all you need to know to implement `PConstant` and `PLift`!
 
 # `PlutusType`, `PCon`, and `PMatch`
-`PlutusType` lets you construct and deconstruct Plutus Core constants from from a Plutarch type's constructors (possibly containing other Plutarch terms). It's essentially a combination of `PCon` (for term construction) and `PMatch` (for term deconstruction).
+`PlutusType` is the primary typeclass that determines the underlying representation for a Plutarch type. It lets you construct and deconstruct Plutus Core constants from from a Plutarch type's constructors (possibly containing other Plutarch terms). It's essentially a combination of `PCon` (for term construction) and `PMatch` (for term deconstruction).
 
 ```hs
 class (PCon a, PMatch a) => PlutusType (a :: k -> Type) where
@@ -284,30 +278,6 @@ data MyType (a :: PType) (b :: PType) (s :: S)
 ```
 > Note: This requires the `generics-sop` package.
 
-If you want to represent your data type as some simple builtin type (e.g integer, bytestrings, string/text, list, or assoc map), you can define your datatype as a `newtype` to the underlying builtin term and derive `PlutusType` using [`DerivePNewtype`](./USAGE.md#deriving-typeclasses-for-newtypes).
-```hs
-import Plutarch.Prelude
-
-newtype MyInt (s :: S) = MyInt (Term s PInteger)
-  deriving (PlutusType) via (DerivePNewtype MyInt PInteger)
-```
-
-If you don't want it to be a newtype, but rather - an ADT, and still have it be represented as some simple builtin type - you can do so by implementing `PlutusType` manually. Here's an example of encoding a Sum type as an Enum via `PInteger`-
-```hs
-import Plutarch
-import Plutarch.Prelude
-
-data AB (s :: S) = A | B
-
-instance PlutusType AB where
-  type PInner AB _ = PInteger
-
-  pcon' A = 0
-  pcon' B = 1
-
-  pmatch' x f =
-    pif (x #== 0) (f A) (f B)
-```
 ## Implementing `PlutusType` for your own types (`Data` Encoding)
 If your type is supposed to be represented using [`Data` encoding](./CONCEPTS.md#data-encoding-and-scott-encoding) instead (i.e has a [`PIsDataRepr`](#pisdatarepr--pdatafields) instance), you can derive `PlutusType` via `PIsDataReprInstances`-
 ```hs
@@ -326,6 +296,9 @@ data MyType (a :: PType) (b :: PType) (s :: S)
     via PIsDataReprInstances (MyType a b)
 ```
 See: [Implementing `PIsDataRepr` and friends](#implementing-pisdatarepr-and-friends)
+
+## Implementing `PlutusType` for your own types (`newtype`)
+See: [`DerivePNewtype`](./USAGE.md#deriving-typeclasses-for-newtypes)
 
 # `PListLike`
 The `PListLike` typeclass bestows beautiful, and familiar, list utilities to its instances. Plutarch has two list types- [`PBuiltinList`](./TYPES.md#pbuiltinlist) and [`PList`](./TYPES.md#plist). Both have `PListLike` instances! However, `PBuiltinList` can only contain builtin types. It cannot contain Plutarch functions. The element type of `PBuiltinList` can be constrained using `PLift a => PBuiltinList a`.
