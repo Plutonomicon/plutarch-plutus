@@ -18,6 +18,8 @@ module Plutarch.Test (
   golden,
   goldens,
   PlutarchGolden (All, Bench, PrintTerm),
+  getGoldenFilePrefix,
+  goldenFilePath,
 ) where
 
 import Control.Monad (when)
@@ -177,27 +179,44 @@ goldens pg = goldens' pg Nothing
 
 goldens' :: PlutarchGolden -> Maybe String -> [(String, ClosedTerm a)] -> Spec
 goldens' pg mk ps = do
-  testAncestors <- fmap (drop 1 . reverse) $ getTestDescriptionPath
-  let name = T.unpack $ T.intercalate "." testAncestors
-      goldenKey = maybe "golden" (<> ".golden") mk
+  prefix <- getGoldenFilePrefix
+  let goldenKey = maybe "golden" (<> ".golden") mk
   describe goldenKey $ do
-    let k = maybe "" ("." <>) mk
     -- Golden test for UPLC
     when (hasPrintTermGolden pg) $ do
       it "uplc" $
-        pureGoldenTextFile ("goldens" </> name <> k <> ".uplc.golden") $
-          multiGolden ps $ \p ->
-            T.pack $ printTerm p
+        let goldenFile = goldenFilePath "goldens" prefix $ Just "uplc"
+         in pureGoldenTextFile goldenFile $
+              multiGolden ps $ \p ->
+                T.pack $ printTerm p
       it "uplc.eval" $
         let evaluateds = flip fmap ps $ \(s, p) -> (s, printTermEvaluated p)
-         in pureGoldenTextFile ("goldens" </> name <> k <> ".uplc.eval.golden") $
+            goldenFile = goldenFilePath "goldens" prefix $ Just "uplc.eval"
+         in pureGoldenTextFile goldenFile $
               multiGolden evaluateds T.pack
     -- Golden test for Plutus benchmarks
     when (hasBenchGolden pg) $
       it "bench" $
-        pureGoldenTextFile ("goldens" </> name <> k <> ".bench.golden") $
-          multiGolden ps $ \p ->
-            TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compile p
+        let goldenFile = goldenFilePath "goldens" prefix $ Just "bench"
+         in pureGoldenTextFile goldenFile $
+              multiGolden ps $ \p ->
+                TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compile p
+
+-- | Get a golden filename prefix from the test description path
+getGoldenFilePrefix ::
+  forall (outers :: [Type]) (inner :: Type).
+  TestDefM outers inner String
+getGoldenFilePrefix =
+  T.unpack . T.intercalate "." . drop 1 . reverse <$> getTestDescriptionPath
+
+-- Get the golden file name given the basepath, an optional suffix and a name
+goldenFilePath :: FilePath -> String -> Maybe String -> FilePath
+goldenFilePath base name suffix =
+  base
+    </> ( name
+            <> maybe "" ("." <>) suffix
+            <> ".golden"
+        )
 
 multiGolden :: forall a. [(String, a)] -> (a -> T.Text) -> Text
 multiGolden xs f =

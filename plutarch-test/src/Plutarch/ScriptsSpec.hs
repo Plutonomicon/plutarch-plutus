@@ -17,22 +17,21 @@ module Plutarch.ScriptsSpec (
   spec,
 ) where
 
-import System.FilePath ((</>))
-
 import Data.Text (Text)
 
-import Data.Aeson.Extras (encodeSerialise)
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified Plutus.V1.Ledger.Crypto as Plutus
 
 import Plutarch (ClosedTerm, POpaque, popaque)
 import Plutarch.Api.V1 (
   PScriptContext,
+  encodeSerialise,
   mintingPolicySymbol,
   mkMintingPolicy,
   mkStakeValidator,
   mkValidator,
   stakeValidatorHash,
+  tryDecodeHex,
   validatorHash,
   type PMintingPolicy,
   type PStakeValidator,
@@ -41,41 +40,59 @@ import Plutarch.Api.V1 (
 import Plutarch.Api.V1.Crypto (PPubKey, PPubKeyHash, PSignature (PSignature))
 import Plutarch.Builtin (pasByteStr)
 import Plutarch.Prelude
-import Plutarch.Test (PlutarchGolden (PrintTerm), golden)
+import Plutarch.Test (
+  PlutarchGolden (PrintTerm),
+  getGoldenFilePrefix,
+  golden,
+  goldenFilePath,
+ )
 import Test.Syd (Spec, describe, it, pureGoldenTextFile)
+import Test.Tasty.HUnit ((@?=))
 
 spec :: Spec
 spec = do
   describe "scripts" $ do
     describe "auth_validator" $ do
+      prefix <- getGoldenFilePrefix
       golden PrintTerm authValidatorTerm
-      it "serialization" $
+      it "serialization" $ do
         pureGoldenTextFile
-          ("goldens" </> "scripts.auth_validator.plutus.golden")
+          (goldenFilePath "goldens" prefix $ Just "plutus")
           validatorEncoded
-      it "hash" $
+      it "deserialisation" $
+        tryDecodeHex validatorEncoded
+          @?= Right authValidatorCompiled
+      it "hash" $ do
         pureGoldenTextFile
-          ("goldens" </> "scripts.auth_validator.hash.golden")
+          (goldenFilePath "goldens" prefix $ Just "hash")
           validatorHashEncoded
     describe "auth_policy" $ do
+      prefix <- getGoldenFilePrefix
       golden PrintTerm authPolicyTerm
-      it "serialization" $
+      it "serialization" $ do
         pureGoldenTextFile
-          ("goldens" </> "scripts.auth_policy.plutus.golden")
+          (goldenFilePath "goldens" prefix $ Just "plutus")
           policyEncoded
+      it "deserialisation" $
+        tryDecodeHex policyEncoded
+          @?= Right authPolicyCompiled
       it "hash" $
         pureGoldenTextFile
-          ("goldens" </> "scripts.auth_policy.hash.golden")
+          (goldenFilePath "goldens" prefix $ Just "hash")
           policySymEncoded
-    describe "auth stake validator" $ do
+    describe "auth_stake_validator" $ do
+      prefix <- getGoldenFilePrefix
       golden PrintTerm authStakeValidatorTerm
       it "serialization" $
         pureGoldenTextFile
-          ("goldens" </> "scripts.auth_stake_validator.plutus.golden")
+          (goldenFilePath "goldens" prefix $ Just "plutus")
           stakeValidatorEncoded
+      it "deserialisation" $
+        tryDecodeHex stakeValidatorEncoded
+          @?= Right authStakeValidatorCompiled
       it "hash" $
         pureGoldenTextFile
-          ("goldens" </> "scripts.auth_stake_validator.hash.golden")
+          (goldenFilePath "goldens" prefix $ Just "hash")
           stakeValidatorHashEncoded
 
 {- |
