@@ -209,7 +209,7 @@ getGoldenFilePrefix ::
 getGoldenFilePrefix =
   T.unpack . T.intercalate "." . drop 1 . reverse <$> getTestDescriptionPath
 
--- Get the golden file name given the basepath, an optional suffix and a name
+-- | Get the golden file name given the basepath, an optional suffix and a name
 goldenFilePath :: FilePath -> String -> Maybe String -> FilePath
 goldenFilePath base name suffix =
   base
