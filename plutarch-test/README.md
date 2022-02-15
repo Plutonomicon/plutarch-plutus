@@ -23,9 +23,11 @@ $ vim cabal.project # And then uncomment the "flags: +developmenet" line.
 $ ghcid -c 'cabal repl plutarch-test:exe:plutarch-test' -T Main.main
 ```
 
-## Use as library
+## The `developmenmt` flag
 
-The `plutarch-test` library exposes the `Plutarch.Test` module for use in testing Plutarch code in user applications such as smart contracts. For benchmarking functions, see the `plutarch-benchmark` package.
+Plutarch has a `development` flag. Right now, the flag is used to control tracing functions, wherein turning on the flag will inject `Trace` instructions in the generated UPLC. 
+
+Since this will impact the printTerm goldens in tests, we provide `plutarchDevFlagDescribe` that should be used everywhere in the test hierarchy where the immediate sub-tree of tests are known to use tracing functions (or any other development-flag-specific featuresto use tracing functions (or any other development-flag-specific features).
 
 ## Goldens
 
