@@ -72,7 +72,7 @@ pdiv # 6 # 3
 where `6` and `3` are `Term s PInteger`s yields `2` - also a `Term s PInteger`.
 
 # `PIsData`
-The `PIsData` typeclass facilitates easy and type safe conversion between Plutarch types and their corresponding [Data representation](./CONCEPTS.md#data-encoding-and-scott-encoding) - i.e [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md). It keeps track of the type information through [`PAsData`](./TYPES.md#pasdata).
+The `PIsData` typeclass facilitates easy and type safe conversion between Plutarch types and their corresponding [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md) representation. It keeps track of the type information through [`PAsData`](./TYPES.md#pasdata).
 ```hs
 class PIsData a where
   pfromData :: Term s (PAsData a) -> Term s a
@@ -128,7 +128,7 @@ pconstantData :: (PLift p, ToData (PLifted p)) => PLifted p -> Term s (PAsData p
 It's simply the `PAsData` building cousin of `pconstant`!
 
 ## Implementing `PConstant` & `PLift`
-If your custom Plutarch type is represented by a builtin type under the hood (i.e not [scott encoded](CONCEPTS.md#data-encoding-and-scott-encoding) - rather one of the [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni) types) - you can implement `PLift` for it by using the provided machinery.
+If your custom Plutarch type is represented by a builtin type under the hood (i.e not [Scott encoded](CONCEPTS.md#scott-encoding) - rather one of the [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni) types) - you can implement `PLift` for it by using the provided machinery.
 
 This comes in 3 flavors.
 * Plutarch type represented **directly** by a builtin type that **is not** `Data` (`DefaultUniData`) ==> `DerivePConstantDirect`
@@ -137,7 +137,7 @@ This comes in 3 flavors.
 * Plutarch type represented **indirectly** by a builtin type that **is not** `Data` (`DefaultUniData`) ==> `DerivePConstantViaNewtype`
 
   Ex: `PPubKeyHash` is a newtype to a `PByteString`, and `PByteString` is *directly* represented as a builtin bytestring.
-* Plutarch type represented by `Data`, i.e. [data encoded](./CONCEPTS.md#data-encoding-and-scott-encoding) (`DefaultUniData`) ==> `DerivePConstantViaData`
+* Plutarch type represented by `Data`, i.e. [data encoded](./CONCEPTS.md#data-encoding) (`DefaultUniData`) ==> `DerivePConstantViaData`
 
   Ex: `PScriptPurpose` is represented as a `Data` value. It is synonymous to `ScriptPurpose` from the Plutus ledger api.
 
@@ -248,7 +248,7 @@ instance PlutusType (PMaybe a) where
   pcon' PNothing = plam $ \_ g -> pforce g
   pmatch' x f = x # (plam $ \inner -> f (PJust inner)) # (pdelay $ f PNothing)
 ```
-This is a [scott encoded representation of the familiar `Maybe` data type](./CONCEPTS.md#data-encoding-and-scott-encoding). As you can see, `PInner` of `PMaybe` is actually a Plutarch level function. And that's exactly why `pcon'` creates a *function*. `pmatch'`, then, simply "matches" on the function - scott encoding fashion.
+This is a [scott encoded representation of the familiar `Maybe` data type](./CONCEPTS.md#scott-encoding). As you can see, `PInner` of `PMaybe` is actually a Plutarch level function. And that's exactly why `pcon'` creates a *function*. `pmatch'`, then, simply "matches" on the function - scott encoding fashion.
 
 You should always use `pcon` and `pmatch` instead of `pcon'` and `pmatch'` - these are provided by the `PCon` and `PMatch` typeclasses-
 ```hs
@@ -264,7 +264,7 @@ All `PlutusType` instances get `PCon` and `PMatch` instances for free!
 For types that cannot easily be both `PCon` and `PMatch` - feel free to implement just one of them! However, in general, **prefer implementing `PlutusType`**!
 
 ## Implementing `PlutusType` for your own types (Scott Encoding)
-If you want to represent your data type with [scott encoding](#data-encoding-and-scott-encoding) (and therefore don't need to make it `Data` encoded), you should simply derive it generically-
+If you want to represent your data type with [scott encoding](./CONCEPTS.md#scott-encoding) (and therefore don't need to make it `Data` encoded), you should simply derive it generically-
 ```hs
 import qualified GHC.Generics as GHC
 import Generics.SOP
@@ -279,7 +279,7 @@ data MyType (a :: PType) (b :: PType) (s :: S)
 > Note: This requires the `generics-sop` package.
 
 ## Implementing `PlutusType` for your own types (`Data` Encoding)
-If your type is supposed to be represented using [`Data` encoding](./CONCEPTS.md#data-encoding-and-scott-encoding) instead (i.e has a [`PIsDataRepr`](#pisdatarepr--pdatafields) instance), you can derive `PlutusType` via `PIsDataReprInstances`-
+If your type is supposed to be represented using [`Data` encoding](./CONCEPTS.md#data-encoding) instead (i.e has a [`PIsDataRepr`](#pisdatarepr--pdatafields) instance), you can derive `PlutusType` via `PIsDataReprInstances`-
 ```hs
 import qualified GHC.Generics as GHC
 import Generics.SOP
@@ -350,7 +350,7 @@ x = pcons # 1 #$ pcons # 2 #$ pcons # 3 # pnil
 The code is the same, we just changed the type annotation. Cool!
 
 # `PIsDataRepr` & `PDataFields`
-`PIsDataRepr` allows for easily constructing *and* deconstructing `Constr` [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md) values. It allows fully type safe matching on [`Data` encoded](./CONCEPTS.md#data-encoding-and-scott-encoding) values, without embedding type information within the generated script - unlike PlutusTx. `PDataFields`, on top of that, allows for ergonomic field access.
+`PIsDataRepr` allows for easily constructing *and* deconstructing `Constr` [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md) values. It allows fully type safe matching on [`Data` encoded](./CONCEPTS.md#data-encoding) values, without embedding type information within the generated script - unlike PlutusTx. `PDataFields`, on top of that, allows for ergonomic field access.
 
 > Aside: What's a `Constr` data value? Briefly, it's how Plutus Core encodes non-trivial ADTs into `Data`/`BuiltinData`. It's essentially a sum-of-products encoding. But you don't have to care too much about any of this. Essentially, whenever you have a custom non-trivial ADT (that isn't just an integer, bytestring, string/text, list, or assoc map) - and you want to represent it as a data encoded value - you should implement `PIsDataRepr` for it.
 
@@ -518,7 +518,7 @@ All the type annotations are here to help!
 
 This is just like regular `pcon` usage you've [seen above](#plutustype-pcon-and-pmatch). It takes in the Haskell ADT of your Plutarch type and gives back a Plutarch term.
 
-What's more interesting, is the `fields` binding. Recall that `PMinting` is a constructor with one argument, that argument is a [`PDataRecord`](#pdatasum--pdatarecord) term. In particular, we want: `Term s (PDataRecord '["_0" ':= PCurrencySymbol ])`. It encodes the exact type, position, and name of the field. So, all we have to do is create a `PDataRecord` term!
+What's more interesting, is the `fields` binding. Recall that `PMinting` is a constructor with one argument, that argument is a [`PDataRecord`](./TYPES.md#pdatasum--pdatarecord) term. In particular, we want: `Term s (PDataRecord '["_0" ':= PCurrencySymbol ])`. It encodes the exact type, position, and name of the field. So, all we have to do is create a `PDataRecord` term!
 
 Of course, we do that using `pdcons` - which is just the familiar `cons` specialized for `PDataRecord` terms.
 ```hs
@@ -580,7 +580,7 @@ data PVehicle (s :: S)
     (PlutusType, PIsData)
     via PIsDataReprInstances PVehicle
 ```
-> Note: You cannot derive `PIsDataRepr` for types that are represented using [scott encoding](./CONCEPTS.md#data-encoding-and-scott-encoding). Your types must be well formed and should be using `PDataRecord` terms instead.
+> Note: You cannot derive `PIsDataRepr` for types that are represented using [scott encoding](./CONCEPTS.md#scott-encoding). Your types must be well formed and should be using `PDataRecord` terms instead.
 
 That's it! Now you can represent `PVehicle` as a `Data` value, as well as deconstruct and access its fields super ergonomically. Let's try it!
 ```hs

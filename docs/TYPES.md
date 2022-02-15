@@ -128,7 +128,7 @@ The final argument is, of course, the list itself.
 > Aside: Interested in the lower level details of `PBuiltinList` (i.e Plutus Core builtin lists)? You can find all you need to know about it at [plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-lists.md).
 
 # `PList`
-Here's the scott encoded cousin of `PBuiltinList`. What does that mean? Well, in practice, it just means that `PList` can contain *any arbitrary* term - not just builtin types. `PList` also has a [`PListLike`](#plistlike) instance - so you won't be missing any of those utilities here!
+Here's the [scott encoded](./CONCEPTS.md#scott-encoding) cousin of `PBuiltinList`. What does that mean? Well, in practice, it just means that `PList` can contain *any arbitrary* term - not just builtin types. `PList` also has a [`PListLike`](#plistlike) instance - so you won't be missing any of those utilities here!
 
 `PList` also has a [`PlutusType`](./TYPECLASSES.md#plutustype-pcon-and-pmatch) instance. You can construct a `PList` using `pcon` (but you should prefer using `pcons` from `PListLike`)-
 ```hs
@@ -158,7 +158,7 @@ ppairDataBuiltin :: Term s (PAsData a :--> PAsData b :--> PBuiltinPair (PAsData 
 It's also helpful to note that `PAsData (PBuiltinPair (PAsData a) (PAsData b))` and `PAsData (PTuple a b)` actually have the same representation under the hood. See [`PTuple`](#ptuple)
 
 # `PTuple`
-These are data encoded pairs. You can build `PTuple`s using `ptuple`-
+These are [data encoded](./CONCEPTS.md#data-encoding) pairs. You can build `PTuple`s using `ptuple`-
 ```hs
 ptuple :: Term s (PAsData a :--> PAsData b :--> PTuple a b)
 ```
@@ -205,7 +205,7 @@ pdata :: Term s (PBuiltinList (PAsData a)) -> Term s (PAsData (PBuiltinList (PAs
 # `PDataSum` & `PDataRecord`
 Plutarch sum and product types are represented using `PDataSum` and `PDataRecord` respectively. These types are crucial to the [`PIsDataRepr`](#pisdatarepr) machinery.
 
-Whenever you need to represent a non-trivial ADT using [`Data` encoding](./CONCEPTS.md#data-encoding-and-scott-encoding), you'll likely be reaching for these.
+Whenever you need to represent a non-trivial ADT using [`Data` encoding](./CONCEPTS.md#data-encoding), you'll likely be reaching for these.
 
 More often than not, you'll be using `PDataRecord`. This is used to denote all the fields of a constructor-
 ```hs
