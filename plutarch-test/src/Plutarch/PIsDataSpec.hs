@@ -10,7 +10,7 @@ import Plutarch.Builtin (pforgetData, ppairDataBuiltin)
 import Plutarch.Lift (PLifted)
 import Plutarch.Prelude
 
-import Plutus.V1.Ledger.Credential
+import Plutus.V1.Ledger.Credential (Credential (ScriptCredential))
 import qualified PlutusTx
 
 import Plutarch.Test

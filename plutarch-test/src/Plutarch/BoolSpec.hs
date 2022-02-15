@@ -3,7 +3,7 @@ module Plutarch.BoolSpec (spec) where
 import Test.Syd
 
 import Plutarch
-import Plutarch.Bool
+import Plutarch.Bool (PBool (PFalse, PTrue), pand, pnot, por, (#&&), (#||))
 import Plutarch.Test
 
 spec :: Spec

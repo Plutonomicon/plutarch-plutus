@@ -8,7 +8,16 @@ import Plutus.V1.Ledger.Api
 import qualified Plutus.V1.Ledger.Interval as Interval
 import qualified Plutus.V1.Ledger.Value as Value
 
-import Plutarch.Api.V1
+import Plutarch.Api.V1 (
+  PCredential,
+  PCurrencySymbol,
+  PPubKeyHash,
+  PScriptContext,
+  PScriptPurpose (PSpending),
+  PTxInInfo,
+  PTxInfo,
+  PValue,
+ )
 import Plutarch.Builtin (pasConstr, pforgetData)
 import Plutarch.Prelude
 import Plutarch.Test

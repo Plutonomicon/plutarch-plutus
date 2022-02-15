@@ -7,7 +7,15 @@ import Test.Syd
 
 import Plutus.V1.Ledger.Api
 
-import Plutarch.Api.V1
+import Plutarch.Api.V1 (
+  PAddress (PAddress),
+  PCredential,
+  PMaybeData,
+  PPubKeyHash,
+  PScriptContext,
+  PScriptPurpose (PSpending),
+  PStakingCredential,
+ )
 import qualified Plutarch.ApiSpec as ApiSpec
 import qualified Plutarch.Monadic as P
 import Plutarch.Prelude

@@ -41,8 +41,8 @@ import Test.Syd (
 
 import Plutarch
 import Plutarch.Benchmark (benchmarkScript')
-import Plutarch.Bool
-import Plutarch.Evaluate
+import Plutarch.Bool (PBool (PTrue))
+import Plutarch.Evaluate (evaluateScript)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 
 {- |
