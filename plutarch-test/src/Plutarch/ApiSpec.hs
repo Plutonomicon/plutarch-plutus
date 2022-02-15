@@ -179,7 +179,7 @@ checkSignatoryCont = plam $ \ph ctx' ->
 checkSignatoryTermCont :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatoryTermCont = plam $ \ph ctx' -> unTermCont $ do
   ctx <- tcont $ pletFields @["txInfo", "purpose"] ctx'
-  tcont (pmatch $ hrecField @"purpose" ctx) >>= \case 
+  tcont (pmatch $ hrecField @"purpose" ctx) >>= \case
     PSpending _ -> do
       let signatories = pfield @"signatories" # hrecField @"txInfo" ctx
       pure $

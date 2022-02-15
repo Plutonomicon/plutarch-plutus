@@ -467,9 +467,12 @@
             chmod u+w $out $out/plutarch.cabal
             # Remove stanzas from .cabal that won't work in GHC 8.10
             sed -i '/-- Everything below this line is deleted for GHC 8.10/,$d' $out/plutarch.cabal
-            # Remove packages that won't work in GHC 8.10 (yet)
+
+            # Prevent `sydtest-discover` from using GHC9 only modules when building with GHC810
+            # https://github.com/NorfairKing/sydtest/blob/master/sydtest-discover/src/Test/Syd/Discover.hs
             chmod -R u+w $out/plutarch-test
-            rm -rf $out/plutarch-test
+            rm -f $out/plutarch-test/src/Plutarch/MonadicSpec.hs
+            rm -f $out/plutarch-test/src/Plutarch/FieldSpec.hs
           '';
           compiler-nix-name = ghcName;
           inherit extraSources;
@@ -614,8 +617,8 @@
             // {
             formatCheck = formatCheckFor system;
             benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
-            test-ghc9-nodev = (nixpkgsFor system).runCommand "test-nodev" { } "${self.apps.${system}.test.program} | tee $out";
-            test-ghc9-dev = (nixpkgsFor system).runCommand "test-dev" { } "${self.apps.${system}.test-dev.program} | tee $out";
+            test-ghc9 = (nixpkgsFor system).runCommand "test" { } "${self.apps.${system}.test.program} | tee $out";
+            test-ghc810 = (nixpkgsFor system).runCommand "test-ghc810" { } "${self.apps.${system}.test-ghc810.program} | tee $out";
           }) // {
         # We don't run the tests, we just check that it builds.
         "ghc810-plutarch:lib:plutarch" = flakeMatrix.ghc810.nodev.packages."plutarch:lib:plutarch";
@@ -640,18 +643,20 @@
         // {
           test = {
             type = "app";
-            program = checkedShellScript system "plutatch-test-nondev"
+            program = checkedShellScript system "plutatch-test-ghc9"
               ''
                 cd ${self}/plutarch-test
                 ${self.flakeMatrix.ghc9.nodev.${system}.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test;
+                ${self.flakeMatrix.ghc9.dev.${system}.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test
               '';
           };
-          test-dev = {
+          test-ghc810 = {
             type = "app";
-            program = checkedShellScript system "plutarch-test-dev"
+            program = checkedShellScript system "plutarch-test-ghc10"
               ''
                 cd ${self}/plutarch-test
-                ${self.flakeMatrix.ghc9.dev.${system}.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test
+                ${self.flakeMatrix.ghc810.nodev.${system}.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test;
+                ${self.flakeMatrix.ghc810.dev.${system}.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test
               '';
           };
           benchmark = {
