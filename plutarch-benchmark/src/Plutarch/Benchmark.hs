@@ -10,16 +10,10 @@ module Plutarch.Benchmark (
   benchmarkScript,
   benchmarkScriptUnapplied,
   benchmarkScriptWithApply,
-  benchmarkValidator,
-  benchmarkMintingPolicy,
-  benchmarkStakeValidator,
   benchmarkScript',
   -- | * Benchmark entrypoints
   bench,
   benchWithApply,
-  benchPValidator,
-  benchPStakeValidator,
-  benchPMintingPolicy,
   bench',
   benchGroup,
   benchMain,
@@ -59,14 +53,6 @@ import Data.Maybe (fromJust)
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
 import Plutarch (ClosedTerm, compile, printTerm)
-import Plutarch.Api.V1 (
-  PScriptContext,
-  type PMintingPolicy,
-  type PStakeValidator,
-  type PValidator,
- )
-import Plutarch.Prelude
-import Plutarch.Unsafe (punsafeCoerce)
 import Plutus.V1.Ledger.Api (
   ExBudget (ExBudget),
   ExCPU (ExCPU),
@@ -74,7 +60,6 @@ import Plutus.V1.Ledger.Api (
   Script,
  )
 import qualified Plutus.V1.Ledger.Api as Plutus
-import qualified Plutus.V1.Ledger.Scripts as Plutus
 
 --------------------------------------------------------------------------------
 
@@ -96,58 +81,6 @@ benchmarkScriptUnapplied name unApplied =
 benchmarkScriptWithApply :: String -> Script -> (Script -> Script) -> NamedBenchmark
 benchmarkScriptWithApply name unApplied applyArgs =
   benchmarkScriptUnapplied name unApplied $ applyArgs unApplied
-
--- | Benchmark a Validator with the provided arguments
-benchmarkValidator ::
-  ( Plutus.ToData d
-  , Plutus.ToData r
-  ) =>
-  String ->
-  Plutus.Validator ->
-  d ->
-  r ->
-  Plutus.ScriptContext ->
-  NamedBenchmark
-benchmarkValidator name (Plutus.Validator unApplied) datum redeemer ctx =
-  benchmarkScriptUnapplied name unApplied $
-    Plutus.applyArguments
-      unApplied
-      [ Plutus.toData datum
-      , Plutus.toData redeemer
-      , Plutus.toData ctx
-      ]
-
--- | Benchmark a MintingPolicy with the provided arguments
-benchmarkMintingPolicy ::
-  (Plutus.ToData r) =>
-  String ->
-  Plutus.MintingPolicy ->
-  r ->
-  Plutus.ScriptContext ->
-  NamedBenchmark
-benchmarkMintingPolicy name (Plutus.MintingPolicy unApplied) redeemer ctx =
-  benchmarkScriptUnapplied name unApplied $
-    Plutus.applyArguments
-      unApplied
-      [ Plutus.toData redeemer
-      , Plutus.toData ctx
-      ]
-
--- | Benchmark a StakeValidator with the provided arguments
-benchmarkStakeValidator ::
-  (Plutus.ToData r) =>
-  String ->
-  Plutus.StakeValidator ->
-  r ->
-  Plutus.ScriptContext ->
-  NamedBenchmark
-benchmarkStakeValidator name (Plutus.StakeValidator unApplied) redeemer ctx =
-  benchmarkScriptUnapplied name unApplied $
-    Plutus.applyArguments
-      unApplied
-      [ Plutus.toData redeemer
-      , Plutus.toData ctx
-      ]
 
 {- |
   Benchmark a script, with an (optional) version without args
@@ -235,43 +168,6 @@ benchWithApply ::
 benchWithApply name unApplied appArgs =
   [ benchmarkScriptUnapplied name (compile unApplied) $
       compile $ appArgs unApplied
-  ]
-
--- | Create a benchmark for a PValidator term, using the provided args
-benchPValidator ::
-  String ->
-  ClosedTerm PValidator ->
-  ClosedTerm PData ->
-  ClosedTerm PData ->
-  ClosedTerm PScriptContext ->
-  [NamedBenchmark]
-benchPValidator name script datum redeemer ctx =
-  [ benchmarkScriptUnapplied name (compile script) $
-      compile $ script # datum # redeemer #$ punsafeCoerce ctx
-  ]
-
--- | Create a benchmark for a PMintingPolicy term, using the provided args
-benchPMintingPolicy ::
-  String ->
-  ClosedTerm PMintingPolicy ->
-  ClosedTerm PData ->
-  ClosedTerm PScriptContext ->
-  [NamedBenchmark]
-benchPMintingPolicy name script redeemer ctx =
-  [ benchmarkScriptUnapplied name (compile script) $
-      compile $ script # redeemer #$ punsafeCoerce ctx
-  ]
-
--- | Create a benchmark for a PStakeValidator term, using the provided args
-benchPStakeValidator ::
-  String ->
-  ClosedTerm PStakeValidator ->
-  ClosedTerm PData ->
-  ClosedTerm PScriptContext ->
-  [NamedBenchmark]
-benchPStakeValidator name script redeemer ctx =
-  [ benchmarkScriptUnapplied name (compile script) $
-      compile $ script # redeemer #$ punsafeCoerce ctx
   ]
 
 -- | Create a benchmark with itself as name

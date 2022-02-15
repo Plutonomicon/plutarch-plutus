@@ -73,9 +73,9 @@
 
 - Added functions to `Plutarch.Benchmark` to account for script-sizing without arguments applied.
 
-  `benchmarkValidator`, `benchmarkMintingPolicy`, `bechmarkStakeValidator`, `benchmarkScriptUnapplied`, `benchmarkScriptWithApply` for benchmarking Plutus API script types.
+  `benchmarkScriptUnapplied`, `benchmarkScriptWithApply` for Plutus API Scripts.
 
-  `benchWithApply`, `benchPValidator`, `benchPMintingPolicy` & `benchPStakeValidator` for Plutarch API script types.
+  `benchWithApply` for Plutarch terms.
 
   Module: `Plutarch.Benchmark`
 
