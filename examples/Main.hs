@@ -21,8 +21,6 @@ import qualified Examples.ConstrData as ConstrData
 import qualified Examples.LetRec as LetRec
 import Utils
 
-import Data.Text (Text)
-
 main :: IO ()
 main = do
   setLocaleEncoding utf8
@@ -141,29 +139,6 @@ plutarchTests =
             printTerm ((plam $ \x y -> ((phoistAcyclic $ plam $ \x -> x # pcon PTrue)) # x # y)) @?= "(program 1.0.0 (\\i0 -> \\i0 -> i2 True i1))"
         , testCase "λy. (λx. x + x) y" $
             printTerm (plam $ \y -> (plam $ \(x :: Term _ PInteger) -> x + x) # y) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
-        ]
-    , testGroup
-        "Lifting of constants"
-        [ testCase "plift on primitive types" $ do
-            plift (pcon PTrue) @?= True
-            plift (pcon PFalse) @?= False
-        , testCase "pconstant on primitive types" $ do
-            plift (pconstant @PBool False) @?= False
-            plift (pconstant @PBool True) @?= True
-        , testCase "plift on list and pair" $ do
-            plift (pconstant ([1, 2, 3] :: [Integer])) @?= [1, 2, 3]
-            plift (pconstant ("IOHK" :: Text, 42 :: Integer)) @?= ("IOHK", 42)
-        , testCase "plift on data" $ do
-            let d :: PlutusTx.Data
-                d = PlutusTx.toData @(Either Bool Bool) $ Right False
-            plift (pconstant d) @?= d
-        , testCase "plift on nested containers" $ do
-            -- List of pairs
-            let v1 = [("IOHK", 42), ("Plutus", 31)] :: [(Text, Integer)]
-            plift (pconstant v1) @?= v1
-            -- List of pair of lists
-            let v2 = [("IOHK", [1, 2, 3]), ("Plutus", [9, 8, 7])] :: [(Text, [Integer])]
-            plift (pconstant v2) @?= v2
         ]
     ]
 

@@ -1,18 +1,40 @@
 module Plutarch.LiftSpec (spec) where
 
+import Data.Text (Text)
+import Plutus.V1.Ledger.Api
+import qualified PlutusTx
 import Test.Syd
 
 import Plutarch.Builtin
 import Plutarch.Internal.Other (popaque)
-import Plutarch.Lift (PLift, PLifted, pconstant)
+import Plutarch.Lift (PLifted)
+import Plutarch.Prelude
 import Plutarch.Test
-
-import Plutus.V1.Ledger.Api
-import qualified PlutusTx
 
 spec :: Spec
 spec = do
   describe "lift" $ do
+    describe "plift" $ do
+      it "bool" $ do
+        plift (pcon PTrue) `shouldBe` True
+        plift (pcon PFalse) `shouldBe` False
+        plift (pconstant False) `shouldBe` False
+        plift (pconstant True) `shouldBe` True
+      it "list" $ do
+        plift (pconstant ([1, 2, 3] :: [Integer])) `shouldBe` [1, 2, 3]
+        plift (pconstant ("IOHK" :: Text, 42 :: Integer)) `shouldBe` ("IOHK", 42)
+      it "nested" $ do
+        -- List of pairs
+        let v1 = [("IOHK", 42), ("Plutus", 31)] :: [(Text, Integer)]
+        plift (pconstant v1) `shouldBe` v1
+        -- List of pair of lists
+        let v2 = [("IOHK", [1, 2, 3]), ("Plutus", [9, 8, 7])] :: [(Text, [Integer])]
+        plift (pconstant v2) `shouldBe` v2
+      it "data" $ do
+        let d :: PlutusTx.Data
+            d = PlutusTx.toData @(Either Bool Bool) $ Right False
+        plift (pconstant d) `shouldBe` d
+
     describe "pconstantData" $ do
       let p1 = False
           p2 = 42 :: Integer
