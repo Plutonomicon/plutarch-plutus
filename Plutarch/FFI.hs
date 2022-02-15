@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-unused-imports #-}
 
 module Plutarch.FFI (
   Delayed,
@@ -8,13 +9,16 @@ module Plutarch.FFI (
   unsafeForeignImport,
 ) where
 
+import Data.ByteString (ByteString)
 import Data.Kind (Constraint, Type)
 import Data.Text (Text)
+import GHC.Generics (C, D, K1, M1, Meta (MetaData), Rep, S)
 import GHC.TypeLits (TypeError)
 import qualified GHC.TypeLits as TypeLits
 import qualified Generics.SOP as SOP
 import Plutarch.Bool (PBool)
 import Plutarch.Builtin (PAsData, PData)
+import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (
   ClosedTerm,
@@ -29,8 +33,11 @@ import Plutarch.Internal (
  )
 import Plutarch.Internal.PlutusType (PlutusType (PInner))
 import Plutarch.String (PString)
+import Plutus.V1.Ledger.Api (
+  PubKeyHash (..),
+ )
 import Plutus.V1.Ledger.Scripts (Script (unScript), fromCompiledCode)
-import PlutusTx.Builtins.Internal (BuiltinBool, BuiltinData)
+import PlutusTx.Builtins.Internal (BuiltinBool, BuiltinByteString, BuiltinData)
 import PlutusTx.Code (CompiledCode, CompiledCodeIn (DeserializedCode))
 import PlutusTx.Prelude (BuiltinString)
 import UntypedPlutusCore (fakeNameDeBruijn)
@@ -69,6 +76,7 @@ type family PlutarchInner (p :: PType) (any :: PType) :: Type where
   PlutarchInner PBool _ = BuiltinBool
   PlutarchInner PInteger _ = Integer
   PlutarchInner PString _ = Text
+  PlutarchInner PByteString _ = ByteString
   PlutarchInner PData _ = BuiltinData
   PlutarchInner PhorallPhantom _ = ForallPhantom
   PlutarchInner (PAsData a :--> PAsData b) x = PlutarchInner (PData :--> PData) x
@@ -81,11 +89,17 @@ type family PlutusTxInner (t :: Type) (any :: Type) :: Type where
   PlutusTxInner BuiltinBool _ = BuiltinBool
   PlutusTxInner Integer _ = Integer
   PlutusTxInner BuiltinString _ = Text
+  PlutusTxInner BuiltinByteString _ = ByteString
   PlutusTxInner BuiltinData _ = BuiltinData
   PlutusTxInner ForallPhantom _ = ForallPhantom
   PlutusTxInner (a -> b) x = PlutusTxInner a x -> PlutusTxInner b x
   PlutusTxInner (Delayed a) x = Delayed (PlutusTxInner a x)
-  PlutusTxInner a x = Delayed (PlutusTxInner (ScottFn (ScottList (SOP.Code a) x) x) x)
+  PlutusTxInner a x = TypeEncoding a (Rep a) x
+
+type TypeEncoding :: Type -> (Type -> Type) -> Type -> Type
+type family TypeEncoding a rep x where
+  TypeEncoding a (M1 D ( 'MetaData _ _ _ 'True) (M1 C _ (M1 S _ (K1 _ b)))) x = PlutusTxInner b x -- newtype
+  TypeEncoding a _ x = Delayed (PlutusTxInner (ScottFn (ScottList (SOP.Code a) x) x) x)
 
 {- |
   List of scott-encoded constructors of a Haskell type (represented by 'SOP.Code')
