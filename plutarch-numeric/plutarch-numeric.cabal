@@ -51,11 +51,7 @@ library
   import:          lang
   exposed-modules:
     Plutarch.Numeric
-    Plutarch.Numeric.Additive
-    Plutarch.Numeric.Division
     Plutarch.Numeric.Group
-    Plutarch.Numeric.Multiplicative
-    Plutarch.Numeric.Ring
 
   other-modules:
     Plutarch.Numeric.Natural
@@ -63,8 +59,9 @@ library
     Plutarch.Numeric.NZNatural
 
   build-depends:
-    , base         >=4.14
-    , plutarch     ^>=1.1
+    , base           >=4.14
+    , plutarch       ^>=1.1
     , plutus-core
+    , semigroupoids  ^>=5.3.7
 
   hs-source-dirs:  src
