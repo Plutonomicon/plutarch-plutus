@@ -179,15 +179,18 @@ checkSignatoryCont = plam $ \ph ctx' ->
 checkSignatoryTermCont :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatoryTermCont = plam $ \ph ctx' -> unTermCont $ do
   ctx <- tcont $ pletFields @["txInfo", "purpose"] ctx'
-  PSpending _ <- tcont (pmatch $ hrecField @"purpose" ctx)
-  let signatories = pfield @"signatories" # hrecField @"txInfo" ctx
-  pure $
-    pif
-      (pelem # pdata ph # pfromData signatories)
-      -- Success!
-      (pconstant ())
-      -- Signature not present.
-      perror
+  tcont (pmatch $ hrecField @"purpose" ctx) >>= \case 
+    PSpending _ -> do
+      let signatories = pfield @"signatories" # hrecField @"txInfo" ctx
+      pure $
+        pif
+          (pelem # pdata ph # pfromData signatories)
+          -- Success!
+          (pconstant ())
+          -- Signature not present.
+          perror
+    _ ->
+      pure $ ptraceError "checkSignatoryCont: not a spending tx"
 
 getFields :: Term s (PData :--> PBuiltinList PData)
 getFields = phoistAcyclic $ plam $ \addr -> psndBuiltin #$ pasConstr # addr
