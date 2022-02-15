@@ -54,7 +54,7 @@ spec = do
           it "succeeds" $ psucceeds p
           it "fails" $ pfails pe
       describe "getFields" $
-        golden PrintTerm getFields
+        golden All getFields
 
 --------------------------------------------------------------------------------
 
