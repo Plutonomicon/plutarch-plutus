@@ -380,7 +380,7 @@ tests =
 result_fieldFromDataTerm'simpleRecord :: String
 result_fieldFromDataTerm'simpleRecord =
 #ifdef Development
-  "(program 1.0.0 (\\i0 -> unIData ((\\i0 -> (\\i0 -> force (force ifThenElse (equalsInteger (force (force fstPair) i1) 0) (delay (force headList (force tailList (force (force sndPair) i1)))) (delay (force (force trace \"verifySoleConstructor failed\" (delay error)))))) (unConstrData i1)) i1)))"
+  "(program 1.0.0 (\\i0 -> unIData ((\\i0 -> force (force ifThenElse (equalsInteger (force (force fstPair) i1) 0) (delay (force headList (force tailList (force (force sndPair) i1)))) (delay (force (force trace \"verifySoleConstructor failed\" (delay error)))))) (unConstrData i1))))"
 #else
   "(program 1.0.0 (\\i0 -> unIData ((\\i0 -> force (force ifThenElse (equalsInteger (force (force fstPair) i1) 0) (delay (force headList (force tailList (force (force sndPair) i1)))) (delay error))) (unConstrData i1))))"
 #endif
@@ -388,7 +388,7 @@ result_fieldFromDataTerm'simpleRecord =
 result_fieldFromDataTerm'flatNested :: String
 result_fieldFromDataTerm'flatNested =
 #ifdef Development
-  "(program 1.0.0 ((\\i0 -> \\i0 -> unIData ((\\i0 -> (\\i0 -> force (force ifThenElse (equalsInteger (force (force fstPair) i1) 0) (delay (force headList (i4 (i4 (i4 (i4 (i4 (i4 (force (force sndPair) i1))))))))) (delay (force (force trace \"verifySoleConstructor failed\" (delay error)))))) (unConstrData i1)) i1)) (force tailList)))"
+  "(program 1.0.0 ((\\i0 -> \\i0 -> unIData ((\\i0 -> force (force ifThenElse (equalsInteger (force (force fstPair) i1) 0) (delay (force headList (i3 (i3 (i3 (i3 (i3 (i3 (force (force sndPair) i1))))))))) (delay (force (force trace \"verifySoleConstructor failed\" (delay error)))))) (unConstrData i1))) (force tailList)))"
 #else
   "(program 1.0.0 ((\\i0 -> \\i0 -> unIData ((\\i0 -> force (force ifThenElse (equalsInteger (force (force fstPair) i1) 0) (delay (force headList (i3 (i3 (i3 (i3 (i3 (i3 (force (force sndPair) i1))))))))) (delay error))) (unConstrData i1))) (force tailList)))"
 #endif
@@ -396,7 +396,7 @@ result_fieldFromDataTerm'flatNested =
 result_fieldFromDataTerm'shallowNested :: String
 result_fieldFromDataTerm'shallowNested =
 #ifdef Development
-  "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> (\\i0 -> force (i4 (equalsInteger (i5 i1) 0) (delay (\\i0 -> i1 ((\\i0 -> equalsInteger (i7 (unConstrData i1)) 1) (i7 (i9 i2))) (unIData (i7 (i8 (i9 i2)))) (decodeUtf8 (unBData (i7 (i8 (i8 (i9 i2)))))))) (delay (force (i9 \"verifySoleConstructor failed\" (delay error)))))) (unConstrData i1)) ((\\i0 -> (\\i0 -> force (i4 (equalsInteger (i5 i1) 0) (delay (i6 (i7 (i7 (i7 (i8 i1)))))) (delay (force (i9 \"verifySoleConstructor failed\" (delay error)))))) (unConstrData i1)) i1) (\\i0 -> \\i0 -> \\i0 -> i2)) (force ifThenElse)) (force (force fstPair))) (force headList)) (force tailList)) (force (force sndPair))) (force trace)))"
+  "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> (\\i0 -> force (i4 (equalsInteger (i5 i1) 0) (delay (\\i0 -> i1 ((\\i0 -> equalsInteger (i7 (unConstrData i1)) 1) (i7 (i9 i2))) (unIData (i7 (i8 (i9 i2)))) (decodeUtf8 (unBData (i7 (i8 (i8 (i9 i2)))))))) (delay (force (i9 i10 (delay error)))))) (unConstrData i1)) ((\\i0 -> force (i3 (equalsInteger (i4 i1) 0) (delay (i5 (i6 (i6 (i6 (i7 i1)))))) (delay (force (i8 i9 (delay error)))))) (unConstrData i1)) (\\i0 -> \\i0 -> \\i0 -> i2)) (force ifThenElse)) (force (force fstPair))) (force headList)) (force tailList)) (force (force sndPair))) (force trace)) \"verifySoleConstructor failed\"))"
 #else
   "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> (\\i0 -> \\i0 -> (\\i0 -> (\\i0 -> force (i4 (equalsInteger (i5 i1) 0) (delay (\\i0 -> i1 ((\\i0 -> equalsInteger (i7 (unConstrData i1)) 1) (i7 (i9 i2))) (unIData (i7 (i8 (i9 i2)))) (decodeUtf8 (unBData (i7 (i8 (i8 (i9 i2)))))))) (delay error))) (unConstrData i1)) ((\\i0 -> force (i3 (equalsInteger (i4 i1) 0) (delay (i5 (i6 (i6 (i6 (i7 i1)))))) (delay error))) (unConstrData i1)) (\\i0 -> \\i0 -> \\i0 -> i2)) (force ifThenElse)) (force (force fstPair))) (force headList)) (force tailList)) (force (force sndPair))))"
 #endif

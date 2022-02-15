@@ -25,7 +25,17 @@ import GHC.TypeLits (
  )
 
 import Data.Kind (Type)
-import Plutarch (PType, S, Term, plam, plet, (#), (#$), type (:-->))
+import Plutarch (
+  PType,
+  S,
+  Term,
+  plam,
+  plet,
+  (#),
+  (#$),
+  type (:-->),
+ )
+
 import Plutarch.Builtin (
   PAsData,
   PIsData (pfromData),
@@ -43,6 +53,7 @@ import Plutarch.DataRepr.Internal (
   type PLabelIndex,
   type PUnLabel,
  )
+import Plutarch.DataRepr.Internal.FromData (PFromDataable, pmaybeFromAsData)
 import Plutarch.DataRepr.Internal.HList (
   HRec (HCons, HNil),
   Labeled (Labeled, unLabeled),
@@ -205,14 +216,14 @@ instance {-# OVERLAPPING #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ':
   which will generate the bindings more efficiently.
 -}
 pfield ::
-  forall name p s a as n.
+  forall name p s a as n b.
   ( PDataFields p
   , as ~ (PFields p)
   , n ~ (PLabelIndex name as)
   , KnownNat n
   , a ~ (PUnLabel (IndexList n as))
+  , PFromDataable a b
   ) =>
-  Term s (p :--> PAsData a)
-pfield =
-  plam $ \t ->
-    pindexDataRecord (Proxy @n) $ ptoFields @p t
+  Term s (p :--> b)
+pfield = plam $ \i ->
+  pmaybeFromAsData $ pindexDataRecord (Proxy @n) $ ptoFields @p i

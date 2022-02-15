@@ -2,6 +2,11 @@ cabal-version: 2.4
 name:          plutarch-test
 version:       1.1.0
 
+flag development
+  description: Enable tracing functions within plutarch.
+  manual:      True
+  default:     False
+
 common c
   default-language:   Haskell2010
   default-extensions:
@@ -66,28 +71,7 @@ common c
     -Wno-name-shadowing -Wunused-foralls -fprint-explicit-foralls
     -fprint-explicit-kinds
 
-executable plutarch-test
-  import:             c
-  type:               exitcode-stdio-1.0
-  main-is:            Main.hs
-  hs-source-dirs:     src
-  default-extensions:
-    OverloadedRecordDot
-    QualifiedDo
-
-  other-modules:
-    Spec
-    Plutarch.BoolSpec
-    Plutarch.UnitSpec
-    Plutarch.IntegerSpec
-    Plutarch.StringSpec
-    Plutarch.ByteStringSpec
-    Plutarch.PLamSpec
-    Plutarch.RationalSpec
-    Plutarch.ListSpec
-    Plutarch.ApiSpec
-    Plutarch.Test
-
+common deps 
   build-depends:
     , aeson >= 2.0
     , base
@@ -106,8 +90,44 @@ executable plutarch-test
     , tasty
     , tasty-golden
     , tasty-hunit
+    , tasty-quickcheck
     , text
     , transformers
+
+library
+  import: c, deps
+  hs-source-dirs: src
+  exposed-modules: Plutarch.Test
+
+executable plutarch-test
+  import:             c, deps
+  type:               exitcode-stdio-1.0
+  main-is:            Main.hs
+  hs-source-dirs:     src
+
+  if impl(ghc >= 9.0)
+    other-modules:
+      Plutarch.MonadicSpec
+      Plutarch.FieldSpec
+  other-modules:
+    Spec
+    Plutarch.ApiSpec
+    Plutarch.BoolSpec
+    Plutarch.ByteStringSpec
+    Plutarch.IntegerSpec
+    Plutarch.ListSpec
+    Plutarch.TraceSpec
+    Plutarch.PIsDataSpec
+    Plutarch.PLamSpec
+    Plutarch.PlutusTypeSpec
+    Plutarch.RationalSpec
+    Plutarch.RecursionSpec
+    Plutarch.StringSpec
+    Plutarch.Test
+    Plutarch.UnitSpec
+
+  if flag(development)
+    cpp-options: -DDevelopment
 
   ghc-options:
     -threaded -rtsopts -with-rtsopts=-N
