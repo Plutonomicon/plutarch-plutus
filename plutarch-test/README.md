@@ -3,9 +3,11 @@
 To run the tests using Nix:
 
 ```sh-session
-$ nix run .#test
-# Or, to run tests with development flag set to true:
-$ nix run .#test-dev
+# Runs tests
+$ nix run .#test-ghc9-nodev
+# To run the above in GHC 8.10 instead:
+$ nix run .#test-ghc810-nodev
+# Replace 'nodev' with 'dev' to run the tests with development flag set
 ```
 
 To run the tests using ghcid (fit for writing tests):

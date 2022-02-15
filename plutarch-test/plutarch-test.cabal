@@ -94,8 +94,6 @@ common deps
     , text
     , transformers
 
-
-
 library
   import: c, deps
   hs-source-dirs: src
@@ -106,16 +104,16 @@ executable plutarch-test
   type:               exitcode-stdio-1.0
   main-is:            Main.hs
   hs-source-dirs:     src
-  default-extensions:
-    OverloadedRecordDot
-    QualifiedDo
 
+  if impl(ghc >= 9.0)
+    other-modules:
+      Plutarch.MonadicSpec
+      Plutarch.FieldSpec
   other-modules:
     Spec
     Plutarch.ApiSpec
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
-    Plutarch.FieldSpec
     Plutarch.IntegerSpec
     Plutarch.ListSpec
     Plutarch.TraceSpec
