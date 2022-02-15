@@ -1,14 +1,13 @@
 {-# LANGUAGE TypeFamilies #-}
 
 module Plutarch.Numeric.NZNatural (
-  PNZNatural (..),
+  PNZNatural,
   NZNatural (..),
 ) where
 
 import Control.Monad (guard)
-import Plutarch (S, Term, (#))
+import Plutarch (S, (#))
 import Plutarch.Bool (PEq ((#==)), POrd ((#<), (#<=)))
-import Plutarch.Integer (PInteger)
 import Plutarch.Lift (
   PConstant (
     PConstantRepr,
@@ -22,7 +21,7 @@ import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
 
 -- | @since 1.0
-newtype PNZNatural (s :: S) = PNZNatural (Term s PInteger)
+data PNZNatural (s :: S)
 
 -- | @since 1.0
 instance PEq PNZNatural where

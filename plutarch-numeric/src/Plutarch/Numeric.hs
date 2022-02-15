@@ -50,11 +50,13 @@ module Plutarch.Numeric (
   mod,
 ) where
 
+import Plutarch.Bool (pif, (#<=), (#<), (#==))
+import qualified PlutusCore as PLC
 import Data.Foldable (foldl')
 import Data.Kind (Type)
 import Data.Semigroup (stimes, stimesMonoid)
 import Data.Semigroup.Foldable (Foldable1 (foldMap1))
-import Plutarch (Term)
+import Plutarch (Term, (#), plet)
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (pconstant)
 import Plutarch.Numeric.Group (Group (gtimes, inverse))
@@ -76,6 +78,7 @@ import Prelude hiding (
   (+),
  )
 import Prelude qualified
+import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 
 {- | A commutative semigroup, meant to be morally equivalent to numerical
  addition.
@@ -134,21 +137,19 @@ instance AdditiveSemigroup (Term s PInteger) where
   {-# INLINEABLE scaleNZNatural #-}
   scaleNZNatural i (NZN.NZNatural n) = i Prelude.* pconstant n
 
-{-
 -- | @since 1.0
 instance AdditiveSemigroup (Term s PNatural) where
   {-# INLINEABLE (+) #-}
-  (+) = _
+  x + y = punsafeBuiltin PLC.AddInteger # x # y
   {-# INLINEABLE scaleNZNatural #-}
-  scaleNZNatural = _
+  scaleNZNatural i n = punsafeBuiltin PLC.MultiplyInteger # i # pconstant n
 
 -- | @since 1.0
 instance AdditiveSemigroup (Term s PNZNatural) where
   {-# INLINEABLE (+) #-}
-  (+) = _
+  x + y = punsafeBuiltin PLC.AddInteger # x # y
   {-# INLINEABLE scaleNZNatural #-}
-  scaleNZNatural = _
--}
+  scaleNZNatural i n = punsafeBuiltin PLC.MultiplyInteger # i # pconstant n
 
 {- | An 'AdditiveSemigroup' extended with a notion of zero.
 
@@ -190,11 +191,21 @@ instance AdditiveMonoid Integer where
   scaleNatural i (Nat.Natural n) = i Prelude.* n
 
 -- | @since 1.0
+deriving via Integer instance (AdditiveMonoid Natural)
+
+-- | @since 1.0
 instance AdditiveMonoid (Term s PInteger) where
   {-# INLINEABLE zero #-}
   zero = pconstant 0
   {-# INLINEABLE scaleNatural #-}
-  scaleNatural i (Nat.Natural n) = i Prelude.* pconstant n
+  scaleNatural i n = punsafeBuiltin PLC.MultiplyInteger # i # pconstant n
+
+-- | @since 1.0
+instance AdditiveMonoid (Term s PNatural) where
+  {-# INLINEABLE zero #-}
+  zero = pconstant . Nat.Natural $ 0
+  {-# INLINEABLE scaleNatural #-}
+  scaleNatural i n = punsafeBuiltin PLC.MultiplyInteger # i # pconstant n
 
 {- | An 'AdditiveMonoid' extended with a notion of negation.
 
@@ -269,6 +280,17 @@ class (AdditiveMonoid a) => AdditiveCMM a where
   -- | @since 1.0
   (^-) :: a -> a -> a
 
+-- | @since 1.0
+instance AdditiveCMM Natural where
+  {-# INLINEABLE (^-) #-}
+  Nat.Natural n ^- Nat.Natural n' = Nat.Natural . max 0 $ n Prelude.- n'
+
+-- | @since 1.0
+instance AdditiveCMM (Term s PNatural) where
+  {-# INLINEABLE (^-) #-}
+  t ^- t' = plet (punsafeBuiltin PLC.SubtractInteger # t # t') 
+                 (\(t'' :: Term s PInteger) -> pif (zero #<= t'') (punsafeCoerce t'') zero)
+
 {- | A restriction of the type being wrapped to the \'additive half\' of its
  capabilities. This allows us to treat such types as 'Semigroup's, 'Monoid's
  or 'Group's when convenient to do so.
@@ -334,7 +356,7 @@ sum = getAdditive . foldMap Additive
 
  @since 1.0
 -}
-class (Eq a) => MultiplicativeSemigroup a where
+class MultiplicativeSemigroup a where
   {-# MINIMAL (*) #-}
 
   -- | @since 1.0
@@ -350,9 +372,37 @@ class (Eq a) => MultiplicativeSemigroup a where
 instance MultiplicativeSemigroup Integer where
   {-# INLINEABLE (*) #-}
   (*) = (Prelude.*)
+  {-# INLINEABLE powNZNatural #-}
+  powNZNatural x (NZN.NZNatural n) = x Prelude.^ n
 
 -- | @since 1.0
 deriving via Integer instance (MultiplicativeSemigroup NZInteger)
+
+-- | @since 1.0
+deriving via Integer instance (MultiplicativeSemigroup Natural)
+
+-- | @since 1.0
+deriving via Integer instance (MultiplicativeSemigroup NZNatural)
+
+-- | @since 1.0
+instance MultiplicativeSemigroup (Term s PInteger) where
+  {-# INLINEABLE (*) #-}
+  (*) = (Prelude.*)
+
+-- | @since 1.0
+instance MultiplicativeSemigroup (Term s PNatural) where
+  {-# INLINEABLE (*) #-}
+  x * y = punsafeBuiltin PLC.MultiplyInteger # x # y
+
+-- | @since 1.0
+instance MultiplicativeSemigroup (Term s PNZNatural) where
+  {-# INLINEABLE (*) #-}
+  x * y = punsafeBuiltin PLC.MultiplyInteger # x # y
+
+-- | @since 1.0
+instance MultiplicativeSemigroup (Term s PNZInteger) where
+  {-# INLINEABLE (*) #-}
+  x * y = punsafeBuiltin PLC.MultiplyInteger # x # y
 
 {- | A 'MultiplicativeSemigroup' extended with a notion of unit.
 
@@ -404,9 +454,56 @@ instance MultiplicativeMonoid Integer where
   abs = Prelude.abs
   {-# INLINEABLE signum #-}
   signum = Prelude.signum
+  {-# INLINEABLE powNatural #-}
+  powNatural x (Nat.Natural n) = x Prelude.^ n
 
 -- | @since 1.0
 deriving via Integer instance MultiplicativeMonoid NZInteger
+
+-- | @since 1.0
+deriving via Integer instance MultiplicativeMonoid Natural
+
+-- | @since 1.0
+deriving via Integer instance MultiplicativeMonoid NZNatural
+
+-- | @since 1.0
+instance MultiplicativeMonoid (Term s PInteger) where
+  {-# INLINEABLE one #-}
+  one = 1
+  {-# INLINEABLE abs #-}
+  abs t = pif (t #< zero) (Prelude.negate t) t
+  {-# INLINEABLE signum #-}
+  signum t = pif (t #< zero) (Prelude.negate 1) . pif (t #== zero) zero $ one
+
+-- | @since 1.0
+instance MultiplicativeMonoid (Term s PNatural) where
+  {-# INLINEABLE one #-}
+  one = pconstant (Nat.Natural 1)
+  {-# INLINEABLE abs #-}
+  abs = id
+  {-# INLINEABLE signum #-}
+  signum t = pif (t #== zero) zero one
+
+-- | @since 1.0
+instance MultiplicativeMonoid (Term s PNZInteger) where
+  {-# INLINEABLE one #-}
+  one = pconstant (NZI.NZInteger 1)
+  {-# INLINEABLE abs #-}
+  abs t = pif (t #< one) go t
+    where
+      go :: Term s PNZInteger
+      go = punsafeCoerce . Prelude.negate @(Term s PInteger) . punsafeCoerce $ t
+  {-# INLINEABLE signum #-}
+  signum t = pif (t #< one) (pconstant . NZI.NZInteger $ (-1)) one
+
+-- | @since 1.0
+instance MultiplicativeMonoid (Term s PNZNatural) where
+  {-# INLINEABLE one #-}
+  one = pconstant (NZN.NZNatural 1)
+  {-# INLINEABLE abs #-}
+  abs = id
+  {-# INLINEABLE signum #-}
+  signum _ = one
 
 {- | A restriction of the type being wrapped to the \'multiplicative half\' of
  its capabilities. This allows us to treat such types as 'Semigroup's,
@@ -477,6 +574,31 @@ class (AdditiveSemigroup a, MultiplicativeMonoid a) => Distributive a where
 instance Distributive Integer where
   {-# INLINEABLE fromNZNatural #-}
   fromNZNatural (NZN.NZNatural i) = i
+
+-- | @since 1.0
+instance Distributive Natural where
+  {-# INLINEABLE fromNZNatural #-}
+  fromNZNatural (NZN.NZNatural n) = Nat.Natural n
+
+-- | @since 1.0
+instance Distributive NZNatural where
+  {-# INLINEABLE fromNZNatural #-}
+  fromNZNatural = id
+
+-- | @since 1.0
+instance Distributive (Term s PInteger) where
+  {-# INLINEABLE fromNZNatural #-}
+  fromNZNatural (NZN.NZNatural i) = pconstant i
+
+-- | @since 1.0
+instance Distributive (Term s PNatural) where
+  {-# INLINEABLE fromNZNatural #-}
+  fromNZNatural (NZN.NZNatural n) = pconstant . Nat.Natural $ n
+
+-- | @since 1.0
+instance Distributive (Term s PNZNatural) where
+  {-# INLINEABLE fromNZNatural #-}
+  fromNZNatural = pconstant
 
 -- | @since 1.0
 class

@@ -1,14 +1,12 @@
 {-# LANGUAGE TypeFamilies #-}
 
 module Plutarch.Numeric.Natural (
-  PNatural (..),
+  PNatural,
   Natural (..),
 ) where
 
-import Control.Monad (guard)
-import Plutarch (S, Term, (#))
+import Plutarch (S, (#))
 import Plutarch.Bool (PEq ((#==)), POrd ((#<), (#<=)))
-import Plutarch.Integer (PInteger)
 import Plutarch.Lift (
   PConstant (
     PConstantRepr,
@@ -22,7 +20,7 @@ import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
 
 -- | @since 1.0
-newtype PNatural (s :: S) = PNatural (Term s PInteger)
+data PNatural (s :: S)
 
 -- | @since 1.0
 instance PEq PNatural where
@@ -57,6 +55,6 @@ instance PConstant Natural where
   {-# INLINEABLE pconstantToRepr #-}
   pconstantToRepr (Natural n) = n
   {-# INLINEABLE pconstantFromRepr #-}
-  pconstantFromRepr i = do
-    guard (i >= 0)
-    pure . Natural $ i
+  pconstantFromRepr i
+    | i == 0 = Nothing
+    | otherwise = Just . Natural $ i
