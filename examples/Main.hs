@@ -8,7 +8,6 @@ import Test.Tasty.HUnit
 
 import qualified Data.Aeson as Aeson
 import Data.Maybe (fromJust)
-import Examples.Tracing (traceTests)
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Plutarch (POpaque, popaque, printTerm)
 import Plutarch.Api.V1 (PScriptPurpose (PMinting))
@@ -23,7 +22,6 @@ import qualified PlutusTx
 import qualified Examples.ConstrData as ConstrData
 import qualified Examples.LetRec as LetRec
 import qualified Examples.Lift as Lift
-import qualified Examples.PlutusType as PlutusType
 import Utils
 
 import Data.Text (Text)
@@ -51,7 +49,6 @@ tests =
     "unit tests"
     [ plutarchTests
     , uplcTests
-    , PlutusType.tests
     , LetRec.tests
     , ConstrData.tests
     , Lift.tests
@@ -120,7 +117,6 @@ plutarchTests =
     , testCase "PAsData equality" $ do
         expect $ let dat = pdata @PInteger 42 in dat #== dat
         expect $ pnot #$ pdata (phexByteStr "12") #== pdata (phexByteStr "ab")
-    , testCase "Tracing" $ traceTests
     , testGroup
         "η-reduction optimisations"
         [ testCase "λx y. addInteger x y => addInteger" $

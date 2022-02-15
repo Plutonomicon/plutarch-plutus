@@ -1,0 +1,7 @@
+add1 (program 1.0.0 (\i0 -> \i0 -> addInteger (addInteger i2 i1) 1))
+add1Hoisted (program 1.0.0 (\i0 -> \i0 -> addInteger (addInteger i2 i1) 1))
+example1 (program 1.0.0 55)
+example2 (program 1.0.0 (\i0 -> i1 (\i0 -> addInteger i1 1) (\i0 -> subtractInteger i1 1)))
+fib (program 1.0.0 (\i0 -> force (force ifThenElse (equalsInteger i1 0) (delay 0) (delay (force (force ifThenElse (equalsInteger i1 1) (delay 1) (delay (addInteger ((\i0 -> (\i0 -> (\i0 -> \i0 -> force (force ifThenElse (equalsInteger i1 0) (delay 0) (delay (force (force ifThenElse (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2))))))))) (\i0 -> i2 i2 i1)) (\i0 -> (\i0 -> \i0 -> force (force ifThenElse (equalsInteger i1 0) (delay 0) (delay (force (force ifThenElse (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2))))))))) (\i0 -> i2 i2 i1)) i1) (subtractInteger i1 1)) ((\i0 -> (\i0 -> (\i0 -> \i0 -> force (force ifThenElse (equalsInteger i1 0) (delay 0) (delay (force (force ifThenElse (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2))))))))) (\i0 -> i2 i2 i1)) (\i0 -> (\i0 -> \i0 -> force (force ifThenElse (equalsInteger i1 0) (delay 0) (delay (force (force ifThenElse (equalsInteger i1 1) (delay 1) (delay (addInteger (i2 (subtractInteger i1 1)) (i2 (subtractInteger i1 2))))))))) (\i0 -> i2 i2 i1)) i1) (subtractInteger i1 2))))))))))
+fib.app.9 (program 1.0.0 34)
+uglyDouble (program 1.0.0 (\i0 -> addInteger i1 i1))

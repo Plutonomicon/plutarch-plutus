@@ -1,5 +1,26 @@
 # Plutarch tests and benchmarks
 
+To run the tests using Nix:
+
+```sh-session
+$ nix run .#test
+# Or, to run tests with development flag set to true:
+$ nix run .#test-dev
+```
+
+To run the tests using ghcid (fit for writing tests):
+
+```sh-session
+$ ghcid -c 'cabal repl plutarch-test:exe:plutarch-test' -T Main.main
+```
+
+To run ghcid with development flag set:
+
+```sh-session
+$ vim cabal.project # And then uncomment the "flags: +developmenet" line.
+$ ghcid -c 'cabal repl plutarch-test:exe:plutarch-test' -T Main.main
+```
+
 ## Use as library
 
 The `plutarch-test` library exposes the `Plutarch.Test` module for use in testing Plutarch code in user applications such as smart contracts. For benchmarking functions, see the `plutarch-benchmark` package.

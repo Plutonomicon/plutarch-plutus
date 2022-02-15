@@ -165,8 +165,6 @@ test-suite examples
     Examples.ConstrData
     Examples.LetRec
     Examples.Lift
-    Examples.PlutusType
-    Examples.Tracing
     Utils
 
   build-depends:
