@@ -107,13 +107,15 @@ executable plutarch-test
   main-is:            Main.hs
   hs-source-dirs:     src
 
+  if impl(ghc >= 9.0)
+    other-modules:
+      Plutarch.MonadicSpec
   other-modules:
     Spec
     Plutarch.ApiSpec
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
     Plutarch.FieldSpec
-    Plutarch.MonadicSpec
     Plutarch.IntegerSpec
     Plutarch.ListSpec
     Plutarch.TraceSpec

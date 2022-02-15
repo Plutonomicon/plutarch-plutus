@@ -1,6 +1,3 @@
-{-# LANGUAGE ImpredicativeTypes #-}
-{-# LANGUAGE OverloadedRecordDot #-}
-
 module Plutarch.ApiSpec (spec, ctx) where
 
 import Test.Syd
@@ -164,11 +161,11 @@ getSym =
 checkSignatoryCont :: forall s. Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatoryCont = plam $ \ph ctx' ->
   pletFields @["txInfo", "purpose"] ctx' $ \ctx -> (`runCont` id) $ do
-    purpose <- cont (pmatch $ ctx.purpose)
+    purpose <- cont (pmatch $ hrecField @"purpose" ctx)
     pure $ case purpose of
       PSpending _ ->
         let signatories :: Term s (PBuiltinList (PAsData PPubKeyHash))
-            signatories = pfield @"signatories" # ctx.txInfo
+            signatories = pfield @"signatories" # hrecField @"txInfo" ctx
          in pif
               (pelem # pdata ph # signatories)
               -- Success!
@@ -182,8 +179,8 @@ checkSignatoryCont = plam $ \ph ctx' ->
 checkSignatoryTermCont :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatoryTermCont = plam $ \ph ctx' -> unTermCont $ do
   ctx <- tcont $ pletFields @["txInfo", "purpose"] ctx'
-  PSpending _ <- tcont (pmatch $ ctx.purpose)
-  let signatories = pfield @"signatories" # ctx.txInfo
+  PSpending _ <- tcont (pmatch $ hrecField @"purpose" ctx)
+  let signatories = pfield @"signatories" # hrecField @"txInfo" ctx
   pure $
     pif
       (pelem # pdata ph # pfromData signatories)
