@@ -626,7 +626,11 @@
           dev = perSystem (system: (projectFor810 true system));
         };
       };
-      flake = perSystem (system: self.projectMatrix.ghc9.nodev.${system}.flake { }); # Default build configuration for flake.
+
+      # Default build configuration.
+      project = self.projectMatrix.ghc9.nodev;
+      flake = perSystem (system: self.project.${system}.flake { });
+
       haddockProject = perSystem (projectFor false);
 
       packages = perSystem (system: self.flake.${system}.packages // {
