@@ -19,7 +19,6 @@ import qualified PlutusTx
 
 import qualified Examples.ConstrData as ConstrData
 import qualified Examples.LetRec as LetRec
-import qualified Examples.Lift as Lift
 import Utils
 
 import Data.Text (Text)
@@ -49,7 +48,6 @@ tests =
     , uplcTests
     , LetRec.tests
     , ConstrData.tests
-    , Lift.tests
     ]
 
 plutarchTests :: HasTester => TestTree

@@ -117,6 +117,7 @@ executable plutarch-test
 
   other-modules:
     Plutarch.ApiSpec
+    Plutarch.LiftSpec
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
     Plutarch.IntegerSpec
