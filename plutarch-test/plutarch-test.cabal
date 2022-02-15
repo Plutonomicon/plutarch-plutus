@@ -113,6 +113,7 @@ executable plutarch-test
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
     Plutarch.FieldSpec
+    Plutarch.MonadicSpec
     Plutarch.IntegerSpec
     Plutarch.ListSpec
     Plutarch.TraceSpec
