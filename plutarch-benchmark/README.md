@@ -1,5 +1,7 @@
 # `plutarch-benchmark`
 
+**NOTE**: These benchmarks will soon be removed, to be replaced by the golden tests in `./plutarch-test`.
+
 ```sh
 # If running from repo root:
 cabal bench plutarch-benchmark
