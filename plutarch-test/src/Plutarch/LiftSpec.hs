@@ -34,7 +34,10 @@ spec = do
         let d :: PlutusTx.Data
             d = PlutusTx.toData @(Either Bool Bool) $ Right False
         plift (pconstant d) `shouldBe` d
-
+    describe "pconstant" $ do
+      it "string" $ do
+        pconstant @PString "abc" `pshouldBe` pconstant @PString "abc"
+        pconstant @PString "foo" `pshouldBe` ("foo" :: Term _ PString)
     describe "pconstantData" $ do
       let p1 = False
           p2 = 42 :: Integer

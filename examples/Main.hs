@@ -70,9 +70,6 @@ plutarchTests =
             let x = pmatch (pcon (PPair a b) :: Term s (PPair PInteger PString)) $ \(PPair _ y) -> y
             printTerm x @?= "(program 1.0.0 ((\\i0 -> i1 42 \"Universe\") (\\i0 -> \\i0 -> i1)))"
         ]
-    , testCase "pconstant \"abc\" == \"abc\"" $ do
-        pconstant @PString "abc" `equal` pconstant @PString "abc"
-        expect $ pconstant @PString "foo" #== "foo"
     , testCase "ScriptPurpose literal" $
         let d :: ScriptPurpose
             d = Minting dummyCurrency
