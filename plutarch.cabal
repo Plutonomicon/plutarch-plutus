@@ -99,8 +99,10 @@ library
     Plutarch.DataRepr
     Plutarch.DataRepr.Internal
     Plutarch.DataRepr.Internal.Field
+    Plutarch.DataRepr.Internal.FromData
     Plutarch.DataRepr.Internal.Generic
     Plutarch.DataRepr.Internal.HList
+    Plutarch.DataRepr.Internal.HList.Utils
     Plutarch.Either
     Plutarch.Evaluate
     Plutarch.Integer
@@ -163,8 +165,6 @@ test-suite examples
     Examples.ConstrData
     Examples.LetRec
     Examples.Lift
-    Examples.PlutusType
-    Examples.Tracing
     Utils
 
   build-depends:
