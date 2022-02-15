@@ -590,6 +590,24 @@
         ((nixpkgsFor system).writeShellApplication {
           inherit name text;
         }) + "/bin/${name}";
+
+      # Create a flake app to run Plutarch tests, under the given `flake` build matrix entry.
+      plutarchTestApp = system: name: flake:
+        {
+          type = "app";
+          program = checkedShellScript system "plutatch-test-${name}"
+            ''
+              cd ${self}/plutarch-test
+              ${flake.${system}.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test;
+            '';
+        };
+
+      # Take a flake app (identified as the key in the 'apps' set), and return a
+      # derivation that runs it in the compile phase.
+      # 
+      # In effect, this allows us to run an 'app' as part of the build process (eg: in CI).
+      flakeApp2Derivation = system: appName:
+        (nixpkgsFor system).runCommand appName { } "${self.apps.${system}.${appName}.program} | tee $out";
     in
     rec {
       inherit extraSources cabalProjectLocal haskellModule tools;
@@ -617,8 +635,10 @@
             // {
             formatCheck = formatCheckFor system;
             benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
-            test-ghc9 = (nixpkgsFor system).runCommand "test" { } "${self.apps.${system}.test.program} | tee $out";
-            test-ghc810 = (nixpkgsFor system).runCommand "test-ghc810" { } "${self.apps.${system}.test-ghc810.program} | tee $out";
+            test-ghc9-nodev = flakeApp2Derivation system "test-ghc9-nodev";
+            test-ghc9-dev = flakeApp2Derivation system "test-ghc9-dev";
+            test-ghc810-nodev = flakeApp2Derivation system "test-ghc810-nodev";
+            test-ghc810-dev = flakeApp2Derivation system "test-ghc810-dev";
           }) // {
         # We don't run the tests, we just check that it builds.
         "ghc810-plutarch:lib:plutarch" = flakeMatrix.ghc810.nodev.packages."plutarch:lib:plutarch";
@@ -641,24 +661,11 @@
       apps = perSystem (system:
         self.flake.${system}.apps
         // {
-          test = {
-            type = "app";
-            program = checkedShellScript system "plutatch-test-ghc9"
-              ''
-                cd ${self}/plutarch-test
-                ${self.flakeMatrix.ghc9.nodev.${system}.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test;
-                ${self.flakeMatrix.ghc9.dev.${system}.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test
-              '';
-          };
-          test-ghc810 = {
-            type = "app";
-            program = checkedShellScript system "plutarch-test-ghc10"
-              ''
-                cd ${self}/plutarch-test
-                ${self.flakeMatrix.ghc810.nodev.${system}.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test;
-                ${self.flakeMatrix.ghc810.dev.${system}.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test
-              '';
-          };
+          test-ghc9-nodev = plutarchTestApp system "ghc9-nodev" self.flakeMatrix.ghc9.nodev;
+          test-ghc9-dev = plutarchTestApp system "ghc9-dev" self.flakeMatrix.ghc9.dev;
+          test-ghc810-nodev = plutarchTestApp system "ghc810-nodev" self.flakeMatrix.ghc810.nodev;
+          test-ghc810-dev = plutarchTestApp system "ghc810-dev" self.flakeMatrix.ghc810.dev;
+          # TODO: The bellow apps will be removed eventually.
           benchmark = {
             type = "app";
             program = "${self.flake.${system}.packages."plutarch-benchmark:bench:benchmark"}/bin/benchmark";
