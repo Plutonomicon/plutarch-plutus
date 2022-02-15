@@ -73,9 +73,9 @@
 
 - Added functions to `Plutarch.Benchmark` to account for script-sizing without arguments applied.
 
-  `benchmarkScriptUnapplied`, `benchmarkScriptWithApply` for Plutus API Scripts.
+  `benchmarkScriptUnapplied`, for Plutus API Scripts.
 
-  `benchWithApply` for Plutarch terms.
+  `benchUnapplied` for Plutarch terms.
 
   Module: `Plutarch.Benchmark`
 

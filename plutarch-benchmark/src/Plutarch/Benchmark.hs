@@ -9,11 +9,10 @@ module Plutarch.Benchmark (
   -- | * Benchmark an arbitraty Plutus script
   benchmarkScript,
   benchmarkScriptUnapplied,
-  benchmarkScriptWithApply,
   benchmarkScript',
   -- | * Benchmark entrypoints
   bench,
-  benchWithApply,
+  benchUnapplied,
   bench',
   benchGroup,
   benchMain,
@@ -74,13 +73,6 @@ benchmarkScript name =
 benchmarkScriptUnapplied :: String -> Script -> Script -> NamedBenchmark
 benchmarkScriptUnapplied name unApplied =
   NamedBenchmark . (name,) . benchmarkScript' (Just unApplied)
-
-{- |
-  Benchmark the given script, using a function to apply arguments.
--}
-benchmarkScriptWithApply :: String -> Script -> (Script -> Script) -> NamedBenchmark
-benchmarkScriptWithApply name unApplied applyArgs =
-  benchmarkScriptUnapplied name unApplied $ applyArgs unApplied
 
 {- |
   Benchmark a script, with an (optional) version without args
@@ -160,14 +152,13 @@ bench name prog =
   to a Term.
   The un-applied version is used to measure the compiled size.
 -}
-benchWithApply ::
+benchUnapplied ::
   String ->
   ClosedTerm a ->
-  (ClosedTerm a -> ClosedTerm result) ->
+  ClosedTerm b ->
   [NamedBenchmark]
-benchWithApply name unApplied appArgs =
-  [ benchmarkScriptUnapplied name (compile unApplied) $
-      compile $ appArgs unApplied
+benchUnapplied name unApplied applied =
+  [ benchmarkScriptUnapplied name (compile unApplied) $ compile applied
   ]
 
 -- | Create a benchmark with itself as name
