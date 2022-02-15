@@ -1,8 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
-{-# OPTIONS_GHC -Wno-unused-imports #-}
 
 module Plutarch.FFI (
-  Delayed,
+  type (>~<),
   foreignExport,
   foreignImport,
   unsafeForeignExport,
@@ -33,9 +32,6 @@ import Plutarch.Internal (
  )
 import Plutarch.Internal.PlutusType (PlutusType (PInner))
 import Plutarch.String (PString)
-import Plutus.V1.Ledger.Api (
-  PubKeyHash (..),
- )
 import Plutus.V1.Ledger.Scripts (Script (unScript), fromCompiledCode)
 import PlutusTx.Builtins.Internal (BuiltinBool, BuiltinByteString, BuiltinData)
 import PlutusTx.Code (CompiledCode, CompiledCodeIn (DeserializedCode))
@@ -48,12 +44,15 @@ data PhorallPhantom :: PType
 
 data Delayed :: Type -> Type
 
-foreignExport :: PlutarchInner p PhorallPhantom ~~ PlutusTxInner t ForallPhantom => ClosedTerm p -> CompiledCode t
+-- | Compile and export a Plutarch term so it can be used by `PlutusTx.applyCode`.
+foreignExport :: p >~< t => ClosedTerm p -> CompiledCode t
 foreignExport = unsafeForeignExport
 
-foreignImport :: PlutarchInner p PhorallPhantom ~~ PlutusTxInner t ForallPhantom => CompiledCode t -> ClosedTerm p
+-- | Import compiled UPLC code (such as a spliced `PlutusTx.compile` result) as a Plutarch term.
+foreignImport :: p >~< t => CompiledCode t -> ClosedTerm p
 foreignImport = unsafeForeignImport
 
+-- | Seriously unsafe, may fail at run time or result in unexpected behaviour in your on-chain validator.
 unsafeForeignExport :: ClosedTerm p -> CompiledCode t
 unsafeForeignExport t = DeserializedCode program Nothing mempty
   where
@@ -63,8 +62,12 @@ unsafeForeignExport t = DeserializedCode program Nothing mempty
           compile' $
             asClosedRawTerm t
 
+-- | Seriously unsafe, may fail at run time or result in unexpected behaviour in your on-chain validator.
 unsafeForeignImport :: CompiledCode t -> ClosedTerm p
 unsafeForeignImport c = Term $ const $ TermResult (RCompiled $ UPLC.toTerm $ unScript $ fromCompiledCode c) []
+
+-- | Equality of inner types - Plutarch on the left and Haskell on the right.
+type p >~< t = PlutarchInner p PhorallPhantom ~~ PlutusTxInner t ForallPhantom
 
 type family a ~~ b :: Constraint where
   ForallPhantom ~~ _ = ()
