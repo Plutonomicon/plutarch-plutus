@@ -560,7 +560,7 @@
           #     builtins.attrValues self.project.${system}.hsPkgs
           #   )
           # );
-          hspkgs = builtins.map (x: self.project.${system}.hsPkgs.${x}.components.library) [
+          hspkgs = builtins.map (x: self.haddockProject.${system}.hsPkgs.${x}.components.library) [
             "plutarch"
             "plutus-core"
             "plutus-tx"
@@ -603,6 +603,7 @@
         };
       };
       flake = flakeMatrix.ghc9.nodev; # Default build configuration for flake.
+      haddockProject = perSystem (projectFor false);
 
       packages = perSystem (system: self.flake.${system}.packages // {
         haddock = haddock system;
