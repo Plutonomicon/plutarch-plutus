@@ -609,7 +609,7 @@
       flakeApp2Derivation = system: appName:
         (nixpkgsFor system).runCommand appName { } "${self.apps.${system}.${appName}.program} | tee $out";
     in
-    rec {
+    {
       inherit extraSources cabalProjectLocal haskellModule tools;
 
       # Build matrix. Plutarch is built against different GHC versions, and 'development' flag.
@@ -623,7 +623,7 @@
           dev = perSystem (system: (projectFor810 true system).flake { });
         };
       };
-      flake = flakeMatrix.ghc9.nodev; # Default build configuration for flake.
+      flake = self.flakeMatrix.ghc9.nodev; # Default build configuration for flake.
       haddockProject = perSystem (projectFor false);
 
       packages = perSystem (system: self.flake.${system}.packages // {
@@ -641,9 +641,9 @@
             test-ghc810-dev = flakeApp2Derivation system "test-ghc810-dev";
           }) // {
         # We don't run the tests, we just check that it builds.
-        "ghc810-plutarch:lib:plutarch" = flakeMatrix.ghc810.nodev.packages."plutarch:lib:plutarch";
-        "ghc810-plutarch:lib:plutarch-test" = flakeMatrix.ghc810.nodev.packages."plutarch-test:lib:plutarch-test";
-        "ghc810-plutarch:lib:plutarch-benchmark" = flakeMatrix.ghc810.nodev.packages."plutarch-benchmark:lib:plutarch-benchmark";
+        "ghc810-plutarch:lib:plutarch" = self.flakeMatrix.ghc810.nodev.packages."plutarch:lib:plutarch";
+        "ghc810-plutarch:lib:plutarch-test" = self.flakeMatrix.ghc810.nodev.packages."plutarch-test:lib:plutarch-test";
+        "ghc810-plutarch:lib:plutarch-benchmark" = self.flakeMatrix.ghc810.nodev.packages."plutarch-benchmark:lib:plutarch-benchmark";
       };
       # Because `nix flake check` does not work with haskell.nix (due to IFD), 
       # we provide this attribute for running the checks locally, using:
