@@ -99,9 +99,6 @@ common deps
 library
   import: c, deps
   hs-source-dirs: src
-  default-extensions:
-    OverloadedRecordDot
-    QualifiedDo
   exposed-modules: Plutarch.Test
 
 executable plutarch-test

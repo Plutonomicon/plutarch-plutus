@@ -619,6 +619,8 @@
           }) // {
         # We don't run the tests, we just check that it builds.
         "ghc810-plutarch:lib:plutarch" = flakeMatrix.ghc810.nodev.packages."plutarch:lib:plutarch";
+        "ghc810-plutarch:lib:plutarch-test" = flakeMatrix.ghc810.nodev.packages."plutarch-test:lib:plutarch-test";
+        "ghc810-plutarch:lib:plutarch-benchmark" = flakeMatrix.ghc810.nodev.packages."plutarch-benchmark:lib:plutarch-benchmark";
       };
       # Because `nix flake check` does not work with haskell.nix (due to IFD), 
       # we provide this attribute for running the checks locally, using:
