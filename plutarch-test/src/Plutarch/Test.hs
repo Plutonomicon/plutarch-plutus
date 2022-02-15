@@ -48,7 +48,7 @@ import qualified Plutus.V1.Ledger.Scripts as Scripts
 {- |
     Like `shouldBe` but but for Plutarch terms
 -}
-pshouldBe :: forall (a :: PType) (b :: PType). ClosedTerm a -> ClosedTerm b -> Expectation
+pshouldBe :: ClosedTerm a -> ClosedTerm b -> Expectation
 pshouldBe x y = do
   p1 <- fmap printScript $ eval $ compile x
   p2 <- fmap printScript $ eval $ compile y
@@ -60,15 +60,15 @@ pshouldBe x y = do
       Right (_, _, x') -> pure x'
 
 {- Like `@?=` but for Plutarch terms -}
-(#@?=) :: forall (a :: PType) (b :: PType). ClosedTerm a -> ClosedTerm b -> Expectation
+(#@?=) :: ClosedTerm a -> ClosedTerm b -> Expectation
 (#@?=) = pshouldBe
 
 {- Asserts the term to be true -}
-passert :: forall (a :: PType). ClosedTerm a -> Expectation
+passert :: ClosedTerm a -> Expectation
 passert p = p #@?= pcon PTrue
 
 {- Asserts the term evaluates successfully without failing -}
-psucceeds :: forall (a :: PType). ClosedTerm a -> Expectation
+psucceeds :: ClosedTerm a -> Expectation
 psucceeds p =
   case evaluateScript (compile p) of
     Left _ -> expectationFailure $ "Term failed to evaluate"
@@ -81,7 +81,7 @@ psucceeds p =
   see https://github.com/input-output-hk/plutus/issues/4270
 
 -}
-printTermEvaluated :: forall a. ClosedTerm a -> String
+printTermEvaluated :: ClosedTerm a -> String
 printTermEvaluated p =
   case evaluateScript (compile p) of
     Left _ -> printTerm perror
@@ -91,7 +91,7 @@ printTermEvaluated p =
 
   See also: `plutarchDevFlagDescribe`
 -}
-ptraces :: forall (a :: PType). ClosedTerm a -> [Text] -> Expectation
+ptraces :: ClosedTerm a -> [Text] -> Expectation
 ptraces p develTraces =
   case evaluateScript (compile p) of
     Left _ -> expectationFailure $ "Term failed to evaluate"
@@ -126,7 +126,7 @@ plutarchDevFlagDescribe m =
 {- ORMOLU_ENABLE -}
 
 {- Asserts the term evaluates without success -}
-pfails :: forall (a :: PType). ClosedTerm a -> Expectation
+pfails :: ClosedTerm a -> Expectation
 pfails p = do
   case evaluateScript (compile p) of
     Left _ -> pure ()
@@ -160,12 +160,8 @@ hasPrintTermGolden = \case
 
 {- Run golden tests on the given Plutarch program -}
 golden :: PlutarchGolden -> ClosedTerm a -> Spec
-golden pg = golden' pg Nothing
-
--- | Make golden tests for the given Plutarch program.
-golden' :: forall a. PlutarchGolden -> Maybe String -> ClosedTerm a -> Spec
-golden' pg mk p =
-  goldens' pg mk [("0", popaque p)]
+golden pg p =
+  goldens pg [("0", popaque p)]
 
 {- | Like `golden` but for multiple programs
 
@@ -173,29 +169,24 @@ golden' pg mk p =
   keyword with a space.
 -}
 goldens :: PlutarchGolden -> [(String, ClosedTerm a)] -> Spec
-goldens pg = goldens' pg Nothing
-
-goldens' :: PlutarchGolden -> Maybe String -> [(String, ClosedTerm a)] -> Spec
-goldens' pg mk ps = do
+goldens pg ps = do
   testAncestors <- fmap (drop 1 . reverse) $ getTestDescriptionPath
   let name = T.unpack $ T.intercalate "." testAncestors
-      goldenKey = maybe "golden" (<> ".golden") mk
-  describe goldenKey $ do
-    let k = maybe "" ("." <>) mk
+  describe "golden" $ do
     -- Golden test for UPLC
     when (hasPrintTermGolden pg) $ do
       it "uplc" $
-        pureGoldenTextFile ("goldens" </> name <> k <> ".uplc.golden") $
+        pureGoldenTextFile ("goldens" </> name <> ".uplc.golden") $
           multiGolden ps $ \p ->
             T.pack $ printTerm p
       it "uplc.eval" $
         let evaluateds = flip fmap ps $ \(s, p) -> (s, printTermEvaluated p)
-         in pureGoldenTextFile ("goldens" </> name <> k <> ".uplc.eval.golden") $
+         in pureGoldenTextFile ("goldens" </> name <> ".uplc.eval.golden") $
               multiGolden evaluateds T.pack
     -- Golden test for Plutus benchmarks
     when (hasBenchGolden pg) $
       it "bench" $
-        pureGoldenTextFile ("goldens" </> name <> k <> ".bench.golden") $
+        pureGoldenTextFile ("goldens" </> name <> ".bench.golden") $
           multiGolden ps $ \p ->
             TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compile p
 
