@@ -59,3 +59,5 @@ Don't try to lift a `PAsData` term! It's intentionally blocked and partial. The 
 Orphan instances! Specifically, in order for those type family applications to fully compute (and yield `h`), you need the `PConstant` instance for `h` in scope, as well as the `PLift` instance for the corresponding Plutarch type. Recall that `h` here is a Haskell type - its corresponding `PConstant` instance is *probably* an orphan instance that you haven't imported.
 
 This happens often with Plutarch ledger API types. If you didn't import `Plutarch.Api.V1.Contexts` (or some other module that imports it), and you're using `pconstant` on a `ScriptContext` - you'll get an error like this. The `PConstant` instance for `ScriptContext` hasn't been imported - so GHC has no idea what `PConstanted ScriptContext` is!
+
+Relevant issue: [#252](https://github.com/Plutonomicon/plutarch/issues/252)
