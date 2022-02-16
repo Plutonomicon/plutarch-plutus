@@ -24,6 +24,7 @@ import Data.Kind (Type)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
+import GHC.Stack (HasCallStack)
 import System.FilePath
 import Test.Syd (
   Expectation,
@@ -46,7 +47,7 @@ import qualified Plutus.V1.Ledger.Scripts as Scripts
 {- |
     Like `shouldBe` but but for Plutarch terms
 -}
-pshouldBe :: ClosedTerm a -> ClosedTerm b -> Expectation
+pshouldBe :: HasCallStack => ClosedTerm a -> ClosedTerm b -> Expectation
 pshouldBe x y = do
   p1 <- fmap printScript $ eval $ compile x
   p2 <- fmap printScript $ eval $ compile y
@@ -58,15 +59,15 @@ pshouldBe x y = do
       Right (_, _, x') -> pure x'
 
 {- Like `@?=` but for Plutarch terms -}
-(#@?=) :: ClosedTerm a -> ClosedTerm b -> Expectation
+(#@?=) :: HasCallStack => ClosedTerm a -> ClosedTerm b -> Expectation
 (#@?=) = pshouldBe
 
 {- Asserts the term to be true -}
-passert :: ClosedTerm a -> Expectation
+passert :: HasCallStack => ClosedTerm a -> Expectation
 passert p = p #@?= pcon PTrue
 
 {- Asserts the term evaluates successfully without failing -}
-psucceeds :: ClosedTerm a -> Expectation
+psucceeds :: HasCallStack => ClosedTerm a -> Expectation
 psucceeds p =
   case evaluateScript (compile p) of
     Left _ -> expectationFailure $ "Term failed to evaluate"
@@ -111,7 +112,7 @@ ptraces p develTraces =
 
   Typically meant to be used in conjunction with `ptraces`.
 -}
-plutarchDevFlagDescribe :: forall (outers :: [Type]) inner. TestDefM outers inner () -> TestDefM outers inner ()
+plutarchDevFlagDescribe :: forall (outers :: [Type]) inner. HasCallStack => TestDefM outers inner () -> TestDefM outers inner ()
 
 -- CPP support isn't great in fourmolu.
 {- ORMOLU_DISABLE -}
@@ -124,14 +125,14 @@ plutarchDevFlagDescribe m =
 {- ORMOLU_ENABLE -}
 
 {- Asserts the term evaluates without success -}
-pfails :: ClosedTerm a -> Expectation
+pfails :: HasCallStack => ClosedTerm a -> Expectation
 pfails p = do
   case evaluateScript (compile p) of
     Left _ -> pure ()
     Right _ -> expectationFailure $ "Term succeeded"
 
 {- Run golden tests on the given Plutarch program -}
-golden :: ClosedTerm a -> Spec
+golden :: HasCallStack => ClosedTerm a -> Spec
 golden p =
   goldens [("0", popaque p)]
 
@@ -140,7 +141,7 @@ golden p =
   Multiple programs use a single golden file. Each output separated from the
   keyword with a space.
 -}
-goldens :: [(String, ClosedTerm a)] -> Spec
+goldens :: HasCallStack => [(String, ClosedTerm a)] -> Spec
 goldens ps = do
   testAncestors <- fmap (drop 1 . reverse) $ getTestDescriptionPath
   let name = T.unpack $ T.intercalate "." testAncestors
