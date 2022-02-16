@@ -168,10 +168,6 @@ test-suite examples
     Examples.Rationals
     Examples.Recursion
     Examples.Tracing
-    Properties.Gen
-    Properties.Spec
-    Properties.Tests.List
-    Properties.Utils
     Utils
 
   build-depends:

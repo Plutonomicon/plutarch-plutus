@@ -32,6 +32,7 @@ common c
     ExistentialQuantification
     ExplicitForAll
     FlexibleContexts
+    FunctionalDependencies
     FlexibleInstances
     ForeignFunctionInterface
     GADTSyntax
@@ -84,6 +85,7 @@ common deps
     , plutus-ledger-api
     , plutus-tx
     , sydtest
+    , sydtest-hedgehog
     , sydtest-discover
     , tasty
     , tasty-golden
@@ -91,6 +93,7 @@ common deps
     , tasty-quickcheck
     , text
     , transformers
+    , hedgehog
 
 library
   import:          c, deps
@@ -114,6 +117,7 @@ executable plutarch-test
     Plutarch.ByteStringSpec
     Plutarch.IntegerSpec
     Plutarch.ListSpec
+    Plutarch.ListPropSpec
     Plutarch.PIsDataSpec
     Plutarch.PLamSpec
     Plutarch.PlutusTypeSpec
@@ -124,6 +128,8 @@ executable plutarch-test
     Plutarch.TraceSpec
     Plutarch.UnitSpec
     Spec
+    Util
+    Gen
 
   if flag(development)
     cpp-options: -DDevelopment
