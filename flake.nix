@@ -467,9 +467,12 @@
             chmod u+w $out $out/plutarch.cabal
             # Remove stanzas from .cabal that won't work in GHC 8.10
             sed -i '/-- Everything below this line is deleted for GHC 8.10/,$d' $out/plutarch.cabal
-            # Remove packages that won't work in GHC 8.10 (yet)
+
+            # Prevent `sydtest-discover` from using GHC9 only modules when building with GHC810
+            # https://github.com/NorfairKing/sydtest/blob/master/sydtest-discover/src/Test/Syd/Discover.hs
             chmod -R u+w $out/plutarch-test
-            rm -rf $out/plutarch-test
+            rm -f $out/plutarch-test/src/Plutarch/MonadicSpec.hs
+            rm -f $out/plutarch-test/src/Plutarch/FieldSpec.hs
           '';
           compiler-nix-name = ghcName;
           inherit extraSources;
@@ -587,22 +590,47 @@
         ((nixpkgsFor system).writeShellApplication {
           inherit name text;
         }) + "/bin/${name}";
+
+      # Create a flake app to run Plutarch tests, under the given project.
+      plutarchTestApp = system: name: project:
+        let
+          flake = project.${system}.flake { };
+        in
+        {
+          type = "app";
+          program = checkedShellScript system "plutatch-test-${name}"
+            ''
+              cd ${self}/plutarch-test
+              ${flake.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test;
+            '';
+        };
+
+      # Take a flake app (identified as the key in the 'apps' set), and return a
+      # derivation that runs it in the compile phase.
+      # 
+      # In effect, this allows us to run an 'app' as part of the build process (eg: in CI).
+      flakeApp2Derivation = system: appName:
+        (nixpkgsFor system).runCommand appName { } "${self.apps.${system}.${appName}.program} | tee $out";
     in
-    rec {
+    {
       inherit extraSources cabalProjectLocal haskellModule tools;
 
       # Build matrix. Plutarch is built against different GHC versions, and 'development' flag.
-      flakeMatrix = {
+      projectMatrix = {
         ghc9 = {
-          nodev = perSystem (system: (projectFor false system).flake { });
-          dev = perSystem (system: (projectFor true system).flake { });
+          nodev = perSystem (system: (projectFor false system));
+          dev = perSystem (system: (projectFor true system));
         };
         ghc810 = {
-          nodev = perSystem (system: (projectFor810 false system).flake { });
-          dev = perSystem (system: (projectFor810 true system).flake { });
+          nodev = perSystem (system: (projectFor810 false system));
+          dev = perSystem (system: (projectFor810 true system));
         };
       };
-      flake = flakeMatrix.ghc9.nodev; # Default build configuration for flake.
+
+      # Default build configuration.
+      project = self.projectMatrix.ghc9.nodev;
+      flake = perSystem (system: self.project.${system}.flake { });
+
       haddockProject = perSystem (projectFor false);
 
       packages = perSystem (system: self.flake.${system}.packages // {
@@ -611,17 +639,17 @@
       checks = perSystem
         (system:
           self.flake.${system}.checks
-            // {
+          // {
             formatCheck = formatCheckFor system;
             benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
-            test-ghc9-nodev = (nixpkgsFor system).runCommand "test-nodev" { } "${self.apps.${system}.test.program} | tee $out";
-            test-ghc9-dev = (nixpkgsFor system).runCommand "test-dev" { } "${self.apps.${system}.test-dev.program} | tee $out";
-          }) // {
-        # We don't run the tests, we just check that it builds.
-        "ghc810-plutarch:lib:plutarch" = flakeMatrix.ghc810.nodev.packages."plutarch:lib:plutarch";
-        "ghc810-plutarch:lib:plutarch-test" = flakeMatrix.ghc810.nodev.packages."plutarch-test:lib:plutarch-test";
-        "ghc810-plutarch:lib:plutarch-benchmark" = flakeMatrix.ghc810.nodev.packages."plutarch-benchmark:lib:plutarch-benchmark";
-      };
+            test-ghc9-nodev = flakeApp2Derivation system "test-ghc9-nodev";
+            test-ghc9-dev = flakeApp2Derivation system "test-ghc9-dev";
+            test-ghc810-nodev = flakeApp2Derivation system "test-ghc810-nodev";
+            test-ghc810-dev = flakeApp2Derivation system "test-ghc810-dev";
+            "ghc810-plutarch:lib:plutarch" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch:lib:plutarch";
+            "ghc810-plutarch:lib:plutarch-test" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch-test:lib:plutarch-test";
+            "ghc810-plutarch:lib:plutarch-benchmark" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch-benchmark:lib:plutarch-benchmark";
+          });
       # Because `nix flake check` does not work with haskell.nix (due to IFD), 
       # we provide this attribute for running the checks locally, using:
       #   nix build .#check.x86_64-linux
@@ -638,22 +666,11 @@
       apps = perSystem (system:
         self.flake.${system}.apps
         // {
-          test = {
-            type = "app";
-            program = checkedShellScript system "plutatch-test-nondev"
-              ''
-                cd ${self}/plutarch-test
-                ${self.flakeMatrix.ghc9.nodev.${system}.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test;
-              '';
-          };
-          test-dev = {
-            type = "app";
-            program = checkedShellScript system "plutarch-test-dev"
-              ''
-                cd ${self}/plutarch-test
-                ${self.flakeMatrix.ghc9.dev.${system}.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test
-              '';
-          };
+          test-ghc9-nodev = plutarchTestApp system "ghc9-nodev" self.projectMatrix.ghc9.nodev;
+          test-ghc9-dev = plutarchTestApp system "ghc9-dev" self.projectMatrix.ghc9.dev;
+          test-ghc810-nodev = plutarchTestApp system "ghc810-nodev" self.projectMatrix.ghc810.nodev;
+          test-ghc810-dev = plutarchTestApp system "ghc810-dev" self.projectMatrix.ghc810.dev;
+          # TODO: The bellow apps will be removed eventually.
           benchmark = {
             type = "app";
             program = "${self.flake.${system}.packages."plutarch-benchmark:bench:benchmark"}/bin/benchmark";
