@@ -101,7 +101,7 @@ import Data.Bifunctor (Bifunctor (first))
 import Data.Coerce (coerce)
 
 import Codec.Serialise (Serialise, deserialiseOrFail)
-import Data.ByteString (fromStrict)
+import Data.ByteString.Lazy (fromStrict)
 import Data.Text (Text)
 
 import Data.Aeson.Extras (encodeSerialise, tryDecode)
