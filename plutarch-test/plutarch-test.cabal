@@ -94,14 +94,14 @@ common deps
 
 library
   import: c, deps
-  hs-source-dirs: src
+  hs-source-dirs: .
   exposed-modules: Plutarch.Test
 
 executable plutarch-test
   import:             c, deps
   type:               exitcode-stdio-1.0
   main-is:            Main.hs
-  hs-source-dirs:     src
+  hs-source-dirs:     .
 
   if impl(ghc >= 9.0)
     other-modules:
