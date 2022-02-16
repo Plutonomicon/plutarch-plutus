@@ -86,7 +86,6 @@ common deps
     , plutus-ledger-api
     , plutus-tx
     , tasty
-    , tasty-golden
     , tasty-hunit
     , tasty-quickcheck
     , text

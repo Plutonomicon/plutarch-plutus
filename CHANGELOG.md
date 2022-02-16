@@ -46,8 +46,6 @@
 
   `validatorHash`, `mintingPolicySymbol` & `stakeValidatorHash` to obtain script hashes.
 
-  `tryDecodeHex` & `encodeSerialise` (re-exported from `Data.Aeson.Extras`), for encoding & decoding Scripts and other Plutus values as hex.
-
   Module: `Plutarch.V1.Api`
 
   See: `Plutarch.ScriptsSpec` in `plutarch-test` for usage examples.

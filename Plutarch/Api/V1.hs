@@ -20,13 +20,9 @@ module Plutarch.Api.V1 (
   mkValidator,
   mkStakeValidator,
   mkMintingPolicy,
-  tryDecodeHex,
   type PValidator,
   type PMintingPolicy,
   type PStakeValidator,
-
-  -- ** Re-export
-  encodeSerialise,
 
   -- ** Value
   Value.PValue (PValue),
@@ -97,14 +93,8 @@ import qualified Plutarch.Api.V1.Tuple as Tuple
 import qualified Plutarch.Api.V1.Tx as Tx
 import qualified Plutarch.Api.V1.Value as Value
 
-import Data.Bifunctor (Bifunctor (first))
 import Data.Coerce (coerce)
 
-import Codec.Serialise (Serialise, deserialiseOrFail)
-import Data.ByteString.Lazy (fromStrict)
-import Data.Text (Text)
-
-import Data.Aeson.Extras (encodeSerialise, tryDecode)
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified Plutus.V1.Ledger.Scripts as Plutus
 
@@ -151,9 +141,3 @@ mintingPolicySymbol = coerce scriptHash
 -- | Hash a StakeValidator, with the correct prefix for Plutus V1
 stakeValidatorHash :: Plutus.StakeValidator -> Plutus.StakeValidatorHash
 stakeValidatorHash = coerce scriptHash
-
--- | Deserialise a value via a hex-encoding
-tryDecodeHex :: forall a. (Serialise a) => Text -> Either String a
-tryDecodeHex tx = do
-  tryDecode tx
-    >>= first show . deserialiseOrFail @a . fromStrict
