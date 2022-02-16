@@ -49,6 +49,23 @@
         "type": "github"
       }
     },
+    "autodocodec": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1644358110,
+        "narHash": "sha256-X1TNZlmO2qDFk3OL4Z1v/gzvd3ouoACAiMweutsYek4=",
+        "owner": "srid",
+        "repo": "autodocodec",
+        "rev": "42b42a7407f33c6c74fa4e8c84906aebfed28daf",
+        "type": "github"
+      },
+      "original": {
+        "owner": "srid",
+        "ref": "ghc921",
+        "repo": "autodocodec",
+        "type": "github"
+      }
+    },
     "cabal-32": {
       "flake": false,
       "locked": {
@@ -848,6 +865,7 @@
       "inputs": {
         "Shrinker": "Shrinker",
         "Win32-network": "Win32-network",
+        "autodocodec": "autodocodec",
         "cardano-base": "cardano-base",
         "cardano-crypto": "cardano-crypto",
         "cardano-prelude": "cardano-prelude",
@@ -866,8 +884,28 @@
         ],
         "plutus": "plutus",
         "protolude": "protolude",
+        "safe-coloured-text": "safe-coloured-text",
         "sized-functors": "sized-functors",
-        "th-extras": "th-extras"
+        "sydtest": "sydtest",
+        "th-extras": "th-extras",
+        "validity": "validity"
+      }
+    },
+    "safe-coloured-text": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1644357337,
+        "narHash": "sha256-sXSKw8m6O9K/H2BBiYqO5e4sJIo+9UP+UvEukRn28d8=",
+        "owner": "srid",
+        "repo": "safe-coloured-text",
+        "rev": "034f3612525568b422e0c62b52417d77b7cf31c2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "srid",
+        "ref": "ghc921",
+        "repo": "safe-coloured-text",
+        "type": "github"
       }
     },
     "sized-functors": {
@@ -935,6 +973,23 @@
         "type": "github"
       }
     },
+    "sydtest": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1644358460,
+        "narHash": "sha256-1ZxTLL5YVxktyHqfMywwsNGx5nxNMPXnq33QI6BcvUI=",
+        "owner": "srid",
+        "repo": "sydtest",
+        "rev": "5b572105c30f79c5e20637c6af4eedf39e0ac85a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "srid",
+        "ref": "ghc921",
+        "repo": "sydtest",
+        "type": "github"
+      }
+    },
     "th-extras": {
       "flake": false,
       "locked": {
@@ -949,6 +1004,23 @@
         "owner": "mokus0",
         "repo": "th-extras",
         "rev": "787ed752c1e5d41b5903b74e171ed087de38bffa",
+        "type": "github"
+      }
+    },
+    "validity": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1644358698,
+        "narHash": "sha256-dpMIu08qXMzy8Kilk/2VWpuwIsfqFtpg/3mkwt5pdjA=",
+        "owner": "srid",
+        "repo": "validity",
+        "rev": "f7982549b95d0ab727950dc876ca06b1862135ba",
+        "type": "github"
+      },
+      "original": {
+        "owner": "srid",
+        "ref": "ghc921",
+        "repo": "validity",
         "type": "github"
       }
     }

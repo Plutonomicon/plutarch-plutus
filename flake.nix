@@ -48,6 +48,16 @@
   inputs.haskell-language-server.url = "github:haskell/haskell-language-server";
   inputs.haskell-language-server.flake = false;
 
+  # These use the PRs from https://github.com/NorfairKing/sydtest/issues/35
+  inputs.sydtest.url = "github:srid/sydtest/ghc921";
+  inputs.sydtest.flake = false;
+  inputs.validity.url = "github:srid/validity/ghc921";
+  inputs.validity.flake = false;
+  inputs.safe-coloured-text.url = "github:srid/safe-coloured-text/ghc921";
+  inputs.safe-coloured-text.flake = false;
+  inputs.autodocodec.url = "github:srid/autodocodec/ghc921";
+  inputs.autodocodec.flake = false;
+
   outputs = inputs@{ self, nixpkgs, haskell-nix, plutus, flake-compat, flake-compat-ci, hercules-ci-effects, ... }:
     let
       extraSources = [
@@ -107,6 +117,29 @@
             "plutus-tx"
             "prettyprinter-configurable"
             "word-array"
+          ];
+        }
+        {
+          src = inputs.sydtest;
+          subdirs = [
+            "sydtest"
+            "sydtest-discover"
+            "sydtest-aeson"
+          ];
+        }
+        {
+          src = inputs.validity;
+          subdirs = [
+            "validity"
+            "validity-aeson"
+          ];
+        }
+        {
+          src = inputs.autodocodec;
+          subdirs = [
+            "autodocodec"
+            "autodocodec-schema"
+            "autodocodec-yaml"
           ];
         }
       ];
@@ -423,20 +456,38 @@
           , word-array ^>= 0.1.0.0
       '';
 
-      projectForGhc = ghcName: system:
+      projectForGhc = ghcName: flagDevelopment: system:
         let pkgs = nixpkgsFor system; in
         let pkgs' = nixpkgsFor' system; in
-        (nixpkgsFor system).haskell-nix.cabalProject' ({
+        let pkgSet = (nixpkgsFor system).haskell-nix.cabalProject' ({
           # This is truly a horrible hack but is necessary. We can't disable tests otherwise in haskell.nix.
           src = if ghcName == ghcVersion then ./. else
           pkgs.runCommand "fake-src" { } ''
             cp -rT ${./.} $out
             chmod u+w $out $out/plutarch.cabal
+            # Remove stanzas from .cabal that won't work in GHC 8.10
             sed -i '/-- Everything below this line is deleted for GHC 8.10/,$d' $out/plutarch.cabal
+
+            # Prevent `sydtest-discover` from using GHC9 only modules when building with GHC810
+            # https://github.com/NorfairKing/sydtest/blob/master/sydtest-discover/src/Test/Syd/Discover.hs
+            chmod -R u+w $out/plutarch-test
+            rm -f $out/plutarch-test/src/Plutarch/MonadicSpec.hs
+            rm -f $out/plutarch-test/src/Plutarch/FieldSpec.hs
           '';
           compiler-nix-name = ghcName;
           inherit extraSources;
-          modules = [ (haskellModule system) ];
+          modules = [
+            (haskellModule system)
+            {
+              # Workaround missing support for build-tools:
+              # https://github.com/input-output-hk/haskell.nix/issues/231
+              packages.plutarch-test.components.exes.plutarch-test.build-tools = [
+                pkgSet.hsPkgs.sydtest-discover
+              ];
+              packages.plutarch-test.flags.development = flagDevelopment;
+              packages.plutarch.flags.development = flagDevelopment;
+            }
+          ];
           shell = {
             withHoogle = true;
 
@@ -444,19 +495,36 @@
 
             # We use the ones from Nixpkgs, since they are cached reliably.
             # Eventually we will probably want to build these with haskell.nix.
-            nativeBuildInputs = [ pkgs'.cabal-install pkgs'.hlint pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt ];
+            nativeBuildInputs = [
+              pkgs'.cabal-install
+              pkgs'.hlint
+              pkgs'.haskellPackages.cabal-fmt
+              pkgs'.nixpkgs-fmt
+              pkgSet.hsPkgs.sydtest-discover.components.exes.sydtest-discover
+            ];
 
             inherit tools;
 
             additional = ps: [
               ps.plutus-ledger-api
+
+              # sydtest dependencies
+              ps.sydtest
+              ps.sydtest-discover
+              ps.sydtest-aeson
+              ps.validity
+              ps.validity-aeson
+              ps.autodocodec
+              ps.autodocodec-schema
+              ps.autodocodec-yaml
               #ps.shrinker
               #ps.shrinker-testing
             ];
           };
         } // (if ghcName == ghcVersion then {
           inherit cabalProjectLocal;
-        } else { }));
+        } else { })); in
+        pkgSet;
 
       projectFor = projectForGhc ghcVersion;
       projectFor810 = projectForGhc "ghc8107";
@@ -495,7 +563,7 @@
           #     builtins.attrValues self.project.${system}.hsPkgs
           #   )
           # );
-          hspkgs = builtins.map (x: self.project.${system}.hsPkgs.${x}.components.library) [
+          hspkgs = builtins.map (x: self.haddockProject.${system}.hsPkgs.${x}.components.library) [
             "plutarch"
             "plutus-core"
             "plutus-tx"
@@ -516,29 +584,72 @@
             '';
           };
         };
+
+      # Checks the shell script using ShellCheck
+      checkedShellScript = system: name: text:
+        ((nixpkgsFor system).writeShellApplication {
+          inherit name text;
+        }) + "/bin/${name}";
+
+      # Create a flake app to run Plutarch tests, under the given project.
+      plutarchTestApp = system: name: project:
+        let
+          flake = project.${system}.flake { };
+        in
+        {
+          type = "app";
+          program = checkedShellScript system "plutatch-test-${name}"
+            ''
+              cd ${self}/plutarch-test
+              ${flake.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test;
+            '';
+        };
+
+      # Take a flake app (identified as the key in the 'apps' set), and return a
+      # derivation that runs it in the compile phase.
+      # 
+      # In effect, this allows us to run an 'app' as part of the build process (eg: in CI).
+      flakeApp2Derivation = system: appName:
+        (nixpkgsFor system).runCommand appName { } "${self.apps.${system}.${appName}.program} | tee $out";
     in
     {
       inherit extraSources cabalProjectLocal haskellModule tools;
 
-      project = perSystem projectFor;
-      project810 = perSystem projectFor810;
-      flake = perSystem (system: (projectFor system).flake { });
-      flake810 = perSystem (system: (projectFor810 system).flake { });
+      # Build matrix. Plutarch is built against different GHC versions, and 'development' flag.
+      projectMatrix = {
+        ghc9 = {
+          nodev = perSystem (system: (projectFor false system));
+          dev = perSystem (system: (projectFor true system));
+        };
+        ghc810 = {
+          nodev = perSystem (system: (projectFor810 false system));
+          dev = perSystem (system: (projectFor810 true system));
+        };
+      };
+
+      # Default build configuration.
+      project = self.projectMatrix.ghc9.nodev;
+      flake = perSystem (system: self.project.${system}.flake { });
+
+      haddockProject = perSystem (projectFor false);
 
       packages = perSystem (system: self.flake.${system}.packages // {
         haddock = haddock system;
       });
-      checks = perSystem (system:
-        let ghc810 = ((projectFor810 system).flake { }).packages; # We don't run the tests, we just check that it builds.
-        in
-        self.flake.${system}.checks
-        // {
-          formatCheck = formatCheckFor system;
-          benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
-        } // {
-          "ghc810-plutarch:lib:plutarch" = ghc810."plutarch:lib:plutarch";
-        }
-      );
+      checks = perSystem
+        (system:
+          self.flake.${system}.checks
+          // {
+            formatCheck = formatCheckFor system;
+            benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
+            test-ghc9-nodev = flakeApp2Derivation system "test-ghc9-nodev";
+            test-ghc9-dev = flakeApp2Derivation system "test-ghc9-dev";
+            test-ghc810-nodev = flakeApp2Derivation system "test-ghc810-nodev";
+            test-ghc810-dev = flakeApp2Derivation system "test-ghc810-dev";
+            "ghc810-plutarch:lib:plutarch" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch:lib:plutarch";
+            "ghc810-plutarch:lib:plutarch-test" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch-test:lib:plutarch-test";
+            "ghc810-plutarch:lib:plutarch-benchmark" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch-benchmark:lib:plutarch-benchmark";
+          });
       # Because `nix flake check` does not work with haskell.nix (due to IFD), 
       # we provide this attribute for running the checks locally, using:
       #   nix build .#check.x86_64-linux
@@ -555,6 +666,11 @@
       apps = perSystem (system:
         self.flake.${system}.apps
         // {
+          test-ghc9-nodev = plutarchTestApp system "ghc9-nodev" self.projectMatrix.ghc9.nodev;
+          test-ghc9-dev = plutarchTestApp system "ghc9-dev" self.projectMatrix.ghc9.dev;
+          test-ghc810-nodev = plutarchTestApp system "ghc810-nodev" self.projectMatrix.ghc810.nodev;
+          test-ghc810-dev = plutarchTestApp system "ghc810-dev" self.projectMatrix.ghc810.dev;
+          # TODO: The bellow apps will be removed eventually.
           benchmark = {
             type = "app";
             program = "${self.flake.${system}.packages."plutarch-benchmark:bench:benchmark"}/bin/benchmark";

@@ -1,0 +1,2 @@
+por (program 1.0.0 ((\i0 -> \i0 -> force ifThenElse i2 (delay True) i1) True (delay error)))
+op (program 1.0.0 (force ((\i0 -> \i0 -> force ifThenElse i2 (delay True) i1) True (delay error))))
