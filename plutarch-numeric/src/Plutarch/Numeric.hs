@@ -1,5 +1,6 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE Trustworthy #-}
+{-# LANGUAGE TypeFamilies #-}
 
 {- | Module: Plutarch.Numeric
  Copyright: (C) MLabs 2022
@@ -601,15 +602,17 @@ instance Distributive (Term s PNZNatural) where
 -}
 class
   (Distributive a, AdditiveMonoid a, MultiplicativeMonoid nz) =>
-  Euclidean a nz res
+  Euclidean a nz
     | nz -> a
     , a -> nz
-    , nz -> res
   where
   {-# MINIMAL removeZero, zeroExtend, quot, rem, fromNatural #-}
 
   -- | @since 1.0
-  removeZero :: a -> res
+  type RemovalResult nz :: Type
+
+  -- | @since 1.0
+  removeZero :: a -> RemovalResult nz
 
   -- | @since 1.0
   zeroExtend :: nz -> a
@@ -634,7 +637,8 @@ class
   fromNatural :: Natural -> a
 
 -- | @since 1.0
-instance Euclidean Integer NZInteger (Maybe NZInteger) where
+instance Euclidean Integer NZInteger where
+  type RemovalResult NZInteger = Maybe NZInteger
   {-# INLINEABLE removeZero #-}
   removeZero i
     | i == 0 = Nothing
@@ -653,7 +657,8 @@ instance Euclidean Integer NZInteger (Maybe NZInteger) where
   fromNatural (Nat.Natural i) = i
 
 -- | @since 1.0
-instance Euclidean Natural NZNatural (Maybe NZNatural) where
+instance Euclidean Natural NZNatural where
+  type RemovalResult NZNatural = Maybe NZNatural
   {-# INLINEABLE removeZero #-}
   removeZero (Nat.Natural i)
     | i == 0 = Nothing
@@ -672,7 +677,8 @@ instance Euclidean Natural NZNatural (Maybe NZNatural) where
   fromNatural = id
 
 -- | @since 1.0
-instance Euclidean (Term s PInteger) (Term s PNZInteger) (Term s (PMaybe PNZInteger)) where
+instance Euclidean (Term s PInteger) (Term s PNZInteger) where
+  type RemovalResult (Term s PNZInteger) = Term s (PMaybe PNZInteger)
   {-# INLINEABLE removeZero #-}
   removeZero t = pif (t #== zero) (pcon PNothing) (pcon . PJust . punsafeCoerce $ t)
   {-# INLINEABLE zeroExtend #-}
@@ -689,7 +695,8 @@ instance Euclidean (Term s PInteger) (Term s PNZInteger) (Term s (PMaybe PNZInte
   fromNatural (Nat.Natural i) = pconstant i
 
 -- | @since 1.0
-instance Euclidean (Term s PNatural) (Term s PNZNatural) (Term s (PMaybe PNZInteger)) where
+instance Euclidean (Term s PNatural) (Term s PNZNatural) where
+  type RemovalResult (Term s PNZNatural) = Term s (PMaybe PNZNatural)
   {-# INLINEABLE removeZero #-}
   removeZero t = pif (t #== zero) (pcon PNothing) (pcon . PJust . punsafeCoerce $ t)
   {-# INLINEABLE zeroExtend #-}
@@ -707,11 +714,10 @@ instance Euclidean (Term s PNatural) (Term s PNZNatural) (Term s (PMaybe PNZInte
 
 -- | @since 1.0
 class
-  (AdditiveGroup a, Euclidean a nz f) =>
-  Arithmetical a nz f
+  (AdditiveGroup a, Euclidean a nz) =>
+  Arithmetical a nz
     | nz -> a
     , a -> nz
-    , nz -> f
   where
   {-# MINIMAL div, mod, fromInteger, fromNZInteger #-}
 
@@ -734,11 +740,10 @@ class
 
 -- | @since 1.0
 class
-  (Euclidean a nz f) =>
-  Divisible a nz f
+  (Euclidean a nz) =>
+  Divisible a nz
     | nz -> a
     , a -> nz
-    , nz -> f
   where
   {-# MINIMAL reciprocal #-}
 
@@ -754,7 +759,7 @@ class
   powInteger x i = getMultiplicative . gtimes i . Multiplicative $ x
 
 -- | @since 1.0
-instance (Divisible a nz f) => Group (Multiplicative nz) where
+instance (Divisible a nz) => Group (Multiplicative nz) where
   {-# INLINEABLE inverse #-}
   inverse (Multiplicative x) = Multiplicative . reciprocal $ x
   {-# INLINEABLE gtimes #-}

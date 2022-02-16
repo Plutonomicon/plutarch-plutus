@@ -92,8 +92,8 @@ product = getMultiplicative . foldMap Multiplicative
  @since 1.0
 -}
 sumNZ ::
-  forall (a :: Type) (f :: Type -> Type) (nz :: Type) (res :: Type).
-  (Foldable f, Euclidean a nz res) =>
+  forall (a :: Type) (f :: Type -> Type) (nz :: Type).
+  (Foldable f, Euclidean a nz) =>
   f nz ->
   a
 sumNZ = foldl' (+^) zero
@@ -103,8 +103,8 @@ sumNZ = foldl' (+^) zero
  @since 1.0
 -}
 productNZ ::
-  forall (a :: Type) (f :: Type -> Type) (nz :: Type) (res :: Type).
-  (Foldable f, Euclidean a nz res) =>
+  forall (a :: Type) (f :: Type -> Type) (nz :: Type).
+  (Foldable f, Euclidean a nz) =>
   f nz ->
   a
 productNZ = foldl' (*^) one
@@ -112,8 +112,8 @@ productNZ = foldl' (*^) one
 -- | @since 1.0
 {-# INLINEABLE (^-^) #-}
 (^-^) ::
-  forall (a :: Type) (nz :: Type) (res :: Type).
-  (AdditiveCMM a, Euclidean a nz res) =>
+  forall (a :: Type) (nz :: Type).
+  (AdditiveCMM a, Euclidean a nz) =>
   a ->
   nz ->
   a
