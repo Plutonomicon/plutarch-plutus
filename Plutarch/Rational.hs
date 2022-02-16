@@ -167,10 +167,7 @@ instance Fractional (Term s PRational) where
     phoistAcyclic
       ( plam $ \x ->
           pmatch x $ \(PRational xn xd) ->
-            pif
-              (xn #== 0)
-              (ptraceError "division by 0")
-              (pcon (PRational xd xn))
+            pfailOnZero # xn # (pcon (PRational xd xn))
       )
       # x'
 
@@ -181,7 +178,9 @@ instance Fractional (Term s PRational) where
             #$ pmatch x
             $ \(PRational xn xd) ->
               pmatch y $ \(PRational yn yd) ->
-                pcon (PRational (xn * yd) (xd * yn))
+                plet (xd * yn) $ \den ->
+                  pfailOnZero # den
+                    #$ pcon (PRational (xn * yd) den)
       )
       # x'
       # y'
@@ -189,16 +188,21 @@ instance Fractional (Term s PRational) where
   fromRational r =
     pcon $ PRational (fromInteger $ numerator r) (fromInteger $ denominator r)
 
+pfailOnZero :: Term s (PInteger :--> a :--> a)
+pfailOnZero = phoistAcyclic $
+  plam $ \n x ->
+    pif
+      (n #== 0)
+      (ptraceError "division by 0")
+      x
+
 preduce :: Term s (PRational :--> PRational)
 preduce = phoistAcyclic $
   plam $ \x ->
     pmatch x $ \(PRational xn xd) ->
       plet (pgcd # xn # xd) $ \r ->
         plet (signum xd) $ \s ->
-          pif
-            (xd #== 0)
-            (ptraceError "division by 0")
-            (pcon $ PRational (s * pdiv # xn # r) (s * pdiv # xd # r))
+          (pcon $ PRational (s * pdiv # xn # r) (s * pdiv # xd # r))
 
 pgcd :: Term s (PInteger :--> PInteger :--> PInteger)
 pgcd = phoistAcyclic $
@@ -249,8 +253,6 @@ pround = phoistAcyclic $
                   (pmod # base # 2)
                   (pif (rem #< pdiv # b # 2) 0 1)
               )
-
--- (pdiv # b # 2 + pmod # b # 2 #<= pmod # a # b) 1 0
 
 ptruncate :: Term s (PRational :--> PInteger)
 ptruncate = phoistAcyclic $
