@@ -45,9 +45,12 @@ import Plutarch.Benchmark (benchmarkScript')
 import Plutarch.Bool (PBool (PTrue))
 import Plutarch.Evaluate (evaluateScript)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
+import PlutusCore.Default
 import Replace.Megaparsec
 import qualified Text.Megaparsec as M
 import qualified Text.Megaparsec.Char as M
+import UntypedPlutusCore
+import qualified UntypedPlutusCore as UPLC
 
 {- |
     Like `shouldBe` but but for Plutarch terms
@@ -83,20 +86,38 @@ psucceeds p =
 -}
 printTermDeterministic :: ClosedTerm a -> String
 printTermDeterministic p =
-  rewriteFailMsgToBeDeterministic $ printTerm p
+  printScript $ rewrite $ compile p
+
+rewriteFailMsgToBeDeterministic :: String -> String
+rewriteFailMsgToBeDeterministic =
+  streamEdit ghcPatternMatchMsg id
   where
-    rewriteFailMsgToBeDeterministic =
-      streamEdit ghcPatternMatchMsg id
     ghcPatternMatchMsg :: M.Parsec Void String String
     ghcPatternMatchMsg = do
       -- What's being replaced.
-      void $
-        M.between
-          (M.string "\"Pattern match failure")
-          (M.string "\"")
-          (M.many $ M.anySingleBut '"')
+      s <- M.string "Pattern match failure"
+      void $ M.takeRest
       -- The replacement
-      pure "\"Pattern match failure...\""
+      pure $ s <> "..."
+
+-- TODO: refactor
+rewrite :: Scripts.Script -> Scripts.Script
+rewrite (Scripts.Script (Program ann ver term)) =
+  Scripts.Script (Program ann ver (go term))
+  where
+    go :: UPLC.Term DeBruijn DefaultUni DefaultFun () -> UPLC.Term DeBruijn DefaultUni DefaultFun ()
+    go = \case
+      (Apply ann (Force fann (Builtin ann' builtin)) (Constant ann1 (Some (ValueOf DefaultUniString s)))) ->
+        (Apply ann (Force fann (Builtin ann' builtin)) (Constant ann1 (someValueOf DefaultUniString $ T.pack . rewriteFailMsgToBeDeterministic . T.unpack $ s)))
+      LamAbs ann name t ->
+        LamAbs ann name (go t)
+      Apply ann t1 t2 ->
+        Apply ann (go t1) (go t2)
+      Force ann t ->
+        Force ann (go t)
+      Delay ann t ->
+        Delay ann (go t)
+      x -> x
 
 {- Like `printTermDeterministic` but evaluates the term beforehand.
 
@@ -107,7 +128,7 @@ printTermDeterministic p =
 -}
 printTermEvaluated :: ClosedTerm a -> String
 printTermEvaluated p =
-  case evaluateScript (compile p) of
+  case evaluateScript (rewrite $ compile p) of
     Left _ -> printTermDeterministic perror
     Right (_, _, x) -> printScript x
 
@@ -212,7 +233,7 @@ goldens pg ps = do
       it "bench" $
         pureGoldenTextFile ("goldens" </> name <> ".bench.golden") $
           multiGolden ps $ \p ->
-            TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compile p
+            TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ rewrite $ compile p
 
 multiGolden :: forall a. [(String, a)] -> (a -> T.Text) -> Text
 multiGolden xs f =
