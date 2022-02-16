@@ -608,7 +608,10 @@ class
   where
   {-# MINIMAL removeZero, zeroExtend, quot, rem, fromNatural #-}
 
-  -- | @since 1.0
+  -- | This is \'morally\' @'Maybe' nz@. We need this rather awkward hack
+  -- because of the way 'PMaybe' works in Plutarch.
+  --
+  -- @since 1.0
   type RemovalResult nz :: Type
 
   -- | @since 1.0
@@ -712,7 +715,36 @@ instance Euclidean (Term s PNatural) (Term s PNZNatural) where
   {-# INLINEABLE fromNatural #-}
   fromNatural = pconstant
 
--- | @since 1.0
+-- | A 'Euclidean' extended with a notion of signedness (and subtraction). This
+-- is /actually/ a Euclidean domain (and thus, a ring also).
+--
+-- = Laws
+--
+-- 'div' and 'mod' must be extensions of the description of Euclidean division
+-- provided by 'quot' and 'rem'. Thus:
+--
+-- * @'div' ('abs' x) ('abs' y)@ @=@ @'quot' ('abs' x) ('abs' y)@
+-- * @'mod' ('abs' x) ('abs' y)@ @=@ @'rem' ('abs' x) ('abs' y)@
+-- * If @'div' x y = q@ and @'mod' x y = r@, then @(q '*^' y) '+' r = x@.
+--
+-- /TODO:/ Spell out precisely how 'div' and 'mod' differ on negatives.
+-- 
+-- Furthermore, @'removeZero'@ and @'zeroExtend'@ must be consistent with
+-- additive inverses:
+--
+-- * @x '-^' y@ @=@ @x '-' 'zeroExtend' y@
+--
+-- Lastly, 'fromInteger' must describe the unique ring homomorphism from
+-- 'Integer' to the instance, which must be an extension of the unique semiring
+-- homomorphism described by 'fromNatural'. 
+--
+-- /TODO:/ Similarly to previous, needs elaboration in the absence of \'known
+-- positive\' types.
+--
+-- /TODO:/ Spell out what exactly we mean by 'fromNZInteger' - what kind of
+-- homomorphism is that?
+--
+-- @since 1.0
 class
   (AdditiveGroup a, Euclidean a nz) =>
   Arithmetical a nz
@@ -737,6 +769,32 @@ class
 
   -- | @since 1.0
   fromNZInteger :: NZInteger -> nz
+
+-- | @since 1.0
+instance Arithmetical Integer NZInteger where
+  {-# INLINEABLE (-^) #-}
+  x -^ NZI.NZInteger y = x Prelude.- y
+  {-# INLINEABLE div #-}
+  div x (NZI.NZInteger y) = Prelude.div x y
+  {-# INLINEABLE mod #-}
+  mod x (NZI.NZInteger y) = Prelude.mod x y
+  {-# INLINEABLE fromInteger #-}
+  fromInteger = id
+  {-# INLINEABLE fromNZInteger #-}
+  fromNZInteger = id
+
+-- | @since 1.0
+instance Arithmetical (Term s PInteger) (Term s PNZInteger) where
+  {-# INLINEABLE (-^) #-}
+  x -^ y = punsafeBuiltin PLC.SubtractInteger # x # y
+  {-# INLINEABLE div #-}
+  div x y = punsafeBuiltin PLC.DivideInteger # x # y
+  {-# INLINEABLE mod #-}
+  mod x y = punsafeBuiltin PLC.ModInteger # x # y
+  {-# INLINEABLE fromInteger #-}
+  fromInteger = pconstant
+  {-# INLINEABLE fromNZInteger #-}
+  fromNZInteger = pconstant
 
 -- | @since 1.0
 class
