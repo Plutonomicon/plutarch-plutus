@@ -100,8 +100,8 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 - [PData](./TYPES.md#pdata)
 
 # Examples
-- [Basic examples](https://github.com/Plutonomicon/plutarch/tree/master/examples/BASIC.md)
-- [Validator & Minting policies](https://github.com/Plutonomicon/plutarch/tree/master/examples/VALIDATOR.md)
+- [Basic examples](./examples/BASIC.md)
+- [Validator & Minting policies](./examples/VALIDATOR.md)
 
 Also see: [examples](https://github.com/Plutonomicon/plutarch/tree/master/examples).
 
