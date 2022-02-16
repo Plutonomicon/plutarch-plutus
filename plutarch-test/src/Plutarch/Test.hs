@@ -20,13 +20,12 @@ module Plutarch.Test (
   PlutarchGolden (All, Bench, PrintTerm),
 ) where
 
-import Control.Monad (void, when)
+import Control.Monad (when)
 import qualified Data.Aeson.Text as Aeson
 import Data.Kind (Type)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
-import Data.Void (Void)
 import System.FilePath
 import Test.Syd (
   Expectation,
@@ -44,13 +43,8 @@ import Plutarch
 import Plutarch.Benchmark (benchmarkScript')
 import Plutarch.Bool (PBool (PTrue))
 import Plutarch.Evaluate (evaluateScript)
+import Plutarch.Test.Deterministic (compileD)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
-import PlutusCore.Default
-import Replace.Megaparsec
-import qualified Text.Megaparsec as M
-import qualified Text.Megaparsec.Char as M
-import UntypedPlutusCore
-import qualified UntypedPlutusCore as UPLC
 
 {- |
     Like `shouldBe` but but for Plutarch terms
@@ -81,56 +75,17 @@ psucceeds p =
     Left _ -> expectationFailure $ "Term failed to evaluate"
     Right _ -> pure ()
 
-{- Like `printTerm` but eliminates non-deterministic parts in UPLC.
-
--}
-printTermDeterministic :: ClosedTerm a -> String
-printTermDeterministic p =
-  printScript $ rewrite $ compile p
-
-rewriteFailMsgToBeDeterministic :: String -> String
-rewriteFailMsgToBeDeterministic =
-  streamEdit ghcPatternMatchMsg id
-  where
-    ghcPatternMatchMsg :: M.Parsec Void String String
-    ghcPatternMatchMsg = do
-      -- What's being replaced.
-      s <- M.string "Pattern match failure"
-      void $ M.takeRest
-      -- The replacement
-      pure $ s <> "..."
-
--- TODO: refactor
-rewrite :: Scripts.Script -> Scripts.Script
-rewrite (Scripts.Script (Program ann ver term)) =
-  Scripts.Script (Program ann ver (go term))
-  where
-    go :: UPLC.Term DeBruijn DefaultUni DefaultFun () -> UPLC.Term DeBruijn DefaultUni DefaultFun ()
-    go = \case
-      (Apply ann (Force fann (Builtin ann' builtin)) (Constant ann1 (Some (ValueOf DefaultUniString s)))) ->
-        (Apply ann (Force fann (Builtin ann' builtin)) (Constant ann1 (someValueOf DefaultUniString $ T.pack . rewriteFailMsgToBeDeterministic . T.unpack $ s)))
-      LamAbs ann name t ->
-        LamAbs ann name (go t)
-      Apply ann t1 t2 ->
-        Apply ann (go t1) (go t2)
-      Force ann t ->
-        Force ann (go t)
-      Delay ann t ->
-        Delay ann (go t)
-      x -> x
-
-{- Like `printTermDeterministic` but evaluates the term beforehand.
+{- Like `evaluateScript` but doesn't fail. Also returns `Script`.
 
   All evaluation failures are treated as equivalent to a `perror`. Plutus does
   not provide an accurate way to tell if the program evalutes to `Error` or not;
   see https://github.com/input-output-hk/plutus/issues/4270
-
 -}
-printTermEvaluated :: ClosedTerm a -> String
-printTermEvaluated p =
-  case evaluateScript (rewrite $ compile p) of
-    Left _ -> printTermDeterministic perror
-    Right (_, _, x) -> printScript x
+evaluateScriptAlways :: Scripts.Script -> Scripts.Script
+evaluateScriptAlways script =
+  case evaluateScript script of
+    Left _ -> compile perror
+    Right (_, _, x) -> x
 
 {- | Asserts that the term evaluates successfully with the given trace sequence
 
@@ -223,17 +178,17 @@ goldens pg ps = do
       it "uplc" $
         pureGoldenTextFile ("goldens" </> name <> ".uplc.golden") $
           multiGolden ps $ \p ->
-            T.pack $ printTermDeterministic p
+            T.pack $ printScript $ compileD p
       it "uplc.eval" $
-        let evaluateds = flip fmap ps $ \(s, p) -> (s, printTermEvaluated p)
-         in pureGoldenTextFile ("goldens" </> name <> ".uplc.eval.golden") $
-              multiGolden evaluateds T.pack
+        pureGoldenTextFile ("goldens" </> name <> ".uplc.eval.golden") $
+          multiGolden ps $ \p ->
+            T.pack $ printScript $ evaluateScriptAlways $ compileD p
     -- Golden test for Plutus benchmarks
     when (hasBenchGolden pg) $
       it "bench" $
         pureGoldenTextFile ("goldens" </> name <> ".bench.golden") $
           multiGolden ps $ \p ->
-            TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ rewrite $ compile p
+            TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compileD p
 
 multiGolden :: forall a. [(String, a)] -> (a -> T.Text) -> Text
 multiGolden xs f =

@@ -98,6 +98,7 @@ library
   import:          c, deps
   hs-source-dirs:  src
   exposed-modules: Plutarch.Test
+  other-modules:   Plutarch.Test.Deterministic
 
 executable plutarch-test
   import:         c, deps
@@ -123,6 +124,7 @@ executable plutarch-test
     Plutarch.RecursionSpec
     Plutarch.StringSpec
     Plutarch.Test
+    Plutarch.Test.Deterministic
     Plutarch.TraceSpec
     Plutarch.UnitSpec
     Spec
