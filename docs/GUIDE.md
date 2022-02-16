@@ -71,6 +71,7 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 - [`PIsData`](./TYPECLASSES.md#pisdata)
 - [`PConstant` & `PLift`](./TYPECLASSES.md#pconstant--plift)
   - [Implementing `PConstant` & `PLift`](./TYPECLASSES.md#implementing-pconstant--plift)
+  - [Implementing `PConstant` & `PLift` for types with type variables (generic types)](./TYPECLASSES.md#implementing-pconstant--plift-for-types-with-type-variables-generic-types)
 - [`PlutusType`, `PCon`, and `PMatch`](./TYPECLASSES.md#plutustype-pcon-and-pmatch)
   - [Implementing `PlutusType` for your own types (Scott Encoding)](./TYPECLASSES.md#implementing-plutustype-for-your-own-types-scott-encoding)
   - [Implementing `PlutusType` for your own types (`Data` Encoding)](./TYPECLASSES.md#implementing-plutustype-for-your-own-types-data-encoding)
