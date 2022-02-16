@@ -78,11 +78,13 @@ common deps
     , bytestring
     , filepath
     , generics-sop
+    , megaparsec
     , plutarch
     , plutarch-benchmark
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
+    , replace-megaparsec
     , sydtest
     , sydtest-discover
     , tasty
