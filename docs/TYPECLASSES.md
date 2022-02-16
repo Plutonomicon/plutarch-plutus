@@ -100,7 +100,13 @@ pconstant :: PLift p => PLifted p -> Term s p
 
 plift :: (PLift p, HasCallStack) => ClosedTerm p -> PLifted p
 ```
-> Aside: `PLifted p` represents the Haskell synonym to the Plutarch type, `p`. Similarly, there is also `PConstanted h` - which represents the Plutarch synonym corresponding to the Haskell type, `h`.
+These typeclasses also bestow the associated type families:
+```hs
+type PLifted :: PType -> Type
+
+type PConstanted :: Type -> PType
+```
+These are meant to be inverse type families of each other. In particular, `PLifted p` represents the Haskell synonym of the Plutarch type, `p`. Similarly, `PConstanted h` represents the Plutarch type corresponding to the Haskell type, `h`.
 
 `pconstant` lets you build a Plutarch value from its corresponding Haskell synonym. For example, the haskell synonym of [`PBool`](./TYPES.md#pbool) is [`Bool`](https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Bool.html#t:Bool).
 ```hs
