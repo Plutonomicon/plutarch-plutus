@@ -76,7 +76,6 @@ common deps
     , aeson >= 2.0
     , base
     , bytestring
-    , transformers
     , sydtest
     , sydtest-discover
     , filepath
@@ -86,15 +85,12 @@ common deps
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
-    , rank2classes        >=1.4.4
     , tasty
     , tasty-golden
     , tasty-hunit
     , tasty-quickcheck
     , text
     , transformers
-
-
 
 library
   import: c, deps
@@ -106,16 +102,16 @@ executable plutarch-test
   type:               exitcode-stdio-1.0
   main-is:            Main.hs
   hs-source-dirs:     src
-  default-extensions:
-    OverloadedRecordDot
-    QualifiedDo
 
+  if impl(ghc >= 9.0)
+    other-modules:
+      Plutarch.MonadicSpec
+      Plutarch.FieldSpec
   other-modules:
     Spec
     Plutarch.ApiSpec
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
-    Plutarch.FieldSpec
     Plutarch.IntegerSpec
     Plutarch.ListSpec
     Plutarch.TraceSpec

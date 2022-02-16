@@ -1,6 +1,4 @@
-{-# LANGUAGE ImpredicativeTypes #-}
-
-module Plutarch.ApiSpec (spec) where
+module Plutarch.ApiSpec (spec, ctx) where
 
 import Test.Syd
 import Test.Tasty.HUnit
@@ -10,9 +8,17 @@ import Plutus.V1.Ledger.Api
 import qualified Plutus.V1.Ledger.Interval as Interval
 import qualified Plutus.V1.Ledger.Value as Value
 
-import Plutarch.Api.V1
+import Plutarch.Api.V1 (
+  PCredential,
+  PCurrencySymbol,
+  PPubKeyHash,
+  PScriptContext,
+  PScriptPurpose (PSpending),
+  PTxInInfo,
+  PTxInfo,
+  PValue,
+ )
 import Plutarch.Builtin (pasConstr, pforgetData)
-import qualified Plutarch.Monadic as P
 import Plutarch.Prelude
 import Plutarch.Test
 
@@ -41,14 +47,9 @@ spec = do
     describe "example" $ do
       -- The checkSignatory family of functions implicitly use tracing due to
       -- monadic syntax, and as such we need two sets of tests here.
+      -- See Plutarch.MonadicSpec for GHC9 only syntax.
       describe "signatory" . plutarchDevFlagDescribe $ do
         let aSig :: PubKeyHash = "ab01fe235c"
-        describe "haskell" $ do
-          let p = checkSignatory # pconstant aSig # ctx
-              pe = checkSignatory # pconstant "41" # ctx
-          golden All p
-          it "succeeds" $ psucceeds p
-          it "fails" $ pfails pe
         describe "cont" $ do
           let p = checkSignatoryCont # pconstant aSig # ctx
               pe = checkSignatoryCont # pconstant "41" # ctx
@@ -62,9 +63,7 @@ spec = do
           it "succeeds" $ psucceeds p
           it "fails" $ pfails pe
       describe "getFields" $
-        golden PrintTerm getFields
-      describe "getFields'" $
-        golden PrintTerm getFields'
+        golden All getFields
 
 --------------------------------------------------------------------------------
 
@@ -167,27 +166,15 @@ getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
 getSym =
   plam $ \v -> pfstBuiltin #$ phead # pto (pto v)
 
-checkSignatory :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
-checkSignatory = plam $ \ph ctx' ->
-  pletFields @["txInfo", "purpose"] ctx' $ \ctx -> P.do
-    PSpending _ <- pmatch $ ctx.purpose
-    let signatories = pfield @"signatories" # ctx.txInfo
-    pif
-      (pelem # pdata ph # pfromData signatories)
-      -- Success!
-      (pconstant ())
-      -- Signature not present.
-      perror
-
 -- | `checkSignatory` implemented using `runCont`
 checkSignatoryCont :: forall s. Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatoryCont = plam $ \ph ctx' ->
   pletFields @["txInfo", "purpose"] ctx' $ \ctx -> (`runCont` id) $ do
-    purpose <- cont (pmatch $ ctx.purpose)
+    purpose <- cont (pmatch $ hrecField @"purpose" ctx)
     pure $ case purpose of
       PSpending _ ->
         let signatories :: Term s (PBuiltinList (PAsData PPubKeyHash))
-            signatories = pfield @"signatories" # ctx.txInfo
+            signatories = pfield @"signatories" # hrecField @"txInfo" ctx
          in pif
               (pelem # pdata ph # signatories)
               -- Success!
@@ -201,21 +188,18 @@ checkSignatoryCont = plam $ \ph ctx' ->
 checkSignatoryTermCont :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatoryTermCont = plam $ \ph ctx' -> unTermCont $ do
   ctx <- tcont $ pletFields @["txInfo", "purpose"] ctx'
-  PSpending _ <- tcont (pmatch $ ctx.purpose)
-  let signatories = pfield @"signatories" # ctx.txInfo
-  pure $
-    pif
-      (pelem # pdata ph # pfromData signatories)
-      -- Success!
-      (pconstant ())
-      -- Signature not present.
-      perror
+  tcont (pmatch $ hrecField @"purpose" ctx) >>= \case
+    PSpending _ -> do
+      let signatories = pfield @"signatories" # hrecField @"txInfo" ctx
+      pure $
+        pif
+          (pelem # pdata ph # pfromData signatories)
+          -- Success!
+          (pconstant ())
+          -- Signature not present.
+          perror
+    _ ->
+      pure $ ptraceError "checkSignatoryCont: not a spending tx"
 
 getFields :: Term s (PData :--> PBuiltinList PData)
 getFields = phoistAcyclic $ plam $ \addr -> psndBuiltin #$ pasConstr # addr
-
-getFields' :: Term s (PAddress :--> PDataRecord '["credential" ':= PCredential, "stakingCredential" ':= PMaybeData PStakingCredential])
-getFields' = phoistAcyclic $
-  plam $ \addr -> P.do
-    PAddress addrFields <- pmatch addr
-    addrFields

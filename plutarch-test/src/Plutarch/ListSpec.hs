@@ -2,7 +2,7 @@ module Plutarch.ListSpec (spec) where
 
 import Test.Syd
 
-import Plutarch.List
+import Plutarch.List (pconvertLists, pfoldl')
 import Plutarch.Prelude
 import Plutarch.Test
 

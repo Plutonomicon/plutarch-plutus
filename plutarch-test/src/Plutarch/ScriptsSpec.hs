@@ -57,42 +57,42 @@ spec = do
       golden PrintTerm authValidatorTerm
       it "serialization" $ do
         pureGoldenTextFile
-          (goldenFilePath "goldens" prefix $ Just "plutus")
+          (goldenFilePath "goldens" prefix "plutus")
           validatorEncoded
       it "deserialisation" $
         tryDecodeHex validatorEncoded
           @?= Right authValidatorCompiled
       it "hash" $ do
         pureGoldenTextFile
-          (goldenFilePath "goldens" prefix $ Just "hash")
+          (goldenFilePath "goldens" prefix "hash")
           validatorHashEncoded
     describe "auth_policy" $ do
       prefix <- getGoldenFilePrefix
       golden PrintTerm authPolicyTerm
       it "serialization" $ do
         pureGoldenTextFile
-          (goldenFilePath "goldens" prefix $ Just "plutus")
+          (goldenFilePath "goldens" prefix "plutus")
           policyEncoded
       it "deserialisation" $
         tryDecodeHex policyEncoded
           @?= Right authPolicyCompiled
       it "hash" $
         pureGoldenTextFile
-          (goldenFilePath "goldens" prefix $ Just "hash")
+          (goldenFilePath "goldens" prefix "hash")
           policySymEncoded
     describe "auth_stake_validator" $ do
       prefix <- getGoldenFilePrefix
       golden PrintTerm authStakeValidatorTerm
       it "serialization" $
         pureGoldenTextFile
-          (goldenFilePath "goldens" prefix $ Just "plutus")
+          (goldenFilePath "goldens" prefix "plutus")
           stakeValidatorEncoded
       it "deserialisation" $
         tryDecodeHex stakeValidatorEncoded
           @?= Right authStakeValidatorCompiled
       it "hash" $
         pureGoldenTextFile
-          (goldenFilePath "goldens" prefix $ Just "hash")
+          (goldenFilePath "goldens" prefix "hash")
           stakeValidatorHashEncoded
 
 {- |
