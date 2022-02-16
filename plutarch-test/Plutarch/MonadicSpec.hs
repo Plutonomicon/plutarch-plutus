@@ -32,11 +32,11 @@ spec = do
         describe "haskell" $ do
           let p = checkSignatory # pconstant aSig # ApiSpec.ctx
               pe = checkSignatory # pconstant "41" # ApiSpec.ctx
-          golden All p
+          golden p
           it "succeeds" $ psucceeds p
           it "fails" $ pfails pe
       describe "getFields" $
-        golden All getFields
+        golden getFields
 
 checkSignatory :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatory = plam $ \ph ctx' ->

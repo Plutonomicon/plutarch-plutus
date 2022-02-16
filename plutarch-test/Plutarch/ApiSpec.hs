@@ -26,23 +26,23 @@ spec :: Spec
 spec = do
   describe "api" $ do
     describe "ctx" $ do
-      golden PrintTerm ctx
+      golden ctx
       describe "get" $ do
         describe "txInfo" $ do
           let p = pfromData $ getTxInfo # ctx
-          golden All p
+          golden p
           it "works" $ plift p @?= info
         describe "mint" $ do
           let p = pforgetData $ getMint #$ getTxInfo # ctx
-          golden All p
+          golden p
           it "works" $ plift p @?= toData mint
         describe "credentials" $ do
           let p = getCredentials ctx
-          golden All p
+          golden p
           it "works" $ plift p @?= [toData validator]
         describe "sym" $ do
           let p = pfromData $ getSym #$ pfromData $ getMint #$ getTxInfo # ctx
-          golden All p
+          golden p
           it "works" $ plift p @?= sym
     describe "example" $ do
       -- The checkSignatory family of functions implicitly use tracing due to
@@ -53,17 +53,17 @@ spec = do
         describe "cont" $ do
           let p = checkSignatoryCont # pconstant aSig # ctx
               pe = checkSignatoryCont # pconstant "41" # ctx
-          golden All p
+          golden p
           it "succeeds" $ psucceeds p
           it "fails" $ pfails pe
         describe "termcont" $ do
           let p = checkSignatoryTermCont # pconstant aSig # ctx
               pe = checkSignatoryTermCont # pconstant "41" # ctx
-          golden All p
+          golden p
           it "succeeds" $ psucceeds p
           it "fails" $ pfails pe
       describe "getFields" $
-        golden All getFields
+        golden getFields
 
 --------------------------------------------------------------------------------
 

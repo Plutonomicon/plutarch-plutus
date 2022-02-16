@@ -16,7 +16,7 @@ spec = do
     describe "example" $ do
       -- compilation
       describe "iterateN" $
-        golden All iterateN
+        golden iterateN
       -- tests
       describe "iterateN (10) (+1) 0 == 10" $ do
         let p :: Term s PInteger

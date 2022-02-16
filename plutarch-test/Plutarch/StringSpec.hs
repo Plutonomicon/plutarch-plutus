@@ -10,12 +10,12 @@ spec = do
   describe "str" $ do
     describe "eq" $ do
       let p = "foo" #== pconstant @PString "foo"
-      golden All p
+      golden p
       it "works" $ passert p
     describe "semigroup" $ do
       let s1 = pconstant @PString "foo"
           s2 = pconstant @PString "bar"
-      golden All $ s1 <> s2
+      golden $ s1 <> s2
       it "laws" $ do
         passert $ (mempty <> s1) #== s1
         passert $ s1 #== (mempty <> s1)

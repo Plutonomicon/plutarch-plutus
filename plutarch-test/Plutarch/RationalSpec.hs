@@ -11,13 +11,12 @@ spec = do
   describe "rational" $ do
     describe "literal" $ do
       let p = 0.5 :: Term s PRational
-      golden PrintTerm p
+      golden p
     describe "ops" $ do
       let p1 = (1 / 2 + 1 / 2) :: Term s PRational
           p2 = 1 / 2 - 1 / 3 :: Term s PRational
           p3 = (1 - 3 / 2) * (2 - 5 / 2) :: Term s PRational
       goldens
-        All
         [ ("+", p1)
         , ("-", p2)
         , ("*", p3)
@@ -31,7 +30,7 @@ spec = do
         passert $ 1 / 2 * 2 / 3 * 3 / 4 * 4 / 5 * 5 / 6 #== (1 / 6 :: Term s PRational)
     describe "compare" $ do
       let p1 = 2 / 9 #< (3 / 10 :: Term s PRational)
-      goldens All [("<", p1)]
+      goldens [("<", p1)]
       it "<" $ passert p1
     describe "round" $ do
       -- NOTE: These will eventually be replaced by property tests.

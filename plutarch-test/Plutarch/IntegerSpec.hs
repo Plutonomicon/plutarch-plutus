@@ -11,7 +11,6 @@ spec = do
   describe "int" $ do
     describe "examples" $ do
       goldens
-        All
         [ ("add1", popaque add1)
         , ("add1Hoisted", popaque add1Hoisted)
         , ("example1", popaque example1)

@@ -9,8 +9,8 @@ spec :: Spec
 spec = do
   describe "plam" $ do
     describe "id" $ do
-      golden PrintTerm $ plam (\x -> x)
+      golden $ plam (\x -> x)
     describe "flip.const" $ do
-      golden PrintTerm $ plam (\_ y -> y)
+      golden $ plam (\_ y -> y)
     describe "plet" $ do
-      golden PrintTerm $ plam (\x _ -> plet x $ \_ -> perror)
+      golden $ plam (\x _ -> plet x $ \_ -> perror)

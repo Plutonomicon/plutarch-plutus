@@ -11,7 +11,6 @@ spec = do
   describe "bool" $ do
     describe "pnot" $ do
       goldens
-        All
         [ ("lam", popaque pnot)
         , ("app", popaque $ pnot #$ pcon PTrue)
         ]
@@ -19,7 +18,6 @@ spec = do
       it "false" $ (pnot #$ pcon PFalse) #@?= pcon PTrue
     describe "pand" $ do
       goldens
-        All
         [ ("tf", pcon PTrue #&& pcon PFalse)
         , ("ft", pcon PFalse #&& pcon PTrue)
         , ("tt", pcon PTrue #&& pcon PTrue)
@@ -32,7 +30,7 @@ spec = do
       describe "laziness" $ do
         let p1 = pand # pcon PFalse # pdelay perror
             p2 = pcon PFalse #&& perror
-        goldens All [("pand", popaque p1), ("op", popaque p2)]
+        goldens [("pand", popaque p1), ("op", popaque p2)]
         it "pand" $ passert $ pnot # pforce p1
         it "op" $ passert $ pnot # p2
         it "pand.perror" $ do
@@ -41,7 +39,6 @@ spec = do
           pfails $ pcon PTrue #&& perror
     describe "por" $ do
       goldens
-        All
         [ ("tf", pcon PTrue #|| pcon PFalse)
         , ("ft", pcon PFalse #|| pcon PTrue)
         , ("tt", pcon PTrue #|| pcon PTrue)
@@ -54,7 +51,7 @@ spec = do
       describe "laziness" $ do
         let p1 = por # pcon PTrue # pdelay perror
             p2 = pcon PTrue #|| perror
-        goldens All [("por", popaque p1), ("op", popaque p2)]
+        goldens [("por", popaque p1), ("op", popaque p2)]
         it "por" $ passert $ pforce p1
         it "op" $ passert p2
         it "pand.perror" $ do

@@ -28,11 +28,11 @@ spec = do
     describe "trips" $ do
       -- compilation
       describe "tripSum" $ do
-        golden All tripSum
+        golden tripSum
       describe "getY" $ do
-        golden All getY
+        golden getY
       describe "tripYZ" $ do
-        golden All tripYZ
+        golden tripYZ
       -- tests
       describe "tripSum # tripA = 1000" $ do
         let p = 1000
@@ -49,7 +49,7 @@ spec = do
     describe "rangeFields" $ do
       -- compilation
       describe "rangeFields" $ do
-        golden All rangeFields
+        golden rangeFields
       -- tests
       describe "rangeFields someFields = 11" $ do
         let p = 11
@@ -58,7 +58,7 @@ spec = do
     describe "dropFields" $ do
       -- compilation
       describe "dropFields" $ do
-        golden All dropFields
+        golden dropFields
       -- tests
       describe "dropFields someFields = 17" $ do
         let p = 17
@@ -67,9 +67,9 @@ spec = do
     describe "pletFields" $ do
       -- compilation
       describe "letSomeFields" $ do
-        golden All letSomeFields
+        golden letSomeFields
       describe "nFields" $ do
-        golden All nFields
+        golden nFields
       -- tests
       describe "letSomeFields = letSomeFields'" $ do
         it "works" $ letSomeFields #@?= letSomeFields'

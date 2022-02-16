@@ -12,7 +12,6 @@ spec = do
       let p1 = ptrace "foo" (pcon PUnit)
           p2 = ptrace "foo" (ptrace "bar" (pcon PUnit))
       goldens
-        All
         [ ("one", p1)
         , ("two", p2)
         ]
@@ -22,7 +21,6 @@ spec = do
       let p1 = ptraceIfTrue "foo" (pcon PTrue)
           p2 = ptraceIfTrue "foo" (pcon PFalse)
       goldens
-        All
         [ ("true", p1)
         , ("false", p2)
         ]
@@ -32,7 +30,6 @@ spec = do
       let p1 = ptraceIfFalse "foo" (pcon PTrue)
           p2 = ptraceIfFalse "foo" (pcon PFalse)
       goldens
-        All
         [ ("true", p1)
         , ("false", p2)
         ]

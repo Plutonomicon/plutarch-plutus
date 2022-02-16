@@ -10,17 +10,16 @@ spec :: Spec
 spec = do
   describe "unit" $ do
     describe "pcon" $ do
-      golden All $ pcon PUnit
+      golden $ pcon PUnit
     describe "pmatch" $ do
       let p = pmatch (pcon PUnit) (\case PUnit -> pcon PTrue)
-      golden All p
+      golden p
       it "works" $ passert p
     describe "compare" $ do
       let pEq = pcon PUnit #== pcon PUnit
           pLt = pcon PUnit #< pcon PUnit
           pLe = pcon PUnit #<= pcon PUnit
       goldens
-        All
         [ ("==", pEq)
         , ("<", pLt)
         , ("<=", pLe)
