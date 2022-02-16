@@ -7,7 +7,7 @@ module Plutarch.Trace (ptrace, ptraceIfTrue, ptraceIfFalse, ptraceError) where
 
 import Plutarch.Internal.Other (Term, perror)
 #ifdef Development
-import Plutarch.Internal.Other (type (:-->), (#), phoistAcyclic, plet, pforce, pdelay)
+import Plutarch.Internal.Other (type (:-->), (#), plet, pforce, pdelay)
 #endif
 #ifdef Development
 import Plutarch.Bool (PBool, pif)
@@ -23,7 +23,7 @@ import qualified PlutusCore as PLC
 
 #ifdef Development
 ptrace' :: Term s (PString :--> a :--> a)
-ptrace' = phoistAcyclic $ pforce $ punsafeBuiltin PLC.Trace
+ptrace' = pforce $ punsafeBuiltin PLC.Trace
 #endif
 
 -- | Trace the given message before evaluating the argument.
