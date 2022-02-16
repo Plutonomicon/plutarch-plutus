@@ -3,16 +3,17 @@
 <details>
 <summary> Table of Contents </summary>
 
-- [No instance for (PUnsafeLiftDecl a)](#no-instance-for-punsafeliftdecl-a)
+- [No instance for `PUnsafeLiftDecl a`](#no-instance-for-punsafeliftdecl-a)
 - [Couldn't match representation of type: ... arising from the 'deriving' clause](#couldnt-match-representation-of-type--arising-from-the-deriving-clause)
 - [Infinite loop / Infinite AST](#infinite-loop--infinite-ast)
 - [Couldn't match type `Plutarch.DataRepr.Internal.PUnLabel ...` arising from a use of `pfield` (or `hrecField`, or `pletFields`)](#couldnt-match-type-plutarchdatareprinternalpunlabel--arising-from-a-use-of-pfield-or-hrecfield-or-pletfields)
 - [Expected a type, but "fieldName" has kind `GHC.Types.Symbol`](#expected-a-type-but-fieldname-has-kind-ghctypessymbol)
 - [Lifting `PAsData`](#lifting-pasdata)
+- [Couldn't match type `PLifted (PConstanted Foo)` with `Foo`](#couldnt-match-type-plifted-pconstanted-foo-with-foo)
 
 </details>
 
-# No instance for (PUnsafeLiftDecl a)
+# No instance for `PUnsafeLiftDecl a`
 You should add `PLift a` to the context! `PLift` is just a synonym to `PUnsafeLiftDecl`.
 
 # Couldn't match representation of type: ... arising from the 'deriving' clause
@@ -45,9 +46,18 @@ Relevant issue: [#19](https://github.com/Plutonomicon/plutarch/issues/19)
 You might get some weird errors when using `pfield`/`hrecField`/`pletFields` like the above. Don't be scared! It just means that the type application you used is incorrect. Specifically, the type application names a non-existent field. Re-check the field name string you used in the type application for typos!
 
 # Expected a type, but "fieldName" has kind `GHC.Types.Symbol`
-This just means the argument of a type application wasn't correctly promoted. Most likely arising from a usage of `pfield`/`hrecField`/`pletFields`. In the case of `pfield` and `hrecField`, the argument of type application should have kind `Symbol`. A simple string literal representing the field name should work in this case. In the case of `pletFields`, the argument of type application should have kind `[Symbol]` - a type level list of types with kind `Symbol`. When you use a singleton list here, like `["foo"]` - it's actually parsed as a *regular* list (like `[a]`). A regular list, of course, has kind `Type`.
+This just means the argument of a type application wasn't correctly promoted. Most likely arising from a usage of `pletFields`. In the case of `pfield` and `hrecField`, the argument of type application should have kind `Symbol`. A simple string literal representing the field name should work in this case. In the case of `pletFields`, the argument of type application should have kind `[Symbol]` - a type level list of types with kind `Symbol`. When you use a singleton list here, like `["foo"]` - it's actually parsed as a *regular* list (like `[a]`). A regular list, of course, has kind `Type`.
 
 All you need to do, is put a `'` (quote) infront of the list, like so- `@'["foo"]`. This will promote the `[a]` to the type level.
 
 # Lifting `PAsData`
-Don't try to lift a `PAsData` term! It's intentionally blocked and partial. The `PLift` instance for `PAsData` is only there to make some important functionality work correctly. But the instance methods will simply error if used. Instead, you should extract the `Term s a` out of `Term s (PAsData a)` using `pfromData` and `plift` that instead!
+Don't try to lift a `PAsData` term! It's intentionally blocked and partial. The `PLift` instance for `PAsData` is only there to make some important functionality work correctly. But the instance methods will simply error if used. Instead, you should either use `pforgetData` and `plift` that, or extract the `Term s a` out of `Term s (PAsData a)` using `pfromData` and `plift` that instead!
+
+# Couldn't match type `PLifted (PConstanted Foo)` with `Foo`
+`PLifted (PConstanted h)` should always just be `h` - right? What's this then?
+
+Orphan instances! Specifically, in order for those type family applications to fully compute (and yield `h`), you need the `PConstant` instance for `h` in scope, as well as the `PLift` instance for the corresponding Plutarch type. Recall that `h` here is a Haskell type - its corresponding `PConstant` instance is *probably* an orphan instance that you haven't imported.
+
+This happens often with Plutarch ledger API types. If you didn't import `Plutarch.Api.V1.Contexts` (or some other module that imports it), and you're using `pconstant` on a `ScriptContext` - you'll get an error like this. The `PConstant` instance for `ScriptContext` hasn't been imported - so GHC has no idea what `PConstanted ScriptContext` is!
+
+Relevant issue: [#252](https://github.com/Plutonomicon/plutarch/issues/252)

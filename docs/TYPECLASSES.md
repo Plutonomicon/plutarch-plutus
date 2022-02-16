@@ -10,6 +10,7 @@ This document describes the primary typeclasses used in Plutarch.
 -   [`PIsData`](#pisdata)
 -   [`PConstant` & `PLift`](#pconstant--plift)
     -   [Implementing `PConstant` & `PLift`](#implementing-pconstant--plift)
+    -   [Implementing `PConstant` & `PLift` for types with type variables (generic types)](#implementing-pconstant--plift-for-types-with-type-variables-generic-types)
 -   [`PlutusType`, `PCon`, and `PMatch`](#plutustype-pcon-and-pmatch)
     -   [Implementing `PlutusType` for your own types (Scott Encoding)](#implementing-plutustype-for-your-own-types-scott-encoding)
     -   [Implementing `PlutusType` for your own types (`Data` Encoding)](#implementing-plutustype-for-your-own-types-data-encoding)
@@ -127,7 +128,13 @@ pconstant :: PLift p => PLifted p -> Term s p
 plift :: (PLift p, HasCallStack) => ClosedTerm p -> PLifted p
 ```
 
-> Aside: `PLifted p` represents the Haskell synonym to the Plutarch type, `p`. Similarly, there is also `PConstanted h` - which represents the Plutarch synonym corresponding to the Haskell type, `h`.
+These typeclasses also bestow the associated type families:
+```hs
+type PLifted :: PType -> Type
+
+type PConstanted :: Type -> PType
+```
+These are meant to be inverse type families of each other. In particular, `PLifted p` represents the Haskell synonym of the Plutarch type, `p`. Similarly, `PConstanted h` represents the Plutarch type corresponding to the Haskell type, `h`.
 
 `pconstant` lets you build a Plutarch value from its corresponding Haskell synonym. For example, the haskell synonym of [`PBool`](./TYPES.md#pbool) is [`Bool`](https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Bool.html#t:Bool).
 
@@ -279,6 +286,57 @@ deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) instan
 -   The Haskell type itself, for which `PConstant` is being implemented for.
 -   The Plutarch synonym to the Haskell type.
     And that's all you need to know to implement `PConstant` and `PLift`!
+
+## Implementing `PConstant` & `PLift` for types with type variables (generic types)
+If your Plutarch type and its Haskell synonym are generic types (e.g. `PMaybeData a`) - the implementation gets a tad more difficult. In particular, you need to constrain the generic type variables to be able to use the derivers.
+
+The constraints observed when implementing `PLift`:
+* Each type variable must also have a `PLift` instance.
+* For each type variable `a`: `a ~ PConstanted (PLifted a)`
+* Depending on the data declaration, your type variable `PLifted a`, for each `a`, might also need [`FromData`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:FromData) and [`ToData`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:FromData) instances.
+
+The constraints observed when implementing `PConstant`:
+* Each type variable must also have a `PConstant` instance.
+* For each type variable `a`: `a ~ PLifted (PConstanted a)`
+* Depending on the data declaration, each type variable `a` might also need [`FromData`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:FromData) and [`ToData`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:FromData) instances.
+
+Here's how you'd set up all this for `PMaybeData a`:
+```hs
+import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
+import Plutarch.Lift (PUnsafeLiftDecl)
+import Plutarch.Prelude
+
+import PlutusTx (FromData, ToData)
+
+data PMaybeData a (s :: S)
+  = PDJust (Term s (PDataRecord '["_0" ':= a]))
+  | PDNothing (Term s (PDataRecord '[]))
+
+instance
+  ( PLift p
+  , p ~ PConstanted (PLifted p)
+  , FromData (PLifted p)
+  , ToData (PLifted p)
+  ) =>
+  PUnsafeLiftDecl (PMaybeData p)
+  where
+  type PLifted (PMaybeData p) = Maybe (PLifted p)
+
+deriving via
+  ( DerivePConstantViaData
+      (Maybe h)
+      (PMaybeData (PConstanted h))
+  )
+  instance
+    ( PConstant h
+    , h ~ PLifted (PConstanted h)
+    , FromData h
+    , ToData h
+    ) =>
+    PConstant (Maybe h)
+```
+
+Relevant issue: [#286](https://github.com/Plutonomicon/plutarch/issues/286)
 
 # `PlutusType`, `PCon`, and `PMatch`
 

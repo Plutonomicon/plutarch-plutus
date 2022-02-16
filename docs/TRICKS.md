@@ -10,7 +10,6 @@ This document discusses thumb rules and general trivia, aiming to make life as a
   - [Where should arguments be `plet`ed?](#where-should-arguments-be-pleted)
 - [Prefer Plutarch level functions](#prefer-plutarch-level-functions)
 - [When to use Haskell level functions?](#when-to-use-haskell-level-functions)
-- [Hoisting is great - but not a silver bullet](#hoisting-is-great---but-not-a-silver-bullet)
 - [The difference between `PlutusType`/`PCon` and `PLift`'s `pconstant`](#the-difference-between-plutustypepcon-and-plifts-pconstant)
 - [List iteration is strict](#list-iteration-is-strict)
 - [Let Haskell level functions take responsibility of evaluation](#let-haskell-level-functions-take-responsibility-of-evaluation)
@@ -53,8 +52,17 @@ abs :: Term s PInteger -> Term s PInteger
 abs x = pif (x #<= -1) (negate x) x
 ```
 
-`x` is going to be inlined _three_ times there. That's really bad if it's a big computation. This is what you should do instead-
+Guess what would happen if you used it like:
+```hs
+abs (reallyExpensiveFunction # arg)
+```
+It'd turn into:
+```hs
+pif ((reallyExpensiveFunction # arg) #<= -1) (negate (reallyExpensiveFunction # arg)) (reallyExpensiveFunction # arg)
+```
+Oh no. `reallyExpensiveFunction` is going to be _applied three times_. That's 3 times the cost!
 
+Isntead, consider using `plet`:
 ```haskell
 abs :: Term s PInteger -> Term s PInteger
 abs x' = plet x' $ \x -> pif (x #<= -1) (negate x) x
@@ -75,7 +83,7 @@ This also applies to field accesses using `OverloadedRecordDot`. When you do `ct
 
 # Prefer Plutarch level functions
 
-Plutarch level functions have a lot of advantages - they can be hoisted; they are strict so you can [use their arguments however many times you like without duplicating work](#dont-duplicate-work); they are required for Plutarch level higher order functions etc. Unless you _really_ need laziness, like `pif` does, try to use Plutarch level functions.
+Plutarch level functions have a lot of advantages - they can be hoisted; they are strict so you can [use their arguments however many times you like without duplicating work](#dont-duplicate-work) etc. Unless you _really_ need laziness, like `pif` does, try to use Plutarch level functions.
 
 Also see: [Hoisting](./CONCEPTS.md#hoisting-metaprogramming--and-fundamentals).
 
@@ -130,27 +138,6 @@ It turns out that `pelimList` usages *almost always* use a one-off Haskell level
 
 However, **not all higher order functions** benefit from taking Haskell level functions. In many HOF usages, you could benefit from passing a commonly used function argument, rather than a one-off function argument. Imagine `map`, you don't always map with one-off functions - often, you `map` with existing, commonly used functions. In these cases, that commonly used function ought to be a Plutarch level function, so it can be hoisted and `map` can simply reference it.
 
-# Hoisting is great - but not a silver bullet
-
-Hoisting is only beneficial for sufficiently large terms. Hoisting a builtin function, for example - is not very useful-
-
-```haskell
-import Plutarch
-import qualified PlutusCore as PLC
-
-phoistAcyclic $ punsafeBuiltin PLC.UnListData
-```
-
-The term will be the same size anyway. However, if you had a larger term due to, say, using `pforce` -
-
-```haskell
-phoistAcyclic $ pforce $ punsafeBuiltin PLC.UnListData
-```
-
-Here, hoisting may be beneficial.
-
-You don't need to hoist the top level Plutarch function that you would just pass to `compile`.
-
 # The difference between `PlutusType`/`PCon` and `PLift`'s `pconstant`
 `PlutusType` is especially useful for building up Plutarch terms *dynamically* - i.e, from arbitrary Plutarch terms. This is when your Plutarch type's constructors contain other Plutarch terms.
 
@@ -166,7 +153,7 @@ instance PlutusType AB where
 ```
 You can use the `A` and `B` constructors during building, but still have your type be represented as integers under the hood! You cannot do this with `pconstant`.
 
-You should prefer `pconstant` (from [`PConstant`/`PLift`](./TYPECLASSES.md#pconstant--plift)) when you can build something up entirely from Haskell level constants and that *something* has the same representation as the Haskell constant.
+You should prefer `pconstant`/`pconstantData` (from [`PConstant`/`PLift`](./TYPECLASSES.md#pconstant--plift)) when you can build something up entirely from Haskell level constants and that *something* has the same representation as the Haskell constant.
 
 # List iteration is strict
 Chained list operations (e.g a filter followed by a map) are not very efficient in Plutus Core. In fact, the iteration is not lazy at all! For example, if you did a `pfilter`, followed by a `pmap`, on a builtin list - the entire `pmap` operation would be computed first, the whole list would be iterated through, and *only then* the `pfilter` would start computing. Ridiculous!
@@ -178,14 +165,12 @@ The user of your Haskell level function doesn't know how many times it uses the 
 * The user `plet`s the argument before passing it to the Haskell level function.
 * The Haskell level function takes responsibility of its argument and `plet`s it itself.
 
-The former is problematic since it's based on *assumption*. What if the Haskell level function is a good rule follower, and correctly `plet`s its argument if using it multiple times? Well, then there's a `plet` by the caller *and* the callee. It won't evaluate the computation twice, so that's good! But it does increase the execution units and the script size a bit!
+The former is problematic since it's based on *assumption*. What if the Haskell level function is a good rule follower, and correctly `plet`s its argument if using it multiple times? Well, then there's a redundant `plet` (though back to back `plet`s *will* be optimized away into one).
 
 Instead, try to offload the responsbility of evaluation to the Haskell level function - so that it only `plet`s when it needs to.
 
-Of course, this is not applicable for recursive Haskell level functions!
-
 # The isomorphism between `makeIsDataIndexed`, Haskell ADTs, and `PIsDataRepr`
-When [implementing `PIsDataRepr`](#implementing-pisdatarepr-and-friends) for a Plutarch type, if the Plutarch type also has a Haskell synonym (e.g `ScriptContext` is the haskell synonym to `PScriptContext`) that uses [`makeIsDataIndexed`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed) - you must make sure the constructor ordering is correct.
+When [implementing `PIsDataRepr`](./TYPECLASSES.md#implementing-pisdatarepr-and-friends) for a Plutarch type, if the Plutarch type also has a Haskell synonym (e.g `ScriptContext` is the haskell synonym to `PScriptContext`) that uses [`makeIsDataIndexed`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed) - you must make sure the constructor ordering is correct.
 
 > Aside: What's a "Haskell synonym"? It's simply the Haskell type that *is supposed to* correspond to a Plutarch type. There doesn't *necessarily* have to be some sort of concrete connection (though there can be, using [`PLift`/`PConstant`](./TYPECLASSES.md#pconstant--plift)) - it's merely a connection you can establish mentally.
 >

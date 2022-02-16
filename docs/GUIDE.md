@@ -13,7 +13,7 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
   - [Typeclasses](#typeclasses)
   - [Working with Types](#working-with-types)
 - [Examples](#examples)
-- [Thumb rules, Tips, and Tricks](#thumb-rules-tips-and-tricks)
+- [Thumb rules, Tips, and Trickss](#thumb-rules-tips-and-trickss)
 - [Common Issues and Troubleshooting](#common-issues-and-troubleshooting)
 - [Useful Links](#useful-links)
 
@@ -71,6 +71,7 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 - [`PIsData`](./TYPECLASSES.md#pisdata)
 - [`PConstant` & `PLift`](./TYPECLASSES.md#pconstant--plift)
   - [Implementing `PConstant` & `PLift`](./TYPECLASSES.md#implementing-pconstant--plift)
+  - [Implementing `PConstant` & `PLift` for types with type variables (generic types)](./TYPECLASSES.md#implementing-pconstant--plift-for-types-with-type-variables-generic-types)
 - [`PlutusType`, `PCon`, and `PMatch`](./TYPECLASSES.md#plutustype-pcon-and-pmatch)
   - [Implementing `PlutusType` for your own types (Scott Encoding)](./TYPECLASSES.md#implementing-plutustype-for-your-own-types-scott-encoding)
   - [Implementing `PlutusType` for your own types (`Data` Encoding)](./TYPECLASSES.md#implementing-plutustype-for-your-own-types-data-encoding)
@@ -100,12 +101,12 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 - [PData](./TYPES.md#pdata)
 
 # Examples
-- [Basic examples](https://github.com/Plutonomicon/plutarch/tree/master/examples/BASIC.md)
-- [Validator & Minting policies](https://github.com/Plutonomicon/plutarch/tree/master/examples/VALIDATOR.md)
+- [Basic examples](./examples/BASIC.md)
+- [Validator & Minting policies](./examples/VALIDATOR.md)
 
 Also see: [examples](https://github.com/Plutonomicon/plutarch/tree/master/examples).
 
-# Thumb rules, Tips, and Tricks
+# Thumb rules, Tips, and Trickss
 Outside of the fundamental user guide, there are thumb rules and general guidelines you can follow to improve your Plutarch experience. In this section, we discuss ways of writing efficient and high quality Plutarch code, as well as rules that can help auditing Plutarch easier.
 
 > Jack: 'rules of thumb' rather than 'thumb rules'.
@@ -115,7 +116,6 @@ Outside of the fundamental user guide, there are thumb rules and general guideli
   - [Where should arguments be `plet`ed?](./TRICKS.md#where-should-arguments-be-pleted)
 - [Prefer Plutarch level functions](./TRICKS.md#prefer-plutarch-level-functions)
 - [When to use Haskell level functions?](./TRICKS.md#when-to-use-haskell-level-functions)
-- [Hoisting is great - but not a silver bullet](./TRICKS.md#hoisting-is-great---but-not-a-silver-bullet)
 - [The difference between `PlutusType`/`PCon` and `PLift`'s `pconstant`](./TRICKS.md#the-difference-between-plutustypepcon-and-plifts-pconstant)
 - [List iteration is strict](./TRICKS.md#list-iteration-is-strict)
 - [Let Haskell level functions take responsibility of evaluation](./TRICKS.md#let-haskell-level-functions-take-responsibility-of-evaluation)
@@ -126,12 +126,13 @@ Outside of the fundamental user guide, there are thumb rules and general guideli
 # Common Issues and Troubleshooting
 Due to the highly abstracted nature of Plutarch and its utilization of advanced type level concepts, you might face unfamiliar errors. Don't worry, the guide is here to help!
 
-- [No instance for (PUnsafeLiftDecl a)](./TROUBLESHOOTING.md#no-instance-for-punsafeliftdecl-a)
+- [No instance for `PUnsafeLiftDecl a`](./TROUBLESHOOTING.md#no-instance-for-punsafeliftdecl-a)
 - [Couldn't match representation of type: ... arising from the 'deriving' clause](./TROUBLESHOOTING.md#couldnt-match-representation-of-type--arising-from-the-deriving-clause)
 - [Infinite loop / Infinite AST](./TROUBLESHOOTING.md#infinite-loop--infinite-ast)
 - [Couldn't match type `Plutarch.DataRepr.Internal.PUnLabel ...` arising from a use of `pfield` (or `hrecField`, or `pletFields`)](./TROUBLESHOOTING.md#couldnt-match-type-plutarchdatareprinternalpunlabel--arising-from-a-use-of-pfield-or-hrecfield-or-pletfields)
 - [Expected a type, but "fieldName" has kind `GHC.Types.Symbol`](./TROUBLESHOOTING.md#expected-a-type-but-fieldname-has-kind-ghctypessymbol)
 - [Lifting `PAsData`](./TROUBLESHOOTING.md#lifting-pasdata)
+- [Couldn't match type `PLifted (PConstanted Foo)` with `Foo`](./TROUBLESHOOTING.md#couldnt-match-type-plifted-pconstanted-foo-with-foo)
 
 # Useful Links
 - [Plutonomicon](https://github.com/Plutonomicon/plutonomicon)
