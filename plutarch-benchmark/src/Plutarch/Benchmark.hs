@@ -29,7 +29,22 @@ import Data.Coerce (coerce)
 import qualified Data.Map.Strict as Map
 import Data.Vector (Vector, (!))
 import qualified Data.Vector as Vector
-import Options.Applicative hiding (header)
+import Options.Applicative (
+  execParser,
+  fullDesc,
+  help,
+  helper,
+  info,
+  liftA2,
+  long,
+  metavar,
+  strOption,
+  progDesc,
+  short,
+  switch,
+  value,
+  (<**>),
+ )
 import Text.PrettyPrint.Boxes ((//))
 import qualified Text.PrettyPrint.Boxes as B
 import Text.Printf (printf)

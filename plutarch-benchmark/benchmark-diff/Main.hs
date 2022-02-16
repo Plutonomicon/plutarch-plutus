@@ -3,7 +3,18 @@ module Main (main) where
 import Plutarch.Benchmark (decodeBenchmarks, diffBenchmarks, renderDiffTable)
 
 import qualified Data.ByteString.Lazy as BSL
-import Options.Applicative
+import Options.Applicative (
+  argument,
+  execParser,
+  fullDesc,
+  helper,
+  info,
+  liftA2,
+  metavar,
+  progDesc,
+  str,
+  (<**>),
+ )
 import qualified Text.PrettyPrint.Boxes as B
 
 --------------------------------------------------------------------------------

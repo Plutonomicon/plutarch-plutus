@@ -116,6 +116,6 @@ executable benchmark-diff
     , boxes
     , bytestring
     , cassava
+    , optparse-applicative
     , plutarch
     , plutarch-benchmark
-    , optparse-applicative
