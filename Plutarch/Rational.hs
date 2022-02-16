@@ -38,6 +38,7 @@ import Plutarch.Builtin (
 import Plutarch.Integer (PInteger, PIntegral (pdiv, pmod))
 import Plutarch.List (PListLike (pcons, phead, pnil, ptail), pmap)
 import Plutarch.Pair (PPair (..))
+import Plutarch.Trace (ptraceError)
 import Plutarch.Unsafe (punsafeCoerce)
 
 data PRational s
@@ -166,7 +167,10 @@ instance Fractional (Term s PRational) where
     phoistAcyclic
       ( plam $ \x ->
           pmatch x $ \(PRational xn xd) ->
-            pcon (PRational xd xn)
+            pif
+              (xn #== 0)
+              (ptraceError "division by 0")
+              (pcon (PRational xd xn))
       )
       # x'
 
@@ -191,7 +195,10 @@ preduce = phoistAcyclic $
     pmatch x $ \(PRational xn xd) ->
       plet (pgcd # xn # xd) $ \r ->
         plet (signum xd) $ \s ->
-          pcon $ PRational (s * pdiv # xn # r) (s * pdiv # xd # r)
+          pif
+            (xd #== 0)
+            (ptraceError "division by 0")
+            (pcon $ PRational (s * pdiv # xn # r) (s * pdiv # xd # r))
 
 pgcd :: Term s (PInteger :--> PInteger :--> PInteger)
 pgcd = phoistAcyclic $

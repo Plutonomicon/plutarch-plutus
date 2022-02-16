@@ -62,3 +62,7 @@ spec = do
         it "0.5" $ passert $ (0.5 :: Term s PRational) #== pfromData (pdata 0.5)
         it "2" $ passert $ (2 :: Term s PRational) #== pfromData (pdata 2)
         it "11/3" $ passert $ (11 / 3 :: Term s PRational) #== pfromData (pdata $ 11 / 3)
+    describe "div by 0 tests" $ do
+      it "1/0" $ pfails ((1 :: Term s PRational) / 0)
+      it "recip 0" $ pfails (recip (0 :: Term s PRational))
+      it "1/(1-1)" $ pfails ((1 :: Term s PRational) / (1 - 1))
