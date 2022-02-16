@@ -29,9 +29,10 @@ import Data.Coerce (coerce)
 import qualified Data.Map.Strict as Map
 import Data.Vector (Vector, (!))
 import qualified Data.Vector as Vector
-import System.Environment (getArgs)
+import Options.Applicative hiding (header)
 import Text.PrettyPrint.Boxes ((//))
 import qualified Text.PrettyPrint.Boxes as B
+import Text.Printf (printf)
 
 import qualified Data.ByteString.Lazy as LB
 import qualified Data.ByteString.Short as SBS
@@ -233,11 +234,34 @@ renderBudgetTable bs =
     ]
 
 benchMain :: [NamedBenchmark] -> IO ()
-benchMain benchmarks =
-  getArgs >>= \case
-    ["--csv"] -> BSL.putStr $ Csv.encodeDefaultOrderedByName benchmarks
-    _ -> do
+benchMain benchmarks = do
+  let cmdOptions =
+        liftA2
+          (,)
+          ( strOption
+              ( long "output"
+                  <> short 'o'
+                  <> value "bench.csv"
+                  <> metavar "OUTPUT"
+                  <> help "Where to put benchmark CSV file"
+              )
+          )
+          ( switch
+              ( long "csv"
+                  <> help "Whether to output raw CSV to stdout"
+              )
+          )
+      opts =
+        info
+          (cmdOptions <**> helper)
+          ( fullDesc
+              <> progDesc "Plutarch benchmarks suite"
+          )
+  (outputLocation, csv) <- execParser opts
+  if csv
+    then BSL.putStr $ Csv.encodeDefaultOrderedByName benchmarks
+    else do
       let csv = Csv.encodeDefaultOrderedByName benchmarks
-      BSL.writeFile "bench.csv" csv
-      putStrLn "Wrote to bench.csv:"
+      BSL.writeFile outputLocation csv
+      putStrLn (printf "Wrote to '%s':" outputLocation)
       putStrLn . B.render $ renderBudgetTable benchmarks
