@@ -1,3 +1,16 @@
+{-# LANGUAGE Safe #-}
+{-# LANGUAGE NoDerivingVia #-}
+{-# LANGUAGE NoGeneralizedNewtypeDeriving #-}
+
+{- | Module: Plutarch.Numeric.Extra
+ Copyright: (C) MLabs 2022
+ License: MIT
+ Maintainer: Koz Ross <koz@mlabs.city>
+ Portability: GHC only
+ Stability: Experimental
+
+ Extra useful numeric functionality.
+-}
 module Plutarch.Numeric.Extra (
   -- * Functions
 

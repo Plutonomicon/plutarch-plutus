@@ -70,7 +70,9 @@ import Prelude hiding (
   mod,
   negate,
   product,
+  quot,
   quotRem,
+  rem,
   signum,
   sum,
   (*),
@@ -566,7 +568,7 @@ instance Distributive (Term s PNZNatural) where
  = Laws
 
  @'zero'@ must annihilate multiplication left and right; specifically, @x '*'
- 'zero' = 'zero' '*' x = 'zero@. Additionally, 'fromNatural' must describe the
+ 'zero' = 'zero' '*' x = 'zero'@. Additionally, 'fromNatural' must describe the
  unique semiring homomorphism from 'Natural' to the instance, which must be an
  extension of the unique semirig homomorphism described by 'fromNZNatural' for
  nonzero values. Thus, the following must hold:
