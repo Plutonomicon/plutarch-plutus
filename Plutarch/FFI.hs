@@ -2,8 +2,11 @@
 
 module Plutarch.FFI (
   type (>~<),
+  PDelayedList (PDCons, PDNil),
   foreignExport,
   foreignImport,
+  pdelayList,
+  pforceList,
   unsafeForeignExport,
   unsafeForeignImport,
 ) where
@@ -11,26 +14,38 @@ module Plutarch.FFI (
 import Data.ByteString (ByteString)
 import Data.Kind (Constraint, Type)
 import Data.Text (Text)
-import GHC.Generics (C, D, K1, M1, Meta (MetaData), Rep, S)
+import GHC.Generics (C, D, Generic, K1, M1, Meta (MetaData), Rep)
+import qualified GHC.Generics as Generics
 import GHC.TypeLits (TypeError)
 import qualified GHC.TypeLits as TypeLits
 import qualified Generics.SOP as SOP
-import Plutarch.Bool (PBool)
+import Plutarch (
+  ClosedTerm,
+  PDelayed,
+  PType,
+  S,
+  pcon,
+  pdelay,
+  pforce,
+  phoistAcyclic,
+  plam,
+  pto,
+  (#),
+  (:-->),
+ )
+import Plutarch.Bool (PBool, PEq, (#==))
 import Plutarch.Builtin (PAsData, PData)
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (
-  ClosedTerm,
-  PDelayed,
-  PType,
   RawTerm (RCompiled),
   Term (Term),
   TermResult (TermResult),
   asClosedRawTerm,
   compile',
-  (:-->),
  )
-import Plutarch.Internal.PlutusType (PlutusType (PInner))
+import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
+import Plutarch.List (PList, PListLike (PElemConstraint, pcons, pelimList, pnil), pconvertLists, plistEquals)
 import Plutarch.String (PString)
 import Plutarch.Unit (PUnit)
 import Plutus.V1.Ledger.Scripts (Script (unScript), fromCompiledCode)
@@ -44,6 +59,19 @@ data ForallPhantom :: Type
 data PhorallPhantom :: PType
 
 data Delayed :: Type -> Type
+data DelayedList :: Type -> Type
+
+-- | Plutarch type of delayed lists, compatible with the PlutusTx encoding of
+-- Haskell lists and convertible with the regular 'PList' using 'pdelayList'
+-- and 'pforceList'.
+data PDelayedList (a :: PType) (s :: S)
+  = PDCons (Term s a) (Term s (PDelayedList a))
+  | PDNil
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic)
+
+instance PEq a => PEq (PDelayedList a) where
+  (#==) xs ys = plistEquals # xs # ys
 
 -- | Compile and export a Plutarch term so it can be used by `PlutusTx.applyCode`.
 foreignExport :: p >~< t => ClosedTerm p -> CompiledCode t
@@ -67,6 +95,26 @@ unsafeForeignExport t = DeserializedCode program Nothing mempty
 unsafeForeignImport :: CompiledCode t -> ClosedTerm p
 unsafeForeignImport c = Term $ const $ TermResult (RCompiled $ UPLC.toTerm $ unScript $ fromCompiledCode c) []
 
+-- | Convert a strict 'PList' to a 'PDelayList', perhaps before exporting it with 'foreignExport'.
+pdelayList :: Term s (PList a :--> PDelayedList a)
+pdelayList = pconvertLists
+
+-- | Convert a 'PDelayList' to a strict 'PList', probably after importing it with 'foreignImport'.
+pforceList :: Term s (PDelayedList a :--> PList a)
+pforceList = pconvertLists
+
+instance PlutusType (PDelayedList a) where
+  type PInner (PDelayedList a) r = PDelayed (r :--> (a :--> PDelayedList a :--> r) :--> r)
+  pcon' (PDCons x xs) = pdelay $ plam $ \_nil cons -> cons # x # xs
+  pcon' PDNil = phoistAcyclic $ pdelay $ plam $ \nil _cons -> nil
+  pmatch' elim f = pforce elim # f PDNil # (plam $ \x xs -> f $ PDCons x xs)
+
+instance PListLike PDelayedList where
+  type PElemConstraint PDelayedList _ = ()
+  pelimList cons nil list = pforce (pto list) # nil # plam cons
+  pcons = phoistAcyclic $ plam $ \x xs -> pcon (PDCons x xs)
+  pnil = pcon PDNil
+
 -- | Equality of inner types - Plutarch on the left and Haskell on the right.
 type p >~< t = PlutarchInner p PhorallPhantom ~~ PlutusTxInner t ForallPhantom
 
@@ -88,6 +136,7 @@ type family PlutarchInner (p :: PType) (any :: PType) :: Type where
   PlutarchInner (PAsData a :--> b) x = PlutarchInner (PData :--> b) x
   PlutarchInner (a :--> b) x = PlutarchInner a x -> PlutarchInner b x
   PlutarchInner (PDelayed a) x = Delayed (PlutarchInner a x)
+  PlutarchInner (PDelayedList a) x = DelayedList (PlutarchInner a x)
   PlutarchInner p x = PlutarchInner (PInner p x) x
 
 type family PlutusTxInner (t :: Type) (any :: Type) :: Type where
@@ -100,11 +149,12 @@ type family PlutusTxInner (t :: Type) (any :: Type) :: Type where
   PlutusTxInner ForallPhantom _ = ForallPhantom
   PlutusTxInner (a -> b) x = PlutusTxInner a x -> PlutusTxInner b x
   PlutusTxInner (Delayed a) x = Delayed (PlutusTxInner a x)
+  PlutusTxInner [a] x = DelayedList (PlutusTxInner a x)
   PlutusTxInner a x = TypeEncoding a (Rep a) x
 
 type TypeEncoding :: Type -> (Type -> Type) -> Type -> Type
 type family TypeEncoding a rep x where
-  TypeEncoding a (M1 D ( 'MetaData _ _ _ 'True) (M1 C _ (M1 S _ (K1 _ b)))) x = PlutusTxInner b x -- newtype
+  TypeEncoding a (M1 D ( 'MetaData _ _ _ 'True) (M1 C _ (M1 Generics.S _ (K1 _ b)))) x = PlutusTxInner b x -- newtype
   TypeEncoding a _ x = Delayed (PlutusTxInner (ScottFn (ScottList (SOP.Code a) x) x) x)
 
 {- |
