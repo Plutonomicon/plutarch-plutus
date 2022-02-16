@@ -10,7 +10,7 @@ import Plutarch.Builtin (pforgetData, ppairDataBuiltin)
 import Plutarch.Lift (PLifted)
 import Plutarch.Prelude
 
-import Plutus.V1.Ledger.Credential
+import Plutus.V1.Ledger.Credential (Credential (ScriptCredential))
 import qualified PlutusTx
 
 import Plutarch.Test
@@ -63,22 +63,22 @@ propertySet ::
 propertySet typeName = do
   describe typeName $ do
     specify ("x ~ " <> typeName <> ": pfromData (pdata x) ≡ x") $
-      property $ pToFromEqual @p
+      property $ ptoFromEqual @p
     specify ("x ~ " <> typeName <> ": pfromData (PlutusTx.toData x) ≡ x") $
-      property $ pFromDataCompat @p
+      property $ pfromDataCompat @p
     specify ("x ~ " <> typeName <> ": PlutusTx.fromData (pdata x) ≡ Just x") $
-      property $ pDataCompat @p
+      property $ pdataCompat @p
 
-pToFromEqual ::
+ptoFromEqual ::
   forall p.
   ( PIsData p
   , PLift p
   ) =>
   PLifted p ->
   _
-pToFromEqual t = pfromData (pdata $ pconstant @p t) `pshouldBe` pconstant @p t
+ptoFromEqual t = pfromData (pdata $ pconstant @p t) `pshouldBe` pconstant @p t
 
-pFromDataCompat ::
+pfromDataCompat ::
   forall p.
   ( PIsData p
   , PlutusTx.ToData (PLifted p)
@@ -88,9 +88,9 @@ pFromDataCompat ::
   ) =>
   PLifted p ->
   IO ()
-pFromDataCompat x = plift (pfromData $ pconstantData @p x) `shouldBe` x
+pfromDataCompat x = plift (pfromData $ pconstantData @p x) `shouldBe` x
 
-pDataCompat ::
+pdataCompat ::
   forall p.
   ( PLift p
   , PIsData p
@@ -100,4 +100,4 @@ pDataCompat ::
   ) =>
   PLifted p ->
   IO ()
-pDataCompat x = PlutusTx.fromData @(PLifted p) (plift $ pforgetData $ pdata $ pconstant @p x) `shouldBe` Just x
+pdataCompat x = PlutusTx.fromData @(PLifted p) (plift $ pforgetData $ pdata $ pconstant @p x) `shouldBe` Just x

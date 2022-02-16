@@ -7,7 +7,15 @@ import Test.Syd
 
 import Plutus.V1.Ledger.Api
 
-import Plutarch.Api.V1
+import Plutarch.Api.V1 (
+  PAddress (PAddress),
+  PCredential,
+  PMaybeData,
+  PPubKeyHash,
+  PScriptContext,
+  PScriptPurpose (PSpending),
+  PStakingCredential,
+ )
 import qualified Plutarch.ApiSpec as ApiSpec
 import qualified Plutarch.Monadic as P
 import Plutarch.Prelude
@@ -28,7 +36,7 @@ spec = do
           it "succeeds" $ psucceeds p
           it "fails" $ pfails pe
       describe "getFields" $
-        golden PrintTerm getFields
+        golden All getFields
 
 checkSignatory :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatory = plam $ \ph ctx' ->

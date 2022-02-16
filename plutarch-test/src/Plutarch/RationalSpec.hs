@@ -3,7 +3,7 @@ module Plutarch.RationalSpec (spec) where
 import Test.Syd
 
 import Plutarch.Prelude
-import Plutarch.Rational
+import Plutarch.Rational (pproperFraction, ptruncate)
 import Plutarch.Test
 
 spec :: Spec
