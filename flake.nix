@@ -10,8 +10,10 @@
     flake = false;
   };
 
-  # https://github.com/input-output-hk/plutus/pull/4328
-  inputs.plutus.url = "github:L-as/plutus?ref=master";
+  inputs.iohk-nix.url = "github:input-output-hk/iohk-nix";
+  inputs.iohk-nix.flake = false;
+  inputs.plutus.url = "github:input-output-hk/plutus";
+  inputs.plutus.flake = false;
   # https://github.com/input-output-hk/cardano-prelude/pull/162
   inputs.cardano-prelude.url = "github:locallycompact/cardano-prelude?rev=93f95047bb36a055bdd56fb0cafd887c072cdce2";
   inputs.cardano-prelude.flake = false;
@@ -22,9 +24,6 @@
   # https://github.com/Quid2/flat/pull/27
   inputs.flat.url = "github:Quid2/flat?rev=41a040c413351e021982bb78bd00f750628f8060";
   inputs.flat.flake = false;
-  # https://github.com/input-output-hk/Win32-network/pull/10
-  inputs.Win32-network.url = "github:input-output-hk/Win32-network?rev=2d1a01c7cbb9f68a1aefe2934aad6c70644ebfea";
-  inputs.Win32-network.flake = false;
   # https://github.com/haskell-foundation/foundation/pull/555
   inputs.foundation.url = "github:haskell-foundation/foundation?rev=0bb195e1fea06d144dafc5af9a0ff79af0a5f4a0";
   inputs.foundation.flake = false;
@@ -58,7 +57,7 @@
   inputs.autodocodec.url = "github:srid/autodocodec/ghc921";
   inputs.autodocodec.flake = false;
 
-  outputs = inputs@{ self, nixpkgs, haskell-nix, plutus, flake-compat, flake-compat-ci, hercules-ci-effects, ... }:
+  outputs = inputs@{ self, nixpkgs, iohk-nix, haskell-nix, plutus, flake-compat, flake-compat-ci, hercules-ci-effects, ... }:
     let
       extraSources = [
         {
@@ -148,8 +147,12 @@
 
       perSystem = nixpkgs.lib.genAttrs supportedSystems;
 
-      nixpkgsFor = system: import nixpkgs { inherit system; overlays = [ haskell-nix.overlay ]; inherit (haskell-nix) config; };
-      nixpkgsFor' = system: import nixpkgs { inherit system; inherit (haskell-nix) config; };
+      nixpkgsFor = system: import nixpkgs {
+        inherit system;
+        overlays = [ haskell-nix.overlay (import "${iohk-nix}/overlays/crypto") ];
+        inherit (haskell-nix) config;
+      };
+      nixpkgsFor' = system: import nixpkgs { inherit system; };
 
       ghcVersion = "ghc921";
 
@@ -215,8 +218,7 @@
             primitive-unlifted < 1.0.0.0
 
           package haskell-language-server
-            flags: +use-ghc-stub +pedantic +ignore-plugins-ghc-bounds -alternateNumberFormat -brittany -callhierarchy -class -eval -floskell -fourmolu -haddockComments -hlint -importLens -ormolu -refineImports -retrie -splice -stylishhaskell -tactic -importLens
-
+            flags: +use-ghc-stub +pedantic +ignore-plugins-ghc-bounds -alternateNumberFormat -brittany -class -eval -haddockComments -hlint -retrie -splice -stylishhaskell -tactic
         '';
         src = "${inputs.haskell-language-server}";
       };
@@ -229,12 +231,12 @@
           cardano-binary.ghcOptions = [ "-Wwarn" ];
           cardano-binary.src = "${inputs.cardano-base}/binary";
           cardano-binary.components.library.postUnpack = "\n";
-          cardano-crypto-class.components.library.pkgconfig = nixpkgs.lib.mkForce [ [ (import plutus { inherit system; }).pkgs.libsodium-vrf ] ];
+          cardano-crypto-class.components.library.pkgconfig = nixpkgs.lib.mkForce [ [ (nixpkgsFor system).libsodium-vrf ] ];
           cardano-crypto-class.doHaddock = false;
           cardano-crypto-class.ghcOptions = [ "-Wwarn" ];
           cardano-crypto-class.src = "${inputs.cardano-base}/cardano-crypto-class";
           cardano-crypto-class.components.library.postUnpack = "\n";
-          cardano-crypto-praos.components.library.pkgconfig = nixpkgs.lib.mkForce [ [ (import plutus { inherit system; }).pkgs.libsodium-vrf ] ];
+          cardano-crypto-praos.components.library.pkgconfig = nixpkgs.lib.mkForce [ [ (nixpkgsFor system).libsodium-vrf ] ];
           cardano-crypto.src = "${inputs.cardano-crypto}";
           cardano-crypto.components.library.postUnpack = "\n";
           cardano-prelude.doHaddock = false; # somehow above options are not applied?
