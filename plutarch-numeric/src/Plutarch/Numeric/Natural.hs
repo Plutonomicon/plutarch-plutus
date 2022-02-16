@@ -19,7 +19,10 @@ import Plutarch.Lift (
 import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
 
--- | @since 1.0
+{- | Plutarch version of 'Natural'.
+
+ @since 1.0
+-}
 data PNatural (s :: S)
 
 -- | @since 1.0
@@ -34,7 +37,10 @@ instance POrd PNatural where
   {-# INLINEABLE (#<) #-}
   n #< n' = punsafeBuiltin PLC.LessThanInteger # n # n'
 
--- | @since 1.0
+{- | The natural numbers, specifically \(\mathbb{N}\), which /includes/ zero.
+
+ @since 1.0
+-}
 newtype Natural = Natural Integer
   deriving
     ( -- | @since 1.0

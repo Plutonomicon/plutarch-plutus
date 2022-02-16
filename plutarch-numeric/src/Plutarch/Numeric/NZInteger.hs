@@ -20,7 +20,10 @@ import Plutarch.Lift (
 import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
 
--- | @since 1.0
+{- | Plutarch version of 'NZInteger'.
+
+ @since 1.0
+-}
 data PNZInteger (s :: S)
 
 -- | @since 1.0
@@ -35,7 +38,11 @@ instance POrd PNZInteger where
   {-# INLINEABLE (#<) #-}
   n #< n' = punsafeBuiltin PLC.LessThanInteger # n # n'
 
--- | @since 1.0
+{- | A representation integers without zero; more precisely,
+ \(\mathbb{Z} - \{0\}\).
+
+ @since 1.0
+-}
 newtype NZInteger = NZInteger Integer
   deriving
     ( -- | @since 1.0

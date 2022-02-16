@@ -51,6 +51,7 @@ library
   import:          lang
   exposed-modules:
     Plutarch.Numeric
+    Plutarch.Numeric.Extra
     Plutarch.Numeric.Group
 
   other-modules:
