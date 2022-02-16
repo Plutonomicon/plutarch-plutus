@@ -3,5 +3,5 @@
 set -xe
 
 find -type f -name '*.hs' ! -path '*/dist-newstyle/*' | xargs fourmolu -o-XTypeApplications -o-XQualifiedDo -o-XOverloadedRecordDot -m inplace
-cabal-fmt -i */*.cabal
+cabal-fmt -i plutarch.cabal */*.cabal
 nixpkgs-fmt *.nix
