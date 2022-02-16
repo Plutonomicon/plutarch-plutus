@@ -3,7 +3,6 @@
 module Plutarch.Test.Deterministic (compileD) where
 
 import qualified Data.Text as T
-import Data.Void (Void)
 import Plutarch (ClosedTerm, compile)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import PlutusCore.Default (
@@ -13,9 +12,6 @@ import PlutusCore.Default (
   ValueOf (ValueOf),
   someValueOf,
  )
-import Replace.Megaparsec (streamEdit)
-import qualified Text.Megaparsec as M
-import qualified Text.Megaparsec.Char as M
 import UntypedPlutusCore (
   Program (Program),
   Term (Apply, Builtin, Constant, Delay, Force, LamAbs),
@@ -32,15 +28,13 @@ rewriteTraces =
   walkScript $ \term -> do
     -- Replace the 's' in `trace s`.
     Apply () b@(Force _ (Builtin _ Trace)) (Constant () (Some (ValueOf DefaultUniString s))) <- pure term
-    let s' = T.pack . streamEdit ghcPatternMatchReplacement id . T.unpack $ s
+    let s' = replaceGhcPatternMatch s
     pure $ Apply () b (Constant () (someValueOf DefaultUniString $ s'))
   where
-    ghcPatternMatchReplacement :: M.Parsec Void String String
-    ghcPatternMatchReplacement = do
-      -- What's being replaced (which is varying).
-      s <- M.string "Pattern match failure" <* M.takeRest
-      -- The replacement (which is constant)
-      pure $ s <> "..."
+    replaceGhcPatternMatch = \case
+      (T.stripPrefix "Pattern match failure" -> Just _) ->
+        "Pattern match failure..."
+      x -> x
 
 {- Walk the Plutus script, transforming matching terms -}
 walkScript ::
