@@ -471,8 +471,8 @@
             # Prevent `sydtest-discover` from using GHC9 only modules when building with GHC810
             # https://github.com/NorfairKing/sydtest/blob/master/sydtest-discover/src/Test/Syd/Discover.hs
             chmod -R u+w $out/plutarch-test
-            rm -f $out/plutarch-test/src/Plutarch/MonadicSpec.hs
-            rm -f $out/plutarch-test/src/Plutarch/FieldSpec.hs
+            rm -f $out/plutarch-test/Plutarch/MonadicSpec.hs
+            rm -f $out/plutarch-test/Plutarch/FieldSpec.hs
           '';
           compiler-nix-name = ghcName;
           inherit extraSources;
