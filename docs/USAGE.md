@@ -278,7 +278,7 @@ data MyType (a :: PType) (b :: PType) (s :: S)
 
 > Note: This requires the `generics-sop` package.
 
-This will use a [scott encoding representation](./CONCEPTS.md#data-encoding-and-scott-encoding) for `MyType`, which is typically what you want. If you want to use [data encoding representation](./CONCEPTS.md#data-encoding-and-scott-encoding) instead in your `PlutusType` instance - you should derive it using `PIsDataReprInstances`. Check out: [implementing `PIsDataRepr` and friends](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)
+This will use a [scott encoding representation](./CONCEPTS.md#scott-encoding) for `MyType`, which is typically what you want. If you want to use [data encoding representation](./CONCEPTS.md#data-encoding) instead in your `PlutusType` instance - you should derive it using `PIsDataReprInstances`. Check out: [implementing `PIsDataRepr` and friends](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)
 
 > Jack: Scott is a proper noun and must always be capitalized.
 Currently, generic deriving supports the following typeclasses:-

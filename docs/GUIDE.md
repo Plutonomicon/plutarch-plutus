@@ -60,6 +60,8 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 - [Raising errors](./CONCEPTS.md#raising-errors)
 - [Delay and Force](./CONCEPTS.md#delay-and-force)
 - [Data encoding and Scott encoding](./CONCEPTS.md#data-encoding-and-scott-encoding)
+    - [Data encoding](./CONCEPTS.md#data-encoding)
+    - [Scott encoding](./CONCEPTS.md#scott-encoding)
 - [Unsafe functions](./CONCEPTS.md#unsafe-functions)
 
 ## Typeclasses
@@ -119,6 +121,7 @@ Outside of the fundamental user guide, there are thumb rules and general guideli
 - [Let Haskell level functions take responsibility of evaluation](./TRICKS.md#let-haskell-level-functions-take-responsibility-of-evaluation)
 - [The isomorphism between `makeIsDataIndexed`, Haskell ADTs, and `PIsDataRepr`](./TRICKS.md#the-isomorphism-between-makeisdataindexed-haskell-adts-and-pisdatarepr)
 - [Prefer statically building constants whenever possible](./TRICKS.md#prefer-statically-building-constants-whenever-possible)
+- [Figuring out the representation of a Plutarch type](./TRICKS.md#figuring-out-the-representation-of-a-plutarch-type)
 
 # Common Issues and Troubleshooting
 Due to the highly abstracted nature of Plutarch and its utilization of advanced type level concepts, you might face unfamiliar errors. Don't worry, the guide is here to help!

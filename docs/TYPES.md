@@ -5,26 +5,25 @@ This document describes the fundamental, commonly used Plutarch types.
 <details>
 <summary> Table of Contents </summary>
 
--   [PInteger](#pinteger)
--   [PBool](#pbool)
--   [PString](#pstring)
--   [PByteString](#pbytestring)
--   [PUnit](#punit)
--   [PBuiltinList](#pbuiltinlist)
--   [PList](#plist)
--   [PBuiltinPair](#pbuiltinpair)
--   [PTuple](#ptuple)
--   [PAsData](#pasdata)
--   [PDataSum & PDataRecord](#pdatasum--pdatarecord)
--   [PRecord](#precord)
+-   [`PInteger`](#pinteger)
+-   [`PBool`](#pbool)
+-   [`PString`](#pstring)
+-   [`PByteString`](#pbytestring)
+-   [`PUnit`](#punit)
+-   [`PBuiltinList`](#pbuiltinlist)
+-   [`PList`](#plist)
+-   [`PBuiltinPair`](#pbuiltinpair)
+-   [`PTuple`](#ptuple)
+-   [`PAsData`](#pasdata)
+-   [`PDataSum` & `PDataRecord`](#pdatasum--pdatarecord)
+-   [`PRecord`](#precord)
     -   [letrec](#letrec)
     -   [Record Data](#record-data)
--   [PData](#pdata)
+-   [`PData`](#pdata)
 
 </details>
 
-# PInteger
-
+# `PInteger`
 `Term s PInteger` has a convenient `Num` instance that allows you to construct Plutarch level integer terms from regular literals. It also means you have all the typical arithmetic operations available to you-
 
 > Jack: consider replacing 'regular'.
@@ -45,7 +44,7 @@ It **does not** have a `PlutusType` instance.
 
 This is synonymous to Plutus Core [builtin integer](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins.html#t:Integer).
 
-# PBool
+# `PBool`
 
 Plutarch level boolean terms can be constructed using `pconstant True` and `pconstant False`.
 
@@ -62,7 +61,7 @@ You can combine Plutarch booleans terms using `#&&` and `#||`, which are synonym
 
 This is synonymous to Plutus Core [builtin boolean](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins-Internal.html#t:BuiltinBool).
 
-# PString
+# `PString`
 
 `Term s PString` has a `IsString` instance. This allows you to make Plutarch level string terms from regular string literals, provided you have `OverloadedStrings` turned on.
 
@@ -80,7 +79,7 @@ It **does not** have a `PlutusType` instance.
 
 This is synonymous to Plutus Core [builtin string](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins.html#t:BuiltinString) (actually Text).
 
-# PByteString
+# `PByteString`
 
 Plutarch level bytestring terms can be created using `phexByteStr` and `pbyteStr`. `phexByteStr` interprets a hex string literal as a `Term s PByteString` and `pbyteStr` merely converts a `ByteString` into a `Term s PByteString`.
 
@@ -100,13 +99,13 @@ It **does not** have a `PlutusType` instance.
 
 This is synonymous to Plutus Core [builtin bytestring](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins.html#t:BuiltinByteString).
 
-# PUnit
+# `PUnit`
 
 The Plutarch level unit term can be constructed using `pconstant ()`.
 
 This is synonymous to Plutus Core [builtin unit](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins-Internal.html#t:BuiltinUnit).
 
-# PBuiltinList
+# `PBuiltinList`
 
 You'll be using builtin lists quite a lot in Plutarch. `PBuiltinList` has a [`PListLike`](#plistlike) instance, giving you access to all the goodies from there! However, `PBuiltinList` can only contain builtin types. In particular, it cannot contain Plutarch functions.
 
@@ -148,9 +147,8 @@ The final argument is, of course, the list itself.
 
 > Jack: Capitalize Plutonomicon.
 
-# PList
-
-Here's the scott encoded cousin of `PBuiltinList`. What does that mean? Well, in practice, it just means that `PList` can contain _any arbitrary_ term - not just builtin types. `PList` also has a [`PListLike`](#plistlike) instance - so you won't be missing any of those utilities here!
+# `PList`
+Here's the [scott encoded](./CONCEPTS.md#scott-encoding) cousin of `PBuiltinList`. What does that mean? Well, in practice, it just means that `PList` can contain _any arbitrary_ term - not just builtin types. `PList` also has a [`PListLike`](#plistlike) instance - so you won't be missing any of those utilities here!
 
 `PList` also has a [`PlutusType`](./TYPECLASSES.md#plutustype-pcon-and-pmatch) instance. You can construct a `PList` using `pcon` (but you should prefer using `pcons` from `PListLike`)-
 
@@ -174,7 +172,7 @@ But you should prefer `pelimList` from `PListLike` instead-
 pelimList (\_ _ -> "oooo fancy") "hey hey there's nothing here!" $ pcon $ PSCons (phexByteStr "fe") $ pcon PSNil
 ```
 
-# PBuiltinPair
+# `PBuiltinPair`
 
 Much like in the case of builtin lists, you'll just be working with builtin functions (or rather, Plutarch synonyms to builtin functions) here. You can find everything about that in [builtin-pairs](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-pairs.md). Feel free to only read the `Plutarch` examples.
 
@@ -186,9 +184,8 @@ ppairDataBuiltin :: Term s (PAsData a :--> PAsData b :--> PBuiltinPair (PAsData 
 
 It's also helpful to note that `PAsData (PBuiltinPair (PAsData a) (PAsData b))` and `PAsData (PTuple a b)` actually have the same representation under the hood. See [`PTuple`](#ptuple)
 
-# PTuple
-
-These are data encoded pairs. You can build `PTuple`s using `ptuple`-
+# `PTuple`
+These are [data encoded](./CONCEPTS.md#data-encoding) pairs. You can build `PTuple`s using `ptuple`-
 
 ```hs
 ptuple :: Term s (PAsData a :--> PAsData b :--> PTuple a b)
@@ -204,11 +201,9 @@ ptupleFromBuiltin :: Term s (PAsData (PBuiltinPair (PAsData a) (PAsData b))) -> 
 pbuiltinPairFromTuple :: Term s (PAsData (PTuple a b)) -> Term s (PAsData (PBuiltinPair (PAsData a) (PAsData b)))
 ```
 
-# PAsData
+# `PAsData`
 
 This is a typed way of representing [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md). It is highly encouraged you use `PAsData` to keep track of what "species" of `Data` value you actually have. `Data` can be a `Constr` (for sum of products - ADTs), `Map` (for wrapping assoc maps of Data to Data), `List` (for wrapping builtin lists of data), `I` (for wrapping builtin integers), and `B` (for wrapping builtin bytestrings).
-
-> Aside: You might be asking, what's an "`I` data value"? This is referring to the different constructors of `Data`/`BuiltinData`. You can find a full explanation of this at [plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md).
 
 Consider a function that takes in and returns a `B` data value - aka `ByteString` as a `Data` value. If you use the direct Plutarch synonym to `Data` - `PData`, you'd have-
 
@@ -224,21 +219,16 @@ foo :: Term s (PAsData PByteString :--> PAsData PByteString)
 
 Now, you have assurance that you're working with a `Data` value that actually represents a builtin bytestring!
 
-`PAsData` also makes deconstructing data simple and type safe. When working with raw `PData`, you might find yourself using `pasConstr`, `pasList` etc. on the type `PData`. If `PData` wasn't actually a `Constr` data value - `pasConstr` would cause an evaluation error at runtime.
+Wrapping and unwrapping to and from `PAsData` terms is provided by the [`PIsData`](./TYPECLASSES.md#pisdata) typeclass. Specifically, by the functions- `pfromData` and `pdata`.
 
-Instead, you should use `pfromData` (from the typeclass `PIsData`) which will use the correct builtin function depending on the type of `PAsData` you have. Some useful instances of it are-
-
+Some useful instances of these functions:
 ```hs
 pfromData :: Term s (PAsData PInteger) -> Term s PInteger
 
 pfromData :: Term s (PAsData PByteString) -> Term s PByteString
 
 pfromData :: Term s (PAsData (PBuiltinList (PAsData a))) -> Term s (PBuiltinList (PAsData a))
-```
 
-You can also create a `PAsData` value from supported types, using `pdata`. Some of the useful instances of it are-
-
-```hs
 pdata :: Term s PInteger -> Term s (PAsData PInteger)
 
 pdata :: Term s PByteString -> Term s (PAsData PByteString)
@@ -246,22 +236,11 @@ pdata :: Term s PByteString -> Term s (PAsData PByteString)
 pdata :: Term s (PBuiltinList (PAsData a)) -> Term s (PAsData (PBuiltinList (PAsData a)))
 ```
 
-In general, if `PIsData T => T` is a Plutarch type (that can be converted to and from `Data`), `PAsData T` is its `Data` representation.
-
-You can also create a `PAsData` from a `PData`, but you lose specific type information along the way-
-
-```hs
-pdata :: Term s PData -> Term s (PAsData PData)
-```
-
-To remove boilerplate uses of `pfromData` a new class has been added that tries to implicitly convert from `PIsData a => Term s (PAsData a)` to `Term s a` when using `hrecField` (or the overloaded record dot) or `pfield`. This will not break instances where `pfromData` is used explicitly. It is important to note that there are cases where GHC is not able to figure out the instance to remove the `PAsData`, in those cases the usage remains the same, i.e. just add a `pfromData`. This can also be
-avoided by adding a type signature.
-
-# PDataSum & PDataRecord
+# `PDataSum` & `PDataRecord`
 
 Plutarch sum and product types are represented using `PDataSum` and `PDataRecord` respectively. These types are crucial to the [`PIsDataRepr`](#pisdatarepr) machinery.
 
-Whenever you need to represent a non-trivial ADT using [`Data` encoding](./CONCEPTS.md#data-encoding-and-scott-encoding), you'll likely be reaching for these.
+Whenever you need to represent a non-trivial ADT using [`Data` encoding](./CONCEPTS.md#data-encoding), you'll likely be reaching for these.
 
 More often than not, you'll be using `PDataRecord`. This is used to denote all the fields of a constructor-
 
@@ -308,7 +287,7 @@ represents a sum type with 2 constructors. The first constructor has 2 fields- `
 
 > Note: It's convention to give names like `_0`, `_1` etc. to fields that don't have a canonically meaningful name. They are merely the "0th field", "1st field" etc.
 
-# PRecord
+# `PRecord`
 
 You can define and use product ADTs, including records with named fields in Plutarch similar to Haskell's records. For a Haskell data type like
 
@@ -367,7 +346,7 @@ circleFixedPoint = punsafeFrom $ letrec $ \Circle{y, radius}-> Circle{
 
 ## Record Data
 
-You can provide a `PIsData` instance for `PRecord Circle` using the following definition:
+You can provide a [`PIsData`](./TYPECLASSES.md#pisdata) instance for `PRecord Circle` using the following definition:
 
 ```hs
 instance RecordFromData Circle
@@ -391,7 +370,7 @@ radiusFromCircleData :: Term s (PAsData (PRecord Circle) :--> PAsData PNatural)
 radiusFromCircleData = fieldFromData radius
 ```
 
-# PData
+# `PData`
 
 This is a direct synonym to [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md). As such, it doesn't keep track of what "species" of `Data` it actually is. Is it an `I` data? Is it a `B` data? Nobody can tell for sure!
 

@@ -16,6 +16,7 @@ This document discusses thumb rules and general trivia, aiming to make life as a
 - [Let Haskell level functions take responsibility of evaluation](#let-haskell-level-functions-take-responsibility-of-evaluation)
 - [The isomorphism between `makeIsDataIndexed`, Haskell ADTs, and `PIsDataRepr`](#the-isomorphism-between-makeisdataindexed-haskell-adts-and-pisdatarepr)
 - [Prefer statically building constants whenever possible](#prefer-statically-building-constants-whenever-possible)
+- [Figuring out the representation of a Plutarch type](#figuring-out-the-representation-of-a-plutarch-type)
 
 </details>
 
@@ -248,7 +249,7 @@ data TxInfo = TxInfo
 The *field names* don't matter though. They are merely labels that don't exist in runtime.
 
 # Prefer statically building constants whenever possible
-Whenever you can build a Plutarch constant out of a pure Haskell value - do it! Functions such as `pconstant`, `phexByteStr` operate on regular Haskell synonyms of Plutarch types. Unlike `pcon`, which potentially work on Plutarch terms (ex: `pcon $ PJust x`, `x` is a `Term s a`). A Plutarch term is an entirely "runtime" concept. "Runtime" as in "Plutus Core Runtime". They only get evaluated during runtime!
+Whenever you can build a Plutarch constant out of a pure Haskell value - do it! Functions such as `pconstant`, `phexByteStr` operate on regular Haskell synonyms of Plutarch types. Unlike `pcon`, which potentially works on Plutarch terms (ex: `pcon $ PJust x`, `x` is a `Term s a`). A Plutarch term is an entirely "runtime" concept. "Runtime" as in "Plutus Core Runtime". They only get evaluated during runtime!
 
 On the other hand, whenever you transform a Haskell synonym to its corresponding Plutarch type using `pconstant`, `phexByteStr` etc. - you're *directly* building a Plutus Core constant. This is entirely static! There are no runtime function calls, no runtime building, it's just *there*, inside the compiled script.
 
@@ -269,3 +270,21 @@ The semantics are both are the same. But the former (`pconstant`) compiles to a 
 > Aside: Remember that Haskell runtime is actually compile-time for Plutarch! Even if you have a dynamically computed variable in the Haskell world, it's still a *constant* in the Plutarch world. So you can use it just as well as an argument to `pconstant`!
 
 Whenever you need to build a Plutarch term of type `a`, from a Haskell value, use `pconstant`. Whenever you need to build a Plutarch term of type `PAsData a`, use `pconstantData`!
+
+# Figuring out the representation of a Plutarch type
+As discussed in other sections of guide, Plutarch types are merely tags to underlying semantic representations. This is an eDSL after all! Their data declarations *actually* don't matter as far as internal semantics are concerned. It's actually the `PlutusType` instance that *really* determines the representation. So how do you figure out the representation of this seemingly transient tag? By following *conventions*.
+
+You *could* give your Plutarch type a representation that makes no sense given its `data` type declaration, but don't! Instead, most data type declarations follow certain rules to hint at their representations. The representation can only be one of two categories: builtin and scott encoded. All *trivial* builtin types are already defined in Plutarch: `PInteger`, `PByteString`, `PString`, `PBool`, `PUnit`, `PBuiltinList`, and `PBuiltinPair`.
+
+Now, let's discuss patterns of data declarations and what representation they *should* hint at:
+* If it's a newtype to a term containing Plutarch type - it should have the same representation as that underlying Plutarch type.
+
+  e.g. `newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)` is just represented as `PByteString`. This is ensured by deriving all necessary instances (particularly `PlutusType`) using [`DerivePNewtype`](./USAGE.md#deriving-typeclasses-for-newtypes).
+
+* If it's an ADT that derives `PlutusType` generically (i.e. `derive anyclass (PlutusType)`)- it uses scott encoding. This is typically the encoding you want for non-trivial data types that don't need to be part of datums or redeemers.
+
+  e.g. `PList` derives `PlutusType` generically and is represented with Scott encoding.
+
+* If it's an ADT that derives `PIsDataRepr` generically (i.e `derive anyclass (PIsDataRepr)`), as well as `PlutusType` via `PIsDataReprInstances`, it's data encoded. Particularly, it's a [`Data`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:Data) value - which is part of the builtin types.
+
+  e.g. `PScriptContext` derives `PIsDataRepr` generically and `PlutusType` via `PIsDataReprInstances`.
