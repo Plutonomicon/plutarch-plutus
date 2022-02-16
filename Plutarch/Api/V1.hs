@@ -31,8 +31,6 @@ module Plutarch.Api.V1 (
 
   -- ** Crypto
   Crypto.PPubKeyHash (PPubKeyHash),
-  Crypto.PPubKey (PPubKey),
-  Crypto.PSignature (PSignature),
 
   -- ** DCert
   DCert.PDCert (
