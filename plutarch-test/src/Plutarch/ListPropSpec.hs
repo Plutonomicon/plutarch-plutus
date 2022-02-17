@@ -2,13 +2,13 @@ module Plutarch.ListPropSpec (spec) where
 
 import Hedgehog (Property)
 
-import Plutarch.List (pmergesort, pelemAt, pfind, preverse, ptimSort)
+import Plutarch.List (pmergeSort, pelemAt, pfind, preverse, ptimSort)
 import Plutarch.Prelude
 
 import Data.List (find, sort)
 
 import Gen (genList, integerGen)
-import Util (haskPlutEquiv, viaBoth, viaBothPartial, viaPEq)
+import Util (haskPlutEquiv, viaBothPartial, viaPEq)
 
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
@@ -21,17 +21,18 @@ spec = describe "list spec" $ do
   it "find" findTest
   it "reverse" reverseTest
   it "elemAt" elemAtTest
-  it "mergesort" mergesortTest
-  it "timsort" timsortTest
+  it "pmergeSort" pmergeSortTest
+  it "ptimSort" ptimSortTest
 
 findTest :: Property
 findTest =
   haskPlutEquiv
-    viaBoth
+    viaPEq
     (find @[] @Integer even)
     (pfind # peven)
     (genList integerGen)
       where
+        peven :: Term s (PInteger :--> PBool)
         peven = plam $ \n -> pmod # n # 2 #== 0
 
 reverseTest :: Property
@@ -53,18 +54,18 @@ elemAtTest =
 elemAt :: Integer -> [Integer] -> Integer
 elemAt n xs = xs !! fromInteger n
 
-mergesortTest :: Property
-mergesortTest =
+pmergeSortTest :: Property
+pmergeSortTest =
   haskPlutEquiv
     viaPEq
     (sort @Integer)
-    mergesort
+    pmergeSort
     (genList integerGen)
 
-timsortTest :: Property
-timsortTest =
+ptimSortTest :: Property
+ptimSortTest =
   haskPlutEquiv
     viaPEq
     (sort @Integer)
-    timSort
+    ptimSort
     (genList integerGen)

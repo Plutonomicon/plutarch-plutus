@@ -8,7 +8,7 @@ module Plutarch.List (
   -- * Comparison
   plistEquals,
   psort,
-  pmergesort,
+  pmergeSort,
   ptimSort,
 
   -- * Query
@@ -410,8 +410,8 @@ psort = ptimSort
 -- TODO: decide on default sort
 -- probably by benchmarking them
 
-pmergesort :: POrd a => Term s (PList a :--> PList a)
-pmergesort = phoistAcyclic $
+pmergeSort :: POrd a => Term s (PList a :--> PList a)
+pmergeSort = phoistAcyclic $
   pfix #$ plam $ \self xs ->
     pmatch xs $ \case
       PSNil -> pcon PSNil

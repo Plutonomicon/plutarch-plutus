@@ -976,17 +976,17 @@
     "sydtest": {
       "flake": false,
       "locked": {
-        "lastModified": 1644358460,
-        "narHash": "sha256-1ZxTLL5YVxktyHqfMywwsNGx5nxNMPXnq33QI6BcvUI=",
-        "owner": "srid",
+        "lastModified": 1645049432,
+        "narHash": "sha256-M8lGW31gaGR+kBKC3eWTj6NiXPD4qYxwCiQJaAYLpu8=",
+        "owner": "Geometer1729",
         "repo": "sydtest",
-        "rev": "5b572105c30f79c5e20637c6af4eedf39e0ac85a",
+        "rev": "06d3983ba48b43f819d1b4f958e8a42727f5abc4",
         "type": "github"
       },
       "original": {
-        "owner": "srid",
-        "ref": "ghc921",
+        "owner": "Geometer1729",
         "repo": "sydtest",
+        "rev": "06d3983ba48b43f819d1b4f958e8a42727f5abc4",
         "type": "github"
       }
     },
