@@ -18,7 +18,6 @@ import Plutus.V1.Ledger.Value (CurrencySymbol (CurrencySymbol))
 import Plutus.V2.Ledger.Contexts (ScriptPurpose (Minting))
 import qualified PlutusCore as PLC
 import qualified PlutusTx
-import Properties.Spec (propertyTests)
 
 import qualified Examples.ConstrData as ConstrData
 import qualified Examples.LetRec as LetRec
@@ -30,7 +29,7 @@ import Data.Text (Text)
 main :: IO ()
 main = do
   setLocaleEncoding utf8
-  defaultMain $ testGroup "all tests" [standardTests, propertyTests] -- , shrinkTests ]
+  defaultMain $ testGroup "all tests" [standardTests] -- , shrinkTests ]
 
 -- FIXME: Make the below impossible using run-time checks.
 -- loop :: Term (PInteger :--> PInteger)
