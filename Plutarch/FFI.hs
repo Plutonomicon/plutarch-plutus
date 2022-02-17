@@ -18,7 +18,12 @@ import GHC.Generics (Generic)
 import GHC.TypeLits (TypeError)
 import qualified GHC.TypeLits as TypeLits
 import qualified Generics.SOP as SOP
-import Generics.SOP.Type.Metadata (DatatypeInfo (Newtype))
+import Generics.SOP.GGP (GCode, GDatatypeInfoOf)
+import Generics.SOP.Type.Metadata (
+  ConstructorInfo (Constructor, Infix, Record),
+  ConstructorName,
+  DatatypeInfo (ADT, Newtype),
+ )
 import Plutarch (
   ClosedTerm,
   PDelayed,
@@ -151,12 +156,44 @@ type family PlutusTxInner (t :: Type) (any :: Type) :: Type where
   PlutusTxInner (a -> b) x = PlutusTxInner a x -> PlutusTxInner b x
   PlutusTxInner (Delayed a) x = Delayed (PlutusTxInner a x)
   PlutusTxInner [a] x = DelayedList (PlutusTxInner a x)
-  PlutusTxInner a x = TypeEncoding (SOP.Code a) (SOP.DatatypeInfoOf a) x
+  PlutusTxInner a x = TypeEncoding (GCode a) (GDatatypeInfoOf a) x
 
 type TypeEncoding :: [[Type]] -> DatatypeInfo -> Type -> Type
 type family TypeEncoding a rep x where
   TypeEncoding '[ '[b]] ( 'Newtype _ _ _) x = PlutusTxInner b x
-  TypeEncoding sop _ x = Delayed (PlutusTxInner (ScottFn (ScottList sop x) x) x)
+-- Matching the behaviour of PlutusTx.Lift.Class.sortedCons
+  TypeEncoding sop ( 'ADT _ "Bool" _ _) x = Delayed (PlutusTxInner (ScottFn (ScottList sop x) x) x)
+  TypeEncoding sop ( 'ADT _ _ cons _) x = Delayed (PlutusTxInner (ScottFn (ScottList (Fst (SortedBy '(sop, NamesOf cons))) x) x) x)
+
+type Fst :: (a, b) -> a
+type family Fst x where
+  Fst '(a, _) = a
+
+type SortedBy :: ([[Type]], [ConstructorName]) -> ([[Type]], [ConstructorName])
+type family SortedBy xs where
+  SortedBy '((ts ': tss), (name ': names)) = Insert ts name (SortedBy '(tss, names))
+  SortedBy '( '[], '[]) = '( '[], '[])
+
+type Insert :: [Type] -> ConstructorName -> ([[Type]], [ConstructorName]) -> ([[Type]], [ConstructorName])
+type family Insert ts name xs where
+  Insert ts1 name1 '(ts2 ': tss, name2 : names) = Insert' (TypeLits.CmpSymbol name1 name2) ts1 name1 '(ts2 ': tss, name2 : names)
+  Insert ts name '( '[], '[]) = '( '[ts], '[name])
+
+type Insert' :: Ordering -> [Type] -> ConstructorName -> ([[Type]], [ConstructorName]) -> ([[Type]], [ConstructorName])
+type family Insert' o ts name xs where
+  Insert' 'GT ts1 name1 '(ts2 ': tss, name2 ': names) = Cons ts2 name2 (Insert ts1 name1 '(tss, names))
+  Insert' _ ts name '(tss, names) = '(ts ': tss, name ': names)
+
+type Cons :: a -> b -> ([a], [b]) -> ([a], [b])
+type family Cons ts name xs where
+  Cons ts name '(tss, names) = '(ts ': tss, name ': names)
+
+type NamesOf :: [ConstructorInfo] -> [ConstructorName]
+type family NamesOf cs where
+  NamesOf ( 'Constructor name ': cs) = name ': NamesOf cs
+  NamesOf ( 'Infix name _ _ ': cs) = name ': NamesOf cs
+  NamesOf ( 'Record name _ ': cs) = name ': NamesOf cs
+  NamesOf '[] = '[]
 
 {- |
   List of scott-encoded constructors of a Haskell type (represented by 'SOP.Code')
