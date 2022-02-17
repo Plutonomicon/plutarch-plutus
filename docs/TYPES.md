@@ -27,9 +27,7 @@ Also see: [eDSL types in Plutarch](./CONCEPTS.md#edsl-types-in-plutarch)
 
 # `PInteger`
 
-`Term s PInteger` has a convenient `Num` instance that allows you to construct Plutarch level integer terms from regular literals. It also means you have all the typical arithmetic operations available to you:
-
-> Jack: consider replacing 'regular'.
+`Term s PInteger` has a convenient `Num` instance that allows you to construct Plutarch level integer terms from integer literals. It also means you have all the typical arithmetic operations available to you:
 
 ```haskell
 1 + 2
@@ -37,9 +35,7 @@ Also see: [eDSL types in Plutarch](./CONCEPTS.md#edsl-types-in-plutarch)
 
 where `1` and `2` are `Term s PInteger`s.
 
-Alongside `Num`, it also has a `PIntegral` instance, allowing you to division, modulus etc.
-
-> Jack: allowing you to _use_ division, modulus etc.
+Alongside `Num`, it also has a `PIntegral` instance, allowing you to use division, modulus etc.
 
 It also has a `PEq` and `POrd` instance, allowing you to do Plutarch level equality and comparison.
 
@@ -56,11 +52,7 @@ pif (pconstant PFalse) 7 42
 -- evaluates to 42
 ```
 
-You can combine Plutarch booleans terms using `#&&` and `#||`, which are synonyms to `&&` and `||`. These are haskell level operators and therefore have short circuiting. If you don't need short circuiting, you can use the Plutarch level alternatives- `pand'` and `por'` respectively.
-
-> Jack: consider capitalizing 'boolean' throughout.
-
-> Jack: capitalize Haskell
+You can combine Plutarch booleans terms using `#&&` and `#||`, which are synonyms to `&&` and `||`. These are Haskell level operators and therefore have short circuiting. If you don't need short circuiting, you can use the Plutarch level alternatives- `pand'` and `por'` respectively.
 
 This is synonymous to Plutus Core [builtin boolean](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins-Internal.html#t:BuiltinBool).
 
@@ -146,13 +138,11 @@ The second argument is the value to return when the list is empty. It's _only ev
 
 The final argument is, of course, the list itself.
 
-> Aside: Interested in the lower level details of `PBuiltinList` (i.e Plutus Core builtin lists)? You can find all you need to know about it at [plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-lists.md).
-
-> Jack: Capitalize Plutonomicon.
+> Aside: Interested in the lower level details of `PBuiltinList` (i.e. Plutus Core builtin lists)? You can find all you need to know about it at [Plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-lists.md).
 
 # `PList`
 
-Here's the [scott encoded](./CONCEPTS.md#scott-encoding) cousin of `PBuiltinList`. What does that mean? Well, in practice, it just means that `PList` can contain _any arbitrary_ term - not just builtin types. `PList` also has a [`PListLike`](#plistlike) instance - so you won't be missing any of those utilities here!
+Here's the [Scott encoded](./CONCEPTS.md#scott-encoding) cousin of `PBuiltinList`. What does that mean? Well, in practice, it just means that `PList` can contain _any arbitrary_ term - not just builtin types. `PList` also has a [`PListLike`](#plistlike) instance - so you won't be missing any of those utilities here!
 
 `PList` also has a [`PlutusType`](./TYPECLASSES.md#plutustype-pcon-and-pmatch) instance. You can construct a `PList` using `pcon` (but you should prefer using `pcons` from `PListLike`):
 
@@ -244,7 +234,7 @@ pdata :: Term s (PBuiltinList (PAsData a)) -> Term s (PAsData (PBuiltinList (PAs
 
 # `PDataSum` & `PDataRecord`
 
-Plutarch sum and product types are represented using `PDataSum` and `PDataRecord` respectively. These types are crucial to the [`PIsDataRepr`](#pisdatarepr) machinery.
+Plutarch sum and product types are represented using `PDataSum` and `PDataRecord` respectively. These types are crucial to the [`PIsDataRepr`](./TYPECLASSES.md#pisdatarepr) machinery.
 
 Whenever you need to represent a non-trivial ADT using [`Data` encoding](./CONCEPTS.md#data-encoding), you'll likely be reaching for these.
 
@@ -287,9 +277,7 @@ PDataSum
   ]
 ```
 
-represents a sum type with 2 constructors. The first constructor has 2 fields- `_0`, and `_1`, with types `PInteger` and `PByteString` respectively. The second constructor has one field- `myField`, with type `PBool`.
-
-> Jack: two for 2
+represents a sum type with 2 constructors. The first constructor has two fields- `_0`, and `_1`, with types `PInteger` and `PByteString` respectively. The second constructor has one field- `myField`, with type `PBool`.
 
 > Note: It's convention to give names like `_0`, `_1` etc. to fields that don't have a canonically meaningful name. They are merely the "0th field", "1st field" etc.
 
@@ -380,8 +368,8 @@ radiusFromCircleData = fieldFromData radius
 
 This is a direct synonym to [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md). As such, it doesn't keep track of what "species" of `Data` it actually is. Is it an `I` data? Is it a `B` data? Nobody can tell for sure!
 
-Consider using [`PAsData`](#pasdata) instead for simple cases, i.e cases other than `Constr`.
+Consider using [`PAsData`](#pasdata) instead for simple cases, i.e. cases other than `Constr`.
 
-Consider using [`PDataSum`/`PDataList`](#pdatasum--pdatarecord) instead when dealing with ADTs, i.e `Constr` data values.
+Consider using [`PDataSum`/`PDataList`](#pdatasum--pdatarecord) instead when dealing with ADTs, i.e. `Constr` data values.
 
 You can find more information about `PData` at [Developers' Corner](./DEVGUIDE.md).

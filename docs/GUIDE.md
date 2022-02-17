@@ -13,7 +13,7 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
   - [Typeclasses](#typeclasses)
   - [Working with Types](#working-with-types)
 - [Examples](#examples)
-- [Thumb rules, Tips, and Trickss](#thumb-rules-tips-and-trickss)
+- [Rules of thumb, Tips, and Tricks](#rules-of-thumb-tips-and-tricks)
 - [Common Issues and Troubleshooting](#common-issues-and-troubleshooting)
 - [Useful Links](#useful-links)
 
@@ -107,11 +107,9 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 
 Also see: [examples](https://github.com/Plutonomicon/plutarch/tree/master/examples).
 
-# Thumb rules, Tips, and Trickss
+# Rules of thumb, Tips, and Tricks
 
-Outside of the fundamental user guide, there are thumb rules and general guidelines you can follow to improve your Plutarch experience. In this section, we discuss ways of writing efficient and high quality Plutarch code, as well as rules that can help auditing Plutarch easier.
-
-> Jack: 'rules of thumb' rather than 'thumb rules'.
+Outside of the fundamental user guide, there are rules of thumb and general guidelines you can follow to improve your Plutarch experience. In this section, we discuss ways of writing efficient and high quality Plutarch code, as well as rules that can help auditing Plutarch easier.
 
 - [Plutarch functions are strict](./TRICKS.md#plutarch-functions-are-strict)
 - [Don't duplicate work](./TRICKS.md#dont-duplicate-work)

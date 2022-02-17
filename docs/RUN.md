@@ -14,23 +14,72 @@ This document describes how to compile and run Plutarch - whether for on chain d
 
 You generally want to adhere to the same extensions and GHC options the [Plutarch repo](https://github.com/Plutonomicon/plutarch/blob/master/plutarch.cabal) uses.
 
-> Jack: Maybe consider listing these in-full? Potentially with a link to the `.cabal` and a disclaimer that it _might_ not be up-to-date? In the old file it would've been lengthy but now you have split it up...?
+<details>
+<summary> List of GHC extensions </summary>
+
+- `NoStarIsType`
+- `BangPatterns`
+- `BinaryLiterals`
+- `ConstrainedClassMethods`
+- `ConstraintKinds`
+- `DataKinds`
+- `DeriveAnyClass`
+- `DeriveDataTypeable`
+- `DeriveFoldable`
+- `DeriveFunctor`
+- `DeriveGeneric`
+- `DeriveLift`
+- `DeriveTraversable`
+- `DerivingStrategies`
+- `DerivingVia`
+- `DoAndIfThenElse`
+- `EmptyCase`
+- `EmptyDataDecls`
+- `EmptyDataDeriving`
+- `ExistentialQuantification`
+- `ExplicitForAll`
+- `FlexibleContexts`
+- `FlexibleInstances`
+- `ForeignFunctionInterface`
+- `GADTSyntax`
+- `GeneralisedNewtypeDeriving`
+- `HexFloatLiterals`
+- `ImplicitPrelude`
+- `InstanceSigs`
+- `KindSignatures`
+- `LambdaCase`
+- `MonomorphismRestriction`
+- `MultiParamTypeClasses`
+- `NamedFieldPuns`
+- `NamedWildCards`
+- `NumericUnderscores`
+- `OverloadedStrings`
+- `PartialTypeSignatures`
+- `PatternGuards`
+- `PolyKinds`
+- `PostfixOperators`
+- `RankNTypes`
+- `RelaxedPolyRec`
+- `ScopedTypeVariables`
+- `StandaloneDeriving`
+- `StandaloneKindSignatures`
+- `TraditionalRecordSyntax`
+- `TupleSections`
+- `TypeApplications`
+- `TypeFamilies`
+- `TypeOperators`
+- `TypeSynonymInstances`
+- `ViewPatterns`
+
+</details>
 
 # Evaluation
 
-You can compile a Plutarch term using `compile`(from `Plutarch` module), making sure it has no free variables. `compile` returns a `Script`- you can use this as you would any other Plutus script. The API in `Plutus.V1.Ledger.Scripts` should prove helpful.
-
-> Jack: `compile` (from `Plutarch module`) \[missing space].
-
-> Jack: `Script` - you can \[missing space].
-
-> Jack: consider linking to [here](https://playground.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Scripts.html).
+You can compile a Plutarch term using `compile` (from `Plutarch` module), making sure it has no free variables. `compile` returns a `Script`, which you can use as you would any other Plutus script. The API in [`Plutus.V1.Ledger.Scripts`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Scripts.html) should prove helpful.
 
 > For further insight into what is compiled - you can use `printTerm` or `printScript` (from `Plutarch` module).
 
-I often use these helper functions to test Plutarch quickly-
-
-> Jack: replace - with :
+I often use these helper functions to test Plutarch quickly:
 
 ```haskell
 import Data.Text (Text)
@@ -48,7 +97,7 @@ evalWithArgs :: ClosedTerm a -> [Data] -> Either ScriptError (ExBudget, [Text], 
 evalWithArgs x args = fmap (\(a, b, s) -> (a, b, unScript s)) . evaluateScript . flip applyArguments args $ compile x
 ```
 
-The fields in the result triple correspond to execution budget (how much memory and CPU units were used), trace log, and script result - respectively. Often you're only interested in the script result, in that case you can use-
+The fields in the result triple correspond to execution budget (how much memory and CPU units were used), trace log, and script result - respectively. Often you're only interested in the script result, in that case you can use:
 
 ```haskell
 evalT :: ClosedTerm a -> Either ScriptError (Program DeBruijn DefaultUni DefaultFun ())

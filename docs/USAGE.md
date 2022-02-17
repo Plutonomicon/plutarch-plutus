@@ -19,8 +19,6 @@ This document describes various core Plutarch usage concepts.
 
 You can apply Plutarch level functions using `#` and `#$` (or `papp`). Notice the associativity and precedence of those operators:
 
-> Jack: operators:
-
 ```haskell
 infixl 8 #
 
@@ -29,15 +27,13 @@ infixr 0 #$
 
 `#$` is pretty much just `$` for Plutarch functions. But `#` is left associative and has a high precedence. This essentially means that the following:
 
-> Jack: following:
-
 ```haskell
 f # 1 # 2
 
 -- f :: Term s (PInteger :--> PInteger :--> PUnit)
 ```
 
-applies `f` to 1 and 2. i.e, it is parsed as - `((f 1) 2)`
+applies `f` to 1 and 2. i.e. it is parsed as - `((f 1) 2)`
 
 Whereas, the following:
 
@@ -48,17 +44,7 @@ f #$ foo # 1
 -- foo :: Term s (PInteger :--> PBool)
 ```
 
-parses as - `f (foo 1)`
-
-(don't take the parens literally - after all `f` and `foo` are not Haskell level functions)
-
-> Jack: consider:
->
-> This means that `f # 1 # 2`\* applies `f` to `1` and then `2` i.e. `(f 1) 2`. In contrast, `g #$ foo # 1`\*\* parses as `g (foo 1)`.
->
-> > \* `f :: Term s (PInteger :--> PInteger :--> PUnit)`
->
-> > \*\* `g :: Term s (PBool :--> PUnit)` `foo :: Term s (PInteger :--> PBool)`
+applies `foo` to `1` and applies the result of that to `f`.
 
 > Aside: Remember that function application here is **strict**. The arguments _will be evaluated_ and then passed in.
 
@@ -67,8 +53,6 @@ parses as - `f (foo 1)`
 # Conditionals
 
 You can simulate `if/then/else` at the Plutarch level using `pif`:
-
-> Jack: `pif`: . N.B. I am no longer going to highlight instances where '-' needs to be replaced. Essentially everywhere I have seen '-' used thus far should be replaced with ':' or ','. See [here](https://www.lexico.com/grammar/colon), [here](https://www.lexico.com/grammar/comma) and [here](https://www.lexico.com/grammar/hyphen).
 
 ```haskell
 pif :: Term s PBool -> Term s a -> Term s a -> Term s a
@@ -80,21 +64,11 @@ This has similar semantics to Haskell's `if/then/else`. That is, only the branch
 pif (pconstant True) 1 2
 ```
 
-The above evaluates to `1`, which has type `Term s PInteger`
-
-> Jack: `Term s PInteger`. \[full stop]
-
-Of course, the predicate can be an arbitrary `Term s PBool` producing computation.
-
-> Jack: I find 'producing computation' abrupt and unclear.
+The above evaluates to `1`, which has type `Term s PInteger`.
 
 # Recursion
 
-To emulate recursion in UPLC (Untyped Plutus Core), you need to use the Y combinator. Plutarch provides the Y combinator with the name `pfix`:
-
-> Jack: Consider linking to the Plutonomicon UPLC docs here, as you did in guide.
-
-> Jack: Consider linking to a simple resource on the Y combinator.
+To emulate recursion in [UPLC (Untyped Plutus Core)](https://github.com/Plutonomicon/plutonomicon/blob/main/uplc.md), you need to use [the Y combinator](https://stackoverflow.com/questions/93526/what-is-a-y-combinator). Plutarch provides the Y combinator with the name `pfix`:
 
 ```haskell
 pfix :: Term s (((a :--> b) :--> a :--> b) :--> a :--> b)
@@ -124,9 +98,6 @@ There's a Plutarch level factorial function! Note how `f` takes in a `self` and 
 # Do syntax with `TermCont`
 
 Continuation functions like `pmatch`, `plet`, and `pletFields` aren't exactly the most convenient, are they? Fortunately, `TermCont` makes it much easier to use. `TermCont` is the familiar [`Cont`](https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-Cont.html) monad, specialized for Plutarch terms.
-
-> Jack: consider emphasising _mostly_.
-> Chase: This comment is now out of context. But I do agree that it should've been emphasized. We will no longer be encouraging `QualifiedDo` usage and switching preference to `TermCont`. Expect Plutarch 2.0 to switch out all continuation functions to return `TermCont`, potentially warranting the removal of `Plutarch.Monadic`.
 
 `TermCont @b s a` essentially represents `(a -> Term s b) -> Term s b`. `a` being the input to the continuation, and `Term s b` being the output. Notice the type application - `b` must have been brought into scope through another binding first.
 
@@ -162,9 +133,6 @@ test = plam $ \x -> unTermCont $ do
 ```
 
 How cool is that? You can use regular `do` syntax on the `TermCont` monad. All the continuations are flattened! Just remember to `unTermCont` the result.
-
-> Jack: The best part is: as you don't require `QualifiedDo`, you don't need GHC 9!
-> Chase: This comment is also a bit out of context now. We basically want to give the impression that you never even need to consider the `QualifiedDo` method. That's why `TermCont` is moved up and prioritized in examples.
 
 Furthermore, this is very similar to the `Cont` monad - it just operates on Plutarch level terms. This means you can draw parallels to utilities and patterns one would use when utilizing the `Cont` monad. Here's an example:
 
@@ -209,14 +177,9 @@ f = plam $ \x -> P.do
 
 In essence, `P.do { x; y }` simply translates to `x y`; where `x :: a -> Term s b` and `y :: a`.
 
-Similarly, `P.do { y <- x; z }` translates to `x $ \case { y -> z; _ -> ptraceError <msg> }`; where `x :: (a -> Term s b) -> Term s b`, `y :: a`, and `z :: Term s b`. Of course, if `y` is a fully exhaustive pattern match (e.g, singular constructor), the extra `_ -> ptraceError <msg>` case will not be generated at all and you'd simply get `x $ \y -> z`.
-
-> Jack: e.g. not e.g,
+Similarly, `P.do { y <- x; z }` translates to `x $ \case { y -> z; _ -> ptraceError <msg> }`; where `x :: (a -> Term s b) -> Term s b`, `y :: a`, and `z :: Term s b`. Of course, if `y` is a fully exhaustive pattern match (e.g. singular constructor), the extra `_ -> ptraceError <msg>` case will not be generated at all and you'd simply get `x $ \y -> z`.
 
 Finally, `P.do { x }` is just `x`.
-
-> Jack: consider 'for use with'.
-> Chase: Sorry! I removed this entire section basically. For aforementioned reasons.
 
 # Deriving typeclasses for `newtype`s
 
@@ -226,9 +189,7 @@ If you're defining a `newtype` to an existing Plutarch type, like so:
 newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
 ```
 
-You ideally want to just have this `newtype` be represetned as a `PByteString` under the hood. Therefore, all the typeclass instances of `PByteString` make sense for `PPubKeyHash` as well. In this case, you can simply derive all those typeclasses for your `PPubKeyHash` type as well! Via `DerivePNewtype`:
-
-> Jack: represented
+You ideally want to just have this `newtype` be represented as a `PByteString` under the hood. Therefore, all the typeclass instances of `PByteString` make sense for `PPubKeyHash` as well. In this case, you can simply derive all those typeclasses for your `PPubKeyHash` type as well! Via `DerivePNewtype`:
 
 ```hs
 {-# LANGUAGE UndecidableInstances #-}
@@ -241,9 +202,9 @@ newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
 
 (yes, you need `UndecidableInstances` to derive `PlutusType`)
 
-`DerivePNewtype` takes two type parameters. Both of them are Plutarch types (i.e types with kind `PType`). The first one is the type you're deriving the instances for, while the second one is the _inner_ type (whatever `PPubKeyHash` is a newtype to).
+`DerivePNewtype` takes two type parameters. Both of them are Plutarch types (i.e. types with kind `PType`). The first one is the type you're deriving the instances for, while the second one is the _inner_ type (whatever `PPubKeyHash` is a newtype to).
 
-> Note: It's important to note that the content of a `newtype` _that aims to be a Plutarch type_ (i.e can be represented as a Plutarch term), must also be a Plutarch term. The type `PByteString s` simply doesn't exist in the Plutus Core world after compilation. It's all just `Term`s. So, when you say `Term s PPubKeyHash`, you're really just describing a `Term s PByteString` under the hood - since that's what it _is_ during runtime.
+> Note: It's important to note that the content of a `newtype` _that aims to be a Plutarch type_ (i.e. can be represented as a Plutarch term), must also be a Plutarch term. The type `PByteString s` simply doesn't exist in the Plutus Core world after compilation. It's all just `Term`s. So, when you say `Term s PPubKeyHash`, you're really just describing a `Term s PByteString` under the hood - since that's what it _is_ during runtime.
 
 > Aside: You can access the inner type using `pto` (assuming it's a `PlutusType` instance). For example, `pto x`, where `x :: Term s PPubKeyHash`, would give you `Term s PByteString`. `pto` converts a [`PlutusType`](./TYPECLASSES.md#plutustype-pcon-and-pmatch) term to its inner type. This is very useful, for example, when you need to use a function that operates on bytestring terms, but all you have is a `Term s PPubKeyHash`. You _know_ it's literally a bytestring under the hood anyway - but how do you obtain that? Using `pto`!
 
@@ -287,11 +248,9 @@ data MyType (a :: PType) (b :: PType) (s :: S)
 
 > Note: This requires the `generics-sop` package.
 
-This will use a [scott encoding representation](./CONCEPTS.md#scott-encoding) for `MyType`, which is typically what you want. If you want to use [data encoding representation](./CONCEPTS.md#data-encoding) instead in your `PlutusType` instance - you should derive it using `PIsDataReprInstances`. Check out: [implementing `PIsDataRepr` and friends](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)
-
-> Jack: Scott is a proper noun and must always be capitalized.
+This will use a [Scott encoding representation](./CONCEPTS.md#scott-encoding) for `MyType`, which is typically what you want. If you want to use [data encoding representation](./CONCEPTS.md#data-encoding) instead in your `PlutusType` instance - you should derive it using `PIsDataReprInstances`. Check out: [implementing `PIsDataRepr` and friends](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)
 
 Currently, generic deriving supports the following typeclasses:
 
-- [`PlutusType`](./TYPECLASSES.md#implementing-plutustype-for-your-own-types) (scott encoding only)
+- [`PlutusType`](./TYPECLASSES.md#implementing-plutustype-for-your-own-types) (Scott encoding only)
 - [`PIsDataRepr`](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)

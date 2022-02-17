@@ -19,7 +19,7 @@ You should add `PLift a` to the context! `PLift` is just a synonym to `PUnsafeLi
 
 # Couldn't match representation of type: ... arising from the 'deriving' clause
 
-If you're getting these errors when deriving typeclasses using the machinery provided by Plutarch (e.g generic deriving, deriving via `PIsDataReprInstances`, `DerivePConstantViaData` etc.) - it means you're missing a constructor import.
+If you're getting these errors when deriving typeclasses using the machinery provided by Plutarch (e.g. generic deriving, deriving via `PIsDataReprInstances`, `DerivePConstantViaData` etc.) - it means you're missing a constructor import.
 
 If you get this while using `DerivingVia`, make sure you have imported the constructor of the type you're _deriving via_.
 

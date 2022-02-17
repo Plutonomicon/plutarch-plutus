@@ -22,9 +22,7 @@ This document describes various concepts applicable in Plutarch.
 
 # Hoisting, metaprogramming, and fundamentals
 
-What is essentially happening here, is that we have a 2-stage compilation process.
-
-> Jack: Plutarch may be conceived as having a two-stage compilation process. N.B. Numbers less than 10 should often be written as a word.
+What is essentially happening here, is that we have a two-stage compilation process.
 
 First GHC compiles our code, then our code generates an _AST_ of our Plutus script,
 
@@ -39,17 +37,11 @@ x = something complex
 
 Any use of `x` will inline the **full definition** of `x`. `x + x` will duplicate `something complex` in the AST. To avoid this, you should [use `plet` in order to avoid duplicate work](#plet-to-avoid-work-duplication). Do note that this is **strictly evaluated, and hence isn't always the best solution.**
 
-There is however still a problem: What about top-level functions, like `fib`, `sum`, `filter`, and such? We can use `plet` to avoid duplicating the definition, but this is error-prone, since to do this perfectly each function that generates part of the AST would need to have access to the `plet`'ed definitions, meaning that we'd likely have to put it into a record or typeclass.
-
-> Jack: problem: what...
-
-> Jack: but this _is_ error-prone.
+There is however still a problem: what about top-level functions like `fib`, `sum`, `filter`, and such? We can use `plet` to avoid duplicating the definition, but this is error-prone, since to do this perfectly each function that generates part of the AST would need to have access to the `plet`'ed definitions, meaning that we'd likely have to put it into a record or typeclass.
 
 To solve this problem, Plutarch supports _hoisting_. Hoisting only works for _closed terms_, that is, terms that don't reference any free variables (introduced by `plam`).
 
-Hoisted terms are essentially moved to a top-level `plet`, i.e. it's essentially common subexpression elimination. Do note that because of this, your hoisted term is **also strictly evaluated, meaning that you shouldn't hoist non-lazy complex computations (use e.g.** `pdelay` **to avoid this).**
-
-> Jack: sub-expression
+Hoisted terms are essentially moved to a top-level `plet`, i.e. it's essentially common sub-expression elimination. Do note that because of this, your hoisted term is **also strictly evaluated**, meaning that you _shouldn't_ hoist non-lazy complex computations (use [`pdelay`](./CONCEPTS.md#delay-and-force) to avoid this).
 
 ## Hoisting Operators
 
@@ -110,9 +102,7 @@ Most types prefixed with `P` are eDSL-level types, meaning that they're meant to
 
 # `plet` to avoid work duplication
 
-Sometimes, when writing Haskell level functions for generating Plutarch terms, you may find yourself needing to re-use the Haskell level function's argument multiple times:
-
-> Jack: arguments
+Sometimes, when writing Haskell level functions working on Plutarch terms, you may find yourself needing to re-use the Haskell level function's argument(s) multiple times:
 
 ```hs
 foo :: Term s PString -> Term s PString
@@ -129,9 +119,7 @@ If you have the `development` flag for `plutarch` turned on - you'll see the tra
 
 # Raising errors
 
-In Plutus Tx, you'd signal validation failure with the [`error`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Prelude.html#v:error) function. You can do the same in Plutarch using `perror`.
-
-> Jack: PlutusTx
+In PlutusTx, you'd signal validation failure with the [`error`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Prelude.html#v:error) function. You can do the same in Plutarch using `perror`.
 
 ```hs
 fails :: Term s (PData :--> PData :--> PData :--> PUnit)
@@ -174,11 +162,7 @@ pif :: Term s PBool -> Term s a -> Term s a -> Term s a
 pif cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay whenFalse
 ```
 
-`pif'` is a direct synonym to the `IfThenElse` Plutus Core builtin function. Of course, it evaluates its arguments strictly but you often want an if-then-else that doesn't evaluate both its branches - only the one for which the condition holds. So, `pif`, as a haskell level function can take in both branches (without any concept of evaluating them), delay them and _then_ apply it to `pif'`. Finally, a `pforce` will force the yielded branch that was previously delayed.
-
-> Jack: Capitalize Haskell.
-
-> Jack: apply _them_ to `pif'`.
+`pif'` is a direct synonym to the `IfThenElse` Plutus Core builtin function. Of course, it evaluates its arguments strictly but you often want an if-then-else that doesn't evaluate both its branches - only the one for which the condition holds. So, `pif`, as a Haskell level function can take in both branches (without any concept of evaluating them), delay them and _then_ apply them to `pif'`. Finally, a `pforce` will force the yielded branch that was previously delayed.
 
 > Aside: Be careful of `pforce`ing the same delayed term twice. Unlike Haskell's handling of laziness - where forcing a thunk twice never duplicates computation - UPLC (Untyped Plutus Core) will happily duplicate the computation each time you force it.
 
@@ -196,21 +180,15 @@ In Plutus Core, there are really two (conflicting) ways to represent non-trivial
 
 > Note: You can find out more about the deep details of `Data`/`BuiltinData` at [plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md).
 
-With that said, `Data` encoding is _ubiquitous_ on the chain. It's the encoding used by the ledger api types, it's the type of the arguments that can be passed to a script on the chain etc. As a result, your datum and redeemers _must_ use data encoding.
-
-> Jack: Capitalize Ledger.
-
-> Jack: Consider 'datums'.
+With that said, `Data` encoding is _ubiquitous_ on the chain. It's the encoding used by the ledger api types, it's the type of the arguments that can be passed to a script on the chain etc. As a result, your datums and redeemers _must_ use data encoding.
 
 ## Scott encoding
 
-On the opposite (and conflicting) end, is scott encoding. [The internet](https://crypto.stanford.edu/~blynn/compiler/scott.html) can explain scott encoding way better than I can. But I'll be demonstrating scott encoding with an example anyway.
+On the opposite (and conflicting) end, is Scott encoding. [The internet](https://crypto.stanford.edu/~blynn/compiler/scott.html) can explain Scott encoding way better than I can. But I'll be demonstrating Scott encoding with an example anyway.
 
-> Jack: Always capitalize Scott, it is a proper noun.
+Firstly, what good is Scott encoding? Well it doesn't share the limitation of not being able to contain functions! However, you cannot use Scott encoded types within, for example, your datums and redeemers.
 
-Firstly, what good is scott encoding? Well it doesn't share the limitation of not being able to contain functions! However, you cannot use scott encoded types within, for example, your datums and redeemers.
-
-Briefly, scott encoding is a way to represent data with functions. The scott encoded representation of `Maybe a` would be:
+Briefly, Scott encoding is a way to represent data with functions. The Scott encoded representation of `Maybe a` would be:
 
 ```hs
 (a -> b) -> b -> b
@@ -228,9 +206,7 @@ Whereas `Nothing` would be represented as this function:
 \_ n -> n
 ```
 
-We covered construction. What about usage/deconstruction? That's also just as simple. Let's say you have a function, `foo :: Maybe Integer -> Integer`, it takes in a scott encoded `Maybe Integer`, and adds `42` to its `Just` value. If it's `Nothing`, it just returns 0.
-
-> Jack: consider zero or `0`.
+We covered construction. What about usage/deconstruction? That's also just as simple. Let's say you have a function, `foo :: Maybe Integer -> Integer`, it takes in a Scott encoded `Maybe Integer`, and adds `42` to its `Just` value. If it's `Nothing`, it just returns `0`.
 
 ```hs
 {-# LANGUAGE RankNTypes #-}

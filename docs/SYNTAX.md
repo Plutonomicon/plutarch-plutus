@@ -23,7 +23,7 @@ There are several ways of building Plutarch constants. We discuss the primary on
 
 ## Static building with `pconstant` and `pconstantData`
 
-Plutarch constant terms can be built directly from Haskell synonyms using `pconstant` (requires [`PConstant`/`PLift`](#pconstant--plift) instance). `pconstant` always takes in a regular Haskell value to create its Plutarch synonym.
+Plutarch constant terms can be built directly from Haskell synonyms using `pconstant` (requires [`PConstant`/`PLift`](./TYPECLASSES.md#pconstant--plift) instance). `pconstant` always takes in a regular Haskell value to create its Plutarch synonym.
 
 ```hs
 import Plutarch.Prelude
@@ -33,9 +33,7 @@ x :: Term s PBool
 x = pconstant True
 ```
 
-Similarly, `PAsData` constant terms can be built using `pconstantData`. If you want to build a `Term s (PAsData PBool)` from a Haskell boolean - you can use `pconstantData True`.
-
-> Jack: replace - with ,
+Similarly, `PAsData` constant terms can be built using `pconstantData`. If you want to build a `Term s (PAsData PBool)` from a Haskell boolean, you can use `pconstantData True`.
 
 > Aside: If you've already read through [`PIsData`](./TYPECLASSES.md#pisdata) and [`PAsData`](./TYPES.md#pasdata), you might know that `pdata . pconstant` would achieve the same thing as `pconstantData`. But it won't actually be as efficient! See, `pconstantData` builds a constant directly - wheras `pdata` _potentially_ dispatches to a builtin function call. Also see: [Prefer statically building constants](./TRICKS.md#prefer-statically-building-constants-whenever-possible).
 
@@ -98,8 +96,6 @@ y = "foobar"
 
 Finally, other miscellaneous functions provided by Plutarch also sometimes build constants:
 
-> Jack: Replace - with :
-
 ```haskell
 import qualified Data.ByteString as BS
 import Plutarch.Prelude
@@ -112,22 +108,16 @@ x = phexByteStr "41"
 
 # Lambdas
 
-You can create Plutarch level lambdas by apply `plam` over a Haskell level lambda/function.
-
-> Jack: applying `plam` to a Haskell level function.
+You can create Plutarch level lambdas by applying `plam` to a Haskell level function.
 
 ```haskell
 pid :: Term s (a :--> a)
 pid = plam $ \x -> x
 ```
 
-The identity function! Notice the type. A Plutarch level lambda uses the funny arrows `:-->` to encode a function type. In the above case, `pid` is a Plutarch level function that takes a type `a`, and returns the same type - `a`. As one would expect, `:-->` is right associative and things curry like a charm (at least, they should).
-
-> Jack: same type: `a`.
+The identity function! Notice the type. A Plutarch level lambda uses the funny arrows `:-->` to encode a function type. In the above case, `pid` is a Plutarch level function that takes a type `a`, and returns the same type: `a`. As one would expect, `:-->` is right associative and things curry like a charm (at least, they should).
 
 Guess what this Plutarch level function does:
-
-> Jack: 'does: '
 
 ```haskell
 f :: Term s (PInteger :--> PString :--> a :--> a)
@@ -136,8 +126,6 @@ f :: Term s (PInteger :--> PString :--> a :--> a)
 That's right! It takes in an integer, a string, and a type `a` and returns the same type `a`. Notice that all of those types are Plutarch level types.
 
 This is the type of the Haskell level function, `plam`:
-
-> Jack: `plam`:
 
 ```haskell
 plam :: (Term s a -> Term s b) -> Term s (a :--> b)
@@ -149,24 +137,16 @@ It just converts a Haskell level function, which operates on purely Plutarch ter
 
 This means that when faced with filling out the gap:
 
-> Jack: gap:
-
 ```haskell
 f :: Term s (PInteger :--> PString :--> a :--> a)
 f = plam $ \???
 ```
 
-You know that the argument to `plam` here will just be a Haskell function that takes in - `Term s PInteger`, `Term s PString`, and `Term s a` (in  that order), and spits out a `Term s a` back.
-
-> Jack: takes in:
-
-> Jack: consider removing the first comma (...`PString` and `Term s a`, and spits...)
+You know that the argument to `plam` here will just be a Haskell function that takes in a `Term s PInteger`, a `Term s PString` and a `Term s a` (in  that order), and spits out a `Term s a` back.
 
 # Delayed terms and Forcing
 
-You can use `pdelay` to create a delayed term and `pforce` to force on it. These will help you emulate laziness in an otherwise strict language. More details at [Delay and Force](./CONCEPTS.md#delay-and-force).
-
-> Jack: Replace 'force on it' with something more descriptive e.g. 'call it' or 'run it'.
+You can use `pdelay` to create a delayed term and `pforce` to evaluate it. These will help you emulate laziness in an otherwise strict language. More details at [Delay and Force](./CONCEPTS.md#delay-and-force).
 
 ```hs
 pdelay :: Term s a -> Term s (PDelayed a)

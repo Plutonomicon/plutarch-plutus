@@ -1,4 +1,4 @@
-This document discusses thumb rules and general trivia, aiming to make life as a Plutarch user or auditor easier.
+This document discusses various rules of thumb and general trivia, aiming to make life as a Plutarch user or auditor easier.
 
 > Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high quality documentation for Plutarch users!
 
@@ -79,7 +79,7 @@ You don't have to worry about work duplication on arguments in _every single sce
 
 Where else is `plet` unnecessary? Functions taking in continuations, such as `plet` (duh) and `pletFields`, always pre-evaluate the binding. An exception, however, is `pmatch`. In certain cases, you don't need to `plet` bindings within the `pmatch` case handler. For example, if you use `pmatch` on a `PList`, the `x` and `xs` in the `PSCons x xs` _will always be pre-evaluated_. On the other hand, if you use `pmatch` on a `PBuiltinList`, the `x` and `xs` in the `PCons x xs` _are **not** pre-evaluated_. Be sure to `plet` them if you use them several times!
 
-In general, `plet`ing something back to back several times will be optimized to a singular `plet` anyway. However, you should know that for data encoded types (types that follow "[implementing `PIsDataRepr` and friends](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)") and scott encoded types, `pmatch` handlers get pre-evaluated bindings. For `PBuiltinList`, and `PDataRecord` - the bindings are not pre-evaluated.
+In general, `plet`ing something back to back several times will be optimized to a singular `plet` anyway. However, you should know that for data encoded types (types that follow "[implementing `PIsDataRepr` and friends](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)") and Scott encoded types, `pmatch` handlers get pre-evaluated bindings. For `PBuiltinList`, and `PDataRecord` - the bindings are not pre-evaluated.
 
 You should also `plet` local bindings! In particular, if you applied a function (whether it be Plutarch level or Haskell level) to obtain a value, bound the value to a variable (using `let` or `where`) - don't use it multiple times! The binding will simply get inlined as the function application - and it'll keep getting re-evaluated. You should `plet` it first!
 
@@ -157,9 +157,9 @@ However, **not all higher order functions** benefit from taking Haskell level fu
 
 # The difference between `PlutusType`/`PCon` and `PLift`'s `pconstant`
 
-`PlutusType` is especially useful for building up Plutarch terms _dynamically_ - i.e, from arbitrary Plutarch terms. This is when your Plutarch type's constructors contain other Plutarch terms.
+`PlutusType` is especially useful for building up Plutarch terms _dynamically_ - i.e. from arbitrary Plutarch terms. This is when your Plutarch type's constructors contain other Plutarch terms.
 
-Another case `PlutusType` is useful is when you want to give your Plutarch type a custom representation, scott encoding, enum - what have you. From the `PlutusType` haddock example:
+Another case `PlutusType` is useful is when you want to give your Plutarch type a custom representation, Scott encoding, enum - what have you. From the `PlutusType` haddock example:
 
 ```hs
 data AB = A | B
@@ -194,7 +194,7 @@ Instead, try to offload the responsbility of evaluation to the Haskell level fun
 
 # The isomorphism between `makeIsDataIndexed`, Haskell ADTs, and `PIsDataRepr`
 
-When [implementing `PIsDataRepr`](./TYPECLASSES.md#implementing-pisdatarepr-and-friends) for a Plutarch type, if the Plutarch type also has a Haskell synonym (e.g `ScriptContext` is the haskell synonym to `PScriptContext`) that uses [`makeIsDataIndexed`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed) - you must make sure the constructor ordering is correct.
+When [implementing `PIsDataRepr`](./TYPECLASSES.md#implementing-pisdatarepr-and-friends) for a Plutarch type, if the Plutarch type also has a Haskell synonym (e.g. `ScriptContext` is the haskell synonym to `PScriptContext`) that uses [`makeIsDataIndexed`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed) - you must make sure the constructor ordering is correct.
 
 > Aside: What's a "Haskell synonym"? It's simply the Haskell type that _is supposed to_ correspond to a Plutarch type. There doesn't _necessarily_ have to be some sort of concrete connection (though there can be, using [`PLift`/`PConstant`](./TYPECLASSES.md#pconstant--plift)) - it's merely a connection you can establish mentally.
 >
@@ -297,7 +297,7 @@ Whenever you need to build a Plutarch term of type `a`, from a Haskell value, us
 
 As discussed in other sections of guide, Plutarch types are merely tags to underlying semantic representations. This is an eDSL after all! Their data declarations _actually_ don't matter as far as internal semantics are concerned. It's actually the `PlutusType` instance that _really_ determines the representation. So how do you figure out the representation of this seemingly transient tag? By following _conventions_.
 
-You _could_ give your Plutarch type a representation that makes no sense given its `data` type declaration, but don't! Instead, most data type declarations follow certain rules to hint at their representations. The representation can only be one of two categories: builtin and scott encoded. All _trivial_ builtin types are already defined in Plutarch: `PInteger`, `PByteString`, `PString`, `PBool`, `PUnit`, `PBuiltinList`, and `PBuiltinPair`.
+You _could_ give your Plutarch type a representation that makes no sense given its `data` type declaration, but don't! Instead, most data type declarations follow certain rules to hint at their representations. The representation can only be one of two categories: builtin and Scott encoded. All _trivial_ builtin types are already defined in Plutarch: `PInteger`, `PByteString`, `PString`, `PBool`, `PUnit`, `PBuiltinList`, and `PBuiltinPair`.
 
 Now, let's discuss patterns of data declarations and what representation they _should_ hint at:
 
@@ -305,10 +305,10 @@ Now, let's discuss patterns of data declarations and what representation they _s
 
   e.g. `newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)` is just represented as `PByteString`. This is ensured by deriving all necessary instances (particularly `PlutusType`) using [`DerivePNewtype`](./USAGE.md#deriving-typeclasses-for-newtypes).
 
-- If it's an ADT that derives `PlutusType` generically (i.e. `derive anyclass (PlutusType)`)- it uses scott encoding. This is typically the encoding you want for non-trivial data types that don't need to be part of datums or redeemers.
+- If it's an ADT that derives `PlutusType` generically (i.e. `derive anyclass (PlutusType)`)- it uses Scott encoding. This is typically the encoding you want for non-trivial data types that don't need to be part of datums or redeemers.
 
   e.g. `PList` derives `PlutusType` generically and is represented with Scott encoding.
 
-- If it's an ADT that derives `PIsDataRepr` generically (i.e `derive anyclass (PIsDataRepr)`), as well as `PlutusType` via `PIsDataReprInstances`, it's data encoded. Particularly, it's a [`Data`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:Data) value - which is part of the builtin types.
+- If it's an ADT that derives `PIsDataRepr` generically (i.e. `derive anyclass (PIsDataRepr)`), as well as `PlutusType` via `PIsDataReprInstances`, it's data encoded. Particularly, it's a [`Data`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:Data) value - which is part of the builtin types.
 
   e.g. `PScriptContext` derives `PIsDataRepr` generically and `PlutusType` via `PIsDataReprInstances`.
