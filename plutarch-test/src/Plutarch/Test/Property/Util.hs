@@ -2,7 +2,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Plutarch.Property.Util (
+module Plutarch.Test.Property.Util (
   Marshal (marshal),
   NotLambda,
   haskPlutEquiv,

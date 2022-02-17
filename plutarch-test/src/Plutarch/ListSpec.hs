@@ -11,8 +11,8 @@ import Hedgehog (Property)
 
 import Data.List (find, sort)
 
-import Plutarch.Property.Gen (genList, integerGen)
-import Plutarch.Property.Util (haskPlutEquiv, marshal, viaBothPartial, viaPEq)
+import Plutarch.Test.Property.Gen (genList, integerGen)
+import Plutarch.Test.Property.Util (haskPlutEquiv, marshal, viaBothPartial, viaPEq)
 
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
