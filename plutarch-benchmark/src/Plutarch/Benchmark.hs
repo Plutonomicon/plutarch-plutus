@@ -3,7 +3,7 @@
 -- | Benchmark (exbudget and script size) for Plutus scripts
 module Plutarch.Benchmark (
   -- | * Types
-  Benchmark,
+  Benchmark(..),
   NamedBenchmark,
   ScriptSizeBytes,
   -- | * Benchmark an arbitraty Plutus script
