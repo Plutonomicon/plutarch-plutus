@@ -71,13 +71,11 @@ common c
     -Wno-name-shadowing -Wunused-foralls -fprint-explicit-foralls
     -fprint-explicit-kinds
 
-common deps 
+common deps
   build-depends:
-    , aeson >= 2.0
+    , aeson               >=2.0
     , base
     , bytestring
-    , sydtest
-    , sydtest-discover
     , filepath
     , generics-sop
     , plutarch
@@ -85,6 +83,8 @@ common deps
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
+    , sydtest
+    , sydtest-discover
     , tasty
     , tasty-hunit
     , tasty-quickcheck
@@ -92,40 +92,40 @@ common deps
     , transformers
 
 library
-  import: c, deps
-  hs-source-dirs: src
+  import:          c, deps
+  hs-source-dirs:  src
   exposed-modules: Plutarch.Test
 
 executable plutarch-test
-  import:             c, deps
-  type:               exitcode-stdio-1.0
-  main-is:            Main.hs
-  hs-source-dirs:     src
+  import:         c, deps
+  type:           exitcode-stdio-1.0
+  main-is:        Main.hs
+  hs-source-dirs: src
 
-  if impl(ghc >= 9.0)
+  if impl(ghc >=9.0)
     other-modules:
-      Plutarch.MonadicSpec
       Plutarch.FieldSpec
+      Plutarch.MonadicSpec
+
   other-modules:
-    Spec
     Plutarch.ApiSpec
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
     Plutarch.IntegerSpec
     Plutarch.ListSpec
-    Plutarch.TraceSpec
     Plutarch.PIsDataSpec
     Plutarch.PLamSpec
     Plutarch.PlutusTypeSpec
     Plutarch.RationalSpec
     Plutarch.RecursionSpec
+    Plutarch.ScriptsSpec
     Plutarch.StringSpec
     Plutarch.Test
+    Plutarch.TraceSpec
     Plutarch.UnitSpec
-    Plutarch.ScriptsSpec
+    Spec
 
   if flag(development)
     cpp-options: -DDevelopment
 
-  ghc-options:
-    -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:    -threaded -rtsopts -with-rtsopts=-N

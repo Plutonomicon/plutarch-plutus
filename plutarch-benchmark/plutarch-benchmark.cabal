@@ -73,9 +73,9 @@ library
   import:          c
   exposed-modules: Plutarch.Benchmark
   build-depends:
+    , aeson
     , base
     , boxes
-    , aeson
     , bytestring
     , cassava
     , containers
@@ -100,10 +100,10 @@ benchmark benchmark
   main-is:        Main.hs
   build-depends:
     , base
+    , bytestring
     , plutarch
     , plutarch-benchmark
     , plutus-ledger-api
-    , bytestring
     , transformers
 
 executable benchmark-diff
