@@ -4,10 +4,17 @@
 module Plutarch.Numeric.Natural (
   PNatural,
   Natural (..),
+  toNatural,
+  ptoNatural,
+  toAbsNatural,
+  ptoAbsNatural,
 ) where
 
-import Plutarch (S, (#))
-import Plutarch.Bool (PEq ((#==)), POrd ((#<), (#<=)))
+import Plutarch (S, (#), Term, pcon)
+import Plutarch.Integer (PInteger)
+import Plutarch.Maybe (PMaybe (PJust, PNothing))
+import Plutarch.Bool (PEq ((#==)), POrd ((#<), (#<=)),
+  pif)
 import Plutarch.Lift (
   PConstant (
     PConstantRepr,
@@ -17,7 +24,7 @@ import Plutarch.Lift (
   ),
   PUnsafeLiftDecl (PLifted),
  )
-import Plutarch.Unsafe (punsafeBuiltin)
+import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
 
 {- | Plutarch version of 'Natural'.
@@ -65,3 +72,40 @@ instance PConstant Natural where
   pconstantFromRepr i
     | i == 0 = Nothing
     | otherwise = Just . Natural $ i
+
+{- | Convert an 'Integer' to a 'Natural' if it is non-negative.
+
+ @since 1.0
+-}
+toNatural :: Integer -> Maybe Natural
+toNatural i
+  | i >= 0 = Just . Natural $ i
+  | otherwise = Nothing
+
+{- | As 'toNatural', but for Plutarch 'Term's.
+
+ @since 1.0
+-}
+ptoNatural ::
+  forall (s :: S).
+  Term s PInteger ->
+  Term s (PMaybe PNatural)
+ptoNatural t = pif (0 #<= t) (pcon . PJust . punsafeCoerce $ t) (pcon PNothing)
+
+{- | Convert an 'Integer' to a 'Natural', yielding the absolute value if given a
+ negative number.
+
+ @since 1.0
+-}
+toAbsNatural :: Integer -> Natural
+toAbsNatural = Natural . Prelude.abs
+
+{- | As 'toAbsNatural', but for Plutarch 'Term's.
+
+ @since 1.0
+-}
+ptoAbsNatural ::
+  forall (s :: S).
+  Term s PInteger ->
+  Term s PNatural
+ptoAbsNatural t = punsafeCoerce . pif (0 #<= t) t $ abs t

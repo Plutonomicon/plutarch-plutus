@@ -51,13 +51,17 @@ library
   import:          lang
   exposed-modules:
     Plutarch.Numeric
-    Plutarch.Numeric.Extra
     Plutarch.Numeric.Group
 
   other-modules:
+    Plutarch.Numeric.Additive
+    Plutarch.Numeric.Combination
+    Plutarch.Numeric.Monoidal
+    Plutarch.Numeric.Multiplicative
     Plutarch.Numeric.Natural
     Plutarch.Numeric.NZInteger
     Plutarch.Numeric.NZNatural
+    Plutarch.Numeric.Ratio
 
   build-depends:
     , base           >=4.14
