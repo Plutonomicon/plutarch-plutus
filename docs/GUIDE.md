@@ -60,8 +60,8 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 - [Raising errors](./CONCEPTS.md#raising-errors)
 - [Delay and Force](./CONCEPTS.md#delay-and-force)
 - [Data encoding and Scott encoding](./CONCEPTS.md#data-encoding-and-scott-encoding)
-    - [Data encoding](./CONCEPTS.md#data-encoding)
-    - [Scott encoding](./CONCEPTS.md#scott-encoding)
+  - [Data encoding](./CONCEPTS.md#data-encoding)
+  - [Scott encoding](./CONCEPTS.md#scott-encoding)
 - [Unsafe functions](./CONCEPTS.md#unsafe-functions)
 
 ## Typeclasses
@@ -101,12 +101,14 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 - [PData](./TYPES.md#pdata)
 
 # Examples
+
 - [Basic examples](./examples/BASIC.md)
 - [Validator & Minting policies](./examples/VALIDATOR.md)
 
 Also see: [examples](https://github.com/Plutonomicon/plutarch/tree/master/examples).
 
 # Thumb rules, Tips, and Trickss
+
 Outside of the fundamental user guide, there are thumb rules and general guidelines you can follow to improve your Plutarch experience. In this section, we discuss ways of writing efficient and high quality Plutarch code, as well as rules that can help auditing Plutarch easier.
 
 > Jack: 'rules of thumb' rather than 'thumb rules'.
@@ -124,6 +126,7 @@ Outside of the fundamental user guide, there are thumb rules and general guideli
 - [Figuring out the representation of a Plutarch type](./TRICKS.md#figuring-out-the-representation-of-a-plutarch-type)
 
 # Common Issues and Troubleshooting
+
 Due to the highly abstracted nature of Plutarch and its utilization of advanced type level concepts, you might face unfamiliar errors. Don't worry, the guide is here to help!
 
 - [No instance for `PUnsafeLiftDecl a`](./TROUBLESHOOTING.md#no-instance-for-punsafeliftdecl-a)
@@ -135,4 +138,5 @@ Due to the highly abstracted nature of Plutarch and its utilization of advanced 
 - [Couldn't match type `PLifted (PConstanted Foo)` with `Foo`](./TROUBLESHOOTING.md#couldnt-match-type-plifted-pconstanted-foo-with-foo)
 
 # Useful Links
+
 - [Plutonomicon](https://github.com/Plutonomicon/plutonomicon)

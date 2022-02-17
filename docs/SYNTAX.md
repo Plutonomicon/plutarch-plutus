@@ -5,13 +5,13 @@ This document describes the syntax of Plutarch through code examples.
 <details>
 <summary> Table of Contents </summary>
 
--   [Constants](#constants)
-    -   [Static building with `pconstant` and `pconstantData`](#static-building-with-pconstant-and-pconstantdata)
-    -   [Dynamic building with `pcon`](#dynamic-building-with-pcon)
-    -   [Overloaded literals](#overloaded-literals)
-    -   [Miscellaneous](#miscellaneous)
--   [Lambdas](#lambdas)
--   [Delayed terms and Forcing](#delayed-terms-and-forcing)
+- [Constants](#constants)
+  - [Static building with `pconstant` and `pconstantData`](#static-building-with-pconstant-and-pconstantdata)
+  - [Dynamic building with `pcon`](#dynamic-building-with-pcon)
+  - [Overloaded literals](#overloaded-literals)
+  - [Miscellaneous](#miscellaneous)
+- [Lambdas](#lambdas)
+- [Delayed terms and Forcing](#delayed-terms-and-forcing)
 
 </details>
 
@@ -41,11 +41,11 @@ Similarly, `PAsData` constant terms can be built using `pconstantData`. If you w
 
 > Jack: replace - with ,
 
-> Aside: If you've already read through \[`PIsData`]\(TODO: LINK) and \[`PAsData`]\(TODO: LINK), you might know that `pdata . pconstant` would achieve the same thing as `pconstantData`. But it won't actually be as efficient! See, `pconstantData` builds a constant directly - wheras `pdata` _potentially_ dispatches to a builtin function call. Also see: \[Prefer statically building constants]\(TODO: LINK).
+> Aside: If you've already read through [`PIsData`](./TYPECLASSES.md#pisdata) and [`PAsData`](./TYPES.md#pasdata), you might know that `pdata . pconstant` would achieve the same thing as `pconstantData`. But it won't actually be as efficient! See, `pconstantData` builds a constant directly - wheras `pdata` _potentially_ dispatches to a builtin function call. Also see: [Prefer statically building constants](./TRICKS.md#prefer-statically-building-constants-whenever-possible).
 
 ## Dynamic building with `pcon`
 
-Plutarch constant terms can also be built from Plutarch terms within other constructors using `pcon` (requires \[`PlutusType`/`PCon`]\(TODO: LINK) instance)-
+Plutarch constant terms can also be built from Plutarch terms within other constructors using `pcon` (requires \[`PlutusType`/`PCon`](TODO: LINK) instance)-
 
 ```haskell
 import Plutarch.Prelude
@@ -168,7 +168,7 @@ You know that the argument to `plam` here will just be a Haskell function that t
 
 # Delayed terms and Forcing
 
-You can use `pdelay` to create a delayed term and `pforce` to force on it. These will help you emulate laziness in an otherwise strict language. More details at \[Delay and Force]\(TODO: LINK).
+You can use `pdelay` to create a delayed term and `pforce` to force on it. These will help you emulate laziness in an otherwise strict language. More details at [Delay and Force](./CONCEPTS.md#delay-and-force).
 
 > Jack: Replace 'force on it' with something more descriptive e.g. 'call it' or 'run it'.
 

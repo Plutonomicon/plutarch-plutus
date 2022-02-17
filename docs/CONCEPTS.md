@@ -5,18 +5,18 @@ This document describes various concepts applicable in Plutarch.
 <details>
 <summary> Table of Contents </summary>
 
--   [Hoisting, metaprogramming,  and fundamentals](#hoisting-metaprogramming--and-fundamentals)
-    -   [Hoisting Operators](#hoisting-operators)
--   [What is the `s`?](#what-is-the-s)
--   [eDSL Types in Plutarch](#edsl-types-in-plutarch)
--   [`plet` to avoid work duplication](#plet-to-avoid-work-duplication)
--   [Tracing](#tracing)
--   [Raising errors](#raising-errors)
--   [Delay and Force](#delay-and-force)
--   [Data encoding and Scott encoding](#data-encoding-and-scott-encoding)
-    -   [Data encoding](#data-encoding)
-    -   [Scott encoding](#scott-encoding)
--   [Unsafe functions](#unsafe-functions)
+- [Hoisting, metaprogramming, and fundamentals](#hoisting-metaprogramming-and-fundamentals)
+  - [Hoisting Operators](#hoisting-operators)
+- [What is the `s`?](#what-is-the-s)
+- [eDSL Types in Plutarch](#edsl-types-in-plutarch)
+- [`plet` to avoid work duplication](#plet-to-avoid-work-duplication)
+- [Tracing](#tracing)
+- [Raising errors](#raising-errors)
+- [Delay and Force](#delay-and-force)
+- [Data encoding and Scott encoding](#data-encoding-and-scott-encoding)
+  - [Data encoding](#data-encoding)
+  - [Scott encoding](#scott-encoding)
+- [Unsafe functions](#unsafe-functions)
 
 </details>
 
@@ -99,10 +99,10 @@ The `s` essentially represents the context, and is like the `s` of `ST`.
 
 It's used to distinguish between closed and open terms:
 
--   Closed term: `type ClosedTerm = forall s. Term s a`
--   Arbitrary term: `exists s. Term s a`
--   NB: `(exists s. Term s a) -> b` is isomorphic to
--   `forall s. Term s a -> b`
+- Closed term: `type ClosedTerm = forall s. Term s a`
+- Arbitrary term: `exists s. Term s a`
+- NB: `(exists s. Term s a) -> b` is isomorphic to
+- `forall s. Term s a -> b`
 
 # eDSL Types in Plutarch
 
@@ -119,18 +119,10 @@ foo :: Term s PString -> Term s PString
 foo x = x <> x
 ```
 
-This is _really_ bad if `x` is actually represented by a big unevaluated computation yielding `Term s PString`. Whenever you find yourself using a Haskell level function argument multiple times - you may want to _strictly_ evaluate it first. `plet` lets you do just that-
-
-```hs
-foo :: Term s PString -> Term s PString
-foo x' = plet x' $ \x -> x <> x
-```
-
-> Aside: How do you know whether something is "actually represented by a big unevaluated computation"? Well, it depends on the callsite and the usage! There's no real way to know while writing a function. The rule of thumb is to `plet` the argument in a Haskell level function regardless (only if it's used multiple times). Duplicate `plet`s back to back are actually optimized to a singular `plet` anyway.
-
-Also see: [Don't duplicate work](./TRICKS.md#dont-duplicate-work).
+In such cases, you should use `plet` on the argument to [avoid duplicating work](./TRICKS.md#dont-duplicate-work)
 
 # Tracing
+
 You can use the functions `ptrace`, `ptraceError`, `ptraceIfFalse`, `ptraceIfTrue` (from `Plutarch.Trace` or `Plutarch.Prelude`) for tracing. These behave similarly to the ones you're used to from [PlutusTx](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Trace.html).
 
 If you have the `development` flag for `plutarch` turned on - you'll see the trace messages appear in the trace log during script evaluation. When not in development mode - these functions basically do nothing.
@@ -199,6 +191,7 @@ In Plutus Core, there are really two (conflicting) ways to represent non-trivial
 > Aside: What's a "trivial" type? The non-data builtin types! `PInteger`, `PByteString`, `PBuiltinList`, `PBuiltinPair`, and `PMap` (actually just a builtin list of builtin pairs). It's important to note that [`Data`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:Data) (`Constr` or otherwise) is also a builtin type.
 
 ## Data encoding
+
 `Constr` data is essentially a sum-of-products representation. However, it can only contain other `Data` values (not necessarily just `Constr` data, could be `I` data, `B` data etc.) as its fields. Plutus Core famously lacks the ability to represent functions using this encoding, and thus - `Constr` encoded values simply cannot contain functions.
 
 > Note: You can find out more about the deep details of `Data`/`BuiltinData` at [plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md).
@@ -210,6 +203,7 @@ With that said, `Data` encoding is _ubiquitous_ on the chain. It's the encoding 
 > Jack: Consider 'datums'.
 
 ## Scott encoding
+
 On the opposite (and conflicting) end, is scott encoding. [The internet](https://crypto.stanford.edu/~blynn/compiler/scott.html) can explain scott encoding way better than I can. But I'll be demonstrating scott encoding with an example anyway.
 
 > Jack: Always capitalize Scott, it is a proper noun.
@@ -254,7 +248,9 @@ nothing = \_ n -> n
 foo :: Maybe Integer -> Integer
 foo mb = mb (\x -> x + 42) 0
 ```
+
 How does that work? Recall that `mb` is really just a function. Here's how the application of `f` would work-
+
 ```hs
 foo (just 1)
 foo (\f _ -> f 1)
@@ -269,6 +265,7 @@ foo (\_ n -> n)
 (\_ n -> n) (\x -> x + 42) 0
 0
 ```
+
 Neat!
 
 This is the same recipe followed in the implementation of `PMaybe`. See its [PlutusType impl](./TYPECLASSES.md#plutustype-pcon-and-pmatch)!
@@ -281,4 +278,4 @@ Things will go very wrong during script evaluation if you do that kind of thing.
 
 The good thing is that unsafe functions all have explicit indicators through the names, as long as you don't use any `punsafe*` functions - you should be fine!
 
-Of course, these have legitimate use cases. Most often, we use these functions to convert between types that *truly* have the same internal representation in UPLC - but the type system simply isn't expressive enough to infer that.
+Of course, these have legitimate use cases. Most often, we use these functions to convert between types that _truly_ have the same internal representation in UPLC - but the type system simply isn't expressive enough to infer that.

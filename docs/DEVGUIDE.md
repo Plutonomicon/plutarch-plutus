@@ -17,35 +17,42 @@ Looking to contribute to Plutarch? Looking for functionalities that are not curr
 - [Lower Level Examples](#lower-level-examples)
   - [Extracting `txInfoInputs` from `ScriptContext` manually (UNTYPED)](#extracting-txinfoinputs-from-scriptcontext-manually-untyped)
 - [Useful Links](#useful-links)
+
 </details>
 
-
 # Code Style
+
 You should generally follow the [MLabs style guide](https://github.com/mlabs-haskell/styleguide), credit to [@Koz Ross](https://github.com/kozross).
 
 **Discouraged Extensions**
-* `ImportQualifiedPost`
-* `RecordWildCards`
+
+- `ImportQualifiedPost`
+- `RecordWildCards`
 
 # Pre-commit checks
+
 Remember to run `./bin/format` to format your code and `cabal test`, alongside `cabal test -f development`, to make sure all the tests pass prior to making a PR!
 
 # Updating Changelog
+
 If your PR makes a change to some user facing functionality - please summarize the change(s) and add it to `CHANGELOG.md`.
 
 # Targeting branch for PR
+
 More often than not, you'll be making PRs directly to `master`.
 
 However, sometimes, there is a release cycle going on and the state of the repository is in flux. There will usually be a `master <- staging` PR open during this time. As long as the `staging` PR is open, you should base most new branches on top of it and merge back into it. Bug fixes, for bugs present in `master`, are exempt from this requirement.
 
 # Concepts
+
 Even if certain functionalities are absent from the public facing API - you can always implement them using functions like `punsafeConstant` and `punsafeBuiltin` - these allow you to walk the lines between Plutus core and Plutarch.
 
 A general familiarity with Plutus core is important. You can learn all of that through the following documents-
-* [Builtin lists](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-lists.md)
-* [Builtin pairs](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-pairs.md)
-* [Builtin functions](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-functions.md)
-* [Builtin data](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md)
+
+- [Builtin lists](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-lists.md)
+- [Builtin pairs](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-pairs.md)
+- [Builtin functions](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-functions.md)
+- [Builtin data](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md)
 
 Parts of the [Pluto guide](https://github.com/Plutonomicon/pluto/blob/main/GUIDE.md) may also prove useful.
 
@@ -83,7 +90,7 @@ punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniString . Txt.pack
 
 And that's _essentially_ what the `IsString` implementation of `Term s PString` does. That is how your string literals end up as plutus core built in strings.
 
-One more, how about something complex - `DefaultUniProtoList`. This is a builtin list. But what is the element type? Well, you'll have to specify that yourself! You use `DefaultUniApply` to &quot;apply&quot; a type (from the default universe) over `DefaultUniProtoList`-
+One more, how about something complex - `DefaultUniProtoList`. This is a builtin list. But what is the element type? Well, you'll have to specify that yourself! You use `DefaultUniApply` to "apply" a type (from the default universe) over `DefaultUniProtoList`-
 
 ```haskell
 import qualified PlutusCore as PLC
@@ -158,10 +165,13 @@ Plutarch aims to hide these low level details from the user. Ideally, you will b
 If you want to work with `BuiltinData` directly however, which you may have to do during developing Plutarch, you can find all that you need to know at [Plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md).
 
 ## `PConstant` and `PLift`
+
 TODO
 
 # Lower Level Examples
+
 ## Extracting `txInfoInputs` from `ScriptContext` manually (UNTYPED)
+
 Here's a quick refresher on what `ScriptContext` looks like-
 
 ```haskell
@@ -265,6 +275,7 @@ Some
 There's just one element in `txInfoInputs` in this example, and there it is. Of course `TxInInfo`, the element type of this list, also gets translated to a `Constr` data with further fields. And that's what you see above.
 
 # Useful Links
+
 - [Builtin lists](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-lists.md)
 - [Builtin pairs](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-pairs.md)
 - [Builtin functions](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-functions.md)

@@ -5,6 +5,7 @@ Basic examples demonstrating Plutarch usage.
 > Aside: Be sure to check out [Compiling and Running](./../GUIDE.md#compiling-and-running) first!
 
 # Fibonacci number at given index
+
 ```hs
 import Plutarch.Prelude
 
@@ -19,9 +20,11 @@ fib = phoistAcyclic $
         1
         $ self # (n - 1) + self # (n - 2)
 ```
+
 from [examples](https://github.com/Plutonomicon/plutarch/tree/master/examples).
 
 Execution-
+
 ```hs
 > evalT $ fib # 2
 Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf integer 2))))

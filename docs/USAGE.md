@@ -5,13 +5,13 @@ This document describes various core Plutarch usage concepts.
 <details>
 <summary> Table of Contents </summary>
 
--   [Applying functions](#applying-functions)
--   [Conditionals](#conditionals)
--   [Recursion](#recursion)
--   [Do syntax with `TermCont`](#do-syntax-with-termcont)
--   [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](#do-syntax-with-qualifieddo-and-plutarchmonadic)
--   [Deriving typeclasses for `newtype`s](#deriving-typeclasses-for-newtypes)
--   [Deriving typeclasses with generics](#deriving-typeclasses-with-generics)
+- [Applying functions](#applying-functions)
+- [Conditionals](#conditionals)
+- [Recursion](#recursion)
+- [Do syntax with `TermCont`](#do-syntax-with-termcont)
+- [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](#do-syntax-with-qualifieddo-and-plutarchmonadic)
+- [Deriving typeclasses for `newtype`s](#deriving-typeclasses-for-newtypes)
+- [Deriving typeclasses with generics](#deriving-typeclasses-with-generics)
 
 </details>
 
@@ -122,6 +122,7 @@ pfac = pfix #$ plam f
 There's a Plutarch level factorial function! Note how `f` takes in a `self` and just recurses on it. All you have to do, is create a Plutarch level function by using `plam` on `f` and `pfix` the result - and that `self` argument will be taken care of for you.
 
 # Do syntax with `TermCont`
+
 Continuation functions like `pmatch`, `plet`, and `pletFields` aren't exactly the most convenient, are they? Fortunately, `TermCont` makes it much easier to use. `TermCont` is the familiar [`Cont`](https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-Cont.html) monad, specialized for Plutarch terms.
 
 > Jack: consider emphasising _mostly_.
@@ -130,6 +131,7 @@ Continuation functions like `pmatch`, `plet`, and `pletFields` aren't exactly th
 `TermCont @b s a` essentially represents `(a -> Term s b) -> Term s b`. `a` being the input to the continuation, and `Term s b` being the output. Notice the type application - `b` must have been brought into scope through another binding first.
 
 Consider the snippet-
+
 ```hs
 import Plutarch.Api.V1.Contexts
 import Plutarch.Prelude
@@ -139,7 +141,9 @@ test = plam $ \x -> pmatch x $ \case
   PSpending _ -> ptrace "matched spending script purpose" $ pconstant ()
   _ -> ptraceError "pattern match failure"
 ```
+
 That's rather ugly! [`pmatch`](./TYPECLASSES.md#plutustype-pcon-and-pmatch) takes in a continuation as its second argument. Can we make this a bit more ergonomic?
+
 ```hs
 import Plutarch.Api.Contexts
 import Plutarch.Prelude
@@ -156,12 +160,14 @@ test = plam $ \x -> unTermCont $ do
   ptraceC "matched spending script purpose"
   pure $ pconstant ()
 ```
+
 How cool is that? You can use regular `do` syntax on the `TermCont` monad. All the continuations are flattened! Just remember to `unTermCont` the result.
 
 > Jack: The best part is: as you don't require `QualifiedDo`, you don't need GHC 9!
 > Chase: This comment is also a bit out of context now. We basically want to give the impression that you never even need to consider the `QualifiedDo` method. That's why `TermCont` is moved up and prioritized in examples.
 
 Furthermore, this is very similar to the `Cont` monad - it just operates on Plutarch level terms. This means you can draw parallels to utilities and patterns one would use when utilizing the `Cont` monad. Here's an example-
+
 ```hs
 import Plutarch.Prelude
 
@@ -181,9 +187,11 @@ foo = plam $ \l -> unTermCont $ do
 `foo` adds up the first element of the given list with the length of its tail. Unless the list was empty, in which case, it just returns 0. It uses continuations with the `do` syntax to elegantly utilize short circuiting!
 
 # Do syntax with `QualifiedDo` and `Plutarch.Monadic`
+
 There's another way of having `do` syntax. Though this one doesn't use a lawful monad. Instead, it uses `QualifiedDo` - and therefore requires GHC 9.
 
 The `Plutarch.Monadic` module exports `>>=`, `>>`, and `fail` functions suitable to be used with `QualifiedDo`.
+
 ```hs
 -- NOTE: REQUIRES GHC 9!
 {-# LANGUAGE QualifiedDo #-}
@@ -230,6 +238,7 @@ import Plutarch.Prelude
 newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
   deriving (PlutusType, PIsData, PEq, POrd) via (DerivePNewtype PPubKeyHash PByteString)
 ```
+
 (yes, you need `UndecidableInstances` to derive `PlutusType`)
 
 `DerivePNewtype` takes two type parameters. Both of them are Plutarch types (i.e types with kind `PType`). The first one is the type you're deriving the instances for, while the second one is the _inner_ type (whatever `PPubKeyHash` is a newtype to).
@@ -240,17 +249,17 @@ newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
 
 Currently, `DerivePNewtype` lets you derive the following typeclasses for your Plutarch _types_:-
 
--   `PlutusType`
--   `PIsData`
--   `PEq`
--   `POrd`
--   `PIntegral`
+- `PlutusType`
+- `PIsData`
+- `PEq`
+- `POrd`
+- `PIntegral`
 
 You can also derive the following typeclasses for Plutarch _terms_:-
 
--   `Num`
--   `Semigroup`
--   `Monoid`
+- `Num`
+- `Semigroup`
+- `Monoid`
 
 What does this mean? Well, `Num` would actually be implemented for `Term s a`, where `a` is a Plutarch type. For example, if you wanted to implement `Semigroup` for `Term s PPubKeyHash` (`Term s PByteString` already has a `Semigroup` instance), you can write-
 
@@ -281,7 +290,8 @@ data MyType (a :: PType) (b :: PType) (s :: S)
 This will use a [scott encoding representation](./CONCEPTS.md#scott-encoding) for `MyType`, which is typically what you want. If you want to use [data encoding representation](./CONCEPTS.md#data-encoding) instead in your `PlutusType` instance - you should derive it using `PIsDataReprInstances`. Check out: [implementing `PIsDataRepr` and friends](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)
 
 > Jack: Scott is a proper noun and must always be capitalized.
+
 Currently, generic deriving supports the following typeclasses:-
 
--   [`PlutusType`](./TYPECLASSES.md#implementing-plutustype-for-your-own-types) (scott encoding only)
--   [`PIsDataRepr`](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)
+- [`PlutusType`](./TYPECLASSES.md#implementing-plutustype-for-your-own-types) (scott encoding only)
+- [`PIsDataRepr`](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)

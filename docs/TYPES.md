@@ -5,25 +5,26 @@ This document describes the fundamental, commonly used Plutarch types.
 <details>
 <summary> Table of Contents </summary>
 
--   [`PInteger`](#pinteger)
--   [`PBool`](#pbool)
--   [`PString`](#pstring)
--   [`PByteString`](#pbytestring)
--   [`PUnit`](#punit)
--   [`PBuiltinList`](#pbuiltinlist)
--   [`PList`](#plist)
--   [`PBuiltinPair`](#pbuiltinpair)
--   [`PTuple`](#ptuple)
--   [`PAsData`](#pasdata)
--   [`PDataSum` & `PDataRecord`](#pdatasum--pdatarecord)
--   [`PRecord`](#precord)
-    -   [letrec](#letrec)
-    -   [Record Data](#record-data)
--   [`PData`](#pdata)
+- [`PInteger`](#pinteger)
+- [`PBool`](#pbool)
+- [`PString`](#pstring)
+- [`PByteString`](#pbytestring)
+- [`PUnit`](#punit)
+- [`PBuiltinList`](#pbuiltinlist)
+- [`PList`](#plist)
+- [`PBuiltinPair`](#pbuiltinpair)
+- [`PTuple`](#ptuple)
+- [`PAsData`](#pasdata)
+- [`PDataSum` & `PDataRecord`](#pdatasum--pdatarecord)
+- [`PRecord`](#precord)
+  - [letrec](#letrec)
+  - [Record Data](#record-data)
+- [`PData`](#pdata)
 
 </details>
 
 # `PInteger`
+
 `Term s PInteger` has a convenient `Num` instance that allows you to construct Plutarch level integer terms from regular literals. It also means you have all the typical arithmetic operations available to you-
 
 > Jack: consider replacing 'regular'.
@@ -148,6 +149,7 @@ The final argument is, of course, the list itself.
 > Jack: Capitalize Plutonomicon.
 
 # `PList`
+
 Here's the [scott encoded](./CONCEPTS.md#scott-encoding) cousin of `PBuiltinList`. What does that mean? Well, in practice, it just means that `PList` can contain _any arbitrary_ term - not just builtin types. `PList` also has a [`PListLike`](#plistlike) instance - so you won't be missing any of those utilities here!
 
 `PList` also has a [`PlutusType`](./TYPECLASSES.md#plutustype-pcon-and-pmatch) instance. You can construct a `PList` using `pcon` (but you should prefer using `pcons` from `PListLike`)-
@@ -185,6 +187,7 @@ ppairDataBuiltin :: Term s (PAsData a :--> PAsData b :--> PBuiltinPair (PAsData 
 It's also helpful to note that `PAsData (PBuiltinPair (PAsData a) (PAsData b))` and `PAsData (PTuple a b)` actually have the same representation under the hood. See [`PTuple`](#ptuple)
 
 # `PTuple`
+
 These are [data encoded](./CONCEPTS.md#data-encoding) pairs. You can build `PTuple`s using `ptuple`-
 
 ```hs
@@ -222,6 +225,7 @@ Now, you have assurance that you're working with a `Data` value that actually re
 Wrapping and unwrapping to and from `PAsData` terms is provided by the [`PIsData`](./TYPECLASSES.md#pisdata) typeclass. Specifically, by the functions- `pfromData` and `pdata`.
 
 Some useful instances of these functions:
+
 ```hs
 pfromData :: Term s (PAsData PInteger) -> Term s PInteger
 

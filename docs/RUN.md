@@ -5,8 +5,8 @@ This document describes how to compile and run Plutarch - whether for on chain d
 <details>
 <summary> Table of Contents </summary>
 
--   [Common Extensions and GHC options](#common-extensions-and-ghc-options)
--   [Evaluation](#evaluation)
+- [Common Extensions and GHC options](#common-extensions-and-ghc-options)
+- [Evaluation](#evaluation)
 
 </details>
 
@@ -30,7 +30,7 @@ You can compile a Plutarch term using `compile`(from `Plutarch` module), making 
 
 I often use these helper functions to test Plutarch quickly-
 
-> Jack: replace - with : 
+> Jack: replace - with :
 
 ```haskell
 import Data.Text (Text)
