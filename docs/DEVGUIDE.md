@@ -47,7 +47,7 @@ However, sometimes, there is a release cycle going on and the state of the repos
 
 Even if certain functionalities are absent from the public facing API - you can always implement them using functions like `punsafeConstant` and `punsafeBuiltin` - these allow you to walk the lines between Plutus core and Plutarch.
 
-A general familiarity with Plutus core is important. You can learn all of that through the following documents-
+A general familiarity with Plutus core is important. You can learn all of that through the following documents:
 
 - [Builtin lists](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-lists.md)
 - [Builtin pairs](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-pairs.md)
@@ -60,7 +60,7 @@ Parts of the [Pluto guide](https://github.com/Plutonomicon/pluto/blob/main/GUIDE
 
 > **NOTE**: The following information is almost never necessary with the existence of `pconstant`. Refer to [constant building](./GUIDE.md#constants) and [`PConstant`/`PLift`](./GUIDE.md#pconstant--plift) section of the Plutarch user guide.
 
-Often, you will need to build a Plutus core constant. You can do this using `Some` and `ValueOf`. Here's how `pcon PTrue` creates a Plutarch term that actually evaluates to a Plutus core constant representing a boolean-
+Often, you will need to build a Plutus core constant. You can do this using `Some` and `ValueOf`. Here's how `pcon PTrue` creates a Plutarch term that actually evaluates to a Plutus core constant representing a boolean:
 
 ```haskell
 import qualified PlutusCore as PLC
@@ -69,7 +69,7 @@ pcon' PTrue = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniBool True
 pcon' PFalse = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniBool False
 ```
 
-There's a lot to unpack here - but the general pattern is always the same. First step is to construct the Plutus core constant-
+There's a lot to unpack here - but the general pattern is always the same. First step is to construct the Plutus core constant:
 
 ```haskell
 PLC.Some $ PLC.ValueOf PLC.DefaultUniBool True
@@ -90,7 +90,7 @@ punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniString . Txt.pack
 
 And that's _essentially_ what the `IsString` implementation of `Term s PString` does. That is how your string literals end up as plutus core built in strings.
 
-One more, how about something complex - `DefaultUniProtoList`. This is a builtin list. But what is the element type? Well, you'll have to specify that yourself! You use `DefaultUniApply` to "apply" a type (from the default universe) over `DefaultUniProtoList`-
+One more, how about something complex - `DefaultUniProtoList`. This is a builtin list. But what is the element type? Well, you'll have to specify that yourself! You use `DefaultUniApply` to "apply" a type (from the default universe) over `DefaultUniProtoList`:
 
 ```haskell
 import qualified PlutusCore as PLC
@@ -100,13 +100,13 @@ PLC.Some . PLC.ValueOf (PLC.DefaultUniProtoList `PLC.DefaultUniApply` PLC.Defaul
 
 That right there converts a `[Integer]` into a Plutus core builtin list of builtin integers. Convenient!
 
-Actually, there's a convenient `pattern` synonym for ``DefaultUniProtoList `DefaultUniApply` a``- `DefaultUniList a`. Using that, you can simplify the above to-
+Actually, there's a convenient `pattern` synonym for ``DefaultUniProtoList `DefaultUniApply` a``- `DefaultUniList a`. Using that, you can simplify the above to:
 
 ```haskell
 PLC.Some . PLC.ValueOf (PLC.DefaultUniList PLC.DefaultUniInteger)
 ```
 
-Note that you will have to provide the correct type annotations yourself, as `punsafeConstant` just infers to a `Term s a`. That's why it's unsafe! Make sure to provide the correct annotations when using this unsafe function-
+Note that you will have to provide the correct type annotations yourself, as `punsafeConstant` just infers to a `Term s a`. That's why it's unsafe! Make sure to provide the correct annotations when using this unsafe function:
 
 ```haskell
 foo :: Bool -> Term s PBool
@@ -136,7 +136,7 @@ You can use and apply this Plutarch function just like any other.
 
 Now here's where this goes off the rails, some builtin functions require _forces_ to be used. These builtin functions have inherent polymorphic type variables. The number of times you need to force them, depends on the number of type variables they have.
 
-Let's look at an example- `HeadList`. It's type can be thought of as - `forall a. [a] → a`. It has one type variable, so it needs to be forced once-
+Let's look at an example- `HeadList`. It's type can be thought of as - `forall a. [a] -> a`. It has one type variable, so it needs to be forced once:
 
 ```haskell
 pheadBuiltin :: Term s (PBuiltinList a :--> a)
@@ -145,7 +145,7 @@ pheadBuiltin = pforce $ punsafeBuiltin PLC.HeadList
 
 We force a Plutarch term using `pforce`, recall that `punsafeBuiltin` returns a term. You need to type it all yourself of course. `pforce` doesn't mean you need to get rid of the type variable in your Plutarch level type. It'll still work with any `a` - the forcing just has to happen at call site.
 
-You can sort of do this blindly, `HeadList` takes 1 force, so just `pforce` once. `TailList` also takes 1 force. `ChooseList` takes 2 forces (`forall a b. [a] → b → b → b`). Here's how you would implement a Plutarch synonym for it-
+You can sort of do this blindly, `HeadList` takes 1 force, so just `pforce` once. `TailList` also takes 1 force. `ChooseList` takes 2 forces (`forall a b. [a] -> b -> b -> b`). Here's how you would implement a Plutarch synonym for it:
 
 ```haskell
 pchooseList :: Term s (PBuiltinList a :--> b -> b -> b)
@@ -172,7 +172,7 @@ TODO
 
 ## Extracting `txInfoInputs` from `ScriptContext` manually (UNTYPED)
 
-Here's a quick refresher on what `ScriptContext` looks like-
+Here's a quick refresher on what `ScriptContext` looks like:
 
 ```haskell
 data ScriptContext = ScriptContext
@@ -181,7 +181,7 @@ data ScriptContext = ScriptContext
   }
 ```
 
-We are interested in `txInfoInputs`, which has type `TxInInfo`. It is the first field within `TxInfo`. If you have read [Working with `BuiltinData`](#working-with-builtindatadatapdata) already - you know that a `ScriptContext` translates to a `Data` value similar to-
+We are interested in `txInfoInputs`, which has type `TxInInfo`. It is the first field within `TxInfo`. If you have read [Working with `BuiltinData`](#working-with-builtindatadatapdata) already - you know that a `ScriptContext` translates to a `Data` value similar to:
 
 ```haskell
 Constr 0 [PlutusTx.toData txInfo, PlutusTx.toData txPurpose]
@@ -189,13 +189,13 @@ Constr 0 [PlutusTx.toData txInfo, PlutusTx.toData txPurpose]
 
 Where `txInfo` and `txPurpose` are values of type `TxInfo` and `ScriptPurpose` respectively.
 
-We are interested in that first field. That's easy, we do the following actions in sequence-
+We are interested in that first field. That's easy, we do the following actions in sequence:
 
 - `pasConstr` - yields a `PBuiltinPair PInteger (PBuiltinList PData)`. We know the constructor id is `0`. It doesn't matter, there's only one constructor.
 - `psndBuiltin` - yields `PBuiltinList PData`, the second element of the pair. These are the fields within `ScriptContext`.
 - `phead` - yields `PData`, the first field. We know this is our `TxInfo`.
 
-Combining that all up would give you-
+Combining that all up would give you:
 
 ```haskell
 import Plutarch.Prelude
@@ -205,7 +205,7 @@ f :: Term s (PData :--> PData)
 f = plam $ \x -> phead #$ psndBuiltin #$ pasConstr # x
 ```
 
-And if you test it with a mock context value, it does work-
+And if you test it with a mock context value, it does work:
 
 ```haskell
 mockCtx :: ScriptContext
@@ -238,14 +238,14 @@ But we're not done yet! We want `txInfoInputs`. You may have noticed where exact
 
 > Aside: Recall that `List` data values are simply wrappers around lists. Also recall that the fields in a `Constr` value must be all of type `Data`. So any of your list fields get translated to `List` data. Just remember not to confuse these with builtin lists (`PBuiltinList`)! Functions like `pheadBuiltin` don't work on `List` data values.
 
-To obtain `txInfoInputs` from here, we do the following actions in sequence-
+To obtain `txInfoInputs` from here, we do the following actions in sequence:
 
 - `pasConstr` - unpacks the `TxInfo`. There's only one constructor, `TxInfo` - we don't care about that. We need the fields.
 - `psndBuiltin` - extracts the second member of the pair, the fields of `TxInfo`.
 - `phead` - extracts the first element of the list. This is our field, `txInfoInputs`.
 - (optional) `pasList` - takes out the builtin list from the `List` data value.
 
-And that's it! Putting it all together-
+And that's it! Putting it all together:
 
 ```haskell
 f :: Term s (PData :--> PBuiltinList PData)
@@ -254,14 +254,14 @@ f = plam $ \x ->
   in pasList #$ phead #$ psndBuiltin #$ pasConstr # txInfo
 ```
 
-Trying it on the same `mockCtx` yields-
+Trying it on the same `mockCtx` yields:
 
 ```haskell
 > f `evalWithArgsT` [PlutusTx.toData mockCtx]
 Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf list (data) [Constr 0 [Constr 0 [Constr 0 [B ""],I 1],Constr 0 [Constr 0 [Constr 0 [B "\SOH#"],Constr 1 []],Map [],Constr 1 []]]]))))
 ```
 
-Getting some of the boilerplate out of the way, this is what the value looks like-
+Getting some of the boilerplate out of the way, this is what the value looks like:
 
 ```haskell
 Some

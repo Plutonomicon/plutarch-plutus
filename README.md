@@ -13,7 +13,7 @@ Plutarch is a typed eDSL in Haskell for writing efficient Plutus Core validators
 # Why Plutarch?
 Plutarch written validators are often significantly more efficient than Plutus Tx written validators. With Plutarch, you have much more fine gained control of the Plutus Core you generate, without giving up any type information.
 
-To put things into perspective, one validator script from a large production contract was rewritten in Plutarch, changed from Plutus Tx. Here's the comparison between the Plutarch script's execution cost compared to the Plutus Tx script's execution cost. These numbers were gathered by simulating the whole contract flow on a testnet-
+To put things into perspective, one validator script from a large production contract was rewritten in Plutarch, changed from Plutus Tx. Here's the comparison between the Plutarch script's execution cost compared to the Plutus Tx script's execution cost. These numbers were gathered by simulating the whole contract flow on a testnet:
 
 | Version            | CPU         | Memory  | Script Size |
 | ------------------ | ----------- | ------- | ----------- |
@@ -32,7 +32,7 @@ This package takes in a flag, `development`, that defaults to false. It's used t
 | -- | --- |
 | Tracing functions from `Plutarch.Trace` log given message to the trace log. | Tracing functions from `Plutarch.Trace` do not log. They merely return their argument. |
 
-You can turn on development mode by passing in the `development` flag in your `cabal.project` file-
+You can turn on development mode by passing in the `development` flag in your `cabal.project` file:
 ```hs
 package plutarch
   flags: +development

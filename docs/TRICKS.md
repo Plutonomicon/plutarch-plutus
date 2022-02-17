@@ -25,25 +25,25 @@ All Plutarch functions are strict. When you apply a Plutarch function to an argu
 
 # Don't duplicate work
 
-Consider the simple snippet-
+Consider the simple snippet:
 
 ```haskell
 pf :: Term s PInteger
 pf = let foo = 1 + 2 in pif (foo #== 3) foo 7
 ```
 
-If you use `printTerm` on this, you'll notice that the computation bound to `foo` is inlined twice-
+If you use `printTerm` on this, you'll notice that the computation bound to `foo` is inlined twice:
 
     (program 1.0.0 ((\\i0 -> force (i1 (equalsInteger (addInteger 1 2) 3) (delay (addInteger 1 2)) (delay 7))) (force ifThenElse)))
 
-Notice how the `addInteger` computation is present _twice_. In these cases, you should use `plet` to compute once and re-use the computed value-
+Notice how the `addInteger` computation is present _twice_. In these cases, you should use `plet` to compute once and re-use the computed value:
 
 ```haskell
 pf :: Term s PInteger
 pf = plet (1 + 3) $ \foo -> pif (foo #== 3) foo 7
 ```
 
-Here's another example of this, Haskell level functions-
+Here's another example of this, Haskell level functions:
 
 ```haskell
 abs :: Term s PInteger -> Term s PInteger
@@ -99,7 +99,7 @@ There is one simple and straightforward usecase though, when you want a function
 
 Outside of that straightforward usecase, figuring out when to use Haskell level functions is quite complex. Haskell level functions will always be inlined when generating the Plutus Core. Unless the function is used _only once_, this sort of inlining will increase the script size - which is problematic.
 
-However, if the function is used _only once_, and making it Plutarch level causes extra `plam`s and `#`s to be introduced - you should just make it Haskell level. For example, consider the `pelimList` implementation-
+However, if the function is used _only once_, and making it Plutarch level causes extra `plam`s and `#`s to be introduced - you should just make it Haskell level. For example, consider the `pelimList` implementation:
 
 ```hs
 pelimList :: PLift a => Term s (a :--> PBuiltinList a :--> r) -> Term s r -> Term s (PBuiltinList a) -> Term s r
@@ -108,7 +108,7 @@ pelimList match_cons match_nil ls = pmatch ls $ \case
   PNil -> match_nil
 ```
 
-It takes in a Plutarch level function, let's see a typical usage-
+It takes in a Plutarch level function, let's see a typical usage:
 
 ```hs
 pelimList
@@ -117,7 +117,7 @@ pelimList
   ls
 ```
 
-This is rather redundant, the above snippet will exhibit inlining to produce-
+This is rather redundant, the above snippet will exhibit inlining to produce:
 
 ```hs
 pmatch ls $ \case
@@ -125,7 +125,7 @@ pmatch ls $ \case
   PNil -> match_nil
 ```
 
-Extra `plam`s and `#`s have been introduced. Really, `pelimList` could have taken a Haskell level function instead-
+Extra `plam`s and `#`s have been introduced. Really, `pelimList` could have taken a Haskell level function instead:
 
 ```hs
 pelimList :: PLift a => (Term s a -> Term s (PBuiltinList a) :--> Term s r) -> Term s r -> Term s (PBuiltinList a) -> Term s r
@@ -134,7 +134,7 @@ pelimList match_cons match_nil ls = pmatch ls $ \case
   PNil -> match_nil
 ```
 
-Now, the following usage-
+Now, the following usage:
 
 ```hs
 pelimList
@@ -143,7 +143,7 @@ pelimList
   ls
 ```
 
-would turn into-
+would turn into:
 
 ```hs
 pmatch ls $ \case
@@ -159,7 +159,7 @@ However, **not all higher order functions** benefit from taking Haskell level fu
 
 `PlutusType` is especially useful for building up Plutarch terms _dynamically_ - i.e, from arbitrary Plutarch terms. This is when your Plutarch type's constructors contain other Plutarch terms.
 
-Another case `PlutusType` is useful is when you want to give your Plutarch type a custom representation, scott encoding, enum - what have you. From the `PlutusType` haddock example-
+Another case `PlutusType` is useful is when you want to give your Plutarch type a custom representation, scott encoding, enum - what have you. From the `PlutusType` haddock example:
 
 ```hs
 data AB = A | B
@@ -183,7 +183,7 @@ Chained list operations (e.g a filter followed by a map) are not very efficient 
 
 We've discussed how a Haskell level function that operates on Plutarch level terms needs to [be careful](#dont-duplicate-work) about [work duplication](./CONCEPTS.md#plet-to-avoid-work-duplication). Related to this point, it's good practice to design your Haskell level functions so that _it takes responsibility_ for evaluation.
 
-The user of your Haskell level function doesn't know how many times it uses the argument it has been passed! If it uses the argument multiple times without `plet`ing it - there's duplicate work! There's 2 solutions to this-
+The user of your Haskell level function doesn't know how many times it uses the argument it has been passed! If it uses the argument multiple times without `plet`ing it - there's duplicate work! There's 2 solutions to this:
 
 - The user `plet`s the argument before passing it to the Haskell level function.
 - The Haskell level function takes responsibility of its argument and `plet`s it itself.
@@ -202,13 +202,13 @@ When [implementing `PIsDataRepr`](./TYPECLASSES.md#implementing-pisdatarepr-and-
 
 In particular, with `makeIsDataIndexed`, you can assign _indices_ to your Haskell ADT's constructors. This determines how the ADT will be represented in Plutus Core. It's important to ensure that the corresponding Plutarch type _knows_ about these indices so it can decode the ADT correctly - in case you passed it into Plutarch code, through Haskell.
 
-For example, consider `Maybe`. Plutus assigns these indices to its constructors-
+For example, consider `Maybe`. Plutus assigns these indices to its constructors:
 
 ```hs
 makeIsDataIndexed ''Maybe [('Just, 0), ('Nothing, 1)]
 ```
 
-0 to `Just`, 1 to `Nothing`. So the corresponding Plutarch type, `PMaybeData` is defined as-
+0 to `Just`, 1 to `Nothing`. So the corresponding Plutarch type, `PMaybeData` is defined as:
 
 ```hs
 data PMaybeData a (s :: S)
@@ -216,7 +216,7 @@ data PMaybeData a (s :: S)
   | PDNothing (Term s (PDataRecord '[]))
 ```
 
-It'd be a very subtle mistake to instead define it as-
+It'd be a very subtle mistake to instead define it as:
 
 ```hs
 data PMaybeData a (s :: S)

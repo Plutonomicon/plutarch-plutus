@@ -23,7 +23,7 @@ If you're getting these errors when deriving typeclasses using the machinery pro
 
 If you get this while using `DerivingVia`, make sure you have imported the constructor of the type you're _deriving via_.
 
-If you get this while utilizing generic deriving, make sure you have imported the `I` constructor (or any other related constructor)-
+If you get this while utilizing generic deriving, make sure you have imported the `I` constructor (or any other related constructor):
 
 ```hs
 import Generics.SOP (Generic, I (I))

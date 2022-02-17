@@ -23,7 +23,7 @@ fib = phoistAcyclic $
 
 from [examples](https://github.com/Plutonomicon/plutarch/tree/master/examples).
 
-Execution-
+Execution:
 
 ```hs
 > evalT $ fib # 2

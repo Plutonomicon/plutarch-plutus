@@ -27,14 +27,14 @@ This document describes the primary typeclasses used in Plutarch.
 
 # `PEq` & `PORd`
 
-Plutarch level equality is provided by the `PEq` typeclass-
+Plutarch level equality is provided by the `PEq` typeclass:
 
 ```haskell
 class PEq t where
   (#==) :: Term s t -> Term s t -> Term s PBool
 ```
 
-`PInteger` implements `PEq` as you would expect. So you could do-
+`PInteger` implements `PEq` as you would expect. So you could do:
 
 ```haskell
 1 #== 2
@@ -44,7 +44,7 @@ That would yield a `Term s PBool`, which you would probably use with `pif` (or s
 
 > Jack: missing full stop.
 
-There is also a synonym to  `Ord`, `POrd`-
+There is also a synonym to  `Ord`, `POrd`:
 
 > Jack: synonym _of_
 
@@ -54,7 +54,7 @@ class POrd t where
   (#<) :: Term s t -> Term s t -> Term s PBool
 ```
 
-It works as you would expect-
+It works as you would expect:
 
 ```haskell
 {-# LANGUAGE OverloadedStrings #-}
@@ -66,14 +66,14 @@ evaluates to `"indeed"` - of type `Term s PString`.
 
 # `PIntegral`
 
-This is similar to the `Integral` typeclass. However, it only has the following class methods-
+This is similar to the `Integral` typeclass. However, it only has the following class methods:
 
 - `pdiv` - similar to `div`
 - `pmod` - similar to `mod`
 - `pquot` - similar to `quot`
 - `prem` - similar to `rem`
 
-Using these functions, you can do division/modulus etc on Plutarch level values-
+Using these functions, you can do division/modulus etc on Plutarch level values:
 
 > Jack: etc. \[with a '.']
 
@@ -121,7 +121,7 @@ These 2 closely tied together typeclasses establish a bridge between a Plutarch 
 
 > Jack: These two closely...
 
-What's more important, are the abilities that `PConstant`/`PLift` instances have-
+What's more important, are the abilities that `PConstant`/`PLift` instances have:
 
 ```hs
 pconstant :: PLift p => PLifted p -> Term s p
@@ -148,7 +148,7 @@ b :: Term s PBool
 b = pconstant False
 ```
 
-On the other end, `plift` lets you obtain the Haskell synonym of a Plutarch value (that is represented as a builtin value, i.e [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni))-
+On the other end, `plift` lets you obtain the Haskell synonym of a Plutarch value (that is represented as a builtin value, i.e [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)):
 
 ```hs
 import Plutus.V1.Ledger.Contexts
@@ -160,7 +160,7 @@ purp = pconstant $ Minting "be"
 Minting "be"
 ```
 
-There's also another handy utility, `pconstantData`-
+There's also another handy utility, `pconstantData`:
 
 ```hs
 pconstantData :: (PLift p, ToData (PLifted p)) => PLifted p -> Term s (PAsData p)
@@ -199,7 +199,7 @@ instance PUnsafeLiftDecl YourPlutarchType where
 
 You're tasked with assigning the correct Haskell synonym to your Plutarch type, and what an important task it is! Recall that `pconstant`'s argument type will depend on your assignment here. In particular: `pconstant :: YourHaskellType -> YourPlutarchType`.
 
-Some examples:-
+Some examples:
 
 - for `YourPlutarchType` = `PInteger`, `YourHaskellType` = `Integer`
 
@@ -217,7 +217,7 @@ Some examples:-
   instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
   ```
 
-Now, let's get to implementing `PConstant` for the Haskell synonym, via the 3 methods. The first of which is `DerivePConstantDirect`-
+Now, let's get to implementing `PConstant` for the Haskell synonym, via the 3 methods. The first of which is `DerivePConstantDirect`:
 
 > Jack: three methods.
 
@@ -230,14 +230,14 @@ import Plutarch.Prelude
 deriving via (DerivePConstantDirect Integer PInteger) instance (PConstant Integer)
 ```
 
-`DerivePConstantDirect` takes in 2 type parameters-
+`DerivePConstantDirect` takes in 2 type parameters:
 
 > Jack: two type parameters. N.B. In prose, numbers less than 10 should be written as a word.
 
 - The Haskell type itself, for which `PConstant` is being implemented for.
 - The **direct** Plutarch synonym to the Haskell type.
 
-Pretty simple! Let's check out `DerivePConstantViaNewtype` now-
+Pretty simple! Let's check out `DerivePConstantViaNewtype` now:
 
 ```hs
 {-# LANGUAGE UndecidableInstances #-}
@@ -254,7 +254,7 @@ newtype PValidatorHash (s :: S) = PValidatorHash (Term s PByteString)
 deriving via (DerivePConstantViaNewtype Plutus.ValidatorHash PValidatorHash PByteString) instance (PConstant Plutus.ValidatorHash)
 ```
 
-`DerivePConstantViaNewtype` takes in 3 type parameters-
+`DerivePConstantViaNewtype` takes in 3 type parameters:
 
 - The Haskell newtype itself, for which `PConstant` is being implemented for.
 - The Plutarch synonym to the Haskell type.
@@ -263,7 +263,7 @@ deriving via (DerivePConstantViaNewtype Plutus.ValidatorHash PValidatorHash PByt
   E.g `ValidatorHash` is a newtype to a `ByteString`, which is synonymous to `PByteString`. In the same way, `PValidatorHash` is actually just a newtype to a `PByteString` term.
   During runtime, `ValidatorHash` is actually just a `ByteString`, the same applies for `PValidatorHash`. So we give it the `newtype` treatment with `DerivePConstantViaNewtype`!
 
-Finally, we have `DerivePConstantViaData` for `Data` values-
+Finally, we have `DerivePConstantViaData` for `Data` values:
 
 ```hs
 {-# LANGUAGE UndecidableInstances #-}
@@ -284,7 +284,7 @@ data PScriptPurpose (s :: S)
 deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) instance (PConstant Plutus.ScriptPurpose)
 ```
 
-`DerivePConstantViaData` takes in 2 type parameters-
+`DerivePConstantViaData` takes in 2 type parameters:
 
 - The Haskell type itself, for which `PConstant` is being implemented for.
 - The Plutarch synonym to the Haskell type.
@@ -361,7 +361,7 @@ class (PCon a, PMatch a) => PlutusType (a :: k -> Type) where
 > Note: You don't need to look too much into the types! After all, you'll be using `pcon` and `pmatch`, rather than `pcon'` and `pmatch'`.
 > `PInner` is meant to represent the "inner" type of `a` - the Plutarch type representing the Plutus Core constant used to represent `a`.
 
-Here's the `PlutusType` instance for `PMaybe`-
+Here's the `PlutusType` instance for `PMaybe`:
 
 ```hs
 data PMaybe a s = PJust (Term s a) | PNothing
@@ -378,7 +378,7 @@ This is a [scott encoded representation of the familiar `Maybe` data type](./CON
 
 > Jack: Scott
 
-You should always use `pcon` and `pmatch` instead of `pcon'` and `pmatch'` - these are provided by the `PCon` and `PMatch` typeclasses-
+You should always use `pcon` and `pmatch` instead of `pcon'` and `pmatch'` - these are provided by the `PCon` and `PMatch` typeclasses:
 
 ```hs
 class PCon a where
@@ -394,7 +394,7 @@ For types that cannot easily be both `PCon` and `PMatch` - feel free to implemen
 
 ## Implementing `PlutusType` for your own types (Scott Encoding)
 
-If you want to represent your data type with [scott encoding](./CONCEPTS.md#scott-encoding) (and therefore don't need to make it `Data` encoded), you should simply derive it generically-
+If you want to represent your data type with [scott encoding](./CONCEPTS.md#scott-encoding) (and therefore don't need to make it `Data` encoded), you should simply derive it generically:
 
 ```hs
 import qualified GHC.Generics as GHC
@@ -412,13 +412,13 @@ data MyType (a :: PType) (b :: PType) (s :: S)
 
 ## Implementing `PlutusType` for your own types (`Data` Encoding)
 
-If your type is supposed to be represented using [`Data` encoding](./CONCEPTS.md#data-encoding-and-scott-encoding) instead (i.e has a [`PIsDataRepr`](#pisdatarepr--pdatafields) instance), you can derive `PlutusType` via `PIsDataReprInstances`-
+If your type is supposed to be represented using [`Data` encoding](./CONCEPTS.md#data-encoding-and-scott-encoding) instead (i.e has a [`PIsDataRepr`](#pisdatarepr--pdatafields) instance), you can derive `PlutusType` via `PIsDataReprInstances`:
 
 =======
 
 ## Implementing `PlutusType` for your own types (`Data` Encoding)
 
-If your type is supposed to be represented using [`Data` encoding](./CONCEPTS.md#data-encoding) instead (i.e has a [`PIsDataRepr`](#pisdatarepr--pdatafields) instance), you can derive `PlutusType` via `PIsDataReprInstances`-
+If your type is supposed to be represented using [`Data` encoding](./CONCEPTS.md#data-encoding) instead (i.e has a [`PIsDataRepr`](#pisdatarepr--pdatafields) instance), you can derive `PlutusType` via `PIsDataReprInstances`:
 
 ```hs
 import qualified GHC.Generics as GHC
@@ -454,19 +454,19 @@ The `PListLike` typeclass bestows beautiful, and familiar, list utilities to its
 
 As long as it's a `PLift a => PBuiltinList a` or `PList a` - it has access to all the `PListLike` goodies, out of the box. It helps to look into some of these functions at [`Plutarch.List`](https://github.com/Plutonomicon/plutarch/blob/master/Plutarch/List.hs).
 
-Along the way, you might be confronted by 2 big mean baddies ...err, constraints-
+Along the way, you might be confronted by 2 big mean baddies ...err, constraints:
 
 ```hs
 PIsListLike list a
 ```
 
-This just means that the type `list a`, is _indeed_ a valid `PListLike` containing valid elements! Of course, all `PList a`s are valid `PListLike`, but we have to think about `PBuiltinList` since it can only contain `PLift a => a` elements! So, in essence a function declared as-
+This just means that the type `list a`, is _indeed_ a valid `PListLike` containing valid elements! Of course, all `PList a`s are valid `PListLike`, but we have to think about `PBuiltinList` since it can only contain `PLift a => a` elements! So, in essence a function declared as:
 
 ```hs
 pfoo :: PIsListLike list a => Term s (list a :--> list a)
 ```
 
-when specialized to `PBuiltinList`, can be simplified as-
+when specialized to `PBuiltinList`, can be simplified as:
 
 ```hs
 pfoo :: PLift a => Term s (PBuiltinList a :--> PBuiltinList a)
@@ -474,7 +474,7 @@ pfoo :: PLift a => Term s (PBuiltinList a :--> PBuiltinList a)
 
 That's all it is. Don't be scared of it!
 
-What about this one-
+What about this one:
 
 ```hs
 PElemConstraint list a
@@ -482,7 +482,7 @@ PElemConstraint list a
 
 This one ensures that the element type `a` can indeed be contained within the list type - `list`. For `PList`, this constraint means nothing - it's always true. For `PBuiltinList`, it can be simplified as `PLift a`. Easy!
 
-Here's two of my favorite `PListLike` utilities (not biased)-
+Here's two of my favorite `PListLike` utilities (not biased):
 
 ```hs
 -- | Cons an element onto an existing list.
@@ -494,14 +494,14 @@ pnil :: PElemConstraint list a => Term s (list a)
 
 What would life be without cons and nil?
 
-Let's build a `PBuiltinList` of `PInteger`s with that-
+Let's build a `PBuiltinList` of `PInteger`s with that:
 
 ```hs
 x :: Term s (PBuiltinList PInteger)
 x = pcons # 1 #$ pcons # 2 #$ pcons # 3 # pnil
 ```
 
-Wooo! Let's not leave `PList` alone in the corner though-
+Wooo! Let's not leave `PList` alone in the corner though:
 
 ```hs
 x :: Term s (PList PInteger)
@@ -537,7 +537,7 @@ foo = plam $ \ctx -> unTermCont $ do
 
 Of course, just like `ScriptContext` - `PScriptContext` is represented as a `Data` value in Plutus Core. Plutarch just lets you keep track of the _exact representation_ of it within the type system.
 
-Here's how `PScriptContext` is defined-
+Here's how `PScriptContext` is defined:
 
 ```hs
 newtype PScriptContext (s :: S)
@@ -554,7 +554,7 @@ newtype PScriptContext (s :: S)
 
 It's a constructor containing a [`PDataRecord`](./TYPES.md#pdatasum--pdatarecord) term. It has 2 fields- `txInfo` and `purpose`.
 
-First, we extract the `purpose` field using `pfield @"purpose"`-
+First, we extract the `purpose` field using `pfield @"purpose"`:
 
 ```hs
 pfield :: Term s (PScriptContext :--> PScriptPurpose)
@@ -566,13 +566,13 @@ pfield :: Term s (PScriptContext :--> PScriptPurpose)
 >
 > Sometimes GHC isn't so smart, and you're forced to provide an explicit type annotation. Or you can simply use `pfromData $ pfield ....`.
 
-Now, we can `pmatch` on our `Term s PScriptPurpose` to extract the Haskell ADT (`PScriptPurpose s`) out of the Plutarch term-
+Now, we can `pmatch` on our `Term s PScriptPurpose` to extract the Haskell ADT (`PScriptPurpose s`) out of the Plutarch term:
 
 ```hs
 pmatch :: Term s PScriptPurpose -> (PScriptPurpose s -> Term s PString) -> Term s PString
 ```
 
-Now that we have `PScriptPurpose s`, we can just `case` match on it! `PScriptPurpose` is defined as-
+Now that we have `PScriptPurpose s`, we can just `case` match on it! `PScriptPurpose` is defined as:
 
 ```hs
 data PScriptPurpose (s :: S)
@@ -620,7 +620,7 @@ Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf string "It's mi
 
 We caught a glimpse of field extraction in the example above, thanks to `pfield`. However, that barely touched the surface.
 
-Once a type has a `PDataFields` instance, field extraction can be done with these 3 functions-
+Once a type has a `PDataFields` instance, field extraction can be done with these 3 functions:
 
 - `pletFields`
 - `pfield`
@@ -628,7 +628,7 @@ Once a type has a `PDataFields` instance, field extraction can be done with thes
 
 > Jack: consider linking to record dot preprocessor.
 
-Each has its own purpose. However, `pletFields` is arguably the most general purpose and most efficient. Whenever you need to extract several fields from the same variable, you should use `pletFields`-
+Each has its own purpose. However, `pletFields` is arguably the most general purpose and most efficient. Whenever you need to extract several fields from the same variable, you should use `pletFields`:
 
 ```hs
 -- NOTE: REQUIRES GHC 9!
@@ -649,7 +649,7 @@ foo = plam $ \ctx' -> do
 
 > Note: The above snippet uses GHC 9 features (`OverloadedRecordDot`). Be sure to check out [alternatives to `OverloadedRecordDot`](#alternatives-to-overloadedrecorddot).
 
-In essence, `pletFields` takes in a type level list of the field names that you want to access and a continuation function that takes in an `HRec`. This `HRec` is essentially a collection of the bound fields. You don't have to worry too much about the details of `HRec`. This particular usage has type-
+In essence, `pletFields` takes in a type level list of the field names that you want to access and a continuation function that takes in an `HRec`. This `HRec` is essentially a collection of the bound fields. You don't have to worry too much about the details of `HRec`. This particular usage has type:
 
 ```hs
 pletFields :: Term s PScriptContext
@@ -684,7 +684,7 @@ If you don't want to use either, you can simply use `hrecField`. In fact, `ctx.p
 
 We learned about type safe matching (through `PlutusType`) as well as type safe field access (through `PDataFields`) - how about construction? Since `PIsDataRepr` allows you to derive [`PlutusType`](#plutustype-pcon-and-pmatch), and `PlutusType` bestows the ability to not only _deconstruct_, but also **construct** values - you can do that just as easily!
 
-Let's see how we could build a `PMinting` `PScriptPurpose` given a `PCurrencySymbol`-
+Let's see how we could build a `PMinting` `PScriptPurpose` given a `PCurrencySymbol`:
 
 ```hs
 import Plutarch.Prelude
@@ -715,7 +715,7 @@ Of course, we do that using `pdcons` - which is just the familiar `cons` special
 pdcons :: forall label a l s. Term s (PAsData a :--> PDataRecord l :--> PDataRecord ((label ':= a) ': l))
 ```
 
-It takes a `PAsData a` and adds that `a` to the `PDataRecord` heterogenous list. We feed it a `PAsData PCurrencySymbol` term and `pdnil` - the empty data record. That should give us-
+It takes a `PAsData a` and adds that `a` to the `PDataRecord` heterogenous list. We feed it a `PAsData PCurrencySymbol` term and `pdnil` - the empty data record. That should give us:
 
 ```hs
 pdcons # currSymDat # pdnil :: Term _ (PDataRecord '[ label ':= PCurrencySymbol ])
@@ -727,7 +727,7 @@ Now that we have `fields`, we can use it with `PMinting` to build a `PScriptPurp
 
 ## Implementing `PIsDataRepr` and friends
 
-Implementing these is rather simple with generic deriving + `PIsDataReprInstances`. All you need is a well formed type using `PDataRecord`. For example, suppose you wanted to implement `PIsDataRepr` for the Plutarch version of this Haskell type-
+Implementing these is rather simple with generic deriving + `PIsDataReprInstances`. All you need is a well formed type using `PDataRecord`. For example, suppose you wanted to implement `PIsDataRepr` for the Plutarch version of this Haskell type:
 
 > Jack: avoid '+' in prose.
 
@@ -738,7 +738,7 @@ data Vehicle
   | ImmovableBox
 ```
 
-You'd declare the corresponding Plutarch type as-
+You'd declare the corresponding Plutarch type as:
 
 ```hs
 import Plutarch.Prelude
@@ -751,7 +751,7 @@ data PVehicle (s :: S)
 
 > Note: The constructor ordering in `PVehicle` matters! If you used [`makeIsDataIndexed`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed) on `Vehicle` to assign an index to each constructor - the Plutarch type's constructors must follow the same indexing order.
 >
-> In this case, `PFourWheeler` is at the 0th index, `PTwoWheeler` is at the 1st index, and `PImmovableBox` is at the 3rd index. Thus, the corresponding `makeIsDataIndexed` usage should be-
+> In this case, `PFourWheeler` is at the 0th index, `PTwoWheeler` is at the 1st index, and `PImmovableBox` is at the 3rd index. Thus, the corresponding `makeIsDataIndexed` usage should be:
 >
 > ```hs
 > PlutusTx.makeIsDataIndexed ''FourWheeler [('FourWheeler,0),('TwoWheeler,1),('ImmovableBox,2)]
@@ -761,7 +761,7 @@ data PVehicle (s :: S)
 
 And you'd simply derive `PIsDataRepr` using generics. However, you **must** also derive `PIsData` using `PIsDataReprInstances`. Moreover, you should also derive `PlutusType`. For single constructor data types, you should also derive `PDataFields`.
 
-Combine all that, and you have-
+Combine all that, and you have:
 
 ```hs
 {-# LANGUAGE UndecidableInstances #-}
@@ -811,7 +811,7 @@ test = plam $ \veh' -> unTermCont $ do
 
 > Note: The above snippet uses GHC 9 features (`OverloadedRecordDot`). Be sure to check out [alternatives to `OverloadedRecordDot`](#alternatives-to-overloadedrecorddot).
 
-What about types with singular constructors? It's quite similar to the sum type case. Here's how it looks-
+What about types with singular constructors? It's quite similar to the sum type case. Here's how it looks:
 
 ```hs
 {-# LANGUAGE UndecidableInstances #-}

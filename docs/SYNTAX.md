@@ -15,15 +15,11 @@ This document describes the syntax of Plutarch through code examples.
 
 </details>
 
-A Plutarch script is a `Term`. This can consist of-
-
-> Jack: replace - with :
+A Plutarch script is a `Term`. This can consist of the following:
 
 # Constants
 
-There are several ways of building Plutarch constants. We discuss the primary ones below:-
-
-> Jack: delete -
+There are several ways of building Plutarch constants. We discuss the primary ones below:
 
 ## Static building with `pconstant` and `pconstantData`
 
@@ -45,7 +41,7 @@ Similarly, `PAsData` constant terms can be built using `pconstantData`. If you w
 
 ## Dynamic building with `pcon`
 
-Plutarch constant terms can also be built from Plutarch terms within other constructors using `pcon` (requires \[`PlutusType`/`PCon`](TODO: LINK) instance)-
+Plutarch constant terms can also be built from Plutarch terms within other constructors using `pcon` (requires [`PlutusType`/`PCon`](./TYPECLASSES.md#plutustype-pcon-and-pmatch) instance):
 
 ```haskell
 import Plutarch.Prelude
@@ -100,7 +96,7 @@ y = "foobar"
 
 ## Miscellaneous
 
-Finally, other miscellaneous functions provided by Plutarch also sometimes build constants-
+Finally, other miscellaneous functions provided by Plutarch also sometimes build constants:
 
 > Jack: Replace - with :
 
@@ -129,7 +125,7 @@ The identity function! Notice the type. A Plutarch level lambda uses the funny a
 
 > Jack: same type: `a`.
 
-Guess what this Plutarch level function does-
+Guess what this Plutarch level function does:
 
 > Jack: 'does: '
 
@@ -139,7 +135,7 @@ f :: Term s (PInteger :--> PString :--> a :--> a)
 
 That's right! It takes in an integer, a string, and a type `a` and returns the same type `a`. Notice that all of those types are Plutarch level types.
 
-This is the type of the Haskell level function, `plam`-
+This is the type of the Haskell level function, `plam`:
 
 > Jack: `plam`:
 
@@ -151,7 +147,7 @@ plam :: (Term s a -> Term s b) -> Term s (a :--> b)
 
 It just converts a Haskell level function, which operates on purely Plutarch terms, into a Plutarch level function.
 
-This means that when faced with filling out the gap-
+This means that when faced with filling out the gap:
 
 > Jack: gap:
 

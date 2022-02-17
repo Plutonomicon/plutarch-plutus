@@ -57,14 +57,14 @@ For the sake of convenience, you often would want to use operators - which must 
 
 Choosing convenience over efficiency is difficult, but if you notice that your operator uses complex logic and may end up creating big terms - you can trivially factor out the logic into a Plutarch level function, hoist it, and simply apply that function within the operator.
 
-Consider boolean or-
+Consider "boolean or":
 
 ```hs
 (#||) :: Term s PBool -> Term s PBool -> Term s PBool
 x #|| y = pif x (pconstant True) $ pif y (pconstant True) $ pconstant False
 ```
 
-You can factor out most of the logic to a Plutarch level function, and apply that in the operator definition-
+You can factor out most of the logic to a Plutarch level function, and apply that in the operator definition:
 
 ```hs
 (#||) :: Term s PBool -> Term s PBool -> Term s PBool
@@ -74,7 +74,7 @@ por :: Term s (PBool :--> PDelayed PBool :--> PBool)
 por = phoistAcyclic $ plam $ \x y -> pif' # x # pconstant True # pforce y
 ```
 
-In general the pattern goes like this-
+In general the pattern goes like this:
 
 ```hs
 (<//>) :: Term s x -> Term s y -> Term s z
@@ -110,7 +110,7 @@ Most types prefixed with `P` are eDSL-level types, meaning that they're meant to
 
 # `plet` to avoid work duplication
 
-Sometimes, when writing Haskell level functions for generating Plutarch terms, you may find yourself needing to re-use the Haskell level function's argument multiple times-
+Sometimes, when writing Haskell level functions for generating Plutarch terms, you may find yourself needing to re-use the Haskell level function's argument multiple times:
 
 > Jack: arguments
 
@@ -146,7 +146,7 @@ Use `pdelay` on a term to create a "delayed term".
 let f = plam (\x -> x) in pdelay (f # phexByteStr 0x41)
 ```
 
-Compiling and evaluating it yields-
+Compiling and evaluating it yields:
 
     Program () (Version () 1 0 0) (Delay () (Constant () (Some (ValueOf bytestring "A"))))
 
@@ -154,17 +154,17 @@ The function application is "delayed". It will not be evaluated (and therefore c
 
 Plutarch level function application is strict. All of your function arguments are evaluated **before** the function is called. This is often undesirable, and you want to create a delayed term instead that you want to force _only_ when you need to compute it.
 
-You can force a previously delayed expression using pforce-
+You can force a previously delayed expression using `pforce`:
 
 ```hs
 pforce $ let f = plam (\x -> x) in pdelay (f # phexByteStr "41")
 ```
 
-It evaluates to-
+It evaluates to:
 
     Program () (Version () 1 0 0) (Constant () (Some (ValueOf bytestring "A")))
 
-Delaying the argument to a Plutarch level function, within the function body, is not very useful - since the argument has been evaluated before the function body has been entered! Instead, you'll often notice usage of `pdelay` and `pforce` in Haskell level function arguments to simulate laziness-
+Delaying the argument to a Plutarch level function, within the function body, is not very useful - since the argument has been evaluated before the function body has been entered! Instead, you'll often notice usage of `pdelay` and `pforce` in Haskell level function arguments to simulate laziness:
 
 ```hs
 pif' :: Term s (PBool :--> a :--> a :--> a)
@@ -210,19 +210,19 @@ On the opposite (and conflicting) end, is scott encoding. [The internet](https:/
 
 Firstly, what good is scott encoding? Well it doesn't share the limitation of not being able to contain functions! However, you cannot use scott encoded types within, for example, your datums and redeemers.
 
-Briefly, scott encoding is a way to represent data with functions. The scott encoded representation of `Maybe a` would be-
+Briefly, scott encoding is a way to represent data with functions. The scott encoded representation of `Maybe a` would be:
 
 ```hs
 (a -> b) -> b -> b
 ```
 
-`Just 42`, for example, would be represented as this function-
+`Just 42`, for example, would be represented as this function:
 
 ```hs
 \f _ -> f 42
 ```
 
-Whereas `Nothing` would be represented as this function-
+Whereas `Nothing` would be represented as this function:
 
 ```hs
 \_ n -> n
@@ -249,7 +249,7 @@ foo :: Maybe Integer -> Integer
 foo mb = mb (\x -> x + 42) 0
 ```
 
-How does that work? Recall that `mb` is really just a function. Here's how the application of `f` would work-
+How does that work? Recall that `mb` is really just a function. Here's how the application of `f` would work:
 
 ```hs
 foo (just 1)

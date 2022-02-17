@@ -27,7 +27,7 @@ Also see: [eDSL types in Plutarch](./CONCEPTS.md#edsl-types-in-plutarch)
 
 # `PInteger`
 
-`Term s PInteger` has a convenient `Num` instance that allows you to construct Plutarch level integer terms from regular literals. It also means you have all the typical arithmetic operations available to you-
+`Term s PInteger` has a convenient `Num` instance that allows you to construct Plutarch level integer terms from regular literals. It also means you have all the typical arithmetic operations available to you:
 
 > Jack: consider replacing 'regular'.
 
@@ -110,7 +110,7 @@ This is synonymous to Plutus Core [builtin unit](https://playground.plutus.iohkd
 
 # `PBuiltinList`
 
-You'll be using builtin lists quite a lot in Plutarch. `PBuiltinList` has a [`PListLike`](#plistlike) instance, giving you access to all the goodies from there! However, `PBuiltinList` can only contain builtin types. In particular, it cannot contain Plutarch functions.
+You'll be using builtin lists quite a lot in Plutarch. `PBuiltinList` has a [`PListLike`](./TYPECLASSES.md#plistlike) instance, giving you access to all the goodies from there! However, `PBuiltinList` can only contain builtin types. In particular, it cannot contain Plutarch functions.
 
 You can express the constraint of "only builtin types" using `PLift`, exported from `Plutarch.Builtin`-\`
 
@@ -118,7 +118,7 @@ You can express the constraint of "only builtin types" using `PLift`, exported f
 validBuiltinList :: PLift a => PBuiltinList a
 ```
 
-As mentioned before, `PBuiltinList` gets access to all the `PListLike` utilities. Other than that, `PLift a => PBuiltinList a` also has a [`PlutusType`](#plutustype-pcon-and-pmatch) instance. You can construct a `PBuiltinList` using `pcon` (but you should prefer using `pcons` from `PListLike`)-
+As mentioned before, `PBuiltinList` gets access to all the `PListLike` utilities. Other than that, `PLift a => PBuiltinList a` also has a [`PlutusType`](./TYPECLASSES.md#plutustype-pcon-and-pmatch) instance. You can construct a `PBuiltinList` using `pcon` (but you should prefer using `pcons` from `PListLike`):
 
 ```hs
 > pcon $ PCons (phexByteStr "fe") $ pcon PNil
@@ -126,7 +126,7 @@ As mentioned before, `PBuiltinList` gets access to all the `PListLike` utilities
 
 would yield a `PBuiltinList PByteString` with one element - `0xfe`. Of course, you could have done that with `pcons # phexByteStr "fe" # pnil` instead!
 
-You can also use `pmatch` to match on a list-
+You can also use `pmatch` to match on a list:
 
 ```hs
 pmatch (pcon $ PCons (phexByteStr "fe") $ pcon PNil) $ \case
@@ -134,7 +134,7 @@ pmatch (pcon $ PCons (phexByteStr "fe") $ pcon PNil) $ \case
   PCons _ _ -> "oooo fancy!"
 ```
 
-But you should prefer `pelimList` from `PListLike` instead-
+But you should prefer `pelimList` from `PListLike` instead:
 
 ```hs
 pelimList (\_ _ -> "oooo fancy") "hey hey there's nothing here!" $ pcon $ PCons (phexByteStr "fe") $ pcon PNil
@@ -154,7 +154,7 @@ The final argument is, of course, the list itself.
 
 Here's the [scott encoded](./CONCEPTS.md#scott-encoding) cousin of `PBuiltinList`. What does that mean? Well, in practice, it just means that `PList` can contain _any arbitrary_ term - not just builtin types. `PList` also has a [`PListLike`](#plistlike) instance - so you won't be missing any of those utilities here!
 
-`PList` also has a [`PlutusType`](./TYPECLASSES.md#plutustype-pcon-and-pmatch) instance. You can construct a `PList` using `pcon` (but you should prefer using `pcons` from `PListLike`)-
+`PList` also has a [`PlutusType`](./TYPECLASSES.md#plutustype-pcon-and-pmatch) instance. You can construct a `PList` using `pcon` (but you should prefer using `pcons` from `PListLike`):
 
 ```hs
 > pcon $ PSCons (phexByteStr "fe") $ pcon PSNil
@@ -162,7 +162,7 @@ Here's the [scott encoded](./CONCEPTS.md#scott-encoding) cousin of `PBuiltinList
 
 would yield a `PList PByteString` with one element - `0xfe`. Of course, you could have done that with `pcons # phexByteStr "fe" # pnil` instead!
 
-You can also use `pmatch` to match on a list-
+You can also use `pmatch` to match on a list:
 
 ```hs
 pmatch (pcon $ PSCons (phexByteStr "fe") $ pcon PSNil) $ \case
@@ -170,7 +170,7 @@ pmatch (pcon $ PSCons (phexByteStr "fe") $ pcon PSNil) $ \case
   PSCons _ _ -> "oooo fancy!"
 ```
 
-But you should prefer `pelimList` from `PListLike` instead-
+But you should prefer `pelimList` from `PListLike` instead:
 
 ```hs
 pelimList (\_ _ -> "oooo fancy") "hey hey there's nothing here!" $ pcon $ PSCons (phexByteStr "fe") $ pcon PSNil
@@ -180,7 +180,7 @@ pelimList (\_ _ -> "oooo fancy") "hey hey there's nothing here!" $ pcon $ PSCons
 
 Much like in the case of builtin lists, you'll just be working with builtin functions (or rather, Plutarch synonyms to builtin functions) here. You can find everything about that in [builtin-pairs](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-pairs.md). Feel free to only read the `Plutarch` examples.
 
-In particular, you can deconstruct `PBuiltinPair` using `pfstBuiltin` and `psndBuiltin`. You can build `PBuiltinPair (PAsData a) (PAsData b)` terms with `ppairDataBuiltin`-
+In particular, you can deconstruct `PBuiltinPair` using `pfstBuiltin` and `psndBuiltin`. You can build `PBuiltinPair (PAsData a) (PAsData b)` terms with `ppairDataBuiltin`:
 
 ```hs
 ppairDataBuiltin :: Term s (PAsData a :--> PAsData b :--> PBuiltinPair (PAsData a) (PAsData b))
@@ -190,7 +190,7 @@ It's also helpful to note that `PAsData (PBuiltinPair (PAsData a) (PAsData b))` 
 
 # `PTuple`
 
-These are [data encoded](./CONCEPTS.md#data-encoding) pairs. You can build `PTuple`s using `ptuple`-
+These are [data encoded](./CONCEPTS.md#data-encoding) pairs. You can build `PTuple`s using `ptuple`:
 
 ```hs
 ptuple :: Term s (PAsData a :--> PAsData b :--> PTuple a b)
@@ -198,7 +198,7 @@ ptuple :: Term s (PAsData a :--> PAsData b :--> PTuple a b)
 
 `PTuple` has a [`PDataFields`](./TYPECLASSES.md#all-about-extracting-fields) instance. As such, you can extract its fields using `pletFields` or `pfield`.
 
-Since `PAsData (PBuiltinPair (PAsData a) (PAsData b))` and `PAsData (PTuple a b)` have the same representation - you can safely convert between them at no cost-
+Since `PAsData (PBuiltinPair (PAsData a) (PAsData b))` and `PAsData (PTuple a b)` have the same representation - you can safely convert between them at no cost:
 
 ```hs
 ptupleFromBuiltin :: Term s (PAsData (PBuiltinPair (PAsData a) (PAsData b))) -> Term s (PAsData (PTuple a b))
@@ -210,13 +210,13 @@ pbuiltinPairFromTuple :: Term s (PAsData (PTuple a b)) -> Term s (PAsData (PBuil
 
 This is a typed way of representing [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md). It is highly encouraged you use `PAsData` to keep track of what "species" of `Data` value you actually have. `Data` can be a `Constr` (for sum of products - ADTs), `Map` (for wrapping assoc maps of Data to Data), `List` (for wrapping builtin lists of data), `I` (for wrapping builtin integers), and `B` (for wrapping builtin bytestrings).
 
-Consider a function that takes in and returns a `B` data value - aka `ByteString` as a `Data` value. If you use the direct Plutarch synonym to `Data` - `PData`, you'd have-
+Consider a function that takes in and returns a `B` data value - aka `ByteString` as a `Data` value. If you use the direct Plutarch synonym to `Data` - `PData`, you'd have:
 
 ```hs
 foo :: Term s (PData :--> PData)
 ```
 
-That's not very informative - you have no way to ensure that you're actually working with `B` data values. You could use `PAsData` instead-
+That's not very informative - you have no way to ensure that you're actually working with `B` data values. You could use `PAsData` instead:
 
 ```hs
 foo :: Term s (PAsData PByteString :--> PAsData PByteString)
@@ -248,7 +248,7 @@ Plutarch sum and product types are represented using `PDataSum` and `PDataRecord
 
 Whenever you need to represent a non-trivial ADT using [`Data` encoding](./CONCEPTS.md#data-encoding), you'll likely be reaching for these.
 
-More often than not, you'll be using `PDataRecord`. This is used to denote all the fields of a constructor-
+More often than not, you'll be using `PDataRecord`. This is used to denote all the fields of a constructor:
 
 ```hs
 import Plutarch.Prelude
@@ -268,14 +268,14 @@ pdnil :: Term s (PDataRecord '[])
 
 To add an `a` to the `PDataRecord` term, you must have a `PAsData a`. The other type variable of interest, is `label`. This is just the name of the field you're adding. You can either use type application to specify the field, or use a type annotation, or let GHC match up the types.
 
-Here's how you'd build a `PDataRecord` with two integer fields, one is named `foo`, the other is named `bar`-
+Here's how you'd build a `PDataRecord` with two integer fields, one is named `foo`, the other is named `bar`:
 
 ```hs
 test ::
 test = pdcons @"foo" @PInteger # 7 #$ pdcons @"bar" @PInteger # 42 # pnil
 ```
 
-`PDataSum` on the other hand, is more "free-standing". In particular, the following type-
+`PDataSum` on the other hand, is more "free-standing". In particular, the following type:
 
 ```hs
 PDataSum

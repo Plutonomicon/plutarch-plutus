@@ -22,7 +22,7 @@ alwaysSucceeds = plam $ \datm redm ctx -> pconstant ()
 
 All the arguments are ignored. So we use the generic `PDatum` and `PRedeemer` types.
 
-Execution-
+Execution:
 
 ```hs
 import qualified PlutusTx
@@ -44,7 +44,7 @@ alwaysFails = plam $ \datm redm ctx -> perror
 
 Similar to the example above.
 
-Execution-
+Execution:
 
 ```hs
 import qualified PlutusTx
@@ -81,7 +81,7 @@ checkSignatory = plam $ \ph _ _ ctx' -> unTermCont $ do
       perror
 ```
 
-> Note: The above snippet uses GHC 9 features (`OverloadedRecordDot`). Be sure to check out [alternatives to `OverloadedRecordDot`](#alternatives-to-overloadedrecorddot).
+> Note: The above snippet uses GHC 9 features (`OverloadedRecordDot`). Be sure to check out [alternatives to `OverloadedRecordDot`](./../TYPECLASSES.md#alternatives-to-overloadedrecorddot).
 
 We match on the script purpose to see if its actually for _spending_ - and we get the signatories field from `txInfo` (the 7th field), check if given pub key hash is present within the signatories and that's it!
 
@@ -123,4 +123,4 @@ Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf unit ()))))
 
 # Using custom datum/redeemer in your Validator
 
-All you have to do is [implement `PIsDataRepr` and friends](#implementing-pisdatarepr-and-friends) for your custom datum/redeemer and you can use it just like `PScriptContext` in your validators!
+All you have to do is [implement `PIsDataRepr` and friends](./../TYPECLASSES.md#implementing-pisdatarepr-and-friends) for your custom datum/redeemer and you can use it just like `PScriptContext` in your validators!

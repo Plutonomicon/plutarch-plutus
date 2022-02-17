@@ -17,7 +17,7 @@ This document describes various core Plutarch usage concepts.
 
 # Applying functions
 
-You can apply Plutarch level functions using `#` and `#$` (or `papp`). Notice the associativity and precedence of those operators-
+You can apply Plutarch level functions using `#` and `#$` (or `papp`). Notice the associativity and precedence of those operators:
 
 > Jack: operators:
 
@@ -27,7 +27,7 @@ infixl 8 #
 infixr 0 #$
 ```
 
-`#$` is pretty much just `$` for Plutarch functions. But `#` is left associative and has a high precedence. This essentially means that the following-
+`#$` is pretty much just `$` for Plutarch functions. But `#` is left associative and has a high precedence. This essentially means that the following:
 
 > Jack: following:
 
@@ -39,7 +39,7 @@ f # 1 # 2
 
 applies `f` to 1 and 2. i.e, it is parsed as - `((f 1) 2)`
 
-Whereas, the following-
+Whereas, the following:
 
 ```haskell
 f #$ foo # 1
@@ -66,7 +66,7 @@ parses as - `f (foo 1)`
 
 # Conditionals
 
-You can simulate `if/then/else` at the Plutarch level using `pif`-
+You can simulate `if/then/else` at the Plutarch level using `pif`:
 
 > Jack: `pif`: . N.B. I am no longer going to highlight instances where '-' needs to be replaced. Essentially everywhere I have seen '-' used thus far should be replaced with ':' or ','. See [here](https://www.lexico.com/grammar/colon), [here](https://www.lexico.com/grammar/comma) and [here](https://www.lexico.com/grammar/hyphen).
 
@@ -90,7 +90,7 @@ Of course, the predicate can be an arbitrary `Term s PBool` producing computatio
 
 # Recursion
 
-To emulate recursion in UPLC (Untyped Plutus Core), you need to use the Y combinator. Plutarch provides the Y combinator with the name `pfix`-
+To emulate recursion in UPLC (Untyped Plutus Core), you need to use the Y combinator. Plutarch provides the Y combinator with the name `pfix`:
 
 > Jack: Consider linking to the Plutonomicon UPLC docs here, as you did in guide.
 
@@ -100,7 +100,7 @@ To emulate recursion in UPLC (Untyped Plutus Core), you need to use the Y combin
 pfix :: Term s (((a :--> b) :--> a :--> b) :--> a :--> b)
 ```
 
-It works as you would expect, though the type is scary. Think of it as the Haskell type-
+It works as you would expect, though the type is scary. Think of it as the Haskell type:
 
 ```haskell
 fix :: ((a -> b) -> (a -> b)) -> a -> b
@@ -130,7 +130,7 @@ Continuation functions like `pmatch`, `plet`, and `pletFields` aren't exactly th
 
 `TermCont @b s a` essentially represents `(a -> Term s b) -> Term s b`. `a` being the input to the continuation, and `Term s b` being the output. Notice the type application - `b` must have been brought into scope through another binding first.
 
-Consider the snippet-
+Consider the snippet:
 
 ```hs
 import Plutarch.Api.V1.Contexts
@@ -166,7 +166,7 @@ How cool is that? You can use regular `do` syntax on the `TermCont` monad. All t
 > Jack: The best part is: as you don't require `QualifiedDo`, you don't need GHC 9!
 > Chase: This comment is also a bit out of context now. We basically want to give the impression that you never even need to consider the `QualifiedDo` method. That's why `TermCont` is moved up and prioritized in examples.
 
-Furthermore, this is very similar to the `Cont` monad - it just operates on Plutarch level terms. This means you can draw parallels to utilities and patterns one would use when utilizing the `Cont` monad. Here's an example-
+Furthermore, this is very similar to the `Cont` monad - it just operates on Plutarch level terms. This means you can draw parallels to utilities and patterns one would use when utilizing the `Cont` monad. Here's an example:
 
 ```hs
 import Plutarch.Prelude
@@ -220,13 +220,13 @@ Finally, `P.do { x }` is just `x`.
 
 # Deriving typeclasses for `newtype`s
 
-If you're defining a `newtype` to an existing Plutarch type, like so-
+If you're defining a `newtype` to an existing Plutarch type, like so:
 
 ```hs
 newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
 ```
 
-You ideally want to just have this `newtype` be represetned as a `PByteString` under the hood. Therefore, all the typeclass instances of `PByteString` make sense for `PPubKeyHash` as well. In this case, you can simply derive all those typeclasses for your `PPubKeyHash` type as well! Via `DerivePNewtype`-
+You ideally want to just have this `newtype` be represetned as a `PByteString` under the hood. Therefore, all the typeclass instances of `PByteString` make sense for `PPubKeyHash` as well. In this case, you can simply derive all those typeclasses for your `PPubKeyHash` type as well! Via `DerivePNewtype`:
 
 > Jack: represented
 
@@ -247,7 +247,7 @@ newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
 
 > Aside: You can access the inner type using `pto` (assuming it's a `PlutusType` instance). For example, `pto x`, where `x :: Term s PPubKeyHash`, would give you `Term s PByteString`. `pto` converts a [`PlutusType`](./TYPECLASSES.md#plutustype-pcon-and-pmatch) term to its inner type. This is very useful, for example, when you need to use a function that operates on bytestring terms, but all you have is a `Term s PPubKeyHash`. You _know_ it's literally a bytestring under the hood anyway - but how do you obtain that? Using `pto`!
 
-Currently, `DerivePNewtype` lets you derive the following typeclasses for your Plutarch _types_:-
+Currently, `DerivePNewtype` lets you derive the following typeclasses for your Plutarch _types_:
 
 - `PlutusType`
 - `PIsData`
@@ -255,13 +255,13 @@ Currently, `DerivePNewtype` lets you derive the following typeclasses for your P
 - `POrd`
 - `PIntegral`
 
-You can also derive the following typeclasses for Plutarch _terms_:-
+You can also derive the following typeclasses for Plutarch _terms_:
 
 - `Num`
 - `Semigroup`
 - `Monoid`
 
-What does this mean? Well, `Num` would actually be implemented for `Term s a`, where `a` is a Plutarch type. For example, if you wanted to implement `Semigroup` for `Term s PPubKeyHash` (`Term s PByteString` already has a `Semigroup` instance), you can write-
+What does this mean? Well, `Num` would actually be implemented for `Term s a`, where `a` is a Plutarch type. For example, if you wanted to implement `Semigroup` for `Term s PPubKeyHash` (`Term s PByteString` already has a `Semigroup` instance), you can write:
 
 ```hs
 {-# LANGUAGE StandaloneDeriving #-}
@@ -271,7 +271,7 @@ deriving via (Term s (DerivePNewtype PPubKeyHash PByteString)) instance Semigrou
 
 # Deriving typeclasses with generics
 
-Plutarch also provides sophisticated generic deriving support for completely custom types. In particular, you can easily derive `PlutusType` for your own type-
+Plutarch also provides sophisticated generic deriving support for completely custom types. In particular, you can easily derive `PlutusType` for your own type:
 
 ```hs
 import qualified GHC.Generics as GHC
@@ -291,7 +291,7 @@ This will use a [scott encoding representation](./CONCEPTS.md#scott-encoding) fo
 
 > Jack: Scott is a proper noun and must always be capitalized.
 
-Currently, generic deriving supports the following typeclasses:-
+Currently, generic deriving supports the following typeclasses:
 
 - [`PlutusType`](./TYPECLASSES.md#implementing-plutustype-for-your-own-types) (scott encoding only)
 - [`PIsDataRepr`](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)
