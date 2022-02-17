@@ -135,6 +135,7 @@ Due to the highly abstracted nature of Plutarch and its utilization of advanced 
 - [Expected a type, but "fieldName" has kind `GHC.Types.Symbol`](./TROUBLESHOOTING.md#expected-a-type-but-fieldname-has-kind-ghctypessymbol)
 - [Lifting `PAsData`](./TROUBLESHOOTING.md#lifting-pasdata)
 - [Couldn't match type `PLifted (PConstanted Foo)` with `Foo`](./TROUBLESHOOTING.md#couldnt-match-type-plifted-pconstanted-foo-with-foo)
+- [Type match errors when using `pfield`/`hrecField` (or `OverloadedRecordDot` to access field)](./TROUBLESHOOTING.md#type-match-errors-when-using-pfieldhrecfield-or-overloadedrecorddot-to-access-field)
 
 # Useful Links
 

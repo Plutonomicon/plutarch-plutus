@@ -10,6 +10,7 @@
 - [Expected a type, but "fieldName" has kind `GHC.Types.Symbol`](#expected-a-type-but-fieldname-has-kind-ghctypessymbol)
 - [Lifting `PAsData`](#lifting-pasdata)
 - [Couldn't match type `PLifted (PConstanted Foo)` with `Foo`](#couldnt-match-type-plifted-pconstanted-foo-with-foo)
+- [Type match errors when using `pfield`/`hrecField` (or `OverloadedRecordDot` to access field)](#type-match-errors-when-using-pfieldhrecfield-or-overloadedrecorddot-to-access-field)
 
 </details>
 
@@ -68,3 +69,11 @@ Orphan instances! Specifically, in order for those type family applications to f
 This happens often with Plutarch ledger API types. If you didn't import `Plutarch.Api.V1.Contexts` (or some other module that imports it), and you're using `pconstant` on a `ScriptContext` - you'll get an error like this. The `PConstant` instance for `ScriptContext` hasn't been imported - so GHC has no idea what `PConstanted ScriptContext` is!
 
 Relevant issue: [#252](https://github.com/Plutonomicon/plutarch/issues/252)
+
+# Type match errors when using `pfield`/`hrecField` (or `OverloadedRecordDot` to access field)
+
+You might get nonsensical "Couldn't match type" errors when extracting fields. This has to do with GHC incorrectly inferring the return type. Field extraction is meant to be polymorphic in its return type in the sense that it might either return a `Term s (PAsData p)` term, or simply a `Term s p` (automatic `pfromData`). Unfortunately, sometimes this polymorphism makes it harder for GHC to infer the types.
+
+You can fix this by providing an explicit type annotation on *the result* of `pfield` or `hrecField` (or `OverloadedRecordDot` for field access). Otherwise, you can also explicitly use `pfromData` on the result.
+
+Relevant issue: [#275](https://github.com/Plutonomicon/plutarch/issues/275)
