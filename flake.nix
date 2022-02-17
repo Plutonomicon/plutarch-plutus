@@ -696,7 +696,7 @@
           # origin/staging. We set != "refs/head/master" so that merges into master don't
           # cause a lot of unnecessary bogus benchmarks to appear in CI for the time
           # being.
-          benchmark-diff = hci-effects.runIf (src.owner == "Plutonomicon" && src.ref != "refs/heads/master") (
+          benchmark-diff = hci-effects.runIf (src.ref != "refs/heads/master") (
             hci-effects.mkEffect {
               src = self;
               buildInputs = with pkgs; [ git nixFlakes ];
