@@ -79,8 +79,8 @@ spec = do
         it "baseAgreement" $ findTest
         goldens
           All
-          [ ("find_(== 3)_[1..4]", pfind # plam (#== 3) #$ marshal [1 .. 4 :: Integer])
-          , ("find_(== 5)_[1..4]", pfind # plam (#== 5) #$ marshal [1 .. 4 :: Integer])
+          [ ("find_(==3)_[1..4]", pfind # plam (#== 3) #$ marshal [1 .. 4 :: Integer])
+          , ("find_(==5)_[1..4]", pfind # plam (#== 5) #$ marshal [1 .. 4 :: Integer])
           ]
       describe "reverse" $ do
         it "base agreement" reverseTest

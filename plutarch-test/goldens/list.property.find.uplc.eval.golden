@@ -1,2 +1,2 @@
-find_(== 3)_[1..4] (program 1.0.0 (\i0 -> \i0 -> i2 3))
-find_(== 5)_[1..4] (program 1.0.0 (\i0 -> \i0 -> force i1))
+find_(==3)_[1..4] (program 1.0.0 (\i0 -> \i0 -> i2 3))
+find_(==5)_[1..4] (program 1.0.0 (\i0 -> \i0 -> force i1))
