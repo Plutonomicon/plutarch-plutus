@@ -12,8 +12,8 @@
 
   inputs.iohk-nix.url = "github:input-output-hk/iohk-nix";
   inputs.iohk-nix.flake = false;
+  # we use sphinxcontrib-haddock input
   inputs.plutus.url = "github:input-output-hk/plutus";
-  inputs.plutus.flake = false;
   # https://github.com/input-output-hk/cardano-prelude/pull/162
   inputs.cardano-prelude.url = "github:locallycompact/cardano-prelude?rev=93f95047bb36a055bdd56fb0cafd887c072cdce2";
   inputs.cardano-prelude.flake = false;
