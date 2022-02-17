@@ -22,16 +22,15 @@ import Data.Text (Text)
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified Plutus.V1.Ledger.Crypto as Plutus
 
+import Data.Aeson.Extras (encodeSerialise)
 import Plutarch (ClosedTerm, POpaque, popaque)
 import Plutarch.Api.V1 (
   PScriptContext,
-  encodeSerialise,
   mintingPolicySymbol,
   mkMintingPolicy,
   mkStakeValidator,
   mkValidator,
   stakeValidatorHash,
-  tryDecodeHex,
   validatorHash,
   type PMintingPolicy,
   type PStakeValidator,
@@ -47,7 +46,6 @@ import Plutarch.Test (
   goldenFilePath,
  )
 import Test.Syd (Spec, describe, it, pureGoldenTextFile)
-import Test.Tasty.HUnit ((@?=))
 
 spec :: Spec
 spec = do
@@ -55,13 +53,6 @@ spec = do
     describe "auth_validator" $ do
       prefix <- getGoldenFilePrefix
       golden PrintTerm authValidatorTerm
-      it "serialization" $ do
-        pureGoldenTextFile
-          (goldenFilePath "goldens" prefix "plutus")
-          validatorEncoded
-      it "deserialisation" $
-        tryDecodeHex validatorEncoded
-          @?= Right authValidatorCompiled
       it "hash" $ do
         pureGoldenTextFile
           (goldenFilePath "goldens" prefix "hash")
@@ -69,13 +60,6 @@ spec = do
     describe "auth_policy" $ do
       prefix <- getGoldenFilePrefix
       golden PrintTerm authPolicyTerm
-      it "serialization" $ do
-        pureGoldenTextFile
-          (goldenFilePath "goldens" prefix "plutus")
-          policyEncoded
-      it "deserialisation" $
-        tryDecodeHex policyEncoded
-          @?= Right authPolicyCompiled
       it "hash" $
         pureGoldenTextFile
           (goldenFilePath "goldens" prefix "hash")
@@ -83,13 +67,6 @@ spec = do
     describe "auth_stake_validator" $ do
       prefix <- getGoldenFilePrefix
       golden PrintTerm authStakeValidatorTerm
-      it "serialization" $
-        pureGoldenTextFile
-          (goldenFilePath "goldens" prefix "plutus")
-          stakeValidatorEncoded
-      it "deserialisation" $
-        tryDecodeHex stakeValidatorEncoded
-          @?= Right authStakeValidatorCompiled
       it "hash" $
         pureGoldenTextFile
           (goldenFilePath "goldens" prefix "hash")
