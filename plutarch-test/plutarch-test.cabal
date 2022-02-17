@@ -120,6 +120,8 @@ executable plutarch-test
     Plutarch.PIsDataSpec
     Plutarch.PLamSpec
     Plutarch.PlutusTypeSpec
+    Plutarch.Property.Gen
+    Plutarch.Property.Util
     Plutarch.RationalSpec
     Plutarch.RecursionSpec
     Plutarch.StringSpec
@@ -127,8 +129,7 @@ executable plutarch-test
     Plutarch.TraceSpec
     Plutarch.UnitSpec
     Spec
-    Plutarch.Property.Util
-    Plutarch.Property.Gen
+
   if flag(development)
     cpp-options: -DDevelopment
 
