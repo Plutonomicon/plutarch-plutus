@@ -108,7 +108,7 @@ x = phexByteStr "41"
 
 # Lambdas
 
-You can create Plutarch level lambdas by applying `plam` to a Haskell level function.
+You can create Plutarch level lambdas by applying `plam` to a Haskell level function that works on Plutarch terms.
 
 ```haskell
 pid :: Term s (a :--> a)

@@ -71,13 +71,13 @@ The above evaluates to `1`, which has type `Term s PInteger`.
 To emulate recursion in [UPLC (Untyped Plutus Core)](https://github.com/Plutonomicon/plutonomicon/blob/main/uplc.md), you need to use [the Y combinator](https://stackoverflow.com/questions/93526/what-is-a-y-combinator). Plutarch provides the Y combinator with the name `pfix`:
 
 ```haskell
-pfix :: Term s (((a :--> b) :--> a :--> b) :--> a :--> b)
+pfix :: Term s (((a :--> b) :--> (a :--> b)) :--> (a :--> b))
 ```
 
 It works as you would expect, though the type is scary. Think of it as the Haskell type:
 
 ```haskell
-fix :: ((a -> b) -> (a -> b)) -> a -> b
+fix :: ((a -> b) -> (a -> b)) -> (a -> b)
 ```
 
 The first argument is "self", or the function you want to recurse with.
