@@ -1,0 +1,2 @@
+find_(== 3)_[1..4] {"exBudgetCPU":5088068,"exBudgetMemory":15806,"scriptSizeBytes":89}
+find_(== 5)_[1..4] {"exBudgetCPU":7190955,"exBudgetMemory":22408,"scriptSizeBytes":89}

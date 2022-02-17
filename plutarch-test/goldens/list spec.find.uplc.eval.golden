@@ -1,2 +1,0 @@
-find (== 3) [1..4] (program 1.0.0 (\i0 -> \i0 -> i2 3))
-find (== 5) [1..4] (program 1.0.0 (\i0 -> \i0 -> force i1))

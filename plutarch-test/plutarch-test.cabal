@@ -116,7 +116,6 @@ executable plutarch-test
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
     Plutarch.IntegerSpec
-    Plutarch.ListPropSpec
     Plutarch.ListSpec
     Plutarch.PIsDataSpec
     Plutarch.PLamSpec
