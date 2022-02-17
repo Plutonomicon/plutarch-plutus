@@ -2,6 +2,12 @@
 
 # Unreleased
 
+- `Plutarch.Prelude` now exports pfind, pelemat, preverse and psrot.
+
+	`Plutarch.List` exports pmergeSort, ptimSort and the new exports from `Plutarch.Prelude`.
+
+	Started by: [#306](https://github.com/Plutonomicon/plutarch/pull/306)
+
 - `TermCont`: Parametrize by result type; add `MonadFail` instance; etc.
 
   Also, export from `Plutarch.TermCont`, and then from `Plutarch.Prelude` (TermCont is no longer exported by `Plutarch.Internal`).
