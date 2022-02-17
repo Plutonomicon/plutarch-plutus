@@ -7,8 +7,8 @@ import Plutarch.Prelude
 
 import Data.List (find, sort)
 
-import Gen (genList, integerGen)
-import Util (haskPlutEquiv, marshal, viaBothPartial, viaPEq)
+import Plutarch.Property.Gen (genList, integerGen)
+import Plutarch.Property.Util (haskPlutEquiv, marshal, viaBothPartial, viaPEq)
 
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range

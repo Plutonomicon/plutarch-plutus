@@ -1,4 +1,4 @@
-module Gen (
+module Plutarch.Property.Gen (
   rationalGen,
   integerGen,
   genList,

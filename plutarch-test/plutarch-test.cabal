@@ -112,7 +112,6 @@ executable plutarch-test
       Plutarch.MonadicSpec
 
   other-modules:
-    Gen
     Plutarch.ApiSpec
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
@@ -129,8 +128,8 @@ executable plutarch-test
     Plutarch.TraceSpec
     Plutarch.UnitSpec
     Spec
-    Util
-
+    Plutarch.Property.Util
+    Plutarch.Property.Gen
   if flag(development)
     cpp-options: -DDevelopment
 
