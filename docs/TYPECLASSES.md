@@ -86,7 +86,7 @@ class PIsData a where
   pdata :: Term s a -> Term s (PAsData a)
 ```
 
-[`PInteger`](#pinteger) has a `PIsData` instance. The `PData` representation of `PInteger` is, of course, an `I` data. And you can get the `PInteger` back from an `I` data using `UnIData` (i.e. `pasInt`).
+[`PInteger`](./TYPES.md#pinteger) has a `PIsData` instance. The `PData` representation of `PInteger` is, of course, an `I` data. And you can get the `PInteger` back from an `I` data using `UnIData` (i.e. `pasInt`).
 
 ```hs
 instance PIsData PInteger where
@@ -163,7 +163,7 @@ This comes in three flavors:
 - Plutarch type represented **indirectly** by a builtin type that **is not** `Data` (`DefaultUniData`) ==> `DerivePConstantViaNewtype`
 
   Ex: `PPubKeyHash` is a newtype to a `PByteString`, and `PByteString` is _directly_ represented as a builtin bytestring.
-- Plutarch type represented by `Data`, i.e. [data encoded](./CONCEPTS.md#data-encoding)(`DefaultUniData`) ==> `DerivePConstantViaData`
+- Plutarch type represented by `Data`, i.e. [data encoded](./CONCEPTS.md#data-encoding) (`DefaultUniData`) ==> `DerivePConstantViaData`
 
   Ex: `PScriptPurpose` is represented as a `Data` value. It is synonymous to `ScriptPurpose` from the Plutus ledger api.
 
@@ -271,13 +271,13 @@ The constraints observed when implementing `PLift`:
 
 - Each type variable must also have a `PLift` instance.
 - For each type variable `a`: `a ~ PConstanted (PLifted a)`
-- Depending on the data declaration, your type variable `PLifted a`, for each `a`, might also need [`FromData`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:FromData) and [`ToData`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:FromData) instances.
+- Depending on the data declaration, your type variable `PLifted a`, for each `a`, might also need [`FromData`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:FromData) and [`ToData`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:ToData) instances.
 
 The constraints observed when implementing `PConstant`:
 
 - Each type variable must also have a `PConstant` instance.
 - For each type variable `a`: `a ~ PLifted (PConstanted a)`
-- Depending on the data declaration, each type variable `a` might also need [`FromData`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:FromData) and [`ToData`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:FromData) instances.
+- Depending on the data declaration, each type variable `a` might also need [`FromData`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:FromData) and [`ToData`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:ToData) instances.
 
 Here's how you'd set up all this for `PMaybeData a`:
 
@@ -621,7 +621,7 @@ You can then access the fields on this `HRec` using `OverloadedRecordDot`.
 
 Next up is `pfield`. You should _only ever_ use this if you just want one field from a variable and no more. Its usage is simply `pfield @"fieldName" # variable`. You can, however, also use `pletFields` in this case (e.g. `pletFields @'["fieldName"] variable`). `pletFields` with a singular field has the same efficiency as `pfield`!
 
-Finally, `hrecField` is merely there to supplement the lack of record dot syntax. See: [Alternative to `OverloadedRecordDot`](#alternative-to-overloadedrecorddot).
+Finally, `hrecField` is merely there to supplement the lack of record dot syntax. See: [Alternative to `OverloadedRecordDot`](#alternatives-to-overloadedrecorddot).
 
 > Note: An important thing to realize is that `pfield` and `hrecField` (or overloaded record dot on `HRec`) are _return type polymorphic_. They can return both `PAsData Foo` or `Foo` terms, depending on the surrounding context. This is very useful in the case of `pmatch`, as `pmatch` doesn't work on `PAsData` terms. So you can simply write `pmatch $ pfield ...` and `pfield` will correctly choose to _unwrap_ the `PAsData` term.
 

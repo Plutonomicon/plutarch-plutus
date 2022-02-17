@@ -252,5 +252,5 @@ This will use a [Scott encoding representation](./CONCEPTS.md#scott-encoding) fo
 
 Currently, generic deriving supports the following typeclasses:
 
-- [`PlutusType`](./TYPECLASSES.md#implementing-plutustype-for-your-own-types) (Scott encoding only)
+- [`PlutusType`](./TYPECLASSES.md#implementing-plutustype-for-your-own-types-scott-encoding) (Scott encoding only)
 - [`PIsDataRepr`](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)

@@ -132,7 +132,7 @@ foo :: Term s PString -> Term s PString
 foo x = x <> x
 ```
 
-In such cases, you should use `plet` on the argument to [avoid duplicating work](./TRICKS.md#dont-duplicate-work)
+In such cases, you should use `plet` on the argument to [avoid duplicating work](./TRICKS.md#dont-duplicate-work).
 
 # Tracing
 

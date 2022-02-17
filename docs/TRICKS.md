@@ -91,7 +91,7 @@ This also applies to field accesses using `OverloadedRecordDot`. When you do `ct
 
 Plutarch level functions have a lot of advantages - they can be hoisted; they are strict so you can [use their arguments however many times you like without duplicating work](#dont-duplicate-work) etc. Unless you _really_ need laziness, like `pif` does, try to use Plutarch level functions.
 
-Also see: [Hoisting](./CONCEPTS.md#hoisting-metaprogramming--and-fundamentals).
+Also see: [Hoisting](./CONCEPTS.md#hoisting-metaprogramming-and-fundamentals).
 
 # When to use Haskell level functions?
 

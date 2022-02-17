@@ -234,7 +234,7 @@ pdata :: Term s (PBuiltinList (PAsData a)) -> Term s (PAsData (PBuiltinList (PAs
 
 # `PDataSum` & `PDataRecord`
 
-Plutarch sum and product types are represented using `PDataSum` and `PDataRecord` respectively. These types are crucial to the [`PIsDataRepr`](./TYPECLASSES.md#pisdatarepr) machinery.
+Plutarch sum and product types are represented using `PDataSum` and `PDataRecord` respectively. These types are crucial to the [`PIsDataRepr`](./TYPECLASSES.md#pisdatarepr--pdatafields) machinery.
 
 Whenever you need to represent a non-trivial ADT using [`Data` encoding](./CONCEPTS.md#data-encoding), you'll likely be reaching for these.
 
