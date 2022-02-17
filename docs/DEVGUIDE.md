@@ -208,6 +208,12 @@ f = plam $ \x -> phead #$ psndBuiltin #$ pasConstr # x
 And if you test it with a mock context value, it does work:
 
 ```haskell
+{-# LANGUAGE OverloadedStrings #-}
+
+import Plutus.V1.Ledger.Api
+import Plutus.V1.Ledger.Interval
+import qualified PlutusTx
+
 mockCtx :: ScriptContext
 mockCtx =
   ScriptContext
