@@ -23,6 +23,8 @@ This document discusses various rules of thumb and general trivia, aiming to mak
 
 All Plutarch functions are strict. When you apply a Plutarch function to an argument using `papp` (or `#`/`#$` - synonyms to `papp`) - the argument will be evaluated before being passed into to the function. If you don't want the argument to be evaluated, you can use `pdelay`.
 
+See: [Delay and Force](./CONCEPTS.md#delay-and-force).
+
 # Don't duplicate work
 
 Consider the simple snippet:
@@ -43,7 +45,7 @@ pf :: Term s PInteger
 pf = plet (1 + 3) $ \foo -> pif (foo #== 3) foo 7
 ```
 
-Here's another example of this, Haskell level functions:
+Another example of this would be:
 
 ```haskell
 abs :: Term s PInteger -> Term s PInteger
@@ -79,11 +81,11 @@ You don't have to worry about work duplication on arguments in _every single sce
 
 Where else is `plet` unnecessary? Functions taking in continuations, such as `plet` (duh) and `pletFields`, always pre-evaluate the binding. An exception, however, is `pmatch`. In certain cases, you don't need to `plet` bindings within the `pmatch` case handler. For example, if you use `pmatch` on a `PList`, the `x` and `xs` in the `PSCons x xs` _will always be pre-evaluated_. On the other hand, if you use `pmatch` on a `PBuiltinList`, the `x` and `xs` in the `PCons x xs` _are **not** pre-evaluated_. Be sure to `plet` them if you use them several times!
 
-In general, `plet`ing something back to back several times will be optimized to a singular `plet` anyway. However, you should know that for data encoded types (types that follow "[implementing `PIsDataRepr` and friends](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)") and Scott encoded types, `pmatch` handlers get pre-evaluated bindings. For `PBuiltinList`, and `PDataRecord` - the bindings are not pre-evaluated.
+In general, `plet`ing something back-to-back several times will be optimized to a singular `plet` anyway. However, you should know that for data encoded types (types that follow "[implementing `PIsDataRepr` and friends](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)") and Scott encoded types, `pmatch` handlers get pre-evaluated bindings. For `PBuiltinList`, and `PDataRecord` - the bindings are not pre-evaluated.
 
-You should also `plet` local bindings! In particular, if you applied a function (whether it be Plutarch level or Haskell level) to obtain a value, bound the value to a variable (using `let` or `where`) - don't use it multiple times! The binding will simply get inlined as the function application - and it'll keep getting re-evaluated. You should `plet` it first!
+You should also `plet` local bindings! In particular, if you applied a function (Plutarch level or Haskell level) to obtain a value, then bound that value to a variable e.g. with `let` or `where`, then avoid using it multiple times. The binding will simply get inlined as the function application - and it'll keep getting re-evaluated. You should `plet` it first!
 
-This also applies to field accesses using `OverloadedRecordDot`. When you do `ctx.purpose`, it really gets translated to `hrecField @"purpose" ctx` - that's a function call! If you use the field multiple times, `plet` it first.
+This also applies to field accesses using `OverloadedRecordDot`. When you do `ctx.purpose`, it really gets translated to `hrecField @"purpose" ctx`, which is a function call! If you use the field multiple times, `plet` it first.
 
 # Prefer Plutarch level functions
 
@@ -95,9 +97,9 @@ Also see: [Hoisting](./CONCEPTS.md#hoisting-metaprogramming--and-fundamentals).
 
 Although you should generally [prefer Plutarch level functions](#prefer-plutarch-level-functions), there are times when a Haskell level function is actually much better. However, figuring out _when_ that is the case - is a delicate art.
 
-There is one simple and straightforward usecase though, when you want a function argument to be lazily evaluated. In such a case, you should use a Haskell level functions that `pdelay`s the argument before calling some Plutarch level function. Recall that [Plutarch level functions are strict](#plutarch-functions-are-strict).
+There is one simple and straightforward use case though, when you want a function argument to be lazily evaluated. In such a case, you should use a Haskell level function that `pdelay`s the argument before calling some Plutarch level function. Recall that [Plutarch level functions are strict](#plutarch-functions-are-strict).
 
-Outside of that straightforward usecase, figuring out when to use Haskell level functions is quite complex. Haskell level functions will always be inlined when generating the Plutus Core. Unless the function is used _only once_, this sort of inlining will increase the script size - which is problematic.
+Outside of that straightforward use case, figuring out when to use Haskell level functions is quite complex. Haskell level functions will always be inlined when generating the Plutus Core. Unless the function is used _only once_, this sort of inlining will increase the script size - which is problematic.
 
 However, if the function is used _only once_, and making it Plutarch level causes extra `plam`s and `#`s to be introduced - you should just make it Haskell level. For example, consider the `pelimList` implementation:
 
@@ -117,7 +119,7 @@ pelimList
   ls
 ```
 
-This is rather redundant, the above snippet will exhibit inlining to produce:
+This is rather redundant, the above snippet will translate to:
 
 ```hs
 pmatch ls $ \case
@@ -151,9 +153,9 @@ pmatch ls $ \case
   PNil -> match_nil
 ```
 
-It turns out that `pelimList` usages _almost always_ use a one-off Haskell level function with a redundant `plam` - so `pelimList` would benefit greatly from just taking a Haskell level function directly.
+It turns out that using `pelimList` _almost always_ involves using a one-off Haskell level function (and therefore a redundant `plam`). As such, `pelimList` benefits greatly from just taking a Haskell level function directly.
 
-However, **not all higher order functions** benefit from taking Haskell level functions. In many HOF usages, you could benefit from passing a commonly used function argument, rather than a one-off function argument. Imagine `map`, you don't always map with one-off functions - often, you `map` with existing, commonly used functions. In these cases, that commonly used function ought to be a Plutarch level function, so it can be hoisted and `map` can simply reference it.
+However, **not all higher order functions** benefit from taking Haskell level functions. In many higher order function use cases, you could benefit from passing a commonly used function argument, rather than a one-off function argument. Imagine `map`, you don't always map with one-off functions - often, you `map` with existing, commonly used functions. In these cases, that commonly used function ought to be a Plutarch level function, so it can be hoisted and `map` can simply reference it.
 
 # The difference between `PlutusType`/`PCon` and `PLift`'s `pconstant`
 
@@ -183,18 +185,18 @@ Chained list operations (e.g a filter followed by a map) are not very efficient 
 
 We've discussed how a Haskell level function that operates on Plutarch level terms needs to [be careful](#dont-duplicate-work) about [work duplication](./CONCEPTS.md#plet-to-avoid-work-duplication). Related to this point, it's good practice to design your Haskell level functions so that _it takes responsibility_ for evaluation.
 
-The user of your Haskell level function doesn't know how many times it uses the argument it has been passed! If it uses the argument multiple times without `plet`ing it - there's duplicate work! There's 2 solutions to this:
+The user of your Haskell level function doesn't know how many times it uses the argument it has been passed! If it uses the argument multiple times without `plet`ing it - there's duplicate work! There are two solutions here:
 
 - The user `plet`s the argument before passing it to the Haskell level function.
 - The Haskell level function takes responsibility of its argument and `plet`s it itself.
 
-The former is problematic since it's based on _assumption_. What if the Haskell level function is a good rule follower, and correctly `plet`s its argument if using it multiple times? Well, then there's a redundant `plet` (though back to back `plet`s _will_ be optimized away into one).
+The former is problematic since it's based on _assumption_. What if the Haskell level function is a good rule follower, and correctly `plet`s its argument if using it multiple times? Well, then there's a redundant `plet` (though back-to-back `plet`s _will_ be optimized away into one).
 
 Instead, try to offload the responsbility of evaluation to the Haskell level function - so that it only `plet`s when it needs to.
 
 # The isomorphism between `makeIsDataIndexed`, Haskell ADTs, and `PIsDataRepr`
 
-When [implementing `PIsDataRepr`](./TYPECLASSES.md#implementing-pisdatarepr-and-friends) for a Plutarch type, if the Plutarch type also has a Haskell synonym (e.g. `ScriptContext` is the haskell synonym to `PScriptContext`) that uses [`makeIsDataIndexed`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed) - you must make sure the constructor ordering is correct.
+When [implementing `PIsDataRepr`](./TYPECLASSES.md#implementing-pisdatarepr-and-friends) for a Plutarch type, if the Plutarch type also has a Haskell synonym (e.g. `ScriptContext` is the Haskell synonym to `PScriptContext`) that uses [`makeIsDataIndexed`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed) - you must make sure the constructor ordering is correct.
 
 > Aside: What's a "Haskell synonym"? It's simply the Haskell type that _is supposed to_ correspond to a Plutarch type. There doesn't _necessarily_ have to be some sort of concrete connection (though there can be, using [`PLift`/`PConstant`](./TYPECLASSES.md#pconstant--plift)) - it's merely a connection you can establish mentally.
 >
@@ -264,11 +266,11 @@ data TxInfo = TxInfo
   }
 ```
 
-The _field names_ don't matter though. They are merely labels that don't exist in runtime.
+The _field names_ don't matter though. They are merely labels that don't exist at runtime.
 
 # Prefer statically building constants whenever possible
 
-Whenever you can build a Plutarch constant out of a pure Haskell value - do it! Functions such as `pconstant`, `phexByteStr` operate on regular Haskell synonyms of Plutarch types. Unlike `pcon`, which potentially works on Plutarch terms (ex: `pcon $ PJust x`, `x` is a `Term s a`). A Plutarch term is an entirely "runtime" concept. "Runtime" as in "Plutus Core Runtime". They only get evaluated during runtime!
+Whenever you can build a Plutarch constant out of a pure Haskell value - do it! Functions such as `pconstant`, `phexByteStr` operate on regular Haskell synonyms of Plutarch types. Unlike `pcon`, which potentially works on Plutarch terms (e.g. `pcon $ PJust x`, `x` is a `Term s a`). A Plutarch term is an entirely "runtime" concept. "Runtime" as in "Plutus Core Runtime". They only get evaluated during runtime!
 
 On the other hand, whenever you transform a Haskell synonym to its corresponding Plutarch type using `pconstant`, `phexByteStr` etc. - you're _directly_ building a Plutus Core constant. This is entirely static! There are no runtime function calls, no runtime building, it's just _there_, inside the compiled script.
 
@@ -295,7 +297,7 @@ Whenever you need to build a Plutarch term of type `a`, from a Haskell value, us
 
 # Figuring out the representation of a Plutarch type
 
-As discussed in other sections of guide, Plutarch types are merely tags to underlying semantic representations. This is an eDSL after all! Their data declarations _actually_ don't matter as far as internal semantics are concerned. It's actually the `PlutusType` instance that _really_ determines the representation. So how do you figure out the representation of this seemingly transient tag? By following _conventions_.
+As discussed in other sections of the guide, Plutarch types are merely tags to underlying semantic representations. This is an eDSL after all! Their data declarations _actually_ don't matter as far as internal semantics are concerned. It's actually the `PlutusType` instance that _really_ determines the representation. So how do you figure out the representation of this seemingly transient tag? By following _conventions_.
 
 You _could_ give your Plutarch type a representation that makes no sense given its `data` type declaration, but don't! Instead, most data type declarations follow certain rules to hint at their representations. The representation can only be one of two categories: builtin and Scott encoded. All _trivial_ builtin types are already defined in Plutarch: `PInteger`, `PByteString`, `PString`, `PBool`, `PUnit`, `PBuiltinList`, and `PBuiltinPair`.
 

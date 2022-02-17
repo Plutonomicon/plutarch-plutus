@@ -41,7 +41,7 @@ f = phoistAcyclic $ plam $ \n ->
     $ n + f # (n - 1)
 ```
 
-The issue here is that the AST is infinitely large. Plutarch will try to traverse this AST and will in the process not terminate, as there is no end to it. In this case you'd fix it by using `pfix`.
+The issue here is that the AST is infinitely large. Plutarch will try to traverse this AST and will in the process not terminate, as there is no end to it. In these cases, consider using `pfix`.
 
 Relevant issue: [#19](https://github.com/Plutonomicon/plutarch/issues/19)
 
@@ -57,7 +57,7 @@ All you need to do, is put a `'` (quote) infront of the list, like so- `@'["foo"
 
 # Lifting `PAsData`
 
-Don't try to lift a `PAsData` term! It's intentionally blocked and partial. The `PLift` instance for `PAsData` is only there to make some important functionality work correctly. But the instance methods will simply error if used. Instead, you should either use `pforgetData` and `plift` that, or extract the `Term s a` out of `Term s (PAsData a)` using `pfromData` and `plift` that instead!
+Don't try to lift a `PAsData` term! It's intentionally blocked and partial. The `PLift` instance for `PAsData` is only there to make some important functionality work correctly. But the instance methods will simply `error` if used. Instead, you should either use `pforgetData` and `plift` that, or extract the `Term s a` out of `Term s (PAsData a)` using `pfromData` and `plift` that instead!
 
 # Couldn't match type `PLifted (PConstanted Foo)` with `Foo`
 

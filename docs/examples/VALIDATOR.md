@@ -83,7 +83,7 @@ checkSignatory = plam $ \ph _ _ ctx' -> unTermCont $ do
 
 > Note: The above snippet uses GHC 9 features (`OverloadedRecordDot`). Be sure to check out [alternatives to `OverloadedRecordDot`](./../TYPECLASSES.md#alternatives-to-overloadedrecorddot).
 
-We match on the script purpose to see if its actually for _spending_ - and we get the signatories field from `txInfo` (the 7th field), check if given pub key hash is present within the signatories and that's it!
+We match on the script purpose to see if its actually for _spending_ - and we get the signatories field from `txInfo` (the 7th field), check if the given pub key hash is present within the signatories and that's it!
 
 It's important that we pass a `PPubKeyHash` _prior_ to treating `checkSignatory` as a validator script.
 
