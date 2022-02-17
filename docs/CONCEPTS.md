@@ -99,7 +99,29 @@ It's used to distinguish between closed and open terms:
 
 # eDSL Types in Plutarch
 
-Most types prefixed with `P` are eDSL-level types, meaning that they're meant to be used with `Term`. They are merely used as a tag, and what Haskell value they can hold is not important. Their kind must be `PType`.
+Most types prefixed with `P` are eDSL-level types, meaning that they're meant to be used with `Term`. Their kind must be `PType`.
+
+They are merely used as a tag, and what Haskell value they can hold is not important. This is an eDSL after all! Their data declarations _actually_ don't matter as far as internal semantics are concerned.
+
+The only thing concrete here is the runtime representation of the type: what it looks like in Plutus Core. Usually this connection is established in the Plutarch type's `PlutusType` implementation\*. You see, `PlutusType` helps *connect* an essentially transient, semantically meaningless tag, with a real runtime value. The tag then helps with typing. It's a *typed* eDSL!
+
+> \[\*]: Not all type's representations are established through `PlutusType`, but it's the most prominent one for our user facing interface. The truth is, anything that can build a `Term s P` for some Plutarch type `P`, is capable of *determining* the representation of `P`. But for type safety, we have to constrain in so that several different functions can't build a `Term s P` and just choose their own representation for it. That breaks everything!
+
+As such, don't focus much into what value a Plutarch type contains in the Haskell world - it doesn't matter. Even the constructors and fields are only there to help with `PlutusType` implementation, by further connecting all of it with runtime values.
+
+For example, `PInteger` doesn't hold *any* values. There is no constructor, it's simply an empty data declaration. `PInteger` is interesting as its representation is determined by the `Num (Term s PInteger)` instance, not `PlutusType`. How?! Well, `fromInteger` is a rather convenient function: it lets you build "number types"  from integers. So `fromInteger` simply takes an integer, we do some magic to create a Plutus Core integer constant out of it, and declare the return type to be `Term s PInteger`. Boom! We built a term of type `PInteger` ....and yet, we never even cared about the actual `PInteger` data declaration.
+
+Let's get to a more orthodox example: `PMaybe`. We discuss its `PlutusType` instance in [the relevant section](./TYPECLASSES.md#plutustype-pcon-and-pmatch). Here's the data type declaration-
+```hs
+data PMaybe a s = PJust (Term s a) | PNothing
+```
+`pcon PNothing` simply yields a runtime value that is capable of representing the *concept of `Nothing`*. It never actually uses `PNothing` - it's just there to let `pcon` know: "hey, I want to represent `Nothing`".
+
+The case is similar for `pcon (PJust x)` (`x :: Term s a`). Notice that `x` *is* a runtime concept with semantic meaning. It's a Plutarch term - it's as concrete as it gets. However, that `PJust` constructor is simply thrown away to obtain the actual term. The term is then put into a runtime value that is capable of representing the *concept of `Just`*. We have used Scott encoding to represent the concept of `Just` and `Nothing` in Plutus Core, for this specific case. But it could have been something else!
+
+In all of this, we've ignored a major Plutarch term building concept: `pconstant`. After all, `pconstant` *also* builds terms for Plutarch types - doesn't that mean it also has a say in connecting the representation with the transient tag? Yes, yes it does. The details of how everything fits in is irrelevant for the user facing interface. But just know that as long as you use the safe derivers to implement these typeclasses - you should be fine, the several "runtime representation determiner"s will merrily agree with each other and the type system (that is, Plutarch's own type system) will be sound.
+
+Also see: [Figuring out the representation of a Plutarch type](./TRICKS.md#figuring-out-the-representation-of-a-plutarch-type).
 
 # `plet` to avoid work duplication
 
@@ -250,9 +272,9 @@ This is the same recipe followed in the implementation of `PMaybe`. See its [Plu
 # Haskell synonym of Plutarch types
 Several sections of the guide use the terminology "Haskell synonym". What does it mean? It's simply the Haskell type that _is supposed to_ correspond to a Plutarch type. There doesn't _necessarily_ have to be some sort of concrete connection (though there can be, using [`PLift`/`PConstant`](./TYPECLASSES.md#pconstant--plift)) - it's merely a connection you can establish mentally.
 
-This detail does come into play in concrete use cases though. After compiling your Plutarch code to a `Script`, when you pass Haskell data types as arguments to the `Script` - they obviously need to correspond to the actual arguments of the Plutarch code. For example, if the Plutarch code is a function taking `PByteString`, after compilation to `Script`, you _should_ pass in the Haskell data type that actually shares the same representation as `PByteString` - the "Haskell synonym", so to speak. In this case, that's `ByteString`*.
+This detail does come into play in concrete use cases though. After compiling your Plutarch code to a `Script`, when you pass Haskell data types as arguments to the `Script` - they obviously need to correspond to the actual arguments of the Plutarch code. For example, if the Plutarch code is a function taking `PByteString`, after compilation to `Script`, you _should_ pass in the Haskell data type that actually shares the same representation as `PByteString` - the "Haskell synonym", so to speak. In this case, that's `ByteString`\*.
 
-\[*]: You can't actually pass a `ByteString` into a compiled `Script` through the [`Plutus.V1.Ledger.Scripts`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Scripts.html) API. Notice that you can only pass `Data` arguments using [`applyArguments`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Scripts.html#v:applyArguments). The Haskell synonym to `Data` is `PAsData a` (for any `a`), and `PData`.
+\[\*]: You can't actually pass a `ByteString` into a compiled `Script` through the [`Plutus.V1.Ledger.Scripts`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Scripts.html) API. Notice that you can only pass `Data` arguments using [`applyArguments`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Scripts.html#v:applyArguments). The Haskell synonym to `Data` is `PAsData a` (for any `a`), and `PData`.
 
 # Unsafe functions
 

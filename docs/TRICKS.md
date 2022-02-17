@@ -293,9 +293,9 @@ Whenever you need to build a Plutarch term of type `a`, from a Haskell value, us
 
 # Figuring out the representation of a Plutarch type
 
-As discussed in other sections of the guide, Plutarch types are merely tags to underlying semantic representations. This is an eDSL after all! Their data declarations _actually_ don't matter as far as internal semantics are concerned. It's actually the `PlutusType` instance that _really_ determines the representation. So how do you figure out the representation of this seemingly transient tag? By following _conventions_.
+We've discussed before how [Plutarch types are merely tags](./CONCEPTS.md#edsl-types-in-plutarch) and don't have a direct connection to their runtime representations. It's important to be able to intuitively figure out the runtime representations from the data type declaration though. This is why most types follow certain conventions.
 
-You _could_ give your Plutarch type a representation that makes no sense given its `data` type declaration, but don't! Instead, most data type declarations follow certain rules to hint at their representations. The representation can only be one of two categories: builtin and Scott encoded. All _trivial_ builtin types are already defined in Plutarch: `PInteger`, `PByteString`, `PString`, `PBool`, `PUnit`, `PBuiltinList`, and `PBuiltinPair`.
+The representation can only be one of two categories: builtin and Scott encoded. All _trivial_ builtin types are already defined in Plutarch: `PInteger`, `PByteString`, `PString`, `PBool`, `PUnit`, `PBuiltinList`, and `PBuiltinPair`.
 
 Now, let's discuss patterns of data declarations and what representation they _should_ hint at:
 
