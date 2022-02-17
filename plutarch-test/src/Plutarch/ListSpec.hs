@@ -3,7 +3,7 @@ module Plutarch.ListSpec (spec) where
 import Test.Syd
 import Test.Syd.Hedgehog ()
 
-import Plutarch.List (pconvertLists, pelemAt, pfind, pfoldl', pmergeSort, preverse, ptimSort)
+import Plutarch.List (pconvertLists, pfoldl', pmergeSort, ptimSort)
 import Plutarch.Prelude
 import Plutarch.Test
 
