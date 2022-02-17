@@ -7,7 +7,13 @@ import Plutarch (
   PlutusType,
   S,
   Term,
+  pcon,
+  phoistAcyclic,
+  plam,
+  pmatch,
+  (#),
  )
+import Plutarch.Bool (PBool (PFalse, PTrue), PEq ((#==)))
 
 -- | Plutus Maybe type, with Scott-encoded repr
 data PMaybe (a :: PType) (s :: S)
@@ -15,3 +21,18 @@ data PMaybe (a :: PType) (s :: S)
   | PNothing
   deriving stock (GHC.Generic)
   deriving anyclass (Generic, PlutusType)
+
+instance PEq a => PEq (PMaybe a) where
+  ma' #== mb' =
+    phoistAcyclic
+      ( plam $ \ma mb ->
+          pmatch ma $ \case
+            PNothing -> pmatch mb $ \case
+              PNothing -> pcon PTrue
+              PJust _ -> pcon PFalse
+            PJust a -> pmatch mb $ \case
+              PNothing -> pcon PFalse
+              PJust b -> a #== b
+      )
+      # ma'
+      # mb'

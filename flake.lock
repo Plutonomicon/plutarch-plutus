@@ -976,11 +976,11 @@
     "sydtest": {
       "flake": false,
       "locked": {
-        "lastModified": 1644358460,
-        "narHash": "sha256-1ZxTLL5YVxktyHqfMywwsNGx5nxNMPXnq33QI6BcvUI=",
+        "lastModified": 1645114028,
+        "narHash": "sha256-P6ZwwfFeN8fpi3fziz9yERTn7BfxdE/j/OofUu+4GdA=",
         "owner": "srid",
         "repo": "sydtest",
-        "rev": "5b572105c30f79c5e20637c6af4eedf39e0ac85a",
+        "rev": "9c6c7678f7aabe22e075aab810a6a2e304591d24",
         "type": "github"
       },
       "original": {

@@ -125,6 +125,7 @@
             "sydtest"
             "sydtest-discover"
             "sydtest-aeson"
+            "sydtest-hedgehog"
           ];
         }
         {
@@ -511,6 +512,7 @@
               # sydtest dependencies
               ps.sydtest
               ps.sydtest-discover
+              ps.sydtest-hedgehog
               ps.sydtest-aeson
               ps.validity
               ps.validity-aeson
@@ -607,7 +609,7 @@
 
       # Take a flake app (identified as the key in the 'apps' set), and return a
       # derivation that runs it in the compile phase.
-      # 
+      #
       # In effect, this allows us to run an 'app' as part of the build process (eg: in CI).
       flakeApp2Derivation = system: appName:
         (nixpkgsFor system).runCommand appName { } "${self.apps.${system}.${appName}.program} | tee $out";
@@ -650,7 +652,7 @@
             "ghc810-plutarch:lib:plutarch-test" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch-test:lib:plutarch-test";
             "ghc810-plutarch:lib:plutarch-benchmark" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch-benchmark:lib:plutarch-benchmark";
           });
-      # Because `nix flake check` does not work with haskell.nix (due to IFD), 
+      # Because `nix flake check` does not work with haskell.nix (due to IFD),
       # we provide this attribute for running the checks locally, using:
       #   nix build .#check.x86_64-linux
       check = perSystem (system:
@@ -694,7 +696,7 @@
           # origin/staging. We set != "refs/head/master" so that merges into master don't
           # cause a lot of unnecessary bogus benchmarks to appear in CI for the time
           # being.
-          benchmark-diff = hci-effects.runIf (src.ref != "refs/heads/master") (
+          benchmark-diff = hci-effects.runIf (src.owner == "Plutonomicon" && src.ref != "refs/heads/master") (
             hci-effects.mkEffect {
               src = self;
               buildInputs = with pkgs; [ git nixFlakes ];
