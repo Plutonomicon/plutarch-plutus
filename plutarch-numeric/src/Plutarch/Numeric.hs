@@ -18,11 +18,13 @@ module Plutarch.Numeric (
   Natural,
   NZNatural,
   NZInteger,
+  Ratio,
 
   -- ** Plutarch
   PNatural,
   PNZNatural,
   PNZInteger,
+  PRatio,
 
   -- ** Helpers
   Additive (..),
@@ -45,14 +47,51 @@ module Plutarch.Numeric (
   Euclidean (..),
   Arithmetical (..),
   Divisible (..),
+
+  -- * Functions
+
+  -- ** Conversions
+
+  -- *** Haskell
+  toNatural,
+  toAbsNatural,
+
+  -- *** Plutarch
+  ptoNatural,
+  ptoAbsNatural,
+
+  -- ** Fraction-related
+
+  -- *** Haskell
+  numerator,
+  denominator,
+
+  -- *** Plutarch
+  pnumerator,
+  pdenominator,
+
+  -- ** Other
+  (^-^),
 ) where
 
 import Data.Kind (Type)
 import Data.Semigroup (stimes, stimesMonoid)
-import Plutarch (Term, pcon, plet, (#))
-import Plutarch.Bool (pif, (#<), (#<=), (#==))
+import Plutarch (
+  DerivePNewtype (DerivePNewtype),
+  PMatch (pmatch),
+  S,
+  Term,
+  pcon,
+  plet,
+  (#),
+ )
+import Plutarch.Bool (PEq ((#==)), pif, (#&&), (#<), (#<=))
 import Plutarch.Integer (PInteger)
-import Plutarch.Lift (pconstant)
+import Plutarch.Lift (
+  PConstant (PConstantRepr, PConstanted, pconstantFromRepr, pconstantToRepr),
+  PUnsafeLiftDecl (PLifted),
+  pconstant,
+ )
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Numeric.Group (Group (gtimes, inverse))
 import Plutarch.Numeric.NZInteger (NZInteger, PNZInteger)
@@ -61,6 +100,7 @@ import Plutarch.Numeric.NZNatural (NZNatural, PNZNatural)
 import Plutarch.Numeric.NZNatural qualified as NZN
 import Plutarch.Numeric.Natural (Natural, PNatural)
 import Plutarch.Numeric.Natural qualified as Nat
+import Plutarch.Pair (PPair (PPair))
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
 import Prelude hiding (
@@ -68,6 +108,7 @@ import Prelude hiding (
   abs,
   div,
   divMod,
+  fromInteger,
   mod,
   negate,
   product,
@@ -79,8 +120,61 @@ import Prelude hiding (
   (*),
   (+),
   (-),
+  (/),
  )
 import Prelude qualified
+
+{- | Plutarch version of 'Ratio'.
+
+ @since 1.0
+-}
+newtype PRatio (a :: S -> Type) (s :: S) = PRatio (Term s (PPair a PNZNatural))
+
+-- | @since 1.0
+deriving via
+  (DerivePNewtype (PRatio a) (PPair a PNZNatural))
+  instance
+    PMatch (PRatio a)
+
+-- | @since 1.0
+instance (PEq a) => PEq (PRatio a) where
+  {-# INLINEABLE (#==) #-}
+  t #== t' = pmatchRatios t t' $ \num num' den den' ->
+    (num #== num') #&& (den #== den')
+
+{- | A ratio whose numerator is the specified type.
+
+ @since 1.0
+-}
+newtype Ratio (a :: Type) = Ratio (a, NZNatural)
+  deriving
+    ( -- | @since 1.0
+      Eq
+    )
+    via (a, NZNatural)
+
+-- | @since 1.0
+instance (Ord a, AdditiveSemigroup a) => Ord (Ratio a) where
+  {-# INLINEABLE compare #-}
+  compare (Ratio (num, den)) (Ratio (num', den')) =
+    compare (scaleNZNatural num den') (scaleNZNatural num' den)
+
+-- | @since 1.0
+instance (PUnsafeLiftDecl a) => PUnsafeLiftDecl (PRatio a) where
+  type PLifted (PRatio a) = Ratio (PLifted a)
+
+-- | @since 1.0
+instance (PConstant a) => PConstant (Ratio a) where
+  type PConstantRepr (Ratio a) = (PConstantRepr a, Integer)
+  type PConstanted (Ratio a) = PRatio (PConstanted a)
+  {-# INLINEABLE pconstantToRepr #-}
+  pconstantToRepr (Ratio (num, NZN.NZNatural den)) = (pconstantToRepr num, den)
+  {-# INLINEABLE pconstantFromRepr #-}
+  pconstantFromRepr (num, den)
+    | den < 1 = Nothing
+    | otherwise = case pconstantFromRepr num of
+        Nothing -> Nothing
+        Just num' -> Just . Ratio $ (num', NZN.NZNatural den)
 
 {- | A commutative semigroup, meant to be morally equivalent to numerical
  addition.
@@ -89,7 +183,8 @@ import Prelude qualified
 
  Formally, an instance of 'AdditiveSemigroup' must be a commutative semigroup
  with '+' as its operation. Furthermore, 'Additive' 'NZNatural' must be a
- right semigroup action, and [TODO], both witnessed by 'scaleNZNatural'.
+ right semigroup action, and 'Multiplicative' 'NZNatural' must translate to composition,
+ both witnessed by 'scaleNZNatural'.
 
  This requires that '+' commutes and associates:
 
@@ -224,9 +319,12 @@ instance AdditiveMonoid (Term s PNatural) where
 
  This requires that @x '+' 'negate' x = 'zero'@ and @x '-' y = x '+'
  'negate' y@; the second of these is the default implementation of '-'.
+ Furthermore, we must have:
 
- /TODO:/ Stating 'scaleInteger' agreement is difficult until we define a
- \'constructive absolute value\'.
+ * If @'Just' m = 'toNatural' n@, then @'scaleInteger' x n
+ = 'scaleNatural' x m@.
+ * If @'toNatural' n = 'Nothing'@, then @'scaleInteger'
+ x n = 'negate' '.' 'scaleInteger' x . 'abs' '$' n@.
 
  @since 1.0
 -}
@@ -330,7 +428,8 @@ instance (AdditiveGroup a) => Group (Additive a) where
 
  Formally, an instance of 'MultiplicativeSemigroup' must be a semigroup with
  '*' as its operation. Furthermore, 'Additive' 'NZNatural' must be a right
- semigroup action, and [TODO], both witnessed by 'powNZNatural'.
+ semigroup action, and 'Multiplicative' 'NZNatural' must translate to composition,
+ both witnessed by 'powNZNatural'.
 
  This requires that @(x '*' y) '*' z = x '*' (y '*' z)@. Furthermore,
  'powNZNatural' must follow these laws:
@@ -394,7 +493,7 @@ instance MultiplicativeSemigroup (Term s PNZInteger) where
  = Laws
 
  Formally, an instance of 'AdditiveMonoid' must be a monoid with 'one' as its
- identity. Furthermore, it must form a left-'Natural' semimodule, withnessed
+ identity. Furthermore, it must form a left-'Natural' semimodule, witnessed
  by 'powNatural', which must be an extension of the right semigroup action
  described by 'powNZNatural' for nonzero actions.
 
@@ -715,36 +814,41 @@ instance Euclidean (Term s PNatural) (Term s PNZNatural) where
   {-# INLINEABLE fromNatural #-}
   fromNatural = pconstant
 
--- | A 'Euclidean' extended with a notion of signedness (and subtraction). This
--- is /actually/ a Euclidean domain (and thus, a ring also).
---
--- = Laws
---
--- 'div' and 'mod' must be extensions of the description of Euclidean division
--- provided by 'quot' and 'rem'. Thus:
---
--- * @'div' ('abs' x) ('abs' y)@ @=@ @'quot' ('abs' x) ('abs' y)@
--- * @'mod' ('abs' x) ('abs' y)@ @=@ @'rem' ('abs' x) ('abs' y)@
--- * If @'div' x y = q@ and @'mod' x y = r@, then @(q '*^' y) '+' r = x@.
---
--- /TODO:/ Spell out precisely how 'div' and 'mod' differ on negatives.
--- 
--- Furthermore, @'removeZero'@ and @'zeroExtend'@ must be consistent with
--- additive inverses:
---
--- * @x '-^' y@ @=@ @x '-' 'zeroExtend' y@
---
--- Lastly, 'fromInteger' must describe the unique ring homomorphism from
--- 'Integer' to the instance, which must be an extension of the unique semiring
--- homomorphism described by 'fromNatural'. 
---
--- /TODO:/ Similarly to previous, needs elaboration in the absence of \'known
--- positive\' types.
---
--- /TODO:/ Spell out what exactly we mean by 'fromNZInteger' - what kind of
--- homomorphism is that?
---
--- @since 1.0
+{- | A 'Euclidean' extended with a notion of signedness (and subtraction). This
+ is /actually/ a Euclidean domain (and thus, a ring also).
+
+ = Laws
+
+ 'div' and 'mod' must be extensions of the description of Euclidean division
+ provided by 'quot' and 'rem'. Thus:
+
+ * @'div' ('abs' x) ('abs' y)@ @=@ @'quot' ('abs' x) ('abs' y)@
+ * @'mod' ('abs' x) ('abs' y)@ @=@ @'rem' ('abs' x) ('abs' y)@
+ * If @'div' x y = q@ and @'mod' x y = r@, then @(q '*^' y) '+' r = x@.
+
+ /TODO:/ Spell out precisely how 'div' and 'mod' differ on negatives.
+
+ Furthermore, @'removeZero'@ and @'zeroExtend'@ must be consistent with
+ additive inverses:
+
+ * @x '-^' y@ @=@ @x '-' 'zeroExtend' y@
+
+ Lastly, 'fromInteger' must describe the unique ring homomorphism from
+ 'Integer' to the instance, which must be an extension of the unique semiring
+ homomorphism described by 'fromNatural'. It also must agree with
+ 'fromNZInteger' on the nonzero part of the instance. Specifically, we must have:
+
+ * If @'Just' m = 'toNatural' n@, then @'fromInteger' n
+ = 'fromNatural' m@
+ * If @'toNatural' n = 'Nothing@, then @'fromInteger' n
+ = 'negate' '.' 'fromInteger' . 'abs' '$' n@.
+ * @'fromInteger' '.' 'zeroExtend' '$' x@ @=@ @'zeroExtend' '.' 'fromNZInteger'
+  '$' x@
+ * If @'removeZero' x = 'Just' y@, then @'removeZero' '.' 'fromInteger' '$' x =
+ 'Just' . 'fromNZInteger' '$' y@.
+
+ @since 1.0
+-}
 class
   (AdditiveGroup a, Euclidean a nz) =>
   Arithmetical a nz
@@ -796,7 +900,30 @@ instance Arithmetical (Term s PInteger) (Term s PNZInteger) where
   {-# INLINEABLE fromNZInteger #-}
   fromNZInteger = pconstant
 
--- | @since 1.0
+{- | A 'Euclidean' extended with a notion of proper division. Basically a field,
+ but without requiring additive inverses.
+
+ = Laws
+
+ @'reciprocal'@ has to act as a multiplicative inverse on the nonzero part of
+ the instance, with division defined as multiplication by the reciprocal.
+ Thus, we have:
+
+ * @'reciprocal' '.' 'reciprocal'@ @=@ @'id'@
+ * @'reciprocal' x '*' x@ @=@ @x '*' 'reciprocal' x@ @=@ @'one'@
+ * @x '/' y@ @=@ @x '*' 'reciprocal' y@
+
+ Furthermore, any instance must form a left-'Integer' semimodule over its
+ nonzero part (witnessed by 'powInteger'), which must be an extension of the
+ left-'Natural' semimodule witnessed by 'powNatural'. Thus, we must have:
+
+ * If @'Just' m = 'toNatural' n@, then @'powInteger' x
+ n = 'powNatural' x m@
+ * If @'toNatural' n = 'Nothing'@., then @'powInteger'
+ x n = 'reciprocal' '.' 'powInteger' x . 'abs' '$' n@.
+
+ @since 1.0
+-}
 class
   (Euclidean a nz) =>
   Divisible a nz
@@ -825,3 +952,101 @@ instance (Divisible a nz) => Group (Multiplicative nz) where
     0 -> mempty
     1 -> stimesMonoid i x
     _ -> inverse . stimesMonoid (Prelude.negate i) $ x
+
+{- | Convert an 'Integer' to a 'Natural' if it is non-negative.
+
+ @since 1.0
+-}
+toNatural :: Integer -> Maybe Natural
+toNatural i
+  | i >= 0 = Just . Nat.Natural $ i
+  | otherwise = Nothing
+
+{- | As 'toNatural', but for Plutarch 'Term's.
+
+ @since 1.0
+-}
+ptoNatural ::
+  forall (s :: S).
+  Term s PInteger ->
+  Term s (PMaybe PNatural)
+ptoNatural t = pif (zero #<= t) (pcon . PJust . punsafeCoerce $ t) (pcon PNothing)
+
+{- | Convert an 'Integer' to a 'Natural', yielding the absolute value if given a
+ negative number.
+
+ @since 1.0
+-}
+toAbsNatural :: Integer -> Natural
+toAbsNatural = Nat.Natural . Prelude.abs
+
+{- | As 'toAbsNatural', but for Plutarch 'Term's.
+
+ @since 1.0
+-}
+ptoAbsNatural ::
+  forall (s :: S).
+  Term s PInteger ->
+  Term s PNatural
+ptoAbsNatural t = punsafeCoerce . pif (zero #<= t) t $ abs t
+
+-- | @since 1.0
+{-# INLINEABLE (^-^) #-}
+(^-^) ::
+  forall (a :: Type) (nz :: Type).
+  (AdditiveCMM a, Euclidean a nz) =>
+  a ->
+  nz ->
+  a
+x ^-^ y = x ^- zeroExtend y
+
+-- | @since 1.0
+numerator ::
+  forall (a :: Type).
+  Ratio a ->
+  a
+numerator (Ratio (x, _)) = x
+
+-- | @since 1.0
+denominator ::
+  forall (a :: Type).
+  Ratio a ->
+  NZNatural
+denominator (Ratio (_, y)) = y
+
+-- | @since 1.0
+pnumerator ::
+  forall (a :: S -> Type) (s :: S).
+  PRatio a s ->
+  Term s a
+pnumerator (PRatio t) = pmatch t $ \(PPair t' _) -> t'
+
+-- | @since 1.0
+pdenominator ::
+  forall (a :: S -> Type) (s :: S).
+  PRatio a s ->
+  Term s PNZNatural
+pdenominator (PRatio t) = pmatch t $ \(PPair _ t') -> t'
+
+-- Helpers
+
+pmatchRatio ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  Term s (PRatio a) ->
+  (Term s a -> Term s PNZNatural -> Term s b) ->
+  Term s b
+pmatchRatio t f =
+  pmatch t $ \(PRatio pp) ->
+    pmatch pp $ \(PPair num den) ->
+      f num den
+
+pmatchRatios ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  Term s (PRatio a) ->
+  Term s (PRatio a) ->
+  (Term s a -> Term s a -> Term s PNZNatural -> Term s PNZNatural -> Term s b) ->
+  Term s b
+pmatchRatios t t' f =
+  pmatchRatio t $ \num den ->
+    pmatchRatio t' $ \num' den' ->
+      f num num' den den'

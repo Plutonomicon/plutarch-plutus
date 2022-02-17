@@ -1,6 +1,4 @@
-{-# LANGUAGE Safe #-}
-{-# LANGUAGE NoDerivingVia #-}
-{-# LANGUAGE NoGeneralizedNewtypeDeriving #-}
+{-# LANGUAGE Trustworthy #-}
 
 {- | Module: Plutarch.Numeric.Extra
  Copyright: (C) MLabs 2022
@@ -21,9 +19,6 @@ module Plutarch.Numeric.Extra (
   product,
   sumNZ,
   productNZ,
-
-  -- ** Other
-  (^-^),
 ) where
 
 import Data.Foldable (foldl')
@@ -31,10 +26,9 @@ import Data.Kind (Type)
 import Data.Semigroup.Foldable (Foldable1 (foldMap1))
 import Plutarch.Numeric (
   Additive (Additive),
-  AdditiveCMM ((^-)),
   AdditiveMonoid (zero),
   AdditiveSemigroup,
-  Euclidean (zeroExtend, (*^), (+^)),
+  Euclidean ((*^), (+^)),
   Multiplicative (Multiplicative),
   MultiplicativeMonoid (one),
   MultiplicativeSemigroup,
@@ -108,13 +102,3 @@ productNZ ::
   f nz ->
   a
 productNZ = foldl' (*^) one
-
--- | @since 1.0
-{-# INLINEABLE (^-^) #-}
-(^-^) ::
-  forall (a :: Type) (nz :: Type).
-  (AdditiveCMM a, Euclidean a nz) =>
-  a ->
-  nz ->
-  a
-x ^-^ y = x ^- zeroExtend y
