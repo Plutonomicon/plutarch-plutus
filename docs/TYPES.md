@@ -1,5 +1,7 @@
 This document describes the fundamental, commonly used Plutarch types.
 
+Also see: [eDSL types in Plutarch](./CONCEPTS.md#edsl-types-in-plutarch)
+
 > Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high quality documentation for Plutarch users!
 
 <details>
