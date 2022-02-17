@@ -14,7 +14,6 @@ This document describes the primary typeclasses used in Plutarch.
 - [`PlutusType`, `PCon`, and `PMatch`](#plutustype-pcon-and-pmatch)
   - [Implementing `PlutusType` for your own types (Scott Encoding)](#implementing-plutustype-for-your-own-types-scott-encoding)
   - [Implementing `PlutusType` for your own types (`Data` Encoding)](#implementing-plutustype-for-your-own-types-data-encoding)
-  - [Implementing `PlutusType` for your own types (`Data` Encoding)](#implementing-plutustype-for-your-own-types-data-encoding-1)
   - [Implementing `PlutusType` for your own types (`newtype`)](#implementing-plutustype-for-your-own-types-newtype)
 - [`PListLike`](#plistlike)
 - [`PIsDataRepr` & `PDataFields`](#pisdatarepr--pdatafields)
@@ -379,10 +378,6 @@ data MyType (a :: PType) (b :: PType) (s :: S)
 ```
 
 > Note: This requires the `generics-sop` package.
-
-## Implementing `PlutusType` for your own types (`Data` Encoding)
-
-If your type is supposed to be represented using [`Data` encoding](./CONCEPTS.md#data-encoding-and-scott-encoding) instead (i.e. has a [`PIsDataRepr`](#pisdatarepr--pdatafields) instance), you can derive `PlutusType` via `PIsDataReprInstances`:
 
 ## Implementing `PlutusType` for your own types (`Data` Encoding)
 
