@@ -23,7 +23,7 @@ There are several ways of building Plutarch constants. We discuss the primary on
 
 ## Static building with `pconstant` and `pconstantData`
 
-Plutarch constant terms can be built directly from Haskell synonyms using `pconstant` (requires [`PConstant`/`PLift`](./TYPECLASSES.md#pconstant--plift) instance). `pconstant` always takes in a regular Haskell value to create its Plutarch synonym.
+Plutarch constant terms can be built directly from [Haskell synonyms](./CONCEPTS.md#haskell-synonym-of-plutarch-types) using `pconstant` (requires [`PConstant`/`PLift`](./TYPECLASSES.md#pconstant--plift) instance). `pconstant` always takes in a regular Haskell value to create its Plutarch synonym.
 
 ```hs
 import Plutarch.Prelude

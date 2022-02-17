@@ -62,6 +62,7 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 - [Data encoding and Scott encoding](./CONCEPTS.md#data-encoding-and-scott-encoding)
   - [Data encoding](./CONCEPTS.md#data-encoding)
   - [Scott encoding](./CONCEPTS.md#scott-encoding)
+- [Haskell synonym of Plutarch types](./CONCEPTS.md#haskell-synonym-of-plutarch-types)
 - [Unsafe functions](./CONCEPTS.md#unsafe-functions)
 
 ## Typeclasses

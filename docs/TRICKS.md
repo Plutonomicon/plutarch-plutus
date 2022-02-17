@@ -196,11 +196,7 @@ Instead, try to offload the responsbility of evaluation to the Haskell level fun
 
 # The isomorphism between `makeIsDataIndexed`, Haskell ADTs, and `PIsDataRepr`
 
-When [implementing `PIsDataRepr`](./TYPECLASSES.md#implementing-pisdatarepr-and-friends) for a Plutarch type, if the Plutarch type also has a Haskell synonym (e.g. `ScriptContext` is the Haskell synonym to `PScriptContext`) that uses [`makeIsDataIndexed`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed) - you must make sure the constructor ordering is correct.
-
-> Aside: What's a "Haskell synonym"? It's simply the Haskell type that _is supposed to_ correspond to a Plutarch type. There doesn't _necessarily_ have to be some sort of concrete connection (though there can be, using [`PLift`/`PConstant`](./TYPECLASSES.md#pconstant--plift)) - it's merely a connection you can establish mentally.
->
-> This detail does come into play in concrete use cases though. After compiling your Plutarch code to a `Script`, when you pass Haskell data types as arguments to the `Script` - they obviously need to correspond to the actual arguments of the Plutarch code. For example, if the Plutarch code is a function taking `PScriptContext`, after compilation to `Script`, you _should_ pass in the Haskell data type that actually shares the same representation as `PScriptContext` - the "Haskell synonym", so to speak. In this case, that's `ScriptContext`.
+When [implementing `PIsDataRepr`](./TYPECLASSES.md#implementing-pisdatarepr-and-friends) for a Plutarch type, if the Plutarch type also has a [Haskell synonym](./CONCEPTS.md#haskell-synonym-of-plutarch-types) (e.g. `ScriptContext` is the Haskell synonym to `PScriptContext`) that uses [`makeIsDataIndexed`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed) - you must make sure the constructor ordering is correct.
 
 In particular, with `makeIsDataIndexed`, you can assign _indices_ to your Haskell ADT's constructors. This determines how the ADT will be represented in Plutus Core. It's important to ensure that the corresponding Plutarch type _knows_ about these indices so it can decode the ADT correctly - in case you passed it into Plutarch code, through Haskell.
 
@@ -270,7 +266,7 @@ The _field names_ don't matter though. They are merely labels that don't exist a
 
 # Prefer statically building constants whenever possible
 
-Whenever you can build a Plutarch constant out of a pure Haskell value - do it! Functions such as `pconstant`, `phexByteStr` operate on regular Haskell synonyms of Plutarch types. Unlike `pcon`, which potentially works on Plutarch terms (e.g. `pcon $ PJust x`, `x` is a `Term s a`). A Plutarch term is an entirely "runtime" concept. "Runtime" as in "Plutus Core Runtime". They only get evaluated during runtime!
+Whenever you can build a Plutarch constant out of a pure Haskell value - do it! Functions such as `pconstant`, `phexByteStr` operate on regular [Haskell synonyms](./CONCEPTS.md#haskell-synonym-of-plutarch-types) of Plutarch types. Unlike `pcon`, which potentially works on Plutarch terms (e.g. `pcon $ PJust x`, `x` is a `Term s a`). A Plutarch term is an entirely "runtime" concept. "Runtime" as in "Plutus Core Runtime". They only get evaluated during runtime!
 
 On the other hand, whenever you transform a Haskell synonym to its corresponding Plutarch type using `pconstant`, `phexByteStr` etc. - you're _directly_ building a Plutus Core constant. This is entirely static! There are no runtime function calls, no runtime building, it's just _there_, inside the compiled script.
 
