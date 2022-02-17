@@ -109,6 +109,8 @@ Also see: [examples](https://github.com/Plutonomicon/plutarch/tree/master/exampl
 # Thumb rules, Tips, and Trickss
 Outside of the fundamental user guide, there are thumb rules and general guidelines you can follow to improve your Plutarch experience. In this section, we discuss ways of writing efficient and high quality Plutarch code, as well as rules that can help auditing Plutarch easier.
 
+> Jack: 'rules of thumb' rather than 'thumb rules'.
+
 - [Plutarch functions are strict](./TRICKS.md#plutarch-functions-are-strict)
 - [Don't duplicate work](./TRICKS.md#dont-duplicate-work)
   - [Where should arguments be `plet`ed?](./TRICKS.md#where-should-arguments-be-pleted)
