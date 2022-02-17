@@ -49,7 +49,7 @@
   inputs.haskell-language-server.flake = false;
 
   # These use the PRs from https://github.com/NorfairKing/sydtest/issues/35
-  inputs.sydtest.url = "github:Geometer1729/sydtest?rev=06d3983ba48b43f819d1b4f958e8a42727f5abc4";
+  inputs.sydtest.url = "github:srid/sydtest/ghc921";
   inputs.sydtest.flake = false;
   inputs.validity.url = "github:srid/validity/ghc921";
   inputs.validity.flake = false;
