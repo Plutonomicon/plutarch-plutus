@@ -1,0 +1,2 @@
+reverse [1..5] (program 1.0.0 (\i0 -> \i0 -> i2 5 (\i0 -> \i0 -> i2 4 (\i0 -> \i0 -> i2 3 (\i0 -> \i0 -> i2 2 (\i0 -> \i0 -> i2 1 (\i0 -> \i0 -> force i1)))))))
+reverse [] (program 1.0.0 (\i0 -> \i0 -> force i1))

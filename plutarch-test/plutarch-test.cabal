@@ -32,9 +32,9 @@ common c
     ExistentialQuantification
     ExplicitForAll
     FlexibleContexts
-    FunctionalDependencies
     FlexibleInstances
     ForeignFunctionInterface
+    FunctionalDependencies
     GADTSyntax
     GeneralisedNewtypeDeriving
     HexFloatLiterals
@@ -79,21 +79,21 @@ common deps
     , bytestring
     , filepath
     , generics-sop
+    , hedgehog
     , plutarch
     , plutarch-benchmark
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
     , sydtest
-    , sydtest-hedgehog
     , sydtest-discover
+    , sydtest-hedgehog
     , tasty
     , tasty-golden
     , tasty-hunit
     , tasty-quickcheck
     , text
     , transformers
-    , hedgehog
 
 library
   import:          c, deps
@@ -112,12 +112,13 @@ executable plutarch-test
       Plutarch.MonadicSpec
 
   other-modules:
+    Gen
     Plutarch.ApiSpec
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
     Plutarch.IntegerSpec
-    Plutarch.ListSpec
     Plutarch.ListPropSpec
+    Plutarch.ListSpec
     Plutarch.PIsDataSpec
     Plutarch.PLamSpec
     Plutarch.PlutusTypeSpec
@@ -129,7 +130,6 @@ executable plutarch-test
     Plutarch.UnitSpec
     Spec
     Util
-    Gen
 
   if flag(development)
     cpp-options: -DDevelopment
