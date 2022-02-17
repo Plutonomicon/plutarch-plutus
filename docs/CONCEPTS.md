@@ -276,6 +276,8 @@ This detail does come into play in concrete use cases though. After compiling yo
 
 \[\*]: You can't actually pass a `ByteString` into a compiled `Script` through the [`Plutus.V1.Ledger.Scripts`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Scripts.html) API. Notice that you can only pass `Data` arguments using [`applyArguments`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Scripts.html#v:applyArguments). The Haskell synonym to `Data` is `PAsData a` (for any `a`), and `PData`.
 
+Also see: [Figuring out the representation of a Plutarch type](./TRICKS.md#figuring-out-the-representation-of-a-plutarch-type).
+
 # Unsafe functions
 
 There are internal functions such as `punsafeCoerce`, `punsafeConstant` etc. that give you terms without their specific type. These **should not** be used by Plutarch users. It is the duty of the user of these unsafe functions to get the type right - and it is very easy to get the type wrong. You can easily make the type system believe you're creating a `Term s PInteger`, when in reality, you created a function.
