@@ -43,15 +43,14 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 - [Applying functions](./USAGE.md#applying-functions)
 - [Conditionals](./USAGE.md#conditionals)
 - [Recursion](./USAGE.md#recursion)
-- [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](./USAGE.md#do-syntax-with-qualifieddo-and-plutarchmonadic)
-  - [Translating `do` syntax with `QualifiedDo` to GHC 8](./USAGE.md#translating-do-syntax-with-qualifieddo-to-ghc-8)
 - [Do syntax with `TermCont`](./USAGE.md#do-syntax-with-termcont)
+- [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](./USAGE.md#do-syntax-with-qualifieddo-and-plutarchmonadic)
 - [Deriving typeclasses for `newtype`s](./USAGE.md#deriving-typeclasses-for-newtypes)
 - [Deriving typeclasses with generics](./USAGE.md#deriving-typeclasses-with-generics)
 
 ## Concepts
 
-- [Hoisting, metaprogramming,  and fundamentals](./CONCEPTS.md#hoisting-metaprogramming--and-fundamentals)
+- [Hoisting, metaprogramming, and fundamentals](./CONCEPTS.md#hoisting-metaprogramming-and-fundamentals)
   - [Hoisting Operators](./CONCEPTS.md#hoisting-operators)
 - [What is the `s`?](./CONCEPTS.md#what-is-the-s)
 - [eDSL Types in Plutarch](./CONCEPTS.md#edsl-types-in-plutarch)
@@ -85,21 +84,21 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 
 ## Working with Types
 
-- [PInteger](./TYPES.md#pinteger)
-- [PBool](./TYPES.md#pbool)
-- [PString](./TYPES.md#pstring)
-- [PByteString](./TYPES.md#pbytestring)
-- [PUnit](./TYPES.md#punit)
-- [PBuiltinList](./TYPES.md#pbuiltinlist)
-- [PList](./TYPES.md#plist)
-- [PBuiltinPair](./TYPES.md#pbuiltinpair)
-- [PTuple](./TYPES.md#ptuple)
-- [PAsData](./TYPES.md#pasdata)
-- [PDataSum & PDataRecord](./TYPES.md#pdatasum--pdatarecord)
-- [PRecord](./TYPES.md#precord)
+- [`PInteger`](./TYPES.md#pinteger)
+- [`PBool`](./TYPES.md#pbool)
+- [`PString`](./TYPES.md#pstring)
+- [`PByteString`](./TYPES.md#pbytestring)
+- [`PUnit`](./TYPES.md#punit)
+- [`PBuiltinList`](./TYPES.md#pbuiltinlist)
+- [`PList`](./TYPES.md#plist)
+- [`PBuiltinPair`](./TYPES.md#pbuiltinpair)
+- [`PTuple`](./TYPES.md#ptuple)
+- [`PAsData`](./TYPES.md#pasdata)
+- [`PDataSum` & `PDataRecord`](./TYPES.md#pdatasum--pdatarecord)
+- [`PRecord`](./TYPES.md#precord)
   - [letrec](./TYPES.md#letrec)
   - [Record Data](./TYPES.md#record-data)
-- [PData](./TYPES.md#pdata)
+- [`PData`](./TYPES.md#pdata)
 
 # Examples
 
