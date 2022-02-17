@@ -14,11 +14,11 @@ module Plutarch.FFI (
 import Data.ByteString (ByteString)
 import Data.Kind (Constraint, Type)
 import Data.Text (Text)
-import GHC.Generics (C, D, Generic, K1, M1, Meta (MetaData), Rep)
-import qualified GHC.Generics as Generics
+import GHC.Generics (Generic)
 import GHC.TypeLits (TypeError)
 import qualified GHC.TypeLits as TypeLits
 import qualified Generics.SOP as SOP
+import Generics.SOP.Type.Metadata (DatatypeInfo (Newtype))
 import Plutarch (
   ClosedTerm,
   PDelayed,
@@ -61,9 +61,10 @@ data PhorallPhantom :: PType
 data Delayed :: Type -> Type
 data DelayedList :: Type -> Type
 
--- | Plutarch type of delayed lists, compatible with the PlutusTx encoding of
--- Haskell lists and convertible with the regular 'PList' using 'pdelayList'
--- and 'pforceList'.
+{- | Plutarch type of delayed lists, compatible with the PlutusTx encoding of
+ Haskell lists and convertible with the regular 'PList' using 'pdelayList'
+ and 'pforceList'.
+-}
 data PDelayedList (a :: PType) (s :: S)
   = PDCons (Term s a) (Term s (PDelayedList a))
   | PDNil
@@ -150,12 +151,12 @@ type family PlutusTxInner (t :: Type) (any :: Type) :: Type where
   PlutusTxInner (a -> b) x = PlutusTxInner a x -> PlutusTxInner b x
   PlutusTxInner (Delayed a) x = Delayed (PlutusTxInner a x)
   PlutusTxInner [a] x = DelayedList (PlutusTxInner a x)
-  PlutusTxInner a x = TypeEncoding a (Rep a) x
+  PlutusTxInner a x = TypeEncoding (SOP.Code a) (SOP.DatatypeInfoOf a) x
 
-type TypeEncoding :: Type -> (Type -> Type) -> Type -> Type
+type TypeEncoding :: [[Type]] -> DatatypeInfo -> Type -> Type
 type family TypeEncoding a rep x where
-  TypeEncoding a (M1 D ( 'MetaData _ _ _ 'True) (M1 C _ (M1 Generics.S _ (K1 _ b)))) x = PlutusTxInner b x -- newtype
-  TypeEncoding a _ x = Delayed (PlutusTxInner (ScottFn (ScottList (SOP.Code a) x) x) x)
+  TypeEncoding '[ '[b]] ( 'Newtype _ _ _) x = PlutusTxInner b x
+  TypeEncoding sop _ x = Delayed (PlutusTxInner (ScottFn (ScottList sop x) x) x)
 
 {- |
   List of scott-encoded constructors of a Haskell type (represented by 'SOP.Code')
