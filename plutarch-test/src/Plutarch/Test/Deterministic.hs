@@ -1,9 +1,10 @@
 {-# LANGUAGE ImpredicativeTypes #-}
 
-module Plutarch.Test.Deterministic (compileD) where
+module Plutarch.Test.Deterministic (compileD, evaluateScriptAlways) where
 
 import qualified Data.Text as T
-import Plutarch (ClosedTerm, compile)
+import Plutarch (ClosedTerm, compile, perror)
+import Plutarch.Evaluate (evaluateScript)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import PlutusCore.Default (
   DefaultFun (Trace),
@@ -17,6 +18,18 @@ import UntypedPlutusCore (
   Term (Apply, Builtin, Constant, Delay, Force, LamAbs),
  )
 import qualified UntypedPlutusCore as UPLC
+
+{- Like `evaluateScript` but doesn't fail. Also returns `Script`.
+
+  All evaluation failures are treated as equivalent to a `perror`. Plutus does
+  not provide an accurate way to tell if the program evalutes to `Error` or not;
+  see https://github.com/input-output-hk/plutus/issues/4270
+-}
+evaluateScriptAlways :: Scripts.Script -> Scripts.Script
+evaluateScriptAlways script =
+  case evaluateScript script of
+    Left _ -> compile perror
+    Right (_, _, x) -> x
 
 {- Like `compile`, but the result is deterministic -}
 compileD :: ClosedTerm a -> Scripts.Script

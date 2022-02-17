@@ -10,31 +10,23 @@ spec :: Spec
 spec = do
   describe "bool" $ do
     describe "pnot" $ do
-      goldens
-        All
-        [ ("lam", popaque pnot)
-        , ("app", popaque $ pnot #$ pcon PTrue)
-        ]
+      goldenSpec $ do
+        "lam" #> pnot
+        "app" #> pnot #$ pcon PTrue
       it "true" $ (pnot #$ pcon PTrue) #@?= pcon PFalse
       it "false" $ (pnot #$ pcon PFalse) #@?= pcon PTrue
     describe "pand" $ do
-      goldens
-        All
-        [ ("tf", pcon PTrue #&& pcon PFalse)
-        , ("ft", pcon PFalse #&& pcon PTrue)
-        , ("tt", pcon PTrue #&& pcon PTrue)
-        , ("ff", pcon PFalse #&& pcon PFalse)
-        ]
-      it "tf" $ (pcon PTrue #&& pcon PFalse) #@?= pcon PFalse
-      it "ft" $ (pcon PFalse #&& pcon PTrue) #@?= pcon PFalse
-      it "tt" $ (pcon PTrue #&& pcon PTrue) #@?= pcon PTrue
-      it "ff" $ (pcon PFalse #&& pcon PFalse) #@?= pcon PFalse
+      goldenSpec $ do
+        "tf" #> pcon PTrue #&& pcon PFalse
+        "ft" #> pcon PFalse #&& pcon PTrue
+        "tt" #> pcon PTrue #&& pcon PTrue
+        "ff" #> pcon PFalse #&& pcon PFalse
       describe "laziness" $ do
-        let p1 = pand # pcon PFalse # pdelay perror
-            p2 = pcon PFalse #&& perror
-        goldens All [("pand", popaque p1), ("op", popaque p2)]
-        it "pand" $ passert $ pnot # pforce p1
-        it "op" $ passert $ pnot # p2
+        goldenSpec $ do
+          "pand" #> pand # pcon PFalse # pdelay perror
+          "op" #> pcon PFalse #&& perror
+        it "pand" $ passert $ pnot # pforce (pand # pcon PFalse # pdelay perror)
+        it "op" $ passert $ pnot # (pcon PFalse #&& perror)
         it "pand.perror" $ do
           pfails $ pand # pcon PFalse # perror
           pfails $ pand # pcon PTrue # perror

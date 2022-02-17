@@ -10,16 +10,15 @@ spec :: Spec
 spec = do
   describe "int" $ do
     describe "examples" $ do
-      goldens
-        All
-        [ ("add1", popaque add1)
-        , ("add1Hoisted", popaque add1Hoisted)
-        , ("example1", popaque example1)
-        , ("example2", popaque example2)
-        , ("fib", popaque fib)
-        , ("fib.app.9", popaque $ fib # 9)
-        , ("uglyDouble", popaque uglyDouble)
-        ]
+      goldenSpec $ do
+        "add1" #> add1
+        "add1Hoisted" #> add1Hoisted
+        "example1" #> example1
+        "example2" #> example2
+        "fib" #> fib
+        "fib.app" #\ do
+          "9" #> fib # 9
+        "uglyDouble" #> uglyDouble
 
 add1 :: Term s (PInteger :--> PInteger :--> PInteger)
 add1 = plam $ \x y -> x + y + 1

@@ -17,12 +17,15 @@ module Plutarch.Test (
   -- `goldens`.
   golden,
   goldens,
+  (#>),
+  (#\),
+  goldenSpec,
   PlutarchGolden (All, Bench, PrintTerm),
   getGoldenFilePrefix,
   goldenFilePath,
 ) where
 
-import Control.Monad (when)
+import Control.Monad.Writer
 import qualified Data.Aeson.Text as Aeson
 import Data.Kind (Type)
 import Data.Text (Text)
@@ -45,7 +48,8 @@ import Plutarch
 import Plutarch.Benchmark (benchmarkScript')
 import Plutarch.Bool (PBool (PTrue))
 import Plutarch.Evaluate (evaluateScript)
-import Plutarch.Test.Deterministic (compileD)
+import Plutarch.Test.Deterministic (compileD, evaluateScriptAlways)
+import Plutarch.Test.Golden
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 
 {- |
@@ -76,18 +80,6 @@ psucceeds p =
   case evaluateScript (compile p) of
     Left _ -> expectationFailure $ "Term failed to evaluate"
     Right _ -> pure ()
-
-{- Like `evaluateScript` but doesn't fail. Also returns `Script`.
-
-  All evaluation failures are treated as equivalent to a `perror`. Plutus does
-  not provide an accurate way to tell if the program evalutes to `Error` or not;
-  see https://github.com/input-output-hk/plutus/issues/4270
--}
-evaluateScriptAlways :: Scripts.Script -> Scripts.Script
-evaluateScriptAlways script =
-  case evaluateScript script of
-    Left _ -> compile perror
-    Right (_, _, x) -> x
 
 {- | Asserts that the term evaluates successfully with the given trace sequence
 
@@ -133,6 +125,8 @@ pfails p = do
   case evaluateScript (compile p) of
     Left _ -> pure ()
     Right _ -> expectationFailure $ "Term succeeded"
+
+-- TODO: All the code below will be deleted, in favour of Golden.hs
 
 {- Whether to run all or a particular golden test
 

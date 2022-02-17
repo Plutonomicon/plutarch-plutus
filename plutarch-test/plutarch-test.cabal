@@ -78,6 +78,7 @@ common deps
     , bytestring
     , filepath
     , generics-sop
+    , mtl
     , plutarch
     , plutarch-benchmark
     , plutus-core
@@ -95,11 +96,13 @@ library
   import:          c, deps
   hs-source-dirs:  src
   exposed-modules: Plutarch.Test
-  other-modules:   Plutarch.Test.Deterministic
+  other-modules:
+    Plutarch.Test.Deterministic
+    Plutarch.Test.Golden
+    Plutarch.Test.ListSyntax
 
 executable plutarch-test
   import:         c, deps
-  type:           exitcode-stdio-1.0
   main-is:        Main.hs
   hs-source-dirs: src
 
@@ -123,6 +126,8 @@ executable plutarch-test
     Plutarch.StringSpec
     Plutarch.Test
     Plutarch.Test.Deterministic
+    Plutarch.Test.Golden
+    Plutarch.Test.ListSyntax
     Plutarch.TraceSpec
     Plutarch.UnitSpec
     Spec
