@@ -105,7 +105,7 @@ They are merely used as a tag, and what Haskell value they can hold is not impor
 
 The only thing concrete here is the runtime representation of the type: what it looks like in Plutus Core. Usually this connection is established in the Plutarch type's `PlutusType` implementation\*. You see, `PlutusType` helps *connect* an essentially transient, semantically meaningless tag, with a real runtime value. The tag then helps with typing. It's a *typed* eDSL!
 
-> \[\*]: Not all type's representations are established through `PlutusType`, but it's the most prominent one for our user facing interface. The truth is, anything that can build a `Term s P` for some Plutarch type `P`, is capable of *determining* the representation of `P`. But for type safety, we have to constrain in so that several different functions can't build a `Term s P` and just choose their own representation for it. That breaks everything!
+> \[\*]: Not all type's representations are established through `PlutusType`, but it's the most prominent one for our user facing interface. The truth is, anything that can build a `Term s P` from scratch, for some Plutarch type `P`, is capable of *determining* the representation of `P`. But for type safety, we have to constrain it so that several different functions can't build a `Term s P` and just choose their own representation for it. That breaks everything!
 
 As such, don't focus much into what value a Plutarch type contains in the Haskell world - it doesn't matter. Even the constructors and fields are only there to help with `PlutusType` implementation, by further connecting all of it with runtime values.
 
