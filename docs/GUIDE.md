@@ -75,6 +75,7 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 - [`PlutusType`, `PCon`, and `PMatch`](./TYPECLASSES.md#plutustype-pcon-and-pmatch)
   - [Implementing `PlutusType` for your own types (Scott Encoding)](./TYPECLASSES.md#implementing-plutustype-for-your-own-types-scott-encoding)
   - [Implementing `PlutusType` for your own types (`Data` Encoding)](./TYPECLASSES.md#implementing-plutustype-for-your-own-types-data-encoding)
+  - [Implementing `PlutusType` for your own types (`newtype`)](./TYPECLASSES.md#implementing-plutustype-for-your-own-types-newtype)
 - [`PListLike`](./TYPECLASSES.md#plistlike)
 - [`PIsDataRepr` & `PDataFields`](./TYPECLASSES.md#pisdatarepr--pdatafields)
   - [All about extracting fields](./TYPECLASSES.md#all-about-extracting-fields)
