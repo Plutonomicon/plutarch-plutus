@@ -17,16 +17,16 @@ spec = do
       it "false" $ (pnot #$ pcon PFalse) #@?= pcon PTrue
     describe "pand" $ do
       pgoldenSpec $ do
-        "tf" @> pcon PTrue #&& pcon PFalse
-        "ft" @> pcon PFalse #&& pcon PTrue
-        "tt" @> pcon PTrue #&& pcon PTrue
-        "ff" @> pcon PFalse #&& pcon PFalse
+        "tf" @> pcon PTrue #&& pcon PFalse @-> pshouldBe (pcon PFalse)
+        "ft" @> pcon PFalse #&& pcon PTrue @-> pshouldBe (pcon PFalse)
+        "tt" @> pcon PTrue #&& pcon PTrue @-> passert
+        "ff" @> pcon PFalse #&& pcon PFalse @-> pshouldBe (pcon PFalse)
       describe "laziness" $ do
         pgoldenSpec $ do
-          "pand" @> pand # pcon PFalse # pdelay perror
-          "op" @> pcon PFalse #&& perror
-        it "pand" $ passert $ pnot # pforce (pand # pcon PFalse # pdelay perror)
-        it "op" $ passert $ pnot # (pcon PFalse #&& perror)
+          "pand" @> pand # pcon PFalse # pdelay perror @-> \p ->
+            passert $ pnot # pforce p
+          "op" @> pcon PFalse #&& perror @-> \p ->
+            passert $ pnot # p
         it "pand.perror" $ do
           pfails $ pand # pcon PFalse # perror
           pfails $ pand # pcon PTrue # perror
