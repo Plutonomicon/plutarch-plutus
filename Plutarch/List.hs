@@ -55,6 +55,7 @@ import Plutarch (
   pdelay,
   perror,
   pfix,
+  pforce,
   phoistAcyclic,
   plam,
   plet,
@@ -104,11 +105,11 @@ class PListLike (list :: (PType) -> PType) where
 
   -- | Return the first element of a list. Partial, throws an error upon encountering an empty list.
   phead :: PElemConstraint list a => Term s (list a :--> a)
-  phead = phoistAcyclic $ plam $ pelimList const perror
+  phead = phoistAcyclic $ plam $ pforce . pelimList (const . pdelay) (pdelay perror)
 
   -- | Take the tail of a list, meaning drop its head. Partial, throws an error upon encountering an empty list.
   ptail :: PElemConstraint list a => Term s (list a :--> list a)
-  ptail = phoistAcyclic $ plam $ pelimList (\_ xs -> xs) perror
+  ptail = phoistAcyclic $ plam $ pforce . pelimList (\_ xs -> pdelay xs) (pdelay perror)
 
   -- | / O(1) /. Check if a list is empty
   pnull :: PElemConstraint list a => Term s (list a :--> PBool)

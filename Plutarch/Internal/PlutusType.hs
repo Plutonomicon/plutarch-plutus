@@ -29,7 +29,7 @@ import Generics.SOP (
  )
 import Plutarch.DataRepr.Internal.Generic (MkSum (mkSum))
 import Plutarch.DataRepr.Internal.HList.Utils (IndexList)
-import Plutarch.Internal (PType, S, Term, pforce, plam', punsafeCoerce, (:-->))
+import Plutarch.Internal (PType, S, Term, plam', punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
 import Plutarch.Internal.PLam ((#))
 import Plutarch.Internal.TypeFamily (ToPType, ToPType2)
@@ -249,7 +249,7 @@ class PLamL (as :: [PType]) (b :: PType) (s :: S) where
   plamL :: (NP (Term s) as -> Term s b) -> Term s (ScottFn as b)
 
 instance PLamL '[] b s where
-  plamL f = PI.pdelay $ f Nil
+  plamL f = f Nil
 
 instance PLamL' as b s => PLamL (a ': as) b s where
   plamL f = plam' $ \a -> plamL' $ \as -> f (a :* as)
@@ -287,7 +287,7 @@ class AppL (c :: PType) (xs :: [PType]) where
   appL :: Term s (ScottFn xs c) -> NP (Term s) xs -> Term s c
 
 instance AppL c '[] where
-  appL f Nil = pforce f
+  appL f Nil = f
 
 instance (AppL' c xs, AppL c xs) => AppL c (x ': xs) where
   appL f (x :* xs) = (f # x) `appL'` xs
@@ -336,7 +336,7 @@ type family ScottList' s code c where
 -}
 type ScottFn :: [PType] -> PType -> PType
 type family ScottFn xs b where
-  ScottFn '[] b = PI.PDelayed b
+  ScottFn '[] b = b
   ScottFn (x ': xs) b = x :--> ScottFn' xs b
 
 {- |
