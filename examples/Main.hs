@@ -64,11 +64,11 @@ plutarchTests =
         "PlutusType scott encoding "
         [ testCase "PMaybe" $ do
             let a = 42 :: Term s PInteger
-            let x = pforce $ pmatch (pcon $ PJust a) $ \case
-                  PJust x -> pdelay x
+            let x = pmatchSum (pcon $ PJust a) $ \case
+                  PJust x -> x
                   -- We expect this perror not to be evaluated eagerly when mx
                   -- is a PJust.
-                  PNothing -> pdelay perror
+                  PNothing -> perror
             printTerm x @?= "(program 1.0.0 (force ((\\i0 -> \\i0 -> i2 42) (\\i0 -> delay i1) (delay error))))"
         , testCase "PPair" $ do
             let a = 42 :: Term s PInteger

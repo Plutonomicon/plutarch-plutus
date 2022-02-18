@@ -6,6 +6,7 @@ module Plutarch.Internal.PlutusType (
   PlutusType (..),
   PCon (..),
   PMatch (..),
+  pmatchSum,
 ) where
 
 import Data.Kind (Type)
@@ -140,8 +141,12 @@ class PCon a where
   pcon :: a s -> Term s a
 
 class PMatch a where
-  -- | Pattern match over Plutarch Terms via a Haskell datatype
+  -- | Pattern match over Plutarch Terms via a Haskell datatype. All branches are strictly evaluated, use `pmatchSum` if you need them lazy.
   pmatch :: Term s a -> (a s -> Term s b) -> Term s b
+
+-- | A less efficient delayed 'pmatch' for use with partial pattern matches in @do@ notation.
+pmatchSum :: PlutusType a => Term s a -> (a s -> Term s b) -> Term s b
+pmatchSum x f = PI.pforce (pmatch x (PI.pdelay . f))
 
 -- | Generic version of `pcon'`
 gpcon ::

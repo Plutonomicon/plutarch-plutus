@@ -16,6 +16,7 @@ module Plutarch (
   S,
   PType,
   PlutusType (..),
+  pmatchSum,
   printTerm,
   printScript,
   (#$),
