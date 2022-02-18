@@ -176,7 +176,6 @@ test-suite examples
     , plutus-tx
     , rank2classes       >=1.4.4
     , tasty
-    , tasty-hedgehog
     , tasty-hunit
     , text
     , transformers
