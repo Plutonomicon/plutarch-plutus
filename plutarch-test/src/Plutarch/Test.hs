@@ -18,6 +18,8 @@ module Plutarch.Test (
   golden,
   goldens,
   PlutarchGolden (All, Bench, PrintTerm),
+  getGoldenFilePrefix,
+  goldenFilePath,
 ) where
 
 import Control.Monad (when)
@@ -170,25 +172,37 @@ golden pg p =
 -}
 goldens :: PlutarchGolden -> [(String, ClosedTerm a)] -> Spec
 goldens pg ps = do
-  testAncestors <- fmap (drop 1 . reverse) $ getTestDescriptionPath
-  let name = T.unpack $ T.intercalate "." testAncestors
+  name <- getGoldenFilePrefix
   describe "golden" $ do
     -- Golden test for UPLC
     when (hasPrintTermGolden pg) $ do
       it "uplc" $
-        pureGoldenTextFile ("goldens" </> name <> ".uplc.golden") $
+        pureGoldenTextFile (goldenFilePath "goldens" name "uplc") $
           multiGolden ps $ \p ->
             T.pack $ printScript $ compileD p
       it "uplc.eval" $
-        pureGoldenTextFile ("goldens" </> name <> ".uplc.eval.golden") $
+        pureGoldenTextFile (goldenFilePath "goldens" name "uplc.eval") $
           multiGolden ps $ \p ->
             T.pack $ printScript $ evaluateScriptAlways $ compileD p
     -- Golden test for Plutus benchmarks
     when (hasBenchGolden pg) $
       it "bench" $
-        pureGoldenTextFile ("goldens" </> name <> ".bench.golden") $
+        pureGoldenTextFile (goldenFilePath "goldens" name "bench") $
           multiGolden ps $ \p ->
             TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compileD p
+
+-- | Get a golden filename prefix from the test description path
+getGoldenFilePrefix ::
+  forall (outers :: [Type]) (inner :: Type).
+  TestDefM outers inner String
+getGoldenFilePrefix =
+  T.unpack . T.intercalate "." . drop 1 . reverse <$> getTestDescriptionPath
+
+-- | Get the golden file name given the basepath, an optional suffix and a name
+goldenFilePath :: FilePath -> String -> String -> FilePath
+goldenFilePath base name suffix =
+  base
+    </> (name <> "." <> suffix <> ".golden")
 
 multiGolden :: forall a. [(String, a)] -> (a -> T.Text) -> Text
 multiGolden xs f =

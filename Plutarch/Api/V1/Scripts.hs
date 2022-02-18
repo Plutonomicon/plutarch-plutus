@@ -2,6 +2,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Api.V1.Scripts (
+  -- * Plutus API Types
   PDatum (PDatum),
   PDatumHash (PDatumHash),
   PRedeemer (PRedeemer),

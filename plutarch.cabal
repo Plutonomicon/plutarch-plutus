@@ -78,6 +78,7 @@ library
   import:          c
   exposed-modules:
     Plutarch
+    Plutarch.Api.Internal.Scripts
     Plutarch.Api.V1
     Plutarch.Api.V1.Address
     Plutarch.Api.V1.AssocMap
@@ -134,11 +135,13 @@ library
     , flat
     , generics-sop
     , hashable
+    , memory
     , mtl
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
     , rank2classes
+    , serialise
     , sop-core
     , template-haskell
     , text
@@ -174,7 +177,9 @@ test-suite examples
     , plutus-ledger-api
     , plutus-tx
     , rank2classes       >=1.4.4
+    , serialise
     , tasty
+    , tasty-golden
     , tasty-hunit
     , text
     , transformers

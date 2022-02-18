@@ -86,7 +86,6 @@ common deps
     , sydtest
     , sydtest-discover
     , tasty
-    , tasty-golden
     , tasty-hunit
     , tasty-quickcheck
     , text
@@ -120,6 +119,7 @@ executable plutarch-test
     Plutarch.PlutusTypeSpec
     Plutarch.RationalSpec
     Plutarch.RecursionSpec
+    Plutarch.ScriptsSpec
     Plutarch.StringSpec
     Plutarch.Test
     Plutarch.Test.Deterministic
