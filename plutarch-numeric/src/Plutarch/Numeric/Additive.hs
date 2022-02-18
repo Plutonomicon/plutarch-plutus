@@ -2,19 +2,19 @@ module Plutarch.Numeric.Additive (
   AdditiveSemigroup (..),
   AdditiveMonoid (..),
   AdditiveGroup (..),
-  AdditiveCMM (..)
-  ) where
+  AdditiveCMM (..),
+) where
 
+import Plutarch (Term, plet, (#))
+import Plutarch.Bool (pif, (#<=))
+import Plutarch.Integer (PInteger)
+import Plutarch.Lift (pconstant)
 import Plutarch.Numeric.NZNatural (NZNatural (NZNatural), PNZNatural)
 import Plutarch.Numeric.Natural (Natural (Natural), PNatural)
-import Plutarch (Term, (#), plet)
-import Plutarch.Bool (pif, (#<=))
-import Plutarch.Lift (pconstant)
-import Plutarch.Integer (PInteger)
-import qualified PlutusCore as PLC
-import Prelude hiding ((+), negate)
-import qualified Prelude
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
+import PlutusCore qualified as PLC
+import Prelude hiding (negate, (+))
+import Prelude qualified
 
 {- | A commutative semigroup, meant to be morally equivalent to numerical
  addition.
@@ -60,6 +60,7 @@ class AdditiveSemigroup a where
 instance AdditiveSemigroup Integer where
   {-# INLINEABLE (+) #-}
   (+) = (Prelude.+)
+
 {-
 {-# INLINEABLE scaleNZNatural #-}
   scaleNZNatural i (NZNatural n) = i Prelude.* n
@@ -75,6 +76,7 @@ deriving via Integer instance (AdditiveSemigroup NZNatural)
 instance AdditiveSemigroup (Term s PInteger) where
   {-# INLINEABLE (+) #-}
   x + y = punsafeBuiltin PLC.AddInteger # x # y
+
 {-
 {-# INLINEABLE scaleNZNatural #-}
   scaleNZNatural i (NZNatural n) =
@@ -85,6 +87,7 @@ instance AdditiveSemigroup (Term s PInteger) where
 instance AdditiveSemigroup (Term s PNatural) where
   {-# INLINEABLE (+) #-}
   x + y = punsafeBuiltin PLC.AddInteger # x # y
+
 {-
 {-# INLINEABLE scaleNZNatural #-}
   scaleNZNatural i (NZNatural n) =
@@ -95,7 +98,8 @@ instance AdditiveSemigroup (Term s PNatural) where
 instance AdditiveSemigroup (Term s PNZNatural) where
   {-# INLINEABLE (+) #-}
   x + y = punsafeBuiltin PLC.AddInteger # x # y
-  {-
+
+{-
   {-# INLINEABLE scaleNZNatural #-}
   scaleNZNatural i (NZNatural n) =
     punsafeBuiltin PLC.MultiplyInteger # i # pconstant n
@@ -139,6 +143,7 @@ class (AdditiveSemigroup a) => AdditiveMonoid a where
 instance AdditiveMonoid Integer where
   {-# INLINEABLE zero #-}
   zero = 0
+
 {-
 {-# INLINEABLE scaleNatural #-}
   scaleNatural i (Natural n) = i Prelude.* n
@@ -151,6 +156,7 @@ deriving via Integer instance (AdditiveMonoid Natural)
 instance AdditiveMonoid (Term s PInteger) where
   {-# INLINEABLE zero #-}
   zero = pconstant 0
+
 {-
 {-# INLINEABLE scaleNatural #-}
   scaleNatural i n = punsafeBuiltin PLC.MultiplyInteger # i # pconstant n
@@ -160,6 +166,7 @@ instance AdditiveMonoid (Term s PInteger) where
 instance AdditiveMonoid (Term s PNatural) where
   {-# INLINEABLE zero #-}
   zero = pconstant . Natural $ 0
+
 {-
 {-# INLINEABLE scaleNatural #-}
   scaleNatural i n = punsafeBuiltin PLC.MultiplyInteger # i # pconstant n
@@ -213,10 +220,11 @@ instance AdditiveGroup Integer where
   (-) = (Prelude.-)
   {-# INLINEABLE negate #-}
   negate = Prelude.negate
-  {-
-  {-# INLINEABLE scaleInteger #-}
-  scaleInteger = (Prelude.*)
-  -}
+
+{-
+{-# INLINEABLE scaleInteger #-}
+scaleInteger = (Prelude.*)
+-}
 
 -- | @since 1.0
 instance AdditiveGroup (Term s PInteger) where
@@ -224,11 +232,12 @@ instance AdditiveGroup (Term s PInteger) where
   (-) = (Prelude.-)
   {-# INLINEABLE negate #-}
   negate = Prelude.negate
-  {-
-  {-# INLINEABLE scaleInteger #-}
-  scaleInteger x i = x Prelude.* pconstant i
-  -}
-  
+
+{-
+{-# INLINEABLE scaleInteger #-}
+scaleInteger x i = x Prelude.* pconstant i
+-}
+
 {- | Extends an 'AdditiveMonoid' with a notion of \'difference-or-zero\'.
 
  = Laws
@@ -259,4 +268,3 @@ instance AdditiveCMM (Term s PNatural) where
     plet
       (punsafeBuiltin PLC.SubtractInteger # t # t')
       (\(t'' :: Term s PInteger) -> pif (zero #<= t'') (punsafeCoerce t'') zero)
-

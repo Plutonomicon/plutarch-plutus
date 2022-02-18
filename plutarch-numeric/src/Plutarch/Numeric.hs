@@ -47,7 +47,7 @@ module Plutarch.Numeric (
   Combination.Divisible (..),
 
   -- * Functions
-  
+
   -- ** Reductions
   Monoidal.sum1,
   Monoidal.product1,
@@ -55,6 +55,17 @@ module Plutarch.Numeric (
   Monoidal.product,
   Monoidal.sumNZ,
   Monoidal.productNZ,
+
+  -- ** Scaling
+  Monoidal.scaleNZNatural,
+  Monoidal.scaleNatural,
+  Monoidal.scaleInteger,
+
+  -- ** Exponentiation
+  Monoidal.powNZNatural,
+  Monoidal.powNatural,
+  Monoidal.powInteger,
+  Monoidal.powIntegerZero,
 
   -- ** Conversions
 
@@ -82,11 +93,11 @@ module Plutarch.Numeric (
   (Combination.^-^),
 ) where
 
-import qualified Plutarch.Numeric.Natural as Nat
-import qualified Plutarch.Numeric.NZNatural as NZN
-import qualified Plutarch.Numeric.NZInteger as NZI
-import qualified Plutarch.Numeric.Ratio as Rat
-import qualified Plutarch.Numeric.Monoidal as Monoidal
-import qualified Plutarch.Numeric.Additive as Additive
-import qualified Plutarch.Numeric.Multiplicative as Multiplicative
-import qualified Plutarch.Numeric.Combination as Combination
+import Plutarch.Numeric.Additive qualified as Additive
+import Plutarch.Numeric.Combination qualified as Combination
+import Plutarch.Numeric.Monoidal qualified as Monoidal
+import Plutarch.Numeric.Multiplicative qualified as Multiplicative
+import Plutarch.Numeric.NZInteger qualified as NZI
+import Plutarch.Numeric.NZNatural qualified as NZN
+import Plutarch.Numeric.Natural qualified as Nat
+import Plutarch.Numeric.Ratio qualified as Rat

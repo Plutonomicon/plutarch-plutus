@@ -1,30 +1,34 @@
-{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Plutarch.Numeric.Combination (
   Distributive (..),
   Euclidean (..),
   Arithmetical (..),
   Divisible (..),
-  (^-^)
-  ) where
+  (^-^),
+) where
 
 import Data.Kind (Type)
-import Plutarch.Numeric.Additive (AdditiveSemigroup ((+)), AdditiveMonoid (zero),
-  AdditiveGroup ((-)), AdditiveCMM ((^-)))
-import Plutarch.Numeric.Multiplicative (MultiplicativeSemigroup ((*)), MultiplicativeMonoid)
+import Plutarch (Term, pcon, (#))
+import Plutarch.Bool (pif, (#==))
+import Plutarch.Integer (PInteger)
+import Plutarch.Lift (pconstant)
+import Plutarch.Maybe (PMaybe (PJust, PNothing))
+import Plutarch.Numeric.Additive (
+  AdditiveCMM ((^-)),
+  AdditiveGroup ((-)),
+  AdditiveMonoid (zero),
+  AdditiveSemigroup ((+)),
+ )
+import Plutarch.Numeric.Multiplicative (MultiplicativeMonoid, MultiplicativeSemigroup ((*)))
+import Plutarch.Numeric.NZInteger (NZInteger (NZInteger), PNZInteger)
 import Plutarch.Numeric.NZNatural (NZNatural (NZNatural), PNZNatural)
 import Plutarch.Numeric.Natural (Natural (Natural), PNatural)
-import Plutarch.Numeric.NZInteger (NZInteger (NZInteger), PNZInteger)
-import Plutarch (Term, pcon, (#))
-import Plutarch.Integer (PInteger)
-import Plutarch.Maybe (PMaybe (PNothing, PJust))
-import Plutarch.Lift (pconstant)
-import Plutarch.Bool (pif, (#==))
-import qualified PlutusCore as PLC
-import Plutarch.Unsafe (punsafeCoerce, punsafeBuiltin)
-import Prelude hiding ((+), (*), (-))
-import qualified Prelude
+import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
+import PlutusCore qualified as PLC
+import Prelude hiding ((*), (+), (-))
+import Prelude qualified
 
 {- | A semirig (semiring without a neutral additive element) formed from an
  'AdditiveSemigroup' and a 'MultiplicativeMonoid'.

@@ -1,23 +1,30 @@
 {-# LANGUAGE TypeFamilies #-}
 
 module Plutarch.Numeric.Ratio (
-  PRatio(..),
-  Ratio(..),
-  numerator, 
+  PRatio (..),
+  Ratio (..),
+  numerator,
   pnumerator,
   denominator,
   pdenominator,
   pmatchRatio,
   pmatchRatios,
-  ) where
+) where
 
 import Data.Kind (Type)
-import Plutarch (S, Term, DerivePNewtype (DerivePNewtype), PMatch (pmatch))
-import Plutarch.Pair (PPair (PPair))
-import Plutarch.Numeric.NZNatural (NZNatural (NZNatural), PNZNatural)
+import Plutarch (DerivePNewtype (DerivePNewtype), PMatch (pmatch), S, Term)
 import Plutarch.Bool (PEq ((#==)), (#&&))
-import Plutarch.Lift (PUnsafeLiftDecl (PLifted), PConstant (PConstantRepr,
-  PConstanted, pconstantToRepr, pconstantFromRepr))
+import Plutarch.Lift (
+  PConstant (
+    PConstantRepr,
+    PConstanted,
+    pconstantFromRepr,
+    pconstantToRepr
+  ),
+  PUnsafeLiftDecl (PLifted),
+ )
+import Plutarch.Numeric.NZNatural (NZNatural (NZNatural), PNZNatural)
+import Plutarch.Pair (PPair (PPair))
 
 {- | Plutarch version of 'Ratio'.
 

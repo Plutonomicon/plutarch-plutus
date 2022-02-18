@@ -10,11 +10,13 @@ module Plutarch.Numeric.Natural (
   ptoAbsNatural,
 ) where
 
-import Plutarch (S, (#), Term, pcon)
+import Plutarch (S, Term, pcon, (#))
+import Plutarch.Bool (
+  PEq ((#==)),
+  POrd ((#<), (#<=)),
+  pif,
+ )
 import Plutarch.Integer (PInteger)
-import Plutarch.Maybe (PMaybe (PJust, PNothing))
-import Plutarch.Bool (PEq ((#==)), POrd ((#<), (#<=)),
-  pif)
 import Plutarch.Lift (
   PConstant (
     PConstantRepr,
@@ -24,6 +26,7 @@ import Plutarch.Lift (
   ),
   PUnsafeLiftDecl (PLifted),
  )
+import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
 

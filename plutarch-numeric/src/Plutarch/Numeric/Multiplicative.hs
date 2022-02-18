@@ -1,17 +1,17 @@
 module Plutarch.Numeric.Multiplicative (
-  MultiplicativeSemigroup(..),
-  MultiplicativeMonoid (..)
-  ) where
+  MultiplicativeSemigroup (..),
+  MultiplicativeMonoid (..),
+) where
 
-import Plutarch.Numeric.NZInteger (NZInteger (NZInteger), PNZInteger)
-import Plutarch.Numeric.Natural (Natural (Natural), PNatural)
-import Plutarch.Numeric.NZNatural (NZNatural (NZNatural), PNZNatural)
 import Plutarch (Term, (#))
 import Plutarch.Bool (pif, (#<), (#==))
 import Plutarch.Integer (PInteger)
-import qualified PlutusCore as PLC
-import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import Plutarch.Lift (pconstant)
+import Plutarch.Numeric.NZInteger (NZInteger (NZInteger), PNZInteger)
+import Plutarch.Numeric.NZNatural (NZNatural (NZNatural), PNZNatural)
+import Plutarch.Numeric.Natural (Natural (Natural), PNatural)
+import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
+import PlutusCore qualified as PLC
 
 {- | A semigroup, meant to be morally equivalent to numerical multiplication.
 
@@ -49,6 +49,7 @@ class MultiplicativeSemigroup a where
 instance MultiplicativeSemigroup Integer where
   {-# INLINEABLE (*) #-}
   (*) = (Prelude.*)
+
 {-
 {-# INLINEABLE powNZNatural #-}
   powNZNatural x (NZN.NZNatural n) = x Prelude.^ n
@@ -135,6 +136,7 @@ instance MultiplicativeMonoid Integer where
   abs = Prelude.abs
   {-# INLINEABLE signum #-}
   signum = Prelude.signum
+
 {-
 {-# INLINEABLE powNatural #-}
   powNatural x (Nat.Natural n) = x Prelude.^ n
@@ -165,8 +167,11 @@ instance MultiplicativeMonoid (Term s PNatural) where
   {-# INLINEABLE abs #-}
   abs = id
   {-# INLINEABLE signum #-}
-  signum t = pif (t #== punsafeCoerce (0 :: Term s PInteger)) 
-                 (punsafeCoerce (0 :: Term s PInteger)) one
+  signum t =
+    pif
+      (t #== punsafeCoerce (0 :: Term s PInteger))
+      (punsafeCoerce (0 :: Term s PInteger))
+      one
 
 -- | @since 1.0
 instance MultiplicativeMonoid (Term s PNZInteger) where
@@ -188,5 +193,3 @@ instance MultiplicativeMonoid (Term s PNZNatural) where
   abs = id
   {-# INLINEABLE signum #-}
   signum _ = one
-
-

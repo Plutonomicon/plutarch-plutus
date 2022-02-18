@@ -1,26 +1,42 @@
 module Plutarch.Numeric.Monoidal (
-  Additive(..),
-  Multiplicative(..),
+  Additive (..),
+  Multiplicative (..),
   sum1,
   product1,
   sum,
   product,
   sumNZ,
   productNZ,
-  ) where
+  scaleNZNatural,
+  powNZNatural,
+  scaleNatural,
+  powNatural,
+  scaleInteger,
+  powInteger,
+  powIntegerZero,
+) where
 
-import Data.Semigroup.Foldable (Foldable1 (foldMap1))
-import Data.Kind (Type)
-import Plutarch.Numeric.Additive (AdditiveSemigroup ((+)), AdditiveMonoid (zero),
-  AdditiveGroup (negate))
-import Plutarch.Numeric.Multiplicative (MultiplicativeSemigroup ((*)),
-  MultiplicativeMonoid (one))
-import Plutarch.Numeric.Combination (Divisible (reciprocal), Euclidean ((+^), (*^)))
-import Plutarch.Numeric.Group (Group (inverse, gtimes))
-import Data.Semigroup (stimesMonoid)
-import Prelude hiding ((+), negate, (*), sum, product)
-import qualified Prelude
 import Data.Foldable (foldl')
+import Data.Kind (Type)
+import Data.Semigroup (stimes, stimesMonoid)
+import Data.Semigroup.Foldable (Foldable1 (foldMap1))
+import Plutarch.Numeric.Additive (
+  AdditiveGroup (negate),
+  AdditiveMonoid (zero),
+  AdditiveSemigroup ((+)),
+ )
+import Plutarch.Numeric.Combination (
+  Divisible (reciprocal),
+  Euclidean (RemovalResult, removeZero, zeroExtend, (*^), (+^)),
+ )
+import Plutarch.Numeric.Group (Group (gtimes, inverse))
+import Plutarch.Numeric.Multiplicative (
+  MultiplicativeMonoid (one),
+  MultiplicativeSemigroup ((*)),
+ )
+import Plutarch.Numeric.NZNatural (NZNatural (NZNatural))
+import Plutarch.Numeric.Natural (Natural (Natural))
+import Prelude hiding (negate, product, sum, (*), (+))
 
 {- | A restriction of the type being wrapped to the \'additive half\' of its
  capabilities. This allows us to treat such types as 'Semigroup's, 'Monoid's
@@ -69,16 +85,10 @@ instance (MultiplicativeMonoid a) => Monoid (Multiplicative a) where
   {-# INLINEABLE mempty #-}
   mempty = Multiplicative one
 
-
 -- | @since 1.0
 instance (Divisible a nz) => Group (Multiplicative nz) where
   {-# INLINEABLE inverse #-}
   inverse (Multiplicative x) = Multiplicative . reciprocal $ x
-  {-# INLINEABLE gtimes #-}
-  gtimes i x = case Prelude.signum i of
-    0 -> mempty
-    1 -> stimesMonoid i x
-    _ -> inverse . stimesMonoid (Prelude.negate i) $ x
 
 {- | \'Add up\' a non-empty collection of values.
 
@@ -145,3 +155,97 @@ productNZ ::
   f nz ->
   a
 productNZ = foldl' (*^) one
+
+{- | Scales any 'AdditiveSemigroup' by an 'NZNatural'. Essentially a
+ specialized, safer 'stimes'.
+
+ @since 1.0
+-}
+scaleNZNatural ::
+  forall (a :: Type).
+  (AdditiveSemigroup a) =>
+  NZNatural ->
+  a ->
+  a
+scaleNZNatural (NZNatural i) = getAdditive . stimes i . Additive
+
+{- | Exponentiates any 'MultiplicativeSemigroup' by an 'NZNatural'. Essentially
+ a specialized, safer 'stimes'.
+
+ @since 1.0
+-}
+powNZNatural ::
+  forall (a :: Type).
+  (MultiplicativeSemigroup a) =>
+  NZNatural ->
+  a ->
+  a
+powNZNatural (NZNatural i) = getMultiplicative . stimes i . Multiplicative
+
+{- | Scales any 'AdditiveMonoid' by a 'Natural'. Essentially a specialized,
+ safer 'stimesMonoid'.
+
+ @since 1.0
+-}
+scaleNatural ::
+  forall (a :: Type).
+  (AdditiveMonoid a) =>
+  Natural ->
+  a ->
+  a
+scaleNatural (Natural i) = getAdditive . stimesMonoid i . Additive
+
+{- | Exponentiates any 'MultiplicativeMonoid' by a 'Natural'. Essentially a
+ specialized, safer 'stimesMonoid'.
+
+ @since 1.0
+-}
+powNatural ::
+  forall (a :: Type).
+  (MultiplicativeMonoid a) =>
+  Natural ->
+  a ->
+  a
+powNatural (Natural i) = getMultiplicative . stimesMonoid i . Multiplicative
+
+{- | Scales any 'AdditiveGroup' by an 'Integer'. Essentially a specialized
+ 'gtimes'.
+
+ @since 1.0
+-}
+scaleInteger ::
+  forall (a :: Type).
+  (AdditiveGroup a) =>
+  Integer ->
+  a ->
+  a
+scaleInteger i = getAdditive . gtimes i . Additive
+
+{- | Exponentiates a known non-zero 'Divisible' by an 'Integer'. Essentially a
+ specialized 'gtimes'.
+
+ @since 1.0
+-}
+powInteger ::
+  forall (nz :: Type) (a :: Type).
+  (Divisible a nz) =>
+  Integer ->
+  nz ->
+  nz
+powInteger i = getMultiplicative . gtimes i . Multiplicative
+
+{- | Exponentiates any Haskell 'Divisible' by an 'Integer', under the convention that
+ 'zero' to any power is 'zero', except for 'one', in which case it is 'one'.
+ This is a tad awkward, but this way, we are consistent with 'powNatural'.
+
+ @since 1.0
+-}
+powIntegerZero ::
+  forall (a :: Type) (nz :: Type).
+  (Divisible a nz, RemovalResult nz ~ Maybe nz) =>
+  Integer ->
+  a ->
+  a
+powIntegerZero i x = case removeZero x of
+  Nothing -> if i == zero then one else zero
+  Just x' -> zeroExtend . powInteger i $ x'
