@@ -136,7 +136,7 @@ compile :: ClosedTerm a -> Script
 
 ## Plutarch Constant `Term`s
 
-There are several ways of building Plutarch `Term`s
+A constant Plutarch `Term` is one that will always yield the same result when evaluated. There are several ways of building constant `Term`s:
 
 - Statically buiilding constant `Term`s from concrete Haskell values , when the value is known at compile-time. 
 - Dynamically building constant `Term`s from Haskell values, i.e. when the the constant produced depends on a function argument
