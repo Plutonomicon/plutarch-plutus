@@ -12,7 +12,7 @@
       - [Pattern matching `Term`s on `PType`s with `pmatch`.](#pattern-matching--term-s-on--ptype-s-with--pmatch-)
       - [`class (PCon a, PMatch a) => PlutusType (a :: PType)` -- with a default instance.](#-class--pcon-a--pmatch-a-----plutustype--a----ptype------with-a-default-instance)
     + [Overloaded literals](#overloaded-literals)
-  * [Helper functions](#helper-functions)
+    + [Helper functions](#helper-functions)
   * [Lambdas; Plutarch-level Function `Term`s.](#lambdas--plutarch-level-function--term-s)
     + [Function Application](#function-application)
     + [Strictness and Laziness; Delayed Terms and Forcing](#strictness-and-laziness--delayed-terms-and-forcing)
@@ -288,7 +288,7 @@ y :: Term s PString
 y = "foobar"
 ```
 
-## Helper functions
+### Helper functions
 
 Finally, other miscellaneous functions provided by Plutarch can be used to build constants:
 
