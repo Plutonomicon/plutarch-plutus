@@ -20,9 +20,10 @@ import Test.Syd (
 
 import Data.Kind (Type)
 import Data.List.NonEmpty (nonEmpty)
-import Data.Maybe (fromMaybe)
+import qualified Data.List.NonEmpty as NE
 import Data.Semigroup (sconcat)
 import Data.String (IsString)
+import GHC.Stack (HasCallStack)
 import Plutarch
 import Plutarch.Benchmark (benchmarkScript')
 import Plutarch.Test.Deterministic (compileD, evaluateScriptAlways)
@@ -66,11 +67,11 @@ infixr 0 #>
 (#\) :: GoldenKey -> ListSyntax (GoldenKey, GoldenValue) -> ListSyntax (GoldenKey, GoldenValue)
 (#\) = listSyntaxAddSubList
 
-goldenSpec :: ListSyntax (GoldenKey, GoldenValue) -> Spec
+goldenSpec :: HasCallStack => ListSyntax (GoldenKey, GoldenValue) -> Spec
 goldenSpec map = do
   name <- currentGoldenKey
   let bs = runListSyntax map
-  let goldenPathWith k = goldenPath "goldens" $ name <> k
+      goldenPathWith k = goldenPath "goldens" $ name <> k
   describe "golden" $ do
     it "uplc" $
       pureGoldenTextFile (goldenPathWith "uplc") $
@@ -82,7 +83,12 @@ goldenSpec map = do
       pureGoldenTextFile (goldenPathWith "bench") $
         combineGoldens $ fmap goldenValueBench <$> bs
 
-currentGoldenKey :: forall (outers :: [Type]) inner. TestDefM outers inner GoldenKey
+currentGoldenKey :: HasCallStack => forall (outers :: [Type]) inner. TestDefM outers inner GoldenKey
 currentGoldenKey = do
-  testAncestors <- fmap (drop 1 . reverse) $ getTestDescriptionPath
-  pure $ sconcat $ fmap GoldenKey $ fromMaybe (error "empty list") $ nonEmpty $ testAncestors
+  fmap nonEmpty getTestDescriptionPath >>= \case
+    Nothing -> error "cannot use currentGoldenKey from top-level spec"
+    Just anc ->
+      case nonEmpty (NE.drop 1 . NE.reverse $ anc) of
+        Nothing -> error "cannot use currentGoldenKey from top-level spec (after sydtest-discover)"
+        Just path ->
+          pure $ sconcat $ fmap GoldenKey path
