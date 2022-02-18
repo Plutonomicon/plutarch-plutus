@@ -15,9 +15,10 @@ spec = do
         "add1Hoisted" #> add1Hoisted
         "example1" #> example1
         "example2" #> example2
-        "fib" #> fib
-        "fib.app" #\ do
-          "9" #> fib # 9
+        "fib" #\ do
+          "lam" #> fib
+          "app" #\ do
+            "9" #> fib # 9
         "uglyDouble" #> uglyDouble
 
 add1 :: Term s (PInteger :--> PInteger :--> PInteger)

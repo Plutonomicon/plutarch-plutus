@@ -2,6 +2,6 @@ add1 {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":16}
 add1Hoisted {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":16}
 example1 {"exBudgetCPU":2057973,"exBudgetMemory":3710,"scriptSizeBytes":34}
 example2 {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":21}
-fib {"exBudgetCPU":416922,"exBudgetMemory":1500,"scriptSizeBytes":72}
+fib.lam {"exBudgetCPU":416922,"exBudgetMemory":1500,"scriptSizeBytes":72}
 fib.app.9 {"exBudgetCPU":187876376,"exBudgetMemory":433318,"scriptSizeBytes":75}
 uglyDouble {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":10}
