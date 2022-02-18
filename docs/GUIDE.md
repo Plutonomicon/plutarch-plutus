@@ -42,7 +42,7 @@ This section serves as a introduction to Plutarch's basic concepts and core synt
       - [Pattern matching `Term`s on `PType`s with `pmatch`.](./INTRO.md#pattern-matching--term-s-on--ptype-s-with--pmatch-)
       - [`class (PCon a, PMatch a) => PlutusType (a :: PType)` -- with a default instance.](./INTRO.md#-class--pcon-a--pmatch-a-----plutustype--a----ptype------with-a-default-instance)
     + [Overloaded literals](./INTRO.md#overloaded-literals)
-  * [Helper functions](./INTRO.md#helper-functions)
+    + [Helper functions](./INTRO.md#helper-functions)
   * [Lambdas; Plutarch-level Function `Term`s.](./INTRO.md#lambdas--plutarch-level-function--term-s)
     + [Function Application](./INTRO.md#function-application)
     + [Strictness and Laziness; Delayed Terms and Forcing](./INTRO.md#strictness-and-laziness--delayed-terms-and-forcing)
