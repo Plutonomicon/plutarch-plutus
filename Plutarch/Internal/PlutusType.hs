@@ -104,7 +104,7 @@ class (PCon a, PMatch a) => PlutusType (a :: PType) where
     , Generic (a s)
     , GPCon pcode b s
     , PLamL (ScottList' s pcode b) b s
-    , ScottFn' (ScottList s pcode b) b ~ PInner a b
+    , ScottFn (ScottList s pcode b) b ~ PInner a b
     , ScottFn (ScottList' s pcode b) b ~ PInner a b
     , AllZipF (AllZip (LiftedCoercible I (Term s))) code pcode
     , SameShapeAs code pcode
@@ -157,11 +157,11 @@ gpcon ::
   , pcode ~ ToPType2 code
   , GPCon pcode c s
   , PLamL (ScottList' s pcode c) c s
-  , ScottFn (ScottList' s pcode c) c ~ ScottFn' (ScottList s pcode c) c
+  , ScottFn (ScottList' s pcode c) c ~ ScottFn (ScottList s pcode c) c
   , AllZipN (Prod SOP) (LiftedCoercible I (Term s)) code pcode
   ) =>
   SOP I (Code (a s)) ->
-  Term s (ScottFn' (ScottList s pcode c) c)
+  Term s (ScottFn (ScottList s pcode c) c)
 gpcon val =
   plamL @(ScottList' s pcode c) @c $ \(f :: NP (Term s) (ScottList' s pcode c)) ->
     gpcon' @pcode @c @s f $
@@ -245,7 +245,8 @@ instance
       unPsop = hcoerce
 
 {- |
-  `plamL` is like `plamL'`, but pdelays the 0-arity case.
+  `plamL` produces a multi-arity plam, but taking a HList of Plutarch terms as
+  arguments.
 
   ```
   plamL $ \Nil -> pcon 42 -- Equivalent to: `pdelay (pcon 42)`.
@@ -256,32 +257,12 @@ class PLamL (as :: [PType]) (b :: PType) (s :: S) where
 instance PLamL '[] b s where
   plamL f = f Nil
 
-instance PLamL' as b s => PLamL (a ': as) b s where
-  plamL f = plam' $ \a -> plamL' $ \as -> f (a :* as)
+instance PLamL as b s => PLamL (a ': as) b s where
+  plamL f = plam' $ \a -> plamL $ \as -> f (a :* as)
 
 {- |
-  `plamL'` produces a multi-arity plam, but taking a HList of Plutarch terms as
-  arguments.
-
-  ```
-  plamL $ \(x :* y :* Nil) ->
-    x + y
-  ```
-
-  - `NP (Term s) '[x, y]` corresponds to `x :* y :* Nil`.
-  - `ScottFn' '[x, y] b` corresponds to `x :--> y :--> b`.
--}
-class PLamL' (as :: [PType]) (b :: PType) (s :: S) where
-  plamL' :: (NP (Term s) as -> Term s b) -> Term s (ScottFn' as b)
-
-instance PLamL' '[] b s where
-  plamL' f = f Nil
-
-instance PLamL' as b s => PLamL' (a ': as) b s where
-  plamL' f = plam' $ \a -> plamL' $ \as -> f (a :* as)
-
-{- |
-  `appL` is like `appL'`, but pforce's the 0-arity case.
+  `appL` takes a multi-argument lambda (produced by `plamL`) and applies it to
+  the associated list of values.
 
   ```
   f = plamL $ \Nil -> pdelay $ pcon 42
@@ -294,26 +275,8 @@ class AppL (c :: PType) (xs :: [PType]) where
 instance AppL c '[] where
   appL f Nil = f
 
-instance (AppL' c xs, AppL c xs) => AppL c (x ': xs) where
-  appL f (x :* xs) = (f # x) `appL'` xs
-
-{- |
-  `appL'` takes a multi-argument lambda (produced by `plamL`) and applies it to
-  the associated list of values.
-
-  ```
-  f = plamL $ \(x :* y :* z :* Nil) -> x + y + z
-  g = f `appL'` (1 :* 2 :* 3 :* Nil)
-  ```
--}
-class AppL' (c :: PType) (xs :: [PType]) where
-  appL' :: Term s (ScottFn' xs c) -> NP (Term s) xs -> Term s c
-
-instance AppL' c '[] where
-  appL' f Nil = f
-
-instance AppL' c xs => AppL' c (x ': xs) where
-  appL' f (x :* xs) = (f # x) `appL'` xs
+instance AppL c xs => AppL c (x ': xs) where
+  appL f (x :* xs) = (f # x) `appL` xs
 
 {- |
   List of scott-encoded constructors of a Plutarch type (represented by `Code`)
@@ -337,17 +300,9 @@ type family ScottList' s code c where
   An individual constructor function of a Scott encoding.
 
    ScottFn '[a, b] c = (a :--> b :--> c)
-   ScottFn '[] c = PDelayed c
+   ScottFn '[] c = c
 -}
 type ScottFn :: [PType] -> PType -> PType
 type family ScottFn xs b where
   ScottFn '[] b = b
-  ScottFn (x ': xs) b = x :--> ScottFn' xs b
-
-{- |
-  Like `ScottFn`, but without the PDelayed case.
--}
-type ScottFn' :: [PType] -> PType -> PType
-type family ScottFn' xs b where
-  ScottFn' '[] b = b
-  ScottFn' (x ': xs) b = x :--> ScottFn' xs b
+  ScottFn (x ': xs) b = x :--> ScottFn xs b
