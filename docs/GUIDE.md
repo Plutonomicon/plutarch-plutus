@@ -1,4 +1,4 @@
-The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
+The Plutarch guide is your one-stop shop for getting up to speed on Plutarch!
 
 > Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high quality documentation for Plutarch users!
 
@@ -7,7 +7,7 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 
 - [Overview](#overview)
   - [Compiling and Running](#compiling-and-running)
-  - [Syntax](#syntax)
+  - [Introduction and Basic Syntax](#syntax)
   - [Usage](#usage)
   - [Concepts](#concepts)
   - [Typeclasses](#typeclasses)
@@ -28,41 +28,52 @@ The Plutarch guide is your one stop shop for getting up to speed on Plutarch!
 - [Common Extensions and GHC options](./RUN.md#common-extensions-and-ghc-options)
 - [Evaluation](./RUN.md#evaluation)
 
-## Syntax
+## Introduction and Basic Syntax
 
-- [Constants](./SYNTAX.md#constants)
-  - [Static building with `pconstant` and `pconstantData`](./SYNTAX.md#static-building-with-pconstant-and-pconstantdata)
-  - [Dynamic building with `pcon`](./SYNTAX.md#dynamic-building-with-pcon)
-  - [Overloaded literals](./SYNTAX.md#overloaded-literals)
-  - [Miscellaneous](./SYNTAX.md#miscellaneous)
-- [Lambdas](./SYNTAX.md#lambdas)
-- [Delayed terms and Forcing](./SYNTAX.md#delayed-terms-and-forcing)
+This section serves as a introduction to Plutarch's basic concepts and core syntactic constructs. It will help build a mental model of Plutarch, but is insufficient to write production-ready code.
 
-## Usage
+- [Overview](./INTRO.md#overview)
+- [Untyped Plutus Core (UPLC)](./INTRO.md#untyped-plutus-core--uplc-)
+- [Plutarch Types](./INTRO.md#plutarch-types)
+- [Plutarch `Term`s](./INTRO.md#plutarch--term-s)
+  * [Plutarch Constant `Term`s](./INTRO.md#plutarch-constant--term-s)
+    + [Static building of constant `Term`s with `pconstant`](./INTRO.md#static-building-of-constant--term-s-with--pconstant-)
+    + [Dynamic building of constant `Term`s with `pcon`](./INTRO.md#dynamic-building-of-constant--term-s-with--pcon-)
+      - [Pattern matching `Term`s on `PType`s with `pmatch`.](./INTRO.md#pattern-matching--term-s-on--ptype-s-with--pmatch-)
+      - [`class (PCon a, PMatch a) => PlutusType (a :: PType)` -- with a default instance.](./INTRO.md#-class--pcon-a--pmatch-a-----plutustype--a----ptype------with-a-default-instance)
+    + [Overloaded literals](./INTRO.md#overloaded-literals)
+  * [Helper functions](./INTRO.md#helper-functions)
+  * [Lambdas; Plutarch-level Function `Term`s.](./INTRO.md#lambdas--plutarch-level-function--term-s)
+    + [Function Application](./INTRO.md#function-application)
+    + [Strictness and Laziness; Delayed Terms and Forcing](./INTRO.md#strictness-and-laziness--delayed-terms-and-forcing)
+- [References](./INTRO.md#references)
+ 
+## Practical Usage
 
-- [Applying functions](./USAGE.md#applying-functions)
+This section fills in the gaps left by the previous. It illustrates techniques that make Plutarch easier to work with.
+
 - [Conditionals](./USAGE.md#conditionals)
 - [Recursion](./USAGE.md#recursion)
-- [Do syntax with `TermCont`](./USAGE.md#do-syntax-with-termcont)
-- [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](./USAGE.md#do-syntax-with-qualifieddo-and-plutarchmonadic)
-- [Deriving typeclasses for `newtype`s](./USAGE.md#deriving-typeclasses-for-newtypes)
+- [Do syntax with `TermCont`](./USAGE.md#do-syntax-with--termcont-)
+- [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](./USAGE.md#do-syntax-with--qualifieddo--and--plutarchmonadic-)
+- [Deriving typeclasses for `newtype`s](./USAGE.md#deriving-typeclasses-for--newtype-s)
 - [Deriving typeclasses with generics](./USAGE.md#deriving-typeclasses-with-generics)
+- [`plet` to avoid work duplication](./USAGE.md#-plet--to-avoid-work-duplication)
+- [Tracing](./USAGE.md#tracing)
+- [Raising errors](./USAGE.md#raising-errors)
+- [Unsafe functions](./USAGE.md#unsafe-functions)
 
 ## Concepts
 
-- [Hoisting, metaprogramming, and fundamentals](./CONCEPTS.md#hoisting-metaprogramming-and-fundamentals)
-  - [Hoisting Operators](./CONCEPTS.md#hoisting-operators)
-- [What is the `s`?](./CONCEPTS.md#what-is-the-s)
-- [eDSL Types in Plutarch](./CONCEPTS.md#edsl-types-in-plutarch)
-- [`plet` to avoid work duplication](./CONCEPTS.md#plet-to-avoid-work-duplication)
-- [Tracing](./CONCEPTS.md#tracing)
-- [Raising errors](./CONCEPTS.md#raising-errors)
-- [Delay and Force](./CONCEPTS.md#delay-and-force)
+This section details additional concepts 
+
+- [Hoisting, metaprogramming, and fundamentals](./CONCEPTS.md#hoisting--metaprogramming--and-fundamentals)
+  * [Hoisting Operators](./CONCEPTS.md#hoisting-operators)
+- [What is the `s`?](./CONCEPTS.md#what-is-the--s--)
 - [Data encoding and Scott encoding](./CONCEPTS.md#data-encoding-and-scott-encoding)
-  - [Data encoding](./CONCEPTS.md#data-encoding)
-  - [Scott encoding](./CONCEPTS.md#scott-encoding)
+  * [Data encoding](./CONCEPTS.md#data-encoding)
+  * [Scott encoding](./CONCEPTS.md#scott-encoding)
 - [Haskell synonym of Plutarch types](./CONCEPTS.md#haskell-synonym-of-plutarch-types)
-- [Unsafe functions](./CONCEPTS.md#unsafe-functions)
 
 ## Typeclasses
 
