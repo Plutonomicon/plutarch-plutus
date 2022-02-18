@@ -65,5 +65,3 @@ deriving via
   (DerivePConstantViaNewtype Plutus.ValidatorHash PValidatorHash PByteString)
   instance
     (PConstant Plutus.ValidatorHash)
-
------------------------------
