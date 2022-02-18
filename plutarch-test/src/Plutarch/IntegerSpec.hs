@@ -10,7 +10,7 @@ spec :: Spec
 spec = do
   describe "int" $ do
     describe "examples" $ do
-      goldenSpec $ do
+      pgoldenSpec $ do
         "add1" #> add1
         "add1Hoisted" #> add1Hoisted
         "example1" #> example1

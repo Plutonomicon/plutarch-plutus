@@ -10,19 +10,19 @@ spec :: Spec
 spec = do
   describe "bool" $ do
     describe "pnot" $ do
-      goldenSpec $ do
+      pgoldenSpec $ do
         "lam" #> pnot
         "app" #> pnot #$ pcon PTrue
       it "true" $ (pnot #$ pcon PTrue) #@?= pcon PFalse
       it "false" $ (pnot #$ pcon PFalse) #@?= pcon PTrue
     describe "pand" $ do
-      goldenSpec $ do
+      pgoldenSpec $ do
         "tf" #> pcon PTrue #&& pcon PFalse
         "ft" #> pcon PFalse #&& pcon PTrue
         "tt" #> pcon PTrue #&& pcon PTrue
         "ff" #> pcon PFalse #&& pcon PFalse
       describe "laziness" $ do
-        goldenSpec $ do
+        pgoldenSpec $ do
           "pand" #> pand # pcon PFalse # pdelay perror
           "op" #> pcon PFalse #&& perror
         it "pand" $ passert $ pnot # pforce (pand # pcon PFalse # pdelay perror)

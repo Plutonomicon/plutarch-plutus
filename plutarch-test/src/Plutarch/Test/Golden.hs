@@ -1,5 +1,5 @@
 module Plutarch.Test.Golden (
-  goldenSpec,
+  pgoldenSpec,
   (#>),
   (#\),
 ) where
@@ -67,8 +67,26 @@ infixr 0 #>
 (#\) :: GoldenKey -> ListSyntax (GoldenKey, GoldenValue) -> ListSyntax (GoldenKey, GoldenValue)
 (#\) = listSyntaxAddSubList
 
-goldenSpec :: HasCallStack => ListSyntax (GoldenKey, GoldenValue) -> Spec
-goldenSpec map = do
+{- Create golden specs for pre/post-eval UPLC and benchmarks.
+
+  A *single* golden file will be created (for each metric) for all the programs
+  in the given tree.
+
+  For example,
+  ```
+  pgoldenSpec $ do
+    "foo" #> pconstant 42
+    "bar" #\ do
+      "qux" #> pconstant "Hello"
+  ```
+
+  Will create three golden files -- uplc.golden, uplc.eval.golden and
+  bench.golden -- each containing three lines one for each program above.
+  Hierarchy is represented by intercalating with a dot; for instance, the key
+  for 'qux' will be "bar.qux".
+-}
+pgoldenSpec :: HasCallStack => ListSyntax (GoldenKey, GoldenValue) -> Spec
+pgoldenSpec map = do
   name <- currentGoldenKey
   let bs = runListSyntax map
       goldenPathWith k = goldenPath "goldens" $ name <> k
