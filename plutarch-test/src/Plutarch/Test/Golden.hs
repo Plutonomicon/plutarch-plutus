@@ -1,7 +1,7 @@
 module Plutarch.Test.Golden (
   pgoldenSpec,
-  (#>),
-  (#\),
+  (@>),
+  (@\),
 ) where
 
 import qualified Data.Aeson.Text as Aeson
@@ -60,12 +60,12 @@ combineGoldens xs =
   T.intercalate "\n" $
     (\(GoldenKey k, v) -> k <> " " <> v) <$> xs
 
-(#>) :: GoldenKey -> ClosedTerm a -> ListSyntax (GoldenKey, GoldenValue)
-(#>) k v = listSyntaxAdd (k, mkGoldenValue v)
-infixr 0 #>
+(@>) :: GoldenKey -> ClosedTerm a -> ListSyntax (GoldenKey, GoldenValue)
+(@>) k v = listSyntaxAdd (k, mkGoldenValue v)
+infixr 0 @>
 
-(#\) :: GoldenKey -> ListSyntax (GoldenKey, GoldenValue) -> ListSyntax (GoldenKey, GoldenValue)
-(#\) = listSyntaxAddSubList
+(@\) :: GoldenKey -> ListSyntax (GoldenKey, GoldenValue) -> ListSyntax (GoldenKey, GoldenValue)
+(@\) = listSyntaxAddSubList
 
 {- Create golden specs for pre/post-eval UPLC and benchmarks.
 
@@ -75,9 +75,9 @@ infixr 0 #>
   For example,
   ```
   pgoldenSpec $ do
-    "foo" #> pconstant 42
-    "bar" #\ do
-      "qux" #> pconstant "Hello"
+    "foo" @> pconstant 42
+    "bar" @\ do
+      "qux" @> pconstant "Hello"
   ```
 
   Will create three golden files -- uplc.golden, uplc.eval.golden and

@@ -17,8 +17,8 @@ module Plutarch.Test (
   -- `goldens`.
   golden,
   goldens,
-  (#>),
-  (#\),
+  (@>),
+  (@\),
   pgoldenSpec,
   PlutarchGolden (All, Bench, PrintTerm),
   getGoldenFilePrefix,
