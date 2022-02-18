@@ -708,7 +708,7 @@ data PVehicle (s :: S)
 >
 > Also see: [Isomorphism between Haskell ADTs and `PIsDataRepr`](./TRICKS.md#the-isomorphism-between-makeisdataindexed-haskell-adts-and-pisdatarepr)
 
-And you'd simply derive `PIsDataRepr` using generics. However, you **must** also derive `PIsData` using `PIsDataReprInstances`. Moreover, you should also derive `PlutusType`. For single constructor data types, you should also derive `PDataFields`.
+And you'd simply derive `PIsDataRepr` using generics. However, you **must** also derive `PIsData` and `PlutusType` using `PIsDataReprInstances`. For single constructor data types, you should also derive `PDataFields`.
 
 Combine all that, and you have:
 
