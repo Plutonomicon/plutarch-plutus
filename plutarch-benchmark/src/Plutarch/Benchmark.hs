@@ -20,7 +20,7 @@ module Plutarch.Benchmark (
   renderDiffTable,
 ) where
 
-import qualified Codec.Serialise as Codec
+import Codec.Serialise (serialise)
 import Control.Arrow ((&&&))
 import Control.Monad (mzero)
 import Data.Aeson (ToJSON)
@@ -67,13 +67,13 @@ benchmarkScript name = NamedBenchmark . (name,) . benchmarkScript'
 
 benchmarkScript' :: Script -> Benchmark
 benchmarkScript' =
-  uncurry mkBenchmark . (evalScriptCounting &&& (fromInteger . toInteger . SBS.length)) . serialiseScript
+  uncurry mkBenchmark . (evalScriptCounting &&& (fromInteger . toInteger . SBS.length)) . serialiseScriptShort
   where
     mkBenchmark :: ExBudget -> Int64 -> Benchmark
     mkBenchmark (ExBudget cpu mem) = Benchmark cpu mem . ScriptSizeBytes
 
-    serialiseScript :: Script -> SBS.ShortByteString
-    serialiseScript = SBS.toShort . LB.toStrict . Codec.serialise -- Using `flat` here breaks `evalScriptCounting`
+    serialiseScriptShort :: Script -> SBS.ShortByteString
+    serialiseScriptShort = SBS.toShort . LB.toStrict . serialise -- Using `flat` here breaks `evalScriptCounting`
     evalScriptCounting :: HasCallStack => Plutus.SerializedScript -> Plutus.ExBudget
     evalScriptCounting script =
       let costModel = fromJust Plutus.defaultCostModelParams
