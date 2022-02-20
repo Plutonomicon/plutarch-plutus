@@ -19,11 +19,7 @@ This document describes various concepts applicable in Plutarch.
 
 # Hoisting, metaprogramming, and fundamentals
 
-What is essentially happening here, is that we have a two-stage compilation process.
-
-First GHC compiles our code, then our code generates an _AST_ of our Plutus script,
-
-which is then serialized using `compile`.
+Plutarch has a two-stage compilation process. First GHC compiles our code, then our code generates an _AST_ of our Plutus script, which is then serialized using `compile`.
 
 The important thing to note, is that when you have a definition like:
 
@@ -34,7 +30,7 @@ x = something complex
 
 Any use of `x` will inline the **full definition** of `x`. `x + x` will duplicate `something complex` in the AST. To avoid this, you should [use `plet` in order to avoid duplicate work](#plet-to-avoid-work-duplication). Do note that this is **strictly evaluated, and hence isn't always the best solution.**
 
-There is however still a problem: what about top-level functions like `fib`, `sum`, `filter`, and such? We can use `plet` to avoid duplicating the definition, but this is error-prone, since to do this perfectly each function that generates part of the AST would need to have access to the `plet`'ed definitions, meaning that we'd likely have to put it into a record or typeclass.
+There is however still a problem: what about top-level functions like `fib`, `sum`, `filter`, and such? We can use `plet` to avoid duplicating the definition, but this is error-prone. To do this perfectly means that each function that generates part of the AST would need to have access to the `plet`'ed definitions, meaning that we'd likely have to put it into a record or typeclass.
 
 To solve this problem, Plutarch supports _hoisting_. Hoisting only works for _closed terms_, that is, terms that don't reference any free variables (introduced by `plam`).
 
@@ -98,13 +94,13 @@ It's used to distinguish between closed and open terms:
 
 # Data encoding and Scott encoding
 
-In Plutus Core, there are really two (conflicting) ways to represent non-trivial ADTs- [`Constr`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:Data) data encoding, or Scott encoding. You can (you should!) only use one of these representations for your non-trivial types.
+In Plutus Core, there are really two (conflicting) ways to represent non-trivial ADTs: [`Constr`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:Data) data encoding, or Scott encoding. You should use only one of these representations for your non-trivial types.
 
 > Aside: What's a "trivial" type? The non-data builtin types! `PInteger`, `PByteString`, `PBuiltinList`, `PBuiltinPair`, and `PMap` (actually just a builtin list of builtin pairs). It's important to note that [`Data`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:Data) (`Constr` or otherwise) is also a builtin type.
 
 ## Data encoding
 
-`Constr` data is essentially a sum-of-products representation. However, it can only contain other `Data` values (not necessarily just `Constr` data, could be `I` data, `B` data etc.) as its fields. Plutus Core famously lacks the ability to represent functions using this encoding, and thus - `Constr` encoded values simply cannot contain functions.
+`Constr` data is essentially a sum-of-products representation. However, it can only contain other `Data` values (not necessarily just `Constr` data, could be `I` data, `B` data etc.) as its fields. Plutus Core famously lacks the ability to represent functions using this encoding, and thus `Constr` encoded values simply cannot contain functions.
 
 > Note: You can find out more about the deep details of `Data`/`BuiltinData` at [plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md).
 
