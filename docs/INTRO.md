@@ -110,7 +110,7 @@ PBool :: S -> Type
 
 Thus, any time we see the kind `S -> Type`, we should mentally substitute its kind synonym `PType`. We reiterate: types of kind `PType`, should be considered as _tags_ on computation. They do not represent types of values in the same way as standard Haskell types. 
 
-The kind of basic types such as `Integer` in Haskell is `*`; the corresponding "basic" kind in Plutarch is simply `PType`. Higher-kinded types in Haskell, such as `Maybe`, will kinds such as `* -> *`. In Plutarch, the corresponding kind is:
+The kind of basic types such as `Integer` in Haskell is `Type`; the corresponding "basic" kind in Plutarch is simply `PType`. Higher-kinded types in Haskell, such as `Maybe`, will kinds such as `Type -> Type`. In Plutarch, the corresponding kind is:
 
 ```hs
 ghci> :k PMaybe
