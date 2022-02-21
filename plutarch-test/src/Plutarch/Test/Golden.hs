@@ -2,7 +2,7 @@
 
 module Plutarch.Test.Golden (
   pgoldenSpec,
-  (@>),
+  (@|),
   (@\),
   (@->),
 
@@ -104,9 +104,9 @@ combineGoldens xs =
   T.intercalate "\n" $
     (\(GoldenKey k, v) -> k <> " " <> v) <$> xs
 
-(@>) :: HasGoldenValue v => GoldenKey -> v -> ListSyntax (GoldenKey, GoldenValue)
-(@>) k v = listSyntaxAdd (k, mkGoldenValue v)
-infixr 0 @>
+(@|) :: HasGoldenValue v => GoldenKey -> v -> ListSyntax (GoldenKey, GoldenValue)
+(@|) k v = listSyntaxAdd (k, mkGoldenValue v)
+infixr 0 @|
 
 (@\) :: GoldenKey -> ListSyntax (GoldenKey, GoldenValue) -> ListSyntax (GoldenKey, GoldenValue)
 (@\) = listSyntaxAddSubList
@@ -119,9 +119,9 @@ infixr 0 @>
   For example,
   ```
   pgoldenSpec $ do
-    "foo" @> pconstant 42
+    "foo" @| pconstant 42
     "bar" @\ do
-      "qux" @> pconstant "Hello"
+      "qux" @| pconstant "Hello"
   ```
 
   Will create three golden files -- uplc.golden, uplc.eval.golden and

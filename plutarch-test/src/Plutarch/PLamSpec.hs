@@ -8,6 +8,6 @@ import Plutarch.Test
 spec :: Spec
 spec = do
   describe "plam" . pgoldenSpec $ do
-    "id" @> plam (\x -> x)
-    "flip.const" @> plam (\_ y -> y)
-    "plet" @> plam (\x _ -> plet x $ \_ -> perror)
+    "id" @| plam (\x -> x)
+    "flip.const" @| plam (\_ y -> y)
+    "plet" @| plam (\x _ -> plet x $ \_ -> perror)

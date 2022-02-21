@@ -9,27 +9,27 @@ spec :: Spec
 spec = do
   describe "trace" . plutarchDevFlagDescribe . pgoldenSpec $ do
     "ptrace" @\ do
-      "one" @> ptrace "foo" (pcon PUnit) @-> \p ->
+      "one" @| ptrace "foo" (pcon PUnit) @-> \p ->
         ptraces p ["foo"]
-      "two" @> ptrace "foo" (ptrace "bar" (pcon PUnit)) @-> \p ->
+      "two" @| ptrace "foo" (ptrace "bar" (pcon PUnit)) @-> \p ->
         ptraces p ["foo", "bar"]
     "ptraceIfTrue" @\ do
-      "true" @> ptraceIfTrue "foo" (pcon PTrue) @-> \p ->
+      "true" @| ptraceIfTrue "foo" (pcon PTrue) @-> \p ->
         p `ptraces` ["foo"]
-      "false" @> ptraceIfTrue "foo" (pcon PFalse) @-> \p ->
+      "false" @| ptraceIfTrue "foo" (pcon PFalse) @-> \p ->
         p `ptraces` []
     "ptraceIfFalse" @\ do
-      "true" @> ptraceIfFalse "foo" (pcon PTrue) @-> \p ->
+      "true" @| ptraceIfFalse "foo" (pcon PTrue) @-> \p ->
         p `ptraces` []
-      "false" @> ptraceIfFalse "foo" (pcon PFalse) @-> \p ->
+      "false" @| ptraceIfFalse "foo" (pcon PFalse) @-> \p ->
         p `ptraces` ["foo"]
     "chained" @\ do
       "false.true.false"
-        @> ptraceIfFalse "foo" (ptraceIfTrue "bar" $ pcon PFalse)
+        @| ptraceIfFalse "foo" (ptraceIfTrue "bar" $ pcon PFalse)
         @-> \p -> p `ptraces` ["foo"]
       "ptrace.true.false"
-        @> ptrace "foo" (ptraceIfTrue "bar" $ pcon PFalse)
+        @| ptrace "foo" (ptraceIfTrue "bar" $ pcon PFalse)
         @-> \p -> p `ptraces` ["foo"]
       "ptrace.true.true"
-        @> ptrace "foo" (ptraceIfTrue "bar" $ pcon PTrue)
+        @| ptrace "foo" (ptraceIfTrue "bar" $ pcon PTrue)
         @-> \p -> p `ptraces` ["foo", "bar"]

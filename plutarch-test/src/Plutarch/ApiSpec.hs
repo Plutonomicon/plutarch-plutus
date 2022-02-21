@@ -27,15 +27,15 @@ spec = do
   describe "api" $ do
     describe "ctx" $ do
       pgoldenSpec $ do
-        "term" @> ctx
+        "term" @| ctx
         "get" @\ do
-          "txInfo" @> pfromData (getTxInfo # ctx) @-> \p ->
+          "txInfo" @| pfromData (getTxInfo # ctx) @-> \p ->
             plift p @?= info
-          "mint" @> pforgetData (getMint #$ getTxInfo # ctx) @-> \p ->
+          "mint" @| pforgetData (getMint #$ getTxInfo # ctx) @-> \p ->
             plift p @?= toData mint
-          "credentials" @> getCredentials ctx @-> \p ->
+          "credentials" @| getCredentials ctx @-> \p ->
             plift p @?= [toData validator]
-          "sym" @> pfromData (getSym #$ pfromData $ getMint #$ getTxInfo # ctx) @-> \p ->
+          "sym" @| pfromData (getSym #$ pfromData $ getMint #$ getTxInfo # ctx) @-> \p ->
             plift p @?= sym
     describe "example" $ do
       -- The checkSignatory family of functions implicitly use tracing due to
@@ -44,13 +44,13 @@ spec = do
       describe "signatory" . plutarchDevFlagDescribe . pgoldenSpec $ do
         let aSig :: PubKeyHash = "ab01fe235c"
         "cont" @\ do
-          "succeeds" @> checkSignatoryCont # pconstant aSig # ctx @-> psucceeds
-          "fails" @> checkSignatoryCont # pconstant "41" # ctx @-> pfails
+          "succeeds" @| checkSignatoryCont # pconstant aSig # ctx @-> psucceeds
+          "fails" @| checkSignatoryCont # pconstant "41" # ctx @-> pfails
         "termcont" @\ do
-          "succeeds" @> checkSignatoryTermCont # pconstant aSig # ctx @-> psucceeds
-          "fails" @> checkSignatoryTermCont # pconstant "41" # ctx @-> pfails
+          "succeeds" @| checkSignatoryTermCont # pconstant aSig # ctx @-> psucceeds
+          "fails" @| checkSignatoryTermCont # pconstant "41" # ctx @-> pfails
       describe "getFields" . pgoldenSpec $ do
-        "0" @> getFields
+        "0" @| getFields
 
 --------------------------------------------------------------------------------
 

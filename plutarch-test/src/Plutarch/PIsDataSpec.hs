@@ -26,7 +26,7 @@ spec = do
     describe "ppair" . pgoldenSpec $ do
       -- pfromData (pdata (I 1, B 0x41)) ≡ (I 1, I A)
       "simple"
-        @> ( ppairDataBuiltin @_ @PInteger @PByteString
+        @| ( ppairDataBuiltin @_ @PInteger @PByteString
               # pconstantData @PInteger 1
               #$ pdata (pconstant $ encodeUtf8 "A")
            )
@@ -37,13 +37,13 @@ spec = do
             ppairDataBuiltin
               # pconstantData @PTxId "41"
               #$ pconstantData (ScriptCredential "82")
-      "scriptcredential" @> scPair @-> \p ->
+      "scriptcredential" @| scPair @-> \p ->
         pfromData (pdata p) `pshouldBe` p
       let scTuple = pdata $ ptuple # pconstantData @PTxId "41" #$ pconstantData $ ScriptCredential "82"
       "isomorphism" @\ do
-        "pforgetData" @> pforgetData (pdata scPair) @== pforgetData scTuple
-        "pbuiltinPairFromTuple" @> pfromData (pbuiltinPairFromTuple scTuple) @== scPair
-        "ptupleFromBuiltin" @> ptupleFromBuiltin (pdata scPair) @== scTuple
+        "pforgetData" @| pforgetData (pdata scPair) @== pforgetData scTuple
+        "pbuiltinPairFromTuple" @| pfromData (pbuiltinPairFromTuple scTuple) @== scPair
+        "ptupleFromBuiltin" @| ptupleFromBuiltin (pdata scPair) @== scTuple
 
 propertySet ::
   forall p.

@@ -16,7 +16,7 @@ module Plutarch.Test (
   plutarchDevFlagDescribe,
 
   -- * Golden testing
-  (@>),
+  (@|),
   (@\),
   (@->),
   (@==),

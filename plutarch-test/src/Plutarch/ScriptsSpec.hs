@@ -46,21 +46,21 @@ spec :: Spec
 spec = do
   describe "scripts" $ do
     describe "auth_validator" $ do
-      pgoldenSpec $ "0" @> authValidatorTerm
+      pgoldenSpec $ "0" @| authValidatorTerm
       prefix <- getGoldenFilePrefix
       it "hash" $ do
         pureGoldenTextFile
           (goldenFilePath "goldens" prefix "hash")
           validatorHashEncoded
     describe "auth_policy" $ do
-      pgoldenSpec $ "0" @> authPolicyTerm
+      pgoldenSpec $ "0" @| authPolicyTerm
       prefix <- getGoldenFilePrefix
       it "hash" $
         pureGoldenTextFile
           (goldenFilePath "goldens" prefix "hash")
           policySymEncoded
     describe "auth_stake_validator" $ do
-      pgoldenSpec $ "0" @> authStakeValidatorTerm
+      pgoldenSpec $ "0" @| authStakeValidatorTerm
       prefix <- getGoldenFilePrefix
       it "hash" $
         pureGoldenTextFile

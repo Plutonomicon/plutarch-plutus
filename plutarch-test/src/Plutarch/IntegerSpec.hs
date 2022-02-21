@@ -11,15 +11,15 @@ spec = do
   describe "int" $ do
     describe "examples" $ do
       pgoldenSpec $ do
-        "add1" @> add1
-        "add1Hoisted" @> add1Hoisted
-        "example1" @> example1
-        "example2" @> example2
+        "add1" @| add1
+        "add1Hoisted" @| add1Hoisted
+        "example1" @| example1
+        "example2" @| example2
         "fib" @\ do
-          "lam" @> fib
+          "lam" @| fib
           "app" @\ do
-            "9" @> fib # 9
-        "uglyDouble" @> uglyDouble
+            "9" @| fib # 9
+        "uglyDouble" @| uglyDouble
 
 add1 :: Term s (PInteger :--> PInteger :--> PInteger)
 add1 = plam $ \x y -> x + y + 1

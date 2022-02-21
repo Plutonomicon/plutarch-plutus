@@ -28,40 +28,40 @@ spec = do
     describe "trips" . pgoldenSpec $ do
       -- compilation
       "lam" @\ do
-        "tripSum" @> tripSum
-        "getY" @> getY
-        "tripYZ" @> tripYZ
+        "tripSum" @| tripSum
+        "getY" @| getY
+        "tripYZ" @| tripYZ
       "tripSum" @\ do
-        "A" @> tripSum # tripA @-> \p ->
+        "A" @| tripSum # tripA @-> \p ->
           plift p @?= 1000
-        "B" @> tripSum # tripB @-> \p ->
+        "B" @| tripSum # tripB @-> \p ->
           plift p @?= 100
-        "C" @> tripSum # tripC @-> \p ->
+        "C" @| tripSum # tripC @-> \p ->
           plift p @?= 10
-      "tripYZ=tripZY" @> tripZY @== tripYZ
+      "tripYZ=tripZY" @| tripZY @== tripYZ
     -- rangeFields
     describe "rangeFields" . pgoldenSpec $ do
       -- compilation
-      "lam" @> rangeFields
-      "app" @> rangeFields # someFields @-> \p -> plift p @?= 11
+      "lam" @| rangeFields
+      "app" @| rangeFields # someFields @-> \p -> plift p @?= 11
     -- dropFields
     describe "dropFields" . pgoldenSpec $ do
       -- compilation
-      "lam" @> dropFields
-      "app" @> dropFields # someFields @-> \p -> plift p @?= 17
+      "lam" @| dropFields
+      "app" @| dropFields # someFields @-> \p -> plift p @?= 17
     -- pletFields
     describe "pletFields" . pgoldenSpec $ do
       -- compilation
       "letSomeFields" @\ do
-        "lam" @> letSomeFields
-        "order" @> letSomeFields' @== letSomeFields
-        "app" @> letSomeFields # someFields @-> \p -> plift p @?= 14
+        "lam" @| letSomeFields
+        "order" @| letSomeFields' @== letSomeFields
+        "app" @| letSomeFields # someFields @-> \p -> plift p @?= 14
       "nFields" @\ do
-        "lam" @> nFields
-        "app" @> nFields # someFields @-> \p -> plift p @?= 1
+        "lam" @| nFields
+        "app" @| nFields # someFields @-> \p -> plift p @?= 1
     describe "other" . pgoldenSpec $ do
-      "by" @> by @-> \p -> plift p @?= 10
-      "dotPlus" @> dotPlus @-> \p -> plift p @?= 19010
+      "by" @| by @-> \p -> plift p @?= 10
+      "dotPlus" @| dotPlus @-> \p -> plift p @?= 19010
 
 --------------------------------------------------------------------------------
 

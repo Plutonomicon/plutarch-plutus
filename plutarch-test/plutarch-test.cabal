@@ -97,7 +97,6 @@ library
   hs-source-dirs:  src
   exposed-modules: Plutarch.Test
   other-modules:
-    Plutarch.Test.Deterministic
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
 

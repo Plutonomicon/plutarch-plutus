@@ -13,11 +13,11 @@ spec :: Spec
 spec = do
   describe "plutustype" $ do
     describe "example" . pgoldenSpec $ do
-      "A-as-0" @> pcon A @== pconstant @PInteger 0
-      "B-as-1" @> pcon B @== pconstant @PInteger 1
+      "A-as-0" @| pcon A @== pconstant @PInteger 0
+      "B-as-1" @| pcon B @== pconstant @PInteger 1
       "swap" @\ do
-        "A" @> swap (pcon A) @== pcon B
-        "B" @> swap (pcon B) @== pcon A
+        "A" @| swap (pcon A) @== pcon B
+        "B" @| swap (pcon B) @== pcon A
     describe "instances-sanity" $ do
       plutarchDevFlagDescribe $ do
         it "PBuiltinList" $ do

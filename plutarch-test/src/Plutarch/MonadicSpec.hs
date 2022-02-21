@@ -30,10 +30,10 @@ spec = do
       describe "signatory" . plutarchDevFlagDescribe . pgoldenSpec $ do
         let aSig :: PubKeyHash = "ab01fe235c"
         "do" @\ do
-          "succeeds" @> checkSignatory # pconstant aSig # ApiSpec.ctx @-> psucceeds
-          "fails" @> checkSignatory # pconstant "41" # ApiSpec.ctx @-> pfails
+          "succeeds" @| checkSignatory # pconstant aSig # ApiSpec.ctx @-> psucceeds
+          "fails" @| checkSignatory # pconstant "41" # ApiSpec.ctx @-> pfails
       describe "getFields" . pgoldenSpec $ do
-        "0" @> getFields
+        "0" @| getFields
 
 checkSignatory :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatory = plam $ \ph ctx' ->
