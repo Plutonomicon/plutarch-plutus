@@ -1,21 +1,23 @@
 > Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high-quality documentation for Plutarch users!
 
 <details>
+ 
 <summary> Table of Contents </summary>
+ 
 - [Overview](#overview)
-- [Untyped Plutus Core (UPLC)](#untyped-plutus-core--uplc-)
+- [Untyped Plutus Core (UPLC)](#untyped-plutus-core-uplc)
 - [Plutarch Types](#plutarch-types)
-- [Plutarch `Term`s](#plutarch--term-s)
-  * [Plutarch Constant `Term`s](#plutarch-constant--term-s)
-    + [Static building of constant `Term`s with `pconstant`](#static-building-of-constant--term-s-with--pconstant-)
-    + [Dynamic building of constant `Term`s with `pcon`](#dynamic-building-of-constant--term-s-with--pcon-)
-      - [Pattern matching `Term`s on `PType`s with `pmatch`.](#pattern-matching--term-s-on--ptype-s-with--pmatch-)
-      - [`class (PCon a, PMatch a) => PlutusType (a :: PType)` -- with a default instance.](#-class--pcon-a--pmatch-a-----plutustype--a----ptype------with-a-default-instance)
+- [Plutarch `Term`s](#plutarch-terms)
+  * [Plutarch Constant `Term`s](#plutarch-constant-terms)
+    + [Static building of constant `Term`s with `pconstant`](#static-building-of-constant-terms-with-pconstant)
+    + [Dynamic building of constant `Term`s with `pcon`](#dynamic-building-of-constant-terms-with-pcon)
+      - [Pattern matching `Term`s on `PType`s with `pmatch`.](#pattern-matching-terms-on-ptypes-with-pmatch)
+      - [`class (PCon a, PMatch a) => PlutusType (a :: PType)` -- with a default instance.](#class-pcon-a-pmatch-a--plutustype-a--ptype----with-a-default-instance)
     + [Overloaded literals](#overloaded-literals)
     + [Helper functions](#helper-functions)
-  * [Lambdas; Plutarch-level Function `Term`s.](#lambdas--plutarch-level-function--term-s)
+  * [Lambdas; Plutarch-level Function `Term`s.](#lambdas-plutarch-level-function-terms)
     + [Function Application](#function-application)
-    + [Strictness and Laziness; Delayed Terms and Forcing](#strictness-and-laziness--delayed-terms-and-forcing)
+    + [Strictness and Laziness; Delayed Terms and Forcing](#strictness-and-laziness-delayed-terms-and-forcing)
 - [References](#references)
 
 </details>
