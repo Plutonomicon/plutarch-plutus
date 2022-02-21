@@ -427,7 +427,7 @@ hif cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay wh
 until forced.
 -}
 pif :: forall {s :: S} {b :: PType}. Term s (PBool :--> (b :--> (b :--> b)))
-pif = plam pif'
+pif = plam hif
 ```
 
 A note of caution: calling `pforce` on the same delayed term twice will execute the computation each time. Users familiar with Haskell's handling of laziness -- where forcing a thunk twice never duplicates computation -- should note that this UPLC behaves differently.
