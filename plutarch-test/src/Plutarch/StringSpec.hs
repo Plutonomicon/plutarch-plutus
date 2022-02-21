@@ -8,18 +8,13 @@ import Plutarch.Test
 spec :: Spec
 spec = do
   describe "str" $ do
-    describe "eq" $ do
-      let p = "foo" #== pconstant @PString "foo"
-      golden All p
-      it "works" $ passert p
-    describe "semigroup" $ do
-      let s1 = pconstant @PString "foo"
-          s2 = pconstant @PString "bar"
-      golden All $ s1 <> s2
-      it "laws" $ do
-        passert $ (mempty <> s1) #== s1
-        passert $ s1 #== (mempty <> s1)
-      it "concats" $ do
-        passert $ s1 <> s2 #== pconstant @PString "foobar"
-      it "mempty" $ do
-        passert $ mempty #== pconstant @PString ""
+    pgoldenSpec $ do
+      "eq" @> "foo" #== pconstant @PString "foo" @-> passert
+      "semigroup" @\ do
+        let s1 = pconstant @PString "foo"
+            s2 = pconstant @PString "bar"
+        "laws" @\ do
+          "id.1" @> (mempty <> s1) #== s1 @-> passert
+          "id.2" @> s1 #== (mempty <> s1) @-> passert
+        "concat" @> s1 <> s2 #== pconstant @PString "foobar" @-> passert
+        "mempty" @> mempty #== pconstant @PString "" @-> passert
