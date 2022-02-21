@@ -53,7 +53,6 @@ import Plutarch
 import Plutarch.Benchmark (benchmarkScript')
 import Plutarch.Bool (PBool (PFalse, PTrue))
 import Plutarch.Evaluate (evaluateScript)
-import Plutarch.Test.Deterministic (compileD, evaluateScriptAlways)
 import Plutarch.Test.Golden
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 

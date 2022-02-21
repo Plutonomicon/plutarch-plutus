@@ -9,6 +9,8 @@ module Plutarch.Test.Golden (
   -- * Internal
   TermExpectation,
   goldenKeyString,
+  evaluateScriptAlways,
+  compileD,
 ) where
 
 import qualified Data.Aeson.Text as Aeson
@@ -36,9 +38,10 @@ import Data.String (IsString)
 import GHC.Stack (HasCallStack)
 import Plutarch
 import Plutarch.Benchmark (benchmarkScript')
+import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Internal (Term (Term, asRawTerm))
-import Plutarch.Test.Deterministic (compileD, evaluateScriptAlways)
 import Plutarch.Test.ListSyntax (ListSyntax, listSyntaxAdd, listSyntaxAddSubList, runListSyntax)
+import qualified Plutus.V1.Ledger.Scripts as Scripts
 
 data GoldenValue = GoldenValue
   { goldenValueUplcPreEval :: Text
@@ -160,3 +163,20 @@ currentGoldenKey = do
 -- Because, we need a function with this signature.
 unsafeClosedTerm :: Term s a -> ClosedTerm a
 unsafeClosedTerm t = Term $ asRawTerm t
+
+{- Like `evaluateScript` but doesn't fail. Also returns `Script`.
+
+  All evaluation failures are treated as equivalent to a `perror`. Plutus does
+  not provide an accurate way to tell if the program evalutes to `Error` or not;
+  see https://github.com/input-output-hk/plutus/issues/4270
+-}
+evaluateScriptAlways :: Scripts.Script -> Scripts.Script
+evaluateScriptAlways script =
+  case evaluateScript script of
+    Left _ -> compile perror
+    Right (_, _, x) -> x
+
+-- TODO: Make this deterministic
+-- See
+compileD :: ClosedTerm a -> Scripts.Script
+compileD = compile

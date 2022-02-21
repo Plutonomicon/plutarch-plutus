@@ -125,7 +125,6 @@ executable plutarch-test
     Plutarch.ScriptsSpec
     Plutarch.StringSpec
     Plutarch.Test
-    Plutarch.Test.Deterministic
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
     Plutarch.TraceSpec
