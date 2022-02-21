@@ -3,13 +3,13 @@ module Plutarch.ListSpec (spec) where
 import Test.Syd
 import Test.Syd.Hedgehog ()
 
-import Plutarch.List (pconvertLists, pfoldl', pmergeSort, ptimSort)
+import Plutarch.List (pconvertLists, pfoldl')
 import Plutarch.Prelude
 import Plutarch.Test
 
 import Hedgehog (Property)
 
-import Data.List (find, sort)
+import Data.List (find)
 
 import Plutarch.Test.Property.Gen (genList, integerGen)
 import Plutarch.Test.Property.Util (haskPlutEquiv, marshal, viaBothPartial, viaPEq)
@@ -93,29 +93,13 @@ spec = do
         it "base agreement" elemAtTest
         goldens
           All
-          [ ("elemAt_3_[1..10]", pelemAt # 3 # marshal [1 .. 10 :: Integer])
-          , ("elemAt_0_[1..10]", pelemAt # 0 # marshal [1 .. 10 :: Integer])
-          , ("elemAt_9_[1..10]", pelemAt # 9 # marshal [1 .. 10 :: Integer])
+          [ ("elemAt_3_[1..10]", pelemAt # 3 # marshal [1..10::Integer])
+          , ("elemAt_0_[1..10]", pelemAt # 0 # marshal [1..10::Integer])
+          , ("elemAt_9_[1..10]", pelemAt # 9 # marshal [1..10::Integer])
           ]
-      let xs1 = marshal [1 .. 10 :: Integer]
-          xs2 = marshal $ reverse [1 .. 10 :: Integer]
-          xs3 = marshal $ [1 .. 10 :: Integer] ++ reverse [11 .. 20]
-      describe "pmergeSort" $ do
-        it "baseAgreement" pmergeSortTest
-        goldens
-          All
-          [ ("sort_xs1", pmergeSort # xs1)
-          , ("sort_xs2", pmergeSort # xs2)
-          , ("sort_xs3", pmergeSort # xs3)
-          ]
-      describe "ptimSort" $ do
-        it "baseAgreement" ptimSortTest
-        goldens
-          All
-          [ ("sort_xs1", ptimSort # xs1)
-          , ("sort_xs2", ptimSort # xs2)
-          , ("sort_xs3", ptimSort # xs3)
-          ]
+      describe "isSorted" $ do
+        it "[1..10]" $ passert $ pcheckSorted # marshal [1..10::Integer]
+        it "reverse_[1..10]" $ passert $ pnot #$ pcheckSorted #$ marshal $ reverse [1..10::Integer]
 
 findTest :: Property
 findTest =
@@ -146,19 +130,3 @@ elemAtTest =
 
 elemAt :: Integer -> [Integer] -> Integer
 elemAt n xs = xs !! fromInteger n
-
-pmergeSortTest :: Property
-pmergeSortTest =
-  haskPlutEquiv
-    viaPEq
-    (sort @Integer)
-    pmergeSort
-    (genList integerGen)
-
-ptimSortTest :: Property
-ptimSortTest =
-  haskPlutEquiv
-    viaPEq
-    (sort @Integer)
-    ptimSort
-    (genList integerGen)

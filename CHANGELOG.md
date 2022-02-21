@@ -2,9 +2,7 @@
 
 # Unreleased
 
-- `Plutarch.Prelude` now exports pfind, pelemat, preverse and psrot.
-
-	`Plutarch.List` exports pmergeSort, ptimSort and the new exports from `Plutarch.Prelude`.
+- `Plutarch.Prelude` and `Plutarch.List` now export pfind, pelemAt, preverse and pcheckSroted.
 
 	Started by: [#306](https://github.com/Plutonomicon/plutarch/pull/306)
 

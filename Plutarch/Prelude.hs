@@ -69,7 +69,6 @@ module Plutarch.Prelude (
   ptryIndex,
   pdrop,
   psingleton,
-  psort,
   pconcat,
   pzipWith,
   pzipWith',
@@ -84,6 +83,7 @@ module Plutarch.Prelude (
   pfoldl,
   pall,
   pany,
+  pcheckSorted,
 
   -- * Scott encoded list type
   PList (..),
