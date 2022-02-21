@@ -5,6 +5,9 @@ module Plutarch.Test.Golden (
   (@>),
   (@\),
   (@->),
+
+  -- * Internal
+  TermExpectation,
 ) where
 
 import qualified Data.Aeson.Text as Aeson
@@ -69,6 +72,7 @@ instance HasGoldenValue (Term s a) where
 -}
 data TermExpectation s a = TermExpectation (Term s a) (Term s a -> Expectation)
 
+{- Test an expectation on a golden Plutarch program -}
 (@->) :: Term s a -> (ClosedTerm a -> Expectation) -> TermExpectation s a
 (@->) p f = TermExpectation p (\p' -> f $ unsafeClosedTerm p')
 infixr 1 @->

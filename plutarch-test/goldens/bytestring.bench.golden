@@ -1,0 +1,10 @@
+empty {"exBudgetCPU":350820,"exBudgetMemory":901,"scriptSizeBytes":14}
+phexByteStr {"exBudgetCPU":351067,"exBudgetMemory":901,"scriptSizeBytes":19}
+plengthByteStr {"exBudgetCPU":496379,"exBudgetMemory":805,"scriptSizeBytes":17}
+pconsBS {"exBudgetCPU":1381637,"exBudgetMemory":2113,"scriptSizeBytes":33}
+pindexByteStr {"exBudgetCPU":298965,"exBudgetMemory":601,"scriptSizeBytes":16}
+psliceByteStr {"exBudgetCPU":363511,"exBudgetMemory":801,"scriptSizeBytes":22}
+eq {"exBudgetCPU":351067,"exBudgetMemory":901,"scriptSizeBytes":16}
+semigroup.concats {"exBudgetCPU":546438,"exBudgetMemory":602,"scriptSizeBytes":17}
+semigroup.laws.id.1 {"exBudgetCPU":867011,"exBudgetMemory":1302,"scriptSizeBytes":22}
+semigroup.laws.id.2 {"exBudgetCPU":867011,"exBudgetMemory":1302,"scriptSizeBytes":21}

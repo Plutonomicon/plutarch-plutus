@@ -21,6 +21,7 @@ module Plutarch.Test (
   (@>),
   (@\),
   (@->),
+  (@==),
   pgoldenSpec,
   PlutarchGolden (All, Bench, PrintTerm),
   getGoldenFilePrefix,
@@ -132,6 +133,11 @@ pfails p = do
     Left _ -> pure ()
     Right _ -> expectationFailure $ "Term succeeded"
 
+{- Convenient alias for `@-> pshouldBe x` -}
+(@==) :: Term s a -> ClosedTerm a -> TermExpectation s a
+(@==) p x = p @-> pshouldBe x
+infixr 1 @==
+
 -- TODO: All the code below will be deleted, in favour of Golden.hs
 
 {- Whether to run all or a particular golden test
@@ -161,6 +167,7 @@ hasPrintTermGolden = \case
   _ -> True
 
 {- Run golden tests on the given Plutarch program -}
+-- {-# DEPRECATED golden "Use `pgoldenSpec` instead." #-}
 golden :: PlutarchGolden -> ClosedTerm a -> Spec
 golden pg p =
   goldens pg [("0", popaque p)]
@@ -170,6 +177,8 @@ golden pg p =
   Multiple programs use a single golden file. Each output separated from the
   keyword with a space.
 -}
+
+-- {-# DEPRECATED goldens "Use `pgoldenSpec` instead." #-}
 goldens :: PlutarchGolden -> [(String, ClosedTerm a)] -> Spec
 goldens pg ps = do
   name <- getGoldenFilePrefix

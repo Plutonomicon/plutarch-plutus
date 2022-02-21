@@ -8,6 +8,7 @@ import Plutarch.Test
 
 spec :: Spec
 spec = do
+  -- TODO: remove the `it`s
   describe "bool" $ do
     describe "pnot" $ do
       pgoldenSpec $ do
@@ -17,10 +18,10 @@ spec = do
       it "false" $ (pnot #$ pcon PFalse) #@?= pcon PTrue
     describe "pand" $ do
       pgoldenSpec $ do
-        "tf" @> pcon PTrue #&& pcon PFalse @-> pshouldBe (pcon PFalse)
-        "ft" @> pcon PFalse #&& pcon PTrue @-> pshouldBe (pcon PFalse)
+        "tf" @> pcon PTrue #&& pcon PFalse @-> passertNot
+        "ft" @> pcon PFalse #&& pcon PTrue @-> passertNot
         "tt" @> pcon PTrue #&& pcon PTrue @-> passert
-        "ff" @> pcon PFalse #&& pcon PFalse @-> pshouldBe (pcon PFalse)
+        "ff" @> pcon PFalse #&& pcon PFalse @-> passertNot
       describe "laziness" $ do
         pgoldenSpec $ do
           "pand" @> pand # pcon PFalse # pdelay perror @-> \p ->
