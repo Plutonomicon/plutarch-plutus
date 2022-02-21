@@ -168,7 +168,6 @@ test-suite examples
     Utils
 
   build-depends:
-    , aeson
     , base
     , bytestring
     , generics-sop
@@ -187,3 +186,5 @@ test-suite examples
   --, shrinker
   if flag(development)
     cpp-options: -DDevelopment
+
+  ghc-options:        -Wwarn=deprecations

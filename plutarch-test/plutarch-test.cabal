@@ -96,11 +96,18 @@ library
   hs-source-dirs:  src
   exposed-modules: Plutarch.Test
 
+  -- FIXME remove -Wwarn=deprecations
+  ghc-options:     -Wwarn=deprecations
+
 executable plutarch-test
   import:         c, deps
-  type:           exitcode-stdio-1.0
   main-is:        Main.hs
   hs-source-dirs: src
+  build-depends:
+    , base16-bytestring
+    , cborg
+    , ghc-prim
+    , serialise
 
   if impl(ghc >=9.0)
     other-modules:
@@ -128,4 +135,5 @@ executable plutarch-test
   if flag(development)
     cpp-options: -DDevelopment
 
-  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
+  -- FIXME remove -Wwarn=deprecations
+  ghc-options:    -threaded -rtsopts -with-rtsopts=-N -Wwarn=deprecations
