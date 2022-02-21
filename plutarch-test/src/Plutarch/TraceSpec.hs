@@ -7,44 +7,29 @@ import Plutarch.Test
 
 spec :: Spec
 spec = do
-  describe "trace" . plutarchDevFlagDescribe $ do
-    describe "ptrace" $ do
-      let p1 = ptrace "foo" (pcon PUnit)
-          p2 = ptrace "foo" (ptrace "bar" (pcon PUnit))
-      goldens
-        All
-        [ ("one", p1)
-        , ("two", p2)
-        ]
-      it "traces one" $ p1 `ptraces` ["foo"]
-      it "traces two" $ p2 `ptraces` ["foo", "bar"]
-    describe "ptraceIfTrue" $ do
-      let p1 = ptraceIfTrue "foo" (pcon PTrue)
-          p2 = ptraceIfTrue "foo" (pcon PFalse)
-      goldens
-        All
-        [ ("true", p1)
-        , ("false", p2)
-        ]
-      it "true" $ p1 `ptraces` ["foo"]
-      it "false" $ p2 `ptraces` []
-    describe "ptraceIfFalse" $ do
-      let p1 = ptraceIfFalse "foo" (pcon PTrue)
-          p2 = ptraceIfFalse "foo" (pcon PFalse)
-      goldens
-        All
-        [ ("true", p1)
-        , ("false", p2)
-        ]
-      it "true" $ p1 `ptraces` []
-      it "false" $ p2 `ptraces` ["foo"]
-    describe "more traces" $ do
-      it "false.true.false" $
-        ptraceIfFalse "foo" (ptraceIfTrue "bar" $ pcon PFalse)
-          `ptraces` ["foo"]
-      it "ptrace.true.false" $
-        ptrace "foo" (ptraceIfTrue "bar" $ pcon PFalse)
-          `ptraces` ["foo"]
-      it "ptrace.true.true" $
-        ptrace "foo" (ptraceIfTrue "bar" $ pcon PTrue)
-          `ptraces` ["foo", "bar"]
+  describe "trace" . plutarchDevFlagDescribe . pgoldenSpec $ do
+    "ptrace" @\ do
+      "one" @> ptrace "foo" (pcon PUnit) @-> \p ->
+        ptraces p ["foo"]
+      "two" @> ptrace "foo" (ptrace "bar" (pcon PUnit)) @-> \p ->
+        ptraces p ["foo", "bar"]
+    "ptraceIfTrue" @\ do
+      "true" @> ptraceIfTrue "foo" (pcon PTrue) @-> \p ->
+        p `ptraces` ["foo"]
+      "false" @> ptraceIfTrue "foo" (pcon PFalse) @-> \p ->
+        p `ptraces` []
+    "ptraceIfFalse" @\ do
+      "true" @> ptraceIfFalse "foo" (pcon PTrue) @-> \p ->
+        p `ptraces` []
+      "false" @> ptraceIfFalse "foo" (pcon PFalse) @-> \p ->
+        p `ptraces` ["foo"]
+    "chained" @\ do
+      "false.true.false"
+        @> ptraceIfFalse "foo" (ptraceIfTrue "bar" $ pcon PFalse)
+        @-> \p -> p `ptraces` ["foo"]
+      "ptrace.true.false"
+        @> ptrace "foo" (ptraceIfTrue "bar" $ pcon PFalse)
+        @-> \p -> p `ptraces` ["foo"]
+      "ptrace.true.true"
+        @> ptrace "foo" (ptraceIfTrue "bar" $ pcon PTrue)
+        @-> \p -> p `ptraces` ["foo", "bar"]
