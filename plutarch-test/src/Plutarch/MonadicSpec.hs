@@ -27,16 +27,13 @@ spec = do
     describe "api.example" $ do
       -- The checkSignatory family of functions implicitly use tracing due to
       -- monadic syntax, and as such we need two sets of tests here.
-      describe "signatory" . plutarchDevFlagDescribe $ do
+      describe "signatory" . plutarchDevFlagDescribe . pgoldenSpec $ do
         let aSig :: PubKeyHash = "ab01fe235c"
-        describe "haskell" $ do
-          let p = checkSignatory # pconstant aSig # ApiSpec.ctx
-              pe = checkSignatory # pconstant "41" # ApiSpec.ctx
-          golden All p
-          it "succeeds" $ psucceeds p
-          it "fails" $ pfails pe
-      describe "getFields" $
-        golden All getFields
+        "do" @\ do
+          "succeeds" @> checkSignatory # pconstant aSig # ApiSpec.ctx @-> psucceeds
+          "fails" @> checkSignatory # pconstant "41" # ApiSpec.ctx @-> pfails
+      describe "getFields" . pgoldenSpec $ do
+        "0" @> getFields
 
 checkSignatory :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatory = plam $ \ph ctx' ->
