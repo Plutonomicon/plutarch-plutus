@@ -8,23 +8,10 @@ import Plutarch.Test
 
 spec :: Spec
 spec = do
-  describe "unit" $ do
-    describe "pcon" $ do
-      golden All $ pcon PUnit
-    describe "pmatch" $ do
-      let p = pmatch (pcon PUnit) (\case PUnit -> pcon PTrue)
-      golden All p
-      it "works" $ passert p
-    describe "compare" $ do
-      let pEq = pcon PUnit #== pcon PUnit
-          pLt = pcon PUnit #< pcon PUnit
-          pLe = pcon PUnit #<= pcon PUnit
-      goldens
-        All
-        [ ("==", pEq)
-        , ("<", pLt)
-        , ("<=", pLe)
-        ]
-      it "==" $ passert pEq
-      it "<" $ passert $ pnot # pLt
-      it "<=" $ passert pLe
+  describe "unit" . pgoldenSpec $ do
+    "pcon" @> pcon PUnit
+    "pmatch" @> pmatch (pcon PUnit) (\case PUnit -> pcon PTrue) @-> passert
+    "compare" @\ do
+      "==" @> pcon PUnit #== pcon PUnit @-> passert
+      "<" @> pcon PUnit #< pcon PUnit @-> passertNot
+      "<=" @> pcon PUnit #<= pcon PUnit @-> passert
