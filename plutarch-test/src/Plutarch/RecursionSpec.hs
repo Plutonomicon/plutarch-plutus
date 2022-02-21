@@ -6,26 +6,22 @@ import Plutarch
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Integer (PInteger)
 
-import Test.Syd (Spec, describe, it)
+import Test.Syd (Spec, describe)
 
+import Plutarch.Lift (pconstant)
 import Plutarch.Test
 
 spec :: Spec
 spec = do
   describe "recursion" $ do
-    describe "example" $ do
-      -- compilation
-      describe "iterateN" $
-        golden All iterateN
-      -- tests
-      describe "iterateN (10) (+1) 0 == 10" $ do
-        let p :: Term s PInteger
-            p = 10
-        it "works" $ (iterateN # 10 # succ # 0) #@?= p
-      describe "iterateN 10 (*2) 1 == 1024" $ do
-        let p :: Term s PInteger
-            p = 1024
-        it "works" $ (iterateN # 10 # double # 1) #@?= p
+    describe "example" . pgoldenSpec $ do
+      "iterateN" @\ do
+        "lam" @> iterateN
+        "app" @\ do
+          "succ" @> iterateN # 10 # succ # 0
+            @== pconstant @PInteger 10
+          "double" @> iterateN # 10 # double # 1
+            @== pconstant @PInteger 1024
 
 succ :: Term s (PInteger :--> PInteger)
 succ = plam $ \x -> x + 1
