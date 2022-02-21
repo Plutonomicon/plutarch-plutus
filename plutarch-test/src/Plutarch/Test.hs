@@ -11,18 +11,20 @@ module Plutarch.Test (
   ptraces,
   pshouldBe,
   (#@?=),
+
+  -- * For Development flag tests
   plutarchDevFlagDescribe,
-  -- | Golden testing
-  --
-  -- Typically you want to use `golden`. For grouping multiple goldens, use
-  -- `goldens`.
-  golden,
-  goldens,
+
+  -- * Golden testing
   (@>),
   (@\),
   (@->),
   (@==),
   pgoldenSpec,
+
+  -- * Deprecated exports
+  golden,
+  goldens,
   PlutarchGolden (All, Bench, PrintTerm),
   getGoldenFilePrefix,
   goldenFilePath,
@@ -156,18 +158,8 @@ data PlutarchGolden
   | PrintTerm
   deriving stock (Eq, Show)
 
-hasBenchGolden :: PlutarchGolden -> Bool
-hasBenchGolden = \case
-  PrintTerm -> False
-  _ -> True
-
-hasPrintTermGolden :: PlutarchGolden -> Bool
-hasPrintTermGolden = \case
-  Bench -> False
-  _ -> True
-
 {- Run golden tests on the given Plutarch program -}
--- {-# DEPRECATED golden "Use `pgoldenSpec` instead." #-}
+{-# DEPRECATED golden "Use `pgoldenSpec` instead." #-}
 golden :: PlutarchGolden -> ClosedTerm a -> Spec
 golden pg p =
   goldens pg [("0", popaque p)]
@@ -177,8 +169,7 @@ golden pg p =
   Multiple programs use a single golden file. Each output separated from the
   keyword with a space.
 -}
-
--- {-# DEPRECATED goldens "Use `pgoldenSpec` instead." #-}
+{-# DEPRECATED goldens "Use `pgoldenSpec` instead." #-}
 goldens :: PlutarchGolden -> [(String, ClosedTerm a)] -> Spec
 goldens pg ps = do
   name <- getGoldenFilePrefix
@@ -199,6 +190,15 @@ goldens pg ps = do
         pureGoldenTextFile (goldenFilePath "goldens" name "bench") $
           multiGolden ps $ \p ->
             TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compileD p
+  where
+    hasBenchGolden :: PlutarchGolden -> Bool
+    hasBenchGolden = \case
+      PrintTerm -> False
+      _ -> True
+    hasPrintTermGolden :: PlutarchGolden -> Bool
+    hasPrintTermGolden = \case
+      Bench -> False
+      _ -> True
 
 -- | Get a golden filename prefix from the test description path
 getGoldenFilePrefix ::
