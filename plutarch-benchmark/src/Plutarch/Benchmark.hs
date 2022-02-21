@@ -62,10 +62,10 @@ import qualified Plutus.V1.Ledger.Api as Plutus
 --------------------------------------------------------------------------------
 
 -- | Benchmark the given script
-benchmarkScript :: String -> Script -> NamedBenchmark
+benchmarkScript :: HasCallStack => String -> Script -> NamedBenchmark
 benchmarkScript name = NamedBenchmark . (name,) . benchmarkScript'
 
-benchmarkScript' :: Script -> Benchmark
+benchmarkScript' :: HasCallStack => Script -> Benchmark
 benchmarkScript' =
   uncurry mkBenchmark . (evalScriptCounting &&& (fromInteger . toInteger . SBS.length)) . serialiseScriptShort
   where
