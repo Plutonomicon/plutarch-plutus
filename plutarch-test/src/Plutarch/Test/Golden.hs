@@ -13,11 +13,19 @@ module Plutarch.Test.Golden (
   compileD,
 ) where
 
+import Control.Monad (forM_, unless)
 import qualified Data.Aeson.Text as Aeson
+import Data.Kind (Type)
+import Data.List.NonEmpty (nonEmpty)
+import qualified Data.List.NonEmpty as NE
+import Data.Maybe (mapMaybe)
+import Data.Semigroup (sconcat)
+import Data.String (IsString)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
-import System.FilePath
+import GHC.Stack (HasCallStack)
+import System.FilePath ((</>))
 import Test.Syd (
   Expectation,
   Spec,
@@ -28,14 +36,6 @@ import Test.Syd (
   pureGoldenTextFile,
  )
 
-import Control.Monad (forM_, unless)
-import Data.Kind (Type)
-import Data.List.NonEmpty (nonEmpty)
-import qualified Data.List.NonEmpty as NE
-import Data.Maybe (mapMaybe)
-import Data.Semigroup (sconcat)
-import Data.String (IsString)
-import GHC.Stack (HasCallStack)
 import Plutarch
 import Plutarch.Benchmark (benchmarkScript')
 import Plutarch.Evaluate (evaluateScript)
@@ -104,10 +104,12 @@ combineGoldens xs =
   T.intercalate "\n" $
     (\(GoldenKey k, v) -> k <> " " <> v) <$> xs
 
+{- Specify goldens for the given Plutarch program -}
 (@|) :: HasGoldenValue v => GoldenKey -> v -> ListSyntax (GoldenKey, GoldenValue)
 (@|) k v = listSyntaxAdd (k, mkGoldenValue v)
 infixr 0 @|
 
+{- Add an expectation for the Plutarch program specified with (@|) -}
 (@\) :: GoldenKey -> ListSyntax (GoldenKey, GoldenValue) -> ListSyntax (GoldenKey, GoldenValue)
 (@\) = listSyntaxAddSubList
 
@@ -177,6 +179,6 @@ evaluateScriptAlways script =
     Right (_, _, x) -> x
 
 -- TODO: Make this deterministic
--- See
+-- See https://github.com/Plutonomicon/plutarch/pull/297
 compileD :: ClosedTerm a -> Scripts.Script
 compileD = compile

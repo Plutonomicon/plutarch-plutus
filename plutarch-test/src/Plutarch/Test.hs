@@ -30,7 +30,7 @@ module Plutarch.Test (
   goldenFilePath,
 ) where
 
-import Control.Monad.Writer
+import Control.Monad (when)
 import qualified Data.Aeson.Text as Aeson
 import Data.Kind (Type)
 import Data.Text (Text)
@@ -53,7 +53,15 @@ import Plutarch
 import Plutarch.Benchmark (benchmarkScript')
 import Plutarch.Bool (PBool (PFalse, PTrue))
 import Plutarch.Evaluate (evaluateScript)
-import Plutarch.Test.Golden
+import Plutarch.Test.Golden (
+  TermExpectation,
+  compileD,
+  evaluateScriptAlways,
+  pgoldenSpec,
+  (@->),
+  (@\),
+  (@|),
+ )
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 
 {- |
@@ -139,7 +147,7 @@ pfails p = do
 (@==) p x = p @-> pshouldBe x
 infixr 1 @==
 
--- TODO: All the code below will be deleted, in favour of Golden.hs
+-- TODO: All the code below will be deleted, in favour of Golden.hs.
 
 {- Whether to run all or a particular golden test
 
