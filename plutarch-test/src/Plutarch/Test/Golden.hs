@@ -1,5 +1,3 @@
-{-# LANGUAGE ImpredicativeTypes #-}
-
 module Plutarch.Test.Golden (
   pgoldenSpec,
   (@|),
