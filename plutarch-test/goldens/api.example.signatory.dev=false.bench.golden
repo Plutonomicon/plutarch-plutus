@@ -1,0 +1,4 @@
+cont.succeeds {"exBudgetCPU":8163467,"exBudgetMemory":16009,"scriptSizeBytes":290}
+cont.fails {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":286}
+termcont.succeeds {"exBudgetCPU":8163467,"exBudgetMemory":16009,"scriptSizeBytes":290}
+termcont.fails {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":286}
