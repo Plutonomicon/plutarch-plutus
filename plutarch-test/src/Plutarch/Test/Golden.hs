@@ -3,8 +3,6 @@ module Plutarch.Test.Golden (
   (@|),
   (@\),
   (@->),
-
-  -- * Internal
   TermExpectation,
   goldenKeyString,
   evaluateScriptAlways,
@@ -71,15 +69,15 @@ instance HasGoldenValue (Term s a) where
   Example:
   >>> TermExpectation (pcon PTrue) $ \p -> pshouldBe (pcon PTrue)
 -}
-data TermExpectation s a = TermExpectation (Term s a) (Term s a -> Expectation)
+data TermExpectation a = TermExpectation (ClosedTerm a) (ClosedTerm a -> Expectation)
 
 -- | Test an expectation on a golden Plutarch program
-(@->) :: Term s a -> (ClosedTerm a -> Expectation) -> TermExpectation s a
+(@->) :: ClosedTerm a -> (ClosedTerm a -> Expectation) -> TermExpectation a
 (@->) p f = TermExpectation p (\p' -> f $ unsafeClosedTerm p')
 
 infixr 1 @->
 
-instance HasGoldenValue (TermExpectation s a) where
+instance HasGoldenValue (TermExpectation a) where
   mkGoldenValue (TermExpectation p f) = mkGoldenValue' (unsafeClosedTerm p) (Just $ f p)
 
 -- | The key used in the .golden files containing multiple golden values
