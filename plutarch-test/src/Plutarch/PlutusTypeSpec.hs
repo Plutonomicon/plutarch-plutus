@@ -12,19 +12,12 @@ import Plutarch.Test
 spec :: Spec
 spec = do
   describe "plutustype" $ do
-    describe "example" $ do
-      describe "A encoded as 0" $ do
-        let p :: Term s PInteger
-            p = 0
-        it "works" (pcon A #@?= p)
-      describe "B encoded as 1" $ do
-        let p :: Term s PInteger
-            p = 1
-        it "works" $ pcon B #@?= p
-      describe "swap A == B" $ do
-        it "works" $ swap (pcon A) #@?= pcon B
-      describe "swap B == A" $ do
-        it "works" $ swap (pcon B) #@?= pcon A
+    describe "example" . pgoldenSpec $ do
+      "A-as-0" @> pcon A @== pconstant @PInteger 0
+      "B-as-1" @> pcon B @== pconstant @PInteger 1
+      "swap" @\ do
+        "A" @> swap (pcon A) @== pcon B
+        "B" @> swap (pcon B) @== pcon A
     describe "instances-sanity" $ do
       plutarchDevFlagDescribe $ do
         it "PBuiltinList" $ do

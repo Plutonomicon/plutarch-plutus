@@ -134,7 +134,7 @@ pfails p = do
     Right _ -> expectationFailure $ "Term succeeded"
 
 {- Convenient alias for `@-> pshouldBe x` -}
-(@==) :: Term s a -> ClosedTerm a -> TermExpectation s a
+(@==) :: Term s a -> ClosedTerm b -> TermExpectation s a
 (@==) p x = p @-> pshouldBe x
 infixr 1 @==
 
