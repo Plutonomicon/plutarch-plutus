@@ -39,34 +39,29 @@ import Plutarch.Api.V1 (
 import Plutarch.Api.V1.Crypto (PPubKey, PPubKeyHash, PSignature (PSignature))
 import Plutarch.Builtin (pasByteStr)
 import Plutarch.Prelude
-import Plutarch.Test (
-  PlutarchGolden (PrintTerm),
-  getGoldenFilePrefix,
-  golden,
-  goldenFilePath,
- )
+import Plutarch.Test
 import Test.Syd (Spec, describe, it, pureGoldenTextFile)
 
 spec :: Spec
 spec = do
   describe "scripts" $ do
     describe "auth_validator" $ do
+      pgoldenSpec $ "0" @> authValidatorTerm
       prefix <- getGoldenFilePrefix
-      golden PrintTerm authValidatorTerm
       it "hash" $ do
         pureGoldenTextFile
           (goldenFilePath "goldens" prefix "hash")
           validatorHashEncoded
     describe "auth_policy" $ do
+      pgoldenSpec $ "0" @> authPolicyTerm
       prefix <- getGoldenFilePrefix
-      golden PrintTerm authPolicyTerm
       it "hash" $
         pureGoldenTextFile
           (goldenFilePath "goldens" prefix "hash")
           policySymEncoded
     describe "auth_stake_validator" $ do
+      pgoldenSpec $ "0" @> authStakeValidatorTerm
       prefix <- getGoldenFilePrefix
-      golden PrintTerm authStakeValidatorTerm
       it "hash" $
         pureGoldenTextFile
           (goldenFilePath "goldens" prefix "hash")
