@@ -101,6 +101,8 @@ For the Plutarch compiler to bridge between arbitrary, semantically-rich Haskell
 
 When this guide uses the term "Plutarch Type," we explicitly talk about a type of _kind_ `PType`. We will refer to  _" types of kind `PType` "_ simply as" `PType`s." We explicitly qualify when referring to the _kind_ `PType`.
 
+> Note to beginners: Plutarch uses a language extension called `DataKinds`. This means that there are kinds beyond `*`. When using `DataKinds`, the kind `Type` is equivalent to the familiar `*` kind; additional named kinds may appear as well. We refer the read to [[3]](#references) and [[4]](#references) for a short and extended beginner-level introduction to these concepts.
+
 `PType` is defined as `type PType = S -> Type`; that is, it is a _kind synonym_ for `S -> Type` (where `S` and `Type` are themselves kinds). This synonym is important to keep in mind because when querying the kind of something like `PBool` in, say, GHCi, we will _not_ see `PType` as the kind. Instead, we get 
 
 ```hs
@@ -439,5 +441,5 @@ Finally, readers should note that `pdelay` and `pforce` are extremely powerful t
 
 - [1] [Lazy Functional State Threads, by John Launchbury and Simon L Peyton Jones](https://www.microsoft.com/en-us/research/wp-content/uploads/1994/06/lazy-functional-state-threads.pdf) 
 - [2] [Unembedding Domain-Specific Languages, by Robert Atkey, Sam Lindley, and Jeremy Yallop](https://bentnib.org/unembedding.pdf)
-
-
+- [3] [Stack Overflow: What is the `DataKinds` extension?](https://stackoverflow.com/questions/20558648/what-is-the-datakinds-extension-of-haskell)
+- [4] [Matt Parson: Basic Type Level Programming in Haskell](https://www.parsonsmatt.org/2017/04/26/basic_type_level_programming_in_haskell.html)
