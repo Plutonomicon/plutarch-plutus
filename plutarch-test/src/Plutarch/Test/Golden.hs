@@ -8,6 +8,7 @@ module Plutarch.Test.Golden (
 
   -- * Internal
   TermExpectation,
+  goldenKeyString,
 ) where
 
 import qualified Data.Aeson.Text as Aeson
@@ -84,6 +85,9 @@ instance HasGoldenValue (TermExpectation s a) where
 newtype GoldenKey = GoldenKey Text
   deriving newtype (Eq, Show, Ord, IsString)
 
+goldenKeyString :: GoldenKey -> String
+goldenKeyString (GoldenKey s) = T.unpack s
+
 instance Semigroup GoldenKey where
   GoldenKey s1 <> GoldenKey s2 = GoldenKey $ s1 <> "." <> s2
 
@@ -137,11 +141,11 @@ pgoldenSpec map = do
     it "bench" $
       pureGoldenTextFile (goldenPathWith "bench") $
         combineGoldens $ fmap goldenValueBench <$> bs
-  let asserts = flip mapMaybe bs $ \(_, b) -> do
-        goldenValueExpectation b
+  let asserts = flip mapMaybe bs $ \(k, b) -> do
+        (k,) <$> goldenValueExpectation b
   unless (null asserts) $ do
-    it "asserts" $ do
-      forM_ asserts id
+    forM_ asserts $ \(k, v) ->
+      it (goldenKeyString $ "<golden>" <> k <> "assert") v
 
 currentGoldenKey :: HasCallStack => forall (outers :: [Type]) inner. TestDefM outers inner GoldenKey
 currentGoldenKey = do
