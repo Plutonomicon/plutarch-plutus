@@ -5,6 +5,7 @@
 module Plutarch.Test (
   -- | Plutarch specific `Expectation` operators
   passert,
+  passertNot,
   pfails,
   psucceeds,
   ptraces,
@@ -47,7 +48,7 @@ import Test.Syd (
 
 import Plutarch
 import Plutarch.Benchmark (benchmarkScript')
-import Plutarch.Bool (PBool (PTrue))
+import Plutarch.Bool (PBool (PFalse, PTrue))
 import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Test.Deterministic (compileD, evaluateScriptAlways)
 import Plutarch.Test.Golden
@@ -74,6 +75,10 @@ pshouldBe x y = do
 {- Asserts the term to be true -}
 passert :: ClosedTerm a -> Expectation
 passert p = p #@?= pcon PTrue
+
+{- Asserts the term to be false -}
+passertNot :: ClosedTerm a -> Expectation
+passertNot p = p #@?= pcon PFalse
 
 {- Asserts the term evaluates successfully without failing -}
 psucceeds :: ClosedTerm a -> Expectation

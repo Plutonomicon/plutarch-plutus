@@ -32,23 +32,17 @@ spec = do
           pfails $ pand # pcon PTrue # perror
           pfails $ pcon PTrue #&& perror
     describe "por" $ do
-      goldens
-        All
-        [ ("tf", pcon PTrue #|| pcon PFalse)
-        , ("ft", pcon PFalse #|| pcon PTrue)
-        , ("tt", pcon PTrue #|| pcon PTrue)
-        , ("ff", pcon PFalse #|| pcon PFalse)
-        ]
-      it "tf" $ (pcon PTrue #|| pcon PFalse) #@?= pcon PTrue
-      it "ft" $ (pcon PFalse #|| pcon PTrue) #@?= pcon PTrue
-      it "tt" $ (pcon PTrue #|| pcon PTrue) #@?= pcon PTrue
-      it "ff" $ (pcon PFalse #|| pcon PFalse) #@?= pcon PFalse
+      pgoldenSpec $ do
+        "tf" @> pcon PTrue #|| pcon PFalse @-> passert
+        "ft" @> pcon PFalse #|| pcon PTrue @-> passert
+        "tt" @> pcon PTrue #|| pcon PTrue @-> passert
+        "ff" @> pcon PFalse #|| pcon PFalse @-> passertNot
       describe "laziness" $ do
-        let p1 = por # pcon PTrue # pdelay perror
-            p2 = pcon PTrue #|| perror
-        goldens All [("por", popaque p1), ("op", popaque p2)]
-        it "por" $ passert $ pforce p1
-        it "op" $ passert p2
+        pgoldenSpec $ do
+          "por" @> por # pcon PTrue # pdelay perror @-> \p ->
+            passert (pforce p)
+          "op" @> pcon PTrue #|| perror @-> \p ->
+            passert p
         it "pand.perror" $ do
           pfails $ por # pcon PFalse # perror
           pfails $ por # pcon PTrue # perror
