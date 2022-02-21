@@ -78,19 +78,19 @@ pshouldBe x y = do
       Left e -> expectationFailure $ "Script evaluation failed: " <> show e
       Right (_, _, x') -> pure x'
 
-{- Like `@?=` but for Plutarch terms -}
+-- | Like `@?=` but for Plutarch terms
 (#@?=) :: ClosedTerm a -> ClosedTerm b -> Expectation
 (#@?=) = pshouldBe
 
-{- Asserts the term to be true -}
+-- | Asserts the term to be true
 passert :: ClosedTerm a -> Expectation
 passert p = p #@?= pcon PTrue
 
-{- Asserts the term to be false -}
+-- | Asserts the term to be false
 passertNot :: ClosedTerm a -> Expectation
 passertNot p = p #@?= pcon PFalse
 
-{- Asserts the term evaluates successfully without failing -}
+-- | Asserts the term evaluates successfully without failing
 psucceeds :: ClosedTerm a -> Expectation
 psucceeds p =
   case evaluateScript (compile p) of
@@ -135,21 +135,22 @@ plutarchDevFlagDescribe m =
 #endif
 {- ORMOLU_ENABLE -}
 
-{- Asserts the term evaluates without success -}
+-- | Asserts the term evaluates without success
 pfails :: ClosedTerm a -> Expectation
 pfails p = do
   case evaluateScript (compile p) of
     Left _ -> pure ()
     Right _ -> expectationFailure $ "Term succeeded"
 
-{- Convenient alias for `@-> pshouldBe x` -}
+-- | Convenient alias for `@-> pshouldBe x`
 (@==) :: Term s a -> ClosedTerm b -> TermExpectation s a
 (@==) p x = p @-> pshouldBe x
+
 infixr 1 @==
 
 -- TODO: All the code below will be deleted, in favour of Golden.hs.
 
-{- Whether to run all or a particular golden test
+{- | Whether to run all or a particular golden test
 
   Typically you want to use `All` -- this produces printTerm and benchmark
   goldens.
@@ -165,7 +166,7 @@ data PlutarchGolden
   | PrintTerm
   deriving stock (Eq, Show)
 
-{- Run golden tests on the given Plutarch program -}
+-- | Run golden tests on the given Plutarch program
 {-# DEPRECATED golden "Use `pgoldenSpec` instead." #-}
 golden :: PlutarchGolden -> ClosedTerm a -> Spec
 golden pg p =

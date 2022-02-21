@@ -50,7 +50,7 @@ data GoldenValue = GoldenValue
   , goldenValueExpectation :: Maybe Expectation
   }
 
-{- Class of types that represent `GoldenValue`
+{- | Class of types that represent `GoldenValue`
 
   This class exists for syntatic sugar provided by (@->) (via `TermExpectation`).
 -}
@@ -68,23 +68,23 @@ mkGoldenValue' p mexp =
 instance HasGoldenValue (Term s a) where
   mkGoldenValue p = mkGoldenValue' (unsafeClosedTerm p) Nothing
 
-{- A `Term` paired with its evaluation expectation
+{- | A `Term` paired with its evaluation expectation
 
   Example:
   >>> TermExpectation (pcon PTrue) $ \p -> pshouldBe (pcon PTrue)
-
 -}
 data TermExpectation s a = TermExpectation (Term s a) (Term s a -> Expectation)
 
-{- Test an expectation on a golden Plutarch program -}
+-- | Test an expectation on a golden Plutarch program
 (@->) :: Term s a -> (ClosedTerm a -> Expectation) -> TermExpectation s a
 (@->) p f = TermExpectation p (\p' -> f $ unsafeClosedTerm p')
+
 infixr 1 @->
 
 instance HasGoldenValue (TermExpectation s a) where
   mkGoldenValue (TermExpectation p f) = mkGoldenValue' (unsafeClosedTerm p) (Just $ f p)
 
-{- The key used in the .golden files containing multiple golden values -}
+-- | The key used in the .golden files containing multiple golden values
 newtype GoldenKey = GoldenKey Text
   deriving newtype (Eq, Show, Ord, IsString)
 
@@ -98,22 +98,23 @@ goldenPath :: FilePath -> GoldenKey -> FilePath
 goldenPath baseDir (GoldenKey k) =
   baseDir </> T.unpack k <> ".golden"
 
-{- Group multiple goldens values in the same file -}
+-- | Group multiple goldens values in the same file
 combineGoldens :: [(GoldenKey, Text)] -> Text
 combineGoldens xs =
   T.intercalate "\n" $
     (\(GoldenKey k, v) -> k <> " " <> v) <$> xs
 
-{- Specify goldens for the given Plutarch program -}
+-- | Specify goldens for the given Plutarch program
 (@|) :: HasGoldenValue v => GoldenKey -> v -> ListSyntax (GoldenKey, GoldenValue)
 (@|) k v = listSyntaxAdd (k, mkGoldenValue v)
+
 infixr 0 @|
 
-{- Add an expectation for the Plutarch program specified with (@|) -}
+-- | Add an expectation for the Plutarch program specified with (@|)
 (@\) :: GoldenKey -> ListSyntax (GoldenKey, GoldenValue) -> ListSyntax (GoldenKey, GoldenValue)
 (@\) = listSyntaxAddSubList
 
-{- Create golden specs for pre/post-eval UPLC and benchmarks.
+{- | Create golden specs for pre/post-eval UPLC and benchmarks.
 
   A *single* golden file will be created (for each metric) for all the programs
   in the given tree.
@@ -166,7 +167,7 @@ currentGoldenKey = do
 unsafeClosedTerm :: Term s a -> ClosedTerm a
 unsafeClosedTerm t = Term $ asRawTerm t
 
-{- Like `evaluateScript` but doesn't fail. Also returns `Script`.
+{- | Like `evaluateScript` but doesn't fail. Also returns `Script`.
 
   All evaluation failures are treated as equivalent to a `perror`. Plutus does
   not provide an accurate way to tell if the program evalutes to `Error` or not;
