@@ -50,7 +50,7 @@ spec = do
           "succeeds" @> checkSignatoryTermCont # pconstant aSig # ctx @-> psucceeds
           "fails" @> checkSignatoryTermCont # pconstant "41" # ctx @-> pfails
       describe "getFields" . pgoldenSpec $ do
-        "1" @> getFields
+        "0" @> getFields
 
 --------------------------------------------------------------------------------
 
