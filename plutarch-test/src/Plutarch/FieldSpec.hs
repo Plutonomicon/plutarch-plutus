@@ -25,68 +25,43 @@ spec :: Spec
 spec = do
   describe "field" $ do
     -- example: Trips
-    describe "trips" $ do
+    describe "trips" . pgoldenSpec $ do
       -- compilation
-      describe "tripSum" $ do
-        golden All tripSum
-      describe "getY" $ do
-        golden All getY
-      describe "tripYZ" $ do
-        golden All tripYZ
-      -- tests
-      describe "tripSum # tripA = 1000" $ do
-        let p = 1000
-        it "works" $ plift (tripSum # tripA) @?= p
-      describe "tripSum # tripB = 100" $ do
-        let p = 100
-        it "works" $ plift (tripSum # tripB) @?= p
-      describe "tripSum # tripC = 10" $ do
-        let p = 10
-        it "works" $ plift (tripSum # tripC) @?= p
-      describe "tripYZ = tripZY" $
-        it "works" $ tripZY #@?= tripYZ
+      "lam" @\ do
+        "tripSum" @> tripSum
+        "getY" @> getY
+        "tripYZ" @> tripYZ
+      "tripSum" @\ do
+        "A" @> tripSum # tripA @-> \p ->
+          plift p @?= 1000
+        "B" @> tripSum # tripB @-> \p ->
+          plift p @?= 100
+        "C" @> tripSum # tripC @-> \p ->
+          plift p @?= 10
+      "tripYZ=tripZY" @> tripZY @== tripYZ
     -- rangeFields
-    describe "rangeFields" $ do
+    describe "rangeFields" . pgoldenSpec $ do
       -- compilation
-      describe "rangeFields" $ do
-        golden All rangeFields
-      -- tests
-      describe "rangeFields someFields = 11" $ do
-        let p = 11
-        it "works" $ plift (rangeFields # someFields) @?= p
+      "lam" @> rangeFields
+      "app" @> rangeFields # someFields @-> \p -> plift p @?= 11
     -- dropFields
-    describe "dropFields" $ do
+    describe "dropFields" . pgoldenSpec $ do
       -- compilation
-      describe "dropFields" $ do
-        golden All dropFields
-      -- tests
-      describe "dropFields someFields = 17" $ do
-        let p = 17
-        it "works" $ plift (dropFields # someFields) @?= p
+      "lam" @> dropFields
+      "app" @> dropFields # someFields @-> \p -> plift p @?= 17
     -- pletFields
-    describe "pletFields" $ do
+    describe "pletFields" . pgoldenSpec $ do
       -- compilation
-      describe "letSomeFields" $ do
-        golden All letSomeFields
-      describe "nFields" $ do
-        golden All nFields
-      -- tests
-      describe "letSomeFields = letSomeFields'" $ do
-        it "works" $ letSomeFields #@?= letSomeFields'
-      describe "letSomeFields someFields = 14" $ do
-        let p = 14
-        it "works" $ plift (letSomeFields # someFields) @?= p
-      describe "nFields someFields = 1" $ do
-        let p = 1
-        it "works" $ plift (nFields # someFields) @?= p
-    describe "other" $ do
-      -- tests
-      describe "by = 10" $ do
-        let p = 10
-        it "works" $ plift by @?= p
-      describe "dotPlus = 19010" $ do
-        let p = 19010
-        it "works" $ plift dotPlus @?= p
+      "letSomeFields" @\ do
+        "lam" @> letSomeFields
+        "order" @> letSomeFields' @== letSomeFields
+        "app" @> letSomeFields # someFields @-> \p -> plift p @?= 14
+      "nFields" @\ do
+        "lam" @> nFields
+        "app" @> nFields # someFields @-> \p -> plift p @?= 1
+    describe "other" . pgoldenSpec $ do
+      "by" @> by @-> \p -> plift p @?= 10
+      "dotPlus" @> dotPlus @-> \p -> plift p @?= 19010
 
 --------------------------------------------------------------------------------
 

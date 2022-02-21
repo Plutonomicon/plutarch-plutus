@@ -26,8 +26,8 @@ spec :: Spec
 spec = do
   describe "api" $ do
     describe "ctx" $ do
-      describe "printTerm" $ golden PrintTerm ctx -- TODO
       pgoldenSpec $ do
+        "term" @> ctx
         "get" @\ do
           "txInfo" @> pfromData (getTxInfo # ctx) @-> \p ->
             plift p @?= info

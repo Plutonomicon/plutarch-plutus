@@ -1,3 +1,4 @@
+term {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":140}
 get.txInfo {"exBudgetCPU":837149,"exBudgetMemory":1496,"scriptSizeBytes":149}
 get.mint {"exBudgetCPU":2838750,"exBudgetMemory":5388,"scriptSizeBytes":177}
 get.credentials {"exBudgetCPU":8007639,"exBudgetMemory":15200,"scriptSizeBytes":242}
