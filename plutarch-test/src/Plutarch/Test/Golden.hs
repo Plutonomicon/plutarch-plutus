@@ -61,8 +61,15 @@ mkGoldenValue' p mexp =
     (TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compileD p)
     mexp
 
+-- We derive for `Term s a` only because GHC prevents us from deriving for
+-- `ClosedTerm a`. In practice, this instance should be used only for closed
+-- terms.
 instance HasGoldenValue (Term s a) where
   mkGoldenValue p = mkGoldenValue' (unsafeClosedTerm p) Nothing
+    where
+      -- Because, we need a function with this signature.
+      unsafeClosedTerm :: Term s a -> ClosedTerm a
+      unsafeClosedTerm t = Term $ asRawTerm t
 
 {- | A `Term` paired with its evaluation expectation
 
@@ -73,12 +80,12 @@ data TermExpectation a = TermExpectation (ClosedTerm a) (ClosedTerm a -> Expecta
 
 -- | Test an expectation on a golden Plutarch program
 (@->) :: ClosedTerm a -> (ClosedTerm a -> Expectation) -> TermExpectation a
-(@->) p f = TermExpectation p (\p' -> f $ unsafeClosedTerm p')
+(@->) p f = TermExpectation p (\p' -> f p')
 
 infixr 1 @->
 
 instance HasGoldenValue (TermExpectation a) where
-  mkGoldenValue (TermExpectation p f) = mkGoldenValue' (unsafeClosedTerm p) (Just $ f p)
+  mkGoldenValue (TermExpectation p f) = mkGoldenValue' p (Just $ f p)
 
 -- | The key used in the .golden files containing multiple golden values
 newtype GoldenKey = GoldenKey Text
@@ -158,10 +165,6 @@ currentGoldenKey = do
         Nothing -> error "cannot use currentGoldenKey from top-level spec (after sydtest-discover)"
         Just path ->
           pure $ sconcat $ fmap GoldenKey path
-
--- Because, we need a function with this signature.
-unsafeClosedTerm :: Term s a -> ClosedTerm a
-unsafeClosedTerm t = Term $ asRawTerm t
 
 {- | Like `evaluateScript` but doesn't fail. Also returns `Script`.
 
