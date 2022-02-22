@@ -1,14 +1,16 @@
 {-# LANGUAGE CPP #-}
-{-# OPTIONS_GHC -Wno-unused-imports #-}
-{-# OPTIONS_GHC -Wno-unused-local-binds #-}
 
 module Plutarch.PlutusTypeSpec (spec) where
 
 import Test.Syd
 
-import Plutarch
-import Plutarch.Api.V1
-import Plutarch.Builtin
+import Plutarch (ClosedTerm, pcon', pmatch')
+import Plutarch.Api.V1 (
+  PAddress (PAddress),
+  PCredential (PPubKeyCredential, PScriptCredential),
+  PScriptPurpose (PCertifying, PMinting, PRewarding, PSpending),
+ )
+import Plutarch.Builtin (pasByteStr, pasConstr)
 import Plutarch.Prelude
 import Plutarch.Test
 import Plutus.V1.Ledger.Address (Address (Address))

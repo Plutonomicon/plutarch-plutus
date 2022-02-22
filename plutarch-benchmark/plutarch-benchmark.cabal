@@ -91,28 +91,3 @@ library
     , vector
 
   hs-source-dirs:  src
-
-benchmark benchmark
-  import:         c
-  type:           exitcode-stdio-1.0
-  hs-source-dirs: bench
-  main-is:        Main.hs
-  build-depends:
-    , base
-    , bytestring
-    , plutarch
-    , plutarch-benchmark
-    , plutus-ledger-api
-    , transformers
-
-executable benchmark-diff
-  import:         c
-  hs-source-dirs: benchmark-diff
-  main-is:        Main.hs
-  build-depends:
-    , base
-    , boxes
-    , bytestring
-    , cassava
-    , plutarch
-    , plutarch-benchmark

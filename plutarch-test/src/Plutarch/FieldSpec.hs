@@ -3,14 +3,17 @@
 
 module Plutarch.FieldSpec (spec) where
 
+import Plutus.V1.Ledger.Address (Address (Address))
+import Plutus.V1.Ledger.Credential (Credential (PubKeyCredential))
+import qualified PlutusCore as PLC
+import qualified PlutusTx
 import Test.Syd
 import Test.Tasty.HUnit
 
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic, I (I))
-import Plutarch
-import Plutarch.Api.V1
-import Plutarch.Builtin
+import Plutarch.Api.V1 (PAddress (PAddress))
+import Plutarch.Builtin (ppairDataBuiltin)
 import Plutarch.DataRepr (
   PDataFields,
   PIsDataReprInstances (PIsDataReprInstances),
@@ -18,13 +21,6 @@ import Plutarch.DataRepr (
 import Plutarch.Prelude
 import Plutarch.Test
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
-
-import Plutus.V1.Ledger.Address (Address (Address))
-import Plutus.V1.Ledger.Credential (
-  Credential (PubKeyCredential),
- )
-import qualified PlutusCore as PLC
-import qualified PlutusTx
 
 spec :: Spec
 spec = do
