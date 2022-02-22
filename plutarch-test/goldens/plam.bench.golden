@@ -1,3 +1,15 @@
 id {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":7}
 flip.const {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":7}
 plet {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":6}
+primitives.bool.true {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":6}
+primitives.int.0 {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":7}
+primitives.int.1 {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":7}
+primitives.int.512 {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":8}
+primitives.int.1048576 {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":10}
+primitives.bytestring.1 {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":10}
+primitives.bytestring.1111111 {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":16}
+primitives.unit.list {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":8}
+primitives.unit.() {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":6}
+primitives.id {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":7}
+primitives.fun.lam+ {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":6}
+primitives.fun.+ {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":6}

@@ -3,10 +3,9 @@
 module Main (main) where
 
 import Control.Monad.Trans.Cont (cont, runCont)
-import Data.ByteString (ByteString)
 import Plutarch (ClosedTerm)
 import Plutarch.Api.V1
-import Plutarch.Benchmark (NamedBenchmark, bench, bench', benchGroup, benchMain)
+import Plutarch.Benchmark (NamedBenchmark, bench, benchGroup, benchMain)
 import Plutarch.Bool
 import Plutarch.Builtin
 import qualified Plutarch.List as List
@@ -28,31 +27,9 @@ benchmarks :: [NamedBenchmark]
 benchmarks =
   benchGroup
     "types"
-    [ benchGroup "builtin:intlist" intListBench
-    , benchGroup "data" dataBench
+    [ benchGroup "data" dataBench
     , benchGroup "syn" syntaxBench
     ]
-
-intListBench :: [[NamedBenchmark]]
-intListBench =
-  let numList = pconstant @(PBuiltinList PInteger) [1 .. 5]
-   in [ benchGroup
-          "primitives"
-          [ bench' $ plam $ \_ -> pconstant True
-          , bench' $ plam $ \_ -> (0 :: Term _ PInteger)
-          , bench' $ plam $ \_ -> (1 :: Term _ PInteger)
-          , bench' $ plam $ \_ -> (512 :: Term _ PInteger)
-          , bench' $ plam $ \_ -> (1048576 :: Term _ PInteger)
-          , bench' $ plam $ \_ -> pconstant ("1" :: ByteString)
-          , bench' $ plam $ \_ -> pconstant ("1111111" :: ByteString)
-          , bench' $ plam $ \_ -> pconstant ([()] :: [()])
-          , bench' $ plam $ \_ -> pconstant ()
-          , bench' $ pconstant ()
-          , bench' $ plam $ \x -> x
-          , bench' $ plam $ \_ -> (plam (+) :: Term _ (PInteger :--> PInteger :--> PInteger))
-          , bench' $ (plam (+) :: Term _ (PInteger :--> PInteger :--> PInteger))
-          ]
-      ]
 
 dataBench :: [[NamedBenchmark]]
 dataBench =
