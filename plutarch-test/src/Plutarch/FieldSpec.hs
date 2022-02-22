@@ -9,17 +9,22 @@ import Test.Tasty.HUnit
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic, I (I))
 import Plutarch
+import Plutarch.Api.V1
+import Plutarch.Builtin
 import Plutarch.DataRepr (
   PDataFields,
   PIsDataReprInstances (PIsDataReprInstances),
  )
-import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
-
-import qualified PlutusCore as PLC
-import qualified PlutusTx
-
 import Plutarch.Prelude
 import Plutarch.Test
+import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
+
+import Plutus.V1.Ledger.Address (Address (Address))
+import Plutus.V1.Ledger.Credential (
+  Credential (PubKeyCredential),
+ )
+import qualified PlutusCore as PLC
+import qualified PlutusTx
 
 spec :: Spec
 spec = do
@@ -62,6 +67,30 @@ spec = do
     describe "other" . pgoldenSpec $ do
       "by" @| by @-> \p -> plift p @?= 10
       "dotPlus" @| dotPlus @-> \p -> plift p @?= 19010
+    describe "data" . pgoldenSpec $ do
+      "pmatch-pfield" @\ do
+        -- These two should ideally have the exact same efficiency.
+        "pmatch" @\ do
+          "newtype"
+            @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+                in pmatch addr $ \(PAddress addrFields) ->
+                    pletFields @'["credential", "stakingCredential"] addrFields $ \y ->
+                      ppairDataBuiltin # hrecField @"credential" y # hrecField @"stakingCredential" y
+        "pfield" @\ do
+          "newtype"
+            @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+                in pletFields @'["credential", "stakingCredential"] addr $ \y ->
+                    ppairDataBuiltin # hrecField @"credential" y # hrecField @"stakingCredential" y
+      "pfield-pletFields" @\ do
+        "pfield" @\ do
+          "single"
+            @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+                in pfromData $ pfield @"credential" # addr
+        "pletFields" @\ do
+          "single"
+            @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+                in pletFields @'["credential"] addr $ \y ->
+                    pfromData $ hrecField @"credential" y
 
 --------------------------------------------------------------------------------
 
