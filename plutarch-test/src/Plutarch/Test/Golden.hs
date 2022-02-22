@@ -170,11 +170,11 @@ currentGoldenKey = do
         Just path ->
           pure $ sconcat $ fmap GoldenKey path
 
-{- | Like `evalScript` but doesn't fail, and returns `Benchmark`.
+{- | Like `evalScript` but doesn't throw `EvalError`, and returns `Benchmark`.
 
-  All evaluation failures are treated as equivalent to a `perror`. Plutus does
-  not provide an accurate way to tell if the program evalutes to `Error` or not;
-  see https://github.com/input-output-hk/plutus/issues/4270
+  On `EvalError`, this function returns `perror` as evaluated script. Plutus
+  does not provide an accurate way to tell if the program evalutes to `Error` or
+  not; see https://github.com/input-output-hk/plutus/issues/4270
 -}
 evalScriptAlwaysWithBenchmark :: Scripts.Script -> (Scripts.Script, Benchmark)
 evalScriptAlwaysWithBenchmark script =
