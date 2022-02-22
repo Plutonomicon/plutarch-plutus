@@ -52,7 +52,7 @@ import Test.Syd (
 import Plutarch
 import Plutarch.Benchmark (benchmarkScript')
 import Plutarch.Bool (PBool (PFalse, PTrue))
-import Plutarch.Evaluate (evaluateScript)
+import Plutarch.Evaluate (evalScript)
 import Plutarch.Test.Golden (
   TermExpectation,
   compileD,
@@ -74,9 +74,9 @@ pshouldBe x y = do
   p1 `shouldBe` p2
   where
     eval :: Scripts.Script -> IO Scripts.Script
-    eval s = case evaluateScript s of
-      Left e -> expectationFailure $ "Script evaluation failed: " <> show e
-      Right (_, _, x') -> pure x'
+    eval s = case evalScript s of
+      (Left e, _, _) -> expectationFailure $ "Script evaluation failed: " <> show e
+      (Right x', _, _) -> pure x'
 
 -- | Like `@?=` but for Plutarch terms
 (#@?=) :: ClosedTerm a -> ClosedTerm b -> Expectation
@@ -93,9 +93,9 @@ passertNot p = p #@?= pcon PFalse
 -- | Asserts the term evaluates successfully without failing
 psucceeds :: ClosedTerm a -> Expectation
 psucceeds p =
-  case evaluateScript (compile p) of
-    Left _ -> expectationFailure $ "Term failed to evaluate"
-    Right _ -> pure ()
+  case evalScript (compile p) of
+    (Left _, _, _) -> expectationFailure $ "Term failed to evaluate"
+    (Right _, _, _) -> pure ()
 
 {- | Asserts that the term evaluates successfully with the given trace sequence
 
@@ -103,9 +103,9 @@ psucceeds p =
 -}
 ptraces :: ClosedTerm a -> [Text] -> Expectation
 ptraces p develTraces =
-  case evaluateScript (compile p) of
-    Left _ -> expectationFailure $ "Term failed to evaluate"
-    Right (_, traceLog, _) -> do
+  case evalScript (compile p) of
+    (Left _, _, _) -> expectationFailure $ "Term failed to evaluate"
+    (Right _, _, traceLog) -> do
 #ifdef Development 
       traceLog `shouldBe` develTraces
 #else
@@ -138,9 +138,9 @@ plutarchDevFlagDescribe m =
 -- | Asserts the term evaluates without success
 pfails :: ClosedTerm a -> Expectation
 pfails p = do
-  case evaluateScript (compile p) of
-    Left _ -> pure ()
-    Right _ -> expectationFailure $ "Term succeeded"
+  case evalScript (compile p) of
+    (Left _, _, _) -> pure ()
+    (Right _, _, _) -> expectationFailure $ "Term succeeded"
 
 -- | Convenient alias for `@-> pshouldBe x`
 (@==) :: ClosedTerm a -> ClosedTerm b -> TermExpectation a

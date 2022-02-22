@@ -100,9 +100,6 @@ library
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
 
-  -- FIXME remove -Wwarn=deprecations
-  ghc-options:     -Wwarn=deprecations
-
 executable plutarch-test
   import:         c, deps
   main-is:        Main.hs

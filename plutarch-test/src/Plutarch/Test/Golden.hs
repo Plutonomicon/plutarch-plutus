@@ -33,7 +33,7 @@ import Test.Syd (
 
 import Plutarch (ClosedTerm, compile, printScript)
 import Plutarch.Benchmark (benchmarkScript')
-import Plutarch.Evaluate (evaluateScript)
+import Plutarch.Evaluate (evalScript)
 import Plutarch.Internal (Term (Term))
 import Plutarch.Prelude
 import Plutarch.Test.ListSyntax (ListSyntax, listSyntaxAdd, listSyntaxAddSubList, runListSyntax)
@@ -176,9 +176,9 @@ currentGoldenKey = do
 -}
 evaluateScriptAlways :: Scripts.Script -> Scripts.Script
 evaluateScriptAlways script =
-  case evaluateScript script of
-    Left _ -> compile perror
-    Right (_, _, x) -> x
+  case evalScript script of
+    (Left _, _, _) -> compile perror
+    (Right x, _, _) -> x
 
 -- TODO: Make this deterministic
 -- See https://github.com/Plutonomicon/plutarch/pull/297
