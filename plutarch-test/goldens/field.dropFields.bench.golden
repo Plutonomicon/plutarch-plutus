@@ -1,2 +1,2 @@
-lam {"exBudgetCPU":268057,"exBudgetMemory":1000,"scriptSizeBytes":45}
-app {"exBudgetCPU":3487094,"exBudgetMemory":5018,"scriptSizeBytes":88}
+lam {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":44}
+app {"exBudgetCPU":3576413,"exBudgetMemory":5318,"scriptSizeBytes":87}

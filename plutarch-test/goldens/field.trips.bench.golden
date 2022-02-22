@@ -1,7 +1,7 @@
-lam.tripSum {"exBudgetCPU":268057,"exBudgetMemory":1000,"scriptSizeBytes":46}
+lam.tripSum {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":43}
 lam.getY {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":16}
-lam.tripYZ {"exBudgetCPU":268057,"exBudgetMemory":1000,"scriptSizeBytes":36}
-tripSum.A {"exBudgetCPU":5147720,"exBudgetMemory":8048,"scriptSizeBytes":80}
-tripSum.B {"exBudgetCPU":5147720,"exBudgetMemory":8048,"scriptSizeBytes":77}
-tripSum.C {"exBudgetCPU":5147720,"exBudgetMemory":8048,"scriptSizeBytes":77}
-tripYZ=tripZY {"exBudgetCPU":268057,"exBudgetMemory":1000,"scriptSizeBytes":36}
+lam.tripYZ {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":32}
+tripSum.A {"exBudgetCPU":5028628,"exBudgetMemory":7648,"scriptSizeBytes":74}
+tripSum.B {"exBudgetCPU":5028628,"exBudgetMemory":7648,"scriptSizeBytes":71}
+tripSum.C {"exBudgetCPU":5028628,"exBudgetMemory":7648,"scriptSizeBytes":71}
+tripYZ=tripZY {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":32}

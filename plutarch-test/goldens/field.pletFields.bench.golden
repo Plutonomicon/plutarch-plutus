@@ -1,5 +1,5 @@
-letSomeFields.lam {"exBudgetCPU":357376,"exBudgetMemory":1300,"scriptSizeBytes":55}
-letSomeFields.order {"exBudgetCPU":357376,"exBudgetMemory":1300,"scriptSizeBytes":55}
-letSomeFields.app {"exBudgetCPU":4160671,"exBudgetMemory":6620,"scriptSizeBytes":97}
-nFields.lam {"exBudgetCPU":148965,"exBudgetMemory":600,"scriptSizeBytes":23}
-nFields.app {"exBudgetCPU":1632088,"exBudgetMemory":2562,"scriptSizeBytes":68}
+letSomeFields.lam {"exBudgetCPU":119192,"exBudgetMemory":500,"scriptSizeBytes":52}
+letSomeFields.order {"exBudgetCPU":119192,"exBudgetMemory":500,"scriptSizeBytes":52}
+letSomeFields.app {"exBudgetCPU":4220217,"exBudgetMemory":6820,"scriptSizeBytes":94}
+nFields.lam {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":21}
+nFields.app {"exBudgetCPU":1572542,"exBudgetMemory":2362,"scriptSizeBytes":65}
