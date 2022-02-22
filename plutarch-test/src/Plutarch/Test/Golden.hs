@@ -38,7 +38,7 @@ import Test.Syd (
 import Plutarch (ClosedTerm, compile, printScript)
 import Plutarch.Benchmark (benchmarkScript')
 import Plutarch.Evaluate (evaluateScript)
-import Plutarch.Internal (Term (Term, asRawTerm))
+import Plutarch.Internal (Term (Term))
 import Plutarch.Prelude
 import Plutarch.Test.ListSyntax (ListSyntax, listSyntaxAdd, listSyntaxAddSubList, runListSyntax)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
@@ -73,7 +73,7 @@ instance HasGoldenValue Term where
 
 -- Because, we need a function with this signature.
 unsafeClosedTerm :: Term s a -> ClosedTerm a
-unsafeClosedTerm t = Term $ asRawTerm t
+unsafeClosedTerm (Term t) = (Term t)
 
 {- | A `Term` paired with its evaluation expectation
 
