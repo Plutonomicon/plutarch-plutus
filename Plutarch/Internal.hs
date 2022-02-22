@@ -320,9 +320,8 @@ phoistAcyclic :: HasCallStack => ClosedTerm a -> Term s a
 phoistAcyclic t = case asRawTerm t 0 of
   -- Built-ins are smaller than variable references
   t'@(getTerm -> RBuiltin _) -> Term $ \_ -> t'
-  -- The same holds for built-ins forced once.
+  -- The same holds for built-ins forced once and twice.
   t'@(getTerm -> RForce (RBuiltin _)) -> Term $ \_ -> t'
-  -- The same holds for built-ins forced once.
   t'@(getTerm -> RForce (RForce (RBuiltin _))) -> Term $ \_ -> t'
   t' -> case evaluateScript . Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' t') of
     Right _ ->
