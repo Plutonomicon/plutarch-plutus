@@ -5,16 +5,24 @@
 module Plutarch.Test (
   -- | Plutarch specific `Expectation` operators
   passert,
+  passertNot,
   pfails,
   psucceeds,
   ptraces,
   pshouldBe,
   (#@?=),
+
+  -- * For Development flag tests
   plutarchDevFlagDescribe,
-  -- | Golden testing
-  --
-  -- Typically you want to use `golden`. For grouping multiple goldens, use
-  -- `goldens`.
+
+  -- * Golden testing
+  (@|),
+  (@\),
+  (@->),
+  (@==),
+  pgoldenSpec,
+
+  -- * Deprecated exports
   golden,
   goldens,
   PlutarchGolden (All, Bench, PrintTerm),
@@ -43,8 +51,17 @@ import Test.Syd (
 
 import Plutarch
 import Plutarch.Benchmark (benchmarkScript')
-import Plutarch.Bool (PBool (PTrue))
+import Plutarch.Bool (PBool (PFalse, PTrue))
 import Plutarch.Evaluate (evaluateScript)
+import Plutarch.Test.Golden (
+  TermExpectation,
+  compileD,
+  evaluateScriptAlways,
+  pgoldenSpec,
+  (@->),
+  (@\),
+  (@|),
+ )
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 
 {- |
@@ -61,33 +78,24 @@ pshouldBe x y = do
       Left e -> expectationFailure $ "Script evaluation failed: " <> show e
       Right (_, _, x') -> pure x'
 
-{- Like `@?=` but for Plutarch terms -}
+-- | Like `@?=` but for Plutarch terms
 (#@?=) :: ClosedTerm a -> ClosedTerm b -> Expectation
 (#@?=) = pshouldBe
 
-{- Asserts the term to be true -}
+-- | Asserts the term to be true
 passert :: ClosedTerm a -> Expectation
 passert p = p #@?= pcon PTrue
 
-{- Asserts the term evaluates successfully without failing -}
+-- | Asserts the term to be false
+passertNot :: ClosedTerm a -> Expectation
+passertNot p = p #@?= pcon PFalse
+
+-- | Asserts the term evaluates successfully without failing
 psucceeds :: ClosedTerm a -> Expectation
 psucceeds p =
   case evaluateScript (compile p) of
     Left _ -> expectationFailure $ "Term failed to evaluate"
     Right _ -> pure ()
-
-{- Like `printTerm` but evaluates the term beforehand.
-
-  All evaluation failures are treated as equivalent to a `perror`. Plutus does
-  not provide an accurate way to tell if the program evalutes to `Error` or not;
-  see https://github.com/input-output-hk/plutus/issues/4270
-
--}
-printTermEvaluated :: ClosedTerm a -> String
-printTermEvaluated p =
-  case evaluateScript (compile p) of
-    Left _ -> printTerm perror
-    Right (_, _, x) -> printScript x
 
 {- | Asserts that the term evaluates successfully with the given trace sequence
 
@@ -127,14 +135,22 @@ plutarchDevFlagDescribe m =
 #endif
 {- ORMOLU_ENABLE -}
 
-{- Asserts the term evaluates without success -}
+-- | Asserts the term evaluates without success
 pfails :: ClosedTerm a -> Expectation
 pfails p = do
   case evaluateScript (compile p) of
     Left _ -> pure ()
     Right _ -> expectationFailure $ "Term succeeded"
 
-{- Whether to run all or a particular golden test
+-- | Convenient alias for `@-> pshouldBe x`
+(@==) :: ClosedTerm a -> ClosedTerm b -> TermExpectation a
+(@==) p x = p @-> pshouldBe x
+
+infixr 1 @==
+
+-- TODO: All the code below will be deleted, in favour of Golden.hs.
+
+{- | Whether to run all or a particular golden test
 
   Typically you want to use `All` -- this produces printTerm and benchmark
   goldens.
@@ -150,17 +166,8 @@ data PlutarchGolden
   | PrintTerm
   deriving stock (Eq, Show)
 
-hasBenchGolden :: PlutarchGolden -> Bool
-hasBenchGolden = \case
-  PrintTerm -> False
-  _ -> True
-
-hasPrintTermGolden :: PlutarchGolden -> Bool
-hasPrintTermGolden = \case
-  Bench -> False
-  _ -> True
-
-{- Run golden tests on the given Plutarch program -}
+-- | Run golden tests on the given Plutarch program
+{-# DEPRECATED golden "Use `pgoldenSpec` instead." #-}
 golden :: PlutarchGolden -> ClosedTerm a -> Spec
 golden pg p =
   goldens pg [("0", popaque p)]
@@ -170,6 +177,7 @@ golden pg p =
   Multiple programs use a single golden file. Each output separated from the
   keyword with a space.
 -}
+{-# DEPRECATED goldens "Use `pgoldenSpec` instead." #-}
 goldens :: PlutarchGolden -> [(String, ClosedTerm a)] -> Spec
 goldens pg ps = do
   name <- getGoldenFilePrefix
@@ -179,17 +187,26 @@ goldens pg ps = do
       it "uplc" $
         pureGoldenTextFile (goldenFilePath "goldens" name "uplc") $
           multiGolden ps $ \p ->
-            T.pack $ printTerm p
+            T.pack $ printScript $ compileD p
       it "uplc.eval" $
-        let evaluateds = flip fmap ps $ \(s, p) -> (s, printTermEvaluated p)
-         in pureGoldenTextFile (goldenFilePath "goldens" name "uplc.eval") $
-              multiGolden evaluateds T.pack
+        pureGoldenTextFile (goldenFilePath "goldens" name "uplc.eval") $
+          multiGolden ps $ \p ->
+            T.pack $ printScript $ evaluateScriptAlways $ compileD p
     -- Golden test for Plutus benchmarks
     when (hasBenchGolden pg) $
       it "bench" $
         pureGoldenTextFile (goldenFilePath "goldens" name "bench") $
           multiGolden ps $ \p ->
-            TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compile p
+            TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compileD p
+  where
+    hasBenchGolden :: PlutarchGolden -> Bool
+    hasBenchGolden = \case
+      PrintTerm -> False
+      _ -> True
+    hasPrintTermGolden :: PlutarchGolden -> Bool
+    hasPrintTermGolden = \case
+      Bench -> False
+      _ -> True
 
 -- | Get a golden filename prefix from the test description path
 getGoldenFilePrefix ::

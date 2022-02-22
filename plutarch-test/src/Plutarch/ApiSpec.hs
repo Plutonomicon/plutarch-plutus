@@ -26,44 +26,31 @@ spec :: Spec
 spec = do
   describe "api" $ do
     describe "ctx" $ do
-      golden PrintTerm ctx
-      describe "get" $ do
-        describe "txInfo" $ do
-          let p = pfromData $ getTxInfo # ctx
-          golden All p
-          it "works" $ plift p @?= info
-        describe "mint" $ do
-          let p = pforgetData $ getMint #$ getTxInfo # ctx
-          golden All p
-          it "works" $ plift p @?= toData mint
-        describe "credentials" $ do
-          let p = getCredentials ctx
-          golden All p
-          it "works" $ plift p @?= [toData validator]
-        describe "sym" $ do
-          let p = pfromData $ getSym #$ pfromData $ getMint #$ getTxInfo # ctx
-          golden All p
-          it "works" $ plift p @?= sym
+      pgoldenSpec $ do
+        "term" @| ctx
+        "get" @\ do
+          "txInfo" @| pfromData (getTxInfo # ctx) @-> \p ->
+            plift p @?= info
+          "mint" @| pforgetData (getMint #$ getTxInfo # ctx) @-> \p ->
+            plift p @?= toData mint
+          "credentials" @| getCredentials ctx @-> \p ->
+            plift p @?= [toData validator]
+          "sym" @| pfromData (getSym #$ pfromData $ getMint #$ getTxInfo # ctx) @-> \p ->
+            plift p @?= sym
     describe "example" $ do
       -- The checkSignatory family of functions implicitly use tracing due to
       -- monadic syntax, and as such we need two sets of tests here.
       -- See Plutarch.MonadicSpec for GHC9 only syntax.
-      describe "signatory" . plutarchDevFlagDescribe $ do
+      describe "signatory" . plutarchDevFlagDescribe . pgoldenSpec $ do
         let aSig :: PubKeyHash = "ab01fe235c"
-        describe "cont" $ do
-          let p = checkSignatoryCont # pconstant aSig # ctx
-              pe = checkSignatoryCont # pconstant "41" # ctx
-          golden All p
-          it "succeeds" $ psucceeds p
-          it "fails" $ pfails pe
-        describe "termcont" $ do
-          let p = checkSignatoryTermCont # pconstant aSig # ctx
-              pe = checkSignatoryTermCont # pconstant "41" # ctx
-          golden All p
-          it "succeeds" $ psucceeds p
-          it "fails" $ pfails pe
-      describe "getFields" $
-        golden All getFields
+        "cont" @\ do
+          "succeeds" @| checkSignatoryCont # pconstant aSig # ctx @-> psucceeds
+          "fails" @| checkSignatoryCont # pconstant "41" # ctx @-> pfails
+        "termcont" @\ do
+          "succeeds" @| checkSignatoryTermCont # pconstant aSig # ctx @-> psucceeds
+          "fails" @| checkSignatoryTermCont # pconstant "41" # ctx @-> pfails
+      describe "getFields" . pgoldenSpec $ do
+        "0" @| getFields
 
 --------------------------------------------------------------------------------
 

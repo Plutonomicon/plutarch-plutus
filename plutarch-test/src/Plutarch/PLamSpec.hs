@@ -7,10 +7,7 @@ import Plutarch.Test
 
 spec :: Spec
 spec = do
-  describe "plam" $ do
-    describe "id" $ do
-      golden PrintTerm $ plam (\x -> x)
-    describe "flip.const" $ do
-      golden PrintTerm $ plam (\_ y -> y)
-    describe "plet" $ do
-      golden PrintTerm $ plam (\x _ -> plet x $ \_ -> perror)
+  describe "plam" . pgoldenSpec $ do
+    "id" @| plam (\x -> x)
+    "flip.const" @| plam (\_ y -> y)
+    "plet" @| plam (\x _ -> plet x $ \_ -> perror)

@@ -1,0 +1,5 @@
+eq (program 1.0.0 ((\i0 -> equalsString i1 i1) "foo"))
+semigroup.laws.id.1 (program 1.0.0 ((\i0 -> equalsString (appendString "" i1) i1) "foo"))
+semigroup.laws.id.2 (program 1.0.0 ((\i0 -> equalsString i1 (appendString "" i1)) "foo"))
+semigroup.concat (program 1.0.0 (equalsString (appendString "foo" "bar") "foobar"))
+semigroup.mempty (program 1.0.0 ((\i0 -> equalsString i1 i1) ""))

@@ -1,0 +1,5 @@
+simple (program 1.0.0 (mkPairData #01 (bData #41)))
+scriptcredential (program 1.0.0 (mkPairData #d8799f4141ff #d87a9f4182ff))
+isomorphism.pforgetData (program 1.0.0 ((\i0 -> (\i0 -> constrData 0 (i2 (force (force fstPair) i1) (i2 (force (force sndPair) i1) [  ]))) (mkPairData #d8799f4141ff #d87a9f4182ff)) (force mkCons)))
+isomorphism.pbuiltinPairFromTuple (program 1.0.0 ((\i0 -> (\i0 -> (\i0 -> (\i0 -> mkPairData (i3 i1) (i3 (force tailList i1))) (force (force sndPair) (unConstrData i1))) ((\i0 -> \i0 -> constrData 0 (i4 i2 (i4 i1 [  ]))) #d8799f4141ff #d87a9f4182ff)) (force headList)) (force mkCons)))
+isomorphism.ptupleFromBuiltin (program 1.0.0 ((\i0 -> (\i0 -> constrData 0 (i2 (force (force fstPair) i1) (i2 (force (force sndPair) i1) [  ]))) (mkPairData #d8799f4141ff #d87a9f4182ff)) (force mkCons)))

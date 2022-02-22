@@ -1,0 +1,3 @@
+id (program 1.0.0 (\i0 -> i1))
+flip.const (program 1.0.0 (\i0 -> \i0 -> i1))
+plet (program 1.0.0 (\i0 -> \i0 -> error))

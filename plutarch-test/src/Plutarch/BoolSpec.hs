@@ -8,57 +8,36 @@ import Plutarch.Test
 
 spec :: Spec
 spec = do
-  describe "bool" $ do
-    describe "pnot" $ do
-      goldens
-        All
-        [ ("lam", popaque pnot)
-        , ("app", popaque $ pnot #$ pcon PTrue)
-        ]
-      it "true" $ (pnot #$ pcon PTrue) #@?= pcon PFalse
-      it "false" $ (pnot #$ pcon PFalse) #@?= pcon PTrue
-    describe "pand" $ do
-      goldens
-        All
-        [ ("tf", pcon PTrue #&& pcon PFalse)
-        , ("ft", pcon PFalse #&& pcon PTrue)
-        , ("tt", pcon PTrue #&& pcon PTrue)
-        , ("ff", pcon PFalse #&& pcon PFalse)
-        ]
-      it "tf" $ (pcon PTrue #&& pcon PFalse) #@?= pcon PFalse
-      it "ft" $ (pcon PFalse #&& pcon PTrue) #@?= pcon PFalse
-      it "tt" $ (pcon PTrue #&& pcon PTrue) #@?= pcon PTrue
-      it "ff" $ (pcon PFalse #&& pcon PFalse) #@?= pcon PFalse
-      describe "laziness" $ do
-        let p1 = pand # pcon PFalse # pdelay perror
-            p2 = pcon PFalse #&& perror
-        goldens All [("pand", popaque p1), ("op", popaque p2)]
-        it "pand" $ passert $ pnot # pforce p1
-        it "op" $ passert $ pnot # p2
-        it "pand.perror" $ do
-          pfails $ pand # pcon PFalse # perror
-          pfails $ pand # pcon PTrue # perror
-          pfails $ pcon PTrue #&& perror
-    describe "por" $ do
-      goldens
-        All
-        [ ("tf", pcon PTrue #|| pcon PFalse)
-        , ("ft", pcon PFalse #|| pcon PTrue)
-        , ("tt", pcon PTrue #|| pcon PTrue)
-        , ("ff", pcon PFalse #|| pcon PFalse)
-        ]
-      it "tf" $ (pcon PTrue #|| pcon PFalse) #@?= pcon PTrue
-      it "ft" $ (pcon PFalse #|| pcon PTrue) #@?= pcon PTrue
-      it "tt" $ (pcon PTrue #|| pcon PTrue) #@?= pcon PTrue
-      it "ff" $ (pcon PFalse #|| pcon PFalse) #@?= pcon PFalse
-      describe "laziness" $ do
-        let p1 = por # pcon PTrue # pdelay perror
-            p2 = pcon PTrue #|| perror
-        goldens All [("por", popaque p1), ("op", popaque p2)]
-        it "por" $ passert $ pforce p1
-        it "op" $ passert p2
-        it "pand.perror" $ do
-          pfails $ por # pcon PFalse # perror
-          pfails $ por # pcon PTrue # perror
-          passert $ pcon PTrue #|| perror
-          pfails $ pcon PFalse #|| perror
+  describe "bool" . pgoldenSpec $ do
+    "pnot" @\ do
+      "lam" @| pnot
+      "app" @| pnot # (pcon PTrue) @-> passertNot
+    "pand" @\ do
+      "tf" @| pcon PTrue #&& pcon PFalse @-> passertNot
+      "ft" @| pcon PFalse #&& pcon PTrue @-> passertNot
+      "tt" @| pcon PTrue #&& pcon PTrue @-> passert
+      "ff" @| pcon PFalse #&& pcon PFalse @-> passertNot
+      "laziness" @\ do
+        "pand" @| pand # pcon PFalse # pdelay perror @-> \p ->
+          passert $ pnot # pforce p
+        "op" @| pcon PFalse #&& perror @-> \p ->
+          passert $ pnot # p
+        "pand.perror" @\ do
+          "false" @| pand # pcon PFalse # perror @-> pfails
+          "true" @| pand # pcon PTrue # perror @-> pfails
+          "op" @| pcon PTrue #&& perror @-> pfails
+    "por" @\ do
+      "tf" @| pcon PTrue #|| pcon PFalse @-> passert
+      "ft" @| pcon PFalse #|| pcon PTrue @-> passert
+      "tt" @| pcon PTrue #|| pcon PTrue @-> passert
+      "ff" @| pcon PFalse #|| pcon PFalse @-> passertNot
+      "laziness" @\ do
+        "por" @| por # pcon PTrue # pdelay perror @-> \p ->
+          passert (pforce p)
+        "op" @| pcon PTrue #|| perror @-> \p ->
+          passert p
+        "pand.perror" @\ do
+          "false" @| por # pcon PFalse # perror @-> pfails
+          "true" @| por # pcon PTrue # perror @-> pfails
+          "op.true" @| pcon PTrue #|| perror @-> psucceeds
+          "op.false" @| pcon PFalse #|| perror @-> pfails
