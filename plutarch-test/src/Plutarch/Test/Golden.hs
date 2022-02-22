@@ -4,6 +4,7 @@ module Plutarch.Test.Golden (
   (@\),
   (@->),
   TermExpectation,
+  PlutarchGoldens,
   goldenKeyString,
   evalScriptAlwaysWithBenchmark,
   compileD,
@@ -111,14 +112,16 @@ combineGoldens xs =
   T.intercalate "\n" $
     (\(GoldenKey k, v) -> k <> " " <> v) <$> xs
 
+type PlutarchGoldens = ListSyntax (GoldenKey, GoldenValue)
+
 -- | Specify goldens for the given Plutarch program
-(@|) :: forall t a. HasGoldenValue t => GoldenKey -> (forall s. t s a) -> ListSyntax (GoldenKey, GoldenValue)
+(@|) :: forall t a. HasGoldenValue t => GoldenKey -> (forall s. t s a) -> PlutarchGoldens
 (@|) k v = listSyntaxAdd (k, mkGoldenValue v)
 
 infixr 0 @|
 
 -- | Add an expectation for the Plutarch program specified with (@|)
-(@\) :: GoldenKey -> ListSyntax (GoldenKey, GoldenValue) -> ListSyntax (GoldenKey, GoldenValue)
+(@\) :: GoldenKey -> PlutarchGoldens -> PlutarchGoldens
 (@\) = listSyntaxAddSubList
 
 {- | Create golden specs for pre/post-eval UPLC and benchmarks.
