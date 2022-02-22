@@ -93,13 +93,13 @@ spec = do
         it "base agreement" elemAtTest
         goldens
           All
-          [ ("elemAt_3_[1..10]", pelemAt # 3 # marshal [1..10::Integer])
-          , ("elemAt_0_[1..10]", pelemAt # 0 # marshal [1..10::Integer])
-          , ("elemAt_9_[1..10]", pelemAt # 9 # marshal [1..10::Integer])
+          [ ("elemAt_3_[1..10]", pelemAt # 3 # marshal [1 .. 10 :: Integer])
+          , ("elemAt_0_[1..10]", pelemAt # 0 # marshal [1 .. 10 :: Integer])
+          , ("elemAt_9_[1..10]", pelemAt # 9 # marshal [1 .. 10 :: Integer])
           ]
       describe "isSorted" $ do
-        it "[1..10]" $ passert $ pcheckSorted # marshal [1..10::Integer]
-        it "reverse_[1..10]" $ passert $ pnot #$ pcheckSorted #$ marshal $ reverse [1..10::Integer]
+        it "[1..10]" $ passert $ pcheckSorted # marshal [1 .. 10 :: Integer]
+        it "reverse_[1..10]" $ passert $ pnot #$ pcheckSorted #$ marshal $ reverse [1 .. 10 :: Integer]
 
 findTest :: Property
 findTest =

@@ -411,4 +411,3 @@ pcheckSorted = phoistAcyclic $
         pmatch xs' $ \case
           PSNil -> pcon PTrue
           PSCons x2 _ -> x1 #<= x2 #&& (self # xs')
-
