@@ -21,6 +21,7 @@ module Plutarch.Lift (
   PUnsafeLiftDecl (..),
 ) where
 
+import Control.Lens ((^?))
 import Data.Coerce
 import Data.Kind (Type)
 import GHC.Stack (HasCallStack)
@@ -29,7 +30,7 @@ import Plutarch.Internal (ClosedTerm, PType, Term, compile, punsafeConstantInter
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import qualified PlutusCore as PLC
 import PlutusCore.Builtin (ReadKnownError, readKnownConstant)
-import PlutusCore.Evaluation.Machine.Exception (ErrorWithCause, MachineError)
+import PlutusCore.Evaluation.Machine.Exception (ErrorWithCause (ErrorWithCause), MachineError, _UnliftingErrorE)
 import PlutusTx (BuiltinData, Data, builtinDataToData, dataToBuiltinData)
 import PlutusTx.Builtins.Class (FromBuiltin, ToBuiltin, fromBuiltin, toBuiltin)
 import qualified UntypedPlutusCore as UPLC
@@ -89,9 +90,15 @@ plift' prog = case evalScript (compile prog) of
 plift :: forall p. (HasCallStack, PLift p) => ClosedTerm p -> PLifted p
 plift prog = case plift' prog of
   Right x -> x
-  Left LiftError_FromRepr -> error "plift failed because of pconstantFromRepr"
-  Left (LiftError_ReadKnownError _) -> error "plift failed because of an internal error in plutus-core"
-  Left (LiftError_EvalError e) -> error $ "plift failed because of an erring term: " <> show e
+  Left LiftError_FromRepr -> error "plift failed: pconstantFromRepr returned 'Nothing'"
+  Left (LiftError_ReadKnownError (ErrorWithCause e causeMaybe)) ->
+    let unliftErrMaybe = e ^? _UnliftingErrorE
+     in error $
+          "plift failed: internal plutus-core error: "
+            <> maybe "ReadKnownEvaluationFailure" show unliftErrMaybe
+            <> "\n"
+            <> maybe "" (\x -> "cause: " <> show x) causeMaybe
+  Left (LiftError_EvalError e) -> error $ "plift failed: erring term: " <> show e
 
 -- TODO: Add haddock
 newtype DerivePConstantDirect (h :: Type) (p :: PType) = DerivePConstantDirect h

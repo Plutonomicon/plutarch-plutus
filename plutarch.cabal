@@ -135,6 +135,7 @@ library
     , flat
     , generics-sop
     , hashable
+    , lens
     , memory
     , mtl
     , plutus-core
