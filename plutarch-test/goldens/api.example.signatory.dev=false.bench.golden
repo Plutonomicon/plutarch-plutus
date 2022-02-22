@@ -1,4 +1,4 @@
-cont.succeeds {"exBudgetCPU":8252786,"exBudgetMemory":16309,"scriptSizeBytes":288}
-cont.fails {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":284}
-termcont.succeeds {"exBudgetCPU":8252786,"exBudgetMemory":16309,"scriptSizeBytes":288}
-termcont.fails {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":284}
+cont.succeeds {"exBudgetCPU":8282559,"exBudgetMemory":16409,"scriptSizeBytes":286}
+cont.fails {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":282}
+termcont.succeeds {"exBudgetCPU":8282559,"exBudgetMemory":16409,"scriptSizeBytes":286}
+termcont.fails {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":282}
