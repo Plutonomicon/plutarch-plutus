@@ -9,6 +9,8 @@ module Plutarch.Benchmark (
   -- | * Benchmark an arbitraty Plutus script
   benchmarkScript,
   benchmarkScript',
+  mkBenchmark,
+  scriptSize,
   -- | * Benchmark entrypoints
   bench,
   bench',
@@ -21,7 +23,6 @@ module Plutarch.Benchmark (
 ) where
 
 import Codec.Serialise (serialise)
-import Control.Arrow ((&&&))
 import Control.Monad (mzero)
 import Data.Aeson (ToJSON)
 import qualified Data.ByteString.Lazy as BSL
@@ -65,41 +66,45 @@ import qualified Plutus.V1.Ledger.Api as Plutus
 benchmarkScript :: HasCallStack => String -> Script -> NamedBenchmark
 benchmarkScript name = NamedBenchmark . (name,) . benchmarkScript'
 
+{-# DEPRECATED benchmarkScript' "use `Plutarch.Evaluate.evalScript` and `mkBenchmark` with `scriptSize`" #-}
 benchmarkScript' :: HasCallStack => Script -> Benchmark
-benchmarkScript' =
-  uncurry mkBenchmark . (evalScriptCounting &&& (fromInteger . toInteger . SBS.length)) . serialiseScriptShort
+benchmarkScript' script =
+  mkBenchmark
+    (evalScriptCounting $ serialiseScriptShort script)
+    (scriptSize script)
   where
-    mkBenchmark :: Maybe ExBudget -> Int64 -> Benchmark
-    mkBenchmark Nothing =
-      Benchmark Nothing Nothing . ScriptSizeBytes
-    mkBenchmark (Just (ExBudget cpu mem)) =
-      Benchmark (Just cpu) (Just mem) . ScriptSizeBytes
-
-    serialiseScriptShort :: Script -> SBS.ShortByteString
-    serialiseScriptShort = SBS.toShort . LB.toStrict . serialise -- Using `flat` here breaks `evalScriptCounting`
-    evalScriptCounting :: HasCallStack => Plutus.SerializedScript -> Maybe Plutus.ExBudget
+    evalScriptCounting :: HasCallStack => Plutus.SerializedScript -> Plutus.ExBudget
     evalScriptCounting script =
       let costModel = fromJust Plutus.defaultCostModelParams
           (_logout, e) = Plutus.evaluateScriptCounting Plutus.Verbose costModel script []
        in case e of
-            Left _evalErr -> Nothing
-            Right exbudget -> Just exbudget
+            Left evalErr -> error $ show evalErr
+            Right exbudget -> exbudget
 
 data Benchmark = Benchmark
-  { exBudgetCPU :: Maybe ExCPU
-  -- ^ CPU budget used by the script. Nothing if script errors.
-  , exBudgetMemory :: Maybe ExMemory
-  -- ^ Memory budget used by the script. Nothing if script errors.
+  { exBudgetCPU :: ExCPU
+  -- ^ CPU budget used by the script.
+  , exBudgetMemory :: ExMemory
+  -- ^ Memory budget used by the script.
   , scriptSizeBytes :: ScriptSizeBytes
   -- ^ Size of Plutus script in bytes
   }
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON)
 
+mkBenchmark :: ExBudget -> ScriptSizeBytes -> Benchmark
+mkBenchmark (ExBudget cpu mem) = Benchmark cpu mem
+
 newtype ScriptSizeBytes = ScriptSizeBytes Int64
   deriving stock (Eq, Ord, Show, Generic)
   deriving newtype (Num, ToField)
   deriving newtype (ToJSON)
+
+scriptSize :: Script -> ScriptSizeBytes
+scriptSize = ScriptSizeBytes . fromIntegral . SBS.length . serialiseScriptShort
+
+serialiseScriptShort :: Script -> SBS.ShortByteString
+serialiseScriptShort = SBS.toShort . LB.toStrict . serialise
 
 {- | A `Benchmark` with a name.
 
@@ -135,14 +140,13 @@ decodeBenchmarks :: LB.ByteString -> Either String [NamedBenchmark]
 decodeBenchmarks =
   let (#!) :: Num a => Vector Csv.Field -> Int -> Csv.Parser a
       (#!) v f = fmap fromInteger . Csv.parseField $ v ! f
-      mkBenchmark cpu mem sz = Benchmark (Just cpu) (Just mem) sz
    in fmap Vector.toList
         <$> Csv.decodeWithP
           ( \case
               v
                 | length v == 4 ->
                     fmap NamedBenchmark $
-                      (,) <$> v .! 0 <*> (mkBenchmark <$> v #! 1 <*> v #! 2 <*> v #! 3)
+                      (,) <$> v .! 0 <*> (Benchmark <$> v #! 1 <*> v #! 2 <*> v #! 3)
               _ | otherwise -> mzero
           )
           Csv.defaultDecodeOptions
@@ -165,8 +169,8 @@ data BenchmarkDiff = BenchmarkDiff
 diffBenchmark :: HasCallStack => String -> Benchmark -> Benchmark -> Maybe BenchmarkDiff
 diffBenchmark
   name
-  (Benchmark (Just (ExCPU oldCpu)) (Just (ExMemory oldMem)) (ScriptSizeBytes oldSize))
-  new@(Benchmark (Just (ExCPU cpu)) (Just (ExMemory mem)) (ScriptSizeBytes size))
+  (Benchmark (ExCPU oldCpu) (ExMemory oldMem) (ScriptSizeBytes oldSize))
+  new@(Benchmark (ExCPU cpu) (ExMemory mem) (ScriptSizeBytes size))
     | oldCpu /= cpu || oldMem /= mem || oldSize /= size =
         let pctChange old new = softRound (fromInteger (toInteger new - toInteger old) / fromInteger (toInteger $ max old new) * 100)
 
@@ -178,8 +182,6 @@ diffBenchmark
                 , name = name
                 }
     | otherwise = Nothing
-diffBenchmark _ _ _ =
-  error "Null cpu/mem benchmarks"
 
 diffBenchmarks :: [NamedBenchmark] -> [NamedBenchmark] -> BenchmarkDiffs
 diffBenchmarks (Map.fromList . coerce -> old) (Map.fromList . coerce -> new) =
@@ -205,15 +207,13 @@ renderDiffTable (BenchmarkDiffs dropped changed added) =
         [B.text $ show old <> "(" <> tag <> ")", renderChange diff]
 
       renderBenchmarkDiff :: BenchmarkDiff -> [B.Box]
-      renderBenchmarkDiff (BenchmarkDiff (Benchmark (Just (ExCPU x)) (Just (ExMemory y)) (ScriptSizeBytes z)) (dx, dy, dz) name) =
+      renderBenchmarkDiff (BenchmarkDiff (Benchmark (ExCPU x) (ExMemory y) (ScriptSizeBytes z)) (dx, dy, dz) name) =
         mconcat
           [ [B.text name]
           , renderResult x dx "cpu"
           , renderResult y dy "mem"
           , renderResult z dz "bytes"
           ]
-      renderBenchmarkDiff _ =
-        error "Null cpu/mem benchmarks"
    in B.vsep
         1
         B.top
@@ -237,7 +237,7 @@ renderBudgetTable bs =
       , B.text $ show mem <> "(mem)"
       , B.text $ show sz <> "(bytes)"
       ]
-    | NamedBenchmark (name, Benchmark (Just (ExCPU cpu)) (Just (ExMemory mem)) (ScriptSizeBytes sz)) <- bs
+    | NamedBenchmark (name, Benchmark (ExCPU cpu) (ExMemory mem) (ScriptSizeBytes sz)) <- bs
     ]
 
 benchMain :: [NamedBenchmark] -> IO ()
