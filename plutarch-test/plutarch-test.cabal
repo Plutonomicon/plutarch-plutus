@@ -94,11 +94,9 @@ common deps
 library
   import:          c, deps
   hs-source-dirs:  src
-  exposed-modules:
-    Plutarch.Test
-    Plutarch.Test.Benchmark
-
+  exposed-modules: Plutarch.Test
   other-modules:
+    Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
 
