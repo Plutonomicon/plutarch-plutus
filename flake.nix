@@ -643,7 +643,6 @@
           self.flake.${system}.checks
           // {
             formatCheck = formatCheckFor system;
-            benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
             test-ghc9-nodev = flakeApp2Derivation system "test-ghc9-nodev";
             test-ghc9-dev = flakeApp2Derivation system "test-ghc9-dev";
             test-ghc810-nodev = flakeApp2Derivation system "test-ghc810-nodev";
@@ -672,15 +671,6 @@
           test-ghc9-dev = plutarchTestApp system "ghc9-dev" self.projectMatrix.ghc9.dev;
           test-ghc810-nodev = plutarchTestApp system "ghc810-nodev" self.projectMatrix.ghc810.nodev;
           test-ghc810-dev = plutarchTestApp system "ghc810-dev" self.projectMatrix.ghc810.dev;
-          # TODO: The bellow apps will be removed eventually.
-          benchmark = {
-            type = "app";
-            program = "${self.flake.${system}.packages."plutarch-benchmark:bench:benchmark"}/bin/benchmark";
-          };
-          benchmark-diff = {
-            type = "app";
-            program = "${self.flake.${system}.packages."plutarch-benchmark:exe:benchmark-diff"}/bin/benchmark-diff";
-          };
         }
       );
       devShell = perSystem (system: self.flake.${system}.devShell);
@@ -691,35 +681,6 @@
           hci-effects = hercules-ci-effects.lib.withPkgs pkgs;
         in
         {
-          # Hercules 0.9 will allow us to calculate the merge-base so we can test all PRs.
-          # Right now we just hardcode this effect to test every commit against
-          # origin/staging. We set != "refs/head/master" so that merges into master don't
-          # cause a lot of unnecessary bogus benchmarks to appear in CI for the time
-          # being.
-          benchmark-diff = hci-effects.runIf (src.ref != "refs/heads/master") (
-            hci-effects.mkEffect {
-              src = self;
-              buildInputs = with pkgs; [ git nixFlakes ];
-              effectScript = ''
-                git clone https://github.com/Plutonomicon/plutarch.git plutarch
-                cd plutarch
-
-                git checkout $(git merge-base origin/staging ${src.rev})
-                nix --extra-experimental-features 'nix-command flakes' run .#benchmark -- --csv > before.csv
-
-                git checkout ${src.rev}
-                nix --extra-experimental-features 'nix-command flakes' run .#benchmark -- --csv > after.csv
-
-                echo
-                echo
-                echo "Benchmark diff between $(git merge-base origin/staging ${src.rev}) and ${src.rev}:"
-                echo
-                echo
-
-                nix --extra-experimental-features 'nix-command flakes' run .#benchmark-diff -- before.csv after.csv
-              '';
-            }
-          );
           gh-pages = hci-effects.runIf (src.ref == "refs/heads/master") (
             hci-effects.mkEffect {
               src = self;
