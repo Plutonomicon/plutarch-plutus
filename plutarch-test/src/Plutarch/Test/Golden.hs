@@ -1,3 +1,7 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE QuantifiedConstraints #-}
+
 module Plutarch.Test.Golden (
   pgoldenSpec,
   (@|),
@@ -11,7 +15,6 @@ module Plutarch.Test.Golden (
 
 import Control.Monad (forM_, unless)
 import qualified Data.Aeson.Text as Aeson
-import Data.Kind (Type)
 import Data.List.NonEmpty (nonEmpty)
 import qualified Data.List.NonEmpty as NE
 import Data.Maybe (mapMaybe)
@@ -32,10 +35,11 @@ import Test.Syd (
   pureGoldenTextFile,
  )
 
-import Plutarch
+import Plutarch (ClosedTerm, compile, printScript)
 import Plutarch.Benchmark (benchmarkScript')
 import Plutarch.Evaluate (evaluateScript)
 import Plutarch.Internal (Term (Term, asRawTerm))
+import Plutarch.Prelude
 import Plutarch.Test.ListSyntax (ListSyntax, listSyntaxAdd, listSyntaxAddSubList, runListSyntax)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 
@@ -50,8 +54,8 @@ data GoldenValue = GoldenValue
 
   This class exists for syntatic sugar provided by (@->) (via `TermExpectation`).
 -}
-class HasGoldenValue a where
-  mkGoldenValue :: a -> GoldenValue
+class HasGoldenValue (t :: S -> PType -> Type) where
+  mkGoldenValue :: forall a. (forall s. t s a) -> GoldenValue
 
 mkGoldenValue' :: ClosedTerm a -> Maybe Expectation -> GoldenValue
 mkGoldenValue' p mexp =
@@ -64,28 +68,30 @@ mkGoldenValue' p mexp =
 -- We derive for `Term s a` only because GHC prevents us from deriving for
 -- `ClosedTerm a`. In practice, this instance should be used only for closed
 -- terms.
-instance HasGoldenValue (Term s a) where
+instance HasGoldenValue Term where
   mkGoldenValue p = mkGoldenValue' (unsafeClosedTerm p) Nothing
-    where
-      -- Because, we need a function with this signature.
-      unsafeClosedTerm :: Term s a -> ClosedTerm a
-      unsafeClosedTerm t = Term $ asRawTerm t
+
+-- Because, we need a function with this signature.
+unsafeClosedTerm :: Term s a -> ClosedTerm a
+unsafeClosedTerm t = Term $ asRawTerm t
 
 {- | A `Term` paired with its evaluation expectation
 
   Example:
   >>> TermExpectation (pcon PTrue) $ \p -> pshouldBe (pcon PTrue)
 -}
-data TermExpectation a = TermExpectation (ClosedTerm a) (ClosedTerm a -> Expectation)
+data TermExpectation' s a = TermExpectation (Term s a) (Term s a -> Expectation)
+
+type TermExpectation a = forall s. TermExpectation' s a
 
 -- | Test an expectation on a golden Plutarch program
 (@->) :: ClosedTerm a -> (ClosedTerm a -> Expectation) -> TermExpectation a
-(@->) p f = TermExpectation p (\p' -> f p')
+(@->) p f = TermExpectation p (\p' -> f $ unsafeClosedTerm p')
 
 infixr 1 @->
 
-instance HasGoldenValue (TermExpectation a) where
-  mkGoldenValue (TermExpectation p f) = mkGoldenValue' p (Just $ f p)
+instance HasGoldenValue TermExpectation' where
+  mkGoldenValue (TermExpectation p f) = mkGoldenValue' (unsafeClosedTerm p) (Just $ f p)
 
 -- | The key used in the .golden files containing multiple golden values
 newtype GoldenKey = GoldenKey Text
@@ -108,7 +114,7 @@ combineGoldens xs =
     (\(GoldenKey k, v) -> k <> " " <> v) <$> xs
 
 -- | Specify goldens for the given Plutarch program
-(@|) :: HasGoldenValue v => GoldenKey -> v -> ListSyntax (GoldenKey, GoldenValue)
+(@|) :: forall t a. HasGoldenValue t => GoldenKey -> (forall s. t s a) -> ListSyntax (GoldenKey, GoldenValue)
 (@|) k v = listSyntaxAdd (k, mkGoldenValue v)
 
 infixr 0 @|
