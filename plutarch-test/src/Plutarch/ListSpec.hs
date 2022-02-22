@@ -17,7 +17,7 @@ spec = do
     describe "type" . pgoldenSpec $ do
       "phead" @| phead # xs10 @== pconstant @PInteger 1
       "ptail" @| ptail # xs10 @== integerList [2 .. 10]
-      let matchP = pmatch (integerList [1, 3, 1]) $ \case
+      let matchP = pmatchSum (integerList [1, 3, 1]) $ \case
             PSNil -> perror
             PSCons x _ -> x
       "pmatch" @| matchP @== pconstant @PInteger 1
@@ -47,7 +47,7 @@ spec = do
             @== pconstant @PInteger (foldl (-) 0 [1 .. 10])
           "empty" @| pfoldl' (-) # 0 # integerList []
             @== pconstant @PInteger 0
-        "primed" @\ do
+        "unprimed" @\ do
           "nonempty" @| pfoldl # plam (-) # 0 # xs10
             @== pconstant @PInteger (foldl (-) 0 [1 .. 10])
           "empty" @| pfoldl # plam (-) # 0 # integerList []
