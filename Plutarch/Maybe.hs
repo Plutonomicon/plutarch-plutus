@@ -1,28 +1,27 @@
-module Plutarch.Maybe ( PMaybe (..)
-                      , pfromMaybe 
-                      ) where
+module Plutarch.Maybe (
+  PMaybe (..),
+  pfromMaybe,
+) where
 
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic, I (I))
-import Plutarch.Util ( type (:$) )
 import Plutarch (
   PType,
   PlutusType,
   S,
   Term,
-  type (:-->),
-  phoistAcyclic,
-  pmatch,
-  plam,
-  unTermCont,
   perror,
+  phoistAcyclic,
+  plam,
+  pmatch,
+  unTermCont,
+  type (:-->),
  )
+import Plutarch.Util (type (:$))
 
 import Plutarch.TermCont (
-  tcont
+  tcont,
  )
-
-
 
 -- | Plutus Maybe type, with Scott-encoded repr
 data PMaybe (a :: PType) (s :: S)
@@ -38,4 +37,3 @@ pfromMaybe = phoistAcyclic $
     pure $ case res of
       PNothing -> perror
       PJust a -> a
-

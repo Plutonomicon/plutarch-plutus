@@ -1,12 +1,13 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Plutarch.Api.V1.AssocMap ( PMap (PMap)
-                                , plookup
-                                , plookup'
-                                , (#!?)
-                                , (#!) 
-                                ) where
+module Plutarch.Api.V1.AssocMap (
+  PMap (PMap),
+  plookup,
+  plookup',
+  (#!?),
+  (#!),
+) where
 
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified PlutusTx.AssocMap as PlutusMap
@@ -22,10 +23,10 @@ import Plutarch.Lift (
  )
 import Plutarch.Prelude
 
-import Plutarch.Util ( type (:$))
+import Plutarch.Util (type (:$))
 
-import Plutarch.List ( pfind )
-import Plutarch.Maybe ( pfromMaybe )
+import Plutarch.List (pfind)
+import Plutarch.Maybe (pfromMaybe)
 
 newtype PMap (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinMap k v))
   deriving (PlutusType, PIsData) via (DerivePNewtype (PMap k v) (PBuiltinMap k v))
@@ -65,10 +66,9 @@ instance
       y' <- Plutus.fromData y
       Just (x', y')
 
-
 infixl 9 #!?, #!
 
-{- | 
+{- |
     operator for 'plookup'
 -}
 (#!?) ::
@@ -82,7 +82,7 @@ infixl 9 #!?, #!
   Term s :$ PMaybe b
 m #!? k = plookup # k # m
 
-{- | 
+{- |
     operator for 'plookup''
 -}
 (#!) ::
@@ -97,7 +97,7 @@ m #!? k = plookup # k # m
 m #! k = plookup' # k # m
 
 {- |
-    traverses a PMap and returns a PJust if the specified 
+    traverses a PMap and returns a PJust if the specified
     element is in a key in the map, PNothing otherwise
 -}
 plookup ::
@@ -118,8 +118,8 @@ plookup = phoistAcyclic $
       PNothing -> pcon PNothing
       PJust tup' -> pcon . PJust $ pfromData $ psndBuiltin # tup'
 
-{- | 
-    plookup but throws an error upon getting a PNothing 
+{- |
+    plookup but throws an error upon getting a PNothing
 -}
 plookup' ::
   forall a b s.
@@ -129,5 +129,3 @@ plookup' ::
   ) =>
   Term s :$ a :--> PMap a b :--> b
 plookup' = plam $ \key map -> pfromMaybe #$ plookup # key # map
-
-

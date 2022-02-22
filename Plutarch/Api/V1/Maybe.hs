@@ -1,15 +1,16 @@
 {-# LANGUAGE UndecidableInstances #-}
 
-module Plutarch.Api.V1.Maybe ( PMaybeData (PDJust, PDNothing)
-                             , pfromMaybe
-                             ) where
+module Plutarch.Api.V1.Maybe (
+  PMaybeData (PDJust, PDNothing),
+  pfromMaybe,
+) where
 
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic, I (I))
 
 import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
 import Plutarch.Prelude
-import Plutarch.Util ( type (:$) )
+import Plutarch.Util (type (:$))
 
 -- | Data encoded Maybe type. Used in various ledger api types.
 data PMaybeData a (s :: S)
@@ -29,4 +30,3 @@ pfromMaybe = phoistAcyclic $
     pure $ case res of
       PNothing -> perror
       PJust a -> a
-
