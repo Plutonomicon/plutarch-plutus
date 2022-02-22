@@ -1,4 +1,5 @@
 module Plutarch.Test.Golden (
+  PlutarchGoldens,
   pgoldenSpec,
   (@|),
   (@\),
@@ -52,6 +53,8 @@ data GoldenValue = GoldenValue
 -}
 class HasGoldenValue (t :: S -> PType -> Type) where
   mkGoldenValue :: forall a. (forall s. t s a) -> GoldenValue
+
+type PlutarchGoldens = ListSyntax (GoldenKey, GoldenValue)
 
 mkGoldenValue' :: ClosedTerm a -> Maybe Expectation -> GoldenValue
 mkGoldenValue' p mexp =
@@ -110,13 +113,13 @@ combineGoldens xs =
     (\(GoldenKey k, v) -> k <> " " <> v) <$> xs
 
 -- | Specify goldens for the given Plutarch program
-(@|) :: forall t a. HasGoldenValue t => GoldenKey -> (forall s. t s a) -> ListSyntax (GoldenKey, GoldenValue)
+(@|) :: forall t a. HasGoldenValue t => GoldenKey -> (forall s. t s a) -> PlutarchGoldens
 (@|) k v = listSyntaxAdd (k, mkGoldenValue v)
 
 infixr 0 @|
 
 -- | Add an expectation for the Plutarch program specified with (@|)
-(@\) :: GoldenKey -> ListSyntax (GoldenKey, GoldenValue) -> ListSyntax (GoldenKey, GoldenValue)
+(@\) :: GoldenKey -> PlutarchGoldens -> PlutarchGoldens
 (@\) = listSyntaxAddSubList
 
 {- | Create golden specs for pre/post-eval UPLC and benchmarks.
@@ -137,7 +140,7 @@ infixr 0 @|
   Hierarchy is represented by intercalating with a dot; for instance, the key
   for 'qux' will be "bar.qux".
 -}
-pgoldenSpec :: HasCallStack => ListSyntax (GoldenKey, GoldenValue) -> Spec
+pgoldenSpec :: HasCallStack => PlutarchGoldens -> Spec
 pgoldenSpec map = do
   name <- currentGoldenKey
   let bs = runListSyntax map
