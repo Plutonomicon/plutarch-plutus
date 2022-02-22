@@ -106,7 +106,6 @@ executable plutarch-test
   build-depends:
     , base16-bytestring
     , cborg
-    , ghc-prim
     , serialise
 
   if impl(ghc >=9.0)

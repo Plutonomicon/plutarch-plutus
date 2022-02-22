@@ -21,7 +21,7 @@ import Data.Text (Text)
 
 import qualified Plutus.V1.Ledger.Api as Plutus
 
-import GHC.Prim (coerce)
+import Data.Coerce (coerce)
 
 import qualified Codec.CBOR.Write as Write
 import Codec.Serialise (Serialise, encode)
