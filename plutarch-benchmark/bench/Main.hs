@@ -2,13 +2,11 @@
 
 module Main (main) where
 
-import Control.Monad.Trans.Cont (cont, runCont)
 import Plutarch (ClosedTerm)
 import Plutarch.Api.V1
 import Plutarch.Benchmark (NamedBenchmark, bench, benchGroup, benchMain)
 import Plutarch.Bool
 import Plutarch.Builtin
-import qualified Plutarch.List as List
 import qualified Plutarch.Monadic as P
 import Plutarch.Prelude
 import Plutus.V1.Ledger.Address (Address (Address))
@@ -28,7 +26,6 @@ benchmarks =
   benchGroup
     "types"
     [ benchGroup "data" dataBench
-    , benchGroup "syn" syntaxBench
     ]
 
 dataBench :: [[NamedBenchmark]]
@@ -269,44 +266,4 @@ deconstrBench =
       , bench "spending" $ f #$ pconstant $ toData spending
       , bench "rewarding" $ f #$ pconstant $ toData rewarding
       , bench "certifying" $ f #$ pconstant $ toData certifying
-      ]
-
--- | Nested lambda, vs do-syntax vs cont monad.
-syntaxBench :: [[NamedBenchmark]]
-syntaxBench =
-  let integerList :: [Integer] -> Term s (PList PInteger)
-      integerList xs = List.pconvertLists #$ pconstant @(PBuiltinList PInteger) xs
-      xs = integerList [1 .. 10]
-   in [ benchGroup
-          "ttail-pmatch"
-          [ -- We expect all these benchmarks to produce equivalent numbers
-            bench "nested" $ do
-              pmatch xs $ \case
-                PSCons _x xs' -> do
-                  pmatch xs' $ \case
-                    PSCons _ xs'' ->
-                      xs''
-                    PSNil -> perror
-                PSNil -> perror
-          , bench "do" $
-              P.do
-                PSCons _ xs' <- pmatch xs
-                PSCons _ xs'' <- pmatch xs'
-                xs''
-          , bench "cont" $
-              flip runCont id $ do
-                ls <- cont $ pmatch xs
-                case ls of
-                  PSCons _ xs' -> do
-                    ls' <- cont $ pmatch xs'
-                    case ls' of
-                      PSCons _ xs'' -> pure xs''
-                      PSNil -> pure perror
-                  PSNil -> pure perror
-          , bench "termcont" $
-              unTermCont $ do
-                PSCons _ xs' <- TermCont $ pmatch xs
-                PSCons _ xs'' <- TermCont $ pmatch xs'
-                pure xs''
-          ]
       ]
