@@ -33,10 +33,10 @@ import Test.Syd (
  )
 
 import Plutarch (ClosedTerm, compile, printScript)
-import Plutarch.Benchmark (Benchmark, mkBenchmark, scriptSize)
 import Plutarch.Evaluate (evalScript)
 import Plutarch.Internal (Term (Term))
 import Plutarch.Prelude
+import Plutarch.Test.Benchmark (Benchmark, mkBenchmark, scriptSize)
 import Plutarch.Test.ListSyntax (ListSyntax, listSyntaxAdd, listSyntaxAddSubList, runListSyntax)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 

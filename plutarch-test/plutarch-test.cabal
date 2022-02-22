@@ -73,14 +73,13 @@ common c
 
 common deps
   build-depends:
-    , aeson               >=2.0
+    , aeson              >=2.0
     , base
     , bytestring
     , filepath
     , generics-sop
     , mtl
     , plutarch
-    , plutarch-benchmark
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
@@ -95,7 +94,10 @@ common deps
 library
   import:          c, deps
   hs-source-dirs:  src
-  exposed-modules: Plutarch.Test
+  exposed-modules:
+    Plutarch.Test
+    Plutarch.Test.Benchmark
+
   other-modules:
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
@@ -128,6 +130,7 @@ executable plutarch-test
     Plutarch.ScriptsSpec
     Plutarch.StringSpec
     Plutarch.Test
+    Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
     Plutarch.TraceSpec
