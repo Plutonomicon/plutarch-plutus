@@ -101,10 +101,10 @@ newtype ScriptSizeBytes = ScriptSizeBytes Int64
   deriving newtype (ToJSON)
 
 scriptSize :: Script -> ScriptSizeBytes
-scriptSize = ScriptSizeBytes . fromInteger . toInteger . SBS.length . serialiseScriptShort
+scriptSize = ScriptSizeBytes . fromIntegral . SBS.length . serialiseScriptShort
 
 serialiseScriptShort :: Script -> SBS.ShortByteString
-serialiseScriptShort = SBS.toShort . LB.toStrict . serialise -- Using `flat` here breaks `evalScriptCounting`
+serialiseScriptShort = SBS.toShort . LB.toStrict . serialise
 
 {- | A `Benchmark` with a name.
 
