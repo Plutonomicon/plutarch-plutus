@@ -125,6 +125,7 @@ library
     Plutarch.Trace
     Plutarch.Unit
     Plutarch.Unsafe
+    Plutarch.Verify
 
   build-depends:
     , base
