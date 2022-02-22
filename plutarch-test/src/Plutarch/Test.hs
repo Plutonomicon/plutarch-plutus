@@ -50,13 +50,12 @@ import Test.Syd (
  )
 
 import Plutarch
-import Plutarch.Benchmark (benchmarkScript')
 import Plutarch.Bool (PBool (PFalse, PTrue))
 import Plutarch.Evaluate (evalScript)
 import Plutarch.Test.Golden (
   TermExpectation,
   compileD,
-  evaluateScriptAlways,
+  evalScriptAlwaysWithBenchmark,
   pgoldenSpec,
   (@->),
   (@\),
@@ -191,13 +190,13 @@ goldens pg ps = do
       it "uplc.eval" $
         pureGoldenTextFile (goldenFilePath "goldens" name "uplc.eval") $
           multiGolden ps $ \p ->
-            T.pack $ printScript $ evaluateScriptAlways $ compileD p
+            T.pack $ printScript $ fst $ evalScriptAlwaysWithBenchmark $ compileD p
     -- Golden test for Plutus benchmarks
     when (hasBenchGolden pg) $
       it "bench" $
         pureGoldenTextFile (goldenFilePath "goldens" name "bench") $
           multiGolden ps $ \p ->
-            TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compileD p
+            TL.toStrict $ Aeson.encodeToLazyText $ snd $ evalScriptAlwaysWithBenchmark $ compileD p
   where
     hasBenchGolden :: PlutarchGolden -> Bool
     hasBenchGolden = \case

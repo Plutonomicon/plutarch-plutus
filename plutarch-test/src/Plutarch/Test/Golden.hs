@@ -5,7 +5,7 @@ module Plutarch.Test.Golden (
   (@->),
   TermExpectation,
   goldenKeyString,
-  evaluateScriptAlways,
+  evalScriptAlwaysWithBenchmark,
   compileD,
 ) where
 
@@ -32,7 +32,7 @@ import Test.Syd (
  )
 
 import Plutarch (ClosedTerm, compile, printScript)
-import Plutarch.Benchmark (benchmarkScript')
+import Plutarch.Benchmark (Benchmark, mkBenchmark, scriptSize)
 import Plutarch.Evaluate (evalScript)
 import Plutarch.Internal (Term (Term))
 import Plutarch.Prelude
@@ -55,11 +55,13 @@ class HasGoldenValue (t :: S -> PType -> Type) where
 
 mkGoldenValue' :: ClosedTerm a -> Maybe Expectation -> GoldenValue
 mkGoldenValue' p mexp =
-  GoldenValue
-    (T.pack $ printScript $ compileD p)
-    (T.pack $ printScript $ evaluateScriptAlways $ compileD p)
-    (TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compileD p)
-    mexp
+  let compiledScript = compileD p
+      (evaluatedScript, bench) = evalScriptAlwaysWithBenchmark compiledScript
+   in GoldenValue
+        (T.pack $ printScript compiledScript)
+        (T.pack $ printScript evaluatedScript)
+        (TL.toStrict $ Aeson.encodeToLazyText bench)
+        mexp
 
 -- We derive for `Term s a` only because GHC prevents us from deriving for
 -- `ClosedTerm a`. In practice, this instance should be used only for closed
@@ -168,17 +170,21 @@ currentGoldenKey = do
         Just path ->
           pure $ sconcat $ fmap GoldenKey path
 
-{- | Like `evaluateScript` but doesn't fail. Also returns `Script`.
+{- | Like `evalScript` but doesn't fail, and returns `Benchmark`.
 
   All evaluation failures are treated as equivalent to a `perror`. Plutus does
   not provide an accurate way to tell if the program evalutes to `Error` or not;
   see https://github.com/input-output-hk/plutus/issues/4270
 -}
-evaluateScriptAlways :: Scripts.Script -> Scripts.Script
-evaluateScriptAlways script =
-  case evalScript script of
-    (Left _, _, _) -> compile perror
-    (Right x, _, _) -> x
+evalScriptAlwaysWithBenchmark :: Scripts.Script -> (Scripts.Script, Benchmark)
+evalScriptAlwaysWithBenchmark script =
+  let (res, exbudget, _traces) = evalScript script
+      bench = mkBenchmark exbudget (scriptSize script)
+   in ( case res of
+        Left _ -> compile perror
+        Right x -> x
+      , bench
+      )
 
 -- TODO: Make this deterministic
 -- See https://github.com/Plutonomicon/plutarch/pull/297
