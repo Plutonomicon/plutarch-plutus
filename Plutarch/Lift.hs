@@ -15,6 +15,7 @@ module Plutarch.Lift (
   PLift,
   DerivePConstantDirect (..),
   DerivePConstantViaNewtype (..),
+  DerivePConstantViaBuiltin (..),
 
   -- * Internal use
   PUnsafeLiftDecl (..),
@@ -23,12 +24,14 @@ module Plutarch.Lift (
 import Data.Coerce
 import Data.Kind (Type)
 import GHC.Stack (HasCallStack)
-import Plutarch.Evaluate (evaluateScript)
+import Plutarch.Evaluate (EvalError, evalScript)
 import Plutarch.Internal (ClosedTerm, PType, Term, compile, punsafeConstantInternal)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import qualified PlutusCore as PLC
-import PlutusCore.Constant (readKnownConstant)
+import PlutusCore.Builtin (ReadKnownError, readKnownConstant)
 import PlutusCore.Evaluation.Machine.Exception (ErrorWithCause, MachineError)
+import PlutusTx (BuiltinData, Data, builtinDataToData, dataToBuiltinData)
+import PlutusTx.Builtins.Class (FromBuiltin, ToBuiltin, fromBuiltin, toBuiltin)
 import qualified UntypedPlutusCore as UPLC
 
 class (PConstant (PLifted p), PConstanted (PLifted p) ~ p) => PUnsafeLiftDecl (p :: PType) where
@@ -64,30 +67,31 @@ pconstant x = punsafeConstantInternal $ PLC.someValue @(PConstantRepr (PLifted p
 
 -- | Error during script evaluation.
 data LiftError
-  = LiftError_ScriptError Scripts.ScriptError
-  | LiftError_EvalException (ErrorWithCause (MachineError PLC.DefaultFun) ())
+  = LiftError_EvalError EvalError
+  | LiftError_ReadKnownError (ErrorWithCause ReadKnownError (MachineError PLC.DefaultFun))
   | LiftError_FromRepr
-  | LiftError_WrongRepr
-  deriving stock (Eq, Show)
+  deriving stock (Eq)
 
 {- | Convert a Plutarch term to the associated Haskell value. Fail otherwise.
 This will fully evaluate the arbitrary closed expression, and convert the resulting value.
 -}
 plift' :: forall p. PUnsafeLiftDecl p => ClosedTerm p -> Either LiftError (PLifted p)
-plift' prog = case evaluateScript (compile prog) of
-  Right (_, _, Scripts.unScript -> UPLC.Program _ _ term) ->
+plift' prog = case evalScript (compile prog) of
+  (Right (Scripts.unScript -> UPLC.Program _ _ term), _, _) ->
     case readKnownConstant @_ @(PConstantRepr (PLifted p)) @(MachineError PLC.DefaultFun) Nothing term of
       Right r -> case pconstantFromRepr r of
         Just h -> Right h
         Nothing -> Left LiftError_FromRepr
-      Left e -> Left $ LiftError_EvalException e
-  Left e -> Left $ LiftError_ScriptError e
+      Left e -> Left $ LiftError_ReadKnownError e
+  (Left e, _, _) -> Left $ LiftError_EvalError e
 
 -- | Like `plift'` but throws on failure.
 plift :: forall p. (HasCallStack, PLift p) => ClosedTerm p -> PLifted p
 plift prog = case plift' prog of
   Right x -> x
-  Left e -> error $ "plift failed: " <> show e
+  Left LiftError_FromRepr -> error "plift failed because of pconstantFromRepr"
+  Left (LiftError_ReadKnownError _) -> error "plift failed because of an internal error in plutus-core"
+  Left (LiftError_EvalError e) -> error $ "plift failed because of an erring term: " <> show e
 
 -- TODO: Add haddock
 newtype DerivePConstantDirect (h :: Type) (p :: PType) = DerivePConstantDirect h
@@ -109,3 +113,29 @@ instance (PLift p, PLift p', Coercible h (PLifted p')) => PConstant (DerivePCons
   type PConstanted (DerivePConstantViaNewtype h p p') = p
   pconstantToRepr x = pconstantToRepr @(PLifted p') $ coerce x
   pconstantFromRepr x = coerce $ pconstantFromRepr @(PLifted p') x
+
+class ToBuiltin' a arep | a -> arep where
+  toBuiltin' :: a -> arep
+
+class FromBuiltin' arep a | arep -> a where
+  fromBuiltin' :: arep -> a
+
+instance {-# OVERLAPPABLE #-} ToBuiltin a arep => ToBuiltin' a arep where
+  toBuiltin' = toBuiltin
+
+instance {-# OVERLAPPABLE #-} FromBuiltin arep a => FromBuiltin' arep a where
+  fromBuiltin' = fromBuiltin
+
+instance ToBuiltin' Data BuiltinData where
+  toBuiltin' = dataToBuiltinData
+
+instance FromBuiltin' BuiltinData Data where
+  fromBuiltin' = builtinDataToData
+
+newtype DerivePConstantViaBuiltin (h :: Type) (p :: PType) (p' :: PType) = DerivePConstantViaBuiltin h
+
+instance (PLift p, PLift p', Coercible h h', ToBuiltin' (PLifted p') h', FromBuiltin' h' (PLifted p')) => PConstant (DerivePConstantViaBuiltin h p p') where
+  type PConstantRepr (DerivePConstantViaBuiltin h p p') = PConstantRepr (PLifted p')
+  type PConstanted (DerivePConstantViaBuiltin h p p') = p
+  pconstantToRepr x = pconstantToRepr @(PLifted p') $ fromBuiltin' (coerce x :: h')
+  pconstantFromRepr x = coerce (toBuiltin' <$> pconstantFromRepr @(PLifted p') x :: Maybe h')

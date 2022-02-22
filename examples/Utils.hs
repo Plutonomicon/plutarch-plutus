@@ -86,7 +86,6 @@ standardTester =
       case evaluateScript $ compile x of
         Left (Scripts.EvaluationError _ _) -> mempty
         Left (Scripts.EvaluationException _ _) -> mempty
-        Left e -> assertFailure $ "Script is malformed: " <> show e
         Right (_, _, s) -> assertFailure $ "Script didn't err: " <> printScript s
 
     expectImpl :: HasCallStack => ClosedTerm PBool -> Assertion

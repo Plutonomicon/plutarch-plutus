@@ -6,15 +6,13 @@ module Main (main) where
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import qualified Data.Aeson as Aeson
-import Data.Maybe (fromJust)
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Plutarch (POpaque, popaque, printTerm)
 import Plutarch.Api.V1 (PScriptPurpose (PMinting))
 import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeBuiltin)
-import Plutus.V1.Ledger.Value (CurrencySymbol (CurrencySymbol))
+import Plutus.V1.Ledger.Value (CurrencySymbol, currencySymbol)
 import Plutus.V2.Ledger.Contexts (ScriptPurpose (Minting))
 import qualified PlutusCore as PLC
 import qualified PlutusTx
@@ -207,6 +205,4 @@ uplcTests =
     ]
 
 dummyCurrency :: CurrencySymbol
-dummyCurrency =
-  CurrencySymbol . fromJust . Aeson.decode $
-    "\"1111111111111111111111111111111111111111111111111111111111111111\""
+dummyCurrency = currencySymbol "\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11"

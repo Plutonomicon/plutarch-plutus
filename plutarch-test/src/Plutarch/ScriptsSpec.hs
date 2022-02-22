@@ -20,9 +20,14 @@ module Plutarch.ScriptsSpec (
 import Data.Text (Text)
 
 import qualified Plutus.V1.Ledger.Api as Plutus
-import qualified Plutus.V1.Ledger.Crypto as Plutus
 
-import Data.Aeson.Extras (encodeSerialise)
+import Data.Coerce (coerce)
+
+import qualified Codec.CBOR.Write as Write
+import Codec.Serialise (Serialise, encode)
+import Data.ByteString (ByteString)
+import qualified Data.ByteString.Base16 as Base16
+import qualified Data.Text.Encoding as TE
 import Plutarch (ClosedTerm, POpaque, popaque)
 import Plutarch.Api.V1 (
   PScriptContext,
@@ -36,7 +41,7 @@ import Plutarch.Api.V1 (
   type PStakeValidator,
   type PValidator,
  )
-import Plutarch.Api.V1.Crypto (PPubKey, PPubKeyHash, PSignature (PSignature))
+import Plutarch.Api.V1.Crypto (PPubKeyHash)
 import Plutarch.Builtin (pasByteStr)
 import Plutarch.Prelude
 import Plutarch.Test
@@ -67,6 +72,13 @@ spec = do
           (goldenFilePath "goldens" prefix "hash")
           stakeValidatorHashEncoded
 
+encodeSerialise :: Serialise a => a -> Text
+encodeSerialise = TE.decodeUtf8 . Base16.encode . Write.toStrictByteString . encode
+
+type PSignature = PByteString
+type PPubKey = PByteString
+type PubKey = ByteString
+
 {- |
   A parameterized Validator which may be unlocked
     by signing the Datum Message with the parameter PubKey.
@@ -79,7 +91,7 @@ authorizedValidator ::
   Term s POpaque
 authorizedValidator authKey datumMessage redeemerSig _ctx =
   pif
-    (pverifySignature # pto authKey # datumMessage # pto redeemerSig)
+    (pverifySignature # authKey # datumMessage # redeemerSig)
     (popaque $ pcon PUnit)
     perror
 
@@ -119,7 +131,7 @@ authorizedStakeValidator authHash _redeemer ctx =
         (popaque $ pcon PUnit)
         perror
 
-adminPubKey :: Plutus.PubKey
+adminPubKey :: PubKey
 adminPubKey = "11661a8aca9b09bb93eefda295b5da2be3f944d1f4253ab29da17db580f50d02d26218e33fbba5e0cc1b0c0cadfb67a5f9a90157dcc19eecd7c9373b0415c888"
 
 adminPubKeyHash :: Plutus.PubKeyHash
@@ -139,7 +151,7 @@ authValidatorTerm =
     authorizedValidator
       (pconstant adminPubKey)
       (pasByteStr # datum)
-      (pcon $ PSignature $ pasByteStr # redeemer)
+      (pasByteStr # redeemer)
       ctx
 
 -- | `validatorHash` gets the Plutus `ValidatorHash`
@@ -203,12 +215,12 @@ stakeValidatorEncoded = encodeSerialise authStakeValidatorCompiled
   Also note that this is not the addr1/CIP-0019 Address encoding of the script.
 -}
 validatorHashEncoded :: Text
-validatorHashEncoded = encodeSerialise authValidatorHash
+validatorHashEncoded = encodeSerialise (coerce authValidatorHash :: Plutus.BuiltinByteString)
 
 -- | The same goes for `CurrencySymbol`
 policySymEncoded :: Text
-policySymEncoded = encodeSerialise authPolicySymbol
+policySymEncoded = encodeSerialise (coerce authPolicySymbol :: Plutus.BuiltinByteString)
 
 -- | ... And `StakeValidatorHash`
 stakeValidatorHashEncoded :: Text
-stakeValidatorHashEncoded = encodeSerialise authStakeValidatorHash
+stakeValidatorHashEncoded = encodeSerialise (coerce authStakeValidatorHash :: Plutus.BuiltinByteString)

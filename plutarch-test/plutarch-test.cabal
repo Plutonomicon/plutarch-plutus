@@ -100,10 +100,17 @@ library
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
 
+  -- FIXME remove -Wwarn=deprecations
+  ghc-options:     -Wwarn=deprecations
+
 executable plutarch-test
   import:         c, deps
   main-is:        Main.hs
   hs-source-dirs: src
+  build-depends:
+    , base16-bytestring
+    , cborg
+    , serialise
 
   if impl(ghc >=9.0)
     other-modules:
@@ -133,4 +140,5 @@ executable plutarch-test
   if flag(development)
     cpp-options: -DDevelopment
 
-  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
+  -- FIXME remove -Wwarn=deprecations
+  ghc-options:    -threaded -rtsopts -with-rtsopts=-N -Wwarn=deprecations
