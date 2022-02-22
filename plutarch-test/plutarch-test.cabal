@@ -78,6 +78,7 @@ common deps
     , bytestring
     , filepath
     , generics-sop
+    , mtl
     , plutarch
     , plutarch-benchmark
     , plutus-core
@@ -95,6 +96,9 @@ library
   import:          c, deps
   hs-source-dirs:  src
   exposed-modules: Plutarch.Test
+  other-modules:
+    Plutarch.Test.Golden
+    Plutarch.Test.ListSyntax
 
   -- FIXME remove -Wwarn=deprecations
   ghc-options:     -Wwarn=deprecations
@@ -127,6 +131,8 @@ executable plutarch-test
     Plutarch.ScriptsSpec
     Plutarch.StringSpec
     Plutarch.Test
+    Plutarch.Test.Golden
+    Plutarch.Test.ListSyntax
     Plutarch.TraceSpec
     Plutarch.UnitSpec
     Spec

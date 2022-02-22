@@ -23,30 +23,27 @@ spec = do
     propertySet @PBool "PBool"
     propertySet @PInteger "PInteger"
     propertySet @PUnit "PUnit"
-    describe "ppair" $ do
-      describe "pfromData (pdata (I 1, B 0x41)) ≡ (I 1, I 2)" $ do
-        let p :: Term s (PBuiltinPair (PAsData PInteger) (PAsData PByteString))
-            p =
-              ppairDataBuiltin # pconstantData @PInteger 1
-                -- ByteString doesn't have a ToData instance - can't use pconstantData....
-                #$ pdata
-                $ pconstant $ encodeUtf8 "A"
-        it "works" $ pfromData (pdata p) #@?= p
-      describe "pfromData (pdata (PTxId 0x41, PScriptCredential 0x82)) ≡ (PTxId 0x41, PScriptCredential 0x82)" $ do
-        let p =
-              ppairDataBuiltin
-                # pconstantData @PTxId "41" #$ pconstantData
-                $ ScriptCredential "82"
-        it "works" $ pfromData (pdata p) #@?= p
-      describe "ptuple isomorphism" $ do
-        let p =
-              ppairDataBuiltin
-                # pconstantData @PTxId "41" #$ pconstantData
-                $ ScriptCredential "82"
-            tup = pdata $ ptuple # pconstantData @PTxId "41" #$ pconstantData $ ScriptCredential "82"
-        it "works" $ pforgetData (pdata p) #@?= pforgetData tup
-        it "works" $ pfromData (pbuiltinPairFromTuple tup) #@?= p
-        it "works" $ ptupleFromBuiltin (pdata p) #@?= tup
+    describe "ppair" . pgoldenSpec $ do
+      -- pfromData (pdata (I 1, B 0x41)) ≡ (I 1, I A)
+      "simple"
+        @| ( ppairDataBuiltin @_ @PInteger @PByteString
+              # pconstantData @PInteger 1
+              #$ pdata (pconstant $ encodeUtf8 "A")
+           )
+          @-> \p ->
+            pfromData (pdata p) `pshouldBe` p
+      -- pfromdata (pdata (ptxid 0x41, pscriptcredential 0x82)) ≡ (ptxid 0x41, pscriptcredential 0x82)
+      let scPair =
+            ppairDataBuiltin
+              # pconstantData @PTxId "41"
+              #$ pconstantData (ScriptCredential "82")
+      "scriptcredential" @| scPair @-> \p ->
+        pfromData (pdata p) `pshouldBe` p
+      let scTuple = pdata $ ptuple # pconstantData @PTxId "41" #$ pconstantData $ ScriptCredential "82"
+      "isomorphism" @\ do
+        "pforgetData" @| pforgetData (pdata scPair) @== pforgetData scTuple
+        "pbuiltinPairFromTuple" @| pfromData (pbuiltinPairFromTuple scTuple) @== scPair
+        "ptupleFromBuiltin" @| ptupleFromBuiltin (pdata scPair) @== scTuple
 
 propertySet ::
   forall p.

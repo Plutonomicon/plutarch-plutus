@@ -1,0 +1,12 @@
+pnull.empty {"exBudgetCPU":1162382,"exBudgetMemory":3532,"scriptSizeBytes":64}
+pnull.nonempty {"exBudgetCPU":16261571,"exBudgetMemory":40093,"scriptSizeBytes":85}
+pconcat.identity {"exBudgetCPU":2054437,"exBudgetMemory":7000,"scriptSizeBytes":64}
+pmap.eg {"exBudgetCPU":29309216,"exBudgetMemory":77312,"scriptSizeBytes":99}
+pmap.identity {"exBudgetCPU":714652,"exBudgetMemory":2500,"scriptSizeBytes":54}
+pfilter.1 {"exBudgetCPU":35949366,"exBudgetMemory":87322,"scriptSizeBytes":115}
+pfilter.2 {"exBudgetCPU":30925386,"exBudgetMemory":83312,"scriptSizeBytes":110}
+pzipWith {"exBudgetCPU":46106600,"exBudgetMemory":119104,"scriptSizeBytes":120}
+pfoldl.primed.nonempty {"exBudgetCPU":27433517,"exBudgetMemory":71012,"scriptSizeBytes":92}
+pfoldl.primed.empty {"exBudgetCPU":1608977,"exBudgetMemory":5032,"scriptSizeBytes":80}
+pfoldl.primed.nonempty {"exBudgetCPU":27433517,"exBudgetMemory":71012,"scriptSizeBytes":92}
+pfoldl.primed.empty {"exBudgetCPU":1608977,"exBudgetMemory":5032,"scriptSizeBytes":80}

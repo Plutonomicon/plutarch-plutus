@@ -1,0 +1,5 @@
+simple (program 1.0.0 (#01, #4141))
+scriptcredential (program 1.0.0 (#d8799f4141ff, #d87a9f4182ff))
+isomorphism.pforgetData (program 1.0.0 #d8799fd8799f4141ffd87a9f4182ffff)
+isomorphism.pbuiltinPairFromTuple (program 1.0.0 (#d8799f4141ff, #d87a9f4182ff))
+isomorphism.ptupleFromBuiltin (program 1.0.0 #d8799fd8799f4141ffd87a9f4182ffff)

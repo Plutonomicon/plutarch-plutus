@@ -1,0 +1,4 @@
+A-as-0 {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":7}
+B-as-1 {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":7}
+swap.A {"exBudgetCPU":554791,"exBudgetMemory":1502,"scriptSizeBytes":21}
+swap.B {"exBudgetCPU":554791,"exBudgetMemory":1502,"scriptSizeBytes":21}

@@ -1,0 +1,5 @@
+eq {"exBudgetCPU":389284,"exBudgetMemory":901,"scriptSizeBytes":18}
+semigroup.laws.id.1 {"exBudgetCPU":659376,"exBudgetMemory":1302,"scriptSizeBytes":24}
+semigroup.laws.id.2 {"exBudgetCPU":659376,"exBudgetMemory":1302,"scriptSizeBytes":23}
+semigroup.concat {"exBudgetCPU":572057,"exBudgetMemory":1003,"scriptSizeBytes":35}
+semigroup.mempty {"exBudgetCPU":388284,"exBudgetMemory":901,"scriptSizeBytes":14}
