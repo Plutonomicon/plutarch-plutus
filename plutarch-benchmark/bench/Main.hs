@@ -396,32 +396,32 @@ syntaxBench =
           "ttail-pmatch"
           [ -- We expect all these benchmarks to produce equivalent numbers
             bench "nested" $ do
-              pmatch xs $ \case
+              pmatchSum xs $ \case
                 PSCons _x xs' -> do
-                  pmatch xs' $ \case
+                  pmatchSum xs' $ \case
                     PSCons _ xs'' ->
                       xs''
                     PSNil -> perror
                 PSNil -> perror
           , bench "do" $
               P.do
-                PSCons _ xs' <- pmatch xs
-                PSCons _ xs'' <- pmatch xs'
+                PSCons _ xs' <- pmatchSum xs
+                PSCons _ xs'' <- pmatchSum xs'
                 xs''
           , bench "cont" $
               flip runCont id $ do
-                ls <- cont $ pmatch xs
+                ls <- cont $ pmatchSum xs
                 case ls of
                   PSCons _ xs' -> do
-                    ls' <- cont $ pmatch xs'
+                    ls' <- cont $ pmatchSum xs'
                     case ls' of
                       PSCons _ xs'' -> pure xs''
                       PSNil -> pure perror
                   PSNil -> pure perror
           , bench "termcont" $
               unTermCont $ do
-                PSCons _ xs' <- TermCont $ pmatch xs
-                PSCons _ xs'' <- TermCont $ pmatch xs'
+                PSCons _ xs' <- TermCont $ pmatchSum xs
+                PSCons _ xs'' <- TermCont $ pmatchSum xs'
                 pure xs''
           ]
       ]
