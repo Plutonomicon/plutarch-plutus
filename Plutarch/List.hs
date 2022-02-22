@@ -13,6 +13,7 @@ module Plutarch.List (
   plength,
   ptryIndex,
   pdrop,
+  pfind,
 
   -- * Construction
   psingleton,
@@ -67,6 +68,8 @@ import Plutarch.Bool (PBool (PFalse, PTrue), PEq, pif, (#&&), (#==), (#||))
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (pconstant)
 import Plutarch.Pair (PPair (PPair))
+
+import Plutarch.Maybe (PMaybe (PJust, PNothing))
 
 import Data.Kind
 
@@ -363,3 +366,21 @@ plistEquals =
         )
         (pelimList (\_ _ -> pconstant False) (pconstant True) ylist)
         xlist
+
+{- |
+    can be safely removed after
+    https://github.com/Plutonomicon/plutarch/pull/274
+    has been merged
+-}
+pfind :: (PIsListLike l a) => Term s ((a :--> PBool) :--> l a :--> PMaybe a)
+pfind = phoistAcyclic $
+  pfix #$ plam $ \self f xs ->
+    pelimList
+      ( \y ys ->
+          pif
+            (f # y)
+            (pcon $ PJust y)
+            (self # f # ys)
+      )
+      (pcon PNothing)
+      xs
