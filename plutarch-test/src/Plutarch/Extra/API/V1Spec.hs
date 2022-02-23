@@ -44,60 +44,61 @@ import Test.Syd
 
 spec :: Spec
 spec = describe "api" $
-  plutarchDevFlagDescribe $ pgoldenSpec $ do
-    "<=" @\ do
-      "1<=2" @| valueLTE # pconstant v1 # pconstant v2 @-> passert
-      "!(2<=1)" @| valueLTE # pconstant v2 # pconstant v1 @-> passertNot
-      "1" @| valueLTE # pconstant v3 # pconstant v4 @-> passertNot
-      "2" @| valueLTE # pconstant v4 # pconstant v3 @-> passertNot
-    "round trip tests" @\ do
-      let valueRoundTrips v =
-            pdata (convertBackValue #$ convertValue # pconstant v) @== pdata (pconstant v)
-      "1" @| valueRoundTrips v1
-      "2" @| valueRoundTrips v2
-      "3" @| valueRoundTrips v3
-      "4" @| valueRoundTrips v4
-    "assetClassValue" @\ do
-      "assetClassValue" @| pdata (assetClassValue # someToken # 1) @== pdata (pconstant v1)
-    "assetClassValueOf" @\ do
-      "1" @| assetClassValueOf # pconstant v1 # someToken #== 1 @-> passert
-      "2" @| assetClassValueOf # pconstant v2 # someToken #== 2 @-> passert
-      "3" @| assetClassValueOf # pconstant v3 # token1 #== 1 @-> passert
-      "4" @| assetClassValueOf # pconstant v1 # token1 #== 0 @-> passert
-    "valSub" @\ do
-      "1" @| valSub # pconstant v2 # pconstant v1 #== pconstant v1 @-> passert
-      "2" @| valSub # pconstant v2 # pconstant v1 #== pconstant v1 @-> passert
-      "3" @| valSub # pconstant v5 # pconstant v4 #== pconstant v3 @-> passert
-      "4" @| valSub # pconstant v5 # pconstant v3 #== pconstant v4 @-> passert
-      "5" @| valSub # pconstant v1 # pconstant v2 #== pconstant negv1 @-> passert
-      "6" @| valSub # pconstant v3 # pconstant v2 #== pconstant v3mv2 @-> passert
-    "value monoid" @\ do
-      "1" @| pconstant (v4 <> v5) #== pconstant v4 <> pconstant v5 @-> passert
-      "2" @| pconstant (v1 <> v5) #== pconstant v1 <> pconstant v5 @-> passert
-      "3" @| pconstant (v3 <> v5) #== pconstant v3 <> pconstant v5 @-> passert
-      "4" @| pconstant (v2 <> v3) #== pconstant v3 <> pconstant v2 @-> passert
-      "5" @| pconstant (v2 <> v3) #== pconstant v2 <> pconstant v3 @-> passert
-      "7" @| pconstant (v3 <> v2) #== pconstant v3 <> pconstant v2 @-> passert
-      "8" @| pconstant (v3 <> v2) #== pconstant v2 <> pconstant v3 @-> passert
-    "<> inverts valSub" @\ do
-      "1" @| pconstant v3 #== (valSub # pconstant v3 # pconstant v2) <> pconstant v2 @-> passert
-      "2" @| pconstant v3 #== valSub # (pconstant v3 <> pconstant v2) # pconstant v2 @-> passert
-      "3" @| pconstant v3 #== (valSub # pconstant v3 # pconstant v4) <> pconstant v4 @-> passert
-      "4" @| pconstant v4 #== (valSub # pconstant v4 # pconstant v5) <> pconstant v5 @-> passert
-      "5" @| pconstant v4mv5 #== valSub # pconstant v4 # pconstant v5 @-> passert
-      "6" @| pconstant v3mv2 #== valSub # pconstant v3 # pconstant v2 @-> passert
-    "getCotiuingOutputs" @\ do
-      "1" @| getContinuingOutputs # ctx #== psingleton # pconstant out1 @-> passert
-      "2" @| getContinuingOutputs # ctx2' [inp2, inp1] #== psingleton # pconstant out2 @-> passert
-      "3" @| getContinuingOutputs # ctx2' [inp1, inp2] #== psingleton # pconstant out2 @-> passert
-      "4" @| getContinuingOutputs # ctx2' [inp2] #== psingleton # pconstant out2 @-> passert
-    "findDatum" @\ do
-      "1" @| findDatum # pconstant datumhash1 # pconstant info #== pcon (PJust $ pconstant datum1) @-> passert
-      "2" @| findDatum # pconstant datumhash2 # pconstant info #== pcon (PJust $ pconstant datum2) @-> passert
-      "3" @| findDatum # pconstant datumhash3 # pconstant info #== pcon PNothing @-> passert
-    "findOwnInput" @\ do
-      "1" @| findOwnInput # ctx #== pcon (PJust $ pconstant inp1) @-> passert
-      "2" @| findOwnInput # ctx2' [inp2] #== pcon (PJust $ pconstant inp2) @-> passert
+  plutarchDevFlagDescribe $
+    pgoldenSpec $ do
+      "<=" @\ do
+        "1<=2" @| valueLTE # pconstant v1 # pconstant v2 @-> passert
+        "!(2<=1)" @| valueLTE # pconstant v2 # pconstant v1 @-> passertNot
+        "1" @| valueLTE # pconstant v3 # pconstant v4 @-> passertNot
+        "2" @| valueLTE # pconstant v4 # pconstant v3 @-> passertNot
+      "round trip tests" @\ do
+        let valueRoundTrips v =
+              pdata (convertBackValue #$ convertValue # pconstant v) @== pdata (pconstant v)
+        "1" @| valueRoundTrips v1
+        "2" @| valueRoundTrips v2
+        "3" @| valueRoundTrips v3
+        "4" @| valueRoundTrips v4
+      "assetClassValue" @\ do
+        "assetClassValue" @| pdata (assetClassValue # someToken # 1) @== pdata (pconstant v1)
+      "assetClassValueOf" @\ do
+        "1" @| assetClassValueOf # pconstant v1 # someToken #== 1 @-> passert
+        "2" @| assetClassValueOf # pconstant v2 # someToken #== 2 @-> passert
+        "3" @| assetClassValueOf # pconstant v3 # token1 #== 1 @-> passert
+        "4" @| assetClassValueOf # pconstant v1 # token1 #== 0 @-> passert
+      "valSub" @\ do
+        "1" @| valSub # pconstant v2 # pconstant v1 #== pconstant v1 @-> passert
+        "2" @| valSub # pconstant v2 # pconstant v1 #== pconstant v1 @-> passert
+        "3" @| valSub # pconstant v5 # pconstant v4 #== pconstant v3 @-> passert
+        "4" @| valSub # pconstant v5 # pconstant v3 #== pconstant v4 @-> passert
+        "5" @| valSub # pconstant v1 # pconstant v2 #== pconstant negv1 @-> passert
+        "6" @| valSub # pconstant v3 # pconstant v2 #== pconstant v3mv2 @-> passert
+      "value monoid" @\ do
+        "1" @| pconstant (v4 <> v5) #== pconstant v4 <> pconstant v5 @-> passert
+        "2" @| pconstant (v1 <> v5) #== pconstant v1 <> pconstant v5 @-> passert
+        "3" @| pconstant (v3 <> v5) #== pconstant v3 <> pconstant v5 @-> passert
+        "4" @| pconstant (v2 <> v3) #== pconstant v3 <> pconstant v2 @-> passert
+        "5" @| pconstant (v2 <> v3) #== pconstant v2 <> pconstant v3 @-> passert
+        "7" @| pconstant (v3 <> v2) #== pconstant v3 <> pconstant v2 @-> passert
+        "8" @| pconstant (v3 <> v2) #== pconstant v2 <> pconstant v3 @-> passert
+      "<> inverts valSub" @\ do
+        "1" @| pconstant v3 #== (valSub # pconstant v3 # pconstant v2) <> pconstant v2 @-> passert
+        "2" @| pconstant v3 #== valSub # (pconstant v3 <> pconstant v2) # pconstant v2 @-> passert
+        "3" @| pconstant v3 #== (valSub # pconstant v3 # pconstant v4) <> pconstant v4 @-> passert
+        "4" @| pconstant v4 #== (valSub # pconstant v4 # pconstant v5) <> pconstant v5 @-> passert
+        "5" @| pconstant v4mv5 #== valSub # pconstant v4 # pconstant v5 @-> passert
+        "6" @| pconstant v3mv2 #== valSub # pconstant v3 # pconstant v2 @-> passert
+      "getCotiuingOutputs" @\ do
+        "1" @| getContinuingOutputs # ctx #== psingleton # pconstant out1 @-> passert
+        "2" @| getContinuingOutputs # ctx2' [inp2, inp1] #== psingleton # pconstant out2 @-> passert
+        "3" @| getContinuingOutputs # ctx2' [inp1, inp2] #== psingleton # pconstant out2 @-> passert
+        "4" @| getContinuingOutputs # ctx2' [inp2] #== psingleton # pconstant out2 @-> passert
+      "findDatum" @\ do
+        "1" @| findDatum # pconstant datumhash1 # pconstant info #== pcon (PJust $ pconstant datum1) @-> passert
+        "2" @| findDatum # pconstant datumhash2 # pconstant info #== pcon (PJust $ pconstant datum2) @-> passert
+        "3" @| findDatum # pconstant datumhash3 # pconstant info #== pcon PNothing @-> passert
+      "findOwnInput" @\ do
+        "1" @| findOwnInput # ctx #== pcon (PJust $ pconstant inp1) @-> passert
+        "2" @| findOwnInput # ctx2' [inp2] #== pcon (PJust $ pconstant inp2) @-> passert
 
 -- TODO unit tests for mustPayToPubKey
 
