@@ -1,5 +1,4 @@
 {-# LANGUAGE UndecidableInstances #-}
-
 -- TODO the PValue instances should go to
 -- Plutarc.Api.V1.Value but they
 -- depend on quite a bit of
@@ -166,13 +165,20 @@ assetClassValue = phoistAcyclic $
   plam $ \ac n -> unTermCont $ do
     cs <- tletField @"currencySymbol" ac
     tn <- tletField @"tokenName" ac
-    tcon $ PValue $ pcon $ PMap $ psingleton
-      #$ ppairDataBuiltin
-        # pdata cs
-        #$ pdata $ pcon $ PMap $ psingleton
-          #$ ppairDataBuiltin
-            # pdata tn
-            # pdata n
+    tcon $
+      PValue $
+        pcon $
+          PMap $
+            psingleton
+              #$ ppairDataBuiltin
+                # pdata cs
+              #$ pdata
+              $ pcon $
+                PMap $
+                  psingleton
+                    #$ ppairDataBuiltin
+                      # pdata tn
+                      # pdata n
 
 assetClassValueOf :: Term s (PValue :--> PAssetClass :--> PInteger)
 assetClassValueOf = phoistAcyclic $

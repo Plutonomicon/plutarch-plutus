@@ -70,7 +70,7 @@ common c
 
 common deps
   build-depends:
-    , aeson               >=2.0
+    , aeson              >=2.0
     , base
     , bytestring
     , filepath

@@ -101,7 +101,6 @@ newtype PTxOut (s :: S)
 instance PUnsafeLiftDecl PTxOut where type PLifted PTxOut = Plutus.TxOut
 deriving via (DerivePConstantViaData Plutus.TxOut PTxOut) instance (PConstant Plutus.TxOut)
 
-
 instance PEq PTxOut where
   a #== b = pdata a #== pdata b
 
@@ -122,4 +121,3 @@ getByteString = phoistAcyclic $
   plam $ \txid ->
     pmatch txid $ \(PTxId txid') ->
       pfromData $ pfield @"_0" # txid'
-

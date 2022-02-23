@@ -3,8 +3,8 @@ module Plutarch.Extra.EqOrdSpec (
 ) where
 
 import Control.Monad (forM_, liftM2)
-import qualified Plutarch.Test.Property.Gen as EGen
 import Hedgehog (Gen)
+import qualified Plutarch.Test.Property.Gen as EGen
 import Plutarch.Test.Property.Util (Marshal (marshal), haskPlutEquiv, viaData)
 
 import Plutarch.Prelude

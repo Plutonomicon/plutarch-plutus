@@ -77,11 +77,13 @@ common deps
     , aeson              >=2.0
     , base
     , bytestring
+    , containers
     , filepath
     , generics-sop
     , hedgehog
     , mtl
     , plutarch
+    , plutarch-extra
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
@@ -94,8 +96,6 @@ common deps
     , tasty-quickcheck
     , text
     , transformers
-    , plutarch-extra
-    , containers
 
 library
   import:          c, deps
@@ -143,11 +143,11 @@ executable plutarch-test
     Plutarch.ScriptsSpec
     Plutarch.StringSpec
     Plutarch.Test
-    Plutarch.Test.Property.Gen
-    Plutarch.Test.Property.Util
     Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
+    Plutarch.Test.Property.Gen
+    Plutarch.Test.Property.Util
     Plutarch.TraceSpec
     Plutarch.UnitSpec
     Spec

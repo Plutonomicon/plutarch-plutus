@@ -13,7 +13,7 @@ import Plutarch (
   pmatch,
   (#),
  )
-import Plutarch.Bool (PBool (PFalse, PTrue), PEq ((#==)),POrd((#<),(#<=)))
+import Plutarch.Bool (PBool (PFalse, PTrue), PEq ((#==)), POrd ((#<), (#<=)))
 
 -- | Plutus Maybe type, with Scott-encoded repr
 data PMaybe (a :: PType) (s :: S)
