@@ -77,7 +77,6 @@ common deps
     , generics-sop
     , hedgehog
     , plutarch
-    , plutarch-benchmark
     , plutus-core
     , plutus-ledger-api
     , plutus-tx

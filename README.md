@@ -39,7 +39,7 @@ package plutarch
 
 # Benchmarks
 
-See the [`plutarch-benchmark`](./plutarch-benchmark) library for how to benchmark plutarch, and benchmarking your own scripts.
+See the [`plutarch-test`](./plutarch-test) for testing and golden files containing benchmarks and UPLCs.
 
 # Usage
 Read the [Plutarch guide](./docs/GUIDE.md) to get started!
