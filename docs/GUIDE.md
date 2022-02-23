@@ -32,36 +32,36 @@ The Plutarch guide is your one-stop shop for getting up to speed on Plutarch!
 
 This section serves as a introduction to Plutarch's basic concepts and core syntactic constructs. It will help build a mental model of Plutarch, but is insufficient to write production-ready code.
 
-- [Overview](#overview)
-- [Untyped Plutus Core (UPLC)](#untyped-plutus-core-uplc)
-- [Plutarch Types](#plutarch-types)
-- [Plutarch `Term`s](#plutarch-terms)
-  * [Plutarch Constant `Term`s](#plutarch-constant-terms)
-    + [Static building of constant `Term`s with `pconstant`](#static-building-of-constant-terms-with-pconstant)
-    + [Dynamic building of constant `Term`s with `pcon`](#dynamic-building-of-constant-terms-with-pcon)
-      - [Pattern matching `Term`s on `PType`s with `pmatch`.](#pattern-matching-terms-on-ptypes-with-pmatch)
-      - [`class (PCon a, PMatch a) => PlutusType (a :: PType)` -- with a default instance.](#class-pcon-a-pmatch-a--plutustype-a--ptype----with-a-default-instance)
-    + [Overloaded literals](#overloaded-literals)
-    + [Helper functions](#helper-functions)
-  * [Lambdas; Plutarch-level Function `Term`s.](#lambdas-plutarch-level-function-terms)
-    + [Function Application](#function-application)
-    + [Strictness and Laziness; Delayed Terms and Forcing](#strictness-and-laziness-delayed-terms-and-forcing)
-- [References](#references)
+- [Overview](./INTRO.md#overview)
+- [Untyped Plutus Core (UPLC)](./INTRO.md#untyped-plutus-core-uplc)
+- [Plutarch Types](./INTRO.md#plutarch-types)
+- [Plutarch `Term`s](./INTRO.md#plutarch-terms)
+  * [Plutarch Constant `Term`s](./INTRO.md#plutarch-constant-terms)
+    + [Static building of constant `Term`s with `pconstant`](./INTRO.md#static-building-of-constant-terms-with-pconstant)
+    + [Dynamic building of constant `Term`s with `pcon`](./INTRO.md#dynamic-building-of-constant-terms-with-pcon)
+      - [Pattern matching `Term`s on `PType`s with `pmatch`.](./INTRO.md#pattern-matching-terms-on-ptypes-with-pmatch)
+      - [`class (PCon a, PMatch a) => PlutusType (a :: PType)` -- with a default instance.](./INTRO.md#class-pcon-a-pmatch-a-plutustype-a-ptype-with-a-default-instance)
+    + [Overloaded literals](./INTRO.md#overloaded-literals)
+    + [Helper functions](./INTRO.md#helper-functions)
+  * [Lambdas; Plutarch-level Function `Term`s.](./INTRO.md#lambdas-plutarch-level-function-terms)
+    + [Function Application](./INTRO.md#function-application)
+    + [Strictness and Laziness; Delayed Terms and Forcing](./INTRO.md#strictness-and-laziness-delayed-terms-and-forcing)
+- [References](./INTRO.md#references)
 - 
 ## Practical Usage
 
 This section fills in the gaps left by the previous. It illustrates techniques that make Plutarch easier to work with.
 
-- [Conditionals](#conditionals)
-- [Recursion](#recursion)
-- [Do syntax with `TermCont`](#do-syntax-with-termcont)
-- [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](#do-syntax-with-qualifieddo-and-plutarchmonadic)
-- [Deriving typeclasses for `newtype`s](#deriving-typeclasses-for-newtypes)
-- [Deriving typeclasses with generics](#deriving-typeclasses-with-generics)
-- [`plet` to avoid work duplication](#plet-to-avoid-work-duplication)
-- [Tracing](#tracing)
-- [Raising errors](#raising-errors)
-- [Unsafe functions](#unsafe-functions)
+- [Conditionals](./USAGE.md#conditionals)
+- [Recursion](./USAGE.md#recursion)
+- [Do syntax with `TermCont`](./USAGE.md#do-syntax-with-termcont)
+- [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](./USAGE.md#do-syntax-with-qualifieddo-and-plutarchmonadic)
+- [Deriving typeclasses for `newtype`s](./USAGE.md#deriving-typeclasses-for-newtypes)
+- [Deriving typeclasses with generics](./USAGE.md#deriving-typeclasses-with-generics)
+- [`plet` to avoid work duplication](./USAGE.md#plet-to-avoid-work-duplication)
+- [Tracing](./USAGE.md#tracing)
+- [Raising errors](./USAGE.md#raising-errors)
+- [Unsafe functions](./USAGE.md#unsafe-functions)
 
 ## Concepts
 
