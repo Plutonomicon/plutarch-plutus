@@ -120,14 +120,6 @@
           ];
         }
         {
-          src = inputs.sydtest;
-          subdirs = [
-            "sydtest"
-            "sydtest-discover"
-            "sydtest-aeson"
-          ];
-        }
-        {
           src = inputs.validity;
           subdirs = [
             "validity"
@@ -475,7 +467,16 @@
             rm -f $out/plutarch-test/src/Plutarch/FieldSpec.hs
           '';
           compiler-nix-name = ghcName;
-          inherit extraSources;
+          extraSources = extraSources ++ [
+            {
+              src = inputs.sydtest;
+              subdirs = [
+                "sydtest"
+                "sydtest-discover"
+                "sydtest-aeson"
+              ];
+            }
+          ];
           modules = [
             (haskellModule system)
             {
