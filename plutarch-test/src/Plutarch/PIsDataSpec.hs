@@ -7,7 +7,7 @@ import Data.Text.Encoding (encodeUtf8)
 
 import Data.String (fromString)
 import qualified GHC.Generics as GHC
-import Generics.SOP
+import Generics.SOP (Generic, I (I))
 import Plutus.V1.Ledger.Api (
   Address (Address),
   Credential (PubKeyCredential, ScriptCredential),
