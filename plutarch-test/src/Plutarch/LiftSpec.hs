@@ -1,11 +1,11 @@
 module Plutarch.LiftSpec (spec) where
 
 import Data.Text (Text)
-import Plutus.V1.Ledger.Api
+import Plutarch.Api.V1 ()
+import Plutus.V1.Ledger.Api (PubKeyHash (PubKeyHash), ScriptPurpose (Minting), TxOutRef (TxOutRef))
 import qualified PlutusTx
 import Test.Syd
 
-import Plutarch.Builtin
 import Plutarch.Lift (PLifted)
 import Plutarch.Prelude
 import Plutarch.Test
