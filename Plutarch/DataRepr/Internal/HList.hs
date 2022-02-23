@@ -124,9 +124,9 @@ hrecField ::
   Term s c
 hrecField xs = pmaybeFromAsData $ hrecField' @name xs
 
-{- TODO: 
+{- TODO:
     - add instance for PVerified b
-    - add function that 
+    - add function that
       - either uses id, in case it is already verified
       - or verifies the structure
     - also add that Class constraint to the HasField instance

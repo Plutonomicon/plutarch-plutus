@@ -20,8 +20,8 @@ import Plutarch.Lift (
  )
 import Plutarch.Prelude
 
-{- TODO: 
-    - this seems to be the type zthis is going to be working on, i.e. whose representation 
+{- TODO:
+    - this seems to be the type zthis is going to be working on, i.e. whose representation
       I will have to check
 -}
 newtype PDatum (s :: S) = PDatum (Term s PData)
