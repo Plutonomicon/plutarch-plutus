@@ -162,9 +162,7 @@ test-suite examples
     OverloadedRecordDot
     QualifiedDo
 
-  other-modules:
-    Utils
-
+  other-modules:      Utils
   build-depends:
     , base
     , bytestring

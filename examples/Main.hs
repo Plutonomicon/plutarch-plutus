@@ -9,7 +9,6 @@ import Test.Tasty.HUnit
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Plutarch (POpaque, popaque, printTerm)
 import Plutarch.Api.V1 (PScriptPurpose (PMinting))
-import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeBuiltin)
 import Plutus.V1.Ledger.Value (CurrencySymbol, currencySymbol)
@@ -24,15 +23,6 @@ main = do
   setLocaleEncoding utf8
   defaultMain $ testGroup "all tests" [standardTests] -- , shrinkTests ]
 
--- FIXME: Make the below impossible using run-time checks.
--- loop :: Term (PInteger :--> PInteger)
--- loop = plam $ \x -> loop # x
--- loopHoisted :: Term (PInteger :--> PInteger)
--- loopHoisted = phoistAcyclic $ plam $ \x -> loop # x
-
--- _shrinkTests :: TestTree
--- _shrinkTests = testGroup "shrink tests" [let ?tester = shrinkTester in tests]
-
 standardTests :: TestTree
 standardTests = testGroup "standard tests" [let ?tester = standardTester in tests]
 
@@ -41,7 +31,6 @@ tests =
   testGroup
     "unit tests"
     [ plutarchTests
-    , uplcTests
     ]
 
 plutarchTests :: HasTester => TestTree
@@ -133,41 +122,6 @@ plutarchTests =
         , testCase "λy. (λx. x + x) y" $
             printTerm (plam $ \y -> (plam $ \(x :: Term _ PInteger) -> x + x) # y) @?= "(program 1.0.0 (\\i0 -> addInteger i1 i1))"
         ]
-    ]
-
--- | Tests for the behaviour of UPLC itself.
-uplcTests :: HasTester => TestTree
-uplcTests =
-  testGroup
-    "uplc tests"
-    [ testCase "2:[1]" $
-        let l :: Term _ (PBuiltinList PInteger) =
-              punsafeConstantInternal . PLC.Some $
-                PLC.ValueOf (PLC.DefaultUniApply PLC.DefaultUniProtoList PLC.DefaultUniInteger) [1]
-            l' :: Term _ (PBuiltinList PInteger) =
-              pforce (punsafeBuiltin PLC.MkCons) # (2 :: Term _ PInteger) # l
-         in equal' l' "(program 1.0.0 [2,1])"
-    , testCase "fails: True:[1]" $
-        let l :: Term _ (PBuiltinList POpaque) =
-              punsafeConstantInternal . PLC.Some $
-                PLC.ValueOf (PLC.DefaultUniApply PLC.DefaultUniProtoList PLC.DefaultUniInteger) [1]
-            l' :: Term _ (PBuiltinList POpaque) =
-              pforce (punsafeBuiltin PLC.MkCons) # pcon PTrue # l
-         in fails l'
-    , testCase "(2,1)" $
-        let p :: Term _ (PBuiltinPair PInteger PInteger) =
-              punsafeConstantInternal . PLC.Some $
-                PLC.ValueOf
-                  ( PLC.DefaultUniApply
-                      (PLC.DefaultUniApply PLC.DefaultUniProtoPair PLC.DefaultUniInteger)
-                      PLC.DefaultUniInteger
-                  )
-                  (1, 2)
-         in equal' p "(program 1.0.0 (1, 2))"
-    , testCase "fails: MkPair 1 2" $
-        let p :: Term _ (PBuiltinPair PInteger PInteger) =
-              punsafeBuiltin PLC.MkPairData # (1 :: Term _ PInteger) # (2 :: Term _ PInteger)
-         in fails p
     ]
 
 dummyCurrency :: CurrencySymbol
