@@ -21,6 +21,7 @@ module Plutarch.Test (
   (@->),
   (@==),
   pgoldenSpec,
+  PlutarchGoldens,
 
   -- * Deprecated exports
   golden,
@@ -53,6 +54,7 @@ import Plutarch
 import Plutarch.Bool (PBool (PFalse, PTrue))
 import Plutarch.Evaluate (evalScript)
 import Plutarch.Test.Golden (
+  PlutarchGoldens,
   TermExpectation,
   compileD,
   evalScriptAlwaysWithBenchmark,
