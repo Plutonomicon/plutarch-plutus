@@ -1,21 +1,32 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.PIsDataSpec (spec) where
 
 import Data.Text.Encoding (encodeUtf8)
 
+import Data.String (fromString)
+import qualified GHC.Generics as GHC
+import Generics.SOP
+import Plutus.V1.Ledger.Api (
+  Address (Address),
+  Credential (PubKeyCredential, ScriptCredential),
+  CurrencySymbol,
+  ScriptPurpose (Minting, Rewarding, Spending),
+  StakingCredential (StakingHash),
+  TxOutRef (TxOutRef),
+ )
+import qualified PlutusTx
+import Test.Syd
+import Test.Tasty.QuickCheck (Arbitrary, property)
+
 import Plutarch.Api.V1
 import Plutarch.Api.V1.Tuple (pbuiltinPairFromTuple, ptupleFromBuiltin)
 import Plutarch.Builtin (pforgetData, ppairDataBuiltin)
+import Plutarch.DataRepr (PDataFields, PIsDataReprInstances (PIsDataReprInstances))
 import Plutarch.Lift (PLifted)
 import Plutarch.Prelude
-
-import Plutus.V1.Ledger.Credential (Credential (ScriptCredential))
-import qualified PlutusTx
-
 import Plutarch.Test
-import Test.Syd
-import Test.Tasty.QuickCheck (Arbitrary, property)
 
 spec :: Spec
 spec = do
@@ -44,6 +55,79 @@ spec = do
         "pforgetData" @| pforgetData (pdata scPair) @== pforgetData scTuple
         "pbuiltinPairFromTuple" @| pfromData (pbuiltinPairFromTuple scTuple) @== scPair
         "ptupleFromBuiltin" @| ptupleFromBuiltin (pdata scPair) @== scTuple
+    -- Data construction tests
+    describe "constr" . pgoldenSpec $ do
+      -- Sum of products construction
+      "sop" @\ do
+        "4wheeler"
+          @| pcon
+            ( PFourWheeler $
+                pdcons
+                  # pconstantData 2 #$ pdcons
+                  # pconstantData 5 #$ pdcons
+                  # pconstantData 42 #$ pdcons
+                  # pconstantData 0
+                  # pdnil
+            )
+            @== pconstant (PlutusTx.Constr 0 [PlutusTx.I 2, PlutusTx.I 5, PlutusTx.I 42, PlutusTx.I 0])
+        "2wheeler"
+          @| pcon (PTwoWheeler $ pdcons # pconstantData 5 #$ pdcons # pconstantData 0 # pdnil)
+          @== pconstant (PlutusTx.Constr 1 [PlutusTx.I 5, PlutusTx.I 0])
+        "immovable"
+          @| pcon (PImmovableBox pdnil)
+          @== pconstant (PlutusTx.Constr 2 [])
+      -- Product construction
+      "prod" @\ do
+        "1"
+          @| pcon
+            ( Triplet $
+                pdcons
+                  # pconstantData @PCurrencySymbol "ab" #$ pdcons
+                  # pconstantData "41" #$ pdcons
+                  # pconstantData "0e"
+                  # pdnil
+            )
+          @== pconstant
+            ( PlutusTx.Constr
+                0
+                [ PlutusTx.toData @CurrencySymbol "ab"
+                , PlutusTx.toData @CurrencySymbol "41"
+                , PlutusTx.toData @CurrencySymbol "0e"
+                ]
+            )
+        let minting = Minting ""
+            spending = Spending $ TxOutRef "ab" 0
+            rewarding = Rewarding . StakingHash $ PubKeyCredential "da"
+        "2"
+          @| pcon
+            ( Triplet $
+                pdcons
+                  # pconstantData minting #$ pdcons
+                  # pconstantData spending #$ pdcons
+                  # pconstantData rewarding
+                  # pdnil
+            )
+          @== pconstant
+            ( PlutusTx.Constr
+                0
+                [PlutusTx.toData minting, PlutusTx.toData spending, PlutusTx.toData rewarding]
+            )
+      -- Enumerable sum type construction
+      "enum" @\ do
+        "PA" @| pcon (PA pdnil) @== pconstant (PlutusTx.Constr 0 [])
+        "PB" @| pcon (PB pdnil) @== pconstant (PlutusTx.Constr 1 [])
+      -- Relation between pconstant and pcon
+      "pconstant-pcon-rel"
+        @| ( let valHash = "01"
+                 addr = Address (ScriptCredential $ fromString valHash) Nothing
+                 pscriptCredential :: Term s PCredential
+                 pscriptCredential =
+                  pcon $
+                    PScriptCredential $
+                      pdcons # pdata (pcon $ PValidatorHash $ phexByteStr valHash) # pdnil
+              in pconstant addr
+                  @== pcon (PAddress $ pdcons # pdata pscriptCredential #$ pdcons # pdata (pcon $ PDNothing pdnil) # pdnil)
+           )
 
 propertySet ::
   forall p.
@@ -98,3 +182,45 @@ pdataCompat ::
   PLifted p ->
   IO ()
 pdataCompat x = PlutusTx.fromData @(PLifted p) (plift $ pforgetData $ pdata $ pconstant @p x) `shouldBe` Just x
+
+{- |
+  We can defined a data-type using PDataRecord, with labeled fields.
+
+  With an appropriate instance of 'PIsDataRepr', we can automatically
+  derive 'PDataFields'.
+-}
+newtype Triplet (a :: PType) (s :: S)
+  = Triplet
+      ( Term
+          s
+          ( PDataRecord
+              '[ "x" ':= a
+               , "y" ':= a
+               , "z" ':= a
+               ]
+          )
+      )
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic, PIsDataRepr)
+  deriving
+    (PlutusType, PIsData, PDataFields)
+    via (PIsDataReprInstances (Triplet a))
+
+data PVehicle (s :: S)
+  = PFourWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger, "_2" ':= PInteger, "_3" ':= PInteger]))
+  | PTwoWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
+  | PImmovableBox (Term s (PDataRecord '[]))
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic, PIsDataRepr)
+  deriving
+    (PlutusType, PIsData)
+    via PIsDataReprInstances PVehicle
+
+data PEnumType (s :: S)
+  = PA (Term s (PDataRecord '[]))
+  | PB (Term s (PDataRecord '[]))
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic, PIsDataRepr)
+  deriving
+    (PlutusType, PIsData)
+    via PIsDataReprInstances PEnumType

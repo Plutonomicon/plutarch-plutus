@@ -163,7 +163,6 @@ test-suite examples
     QualifiedDo
 
   other-modules:
-    Examples.ConstrData
     Examples.LetRec
     Utils
 

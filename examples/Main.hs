@@ -17,7 +17,6 @@ import Plutus.V2.Ledger.Contexts (ScriptPurpose (Minting))
 import qualified PlutusCore as PLC
 import qualified PlutusTx
 
-import qualified Examples.ConstrData as ConstrData
 import qualified Examples.LetRec as LetRec
 import Utils
 
@@ -45,7 +44,6 @@ tests =
     [ plutarchTests
     , uplcTests
     , LetRec.tests
-    , ConstrData.tests
     ]
 
 plutarchTests :: HasTester => TestTree
