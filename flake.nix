@@ -475,6 +475,7 @@
             chmod -R u+w $out/plutarch-test
             rm -f $out/plutarch-test/src/Plutarch/MonadicSpec.hs
             rm -f $out/plutarch-test/src/Plutarch/FieldSpec.hs
+            rm -f $out/plutarch-test/src/Plutarch/RecSpec.hs
           '';
           compiler-nix-name = ghcName;
           inherit extraSources;
