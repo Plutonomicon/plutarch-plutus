@@ -1,0 +1,41 @@
+<=.1<=2 {"exBudgetCPU":61978263,"exBudgetMemory":190540,"scriptSizeBytes":793}
+<=.!(2<=1) {"exBudgetCPU":61293484,"exBudgetMemory":188240,"scriptSizeBytes":793}
+<=.1 {"exBudgetCPU":74840628,"exBudgetMemory":229373,"scriptSizeBytes":795}
+<=.2 {"exBudgetCPU":73798573,"exBudgetMemory":225873,"scriptSizeBytes":795}
+round trip tests.1 {"exBudgetCPU":45997988,"exBudgetMemory":142801,"scriptSizeBytes":840}
+round trip tests.2 {"exBudgetCPU":45997988,"exBudgetMemory":142801,"scriptSizeBytes":840}
+round trip tests.3 {"exBudgetCPU":65290049,"exBudgetMemory":200964,"scriptSizeBytes":845}
+round trip tests.4 {"exBudgetCPU":45997988,"exBudgetMemory":142801,"scriptSizeBytes":837}
+assetClassValue.assetClassValue {"exBudgetCPU":6665584,"exBudgetMemory":11636,"scriptSizeBytes":115}
+assetClassValueOf.1 {"exBudgetCPU":34607011,"exBudgetMemory":100966,"scriptSizeBytes":773}
+assetClassValueOf.2 {"exBudgetCPU":34607011,"exBudgetMemory":100966,"scriptSizeBytes":773}
+assetClassValueOf.3 {"exBudgetCPU":47112349,"exBudgetMemory":138599,"scriptSizeBytes":775}
+assetClassValueOf.4 {"exBudgetCPU":37763123,"exBudgetMemory":110372,"scriptSizeBytes":770}
+valSub.1 {"exBudgetCPU":134750938,"exBudgetMemory":415026,"scriptSizeBytes":1173}
+valSub.2 {"exBudgetCPU":134750938,"exBudgetMemory":415026,"scriptSizeBytes":1173}
+valSub.3 {"exBudgetCPU":182930078,"exBudgetMemory":560261,"scriptSizeBytes":1201}
+valSub.4 {"exBudgetCPU":187824398,"exBudgetMemory":574969,"scriptSizeBytes":1201}
+valSub.5 {"exBudgetCPU":134661619,"exBudgetMemory":414726,"scriptSizeBytes":1194}
+valSub.6 {"exBudgetCPU":232200965,"exBudgetMemory":710582,"scriptSizeBytes":1215}
+value monoid.1 {"exBudgetCPU":180287304,"exBudgetMemory":552455,"scriptSizeBytes":1179}
+value monoid.2 {"exBudgetCPU":218742360,"exBudgetMemory":668861,"scriptSizeBytes":1193}
+value monoid.3 {"exBudgetCPU":196996837,"exBudgetMemory":602794,"scriptSizeBytes":1187}
+value monoid.4 {"exBudgetCPU":219099636,"exBudgetMemory":670061,"scriptSizeBytes":1193}
+value monoid.5 {"exBudgetCPU":218742360,"exBudgetMemory":668861,"scriptSizeBytes":1193}
+value monoid.7 {"exBudgetCPU":232152621,"exBudgetMemory":711080,"scriptSizeBytes":1193}
+value monoid.8 {"exBudgetCPU":231795345,"exBudgetMemory":709880,"scriptSizeBytes":1193}
+<> inverts valSub.1 {"exBudgetCPU":318128853,"exBudgetMemory":972246,"scriptSizeBytes":1305}
+<> inverts valSub.2 {"exBudgetCPU":320366255,"exBudgetMemory":979350,"scriptSizeBytes":1305}
+<> inverts valSub.3 {"exBudgetCPU":274592113,"exBudgetMemory":841212,"scriptSizeBytes":1302}
+<> inverts valSub.4 {"exBudgetCPU":278053150,"exBudgetMemory":851516,"scriptSizeBytes":1302}
+<> inverts valSub.5 {"exBudgetCPU":185002986,"exBudgetMemory":566563,"scriptSizeBytes":1201}
+<> inverts valSub.6 {"exBudgetCPU":232200965,"exBudgetMemory":710582,"scriptSizeBytes":1215}
+getCotiuingOutputs.1 {"exBudgetCPU":39493913,"exBudgetMemory":77037,"scriptSizeBytes":702}
+getCotiuingOutputs.2 {"exBudgetCPU":41016876,"exBudgetMemory":80265,"scriptSizeBytes":742}
+getCotiuingOutputs.3 {"exBudgetCPU":47196279,"exBudgetMemory":91207,"scriptSizeBytes":742}
+getCotiuingOutputs.4 {"exBudgetCPU":39493913,"exBudgetMemory":77037,"scriptSizeBytes":702}
+findDatum.1 {"exBudgetCPU":8655883,"exBudgetMemory":17139,"scriptSizeBytes":380}
+findDatum.2 {"exBudgetCPU":11485955,"exBudgetMemory":22965,"scriptSizeBytes":380}
+findDatum.3 {"exBudgetCPU":11004366,"exBudgetMemory":23568,"scriptSizeBytes":373}
+findOwnInput.1 {"exBudgetCPU":15654469,"exBudgetMemory":30585,"scriptSizeBytes":498}
+findOwnInput.2 {"exBudgetCPU":15654469,"exBudgetMemory":30585,"scriptSizeBytes":498}
