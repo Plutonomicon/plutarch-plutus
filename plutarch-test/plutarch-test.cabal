@@ -108,18 +108,21 @@ executable plutarch-test
   build-depends:
     , base16-bytestring
     , cborg
+    , rank2classes
     , serialise
 
   if impl(ghc >=9.0)
     other-modules:
       Plutarch.FieldSpec
       Plutarch.MonadicSpec
+      Plutarch.RecSpec
 
   other-modules:
     Plutarch.ApiSpec
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
     Plutarch.IntegerSpec
+    Plutarch.LiftSpec
     Plutarch.ListSpec
     Plutarch.PIsDataSpec
     Plutarch.PLamSpec
@@ -134,6 +137,7 @@ executable plutarch-test
     Plutarch.Test.ListSyntax
     Plutarch.TraceSpec
     Plutarch.UnitSpec
+    Plutarch.UPLCSpec
     Spec
 
   if flag(development)

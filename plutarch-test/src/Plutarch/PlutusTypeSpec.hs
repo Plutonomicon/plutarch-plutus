@@ -30,6 +30,20 @@ spec = do
       "swap" @\ do
         "A" @| swap (pcon A) @== pcon B
         "B" @| swap (pcon B) @== pcon A
+      "scottenc" @\ do
+        "PMaybe"
+          @| ( let a = 42 :: Term s PInteger
+                in pmatch (pcon $ PJust a) $ \case
+                    PJust x -> x
+                    -- We expect this perror not to be evaluated eagerly when mx
+                    -- is a PJust.
+                    PNothing -> perror
+             )
+        "PPair"
+          @| ( let a = 42 :: Term s PInteger
+                   b = "Universe" :: Term s PString
+                in pmatch (pcon (PPair a b) :: Term s (PPair PInteger PString)) $ \(PPair _ y) -> y
+             )
     describe "instances-sanity" $ do
       plutarchDevFlagDescribe $ do
         it "PBuiltinList" $ do

@@ -3,3 +3,5 @@ get.txInfo {"exBudgetCPU":837149,"exBudgetMemory":1496,"scriptSizeBytes":149}
 get.mint {"exBudgetCPU":2838750,"exBudgetMemory":5388,"scriptSizeBytes":177}
 get.credentials {"exBudgetCPU":8007639,"exBudgetMemory":15200,"scriptSizeBytes":242}
 get.sym {"exBudgetCPU":3825799,"exBudgetMemory":6816,"scriptSizeBytes":188}
+ScriptPurpose.literal {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":48}
+ScriptPurpose.decode {"exBudgetCPU":1570478,"exBudgetMemory":3498,"scriptSizeBytes":74}
