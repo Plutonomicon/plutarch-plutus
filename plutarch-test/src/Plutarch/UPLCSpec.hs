@@ -36,3 +36,14 @@ spec = do
     "fails:MkPair-1-2"
       @| punsafeBuiltin PLC.MkPairData # (1 :: Term _ PInteger) # (2 :: Term _ PInteger)
         @-> pfails
+  describe "uplc-misc" . pgoldenSpec $ do
+    "perror" @| perror @-> pfails
+    "perror.arg" @| perror # (1 :: Term s PInteger) @-> pfails
+    "laziness" @\ do
+      "f.d" @| (pforce . pdelay $ (0 :: Term s PInteger))
+      "d.f.d" @| (pdelay . pforce . pdelay $ (0 :: Term s PInteger))
+    "hoist" @\ do
+      -- hoist id 0 => 0
+      "id.0" @| phoistAcyclic $ plam $ \x -> x # (0 :: Term s PInteger)
+      -- hoist fstPair => fstPair
+      "fstPair" @| phoistAcyclic (punsafeBuiltin PLC.FstPair)

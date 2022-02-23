@@ -37,9 +37,7 @@ plutarchTests :: HasTester => TestTree
 plutarchTests =
   testGroup
     "plutarch tests"
-    [ testCase "1 + 2 == 3" $ equal (pconstant @PInteger $ 1 + 2) (pconstant @PInteger 3)
-    , testCase "fails: perror" $ fails perror
-    , testCase "ScriptPurpose literal" $
+    [ testCase "ScriptPurpose literal" $
         let d :: ScriptPurpose
             d = Minting dummyCurrency
             f :: Term s PScriptPurpose
@@ -55,22 +53,6 @@ plutarchTests =
               PMinting c -> popaque c
               _ -> perror
          in printTerm f @?= "(program 1.0.0 ((\\i0 -> (\\i0 -> (\\i0 -> force (force ifThenElse (equalsInteger 0 i2) (delay i1) (delay error))) (force (force sndPair) i2)) (force (force fstPair) i1)) (unConstrData #d8799f58201111111111111111111111111111111111111111111111111111111111111111ff)))"
-    , testCase "error # 1 => error" $
-        printTerm (perror # (1 :: Term s PInteger)) @?= "(program 1.0.0 error)"
-    , -- TODO: Port this to pluatrch-test
-      -- , testCase "fib error => error" $
-      --    printTerm (fib # perror) @?= "(program 1.0.0 error)"
-      testCase "force (delay 0) => 0" $
-        printTerm (pforce . pdelay $ (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
-    , testCase "delay (force (delay 0)) => delay 0" $
-        printTerm (pdelay . pforce . pdelay $ (0 :: Term s PInteger)) @?= "(program 1.0.0 (delay 0))"
-    , testCase "id # 0 => 0" $
-        printTerm ((plam $ \x -> x) # (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
-    , testCase "hoist id 0 => 0" $
-        printTerm ((phoistAcyclic $ plam $ \x -> x) # (0 :: Term s PInteger)) @?= "(program 1.0.0 0)"
-    , testCase "hoist fstPair => fstPair" $
-        printTerm (phoistAcyclic (punsafeBuiltin PLC.FstPair)) @?= "(program 1.0.0 fstPair)"
-    , testCase "throws: hoist error" $ throws $ phoistAcyclic perror
     , testCase "PData equality" $ do
         expect $ let dat = pconstant @PData (PlutusTx.List [PlutusTx.Constr 1 [PlutusTx.I 0]]) in dat #== dat
         expect $ pnot #$ pconstant @PData (PlutusTx.Constr 0 []) #== pconstant @PData (PlutusTx.I 42)

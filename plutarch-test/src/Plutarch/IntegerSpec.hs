@@ -19,6 +19,7 @@ spec = do
           "lam" @| fib
           "app" @\ do
             "9" @| fib # 9
+          "error" @| fib # perror @-> pfails
         "uglyDouble" @| uglyDouble
 
 add1 :: Term s (PInteger :--> PInteger :--> PInteger)
