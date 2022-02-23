@@ -207,7 +207,9 @@ shallowOuterData = pdata (punsafeFrom sampleShallowOuter)
 
 spec :: Spec
 spec = do
-  describe "rec" . pgoldenSpec $ do
+  -- Plutarch.Rec.verifySoleConstructor uses tracing, so we must create two sets
+  -- of golden.
+  describe "rec" . plutarchDevFlagDescribe . pgoldenSpec $ do
     "simple" @\ do
       -- Record construction
       "constr" @\ do
