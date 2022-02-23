@@ -6,7 +6,6 @@ import qualified PlutusTx
 import Test.Syd
 
 import Plutarch.Builtin
-import Plutarch.Internal.Other (popaque)
 import Plutarch.Lift (PLifted)
 import Plutarch.Prelude
 import Plutarch.Test
@@ -39,19 +38,12 @@ spec = do
         pconstant @PString "abc" `pshouldBe` pconstant @PString "abc"
         pconstant @PString "foo" `pshouldBe` ("foo" :: Term _ PString)
     describe "pconstantData" $ do
-      let p1 = False
-          p2 = 42 :: Integer
-          p3 = PubKeyHash "04"
-          p4 = Minting ""
-          p5 = TxOutRef "41" 12
-      goldens
-        All
-        [ ("bool", popaque $ pconstantData p1)
-        , ("int", popaque $ pconstantData p2)
-        , ("pkh", popaque $ pconstantData p3)
-        , ("minting", popaque $ pconstantData p4)
-        , ("txoutref", popaque $ pconstantData p5)
-        ]
+      pgoldenSpec $ do
+        "bool" @| pconstantData False
+        "int" @| pconstantData (42 :: Integer)
+        "pkh" @| pconstantData (PubKeyHash "04")
+        "minting" @| pconstantData (Minting "")
+        "txoutref" @| pconstantData (TxOutRef "41" 12)
       it "works" $ testPConstantDataSan False
 
 testPConstantDataSan :: forall p. (PIsData p, PLift p, PlutusTx.ToData (PLifted p)) => PLifted p -> Expectation
