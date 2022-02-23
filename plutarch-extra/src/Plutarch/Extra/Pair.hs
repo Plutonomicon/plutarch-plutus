@@ -1,8 +1,3 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
-
--- Orphans aren't great but
--- this should be merged to plutarch eventually anyway
-
 module Plutarch.Extra.Pair (
   pfst,
   psnd,
@@ -25,38 +20,6 @@ pairToBuiltin = phoistAcyclic $
 
 pairFromBuiltin :: (PIsData a, PIsData b) => Term s (PBuiltinPair (PAsData a) (PAsData b) :--> PPair a b)
 pairFromBuiltin = phoistAcyclic $ plam $ \p -> pcon $ PPair (pfromData $ pfstBuiltin # p) (pfromData $ psndBuiltin # p)
-
-instance (PEq a, PEq b) => PEq (PPair a b) where
-  a' #== b' =
-    phoistAcyclic
-      ( plam $ \a b ->
-          pmatch a $ \(PPair al ar) ->
-            pmatch b $ \(PPair bl br) ->
-              al #== bl #&& ar #== br
-      )
-      # a'
-      # b'
-
-instance (PEq a, POrd a, POrd b) => POrd (PPair a b) where
-  a' #< b' =
-    phoistAcyclic
-      ( plam $ \a b ->
-          pmatch a $ \(PPair al ar) ->
-            pmatch b $ \(PPair bl br) ->
-              (al #< bl) #|| ((al #== bl) #&& (ar #< br))
-      )
-      # a'
-      # b'
-
-  a' #<= b' =
-    phoistAcyclic
-      ( plam $ \a b ->
-          pmatch a $ \(PPair al ar) ->
-            pmatch b $ \(PPair bl br) ->
-              (al #< bl) #|| ((al #== bl) #&& (ar #<= br))
-      )
-      # a'
-      # b'
 
 pfst :: Term s (PPair a b :--> a)
 pfst = phoistAcyclic $ plam $ \p -> pmatch p $ \(PPair a _) -> a

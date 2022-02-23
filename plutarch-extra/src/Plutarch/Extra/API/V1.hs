@@ -1,4 +1,9 @@
 {-# LANGUAGE UndecidableInstances #-}
+
+-- TODO the PValue instances should go to
+-- Plutarc.Api.V1.Value but they
+-- depend on quite a bit of
+-- stuff in plutarch-extra
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Extra.API.V1 (
@@ -31,7 +36,6 @@ import Plutarch.Api.V1 (
   PScriptPurpose (PSpending),
   PTokenName,
   PTuple,
-  PTxId (..),
   PTxInInfo (..),
   PTxInfo (..),
   PTxOut (..),
@@ -81,25 +85,7 @@ newtype PAssetClass (s :: S)
     via PIsDataReprInstances PAssetClass
 
 type PAssetClass' = PPair PCurrencySymbol PTokenName
-
-instance PEq PTxId where
-  a' #== b' =
-    phoistAcyclic
-      ( plam $ \a b ->
-          (getByteString # a) #== (getByteString # b)
-      )
-      # a'
-      # b'
-
-instance PEq PAddress where
-  a' #== b' =
-    phoistAcyclic
-      ( plam $ \a b ->
-          (pfield @"credential" # a) #== (pfield @"credential" # b)
-            #&& (pfield @"stakingCredential" # a) #== (pfield @"stakingCredential" # b)
-      )
-      # a'
-      # b'
+type PMonoid (a :: PType) = forall s. Monoid (Term s a)
 
 instance PEq PValue where
   a' #== b' =
@@ -112,14 +98,6 @@ instance PEq PValue where
       # a'
       # b'
 
-instance PEq PTxOut where
-  a #== b = pdata a #== pdata b
-
-instance PEq PTxInInfo where
-  a #== b = pdata a #== pdata b
-
-type PMonoid (a :: PType) = forall s. Monoid (Term s a)
-
 instance Semigroup (Term s PValue) where
   a' <> b' =
     phoistAcyclic
@@ -131,12 +109,6 @@ instance Semigroup (Term s PValue) where
 
 instance Monoid (Term s PValue) where
   mempty = pcon $ PValue $ pcon $ PMap $ pcon PNil
-
-getByteString :: Term s (PTxId :--> PByteString)
-getByteString = phoistAcyclic $
-  plam $ \txid -> unTermCont $ do
-    PTxId txid' <- tmatch txid
-    tletField @"_0" txid'
 
 valueLTE :: Term s (PValue :--> PValue :--> PBool)
 valueLTE = phoistAcyclic $
@@ -194,13 +166,13 @@ assetClassValue = phoistAcyclic $
   plam $ \ac n -> unTermCont $ do
     cs <- tletField @"currencySymbol" ac
     tn <- tletField @"tokenName" ac
-    tcon $
-      PValue $
-        pcon $
-          PMap $
-            psingleton #$ ppairDataBuiltin # pdata cs
-              #$ pdata
-              $ pcon $ PMap $ psingleton #$ ppairDataBuiltin # pdata tn # pdata n
+    tcon $ PValue $ pcon $ PMap $ psingleton
+      #$ ppairDataBuiltin
+        # pdata cs
+        #$ pdata $ pcon $ PMap $ psingleton
+          #$ ppairDataBuiltin
+            # pdata tn
+            # pdata n
 
 assetClassValueOf :: Term s (PValue :--> PAssetClass :--> PInteger)
 assetClassValueOf = phoistAcyclic $

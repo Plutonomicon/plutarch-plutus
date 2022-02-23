@@ -80,3 +80,15 @@ newtype PAddress (s :: S)
 
 instance PUnsafeLiftDecl PAddress where type PLifted PAddress = Plutus.Address
 deriving via (DerivePConstantViaData Plutus.Address PAddress) instance (PConstant Plutus.Address)
+
+
+instance PEq PAddress where
+  a' #== b' =
+    phoistAcyclic
+      ( plam $ \a b ->
+          (pfield @"credential" # a) #== (pfield @"credential" # b)
+            #&& (pfield @"stakingCredential" # a) #== (pfield @"stakingCredential" # b)
+      )
+      # a'
+      # b'
+

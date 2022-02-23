@@ -13,7 +13,7 @@ import Plutarch (
   pmatch,
   (#),
  )
-import Plutarch.Bool (PBool (PFalse, PTrue), PEq ((#==)))
+import Plutarch.Bool (PBool (PFalse, PTrue), PEq ((#==)),POrd((#<),(#<=)))
 
 -- | Plutus Maybe type, with Scott-encoded repr
 data PMaybe (a :: PType) (s :: S)
@@ -33,6 +33,33 @@ instance PEq a => PEq (PMaybe a) where
             PJust a -> pmatch mb $ \case
               PNothing -> pcon PFalse
               PJust b -> a #== b
+      )
+      # ma'
+      # mb'
+
+instance POrd a => POrd (PMaybe a) where
+  ma' #< mb' =
+    phoistAcyclic
+      ( plam $ \ma mb ->
+          pmatch ma $ \case
+            PNothing -> pmatch mb $ \case
+              PNothing -> pcon PFalse
+              PJust _ -> pcon PTrue
+            PJust a -> pmatch mb $ \case
+              PNothing -> pcon PFalse
+              PJust b -> a #< b
+      )
+      # ma'
+      # mb'
+
+  ma' #<= mb' =
+    phoistAcyclic
+      ( plam $ \ma mb ->
+          pmatch ma $ \case
+            PNothing -> pcon PTrue
+            PJust a -> pmatch mb $ \case
+              PNothing -> pcon PFalse
+              PJust b -> a #<= b
       )
       # ma'
       # mb'
