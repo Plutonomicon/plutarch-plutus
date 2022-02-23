@@ -44,7 +44,7 @@ import Test.Syd
 
 spec :: Spec
 spec = describe "api" $
-  pgoldenSpec $ do
+  plutarchDevFlagDescribe $ pgoldenSpec $ do
     "<=" @\ do
       "1<=2" @| valueLTE # pconstant v1 # pconstant v2 @-> passert
       "!(2<=1)" @| valueLTE # pconstant v2 # pconstant v1 @-> passertNot
