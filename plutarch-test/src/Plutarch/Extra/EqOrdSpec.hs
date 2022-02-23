@@ -10,7 +10,6 @@ import Plutarch.Test.Property.Util (Marshal (marshal), haskPlutEquiv, viaData)
 import Plutarch.Prelude
 
 import Plutarch.Extra.API.V1 ()
-import Plutarch.Extra.Maybe ()
 
 import Plutarch.Test
 

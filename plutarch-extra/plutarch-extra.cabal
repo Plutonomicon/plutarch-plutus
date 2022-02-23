@@ -70,25 +70,9 @@ common c
 
 common deps
   build-depends:
-    , aeson              >=2.0
     , base
-    , bytestring
-    , filepath
     , generics-sop
-    , hedgehog
     , plutarch
-    , plutus-core
-    , plutus-ledger-api
-    , plutus-tx
-    , sydtest
-    , sydtest-discover
-    , sydtest-hedgehog
-    , tasty
-    , tasty-golden
-    , tasty-hunit
-    , tasty-quickcheck
-    , text
-    , transformers
 
 library
   import:          c, deps

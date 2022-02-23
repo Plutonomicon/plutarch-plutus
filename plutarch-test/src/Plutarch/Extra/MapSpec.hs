@@ -27,7 +27,6 @@ import Plutarch.Extra.Map (
   plookup,
   unionWith,
  )
-import Plutarch.Extra.Maybe ()
 
 import Plutarch.Test
 
