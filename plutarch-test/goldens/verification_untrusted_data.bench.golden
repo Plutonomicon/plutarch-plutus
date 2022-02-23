@@ -1,0 +1,7 @@
+erroneous.int /= bytestring {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":16}
+erroneous.(String, Integer) /= (String, String) {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":102}
+erroneous.[String] /= [Integer] {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":85}
+working.int == int {"exBudgetCPU":448965,"exBudgetMemory":664,"scriptSizeBytes":11}
+working.(String, String) == (String, String) {"exBudgetCPU":7384676,"exBudgetMemory":12164,"scriptSizeBytes":102}
+working.(POpaque, POpaque) == (POpaque, POpaque) {"exBudgetCPU":6216719,"exBudgetMemory":11072,"scriptSizeBytes":88}
+working.[String] == [String] {"exBudgetCPU":6809909,"exBudgetMemory":14008,"scriptSizeBytes":94}

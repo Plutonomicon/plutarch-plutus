@@ -1,0 +1,7 @@
+erroneous.int /= bytestring (program 1.0.0 error)
+erroneous.(String, Integer) /= (String, String) (program 1.0.0 error)
+erroneous.[String] /= [Integer] (program 1.0.0 error)
+working.int == int (program 1.0.0 42)
+working.(String, String) == (String, String) (program 1.0.0 (#43666f6f, #43626172))
+working.(POpaque, POpaque) == (POpaque, POpaque) (program 1.0.0 (#d87980, #d87980))
+working.[String] == [String] (program 1.0.0 [#43666f6f, #43626172])

@@ -66,7 +66,7 @@ common c
 
   ghc-options:
     -Wall -Wcompat -Wincomplete-uni-patterns -Wno-unused-do-bind
-    -Wno-partial-type-signatures -Wmissing-export-lists -Werror
+    -Wno-partial-type-signatures -Wmissing-export-lists 
     -Wincomplete-record-updates -Wmissing-deriving-strategies
     -Wno-name-shadowing -Wunused-foralls -fprint-explicit-foralls
     -fprint-explicit-kinds
@@ -135,6 +135,7 @@ executable plutarch-test
     Plutarch.Test.ListSyntax
     Plutarch.TraceSpec
     Plutarch.UnitSpec
+    Plutarch.VerifySpec
     Spec
 
   if flag(development)
