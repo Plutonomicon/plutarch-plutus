@@ -94,8 +94,8 @@ plift prog = case plift' prog of
   Left (LiftError_ReadKnownError (ErrorWithCause e causeMaybe)) ->
     let unliftErrMaybe = e ^? _UnliftingErrorE
      in error $
-          "plift failed: internal plutus-core error: "
-            <> maybe "ReadKnownEvaluationFailure" show unliftErrMaybe
+          "plift failed: incorrect type: "
+            <> maybe "absurd evaluation failure" show unliftErrMaybe
             <> "\n"
             <> maybe "" (\x -> "cause: " <> show x) causeMaybe
   Left (LiftError_EvalError e) -> error $ "plift failed: erring term: " <> show e
