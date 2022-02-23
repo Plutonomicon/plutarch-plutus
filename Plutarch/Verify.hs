@@ -13,10 +13,10 @@ import Plutarch.Builtin (
   PData,
   PIsData (pfromData),
   pdata,
+  pforgetData,
   pfstBuiltin,
   ppairDataBuiltin,
   psndBuiltin,
-  pforgetData,
  )
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
@@ -72,11 +72,11 @@ instance PTryFrom (PBuiltinPair (PAsData POpaque) (PAsData POpaque)) where
               # (psndBuiltin # tup)
        in chk
 
-{- | 
-    This deeply checks the Datastructure for validity. 
-    Be aware this might get really expensive, so only 
-    use it if you cannot establish trust otherwise 
-    (e.g. via only checking a part of your Data with 
+{- |
+    This deeply checks the Datastructure for validity.
+    Be aware this might get really expensive, so only
+    use it if you cannot establish trust otherwise
+    (e.g. via only checking a part of your Data with
     PTryFrom)
 -}
 class PTryFromRecur (a :: PType) where
