@@ -8,10 +8,10 @@ module Plutarch.Api.V1.Value (
 ) where
 
 import qualified Plutus.V1.Ledger.Api as Plutus
-import qualified PlutusTx.Builtins.Internal as PT
 
 import Plutarch.Api.V1.AssocMap (PMap)
 import Plutarch.Lift (
+  DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
   PLifted,
   PUnsafeLiftDecl,
@@ -23,7 +23,7 @@ newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
 
 instance PUnsafeLiftDecl PTokenName where type PLifted PTokenName = Plutus.TokenName
 deriving via
-  (DerivePConstantViaNewtype Plutus.TokenName PTokenName PByteString)
+  (DerivePConstantViaBuiltin Plutus.TokenName PTokenName PByteString)
   instance
     (PConstant Plutus.TokenName)
 
@@ -32,7 +32,7 @@ newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
 
 instance PUnsafeLiftDecl PCurrencySymbol where type PLifted PCurrencySymbol = Plutus.CurrencySymbol
 deriving via
-  (DerivePConstantViaNewtype Plutus.CurrencySymbol PCurrencySymbol PByteString)
+  (DerivePConstantViaBuiltin Plutus.CurrencySymbol PCurrencySymbol PByteString)
   instance
     (PConstant Plutus.CurrencySymbol)
 

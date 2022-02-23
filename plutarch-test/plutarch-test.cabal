@@ -80,6 +80,7 @@ common deps
     , filepath
     , generics-sop
     , hedgehog
+    , mtl
     , plutarch
     , plutarch-benchmark
     , plutus-core
@@ -89,7 +90,6 @@ common deps
     , sydtest-discover
     , sydtest-hedgehog
     , tasty
-    , tasty-golden
     , tasty-hunit
     , tasty-quickcheck
     , text
@@ -101,12 +101,18 @@ library
   import:          c, deps
   hs-source-dirs:  src
   exposed-modules: Plutarch.Test
+  other-modules:
+    Plutarch.Test.Golden
+    Plutarch.Test.ListSyntax
 
 executable plutarch-test
   import:         c, deps
-  type:           exitcode-stdio-1.0
   main-is:        Main.hs
   hs-source-dirs: src
+  build-depends:
+    , base16-bytestring
+    , cborg
+    , serialise
 
   if impl(ghc >=9.0)
     other-modules:
@@ -133,10 +139,13 @@ executable plutarch-test
     Plutarch.PlutusTypeSpec
     Plutarch.RationalSpec
     Plutarch.RecursionSpec
+    Plutarch.ScriptsSpec
     Plutarch.StringSpec
     Plutarch.Test
     Plutarch.Test.Property.Gen
     Plutarch.Test.Property.Util
+    Plutarch.Test.Golden
+    Plutarch.Test.ListSyntax
     Plutarch.TraceSpec
     Plutarch.UnitSpec
     Spec
@@ -144,4 +153,5 @@ executable plutarch-test
   if flag(development)
     cpp-options: -DDevelopment
 
-  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
+  -- FIXME remove -Wwarn=deprecations
+  ghc-options:    -threaded -rtsopts -with-rtsopts=-N -Wwarn=deprecations

@@ -1,1 +1,0 @@
-0 (program 1.0.0 ((\i0 -> equalsInteger (lengthOfByteString (consByteString 91 i1)) (addInteger 1 (lengthOfByteString i1))) #48fcd1))

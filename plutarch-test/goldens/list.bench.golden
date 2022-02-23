@@ -1,0 +1,6 @@
+mergeSort.xs1 {"exBudgetCPU":114094232,"exBudgetMemory":371050,"scriptSizeBytes":214}
+mergeSort.xs2 {"exBudgetCPU":115880612,"exBudgetMemory":377050,"scriptSizeBytes":214}
+mergeSort.xs3 {"exBudgetCPU":282005503,"exBudgetMemory":913438,"scriptSizeBytes":262}
+timSort.xs1 {"exBudgetCPU":44103707,"exBudgetMemory":143837,"scriptSizeBytes":371}
+timSort.xs2 {"exBudgetCPU":61739118,"exBudgetMemory":198675,"scriptSizeBytes":371}
+timSort.xs3 {"exBudgetCPU":121240698,"exBudgetMemory":388735,"scriptSizeBytes":419}

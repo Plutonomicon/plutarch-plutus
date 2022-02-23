@@ -21,7 +21,7 @@ import Control.Monad.Trans.State.Lazy (State, evalState, get, put)
 import Data.Functor.Compose (Compose (Compose, getCompose))
 import Data.Kind (Type)
 import Data.Monoid (Dual (Dual, getDual), Endo (Endo, appEndo), Sum (Sum, getSum))
-import Numeric.Natural (Natural)
+import GHC.Word (Word64)
 import Plutarch (
   PlutusType (PInner, pcon', pmatch'),
   pcon,
@@ -78,7 +78,7 @@ rmatch p f = p # arg
   where
     arg :: Term s (ScottEncoded r t)
     arg = Term (\i -> TermResult (RLamAbs (fieldCount (initial @r) - 1) $ rawArg i) [])
-    rawArg :: Natural -> RawTerm
+    rawArg :: Word64 -> RawTerm
     rawArg depth = getTerm $ asRawTerm (f $ variables depth) $ depth + fieldCount (initial @r)
 
 -- | Wrapped recursive let construct, tying into knot the recursive equations specified in the record fields.
@@ -121,14 +121,14 @@ accessors = abstract Rank2.<$> variables 0
 {- | A record of terms that each accesses a different variable in scope,
  outside in following the field order.
 -}
-variables :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => Natural -> r (Term s)
+variables :: forall r s. (Rank2.Distributive r, Rank2.Traversable r) => Word64 -> r (Term s)
 variables baseDepth = Rank2.cotraverse var id
   where
     var :: (r (Term s) -> Term s a) -> Term s a
     var ref = ref ordered
     ordered :: r (Term s)
     ordered = evalState (Rank2.traverse next $ initial @r) 0
-    next :: f a -> State Natural (Term s a)
+    next :: f a -> State Word64 (Term s a)
     next _ = do
       i <- get
       let i' = succ i
@@ -230,7 +230,7 @@ verifySoleConstructor f d =
 initial :: Rank2.Distributive r => r (Compose Maybe (Term s))
 initial = Rank2.distribute Nothing
 
-fieldCount :: Rank2.Foldable r => r f -> Natural
+fieldCount :: Rank2.Foldable r => r f -> Word64
 fieldCount = getSum . Rank2.foldMap (const $ Sum 1)
 
 -- | The raw Y-combinator term

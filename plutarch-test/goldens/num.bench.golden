@@ -1,0 +1,8 @@
+product.exa1 {"exBudgetCPU":11766311,"exBudgetMemory":36820,"scriptSizeBytes":101}
+product.exa1 {"exBudgetCPU":714652,"exBudgetMemory":2500,"scriptSizeBytes":45}
+sum.exa1 {"exBudgetCPU":12898881,"exBudgetMemory":36820,"scriptSizeBytes":101}
+sum.exa1 {"exBudgetCPU":714652,"exBudgetMemory":2500,"scriptSizeBytes":45}
+exp.rational.exa1 {"exBudgetCPU":1758257,"exBudgetMemory":5402,"scriptSizeBytes":131}
+exp.rational.exa1 {"exBudgetCPU":1758257,"exBudgetMemory":5402,"scriptSizeBytes":130}
+exp.integer.exa1 {"exBudgetCPU":23026197,"exBudgetMemory":45780,"scriptSizeBytes":102}
+exp.integer.exa1 {"exBudgetCPU":1806807,"exBudgetMemory":5104,"scriptSizeBytes":101}

@@ -9,6 +9,8 @@ module Plutarch.Benchmark (
   -- | * Benchmark an arbitraty Plutus script
   benchmarkScript,
   benchmarkScript',
+  mkBenchmark,
+  scriptSize,
   -- | * Benchmark entrypoints
   bench,
   bench',
@@ -20,8 +22,7 @@ module Plutarch.Benchmark (
   renderDiffTable,
 ) where
 
-import qualified Codec.Serialise as Codec
-import Control.Arrow ((&&&))
+import Codec.Serialise (serialise)
 import Control.Monad (mzero)
 import Data.Aeson (ToJSON)
 import qualified Data.ByteString.Lazy as BSL
@@ -62,41 +63,48 @@ import qualified Plutus.V1.Ledger.Api as Plutus
 --------------------------------------------------------------------------------
 
 -- | Benchmark the given script
-benchmarkScript :: String -> Script -> NamedBenchmark
+benchmarkScript :: HasCallStack => String -> Script -> NamedBenchmark
 benchmarkScript name = NamedBenchmark . (name,) . benchmarkScript'
 
-benchmarkScript' :: Script -> Benchmark
-benchmarkScript' =
-  uncurry mkBenchmark . (evalScriptCounting &&& (fromInteger . toInteger . SBS.length)) . serialiseScript
+{-# DEPRECATED benchmarkScript' "use `Plutarch.Evaluate.evalScript` and `mkBenchmark` with `scriptSize`" #-}
+benchmarkScript' :: HasCallStack => Script -> Benchmark
+benchmarkScript' script =
+  mkBenchmark
+    (evalScriptCounting $ serialiseScriptShort script)
+    (scriptSize script)
   where
-    mkBenchmark :: ExBudget -> Int64 -> Benchmark
-    mkBenchmark (ExBudget cpu mem) = Benchmark cpu mem . ScriptSizeBytes
-
-    serialiseScript :: Script -> SBS.ShortByteString
-    serialiseScript = SBS.toShort . LB.toStrict . Codec.serialise -- Using `flat` here breaks `evalScriptCounting`
     evalScriptCounting :: HasCallStack => Plutus.SerializedScript -> Plutus.ExBudget
     evalScriptCounting script =
       let costModel = fromJust Plutus.defaultCostModelParams
           (_logout, e) = Plutus.evaluateScriptCounting Plutus.Verbose costModel script []
        in case e of
-            Left evalErr -> error ("Eval Error: " <> show evalErr)
+            Left evalErr -> error $ show evalErr
             Right exbudget -> exbudget
 
 data Benchmark = Benchmark
   { exBudgetCPU :: ExCPU
-  -- ^ CPU budget used by the script
+  -- ^ CPU budget used by the script.
   , exBudgetMemory :: ExMemory
-  -- ^ Memory budget used by the script
+  -- ^ Memory budget used by the script.
   , scriptSizeBytes :: ScriptSizeBytes
   -- ^ Size of Plutus script in bytes
   }
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON)
 
+mkBenchmark :: ExBudget -> ScriptSizeBytes -> Benchmark
+mkBenchmark (ExBudget cpu mem) = Benchmark cpu mem
+
 newtype ScriptSizeBytes = ScriptSizeBytes Int64
   deriving stock (Eq, Ord, Show, Generic)
   deriving newtype (Num, ToField)
   deriving newtype (ToJSON)
+
+scriptSize :: Script -> ScriptSizeBytes
+scriptSize = ScriptSizeBytes . fromIntegral . SBS.length . serialiseScriptShort
+
+serialiseScriptShort :: Script -> SBS.ShortByteString
+serialiseScriptShort = SBS.toShort . LB.toStrict . serialise
 
 {- | A `Benchmark` with a name.
 
@@ -158,7 +166,7 @@ data BenchmarkDiff = BenchmarkDiff
   }
   deriving stock (Show, Generic)
 
-diffBenchmark :: String -> Benchmark -> Benchmark -> Maybe BenchmarkDiff
+diffBenchmark :: HasCallStack => String -> Benchmark -> Benchmark -> Maybe BenchmarkDiff
 diffBenchmark
   name
   (Benchmark (ExCPU oldCpu) (ExMemory oldMem) (ScriptSizeBytes oldSize))
