@@ -94,6 +94,8 @@ common deps
     , tasty-quickcheck
     , text
     , transformers
+    , plutarch-extra
+    , containers
 
 library
   import:          c, deps
@@ -115,6 +117,15 @@ executable plutarch-test
     Plutarch.ApiSpec
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
+    Plutarch.Extra.API.V1Spec
+    Plutarch.Extra.EqOrdSpec
+    Plutarch.Extra.IntegerSpec
+    Plutarch.Extra.IsDataSpec
+    Plutarch.Extra.ListSpec
+    Plutarch.Extra.MapSpec
+    Plutarch.Extra.MaybeSpec
+    Plutarch.Extra.NumSpec
+    Plutarch.Extra.PairSpec
     Plutarch.IntegerSpec
     Plutarch.ListSpec
     Plutarch.PIsDataSpec

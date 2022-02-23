@@ -24,8 +24,11 @@ import Plutarch (ClosedTerm, compile)
 
 import Plutarch.Evaluate (evaluateScript)
 
+import Plutarch.Extra.Map (Map (..))
+
 import Control.Exception (SomeException, evaluate, try)
-import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Trans (lift)
+import qualified Data.Map as M
 import Data.Proxy (Proxy (..))
 import Data.Text (Text)
 
@@ -186,7 +189,7 @@ testDataEq x y = testOutputEq (pdata x) (pdata y)
 
 testPartial :: (h -> ClosedTerm p -> PropertyT IO ()) -> h -> ClosedTerm p -> PropertyT IO ()
 testPartial baseTest h p =
-  liftIO (try $ evaluate h) >>= \case
+  lift (try $ evaluate h) >>= \case
     Left (_ :: SomeException) ->
       case run p of
         Left _ -> assert True
@@ -234,6 +237,9 @@ instance (Marshal ha pa, Marshal hb pb) => Marshal (ha, hb) (PPair pa pb) where
 
 instance Marshal Integer PInteger where
   marshal n = fromInteger n
+
+instance (Marshal ha pa, Marshal hb pb) => Marshal (M.Map ha hb) (Map pa pb) where
+  marshal m = pcon $ Map $ marshal $ M.toList m
 
 instance Marshal Rational PRational where
   marshal r = fromRational r
