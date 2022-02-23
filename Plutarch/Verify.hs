@@ -16,6 +16,7 @@ import Plutarch.Builtin (
   pfstBuiltin,
   ppairDataBuiltin,
   psndBuiltin,
+  pforgetData,
  )
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
@@ -63,7 +64,7 @@ instance PTryFrom (PBuiltinPair (PAsData POpaque) (PAsData POpaque)) where
   ptryFrom = phoistAcyclic $
     plam $ \opq ->
       let tup :: Term _ (PBuiltinPair (PAsData POpaque) (PAsData POpaque))
-          tup = punsafeCoerce opq
+          tup = pfromData $ punsafeCoerce opq
           chk :: Term _ (PBuiltinPair (PAsData POpaque) (PAsData POpaque))
           chk =
             ppairDataBuiltin
@@ -71,6 +72,13 @@ instance PTryFrom (PBuiltinPair (PAsData POpaque) (PAsData POpaque)) where
               # (psndBuiltin # tup)
        in chk
 
+{- | 
+    This deeply checks the Datastructure for validity. 
+    Be aware this might get really expensive, so only 
+    use it if you cannot establish trust otherwise 
+    (e.g. via only checking a part of your Data with 
+    PTryFrom)
+-}
 class PTryFromRecur (a :: PType) where
   ptryFromRecur :: Term s (PData :--> a)
 
@@ -90,10 +98,10 @@ instance (PTryFromRecur a, PLift a, PIsData a) => PTryFromRecur (PBuiltinList (P
 instance (PTryFromRecur a, PIsData a, PTryFromRecur b, PIsData b) => PTryFromRecur (PBuiltinPair (PAsData a) (PAsData b)) where
   ptryFromRecur = phoistAcyclic $
     plam $ \opq ->
-      let tup :: Term _ (PBuiltinPair (PAsData PData) (PAsData PData))
-          tup = punsafeCoerce opq
+      let tup :: Term _ (PBuiltinPair (PAsData _) (PAsData _))
+          tup = pfromData $ punsafeCoerce opq
           fst :: Term _ (PAsData a)
-          fst = pdata $ ptryFromRecur @a #$ pfromData $ pfstBuiltin # tup
+          fst = pdata $ ptryFromRecur @a #$ pforgetData $ pfstBuiltin # tup
           snd :: Term _ (PAsData b)
-          snd = pdata $ ptryFromRecur @b #$ pfromData $ psndBuiltin # tup
+          snd = pdata $ ptryFromRecur @b #$ pforgetData $ psndBuiltin # tup
        in ppairDataBuiltin # fst # snd
