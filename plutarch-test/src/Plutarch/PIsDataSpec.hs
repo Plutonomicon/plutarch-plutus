@@ -34,6 +34,22 @@ spec = do
     propertySet @PBool "PBool"
     propertySet @PInteger "PInteger"
     propertySet @PUnit "PUnit"
+    describe "equality" . pgoldenSpec $ do
+      "PData" @\ do
+        "1"
+          @| (let dat = pconstant @PData (PlutusTx.List [PlutusTx.Constr 1 [PlutusTx.I 0]]) in dat #== dat)
+          @-> passert
+        "2"
+          @| (pnot #$ pconstant @PData (PlutusTx.Constr 0 []) #== pconstant @PData (PlutusTx.I 42))
+          @-> passert
+      "PAsData" @\ do
+        "1"
+          @| let dat = pdata @PInteger 42
+              in dat #== dat
+                  @-> passert
+        "1"
+          @| (pnot #$ pdata (phexByteStr "12") #== pdata (phexByteStr "ab"))
+          @-> passert
     describe "ppair" . pgoldenSpec $ do
       -- pfromData (pdata (I 1, B 0x41)) ≡ (I 1, I A)
       "simple"

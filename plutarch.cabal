@@ -150,37 +150,3 @@ library
 
   if flag(development)
     cpp-options: -DDevelopment
-
--- Everything below this line is deleted for GHC 8.10
-
-test-suite examples
-  import:             c
-  type:               exitcode-stdio-1.0
-  main-is:            Main.hs
-  hs-source-dirs:     examples
-  default-extensions:
-    OverloadedRecordDot
-    QualifiedDo
-
-  other-modules:      Utils
-  build-depends:
-    , base
-    , bytestring
-    , generics-sop
-    , plutarch
-    , plutus-core
-    , plutus-ledger-api
-    , plutus-tx
-    , rank2classes       >=1.4.4
-    , serialise
-    , tasty
-    , tasty-golden
-    , tasty-hunit
-    , text
-    , transformers
-
-  --, shrinker
-  if flag(development)
-    cpp-options: -DDevelopment
-
-  ghc-options:        -Wwarn=deprecations
