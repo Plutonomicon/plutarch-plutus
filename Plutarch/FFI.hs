@@ -99,7 +99,7 @@ unsafeForeignExport t = DeserializedCode program Nothing mempty
 
 -- | Seriously unsafe, may fail at run time or result in unexpected behaviour in your on-chain validator.
 unsafeForeignImport :: CompiledCode t -> ClosedTerm p
-unsafeForeignImport c = Term $ const $ TermResult (RCompiled $ UPLC.toTerm $ unScript $ fromCompiledCode c) []
+unsafeForeignImport c = Term $ const $ TermResult (RCompiled $ UPLC._progTerm $ unScript $ fromCompiledCode c) []
 
 -- | Convert a strict 'PList' to a 'PDelayList', perhaps before exporting it with 'foreignExport'.
 pdelayList :: Term s (PList a :--> PDelayedList a)
