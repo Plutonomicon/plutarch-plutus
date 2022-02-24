@@ -1,4 +1,4 @@
-module Plutarch.ApiSpec (spec, ctx) where
+module Plutarch.ApiSpec (spec, ctx, info, purpose) where
 
 import Test.Syd
 import Test.Tasty.HUnit

@@ -12,6 +12,8 @@ import Plutarch.Builtin (
   PBuiltinPair,
   PData,
   PIsData (pfromData),
+  pasByteStr,
+  pasInt,
   pdata,
   pforgetData,
   pfstBuiltin,
@@ -32,7 +34,6 @@ import Plutarch.Internal.Other (
  )
 import Plutarch.List (pmap)
 
-import Plutarch.Lift (PLift)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import qualified PlutusCore as PLC
 
@@ -43,13 +44,13 @@ import qualified PlutusCore as PLC
     representation.
 -}
 class PTryFrom (a :: PType) where
-  ptryFrom :: Term s (PData :--> a)
+  ptryFrom :: Term s (PData :--> PAsData a)
 
 instance PTryFrom PInteger where
-  ptryFrom = punsafeBuiltin PLC.UnIData
+  ptryFrom = plam $ pdata . (pasInt #)
 
 instance PTryFrom PByteString where
-  ptryFrom = punsafeBuiltin PLC.UnBData
+  ptryFrom = plam $ pdata . (pasByteStr #)
 
 {- |
     Note: PAsData POpaque ~ PData
@@ -70,7 +71,7 @@ instance PTryFrom (PBuiltinPair (PAsData POpaque) (PAsData POpaque)) where
             ppairDataBuiltin
               # (pfstBuiltin # tup)
               # (psndBuiltin # tup)
-       in chk
+       in pdata $ chk
 
 {- |
     This deeply checks the Datastructure for validity.
@@ -80,20 +81,20 @@ instance PTryFrom (PBuiltinPair (PAsData POpaque) (PAsData POpaque)) where
     PTryFrom)
 -}
 class PTryFromRecur (a :: PType) where
-  ptryFromRecur :: Term s (PData :--> a)
+  ptryFromRecur :: Term s (PData :--> PAsData a)
 
 instance PTryFromRecur PInteger where
-  ptryFromRecur = punsafeBuiltin PLC.UnIData
+  ptryFromRecur = plam $ pdata . (pasInt #)
 
 instance PTryFromRecur PByteString where
-  ptryFromRecur = punsafeBuiltin PLC.UnBData
+  ptryFromRecur = plam $ pdata . (pasByteStr #)
 
-instance (PTryFromRecur a, PLift a, PIsData a) => PTryFromRecur (PBuiltinList (PAsData a)) where
+instance (PTryFromRecur a, PIsData a) => PTryFromRecur (PBuiltinList (PAsData a)) where
   ptryFromRecur = phoistAcyclic $
     plam $ \opq ->
       let lst :: Term _ (PBuiltinList (PAsData PData))
           lst = punsafeBuiltin PLC.UnListData #$ opq
-       in pmap # (plam $ \e -> pdata $ ptryFromRecur @a #$ pfromData e) # lst
+       in pdata $ pmap # (plam $ \e -> ptryFromRecur @a #$ pfromData e) # lst
 
 instance (PTryFromRecur a, PIsData a, PTryFromRecur b, PIsData b) => PTryFromRecur (PBuiltinPair (PAsData a) (PAsData b)) where
   ptryFromRecur = phoistAcyclic $
@@ -101,7 +102,7 @@ instance (PTryFromRecur a, PIsData a, PTryFromRecur b, PIsData b) => PTryFromRec
       let tup :: Term _ (PBuiltinPair (PAsData _) (PAsData _))
           tup = pfromData $ punsafeCoerce opq
           fst :: Term _ (PAsData a)
-          fst = pdata $ ptryFromRecur @a #$ pforgetData $ pfstBuiltin # tup
+          fst = ptryFromRecur @a #$ pforgetData $ pfstBuiltin # tup
           snd :: Term _ (PAsData b)
-          snd = pdata $ ptryFromRecur @b #$ pforgetData $ psndBuiltin # tup
-       in ppairDataBuiltin # fst # snd
+          snd = ptryFromRecur @b #$ pforgetData $ psndBuiltin # tup
+       in pdata $ ppairDataBuiltin # fst # snd
