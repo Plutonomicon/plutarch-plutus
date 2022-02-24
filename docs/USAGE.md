@@ -7,17 +7,14 @@ This document describes various core Plutarch usage concepts.
 
 - [Conditionals](#conditionals)
 - [Recursion](#recursion)
-- [Do syntax with `TermCont`](#do-syntax-with--termcont-)
-- [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](#do-syntax-with--qualifieddo--and--plutarchmonadic-)
-- [Deriving typeclasses for `newtype`s](#deriving-typeclasses-for--newtype-s)
+- [Do syntax with `TermCont`](#do-syntax-with-termcont)
+- [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](#do-syntax-with-qualifieddo-and-plutarchmonadic)
+- [Deriving typeclasses for `newtype`s](#deriving-typeclasses-for-newtypes)
 - [Deriving typeclasses with generics](#deriving-typeclasses-with-generics)
-- [`plet` to avoid work duplication](#-plet--to-avoid-work-duplication)
+- [`plet` to avoid work duplication](#plet-to-avoid-work-duplication)
 - [Tracing](#tracing)
 - [Raising errors](#raising-errors)
 - [Unsafe functions](#unsafe-functions)
-
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
 
 </details>
 
