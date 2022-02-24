@@ -109,21 +109,6 @@
             "word-array"
           ];
         }
-        {
-          src = inputs.validity;
-          subdirs = [
-            "validity"
-            "validity-aeson"
-          ];
-        }
-        {
-          src = inputs.autodocodec;
-          subdirs = [
-            "autodocodec"
-            "autodocodec-schema"
-            "autodocodec-yaml"
-          ];
-        }
       ];
 
       supportedSystems = with nixpkgs.lib.systems.supported; tier1 ++ tier2 ++ tier3;
