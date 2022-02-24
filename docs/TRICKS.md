@@ -27,22 +27,82 @@ See: [Delay and Force](./CONCEPTS.md#delay-and-force).
 
 # Don't duplicate work
 
-Consider the simple snippet:
+In Haskell, expressions in a `let` statement are lazily evaluated. 
 
-```haskell
+Consider the simple snippet: 
+
+```hs
 pf :: Term s PInteger
-pf = let foo = 1 + 2 in pif (foo #== 3) foo 7
+pf = 
+  let foo = 1 + 2      -- | Lazily declare `foo` here at the Haskell level,...
+  in pif 
+       (foo #== 3)     -- | A.) ...then inline here...
+       foo             -- | B.) ...and inline here.
+       7
 ```
 
-If you use `printTerm` on this, you'll notice that the computation bound to `foo` is inlined twice:
+Using the `printTerm` function (provided by the top level `Plutarch` module), we can view
+the computation bound to `foo`. The formatting below is our own; notice that
+`foo`, which becomes `(addInteger 1 2)` in UPLC, is inlined twice:
 
-    (program 1.0.0 ((\\i0 -> force (i1 (equalsInteger (addInteger 1 2) 3) (delay (addInteger 1 2)) (delay 7))) (force ifThenElse)))
+```hs
+> printTerm pf
 
-Notice how the `addInteger` computation is present _twice_. In these cases, you should use `plet` to compute once and re-use the computed value:
+(...)
 
-```haskell
-pf :: Term s PInteger
-pf = plet (1 + 3) $ \foo -> pif (foo #== 3) foo 7
+(force 
+    (force ifThenElse 
+       (equalsInteger 
+          (addInteger 1 2)      -- | A.) `foo` appears here...
+          3
+       ) 
+       (delay (addInteger 1 2)) -- | B.) ...and here
+       (delay 7)
+    )
+)
+```
+
+Performing this computation twice is obviously bad (in this circumstance), since it will increase
+the execution budget for the script.
+
+A technique to circumvent this is to introduce a free variable via a lambda, 
+replace the inlined expression (in our case, `(addInteger 1 2)`) with that variable, and them
+apply the lambda to the _calculated_ expression:
+
+```hs
+> printTerm pf'
+
+(...)
+
+((\\i0 ->                          -- | A'.) Introduce a lambda here,...
+    force
+        (force ifThenElse 
+            (equalsInteger i1 3)   -- | B'.) ...apply the argument here,...
+            (delay i1)             -- | C'.) ...and apply the argument here,
+            (delay 7)
+        )
+ ) (addInteger 1 2)                -- | D'.) ...then calculate `foo` once and apply the lambda
+)
+```
+
+Plutarch provides the `plet :: Term s a -> (Term s a -> Term s b) -> Term s b` function 
+to accomplish exactly this. To demonstrate this technique, the implementation of `pf'` that 
+will lead to the above UPLC is given as:
+
+```hs
+{-
+Note: the letter labels on our annotations match the operations in the
+previous example.
+-}
+
+pf' :: Term s PInteger
+pf' = 
+  plet (1 + 2) $             -- | D.') Calculate the desired value here (strictly),...
+  \foo ->                    -- | A.') ...introduce a lambda abstraction,...
+    pif  
+      (foo #== 3)            -- | B.') ...and apply the argument here...
+      foo                    -- | C.') ... and here.
+      7
 ```
 
 Another example of this would be:
