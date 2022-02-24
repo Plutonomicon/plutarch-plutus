@@ -67,12 +67,12 @@ As a preview, the bridge Plutarch provides between Haskell and UPLC looks someth
 | STLC terms; constants like `Term s PInteger` and    | -----------------------> | Types like `PInteger`, `PMaybe a`                   |
 | lambdas like `Term s (PInteger :--> PBool)`         |        |                 |                                                     |
 -------------------------------------------------------        (`pmatch`)       -------------------------------------------------------
-                              ^                     | 
-(functions like `pfromData`)--|                     |
-                              |                     |--(functions like `ptoData`,
-                              |                     |   types like `AsData a`) 
-                              |                     |
-                              |                     v
+                              |
+                              |
+                              |--(`compile`)
+                              |
+                              |
+                              v
 -------------------------------------------------------
 |                    *UPLC World*                     |
 -------------------------------------------------------
@@ -80,6 +80,24 @@ As a preview, the bridge Plutarch provides between Haskell and UPLC looks someth
 |                                                     |
 -------------------------------------------------------
 ```
+
+Further, you may notice two general categories of functions in Plutarch: "Haskell-level" functions between terms, and "Plutarch-level"
+functions _as_ lambda terms. By convention, we will prefix the Haskell-level functions with `h` and the Plutarch-level lambdas
+with `p`, for example
+
+```hs
+-- This example is listed here as a preview; the unfamiliar parts will 
+-- be detailed below.
+
+-- A Plutarch-level lambda term
+pf :: Term s (a :--> b :--> c)
+
+-- Rcovering a Haskell level function from a Plutarch level function
+hf :: Term s a -> Term s b -> Term s c
+hf x y = pf # x # y
+```
+
+Note that `pf` is truly just a Plutarch `Term` and should not be treated specially.
 
 The remainder of this document cover the bridge between Haskell and Plutarch at a high-level. It will _not_ cover all techniques necessary to write production-ready scripts. Nor will it cover the bridge between Plutarch and UPLC beyond the minimum. Nonetheless, it should provide sufficient background to prepare the reader for further study.
 
