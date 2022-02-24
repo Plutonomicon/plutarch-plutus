@@ -1,7 +1,5 @@
 module Plutarch.UnitSpec (spec) where
 
-import Test.Syd
-
 import Plutarch
 import Plutarch.Prelude
 import Plutarch.Test

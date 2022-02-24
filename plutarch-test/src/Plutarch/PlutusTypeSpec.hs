@@ -2,8 +2,6 @@
 
 module Plutarch.PlutusTypeSpec (spec) where
 
-import Test.Syd
-
 import Plutarch
 import Plutarch.Prelude
 

@@ -45,7 +45,6 @@ import Plutarch.Test (
   golden,
   goldenFilePath,
  )
-import Test.Syd (Spec, describe, it, pureGoldenTextFile)
 
 spec :: Spec
 spec = do

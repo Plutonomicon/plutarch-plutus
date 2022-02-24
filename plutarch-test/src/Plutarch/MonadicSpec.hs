@@ -3,8 +3,6 @@
 
 module Plutarch.MonadicSpec (spec) where
 
-import Test.Syd
-
 import Plutus.V1.Ledger.Api
 
 import Plutarch.Api.V1 (

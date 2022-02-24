@@ -6,8 +6,6 @@ import Plutarch
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Integer (PInteger)
 
-import Test.Syd (Spec, describe, it)
-
 import Plutarch.Test
 
 spec :: Spec

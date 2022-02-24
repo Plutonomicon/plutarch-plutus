@@ -14,7 +14,6 @@ import Plutus.V1.Ledger.Credential (Credential (ScriptCredential))
 import qualified PlutusTx
 
 import Plutarch.Test
-import Test.Syd
 import Test.Tasty.QuickCheck (Arbitrary, property)
 
 spec :: Spec

@@ -83,8 +83,6 @@ common deps
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
-    , sydtest
-    , sydtest-discover
     , tasty
     , tasty-hunit
     , tasty-quickcheck

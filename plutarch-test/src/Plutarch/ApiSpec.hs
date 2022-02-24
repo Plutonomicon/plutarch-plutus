@@ -1,6 +1,5 @@
 module Plutarch.ApiSpec (spec, ctx) where
 
-import Test.Syd
 import Test.Tasty.HUnit
 
 import Control.Monad.Trans.Cont (cont, runCont)

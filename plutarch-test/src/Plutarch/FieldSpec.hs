@@ -3,7 +3,6 @@
 
 module Plutarch.FieldSpec (spec) where
 
-import Test.Syd
 import Test.Tasty.HUnit
 
 import qualified GHC.Generics as GHC

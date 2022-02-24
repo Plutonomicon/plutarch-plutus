@@ -29,17 +29,6 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import System.FilePath
-import Test.Syd (
-  Expectation,
-  Spec,
-  TestDefM,
-  describe,
-  expectationFailure,
-  getTestDescriptionPath,
-  it,
-  pureGoldenTextFile,
-  shouldBe,
- )
 
 import Plutarch
 import Plutarch.Benchmark (benchmarkScript')

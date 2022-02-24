@@ -1,7 +1,5 @@
 module Plutarch.PLamSpec (spec) where
 
-import Test.Syd
-
 import Plutarch
 import Plutarch.Test
 
