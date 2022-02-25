@@ -8,6 +8,7 @@ module Plutarch.Benchmark (
   ScriptSizeBytes,
   -- | * Benchmark an arbitraty Plutus script
   benchmarkScript,
+  benchmarkScript',
   -- | * Benchmark entrypoints
   bench,
   bench',
@@ -19,9 +20,10 @@ module Plutarch.Benchmark (
   renderDiffTable,
 ) where
 
-import qualified Codec.Serialise as Codec
+import Codec.Serialise (serialise)
 import Control.Arrow ((&&&))
 import Control.Monad (mzero)
+import Data.Aeson (ToJSON)
 import qualified Data.ByteString.Lazy as BSL
 import Data.Coerce (coerce)
 import qualified Data.Map.Strict as Map
@@ -65,13 +67,13 @@ benchmarkScript name = NamedBenchmark . (name,) . benchmarkScript'
 
 benchmarkScript' :: Script -> Benchmark
 benchmarkScript' =
-  uncurry mkBenchmark . (evalScriptCounting &&& (fromInteger . toInteger . SBS.length)) . serialiseScript
+  uncurry mkBenchmark . (evalScriptCounting &&& (fromInteger . toInteger . SBS.length)) . serialiseScriptShort
   where
     mkBenchmark :: ExBudget -> Int64 -> Benchmark
     mkBenchmark (ExBudget cpu mem) = Benchmark cpu mem . ScriptSizeBytes
 
-    serialiseScript :: Script -> SBS.ShortByteString
-    serialiseScript = SBS.toShort . LB.toStrict . Codec.serialise -- Using `flat` here breaks `evalScriptCounting`
+    serialiseScriptShort :: Script -> SBS.ShortByteString
+    serialiseScriptShort = SBS.toShort . LB.toStrict . serialise -- Using `flat` here breaks `evalScriptCounting`
     evalScriptCounting :: HasCallStack => Plutus.SerializedScript -> Plutus.ExBudget
     evalScriptCounting script =
       let costModel = fromJust Plutus.defaultCostModelParams
@@ -89,10 +91,12 @@ data Benchmark = Benchmark
   -- ^ Size of Plutus script in bytes
   }
   deriving stock (Show, Generic)
+  deriving anyclass (ToJSON)
 
 newtype ScriptSizeBytes = ScriptSizeBytes Int64
   deriving stock (Eq, Ord, Show, Generic)
   deriving newtype (Num, ToField)
+  deriving newtype (ToJSON)
 
 {- | A `Benchmark` with a name.
 
@@ -100,6 +104,7 @@ newtype ScriptSizeBytes = ScriptSizeBytes Int64
 -}
 newtype NamedBenchmark = NamedBenchmark (String, Benchmark)
   deriving stock (Show, Generic)
+  deriving newtype (ToJSON)
 
 instance ToNamedRecord NamedBenchmark where
   toNamedRecord (NamedBenchmark (name, Benchmark {..})) =

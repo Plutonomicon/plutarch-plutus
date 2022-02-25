@@ -1,0 +1,2 @@
+one (program 1.0.0 (force (force trace "foo" (delay ()))))
+two (program 1.0.0 ((\i0 -> force (i1 "foo" (delay (force (i1 "bar" (delay ())))))) (force trace)))
