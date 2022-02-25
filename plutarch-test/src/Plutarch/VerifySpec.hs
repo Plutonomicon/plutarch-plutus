@@ -24,19 +24,16 @@ import Plutarch.Api.V1 (
   PTxOutRef,
   PValidator,
  )
-import Plutarch.Bool (pif')
 import Plutarch.Builtin (
   pasInt,
   pforgetData,
   ppairDataBuiltin,
  )
 import Plutarch.Prelude
-import Plutarch.Unsafe (punsafeBuiltin)
 import Plutarch.Verify (
   PTryFrom (ptryFrom),
-  PTryFromRecur (ptryFromRecur),
+  PDepth (PShallow, PDeep),
  )
-import qualified PlutusCore as PLC
 
 import Plutarch.ApiSpec (info, purpose)
 import Plutarch.Test
@@ -49,7 +46,7 @@ spec = do
         @| checkShallow
           @PInteger
           @PByteString
-          (pconstant "foo")
+          (pdata $ pconstant "foo")
         @-> pfails
       "(String, Integer) /= (String, String)"
         @| checkDeep
@@ -65,22 +62,13 @@ spec = do
         @-> pfails
     "working" @\ do
       "int == int"
-        @| checkShallow @PInteger @PInteger (pconstant 42)
+        @| checkShallow @PInteger @PInteger (pdata $ pconstant 42)
         @-> psucceeds
       "(String, String) == (String, String)"
         @| checkDeep
           @(PBuiltinPair (PAsData PByteString) (PAsData PByteString))
           @(PBuiltinPair (PAsData PByteString) (PAsData PByteString))
           (ppairDataBuiltin # (pdata $ pconstant "foo") # (pdata $ pconstant "bar"))
-        @-> psucceeds
-      "(POpaque, POpaque) == (POpaque, POpaque)"
-        @| checkShallow
-          @(PBuiltinPair (PAsData POpaque) (PAsData POpaque))
-          @(PBuiltinPair (PAsData POpaque) (PAsData POpaque))
-          ( punsafeBuiltin PLC.MkPairData
-              # (pdata $ pcon PUnit)
-              # (pdata $ pcon PUnit)
-          )
         @-> psucceeds
       "[String] == [String]"
         @| checkDeep
@@ -98,50 +86,56 @@ spec = do
         @| validator # pforgetData l1 # pforgetData l2 # validContext @-> psucceeds
 
 checkShallow ::
-  forall (target :: PType) (actual :: PType).
-  ( PTryFrom target
-  , PIsData actual
-  , PIsData target
+  forall (target :: PType) (actual :: PType) .
+  ( PTryFrom 'PShallow PData (PAsData target)
   ) =>
-  ClosedTerm actual ->
-  ClosedTerm target
-checkShallow = reprTargetActual ptryFrom
+  ClosedTerm (PAsData actual) ->
+  ClosedTerm (PAsData target)
+checkShallow  t = ptryFrom @'PShallow #$ pforgetData t
 
 checkDeep ::
   forall (target :: PType) (actual :: PType).
-  ( PTryFromRecur target
+  ( PTryFrom 'PDeep POpaque target
   , PIsData actual
   , PIsData target
   ) =>
   ClosedTerm actual ->
   ClosedTerm target
-checkDeep = reprTargetActual (ptryFromRecur)
+checkDeep t = ptryFrom @'PDeep #$ popaque t 
 
-reprTargetActual ::
-  forall (target :: PType) (actual :: PType).
-  ( PIsData actual
-  , PIsData target
-  ) =>
-  ClosedTerm (PData :--> PAsData target) ->
-  ClosedTerm (actual) ->
-  ClosedTerm (target)
-reprTargetActual f x = pfromData $ f #$ pforgetData $ pdata x
 
--- example: untrusted redeemer
+{- 
+this (the `partialCheck` function) would be really useful and it should be possible, however, it wants a 
+`PIsData` instance for `PBuiltinList PData` which of course there isn't. 
+From my understanding tho, when it comes to the `PAsData (PBuiltinList PData)` case it should stop 
+complaining because the instance for `PAsData (PBuiltinList PData)` is strictly more specific than the 
+instance for `PAsData (PbuiltinList (PAsData a))`, i.e. it should not require the `PIsData` constraint
+
+sampleStructure :: Term _ (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData PInteger)))))))
+sampleStructure = pdata $ psingleton #$ pdata $ psingleton #$ toDatadList [1..100]
+
+partialCheck :: Term _ (PAsData (PBuiltinList (PAsData (PBuiltinList PData))))
+partialCheck = let dat :: Term _ PData 
+                   dat = pforgetData sampleStructure
+                in ptryFrom @'PDeep #$ dat
+
+fullCheck :: Term _ (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData PInteger)))))))
+fullCheck = ptryFrom @'PDeep #$ pforgetData sampleStructure
+-}
+
+
+------------------- Example: untrusted Redeemer ------------------------------------
+
 
 newtype PNatural (s :: S) = PMkNatural (Term s PInteger)
   deriving (PlutusType, PIsData, PEq, POrd) via (DerivePNewtype PNatural PInteger)
 
 -- | partial
 pmkNatural :: Term s (PInteger :--> PNatural)
-pmkNatural = plam $ \i -> pif' # (i #< 0) # perror # (pcon $ PMkNatural i)
+pmkNatural = plam $ \i -> pif  (i #< 0) (ptraceError "could not make natural") (pcon $ PMkNatural i)
 
-{- | total
- pmaybeMkNatural :: Term s (PInteger :--> PMaybe PNatural)
- pmaybeMkNatural = plam $ \i -> pif' # (i #< 0) # pcon PNothing # (pcon $ PJust $ pcon $ PMkNatural i)
--}
-instance PTryFromRecur PNatural where
-  ptryFromRecur = plam $ \opq -> unTermCont $ do
+instance PTryFrom a PData (PAsData PNatural) where
+  ptryFrom = plam $ \opq -> unTermCont $ do
     let i :: Term _ PInteger
         i = pasInt # opq
     pure $ pdata $ pmkNatural # i
@@ -151,10 +145,10 @@ validator = phoistAcyclic $
   plam $ \dat red ctx -> unTermCont $ do
     --                      untrusted ---^---^   ^--- trusted
     let trustedRedeemer :: Term _ (PBuiltinList (PAsData PNatural))
-        trustedRedeemer = pfromData $ ptryFromRecur # red
+        trustedRedeemer = pfromData $ ptryFrom @'PDeep # red
         trustedDatum :: Term _ (PBuiltinList (PAsData PNatural))
-        trustedDatum = pfromData $ ptryFromRecur # dat
-        -- make the Datm and Redeemer trusted
+        trustedDatum = pfromData $ ptryFrom @'PDeep # dat
+        -- make the Datum and Redeemer trusted
 
         ownHash :: Term _ PDatumHash
         ownHash = unTermCont $ do
@@ -163,7 +157,7 @@ validator = phoistAcyclic $
               maybeHash = pfield @"datumHash" #$ pfield @"resolved" #$ (pfromData ownInput)
           PDJust datumHash <- tcont $ pmatch maybeHash
           pure $ pfield @"_0" # datumHash
-        -- find own script adress matching DatumHash
+        -- find own script address matching DatumHash
 
         outputs :: Term _ (PBuiltinList (PAsData (PTuple PDatumHash PDatum)))
         outputs = pfield @"data" #$ pfield @"txInfo" # ctx
@@ -172,13 +166,13 @@ validator = phoistAcyclic $
         matchingHashDatum :: Term _ (PBuiltinList PDatum)
         matchingHashDatum =
           precList
-            ( \self x xs -> unTermCont $ do
-                tup <- tcont $ pletFields @["_0", "_1"] x
-                pure $
+            ( \self x xs ->  pletFields @["_0", "_1"] x $ 
+              \tup ->
+                ptrace "iteration" $
                   pif
                     (hrecField @"_0" tup #== ownHash)
-                    (pcons # (hrecField @"_1" tup) # (self # xs))
-                    (self # xs)
+                    (ptrace "appended something" pcons # (hrecField @"_1" tup) # (self # xs))
+                    (ptrace "called without appending" self # xs)
             )
             (const pnil)
             #$ outputs
@@ -186,10 +180,10 @@ validator = phoistAcyclic $
         -- to do that with tools available, I wrote it by hand
 
         singleOutput :: Term _ PDatum
-        singleOutput =
-          pif' # (pnull #$ ptail # matchingHashDatum)
-            # (phead # matchingHashDatum)
-            # perror
+        singleOutput = plet matchingHashDatum $ \dat ->
+          pif (pnull #$ ptail # dat)
+            (phead # dat)
+            (ptraceError "not a single output")
         -- make sure that after filtering the outputs, only one output
         -- remains
 
@@ -201,7 +195,7 @@ validator = phoistAcyclic $
         isValid = (pto singleOutput) #== pforgetData resultList
     -- the final check for validity
     pure $
-      pif' # isValid # (popaque $ pcon PUnit) # perror
+      pif isValid (popaque $ pcon PUnit) (ptraceError "not valid")
 
 pfindOwnInput :: Term s (PScriptContext :--> PMaybe (PAsData PTxInInfo))
 pfindOwnInput = phoistAcyclic $
@@ -235,7 +229,8 @@ pfind = phoistAcyclic $
       (pcon PNothing)
       xs
 
--- Mocking a transaction
+------------------- Mocking a transaction ------------------------------------------
+
 
 ctx :: [(DatumHash, Datum)] -> Term s PScriptContext
 ctx l = pconstant (ScriptContext (info' l) purpose)
@@ -247,7 +242,11 @@ validList1 :: [(DatumHash, Datum)]
 validList1 =
   let dat :: Datum
       dat = Datum $ toBuiltinData [(1 :: Integer) .. 10]
-   in [("d0", dat)]
+   in [("d0", dat)] 
+
+
+------------------- Helpers --------------------------------------------------------
+
 
 toDatadList :: [Integer] -> Term s (PAsData (PBuiltinList (PAsData PInteger)))
 toDatadList = pdata . (foldr go pnil)

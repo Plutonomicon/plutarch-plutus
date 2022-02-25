@@ -1,8 +1,7 @@
-erroneous.int /= bytestring {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":22}
-erroneous.(String, Integer) /= (String, String) {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":116}
-erroneous.[String] /= [Integer] {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":89}
-working.int == int {"exBudgetCPU":957376,"exBudgetMemory":1428,"scriptSizeBytes":17}
-working.(String, String) == (String, String) {"exBudgetCPU":10553099,"exBudgetMemory":17616,"scriptSizeBytes":116}
-working.(POpaque, POpaque) == (POpaque, POpaque) {"exBudgetCPU":9206504,"exBudgetMemory":15924,"scriptSizeBytes":97}
-working.[String] == [String] {"exBudgetCPU":7229001,"exBudgetMemory":14472,"scriptSizeBytes":98}
-example.concatenate two lists {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":241}
+erroneous.int /= bytestring {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":45}
+erroneous.(String, Integer) /= (String, String) {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":171}
+erroneous.[String] /= [Integer] {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":115}
+working.int == int {"exBudgetCPU":1390705,"exBudgetMemory":3366,"scriptSizeBytes":40}
+working.(String, String) == (String, String) {"exBudgetCPU":12047260,"exBudgetMemory":22656,"scriptSizeBytes":171}
+working.[String] == [String] {"exBudgetCPU":8604070,"exBudgetMemory":19112,"scriptSizeBytes":124}
+example.concatenate two lists {"exBudgetCPU":66205381,"exBudgetMemory":127091,"scriptSizeBytes":644}
