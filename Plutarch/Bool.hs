@@ -1,3 +1,5 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
@@ -17,6 +19,9 @@ module Plutarch.Bool (
   por',
 ) where
 
+import Data.Foldable (foldl')
+import Data.SOP.Constraint
+import Generics.SOP
 import Plutarch.Internal.Other (
   DerivePNewtype,
   PDelayed,
@@ -33,6 +38,7 @@ import Plutarch.Internal.Other (
   (#),
   type (:-->),
  )
+import Plutarch.Internal.TypeFamily (ToPType2)
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstant,
@@ -57,6 +63,29 @@ instance PlutusType PBool where
 
 class PEq t where
   (#==) :: Term s t -> Term s t -> Term s PBool
+  default (#==) ::
+    forall s code pcode.
+    ( code ~ Code (t s)
+    , pcode ~ ToPType2 code
+    , Generic (t s)
+    , PlutusType t
+    , All2 PEq pcode
+    , SameShapeAs code pcode
+    , SameShapeAs pcode code
+    , AllZipF (AllZip (LiftedCoercible I (Term s))) code pcode
+    ) =>
+    Term s t ->
+    Term s t ->
+    Term s PBool
+  a #== b = go # a # b
+    where
+      -- FIXME: hoisting breaks compilation
+      go =
+        {- phoistAcyclic $ -}
+        plam $ \x y ->
+          pmatch x $ \x' ->
+            pmatch y $ \y' ->
+              gpeq @t (pfrom x') (pfrom y')
 
 infix 4 #==
 
@@ -117,3 +146,42 @@ por = phoistAcyclic $ plam $ \x y -> pif' # x # (phoistAcyclic $ pdelay $ pcon P
 -- | Hoisted, Plutarch level, strictly evaluated boolean or function.
 por' :: Term s (PBool :--> PBool :--> PBool)
 por' = phoistAcyclic $ plam $ \x y -> pif' # x # (pcon PTrue) # y
+
+gpeq ::
+  forall a s code pcode.
+  ( code ~ Code (a s)
+  , pcode ~ ToPType2 code
+  , All2 PEq pcode
+  ) =>
+  SOP (Term s) pcode ->
+  SOP (Term s) pcode ->
+  Term s PBool
+gpeq (SOP c1) (SOP c2) =
+  ccompare_NS (Proxy @(All PEq)) (pcon PFalse) eqProd (pcon PFalse) c1 c2
+  where
+    eqProd :: All PEq xs => NP (Term s) xs -> NP (Term s) xs -> Term s PBool
+    eqProd p1 p2 =
+      foldl' (#&&) (pcon PTrue) $
+        hcollapse $ hcliftA2 (Proxy :: Proxy PEq) eqTerm p1 p2
+      where
+        eqTerm :: forall a. PEq a => Term s a -> Term s a -> K (Term s PBool) a
+        eqTerm a b =
+          K $ a #== b
+
+{- | Like `from` but for Plutarch terms
+
+  Instead of `I`, this uses `Term s` as the container type.
+-}
+pfrom ::
+  forall a s code pcode.
+  ( Generic (a s)
+  , code ~ Code (a s)
+  , pcode ~ ToPType2 code
+  , SameShapeAs code pcode
+  , SameShapeAs pcode code
+  , AllZipF (AllZip (LiftedCoercible I (Term s))) code pcode
+  , All Top pcode
+  ) =>
+  a s ->
+  SOP (Term s) (ToPType2 (Code (a s)))
+pfrom = hfromI . from
