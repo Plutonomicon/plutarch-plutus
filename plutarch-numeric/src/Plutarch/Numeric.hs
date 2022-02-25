@@ -46,6 +46,14 @@ module Plutarch.Numeric (
   Combination.Arithmetical (..),
   Combination.Divisible (..),
 
+  -- ** Fraction-related
+
+  -- *** Haskell
+  Fractional.Fractionable (..),
+
+  -- *** Plutarch
+  Fractional.PFractionable (..),
+
   -- * Functions
 
   -- ** Reductions
@@ -95,6 +103,7 @@ module Plutarch.Numeric (
 
 import Plutarch.Numeric.Additive qualified as Additive
 import Plutarch.Numeric.Combination qualified as Combination
+import Plutarch.Numeric.Fractional qualified as Fractional
 import Plutarch.Numeric.Monoidal qualified as Monoidal
 import Plutarch.Numeric.Multiplicative qualified as Multiplicative
 import Plutarch.Numeric.NZInteger qualified as NZI
