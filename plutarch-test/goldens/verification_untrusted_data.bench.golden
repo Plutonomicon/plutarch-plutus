@@ -4,4 +4,8 @@ erroneous.[String] /= [Integer] {"exBudgetCPU":null,"exBudgetMemory":null,"scrip
 working.int == int {"exBudgetCPU":1390705,"exBudgetMemory":3366,"scriptSizeBytes":40}
 working.(String, String) == (String, String) {"exBudgetCPU":12047260,"exBudgetMemory":22656,"scriptSizeBytes":171}
 working.[String] == [String] {"exBudgetCPU":8604070,"exBudgetMemory":19112,"scriptSizeBytes":124}
+removing the data wrapper.erroneous.(String, Integer) /= (String, String) {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":102}
+removing the data wrapper.erroneous.[String] /= [Integer] {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":77}
+removing the data wrapper.working.(String, String) == (String, String) {"exBudgetCPU":7384676,"exBudgetMemory":12164,"scriptSizeBytes":102}
+removing the data wrapper.working.[String] == [String] {"exBudgetCPU":6033541,"exBudgetMemory":12344,"scriptSizeBytes":85}
 example.concatenate two lists {"exBudgetCPU":66205381,"exBudgetMemory":127091,"scriptSizeBytes":644}

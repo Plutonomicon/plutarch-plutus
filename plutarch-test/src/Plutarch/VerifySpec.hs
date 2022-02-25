@@ -32,6 +32,7 @@ import Plutarch.Builtin (
 import Plutarch.Prelude
 import Plutarch.Verify (
   PTryFrom (ptryFrom),
+  PTryUnwrapFrom (ptryUnwrapFrom),
   PDepth (PShallow, PDeep),
  )
 
@@ -76,6 +77,33 @@ spec = do
           @(PBuiltinList (PAsData PByteString))
           ((pcons # (pdata $ pconstant "foo")) #$ (psingleton # (pdata $ pconstant "bar")))
         @-> psucceeds
+    "removing the data wrapper" @\ do 
+      "erroneous" @\ do
+        "(String, Integer) /= (String, String)"
+          @| checkDeepUnwrap
+            @(PAsData (PBuiltinPair (PAsData PByteString) (PAsData PByteString)))
+            @(PBuiltinPair (PAsData PInteger) (PAsData PByteString))
+            (pdata $ ppairDataBuiltin # (pdata $ pconstant "foo") # (pdata $ pconstant "bar"))
+          @-> pfails 
+        "[String] /= [Integer]"
+          @| (checkDeepUnwrap 
+            @(PAsData (PBuiltinList (PAsData PInteger)))
+            @(PBuiltinList PByteString)
+            (pdata $ (pcons # (pdata $ pconstant 3)) #$ (psingleton # (pdata $ pconstant 4))))
+          @-> pfails
+      "working" @\ do
+        "(String, String) == (String, String)"
+          @| (checkDeepUnwrap
+            @(PAsData (PBuiltinPair (PAsData PByteString) (PAsData PByteString)))
+            @(PBuiltinPair (PAsData PByteString) (PAsData PByteString))
+            (pdata $ ppairDataBuiltin # (pdata $ pconstant "foo") # (pdata $ pconstant "bar")))
+          @-> psucceeds
+        "[String] == [String]"
+          @| checkDeepUnwrap
+            @(PAsData (PBuiltinList (PAsData PByteString)))
+            @(PBuiltinList PByteString)
+            (pdata $ (pcons # (pdata $ pconstant "foo")) #$ (psingleton # (pdata $ pconstant "bar"))) 
+          @-> psucceeds
     "example" @\ do
       let validContext = ctx validList1
           l1 :: Term _ (PAsData (PBuiltinList (PAsData PInteger)))
@@ -84,6 +112,16 @@ spec = do
           l2 = toDatadList [6 .. 10]
       "concatenate two lists"
         @| validator # pforgetData l1 # pforgetData l2 # validContext @-> psucceeds
+
+checkDeepUnwrap :: 
+  forall (actual :: PType) (target :: PType) b.
+    ( PTryUnwrapFrom 'PDeep target
+    , PAsData b ~ actual
+    ) => 
+    ClosedTerm actual -> 
+    ClosedTerm target
+checkDeepUnwrap t = ptryUnwrapFrom @'PDeep #$ pforgetData t
+
 
 checkShallow ::
   forall (target :: PType) (actual :: PType) .

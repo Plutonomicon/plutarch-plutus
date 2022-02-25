@@ -6,6 +6,7 @@
 
 module Plutarch.Verify (
   PTryFrom (ptryFrom),
+  PTryUnwrapFrom (ptryUnwrapFrom),
   PDepth (PDeep, PShallow),
   pcheckType,
   pcheckByteStr,
@@ -21,6 +22,10 @@ import Plutarch.Builtin (
   PBuiltinPair,
   PData,
   PIsData (pfromData),
+  pasByteStr,
+  pasInt,
+  pasList,
+  pasMap,
   pdata,
   pforgetData,
   pfstBuiltin,
@@ -41,6 +46,8 @@ import Plutarch.Internal.Other (
   (#$),
   type (:-->),
  )
+
+import Plutarch.Lift (PLift)
 
 import Plutarch.Bool (pif, (#==))
 
@@ -161,6 +168,62 @@ instance PTryFrom PShallow PData PData where
   ptryFrom = plam id
 
 -- PShallow POpaque instances wouldn't make sense as that wouldn't do any verifying at all
+
+----------------------- Class that removes the PAsData wrapper --------------------------
+
+{- |
+    the basic idea behind the class is, that if i removed the data wrapper, I have
+    confidence that the type really has the structure I tested it to have
+-}
+class PTryUnwrapFrom (d :: PDepth) (b :: PType) where
+  ptryUnwrapFrom :: Term s (PData :--> b)
+
+instance PTryUnwrapFrom PDeep PInteger where
+  ptryUnwrapFrom = pasInt
+
+instance PTryUnwrapFrom PDeep PByteString where
+  ptryUnwrapFrom = pasByteStr
+
+instance {-# OVERLAPPING #-} PTryUnwrapFrom PDeep (PBuiltinList PData) where
+  ptryUnwrapFrom = pasList
+
+instance {-# OVERLAPPING #-} PTryUnwrapFrom PDeep (PBuiltinList (PBuiltinPair PData PData)) where
+  ptryUnwrapFrom = pasMap
+
+instance
+  {-# OVERLAPPABLE #-}
+  ( PTryUnwrapFrom PDeep b
+  , PIsData b
+  , PLift b
+  ) =>
+  PTryUnwrapFrom PDeep (PBuiltinList b)
+  where
+  ptryUnwrapFrom = phoistAcyclic $
+    plam $ \opq ->
+      let lst :: Term _ (PBuiltinList (PAsData b))
+          lst = punsafeBuiltin PLC.UnListData # opq
+       in pmap # (plam $ \e -> ptryUnwrapFrom @PDeep @b #$ pforgetData e) # lst
+
+-- this instance is not ok, I can not create an instance that doesn't work on
+-- wrapped types.
+instance
+  {-# OVERLAPPABLE #-}
+  ( PTryUnwrapFrom PDeep a
+  , PTryUnwrapFrom PDeep b
+  , PIsData a
+  , PIsData b
+  ) =>
+  PTryUnwrapFrom PDeep (PBuiltinPair (PAsData a) (PAsData b))
+  where
+  ptryUnwrapFrom = phoistAcyclic $
+    plam $ \opq ->
+      let tup :: Term _ (PBuiltinPair (PAsData a) (PAsData b))
+          tup = pfromData $ punsafeCoerce opq
+          fst :: Term _ a
+          fst = ptryUnwrapFrom @PDeep @a #$ pforgetData $ pfstBuiltin # tup
+          snd :: Term _ b
+          snd = ptryUnwrapFrom @PDeep @b #$ pforgetData $ psndBuiltin # tup
+       in ppairDataBuiltin # pdata fst # pdata snd
 
 ----------------------- Helper functions ------------------------------------------------
 
