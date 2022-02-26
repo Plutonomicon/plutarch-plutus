@@ -224,6 +224,10 @@ instance PIsData a => PIsData (PBuiltinList (PAsData a)) where
   pfromData x = punsafeCoerce $ pasList # pforgetData x
   pdata x = punsafeBuiltin PLC.ListData # x
 
+instance PIsData (PBuiltinList PData) where
+  pfromData x = punsafeCoerce $ pasList # pforgetData x
+  pdata x = punsafeBuiltin PLC.ListData # x
+
 instance PIsData (PBuiltinMap k v) where
   pfromData x = punsafeCoerce $ pasMap # pforgetData x
   pdata x = punsafeBuiltin PLC.MapData # x
@@ -273,6 +277,10 @@ instance PIsData (PBuiltinPair (PAsData a) (PAsData b)) where
       target = f # punsafeCoerce x
       f = phoistAcyclic $
         plam $ \pair -> pconstrBuiltin # 0 #$ pcons # (pfstBuiltin # pair) #$ pcons # (psndBuiltin # pair) # pnil
+
+instance PIsData (PBuiltinPair PData PData) where
+  pfromData x = punsafeCoerce $ pfromData @(PBuiltinPair (PAsData _) (PAsData _)) $ punsafeCoerce x
+  pdata x = punsafeCoerce $ pdata @(PBuiltinPair (PAsData _) (PAsData _)) $ punsafeCoerce x
 
 instance PIsData PUnit where
   pfromData _ = pconstant ()

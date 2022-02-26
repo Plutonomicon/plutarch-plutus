@@ -8,4 +8,6 @@ removing the data wrapper.erroneous.(String, Integer) /= (String, String) {"exBu
 removing the data wrapper.erroneous.[String] /= [Integer] {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":77}
 removing the data wrapper.working.(String, String) == (String, String) {"exBudgetCPU":7384676,"exBudgetMemory":12164,"scriptSizeBytes":102}
 removing the data wrapper.working.[String] == [String] {"exBudgetCPU":6033541,"exBudgetMemory":12344,"scriptSizeBytes":85}
-example.concatenate two lists {"exBudgetCPU":66205381,"exBudgetMemory":127091,"scriptSizeBytes":644}
+removing the data wrapper.partial checks.check whole structure {"exBudgetCPU":315492408,"exBudgetMemory":673004,"scriptSizeBytes":839}
+removing the data wrapper.partial checks.check structure partly {"exBudgetCPU":53643621,"exBudgetMemory":79318,"scriptSizeBytes":810}
+example.concatenate two lists {"exBudgetCPU":67071068,"exBudgetMemory":129055,"scriptSizeBytes":1040}

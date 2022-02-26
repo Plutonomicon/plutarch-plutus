@@ -103,7 +103,14 @@ spec = do
             @(PAsData (PBuiltinList (PAsData PByteString)))
             @(PBuiltinList PByteString)
             (pdata $ (pcons # (pdata $ pconstant "foo")) #$ (psingleton # (pdata $ pconstant "bar"))) 
-          @-> psucceeds
+          @-> psucceeds 
+      "partial checks" @\ do 
+        -- this is way more expensive ...
+        "check whole structure" 
+          @| fullCheck @-> psucceeds
+        -- ... than this
+        "check structure partly"
+          @| partialCheck @-> psucceeds
     "example" @\ do
       let validContext = ctx validList1
           l1 :: Term _ (PAsData (PBuiltinList (PAsData PInteger)))
@@ -148,6 +155,7 @@ this (the `partialCheck` function) would be really useful and it should be possi
 From my understanding tho, when it comes to the `PAsData (PBuiltinList PData)` case it should stop 
 complaining because the instance for `PAsData (PBuiltinList PData)` is strictly more specific than the 
 instance for `PAsData (PbuiltinList (PAsData a))`, i.e. it should not require the `PIsData` constraint
+-}
 
 sampleStructure :: Term _ (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData PInteger)))))))
 sampleStructure = pdata $ psingleton #$ pdata $ psingleton #$ toDatadList [1..100]
@@ -159,7 +167,6 @@ partialCheck = let dat :: Term _ PData
 
 fullCheck :: Term _ (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData PInteger)))))))
 fullCheck = ptryFrom @'PDeep #$ pforgetData sampleStructure
--}
 
 
 ------------------- Example: untrusted Redeemer ------------------------------------
