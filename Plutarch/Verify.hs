@@ -43,16 +43,28 @@ import Plutarch.Internal.Other (
   pforce,
   phoistAcyclic,
   plam,
+  plet,
   (#),
   (#$),
   type (:-->),
+ )
+
+import Plutarch.DataRepr.Internal (
+  PDataRecord,
+  PLabeledType ((:=)),
+  pdcons,
+  pdnil,
  )
 
 import Plutarch.Lift (PLift)
 
 import Plutarch.Bool (pif, (#==))
 
-import Plutarch.List (pmap)
+import Plutarch.List (
+  phead,
+  pmap,
+  ptail,
+ )
 
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import qualified PlutusCore as PLC
@@ -128,13 +140,49 @@ instance
   where
   ptryFrom = phoistAcyclic $
     plam $ \opq ->
-      let tup :: Term _ (PBuiltinPair a b)
-          tup = pfromData $ punsafeCoerce opq
-          fst :: Term _ a
-          fst = ptryFrom @PDeep @PData @a #$ pforgetData $ pfstBuiltin # tup
-          snd :: Term _ b
-          snd = ptryFrom @PDeep @PData @b #$ pforgetData $ psndBuiltin # tup
-       in pdata $ ppairDataBuiltin # fst # snd
+      plet (pfromData $ punsafeCoerce opq) $
+        \tup ->
+          let fst :: Term _ a
+              fst = ptryFrom @PDeep @PData @a #$ pforgetData $ pfstBuiltin # tup
+              snd :: Term _ b
+              snd = ptryFrom @PDeep @PData @b #$ pforgetData $ psndBuiltin # tup
+           in pdata $ ppairDataBuiltin # fst # snd
+
+instance
+  {-# OVERLAPPABLE #-}
+  ( PTryFrom PDeep PData (PAsData b)
+  , PTryFrom PDeep PData (PAsData (PDataRecord xs))
+  , x ~ (s ':= b)
+  , PIsData (PDataRecord xs)
+  ) =>
+  PTryFrom PDeep PData (PAsData (PDataRecord (x ': xs)))
+  where
+  ptryFrom = phoistAcyclic $
+    plam $ \opq -> plet (pfromData @(PBuiltinList _) $ punsafeCoerce opq) $ \lst ->
+      let lsthead :: Term _ PData
+          lsthead = phead # lst
+          lsttail :: Term _ (PAsData (PBuiltinList PData))
+          lsttail = pdata $ ptail # lst
+       in punsafeCoerce $
+            pdcons @s
+              # (ptryFrom @PDeep @PData @(PAsData b) # lsthead)
+              # (pfromData (ptryFrom @PDeep @PData @(PAsData (PDataRecord xs)) # pforgetData lsttail))
+
+instance
+  {-# OVERLAPPING #-}
+  ( PTryFrom PDeep PData (PAsData b)
+  , x ~ (s ':= b)
+  ) =>
+  PTryFrom PDeep PData (PAsData (PDataRecord '[x]))
+  where
+  ptryFrom = phoistAcyclic $
+    plam $ \opq ->
+      let lsthead :: Term _ PData
+          lsthead = phead # (pfromData @(PBuiltinList _) $ punsafeCoerce opq)
+       in punsafeCoerce $
+            pdcons @s
+              # (ptryFrom @PDeep @PData @(PAsData b) # lsthead)
+              # pdnil
 
 ----------------------- PDeep POpaque instances -----------------------------------------
 

@@ -53,13 +53,13 @@ spec = do
         @| checkDeep
           @(PBuiltinPair (PAsData PInteger) (PAsData PByteString))
           @(PBuiltinPair (PAsData PByteString) (PAsData PByteString))
-          (ppairDataBuiltin # (pdata $ pconstant "foo") # (pdata $ pconstant "bar"))
+          (pdata $ ppairDataBuiltin # (pdata $ pconstant "foo") # (pdata $ pconstant "bar"))
         @-> pfails
       "[String] /= [Integer]"
         @| checkDeep
           @(PBuiltinList (PAsData PByteString))
           @(PBuiltinList (PAsData PInteger))
-          ((pcons # (pdata $ pconstant 3)) #$ (psingleton # (pdata $ pconstant 4)))
+          (pdata $ (pcons # (pdata $ pconstant 3)) #$ (psingleton # (pdata $ pconstant 4)))
         @-> pfails
     "working" @\ do
       "int == int"
@@ -69,14 +69,19 @@ spec = do
         @| checkDeep
           @(PBuiltinPair (PAsData PByteString) (PAsData PByteString))
           @(PBuiltinPair (PAsData PByteString) (PAsData PByteString))
-          (ppairDataBuiltin # (pdata $ pconstant "foo") # (pdata $ pconstant "bar"))
+          (pdata $ ppairDataBuiltin # (pdata $ pconstant "foo") # (pdata $ pconstant "bar"))
         @-> psucceeds
       "[String] == [String]"
         @| checkDeep
           @(PBuiltinList (PAsData PByteString))
           @(PBuiltinList (PAsData PByteString))
-          ((pcons # (pdata $ pconstant "foo")) #$ (psingleton # (pdata $ pconstant "bar")))
+          (pdata $ (pcons # (pdata $ pconstant "foo")) #$ (psingleton # (pdata $ pconstant "bar")))
         @-> psucceeds
+      "A { test := String, test2 := Integer } == { test := String, test2 := Integer }"
+        @| checkDeep 
+          @(PDataRecord (("foo" ':= PInteger) ': ("bar" ':= PInteger) ': '[]))
+          @(PDataRecord (("foo" ':= PInteger) ': ("bar" ':= PInteger) ': '[]))
+          (pdata (pdcons @"foo" # (pdata $ pconstant 7)  #$ pdcons @"bar" # (pdata $ pconstant 42) # pdnil))
     "removing the data wrapper" @\ do 
       "erroneous" @\ do
         "(String, Integer) /= (String, String)"
@@ -113,12 +118,26 @@ spec = do
           @| partialCheck @-> psucceeds
     "example" @\ do
       let validContext = ctx validList1
+          invalidContext = ctx invalidList1
           l1 :: Term _ (PAsData (PBuiltinList (PAsData PInteger)))
           l1 = toDatadList [1 .. 5]
           l2 :: Term _ (PAsData (PBuiltinList (PAsData PInteger)))
           l2 = toDatadList [6 .. 10]
-      "concatenate two lists"
+          l3 :: Term _ (PAsData (PBuiltinList (PAsData PInteger)))
+          l3 = toDatadList [6..9]
+          l4 :: Term _ (PAsData (PBuiltinList (PAsData PInteger)))
+          l4 = toDatadList [6,8,8,9,10]
+      "concatenate two lists, legal"
         @| validator # pforgetData l1 # pforgetData l2 # validContext @-> psucceeds
+      "concatenate tow lists, illegal (list too short)"
+        @| validator # pforgetData l1 # pforgetData l3 # validContext @-> pfails
+      "concatenate tow lists, illegal (wrong elements in list)"
+        @| validator # pforgetData l1 # pforgetData l4 # validContext @-> pfails
+      "concatenate tow lists, illegal (more than one output)"
+        @| validator # pforgetData l1 # pforgetData l2 # invalidContext @-> pfails
+
+-- rec :: Term _ (PDataRecord (("foo" ':= PInteger) ': ("bar" ':= PInteger) ': '[]))
+-- rec = 
 
 checkDeepUnwrap :: 
   forall (actual :: PType) (target :: PType) b.
@@ -140,26 +159,19 @@ checkShallow  t = ptryFrom @'PShallow #$ pforgetData t
 
 checkDeep ::
   forall (target :: PType) (actual :: PType).
-  ( PTryFrom 'PDeep POpaque target
+  ( PTryFrom 'PDeep PData (PAsData target)
   , PIsData actual
   , PIsData target
   ) =>
-  ClosedTerm actual ->
-  ClosedTerm target
-checkDeep t = ptryFrom @'PDeep #$ popaque t 
+  ClosedTerm (PAsData actual) ->
+  ClosedTerm (PAsData target)
+checkDeep t = ptryFrom @'PDeep #$ pforgetData t 
 
-
-{- 
-this (the `partialCheck` function) would be really useful and it should be possible, however, it wants a 
-`PIsData` instance for `PBuiltinList PData` which of course there isn't. 
-From my understanding tho, when it comes to the `PAsData (PBuiltinList PData)` case it should stop 
-complaining because the instance for `PAsData (PBuiltinList PData)` is strictly more specific than the 
-instance for `PAsData (PbuiltinList (PAsData a))`, i.e. it should not require the `PIsData` constraint
--}
 
 sampleStructure :: Term _ (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData PInteger)))))))
 sampleStructure = pdata $ psingleton #$ pdata $ psingleton #$ toDatadList [1..100]
 
+-- | PData serves as the base case for recursing into the structure
 partialCheck :: Term _ (PAsData (PBuiltinList (PAsData (PBuiltinList PData))))
 partialCheck = let dat :: Term _ PData 
                    dat = pforgetData sampleStructure
@@ -288,6 +300,12 @@ validList1 =
   let dat :: Datum
       dat = Datum $ toBuiltinData [(1 :: Integer) .. 10]
    in [("d0", dat)] 
+
+invalidList1 :: [(DatumHash, Datum)]
+invalidList1 =
+  let dat :: Datum
+      dat = Datum $ toBuiltinData [(1 :: Integer) .. 10]
+   in [("d0", dat), ("d0", Datum $ toBuiltinData @Integer 3)] 
 
 
 ------------------- Helpers --------------------------------------------------------

@@ -92,13 +92,14 @@ import Plutarch.Builtin (
 import Plutarch.DataRepr.Internal.Generic (MkSum (mkSum))
 import Plutarch.DataRepr.Internal.HList (type Drop, type IndexList)
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal (S (SI))
+import Plutarch.Internal (S (SI), punsafeBuiltin)
 import Plutarch.Internal.TypeFamily (ToPType2)
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstant, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont)
 import Plutarch.Unsafe (punsafeCoerce)
 import qualified Plutus.V1.Ledger.Api as Ledger
+import qualified PlutusCore as PLC
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is
  `PBuiltinList PData`.
@@ -173,6 +174,21 @@ type family PLabelIndex (name :: Symbol) (as :: [PLabeledType]) :: Nat where
 
 type family PUnLabel (a :: PLabeledType) :: PType where
   PUnLabel (name ':= a) = a
+
+type PUnLabelAll :: [PLabeledType] -> [PType]
+type family PUnLabelAll l where
+  PUnLabelAll '[] = '[]
+  PUnLabelAll (x ': xs) = PUnLabel x ': PUnLabelAll xs
+
+instance
+  {-# OVERLAPPABLE #-}
+  ( All PIsData bs
+  , bs ~ PUnLabelAll xs
+  ) =>
+  PIsData (PDataRecord xs)
+  where
+  pfromData x = punsafeBuiltin PLC.UnListData # pforgetData x
+  pdata x = punsafeBuiltin PLC.ListData # x
 
 {- | A sum of 'PDataRecord's. The underlying representation is the `PDataConstr` constructor,
  where the integer is the index of the variant and the list is the record.
