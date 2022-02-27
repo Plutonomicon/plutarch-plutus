@@ -71,6 +71,8 @@
 
   Added by: [#235](https://github.com/Plutonomicon/plutarch/pull/270)
 
+- Add `Plutarch.Test` for testing Plutarch code with goldens for UPLC printing and Plutus benchmarks.
+
 # 1.1.0
 
 - General repository changes.

@@ -8,12 +8,13 @@ import Plutus.V1.Ledger.Api
 import qualified Plutus.V1.Ledger.Interval as Interval
 import qualified Plutus.V1.Ledger.Value as Value
 
+import Plutarch (popaque)
 import Plutarch.Api.V1 (
   PCredential,
   PCurrencySymbol,
   PPubKeyHash,
   PScriptContext,
-  PScriptPurpose (PSpending),
+  PScriptPurpose (PMinting, PSpending),
   PTxInInfo,
   PTxInfo,
   PValue,
@@ -37,6 +38,13 @@ spec = do
             plift p @?= [toData validator]
           "sym" @| pfromData (getSym #$ pfromData $ getMint #$ getTxInfo # ctx) @-> \p ->
             plift p @?= sym
+        "ScriptPurpose" @\ do
+          "literal" @| pconstant @PScriptPurpose (Minting dummyCurrency)
+          "decode"
+            @| pmatch (pconstant @PScriptPurpose (Minting dummyCurrency))
+            $ \case
+              PMinting c -> popaque c
+              _ -> perror
     describe "example" $ do
       -- The checkSignatory family of functions implicitly use tracing due to
       -- monadic syntax, and as such we need two sets of tests here.
@@ -190,3 +198,6 @@ checkSignatoryTermCont = plam $ \ph ctx' -> unTermCont $ do
 
 getFields :: Term s (PData :--> PBuiltinList PData)
 getFields = phoistAcyclic $ plam $ \addr -> psndBuiltin #$ pasConstr # addr
+
+dummyCurrency :: CurrencySymbol
+dummyCurrency = Value.currencySymbol "\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11"

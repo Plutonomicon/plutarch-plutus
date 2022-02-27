@@ -1,17 +1,17 @@
-erroneous.int /= bytestring {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":45}
-erroneous.(String, Integer) /= (String, String) {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":159}
-erroneous.[String] /= [Integer] {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":111}
+erroneous.int /= bytestring {"exBudgetCPU":437969,"exBudgetMemory":166,"scriptSizeBytes":45}
+erroneous.(String, Integer) /= (String, String) {"exBudgetCPU":2537969,"exBudgetMemory":614,"scriptSizeBytes":159}
+erroneous.[String] /= [Integer] {"exBudgetCPU":1487969,"exBudgetMemory":390,"scriptSizeBytes":111}
 working.int == int {"exBudgetCPU":1390705,"exBudgetMemory":3366,"scriptSizeBytes":40}
 working.(String, String) == (String, String) {"exBudgetCPU":8788383,"exBudgetMemory":17372,"scriptSizeBytes":159}
 working.[String] == [String] {"exBudgetCPU":8305205,"exBudgetMemory":18580,"scriptSizeBytes":120}
-working.A { test := String, test2 := Integer } == { test := String, test2 := Integer } {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":125}
-removing the data wrapper.erroneous.(String, Integer) /= (String, String) {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":102}
-removing the data wrapper.erroneous.[String] /= [Integer] {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":77}
+working.A { test := String, test2 := Integer } == { test := String, test2 := Integer } {"exBudgetCPU":2375838,"exBudgetMemory":552,"scriptSizeBytes":125}
+removing the data wrapper.erroneous.(String, Integer) /= (String, String) {"exBudgetCPU":2400100,"exBudgetMemory":612,"scriptSizeBytes":102}
+removing the data wrapper.erroneous.[String] /= [Integer] {"exBudgetCPU":1350100,"exBudgetMemory":388,"scriptSizeBytes":77}
 removing the data wrapper.working.(String, String) == (String, String) {"exBudgetCPU":7384676,"exBudgetMemory":12164,"scriptSizeBytes":102}
 removing the data wrapper.working.[String] == [String] {"exBudgetCPU":6033541,"exBudgetMemory":12344,"scriptSizeBytes":85}
 removing the data wrapper.partial checks.check whole structure {"exBudgetCPU":315492408,"exBudgetMemory":673004,"scriptSizeBytes":839}
 removing the data wrapper.partial checks.check structure partly {"exBudgetCPU":53643621,"exBudgetMemory":79318,"scriptSizeBytes":810}
 example.concatenate two lists, legal {"exBudgetCPU":66205381,"exBudgetMemory":127091,"scriptSizeBytes":644}
-example.concatenate tow lists, illegal (list too short) {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":637}
-example.concatenate tow lists, illegal (wrong elements in list) {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":644}
-example.concatenate tow lists, illegal (more than one output) {"exBudgetCPU":null,"exBudgetMemory":null,"scriptSizeBytes":651}
+example.concatenate tow lists, illegal (list too short) {"exBudgetCPU":58463317,"exBudgetMemory":105633,"scriptSizeBytes":637}
+example.concatenate tow lists, illegal (wrong elements in list) {"exBudgetCPU":65848105,"exBudgetMemory":125891,"scriptSizeBytes":644}
+example.concatenate tow lists, illegal (more than one output) {"exBudgetCPU":39820947,"exBudgetMemory":64533,"scriptSizeBytes":651}

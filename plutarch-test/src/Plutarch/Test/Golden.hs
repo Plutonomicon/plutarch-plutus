@@ -4,8 +4,9 @@ module Plutarch.Test.Golden (
   (@\),
   (@->),
   TermExpectation,
+  PlutarchGoldens,
   goldenKeyString,
-  evaluateScriptAlways,
+  evalScriptAlwaysWithBenchmark,
   compileD,
 ) where
 
@@ -32,10 +33,10 @@ import Test.Syd (
  )
 
 import Plutarch (ClosedTerm, compile, printScript)
-import Plutarch.Benchmark (benchmarkScript')
-import Plutarch.Evaluate (evaluateScript)
+import Plutarch.Evaluate (evalScript)
 import Plutarch.Internal (Term (Term))
 import Plutarch.Prelude
+import Plutarch.Test.Benchmark (Benchmark, mkBenchmark, scriptSize)
 import Plutarch.Test.ListSyntax (ListSyntax, listSyntaxAdd, listSyntaxAddSubList, runListSyntax)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 
@@ -55,11 +56,13 @@ class HasGoldenValue (t :: S -> PType -> Type) where
 
 mkGoldenValue' :: ClosedTerm a -> Maybe Expectation -> GoldenValue
 mkGoldenValue' p mexp =
-  GoldenValue
-    (T.pack $ printScript $ compileD p)
-    (T.pack $ printScript $ evaluateScriptAlways $ compileD p)
-    (TL.toStrict $ Aeson.encodeToLazyText $ benchmarkScript' $ compileD p)
-    mexp
+  let compiledScript = compileD p
+      (evaluatedScript, bench) = evalScriptAlwaysWithBenchmark compiledScript
+   in GoldenValue
+        (T.pack $ printScript compiledScript)
+        (T.pack $ printScript evaluatedScript)
+        (TL.toStrict $ Aeson.encodeToLazyText bench)
+        mexp
 
 -- We derive for `Term s a` only because GHC prevents us from deriving for
 -- `ClosedTerm a`. In practice, this instance should be used only for closed
@@ -109,14 +112,16 @@ combineGoldens xs =
   T.intercalate "\n" $
     (\(GoldenKey k, v) -> k <> " " <> v) <$> xs
 
+type PlutarchGoldens = ListSyntax (GoldenKey, GoldenValue)
+
 -- | Specify goldens for the given Plutarch program
-(@|) :: forall t a. HasGoldenValue t => GoldenKey -> (forall s. t s a) -> ListSyntax (GoldenKey, GoldenValue)
+(@|) :: forall t a. HasGoldenValue t => GoldenKey -> (forall s. t s a) -> PlutarchGoldens
 (@|) k v = listSyntaxAdd (k, mkGoldenValue v)
 
 infixr 0 @|
 
 -- | Add an expectation for the Plutarch program specified with (@|)
-(@\) :: GoldenKey -> ListSyntax (GoldenKey, GoldenValue) -> ListSyntax (GoldenKey, GoldenValue)
+(@\) :: GoldenKey -> PlutarchGoldens -> PlutarchGoldens
 (@\) = listSyntaxAddSubList
 
 {- | Create golden specs for pre/post-eval UPLC and benchmarks.
@@ -168,17 +173,21 @@ currentGoldenKey = do
         Just path ->
           pure $ sconcat $ fmap GoldenKey path
 
-{- | Like `evaluateScript` but doesn't fail. Also returns `Script`.
+{- | Like `evalScript` but doesn't throw `EvalError`, and returns `Benchmark`.
 
-  All evaluation failures are treated as equivalent to a `perror`. Plutus does
-  not provide an accurate way to tell if the program evalutes to `Error` or not;
-  see https://github.com/input-output-hk/plutus/issues/4270
+  On `EvalError`, this function returns `perror` as evaluated script. Plutus
+  does not provide an accurate way to tell if the program evalutes to `Error` or
+  not; see https://github.com/input-output-hk/plutus/issues/4270
 -}
-evaluateScriptAlways :: Scripts.Script -> Scripts.Script
-evaluateScriptAlways script =
-  case evaluateScript script of
-    Left _ -> compile perror
-    Right (_, _, x) -> x
+evalScriptAlwaysWithBenchmark :: Scripts.Script -> (Scripts.Script, Benchmark)
+evalScriptAlwaysWithBenchmark script =
+  let (res, exbudget, _traces) = evalScript script
+      bench = mkBenchmark exbudget (scriptSize script)
+   in ( case res of
+        Left _ -> compile perror
+        Right x -> x
+      , bench
+      )
 
 -- TODO: Make this deterministic
 -- See https://github.com/Plutonomicon/plutarch/pull/297

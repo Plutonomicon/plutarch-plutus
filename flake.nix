@@ -462,19 +462,16 @@
         let pkgs = nixpkgsFor system; in
         let pkgs' = nixpkgsFor' system; in
         let pkgSet = (nixpkgsFor system).haskell-nix.cabalProject' ({
-          # This is truly a horrible hack but is necessary. We can't disable tests otherwise in haskell.nix.
+          # This is truly a horrible hack but is necessary for sydtest-discover to work.
           src = if ghcName == ghcVersion then ./. else
           pkgs.runCommand "fake-src" { } ''
-            cp -rT ${./.} $out
-            chmod u+w $out $out/plutarch.cabal
-            # Remove stanzas from .cabal that won't work in GHC 8.10
-            sed -i '/-- Everything below this line is deleted for GHC 8.10/,$d' $out/plutarch.cabal
-
             # Prevent `sydtest-discover` from using GHC9 only modules when building with GHC810
             # https://github.com/NorfairKing/sydtest/blob/master/sydtest-discover/src/Test/Syd/Discover.hs
+            cp -rT ${./.} $out
             chmod -R u+w $out/plutarch-test
             rm -f $out/plutarch-test/src/Plutarch/MonadicSpec.hs
             rm -f $out/plutarch-test/src/Plutarch/FieldSpec.hs
+            rm -f $out/plutarch-test/src/Plutarch/RecSpec.hs
           '';
           compiler-nix-name = ghcName;
           inherit extraSources;
@@ -643,14 +640,12 @@
           self.flake.${system}.checks
           // {
             formatCheck = formatCheckFor system;
-            benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
             test-ghc9-nodev = flakeApp2Derivation system "test-ghc9-nodev";
             test-ghc9-dev = flakeApp2Derivation system "test-ghc9-dev";
             test-ghc810-nodev = flakeApp2Derivation system "test-ghc810-nodev";
             test-ghc810-dev = flakeApp2Derivation system "test-ghc810-dev";
             "ghc810-plutarch:lib:plutarch" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch:lib:plutarch";
             "ghc810-plutarch:lib:plutarch-test" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch-test:lib:plutarch-test";
-            "ghc810-plutarch:lib:plutarch-benchmark" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch-benchmark:lib:plutarch-benchmark";
           });
       # Because `nix flake check` does not work with haskell.nix (due to IFD), 
       # we provide this attribute for running the checks locally, using:
@@ -672,15 +667,6 @@
           test-ghc9-dev = plutarchTestApp system "ghc9-dev" self.projectMatrix.ghc9.dev;
           test-ghc810-nodev = plutarchTestApp system "ghc810-nodev" self.projectMatrix.ghc810.nodev;
           test-ghc810-dev = plutarchTestApp system "ghc810-dev" self.projectMatrix.ghc810.dev;
-          # TODO: The bellow apps will be removed eventually.
-          benchmark = {
-            type = "app";
-            program = "${self.flake.${system}.packages."plutarch-benchmark:bench:benchmark"}/bin/benchmark";
-          };
-          benchmark-diff = {
-            type = "app";
-            program = "${self.flake.${system}.packages."plutarch-benchmark:exe:benchmark-diff"}/bin/benchmark-diff";
-          };
         }
       );
       devShell = perSystem (system: self.flake.${system}.devShell);
@@ -691,35 +677,6 @@
           hci-effects = hercules-ci-effects.lib.withPkgs pkgs;
         in
         {
-          # Hercules 0.9 will allow us to calculate the merge-base so we can test all PRs.
-          # Right now we just hardcode this effect to test every commit against
-          # origin/staging. We set != "refs/head/master" so that merges into master don't
-          # cause a lot of unnecessary bogus benchmarks to appear in CI for the time
-          # being.
-          benchmark-diff = hci-effects.runIf (src.ref != "refs/heads/master") (
-            hci-effects.mkEffect {
-              src = self;
-              buildInputs = with pkgs; [ git nixFlakes ];
-              effectScript = ''
-                git clone https://github.com/Plutonomicon/plutarch.git plutarch
-                cd plutarch
-
-                git checkout $(git merge-base origin/staging ${src.rev})
-                nix --extra-experimental-features 'nix-command flakes' run .#benchmark -- --csv > before.csv
-
-                git checkout ${src.rev}
-                nix --extra-experimental-features 'nix-command flakes' run .#benchmark -- --csv > after.csv
-
-                echo
-                echo
-                echo "Benchmark diff between $(git merge-base origin/staging ${src.rev}) and ${src.rev}:"
-                echo
-                echo
-
-                nix --extra-experimental-features 'nix-command flakes' run .#benchmark-diff -- before.csv after.csv
-              '';
-            }
-          );
           gh-pages = hci-effects.runIf (src.ref == "refs/heads/master") (
             hci-effects.mkEffect {
               src = self;

@@ -73,17 +73,17 @@ common c
 
 common deps
   build-depends:
-    , aeson               >=2.0
+    , aeson              >=2.0
     , base
     , bytestring
     , filepath
     , generics-sop
     , mtl
     , plutarch
-    , plutarch-benchmark
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
+    , serialise
     , sydtest
     , sydtest-discover
     , tasty
@@ -97,11 +97,9 @@ library
   hs-source-dirs:  src
   exposed-modules: Plutarch.Test
   other-modules:
+    Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
-
-  -- FIXME remove -Wwarn=deprecations
-  ghc-options:     -Wwarn=deprecations
 
 executable plutarch-test
   import:         c, deps
@@ -110,18 +108,21 @@ executable plutarch-test
   build-depends:
     , base16-bytestring
     , cborg
+    , rank2classes
     , serialise
 
   if impl(ghc >=9.0)
     other-modules:
       Plutarch.FieldSpec
       Plutarch.MonadicSpec
+      Plutarch.RecSpec
 
   other-modules:
     Plutarch.ApiSpec
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
     Plutarch.IntegerSpec
+    Plutarch.LiftSpec
     Plutarch.ListSpec
     Plutarch.PIsDataSpec
     Plutarch.PLamSpec
@@ -131,10 +132,12 @@ executable plutarch-test
     Plutarch.ScriptsSpec
     Plutarch.StringSpec
     Plutarch.Test
+    Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
     Plutarch.TraceSpec
     Plutarch.UnitSpec
+    Plutarch.UPLCSpec
     Plutarch.VerifySpec
     Spec
 
