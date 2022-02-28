@@ -78,21 +78,7 @@ class PEq t where
     Term s t ->
     Term s t ->
     Term s PBool
-  a #== b = peq' # a # b
-
-peq' ::
-  forall t s.
-  ( PGeneric s t
-  , PlutusType t
-  , All2 PEq (PCode s t)
-  ) =>
-  Term s (t :--> t :--> PBool)
-peq' =
-  punsafehoistAcyclic $
-    plam $ \x y ->
-      pmatch x $ \x' ->
-        pmatch y $ \y' ->
-          gpeq @t (pfrom x') (pfrom y')
+  a #== b = gpeq # a # b
 
 infix 4 #==
 
@@ -154,13 +140,28 @@ por = phoistAcyclic $ plam $ \x y -> pif' # x # (phoistAcyclic $ pdelay $ pcon P
 por' :: Term s (PBool :--> PBool :--> PBool)
 por' = phoistAcyclic $ plam $ \x y -> pif' # x # (pcon PTrue) # y
 
+-- | Generic version of (#==)
 gpeq ::
+  forall t s.
+  ( PGeneric s t
+  , PlutusType t
+  , All2 PEq (PCode s t)
+  ) =>
+  Term s (t :--> t :--> PBool)
+gpeq =
+  punsafehoistAcyclic $
+    plam $ \x y ->
+      pmatch x $ \x' ->
+        pmatch y $ \y' ->
+          gpeq' @t (pfrom x') (pfrom y')
+
+gpeq' ::
   forall a s.
   All2 PEq (PCode s a) =>
   SOP (Term s) (PCode s a) ->
   SOP (Term s) (PCode s a) ->
   Term s PBool
-gpeq (SOP c1) (SOP c2) =
+gpeq' (SOP c1) (SOP c2) =
   ccompare_NS (Proxy @(All PEq)) (pcon PFalse) eqProd (pcon PFalse) c1 c2
   where
     eqProd :: All PEq xs => NP (Term s) xs -> NP (Term s) xs -> Term s PBool
