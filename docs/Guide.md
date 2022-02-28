@@ -25,8 +25,8 @@ The Plutarch guide is your one-stop shop for getting up to speed on Plutarch!
 
 ## Compiling and Running
 
-- [Common Extensions and GHC options](./RUN.md#common-extensions-and-ghc-options)
-- [Evaluation](./RUN.md#evaluation)
+- [Common Extensions and GHC options](./Run.md#common-extensions-and-ghc-options)
+- [Evaluation](./Run.md#evaluation)
 
 ## Introduction and Basic Syntax
 
@@ -79,7 +79,7 @@ The [Concepts section](./Concepts.md) details additional concepts.
 The [Typeclasses section](./Typeclasses.md) discusses the primary typeclasses related to Plutarch.
 
 - [`PEq` & `POrd`](./Typeclasses/PEq%20and%20POrd.md)
-- [`PIntegral`](./Typeclasses/PEq%20and%20POrd.md)
+- [`PIntegral`](./Typeclasses/PIntegral.md)
 - [`PIsData`](./Typeclasses/PIsData.md)
 - [`PlutusType`, `PCon`, and `PMatch`](./Typeclasses/PlutusType,%20PCon,%20and%20PMatch.md)
   - [Implementing `PlutusType` for your own types (Scott Encoding)](./Typeclasses/PlutusType,%20PCon,%20and%20PMatch.md#implementing-plutustype-for-your-own-types-scott-encoding)
@@ -120,7 +120,7 @@ The [Types section](./Types.md) discusses the core types of Plutarch.
 - [Basic examples](./examples/BASIC.md)
 - [Validator & Minting policies](./examples/VALIDATOR.md)
 
-Also see: [examples](https://github.com/Plutonomicon/plutarch/tree/master/examples).
+Also see: [examples](https://github.com/Plutonomicon/plutarch/tree/master/plutarch-test).
 
 # Rules of thumb, Tips, and Tricks
 
@@ -141,14 +141,14 @@ Outside of the fundamental user guide, there are rules of thumb and general guid
 
 Due to the highly abstracted nature of Plutarch and its utilization of advanced type level concepts, you might face unfamiliar errors. Don't worry, the guide is here to help!
 
-- [No instance for `PUnsafeLiftDecl a`](./TROUBLESHOOTING.md#no-instance-for-punsafeliftdecl-a)
-- [Couldn't match representation of type: ... arising from the 'deriving' clause](./TROUBLESHOOTING.md#couldnt-match-representation-of-type--arising-from-the-deriving-clause)
-- [Infinite loop / Infinite AST](./TROUBLESHOOTING.md#infinite-loop--infinite-ast)
-- [Couldn't match type `Plutarch.DataRepr.Internal.PUnLabel ...` arising from a use of `pfield` (or `hrecField`, or `pletFields`)](./TROUBLESHOOTING.md#couldnt-match-type-plutarchdatareprinternalpunlabel--arising-from-a-use-of-pfield-or-hrecfield-or-pletfields)
-- [Expected a type, but "fieldName" has kind `GHC.Types.Symbol`](./TROUBLESHOOTING.md#expected-a-type-but-fieldname-has-kind-ghctypessymbol)
-- [Lifting `PAsData`](./TROUBLESHOOTING.md#lifting-pasdata)
-- [Couldn't match type `PLifted (PConstanted Foo)` with `Foo`](./TROUBLESHOOTING.md#couldnt-match-type-plifted-pconstanted-foo-with-foo)
-- [Type match errors when using `pfield`/`hrecField` (or `OverloadedRecordDot` to access field)](./TROUBLESHOOTING.md#type-match-errors-when-using-pfieldhrecfield-or-overloadedrecorddot-to-access-field)
+- [No instance for `PUnsafeLiftDecl a`](./Troubleshooting.md#no-instance-for-punsafeliftdecl-a)
+- [Couldn't match representation of type: ... arising from the 'deriving' clause](./Troubleshooting.md#couldnt-match-representation-of-type--arising-from-the-deriving-clause)
+- [Infinite loop / Infinite AST](./Troubleshooting.md#infinite-loop--infinite-ast)
+- [Couldn't match type `Plutarch.DataRepr.Internal.PUnLabel ...` arising from a use of `pfield` (or `hrecField`, or `pletFields`)](./Troubleshooting.md#couldnt-match-type-plutarchdatareprinternalpunlabel--arising-from-a-use-of-pfield-or-hrecfield-or-pletfields)
+- [Expected a type, but "fieldName" has kind `GHC.Types.Symbol`](./Troubleshooting.md#expected-a-type-but-fieldname-has-kind-ghctypessymbol)
+- [Lifting `PAsData`](./Troubleshooting.md#lifting-pasdata)
+- [Couldn't match type `PLifted (PConstanted Foo)` with `Foo`](./Troubleshooting.md#couldnt-match-type-plifted-pconstanted-foo-with-foo)
+- [Type match errors when using `pfield`/`hrecField` (or `OverloadedRecordDot` to access field)](./Troubleshooting.md#type-match-errors-when-using-pfieldhrecfield-or-overloadedrecorddot-to-access-field)
 
 # Useful Links
 

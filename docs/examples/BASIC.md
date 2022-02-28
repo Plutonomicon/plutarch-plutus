@@ -21,7 +21,7 @@ fib = phoistAcyclic $
         $ self # (n - 1) + self # (n - 2)
 ```
 
-from [examples](https://github.com/Plutonomicon/plutarch/tree/master/examples).
+from [examples](https://github.com/Plutonomicon/plutarch/tree/master/plutarch-test).
 
 Execution:
 
