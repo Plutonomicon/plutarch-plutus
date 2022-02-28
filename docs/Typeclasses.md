@@ -3,7 +3,7 @@ This section describes the primary typeclasses used in Plutarch.
 > Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high quality documentation for Plutarch users!
 
 - [`PEq` & `POrd`](./Typeclasses/PEq%20and%20POrd.md)
-- [`PIntegral`](./Typeclasses/PEq%20and%20POrd.md)
+- [`PIntegral`](./Typeclasses/PIntegral.md)
 - [`PIsData`](./Typeclasses/PIsData.md)
 - [`PlutusType`, `PCon`, and `PMatch`](./Typeclasses/PlutusType,%20PCon,%20and%20PMatch.md)
   - [Implementing `PlutusType` for your own types (Scott Encoding)](./Typeclasses/PlutusType,%20PCon,%20and%20PMatch.md#implementing-plutustype-for-your-own-types-scott-encoding)
