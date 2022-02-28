@@ -22,6 +22,7 @@ module Plutarch.Bool (
 import Data.Foldable (foldl')
 import Data.SOP.Constraint
 import Generics.SOP
+import Plutarch.Internal (punsafehoistAcyclic)
 import Plutarch.Internal.Other (
   DerivePNewtype,
   PDelayed,
@@ -77,15 +78,27 @@ class PEq t where
     Term s t ->
     Term s t ->
     Term s PBool
-  a #== b = go # a # b
+  a #== b = peq' # a # b
     where
-      -- FIXME: hoisting breaks compilation
-      go =
-        {- phoistAcyclic $ -}
-        plam $ \x y ->
-          pmatch x $ \x' ->
-            pmatch y $ \y' ->
-              gpeq @t (pfrom x') (pfrom y')
+
+peq' ::
+  forall t s code pcode.
+  ( code ~ Code (t s)
+  , pcode ~ ToPType2 code
+  , Generic (t s)
+  , PlutusType t
+  , All2 PEq pcode
+  , SameShapeAs code pcode
+  , SameShapeAs pcode code
+  , AllZipF (AllZip (LiftedCoercible I (Term s))) code pcode
+  ) =>
+  Term s (t :--> t :--> PBool)
+peq' =
+  punsafehoistAcyclic $
+    plam $ \x y ->
+      pmatch x $ \x' ->
+        pmatch y $ \y' ->
+          gpeq @t (pfrom x') (pfrom y')
 
 infix 4 #==
 
