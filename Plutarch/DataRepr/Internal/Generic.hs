@@ -1,15 +1,48 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
 
--- | Common generics-sop utilities for use in Plutarch.
+{- Common generics-sop utilities for use in Plutarch.
+
+  TODO: Move to Plutarch.Internal.Generic?
+-}
 module Plutarch.DataRepr.Internal.Generic (
+  -- * Plutarch adapters for generics-sop API
+  PGeneric,
+  PCode,
+  pfrom,
+
+  -- * Helpers for when existing generics-sop combinators are insufficient.
   MkSum (..),
 ) where
 
-import Data.Kind (Type)
+import Data.Kind (Constraint, Type)
 import GHC.TypeLits (Nat, type (-))
-import Generics.SOP (I, NP, NS (S, Z))
+import Generics.SOP (All, AllZip, Code, Generic (from), I, LiftedCoercible, NP, NS (S, Z), SOP, SameShapeAs, Top, hfromI)
+import Generics.SOP.Constraint (AllZipF)
 import Plutarch.DataRepr.Internal.HList.Utils (IndexList)
+import Plutarch.Internal (PType, S, Term)
+import Plutarch.Internal.TypeFamily (ToPType2)
+
+{- `Generic` constraint extended to work with Plutarch types.
+-}
+type PGeneric :: S -> PType -> Constraint
+type PGeneric s a =
+  ( Generic (a s)
+  , SameShapeAs (Code (a s)) (ToPType2 (Code (a s)))
+  , SameShapeAs (ToPType2 (Code (a s))) (Code (a s))
+  , AllZipF (AllZip (LiftedCoercible I (Term s))) (Code (a s)) (ToPType2 (Code (a s)))
+  , All Top (ToPType2 (Code (a s)))
+  )
+
+{- Like `Code` but for Plutarch types -}
+type PCode s a = ToPType2 (Code (a s))
+
+{- | Like `from` but for Plutarch terms
+
+  Instead of `I`, this uses `Term s` as the container type.
+-}
+pfrom :: PGeneric s a => a s -> SOP (Term s) (PCode s a)
+pfrom = hfromI . from
 
 {- |
 Infrastructure to create a single sum constructor given its type index and value.

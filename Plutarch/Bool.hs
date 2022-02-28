@@ -20,8 +20,18 @@ module Plutarch.Bool (
 ) where
 
 import Data.Foldable (foldl')
-import Data.SOP.Constraint
-import Generics.SOP
+import Generics.SOP (
+  All,
+  All2,
+  HCollapse (hcollapse),
+  K (..),
+  NP,
+  Proxy (..),
+  SOP (..),
+  ccompare_NS,
+  hcliftA2,
+ )
+import Plutarch.DataRepr.Internal.Generic (PCode, PGeneric, pfrom)
 import Plutarch.Internal (punsafehoistAcyclic)
 import Plutarch.Internal.Other (
   DerivePNewtype,
@@ -39,7 +49,6 @@ import Plutarch.Internal.Other (
   (#),
   type (:-->),
  )
-import Plutarch.Internal.TypeFamily (ToPType2)
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstant,
@@ -65,32 +74,17 @@ instance PlutusType PBool where
 class PEq t where
   (#==) :: Term s t -> Term s t -> Term s PBool
   default (#==) ::
-    forall s code pcode.
-    ( code ~ Code (t s)
-    , pcode ~ ToPType2 code
-    , Generic (t s)
-    , PlutusType t
-    , All2 PEq pcode
-    , SameShapeAs code pcode
-    , SameShapeAs pcode code
-    , AllZipF (AllZip (LiftedCoercible I (Term s))) code pcode
-    ) =>
+    (PGeneric s t, PlutusType t, All2 PEq (PCode s t)) =>
     Term s t ->
     Term s t ->
     Term s PBool
   a #== b = peq' # a # b
-    where
 
 peq' ::
-  forall t s code pcode.
-  ( code ~ Code (t s)
-  , pcode ~ ToPType2 code
-  , Generic (t s)
+  forall t s.
+  ( PGeneric s t
   , PlutusType t
-  , All2 PEq pcode
-  , SameShapeAs code pcode
-  , SameShapeAs pcode code
-  , AllZipF (AllZip (LiftedCoercible I (Term s))) code pcode
+  , All2 PEq (PCode s t)
   ) =>
   Term s (t :--> t :--> PBool)
 peq' =
@@ -161,13 +155,10 @@ por' :: Term s (PBool :--> PBool :--> PBool)
 por' = phoistAcyclic $ plam $ \x y -> pif' # x # (pcon PTrue) # y
 
 gpeq ::
-  forall a s code pcode.
-  ( code ~ Code (a s)
-  , pcode ~ ToPType2 code
-  , All2 PEq pcode
-  ) =>
-  SOP (Term s) pcode ->
-  SOP (Term s) pcode ->
+  forall a s.
+  All2 PEq (PCode s a) =>
+  SOP (Term s) (PCode s a) ->
+  SOP (Term s) (PCode s a) ->
   Term s PBool
 gpeq (SOP c1) (SOP c2) =
   ccompare_NS (Proxy @(All PEq)) (pcon PFalse) eqProd (pcon PFalse) c1 c2
@@ -180,21 +171,3 @@ gpeq (SOP c1) (SOP c2) =
         eqTerm :: forall a. PEq a => Term s a -> Term s a -> K (Term s PBool) a
         eqTerm a b =
           K $ a #== b
-
-{- | Like `from` but for Plutarch terms
-
-  Instead of `I`, this uses `Term s` as the container type.
--}
-pfrom ::
-  forall a s code pcode.
-  ( Generic (a s)
-  , code ~ Code (a s)
-  , pcode ~ ToPType2 code
-  , SameShapeAs code pcode
-  , SameShapeAs pcode code
-  , AllZipF (AllZip (LiftedCoercible I (Term s))) code pcode
-  , All Top pcode
-  ) =>
-  a s ->
-  SOP (Term s) (ToPType2 (Code (a s)))
-pfrom = hfromI . from
