@@ -88,10 +88,12 @@ module Plutarch.Numeric (
   -- ** Fraction-related
 
   -- *** Haskell
+  Rat.ratio,
   Rat.numerator,
   Rat.denominator,
 
   -- *** Plutarch
+  Rat.pconRatio,
   Rat.pnumerator,
   Rat.pdenominator,
   Rat.pmatchRatio,

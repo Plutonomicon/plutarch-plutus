@@ -3,6 +3,8 @@
 module Plutarch.Numeric.Ratio (
   PRatio (..),
   Ratio (..),
+  ratio,
+  pconRatio,
   numerator,
   pnumerator,
   denominator,
@@ -12,7 +14,14 @@ module Plutarch.Numeric.Ratio (
 ) where
 
 import Data.Kind (Type)
-import Plutarch (DerivePNewtype (DerivePNewtype), PMatch (pmatch), S, Term)
+import Plutarch (
+  DerivePNewtype (DerivePNewtype),
+  PMatch (pmatch),
+  S,
+  Term,
+  pcon,
+  plet,
+ )
 import Plutarch.Bool (PEq ((#==)), (#&&))
 import Plutarch.Lift (
   PConstant (
@@ -23,8 +32,13 @@ import Plutarch.Lift (
   ),
   PUnsafeLiftDecl (PLifted),
  )
+import Plutarch.Numeric.Fractional (
+  Fractionable (findScale, unscale),
+  PFractionable (pfindScale, punscale),
+ )
 import Plutarch.Numeric.NZNatural (NZNatural (NZNatural), PNZNatural)
 import Plutarch.Pair (PPair (PPair))
+import Plutarch.Unsafe (punsafeCoerce)
 
 {- | Plutarch version of 'Ratio'.
 
@@ -43,6 +57,16 @@ instance (PEq a) => PEq (PRatio a) where
   {-# INLINEABLE (#==) #-}
   t #== t' = pmatchRatios t t' $ \num num' den den' ->
     (num #== num') #&& (den #== den')
+
+-- | @since 1.0
+pconRatio ::
+  forall (a :: S -> Type) (s :: S).
+  (PFractionable a) =>
+  Term s a ->
+  Term s PNZNatural ->
+  Term s (PRatio a)
+pconRatio num den = plet (pfindScale num den) $ \scaledown ->
+  punsafeCoerce . pcon $ PPair (punscale num scaledown) (punscale den scaledown)
 
 {- | A ratio whose numerator is the specified type.
 
@@ -71,6 +95,17 @@ instance (PConstant a) => PConstant (Ratio a) where
     | otherwise = case pconstantFromRepr num of
         Nothing -> Nothing
         Just num' -> Just . Ratio $ (num', NZNatural den)
+
+-- | @since 1.0
+ratio ::
+  forall (a :: Type).
+  (Fractionable a) =>
+  a ->
+  NZNatural ->
+  Ratio a
+ratio num den =
+  let scaledown = findScale num den
+   in Ratio (unscale num scaledown, unscale den scaledown)
 
 -- | @since 1.0
 numerator ::

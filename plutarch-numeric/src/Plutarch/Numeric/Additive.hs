@@ -5,15 +5,29 @@ module Plutarch.Numeric.Additive (
   AdditiveCMM (..),
 ) where
 
-import Plutarch (Term, plet, (#))
+import Data.Kind (Type)
+import Plutarch (S, Term, pcon, plet, (#))
 import Plutarch.Bool (pif, (#<=))
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (pconstant)
+import Plutarch.Numeric.Fractional (
+  Fractionable (scale),
+  PFractionable (pscale),
+ )
 import Plutarch.Numeric.NZNatural (NZNatural (NZNatural), PNZNatural)
 import Plutarch.Numeric.Natural (Natural (Natural), PNatural)
+import Plutarch.Numeric.Ratio (
+  PRatio,
+  Ratio (Ratio),
+  pconRatio,
+  pmatchRatio,
+  pmatchRatios,
+  ratio,
+ )
+import Plutarch.Pair (PPair (PPair))
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
-import Prelude hiding (negate, (+))
+import Prelude hiding (negate, (+), (-))
 import Prelude qualified
 
 {- | A commutative semigroup, meant to be morally equivalent to numerical
@@ -22,20 +36,10 @@ import Prelude qualified
  = Laws
 
  Formally, an instance of 'AdditiveSemigroup' must be a commutative semigroup
- with '+' as its operation. Furthermore, 'Additive' 'NZNatural' must be a
- right semigroup action, and 'Multiplicative' 'NZNatural' must translate to composition,
- both witnessed by 'scaleNZNatural'.
-
- This requires that '+' commutes and associates:
+ with '+' as its operation. This requires that '+' commutes and associates:
 
  * @x '+' y@ @=@ @y '+' x@
  * @(x '+' y) '+' z@ @=@ @x '+' (y '+' z)@
-
- Furthermore, 'scaleNZNatural' must follow these laws:
-
- * @'scaleNZNatural' x 'one'@ @=@ @x@
- * @'scaleNZNatural' x (n '+' m)@ @=@ @'scaleNZNatural' x n '+' 'scaleNZNatural' x m@
- * @'scaleNZNatural' x (n '*' m)@ @=@ @'scaleNZNatural' ('scaleNZNatural' x n) m@
 
  @since 1.0
 -}
@@ -45,26 +49,10 @@ class AdditiveSemigroup a where
   -- | @since 1.0
   (+) :: a -> a -> a
 
-{-
-  -- | This uses a default \'sum by squaring\' implementation. While this is
-  -- reasonably good by default, many types allow a more efficient
-  -- implementation; try and define one if you can.
-  --
-  -- @since 1.0
-  {-# INLINEABLE scaleNZNatural #-}
-  scaleNZNatural :: a -> NZNatural -> a
-  scaleNZNatural x (NZNatural n) = getAdditive . stimes n . Additive $ x
--}
-
 -- | @since 1.0
 instance AdditiveSemigroup Integer where
   {-# INLINEABLE (+) #-}
   (+) = (Prelude.+)
-
-{-
-{-# INLINEABLE scaleNZNatural #-}
-  scaleNZNatural i (NZNatural n) = i Prelude.* n
--}
 
 -- | @since 1.0
 deriving via Integer instance (AdditiveSemigroup Natural)
@@ -73,52 +61,42 @@ deriving via Integer instance (AdditiveSemigroup Natural)
 deriving via Integer instance (AdditiveSemigroup NZNatural)
 
 -- | @since 1.0
+instance
+  (Fractionable a, AdditiveSemigroup a) =>
+  AdditiveSemigroup (Ratio a)
+  where
+  {-# INLINEABLE (+) #-}
+  (+) = viaRatio (+)
+
+-- | @since 1.0
 instance AdditiveSemigroup (Term s PInteger) where
   {-# INLINEABLE (+) #-}
   x + y = punsafeBuiltin PLC.AddInteger # x # y
-
-{-
-{-# INLINEABLE scaleNZNatural #-}
-  scaleNZNatural i (NZNatural n) =
-    punsafeBuiltin PLC.MultiplyInteger # i # pconstant n
--}
 
 -- | @since 1.0
 instance AdditiveSemigroup (Term s PNatural) where
   {-# INLINEABLE (+) #-}
   x + y = punsafeBuiltin PLC.AddInteger # x # y
 
-{-
-{-# INLINEABLE scaleNZNatural #-}
-  scaleNZNatural i (NZNatural n) =
-    punsafeBuiltin PLC.MultiplyInteger # i # pconstant n
--}
+-- | @since 1.0
+instance
+  (PFractionable a, AdditiveSemigroup (Term s a)) =>
+  AdditiveSemigroup (Term s (PRatio a))
+  where
+  {-# INLINEABLE (+) #-}
+  (+) = viaPRatio (+)
 
 -- | @since 1.0
 instance AdditiveSemigroup (Term s PNZNatural) where
   {-# INLINEABLE (+) #-}
   x + y = punsafeBuiltin PLC.AddInteger # x # y
 
-{-
-  {-# INLINEABLE scaleNZNatural #-}
-  scaleNZNatural i (NZNatural n) =
-    punsafeBuiltin PLC.MultiplyInteger # i # pconstant n
--}
-
 {- | An 'AdditiveSemigroup' extended with a notion of zero.
 
  = Laws
 
  Formally, an instance of 'AdditiveMonoid' must be a commutative monoid with
- 'zero' as its identity. Furthermore, it must form a left-'Natural'
- semimodule, witnessed by 'scaleNatural', which must be an extension of the
- right semigroup action described by 'scaleNZNatural' for nonzero actions.
-
- This requires that @'zero' '+' x = x '+' 'zero' = x@. Furthermore,
- 'scaleNatural' must follow these laws:
-
- * If @'Just' m = 'removeZero' n@, then @'scaleNatural' x n = 'scaleNZNatural' x m@.
- * @'scaleNatural' x 'zero'@ @=@ @'zero'@
+ 'zero' as its identity. This requires that @'zero' '+' x = x '+' 'zero' = x@.
 
  @since 1.0
 -}
@@ -128,73 +106,56 @@ class (AdditiveSemigroup a) => AdditiveMonoid a where
   -- | @since 1.0
   zero :: a
 
-{-
-  -- | This uses a default \'sum by squaring\' implementation. While this is
-  -- reasonably good by default, many types allow a more efficient
-  -- implementation; try and define one if you can.
-  --
-  -- @since 1.0
-  {-# INLINEABLE scaleNatural #-}
-  scaleNatural :: a -> Natural -> a
-  scaleNatural x (Natural n) = getAdditive . stimesMonoid n . Additive $ x
--}
-
 -- | @since 1.0
 instance AdditiveMonoid Integer where
   {-# INLINEABLE zero #-}
   zero = 0
 
-{-
-{-# INLINEABLE scaleNatural #-}
-  scaleNatural i (Natural n) = i Prelude.* n
--}
-
 -- | @since 1.0
 deriving via Integer instance (AdditiveMonoid Natural)
+
+-- | @since 1.0
+instance
+  (Fractionable a, AdditiveMonoid a) =>
+  AdditiveMonoid (Ratio a)
+  where
+  {-# INLINEABLE zero #-}
+  zero = Ratio (zero, NZNatural 1)
 
 -- | @since 1.0
 instance AdditiveMonoid (Term s PInteger) where
   {-# INLINEABLE zero #-}
   zero = pconstant 0
 
-{-
-{-# INLINEABLE scaleNatural #-}
-  scaleNatural i n = punsafeBuiltin PLC.MultiplyInteger # i # pconstant n
--}
-
 -- | @since 1.0
 instance AdditiveMonoid (Term s PNatural) where
   {-# INLINEABLE zero #-}
   zero = pconstant . Natural $ 0
 
-{-
-{-# INLINEABLE scaleNatural #-}
-  scaleNatural i n = punsafeBuiltin PLC.MultiplyInteger # i # pconstant n
--}
+-- | @since 1.0
+instance
+  (PFractionable a, AdditiveMonoid (Term s a)) =>
+  AdditiveMonoid (Term s (PRatio a))
+  where
+  {-# INLINEABLE zero #-}
+  zero =
+    punsafeCoerce . pcon $
+      PPair
+        (zero :: Term s a)
+        (punsafeCoerce (1 :: Term s PInteger))
 
 {- | An 'AdditiveMonoid' extended with a notion of negation.
 
  = Laws
 
  Formally, an instance of 'AdditiveGroup' must be an abelian group with
- 'negate' as its inverse-constructing operation. Furthermore, it must form a
- left-'Integer' semimodule, witnessed by 'scaleInteger', which must be an
- extension of the left-'Natural' semimodule witnessed by 'scaleNatural' for
- non-negative elements.
-
- This requires that @x '+' 'negate' x = 'zero'@ and @x '-' y = x '+'
- 'negate' y@; the second of these is the default implementation of '-'.
- Furthermore, we must have:
-
- * If @'Just' m = 'toNatural' n@, then @'scaleInteger' x n
- = 'scaleNatural' x m@.
- * If @'toNatural' n = 'Nothing'@, then @'scaleInteger'
- x n = 'negate' '.' 'scaleInteger' x . 'abs' '$' n@.
+ 'negate' as its inverse-constructing operation. This requires that @x '+'
+ 'negate' x = 'zero'@ and @x '-' y = x '+' 'negate' y@.
 
  @since 1.0
 -}
 class (AdditiveMonoid a) => AdditiveGroup a where
-  {-# MINIMAL negate #-}
+  {-# MINIMAL negate | (-) #-}
 
   -- | @since 1.0
   (-) :: a -> a -> a
@@ -202,17 +163,7 @@ class (AdditiveMonoid a) => AdditiveGroup a where
 
   -- | @since 1.0
   negate :: a -> a
-
-{-
-  -- | This uses a default \'sum by squaring\' implementation. While this is
-  -- reasonably good by default, many types allow a more efficient
-  -- implementation; try and define one if you can.
-  --
-  -- @since 1.0
-  {-# INLINEABLE scaleInteger #-}
-  scaleInteger :: a -> Integer -> a
-  scaleInteger x i = getAdditive . gtimes i . Additive $ x
--}
+  negate x = zero - x
 
 -- | @since 1.0
 instance AdditiveGroup Integer where
@@ -221,10 +172,15 @@ instance AdditiveGroup Integer where
   {-# INLINEABLE negate #-}
   negate = Prelude.negate
 
-{-
-{-# INLINEABLE scaleInteger #-}
-scaleInteger = (Prelude.*)
--}
+-- | @since 1.0
+instance
+  (Fractionable a, AdditiveGroup a) =>
+  AdditiveGroup (Ratio a)
+  where
+  {-# INLINEABLE (-) #-}
+  (-) = viaRatio (-)
+  {-# INLINEABLE negate #-}
+  negate (Ratio (num, den)) = Ratio (negate num, den)
 
 -- | @since 1.0
 instance AdditiveGroup (Term s PInteger) where
@@ -233,10 +189,16 @@ instance AdditiveGroup (Term s PInteger) where
   {-# INLINEABLE negate #-}
   negate = Prelude.negate
 
-{-
-{-# INLINEABLE scaleInteger #-}
-scaleInteger x i = x Prelude.* pconstant i
--}
+-- | @since 1.0
+instance
+  (PFractionable a, AdditiveGroup (Term s a)) =>
+  AdditiveGroup (Term s (PRatio a))
+  where
+  {-# INLINEABLE (-) #-}
+  (-) = viaPRatio (-)
+  {-# INLINEABLE negate #-}
+  negate t = pmatchRatio t $ \num den ->
+    punsafeCoerce . pcon $ PPair (negate num) den
 
 {- | Extends an 'AdditiveMonoid' with a notion of \'difference-or-zero\'.
 
@@ -262,9 +224,48 @@ instance AdditiveCMM Natural where
   Natural n ^- Natural n' = Natural . max 0 $ n Prelude.- n'
 
 -- | @since 1.0
+instance (Fractionable a, AdditiveCMM a) => AdditiveCMM (Ratio a) where
+  {-# INLINEABLE (^-) #-}
+  (^-) = viaRatio (^-)
+
+-- | @since 1.0
 instance AdditiveCMM (Term s PNatural) where
   {-# INLINEABLE (^-) #-}
   t ^- t' =
     plet
       (punsafeBuiltin PLC.SubtractInteger # t # t')
       (\(t'' :: Term s PInteger) -> pif (zero #<= t'') (punsafeCoerce t'') zero)
+
+-- | @since 1.0
+instance
+  (PFractionable a, AdditiveCMM (Term s a)) =>
+  AdditiveCMM (Term s (PRatio a))
+  where
+  {-# INLINEABLE (^-) #-}
+  (^-) = viaPRatio (^-)
+
+-- Helpers
+
+viaRatio ::
+  forall (a :: Type).
+  (Fractionable a) =>
+  (a -> a -> a) ->
+  Ratio a ->
+  Ratio a ->
+  Ratio a
+viaRatio f (Ratio (num, den)) (Ratio (num', den')) =
+  let newDen = scale den den'
+      newNum = f (scale num den') (scale num' den)
+   in ratio newNum newDen
+
+viaPRatio ::
+  forall (a :: S -> Type) (s :: S).
+  (PFractionable a) =>
+  (Term s a -> Term s a -> Term s a) ->
+  Term s (PRatio a) ->
+  Term s (PRatio a) ->
+  Term s (PRatio a)
+viaPRatio f t t' = pmatchRatios t t' $ \num num' den den' ->
+  plet (pscale den den') $ \newDen ->
+    plet (f (pscale num den') (pscale num' den)) $ \newNum ->
+      pconRatio newNum newDen
