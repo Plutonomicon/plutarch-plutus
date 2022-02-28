@@ -13,7 +13,7 @@ module Plutarch.Internal (
   pdelay,
   pforce,
   phoistAcyclic,
-  punsafehoistAcyclic,
+  punsafeAsClosedTerm,
   perror,
   punsafeCoerce,
   punsafeBuiltin,
@@ -327,11 +327,8 @@ phoistAcyclic t = case asRawTerm t 0 of
        in Term $ \_ -> TermResult (RHoisted hoisted) (hoisted : getDeps t')
     (Left e, _, _) -> error $ "Hoisted term errs! " <> show e
 
-punsafehoistAcyclic :: HasCallStack => Term s a -> Term s a
-punsafehoistAcyclic t = phoistAcyclic $ unsafeClosedTerm t
-
-unsafeClosedTerm :: Term s a -> ClosedTerm a
-unsafeClosedTerm (Term t) = (Term t)
+punsafeAsClosedTerm :: forall s a. Term s a -> ClosedTerm a
+punsafeAsClosedTerm (Term t) = (Term t)
 
 -- Couldn't find a definition for this in plutus-core
 subst :: Word64 -> (Word64 -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun () -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()

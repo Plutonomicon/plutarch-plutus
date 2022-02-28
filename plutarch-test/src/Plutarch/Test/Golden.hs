@@ -34,7 +34,7 @@ import Test.Syd (
 
 import Plutarch (ClosedTerm, compile, printScript)
 import Plutarch.Evaluate (evalScript)
-import Plutarch.Internal (Term (Term))
+import Plutarch.Internal (punsafeAsClosedTerm)
 import Plutarch.Prelude
 import Plutarch.Test.Benchmark (Benchmark, mkBenchmark, scriptSize)
 import Plutarch.Test.ListSyntax (ListSyntax, listSyntaxAdd, listSyntaxAddSubList, runListSyntax)
@@ -68,11 +68,7 @@ mkGoldenValue' p mexp =
 -- `ClosedTerm a`. In practice, this instance should be used only for closed
 -- terms.
 instance HasGoldenValue Term where
-  mkGoldenValue p = mkGoldenValue' (unsafeClosedTerm p) Nothing
-
--- Because, we need a function with this signature.
-unsafeClosedTerm :: Term s a -> ClosedTerm a
-unsafeClosedTerm (Term t) = (Term t)
+  mkGoldenValue p = mkGoldenValue' (punsafeAsClosedTerm p) Nothing
 
 {- | A `Term` paired with its evaluation expectation
 
@@ -85,12 +81,12 @@ type TermExpectation a = forall s. TermExpectation' s a
 
 -- | Test an expectation on a golden Plutarch program
 (@->) :: ClosedTerm a -> (ClosedTerm a -> Expectation) -> TermExpectation a
-(@->) p f = TermExpectation p (\p' -> f $ unsafeClosedTerm p')
+(@->) p f = TermExpectation p (\p' -> f $ punsafeAsClosedTerm p')
 
 infixr 1 @->
 
 instance HasGoldenValue TermExpectation' where
-  mkGoldenValue (TermExpectation p f) = mkGoldenValue' (unsafeClosedTerm p) (Just $ f p)
+  mkGoldenValue (TermExpectation p f) = mkGoldenValue' (punsafeAsClosedTerm p) (Just $ f p)
 
 -- | The key used in the .golden files containing multiple golden values
 newtype GoldenKey = GoldenKey Text

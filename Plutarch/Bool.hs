@@ -32,7 +32,7 @@ import Generics.SOP (
   hcliftA2,
  )
 import Plutarch.DataRepr.Internal.Generic (PCode, PGeneric, pfrom)
-import Plutarch.Internal (punsafehoistAcyclic)
+import Plutarch.Internal (punsafeAsClosedTerm)
 import Plutarch.Internal.Other (
   DerivePNewtype,
   PDelayed,
@@ -149,11 +149,12 @@ gpeq ::
   ) =>
   Term s (t :--> t :--> PBool)
 gpeq =
-  punsafehoistAcyclic $
-    plam $ \x y ->
-      pmatch x $ \x' ->
-        pmatch y $ \y' ->
-          gpeq' @t (pfrom x') (pfrom y')
+  phoistAcyclic $
+    punsafeAsClosedTerm @s $
+      plam $ \x y ->
+        pmatch x $ \x' ->
+          pmatch y $ \y' ->
+            gpeq' @t (pfrom x') (pfrom y')
 
 gpeq' ::
   forall a s.
