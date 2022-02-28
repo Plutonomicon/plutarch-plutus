@@ -57,31 +57,29 @@ Left (EvaluationError [] "(CekEvaluationFailure,Nothing)")
 
 ```hs
 -- NOTE: REQUIRES GHC 9!
+{-# LANGUAGE QualifiedDo #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 
 import Plutarch.Prelude
 import Plutarch.Api.V1.Contexts
 import Plutarch.Api.V1.Crypto
 import Plutarch.Api.V1.Scripts
-
-pmatchC :: PlutusType a => Term s a -> TermCont s (a s)
-pmatchC = tcont . pmatch
+import qualified Plutarch.Monadic as P
 
 checkSignatory :: Term s (PPubKeyHash :--> PAsData PDatum :--> PAsData PRedeemer :--> PAsData PScriptContext :--> PUnit)
-checkSignatory = plam $ \ph _ _ ctx' -> unTermCont $ do
-  ctx <- tcont $ pletFields @["txInfo", "purpose"] ctx'
-  PSpending _ <- pmatchC ctx.purpose
+checkSignatory = plam $ \ph _ _ ctx' -> P.do
+  ctx <- pletFields @["txInfo", "purpose"] ctx'
+  PSpending _ <- pmatch ctx.purpose
   let signatories = pfield @"signatories" # ctx.txInfo
-  pure $
-    pif
-      (pelem # pdata ph # pfromData signatories)
-      -- Success!
-      (pconstant ())
-      -- Signature not present.
-      perror
+  pif
+    (pelem # pdata ph # pfromData signatories)
+    -- Success!
+    (pconstant ())
+    -- Signature not present.
+    perror
 ```
 
-> Note: The above snippet uses GHC 9 features (`OverloadedRecordDot`). Be sure to check out [alternatives to `OverloadedRecordDot`](./../TYPECLASSES.md#alternatives-to-overloadedrecorddot).
+> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `OverloadedRecordDot`). Be sure to check out [Do syntax with `TermCont`](./../Usage/Do%20syntax%20with%20TermCont.md) [alternatives to `OverloadedRecordDot`](./../Typeclasses/PIsDataRepr%20and%20PDataFields.md#alternatives-to-overloadedrecorddot).
 
 We match on the script purpose to see if its actually for _spending_ - and we get the signatories field from `txInfo` (the 7th field), check if the given pub key hash is present within the signatories and that's it!
 
@@ -123,4 +121,4 @@ Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf unit ()))))
 
 # Using custom datum/redeemer in your Validator
 
-All you have to do is [implement `PIsDataRepr` and friends](./../TYPECLASSES.md#implementing-pisdatarepr-and-friends) for your custom datum/redeemer and you can use it just like `PScriptContext` in your validators!
+All you have to do is [implement `PIsDataRepr` and friends](./../Typeclasses/PIsDataRepr%20and%20PDataFields.md#implementing-pisdatarepr-and-friends) for your custom datum/redeemer and you can use it just like `PScriptContext` in your validators!

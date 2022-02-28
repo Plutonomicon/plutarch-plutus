@@ -74,6 +74,6 @@ Relevant issue: [#252](https://github.com/Plutonomicon/plutarch/issues/252)
 
 You might get nonsensical "Couldn't match type" errors when extracting fields. This has to do with GHC incorrectly inferring the return type. Field extraction is meant to be polymorphic in its return type in the sense that it might either return a `Term s (PAsData p)` term, or simply a `Term s p` (automatic `pfromData`). Unfortunately, sometimes this polymorphism makes it harder for GHC to infer the types.
 
-You can fix this by providing an explicit type annotation on *the result* of `pfield` or `hrecField` (or `OverloadedRecordDot` for field access). Otherwise, you can also explicitly use `pfromData` on the result.
+You can fix this by providing an explicit type annotation on _the result_ of `pfield` or `hrecField` (or `OverloadedRecordDot` for field access). Otherwise, you can also explicitly use `pfromData` on the result.
 
 Relevant issue: [#275](https://github.com/Plutonomicon/plutarch/issues/275)
