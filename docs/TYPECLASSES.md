@@ -593,13 +593,13 @@ import Plutarch.Prelude
 import Plutarch.Api.V1.Contexts
 
 foo :: Term s (PScriptContext :--> PUnit)
-foo = plam $ \ctx' -> do
+foo = plam $ \ctx' -> unTermCont $ do
   ctx <- tcont $ pletFields @["txInfo", "purpose"] ctx'
   let
     purpose = ctx.purpose
     txInfo = ctx.txInfo
   -- <use purpose and txInfo here>
-  pconstant ()
+  return $ pconstant ()
 ```
 
 > Note: The above snippet uses GHC 9 features (`OverloadedRecordDot`). Be sure to check out [alternatives to `OverloadedRecordDot`](#alternatives-to-overloadedrecorddot).

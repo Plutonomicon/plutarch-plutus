@@ -5,50 +5,19 @@ This document describes various core Plutarch usage concepts.
 <details>
 <summary> Table of Contents </summary>
 
-- [Applying functions](#applying-functions)
 - [Conditionals](#conditionals)
 - [Recursion](#recursion)
 - [Do syntax with `TermCont`](#do-syntax-with-termcont)
 - [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](#do-syntax-with-qualifieddo-and-plutarchmonadic)
 - [Deriving typeclasses for `newtype`s](#deriving-typeclasses-for-newtypes)
 - [Deriving typeclasses with generics](#deriving-typeclasses-with-generics)
+- [`plet` to avoid work duplication](#plet-to-avoid-work-duplication)
+- [Tracing](#tracing)
+- [Raising errors](#raising-errors)
+- [Unsafe functions](#unsafe-functions)
 
 </details>
 
-# Applying functions
-
-You can apply Plutarch level functions using `#` and `#$` (or `papp`). Notice the associativity and precedence of those operators:
-
-```haskell
-infixl 8 #
-
-infixr 0 #$
-```
-
-`#$` is pretty much just `$` for Plutarch functions. But `#` is left associative and has a high precedence. This essentially means that the following:
-
-```haskell
-f # 1 # 2
-
--- f :: Term s (PInteger :--> PInteger :--> PUnit)
-```
-
-applies `f` to 1 and 2. i.e. it is parsed as - `((f 1) 2)`
-
-Whereas, the following:
-
-```haskell
-f #$ foo # 1
-
--- f :: Term s (PBool :--> PUnit)
--- foo :: Term s (PInteger :--> PBool)
-```
-
-applies `foo` to `1` and applies the result of that to `f`.
-
-> Aside: Remember that function application here is **strict**. The arguments _will be evaluated_ and then passed in.
-
-> Rule of thumb: If you see `#` - you can quickly infer that a Plutarch level function is being applied and the arguments will be evaluated. Haskell level functions still have their usual semantics, which is why `pif` doesn't evaluate both branches. (if you want, you can use `pif'` - which is a Plutarch level function and therefore strict)
 
 # Conditionals
 
@@ -82,6 +51,8 @@ fix :: ((a -> b) -> (a -> b)) -> (a -> b)
 
 The first argument is "self", or the function you want to recurse with.
 
+The below example implements a Plutarch-level factorial function:
+
 ```haskell
 import Plutarch.Prelude
 
@@ -93,7 +64,7 @@ pfac = pfix #$ plam f
 -- (ignore the existence of non positives :D)
 ```
 
-There's a Plutarch level factorial function! Note how `f` takes in a `self` and just recurses on it. All you have to do, is create a Plutarch level function by using `plam` on `f` and `pfix` the result - and that `self` argument will be taken care of for you.
+Note how `f` takes in a `self` and just recurses on it. All you have to do, is create a Plutarch level function by using `plam` on `f` and `pfix` the result - and that `self` argument will be taken care of for you.
 
 # Do syntax with `TermCont`
 
@@ -254,3 +225,40 @@ Currently, generic deriving supports the following typeclasses:
 
 - [`PlutusType`](./TYPECLASSES.md#implementing-plutustype-for-your-own-types-scott-encoding) (Scott encoding only)
 - [`PIsDataRepr`](./TYPECLASSES.md#implementing-pisdatarepr-and-friends)
+
+# `plet` to avoid work duplication
+
+Sometimes, when writing Haskell level functions working on Plutarch terms, you may find yourself needing to re-use the Haskell level function's argument(s) multiple times:
+
+```hs
+foo :: Term s PString -> Term s PString
+foo x = x <> x
+```
+
+In such cases, you should use `plet` on the argument to [avoid duplicating work](./TRICKS.md#dont-duplicate-work).
+
+
+# Tracing
+
+You can use the functions `ptrace`, `ptraceError`, `ptraceIfFalse`, `ptraceIfTrue` (from `Plutarch.Trace` or `Plutarch.Prelude`) for tracing. These behave similarly to the ones you're used to from [PlutusTx](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Trace.html).
+
+If you have the `development` flag for `plutarch` turned on - you'll see the trace messages appear in the trace log during script evaluation. When not in development mode - these functions basically do nothing.
+
+# Raising errors
+
+In PlutusTx, you'd signal validation failure with the [`error`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Prelude.html#v:error) function. You can do the same in Plutarch using `perror`.
+
+```hs
+fails :: Term s (PData :--> PData :--> PData :--> PUnit)
+fails = plam $ \_ _ _ -> perror
+```
+
+# Unsafe functions
+
+There are internal functions such as `punsafeCoerce`, `punsafeConstant` etc. that give you terms without their specific type. These **should not** be used by Plutarch users. It is the duty of the user of these unsafe functions to get the type right - and it is very easy to get the type wrong. You can easily make the type system believe you're creating a `Term s PInteger`, when in reality, you created a function.
+
+Things will go very wrong during script evaluation if you do that kind of thing.
+
+The good thing is that unsafe functions all have explicit indicators through the names, as long as you don't use any `punsafe*` functions - you should be fine!
+
+Of course, these have legitimate use cases. Most often, we use these functions to convert between types that _truly_ have the same internal representation in UPLC - but the type system simply isn't expressive enough to infer that.
