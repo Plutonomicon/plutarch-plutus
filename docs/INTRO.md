@@ -1,23 +1,22 @@
 > Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high-quality documentation for Plutarch users!
 
 <details>
- 
+
 <summary> Table of Contents </summary>
- 
+
 - [Overview](#overview)
 - [Untyped Plutus Core (UPLC)](#untyped-plutus-core-uplc)
 - [Plutarch Types](#plutarch-types)
 - [Plutarch `Term`s](#plutarch-terms)
-  * [Plutarch Constant `Term`s](#plutarch-constant-terms)
-    + [Static building of constant `Term`s with `pconstant`](#static-building-of-constant-terms-with-pconstant)
-    + [Dynamic building of constant `Term`s with `pcon`](#dynamic-building-of-constant-terms-with-pcon)
-      - [Pattern matching `Term`s on `PType`s with `pmatch`.](#pattern-matching-terms-on-ptypes-with-pmatch)
-      - [`class (PCon a, PMatch a) => PlutusType (a :: PType)` -- with a default instance.](#class-pcon-a-pmatch-a--plutustype-a--ptype----with-a-default-instance)
-    + [Overloaded literals](#overloaded-literals)
-    + [Helper functions](#helper-functions)
-  * [Lambdas; Plutarch-level Function `Term`s.](#lambdas-plutarch-level-function-terms)
-    + [Function Application](#function-application)
-    + [Strictness and Laziness; Delayed Terms and Forcing](#strictness-and-laziness-delayed-terms-and-forcing)
+- [Plutarch Constant `Term`s](#plutarch-constant-terms)
+  - [Static building of constant `Term`s with `pconstant`](#static-building-of-constant-terms-with-pconstant)
+  - [Dynamic building of constant `Term`s with `pcon`](#dynamic-building-of-constant-terms-with-pcon)
+  - [Overloaded literals](#overloaded-literals)
+  - [Helper functions](#helper-functions)
+- [Pattern matching constant `Term`s with `pmatch`.](#pattern-matching-constant-terms-with-pmatch)
+- [Lambdas; Plutarch-level Function `Term`s.](#lambdas-plutarch-level-function-terms)
+  - [Function Application](#function-application)
+- [Strictness and Laziness; Delayed Terms and Forcing](#strictness-and-laziness-delayed-terms-and-forcing)
 - [References](#references)
 
 </details>
@@ -26,11 +25,11 @@
 
 Plutarch is an eDSL in Haskell for writing on-chain scripts for Cardano. With some caveats, Plutarch is a [simply-typed lambda calculus](https://en.wikipedia.org/wiki/Simply_typed_lambda_calculus) (or STLC). Writing a script in Plutarch allows us to leverage the language features provided by Haskell while retaining the ability to compile to compact Untyped Plutus Core (or UPLC, which is an untyped lambda calculus).
 
-When we talk about "Plutarch scripts," we are referring to values of type `Term (s :: S) (a :: PType)`. `Term` is a `newtype` wrapper around a more complex type, the details of which Plutarch end-users can ignore. A `Term` is a typed lambda term; it can be thought of as representing a not-yet-evaluated computation that, if successfully evaluated, will return a value of type `a`. 
+When we talk about "Plutarch scripts," we are referring to values of type `Term (s :: S) (a :: PType)`. `Term` is a `newtype` wrapper around a more complex type, the details of which Plutarch end-users can ignore. A `Term` is a typed lambda term; it can be thought of as representing a computation that, if successfully evaluated, will return a value of type `a`.
 
-The two type variables of the `Term s a` declaration have particular kinds: 
+The two type variables of the `Term s a` declaration have particular kinds:
 
-- `s :: S` is like the `s` of `ST s a`. It represents the computation context in a manner that mimics mutable state while providing a familiar functional interface. Sections 1 through 4 of [[1]](#references) give an accessible introduction to how this works. `s` is never instantiated with a concrete value; it is merely a type-level way to ensure that computational contexts remain properly encapsulated (i.e., different state threads don't interact). For more in-depth coverage of this and other eDSL design principles used in Plutarch, see [[2]](#references).
+- `s :: S` is like the `s` of `ST s a`. It represents the computation context in a manner that mimics mutable state while providing a familiar functional interface. Sections 1 through 4 of \[[1](#references)] give an accessible introduction to how this works. `s` is never instantiated with a concrete value; it is merely a type-level way to ensure that computational contexts remain properly encapsulated (i.e., different state threads don't interact). For more in-depth coverage of this and other eDSL design principles used in Plutarch, see \[[2](#references)].
 - `a :: PType` is short-hand for "Plutarch Type". We prefix these types with a capital `P`, such as `PInteger`, `PBool`, and so forth. _Tagging_ a `Term` with a `PType` indicates the type of the `Term`'s return value. Doing this allows us to bridge between the simple type system of Plutarch and the untyped UPLC.
 
 Note that we _should not_ think of a type of kind `PType` as carrying a value; it is a tag for a computation that may produce a value. For instance, the definition of `PInteger` is simply
@@ -49,46 +48,44 @@ In brief, when writing Plutarch scripts, we have a few tasks:
 - B.) Working with _Plutarch `Terms`_, which are values of the type `Term (s :: S) (a :: PType)`. These are the Plutarch scripts themselves, from which we build up more complex scripts before compiling and executing them on-chain.
 - C.) Writing Haskell-level functions _between Plutarch Terms_ (i.e., with types like `Term s a -> Term s b`). Doing so allows us to leverage Haskell's language features and ecosystem.
 - D.) Efficiently Converting the functions from _(C.)_ to _Plutarch-level functions_, which are of the type `Term s (a :--> b)`. We can _directly_ convert the functions from (C.) to Plutarch-level functions at the most naive level using `plam`. Additional Plutarch utilities provide for optimization opportunities.
-- E.) Compiling and executing the functions from _(D.)_, targetting UPLC for on-chain usage. 
+- E.) Compiling and executing the functions from _(D.)_, targetting UPLC for on-chain usage.
 
 As a preview, the bridge Plutarch provides between Haskell and UPLC looks something like this:
 
-```
-------------------------------------------------------
-|                  *Haskell World*                   |
-------------------------------------------------------
-| Values with types like `Bool`, `Integer`, `Maybe a`|
-------------------------------------------------------
-                           ^                     | 
- (functions like `plift`)--|                     |--(functions like `pconstant`) 
-                           |                     |
-                           |                     v         (`pcon`)
--------------------------------------------------------    |                     -------------------------------------------------------
-|                  *Plutarch Term World*              | <----------------------- |                  *Plutarch Type World*              |
--------------------------------------------------------                          -------------------------------------------------------
-| STLC terms; constants like `Term s PInteger` and    | -----------------------> | Types like `PInteger`, `PMaybe a`                   |
-| lambdas like `Term s (PInteger :--> PBool)`         |        |                 |                                                     |
--------------------------------------------------------        (`pmatch`)       -------------------------------------------------------
-                              |
-                              |
-                              |--(`compile`)
-                              |
-                              |
-                              v
--------------------------------------------------------
-|                    *UPLC World*                     |
--------------------------------------------------------
-| Untyped lambda calculus terms. Values of type `Data`|
-|                                                     |
--------------------------------------------------------
-```
+    ------------------------------------------------------
+    |                  *Haskell World*                   |
+    ------------------------------------------------------
+    | Values with types like `Bool`, `Integer`, `Maybe a`|
+    ------------------------------------------------------
+                               ^                     |
+     (functions like `plift`)--|                     |--(functions like `pconstant`)
+                               |                     |
+                               |                     v         (`pcon`)
+    -------------------------------------------------------    |                     -------------------------------------------------------
+    |                  *Plutarch Term World*              | <----------------------- |                  *Plutarch Type World*              |
+    -------------------------------------------------------                          -------------------------------------------------------
+    | STLC terms; constants like `Term s PInteger` and    | -----------------------> | Types like `PInteger`, `PMaybe a`                   |
+    | lambdas like `Term s (PInteger :--> PBool)`         |        |                 |                                                     |
+    -------------------------------------------------------        (`pmatch`)       -------------------------------------------------------
+                                  |
+                                  |
+                                  |--(`compile`)
+                                  |
+                                  |
+                                  v
+    -------------------------------------------------------
+    |                    *UPLC World*                     |
+    -------------------------------------------------------
+    | Untyped lambda calculus terms. Values of type `Data`|
+    |                                                     |
+    -------------------------------------------------------
 
 Further, you may notice two general categories of functions in Plutarch: "Haskell-level" functions between terms, and "Plutarch-level"
 functions _as_ lambda terms. By convention, we will prefix the Haskell-level functions with `h` and the Plutarch-level lambdas
 with `p`, for example
 
 ```hs
--- This example is listed here as a preview; the unfamiliar parts will 
+-- This example is listed here as a preview; the unfamiliar parts will
 -- be detailed below.
 
 -- A Plutarch-level lambda term
@@ -109,28 +106,28 @@ Plutarch compiles to UPLC. Most Plutarch end-users will not need to concern them
 
 Unlike Haskell, UPLC is a low-level and untyped language implementing a basic lambda calculus. Consequently, it supports only a handful of built-in values and functions which may be strung together in lambda applications. The built-in types provided by UPLC include the usual primitive types -- integers, byte strings and strings, booleans, and so forth -- and a special `Data` value that can encode representations of arbitrary sum-of-products Haskell types.
 
-While the _semantic_ meaning of a Haskell type such as `Maybe Integer` is missing in UPLC, it still can be _represented_ in UPLC through certain [encodings](./CONCEPTS.md#data-encoding-and-scott-encoding]. These encodings are the aformentioned `Data` builtin, which can be used to represent arbitrary types in on-chain components such as Datum and Redeemers as well as Scott Encoding, which can additionally encode function types but cannot be used in Datums or Redeemers. The key idea is that UPLC doesn't track what differentiates semantically distinct values, regardless of their encoding, and will not prevent a programmer from operating on the underlying representation in non-sensical ways. 
+While the _semantic_ meaning of a Haskell type such as `Maybe Integer` is missing in UPLC, it still can be _represented_ in UPLC through certain [encodings](./CONCEPTS.md#data-encoding-and-scott-encoding). The aforementioned `Data` encoding can be used to represent arbitrary types in on-chain components such as Datum and Redeemers. On the other hand Scott Encoding can additionally encode function types but cannot be used in Datums or Redeemers. The key idea is that UPLC doesn't track what differentiates semantically distinct values, regardless of their encoding, and will not prevent a programmer from operating on the underlying representation in non-sensical ways.
 
-Plutarch's solution is to _tag_ scripts that compile to UPLC (i.e., Plutarch ` Term`s) with types. Doing so allows the Plutarch compiler to track and type check operations on semantically distinct UPLC values. These tags are provided by "Plutarch Types", or "types of kind `PType`". 
+Plutarch's solution is to _tag_ scripts that compile to UPLC (i.e., Plutarch `Term`s) with types. Doing so allows the Plutarch compiler to track and type check operations on semantically distinct UPLC values. These tags are provided by "Plutarch Types", or "types of kind `PType`".
 
 For the Plutarch compiler to bridge between arbitrary, semantically-rich Haskell types and the untyped values of UPLC, it is necessary to associate various bits of information with `PType`s. On the one hand, each `PType` should have some semantic, type-level richness such as typeclass instances (otherwise, there would be little point in programming in Haskell!). On the other hand, each `PType` needs to have a UPLC representation, either as a built-in primitive value,`Data`, or as a Scott-encoded lambda, in order to compile to UPLC.
 
 # Plutarch Types
 
-When this guide uses the term "Plutarch Type," we explicitly talk about a type of _kind_ `PType`. We will refer to  _" types of kind `PType` "_ simply as" `PType`s." We explicitly qualify when referring to the _kind_ `PType`.
+When this guide uses the term "Plutarch Type" we explicitly talk about a type of _kind_ `PType`. We will refer to  _" types of kind `PType` "_ simply as `PType`s. We explicitly qualify when referring to the _kind_ `PType`.
 
-> Note to beginners: Plutarch uses a language extension called `DataKinds`. This means that there are kinds beyond `*`. When using `DataKinds`, the kind `Type` is equivalent to the familiar `*` kind; additional named kinds may appear as well. We refer the read to [[3]](#references) for an extended beginner-level introduction to these concepts if desired.
+> Note to beginners: Plutarch uses a language extension called `DataKinds`. This means that there are kinds beyond `Type` (aka `*`). We refer the read to \[[3](#references)] for an extended beginner-level introduction to these concepts if desired.
 
-`PType` is defined as `type PType = S -> Type`; that is, it is a _kind synonym_ for `S -> Type` (where `S` and `Type` are themselves kinds). This synonym is important to keep in mind because when querying the kind of something like `PBool` in, say, GHCi, we will _not_ see `PType` as the kind. Instead, we get 
+`PType` is defined as `type PType = S -> Type`; that is, it is a _kind synonym_ for `S -> Type` (where `S` and `Type` are themselves kinds). This synonym is important to keep in mind because when querying the kind of something like `PBool` in, say, GHCi, we will _not_ see `PType` as the kind. Instead, we get
 
 ```hs
 ghci> :k PBool
 PBool :: S -> Type
 ```
 
-Thus, any time we see the kind `S -> Type`, we should mentally substitute its kind synonym `PType`. We reiterate: types of kind `PType`, should be considered as _tags_ on computation. They do not represent types of values in the same way as standard Haskell types. 
+Thus, any time we see the kind `S -> Type`, we should mentally substitute its kind synonym `PType`. We reiterate: types of kind `PType`, should be considered as _tags_ on computation. They do not represent types of values in the same way as standard Haskell types.
 
-The kind of basic types such as `Integer` in Haskell is `Type`; the corresponding "basic" kind in Plutarch is simply `PType`. Higher-kinded types in Haskell, such as `Maybe`, will kinds such as `Type -> Type`. In Plutarch, the corresponding kind is:
+The kind of basic types such as `Integer` in Haskell has the kind: `Type`; the corresponding "basic" kind in Plutarch is simply `PType`. Higher-kinded types in Haskell, such as `Maybe`, will kinds such as `Type -> Type`. In Plutarch, the corresponding kind is:
 
 ```hs
 ghci> :k PMaybe
@@ -141,47 +138,55 @@ Since the kind arrow `->` is right-associative, we first read this as `PMaybe ::
 
 The kind `S -> Type` is mysterious at first, but we recall that `PType`s are _tags_ on (unexecuted) computations indicating their result type. The `S` kind represents the computational context; thus, a `PType` expects to receive a _computational context_ represented by a value `s` whose type has kind `S` that it will tag to produce a `Type`. Note that end-users never instantiate the value `s` with a concrete value; it is simply a type-level mechanism to maintain functional purity.
 
-The above notion is essential to understanding why not all `PType`s have data constructors; the data constructors are irrelevant, except insofar as they enable the implementation to keep track of Haskell-level and UPLC-level representations. `PInteger` is one such case; it is impossible to construct a constant `y` where `y = PInteger`. Other `PType`s, such as `PMaybe`, _do_ have data constructors (specifically `PJust` and `PNothing`), but _still_ do not carry data from the viewpoint of UPLC. A value such as `PNothing` merely facilitates convenient term construction and deconstruction. When `pcon` sees `PNothing`, it knows it should build a UPLC constant that is _morally_ equivalent to the concept of `Nothing :: Maybe a`.
+The above notion is essential to understanding why not all `PType`s have data constructors; the data constructors are irrelevant, except insofar as they enable the implementation to keep track of Haskell-level and UPLC-level representations. `PInteger` is one such case; it is impossible to construct a constant `y` where `y :: PInteger s`. Other `PType`s, such as `PMaybe`, _do_ have data constructors (specifically `PJust` and `PNothing`), but _still_ do not carry data from the viewpoint of UPLC. A value such as `PNothing` merely facilitates convenient term construction and deconstruction. When `pcon` sees `PNothing`, it knows it should build a UPLC constant that is _morally_ equivalent to the concept of `Nothing :: Maybe a`.
 
 # Plutarch `Term`s
 
 Plutarch `Term`s are terms in the sense of simply-typed lambda calculus terms. In a lambda calculus, we can construct terms as either "constants" or "lambdas," and terms can either be "open" (having free variables) or "closed" (having no free variables). We compose Plutarch `Term`s to build up increasingly complex computations. Once all free variables are eliminated from a `Term` (making it a `Closed Term`), we can compile it using the eponymous function from the `Plutarch` module:
 
 ```hs
--- | Closed term is a type synonym 
-type ClosedTerm (a :: PType) = forall (s :: S). Term s a 
+-- | Closed term is a type synonym
+type ClosedTerm (a :: PType) = forall (s :: S). Term s a
 
 -- | Compile operates on closed terms to produce usable UPLC scripts.
 compile :: ClosedTerm a -> Script
 ```
+
 `Term`s are constructed from Haskell values and are tagged with `PType`s.
 
-## Plutarch Constant `Term`s
+# Plutarch Constant `Term`s
 
 When evaluated, a constant Plutarch `Term` will always yield the same result. There are several ways of building constant `Term`s:
 
-- Statically building constant `Term`s from concrete Haskell values when we know the value at compile-time. 
-- Dynamically building constant `Term`s from Haskell values, i.e., when the constant produced depends on a function argument
+- Statically building constant `Term`s from concrete Haskell values when we know the value at compile-time.
+- Dynamically building constant `Term`s from Haskell values, i.e. when the constant produced depends on a dynamic value.
 - Overloaded literal syntax
 - Helper functions
-  
-### Static building of constant `Term`s with `pconstant`
 
-If we know the desired value of a constant `Term` at compile-time, we can build the `Term` directly using [Haskell synonyms](./CONCEPTS.md#haskell-synonym-of-plutarch-types). The function to do so is `pconstant`. 
+## Static building of constant `Term`s with `pconstant`
 
-Constructing constants in this way utilizes [associated type familes](https://wiki.haskell.org/GHC/Type_families#An_associated_type_synonym_example) provided in the `PConstant` and `PLift` typeclasses. On the Haskell <-> Plutarch side, the basic flow is this:
+If we know the desired value of a constant `Term` at compile-time, we can build the `Term` directly using [Haskell synonyms](./CONCEPTS.md#haskell-synonym-of-plutarch-types). The function to do so is `pconstant`.
 
-- `pconstant` takes a single argument. The type of That argument must be an instance of the `PUnsafeLiftDecl` typeclass.
-- The `PUnsafeLiftDecl` has a superclass, `PConstant`. This class (among other things) associates a type family `PConstanted h :: PType` to a Haskell type `h :: Type`.
-- This means that `pconstant` can take a value `x` of type `Type` and produce a type of kind `PType`. `pconstant` to embeds the value `x` into a `Term s a`, where `a` is the `PType` associated with the type of `x`. 
-- The computation represented by `Term s a` is now tagged with the appropriate type.
+Constructing constants in this way utilizes the [`PConstant`/`PLift`](./TYPECLASSES.md#pconstant--plift) typeclasses. These typeclasses expose the following [associated type familes](https://wiki.haskell.org/GHC/Type_families#An_associated_type_synonym_example):
 
-On the Plutarch <-> UPLC side, the flow is as follows:
+```hs
+type PLifted :: PType -> Type
 
-- The `PConstant` class associates a second type family, `PConstantRepr`, with the Haskell type `h :: Type`. This type family gives the UPLC representation of `h`. 
-- When we construct a `Term` as above and compile it, the type family guides the compiler to the on-chain UPLC representation.
+type PConstanted :: Type -> PType
+```
 
-The end-user effect `pconstant` always takes in a regular Haskell value with a `PLift`, and thus `PConstant` typeclass instances (along with the other superclasses of each) to create its Plutarch synonym. These typeclasses may seem burdensome, but they are provided by the Plutarch libraries for most basic types and can be automatically derived in many other cases. For example:
+`pconstant` takes a single argument: a regular Haskell type with a `PConstant`/`PLift` instance, and yields a Plutarch term tagged with the corresponding Plutarch type.
+
+The relation between the Plutarch type and its [Haskell synonym](./CONCEPTS.md#haskell-synonym-of-plutarch-types) is established by the type families. For any Haskell type `h`, `PConstanted h` is the corresponding Plutarch type. Similarly, for any Plutarch type `p`, `PLifted p` corresponds to the Haskell synonym.
+
+Lawful instances shall obey the following invariants:
+
+```hs
+PLifted (PConstanted h) ~ h
+PConstanted (PLifted p) ~ p
+```
+
+For example:
 
 ```hs
 import Plutarch.Prelude
@@ -191,11 +196,11 @@ x :: Term s PBool
 x = pconstant True
 ```
 
-To reiterate: in the above snippet, `x` represents a computation that is _tagged_ with the type `PBool`, that, when evaluated, returns a result that is semantically `True`. The `PLift` and `PConstant` typeclasses provided the associated types necessary for Plutarch to convert to and from Haskell types to Plutarch's `PType` tags. 
+The familiar `Bool` has a `PConstant` instance and it corresponds to `PBool` (which has a `PLift` instance). Therefore `PLifted PBool ~ Bool` and `PConstanted Bool ~ PBool`.
 
-### Dynamic building of constant `Term`s with `pcon`
+## Dynamic building of constant `Term`s with `pcon`
 
-Sometimes the value that we want to treat as a constant `Term` is not known at compile time. To explain how to construct constants when we can only determine the value at runtime, we will examine the `PMaybe` Plutarch type. It can serve the same purpose as the `Maybe` type in Haskell: to represent the situation where computation may not produce a sensible result. 
+Sometimes the value that we want to treat as a constant `Term` is not known at compile time. To explain how to construct constants when we can only determine the value at runtime, we will examine the `PMaybe` Plutarch type. It can serve the same purpose as the `Maybe` type in Haskell: to represent the situation where computation may not produce a sensible result.
 
 `PMaybe` has the following definition:
 
@@ -204,7 +209,9 @@ data PMaybe (a :: PType) (s :: S)
   = PJust (Term s a)
   | PNothing
 ```
+
 and the following kind:
+
 ```hs
 ghci> :k PMaybe
 PMaybe :: PType -> S -> Type
@@ -213,9 +220,9 @@ PMaybe :: PType -> S -> Type
 Let's dissect what this means.
 
 - `PMaybe` builds a `PType` from a `PType`; given a `PType`, we can tag a computation with the type `PMaybe a` to indicate that its return value should is semantically either `Just a` or `Nothing`. Such a tagging would look like a value with the type `Term s (PMaybe a)`.
-- `PJust` and `PNothing` are data constructors. They are _not_ tags. `PJust :: Term s a -> PMaybe (a :: PType) (s :: S)` is a _wrapper_ around a computation that can return a result of type `a`. 
+- `PJust` and `PNothing` are data constructors. They are _not_ tags. `PJust :: Term s a -> PMaybe (a :: PType) (s :: S)` is a helper to signify the concept of `Just x`. It contains a Plutarch term.
 
-Now suppose that we want to carry around a constant `Term` in a Plutarch script that can be either `PJust a` or `PNothing`. To do so, we need a function to go from `PJust a` (which we _can_ instantiate as a Haskell value, unlike `PInteger`) to a `Term s (PMaybe a)`. This function is `pcon`: 
+Now suppose that we want to carry around a constant `Term` in a Plutarch script that can be either `PJust a` or `PNothing`. To do so, we need a function to go from `PJust a` (which we _can_ instantiate as a Haskell value, unlike `PInteger`) to a `Term s (PMaybe a)`. This function is `pcon`:
 
 ```hs
 pcon :: a s -> Term s a
@@ -225,74 +232,20 @@ pcon :: a s -> Term s a
 x :: Term s PInteger
 x = pconstant 3
 
-justx :: forall {s :: S}. PMaybe (PInteger @{S}) s
-justx = PJust x
-
-justxTerm :: forall {s :: S}. Term s (PMaybe (PInteger @{S}))
-justxTerm = pcon justx
+justTerm :: Term s (PMaybe PInteger)
+justTerm = pcon (PJust x)
 ```
 
-These types deserve some explaination. 
+These types deserve some explaination.
 
 - We are familiar by now with the type of `x`; it is a computation that returns a value that can be interpreted as a Haskell integer if evaluated successfully (in this case, 3).
-- The type of `justx` says the following: "a computation tagged with this type indicates that the computation, evaluated in the context `s`, will  produce a value to be interpreted as either  `Just Integer` or `Nothing`."
-- The type of `justxTerm` represents a computation tagged with the type of `justx`.
+- The type of `justTerm` represents a computation tagged with the `PMaybe PInteger` type.
 
-That is, if we ask `justxTerm` what it will return when evaluated, it responds, "You should interpret the value I give you as either `Nothing` or `Just Integer`." Of course, we know that the result will always be `Just 3`; but this is the general mechanism to declare a function requiring a `Maybe`. 
+That is, if we ask `justTerm` what it will return when evaluated, it responds, "You should interpret the value I give you as either `Nothing` or `Just Integer`." Of course, we know that the result will always be `Just 3`; but this is the general mechanism to declare a function requiring a `Maybe`.
 
 The `pcon` function is a method of the [`PCon` typeclass](./TYPECLASSES.md#plutustype-pcon-and-pmatch).
-    
-#### Pattern matching `Term`s on `PType`s with `pmatch`.
 
-We've shown how to construct `Term`s out of the data constructors of types with kind `PType` (i.e., `pcon . PJust`). Next, it is natural that we may want to pattern match on `Term` with a known `PType` tag (i.e., of a value with type `Term s (PMaybe a)`) to produce another `Term` (i.e., depending on whether the value matches `PJust _` or `Nothing`.)
-
-The function that we need is a method of the `PMatch` typeclass. For the time being, we will ignore the details of implementation and only look at the type:
-
-```hs
-pmatch :: forall (a :: PType) (s :: S) (b :: PType).
-    PMatch a =>               {- We have two constraints on the type `a`: 
-                                  it has a `PMatch` instance and is of kind `PType`.-}
-    Term s a ->               -- Given a `Term` tagged with `a`...
-    (a s -> Term s b) ->      -- ...and a function from a type of kind `PType` to a Term s b)`...
-    Term s b                  -- ...produce a `Term s b`
-```
-
-The annotation of the second argument deserves some focus; the second argument has its type displayed as `(a s -> Term s b)`, but our comment suggests something else. First, recall that `a` is declared to have kind `PType`, and `PType` is a kind synonym for `S -> Type`. Thus, since `s` has kind `S`, we have that `a s` has the _kind_ `PType`.
-
-What this means, in practice, is that `pmatch` matches on the possible values of the _result_ of evaluating a `Term s a` -- specifically, it matches on _values_ of a _type_ that have _kind `PType`_ -- and branches accordingly. The second argument to `pmatch` is a _continuation_; it determines how the program continues once `pmatch` has done its work.
-
-We have already introduced a type with kind `PType` suitable for branching. Here is an example of a :
-
-```hs
-{- | This function takes in a Haskell-level `PMaybe` value (specifically, _not_ a `Term`)
-     and return a `Term` depending on the Haskell-level pattern match on `PMaybe`s data
-     constructors.
--}
-continuation :: forall {a :: PType} {s :: S}. PMaybe a s -> Term s PBool
-continuation x = case x of
-   PJust _ -> pconstant True
-   PNothing -> pconstant False
-
-{- | A Haskell-level `isJust` on Plutarch `Term`s. `pmatch` can match on
-     the possibilities of `PJust _` or `PNothing` being the result of an evaluated
-     `Term`.
--}
-hisJust :: forall {a :: PType} {s :: S}. Term s (PMaybe a) -> Term s PBool
-hisJust x = pmatch x continuation
-
--- | A Plutarch-level `isJust`
-pisJust :: forall {s :: S} {a :: PType}. Term s (PMaybe a :--> PBool)
-pisJust = plam hisJust
-```
-Readers should note that this is not the most ergonomic way to deal with pattern matching (Plutarch provides two versions of `do` syntax), but it _is_ how the more ergonomic methods work under the hood.
-
-#### `class (PCon a, PMatch a) => PlutusType (a :: PType)` -- with a default instance.
-Combining the `PCon` and `PMatch` typeclasses (providing `pcon` and `pmatch`, respectively) is sufficient to encode Haskell types as UPLC types. 
-Having both a `PCon` and `PMatch` instance means that the `PlutusType` instance -- the instance detailing how to go from Plutarch `Term`s to UPLC representations -- can be derived generically!
-
-While we won't go into detail here, this is a non-trivial fact that deserves explicit mention; we've gone from Haskell types to Plutarch `PType` tags, tagged Plutarch `Terms` and back, and obtained a mechanism to represent UPLC terms for free.
-
-### Overloaded literals
+## Overloaded literals
 
 `pconstant` and `pcon` are the long-form ways of building constants. Specific constant Haskell literals are overloaded to help construct Plutarch constants. We provide two examples below.
 
@@ -310,7 +263,7 @@ y :: Term s PString
 y = "foobar"
 ```
 
-### Helper functions
+## Helper functions
 
 Finally, Plutarch provides helper functions to build certain types of constants:
 
@@ -321,14 +274,59 @@ import Plutarch.Prelude
 -- | A plutarch level bytestring. Its value is [65], in this case.
 x :: Term s PByteString
 x = phexByteStr "41"
--- ^ `phexByteStr` interprets a hex string as a bytestring. 0x41 is 65 - of course.
+-- ^ 'phexByteStr' interprets a hex string as a bytestring. 0x41 is 65 - of course.
 ```
 
-## Lambdas; Plutarch-level Function `Term`s.
+# Pattern matching constant `Term`s with `pmatch`.
+
+We've shown how to construct `Term`s out of the data constructors of types with kind `PType` (i.e., `pcon . PJust`). Next, it is natural that we may want to pattern match on `Term` with a known `PType` tag (i.e., of a value with type `Term s (PMaybe a)`) to produce another `Term` (i.e., depending on whether the value matches `PJust _` or `Nothing`.)
+
+The function that we need is a method of the `PMatch` typeclass. For the time being, we will ignore the details of implementation and only look at the type:
+
+```hs
+pmatch :: forall (a :: PType) (s :: S) (b :: PType).
+    PMatch a =>               {- We have two constraints on the type `a`:
+                                  it has a `PMatch` instance. -}
+    Term s a ->               -- Given a `Term` tagged with `a`...
+    (a s -> Term s b) ->      -- ...and a function from `a s` to a Term s b`...
+    Term s b                  -- ...produce a `Term s b`
+```
+
+The annotation of the second argument deserves some focus; the second argument has its type displayed as `(a s -> Term s b)`. First, recall that `a` is declared to have kind `PType`, and `PType` is a kind synonym for `S -> Type`. Thus, since `s` has kind `S`, we have that `a s` has the _kind_ `Type`. That is, it is a regular Haskell type.
+
+What this means, in practice, is that `pmatch` matches on the possible values of the _result_ of evaluating a `Term s a` -- specifically, it matches on _values_ of a _type_ that has _kind `PType`_ -- and branches accordingly. The second argument to `pmatch` is a _continuation_; it determines how the program continues once `pmatch` has done its work.
+
+We have already introduced a type with kind `PType` suitable for branching: `PMaybe`. Here is an example:
+
+```hs
+{- | This function takes in a Haskell-level `PMaybe` value (specifically, _not_ a `Term`)
+     and returns a `Term` depending on the Haskell-level pattern match on `PMaybe`s data
+     constructors.
+-}
+continuation :: PMaybe a s -> Term s PBool
+continuation x = case x of
+  PJust _ -> pconstant True
+  PNothing -> pconstant False
+
+{- | A Haskell-level `isJust` on Plutarch `Term`s. `pmatch` can match on
+     the possibilities of `PJust _` or `PNothing` being the result of an evaluated
+     `Term`.
+-}
+hisJust :: Term s (PMaybe a) -> Term s PBool
+hisJust x = pmatch x continuation
+
+-- | A Plutarch-level `isJust`
+pisJust :: Term s (PMaybe a :--> PBool)
+pisJust = plam hisJust
+```
+
+Readers should note that this is not the most ergonomic way to deal with pattern matching (Plutarch provides two versions of `do` syntax), but it _is_ how the more ergonomic methods work under the hood.
+
+# Lambdas; Plutarch-level Function `Term`s.
 
 Lambdas are the second form of Plutarch `Term`s. Lambda terms are represented at the type level by the infix type constructor `:-->`; a value of type `Term s (a :--> b)` evaluates to a function that takes a value of type `a` and produces a value of type `b`.
 
-You can create Plutarch lambda `Term`s by applying the `plam` function to a Haskell-level function that works on Plutarch terms. The true type of `plam` itself is unimportant to end-users of Plutarch, but it should be thought of as 
+You can create Plutarch lambda `Term`s by applying the `plam` function to a Haskell-level function that works on Plutarch terms. The true type of `plam` itself is unimportant to end-users of Plutarch, but it should be thought of as
 
 ```hs
 plam :: (Term s a -> Term s b) -> Term s (a :--> b)
@@ -367,9 +365,9 @@ f = plam $ \???
 
 We know that the argument to `plam` here is a Haskell function `g` with type `Term s PInteger -> Term s PString -> Term s a -> Term s a`.
 
-### Function Application
+## Function Application
 
-Once we construct a Plutarch lambda `Term` using `plam`, it is rather useless unless we apply it to an argument. Plutarch provides two operators to do so 
+Once we construct a Plutarch lambda `Term` using `plam`, it is rather useless unless we apply it to an argument. Plutarch provides two operators to do so
 
 ```hs
 {- |
@@ -377,7 +375,7 @@ Once we construct a Plutarch lambda `Term` using `plam`, it is rather useless un
   function juxtaposition. e.g.:
 
   >>> f # x # y
-  f x y
+  Conceptually: f x y
 -}
 (#) :: Term s (a :--> b) -> Term s a -> Term s b
 infixl 8 #
@@ -387,7 +385,7 @@ infixl 8 #
   `$`, in combination with `#`. e.g.:
 
   >>> f # x #$ g # y # z
-  f x (g y z)
+  Conceptually: f x (g y z)
 -}
 (#$) :: Term s (a :--> b) -> Term s a -> Term s b
 infixr 0 #$
@@ -395,28 +393,16 @@ infixr 0 #$
 
 The types of each operator match our intuition. Applying a lambda `Term` to a `Term` (tagged with the `PType` of the domain of the lambda) produces a `Term` (tagged with the `PType` of the codomain.).
 
-### Strictness and Laziness; Delayed Terms and Forcing
+# Strictness and Laziness; Delayed Terms and Forcing
 
 Plutarch, like UPLC, is strict by default; this is in contrast to Haskell, which is nonstrict. In practice, this means that calling a function in Plutarch evaluates _all_ arguments to the Plutarch lambda `Term` beforehand.
 
 > Note: the below example does not correspond precisely to the implementation of `pif` or `pif'`; it is for didactic purposes only
 
-This behavior may be undesirable, for example, when one of two `Term`s are branched upon within an `if` statement. In Plutarch, `pif'` is strict and `pif` is lazy. A strict `pif'` could look something like 
+This behavior may be undesirable, for example, when one of two `Term`s are branched upon within an `if` statement. The Plutarch level function `pif'` is naturally strict in its arguments - and therefore evaluate both branches before even entering the function body.
 
 ```hs
-{- | Haskell-level `if` function between `Term`s. This  function is nonstrict;
-only a single branch is evaluated (since this is a Haskell function).
-Unfortunately, it _doesn't_ translate to a non-strict Plutarch lambda, 
-as we will see below.
--}
-hif' :: Term s PBool -> Term s a -> Term s b -> Term s c
-hif' cond whenTrue whenFalse = pmatch cond $ \case
-  PTrue -> whenTrue
-  PFalse -> whenFalse
-
-{- | Strict Plutarch-level `if`. The arguments _are_ evaluated
-(by default), meaning that both branches are evaluated.
-pif' :: forall {s :: S} {b :: PType}. Term s (PBool :--> (b :--> (b :--> b)))
+pif' :: Term s (PBool :--> b :--> b :--> b)
 pif' = plam hif
 ```
 
@@ -431,32 +417,23 @@ pdelay :: Term s a -> Term s (PDelayed a)
 A delayed term evaluates when it is _forced_ using the `pforce` function. Forcing a term strips the `PDelayed` wrapper:
 
 ```hs
-pforce :: Term s (PDelayed a) -> Term s a 
+pforce :: Term s (PDelayed a) -> Term s a
 ```
 
-Thus, if we wanted a lazy `pif", we could do the following:
+Thus, if we wanted a lazy `pif`, we could do the following:
 
 ```hs
-{- | Haskell-level `if` function between `Term`s. This time
-it _does_ translate to a lazy Plutarch lambda.
--}
+-- | Utilizing Haskell level functions with `pdelay` and `pforce` to have lazy wrapper around `pif`.
 hif :: Term s PBool -> Term s a -> Term s a -> Term s a
 hif cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay whenFalse
-
-{- | Plutarch-level `if`. We delay the arguments in `hif` so they are not applied
-until forced.
--}
-pif :: forall {s :: S} {b :: PType}. Term s (PBool :--> (b :--> (b :--> b)))
-pif = plam hif
 ```
 
-A note of caution: calling `pforce` on the same delayed term twice will execute the computation each time. Users familiar with Haskell's handling of laziness -- where forcing a thunk twice never duplicates computation -- should note that this UPLC behaves differently.
+A note of caution: calling `pforce` on the same delayed term twice will execute the computation each time. Users familiar with Haskell's handling of laziness -- where forcing a thunk twice never duplicates computation -- should note that UPLC behaves differently.
 
-Finally, readers should note that `pdelay` and `pforce` are extremely powerful tools when writing Plutarch scripts and are encouraged to familiarize themselves accordingly. 
+Finally, readers should note that `pdelay` and `pforce` are extremely powerful tools when writing Plutarch scripts and are encouraged to familiarize themselves accordingly.
 
+# References
 
-# References 
-
-- [1] [Lazy Functional State Threads, by John Launchbury and Simon L Peyton Jones](https://www.microsoft.com/en-us/research/wp-content/uploads/1994/06/lazy-functional-state-threads.pdf) 
-- [2] [Unembedding Domain-Specific Languages, by Robert Atkey, Sam Lindley, and Jeremy Yallop](https://bentnib.org/unembedding.pdf)
-- [3] [Matt Parson: Basic Type Level Programming in Haskell](https://www.parsonsmatt.org/2017/04/26/basic_type_level_programming_in_haskell.html)
+- \[1][Lazy Functional State Threads, by John Launchbury and Simon L Peyton Jones](https://www.microsoft.com/en-us/research/wp-content/uploads/1994/06/lazy-functional-state-threads.pdf)
+- \[2][Unembedding Domain-Specific Languages, by Robert Atkey, Sam Lindley, and Jeremy Yallop](https://bentnib.org/unembedding.pdf)
+- \[3][Matt Parson: Basic Type Level Programming in Haskell](https://www.parsonsmatt.org/2017/04/26/basic_type_level_programming_in_haskell.html)

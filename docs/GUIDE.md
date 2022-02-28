@@ -7,8 +7,8 @@ The Plutarch guide is your one-stop shop for getting up to speed on Plutarch!
 
 - [Overview](#overview)
   - [Compiling and Running](#compiling-and-running)
-  - [Introduction and Basic Syntax](#syntax)
-  - [Usage](#usage)
+  - [Introduction and Basic Syntax](#introduction-and-basic-syntax)
+  - [Practical Usage](#practical-usage)
   - [Concepts](#concepts)
   - [Typeclasses](#typeclasses)
   - [Working with Types](#working-with-types)
@@ -36,18 +36,16 @@ This section serves as a introduction to Plutarch's basic concepts and core synt
 - [Untyped Plutus Core (UPLC)](./INTRO.md#untyped-plutus-core-uplc)
 - [Plutarch Types](./INTRO.md#plutarch-types)
 - [Plutarch `Term`s](./INTRO.md#plutarch-terms)
-  * [Plutarch Constant `Term`s](./INTRO.md#plutarch-constant-terms)
-    + [Static building of constant `Term`s with `pconstant`](./INTRO.md#static-building-of-constant-terms-with-pconstant)
-    + [Dynamic building of constant `Term`s with `pcon`](./INTRO.md#dynamic-building-of-constant-terms-with-pcon)
-      - [Pattern matching `Term`s on `PType`s with `pmatch`.](./INTRO.md#pattern-matching-terms-on-ptypes-with-pmatch)
-      - [`class (PCon a, PMatch a) => PlutusType (a :: PType)` -- with a default instance.](./INTRO.md#class-pcon-a-pmatch-a-plutustype-a-ptype-with-a-default-instance)
-    + [Overloaded literals](./INTRO.md#overloaded-literals)
-    + [Helper functions](./INTRO.md#helper-functions)
-  * [Lambdas; Plutarch-level Function `Term`s.](./INTRO.md#lambdas-plutarch-level-function-terms)
-    + [Function Application](./INTRO.md#function-application)
-    + [Strictness and Laziness; Delayed Terms and Forcing](./INTRO.md#strictness-and-laziness-delayed-terms-and-forcing)
+- [Plutarch Constant `Term`s](./INTRO.md#plutarch-constant-terms)
+  - [Static building of constant `Term`s with `pconstant`](./INTRO.md#static-building-of-constant-terms-with-pconstant)
+  - [Dynamic building of constant `Term`s with `pcon`](./INTRO.md#dynamic-building-of-constant-terms-with-pcon)
+  - [Overloaded literals](./INTRO.md#overloaded-literals)
+  - [Helper functions](./INTRO.md#helper-functions)
+- [Pattern matching constant `Term`s with `pmatch`.](./INTRO.md#pattern-matching-constant-terms-with-pmatch)
+- [Lambdas; Plutarch-level Function `Term`s.](./INTRO.md#lambdas-plutarch-level-function-terms)
+  - [Function Application](./INTRO.md#function-application)
+- [Strictness and Laziness; Delayed Terms and Forcing](./INTRO.md#strictness-and-laziness-delayed-terms-and-forcing)
 - [References](./INTRO.md#references)
-- 
 ## Practical Usage
 
 This section fills in the gaps left by the previous. It illustrates techniques that make Plutarch easier to work with.
@@ -65,14 +63,14 @@ This section fills in the gaps left by the previous. It illustrates techniques t
 
 ## Concepts
 
-This section details additional concepts 
+This section details additional concepts
 
 - [Hoisting, metaprogramming, and fundamentals](./CONCEPTS.md#hoisting--metaprogramming--and-fundamentals)
-  * [Hoisting Operators](./CONCEPTS.md#hoisting-operators)
+  - [Hoisting Operators](./CONCEPTS.md#hoisting-operators)
 - [What is the `s`?](./CONCEPTS.md#what-is-the--s--)
 - [Data encoding and Scott encoding](./CONCEPTS.md#data-encoding-and-scott-encoding)
-  * [Data encoding](./CONCEPTS.md#data-encoding)
-  * [Scott encoding](./CONCEPTS.md#scott-encoding)
+  - [Data encoding](./CONCEPTS.md#data-encoding)
+  - [Scott encoding](./CONCEPTS.md#scott-encoding)
 - [Haskell synonym of Plutarch types](./CONCEPTS.md#haskell-synonym-of-plutarch-types)
 
 ## Typeclasses
