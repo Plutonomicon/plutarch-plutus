@@ -1,0 +1,4 @@
+eq.true.nothing (program 1.0.0 True)
+eq.true.just (program 1.0.0 True)
+eq.false.nothing-just (program 1.0.0 False)
+eq.false.just-just (program 1.0.0 False)
