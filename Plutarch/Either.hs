@@ -3,9 +3,10 @@ module Plutarch.Either (PEither (..)) where
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic, I (I))
 import Plutarch (PType, PlutusType, S, Term)
+import Plutarch.Bool (PEq)
 
 data PEither (a :: PType) (b :: PType) (s :: S)
   = PLeft (Term s a)
   | PRight (Term s b)
   deriving stock (GHC.Generic)
-  deriving anyclass (Generic, PlutusType)
+  deriving anyclass (Generic, PlutusType, PEq)
