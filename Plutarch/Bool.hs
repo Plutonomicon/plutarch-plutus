@@ -31,8 +31,8 @@ import Generics.SOP (
   ccompare_NS,
   hcliftA2,
  )
-import Plutarch.DataRepr.Internal.Generic (PCode, PGeneric, pfrom)
 import Plutarch.Internal (punsafeAsClosedTerm)
+import Plutarch.Internal.Generic (PCode, PGeneric, pfrom)
 import Plutarch.Internal.Other (
   DerivePNewtype,
   PDelayed,

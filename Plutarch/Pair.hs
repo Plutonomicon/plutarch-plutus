@@ -1,5 +1,3 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
-
 module Plutarch.Pair (PPair (..)) where
 
 import qualified GHC.Generics as GHC
