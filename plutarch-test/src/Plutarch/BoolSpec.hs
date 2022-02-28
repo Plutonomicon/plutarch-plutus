@@ -1,9 +1,11 @@
 module Plutarch.BoolSpec (spec) where
 
+import qualified GHC.Generics as GHC
+import Generics.SOP (Generic, I (I))
 import Test.Syd
 
-import Plutarch
-import Plutarch.Bool (PBool (PFalse, PTrue), pand, pnot, por, (#&&), (#||))
+import Plutarch.Bool (pand, por)
+import Plutarch.Prelude
 import Plutarch.Test
 
 spec :: Spec
@@ -41,3 +43,23 @@ spec = do
           "true" @| por # pcon PTrue # perror @-> pfails
           "op.true" @| pcon PTrue #|| perror @-> psucceeds
           "op.false" @| pcon PFalse #|| perror @-> pfails
+    "peq" @\ do
+      "rec" @\ do
+        "true" @\ do
+          "leaf" @| leaf1 #== leaf1 @-> passert
+
+{- A recursive data type to test PEq behaviour
+
+  This is just a simple binary tree; nothing sophisticated.
+-}
+data PTree a s
+  = PLeaf (Term s a)
+  | PBranch (Term s (PPair (PTree a) (PTree a)))
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic, PlutusType, PEq)
+
+leaf1 :: Term s (PTree PInteger)
+leaf1 = pcon $ PLeaf 42
+
+_leaf2 :: Term s (PTree PInteger)
+_leaf2 = pcon $ PLeaf 24
