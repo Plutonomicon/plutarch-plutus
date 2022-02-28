@@ -24,10 +24,10 @@ import Generics.SOP (
   All,
   All2,
   HCollapse (hcollapse),
-  K (..),
+  K (K),
   NP,
-  Proxy (..),
-  SOP (..),
+  Proxy (Proxy),
+  SOP (SOP),
   ccompare_NS,
   hcliftA2,
  )

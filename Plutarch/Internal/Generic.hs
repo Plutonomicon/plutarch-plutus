@@ -10,7 +10,7 @@ module Plutarch.Internal.Generic (
   pfrom,
 
   -- * Helpers for when existing generics-sop combinators are insufficient.
-  MkSum (..),
+  MkSum (mkSum),
 ) where
 
 import Data.Kind (Constraint, Type)
