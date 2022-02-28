@@ -5,6 +5,8 @@ module Plutarch.FFI (
   PDelayedList (PDCons, PDNil),
   foreignExport,
   foreignImport,
+  opaqueExport,
+  opaqueImport,
   pdelayList,
   pforceList,
   unsafeForeignExport,
@@ -14,6 +16,7 @@ module Plutarch.FFI (
 import Data.ByteString (ByteString)
 import Data.Kind (Constraint, Type)
 import Data.Text (Text)
+import Data.Void (Void)
 import GHC.Generics (Generic)
 import GHC.TypeLits (TypeError)
 import qualified GHC.TypeLits as TypeLits
@@ -27,6 +30,7 @@ import Generics.SOP.Type.Metadata (
 import Plutarch (
   ClosedTerm,
   PDelayed,
+  POpaque,
   PType,
   S,
   pcon,
@@ -86,6 +90,14 @@ foreignExport = unsafeForeignExport
 -- | Import compiled UPLC code (such as a spliced `PlutusTx.compile` result) as a Plutarch term.
 foreignImport :: p >~< t => CompiledCode t -> ClosedTerm p
 foreignImport = unsafeForeignImport
+
+-- | Export Plutarch term of any type as @CompiledCode Void@.
+opaqueExport :: ClosedTerm p -> CompiledCode Void
+opaqueExport = unsafeForeignExport
+
+-- | Import compiled UPLC code of any type as a Plutarch opaque term.
+opaqueImport :: CompiledCode t -> ClosedTerm POpaque
+opaqueImport = unsafeForeignImport
 
 -- | Seriously unsafe, may fail at run time or result in unexpected behaviour in your on-chain validator.
 unsafeForeignExport :: ClosedTerm p -> CompiledCode t
