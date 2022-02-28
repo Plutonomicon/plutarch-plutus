@@ -61,6 +61,12 @@ spec = do
           @(PBuiltinList (PAsData PInteger))
           (pdata $ (pcons # (pdata $ pconstant 3)) #$ (psingleton # (pdata $ pconstant 4)))
         @-> pfails
+      "A { test := Integer, test2 := Integer } /= { test := String, test2 := Integer }"
+        @| checkDeep 
+          @(PDataRecord (("foo" ':= PInteger) ': ("bar" ':= PInteger) ': '[]))
+          @(PDataRecord (("foo" ':= PByteString) ': ("bar" ':= PInteger) ': '[]))
+          (pdata (pdcons @"foo" # (pdata $ pconstant "baz")  #$ pdcons @"bar" # (pdata $ pconstant 42) # pdnil))
+        @-> pfails
     "working" @\ do
       "int == int"
         @| checkShallow @PInteger @PInteger (pdata $ pconstant 42)
@@ -77,11 +83,21 @@ spec = do
           @(PBuiltinList (PAsData PByteString))
           (pdata $ (pcons # (pdata $ pconstant "foo")) #$ (psingleton # (pdata $ pconstant "bar")))
         @-> psucceeds
-      "A { test := String, test2 := Integer } == { test := String, test2 := Integer }"
+      "A { test := Integer, test2 := Integer } == { test := Integer, test2 := Integer }"
         @| checkDeep 
           @(PDataRecord (("foo" ':= PInteger) ': ("bar" ':= PInteger) ': '[]))
           @(PDataRecord (("foo" ':= PInteger) ': ("bar" ':= PInteger) ': '[]))
           (pdata (pdcons @"foo" # (pdata $ pconstant 7)  #$ pdcons @"bar" # (pdata $ pconstant 42) # pdnil))
+      "A { test := Integer, test2 := Integer } == [Integer]"
+        @| checkDeep 
+          @(PDataRecord (("foo" ':= PInteger) ': ("bar" ':= PInteger) ': '[]))
+          @(PBuiltinList (PAsData PInteger))
+          (pdata (pcons # (pdata $ pconstant 7)  #$ pcons # (pdata $ pconstant 42) # pnil))
+      "A { test := String, test2 := Integer } == { test := String, test2 := Integer }"
+        @| checkDeep
+          @(PDataRecord (("foo" ':= PByteString) ': ("bar" ':= PInteger) ': '[]))
+          @(PDataRecord (("foo" ':= PByteString) ': ("bar" ':= PInteger) ': '[]))
+          (pdata (pdcons @"foo" # (pdata $ pconstant "baz")  #$ pdcons @"bar" # (pdata $ pconstant 42) # pdnil))
     "removing the data wrapper" @\ do 
       "erroneous" @\ do
         "(String, Integer) /= (String, String)"
@@ -129,11 +145,11 @@ spec = do
           l4 = toDatadList [6,8,8,9,10]
       "concatenate two lists, legal"
         @| validator # pforgetData l1 # pforgetData l2 # validContext @-> psucceeds
-      "concatenate tow lists, illegal (list too short)"
+      "concatenate two lists, illegal (list too short)"
         @| validator # pforgetData l1 # pforgetData l3 # validContext @-> pfails
-      "concatenate tow lists, illegal (wrong elements in list)"
+      "concatenate two lists, illegal (wrong elements in list)"
         @| validator # pforgetData l1 # pforgetData l4 # validContext @-> pfails
-      "concatenate tow lists, illegal (more than one output)"
+      "concatenate two lists, illegal (more than one output)"
         @| validator # pforgetData l1 # pforgetData l2 # invalidContext @-> pfails
 
 -- rec :: Term _ (PDataRecord (("foo" ':= PInteger) ': ("bar" ':= PInteger) ': '[]))
@@ -155,7 +171,7 @@ checkShallow ::
   ) =>
   ClosedTerm (PAsData actual) ->
   ClosedTerm (PAsData target)
-checkShallow  t = ptryFrom @'PShallow #$ pforgetData t
+checkShallow  t = ptryFrom @'PShallow $ pforgetData t
 
 checkDeep ::
   forall (target :: PType) (actual :: PType).
@@ -165,7 +181,7 @@ checkDeep ::
   ) =>
   ClosedTerm (PAsData actual) ->
   ClosedTerm (PAsData target)
-checkDeep t = ptryFrom @'PDeep #$ pforgetData t 
+checkDeep t = ptryFrom @'PDeep $ pforgetData t 
 
 
 sampleStructure :: Term _ (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData PInteger)))))))
@@ -175,10 +191,10 @@ sampleStructure = pdata $ psingleton #$ pdata $ psingleton #$ toDatadList [1..10
 partialCheck :: Term _ (PAsData (PBuiltinList (PAsData (PBuiltinList PData))))
 partialCheck = let dat :: Term _ PData 
                    dat = pforgetData sampleStructure
-                in ptryFrom @'PDeep #$ dat
+                in ptryFrom @'PDeep $ dat
 
 fullCheck :: Term _ (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData PInteger)))))))
-fullCheck = ptryFrom @'PDeep #$ pforgetData sampleStructure
+fullCheck = ptryFrom @'PDeep $ pforgetData sampleStructure
 
 
 ------------------- Example: untrusted Redeemer ------------------------------------
@@ -192,19 +208,19 @@ pmkNatural :: Term s (PInteger :--> PNatural)
 pmkNatural = plam $ \i -> pif  (i #< 0) (ptraceError "could not make natural") (pcon $ PMkNatural i)
 
 instance PTryFrom a PData (PAsData PNatural) where
-  ptryFrom = plam $ \opq -> unTermCont $ do
+  ptryFrom opq =
     let i :: Term _ PInteger
         i = pasInt # opq
-    pure $ pdata $ pmkNatural # i
+     in pdata $ pmkNatural # i
 
 validator :: Term s PValidator
 validator = phoistAcyclic $
   plam $ \dat red ctx -> unTermCont $ do
     --                      untrusted ---^---^   ^--- trusted
     let trustedRedeemer :: Term _ (PBuiltinList (PAsData PNatural))
-        trustedRedeemer = pfromData $ ptryFrom @'PDeep # red
+        trustedRedeemer = pfromData $ ptryFrom @'PDeep red
         trustedDatum :: Term _ (PBuiltinList (PAsData PNatural))
-        trustedDatum = pfromData $ ptryFrom @'PDeep # dat
+        trustedDatum = pfromData $ ptryFrom @'PDeep dat
         -- make the Datum and Redeemer trusted
 
         ownHash :: Term _ PDatumHash

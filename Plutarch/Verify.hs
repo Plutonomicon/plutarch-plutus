@@ -15,6 +15,8 @@ module Plutarch.Verify (
   pcheckList,
   pcheckMap,
 ) where
+  
+-- import GHC.TypeLits (KnownNat)
 
 import Plutarch.Builtin (
   PAsData,
@@ -86,15 +88,15 @@ import qualified PlutusCore as PLC
 -}
 class PTryFrom (d :: PDepth) (a :: PType) (b :: PType) where
   --      this is the "safest" type --^            ^-- this is the target type
-  ptryFrom :: Term s (a :--> b)
+  ptryFrom :: Term s a -> Term s b
 
 ----------------------- Polymorphic instances -------------------------------------------
 
 instance PTryFrom a PData (PAsData PInteger) where
-  ptryFrom = pcheckInt
+  ptryFrom = (pcheckInt #)
 
 instance PTryFrom a PData (PAsData PByteString) where
-  ptryFrom = pcheckByteStr
+  ptryFrom = (pcheckByteStr #)
 
 ----------------------- PDeep PData instances -------------------------------------------
 
@@ -102,16 +104,14 @@ data PDepth
   = PDeep
   | PShallow
 
-{-
-instance {-# OVERLAPPING #-} PTryFrom PDeep PData PData where
-  ptryFrom = plam id
--}
+instance PTryFrom PDeep PData PData where
+  ptryFrom = id
 
 instance {-# OVERLAPPING #-} PTryFrom PDeep PData (PAsData (PBuiltinList PData)) where
-  ptryFrom = pcheckList
+  ptryFrom = (pcheckList #)
 
 instance {-# OVERLAPPING #-} PTryFrom PDeep PData (PAsData (PBuiltinMap PData PData)) where
-  ptryFrom = pcheckMap
+  ptryFrom = (pcheckMap #)
 
 instance
   {-# OVERLAPPABLE #-}
@@ -121,11 +121,10 @@ instance
   ) =>
   PTryFrom PDeep PData (PAsData (PBuiltinList a))
   where
-  ptryFrom = phoistAcyclic $
-    plam $ \opq ->
+  ptryFrom opq = 
       let lst :: Term _ (PBuiltinList a)
           lst = punsafeBuiltin PLC.UnListData # opq
-       in pdata $ pmap # (plam $ \e -> ptryFrom @PDeep @PData @a #$ pforgetData e) # lst
+       in pdata $ pmap # (plam $ \e -> ptryFrom @PDeep @PData @a $ pforgetData e) # lst
 
 instance
   {-# OVERLAPPABLE #-}
@@ -138,14 +137,13 @@ instance
   ) =>
   PTryFrom PDeep PData (PAsData (PBuiltinPair a b))
   where
-  ptryFrom = phoistAcyclic $
-    plam $ \opq ->
+  ptryFrom opq =
       plet (pfromData $ punsafeCoerce opq) $
         \tup ->
           let fst :: Term _ a
-              fst = ptryFrom @PDeep @PData @a #$ pforgetData $ pfstBuiltin # tup
+              fst = ptryFrom @PDeep @PData @a $ pforgetData $ pfstBuiltin # tup
               snd :: Term _ b
-              snd = ptryFrom @PDeep @PData @b #$ pforgetData $ psndBuiltin # tup
+              snd = ptryFrom @PDeep @PData @b $ pforgetData $ psndBuiltin # tup
            in pdata $ ppairDataBuiltin # fst # snd
 
 instance
@@ -157,16 +155,16 @@ instance
   ) =>
   PTryFrom PDeep PData (PAsData (PDataRecord (x ': xs)))
   where
-  ptryFrom = phoistAcyclic $
-    plam $ \opq -> plet (pfromData @(PBuiltinList _) $ punsafeCoerce opq) $ \lst ->
+  ptryFrom opq = 
+    plet (pfromData @(PBuiltinList _) $ punsafeCoerce opq) $ \lst ->
       let lsthead :: Term _ PData
           lsthead = phead # lst
           lsttail :: Term _ (PAsData (PBuiltinList PData))
           lsttail = pdata $ ptail # lst
        in punsafeCoerce $
             pdcons @s
-              # (ptryFrom @PDeep @PData @(PAsData b) # lsthead)
-              # (pfromData (ptryFrom @PDeep @PData @(PAsData (PDataRecord xs)) # pforgetData lsttail))
+              # (ptryFrom @PDeep @PData @(PAsData b) lsthead)
+              # (pfromData (ptryFrom @PDeep @PData @(PAsData (PDataRecord xs)) (pforgetData lsttail)))
 
 instance
   {-# OVERLAPPING #-}
@@ -175,13 +173,12 @@ instance
   ) =>
   PTryFrom PDeep PData (PAsData (PDataRecord '[x]))
   where
-  ptryFrom = phoistAcyclic $
-    plam $ \opq ->
+  ptryFrom opq =
       let lsthead :: Term _ PData
           lsthead = phead # (pfromData @(PBuiltinList _) $ punsafeCoerce opq)
        in punsafeCoerce $
             pdcons @s
-              # (ptryFrom @PDeep @PData @(PAsData b) # lsthead)
+              # (ptryFrom @PDeep @PData @(PAsData b) lsthead)
               # pdnil
 
 ----------------------- PDeep POpaque instances -----------------------------------------
@@ -199,22 +196,21 @@ instance
   ) =>
   PTryFrom PDeep POpaque a
   where
-  ptryFrom = phoistAcyclic $
-    plam $ \opq ->
+  ptryFrom opq =
       let prop :: Term _ a
           prop = punsafeCoerce opq
-       in pfromData $ ptryFrom @PDeep @PData @(PAsData a) #$ pforgetData $ pdata prop
+       in pfromData $ ptryFrom @PDeep @PData @(PAsData a) $ pforgetData $ pdata prop
 
 ----------------------- PShallow PData instances ----------------------------------------
 
 instance PTryFrom PShallow PData (PAsData (PBuiltinList PData)) where
-  ptryFrom = pcheckList
+  ptryFrom = (pcheckList #)
 
 instance PTryFrom PShallow PData (PAsData (PBuiltinMap PData PData)) where
-  ptryFrom = pcheckMap
+  ptryFrom = (pcheckMap #)
 
 instance PTryFrom PShallow PData PData where
-  ptryFrom = plam id
+  ptryFrom = id 
 
 -- PShallow POpaque instances wouldn't make sense as that wouldn't do any verifying at all
 
