@@ -70,8 +70,8 @@ import Plutarch (
 import Plutarch.Bool (PBool (PFalse, PTrue), PEq, pif, (#&&), (#==), (#||))
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (pconstant)
+import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Pair (PPair (PPair))
-import Plutarch.Maybe (PMaybe (PJust,PNothing))
 
 import Data.Kind
 
@@ -141,14 +141,16 @@ pconvertLists = phoistAcyclic $
 -- | Extract head and tail of the list, throws error if list is empty.
 ptryUncons ::
   PIsListLike list a =>
+  Term s (list a :--> PPair a (list a))
 ptryUncons =
+  plam $ pelimList (\x -> pcon . PPair x) perror
 
 -- | Extract head and tail of the list, if list is not empty.
-puncons :: 
+puncons ::
   PIsListLike list a =>
-  Term s (list a) ->
-  Term s (PMaybe (PPair a (list a)))
-puncons = pelimList (\x -> pcon . PJust . pcon . PPair x) (pcon PNothing)
+  Term s (list a :--> PMaybe (PPair a (list a)))
+puncons =
+  plam $ pelimList (\x -> pcon . PJust . pcon . PPair x) (pcon PNothing)
 
 -- | Like 'pelimList', but with a fixpoint recursion hatch.
 precList ::
