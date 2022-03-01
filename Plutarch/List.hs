@@ -19,7 +19,7 @@ module Plutarch.List (
 
   -- * Deconstruction
   puncons,
-  punsafeUncons,
+  ptryUncons,
 
   -- * Combine
   pconcat,
@@ -139,11 +139,9 @@ pconvertLists = phoistAcyclic $
       pnil
 
 -- | Extract head and tail of the list, throws error if list is empty.
-punsafeUncons :: 
+ptryUncons ::
   PIsListLike list a =>
-  Term s (list a) ->
-  Term s (PPair a (list a))
-punsafeUncons = pelimList (\x -> pcon . PPair x) perror
+ptryUncons =
 
 -- | Extract head and tail of the list, if list is not empty.
 puncons :: 
