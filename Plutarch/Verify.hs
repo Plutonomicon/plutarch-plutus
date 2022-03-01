@@ -1,22 +1,16 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
 {-# OPTIONS_GHC -Wno-unticked-promoted-constructors #-}
 {-# OPTIONS_GHC -Wredundant-constraints #-}
 
 module Plutarch.Verify (
-  PTryFrom (ptryFrom),
-  PTryUnwrapFrom (ptryUnwrapFrom),
-  PDepth (PDeep, PShallow),
+  PTryFrom (PExcess, ptryFrom),
   pcheckType,
   pcheckByteStr,
   pcheckInt,
   pcheckList,
   pcheckMap,
 ) where
-  
--- import GHC.TypeLits (KnownNat)
 
 import Plutarch.Builtin (
   PAsData,
@@ -35,21 +29,23 @@ import Plutarch.Builtin (
   ppairDataBuiltin,
   psndBuiltin,
  )
+
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal.Other (
   POpaque,
   PType,
   Term,
+  pcon,
   perror,
   pforce,
   phoistAcyclic,
   plam,
   plet,
   (#),
-  (#$),
   type (:-->),
  )
+import Plutarch.Unit (PUnit (PUnit))
 
 import Plutarch.DataRepr.Internal (
   PDataRecord,
@@ -57,8 +53,6 @@ import Plutarch.DataRepr.Internal (
   pdcons,
   pdnil,
  )
-
-import Plutarch.Lift (PLift)
 
 import Plutarch.Bool (pif, (#==))
 
@@ -71,6 +65,8 @@ import Plutarch.List (
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import qualified PlutusCore as PLC
 
+import Plutarch.TermCont (TermCont, tcont, unTermCont)
+
 {- |
     Note: PAsData POpaque ~ PData
 -}
@@ -79,109 +75,162 @@ import qualified PlutusCore as PLC
 
 {- |
     This checks the datastructure for validity.
-    Be aware that if called with `PDeep`, it will in
-    most cases will at least be slightly more expensive
+    If you don't care about parts of the datastructure
+    don't verify those parts, just let it return a PData
+    instead
     Be aware this might get really expensive, so only
     use it if you cannot establish trust otherwise
     (e.g. via only checking a part of your Data with
     PTryFrom)
 -}
-class PTryFrom (d :: PDepth) (a :: PType) (b :: PType) where
-  --      this is the "safest" type --^            ^-- this is the target type
-  ptryFrom :: Term s a -> Term s b
+class PTryFrom (a :: PType) (b :: PType) where
+  --     "safest" type --^            ^-- target type
+  type PExcess a b :: PType
+  ptryFrom :: Term s a -> TermCont s (Term s b, Term s (PExcess a b))
 
------------------------ Polymorphic instances -------------------------------------------
+----------------------- PData instances -------------------------------------------------
 
-instance PTryFrom a PData (PAsData PInteger) where
-  ptryFrom = (pcheckInt #)
+instance PTryFrom PData (PAsData PInteger) where
+  type PExcess PData (PAsData PInteger) = PInteger
+  ptryFrom opq = do
+    ver <- tcont $ plet (pasInt # opq)
+    pure $ (punsafeCoerce opq, ver)
 
-instance PTryFrom a PData (PAsData PByteString) where
-  ptryFrom = (pcheckByteStr #)
+instance PTryFrom PData (PAsData PByteString) where
+  type PExcess PData (PAsData PByteString) = PByteString
+  ptryFrom opq = do
+    ver <- tcont $ plet (pasByteStr # opq)
+    pure $ (punsafeCoerce opq, ver)
 
------------------------ PDeep PData instances -------------------------------------------
+instance PTryFrom PData PData where
+  type PExcess PData PData = PUnit
+  ptryFrom opq = pure $ (opq, pcon PUnit)
 
-data PDepth
-  = PDeep
-  | PShallow
+instance {-# OVERLAPPING #-} PTryFrom PData (PAsData (PBuiltinList PData)) where
+  type PExcess PData (PAsData (PBuiltinList PData)) = PBuiltinList PData
+  ptryFrom opq = do
+    ver <- tcont $ plet (pasList # opq)
+    pure $ (punsafeCoerce opq, ver)
 
-instance PTryFrom PDeep PData PData where
-  ptryFrom = id
+instance
+  {-# OVERLAPS #-}
+  ( PTryFrom PData (PAsData a)
+  , PTryFrom PData (PAsData b)
+  ) =>
+  PTryFrom PData (PAsData (PBuiltinMap a b))
+  where
+  type PExcess PData (PAsData (PBuiltinMap a b)) = PBuiltinList (PBuiltinPair (PAsData a) (PAsData b))
+  ptryFrom opq = do
+    verMap <- tcont $ plet (pasMap # opq)
+    -- I've not obtained a `PBuiltinList (PBuiltinPair a b)`
+    let verifyPair :: Term _ (PBuiltinPair PData PData :--> PBuiltinPair (PAsData a) (PAsData b))
+        verifyPair = plam $ \tup -> unTermCont $ do
+          (verfst, _) <- ptryFrom @PData @(PAsData a) $ pfstBuiltin # tup
+          (versnd, _) <- ptryFrom @PData @(PAsData b) $ psndBuiltin # tup
+          pure $ ppairDataBuiltin # verfst # versnd
+    ver <- tcont $ plet $ pmap # verifyPair # verMap
+    pure (punsafeCoerce opq, ver)
 
-instance {-# OVERLAPPING #-} PTryFrom PDeep PData (PAsData (PBuiltinList PData)) where
-  ptryFrom = (pcheckList #)
-
-instance {-# OVERLAPPING #-} PTryFrom PDeep PData (PAsData (PBuiltinMap PData PData)) where
-  ptryFrom = (pcheckMap #)
+instance {-# OVERLAPPING #-} PTryFrom PData (PAsData (PBuiltinMap POpaque POpaque)) where
+  type PExcess PData (PAsData (PBuiltinMap POpaque POpaque)) = PBuiltinList (PBuiltinPair (PAsData POpaque) (PAsData POpaque))
+  ptryFrom opq = do
+    ver <- tcont $ plet (pasMap # opq)
+    pure $ (punsafeCoerce opq, punsafeCoerce ver) -- PAsData POpaque ~ PData
 
 instance
   {-# OVERLAPPABLE #-}
-  ( PTryFrom PDeep PData a
+  ( PTryFrom PData a
   , a ~ PAsData b
   , PIsData b
   ) =>
-  PTryFrom PDeep PData (PAsData (PBuiltinList a))
+  PTryFrom PData (PAsData (PBuiltinList a))
   where
-  ptryFrom opq = 
-      let lst :: Term _ (PBuiltinList a)
-          lst = punsafeBuiltin PLC.UnListData # opq
-       in pdata $ pmap # (plam $ \e -> ptryFrom @PDeep @PData @a $ pforgetData e) # lst
+  type PExcess PData (PAsData (PBuiltinList a)) = PBuiltinList a
+  ptryFrom opq =
+    let lst :: Term _ (PBuiltinList a)
+        lst = punsafeBuiltin PLC.UnListData # opq
+        verify :: a ~ PAsData b => Term _ (PAsData b :--> a)
+        verify = plam $ \e ->
+          unTermCont $ do
+            (wrapped, _) <- ptryFrom @PData @a $ pforgetData e
+            pure wrapped
+     in do
+          ver <- tcont $ plet $ pmap # verify # lst
+          pure $ (punsafeCoerce opq, ver)
 
 instance
   {-# OVERLAPPABLE #-}
-  ( PTryFrom PDeep PData a
+  ( PTryFrom PData a
   , a ~ PAsData a'
   , PIsData a'
-  , PTryFrom PDeep PData b
+  , PTryFrom PData b
   , b ~ PAsData b'
   , PIsData b'
   ) =>
-  PTryFrom PDeep PData (PAsData (PBuiltinPair a b))
+  PTryFrom PData (PAsData (PBuiltinPair a b))
   where
-  ptryFrom opq =
-      plet (pfromData $ punsafeCoerce opq) $
-        \tup ->
-          let fst :: Term _ a
-              fst = ptryFrom @PDeep @PData @a $ pforgetData $ pfstBuiltin # tup
-              snd :: Term _ b
-              snd = ptryFrom @PDeep @PData @b $ pforgetData $ psndBuiltin # tup
-           in pdata $ ppairDataBuiltin # fst # snd
+  type PExcess PData (PAsData (PBuiltinPair a b)) = PBuiltinPair a b
+  ptryFrom opq = do
+    tup <- tcont $ plet (pfromData $ punsafeCoerce opq)
+    let fst' :: Term _ a
+        fst' = unTermCont $ fst <$> (ptryFrom @PData @a $ pforgetData $ pfstBuiltin # tup)
+        snd' :: Term _ b
+        snd' = unTermCont $ fst <$> (ptryFrom @PData @b $ pforgetData $ psndBuiltin # tup)
+    ver <- tcont $ plet $ ppairDataBuiltin # fst' # snd'
+    pure $ (punsafeCoerce opq, ver)
 
 instance
   {-# OVERLAPPABLE #-}
-  ( PTryFrom PDeep PData (PAsData b)
-  , PTryFrom PDeep PData (PAsData (PDataRecord xs))
+  ( PTryFrom PData (PAsData b)
+  , PTryFrom PData (PAsData (PDataRecord xs))
   , x ~ (s ':= b)
   , PIsData (PDataRecord xs)
+  , PExcess PData (PAsData (PDataRecord xs)) ~ PDataRecord xs
   ) =>
-  PTryFrom PDeep PData (PAsData (PDataRecord (x ': xs)))
+  PTryFrom PData (PAsData (PDataRecord (x ': xs)))
   where
-  ptryFrom opq = 
-    plet (pfromData @(PBuiltinList _) $ punsafeCoerce opq) $ \lst ->
-      let lsthead :: Term _ PData
-          lsthead = phead # lst
-          lsttail :: Term _ (PAsData (PBuiltinList PData))
-          lsttail = pdata $ ptail # lst
-       in punsafeCoerce $
-            pdcons @s
-              # (ptryFrom @PDeep @PData @(PAsData b) lsthead)
-              # (pfromData (ptryFrom @PDeep @PData @(PAsData (PDataRecord xs)) (pforgetData lsttail)))
+  type PExcess PData (PAsData (PDataRecord (x ': xs))) = PDataRecord (x ': xs)
+  ptryFrom opq = do
+    lst <- tcont $ plet (pfromData @(PBuiltinList _) $ punsafeCoerce opq)
+    let lsthead :: Term _ PData
+        lsthead = phead # lst
+        lsttail :: Term _ (PAsData (PBuiltinList PData))
+        lsttail = pdata $ ptail # lst
+        verhead :: Term _ (PAsData b)
+        verhead = unTermCont $ fst <$> (ptryFrom @PData @(PAsData b) lsthead)
+        vertail :: Term _ (PDataRecord xs)
+        vertail = unTermCont $ snd <$> (ptryFrom @PData @(PAsData (PDataRecord xs)) (pforgetData lsttail))
+    ver <-
+      tcont $
+        plet $
+          pdcons @s
+            # verhead
+            # vertail
+    pure (punsafeCoerce opq, ver)
 
 instance
   {-# OVERLAPPING #-}
-  ( PTryFrom PDeep PData (PAsData b)
+  ( PTryFrom PData (PAsData b)
+  , PIsData b
   , x ~ (s ':= b)
   ) =>
-  PTryFrom PDeep PData (PAsData (PDataRecord '[x]))
+  PTryFrom PData (PAsData (PDataRecord '[x]))
   where
-  ptryFrom opq =
-      let lsthead :: Term _ PData
-          lsthead = phead # (pfromData @(PBuiltinList _) $ punsafeCoerce opq)
-       in punsafeCoerce $
-            pdcons @s
-              # (ptryFrom @PDeep @PData @(PAsData b) lsthead)
-              # pdnil
+  type PExcess PData (PAsData (PDataRecord '[x])) = PDataRecord '[x]
+  ptryFrom opq = do
+    let lsthead :: Term _ PData
+        lsthead = phead # (pfromData @(PBuiltinList _) $ punsafeCoerce opq)
+        verhead :: Term _ (PAsData b)
+        verhead = unTermCont $ fst <$> (ptryFrom @PData @(PAsData b) lsthead)
+    ver <-
+      tcont $
+        plet $
+          pdcons @s
+            # verhead
+            # pdnil
+    pure $ (punsafeCoerce opq, ver)
 
------------------------ PDeep POpaque instances -----------------------------------------
+----------------------- POpaque Instances -----------------------------------------------
 
 {- |
     for none of the opaque instances it can be verified
@@ -191,84 +240,18 @@ instance
     your POpaque safely
 -}
 instance
-  ( PTryFrom PDeep PData (PAsData a)
+  ( PTryFrom PData (PAsData a)
   , PIsData a
   ) =>
-  PTryFrom PDeep POpaque a
+  PTryFrom POpaque a
   where
-  ptryFrom opq =
-      let prop :: Term _ a
-          prop = punsafeCoerce opq
-       in pfromData $ ptryFrom @PDeep @PData @(PAsData a) $ pforgetData $ pdata prop
-
------------------------ PShallow PData instances ----------------------------------------
-
-instance PTryFrom PShallow PData (PAsData (PBuiltinList PData)) where
-  ptryFrom = (pcheckList #)
-
-instance PTryFrom PShallow PData (PAsData (PBuiltinMap PData PData)) where
-  ptryFrom = (pcheckMap #)
-
-instance PTryFrom PShallow PData PData where
-  ptryFrom = id 
-
--- PShallow POpaque instances wouldn't make sense as that wouldn't do any verifying at all
-
------------------------ Class that removes the PAsData wrapper --------------------------
-
-{- |
-    the basic idea behind the class is, that if i removed the data wrapper, I have
-    confidence that the type really has the structure I tested it to have
--}
-class PTryUnwrapFrom (d :: PDepth) (b :: PType) where
-  ptryUnwrapFrom :: Term s (PData :--> b)
-
-instance PTryUnwrapFrom PDeep PInteger where
-  ptryUnwrapFrom = pasInt
-
-instance PTryUnwrapFrom PDeep PByteString where
-  ptryUnwrapFrom = pasByteStr
-
-instance {-# OVERLAPPING #-} PTryUnwrapFrom PDeep (PBuiltinList PData) where
-  ptryUnwrapFrom = pasList
-
-instance {-# OVERLAPPING #-} PTryUnwrapFrom PDeep (PBuiltinList (PBuiltinPair PData PData)) where
-  ptryUnwrapFrom = pasMap
-
-instance
-  {-# OVERLAPPABLE #-}
-  ( PTryUnwrapFrom PDeep b
-  , PIsData b
-  , PLift b
-  ) =>
-  PTryUnwrapFrom PDeep (PBuiltinList b)
-  where
-  ptryUnwrapFrom = phoistAcyclic $
-    plam $ \opq ->
-      let lst :: Term _ (PBuiltinList (PAsData b))
-          lst = punsafeBuiltin PLC.UnListData # opq
-       in pmap # (plam $ \e -> ptryUnwrapFrom @PDeep @b #$ pforgetData e) # lst
-
--- this instance is not ok, I can not create an instance that doesn't work on
--- wrapped types.
-instance
-  {-# OVERLAPPABLE #-}
-  ( PTryUnwrapFrom PDeep a
-  , PTryUnwrapFrom PDeep b
-  , PIsData a
-  , PIsData b
-  ) =>
-  PTryUnwrapFrom PDeep (PBuiltinPair (PAsData a) (PAsData b))
-  where
-  ptryUnwrapFrom = phoistAcyclic $
-    plam $ \opq ->
-      let tup :: Term _ (PBuiltinPair (PAsData a) (PAsData b))
-          tup = pfromData $ punsafeCoerce opq
-          fst :: Term _ a
-          fst = ptryUnwrapFrom @PDeep @a #$ pforgetData $ pfstBuiltin # tup
-          snd :: Term _ b
-          snd = ptryUnwrapFrom @PDeep @b #$ pforgetData $ psndBuiltin # tup
-       in ppairDataBuiltin # pdata fst # pdata snd
+  type PExcess POpaque a = PAsData a
+  ptryFrom opq = do
+    let prop :: Term _ a
+        prop = punsafeCoerce opq
+    ver' <- fst <$> (ptryFrom @PData @(PAsData a) $ pforgetData $ pdata prop)
+    ver <- tcont $ plet ver'
+    pure $ (punsafeCoerce opq, ver)
 
 ----------------------- Helper functions ------------------------------------------------
 
