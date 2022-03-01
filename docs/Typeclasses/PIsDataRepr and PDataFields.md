@@ -303,7 +303,10 @@ import qualified GHC.Generics as GHC
 import Generics.SOP
 
 import Plutarch.Prelude
-import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
+import Plutarch.DataRepr (
+  PDataFields,
+  PIsDataReprInstances (PIsDataReprInstances),
+ )
 
 newtype PFoo (s :: S) = PMkFoo (Term s (PDataRecord '["foo" ':= PByteString]))
   deriving stock (GHC.Generic)
