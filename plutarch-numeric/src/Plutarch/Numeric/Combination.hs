@@ -1,30 +1,35 @@
 {-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module Plutarch.Numeric.Combination (
   Distributive (..),
+  RemoveZero (..),
+  PRemoveZero (..),
   Euclidean (..),
   Arithmetical (..),
   Divisible (..),
-  (^-^),
 ) where
 
-import Data.Kind (Type)
-import Plutarch (Term, pcon, (#))
+import Plutarch (Term, pcon, plet, pmatch, (#))
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (pconstant)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Numeric.Additive (
-  AdditiveCMM ((^-)),
-  AdditiveGroup ((-)),
+  AdditiveGroup,
   AdditiveMonoid (zero),
-  AdditiveSemigroup ((+)),
+  AdditiveSemigroup,
  )
-import Plutarch.Numeric.Multiplicative (MultiplicativeMonoid, MultiplicativeSemigroup ((*)))
+import Plutarch.Numeric.Fractional (Fractionable, PFractionable)
+import Plutarch.Numeric.Multiplicative (
+  MultiplicativeMonoid (one),
+ )
 import Plutarch.Numeric.NZInteger (NZInteger (NZInteger), PNZInteger)
 import Plutarch.Numeric.NZNatural (NZNatural (NZNatural), PNZNatural)
 import Plutarch.Numeric.Natural (Natural (Natural), PNatural)
+import Plutarch.Numeric.Ratio (PRatio, Ratio (Ratio), pmatchRatio)
+import Plutarch.Pair (PPair (PPair))
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
 import Prelude hiding ((*), (+), (-))
@@ -68,6 +73,11 @@ instance Distributive NZNatural where
   fromNZNatural = id
 
 -- | @since 1.0
+instance (Fractionable a, Distributive a) => Distributive (Ratio a) where
+  {-# INLINEABLE fromNZNatural #-}
+  fromNZNatural n = Ratio (fromNZNatural n, one)
+
+-- | @since 1.0
 instance Distributive (Term s PInteger) where
   {-# INLINEABLE fromNZNatural #-}
   fromNZNatural (NZNatural i) = pconstant i
@@ -81,6 +91,100 @@ instance Distributive (Term s PNatural) where
 instance Distributive (Term s PNZNatural) where
   {-# INLINEABLE fromNZNatural #-}
   fromNZNatural = pconstant
+
+-- | @since 1.0
+instance
+  (PFractionable a, Distributive (Term s a)) =>
+  Distributive (Term s (PRatio a))
+  where
+  {-# INLINEABLE fromNZNatural #-}
+  fromNZNatural n =
+    punsafeCoerce . pcon $
+      PPair
+        (fromNZNatural n :: Term s a)
+        (one :: Term s PNZNatural)
+
+-- | @since 1.0
+class (AdditiveMonoid a) => RemoveZero a nz | a -> nz, nz -> a where
+  -- | @since 1.0
+  removeZero :: a -> Maybe nz
+
+  -- | @since 1.0
+  zeroExtend :: nz -> a
+
+-- | @since 1.0
+instance RemoveZero Integer NZInteger where
+  {-# INLINEABLE removeZero #-}
+  removeZero i
+    | i == zero = Nothing
+    | otherwise = pure . NZInteger $ i
+  {-# INLINEABLE zeroExtend #-}
+  zeroExtend (NZInteger i) = i
+
+-- | @since 1.0
+instance RemoveZero Natural NZNatural where
+  {-# INLINEABLE removeZero #-}
+  removeZero (Natural i)
+    | i == zero = Nothing
+    | otherwise = pure . NZNatural $ i
+  {-# INLINEABLE zeroExtend #-}
+  zeroExtend (NZNatural i) = Natural i
+
+-- | @since 1.0
+instance
+  (Fractionable a, RemoveZero a nz) =>
+  RemoveZero (Ratio a) (Ratio nz)
+  where
+  {-# INLINEABLE removeZero #-}
+  removeZero (Ratio (num, den)) = do
+    num' <- removeZero num
+    pure . Ratio $ (num', den)
+  {-# INLINEABLE zeroExtend #-}
+  zeroExtend (Ratio (num, den)) = Ratio (zeroExtend num, den)
+
+-- | @since 1.0
+class (forall s. AdditiveMonoid (Term s a)) => PRemoveZero a nz | a -> nz, nz -> a where
+  -- | @since 1.0
+  premoveZero :: Term s a -> Term s (PMaybe nz)
+
+  -- | @since 1.0
+  pzeroExtend :: Term s nz -> Term s a
+
+-- | @since 1.0
+instance PRemoveZero PInteger PNZInteger where
+  {-# INLINEABLE premoveZero #-}
+  premoveZero t =
+    pif
+      (t #== zero)
+      (pcon PNothing)
+      (pcon . PJust . punsafeCoerce $ t)
+  {-# INLINEABLE pzeroExtend #-}
+  pzeroExtend = punsafeCoerce
+
+-- | @since 1.0
+instance PRemoveZero PNatural PNZNatural where
+  {-# INLINEABLE premoveZero #-}
+  premoveZero t =
+    pif
+      (t #== zero)
+      (pcon PNothing)
+      (pcon . PJust . punsafeCoerce $ t)
+  {-# INLINEABLE pzeroExtend #-}
+  pzeroExtend = punsafeCoerce
+
+-- | @since 1.0
+instance
+  (PFractionable a, PRemoveZero a nz) =>
+  PRemoveZero (PRatio a) (PRatio nz)
+  where
+  {-# INLINEABLE premoveZero #-}
+  premoveZero t = pmatchRatio t $ \num den ->
+    plet (premoveZero num) $ \numMay ->
+      pmatch numMay $ \case
+        PNothing -> pcon PNothing
+        PJust t' -> pcon . PJust . punsafeCoerce . pcon $ PPair t' den
+  {-# INLINEABLE pzeroExtend #-}
+  pzeroExtend = punsafeCoerce
 
 {- | A generalization of a Euclidean domain, except that it \'extends\' a
  semiring, not a ring.
@@ -125,29 +229,11 @@ class
     | nz -> a
     , a -> nz
   where
-  {-# MINIMAL removeZero, zeroExtend, quot, rem, fromNatural #-}
-
-  -- | This is \'morally\' @'Maybe' nz@. We need this rather awkward hack
-  -- because of the way 'PMaybe' works in Plutarch.
-  --
-  -- @since 1.0
-  type RemovalResult nz :: Type
-
   -- | @since 1.0
-  removeZero :: a -> RemovalResult nz
-
-  -- | @since 1.0
-  zeroExtend :: nz -> a
-
-  -- | @since 1.0
-  {-# INLINEABLE (+^) #-}
   (+^) :: a -> nz -> a
-  x +^ y = x + zeroExtend y
 
   -- | @since 1.0
-  {-# INLINEABLE (*^) #-}
   (*^) :: a -> nz -> a
-  x *^ y = x * zeroExtend y
 
   -- | @since 1.0
   quot :: a -> nz -> a
@@ -160,13 +246,6 @@ class
 
 -- | @since 1.0
 instance Euclidean Integer NZInteger where
-  type RemovalResult NZInteger = Maybe NZInteger
-  {-# INLINEABLE removeZero #-}
-  removeZero i
-    | i == 0 = Nothing
-    | otherwise = Just . NZInteger $ i
-  {-# INLINEABLE zeroExtend #-}
-  zeroExtend (NZInteger i) = i
   {-# INLINEABLE (+^) #-}
   x +^ (NZInteger y) = x Prelude.+ y
   {-# INLINEABLE (*^) #-}
@@ -180,13 +259,6 @@ instance Euclidean Integer NZInteger where
 
 -- | @since 1.0
 instance Euclidean Natural NZNatural where
-  type RemovalResult NZNatural = Maybe NZNatural
-  {-# INLINEABLE removeZero #-}
-  removeZero (Natural i)
-    | i == 0 = Nothing
-    | otherwise = Just . NZNatural $ i
-  {-# INLINEABLE zeroExtend #-}
-  zeroExtend (NZNatural i) = Natural i
   {-# INLINEABLE (+^) #-}
   Natural x +^ NZNatural y = Natural $ x Prelude.+ y
   {-# INLINEABLE (*^) #-}
@@ -200,11 +272,6 @@ instance Euclidean Natural NZNatural where
 
 -- | @since 1.0
 instance Euclidean (Term s PInteger) (Term s PNZInteger) where
-  type RemovalResult (Term s PNZInteger) = Term s (PMaybe PNZInteger)
-  {-# INLINEABLE removeZero #-}
-  removeZero t = pif (t #== zero) (pcon PNothing) (pcon . PJust . punsafeCoerce $ t)
-  {-# INLINEABLE zeroExtend #-}
-  zeroExtend = punsafeCoerce
   {-# INLINEABLE (+^) #-}
   x +^ y = punsafeBuiltin PLC.AddInteger # x # y
   {-# INLINEABLE (*^) #-}
@@ -218,11 +285,6 @@ instance Euclidean (Term s PInteger) (Term s PNZInteger) where
 
 -- | @since 1.0
 instance Euclidean (Term s PNatural) (Term s PNZNatural) where
-  type RemovalResult (Term s PNZNatural) = Term s (PMaybe PNZNatural)
-  {-# INLINEABLE removeZero #-}
-  removeZero t = pif (t #== zero) (pcon PNothing) (pcon . PJust . punsafeCoerce $ t)
-  {-# INLINEABLE zeroExtend #-}
-  zeroExtend = punsafeCoerce
   {-# INLINEABLE (+^) #-}
   x +^ y = punsafeBuiltin PLC.AddInteger # x # y
   {-# INLINEABLE (*^) #-}
@@ -233,16 +295,6 @@ instance Euclidean (Term s PNatural) (Term s PNZNatural) where
   rem x y = punsafeBuiltin PLC.RemainderInteger # x # y
   {-# INLINEABLE fromNatural #-}
   fromNatural = pconstant
-
--- | @since 1.0
-{-# INLINEABLE (^-^) #-}
-(^-^) ::
-  forall (a :: Type) (nz :: Type).
-  (AdditiveCMM a, Euclidean a nz) =>
-  a ->
-  nz ->
-  a
-x ^-^ y = x ^- zeroExtend y
 
 {- | A 'Euclidean' extended with a notion of signedness (and subtraction). This
  is /actually/ a Euclidean domain (and thus, a ring also).
@@ -285,12 +337,8 @@ class
     | nz -> a
     , a -> nz
   where
-  {-# MINIMAL div, mod, fromInteger, fromNZInteger #-}
-
   -- | @since 1.0
-  {-# INLINEABLE (-^) #-}
   (-^) :: a -> nz -> a
-  x -^ y = x - zeroExtend y
 
   -- | @since 1.0
   div :: a -> nz -> a
@@ -355,22 +403,13 @@ instance Arithmetical (Term s PInteger) (Term s PNZInteger) where
  @since 1.0
 -}
 class
-  (Euclidean a nz) =>
+  (Distributive a) =>
   Divisible a nz
     | nz -> a
     , a -> nz
   where
-  {-# MINIMAL reciprocal #-}
-
   -- | @since 1.0
   (/) :: a -> nz -> a
-  x / y = x *^ reciprocal y
 
   -- | @since 1.0
   reciprocal :: nz -> nz
-
-{-
-  -- | @since 1.0
-  powInteger :: nz -> Integer -> nz
-  powInteger x i = getMultiplicative . gtimes i . Multiplicative $ x
--}

@@ -6,10 +6,10 @@ module Plutarch.Numeric.Fractional (
 import Data.Kind (Type)
 import Plutarch (S, Term, pfix, plam, (#), (#$), type (:-->))
 import Plutarch.Bool (pif, (#==))
-import Plutarch.Integer (PInteger, pmod)
+import Plutarch.Integer (PInteger, prem)
 import Plutarch.Numeric.NZInteger (NZInteger (NZInteger))
 import Plutarch.Numeric.NZNatural (NZNatural (NZNatural), PNZNatural)
-import Plutarch.Numeric.Natural (Natural (Natural))
+import Plutarch.Numeric.Natural (Natural (Natural), PNatural)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
 
@@ -66,7 +66,25 @@ class PFractionable (a :: S -> Type) where
     Term s PNZNatural
 
 -- | @since 1.0
+instance PFractionable PInteger where
+  {-# INLINEABLE pscale #-}
+  pscale t t' = punsafeBuiltin PLC.MultiplyInteger # t # t'
+  {-# INLINEABLE punscale #-}
+  punscale t t' = punsafeBuiltin PLC.QuotientInteger # t # t'
+  {-# INLINEABLE pfindScale #-}
+  pfindScale t t' = punsafeCoerce (pgcd # t #$ punsafeCoerce t')
+
+-- | @since 1.0
 instance PFractionable PNZNatural where
+  {-# INLINEABLE pscale #-}
+  pscale t t' = punsafeBuiltin PLC.MultiplyInteger # t # t'
+  {-# INLINEABLE punscale #-}
+  punscale t t' = punsafeBuiltin PLC.QuotientInteger # t # t'
+  {-# INLINEABLE pfindScale #-}
+  pfindScale t t' = punsafeCoerce (pgcd #$ punsafeCoerce t #$ punsafeCoerce t')
+
+-- | @since 1.0
+instance PFractionable PNatural where
   {-# INLINEABLE pscale #-}
   pscale t t' = punsafeBuiltin PLC.MultiplyInteger # t # t'
   {-# INLINEABLE punscale #-}
@@ -77,4 +95,4 @@ instance PFractionable PNZNatural where
 -- Helpers
 
 pgcd :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
-pgcd = pfix #$ plam $ \self x y -> pif (y #== 0) x (self # y # (pmod # x # y))
+pgcd = pfix #$ plam $ \self x y -> pif (y #== 0) x (self # y # (prem # x # y))

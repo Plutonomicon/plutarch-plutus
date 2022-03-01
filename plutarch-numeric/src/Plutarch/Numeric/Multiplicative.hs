@@ -3,103 +3,138 @@ module Plutarch.Numeric.Multiplicative (
   MultiplicativeMonoid (..),
 ) where
 
-import Plutarch (Term, (#))
+import Plutarch (Term, pcon, plet, (#))
 import Plutarch.Bool (pif, (#<), (#==))
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (pconstant)
+import Plutarch.Numeric.Fractional (Fractionable, PFractionable)
 import Plutarch.Numeric.NZInteger (NZInteger (NZInteger), PNZInteger)
 import Plutarch.Numeric.NZNatural (NZNatural (NZNatural), PNZNatural)
 import Plutarch.Numeric.Natural (Natural (Natural), PNatural)
+import Plutarch.Numeric.Ratio (
+  PRatio,
+  Ratio (Ratio),
+  pconRatio,
+  pmatchRatio,
+  pmatchRatios,
+  ratio,
+ )
+import Plutarch.Pair (PPair (PPair))
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
+import Prelude hiding (abs, signum, (*))
+import Prelude qualified
 
 {- | A semigroup, meant to be morally equivalent to numerical multiplication.
 
  = Laws
 
  Formally, an instance of 'MultiplicativeSemigroup' must be a semigroup with
- '*' as its operation. Furthermore, 'Additive' 'NZNatural' must be a right
- semigroup action, and 'Multiplicative' 'NZNatural' must translate to composition,
- both witnessed by 'powNZNatural'.
+ '*' as its operation. This requires that @(x '*' y) '*' z = x '*' (y '*' z)@.
 
- This requires that @(x '*' y) '*' z = x '*' (y '*' z)@. Furthermore,
- 'powNZNatural' must follow these laws:
+ = Note
 
- * @'powNZNatural' x 'one'@ @=@ @x@
- * @'powNZNatural' x (n '+' m)@ @=@ @'powNZNatural' x n '*' 'powNZNatural' x m@
- * @'powNZNatural' x (n '*' m)@ @=@ @'powNZNatural' ('powNZNatural' x n) m@
+ In general, multiplication is /not/ commutative. Types for which it is will
+ specify it as such in their instance documentation.
 
  @since 1.0
 -}
 class MultiplicativeSemigroup a where
-  {-# MINIMAL (*) #-}
-
   -- | @since 1.0
   (*) :: a -> a -> a
 
-{-
-  -- This uses a default \'exponentiation by squaring\' implementation.
-  --
-  -- @since 1.0
-  powNZNatural :: a -> NZNatural -> a
-  powNZNatural x (NZN.NZNatural n) = getMultiplicative . stimes n . Multiplicative $ x
--}
+{- | Multiplication for 'Integer' is commutative.
 
--- | @since 1.0
+ @since 1.0
+-}
 instance MultiplicativeSemigroup Integer where
   {-# INLINEABLE (*) #-}
   (*) = (Prelude.*)
 
-{-
-{-# INLINEABLE powNZNatural #-}
-  powNZNatural x (NZN.NZNatural n) = x Prelude.^ n
--}
+{- | Multiplication for 'NZInteger' is commutative.
 
--- | @since 1.0
+ @since 1.0
+-}
 deriving via Integer instance (MultiplicativeSemigroup NZInteger)
 
--- | @since 1.0
+{- | Multiplication for 'Natural' is commutative.
+
+ @since 1.0
+-}
 deriving via Integer instance (MultiplicativeSemigroup Natural)
 
--- | @since 1.0
+{- | Multiplication for 'NZNatural' is commutative.
+
+ @since 1.0
+-}
 deriving via Integer instance (MultiplicativeSemigroup NZNatural)
 
--- | @since 1.0
+{- | Multiplication for @'Ratio' a@ is commutative whenever multiplication for
+ @a@ is.
+
+ @since 1.0
+-}
+instance
+  (Fractionable a, MultiplicativeSemigroup a) =>
+  MultiplicativeSemigroup (Ratio a)
+  where
+  {-# INLINEABLE (*) #-}
+  Ratio (num, den) * Ratio (num', den') = ratio (num * num') (den * den')
+
+{- | Multiplication for @'Term' s 'PInteger'@ is commutative.
+
+ @since 1.0
+-}
 instance MultiplicativeSemigroup (Term s PInteger) where
   {-# INLINEABLE (*) #-}
   (*) = (Prelude.*)
 
--- | @since 1.0
+{- | Multiplication for @'Term' s 'PNatural'@ is commutative.
+
+ @since 1.0
+-}
 instance MultiplicativeSemigroup (Term s PNatural) where
   {-# INLINEABLE (*) #-}
   x * y = punsafeBuiltin PLC.MultiplyInteger # x # y
 
--- | @since 1.0
+{- | Multiplication for @'Term' s 'PNZNatural'@ is commutative.
+
+ @since 1.0
+-}
 instance MultiplicativeSemigroup (Term s PNZNatural) where
   {-# INLINEABLE (*) #-}
   x * y = punsafeBuiltin PLC.MultiplyInteger # x # y
 
--- | @since 1.0
+{- | Multiplication for @'Term' s 'PNZInteger'@ is commutative.
+
+ @since 1.0
+-}
 instance MultiplicativeSemigroup (Term s PNZInteger) where
   {-# INLINEABLE (*) #-}
   x * y = punsafeBuiltin PLC.MultiplyInteger # x # y
+
+{- | Multiplication for @'Term' s ('PRatio' a)@ is commutative whenever
+ multiplication for @'Term' s a@ is.
+
+ @since 1.0
+-}
+instance
+  (PFractionable a, MultiplicativeSemigroup (Term s a)) =>
+  MultiplicativeSemigroup (Term s (PRatio a))
+  where
+  {-# INLINEABLE (*) #-}
+  t * t' = pmatchRatios t t' $ \num num' den den' ->
+    plet (num * num') $ \newNum ->
+      plet (den * den') $ \newDen ->
+        pconRatio newNum newDen
 
 {- | A 'MultiplicativeSemigroup' extended with a notion of unit.
 
  = Laws
 
  Formally, an instance of 'AdditiveMonoid' must be a monoid with 'one' as its
- identity. Furthermore, it must form a left-'Natural' semimodule, witnessed
- by 'powNatural', which must be an extension of the right semigroup action
- described by 'powNZNatural' for nonzero actions.
-
- This requires that @'one' '*' x = x '*' 'one' = x@. Furthermore, 'powNatural'
- must follow these laws:
-
- * If @'Just' m = 'removeZero' n@, then @'powNatural' x n = 'powNatural' x m@.
- * @'powNatural' x 'zero'@ @=@ @'one'@.
-
- Lastly, 'abs' and 'signum' must follow these laws:
+ identity. This requires that @'one' '*' x = x '*' 'one' = x@. Furthermore,
+ 'abs' and 'signum' must follow these laws:
 
  * @'abs' 'one'@ @=@ @'signum' 'one'@ @=@ @'one'@
  * @'abs' x '*' 'signum' x@ @=@ @x@
@@ -108,8 +143,6 @@ instance MultiplicativeSemigroup (Term s PNZInteger) where
  @since 1.0
 -}
 class (MultiplicativeSemigroup a) => MultiplicativeMonoid a where
-  {-# MINIMAL one, abs, signum #-}
-
   -- | @since 1.0
   one :: a
 
@@ -118,15 +151,6 @@ class (MultiplicativeSemigroup a) => MultiplicativeMonoid a where
 
   -- | @since 1.0
   signum :: a -> a
-
-{-
-  -- This uses a default \'exponentiation by squaring\' implementation.
-  --
-  -- @since 1.0
-  powNatural :: a -> Natural -> a
-  powNatural x (Nat.Natural n) =
-    getMultiplicative . stimesMonoid n . Multiplicative $ x
--}
 
 -- | @since 1.0
 instance MultiplicativeMonoid Integer where
@@ -137,11 +161,6 @@ instance MultiplicativeMonoid Integer where
   {-# INLINEABLE signum #-}
   signum = Prelude.signum
 
-{-
-{-# INLINEABLE powNatural #-}
-  powNatural x (Nat.Natural n) = x Prelude.^ n
--}
-
 -- | @since 1.0
 deriving via Integer instance MultiplicativeMonoid NZInteger
 
@@ -150,6 +169,18 @@ deriving via Integer instance MultiplicativeMonoid Natural
 
 -- | @since 1.0
 deriving via Integer instance MultiplicativeMonoid NZNatural
+
+-- | @since 1.0
+instance
+  (Fractionable a, MultiplicativeMonoid a) =>
+  MultiplicativeMonoid (Ratio a)
+  where
+  {-# INLINEABLE one #-}
+  one = Ratio (one, one)
+  {-# INLINEABLE abs #-}
+  abs (Ratio (num, den)) = Ratio (abs num, den)
+  {-# INLINEABLE signum #-}
+  signum (Ratio (num, _)) = Ratio (signum num, one)
 
 -- | @since 1.0
 instance MultiplicativeMonoid (Term s PInteger) where
@@ -193,3 +224,16 @@ instance MultiplicativeMonoid (Term s PNZNatural) where
   abs = id
   {-# INLINEABLE signum #-}
   signum _ = one
+
+-- | @since 1.0
+instance
+  (PFractionable a, MultiplicativeMonoid (Term s a)) =>
+  MultiplicativeMonoid (Term s (PRatio a))
+  where
+  {-# INLINEABLE one #-}
+  one = punsafeCoerce . pcon $ PPair (one :: Term s a) (one :: Term s PNZNatural)
+  {-# INLINEABLE abs #-}
+  abs t = pmatchRatio t $ \num den -> punsafeCoerce . pcon $ PPair (abs num) den
+  {-# INLINEABLE signum #-}
+  signum t = pmatchRatio t $ \num _ ->
+    punsafeCoerce . pcon $ PPair (signum num) (one :: Term s PNZNatural)
