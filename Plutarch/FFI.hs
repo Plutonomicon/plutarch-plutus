@@ -16,6 +16,7 @@ module Plutarch.FFI (
 import Data.ByteString (ByteString)
 import Data.Kind (Constraint, Type)
 import Data.Text (Text)
+import GHC.Exts (Any)
 import GHC.Generics (Generic)
 import GHC.TypeLits (TypeError)
 import qualified GHC.TypeLits as TypeLits
@@ -26,7 +27,6 @@ import Generics.SOP.Type.Metadata (
   ConstructorName,
   DatatypeInfo (ADT, Newtype),
  )
-import GHC.Exts (Any)
 import Plutarch (
   ClosedTerm,
   PDelayed,
