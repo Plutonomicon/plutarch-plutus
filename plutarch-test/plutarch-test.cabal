@@ -136,9 +136,9 @@ executable plutarch-test
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
     Plutarch.TraceSpec
+    Plutarch.TryFromSpec
     Plutarch.UnitSpec
     Plutarch.UPLCSpec
-    Plutarch.VerifySpec
     Spec
 
   if flag(development)

@@ -1,7 +1,8 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-module Plutarch.VerifySpec (spec) where
+module Plutarch.TryFromSpec (spec) where
 
 import Test.Syd
 
@@ -11,6 +12,10 @@ import Plutus.V1.Ledger.Api (
   ScriptContext (ScriptContext),
   ToData (toBuiltinData),
   TxInfo (txInfoData),
+ )
+
+import PlutusTx (
+  Data (Constr, I, B), 
  )
 
 import Plutarch.Unsafe (
@@ -35,8 +40,8 @@ import Plutarch.Builtin (
   ppairDataBuiltin,
  )
 import Plutarch.Prelude
-import Plutarch.Verify (
-  PTryFrom (PExcess, ptryFrom),
+import Plutarch.TryFrom (
+  PTryFrom (PTryFromExcess, ptryFrom),
  )
 
 import Plutarch.ApiSpec (info, purpose)
@@ -66,6 +71,16 @@ spec = do
         @-> pfails
       "Map Int String /= Map Int Int"
         @| mapTestFails @-> pfails
+      "PDataSum constr 2" 
+        @| checkDeep
+          @(PDataSum '[ '[ "i1" ':=  PInteger, "b2" ':= PByteString ]])
+          @(PDataSum '[ '[ "i1" ':=  PInteger, "b2" ':= PByteString ], '[ "i3" ':= PInteger, "b4" ':= PByteString ] ])
+          (punsafeCoerce $ pconstant $ Constr 1 [I 5, B "foo"]) @-> pfails
+      "PDataSum wrong record type" 
+        @| checkDeep 
+          @(PDataSum '[ '[ "i1" ':=  PInteger, "b2" ':= PByteString ], '[ "i3" ':= PByteString, "b4" ':= PByteString ] ])
+          @(PDataSum '[ '[ "i1" ':=  PInteger, "b2" ':= PByteString ], '[ "i3" ':= PInteger, "b4" ':= PByteString ] ])
+          (punsafeCoerce $ pconstant $ Constr 2 [I 5, B "foo"])  @-> pfails
     "working" @\ do
       "(String, String) == (String, String)"
         @| checkDeep
@@ -99,6 +114,16 @@ spec = do
         @-> psucceeds
       "Map Int String == Map Int String"
         @| mapTestSucceeds @-> psucceeds
+      "PDataSum constr 0" 
+        @| checkDeep 
+          @(PDataSum '[ '[ "i1" ':=  PInteger, "b2" ':= PByteString ], '[ "i3" ':= PInteger, "b4" ':= PByteString ] ])
+          @(PDataSum '[ '[ "i1" ':=  PInteger, "b2" ':= PByteString ], '[ "i3" ':= PInteger, "b4" ':= PByteString ] ])
+          (punsafeCoerce $ pconstant $ Constr 0 [I 5, B "foo"]) @-> psucceeds
+      "PDataSum constr 1" 
+        @| checkDeep 
+          @(PDataSum '[ '[ "i1" ':=  PInteger, "b2" ':= PByteString ], '[ "i3" ':= PInteger, "b4" ':= PByteString ] ])
+          @(PDataSum '[ '[ "i1" ':=  PInteger, "b2" ':= PByteString ], '[ "i3" ':= PInteger, "b4" ':= PByteString ] ])
+          (punsafeCoerce $ pconstant $ Constr 1 [I 5, B "foo"]) @-> psucceeds
     "removing the data wrapper" @\ do
       "erroneous" @\ do
         "(String, Integer) /= (String, String)"
@@ -155,23 +180,7 @@ spec = do
       "concatenate two lists, illegal (more than one output)"
         @| validator # pforgetData l1 # pforgetData l2 # invalidContext @-> pfails
 
-mapTestSucceeds :: ClosedTerm (PAsData (PBuiltinMap PByteString PInteger))
-mapTestSucceeds = unTermCont $ do
-  (val, _) <- ptryFrom @PData $ pforgetData sampleMap
-  pure val
-
-mapTestFails :: ClosedTerm (PAsData (PBuiltinMap PInteger PInteger))
-mapTestFails = unTermCont $ do
-  (val, _) <- ptryFrom @PData $ pforgetData sampleMap
-  pure val
-
-sampleMap :: Term _ (PAsData (PBuiltinMap PByteString PInteger))
-sampleMap =
-  pdata $
-    pcons
-      # (ppairDataBuiltin # (pdata $ pconstant "foo") # (pdata $ pconstant 42)) #$ pcons
-      # (ppairDataBuiltin # (pdata $ pconstant "bar") # (pdata $ pconstant 41))
-      # pnil
+------------------- Checking deeply, shallowly and unwrapping ----------------------
 
 checkDeep ::
   forall (target :: PType) (actual :: PType).
@@ -190,7 +199,7 @@ checkDeepUnwrap ::
   , PIsData target
   ) =>
   ClosedTerm (PAsData actual) ->
-  ClosedTerm (PExcess PData (PAsData target))
+  ClosedTerm (PTryFromExcess PData (PAsData target))
 checkDeepUnwrap t = unTermCont $ snd <$> (ptryFrom @PData @(PAsData target) $ pforgetData t)
 
 sampleStructure :: Term _ (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData PInteger)))))))
@@ -216,7 +225,7 @@ pmkNatural :: Term s (PInteger :--> PNatural)
 pmkNatural = plam $ \i -> pif (i #< 0) (ptraceError "could not make natural") (pcon $ PMkNatural i)
 
 instance PTryFrom PData (PAsData PNatural) where
-  type PExcess PData (PAsData PNatural) = PNatural
+  type PTryFromExcess PData (PAsData PNatural) = PNatural
   ptryFrom opq = do
     (wrapped, unwrapped) <- ptryFrom @PData @(PAsData PInteger) opq
     ver <- tcont $ plet $ pmkNatural # unwrapped
@@ -309,7 +318,7 @@ pfind = phoistAcyclic $
       (pcon PNothing)
       xs
 
-------------------- Mocking a transaction ------------------------------------------
+------------------- Mocking a ScriptContext ----------------------------------------
 
 ctx :: [(DatumHash, Datum)] -> Term s PScriptContext
 ctx l = pconstant (ScriptContext (info' l) purpose)
@@ -336,3 +345,23 @@ toDatadList = pdata . (foldr go pnil)
   where
     go :: Integer -> Term _ (PBuiltinList (PAsData PInteger)) -> Term _ (PBuiltinList (PAsData PInteger))
     go i acc = pcons # (pdata $ pconstant i) # acc
+
+------------------- Special cases for maps -----------------------------------------
+
+mapTestSucceeds :: ClosedTerm (PAsData (PBuiltinMap PByteString PInteger))
+mapTestSucceeds = unTermCont $ do
+  (val, _) <- ptryFrom @PData $ pforgetData sampleMap
+  pure val
+
+mapTestFails :: ClosedTerm (PAsData (PBuiltinMap PInteger PInteger))
+mapTestFails = unTermCont $ do
+  (val, _) <- ptryFrom @PData $ pforgetData sampleMap
+  pure val
+
+sampleMap :: Term _ (PAsData (PBuiltinMap PByteString PInteger))
+sampleMap =
+  pdata $
+    pcons
+      # (ppairDataBuiltin # (pdata $ pconstant "foo") # (pdata $ pconstant 42)) #$ pcons
+      # (ppairDataBuiltin # (pdata $ pconstant "bar") # (pdata $ pconstant 41))
+      # pnil
