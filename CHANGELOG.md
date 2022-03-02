@@ -1,7 +1,7 @@
 # Revision history for plutarch
 
 # Unreleased
-- Add `puncons` and `punsafeUncons` functions for deconstructing list.
+- Add `puncons` and `ptryUncons` functions for deconstructing list.
 
 - `TermCont`: Parametrize by result type; add `MonadFail` instance; etc.
 
