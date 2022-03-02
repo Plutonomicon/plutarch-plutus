@@ -143,14 +143,18 @@ ptryUncons ::
   PIsListLike list a =>
   Term s (list a :--> PPair a (list a))
 ptryUncons =
-  plam $ pelimList (\x -> pcon . PPair x) perror
+  phoistAcyclic $
+    plam $
+      pelimList (\x -> pcon . PPair x) perror
 
 -- | Extract head and tail of the list, if list is not empty.
 puncons ::
   PIsListLike list a =>
   Term s (list a :--> PMaybe (PPair a (list a)))
 puncons =
-  plam $ pelimList (\x -> pcon . PJust . pcon . PPair x) (pcon PNothing)
+  phoistAcyclic $
+    plam $
+      pelimList (\x -> pcon . PJust . pcon . PPair x) (pcon PNothing)
 
 -- | Like 'pelimList', but with a fixpoint recursion hatch.
 precList ::
