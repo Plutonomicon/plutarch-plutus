@@ -11,6 +11,8 @@ module Plutarch.Test (
   ptraces,
   pshouldBe,
   (#@?=),
+  -- | Budget expectation
+  psatisfyMaxBudget,
 
   -- * For Development flag tests
   plutarchDevFlagDescribe,
@@ -19,9 +21,14 @@ module Plutarch.Test (
   (@|),
   (@\),
   (@->),
+  (@:->),
   (@==),
   pgoldenSpec,
   PlutarchGoldens,
+
+  -- * Benchmark type for use in `(@:->)`
+  Benchmark (Benchmark, exBudgetCPU, exBudgetMemory, scriptSizeBytes),
+  ScriptSizeBytes,
 
   -- * Deprecated exports
   golden,
@@ -48,11 +55,16 @@ import Test.Syd (
   it,
   pureGoldenTextFile,
   shouldBe,
+  shouldSatisfyNamed,
  )
 
 import Plutarch
 import Plutarch.Bool (PBool (PFalse, PTrue))
 import Plutarch.Evaluate (evalScript)
+import Plutarch.Test.Benchmark (
+  Benchmark (Benchmark, exBudgetCPU, exBudgetMemory, scriptSizeBytes),
+  ScriptSizeBytes,
+ )
 import Plutarch.Test.Golden (
   PlutarchGoldens,
   TermExpectation,
@@ -60,6 +72,7 @@ import Plutarch.Test.Golden (
   evalScriptAlwaysWithBenchmark,
   pgoldenSpec,
   (@->),
+  (@:->),
   (@\),
   (@|),
  )
@@ -98,6 +111,23 @@ psucceeds p =
     (Left _, _, _) -> expectationFailure $ "Term failed to evaluate"
     (Right _, _, _) -> pure ()
 
+-- | Asserts the term evaluates without success
+pfails :: ClosedTerm a -> Expectation
+pfails p = do
+  case evalScript (compile p) of
+    (Left _, _, _) -> pure ()
+    (Right _, _, _) -> expectationFailure $ "Term succeeded"
+
+-- | Expects the benchmark to be within the given max budget
+psatisfyMaxBudget :: Benchmark -> Benchmark -> Expectation
+psatisfyMaxBudget bench maxBudget = do
+  shouldSatisfyNamed bench ("cpu<=" <> show (exBudgetCPU maxBudget)) $ \_ ->
+    exBudgetCPU bench <= exBudgetCPU maxBudget
+  shouldSatisfyNamed bench ("mem<=" <> show (exBudgetMemory maxBudget)) $ \_ ->
+    exBudgetMemory bench <= exBudgetMemory maxBudget
+  shouldSatisfyNamed bench ("size<=" <> show (scriptSizeBytes maxBudget)) $ \_ ->
+    scriptSizeBytes bench <= scriptSizeBytes maxBudget
+
 {- | Asserts that the term evaluates successfully with the given trace sequence
 
   See also: `plutarchDevFlagDescribe`
@@ -135,13 +165,6 @@ plutarchDevFlagDescribe m =
   describe "dev=false" m
 #endif
 {- ORMOLU_ENABLE -}
-
--- | Asserts the term evaluates without success
-pfails :: ClosedTerm a -> Expectation
-pfails p = do
-  case evalScript (compile p) of
-    (Left _, _, _) -> pure ()
-    (Right _, _, _) -> expectationFailure $ "Term succeeded"
 
 -- | Convenient alias for `@-> pshouldBe x`
 (@==) :: ClosedTerm a -> ClosedTerm b -> TermExpectation a

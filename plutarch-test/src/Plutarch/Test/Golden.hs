@@ -1,8 +1,11 @@
+{-# LANGUAGE ImpredicativeTypes #-}
+
 module Plutarch.Test.Golden (
   pgoldenSpec,
   (@|),
   (@\),
   (@->),
+  (@:->),
   TermExpectation,
   PlutarchGoldens,
   goldenKeyString,
@@ -42,9 +45,15 @@ import qualified Plutus.V1.Ledger.Scripts as Scripts
 
 data GoldenValue = GoldenValue
   { goldenValueUplcPreEval :: Text
+  -- ^ Golden string for UPLC
   , goldenValueUplcPostEval :: Text
+  -- ^ Golden string for evaluated UPLC
   , goldenValueBench :: Text
-  , goldenValueExpectation :: Maybe Expectation
+  -- ^ Golden string for benchmark JSON
+  , goldenValueBenchVal :: Benchmark
+  -- ^ `Benchmark` for evaluated UPLC
+  , goldenValueExpectation :: Maybe (Benchmark -> Expectation)
+  -- ^ User test's expectation function
   }
 
 {- | Class of types that represent `GoldenValue`
@@ -54,7 +63,7 @@ data GoldenValue = GoldenValue
 class HasGoldenValue (t :: S -> PType -> Type) where
   mkGoldenValue :: forall a. (forall s. t s a) -> GoldenValue
 
-mkGoldenValue' :: ClosedTerm a -> Maybe Expectation -> GoldenValue
+mkGoldenValue' :: ClosedTerm a -> Maybe (Benchmark -> Expectation) -> GoldenValue
 mkGoldenValue' p mexp =
   let compiledScript = compileD p
       (evaluatedScript, bench) = evalScriptAlwaysWithBenchmark compiledScript
@@ -62,6 +71,7 @@ mkGoldenValue' p mexp =
         (T.pack $ printScript compiledScript)
         (T.pack $ printScript evaluatedScript)
         (TL.toStrict $ Aeson.encodeToLazyText bench)
+        bench
         mexp
 
 -- We derive for `Term s a` only because GHC prevents us from deriving for
@@ -70,23 +80,34 @@ mkGoldenValue' p mexp =
 instance HasGoldenValue Term where
   mkGoldenValue p = mkGoldenValue' (punsafeAsClosedTerm p) Nothing
 
-{- | A `Term` paired with its evaluation expectation
+{- | A `Term` paired with its evaluation/benchmark expectation
 
   Example:
-  >>> TermExpectation (pcon PTrue) $ \p -> pshouldBe (pcon PTrue)
+  >>> TermExpectation (pcon PTrue) $ \(p, _benchmark) -> pshouldBe (pcon PTrue)
 -}
-data TermExpectation' s a = TermExpectation (Term s a) (Term s a -> Expectation)
+data TermExpectation' s a = TermExpectation (Term s a) ((Term s a, Benchmark) -> Expectation)
 
 type TermExpectation a = forall s. TermExpectation' s a
 
 -- | Test an expectation on a golden Plutarch program
 (@->) :: ClosedTerm a -> (ClosedTerm a -> Expectation) -> TermExpectation a
-(@->) p f = TermExpectation p (\p' -> f $ punsafeAsClosedTerm p')
+(@->) p f = p @:-> \(p', _) -> f $ punsafeAsClosedTerm p'
 
 infixr 1 @->
 
+{- | Like `@->` but also takes the benchmark as an argument
+
+  Useful to do assertion checks on post-evaluation benchmark (eg: to check if
+  script size is below certain threshold). Use in conjunction with
+  `psatisfyMaxBudget`.
+-}
+(@:->) :: ClosedTerm a -> ((ClosedTerm a, Benchmark) -> Expectation) -> TermExpectation a
+(@:->) p f = TermExpectation p (\(p', b) -> f (punsafeAsClosedTerm p', b))
+
+infixr 1 @:->
+
 instance HasGoldenValue TermExpectation' where
-  mkGoldenValue (TermExpectation p f) = mkGoldenValue' (punsafeAsClosedTerm p) (Just $ f p)
+  mkGoldenValue (TermExpectation p f) = mkGoldenValue' (punsafeAsClosedTerm p) (Just $ (\b -> f (p, b)))
 
 -- | The key used in the .golden files containing multiple golden values
 newtype GoldenKey = GoldenKey Text
@@ -154,7 +175,7 @@ pgoldenSpec map = do
       pureGoldenTextFile (goldenPathWith "bench") $
         combineGoldens $ fmap goldenValueBench <$> bs
   let asserts = flip mapMaybe bs $ \(k, b) -> do
-        (k,) <$> goldenValueExpectation b
+        (k,) . ($ goldenValueBenchVal b) <$> goldenValueExpectation b
   unless (null asserts) $ do
     forM_ asserts $ \(k, v) ->
       it (goldenKeyString $ "<golden>" <> k <> "assert") v
