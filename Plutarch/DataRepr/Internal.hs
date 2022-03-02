@@ -185,61 +185,29 @@ type family PUnLabel (a :: PLabeledType) :: PType where
 -}
 type PDataSum :: [[PLabeledType]] -> PType
 data PDataSum (defs :: [[PLabeledType]]) (s :: S) where 
-  MkPDataSum :: PDataSum' 'True defs s -> PDataSum defs s 
+  DSZ :: (forall {out :: PType}. (Term s (PDataRecord x) -> Term s out) -> Term s out) 
+      -> PDataSum (x ': xs) s
 
-
-data PDataSum' :: Bool -> [[PLabeledType]] -> PType where 
-  SumZ_ :: forall 
-           {x:: [PLabeledType]} 
-           {s :: S}
-         . PDataSum' 'False '[x] s
-
-  SumZ :: forall 
-          {x:: [PLabeledType]} 
-          {s :: S}
-        . (forall {out :: PType}. (Term s (PDataRecord x) -> Term s out) -> Term s out) 
-       -> PDataSum' 'True '[x] s
-
-  Inj :: forall 
-         {x :: [PLabeledType]} 
-         {xss :: [[PLabeledType]]} 
-         {s :: S} 
-       . (forall {out :: PType}. (Term s (PDataRecord x) -> Term s out) -> Term s out) 
-      -> PDataSum' 'False xss s 
-      -> PDataSum' 'True (x ': xss) s 
-
-  Inj_ :: forall {b :: Bool} {w :: [PLabeledType]} {x :: [PLabeledType]} {xss :: [[PLabeledType]]} {s :: S} 
-        .  PDataSum'  b (x:xss) s 
-        -> PDataSum'  b (w:x:xss) s
+  DSS :: PDataSum xs s -> PDataSum (x ': xs) s
 
 -- the length functions in sop-core gives the actual length, we want length-1
 adjustedLength :: forall x xs proxy. SListI (x:xs) => proxy (x:xs) -> Integer 
 adjustedLength proxy = fromIntegral (lengthSList proxy) - 1  
 
--- the constraint will be satisfied by every nonempty list
 instance SListI (def:defs) => PlutusType (PDataSum (def:defs)) where
   type PInner (PDataSum (def:defs)) _ = PData 
 
-  -- this is reasonably straightforward. we don't need to worry about the SumZ_ case because it's impossible here 
   pcon' :: forall 
            {s :: S} 
            {b :: PType}
          . PDataSum (def:defs) s 
         -> Term s (PInner (PDataSum (def:defs)) b)
-  pcon' (MkPDataSum s) = go s 
-    where 
-      go :: forall 
-            {d :: [PLabeledType]} 
-            {ds :: [[PLabeledType]]} 
-            {s :: S}
-          . PDataSum' 'True (d:ds) s 
-         -> Term s (PInner (PDataSum (d:ds)) b)
-      go  = \case 
-        SumZ f ->  punsafeBuiltin PLC.ConstrData # (pconstant @PInteger $ adjustedLength $ Proxy @(def:defs)) # (f id) -- rewrite this with pconstrBuiltin?
-        Inj f _ -> punsafeBuiltin PLC.ConstrData # (pconstant @PInteger $ adjustedLength $ Proxy @(def:defs)) # (f id) 
-        Inj_ pds -> go pds
+  pcon'  = \case 
+        DSZ f ->  punsafeBuiltin PLC.ConstrData # (pconstant @PInteger $ adjustedLength $ Proxy @(def:defs)) # (f id) -- rewrite this with pconstrBuiltin?
+        DSS rest -> case rest of 
+          DSZ f -> punsafeBuiltin PLC.ConstrData # (pconstant @PInteger $ adjustedLength $ Proxy @(def:defs)) # (f id)
+          dss@(DSS _) -> pcon' dss  
 
-  -- this is more complicated 
   pmatch' :: forall 
              {s :: S} 
              {b :: PType}
@@ -250,33 +218,21 @@ instance SListI (def:defs) => PlutusType (PDataSum (def:defs)) where
     plet (pasConstr #$ pforgetData $ pdata d) $ \d' ->
     plet (pfstBuiltin # d') $ \constr ->
     plet (psndBuiltin # d') $ \args ->
-      go constr args sList (f . MkPDataSum)                     
+      go constr args sList f                      
    where 
-    -- Used to "fill in" the remaining elements of the "right hand side" of a sum once we've determined which element the sum ought to contain.
-    mkEmpty :: forall 
-               {d :: [PLabeledType]} 
-               {ds :: [[PLabeledType]]} 
-               {s :: S}
-             . SListI (d:ds) 
-            => SList (d:ds) 
-            -> PDataSum' 'False (d:ds) s 
-    mkEmpty SCons = case sList @ds of 
-      SNil       -> SumZ_
-      rest@SCons -> Inj_ (mkEmpty rest) 
-
     go :: forall {d :: [PLabeledType]} {ds :: [[PLabeledType]]}
         . Term s PInteger -- the index of the constructor in the sum
        -> Term s (PBuiltinList PData)  -- the inner representation of the record at the index of the first argument 
        -> SList (d:ds) -- a GADT which represents the structure of the sum (can't construct it w/o this)
-       -> (PDataSum' 'True (d:ds) s -> Term s b) -- an accumulator function. represents an empty "left-hand side" of the sum 
+       -> (PDataSum (d:ds) s -> Term s b) -- an accumulator function. represents an empty "left-hand side" of the sum 
        -> Term s b                             
     go constr args SCons g =
       case sList @ds of 
-        SNil ->  g $ SumZ $ \k -> k $ punsafeCoerce args
+        SNil ->  g $ DSZ $ \k -> k $ punsafeCoerce args
         rest@SCons -> 
           pif (constr #== pconstant (adjustedLength $ Proxy @(d:ds))) -- if the index of the constructor matches the size of the sum
-              (g $ Inj (\k -> k $ punsafeCoerce args) $ mkEmpty sList) -- then cons an injection (which contains an element) onto an empty tail, and append the empty left hand side at the front
-              (go constr args rest (g . Inj_)) -- else recurse, "moving the accumulator forward by one"
+              (g $ DSZ (\k -> k $ punsafeCoerce args)) -- then cons an injection (which contains an element) onto an empty tail, and append the empty left hand side at the front
+              (go constr args rest (g . DSS)) -- else recurse, "moving the accumulator forward by one"
 
 instance PIsData (PDataSum defs) where
   pdata = punsafeCoerce
