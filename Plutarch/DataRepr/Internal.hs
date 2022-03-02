@@ -33,7 +33,8 @@ import GHC.TypeLits (
   Symbol,
   TypeError,
   natVal,
-  type (+),
+  type (+), 
+  Natural
  )
 import Generics.SOP (
   All,
@@ -92,13 +93,18 @@ import Plutarch.Builtin (
 import Plutarch.DataRepr.Internal.Generic (MkSum (mkSum))
 import Plutarch.DataRepr.Internal.HList (type Drop, type IndexList)
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal (S (SI))
+import Plutarch.Internal (S (SI), punsafeBuiltin)
 import Plutarch.Internal.TypeFamily (ToPType2)
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstant, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont)
 import Plutarch.Unsafe (punsafeCoerce)
 import qualified Plutus.V1.Ledger.Api as Ledger
+import qualified PlutusCore as PLC
+import Data.Constraint
+import Data.Constraint.Nat (plusNat)
+import Data.Type.Equality
+import qualified Unsafe.Coerce as UNSAFE
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is
  `PBuiltinList PData`.
@@ -180,7 +186,114 @@ type family PUnLabel (a :: PLabeledType) :: PType where
  This is how most data structures are stored on-chain.
 -}
 type PDataSum :: [[PLabeledType]] -> PType
-data PDataSum (defs :: [[PLabeledType]]) (s :: S)
+data PDataSum (defs :: [[PLabeledType]]) (s :: S) where 
+  MkPDataSum :: PDataSum' n 'True defs s -> PDataSum defs s 
+
+data PDataSum' :: Natural -> Bool -> [[PLabeledType]] -> PType where 
+  SumZE :: forall {x:: [PLabeledType]} {s :: S}
+           . PDataSum' 0 'False '[x] s
+
+  SumZF :: forall {x:: [PLabeledType]} {s :: S}
+           . (forall {out :: PType}. (Term s (PDataRecord x) -> Term s out) -> Term s out) 
+           -> PDataSum' 0 'True '[x] s
+
+  InjE :: forall {n :: Natural} {x :: [PLabeledType]} {xss :: [[PLabeledType]]} {s :: S} 
+        . (KnownNat (n+1))
+        => (forall {out :: PType}. (Term s (PDataRecord x) -> Term s out) -> Term s out) 
+        -> PDataSum' n 'False xss s 
+        -> PDataSum' (n + 1) 'True (x ': xss) s 
+
+  InjF :: forall {n :: Natural} {b :: Bool} {x :: [PLabeledType]} {xss :: [[PLabeledType]]} {s :: S} 
+        .  KnownNat (n+1)
+        => PDataSum' n b xss s 
+        -> PDataSum' (n + 1) b (x ': xss) s
+
+-- Used to reconstruct the PDataSum in the pmatch' instance for PlutusType 
+data IndexedSum :: Nat -> [k] -> Type where 
+  IxZ :: forall k (a :: k). IndexedSum 0 '[a]
+
+  IxS :: forall k (a :: k) (as :: [k]) 
+       . IndexedSum (Length as) as -> IndexedSum (Length as + 1) (a ': as)
+
+-- Well, length minus one at least 
+type family Length (xss :: [k]) :: Nat where 
+  Length '[x] = 0 
+  Length (x ': xs) = (Length xs) + 1 
+
+-- Could convert an SList into this, but this is simpler (I don't think SList is suitable here)
+class IndexableSum (defs :: [k]) where 
+  indexSum :: IndexedSum (Length defs) defs 
+
+-- this is kind of a cheap hack and there's probably a better way to do this
+knownLength :: forall n ks. IndexedSum n ks -> Dict (KnownNat n)
+knownLength = \case 
+  IxZ -> Dict 
+  ixed@(IxS rest) -> case knownLength rest of 
+    d@Dict -> go ixed d 
+ where 
+   go :: forall (n' :: Nat) a as . IndexedSum (n' + 1) (a:as) 
+      -> Dict (KnownNat n') 
+      -> Dict (KnownNat (n' + 1))
+   go (IxS _) Dict = mapDict plusNat (Dict :: Dict (KnownNat n', KnownNat 1))
+
+-- maybe don't need the constraints? 
+addLength :: forall k ks. (IndexableSum (k:ks), IndexableSum ks) => Length (k:ks) :~: Length ks + 1 
+addLength = UNSAFE.unsafeCoerce Refl 
+
+-- maybe overlap-related pragmas?
+instance IndexableSum '[k] where 
+  indexSum = IxZ 
+
+instance IndexableSum ks => IndexableSum (k ': ks) where 
+  indexSum = case addLength @k @ks of 
+              Refl -> IxS (indexSum :: IndexedSum (Length ks) ks)
+
+-- the constraint will be satisfied by every nonempty list
+instance IndexableSum defs => PlutusType (PDataSum defs) where
+  type PInner (PDataSum defs) _ = PData 
+
+  pcon' :: forall (s :: S) (b :: PType). PDataSum defs s -> Term s (PInner (PDataSum defs) b)
+  pcon' (MkPDataSum s) = go s 
+    where 
+      go :: forall {n :: Natural} {defs :: [[PLabeledType]]} {s :: S}. PDataSum' n 'True defs s -> Term s (PInner (PDataSum defs) b)
+      go = \case 
+        SumZF f ->  punsafeBuiltin PLC.ConstrData # (pconstant @PInteger (natVal $ Proxy @n)) # (f id) -- rewrite this with pconstrBuiltin
+        InjE f _ -> punsafeBuiltin PLC.ConstrData # (pconstant @PInteger (natVal $ Proxy @n)) # (f id) 
+        InjF pds -> go pds 
+
+
+  pmatch' :: forall (s :: S) (b :: PType)
+           . Term s (PInner (PDataSum defs) b)
+          -> (PDataSum defs s -> Term s b) 
+          -> Term s b
+  pmatch' d f = 
+    plet (pasConstr #$ pforgetData $ pdata d) $ \d' ->
+    plet (pfstBuiltin # d') $ \constr ->
+    plet (psndBuiltin # d') $ \args ->
+      go 
+        constr args (indexSum :: IndexedSum (Length defs) defs) (f . MkPDataSum)                     
+   where 
+    iLen :: forall n as s. IndexedSum n as -> Term s PInteger 
+    iLen ixed = pconstant $ natVal (Proxy @n) \\ knownLength ixed -- pconstant bad?
+
+    mkEmpty :: forall n as s. IndexedSum n as -> PDataSum' n 'False as s 
+    mkEmpty = \case 
+      IxZ -> SumZE 
+      i@(IxS rest) -> InjF (mkEmpty rest) \\ knownLength i 
+
+    go :: forall n as
+        . Term s PInteger 
+       -> Term s (PBuiltinList PData)  
+       -> IndexedSum (n) as
+       -> (PDataSum' n 'True as s -> Term s b)
+       -> Term s b 
+    go constr args ias@(IxS rest) g = 
+      pif (constr #== iLen ias)
+          (g $ InjE (\k -> k $ punsafeCoerce args) $ mkEmpty rest)
+          (go constr args rest (g . InjF))
+        \\ knownLength ias 
+
+    go _ args IxZ g = g $ SumZF $ \k -> k $ punsafeCoerce args 
 
 instance PIsData (PDataSum defs) where
   pdata = punsafeCoerce
@@ -228,7 +341,7 @@ pmatchDataSum d handlers =
     plet (pfstBuiltin # d') $ \constr ->
       plet (psndBuiltin # d') $ \args ->
         let handlers' = applyHandlers args handlers
-         in runTermCont (findCommon handlers') $ \common ->
+        in runTermCont (findCommon handlers') $ \common ->
               go
                 common
                 0
@@ -381,3 +494,4 @@ class IsBuiltinList a where
 
 instance IsBuiltinList (PDataRecord l) where
   dataListFrom = punsafeCoerce
+
