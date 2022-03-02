@@ -12,10 +12,10 @@ module Plutarch.TryFrom (
   pcheckMap,
 ) where
 
-import GHC.TypeLits (Nat, KnownNat, natVal, type (+))
 import Data.Proxy (Proxy (Proxy))
+import GHC.TypeLits (KnownNat, Nat, natVal, type (+))
 
---import Data.Kind (Constraint)
+-- import Data.Kind (Constraint)
 
 import Plutarch.Builtin (
   PAsData,
@@ -25,6 +25,7 @@ import Plutarch.Builtin (
   PData,
   PIsData (pfromData),
   pasByteStr,
+  pasConstr,
   pasInt,
   pasList,
   pasMap,
@@ -33,7 +34,6 @@ import Plutarch.Builtin (
   pfstBuiltin,
   ppairDataBuiltin,
   psndBuiltin,
-  pasConstr,
  )
 
 import Plutarch.ByteString (PByteString)
@@ -238,49 +238,50 @@ instance
             # pdnil
     pure $ (punsafeCoerce opq, ver)
 
-class SumValidation (n::Nat) (sum :: [[PLabeledType]] ) where 
+class SumValidation (n :: Nat) (sum :: [[PLabeledType]]) where
   validateSum :: Term s PData -> Term s (PBuiltinList PData)
 
-instance 
+instance
   {-# OVERLAPPABLE #-}
-  forall n x xs. 
+  forall n x xs.
   ( PTryFrom PData (PAsData (PDataRecord x))
-  , SumValidation (n+1) xs
+  , SumValidation (n + 1) xs
   , KnownNat n
-  ) => 
-  SumValidation n (x ': xs) where 
-  validateSum s = unTermCont $ 
-    do let n :: Integer
-           n = natVal (Proxy @n)
-       elem <- tcont $ plet $ pasConstr #$ s
-       let snd' :: Term _ (PBuiltinList PData)
-           snd' = pif (fromInteger n #== (pfstBuiltin # elem))
-                   (unTermCont $ do 
-                     let rec = pdata $ psndBuiltin # elem
-                     y <- snd <$> (ptryFrom @PData @(PAsData (PDataRecord x)) $ pforgetData rec)
-                     pure $ punsafeCoerce (y :: Term _ (PTryFromExcess PData (PAsData (PDataRecord x))))
-                   )
-                   (validateSum @(n+1) @xs $ punsafeCoerce s)
-       tcont $ plet snd'
-       
+  ) =>
+  SumValidation n (x ': xs)
+  where
+  validateSum s = unTermCont $
+    do
+      let n :: Integer
+          n = natVal (Proxy @n)
+      elem <- tcont $ plet $ pasConstr #$ s
+      let snd' :: Term _ (PBuiltinList PData)
+          snd' =
+            pif
+              (fromInteger n #== (pfstBuiltin # elem))
+              ( unTermCont $ do
+                  let rec = pdata $ psndBuiltin # elem
+                  y <- snd <$> (ptryFrom @PData @(PAsData (PDataRecord x)) $ pforgetData rec)
+                  pure $ punsafeCoerce (y :: Term _ (PTryFromExcess PData (PAsData (PDataRecord x))))
+              )
+              (validateSum @(n + 1) @xs $ punsafeCoerce s)
+      tcont $ plet snd'
+
+instance {-# OVERLAPPING #-} SumValidation n '[] where
+  validateSum _ = perror
 
 instance
   {-# OVERLAPPING #-}
-  SumValidation n '[] where 
-  validateSum _ = perror
-
-instance 
-  {-# OVERLAPPING #-}
   forall ys.
   ( SumValidation 0 ys
-  --, AllRecordsPTryFrom ys
-  )=>
-  PTryFrom PData (PAsData (PDataSum ys)) where 
+  -- , AllRecordsPTryFrom ys
+  ) =>
+  PTryFrom PData (PAsData (PDataSum ys))
+  where
   type PTryFromExcess PData (PAsData (PDataSum ys)) = PUnit
-  ptryFrom opq = do 
+  ptryFrom opq = do
     _ <- tcont $ plet $ validateSum @0 @ys opq
     pure (punsafeCoerce opq, pcon PUnit)
-
 
 ----------------------- POpaque Instances -----------------------------------------------
 

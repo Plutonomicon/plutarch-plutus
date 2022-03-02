@@ -1,6 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.TryFromSpec (spec) where
 
@@ -15,7 +15,7 @@ import Plutus.V1.Ledger.Api (
  )
 
 import PlutusTx (
-  Data (Constr, I, B), 
+  Data (B, Constr, I),
  )
 
 import Plutarch.Unsafe (
@@ -71,16 +71,18 @@ spec = do
         @-> pfails
       "Map Int String /= Map Int Int"
         @| mapTestFails @-> pfails
-      "PDataSum constr 2" 
+      "PDataSum constr 2"
         @| checkDeep
-          @(PDataSum '[ '[ "i1" ':=  PInteger, "b2" ':= PByteString ]])
-          @(PDataSum '[ '[ "i1" ':=  PInteger, "b2" ':= PByteString ], '[ "i3" ':= PInteger, "b4" ':= PByteString ] ])
-          (punsafeCoerce $ pconstant $ Constr 1 [I 5, B "foo"]) @-> pfails
-      "PDataSum wrong record type" 
-        @| checkDeep 
-          @(PDataSum '[ '[ "i1" ':=  PInteger, "b2" ':= PByteString ], '[ "i3" ':= PByteString, "b4" ':= PByteString ] ])
-          @(PDataSum '[ '[ "i1" ':=  PInteger, "b2" ':= PByteString ], '[ "i3" ':= PInteger, "b4" ':= PByteString ] ])
-          (punsafeCoerce $ pconstant $ Constr 2 [I 5, B "foo"])  @-> pfails
+          @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString]])
+          @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
+          (punsafeCoerce $ pconstant $ Constr 1 [I 5, B "foo"])
+          @-> pfails
+      "PDataSum wrong record type"
+        @| checkDeep
+          @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PByteString, "b4" ':= PByteString]])
+          @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
+          (punsafeCoerce $ pconstant $ Constr 2 [I 5, B "foo"])
+          @-> pfails
     "working" @\ do
       "(String, String) == (String, String)"
         @| checkDeep
@@ -114,16 +116,18 @@ spec = do
         @-> psucceeds
       "Map Int String == Map Int String"
         @| mapTestSucceeds @-> psucceeds
-      "PDataSum constr 0" 
-        @| checkDeep 
-          @(PDataSum '[ '[ "i1" ':=  PInteger, "b2" ':= PByteString ], '[ "i3" ':= PInteger, "b4" ':= PByteString ] ])
-          @(PDataSum '[ '[ "i1" ':=  PInteger, "b2" ':= PByteString ], '[ "i3" ':= PInteger, "b4" ':= PByteString ] ])
-          (punsafeCoerce $ pconstant $ Constr 0 [I 5, B "foo"]) @-> psucceeds
-      "PDataSum constr 1" 
-        @| checkDeep 
-          @(PDataSum '[ '[ "i1" ':=  PInteger, "b2" ':= PByteString ], '[ "i3" ':= PInteger, "b4" ':= PByteString ] ])
-          @(PDataSum '[ '[ "i1" ':=  PInteger, "b2" ':= PByteString ], '[ "i3" ':= PInteger, "b4" ':= PByteString ] ])
-          (punsafeCoerce $ pconstant $ Constr 1 [I 5, B "foo"]) @-> psucceeds
+      "PDataSum constr 0"
+        @| checkDeep
+          @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
+          @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
+          (punsafeCoerce $ pconstant $ Constr 0 [I 5, B "foo"])
+          @-> psucceeds
+      "PDataSum constr 1"
+        @| checkDeep
+          @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
+          @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
+          (punsafeCoerce $ pconstant $ Constr 1 [I 5, B "foo"])
+          @-> psucceeds
     "removing the data wrapper" @\ do
       "erroneous" @\ do
         "(String, Integer) /= (String, String)"

@@ -175,10 +175,7 @@ type family PLabelIndex (name :: Symbol) (as :: [PLabeledType]) :: Nat where
 type family PUnLabel (a :: PLabeledType) :: PType where
   PUnLabel (name ':= a) = a
 
-instance
-  {-# OVERLAPPABLE #-}
-  PIsData (PDataRecord xs)
-  where
+instance {-# OVERLAPPABLE #-} PIsData (PDataRecord xs) where
   pfromData x = punsafeBuiltin PLC.UnListData # pforgetData x
   pdata x = punsafeBuiltin PLC.ListData # x
 
