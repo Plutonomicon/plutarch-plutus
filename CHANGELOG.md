@@ -3,6 +3,8 @@
 # Unreleased
 - Add `puncons` and `ptryUncons` functions for deconstructing list.
 
+  Started by: [#333](https://github.com/Plutonomicon/plutarch/pull/333)
+
 - `TermCont`: Parametrize by result type; add `MonadFail` instance; etc.
 
   Also, export from `Plutarch.TermCont`, and then from `Plutarch.Prelude` (TermCont is no longer exported by `Plutarch.Internal`).
