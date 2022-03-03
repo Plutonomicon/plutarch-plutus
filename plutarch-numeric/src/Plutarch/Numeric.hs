@@ -43,6 +43,7 @@ module Plutarch.Numeric (
   -- ** Combination
   Combination.Distributive (..),
   Combination.RemoveZero (..),
+  Combination.PRemoveZero (..),
   Combination.Euclidean (..),
   Combination.Arithmetical (..),
   Combination.Divisible (..),

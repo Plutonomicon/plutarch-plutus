@@ -42,7 +42,7 @@ import Plutarch.Numeric.Ratio (
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
-import Prelude hiding (negate, quot, rem, (*), (+), (-))
+import Prelude hiding (abs, div, mod, negate, quot, rem, (*), (+), (-), (/))
 import Prelude qualified
 
 {- | A semirig (semiring without a neutral additive element) formed from an
@@ -231,25 +231,32 @@ instance
 {- | A generalization of a Euclidean domain, except that it \'extends\' a
  semiring, not a ring.
 
+ = Note
+
+ Morally speaking, 'RemoveZero' or 'PRemoveZero' should be superclass
+ constraints for 'Euclidean'. However, as these would be different for
+ different types, we cannot actually choose one or the other, as this
+ would then make half of our desired instances unwritable.
+
+ Therefore, any instance of this type class should /also/ be an instance of
+ either 'RemoveZero' or 'PRemoveZero'. The laws are stated in terms of
+ 'RemoveZero' being that choice, but the 'PRemoveZero' equivalents should
+ follow similarly.
+
  = Laws
 
  @'zero'@ must annihilate multiplication left and right; specifically, @x '*'
  'zero' = 'zero' '*' x = 'zero'@. Additionally, 'fromNatural' must describe the
  unique semiring homomorphism from 'Natural' to the instance, which must be an
  extension of the unique semirig homomorphism described by 'fromNZNatural' for
- nonzero values. Thus, the following must hold:
+ zerofree values. Thus, the following must hold:
 
  * @'fromNatural' 'zero'@ @=@ @'zero'@
  * If @'Just' m = 'removeZero' n@, then @'fromNatural' n = 'fromNZNatural' m@
 
- Furthermore, 'removeZero' and 'zeroExtend' should form a partial isomorphism
- between a type and this instance (acting as the zero extension of that type).
- This must be consistent with addition and multiplication, as witnessed by
- '+^' and '*^'. Specifically, all the following must hold:
+ Furthermore, '+^' and '*^' must be consistent with '+' and '*', but for
+ zerofree inputs. Specifically:
 
- * @'removeZero' 'zero'@ @=@ @'Nothing'@
- * If @x '/=' 'zero'@, then @'removeZero' x = 'Just' y@
- * @removeZero '.' zeroExtend@ @=@ @'Just'@
  * @x '+^' y@ @=@ @x '+' 'zeroExtend' y@
  * @x '*^' y@ @=@ @x '*' 'zeroExtend' y@
 
@@ -285,6 +292,11 @@ class
 
   -- | @since 1.0
   fromNatural :: Natural -> a
+
+infixl 6 +^
+infixl 7 *^
+infixl 7 `quot`
+infixl 7 `rem`
 
 -- | @since 1.0
 instance Euclidean Integer NZInteger where
@@ -456,30 +468,40 @@ instance Euclidean (Term s (PRatio PNatural)) (Term s (PRatio PNZNatural)) where
  'div' and 'mod' must be extensions of the description of Euclidean division
  provided by 'quot' and 'rem'. Thus:
 
- * @'div' ('abs' x) ('abs' y)@ @=@ @'quot' ('abs' x) ('abs' y)@
- * @'mod' ('abs' x) ('abs' y)@ @=@ @'rem' ('abs' x) ('abs' y)@
+ * @'div' ('Plutarch.Numeric.Multiplicative.abs' x)
+ ('Plutarch.Numeric.Multiplicative.abs' y)@ @=@ @'quot'
+ ('Plutarch.Numeric.Multiplicative.abs' x) ('Plutarch.Numeric.Multiplicative.abs'
+ y)@
+ * @'mod' ('Plutarch.Numeric.Multiplicative.abs' x)
+ ('Plutarch.Numeric.Multiplicative.abs' y)@ @=@ @'rem'
+ ('Plutarch.Numeric.Multiplicative.abs' x)
+ ('Plutarch.Numeric.Multiplicative.abs' y)@
  * If @'div' x y = q@ and @'mod' x y = r@, then @(q '*^' y) '+' r = x@.
 
  /TODO:/ Spell out precisely how 'div' and 'mod' differ on negatives.
 
- Furthermore, @'removeZero'@ and @'zeroExtend'@ must be consistent with
- additive inverses:
+ /TODO:/ Spell out '-^' laws.
 
- * @x '-^' y@ @=@ @x '-' 'zeroExtend' y@
+ /TODO:/ Note how 'Plutarch.Numeric.Multiplicative.abs' interacts with signs.
 
- Lastly, 'fromInteger' must describe the unique ring homomorphism from
- 'Integer' to the instance, which must be an extension of the unique semiring
- homomorphism described by 'fromNatural'. It also must agree with
- 'fromNZInteger' on the nonzero part of the instance. Specifically, we must have:
+ Lastly, 'Plutarch.Numeric.Combination.fromInteger' must describe the unique
+ ring homomorphism from 'Integer' to the instance, which must be an extension
+ of the unique semiring homomorphism described by 'fromNatural'. It also must
+ agree with 'fromNZInteger' on the zerofree part of the instance. Specifically,
+ we must have:
 
- * If @'Just' m = 'toNatural' n@, then @'fromInteger' n
- = 'fromNatural' m@
- * If @'toNatural' n = 'Nothing@, then @'fromInteger' n
- = 'negate' '.' 'fromInteger' . 'abs' '$' n@.
- * @'fromInteger' '.' 'zeroExtend' '$' x@ @=@ @'zeroExtend' '.' 'fromNZInteger'
+ * If @'Just' m = 'Plutarch.Numeric.Natural.toNatural' n@, then
+ @'Plutarch.Numeric.Combination.fromInteger' n = 'fromNatural' m@
+ * If @'Plutarch.Numeric.Natural.toNatural' n = 'Nothing@, then
+ @'Plutarch.Numeric.Combination.fromInteger' n = 'negate' '.'
+ 'Plutarch.Numeric.Combination.fromInteger' .
+ 'Plutarch.Numeric.Multiplicative.abs' '$' n@.
+ * @'Plutarch.Numeric.Combination.fromInteger' '.' 'zeroExtend' '$' x@ @=@
+ @'zeroExtend' '.' 'fromNZInteger'
   '$' x@
- * If @'removeZero' x = 'Just' y@, then @'removeZero' '.' 'fromInteger' '$' x =
- 'Just' . 'fromNZInteger' '$' y@.
+ * If @'removeZero' x = 'Just' y@, then @'removeZero' '.'
+ 'Plutarch.Numeric.Combination.fromInteger' '$' x = 'Just' . 'fromNZInteger'
+ '$' y@.
 
  @since 1.0
 -}
@@ -503,6 +525,10 @@ class
 
   -- | @since 1.0
   fromNZInteger :: NZInteger -> nz
+
+infixl 6 -^
+infixl 7 `div`
+infixl 7 `mod`
 
 -- | @since 1.0
 instance Arithmetical Integer NZInteger where
@@ -573,7 +599,7 @@ instance Arithmetical (Term s (PRatio PInteger)) (Term s (PRatio PNZInteger)) wh
 
  = Laws
 
- @'reciprocal'@ has to act as a multiplicative inverse on the nonzero part of
+ @'reciprocal'@ has to act as a multiplicative inverse on the zerofree part of
  the instance, with division defined as multiplication by the reciprocal.
  Thus, we have:
 
@@ -594,6 +620,8 @@ class
 
   -- | @since 1.0
   reciprocal :: nz -> nz
+
+infixl 7 /
 
 -- | @since 1.0
 instance Divisible (Ratio Integer) (Ratio NZInteger) where

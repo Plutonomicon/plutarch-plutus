@@ -43,6 +43,8 @@ class MultiplicativeSemigroup a where
   -- | @since 1.0
   (*) :: a -> a -> a
 
+infixl 7 *
+
 {- | Multiplication for 'Integer' is commutative.
 
  @since 1.0
@@ -132,7 +134,7 @@ instance
 
  = Laws
 
- Formally, an instance of 'AdditiveMonoid' must be a monoid with 'one' as its
+ Formally, an instance of 'MultiplicativeMonoid' must be a monoid with 'one' as its
  identity. This requires that @'one' '*' x = x '*' 'one' = x@. Furthermore,
  'abs' and 'signum' must follow these laws:
 

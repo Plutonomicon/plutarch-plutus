@@ -49,6 +49,8 @@ class AdditiveSemigroup a where
   -- | @since 1.0
   (+) :: a -> a -> a
 
+infixl 6 +
+
 -- | @since 1.0
 instance AdditiveSemigroup Integer where
   {-# INLINEABLE (+) #-}
@@ -165,6 +167,8 @@ class (AdditiveMonoid a) => AdditiveGroup a where
   negate :: a -> a
   negate x = zero - x
 
+infixl 6 -
+
 -- | @since 1.0
 instance AdditiveGroup Integer where
   {-# INLINEABLE (-) #-}
@@ -217,6 +221,8 @@ instance
 class (AdditiveMonoid a) => AdditiveCMM a where
   -- | @since 1.0
   (^-) :: a -> a -> a
+
+infixl 6 ^-
 
 -- | @since 1.0
 instance AdditiveCMM Natural where

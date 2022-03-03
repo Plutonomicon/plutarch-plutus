@@ -58,7 +58,10 @@ instance (PEq a) => PEq (PRatio a) where
   t #== t' = pmatchRatios t t' $ \num num' den den' ->
     (num #== num') #&& (den #== den')
 
--- | @since 1.0
+{- | As 'ratio', but for Plutarch 'Term's.
+
+ @since 1.0
+-}
 pconRatio ::
   forall (a :: S -> Type) (s :: S).
   (PFractionable a) =>
@@ -96,7 +99,10 @@ instance (PConstant a) => PConstant (Ratio a) where
         Nothing -> Nothing
         Just num' -> Just . Ratio $ (num', NZNatural den)
 
--- | @since 1.0
+{- | Given a numerator and a denominator, construct a 'Ratio'.
+
+ @since 1.0
+-}
 ratio ::
   forall (a :: Type).
   (Fractionable a) =>
@@ -107,35 +113,51 @@ ratio num den =
   let scaledown = findScale num den
    in Ratio (unscale num scaledown, unscale den scaledown)
 
--- | @since 1.0
+{- | Retrieves the numerator.
+
+ @since 1.0
+-}
 numerator ::
   forall (a :: Type).
   Ratio a ->
   a
 numerator (Ratio (x, _)) = x
 
--- | @since 1.0
+{- | Retrieves the denominator.
+
+ @since 1.0
+-}
 denominator ::
   forall (a :: Type).
   Ratio a ->
   NZNatural
 denominator (Ratio (_, y)) = y
 
--- | @since 1.0
+{- | As 'numerator', but for a Plutarch 'Term' (and ratio).
+
+ @since 1.0
+-}
 pnumerator ::
   forall (a :: S -> Type) (s :: S).
   PRatio a s ->
   Term s a
 pnumerator (PRatio t) = pmatch t $ \(PPair t' _) -> t'
 
--- | @since 1.0
+{- | As 'denominator', but for a Plutarch 'Term' (and ratio).
+
+ @since 1.0
+-}
 pdenominator ::
   forall (a :: S -> Type) (s :: S).
   PRatio a s ->
   Term s PNZNatural
 pdenominator (PRatio t) = pmatch t $ \(PPair _ t') -> t'
 
--- | @since 1.0
+{- | Helper for \'deconstructing\' a @'Term' s ('PRatio' a)@ into its numerator
+ and denominator parts.
+
+ @since 1.0
+-}
 pmatchRatio ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   Term s (PRatio a) ->
@@ -146,7 +168,11 @@ pmatchRatio t f =
     pmatch pp $ \(PPair num den) ->
       f num den
 
--- | @since 1.0
+{- | Helper for \'deconstructing\' two @'Term' s ('PRatio' a)@s into their
+ respective numerators and denominators.
+
+ @since 1.0
+-}
 pmatchRatios ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   Term s (PRatio a) ->
