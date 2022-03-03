@@ -3,6 +3,14 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE UndecidableSuperClasses #-}
 
+{- |
+Module: Plutarch.Lift
+Description: Conversion to and from Plutarch terms and Haskell types
+
+This module defines functions, associated type families, and newtypes for use with
+[@DerivingVia@](https://ryanglscott.github.io/papers/deriving-via.pdf) to allow
+Plutarch to convert to and from PTypes and Haskell types.
+-}
 module Plutarch.Lift (
   -- * Converstion between Plutarch terms and Haskell types
   pconstant,
@@ -16,6 +24,7 @@ module Plutarch.Lift (
   DerivePConstantDirect (..),
   DerivePConstantViaNewtype (..),
   DerivePConstantViaBuiltin (..),
+  PConstantable,
 
   -- * Internal use
   PUnsafeLiftDecl (..),
@@ -23,7 +32,7 @@ module Plutarch.Lift (
 
 import Control.Lens ((^?))
 import Data.Coerce
-import Data.Kind (Type)
+import Data.Kind (Type, Constraint)
 import GHC.Stack (HasCallStack)
 import Plutarch.Evaluate (EvalError, evalScript)
 import Plutarch.Internal (ClosedTerm, PType, Term, compile, punsafeConstantInternal)
@@ -100,7 +109,11 @@ plift prog = case plift' prog of
             <> maybe "" (\x -> "cause: " <> show x) causeMaybe
   Left (LiftError_EvalError e) -> error $ "plift failed: erring term: " <> show e
 
--- TODO: Add haddock
+{- | Newtype wrapper for deriving @PConstant@ when the wrapped type is directly
+represented by a builtin UPLC type that is /not/ @Data@.
+
+  Ex: @PInteger@ is directly represented as a builtin integer.
+-}
 newtype DerivePConstantDirect (h :: Type) (p :: PType) = DerivePConstantDirect h
 
 instance
@@ -112,8 +125,45 @@ instance
   pconstantToRepr = coerce
   pconstantFromRepr = Just . coerce
 
--- TODO: Add haddock
-newtype DerivePConstantViaNewtype (h :: Type) (p :: PType) (p' :: PType) = DerivePConstantViaNewtype h
+{-| Newtype wrapper for deriving @PConstant@ when the wrapped type is represented
+indirectly by a builtin UPLC type that is /not/ @Data@.
+
+  Ex: @PPubKeyHash@ is a newtype to a @PByteString@ and @PByteString@ is directly
+  represented as a builtin bytestring.
+
+Polymorphic types can be derived as follows:
+
+Usage:
+
+
+>
+> deriving via
+>   (DerivePConstantViaNewType
+>     (Foo a)
+>     (PFoo (PConstanted a))
+>     (PConstanted a))
+>   instance
+>     PConstantable a =>
+>     PConstant (Foo a)
+-}
+newtype DerivePConstantViaNewtype
+  (h :: Type)    -- | The Haskell newtype we are deriving a @PConstant@ instance for
+  (p :: PType)   -- | PType to associate with the newtype
+  (p' :: PType)  -- | Underlying UPLC representation type
+  = DerivePConstantViaNewtype h
+
+{-| Type synonym to simplify deriving of @PConstant@ via @DerivePConstantViaNewtype@.
+
+A newtype @Foo a@ is considered "Constantable" if:
+
+- The wrapped type @a@ has a @PConstant@ instance.
+- The lifted type of @a@ has a @PUnsafeLiftDecl@ instance.
+- There is type equality between @a@ and @PLifted (PConstanted a)@.
+
+These constraints are sufficient to derive a @PConstant@ instance for the newtype.
+-}
+type PConstantable :: Type -> Constraint
+type PConstantable a =  (a ~ (PLifted (PConstanted a)), PUnsafeLiftDecl (PConstanted a), PConstant a)
 
 instance (PLift p, PLift p', Coercible h (PLifted p')) => PConstant (DerivePConstantViaNewtype h p p') where
   type PConstantRepr (DerivePConstantViaNewtype h p p') = PConstantRepr (PLifted p')
