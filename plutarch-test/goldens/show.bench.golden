@@ -1,0 +1,13 @@
+int.0 {"exBudgetCPU":6284427,"exBudgetMemory":14017,"scriptSizeBytes":317}
+int.5 {"exBudgetCPU":8760152,"exBudgetMemory":20027,"scriptSizeBytes":317}
+int.-5 {"exBudgetCPU":9393754,"exBudgetMemory":20832,"scriptSizeBytes":317}
+int.10 {"exBudgetCPU":12293936,"exBudgetMemory":26039,"scriptSizeBytes":317}
+int.-10 {"exBudgetCPU":12927538,"exBudgetMemory":26844,"scriptSizeBytes":317}
+int.14 {"exBudgetCPU":14274516,"exBudgetMemory":30847,"scriptSizeBytes":317}
+int.-14 {"exBudgetCPU":14908118,"exBudgetMemory":31652,"scriptSizeBytes":317}
+int.102 {"exBudgetCPU":18800590,"exBudgetMemory":39265,"scriptSizeBytes":318}
+int.-102 {"exBudgetCPU":19434192,"exBudgetMemory":40070,"scriptSizeBytes":318}
+maybe.nothing {"exBudgetCPU":1458977,"exBudgetMemory":5000,"scriptSizeBytes":354}
+maybe.just {"exBudgetCPU":15676121,"exBudgetMemory":34060,"scriptSizeBytes":356}
+either.right {"exBudgetCPU":15766440,"exBudgetMemory":34361,"scriptSizeBytes":373}
+maybe.either {"exBudgetCPU":17334403,"exBudgetMemory":37506,"scriptSizeBytes":434}

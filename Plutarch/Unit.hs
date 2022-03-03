@@ -3,7 +3,8 @@
 
 module Plutarch.Unit (PUnit (..)) where
 
-import Plutarch (PlutusType (PInner, pcon', pmatch'), Term, pcon)
+import qualified Data.Text as T
+import Plutarch (PlutusType (PInner, pcon', pmatch'), Term, pcon, pmatch)
 import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
@@ -12,8 +13,11 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
   pconstant,
  )
+import Plutarch.Show (PShow (pshow'))
 
 data PUnit s = PUnit
+  deriving stock (Show)
+
 instance PUnsafeLiftDecl PUnit where type PLifted PUnit = ()
 deriving via (DerivePConstantDirect () PUnit) instance (PConstant ())
 
@@ -34,3 +38,6 @@ instance Semigroup (Term s PUnit) where
 
 instance Monoid (Term s PUnit) where
   mempty = pcon PUnit
+
+instance PShow PUnit where
+  pshow' _ = flip pmatch $ pconstant . T.pack . show
