@@ -7,7 +7,7 @@ import Data.Kind (Type)
 import Plutarch (S, Term, pfix, plam, (#), (#$), type (:-->))
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Integer (PInteger, prem)
-import Plutarch.Numeric.NZInteger (NZInteger (NZInteger))
+import Plutarch.Numeric.NZInteger (NZInteger (NZInteger), PNZInteger)
 import Plutarch.Numeric.NZNatural (NZNatural (NZNatural), PNZNatural)
 import Plutarch.Numeric.Natural (Natural (Natural), PNatural)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
@@ -73,6 +73,15 @@ instance PFractionable PInteger where
   punscale t t' = punsafeBuiltin PLC.QuotientInteger # t # t'
   {-# INLINEABLE pfindScale #-}
   pfindScale t t' = punsafeCoerce (pgcd # t #$ punsafeCoerce t')
+
+-- | @since 1.0
+instance PFractionable PNZInteger where
+  {-# INLINEABLE pscale #-}
+  pscale t t' = punsafeBuiltin PLC.MultiplyInteger # t # t'
+  {-# INLINEABLE punscale #-}
+  punscale t t' = punsafeBuiltin PLC.QuotientInteger # t # t'
+  {-# INLINEABLE pfindScale #-}
+  pfindScale t t' = punsafeCoerce (pgcd #$ punsafeCoerce t #$ punsafeCoerce t')
 
 -- | @since 1.0
 instance PFractionable PNZNatural where

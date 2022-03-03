@@ -42,6 +42,7 @@ module Plutarch.Numeric (
 
   -- ** Combination
   Combination.Distributive (..),
+  Combination.RemoveZero (..),
   Combination.Euclidean (..),
   Combination.Arithmetical (..),
   Combination.Divisible (..),
@@ -98,9 +99,6 @@ module Plutarch.Numeric (
   Rat.pdenominator,
   Rat.pmatchRatio,
   Rat.pmatchRatios,
-
-  -- ** Other
-  (Combination.^-^),
 ) where
 
 import Plutarch.Numeric.Additive qualified as Additive

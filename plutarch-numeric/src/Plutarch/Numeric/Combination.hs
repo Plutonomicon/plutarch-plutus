@@ -12,27 +12,37 @@ module Plutarch.Numeric.Combination (
 ) where
 
 import Plutarch (Term, pcon, plet, pmatch, (#))
-import Plutarch.Bool (pif, (#==))
+import Plutarch.Bool (pif, (#<=), (#==))
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (pconstant)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Numeric.Additive (
-  AdditiveGroup,
+  AdditiveGroup (negate, (-)),
   AdditiveMonoid (zero),
-  AdditiveSemigroup,
+  AdditiveSemigroup ((+)),
  )
-import Plutarch.Numeric.Fractional (Fractionable, PFractionable)
+import Plutarch.Numeric.Fractional (
+  Fractionable (scale),
+  PFractionable (pscale),
+ )
 import Plutarch.Numeric.Multiplicative (
   MultiplicativeMonoid (one),
+  (*),
  )
 import Plutarch.Numeric.NZInteger (NZInteger (NZInteger), PNZInteger)
 import Plutarch.Numeric.NZNatural (NZNatural (NZNatural), PNZNatural)
 import Plutarch.Numeric.Natural (Natural (Natural), PNatural)
-import Plutarch.Numeric.Ratio (PRatio, Ratio (Ratio), pmatchRatio)
+import Plutarch.Numeric.Ratio (
+  PRatio,
+  Ratio (Ratio),
+  pconRatio,
+  pmatchRatio,
+  ratio,
+ )
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
-import Prelude hiding ((*), (+), (-))
+import Prelude hiding (negate, quot, rem, (*), (+), (-))
 import Prelude qualified
 
 {- | A semirig (semiring without a neutral additive element) formed from an
@@ -104,8 +114,23 @@ instance
         (fromNZNatural n :: Term s a)
         (one :: Term s PNZNatural)
 
--- | @since 1.0
+{- | Describes a bijective relation between a numeric type and an equivalent
+ type which is zerofree (that is, has no counterpart to 'zero').
+
+ = Laws
+
+ 'removeZero' and 'zeroExtend' should form a partial isomorphism, such that
+ 'zero' is not an inverse of any element. More precisely, the following must
+ hold:
+
+ * @'removeZero' '.' 'zeroExtend'@ @=@ @'id'@
+ * @'removeZero' 'zero'@ @=@ @'Nothing'@
+
+ @since 1.0
+-}
 class (AdditiveMonoid a) => RemoveZero a nz | a -> nz, nz -> a where
+  {-# MINIMAL removeZero, zeroExtend #-}
+
   -- | @since 1.0
   removeZero :: a -> Maybe nz
 
@@ -142,8 +167,25 @@ instance
   {-# INLINEABLE zeroExtend #-}
   zeroExtend (Ratio (num, den)) = Ratio (zeroExtend num, den)
 
--- | @since 1.0
-class (forall s. AdditiveMonoid (Term s a)) => PRemoveZero a nz | a -> nz, nz -> a where
+{- | This is \'morally equivalent\' to 'RemoveZero', except that it's designed
+ for convenient use with Plutarch 'Term's.
+
+ = Laws
+
+ The laws are \'morally the same\' as those for 'RemoveZero', but we restate
+ them here for clarity.
+
+ * @'premoveZero' '.' 'pzeroExtend'@ @=@ @'id'@
+ * @'premoveZero' 'zero'@ @=@ @'pcon' 'PNothing'@
+
+ @since 1.0
+-}
+class
+  (forall s. AdditiveMonoid (Term s a)) =>
+  PRemoveZero a nz
+    | a -> nz
+    , nz -> a
+  where
   -- | @since 1.0
   premoveZero :: Term s a -> Term s (PMaybe nz)
 
@@ -271,6 +313,48 @@ instance Euclidean Natural NZNatural where
   fromNatural = id
 
 -- | @since 1.0
+instance Euclidean (Ratio Integer) (Ratio NZInteger) where
+  {-# INLINEABLE (+^) #-}
+  r +^ Ratio (NZInteger num, den) = r + Ratio (num, den)
+  {-# INLINEABLE (*^) #-}
+  r *^ Ratio (NZInteger num, den) = r * Ratio (num, den)
+
+  -- This is equivalent to '/'.
+  {-# INLINEABLE quot #-}
+  quot (Ratio (num, NZNatural den)) (Ratio (NZInteger num', den')) =
+    let newNum = scale num den'
+        newDen = num' * den
+     in case Prelude.signum newDen of
+          (-1) -> ratio (Prelude.negate newNum) (NZNatural . Prelude.abs $ newDen)
+          _ -> ratio newNum (NZNatural newDen)
+
+  -- Always 'zero'.
+  {-# INLINEABLE rem #-}
+  rem _ _ = zero
+  {-# INLINEABLE fromNatural #-}
+  fromNatural (Natural i) = Ratio (i, one)
+
+-- | @since 1.0
+instance Euclidean (Ratio Natural) (Ratio NZNatural) where
+  {-# INLINEABLE (+^) #-}
+  r +^ Ratio (NZNatural num, den) = r + Ratio (Natural num, den)
+  {-# INLINEABLE (*^) #-}
+  r *^ Ratio (NZNatural num, den) = r * Ratio (Natural num, den)
+
+  -- This is equivalent to '/'.
+  {-# INLINEABLE quot #-}
+  quot (Ratio (num, den)) (Ratio (num', den')) =
+    let newNum = scale num den'
+        newDen = scale num' den
+     in ratio newNum newDen
+
+  -- Always 'zero'.
+  {-# INLINEABLE rem #-}
+  rem _ _ = zero
+  {-# INLINEABLE fromNatural #-}
+  fromNatural n = Ratio (n, one)
+
+-- | @since 1.0
 instance Euclidean (Term s PInteger) (Term s PNZInteger) where
   {-# INLINEABLE (+^) #-}
   x +^ y = punsafeBuiltin PLC.AddInteger # x # y
@@ -295,6 +379,74 @@ instance Euclidean (Term s PNatural) (Term s PNZNatural) where
   rem x y = punsafeBuiltin PLC.RemainderInteger # x # y
   {-# INLINEABLE fromNatural #-}
   fromNatural = pconstant
+
+-- | @since 1.0
+instance Euclidean (Term s (PRatio PInteger)) (Term s (PRatio PNZInteger)) where
+  {-# INLINEABLE (+^) #-}
+  t +^ t' = pmatchRatio t $ \num den ->
+    pmatchRatio t' $ \num' den' ->
+      plet (den * den') $ \newDen ->
+        plet (pscale num den' + punsafeCoerce (pscale num' den)) $ \newNum ->
+          pconRatio newNum newDen
+  {-# INLINEABLE (*^) #-}
+  t *^ t' = pmatchRatio t $ \num den ->
+    pmatchRatio t' $ \num' den' ->
+      plet (den * den') $ \newDen ->
+        plet (num * punsafeCoerce num') $ \newNum ->
+          pconRatio newNum newDen
+
+  -- Equivalent to '/'.
+  {-# INLINEABLE quot #-}
+  quot t t' = pmatchRatio t $ \num den ->
+    pmatchRatio t' $ \num' den' ->
+      plet (pscale num den') $ \newNum ->
+        plet (num' * punsafeCoerce den) $ \newDen ->
+          pif
+            (one #<= newDen)
+            (pconRatio newNum (punsafeCoerce newDen))
+            ( pconRatio
+                (negate newNum)
+                ( punsafeCoerce
+                    . negate @(Term s PInteger)
+                    . punsafeCoerce
+                    $ newDen
+                )
+            )
+
+  -- Always 'zero'.
+  {-# INLINEABLE rem #-}
+  rem _ _ = zero
+  {-# INLINEABLE fromNatural #-}
+  fromNatural (Natural i) = pconRatio (pconstant i) one
+
+-- | @since 1.0
+instance Euclidean (Term s (PRatio PNatural)) (Term s (PRatio PNZNatural)) where
+  {-# INLINEABLE (+^) #-}
+  t +^ t' = pmatchRatio t $ \num den ->
+    pmatchRatio t' $ \num' den' ->
+      plet (den * den') $ \newDen ->
+        plet (pscale num den' + pscale (punsafeCoerce num') den) $ \newNum ->
+          pconRatio newNum newDen
+  {-# INLINEABLE (*^) #-}
+  t *^ t' = pmatchRatio t $ \num den ->
+    pmatchRatio t' $ \num' den' ->
+      plet (den * den') $ \newDen ->
+        plet (num * punsafeCoerce num') $ \newNum ->
+          pconRatio newNum newDen
+
+  -- Equivalent to '/'.
+  {-# INLINEABLE quot #-}
+  quot t t' = pmatchRatio t $ \num den ->
+    pmatchRatio t' $ \num' den' ->
+      plet (pscale num den') $ \newNum ->
+        plet (num' * den) $ \newDen ->
+          pconRatio newNum newDen
+
+  -- Always 'zero'.
+  {-# INLINEABLE rem #-}
+  rem _ _ = zero
+  {-# INLINEABLE fromNatural #-}
+  fromNatural n = pconRatio (pconstant n) one
 
 {- | A 'Euclidean' extended with a notion of signedness (and subtraction). This
  is /actually/ a Euclidean domain (and thus, a ring also).
@@ -366,6 +518,23 @@ instance Arithmetical Integer NZInteger where
   fromNZInteger = id
 
 -- | @since 1.0
+instance Arithmetical (Ratio Integer) (Ratio NZInteger) where
+  {-# INLINEABLE (-^) #-}
+  r -^ Ratio (NZInteger num, den) = r - Ratio (num, den)
+
+  -- Equivalent to '/'.
+  {-# INLINEABLE div #-}
+  div = quot
+
+  -- Always 'zero'.
+  {-# INLINEABLE mod #-}
+  mod = rem
+  {-# INLINEABLE fromInteger #-}
+  fromInteger i = Ratio (i, one)
+  {-# INLINEABLE fromNZInteger #-}
+  fromNZInteger i = Ratio (i, one)
+
+-- | @since 1.0
 instance Arithmetical (Term s PInteger) (Term s PNZInteger) where
   {-# INLINEABLE (-^) #-}
   x -^ y = punsafeBuiltin PLC.SubtractInteger # x # y
@@ -377,6 +546,27 @@ instance Arithmetical (Term s PInteger) (Term s PNZInteger) where
   fromInteger = pconstant
   {-# INLINEABLE fromNZInteger #-}
   fromNZInteger = pconstant
+
+-- | @since 1.0
+instance Arithmetical (Term s (PRatio PInteger)) (Term s (PRatio PNZInteger)) where
+  {-# INLINEABLE (-^) #-}
+  t -^ t' = pmatchRatio t $ \num den ->
+    pmatchRatio t' $ \num' den' ->
+      plet (den * den') $ \newDen ->
+        plet (pscale num den' - punsafeCoerce (pscale num' den)) $ \newNum ->
+          pconRatio newNum newDen
+
+  -- Equivalent to '/'.
+  {-# INLINEABLE div #-}
+  div = quot
+
+  -- Equivalent to 'zero'.
+  {-# INLINEABLE mod #-}
+  mod = rem
+  {-# INLINEABLE fromInteger #-}
+  fromInteger i = pconRatio (pconstant i) one
+  {-# INLINEABLE fromNZInteger #-}
+  fromNZInteger i = pconRatio (pconstant i) one
 
 {- | A 'Euclidean' extended with a notion of proper division. Basically a field,
  but without requiring additive inverses.
@@ -391,19 +581,10 @@ instance Arithmetical (Term s PInteger) (Term s PNZInteger) where
  * @'reciprocal' x '*' x@ @=@ @x '*' 'reciprocal' x@ @=@ @'one'@
  * @x '/' y@ @=@ @x '*' 'reciprocal' y@
 
- Furthermore, any instance must form a left-'Integer' semimodule over its
- nonzero part (witnessed by 'powInteger'), which must be an extension of the
- left-'Natural' semimodule witnessed by 'powNatural'. Thus, we must have:
-
- * If @'Just' m = 'toNatural' n@, then @'powInteger' x
- n = 'powNatural' x m@
- * If @'toNatural' n = 'Nothing'@., then @'powInteger'
- x n = 'reciprocal' '.' 'powInteger' x . 'abs' '$' n@.
-
  @since 1.0
 -}
 class
-  (Distributive a) =>
+  (Euclidean a nz) =>
   Divisible a nz
     | nz -> a
     , a -> nz
@@ -413,3 +594,42 @@ class
 
   -- | @since 1.0
   reciprocal :: nz -> nz
+
+-- | @since 1.0
+instance Divisible (Ratio Integer) (Ratio NZInteger) where
+  {-# INLINEABLE (/) #-}
+  (/) = quot
+  {-# INLINEABLE reciprocal #-}
+  reciprocal (Ratio (NZInteger num, NZNatural den)) =
+    Ratio $ case Prelude.signum num of
+      (-1) -> (NZInteger . Prelude.negate $ den, NZNatural . Prelude.negate $ num)
+      _ -> (NZInteger den, NZNatural num)
+
+-- | @since 1.0
+instance Divisible (Ratio Natural) (Ratio NZNatural) where
+  {-# INLINEABLE (/) #-}
+  (/) = quot
+  {-# INLINEABLE reciprocal #-}
+  reciprocal (Ratio (num, den)) = Ratio (den, num)
+
+-- | @since 1.0
+instance Divisible (Term s (PRatio PInteger)) (Term s (PRatio PNZInteger)) where
+  {-# INLINEABLE (/) #-}
+  (/) = quot
+  {-# INLINEABLE reciprocal #-}
+  reciprocal t = pmatchRatio t $ \num den ->
+    pif
+      (one #<= num)
+      (pconRatio (punsafeCoerce den) (punsafeCoerce num))
+      ( pconRatio
+          (punsafeCoerce . negate @(Term s PInteger) . punsafeCoerce $ den)
+          (punsafeCoerce . negate @(Term s PInteger) . punsafeCoerce $ num)
+      )
+
+-- | @since 1.0
+instance Divisible (Term s (PRatio PNatural)) (Term s (PRatio PNZNatural)) where
+  {-# INLINEABLE (/) #-}
+  (/) = quot
+  {-# INLINEABLE reciprocal #-}
+  reciprocal t = pmatchRatio t $ \num den ->
+    pconRatio (punsafeCoerce den) (punsafeCoerce num)

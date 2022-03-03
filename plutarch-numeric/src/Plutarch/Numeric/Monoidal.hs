@@ -27,7 +27,8 @@ import Plutarch.Numeric.Additive (
  )
 import Plutarch.Numeric.Combination (
   Divisible (reciprocal),
-  Euclidean (RemovalResult, removeZero, zeroExtend, (*^), (+^)),
+  Euclidean ((*^), (+^)),
+  RemoveZero (removeZero, zeroExtend),
  )
 import Plutarch.Numeric.Group (Group (gtimes, inverse))
 import Plutarch.Numeric.Multiplicative (
@@ -242,7 +243,7 @@ powInteger i = getMultiplicative . gtimes i . Multiplicative
 -}
 powIntegerZero ::
   forall (a :: Type) (nz :: Type).
-  (Divisible a nz, RemovalResult nz ~ Maybe nz) =>
+  (Divisible a nz, RemoveZero a nz) =>
   Integer ->
   a ->
   a
