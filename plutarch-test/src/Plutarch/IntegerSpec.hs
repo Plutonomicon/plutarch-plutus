@@ -20,7 +20,7 @@ spec = do
           "app" @\ do
             "9" @| fib # 9 @:-> \(p, bench) -> do
               p `pshouldBe` (34 :: Term _ PInteger)
-              bench `psatisfyMaxBudget` Benchmark 1_000_000_000 1_000_000 100
+              bench `psatisfyWithinBenchmark` Benchmark 1_000_000_000 1_000_000 100
           "error" @| fib # perror @-> pfails
         "uglyDouble" @| uglyDouble
 

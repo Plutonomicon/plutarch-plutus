@@ -12,7 +12,7 @@ module Plutarch.Test (
   pshouldBe,
   (#@?=),
   -- | Budget expectation
-  psatisfyMaxBudget,
+  psatisfyWithinBenchmark,
 
   -- * For Development flag tests
   plutarchDevFlagDescribe,
@@ -118,9 +118,17 @@ pfails p = do
     (Left _, _, _) -> pure ()
     (Right _, _, _) -> expectationFailure $ "Term succeeded"
 
--- | Expects the benchmark to be within the given max budget
-psatisfyMaxBudget :: Benchmark -> Benchmark -> Expectation
-psatisfyMaxBudget bench maxBudget = do
+{- | Check that the given benchmark is within certain maximum values.
+
+  Use this to ensure that a program's benchmark doesn't exceed expected values
+  (such as script size or memory budget). You will need this because,
+
+  - `Plutarch.Test`'s golden testing uses maximum possible ExBudget for evaluating
+  programs
+  - You may want to check that the script size is within a certain value
+-}
+psatisfyWithinBenchmark :: Benchmark -> Benchmark -> Expectation
+psatisfyWithinBenchmark bench maxBudget = do
   shouldSatisfyNamed bench ("cpu<=" <> show (exBudgetCPU maxBudget)) $ \_ ->
     exBudgetCPU bench <= exBudgetCPU maxBudget
   shouldSatisfyNamed bench ("mem<=" <> show (exBudgetMemory maxBudget)) $ \_ ->

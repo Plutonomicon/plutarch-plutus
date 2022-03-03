@@ -99,7 +99,7 @@ infixr 1 @->
 
   Useful to do assertion checks on post-evaluation benchmark (eg: to check if
   script size is below certain threshold). Use in conjunction with
-  `psatisfyMaxBudget`.
+  `psatisfyWithinBenchmark`.
 -}
 (@:->) :: ClosedTerm a -> ((ClosedTerm a, Benchmark) -> Expectation) -> TermExpectation a
 (@:->) p f = TermExpectation p (\(p', b) -> f (punsafeAsClosedTerm p', b))
