@@ -83,14 +83,21 @@ import qualified Plutus.V1.Ledger.Scripts as Scripts
 -}
 pshouldBe :: ClosedTerm a -> ClosedTerm b -> Expectation
 pshouldBe x y = do
-  p1 <- fmap printScript $ eval $ compile x
-  p2 <- fmap printScript $ eval $ compile y
-  p1 `shouldBe` p2
+  p1 <- eval $ compile x
+  p2 <- eval $ compile y
+  pscriptShouldBe p1 p2
   where
     eval :: Scripts.Script -> IO Scripts.Script
     eval s = case evalScript s of
       (Left e, _, _) -> expectationFailure $ "Script evaluation failed: " <> show e
       (Right x', _, _) -> pure x'
+
+{- |
+  Like `pshouldBe` but on `Script`
+-}
+pscriptShouldBe :: Scripts.Script -> Scripts.Script -> Expectation
+pscriptShouldBe x y =
+  printScript x `shouldBe` printScript y
 
 -- | Like `@?=` but for Plutarch terms
 (#@?=) :: ClosedTerm a -> ClosedTerm b -> Expectation
@@ -176,7 +183,9 @@ plutarchDevFlagDescribe m =
 
 -- | Convenient alias for `@-> pshouldBe x`
 (@==) :: ClosedTerm a -> ClosedTerm b -> TermExpectation a
-(@==) p x = p @-> pshouldBe x
+(@==) p x = p @:-> \(_, script, _) -> script `pscriptShouldBe` xScript
+  where
+    xScript = fst . evalScriptAlwaysWithBenchmark . compile $ x
 
 infixr 1 @==
 
