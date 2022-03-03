@@ -1,5 +1,5 @@
 cabal-version: 2.4
-name:          plutarch-test
+name:          plutarch-extra
 version:       1.1.0
 
 flag development
@@ -73,89 +73,16 @@ common c
 
 common deps
   build-depends:
-    , aeson              >=2.0
     , base
-    , bytestring
-    , filepath
-    , generics-sop
-    , mtl
     , plutarch
-    , plutarch-extra
-    , plutus-core
-    , plutus-ledger-api
-    , plutus-tx
-    , serialise
-    , sydtest
-    , sydtest-discover
-    , tasty
-    , tasty-hunit
-    , tasty-quickcheck
-    , text
-    , transformers
 
 library
   import:          c, deps
-  hs-source-dirs:  plutarch-base
-  exposed-modules: Plutarch.Test
-  other-modules:
-    Plutarch.Test.Benchmark
-    Plutarch.Test.Golden
-    Plutarch.Test.ListSyntax
+  exposed-modules: Plutarch.Extra
 
-executable plutarch-extra
-  import:         c, deps
-  main-is:        Main.hs 
-  hs-source-dirs: plutarch-extra
-  other-modules:
-    Plutarch.ExtraSpec
-    Spec
-
-  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
-
-executable plutarch-base
-  import:         c, deps
-  main-is:        Main.hs
-  hs-source-dirs: plutarch-base
-  build-depends:
-    , base16-bytestring
-    , cborg
-    , rank2classes
-    , serialise
-
-  if impl(ghc >=9.0)
-    other-modules:
-      Plutarch.FieldSpec
-      Plutarch.MonadicSpec
-      Plutarch.RecSpec
-
-  other-modules:
-    Plutarch.ApiSpec
-    Plutarch.BoolSpec
-    Plutarch.ByteStringSpec
-    Plutarch.EitherSpec
-    Plutarch.IntegerSpec
-    Plutarch.LiftSpec
-    Plutarch.ListSpec
-    Plutarch.MaybeSpec
-    Plutarch.PairSpec
-    Plutarch.PIsDataSpec
-    Plutarch.PLamSpec
-    Plutarch.PlutusTypeSpec
-    Plutarch.RationalSpec
-    Plutarch.RecursionSpec
-    Plutarch.ScriptsSpec
-    Plutarch.StringSpec
-    Plutarch.Test
-    Plutarch.Test.Benchmark
-    Plutarch.Test.Golden
-    Plutarch.Test.ListSyntax
-    Plutarch.TraceSpec
-    Plutarch.UnitSpec
-    Plutarch.UPLCSpec
-    Spec
+  -- other-modules:
 
   if flag(development)
     cpp-options: -DDevelopment
 
-  -- FIXME remove -Wwarn=deprecations
-  ghc-options:    -threaded -rtsopts -with-rtsopts=-N -Wwarn=deprecations
+  ghc-options:     -threaded -rtsopts -with-rtsopts=-N
