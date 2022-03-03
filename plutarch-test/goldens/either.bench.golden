@@ -1,0 +1,5 @@
+eq.true.left {"exBudgetCPU":1715938,"exBudgetMemory":5402,"scriptSizeBytes":67}
+eq.true.right {"exBudgetCPU":1715938,"exBudgetMemory":5402,"scriptSizeBytes":67}
+eq.false.left-right {"exBudgetCPU":1042155,"exBudgetMemory":3600,"scriptSizeBytes":67}
+eq.false.left-left {"exBudgetCPU":1715938,"exBudgetMemory":5402,"scriptSizeBytes":67}
+eq.false.right-right {"exBudgetCPU":1715938,"exBudgetMemory":5402,"scriptSizeBytes":67}
