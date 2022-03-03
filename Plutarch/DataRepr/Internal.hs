@@ -11,7 +11,9 @@ module Plutarch.DataRepr.Internal (
   pdcons,
   pdnil,
   DataReprHandlers (..),
+  PConstantableData,
   PDataRecord (..),
+  PLiftableData,
   PLabeledType (..),
   type PLabelIndex,
   type PUnLabel,
@@ -23,7 +25,7 @@ module Plutarch.DataRepr.Internal (
   pasDataSum,
 ) where
 
-import Data.Kind (Type)
+import Data.Kind (Constraint, Type)
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy (Proxy))
 import GHC.TypeLits (
@@ -94,7 +96,17 @@ import Plutarch.Integer (PInteger)
 import Plutarch.Internal (S (SI))
 import Plutarch.Internal.Generic (MkSum (mkSum))
 import Plutarch.Internal.TypeFamily (ToPType2)
-import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstant, pconstantFromRepr, pconstantToRepr)
+import Plutarch.Lift (
+  PConstant,
+  PConstantRepr,
+  PConstantable,
+  PConstanted,
+  PLift,
+  PLifted,
+  pconstant,
+  pconstantFromRepr,
+  pconstantToRepr,
+ )
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont)
 import Plutarch.Unsafe (punsafeCoerce)
@@ -364,7 +376,74 @@ instance PIsDataRepr a => PlutusType (PIsDataReprInstances a) where
   pcon' (PIsDataReprInstances x) = pconRepr x
   pmatch' x f = pmatchRepr x (f . PIsDataReprInstances)
 
-newtype DerivePConstantViaData (h :: Type) (p :: PType) = DerivePConstantViaData h
+{- | Type synonym to simplify deriving of @PConstant@ via @DerivePConstantViaData@.
+
+A type @Foo a@ is considered "ConstantableData" if:
+
+- The wrapped type @a@ has a @PConstant@ instance.
+- The lifted type of @a@ has a @PUnsafeLiftDecl@ instance.
+- There is type equality between @a@ and @PLifted (PConstanted a)@.
+- The newtype has @FromData@ and @ToData@ instances
+
+These constraints are sufficient to derive a @PConstant@ instance for the newtype.
+
+For deriving @PConstant@ for a wrapped type represented in UPLC as @Data@, see
+@DerivePConstantViaData@.
+
+Polymorphic types can be derived as follows:
+
+>data Bar a = Bar a deriving stock (GHC.Generic)
+>
+>PlutusTx.makeLift ''Bar
+>PlutusTx.makeIsDataIndexed ''Bar [('Bar, 0)]
+>
+>data PBar (a :: PType) (s :: S)
+>  = PBar (Term s (PDataRecord '["_0" ':= a]))
+>  deriving stock (GHC.Generic)
+>  deriving anyclass (SOP.Generic, PIsDataRepr)
+>  deriving (PlutusType, PIsData, PDataFields) via PIsDataReprInstances (PBar a)
+>
+>instance
+>  forall a.
+>  PLiftableData a =>
+>  PUnsafeLiftDecl (PBar a)
+>  where
+>  type PLifted (PBar a) = Bar (PLifted a)
+>
+>deriving via
+>  ( DerivePConstantViaData
+>      (Bar a)
+>      (PBar (PConstanted a))
+>  )
+>  instance
+>    PConstantableData a =>
+>    PConstant (Bar a)
+-}
+type PConstantableData :: Type -> Constraint
+type PConstantableData h =
+  ( PConstantable h
+  , Ledger.FromData (h)
+  , Ledger.ToData (h)
+  )
+
+type PLiftableData :: PType -> Constraint
+type PLiftableData p =
+  ( PLift p
+  , Ledger.FromData (PLifted p)
+  , Ledger.ToData (PLifted p)
+  )
+
+{- |
+
+For deriving @PConstant@ for a wrapped type represented by a builtin type, see
+@DerivePConstantViaNewtype@.
+-}
+newtype
+  DerivePConstantViaData
+    (h :: Type)
+    (p :: PType) -- The Plutarch synonym to the Haskell type
+  = -- | The Haskell type for which @PConstant is being derived.
+    DerivePConstantViaData h
 
 instance (PIsDataRepr p, PLift p, Ledger.FromData h, Ledger.ToData h) => PConstant (DerivePConstantViaData h p) where
   type PConstantRepr (DerivePConstantViaData h p) = Ledger.Data

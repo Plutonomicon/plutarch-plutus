@@ -32,7 +32,7 @@ module Plutarch.Lift (
 
 import Control.Lens ((^?))
 import Data.Coerce
-import Data.Kind (Type, Constraint)
+import Data.Kind (Constraint, Type)
 import GHC.Stack (HasCallStack)
 import Plutarch.Evaluate (EvalError, evalScript)
 import Plutarch.Internal (ClosedTerm, PType, Term, compile, punsafeConstantInternal)
@@ -125,7 +125,7 @@ instance
   pconstantToRepr = coerce
   pconstantFromRepr = Just . coerce
 
-{-| Newtype wrapper for deriving @PConstant@ when the wrapped type is represented
+{- | Newtype wrapper for deriving @PConstant@ when the wrapped type is represented
 indirectly by a builtin UPLC type that is /not/ @Data@.
 
   Ex: @PPubKeyHash@ is a newtype to a @PByteString@ and @PByteString@ is directly
@@ -133,26 +133,32 @@ indirectly by a builtin UPLC type that is /not/ @Data@.
 
 Polymorphic types can be derived as follows:
 
-Usage:
-
-
+>newtype Foo a = Foo a
 >
-> deriving via
->   (DerivePConstantViaNewType
->     (Foo a)
->     (PFoo (PConstanted a))
->     (PConstanted a))
->   instance
->     PConstantable a =>
->     PConstant (Foo a)
+>newtype PFoo a s = PFoo (Term s a)
+>
+>instance forall a. PLift a => PUnsafeLiftDecl (PFoo a) where
+>  type PLifted (PFoo a) = Foo (PLifted a)
+>
+>deriving via
+>  ( DerivePConstantViaNewtype
+>      (Foo a)
+>      (PFoo (PConstanted a))
+>      (PConstanted a)
+>  )
+>  instance
+>    PConstantable a =>
+>    PConstant (Foo a)
 -}
-newtype DerivePConstantViaNewtype
-  (h :: Type)    -- | The Haskell newtype we are deriving a @PConstant@ instance for
-  (p :: PType)   -- | PType to associate with the newtype
-  (p' :: PType)  -- | Underlying UPLC representation type
-  = DerivePConstantViaNewtype h
+newtype
+  DerivePConstantViaNewtype
+    (h :: Type)
+    (p :: PType) -- PType to associate with the newtype
+    (p' :: PType) -- Underlying UPLC representation type
+  = -- | The Haskell newtype we are deriving a @PConstant@ instance for
+    DerivePConstantViaNewtype h
 
-{-| Type synonym to simplify deriving of @PConstant@ via @DerivePConstantViaNewtype@.
+{- | Type synonym to simplify deriving of @PConstant@ via @DerivePConstantViaNewtype@.
 
 A newtype @Foo a@ is considered "Constantable" if:
 
@@ -161,9 +167,12 @@ A newtype @Foo a@ is considered "Constantable" if:
 - There is type equality between @a@ and @PLifted (PConstanted a)@.
 
 These constraints are sufficient to derive a @PConstant@ instance for the newtype.
+
+For deriving @PConstant@ for a wrapped type represented in UPLC as @Data@, see
+@DerivePConstantViaData@.
 -}
 type PConstantable :: Type -> Constraint
-type PConstantable a =  (a ~ (PLifted (PConstanted a)), PUnsafeLiftDecl (PConstanted a), PConstant a)
+type PConstantable a = (a ~ (PLifted (PConstanted a)), PUnsafeLiftDecl (PConstanted a), PConstant a)
 
 instance (PLift p, PLift p', Coercible h (PLifted p')) => PConstant (DerivePConstantViaNewtype h p p') where
   type PConstantRepr (DerivePConstantViaNewtype h p p') = PConstantRepr (PLifted p')
