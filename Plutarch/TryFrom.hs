@@ -19,7 +19,7 @@ import GHC.TypeLits (KnownNat, Nat, natVal, type (+))
 
 import Plutarch.Builtin (
   PAsData,
-  PBuiltinList,
+  PBuiltinList (PCons, PNil),
   PBuiltinMap,
   PBuiltinPair,
   PData,
@@ -44,6 +44,8 @@ import Plutarch.Internal.Other (
   Term,
   pcon,
   perror,
+  pfix,
+  pmatch,
   pforce,
   phoistAcyclic,
   plam,
@@ -61,6 +63,7 @@ import Plutarch.DataRepr.Internal (
   pdcons,
   pdnil,
  )
+
 
 import Plutarch.Bool (pif, (#==))
 
