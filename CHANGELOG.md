@@ -4,11 +4,11 @@
 
 - `PThese`: Include new `PThese` data type. 
   
-  Started by: [#TBD](https://github.com/Plutonomicon/plutarch/pull/TBD)
+  Started by: [#355](https://github.com/Plutonomicon/plutarch/pull/355)
 
 - `PTheseData`: Include new `PTheseData` data type.
 
-  Started by: [#TBD](https://github.com/Plutonomicon/plutarch/pull/TBD)
+  Started by: [#355](https://github.com/Plutonomicon/plutarch/pull/355)
 
 - `TermCont`: Parametrize by result type; add `MonadFail` instance; etc.
 
