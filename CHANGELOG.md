@@ -1,7 +1,9 @@
 # Revision history for plutarch
 
 # Unreleased
-- Add `puncons` and `punsafeUncons` functions for deconstructing list.
+- Add `puncons` and `ptryUncons` functions for deconstructing list.
+
+  Started by: [#333](https://github.com/Plutonomicon/plutarch/pull/333)
 
 - Add generic deriving for `PEq`
 
