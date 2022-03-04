@@ -600,7 +600,7 @@
         in
         {
           type = "app";
-          program = checkedShellScript system "plutatch-test-${name}"
+          program = checkedShellScript system "plutarch-test-${name}"
             ''
               cd ${self}/plutarch-test
               ${flake.packages."plutarch-test:exe:plutarch-base-test"}/bin/plutarch-base-test;

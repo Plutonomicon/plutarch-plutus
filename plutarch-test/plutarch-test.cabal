@@ -95,17 +95,21 @@ common deps
 
 library
   import:          c, deps
-  hs-source-dirs:  plutarch-base
+  hs-source-dirs:  common
   exposed-modules: Plutarch.Test
   other-modules:
     Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
 
+  if flag(development)
+    cpp-options: -DDevelopment
+
 executable plutarch-extra-test
   import:         c, deps
   main-is:        Main.hs 
   hs-source-dirs: plutarch-extra
+  build-depends:  plutarch-test
   other-modules:
     Plutarch.ExtraSpec
     Spec
@@ -119,6 +123,7 @@ executable plutarch-base-test
   build-depends:
     , base16-bytestring
     , cborg
+    , plutarch-test
     , rank2classes
     , serialise
 
@@ -145,10 +150,6 @@ executable plutarch-base-test
     Plutarch.RecursionSpec
     Plutarch.ScriptsSpec
     Plutarch.StringSpec
-    Plutarch.Test
-    Plutarch.Test.Benchmark
-    Plutarch.Test.Golden
-    Plutarch.Test.ListSyntax
     Plutarch.TraceSpec
     Plutarch.UnitSpec
     Plutarch.UPLCSpec
