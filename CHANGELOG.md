@@ -2,6 +2,14 @@
 
 # Unreleased
 
+- `PThese`: Include new `PThese` data type. 
+  
+  Started by: [#TBD](https://github.com/Plutonomicon/plutarch/pull/TBD)
+
+- `PTheseData`: Include new `PTheseData` data type.
+
+  Started by: [#TBD](https://github.com/Plutonomicon/plutarch/pull/TBD)
+
 - `TermCont`: Parametrize by result type; add `MonadFail` instance; etc.
 
   Also, export from `Plutarch.TermCont`, and then from `Plutarch.Prelude` (TermCont is no longer exported by `Plutarch.Internal`).
