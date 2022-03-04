@@ -92,6 +92,12 @@
 
   Added by: [#329](https://github.com/Plutonomicon/plutarch/pull/329)
 
+- `plutarch-extra` export merged Prelude 
+   
+  Module: `Plutarch.PPrelude`
+
+  Added by: [#356](https://github.com/Plutonomicon/plutarch/pull/356)
+
 # 1.1.0
 
 - General repository changes.
