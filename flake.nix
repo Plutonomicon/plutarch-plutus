@@ -480,10 +480,7 @@
             {
               # Workaround missing support for build-tools:
               # https://github.com/input-output-hk/haskell.nix/issues/231
-              packages.plutarch-test.components.exes.plutarch-base-test.build-tools = [
-                pkgSet.hsPkgs.sydtest-discover
-              ];
-              packages.plutarch-test.components.exes.plutarch-extra-test.build-tools = [
+              packages.plutarch-test.components.exes.plutarch-test.build-tools = [
                 pkgSet.hsPkgs.sydtest-discover
               ];
               packages.plutarch-test.flags.development = flagDevelopment;
@@ -603,8 +600,7 @@
           program = checkedShellScript system "plutarch-test-${name}"
             ''
               cd ${self}/plutarch-test
-              ${flake.packages."plutarch-test:exe:plutarch-base-test"}/bin/plutarch-base-test;
-              ${flake.packages."plutarch-test:exe:plutarch-extra-test"}/bin/plutarch-extra-test;
+              ${flake.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test;
             '';
         };
 

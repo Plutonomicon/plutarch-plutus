@@ -105,21 +105,10 @@ library
   if flag(development)
     cpp-options: -DDevelopment
 
-executable plutarch-extra-test
-  import:         c, deps
-  main-is:        Main.hs 
-  hs-source-dirs: plutarch-extra
-  build-depends:  plutarch-test
-  other-modules:
-    Plutarch.ExtraSpec
-    Spec
-
-  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
-
-executable plutarch-base-test
+executable plutarch-test
   import:         c, deps
   main-is:        Main.hs
-  hs-source-dirs: plutarch-base
+  hs-source-dirs: plutarch-base plutarch-extra common ./.
   build-depends:
     , base16-bytestring
     , cborg
@@ -134,10 +123,13 @@ executable plutarch-base-test
       Plutarch.RecSpec
 
   other-modules:
+    BaseSpec
+    ExtraSpec
     Plutarch.ApiSpec
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
     Plutarch.EitherSpec
+    Plutarch.HelloSpec
     Plutarch.IntegerSpec
     Plutarch.LiftSpec
     Plutarch.ListSpec
@@ -150,10 +142,13 @@ executable plutarch-base-test
     Plutarch.RecursionSpec
     Plutarch.ScriptsSpec
     Plutarch.StringSpec
+    Plutarch.Test
+    Plutarch.Test.Benchmark
+    Plutarch.Test.Golden
+    Plutarch.Test.ListSyntax
     Plutarch.TraceSpec
     Plutarch.UnitSpec
     Plutarch.UPLCSpec
-    Spec
 
   if flag(development)
     cpp-options: -DDevelopment
