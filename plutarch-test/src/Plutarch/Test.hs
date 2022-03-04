@@ -181,11 +181,11 @@ plutarchDevFlagDescribe m =
 #endif
 {- ORMOLU_ENABLE -}
 
--- | Convenient alias for `@-> pshouldBe x`
+-- | Test that the Plutarch program evaluates to the given term
 (@==) :: ClosedTerm a -> ClosedTerm b -> TermExpectation a
 (@==) p x = p @:-> \(_, script, _) -> script `pscriptShouldBe` xScript
   where
-    xScript = fst . evalScriptAlwaysWithBenchmark . compile $ x
+    xScript = fst . evalScriptAlwaysWithBenchmark $ compile x
 
 infixr 1 @==
 
