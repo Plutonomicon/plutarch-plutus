@@ -16,13 +16,14 @@ import Plutarch (
   pmatch,
   type (:-->),
  )
+import Plutarch.Bool (PEq)
 
 -- | Plutus Maybe type, with Scott-encoded repr
 data PMaybe (a :: PType) (s :: S)
   = PJust (Term s a)
   | PNothing
   deriving stock (GHC.Generic)
-  deriving anyclass (Generic, PlutusType)
+  deriving anyclass (Generic, PlutusType, PEq)
 
 pfromMaybe :: Term s (PMaybe a :--> a)
 pfromMaybe = phoistAcyclic $

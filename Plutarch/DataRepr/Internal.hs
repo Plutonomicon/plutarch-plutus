@@ -89,10 +89,10 @@ import Plutarch.Builtin (
   pfstBuiltin,
   psndBuiltin,
  )
-import Plutarch.DataRepr.Internal.Generic (MkSum (mkSum))
 import Plutarch.DataRepr.Internal.HList (type Drop, type IndexList)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (S (SI), punsafeBuiltin)
+import Plutarch.Internal.Generic (MkSum (mkSum))
 import Plutarch.Internal.TypeFamily (ToPType2)
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstant, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)

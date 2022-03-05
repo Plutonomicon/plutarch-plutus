@@ -100,7 +100,6 @@ library
     Plutarch.DataRepr.Internal
     Plutarch.DataRepr.Internal.Field
     Plutarch.DataRepr.Internal.FromData
-    Plutarch.DataRepr.Internal.Generic
     Plutarch.DataRepr.Internal.HList
     Plutarch.DataRepr.Internal.HList.Utils
     Plutarch.Either
@@ -108,6 +107,7 @@ library
     Plutarch.FFI
     Plutarch.Integer
     Plutarch.Internal
+    Plutarch.Internal.Generic
     Plutarch.Internal.Other
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType

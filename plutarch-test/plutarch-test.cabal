@@ -121,9 +121,12 @@ executable plutarch-test
     Plutarch.ApiSpec
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
+    Plutarch.EitherSpec
     Plutarch.IntegerSpec
     Plutarch.LiftSpec
     Plutarch.ListSpec
+    Plutarch.MaybeSpec
+    Plutarch.PairSpec
     Plutarch.PIsDataSpec
     Plutarch.PLamSpec
     Plutarch.PlutusTypeSpec

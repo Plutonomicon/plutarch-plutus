@@ -27,10 +27,10 @@ import Generics.SOP (
   hcoerce,
   unSOP,
  )
-import Plutarch.DataRepr.Internal.Generic (MkSum (mkSum))
 import Plutarch.DataRepr.Internal.HList.Utils (IndexList)
 import Plutarch.Internal (PType, S, Term, pforce, plam', punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
+import Plutarch.Internal.Generic (MkSum (mkSum))
 import Plutarch.Internal.PLam ((#))
 import Plutarch.Internal.TypeFamily (ToPType, ToPType2)
 

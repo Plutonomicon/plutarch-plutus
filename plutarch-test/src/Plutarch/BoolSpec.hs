@@ -2,8 +2,8 @@ module Plutarch.BoolSpec (spec) where
 
 import Test.Syd
 
-import Plutarch
-import Plutarch.Bool (PBool (PFalse, PTrue), pand, pnot, por, (#&&), (#||))
+import Plutarch.Bool (pand, por)
+import Plutarch.Prelude
 import Plutarch.Test
 
 spec :: Spec
