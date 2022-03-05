@@ -5,6 +5,8 @@
 
 module Plutarch.TryFrom (
   PTryFrom (PTryFromExcess, ptryFrom),
+  PFrom (pfrom),
+  PMaybeFrom (PMaybeFromExcess, pmaybeFrom),
   pcheckType,
   pcheckByteStr,
   pcheckInt,
@@ -15,11 +17,9 @@ module Plutarch.TryFrom (
 import Data.Proxy (Proxy (Proxy))
 import GHC.TypeLits (KnownNat, Nat, natVal, type (+))
 
--- import Data.Kind (Constraint)
-
 import Plutarch.Builtin (
   PAsData,
-  PBuiltinList (PCons, PNil),
+  PBuiltinList,
   PBuiltinMap,
   PBuiltinPair,
   PData,
@@ -36,6 +36,8 @@ import Plutarch.Builtin (
   psndBuiltin,
  )
 
+import Plutarch.Maybe (PMaybe)
+
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal.Other (
@@ -44,8 +46,6 @@ import Plutarch.Internal.Other (
   Term,
   pcon,
   perror,
-  pfix,
-  pmatch,
   pforce,
   phoistAcyclic,
   plam,
@@ -63,7 +63,6 @@ import Plutarch.DataRepr.Internal (
   pdcons,
   pdnil,
  )
-
 
 import Plutarch.Bool (pif, (#==))
 
@@ -93,11 +92,28 @@ import Plutarch.TermCont (TermCont, tcont, unTermCont)
     use it if you cannot establish trust otherwise
     (e.g. via only checking a part of your Data with
     PTryFrom)
+    Laws:
+      - the operation `ptryFrom` mustn't change the representation of the underlying data
+      - the operation `ptryFrom` must always prove the integrity of the whole target type
+        - example:
+          `ptryFrom PData (PAsData (PBuiltinList PData))` must only succeed if the underlying
+          representation is a `BuiltinList` containing any `PData`
+        - all conversion are fallible, this happens if the representation doesn't match
+          the expected type.
+      - the operation `ptryFrom` proves equality between the less expressive `PType` `a` and
+        the more expressive `PType` `b`, hence the first element of the resulting Tuple
+        must always be wrapped in `PAsData` if the origin type was `PData` (see law 1)
+      - the result type `b` must always be safe than the origin type `a`, i.e. it must carry
+        more information
 -}
 class PTryFrom (a :: PType) (b :: PType) where
-  --     "safest" type --^            ^-- target type
   type PTryFromExcess a b :: PType
   ptryFrom :: Term s a -> TermCont s (Term s b, Term s (PTryFromExcess a b))
+
+  -- | this function is only used for `PFrom` and is not exported,
+  -- it makes use of PTryFrom being a bijection
+  ptryFromInverse :: Term s b -> Term s a
+  ptryFromInverse = punsafeCoerce
 
 ----------------------- PData instances -------------------------------------------------
 
@@ -277,7 +293,6 @@ instance
   {-# OVERLAPPING #-}
   forall ys.
   ( SumValidation 0 ys
-  -- , AllRecordsPTryFrom ys
   ) =>
   PTryFrom PData (PAsData (PDataSum ys))
   where
@@ -308,6 +323,47 @@ instance
     ver' <- fst <$> (ptryFrom @PData @(PAsData a) $ pforgetData $ pdata prop)
     ver <- tcont $ plet ver'
     pure $ (punsafeCoerce opq, ver)
+
+instance
+  ( PTryFrom a b
+  , PIsData a
+  , PIsData b
+  ) =>
+  PTryFrom (PAsData a) (PAsData b)
+  where
+  type PTryFromExcess (PAsData a) (PAsData b) = PTryFromExcess a b
+  ptryFrom opq = do
+    ver' <- ptryFrom @a @b $ pfromData opq
+    ver <- tcont $ plet $ snd ver'
+    pure $ (punsafeCoerce opq, ver)
+
+----------------------- The class PFrom -------------------------------------------------
+
+{- |
+    Represents infallible conversion.
+    Laws:
+    - The result type must always carry less information than the origin
+      type
+-}
+class PFrom a b where
+  pfrom :: Term s a -> TermCont s (Term s b)
+
+{- |
+    This instance relies on all instances of `PTryFrom` being lawful
+-}
+instance
+  {-# OVERLAPPABLE #-}
+  ( PTryFrom b a
+  ) =>
+  PFrom a b
+  where
+  pfrom = pure . ptryFromInverse
+
+----------------------- The class PMaybeFrom --------------------------------------------
+
+class PMaybeFrom (a :: PType) (b :: PType) where
+  type PMaybeFromExcess a b :: PType
+  pmaybeFrom :: Term s a -> TermCont s (Term s (PMaybe b), Term s (PMaybe (PMaybeFromExcess a b)))
 
 ----------------------- Helper functions ------------------------------------------------
 

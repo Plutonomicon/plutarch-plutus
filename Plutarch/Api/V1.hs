@@ -25,7 +25,7 @@ module Plutarch.Api.V1 (
   type PStakeValidator,
 
   -- ** Value
-  Value.PValue (PValue),
+  Value.PValue,
   Value.PCurrencySymbol (PCurrencySymbol),
   Value.PTokenName (PTokenName),
 
@@ -66,7 +66,7 @@ module Plutarch.Api.V1 (
   Tx.PTxInInfo (PTxInInfo),
 
   -- ** AssocMap
-  AssocMap.PMap (PMap),
+  AssocMap.PMap,
 
   -- ** Others
   Maybe.PMaybeData (PDJust, PDNothing),

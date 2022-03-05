@@ -2,7 +2,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Api.V1.Value (
-  PValue (PValue),
+  PValue,
   PCurrencySymbol (PCurrencySymbol),
   PTokenName (PTokenName),
 ) where
@@ -16,6 +16,12 @@ import Plutarch.Lift (
   PLifted,
   PUnsafeLiftDecl,
  )
+
+import Plutarch.TryFrom (
+  PMaybeFrom (PMaybeFromExcess, pmaybeFrom),
+  PTryFrom (PTryFromExcess, ptryFrom),
+ )
+
 import Plutarch.Prelude
 
 newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
@@ -46,3 +52,32 @@ deriving via
   (DerivePConstantViaNewtype Plutus.Value PValue (PMap PCurrencySymbol (PMap PTokenName PInteger)))
   instance
     (PConstant Plutus.Value)
+
+----------------------- PTryFrom and PMaybeFrom instances -------------------------------
+
+instance PTryFrom (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue where
+  type PTryFromExcess (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue = PUnit
+  ptryFrom m = 
+    let 
+        predInner :: Term _ (PBuiltinPair (PAsData PTokenName) (PAsData PInteger) :--> PBool)
+        predInner = plam $ \tup -> pif (0 #< (pfromData $ psndBuiltin # tup)) (pcon PTrue) perror
+        predOuter :: Term _ (PBuiltinPair (PAsData PCurrencySymbol) (PAsData (PMap PTokenName PInteger)) :--> PBool)
+        predOuter = plam $ \tup -> pall # predInner # (pto $ pfromData $ psndBuiltin # tup)
+        res :: Term _ PBool
+        res = pall # predOuter # pto m
+     in do 
+       _ <- tcont $ plet res
+       pure $ (pcon $ PValue m, pcon PUnit)
+
+instance PMaybeFrom (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue where
+  type PMaybeFromExcess (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue = PUnit
+  pmaybeFrom m = do
+    let predInner :: Term _ (PBuiltinPair (PAsData PTokenName) (PAsData PInteger) :--> PBool)
+        predInner = plam $ \tup -> pif (0 #< (pfromData $ psndBuiltin # tup)) (pcon PTrue) (pcon PFalse)
+        predOuter :: Term _ (PBuiltinPair (PAsData PCurrencySymbol) (PAsData (PMap PTokenName PInteger)) :--> PBool)
+        predOuter = plam $ \tup -> pall # predInner # (pto $ pfromData $ psndBuiltin # tup)
+        res :: Term _ PBool
+        res = pall # predOuter # pto m
+    (tcont $ plet res) >>= (tcont . pmatch) >>= \case 
+        PFalse -> pure (pcon PNothing, pcon PNothing)
+        PTrue -> pure ((pcon . PJust . pcon . PValue) m, (pcon . PJust . pcon) PUnit)
