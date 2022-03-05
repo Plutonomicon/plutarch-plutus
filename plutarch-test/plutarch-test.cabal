@@ -116,6 +116,7 @@ executable plutarch-test
       Plutarch.FieldSpec
       Plutarch.MonadicSpec
       Plutarch.RecSpec
+      Plutarch.TryFromSpec
 
   other-modules:
     Plutarch.ApiSpec
@@ -139,7 +140,6 @@ executable plutarch-test
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
     Plutarch.TraceSpec
-    Plutarch.TryFromSpec
     Plutarch.UnitSpec
     Plutarch.UPLCSpec
     Spec

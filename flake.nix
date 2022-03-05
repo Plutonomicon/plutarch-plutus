@@ -472,6 +472,7 @@
             rm -f $out/plutarch-test/src/Plutarch/MonadicSpec.hs
             rm -f $out/plutarch-test/src/Plutarch/FieldSpec.hs
             rm -f $out/plutarch-test/src/Plutarch/RecSpec.hs
+            rm -f $out/plutarch-test/src/Plutarch/TryFromSpec.hs
           '';
           compiler-nix-name = ghcName;
           inherit extraSources;
