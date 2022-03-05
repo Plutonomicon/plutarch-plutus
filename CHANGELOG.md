@@ -78,6 +78,12 @@
 
 - Add `Plutarch.Test` for testing Plutarch code with goldens for UPLC printing and Plutus benchmarks.
 
+- Add Conversion types `PTryFrom`, `PMaybeFrom` and `PFrom`
+
+  Module: `Plutarch.TryFrom`
+
+  Added by: [#326](https://github.com/Plutonomicon/plutarch/pull/326)
+
 # 1.1.0
 
 - General repository changes.

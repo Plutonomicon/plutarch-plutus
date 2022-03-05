@@ -47,6 +47,7 @@
         - [Alternatives to `OverloadedRecordDot`](#alternatives-to-overloadedrecorddot)
       - [All about constructing data values](#all-about-constructing-data-values)
       - [Implementing PIsDataRepr and friends](#implementing-pisdatarepr-and-friends)
+    - [PTryFrom, PMaybeFrom and PFrom](#ptryfrom-pmaybefrom-and-pfrom)
   - [Working with Types](#working-with-types)
     - [PInteger](#pinteger)
     - [PBool](#pbool)
@@ -1357,6 +1358,56 @@ newtype PFoo (s :: S) = PMkFoo (Term s (PDataRecord '["foo" ':= PByteString]))
     via PIsDataReprInstances PFoo
 ```
 Just an extra `PDataFields` derivation compared to the sum type usage! (oh and also the ominous `UndecidableInstances`)
+
+### PTryFrom, PMaybeFrom and PFrom
+
+```haskell
+-- PTryFrom 
+
+class PTryFrom (a :: PType) (b :: PType) where
+  type PTryFromExcess a b :: PType
+  ptryFrom :: Term s a -> TermCont s (Term s b, Term s (PTryFromExcess a b))
+
+  -- | this function is only used for `PFrom` and is not exported,
+  -- it makes use of PTryFrom being a class that always recovers data
+  ptryFromInverse :: Term s b -> Term s a
+  ptryFromInverse = punsafeCoerce
+
+-- PFrom
+
+class PFrom a b where
+  pfrom :: Term s a -> TermCont s (Term s b)
+
+-- PMaybeFrom
+
+class PMaybeFrom (a :: PType) (b :: PType) where
+  type PMaybeFromExcess a b :: PType
+  pmaybeFrom :: Term s a -> TermCont s (Term s (PMaybe b), Term s (PMaybe (PMaybeFromExcess a b)))
+```
+
+`PTryFrom` is a typeclass to prove equality between a type that in some way can't be trusted about its representation and another type that we want the untrusted type to be represented as. 
+`PTryFrom` proves the structure of the untrusted type and recovers it as the trusted, type which hence also carries more information. 
+
+A good example is getting a `PData` from a redeemer and wanting to prove that it is of a certain kind, e.g. a `PAsData (PBuiltinList (PAsData PInteger))`. We could do this with: 
+
+```haskell
+recoverListFromPData = unTermCont $ fst <$> ptryFrom @PData @(PAsData (PBuiltinList (PAsData PInteger))
+```
+
+An important note is, that `PTryFrom` carries a type `PExcess` which safes data that arose as "excess" during the act of verifying. For `PData (PAsData PSomething)` instances this most times 
+carries a `PSomething`, i.e. the type that has been proven equality for but without `PAsData` wrapper. In cases where this type is not useful, the `PExcess` type is just `PUnit`.
+
+In case we don't want to verify the whole structure but rather part of it (this can be a reasonable decision to lower the fees), we can just leave the part of the data that is not to be 
+verified a `PData` which serves as the base case: 
+
+```haskell
+recoverListPartially = ptryFrom @PData @(PAsData (PBuiltinList PData))
+```
+
+As `ptryFrom` always *recovers* information and *never changes the representation* of the type to be verified, the reverse operation is always successful by `punsafeCoerce`. 
+This is why there is an instance for `PFrom` that always allows conversion to the "less lawful" type. 
+
+There is also `PMaybeFrom` which allows conversion similary to `PTryFrom` but doesn't `perror` on failure but rather returns `PNothing` 
 
 ## Working with Types
 

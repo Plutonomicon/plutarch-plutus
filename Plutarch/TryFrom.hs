@@ -7,11 +7,6 @@ module Plutarch.TryFrom (
   PTryFrom (PTryFromExcess, ptryFrom),
   PFrom (pfrom),
   PMaybeFrom (PMaybeFromExcess, pmaybeFrom),
-  pcheckType,
-  pcheckByteStr,
-  pcheckInt,
-  pcheckList,
-  pcheckMap,
 ) where
 
 import Data.Proxy (Proxy (Proxy))
@@ -46,8 +41,6 @@ import Plutarch.Internal.Other (
   Term,
   pcon,
   perror,
-  pforce,
-  phoistAcyclic,
   plam,
   plet,
   (#),
@@ -76,10 +69,6 @@ import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import qualified PlutusCore as PLC
 
 import Plutarch.TermCont (TermCont, tcont, unTermCont)
-
-{- |
-    Note: PAsData POpaque ~ PData
--}
 
 ----------------------- The class PTryFrom ----------------------------------------------
 
@@ -111,7 +100,7 @@ class PTryFrom (a :: PType) (b :: PType) where
   ptryFrom :: Term s a -> TermCont s (Term s b, Term s (PTryFromExcess a b))
 
   -- | this function is only used for `PFrom` and is not exported,
-  -- it makes use of PTryFrom being a bijection
+  -- it makes use of PTryFrom being a class that always recovers data
   ptryFromInverse :: Term s b -> Term s a
   ptryFromInverse = punsafeCoerce
 
@@ -364,26 +353,3 @@ instance
 class PMaybeFrom (a :: PType) (b :: PType) where
   type PMaybeFromExcess a b :: PType
   pmaybeFrom :: Term s a -> TermCont s (Term s (PMaybe b), Term s (PMaybe (PMaybeFromExcess a b)))
-
------------------------ Helper functions ------------------------------------------------
-
-pchooseData :: Term s (PData :--> a :--> a :--> a :--> a :--> a :--> a)
-pchooseData = phoistAcyclic $ pforce $ punsafeBuiltin PLC.ChooseData
-
-pcheckType :: (Term s PInteger) -> Term _ (PData :--> PAsData b)
-pcheckType i = plam $ \d ->
-  let con :: Term _ PInteger
-      con = pchooseData # d # 0 # 1 # 2 # 3 # 4
-   in pif (con #== i) (punsafeCoerce d) perror
-
-pcheckMap :: Term s (PData :--> PAsData (PBuiltinMap PData PData))
-pcheckMap = pcheckType 1
-
-pcheckList :: Term s (PData :--> PAsData (PBuiltinList PData))
-pcheckList = pcheckType 2
-
-pcheckInt :: Term s (PData :--> PAsData PInteger)
-pcheckInt = pcheckType 3
-
-pcheckByteStr :: Term s (PData :--> PAsData PByteString)
-pcheckByteStr = pcheckType 4
