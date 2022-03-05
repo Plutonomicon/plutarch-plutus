@@ -205,7 +205,7 @@ instance SListI (def:defs) => PlutusType (PDataSum (def:defs)) where
   pcon'  = \case 
         DSZ f ->  punsafeBuiltin PLC.ConstrData # (pconstant @PInteger $ adjustedLength $ Proxy @(def:defs)) # (f id) -- rewrite this with pconstrBuiltin?
         DSS rest -> case rest of 
-          DSZ f -> punsafeBuiltin PLC.ConstrData # (pconstant @PInteger $ adjustedLength $ Proxy @(def:defs)) # (f id)
+          DSZ f -> punsafeBuiltin PLC.ConstrData # (pconstant @PInteger $ adjustedLength $ Proxy @(defs)) # (f id)
           dss@(DSS _) -> pcon' dss  
 
   pmatch' :: forall 
