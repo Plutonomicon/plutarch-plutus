@@ -26,6 +26,7 @@ import Plutarch
 import Plutarch.Api.V1 (
   PDatum,
   PDatumHash,
+  PMap,
   PMaybeData (PDJust),
   PScriptContext,
   PScriptPurpose (PSpending),
@@ -41,15 +42,17 @@ import Plutarch.Builtin (
  )
 import Plutarch.Prelude
 import Plutarch.TryFrom (
+  PMaybeFrom (pmaybeFrom),
   PTryFrom (PTryFromExcess, ptryFrom),
  )
 
 import Plutarch.ApiSpec (info, purpose)
+import Plutarch.Maybe (pfromMaybe)
 import Plutarch.Test
 
 spec :: Spec
 spec = do
-  describe "verification_untrusted_data" . pgoldenSpec $ do
+  describe "verification_untrusted_data" . plutarchDevFlagDescribe . pgoldenSpec $ do
     "erroneous" @\ do
       "(String, Integer) /= (String, String)"
         @| checkDeep
@@ -164,6 +167,42 @@ spec = do
         -- ... than this
         "check structure partly"
           @| partialCheck @-> psucceeds
+    "checking PValue and PMap for validity" @\ do
+      "PMap" @\ do
+        let ms0 :: Term _ (PBuiltinMap PInteger PUnit)
+            ms0 =
+              pcons
+                # (ppairDataBuiltin # (pdata $ pconstant 1) # (pdata $ pcon PUnit)) #$ pcons
+                # (ppairDataBuiltin # (pdata $ pconstant 2) # (pdata $ pcon PUnit)) #$ pcons
+                # (ppairDataBuiltin # (pdata $ pconstant 42) # (pdata $ pcon PUnit))
+                # pnil
+            mf1 :: Term _ (PBuiltinMap PInteger PUnit)
+            mf1 =
+              pcons
+                # (ppairDataBuiltin # (pdata $ pconstant 1) # (pdata $ pcon PUnit)) #$ pcons
+                # (ppairDataBuiltin # (pdata $ pconstant 1) # (pdata $ pcon PUnit)) #$ pcons
+                # (ppairDataBuiltin # (pdata $ pconstant 42) # (pdata $ pcon PUnit))
+                # pnil
+            mf2 :: Term _ (PBuiltinMap PInteger PUnit)
+            mf2 =
+              pcons
+                # (ppairDataBuiltin # (pdata $ pconstant 1) # (pdata $ pcon PUnit)) #$ pcons
+                # (ppairDataBuiltin # (pdata $ pconstant 2) # (pdata $ pcon PUnit)) #$ pcons
+                # (ppairDataBuiltin # (pdata $ pconstant 3) # (pdata $ pcon PUnit)) #$ pcons
+                # (ppairDataBuiltin # (pdata $ pconstant 2) # (pdata $ pcon PUnit))
+                # pnil
+        "valid0"
+          @| (unTermCont $ fst <$> ptryFrom @_ @(PMap PInteger PUnit) ms0) @-> psucceeds
+        "invalid1"
+          @| (unTermCont $ fst <$> ptryFrom @_ @(PMap PInteger PUnit) mf1) @-> pfails
+        "invalid2"
+          @| (unTermCont $ fst <$> ptryFrom @_ @(PMap PInteger PUnit) mf2) @-> pfails
+        "valid0maybe"
+          @| (unTermCont $ ((pfromMaybe #) . fst) <$> pmaybeFrom @_ @(PMap PInteger PUnit) ms0) @-> psucceeds
+        "invalid1maybe"
+          @| (unTermCont $ ((pfromMaybe #) . fst) <$> pmaybeFrom @_ @(PMap PInteger PUnit) mf1) @-> pfails
+        "invalid2maybe"
+          @| (unTermCont $ fst <$> ptryFrom @_ @(PMap PInteger PUnit) mf2) @-> pfails
     "example" @\ do
       let validContext = ctx validList1
           invalidContext = ctx invalidList1

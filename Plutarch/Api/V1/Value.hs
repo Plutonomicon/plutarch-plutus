@@ -57,17 +57,16 @@ deriving via
 
 instance PTryFrom (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue where
   type PTryFromExcess (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue = PUnit
-  ptryFrom m = 
-    let 
-        predInner :: Term _ (PBuiltinPair (PAsData PTokenName) (PAsData PInteger) :--> PBool)
+  ptryFrom m =
+    let predInner :: Term _ (PBuiltinPair (PAsData PTokenName) (PAsData PInteger) :--> PBool)
         predInner = plam $ \tup -> pif (0 #< (pfromData $ psndBuiltin # tup)) (pcon PTrue) perror
         predOuter :: Term _ (PBuiltinPair (PAsData PCurrencySymbol) (PAsData (PMap PTokenName PInteger)) :--> PBool)
         predOuter = plam $ \tup -> pall # predInner # (pto $ pfromData $ psndBuiltin # tup)
         res :: Term _ PBool
         res = pall # predOuter # pto m
-     in do 
-       _ <- tcont $ plet res
-       pure $ (pcon $ PValue m, pcon PUnit)
+     in do
+          _ <- tcont $ plet res
+          pure $ (pcon $ PValue m, pcon PUnit)
 
 instance PMaybeFrom (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue where
   type PMaybeFromExcess (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue = PUnit
@@ -78,6 +77,6 @@ instance PMaybeFrom (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue whe
         predOuter = plam $ \tup -> pall # predInner # (pto $ pfromData $ psndBuiltin # tup)
         res :: Term _ PBool
         res = pall # predOuter # pto m
-    (tcont $ plet res) >>= (tcont . pmatch) >>= \case 
-        PFalse -> pure (pcon PNothing, pcon PNothing)
-        PTrue -> pure ((pcon . PJust . pcon . PValue) m, (pcon . PJust . pcon) PUnit)
+    (tcont $ plet res) >>= (tcont . pmatch) >>= \case
+      PFalse -> pure (pcon PNothing, pcon PNothing)
+      PTrue -> pure ((pcon . PJust . pcon . PValue) m, (pcon . PJust . pcon) PUnit)

@@ -83,7 +83,7 @@ instance
                       PNil -> pcon PUnit
                       PCons y _ ->
                         pif
-                          ((pfromData (pfstBuiltin # x)) #<= (pfromData (pfstBuiltin # y)))
+                          ((pfromData (pfstBuiltin # x)) #< (pfromData (pfstBuiltin # y)))
                           (self # ys)
                           perror
           )
@@ -115,4 +115,7 @@ instance
                           (pcon PNothing)
           )
             # oMap
-    pure ((pcon . PJust . pcon . PMap) oMap, sortVer)
+    ver <- tcont $ pmatch sortVer
+    pure $ case ver of
+      PJust _ -> ((pcon . PJust . pcon . PMap) oMap, sortVer)
+      PNothing -> (pcon PNothing, sortVer)
