@@ -48,7 +48,7 @@ import Plutarch (
   (#$),
   type (:-->),
  )
-import Plutarch.Bool (PBool (..), PEq, pif', (#==))
+import Plutarch.Bool (PBool (..), PEq, pif', (#&&), (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (
@@ -75,6 +75,14 @@ data PBuiltinPair (a :: PType) (b :: PType) (s :: S)
 
 instance (PLift a, PLift b) => PUnsafeLiftDecl (PBuiltinPair a b) where
   type PLifted (PBuiltinPair a b) = (PLifted a, PLifted b)
+
+instance (PEq a, PEq b) => PEq (PBuiltinPair a b) where
+  x #== y = pairEq # x # y
+    where
+      pairEq :: Term _ (PBuiltinPair a b :--> PBuiltinPair a b :--> PBool)
+      pairEq = phoistAcyclic $
+        plam $ \tup0 tup1 ->
+          (pfstBuiltin # tup0 #== pfstBuiltin # tup1) #&& (psndBuiltin # tup0 #== psndBuiltin # tup1)
 
 -- FIXME: figure out good way of deriving this
 instance (PConstant a, PConstant b) => PConstant (a, b) where

@@ -20,7 +20,7 @@ import Plutarch.Lift (
 import Plutarch.Prelude
 
 newtype PMap (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinMap k v))
-  deriving (PlutusType, PIsData) via (DerivePNewtype (PMap k v) (PBuiltinMap k v))
+  deriving (PlutusType, PIsData, PEq) via (DerivePNewtype (PMap k v) (PBuiltinMap k v))
 
 instance
   ( Plutus.ToData (PLifted v)
