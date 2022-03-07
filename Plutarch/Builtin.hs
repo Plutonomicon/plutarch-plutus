@@ -159,8 +159,11 @@ instance PListLike PBuiltinList where
   ptail = ptailBuiltin
   pnull = pnullBuiltin
 
-instance (PLift a, PEq a) => PEq (PBuiltinList a) where
-  (#==) xs ys = plistEquals # xs # ys
+instance {-# OVERLAPPABLE #-} (PLift a, PEq a) => PEq (PBuiltinList a) where
+  xs #== ys = plistEquals # xs # ys
+
+instance {-# OVERLAPPING #-} PIsData a => PEq (PBuiltinList (PAsData a)) where
+  xs #== ys = pdata xs #== pdata ys
 
 data PData s
   = PDataConstr (Term s (PBuiltinPair PInteger (PBuiltinList PData)))

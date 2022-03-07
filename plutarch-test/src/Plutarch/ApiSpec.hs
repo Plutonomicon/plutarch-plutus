@@ -45,6 +45,8 @@ spec = do
             $ \case
               PMinting c -> popaque c
               _ -> perror
+        "Equality uses PData" @\ do
+          "mint == mint" @| pconstant mint #== pconstant mint @-> psucceeds
     describe "example" $ do
       -- The checkSignatory family of functions implicitly use tracing due to
       -- monadic syntax, and as such we need two sets of tests here.

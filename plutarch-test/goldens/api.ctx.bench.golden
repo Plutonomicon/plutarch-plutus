@@ -5,3 +5,4 @@ get.credentials {"exBudgetCPU":8007639,"exBudgetMemory":15200,"scriptSizeBytes":
 get.sym {"exBudgetCPU":3825799,"exBudgetMemory":6816,"scriptSizeBytes":188}
 ScriptPurpose.literal {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":48}
 ScriptPurpose.decode {"exBudgetCPU":1570478,"exBudgetMemory":3498,"scriptSizeBytes":74}
+Equality uses PData.mint == mint {"exBudgetCPU":1047376,"exBudgetMemory":1365,"scriptSizeBytes":41}
