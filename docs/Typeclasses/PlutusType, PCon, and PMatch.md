@@ -40,6 +40,14 @@ All `PlutusType` instances get `PCon` and `PMatch` instances for free!
 
 For types that cannot easily be both `PCon` and `PMatch` - feel free to implement just one of them! However, in general, **prefer implementing `PlutusType`**!
 
+Another feature of `PlutusType` instances is that you can extract out the *inner* type of any `PlutusType` instance! Above, the inner type (or representation) of `PMaybe` was a function. You can use `pto` to safely take this inner type out-
+
+```hs
+pto :: Term s a -> (forall b. Term s (PInner a b))
+```
+
+This is quite useful when working with `newtype`s. Notice how `PCurrencySymbol`, for example, is simply a newtype to a `PByteString`. Its `PInner` is also `PByteString`. To be able to use functions that operate on `PByteString`s with your `PCurrencySymbol`, you can simply take out the `PByteString` using `pto`!
+
 ## Implementing `PlutusType` for your own types (Scott Encoding)
 
 If you want to represent your data type with [Scott encoding](./../Concepts/Data%20and%20Scott%20encoding.md#scott-encoding) (and therefore don't need to make it `Data` encoded), you should simply derive it generically:
