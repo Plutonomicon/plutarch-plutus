@@ -16,3 +16,5 @@ list.1 {"exBudgetCPU":10989375,"exBudgetMemory":26452,"scriptSizeBytes":411}
 list.1,2,3 {"exBudgetCPU":29411680,"exBudgetMemory":66720,"scriptSizeBytes":413}
 builtinlist.nil {"exBudgetCPU":3519719,"exBudgetMemory":10435,"scriptSizeBytes":401}
 builtinlist.1,2,3 {"exBudgetCPU":26855742,"exBudgetMemory":56248,"scriptSizeBytes":404}
+pair.int-str {"exBudgetCPU":16329624,"exBudgetMemory":35186,"scriptSizeBytes":365}
+pair.int-list {"exBudgetCPU":41712616,"exBudgetMemory":86350,"scriptSizeBytes":443}

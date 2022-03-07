@@ -47,3 +47,10 @@ spec = do
           xs0 = pconstant @(PBuiltinList PInteger) []
       "nil" @| pshow xs0 @== str "[]"
       "1,2,3" @| pshow xs3 @== str "[1, 2, 3]"
+    "pair" @\ do
+      "int-str"
+        @| pshow (pcon @(PPair PInteger PString) $ PPair 42 "hello")
+        @== str "PPair 42 hello"
+      "int-list"
+        @| pshow (pcon @(PPair PInteger (PBuiltinList PInteger)) $ PPair 42 $ pconstant [1, 2, 3])
+        @== str "PPair 42 [1, 2, 3]"
