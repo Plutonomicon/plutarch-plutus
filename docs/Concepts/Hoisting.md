@@ -34,10 +34,10 @@ You can factor out most of the logic to a Plutarch level function, and apply tha
 
 ```hs
 (#||) :: Term s PBool -> Term s PBool -> Term s PBool
-x #|| y = por # x # pdelay y
+x #|| y = pforce $ por # x # pdelay y
 
-por :: Term s (PBool :--> PDelayed PBool :--> PBool)
-por = phoistAcyclic $ plam $ \x y -> pif' # x # pconstant True # pforce y
+por :: Term s (PBool :--> PDelayed PBool :--> PDelayed PBool)
+por = phoistAcyclic $ plam $ \x y -> pif' # x # pdelay (pconstant True) # y
 ```
 
 In general the pattern goes like this:

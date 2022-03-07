@@ -5,8 +5,8 @@
 ```hs
 class (PCon a, PMatch a) => PlutusType (a :: k -> Type) where
   type PInner a (b' :: k -> Type) :: k -> Type
-  pcon' :: forall s. a s -> forall b. Term s (PInner a b)
-  pmatch' :: forall s c. (forall b. Term s (PInner a b)) -> (a s -> Term s c) -> Term s c
+  pcon' :: forall s b. a s -> Term s (PInner a b)
+  pmatch' :: forall s b. Term s (PInner a b) -> (a s -> Term s b) -> Term s b
 ```
 
 > Note: You don't need to look too much into the types! After all, you'll be using `pcon` and `pmatch`, rather than `pcon'` and `pmatch'`.
@@ -19,7 +19,6 @@ data PMaybe a s = PJust (Term s a) | PNothing
 
 instance PlutusType (PMaybe a) where
   type PInner (PMaybe a) b = (a :--> b) :--> PDelayed b :--> b
-  pcon' :: forall s. PMaybe a s -> forall b. Term s (PInner (PMaybe a) b)
   pcon' (PJust x) = plam $ \f (_ :: Term _ _) -> f # x
   pcon' PNothing = plam $ \_ g -> pforce g
   pmatch' x f = x # (plam $ \inner -> f (PJust inner)) # (pdelay $ f PNothing)

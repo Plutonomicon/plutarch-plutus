@@ -34,7 +34,7 @@ newtype PScriptContext (s :: S)
   = PScriptContext
       ( Term
           s
-          ( PDataRecor, numbers less than 10 should be written as a word.
+          ( PDataRecord
               '[ "txInfo" ':= PTxInfo
                , "purpose" ':= PScriptPurpose
                ]
