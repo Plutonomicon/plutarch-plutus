@@ -192,17 +192,17 @@ spec = do
                 # (ppairDataBuiltin # (pdata $ pconstant 2) # (pdata $ pcon PUnit))
                 # pnil
         "valid0"
-          @| (unTermCont $ fst <$> ptryFrom @_ @(PMap PInteger PUnit) ms0) @-> psucceeds
+          @| (unTermCont $ fst <$> TermCont (ptryFrom @_ @(PMap PInteger PUnit) ms0)) @-> psucceeds
         "invalid1"
-          @| (unTermCont $ fst <$> ptryFrom @_ @(PMap PInteger PUnit) mf1) @-> pfails
+          @| (unTermCont $ fst <$> TermCont (ptryFrom @_ @(PMap PInteger PUnit) mf1)) @-> pfails
         "invalid2"
-          @| (unTermCont $ fst <$> ptryFrom @_ @(PMap PInteger PUnit) mf2) @-> pfails
+          @| (unTermCont $ fst <$> TermCont (ptryFrom @_ @(PMap PInteger PUnit) mf2)) @-> pfails
         "valid0maybe"
-          @| (unTermCont $ ((pfromMaybe #) . fst) <$> pmaybeFrom @_ @(PMap PInteger PUnit) ms0) @-> psucceeds
+          @| (unTermCont $ ((pfromMaybe #) . fst) <$> TermCont (pmaybeFrom @_ @(PMap PInteger PUnit) ms0)) @-> psucceeds
         "invalid1maybe"
-          @| (unTermCont $ ((pfromMaybe #) . fst) <$> pmaybeFrom @_ @(PMap PInteger PUnit) mf1) @-> pfails
+          @| (unTermCont $ ((pfromMaybe #) . fst) <$> TermCont (pmaybeFrom @_ @(PMap PInteger PUnit) mf1)) @-> pfails
         "invalid2maybe"
-          @| (unTermCont $ fst <$> ptryFrom @_ @(PMap PInteger PUnit) mf2) @-> pfails
+          @| (unTermCont $ fst <$> TermCont (ptryFrom @_ @(PMap PInteger PUnit) mf2)) @-> pfails
     "example" @\ do
       let validContext = ctx validList1
           invalidContext = ctx invalidList1
@@ -233,7 +233,7 @@ checkDeep ::
   ) =>
   ClosedTerm (PAsData actual) ->
   ClosedTerm (PAsData target)
-checkDeep t = unTermCont $ fst <$> (ptryFrom $ pforgetData t)
+checkDeep t = unTermCont $ fst <$> TermCont (ptryFrom $ pforgetData t)
 
 checkDeepUnwrap ::
   forall (target :: PType) (actual :: PType).
@@ -243,7 +243,7 @@ checkDeepUnwrap ::
   ) =>
   ClosedTerm (PAsData actual) ->
   ClosedTerm (PTryFromExcess PData (PAsData target))
-checkDeepUnwrap t = unTermCont $ snd <$> (ptryFrom @PData @(PAsData target) $ pforgetData t)
+checkDeepUnwrap t = unTermCont $ snd <$> TermCont (ptryFrom @PData @(PAsData target) $ pforgetData t)
 
 sampleStructure :: Term _ (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData PInteger)))))))
 sampleStructure = pdata $ psingleton #$ pdata $ psingleton #$ toDatadList [1 .. 100]
@@ -253,10 +253,10 @@ partialCheck :: Term _ (PAsData (PBuiltinList (PAsData (PBuiltinList PData))))
 partialCheck =
   let dat :: Term _ PData
       dat = pforgetData sampleStructure
-   in unTermCont $ fst <$> (ptryFrom dat)
+   in unTermCont $ fst <$> TermCont (ptryFrom dat)
 
 fullCheck :: Term _ (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData PInteger)))))))
-fullCheck = unTermCont $ fst <$> (ptryFrom $ pforgetData sampleStructure)
+fullCheck = unTermCont $ fst <$> TermCont (ptryFrom $ pforgetData sampleStructure)
 
 ------------------- Example: untrusted Redeemer ------------------------------------
 
@@ -269,16 +269,16 @@ pmkNatural = plam $ \i -> pif (i #< 0) (ptraceError "could not make natural") (p
 
 instance PTryFrom PData (PAsData PNatural) where
   type PTryFromExcess PData (PAsData PNatural) = PNatural
-  ptryFrom opq = do
-    (wrapped, unwrapped) <- ptryFrom @PData @(PAsData PInteger) opq
+  ptryFrom opq = runTermCont $ do
+    (wrapped, unwrapped) <- TermCont $ ptryFrom @PData @(PAsData PInteger) opq
     ver <- tcont $ plet $ pmkNatural # unwrapped
     pure $ (punsafeCoerce wrapped, ver)
 
 validator :: Term s PValidator
 validator = phoistAcyclic $
   plam $ \dat red ctx -> unTermCont $ do
-    (_, trustedRedeemer) <- ptryFrom @PData @(PAsData (PBuiltinList (PAsData PNatural))) red
-    (_, trustedDatum) <- (ptryFrom @PData @(PAsData (PBuiltinList (PAsData PNatural))) dat)
+    (_, trustedRedeemer) <- TermCont $ ptryFrom @PData @(PAsData (PBuiltinList (PAsData PNatural))) red
+    (_, trustedDatum) <- TermCont (ptryFrom @PData @(PAsData (PBuiltinList (PAsData PNatural))) dat)
     -- make the Datum and Redeemer trusted
 
     let ownHash :: Term _ PDatumHash
@@ -393,12 +393,12 @@ toDatadList = pdata . (foldr go pnil)
 
 mapTestSucceeds :: ClosedTerm (PAsData (PBuiltinMap PByteString PInteger))
 mapTestSucceeds = unTermCont $ do
-  (val, _) <- ptryFrom @PData $ pforgetData sampleMap
+  (val, _) <- TermCont $ ptryFrom @PData $ pforgetData sampleMap
   pure val
 
 mapTestFails :: ClosedTerm (PAsData (PBuiltinMap PInteger PInteger))
 mapTestFails = unTermCont $ do
-  (val, _) <- ptryFrom @PData $ pforgetData sampleMap
+  (val, _) <- TermCont $ ptryFrom @PData $ pforgetData sampleMap
   pure val
 
 sampleMap :: Term _ (PAsData (PBuiltinMap PByteString PInteger))

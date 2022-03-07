@@ -68,7 +68,7 @@ import Plutarch.List (
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import qualified PlutusCore as PLC
 
-import Plutarch.TermCont (TermCont, tcont, unTermCont)
+import Plutarch.TermCont (TermCont (TermCont, runTermCont), tcont, unTermCont)
 
 ----------------------- The class PTryFrom ----------------------------------------------
 
@@ -97,7 +97,7 @@ import Plutarch.TermCont (TermCont, tcont, unTermCont)
 -}
 class PTryFrom (a :: PType) (b :: PType) where
   type PTryFromExcess a b :: PType
-  ptryFrom :: Term s a -> TermCont s (Term s b, Term s (PTryFromExcess a b))
+  ptryFrom :: Term s a -> ((Term s b, Term s (PTryFromExcess a b)) -> Term s r) -> Term s r
 
   -- | this function is only used for `PFrom` and is not exported,
   -- it makes use of PTryFrom being a class that always recovers data
@@ -108,23 +108,23 @@ class PTryFrom (a :: PType) (b :: PType) where
 
 instance PTryFrom PData (PAsData PInteger) where
   type PTryFromExcess PData (PAsData PInteger) = PInteger
-  ptryFrom opq = do
+  ptryFrom opq = runTermCont $ do
     ver <- tcont $ plet (pasInt # opq)
     pure $ (punsafeCoerce opq, ver)
 
 instance PTryFrom PData (PAsData PByteString) where
   type PTryFromExcess PData (PAsData PByteString) = PByteString
-  ptryFrom opq = do
+  ptryFrom opq = runTermCont $ do
     ver <- tcont $ plet (pasByteStr # opq)
     pure $ (punsafeCoerce opq, ver)
 
 instance PTryFrom PData PData where
   type PTryFromExcess PData PData = PUnit
-  ptryFrom opq = pure $ (opq, pcon PUnit)
+  ptryFrom opq = runTermCont $ pure $ (opq, pcon PUnit)
 
 instance {-# OVERLAPPING #-} PTryFrom PData (PAsData (PBuiltinList PData)) where
   type PTryFromExcess PData (PAsData (PBuiltinList PData)) = PBuiltinList PData
-  ptryFrom opq = do
+  ptryFrom opq = runTermCont $ do
     ver <- tcont $ plet (pasList # opq)
     pure $ (punsafeCoerce opq, ver)
 
@@ -136,20 +136,20 @@ instance
   PTryFrom PData (PAsData (PBuiltinMap a b))
   where
   type PTryFromExcess PData (PAsData (PBuiltinMap a b)) = PBuiltinList (PBuiltinPair (PAsData a) (PAsData b))
-  ptryFrom opq = do
+  ptryFrom opq = runTermCont $ do
     verMap <- tcont $ plet (pasMap # opq)
     -- I've not obtained a `PBuiltinList (PBuiltinPair a b)`
     let verifyPair :: Term _ (PBuiltinPair PData PData :--> PBuiltinPair (PAsData a) (PAsData b))
         verifyPair = plam $ \tup -> unTermCont $ do
-          (verfst, _) <- ptryFrom @PData @(PAsData a) $ pfstBuiltin # tup
-          (versnd, _) <- ptryFrom @PData @(PAsData b) $ psndBuiltin # tup
+          (verfst, _) <- TermCont $ ptryFrom @PData @(PAsData a) $ pfstBuiltin # tup
+          (versnd, _) <- TermCont $ ptryFrom @PData @(PAsData b) $ psndBuiltin # tup
           pure $ ppairDataBuiltin # verfst # versnd
     ver <- tcont $ plet $ pmap # verifyPair # verMap
     pure (punsafeCoerce opq, ver)
 
 instance {-# OVERLAPPING #-} PTryFrom PData (PAsData (PBuiltinMap POpaque POpaque)) where
   type PTryFromExcess PData (PAsData (PBuiltinMap POpaque POpaque)) = PBuiltinList (PBuiltinPair (PAsData POpaque) (PAsData POpaque))
-  ptryFrom opq = do
+  ptryFrom opq = runTermCont $ do
     ver <- tcont $ plet (pasMap # opq)
     pure $ (punsafeCoerce opq, punsafeCoerce ver) -- PAsData POpaque ~ PData
 
@@ -162,17 +162,16 @@ instance
   PTryFrom PData (PAsData (PBuiltinList a))
   where
   type PTryFromExcess PData (PAsData (PBuiltinList a)) = PBuiltinList a
-  ptryFrom opq =
+  ptryFrom opq = runTermCont $ do
     let lst :: Term _ (PBuiltinList a)
         lst = punsafeBuiltin PLC.UnListData # opq
         verify :: a ~ PAsData b => Term _ (PAsData b :--> a)
         verify = plam $ \e ->
           unTermCont $ do
-            (wrapped, _) <- ptryFrom @PData @a $ pforgetData e
+            (wrapped, _) <- TermCont $ ptryFrom @PData @a $ pforgetData e
             pure wrapped
-     in do
-          ver <- tcont $ plet $ pmap # verify # lst
-          pure $ (punsafeCoerce opq, ver)
+    ver <- tcont $ plet $ pmap # verify # lst
+    pure $ (punsafeCoerce opq, ver)
 
 instance
   {-# OVERLAPPABLE #-}
@@ -186,12 +185,12 @@ instance
   PTryFrom PData (PAsData (PBuiltinPair a b))
   where
   type PTryFromExcess PData (PAsData (PBuiltinPair a b)) = PBuiltinPair a b
-  ptryFrom opq = do
+  ptryFrom opq = runTermCont $ do
     tup <- tcont $ plet (pfromData $ punsafeCoerce opq)
     let fst' :: Term _ a
-        fst' = unTermCont $ fst <$> (ptryFrom @PData @a $ pforgetData $ pfstBuiltin # tup)
+        fst' = unTermCont $ fst <$> TermCont (ptryFrom @PData @a $ pforgetData $ pfstBuiltin # tup)
         snd' :: Term _ b
-        snd' = unTermCont $ fst <$> (ptryFrom @PData @b $ pforgetData $ psndBuiltin # tup)
+        snd' = unTermCont $ fst <$> TermCont (ptryFrom @PData @b $ pforgetData $ psndBuiltin # tup)
     ver <- tcont $ plet $ ppairDataBuiltin # fst' # snd'
     pure $ (punsafeCoerce opq, ver)
 
@@ -206,16 +205,16 @@ instance
   PTryFrom PData (PAsData (PDataRecord (x ': xs)))
   where
   type PTryFromExcess PData (PAsData (PDataRecord (x ': xs))) = PDataRecord (x ': xs)
-  ptryFrom opq = do
+  ptryFrom opq = runTermCont $ do
     lst <- tcont $ plet (pfromData @(PBuiltinList _) $ punsafeCoerce opq)
     let lsthead :: Term _ PData
         lsthead = phead # lst
         lsttail :: Term _ (PAsData (PBuiltinList PData))
         lsttail = pdata $ ptail # lst
         verhead :: Term _ (PAsData b)
-        verhead = unTermCont $ fst <$> (ptryFrom @PData @(PAsData b) lsthead)
+        verhead = unTermCont $ fst <$> TermCont (ptryFrom @PData @(PAsData b) lsthead)
         vertail :: Term _ (PDataRecord xs)
-        vertail = unTermCont $ snd <$> (ptryFrom @PData @(PAsData (PDataRecord xs)) (pforgetData lsttail))
+        vertail = unTermCont $ snd <$> TermCont (ptryFrom @PData @(PAsData (PDataRecord xs)) (pforgetData lsttail))
     ver <-
       tcont $
         plet $
@@ -233,11 +232,11 @@ instance
   PTryFrom PData (PAsData (PDataRecord '[x]))
   where
   type PTryFromExcess PData (PAsData (PDataRecord '[x])) = PDataRecord '[x]
-  ptryFrom opq = do
+  ptryFrom opq = runTermCont $ do
     let lsthead :: Term _ PData
         lsthead = phead # (pfromData @(PBuiltinList _) $ punsafeCoerce opq)
         verhead :: Term _ (PAsData b)
-        verhead = unTermCont $ fst <$> (ptryFrom @PData @(PAsData b) lsthead)
+        verhead = unTermCont $ fst <$> TermCont (ptryFrom @PData @(PAsData b) lsthead)
     ver <-
       tcont $
         plet $
@@ -269,7 +268,7 @@ instance
               (fromInteger n #== (pfstBuiltin # elem))
               ( unTermCont $ do
                   let rec = pdata $ psndBuiltin # elem
-                  y <- snd <$> (ptryFrom @PData @(PAsData (PDataRecord x)) $ pforgetData rec)
+                  y <- snd <$> TermCont (ptryFrom @PData @(PAsData (PDataRecord x)) $ pforgetData rec)
                   pure $ punsafeCoerce (y :: Term _ (PTryFromExcess PData (PAsData (PDataRecord x))))
               )
               (validateSum @(n + 1) @xs $ punsafeCoerce s)
@@ -286,7 +285,7 @@ instance
   PTryFrom PData (PAsData (PDataSum ys))
   where
   type PTryFromExcess PData (PAsData (PDataSum ys)) = PUnit
-  ptryFrom opq = do
+  ptryFrom opq = runTermCont $ do
     _ <- tcont $ plet $ validateSum @0 @ys opq
     pure (punsafeCoerce opq, pcon PUnit)
 
@@ -306,10 +305,10 @@ instance
   PTryFrom POpaque a
   where
   type PTryFromExcess POpaque a = PAsData a
-  ptryFrom opq = do
+  ptryFrom opq = runTermCont $ do
     let prop :: Term _ a
         prop = punsafeCoerce opq
-    ver' <- fst <$> (ptryFrom @PData @(PAsData a) $ pforgetData $ pdata prop)
+    ver' <- fst <$> TermCont (ptryFrom @PData @(PAsData a) $ pforgetData $ pdata prop)
     ver <- tcont $ plet ver'
     pure $ (punsafeCoerce opq, ver)
 
@@ -321,8 +320,8 @@ instance
   PTryFrom (PAsData a) (PAsData b)
   where
   type PTryFromExcess (PAsData a) (PAsData b) = PTryFromExcess a b
-  ptryFrom opq = do
-    ver' <- ptryFrom @a @b $ pfromData opq
+  ptryFrom opq = runTermCont $ do
+    ver' <- TermCont $ ptryFrom @a @b $ pfromData opq
     ver <- tcont $ plet $ snd ver'
     pure $ (punsafeCoerce opq, ver)
 
@@ -335,7 +334,7 @@ instance
       type
 -}
 class PFrom a b where
-  pfrom :: Term s a -> TermCont s (Term s b)
+  pfrom :: Term s a -> (((Term s b) -> Term s r) -> Term s r)
 
 {- |
     This instance relies on all instances of `PTryFrom` being lawful
@@ -346,10 +345,56 @@ instance
   ) =>
   PFrom a b
   where
+  pfrom = runTermCont . pure . ptryFromInverse
+
+{-
+-- My experimentations around adding `PIsDataRepr` to the
+-- machinery
+
+type PFrom :: Constraint -> PType -> PType -> Constraint
+class PFrom c a b where
+  pfrom :: c => Term s a -> TermCont s (Term s b)
+
+instance
+  {-# OVERLAPPABLE #-}
+  ( PTryFrom b a
+  ) =>
+  PFrom a b
+  where
   pfrom = pure . ptryFromInverse
+instance
+  {-# OVERLAPPABLE #-}
+  ( PTryFrom PData (PAsData a)
+  , c ~ PInner a b
+  ) =>
+  PTryFrom (PAsData a) c where
+    ptryFrom opq = do
+      let inner = pto opq
+      undefined
+
+instance
+  {-# OVERLAPPING #-}
+  forall a b c.
+  ( PlutusType b
+  , c ~ PInner a b
+  ) =>
+  PFrom (PlutusType b) a c where
+  pfrom = pure . pto
+
+-- forall a b. newtype PTryFrom a b => TryFrommable b = MkTryFrommable b
+
+instance
+  {-# OVERLAPPABLE #-}
+  ( PFamFrom c b a
+  ) =>
+  PFrom a b
+  where
+  pfrom = pure . ptryFromInverse
+
+-}
 
 ----------------------- The class PMaybeFrom --------------------------------------------
 
 class PMaybeFrom (a :: PType) (b :: PType) where
   type PMaybeFromExcess a b :: PType
-  pmaybeFrom :: Term s a -> TermCont s (Term s (PMaybe b), Term s (PMaybe (PMaybeFromExcess a b)))
+  pmaybeFrom :: Term s a -> (((Term s (PMaybe b), Term s (PMaybe (PMaybeFromExcess a b))) -> Term s r) -> Term s r)

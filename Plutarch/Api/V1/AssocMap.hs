@@ -70,7 +70,7 @@ instance
   PTryFrom (PBuiltinMap k v) (PMap k v)
   where
   type PTryFromExcess (PBuiltinMap k v) (PMap k v) = PUnit
-  ptryFrom oMap = do
+  ptryFrom oMap = runTermCont $ do
     sortVer <-
       tcont $
         plet $
@@ -97,7 +97,7 @@ instance
   PMaybeFrom (PBuiltinMap k v) (PMap k v)
   where
   type PMaybeFromExcess (PBuiltinMap k v) (PMap k v) = PUnit
-  pmaybeFrom oMap = do
+  pmaybeFrom oMap = runTermCont $ do
     sortVer <-
       tcont $
         plet $

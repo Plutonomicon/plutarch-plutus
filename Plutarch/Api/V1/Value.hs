@@ -57,20 +57,19 @@ deriving via
 
 instance PTryFrom (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue where
   type PTryFromExcess (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue = PUnit
-  ptryFrom m =
+  ptryFrom m = runTermCont $ do
     let predInner :: Term _ (PBuiltinPair (PAsData PTokenName) (PAsData PInteger) :--> PBool)
         predInner = plam $ \tup -> pif (0 #< (pfromData $ psndBuiltin # tup)) (pcon PTrue) perror
         predOuter :: Term _ (PBuiltinPair (PAsData PCurrencySymbol) (PAsData (PMap PTokenName PInteger)) :--> PBool)
         predOuter = plam $ \tup -> pall # predInner # (pto $ pfromData $ psndBuiltin # tup)
         res :: Term _ PBool
         res = pall # predOuter # pto m
-     in do
-          _ <- tcont $ plet res
-          pure $ (pcon $ PValue m, pcon PUnit)
+    _ <- tcont $ plet res
+    pure $ (pcon $ PValue m, pcon PUnit)
 
 instance PMaybeFrom (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue where
   type PMaybeFromExcess (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue = PUnit
-  pmaybeFrom m = do
+  pmaybeFrom m = runTermCont $ do
     let predInner :: Term _ (PBuiltinPair (PAsData PTokenName) (PAsData PInteger) :--> PBool)
         predInner = plam $ \tup -> pif (0 #< (pfromData $ psndBuiltin # tup)) (pcon PTrue) (pcon PFalse)
         predOuter :: Term _ (PBuiltinPair (PAsData PCurrencySymbol) (PAsData (PMap PTokenName PInteger)) :--> PBool)
