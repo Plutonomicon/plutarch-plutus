@@ -3,7 +3,6 @@
 
 module Plutarch.Unit (PUnit (..)) where
 
-import qualified Data.Text as T
 import Plutarch (PlutusType (PInner, pcon', pmatch'), Term, pcon, pmatch)
 import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Lift (
@@ -40,4 +39,4 @@ instance Monoid (Term s PUnit) where
   mempty = pcon PUnit
 
 instance PShow PUnit where
-  pshow' _ = flip pmatch $ pconstant . T.pack . show
+  pshow' _ x = pmatch x $ \PUnit -> "()"

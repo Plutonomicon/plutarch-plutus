@@ -1,3 +1,4 @@
+unit {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":11}
 int.0 {"exBudgetCPU":6284427,"exBudgetMemory":14017,"scriptSizeBytes":317}
 int.5 {"exBudgetCPU":8760152,"exBudgetMemory":20027,"scriptSizeBytes":317}
 int.-5 {"exBudgetCPU":9393754,"exBudgetMemory":20832,"scriptSizeBytes":317}
@@ -9,8 +10,8 @@ int.102 {"exBudgetCPU":18800590,"exBudgetMemory":39265,"scriptSizeBytes":318}
 int.-102 {"exBudgetCPU":19434192,"exBudgetMemory":40070,"scriptSizeBytes":318}
 maybe.nothing {"exBudgetCPU":1458977,"exBudgetMemory":5000,"scriptSizeBytes":354}
 maybe.just {"exBudgetCPU":15676121,"exBudgetMemory":34060,"scriptSizeBytes":356}
-either.right {"exBudgetCPU":15766440,"exBudgetMemory":34361,"scriptSizeBytes":373}
-maybe.either {"exBudgetCPU":17334403,"exBudgetMemory":37506,"scriptSizeBytes":434}
+either.right {"exBudgetCPU":15766440,"exBudgetMemory":34361,"scriptSizeBytes":370}
+maybe.either {"exBudgetCPU":17334403,"exBudgetMemory":37506,"scriptSizeBytes":431}
 list.nil {"exBudgetCPU":3787676,"exBudgetMemory":11335,"scriptSizeBytes":410}
 list.1 {"exBudgetCPU":10989375,"exBudgetMemory":26452,"scriptSizeBytes":411}
 list.1,2,3 {"exBudgetCPU":29411680,"exBudgetMemory":66720,"scriptSizeBytes":413}

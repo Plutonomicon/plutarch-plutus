@@ -13,6 +13,7 @@ spec :: Spec
 spec = do
   describe "show" . pgoldenSpec $ do
     let str x = pconstant @PString x
+    "unit" @| pshow (pcon PUnit) @== str "()"
     "int" @\ do
       "0" @| pshow (pconstant @PInteger 0) @== str "0"
       forM_ [5, 10, 14, 102] $ \n -> do
