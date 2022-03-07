@@ -63,7 +63,19 @@ import Plutarch.Lift (
   pconstantFromRepr,
   pconstantToRepr,
  )
-import Plutarch.List (PListLike (..), plistEquals, pshowList)
+import Plutarch.List (
+  PListLike (
+    PElemConstraint,
+    pcons,
+    pelimList,
+    phead,
+    pnil,
+    pnull,
+    ptail
+  ),
+  plistEquals,
+  pshowList,
+ )
 import Plutarch.Show (PShow (pshow'))
 import Plutarch.Unit (PUnit)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeFrom)

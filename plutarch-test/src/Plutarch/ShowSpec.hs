@@ -7,7 +7,6 @@ import Test.Syd
 
 import Plutarch.ListSpec (integerList)
 import Plutarch.Prelude
-import Plutarch.Show
 import Plutarch.Test
 
 spec :: Spec

@@ -1,6 +1,11 @@
 # Revision history for plutarch
 
 # Unreleased
+
+- Add `pshow` and `ptraceShowId` 
+
+  Started by [#352](https://github.com/Plutonomicon/plutarch/pull/352)
+
 - Add `puncons` and `ptryUncons` functions for deconstructing list.
 
   Started by: [#333](https://github.com/Plutonomicon/plutarch/pull/333)

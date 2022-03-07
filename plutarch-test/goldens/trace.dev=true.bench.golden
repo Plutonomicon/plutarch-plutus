@@ -1,5 +1,6 @@
 ptrace.one {"exBudgetCPU":388284,"exBudgetMemory":932,"scriptSizeBytes":16}
 ptrace.two {"exBudgetCPU":806241,"exBudgetMemory":1864,"scriptSizeBytes":30}
+ptraceShowId.right-42 {"exBudgetCPU":16124851,"exBudgetMemory":35093,"scriptSizeBytes":382}
 ptraceIfTrue.true {"exBudgetCPU":686015,"exBudgetMemory":1933,"scriptSizeBytes":27}
 ptraceIfTrue.false {"exBudgetCPU":387150,"exBudgetMemory":1401,"scriptSizeBytes":27}
 ptraceIfFalse.true {"exBudgetCPU":387150,"exBudgetMemory":1401,"scriptSizeBytes":27}

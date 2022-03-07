@@ -13,6 +13,10 @@ spec = do
         ptraces p ["foo"]
       "two" @| ptrace "foo" (ptrace "bar" (pcon PUnit)) @-> \p ->
         ptraces p ["foo", "bar"]
+    "ptraceShowId" @\ do
+      let x = pcon @(PEither PUnit PInteger) $ PRight 42
+      "right-42" @| ptraceShowId x @-> \p ->
+        p `ptraces` ["PRight 42"]
     "ptraceIfTrue" @\ do
       "true" @| ptraceIfTrue "foo" (pcon PTrue) @-> \p ->
         p `ptraces` ["foo"]
