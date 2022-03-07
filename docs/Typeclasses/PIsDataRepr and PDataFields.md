@@ -23,6 +23,7 @@ foo = plam $ \ctx -> P.do
     PRewarding _ -> "It's rewarding!"
     PCertifying _ -> "It's certifying!"
 ```
+
 > Note: The above snippet uses GHC 9 features (`QualifiedDo`). Be sure to check out [Do syntax with `TermCont`](./../Usage/Do%20syntax%20with%20TermCont.md).
 
 Of course, just like `ScriptContext` - `PScriptContext` is represented as a `Data` value in Plutus Core. Plutarch just lets you keep track of the _exact representation_ of it within the type system.
@@ -232,6 +233,14 @@ data PVehicle (s :: S)
   | PTwoWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
   | PImmovableBox (Term s (PDataRecord '[]))
 ```
+
+Each field type must also have a `PIsData` instance. We've fulfilled this criteria above as `PInteger` does indeed have a `PIsData` instance. However, think of `PBuiltinList`s, as an example. `PBuiltinList`'s `PIsData` instance is restricted to only `PAsData` elements.
+
+```hs
+instance PIsData a => PIsData (PBuiltinList (PAsData a))
+```
+
+Thus, you can use `PBuiltinList (PAsData PInteger)` as a field type, but not `PBuiltinList PInteger`.
 
 > Note: The constructor ordering in `PVehicle` matters! If you used [`makeIsDataIndexed`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed) on `Vehicle` to assign an index to each constructor - the Plutarch type's constructors must follow the same indexing order.
 >
