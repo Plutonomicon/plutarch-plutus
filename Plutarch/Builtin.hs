@@ -117,7 +117,7 @@ data PBuiltinList (a :: PType) (s :: S)
   = PCons (Term s a) (Term s (PBuiltinList a))
   | PNil
 
-instance (PShow a, PUnsafeLiftDecl a) => PShow (PBuiltinList a) where
+instance (PShow a, PLift a) => PShow (PBuiltinList a) where
   pshow' _ x = pshowList @PBuiltinList @a # x
 
 pheadBuiltin :: Term s (PBuiltinList a :--> a)
