@@ -17,6 +17,14 @@ To solve this problem, Plutarch supports _hoisting_. Hoisting only works for _cl
 
 Hoisted terms are essentially moved to a top-level `plet`, i.e. it's essentially common sub-expression elimination. Do note that because of this, your hoisted term is **also strictly evaluated**, meaning that you _shouldn't_ hoist non-lazy complex computations (use [`pdelay`](./../Introduction/Delay%20and%20Force.md) to avoid this).
 
+In general, you should use `phoistAcyclic` on every top level function:
+
+```hs
+foo = phoistAcyclic $ plam $ \x -> <something complex>
+```
+
+As long as the Plutarch lambda you're hoisting does not have [free variables](https://wiki.haskell.org/Free_variable) (as Plutarch terms), you will be able to hoist it!
+
 ## Hoisting Operators
 
 For the sake of convenience, you often would want to use operators - which must be Haskell level functions. This is the case for `+`, `-`, `#==` and many more.
