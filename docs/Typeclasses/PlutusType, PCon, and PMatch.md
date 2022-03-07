@@ -74,7 +74,7 @@ If your type is supposed to be represented using [`Data` encoding](./../Concepts
 import qualified GHC.Generics as GHC
 import Generics.SOP
 import Plutarch.Prelude
-import Plutarch.DataRepr (PIsDataReprInstances(PIsDataReprInstances))
+import Plutarch.DataRepr (PIsDataReprInstances(PIsDataReprInstances), PDataFields)
 
 data MyType (a :: PType) (b :: PType) (s :: S)
   = One (Term s (PDataRecord '[ "_0" ':= a ]))
@@ -82,7 +82,7 @@ data MyType (a :: PType) (b :: PType) (s :: S)
   deriving stock (GHC.Generic)
   deriving anyclass (Generic, PIsDataRepr)
   deriving
-    (PlutusType, PIsData)
+    (PlutusType, PIsData, PDataFields)
     via PIsDataReprInstances (MyType a b)
 ```
 
