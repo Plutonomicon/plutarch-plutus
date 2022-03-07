@@ -11,3 +11,8 @@ maybe.nothing {"exBudgetCPU":1458977,"exBudgetMemory":5000,"scriptSizeBytes":354
 maybe.just {"exBudgetCPU":15676121,"exBudgetMemory":34060,"scriptSizeBytes":356}
 either.right {"exBudgetCPU":15766440,"exBudgetMemory":34361,"scriptSizeBytes":373}
 maybe.either {"exBudgetCPU":17334403,"exBudgetMemory":37506,"scriptSizeBytes":434}
+list.nil {"exBudgetCPU":3787676,"exBudgetMemory":11335,"scriptSizeBytes":410}
+list.1 {"exBudgetCPU":10989375,"exBudgetMemory":26452,"scriptSizeBytes":411}
+list.1,2,3 {"exBudgetCPU":29411680,"exBudgetMemory":66720,"scriptSizeBytes":413}
+builtinlist.nil {"exBudgetCPU":3519719,"exBudgetMemory":10435,"scriptSizeBytes":401}
+builtinlist.1,2,3 {"exBudgetCPU":26855742,"exBudgetMemory":56248,"scriptSizeBytes":404}
