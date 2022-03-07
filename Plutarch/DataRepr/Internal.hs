@@ -33,7 +33,7 @@ import GHC.TypeLits (
   Symbol,
   TypeError,
   natVal,
-  type (+)
+  type (+),
  )
 import Generics.SOP (
   All,
@@ -41,11 +41,13 @@ import Generics.SOP (
   AllZipN,
   Code,
   Generic,
-  I (I),
+  I (..),
   K (K),
   LiftedCoercible,
   NP (Nil, (:*)),
+  NS (..),
   POP,
+  SList (..),
   SListI,
   SOP (SOP),
   from,
@@ -53,10 +55,9 @@ import Generics.SOP (
   hcollapse,
   hfromI,
   hindex,
-  to,
-  I(..),
+  lengthSList,
   sList,
-  SList(..), lengthSList
+  to,
  )
 import Plutarch (
   Dig,
@@ -95,14 +96,13 @@ import Plutarch.Builtin (
 import Plutarch.DataRepr.Internal.Generic (MkSum (mkSum))
 import Plutarch.DataRepr.Internal.HList (type Drop, type IndexList)
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal (S (SI), punsafeBuiltin)
+import Plutarch.Internal (S (SI))
 import Plutarch.Internal.TypeFamily (ToPType2)
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstant, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont)
 import Plutarch.Unsafe (punsafeCoerce)
 import qualified Plutus.V1.Ledger.Api as Ledger
-import qualified PlutusCore as PLC
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is
  `PBuiltinList PData`.
@@ -183,56 +183,57 @@ type family PUnLabel (a :: PLabeledType) :: PType where
 
  This is how most data structures are stored on-chain.
 -}
-type PDataSum :: [[PLabeledType]] -> PType
-data PDataSum (defs :: [[PLabeledType]]) (s :: S) where 
-  DSZ :: (forall {out :: PType}. (Term s (PDataRecord x) -> Term s out) -> Term s out) 
-      -> PDataSum (x ': xs) s
+newtype DRec s x = DRec (forall {out :: PType}. ((Term s (PDataRecord x) -> Term s out) -> Term s out))
 
-  DSS :: PDataSum xs s -> PDataSum (x ': xs) s
+type PDataSum :: [[PLabeledType]] -> PType
+newtype PDataSum defs s = PDataSum (NS (DRec s) defs)
 
 -- the length functions in sop-core gives the actual length, we want length-1
-adjustedLength :: forall x xs proxy. SListI (x:xs) => proxy (x:xs) -> Integer 
-adjustedLength proxy = fromIntegral (lengthSList proxy) - 1  
+adjustedLength :: forall x xs proxy. SListI (x : xs) => proxy (x : xs) -> Integer
+adjustedLength proxy = fromIntegral (lengthSList proxy) - 1
 
-instance SListI (def:defs) => PlutusType (PDataSum (def:defs)) where
-  type PInner (PDataSum (def:defs)) _ = PData 
+instance SListI (def : defs) => PlutusType (PDataSum (def : defs)) where
+  type PInner (PDataSum (def : defs)) _ = PData
+  pcon' ::
+    forall
+      {s :: S}
+      {b :: PType}.
+    PDataSum (def : defs) s ->
+    Term s (PInner (PDataSum (def : defs)) b)
+  pcon' (PDataSum xss) = case xss of
+    Z (DRec f) -> punsafeCoerce $ pconstrBuiltin # (pconstant @PInteger $ adjustedLength $ Proxy @(def : defs)) # (punsafeCoerce $ f id)
+    S rest -> case rest of
+      Z (DRec f) -> punsafeCoerce $ pconstrBuiltin # (pconstant @PInteger $ adjustedLength $ Proxy @defs) # (punsafeCoerce $ f $ id)
+      dss@(S _) -> pcon' (PDataSum dss)
 
-  pcon' :: forall 
-           {s :: S} 
-           {b :: PType}
-         . PDataSum (def:defs) s 
-        -> Term s (PInner (PDataSum (def:defs)) b)
-  pcon'  = \case 
-        DSZ f ->  punsafeBuiltin PLC.ConstrData # (pconstant @PInteger $ adjustedLength $ Proxy @(def:defs)) # (f id) -- rewrite this with pconstrBuiltin?
-        DSS rest -> case rest of 
-          DSZ f -> punsafeBuiltin PLC.ConstrData # (pconstant @PInteger $ adjustedLength $ Proxy @(defs)) # (f id)
-          dss@(DSS _) -> pcon' dss  
-
-  pmatch' :: forall 
-             {s :: S} 
-             {b :: PType}
-           . Term s (PInner (PDataSum (def:defs)) b)
-          -> (PDataSum (def:defs) s -> Term s b) 
-          -> Term s b
-  pmatch' d f = 
+  pmatch' ::
+    forall
+      {s :: S}
+      {b :: PType}.
+    Term s (PInner (PDataSum (def : defs)) b) ->
+    (PDataSum (def : defs) s -> Term s b) ->
+    Term s b
+  pmatch' d f =
     plet (pasConstr #$ pforgetData $ pdata d) $ \d' ->
-    plet (pfstBuiltin # d') $ \constr ->
-    plet (psndBuiltin # d') $ \args ->
-      go constr args sList f                      
-   where 
-    go :: forall {d :: [PLabeledType]} {ds :: [[PLabeledType]]}
-        . Term s PInteger -- the index of the constructor in the sum
-       -> Term s (PBuiltinList PData)  -- the inner representation of the record at the index of the first argument 
-       -> SList (d:ds) -- a GADT which represents the structure of the sum (can't construct it w/o this)
-       -> (PDataSum (d:ds) s -> Term s b) -- an accumulator function. represents an empty "left-hand side" of the sum 
-       -> Term s b                             
-    go constr args SCons g =
-      case sList @ds of 
-        SNil ->  g $ DSZ $ \k -> k $ punsafeCoerce args
-        rest@SCons -> 
-          pif (constr #== pconstant (adjustedLength $ Proxy @(d:ds))) -- if the index of the constructor matches the size of the sum
-              (g $ DSZ (\k -> k $ punsafeCoerce args)) -- then cons an injection (which contains an element) onto an empty tail, and append the empty left hand side at the front
-              (go constr args rest (g . DSS)) -- else recurse, "moving the accumulator forward by one"
+      plet (pfstBuiltin # d') $ \constr ->
+        plet (psndBuiltin # d') $ \args ->
+          go constr args sList (f . PDataSum)
+    where
+      go ::
+        forall {d :: [PLabeledType]} {ds :: [[PLabeledType]]}.
+        Term s PInteger ->
+        Term s (PBuiltinList PData) ->
+        SList (d : ds) ->
+        (NS (DRec s) (d : ds) -> Term s b) ->
+        Term s b
+      go constr args SCons g =
+        case sList @ds of
+          SNil -> g . Z $ DRec (\k -> k $ punsafeCoerce args)
+          rest@SCons ->
+            pif
+              (constr #== pconstant (adjustedLength $ Proxy @(d : ds)))
+              (g . Z $ DRec (\k -> k $ punsafeCoerce args))
+              (go constr args rest (g . S))
 
 instance PIsData (PDataSum defs) where
   pdata = punsafeCoerce
@@ -280,7 +281,7 @@ pmatchDataSum d handlers =
     plet (pfstBuiltin # d') $ \constr ->
       plet (psndBuiltin # d') $ \args ->
         let handlers' = applyHandlers args handlers
-        in runTermCont (findCommon handlers') $ \common ->
+         in runTermCont (findCommon handlers') $ \common ->
               go
                 common
                 0
@@ -433,4 +434,3 @@ class IsBuiltinList a where
 
 instance IsBuiltinList (PDataRecord l) where
   dataListFrom = punsafeCoerce
-
