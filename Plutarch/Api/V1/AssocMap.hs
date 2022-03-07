@@ -3,6 +3,7 @@
 
 module Plutarch.Api.V1.AssocMap (
   PMap,
+  pmkPMap,
 ) where
 
 import Plutarch.TryFrom (
@@ -60,6 +61,32 @@ instance
       x' <- Plutus.fromData x
       y' <- Plutus.fromData y
       Just (x', y')
+
+----------------------- Smart constructor to to create onchain instances ----------------
+
+{- |
+    Smart constructor to enforce PMap invariants on the Haskell level for writing
+    onchain code
+-}
+pmkPMap ::
+  forall a b s.
+  ( PLifted (PConstanted a) ~ a
+  , PLifted (PConstanted b) ~ b
+  , PLift (PConstanted a)
+  , PLift (PConstanted b)
+  , Plutus.ToData a
+  , Plutus.ToData b
+  , Plutus.FromData a
+  , Plutus.FromData b
+  , Ord a
+  ) =>
+  [(a, b)] ->
+  Maybe (Term s (PMap (PConstanted a) (PConstanted b)))
+pmkPMap l = if sorted l then Just (pconstant $ PlutusMap.fromList l) else Nothing
+  where
+    sorted [] = True
+    sorted [_] = True
+    sorted (x : y : zs) = if fst x > fst y then False else sorted (y : zs)
 
 ----------------------- PTryFrom and PMaybeFrom instances -------------------------------
 

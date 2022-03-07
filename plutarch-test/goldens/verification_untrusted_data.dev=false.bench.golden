@@ -24,6 +24,10 @@ checking PValue and PMap for validity.PMap.invalid2 {"exBudgetCPU":12645264,"exB
 checking PValue and PMap for validity.PMap.valid0maybe {"exBudgetCPU":14519413,"exBudgetMemory":28316,"scriptSizeBytes":198}
 checking PValue and PMap for validity.PMap.invalid1maybe {"exBudgetCPU":2880288,"exBudgetMemory":678,"scriptSizeBytes":198}
 checking PValue and PMap for validity.PMap.invalid2maybe {"exBudgetCPU":12645264,"exBudgetMemory":21418,"scriptSizeBytes":190}
+checking PValue and PMap for validity.PValue.valid0 {"exBudgetCPU":7607387,"exBudgetMemory":19388,"scriptSizeBytes":137}
+checking PValue and PMap for validity.PValue.invalid1 {"exBudgetCPU":2310477,"exBudgetMemory":521,"scriptSizeBytes":153}
+checking PValue and PMap for validity.PValue.valid0maybe {"exBudgetCPU":8292167,"exBudgetMemory":21689,"scriptSizeBytes":160}
+checking PValue and PMap for validity.PValue.invalid1maybe {"exBudgetCPU":8265080,"exBudgetMemory":20524,"scriptSizeBytes":176}
 example.concatenate two lists, legal {"exBudgetCPU":63896970,"exBudgetMemory":125943,"scriptSizeBytes":656}
 example.concatenate two lists, illegal (list too short) {"exBudgetCPU":56513317,"exBudgetMemory":105217,"scriptSizeBytes":649}
 example.concatenate two lists, illegal (wrong elements in list) {"exBudgetCPU":63748105,"exBudgetMemory":125443,"scriptSizeBytes":656}

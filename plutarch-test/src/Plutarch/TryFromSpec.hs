@@ -18,22 +18,28 @@ import PlutusTx (
   Data (B, Constr, I),
  )
 
+import PlutusTx.AssocMap (Map)
+import qualified PlutusTx.AssocMap as PlutusMap
+
 import Plutarch.Unsafe (
   punsafeCoerce,
  )
 
 import Plutarch
 import Plutarch.Api.V1 (
+  PCurrencySymbol,
   PDatum,
   PDatumHash,
   PMap,
   PMaybeData (PDJust),
   PScriptContext,
   PScriptPurpose (PSpending),
+  PTokenName,
   PTuple,
   PTxInInfo,
   PTxOutRef,
   PValidator,
+  PValue,
  )
 import Plutarch.Builtin (
   PBuiltinMap,
@@ -49,6 +55,8 @@ import Plutarch.TryFrom (
 import Plutarch.ApiSpec (info, purpose)
 import Plutarch.Maybe (pfromMaybe)
 import Plutarch.Test
+import Plutus.V1.Ledger.Value (Value)
+import qualified Plutus.V1.Ledger.Value as Value
 
 spec :: Spec
 spec = do
@@ -203,6 +211,19 @@ spec = do
           @| (unTermCont $ ((pfromMaybe #) . fst) <$> TermCont (pmaybeFrom @_ @(PMap PInteger PUnit) mf1)) @-> pfails
         "invalid2maybe"
           @| (unTermCont $ fst <$> TermCont (ptryFrom @_ @(PMap PInteger PUnit) mf2)) @-> pfails
+      "PValue" @\ do
+        let legalValue0 :: Value
+            legalValue0 = Value.singleton "c0" "someToken" 1
+            illegalValue1 :: Map Value.CurrencySymbol (Map Value.TokenName Integer)
+            illegalValue1 = PlutusMap.fromList [("c0", PlutusMap.fromList [("someToken", 1), ("someOtherToken", 0)])]
+        "valid0"
+          @| (unTermCont $ fst <$> TermCont (ptryFrom @(PMap PCurrencySymbol (PMap PTokenName PInteger)) @PValue $ punsafeCoerce $ pconstant $ legalValue0)) @-> psucceeds
+        "invalid1"
+          @| (unTermCont $ fst <$> TermCont (ptryFrom @(PMap PCurrencySymbol (PMap PTokenName PInteger)) @PValue $ pconstant $ illegalValue1)) @-> pfails
+        "valid0maybe"
+          @| (unTermCont $ ((pfromMaybe #) . fst) <$> TermCont (pmaybeFrom @(PMap PCurrencySymbol (PMap PTokenName PInteger)) @PValue $ punsafeCoerce $ pconstant $ legalValue0)) @-> psucceeds
+        "invalid1maybe"
+          @| (unTermCont $ ((pfromMaybe #) . fst) <$> TermCont (pmaybeFrom @(PMap PCurrencySymbol (PMap PTokenName PInteger)) @PValue $ pconstant $ illegalValue1)) @-> pfails
     "example" @\ do
       let validContext = ctx validList1
           invalidContext = ctx invalidList1
