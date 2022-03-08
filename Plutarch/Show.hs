@@ -70,7 +70,12 @@ instance PShow PString where
   pshow' _ = id
 
 instance PShow PBool where
-  pshow' _ x = pmatch x (pconstant @PString . T.pack . show)
+  pshow' _ x = pshowBool # x
+    where
+      pshowBool = phoistAcyclic $
+        plam $ \x ->
+          -- Delegate to Haskell's Show instance
+          pmatch x $ pconstant @PString . T.pack . show
 
 instance PShow PInteger where
   pshow' _ x = pshowInt # x
