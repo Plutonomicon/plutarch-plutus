@@ -12,3 +12,4 @@ This document discusses various rules of thumb and general trivia, aiming to mak
 - [The isomorphism between `makeIsDataIndexed`, Haskell ADTs, and `PIsDataRepr`](./Tricks/makeIsDataIndexed,%20Haskell%20ADTs,%20and%20PIsDataRepr.md)
 - [Prefer statically building constants whenever possible](./Tricks/Prefer%20statically%20building%20constants.md)
 - [Figuring out the representation of a Plutarch type](./Tricks/Representation%20of%20Plutarch%20type.md)
+- [Prefer pattern matching on the result of `pmatch` immediately](./Tricks/Prefer%20matching%20on%20pmatch%20result%20immediately.md)

@@ -119,3 +119,13 @@ In general, `plet`ing something back-to-back several times will be optimized to 
 You should also `plet` local bindings! In particular, if you applied a function (Plutarch level or Haskell level) to obtain a value, then bound that value to a variable e.g. with `let` or `where`, then avoid using it multiple times. The binding will simply get inlined as the function application - and it'll keep getting re-evaluated. You should `plet` it first!
 
 This also applies to field accesses using `OverloadedRecordDot`. When you do `ctx.purpose`, it really gets translated to `hrecField @"purpose" ctx`, which is a function call! If you use the field multiple times, `plet` it first.
+
+Another slightly obscure case can be observed in scott encoded types. When you build a scott encoded type using `pcon` - the Plutarch terms you use as fields are simply inlined within the scott encoded type. As such, `pcon $ PPair <complex expr> <another complex expr>` ends up like:
+
+```hs
+(\f -> f <complex expr> <another complex expr>)
+```
+
+This is practically psuedocode. However, it demonstrates that your expressions are not evaluated when _building_ the scott encoded pair. Indeed, they will be evaluated when you `pmatch` on it. As such, if you `pmatch` on this pair multiple times, those expressions will evaluate multiple times!
+
+If you _must_ `pmatch` on such types several times, `plet` the fields before building the container type!

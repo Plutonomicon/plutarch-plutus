@@ -67,3 +67,17 @@ data TxInfo = TxInfo
 ```
 
 The _field names_ don't matter though. They are merely labels that don't exist at runtime.
+
+## What about `newtype`s?
+
+Of course, this does not apply when you're using `newtype` derivation (e.g `derive newtype ...`) to derive `FromData` or `ToData` for your PlutusTx types. In that case, the `Data` representation is simply the same as the inner type.
+
+```hs
+import qualified PlutusTx
+import PlutusTx.Prelude
+
+newtype CurrencySymbol = CurrencySymbol { unCurrencySymbol :: BuiltinByteString }
+  deriving newtype (PlutusTx.ToData, PlutusTx.FromData, PlutusTx.UnsafeFromData)
+```
+
+Here, for example, `CurrencySymbol` has the very same `Data` representation as `BuiltinByteString`. No extra information is added.
