@@ -6,6 +6,7 @@ module Plutarch.ByteString (
   phexByteStr,
   pbyteStr,
   pconsBS,
+  pelimBS,
   psliceBS,
   plengthBS,
   pindexBS,
@@ -16,10 +17,13 @@ import qualified Data.ByteString as BS
 import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Stack (HasCallStack)
-import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
+import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal.Other (
   Term,
+  phoistAcyclic,
+  plam,
+  plet,
   (#),
   type (:-->),
  )
@@ -73,6 +77,23 @@ pbyteStr = pconstant
 -- | Prepend a byte, represented by a non negative 'PInteger', to a 'PBytestring'.
 pconsBS :: Term s (PInteger :--> PByteString :--> PByteString)
 pconsBS = punsafeBuiltin PLC.ConsByteString
+
+-- | Case matching on bytestring, as if a list.
+pelimBS ::
+  Term
+    s
+    ( PByteString
+        :--> a -- If bytestring is empty
+        :--> (PInteger :--> PByteString :--> a) -- If bytestring is non-empty
+        :--> a
+    )
+pelimBS = phoistAcyclic $
+  plam $ \bs z f ->
+    plet (plengthBS # bs) $ \n ->
+      pif (n #== 0) z $
+        plet (pindexBS # bs # 0) $ \x ->
+          plet (psliceBS # 1 # (n - 1) # bs) $ \xs ->
+            f # x # xs
 
 {- | Slice a 'PByteString' with given start index and slice length.
 

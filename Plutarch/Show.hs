@@ -31,7 +31,7 @@ import Generics.SOP (
   hmap,
  )
 import Plutarch.Bool (PBool, PEq ((#==)), POrd ((#<)), pif)
-import Plutarch.ByteString (PByteString, pindexBS, plengthBS, psliceBS)
+import Plutarch.ByteString (PByteString, pconsBS, pelimBS)
 import Plutarch.Integer (PInteger, PIntegral (pquot, prem))
 import Plutarch.Internal (punsafeAsClosedTerm)
 import Plutarch.Internal.Generic (PCode, PGeneric, pfrom)
@@ -49,7 +49,7 @@ import Plutarch.Internal.Other (
   type (:-->),
  )
 import Plutarch.Lift (pconstant)
-import Plutarch.String (PString)
+import Plutarch.String (PString, pdecodeUtf8, pencodeUtf8)
 
 class PShow t where
   -- | Return the string representation of a Plutarch value
@@ -65,11 +65,29 @@ pshow :: PShow a => Term s a -> Term s PString
 pshow = pshow' False
 
 instance PShow PString where
-  -- FIXME: We ideally want to wrap the string in quotes, and escape it
-  -- appropriately just like Haskell's Show instance. However, there appears to
-  -- be no way to do this using Plutus' builtins. So we will just return the
-  -- string as is.
-  pshow' _ = id
+  pshow' _ x = "\"" <> pshowStr # x <> "\""
+    where
+      pshowStr :: Term s (PString :--> PString)
+      pshowStr = phoistAcyclic $
+        plam $ \s ->
+          pdecodeUtf8 #$ pshowUtf8Bytes #$ pencodeUtf8 # s
+      pshowUtf8Bytes :: Term s (PByteString :--> PByteString)
+      pshowUtf8Bytes = phoistAcyclic $
+        pfix #$ plam $ \self bs ->
+          pelimBS # bs
+            # bs
+            #$ plam
+            $ \x xs ->
+              -- Non-ascii byte sequence will not use bytes < 128.
+              -- So we are safe to rewrite the lower byte values.
+              -- https://en.wikipedia.org/wiki/UTF-8#Encoding
+              let doubleQuote = 34 :: Term _ PInteger -- `"`
+                  escapeSlash = 92 :: Term _ PInteger -- `\`
+                  rec = pconsBS # x #$ self # xs
+               in pif
+                    (x #== doubleQuote)
+                    (pconsBS # escapeSlash # rec)
+                    rec
 
 instance PShow PBool where
   pshow' _ x = pshowBool # x
@@ -105,16 +123,12 @@ instance PShow PInteger where
 instance PShow PByteString where
   pshow' _ x = "0x" <> showByteString # x
     where
-      showByteString =
-        phoistAcyclic $
-          pfix #$ plam $ \self bs ->
-            plet (plengthBS # bs) $ \n ->
-              pif
-                (n #== 0)
-                (pconstant @PString "")
-                $ plet (pindexBS # bs # 0) $ \x ->
-                  plet (psliceBS # 1 # (n - 1) # bs) $ \xs ->
-                    showByte # x <> self # xs
+      showByteString = phoistAcyclic $
+        pfix #$ plam $ \self bs ->
+          pelimBS # bs
+            # (pconstant @PString "")
+            #$ plam
+            $ \x xs -> showByte # x <> self # xs
       showByte :: Term s (PInteger :--> PString)
       showByte = phoistAcyclic $
         plam $ \n ->
@@ -122,14 +136,13 @@ instance PShow PByteString where
             plet (prem # n # 16) $ \b ->
               showNibble # a <> showNibble # b
       showNibble :: Term s (PInteger :--> PString)
-      showNibble =
-        phoistAcyclic $
-          plam $ \n ->
-            pcase perror n $
-              flip fmap [0 .. 15] $ \(x :: Int) ->
-                ( pconstant $ toInteger x
-                , pconstant @PString $ T.pack $ intToDigit x : []
-                )
+      showNibble = phoistAcyclic $
+        plam $ \n ->
+          pcase perror n $
+            flip fmap [0 .. 15] $ \(x :: Int) ->
+              ( pconstant $ toInteger x
+              , pconstant @PString $ T.pack $ intToDigit x : []
+              )
 
 pcase :: PEq a => Term s b -> Term s a -> [(Term s a, Term s b)] -> Term s b
 pcase otherwise x = \case

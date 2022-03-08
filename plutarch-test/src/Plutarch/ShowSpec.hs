@@ -33,6 +33,13 @@ spec = do
       "3" @| pshow (phexByteStr "14AF03") @== str "0x14af03"
       "n" @| pshow (phexByteStr "FFFFFF") @== str "0xffffff"
       "0" @| pshow (phexByteStr "000000") @== str "0x000000"
+    "str" @\ do
+      "empty" @| pshow (str "") @== str "\"\""
+      "hello123" @| pshow (str "hello123") @== str "\"hello123\""
+      "quoted" @| pshow (str "hello\"123") @== str "\"hello\\\"123\""
+      "slash" @| pshow (str "foo\\bar") @== str "\"foo\\bar\""
+      "unicode" @| pshow (str "vis-à-vis") @== str "\"vis-à-vis\""
+      "unicode-quoted" @| pshow (str "vis-\"à\"-vis") @== str "\"vis-\\\"à\\\"-vis\""
     "maybe" @\ do
       "nothing"
         @| pshow @(PMaybe PInteger) (pcon PNothing)
@@ -60,7 +67,7 @@ spec = do
     "pair" @\ do
       "int-str"
         @| pshow (pcon @(PPair PInteger PString) $ PPair 42 "hello")
-        @== str "PPair 42 hello"
+        @== str "PPair 42 \"hello\""
       "int-list"
         @| pshow (pcon @(PPair PInteger (PBuiltinList PInteger)) $ PPair 42 $ pconstant [1, 2, 3])
         @== str "PPair 42 [1, 2, 3]"
