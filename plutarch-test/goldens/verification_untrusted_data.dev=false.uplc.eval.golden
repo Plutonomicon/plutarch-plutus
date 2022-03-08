@@ -12,6 +12,8 @@ working.A { test := String, test2 := Integer } == { test := String, test2 := Int
 working.Map Int String == Map Int String (program 1.0.0 #a243666f6f182a436261721829)
 working.PDataSum constr 0 (program 1.0.0 #d8799f0543666f6fff)
 working.PDataSum constr 1 (program 1.0.0 #d87a9f0543666f6fff)
+recovering a record partially vs completely.partially (program 1.0.0 #9f034362617aff)
+recovering a record partially vs completely.completely (program 1.0.0 #9f034362617aff)
 removing the data wrapper.erroneous.(String, Integer) /= (String, String) (program 1.0.0 error)
 removing the data wrapper.erroneous.[String] /= [Integer] (program 1.0.0 error)
 removing the data wrapper.working.(String, String) == (String, String) (program 1.0.0 (#43666f6f, #43626172))

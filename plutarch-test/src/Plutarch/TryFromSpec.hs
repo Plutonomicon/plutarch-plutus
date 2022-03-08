@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UndecidableInstances #-}
 
@@ -7,11 +8,14 @@ module Plutarch.TryFromSpec (spec) where
 import Test.Syd
 
 import Plutus.V1.Ledger.Api (
+  Address (Address),
+  Credential (ScriptCredential),
   Datum (Datum),
   DatumHash,
   ScriptContext (ScriptContext),
   ToData (toBuiltinData),
-  TxInfo (txInfoData),
+  TxInfo (txInfoData, txInfoOutputs),
+  TxOut (TxOut, txOutAddress, txOutDatumHash, txOutValue),
  )
 
 import PlutusTx (
@@ -37,6 +41,8 @@ import Plutarch.Api.V1 (
   PTokenName,
   PTuple,
   PTxInInfo,
+  PTxInfo,
+  PTxOut,
   PTxOutRef,
   PValidator,
   PValue,
@@ -53,6 +59,7 @@ import Plutarch.TryFrom (
  )
 
 import Plutarch.ApiSpec (info, purpose)
+import qualified Plutarch.ApiSpec as Api
 import Plutarch.Maybe (pfromMaybe)
 import Plutarch.Test
 import Plutus.V1.Ledger.Value (Value)
@@ -132,12 +139,25 @@ spec = do
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
           (punsafeCoerce $ pconstant $ Constr 0 [I 5, B "foo"])
-          @-> psucceeds
+        @-> psucceeds
       "PDataSum constr 1"
         @| checkDeep
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
           (punsafeCoerce $ pconstant $ Constr 1 [I 5, B "foo"])
+        @-> psucceeds
+    "recovering a record partially vs completely" @\ do
+      "partially"
+        @| checkDeep
+          @(PDataRecord '["foo" ':= PInteger, "bar" ':= PData])
+          @(PDataRecord '["foo" ':= PInteger, "bar" ':= PByteString])
+          (pdata $ pdcons @"foo" # (pdata $ pconstant 3) #$ pdcons @"bar" # (pdata $ pconstant "baz") # pdnil)
+          @-> psucceeds
+      "completely"
+        @| checkDeep
+          @(PDataRecord '["foo" ':= PInteger, "bar" ':= PByteString])
+          @(PDataRecord '["foo" ':= PInteger, "bar" ':= PByteString])
+          (pdata (pdcons @"foo" # (pdata $ pconstant 3) #$ pdcons @"bar" # (pdata $ pconstant "baz") # pdnil))
           @-> psucceeds
     "removing the data wrapper" @\ do
       "erroneous" @\ do
@@ -225,8 +245,8 @@ spec = do
         "invalid1maybe"
           @| (unTermCont $ ((pfromMaybe #) . fst) <$> TermCont (pmaybeFrom @(PMap PCurrencySymbol (PMap PTokenName PInteger)) @PValue $ pconstant $ illegalValue1)) @-> pfails
     "example" @\ do
-      let validContext = ctx validList1
-          invalidContext = ctx invalidList1
+      let validContext0 = ctx validOutputs0 validList1
+          invalidContext1 = ctx invalidOutputs1 validList1
           l1 :: Term _ (PAsData (PBuiltinList (PAsData PInteger)))
           l1 = toDatadList [1 .. 5]
           l2 :: Term _ (PAsData (PBuiltinList (PAsData PInteger)))
@@ -236,13 +256,13 @@ spec = do
           l4 :: Term _ (PAsData (PBuiltinList (PAsData PInteger)))
           l4 = toDatadList [6, 8, 8, 9, 10]
       "concatenate two lists, legal"
-        @| validator # pforgetData l1 # pforgetData l2 # validContext @-> psucceeds
+        @| validator # pforgetData l1 # pforgetData l2 # validContext0 @-> psucceeds
       "concatenate two lists, illegal (list too short)"
-        @| validator # pforgetData l1 # pforgetData l3 # validContext @-> pfails
+        @| validator # pforgetData l1 # pforgetData l3 # validContext0 @-> pfails
       "concatenate two lists, illegal (wrong elements in list)"
-        @| validator # pforgetData l1 # pforgetData l4 # validContext @-> pfails
+        @| validator # pforgetData l1 # pforgetData l4 # validContext0 @-> pfails
       "concatenate two lists, illegal (more than one output)"
-        @| validator # pforgetData l1 # pforgetData l2 # invalidContext @-> pfails
+        @| validator # pforgetData l1 # pforgetData l2 # invalidContext1 @-> pfails
 
 ------------------- Checking deeply, shallowly and unwrapping ----------------------
 
@@ -302,6 +322,8 @@ validator = phoistAcyclic $
     (_, trustedDatum) <- TermCont (ptryFrom @PData @(PAsData (PBuiltinList (PAsData PNatural))) dat)
     -- make the Datum and Redeemer trusted
 
+    txInfo :: (Term _ PTxInfo) <- tcont $ plet $ pfield @"txInfo" # ctx
+
     let ownHash :: Term _ PDatumHash
         ownHash = unTermCont $ do
           PJust ownInput <- tcont $ pmatch $ pfindOwnInput # ctx
@@ -311,8 +333,11 @@ validator = phoistAcyclic $
           pure $ pfield @"_0" # datumHash
         -- find own script address matching DatumHash
 
-        outputs :: Term _ (PBuiltinList (PAsData (PTuple PDatumHash PDatum)))
-        outputs = pfield @"data" #$ pfield @"txInfo" # ctx
+        data' :: Term _ (PBuiltinList (PAsData (PTuple PDatumHash PDatum)))
+        data' = pfield @"data" # txInfo
+
+        outputs :: Term _ (PBuiltinList (PAsData PTxOut))
+        outputs = pfield @"outputs" # txInfo
         -- find the list of the outputs
 
         matchingHashDatum :: Term _ (PBuiltinList PDatum)
@@ -322,21 +347,23 @@ validator = phoistAcyclic $
                 \tup ->
                   ptrace "iteration" $
                     pif
-                      (hrecField @"_0" tup #== ownHash)
-                      (ptrace "appended something" pcons # (hrecField @"_1" tup) # (self # xs))
+                      (tup._0 #== ownHash)
+                      (ptrace "appended something" pcons # (tup._1) # (self # xs))
                       (ptrace "called without appending" self # xs)
             )
             (const pnil)
-            #$ outputs
+            #$ data'
         -- filter and map at the same time, as there is no efficient way
         -- to do that with tools available, I wrote it by hand
 
-        singleOutput :: Term _ PDatum
-        singleOutput = plet matchingHashDatum $ \dat ->
-          pif
-            (pnull #$ ptail # dat)
-            (phead # dat)
-            (ptraceError "not a single output")
+        singleOutput :: Term _ PBool
+        singleOutput = pnull #$ ptail #$ pfilter # pred # outputs
+          where
+            pred :: Term _ (PAsData PTxOut :--> PBool)
+            pred = plam $ \out -> unTermCont $ do
+              PDJust dhash <- tcont $ pmatch (pfield @"datumHash" # out)
+              pure $ pfield @"_0" # dhash #== ownHash
+
         -- make sure that after filtering the outputs, only one output
         -- remains
 
@@ -345,7 +372,7 @@ validator = phoistAcyclic $
         -- the resulting list with trusted datum and trusted redeemer
 
         isValid :: Term _ PBool
-        isValid = (pto singleOutput) #== pforgetData resultList
+        isValid = pif singleOutput (pto (phead # matchingHashDatum) #== pforgetData resultList) (pcon PFalse)
     -- the final check for validity
     pure $
       pif isValid (popaque $ pcon PUnit) (ptraceError "not valid")
@@ -354,9 +381,9 @@ pfindOwnInput :: Term s (PScriptContext :--> PMaybe (PAsData PTxInInfo))
 pfindOwnInput = phoistAcyclic $
   plam $ \ctx' -> unTermCont $ do
     ctx <- tcont $ pletFields @["txInfo", "purpose"] ctx'
-    PSpending txoutRef <- tcont $ pmatch $ hrecField @"purpose" ctx
+    PSpending txoutRef <- tcont $ pmatch $ ctx.purpose
     let txInInfos :: Term _ (PBuiltinList (PAsData PTxInInfo))
-        txInInfos = pfield @"inputs" #$ hrecField @"txInfo" ctx
+        txInInfos = pfield @"inputs" #$ ctx.txInfo
         target :: Term _ PTxOutRef
         target = pfield @"_0" # txoutRef
         pred :: Term _ (PAsData PTxInInfo :--> PBool)
@@ -384,23 +411,47 @@ pfind = phoistAcyclic $
 
 ------------------- Mocking a ScriptContext ----------------------------------------
 
-ctx :: [(DatumHash, Datum)] -> Term s PScriptContext
-ctx l = pconstant (ScriptContext (info' l) purpose)
+ctx :: [TxOut] -> [(DatumHash, Datum)] -> Term s PScriptContext
+ctx outs l = pconstant (ScriptContext (info' outs l) purpose)
 
-info' :: [(DatumHash, Datum)] -> TxInfo
-info' dat = info {txInfoData = dat}
+info' :: [TxOut] -> [(DatumHash, Datum)] -> TxInfo
+info' outs dat =
+  info
+    { txInfoData = dat
+    , txInfoOutputs = outs
+    }
+
+validOutputs0 :: [TxOut]
+validOutputs0 =
+  [ TxOut
+      { txOutAddress =
+          Address (ScriptCredential Api.validator) Nothing
+      , txOutValue = mempty
+      , txOutDatumHash = Just Api.datum
+      }
+  ]
+
+invalidOutputs1 :: [TxOut]
+invalidOutputs1 =
+  [ TxOut
+      { txOutAddress =
+          Address (ScriptCredential Api.validator) Nothing
+      , txOutValue = mempty
+      , txOutDatumHash = Just Api.datum
+      }
+  , TxOut
+      { txOutAddress =
+          Address (ScriptCredential Api.validator) Nothing
+      , txOutValue = mempty
+      , txOutDatumHash = Nothing
+      }
+  ]
 
 validList1 :: [(DatumHash, Datum)]
 validList1 =
   let dat :: Datum
       dat = Datum $ toBuiltinData [(1 :: Integer) .. 10]
    in [("d0", dat)]
-
-invalidList1 :: [(DatumHash, Datum)]
-invalidList1 =
-  let dat :: Datum
-      dat = Datum $ toBuiltinData [(1 :: Integer) .. 10]
-   in [("d0", dat), ("d0", Datum $ toBuiltinData @Integer 3)]
 
 ------------------- Helpers --------------------------------------------------------
 

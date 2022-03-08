@@ -122,6 +122,10 @@ instance PTryFrom PData PData where
   type PTryFromExcess PData PData = PUnit
   ptryFrom opq = runTermCont $ pure $ (opq, pcon PUnit)
 
+instance PTryFrom PData (PAsData PData) where
+  type PTryFromExcess PData (PAsData PData) = PUnit
+  ptryFrom opq = runTermCont $ pure (pdata opq, pcon PUnit)
+
 instance {-# OVERLAPPING #-} PTryFrom PData (PAsData (PBuiltinList PData)) where
   type PTryFromExcess PData (PAsData (PBuiltinList PData)) = PBuiltinList PData
   ptryFrom opq = runTermCont $ do
