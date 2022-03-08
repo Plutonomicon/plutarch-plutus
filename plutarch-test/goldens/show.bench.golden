@@ -10,6 +10,12 @@ int.14 {"exBudgetCPU":14274516,"exBudgetMemory":30847,"scriptSizeBytes":317}
 int.-14 {"exBudgetCPU":14908118,"exBudgetMemory":31652,"scriptSizeBytes":317}
 int.102 {"exBudgetCPU":18800590,"exBudgetMemory":39265,"scriptSizeBytes":318}
 int.-102 {"exBudgetCPU":19434192,"exBudgetMemory":40070,"scriptSizeBytes":318}
+bytestring.empty {"exBudgetCPU":3089766,"exBudgetMemory":9008,"scriptSizeBytes":401}
+bytestring.1 {"exBudgetCPU":10795630,"exBudgetMemory":25140,"scriptSizeBytes":403}
+bytestring.2 {"exBudgetCPU":28406394,"exBudgetMemory":65314,"scriptSizeBytes":404}
+bytestring.3 {"exBudgetCPU":35125968,"exBudgetMemory":79046,"scriptSizeBytes":405}
+bytestring.n {"exBudgetCPU":63349233,"exBudgetMemory":147560,"scriptSizeBytes":405}
+bytestring.0 {"exBudgetCPU":18786183,"exBudgetMemory":39380,"scriptSizeBytes":405}
 maybe.nothing {"exBudgetCPU":1458977,"exBudgetMemory":5000,"scriptSizeBytes":354}
 maybe.just {"exBudgetCPU":15676121,"exBudgetMemory":34060,"scriptSizeBytes":356}
 either.right {"exBudgetCPU":15766440,"exBudgetMemory":34361,"scriptSizeBytes":370}

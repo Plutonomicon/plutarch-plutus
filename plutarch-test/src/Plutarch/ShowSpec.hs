@@ -26,6 +26,13 @@ spec = do
         (fromString $ show (-n))
           @| pshow (pconstant @PInteger (-n))
           @== pconstant (T.pack $ show (-n))
+    "bytestring" @\ do
+      "empty" @| pshow (phexByteStr "") @== str "0x"
+      "1" @| pshow (phexByteStr "14") @== str "0x14"
+      "2" @| pshow (phexByteStr "14AF") @== str "0x14af"
+      "3" @| pshow (phexByteStr "14AF03") @== str "0x14af03"
+      "n" @| pshow (phexByteStr "FFFFFF") @== str "0xffffff"
+      "0" @| pshow (phexByteStr "000000") @== str "0x000000"
     "maybe" @\ do
       "nothing"
         @| pshow @(PMaybe PInteger) (pcon PNothing)

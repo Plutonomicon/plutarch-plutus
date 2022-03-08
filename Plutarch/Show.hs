@@ -6,6 +6,7 @@ module Plutarch.Show (
   pshow,
 ) where
 
+import Data.Char (intToDigit)
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import qualified Data.List.NonEmpty as NE
 import Data.Semigroup (sconcat)
@@ -30,6 +31,7 @@ import Generics.SOP (
   hmap,
  )
 import Plutarch.Bool (PBool, PEq ((#==)), POrd ((#<)), pif)
+import Plutarch.ByteString (PByteString, pindexBS, plengthBS, psliceBS)
 import Plutarch.Integer (PInteger, PIntegral (pquot, prem))
 import Plutarch.Internal (punsafeAsClosedTerm)
 import Plutarch.Internal.Generic (PCode, PGeneric, pfrom)
@@ -99,10 +101,40 @@ instance PShow PInteger where
           pcase perror digit $
             flip fmap [0 .. 9] $ \(x :: Integer) ->
               (pconstant x, pconstant (T.pack . show $ x))
-      pcase :: PEq a => Term s b -> Term s a -> [(Term s a, Term s b)] -> Term s b
-      pcase otherwise x = \case
-        [] -> otherwise
-        ((x', r) : cs) -> pif (x #== x') r $ pcase otherwise x cs
+
+instance PShow PByteString where
+  pshow' _ x = "0x" <> showByteString # x
+    where
+      showByteString =
+        phoistAcyclic $
+          pfix #$ plam $ \self bs ->
+            plet (plengthBS # bs) $ \n ->
+              pif
+                (n #== 0)
+                (pconstant @PString "")
+                $ plet (pindexBS # bs # 0) $ \x ->
+                  plet (psliceBS # 1 # (n - 1) # bs) $ \xs ->
+                    showByte # x <> self # xs
+      showByte :: Term s (PInteger :--> PString)
+      showByte = phoistAcyclic $
+        plam $ \n ->
+          plet (pquot # n # 16) $ \a ->
+            plet (prem # n # 16) $ \b ->
+              showNibble # a <> showNibble # b
+      showNibble :: Term s (PInteger :--> PString)
+      showNibble =
+        phoistAcyclic $
+          plam $ \n ->
+            pcase perror n $
+              flip fmap [0 .. 15] $ \(x :: Int) ->
+                ( pconstant $ toInteger x
+                , pconstant @PString $ T.pack $ intToDigit x : []
+                )
+
+pcase :: PEq a => Term s b -> Term s a -> [(Term s a, Term s b)] -> Term s b
+pcase otherwise x = \case
+  [] -> otherwise
+  ((x', r) : cs) -> pif (x #== x') r $ pcase otherwise x cs
 
 -- | Generic version of `pshow`
 gpshow ::
