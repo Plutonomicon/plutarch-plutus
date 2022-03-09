@@ -3,7 +3,7 @@
 
 module Plutarch.Unit (PUnit (..)) where
 
-import Plutarch (PlutusType (PInner, pcon', pmatch'), Term, pcon, pmatch)
+import Plutarch (PlutusType (PInner, pcon', pmatch'), Term, pcon)
 import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
@@ -15,7 +15,6 @@ import Plutarch.Lift (
 import Plutarch.Show (PShow (pshow'))
 
 data PUnit s = PUnit
-  deriving stock (Show)
 
 instance PUnsafeLiftDecl PUnit where type PLifted PUnit = ()
 deriving via (DerivePConstantDirect () PUnit) instance (PConstant ())
@@ -39,4 +38,4 @@ instance Monoid (Term s PUnit) where
   mempty = pcon PUnit
 
 instance PShow PUnit where
-  pshow' _ x = pmatch x $ \PUnit -> "()"
+  pshow' _ _ = "()"
