@@ -32,7 +32,7 @@ import Generics.SOP (
   hcliftA2,
  )
 import Plutarch.Internal (punsafeAsClosedTerm)
-import Plutarch.Internal.Generic (PCode, PGeneric, pfrom)
+import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.Other (
   DerivePNewtype,
   PDelayed,
@@ -154,7 +154,7 @@ gpeq =
       plam $ \x y ->
         pmatch x $ \x' ->
           pmatch y $ \y' ->
-            gpeq' @t (pfrom x') (pfrom y')
+            gpeq' @t (gpfrom x') (gpfrom y')
 
 gpeq' ::
   forall a s.
