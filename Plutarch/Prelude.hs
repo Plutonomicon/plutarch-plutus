@@ -115,9 +115,11 @@ module Plutarch.Prelude (
 
   -- * Tracing
   ptrace,
+  ptraceShowId,
   ptraceIfFalse,
   ptraceIfTrue,
   ptraceError,
+  pshow,
 
   -- * Cryptographic hashes and signatures
   psha2_256,
@@ -156,6 +158,7 @@ import Plutarch.List
 import Plutarch.Maybe
 import Plutarch.Pair
 import Plutarch.Rational
+import Plutarch.Show
 import Plutarch.String
 import Plutarch.TermCont
 import Plutarch.Trace

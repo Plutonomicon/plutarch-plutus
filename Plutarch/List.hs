@@ -4,6 +4,7 @@ module Plutarch.List (
   PListLike (..),
   PIsListLike,
   pconvertLists,
+  pshowList,
 
   -- * Comparison
   plistEquals,
@@ -72,14 +73,37 @@ import Plutarch.Integer (PInteger)
 import Plutarch.Lift (pconstant)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Pair (PPair (PPair))
+import Plutarch.String (PString)
 
 import Data.Kind
+import Plutarch.Show (PShow (pshow'), pshow)
 
 data PList (a :: PType) (s :: S)
   = PSCons (Term s a) (Term s (PList a))
   | PSNil
   deriving stock (GHC.Generic)
   deriving anyclass (Generic, PlutusType)
+
+instance PShow a => PShow (PList a) where
+  pshow' _ x = pshowList @PList @a # x
+
+pshowList :: forall list a s. (PShow a, PIsListLike list a) => Term s (list a :--> PString)
+pshowList =
+  phoistAcyclic $
+    plam $ \list ->
+      "[" <> pshowList' @list @a # list <> "]"
+
+pshowList' :: forall list a s. (PShow a, PIsListLike list a) => Term s (list a :--> PString)
+pshowList' =
+  phoistAcyclic $
+    precList
+      ( \self x xs ->
+          pelimList
+            (\_ _ -> pshow x <> ", " <> self # xs)
+            (pshow x)
+            xs
+      )
+      (\_self -> "")
 
 instance PEq a => PEq (PList a) where
   (#==) xs ys = plistEquals # xs # ys

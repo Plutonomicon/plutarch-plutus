@@ -141,6 +141,7 @@ executable plutarch-test
     Plutarch.RationalSpec
     Plutarch.RecursionSpec
     Plutarch.ScriptsSpec
+    Plutarch.ShowSpec
     Plutarch.StringSpec
     Plutarch.Test
     Plutarch.Test.Benchmark

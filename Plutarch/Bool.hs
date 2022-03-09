@@ -61,6 +61,7 @@ import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinBool'
 data PBool (s :: S) = PTrue | PFalse
+  deriving stock (Show)
 
 instance PUnsafeLiftDecl PBool where type PLifted PBool = Bool
 deriving via (DerivePConstantDirect Bool PBool) instance (PConstant Bool)
