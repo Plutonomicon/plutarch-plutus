@@ -85,8 +85,7 @@ import Plutarch.Builtin (
 import Plutarch.DataRepr.Internal.HList (type Drop, type IndexList)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (S (SI))
-import Plutarch.Internal.Generic (MkSum (mkSum), PCode, PGeneric, pfrom)
-import qualified Plutarch.Internal.Generic as G
+import Plutarch.Internal.Generic (MkSum (mkSum), PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstant, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont)
@@ -286,7 +285,7 @@ class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
   pconRepr x = punsafeCoerce expected
     where
       expected :: Term _ (PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
-      expected = gpconRepr @a $ pfrom x
+      expected = gpconRepr @a $ gpfrom x
 
   pmatchRepr :: forall s b. Term s (PDataSum (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
   default pmatchRepr ::
@@ -337,7 +336,7 @@ instance
   MkDataReprHandler s a n (r ': rs)
   where
   mkDataReprHandler f =
-    DRHCons (f . G.pto . mkSOP . mkProduct) $
+    DRHCons (f . gpto . mkSOP . mkProduct) $
       mkDataReprHandler @s @a @(n + 1) @rs f
     where
       mkProduct :: Term s (PDataRecord fs) -> NP (Term s) r

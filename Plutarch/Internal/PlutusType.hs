@@ -21,7 +21,7 @@ import Generics.SOP (
 import Plutarch.DataRepr.Internal.HList.Utils (IndexList)
 import Plutarch.Internal (PType, S, Term, pforce, plam', punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
-import Plutarch.Internal.Generic (MkSum (mkSum), PCode, PGeneric, pfrom, pto)
+import Plutarch.Internal.Generic (MkSum (mkSum), PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Internal.PLam ((#))
 import Plutarch.Internal.TypeFamily (ToPType, ToPType2)
 
@@ -100,7 +100,7 @@ class (PCon a, PMatch a) => PlutusType (a :: PType) where
     ) =>
     a s ->
     Term s (PInner a b)
-  pcon' x = gpcon @a @b $ pfrom x
+  pcon' x = gpcon @a @b $ gpfrom x
 
   pmatch' :: forall s b. (Term s (PInner a b)) -> (a s -> Term s b) -> Term s b
   default pmatch' ::
@@ -115,7 +115,7 @@ class (PCon a, PMatch a) => PlutusType (a :: PType) where
     (Term s (PInner a b)) ->
     (a s -> Term s b) ->
     Term s b
-  pmatch' x f = gpmatch @a x (f . pto)
+  pmatch' x f = gpmatch @a x (f . gpto)
 
 instance {-# OVERLAPPABLE #-} PlutusType a => PMatch a where
   pmatch x f = pmatch' (punsafeCoerce x) f

@@ -7,8 +7,8 @@ module Plutarch.Internal.Generic (
   -- * Plutarch adapters for generics-sop API
   PGeneric,
   PCode,
-  pfrom,
-  pto,
+  gpfrom,
+  gpto,
 
   -- * Helpers for when existing generics-sop combinators are insufficient.
   MkSum (mkSum),
@@ -40,12 +40,12 @@ type PCode s a = ToPType2 (Code (a s))
 
   Instead of `I`, this uses `Term s` as the container type.
 -}
-pfrom :: PGeneric s a => a s -> SOP (Term s) (PCode s a)
-pfrom = hfromI . from
+gpfrom :: PGeneric s a => a s -> SOP (Term s) (PCode s a)
+gpfrom = hfromI . from
 
--- | Like `to` but for Plutarch terms. Analogous to `pfrom`.
-pto :: PGeneric s a => SOP (Term s) (PCode s a) -> a s
-pto = to . htoI
+-- | Like `to` but for Plutarch terms. Analogous to `gpfrom`.
+gpto :: PGeneric s a => SOP (Term s) (PCode s a) -> a s
+gpto = to . htoI
 
 {- |
 Infrastructure to create a single sum constructor given its type index and value.
