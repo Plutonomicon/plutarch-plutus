@@ -1,7 +1,14 @@
 # Revision history for plutarch
 
 # Unreleased
-- Add `puncons` and `punsafeUncons` functions for deconstructing list.
+
+- Add `pshow` and `ptraceShowId` 
+
+  Started by [#352](https://github.com/Plutonomicon/plutarch/pull/352)
+
+- Add `puncons` and `ptryUncons` functions for deconstructing list.
+
+  Started by: [#333](https://github.com/Plutonomicon/plutarch/pull/333)
 
 - Add generic deriving for `PEq`
 
@@ -77,6 +84,13 @@
   Added by: [#235](https://github.com/Plutonomicon/plutarch/pull/270)
 
 - Add `Plutarch.Test` for testing Plutarch code with goldens for UPLC printing and Plutus benchmarks.
+
+- `plutarch-extra`: Add a new directory scaffold "`plutarch-extra`" which will be home to everything too specific to not be in the 
+  main Plutarch repo. Also refactored the test library.
+
+  Directory: `plutarch-extra`
+
+  Added by: [#329](https://github.com/Plutonomicon/plutarch/pull/329)
 
 # 1.1.0
 

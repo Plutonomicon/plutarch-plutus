@@ -38,22 +38,15 @@ import GHC.TypeLits (
 import Generics.SOP (
   All,
   All2,
-  AllZipN,
   Code,
   Generic,
-  I (I),
   K (K),
-  LiftedCoercible,
   NP (Nil, (:*)),
-  POP,
   SListI,
   SOP (SOP),
-  from,
   hcmap,
   hcollapse,
-  hfromI,
   hindex,
-  to,
  )
 import Plutarch (
   Dig,
@@ -92,8 +85,7 @@ import Plutarch.Builtin (
 import Plutarch.DataRepr.Internal.HList (type Drop, type IndexList)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (S (SI))
-import Plutarch.Internal.Generic (MkSum (mkSum))
-import Plutarch.Internal.TypeFamily (ToPType2)
+import Plutarch.Internal.Generic (MkSum (mkSum), PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstant, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont)
@@ -151,10 +143,10 @@ data PLabeledType = Symbol := PType
 
 {- Get the product types of a data record sum constructor
 -}
-type PDataRecordFields :: [Type] -> [PLabeledType]
+type PDataRecordFields :: [PType] -> [PLabeledType]
 type family PDataRecordFields as where
   PDataRecordFields '[] = '[]
-  PDataRecordFields '[Term s (PDataRecord fs)] = fs
+  PDataRecordFields '[(PDataRecord fs)] = fs
   PDataRecordFields '[t] = TypeError ( 'Text "Expected PDataRecord" ':<>: 'Text "but got" ':<>: 'ShowType t)
   PDataRecordFields ts = TypeError ( 'Text "Expected none or PDataRecord" ':<>: 'Text "but got" ':<>: 'ShowType ts)
 
@@ -162,7 +154,7 @@ type family PDataRecordFields as where
 
 NOTE: Unfortunately we can't write a generic FMap due to ghc's arity limitations.
 -}
-type PDataRecordFields2 :: [[Type]] -> [[PLabeledType]]
+type PDataRecordFields2 :: [[PType]] -> [[PLabeledType]]
 type family PDataRecordFields2 as where
   PDataRecordFields2 '[] = '[]
   PDataRecordFields2 (a ': as) = PDataRecordFields a ': PDataRecordFields2 as
@@ -276,81 +268,81 @@ newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
 -- TODO: This 'PMatch' constraint needs to be changed to 'PlutusType (breaking change).
 class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PLabeledType]]
-  type PIsDataReprRepr a = PDataRecordFields2 (Code (a 'SI))
+  type PIsDataReprRepr a = PDataRecordFields2 (PCode 'SI a)
 
   pconRepr :: a s -> Term s (PDataSum (PIsDataReprRepr a))
   default pconRepr ::
     forall s code pcode.
-    ( Generic (a s)
+    ( PGeneric s a
     , code ~ Code (a s)
-    , pcode ~ ToPType2 code
+    , pcode ~ PCode s a
     , All SListI pcode
     , All Singleton code
     , All2 IsBuiltinList pcode
-    , AllZipN POP (LiftedCoercible I (Term s)) code pcode
     ) =>
     a s ->
     Term s (PDataSum (PIsDataReprRepr a))
   pconRepr x = punsafeCoerce expected
     where
       expected :: Term _ (PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
-      expected = gpconRepr @a $ from x
+      expected = gpconRepr @a $ gpfrom x
 
   pmatchRepr :: forall s b. Term s (PDataSum (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
   default pmatchRepr ::
-    forall s b code.
+    forall s b code pcode.
     ( code ~ Code (a s)
-    , PDataRecordFields2 code ~ PIsDataReprRepr a
-    , MkDataReprHandler s a 0 code
+    , pcode ~ PCode s a
+    , PDataRecordFields2 pcode ~ PIsDataReprRepr a
+    , MkDataReprHandler s a 0 pcode
     ) =>
     Term s (PDataSum (PIsDataReprRepr a)) ->
     (a s -> Term s b) ->
     Term s b
   pmatchRepr dat =
-    pmatchDataSum dat . mkDataReprHandler @s @a @0 @code
+    pmatchDataSum dat . mkDataReprHandler @s @a @0 @pcode
 
 gpconRepr ::
   forall a s code pcode.
   ( Generic (a s)
   , code ~ Code (a s)
-  , pcode ~ ToPType2 code
+  , pcode ~ PCode s a
   , All SListI pcode
   , All Singleton code
   , All2 IsBuiltinList pcode
-  , AllZipN POP (LiftedCoercible I (Term s)) code pcode
   ) =>
-  SOP I (Code (a s)) ->
+  SOP (Term s) pcode ->
   Term s (PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
 gpconRepr x = pconstrBuiltin # pconstant (toInteger $ hindex sop) # head (hcollapse sop)
   where
     sop :: SOP (K (Term s (PBuiltinList PData))) pcode
-    sop = hcmap (Proxy @IsBuiltinList) (K . dataListFrom) $ hfromI x
+    sop = hcmap (Proxy @IsBuiltinList) (K . dataListFrom) x
 
 -- | Create a `DataReprhandlers` starting from `n`th sum constructor
-class MkDataReprHandler (s :: S) (a :: PType) (n :: Nat) (rest :: [[Type]]) where
+class MkDataReprHandler (s :: S) (a :: PType) (n :: Nat) (rest :: [[PType]]) where
   mkDataReprHandler :: forall out. (a s -> Term s out) -> DataReprHandlers out (PDataRecordFields2 rest) s
 
 instance MkDataReprHandler s a n '[] where
   mkDataReprHandler _ = DRHNil
 
 instance
-  ( Generic (a s)
+  ( PGeneric s a
   , code ~ Code (a s)
-  , r ~ IndexList n code
-  , r ~ '[Term s (PDataRecord fs)]
-  , MkSum n code
+  , pcode ~ PCode s a
+  , r ~ IndexList n pcode
+  , r ~ '[(PDataRecord fs)]
+  , MkSum n pcode (Term s)
   , MkDataReprHandler s a (n + 1) rs
   ) =>
   MkDataReprHandler s a n (r ': rs)
   where
   mkDataReprHandler f =
-    DRHCons (f . to . mkSOP . mkProduct) $
+    DRHCons (f . gpto . mkSOP . mkProduct) $
       mkDataReprHandler @s @a @(n + 1) @rs f
     where
-      mkProduct :: Term s (PDataRecord fs) -> NP I r
-      mkProduct x = I x :* Nil
-      mkSOP :: NP I r -> SOP I (Code (a s))
-      mkSOP = SOP . mkSum @n @code
+      mkProduct :: Term s (PDataRecord fs) -> NP (Term s) r
+      mkProduct x = x :* Nil
+      mkSOP :: NP (Term s) r -> SOP (Term s) (PCode s a)
+      mkSOP = SOP . mkSum @_ @n @pcode
 
 pasDataSum :: PIsDataRepr a => Term s a -> Term s (PDataSum (PIsDataReprRepr a))
 pasDataSum = punsafeCoerce

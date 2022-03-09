@@ -1,4 +1,4 @@
-module Plutarch.ListSpec (spec) where
+module Plutarch.ListSpec (spec, integerList) where
 
 import Test.Syd
 
