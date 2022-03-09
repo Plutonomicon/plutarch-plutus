@@ -469,9 +469,9 @@
             # https://github.com/NorfairKing/sydtest/blob/master/sydtest-discover/src/Test/Syd/Discover.hs
             cp -rT ${./.} $out
             chmod -R u+w $out/plutarch-test
-            rm -f $out/plutarch-test/src/Plutarch/MonadicSpec.hs
-            rm -f $out/plutarch-test/src/Plutarch/FieldSpec.hs
-            rm -f $out/plutarch-test/src/Plutarch/RecSpec.hs
+            rm -f $out/plutarch-test/plutarch-base/Plutarch/MonadicSpec.hs
+            rm -f $out/plutarch-test/plutarch-base/Plutarch/FieldSpec.hs
+            rm -f $out/plutarch-test/plutarch-base/Plutarch/RecSpec.hs
           '';
           compiler-nix-name = ghcName;
           inherit extraSources;
@@ -597,7 +597,7 @@
         in
         {
           type = "app";
-          program = checkedShellScript system "plutatch-test-${name}"
+          program = checkedShellScript system "plutarch-test-${name}"
             ''
               cd ${self}/plutarch-test
               ${flake.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test;
