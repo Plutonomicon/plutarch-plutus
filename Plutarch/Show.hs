@@ -31,7 +31,7 @@ import Generics.SOP (
   hmap,
  )
 import Plutarch.Bool (PBool, PEq ((#==)), POrd ((#<)), pif)
-import Plutarch.ByteString (PByteString, pconsBS, pelimBS)
+import Plutarch.ByteString (PByteString, pconsBS, pindexBS, plengthBS, psliceBS)
 import Plutarch.Integer (PInteger, PIntegral (pquot, prem))
 import Plutarch.Internal (punsafeAsClosedTerm)
 import Plutarch.Internal.Generic (PCode, PGeneric, pfrom)
@@ -65,12 +65,12 @@ pshow :: PShow a => Term s a -> Term s PString
 pshow = pshow' False
 
 instance PShow PString where
-  pshow' _ x = "\"" <> pshowStr # x <> "\""
+  pshow' _ x = pshowStr # x
     where
       pshowStr :: Term s (PString :--> PString)
       pshowStr = phoistAcyclic $
         plam $ \s ->
-          pdecodeUtf8 #$ pshowUtf8Bytes #$ pencodeUtf8 # s
+          "\"" <> (pdecodeUtf8 #$ pshowUtf8Bytes #$ pencodeUtf8 # s) <> "\""
       pshowUtf8Bytes :: Term s (PByteString :--> PByteString)
       pshowUtf8Bytes = phoistAcyclic $
         pfix #$ plam $ \self bs ->
@@ -121,9 +121,12 @@ instance PShow PInteger where
               (pconstant x, pconstant (T.pack . show $ x))
 
 instance PShow PByteString where
-  pshow' _ x = "0x" <> showByteString # x
+  pshow' _ x = showByteString # x
     where
       showByteString = phoistAcyclic $
+        plam $ \bs ->
+          "0x" <> showByteString' # bs
+      showByteString' = phoistAcyclic $
         pfix #$ plam $ \self bs ->
           pelimBS # bs
             # (pconstant @PString "")
@@ -143,6 +146,23 @@ instance PShow PByteString where
               ( pconstant $ toInteger x
               , pconstant @PString $ T.pack $ intToDigit x : []
               )
+
+-- | Case matching on bytestring, as if a list.
+pelimBS ::
+  Term
+    s
+    ( PByteString
+        :--> a -- If bytestring is empty
+        :--> (PInteger :--> PByteString :--> a) -- If bytestring is non-empty
+        :--> a
+    )
+pelimBS = phoistAcyclic $
+  plam $ \bs z f ->
+    plet (plengthBS # bs) $ \n ->
+      pif (n #== 0) z $
+        plet (pindexBS # bs # 0) $ \x ->
+          plet (psliceBS # 1 # (n - 1) # bs) $ \xs ->
+            f # x # xs
 
 pcase :: PEq a => Term s b -> Term s a -> [(Term s a, Term s b)] -> Term s b
 pcase otherwise x = \case
