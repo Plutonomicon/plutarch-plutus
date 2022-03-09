@@ -16,7 +16,7 @@ module Plutarch.FFI (
 import Data.ByteString (ByteString)
 import Data.Kind (Constraint, Type)
 import Data.Text (Text)
-import GHC.Exts (Any)
+import Data.Void (Void)
 import GHC.Generics (Generic)
 import GHC.TypeLits (TypeError)
 import qualified GHC.TypeLits as TypeLits
@@ -91,8 +91,8 @@ foreignExport = unsafeForeignExport
 foreignImport :: p >~< t => CompiledCode t -> ClosedTerm p
 foreignImport = unsafeForeignImport
 
--- | Export Plutarch term of any type as @CompiledCode Any@.
-opaqueExport :: ClosedTerm p -> CompiledCode Any
+-- | Export Plutarch term of any type as @CompiledCode Void@.
+opaqueExport :: ClosedTerm p -> CompiledCode Void
 opaqueExport = unsafeForeignExport
 
 -- | Import compiled UPLC code of any type as a Plutarch opaque term.

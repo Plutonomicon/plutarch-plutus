@@ -85,6 +85,13 @@
 
 - Add `Plutarch.Test` for testing Plutarch code with goldens for UPLC printing and Plutus benchmarks.
 
+- `plutarch-extra`: Add a new directory scaffold "`plutarch-extra`" which will be home to everything too specific to not be in the 
+  main Plutarch repo. Also refactored the test library.
+
+  Directory: `plutarch-extra`
+
+  Added by: [#329](https://github.com/Plutonomicon/plutarch/pull/329)
+
 # 1.1.0
 
 - General repository changes.
