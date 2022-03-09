@@ -18,7 +18,7 @@ import Plutarch.Lift (
  )
 
 import Plutarch.TryFrom (
-  PMaybeFrom (PMaybeFromExcess, pmaybeFrom),
+  Flip (Flip),
   PTryFrom (PTryFromExcess, ptryFrom),
  )
 
@@ -53,10 +53,10 @@ deriving via
   instance
     (PConstant Plutus.Value)
 
------------------------ PTryFrom and PMaybeFrom instances -------------------------------
+----------------------- PTryFrom instances ----------------------------------------------
 
 instance PTryFrom (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue where
-  type PTryFromExcess (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue = PUnit
+  type PTryFromExcess (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue = Flip Term PUnit
   ptryFrom m = runTermCont $ do
     let predInner :: Term _ (PBuiltinPair (PAsData PTokenName) (PAsData PInteger) :--> PBool)
         predInner = plam $ \tup -> pif (0 #< (pfromData $ psndBuiltin # tup)) (pcon PTrue) perror
@@ -65,17 +65,4 @@ instance PTryFrom (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue where
         res :: Term _ PBool
         res = pall # predOuter # pto m
     _ <- tcont $ plet res
-    pure $ (pcon $ PValue m, pcon PUnit)
-
-instance PMaybeFrom (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue where
-  type PMaybeFromExcess (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue = PUnit
-  pmaybeFrom m = runTermCont $ do
-    let predInner :: Term _ (PBuiltinPair (PAsData PTokenName) (PAsData PInteger) :--> PBool)
-        predInner = plam $ \tup -> pif (0 #< (pfromData $ psndBuiltin # tup)) (pcon PTrue) (pcon PFalse)
-        predOuter :: Term _ (PBuiltinPair (PAsData PCurrencySymbol) (PAsData (PMap PTokenName PInteger)) :--> PBool)
-        predOuter = plam $ \tup -> pall # predInner # (pto $ pfromData $ psndBuiltin # tup)
-        res :: Term _ PBool
-        res = pall # predOuter # pto m
-    (tcont $ plet res) >>= (tcont . pmatch) >>= \case
-      PFalse -> pure (pcon PNothing, pcon PNothing)
-      PTrue -> pure ((pcon . PJust . pcon . PValue) m, (pcon . PJust . pcon) PUnit)
+    pure $ (pcon $ PValue m, Flip $ pcon PUnit)

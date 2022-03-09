@@ -14,23 +14,18 @@ working.PDataSum constr 0 {"exBudgetCPU":6024815,"exBudgetMemory":10910,"scriptS
 working.PDataSum constr 1 {"exBudgetCPU":7028371,"exBudgetMemory":12876,"scriptSizeBytes":171}
 recovering a record partially vs completely.partially {"exBudgetCPU":5292621,"exBudgetMemory":8440,"scriptSizeBytes":84}
 recovering a record partially vs completely.completely {"exBudgetCPU":6518989,"exBudgetMemory":10200,"scriptSizeBytes":99}
-removing the data wrapper.erroneous.(String, Integer) /= (String, String) {"exBudgetCPU":2400100,"exBudgetMemory":612,"scriptSizeBytes":96}
-removing the data wrapper.erroneous.[String] /= [Integer] {"exBudgetCPU":1350100,"exBudgetMemory":388,"scriptSizeBytes":92}
-removing the data wrapper.working.(String, String) == (String, String) {"exBudgetCPU":5889216,"exBudgetMemory":9972,"scriptSizeBytes":101}
-removing the data wrapper.working.[String] == [String] {"exBudgetCPU":6480136,"exBudgetMemory":13844,"scriptSizeBytes":92}
+removing the data wrapper.erroneous.(String, Integer) /= (String, String) {"exBudgetCPU":2400100,"exBudgetMemory":612,"scriptSizeBytes":117}
+removing the data wrapper.erroneous.[String] /= [Integer] {"exBudgetCPU":1350100,"exBudgetMemory":388,"scriptSizeBytes":114}
+removing the data wrapper.working.(String, String) == (String, String) {"exBudgetCPU":8339682,"exBudgetMemory":14428,"scriptSizeBytes":123}
+removing the data wrapper.working.[String] == [String] {"exBudgetCPU":8093553,"exBudgetMemory":16904,"scriptSizeBytes":114}
 removing the data wrapper.partial checks.check whole structure {"exBudgetCPU":287941468,"exBudgetMemory":531268,"scriptSizeBytes":1524}
 removing the data wrapper.partial checks.check structure partly {"exBudgetCPU":101880233,"exBudgetMemory":145544,"scriptSizeBytes":1494}
 checking PValue and PMap for validity.PMap.valid0 {"exBudgetCPU":13804861,"exBudgetMemory":25916,"scriptSizeBytes":169}
 checking PValue and PMap for validity.PMap.invalid1 {"exBudgetCPU":2880288,"exBudgetMemory":678,"scriptSizeBytes":169}
 checking PValue and PMap for validity.PMap.invalid2 {"exBudgetCPU":12645264,"exBudgetMemory":21418,"scriptSizeBytes":190}
-checking PValue and PMap for validity.PMap.valid0maybe {"exBudgetCPU":14519413,"exBudgetMemory":28316,"scriptSizeBytes":198}
-checking PValue and PMap for validity.PMap.invalid1maybe {"exBudgetCPU":2880288,"exBudgetMemory":678,"scriptSizeBytes":198}
-checking PValue and PMap for validity.PMap.invalid2maybe {"exBudgetCPU":12645264,"exBudgetMemory":21418,"scriptSizeBytes":190}
 checking PValue and PMap for validity.PValue.valid0 {"exBudgetCPU":7607387,"exBudgetMemory":19388,"scriptSizeBytes":137}
 checking PValue and PMap for validity.PValue.invalid1 {"exBudgetCPU":2310477,"exBudgetMemory":521,"scriptSizeBytes":153}
-checking PValue and PMap for validity.PValue.valid0maybe {"exBudgetCPU":8292167,"exBudgetMemory":21689,"scriptSizeBytes":160}
-checking PValue and PMap for validity.PValue.invalid1maybe {"exBudgetCPU":8265080,"exBudgetMemory":20524,"scriptSizeBytes":176}
-example.concatenate two lists, legal {"exBudgetCPU":83427771,"exBudgetMemory":161141,"scriptSizeBytes":823}
-example.concatenate two lists, illegal (list too short) {"exBudgetCPU":78038909,"exBudgetMemory":147115,"scriptSizeBytes":816}
-example.concatenate two lists, illegal (wrong elements in list) {"exBudgetCPU":79319097,"exBudgetMemory":147341,"scriptSizeBytes":823}
-example.concatenate two lists, illegal (more than one output) {"exBudgetCPU":54379241,"exBudgetMemory":104804,"scriptSizeBytes":844}
+example.concatenate two lists, legal {"exBudgetCPU":55650750,"exBudgetMemory":105851,"scriptSizeBytes":713}
+example.concatenate two lists, illegal (list too short) {"exBudgetCPU":48177778,"exBudgetMemory":84825,"scriptSizeBytes":707}
+example.concatenate two lists, illegal (wrong elements in list) {"exBudgetCPU":55412566,"exBudgetMemory":105051,"scriptSizeBytes":713}
+example.concatenate two lists, illegal (more than one output) {"exBudgetCPU":35832714,"exBudgetMemory":63544,"scriptSizeBytes":734}

@@ -6,8 +6,10 @@ module Plutarch.Api.V1.AssocMap (
   pmkPMap,
 ) where
 
+import Data.Map (Map, toList)
+
 import Plutarch.TryFrom (
-  PMaybeFrom (PMaybeFromExcess, pmaybeFrom),
+  Flip (Flip),
   PTryFrom (PTryFromExcess, ptryFrom),
  )
 import qualified Plutus.V1.Ledger.Api as Plutus
@@ -80,15 +82,11 @@ pmkPMap ::
   , Plutus.FromData b
   , Ord a
   ) =>
-  [(a, b)] ->
-  Maybe (Term s (PMap (PConstanted a) (PConstanted b)))
-pmkPMap l = if sorted l then Just (pconstant $ PlutusMap.fromList l) else Nothing
-  where
-    sorted [] = True
-    sorted [_] = True
-    sorted (x : y : zs) = if fst x > fst y then False else sorted (y : zs)
+  Map a b ->
+  Term s (PMap (PConstanted a) (PConstanted b))
+pmkPMap (toList -> l) = pconstant $ PlutusMap.fromList l
 
------------------------ PTryFrom and PMaybeFrom instances -------------------------------
+----------------------- PTryFrom insances -----------------------------------------------
 
 instance
   ( POrd k
@@ -96,7 +94,7 @@ instance
   ) =>
   PTryFrom (PBuiltinMap k v) (PMap k v)
   where
-  type PTryFromExcess (PBuiltinMap k v) (PMap k v) = PUnit
+  type PTryFromExcess (PBuiltinMap k v) (PMap k v) = Flip Term PUnit
   ptryFrom oMap = runTermCont $ do
     sortVer <-
       tcont $
@@ -115,34 +113,4 @@ instance
                           perror
           )
             # oMap
-    pure ((pcon . PMap) oMap, sortVer)
-
-instance
-  ( POrd k
-  , PIsData k
-  ) =>
-  PMaybeFrom (PBuiltinMap k v) (PMap k v)
-  where
-  type PMaybeFromExcess (PBuiltinMap k v) (PMap k v) = PUnit
-  pmaybeFrom oMap = runTermCont $ do
-    sortVer <-
-      tcont $
-        plet $
-          ( pfix #$ plam $
-              \self xs ->
-                pmatch xs $ \case
-                  PNil -> pcon $ PJust $ pcon PUnit
-                  PCons x ys ->
-                    pmatch ys $ \case
-                      PNil -> pcon $ PJust $ pcon PUnit
-                      PCons y _ ->
-                        pif
-                          ((pfromData (pfstBuiltin # x)) #< (pfromData (pfstBuiltin # y)))
-                          (self # ys)
-                          (pcon PNothing)
-          )
-            # oMap
-    ver <- tcont $ pmatch sortVer
-    pure $ case ver of
-      PJust _ -> ((pcon . PJust . pcon . PMap) oMap, sortVer)
-      PNothing -> (pcon PNothing, sortVer)
+    pure ((pcon . PMap) oMap, Flip sortVer)

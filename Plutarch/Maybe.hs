@@ -1,6 +1,6 @@
 module Plutarch.Maybe (
   PMaybe (PJust, PNothing),
-  pfromMaybe,
+  pfromJust,
 ) where
 
 import qualified GHC.Generics as GHC
@@ -25,8 +25,11 @@ data PMaybe (a :: PType) (s :: S)
   deriving stock (GHC.Generic)
   deriving anyclass (Generic, PlutusType, PEq)
 
-pfromMaybe :: Term s (PMaybe a :--> a)
-pfromMaybe = phoistAcyclic $
+{- |
+ fallible unwrapping from @PMaybe@
+-}
+pfromJust :: Term s (PMaybe a :--> a)
+pfromJust = phoistAcyclic $
   plam $ \maybe -> pmatch maybe $ \case
     PNothing -> perror
     PJust a -> a

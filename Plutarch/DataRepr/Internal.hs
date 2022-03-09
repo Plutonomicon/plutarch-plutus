@@ -82,6 +82,7 @@ import Plutarch.Builtin (
   PData,
   PIsData,
   pasConstr,
+  pasList,
   pconstrBuiltin,
   pdata,
   pforgetData,
@@ -176,7 +177,7 @@ type family PUnLabel (a :: PLabeledType) :: PType where
   PUnLabel (name ':= a) = a
 
 instance {-# OVERLAPPABLE #-} PIsData (PDataRecord xs) where
-  pfromData x = punsafeBuiltin PLC.UnListData # pforgetData x
+  pfromData x = punsafeCoerce $ pasList # pforgetData x
   pdata x = punsafeBuiltin PLC.ListData # x
 
 {- | A sum of 'PDataRecord's. The underlying representation is the `PDataConstr` constructor,

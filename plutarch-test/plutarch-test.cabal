@@ -108,6 +108,7 @@ executable plutarch-test
   build-depends:
     , base16-bytestring
     , cborg
+    , containers
     , rank2classes
     , serialise
 

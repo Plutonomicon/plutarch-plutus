@@ -1,0 +1,3 @@
+sorted0 (program 1.0.0 [(#03, #182a), (#04, #182a)])
+sorted1 (program 1.0.0 [(#03, #182a)])
+unsorted2 (program 1.0.0 [(#01, #182a), (#02, #182a)])

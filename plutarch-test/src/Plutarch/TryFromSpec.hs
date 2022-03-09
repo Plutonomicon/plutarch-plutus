@@ -31,6 +31,7 @@ import Plutarch.Unsafe (
 
 import Plutarch
 import Plutarch.Api.V1 (
+  PAddress,
   PCurrencySymbol,
   PDatum,
   PDatumHash,
@@ -54,13 +55,12 @@ import Plutarch.Builtin (
  )
 import Plutarch.Prelude
 import Plutarch.TryFrom (
-  PMaybeFrom (pmaybeFrom),
+  Flip (Flip, unFlip),
   PTryFrom (PTryFromExcess, ptryFrom),
  )
 
 import Plutarch.ApiSpec (info, purpose)
 import qualified Plutarch.ApiSpec as Api
-import Plutarch.Maybe (pfromMaybe)
 import Plutarch.Test
 import Plutus.V1.Ledger.Value (Value)
 import qualified Plutus.V1.Ledger.Value as Value
@@ -225,12 +225,6 @@ spec = do
           @| (unTermCont $ fst <$> TermCont (ptryFrom @_ @(PMap PInteger PUnit) mf1)) @-> pfails
         "invalid2"
           @| (unTermCont $ fst <$> TermCont (ptryFrom @_ @(PMap PInteger PUnit) mf2)) @-> pfails
-        "valid0maybe"
-          @| (unTermCont $ ((pfromMaybe #) . fst) <$> TermCont (pmaybeFrom @_ @(PMap PInteger PUnit) ms0)) @-> psucceeds
-        "invalid1maybe"
-          @| (unTermCont $ ((pfromMaybe #) . fst) <$> TermCont (pmaybeFrom @_ @(PMap PInteger PUnit) mf1)) @-> pfails
-        "invalid2maybe"
-          @| (unTermCont $ fst <$> TermCont (ptryFrom @_ @(PMap PInteger PUnit) mf2)) @-> pfails
       "PValue" @\ do
         let legalValue0 :: Value
             legalValue0 = Value.singleton "c0" "someToken" 1
@@ -240,10 +234,6 @@ spec = do
           @| (unTermCont $ fst <$> TermCont (ptryFrom @(PMap PCurrencySymbol (PMap PTokenName PInteger)) @PValue $ punsafeCoerce $ pconstant $ legalValue0)) @-> psucceeds
         "invalid1"
           @| (unTermCont $ fst <$> TermCont (ptryFrom @(PMap PCurrencySymbol (PMap PTokenName PInteger)) @PValue $ pconstant $ illegalValue1)) @-> pfails
-        "valid0maybe"
-          @| (unTermCont $ ((pfromMaybe #) . fst) <$> TermCont (pmaybeFrom @(PMap PCurrencySymbol (PMap PTokenName PInteger)) @PValue $ punsafeCoerce $ pconstant $ legalValue0)) @-> psucceeds
-        "invalid1maybe"
-          @| (unTermCont $ ((pfromMaybe #) . fst) <$> TermCont (pmaybeFrom @(PMap PCurrencySymbol (PMap PTokenName PInteger)) @PValue $ pconstant $ illegalValue1)) @-> pfails
     "example" @\ do
       let validContext0 = ctx validOutputs0 validList1
           invalidContext1 = ctx invalidOutputs1 validList1
@@ -281,10 +271,11 @@ checkDeepUnwrap ::
   ( PTryFrom PData (PAsData target)
   , PIsData actual
   , PIsData target
+  , PTryFromExcess PData (PAsData target) ~ Flip Term target
   ) =>
   ClosedTerm (PAsData actual) ->
-  ClosedTerm (PTryFromExcess PData (PAsData target))
-checkDeepUnwrap t = unTermCont $ snd <$> TermCont (ptryFrom @PData @(PAsData target) $ pforgetData t)
+  ClosedTerm (PAsData target)
+checkDeepUnwrap t = unTermCont $ fst <$> TermCont (ptryFrom @PData @(PAsData target) $ pforgetData t)
 
 sampleStructure :: Term _ (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData PInteger)))))))
 sampleStructure = pdata $ psingleton #$ pdata $ psingleton #$ toDatadList [1 .. 100]
@@ -309,29 +300,33 @@ pmkNatural :: Term s (PInteger :--> PNatural)
 pmkNatural = plam $ \i -> pif (i #< 0) (ptraceError "could not make natural") (pcon $ PMkNatural i)
 
 instance PTryFrom PData (PAsData PNatural) where
-  type PTryFromExcess PData (PAsData PNatural) = PNatural
+  type PTryFromExcess PData (PAsData PNatural) = Flip Term PNatural
   ptryFrom opq = runTermCont $ do
-    (wrapped, unwrapped) <- TermCont $ ptryFrom @PData @(PAsData PInteger) opq
-    ver <- tcont $ plet $ pmkNatural # unwrapped
-    pure $ (punsafeCoerce wrapped, ver)
+    tup <- TermCont $ ptryFrom @PData @(PAsData PInteger) opq
+    ver <- tcont $ plet $ pmkNatural # unFlip (snd tup)
+    pure $ (punsafeCoerce (fst tup), Flip ver)
 
 validator :: Term s PValidator
 validator = phoistAcyclic $
   plam $ \dat red ctx -> unTermCont $ do
-    (_, trustedRedeemer) <- TermCont $ ptryFrom @PData @(PAsData (PBuiltinList (PAsData PNatural))) red
-    (_, trustedDatum) <- TermCont (ptryFrom @PData @(PAsData (PBuiltinList (PAsData PNatural))) dat)
+    trustedRedeemer <- (unFlip . snd) <$> (TermCont $ ptryFrom @PData @(PAsData (PBuiltinList (PAsData PNatural))) red)
+    let trustedDatum :: Term _ (PBuiltinList (PAsData PNatural))
+        trustedDatum = pfromData $ punsafeCoerce dat
     -- make the Datum and Redeemer trusted
 
     txInfo :: (Term _ PTxInfo) <- tcont $ plet $ pfield @"txInfo" # ctx
 
-    let ownHash :: Term _ PDatumHash
-        ownHash = unTermCont $ do
-          PJust ownInput <- tcont $ pmatch $ pfindOwnInput # ctx
-          let maybeHash :: Term _ (PMaybeData PDatumHash)
-              maybeHash = pfield @"datumHash" #$ pfield @"resolved" #$ (pfromData ownInput)
-          PDJust datumHash <- tcont $ pmatch maybeHash
-          pure $ pfield @"_0" # datumHash
+    PJust ownInput <- tcont $ pmatch $ pfindOwnInput # ctx
+    resolved <- tcont $ pletFields @["address", "datumHash"] $ pfield @"resolved" # ownInput
+
+    let ownAddress :: Term _ PAddress
+        ownAddress = resolved.address
         -- find own script address matching DatumHash
+
+        ownHash :: Term _ PDatumHash
+        ownHash = unTermCont $ do
+          PDJust dhash <- tcont $ pmatch resolved.datumHash
+          pure $ pfield @"_0" # dhash
 
         data' :: Term _ (PBuiltinList (PAsData (PTuple PDatumHash PDatum)))
         data' = pfield @"data" # txInfo
@@ -361,8 +356,7 @@ validator = phoistAcyclic $
           where
             pred :: Term _ (PAsData PTxOut :--> PBool)
             pred = plam $ \out -> unTermCont $ do
-              PDJust dhash <- tcont $ pmatch (pfield @"datumHash" # out)
-              pure $ pfield @"_0" # dhash #== ownHash
+              pure $ pfield @"address" # out #== (pdata $ ownAddress)
 
         -- make sure that after filtering the outputs, only one output
         -- remains
