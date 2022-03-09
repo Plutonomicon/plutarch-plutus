@@ -34,7 +34,7 @@ import Plutarch.Bool (PBool, PEq ((#==)), POrd ((#<)), pif)
 import Plutarch.ByteString (PByteString, pconsBS, pindexBS, plengthBS, psliceBS)
 import Plutarch.Integer (PInteger, PIntegral (pquot, prem))
 import Plutarch.Internal (punsafeAsClosedTerm)
-import Plutarch.Internal.Generic (PCode, PGeneric, pfrom)
+import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.Other (
   PlutusType,
   Term,
@@ -180,7 +180,7 @@ gpshow wrap =
     punsafeAsClosedTerm @s $
       plam $ \x ->
         pmatch x $ \x' ->
-          productGroup wrap " " $ gpshow' @a (pfrom x')
+          productGroup wrap " " $ gpshow' @a (gpfrom x')
 
 -- | Like `gpshow`, but returns the individual parameters list
 gpshow' ::
