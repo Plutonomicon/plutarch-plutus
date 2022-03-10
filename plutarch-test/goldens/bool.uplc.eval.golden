@@ -1,4 +1,4 @@
-pnot.lam (program 1.0.0 (\i0 -> force (force ifThenElse i1 (delay False) (delay True))))
+pnot.lam (program 1.0.0 (\i0 -> force ifThenElse i1 False True))
 pnot.app (program 1.0.0 False)
 pand.tf (program 1.0.0 False)
 pand.ft (program 1.0.0 False)
