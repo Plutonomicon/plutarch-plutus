@@ -410,13 +410,28 @@ pmatchLT d1 d2 handlers = unTermCont $ do
       $ pif
         (cid1 #== cid2)
         -- Matching constructors, compare fields now.
-        ( plet (psndBuiltin # a) $ \flds1 ->
-            plet (psndBuiltin # b) $ \flds2 ->
-              go 0 (applyHandlers flds1 flds2 handlers) cid1
+        ( unTermCont $ do
+          flds1 <- tcont . plet $ psndBuiltin # a
+          flds2 <- tcont . plet $ psndBuiltin # b
+          let handlers' = applyHandlers flds1 flds2 handlers
+          common <- findCommon handlers'
+          pure $ go common 0 (applyHandlers flds1 flds2 handlers) cid1
         )
         -- Left arg's constructor id is greater, no need to continue.
         $ pconstant False
   where
+    hashHandlers :: [Term s PBool] -> TermCont s [(Dig, Term s PBool)]
+    hashHandlers [] = pure []
+    hashHandlers (handler : rest) = do
+      hash <- hashOpenTerm handler
+      hashes <- hashHandlers rest
+      pure $ (hash, handler) : hashes
+
+    findCommon :: [Term s PBool] -> TermCont s (Dig, Term s PBool)
+    findCommon handlers = do
+      l <- hashHandlers handlers
+      pure $ head . maximumBy (\x y -> length x `compare` length y) . groupBy (\x y -> fst x == fst y) . sortOn fst $ l
+
     applyHandlers :: Term s (PBuiltinList PData) -> Term s (PBuiltinList PData) -> LTReprHandlers defs s -> [Term s PBool]
     applyHandlers _ _ LTRHNil = []
     applyHandlers args1 args2 (LTRHCons handler rest) =
@@ -424,21 +439,19 @@ pmatchLT d1 d2 handlers = unTermCont $ do
       applyHandlers args1 args2 rest
 
     go ::
+      (Dig, Term s out) ->
       Integer ->
-      [Term s PBool] ->
+      [Term s out] ->
       Term s PInteger ->
-      Term s PBool
-    go _ [] _ = error "pmatchDataSum2:go:empty handlers" -- empty 'PDataSum' shouldn't exist.
-    go idx [handler1, handler2] c =
-      pif
-        (fromInteger idx #== c)
-        handler1
-        handler2
-    go idx (handler : rest) c =
-      pif
-        (fromInteger idx #== c)
-        handler
-        $ go (idx + 1) rest c
+      Term s out
+    go common _ [] _ = snd common
+    go common idx (handler : rest) c = runTermCont (hashOpenTerm handler) $ \hhash ->
+      if hhash == fst common
+        then go common (idx + 1) rest c
+        else pif
+          (fromInteger idx #== c)
+          handler
+          $ go common (idx + 1) rest c
 
 class MkLtReprHandler defs where
   type FirstDef defs :: [PLabeledType]
