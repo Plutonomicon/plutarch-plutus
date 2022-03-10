@@ -73,7 +73,7 @@ common c
 
 common deps
   build-depends:
-    , aeson              >=2.0
+    , aeson                 >=2.0
     , base
     , bytestring
     , filepath
@@ -84,6 +84,7 @@ common deps
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
+    , quickcheck-instances
     , serialise
     , sydtest
     , sydtest-discover
@@ -138,10 +139,12 @@ executable plutarch-test
     Plutarch.PIsDataSpec
     Plutarch.PLamSpec
     Plutarch.PlutusTypeSpec
+    Plutarch.POrdSpec
     Plutarch.RationalSpec
     Plutarch.RecursionSpec
     Plutarch.ScriptsSpec
     Plutarch.ShowSpec
+    Plutarch.SpecTypes
     Plutarch.StringSpec
     Plutarch.Test
     Plutarch.Test.Benchmark

@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Api.V1.Maybe (
   PMaybeData (PDJust, PDNothing),
@@ -6,10 +7,19 @@ module Plutarch.Api.V1.Maybe (
 
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic, I (I))
+import qualified PlutusTx
 
 import Plutarch.Builtin (pasConstr, pforgetData)
-import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances), PIsDataReprRepr)
+import Plutarch.DataRepr.Internal (
+  DerivePConstantViaData (DerivePConstantViaData),
+  PIsDataReprInstances (PIsDataReprInstances),
+  PIsDataReprRepr,
+ )
 import Plutarch.DataRepr.Internal.HList.Utils (IndexList)
+import Plutarch.Lift (
+  PConstant (PConstanted),
+  PUnsafeLiftDecl (..),
+ )
 import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeCoerce)
 
@@ -23,6 +33,24 @@ data PMaybeData a (s :: S)
   deriving
     (PlutusType, PIsData, PEq)
     via PIsDataReprInstances (PMaybeData a)
+
+instance
+  ( PConstanted (PLifted a) ~ a
+  , PlutusTx.FromData (PLifted a)
+  , PlutusTx.ToData (PLifted a)
+  ) =>
+  PUnsafeLiftDecl (PMaybeData a)
+  where
+  type PLifted (PMaybeData a) = Maybe (PLifted a)
+
+deriving via
+  (DerivePConstantViaData (Maybe a) (PMaybeData (PConstanted a)))
+  instance
+    ( PlutusTx.FromData a
+    , PlutusTx.ToData a
+    , PLifted (PConstanted a) ~ a
+    ) =>
+    PConstant (Maybe a)
 
 -- Have to manually write this instance because the constructor id ordering is screwed for 'Maybe'....
 instance (PIsData a, POrd a) => POrd (PMaybeData a) where

@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedRecordDot #-}
-{-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.FieldSpec (spec) where
 
@@ -10,15 +9,10 @@ import qualified PlutusTx
 import Test.Syd
 import Test.Tasty.HUnit
 
-import qualified GHC.Generics as GHC
-import Generics.SOP (Generic, I (I))
 import Plutarch.Api.V1 (PAddress (PAddress))
 import Plutarch.Builtin (ppairDataBuiltin)
-import Plutarch.DataRepr (
-  PDataFields,
-  PIsDataReprInstances (PIsDataReprInstances),
- )
 import Plutarch.Prelude
+import Plutarch.SpecTypes (PTriplet)
 import Plutarch.Test
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 
@@ -90,32 +84,8 @@ spec = do
 
 --------------------------------------------------------------------------------
 
-{- |
-  We can defined a data-type using PDataRecord, with labeled fields.
-
-  With an appropriate instance of 'PIsDataRepr', we can automatically
-  derive 'PDataFields'.
--}
-newtype Triplet (a :: PType) (s :: S)
-  = Triplet
-      ( Term
-          s
-          ( PDataRecord
-              '[ "x" ':= a
-               , "y" ':= a
-               , "z" ':= a
-               ]
-          )
-      )
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
-  deriving
-    (PlutusType, PIsData, PDataFields)
-    via (PIsDataReprInstances (Triplet a))
-
 mkTrip ::
-  forall a s. (PIsData a) => Term s a -> Term s a -> Term s a -> Term s (Triplet a)
+  forall a s. (PIsData a) => Term s a -> Term s a -> Term s a -> Term s (PTriplet a)
 mkTrip x y z =
   punsafeBuiltin PLC.ConstrData # (0 :: Term _ PInteger)
     # ( ( pcons # (pdata x)
@@ -127,19 +97,19 @@ mkTrip x y z =
       )
 
 -- | An example term
-tripA :: Term s (Triplet PInteger)
+tripA :: Term s (PTriplet PInteger)
 tripA = mkTrip 150 750 100
 
 -- | Another
-tripB :: Term s (Triplet PInteger)
+tripB :: Term s (PTriplet PInteger)
 tripB = mkTrip 50 10 40
 
 -- | Another
-tripC :: Term s (Triplet PInteger)
+tripC :: Term s (PTriplet PInteger)
 tripC = mkTrip 1 8 1
 
--- | Nested triplet
-tripTrip :: Term s (Triplet (Triplet PInteger))
+-- | Nested PTriplet
+tripTrip :: Term s (PTriplet (PTriplet PInteger))
 tripTrip = mkTrip tripA tripB tripC
 
 {- |
@@ -149,7 +119,7 @@ tripTrip = mkTrip tripA tripB tripC
   The fields in the 'HRec' can them be accessed with
   RecordDotSyntax.
 -}
-tripSum :: Term s ((Triplet PInteger) :--> PInteger)
+tripSum :: Term s ((PTriplet PInteger) :--> PInteger)
 tripSum =
   plam $ \x -> pletFields @["x", "y", "z"] x $
     \fs ->
@@ -160,7 +130,7 @@ tripSum =
 {- |
    A subset of fields can be specified.
 -}
-tripYZ :: Term s ((Triplet PInteger) :--> PInteger)
+tripYZ :: Term s ((PTriplet PInteger) :--> PInteger)
 tripYZ =
   plam $ \x -> pletFields @["y", "z"] x $
     \fs ->
@@ -170,7 +140,7 @@ tripYZ =
   The ordering of fields specified is irrelevant,
   this is equivalent to 'tripYZ'.
 -}
-tripZY :: Term s ((Triplet PInteger) :--> PInteger)
+tripZY :: Term s ((PTriplet PInteger) :--> PInteger)
 tripZY =
   plam $ \x -> pletFields @["z", "y"] x $
     \fs ->
@@ -185,7 +155,7 @@ tripZY =
 by :: Term s PInteger
 by = pfield @"y" # tripB
 
-getY :: Term s (Triplet PInteger :--> PAsData PInteger)
+getY :: Term s (PTriplet PInteger :--> PAsData PInteger)
 getY = pfield @"y"
 
 {- |
