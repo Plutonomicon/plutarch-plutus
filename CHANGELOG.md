@@ -2,7 +2,7 @@
 
 # Unreleased
 
-- Add `pshow` and `ptraceShowId` 
+- Add `pshow` and `ptraceShowId`
 
   Started by [#352](https://github.com/Plutonomicon/plutarch/pull/352)
 
@@ -53,7 +53,7 @@
 - Added APIs for constructing, compiling, serialising & hashing Plutarch scripts.
 
   Type synonyms for Plutarch-typed scripts `PValidator`,`PMintingPolicy` & `PStakeValidator`.
-  
+
   `mkValidator`, `mkStakeValidator` & `mkMintingPolicy` functions, for creating Plutus API compatible scripts.
 
   `validatorHash`, `mintingPolicySymbol` & `stakeValidatorHash` to obtain script hashes.
@@ -85,12 +85,16 @@
 
 - Add `Plutarch.Test` for testing Plutarch code with goldens for UPLC printing and Plutus benchmarks.
 
-- `plutarch-extra`: Add a new directory scaffold "`plutarch-extra`" which will be home to everything too specific to not be in the 
+- `plutarch-extra`: Add a new directory scaffold "`plutarch-extra`" which will be home to everything too specific to not be in the
   main Plutarch repo. Also refactored the test library.
 
   Directory: `plutarch-extra`
 
   Added by: [#329](https://github.com/Plutonomicon/plutarch/pull/329)
+
+- Add `POrd` and `PEq` derivation for data encoded types via `PIsDataReprInstances`.
+
+  Added by: [#371](https://github.com/Plutonomicon/plutarch/pull/371)
 
 # 1.1.0
 
