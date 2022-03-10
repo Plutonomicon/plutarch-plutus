@@ -111,7 +111,7 @@ pif b case_true case_false = pmatch b $ \case
 
 -- | Boolean negation for 'PBool' terms.
 pnot :: Term s (PBool :--> PBool)
-pnot = phoistAcyclic $ plam $ \x -> pif' # x # pconstant False # pconstant True
+pnot = phoistAcyclic $ plam $ \x -> pif' # x # pcon PFalse # pcon PTrue
 
 -- | Lazily evaluated boolean and for 'PBool' terms.
 infixr 3 #&&
