@@ -96,6 +96,10 @@
 
   Added by: [#371](https://github.com/Plutonomicon/plutarch/pull/371)
 
+- Add `PConstant` instance for `Maybe`, with corresponding `PLift` instance for `PMaybeData`.
+
+  Added by: [#371](https://github.com/Plutonomicon/plutarch/pull/371)
+
 # 1.1.0
 
 - General repository changes.
