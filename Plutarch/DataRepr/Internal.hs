@@ -140,7 +140,7 @@ instance (POrd x, PIsData x) => POrd (PDataRecord '[label ':= x]) where
     PDCons y _ <- tcont $ pmatch l2
 
     pure $ pfromData x #< pfromData y
-  l1 #<= l2 = pdata (pto l1) #== pdata (pto l2) #|| l1 #< l2
+  l1 #<= l2 = pdToBuiltin l1 #== pdToBuiltin l1 #|| l1 #< l2
 
 instance (POrd x, PIsData x, POrd (PDataRecord (x' ': xs))) => POrd (PDataRecord ((label ':= x) ': x' ': xs)) where
   l1 #< l2 = unTermCont $ do
@@ -151,7 +151,7 @@ instance (POrd x, PIsData x, POrd (PDataRecord (x' ': xs))) => POrd (PDataRecord
     b <- tcont . plet $ pfromData y
 
     pure $ pif (a #< b) (pconstant True) $ pif (a #== b) (xs #< ys) $ pconstant False
-  l1 #<= l2 = pdata (pto l1) #== pdata (pto l2) #|| l1 #< l2
+  l1 #<= l2 = pdToBuiltin l1 #== pdToBuiltin l2 #|| l1 #< l2
 
 {- | Cons a field to a data record.
 
