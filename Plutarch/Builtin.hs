@@ -170,6 +170,12 @@ instance PListLike PBuiltinList where
 instance (PLift a, PEq a) => PEq (PBuiltinList a) where
   (#==) xs ys = plistEquals # xs # ys
 
+instance {-# OVERLAPPING #-} PIsData a => PEq (PBuiltinList (PAsData a)) where
+  xs #== ys = pdata xs #== pdata ys
+
+instance {-# OVERLAPPING #-} PEq (PBuiltinList PData) where
+  xs #== ys = pdata xs #== pdata ys
+
 data PData s
   = PDataConstr (Term s (PBuiltinPair PInteger (PBuiltinList PData)))
   | PDataMap (Term s (PBuiltinList (PBuiltinPair PData PData)))
@@ -235,6 +241,10 @@ class PIsData a where
 instance PIsData PData where
   pfromData = punsafeCoerce
   pdata = punsafeCoerce
+
+instance PIsData (PBuiltinList PData) where
+  pfromData x = punsafeCoerce $ pasList # pforgetData x
+  pdata x = punsafeBuiltin PLC.ListData # x
 
 instance PIsData a => PIsData (PBuiltinList (PAsData a)) where
   pfromData x = punsafeCoerce $ pasList # pforgetData x
