@@ -11,6 +11,8 @@ module Plutarch.Test (
   ptraces,
   pshouldBe,
   (#@?=),
+  -- | Budget expectation
+  psatisfyWithinBenchmark,
 
   -- * For Development flag tests
   plutarchDevFlagDescribe,
@@ -19,9 +21,14 @@ module Plutarch.Test (
   (@|),
   (@\),
   (@->),
+  (@:->),
   (@==),
   pgoldenSpec,
   PlutarchGoldens,
+
+  -- * Benchmark type for use in `(@:->)`
+  Benchmark (Benchmark, exBudgetCPU, exBudgetMemory, scriptSizeBytes),
+  ScriptSizeBytes,
 
   -- * Deprecated exports
   golden,
@@ -48,11 +55,16 @@ import Test.Syd (
   it,
   pureGoldenTextFile,
   shouldBe,
+  shouldSatisfyNamed,
  )
 
 import Plutarch
 import Plutarch.Bool (PBool (PFalse, PTrue))
 import Plutarch.Evaluate (evalScript)
+import Plutarch.Test.Benchmark (
+  Benchmark (Benchmark, exBudgetCPU, exBudgetMemory, scriptSizeBytes),
+  ScriptSizeBytes,
+ )
 import Plutarch.Test.Golden (
   PlutarchGoldens,
   TermExpectation,
@@ -60,6 +72,7 @@ import Plutarch.Test.Golden (
   evalScriptAlwaysWithBenchmark,
   pgoldenSpec,
   (@->),
+  (@:->),
   (@\),
   (@|),
  )
@@ -70,14 +83,21 @@ import qualified Plutus.V1.Ledger.Scripts as Scripts
 -}
 pshouldBe :: ClosedTerm a -> ClosedTerm b -> Expectation
 pshouldBe x y = do
-  p1 <- fmap printScript $ eval $ compile x
-  p2 <- fmap printScript $ eval $ compile y
-  p1 `shouldBe` p2
+  p1 <- eval $ compile x
+  p2 <- eval $ compile y
+  pscriptShouldBe p1 p2
   where
     eval :: Scripts.Script -> IO Scripts.Script
     eval s = case evalScript s of
       (Left e, _, _) -> expectationFailure $ "Script evaluation failed: " <> show e
       (Right x', _, _) -> pure x'
+
+{- |
+  Like `pshouldBe` but on `Script`
+-}
+pscriptShouldBe :: Scripts.Script -> Scripts.Script -> Expectation
+pscriptShouldBe x y =
+  printScript x `shouldBe` printScript y
 
 -- | Like `@?=` but for Plutarch terms
 (#@?=) :: ClosedTerm a -> ClosedTerm b -> Expectation
@@ -97,6 +117,31 @@ psucceeds p =
   case evalScript (compile p) of
     (Left _, _, _) -> expectationFailure $ "Term failed to evaluate"
     (Right _, _, _) -> pure ()
+
+-- | Asserts the term evaluates without success
+pfails :: ClosedTerm a -> Expectation
+pfails p = do
+  case evalScript (compile p) of
+    (Left _, _, _) -> pure ()
+    (Right _, _, _) -> expectationFailure $ "Term succeeded"
+
+{- | Check that the given benchmark is within certain maximum values.
+
+  Use this to ensure that a program's benchmark doesn't exceed expected values
+  (such as script size or memory budget). You will need this because,
+
+  - `Plutarch.Test`'s golden testing uses maximum possible ExBudget for evaluating
+  programs
+  - You may want to check that the script size is within a certain value
+-}
+psatisfyWithinBenchmark :: Benchmark -> Benchmark -> Expectation
+psatisfyWithinBenchmark bench maxBudget = do
+  shouldSatisfyNamed bench ("cpu<=" <> show (exBudgetCPU maxBudget)) $ \_ ->
+    exBudgetCPU bench <= exBudgetCPU maxBudget
+  shouldSatisfyNamed bench ("mem<=" <> show (exBudgetMemory maxBudget)) $ \_ ->
+    exBudgetMemory bench <= exBudgetMemory maxBudget
+  shouldSatisfyNamed bench ("size<=" <> show (scriptSizeBytes maxBudget)) $ \_ ->
+    scriptSizeBytes bench <= scriptSizeBytes maxBudget
 
 {- | Asserts that the term evaluates successfully with the given trace sequence
 
@@ -136,16 +181,11 @@ plutarchDevFlagDescribe m =
 #endif
 {- ORMOLU_ENABLE -}
 
--- | Asserts the term evaluates without success
-pfails :: ClosedTerm a -> Expectation
-pfails p = do
-  case evalScript (compile p) of
-    (Left _, _, _) -> pure ()
-    (Right _, _, _) -> expectationFailure $ "Term succeeded"
-
--- | Convenient alias for `@-> pshouldBe x`
+-- | Test that the Plutarch program evaluates to the given term
 (@==) :: ClosedTerm a -> ClosedTerm b -> TermExpectation a
-(@==) p x = p @-> pshouldBe x
+(@==) p x = p @:-> \(_, script, _) -> script `pscriptShouldBe` xScript
+  where
+    xScript = fst . evalScriptAlwaysWithBenchmark $ compile x
 
 infixr 1 @==
 
