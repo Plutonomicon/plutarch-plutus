@@ -411,11 +411,11 @@ pmatchLT d1 d2 handlers = unTermCont $ do
         (cid1 #== cid2)
         -- Matching constructors, compare fields now.
         ( unTermCont $ do
-          flds1 <- tcont . plet $ psndBuiltin # a
-          flds2 <- tcont . plet $ psndBuiltin # b
-          let handlers' = applyHandlers flds1 flds2 handlers
-          common <- findCommon handlers'
-          pure $ go common 0 (applyHandlers flds1 flds2 handlers) cid1
+            flds1 <- tcont . plet $ psndBuiltin # a
+            flds2 <- tcont . plet $ psndBuiltin # b
+            let handlers' = applyHandlers flds1 flds2 handlers
+            common <- findCommon handlers'
+            pure $ go common 0 (applyHandlers flds1 flds2 handlers) cid1
         )
         -- Left arg's constructor id is greater, no need to continue.
         $ pconstant False
@@ -448,10 +448,11 @@ pmatchLT d1 d2 handlers = unTermCont $ do
     go common idx (handler : rest) c = runTermCont (hashOpenTerm handler) $ \hhash ->
       if hhash == fst common
         then go common (idx + 1) rest c
-        else pif
-          (fromInteger idx #== c)
-          handler
-          $ go common (idx + 1) rest c
+        else
+          pif
+            (fromInteger idx #== c)
+            handler
+            $ go common (idx + 1) rest c
 
 class MkLtReprHandler defs where
   type FirstDef defs :: [PLabeledType]
