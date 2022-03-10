@@ -31,7 +31,7 @@ import Generics.SOP (
   ccompare_NS,
   hcliftA2,
  )
-import Plutarch.Internal (punsafeAsClosedTerm)
+import Plutarch.Internal (plet, punsafeAsClosedTerm)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.Other (
   DerivePNewtype,
@@ -47,6 +47,7 @@ import Plutarch.Internal.Other (
   pmatch,
   pto,
   (#),
+  (#$),
   type (:-->),
  )
 import Plutarch.Lift (
@@ -83,12 +84,19 @@ class PEq t where
 
 infix 4 #==
 
-class POrd t where
+class PEq t => POrd t where
   (#<=) :: Term s t -> Term s t -> Term s PBool
   (#<) :: Term s t -> Term s t -> Term s PBool
 
 infix 4 #<=
 infix 4 #<
+
+instance PEq PBool where
+  x #== y' = plet y' $ \y -> pif' # x # y #$ pnot # y
+
+instance POrd PBool where
+  x #< y = pif' # x # pconstant False # y
+  x #<= y = pif' # x # y # pconstant True
 
 instance PEq b => PEq (DerivePNewtype a b) where
   x #== y = pto x #== pto y
