@@ -2,13 +2,13 @@
 
 module Plutarch.FFI (
   type (>~<),
-  PDelayedList (PDCons, PDNil),
+  PTxList (PTxCons, PTxNil),
   foreignExport,
   foreignImport,
   opaqueExport,
   opaqueImport,
-  pdelayList,
-  pforceList,
+  plistFromTx,
+  plistToTx,
   unsafeForeignExport,
   unsafeForeignImport,
 ) where
@@ -70,17 +70,17 @@ data PhorallPhantom :: PType
 data Delayed :: Type -> Type
 data DelayedList :: Type -> Type
 
-{- | Plutarch type of delayed lists, compatible with the PlutusTx encoding of
- Haskell lists and convertible with the regular 'PList' using 'pdelayList'
- and 'pforceList'.
+{- | Plutarch type of lists compatible with the PlutusTx encoding of Haskell
+ lists and convertible with the regular 'PList' using 'plistToTx' and
+ 'plistFromTx'.
 -}
-data PDelayedList (a :: PType) (s :: S)
-  = PDCons (Term s a) (Term s (PDelayedList a))
-  | PDNil
+data PTxList (a :: PType) (s :: S)
+  = PTxCons (Term s a) (Term s (PTxList a))
+  | PTxNil
   deriving stock (Generic)
   deriving anyclass (SOP.Generic)
 
-instance PEq a => PEq (PDelayedList a) where
+instance PEq a => PEq (PTxList a) where
   (#==) xs ys = plistEquals # xs # ys
 
 -- | Compile and export a Plutarch term so it can be used by `PlutusTx.applyCode`.
@@ -113,25 +113,25 @@ unsafeForeignExport t = DeserializedCode program Nothing mempty
 unsafeForeignImport :: CompiledCode t -> ClosedTerm p
 unsafeForeignImport c = Term $ const $ TermResult (RCompiled $ UPLC._progTerm $ unScript $ fromCompiledCode c) []
 
--- | Convert a strict 'PList' to a 'PDelayList', perhaps before exporting it with 'foreignExport'.
-pdelayList :: Term s (PList a :--> PDelayedList a)
-pdelayList = pconvertLists
+-- | Convert a 'PList' to a 'PTxList', perhaps before exporting it with 'foreignExport'.
+plistToTx :: Term s (PList a :--> PTxList a)
+plistToTx = pconvertLists
 
--- | Convert a 'PDelayList' to a strict 'PList', probably after importing it with 'foreignImport'.
-pforceList :: Term s (PDelayedList a :--> PList a)
-pforceList = pconvertLists
+-- | Convert a 'PTxList' to a 'PList', probably after importing it with 'foreignImport'.
+plistFromTx :: Term s (PTxList a :--> PList a)
+plistFromTx = pconvertLists
 
-instance PlutusType (PDelayedList a) where
-  type PInner (PDelayedList a) r = PDelayed (r :--> (a :--> PDelayedList a :--> r) :--> r)
-  pcon' (PDCons x xs) = pdelay $ plam $ \_nil cons -> cons # x # xs
-  pcon' PDNil = phoistAcyclic $ pdelay $ plam $ \nil _cons -> nil
-  pmatch' elim f = pforce elim # f PDNil # (plam $ \x xs -> f $ PDCons x xs)
+instance PlutusType (PTxList a) where
+  type PInner (PTxList a) r = PDelayed (r :--> (a :--> PTxList a :--> r) :--> r)
+  pcon' (PTxCons x xs) = pdelay $ plam $ \_nil cons -> cons # x # xs
+  pcon' PTxNil = phoistAcyclic $ pdelay $ plam $ \nil _cons -> nil
+  pmatch' elim f = pforce elim # f PTxNil # (plam $ \x xs -> f $ PTxCons x xs)
 
-instance PListLike PDelayedList where
-  type PElemConstraint PDelayedList _ = ()
+instance PListLike PTxList where
+  type PElemConstraint PTxList _ = ()
   pelimList cons nil list = pforce (pto list) # nil # plam cons
-  pcons = phoistAcyclic $ plam $ \x xs -> pcon (PDCons x xs)
-  pnil = pcon PDNil
+  pcons = phoistAcyclic $ plam $ \x xs -> pcon (PTxCons x xs)
+  pnil = pcon PTxNil
 
 -- | Equality of inner types - Plutarch on the left and Haskell on the right.
 type p >~< t = PlutarchInner p PhorallPhantom ~~ PlutusTxInner t ForallPhantom
@@ -154,7 +154,7 @@ type family PlutarchInner (p :: PType) (any :: PType) :: Type where
   PlutarchInner (PAsData a :--> b) x = PlutarchInner (PData :--> b) x
   PlutarchInner (a :--> b) x = PlutarchInner a x -> PlutarchInner b x
   PlutarchInner (PDelayed a) x = Delayed (PlutarchInner a x)
-  PlutarchInner (PDelayedList a) x = DelayedList (PlutarchInner a x)
+  PlutarchInner (PTxList a) x = DelayedList (PlutarchInner a x)
   PlutarchInner p x = PlutarchInner (PInner p x) x
 
 type family PlutusTxInner (t :: Type) (any :: Type) :: Type where
