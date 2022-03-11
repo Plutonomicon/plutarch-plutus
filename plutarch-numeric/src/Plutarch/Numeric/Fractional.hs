@@ -13,7 +13,34 @@ import Plutarch.Numeric.Natural (Natural (Natural), PNatural)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
 
--- | @since 1.0
+{- | Represents a type's ability to be extended to the field of fractions. Also
+ provides key methods required for the implementation of
+ 'Plutarch.Numeric.Ratio.Ratio' to function
+ correctly.
+
+ = Laws
+
+ 'scale' should describe a right monoidal action of
+ 'Plutarch.Numeric.Monoidal.Multiplicative' 'NZNatural' on @a@, with 'unscale' acting
+ as a cancellation. Specifically:
+
+ * @'scale' x 'Plutarch.Numeric.Multiplicative.one'@ @=@ @'unscale' x
+ 'Plutarch.Numeric.Multiplicative.one'@ @=@ @x@
+ * @'scale' x (n 'Plutarch.Numeric.Multiplicative.*' m)@ @=@ @'scale' ('scale'
+ x n) m@
+ * @'unscale' ('scale' x n) n@ @=@ @x@
+
+ 'findScale' should follow these laws:
+
+ * @'findScale' x 'Plutarch.Numeric.Multiplicative.one'@ @=@
+ @'Plutarch.Numeric.Multiplicative.one'@
+ * @'findScale' ('scale' x m) (m 'Plutarch.Numeric.Multiplicative.*' n)@ @=@
+ @m 'Plutarch.Numeric.Multiplicative.*' 'findScale' x n@
+ * If @m = 'findScale' x n@, then @'findScale' ('unscale' x m) m =
+ 'Plutarch.Numeric.Multiplicative.one'@
+
+ @since 1.0
+-}
 class Fractionable (a :: Type) where
   -- | @since 1.0
   scale :: a -> NZNatural -> a
@@ -42,7 +69,28 @@ deriving via Integer instance Fractionable Natural
 -- | @since 1.0
 deriving via Integer instance Fractionable NZInteger
 
--- | @since 1.0
+{- | This is \'morally equivalent\' to 'Fractionable', except that it's designed
+ for convenient use with Plutarch 'Term's.
+
+ = Laws
+
+ The laws are \'morally the same\' as those for 'Fractionable', but we restate
+ them here for clarity.
+
+ * @'pscale' x 'Plutarch.Numeric.Multiplicative.one'@ @=@ @'punscale' x
+ 'Plutarch.Numeric.Multiplicative.one'@ @=@ @x@
+ * @'pscale' x (n 'Plutarch.Numeric.Multiplicative.*' m)@ @=@ @'pscale' ('pscale'
+ x n) m@
+ * @'punscale' ('pscale' x n) n@ @=@ @x@
+ * @'pfindScale' x 'Plutarch.Numeric.Multiplicative.one'@ @=@
+ @'Plutarch.Numeric.Multiplicative.one'@
+ * @'pfindScale' ('pscale' x m) (m 'Plutarch.Numeric.Multiplicative.*' n)@ @=@
+ @m 'Plutarch.Numeric.Multiplicative.*' 'pfindScale' x n@
+ * If @m = 'pfindScale' x n@, then @'pfindScale' ('punscale' x m) m =
+ 'Plutarch.Numeric.Multiplicative.one'@
+
+ @since 1.0
+-}
 class PFractionable (a :: S -> Type) where
   -- | @since 1.0
   pscale ::

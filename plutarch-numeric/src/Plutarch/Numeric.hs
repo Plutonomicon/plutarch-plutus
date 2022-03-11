@@ -59,12 +59,20 @@ module Plutarch.Numeric (
   -- * Functions
 
   -- ** Reductions
+
+  -- *** Haskell
   Monoidal.sum1,
   Monoidal.product1,
   Monoidal.sum,
   Monoidal.product,
   Monoidal.sumNZ,
   Monoidal.productNZ,
+
+  -- *** Plutarch
+  Monoidal.psum,
+  Monoidal.pproduct,
+  Monoidal.psumNZ,
+  Monoidal.pproductNZ,
 
   -- ** Scaling
   Monoidal.scaleNZNatural,

@@ -1,12 +1,18 @@
+{-# LANGUAGE QuantifiedConstraints #-}
+
 module Plutarch.Numeric.Monoidal (
   Additive (..),
   Multiplicative (..),
   sum1,
   product1,
   sum,
+  psum,
   product,
+  pproduct,
   sumNZ,
+  psumNZ,
   productNZ,
+  pproductNZ,
   scaleNZNatural,
   powNZNatural,
   scaleNatural,
@@ -20,6 +26,8 @@ import Data.Foldable (foldl')
 import Data.Kind (Type)
 import Data.Semigroup (stimes, stimesMonoid)
 import Data.Semigroup.Foldable (Foldable1 (foldMap1))
+import Plutarch (S, Term, (#))
+import Plutarch.List (PListLike (PElemConstraint), pfoldl')
 import Plutarch.Numeric.Additive (
   AdditiveGroup (negate),
   AdditiveMonoid (zero),
@@ -113,6 +121,17 @@ sum ::
   a
 sum = getAdditive . foldMap Additive
 
+{- | As 'sum', but specialized for Plutarch types.
+
+ @since 1.0
+-}
+psum ::
+  forall (a :: S -> Type) (f :: (S -> Type) -> S -> Type) (s :: S).
+  (PListLike f, forall s'. AdditiveMonoid (Term s' a), PElemConstraint f a) =>
+  Term s (f a) ->
+  Term s a
+psum xs = pfoldl' (+) # zero # xs
+
 {- | Multiply together a non-empty collection of values.
 
  @since 1.0
@@ -135,6 +154,17 @@ product ::
   a
 product = getMultiplicative . foldMap Multiplicative
 
+{- | As 'product', but specialized for Plutarch types.
+
+ @since 1.0
+-}
+pproduct ::
+  forall (a :: S -> Type) (f :: (S -> Type) -> S -> Type) (s :: S).
+  (PListLike f, forall s'. MultiplicativeMonoid (Term s' a), PElemConstraint f a) =>
+  Term s (f a) ->
+  Term s a
+pproduct xs = pfoldl' (*) # one # xs
+
 {- | A version of 'sum' for zerofree values.
 
  @since 1.0
@@ -146,6 +176,17 @@ sumNZ ::
   a
 sumNZ = foldl' (+^) zero
 
+{- | As 'sumNZ', but specialized for Plutarch types.
+
+ @since 1.0
+-}
+psumNZ ::
+  forall (a :: S -> Type) (f :: (S -> Type) -> S -> Type) (nz :: S -> Type) (s :: S).
+  (PListLike f, forall s'. Euclidean (Term s' a) (Term s' nz), PElemConstraint f nz) =>
+  Term s (f nz) ->
+  Term s a
+psumNZ xs = pfoldl' (+^) # zero # xs
+
 {- | A version of 'product' for zerofree values.
 
  @since 1.0
@@ -156,6 +197,17 @@ productNZ ::
   f nz ->
   a
 productNZ = foldl' (*^) one
+
+{- | As 'productNZ', but specialized for Plutarch types.
+
+ @since 1.0
+-}
+pproductNZ ::
+  forall (a :: S -> Type) (f :: (S -> Type) -> S -> Type) (nz :: S -> Type) (s :: S).
+  (PListLike f, forall s'. Euclidean (Term s' a) (Term s' nz), PElemConstraint f nz) =>
+  Term s (f nz) ->
+  Term s a
+pproductNZ xs = pfoldl' (*^) # one # xs
 
 {- | Scales any 'AdditiveSemigroup' by an 'NZNatural'. Essentially a
  specialized, safer 'stimes'.

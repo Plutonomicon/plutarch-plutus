@@ -463,6 +463,11 @@ instance Euclidean (Term s (PRatio PNatural)) (Term s (PRatio PNZNatural)) where
 {- | A 'Euclidean' extended with a notion of signedness (and subtraction). This
  is /actually/ a Euclidean domain (and thus, a ring also).
 
+ = Note
+
+ The caveat regarding 'RemoveZero' and 'PRemoveZero' as \'moral superclasses\' of
+ 'Euclidean' also applies here.
+
  = Laws
 
  'div' and 'mod' must be extensions of the description of Euclidean division
@@ -480,9 +485,10 @@ instance Euclidean (Term s (PRatio PNatural)) (Term s (PRatio PNZNatural)) where
 
  /TODO:/ Spell out precisely how 'div' and 'mod' differ on negatives.
 
- /TODO:/ Spell out '-^' laws.
+ Furthermore, '-^' must be consistent with '-', but for zerofree inputs.
+ Specifically:
 
- /TODO:/ Note how 'Plutarch.Numeric.Multiplicative.abs' interacts with signs.
+ * @x '-^' y@ @=@ @x '-' 'zeroExtend' y@
 
  Lastly, 'Plutarch.Numeric.Combination.fromInteger' must describe the unique
  ring homomorphism from 'Integer' to the instance, which must be an extension
@@ -596,6 +602,11 @@ instance Arithmetical (Term s (PRatio PInteger)) (Term s (PRatio PNZInteger)) wh
 
 {- | A 'Euclidean' extended with a notion of proper division. Basically a field,
  but without requiring additive inverses.
+
+ = Note
+
+ The caveat regarding 'RemoveZero' and 'PRemoveZero' as \'moral superclasses\' of
+ 'Euclidean' also applies here.
 
  = Laws
 
