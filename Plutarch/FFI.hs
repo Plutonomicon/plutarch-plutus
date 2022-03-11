@@ -137,15 +137,21 @@ plistFromTx = pconvertLists
 
 -- | Convert a 'PMaybe' to a 'PTxMaybe', perhaps before exporting it with 'foreignExport'.
 pmaybeToTx :: Term s (PMaybe a :--> PTxMaybe a)
-pmaybeToTx = plam $ flip pmatch $ pcon . \case
-  PNothing -> PTxNothing
-  PJust x -> PTxJust x
+pmaybeToTx =
+  plam $
+    flip pmatch $
+      pcon . \case
+        PNothing -> PTxNothing
+        PJust x -> PTxJust x
 
 -- | Convert a 'PTxMaybe' to a 'PMaybe', probably after importing it with 'foreignImport'.
 pmaybeFromTx :: Term s (PTxMaybe a :--> PMaybe a)
-pmaybeFromTx = plam $ flip pmatch $ pcon . \case
-  PTxNothing -> PNothing
-  PTxJust x -> PJust x
+pmaybeFromTx =
+  plam $
+    flip pmatch $
+      pcon . \case
+        PTxNothing -> PNothing
+        PTxJust x -> PJust x
 
 instance PlutusType (PTxList a) where
   type PInner (PTxList a) r = PDelayed (r :--> (a :--> PTxList a :--> r) :--> r)
