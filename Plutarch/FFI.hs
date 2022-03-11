@@ -3,6 +3,7 @@
 module Plutarch.FFI (
   type (>~<),
   PTxList (PTxCons, PTxNil),
+  PTxMaybe (PTxJust, PTxNothing),
   foreignExport,
   foreignImport,
   opaqueExport,
@@ -166,10 +167,10 @@ instance PListLike PTxList where
   pnil = pcon PTxNil
 
 instance PlutusType (PTxMaybe a) where
-  type PInner (PTxMaybe a) r = PDelayed (r :--> (a :--> r) :--> r)
-  pcon' (PTxJust x) = pdelay $ plam $ \_nothing just -> just # x
-  pcon' PTxNothing = phoistAcyclic $ pdelay $ plam $ \nothing _just -> nothing
-  pmatch' elim f = pforce elim # f PTxNothing # (plam $ f . PTxJust)
+  type PInner (PTxMaybe a) r = PDelayed ((a :--> r) :--> r :--> r)
+  pcon' (PTxJust x) = pdelay $ plam $ \just _nothing -> just # x
+  pcon' PTxNothing = phoistAcyclic $ pdelay $ plam $ \_just nothing -> nothing
+  pmatch' elim f = pforce elim # (plam $ f . PTxJust) # f PTxNothing
 
 -- | Equality of inner types - Plutarch on the left and Haskell on the right.
 type p >~< t = PlutarchInner p PhorallPhantom ~~ PlutusTxInner t ForallPhantom
