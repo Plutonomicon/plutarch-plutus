@@ -9,7 +9,8 @@ module Plutarch.Api.V1.AssocMap (
 import Data.Map (Map, toList)
 
 import Plutarch.TryFrom (
-  Flip (Flip),
+  HSTree (HSRoot),
+  HTree (HNode),
   PTryFrom (PTryFromExcess, ptryFrom),
  )
 import qualified Plutus.V1.Ledger.Api as Plutus
@@ -94,9 +95,9 @@ instance
   ) =>
   PTryFrom (PBuiltinMap k v) (PMap k v)
   where
-  type PTryFromExcess (PBuiltinMap k v) (PMap k v) = Flip Term PUnit
+  type PTryFromExcess (PBuiltinMap k v) (PMap k v) = 'HNode '[]
   ptryFrom oMap = runTermCont $ do
-    sortVer <-
+    _ <-
       tcont $
         plet $
           ( pfix #$ plam $
@@ -113,4 +114,4 @@ instance
                           perror
           )
             # oMap
-    pure ((pcon . PMap) oMap, Flip sortVer)
+    pure ((pcon . PMap) oMap, HSRoot)

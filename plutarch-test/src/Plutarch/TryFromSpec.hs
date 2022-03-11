@@ -7,6 +7,10 @@ module Plutarch.TryFromSpec (spec) where
 
 import Test.Syd
 
+import qualified GHC.Generics as GHC
+
+import Generics.SOP (Generic, I (I))
+
 import Plutus.V1.Ledger.Api (
   Address (Address),
   Credential (ScriptCredential),
@@ -61,6 +65,7 @@ import Plutarch.TryFrom (
 
 import Plutarch.ApiSpec (info, purpose)
 import qualified Plutarch.ApiSpec as Api
+import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
 import Plutarch.Test
 import Plutus.V1.Ledger.Value (Value)
 import qualified Plutus.V1.Ledger.Value as Value
@@ -93,13 +98,13 @@ spec = do
         @| checkDeep
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString]])
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
-          (punsafeCoerce $ pconstant $ Constr 1 [I 5, B "foo"])
+          (punsafeCoerce $ pconstant $ Constr 1 [PlutusTx.I 5, B "foo"])
           @-> pfails
       "PDataSum wrong record type"
         @| checkDeep
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PByteString, "b4" ':= PByteString]])
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
-          (punsafeCoerce $ pconstant $ Constr 2 [I 5, B "foo"])
+          (punsafeCoerce $ pconstant $ Constr 2 [PlutusTx.I 5, B "foo"])
           @-> pfails
     "working" @\ do
       "(String, String) == (String, String)"
@@ -138,13 +143,13 @@ spec = do
         @| checkDeep
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
-          (punsafeCoerce $ pconstant $ Constr 0 [I 5, B "foo"])
+          (punsafeCoerce $ pconstant $ Constr 0 [PlutusTx.I 5, B "foo"])
         @-> psucceeds
       "PDataSum constr 1"
         @| checkDeep
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
-          (punsafeCoerce $ pconstant $ Constr 1 [I 5, B "foo"])
+          (punsafeCoerce $ pconstant $ Constr 1 [PlutusTx.I 5, B "foo"])
         @-> psucceeds
     "recovering a record partially vs completely" @\ do
       "partially"
@@ -474,3 +479,25 @@ sampleMap =
       # (ppairDataBuiltin # (pdata $ pconstant "foo") # (pdata $ pconstant 42)) #$ pcons
       # (ppairDataBuiltin # (pdata $ pconstant "bar") # (pdata $ pconstant 41))
       # pnil
+
+{-
+------------------- Sample type with PIsDataRepr -----------------------------------
+
+sampleAB :: Term s (PAsData PAB)
+sampleAB = pdata $ pcon $ PA (pdcons @"_0" # (pdata $ pconstant 4) #$ pdcons # (pdata $ pconstant "foo") # pdnil)
+
+sampleABdata :: Term s PData
+sampleABdata = pforgetData sampleAB
+
+recoverAB :: Term s (PAsData PAB)
+recoverAB = unTermCont $ do
+  ver <- fst <$> TermCont (ptryFrom sampleABdata)
+
+data PAB (s::S)
+  = PA  (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PByteString] ))
+  | PB  (Term s (PDataRecord '["_0" ':= PBuiltinList (PAsData PInteger), "_1" ':= PByteString] ))
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic, PIsDataRepr)
+  deriving (PlutusType, PIsData)
+  via PIsDataReprInstances PAB
+-}
