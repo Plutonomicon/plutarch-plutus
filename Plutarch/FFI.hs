@@ -9,6 +9,8 @@ module Plutarch.FFI (
   opaqueImport,
   plistFromTx,
   plistToTx,
+  pmaybeFromTx,
+  pmaybeToTx,
   unsafeForeignExport,
   unsafeForeignImport,
 ) where
@@ -38,6 +40,7 @@ import Plutarch (
   pforce,
   phoistAcyclic,
   plam,
+  pmatch,
   pto,
   (#),
   (:-->),
@@ -55,6 +58,8 @@ import Plutarch.Internal (
  )
 import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.List (PList, PListLike (PElemConstraint, pcons, pelimList, pnil), pconvertLists, plistEquals)
+import Plutarch.Maybe (PMaybe (PJust, PNothing))
+import Plutarch.Show (PShow)
 import Plutarch.String (PString)
 import Plutarch.Unit (PUnit)
 import Plutus.V1.Ledger.Scripts (Script (unScript), fromCompiledCode)
@@ -78,7 +83,16 @@ data PTxList (a :: PType) (s :: S)
   = PTxCons (Term s a) (Term s (PTxList a))
   | PTxNil
   deriving stock (Generic)
-  deriving anyclass (SOP.Generic)
+  deriving anyclass (SOP.Generic, SOP.HasDatatypeInfo, PShow)
+
+{- | Plutarch type compatible with the PlutusTx encoding of Haskell 'Maybe' and
+ convertible with the regular 'PMaybe' using 'pmaybeToTx' and 'pmaybeFromTx'.
+-}
+data PTxMaybe (a :: PType) (s :: S)
+  = PTxJust (Term s a)
+  | PTxNothing
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic, SOP.HasDatatypeInfo, PEq, PShow)
 
 instance PEq a => PEq (PTxList a) where
   (#==) xs ys = plistEquals # xs # ys
@@ -121,6 +135,18 @@ plistToTx = pconvertLists
 plistFromTx :: Term s (PTxList a :--> PList a)
 plistFromTx = pconvertLists
 
+-- | Convert a 'PMaybe' to a 'PTxMaybe', perhaps before exporting it with 'foreignExport'.
+pmaybeToTx :: Term s (PMaybe a :--> PTxMaybe a)
+pmaybeToTx = plam $ flip pmatch $ pcon . \case
+  PNothing -> PTxNothing
+  PJust x -> PTxJust x
+
+-- | Convert a 'PTxMaybe' to a 'PMaybe', probably after importing it with 'foreignImport'.
+pmaybeFromTx :: Term s (PTxMaybe a :--> PMaybe a)
+pmaybeFromTx = plam $ flip pmatch $ pcon . \case
+  PTxNothing -> PNothing
+  PTxJust x -> PJust x
+
 instance PlutusType (PTxList a) where
   type PInner (PTxList a) r = PDelayed (r :--> (a :--> PTxList a :--> r) :--> r)
   pcon' (PTxCons x xs) = pdelay $ plam $ \_nil cons -> cons # x # xs
@@ -132,6 +158,12 @@ instance PListLike PTxList where
   pelimList cons nil list = pforce (pto list) # nil # plam cons
   pcons = phoistAcyclic $ plam $ \x xs -> pcon (PTxCons x xs)
   pnil = pcon PTxNil
+
+instance PlutusType (PTxMaybe a) where
+  type PInner (PTxMaybe a) r = PDelayed (r :--> (a :--> r) :--> r)
+  pcon' (PTxJust x) = pdelay $ plam $ \_nothing just -> just # x
+  pcon' PTxNothing = phoistAcyclic $ pdelay $ plam $ \nothing _just -> nothing
+  pmatch' elim f = pforce elim # f PTxNothing # (plam $ f . PTxJust)
 
 -- | Equality of inner types - Plutarch on the left and Haskell on the right.
 type p >~< t = PlutarchInner p PhorallPhantom ~~ PlutusTxInner t ForallPhantom
