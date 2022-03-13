@@ -1,18 +1,18 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
 module Plutarch.TryFrom (
   PTryFrom (PTryFromExcess, ptryFrom),
   HTree (HNode, HLeaf),
   HSTree (HSLeaf, HSRoot, (:<<:)),
+  (:<->:),
   hsing,
+  htreeNode,
 ) where
 
-import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
-import GHC.TypeLits (AppendSymbol, ErrorMessage (Text), KnownNat, Nat, Symbol, TypeError, natVal, type (+))
+import GHC.TypeLits (ErrorMessage (Text), KnownNat, Nat, Symbol, TypeError, natVal, type (+))
 
 import Plutarch.Builtin (
   PAsData,
@@ -40,21 +40,17 @@ import Plutarch.Internal.Other (
   PType,
   S,
   Term,
-  pcon,
   perror,
   plam,
   plet,
   (#),
-  (#$),
   type (:-->),
  )
-import Plutarch.Unit (PUnit (PUnit))
 
 import Plutarch.DataRepr.Internal (
   PDataRecord,
   PDataSum,
   PLabeledType ((:=)),
-  PUnLabel,
   pdcons,
   pdnil,
  )
@@ -67,9 +63,9 @@ import Plutarch.List (
   ptail,
  )
 
-import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
-import qualified PlutusCore as PLC
+import Plutarch.Unsafe (punsafeCoerce)
 
+import GHC.Records (HasField (getField))
 import Plutarch.TermCont (TermCont (TermCont, runTermCont), tcont, unTermCont)
 
 ----------------------- The class PTryFrom ----------------------------------------------
@@ -137,17 +133,32 @@ htreeNode ::
   Term s e
 htreeNode tree = indexHTree tree $ treeElemOf @name @e @tree
 
-indexHTree :: forall name s tree. HSTree tree s -> (forall e. TreeElem name e tree -> Term s e)
+indexHTree ::
+  forall (name :: Symbol) (tree :: HTree) (s :: S).
+  HSTree tree s ->
+  (forall (e :: PType). TreeElem name e tree -> Term s e)
 indexHTree (_ :<<: node) (There rest) = indexHTree node rest
 indexHTree (HSLeaf x :<<: _) Here = x
--- indexHTree (tree :<<: _) HereTree = tree
-indexHTree _ _ = error "impossible"
+indexHTree (HSLeaf x) HereLeaf = x
+indexHTree (_tree :<<: _) HereTree = error "while trying to access tree"
+indexHTree _ _ = error "impossible while indexing HTree"
 
-class TreeElemOf (name :: Symbol) (typ :: PType) (tree :: HTree) where
+{-
+type TreeOrTerm :: HTree -> S -> Type
+type family TreeOrTerm tree s where
+  TreeOrTerm ('HLeaf l1 ptyp) s = Term s ptyp
+  TreeOrTerm ('HNode l0 ('HLeaf l1 ptyp ': trees)) s = Term s ptyp
+  TreeOrTerm ('HNode l trees) s = HSTree ('HNode l trees) s
+  -}
+
+class TreeElemOf (name :: Symbol) (typ :: PType) (tree :: HTree) | name tree -> typ where
   treeElemOf :: TreeElem name typ tree
 
 instance {-# OVERLAPPING #-} TreeElemOf name e ( 'HNode sym ( 'HLeaf name e ': trees)) where
   treeElemOf = Here
+
+instance TreeElemOf name e ( 'HLeaf name e) where
+  treeElemOf = HereLeaf
 
 instance
   {-# OVERLAPPING #-}
@@ -167,18 +178,31 @@ instance
 
 data TreeElem (name :: Symbol) (typ :: PType) (tree :: HTree) where
   Here :: TreeElem name typ ( 'HNode sym ( 'HLeaf name typ ': trees))
+  HereLeaf :: TreeElem name typ ( 'HLeaf name typ)
   HereTree :: TreeElem name (HSTree ( 'HNode name inner)) ( 'HNode sym ( 'HNode name inner ': trees))
   There :: TreeElem name typ ( 'HNode sym l) -> TreeElem name typ ( 'HNode sym (tree ': l))
 
 deriving stock instance Show (TreeElem a b c)
 
+type family Relabel sym old where
+  Relabel sym ( 'HNode _ inner) = 'HNode sym inner
+  Relabel sym ( 'HLeaf _ inner) = 'HLeaf sym inner
+
+class SRelabel sym tree s where
+  srelabel :: HSTree tree s -> HSTree (Relabel sym tree) s
+
+instance SRelabel sym ( 'HNode old inner) s where
+  srelabel HSRoot = HSRoot
+  srelabel (x :<<: HSRoot) = (x :<<: HSRoot)
+  srelabel _ = error "impossible while relabeling"
+
+instance SRelabel sym ( 'HLeaf old ptyp) s where
+  srelabel (HSLeaf x) = (HSLeaf x)
+
 ----------------------- PData instances -------------------------------------------------
 
 hsing :: forall sym a (s :: S). Term s a -> HSTree ( 'HLeaf sym a) s
 hsing = HSLeaf @sym
-
-type Flip :: (a -> b -> Type) -> b -> a -> Type
-newtype Flip (f :: a -> b -> Type) (y :: b) (x :: a) = Flip {unFlip :: f x y}
 
 instance PTryFrom PData (PAsData PInteger) (s :: S) where
   type PTryFromExcess PData (PAsData PInteger) = 'HLeaf "unwrapped" PInteger
@@ -197,8 +221,8 @@ instance PTryFrom PData PData s where
   ptryFrom opq = runTermCont $ pure $ (opq, HSRoot)
 
 instance PTryFrom PData (PAsData PData) s where
-  type PTryFromExcess PData (PAsData PData) = 'HNode "empty" '[]
-  ptryFrom opq = runTermCont $ pure (pdata opq, HSRoot)
+  type PTryFromExcess PData (PAsData PData) = 'HLeaf "unwrapped" PData
+  ptryFrom opq = runTermCont $ pure (pdata opq, hsing opq)
 
 -- TODO: add the excess inner type
 instance
@@ -210,7 +234,6 @@ instance
   type PTryFromExcess PData (PAsData (PBuiltinMap a b)) = 'HLeaf "unwrapped" (PBuiltinMap a b)
   ptryFrom opq = runTermCont $ do
     verMap <- tcont $ plet (pasMap # opq)
-    -- I've not obtained a `PBuiltinList (PBuiltinPair a b)`
     let verifyPair :: Term _ (PBuiltinPair PData PData :--> PBuiltinPair (PAsData a) (PAsData b))
         verifyPair = plam $ \tup -> unTermCont $ do
           (verfst, _) <- TermCont $ ptryFrom @PData @(PAsData a) $ pfstBuiltin # tup
@@ -228,21 +251,20 @@ instance {-# OVERLAPPING #-} PTryFrom PData (PAsData (PBuiltinList PData)) s whe
 
 instance
   {-# OVERLAPPABLE #-}
-  forall a b s.
-  ( PTryFrom PData a s
-  , a ~ PAsData b
-  , PIsData b
+  forall a s.
+  ( PTryFrom PData (PAsData a) s
+  , PIsData a
   ) =>
-  PTryFrom PData (PAsData (PBuiltinList a)) s
+  PTryFrom PData (PAsData (PBuiltinList (PAsData a))) s
   where
-  type PTryFromExcess PData (PAsData (PBuiltinList a)) = 'HLeaf "unwrapped" (PBuiltinList a)
+  type PTryFromExcess PData (PAsData (PBuiltinList (PAsData a))) = 'HLeaf "unwrapped" (PBuiltinList (PAsData a))
   ptryFrom opq = runTermCont $ do
-    let lst :: Term _ (PBuiltinList a)
-        lst = punsafeBuiltin PLC.UnListData # opq
-        verify :: a ~ PAsData b => Term _ (PAsData b :--> a)
+    let lst :: Term _ (PBuiltinList PData)
+        lst = pasList # opq
+        verify :: Term _ (PData :--> PAsData a)
         verify = plam $ \e ->
           unTermCont $ do
-            (wrapped, _) <- TermCont $ ptryFrom @PData @a @s $ pforgetData e
+            (wrapped, _) <- TermCont $ ptryFrom @PData @(PAsData a) @s $ e
             pure wrapped
     ver <- tcont $ plet $ pmap # verify # lst
     pure $ (punsafeCoerce opq, hsing ver)
@@ -311,70 +333,70 @@ instance
   ( RecordValidation xs s
   , PTryFrom PData (PAsData a) s
   , PTryFrom PData (PAsData (PDataRecord xs)) s
-  , TreeElemOf "unwrapped" (PDataRecord xs) ( 'HNode "record" (ValidationExcess xs))
+  , SRelabel label (PTryFromExcess PData (PAsData a)) s
   ) =>
   RecordValidation ((label ':= a) ': xs) s
   where
-  type ValidationExcess ((label ':= a) ': xs) = (PTryFromExcess PData (PAsData a)) ': ValidationExcess xs
+  type ValidationExcess ((label ':= a) ': xs) = Relabel label (PTryFromExcess PData (PAsData a)) ': ValidationExcess xs
   recoverRecord lst = do
     let lsthead :: Term s PData
         lsthead = phead # lst
         lsttail :: Term s (PBuiltinList PData)
         lsttail = ptail # lst
     (verhead, exchead) <- TermCont $ ptryFrom @PData @(PAsData a) @s lsthead
-    (_, exctail) <- recoverRecord @xs @s lsttail
-    rec <- tcont $ plet $ pdcons @label # verhead # (htreeNode @"unwrapped" exctail)
-    pure (rec, exchead :<<: exctail)
+    (vertail, exctail) <- recoverRecord @xs @s lsttail
+    rec <- tcont $ plet $ pdcons @label # verhead # vertail
+    pure (rec, (srelabel @label exchead) :<<: exctail)
 
 instance {-# OVERLAPPING #-} RecordValidation '[] s where
   type ValidationExcess '[] = '[]
   recoverRecord _ = pure (pdnil, HSRoot)
 
-{-
-class SumValidation (n :: Nat) (sum :: [[PLabeledType]]) where
+instance
+  {-# OVERLAPPING #-}
+  forall ys (s :: S).
+  ( SumValidation 0 ys s
+  ) =>
+  PTryFrom PData (PAsData (PDataSum ys)) s
+  where
+  type PTryFromExcess PData (PAsData (PDataSum ys)) = 'HNode "empty" '[]
+  ptryFrom opq = runTermCont $ do
+    _ <- tcont $ plet $ validateSum @0 @ys opq
+    pure (punsafeCoerce opq, HSRoot)
+
+class SumValidation (n :: Nat) (sum :: [[PLabeledType]]) s where
   validateSum :: Term s PData -> Term s (PBuiltinList PData)
 
 instance
   {-# OVERLAPPABLE #-}
-  forall n x xs s.
-  ( PTryFrom PData (PAsData (PDataRecord x))
-  , SumValidation (n + 1) xs
+  forall (n :: Nat) (x :: [PLabeledType]) (xs :: [[PLabeledType]]) (s :: S).
+  ( PTryFrom PData (PAsData (PDataRecord x)) s
+  , SumValidation (n + 1) xs s
   , KnownNat n
-  , PTryFromExcess PData (PAsData (PDataRecord x)) s ~ Flip Term (PDataRecord x) s
+  , FromRecordFields x ~ ValidationExcess x
+  , RecordValidation x s
   ) =>
-  SumValidation n (x ': xs)
+  SumValidation n (x ': xs) s
   where
   validateSum s = unTermCont $
     do
       let n :: Integer
           n = natVal (Proxy @n)
-      elem <- tcont $ plet $ pasConstr #$ s
+      elem <- tcont $ plet $ pasConstr # s
       let snd' :: Term _ (PBuiltinList PData)
           snd' =
             pif
               (fromInteger n #== (pfstBuiltin # elem))
               ( unTermCont $ do
                   let rec = pdata $ psndBuiltin # elem
-                  y <- (unFlip . snd) <$> TermCont (ptryFrom @PData @(PAsData (PDataRecord x)) $ pforgetData rec)
+                  y <- (htreeNode @"unwrapped" . snd) <$> TermCont (ptryFrom @PData @(PAsData (PDataRecord x)) @s $ pforgetData rec)
                   pure $ punsafeCoerce (y :: Term _ (PDataRecord x))
               )
               (validateSum @(n + 1) @xs $ punsafeCoerce s)
       tcont $ plet snd'
 
-instance {-# OVERLAPPING #-} SumValidation n '[] where
+instance {-# OVERLAPPING #-} SumValidation n '[] s where
   validateSum _ = perror
-
-instance
-  {-# OVERLAPPING #-}
-  forall ys.
-  ( SumValidation 0 ys
-  ) =>
-  PTryFrom PData (PAsData (PDataSum ys))
-  where
-  type PTryFromExcess PData (PAsData (PDataSum ys)) = Flip Term PUnit
-  ptryFrom opq = runTermCont $ do
-    _ <- tcont $ plet $ validateSum @0 @ys opq
-    pure (punsafeCoerce opq, Flip $ pcon PUnit)
 
 ----------------------- POpaque Instances -----------------------------------------------
 
@@ -386,28 +408,32 @@ instance
     your POpaque safely
 -}
 instance
-  ( PTryFrom PData (PAsData a)
+  ( PTryFrom PData (PAsData a) s
   , PIsData a
   ) =>
-  PTryFrom POpaque a
+  PTryFrom POpaque a s
   where
-  type PTryFromExcess POpaque a = Flip Term (PAsData a)
+  type PTryFromExcess POpaque a = 'HLeaf "wrapped" (PAsData a)
   ptryFrom opq = runTermCont $ do
     let prop :: Term _ a
         prop = punsafeCoerce opq
     ver' <- fst <$> TermCont (ptryFrom @PData @(PAsData a) $ pforgetData $ pdata prop)
     ver <- tcont $ plet ver'
-    pure $ (punsafeCoerce opq, Flip ver)
+    pure $ (punsafeCoerce opq, hsing ver)
 
 instance
-  ( PTryFrom a b
+  ( PTryFrom a b s
   , PIsData a
   , PIsData b
   ) =>
-  PTryFrom (PAsData a) (PAsData b)
+  PTryFrom (PAsData a) (PAsData b) s
   where
   type PTryFromExcess (PAsData a) (PAsData b) = PTryFromExcess a b
   ptryFrom opq = runTermCont $ do
     ver' <- snd <$> TermCont (ptryFrom @a @b (pfromData opq))
     pure $ (punsafeCoerce opq, ver')
-    -}
+
+----------------------- HasField instance -----------------------------------------------
+
+instance TreeElemOf name ptyp tree => HasField name (HSTree tree s) (Term s ptyp) where
+  getField = htreeNode @name @ptyp

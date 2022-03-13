@@ -56,8 +56,8 @@ deriving via
 
 ----------------------- PTryFrom instances ----------------------------------------------
 
-instance PTryFrom (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue where
-  type PTryFromExcess (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue = 'HNode '[]
+instance PTryFrom (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue s where
+  type PTryFromExcess (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue = 'HNode "empty" '[]
   ptryFrom m = runTermCont $ do
     let predInner :: Term _ (PBuiltinPair (PAsData PTokenName) (PAsData PInteger) :--> PBool)
         predInner = plam $ \tup -> pif (0 #< (pfromData $ psndBuiltin # tup)) (pcon PTrue) perror

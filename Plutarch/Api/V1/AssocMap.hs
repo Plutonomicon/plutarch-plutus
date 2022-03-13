@@ -93,9 +93,9 @@ instance
   ( POrd k
   , PIsData k
   ) =>
-  PTryFrom (PBuiltinMap k v) (PMap k v)
+  PTryFrom (PBuiltinMap k v) (PMap k v) s
   where
-  type PTryFromExcess (PBuiltinMap k v) (PMap k v) = 'HNode '[]
+  type PTryFromExcess (PBuiltinMap k v) (PMap k v) = 'HNode "empty" '[]
   ptryFrom oMap = runTermCont $ do
     _ <-
       tcont $

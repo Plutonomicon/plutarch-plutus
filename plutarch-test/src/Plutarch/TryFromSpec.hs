@@ -7,9 +7,9 @@ module Plutarch.TryFromSpec (spec) where
 
 import Test.Syd
 
-import qualified GHC.Generics as GHC
+-- import qualified GHC.Generics as GHC
 
-import Generics.SOP (Generic, I (I))
+-- import Generics.SOP (Generic, I (I))
 
 import Plutus.V1.Ledger.Api (
   Address (Address),
@@ -59,13 +59,15 @@ import Plutarch.Builtin (
  )
 import Plutarch.Prelude
 import Plutarch.TryFrom (
-  Flip (Flip, unFlip),
+  HTree (HLeaf),
   PTryFrom (PTryFromExcess, ptryFrom),
+  hsing,
  )
 
 import Plutarch.ApiSpec (info, purpose)
 import qualified Plutarch.ApiSpec as Api
-import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
+
+-- import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
 import Plutarch.Test
 import Plutus.V1.Ledger.Value (Value)
 import qualified Plutus.V1.Ledger.Value as Value
@@ -262,25 +264,24 @@ spec = do
 ------------------- Checking deeply, shallowly and unwrapping ----------------------
 
 checkDeep ::
-  forall (target :: PType) (actual :: PType).
-  ( PTryFrom PData (PAsData target)
+  forall (target :: PType) (actual :: PType) (s :: S).
+  ( PTryFrom PData (PAsData target) s
   , PIsData actual
   , PIsData target
   ) =>
-  ClosedTerm (PAsData actual) ->
-  ClosedTerm (PAsData target)
-checkDeep t = unTermCont $ fst <$> TermCont (ptryFrom $ pforgetData t)
+  Term s (PAsData actual) ->
+  Term s (PAsData target)
+checkDeep t = unTermCont $ fst <$> TermCont (ptryFrom @PData @(PAsData target) @s $ pforgetData t)
 
 checkDeepUnwrap ::
-  forall (target :: PType) (actual :: PType).
-  ( PTryFrom PData (PAsData target)
+  forall (target :: PType) (actual :: PType) (s :: S).
+  ( PTryFrom PData (PAsData target) s
   , PIsData actual
   , PIsData target
-  , PTryFromExcess PData (PAsData target) ~ Flip Term target
   ) =>
-  ClosedTerm (PAsData actual) ->
-  ClosedTerm (PAsData target)
-checkDeepUnwrap t = unTermCont $ fst <$> TermCont (ptryFrom @PData @(PAsData target) $ pforgetData t)
+  Term s (PAsData actual) ->
+  Term s (PAsData target)
+checkDeepUnwrap t = unTermCont $ fst <$> TermCont (ptryFrom @PData @(PAsData target) @s $ pforgetData t)
 
 sampleStructure :: Term _ (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData PInteger)))))))
 sampleStructure = pdata $ psingleton #$ pdata $ psingleton #$ toDatadList [1 .. 100]
@@ -304,17 +305,17 @@ newtype PNatural (s :: S) = PMkNatural (Term s PInteger)
 pmkNatural :: Term s (PInteger :--> PNatural)
 pmkNatural = plam $ \i -> pif (i #< 0) (ptraceError "could not make natural") (pcon $ PMkNatural i)
 
-instance PTryFrom PData (PAsData PNatural) where
-  type PTryFromExcess PData (PAsData PNatural) = Flip Term PNatural
+instance PTryFrom PData (PAsData PNatural) s where
+  type PTryFromExcess PData (PAsData PNatural) = 'HLeaf "unwrapped" PNatural
   ptryFrom opq = runTermCont $ do
-    tup <- TermCont $ ptryFrom @PData @(PAsData PInteger) opq
-    ver <- tcont $ plet $ pmkNatural # unFlip (snd tup)
-    pure $ (punsafeCoerce (fst tup), Flip ver)
+    (ter, exc) <- TermCont $ ptryFrom @PData @(PAsData PInteger) opq
+    ver <- tcont $ plet $ pmkNatural # exc.unwrapped
+    pure $ (punsafeCoerce ter, hsing ver)
 
 validator :: Term s PValidator
 validator = phoistAcyclic $
   plam $ \dat red ctx -> unTermCont $ do
-    trustedRedeemer <- (unFlip . snd) <$> (TermCont $ ptryFrom @PData @(PAsData (PBuiltinList (PAsData PNatural))) red)
+    trustedRedeemer <- (\(snd -> red) -> red.unwrapped) <$> (TermCont $ ptryFrom @PData @(PAsData (PBuiltinList (PAsData PNatural))) red)
     let trustedDatum :: Term _ (PBuiltinList (PAsData PNatural))
         trustedDatum = pfromData $ punsafeCoerce dat
     -- make the Datum and Redeemer trusted
