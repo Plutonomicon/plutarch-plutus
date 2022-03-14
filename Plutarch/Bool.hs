@@ -111,7 +111,7 @@ pif b case_true case_false = pmatch b $ \case
 
 -- | Boolean negation for 'PBool' terms.
 pnot :: Term s (PBool :--> PBool)
-pnot = phoistAcyclic $ plam $ \x -> pif x (pcon PFalse) $ pcon PTrue
+pnot = phoistAcyclic $ plam $ \x -> pif' # x # pcon PFalse # pcon PTrue
 
 -- | Lazily evaluated boolean and for 'PBool' terms.
 infixr 3 #&&
@@ -135,11 +135,11 @@ pand' = phoistAcyclic $ plam $ \x y -> pif' # x # y # (pcon PFalse)
 
 -- | Hoisted, Plutarch level, lazily evaluated boolean or function.
 por :: Term s (PBool :--> PDelayed PBool :--> PDelayed PBool)
-por = phoistAcyclic $ plam $ \x y -> pif' # x # (phoistAcyclic $ pdelay $ pcon PTrue) # y
+por = phoistAcyclic $ plam $ \x -> pif' # x # (phoistAcyclic $ pdelay $ pcon PTrue)
 
 -- | Hoisted, Plutarch level, strictly evaluated boolean or function.
 por' :: Term s (PBool :--> PBool :--> PBool)
-por' = phoistAcyclic $ plam $ \x y -> pif' # x # (pcon PTrue) # y
+por' = phoistAcyclic $ plam $ \x -> pif' # x # (pcon PTrue)
 
 -- | Generic version of (#==)
 gpeq ::
