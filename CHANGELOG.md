@@ -14,6 +14,12 @@
 
   Started by [#335](https://github.com/Plutonomicon/plutarch/pull/335)
 
+- Added module `Plutarch.FFI` for interoperability with PlutusTx.
+
+- Added module `Plutarch.Show` with the `PShow` type class.
+
+- Added `DerivePConstantViaBuiltin`, deprecating `DerivePConstantViaNewtype`.
+
 - `TermCont`: Parametrize by result type; add `MonadFail` instance; etc.
 
   Also, export from `Plutarch.TermCont`, and then from `Plutarch.Prelude` (TermCont is no longer exported by `Plutarch.Internal`).
