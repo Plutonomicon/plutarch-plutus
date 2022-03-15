@@ -116,6 +116,13 @@ executable plutarch-test
     , rank2classes
     , serialise
 
+  if impl(ghc <9.0)
+    build-depends:
+      , plutus-tx-plugin
+      , shrinker
+
+    other-modules: Plutarch.FFISpec
+
   if impl(ghc >=9.0)
     other-modules:
       Plutarch.FieldSpec
