@@ -267,9 +267,6 @@
       };
 
       cabalProjectLocal = ''
-        package plutus-tx-plugin
-          flags: +use-ghc-stub
-
         allow-newer:
           cardano-binary:base
           , cardano-crypto-class:base
@@ -461,20 +458,40 @@
       projectForGhc = ghcName: flagDevelopment: system:
         let pkgs = nixpkgsFor system; in
         let pkgs' = nixpkgsFor' system; in
+        let addSubDir = target: subdir: source:
+          if source.src == target
+          then source // { subdirs = source.subdirs ++ [ subdir ]; }
+          else source; in
         let pkgSet = (nixpkgsFor system).haskell-nix.cabalProject' ({
           # This is truly a horrible hack but is necessary for sydtest-discover to work.
-          src = if ghcName == ghcVersion then ./. else
-          pkgs.runCommand "fake-src" { } ''
-            # Prevent `sydtest-discover` from using GHC9 only modules when building with GHC810
-            # https://github.com/NorfairKing/sydtest/blob/master/sydtest-discover/src/Test/Syd/Discover.hs
-            cp -rT ${./.} $out
-            chmod -R u+w $out/plutarch-test
-            rm -f $out/plutarch-test/plutarch-base/Plutarch/MonadicSpec.hs
-            rm -f $out/plutarch-test/plutarch-base/Plutarch/FieldSpec.hs
-            rm -f $out/plutarch-test/plutarch-base/Plutarch/RecSpec.hs
-          '';
+          src =
+            if ghcName == ghcVersion
+            then
+              pkgs.runCommand "fake-src" { } ''
+                # Prevent `sydtest-discover` from using GHC810 only modules when building with GHC9
+                # https://github.com/NorfairKing/sydtest/blob/master/sydtest-discover/src/Test/Syd/Discover.hs
+                cp -rT ${./.} $out
+                chmod -R u+w $out/plutarch-test
+                rm -f $out/plutarch-test/plutarch-base/Plutarch/FFISpec.hs
+              ''
+            else
+              pkgs.runCommand "fake-src" { } ''
+                # Prevent `sydtest-discover` from using GHC9 only modules when building with GHC810
+                # https://github.com/NorfairKing/sydtest/blob/master/sydtest-discover/src/Test/Syd/Discover.hs
+                cp -rT ${./.} $out
+                chmod -R u+w $out/plutarch-test
+                rm -f $out/plutarch-test/plutarch-base/Plutarch/MonadicSpec.hs
+                rm -f $out/plutarch-test/plutarch-base/Plutarch/FieldSpec.hs
+                rm -f $out/plutarch-test/plutarch-base/Plutarch/RecSpec.hs
+              '';
           compiler-nix-name = ghcName;
-          inherit extraSources;
+          extraSources =
+            if ghcName == ghcVersion then extraSources
+            else map (addSubDir inputs.plutus "plutus-tx-plugin") extraSources
+              ++ [{
+              src = inputs.Shrinker;
+              subdirs = [ "." ];
+            }];
           modules = [
             (haskellModule system)
             {
