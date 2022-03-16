@@ -60,9 +60,8 @@ import Plutarch.Builtin (
  )
 import Plutarch.Prelude
 import Plutarch.TryFrom (
-  HSSing,
   PTryFrom (PTryFromExcess, ptryFrom),
-  hsing,
+  Flip (MkFlip),
  )
 
 import Plutarch.ApiSpec (info, purpose)
@@ -72,6 +71,7 @@ import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
 import Plutarch.Test
 import Plutus.V1.Ledger.Value (Value)
 import qualified Plutus.V1.Ledger.Value as Value
+import GHC.IO.Buffer (bufferRemove)
 
 spec :: Spec
 spec = do
@@ -307,11 +307,11 @@ pmkNatural :: Term s (PInteger :--> PNatural)
 pmkNatural = plam $ \i -> pif (i #< 0) (ptraceError "could not make natural") (pcon $ PMkNatural i)
 
 instance PTryFrom PData (PAsData PNatural) s where
-  type PTryFromExcess PData (PAsData PNatural) = HSSing "unwrapped" PNatural
+  type PTryFromExcess PData (PAsData PNatural) = Flip Term PNatural
   ptryFrom opq = runTermCont $ do
     (ter, exc) <- TermCont $ ptryFrom @PData @(PAsData PInteger) opq
-    ver <- tcont $ plet $ pmkNatural #$ exc.unwrapped
-    pure $ (punsafeCoerce ter, hsing ver)
+    ver <- tcont $ plet $ pmkNatural #$ exc
+    pure $ (punsafeCoerce ter, ver)
 
 validator :: Term s PValidator
 validator = phoistAcyclic $
@@ -510,3 +510,8 @@ data PAB (s :: S)
   deriving
     (PlutusType, PIsData)
     via PIsDataReprInstances PAB
+
+-- TODO: remove 
+
+rec :: Term s (PAsData (PDataRecord '["foo" ':= PInteger, "bar" ':= PByteString]))
+rec = pdata (pdcons @"foo" # (pdata $ pconstant 3) #$ pdcons @"bar" # (pdata $ pconstant "baz") # pdnil)
