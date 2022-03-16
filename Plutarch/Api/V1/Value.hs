@@ -18,9 +18,9 @@ import Plutarch.Lift (
  )
 
 import Plutarch.TryFrom (
-  HSTree (HSRoot),
-  HTree (HNode),
+  HRecP (HSNil),
   PTryFrom (PTryFromExcess, ptryFrom),
+  RecKind (HNil),
  )
 
 import Plutarch.Prelude
@@ -57,7 +57,7 @@ deriving via
 ----------------------- PTryFrom instances ----------------------------------------------
 
 instance PTryFrom (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue s where
-  type PTryFromExcess (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue = 'HNode "empty" '[]
+  type PTryFromExcess (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue = HRecP 'HNil
   ptryFrom m = runTermCont $ do
     let predInner :: Term _ (PBuiltinPair (PAsData PTokenName) (PAsData PInteger) :--> PBool)
         predInner = plam $ \tup -> pif (0 #< (pfromData $ psndBuiltin # tup)) (pcon PTrue) perror
@@ -66,4 +66,4 @@ instance PTryFrom (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue s whe
         res :: Term _ PBool
         res = pall # predOuter # pto m
     _ <- tcont $ plet res
-    pure $ (pcon $ PValue m, HSRoot)
+    pure $ (pcon $ PValue m, HSNil)

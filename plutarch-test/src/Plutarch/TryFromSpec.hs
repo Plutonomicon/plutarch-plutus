@@ -7,9 +7,9 @@ module Plutarch.TryFromSpec (spec) where
 
 import Test.Syd
 
--- import qualified GHC.Generics as GHC
+import qualified GHC.Generics as GHC
 
--- import Generics.SOP (Generic, I (I))
+import Generics.SOP (Generic, I (I))
 
 import Plutus.V1.Ledger.Api (
   Address (Address),
@@ -31,6 +31,7 @@ import qualified PlutusTx.AssocMap as PlutusMap
 
 import Plutarch.Unsafe (
   punsafeCoerce,
+  punsafeFrom,
  )
 
 import Plutarch
@@ -59,7 +60,7 @@ import Plutarch.Builtin (
  )
 import Plutarch.Prelude
 import Plutarch.TryFrom (
-  HTree (HLeaf),
+  HSSing,
   PTryFrom (PTryFromExcess, ptryFrom),
   hsing,
  )
@@ -67,7 +68,7 @@ import Plutarch.TryFrom (
 import Plutarch.ApiSpec (info, purpose)
 import qualified Plutarch.ApiSpec as Api
 
--- import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
+import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
 import Plutarch.Test
 import Plutus.V1.Ledger.Value (Value)
 import qualified Plutus.V1.Ledger.Value as Value
@@ -306,10 +307,10 @@ pmkNatural :: Term s (PInteger :--> PNatural)
 pmkNatural = plam $ \i -> pif (i #< 0) (ptraceError "could not make natural") (pcon $ PMkNatural i)
 
 instance PTryFrom PData (PAsData PNatural) s where
-  type PTryFromExcess PData (PAsData PNatural) = 'HLeaf "unwrapped" PNatural
+  type PTryFromExcess PData (PAsData PNatural) = HSSing "unwrapped" PNatural
   ptryFrom opq = runTermCont $ do
     (ter, exc) <- TermCont $ ptryFrom @PData @(PAsData PInteger) opq
-    ver <- tcont $ plet $ pmkNatural # exc.unwrapped
+    ver <- tcont $ plet $ pmkNatural #$ exc.unwrapped
     pure $ (punsafeCoerce ter, hsing ver)
 
 validator :: Term s PValidator
@@ -481,7 +482,6 @@ sampleMap =
       # (ppairDataBuiltin # (pdata $ pconstant "bar") # (pdata $ pconstant 41))
       # pnil
 
-{-
 ------------------- Sample type with PIsDataRepr -----------------------------------
 
 sampleAB :: Term s (PAsData PAB)
@@ -490,15 +490,23 @@ sampleAB = pdata $ pcon $ PA (pdcons @"_0" # (pdata $ pconstant 4) #$ pdcons # (
 sampleABdata :: Term s PData
 sampleABdata = pforgetData sampleAB
 
-recoverAB :: Term s (PAsData PAB)
+{-
+recoverAB :: Term s PAB
 recoverAB = unTermCont $ do
-  ver <- fst <$> TermCont (ptryFrom sampleABdata)
+  (ter, exc) <- TermCont (ptryFrom sampleABdata)
+  pure exc.unwrapped
+  -}
 
-data PAB (s::S)
-  = PA  (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PByteString] ))
-  | PB  (Term s (PDataRecord '["_0" ':= PBuiltinList (PAsData PInteger), "_1" ':= PByteString] ))
+recoverAB :: Term s PAB
+recoverAB = unTermCont $ do
+  exc <- TermCont (ptryFrom sampleABdata)
+  pure $ fst exc
+
+data PAB (s :: S)
+  = PA (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PByteString]))
+  | PB (Term s (PDataRecord '["_0" ':= PBuiltinList (PAsData PInteger), "_1" ':= PByteString]))
   deriving stock (GHC.Generic)
   deriving anyclass (Generic, PIsDataRepr)
-  deriving (PlutusType, PIsData)
-  via PIsDataReprInstances PAB
--}
+  deriving
+    (PlutusType, PIsData)
+    via PIsDataReprInstances PAB
