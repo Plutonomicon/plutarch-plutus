@@ -162,10 +162,10 @@ gpeq =
           pmatch y $ \y' ->
             gpeq' (gpfrom x') (gpfrom y')
 
-gpeq' :: All2 PEq a => SOP (Term s) a -> SOP (Term s) a -> Term s PBool
+gpeq' :: All2 PEq xss => SOP (Term s) xss -> SOP (Term s) xss -> Term s PBool
 gpeq' (SOP c1) (SOP c2) =
   ccompare_NS (Proxy @(All PEq)) (pcon PFalse) eqProd (pcon PFalse) c1 c2
-  
+
 eqProd :: All PEq xs => NP (Term s) xs -> NP (Term s) xs -> Term s PBool
 eqProd p1 p2 =
   pands $ hcollapse $ hcliftA2 (Proxy :: Proxy PEq) eqTerm p1 p2
