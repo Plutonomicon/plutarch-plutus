@@ -62,6 +62,7 @@ The [Usage section](./Usage.md) fills in the gaps left by the previous. It illus
 - [Tracing](./Usage/Tracing.md)
 - [Raising errors](./Usage/Raising%20errors.md)
 - [Unsafe functions](./Usage/Unsafe%20functions.md)
+- [Interoperability with PlutusTx](./Usage/FFI.md)
 
 ## Concepts
 
