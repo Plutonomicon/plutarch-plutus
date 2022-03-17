@@ -463,19 +463,7 @@
           then source // { subdirs = source.subdirs ++ [ subdir ]; }
           else source; in
         let pkgSet = (nixpkgsFor system).haskell-nix.cabalProject' ({
-          # This is truly a horrible hack but is necessary for sydtest-discover to work.
-          src =
-            if ghcName == ghcVersion
-            then ./.
-            else
-              pkgs.runCommand "fake-src" { } ''
-                # Prevent `sydtest-discover` from using GHC9 only modules when building with GHC810
-                # https://github.com/NorfairKing/sydtest/blob/master/sydtest-discover/src/Test/Syd/Discover.hs
-                cp -rT ${./.} $out
-                chmod -R u+w $out/plutarch-test
-                rm -f $out/plutarch-test/plutarch-base/Plutarch/MonadicSpec.hs
-                rm -f $out/plutarch-test/plutarch-base/Plutarch/FieldSpec.hs
-              '';
+          src = ./.;
           compiler-nix-name = ghcName;
           extraSources =
             if ghcName == ghcVersion then extraSources
