@@ -466,14 +466,7 @@
           # This is truly a horrible hack but is necessary for sydtest-discover to work.
           src =
             if ghcName == ghcVersion
-            then
-              pkgs.runCommand "fake-src" { } ''
-                # Prevent `sydtest-discover` from using GHC810 only modules when building with GHC9
-                # https://github.com/NorfairKing/sydtest/blob/master/sydtest-discover/src/Test/Syd/Discover.hs
-                cp -rT ${./.} $out
-                chmod -R u+w $out/plutarch-test
-                rm -f $out/plutarch-test/plutarch-base/Plutarch/FFISpec.hs
-              ''
+            then ./.
             else
               pkgs.runCommand "fake-src" { } ''
                 # Prevent `sydtest-discover` from using GHC9 only modules when building with GHC810
