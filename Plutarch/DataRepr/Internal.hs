@@ -140,7 +140,11 @@ instance (POrd x, PIsData x) => POrd (PDataRecord '[label ':= x]) where
     PDCons y _ <- tcont $ pmatch l2
 
     pure $ pfromData x #< pfromData y
-  l1 #<= l2 = pdToBuiltin l1 #== pdToBuiltin l1 #|| l1 #< l2
+  l1 #<= l2 = unTermCont $ do
+    PDCons x _ <- tcont $ pmatch l1
+    PDCons y _ <- tcont $ pmatch l2
+
+    pure $ pfromData x #<= pfromData y
 
 instance (POrd x, PIsData x, POrd (PDataRecord (x' ': xs))) => POrd (PDataRecord ((label ':= x) ': x' ': xs)) where
   l1 #< l2 = unTermCont $ do
