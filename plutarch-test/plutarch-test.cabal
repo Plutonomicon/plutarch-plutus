@@ -127,7 +127,6 @@ executable plutarch-test
     other-modules:
       Plutarch.FieldSpec
       Plutarch.MonadicSpec
-      Plutarch.RecSpec
 
   other-modules:
     BaseSpec
@@ -146,6 +145,7 @@ executable plutarch-test
     Plutarch.PLamSpec
     Plutarch.PlutusTypeSpec
     Plutarch.RationalSpec
+    Plutarch.RecSpec
     Plutarch.RecursionSpec
     Plutarch.ScriptsSpec
     Plutarch.ShowSpec
