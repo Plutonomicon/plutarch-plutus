@@ -1,5 +1,0 @@
-x1+x2.builtin {"exBudgetCPU":1212996,"exBudgetMemory":2098,"scriptSizeBytes":29}
-x1+x2.pmatch {"exBudgetCPU":2227548,"exBudgetMemory":4562,"scriptSizeBytes":48}
-uncons.ChooseList {"exBudgetCPU":806241,"exBudgetMemory":1864,"scriptSizeBytes":26}
-uncons.head-and-tail {"exBudgetCPU":687149,"exBudgetMemory":1464,"scriptSizeBytes":23}
-uncons.head-and-tail-and-null {"exBudgetCPU":1283745,"exBudgetMemory":2997,"scriptSizeBytes":35}

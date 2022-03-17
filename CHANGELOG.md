@@ -13,6 +13,9 @@
 - Add generic deriving for `PEq`
 
   Started by [#335](https://github.com/Plutonomicon/plutarch/pull/335)
+- `Plutarch.Prelude` and `Plutarch.List` now export pfind, pelemAt, preverse and pcheckSroted.
+
+	Started by: [#306](https://github.com/Plutonomicon/plutarch/pull/306)
 
 - `TermCont`: Parametrize by result type; add `MonadFail` instance; etc.
 

@@ -1,5 +1,0 @@
-x1+x2.builtin (program 1.0.0 ((\i0 -> (\i0 -> addInteger (i1 (force tailList i2)) (i1 i2)) (force headList)) [1,2,3,4,5]))
-x1+x2.pmatch (program 1.0.0 ((\i0 -> (\i0 -> (\i0 -> force (i1 i3 (delay error) (delay ((\i0 -> force (i2 i1 (delay error) (delay (addInteger (i3 i4) (i3 i1))))) (force tailList i3))))) (force (force chooseList))) (force headList)) [1,2,3,4,5]))
-uncons.ChooseList (program 1.0.0 ((\i0 -> force (force (force chooseList) i1 (delay error) (delay (force tailList i1)))) [1,2,3,4,5]))
-uncons.head-and-tail (program 1.0.0 ((\i0 -> (\i0 -> force tailList i2) (force headList i1)) [1,2,3,4,5]))
-uncons.head-and-tail-and-null (program 1.0.0 ((\i0 -> (\i0 -> force (force ifThenElse i1 (delay error) (delay ((\i0 -> force tailList i3) (force headList i2))))) (force nullList i1)) [1,2,3,4,5]))

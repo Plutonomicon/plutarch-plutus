@@ -252,8 +252,6 @@ pround = phoistAcyclic $
                   (pif (rem #< pdiv # b # 2) 0 1)
               )
 
--- (pdiv # b # 2 + pmod # b # 2 #<= pmod # a # b) 1 0
-
 ptruncate :: Term s (PRational :--> PInteger)
 ptruncate = phoistAcyclic $
   plam $ \x ->
