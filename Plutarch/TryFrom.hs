@@ -1,16 +1,18 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE DefaultSignatures #-}
 
 module Plutarch.TryFrom (
-  PTryFrom (PTryFromExcess, ptryFrom),
-  hsing,
-  getExcessField,
-  HRecP (HSNil, HSCons),
-  RecKind (HNil, HCons),
+  PTryFrom (..),
+  PTryFromData (..),
+  HRecP (..),
+  RecKind (..),
+  Flip (..),
   HSing,
   HSSing,
-  Flip (MkFlip, unFlip),
+  hsing,
+  getExcessField,
 ) where
 
 import Data.Proxy (Proxy (Proxy))
@@ -42,6 +44,7 @@ import Plutarch.Internal.Other (
   PType,
   S,
   Term,
+  PInner,
   perror,
   plam,
   plet,
@@ -65,11 +68,13 @@ import Plutarch.List (
   ptail,
  )
 
-import Plutarch.Unsafe (punsafeCoerce)
+import Plutarch.Unsafe (punsafeCoerce, punsafeFrom)
 
 import GHC.Records (HasField (getField))
 
 import Plutarch.TermCont (TermCont (TermCont, runTermCont), tcont, unTermCont)
+
+import Plutarch.DataRepr.Internal (PIsDataReprInstances, PIsDataRepr (PIsDataReprRepr))
 
 ----------------------- The class PTryFrom ----------------------------------------------
 
@@ -398,6 +403,44 @@ instance
   ptryFrom opq = runTermCont $ do
     ver' <- snd <$> TermCont (ptryFrom @a @b (pfromData opq))
     pure $ (punsafeCoerce opq, ver')
+
+----------------------- PIsDataReprInstances --------------------------------------------
+
+class PTryFromData s b where 
+  type PTryFromDataExcess b :: PType
+  type PTryFromDataExcess b = PTryFromExcess PData b
+  ptryFromData  :: Term s PData -> ((Term s b, PTryFromDataExcess b s) -> Term s r) -> Term s r
+    {-
+  default ptryFromData  :: 
+    ( PTryFromExcess PData b s ~ PTryFromDataExcess b s 
+    , PTryFrom PData b s 
+    ) =>
+    Term s PData -> ((Term s b, PTryFromDataExcess b s) -> Term s r) -> Term s r
+  ptryFromData = ptryFrom @PData @b
+
+deriving anyclass instance (PTryFrom PData b s) => PTryFromData s b
+-}
+
+instance 
+  ( PTryFrom PData (PAsData (PIsDataReprInstances a)) s
+  ) => 
+  PTryFromData s (PAsData (PIsDataReprInstances a)) where 
+  ptryFromData = ptryFrom 
+
+instance
+  ( PIsDataRepr a
+  , SumValidation 0 (PIsDataReprRepr a) s
+  , PInner a b ~ PDataSum (PIsDataReprRepr a)
+  ) =>
+  PTryFrom PData (PAsData (PIsDataReprInstances a)) s
+  where
+  type PTryFromExcess PData (PAsData (PIsDataReprInstances a)) = HRecP 'HNil
+  ptryFrom opq = runTermCont $ do
+    let reprsum :: Term _ (PDataSum (PIsDataReprRepr a))
+        reprsum = pfromData $ unTermCont $ fst <$> TermCont (ptryFrom opq)
+    pure $ (pdata $ punsafeFrom reprsum, HSNil)
+
+-- TODO: add overlapping instance for single constructor types that has actual excess 
 
 ----------------------- HasField instance -----------------------------------------------
 

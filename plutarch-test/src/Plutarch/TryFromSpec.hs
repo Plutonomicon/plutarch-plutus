@@ -2,10 +2,13 @@
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -ddump-deriv #-}
 
 module Plutarch.TryFromSpec (spec) where
 
 import Test.Syd
+
+import Data.Kind (Constraint)
 
 import qualified GHC.Generics as GHC
 
@@ -62,6 +65,7 @@ import Plutarch.Prelude
 import Plutarch.TryFrom (
   HSSing,
   PTryFrom (PTryFromExcess, ptryFrom),
+  PTryFromData (ptryFromData),
   hsing,
  )
 
@@ -490,17 +494,11 @@ sampleAB = pdata $ pcon $ PA (pdcons @"_0" # (pdata $ pconstant 4) #$ pdcons # (
 sampleABdata :: Term s PData
 sampleABdata = pforgetData sampleAB
 
-{-
-recoverAB :: Term s PAB
+recoverAB :: Term s (PAsData PAB)
 recoverAB = unTermCont $ do
-  (ter, exc) <- TermCont (ptryFrom sampleABdata)
-  pure exc.unwrapped
-  -}
+  (ter , _) <- TermCont (ptryFromData sampleABdata)
+  pure ter
 
-recoverAB :: Term s PAB
-recoverAB = unTermCont $ do
-  exc <- TermCont (ptryFrom sampleABdata)
-  pure $ fst exc
 
 data PAB (s :: S)
   = PA (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PByteString]))
@@ -510,3 +508,5 @@ data PAB (s :: S)
   deriving
     (PlutusType, PIsData)
     via PIsDataReprInstances PAB
+
+deriving via PAsData (PIsDataReprInstances PAB) instance PTryFromData s (PAsData PAB)

@@ -171,7 +171,7 @@ type family PDataRecordFields2 as where
 
 type family PLabelIndex (name :: Symbol) (as :: [PLabeledType]) :: Nat where
   PLabelIndex name ((name ':= a) ': as) = 0
-  PLabelIndex name (_' : as) = (PLabelIndex name as) + 1
+  PLabelIndex name (_ ': as) = (PLabelIndex name as) + 1
 
 type family PUnLabel (a :: PLabeledType) :: PType where
   PUnLabel (name ':= a) = a
