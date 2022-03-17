@@ -59,10 +59,8 @@ import Plutarch.Builtin (
  )
 import Plutarch.Prelude
 import Plutarch.TryFrom (
-  HSSing,
+  Flip,
   PTryFrom (PTryFromExcess, ptryFrom),
-  PTryFromData (ptryFromData),
-  hsing,
  )
 
 import Plutarch.ApiSpec (info, purpose)
@@ -262,14 +260,14 @@ spec = do
       "concatenate two lists, illegal (more than one output)"
         @| validator # pforgetData l1 # pforgetData l2 # invalidContext1 @-> pfails
     "example2" @\ do
-      "recovering a record succeeds" 
+      "recovering a record succeeds"
         @| recoverAB @-> psucceeds
 
 ------------------- Checking deeply, shallowly and unwrapping ----------------------
 
 checkDeep ::
   forall (target :: PType) (actual :: PType) (s :: S).
-  ( PTryFrom PData (PAsData target) s
+  ( PTryFrom PData (PAsData target)
   , PIsData actual
   , PIsData target
   ) =>
@@ -279,7 +277,7 @@ checkDeep t = unTermCont $ fst <$> TermCont (ptryFrom @PData @(PAsData target) @
 
 checkDeepUnwrap ::
   forall (target :: PType) (actual :: PType) (s :: S).
-  ( PTryFrom PData (PAsData target) s
+  ( PTryFrom PData (PAsData target)
   , PIsData actual
   , PIsData target
   ) =>
@@ -309,17 +307,17 @@ newtype PNatural (s :: S) = PMkNatural (Term s PInteger)
 pmkNatural :: Term s (PInteger :--> PNatural)
 pmkNatural = plam $ \i -> pif (i #< 0) (ptraceError "could not make natural") (pcon $ PMkNatural i)
 
-instance PTryFrom PData (PAsData PNatural) s where
-  type PTryFromExcess PData (PAsData PNatural) = HSSing "unwrapped" PNatural
+instance PTryFrom PData (PAsData PNatural) where
+  type PTryFromExcess PData (PAsData PNatural) = Flip Term PNatural
   ptryFrom opq = runTermCont $ do
     (ter, exc) <- TermCont $ ptryFrom @PData @(PAsData PInteger) opq
-    ver <- tcont $ plet $ pmkNatural #$ exc.unwrapped
-    pure $ (punsafeCoerce ter, hsing ver)
+    ver <- tcont $ plet $ pmkNatural #$ exc
+    pure $ (punsafeCoerce ter, ver)
 
 validator :: Term s PValidator
 validator = phoistAcyclic $
   plam $ \dat red ctx -> unTermCont $ do
-    trustedRedeemer <- (\(snd -> red) -> red.unwrapped) <$> (TermCont $ ptryFrom @PData @(PAsData (PBuiltinList (PAsData PNatural))) red)
+    trustedRedeemer <- (\(snd -> red) -> red) <$> (TermCont $ ptryFrom @PData @(PAsData (PBuiltinList (PAsData PNatural))) red)
     let trustedDatum :: Term _ (PBuiltinList (PAsData PNatural))
         trustedDatum = pfromData $ punsafeCoerce dat
     -- make the Datum and Redeemer trusted
@@ -494,7 +492,7 @@ sampleABdata :: Term s PData
 sampleABdata = pforgetData sampleAB
 
 recoverAB :: Term s (PAsData PAB)
-recoverAB = unTermCont $ fst <$> (tcont $ ptryFromData sampleABdata)
+recoverAB = unTermCont $ fst <$> (tcont $ ptryFrom sampleABdata)
 
 data PAB (s :: S)
   = PA (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PByteString]))
@@ -505,4 +503,4 @@ data PAB (s :: S)
     (PlutusType, PIsData)
     via PIsDataReprInstances PAB
 
-deriving via PAsData (PIsDataReprInstances PAB) instance PTryFromData s (PAsData PAB)
+deriving via PAsData (PIsDataReprInstances PAB) instance PTryFrom PData (PAsData PAB)

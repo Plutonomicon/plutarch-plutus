@@ -23,6 +23,7 @@ module Plutarch.Builtin (
   PAsData,
   pforgetData,
   ppairDataBuiltin,
+  pchooseListBuiltin,
   type PBuiltinMap,
 ) where
 

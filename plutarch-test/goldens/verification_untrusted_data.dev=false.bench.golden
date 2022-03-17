@@ -1,19 +1,19 @@
 erroneous.(String, Integer) /= (String, String) {"exBudgetCPU":2400100,"exBudgetMemory":612,"scriptSizeBytes":123}
 erroneous.[String] /= [Integer] {"exBudgetCPU":1350100,"exBudgetMemory":388,"scriptSizeBytes":101}
-erroneous.A { test := Integer, test2 := Integer } /= { test := String, test2 := Integer } {"exBudgetCPU":1200100,"exBudgetMemory":356,"scriptSizeBytes":140}
+erroneous.A { test := Integer, test2 := Integer } /= { test := String, test2 := Integer } {"exBudgetCPU":1200100,"exBudgetMemory":356,"scriptSizeBytes":108}
 erroneous.Map Int String /= Map Int Int {"exBudgetCPU":2100100,"exBudgetMemory":548,"scriptSizeBytes":165}
-erroneous.PDataSum constr 2 {"exBudgetCPU":437969,"exBudgetMemory":166,"scriptSizeBytes":110}
-erroneous.PDataSum wrong record type {"exBudgetCPU":875838,"exBudgetMemory":232,"scriptSizeBytes":190}
+erroneous.PDataSum constr 2 {"exBudgetCPU":437969,"exBudgetMemory":166,"scriptSizeBytes":111}
+erroneous.PDataSum wrong record type {"exBudgetCPU":875838,"exBudgetMemory":232,"scriptSizeBytes":193}
 working.(String, String) == (String, String) {"exBudgetCPU":8339682,"exBudgetMemory":14428,"scriptSizeBytes":123}
 working.[String] == [String] {"exBudgetCPU":8093553,"exBudgetMemory":16904,"scriptSizeBytes":114}
-working.A { test := Integer, test2 := Integer } == { test := Integer, test2 := Integer } {"exBudgetCPU":9720590,"exBudgetMemory":14348,"scriptSizeBytes":136}
-working.A { test := Integer, test2 := Integer } == [Integer] {"exBudgetCPU":9720590,"exBudgetMemory":14348,"scriptSizeBytes":136}
-working.A { test := String, test2 := Integer } == { test := String, test2 := Integer } {"exBudgetCPU":9809909,"exBudgetMemory":14648,"scriptSizeBytes":140}
+working.A { test := Integer, test2 := Integer } == { test := Integer, test2 := Integer } {"exBudgetCPU":6636946,"exBudgetMemory":11068,"scriptSizeBytes":101}
+working.A { test := Integer, test2 := Integer } == [Integer] {"exBudgetCPU":6636946,"exBudgetMemory":11068,"scriptSizeBytes":101}
+working.A { test := String, test2 := Integer } == { test := String, test2 := Integer } {"exBudgetCPU":6726265,"exBudgetMemory":11368,"scriptSizeBytes":108}
 working.Map Int String == Map Int String {"exBudgetCPU":12939479,"exBudgetMemory":23744,"scriptSizeBytes":165}
-working.PDataSum constr 0 {"exBudgetCPU":7072545,"exBudgetMemory":12070,"scriptSizeBytes":190}
-working.PDataSum constr 1 {"exBudgetCPU":8076101,"exBudgetMemory":14036,"scriptSizeBytes":190}
-recovering a record partially vs completely.partially {"exBudgetCPU":7626265,"exBudgetMemory":11560,"scriptSizeBytes":113}
-recovering a record partially vs completely.completely {"exBudgetCPU":9809909,"exBudgetMemory":14648,"scriptSizeBytes":140}
+working.PDataSum constr 0 {"exBudgetCPU":6651183,"exBudgetMemory":12542,"scriptSizeBytes":193}
+working.PDataSum constr 1 {"exBudgetCPU":7654739,"exBudgetMemory":14508,"scriptSizeBytes":193}
+recovering a record partially vs completely.partially {"exBudgetCPU":6008308,"exBudgetMemory":10372,"scriptSizeBytes":99}
+recovering a record partially vs completely.completely {"exBudgetCPU":6726265,"exBudgetMemory":11368,"scriptSizeBytes":107}
 removing the data wrapper.erroneous.(String, Integer) /= (String, String) {"exBudgetCPU":2400100,"exBudgetMemory":612,"scriptSizeBytes":117}
 removing the data wrapper.erroneous.[String] /= [Integer] {"exBudgetCPU":1350100,"exBudgetMemory":388,"scriptSizeBytes":114}
 removing the data wrapper.working.(String, String) == (String, String) {"exBudgetCPU":8339682,"exBudgetMemory":14428,"scriptSizeBytes":123}
@@ -29,4 +29,4 @@ example.concatenate two lists, legal {"exBudgetCPU":55650750,"exBudgetMemory":10
 example.concatenate two lists, illegal (list too short) {"exBudgetCPU":48177778,"exBudgetMemory":84825,"scriptSizeBytes":707}
 example.concatenate two lists, illegal (wrong elements in list) {"exBudgetCPU":55412566,"exBudgetMemory":105051,"scriptSizeBytes":713}
 example.concatenate two lists, illegal (more than one output) {"exBudgetCPU":35832714,"exBudgetMemory":63544,"scriptSizeBytes":734}
-example2.recovering a record succeeds {"exBudgetCPU":9525281,"exBudgetMemory":15590,"scriptSizeBytes":285}
+example2.recovering a record succeeds {"exBudgetCPU":9103919,"exBudgetMemory":16062,"scriptSizeBytes":287}

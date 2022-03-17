@@ -164,4 +164,4 @@ executable plutarch-test
     cpp-options: -DDevelopment
 
   -- FIXME remove -Wwarn=deprecations
-  ghc-options:    -threaded -rtsopts -with-rtsopts=-N -Wwarn=deprecations -Wwarn=missing-home-modules
+  ghc-options:    -threaded -rtsopts -with-rtsopts=-N -Wwarn=deprecations

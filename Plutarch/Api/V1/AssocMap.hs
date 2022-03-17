@@ -9,9 +9,8 @@ module Plutarch.Api.V1.AssocMap (
 import Data.Map (Map, toList)
 
 import Plutarch.TryFrom (
-  HRecP (HSNil),
+  HRecP (HNil),
   PTryFrom (PTryFromExcess, ptryFrom),
-  RecKind (HNil),
  )
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified PlutusTx.AssocMap as PlutusMap
@@ -93,9 +92,9 @@ instance
   ( POrd k
   , PIsData k
   ) =>
-  PTryFrom (PBuiltinMap k v) (PMap k v) s
+  PTryFrom (PBuiltinMap k v) (PMap k v)
   where
-  type PTryFromExcess (PBuiltinMap k v) (PMap k v) = HRecP 'HNil
+  type PTryFromExcess (PBuiltinMap k v) (PMap k v) = HRecP '[]
   ptryFrom oMap = runTermCont $ do
     _ <-
       tcont $
@@ -114,4 +113,4 @@ instance
                           perror
           )
             # oMap
-    pure ((pcon . PMap) oMap, HSNil)
+    pure ((pcon . PMap) oMap, HNil)
