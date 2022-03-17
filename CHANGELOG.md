@@ -92,11 +92,17 @@
 
   Added by: [#329](https://github.com/Plutonomicon/plutarch/pull/329)
 
-- Add `POrd` and `PEq` derivation for data encoded types via `PIsDataReprInstances`.
+- `plutarch-extra` export merged Prelude
+
+  Module: `Plutarch.PPrelude`
+
+  Added by: [#356](https://github.com/Plutonomicon/plutarch/pull/356)
+
+- Add `PConstant` instance for `Maybe`, with corresponding `PLift` instance for `PMaybeData`.
 
   Added by: [#371](https://github.com/Plutonomicon/plutarch/pull/371)
 
-- Add `PConstant` instance for `Maybe`, with corresponding `PLift` instance for `PMaybeData`.
+- Add `POrd` and `PEq` derivation for data encoded types via `PIsDataReprInstances`.
 
   Added by: [#371](https://github.com/Plutonomicon/plutarch/pull/371)
 

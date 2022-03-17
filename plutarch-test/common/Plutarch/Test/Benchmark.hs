@@ -1,6 +1,9 @@
 module Plutarch.Test.Benchmark (
-  Benchmark,
+  -- * Working with `Benchmark` type
+  Benchmark (Benchmark, exBudgetCPU, exBudgetMemory, scriptSizeBytes),
   ScriptSizeBytes,
+
+  -- * Producing benchmark values
   mkBenchmark,
   scriptSize,
 ) where
