@@ -1,6 +1,7 @@
 {-# LANGUAGE ImpredicativeTypes #-}
 
 module Plutarch.Test.Golden (
+  -- * DSL
   pgoldenSpec,
   (@|),
   (@\),
@@ -8,7 +9,14 @@ module Plutarch.Test.Golden (
   (@:->),
   TermExpectation,
   PlutarchGoldens,
+
+  -- * Golden key
+  GoldenKey,
+  currentGoldenKey,
   goldenKeyString,
+  goldenPath,
+
+  -- * Evaluation
   evalScriptAlwaysWithBenchmark,
   compileD,
 ) where
