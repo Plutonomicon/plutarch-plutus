@@ -9,28 +9,19 @@ module Plutarch.Internal.PlutusType (
 ) where
 
 import Data.Kind (Type)
-import Data.SOP.Constraint (AllZipF)
 import GHC.TypeLits (ErrorMessage (Text), Nat, TypeError, type (+))
 import Generics.SOP (
   All,
-  AllZip,
-  AllZipN,
-  Generic (..),
-  I,
-  LiftedCoercible,
-  NP (..),
-  NS (..),
-  Prod,
+  Generic (Code),
+  NP (Nil, (:*)),
+  NS (S, Z),
   SOP (SOP),
-  SameShapeAs,
   Top,
-  hcoerce,
-  unSOP,
  )
 import Plutarch.DataRepr.Internal.HList.Utils (IndexList)
 import Plutarch.Internal (PType, S, Term, pforce, plam', punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
-import Plutarch.Internal.Generic (MkSum (mkSum))
+import Plutarch.Internal.Generic (MkSum (mkSum), PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Internal.PLam ((#))
 import Plutarch.Internal.TypeFamily (ToPType, ToPType2)
 
@@ -99,27 +90,24 @@ class (PCon a, PMatch a) => PlutusType (a :: PType) where
   default pcon' ::
     forall s b code pcode.
     ( code ~ Code (a s)
-    , pcode ~ ToPType2 code
-    , Generic (a s)
+    , pcode ~ PCode s a
+    , PGeneric s a
     , GPCon pcode b s
     , PLamL (ScottList' s pcode b) b s
     , ScottFn' (ScottList s pcode b) b ~ PInner a b
     , ScottFn (ScottList' s pcode b) b ~ PInner a b
-    , AllZipF (AllZip (LiftedCoercible I (Term s))) code pcode
-    , SameShapeAs code pcode
-    , SameShapeAs pcode code
     , All Top pcode
     ) =>
     a s ->
     Term s (PInner a b)
-  pcon' x = gpcon @a @b $ from x
+  pcon' x = gpcon @a @b $ gpfrom x
 
   pmatch' :: forall s b. (Term s (PInner a b)) -> (a s -> Term s b) -> Term s b
   default pmatch' ::
     forall s b code pcode.
     ( code ~ Code (a s)
-    , pcode ~ ToPType2 code
-    , Generic (a s)
+    , pcode ~ PCode s a
+    , PGeneric s a
     , AppL b (ScottList' s pcode b)
     , GPMatch a 0 code b s
     , PInner a b ~ ScottFn (ScottList' s pcode b) b
@@ -127,7 +115,7 @@ class (PCon a, PMatch a) => PlutusType (a :: PType) where
     (Term s (PInner a b)) ->
     (a s -> Term s b) ->
     Term s b
-  pmatch' x f = gpmatch @a x (f . to)
+  pmatch' x f = gpmatch @a x (f . gpto)
 
 instance {-# OVERLAPPABLE #-} PlutusType a => PMatch a where
   pmatch x f = pmatch' (punsafeCoerce x) f
@@ -147,23 +135,18 @@ class PMatch a where
 gpcon ::
   forall a c s code pcode.
   ( PlutusType a
-  , Generic (a s)
+  , PGeneric s a
   , code ~ Code (a s)
-  , pcode ~ ToPType2 code
+  , pcode ~ PCode s a
   , GPCon pcode c s
   , PLamL (ScottList' s pcode c) c s
   , ScottFn (ScottList' s pcode c) c ~ ScottFn' (ScottList s pcode c) c
-  , AllZipN (Prod SOP) (LiftedCoercible I (Term s)) code pcode
   ) =>
-  SOP I (Code (a s)) ->
+  SOP (Term s) pcode ->
   Term s (ScottFn' (ScottList s pcode c) c)
-gpcon val =
+gpcon (SOP val) =
   plamL @(ScottList' s pcode c) @c $ \(f :: NP (Term s) (ScottList' s pcode c)) ->
-    gpcon' @pcode @c @s f $
-      unSOP $ pSop val
-  where
-    pSop :: AllZipN (Prod SOP) (LiftedCoercible I (Term s)) xss (ToPType2 xss) => SOP I xss -> SOP (Term s) (ToPType2 xss)
-    pSop = hcoerce
+    gpcon' @pcode @c @s f val
 
 {- |
   `gpcon'`, given a *partial* scott encoding (as a `PLamL`) and a sum choice, applies
@@ -188,14 +171,14 @@ instance (GPCon xs c s, AppL c x) => GPCon (x ': xs) c s where
 -}
 gpmatch ::
   forall a s c code pcode.
-  ( Generic (a s)
+  ( PGeneric s a
   , code ~ Code (a s)
-  , pcode ~ ToPType2 code
+  , pcode ~ PCode s a
   , AppL c (ScottList' s pcode c)
   , GPMatch a 0 code c s
   ) =>
   Term s (ScottFn (ScottList' s pcode c) c) ->
-  (SOP I (Code (a s)) -> Term s c) ->
+  (SOP (Term s) pcode -> Term s c) ->
   Term s c
 gpmatch x f =
   x `appL` gpmatch' @a @0 @code @c @s f
@@ -205,39 +188,25 @@ gpmatch x f =
   scott encoding function.
 -}
 class GPMatch (a :: PType) (n :: Nat) (xss :: [[Type]]) (c :: PType) (s :: S) where
-  gpmatch' :: (SOP I (Code (a s)) -> Term s c) -> NP (Term s) (ScottList' s (ToPType2 xss) c)
+  gpmatch' :: (SOP (Term s) (PCode s a) -> Term s c) -> NP (Term s) (ScottList' s (ToPType2 xss) c)
 
 instance GPMatch a n '[] c s where
   gpmatch' _ = Nil
 
 instance
   ( code ~ Code (a s)
-  , xs ~ IndexList n code
+  , ToPType xs ~ IndexList n (PCode s a)
   , GPMatch a (n + 1) xss c s
   , PLamL (ToPType xs) c s
-  , MkSum n (Code (a s))
-  , AllZipF (LiftedCoercible (Term s) I) (ToPType xs) xs
-  , SameShapeAs xs (ToPType xs)
-  , SameShapeAs (ToPType xs) xs
+  , MkSum n (PCode s a) (Term s)
   , All Top (ToPType xs)
   , All Top xs
   ) =>
   GPMatch a n (xs : xss) c s
   where
   gpmatch' f =
-    plamL @(ToPType xs) @c (f . SOP . mkSum @n @(Code (a s)) . unPsop)
+    plamL @(ToPType xs) @c (f . SOP . mkSum @_ @n @(PCode s a) @(Term s))
       :* gpmatch' @a @(n + 1) @xss @c @s f
-    where
-      unPsop ::
-        ( AllZipF (LiftedCoercible (Term s) I) (ToPType xs) xs
-        , SameShapeAs xs (ToPType xs)
-        , SameShapeAs (ToPType xs) xs
-        , All Top (ToPType xs)
-        , All Top xs
-        ) =>
-        NP (Term s) (ToPType xs) ->
-        NP I xs
-      unPsop = hcoerce
 
 {- |
   `plamL` is like `plamL'`, but pdelays the 0-arity case.

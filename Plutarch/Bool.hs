@@ -19,7 +19,7 @@ module Plutarch.Bool (
   por',
 ) where
 
-import Data.Foldable (foldl')
+import Data.List.NonEmpty (nonEmpty)
 import Generics.SOP (
   All,
   All2,
@@ -32,7 +32,7 @@ import Generics.SOP (
   hcliftA2,
  )
 import Plutarch.Internal (punsafeAsClosedTerm)
-import Plutarch.Internal.Generic (PCode, PGeneric, pfrom)
+import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.Other (
   DerivePNewtype,
   PDelayed,
@@ -61,6 +61,7 @@ import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinBool'
 data PBool (s :: S) = PTrue | PFalse
+  deriving stock (Show)
 
 instance PUnsafeLiftDecl PBool where type PLifted PBool = Bool
 deriving via (DerivePConstantDirect Bool PBool) instance (PConstant Bool)
@@ -110,7 +111,7 @@ pif b case_true case_false = pmatch b $ \case
 
 -- | Boolean negation for 'PBool' terms.
 pnot :: Term s (PBool :--> PBool)
-pnot = phoistAcyclic $ plam $ \x -> pif x (pcon PFalse) $ pcon PTrue
+pnot = phoistAcyclic $ plam $ \x -> pif' # x # pcon PFalse # pcon PTrue
 
 -- | Lazily evaluated boolean and for 'PBool' terms.
 infixr 3 #&&
@@ -134,11 +135,18 @@ pand' = phoistAcyclic $ plam $ \x y -> pif' # x # y # (pcon PFalse)
 
 -- | Hoisted, Plutarch level, lazily evaluated boolean or function.
 por :: Term s (PBool :--> PDelayed PBool :--> PDelayed PBool)
-por = phoistAcyclic $ plam $ \x y -> pif' # x # (phoistAcyclic $ pdelay $ pcon PTrue) # y
+por = phoistAcyclic $ plam $ \x -> pif' # x # (phoistAcyclic $ pdelay $ pcon PTrue)
 
 -- | Hoisted, Plutarch level, strictly evaluated boolean or function.
 por' :: Term s (PBool :--> PBool :--> PBool)
-por' = phoistAcyclic $ plam $ \x y -> pif' # x # (pcon PTrue) # y
+por' = phoistAcyclic $ plam $ \x -> pif' # x # (pcon PTrue)
+
+-- | Like Haskell's `and` but for Plutarch terms
+pands :: [Term s PBool] -> Term s PBool
+pands ts' =
+  case nonEmpty ts' of
+    Nothing -> pcon PTrue
+    Just ts -> foldl1 (#&&) ts
 
 -- | Generic version of (#==)
 gpeq ::
@@ -154,7 +162,7 @@ gpeq =
       plam $ \x y ->
         pmatch x $ \x' ->
           pmatch y $ \y' ->
-            gpeq' @t (pfrom x') (pfrom y')
+            gpeq' @t (gpfrom x') (gpfrom y')
 
 gpeq' ::
   forall a s.
@@ -167,8 +175,7 @@ gpeq' (SOP c1) (SOP c2) =
   where
     eqProd :: All PEq xs => NP (Term s) xs -> NP (Term s) xs -> Term s PBool
     eqProd p1 p2 =
-      foldl' (#&&) (pcon PTrue) $
-        hcollapse $ hcliftA2 (Proxy :: Proxy PEq) eqTerm p1 p2
+      pands $ hcollapse $ hcliftA2 (Proxy :: Proxy PEq) eqTerm p1 p2
       where
         eqTerm :: forall a. PEq a => Term s a -> Term s a -> K (Term s PBool) a
         eqTerm a b =

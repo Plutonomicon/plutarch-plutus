@@ -25,7 +25,8 @@ checking PValue and PMap for validity.PMap.invalid1 {"exBudgetCPU":2880288,"exBu
 checking PValue and PMap for validity.PMap.invalid2 {"exBudgetCPU":12645264,"exBudgetMemory":21418,"scriptSizeBytes":190}
 checking PValue and PMap for validity.PValue.valid0 {"exBudgetCPU":7607387,"exBudgetMemory":19388,"scriptSizeBytes":137}
 checking PValue and PMap for validity.PValue.invalid1 {"exBudgetCPU":2310477,"exBudgetMemory":521,"scriptSizeBytes":153}
-example.concatenate two lists, legal {"exBudgetCPU":56427118,"exBudgetMemory":107515,"scriptSizeBytes":1085}
-example.concatenate two lists, illegal (list too short) {"exBudgetCPU":48627778,"exBudgetMemory":84921,"scriptSizeBytes":1078}
-example.concatenate two lists, illegal (wrong elements in list) {"exBudgetCPU":55862566,"exBudgetMemory":105147,"scriptSizeBytes":1085}
-example.concatenate two lists, illegal (more than one output) {"exBudgetCPU":35982714,"exBudgetMemory":63576,"scriptSizeBytes":1106}
+example.concatenate two lists, legal {"exBudgetCPU":56427118,"exBudgetMemory":107515,"scriptSizeBytes":1115}
+example.concatenate two lists, illegal (list too short) {"exBudgetCPU":48627778,"exBudgetMemory":84921,"scriptSizeBytes":1108}
+example.concatenate two lists, illegal (wrong elements in list) {"exBudgetCPU":55862566,"exBudgetMemory":105147,"scriptSizeBytes":1115}
+example.concatenate two lists, illegal (more than one output) {"exBudgetCPU":35982714,"exBudgetMemory":63576,"scriptSizeBytes":1136}
+example2.recovering a record succeeds {"exBudgetCPU":9525281,"exBudgetMemory":15590,"scriptSizeBytes":285}

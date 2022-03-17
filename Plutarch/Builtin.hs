@@ -63,7 +63,20 @@ import Plutarch.Lift (
   pconstantFromRepr,
   pconstantToRepr,
  )
-import Plutarch.List (PListLike (..), plistEquals)
+import Plutarch.List (
+  PListLike (
+    PElemConstraint,
+    pcons,
+    pelimList,
+    phead,
+    pnil,
+    pnull,
+    ptail
+  ),
+  plistEquals,
+  pshowList,
+ )
+import Plutarch.Show (PShow (pshow'))
 import Plutarch.Unit (PUnit)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeFrom)
 import qualified PlutusCore as PLC
@@ -103,6 +116,9 @@ ppairDataBuiltin = punsafeBuiltin PLC.MkPairData
 data PBuiltinList (a :: PType) (s :: S)
   = PCons (Term s a) (Term s (PBuiltinList a))
   | PNil
+
+instance (PShow a, PLift a) => PShow (PBuiltinList a) where
+  pshow' _ x = pshowList @PBuiltinList @a # x
 
 pheadBuiltin :: Term s (PBuiltinList a :--> a)
 pheadBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList

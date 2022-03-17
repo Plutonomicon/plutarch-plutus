@@ -1,7 +1,7 @@
 pnull.empty {"exBudgetCPU":1162382,"exBudgetMemory":3532,"scriptSizeBytes":64}
-pnull.nonempty {"exBudgetCPU":16261571,"exBudgetMemory":40093,"scriptSizeBytes":85}
+pnull.nonempty {"exBudgetCPU":16202025,"exBudgetMemory":39893,"scriptSizeBytes":84}
 pconcat.identity {"exBudgetCPU":2054437,"exBudgetMemory":7000,"scriptSizeBytes":64}
-plength {"exBudgetCPU":27522836,"exBudgetMemory":71312,"scriptSizeBytes":95}
+plength {"exBudgetCPU":27433517,"exBudgetMemory":71012,"scriptSizeBytes":92}
 pelem {"exBudgetCPU":21833687,"exBudgetMemory":56502,"scriptSizeBytes":97}
 pall {"exBudgetCPU":16886804,"exBudgetMemory":42193,"scriptSizeBytes":100}
 plistEquals.true {"exBudgetCPU":46644574,"exBudgetMemory":122904,"scriptSizeBytes":126}

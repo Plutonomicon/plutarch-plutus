@@ -6,6 +6,7 @@
 - [Overview](#overview)
   - [Compiling and Running](#compiling-and-running)
     - [Common Extensions and GHC options](#common-extensions-and-ghc-options)
+    - [Using the Plutarch Prelude](#using-the-plutarch-prelude)
     - [Evaluation](#evaluation)
   - [Syntax](#syntax)
     - [Constants](#constants)
@@ -99,6 +100,18 @@
 ### Common Extensions and GHC options
 
 You generally want to adhere to the same extensions and GHC options the [Plutarch repo](https://github.com/Plutonomicon/plutarch/blob/master/plutarch.cabal) uses.
+
+### Using the Plutarch Prelude
+
+Plutarch exports a Prelude (`Plutarch.Prelude`) that contains the most commonly used Plutarch functions, types and constructors.
+
+The Plutarch Prelude `Plutarch.Prelude` has no overlap with `base` Prelude, which is the reason why you can use both of them together
+without trouble. If you want to avoid importing `Plutarch.Prelude` in each of your modules, add the following to your `*.cabal` file:
+
+```haskell
+  mixins: base hiding (Prelude)
+                    , plutarch-preludes (PPrelude as Prelude)
+```
 
 ### Evaluation
 

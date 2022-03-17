@@ -29,3 +29,4 @@ example.concatenate two lists, legal {"exBudgetCPU":55650750,"exBudgetMemory":10
 example.concatenate two lists, illegal (list too short) {"exBudgetCPU":48177778,"exBudgetMemory":84825,"scriptSizeBytes":707}
 example.concatenate two lists, illegal (wrong elements in list) {"exBudgetCPU":55412566,"exBudgetMemory":105051,"scriptSizeBytes":713}
 example.concatenate two lists, illegal (more than one output) {"exBudgetCPU":35832714,"exBudgetMemory":63544,"scriptSizeBytes":734}
+example2.recovering a record succeeds {"exBudgetCPU":9525281,"exBudgetMemory":15590,"scriptSizeBytes":285}

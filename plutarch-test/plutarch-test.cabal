@@ -80,6 +80,7 @@ common deps
     , generics-sop
     , mtl
     , plutarch
+    , plutarch-extra
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
@@ -94,23 +95,34 @@ common deps
 
 library
   import:          c, deps
-  hs-source-dirs:  src
+  hs-source-dirs:  common
   exposed-modules: Plutarch.Test
   other-modules:
     Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
 
+  if flag(development)
+    cpp-options: -DDevelopment
+
 executable plutarch-test
   import:         c, deps
   main-is:        Main.hs
-  hs-source-dirs: src
+  hs-source-dirs: plutarch-base plutarch-extra common ./.
   build-depends:
     , base16-bytestring
     , cborg
     , containers
+    , plutarch-test
     , rank2classes
     , serialise
+
+  if impl(ghc <9.0)
+    build-depends:
+      , plutus-tx-plugin
+      , shrinker
+
+    other-modules: Plutarch.FFISpec
 
   if impl(ghc >=9.0)
     other-modules:
@@ -120,10 +132,13 @@ executable plutarch-test
       Plutarch.TryFromSpec
 
   other-modules:
+    BaseSpec
+    ExtraSpec
     Plutarch.ApiSpec
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
     Plutarch.EitherSpec
+    Plutarch.HelloSpec
     Plutarch.IntegerSpec
     Plutarch.LiftSpec
     Plutarch.ListSpec
@@ -135,6 +150,7 @@ executable plutarch-test
     Plutarch.RationalSpec
     Plutarch.RecursionSpec
     Plutarch.ScriptsSpec
+    Plutarch.ShowSpec
     Plutarch.StringSpec
     Plutarch.Test
     Plutarch.Test.Benchmark
@@ -143,10 +159,9 @@ executable plutarch-test
     Plutarch.TraceSpec
     Plutarch.UnitSpec
     Plutarch.UPLCSpec
-    Spec
 
   if flag(development)
     cpp-options: -DDevelopment
 
   -- FIXME remove -Wwarn=deprecations
-  ghc-options:    -threaded -rtsopts -with-rtsopts=-N -Wwarn=deprecations
+  ghc-options:    -threaded -rtsopts -with-rtsopts=-N -Wwarn=deprecations -Wwarn=missing-home-modules

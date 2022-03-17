@@ -2,13 +2,10 @@
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# OPTIONS_GHC -ddump-deriv #-}
 
 module Plutarch.TryFromSpec (spec) where
 
 import Test.Syd
-
-import Data.Kind (Constraint)
 
 import qualified GHC.Generics as GHC
 
@@ -34,7 +31,6 @@ import qualified PlutusTx.AssocMap as PlutusMap
 
 import Plutarch.Unsafe (
   punsafeCoerce,
-  punsafeFrom,
  )
 
 import Plutarch
@@ -265,6 +261,9 @@ spec = do
         @| validator # pforgetData l1 # pforgetData l4 # validContext0 @-> pfails
       "concatenate two lists, illegal (more than one output)"
         @| validator # pforgetData l1 # pforgetData l2 # invalidContext1 @-> pfails
+    "example2" @\ do
+      "recovering a record succeeds" 
+        @| recoverAB @-> psucceeds
 
 ------------------- Checking deeply, shallowly and unwrapping ----------------------
 
@@ -495,10 +494,7 @@ sampleABdata :: Term s PData
 sampleABdata = pforgetData sampleAB
 
 recoverAB :: Term s (PAsData PAB)
-recoverAB = unTermCont $ do
-  (ter , _) <- TermCont (ptryFromData sampleABdata)
-  pure ter
-
+recoverAB = unTermCont $ fst <$> (tcont $ ptryFromData sampleABdata)
 
 data PAB (s :: S)
   = PA (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PByteString]))
