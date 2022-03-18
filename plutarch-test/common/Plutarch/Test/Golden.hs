@@ -10,11 +10,13 @@ module Plutarch.Test.Golden (
   TermExpectation,
   PlutarchGoldens,
 
-  -- * Golden key
+  -- * Golden key and path
   GoldenKey,
   currentGoldenKey,
   goldenKeyString,
-  goldenPath,
+  mkGoldenKeyFromSpecPath,
+  defaultGoldenBasePath,
+  goldenTestPath,
 
   -- * Evaluation
   evalScriptAlwaysWithBenchmark,
@@ -133,15 +135,23 @@ goldenKeyString (GoldenKey s) = T.unpack s
 instance Semigroup GoldenKey where
   GoldenKey s1 <> GoldenKey s2 = GoldenKey $ s1 <> "." <> s2
 
+currentGoldenKey :: HasCallStack => forall (outers :: [Type]) inner. TestDefM outers inner GoldenKey
+currentGoldenKey = do
+  mkGoldenKeyFromSpecPath <$> getTestDescriptionPath
+
+mkGoldenKeyFromSpecPath :: HasCallStack => [Text] -> GoldenKey
+mkGoldenKeyFromSpecPath path =
+  case nonEmpty path of
+    Nothing -> error "cannot use currentGoldenKey from top-level spec"
+    Just anc ->
+      case nonEmpty (NE.drop 1 . NE.reverse $ anc) of
+        Nothing -> error "cannot use currentGoldenKey from top-level spec (after sydtest-discover)"
+        Just path ->
+          sconcat $ fmap GoldenKey path
+
 goldenPath :: FilePath -> GoldenKey -> FilePath
 goldenPath baseDir (GoldenKey k) =
   baseDir </> T.unpack k <> ".golden"
-
--- | Group multiple goldens values in the same file
-combineGoldens :: [(GoldenKey, Text)] -> Text
-combineGoldens xs =
-  T.intercalate "\n" $
-    (\(GoldenKey k, v) -> k <> " " <> v) <$> xs
 
 type PlutarchGoldens = ListSyntax (GoldenKey, GoldenValue)
 
@@ -173,36 +183,59 @@ infixr 0 @|
   Hierarchy is represented by intercalating with a dot; for instance, the key
   for 'qux' will be "bar.qux".
 -}
-pgoldenSpec :: HasCallStack => ListSyntax (GoldenKey, GoldenValue) -> Spec
+pgoldenSpec :: HasCallStack => PlutarchGoldens -> Spec
 pgoldenSpec map = do
-  name <- currentGoldenKey
+  base <- currentGoldenKey
   let bs = runListSyntax map
-      goldenPathWith k = goldenPath "goldens" $ name <> k
+  -- Golden tests
   describe "golden" $ do
-    it "uplc" $
-      pureGoldenTextFile (goldenPathWith "uplc") $
-        combineGoldens $ fmap goldenValueUplcPreEval <$> bs
-    it "uplc.eval" $
-      pureGoldenTextFile (goldenPathWith "uplc.eval") $
-        combineGoldens $ fmap goldenValueUplcPostEval <$> bs
-    it "bench" $
-      pureGoldenTextFile (goldenPathWith "bench") $
-        combineGoldens $ fmap goldenValueBench <$> bs
+    goldenTestSpec base bs `mapM_` [minBound .. maxBound]
+  -- Assertion tests (if any)
   let asserts = flip mapMaybe bs $ \(k, v) -> do
         (k,) . (\f -> f (goldenValueEvaluated v) $ goldenValueBenchVal v) <$> goldenValueExpectation v
   unless (null asserts) $ do
     forM_ asserts $ \(k, v) ->
       it (goldenKeyString $ "<golden>" <> k <> "assert") v
 
-currentGoldenKey :: HasCallStack => forall (outers :: [Type]) inner. TestDefM outers inner GoldenKey
-currentGoldenKey = do
-  fmap nonEmpty getTestDescriptionPath >>= \case
-    Nothing -> error "cannot use currentGoldenKey from top-level spec"
-    Just anc ->
-      case nonEmpty (NE.drop 1 . NE.reverse $ anc) of
-        Nothing -> error "cannot use currentGoldenKey from top-level spec (after sydtest-discover)"
-        Just path ->
-          pure $ sconcat $ fmap GoldenKey path
+data GoldenTest
+  = -- | The unevaluated UPLC (compiled target of Plutarch term)
+    UPLCPreEval
+  | -- | The evaluated UPLC (evaluated result of Plutarch term)
+    UPLCPostEval
+  | -- | Benchmark of Plutarch term (will never fail)
+    Bench
+  deriving stock (Eq, Show, Ord, Enum, Bounded)
+
+goldenTestKey :: GoldenTest -> GoldenKey
+goldenTestKey = \case
+  UPLCPreEval -> "uplc"
+  UPLCPostEval -> "uplc.eval"
+  Bench -> "bench"
+
+defaultGoldenBasePath :: FilePath
+defaultGoldenBasePath = "goldens"
+
+goldenTestPath :: GoldenKey -> GoldenTest -> FilePath
+goldenTestPath base gt =
+  goldenPath defaultGoldenBasePath $ base <> goldenTestKey gt
+
+goldenTestVal :: GoldenTest -> GoldenValue -> Text
+goldenTestVal t v = case t of
+  UPLCPreEval -> goldenValueUplcPreEval v
+  UPLCPostEval -> goldenValueUplcPostEval v
+  Bench -> goldenValueBench v
+
+goldenTestSpec :: GoldenKey -> [(GoldenKey, GoldenValue)] -> GoldenTest -> Spec
+goldenTestSpec base vals gt = do
+  it (goldenKeyString $ goldenTestKey gt) $
+    pureGoldenTextFile (goldenTestPath base gt) $
+      combineGoldens $ fmap (goldenTestVal gt) <$> vals
+  where
+    -- Group multiple goldens values in the same file
+    combineGoldens :: [(GoldenKey, Text)] -> Text
+    combineGoldens xs =
+      T.intercalate "\n" $
+        (\(GoldenKey k, v) -> k <> " " <> v) <$> xs
 
 {- | Like `evalScript` but doesn't throw `EvalError`, and returns `Benchmark`.
 
