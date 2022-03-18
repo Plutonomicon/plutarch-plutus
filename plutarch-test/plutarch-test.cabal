@@ -108,7 +108,7 @@ library
 executable plutarch-test
   import:         c, deps
   main-is:        Main.hs
-  hs-source-dirs: plutarch-base plutarch-extra common ./.
+  hs-source-dirs: plutarch-base plutarch-extra common conditional ./.
   build-depends:
     , base16-bytestring
     , cborg
@@ -127,7 +127,6 @@ executable plutarch-test
     other-modules:
       Plutarch.FieldSpec
       Plutarch.MonadicSpec
-      Plutarch.RecSpec
 
   other-modules:
     BaseSpec
@@ -146,6 +145,7 @@ executable plutarch-test
     Plutarch.PLamSpec
     Plutarch.PlutusTypeSpec
     Plutarch.RationalSpec
+    Plutarch.RecSpec
     Plutarch.RecursionSpec
     Plutarch.ScriptsSpec
     Plutarch.ShowSpec
