@@ -2,7 +2,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Api.V1.AssocMap (
-  PMap,
+  PMap (PMap),
   pmkPMap,
 ) where
 

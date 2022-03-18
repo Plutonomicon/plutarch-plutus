@@ -20,6 +20,9 @@ removing the data wrapper.working.(String, String) == (String, String) {"exBudge
 removing the data wrapper.working.[String] == [String] {"exBudgetCPU":8093553,"exBudgetMemory":16904,"scriptSizeBytes":114}
 removing the data wrapper.partial checks.check whole structure {"exBudgetCPU":287941468,"exBudgetMemory":531268,"scriptSizeBytes":1524}
 removing the data wrapper.partial checks.check structure partly {"exBudgetCPU":101880233,"exBudgetMemory":145544,"scriptSizeBytes":1494}
+removing the data wrapper.recovering a nested record.succeeds {"exBudgetCPU":6784676,"exBudgetMemory":12036,"scriptSizeBytes":107}
+removing the data wrapper.recovering a nested record.fails {"exBudgetCPU":1500100,"exBudgetMemory":420,"scriptSizeBytes":107}
+removing the data wrapper.recovering a nested record.sample usage contains the right value {"exBudgetCPU":5874814,"exBudgetMemory":10877,"scriptSizeBytes":97}
 checking PValue and PMap for validity.PMap.valid0 {"exBudgetCPU":13804861,"exBudgetMemory":25916,"scriptSizeBytes":169}
 checking PValue and PMap for validity.PMap.invalid1 {"exBudgetCPU":2880288,"exBudgetMemory":678,"scriptSizeBytes":169}
 checking PValue and PMap for validity.PMap.invalid2 {"exBudgetCPU":12645264,"exBudgetMemory":21418,"scriptSizeBytes":190}

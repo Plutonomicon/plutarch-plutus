@@ -1,16 +1,16 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE OverloadedRecordDot #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.TryFromSpec (spec) where
 
-import Test.Syd
-
+-- Haskell imports
 import qualified GHC.Generics as GHC
 
 import Generics.SOP (Generic, I (I))
 
+import Test.Syd
+
+-- Plutus and PlutusTx imports
 import Plutus.V1.Ledger.Api (
   Address (Address),
   Credential (ScriptCredential),
@@ -22,6 +22,9 @@ import Plutus.V1.Ledger.Api (
   TxOut (TxOut, txOutAddress, txOutDatumHash, txOutValue),
  )
 
+import Plutus.V1.Ledger.Value (Value)
+import qualified Plutus.V1.Ledger.Value as Value
+
 import PlutusTx (
   Data (B, Constr, I),
  )
@@ -29,11 +32,26 @@ import PlutusTx (
 import PlutusTx.AssocMap (Map)
 import qualified PlutusTx.AssocMap as PlutusMap
 
+-- Plutarch imports
+import Plutarch.Prelude
+
+import Plutarch.Test (
+  passert,
+  pfails,
+  pgoldenSpec,
+  plutarchDevFlagDescribe,
+  psucceeds,
+  (@->),
+  (@\),
+  (@|),
+ )
+
+import Plutarch (ClosedTerm, popaque)
+
 import Plutarch.Unsafe (
   punsafeCoerce,
  )
 
-import Plutarch
 import Plutarch.Api.V1 (
   PAddress,
   PCurrencySymbol,
@@ -52,24 +70,23 @@ import Plutarch.Api.V1 (
   PValidator,
   PValue,
  )
+
 import Plutarch.Builtin (
   PBuiltinMap,
   pforgetData,
   ppairDataBuiltin,
  )
-import Plutarch.Prelude
+
 import Plutarch.TryFrom (
   Flip,
   PTryFrom (PTryFromExcess, ptryFrom),
+  ptryFromData,
  )
 
 import Plutarch.ApiSpec (info, purpose)
 import qualified Plutarch.ApiSpec as Api
 
 import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
-import Plutarch.Test
-import Plutus.V1.Ledger.Value (Value)
-import qualified Plutus.V1.Ledger.Value as Value
 
 spec :: Spec
 spec = do
@@ -158,13 +175,13 @@ spec = do
           @(PDataRecord '["foo" ':= PInteger, "bar" ':= PData])
           @(PDataRecord '["foo" ':= PInteger, "bar" ':= PByteString])
           (pdata $ pdcons @"foo" # (pdata $ pconstant 3) #$ pdcons @"bar" # (pdata $ pconstant "baz") # pdnil)
-          @-> psucceeds
+        @-> psucceeds
       "completely"
         @| checkDeep
           @(PDataRecord '["foo" ':= PInteger, "bar" ':= PByteString])
           @(PDataRecord '["foo" ':= PInteger, "bar" ':= PByteString])
           (pdata (pdcons @"foo" # (pdata $ pconstant 3) #$ pdcons @"bar" # (pdata $ pconstant "baz") # pdnil))
-          @-> psucceeds
+        @-> psucceeds
     "removing the data wrapper" @\ do
       "erroneous" @\ do
         "(String, Integer) /= (String, String)"
@@ -201,6 +218,21 @@ spec = do
         -- ... than this
         "check structure partly"
           @| partialCheck @-> psucceeds
+      "recovering a nested record" @\ do
+        "succeeds"
+          @| checkDeep
+            @(PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])])
+            @(PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])])
+            (pdata $ pdcons # (pdata $ pdcons # pdata (pconstant 42) # pdnil) # pdnil)
+          @-> psucceeds
+        "fails"
+          @| checkDeep
+            @(PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PByteString])])
+            @(PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])])
+            (pdata $ pdcons # (pdata $ pdcons # pdata (pconstant 42) # pdnil) # pdnil)
+          @-> pfails
+        "sample usage contains the right value"
+          @| pconstant 42 #== theField @-> passert
     "checking PValue and PMap for validity" @\ do
       "PMap" @\ do
         let ms0 :: Term _ (PBuiltinMap PInteger PUnit)
@@ -266,14 +298,14 @@ spec = do
 ------------------- Checking deeply, shallowly and unwrapping ----------------------
 
 checkDeep ::
-  forall (target :: PType) (actual :: PType) (s :: S).
+  forall (target :: PType) (actual :: PType).
   ( PTryFrom PData (PAsData target)
   , PIsData actual
   , PIsData target
   ) =>
-  Term s (PAsData actual) ->
-  Term s (PAsData target)
-checkDeep t = unTermCont $ fst <$> TermCont (ptryFrom @PData @(PAsData target) @s $ pforgetData t)
+  ClosedTerm (PAsData actual) ->
+  ClosedTerm (PAsData target)
+checkDeep t = unTermCont $ fst <$> TermCont (ptryFromData @(PAsData target) $ pforgetData t)
 
 checkDeepUnwrap ::
   forall (target :: PType) (actual :: PType) (s :: S).
@@ -283,7 +315,7 @@ checkDeepUnwrap ::
   ) =>
   Term s (PAsData actual) ->
   Term s (PAsData target)
-checkDeepUnwrap t = unTermCont $ fst <$> TermCont (ptryFrom @PData @(PAsData target) @s $ pforgetData t)
+checkDeepUnwrap t = unTermCont $ fst <$> TermCont (ptryFromData @(PAsData target) @s $ pforgetData t)
 
 sampleStructure :: Term _ (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData PInteger)))))))
 sampleStructure = pdata $ psingleton #$ pdata $ psingleton #$ toDatadList [1 .. 100]
@@ -310,14 +342,14 @@ pmkNatural = plam $ \i -> pif (i #< 0) (ptraceError "could not make natural") (p
 instance PTryFrom PData (PAsData PNatural) where
   type PTryFromExcess PData (PAsData PNatural) = Flip Term PNatural
   ptryFrom opq = runTermCont $ do
-    (ter, exc) <- TermCont $ ptryFrom @PData @(PAsData PInteger) opq
+    (ter, exc) <- TermCont $ ptryFromData @(PAsData PInteger) opq
     ver <- tcont $ plet $ pmkNatural #$ exc
     pure $ (punsafeCoerce ter, ver)
 
 validator :: Term s PValidator
 validator = phoistAcyclic $
   plam $ \dat red ctx -> unTermCont $ do
-    trustedRedeemer <- (\(snd -> red) -> red) <$> (TermCont $ ptryFrom @PData @(PAsData (PBuiltinList (PAsData PNatural))) red)
+    trustedRedeemer <- (\(snd -> red) -> red) <$> (TermCont $ ptryFromData @(PAsData (PBuiltinList (PAsData PNatural))) red)
     let trustedDatum :: Term _ (PBuiltinList (PAsData PNatural))
         trustedDatum = pfromData $ punsafeCoerce dat
     -- make the Datum and Redeemer trusted
@@ -467,12 +499,12 @@ toDatadList = pdata . (foldr go pnil)
 
 mapTestSucceeds :: ClosedTerm (PAsData (PBuiltinMap PByteString PInteger))
 mapTestSucceeds = unTermCont $ do
-  (val, _) <- TermCont $ ptryFrom @PData $ pforgetData sampleMap
+  (val, _) <- TermCont $ ptryFromData $ pforgetData sampleMap
   pure val
 
 mapTestFails :: ClosedTerm (PAsData (PBuiltinMap PInteger PInteger))
 mapTestFails = unTermCont $ do
-  (val, _) <- TermCont $ ptryFrom @PData $ pforgetData sampleMap
+  (val, _) <- TermCont $ ptryFromData $ pforgetData sampleMap
   pure val
 
 sampleMap :: Term _ (PAsData (PBuiltinMap PByteString PInteger))
@@ -503,4 +535,19 @@ data PAB (s :: S)
     (PlutusType, PIsData)
     via PIsDataReprInstances PAB
 
+-- here we can derive the `PTryFrom` instance for PAB via the newtype wrapper
+-- `PIsDataReprInstances`
 deriving via PAsData (PIsDataReprInstances PAB) instance PTryFrom PData (PAsData PAB)
+
+------------------- Sample usage with recovered record type ------------------------
+
+untrustedRecord :: Term s PData
+untrustedRecord =
+  let rec :: Term s (PAsData (PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])]))
+      rec = pdata $ pdcons # (pdata $ pdcons # pdata (pconstant 42) # pdnil) # pdnil
+   in pforgetData rec
+
+theField :: Term s PInteger
+theField = unTermCont $ do
+  (_, exc) <- tcont (ptryFrom @_ @(PAsData (PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])])) untrustedRecord)
+  pure $ exc._0._1
