@@ -76,6 +76,8 @@ common deps
     , aeson              >=2.0
     , base
     , bytestring
+    , containers
+    , directory
     , filepath
     , generics-sop
     , mtl
@@ -101,6 +103,7 @@ library
     Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
+    Plutarch.Test.Run
 
   if flag(development)
     cpp-options: -DDevelopment
@@ -154,6 +157,7 @@ executable plutarch-test
     Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
+    Plutarch.Test.Run
     Plutarch.TraceSpec
     Plutarch.UnitSpec
     Plutarch.UPLCSpec
