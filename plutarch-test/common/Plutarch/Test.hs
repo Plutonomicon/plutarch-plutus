@@ -29,36 +29,20 @@ module Plutarch.Test (
   -- * Benchmark type for use in `(@:->)`
   Benchmark (Benchmark, exBudgetCPU, exBudgetMemory, scriptSizeBytes),
   ScriptSizeBytes,
-
-  -- * Deprecated exports
-  golden,
-  goldens,
-  PlutarchGolden (All, Bench, PrintTerm),
-  getGoldenFilePrefix,
-  goldenFilePath,
 ) where
 
-import Control.Monad (when)
-import qualified Data.Aeson.Text as Aeson
 import Data.Kind (Type)
 import Data.Text (Text)
-import qualified Data.Text as T
-import qualified Data.Text.Lazy as TL
-import System.FilePath
 import Test.Syd (
   Expectation,
-  Spec,
   TestDefM,
   describe,
   expectationFailure,
-  getTestDescriptionPath,
-  it,
-  pureGoldenTextFile,
   shouldBe,
   shouldSatisfyNamed,
  )
 
-import Plutarch
+import Plutarch (ClosedTerm, PCon (pcon), compile, printScript)
 import Plutarch.Bool (PBool (PFalse, PTrue))
 import Plutarch.Evaluate (evalScript)
 import Plutarch.Test.Benchmark (
@@ -68,7 +52,6 @@ import Plutarch.Test.Benchmark (
 import Plutarch.Test.Golden (
   PlutarchGoldens,
   TermExpectation,
-  compileD,
   evalScriptAlwaysWithBenchmark,
   pgoldenSpec,
   (@->),
@@ -188,81 +171,3 @@ plutarchDevFlagDescribe m =
     xScript = fst . evalScriptAlwaysWithBenchmark $ compile x
 
 infixr 1 @==
-
--- TODO: All the code below will be deleted, in favour of Golden.hs.
-
-{- | Whether to run all or a particular golden test
-
-  Typically you want to use `All` -- this produces printTerm and benchmark
-  goldens.
-
-  Occasionally you want `PrintTerm` because you don't care to benchmark that
-  program.
-
-  Use `Bench` to only benchmark the program.
--}
-data PlutarchGolden
-  = All
-  | Bench
-  | PrintTerm
-  deriving stock (Eq, Show)
-
--- | Run golden tests on the given Plutarch program
-{-# DEPRECATED golden "Use `pgoldenSpec` instead." #-}
-golden :: PlutarchGolden -> ClosedTerm a -> Spec
-golden pg p =
-  goldens pg [("0", popaque p)]
-
-{- | Like `golden` but for multiple programs
-
-  Multiple programs use a single golden file. Each output separated from the
-  keyword with a space.
--}
-{-# DEPRECATED goldens "Use `pgoldenSpec` instead." #-}
-goldens :: PlutarchGolden -> [(String, ClosedTerm a)] -> Spec
-goldens pg ps = do
-  name <- getGoldenFilePrefix
-  describe "golden" $ do
-    -- Golden test for UPLC
-    when (hasPrintTermGolden pg) $ do
-      it "uplc" $
-        pureGoldenTextFile (goldenFilePath "goldens" name "uplc") $
-          multiGolden ps $ \p ->
-            T.pack $ printScript $ compileD p
-      it "uplc.eval" $
-        pureGoldenTextFile (goldenFilePath "goldens" name "uplc.eval") $
-          multiGolden ps $ \p ->
-            T.pack $ printScript $ fst $ evalScriptAlwaysWithBenchmark $ compileD p
-    -- Golden test for Plutus benchmarks
-    when (hasBenchGolden pg) $
-      it "bench" $
-        pureGoldenTextFile (goldenFilePath "goldens" name "bench") $
-          multiGolden ps $ \p ->
-            TL.toStrict $ Aeson.encodeToLazyText $ snd $ evalScriptAlwaysWithBenchmark $ compileD p
-  where
-    hasBenchGolden :: PlutarchGolden -> Bool
-    hasBenchGolden = \case
-      PrintTerm -> False
-      _ -> True
-    hasPrintTermGolden :: PlutarchGolden -> Bool
-    hasPrintTermGolden = \case
-      Bench -> False
-      _ -> True
-
--- | Get a golden filename prefix from the test description path
-getGoldenFilePrefix ::
-  forall (outers :: [Type]) (inner :: Type).
-  TestDefM outers inner String
-getGoldenFilePrefix =
-  T.unpack . T.intercalate "." . drop 1 . reverse <$> getTestDescriptionPath
-
--- | Get the golden file name given the basepath, an optional suffix and a name
-goldenFilePath :: FilePath -> String -> String -> FilePath
-goldenFilePath base name suffix =
-  base
-    </> (name <> "." <> suffix <> ".golden")
-
-multiGolden :: forall a. [(String, a)] -> (a -> T.Text) -> Text
-multiGolden xs f =
-  T.intercalate "\n" $
-    (\(s, x) -> T.pack s <> " " <> f x) <$> xs

@@ -45,6 +45,7 @@ import Plutarch.Api.V1.Crypto (PPubKeyHash)
 import Plutarch.Builtin (pasByteStr)
 import Plutarch.Prelude
 import Plutarch.Test
+import Plutarch.Test.Golden (currentGoldenKey, goldenPath)
 import Test.Syd (Spec, describe, it, pureGoldenTextFile)
 
 spec :: Spec
@@ -52,24 +53,24 @@ spec = do
   describe "scripts" $ do
     describe "auth_validator" $ do
       pgoldenSpec $ "0" @| authValidatorTerm
-      prefix <- getGoldenFilePrefix
+      prefix <- currentGoldenKey
       it "hash" $ do
         pureGoldenTextFile
-          (goldenFilePath "goldens" prefix "hash")
+          (goldenPath "goldens" $ prefix <> "hash")
           validatorHashEncoded
     describe "auth_policy" $ do
       pgoldenSpec $ "0" @| authPolicyTerm
-      prefix <- getGoldenFilePrefix
+      prefix <- currentGoldenKey
       it "hash" $
         pureGoldenTextFile
-          (goldenFilePath "goldens" prefix "hash")
+          (goldenPath "goldens" $ prefix <> "hash")
           policySymEncoded
     describe "auth_stake_validator" $ do
       pgoldenSpec $ "0" @| authStakeValidatorTerm
-      prefix <- getGoldenFilePrefix
+      prefix <- currentGoldenKey
       it "hash" $
         pureGoldenTextFile
-          (goldenFilePath "goldens" prefix "hash")
+          (goldenPath "goldens" $ prefix <> "hash")
           stakeValidatorHashEncoded
 
 encodeSerialise :: Serialise a => a -> Text
