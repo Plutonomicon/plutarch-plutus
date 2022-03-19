@@ -2,7 +2,7 @@
 
 # Unreleased
 
-- Add `pshow` and `ptraceShowId` 
+- Added module `Plutarch.Show` with the `PShow` type class, as well as functions `pshow` and `ptraceShowId`.
 
   Started by [#352](https://github.com/Plutonomicon/plutarch/pull/352)
 
@@ -13,6 +13,10 @@
 - Add generic deriving for `PEq`
 
   Started by [#335](https://github.com/Plutonomicon/plutarch/pull/335)
+
+- Added module `Plutarch.FFI` for interoperability with PlutusTx.
+
+- Added `DerivePConstantViaBuiltin`, deprecating `DerivePConstantViaNewtype`.
 
 - `TermCont`: Parametrize by result type; add `MonadFail` instance; etc.
 
