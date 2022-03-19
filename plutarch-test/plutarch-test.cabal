@@ -144,7 +144,7 @@ executable plutarch-test
     Plutarch.IntegerSpec
     Plutarch.LiftSpec
     Plutarch.ListSpec
-    Plutarch.ListUtilSpec
+    Plutarch.ListUtilsSpec
     Plutarch.MaybeSpec
     Plutarch.PairSpec
     Plutarch.PIsDataSpec

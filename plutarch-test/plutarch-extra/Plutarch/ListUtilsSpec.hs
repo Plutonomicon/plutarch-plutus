@@ -1,4 +1,4 @@
-module Plutarch.ListUtilSpec (spec) where
+module Plutarch.ListUtilsSpec (spec) where
 
 import Test.Syd
 import Test.Syd.Hedgehog ()
@@ -18,7 +18,7 @@ spec = do
   describe "extra.listutils" $ do
     describe "properties" $ do
       describe "reverse" $ do
-        it "base agreement" reverseTest
+        it "plutarch level reversing behaves like haskell level reversing" reverseTest
     describe "goldens" . pgoldenSpec $ do
       "reverse" @\ do
         "reverse_[1..5]" @| preverse # marshal [1 .. 5 :: Integer]

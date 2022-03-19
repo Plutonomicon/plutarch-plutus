@@ -16,6 +16,7 @@ module Plutarch.List (
   pdrop,
   pfind,
   pelemAt,
+  (#!!),
 
   -- * Construction
   psingleton,
@@ -412,7 +413,15 @@ plistEquals =
         (pelimList (\_ _ -> pconstant False) (pconstant True) ylist)
         xlist
 
-pelemAt :: (PIsListLike l a) => Term s (PInteger :--> l a :--> a)
+-- | / O(n) /. Like Haskell level `(!!)` but on the plutarch level
+(#!!) :: (PIsListLike l a) => Term s (l a) -> Term s PInteger -> Term s a
+l #!! i = pelemAt # i # l
+
+{- | / O(n) /. Like Haskell level `(!!)` but on the Plutarch level, not infix and
+    with arguments reversed, errors if the specified index is greater than or equal
+    to the lists length
+-}
+pelemAt :: PIsListLike l a => Term s (PInteger :--> l a :--> a)
 pelemAt = phoistAcyclic $
   plam $ \n xs ->
     pif
@@ -420,7 +429,8 @@ pelemAt = phoistAcyclic $
       (ptraceError "pelemAt: negative index")
       (pelemAt' # n # xs)
 
-pelemAt' :: (PIsListLike l a) => Term s (PInteger :--> l a :--> a)
+-- | / O(n) /. like `pelemAt` but doesn't fail on negative indexes
+pelemAt' :: PIsListLike l a => Term s (PInteger :--> l a :--> a)
 pelemAt' = phoistAcyclic $
   pfix #$ plam $ \self n xs ->
     pif
@@ -428,7 +438,8 @@ pelemAt' = phoistAcyclic $
       (phead # xs)
       (self # (n - 1) #$ ptail # xs)
 
-pfind :: (PIsListLike l a) => Term s ((a :--> PBool) :--> l a :--> PMaybe a)
+-- | / O(n) /. like haskell level `find` but on plutarch level
+pfind :: PIsListLike l a => Term s ((a :--> PBool) :--> l a :--> PMaybe a)
 pfind = phoistAcyclic $
   pfix #$ plam $ \self f xs ->
     pelimList

@@ -12,7 +12,7 @@ import Hedgehog (Property)
 import Data.List (find)
 
 import Plutarch.Test.Property.Gen (genList, integerGen)
-import Plutarch.Test.Property.Util (haskPlutEquiv, marshal, viaBothPartial, viaPEq)
+import Plutarch.Test.Property.Util (haskPlutEquiv, viaBothPartial, viaPEq)
 
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
@@ -25,18 +25,20 @@ spec = do
   describe "list" $ do
     describe "properties" $ do
       describe "find" $ do
-        it "baseAgreement" $ findTest
+        it "plutarch level find mirrors haskell level find" findTest
       describe "elemAt" $ do
-        it "base agreement" elemAtTest
-    describe "goldens" . pgoldenSpec $ do
+        it "plutarch level elemAt mirrors haskell level elemAt" elemAtTest
+    describe "goldens" . plutarchDevFlagDescribe . pgoldenSpec $ do
       let xs10 :: Term _ (PList PInteger)
           xs10 = integerList [1 .. 10]
-      "pmatch" @| (pmatch (integerList [1, 3, 1]) $ \_ -> perror) @-> pfails
+          numList :: Term _ (PBuiltinList PInteger)
+          numList = pconstant [1 .. 5]
+      "pmatch" @| pmatch (integerList [1, 3, 1]) (const perror) @-> pfails
       "phead" @| 1 #== (phead # xs10) @-> passert
       "ptail" @| integerList [2 .. 10] #== ptail # xs10 @-> passert
       "pnull" @\ do
-        "nonempty" @| (pnot #$ pnull # xs10) @-> passert
         "empty" @| (pnull # integerList []) @-> passert
+        "nonempty" @| (pnot #$ pnull # xs10) @-> passert
       "pconcat" @\ do
         "identity" @| (pconcat # xs10 # pnil #== pconcat # pnil # xs10) #&& (pconcat # pnil # xs10 #== xs10) @-> passert
       "pmap" @\ do
@@ -48,17 +50,53 @@ spec = do
       "pzipWith" @\ do
         "double" @| pzipWith' (+) # xs10 # xs10 #== integerList (fmap (* 2) [1 .. 10]) @-> passert
       "pfoldl" @\ do
-        "nonempty0" @| pfoldl # plam (-) # 0 # xs10 #== pconstant (foldl (-) 0 [1 .. 10]) @-> passert
-        "nonempty1" @| pfoldl' (-) # 0 # xs10 #== pconstant (foldl (-) 0 [1 .. 10]) @-> passert
-        "empty0" @| pfoldl # plam (-) # 0 # integerList [] #== pconstant 0 @-> passert
-        "empty1" @| pfoldl' (-) # 0 # integerList [] #== pconstant 0 @-> passert
+        "nonempty" @| pfoldl # plam (-) # 0 # xs10 #== pconstant (foldl (-) 0 [1 .. 10]) @-> passert
+        "nonempty-primed" @| pfoldl' (-) # 0 # xs10 #== pconstant (foldl (-) 0 [1 .. 10]) @-> passert
+        "empty" @| pfoldl # plam (-) # 0 # integerList [] #== pconstant 0 @-> passert
+        "empty-primed" @| pfoldl' (-) # 0 # integerList [] #== pconstant 0 @-> passert
       "elemAt" @\ do
-        "elemAt_3_[1..10]" @| pelemAt # 3 # marshal [1 .. 10 :: Integer]
-        "elemAt_0_[1..10]" @| pelemAt # 0 # marshal [1 .. 10 :: Integer]
-        "elemAt_9_[1..10]" @| pelemAt # 9 # marshal [1 .. 10 :: Integer]
+        "elemAt_3_[1..10]" @| pelemAt # 3 # integerList [1 .. 10]
+        "elemAt_0_[1..10]" @| pelemAt # 0 # integerList [1 .. 10]
+        "elemAt_9_[1..10]" @| pelemAt # 9 # integerList [1 .. 10]
       "find" @\ do
-        "find_(==3)_[1..4]" @| pfind # plam (#== 3) #$ marshal [1 .. 4 :: Integer]
-        "find_(==5)_[1..4]" @| pfind # plam (#== 5) #$ marshal [1 .. 4 :: Integer]
+        "find_(==3)_[1..4]" @| pfind # plam (#== 3) #$ integerList [1 .. 4]
+        "find_(==5)_[1..4]" @| pfind # plam (#== 5) #$ integerList [1 .. 4]
+      -- Two ways of matching on a list
+      "x1+x2" @\ do
+        -- Via HeadList and TailList only.
+        "builtin" @| (phead #$ ptail # numList) + (phead # numList)
+        -- Via ChooseList (twice invoked)
+        "pmatch"
+          @| pmatch numList
+          $ \case
+            PNil -> perror
+            PCons x xs ->
+              pmatch xs $ \case
+                PNil -> perror
+                PCons y _ ->
+                  x + y
+      -- Various ways of uncons'ing a list
+      "uncons" @\ do
+        -- ChooseList builtin, like uncons but fails on null lists
+        "ChooseList"
+          @| pmatch numList
+          $ \case
+            PNil -> perror
+            PCons _x xs ->
+              xs
+        -- Retrieving head and tail of a list
+        "head-and-tail"
+          @| plet (phead # numList)
+          $ \_x ->
+            ptail # numList
+        -- Retrieve head and tail using builtins, but fail on null lists.
+        "head-and-tail-and-null"
+          @| plet (pnull # numList)
+          $ \isEmpty ->
+            pmatch isEmpty $ \case
+              PTrue -> perror
+              PFalse -> plet (phead # numList) $ \_x ->
+                ptail # numList
 
 findTest :: Property
 findTest =

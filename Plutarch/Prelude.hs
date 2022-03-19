@@ -82,6 +82,7 @@ module Plutarch.Prelude (
   pfoldl,
   pall,
   pany,
+  (#!!),
 
   -- * Scott encoded list type
   PList (..),
