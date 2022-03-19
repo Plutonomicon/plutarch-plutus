@@ -1,6 +1,4 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE DefaultSignatures #-}
-{-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -162,21 +160,16 @@ gpeq =
       plam $ \x y ->
         pmatch x $ \x' ->
           pmatch y $ \y' ->
-            gpeq' @t (gpfrom x') (gpfrom y')
+            gpeq' (gpfrom x') (gpfrom y')
 
-gpeq' ::
-  forall a s.
-  All2 PEq (PCode s a) =>
-  SOP (Term s) (PCode s a) ->
-  SOP (Term s) (PCode s a) ->
-  Term s PBool
+gpeq' :: All2 PEq xss => SOP (Term s) xss -> SOP (Term s) xss -> Term s PBool
 gpeq' (SOP c1) (SOP c2) =
   ccompare_NS (Proxy @(All PEq)) (pcon PFalse) eqProd (pcon PFalse) c1 c2
+
+eqProd :: All PEq xs => NP (Term s) xs -> NP (Term s) xs -> Term s PBool
+eqProd p1 p2 =
+  pands $ hcollapse $ hcliftA2 (Proxy :: Proxy PEq) eqTerm p1 p2
   where
-    eqProd :: All PEq xs => NP (Term s) xs -> NP (Term s) xs -> Term s PBool
-    eqProd p1 p2 =
-      pands $ hcollapse $ hcliftA2 (Proxy :: Proxy PEq) eqTerm p1 p2
-      where
-        eqTerm :: forall a. PEq a => Term s a -> Term s a -> K (Term s PBool) a
-        eqTerm a b =
-          K $ a #== b
+    eqTerm :: forall s a. PEq a => Term s a -> Term s a -> K (Term s PBool) a
+    eqTerm a b =
+      K $ a #== b

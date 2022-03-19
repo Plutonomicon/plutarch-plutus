@@ -2,7 +2,7 @@
 
 # Unreleased
 
-- Add `pshow` and `ptraceShowId` 
+- Added module `Plutarch.Show` with the `PShow` type class, as well as functions `pshow` and `ptraceShowId`.
 
   Started by [#352](https://github.com/Plutonomicon/plutarch/pull/352)
 
@@ -16,6 +16,10 @@
 - `Plutarch.Prelude` and `Plutarch.List` now export pfind, pelemAt, preverse and pcheckSroted.
 
 	Started by: [#306](https://github.com/Plutonomicon/plutarch/pull/306)
+
+- Added module `Plutarch.FFI` for interoperability with PlutusTx.
+
+- Added `DerivePConstantViaBuiltin`, deprecating `DerivePConstantViaNewtype`.
 
 - `TermCont`: Parametrize by result type; add `MonadFail` instance; etc.
 

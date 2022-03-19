@@ -45,32 +45,20 @@ import Plutarch.Api.V1.Crypto (PPubKeyHash)
 import Plutarch.Builtin (pasByteStr)
 import Plutarch.Prelude
 import Plutarch.Test
-import Test.Syd (Spec, describe, it, pureGoldenTextFile)
+import Test.Syd (Spec, describe)
 
 spec :: Spec
 spec = do
-  describe "scripts" $ do
-    describe "auth_validator" $ do
-      pgoldenSpec $ "0" @| authValidatorTerm
-      prefix <- getGoldenFilePrefix
-      it "hash" $ do
-        pureGoldenTextFile
-          (goldenFilePath "goldens" prefix "hash")
-          validatorHashEncoded
-    describe "auth_policy" $ do
-      pgoldenSpec $ "0" @| authPolicyTerm
-      prefix <- getGoldenFilePrefix
-      it "hash" $
-        pureGoldenTextFile
-          (goldenFilePath "goldens" prefix "hash")
-          policySymEncoded
-    describe "auth_stake_validator" $ do
-      pgoldenSpec $ "0" @| authStakeValidatorTerm
-      prefix <- getGoldenFilePrefix
-      it "hash" $
-        pureGoldenTextFile
-          (goldenFilePath "goldens" prefix "hash")
-          stakeValidatorHashEncoded
+  describe "scripts" . pgoldenSpec $ do
+    "auth_validator" @\ do
+      "0" @| authValidatorTerm
+      "hash" @| pconstant validatorHashEncoded
+    "auth_policy" @\ do
+      "0" @| authPolicyTerm
+      "hash" @| pconstant policySymEncoded
+    "auth_stake_validator" @\ do
+      "0" @| authStakeValidatorTerm
+      "hash" @| pconstant stakeValidatorHashEncoded
 
 encodeSerialise :: Serialise a => a -> Text
 encodeSerialise = TE.decodeUtf8 . Base16.encode . Write.toStrictByteString . encode
