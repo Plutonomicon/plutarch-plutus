@@ -28,7 +28,7 @@ spec = do
         it "plutarch level find mirrors haskell level find" findTest
       describe "elemAt" $ do
         it "plutarch level elemAt mirrors haskell level elemAt" elemAtTest
-    describe "goldens" . plutarchDevFlagDescribe . pgoldenSpec $ do
+    plutarchDevFlagDescribe . pgoldenSpec $ do
       let xs10 :: Term _ (PList PInteger)
           xs10 = integerList [1 .. 10]
           numList :: Term _ (PBuiltinList PInteger)

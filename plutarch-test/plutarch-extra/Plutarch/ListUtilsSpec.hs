@@ -19,7 +19,7 @@ spec = do
     describe "properties" $ do
       describe "reverse" $ do
         it "plutarch level reversing behaves like haskell level reversing" reverseTest
-    describe "goldens" . pgoldenSpec $ do
+    pgoldenSpec $ do
       "reverse" @\ do
         "reverse_[1..5]" @| preverse # marshal [1 .. 5 :: Integer]
       "isSorted" @\ do
