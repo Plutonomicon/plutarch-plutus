@@ -169,6 +169,9 @@ spec = do
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
           (punsafeCoerce $ pconstant $ Constr 1 [PlutusTx.I 5, B "foo"])
         @-> psucceeds
+      "recover PWrapInt"
+        @| pconstant 42 #== (unTermCont $ snd <$> tcont (ptryFromData @(PAsData PWrapInt) (pforgetData $ pdata $ pconstant @PInteger 42)))
+        @-> passert
     "recovering a record partially vs completely" @\ do
       "partially"
         @| checkDeep
@@ -551,3 +554,10 @@ theField :: Term s PInteger
 theField = unTermCont $ do
   (_, exc) <- tcont (ptryFrom @_ @(PAsData (PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])])) untrustedRecord)
   pure $ exc._0._1
+
+------------------- Sample usage DerivePNewType ------------------------------------
+
+newtype PWrapInt (s :: S) = PMkWrapInt (Term s PInteger)
+  deriving (PlutusType, PIsData, PEq, POrd) via (DerivePNewtype PWrapInt PInteger)
+
+deriving via DerivePNewtype (PAsData PWrapInt) (PAsData PInteger) instance PTryFrom PData (PAsData PWrapInt)

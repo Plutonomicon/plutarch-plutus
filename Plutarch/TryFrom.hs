@@ -25,8 +25,8 @@ import Plutarch.Integer (PInteger)
 import Plutarch.Unit (PUnit (PUnit))
 
 import Plutarch.Internal.Other (
+  DerivePNewtype,
   PInner,
-  POpaque,
   PType,
   S,
   Term,
@@ -376,28 +376,7 @@ instance
 instance {-# OVERLAPPING #-} SumValidation n '[] where
   validateSum _ = ptraceError "reached end of sum while still not having found the constructor"
 
------------------------ POpaque ans other utility instances -----------------------------
-
-{- |
-    for none of the opaque instances it can be verified
-    that the actual structure is what it says to be
-    because that data is lost when the PAsData wrapper
-    is removed, this can only be safely used if you obtained
-    your POpaque safely
--}
-instance
-  ( PTryFrom PData (PAsData a)
-  , PIsData a
-  ) =>
-  PTryFrom POpaque a
-  where
-  type PTryFromExcess POpaque a = Flip Term (PAsData a)
-  ptryFrom opq = runTermCont $ do
-    let prop :: Term _ a
-        prop = punsafeCoerce opq
-    ver' <- fst <$> TermCont (ptryFromData @(PAsData a) $ pforgetData $ pdata prop)
-    ver <- tcont $ plet ver'
-    pure $ (punsafeCoerce opq, ver)
+----------------------- other utility functions -----------------------------------------
 
 {- | if there is an instance to recover something that is unwrapped from something that is
  unwrapped, then there is also the possibility to recover the whole thing but wrapped
@@ -439,6 +418,16 @@ instance
     let reprsum :: Term _ (PDataSum (PIsDataReprRepr a))
         reprsum = pfromData $ unTermCont $ fst <$> TermCont (ptryFrom opq)
     pure $ (pdata $ punsafeFrom reprsum, HNil)
+
+----------------------- DerivePNewtype insatace -----------------------------------------
+
+instance
+  ( PTryFrom a b
+  ) =>
+  PTryFrom a (DerivePNewtype c b)
+  where
+  type PTryFromExcess a (DerivePNewtype c b) = PTryFromExcess a b
+  ptryFrom opq = runTermCont $ (\(inn, exc) -> (punsafeFrom inn, exc)) <$> tcont (ptryFrom @a @b opq)
 
 ----------------------- HasField instance -----------------------------------------------
 
