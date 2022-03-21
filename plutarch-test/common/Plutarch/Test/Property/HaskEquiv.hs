@@ -6,7 +6,7 @@ module Plutarch.Test.Property.HaskEquiv (
   prop_haskEquiv,
   Equality (..),
   Totality (..),
-  NP ((:*), Nil), -- Re-exports from sop-core for building Generator arguments
+  NP ((:*), Nil), -- Re-exports from sop-core for building Gen arguments
 
   -- * For writing helper functions using `prop_haskEquiv`
   LamArgs,
@@ -52,7 +52,7 @@ data Totality
   equivalent, upto the given equality and totality.
 -}
 class HaskEquiv (e :: Equality) (t :: Totality) h p args where
-  -- | Test that `hf` and `pf` are equal when applied on the given arguments.
+  -- | Test that `h` and `p` are equal when applied on the given arguments.
   haskEquiv :: h -> ClosedTerm p -> NP Gen args -> PropertyT IO ()
 
 -- | Argument types for a Haskell function (empty if a term value)
@@ -60,7 +60,7 @@ type family LamArgs f :: [Type] where
   LamArgs (a -> b) = a ': LamArgs b
   LamArgs _ = '[]
 
--- For lambda terms, generate the first argument and delegate.
+-- For lambda terms generate the first argument and delegate.
 instance
   (Show ha, Marshal ha pa, HaskEquiv e t hb pb (LamArgs hb), LamArgs (ha -> hb) ~ args) =>
   HaskEquiv e t (ha -> hb) (pa :--> pb) args
