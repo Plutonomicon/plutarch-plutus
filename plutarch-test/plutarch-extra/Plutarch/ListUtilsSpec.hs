@@ -8,8 +8,8 @@ import Plutarch.Test
 
 import Hedgehog (Property)
 
+import Plutarch.Test.Property
 import Plutarch.Test.Property.Gen (genList, integerGen)
-import Plutarch.Test.Property.Util
 
 import Plutarch.ListUtils (pcheckSorted, preverse)
 
