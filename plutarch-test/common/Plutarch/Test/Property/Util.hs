@@ -1,5 +1,4 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Test.Property.Util (
@@ -27,6 +26,7 @@ module Plutarch.Test.Property.Util (
 import Plutarch (ClosedTerm, compile)
 import Plutarch.Evaluate (EvalError, evalScript)
 import Plutarch.Prelude
+import Plutarch.Test.Property.Marshal (Marshal (marshal))
 
 import Control.Exception (SomeException, evaluate, try)
 import Control.Monad.IO.Class (liftIO)
@@ -37,9 +37,6 @@ import Plutus.V1.Ledger.Scripts (Script (..))
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
 
 import Hedgehog (Gen, Property, PropertyT, annotate, annotateShow, assert, forAll, property, (===))
-
-class Marshal h (p :: PType) | h -> p where
-  marshal :: h -> ClosedTerm p
 
 data EquivalenceMethod
   = -- test equivalence by converting to data with pdata
@@ -279,29 +276,6 @@ testOutputEq x y =
 
 run :: ClosedTerm h -> (Either EvalError Script, ExBudget, [Text])
 run t = evalScript $ compile t
-
-instance Marshal h p => Marshal [h] (PList p) where
-  marshal xs = foldr (\h t -> pcons # marshal h # t) pnil xs
-
-instance Marshal ha pa => Marshal (Maybe ha) (PMaybe pa) where
-  marshal (Just x) = pcon $ PJust $ marshal x
-  marshal Nothing = pcon PNothing
-
-instance (Marshal ha pa, Marshal hb pb) => Marshal (ha, hb) (PPair pa pb) where
-  marshal (a, b) = pcon $ PPair (marshal a) (marshal b)
-
-instance Marshal Integer PInteger where
-  marshal n = fromInteger n
-
-instance Marshal Rational PRational where
-  marshal r = fromRational r
-
-instance Marshal Bool PBool where
-  marshal True = pcon PTrue
-  marshal False = pcon PFalse
-
-instance Marshal () PUnit where
-  marshal () = pcon PUnit
 
 -- GensForArgs f is the tuple of generators for the arguments of F
 -- i.e. GensForArgs (a -> b -> c) ~ (Gen a,Gen b)

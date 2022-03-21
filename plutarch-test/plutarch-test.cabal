@@ -104,13 +104,15 @@ library
   hs-source-dirs:  common
   exposed-modules:
     Plutarch.Test
+    Plutarch.Test.Property
     Plutarch.Test.Property.Gen
-    Plutarch.Test.Property.Util
 
   other-modules:
     Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
+    Plutarch.Test.Property.Marshal
+    Plutarch.Test.Property.Util
     Plutarch.Test.Run
 
   if flag(development)
@@ -167,6 +169,7 @@ executable plutarch-test
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
     Plutarch.Test.Property.Gen
+    Plutarch.Test.Property.Marshal
     Plutarch.Test.Property.Util
     Plutarch.Test.Run
     Plutarch.TraceSpec
