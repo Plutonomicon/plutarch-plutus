@@ -51,7 +51,7 @@ data Totality
   Class of pairs of Plutarch and Haskell types that are semantically
   equivalent, upto the given equality and totality.
 -}
-class HaskEquiv (e :: Equality) (t :: Totality) h p args where
+class LamArgs h ~ args => HaskEquiv (e :: Equality) (t :: Totality) h p args | h -> p where
   -- | Test that `h` and `p` are equal when applied on the given arguments.
   haskEquiv :: h -> ClosedTerm p -> NP Gen args -> PropertyT IO ()
 
@@ -69,10 +69,10 @@ instance
     x <- forAll a
     haskEquiv @e @t (hf x) (pf # marshal x) as
 
-instance (PIsData p, Marshal h p) => HaskEquiv 'OnPData 'TotalFun h p '[] where
+instance (PIsData p, Marshal h p, LamArgs h ~ '[]) => HaskEquiv 'OnPData 'TotalFun h p '[] where
   haskEquiv h p Nil = testDataEq h p
 
-instance (PEq p, Marshal h p) => HaskEquiv 'OnPEq 'TotalFun h p '[] where
+instance (PEq p, Marshal h p, LamArgs h ~ '[]) => HaskEquiv 'OnPEq 'TotalFun h p '[] where
   haskEquiv h p Nil = testPEq (marshal h) p
 
 instance
