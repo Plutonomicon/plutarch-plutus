@@ -28,12 +28,13 @@ import Data.Text (Text)
 import Hedgehog (Gen, Property, PropertyT, annotate, annotateShow, assert, forAll, property, (===))
 
 import Plutarch (ClosedTerm, compile)
-import Plutarch.Evaluate (EvalError, evalScript)
+import Plutarch.Evaluate (EvalError, evalScript')
 import Plutarch.Prelude
 import Plutarch.Test.Property.Marshal (Marshal (marshal))
 
 import Plutus.V1.Ledger.Scripts (Script (Script, unScript))
-import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
+import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
+import PlutusCore.Evaluation.Machine.ExMemory (ExCPU (ExCPU), ExMemory (ExMemory))
 
 -- | The nature of equality between two Plutarch terms.
 data Equality
@@ -165,7 +166,15 @@ pshouldBe x y =
     _ -> assert False
 
 run :: ClosedTerm h -> (Either EvalError Script, ExBudget, [Text])
-run t = evalScript $ compile t
+run t = evalScriptHugeBudget $ compile t
+
+{- | A more suitable version of `evalScript` geared towards property tests that
+  can use lots of resources
+-}
+evalScriptHugeBudget :: Script -> (Either EvalError Script, ExBudget, [Text])
+evalScriptHugeBudget =
+  evalScript' $
+    ExBudget (ExCPU 10_000_000_000_000) (ExMemory 10_000_000_000)
 
 prop_leftInverse ::
   forall e t p p' h.
