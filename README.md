@@ -43,7 +43,7 @@ package plutarch
 See the [`plutarch-test`](./plutarch-test) for testing and golden files containing benchmarks and UPLCs.
 
 # Usage
-Read the [Plutarch guide](./docs/GUIDE.md) to get started!
+Read the [Plutarch guide](./docs/README.md) to get started!
 
 # Contributing
 Contributions are more than welcome! Alongside the [User guide](#usage) above, you may also find the [Developers' guide](./docs/DEVGUIDE.md) useful for understanding the codebase.
