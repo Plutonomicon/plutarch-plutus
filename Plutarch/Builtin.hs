@@ -27,7 +27,7 @@ module Plutarch.Builtin (
   type PBuiltinMap,
 ) where
 
-import Data.Coerce (Coercible)
+import Data.Coerce (Coercible, coerce)
 import Plutarch (
   DerivePNewtype,
   PInner,
@@ -226,8 +226,14 @@ instance PConstant (PAsDataLifted a) where
 
 instance PUnsafeLiftDecl (PAsData a) where type PLifted (PAsData a) = PAsDataLifted a
 
-pforgetData :: Term s (PAsData a) -> Term s PData
-pforgetData = punsafeCoerce
+newtype Helper (a :: PType) (s :: S) = Helper (a s)
+
+pforgetData :: forall s a. Term s (PAsData a) -> Term s PData
+pforgetData x = coerce $ pforgetData' (coerce x :: Term s (Helper (PAsData a)))
+
+-- | Like 'pforgetData', except it works for complex types.
+pforgetData' :: forall (p :: PType -> PType) a s. Term s (p (PAsData a)) -> Term s (p PData)
+pforgetData' = punsafeCoerce
 
 class PIsData a where
   pfromData :: Term s (PAsData a) -> Term s a
