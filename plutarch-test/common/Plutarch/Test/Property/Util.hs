@@ -183,7 +183,9 @@ data Equiv
   | OnPData
   | OnBoth
 
-data Totality = TotalFun | PartialFun
+data Totality
+  = TotalFun
+  | PartialFun
 
 class EquivProp (e :: Equiv) (t :: Totality) h (p :: PType) where
   equivProp :: h -> ClosedTerm p -> PropertyT IO ()

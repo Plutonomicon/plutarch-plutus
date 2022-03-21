@@ -89,6 +89,7 @@ common deps
     , plutus-ledger-api
     , plutus-tx
     , serialise
+    , sop-core
     , sydtest
     , sydtest-discover
     , sydtest-hedgehog
@@ -101,7 +102,11 @@ common deps
 library
   import:          c, deps
   hs-source-dirs:  common
-  exposed-modules: Plutarch.Test
+  exposed-modules:
+    Plutarch.Test
+    Plutarch.Test.Property.Gen
+    Plutarch.Test.Property.Util
+
   other-modules:
     Plutarch.Test.Benchmark
     Plutarch.Test.Golden
