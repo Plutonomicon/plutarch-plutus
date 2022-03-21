@@ -9,9 +9,7 @@ module Plutarch.TryFrom (
   ptryFromData,
 ) where
 
-import Data.Coerce (Coercible)
 import Data.Function ((&))
-import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
 
 import GHC.Records (HasField (getField))
@@ -79,6 +77,8 @@ import Plutarch.TermCont (TermCont (TermCont, runTermCont), tcont, unTermCont)
 
 import Plutarch.DataRepr.Internal (PIsDataRepr (PIsDataReprRepr), PIsDataReprInstances)
 
+import Plutarch.Reducible (Reducible (Reduce))
+
 ----------------------- The class PTryFrom ----------------------------------------------
 
 {- |
@@ -120,14 +120,7 @@ ptryFromData = ptryFrom @PData @b
 
 ----------------------- Reducible and Flip ----------------------------------------------
 
-class (Coercible (Reduce x) x) => Reducible (x :: Type) where
-  type Reduce x :: Type
-
-instance Reducible () where type Reduce () = ()
-
 instance Reducible (HRecP as s) where type Reduce (HRecP as s) = HRecP as s
-
-instance Reducible (Term s a) where type Reduce (Term s a) = Term s a
 
 instance Reducible (f x y) => Reducible (Flip f y x) where
   type Reduce (Flip f y x) = Reduce (f x y)

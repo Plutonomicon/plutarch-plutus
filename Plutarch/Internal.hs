@@ -44,6 +44,7 @@ import qualified Flat.Run as F
 import GHC.Stack (HasCallStack)
 import GHC.Word (Word64)
 import Plutarch.Evaluate (evalScript)
+import Plutarch.Reducible (Reducible (Reduce))
 import Plutus.V1.Ledger.Scripts (Script (Script))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import qualified PlutusCore as PLC
@@ -138,6 +139,8 @@ type role Term phantom representational
  instantiated with.
 -}
 newtype Term (s :: S) (a :: PType) = Term {asRawTerm :: Word64 -> TermResult}
+
+instance Reducible (Term s a) where type Reduce (Term s a) = Term s a
 
 {- |
   *Closed* terms with no free variables.
