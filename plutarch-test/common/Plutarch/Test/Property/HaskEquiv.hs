@@ -14,6 +14,7 @@ module Plutarch.Test.Property.HaskEquiv (
 
   -- * Useful properties
   prop_leftInverse,
+  prop_dataRoundTrip,
 
   -- * Underlying equality tests
   testDataEq,
@@ -62,8 +63,8 @@ type family LamArgs f :: [Type] where
 
 -- For lambda terms generate the first argument and delegate.
 instance
-  (Show ha, Marshal ha pa, HaskEquiv e t hb pb (LamArgs hb), LamArgs (ha -> hb) ~ args) =>
-  HaskEquiv e t (ha -> hb) (pa :--> pb) args
+  (Show ha, Marshal ha pa, HaskEquiv e t hb pb hbArgs, LamArgs hb ~ hbArgs) =>
+  HaskEquiv e t (ha -> hb) (pa :--> pb) (ha ': hbArgs)
   where
   haskEquiv hf pf (a :* as) = do
     x <- forAll a
@@ -179,3 +180,27 @@ prop_leftInverse ::
   Property
 prop_leftInverse l r arg =
   prop_haskEquiv @e @t (id @h) (plam $ \x -> l #$ r # x) (arg :* Nil)
+
+{- |
+  A Plutarch term that is a `PIsData` can be encoded to and decoded back to the
+  same value.
+-}
+prop_dataRoundTrip ::
+  forall h p.
+  ( LamArgs h ~ '[]
+  , Show h
+  , Marshal h p
+  , PIsData p
+  , PEq p
+  ) =>
+  Gen h ->
+  Property
+prop_dataRoundTrip =
+  prop_leftInverse
+    @( 'OnPEq)
+    @( 'TotalFun)
+    @p
+    @(PAsData p)
+    @h
+    (plam pfromData)
+    (plam pdata)
