@@ -54,7 +54,21 @@ deriving via
 
 -- Have to manually write this instance because the constructor id ordering is screwed for 'Maybe'....
 instance (PIsData a, POrd a) => POrd (PMaybeData a) where
-  x #< y = unTermCont $ do
+  x #< y = _pmaybeLT False (#<) # x # y
+  x #<= y = _pmaybeLT True (#<=) # x # y
+
+_pmaybeLT ::
+  PIsData a =>
+  Bool ->
+  ( forall s rec.
+    (rec ~ (IndexList 0 (PIsDataReprRepr (PMaybeData a)))) =>
+    Term s (PDataRecord rec) ->
+    Term s (PDataRecord rec) ->
+    Term s PBool
+  ) ->
+  Term s (PMaybeData a :--> PMaybeData a :--> PBool)
+_pmaybeLT whenBothNothing ltF = phoistAcyclic $
+  plam $ \x y -> unTermCont $ do
     a <- tcont . plet $ pasConstr #$ pforgetData $ pdata x
     b <- tcont . plet $ pasConstr #$ pforgetData $ pdata y
 
@@ -74,12 +88,8 @@ instance (PIsData a, POrd a) => POrd (PMaybeData a) where
           -}
           ( pif
               (cid1 #== 0)
-              (lt0 (punsafeCoerce $ psndBuiltin # a) (punsafeCoerce $ psndBuiltin # b))
-              -- Both are 'Nothing'. '#<' is False.
-              $ pconstant False
+              (ltF (punsafeCoerce $ psndBuiltin # a) (punsafeCoerce $ psndBuiltin # b))
+              -- Both are 'Nothing'. Let caller choose answer.
+              $ pconstant whenBothNothing
           )
           $ pconstant True
-    where
-      lt0 = (#<) @(PDataRecord (IndexList 0 (PIsDataReprRepr (PMaybeData a))))
-
-  x #<= y = x #== y #|| x #< y

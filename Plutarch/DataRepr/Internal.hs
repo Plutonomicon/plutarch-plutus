@@ -70,7 +70,7 @@ import Plutarch (
   (#$),
   type (:-->),
  )
-import Plutarch.Bool (PBool, PEq, POrd, pif, (#<), (#<=), (#==), (#||))
+import Plutarch.Bool (PBool, PEq, POrd, pif, (#<), (#<=), (#==))
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
@@ -155,7 +155,14 @@ instance (POrd x, PIsData x, POrd (PDataRecord (x' ': xs))) => POrd (PDataRecord
     b <- tcont . plet $ pfromData y
 
     pure $ pif (a #< b) (pconstant True) $ pif (a #== b) (xs #< ys) $ pconstant False
-  l1 #<= l2 = pdToBuiltin l1 #== pdToBuiltin l2 #|| l1 #< l2
+  l1 #<= l2 = unTermCont $ do
+    PDCons x xs <- tcont $ pmatch l1
+    PDCons y ys <- tcont $ pmatch l2
+
+    a <- tcont . plet $ pfromData x
+    b <- tcont . plet $ pfromData y
+
+    pure $ pif (a #< b) (pconstant True) $ pif (a #== b) (xs #<= ys) $ pconstant False
 
 {- | Cons a field to a data record.
 
@@ -223,7 +230,7 @@ instance PEq (PDataSum defs) where
 
 instance MkLtReprHandler defs => POrd (PDataSum defs) where
   x #< y = pmatchLT x y mkLtReprHandler
-  x #<= y = x #== y #|| x #< y
+  x #<= y = pmatchLT x y mkLteReprHandler
 
 pasDataSum :: PIsDataRepr a => Term s a -> Term s (PDataSum (PIsDataReprRepr a))
 pasDataSum = punsafeCoerce
@@ -461,14 +468,17 @@ pmatchLT d1 d2 handlers = unTermCont $ do
 class MkLtReprHandler defs where
   type FirstDef defs :: [PLabeledType]
   mkLtReprHandler :: LTReprHandlers defs s
+  mkLteReprHandler :: LTReprHandlers defs s
 
 instance POrd (PDataRecord def) => MkLtReprHandler '[def] where
   type FirstDef '[def] = def
   mkLtReprHandler = LTRHCons (#<) LTRHNil
+  mkLteReprHandler = LTRHCons (#<=) LTRHNil
 
 instance (POrd (PDataRecord def), MkLtReprHandler (def' ': defs)) => MkLtReprHandler (def ': def' ': defs) where
   type FirstDef (def ': def' ': defs) = def
   mkLtReprHandler = LTRHCons (#<) mkLtReprHandler
+  mkLteReprHandler = LTRHCons (#<=) mkLteReprHandler
 
 {- | Use this for implementing the necessary instances for getting the `Data` representation.
  You must implement 'PIsDataRepr' to use this.
@@ -491,7 +501,7 @@ instance PIsDataRepr a => PEq (PIsDataReprInstances a) where
 -- | This uses lexicographic ordering. Actually uses PDataSum '(#<)' implementation.
 instance (PIsDataRepr a, MkLtReprHandler (PIsDataReprRepr a)) => POrd (PIsDataReprInstances a) where
   x #< y = pto x #< pto y
-  x #<= y = x #== y #|| x #< y
+  x #<= y = pto x #<= pto y
 
 newtype DerivePConstantViaData (h :: Type) (p :: PType) = DerivePConstantViaData h
 
