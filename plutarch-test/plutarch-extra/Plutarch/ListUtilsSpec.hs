@@ -9,7 +9,7 @@ import Plutarch.Test
 import Hedgehog (Property)
 
 import Plutarch.Test.Property.Gen (genList, integerGen)
-import Plutarch.Test.Property.Util (haskPlutEquiv, marshal, viaPEq)
+import Plutarch.Test.Property.Util
 
 import Plutarch.ListUtils (pcheckSorted, preverse)
 
@@ -28,9 +28,10 @@ spec = do
         "reverse_[]" @| preverse # marshal ([] :: [Integer])
 
 reverseTest :: Property
-reverseTest =
-  haskPlutEquiv
-    viaPEq
+reverseTest = do
+  prop_equiv
+    @( 'OnPEq)
+    @( 'TotalFun)
     (reverse :: [Integer] -> [Integer])
     preverse
-    (genList integerGen)
+    (genList integerGen :* Nil)

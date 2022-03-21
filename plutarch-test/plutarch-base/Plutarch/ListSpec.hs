@@ -12,7 +12,7 @@ import Hedgehog (Property)
 import Data.List (find)
 
 import Plutarch.Test.Property.Gen (genList, integerGen)
-import Plutarch.Test.Property.Util (haskPlutEquiv, viaBothPartial, viaPEq)
+import Plutarch.Test.Property.Util
 
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
@@ -100,22 +100,26 @@ spec = do
 
 findTest :: Property
 findTest =
-  haskPlutEquiv
-    viaPEq
+  prop_equiv
+    @( 'OnPEq)
+    @( 'TotalFun)
     (find @[] @Integer even)
     (pfind # peven)
-    (genList integerGen)
+    (genList integerGen :* Nil)
   where
     peven :: Term s (PInteger :--> PBool)
     peven = plam $ \n -> pmod # n # 2 #== 0
 
 elemAtTest :: Property
 elemAtTest =
-  haskPlutEquiv
-    viaBothPartial
+  prop_equiv
+    @( 'OnBoth)
+    @( 'PartialFun)
     elemAt
     pelemAt
-    (Gen.integral $ Range.linear (-10) 100, Gen.list (Range.linear 0 100) integerGen)
+    $ Gen.integral (Range.linear (-10) 100)
+      :* Gen.list (Range.linear 0 100) integerGen
+      :* Nil
 
 elemAt :: Integer -> [Integer] -> Integer
 elemAt n xs = xs !! fromInteger n

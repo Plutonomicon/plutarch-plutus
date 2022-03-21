@@ -4,29 +4,33 @@
 
 module Plutarch.Test.Property.Util (
   Marshal (marshal),
-  NotLambda,
-  haskPlutEquiv,
   leftInverse,
+  Equiv (..),
+  Totality (..),
+  NP ((:*), Nil), -- Re-exports for building Generator lists
+  prop_equiv,
+
+  -- * TODO: remove
+  runTest,
   viaData,
   viaPEq,
   viaBoth,
   viaPEqPartial,
   viaDataPartial,
   viaBothPartial,
+
+  -- * Maybe keep
   testDataEq,
   testPEq,
-  run,
 ) where
 
-import Plutarch.Prelude
-
 import Plutarch (ClosedTerm, compile)
-
 import Plutarch.Evaluate (EvalError, evalScript)
+import Plutarch.Prelude
 
 import Control.Exception (SomeException, evaluate, try)
 import Control.Monad.IO.Class (liftIO)
-import Data.Proxy (Proxy (Proxy))
+import Data.SOP (NP (..), Proxy (..))
 import Data.Text (Text)
 
 import Plutus.V1.Ledger.Scripts (Script (..))
@@ -80,7 +84,7 @@ class GensForArgs h ~ args => HaskellPlutarchEquivalence (e :: EquivalenceMethod
  -}
 
 instance (PIsData p, Marshal h p, NotLambda h) => HaskellPlutarchEquivalence' 'ViaPData h p () where
-  runTest' Proxy ht pt () = testDataEq (marshal ht) pt
+  runTest' Proxy ht pt () = testDataEq ht pt
 
 instance (PEq p, Marshal h p, NotLambda h) => HaskellPlutarchEquivalence' 'ViaPEq h p () where
   runTest' Proxy ht pt () = testPEq (marshal ht) pt
@@ -142,26 +146,19 @@ instance
  - and are the intended way to indicate which sort
  - of test to use and to run haskell agreement tests in general
 -}
-
-haskPlutEquiv ::
-  HaskellPlutarchEquivalence e h p args =>
-  Proxy (e :: EquivalenceMethod) ->
-  h ->
-  ClosedTerm p ->
-  args ->
-  Property
-haskPlutEquiv proxy h p args = property $ runTest proxy h p args
-
 leftInverse ::
-  forall h e p p'.
-  HaskellPlutarchEquivalence e (h -> h) (p :--> p) (Gen h) =>
-  Proxy (e :: EquivalenceMethod) ->
+  forall e t h p p' ha.
+  ( LamArgs (h -> h) ~ '[ha]
+  , EquivLamProp e t (h -> h) (p :--> p) '[ha]
+  , Show ha
+  , Marshal ha p
+  ) =>
   ClosedTerm (p' :--> p) ->
   ClosedTerm (p :--> p') ->
   Gen h ->
   Property
-leftInverse proxy l r =
-  haskPlutEquiv proxy (id :: h -> h) (plam $ \x -> l #$ r # x)
+leftInverse l r arg =
+  prop_equiv @e @t (id :: h -> h) (plam $ \x -> l #$ r # x) (arg :* Nil)
 
 viaData :: Proxy 'ViaPData
 viaData = Proxy
@@ -181,8 +178,67 @@ viaDataPartial = Proxy
 viaBothPartial :: Proxy ( 'Partial ( 'And 'ViaPEq 'ViaPData))
 viaBothPartial = Proxy
 
-testDataEq :: PIsData a => ClosedTerm a -> ClosedTerm a -> PropertyT IO ()
-testDataEq x y = testOutputEq (pdata x) (pdata y)
+data Equiv
+  = OnPEq
+  | OnPData
+  | OnBoth
+
+data Totality = TotalFun | PartialFun
+
+class EquivProp (e :: Equiv) (t :: Totality) h (p :: PType) where
+  equivProp :: h -> ClosedTerm p -> PropertyT IO ()
+
+class EquivLamProp e t hf pf args where
+  equivLamProp :: hf -> ClosedTerm pf -> NP Gen args -> PropertyT IO ()
+
+type family LamArgs f :: [Type] where
+  LamArgs (a -> b) = a ': LamArgs b
+  LamArgs _ = '[]
+
+instance {-# OVERLAPPABLE #-} (EquivProp e t h p, LamArgs h ~ '[]) => EquivLamProp e t h p '[] where
+  equivLamProp h p Nil = equivProp @e @t h p
+
+instance
+  {-# OVERLAPPING #-}
+  (Show ha, Marshal ha pa, EquivLamProp e t hb pb (LamArgs hb), LamArgs (ha -> hb) ~ args) =>
+  EquivLamProp e t (ha -> hb) (pa :--> pb) args
+  where
+  equivLamProp hf pf (a :* as) = do
+    x <- forAll a
+    equivLamProp @e @t (hf x) (pf # marshal x) as
+
+instance (PIsData p, Marshal h p) => EquivProp 'OnPData 'TotalFun h p where
+  equivProp h p = testDataEq h p
+
+instance (PEq p, Marshal h p) => EquivProp 'OnPEq 'TotalFun h p where
+  equivProp h p = testPEq (marshal h) p
+
+instance
+  ( PEq p
+  , PIsData p
+  , Marshal h p
+  , EquivProp 'OnPEq 'TotalFun h p
+  , EquivProp 'OnPData 'TotalFun h p
+  ) =>
+  EquivProp 'OnBoth 'TotalFun h p
+  where
+  equivProp h p = do
+    equivProp @( 'OnPEq) @( 'TotalFun) h p
+    equivProp @( 'OnPData) @( 'TotalFun) h p
+
+instance
+  {-# OVERLAPPING #-}
+  (PIsData p, Marshal h p, EquivProp eq 'TotalFun h p) =>
+  EquivProp eq 'PartialFun h p
+  where
+  equivProp h p = testPartial (\h' p' -> equivProp @eq @( 'TotalFun) h' p') h p
+
+prop_equiv :: forall e t h p. EquivLamProp e t h p (LamArgs h) => h -> ClosedTerm p -> NP Gen (LamArgs h) -> Property
+prop_equiv h p gens = do
+  property $ equivLamProp @e @t h p gens
+
+testDataEq :: (PIsData a, Marshal h a) => h -> ClosedTerm a -> PropertyT IO ()
+testDataEq x y = testOutputEq (pdata $ marshal x) (pdata y)
 
 testPartial :: (h -> ClosedTerm p -> PropertyT IO ()) -> h -> ClosedTerm p -> PropertyT IO ()
 testPartial baseTest h p =
