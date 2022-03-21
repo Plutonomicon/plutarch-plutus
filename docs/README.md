@@ -53,6 +53,7 @@ The [Usage section](./Usage.md) fills in the gaps left by the previous. It illus
 
 - [Conditionals](./Usage/Conditionals.md)
 - [Recursion](./Usage/Recursion.md)
+- [Using the Plutarch Prelude](./Usage/Prelude%20mixin.md)
 - [Do syntax with `TermCont`](./Usage/Do%20syntax%20with%20TermCont.md)
 - [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](./Usage/Do%20syntax%20with%20QualifiedDo.md)
 - [Deriving typeclasses for `newtype`s](./Usage/Deriving%20for%20newtypes.md)
