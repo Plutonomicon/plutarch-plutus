@@ -1,18 +1,21 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Plutarch.Test.Property.Util (
+module Plutarch.Test.Property.HaskEquiv (
+  -- | * The main property
+  prop_haskEquiv,
   Equality (..),
   Totality (..),
-  NP ((:*), Nil), -- Re-exports for building Generator lists
-  prop_equiv,
-  prop_leftInverse,
+  NP ((:*), Nil), -- Re-exports from sop-core for building Generator arguments
 
-  -- * For writing helper functions using `prop_equiv`
+  -- * For writing helper functions using `prop_haskEquiv`
   LamArgs,
   HaskEquiv,
 
-  -- * Maybe keep
+  -- * Useful properties
+  prop_leftInverse,
+
+  -- * Underlying equality tests
   testDataEq,
   testPEq,
 ) where
@@ -93,10 +96,16 @@ instance
   (PIsData p, Marshal h p, HaskEquivTerm eq 'TotalFun h p) =>
   HaskEquivTerm eq 'PartialFun h p
   where
-  haskEquivTerm h p = testPartial (\h' p' -> haskEquivTerm @eq @( 'TotalFun) h' p') h p
+  haskEquivTerm h p = testPartial (haskEquivTerm @eq @( 'TotalFun)) h p
 
-prop_equiv :: forall e t h p. HaskEquiv e t h p (LamArgs h) => h -> ClosedTerm p -> NP Gen (LamArgs h) -> Property
-prop_equiv h p gens = do
+{- |
+  The given Plutarch term is equivalent to the given Haskell type upto the given
+  equality and totality.
+
+  Generator arguments must be non-empty if the term is a lambda.
+-}
+prop_haskEquiv :: forall e t h p. HaskEquiv e t h p (LamArgs h) => h -> ClosedTerm p -> NP Gen (LamArgs h) -> Property
+prop_haskEquiv h p gens = do
   property $ haskEquiv @e @t h p gens
 
 testDataEq :: (PIsData a, Marshal h a) => h -> ClosedTerm a -> PropertyT IO ()
@@ -116,6 +125,8 @@ testPartial baseTest h p =
 
 testPEq :: PEq a => ClosedTerm a -> ClosedTerm a -> PropertyT IO ()
 testPEq x y =
+  -- Evaluate the terms once so we can annotate them individually.
+  -- Then, evaluate `x #== y`.
   case (run x, run y) of
     ((Right (Script x'), _, _), (Right (Script y'), _, _)) -> do
       annotateShow x'
@@ -154,7 +165,7 @@ prop_leftInverse ::
   Gen h ->
   Property
 prop_leftInverse l r arg =
-  prop_equiv @e @t (id @h) (plam $ \x -> l #$ r # x) (arg :* Nil)
+  prop_haskEquiv @e @t (id @h) (plam $ \x -> l #$ r # x) (arg :* Nil)
 
 type family LamArgs f :: [Type] where
   LamArgs (a -> b) = a ': LamArgs b

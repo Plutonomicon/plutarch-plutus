@@ -100,7 +100,7 @@ spec = do
 
 findTest :: Property
 findTest =
-  prop_equiv
+  prop_haskEquiv
     @( 'OnPEq)
     @( 'TotalFun)
     (find @[] @Integer even)
@@ -112,7 +112,7 @@ findTest =
 
 elemAtTest :: Property
 elemAtTest =
-  prop_equiv
+  prop_haskEquiv
     @( 'OnBoth)
     @( 'PartialFun)
     elemAt

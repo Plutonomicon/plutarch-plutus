@@ -111,8 +111,8 @@ library
     Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
+    Plutarch.Test.Property.HaskEquiv
     Plutarch.Test.Property.Marshal
-    Plutarch.Test.Property.Util
     Plutarch.Test.Run
 
   if flag(development)
@@ -170,8 +170,8 @@ executable plutarch-test
     Plutarch.Test.ListSyntax
     Plutarch.Test.Property
     Plutarch.Test.Property.Gen
+    Plutarch.Test.Property.HaskEquiv
     Plutarch.Test.Property.Marshal
-    Plutarch.Test.Property.Util
     Plutarch.Test.Run
     Plutarch.TraceSpec
     Plutarch.UnitSpec

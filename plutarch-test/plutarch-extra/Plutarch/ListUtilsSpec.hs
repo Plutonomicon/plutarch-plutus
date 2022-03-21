@@ -29,7 +29,7 @@ spec = do
 
 reverseTest :: Property
 reverseTest = do
-  prop_equiv
+  prop_haskEquiv
     @( 'OnPEq)
     @( 'TotalFun)
     (reverse :: [Integer] -> [Integer])
