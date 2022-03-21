@@ -1,3 +1,4 @@
+{-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Test.Property.Marshal (
@@ -5,11 +6,14 @@ module Plutarch.Test.Property.Marshal (
 ) where
 
 import Plutarch (ClosedTerm)
+import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude
 
 -- | Class of Haskell types that can be marshalled to a Plutarch term.
 class Marshal h (p :: PType) | h -> p where
   marshal :: h -> ClosedTerm p
+  default marshal :: (PLifted p ~ h, PLift p) => h -> ClosedTerm p
+  marshal x = pconstant x
 
 instance Marshal h p => Marshal [h] (PList p) where
   marshal xs = foldr (\h t -> pcons # marshal h # t) pnil xs
