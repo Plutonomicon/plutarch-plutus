@@ -75,7 +75,6 @@ import Plutarch.Builtin (
   PData,
   PIsData,
   pasConstr,
-  pasList,
   pconstrBuiltin,
   pdata,
   pforgetData,
@@ -90,9 +89,8 @@ import Plutarch.Internal.Generic (MkSum (mkSum), PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstant, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont)
-import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
+import Plutarch.Unsafe (punsafeCoerce)
 import qualified Plutus.V1.Ledger.Api as Ledger
-import qualified PlutusCore as PLC
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is
  `PBuiltinList PData`.
@@ -169,8 +167,8 @@ type family PUnLabel (a :: PLabeledType) :: PType where
   PUnLabel (name ':= a) = a
 
 instance {-# OVERLAPPABLE #-} PIsData (PDataRecord xs) where
-  pfromData x = punsafeCoerce $ pasList # pforgetData x
-  pdata x = punsafeBuiltin PLC.ListData # x
+  pfromData x = punsafeCoerce $ (pfromData (punsafeCoerce x) :: Term _ (PBuiltinList PData))
+  pdata x = punsafeCoerce $ pdata (punsafeCoerce x :: Term _ (PBuiltinList PData))
 
 {- | A sum of 'PDataRecord's. The underlying representation is the `PDataConstr` constructor,
  where the integer is the index of the variant and the list is the record.
