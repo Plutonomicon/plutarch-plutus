@@ -2,7 +2,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Test.Property.HaskEquiv (
-  -- | * The main property
+  -- * The main property
   prop_haskEquiv,
   Equality (..),
   Totality (..),
@@ -20,20 +20,19 @@ module Plutarch.Test.Property.HaskEquiv (
   testPEq,
 ) where
 
+import Control.Exception (SomeException, evaluate, try)
+import Control.Monad.IO.Class (liftIO)
+import Data.SOP (NP (Nil, (:*)))
+import Data.Text (Text)
+import Hedgehog (Gen, Property, PropertyT, annotate, annotateShow, assert, forAll, property, (===))
+
 import Plutarch (ClosedTerm, compile)
 import Plutarch.Evaluate (EvalError, evalScript)
 import Plutarch.Prelude
 import Plutarch.Test.Property.Marshal (Marshal (marshal))
 
-import Control.Exception (SomeException, evaluate, try)
-import Control.Monad.IO.Class (liftIO)
-import Data.SOP (NP (Nil, (:*)))
-import Data.Text (Text)
-
-import Plutus.V1.Ledger.Scripts (Script (..))
+import Plutus.V1.Ledger.Scripts (Script (Script, unScript))
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
-
-import Hedgehog (Gen, Property, PropertyT, annotate, annotateShow, assert, forAll, property, (===))
 
 -- | The nature of equality between two Plutarch terms.
 data Equality
@@ -49,22 +48,19 @@ data Totality
   deriving stock (Eq, Show, Ord)
 
 {- |
-  Like `HaskEquiv` but limited to non-lambda terms.
--}
-class HaskEquivTerm (e :: Equality) (t :: Totality) h (p :: PType) where
-  haskEquivTerm :: h -> ClosedTerm p -> PropertyT IO ()
-
-{- |
   Class of pairs of Plutarch and Haskell types that are semantically
   equivalent, upto the given equality and totality.
 -}
-class HaskEquiv equivalence totality hf pf args where
+class HaskEquiv (e :: Equality) (t :: Totality) h p args where
   -- | Test that `hf` and `pf` are equal when applied on the given arguments.
-  haskEquiv :: hf -> ClosedTerm pf -> NP Gen args -> PropertyT IO ()
+  haskEquiv :: h -> ClosedTerm p -> NP Gen args -> PropertyT IO ()
 
-instance (HaskEquivTerm e t h p, LamArgs h ~ '[]) => HaskEquiv e t h p '[] where
-  haskEquiv h p Nil = haskEquivTerm @e @t h p
+-- | Argument types for a Haskell function (empty if a term value)
+type family LamArgs f :: [Type] where
+  LamArgs (a -> b) = a ': LamArgs b
+  LamArgs _ = '[]
 
+-- For lambda terms, generate the first argument and delegate.
 instance
   (Show ha, Marshal ha pa, HaskEquiv e t hb pb (LamArgs hb), LamArgs (ha -> hb) ~ args) =>
   HaskEquiv e t (ha -> hb) (pa :--> pb) args
@@ -73,40 +69,57 @@ instance
     x <- forAll a
     haskEquiv @e @t (hf x) (pf # marshal x) as
 
-instance (PIsData p, Marshal h p) => HaskEquivTerm 'OnPData 'TotalFun h p where
-  haskEquivTerm h p = testDataEq h p
+instance (PIsData p, Marshal h p) => HaskEquiv 'OnPData 'TotalFun h p '[] where
+  haskEquiv h p Nil = testDataEq h p
 
-instance (PEq p, Marshal h p) => HaskEquivTerm 'OnPEq 'TotalFun h p where
-  haskEquivTerm h p = testPEq (marshal h) p
+instance (PEq p, Marshal h p) => HaskEquiv 'OnPEq 'TotalFun h p '[] where
+  haskEquiv h p Nil = testPEq (marshal h) p
 
 instance
   ( PEq p
   , PIsData p
   , Marshal h p
-  , HaskEquivTerm 'OnPEq 'TotalFun h p
-  , HaskEquivTerm 'OnPData 'TotalFun h p
+  , HaskEquiv 'OnPEq 'TotalFun h p '[]
+  , HaskEquiv 'OnPData 'TotalFun h p '[]
   ) =>
-  HaskEquivTerm 'OnBoth 'TotalFun h p
+  HaskEquiv 'OnBoth 'TotalFun h p '[]
   where
-  haskEquivTerm h p = do
-    haskEquivTerm @( 'OnPEq) @( 'TotalFun) h p
-    haskEquivTerm @( 'OnPData) @( 'TotalFun) h p
+  haskEquiv h p Nil = do
+    haskEquiv @( 'OnPEq) @( 'TotalFun) h p Nil
+    haskEquiv @( 'OnPData) @( 'TotalFun) h p Nil
 
 instance
-  (PIsData p, Marshal h p, HaskEquivTerm eq 'TotalFun h p) =>
-  HaskEquivTerm eq 'PartialFun h p
+  (PIsData p, Marshal h p, HaskEquiv eq 'TotalFun h p '[]) =>
+  HaskEquiv eq 'PartialFun h p '[]
   where
-  haskEquivTerm h p = testPartial (haskEquivTerm @eq @( 'TotalFun)) h p
+  haskEquiv h p Nil = testPartial (\h' p' -> haskEquiv @eq @( 'TotalFun) h' p' Nil) h p
 
 {- |
   The given Plutarch term is equivalent to the given Haskell type upto the given
   equality and totality.
 
-  Generator arguments must be non-empty if the term is a lambda.
+  Generator arguments must be non-empty if the term is a lambda. This function
+  must always be called using `TypeApplications` specifying the first two
+  type variables.
+
+  Example:
+
+  >>> prop_haskEquiv
+    @'OnPEq
+    @'TotalFun
+    (reverse :: [Integer] -> [Integer])
+    preverse
+    (genList integerGen :* Nil)
 -}
-prop_haskEquiv :: forall e t h p. HaskEquiv e t h p (LamArgs h) => h -> ClosedTerm p -> NP Gen (LamArgs h) -> Property
-prop_haskEquiv h p gens = do
-  property $ haskEquiv @e @t h p gens
+prop_haskEquiv ::
+  forall (e :: Equality) (t :: Totality) h p.
+  HaskEquiv e t h p (LamArgs h) =>
+  h ->
+  ClosedTerm p ->
+  NP Gen (LamArgs h) ->
+  Property
+prop_haskEquiv h p = do
+  property . haskEquiv @e @t h p
 
 testDataEq :: (PIsData a, Marshal h a) => h -> ClosedTerm a -> PropertyT IO ()
 testDataEq x y =
@@ -166,7 +179,3 @@ prop_leftInverse ::
   Property
 prop_leftInverse l r arg =
   prop_haskEquiv @e @t (id @h) (plam $ \x -> l #$ r # x) (arg :* Nil)
-
-type family LamArgs f :: [Type] where
-  LamArgs (a -> b) = a ': LamArgs b
-  LamArgs _ = '[]
