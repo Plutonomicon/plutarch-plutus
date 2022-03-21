@@ -9,7 +9,6 @@ module Plutarch.TryFrom (
   ptryFromData,
 ) where
 
-import Data.Function ((&))
 import Data.Proxy (Proxy (Proxy))
 
 import GHC.Records (HasField (getField))
@@ -277,10 +276,8 @@ instance PTryFrom (PBuiltinList PData) (PDataRecord '[]) where
   type PTryFromExcess (PBuiltinList PData) (PDataRecord '[]) = HRecP '[]
   ptryFrom opq = runTermCont $ do
     _ :: Term _ PUnit <-
-      pchooseListBuiltin # opq # pdelay (pcon PUnit) # pdelay (ptraceError "list is longer than zero")
-        & pforce
-        & plet
-        & tcont
+      tcont . plet . pforce $
+        pchooseListBuiltin # opq # pdelay (pcon PUnit) # pdelay (ptraceError "list is longer than zero")
     pure (pdnil, HNil)
 
 instance
