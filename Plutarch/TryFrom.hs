@@ -5,12 +5,10 @@
 module Plutarch.TryFrom (
   PTryFrom (..),
   HRecP (..),
-  ptryFrom,
 ) where
 
 import Data.Proxy (Proxy (Proxy))
 
-import GHC.Records (HasField (getField))
 import GHC.TypeLits (KnownNat, Nat, Symbol, natVal, type (+))
 
 import Plutarch.Unsafe (punsafeCoerce, punsafeFrom)
@@ -38,6 +36,8 @@ import Plutarch.Internal.Other (
  )
 
 import Plutarch.Trace (ptraceError)
+
+import Plutarch.DataRepr.Internal.HList (HRec (HCons, HNil), Labeled (Labeled))
 
 import Plutarch.DataRepr.Internal (
   PDataRecord,
@@ -80,6 +80,8 @@ import Plutarch.Reducible (Reducible (Reduce))
 
 import Data.Functor.Const (Const)
 
+import Data.Kind (Type)
+
 ----------------------- The class PTryFrom ----------------------------------------------
 
 {- |
@@ -111,8 +113,6 @@ class PTryFrom (b :: PType) (a :: PType) where
 
 ----------------------- Reducible and Flip ----------------------------------------------
 
-instance Reducible (HRecP as s) where type Reduce (HRecP as s) = HRecP as s
-
 instance Reducible (f x y) => Reducible (Flip f y x) where
   type Reduce (Flip f y x) = Reduce (f x y)
 
@@ -120,49 +120,13 @@ newtype Flip f a b = Flip (f b a)
 
 ----------------------- HRecP and friends -----------------------------------------------
 
--- | Like @HRec@ but parametrised over a list of `PType`s, not `Type`s.
-data HRecP (as :: [(Symbol, PType)]) (s :: S) where
-  HNil :: HRecP '[] s
-  HCons :: forall name a as s. Reduce (a s) -> HRecP as s -> HRecP ('(name, a) ': as) s
+type family HRecPApply (as :: [(Symbol, PType)]) (s :: S) :: [Type] where
+  HRecPApply ('(name, ty) ': rest) s = Labeled name (Reduce (ty s)) ': HRecPApply rest s
+  HRecPApply '[] s = '[]
 
-{- | allows accessing excess fields in an HRec, as of ghc921 you can
- also use `OverloadedRecordDot` with this.
--}
-getExcessField ::
-  forall name a as s.
-  ( ElemOf name a as
-  ) =>
-  HRecP as s ->
-  Reduce (a s)
-getExcessField xs = indexHRec xs $ elemOf @name @a @as
+newtype HRecP (as :: [(Symbol, PType)]) (s :: S) = HRecP (HRec (HRecPApply as s))
 
--- | Index HRec using Elem
-indexHRec :: forall s as. HRecP as s -> (forall a name. Elem name a as -> Reduce (a s))
-indexHRec (HCons x _) Here = x
-indexHRec (HCons _ xs) (There i) = indexHRec xs i
-indexHRec HNil impossible = case impossible of {}
-
-data Elem (sym :: Symbol) (a :: PType) (as :: [(Symbol, PType)]) where
-  Here :: Elem sym a ('(sym, a) ': as)
-  There :: Elem a sym as -> Elem a sym ('(sym', b) ': as)
-
-class
-  ElemOf (name :: Symbol) (a :: PType) (as :: [(Symbol, PType)])
-    | as name -> a
-  where
-  elemOf :: Elem name a as
-
-instance {-# OVERLAPPING #-} ElemOf name a ('(name, a) ': as) where
-  elemOf = Here
-
-instance
-  {-# OVERLAPPABLE #-}
-  ( ElemOf name a as
-  ) =>
-  ElemOf name a ('(name', b) ': as)
-  where
-  elemOf :: Elem name a ('(name', b) ': as)
-  elemOf = There (elemOf @name @a @as)
+instance Reducible (HRecP as s) where type Reduce (HRecP as s) = HRec (HRecPApply as s)
 
 ----------------------- PData instances -------------------------------------------------
 
@@ -291,7 +255,7 @@ instance
     hv <- tcont $ ptryFrom @(PAsData pty) @PData h
     t <- tcont $ plet $ ptail # opq
     tv <- tcont $ ptryFrom @(PDataRecord as) @(PBuiltinList PData) t
-    pure (punsafeCoerce opq, HCons hv (snd tv))
+    pure (punsafeCoerce opq, HCons (Labeled hv) (snd tv))
 
 newtype Helper a b s = Helper (a s, b s)
 
