@@ -229,8 +229,12 @@ instance PEq (PDataSum defs) where
   x #== y = pdata x #== pdata y
 
 instance MkLtReprHandler defs => POrd (PDataSum defs) where
-  x #< y = pmatchLT x y mkLtReprHandler
-  x #<= y = pmatchLT x y mkLteReprHandler
+  x' #< y' = f # x' # y'
+    where
+      f = phoistAcyclic $ plam $ \x y -> pmatchLT x y mkLtReprHandler
+  x' #<= y' = f # x' # y'
+    where
+      f = phoistAcyclic $ plam $ \x y -> pmatchLT x y mkLteReprHandler
 
 pasDataSum :: PIsDataRepr a => Term s a -> Term s (PDataSum (PIsDataReprRepr a))
 pasDataSum = punsafeCoerce
@@ -403,7 +407,7 @@ data LTReprHandlers (defs :: [[PLabeledType]]) (s :: S) where
     LTReprHandlers defs s ->
     LTReprHandlers (def : defs) s
 
--- | Optimized dual pmatch specialized for lexicographic '#<' (and potentially) '#<=' implementation.
+-- | Optimized dual pmatch specialized for lexicographic '#<' and '#<=' implementations.
 pmatchLT :: Term s (PDataSum defs) -> Term s (PDataSum defs) -> LTReprHandlers defs s -> Term s PBool
 pmatchLT d1 d2 (LTRHCons handler LTRHNil) = handler (punDataSum # d1) (punDataSum # d2)
 pmatchLT d1 d2 handlers = unTermCont $ do
