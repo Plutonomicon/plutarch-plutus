@@ -70,7 +70,7 @@ common c
     -Wno-partial-type-signatures -Wmissing-export-lists -Werror
     -Wincomplete-record-updates -Wmissing-deriving-strategies
     -Wno-name-shadowing -Wunused-foralls -fprint-explicit-foralls
-    -fprint-explicit-kinds -fprint-potential-instances
+    -fprint-explicit-kinds
 
 common deps
   build-depends:
@@ -111,6 +111,7 @@ library
     Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
+    Plutarch.Test.Property.Extra
     Plutarch.Test.Property.HaskEquiv
     Plutarch.Test.Property.Marshal
     Plutarch.Test.Run
@@ -128,7 +129,6 @@ executable plutarch-test
     , plutarch-test
     , rank2classes
     , serialise
-    , sop-core
 
   if impl(ghc <9.0)
     build-depends:
@@ -169,6 +169,7 @@ executable plutarch-test
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
     Plutarch.Test.Property
+    Plutarch.Test.Property.Extra
     Plutarch.Test.Property.Gen
     Plutarch.Test.Property.HaskEquiv
     Plutarch.Test.Property.Marshal

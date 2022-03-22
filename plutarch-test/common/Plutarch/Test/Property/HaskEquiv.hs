@@ -1,22 +1,27 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
 
+{- |
+  The property of Plutarch terms corresponding to a Haskell term.
+
+  Assuming Haskell functions are already well-tested, by verifying the property
+  that a Plutarch term functions equivalently to the corresponding Haskell term
+  we automatically (more or less) verify the correctness of the Plutarch term.
+
+  This modules provides a `prop_haskEquiv` to that end.
+-}
 module Plutarch.Test.Property.HaskEquiv (
-  -- * The main property
+  -- * The principal property of the module #prop#
   prop_haskEquiv,
   Equality (..),
   Totality (..),
   NP ((:*), Nil), -- Re-exports from sop-core for building Gen arguments
 
-  -- * For writing helper functions using `prop_haskEquiv`
+  -- * For writing helper functions using `prop_haskEquiv` #types#
   LamArgs,
   HaskEquiv,
 
-  -- * Useful properties
-  prop_leftInverse,
-  prop_dataRoundTrip,
-
-  -- * Underlying equality tests
+  -- * Underlying equality tests #util#
   testDataEq,
   testPEq,
 ) where
@@ -26,35 +31,37 @@ import Control.Monad.IO.Class (liftIO)
 import Data.SOP (NP (Nil, (:*)))
 import Data.Text (Text)
 import Hedgehog (Gen, Property, PropertyT, annotate, annotateShow, assert, forAll, property, (===))
+import Plutus.V1.Ledger.Scripts (Script (Script, unScript))
+import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
+import PlutusCore.Evaluation.Machine.ExMemory (ExCPU (ExCPU), ExMemory (ExMemory))
 
 import Plutarch (ClosedTerm, compile)
 import Plutarch.Evaluate (EvalError, evalScript')
 import Plutarch.Prelude
 import Plutarch.Test.Property.Marshal (Marshal (marshal))
 
-import Plutus.V1.Ledger.Scripts (Script (Script, unScript))
-import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
-import PlutusCore.Evaluation.Machine.ExMemory (ExCPU (ExCPU), ExMemory (ExMemory))
-
 -- | The nature of equality between two Plutarch terms.
 data Equality
   = OnPEq
   | OnPData
-  | OnBoth
+  | -- | Terms are equal on both `PEq` and `PData`
+    OnBoth
   deriving stock (Eq, Show, Ord)
 
 -- | Whether a function is total or partial.
 data Totality
   = TotalFun
-  | PartialFun
+  | -- | The Plutarch *and* Haskell function is expected to be partial (error's on
+    -- certain inputs).
+    PartialFun
   deriving stock (Eq, Show, Ord)
 
 {- |
   Class of pairs of Plutarch and Haskell types that are semantically
-  equivalent, upto the given equality and totality.
+  equivalent, upto the given `Equality` and `Totality`.
 -}
 class LamArgs h ~ args => HaskEquiv (e :: Equality) (t :: Totality) h p args | h -> p where
-  -- | Test that `h` and `p` are equal when applied on the given arguments.
+  -- | Test that `h` and `p` are equal when applied on the given `args`.
   haskEquiv :: h -> ClosedTerm p -> NP Gen args -> PropertyT IO ()
 
 -- | Argument types for a Haskell function (empty if a term value)
@@ -98,7 +105,7 @@ instance
 
 {- |
   The given Plutarch term is equivalent to the given Haskell type upto the given
-  equality and totality.
+  `Equality` and `Totality`.
 
   Generator arguments must be non-empty if the term is a lambda. This function
   must always be called using `TypeApplications` specifying the first two
@@ -178,41 +185,3 @@ evalScriptHugeBudget :: Script -> (Either EvalError Script, ExBudget, [Text])
 evalScriptHugeBudget =
   evalScript' $
     ExBudget (ExCPU 10_000_000_000_000) (ExMemory 10_000_000_000)
-
-prop_leftInverse ::
-  forall e t p p' h.
-  ( LamArgs h ~ '[]
-  , HaskEquiv e t (h -> h) (p :--> p) '[h]
-  , Show h
-  , Marshal h p
-  ) =>
-  ClosedTerm (p' :--> p) ->
-  ClosedTerm (p :--> p') ->
-  Gen h ->
-  Property
-prop_leftInverse l r arg =
-  prop_haskEquiv @e @t (id @h) (plam $ \x -> l #$ r # x) (arg :* Nil)
-
-{- |
-  A Plutarch term that is a `PIsData` can be encoded to and decoded back to the
-  same value.
--}
-prop_dataRoundTrip ::
-  forall h p.
-  ( LamArgs h ~ '[]
-  , Show h
-  , Marshal h p
-  , PIsData p
-  , PEq p
-  ) =>
-  Gen h ->
-  Property
-prop_dataRoundTrip =
-  prop_leftInverse
-    @( 'OnPEq)
-    @( 'TotalFun)
-    @p
-    @(PAsData p)
-    @h
-    (plam pfromData)
-    (plam pdata)

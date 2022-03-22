@@ -6,7 +6,7 @@ module Plutarch.Test.Property.Marshal (
 ) where
 
 import Plutarch (ClosedTerm)
-import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
+import Plutarch.Lift (PLifted)
 import Plutarch.Prelude
 
 -- | Class of Haskell types that can be marshalled to a Plutarch term.
