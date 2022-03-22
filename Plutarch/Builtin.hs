@@ -172,7 +172,7 @@ instance PListLike PBuiltinList where
 instance (PLift a, PEq a) => PEq (PBuiltinList a) where
   (#==) xs ys = plistEquals # xs # ys
 
-newtype PData (s :: S) = PData (Term s PData)
+data PData (s :: S) = PData (Term s PData)
 
 instance PlutusType PData where
   type PInner PData _ = PData
@@ -217,6 +217,7 @@ pdataLiteral = pconstant
 type role PAsData representational phantom
 data PAsData (a :: PType) (s :: S)
 
+type role PAsDataLifted representational
 data PAsDataLifted (a :: PType)
 
 instance PConstant (PAsDataLifted a) where
