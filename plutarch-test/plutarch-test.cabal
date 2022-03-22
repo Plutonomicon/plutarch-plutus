@@ -105,13 +105,13 @@ library
   exposed-modules:
     Plutarch.Test
     Plutarch.Test.Property
-    Plutarch.Test.Property.Gen
 
   other-modules:
     Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
     Plutarch.Test.Property.Extra
+    Plutarch.Test.Property.Gen
     Plutarch.Test.Property.HaskEquiv
     Plutarch.Test.Property.Marshal
     Plutarch.Test.Run

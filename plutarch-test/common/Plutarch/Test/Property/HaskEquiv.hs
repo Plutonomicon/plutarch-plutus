@@ -118,7 +118,7 @@ instance
     @'TotalFun
     (reverse :: [Integer] -> [Integer])
     preverse
-    (genList integerGen :* Nil)
+    (genList genInteger :* Nil)
 -}
 prop_haskEquiv ::
   forall (e :: Equality) (t :: Totality) h p.

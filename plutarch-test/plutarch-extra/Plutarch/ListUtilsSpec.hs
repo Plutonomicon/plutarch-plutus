@@ -9,7 +9,7 @@ import Plutarch.Test
 import Hedgehog (Property)
 
 import Plutarch.Test.Property
-import Plutarch.Test.Property.Gen (genList, integerGen)
+import Plutarch.Test.Property.Gen (genInteger, genList)
 
 import Plutarch.ListUtils (pcheckSorted, preverse)
 
@@ -34,4 +34,4 @@ reverseTest = do
     @( 'TotalFun)
     (reverse :: [Integer] -> [Integer])
     preverse
-    (genList integerGen :* Nil)
+    (genList genInteger :* Nil)
