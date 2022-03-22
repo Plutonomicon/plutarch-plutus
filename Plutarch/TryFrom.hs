@@ -38,7 +38,7 @@ import Plutarch.Internal.Other (
 
 import Plutarch.Trace (ptraceError)
 
-import Plutarch.DataRepr.Internal.HList (HRec (HCons, HNil), Labeled (Labeled))
+import Plutarch.DataRepr.Internal.HList (HRec (HCons, HNil), HRecGeneric (HRecGeneric), Labeled (Labeled))
 
 import Plutarch.DataRepr.Internal (
   PDataRecord,
@@ -82,6 +82,8 @@ import Plutarch.Reducible (Reducible (Reduce))
 import Data.Functor.Const (Const)
 
 import Data.Kind (Type)
+
+import Data.Coerce (coerce)
 
 ----------------------- The class PTryFrom ----------------------------------------------
 
@@ -128,9 +130,9 @@ type family HRecPApply (as :: [(Symbol, PType)]) (s :: S) :: [Type] where
   HRecPApply ('(name, ty) ': rest) s = Labeled name (Reduce (ty s)) ': HRecPApply rest s
   HRecPApply '[] s = '[]
 
-newtype HRecP (as :: [(Symbol, PType)]) (s :: S) = HRecP (HRec (HRecPApply as s))
+newtype HRecP (as :: [(Symbol, PType)]) (s :: S) = HRecP (HRecGeneric (HRecPApply as s))
 
-instance Reducible (HRecP as s) where type Reduce (HRecP as s) = HRec (HRecPApply as s)
+instance Reducible (HRecP as s) where type Reduce (HRecP as s) = HRecGeneric (HRecPApply as s)
 
 ----------------------- PData instances -------------------------------------------------
 
@@ -236,7 +238,7 @@ instance PTryFrom (PBuiltinList PData) (PDataRecord '[]) where
     _ :: Term _ PUnit <-
       tcont . plet . pforce $
         pchooseListBuiltin # opq # pdelay (pcon PUnit) # pdelay (ptraceError "list is longer than zero")
-    pure (pdnil, HNil)
+    pure (pdnil, HRecGeneric HNil)
 
 type family UnHRecP (x :: PType) :: [(Symbol, PType)] where
   UnHRecP (HRecP as) = as
@@ -259,7 +261,7 @@ instance
     hv <- tcont $ ptryFrom @(PAsData pty) @PData h
     t <- tcont $ plet $ ptail # opq
     tv <- tcont $ ptryFrom @(PDataRecord as) @(PBuiltinList PData) t
-    pure (punsafeCoerce opq, HCons (Labeled hv) (snd tv))
+    pure (punsafeCoerce opq, HRecGeneric (HCons (Labeled hv) (coerce $ snd tv)))
 
 newtype Helper a b s = Helper (a s, b s)
 
