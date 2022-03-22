@@ -22,15 +22,9 @@ import Plutus.V1.Ledger.Api (
   TxOut (TxOut, txOutAddress, txOutDatumHash, txOutValue),
  )
 
-import Plutus.V1.Ledger.Value (Value)
-import qualified Plutus.V1.Ledger.Value as Value
-
 import PlutusTx (
   Data (B, Constr, I),
  )
-
-import PlutusTx.AssocMap (Map)
-import qualified PlutusTx.AssocMap as PlutusMap
 
 -- Plutarch imports
 import Plutarch.Prelude
@@ -54,21 +48,17 @@ import Plutarch.Unsafe (
 
 import Plutarch.Api.V1 (
   PAddress,
-  PCurrencySymbol,
   PDatum,
   PDatumHash,
-  PMap,
   PMaybeData (PDJust),
   PScriptContext,
   PScriptPurpose (PSpending),
-  PTokenName,
   PTuple,
   PTxInInfo,
   PTxInfo,
   PTxOut,
   PTxOutRef,
   PValidator,
-  PValue,
  )
 
 import Plutarch.Builtin (
@@ -78,15 +68,20 @@ import Plutarch.Builtin (
  )
 
 import Plutarch.TryFrom (
-  Flip,
-  PTryFrom (PTryFromExcess, ptryFrom),
-  ptryFromData,
+  PTryFrom,
+  PTryFromExcess,
+  ptryFrom,
+  ptryFrom',
  )
+
+import Plutarch.Reducible (Reduce, Reducible)
 
 import Plutarch.ApiSpec (info, purpose)
 import qualified Plutarch.ApiSpec as Api
 
 import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
+
+import GHC.Records (getField)
 
 spec :: Spec
 spec = do
@@ -170,7 +165,7 @@ spec = do
           (punsafeCoerce $ pconstant $ Constr 1 [PlutusTx.I 5, B "foo"])
         @-> psucceeds
       "recover PWrapInt"
-        @| pconstant 42 #== (unTermCont $ snd <$> tcont (ptryFromData @(PAsData PWrapInt) (pforgetData $ pdata $ pconstant @PInteger 42)))
+        @| pconstant 42 #== (unTermCont $ snd <$> tcont (ptryFrom @(PAsData PWrapInt) (pforgetData $ pdata $ pconstant @PInteger 42)))
         @-> passert
     "recovering a record partially vs completely" @\ do
       "partially"
@@ -236,45 +231,6 @@ spec = do
           @-> pfails
         "sample usage contains the right value"
           @| pconstant 42 #== theField @-> passert
-    "checking PValue and PMap for validity" @\ do
-      "PMap" @\ do
-        let ms0 :: Term _ (PBuiltinMap PInteger PUnit)
-            ms0 =
-              pcons
-                # (ppairDataBuiltin # (pdata $ pconstant 1) # (pdata $ pcon PUnit)) #$ pcons
-                # (ppairDataBuiltin # (pdata $ pconstant 2) # (pdata $ pcon PUnit)) #$ pcons
-                # (ppairDataBuiltin # (pdata $ pconstant 42) # (pdata $ pcon PUnit))
-                # pnil
-            mf1 :: Term _ (PBuiltinMap PInteger PUnit)
-            mf1 =
-              pcons
-                # (ppairDataBuiltin # (pdata $ pconstant 1) # (pdata $ pcon PUnit)) #$ pcons
-                # (ppairDataBuiltin # (pdata $ pconstant 1) # (pdata $ pcon PUnit)) #$ pcons
-                # (ppairDataBuiltin # (pdata $ pconstant 42) # (pdata $ pcon PUnit))
-                # pnil
-            mf2 :: Term _ (PBuiltinMap PInteger PUnit)
-            mf2 =
-              pcons
-                # (ppairDataBuiltin # (pdata $ pconstant 1) # (pdata $ pcon PUnit)) #$ pcons
-                # (ppairDataBuiltin # (pdata $ pconstant 2) # (pdata $ pcon PUnit)) #$ pcons
-                # (ppairDataBuiltin # (pdata $ pconstant 3) # (pdata $ pcon PUnit)) #$ pcons
-                # (ppairDataBuiltin # (pdata $ pconstant 2) # (pdata $ pcon PUnit))
-                # pnil
-        "valid0"
-          @| (unTermCont $ fst <$> TermCont (ptryFrom @_ @(PMap PInteger PUnit) ms0)) @-> psucceeds
-        "invalid1"
-          @| (unTermCont $ fst <$> TermCont (ptryFrom @_ @(PMap PInteger PUnit) mf1)) @-> pfails
-        "invalid2"
-          @| (unTermCont $ fst <$> TermCont (ptryFrom @_ @(PMap PInteger PUnit) mf2)) @-> pfails
-      "PValue" @\ do
-        let legalValue0 :: Value
-            legalValue0 = Value.singleton "c0" "someToken" 1
-            illegalValue1 :: Map Value.CurrencySymbol (Map Value.TokenName Integer)
-            illegalValue1 = PlutusMap.fromList [("c0", PlutusMap.fromList [("someToken", 1), ("someOtherToken", 0)])]
-        "valid0"
-          @| (unTermCont $ fst <$> TermCont (ptryFrom @(PMap PCurrencySymbol (PMap PTokenName PInteger)) @PValue $ punsafeCoerce $ pconstant $ legalValue0)) @-> psucceeds
-        "invalid1"
-          @| (unTermCont $ fst <$> TermCont (ptryFrom @(PMap PCurrencySymbol (PMap PTokenName PInteger)) @PValue $ pconstant $ illegalValue1)) @-> pfails
     "example" @\ do
       let validContext0 = ctx validOutputs0 validList1
           invalidContext1 = ctx invalidOutputs1 validList1
@@ -308,7 +264,7 @@ checkDeep ::
   ) =>
   ClosedTerm (PAsData actual) ->
   ClosedTerm (PAsData target)
-checkDeep t = unTermCont $ fst <$> TermCont (ptryFromData @(PAsData target) $ pforgetData t)
+checkDeep t = unTermCont $ fst <$> TermCont (ptryFrom @(PAsData target) $ pforgetData t)
 
 checkDeepUnwrap ::
   forall (target :: PType) (actual :: PType) (s :: S).
@@ -318,7 +274,7 @@ checkDeepUnwrap ::
   ) =>
   Term s (PAsData actual) ->
   Term s (PAsData target)
-checkDeepUnwrap t = unTermCont $ fst <$> TermCont (ptryFromData @(PAsData target) @s $ pforgetData t)
+checkDeepUnwrap t = unTermCont $ fst <$> TermCont (ptryFrom @(PAsData target) $ pforgetData t)
 
 sampleStructure :: Term _ (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData (PBuiltinList (PAsData PInteger)))))))
 sampleStructure = pdata $ psingleton #$ pdata $ psingleton #$ toDatadList [1 .. 100]
@@ -342,17 +298,22 @@ newtype PNatural (s :: S) = PMkNatural (Term s PInteger)
 pmkNatural :: Term s (PInteger :--> PNatural)
 pmkNatural = plam $ \i -> pif (i #< 0) (ptraceError "could not make natural") (pcon $ PMkNatural i)
 
+newtype Flip f b a = Flip (f a b)
+
+instance Reducible (f a b) => Reducible (Flip f b a) where
+  type Reduce (Flip f b a) = Reduce (f a b)
+
 instance PTryFrom PData (PAsData PNatural) where
   type PTryFromExcess PData (PAsData PNatural) = Flip Term PNatural
-  ptryFrom opq = runTermCont $ do
-    (ter, exc) <- TermCont $ ptryFromData @(PAsData PInteger) opq
+  ptryFrom' opq = runTermCont $ do
+    (ter, exc) <- TermCont $ ptryFrom @(PAsData PInteger) opq
     ver <- tcont $ plet $ pmkNatural #$ exc
     pure $ (punsafeCoerce ter, ver)
 
 validator :: Term s PValidator
 validator = phoistAcyclic $
   plam $ \dat red ctx -> unTermCont $ do
-    trustedRedeemer <- (\(snd -> red) -> red) <$> (TermCont $ ptryFromData @(PAsData (PBuiltinList (PAsData PNatural))) red)
+    trustedRedeemer <- (\(snd -> red) -> red) <$> (TermCont $ ptryFrom @(PAsData (PBuiltinList (PAsData PNatural))) red)
     let trustedDatum :: Term _ (PBuiltinList (PAsData PNatural))
         trustedDatum = pfromData $ punsafeCoerce dat
     -- make the Datum and Redeemer trusted
@@ -428,24 +389,6 @@ pfindOwnInput = phoistAcyclic $
           (pfield @"id" # target) #== (pfield @"id" #$ pfield @"outRef" # pfromData actual)
     pure $ pfind # pred # txInInfos
 
-{- |
-    can be safely removed after
-    https://github.com/Plutonomicon/plutarch/pull/274
-    has been merged
--}
-pfind :: (PIsListLike l a) => Term s ((a :--> PBool) :--> l a :--> PMaybe a)
-pfind = phoistAcyclic $
-  pfix #$ plam $ \self f xs ->
-    pelimList
-      ( \y ys ->
-          pif
-            (f # y)
-            (pcon $ PJust y)
-            (self # f # ys)
-      )
-      (pcon PNothing)
-      xs
-
 ------------------- Mocking a ScriptContext ----------------------------------------
 
 ctx :: [TxOut] -> [(DatumHash, Datum)] -> Term s PScriptContext
@@ -502,12 +445,12 @@ toDatadList = pdata . (foldr go pnil)
 
 mapTestSucceeds :: ClosedTerm (PAsData (PBuiltinMap PByteString PInteger))
 mapTestSucceeds = unTermCont $ do
-  (val, _) <- TermCont $ ptryFromData $ pforgetData sampleMap
+  (val, _) <- TermCont $ ptryFrom $ pforgetData sampleMap
   pure val
 
 mapTestFails :: ClosedTerm (PAsData (PBuiltinMap PInteger PInteger))
 mapTestFails = unTermCont $ do
-  (val, _) <- TermCont $ ptryFromData $ pforgetData sampleMap
+  (val, _) <- TermCont $ ptryFrom $ pforgetData sampleMap
   pure val
 
 sampleMap :: Term _ (PAsData (PBuiltinMap PByteString PInteger))
@@ -552,8 +495,8 @@ untrustedRecord =
 
 theField :: Term s PInteger
 theField = unTermCont $ do
-  (_, exc) <- tcont (ptryFrom @_ @(PAsData (PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])])) untrustedRecord)
-  pure $ exc._0._1
+  (_, exc) <- tcont (ptryFrom @(PAsData (PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])])) untrustedRecord)
+  pure $ snd . getField @"_1" . snd . snd . getField @"_0" . snd $ exc
 
 ------------------- Sample usage DerivePNewType ------------------------------------
 

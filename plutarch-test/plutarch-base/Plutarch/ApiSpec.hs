@@ -4,7 +4,6 @@ import Test.Syd
 import Test.Tasty.HUnit
 
 import Control.Monad.Trans.Cont (cont, runCont)
-import qualified Data.Map as Map
 import Plutus.V1.Ledger.Api
 import qualified Plutus.V1.Ledger.Interval as Interval
 import qualified Plutus.V1.Ledger.Value as Value
@@ -19,7 +18,6 @@ import Plutarch.Api.V1 (
   PTxInInfo,
   PTxInfo,
   PValue,
-  pmkPMap,
  )
 import Plutarch.Builtin (pasConstr, pforgetData)
 import Plutarch.Prelude
@@ -63,11 +61,6 @@ spec = do
           "fails" @| checkSignatoryTermCont # pconstant "41" # ctx @-> pfails
       describe "getFields" . pgoldenSpec $ do
         "0" @| getFields
-    describe "example2" $ do
-      describe "Map examples" . pgoldenSpec $ do
-        "sorted0" @| pmkPMap @Integer @Integer (Map.fromList [(3, 42), (4, 42)]) @-> psucceeds
-        "sorted1" @| pmkPMap @Integer @Integer (Map.fromList [(3, 42), (3, 42)]) @-> psucceeds
-        "unsorted2" @| pmkPMap @Integer @Integer (Map.fromList [(2, 42), (1, 42)]) @-> psucceeds
 
 --------------------------------------------------------------------------------
 
