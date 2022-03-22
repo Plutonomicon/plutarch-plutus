@@ -67,7 +67,6 @@ module Plutarch.Api.V1 (
 
   -- ** AssocMap
   AssocMap.PMap,
-  AssocMap.pmkPMap,
 
   -- ** Others
   Maybe.PMaybeData (PDJust, PDNothing),

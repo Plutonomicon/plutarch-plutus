@@ -3,10 +3,7 @@
 
 module Plutarch.Api.V1.AssocMap (
   PMap (PMap),
-  pmkPMap,
 ) where
-
-import Data.Map (Map, toList)
 
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified PlutusTx.AssocMap as PlutusMap
@@ -32,6 +29,7 @@ instance
   , Plutus.FromData (PLifted k)
   , PLift k
   , PLift v
+  , Ord (PLifted k)
   ) =>
   PUnsafeLiftDecl (PMap k v)
   where
@@ -39,15 +37,14 @@ instance
 
 instance
   ( PLifted (PConstanted k) ~ k
+  , PLifted (PConstanted v) ~ v
   , Plutus.ToData v
   , Plutus.FromData v
   , Plutus.ToData k
   , Plutus.FromData k
-  , PConstant k
-  , PLifted (PConstanted v) ~ v
-  , Plutus.FromData v
-  , Plutus.ToData v
   , PConstant v
+  , PConstant k
+  , Ord k
   ) =>
   PConstant (PlutusMap.Map k v)
   where
@@ -59,25 +56,3 @@ instance
       x' <- Plutus.fromData x
       y' <- Plutus.fromData y
       Just (x', y')
-
------------------------ Smart constructor to to create onchain instances ----------------
-
-{- |
-    Smart constructor to enforce PMap invariants on the Haskell level for writing
-    onchain code
--}
-pmkPMap ::
-  forall a b s.
-  ( PLifted (PConstanted a) ~ a
-  , PLifted (PConstanted b) ~ b
-  , PLift (PConstanted a)
-  , PLift (PConstanted b)
-  , Plutus.ToData a
-  , Plutus.ToData b
-  , Plutus.FromData a
-  , Plutus.FromData b
-  , Ord a
-  ) =>
-  Map a b ->
-  Term s (PMap (PConstanted a) (PConstanted b))
-pmkPMap (toList -> l) = pconstant $ PlutusMap.fromList l
