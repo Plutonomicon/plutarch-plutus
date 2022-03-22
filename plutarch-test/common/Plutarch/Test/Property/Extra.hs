@@ -1,5 +1,4 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE UndecidableInstances #-}
 
 {- |
   Extra properties based on `prop_haskEquiv`
@@ -28,6 +27,16 @@ import Plutarch.Test.Property.Marshal (Marshal)
   `l` is a left inverse of `r`
 
   See https://en.wikipedia.org/wiki/Inverse_function#Left_inverses
+
+  Like `prop_haskEquiv`, you want to call this with @TypeApplications@
+  specifying the value of `e` and `t`. For example,
+
+  >>> prop_leftInverse
+    @'OnPEq
+    @'TotalFun
+    mapJoin
+    mapSplit
+    $ mapOf (pairOf integer integer) rational
 -}
 prop_leftInverse ::
   forall e t p p' h.
