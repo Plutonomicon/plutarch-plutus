@@ -72,7 +72,7 @@ instance
     haskEquiv @e @t (hf x) (pf # marshal x) as
 
 instance (PIsData p, Marshal h p, LamArgs h ~ '[]) => HaskEquiv 'OnPData 'TotalFun h p '[] where
-  haskEquiv h p Nil = testDataEq h p
+  haskEquiv h p Nil = testDataEq' h p
 
 instance (PEq p, Marshal h p, LamArgs h ~ '[]) => HaskEquiv 'OnPEq 'TotalFun h p '[] where
   haskEquiv h p Nil = testPEq (marshal h) p
@@ -123,9 +123,12 @@ prop_haskEquiv ::
 prop_haskEquiv h p = do
   property . haskEquiv @e @t h p
 
-testDataEq :: (PIsData a, Marshal h a) => h -> ClosedTerm a -> PropertyT IO ()
-testDataEq x y =
-  pshouldBe (pdata $ marshal x) (pdata y)
+testDataEq' :: (PIsData a, Marshal h a) => h -> ClosedTerm a -> PropertyT IO ()
+testDataEq' x y =
+  testDataEq (marshal x) y
+
+testDataEq :: (PIsData a) => ClosedTerm a -> ClosedTerm a -> PropertyT IO ()
+testDataEq x y = pshouldBe (pdata x) (pdata y)
 
 testPartial :: (h -> ClosedTerm p -> PropertyT IO ()) -> h -> ClosedTerm p -> PropertyT IO ()
 testPartial baseTest h p =
