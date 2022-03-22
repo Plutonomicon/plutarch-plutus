@@ -236,7 +236,7 @@ pforgetData x = coerce $ pforgetData' Proxy (coerce x :: Term s (Helper1 (PAsDat
 pforgetData' :: forall a (p :: PType -> PType) s. Proxy p -> Term s (p (PAsData a)) -> Term s (p PData)
 pforgetData' Proxy = punsafeCoerce
 
--- | Like 'pforgetData', except it works for complex types.
+-- | Inverse of 'pforgetData''.
 prememberData :: forall (p :: PType -> PType) s. Proxy p -> Term s (p PData) -> Term s (p (PAsData PData))
 prememberData Proxy = punsafeCoerce
 

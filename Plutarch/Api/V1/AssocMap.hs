@@ -8,10 +8,6 @@ module Plutarch.Api.V1.AssocMap (
 
 import Data.Map (Map, toList)
 
-import Plutarch.TryFrom (
-  HRecP (HNil),
-  PTryFrom (PTryFromExcess, ptryFrom),
- )
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified PlutusTx.AssocMap as PlutusMap
 
@@ -85,32 +81,3 @@ pmkPMap ::
   Map a b ->
   Term s (PMap (PConstanted a) (PConstanted b))
 pmkPMap (toList -> l) = pconstant $ PlutusMap.fromList l
-
------------------------ PTryFrom insances -----------------------------------------------
-
-instance
-  ( POrd k
-  , PIsData k
-  ) =>
-  PTryFrom (PBuiltinMap k v) (PMap k v)
-  where
-  type PTryFromExcess (PBuiltinMap k v) (PMap k v) = HRecP '[]
-  ptryFrom oMap = runTermCont $ do
-    _ <-
-      tcont $
-        plet $
-          ( pfix #$ plam $
-              \self xs ->
-                pmatch xs $ \case
-                  PNil -> pcon PUnit
-                  PCons x ys ->
-                    pmatch ys $ \case
-                      PNil -> pcon PUnit
-                      PCons y _ ->
-                        pif
-                          ((pfromData (pfstBuiltin # x)) #< (pfromData (pfstBuiltin # y)))
-                          (self # ys)
-                          perror
-          )
-            # oMap
-    pure ((pcon . PMap) oMap, HNil)

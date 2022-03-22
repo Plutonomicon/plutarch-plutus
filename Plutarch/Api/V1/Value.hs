@@ -17,11 +17,6 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
  )
 
-import Plutarch.TryFrom (
-  HRecP (HNil),
-  PTryFrom (PTryFromExcess, ptryFrom),
- )
-
 import Plutarch.Prelude
 
 newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
@@ -52,17 +47,3 @@ deriving via
   (DerivePConstantViaNewtype Plutus.Value PValue (PMap PCurrencySymbol (PMap PTokenName PInteger)))
   instance
     (PConstant Plutus.Value)
-
------------------------ PTryFrom instances ----------------------------------------------
-
-instance PTryFrom (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue where
-  type PTryFromExcess (PMap PCurrencySymbol (PMap PTokenName PInteger)) PValue = HRecP '[]
-  ptryFrom m = runTermCont $ do
-    let predInner :: Term _ (PBuiltinPair (PAsData PTokenName) (PAsData PInteger) :--> PBool)
-        predInner = plam $ \tup -> pif (0 #< (pfromData $ psndBuiltin # tup)) (pcon PTrue) perror
-        predOuter :: Term _ (PBuiltinPair (PAsData PCurrencySymbol) (PAsData (PMap PTokenName PInteger)) :--> PBool)
-        predOuter = plam $ \tup -> pall # predInner # (pto $ pfromData $ psndBuiltin # tup)
-        res :: Term _ PBool
-        res = pall # predOuter # pto m
-    _ <- tcont $ plet res
-    pure $ (pcon $ PValue m, HNil)
