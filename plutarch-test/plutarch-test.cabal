@@ -76,6 +76,8 @@ common deps
     , aeson                 >=2.0
     , base
     , bytestring
+    , containers
+    , directory
     , filepath
     , generics-sop
     , mtl
@@ -102,6 +104,7 @@ library
     Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
+    Plutarch.Test.Run
 
   if flag(development)
     cpp-options: -DDevelopment
@@ -109,7 +112,7 @@ library
 executable plutarch-test
   import:         c, deps
   main-is:        Main.hs
-  hs-source-dirs: plutarch-base plutarch-extra common ./.
+  hs-source-dirs: plutarch-base plutarch-extra common conditional ./.
   build-depends:
     , base16-bytestring
     , cborg
@@ -128,7 +131,6 @@ executable plutarch-test
     other-modules:
       Plutarch.FieldSpec
       Plutarch.MonadicSpec
-      Plutarch.RecSpec
 
   other-modules:
     BaseSpec
@@ -148,6 +150,7 @@ executable plutarch-test
     Plutarch.PlutusTypeSpec
     Plutarch.POrdSpec
     Plutarch.RationalSpec
+    Plutarch.RecSpec
     Plutarch.RecursionSpec
     Plutarch.ScriptsSpec
     Plutarch.ShowSpec
@@ -157,6 +160,7 @@ executable plutarch-test
     Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
+    Plutarch.Test.Run
     Plutarch.TraceSpec
     Plutarch.UnitSpec
     Plutarch.UPLCSpec
