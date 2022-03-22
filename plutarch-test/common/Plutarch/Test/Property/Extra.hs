@@ -29,19 +29,18 @@ import Plutarch.Test.Property.Marshal (Marshal)
   See https://en.wikipedia.org/wiki/Inverse_function#Left_inverses
 
   Like `prop_haskEquiv`, you want to call this with @TypeApplications@
-  specifying the value of `e` and `t`. For example,
+  specifying the value of `e`. For example,
 
   >>> prop_leftInverse
     @'OnPEq
-    @'TotalFun
     mapJoin
     mapSplit
     $ mapOf (pairOf integer integer) rational
 -}
 prop_leftInverse ::
-  forall e t p p' h.
+  forall e p p' h.
   ( LamArgs h ~ '[]
-  , HaskEquiv e t (h -> h) (p :--> p) '[h]
+  , HaskEquiv e 'TotalFun (h -> h) (p :--> p) '[h]
   , Show h
   , Marshal h p
   ) =>
@@ -50,7 +49,7 @@ prop_leftInverse ::
   Gen h ->
   Property
 prop_leftInverse l r arg =
-  prop_haskEquiv @e @t (id @h) (plam $ \x -> l #$ r # x) (arg :* Nil)
+  prop_haskEquiv @e @( 'TotalFun) (id @h) (plam $ \x -> l #$ r # x) (arg :* Nil)
 
 {- |
   A Plutarch term that is a `PIsData` can be encoded to and decoded back to the
@@ -69,7 +68,6 @@ prop_dataRoundTrip ::
 prop_dataRoundTrip =
   prop_leftInverse
     @( 'OnPEq)
-    @( 'TotalFun)
     @p
     @(PAsData p)
     @h
