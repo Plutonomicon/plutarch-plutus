@@ -1,5 +1,0 @@
-x1+x2.builtin (program 1.0.0 3)
-x1+x2.pmatch (program 1.0.0 3)
-uncons.ChooseList (program 1.0.0 [2,3,4,5])
-uncons.head-and-tail (program 1.0.0 [2,3,4,5])
-uncons.head-and-tail-and-null (program 1.0.0 [2,3,4,5])

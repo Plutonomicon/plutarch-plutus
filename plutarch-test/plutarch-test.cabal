@@ -34,6 +34,7 @@ common c
     FlexibleContexts
     FlexibleInstances
     ForeignFunctionInterface
+    FunctionalDependencies
     GADTSyntax
     GeneralisedNewtypeDeriving
     HexFloatLiterals
@@ -80,6 +81,7 @@ common deps
     , directory
     , filepath
     , generics-sop
+    , hedgehog
     , mtl
     , plutarch
     , plutarch-extra
@@ -89,6 +91,7 @@ common deps
     , serialise
     , sydtest
     , sydtest-discover
+    , sydtest-hedgehog
     , tasty
     , tasty-hunit
     , tasty-quickcheck
@@ -138,10 +141,10 @@ executable plutarch-test
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
     Plutarch.EitherSpec
-    Plutarch.HelloSpec
     Plutarch.IntegerSpec
     Plutarch.LiftSpec
     Plutarch.ListSpec
+    Plutarch.ListUtilsSpec
     Plutarch.MaybeSpec
     Plutarch.PairSpec
     Plutarch.PIsDataSpec
@@ -157,6 +160,8 @@ executable plutarch-test
     Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
+    Plutarch.Test.Property.Gen
+    Plutarch.Test.Property.Util
     Plutarch.Test.Run
     Plutarch.TraceSpec
     Plutarch.UnitSpec
