@@ -1,10 +1,21 @@
 module Plutarch.ListSpec (spec, integerList) where
 
 import Test.Syd
+import Test.Syd.Hedgehog ()
 
 import Plutarch.List (pconvertLists, pfoldl')
 import Plutarch.Prelude
 import Plutarch.Test
+
+import Hedgehog (Property)
+
+import Data.List (find)
+
+import Plutarch.Test.Property.Gen (genList, integerGen)
+import Plutarch.Test.Property.Util (haskPlutEquiv, viaBothPartial, viaPEq)
+
+import qualified Hedgehog.Gen as Gen
+import qualified Hedgehog.Range as Range
 
 integerList :: [Integer] -> Term s (PList PInteger)
 integerList xs = pconvertLists #$ pconstant @(PBuiltinList PInteger) xs
@@ -12,59 +23,44 @@ integerList xs = pconvertLists #$ pconstant @(PBuiltinList PInteger) xs
 spec :: Spec
 spec = do
   describe "list" $ do
-    let xs10 :: Term _ (PList PInteger)
-        xs10 = integerList [1 .. 10]
-    describe "type" . pgoldenSpec $ do
-      "phead" @| phead # xs10 @== pconstant @PInteger 1
-      "ptail" @| ptail # xs10 @== integerList [2 .. 10]
-      let matchP = pmatch (integerList [1, 3, 1]) $ \case
-            PSNil -> perror
-            PSCons x _ -> x
-      "pmatch" @| matchP @== pconstant @PInteger 1
-    describe "fun" . pgoldenSpec $ do
+    describe "properties" $ do
+      describe "find" $ do
+        it "plutarch level find mirrors haskell level find" findTest
+      describe "elemAt" $ do
+        it "plutarch level elemAt mirrors haskell level elemAt" elemAtTest
+    plutarchDevFlagDescribe . pgoldenSpec $ do
+      let xs10 :: Term _ (PList PInteger)
+          xs10 = integerList [1 .. 10]
+          numList :: Term _ (PBuiltinList PInteger)
+          numList = pconstant [1 .. 5]
+      "pmatch" @| pmatch (integerList [1, 3, 1]) (const perror) @-> pfails
+      "phead" @| 1 #== (phead # xs10) @-> passert
+      "ptail" @| integerList [2 .. 10] #== ptail # xs10 @-> passert
       "pnull" @\ do
-        "empty" @| pnull # (integerList []) @-> passert
-        "nonempty" @| pnot # (pnull # xs10) @-> passert
+        "empty" @| (pnull # integerList []) @-> passert
+        "nonempty" @| (pnot #$ pnull # xs10) @-> passert
       "pconcat" @\ do
-        let xs :: Term s (PList PInteger)
-            xs = psingleton # (fromInteger @(Term _ PInteger) 0)
-        "identity" @| pconcat # xs # pnil @== xs
-      "plength"
-        @| plength # xs10 @== pconstant @PInteger 10
-      "pelem"
-        @| pelem # 5 # xs10 @-> passert
-      "pall"
-        @| pall # plam (const $ pconstant @PBool False) # xs10 @-> passertNot
-      "plistEquals" @\ do
-        "true" @| plistEquals # xs10 # integerList [1 .. 10] @-> passert
-        "false" @| plistEquals # xs10 # integerList [1 .. 3] @-> passertNot
-        "empty" @| plistEquals # xs10 # integerList [] @-> passertNot
+        "identity" @| (pconcat # xs10 # pnil #== pconcat # pnil # xs10) #&& (pconcat # pnil # xs10 #== xs10) @-> passert
       "pmap" @\ do
-        "eg" @| pmap # (plam $ \x -> x + x) # xs10
-          @== (integerList $ fmap (* 2) [1 .. 10])
-        "identity" @| pmap @PList # (plam $ \(x :: Term _ PInteger) -> x) # pnil
-          @== pnil @PList
+        "eg" @| pmap # (plam $ \x -> x + x) # xs10 #== (integerList $ fmap (* 2) [1 .. 10]) @-> passert
+        "identity" @| pmap @PList # (plam $ \(x :: Term _ PInteger) -> x) # pnil #== pnil @-> passert
       "pfilter" @\ do
-        "1" @| pfilter # (plam $ \x -> pmod # x # 2 #== 0) # xs10
-          @== integerList [2, 4, 6, 8, 10]
-        "2" @| pfilter # (plam $ \x -> 5 #< x) # xs10
-          @== integerList [6 .. 10]
-      "pzipWith" @| pzipWith' (+) # xs10 # xs10
-        @== (integerList (fmap (* 2) [1 .. 10]))
+        "evens" @| pfilter # (plam $ \x -> pmod # x # 2 #== 0) # xs10 #== integerList [2, 4, 6, 8, 10] @-> passert
+        "gt5" @| pfilter # (plam $ \x -> 5 #< x) # xs10 #== integerList [6 .. 10] @-> passert
+      "pzipWith" @\ do
+        "double" @| pzipWith' (+) # xs10 # xs10 #== integerList (fmap (* 2) [1 .. 10]) @-> passert
       "pfoldl" @\ do
-        "primed" @\ do
-          "nonempty" @| pfoldl' (-) # 0 # xs10
-            @== pconstant @PInteger (foldl (-) 0 [1 .. 10])
-          "empty" @| pfoldl' (-) # 0 # integerList []
-            @== pconstant @PInteger 0
-        "primed" @\ do
-          "nonempty" @| pfoldl # plam (-) # 0 # xs10
-            @== pconstant @PInteger (foldl (-) 0 [1 .. 10])
-          "empty" @| pfoldl # plam (-) # 0 # integerList []
-            @== pconstant @PInteger 0
-    -- Benchmarking different ways of using lists
-    describe "bench" . pgoldenSpec $ do
-      let numList = pconstant @(PBuiltinList PInteger) [1 .. 5]
+        "nonempty" @| pfoldl # plam (-) # 0 # xs10 #== pconstant (foldl (-) 0 [1 .. 10]) @-> passert
+        "nonempty-primed" @| pfoldl' (-) # 0 # xs10 #== pconstant (foldl (-) 0 [1 .. 10]) @-> passert
+        "empty" @| pfoldl # plam (-) # 0 # integerList [] #== pconstant 0 @-> passert
+        "empty-primed" @| pfoldl' (-) # 0 # integerList [] #== pconstant 0 @-> passert
+      "elemAt" @\ do
+        "elemAt_3_[1..10]" @| pelemAt # 3 # integerList [1 .. 10]
+        "elemAt_0_[1..10]" @| pelemAt # 0 # integerList [1 .. 10]
+        "elemAt_9_[1..10]" @| pelemAt # 9 # integerList [1 .. 10]
+      "find" @\ do
+        "find_(==3)_[1..4]" @| pfind # plam (#== 3) #$ integerList [1 .. 4]
+        "find_(==5)_[1..4]" @| pfind # plam (#== 5) #$ integerList [1 .. 4]
       -- Two ways of matching on a list
       "x1+x2" @\ do
         -- Via HeadList and TailList only.
@@ -101,3 +97,25 @@ spec = do
               PTrue -> perror
               PFalse -> plet (phead # numList) $ \_x ->
                 ptail # numList
+
+findTest :: Property
+findTest =
+  haskPlutEquiv
+    viaPEq
+    (find @[] @Integer even)
+    (pfind # peven)
+    (genList integerGen)
+  where
+    peven :: Term s (PInteger :--> PBool)
+    peven = plam $ \n -> pmod # n # 2 #== 0
+
+elemAtTest :: Property
+elemAtTest =
+  haskPlutEquiv
+    viaBothPartial
+    elemAt
+    pelemAt
+    (Gen.integral $ Range.linear (-10) 100, Gen.list (Range.linear 0 100) integerGen)
+
+elemAt :: Integer -> [Integer] -> Integer
+elemAt n xs = xs !! fromInteger n
