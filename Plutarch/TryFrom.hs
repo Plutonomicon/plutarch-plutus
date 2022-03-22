@@ -348,11 +348,11 @@ instance
   ) =>
   PTryFrom (PAsData (PIsDataReprInstances a)) PData
   where
-  type PTryFromExcess (PAsData (PIsDataReprInstances a)) PData = HRecP '[]
+  type PTryFromExcess (PAsData (PIsDataReprInstances a)) PData = Const ()
   ptryFrom opq = runTermCont $ do
     let reprsum :: Term _ (PDataSum (PIsDataReprRepr a))
         reprsum = pfromData $ unTermCont $ fst <$> TermCont (ptryFrom opq)
-    pure $ (pdata $ punsafeFrom reprsum, HNil)
+    pure $ (pdata $ punsafeFrom reprsum, ())
 
 ----------------------- DerivePNewtype insatace -----------------------------------------
 
