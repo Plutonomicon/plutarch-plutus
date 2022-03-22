@@ -6,7 +6,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Builtin (
-  PData (..),
+  PData,
   pfstBuiltin,
   psndBuiltin,
   pasConstr,
@@ -172,12 +172,12 @@ instance PListLike PBuiltinList where
 instance (PLift a, PEq a) => PEq (PBuiltinList a) where
   (#==) xs ys = plistEquals # xs # ys
 
-data PData s
-  = PDataConstr (Term s (PBuiltinPair PInteger (PBuiltinList PData)))
-  | PDataMap (Term s (PBuiltinList (PBuiltinPair PData PData)))
-  | PDataList (Term s (PBuiltinList PData))
-  | PDataInteger (Term s PInteger)
-  | PDataByteString (Term s PByteString)
+newtype PData (s :: S) = PData (Term s PData)
+
+instance PlutusType PData where
+  type PInner PData _ = PData
+  pcon' (PData t) = t
+  pmatch' t f = f (PData t)
 
 instance PUnsafeLiftDecl PData where type PLifted PData = Data
 deriving via (DerivePConstantDirect Data PData) instance (PConstant Data)
