@@ -1,4 +1,4 @@
-module Plutarch.ApiSpec (spec, ctx) where
+module Plutarch.ApiSpec (spec, ctx, info, purpose, validator, datum) where
 
 import Test.Syd
 import Test.Tasty.HUnit
@@ -22,6 +22,8 @@ import Plutarch.Api.V1 (
 import Plutarch.Builtin (pasConstr, pforgetData)
 import Plutarch.Prelude
 import Plutarch.Test
+
+-- import PlutusTx.AssocMap as PlutusMap
 
 spec :: Spec
 spec = do

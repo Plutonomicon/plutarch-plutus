@@ -16,6 +16,7 @@ import Plutarch.Lift (
   PLifted,
   PUnsafeLiftDecl,
  )
+
 import Plutarch.Prelude
 
 newtype PTokenName (s :: S) = PTokenName (Term s PByteString)

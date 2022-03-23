@@ -35,6 +35,11 @@ import PlutusTx (BuiltinData, Data, builtinDataToData, dataToBuiltinData)
 import PlutusTx.Builtins.Class (FromBuiltin, ToBuiltin, fromBuiltin, toBuiltin)
 import qualified UntypedPlutusCore as UPLC
 
+{- |
+Laws:
+ - It must be that @PConstantRepr (PLifted p)@ when encoded as a constant
+   in UPLC (via the 'UntypedPlutusCore.Constant' constructor) is a valid @p@.
+-}
 class (PConstant (PLifted p), PConstanted (PLifted p) ~ p) => PUnsafeLiftDecl (p :: PType) where
   type PLifted p :: Type
 
@@ -44,6 +49,14 @@ and converted to a Plutarch type.
 The Plutarch type is determined by `PConstanted h`. Its Plutus Core representation is given by `PConstantRepr h`.
 
 This typeclass is closely tied with 'PLift'.
+
+Laws:
+ - @pconstantFromRepr . pconstantToRepr ≡ Just@
+ - @(pconstantToRepr <$>) . pconstantFromRepr ≡ Just@
+ - @plift . pfromData . punsafeCoerce . pconstant . toData ≡ id@
+ - @fromData . plift . pforgetData . ptoData . pconstant ≡ Just@
+
+These laws must be upheld for the sake of soundness of the type system.
 -}
 class (PUnsafeLiftDecl (PConstanted h), PLC.DefaultUni `PLC.Includes` PConstantRepr h) => PConstant (h :: Type) where
   type PConstantRepr h :: Type

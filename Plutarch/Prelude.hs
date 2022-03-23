@@ -97,7 +97,7 @@ module Plutarch.Prelude (
   PPair (..),
 
   -- * Builtin types and utilities
-  PData (..),
+  PData,
   pfstBuiltin,
   psndBuiltin,
   PBuiltinPair,

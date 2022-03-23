@@ -118,6 +118,7 @@ executable plutarch-test
   build-depends:
     , base16-bytestring
     , cborg
+    , containers
     , plutarch-test
     , rank2classes
     , serialise
@@ -133,6 +134,7 @@ executable plutarch-test
     other-modules:
       Plutarch.FieldSpec
       Plutarch.MonadicSpec
+      Plutarch.TryFromSpec
 
   other-modules:
     BaseSpec

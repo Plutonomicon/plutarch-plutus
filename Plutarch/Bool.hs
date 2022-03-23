@@ -81,7 +81,7 @@ class PEq t where
 
 infix 4 #==
 
-class POrd t where
+class PEq t => POrd t where
   (#<=) :: Term s t -> Term s t -> Term s PBool
   (#<) :: Term s t -> Term s t -> Term s PBool
 

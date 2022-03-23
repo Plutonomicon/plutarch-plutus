@@ -2,6 +2,10 @@
 
 # Unreleased
 
+- Added `PEq` superclass constraint to `POrd`
+
+  Included by [#326](https://github.com/Plutonomicon/plutarch/pull/326)
+
 - Added module `Plutarch.Show` with the `PShow` type class, as well as functions `pshow` and `ptraceShowId`.
 
   Started by [#352](https://github.com/Plutonomicon/plutarch/pull/352)
@@ -60,7 +64,7 @@
 - Added APIs for constructing, compiling, serialising & hashing Plutarch scripts.
 
   Type synonyms for Plutarch-typed scripts `PValidator`,`PMintingPolicy` & `PStakeValidator`.
-  
+
   `mkValidator`, `mkStakeValidator` & `mkMintingPolicy` functions, for creating Plutus API compatible scripts.
 
   `validatorHash`, `mintingPolicySymbol` & `stakeValidatorHash` to obtain script hashes.
@@ -92,15 +96,20 @@
 
 - Add `Plutarch.Test` for testing Plutarch code with goldens for UPLC printing and Plutus benchmarks.
 
-- `plutarch-extra`: Add a new directory scaffold "`plutarch-extra`" which will be home to everything too specific to not be in the 
+- Add Conversion types `PTryFrom`, `PMaybeFrom` and `PFrom`
+
+  Module: `Plutarch.TryFrom`
+
+  Added by: [#326](https://github.com/Plutonomicon/plutarch/pull/326)
+- `plutarch-extra`: Add a new directory scaffold "`plutarch-extra`" which will be home to everything too specific to not be in the
   main Plutarch repo. Also refactored the test library.
 
   Directory: `plutarch-extra`
 
   Added by: [#329](https://github.com/Plutonomicon/plutarch/pull/329)
 
-- `plutarch-extra` export merged Prelude 
-   
+- `plutarch-extra` export merged Prelude
+
   Module: `Plutarch.PPrelude`
 
   Added by: [#356](https://github.com/Plutonomicon/plutarch/pull/356)
