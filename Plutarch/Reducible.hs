@@ -4,10 +4,9 @@ module Plutarch.Reducible (Reducible (Reduce)) where
 import Data.Coerce (Coercible)
 import Data.Functor.Const (Const (Const))
 import Data.Functor.Identity (Identity (Identity))
-import Data.Kind (Type)
 
-class (Coercible (Reduce x) x) => Reducible (x :: Type) where
-  type Reduce x :: Type
+class (Coercible (Reduce x) x) => Reducible (x :: k) where
+  type Reduce x :: k
 
 instance Reducible () where type Reduce () = ()
 
