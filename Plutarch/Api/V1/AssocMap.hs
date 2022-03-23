@@ -3,12 +3,13 @@
 
 module Plutarch.Api.V1.AssocMap (
   PMap (PMap),
+  singleton,
 ) where
 
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified PlutusTx.AssocMap as PlutusMap
 
-import Plutarch.Builtin (PBuiltinMap)
+import Plutarch.Builtin (PBuiltinMap, ppairDataBuiltin)
 import Plutarch.Lift (
   PConstantDecl,
   PConstantRepr,
@@ -19,6 +20,7 @@ import Plutarch.Lift (
   pconstantToRepr,
  )
 import Plutarch.Prelude
+import Plutarch.Unsafe (punsafeFrom)
 
 newtype PMap (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinMap k v))
   deriving (PlutusType, PIsData) via (DerivePNewtype (PMap k v) (PBuiltinMap k v))
@@ -47,3 +49,7 @@ instance
       x' <- Plutus.fromData x
       y' <- Plutus.fromData y
       Just (x', y')
+
+-- | Construct a singleton 'PMap' with the given key and value
+singleton :: (PIsData k, PIsData v) => Term (s :: S) (k :--> v :--> PMap k v)
+singleton = plam $ \key value -> punsafeFrom (pcons # (ppairDataBuiltin # pdata key # pdata value) # pnil)

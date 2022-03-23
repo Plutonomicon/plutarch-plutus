@@ -29,6 +29,7 @@ import Plutarch.Api.V1 (
   PTxInfo,
   PValue,
  )
+import qualified Plutarch.Api.V1.Value as PValue
 import Plutarch.Builtin (pasConstr, pforgetData)
 import Plutarch.Prelude
 import Plutarch.Test
@@ -56,6 +57,10 @@ spec = do
             $ \case
               PMinting c -> popaque c
               _ -> perror
+    describe "value" $ do
+      pgoldenSpec $ do
+        "singleton" @| PValue.singleton # pconstant "c0" # pconstant "sometoken" # 1 @-> \p ->
+          plift p @?= mint
     describe "example" $ do
       -- The checkSignatory family of functions implicitly use tracing due to
       -- monadic syntax, and as such we need two sets of tests here.

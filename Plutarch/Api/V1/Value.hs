@@ -5,11 +5,13 @@ module Plutarch.Api.V1.Value (
   PValue (PValue),
   PCurrencySymbol (PCurrencySymbol),
   PTokenName (PTokenName),
+  singleton,
 ) where
 
 import qualified Plutus.V1.Ledger.Api as Plutus
 
 import Plutarch.Api.V1.AssocMap (PMap)
+import qualified Plutarch.Api.V1.AssocMap as AssocMap
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
@@ -17,6 +19,7 @@ import Plutarch.Lift (
   PLifted,
   PUnsafeLiftDecl,
  )
+import Plutarch.Unsafe (punsafeFrom)
 
 import Plutarch.Prelude
 
@@ -48,3 +51,10 @@ deriving via
   (DerivePConstantViaNewtype Plutus.Value PValue (PMap PCurrencySymbol (PMap PTokenName PInteger)))
   instance
     PConstantDecl Plutus.Value
+
+-- | Construct a singleton 'PValue' containing only the given quantity of the given currency.
+singleton :: Term (s :: S) (PCurrencySymbol :--> PTokenName :--> PInteger :--> PValue)
+singleton =
+  plam $
+    \symbol token amount ->
+      punsafeFrom (AssocMap.singleton # symbol #$ AssocMap.singleton # token # amount)
