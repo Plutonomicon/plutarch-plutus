@@ -17,6 +17,7 @@ Looking to contribute to Plutarch? Looking for functionalities that are not curr
 - [Lower Level Examples](#lower-level-examples)
   - [Extracting `txInfoInputs` from `ScriptContext` manually (UNTYPED)](#extracting-txinfoinputs-from-scriptcontext-manually-untyped)
 - [Useful Links](#useful-links)
+- [How to build docs](#how-to-build-docs)
 
 </details>
 
@@ -289,3 +290,17 @@ There's just one element in `txInfoInputs` in this example, and there it is. Of 
 - [Plutus builtin functions and types](https://playground.plutus.iohkdev.io/doc/haddock//plutus-tx/html/PlutusTx-Builtins-Internal.html)
 - [Plutus Core builtin function identifiers, aka `DefaultFun`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultFun)
 - [Plutus Core types, aka `DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)
+
+# How to build docs
+
+To run the docs locally,
+
+```sh-session
+nix run .#docs
+```
+
+To build the static HTML site,
+
+```sh-session
+nix build .#website
+```

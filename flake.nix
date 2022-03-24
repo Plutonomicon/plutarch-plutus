@@ -589,7 +589,7 @@
         let
           pkgs = nixpkgsFor system;
           configFile = (pkgs.formats.yaml { }).generate "emanote-configFile" {
-            template.baseUrl = "/plutarch/";
+            template.baseUrl = "/"; # Use this when pushing to github.io: "/plutarch/";
           };
           configDir = pkgs.runCommand "emanote-configDir" { } ''
             mkdir -p $out
