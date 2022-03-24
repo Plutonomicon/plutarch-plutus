@@ -105,7 +105,7 @@ mockCtx =
 Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf string "It's minting!"))))
 ```
 
-> Aside: You can find the definition of `evalWithArgsT` at [Compiling and Running](../GUIDE.md#compiling-and-running).
+> Aside: You can find the definition of `evalWithArgsT` at [Compiling and Running](../README.md#compiling-and-running).
 
 ## All about extracting fields
 

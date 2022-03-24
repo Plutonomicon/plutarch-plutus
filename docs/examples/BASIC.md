@@ -2,7 +2,7 @@ Basic examples demonstrating Plutarch usage.
 
 > Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high quality documentation for Plutarch users!
 
-> Aside: Be sure to check out [Compiling and Running](./../GUIDE.md#compiling-and-running) first!
+> Aside: Be sure to check out [Compiling and Running](./../README.md#compiling-and-running) first!
 
 # Fibonacci number at given index
 
