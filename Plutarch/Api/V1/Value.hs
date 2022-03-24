@@ -6,6 +6,7 @@ module Plutarch.Api.V1.Value (
   PCurrencySymbol (PCurrencySymbol),
   PTokenName (PTokenName),
   singleton,
+  valueOf,
 ) where
 
 import qualified Plutus.V1.Ledger.Api as Plutus
@@ -54,7 +55,16 @@ deriving via
 
 -- | Construct a singleton 'PValue' containing only the given quantity of the given currency.
 singleton :: Term (s :: S) (PCurrencySymbol :--> PTokenName :--> PInteger :--> PValue)
-singleton =
-  plam $
-    \symbol token amount ->
-      punsafeFrom (AssocMap.singleton # symbol #$ AssocMap.singleton # token # amount)
+singleton = phoistAcyclic $
+  plam $ \symbol token amount ->
+    punsafeFrom (AssocMap.singleton # symbol #$ AssocMap.singleton # token # amount)
+
+-- | Get the quantity of the given currency in the 'PValue'.
+valueOf :: Term (s :: S) (PValue :--> PCurrencySymbol :--> PTokenName :--> PInteger)
+valueOf = phoistAcyclic $
+  plam $ \value symbol token ->
+    pmatch (AssocMap.lookup # symbol # pto value) $ \case
+      PNothing -> 0
+      PJust submap -> pmatch (AssocMap.lookup # token # submap) $ \case
+        PNothing -> 0
+        PJust amount -> amount
