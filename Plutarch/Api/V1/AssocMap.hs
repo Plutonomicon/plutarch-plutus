@@ -22,7 +22,6 @@ import Plutarch.Lift (
   pconstantFromRepr,
   pconstantToRepr,
  )
-import Plutarch.Maybe (pmaybe)
 import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeFrom)
 
@@ -65,7 +64,7 @@ lookup = phoistAcyclic $
       # pdata key
 
 -- | Look up the given key data in a 'PMap'.
-lookupData :: (PIsData k, PIsData v) => Term (s :: S) (PAsData k :--> PMap k v :--> PMaybe (PAsData v))
+lookupData :: (PIsData k, PIsData v, POrd k) => Term (s :: S) (PAsData k :--> PMap k v :--> PMaybe (PAsData v))
 lookupData = lookupDataWith # (phoistAcyclic $ plam $ \pair -> pcon $ PJust $ psndBuiltin # pair)
 
 -- | Look up the given key data in a 'PMap', applying the given function to the found key-value pair.
@@ -79,11 +78,17 @@ lookupDataWith ::
         :--> PMaybe x
     )
 lookupDataWith = phoistAcyclic $
-  plam $ \unwrap key map ->
-    pmaybe # pcon PNothing # unwrap
-      #$ plet (plam $ \pair -> pfstBuiltin # pair #== key)
-      $ \predicate ->
-        pfind # predicate # pto map
+  phoistAcyclic $
+    plam $ \unwrap key map ->
+      precList
+        ( \self x xs ->
+            pif
+              (pfstBuiltin # x #== key)
+              (unwrap # x)
+              (self # xs)
+        )
+        (const $ pcon PNothing)
+        # pto map
 
 -- | Construct a singleton 'PMap' with the given key and value.
 singleton :: (PIsData k, PIsData v) => Term (s :: S) (k :--> v :--> PMap k v)
