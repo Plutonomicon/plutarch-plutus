@@ -26,7 +26,7 @@ module Plutarch.DataRepr.Internal (
 ) where
 
 import Data.Functor.Const (Const (Const))
-import Data.Kind (Constraint, Type)
+import Data.Kind (Type)
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy (Proxy))
 import Data.SOP.NP (cana_NP)
@@ -43,6 +43,7 @@ import Generics.SOP (
   All,
   All2,
   Code,
+  Compose,
   Generic,
   K (K),
   NP (Nil, (:*)),
@@ -234,7 +235,7 @@ instance PIsData (PDataSum defs) where
 instance PEq (PDataSum defs) where
   x #== y = pdata x #== pdata y
 
-instance All POrdDef defs => POrd (PDataSum defs) where
+instance All (Compose POrd PDataRecord) defs => POrd (PDataSum defs) where
   x' #< y' = f # x' # y'
     where
       f = phoistAcyclic $ plam $ \x y -> pmatchLT x y mkLTHandler
@@ -446,34 +447,25 @@ findCommon handlers = do
   l <- hashHandlers handlers
   pure $ head . maximumBy (\x y -> length x `compare` length y) . groupBy (\x y -> fst x == fst y) . sortOn fst $ l
 
-type POrdDef :: [PLabeledType] -> Constraint
-class POrd (PDataRecord l) => POrdDef l where
-  ltDef :: Term s (PDataRecord l) -> Term s (PDataRecord l) -> Term s PBool
-  ltDef = (#<)
-  lteDef :: Term s (PDataRecord l) -> Term s (PDataRecord l) -> Term s PBool
-  lteDef = (#<=)
-
-instance POrd (PDataRecord def) => POrdDef def
-
-mkLTHandler :: forall def s. All POrdDef def => NP (DualReprHandler s PBool) def
-mkLTHandler = cana_NP (Proxy @POrdDef) rer $ Const ()
+mkLTHandler :: forall def s. All (Compose POrd PDataRecord) def => NP (DualReprHandler s PBool) def
+mkLTHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
   where
     rer ::
       forall (y :: [PLabeledType]) (ys :: [[PLabeledType]]).
-      POrdDef y =>
+      Compose POrd PDataRecord y =>
       Const () (y : ys) ->
       (DualReprHandler s PBool y, Const () ys)
-    rer _ = (LTRepr ltDef, Const ())
+    rer _ = (LTRepr (#<), Const ())
 
-mkLTEHandler :: forall def s. All POrdDef def => NP (DualReprHandler s PBool) def
-mkLTEHandler = cana_NP (Proxy @POrdDef) rer $ Const ()
+mkLTEHandler :: forall def s. All (Compose POrd PDataRecord) def => NP (DualReprHandler s PBool) def
+mkLTEHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
   where
     rer ::
       forall (y :: [PLabeledType]) (ys :: [[PLabeledType]]).
-      POrdDef y =>
+      Compose POrd PDataRecord y =>
       Const () (y : ys) ->
       (DualReprHandler s PBool y, Const () ys)
-    rer _ = (LTRepr lteDef, Const ())
+    rer _ = (LTRepr (#<=), Const ())
 
 {- | Use this for implementing the necessary instances for getting the `Data` representation.
  You must implement 'PIsDataRepr' to use this.
@@ -494,7 +486,7 @@ instance PIsDataRepr a => PEq (PIsDataReprInstances a) where
   x #== y = pdata x #== pdata y
 
 -- | This uses lexicographic ordering. Actually uses PDataSum '(#<)' implementation.
-instance (PIsDataRepr a, All POrdDef (PIsDataReprRepr a)) => POrd (PIsDataReprInstances a) where
+instance (PIsDataRepr a, All (Compose POrd PDataRecord) (PIsDataReprRepr a)) => POrd (PIsDataReprInstances a) where
   x #< y = pto x #< pto y
   x #<= y = pto x #<= pto y
 
