@@ -6,6 +6,7 @@ module Plutarch.Api.V1.AssocMap (
   lookup,
   lookupData,
   singleton,
+  singletonData,
 ) where
 
 import qualified Plutus.V1.Ledger.Api as Plutus
@@ -86,5 +87,9 @@ lookupDataWith = phoistAcyclic $
 
 -- | Construct a singleton 'PMap' with the given key and value.
 singleton :: (PIsData k, PIsData v) => Term (s :: S) (k :--> v :--> PMap k v)
-singleton =
-  plam $ \key value -> punsafeFrom (pcons # (ppairDataBuiltin # pdata key # pdata value) # pnil)
+singleton = phoistAcyclic $ plam $ \key value -> singletonData # pdata key # pdata value
+
+-- | Construct a singleton 'PMap' with the given data-encoded key and value.
+singletonData :: (PIsData k, PIsData v) => Term (s :: S) (PAsData k :--> PAsData v :--> PMap k v)
+singletonData = phoistAcyclic $
+  plam $ \key value -> punsafeFrom (pcons # (ppairDataBuiltin # key # value) # pnil)
