@@ -116,6 +116,14 @@ data PSampleRecord f = PSampleRecord
   }
 $(deriveAll ''PSampleRecord)
 
+data PSampleRecord' (s :: S) = PSampleRecord'
+  { psampleBool' :: Term s PBool
+  , psampleInt' :: Term s PInteger
+  , psampleString' :: Term s PString
+  }
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic, PlutusType)
+
 importedField :: Term _ (PDelayed (Rec.PRecord PSampleRecord) :--> PInteger)
 importedField = foreignImport ($$(PlutusTx.compile [||sampleInt||]) :: CompiledCode (SampleRecord -> Integer))
 
@@ -265,8 +273,10 @@ spec = do
   describe "Records" $ do
     it "PlutusTx record value" $
       printShrunkCode $$(PlutusTx.compile [||SampleRecord (toBuiltin False) 6 "Hello"||]) @?= sampleScottEncoding
-    it "Plutarch record value" $
+    it "Plutarch HKD record value" $
       printTerm (pdelay $ Rec.rcon $ PSampleRecord (pcon PFalse) 6 "Hello") @?= sampleScottEncoding
+    it "Plutarch SOP record value" $
+      printTerm (pdelay $ pcon $ PSampleRecord' (pcon PFalse) 6 "Hello") @?= sampleScottEncoding
     it "PlutusTx record function" $
       printShrunkCode $$(PlutusTx.compile [||sampleInt||]) @?= sampleScottField
     it "Plutarch record function" $
