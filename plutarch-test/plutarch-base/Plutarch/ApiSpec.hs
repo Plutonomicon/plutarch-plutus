@@ -59,8 +59,11 @@ spec = do
               _ -> perror
     describe "value" $ do
       pgoldenSpec $ do
-        "singleton" @| PValue.singleton # pconstant "c0" # pconstant "sometoken" # 1 @-> \p ->
+        let pmint = PValue.singleton # pconstant "c0" # pconstant "sometoken" # 1
+        "singleton" @| pmint @-> \p ->
           plift p @?= mint
+        "valueOf" @| PValue.valueOf # pmint # pconstant "c0" # pconstant "sometoken" @-> \p ->
+          plift p @?= 1
     describe "example" $ do
       -- The checkSignatory family of functions implicitly use tracing due to
       -- monadic syntax, and as such we need two sets of tests here.
