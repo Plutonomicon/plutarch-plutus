@@ -22,12 +22,14 @@ module Plutarch.DataRepr.Internal (
   DerivePConstantViaData (..),
   pasDataSum,
   pdToBuiltin,
-  LTReprHandlers (..),
+  DualReprHandler (..),
 ) where
 
-import Data.Kind (Type)
+import Data.Functor.Const (Const (Const))
+import Data.Kind (Constraint, Type)
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy (Proxy))
+import Data.SOP.NP (cana_NP)
 import GHC.TypeLits (
   ErrorMessage (ShowType, Text, (:<>:)),
   KnownNat,
@@ -228,13 +230,13 @@ instance PIsData (PDataSum defs) where
 instance PEq (PDataSum defs) where
   x #== y = pdata x #== pdata y
 
-instance MkLtReprHandler defs => POrd (PDataSum defs) where
+instance All POrdDef defs => POrd (PDataSum defs) where
   x' #< y' = f # x' # y'
     where
-      f = phoistAcyclic $ plam $ \x y -> pmatchLT x y mkLtReprHandler
+      f = phoistAcyclic $ plam $ \x y -> pmatchLT x y mkLTHandler
   x' #<= y' = f # x' # y'
     where
-      f = phoistAcyclic $ plam $ \x y -> pmatchLT x y mkLteReprHandler
+      f = phoistAcyclic $ plam $ \x y -> pmatchLT x y mkLTEHandler
 
 pasDataSum :: PIsDataRepr a => Term s a -> Term s (PDataSum (PIsDataReprRepr a))
 pasDataSum = punsafeCoerce
@@ -282,44 +284,15 @@ pmatchDataSum d handlers =
       plet (psndBuiltin # d') $ \args ->
         let handlers' = applyHandlers args handlers
          in runTermCont (findCommon handlers') $ \common ->
-              go
+              reprHandlersGo
                 common
                 0
                 handlers'
                 constr
   where
-    hashHandlers :: [Term s out] -> TermCont s [(Dig, Term s out)]
-    hashHandlers [] = pure []
-    hashHandlers (handler : rest) = do
-      hash <- hashOpenTerm handler
-      hashes <- hashHandlers rest
-      pure $ (hash, handler) : hashes
-
-    findCommon :: [Term s out] -> TermCont s (Dig, Term s out)
-    findCommon handlers = do
-      l <- hashHandlers handlers
-      pure $ head . maximumBy (\x y -> length x `compare` length y) . groupBy (\x y -> fst x == fst y) . sortOn fst $ l
-
     applyHandlers :: Term s (PBuiltinList PData) -> DataReprHandlers out defs s -> [Term s out]
     applyHandlers _ DRHNil = []
     applyHandlers args (DRHCons handler rest) = handler (punsafeCoerce args) : applyHandlers args rest
-
-    go ::
-      (Dig, Term s out) ->
-      Integer ->
-      [Term s out] ->
-      Term s PInteger ->
-      Term s out
-    go common _ [] _ = snd common
-    go common idx (handler : rest) constr =
-      runTermCont (hashOpenTerm handler) $ \hhash ->
-        if hhash == fst common
-          then go common (idx + 1) rest constr
-          else
-            pif
-              (fromInteger idx #== constr)
-              handler
-              $ go common (idx + 1) rest constr
 
 -- TODO: This 'PMatch' constraint needs to be changed to 'PlutusType (breaking change).
 class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
@@ -400,16 +373,11 @@ instance
       mkSOP :: NP (Term s) r -> SOP (Term s) (PCode s a)
       mkSOP = SOP . mkSum @_ @n @pcode
 
-data LTReprHandlers (defs :: [[PLabeledType]]) (s :: S) where
-  LTRHNil :: LTReprHandlers '[] s
-  LTRHCons ::
-    (Term s (PDataRecord def) -> Term s (PDataRecord def) -> Term s PBool) ->
-    LTReprHandlers defs s ->
-    LTReprHandlers (def : defs) s
+newtype DualReprHandler s out def = LTRepr (Term s (PDataRecord def) -> Term s (PDataRecord def) -> Term s out)
 
 -- | Optimized dual pmatch specialized for lexicographic '#<' and '#<=' implementations.
-pmatchLT :: Term s (PDataSum defs) -> Term s (PDataSum defs) -> LTReprHandlers defs s -> Term s PBool
-pmatchLT d1 d2 (LTRHCons handler LTRHNil) = handler (punDataSum # d1) (punDataSum # d2)
+pmatchLT :: Term s (PDataSum defs) -> Term s (PDataSum defs) -> NP (DualReprHandler s PBool) defs -> Term s PBool
+pmatchLT d1 d2 (LTRepr handler :* Nil) = handler (punDataSum # d1) (punDataSum # d2)
 pmatchLT d1 d2 handlers = unTermCont $ do
   a <- tcont . plet $ pasConstr #$ pforgetData $ pdata d1
   b <- tcont . plet $ pasConstr #$ pforgetData $ pdata d2
@@ -430,59 +398,78 @@ pmatchLT d1 d2 handlers = unTermCont $ do
             flds2 <- tcont . plet $ psndBuiltin # b
             let handlers' = applyHandlers flds1 flds2 handlers
             common <- findCommon handlers'
-            pure $ go common 0 (applyHandlers flds1 flds2 handlers) cid1
+            pure $ reprHandlersGo common 0 (applyHandlers flds1 flds2 handlers) cid1
         )
         -- Left arg's constructor id is greater, no need to continue.
         $ pconstant False
   where
-    hashHandlers :: [Term s PBool] -> TermCont s [(Dig, Term s PBool)]
-    hashHandlers [] = pure []
-    hashHandlers (handler : rest) = do
-      hash <- hashOpenTerm handler
-      hashes <- hashHandlers rest
-      pure $ (hash, handler) : hashes
-
-    findCommon :: [Term s PBool] -> TermCont s (Dig, Term s PBool)
-    findCommon handlers = do
-      l <- hashHandlers handlers
-      pure $ head . maximumBy (\x y -> length x `compare` length y) . groupBy (\x y -> fst x == fst y) . sortOn fst $ l
-
-    applyHandlers :: Term s (PBuiltinList PData) -> Term s (PBuiltinList PData) -> LTReprHandlers defs s -> [Term s PBool]
-    applyHandlers _ _ LTRHNil = []
-    applyHandlers args1 args2 (LTRHCons handler rest) =
+    applyHandlers ::
+      Term s (PBuiltinList PData) ->
+      Term s (PBuiltinList PData) ->
+      NP (DualReprHandler s PBool) defs ->
+      [Term s PBool]
+    applyHandlers _ _ Nil = []
+    applyHandlers args1 args2 (LTRepr handler :* rest) =
       handler (punsafeCoerce args1) (punsafeCoerce args2) :
       applyHandlers args1 args2 rest
 
-    go ::
-      (Dig, Term s out) ->
-      Integer ->
-      [Term s out] ->
-      Term s PInteger ->
-      Term s out
-    go common _ [] _ = snd common
-    go common idx (handler : rest) c = runTermCont (hashOpenTerm handler) $ \hhash ->
-      if hhash == fst common
-        then go common (idx + 1) rest c
-        else
-          pif
-            (fromInteger idx #== c)
-            handler
-            $ go common (idx + 1) rest c
+reprHandlersGo ::
+  (Dig, Term s out) ->
+  Integer ->
+  [Term s out] ->
+  Term s PInteger ->
+  Term s out
+reprHandlersGo common _ [] _ = snd common
+reprHandlersGo common idx (handler : rest) c =
+  runTermCont (hashOpenTerm handler) $ \hhash ->
+    if hhash == fst common
+      then reprHandlersGo common (idx + 1) rest c
+      else
+        pif
+          (fromInteger idx #== c)
+          handler
+          $ reprHandlersGo common (idx + 1) rest c
 
-class MkLtReprHandler defs where
-  type FirstDef defs :: [PLabeledType]
-  mkLtReprHandler :: LTReprHandlers defs s
-  mkLteReprHandler :: LTReprHandlers defs s
+hashHandlers :: [Term s out] -> TermCont s [(Dig, Term s out)]
+hashHandlers [] = pure []
+hashHandlers (handler : rest) = do
+  hash <- hashOpenTerm handler
+  hashes <- hashHandlers rest
+  pure $ (hash, handler) : hashes
 
-instance POrd (PDataRecord def) => MkLtReprHandler '[def] where
-  type FirstDef '[def] = def
-  mkLtReprHandler = LTRHCons (#<) LTRHNil
-  mkLteReprHandler = LTRHCons (#<=) LTRHNil
+findCommon :: [Term s out] -> TermCont s (Dig, Term s out)
+findCommon handlers = do
+  l <- hashHandlers handlers
+  pure $ head . maximumBy (\x y -> length x `compare` length y) . groupBy (\x y -> fst x == fst y) . sortOn fst $ l
 
-instance (POrd (PDataRecord def), MkLtReprHandler (def' ': defs)) => MkLtReprHandler (def ': def' ': defs) where
-  type FirstDef (def ': def' ': defs) = def
-  mkLtReprHandler = LTRHCons (#<) mkLtReprHandler
-  mkLteReprHandler = LTRHCons (#<=) mkLteReprHandler
+type POrdDef :: [PLabeledType] -> Constraint
+class POrd (PDataRecord l) => POrdDef l where
+  ltDef :: Term s (PDataRecord l) -> Term s (PDataRecord l) -> Term s PBool
+  ltDef = (#<)
+  lteDef :: Term s (PDataRecord l) -> Term s (PDataRecord l) -> Term s PBool
+  lteDef = (#<=)
+
+instance POrd (PDataRecord def) => POrdDef def
+
+mkLTHandler :: forall def s. All POrdDef def => NP (DualReprHandler s PBool) def
+mkLTHandler = cana_NP (Proxy @POrdDef) rer $ Const ()
+  where
+    rer ::
+      forall (y :: [PLabeledType]) (ys :: [[PLabeledType]]).
+      POrdDef y =>
+      Const () (y : ys) ->
+      (DualReprHandler s PBool y, Const () ys)
+    rer _ = (LTRepr ltDef, Const ())
+
+mkLTEHandler :: forall def s. All POrdDef def => NP (DualReprHandler s PBool) def
+mkLTEHandler = cana_NP (Proxy @POrdDef) rer $ Const ()
+  where
+    rer ::
+      forall (y :: [PLabeledType]) (ys :: [[PLabeledType]]).
+      POrdDef y =>
+      Const () (y : ys) ->
+      (DualReprHandler s PBool y, Const () ys)
+    rer _ = (LTRepr lteDef, Const ())
 
 {- | Use this for implementing the necessary instances for getting the `Data` representation.
  You must implement 'PIsDataRepr' to use this.
@@ -503,7 +490,7 @@ instance PIsDataRepr a => PEq (PIsDataReprInstances a) where
   x #== y = pdata x #== pdata y
 
 -- | This uses lexicographic ordering. Actually uses PDataSum '(#<)' implementation.
-instance (PIsDataRepr a, MkLtReprHandler (PIsDataReprRepr a)) => POrd (PIsDataReprInstances a) where
+instance (PIsDataRepr a, All POrdDef (PIsDataReprRepr a)) => POrd (PIsDataReprInstances a) where
   x #< y = pto x #< pto y
   x #<= y = pto x #<= pto y
 
