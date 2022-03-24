@@ -58,7 +58,6 @@
   inputs.autodocodec.flake = false;
 
   inputs.emanote.url = "github:srid/emanote/rel-link-and-anchors";
-  # inputs.emanote.inputs.ema.inputs.nixpkgs.follows = "nixpkgs";
 
   outputs = inputs@{ self, nixpkgs, iohk-nix, haskell-nix, plutus, flake-compat, flake-compat-ci, hercules-ci-effects, ... }:
     let
