@@ -210,10 +210,14 @@ type family PDataRecordFields2 as where
 
 type family PLabelIndex (name :: Symbol) (as :: [PLabeledType]) :: Nat where
   PLabelIndex name ((name ':= a) ': as) = 0
-  PLabelIndex name (_' : as) = (PLabelIndex name as) + 1
+  PLabelIndex name (_ ': as) = (PLabelIndex name as) + 1
 
 type family PUnLabel (a :: PLabeledType) :: PType where
   PUnLabel (name ':= a) = a
+
+instance {-# OVERLAPPABLE #-} PIsData (PDataRecord xs) where
+  pfromData x = punsafeCoerce $ (pfromData (punsafeCoerce x) :: Term _ (PBuiltinList PData))
+  pdata x = punsafeCoerce $ pdata (punsafeCoerce x :: Term _ (PBuiltinList PData))
 
 {- | A sum of 'PDataRecord's. The underlying representation is the `PDataConstr` constructor,
  where the integer is the index of the variant and the list is the record.

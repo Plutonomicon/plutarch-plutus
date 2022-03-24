@@ -14,6 +14,9 @@ module Plutarch.List (
   plength,
   ptryIndex,
   pdrop,
+  pfind,
+  pelemAt,
+  (#!!),
 
   -- * Construction
   psingleton,
@@ -68,7 +71,7 @@ import Plutarch (
   (#$),
   type (:-->),
  )
-import Plutarch.Bool (PBool (PFalse, PTrue), PEq, pif, (#&&), (#==), (#||))
+import Plutarch.Bool (PBool (PFalse, PTrue), PEq, pif, (#&&), (#<), (#==), (#||))
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (pconstant)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
@@ -77,6 +80,7 @@ import Plutarch.String (PString)
 
 import Data.Kind
 import Plutarch.Show (PShow (pshow'), pshow)
+import Plutarch.Trace (ptraceError)
 
 data PList (a :: PType) (s :: S)
   = PSCons (Term s a) (Term s (PList a))
@@ -408,3 +412,42 @@ plistEquals =
         )
         (pelimList (\_ _ -> pconstant False) (pconstant True) ylist)
         xlist
+
+-- | / O(n) /. Like Haskell level `(!!)` but on the plutarch level
+(#!!) :: (PIsListLike l a) => Term s (l a) -> Term s PInteger -> Term s a
+l #!! i = pelemAt # i # l
+
+{- | / O(n) /. Like Haskell level `(!!)` but on the Plutarch level, not infix and
+    with arguments reversed, errors if the specified index is greater than or equal
+    to the lists length
+-}
+pelemAt :: PIsListLike l a => Term s (PInteger :--> l a :--> a)
+pelemAt = phoistAcyclic $
+  plam $ \n xs ->
+    pif
+      (n #< 0)
+      (ptraceError "pelemAt: negative index")
+      (pelemAt' # n # xs)
+
+-- | / O(n) /. like `pelemAt` but doesn't fail on negative indexes
+pelemAt' :: PIsListLike l a => Term s (PInteger :--> l a :--> a)
+pelemAt' = phoistAcyclic $
+  pfix #$ plam $ \self n xs ->
+    pif
+      (n #== 0)
+      (phead # xs)
+      (self # (n - 1) #$ ptail # xs)
+
+-- | / O(n) /. like haskell level `find` but on plutarch level
+pfind :: PIsListLike l a => Term s ((a :--> PBool) :--> l a :--> PMaybe a)
+pfind = phoistAcyclic $
+  pfix #$ plam $ \self f xs ->
+    pelimList
+      ( \y ys ->
+          pif
+            (f # y)
+            (pcon $ PJust y)
+            (self # f # ys)
+      )
+      (pcon PNothing)
+      xs

@@ -78,6 +78,8 @@ library plutarch-preludes
 
 library
   import:          c, deps
-  exposed-modules: Plutarch.Extra
+  exposed-modules:
+    Plutarch.Extra
+    Plutarch.ListUtils
 
 -- other-modules:

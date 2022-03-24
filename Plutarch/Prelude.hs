@@ -64,6 +64,7 @@ module Plutarch.Prelude (
   PIsListLike,
   plistEquals,
   pelem,
+  pelemAt,
   plength,
   ptryIndex,
   pdrop,
@@ -74,12 +75,14 @@ module Plutarch.Prelude (
   pzip,
   pmap,
   pfilter,
+  pfind,
   precList,
   pfoldr,
   pfoldrLazy,
   pfoldl,
   pall,
   pany,
+  (#!!),
 
   -- * Scott encoded list type
   PList (..),
@@ -94,7 +97,7 @@ module Plutarch.Prelude (
   PPair (..),
 
   -- * Builtin types and utilities
-  PData (..),
+  PData,
   pfstBuiltin,
   psndBuiltin,
   PBuiltinPair,

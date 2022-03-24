@@ -2,6 +2,10 @@
 
 # Unreleased
 
+- Added `PEq` superclass constraint to `POrd`
+
+  Included by [#326](https://github.com/Plutonomicon/plutarch/pull/326)
+
 - Added module `Plutarch.Show` with the `PShow` type class, as well as functions `pshow` and `ptraceShowId`.
 
   Started by [#352](https://github.com/Plutonomicon/plutarch/pull/352)
@@ -13,6 +17,9 @@
 - Add generic deriving for `PEq`
 
   Started by [#335](https://github.com/Plutonomicon/plutarch/pull/335)
+- `Plutarch.Prelude` and `Plutarch.List` now export pfind, pelemAt, preverse and pcheckSroted.
+
+	Started by: [#306](https://github.com/Plutonomicon/plutarch/pull/306)
 
 - Added module `Plutarch.FFI` for interoperability with PlutusTx.
 
@@ -88,6 +95,12 @@
   Added by: [#235](https://github.com/Plutonomicon/plutarch/pull/270)
 
 - Add `Plutarch.Test` for testing Plutarch code with goldens for UPLC printing and Plutus benchmarks.
+
+- Add Conversion types `PTryFrom`, `PMaybeFrom` and `PFrom`
+
+  Module: `Plutarch.TryFrom`
+
+  Added by: [#326](https://github.com/Plutonomicon/plutarch/pull/326)
 
 - `plutarch-extra`: Add a new directory scaffold "`plutarch-extra`" which will be home to everything too specific to not be in the
   main Plutarch repo. Also refactored the test library.
