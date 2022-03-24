@@ -57,6 +57,9 @@
   inputs.autodocodec.url = "github:srid/autodocodec/ghc921";
   inputs.autodocodec.flake = false;
 
+  inputs.emanote.url = "github:srid/emanote/rel-link-and-anchors";
+  # inputs.emanote.inputs.ema.inputs.nixpkgs.follows = "nixpkgs";
+
   outputs = inputs@{ self, nixpkgs, iohk-nix, haskell-nix, plutus, flake-compat, flake-compat-ci, hercules-ci-effects, ... }:
     let
       extraSources = [
@@ -666,6 +669,16 @@
           test-ghc9-dev = plutarchTestApp system "ghc9-dev" self.projectMatrix.ghc9.dev;
           test-ghc810-nodev = plutarchTestApp system "ghc810-nodev" self.projectMatrix.ghc810.nodev;
           test-ghc810-dev = plutarchTestApp system "ghc810-dev" self.projectMatrix.ghc810.dev;
+          docs  = rec {
+            type = "app";
+            # '' is required for escaping ${} in nix
+            script = (nixpkgsFor system).writers.writeBash "emanoteLiveReload.sh" ''
+              set -xe
+              export PORT="''${EMANOTE_PORT:-7072}"
+              ${inputs.emanote.defaultPackage.${system}}/bin/emanote --layers ./docs run --port "$PORT"
+            '';
+            program = builtins.toString script;
+          };
         }
       );
       devShell = perSystem (system: self.flake.${system}.devShell);
