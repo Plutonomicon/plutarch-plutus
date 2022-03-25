@@ -44,7 +44,7 @@ f = phoistAcyclic $ plam $ \n ->
 
 The issue here is that the AST is infinitely large. Plutarch will try to traverse this AST and will in the process not terminate, as there is no end to it. In these cases, consider using `pfix`.
 
-Relevant issue: [#19](https://github.com/Plutonomicon/plutarch/issues/19)
+Relevant issue: [\#19](https://github.com/Plutonomicon/plutarch/issues/19)
 
 # Couldn't match type `Plutarch.DataRepr.Internal.PUnLabel ...` arising from a use of `pfield` (or `hrecField`, or `pletFields`)
 
@@ -68,7 +68,7 @@ Orphan instances! Specifically, in order for those type family applications to f
 
 This happens often with Plutarch ledger API types. If you didn't import `Plutarch.Api.V1.Contexts` (or some other module that imports it), and you're using `pconstant` on a `ScriptContext` - you'll get an error like this. The `PConstant` instance for `ScriptContext` hasn't been imported - so GHC has no idea what `PConstanted ScriptContext` is!
 
-Relevant issue: [#252](https://github.com/Plutonomicon/plutarch/issues/252)
+Relevant issue: [\#252](https://github.com/Plutonomicon/plutarch/issues/252)
 
 # Type match errors when using `pfield`/`hrecField` (or `OverloadedRecordDot` to access field)
 
@@ -76,4 +76,4 @@ You might get nonsensical "Couldn't match type" errors when extracting fields. T
 
 You can fix this by providing an explicit type annotation on _the result_ of `pfield` or `hrecField` (or `OverloadedRecordDot` for field access). Otherwise, you can also explicitly use `pfromData` on the result.
 
-Relevant issue: [#275](https://github.com/Plutonomicon/plutarch/issues/275)
+Relevant issue: [\#275](https://github.com/Plutonomicon/plutarch/issues/275)

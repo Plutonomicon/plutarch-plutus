@@ -214,4 +214,4 @@ deriving via
     PConstant (Maybe h)
 ```
 
-Relevant issue: [#286](https://github.com/Plutonomicon/plutarch/issues/286)
+Relevant issue: [\#286](https://github.com/Plutonomicon/plutarch/issues/286)
