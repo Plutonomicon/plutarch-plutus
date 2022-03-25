@@ -1,3 +1,3 @@
-# Plutarch
+# Plutarch Guide
 
 See [[README]]

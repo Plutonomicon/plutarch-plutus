@@ -57,7 +57,7 @@
   inputs.autodocodec.url = "github:srid/autodocodec/ghc921";
   inputs.autodocodec.flake = false;
 
-  inputs.emanote.url = "github:srid/emanote/rel-link-and-anchors";
+  inputs.emanote.url = "github:srid/emanote/master";
 
   outputs = inputs@{ self, nixpkgs, iohk-nix, haskell-nix, plutus, flake-compat, flake-compat-ci, hercules-ci-effects, ... }:
     let
