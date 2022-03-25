@@ -6,6 +6,7 @@
 template:
   # Change this to 'pretty' to use URLs without .html suffix.
   urlStrategy: direct
+  theme: green
 
 page:
   siteTitle: Plutarch Guide
