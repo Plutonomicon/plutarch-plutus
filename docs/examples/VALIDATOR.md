@@ -7,7 +7,7 @@ Examples of validators and minting policies written in Plutarch.
 - [Validator that checks whether a value is present within signatories](#validator-that-checks-whether-a-value-is-present-within-signatories)
 - [Using custom datum/redeemer in your Validator](#using-custom-datumredeemer-in-your-validator)
 
-> Aside: Be sure to check out [Compiling and Running](./../GUIDE.md#compiling-and-running) first!
+> Aside: Be sure to check out [Compiling and Running](./../README.md#compiling-and-running) first!
 
 # Validator that always succeeds
 

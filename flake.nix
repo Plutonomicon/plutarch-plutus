@@ -57,6 +57,8 @@
   inputs.autodocodec.url = "github:srid/autodocodec/ghc921";
   inputs.autodocodec.flake = false;
 
+  inputs.emanote.url = "github:srid/emanote/master";
+
   outputs = inputs@{ self, nixpkgs, iohk-nix, haskell-nix, plutus, flake-compat, flake-compat-ci, hercules-ci-effects, ... }:
     let
       extraSources = [
@@ -582,6 +584,35 @@
             '';
           };
         };
+      plutarchWebsite = system:
+        let
+          pkgs = nixpkgsFor system;
+          configFile = (pkgs.formats.yaml { }).generate "emanote-configFile" {
+            template.baseUrl = "/"; # Use this when pushing to github.io: "/plutarch/";
+          };
+          configDir = pkgs.runCommand "emanote-configDir" { } ''
+            mkdir -p $out
+            cp ${configFile} $out/index.yaml
+          '';
+        in
+        pkgs.runCommand "plutarch-docs-html" { }
+          ''
+            mkdir $out
+            ${inputs.emanote.defaultPackage.${system}}/bin/emanote \
+              --layers "${self}/docs;${configDir}" \
+              gen $out
+          '';
+      plutarchWebsiteApp = system:
+        rec {
+          type = "app";
+          # '' is required for escaping ${} in nix
+          script = (nixpkgsFor system).writers.writeBash "emanoteLiveReload.sh" ''
+            set -xe
+            export PORT="''${EMANOTE_PORT:-7072}"
+            ${inputs.emanote.defaultPackage.${system}}/bin/emanote --layers ./docs run --port "$PORT"
+          '';
+          program = builtins.toString script;
+        };
 
       # Checks the shell script using ShellCheck
       checkedShellScript = system: name: text:
@@ -633,6 +664,7 @@
 
       packages = perSystem (system: self.flake.${system}.packages // {
         haddock = haddock system;
+        website = plutarchWebsite system;
       });
       checks = perSystem
         (system:
@@ -666,6 +698,8 @@
           test-ghc9-dev = plutarchTestApp system "ghc9-dev" self.projectMatrix.ghc9.dev;
           test-ghc810-nodev = plutarchTestApp system "ghc810-nodev" self.projectMatrix.ghc810.nodev;
           test-ghc810-dev = plutarchTestApp system "ghc810-dev" self.projectMatrix.ghc810.dev;
+
+          docs = plutarchWebsiteApp system;
         }
       );
       devShell = perSystem (system: self.flake.${system}.devShell);
