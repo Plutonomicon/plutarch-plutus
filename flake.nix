@@ -677,6 +677,7 @@
             test-ghc810-dev = flakeApp2Derivation system "test-ghc810-dev";
             "ghc810-plutarch:lib:plutarch" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch:lib:plutarch";
             "ghc810-plutarch:lib:plutarch-test" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch-test:lib:plutarch-test";
+            hls = checkedShellScript system "hls" "${self.project.${system}.pkgs.haskell-language-server}/bin/haskell-language-server";
           });
       # Because `nix flake check` does not work with haskell.nix (due to IFD),
       # we provide this attribute for running the checks locally, using:
