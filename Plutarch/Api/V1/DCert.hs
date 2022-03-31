@@ -47,7 +47,7 @@ data PDCert (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PlutusType, PIsData)
+    (PlutusType, PIsData, PEq, POrd)
     via (PIsDataReprInstances PDCert)
 
 instance PUnsafeLiftDecl PDCert where type PLifted PDCert = Plutus.DCert

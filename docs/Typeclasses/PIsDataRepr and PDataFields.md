@@ -254,6 +254,11 @@ Thus, you can use `PBuiltinList (PAsData PInteger)` as a field type, but not `PB
 
 And you'd simply derive `PIsDataRepr` using generics. However, you **must** also derive `PIsData` and `PlutusType` using `PIsDataReprInstances`. For single constructor data types, you should also derive `PDataFields`.
 
+Furthermore, you can also derive the following typeclasses via `PIsDataReprInstances`:
+
+- [`PEq`](./PEq%20and%20POrd.md)
+- [`POrd`](./PEq%20and%20POrd.md)
+
 Combine all that, and you have:
 
 ```hs

@@ -23,9 +23,10 @@ import Test.Tasty.QuickCheck (Arbitrary, property)
 import Plutarch.Api.V1
 import Plutarch.Api.V1.Tuple (pbuiltinPairFromTuple, ptupleFromBuiltin)
 import Plutarch.Builtin (pforgetData, ppairDataBuiltin)
-import Plutarch.DataRepr (PDataFields, PIsDataReprInstances (PIsDataReprInstances))
+import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
 import Plutarch.Lift (PLifted)
 import Plutarch.Prelude
+import Plutarch.SpecTypes (PTriplet (PTriplet))
 import Plutarch.Test
 
 spec :: Spec
@@ -96,7 +97,7 @@ spec = do
       "prod" @\ do
         "1"
           @| pcon
-            ( Triplet $
+            ( PTriplet $
                 pdcons
                   # pconstantData @PCurrencySymbol "ab" #$ pdcons
                   # pconstantData "41" #$ pdcons
@@ -116,7 +117,7 @@ spec = do
             rewarding = Rewarding . StakingHash $ PubKeyCredential "da"
         "2"
           @| pcon
-            ( Triplet $
+            ( PTriplet $
                 pdcons
                   # pconstantData minting #$ pdcons
                   # pconstantData spending #$ pdcons
@@ -198,29 +199,6 @@ pdataCompat ::
   PLifted p ->
   IO ()
 pdataCompat x = PlutusTx.fromData @(PLifted p) (plift $ pforgetData $ pdata $ pconstant @p x) `shouldBe` Just x
-
-{- |
-  We can defined a data-type using PDataRecord, with labeled fields.
-
-  With an appropriate instance of 'PIsDataRepr', we can automatically
-  derive 'PDataFields'.
--}
-newtype Triplet (a :: PType) (s :: S)
-  = Triplet
-      ( Term
-          s
-          ( PDataRecord
-              '[ "x" ':= a
-               , "y" ':= a
-               , "z" ':= a
-               ]
-          )
-      )
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic, PIsDataRepr)
-  deriving
-    (PlutusType, PIsData, PDataFields)
-    via (PIsDataReprInstances (Triplet a))
 
 data PVehicle (s :: S)
   = PFourWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger, "_2" ':= PInteger, "_3" ':= PInteger]))

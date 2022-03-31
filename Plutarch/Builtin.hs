@@ -172,6 +172,12 @@ instance PListLike PBuiltinList where
 instance (PLift a, PEq a) => PEq (PBuiltinList a) where
   (#==) xs ys = plistEquals # xs # ys
 
+instance {-# OVERLAPPING #-} PIsData a => PEq (PBuiltinList (PAsData a)) where
+  xs #== ys = pdata xs #== pdata ys
+
+instance {-# OVERLAPPING #-} PEq (PBuiltinList PData) where
+  xs #== ys = pdata xs #== pdata ys
+
 data PData (s :: S) = PData (Term s PData)
 
 instance PlutusType PData where
