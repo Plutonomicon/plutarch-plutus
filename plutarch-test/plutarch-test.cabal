@@ -82,6 +82,9 @@ common deps
     , filepath
     , generics-sop
     , hedgehog
+    , hspec
+    , hspec-core
+    , hspec-hedgehog
     , mtl
     , plutarch
     , plutarch-extra
@@ -116,6 +119,7 @@ library
     Plutarch.Test.Property.HaskEquiv
     Plutarch.Test.Property.Marshal
     Plutarch.Test.Run
+    Plutarch.Test.TrailSpecMonad
 
   if flag(development)
     cpp-options: -DDevelopment
@@ -179,6 +183,7 @@ executable plutarch-test
     Plutarch.Test.Property.HaskEquiv
     Plutarch.Test.Property.Marshal
     Plutarch.Test.Run
+    Plutarch.Test.TrailSpecMonad
     Plutarch.TraceSpec
     Plutarch.UnitSpec
     Plutarch.UPLCSpec

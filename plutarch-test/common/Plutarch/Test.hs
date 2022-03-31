@@ -59,6 +59,7 @@ import Plutarch.Test.Golden (
   (@\),
   (@|),
  )
+import Plutarch.Test.TrailSpecMonad ()
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 
 {- |
