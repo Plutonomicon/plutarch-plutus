@@ -154,54 +154,56 @@
 
       ghcVersion = "ghc921";
 
+      # https://github.com/input-output-hk/haskell.nix/issues/1177
+      nonReinstallablePkgs = [
+        "rts"
+        "ghc-heap"
+        "ghc-prim"
+        "integer-gmp"
+        "integer-simple"
+        "base"
+        "deepseq"
+        "array"
+        "ghc-boot-th"
+        "pretty"
+        "template-haskell"
+        # ghcjs custom packages
+        "ghcjs-prim"
+        "ghcjs-th"
+        "ghc-bignum"
+        "exceptions"
+        "stm"
+        "ghc-boot"
+        "ghc"
+        "Cabal"
+        "Win32"
+        "array"
+        "binary"
+        "bytestring"
+        "containers"
+        "directory"
+        "filepath"
+        "ghc-boot"
+        "ghc-compact"
+        "ghc-prim"
+        # "ghci" "haskeline"
+        "hpc"
+        "mtl"
+        "parsec"
+        "process"
+        "text"
+        "time"
+        "transformers"
+        "unix"
+        "xhtml"
+        "terminfo"
+      ];
+
       tools.fourmolu = { };
       tools.haskell-language-server = {
-        modules = [{
-          # https://github.com/input-output-hk/haskell.nix/issues/1177
-          nonReinstallablePkgs = [
-            "rts"
-            "ghc-heap"
-            "ghc-prim"
-            "integer-gmp"
-            "integer-simple"
-            "base"
-            "deepseq"
-            "array"
-            "ghc-boot-th"
-            "pretty"
-            "template-haskell"
-            # ghcjs custom packages
-            "ghcjs-prim"
-            "ghcjs-th"
-            "ghc-bignum"
-            "exceptions"
-            "stm"
-            "ghc-boot"
-            "ghc"
-            "Cabal"
-            "Win32"
-            "array"
-            "binary"
-            "bytestring"
-            "containers"
-            "directory"
-            "filepath"
-            "ghc-boot"
-            "ghc-compact"
-            "ghc-prim"
-            # "ghci" "haskeline"
-            "hpc"
-            "mtl"
-            "parsec"
-            "process"
-            "text"
-            "time"
-            "transformers"
-            "unix"
-            "xhtml"
-            "terminfo"
-          ];
-        }];
+        modules = [
+          { inherit nonReinstallablePkgs; }
+        ];
         compiler-nix-name = ghcVersion;
         # For some reason it doesn't use the latest version automatically.
         index-state =
@@ -222,6 +224,7 @@
       };
 
       haskellModule = system: {
+        inherit nonReinstallablePkgs; # Needed only so we can use hspec; https://github.com/Plutonomicon/plutarch/issues/409
         packages = {
           basement.src = "${inputs.foundation}/basement";
           basement.components.library.postUnpack = "\n";
