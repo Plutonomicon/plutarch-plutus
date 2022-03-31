@@ -3,12 +3,7 @@
 
   inputs.haskell-nix.url = "github:L-as/haskell.nix?ref=master";
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
-  inputs.flake-compat-ci.url = "github:hercules-ci/flake-compat-ci";
   inputs.hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
-  inputs.flake-compat = {
-    url = "github:edolstra/flake-compat";
-    flake = false;
-  };
 
   inputs.iohk-nix.url = "github:input-output-hk/iohk-nix";
   inputs.iohk-nix.flake = false;
@@ -59,7 +54,7 @@
 
   inputs.emanote.url = "github:srid/emanote/master";
 
-  outputs = inputs@{ self, nixpkgs, iohk-nix, haskell-nix, plutus, flake-compat, flake-compat-ci, hercules-ci-effects, ... }:
+  outputs = inputs@{ self, nixpkgs, iohk-nix, haskell-nix, plutus, hercules-ci-effects, ... }:
     let
       extraSources = [
         {
@@ -738,11 +733,6 @@
             }
           );
         };
-
-      ciNix = args@{ src }: flake-compat-ci.lib.recurseIntoFlakeWith {
-        flake = self;
-        systems = [ "x86_64-linux" ];
-        effectsArgs = args;
-      };
+      herculesCI.ciSystems = [ "x86_64-linux" ];
     };
 }
