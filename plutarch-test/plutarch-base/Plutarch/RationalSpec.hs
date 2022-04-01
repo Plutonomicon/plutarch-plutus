@@ -1,12 +1,11 @@
 module Plutarch.RationalSpec (spec) where
 
-import Test.Syd
-
 import Plutarch.Prelude
 import Plutarch.Rational (pproperFraction, ptruncate)
 import Plutarch.Test
+import Test.Hspec (Expectation)
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   let rat :: Term s PRational -> Term s PRational
       rat = id

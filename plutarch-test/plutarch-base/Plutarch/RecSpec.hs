@@ -3,7 +3,7 @@
 module Plutarch.RecSpec (spec) where
 
 import qualified Rank2.TH
-import Test.Syd
+
 import Prelude hiding (even, odd)
 
 import Plutarch (pcon', pmatch')
@@ -205,7 +205,7 @@ flatOuterData = pdata (punsafeFrom sampleFlatOuter)
 shallowOuterData :: Term s (PAsData (PRecord ShallowOuterRecord))
 shallowOuterData = pdata (punsafeFrom sampleShallowOuter)
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   -- Plutarch.Rec.verifySoleConstructor uses tracing, so we must create two sets
   -- of golden.

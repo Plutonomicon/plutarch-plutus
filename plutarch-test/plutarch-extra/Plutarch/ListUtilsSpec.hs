@@ -1,24 +1,20 @@
-module Plutarch.ListUtilsSpec (spec) where
+{-# LANGUAGE TemplateHaskell #-}
 
-import Test.Syd
-import Test.Syd.Hedgehog ()
+module Plutarch.ListUtilsSpec (spec, props) where
 
 import Plutarch.Prelude
 import Plutarch.Test
 
-import Hedgehog (Property)
+import Hedgehog (Property, checkParallel, discover)
 
 import Plutarch.Test.Property
 import Plutarch.Test.Property.Gen (genInteger, genList)
 
 import Plutarch.ListUtils (pcheckSorted, preverse)
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "extra.listutils" $ do
-    describe "properties" $ do
-      describe "reverse" $ do
-        it "plutarch level reversing behaves like haskell level reversing" reverseTest
     pgoldenSpec $ do
       "reverse" @\ do
         "reverse_[1..5]" @| preverse # marshal [1 .. 5 :: Integer]
@@ -27,8 +23,12 @@ spec = do
         "reverse_[1..10]" @| (pnot #$ pcheckSorted #$ marshal $ reverse [1 .. 10 :: Integer]) @-> passert
         "reverse_[]" @| preverse # marshal ([] :: [Integer])
 
-reverseTest :: Property
-reverseTest = do
+props :: IO Bool
+props = checkParallel $$(discover)
+
+-- plutarch level reversing behaves like haskell level reversing
+prop_preverseEquiv :: Property
+prop_preverseEquiv = do
   prop_haskEquiv
     @( 'OnPEq)
     @( 'TotalFun)

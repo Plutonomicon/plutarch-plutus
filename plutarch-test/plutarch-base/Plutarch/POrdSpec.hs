@@ -16,7 +16,7 @@ import qualified PlutusTx as PlutusTx
 import qualified PlutusTx.Builtins as PlutusTx
 
 import Test.QuickCheck.Instances ()
-import Test.Syd
+
 import Test.Tasty.QuickCheck (Arbitrary, arbitrary, oneof, property)
 
 import Plutarch.Api.V1 (PAddress, PCredential (PPubKeyCredential, PScriptCredential), PMaybeData)
@@ -27,10 +27,12 @@ import Plutarch.Lift (
  )
 import Plutarch.Prelude
 
+import Control.Monad.Trans (lift)
 import Plutarch.SpecTypes (PTriplet (PTriplet), Triplet (Triplet))
 import Plutarch.Test
+import Test.Hspec (shouldBe, specify)
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "pisdata" $ do
     describe "ord.property" $ do
@@ -109,16 +111,19 @@ propertySet ::
   , Arbitrary (PLifted p)
   ) =>
   String ->
-  Spec
+  TrailSpec
 propertySet typeName' = do
   describe typeName' $ do
     let typeName = '(' : typeName' ++ ")"
-    specify ("(#<) @" <> typeName <> " ≡ (<) @" <> typeName) $
-      property $ pltIso @p
-    specify ("(#<=) @" <> typeName <> " ≡ (<=) @" <> typeName) $
-      property $ plteIso @p
-    specify ("(#==) @" <> typeName <> " ≡ (==) @" <> typeName) $
-      property $ peqIso @p
+    lift $
+      specify ("(#<) @" <> typeName <> " ≡ (<) @" <> typeName) $
+        property $ pltIso @p
+    lift $
+      specify ("(#<=) @" <> typeName <> " ≡ (<=) @" <> typeName) $
+        property $ plteIso @p
+    lift $
+      specify ("(#==) @" <> typeName <> " ≡ (==) @" <> typeName) $
+        property $ peqIso @p
 
 pltIso :: forall p h. (p ~ PConstanted h, h ~ PLifted p, PConstant h, Arbitrary h, Ord h, POrd p) => h -> h -> IO ()
 pltIso a b = plift (pconstant @p a #< pconstant b) `shouldBe` (a < b)

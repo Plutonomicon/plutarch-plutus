@@ -3,13 +3,12 @@ module Plutarch.ShowSpec (spec) where
 import Control.Monad (forM_)
 import Data.String (IsString (fromString))
 import qualified Data.Text as T
-import Test.Syd
 
 import Plutarch.ListSpec (integerList)
 import Plutarch.Prelude
 import Plutarch.Test
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "show" . pgoldenSpec $ do
     let str x = pconstant @PString x

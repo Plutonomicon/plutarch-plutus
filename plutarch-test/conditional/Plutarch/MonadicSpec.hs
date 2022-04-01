@@ -3,8 +3,6 @@
 
 module Plutarch.MonadicSpec (spec) where
 
-import Test.Syd
-
 import Plutarch.Api.V1 (
   PAddress (PAddress),
   PCredential,
@@ -20,7 +18,7 @@ import Plutarch.Prelude
 import Plutarch.Test
 import Plutus.V1.Ledger.Api
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "monadic" $ do
     {- TODO: Uncomment this after flakiness is fixed

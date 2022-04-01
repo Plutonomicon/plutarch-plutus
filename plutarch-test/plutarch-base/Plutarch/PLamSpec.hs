@@ -2,13 +2,12 @@ module Plutarch.PLamSpec (spec) where
 
 import Data.ByteString (ByteString)
 import qualified PlutusCore as PLC
-import Test.Syd
 
 import Plutarch.Prelude
 import Plutarch.Test
 import Plutarch.Unsafe (punsafeBuiltin)
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "plam" . pgoldenSpec $ do
     "id" @| plam (\x -> x)

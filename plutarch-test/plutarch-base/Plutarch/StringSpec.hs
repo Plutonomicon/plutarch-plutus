@@ -1,11 +1,9 @@
 module Plutarch.StringSpec (spec) where
 
-import Test.Syd
-
 import Plutarch.Prelude
 import Plutarch.Test
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "str" $ do
     pgoldenSpec $ do

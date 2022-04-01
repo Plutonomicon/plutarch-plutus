@@ -17,9 +17,10 @@ import Plutus.V1.Ledger.Api (
   TxOutRef (TxOutRef),
  )
 import qualified PlutusTx
-import Test.Syd
+
 import Test.Tasty.QuickCheck (Arbitrary, property)
 
+import Control.Monad.Trans (lift)
 import Plutarch.Api.V1
 import Plutarch.Api.V1.Tuple (pbuiltinPairFromTuple, ptupleFromBuiltin)
 import Plutarch.Builtin (pforgetData, ppairDataBuiltin)
@@ -28,8 +29,9 @@ import Plutarch.Lift (PLifted)
 import Plutarch.Prelude
 import Plutarch.SpecTypes (PTriplet (PTriplet))
 import Plutarch.Test
+import Test.Hspec (shouldBe, specify)
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "pisdata" $ do
     propertySet @PBool "PBool"
@@ -157,15 +159,18 @@ propertySet ::
   , Arbitrary (PLifted p)
   ) =>
   String ->
-  Spec
+  TrailSpec
 propertySet typeName = do
   describe typeName $ do
-    specify ("x ~ " <> typeName <> ": pfromData (pdata x) ≡ x") $
-      property $ ptoFromEqual @p
-    specify ("x ~ " <> typeName <> ": pfromData (PlutusTx.toData x) ≡ x") $
-      property $ pfromDataCompat @p
-    specify ("x ~ " <> typeName <> ": PlutusTx.fromData (pdata x) ≡ Just x") $
-      property $ pdataCompat @p
+    lift $
+      specify ("x ~ " <> typeName <> ": pfromData (pdata x) ≡ x") $
+        property $ ptoFromEqual @p
+    lift $
+      specify ("x ~ " <> typeName <> ": pfromData (PlutusTx.toData x) ≡ x") $
+        property $ pfromDataCompat @p
+    lift $
+      specify ("x ~ " <> typeName <> ": PlutusTx.fromData (pdata x) ≡ Just x") $
+        property $ pdataCompat @p
 
 ptoFromEqual ::
   forall p.

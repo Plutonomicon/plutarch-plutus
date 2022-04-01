@@ -1,12 +1,10 @@
 module Plutarch.IntegerSpec (spec) where
 
-import Test.Syd
-
 import Plutarch
 import Plutarch.Prelude
 import Plutarch.Test
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "int" $ do
     describe "examples" $ do

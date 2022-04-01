@@ -2,8 +2,6 @@
 
 module Plutarch.PlutusTypeSpec (spec) where
 
-import Test.Syd
-
 import Plutarch (pcon', pmatch')
 import Plutarch.Api.V1 (
   PAddress (PAddress),
@@ -20,8 +18,9 @@ import Plutus.V1.Ledger.Credential (
   Credential (PubKeyCredential, ScriptCredential),
   StakingCredential (StakingPtr),
  )
+import Test.Hspec (Expectation)
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "plutustype" $ do
     describe "example" . pgoldenSpec $ do
@@ -54,7 +53,7 @@ spec = do
 
 We ideally want the typed and raw versions to have as little deviation as possible.
 -}
-deconstrSpec :: Spec
+deconstrSpec :: TrailSpec
 deconstrSpec = do
   describe "deconstr" . pgoldenSpec $ do
     "matching" @\ do

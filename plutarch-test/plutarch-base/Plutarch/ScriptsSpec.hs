@@ -44,9 +44,8 @@ import Plutarch.Api.V1.Crypto (PPubKeyHash)
 import Plutarch.Builtin (pasByteStr)
 import Plutarch.Prelude
 import Plutarch.Test
-import Test.Syd (Spec, describe)
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "scripts" . pgoldenSpec $ do
     "auth_validator" @\ do

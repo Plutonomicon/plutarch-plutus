@@ -1,25 +1,16 @@
 module Plutarch.Test.Run (runPlutarchSpec) where
 
-import Control.Monad (forM_, void)
-import Data.Set (Set)
-import qualified Data.Set as Set
-import qualified Data.Text as T
-import Plutarch.Test.Golden (GoldenKey, defaultGoldenBasePath, goldenTestPath, mkGoldenKeyFromSpecPath)
-import System.Directory (listDirectory)
-import System.Exit (ExitCode (ExitFailure), exitWith)
-import System.FilePath ((</>))
-import Test.Syd (
-  Spec,
-  SpecTree (..),
-  Timed (timedValue),
-  shouldExitFail,
-  sydTestResult,
- )
-import Test.Syd.OptParse (getSettings)
+import Plutarch.Test.TrailSpecMonad (TrailSpec, runTrailSpec)
+import Test.Hspec (hspec)
 
 -- | Like `sydTest`, but ensures that there are no unused goldens left behind.
-runPlutarchSpec :: Spec -> IO ()
+runPlutarchSpec :: TrailSpec -> IO ()
 runPlutarchSpec spec = do
+  -- TODO: unsused goldens
+  -- TODO: use hedgehog runner via hspec-hedgehog
+  hspec $ runTrailSpec spec
+
+{-
   usedGoldens <- goldenPathsUsedBy <$> sydTest' spec
   unusedGoldens usedGoldens >>= \case
     [] -> pure ()
@@ -78,3 +69,5 @@ sydTest' spec = do
   if shouldExitFail config resultForest
     then exitWith $ ExitFailure 1
     else pure $ void <$> resultForest
+
+      -}

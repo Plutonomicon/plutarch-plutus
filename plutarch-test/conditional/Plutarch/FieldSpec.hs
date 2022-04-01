@@ -6,7 +6,6 @@ import Plutus.V1.Ledger.Address (Address (Address))
 import Plutus.V1.Ledger.Credential (Credential (PubKeyCredential))
 import qualified PlutusCore as PLC
 import qualified PlutusTx
-import Test.Syd
 import Test.Tasty.HUnit
 
 import Plutarch.Api.V1 (PAddress (PAddress))
@@ -16,7 +15,7 @@ import Plutarch.SpecTypes (PTriplet)
 import Plutarch.Test
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "field" $ do
     -- example: Trips

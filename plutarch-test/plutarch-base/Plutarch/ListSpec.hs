@@ -1,33 +1,30 @@
-module Plutarch.ListSpec (spec, integerList) where
+{-# LANGUAGE TemplateHaskell #-}
 
-import Test.Syd
-import Test.Syd.Hedgehog ()
+module Plutarch.ListSpec (spec, props, integerList) where
 
 import Plutarch.List (pconvertLists, pfoldl')
 import Plutarch.Prelude
 import Plutarch.Test
-
-import Hedgehog (Property)
 
 import Data.List (find)
 
 import Plutarch.Test.Property
 import Plutarch.Test.Property.Gen (genInteger, genList)
 
+import Hedgehog (Property, checkParallel)
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
+import Test.Hspec.Hedgehog (discover)
 
 integerList :: [Integer] -> Term s (PList PInteger)
 integerList xs = pconvertLists #$ pconstant @(PBuiltinList PInteger) xs
 
-spec :: Spec
+props :: IO Bool
+props = checkParallel $$(discover)
+
+spec :: TrailSpec
 spec = do
   describe "list" $ do
-    describe "properties" $ do
-      describe "find" $ do
-        it "plutarch level find mirrors haskell level find" findTest
-      describe "elemAt" $ do
-        it "plutarch level elemAt mirrors haskell level elemAt" elemAtTest
     plutarchDevFlagDescribe . pgoldenSpec $ do
       let xs10 :: Term _ (PList PInteger)
           xs10 = integerList [1 .. 10]
@@ -98,8 +95,9 @@ spec = do
               PFalse -> plet (phead # numList) $ \_x ->
                 ptail # numList
 
-findTest :: Property
-findTest =
+-- plutarch level find mirrors haskell level find
+prop_pfindEquiv :: Property
+prop_pfindEquiv =
   prop_haskEquiv
     @( 'OnPEq)
     @( 'TotalFun)
@@ -110,8 +108,9 @@ findTest =
     peven :: Term s (PInteger :--> PBool)
     peven = plam $ \n -> pmod # n # 2 #== 0
 
-elemAtTest :: Property
-elemAtTest =
+-- plutarch level elemAt mirrors haskell level elemAt
+prop_pelemAtEquiv :: Property
+prop_pelemAtEquiv =
   prop_haskEquiv
     @( 'OnBoth)
     @( 'PartialFun)

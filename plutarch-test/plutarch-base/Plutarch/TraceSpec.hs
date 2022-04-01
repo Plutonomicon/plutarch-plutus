@@ -1,11 +1,9 @@
 module Plutarch.TraceSpec (spec) where
 
-import Test.Syd
-
 import Plutarch.Prelude
 import Plutarch.Test
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "trace" . plutarchDevFlagDescribe . pgoldenSpec $ do
     "ptrace" @\ do

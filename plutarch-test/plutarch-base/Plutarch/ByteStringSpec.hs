@@ -1,12 +1,10 @@
 module Plutarch.ByteStringSpec (spec) where
 
-import Test.Syd
-
 import qualified Data.ByteString as BS
 import Plutarch.Prelude
 import Plutarch.Test
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "bytestring" . pgoldenSpec $ do
     "empty" @| mempty #== phexByteStr "" @-> passert

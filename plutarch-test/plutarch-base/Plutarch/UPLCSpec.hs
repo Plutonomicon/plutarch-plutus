@@ -1,14 +1,13 @@
 module Plutarch.UPLCSpec (spec) where
 
 import qualified PlutusCore as PLC
-import Test.Syd
 
 import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude
 import Plutarch.Test
 import Plutarch.Unsafe (punsafeBuiltin)
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   -- Tests for the behaviour of UPLC itself.
   describe "uplc-behaviour" . pgoldenSpec $ do

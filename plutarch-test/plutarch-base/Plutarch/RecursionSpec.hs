@@ -6,12 +6,10 @@ import Plutarch
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Integer (PInteger)
 
-import Test.Syd (Spec, describe)
-
 import Plutarch.Lift (pconstant)
 import Plutarch.Test
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "recursion" $ do
     describe "example" . pgoldenSpec $ do

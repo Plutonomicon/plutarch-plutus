@@ -1,12 +1,10 @@
 module Plutarch.BoolSpec (spec) where
 
-import Test.Syd
-
 import Plutarch.Bool (pand, por)
 import Plutarch.Prelude
 import Plutarch.Test
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "bool" . pgoldenSpec $ do
     "pnot" @\ do

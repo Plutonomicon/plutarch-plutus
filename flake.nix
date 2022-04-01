@@ -42,16 +42,6 @@
   inputs.haskell-language-server.url = "github:haskell/haskell-language-server";
   inputs.haskell-language-server.flake = false;
 
-  # These use the PRs from https://github.com/NorfairKing/sydtest/issues/35
-  inputs.sydtest.url = "github:srid/sydtest/ghc921";
-  inputs.sydtest.flake = false;
-  inputs.validity.url = "github:srid/validity/ghc921";
-  inputs.validity.flake = false;
-  inputs.safe-coloured-text.url = "github:srid/safe-coloured-text/ghc921";
-  inputs.safe-coloured-text.flake = false;
-  inputs.autodocodec.url = "github:srid/autodocodec/ghc921";
-  inputs.autodocodec.flake = false;
-
   inputs.emanote.url = "github:srid/emanote/master";
 
   outputs = inputs@{ self, nixpkgs, iohk-nix, haskell-nix, plutus, hercules-ci-effects, ... }:
@@ -113,30 +103,6 @@
             "plutus-tx"
             "prettyprinter-configurable"
             "word-array"
-          ];
-        }
-        {
-          src = inputs.sydtest;
-          subdirs = [
-            "sydtest"
-            "sydtest-discover"
-            "sydtest-aeson"
-            "sydtest-hedgehog"
-          ];
-        }
-        {
-          src = inputs.validity;
-          subdirs = [
-            "validity"
-            "validity-aeson"
-          ];
-        }
-        {
-          src = inputs.autodocodec;
-          subdirs = [
-            "autodocodec"
-            "autodocodec-schema"
-            "autodocodec-yaml"
           ];
         }
       ];
@@ -476,11 +442,6 @@
           modules = [
             (haskellModule system)
             {
-              # Workaround missing support for build-tools:
-              # https://github.com/input-output-hk/haskell.nix/issues/231
-              packages.plutarch-test.components.exes.plutarch-test.build-tools = [
-                pkgSet.hsPkgs.sydtest-discover
-              ];
               packages.plutarch-test.flags.development = flagDevelopment;
               packages.plutarch.flags.development = flagDevelopment;
             }
@@ -497,7 +458,6 @@
               pkgs'.hlint
               pkgs'.haskellPackages.cabal-fmt
               pkgs'.nixpkgs-fmt
-              pkgSet.hsPkgs.sydtest-discover.components.exes.sydtest-discover
             ];
 
             inherit tools;
@@ -505,16 +465,6 @@
             additional = ps: [
               ps.plutus-ledger-api
 
-              # sydtest dependencies
-              ps.sydtest
-              ps.sydtest-discover
-              ps.sydtest-hedgehog
-              ps.sydtest-aeson
-              ps.validity
-              ps.validity-aeson
-              ps.autodocodec
-              ps.autodocodec-schema
-              ps.autodocodec-yaml
               #ps.shrinker
               #ps.shrinker-testing
             ];

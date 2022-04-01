@@ -1,6 +1,5 @@
 module Plutarch.ApiSpec (spec, ctx, info, purpose, validator, datum) where
 
-import Test.Syd
 import Test.Tasty.HUnit
 
 import Control.Monad.Trans.Cont (cont, runCont)
@@ -24,7 +23,7 @@ import Plutarch.Test
 
 -- import PlutusTx.AssocMap as PlutusMap
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "api" $ do
     describe "ctx" $ do

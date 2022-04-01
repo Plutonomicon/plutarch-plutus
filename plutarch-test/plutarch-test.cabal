@@ -84,6 +84,7 @@ common deps
     , hedgehog
     , hspec
     , hspec-core
+    , hspec-golden
     , hspec-hedgehog
     , mtl
     , plutarch
@@ -94,9 +95,6 @@ common deps
     , quickcheck-instances
     , serialise
     , sop-core
-    , sydtest
-    , sydtest-discover
-    , sydtest-hedgehog
     , tasty
     , tasty-hunit
     , tasty-quickcheck

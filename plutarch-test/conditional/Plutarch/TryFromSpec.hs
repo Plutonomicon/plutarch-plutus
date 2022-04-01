@@ -8,8 +8,6 @@ import qualified GHC.Generics as GHC
 
 import Generics.SOP (Generic, I (I))
 
-import Test.Syd
-
 -- Plutus and PlutusTx imports
 import Plutus.V1.Ledger.Api (
   Address (Address),
@@ -29,16 +27,7 @@ import PlutusTx (
 -- Plutarch imports
 import Plutarch.Prelude
 
-import Plutarch.Test (
-  passert,
-  pfails,
-  pgoldenSpec,
-  plutarchDevFlagDescribe,
-  psucceeds,
-  (@->),
-  (@\),
-  (@|),
- )
+import Plutarch.Test
 
 import Plutarch.Unsafe (
   punsafeCoerce,
@@ -81,7 +70,7 @@ import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
 
 import GHC.Records (getField)
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "verification_untrusted_data" . plutarchDevFlagDescribe . pgoldenSpec $ do
     "erroneous" @\ do

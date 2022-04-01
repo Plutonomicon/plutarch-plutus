@@ -1,12 +1,10 @@
 module Plutarch.UnitSpec (spec) where
 
-import Test.Syd
-
 import Plutarch
 import Plutarch.Prelude
 import Plutarch.Test
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "unit" . pgoldenSpec $ do
     "pcon" @| pcon PUnit

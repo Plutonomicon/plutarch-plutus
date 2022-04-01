@@ -1,11 +1,9 @@
 module Plutarch.EitherSpec (spec) where
 
-import Test.Syd
-
 import Plutarch.Prelude
 import Plutarch.Test
 
-spec :: Spec
+spec :: TrailSpec
 spec = do
   describe "either" . pgoldenSpec $ do
     "eq" @\ do
