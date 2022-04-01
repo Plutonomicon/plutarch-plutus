@@ -5,7 +5,6 @@ module Plutarch.Test.Property.Marshal (
   Marshal (marshal),
 ) where
 
-import Plutarch (ClosedTerm)
 import Plutarch.Lift (PLifted)
 import Plutarch.Prelude
 

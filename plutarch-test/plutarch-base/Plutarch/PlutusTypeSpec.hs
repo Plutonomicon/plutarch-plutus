@@ -4,7 +4,7 @@ module Plutarch.PlutusTypeSpec (spec) where
 
 import Test.Syd
 
-import Plutarch (ClosedTerm, pcon', pmatch')
+import Plutarch (pcon', pmatch')
 import Plutarch.Api.V1 (
   PAddress (PAddress),
   PCredential (PPubKeyCredential, PScriptCredential),

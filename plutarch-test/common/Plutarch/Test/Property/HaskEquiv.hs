@@ -35,7 +35,7 @@ import Plutus.V1.Ledger.Scripts (Script (Script, unScript))
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
 import PlutusCore.Evaluation.Machine.ExMemory (ExCPU (ExCPU), ExMemory (ExMemory))
 
-import Plutarch (ClosedTerm, compile)
+import Plutarch (compile)
 import Plutarch.Evaluate (EvalError, evalScript')
 import Plutarch.Prelude
 import Plutarch.Test.Property.Marshal (Marshal (marshal))
