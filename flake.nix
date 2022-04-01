@@ -700,13 +700,13 @@
       );
       devShell = perSystem (system: self.flake.${system}.devShell);
 
-      effects = { src }:
+      effects = { ref }:
         let
           pkgs = nixpkgs.legacyPackages.x86_64-linux;
           hci-effects = hercules-ci-effects.lib.withPkgs pkgs;
         in
         {
-          gh-pages = hci-effects.runIf (src.ref == "refs/heads/master") (
+          gh-pages = hci-effects.runIf (ref == "refs/heads/master") (
             hci-effects.mkEffect {
               src = self;
               buildInputs = with pkgs; [ openssh git ];
