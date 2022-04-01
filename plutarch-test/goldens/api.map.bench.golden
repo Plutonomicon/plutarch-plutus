@@ -1,0 +1,4 @@
+lookup {"exBudgetCPU":5590502,"exBudgetMemory":12555,"scriptSizeBytes":143}
+lookupData {"exBudgetCPU":5652634,"exBudgetMemory":12555,"scriptSizeBytes":143}
+singleton {"exBudgetCPU":1374198,"exBudgetMemory":2828,"scriptSizeBytes":39}
+singletonData {"exBudgetCPU":1195560,"exBudgetMemory":2228,"scriptSizeBytes":34}
