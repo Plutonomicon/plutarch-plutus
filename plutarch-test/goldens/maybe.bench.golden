@@ -2,3 +2,7 @@ eq.true.nothing {"exBudgetCPU":684879,"exBudgetMemory":2400,"scriptSizeBytes":34
 eq.true.just {"exBudgetCPU":1001385,"exBudgetMemory":3001,"scriptSizeBytes":38}
 eq.false.nothing-just {"exBudgetCPU":714652,"exBudgetMemory":2500,"scriptSizeBytes":36}
 eq.false.just-just {"exBudgetCPU":1001385,"exBudgetMemory":3001,"scriptSizeBytes":38}
+pfromJust.nothing {"exBudgetCPU":100,"exBudgetMemory":100,"scriptSizeBytes":14}
+pfromJust.just {"exBudgetCPU":644109,"exBudgetMemory":1801,"scriptSizeBytes":21}
+pmaybe.nothing {"exBudgetCPU":792974,"exBudgetMemory":2301,"scriptSizeBytes":34}
+pmaybe.just {"exBudgetCPU":1228367,"exBudgetMemory":3103,"scriptSizeBytes":36}

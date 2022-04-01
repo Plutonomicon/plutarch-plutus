@@ -2,3 +2,7 @@ eq.true.nothing (program 1.0.0 ((\i0 -> \i0 -> i2 (\i0 -> i2 (\i0 -> equalsInteg
 eq.true.just (program 1.0.0 ((\i0 -> \i0 -> i2 (\i0 -> i2 (\i0 -> equalsInteger i2 i1) (delay False)) (delay (i1 (\i0 -> False) (delay True)))) (\i0 -> \i0 -> i2 42) (\i0 -> \i0 -> i2 42)))
 eq.false.nothing-just (program 1.0.0 ((\i0 -> \i0 -> i2 (\i0 -> i2 (\i0 -> equalsInteger i2 i1) (delay False)) (delay (i1 (\i0 -> False) (delay True)))) (\i0 -> \i0 -> force i1) (\i0 -> \i0 -> i2 42)))
 eq.false.just-just (program 1.0.0 ((\i0 -> \i0 -> i2 (\i0 -> i2 (\i0 -> equalsInteger i2 i1) (delay False)) (delay (i1 (\i0 -> False) (delay True)))) (\i0 -> \i0 -> i2 24) (\i0 -> \i0 -> i2 42)))
+pfromJust.nothing (program 1.0.0 ((\i0 -> i1 (\i0 -> i1) (delay error)) (\i0 -> \i0 -> force i1)))
+pfromJust.just (program 1.0.0 (equalsInteger ((\i0 -> i1 (\i0 -> i1) (delay error)) (\i0 -> \i0 -> i2 42)) 42))
+pmaybe.nothing (program 1.0.0 (equalsInteger ((\i0 -> \i0 -> \i0 -> i1 (\i0 -> i3 i1) (delay i3)) 0 (\i0 -> addInteger i1 1) (\i0 -> \i0 -> force i1)) 0))
+pmaybe.just (program 1.0.0 (equalsInteger ((\i0 -> \i0 -> \i0 -> i1 (\i0 -> i3 i1) (delay i3)) 0 (\i0 -> addInteger i1 1) (\i0 -> \i0 -> i2 41)) 42))
