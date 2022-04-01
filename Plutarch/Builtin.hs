@@ -7,6 +7,7 @@
 
 module Plutarch.Builtin (
   PData (..),
+  pchooseListBuiltin,
   pfstBuiltin,
   psndBuiltin,
   pasConstr,

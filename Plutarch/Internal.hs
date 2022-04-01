@@ -46,6 +46,7 @@ import PlutusCore (Some (Some), ValueOf (ValueOf))
 import qualified PlutusCore as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
 import qualified UntypedPlutusCore as UPLC
+import Plutarch.Reducible (Reducible (Reduce))
 
 {- $hoisted
  __Explanation for hoisted terms:__
@@ -421,3 +422,5 @@ hashTerm :: ClosedTerm a -> Dig
 hashTerm t =
   let t' = asRawTerm t 0
    in hashRawTerm . getTerm $ t'
+
+instance Reducible (Term s a) where type Reduce (Term s a) = Term s a
