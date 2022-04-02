@@ -700,7 +700,7 @@
       );
       devShell = perSystem (system: self.flake.${system}.devShell);
 
-      effects = { ref }:
+      effects = { ref, ... }:
         let
           pkgs = nixpkgs.legacyPackages.x86_64-linux;
           hci-effects = hercules-ci-effects.lib.withPkgs pkgs;
