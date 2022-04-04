@@ -45,7 +45,7 @@ import Test.Syd (
   pureGoldenTextFile,
  )
 
-import Plutarch (ClosedTerm, compile, printScript)
+import Plutarch (compile, printScript)
 import Plutarch.Evaluate (evalScript)
 import Plutarch.Internal (punsafeAsClosedTerm)
 import Plutarch.Prelude

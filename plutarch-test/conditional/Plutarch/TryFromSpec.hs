@@ -40,8 +40,6 @@ import Plutarch.Test (
   (@|),
  )
 
-import Plutarch (ClosedTerm, popaque)
-
 import Plutarch.Unsafe (
   punsafeCoerce,
  )

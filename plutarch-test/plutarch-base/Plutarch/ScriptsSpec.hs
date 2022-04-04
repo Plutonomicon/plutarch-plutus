@@ -28,7 +28,6 @@ import Codec.Serialise (Serialise, encode)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Base16 as Base16
 import qualified Data.Text.Encoding as TE
-import Plutarch (ClosedTerm, POpaque, popaque)
 import Plutarch.Api.V1 (
   PScriptContext,
   mintingPolicySymbol,
