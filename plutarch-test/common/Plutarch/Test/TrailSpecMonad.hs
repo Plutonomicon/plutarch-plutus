@@ -14,11 +14,14 @@ module Plutarch.Test.TrailSpecMonad (
   -- * Variants of hspec functions that work in `TrailSpecM` monad
   describe,
   it,
+
+  -- * Test
+  spec,
 ) where
 
 import Control.Monad.Reader
 import GHC.Stack (HasCallStack)
-import Test.Hspec.Core.Spec (Arg, Example, SpecM)
+import Test.Hspec.Core.Spec (Arg, Example, Spec, SpecM)
 import qualified Test.Hspec.Core.Spec
 import Test.Hspec.Hedgehog (hedgehog, (===))
 
@@ -56,8 +59,8 @@ describe s (TrailSpecM m) =
 it :: (HasCallStack, Example a) => String -> a -> TrailSpecWith (Arg a)
 it s t = lift $ Test.Hspec.Core.Spec.it s t
 
-_test_trailSpec :: TrailSpec
-_test_trailSpec = do
+spec :: Spec
+spec = runTrailSpec $ do
   as0 <- ancestorTrail
   it "ancestorTrail at root" . hedgehog $ do
     as0 === []

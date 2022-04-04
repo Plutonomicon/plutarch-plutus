@@ -3,7 +3,7 @@
 
 -- | Common functions for testing Plutarch code
 module Plutarch.Test (
-  -- | Plutarch specific `Expectation` operators
+  -- * Plutarch specific `Expectation` operators
   passert,
   passertNot,
   pfails,
@@ -11,7 +11,8 @@ module Plutarch.Test (
   ptraces,
   pshouldBe,
   (#@?=),
-  -- | Budget expectation
+
+  -- * Budget expectation
   psatisfyWithinBenchmark,
 
   -- * For Development flag tests
@@ -26,7 +27,7 @@ module Plutarch.Test (
   pgoldenSpec,
   PlutarchGoldens,
 
-  -- * Spec monad for tests using golden testing
+  -- * Spec monad for tests using golden testing. Use `runTrailSpec` on the spec tree that uses `pgoldenSpec`.
   TrailSpec,
   describe,
   it,

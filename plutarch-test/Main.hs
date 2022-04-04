@@ -16,6 +16,7 @@ import Test.Hspec (hspec)
 
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Plutarch.Test (Spec)
+import qualified Plutarch.Test.TrailSpecMonad as TrailSpecMonad
 
 main :: IO ()
 main = do
@@ -33,6 +34,7 @@ main = do
 
 spec :: Spec
 spec = do
+  TrailSpecMonad.spec
   BaseSpec.spec
   ExtraSpec.spec
 #if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
