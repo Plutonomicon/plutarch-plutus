@@ -44,6 +44,11 @@
 
   inputs.hspec.url = "github:srid/hspec/askAncestors";
   inputs.hspec.flake = false;
+  # Overriding hspec (above) necessitates overriding these for some reason.
+  inputs.hspec-hedgehog.url = "github:parsonsmatt/hspec-hedgehog";
+  inputs.hspec-hedgehog.flake = false;
+  inputs.hspec-golden.url = "github:stackbuilders/hspec-golden";
+  inputs.hspec-golden.flake = false;
 
   inputs.emanote.url = "github:srid/emanote/master";
 
@@ -116,6 +121,14 @@
             "hspec-contrib"
             "hspec-discover"
           ];
+        }
+        {
+          src = inputs.hspec-hedgehog;
+          subdirs = [ "." ];
+        }
+        {
+          src = inputs.hspec-golden;
+          subdirs = [ "." ];
         }
       ];
 
@@ -487,6 +500,8 @@
               ps.hspec-core
               ps.hspec-contrib
               ps.hspec-discover
+              ps.hspec-hedgehog
+              ps.hspec-golden
               #ps.shrinker
               #ps.shrinker-testing
             ];

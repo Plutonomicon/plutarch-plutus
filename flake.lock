@@ -636,6 +636,38 @@
         "type": "github"
       }
     },
+    "hspec-golden": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1648755064,
+        "narHash": "sha256-5a6BksZx00o2iL0Ei/L1Kkou2BsnsIagN+tTmqYyKfs=",
+        "owner": "stackbuilders",
+        "repo": "hspec-golden",
+        "rev": "4b0ad56b2de0254a7b1e0feda917656f78a5bcda",
+        "type": "github"
+      },
+      "original": {
+        "owner": "stackbuilders",
+        "repo": "hspec-golden",
+        "type": "github"
+      }
+    },
+    "hspec-hedgehog": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1602603478,
+        "narHash": "sha256-XnS3zjQ7eh3iBOWq+Z/YcwrfWI55hV6k8LsZ8qm/qOc=",
+        "owner": "parsonsmatt",
+        "repo": "hspec-hedgehog",
+        "rev": "eb617d854542510f0129acdea4bf52e50b13042e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "parsonsmatt",
+        "repo": "hspec-hedgehog",
+        "type": "github"
+      }
+    },
     "iohk-nix": {
       "flake": false,
       "locked": {
@@ -947,6 +979,8 @@
         "hercules-ci-effects": "hercules-ci-effects",
         "hs-memory": "hs-memory",
         "hspec": "hspec",
+        "hspec-golden": "hspec-golden",
+        "hspec-hedgehog": "hspec-hedgehog",
         "iohk-nix": "iohk-nix",
         "nixpkgs": [
           "haskell-nix",
