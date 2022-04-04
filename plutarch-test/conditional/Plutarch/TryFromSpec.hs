@@ -81,8 +81,6 @@ import qualified Plutarch.ApiSpec as Api
 
 import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
 
-import GHC.Records (getField)
-
 spec :: Spec
 spec = do
   describe "verification_untrusted_data" . plutarchDevFlagDescribe . pgoldenSpec $ do
@@ -333,7 +331,7 @@ validator = phoistAcyclic $
           pure $ pfield @"_0" # dhash
 
         data' :: Term _ (PBuiltinList (PAsData (PTuple PDatumHash PDatum)))
-        data' = pfield @"data" # txInfo
+        data' = pfield @"datums" # txInfo
 
         outputs :: Term _ (PBuiltinList (PAsData PTxOut))
         outputs = pfield @"outputs" # txInfo

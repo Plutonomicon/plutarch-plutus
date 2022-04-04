@@ -113,8 +113,8 @@ module Plutarch.Prelude (
   pdcons,
   pdnil,
   pfield,
+  getField,
   pletFields,
-  hrecField,
 
   -- * Tracing
   ptrace,
@@ -166,3 +166,4 @@ import Plutarch.String
 import Plutarch.TermCont
 import Plutarch.Trace
 import Plutarch.Unit
+import GHC.Records (getField)

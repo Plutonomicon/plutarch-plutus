@@ -20,7 +20,6 @@ module Plutarch.DataRepr (
   F.PDataFields (ptoFields, type PFields),
   F.pletFields,
   F.pfield,
-  F.hrecField,
   F.HRec,
 ) where
 
