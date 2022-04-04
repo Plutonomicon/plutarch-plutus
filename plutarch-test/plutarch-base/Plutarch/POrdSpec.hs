@@ -31,15 +31,17 @@ import Control.Monad.Trans (lift)
 import Plutarch.SpecTypes (PTriplet (PTriplet), Triplet (Triplet))
 import Plutarch.Test
 import Test.Hspec (shouldBe, specify)
+import qualified Test.Hspec as H
 
 spec :: Spec
 spec = runTrailSpec $ do
   describe "pisdata" $ do
     describe "ord.property" $ do
-      propertySet @PBool "PBool"
-      propertySet @(PMaybeData PInteger) "PMaybeData PInteger"
-      propertySet @(PTriplet PInteger) "PMaybeData PInteger"
-      propertySet @PAddress' "PAddress"
+      lift $ do
+        propertySet @PBool "PBool"
+        propertySet @(PMaybeData PInteger) "PMaybeData PInteger"
+        propertySet @(PTriplet PInteger) "PMaybeData PInteger"
+        propertySet @PAddress' "PAddress"
     describe "lt" . pgoldenSpec $ do
       "PCredential" @\ do
         let c1 = PubKeyCredential ""
@@ -111,19 +113,16 @@ propertySet ::
   , Arbitrary (PLifted p)
   ) =>
   String ->
-  TrailSpec
+  Spec
 propertySet typeName' = do
-  describe typeName' $ do
+  H.describe typeName' $ do
     let typeName = '(' : typeName' ++ ")"
-    lift $
-      specify ("(#<) @" <> typeName <> " ≡ (<) @" <> typeName) $
-        property $ pltIso @p
-    lift $
-      specify ("(#<=) @" <> typeName <> " ≡ (<=) @" <> typeName) $
-        property $ plteIso @p
-    lift $
-      specify ("(#==) @" <> typeName <> " ≡ (==) @" <> typeName) $
-        property $ peqIso @p
+    specify ("(#<) @" <> typeName <> " ≡ (<) @" <> typeName) $
+      property $ pltIso @p
+    specify ("(#<=) @" <> typeName <> " ≡ (<=) @" <> typeName) $
+      property $ plteIso @p
+    specify ("(#==) @" <> typeName <> " ≡ (==) @" <> typeName) $
+      property $ peqIso @p
 
 pltIso :: forall p h. (p ~ PConstanted h, h ~ PLifted p, PConstant h, Arbitrary h, Ord h, POrd p) => h -> h -> IO ()
 pltIso a b = plift (pconstant @p a #< pconstant b) `shouldBe` (a < b)

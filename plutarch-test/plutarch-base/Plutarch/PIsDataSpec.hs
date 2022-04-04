@@ -30,13 +30,15 @@ import Plutarch.Prelude
 import Plutarch.SpecTypes (PTriplet (PTriplet))
 import Plutarch.Test
 import Test.Hspec (shouldBe, specify)
+import qualified Test.Hspec as H
 
 spec :: Spec
 spec = runTrailSpec $ do
   describe "pisdata" $ do
-    propertySet @PBool "PBool"
-    propertySet @PInteger "PInteger"
-    propertySet @PUnit "PUnit"
+    lift $ do
+      propertySet @PBool "PBool"
+      propertySet @PInteger "PInteger"
+      propertySet @PUnit "PUnit"
     describe "equality" . pgoldenSpec $ do
       "PData" @\ do
         "1"
@@ -159,18 +161,15 @@ propertySet ::
   , Arbitrary (PLifted p)
   ) =>
   String ->
-  TrailSpec
+  Spec
 propertySet typeName = do
-  describe typeName $ do
-    lift $
-      specify ("x ~ " <> typeName <> ": pfromData (pdata x) ≡ x") $
-        property $ ptoFromEqual @p
-    lift $
-      specify ("x ~ " <> typeName <> ": pfromData (PlutusTx.toData x) ≡ x") $
-        property $ pfromDataCompat @p
-    lift $
-      specify ("x ~ " <> typeName <> ": PlutusTx.fromData (pdata x) ≡ Just x") $
-        property $ pdataCompat @p
+  H.describe typeName $ do
+    specify ("x ~ " <> typeName <> ": pfromData (pdata x) ≡ x") $
+      property $ ptoFromEqual @p
+    specify ("x ~ " <> typeName <> ": pfromData (PlutusTx.toData x) ≡ x") $
+      property $ pfromDataCompat @p
+    specify ("x ~ " <> typeName <> ": PlutusTx.fromData (pdata x) ≡ Just x") $
+      property $ pdataCompat @p
 
 ptoFromEqual ::
   forall p.
