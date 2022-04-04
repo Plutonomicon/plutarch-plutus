@@ -35,7 +35,7 @@ spec = do
       "0" @| pshow (phexByteStr "000000") @== str "0x000000"
     "str" @\ do
       "empty" @| pshow (str "") @== str "\"\""
-      "hello123" @| pshow (str "hello123") @== str "\"hello123\""
+      "hello123" @| pshow (str "hello") @== str "\"hello123\""
       "quoted" @| pshow (str "hello\"123") @== str "\"hello\\\"123\""
       "slash" @| pshow (str "foo\\bar") @== str "\"foo\\bar\""
       "unicode" @| pshow (str "vis-à-vis") @== str "\"vis-à-vis\""
