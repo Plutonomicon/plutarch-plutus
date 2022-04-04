@@ -10,7 +10,6 @@ module Plutarch.Test.Property.Extra (
 
 import Hedgehog (Gen, Property)
 
-import Plutarch (ClosedTerm)
 import Plutarch.Prelude
 
 import Plutarch.Test.Property.HaskEquiv (

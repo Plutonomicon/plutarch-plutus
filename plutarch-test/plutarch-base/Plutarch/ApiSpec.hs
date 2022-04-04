@@ -8,7 +8,6 @@ import Plutus.V1.Ledger.Api
 import qualified Plutus.V1.Ledger.Interval as Interval
 import qualified Plutus.V1.Ledger.Value as Value
 
-import Plutarch (popaque)
 import Plutarch.Api.V1 (
   PCredential,
   PCurrencySymbol,

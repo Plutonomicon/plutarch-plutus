@@ -96,7 +96,7 @@ import Data.Coerce (coerce)
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified Plutus.V1.Ledger.Scripts as Plutus
 
-import Plutarch (ClosedTerm, POpaque, compile)
+import Plutarch (compile)
 import Plutarch.Api.Internal.Scripts (hashScriptWithPrefix)
 import Plutarch.Api.V1.Contexts (PScriptContext)
 import Plutarch.Prelude

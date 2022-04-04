@@ -3,7 +3,6 @@ module Plutarch.UPLCSpec (spec) where
 import qualified PlutusCore as PLC
 import Test.Syd
 
-import Plutarch (POpaque)
 import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude
 import Plutarch.Test

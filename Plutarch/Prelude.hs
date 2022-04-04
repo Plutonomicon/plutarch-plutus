@@ -3,6 +3,7 @@ module Plutarch.Prelude (
   (:-->),
   PDelayed,
   Term,
+  ClosedTerm,
   plam,
   plam',
   papp,
@@ -95,6 +96,10 @@ module Plutarch.Prelude (
 
   -- * Scott encoded pair type and utilities
   PPair (..),
+
+  -- * Opaque type
+  POpaque (POpaque),
+  popaque,
 
   -- * Builtin types and utilities
   PData,
