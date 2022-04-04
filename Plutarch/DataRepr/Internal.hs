@@ -56,7 +56,6 @@ import Generics.SOP (
 import Plutarch (
   Dig,
   PInner,
-  PMatch,
   PType,
   PlutusType,
   S,
@@ -299,8 +298,7 @@ pmatchDataSum d handlers =
     applyHandlers _ DRHNil = []
     applyHandlers args (DRHCons handler rest) = handler (punsafeCoerce args) : applyHandlers args rest
 
--- TODO: This 'PMatch' constraint needs to be changed to 'PlutusType (breaking change).
-class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
+class (PlutusType a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PLabeledType]]
   type PIsDataReprRepr a = PDataRecordFields2 (PCode 'SI a)
 
