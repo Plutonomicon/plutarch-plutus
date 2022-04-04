@@ -1,17 +1,23 @@
 module Plutarch.Test.Run (runPlutarchSpec) where
 
-import Plutarch.Test.TrailSpecMonad (TrailSpec, runTrailSpec)
-import Test.Hspec (hspec)
+import Control.Monad (forM_)
+import Data.Set (Set)
+import qualified Data.Set as Set
+import qualified Data.Text as T
+import Plutarch.Test.Golden (GoldenKey, defaultGoldenBasePath, goldenTestPath, mkGoldenKeyFromSpecPath)
+import System.Directory (listDirectory)
+import System.Exit (ExitCode (ExitFailure), exitWith)
+import System.FilePath ((</>))
+import Test.Hspec (Spec, hspec)
+import Test.Hspec.Core.Spec (SpecTree, Tree (Leaf, Node, NodeWithCleanup), runSpecM)
 
 -- | Like `sydTest`, but ensures that there are no unused goldens left behind.
-runPlutarchSpec :: TrailSpec -> IO ()
+runPlutarchSpec :: Spec -> IO ()
 runPlutarchSpec spec = do
-  -- TODO: unsused goldens
-  -- TODO: use hedgehog runner via hspec-hedgehog
-  hspec $ runTrailSpec spec
-
-{-
-  usedGoldens <- goldenPathsUsedBy <$> sydTest' spec
+  hspec spec
+  -- A second traversal here (`runSpecM`) can be obviated after
+  -- https://github.com/hspec/hspec/issues/649
+  usedGoldens <- goldenPathsUsedBy <$> runSpecM spec
   unusedGoldens usedGoldens >>= \case
     [] -> pure ()
     unused -> do
@@ -47,27 +53,14 @@ goldenPathsUsedBy trees = do
 -- | Retrieve all golden keys used by the given test tree.
 queryGoldens :: [SpecTree a] -> [GoldenKey]
 queryGoldens =
-  fmap mkGoldenKeyFromSpecPath . concatMap (go [])
+  fmap (mkGoldenKeyFromSpecPath . reverse) . concatMap (go [])
   where
     go ancestors = \case
-      DescribeNode "golden" _children ->
+      Node "golden" _children ->
         ancestors : []
-      DescribeNode k children ->
-        concatMap (go $ k : ancestors) children
-      SubForestNode trees ->
+      Node k children ->
+        concatMap (go $ T.pack k : ancestors) children
+      NodeWithCleanup _ _ trees ->
         concatMap (go ancestors) trees
-      SpecifyNode _ _ ->
+      Leaf _ ->
         mempty
-      PendingNode _ _ ->
-        mempty
-
--- | Like `sydTest` but returns the test tree.
-sydTest' :: Spec -> IO [SpecTree ()]
-sydTest' spec = do
-  config <- getSettings
-  resultForest <- timedValue <$> sydTestResult config spec
-  if shouldExitFail config resultForest
-    then exitWith $ ExitFailure 1
-    else pure $ void <$> resultForest
-
-      -}

@@ -13,13 +13,13 @@ import qualified Plutarch.FFISpec as FFISpec
 #endif
 
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
-import Plutarch.Test (TrailSpec)
+import Plutarch.Test (TrailSpec, runTrailSpec)
 import Plutarch.Test.Run (runPlutarchSpec)
 
 main :: IO ()
 main = do
   setLocaleEncoding utf8
-  runPlutarchSpec spec
+  runPlutarchSpec . runTrailSpec $ spec
 
 spec :: TrailSpec
 spec = do
