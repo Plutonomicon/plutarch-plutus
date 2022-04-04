@@ -3,12 +3,11 @@ module Plutarch.ByteStringSpec (spec) where
 import qualified Data.ByteString as BS
 import Plutarch.Prelude
 import Plutarch.Test
-import qualified Plutarch.Test.TrailSpecMonad as TS
 import Test.Hspec
 
 spec :: Spec
-spec = TS.runTrailSpec $ do
-  TS.describe "bytestring" . pgoldenSpec $ do
+spec = do
+  describe "bytestring" . pgoldenSpec $ do
     "empty" @| mempty #== phexByteStr "" @-> passert
     "phexByteStr"
       @| ( let a :: [String] = ["42", "ab", "df", "c9"]

@@ -3,13 +3,12 @@ module Plutarch.IntegerSpec (spec) where
 import Plutarch
 import Plutarch.Prelude
 import Plutarch.Test
-import qualified Plutarch.Test.TrailSpecMonad as TS
 import Test.Hspec
 
 spec :: Spec
-spec = TS.runTrailSpec $ do
-  TS.describe "int" $ do
-    TS.describe "examples" $ do
+spec = do
+  describe "int" $ do
+    describe "examples" $ do
       pgoldenSpec $ do
         "add1" @| add1
         "add1Hoisted" @| add1Hoisted

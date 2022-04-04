@@ -28,7 +28,6 @@ import PlutusTx (
 import Plutarch.Prelude
 
 import Plutarch.Test
-import qualified Plutarch.Test.TrailSpecMonad as TS
 
 import Plutarch.Unsafe (
   punsafeCoerce,
@@ -73,8 +72,8 @@ import GHC.Records (getField)
 import Test.Hspec
 
 spec :: Spec
-spec = TS.runTrailSpec $ do
-  TS.describe "verification_untrusted_data" . plutarchDevFlagDescribe . pgoldenSpec $ do
+spec = do
+  describe "verification_untrusted_data" . plutarchDevFlagDescribe . pgoldenSpec $ do
     "erroneous" @\ do
       "(String, Integer) /= (String, String)"
         @| checkDeep

@@ -2,12 +2,11 @@ module Plutarch.EitherSpec (spec) where
 
 import Plutarch.Prelude
 import Plutarch.Test
-import qualified Plutarch.Test.TrailSpecMonad as TS
 import Test.Hspec
 
 spec :: Spec
-spec = TS.runTrailSpec $ do
-  TS.describe "either" . pgoldenSpec $ do
+spec = do
+  describe "either" . pgoldenSpec $ do
     "eq" @\ do
       "true" @\ do
         "left" @| pcon @(PEither PInteger PInteger) (PLeft 42) #== pcon (PLeft 42) @-> passert

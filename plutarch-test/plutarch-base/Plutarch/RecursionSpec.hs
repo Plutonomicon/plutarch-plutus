@@ -8,13 +8,12 @@ import Plutarch.Integer (PInteger)
 
 import Plutarch.Lift (pconstant)
 import Plutarch.Test
-import qualified Plutarch.Test.TrailSpecMonad as TS
-import Test.Hspec (Spec)
+import Test.Hspec
 
 spec :: Spec
-spec = TS.runTrailSpec $ do
-  TS.describe "recursion" $ do
-    TS.describe "example" . pgoldenSpec $ do
+spec = do
+  describe "recursion" $ do
+    describe "example" . pgoldenSpec $ do
       "iterateN" @\ do
         "lam" @| iterateN
         "app" @\ do

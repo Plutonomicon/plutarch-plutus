@@ -5,12 +5,11 @@ import Plutarch.Bool (PEq ((#==)))
 import Plutarch.Integer (PInteger)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Test
-import qualified Plutarch.Test.TrailSpecMonad as TS
 import Test.Hspec
 
 spec :: Spec
-spec = TS.runTrailSpec $ do
-  TS.describe "maybe" . pgoldenSpec $ do
+spec = do
+  describe "maybe" . pgoldenSpec $ do
     "eq" @\ do
       "true" @\ do
         "nothing" @| pcon @(PMaybe PInteger) PNothing #== pcon PNothing @-> passert

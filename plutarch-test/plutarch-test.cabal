@@ -108,7 +108,6 @@ library
   exposed-modules:
     Plutarch.Test
     Plutarch.Test.Property
-    Plutarch.Test.TrailSpecMonad
 
   other-modules:
     Plutarch.Test.Benchmark
@@ -182,7 +181,6 @@ executable plutarch-test
     Plutarch.Test.Property.HaskEquiv
     Plutarch.Test.Property.Marshal
     Plutarch.Test.Run
-    Plutarch.Test.TrailSpecMonad
     Plutarch.TraceSpec
     Plutarch.UnitSpec
     Plutarch.UPLCSpec
