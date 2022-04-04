@@ -1,4 +1,4 @@
-module Plutarch.Test.Run (runPlutarchSpec) where
+module Plutarch.Test.Run (noUnusedGoldens) where
 
 import Control.Monad (forM_)
 import Data.Set (Set)
@@ -8,13 +8,19 @@ import Plutarch.Test.Golden (GoldenKey, defaultGoldenBasePath, goldenTestPath, m
 import System.Directory (listDirectory)
 import System.Exit (ExitCode (ExitFailure), exitWith)
 import System.FilePath ((</>))
-import Test.Hspec (Spec, hspec)
+import Test.Hspec (Spec)
 import Test.Hspec.Core.Spec (SpecTree, Tree (Leaf, Node, NodeWithCleanup), runSpecM)
 
--- | Like `hspec`, but ensures that there are no unused goldens left behind.
-runPlutarchSpec :: Spec -> IO ()
-runPlutarchSpec spec = do
-  hspec spec
+{- | Ensures that there are no unused goldens left behind.
+
+  Use this on any `SpecTree` that interally uses `pgoldenSpec` to define the
+  golden tests. These golden file paths are accumulated, and compared to the
+  actual files existing on disk. If any golden file exists on disk, but is not
+  tracked by the `SpecTree` this function will fail, reporting the list of
+  untracked golden files.
+-}
+noUnusedGoldens :: Spec -> IO ()
+noUnusedGoldens spec = do
   -- A second traversal here (`runSpecM`) can be obviated after
   -- https://github.com/hspec/hspec/issues/649
   usedGoldens <- goldenPathsUsedBy <$> runSpecM spec

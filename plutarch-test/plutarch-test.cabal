@@ -108,6 +108,7 @@ library
   exposed-modules:
     Plutarch.Test
     Plutarch.Test.Property
+    Plutarch.Test.Run
 
   other-modules:
     Plutarch.Test.Benchmark
@@ -117,7 +118,6 @@ library
     Plutarch.Test.Property.Gen
     Plutarch.Test.Property.HaskEquiv
     Plutarch.Test.Property.Marshal
-    Plutarch.Test.Run
     Plutarch.Test.TrailSpecMonad
 
   if flag(development)
