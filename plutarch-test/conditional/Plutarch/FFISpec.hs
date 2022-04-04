@@ -5,7 +5,7 @@ module Plutarch.FFISpec (spec) where
 
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
-import Plutarch (ClosedTerm, compile, printScript, printTerm)
+import Plutarch (compile, printScript, printTerm)
 import Plutarch.Api.V1 (PCurrencySymbol, PPubKeyHash, PScriptContext, PTokenName, PTxInfo)
 import Plutarch.Evaluate (EvalError, evalScript)
 import Plutarch.FFI (
