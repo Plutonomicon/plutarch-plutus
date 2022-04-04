@@ -3,15 +3,16 @@ module Plutarch.RationalSpec (spec) where
 import Plutarch.Prelude
 import Plutarch.Rational (pproperFraction, ptruncate)
 import Plutarch.Test
-import Test.Hspec (Expectation)
+import qualified Plutarch.Test.TrailSpecMonad as TS
+import Test.Hspec (Expectation, Spec)
 
 spec :: Spec
-spec = runTrailSpec $ do
+spec = TS.runTrailSpec $ do
   let rat :: Term s PRational -> Term s PRational
       rat = id
       assertRat :: ClosedTerm PRational -> ClosedTerm PRational -> Expectation
       assertRat x p = passert $ p #== x
-  describe "rational" . pgoldenSpec $ do
+  TS.describe "rational" . pgoldenSpec $ do
     "literal" @| rat 0.5
     "ops" @\ do
       "+" @| rat (1 / 2 + 1 / 2) @-> assertRat 1

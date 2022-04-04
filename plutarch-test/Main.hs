@@ -14,8 +14,7 @@ import qualified Plutarch.FFISpec as FFISpec
 #endif
 
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
-import Plutarch.Test (Spec)
-import Test.Hspec (describe, hspec)
+import Test.Hspec (Spec, describe, hspec)
 
 main :: IO ()
 main = do

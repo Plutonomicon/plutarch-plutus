@@ -5,15 +5,17 @@ import Plutarch.Api.V1 ()
 import Plutus.V1.Ledger.Api (PubKeyHash (PubKeyHash), ScriptPurpose (Minting), TxOutRef (TxOutRef))
 import qualified PlutusTx
 
+import Control.Monad.Reader (lift)
 import Plutarch.Lift (PLifted)
 import Plutarch.Prelude
 import Plutarch.Test
-import Test.Hspec (Expectation, shouldBe)
+import qualified Plutarch.Test.TrailSpecMonad as TS
+import Test.Hspec (Expectation, Spec, describe, it, shouldBe)
 
 spec :: Spec
-spec = runTrailSpec $ do
-  describe "lift" $ do
-    describe "plift" $ do
+spec = TS.runTrailSpec $ do
+  TS.describe "lift" $ do
+    lift . describe "plift" $ do
       it "bool" $ do
         plift (pcon PTrue) `shouldBe` True
         plift (pcon PFalse) `shouldBe` False
@@ -33,18 +35,18 @@ spec = runTrailSpec $ do
         let d :: PlutusTx.Data
             d = PlutusTx.toData @(Either Bool Bool) $ Right False
         plift (pconstant d) `shouldBe` d
-    describe "pconstant" $ do
+    lift . describe "pconstant" $ do
       it "string" $ do
         pconstant @PString "abc" `pshouldBe` pconstant @PString "abc"
         pconstant @PString "foo" `pshouldBe` ("foo" :: Term _ PString)
-    describe "pconstantData" $ do
+    TS.describe "pconstantData" $ do
       pgoldenSpec $ do
         "bool" @| pconstantData False
         "int" @| pconstantData (42 :: Integer)
         "pkh" @| pconstantData (PubKeyHash "04")
         "minting" @| pconstantData (Minting "")
         "txoutref" @| pconstantData (TxOutRef "41" 12)
-      it "works" $ testPConstantDataSan False
+      TS.it "works" $ testPConstantDataSan False
 
 testPConstantDataSan :: forall p. (PIsData p, PLift p, PlutusTx.ToData (PLifted p)) => PLifted p -> Expectation
 testPConstantDataSan x =

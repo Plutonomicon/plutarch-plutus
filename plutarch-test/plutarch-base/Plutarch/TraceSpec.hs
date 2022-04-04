@@ -2,10 +2,12 @@ module Plutarch.TraceSpec (spec) where
 
 import Plutarch.Prelude
 import Plutarch.Test
+import qualified Plutarch.Test.TrailSpecMonad as TS
+import Test.Hspec
 
 spec :: Spec
-spec = runTrailSpec $ do
-  describe "trace" . plutarchDevFlagDescribe . pgoldenSpec $ do
+spec = TS.runTrailSpec $ do
+  TS.describe "trace" . plutarchDevFlagDescribe . pgoldenSpec $ do
     "ptrace" @\ do
       "one" @| ptrace "foo" (pcon PUnit) @-> \p ->
         ptraces p ["foo"]

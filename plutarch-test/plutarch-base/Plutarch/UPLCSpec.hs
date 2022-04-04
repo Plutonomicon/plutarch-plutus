@@ -5,12 +5,14 @@ import qualified PlutusCore as PLC
 import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude
 import Plutarch.Test
+import qualified Plutarch.Test.TrailSpecMonad as TS
 import Plutarch.Unsafe (punsafeBuiltin)
+import Test.Hspec (Spec)
 
 spec :: Spec
-spec = runTrailSpec $ do
+spec = TS.runTrailSpec $ do
   -- Tests for the behaviour of UPLC itself.
-  describe "uplc-behaviour" . pgoldenSpec $ do
+  TS.describe "uplc-behaviour" . pgoldenSpec $ do
     "2:[1]"
       @| ( let l :: Term _ (PBuiltinList PInteger) =
                 punsafeConstantInternal . PLC.Some $
@@ -34,7 +36,7 @@ spec = runTrailSpec $ do
     "fails:MkPair-1-2"
       @| punsafeBuiltin PLC.MkPairData # (1 :: Term _ PInteger) # (2 :: Term _ PInteger)
         @-> pfails
-  describe "uplc-misc" . pgoldenSpec $ do
+  TS.describe "uplc-misc" . pgoldenSpec $ do
     "perror" @| perror @-> pfails
     "perror.arg" @| perror # (1 :: Term s PInteger) @-> pfails
     "laziness" @\ do

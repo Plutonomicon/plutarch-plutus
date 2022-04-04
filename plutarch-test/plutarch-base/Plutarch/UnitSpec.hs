@@ -3,10 +3,12 @@ module Plutarch.UnitSpec (spec) where
 import Plutarch
 import Plutarch.Prelude
 import Plutarch.Test
+import qualified Plutarch.Test.TrailSpecMonad as TS
+import Test.Hspec
 
 spec :: Spec
-spec = runTrailSpec $ do
-  describe "unit" . pgoldenSpec $ do
+spec = TS.runTrailSpec $ do
+  TS.describe "unit" . pgoldenSpec $ do
     "pcon" @| pcon PUnit
     "pmatch" @| pmatch (pcon PUnit) (\case PUnit -> pcon PTrue) @-> passert
     "compare" @\ do

@@ -3,10 +3,12 @@ module Plutarch.BoolSpec (spec) where
 import Plutarch.Bool (pand, por)
 import Plutarch.Prelude
 import Plutarch.Test
+import qualified Plutarch.Test.TrailSpecMonad as TS
+import Test.Hspec
 
 spec :: Spec
-spec = runTrailSpec $ do
-  describe "bool" . pgoldenSpec $ do
+spec = TS.runTrailSpec $ do
+  TS.describe "bool" . pgoldenSpec $ do
     "pnot" @\ do
       "lam" @| pnot
       "app" @| pnot # (pcon PTrue) @-> passertNot

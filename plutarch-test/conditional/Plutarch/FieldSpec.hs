@@ -13,13 +13,15 @@ import Plutarch.Builtin (ppairDataBuiltin)
 import Plutarch.Prelude
 import Plutarch.SpecTypes (PTriplet)
 import Plutarch.Test
+import qualified Plutarch.Test.TrailSpecMonad as TS
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
+import Test.Hspec
 
 spec :: Spec
-spec = runTrailSpec $ do
-  describe "field" $ do
+spec = TS.runTrailSpec $ do
+  TS.describe "field" $ do
     -- example: Trips
-    describe "trips" . pgoldenSpec $ do
+    TS.describe "trips" . pgoldenSpec $ do
       -- compilation
       "lam" @\ do
         "tripSum" @| tripSum
@@ -34,17 +36,17 @@ spec = runTrailSpec $ do
           plift p @?= 10
       "tripYZ=tripZY" @| tripZY @== tripYZ
     -- rangeFields
-    describe "rangeFields" . pgoldenSpec $ do
+    TS.describe "rangeFields" . pgoldenSpec $ do
       -- compilation
       "lam" @| rangeFields
       "app" @| rangeFields # someFields @-> \p -> plift p @?= 11
     -- dropFields
-    describe "dropFields" . pgoldenSpec $ do
+    TS.describe "dropFields" . pgoldenSpec $ do
       -- compilation
       "lam" @| dropFields
       "app" @| dropFields # someFields @-> \p -> plift p @?= 17
     -- pletFields
-    describe "pletFields" . pgoldenSpec $ do
+    TS.describe "pletFields" . pgoldenSpec $ do
       -- compilation
       "letSomeFields" @\ do
         "lam" @| letSomeFields
@@ -53,10 +55,10 @@ spec = runTrailSpec $ do
       "nFields" @\ do
         "lam" @| nFields
         "app" @| nFields # someFields @-> \p -> plift p @?= 1
-    describe "other" . pgoldenSpec $ do
+    TS.describe "other" . pgoldenSpec $ do
       "by" @| by @-> \p -> plift p @?= 10
       "dotPlus" @| dotPlus @-> \p -> plift p @?= 19010
-    describe "data" . pgoldenSpec $ do
+    TS.describe "data" . pgoldenSpec $ do
       "pmatch-pfield" @\ do
         -- These two should ideally have the exact same efficiency.
         "pmatch" @\ do

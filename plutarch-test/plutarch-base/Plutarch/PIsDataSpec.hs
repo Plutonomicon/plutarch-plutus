@@ -29,17 +29,18 @@ import Plutarch.Lift (PLifted)
 import Plutarch.Prelude
 import Plutarch.SpecTypes (PTriplet (PTriplet))
 import Plutarch.Test
-import Test.Hspec (shouldBe, specify)
+import qualified Plutarch.Test.TrailSpecMonad as TS
+import Test.Hspec (Spec, shouldBe, specify)
 import qualified Test.Hspec as H
 
 spec :: Spec
-spec = runTrailSpec $ do
-  describe "pisdata" $ do
+spec = TS.runTrailSpec $ do
+  TS.describe "pisdata" $ do
     lift $ do
       propertySet @PBool "PBool"
       propertySet @PInteger "PInteger"
       propertySet @PUnit "PUnit"
-    describe "equality" . pgoldenSpec $ do
+    TS.describe "equality" . pgoldenSpec $ do
       "PData" @\ do
         "1"
           @| (let dat = pconstant @PData (PlutusTx.List [PlutusTx.Constr 1 [PlutusTx.I 0]]) in dat #== dat)
@@ -55,7 +56,7 @@ spec = runTrailSpec $ do
         "1"
           @| (pnot #$ pdata (phexByteStr "12") #== pdata (phexByteStr "ab"))
           @-> passert
-    describe "ppair" . pgoldenSpec $ do
+    TS.describe "ppair" . pgoldenSpec $ do
       -- pfromData (pdata (I 1, B 0x41)) ≡ (I 1, I A)
       "simple"
         @| ( ppairDataBuiltin @_ @PInteger @PByteString
@@ -77,7 +78,7 @@ spec = runTrailSpec $ do
         "pbuiltinPairFromTuple" @| pfromData (pbuiltinPairFromTuple scTuple) @== scPair
         "ptupleFromBuiltin" @| ptupleFromBuiltin (pdata scPair) @== scTuple
     -- Data construction tests
-    describe "constr" . pgoldenSpec $ do
+    TS.describe "constr" . pgoldenSpec $ do
       -- Sum of products construction
       "sop" @\ do
         "4wheeler"

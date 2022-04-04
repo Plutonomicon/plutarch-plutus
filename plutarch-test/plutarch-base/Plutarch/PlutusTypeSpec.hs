@@ -18,12 +18,14 @@ import Plutus.V1.Ledger.Credential (
   Credential (PubKeyCredential, ScriptCredential),
   StakingCredential (StakingPtr),
  )
-import Test.Hspec (Expectation)
+
+import qualified Plutarch.Test.TrailSpecMonad as TS
+import Test.Hspec (Expectation, Spec)
 
 spec :: Spec
-spec = runTrailSpec $ do
-  describe "plutustype" $ do
-    describe "example" . pgoldenSpec $ do
+spec = TS.runTrailSpec $ do
+  TS.describe "plutustype" $ do
+    TS.describe "example" . pgoldenSpec $ do
       "A-as-0" @| pcon A @== pconstant @PInteger 0
       "B-as-1" @| pcon B @== pconstant @PInteger 1
       "swap" @\ do
@@ -43,9 +45,9 @@ spec = runTrailSpec $ do
                    b = "Universe" :: Term s PString
                 in pmatch (pcon (PPair a b) :: Term s (PPair PInteger PString)) $ \(PPair _ y) -> y
              )
-    describe "instances-sanity" $ do
+    TS.describe "instances-sanity" $ do
       plutarchDevFlagDescribe $ do
-        it "PBuiltinList" $ do
+        TS.it "PBuiltinList" $ do
           pmatchTargetEval $ pconstant [1 :: Integer, 2, 3, 4]
     deconstrSpec
 
@@ -53,9 +55,9 @@ spec = runTrailSpec $ do
 
 We ideally want the typed and raw versions to have as little deviation as possible.
 -}
-deconstrSpec :: TrailSpec
+deconstrSpec :: TS.TrailSpec
 deconstrSpec = do
-  describe "deconstr" . pgoldenSpec $ do
+  TS.describe "deconstr" . pgoldenSpec $ do
     "matching" @\ do
       "typed" @\ do
         "newtype"

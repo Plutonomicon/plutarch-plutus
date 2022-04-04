@@ -1,5 +1,8 @@
 {- | This module exists only until https://github.com/hspec/hspec/pull/648 is
  merged & released upstream.
+
+ It is to be used when defining test trees that use `pgoldenSpec`. Once the
+ above PR is merged, `pgoldenSpec` will work in the `Spec` monad.
 -}
 module Plutarch.Test.TrailSpecMonad (
   -- * Types

@@ -7,10 +7,12 @@ import qualified Data.Text as T
 import Plutarch.ListSpec (integerList)
 import Plutarch.Prelude
 import Plutarch.Test
+import qualified Plutarch.Test.TrailSpecMonad as TS
+import Test.Hspec
 
 spec :: Spec
-spec = runTrailSpec $ do
-  describe "show" . pgoldenSpec $ do
+spec = TS.runTrailSpec $ do
+  TS.describe "show" . pgoldenSpec $ do
     let str x = pconstant @PString x
     "unit" @| pshow (pcon PUnit) @== str "()"
     "bool" @\ do

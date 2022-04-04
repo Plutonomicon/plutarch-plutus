@@ -2,10 +2,12 @@ module Plutarch.StringSpec (spec) where
 
 import Plutarch.Prelude
 import Plutarch.Test
+import qualified Plutarch.Test.TrailSpecMonad as TS
+import Test.Hspec
 
 spec :: Spec
-spec = runTrailSpec $ do
-  describe "str" $ do
+spec = TS.runTrailSpec $ do
+  TS.describe "str" $ do
     pgoldenSpec $ do
       "eq" @| "foo" #== pconstant @PString "foo" @-> passert
       "semigroup" @\ do

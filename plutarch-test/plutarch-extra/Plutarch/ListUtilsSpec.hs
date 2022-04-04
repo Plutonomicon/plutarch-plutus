@@ -3,17 +3,20 @@ module Plutarch.ListUtilsSpec (spec) where
 import Plutarch.ListUtils (pcheckSorted, preverse)
 import Plutarch.Prelude
 
+import Control.Monad.Reader (lift)
 import Hedgehog (Property)
 import Hedgehog.Internal.Property (propertyTest)
 import Plutarch.Test
 import Plutarch.Test.Property
 import Plutarch.Test.Property.Gen (genInteger, genList)
+import qualified Plutarch.Test.TrailSpecMonad as TS
+import Test.Hspec (Spec, describe, it)
 import Test.Hspec.Hedgehog (hedgehog)
 
 spec :: Spec
-spec = runTrailSpec $ do
-  describe "extra.listutils" $ do
-    describe "properties" $ do
+spec = TS.runTrailSpec $ do
+  TS.describe "extra.listutils" $ do
+    lift . describe "properties" $ do
       describe "reverse" $ do
         it "plutarch level reversing behaves like haskell level reversing" . hedgehog . propertyTest $ prop_preverseEquiv
     pgoldenSpec $ do

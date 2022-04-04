@@ -44,10 +44,12 @@ import Plutarch.Api.V1.Crypto (PPubKeyHash)
 import Plutarch.Builtin (pasByteStr)
 import Plutarch.Prelude
 import Plutarch.Test
+import qualified Plutarch.Test.TrailSpecMonad as TS
+import Test.Hspec (Spec)
 
 spec :: Spec
-spec = runTrailSpec $ do
-  describe "scripts" . pgoldenSpec $ do
+spec = TS.runTrailSpec $ do
+  TS.describe "scripts" . pgoldenSpec $ do
     "auth_validator" @\ do
       "0" @| authValidatorTerm
       "hash" @| pconstant validatorHashEncoded

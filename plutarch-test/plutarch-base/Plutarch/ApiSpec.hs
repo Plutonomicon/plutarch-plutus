@@ -20,13 +20,15 @@ import Plutarch.Api.V1 (
 import Plutarch.Builtin (pasConstr, pforgetData)
 import Plutarch.Prelude
 import Plutarch.Test
+import qualified Plutarch.Test.TrailSpecMonad as TS
+import Test.Hspec
 
 -- import PlutusTx.AssocMap as PlutusMap
 
 spec :: Spec
-spec = runTrailSpec $ do
-  describe "api" $ do
-    describe "ctx" $ do
+spec = TS.runTrailSpec $ do
+  TS.describe "api" $ do
+    TS.describe "ctx" $ do
       pgoldenSpec $ do
         "term" @| ctx
         "get" @\ do
@@ -45,11 +47,11 @@ spec = runTrailSpec $ do
             $ \case
               PMinting c -> popaque c
               _ -> perror
-    describe "example" $ do
+    TS.describe "example" $ do
       -- The checkSignatory family of functions implicitly use tracing due to
       -- monadic syntax, and as such we need two sets of tests here.
       -- See Plutarch.MonadicSpec for GHC9 only syntax.
-      describe "signatory" . plutarchDevFlagDescribe . pgoldenSpec $ do
+      TS.describe "signatory" . plutarchDevFlagDescribe . pgoldenSpec $ do
         let aSig :: PubKeyHash = "ab01fe235c"
         "cont" @\ do
           "succeeds" @| checkSignatoryCont # pconstant aSig # ctx @-> psucceeds
@@ -57,7 +59,7 @@ spec = runTrailSpec $ do
         "termcont" @\ do
           "succeeds" @| checkSignatoryTermCont # pconstant aSig # ctx @-> psucceeds
           "fails" @| checkSignatoryTermCont # pconstant "41" # ctx @-> pfails
-      describe "getFields" . pgoldenSpec $ do
+      TS.describe "getFields" . pgoldenSpec $ do
         "0" @| getFields
 
 --------------------------------------------------------------------------------

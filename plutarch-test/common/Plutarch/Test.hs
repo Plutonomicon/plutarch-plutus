@@ -27,13 +27,6 @@ module Plutarch.Test (
   pgoldenSpec,
   PlutarchGoldens,
 
-  -- * Spec monad for tests using golden testing. Use `runTrailSpec` on the spec tree that uses `pgoldenSpec`.
-  TrailSpec,
-  describe,
-  it,
-  runTrailSpec,
-  Spec,
-
   -- * Benchmark type for use in `(@:->)`
   Benchmark (Benchmark, exBudgetCPU, exBudgetMemory, scriptSizeBytes),
   ScriptSizeBytes,
@@ -58,9 +51,9 @@ import Plutarch.Test.Golden (
   (@\),
   (@|),
  )
-import Plutarch.Test.TrailSpecMonad (TrailSpec, describe, it, runTrailSpec)
+import qualified Plutarch.Test.TrailSpecMonad as TS
 import qualified Plutus.V1.Ledger.Scripts as Scripts
-import Test.Hspec (Expectation, Spec, expectationFailure, shouldBe, shouldSatisfy)
+import Test.Hspec (Expectation, expectationFailure, shouldBe, shouldSatisfy)
 import Test.Tasty.HUnit (assertFailure)
 
 {- |
@@ -154,15 +147,15 @@ ptraces p develTraces =
 
   Typically meant to be used in conjunction with `ptraces`.
 -}
-plutarchDevFlagDescribe :: TrailSpec -> TrailSpec
+plutarchDevFlagDescribe :: TS.TrailSpec -> TS.TrailSpec
 
 -- CPP support isn't great in fourmolu.
 {- ORMOLU_DISABLE -}
 plutarchDevFlagDescribe m =
 #ifdef Development 
-  describe "dev=true" m
+  TS.describe "dev=true" m
 #else
-  describe "dev=false" m
+  TS.describe "dev=false" m
 #endif
 {- ORMOLU_ENABLE -}
 
