@@ -62,7 +62,8 @@ import PlutusTx.Builtins.Internal (BuiltinBool, BuiltinUnit)
 import PlutusTx.Prelude
 import Shrink (shrinkScript, shrinkScriptSp, withoutTactics)
 
-import Plutarch.Test
+import Plutarch.Test hiding (describe, it)
+import Test.Hspec
 import Test.Tasty.HUnit ((@?=))
 
 -- import Test.Tasty.Plutus.Internal.Context (ContextBuilder (cbSignatories), TransactionConfig(..), compileSpending)
