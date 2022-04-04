@@ -1,3 +1,6 @@
+{- | This module exists only until https://github.com/hspec/hspec/pull/648 is
+ merged & released upstream.
+-}
 module Plutarch.Test.TrailSpecMonad (
   -- * Types
   TrailSpecM,
