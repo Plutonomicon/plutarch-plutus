@@ -37,6 +37,7 @@ import GHC.Stack (HasCallStack)
 import System.FilePath ((</>))
 import Test.Hspec.Golden
 
+import qualified Data.List.NonEmpty as NE
 import Plutarch (compile, printScript)
 import Plutarch.Evaluate (evalScript)
 import Plutarch.Internal (punsafeAsClosedTerm)
@@ -132,14 +133,17 @@ instance Semigroup GoldenKey where
 
 currentGoldenKey :: HasCallStack => TrailSpecM (SpecM ()) GoldenKey
 currentGoldenKey = do
-  mkGoldenKeyFromSpecPath . reverse . fmap T.pack <$> ancestorTrail
+  mkGoldenKeyFromSpecPath . fmap T.pack <$> ancestorTrail
 
 mkGoldenKeyFromSpecPath :: HasCallStack => [Text] -> GoldenKey
 mkGoldenKeyFromSpecPath path =
   case nonEmpty path of
     Nothing -> error "cannot use currentGoldenKey from top-level spec"
-    Just path ->
-      sconcat $ fmap GoldenKey path
+    Just anc ->
+      case nonEmpty (NE.drop 1 . NE.reverse $ anc) of
+        Nothing -> error "cannot use currentGoldenKey from top-level spec (after sydtest-discover)"
+        Just path ->
+          sconcat $ fmap GoldenKey path
 
 goldenPath :: FilePath -> GoldenKey -> FilePath
 goldenPath baseDir (GoldenKey k) =

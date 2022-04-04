@@ -21,7 +21,7 @@ module Plutarch.Test.TrailSpecMonad (
 
 import Control.Monad.Reader
 import GHC.Stack (HasCallStack)
-import Test.Hspec.Core.Spec (Arg, Example, SpecM)
+import Test.Hspec.Core.Spec (Arg, Example, SpecM, getSpecDescriptionPath)
 import qualified Test.Hspec.Core.Spec
 
 type TrailSpec = TrailSpecWith ()
@@ -45,7 +45,7 @@ runTrailSpec (TrailSpecM m) = runReaderT m []
 
 -- | Return the ancestor groups, from immediate parent to the root.
 ancestorTrail :: TrailSpecM (SpecM a) [String]
-ancestorTrail = TrailSpecM ask
+ancestorTrail = lift getSpecDescriptionPath
 
 -- | Like `Test.Hspec.Core.Spec.describe` but for `TrailSpecM`.
 describe :: HasCallStack => String -> TrailSpecWith a -> TrailSpecWith a
