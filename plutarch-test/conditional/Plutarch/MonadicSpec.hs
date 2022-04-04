@@ -18,8 +18,8 @@ import Plutarch.Prelude
 import Plutarch.Test
 import Plutus.V1.Ledger.Api
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "monadic" $ do
     {- TODO: Uncomment this after flakiness is fixed
       See https://github.com/Plutonomicon/plutarch/issues/290

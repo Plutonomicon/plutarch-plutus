@@ -45,8 +45,8 @@ import Plutarch.Builtin (pasByteStr)
 import Plutarch.Prelude
 import Plutarch.Test
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "scripts" . pgoldenSpec $ do
     "auth_validator" @\ do
       "0" @| authValidatorTerm

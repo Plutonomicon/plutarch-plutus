@@ -232,7 +232,7 @@ signatories = ["ab01fe235c", "123014", "abcdef"]
 
  @since 0.1
 -}
-spec :: TrailSpec
+spec :: Spec
 spec = describe "FFI" $ do
   describe "Simple types" $ do
     it "integer literal" $

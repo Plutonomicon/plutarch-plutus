@@ -5,8 +5,8 @@ import Plutarch.Rational (pproperFraction, ptruncate)
 import Plutarch.Test
 import Test.Hspec (Expectation)
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   let rat :: Term s PRational -> Term s PRational
       rat = id
       assertRat :: ClosedTerm PRational -> ClosedTerm PRational -> Expectation

@@ -20,8 +20,8 @@ import Plutus.V1.Ledger.Credential (
  )
 import Test.Hspec (Expectation)
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "plutustype" $ do
     describe "example" . pgoldenSpec $ do
       "A-as-0" @| pcon A @== pconstant @PInteger 0

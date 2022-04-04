@@ -4,8 +4,8 @@ import Plutarch.Bool (pand, por)
 import Plutarch.Prelude
 import Plutarch.Test
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "bool" . pgoldenSpec $ do
     "pnot" @\ do
       "lam" @| pnot

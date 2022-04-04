@@ -7,8 +7,8 @@ import Plutarch.Prelude
 import Plutarch.Test
 import Plutarch.Unsafe (punsafeBuiltin)
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "plam" . pgoldenSpec $ do
     "id" @| plam (\x -> x)
     "flip.const" @| plam (\_ y -> y)

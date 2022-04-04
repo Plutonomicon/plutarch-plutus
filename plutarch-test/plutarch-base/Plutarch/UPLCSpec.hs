@@ -7,8 +7,8 @@ import Plutarch.Prelude
 import Plutarch.Test
 import Plutarch.Unsafe (punsafeBuiltin)
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   -- Tests for the behaviour of UPLC itself.
   describe "uplc-behaviour" . pgoldenSpec $ do
     "2:[1]"

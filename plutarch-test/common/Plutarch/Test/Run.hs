@@ -11,7 +11,7 @@ import System.FilePath ((</>))
 import Test.Hspec (Spec, hspec)
 import Test.Hspec.Core.Spec (SpecTree, Tree (Leaf, Node, NodeWithCleanup), runSpecM)
 
--- | Like `sydTest`, but ensures that there are no unused goldens left behind.
+-- | Like `hspec`, but ensures that there are no unused goldens left behind.
 runPlutarchSpec :: Spec -> IO ()
 runPlutarchSpec spec = do
   hspec spec

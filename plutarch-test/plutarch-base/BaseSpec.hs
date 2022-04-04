@@ -19,12 +19,12 @@ import qualified Plutarch.RecursionSpec as RecursionSpec
 import qualified Plutarch.ScriptsSpec as ScriptsSpec
 import qualified Plutarch.ShowSpec as ShowSpec
 import qualified Plutarch.StringSpec as StringSpec
-import Plutarch.Test (TrailSpec)
+import Plutarch.Test
 import qualified Plutarch.TraceSpec as TraceSpec
 import qualified Plutarch.UPLCSpec as UPLCSpec
 import qualified Plutarch.UnitSpec as UnitSpec
 
-spec :: TrailSpec
+spec :: Spec
 spec = do
   ApiSpec.spec
   BoolSpec.spec

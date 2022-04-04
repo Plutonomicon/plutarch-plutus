@@ -70,8 +70,8 @@ import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
 
 import GHC.Records (getField)
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "verification_untrusted_data" . plutarchDevFlagDescribe . pgoldenSpec $ do
     "erroneous" @\ do
       "(String, Integer) /= (String, String)"

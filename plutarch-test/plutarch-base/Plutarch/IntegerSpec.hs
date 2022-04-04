@@ -4,8 +4,8 @@ import Plutarch
 import Plutarch.Prelude
 import Plutarch.Test
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "int" $ do
     describe "examples" $ do
       pgoldenSpec $ do

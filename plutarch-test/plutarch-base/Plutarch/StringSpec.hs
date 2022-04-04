@@ -3,8 +3,8 @@ module Plutarch.StringSpec (spec) where
 import Plutarch.Prelude
 import Plutarch.Test
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "str" $ do
     pgoldenSpec $ do
       "eq" @| "foo" #== pconstant @PString "foo" @-> passert

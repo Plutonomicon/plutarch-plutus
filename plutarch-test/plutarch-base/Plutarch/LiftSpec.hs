@@ -10,8 +10,8 @@ import Plutarch.Prelude
 import Plutarch.Test
 import Test.Hspec (Expectation, shouldBe)
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "lift" $ do
     describe "plift" $ do
       it "bool" $ do

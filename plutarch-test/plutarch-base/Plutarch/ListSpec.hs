@@ -17,8 +17,8 @@ import Test.Hspec.Hedgehog (hedgehog)
 integerList :: [Integer] -> Term s (PList PInteger)
 integerList xs = pconvertLists #$ pconstant @(PBuiltinList PInteger) xs
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "list" $ do
     describe "properties" $ do
       describe "find" $ do

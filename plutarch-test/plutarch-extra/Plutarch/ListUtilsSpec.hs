@@ -10,8 +10,8 @@ import Plutarch.Test.Property
 import Plutarch.Test.Property.Gen (genInteger, genList)
 import Test.Hspec.Hedgehog (hedgehog)
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "extra.listutils" $ do
     describe "properties" $ do
       describe "reverse" $ do

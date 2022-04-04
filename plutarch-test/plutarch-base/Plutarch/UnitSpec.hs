@@ -4,8 +4,8 @@ import Plutarch
 import Plutarch.Prelude
 import Plutarch.Test
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "unit" . pgoldenSpec $ do
     "pcon" @| pcon PUnit
     "pmatch" @| pmatch (pcon PUnit) (\case PUnit -> pcon PTrue) @-> passert

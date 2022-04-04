@@ -23,8 +23,8 @@ import Plutarch.Test
 
 -- import PlutusTx.AssocMap as PlutusMap
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "api" $ do
     describe "ctx" $ do
       pgoldenSpec $ do

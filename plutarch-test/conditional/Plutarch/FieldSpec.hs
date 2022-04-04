@@ -15,8 +15,8 @@ import Plutarch.SpecTypes (PTriplet)
 import Plutarch.Test
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "field" $ do
     -- example: Trips
     describe "trips" . pgoldenSpec $ do

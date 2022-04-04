@@ -6,8 +6,8 @@ import Plutarch.Integer (PInteger)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Test
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "maybe" . pgoldenSpec $ do
     "eq" @\ do
       "true" @\ do

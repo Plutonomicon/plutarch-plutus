@@ -8,8 +8,8 @@ import Plutarch.ListSpec (integerList)
 import Plutarch.Prelude
 import Plutarch.Test
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "show" . pgoldenSpec $ do
     let str x = pconstant @PString x
     "unit" @| pshow (pcon PUnit) @== str "()"

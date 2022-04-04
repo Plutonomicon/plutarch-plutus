@@ -3,8 +3,8 @@ module Plutarch.PairSpec (spec) where
 import Plutarch.Prelude
 import Plutarch.Test
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "pair" . pgoldenSpec $ do
     "eq" @\ do
       "true"

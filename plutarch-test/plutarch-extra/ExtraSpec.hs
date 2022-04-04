@@ -1,8 +1,8 @@
 module ExtraSpec (spec) where
 
 import qualified Plutarch.ListUtilsSpec as ListUtilsSpec
-import Plutarch.Test (TrailSpec)
+import Plutarch.Test
 
-spec :: TrailSpec
+spec :: Spec
 spec = do
   ListUtilsSpec.spec

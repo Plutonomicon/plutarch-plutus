@@ -31,8 +31,8 @@ import Plutarch.SpecTypes (PTriplet (PTriplet))
 import Plutarch.Test
 import Test.Hspec (shouldBe, specify)
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "pisdata" $ do
     propertySet @PBool "PBool"
     propertySet @PInteger "PInteger"

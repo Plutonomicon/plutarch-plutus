@@ -3,8 +3,8 @@ module Plutarch.TraceSpec (spec) where
 import Plutarch.Prelude
 import Plutarch.Test
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "trace" . plutarchDevFlagDescribe . pgoldenSpec $ do
     "ptrace" @\ do
       "one" @| ptrace "foo" (pcon PUnit) @-> \p ->

@@ -4,8 +4,8 @@ import qualified Data.ByteString as BS
 import Plutarch.Prelude
 import Plutarch.Test
 
-spec :: TrailSpec
-spec = do
+spec :: Spec
+spec = runTrailSpec $ do
   describe "bytestring" . pgoldenSpec $ do
     "empty" @| mempty #== phexByteStr "" @-> passert
     "phexByteStr"
