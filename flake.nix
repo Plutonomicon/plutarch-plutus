@@ -42,6 +42,7 @@
   inputs.haskell-language-server.url = "github:haskell/haskell-language-server";
   inputs.haskell-language-server.flake = false;
 
+  # https://github.com/hspec/hspec/pull/648
   inputs.hspec.url = "github:srid/hspec/askAncestors";
   inputs.hspec.flake = false;
   # Overriding hspec (above) necessitates overriding these for some reason.
