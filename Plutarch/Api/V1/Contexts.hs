@@ -47,7 +47,7 @@ newtype PTxInfo (s :: S)
                , "wdrl" ':= PBuiltinList (PAsData (PTuple PStakingCredential PInteger))
                , "validRange" ':= PPOSIXTimeRange
                , "signatories" ':= PBuiltinList (PAsData PPubKeyHash)
-               , "data" ':= PBuiltinList (PAsData (PTuple PDatumHash PDatum))
+               , "datums" ':= PBuiltinList (PAsData (PTuple PDatumHash PDatum))
                , "id" ':= PTxId
                ]
           )
