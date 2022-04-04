@@ -148,6 +148,7 @@ module Plutarch.Prelude (
 import Prelude ()
 
 import Data.Kind (Type)
+import GHC.Records (getField)
 import Plutarch
 import Plutarch.Bool
 import Plutarch.Builtin
@@ -166,4 +167,3 @@ import Plutarch.String
 import Plutarch.TermCont
 import Plutarch.Trace
 import Plutarch.Unit
-import GHC.Records (getField)
