@@ -30,7 +30,6 @@ import Plutarch.Prelude
 import Plutarch.SpecTypes (PTriplet (PTriplet), Triplet (Triplet))
 import Plutarch.Test
 import Test.Hspec (Spec, describe, shouldBe, specify)
-import qualified Test.Hspec as H
 
 spec :: Spec
 spec = do
@@ -113,7 +112,7 @@ propertySet ::
   String ->
   Spec
 propertySet typeName' = do
-  H.describe typeName' $ do
+  describe typeName' $ do
     let typeName = '(' : typeName' ++ ")"
     specify ("(#<) @" <> typeName <> " ≡ (<) @" <> typeName) $
       property $ pltIso @p
