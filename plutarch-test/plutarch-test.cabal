@@ -84,6 +84,7 @@ common deps
     , hedgehog
     , hspec
     , hspec-core
+    , hspec-discover
     , hspec-golden
     , hspec-hedgehog
     , mtl

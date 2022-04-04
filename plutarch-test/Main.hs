@@ -17,6 +17,7 @@ import Test.Hspec (hspec)
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Plutarch.Test (Spec)
 import qualified Plutarch.Test.TrailSpecMonad as TrailSpecMonad
+import Test.Hspec (describe)
 
 main :: IO ()
 main = do
@@ -38,8 +39,10 @@ spec = do
   BaseSpec.spec
   ExtraSpec.spec
 #if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
-  FieldSpec.spec
-  MonadicSpec.spec
+  describe "GHC-9-only" $ do
+    FieldSpec.spec
+    MonadicSpec.spec
 #else
-  FFISpec.spec
+  describe "GHC-8-only" $ do
+    FFISpec.spec
 #endif

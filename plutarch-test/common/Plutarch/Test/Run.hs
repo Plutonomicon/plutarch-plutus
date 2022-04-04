@@ -53,7 +53,8 @@ goldenPathsUsedBy trees = do
 -- | Retrieve all golden keys used by the given test tree.
 queryGoldens :: [SpecTree a] -> [GoldenKey]
 queryGoldens =
-  fmap (mkGoldenKeyFromSpecPath . reverse) . concatMap (go [])
+  -- `drop 1`, to drop the hspec-discover generated root node.
+  fmap (mkGoldenKeyFromSpecPath . drop 1 . reverse) . concatMap (go [])
   where
     go ancestors = \case
       Node "golden" _children ->

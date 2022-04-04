@@ -442,6 +442,11 @@
           modules = [
             (haskellModule system)
             {
+              # Workaround missing support for build-tools:
+              # https://github.com/input-output-hk/haskell.nix/issues/231
+              packages.plutarch-test.components.exes.plutarch-test.build-tools = [
+                pkgSet.hsPkgs.hspec-discover
+              ];
               packages.plutarch-test.flags.development = flagDevelopment;
               packages.plutarch.flags.development = flagDevelopment;
             }
@@ -458,6 +463,7 @@
               pkgs'.hlint
               pkgs'.haskellPackages.cabal-fmt
               pkgs'.nixpkgs-fmt
+              pkgSet.hsPkgs.hspec-discover.components.exes.hspec-discover
             ];
 
             inherit tools;

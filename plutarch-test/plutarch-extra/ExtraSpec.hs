@@ -1,8 +1,2 @@
-module ExtraSpec (spec) where
-
-import qualified Plutarch.ListUtilsSpec as ListUtilsSpec
-import Plutarch.Test
-
-spec :: Spec
-spec = do
-  ListUtilsSpec.spec
+{-# OPTIONS_GHC -F -pgmF hspec-discover -optF --module-name=ExtraSpec #-}
+{-# OPTIONS_GHC -Wno-missing-export-lists #-}
