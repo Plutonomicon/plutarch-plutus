@@ -42,6 +42,9 @@
   inputs.haskell-language-server.url = "github:haskell/haskell-language-server";
   inputs.haskell-language-server.flake = false;
 
+  inputs.hspec.url = "github:srid/hspec/askAncestors";
+  inputs.hspec.flake = false;
+
   inputs.emanote.url = "github:srid/emanote/master";
 
   outputs = inputs@{ self, nixpkgs, iohk-nix, haskell-nix, plutus, hercules-ci-effects, ... }:
@@ -103,6 +106,15 @@
             "plutus-tx"
             "prettyprinter-configurable"
             "word-array"
+          ];
+        }
+        {
+          src = inputs.hspec;
+          subdirs = [
+            "."
+            "hspec-core"
+            "hspec-contrib"
+            "hspec-discover"
           ];
         }
       ];
@@ -471,6 +483,10 @@
             additional = ps: [
               ps.plutus-ledger-api
 
+              ps.hspec
+              ps.hspec-core
+              ps.hspec-contrib
+              ps.hspec-discover
               #ps.shrinker
               #ps.shrinker-testing
             ];
