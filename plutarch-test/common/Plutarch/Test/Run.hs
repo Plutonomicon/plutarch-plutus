@@ -23,7 +23,7 @@ noUnusedGoldens :: Spec -> IO ()
 noUnusedGoldens spec = do
   -- A second traversal here (`runSpecM`) can be obviated after
   -- https://github.com/hspec/hspec/issues/649
-  usedGoldens <- goldenPathsUsedBy <$> runSpecM spec
+  usedGoldens <- goldenPathsUsedBy . snd <$> runSpecM spec
   unusedGoldens usedGoldens >>= \case
     [] -> pure ()
     unused -> do
