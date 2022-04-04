@@ -23,7 +23,7 @@ noUnusedGoldens :: Spec -> IO ()
 noUnusedGoldens spec = do
   -- A second traversal here (`runSpecM`) can be obviated after
   -- https://github.com/hspec/hspec/issues/649
-  usedGoldens <- goldenPathsUsedBy <$> runSpecM spec
+  usedGoldens <- goldenPathsUsedBy . snd <$> runSpecM spec
   unusedGoldens usedGoldens >>= \case
     [] -> pure ()
     unused -> do
@@ -60,7 +60,7 @@ goldenPathsUsedBy trees = do
 queryGoldens :: [SpecTree a] -> [GoldenKey]
 queryGoldens =
   -- `drop 1`, to drop the hspec-discover generated root node.
-  fmap (mkGoldenKeyFromSpecPath . drop 1 . reverse) . concatMap (go [])
+  fmap mkGoldenKeyFromSpecPath . concatMap (go [])
   where
     go ancestors = \case
       Node "golden" _children ->

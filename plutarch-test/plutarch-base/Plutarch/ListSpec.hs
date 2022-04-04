@@ -5,7 +5,6 @@ import Data.List (find)
 import Plutarch.List (pconvertLists, pfoldl')
 import Plutarch.Prelude
 
-import Control.Monad.Reader (lift)
 import Hedgehog (Property)
 import qualified Hedgehog.Gen as Gen
 import Hedgehog.Internal.Property (Property (propertyTest))
@@ -13,7 +12,6 @@ import qualified Hedgehog.Range as Range
 import Plutarch.Test
 import Plutarch.Test.Property
 import Plutarch.Test.Property.Gen (genInteger, genList)
-import qualified Plutarch.Test.TrailSpecMonad as TS
 import Test.Hspec (Spec, describe, it)
 import Test.Hspec.Hedgehog (hedgehog)
 
@@ -21,9 +19,9 @@ integerList :: [Integer] -> Term s (PList PInteger)
 integerList xs = pconvertLists #$ pconstant @(PBuiltinList PInteger) xs
 
 spec :: Spec
-spec = TS.runTrailSpec $ do
-  TS.describe "list" $ do
-    lift . describe "properties" $ do
+spec = do
+  describe "list" $ do
+    describe "properties" $ do
       describe "find" $ do
         it "plutarch level find mirrors haskell level find" . hedgehog . propertyTest $ prop_pfindEquiv
       describe "elemAt" $ do

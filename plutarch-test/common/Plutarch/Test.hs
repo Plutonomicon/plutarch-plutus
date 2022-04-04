@@ -51,9 +51,8 @@ import Plutarch.Test.Golden (
   (@\),
   (@|),
  )
-import qualified Plutarch.Test.TrailSpecMonad as TS
 import qualified Plutus.V1.Ledger.Scripts as Scripts
-import Test.Hspec (Expectation, expectationFailure, shouldBe, shouldSatisfy)
+import Test.Hspec (Expectation, Spec, describe, expectationFailure, shouldBe, shouldSatisfy)
 import Test.Tasty.HUnit (assertFailure)
 
 {- |
@@ -147,15 +146,15 @@ ptraces p develTraces =
 
   Typically meant to be used in conjunction with `ptraces`.
 -}
-plutarchDevFlagDescribe :: TS.TrailSpec -> TS.TrailSpec
+plutarchDevFlagDescribe :: Spec -> Spec
 
 -- CPP support isn't great in fourmolu.
 {- ORMOLU_DISABLE -}
 plutarchDevFlagDescribe m =
 #ifdef Development 
-  TS.describe "dev=true" m
+  describe "dev=true" m
 #else
-  TS.describe "dev=false" m
+  describe "dev=false" m
 #endif
 {- ORMOLU_ENABLE -}
 

@@ -42,6 +42,15 @@
   inputs.haskell-language-server.url = "github:haskell/haskell-language-server";
   inputs.haskell-language-server.flake = false;
 
+  # https://github.com/hspec/hspec/pull/648
+  inputs.hspec.url = "github:srid/hspec/askAncestors";
+  inputs.hspec.flake = false;
+  # Overriding hspec (above) necessitates overriding these for some reason.
+  inputs.hspec-hedgehog.url = "github:parsonsmatt/hspec-hedgehog";
+  inputs.hspec-hedgehog.flake = false;
+  inputs.hspec-golden.url = "github:stackbuilders/hspec-golden";
+  inputs.hspec-golden.flake = false;
+
   inputs.emanote.url = "github:srid/emanote/master";
 
   outputs = inputs@{ self, nixpkgs, iohk-nix, haskell-nix, plutus, hercules-ci-effects, ... }:
@@ -104,6 +113,23 @@
             "prettyprinter-configurable"
             "word-array"
           ];
+        }
+        {
+          src = inputs.hspec;
+          subdirs = [
+            "."
+            "hspec-core"
+            "hspec-contrib"
+            "hspec-discover"
+          ];
+        }
+        {
+          src = inputs.hspec-hedgehog;
+          subdirs = [ "." ];
+        }
+        {
+          src = inputs.hspec-golden;
+          subdirs = [ "." ];
         }
       ];
 
@@ -471,6 +497,12 @@
             additional = ps: [
               ps.plutus-ledger-api
 
+              ps.hspec
+              ps.hspec-core
+              ps.hspec-contrib
+              ps.hspec-discover
+              ps.hspec-hedgehog
+              ps.hspec-golden
               #ps.shrinker
               #ps.shrinker-testing
             ];

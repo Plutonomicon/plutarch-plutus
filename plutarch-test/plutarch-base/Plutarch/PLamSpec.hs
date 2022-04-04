@@ -5,13 +5,12 @@ import qualified PlutusCore as PLC
 
 import Plutarch.Prelude
 import Plutarch.Test
-import qualified Plutarch.Test.TrailSpecMonad as TS
 import Plutarch.Unsafe (punsafeBuiltin)
 import Test.Hspec
 
 spec :: Spec
-spec = TS.runTrailSpec $ do
-  TS.describe "plam" . pgoldenSpec $ do
+spec = do
+  describe "plam" . pgoldenSpec $ do
     "id" @| plam (\x -> x)
     "flip.const" @| plam (\_ y -> y)
     "plet" @| plam (\x _ -> plet x $ \_ -> perror)

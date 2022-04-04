@@ -16,13 +16,12 @@ import qualified Plutarch.ApiSpec as ApiSpec
 import qualified Plutarch.Monadic as P
 import Plutarch.Prelude
 import Plutarch.Test
-import qualified Plutarch.Test.TrailSpecMonad as TS
 import Plutus.V1.Ledger.Api
 import Test.Hspec
 
 spec :: Spec
-spec = TS.runTrailSpec $ do
-  TS.describe "monadic" $ do
+spec = do
+  describe "monadic" $ do
     {- TODO: Uncomment this after flakiness is fixed
       See https://github.com/Plutonomicon/plutarch/issues/290
     -}
@@ -63,15 +62,15 @@ spec = TS.runTrailSpec $ do
           PSCons _ xs'' <- TermCont $ pmatch xs'
           pure xs''
           -}
-    TS.describe "api.example" $ do
+    describe "api.example" $ do
       -- The checkSignatory family of functions implicitly use tracing due to
       -- monadic syntax, and as such we need two sets of tests here.
-      TS.describe "signatory" . plutarchDevFlagDescribe . pgoldenSpec $ do
+      describe "signatory" . plutarchDevFlagDescribe . pgoldenSpec $ do
         let aSig :: PubKeyHash = "ab01fe235c"
         "do" @\ do
           "succeeds" @| checkSignatory # pconstant aSig # ApiSpec.ctx @-> psucceeds
           "fails" @| checkSignatory # pconstant "41" # ApiSpec.ctx @-> pfails
-      TS.describe "getFields" . pgoldenSpec $ do
+      describe "getFields" . pgoldenSpec $ do
         "0" @| getFields
 
 checkSignatory :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)

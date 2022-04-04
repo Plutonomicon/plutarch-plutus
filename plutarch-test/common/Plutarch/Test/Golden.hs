@@ -37,17 +37,17 @@ import GHC.Stack (HasCallStack)
 import System.FilePath ((</>))
 import Test.Hspec.Golden
 
+import qualified Data.List.NonEmpty as NE
 import Plutarch (compile, printScript)
 import Plutarch.Evaluate (evalScript)
 import Plutarch.Internal (punsafeAsClosedTerm)
 import Plutarch.Prelude
 import Plutarch.Test.Benchmark (Benchmark, mkBenchmark, scriptSize)
 import Plutarch.Test.ListSyntax (ListSyntax, listSyntaxAdd, listSyntaxAddSubList, runListSyntax)
-import Plutarch.Test.TrailSpecMonad (TrailSpec, TrailSpecM, ancestorTrail, describe, it)
 import Plutus.V1.Ledger.Scripts (Script)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
-import Test.Hspec (Expectation)
-import Test.Hspec.Core.Spec (SpecM)
+import Test.Hspec (Expectation, Spec, describe, it)
+import Test.Hspec.Core.Spec (SpecM, getSpecDescriptionPath)
 
 data GoldenValue = GoldenValue
   { goldenValueUplcPreEval :: Text
@@ -130,16 +130,19 @@ goldenKeyString (GoldenKey s) = T.unpack s
 instance Semigroup GoldenKey where
   GoldenKey s1 <> GoldenKey s2 = GoldenKey $ s1 <> "." <> s2
 
-currentGoldenKey :: HasCallStack => TrailSpecM (SpecM ()) GoldenKey
+currentGoldenKey :: HasCallStack => SpecM () GoldenKey
 currentGoldenKey = do
-  mkGoldenKeyFromSpecPath . reverse . fmap T.pack <$> ancestorTrail
+  mkGoldenKeyFromSpecPath . fmap T.pack <$> getSpecDescriptionPath
 
 mkGoldenKeyFromSpecPath :: HasCallStack => [Text] -> GoldenKey
 mkGoldenKeyFromSpecPath path =
   case nonEmpty path of
     Nothing -> error "cannot use currentGoldenKey from top-level spec"
-    Just path ->
-      sconcat $ fmap GoldenKey path
+    Just anc ->
+      case nonEmpty (NE.drop 1 . NE.reverse $ anc) of
+        Nothing -> error "cannot use currentGoldenKey from top-level spec (after sydtest-discover)"
+        Just path ->
+          sconcat $ fmap GoldenKey path
 
 goldenPath :: FilePath -> GoldenKey -> FilePath
 goldenPath baseDir (GoldenKey k) =
@@ -175,7 +178,7 @@ infixr 0 @|
   Hierarchy is represented by intercalating with a dot; for instance, the key
   for 'qux' will be "bar.qux".
 -}
-pgoldenSpec :: HasCallStack => PlutarchGoldens -> TrailSpec
+pgoldenSpec :: HasCallStack => PlutarchGoldens -> Spec
 pgoldenSpec map = do
   base <- currentGoldenKey
   let bs = runListSyntax map
@@ -217,7 +220,7 @@ goldenTestVal t v = case t of
   UPLCPostEval -> goldenValueUplcPostEval v
   Bench -> goldenValueBench v
 
-goldenTestSpec :: GoldenKey -> [(GoldenKey, GoldenValue)] -> GoldenTest -> TrailSpec
+goldenTestSpec :: GoldenKey -> [(GoldenKey, GoldenValue)] -> GoldenTest -> Spec
 goldenTestSpec base vals gt = do
   it (goldenKeyString $ goldenTestKey gt) $ do
     Golden

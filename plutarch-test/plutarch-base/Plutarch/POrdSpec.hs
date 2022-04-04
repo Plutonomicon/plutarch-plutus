@@ -27,23 +27,20 @@ import Plutarch.Lift (
  )
 import Plutarch.Prelude
 
-import Control.Monad.Trans (lift)
 import Plutarch.SpecTypes (PTriplet (PTriplet), Triplet (Triplet))
 import Plutarch.Test
-import qualified Plutarch.Test.TrailSpecMonad as TS
 import Test.Hspec (Spec, describe, shouldBe, specify)
 import qualified Test.Hspec as H
 
 spec :: Spec
-spec = TS.runTrailSpec $ do
-  TS.describe "pisdata" $ do
-    lift $
-      describe "ord.property" $ do
-        propertySet @PBool "PBool"
-        propertySet @(PMaybeData PInteger) "PMaybeData PInteger"
-        propertySet @(PTriplet PInteger) "PMaybeData PInteger"
-        propertySet @PAddress' "PAddress"
-    TS.describe "lt" . pgoldenSpec $ do
+spec = do
+  describe "pisdata" $ do
+    describe "ord.property" $ do
+      propertySet @PBool "PBool"
+      propertySet @(PMaybeData PInteger) "PMaybeData PInteger"
+      propertySet @(PTriplet PInteger) "PMaybeData PInteger"
+      propertySet @PAddress' "PAddress"
+    describe "lt" . pgoldenSpec $ do
       "PCredential" @\ do
         let c1 = PubKeyCredential ""
             c2 = ScriptCredential "41"
@@ -56,7 +53,7 @@ spec = TS.runTrailSpec $ do
         "derived" @\ ltWith (#<) c1 c2
         "pmatch" @\ ltWith ltTrip c1 c2
         "pmatch-pdatarecord" @\ ltWith ltTrip' c1 c2
-    TS.describe "lte" . pgoldenSpec $ do
+    describe "lte" . pgoldenSpec $ do
       "PCredential" @\ do
         let c1 = PubKeyCredential ""
             c2 = ScriptCredential "41"

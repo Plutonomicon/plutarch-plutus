@@ -26,9 +26,8 @@ import Plutarch.Rec (
  )
 import Plutarch.Rec.TH (deriveAll)
 import Plutarch.Test
-import qualified Plutarch.Test.TrailSpecMonad as TS
 import Plutarch.Unsafe (punsafeCoerce, punsafeFrom)
-import Test.Hspec (Spec)
+import Test.Hspec
 
 data FlatOuterRecord f = FlatOuterRecord
   { flatOuterBool :: f PBool
@@ -208,10 +207,10 @@ shallowOuterData :: Term s (PAsData (PRecord ShallowOuterRecord))
 shallowOuterData = pdata (punsafeFrom sampleShallowOuter)
 
 spec :: Spec
-spec = TS.runTrailSpec $ do
+spec = do
   -- Plutarch.Rec.verifySoleConstructor uses tracing, so we must create two sets
   -- of golden.
-  TS.describe "rec" . plutarchDevFlagDescribe . pgoldenSpec $ do
+  describe "rec" . plutarchDevFlagDescribe . pgoldenSpec $ do
     "simple" @\ do
       -- Record construction
       "constr" @\ do
