@@ -26,25 +26,18 @@ module Plutarch.Test.Golden (
 import Control.Monad (forM_, unless)
 import qualified Data.Aeson.Text as Aeson
 import Data.List.NonEmpty (nonEmpty)
-import qualified Data.List.NonEmpty as NE
 import Data.Maybe (mapMaybe)
 import Data.Semigroup (sconcat)
 import Data.String (IsString)
 import Data.Text (Text)
 import qualified Data.Text as T
+import qualified Data.Text.IO as TIO
 import qualified Data.Text.Lazy as TL
 import GHC.Stack (HasCallStack)
 import System.FilePath ((</>))
-import Test.Syd (
-  Expectation,
-  Spec,
-  TestDefM,
-  describe,
-  getTestDescriptionPath,
-  it,
-  pureGoldenTextFile,
- )
+import Test.Hspec.Golden
 
+import qualified Data.List.NonEmpty as NE
 import Plutarch (compile, printScript)
 import Plutarch.Evaluate (evalScript)
 import Plutarch.Internal (punsafeAsClosedTerm)
@@ -53,6 +46,8 @@ import Plutarch.Test.Benchmark (Benchmark, mkBenchmark, scriptSize)
 import Plutarch.Test.ListSyntax (ListSyntax, listSyntaxAdd, listSyntaxAddSubList, runListSyntax)
 import Plutus.V1.Ledger.Scripts (Script)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
+import Test.Hspec (Expectation, Spec, describe, it)
+import Test.Hspec.Core.Spec (SpecM, getSpecDescriptionPath)
 
 data GoldenValue = GoldenValue
   { goldenValueUplcPreEval :: Text
@@ -135,9 +130,9 @@ goldenKeyString (GoldenKey s) = T.unpack s
 instance Semigroup GoldenKey where
   GoldenKey s1 <> GoldenKey s2 = GoldenKey $ s1 <> "." <> s2
 
-currentGoldenKey :: HasCallStack => forall (outers :: [Type]) inner. TestDefM outers inner GoldenKey
+currentGoldenKey :: HasCallStack => SpecM () GoldenKey
 currentGoldenKey = do
-  mkGoldenKeyFromSpecPath <$> getTestDescriptionPath
+  mkGoldenKeyFromSpecPath . fmap T.pack <$> getSpecDescriptionPath
 
 mkGoldenKeyFromSpecPath :: HasCallStack => [Text] -> GoldenKey
 mkGoldenKeyFromSpecPath path =
@@ -227,9 +222,16 @@ goldenTestVal t v = case t of
 
 goldenTestSpec :: GoldenKey -> [(GoldenKey, GoldenValue)] -> GoldenTest -> Spec
 goldenTestSpec base vals gt = do
-  it (goldenKeyString $ goldenTestKey gt) $
-    pureGoldenTextFile (goldenTestPath base gt) $
-      combineGoldens $ fmap (goldenTestVal gt) <$> vals
+  it (goldenKeyString $ goldenTestKey gt) $ do
+    Golden
+      { output = combineGoldens $ fmap (goldenTestVal gt) <$> vals
+      , goldenFile = goldenTestPath base gt
+      , actualFile = Nothing
+      , encodePretty = show
+      , writeToFile = TIO.writeFile
+      , readFromFile = TIO.readFile
+      , failFirstTime = False
+      }
   where
     -- Group multiple goldens values in the same file
     combineGoldens :: [(GoldenKey, Text)] -> Text

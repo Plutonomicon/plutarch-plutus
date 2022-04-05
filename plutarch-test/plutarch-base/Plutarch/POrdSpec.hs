@@ -16,7 +16,7 @@ import qualified PlutusTx as PlutusTx
 import qualified PlutusTx.Builtins as PlutusTx
 
 import Test.QuickCheck.Instances ()
-import Test.Syd
+
 import Test.Tasty.QuickCheck (Arbitrary, arbitrary, oneof, property)
 
 import Plutarch.Api.V1 (PAddress, PCredential (PPubKeyCredential, PScriptCredential), PMaybeData)
@@ -29,6 +29,7 @@ import Plutarch.Prelude
 
 import Plutarch.SpecTypes (PTriplet (PTriplet), Triplet (Triplet))
 import Plutarch.Test
+import Test.Hspec (Spec, describe, shouldBe, specify)
 
 spec :: Spec
 spec = do

@@ -82,6 +82,11 @@ common deps
     , filepath
     , generics-sop
     , hedgehog
+    , hspec
+    , hspec-core
+    , hspec-discover
+    , hspec-golden
+    , hspec-hedgehog
     , mtl
     , plutarch
     , plutarch-extra
@@ -91,9 +96,6 @@ common deps
     , quickcheck-instances
     , serialise
     , sop-core
-    , sydtest
-    , sydtest-discover
-    , sydtest-hedgehog
     , tasty
     , tasty-hunit
     , tasty-quickcheck

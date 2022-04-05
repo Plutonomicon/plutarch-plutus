@@ -1,12 +1,11 @@
 module Plutarch.MaybeSpec (spec) where
 
-import Test.Syd
-
 import Plutarch
 import Plutarch.Bool (PEq ((#==)))
 import Plutarch.Integer (PInteger)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Test
+import Test.Hspec
 
 spec :: Spec
 spec = do

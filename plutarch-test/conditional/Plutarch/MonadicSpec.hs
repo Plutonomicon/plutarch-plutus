@@ -3,8 +3,6 @@
 
 module Plutarch.MonadicSpec (spec) where
 
-import Test.Syd
-
 import Plutarch.Api.V1 (
   PAddress (PAddress),
   PCredential,
@@ -19,6 +17,7 @@ import qualified Plutarch.Monadic as P
 import Plutarch.Prelude
 import Plutarch.Test
 import Plutus.V1.Ledger.Api
+import Test.Hspec
 
 spec :: Spec
 spec = do

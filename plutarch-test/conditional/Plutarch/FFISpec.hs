@@ -62,7 +62,7 @@ import PlutusTx.Builtins.Internal (BuiltinBool, BuiltinUnit)
 import PlutusTx.Prelude
 import Shrink (shrinkScript, shrinkScriptSp, withoutTactics)
 
-import Test.Syd
+import Test.Hspec
 import Test.Tasty.HUnit ((@?=))
 
 -- import Test.Tasty.Plutus.Internal.Context (ContextBuilder (cbSignatories), TransactionConfig(..), compileSpending)
@@ -233,7 +233,7 @@ signatories = ["ab01fe235c", "123014", "abcdef"]
  @since 0.1
 -}
 spec :: Spec
-spec = do
+spec = describe "FFI" $ do
   describe "Simple types" $ do
     it "integer literal" $
       printCode $$(PlutusTx.compile [||42 :: Integer||]) @?= "(program 1.0.0 42)"

@@ -3,7 +3,7 @@
 
 -- | Common functions for testing Plutarch code
 module Plutarch.Test (
-  -- | Plutarch specific `Expectation` operators
+  -- * Plutarch specific `Expectation` operators
   passert,
   passertNot,
   pfails,
@@ -11,7 +11,8 @@ module Plutarch.Test (
   ptraces,
   pshouldBe,
   (#@?=),
-  -- | Budget expectation
+
+  -- * Budget expectation
   psatisfyWithinBenchmark,
 
   -- * For Development flag tests
@@ -31,16 +32,7 @@ module Plutarch.Test (
   ScriptSizeBytes,
 ) where
 
-import Data.Kind (Type)
 import Data.Text (Text)
-import Test.Syd (
-  Expectation,
-  TestDefM,
-  describe,
-  expectationFailure,
-  shouldBe,
-  shouldSatisfyNamed,
- )
 
 import Plutarch (ClosedTerm, PCon (pcon), compile, printScript)
 import Plutarch.Bool (PBool (PFalse, PTrue))
@@ -60,6 +52,8 @@ import Plutarch.Test.Golden (
   (@|),
  )
 import qualified Plutus.V1.Ledger.Scripts as Scripts
+import Test.Hspec (Expectation, Spec, describe, expectationFailure, shouldBe, shouldSatisfy)
+import Test.Tasty.HUnit (assertFailure)
 
 {- |
     Like `shouldBe` but but for Plutarch terms
@@ -72,7 +66,7 @@ pshouldBe x y = do
   where
     eval :: Scripts.Script -> IO Scripts.Script
     eval s = case evalScript s of
-      (Left e, _, _) -> expectationFailure $ "Script evaluation failed: " <> show e
+      (Left e, _, _) -> assertFailure $ "Script evaluation failed: " <> show e
       (Right x', _, _) -> pure x'
 
 {- |
@@ -119,11 +113,11 @@ pfails p = do
 -}
 psatisfyWithinBenchmark :: Benchmark -> Benchmark -> Expectation
 psatisfyWithinBenchmark bench maxBudget = do
-  shouldSatisfyNamed bench ("cpu<=" <> show (exBudgetCPU maxBudget)) $ \_ ->
+  shouldSatisfy bench $ \_ ->
     exBudgetCPU bench <= exBudgetCPU maxBudget
-  shouldSatisfyNamed bench ("mem<=" <> show (exBudgetMemory maxBudget)) $ \_ ->
+  shouldSatisfy bench $ \_ ->
     exBudgetMemory bench <= exBudgetMemory maxBudget
-  shouldSatisfyNamed bench ("size<=" <> show (scriptSizeBytes maxBudget)) $ \_ ->
+  shouldSatisfy bench $ \_ ->
     scriptSizeBytes bench <= scriptSizeBytes maxBudget
 
 {- | Asserts that the term evaluates successfully with the given trace sequence
@@ -152,7 +146,7 @@ ptraces p develTraces =
 
   Typically meant to be used in conjunction with `ptraces`.
 -}
-plutarchDevFlagDescribe :: forall (outers :: [Type]) inner. TestDefM outers inner () -> TestDefM outers inner ()
+plutarchDevFlagDescribe :: Spec -> Spec
 
 -- CPP support isn't great in fourmolu.
 {- ORMOLU_DISABLE -}

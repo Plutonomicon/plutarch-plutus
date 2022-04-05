@@ -17,7 +17,7 @@ import Plutus.V1.Ledger.Api (
   TxOutRef (TxOutRef),
  )
 import qualified PlutusTx
-import Test.Syd
+
 import Test.Tasty.QuickCheck (Arbitrary, property)
 
 import Plutarch.Api.V1
@@ -28,6 +28,7 @@ import Plutarch.Lift (PLifted)
 import Plutarch.Prelude
 import Plutarch.SpecTypes (PTriplet (PTriplet))
 import Plutarch.Test
+import Test.Hspec
 
 spec :: Spec
 spec = do

@@ -1,21 +1,19 @@
 module Plutarch.ListSpec (spec, integerList) where
 
-import Test.Syd
-import Test.Syd.Hedgehog ()
+import Data.List (find)
 
 import Plutarch.List (pconvertLists, pfoldl')
 import Plutarch.Prelude
-import Plutarch.Test
 
 import Hedgehog (Property)
-
-import Data.List (find)
-
+import qualified Hedgehog.Gen as Gen
+import Hedgehog.Internal.Property (Property (propertyTest))
+import qualified Hedgehog.Range as Range
+import Plutarch.Test
 import Plutarch.Test.Property
 import Plutarch.Test.Property.Gen (genInteger, genList)
-
-import qualified Hedgehog.Gen as Gen
-import qualified Hedgehog.Range as Range
+import Test.Hspec (Spec, describe, it)
+import Test.Hspec.Hedgehog (hedgehog)
 
 integerList :: [Integer] -> Term s (PList PInteger)
 integerList xs = pconvertLists #$ pconstant @(PBuiltinList PInteger) xs
@@ -25,9 +23,9 @@ spec = do
   describe "list" $ do
     describe "properties" $ do
       describe "find" $ do
-        it "plutarch level find mirrors haskell level find" findTest
+        it "plutarch level find mirrors haskell level find" . hedgehog . propertyTest $ prop_pfindEquiv
       describe "elemAt" $ do
-        it "plutarch level elemAt mirrors haskell level elemAt" elemAtTest
+        it "plutarch level elemAt mirrors haskell level elemAt" . hedgehog . propertyTest $ prop_pelemAtEquiv
     plutarchDevFlagDescribe . pgoldenSpec $ do
       let xs10 :: Term _ (PList PInteger)
           xs10 = integerList [1 .. 10]
@@ -98,8 +96,9 @@ spec = do
               PFalse -> plet (phead # numList) $ \_x ->
                 ptail # numList
 
-findTest :: Property
-findTest =
+-- plutarch level find mirrors haskell level find
+prop_pfindEquiv :: Property
+prop_pfindEquiv =
   prop_haskEquiv
     @( 'OnPEq)
     @( 'TotalFun)
@@ -110,8 +109,9 @@ findTest =
     peven :: Term s (PInteger :--> PBool)
     peven = plam $ \n -> pmod # n # 2 #== 0
 
-elemAtTest :: Property
-elemAtTest =
+-- plutarch level elemAt mirrors haskell level elemAt
+prop_pelemAtEquiv :: Property
+prop_pelemAtEquiv =
   prop_haskEquiv
     @( 'OnBoth)
     @( 'PartialFun)

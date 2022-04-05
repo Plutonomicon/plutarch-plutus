@@ -1,9 +1,8 @@
 module Plutarch.PairSpec (spec) where
 
-import Test.Syd
-
 import Plutarch.Prelude
 import Plutarch.Test
+import Test.Hspec
 
 spec :: Spec
 spec = do
