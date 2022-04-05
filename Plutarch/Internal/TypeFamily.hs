@@ -1,4 +1,4 @@
-module Plutarch.Internal.TypeFamily (ToPType, ToPType2, UnTerm) where
+module Plutarch.Internal.TypeFamily (ToPType, ToPType2, UnTerm, Snd) where
 
 import Data.Kind (Type)
 import Plutarch.Internal (PType, Term)
@@ -17,3 +17,6 @@ type family ToPType2 as where
 type UnTerm :: Type -> PType
 type family UnTerm x where
   UnTerm (Term s a) = a
+
+type family Snd ab where
+  Snd '(a, b) = b

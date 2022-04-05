@@ -23,11 +23,10 @@ module Plutarch.DataRepr.Internal.HList (
   ElemOf (..),
 ) where
 
-import Data.Kind (Type)
+import Data.Kind (Constraint, Type)
 import GHC.Records (HasField, getField)
 import GHC.TypeLits (Symbol)
-import Plutarch (Term)
-import Plutarch.Builtin
+import Plutarch.Builtin (PAsData)
 import Plutarch.DataRepr.Internal.FromData (PFromDataable, pmaybeFromAsData)
 import Plutarch.DataRepr.Internal.HList.Utils (
   Drop,
@@ -37,19 +36,22 @@ import Plutarch.DataRepr.Internal.HList.Utils (
   Labeled (Labeled, unLabeled),
   SingleItem,
  )
+import Plutarch.Internal (Term)
+import Plutarch.Internal.TypeFamily (Snd)
 
 --------------------------------------------------------------------------------
 ---------- HList and HRec types
 
-data HRec (as :: [Type]) where
+type HRec :: [(Symbol, Type)] -> Type
+data HRec as where
   HNil :: HRec '[]
-  HCons :: (Labeled name a) -> HRec as -> HRec ((Labeled name a) ': as)
+  HCons :: Labeled name a -> HRec as -> HRec ('(name, a) ': as)
 
 ---------- Field indexing functions
 
 -- | Index HRec using Elem
-indexHRec :: HRec as -> (forall a. Elem a as -> a)
-indexHRec (HCons x _) Here = x
+indexHRec :: HRec as -> (forall a. Elem a as -> Snd a)
+indexHRec (HCons x _) Here = unLabeled x
 indexHRec (HCons _ xs) (There i) = indexHRec xs i
 indexHRec HNil impossible = case impossible of {}
 
@@ -67,7 +69,7 @@ hrecField' ::
   ) =>
   HRec as ->
   a
-hrecField' xs = unLabeled $ indexHRec xs $ elemOf @name @a @as
+hrecField' xs = indexHRec xs $ elemOf @name @a @as
 
 ---------- Internal utils
 
@@ -77,11 +79,8 @@ hrecField' xs = unLabeled $ indexHRec xs $ elemOf @name @a @as
   This class could instead be a more direct version of 'indexHList',
   but perhaps the `Elem` encoding will be useful.
 -}
-class
-  (IndexLabel name as ~ a) =>
-  ElemOf (name :: Symbol) (a :: Type) (as :: [Type])
-    | as name -> a
-  where
+type ElemOf :: Symbol -> Type -> [(Symbol, Type)] -> Constraint
+class IndexLabel name as ~ a => ElemOf name a as | as name -> a where
   -- | Construct the `Elem` corresponding to a Nat index.
   --
   --    Example:
@@ -91,10 +90,10 @@ class
   --
   --    >>> natElem @_ @3
   --    There (There (There Here))
-  elemOf :: Elem (Labeled name a) as
+  elemOf :: Elem '(name, a) as
 
-instance {-# OVERLAPPING #-} ElemOf name a ((Labeled name a) ': as) where
-  elemOf :: Elem (Labeled name a) ((Labeled name a) ': as)
+instance {-# OVERLAPPING #-} ElemOf name a ('(name, a) ': as) where
+  elemOf :: Elem '(name, a) ('(name, a) ': as)
   elemOf = Here
 
 instance
@@ -104,7 +103,7 @@ instance
   ) =>
   ElemOf name a (b ': as)
   where
-  elemOf :: Elem (Labeled name a) (b ': as)
+  elemOf :: Elem '(name, a) (b ': as)
   elemOf = There (elemOf @name @a @as)
 
 {- |
@@ -144,7 +143,7 @@ newtype HRecGeneric as = HRecGeneric (HRec as)
 
 instance
   forall name a as.
-  ( (IndexLabel name as ~ a)
+  ( IndexLabel name as ~ a
   , ElemOf name a as
   ) =>
   HasField name (HRecGeneric as) a
