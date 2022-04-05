@@ -1,12 +1,12 @@
 module Plutarch.UPLCSpec (spec) where
 
 import qualified PlutusCore as PLC
-import Test.Syd
 
 import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude
 import Plutarch.Test
 import Plutarch.Unsafe (punsafeBuiltin)
+import Test.Hspec
 
 spec :: Spec
 spec = do

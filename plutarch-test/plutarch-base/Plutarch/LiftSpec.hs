@@ -4,11 +4,11 @@ import Data.Text (Text)
 import Plutarch.Api.V1 ()
 import Plutus.V1.Ledger.Api (PubKeyHash (PubKeyHash), ScriptPurpose (Minting), TxOutRef (TxOutRef))
 import qualified PlutusTx
-import Test.Syd
 
 import Plutarch.Lift (PLifted)
 import Plutarch.Prelude
 import Plutarch.Test
+import Test.Hspec (Expectation, Spec, describe, it, shouldBe)
 
 spec :: Spec
 spec = do

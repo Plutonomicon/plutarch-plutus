@@ -3,7 +3,7 @@
 module Plutarch.RecSpec (spec) where
 
 import qualified Rank2.TH
-import Test.Syd
+
 import Prelude hiding (even, odd)
 
 import Plutarch (pcon', pmatch')
@@ -27,6 +27,7 @@ import Plutarch.Rec (
 import Plutarch.Rec.TH (deriveAll)
 import Plutarch.Test
 import Plutarch.Unsafe (punsafeCoerce, punsafeFrom)
+import Test.Hspec
 
 data FlatOuterRecord f = FlatOuterRecord
   { flatOuterBool :: f PBool

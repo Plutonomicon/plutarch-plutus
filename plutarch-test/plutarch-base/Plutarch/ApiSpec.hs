@@ -1,6 +1,5 @@
 module Plutarch.ApiSpec (spec, ctx, info, purpose, validator, datum) where
 
-import Test.Syd
 import Test.Tasty.HUnit
 
 import Control.Monad.Trans.Cont (cont, runCont)
@@ -21,6 +20,7 @@ import Plutarch.Api.V1 (
 import Plutarch.Builtin (pasConstr, pforgetData)
 import Plutarch.Prelude
 import Plutarch.Test
+import Test.Hspec
 
 -- import PlutusTx.AssocMap as PlutusMap
 

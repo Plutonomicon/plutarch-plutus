@@ -1,10 +1,9 @@
 module Plutarch.RationalSpec (spec) where
 
-import Test.Syd
-
 import Plutarch.Prelude
 import Plutarch.Rational (pproperFraction, ptruncate)
 import Plutarch.Test
+import Test.Hspec
 
 spec :: Spec
 spec = do

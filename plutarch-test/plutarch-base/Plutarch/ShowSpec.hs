@@ -3,11 +3,11 @@ module Plutarch.ShowSpec (spec) where
 import Control.Monad (forM_)
 import Data.String (IsString (fromString))
 import qualified Data.Text as T
-import Test.Syd
 
 import Plutarch.ListSpec (integerList)
 import Plutarch.Prelude
 import Plutarch.Test
+import Test.Hspec
 
 spec :: Spec
 spec = do

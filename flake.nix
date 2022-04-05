@@ -42,15 +42,14 @@
   inputs.haskell-language-server.url = "github:haskell/haskell-language-server";
   inputs.haskell-language-server.flake = false;
 
-  # These use the PRs from https://github.com/NorfairKing/sydtest/issues/35
-  inputs.sydtest.url = "github:srid/sydtest/ghc921";
-  inputs.sydtest.flake = false;
-  inputs.validity.url = "github:srid/validity/ghc921";
-  inputs.validity.flake = false;
-  inputs.safe-coloured-text.url = "github:srid/safe-coloured-text/ghc921";
-  inputs.safe-coloured-text.flake = false;
-  inputs.autodocodec.url = "github:srid/autodocodec/ghc921";
-  inputs.autodocodec.flake = false;
+  # https://github.com/hspec/hspec/pull/648
+  inputs.hspec.url = "github:srid/hspec/askAncestors";
+  inputs.hspec.flake = false;
+  # Overriding hspec (above) necessitates overriding these for some reason.
+  inputs.hspec-hedgehog.url = "github:parsonsmatt/hspec-hedgehog";
+  inputs.hspec-hedgehog.flake = false;
+  inputs.hspec-golden.url = "github:stackbuilders/hspec-golden";
+  inputs.hspec-golden.flake = false;
 
   inputs.emanote.url = "github:srid/emanote/master";
 
@@ -116,28 +115,21 @@
           ];
         }
         {
-          src = inputs.sydtest;
+          src = inputs.hspec;
           subdirs = [
-            "sydtest"
-            "sydtest-discover"
-            "sydtest-aeson"
-            "sydtest-hedgehog"
+            "."
+            "hspec-core"
+            "hspec-contrib"
+            "hspec-discover"
           ];
         }
         {
-          src = inputs.validity;
-          subdirs = [
-            "validity"
-            "validity-aeson"
-          ];
+          src = inputs.hspec-hedgehog;
+          subdirs = [ "." ];
         }
         {
-          src = inputs.autodocodec;
-          subdirs = [
-            "autodocodec"
-            "autodocodec-schema"
-            "autodocodec-yaml"
-          ];
+          src = inputs.hspec-golden;
+          subdirs = [ "." ];
         }
       ];
 
@@ -154,54 +146,56 @@
 
       ghcVersion = "ghc921";
 
+      # https://github.com/input-output-hk/haskell.nix/issues/1177
+      nonReinstallablePkgs = [
+        "rts"
+        "ghc-heap"
+        "ghc-prim"
+        "integer-gmp"
+        "integer-simple"
+        "base"
+        "deepseq"
+        "array"
+        "ghc-boot-th"
+        "pretty"
+        "template-haskell"
+        # ghcjs custom packages
+        "ghcjs-prim"
+        "ghcjs-th"
+        "ghc-bignum"
+        "exceptions"
+        "stm"
+        "ghc-boot"
+        "ghc"
+        "Cabal"
+        "Win32"
+        "array"
+        "binary"
+        "bytestring"
+        "containers"
+        "directory"
+        "filepath"
+        "ghc-boot"
+        "ghc-compact"
+        "ghc-prim"
+        # "ghci" "haskeline"
+        "hpc"
+        "mtl"
+        "parsec"
+        "process"
+        "text"
+        "time"
+        "transformers"
+        "unix"
+        "xhtml"
+        "terminfo"
+      ];
+
       tools.fourmolu = { };
       tools.haskell-language-server = {
-        modules = [{
-          # https://github.com/input-output-hk/haskell.nix/issues/1177
-          nonReinstallablePkgs = [
-            "rts"
-            "ghc-heap"
-            "ghc-prim"
-            "integer-gmp"
-            "integer-simple"
-            "base"
-            "deepseq"
-            "array"
-            "ghc-boot-th"
-            "pretty"
-            "template-haskell"
-            # ghcjs custom packages
-            "ghcjs-prim"
-            "ghcjs-th"
-            "ghc-bignum"
-            "exceptions"
-            "stm"
-            "ghc-boot"
-            "ghc"
-            "Cabal"
-            "Win32"
-            "array"
-            "binary"
-            "bytestring"
-            "containers"
-            "directory"
-            "filepath"
-            "ghc-boot"
-            "ghc-compact"
-            "ghc-prim"
-            # "ghci" "haskeline"
-            "hpc"
-            "mtl"
-            "parsec"
-            "process"
-            "text"
-            "time"
-            "transformers"
-            "unix"
-            "xhtml"
-            "terminfo"
-          ];
-        }];
+        modules = [
+          { inherit nonReinstallablePkgs; }
+        ];
         compiler-nix-name = ghcVersion;
         # For some reason it doesn't use the latest version automatically.
         index-state =
@@ -222,6 +216,7 @@
       };
 
       haskellModule = system: {
+        inherit nonReinstallablePkgs; # Needed only so we can use hspec; https://github.com/Plutonomicon/plutarch/issues/409
         packages = {
           basement.src = "${inputs.foundation}/basement";
           basement.components.library.postUnpack = "\n";
@@ -476,7 +471,7 @@
               # Workaround missing support for build-tools:
               # https://github.com/input-output-hk/haskell.nix/issues/231
               packages.plutarch-test.components.exes.plutarch-test.build-tools = [
-                pkgSet.hsPkgs.sydtest-discover
+                pkgSet.hsPkgs.hspec-discover
               ];
               packages.plutarch-test.flags.development = flagDevelopment;
               packages.plutarch.flags.development = flagDevelopment;
@@ -494,7 +489,7 @@
               pkgs'.hlint
               pkgs'.haskellPackages.cabal-fmt
               pkgs'.nixpkgs-fmt
-              pkgSet.hsPkgs.sydtest-discover.components.exes.sydtest-discover
+              pkgSet.hsPkgs.hspec-discover.components.exes.hspec-discover
             ];
 
             inherit tools;
@@ -502,16 +497,12 @@
             additional = ps: [
               ps.plutus-ledger-api
 
-              # sydtest dependencies
-              ps.sydtest
-              ps.sydtest-discover
-              ps.sydtest-hedgehog
-              ps.sydtest-aeson
-              ps.validity
-              ps.validity-aeson
-              ps.autodocodec
-              ps.autodocodec-schema
-              ps.autodocodec-yaml
+              ps.hspec
+              ps.hspec-core
+              ps.hspec-contrib
+              ps.hspec-discover
+              ps.hspec-hedgehog
+              ps.hspec-golden
               #ps.shrinker
               #ps.shrinker-testing
             ];

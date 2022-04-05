@@ -1,6 +1,6 @@
-module Plutarch.Test.Run (runPlutarchSpec) where
+module Plutarch.Test.Run (noUnusedGoldens) where
 
-import Control.Monad (forM_, void)
+import Control.Monad (forM_)
 import Data.Set (Set)
 import qualified Data.Set as Set
 import qualified Data.Text as T
@@ -8,19 +8,22 @@ import Plutarch.Test.Golden (GoldenKey, defaultGoldenBasePath, goldenTestPath, m
 import System.Directory (listDirectory)
 import System.Exit (ExitCode (ExitFailure), exitWith)
 import System.FilePath ((</>))
-import Test.Syd (
-  Spec,
-  SpecTree (..),
-  Timed (timedValue),
-  shouldExitFail,
-  sydTestResult,
- )
-import Test.Syd.OptParse (getSettings)
+import Test.Hspec (Spec)
+import Test.Hspec.Core.Spec (SpecTree, Tree (Leaf, Node, NodeWithCleanup), runSpecM)
 
--- | Like `sydTest`, but ensures that there are no unused goldens left behind.
-runPlutarchSpec :: Spec -> IO ()
-runPlutarchSpec spec = do
-  usedGoldens <- goldenPathsUsedBy <$> sydTest' spec
+{- | Ensures that there are no unused goldens left behind.
+
+  Use this on any `SpecTree` that interally uses `pgoldenSpec` to define the
+  golden tests. These golden file paths are accumulated, and compared to the
+  actual files existing on disk. If any golden file exists on disk, but is not
+  tracked by the `SpecTree` this function will fail, reporting the list of
+  untracked golden files.
+-}
+noUnusedGoldens :: Spec -> IO ()
+noUnusedGoldens spec = do
+  -- A second traversal here (`runSpecM`) can be obviated after
+  -- https://github.com/hspec/hspec/issues/649
+  usedGoldens <- goldenPathsUsedBy . snd <$> runSpecM spec
   unusedGoldens usedGoldens >>= \case
     [] -> pure ()
     unused -> do
@@ -56,25 +59,15 @@ goldenPathsUsedBy trees = do
 -- | Retrieve all golden keys used by the given test tree.
 queryGoldens :: [SpecTree a] -> [GoldenKey]
 queryGoldens =
+  -- `drop 1`, to drop the hspec-discover generated root node.
   fmap mkGoldenKeyFromSpecPath . concatMap (go [])
   where
     go ancestors = \case
-      DescribeNode "golden" _children ->
+      Node "golden" _children ->
         ancestors : []
-      DescribeNode k children ->
-        concatMap (go $ k : ancestors) children
-      SubForestNode trees ->
+      Node k children ->
+        concatMap (go $ T.pack k : ancestors) children
+      NodeWithCleanup _ _ trees ->
         concatMap (go ancestors) trees
-      SpecifyNode _ _ ->
+      Leaf _ ->
         mempty
-      PendingNode _ _ ->
-        mempty
-
--- | Like `sydTest` but returns the test tree.
-sydTest' :: Spec -> IO [SpecTree ()]
-sydTest' spec = do
-  config <- getSettings
-  resultForest <- timedValue <$> sydTestResult config spec
-  if shouldExitFail config resultForest
-    then exitWith $ ExitFailure 1
-    else pure $ void <$> resultForest

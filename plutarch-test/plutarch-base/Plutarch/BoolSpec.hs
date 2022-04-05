@@ -1,10 +1,9 @@
 module Plutarch.BoolSpec (spec) where
 
-import Test.Syd
-
 import Plutarch.Bool (pand, por)
 import Plutarch.Prelude
 import Plutarch.Test
+import Test.Hspec
 
 spec :: Spec
 spec = do

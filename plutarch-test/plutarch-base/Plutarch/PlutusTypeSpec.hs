@@ -2,8 +2,6 @@
 
 module Plutarch.PlutusTypeSpec (spec) where
 
-import Test.Syd
-
 import Plutarch (pcon', pmatch')
 import Plutarch.Api.V1 (
   PAddress (PAddress),
@@ -20,6 +18,8 @@ import Plutus.V1.Ledger.Credential (
   Credential (PubKeyCredential, ScriptCredential),
   StakingCredential (StakingPtr),
  )
+
+import Test.Hspec
 
 spec :: Spec
 spec = do

@@ -2,11 +2,11 @@ module Plutarch.PLamSpec (spec) where
 
 import Data.ByteString (ByteString)
 import qualified PlutusCore as PLC
-import Test.Syd
 
 import Plutarch.Prelude
 import Plutarch.Test
 import Plutarch.Unsafe (punsafeBuiltin)
+import Test.Hspec
 
 spec :: Spec
 spec = do

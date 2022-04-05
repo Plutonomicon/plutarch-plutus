@@ -32,23 +32,6 @@
         "type": "github"
       }
     },
-    "autodocodec": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1644358110,
-        "narHash": "sha256-X1TNZlmO2qDFk3OL4Z1v/gzvd3ouoACAiMweutsYek4=",
-        "owner": "srid",
-        "repo": "autodocodec",
-        "rev": "42b42a7407f33c6c74fa4e8c84906aebfed28daf",
-        "type": "github"
-      },
-      "original": {
-        "owner": "srid",
-        "ref": "ghc921",
-        "repo": "autodocodec",
-        "type": "github"
-      }
-    },
     "cabal-32": {
       "flake": false,
       "locked": {
@@ -652,6 +635,55 @@
         "type": "github"
       }
     },
+    "hspec": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1649095108,
+        "narHash": "sha256-cPmt4hvmdh727VT6UAL8yFArmm4FAWeg3K5Qi3XtU4g=",
+        "owner": "srid",
+        "repo": "hspec",
+        "rev": "44f2a143e10c93df237af428457d0e4b74ae270a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "srid",
+        "ref": "askAncestors",
+        "repo": "hspec",
+        "type": "github"
+      }
+    },
+    "hspec-golden": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1648755064,
+        "narHash": "sha256-5a6BksZx00o2iL0Ei/L1Kkou2BsnsIagN+tTmqYyKfs=",
+        "owner": "stackbuilders",
+        "repo": "hspec-golden",
+        "rev": "4b0ad56b2de0254a7b1e0feda917656f78a5bcda",
+        "type": "github"
+      },
+      "original": {
+        "owner": "stackbuilders",
+        "repo": "hspec-golden",
+        "type": "github"
+      }
+    },
+    "hspec-hedgehog": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1602603478,
+        "narHash": "sha256-XnS3zjQ7eh3iBOWq+Z/YcwrfWI55hV6k8LsZ8qm/qOc=",
+        "owner": "parsonsmatt",
+        "repo": "hspec-hedgehog",
+        "rev": "eb617d854542510f0129acdea4bf52e50b13042e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "parsonsmatt",
+        "repo": "hspec-hedgehog",
+        "type": "github"
+      }
+    },
     "iohk-nix": {
       "flake": false,
       "locked": {
@@ -965,7 +997,6 @@
     "root": {
       "inputs": {
         "Shrinker": "Shrinker",
-        "autodocodec": "autodocodec",
         "cardano-base": "cardano-base",
         "cardano-crypto": "cardano-crypto",
         "cardano-prelude": "cardano-prelude",
@@ -977,6 +1008,9 @@
         "haskell-nix": "haskell-nix",
         "hercules-ci-effects": "hercules-ci-effects",
         "hs-memory": "hs-memory",
+        "hspec": "hspec",
+        "hspec-golden": "hspec-golden",
+        "hspec-hedgehog": "hspec-hedgehog",
         "iohk-nix": "iohk-nix",
         "nixpkgs": [
           "haskell-nix",
@@ -984,28 +1018,8 @@
         ],
         "plutus": "plutus",
         "protolude": "protolude",
-        "safe-coloured-text": "safe-coloured-text",
         "sized-functors": "sized-functors",
-        "sydtest": "sydtest",
-        "th-extras": "th-extras",
-        "validity": "validity"
-      }
-    },
-    "safe-coloured-text": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1644357337,
-        "narHash": "sha256-sXSKw8m6O9K/H2BBiYqO5e4sJIo+9UP+UvEukRn28d8=",
-        "owner": "srid",
-        "repo": "safe-coloured-text",
-        "rev": "034f3612525568b422e0c62b52417d77b7cf31c2",
-        "type": "github"
-      },
-      "original": {
-        "owner": "srid",
-        "ref": "ghc921",
-        "repo": "safe-coloured-text",
-        "type": "github"
+        "th-extras": "th-extras"
       }
     },
     "sized-functors": {
@@ -1070,23 +1084,6 @@
       "original": {
         "owner": "input-output-hk",
         "repo": "stackage.nix",
-        "type": "github"
-      }
-    },
-    "sydtest": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1645114028,
-        "narHash": "sha256-P6ZwwfFeN8fpi3fziz9yERTn7BfxdE/j/OofUu+4GdA=",
-        "owner": "srid",
-        "repo": "sydtest",
-        "rev": "9c6c7678f7aabe22e075aab810a6a2e304591d24",
-        "type": "github"
-      },
-      "original": {
-        "owner": "srid",
-        "ref": "ghc921",
-        "repo": "sydtest",
         "type": "github"
       }
     },
@@ -1162,23 +1159,6 @@
         "owner": "srid",
         "ref": "master",
         "repo": "unionmount",
-        "type": "github"
-      }
-    },
-    "validity": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1644358698,
-        "narHash": "sha256-dpMIu08qXMzy8Kilk/2VWpuwIsfqFtpg/3mkwt5pdjA=",
-        "owner": "srid",
-        "repo": "validity",
-        "rev": "f7982549b95d0ab727950dc876ca06b1862135ba",
-        "type": "github"
-      },
-      "original": {
-        "owner": "srid",
-        "ref": "ghc921",
-        "repo": "validity",
         "type": "github"
       }
     }
