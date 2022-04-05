@@ -293,7 +293,7 @@ There's just one element in `txInfoInputs` in this example, and there it is. Of 
 
 # How to build docs
 
-To run the docs locally,
+To run the docs locally from the Git working copy (useful when editing them),
 
 ```sh-session
 nix run .#docs
@@ -303,4 +303,10 @@ To build the static HTML site,
 
 ```sh-session
 nix build .#website
+```
+
+To run the docs directly without cloning the Git repo,
+
+```sh-session
+nix run github:Plutonomicon/plutarch#website
 ```

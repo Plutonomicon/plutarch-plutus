@@ -579,7 +579,7 @@
             '';
           };
         };
-      plutarchWebsite = system:
+      plutarchWebsiteStatic = system:
         let
           pkgs = nixpkgsFor system;
           configFile = (pkgs.formats.yaml { }).generate "emanote-configFile" {
@@ -597,14 +597,14 @@
               --layers "${self}/docs;${configDir}" \
               gen $out
           '';
-      plutarchWebsiteApp = system:
+      plutarchWebsiteLive = system: path:
         rec {
           type = "app";
           # '' is required for escaping ${} in nix
           script = (nixpkgsFor system).writers.writeBash "emanoteLiveReload.sh" ''
             set -xe
             export PORT="''${EMANOTE_PORT:-7072}"
-            ${inputs.emanote.defaultPackage.${system}}/bin/emanote --layers ./docs run --port "$PORT"
+            ${inputs.emanote.defaultPackage.${system}}/bin/emanote --layers ${path} run --port "$PORT"
           '';
           program = builtins.toString script;
         };
@@ -659,7 +659,7 @@
 
       packages = perSystem (system: self.flake.${system}.packages // {
         haddock = haddock system;
-        website = plutarchWebsite system;
+        website = plutarchWebsiteStatic system;
       });
       checks = perSystem
         (system:
@@ -695,7 +695,10 @@
           test-ghc810-nodev = plutarchTestApp system "ghc810-nodev" self.projectMatrix.ghc810.nodev;
           test-ghc810-dev = plutarchTestApp system "ghc810-dev" self.projectMatrix.ghc810.dev;
 
-          docs = plutarchWebsiteApp system;
+          # `nix run .#docs` should be run from the Git repo.
+          docs = plutarchWebsiteLive system "./docs";
+          # `nix run github:Plutonomicon/plutarch#website` can be run from anywhere
+          website = plutarchWebsiteLive system "${self}/docs";
         }
       );
       devShell = perSystem (system: self.flake.${system}.devShell);
