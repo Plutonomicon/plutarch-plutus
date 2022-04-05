@@ -6,6 +6,7 @@ module Plutarch.Api.V1.Value (
   PCurrencySymbol (PCurrencySymbol),
   PTokenName (PTokenName),
   singleton,
+  unionWith,
   valueOf,
 ) where
 
@@ -68,3 +69,16 @@ valueOf = phoistAcyclic $
       PJust submap -> pmatch (AssocMap.lookup # token # submap) $ \case
         PNothing -> 0
         PJust amount -> amount
+
+{- | Combine two 'PValue's applying the given function to any pair of
+ quantities with the same asset class. Note that the result is _not_
+ normalized and may contain zero quantities.
+-}
+unionWith :: Term (s :: S) ((PInteger :--> PInteger :--> PInteger) :--> PValue :--> PValue :--> PValue)
+unionWith = phoistAcyclic $
+  plam $ \combine x y ->
+    pcon . PValue $
+      AssocMap.unionWith
+        # (plam $ \x y -> AssocMap.unionWith # combine # x # y)
+        # pto x
+        # pto y

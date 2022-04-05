@@ -1,2 +1,7 @@
 singleton (program 1.0.0 [(#41c0, #a149736f6d65746f6b656e01)])
 valueOf (program 1.0.0 1)
+unionWith.const (program 1.0.0 [(#41c0, #a149736f6d65746f6b656e01)])
+unionWith.(+) (program 1.0.0 [(#41c0, #a149736f6d65746f6b656e02)])
+unionWith.tokens (program 1.0.0 [(#41c0, #a249736f6d65746f6b656e014a6f74686572746f6b656e01)])
+unionWith.symbols (program 1.0.0 [ (#41c0, #a149736f6d65746f6b656e01)
+               , (#41c2, #a149736f6d65746f6b656e01) ])

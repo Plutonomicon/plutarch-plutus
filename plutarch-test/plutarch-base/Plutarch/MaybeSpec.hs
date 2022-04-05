@@ -25,4 +25,4 @@ spec = do
       "just" @| pmaybe # 0 # psucc # pcon (PJust 41) #== 42 @-> passert
 
 psucc :: ClosedTerm (PInteger :--> PInteger)
-psucc = phoistAcyclic (plam (+1))
+psucc = phoistAcyclic (plam (+ 1))

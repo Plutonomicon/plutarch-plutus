@@ -2,3 +2,11 @@ lookup {"exBudgetCPU":5590502,"exBudgetMemory":12555,"scriptSizeBytes":143}
 lookupData {"exBudgetCPU":5652634,"exBudgetMemory":12555,"scriptSizeBytes":143}
 singleton {"exBudgetCPU":1374198,"exBudgetMemory":2828,"scriptSizeBytes":39}
 singletonData {"exBudgetCPU":1195560,"exBudgetMemory":2228,"scriptSizeBytes":34}
+difference.emptyLeft {"exBudgetCPU":3012848,"exBudgetMemory":7860,"scriptSizeBytes":173}
+difference.emptyRight {"exBudgetCPU":6563780,"exBudgetMemory":16484,"scriptSizeBytes":176}
+difference.emptyResult {"exBudgetCPU":9839480,"exBudgetMemory":23042,"scriptSizeBytes":190}
+unionWith.const {"exBudgetCPU":22897749,"exBudgetMemory":55380,"scriptSizeBytes":372}
+unionWith.(+) {"exBudgetCPU":22946093,"exBudgetMemory":54882,"scriptSizeBytes":369}
+unionWithData.const {"exBudgetCPU":22001154,"exBudgetMemory":53784,"scriptSizeBytes":359}
+unionWithData.emptyLeft {"exBudgetCPU":10586540,"exBudgetMemory":28580,"scriptSizeBytes":346}
+unionWithData.emptyRight {"exBudgetCPU":13570650,"exBudgetMemory":35772,"scriptSizeBytes":347}

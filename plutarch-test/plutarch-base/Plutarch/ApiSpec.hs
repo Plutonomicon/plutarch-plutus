@@ -61,21 +61,51 @@ spec = do
     describe "value" $ do
       pgoldenSpec $ do
         let pmint = PValue.singleton # pconstant "c0" # pconstant "sometoken" # 1
+            pmintOtherToken = PValue.singleton # pconstant "c0" # pconstant "othertoken" # 1
+            pmintOtherSymbol = PValue.singleton # pconstant "c2" # pconstant "sometoken" # 1
         "singleton" @| pmint @-> \p ->
           plift p @?= mint
         "valueOf" @| PValue.valueOf # pmint # pconstant "c0" # pconstant "sometoken" @-> \p ->
           plift p @?= 1
+        "unionWith" @\ do
+          "const" @| PValue.unionWith # plam const # pmint # pmint @-> \p ->
+            plift p @?= mint
+          "(+)" @| PValue.unionWith # plam (+) # pmint # pmint @-> \p ->
+            plift p @?= mint <> mint
+          "tokens" @| PValue.unionWith # plam (+) # pmint # pmintOtherToken @-> \p ->
+            plift p @?= mint <> mintOtherToken
+          "symbols" @| PValue.unionWith # plam (+) # pmint # pmintOtherSymbol @-> \p ->
+            plift p @?= mint <> mintOtherSymbol
     describe "map" $ do
       pgoldenSpec $ do
-        let pmap, pdmap :: Term _ (AssocMap.PMap PByteString PInteger)
+        let pmap, pdmap, emptyMap, doubleMap :: Term _ (AssocMap.PMap PByteString PInteger)
             pmap = AssocMap.singleton # pconstant "key" # 42
             pdmap = AssocMap.singletonData # pdata (pconstant "key") # pdata 42
+            emptyMap = AssocMap.empty
+            doubleMap = AssocMap.singleton # pconstant "key" # 84
         "lookup" @| AssocMap.lookup # pconstant "key" # pmap #== pcon (PJust 42) @-> passert
         "lookupData"
           @| AssocMap.lookupData # pdata (pconstant "key") # pmap #== pcon (PJust $ pdata 42)
           @-> passert
         "singleton" @| pmap @-> pshouldReallyBe pdmap
         "singletonData" @| pdmap @-> pshouldReallyBe pmap
+        "difference" @\ do
+          "emptyLeft" @| AssocMap.difference # emptyMap # pmap @-> pshouldReallyBe emptyMap
+          "emptyRight" @| AssocMap.difference # pmap # emptyMap @-> pshouldReallyBe pmap
+          "emptyResult" @| AssocMap.difference # pmap # doubleMap @-> pshouldReallyBe emptyMap
+        "unionWith" @\ do
+          "const" @| AssocMap.unionWith # plam const # pmap # pmap @-> pshouldReallyBe pmap
+          "(+)" @| AssocMap.unionWith # plam (+) # pmap # pmap @-> pshouldReallyBe doubleMap
+        "unionWithData" @\ do
+          "const" @| AssocMap.unionWithData # plam const # pmap # pmap @-> pshouldReallyBe pmap
+          "emptyLeft" @| AssocMap.unionWithData # plam const # emptyMap # pmap @-> pshouldReallyBe pmap
+          "emptyRight" @| AssocMap.unionWithData # plam const # pmap # emptyMap @-> pshouldReallyBe pmap
+
+    {- TODO: fails due to incomplete normalization
+            "mapEitherWithKey" @\ do
+              "const" @| AssocMap.mapEitherWithKey # plam (const $ pcon . PRight) # pmap
+                @-> pshouldReallyBe (pcon $ PPair emptyMap pmap)
+    -}
     describe "example" $ do
       -- The checkSignatory family of functions implicitly use tracing due to
       -- monadic syntax, and as such we need two sets of tests here.
@@ -135,6 +165,12 @@ inp =
 -- | Minting a single token
 mint :: Value
 mint = Value.singleton sym "sometoken" 1
+
+mintOtherToken :: Value
+mintOtherToken = Value.singleton sym "othertoken" 1
+
+mintOtherSymbol :: Value
+mintOtherSymbol = Value.singleton "c2" "sometoken" 1
 
 ref :: TxOutRef
 ref = TxOutRef "a0" 0
@@ -289,4 +325,4 @@ d0DatValue :: [Integer]
 d0DatValue = [1 .. 10]
 
 pshouldReallyBe :: ClosedTerm a -> ClosedTerm a -> Expectation
-pshouldReallyBe = pshouldBe
+pshouldReallyBe a b = pshouldBe b a
