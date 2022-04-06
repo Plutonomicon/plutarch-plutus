@@ -1,4 +1,12 @@
-module Plutarch.ApiSpec (spec, ctx, info, purpose, validator, datum) where
+-- NOTE: This module also contains ScriptContext mocks, which should ideally
+-- moved to a module of its own after cleaning up to expose a easy to reason
+-- about API.
+module Plutarch.ApiSpec (
+  spec,
+  ctx,
+  validContext0,
+  invalidContext1,
+) where
 
 import Test.Tasty.HUnit
 
@@ -200,3 +208,53 @@ getFields = phoistAcyclic $ plam $ \addr -> psndBuiltin #$ pasConstr # addr
 
 dummyCurrency :: CurrencySymbol
 dummyCurrency = Value.currencySymbol "\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11"
+
+------------------- Mocking a ScriptContext ----------------------------------------
+
+validContext0 :: Term s PScriptContext
+validContext0 = mkCtx validOutputs0 validDatums1
+
+invalidContext1 :: Term s PScriptContext
+invalidContext1 = mkCtx invalidOutputs1 validDatums1
+
+mkCtx :: [TxOut] -> [(DatumHash, Datum)] -> Term s PScriptContext
+mkCtx outs l = pconstant (ScriptContext (info' outs l) purpose)
+  where
+    info' :: [TxOut] -> [(DatumHash, Datum)] -> TxInfo
+    info' outs dat =
+      info
+        { txInfoData = dat
+        , txInfoOutputs = outs
+        }
+
+validOutputs0 :: [TxOut]
+validOutputs0 =
+  [ TxOut
+      { txOutAddress =
+          Address (ScriptCredential validator) Nothing
+      , txOutValue = mempty
+      , txOutDatumHash = Just datum
+      }
+  ]
+
+invalidOutputs1 :: [TxOut]
+invalidOutputs1 =
+  [ TxOut
+      { txOutAddress =
+          Address (ScriptCredential validator) Nothing
+      , txOutValue = mempty
+      , txOutDatumHash = Just datum
+      }
+  , TxOut
+      { txOutAddress =
+          Address (ScriptCredential validator) Nothing
+      , txOutValue = mempty
+      , txOutDatumHash = Nothing
+      }
+  ]
+
+validDatums1 :: [(DatumHash, Datum)]
+validDatums1 =
+  let dat :: Datum
+      dat = Datum $ toBuiltinData [(1 :: Integer) .. 10]
+   in [("d0", dat)]
