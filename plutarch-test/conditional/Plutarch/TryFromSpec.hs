@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Plutarch.TryFromSpec (spec) where
+module Plutarch.TryFromSpec (spec, ctx, validOutputs0, validList1) where
 
 -- Haskell imports
 import qualified GHC.Generics as GHC
