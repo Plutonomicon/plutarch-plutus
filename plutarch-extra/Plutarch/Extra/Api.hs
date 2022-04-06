@@ -18,7 +18,7 @@ import Plutarch.Api.V1 (
  )
 import Plutarch.Prelude
 
-import Plutarch.Extra.Monad (tlet, tletField, tmatch, tmatchField)
+import Plutarch.Extra.Monad (tlet, tmatch)
 
 {- | gets a list of continuing outputs by finding
  - its own input and  returning a list of outputs with the same outAddress
@@ -26,12 +26,12 @@ import Plutarch.Extra.Monad (tlet, tletField, tmatch, tmatchField)
 getContinuingOutputs :: Term s (PScriptContext :--> PBuiltinList PTxOut)
 getContinuingOutputs = phoistAcyclic $
   plam $ \sc -> unTermCont $ do
-    txinfo <- tletField @"txInfo" sc
-    outs <- tletField @"outputs" txinfo
+    txinfo <- tlet $ pfield @"txInfo" # sc
+    outs <- tlet $ pfield @"outputs" # txinfo
     tmatch (findOwnInput # sc) >>= \case
       PJust te -> do
-        resolved <- tletField @"resolved" te
-        outAdr <- tletField @"address" resolved
+        resolved <- tlet $ pfield @"resolved" # te
+        outAdr <- tlet $ pfield @"address" # resolved
         pure $ pfilter # (matches # outAdr) #$ pmap # plam pfromData # outs
       PNothing ->
         pure $ ptraceError "can't get any continuing outputs"
@@ -39,7 +39,7 @@ getContinuingOutputs = phoistAcyclic $
     matches :: Term s (PAddress :--> PTxOut :--> PBool)
     matches = phoistAcyclic $
       plam $ \adr txOut -> unTermCont $ do
-        outAdr <- tletField @"address" txOut
+        outAdr <- tlet $ pfield @"address" # txOut
         pure $ adr #== outAdr
 
 {- | tries to finds the transaction's input
@@ -51,8 +51,8 @@ findOwnInput = phoistAcyclic $
     PScriptContext te <- tmatch sc
     tmatch (pfromData $ pfield @"purpose" # te) >>= \case
       PSpending outRef' -> do
-        outRef <- tletField @"_0" outRef'
-        PTxInfo txinfo <- tmatchField @"txInfo" te
+        outRef <- tlet $ pfield @"_0" # outRef'
+        PTxInfo txinfo <- tmatch $ pfield @"txInfo" # te
         is <- tlet $ pmap # plam pfromData #$ pfromData $ pfield @"inputs" # txinfo
         pure $ pfind # (matches # outRef) # is
       _ ->
@@ -62,10 +62,10 @@ findOwnInput = phoistAcyclic $
     matches = phoistAcyclic $
       plam $ \outref txininfo -> unTermCont $ do
         PTxOutRef outref' <- tmatch outref
-        outRefId <- tletField @"id" outref'
+        outRefId <- tlet $ pfield @"id" # outref'
         PTxInInfo txininfo' <- tmatch txininfo
-        PTxOutRef inOutRef <- tmatchField @"outRef" txininfo'
-        inOutRefId <- tletField @"id" inOutRef
+        PTxOutRef inOutRef <- tmatch $ pfield @"outRef" # txininfo'
+        inOutRefId <- tlet $ pfield @"id" # inOutRef
         pure $
           outRefId #== inOutRefId
 
@@ -73,7 +73,7 @@ findOwnInput = phoistAcyclic $
 findDatum :: Term s (PDatumHash :--> PTxInfo :--> PMaybe PDatum)
 findDatum = phoistAcyclic $
   plam $ \dh txinfo -> unTermCont $ do
-    txInfoData <- tletField @"data" txinfo
+    txInfoData <- tlet $ pfield @"data" # txinfo
     maybeEnt <- tlet $ pfind # (matches # dh) # txInfoData
     pure $
       pmatch maybeEnt $ \case

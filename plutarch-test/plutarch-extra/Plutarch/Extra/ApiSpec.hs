@@ -4,7 +4,7 @@ import Plutarch.Extra.Api
 import Plutarch.Prelude
 
 import Plutarch.Test
-import Test.Hspec (Spec, describe)
+import Test.Hspec
 
 import Plutarch.ApiSpec (validContext0)
 
