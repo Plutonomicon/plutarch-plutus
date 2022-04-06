@@ -6,7 +6,7 @@ import Plutarch.Prelude
 import Plutarch.Test
 import Test.Hspec
 
-import Plutarch.ApiSpec (validContext0)
+import Plutarch.ApiSpec (d0Dat, inp, validContext0, validOutputs0)
 
 spec :: Spec
 spec = do
@@ -14,8 +14,11 @@ spec = do
     let ctx = validContext0
     plutarchDevFlagDescribe . pgoldenSpec $ do
       "findOwnInput"
-        @| findOwnInput # ctx
+        @| findOwnInput # ctx @-> \res ->
+          passert $ res #== pcon (PJust $ pconstant inp)
       "getContinuingOutputs"
-        @| getContinuingOutputs # ctx
+        @| getContinuingOutputs # ctx @-> \txOuts ->
+          passert $ txOuts #== pconstant validOutputs0
       "findDatum"
-        @| findDatum # pconstant "d0" # (pfield @"txInfo" # ctx)
+        @| findDatum # pconstant "d0" # (pfield @"txInfo" # ctx) @-> \res ->
+          passert $ res #== pcon (PJust $ pconstant d0Dat)

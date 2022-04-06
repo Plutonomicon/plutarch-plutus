@@ -5,7 +5,10 @@ module Plutarch.ApiSpec (
   spec,
   ctx,
   validContext0,
+  validOutputs0,
   invalidContext1,
+  d0Dat,
+  inp,
 ) where
 
 import Test.Tasty.HUnit
@@ -255,6 +258,7 @@ invalidOutputs1 =
 
 validDatums1 :: [(DatumHash, Datum)]
 validDatums1 =
-  let dat :: Datum
-      dat = Datum $ toBuiltinData [(1 :: Integer) .. 10]
-   in [("d0", dat)]
+  [("d0", d0Dat)]
+
+d0Dat :: Datum
+d0Dat = Datum $ toBuiltinData [(1 :: Integer) .. 10]
