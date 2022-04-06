@@ -28,13 +28,13 @@ getContinuingOutputs = phoistAcyclic $
   plam $ \sc -> unTermCont $ do
     txinfo <- tletField @"txInfo" sc
     outs <- tletField @"outputs" txinfo
-    pure $
-      pmatch (findOwnInput # sc) $ \case
-        PJust te -> unTermCont $ do
-          resolved <- tletField @"resolved" te
-          outAdr <- tletField @"address" resolved
-          pure $ pfilter # (matches # outAdr) #$ pmap # plam pfromData # outs
-        PNothing -> ptraceError "can't get any continuing outputs"
+    tmatch (findOwnInput # sc) >>= \case
+      PJust te -> do
+        resolved <- tletField @"resolved" te
+        outAdr <- tletField @"address" resolved
+        pure $ pfilter # (matches # outAdr) #$ pmap # plam pfromData # outs
+      PNothing ->
+        pure $ ptraceError "can't get any continuing outputs"
   where
     matches :: Term s (PAddress :--> PTxOut :--> PBool)
     matches = phoistAcyclic $
@@ -49,15 +49,14 @@ findOwnInput :: Term s (PScriptContext :--> PMaybe PTxInInfo)
 findOwnInput = phoistAcyclic $
   plam $ \sc -> unTermCont $ do
     PScriptContext te <- tmatch sc
-    pure $
-      pmatch (pfromData $ pfield @"purpose" # te) $ \case
-        PSpending outRef' -> unTermCont $ do
-          outRef <- tletField @"_0" outRef'
-          PTxInfo txinfo <- tmatchField @"txInfo" te
-          is <- tlet $ pmap # plam pfromData #$ pfromData $ pfield @"inputs" # txinfo
-          pure $
-            pfind # (matches # outRef) # is
-        _ -> pcon PNothing
+    tmatch (pfromData $ pfield @"purpose" # te) >>= \case
+      PSpending outRef' -> do
+        outRef <- tletField @"_0" outRef'
+        PTxInfo txinfo <- tmatchField @"txInfo" te
+        is <- tlet $ pmap # plam pfromData #$ pfromData $ pfield @"inputs" # txinfo
+        pure $ pfind # (matches # outRef) # is
+      _ ->
+        pure $ pcon PNothing
   where
     matches :: Term s (PTxOutRef :--> PTxInInfo :--> PBool)
     matches = phoistAcyclic $
