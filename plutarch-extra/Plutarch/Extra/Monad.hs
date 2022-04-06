@@ -1,14 +1,19 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Plutarch.Extra.Monad (tlet, tletField, tmatch, tmatchField) where
-
-import Plutarch.Prelude
+module Plutarch.Extra.Monad (
+  tlet,
+  tletField,
+  tmatch,
+  tmatchField,
+) where
 
 import GHC.TypeLits (KnownNat)
+
 import Plutarch.DataRepr (PDataFields (PFields))
 import Plutarch.DataRepr.Internal (PLabelIndex, PUnLabel)
 import Plutarch.DataRepr.Internal.HList (IndexList)
+import Plutarch.Prelude
 
 tlet :: Term s a -> TermCont s (Term s a)
 tlet = tcont . plet

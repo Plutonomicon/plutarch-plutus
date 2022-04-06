@@ -1,19 +1,23 @@
-module Plutarch.Extra.Api (getContinuingOutputs, findOwnInput, findDatum) where
-
-import Plutarch.Prelude
+module Plutarch.Extra.Api (
+  getContinuingOutputs,
+  findOwnInput,
+  findDatum,
+) where
 
 import Plutarch.Api.V1 (
   PAddress,
-  PDatum (..),
+  PDatum,
   PDatumHash,
-  PScriptContext (..),
+  PScriptContext (PScriptContext),
   PScriptPurpose (PSpending),
   PTuple,
-  PTxInInfo (..),
-  PTxInfo (..),
+  PTxInInfo (PTxInInfo),
+  PTxInfo (PTxInfo),
   PTxOut,
-  PTxOutRef (..),
+  PTxOutRef (PTxOutRef),
  )
+import Plutarch.Prelude
+
 import Plutarch.Extra.Monad (tlet, tletField, tmatch, tmatchField)
 
 {- | gets a list of continuing outputs by finding
