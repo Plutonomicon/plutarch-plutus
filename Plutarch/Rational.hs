@@ -202,7 +202,7 @@ pfailOnZero = phoistAcyclic $
   plam $ \n x ->
     pif
       (n #== 0)
-      (ptraceError "division by 0")
+      (ptraceError "pfailOnZero: division by 0")
       x
 
 preduce :: Term s (PRational :--> PRational)
@@ -211,7 +211,7 @@ preduce = phoistAcyclic $
     pmatch x $ \(PRational xn xd) ->
       plet (pgcd # xn # xd) $ \r ->
         plet (signum xd) $ \s ->
-          (pcon $ PRational (s * pdiv # xn # r) (s * pdiv # xd # r))
+          pcon $ PRational (s * pdiv # xn # r) (s * pdiv # xd # r)
 
 pgcd :: Term s (PInteger :--> PInteger :--> PInteger)
 pgcd = phoistAcyclic $
