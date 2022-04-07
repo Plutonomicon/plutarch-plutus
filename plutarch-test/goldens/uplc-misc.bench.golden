@@ -1,0 +1,6 @@
+perror {"exBudgetCPU":100,"exBudgetMemory":100,"scriptSizeBytes":5}
+perror.arg {"exBudgetCPU":100,"exBudgetMemory":100,"scriptSizeBytes":5}
+laziness.f.d {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":7}
+laziness.d.f.d {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":7}
+hoist.id.0 {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":9}
+hoist.fstPair {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":6}

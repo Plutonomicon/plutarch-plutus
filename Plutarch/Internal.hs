@@ -6,6 +6,7 @@ module Plutarch.Internal (
   PDelayed,
   -- | $term
   Term (Term, asRawTerm),
+  asClosedRawTerm,
   mapTerm,
   plam',
   plet,
@@ -13,12 +14,14 @@ module Plutarch.Internal (
   pdelay,
   pforce,
   phoistAcyclic,
+  punsafeAsClosedTerm,
   perror,
   punsafeCoerce,
   punsafeBuiltin,
   punsafeConstant,
   punsafeConstantInternal,
   compile,
+  compile',
   ClosedTerm,
   Dig,
   hashTerm,
@@ -39,8 +42,9 @@ import qualified Data.Map.Lazy as M
 import qualified Data.Set as S
 import qualified Flat.Run as F
 import GHC.Stack (HasCallStack)
-import Numeric.Natural (Natural)
-import Plutarch.Evaluate (evaluateScript)
+import GHC.Word (Word64)
+import Plutarch.Evaluate (evalScript)
+import Plutarch.Reducible (Reducible (Reduce))
 import Plutus.V1.Ledger.Scripts (Script (Script))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import qualified PlutusCore as PLC
@@ -68,13 +72,14 @@ data HoistedTerm = HoistedTerm Dig RawTerm
   deriving stock (Show)
 
 data RawTerm
-  = RVar Natural
-  | RLamAbs Natural RawTerm
+  = RVar Word64
+  | RLamAbs Word64 RawTerm
   | RApply RawTerm [RawTerm]
   | RForce RawTerm
   | RDelay RawTerm
   | RConstant (Some (ValueOf PLC.DefaultUni))
   | RBuiltin PLC.DefaultFun
+  | RCompiled (UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ())
   | RError
   | RHoisted HoistedTerm
   deriving stock (Show)
@@ -91,6 +96,7 @@ hashRawTerm' (RConstant x) = flip hashUpdate ("5" :: BS.ByteString) . flip hashU
 hashRawTerm' (RBuiltin x) = flip hashUpdate ("6" :: BS.ByteString) . flip hashUpdate (F.flat x)
 hashRawTerm' RError = flip hashUpdate ("7" :: BS.ByteString)
 hashRawTerm' (RHoisted (HoistedTerm hash _)) = flip hashUpdate ("8" :: BS.ByteString) . flip hashUpdate hash
+hashRawTerm' (RCompiled code) = flip hashUpdate ("9" :: BS.ByteString) . flip hashUpdate (F.flat code)
 
 hashRawTerm :: RawTerm -> Dig
 hashRawTerm t = hashFinalize . hashRawTerm' t $ hashInit
@@ -132,7 +138,9 @@ type role Term phantom representational
  de-Bruijn index needed to reach its own level given the level it itself is
  instantiated with.
 -}
-newtype Term (s :: S) (a :: PType) = Term {asRawTerm :: Natural -> TermResult}
+newtype Term (s :: S) (a :: PType) = Term {asRawTerm :: Word64 -> TermResult}
+
+instance Reducible (Term s a) where type Reduce (Term s a) = Term s a
 
 {- |
   *Closed* terms with no free variables.
@@ -167,14 +175,14 @@ plam' f = Term $ \i ->
         t -> mapTerm (RLamAbs 0) t
   where
     -- 0 is 1
-    getArity :: RawTerm -> Maybe Natural
+    getArity :: RawTerm -> Maybe Word64
     -- We only do this if it's hoisted, since it's only safe if it doesn't
     -- refer to any of the variables in the wrapping lambda.
     getArity (RHoisted (HoistedTerm _ (RLamAbs n _))) = Just n
     getArity (RHoisted (HoistedTerm _ t)) = getArityBuiltin t
     getArity t = getArityBuiltin t
 
-    getArityBuiltin :: RawTerm -> Maybe Natural
+    getArityBuiltin :: RawTerm -> Maybe Word64
     getArityBuiltin (RBuiltin PLC.AddInteger) = Just 1
     getArityBuiltin (RBuiltin PLC.SubtractInteger) = Just 1
     getArityBuiltin (RBuiltin PLC.MultiplyInteger) = Just 1
@@ -320,14 +328,17 @@ phoistAcyclic :: HasCallStack => ClosedTerm a -> Term s a
 phoistAcyclic t = case asRawTerm t 0 of
   -- Built-ins are smaller than variable references
   t'@(getTerm -> RBuiltin _) -> Term $ \_ -> t'
-  t' -> case evaluateScript . Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' t') of
-    Right _ ->
+  t' -> case evalScript . Script . UPLC.Program () (PLC.defaultVersion ()) $ compile' t' of
+    (Right _, _, _) ->
       let hoisted = HoistedTerm (hashRawTerm . getTerm $ t') (getTerm t')
        in Term $ \_ -> TermResult (RHoisted hoisted) (hoisted : getDeps t')
-    Left e -> error $ "Hoisted term errs! " <> show e
+    (Left e, _, _) -> error $ "Hoisted term errs! " <> show e
+
+punsafeAsClosedTerm :: forall s a. Term s a -> ClosedTerm a
+punsafeAsClosedTerm (Term t) = (Term t)
 
 -- Couldn't find a definition for this in plutus-core
-subst :: Natural -> (Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun () -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+subst :: Word64 -> (Word64 -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun () -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 subst idx x (UPLC.Apply () yx yy) = UPLC.Apply () (subst idx x yx) (subst idx x yy)
 subst idx x (UPLC.LamAbs () name y) = UPLC.LamAbs () name (subst (idx + 1) x y)
 subst idx x (UPLC.Delay () y) = UPLC.Delay () (subst idx x y)
@@ -338,8 +349,8 @@ subst idx _ (UPLC.Var () (DeBruijn (Index idx'))) | idx < idx' = UPLC.Var () (De
 subst _ _ y = y
 
 rawTermToUPLC ::
-  (HoistedTerm -> Natural -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) ->
-  Natural ->
+  (HoistedTerm -> Word64 -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) ->
+  Word64 ->
   RawTerm ->
   UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i + 1) -- Why the fuck does it start from 1 and not 0?
@@ -363,6 +374,7 @@ rawTermToUPLC m l (RDelay t) = UPLC.Delay () (rawTermToUPLC m l t)
 rawTermToUPLC m l (RForce t) = UPLC.Force () (rawTermToUPLC m l t)
 rawTermToUPLC _ _ (RBuiltin f) = UPLC.Builtin () f
 rawTermToUPLC _ _ (RConstant c) = UPLC.Constant () c
+rawTermToUPLC _ _ (RCompiled code) = code
 rawTermToUPLC _ _ RError = UPLC.Error ()
 -- rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted
 rawTermToUPLC m l (RHoisted hoisted) = m hoisted l -- UPLC.Var () . DeBruijn . Index $ l - m hoisted
@@ -373,14 +385,14 @@ compile' t =
   let t' = getTerm t
       deps = getDeps t
 
-      f :: Natural -> Maybe Natural -> (Bool, Maybe Natural)
+      f :: Word64 -> Maybe Word64 -> (Bool, Maybe Word64)
       f n Nothing = (True, Just n)
       f _ (Just n) = (False, Just n)
 
       g ::
         HoistedTerm ->
-        (M.Map Dig Natural, [(Natural, RawTerm)], Natural) ->
-        (M.Map Dig Natural, [(Natural, RawTerm)], Natural)
+        (M.Map Dig Word64, [(Word64, RawTerm)], Word64) ->
+        (M.Map Dig Word64, [(Word64, RawTerm)], Word64)
       g (HoistedTerm hash term) (map, defs, n) = case M.alterF (f n) hash map of
         (True, map) -> (map, (n, term) : defs, n + 1)
         (False, map) -> (map, defs, n)

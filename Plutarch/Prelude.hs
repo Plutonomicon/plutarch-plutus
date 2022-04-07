@@ -3,6 +3,7 @@ module Plutarch.Prelude (
   (:-->),
   PDelayed,
   Term,
+  ClosedTerm,
   plam,
   plam',
   papp,
@@ -64,6 +65,7 @@ module Plutarch.Prelude (
   PIsListLike,
   plistEquals,
   pelem,
+  pelemAt,
   plength,
   ptryIndex,
   pdrop,
@@ -74,12 +76,14 @@ module Plutarch.Prelude (
   pzip,
   pmap,
   pfilter,
+  pfind,
   precList,
   pfoldr,
   pfoldrLazy,
   pfoldl,
   pall,
   pany,
+  (#!!),
 
   -- * Scott encoded list type
   PList (..),
@@ -93,8 +97,12 @@ module Plutarch.Prelude (
   -- * Scott encoded pair type and utilities
   PPair (..),
 
+  -- * Opaque type
+  POpaque (POpaque),
+  popaque,
+
   -- * Builtin types and utilities
-  PData (..),
+  PData,
   pfstBuiltin,
   psndBuiltin,
   PBuiltinPair,
@@ -115,9 +123,11 @@ module Plutarch.Prelude (
 
   -- * Tracing
   ptrace,
+  ptraceShowId,
   ptraceIfFalse,
   ptraceIfTrue,
   ptraceError,
+  pshow,
 
   -- * Cryptographic hashes and signatures
   psha2_256,
@@ -156,6 +166,7 @@ import Plutarch.List
 import Plutarch.Maybe
 import Plutarch.Pair
 import Plutarch.Rational
+import Plutarch.Show
 import Plutarch.String
 import Plutarch.TermCont
 import Plutarch.Trace
