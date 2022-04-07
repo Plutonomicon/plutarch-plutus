@@ -110,15 +110,12 @@ data PDataRecord (as :: [PLabeledType]) (s :: S) where
 instance {-# OVERLAPPABLE #-} PlutusType (PDataRecord l) where
   type PInner (PDataRecord l) _ = PBuiltinList PData
   pcon' (PDCons x xs) = pcons # pforgetData x # pto xs
-  pcon' PDNil         = pnil
+  pcon' PDNil = pnil
   pmatch' _ _ = undefined -- FIXME
 
 instance PlutusType (PDataRecord ((name ':= x) ': xs)) where
   type PInner (PDataRecord ((name ':= x) ': xs)) _ = PBuiltinList PData
-  pcon' (PDCons x xs) = pto result
-    where
-      result :: Term _ (PDataRecord ((name ':= x) ': xs))
-      result = pdcons # x # xs
+  pcon' (PDCons x xs) = pcons # pforgetData x # pto xs
   pmatch' l' f = plet l' $ \l ->
     let x :: Term _ (PAsData x)
         x = punsafeCoerce $ phead # l
@@ -377,11 +374,11 @@ instance
       mkSOP :: NP (Term s) r -> SOP (Term s) (PCode s a)
       mkSOP = SOP . mkSum @_ @n @pcode
 
-newtype DualReprHandler s out def = LTRepr (Term s (PDataRecord def) -> Term s (PDataRecord def) -> Term s out)
+newtype DualReprHandler s out def = DualRepr (Term s (PDataRecord def) -> Term s (PDataRecord def) -> Term s out)
 
 -- | Optimized dual pmatch specialized for lexicographic '#<' and '#<=' implementations.
 pmatchLT :: Term s (PDataSum defs) -> Term s (PDataSum defs) -> NP (DualReprHandler s PBool) defs -> Term s PBool
-pmatchLT d1 d2 (LTRepr handler :* Nil) = handler (punDataSum # d1) (punDataSum # d2)
+pmatchLT d1 d2 (DualRepr handler :* Nil) = handler (punDataSum # d1) (punDataSum # d2)
 pmatchLT d1 d2 handlers = unTermCont $ do
   a <- tcont . plet $ pasConstr #$ pforgetData $ pdata d1
   b <- tcont . plet $ pasConstr #$ pforgetData $ pdata d2
@@ -413,7 +410,7 @@ pmatchLT d1 d2 handlers = unTermCont $ do
       NP (DualReprHandler s PBool) defs ->
       [Term s PBool]
     applyHandlers _ _ Nil = []
-    applyHandlers args1 args2 (LTRepr handler :* rest) =
+    applyHandlers args1 args2 (DualRepr handler :* rest) =
       handler (punsafeCoerce args1) (punsafeCoerce args2) :
       applyHandlers args1 args2 rest
 
@@ -454,7 +451,7 @@ mkLTHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
       Compose POrd PDataRecord y =>
       Const () (y : ys) ->
       (DualReprHandler s PBool y, Const () ys)
-    rer _ = (LTRepr (#<), Const ())
+    rer _ = (DualRepr (#<), Const ())
 
 mkLTEHandler :: forall def s. All (Compose POrd PDataRecord) def => NP (DualReprHandler s PBool) def
 mkLTEHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
@@ -464,7 +461,7 @@ mkLTEHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
       Compose POrd PDataRecord y =>
       Const () (y : ys) ->
       (DualReprHandler s PBool y, Const () ys)
-    rer _ = (LTRepr (#<=), Const ())
+    rer _ = (DualRepr (#<=), Const ())
 
 {- | Use this for implementing the necessary instances for getting the `Data` representation.
  You must implement 'PIsDataRepr' to use this.
