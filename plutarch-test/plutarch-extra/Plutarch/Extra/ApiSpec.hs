@@ -3,10 +3,9 @@ module Plutarch.Extra.ApiSpec (spec) where
 import Plutarch.Extra.Api
 import Plutarch.Prelude
 
+import Plutarch.ApiSpec (d0Dat, inp, validContext0, validOutputs0)
 import Plutarch.Test
 import Test.Hspec
-
-import Plutarch.ApiSpec (d0Dat, inp, validContext0, validOutputs0)
 
 spec :: Spec
 spec = do

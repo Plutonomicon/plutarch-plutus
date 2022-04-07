@@ -4,15 +4,17 @@ module Plutarch.Extra.Api (
   findDatum,
 ) where
 
+import GHC.Records (HasField (getField))
+
 import Plutarch.Api.V1 (
   PAddress,
   PDatum,
   PDatumHash,
-  PScriptContext (PScriptContext),
+  PScriptContext,
   PScriptPurpose (PSpending),
   PTuple,
   PTxInInfo (PTxInInfo),
-  PTxInfo (PTxInfo),
+  PTxInfo,
   PTxOut,
   PTxOutRef (PTxOutRef),
  )
@@ -48,12 +50,11 @@ getContinuingOutputs = phoistAcyclic $
 findOwnInput :: Term s (PScriptContext :--> PMaybe PTxInInfo)
 findOwnInput = phoistAcyclic $
   plam $ \sc -> unTermCont $ do
-    PScriptContext te <- tmatch sc
-    tmatch (pfromData $ pfield @"purpose" # te) >>= \case
+    ctx <- tcont $ pletFields @["txInfo", "purpose"] sc
+    tmatch (getField @"purpose" ctx) >>= \case
       PSpending outRef' -> do
         outRef <- tlet $ pfield @"_0" # outRef'
-        PTxInfo txinfo <- tmatch $ pfield @"txInfo" # te
-        is <- tlet $ pmap # plam pfromData #$ pfromData $ pfield @"inputs" # txinfo
+        is <- tlet $ pmap # plam pfromData #$ pfromData $ pfield @"inputs" # (getField @"txInfo" ctx)
         pure $ pfind # (matches # outRef) # is
       _ ->
         pure $ pcon PNothing
