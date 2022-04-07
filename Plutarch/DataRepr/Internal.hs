@@ -21,7 +21,6 @@ module Plutarch.DataRepr.Internal (
   pdropDataRecord,
   DerivePConstantViaData (..),
   pasDataSum,
-  pdToBuiltin,
   DualReprHandler (..),
 ) where
 
@@ -108,6 +107,12 @@ data PDataRecord (as :: [PLabeledType]) (s :: S) where
     PDataRecord ((name ':= x) ': xs) s
   PDNil :: PDataRecord '[] s
 
+instance {-# OVERLAPPABLE #-} PlutusType (PDataRecord l) where
+  type PInner (PDataRecord l) _ = PBuiltinList PData
+  pcon' (PDCons x xs) = pcons # pforgetData x # pto xs
+  pcon' PDNil         = pnil
+  pmatch' _ _ = undefined -- FIXME
+
 instance PlutusType (PDataRecord ((name ':= x) ': xs)) where
   type PInner (PDataRecord ((name ':= x) ': xs)) _ = PBuiltinList PData
   pcon' (PDCons x xs) = pto result
@@ -128,7 +133,7 @@ instance PlutusType (PDataRecord '[]) where
 
 -- | This uses data equality. 'PEq' instances of elements don't make any difference.
 instance PEq (PDataRecord xs) where
-  x #== y = pdToBuiltin x #== pdToBuiltin y
+  x #== y = pto x #== pto y
 
 -- Lexicographic ordering based 'Ord' instances for 'PDataRecord'.
 
@@ -183,10 +188,6 @@ pdcons = punsafeCoerce $ pcons @PBuiltinList @PData
 -- | An empty 'PDataRecord'.
 pdnil :: Term s (PDataRecord '[])
 pdnil = punsafeCoerce $ pnil @PBuiltinList @PData
-
--- | Convert a 'PDataRecord' into a builtin list of data values, losing type information in the process.
-pdToBuiltin :: Term s (PDataRecord xs) -> Term s (PBuiltinList PData)
-pdToBuiltin = punsafeCoerce
 
 data PLabeledType = Symbol := PType
 
