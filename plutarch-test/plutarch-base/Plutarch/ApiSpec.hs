@@ -89,6 +89,9 @@ spec = do
           @-> passert
         "singleton" @| pmap @-> pshouldReallyBe pdmap
         "singletonData" @| pdmap @-> pshouldReallyBe pmap
+        "insert" @\ do
+          "empty" @| AssocMap.insert # pconstant "key" # 42 # emptyMap @-> pshouldReallyBe pmap
+          "replace" @| AssocMap.insert # pconstant "key" # 84 # pmap @-> pshouldReallyBe doubleMap
         "difference" @\ do
           "emptyLeft" @| AssocMap.difference # emptyMap # pmap @-> pshouldReallyBe emptyMap
           "emptyRight" @| AssocMap.difference # pmap # emptyMap @-> pshouldReallyBe pmap

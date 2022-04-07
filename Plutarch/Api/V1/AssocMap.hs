@@ -8,6 +8,8 @@ module Plutarch.Api.V1.AssocMap (
   empty,
   singleton,
   singletonData,
+  insert,
+  insertData,
 
   -- * Lookups
   lookup,
@@ -38,7 +40,37 @@ import Plutarch.Lift (
   pconstantToRepr,
  )
 import Plutarch.Maybe (pmaybe)
-import Plutarch.Prelude
+import Plutarch.Prelude (
+  DerivePNewtype (..),
+  PAsData,
+  PBuiltinPair,
+  PCon (pcon),
+  PConstant,
+  PEither (..),
+  PEq ((#==)),
+  PIsData (..),
+  PLift,
+  PListLike (pcons, pnil),
+  PMatch (pmatch),
+  PMaybe (..),
+  PPair (..),
+  PType,
+  PlutusType,
+  S,
+  Term,
+  pconcat,
+  pfstBuiltin,
+  phoistAcyclic,
+  pif,
+  plam,
+  plet,
+  precList,
+  psndBuiltin,
+  pto,
+  (#),
+  (#$),
+  type (:-->),
+ )
 import Plutarch.Unsafe (punsafeFrom)
 
 import Prelude hiding (lookup)
@@ -94,17 +126,39 @@ lookupDataWith ::
         :--> PMaybe x
     )
 lookupDataWith = phoistAcyclic $
-  phoistAcyclic $
-    plam $ \unwrap key map ->
-      precList
-        ( \self x xs ->
-            pif
-              (pfstBuiltin # x #== key)
-              (unwrap # x)
-              (self # xs)
-        )
-        (const $ pcon PNothing)
-        # pto map
+  plam $ \unwrap key map ->
+    precList
+      ( \self x xs ->
+          pif
+            (pfstBuiltin # x #== key)
+            (unwrap # x)
+            (self # xs)
+      )
+      (const $ pcon PNothing)
+      # pto map
+
+-- | Insert a new key/value pair into the map, overiding the previous if any.
+insert :: (PIsData k, PIsData v) => Term (s :: S) (k :--> v :--> PMap k v :--> PMap k v)
+insert = phoistAcyclic $
+  plam $ \k v -> insertData # pdata k # pdata v
+
+-- | Insert a new data-encoded key/value pair into the map, overiding the previous if any.
+insertData :: (PIsData k, PIsData v) => Term (s :: S) (PAsData k :--> PAsData v :--> PMap k v :--> PMap k v)
+insertData = phoistAcyclic $
+  plam $ \key val map ->
+    plet (plam (pcons # (ppairDataBuiltin # key # val) #)) $ \addPair ->
+      punsafeFrom $
+        precList
+          ( \self x xs ->
+              plam $ \prefix ->
+                pif
+                  (pfstBuiltin # x #== key)
+                  (prefix #$ addPair # xs)
+                  (self # xs #$ plam $ \suffix -> prefix #$ pcons # x # suffix)
+          )
+          (const $ plam (#$ addPair # pnil))
+          # pto map
+          # plam id
 
 -- | Construct an empty 'PMap'.
 empty :: Term (s :: S) (PMap k v)
