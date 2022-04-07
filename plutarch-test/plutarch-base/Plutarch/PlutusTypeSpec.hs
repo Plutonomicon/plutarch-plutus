@@ -20,6 +20,9 @@ import Plutus.V1.Ledger.Credential (
  )
 
 import Test.Hspec
+import Plutarch.DataRepr
+import Data.SOP.NS
+import Data.Functor.Compose
 
 spec :: Spec
 spec = do
@@ -59,28 +62,52 @@ deconstrSpec = do
   describe "deconstr" . pgoldenSpec $ do
     "matching" @\ do
       "typed" @\ do
-        "newtype"
-          @| plam
-            ( \x -> pmatch x $ \(PAddress addrFields) ->
-                addrFields
-            )
-            # pconstant addrPC
-        "sumtype(ignore-fields)"
-          @| plam
-            ( \x -> pmatch x $ \case
-                PMinting _ -> pconstant ()
-                _ -> perror
-            )
-            # pconstant minting
-        "sumtype(partial-match)"
-          @| plam
-            ( \x -> pmatch x $ \case
-                PMinting hs -> hs
-                _ -> perror
-            )
-            # pconstant minting
+        "newtype" @\ do
+          "normal"
+            @| plam
+              ( \x -> pmatch x $ \(PAddress addrFields) ->
+                  addrFields
+              )
+              # pconstant addrPC
+          "datasum"
+            @| plam
+              ( \x -> pmatch (pasDataSum x) $ \(PDataSum datsum) -> case datsum of
+                  Z (Compose addrFields) -> addrFields
+                  _ -> perror
+              )
+              # pconstant addrPC
+        "sumtype(ignore-fields)" @\ do
+          "normal"
+            @| plam
+              ( \x -> pmatch x $ \case
+                  PMinting _ -> pconstant ()
+                  _ -> perror
+              )
+              # pconstant minting
+          "datasum"
+            @| plam
+              ( \x -> pmatch (pasDataSum x) $ \(PDataSum datsum) -> case datsum of
+                  Z _ -> pconstant ()
+                  _ -> perror
+              )
+              # pconstant minting
+        "sumtype(partial-match)" @\ do
+          "normal"
+            @| plam
+              ( \x -> pmatch x $ \case
+                  PMinting hs -> hs
+                  _ -> perror
+              )
+              # pconstant minting
+          "datasum"
+            @| plam
+              ( \x -> pmatch (pasDataSum x) $ \(PDataSum datsum) -> case datsum of
+                  Z (Compose hs) -> hs
+                  _ -> perror
+              )
+              # pconstant minting
         "sumtype(exhaustive)" @\ do
-          benchPurpose $
+          ("normal" @\) $ benchPurpose $
             plam
               ( \x -> pmatch x $ \case
                   PMinting f -> plet f $ const $ phexByteStr "01"
@@ -88,8 +115,17 @@ deconstrSpec = do
                   PRewarding f -> plet f $ const $ phexByteStr "03"
                   PCertifying f -> plet f $ const $ phexByteStr "04"
               )
+          ("datasum" @\) $ benchPurpose $
+            plam
+              ( \x -> pmatch (pasDataSum x) $ \(PDataSum datsum) -> case datsum of
+                  Z (Compose f) -> plet f $ const $ phexByteStr "01"
+                  S (Z (Compose f)) -> plet f $ const $ phexByteStr "02"
+                  S (S (Z (Compose f))) -> plet f $ const $ phexByteStr "03"
+                  S (S (S (Z (Compose f)))) -> plet f $ const $ phexByteStr "04"
+                  _ -> perror
+              )
         "sumtype(exhaustive)(ignore-fields)" @\ do
-          benchPurpose $
+          ("normal" @\) $ benchPurpose $
             plam
               ( \x -> pmatch x $ \case
                   PMinting _ -> phexByteStr "01"
@@ -97,6 +133,15 @@ deconstrSpec = do
                   PRewarding _ -> phexByteStr "03"
                   PCertifying _ -> phexByteStr "04"
               )
+          ("datasum" @\) $ benchPurpose $
+              plam
+                ( \x -> pmatch (pasDataSum x) $ \(PDataSum datsum) -> case datsum of
+                    Z _ -> phexByteStr "01"
+                    S (Z _) -> phexByteStr "02"
+                    S (S (Z _)) -> phexByteStr "03"
+                    S (S (S (Z _))) -> phexByteStr "04"
+                    _ -> perror
+                )
       "raw" @\ do
         "newtype"
           @| plam

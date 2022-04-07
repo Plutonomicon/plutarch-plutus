@@ -1,10 +1,11 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE DefaultSignatures #-}
+{-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans -Wno-redundant-constraints #-}
 
 module Plutarch.DataRepr.Internal (
-  PDataSum,
+  PDataSum (..),
   punDataSum,
   ptryIndexDataSum,
   pmatchDataSum,
@@ -25,6 +26,7 @@ module Plutarch.DataRepr.Internal (
   DualReprHandler (..),
 ) where
 
+import qualified Data.Functor.Compose as F
 import Data.Functor.Const (Const (Const))
 import Data.Kind (Type)
 import Data.List (groupBy, maximumBy, sortOn)
@@ -47,15 +49,13 @@ import Generics.SOP (
   Generic,
   K (K),
   NP (Nil, (:*)),
-  NS (Z, S),
-  SList (SNil, SCons),
+  NS,
   SListI,
   SOP (SOP),
   hcmap,
   hcollapse,
   hindex,
-  lengthSList,
-  sList,
+  hmap,
  )
 import Plutarch (
   Dig,
@@ -94,12 +94,11 @@ import Plutarch.Builtin (
  )
 import Plutarch.DataRepr.Internal.HList (type Drop, type IndexList)
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal (S (SI))
-import Plutarch.Internal.Generic (MkSum (mkSum), PCode, PGeneric, gpfrom, gpto)
+import Plutarch.Internal (S (SI), punsafeCoerce)
+import Plutarch.Internal.Generic (MkNS, PCode, PGeneric, gpfrom, gpto, mkNS, mkSum)
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstant, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont, tcont, unTermCont)
-import Plutarch.Unsafe (punsafeCoerce)
 import qualified Plutus.V1.Ledger.Api as Ledger
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is
@@ -224,62 +223,27 @@ instance {-# OVERLAPPABLE #-} PIsData (PDataRecord xs) where
   pfromData x = punsafeCoerce $ (pfromData (punsafeCoerce x) :: Term _ (PBuiltinList PData))
   pdata x = punsafeCoerce $ pdata (punsafeCoerce x :: Term _ (PBuiltinList PData))
 
-{- | A sum of 'PDataRecord's. The underlying representation is the `PDataConstr` constructor,
- where the integer is the index of the variant and the list is the record.
-
- This is how most data structures are stored on-chain.
--}
-newtype DRec s x = DRec (forall {out :: PType}. ((Term s (PDataRecord x) -> Term s out) -> Term s out))
-
+{- | A sum of 'PDataRecord's. The underlying representation is the `Constr` constructor,
+where the integer is the index of the variant and the list is the record. -}
 type PDataSum :: [[PLabeledType]] -> PType
-newtype PDataSum defs s = PDataSum (NS (DRec s) defs)
+newtype PDataSum defs s = PDataSum (NS (F.Compose (Term s) PDataRecord) defs)
 
--- the length functions in sop-core gives the actual length, we want length-1
-adjustedLength :: forall x xs proxy. SListI (x : xs) => proxy (x : xs) -> Integer
-adjustedLength proxy = fromIntegral (lengthSList proxy) - 1
+instance
+  ( SListI defs
+  , forall s. MkDataSumHandler s defs 0 defs
+  ) =>
+  PlutusType (PDataSum defs)
+  where
+  type PInner (PDataSum defs) _ = PData
+  pcon' (PDataSum xss) =
+    let constrIx = fromIntegral $ hindex xss
+        datRec = hcollapse $ hmap (K . pdToBuiltin . F.getCompose) xss
+     in pforgetData $ pconstrBuiltin # pconstant constrIx # datRec
 
-instance SListI (def : defs) => PlutusType (PDataSum (def : defs)) where
-  type PInner (PDataSum (def : defs)) _ = PData
-  pcon' ::
-    forall
-      {s :: S}
-      {b :: PType}.
-    PDataSum (def : defs) s ->
-    Term s (PInner (PDataSum (def : defs)) b)
-  pcon' (PDataSum xss) = case xss of
-    Z (DRec f) -> punsafeCoerce $ pconstrBuiltin # (pconstant @PInteger $ adjustedLength $ Proxy @(def : defs)) # (punsafeCoerce $ f id)
-    S rest -> case rest of
-      Z (DRec f) -> punsafeCoerce $ pconstrBuiltin # (pconstant @PInteger $ adjustedLength $ Proxy @defs) # (punsafeCoerce $ f $ id)
-      dss@(S _) -> pcon' (PDataSum dss)
-
-  pmatch' ::
-    forall
-      {s :: S}
-      {b :: PType}.
-    Term s (PInner (PDataSum (def : defs)) b) ->
-    (PDataSum (def : defs) s -> Term s b) ->
-    Term s b
-  pmatch' d f =
-    plet (pasConstr #$ pforgetData $ pdata d) $ \d' ->
-      plet (pfstBuiltin # d') $ \constr ->
-        plet (psndBuiltin # d') $ \args ->
-          go constr args sList (f . PDataSum)
+  pmatch' d = pmatchDataSum target . mkDataSumHandler @_ @defs @0 @defs
     where
-      go ::
-        forall {d :: [PLabeledType]} {ds :: [[PLabeledType]]}.
-        Term s PInteger ->
-        Term s (PBuiltinList PData) ->
-        SList (d : ds) ->
-        (NS (DRec s) (d : ds) -> Term s b) ->
-        Term s b
-      go constr args SCons g =
-        case sList @ds of
-          SNil -> g . Z $ DRec (\k -> k $ punsafeCoerce args)
-          rest@SCons ->
-            pif
-              (constr #== pconstant (adjustedLength $ Proxy @(d : ds)))
-              (g . Z $ DRec (\k -> k $ punsafeCoerce args))
-              (go constr args rest (g . S))
+      target :: Term _ (PDataSum defs)
+      target = punsafeCoerce d
 
 instance PIsData (PDataSum defs) where
   pdata = punsafeCoerce
@@ -417,7 +381,7 @@ instance
   , pcode ~ PCode s a
   , r ~ IndexList n pcode
   , r ~ '[(PDataRecord fs)]
-  , MkSum n pcode (Term s)
+  , MkNS n pcode (NP (Term s))
   , MkDataReprHandler s a (n + 1) rs
   ) =>
   MkDataReprHandler s a n (r ': rs)
@@ -429,7 +393,25 @@ instance
       mkProduct :: Term s (PDataRecord fs) -> NP (Term s) r
       mkProduct x = x :* Nil
       mkSOP :: NP (Term s) r -> SOP (Term s) (PCode s a)
-      mkSOP = SOP . mkSum @_ @n @pcode
+      mkSOP = SOP . mkSum @n @pcode
+
+class MkDataSumHandler s a (n :: Nat) rest where
+  mkDataSumHandler :: forall out. (PDataSum a s -> Term s out) -> DataReprHandlers out rest s
+
+instance MkDataSumHandler s a n '[] where
+  mkDataSumHandler _ = DRHNil
+
+instance
+  ( MkDataSumHandler s a (n + 1) defs
+  , IndexList n a ~ def
+  , MkNS n a (F.Compose (Term s) PDataRecord)
+  ) =>
+  MkDataSumHandler s a n (def : defs)
+  where
+  mkDataSumHandler f = DRHCons (f . dataSumFrom) $ mkDataSumHandler @s @a @(n + 1) @defs f
+    where
+      dataSumFrom :: Term s (PDataRecord def) -> PDataSum a s
+      dataSumFrom = PDataSum . mkNS @_ @n . F.Compose
 
 newtype DualReprHandler s out def = LTRepr (Term s (PDataRecord def) -> Term s (PDataRecord def) -> Term s out)
 

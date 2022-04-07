@@ -1,6 +1,6 @@
 module Plutarch.DataRepr (
   -- * DataRepr
-  I.PDataSum,
+  I.PDataSum (PDataSum),
   I.punDataSum,
   I.ptryIndexDataSum,
   I.DataReprHandlers (DRHNil, DRHCons),
