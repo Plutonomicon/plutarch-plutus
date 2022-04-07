@@ -19,8 +19,7 @@ $ ghcid -c 'cabal repl plutarch-test:exe:plutarch-test' -T Main.main
 To run ghcid with development flag set:
 
 ```sh-session
-$ vim cabal.project # And then uncomment the "flags: +developmenet" line.
-$ ghcid -c 'cabal repl plutarch-test:exe:plutarch-test' -T Main.main
+$ ghcid -c 'cabal repl plutarch-test:exe:plutarch-test -f development' -T Main.main
 ```
 
 Note: `cabal run` should be run inside `./plutarch-test` directory.
