@@ -2,6 +2,9 @@
 
 module Plutarch.PlutusTypeSpec (spec) where
 
+import Data.Functor.Compose (Compose (Compose))
+import Data.SOP.NS (NS (S, Z))
+
 import Plutarch (pcon', pmatch')
 import Plutarch.Api.V1 (
   PAddress (PAddress),
@@ -9,6 +12,7 @@ import Plutarch.Api.V1 (
   PScriptPurpose (PCertifying, PMinting, PRewarding, PSpending),
  )
 import Plutarch.Builtin (pasByteStr, pasConstr)
+import Plutarch.DataRepr (PDataSum (PDataSum), pasDataSum)
 import Plutarch.Prelude
 import Plutarch.Test
 import Plutus.V1.Ledger.Address (Address (Address))
@@ -20,9 +24,6 @@ import Plutus.V1.Ledger.Credential (
  )
 
 import Test.Hspec
-import Plutarch.DataRepr
-import Data.SOP.NS
-import Data.Functor.Compose
 
 spec :: Spec
 spec = do
@@ -107,33 +108,37 @@ deconstrSpec = do
               )
               # pconstant minting
         "sumtype(exhaustive)" @\ do
-          ("normal" @\) $ benchPurpose $
-            plam
-              ( \x -> pmatch x $ \case
-                  PMinting f -> plet f $ const $ phexByteStr "01"
-                  PSpending f -> plet f $ const $ phexByteStr "02"
-                  PRewarding f -> plet f $ const $ phexByteStr "03"
-                  PCertifying f -> plet f $ const $ phexByteStr "04"
-              )
-          ("datasum" @\) $ benchPurpose $
-            plam
-              ( \x -> pmatch (pasDataSum x) $ \(PDataSum datsum) -> case datsum of
-                  Z (Compose f) -> plet f $ const $ phexByteStr "01"
-                  S (Z (Compose f)) -> plet f $ const $ phexByteStr "02"
-                  S (S (Z (Compose f))) -> plet f $ const $ phexByteStr "03"
-                  S (S (S (Z (Compose f)))) -> plet f $ const $ phexByteStr "04"
-                  _ -> perror
-              )
+          ("normal" @\) $
+            benchPurpose $
+              plam
+                ( \x -> pmatch x $ \case
+                    PMinting f -> plet f $ const $ phexByteStr "01"
+                    PSpending f -> plet f $ const $ phexByteStr "02"
+                    PRewarding f -> plet f $ const $ phexByteStr "03"
+                    PCertifying f -> plet f $ const $ phexByteStr "04"
+                )
+          ("datasum" @\) $
+            benchPurpose $
+              plam
+                ( \x -> pmatch (pasDataSum x) $ \(PDataSum datsum) -> case datsum of
+                    Z (Compose f) -> plet f $ const $ phexByteStr "01"
+                    S (Z (Compose f)) -> plet f $ const $ phexByteStr "02"
+                    S (S (Z (Compose f))) -> plet f $ const $ phexByteStr "03"
+                    S (S (S (Z (Compose f)))) -> plet f $ const $ phexByteStr "04"
+                    _ -> perror
+                )
         "sumtype(exhaustive)(ignore-fields)" @\ do
-          ("normal" @\) $ benchPurpose $
-            plam
-              ( \x -> pmatch x $ \case
-                  PMinting _ -> phexByteStr "01"
-                  PSpending _ -> phexByteStr "02"
-                  PRewarding _ -> phexByteStr "03"
-                  PCertifying _ -> phexByteStr "04"
-              )
-          ("datasum" @\) $ benchPurpose $
+          ("normal" @\) $
+            benchPurpose $
+              plam
+                ( \x -> pmatch x $ \case
+                    PMinting _ -> phexByteStr "01"
+                    PSpending _ -> phexByteStr "02"
+                    PRewarding _ -> phexByteStr "03"
+                    PCertifying _ -> phexByteStr "04"
+                )
+          ("datasum" @\) $
+            benchPurpose $
               plam
                 ( \x -> pmatch (pasDataSum x) $ \(PDataSum datsum) -> case datsum of
                     Z _ -> phexByteStr "01"

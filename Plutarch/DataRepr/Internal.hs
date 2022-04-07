@@ -224,7 +224,8 @@ instance {-# OVERLAPPABLE #-} PIsData (PDataRecord xs) where
   pdata x = punsafeCoerce $ pdata (punsafeCoerce x :: Term _ (PBuiltinList PData))
 
 {- | A sum of 'PDataRecord's. The underlying representation is the `Constr` constructor,
-where the integer is the index of the variant and the list is the record. -}
+where the integer is the index of the variant and the list is the record.
+-}
 type PDataSum :: [[PLabeledType]] -> PType
 newtype PDataSum defs s = PDataSum (NS (F.Compose (Term s) PDataRecord) defs)
 
