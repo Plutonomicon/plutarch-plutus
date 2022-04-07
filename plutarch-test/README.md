@@ -19,7 +19,7 @@ $ ghcid -c 'cabal repl plutarch-test:exe:plutarch-test' -T Main.main
 To run ghcid with development flag set:
 
 ```sh-session
-$ ghcid -c 'cabal repl plutarch-test:exe:plutarch-test -f development' -T Main.main
+$ ghcid -c 'cabal repl plutarch-test:exe:plutarch-test -f development --builddir=dist-ghc9-dev' -T Main.main
 ```
 
 Note: `cabal run` should be run inside `./plutarch-test` directory.
