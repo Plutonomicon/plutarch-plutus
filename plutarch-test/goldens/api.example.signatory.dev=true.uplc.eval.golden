@@ -1,0 +1,4 @@
+cont.succeeds (program 1.0.0 ())
+cont.fails (program 1.0.0 error)
+termcont.succeeds (program 1.0.0 ())
+termcont.fails (program 1.0.0 error)
