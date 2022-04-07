@@ -22,9 +22,7 @@ import Plutarch.Prelude
 
 import Plutarch.Extra.Monad (tmatch)
 
-{- | gets a list of continuing outputs by finding
- - its own input and  returning a list of outputs with the same outAddress
--}
+-- | Find the output txns corresponding to the input being validated.
 getContinuingOutputs :: Term s (PScriptContext :--> PBuiltinList PTxOut)
 getContinuingOutputs = phoistAcyclic $
   plam $ \sc -> unTermCont $ do
@@ -43,8 +41,10 @@ getContinuingOutputs = phoistAcyclic $
       plam $ \adr txOut ->
         adr #== pfield @"address" # txOut
 
-{- | tries to finds the transaction's input
- - by looking for a txininfo in the inputs coresponding to the TxOutRef which the script purpose is spending
+{- | Find the input currently being validated.
+
+  Tries to finds the transaction's input by looking for a `PTxInInfo` in the inputs
+  coresponding to the `PTxOutRef` which the script purpose is spending
 -}
 findOwnInput :: Term s (PScriptContext :--> PMaybe PTxInInfo)
 findOwnInput = phoistAcyclic $
@@ -67,7 +67,7 @@ findOwnInput = phoistAcyclic $
         pfield @"id" # outref
           #== pfield @"id" # (pfield @"outRef" # txininfo)
 
--- | Looks up a datum by it's hash from the PTxInfo
+-- | Find the data corresponding to a data hash, if there is one
 findDatum :: Term s (PDatumHash :--> PTxInfo :--> PMaybe PDatum)
 findDatum = phoistAcyclic $
   plam $ \dh txinfo -> unTermCont $ do
@@ -76,9 +76,15 @@ findDatum = phoistAcyclic $
     pure $
       pmatch maybeEnt $ \case
         PNothing -> pcon PNothing
-        PJust x -> pcon $ PJust $ pfield @"_1" # x
+        PJust x -> pcon $ PJust $ pdsnd # x
   where
     matches :: (PEq k, PIsData k) => Term s (k :--> PAsData (PTuple k v) :--> PBool)
     matches = phoistAcyclic $
-      plam $ \dh dataTupe ->
-        dh #== pfield @"_0" # dataTupe
+      plam $ \a ab ->
+        a #== pdfst # ab
+
+pdfst :: PIsData k => Term s (PAsData (PTuple k v) :--> k)
+pdfst = pfield @"_0"
+
+pdsnd :: PIsData v => Term s (PAsData (PTuple k v) :--> v)
+pdsnd = pfield @"_1"
