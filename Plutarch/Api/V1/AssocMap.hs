@@ -10,6 +10,8 @@ module Plutarch.Api.V1.AssocMap (
   singletonData,
   insert,
   insertData,
+  delete,
+  deleteData,
 
   -- * Lookups
   lookup,
@@ -143,7 +145,9 @@ insert = phoistAcyclic $
   plam $ \k v -> insertData # pdata k # pdata v
 
 -- | Insert a new data-encoded key/value pair into the map, overiding the previous if any.
-insertData :: (PIsData k, PIsData v) => Term (s :: S) (PAsData k :--> PAsData v :--> PMap k v :--> PMap k v)
+insertData ::
+  (PIsData k, PIsData v) =>
+  Term (s :: S) (PAsData k :--> PAsData v :--> PMap k v :--> PMap k v)
 insertData = phoistAcyclic $
   plam $ \key val map ->
     plet (plam (pcons # (ppairDataBuiltin # key # val) #)) $ \addPair ->
@@ -159,6 +163,27 @@ insertData = phoistAcyclic $
           (const $ plam (#$ addPair # pnil))
           # pto map
           # plam id
+
+-- | Delete a key from the map.
+delete :: (PIsData k, PIsData v) => Term (s :: S) (k :--> PMap k v :--> PMap k v)
+delete = phoistAcyclic $ plam $ \key -> deleteData # pdata key
+
+-- | Delete a data-encoded key from the map.
+deleteData :: (PIsData k, PIsData v) => Term (s :: S) (PAsData k :--> PMap k v :--> PMap k v)
+deleteData = phoistAcyclic $
+  plam $ \key map ->
+    punsafeFrom $
+      precList
+        ( \self x xs ->
+            plam $ \prefix ->
+              pif
+                (pfstBuiltin # x #== key)
+                (prefix #$ xs)
+                (self # xs #$ plam $ \suffix -> prefix #$ pcons # x # suffix)
+        )
+        (const $ plam (# pnil))
+        # pto map
+        # plam id
 
 -- | Construct an empty 'PMap'.
 empty :: Term (s :: S) (PMap k v)

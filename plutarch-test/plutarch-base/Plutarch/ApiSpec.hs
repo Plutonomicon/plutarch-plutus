@@ -78,11 +78,12 @@ spec = do
             plift p @?= mint <> mintOtherSymbol
     describe "map" $ do
       pgoldenSpec $ do
-        let pmap, pdmap, emptyMap, doubleMap :: Term _ (AssocMap.PMap PByteString PInteger)
+        let pmap, pdmap, emptyMap, doubleMap, otherMap :: Term _ (AssocMap.PMap PByteString PInteger)
             pmap = AssocMap.singleton # pconstant "key" # 42
             pdmap = AssocMap.singletonData # pdata (pconstant "key") # pdata 42
             emptyMap = AssocMap.empty
             doubleMap = AssocMap.singleton # pconstant "key" # 84
+            otherMap = AssocMap.singleton # pconstant "newkey" # 6
         "lookup" @| AssocMap.lookup # pconstant "key" # pmap #== pcon (PJust 42) @-> passert
         "lookupData"
           @| AssocMap.lookupData # pdata (pconstant "key") # pmap #== pcon (PJust $ pdata 42)
@@ -92,6 +93,16 @@ spec = do
         "insert" @\ do
           "empty" @| AssocMap.insert # pconstant "key" # 42 # emptyMap @-> pshouldReallyBe pmap
           "replace" @| AssocMap.insert # pconstant "key" # 84 # pmap @-> pshouldReallyBe doubleMap
+        "delete" @\ do
+          "empty" @| AssocMap.delete # pconstant "key" # emptyMap @-> pshouldReallyBe emptyMap
+          "only" @| AssocMap.delete # pconstant "key" # pmap @-> pshouldReallyBe emptyMap
+          "miss" @| AssocMap.delete # pconstant "nokey" # pmap @-> pshouldReallyBe pmap
+          "new" @|
+            AssocMap.delete # pconstant "newkey" # (AssocMap.insert # pconstant "newkey" # 6 # pmap)
+            @-> pshouldReallyBe pmap
+          "old" @|
+            AssocMap.delete # pconstant "key" # (AssocMap.insert # pconstant "newkey" # 6 # pmap)
+            @-> pshouldReallyBe otherMap
         "difference" @\ do
           "emptyLeft" @| AssocMap.difference # emptyMap # pmap @-> pshouldReallyBe emptyMap
           "emptyRight" @| AssocMap.difference # pmap # emptyMap @-> pshouldReallyBe pmap
