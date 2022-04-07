@@ -79,11 +79,9 @@ findDatum = phoistAcyclic $
     pure $
       pmatch maybeEnt $ \case
         PNothing -> pcon PNothing
-        PJust x -> pcon $ PJust $ pfromData $ pfield @"_1" # x
+        PJust x -> pcon $ PJust $ pfield @"_1" # x
   where
-    matches :: Term s (PDatumHash :--> PAsData (PTuple PDatumHash PDatum) :--> PBool)
+    matches :: (PEq k, PIsData k) => Term s (k :--> PAsData (PTuple k v) :--> PBool)
     matches = phoistAcyclic $
-      plam $ \dh dataTupe -> unTermCont $ do
-        let tupe = pfromData dataTupe
-        pure $
-          dh #== pfromData (pfield @"_0" # tupe)
+      plam $ \dh dataTupe ->
+        dh #== pfield @"_0" # dataTupe
