@@ -1,5 +1,8 @@
-lookup (program 1.0.0 True)
-lookupData (program 1.0.0 True)
+lookup.hit (program 1.0.0 (\i0 -> \i0 -> i2 (unIData (force (force sndPair) ( #436b6579
+, #182a )))))
+lookup.miss (program 1.0.0 (\i0 -> \i0 -> force i1))
+lookupData.hit (program 1.0.0 (\i0 -> \i0 -> i2 (force (force sndPair) (#436b6579, #182a))))
+lookupData.miss (program 1.0.0 (\i0 -> \i0 -> force i1))
 singleton (program 1.0.0 [(#436b6579, #182a)])
 singletonData (program 1.0.0 [(#436b6579, #182a)])
 insert.empty (program 1.0.0 [(#436b6579, #182a)])

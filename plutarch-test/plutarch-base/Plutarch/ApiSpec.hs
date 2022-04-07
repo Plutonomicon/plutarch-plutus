@@ -84,10 +84,16 @@ spec = do
             emptyMap = AssocMap.empty
             doubleMap = AssocMap.singleton # pconstant "key" # 84
             otherMap = AssocMap.singleton # pconstant "newkey" # 6
-        "lookup" @| AssocMap.lookup # pconstant "key" # pmap #== pcon (PJust 42) @-> passert
-        "lookupData"
-          @| AssocMap.lookupData # pdata (pconstant "key") # pmap #== pcon (PJust $ pdata 42)
-          @-> passert
+        "lookup" @\ do
+          "hit" @| AssocMap.lookup # pconstant "key" # pmap
+            @-> \result -> passert $ result #== pcon (PJust 42)
+          "miss" @| AssocMap.lookup # pconstant "nokey" # pmap
+            @-> \result -> passert $ result #== pcon PNothing
+        "lookupData" @\ do
+          "hit" @| AssocMap.lookupData # pdata (pconstant "key") # pmap
+            @-> \result -> passert $ result #== pcon (PJust $ pdata 42)
+          "miss" @| AssocMap.lookupData # pdata (pconstant "nokey") # pmap
+            @-> \result -> passert $ result #== pcon PNothing
         "singleton" @| pmap @-> pshouldReallyBe pdmap
         "singletonData" @| pdmap @-> pshouldReallyBe pmap
         "insert" @\ do

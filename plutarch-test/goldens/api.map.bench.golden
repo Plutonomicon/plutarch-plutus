@@ -1,5 +1,7 @@
-lookup {"exBudgetCPU":5590502,"exBudgetMemory":12555,"scriptSizeBytes":143}
-lookupData {"exBudgetCPU":5652634,"exBudgetMemory":12555,"scriptSizeBytes":143}
+lookup.hit {"exBudgetCPU":4140352,"exBudgetMemory":9090,"scriptSizeBytes":116}
+lookup.miss {"exBudgetCPU":4975131,"exBudgetMemory":11422,"scriptSizeBytes":126}
+lookupData.hit {"exBudgetCPU":4140352,"exBudgetMemory":9090,"scriptSizeBytes":114}
+lookupData.miss {"exBudgetCPU":4885812,"exBudgetMemory":11122,"scriptSizeBytes":121}
 singleton {"exBudgetCPU":1374198,"exBudgetMemory":2828,"scriptSizeBytes":39}
 singletonData {"exBudgetCPU":1195560,"exBudgetMemory":2228,"scriptSizeBytes":34}
 insert.empty {"exBudgetCPU":3131940,"exBudgetMemory":8260,"scriptSizeBytes":132}
