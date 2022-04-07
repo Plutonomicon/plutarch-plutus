@@ -13,10 +13,10 @@ import Plutarch.Api.V1 (
   PScriptContext,
   PScriptPurpose (PSpending),
   PTuple,
-  PTxInInfo (PTxInInfo),
+  PTxInInfo,
   PTxInfo,
   PTxOut,
-  PTxOutRef (PTxOutRef),
+  PTxOutRef,
  )
 import Plutarch.Prelude
 
@@ -63,12 +63,9 @@ findOwnInput = phoistAcyclic $
   where
     matches :: Term s (PTxOutRef :--> PTxInInfo :--> PBool)
     matches = phoistAcyclic $
-      plam $ \outref txininfo -> unTermCont $ do
-        PTxOutRef outref' <- tmatch outref
-        PTxInInfo txininfo' <- tmatch txininfo
-        PTxOutRef inOutRef <- tmatch $ pfield @"outRef" # txininfo'
-        pure $
-          pfield @"id" # outref' #== pfield @"id" # inOutRef
+      plam $ \outref txininfo ->
+        pfield @"id" # outref
+          #== pfield @"id" # (pfield @"outRef" # txininfo)
 
 -- | Looks up a datum by it's hash from the PTxInfo
 findDatum :: Term s (PDatumHash :--> PTxInfo :--> PMaybe PDatum)
