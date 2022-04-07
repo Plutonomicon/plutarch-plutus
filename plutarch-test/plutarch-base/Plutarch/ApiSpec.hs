@@ -97,11 +97,11 @@ spec = do
           "empty" @| AssocMap.delete # pconstant "key" # emptyMap @-> pshouldReallyBe emptyMap
           "only" @| AssocMap.delete # pconstant "key" # pmap @-> pshouldReallyBe emptyMap
           "miss" @| AssocMap.delete # pconstant "nokey" # pmap @-> pshouldReallyBe pmap
-          "new" @|
-            AssocMap.delete # pconstant "newkey" # (AssocMap.insert # pconstant "newkey" # 6 # pmap)
+          "new"
+            @| AssocMap.delete # pconstant "newkey" # (AssocMap.insert # pconstant "newkey" # 6 # pmap)
             @-> pshouldReallyBe pmap
-          "old" @|
-            AssocMap.delete # pconstant "key" # (AssocMap.insert # pconstant "newkey" # 6 # pmap)
+          "old"
+            @| AssocMap.delete # pconstant "key" # (AssocMap.insert # pconstant "newkey" # 6 # pmap)
             @-> pshouldReallyBe otherMap
         "difference" @\ do
           "emptyLeft" @| AssocMap.difference # emptyMap # pmap @-> pshouldReallyBe emptyMap

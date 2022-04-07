@@ -45,6 +45,7 @@ import Plutarch.Maybe (pmaybe)
 import Plutarch.Prelude (
   DerivePNewtype (..),
   PAsData,
+  PBuiltinList,
   PBuiltinPair,
   PCon (pcon),
   PConstant,
@@ -149,20 +150,8 @@ insertData ::
   (PIsData k, PIsData v) =>
   Term (s :: S) (PAsData k :--> PAsData v :--> PMap k v :--> PMap k v)
 insertData = phoistAcyclic $
-  plam $ \key val map ->
-    plet (plam (pcons # (ppairDataBuiltin # key # val) #)) $ \addPair ->
-      punsafeFrom $
-        precList
-          ( \self x xs ->
-              plam $ \prefix ->
-                pif
-                  (pfstBuiltin # x #== key)
-                  (prefix #$ addPair # xs)
-                  (self # xs #$ plam $ \suffix -> prefix #$ pcons # x # suffix)
-          )
-          (const $ plam (#$ addPair # pnil))
-          # pto map
-          # plam id
+  plam $ \key val ->
+    rebuildAtKey # (plam (pcons # (ppairDataBuiltin # key # val) #)) # key
 
 -- | Delete a key from the map.
 delete :: (PIsData k, PIsData v) => Term (s :: S) (k :--> PMap k v :--> PMap k v)
@@ -170,18 +159,31 @@ delete = phoistAcyclic $ plam $ \key -> deleteData # pdata key
 
 -- | Delete a data-encoded key from the map.
 deleteData :: (PIsData k, PIsData v) => Term (s :: S) (PAsData k :--> PMap k v :--> PMap k v)
-deleteData = phoistAcyclic $
-  plam $ \key map ->
+deleteData = rebuildAtKey # plam id
+
+-- | Rebuild the map at the given key.
+rebuildAtKey ::
+  Term
+    s
+    ( ( PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+          :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+      )
+        :--> PAsData k
+        :--> PMap k v
+        :--> PMap k v
+    )
+rebuildAtKey = phoistAcyclic $
+  plam $ \handler key map ->
     punsafeFrom $
       precList
         ( \self x xs ->
             plam $ \prefix ->
               pif
                 (pfstBuiltin # x #== key)
-                (prefix #$ xs)
+                (prefix #$ handler # xs)
                 (self # xs #$ plam $ \suffix -> prefix #$ pcons # x # suffix)
         )
-        (const $ plam (# pnil))
+        (const $ plam (#$ handler # pnil))
         # pto map
         # plam id
 
