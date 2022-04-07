@@ -1,0 +1,4 @@
+2:[1] (program 1.0.0 (force mkCons 2 [1]))
+fails:True:[1] (program 1.0.0 (force mkCons True [1]))
+(2,1) (program 1.0.0 (1, 2))
+fails:MkPair-1-2 (program 1.0.0 (mkPairData 1 2))

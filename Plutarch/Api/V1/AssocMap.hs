@@ -29,6 +29,7 @@ instance
   , Plutus.FromData (PLifted k)
   , PLift k
   , PLift v
+  , Ord (PLifted k)
   ) =>
   PUnsafeLiftDecl (PMap k v)
   where
@@ -36,15 +37,14 @@ instance
 
 instance
   ( PLifted (PConstanted k) ~ k
+  , PLifted (PConstanted v) ~ v
   , Plutus.ToData v
   , Plutus.FromData v
   , Plutus.ToData k
   , Plutus.FromData k
-  , PConstant k
-  , PLifted (PConstanted v) ~ v
-  , Plutus.FromData v
-  , Plutus.ToData v
   , PConstant v
+  , PConstant k
+  , Ord k
   ) =>
   PConstant (PlutusMap.Map k v)
   where

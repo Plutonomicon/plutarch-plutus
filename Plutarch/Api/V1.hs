@@ -25,14 +25,12 @@ module Plutarch.Api.V1 (
   type PStakeValidator,
 
   -- ** Value
-  Value.PValue (PValue),
+  Value.PValue,
   Value.PCurrencySymbol (PCurrencySymbol),
   Value.PTokenName (PTokenName),
 
   -- ** Crypto
   Crypto.PPubKeyHash (PPubKeyHash),
-  Crypto.PPubKey (PPubKey),
-  Crypto.PSignature (PSignature),
 
   -- ** DCert
   DCert.PDCert (
@@ -68,7 +66,7 @@ module Plutarch.Api.V1 (
   Tx.PTxInInfo (PTxInInfo),
 
   -- ** AssocMap
-  AssocMap.PMap (PMap),
+  AssocMap.PMap,
 
   -- ** Others
   Maybe.PMaybeData (PDJust, PDNothing),
@@ -98,7 +96,7 @@ import Data.Coerce (coerce)
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified Plutus.V1.Ledger.Scripts as Plutus
 
-import Plutarch (ClosedTerm, POpaque, compile)
+import Plutarch (compile)
 import Plutarch.Api.Internal.Scripts (hashScriptWithPrefix)
 import Plutarch.Api.V1.Contexts (PScriptContext)
 import Plutarch.Prelude

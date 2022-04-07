@@ -21,11 +21,15 @@ module Plutarch.DataRepr.Internal (
   pdropDataRecord,
   DerivePConstantViaData (..),
   pasDataSum,
+  pdToBuiltin,
+  DualReprHandler (..),
 ) where
 
+import Data.Functor.Const (Const (Const))
 import Data.Kind (Type)
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy (Proxy))
+import Data.SOP.NP (cana_NP)
 import GHC.TypeLits (
   ErrorMessage (ShowType, Text, (:<>:)),
   KnownNat,
@@ -38,26 +42,20 @@ import GHC.TypeLits (
 import Generics.SOP (
   All,
   All2,
-  AllZipN,
   Code,
+  Compose,
   Generic,
-  I (..),
   K (K),
-  LiftedCoercible,
   NP (Nil, (:*)),
-  NS (..),
-  POP,
-  SList (..),
+  NS (Z, S),
+  SList (SNil, SCons),
   SListI,
   SOP (SOP),
-  from,
   hcmap,
   hcollapse,
-  hfromI,
   hindex,
   lengthSList,
   sList,
-  to,
  )
 import Plutarch (
   Dig,
@@ -72,13 +70,14 @@ import Plutarch (
   phoistAcyclic,
   plam,
   plet,
+  pmatch,
   pmatch',
   pto,
   (#),
   (#$),
   type (:-->),
  )
-import Plutarch.Bool (pif, (#==))
+import Plutarch.Bool (PBool, PEq, POrd, pif, (#<), (#<=), (#==))
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
@@ -93,14 +92,13 @@ import Plutarch.Builtin (
   pfstBuiltin,
   psndBuiltin,
  )
-import Plutarch.DataRepr.Internal.Generic (MkSum (mkSum))
 import Plutarch.DataRepr.Internal.HList (type Drop, type IndexList)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (S (SI))
-import Plutarch.Internal.TypeFamily (ToPType2)
+import Plutarch.Internal.Generic (MkSum (mkSum), PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstant, pconstantFromRepr, pconstantToRepr)
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
-import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont)
+import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont, tcont, unTermCont)
 import Plutarch.Unsafe (punsafeCoerce)
 import qualified Plutus.V1.Ledger.Api as Ledger
 
@@ -133,6 +131,46 @@ instance PlutusType (PDataRecord '[]) where
   pcon' PDNil = pnil
   pmatch' _ f = f PDNil
 
+-- | This uses data equality. 'PEq' instances of elements don't make any difference.
+instance PEq (PDataRecord xs) where
+  x #== y = pdToBuiltin x #== pdToBuiltin y
+
+-- Lexicographic ordering based 'Ord' instances for 'PDataRecord'.
+
+instance POrd (PDataRecord '[]) where
+  _ #<= _ = pconstant True
+  _ #< _ = pconstant False
+
+instance (POrd x, PIsData x) => POrd (PDataRecord '[label ':= x]) where
+  l1 #< l2 = unTermCont $ do
+    PDCons x _ <- tcont $ pmatch l1
+    PDCons y _ <- tcont $ pmatch l2
+
+    pure $ pfromData x #< pfromData y
+  l1 #<= l2 = unTermCont $ do
+    PDCons x _ <- tcont $ pmatch l1
+    PDCons y _ <- tcont $ pmatch l2
+
+    pure $ pfromData x #<= pfromData y
+
+instance (POrd x, PIsData x, POrd (PDataRecord (x' ': xs))) => POrd (PDataRecord ((label ':= x) ': x' ': xs)) where
+  l1 #< l2 = unTermCont $ do
+    PDCons x xs <- tcont $ pmatch l1
+    PDCons y ys <- tcont $ pmatch l2
+
+    a <- tcont . plet $ pfromData x
+    b <- tcont . plet $ pfromData y
+
+    pure $ pif (a #< b) (pconstant True) $ pif (a #== b) (xs #< ys) $ pconstant False
+  l1 #<= l2 = unTermCont $ do
+    PDCons x xs <- tcont $ pmatch l1
+    PDCons y ys <- tcont $ pmatch l2
+
+    a <- tcont . plet $ pfromData x
+    b <- tcont . plet $ pfromData y
+
+    pure $ pif (a #< b) (pconstant True) $ pif (a #== b) (xs #<= ys) $ pconstant False
+
 {- | Cons a field to a data record.
 
 You can specify the label to associate with the field using type applications-
@@ -151,14 +189,18 @@ pdcons = punsafeCoerce $ pcons @PBuiltinList @PData
 pdnil :: Term s (PDataRecord '[])
 pdnil = punsafeCoerce $ pnil @PBuiltinList @PData
 
+-- | Convert a 'PDataRecord' into a builtin list of data values, losing type information in the process.
+pdToBuiltin :: Term s (PDataRecord xs) -> Term s (PBuiltinList PData)
+pdToBuiltin = punsafeCoerce
+
 data PLabeledType = Symbol := PType
 
 {- Get the product types of a data record sum constructor
 -}
-type PDataRecordFields :: [Type] -> [PLabeledType]
+type PDataRecordFields :: [PType] -> [PLabeledType]
 type family PDataRecordFields as where
   PDataRecordFields '[] = '[]
-  PDataRecordFields '[Term s (PDataRecord fs)] = fs
+  PDataRecordFields '[(PDataRecord fs)] = fs
   PDataRecordFields '[t] = TypeError ( 'Text "Expected PDataRecord" ':<>: 'Text "but got" ':<>: 'ShowType t)
   PDataRecordFields ts = TypeError ( 'Text "Expected none or PDataRecord" ':<>: 'Text "but got" ':<>: 'ShowType ts)
 
@@ -166,17 +208,21 @@ type family PDataRecordFields as where
 
 NOTE: Unfortunately we can't write a generic FMap due to ghc's arity limitations.
 -}
-type PDataRecordFields2 :: [[Type]] -> [[PLabeledType]]
+type PDataRecordFields2 :: [[PType]] -> [[PLabeledType]]
 type family PDataRecordFields2 as where
   PDataRecordFields2 '[] = '[]
   PDataRecordFields2 (a ': as) = PDataRecordFields a ': PDataRecordFields2 as
 
 type family PLabelIndex (name :: Symbol) (as :: [PLabeledType]) :: Nat where
   PLabelIndex name ((name ':= a) ': as) = 0
-  PLabelIndex name (_' : as) = (PLabelIndex name as) + 1
+  PLabelIndex name (_ ': as) = (PLabelIndex name as) + 1
 
 type family PUnLabel (a :: PLabeledType) :: PType where
   PUnLabel (name ':= a) = a
+
+instance {-# OVERLAPPABLE #-} PIsData (PDataRecord xs) where
+  pfromData x = punsafeCoerce $ (pfromData (punsafeCoerce x) :: Term _ (PBuiltinList PData))
+  pdata x = punsafeCoerce $ pdata (punsafeCoerce x :: Term _ (PBuiltinList PData))
 
 {- | A sum of 'PDataRecord's. The underlying representation is the `PDataConstr` constructor,
  where the integer is the index of the variant and the list is the record.
@@ -239,6 +285,20 @@ instance PIsData (PDataSum defs) where
   pdata = punsafeCoerce
   pfromData = punsafeCoerce
 
+instance PEq (PDataSum defs) where
+  x #== y = pdata x #== pdata y
+
+instance All (Compose POrd PDataRecord) defs => POrd (PDataSum defs) where
+  x' #< y' = f # x' # y'
+    where
+      f = phoistAcyclic $ plam $ \x y -> pmatchLT x y mkLTHandler
+  x' #<= y' = f # x' # y'
+    where
+      f = phoistAcyclic $ plam $ \x y -> pmatchLT x y mkLTEHandler
+
+pasDataSum :: PIsDataRepr a => Term s a -> Term s (PDataSum (PIsDataReprRepr a))
+pasDataSum = punsafeCoerce
+
 -- | If there is only a single variant, then we can safely extract it.
 punDataSum :: Term s (PDataSum '[def] :--> PDataRecord def)
 punDataSum = phoistAcyclic $
@@ -282,131 +342,188 @@ pmatchDataSum d handlers =
       plet (psndBuiltin # d') $ \args ->
         let handlers' = applyHandlers args handlers
          in runTermCont (findCommon handlers') $ \common ->
-              go
+              reprHandlersGo
                 common
                 0
                 handlers'
                 constr
   where
-    hashHandlers :: [Term s out] -> TermCont s [(Dig, Term s out)]
-    hashHandlers [] = pure []
-    hashHandlers (handler : rest) = do
-      hash <- hashOpenTerm handler
-      hashes <- hashHandlers rest
-      pure $ (hash, handler) : hashes
-
-    findCommon :: [Term s out] -> TermCont s (Dig, Term s out)
-    findCommon handlers = do
-      l <- hashHandlers handlers
-      pure $ head . maximumBy (\x y -> length x `compare` length y) . groupBy (\x y -> fst x == fst y) . sortOn fst $ l
-
     applyHandlers :: Term s (PBuiltinList PData) -> DataReprHandlers out defs s -> [Term s out]
     applyHandlers _ DRHNil = []
     applyHandlers args (DRHCons handler rest) = handler (punsafeCoerce args) : applyHandlers args rest
 
-    go ::
-      (Dig, Term s out) ->
-      Integer ->
-      [Term s out] ->
-      Term s PInteger ->
-      Term s out
-    go common _ [] _ = snd common
-    go common idx (handler : rest) constr =
-      runTermCont (hashOpenTerm handler) $ \hhash ->
-        if hhash == fst common
-          then go common (idx + 1) rest constr
-          else
-            pif
-              (fromInteger idx #== constr)
-              handler
-              $ go common (idx + 1) rest constr
-
-{- | Use this for implementing the necessary instances for getting the `Data` representation.
- You must implement 'PIsDataRepr' to use this.
--}
-newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
-
 -- TODO: This 'PMatch' constraint needs to be changed to 'PlutusType (breaking change).
 class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PLabeledType]]
-  type PIsDataReprRepr a = PDataRecordFields2 (Code (a 'SI))
+  type PIsDataReprRepr a = PDataRecordFields2 (PCode 'SI a)
 
   pconRepr :: a s -> Term s (PDataSum (PIsDataReprRepr a))
   default pconRepr ::
     forall s code pcode.
-    ( Generic (a s)
+    ( PGeneric s a
     , code ~ Code (a s)
-    , pcode ~ ToPType2 code
+    , pcode ~ PCode s a
     , All SListI pcode
     , All Singleton code
     , All2 IsBuiltinList pcode
-    , AllZipN POP (LiftedCoercible I (Term s)) code pcode
     ) =>
     a s ->
     Term s (PDataSum (PIsDataReprRepr a))
   pconRepr x = punsafeCoerce expected
     where
       expected :: Term _ (PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
-      expected = gpconRepr @a $ from x
+      expected = gpconRepr @a $ gpfrom x
 
   pmatchRepr :: forall s b. Term s (PDataSum (PIsDataReprRepr a)) -> (a s -> Term s b) -> Term s b
   default pmatchRepr ::
-    forall s b code.
+    forall s b code pcode.
     ( code ~ Code (a s)
-    , PDataRecordFields2 code ~ PIsDataReprRepr a
-    , MkDataReprHandler s a 0 code
+    , pcode ~ PCode s a
+    , PDataRecordFields2 pcode ~ PIsDataReprRepr a
+    , MkDataReprHandler s a 0 pcode
     ) =>
     Term s (PDataSum (PIsDataReprRepr a)) ->
     (a s -> Term s b) ->
     Term s b
   pmatchRepr dat =
-    pmatchDataSum dat . mkDataReprHandler @s @a @0 @code
+    pmatchDataSum dat . mkDataReprHandler @s @a @0 @pcode
 
 gpconRepr ::
   forall a s code pcode.
   ( Generic (a s)
   , code ~ Code (a s)
-  , pcode ~ ToPType2 code
+  , pcode ~ PCode s a
   , All SListI pcode
   , All Singleton code
   , All2 IsBuiltinList pcode
-  , AllZipN POP (LiftedCoercible I (Term s)) code pcode
   ) =>
-  SOP I (Code (a s)) ->
+  SOP (Term s) pcode ->
   Term s (PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
 gpconRepr x = pconstrBuiltin # pconstant (toInteger $ hindex sop) # head (hcollapse sop)
   where
     sop :: SOP (K (Term s (PBuiltinList PData))) pcode
-    sop = hcmap (Proxy @IsBuiltinList) (K . dataListFrom) $ hfromI x
+    sop = hcmap (Proxy @IsBuiltinList) (K . dataListFrom) x
 
 -- | Create a `DataReprhandlers` starting from `n`th sum constructor
-class MkDataReprHandler (s :: S) (a :: PType) (n :: Nat) (rest :: [[Type]]) where
+class MkDataReprHandler (s :: S) (a :: PType) (n :: Nat) (rest :: [[PType]]) where
   mkDataReprHandler :: forall out. (a s -> Term s out) -> DataReprHandlers out (PDataRecordFields2 rest) s
 
 instance MkDataReprHandler s a n '[] where
   mkDataReprHandler _ = DRHNil
 
 instance
-  ( Generic (a s)
+  ( PGeneric s a
   , code ~ Code (a s)
-  , r ~ IndexList n code
-  , r ~ '[Term s (PDataRecord fs)]
-  , MkSum n code
+  , pcode ~ PCode s a
+  , r ~ IndexList n pcode
+  , r ~ '[(PDataRecord fs)]
+  , MkSum n pcode (Term s)
   , MkDataReprHandler s a (n + 1) rs
   ) =>
   MkDataReprHandler s a n (r ': rs)
   where
   mkDataReprHandler f =
-    DRHCons (f . to . mkSOP . mkProduct) $
+    DRHCons (f . gpto . mkSOP . mkProduct) $
       mkDataReprHandler @s @a @(n + 1) @rs f
     where
-      mkProduct :: Term s (PDataRecord fs) -> NP I r
-      mkProduct x = I x :* Nil
-      mkSOP :: NP I r -> SOP I (Code (a s))
-      mkSOP = SOP . mkSum @n @code
+      mkProduct :: Term s (PDataRecord fs) -> NP (Term s) r
+      mkProduct x = x :* Nil
+      mkSOP :: NP (Term s) r -> SOP (Term s) (PCode s a)
+      mkSOP = SOP . mkSum @_ @n @pcode
 
-pasDataSum :: PIsDataRepr a => Term s a -> Term s (PDataSum (PIsDataReprRepr a))
-pasDataSum = punsafeCoerce
+newtype DualReprHandler s out def = LTRepr (Term s (PDataRecord def) -> Term s (PDataRecord def) -> Term s out)
+
+-- | Optimized dual pmatch specialized for lexicographic '#<' and '#<=' implementations.
+pmatchLT :: Term s (PDataSum defs) -> Term s (PDataSum defs) -> NP (DualReprHandler s PBool) defs -> Term s PBool
+pmatchLT d1 d2 (LTRepr handler :* Nil) = handler (punDataSum # d1) (punDataSum # d2)
+pmatchLT d1 d2 handlers = unTermCont $ do
+  a <- tcont . plet $ pasConstr #$ pforgetData $ pdata d1
+  b <- tcont . plet $ pasConstr #$ pforgetData $ pdata d2
+
+  cid1 <- tcont . plet $ pfstBuiltin # a
+  cid2 <- tcont . plet $ pfstBuiltin # b
+
+  pure $
+    pif
+      (cid1 #< cid2)
+      -- Left arg's constructor id is less, no need to continue.
+      (pconstant True)
+      $ pif
+        (cid1 #== cid2)
+        -- Matching constructors, compare fields now.
+        ( unTermCont $ do
+            flds1 <- tcont . plet $ psndBuiltin # a
+            flds2 <- tcont . plet $ psndBuiltin # b
+            let handlers' = applyHandlers flds1 flds2 handlers
+            common <- findCommon handlers'
+            pure $ reprHandlersGo common 0 (applyHandlers flds1 flds2 handlers) cid1
+        )
+        -- Left arg's constructor id is greater, no need to continue.
+        $ pconstant False
+  where
+    applyHandlers ::
+      Term s (PBuiltinList PData) ->
+      Term s (PBuiltinList PData) ->
+      NP (DualReprHandler s PBool) defs ->
+      [Term s PBool]
+    applyHandlers _ _ Nil = []
+    applyHandlers args1 args2 (LTRepr handler :* rest) =
+      handler (punsafeCoerce args1) (punsafeCoerce args2) :
+      applyHandlers args1 args2 rest
+
+reprHandlersGo ::
+  (Dig, Term s out) ->
+  Integer ->
+  [Term s out] ->
+  Term s PInteger ->
+  Term s out
+reprHandlersGo common _ [] _ = snd common
+reprHandlersGo common idx (handler : rest) c =
+  runTermCont (hashOpenTerm handler) $ \hhash ->
+    if hhash == fst common
+      then reprHandlersGo common (idx + 1) rest c
+      else
+        pif
+          (fromInteger idx #== c)
+          handler
+          $ reprHandlersGo common (idx + 1) rest c
+
+hashHandlers :: [Term s out] -> TermCont s [(Dig, Term s out)]
+hashHandlers [] = pure []
+hashHandlers (handler : rest) = do
+  hash <- hashOpenTerm handler
+  hashes <- hashHandlers rest
+  pure $ (hash, handler) : hashes
+
+findCommon :: [Term s out] -> TermCont s (Dig, Term s out)
+findCommon handlers = do
+  l <- hashHandlers handlers
+  pure $ head . maximumBy (\x y -> length x `compare` length y) . groupBy (\x y -> fst x == fst y) . sortOn fst $ l
+
+mkLTHandler :: forall def s. All (Compose POrd PDataRecord) def => NP (DualReprHandler s PBool) def
+mkLTHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
+  where
+    rer ::
+      forall (y :: [PLabeledType]) (ys :: [[PLabeledType]]).
+      Compose POrd PDataRecord y =>
+      Const () (y : ys) ->
+      (DualReprHandler s PBool y, Const () ys)
+    rer _ = (LTRepr (#<), Const ())
+
+mkLTEHandler :: forall def s. All (Compose POrd PDataRecord) def => NP (DualReprHandler s PBool) def
+mkLTEHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
+  where
+    rer ::
+      forall (y :: [PLabeledType]) (ys :: [[PLabeledType]]).
+      Compose POrd PDataRecord y =>
+      Const () (y : ys) ->
+      (DualReprHandler s PBool y, Const () ys)
+    rer _ = (LTRepr (#<=), Const ())
+
+{- | Use this for implementing the necessary instances for getting the `Data` representation.
+ You must implement 'PIsDataRepr' to use this.
+-}
+newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
 
 instance PIsDataRepr a => PIsData (PIsDataReprInstances a) where
   pdata = punsafeCoerce
@@ -416,6 +533,15 @@ instance PIsDataRepr a => PlutusType (PIsDataReprInstances a) where
   type PInner (PIsDataReprInstances a) _ = PDataSum (PIsDataReprRepr a)
   pcon' (PIsDataReprInstances x) = pconRepr x
   pmatch' x f = pmatchRepr x (f . PIsDataReprInstances)
+
+-- | This uses data equality. 'PEq' instances of elements don't make any difference.
+instance PIsDataRepr a => PEq (PIsDataReprInstances a) where
+  x #== y = pdata x #== pdata y
+
+-- | This uses lexicographic ordering. Actually uses PDataSum '(#<)' implementation.
+instance (PIsDataRepr a, All (Compose POrd PDataRecord) (PIsDataReprRepr a)) => POrd (PIsDataReprInstances a) where
+  x #< y = pto x #< pto y
+  x #<= y = pto x #<= pto y
 
 newtype DerivePConstantViaData (h :: Type) (p :: PType) = DerivePConstantViaData h
 

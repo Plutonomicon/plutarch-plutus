@@ -100,13 +100,14 @@ library
     Plutarch.DataRepr.Internal
     Plutarch.DataRepr.Internal.Field
     Plutarch.DataRepr.Internal.FromData
-    Plutarch.DataRepr.Internal.Generic
     Plutarch.DataRepr.Internal.HList
     Plutarch.DataRepr.Internal.HList.Utils
     Plutarch.Either
     Plutarch.Evaluate
+    Plutarch.FFI
     Plutarch.Integer
     Plutarch.Internal
+    Plutarch.Internal.Generic
     Plutarch.Internal.Other
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType
@@ -120,9 +121,12 @@ library
     Plutarch.Rational
     Plutarch.Rec
     Plutarch.Rec.TH
+    Plutarch.Reducible
+    Plutarch.Show
     Plutarch.String
     Plutarch.TermCont
     Plutarch.Trace
+    Plutarch.TryFrom
     Plutarch.Unit
     Plutarch.Unsafe
 
@@ -135,6 +139,7 @@ library
     , flat
     , generics-sop
     , hashable
+    , lens
     , memory
     , mtl
     , plutus-core
@@ -147,43 +152,5 @@ library
     , text
     , transformers
 
-  if flag(development)
-    cpp-options: -DDevelopment
-
--- Everything below this line is deleted for GHC 8.10
-
-test-suite examples
-  import:             c
-  type:               exitcode-stdio-1.0
-  main-is:            Main.hs
-  hs-source-dirs:     examples
-  default-extensions:
-    OverloadedRecordDot
-    QualifiedDo
-
-  other-modules:
-    Examples.ConstrData
-    Examples.LetRec
-    Examples.Lift
-    Utils
-
-  build-depends:
-    , aeson
-    , base
-    , bytestring
-    , generics-sop
-    , plutarch
-    , plutus-core
-    , plutus-ledger-api
-    , plutus-tx
-    , rank2classes       >=1.4.4
-    , serialise
-    , tasty
-    , tasty-golden
-    , tasty-hunit
-    , text
-    , transformers
-
-  --, shrinker
   if flag(development)
     cpp-options: -DDevelopment

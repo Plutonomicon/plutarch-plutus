@@ -1,0 +1,5 @@
+bool {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":12}
+int {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":11}
+pkh {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":12}
+minting {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":14}
+txoutref {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":20}

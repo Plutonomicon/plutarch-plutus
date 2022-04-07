@@ -4,6 +4,7 @@ module Plutarch.List (
   PListLike (..),
   PIsListLike,
   pconvertLists,
+  pshowList,
 
   -- * Comparison
   plistEquals,
@@ -13,9 +14,16 @@ module Plutarch.List (
   plength,
   ptryIndex,
   pdrop,
+  pfind,
+  pelemAt,
+  (#!!),
 
   -- * Construction
   psingleton,
+
+  -- * Deconstruction
+  puncons,
+  ptryUncons,
 
   -- * Combine
   pconcat,
@@ -63,18 +71,43 @@ import Plutarch (
   (#$),
   type (:-->),
  )
-import Plutarch.Bool (PBool (PFalse, PTrue), PEq, pif, (#&&), (#==), (#||))
+import Plutarch.Bool (PBool (PFalse, PTrue), PEq, pif, (#&&), (#<), (#==), (#||))
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (pconstant)
+import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Pair (PPair (PPair))
+import Plutarch.String (PString)
 
 import Data.Kind
+import Plutarch.Show (PShow (pshow'), pshow)
+import Plutarch.Trace (ptraceError)
 
 data PList (a :: PType) (s :: S)
   = PSCons (Term s a) (Term s (PList a))
   | PSNil
   deriving stock (GHC.Generic)
   deriving anyclass (Generic, PlutusType)
+
+instance PShow a => PShow (PList a) where
+  pshow' _ x = pshowList @PList @a # x
+
+pshowList :: forall list a s. (PShow a, PIsListLike list a) => Term s (list a :--> PString)
+pshowList =
+  phoistAcyclic $
+    plam $ \list ->
+      "[" <> pshowList' @list @a # list <> "]"
+
+pshowList' :: forall list a s. (PShow a, PIsListLike list a) => Term s (list a :--> PString)
+pshowList' =
+  phoistAcyclic $
+    precList
+      ( \self x xs ->
+          pelimList
+            (\_ _ -> pshow x <> ", " <> self # xs)
+            (pshow x)
+            xs
+      )
+      (\_self -> "")
 
 instance PEq a => PEq (PList a) where
   (#==) xs ys = plistEquals # xs # ys
@@ -133,6 +166,24 @@ pconvertLists = phoistAcyclic $
       (\x xs -> pcons # x #$ self # xs)
       pnil
 
+-- | Extract head and tail of the list, throws error if list is empty.
+ptryUncons ::
+  PIsListLike list a =>
+  Term s (list a :--> PPair a (list a))
+ptryUncons =
+  phoistAcyclic $
+    plam $
+      pelimList (\x -> pcon . PPair x) perror
+
+-- | Extract head and tail of the list, if list is not empty.
+puncons ::
+  PIsListLike list a =>
+  Term s (list a :--> PMaybe (PPair a (list a)))
+puncons =
+  phoistAcyclic $
+    plam $
+      pelimList (\x -> pcon . PJust . pcon . PPair x) (pcon PNothing)
+
 -- | Like 'pelimList', but with a fixpoint recursion hatch.
 precList ::
   PIsListLike list a =>
@@ -166,11 +217,11 @@ pelem =
 
 -- | / O(n) /. Count the number of elements in the list
 plength :: PIsListLike list a => Term s (list a :--> PInteger)
-plength = phoistAcyclic $
-  plam $ \xs ->
-    let go :: PIsListLike list a => Term s (list a :--> PInteger :--> PInteger)
-        go = (pfix #$ plam $ \self ls n -> pelimList (\_ xs -> self # xs # n + 1) n ls)
-     in go # xs # 0
+plength =
+  phoistAcyclic $
+    let go :: PIsListLike list a => Term s (PInteger :--> list a :--> PInteger)
+        go = pfix #$ plam $ \self n -> pelimList (\_ xs -> self # (n + 1) # xs) n
+     in go # 0
 
 -- | Index a BuiltinList, throwing an error if the index is out of bounds.
 ptryIndex :: (PIsListLike list a) => Natural -> Term s (list a) -> Term s a
@@ -197,20 +248,18 @@ pdrop n xs = pdrop' n # xs
 pfoldl :: PIsListLike list a => Term s ((b :--> a :--> b) :--> b :--> list a :--> b)
 pfoldl = phoistAcyclic $
   plam $ \f ->
-    pfix #$ plam $ \self z l ->
+    pfix #$ plam $ \self z ->
       pelimList
         (\x xs -> self # (f # z # x) # xs)
         z
-        l
 
 -- | The same as 'pfoldl', but with Haskell-level reduction function.
 pfoldl' :: PIsListLike list a => (forall s. Term s b -> Term s a -> Term s b) -> Term s (b :--> list a :--> b)
 pfoldl' f = phoistAcyclic $
-  pfix #$ plam $ \self z l ->
+  pfix #$ plam $ \self z ->
     pelimList
       (\x xs -> self # f z x # xs)
       z
-      l
 
 -- | / O(n) /. Fold on a list right-associatively.
 pfoldr :: PIsListLike list a => Term s ((a :--> b :--> b) :--> b :--> list a :--> b)
@@ -363,3 +412,42 @@ plistEquals =
         )
         (pelimList (\_ _ -> pconstant False) (pconstant True) ylist)
         xlist
+
+-- | / O(n) /. Like Haskell level `(!!)` but on the plutarch level
+(#!!) :: (PIsListLike l a) => Term s (l a) -> Term s PInteger -> Term s a
+l #!! i = pelemAt # i # l
+
+{- | / O(n) /. Like Haskell level `(!!)` but on the Plutarch level, not infix and
+    with arguments reversed, errors if the specified index is greater than or equal
+    to the lists length
+-}
+pelemAt :: PIsListLike l a => Term s (PInteger :--> l a :--> a)
+pelemAt = phoistAcyclic $
+  plam $ \n xs ->
+    pif
+      (n #< 0)
+      (ptraceError "pelemAt: negative index")
+      (pelemAt' # n # xs)
+
+-- | / O(n) /. like `pelemAt` but doesn't fail on negative indexes
+pelemAt' :: PIsListLike l a => Term s (PInteger :--> l a :--> a)
+pelemAt' = phoistAcyclic $
+  pfix #$ plam $ \self n xs ->
+    pif
+      (n #== 0)
+      (phead # xs)
+      (self # (n - 1) #$ ptail # xs)
+
+-- | / O(n) /. like haskell level `find` but on plutarch level
+pfind :: PIsListLike l a => Term s ((a :--> PBool) :--> l a :--> PMaybe a)
+pfind = phoistAcyclic $
+  pfix #$ plam $ \self f xs ->
+    pelimList
+      ( \y ys ->
+          pif
+            (f # y)
+            (pcon $ PJust y)
+            (self # f # ys)
+      )
+      (pcon PNothing)
+      xs
