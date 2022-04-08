@@ -29,6 +29,7 @@ import Plutarch.DataRepr (
   PIsDataReprInstances (PIsDataReprInstances),
  )
 import Plutarch.Lift (
+  PConstantDecl,
   PLifted,
   PUnsafeLiftDecl,
  )
@@ -61,7 +62,7 @@ newtype PTxInfo (s :: S)
     via PIsDataReprInstances PTxInfo
 
 instance PUnsafeLiftDecl PTxInfo where type PLifted PTxInfo = Plutus.TxInfo
-deriving via (DerivePConstantViaData Plutus.TxInfo PTxInfo) instance (PConstant Plutus.TxInfo)
+deriving via (DerivePConstantViaData Plutus.TxInfo PTxInfo) instance PConstantDecl Plutus.TxInfo
 
 -- | Script context consists of the script purpose and the pending transaction info.
 newtype PScriptContext (s :: S)
@@ -82,7 +83,7 @@ newtype PScriptContext (s :: S)
     via PIsDataReprInstances PScriptContext
 
 instance PUnsafeLiftDecl PScriptContext where type PLifted PScriptContext = Plutus.ScriptContext
-deriving via (DerivePConstantViaData Plutus.ScriptContext PScriptContext) instance (PConstant Plutus.ScriptContext)
+deriving via (DerivePConstantViaData Plutus.ScriptContext PScriptContext) instance PConstantDecl Plutus.ScriptContext
 
 -- General types, used by V1 and V2
 
@@ -100,4 +101,4 @@ data PScriptPurpose (s :: S)
     via (PIsDataReprInstances PScriptPurpose)
 
 instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
-deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) instance (PConstant Plutus.ScriptPurpose)
+deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) instance PConstantDecl Plutus.ScriptPurpose

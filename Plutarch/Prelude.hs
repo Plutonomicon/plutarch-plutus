@@ -140,6 +140,8 @@ module Plutarch.Prelude (
   plift,
   PConstant,
   PLift,
+  PConstantData,
+  PLiftData,
 
   -- * Typeclass derivers.
   DerivePNewtype (DerivePNewtype),

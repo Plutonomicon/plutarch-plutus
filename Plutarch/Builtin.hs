@@ -56,6 +56,7 @@ import Plutarch.Integer (PInteger)
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstant,
+  PConstantDecl,
   PConstantRepr,
   PConstanted,
   PLift,
@@ -92,7 +93,7 @@ instance (PLift a, PLift b) => PUnsafeLiftDecl (PBuiltinPair a b) where
   type PLifted (PBuiltinPair a b) = (PLifted a, PLifted b)
 
 -- FIXME: figure out good way of deriving this
-instance (PConstant a, PConstant b) => PConstant (a, b) where
+instance (PConstant a, PConstant b) => PConstantDecl (a, b) where
   type PConstantRepr (a, b) = (PConstantRepr a, PConstantRepr b)
   type PConstanted (a, b) = PBuiltinPair (PConstanted a) (PConstanted b)
   pconstantToRepr (x, y) = (pconstantToRepr x, pconstantToRepr y)
@@ -137,7 +138,7 @@ pnullBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.NullList
 pconsBuiltin :: Term s (a :--> PBuiltinList a :--> PBuiltinList a)
 pconsBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.MkCons
 
-instance PConstant a => PConstant [a] where
+instance PConstant a => PConstantDecl [a] where
   type PConstantRepr [a] = [PConstantRepr a]
   type PConstanted [a] = PBuiltinList (PConstanted a)
   pconstantToRepr x = pconstantToRepr <$> x
@@ -186,7 +187,7 @@ instance PlutusType PData where
   pmatch' t f = f (PData t)
 
 instance PUnsafeLiftDecl PData where type PLifted PData = Data
-deriving via (DerivePConstantDirect Data PData) instance (PConstant Data)
+deriving via (DerivePConstantDirect Data PData) instance PConstantDecl Data
 
 instance PEq PData where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
@@ -226,7 +227,7 @@ data PAsData (a :: PType) (s :: S)
 type role PAsDataLifted representational
 data PAsDataLifted (a :: PType)
 
-instance PConstant (PAsDataLifted a) where
+instance PConstantDecl (PAsDataLifted a) where
   type PConstantRepr (PAsDataLifted a) = Data
   type PConstanted (PAsDataLifted a) = PAsData a
   pconstantToRepr = \case {}

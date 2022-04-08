@@ -65,12 +65,14 @@ This comes in three flavors:
 
   Ex: `PScriptPurpose` is represented as a `Data` value. It is synonymous to `ScriptPurpose` from the Plutus ledger api.
 
-Whichever path you need to go down, there is one common part- implementing `PLift`, or rather `PUnsafeLiftDecl`. See, `PLift` is actually just a type synonym to `PUnsafeLiftDecl`. Essentially an empty typeclass with an associated type family that provides insight on the relationship between a Plutarch type and its Haskell synonym.
+Whichever path you need to go down, there is one common part- implementing `PLift`, or rather `PUnsafeLiftDecl`. See, `PLift` is actually just a type synonym to `PUnsafeLiftDecl` (with a bit more machinery). Essentially an empty typeclass with an associated type family that provides insight on the relationship between a Plutarch type and its Haskell synonym.
 
 ```hs
 instance PUnsafeLiftDecl YourPlutarchType where
   type PLifted YourPlutarchType = YourHaskellType
 ```
+
+In fact, `PConstant` is _also_ a type synonym. The actual typeclass you'll be implementing is `PConstantDecl`.
 
 You're tasked with assigning the correct Haskell synonym to your Plutarch type, and what an important task it is! Recall that `pconstant`'s argument type will depend on your assignment here. In particular: `pconstant :: YourHaskellType -> YourPlutarchType`.
 
@@ -97,10 +99,10 @@ Now, let's get to implementing `PConstant` for the Haskell synonym, via the thre
 ```hs
 {-# LANGUAGE UndecidableInstances #-}
 
-import Plutarch.Lift (DerivePConstantDirect (DerivePConstantDirect))
+import Plutarch.Lift (DerivePConstantDirect (DerivePConstantDirect), PConstantDecl, PUnsafeLiftDecl)
 import Plutarch.Prelude
 
-deriving via (DerivePConstantDirect Integer PInteger) instance (PConstant Integer)
+deriving via (DerivePConstantDirect Integer PInteger) instance PConstantDecl Integer
 ```
 
 `DerivePConstantDirect` takes in two type parameters:
@@ -113,7 +115,7 @@ Pretty simple! Let's check out `DerivePConstantViaNewtype` now:
 ```hs
 {-# LANGUAGE UndecidableInstances #-}
 
-import Plutarch.Lift (DerivePConstantViaNewtype (DerivePConstantViaNewtype))
+import Plutarch.Lift (DerivePConstantViaNewtype (DerivePConstantViaNewtype), PConstantDecl, PUnsafeLiftDecl)
 import Plutarch.Prelude
 
 import qualified Plutus.V1.Ledger.Api as Plutus
@@ -122,7 +124,8 @@ newtype PValidatorHash (s :: S) = PValidatorHash (Term s PByteString)
 
 ...
 
-deriving via (DerivePConstantViaNewtype Plutus.ValidatorHash PValidatorHash PByteString) instance (PConstant Plutus.ValidatorHash)
+deriving via (DerivePConstantViaNewtype Plutus.ValidatorHash PValidatorHash PByteString)
+  instance PConstantDecl Plutus.ValidatorHash
 ```
 
 `DerivePConstantViaNewtype` takes in three type parameters:
@@ -139,7 +142,8 @@ Finally, we have `DerivePConstantViaData` for `Data` values:
 ```hs
 {-# LANGUAGE UndecidableInstances #-}
 
-import Plutarch.Lift (DerivePConstantViaNewtype (DerivePConstantViaNewtype))
+import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
+import Plutarch.Lift (PConstantDecl, PUnsafeLiftDecl)
 import Plutarch.Prelude
 
 import qualified Plutus.V1.Ledger.Api as Plutus
@@ -152,7 +156,8 @@ data PScriptPurpose (s :: S)
 
 ...
 
-deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) instance (PConstant Plutus.ScriptPurpose)
+deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose)
+  instance PConstantDecl Plutus.ScriptPurpose
 ```
 
 `DerivePConstantViaData` takes in two type parameters:
@@ -163,25 +168,23 @@ deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) instan
 
 ## Implementing `PConstant` & `PLift` for types with type variables (generic types)
 
-If your Plutarch type and its Haskell synonym are generic types (e.g. `PMaybeData a`) - the implementation gets a tad more difficult. In particular, you need to constrain the generic type variables to be able to use the derivers.
+If your Plutarch type and its Haskell synonym are generic types (e.g. `PMaybeData a`) - the implementation gets a tad more difficult. In particular, you need to constrain the generic type variables to also have the relevant instance.
 
 The constraints observed when implementing `PLift`:
 
 - Each type variable must also have a `PLift` instance.
-- For each type variable `a`: `a ~ PConstanted (PLifted a)`
-- Depending on the data declaration, your type variable `PLifted a`, for each `a`, might also need [`FromData`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:FromData) and [`ToData`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:ToData) instances.
 
 The constraints observed when implementing `PConstant`:
 
 - Each type variable must also have a `PConstant` instance.
-- For each type variable `a`: `a ~ PLifted (PConstanted a)`
-- Depending on the data declaration, each type variable `a` might also need [`FromData`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:FromData) and [`ToData`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:ToData) instances.
+
+If you're using `DerivePConstantViaData`, you should use the `PLiftData` and `PConstantData` constraints instead respectively.
 
 Here's how you'd set up all this for `PMaybeData a`:
 
 ```hs
 import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
-import Plutarch.Lift (PUnsafeLiftDecl)
+import Plutarch.Lift (PConstantDecl, PUnsafeLiftDecl)
 import Plutarch.Prelude
 
 import PlutusTx (FromData, ToData)
@@ -190,14 +193,7 @@ data PMaybeData a (s :: S)
   = PDJust (Term s (PDataRecord '["_0" ':= a]))
   | PDNothing (Term s (PDataRecord '[]))
 
-instance
-  ( PLift p
-  , p ~ PConstanted (PLifted p)
-  , FromData (PLifted p)
-  , ToData (PLifted p)
-  ) =>
-  PUnsafeLiftDecl (PMaybeData p)
-  where
+instance PLiftData p => PUnsafeLiftDecl (PMaybeData p) where
   type PLifted (PMaybeData p) = Maybe (PLifted p)
 
 deriving via
@@ -205,13 +201,5 @@ deriving via
       (Maybe h)
       (PMaybeData (PConstanted h))
   )
-  instance
-    ( PConstant h
-    , h ~ PLifted (PConstanted h)
-    , FromData h
-    , ToData h
-    ) =>
-    PConstant (Maybe h)
+  instance PConstantData h => PConstantDecl (Maybe h)
 ```
-
-Relevant issue: [\#286](https://github.com/Plutonomicon/plutarch/issues/286)
