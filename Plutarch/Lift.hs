@@ -85,7 +85,7 @@ The Haskell type is determined by `PLifted p`.
 This typeclass is closely tied with 'PConstant'.
 -}
 type PLift :: PType -> Constraint
-type PLift p = PUnsafeLiftDecl p
+type PLift = PUnsafeLiftDecl
 
 {- | Create a Plutarch-level constant, from a Haskell value.
 Example:
