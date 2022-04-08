@@ -50,7 +50,7 @@ Laws:
    in UPLC (via the 'UntypedPlutusCore.Constant' constructor) is a valid @p@.
 -}
 class (PConstant (PLifted p), PConstanted (PLifted p) ~ p) => PUnsafeLiftDecl (p :: PType) where
-  type PLifted p :: Type
+  type PLifted p = (r :: Type) | r -> p
 
 {- | Class of Haskell types `h` that can be represented as a Plutus core builtin
 and converted to a Plutarch type.
@@ -80,7 +80,7 @@ The Haskell type is determined by `PLifted p`.
 This typeclass is closely tied with 'PConstant'.
 -}
 type PLift :: PType -> Constraint
-type PLift p = (p ~ (PConstanted (PLifted p)), PUnsafeLiftDecl p)
+type PLift p = (p ~ PConstanted (PLifted p), PUnsafeLiftDecl p)
 
 {- | Create a Plutarch-level constant, from a Haskell value.
 Example:
@@ -186,7 +186,7 @@ For deriving @PConstant@ for a wrapped type represented in UPLC as @Data@, see
 @DerivePConstantViaData@.
 -}
 type PConstantable :: Type -> Constraint
-type PConstantable a = (a ~ (PLifted (PConstanted a)), PUnsafeLiftDecl (PConstanted a), PConstant a)
+type PConstantable a = (a ~ PLifted (PConstanted a), PConstant a)
 
 instance (PLift p, PLift p', Coercible h (PLifted p')) => PConstant (DerivePConstantViaNewtype h p p') where
   type PConstantRepr (DerivePConstantViaNewtype h p p') = PConstantRepr (PLifted p')

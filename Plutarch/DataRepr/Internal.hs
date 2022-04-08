@@ -28,7 +28,7 @@ module Plutarch.DataRepr.Internal (
 ) where
 
 import Data.Functor.Const (Const (Const))
-import Data.Kind (Type, Constraint)
+import Data.Kind (Constraint, Type)
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy (Proxy))
 import Data.SOP.NP (cana_NP)
@@ -93,6 +93,7 @@ import Plutarch.Builtin (
 import Plutarch.DataRepr.Internal.HList (type Drop, type IndexList)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (S (SI))
+import Plutarch.Internal.Generic (MkSum (mkSum), PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Lift (
   PConstant,
   PConstantRepr,
@@ -104,7 +105,6 @@ import Plutarch.Lift (
   pconstantFromRepr,
   pconstantToRepr,
  )
-import Plutarch.Internal.Generic (MkSum (mkSum), PCode, PGeneric, gpfrom, gpto)
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont, tcont, unTermCont)
 import Plutarch.Unsafe (punsafeCoerce)
