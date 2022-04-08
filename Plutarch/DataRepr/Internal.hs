@@ -109,9 +109,11 @@ data PDataRecord (as :: [PLabeledType]) (s :: S) where
 
 instance {-# OVERLAPPABLE #-} PlutusType (PDataRecord l) where
   type PInner (PDataRecord l) _ = PBuiltinList PData
-  pcon' (PDCons x xs) = pcons # pforgetData x # pto xs
-  pcon' PDNil = pnil
-  pmatch' _ _ = undefined -- FIXME
+  pcon' :: PDataRecord l s -> Term s (PBuiltinList PData)
+  pcon' (PDCons x xs) = pcon' $ PDCons x xs
+  pcon' PDNil = pcon' PDNil
+  pmatch' :: Term s (PBuiltinList PData) -> (PDataRecord l s -> Term s b) -> Term s b
+  pmatch' _ _ = error "PDataRecord l: pmatch' unsupported ('l' should be more specific)"
 
 instance PlutusType (PDataRecord ((name ':= x) ': xs)) where
   type PInner (PDataRecord ((name ':= x) ': xs)) _ = PBuiltinList PData
