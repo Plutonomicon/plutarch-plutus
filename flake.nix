@@ -3,12 +3,7 @@
 
   inputs.haskell-nix.url = "github:L-as/haskell.nix?ref=master";
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
-  inputs.flake-compat-ci.url = "github:hercules-ci/flake-compat-ci";
   inputs.hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
-  inputs.flake-compat = {
-    url = "github:edolstra/flake-compat";
-    flake = false;
-  };
 
   inputs.iohk-nix.url = "github:input-output-hk/iohk-nix";
   inputs.iohk-nix.flake = false;
@@ -47,17 +42,18 @@
   inputs.haskell-language-server.url = "github:haskell/haskell-language-server";
   inputs.haskell-language-server.flake = false;
 
-  # These use the PRs from https://github.com/NorfairKing/sydtest/issues/35
-  inputs.sydtest.url = "github:srid/sydtest/ghc921";
-  inputs.sydtest.flake = false;
-  inputs.validity.url = "github:srid/validity/ghc921";
-  inputs.validity.flake = false;
-  inputs.safe-coloured-text.url = "github:srid/safe-coloured-text/ghc921";
-  inputs.safe-coloured-text.flake = false;
-  inputs.autodocodec.url = "github:srid/autodocodec/ghc921";
-  inputs.autodocodec.flake = false;
+  # https://github.com/hspec/hspec/pull/648
+  inputs.hspec.url = "github:srid/hspec/askAncestors";
+  inputs.hspec.flake = false;
+  # Overriding hspec (above) necessitates overriding these for some reason.
+  inputs.hspec-hedgehog.url = "github:parsonsmatt/hspec-hedgehog";
+  inputs.hspec-hedgehog.flake = false;
+  inputs.hspec-golden.url = "github:stackbuilders/hspec-golden";
+  inputs.hspec-golden.flake = false;
 
-  outputs = inputs@{ self, nixpkgs, iohk-nix, haskell-nix, plutus, flake-compat, flake-compat-ci, hercules-ci-effects, ... }:
+  inputs.emanote.url = "github:srid/emanote/master";
+
+  outputs = inputs@{ self, nixpkgs, iohk-nix, haskell-nix, plutus, hercules-ci-effects, ... }:
     let
       extraSources = [
         {
@@ -119,27 +115,21 @@
           ];
         }
         {
-          src = inputs.sydtest;
+          src = inputs.hspec;
           subdirs = [
-            "sydtest"
-            "sydtest-discover"
-            "sydtest-aeson"
+            "."
+            "hspec-core"
+            "hspec-contrib"
+            "hspec-discover"
           ];
         }
         {
-          src = inputs.validity;
-          subdirs = [
-            "validity"
-            "validity-aeson"
-          ];
+          src = inputs.hspec-hedgehog;
+          subdirs = [ "." ];
         }
         {
-          src = inputs.autodocodec;
-          subdirs = [
-            "autodocodec"
-            "autodocodec-schema"
-            "autodocodec-yaml"
-          ];
+          src = inputs.hspec-golden;
+          subdirs = [ "." ];
         }
       ];
 
@@ -156,54 +146,56 @@
 
       ghcVersion = "ghc921";
 
+      # https://github.com/input-output-hk/haskell.nix/issues/1177
+      nonReinstallablePkgs = [
+        "rts"
+        "ghc-heap"
+        "ghc-prim"
+        "integer-gmp"
+        "integer-simple"
+        "base"
+        "deepseq"
+        "array"
+        "ghc-boot-th"
+        "pretty"
+        "template-haskell"
+        # ghcjs custom packages
+        "ghcjs-prim"
+        "ghcjs-th"
+        "ghc-bignum"
+        "exceptions"
+        "stm"
+        "ghc-boot"
+        "ghc"
+        "Cabal"
+        "Win32"
+        "array"
+        "binary"
+        "bytestring"
+        "containers"
+        "directory"
+        "filepath"
+        "ghc-boot"
+        "ghc-compact"
+        "ghc-prim"
+        # "ghci" "haskeline"
+        "hpc"
+        "mtl"
+        "parsec"
+        "process"
+        "text"
+        "time"
+        "transformers"
+        "unix"
+        "xhtml"
+        "terminfo"
+      ];
+
       tools.fourmolu = { };
       tools.haskell-language-server = {
-        modules = [{
-          # https://github.com/input-output-hk/haskell.nix/issues/1177
-          nonReinstallablePkgs = [
-            "rts"
-            "ghc-heap"
-            "ghc-prim"
-            "integer-gmp"
-            "integer-simple"
-            "base"
-            "deepseq"
-            "array"
-            "ghc-boot-th"
-            "pretty"
-            "template-haskell"
-            # ghcjs custom packages
-            "ghcjs-prim"
-            "ghcjs-th"
-            "ghc-bignum"
-            "exceptions"
-            "stm"
-            "ghc-boot"
-            "ghc"
-            "Cabal"
-            "Win32"
-            "array"
-            "binary"
-            "bytestring"
-            "containers"
-            "directory"
-            "filepath"
-            "ghc-boot"
-            "ghc-compact"
-            "ghc-prim"
-            # "ghci" "haskeline"
-            "hpc"
-            "mtl"
-            "parsec"
-            "process"
-            "text"
-            "time"
-            "transformers"
-            "unix"
-            "xhtml"
-            "terminfo"
-          ];
-        }];
+        modules = [
+          { inherit nonReinstallablePkgs; }
+        ];
         compiler-nix-name = ghcVersion;
         # For some reason it doesn't use the latest version automatically.
         index-state =
@@ -224,6 +216,7 @@
       };
 
       haskellModule = system: {
+        inherit nonReinstallablePkgs; # Needed only so we can use hspec; https://github.com/Plutonomicon/plutarch/issues/409
         packages = {
           basement.src = "${inputs.foundation}/basement";
           basement.components.library.postUnpack = "\n";
@@ -267,9 +260,6 @@
       };
 
       cabalProjectLocal = ''
-        package plutus-tx-plugin
-          flags: +use-ghc-stub
-
         allow-newer:
           cardano-binary:base
           , cardano-crypto-class:base
@@ -461,27 +451,27 @@
       projectForGhc = ghcName: flagDevelopment: system:
         let pkgs = nixpkgsFor system; in
         let pkgs' = nixpkgsFor' system; in
+        let addSubDir = target: subdir: source:
+          if source.src == target
+          then source // { subdirs = source.subdirs ++ [ subdir ]; }
+          else source; in
         let pkgSet = (nixpkgsFor system).haskell-nix.cabalProject' ({
-          # This is truly a horrible hack but is necessary for sydtest-discover to work.
-          src = if ghcName == ghcVersion then ./. else
-          pkgs.runCommand "fake-src" { } ''
-            # Prevent `sydtest-discover` from using GHC9 only modules when building with GHC810
-            # https://github.com/NorfairKing/sydtest/blob/master/sydtest-discover/src/Test/Syd/Discover.hs
-            cp -rT ${./.} $out
-            chmod -R u+w $out/plutarch-test
-            rm -f $out/plutarch-test/src/Plutarch/MonadicSpec.hs
-            rm -f $out/plutarch-test/src/Plutarch/FieldSpec.hs
-            rm -f $out/plutarch-test/src/Plutarch/RecSpec.hs
-          '';
+          src = ./.;
           compiler-nix-name = ghcName;
-          inherit extraSources;
+          extraSources =
+            if ghcName == ghcVersion then extraSources
+            else map (addSubDir inputs.plutus "plutus-tx-plugin") extraSources
+              ++ [{
+              src = inputs.Shrinker;
+              subdirs = [ "." ];
+            }];
           modules = [
             (haskellModule system)
             {
               # Workaround missing support for build-tools:
               # https://github.com/input-output-hk/haskell.nix/issues/231
               packages.plutarch-test.components.exes.plutarch-test.build-tools = [
-                pkgSet.hsPkgs.sydtest-discover
+                pkgSet.hsPkgs.hspec-discover
               ];
               packages.plutarch-test.flags.development = flagDevelopment;
               packages.plutarch.flags.development = flagDevelopment;
@@ -499,7 +489,7 @@
               pkgs'.hlint
               pkgs'.haskellPackages.cabal-fmt
               pkgs'.nixpkgs-fmt
-              pkgSet.hsPkgs.sydtest-discover.components.exes.sydtest-discover
+              pkgSet.hsPkgs.hspec-discover.components.exes.hspec-discover
             ];
 
             inherit tools;
@@ -507,15 +497,12 @@
             additional = ps: [
               ps.plutus-ledger-api
 
-              # sydtest dependencies
-              ps.sydtest
-              ps.sydtest-discover
-              ps.sydtest-aeson
-              ps.validity
-              ps.validity-aeson
-              ps.autodocodec
-              ps.autodocodec-schema
-              ps.autodocodec-yaml
+              ps.hspec
+              ps.hspec-core
+              ps.hspec-contrib
+              ps.hspec-discover
+              ps.hspec-hedgehog
+              ps.hspec-golden
               #ps.shrinker
               #ps.shrinker-testing
             ];
@@ -583,6 +570,35 @@
             '';
           };
         };
+      plutarchWebsiteStatic = system:
+        let
+          pkgs = nixpkgsFor system;
+          configFile = (pkgs.formats.yaml { }).generate "emanote-configFile" {
+            template.baseUrl = "/"; # Use this when pushing to github.io: "/plutarch/";
+          };
+          configDir = pkgs.runCommand "emanote-configDir" { } ''
+            mkdir -p $out
+            cp ${configFile} $out/index.yaml
+          '';
+        in
+        pkgs.runCommand "plutarch-docs-html" { }
+          ''
+            mkdir $out
+            ${inputs.emanote.defaultPackage.${system}}/bin/emanote \
+              --layers "${self}/docs;${configDir}" \
+              gen $out
+          '';
+      plutarchWebsiteLive = system: path:
+        rec {
+          type = "app";
+          # '' is required for escaping ${} in nix
+          script = (nixpkgsFor system).writers.writeBash "emanoteLiveReload.sh" ''
+            set -xe
+            export PORT="''${EMANOTE_PORT:-7072}"
+            ${inputs.emanote.defaultPackage.${system}}/bin/emanote --layers ${path} run --port "$PORT"
+          '';
+          program = builtins.toString script;
+        };
 
       # Checks the shell script using ShellCheck
       checkedShellScript = system: name: text:
@@ -597,7 +613,7 @@
         in
         {
           type = "app";
-          program = checkedShellScript system "plutatch-test-${name}"
+          program = checkedShellScript system "plutarch-test-${name}"
             ''
               cd ${self}/plutarch-test
               ${flake.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test;
@@ -606,7 +622,7 @@
 
       # Take a flake app (identified as the key in the 'apps' set), and return a
       # derivation that runs it in the compile phase.
-      # 
+      #
       # In effect, this allows us to run an 'app' as part of the build process (eg: in CI).
       flakeApp2Derivation = system: appName:
         (nixpkgsFor system).runCommand appName { } "${self.apps.${system}.${appName}.program} | tee $out";
@@ -634,6 +650,7 @@
 
       packages = perSystem (system: self.flake.${system}.packages // {
         haddock = haddock system;
+        website = plutarchWebsiteStatic system;
       });
       checks = perSystem
         (system:
@@ -646,8 +663,9 @@
             test-ghc810-dev = flakeApp2Derivation system "test-ghc810-dev";
             "ghc810-plutarch:lib:plutarch" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch:lib:plutarch";
             "ghc810-plutarch:lib:plutarch-test" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch-test:lib:plutarch-test";
+            hls = checkedShellScript system "hls" "${self.project.${system}.pkgs.haskell-language-server}/bin/haskell-language-server";
           });
-      # Because `nix flake check` does not work with haskell.nix (due to IFD), 
+      # Because `nix flake check` does not work with haskell.nix (due to IFD),
       # we provide this attribute for running the checks locally, using:
       #   nix build .#check.x86_64-linux
       check = perSystem (system:
@@ -667,17 +685,22 @@
           test-ghc9-dev = plutarchTestApp system "ghc9-dev" self.projectMatrix.ghc9.dev;
           test-ghc810-nodev = plutarchTestApp system "ghc810-nodev" self.projectMatrix.ghc810.nodev;
           test-ghc810-dev = plutarchTestApp system "ghc810-dev" self.projectMatrix.ghc810.dev;
+
+          # `nix run .#docs` should be run from the Git repo.
+          docs = plutarchWebsiteLive system "./docs";
+          # `nix run github:Plutonomicon/plutarch#website` can be run from anywhere
+          website = plutarchWebsiteLive system "${self}/docs";
         }
       );
       devShell = perSystem (system: self.flake.${system}.devShell);
 
-      effects = { src }:
+      effects = { ref, ... }:
         let
           pkgs = nixpkgs.legacyPackages.x86_64-linux;
           hci-effects = hercules-ci-effects.lib.withPkgs pkgs;
         in
         {
-          gh-pages = hci-effects.runIf (src.ref == "refs/heads/master") (
+          gh-pages = hci-effects.runIf (ref == "refs/heads/master") (
             hci-effects.mkEffect {
               src = self;
               buildInputs = with pkgs; [ openssh git ];
@@ -704,11 +727,6 @@
             }
           );
         };
-
-      ciNix = args@{ src }: flake-compat-ci.lib.recurseIntoFlakeWith {
-        flake = self;
-        systems = [ "x86_64-linux" ];
-        effectsArgs = args;
-      };
+      herculesCI.ciSystems = [ "x86_64-linux" ];
     };
 }

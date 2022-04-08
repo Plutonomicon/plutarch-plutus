@@ -34,6 +34,7 @@ common c
     FlexibleContexts
     FlexibleInstances
     ForeignFunctionInterface
+    FunctionalDependencies
     GADTSyntax
     GeneralisedNewtypeDeriving
     HexFloatLiterals
@@ -73,19 +74,28 @@ common c
 
 common deps
   build-depends:
-    , aeson              >=2.0
+    , aeson                 >=2.0
     , base
     , bytestring
+    , containers
+    , directory
     , filepath
     , generics-sop
+    , hedgehog
+    , hspec
+    , hspec-core
+    , hspec-discover
+    , hspec-golden
+    , hspec-hedgehog
     , mtl
     , plutarch
+    , plutarch-extra
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
+    , quickcheck-instances
     , serialise
-    , sydtest
-    , sydtest-discover
+    , sop-core
     , tasty
     , tasty-hunit
     , tasty-quickcheck
@@ -94,30 +104,52 @@ common deps
 
 library
   import:          c, deps
-  hs-source-dirs:  src
-  exposed-modules: Plutarch.Test
+  hs-source-dirs:  common
+  exposed-modules:
+    Plutarch.Test
+    Plutarch.Test.Property
+
   other-modules:
     Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
+    Plutarch.Test.Property.Extra
+    Plutarch.Test.Property.Gen
+    Plutarch.Test.Property.HaskEquiv
+    Plutarch.Test.Property.Marshal
+    Plutarch.Test.Run
+
+  if flag(development)
+    cpp-options: -DDevelopment
 
 executable plutarch-test
   import:         c, deps
   main-is:        Main.hs
-  hs-source-dirs: src
+  hs-source-dirs: plutarch-base plutarch-extra common conditional ./.
   build-depends:
     , base16-bytestring
     , cborg
+    , containers
+    , plutarch-test
     , rank2classes
     , serialise
+
+  if impl(ghc <9.0)
+    build-depends:
+      , plutus-tx-plugin
+      , shrinker
+
+    other-modules: Plutarch.FFISpec
 
   if impl(ghc >=9.0)
     other-modules:
       Plutarch.FieldSpec
       Plutarch.MonadicSpec
-      Plutarch.RecSpec
+      Plutarch.TryFromSpec
 
   other-modules:
+    BaseSpec
+    ExtraSpec
     Plutarch.ApiSpec
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
@@ -125,23 +157,33 @@ executable plutarch-test
     Plutarch.IntegerSpec
     Plutarch.LiftSpec
     Plutarch.ListSpec
+    Plutarch.ListUtilsSpec
     Plutarch.MaybeSpec
     Plutarch.PairSpec
     Plutarch.PIsDataSpec
     Plutarch.PLamSpec
     Plutarch.PlutusTypeSpec
+    Plutarch.POrdSpec
     Plutarch.RationalSpec
+    Plutarch.RecSpec
     Plutarch.RecursionSpec
     Plutarch.ScriptsSpec
+    Plutarch.ShowSpec
+    Plutarch.SpecTypes
     Plutarch.StringSpec
     Plutarch.Test
     Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
+    Plutarch.Test.Property
+    Plutarch.Test.Property.Extra
+    Plutarch.Test.Property.Gen
+    Plutarch.Test.Property.HaskEquiv
+    Plutarch.Test.Property.Marshal
+    Plutarch.Test.Run
     Plutarch.TraceSpec
     Plutarch.UnitSpec
     Plutarch.UPLCSpec
-    Spec
 
   if flag(development)
     cpp-options: -DDevelopment

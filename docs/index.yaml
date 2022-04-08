@@ -1,0 +1,14 @@
+# Emanote settings
+#
+# For list of possible settings and their defaults, see: 
+# https://github.com/srid/emanote/blob/master/default/index.yaml
+
+template:
+  # Change this to 'pretty' to use URLs without .html suffix.
+  urlStrategy: direct
+  theme: green
+
+page:
+  siteTitle: Plutarch Guide
+  headHtml: |
+    <snippet var="js.prism" />

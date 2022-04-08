@@ -56,7 +56,7 @@ newtype PTxInfo (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PlutusType, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields, PEq)
     via PIsDataReprInstances PTxInfo
 
 instance PUnsafeLiftDecl PTxInfo where type PLifted PTxInfo = Plutus.TxInfo
@@ -76,7 +76,7 @@ newtype PScriptContext (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PlutusType, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields, PEq)
     via PIsDataReprInstances PScriptContext
 
 instance PUnsafeLiftDecl PScriptContext where type PLifted PScriptContext = Plutus.ScriptContext
@@ -93,7 +93,7 @@ data PScriptPurpose (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PlutusType, PIsData)
+    (PlutusType, PIsData, PEq)
     via (PIsDataReprInstances PScriptPurpose)
 
 instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose

@@ -33,7 +33,7 @@ data PCredential (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PlutusType, PIsData)
+    (PlutusType, PIsData, PEq, POrd)
     via (PIsDataReprInstances PCredential)
 
 instance PUnsafeLiftDecl PCredential where type PLifted PCredential = Plutus.Credential
@@ -55,7 +55,7 @@ data PStakingCredential (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PlutusType, PIsData)
+    (PlutusType, PIsData, PEq, POrd)
     via PIsDataReprInstances PStakingCredential
 
 instance PUnsafeLiftDecl PStakingCredential where type PLifted PStakingCredential = Plutus.StakingCredential
@@ -75,7 +75,7 @@ newtype PAddress (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PlutusType, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields, PEq, POrd)
     via PIsDataReprInstances PAddress
 
 instance PUnsafeLiftDecl PAddress where type PLifted PAddress = Plutus.Address

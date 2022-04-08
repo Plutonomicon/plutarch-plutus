@@ -38,12 +38,21 @@ import Plutarch.Builtin (
 import Plutarch.Integer (PInteger, PIntegral (pdiv, pmod))
 import Plutarch.List (PListLike (pcons, phead, pnil, ptail), pmap)
 import Plutarch.Pair (PPair (..))
+import Plutarch.Show (PShow (pshow'), pshow)
 import Plutarch.Unsafe (punsafeCoerce)
 
 data PRational s
   = PRational (Term s PInteger) (Term s PInteger)
   deriving stock (GHC.Generic)
   deriving anyclass (Generic, PlutusType)
+
+instance PShow PRational where
+  pshow' _ x =
+    pshowRat # x
+    where
+      pshowRat = phoistAcyclic $
+        plam $ \n -> pmatch n $ \(PRational x y) ->
+          pshow x <> "/" <> pshow y
 
 instance PIsData PRational where
   pfromData x' = phoistAcyclic (plam $ \x -> pListToRat #$ pmap # pasInt #$ pasList # pforgetData x) # x'
@@ -242,8 +251,6 @@ pround = phoistAcyclic $
                   (pmod # base # 2)
                   (pif (rem #< pdiv # b # 2) 0 1)
               )
-
--- (pdiv # b # 2 + pmod # b # 2 #<= pmod # a # b) 1 0
 
 ptruncate :: Term s (PRational :--> PInteger)
 ptruncate = phoistAcyclic $
