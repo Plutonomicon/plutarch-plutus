@@ -123,6 +123,10 @@
 
   Added by: [#371](https://github.com/Plutonomicon/plutarch/pull/371)
 
+- Make `PRational` construction machinery fail when the denominator is 0.
+
+  Fixed by: [#299](https://github.com/Plutonomicon/plutarch/pull/299)
+
 # 1.1.0
 
 - General repository changes.
