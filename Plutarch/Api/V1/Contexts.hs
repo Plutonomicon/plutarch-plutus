@@ -40,16 +40,16 @@ newtype PTxInfo (s :: S)
       ( Term
           s
           ( PDataRecord
-              '[ "inputs" ':= PBuiltinList (PAsData PTxInInfo) -- ^ Transaction inputs
-               , "outputs" ':= PBuiltinList (PAsData PTxOut) -- ^ Transaction outputs
-               , "fee" ':= PValue -- ^ The fee paid by this transaction.
-               , "mint" ':= PValue -- ^ The value minted by the transaction.
-               , "dcert" ':= PBuiltinList (PAsData PDCert) -- ^ Digests of the certificates included in this transaction.
-               , "wdrl" ':= PBuiltinList (PAsData (PTuple PStakingCredential PInteger)) -- ^ Staking withdrawals
-               , "validRange" ':= PPOSIXTimeRange -- ^ The valid range for the transaction.
-               , "signatories" ':= PBuiltinList (PAsData PPubKeyHash) -- ^ Signatories attesting that they all signed the tx.
+              '[ "inputs" ':= PBuiltinList (PAsData PTxInInfo) -- Transaction inputs
+               , "outputs" ':= PBuiltinList (PAsData PTxOut) -- Transaction outputs
+               , "fee" ':= PValue -- The fee paid by this transaction.
+               , "mint" ':= PValue -- The value minted by the transaction.
+               , "dcert" ':= PBuiltinList (PAsData PDCert) -- Digests of the certificates included in this transaction.
+               , "wdrl" ':= PBuiltinList (PAsData (PTuple PStakingCredential PInteger)) -- Staking withdrawals
+               , "validRange" ':= PPOSIXTimeRange -- The valid range for the transaction.
+               , "signatories" ':= PBuiltinList (PAsData PPubKeyHash) -- Signatories attesting that they all signed the tx.
                , "data" ':= PBuiltinList (PAsData (PTuple PDatumHash PDatum))
-               , "id" ':= PTxId -- ^ The hash of the pending transaction.
+               , "id" ':= PTxId -- The hash of the pending transaction.
                ]
           )
       )
@@ -85,6 +85,7 @@ instance PUnsafeLiftDecl PScriptContext where type PLifted PScriptContext = Plut
 deriving via (DerivePConstantViaData Plutus.ScriptContext PScriptContext) instance (PConstant Plutus.ScriptContext)
 
 -- General types, used by V1 and V2
+
 -- | The purpose of the script that is currently running
 data PScriptPurpose (s :: S)
   = PMinting (Term s (PDataRecord '["_0" ':= PCurrencySymbol]))
