@@ -82,29 +82,34 @@ You can compile a Plutarch term using `compile` (from `Plutarch` module), making
 I often use these helper functions to test Plutarch quickly:
 
 ```haskell
-import Data.Text (Text)
-import Plutarch.Evaluate (evaluateScript)
-import Plutarch (ClosedTerm, compile)
-import Plutus.V1.Ledger.Api (ExBudget)
-import Plutus.V1.Ledger.Scripts (Script (unScript), ScriptError, applyArguments)
-import UntypedPlutusCore (DeBruijn, DefaultFun, DefaultUni, Program)
-import PlutusTx (Data)
+import Data.Text                (Text)
+import Plutarch                 (ClosedTerm, compile)
+import Plutarch.Evaluate        (evalScript, EvalError)
+import Plutus.V1.Ledger.Api     (Data, ExBudget)
+import Plutus.V1.Ledger.Scripts (Script (unScript), applyArguments)
+import UntypedPlutusCore        (DeBruijn, DefaultFun, DefaultUni, Program)
 
-eval :: ClosedTerm a -> Either ScriptError (ExBudget, [Text], Program DeBruijn DefaultUni DefaultFun ())
-eval x = fmap (\(a, b, s) -> (a, b, unScript s)) . evaluateScript $ compile x
+evalT :: ClosedTerm a -> (Either EvalError (Program DeBruijn DefaultUni DefaultFun ()), ExBudget, [Text])
+evalT x = evalWithArgsT x []
 
-evalWithArgs :: ClosedTerm a -> [Data] -> Either ScriptError (ExBudget, [Text], Program DeBruijn DefaultUni DefaultFun ())
-evalWithArgs x args = fmap (\(a, b, s) -> (a, b, unScript s)) . evaluateScript . flip applyArguments args $ compile x
+evalWithArgsT :: ClosedTerm a -> [Data] -> (Either EvalError (Program DeBruijn DefaultUni DefaultFun ()), ExBudget, [Text])
+evalWithArgsT x args = (\(res, budg, trcs) -> (fmap unScript res, budg, trcs))
+  . evalScript
+  . flip applyArguments args
+  $ compile x
 ```
 
-The fields in the result triple correspond to execution budget (how much memory and CPU units were used), trace log, and script result - respectively. Often you're only interested in the script result, in that case you can use:
+The fields in the result triple correspond to script result, execution budget (how much memory and CPU units were used), and trace log - respectively. Often you're only interested in the script result, in that case you can use:
 
 ```haskell
-evalT :: ClosedTerm a -> Either ScriptError (Program DeBruijn DefaultUni DefaultFun ())
-evalT x = fmap (\(_, _, s) -> unScript s) . evaluateScript $ compile x
+evalT :: ClosedTerm a -> Either EvalError (Program DeBruijn DefaultUni DefaultFun ())
+evalT x = evalWithArgsT x []
 
-evalWithArgsT :: ClosedTerm a -> [Data] -> Either ScriptError (Program DeBruijn DefaultUni DefaultFun ())
-evalWithArgsT x args = fmap (\(_, _, s) -> unScript s) . evaluateScript . flip applyArguments args $ compile x
+evalWithArgsT :: ClosedTerm a -> [Data] -> Either EvalError (Program DeBruijn DefaultUni DefaultFun ())
+evalWithArgsT x args = (\(res, _, _) -> fmap unScript res)
+  . evalScript
+  . flip applyArguments args
+  $ compile x
 ```
 
 > Note: You can pretty much ignore the UPLC types involved here. All it really means is that the result is a "UPLC program". When it's printed, it's pretty legible - especially for debugging purposes. Although not necessary to use Plutarch, you may find the [Plutonomicon UPLC guide](https://github.com/Plutonomicon/plutonomicon/blob/main/uplc.md) useful.

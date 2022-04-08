@@ -48,7 +48,7 @@ newtype PTxInfo (s :: S)
                , "wdrl" ':= PBuiltinList (PAsData (PTuple PStakingCredential PInteger)) -- Staking withdrawals
                , "validRange" ':= PPOSIXTimeRange -- The valid range for the transaction.
                , "signatories" ':= PBuiltinList (PAsData PPubKeyHash) -- Signatories attesting that they all signed the tx.
-               , "data" ':= PBuiltinList (PAsData (PTuple PDatumHash PDatum))
+               , "datums" ':= PBuiltinList (PAsData (PTuple PDatumHash PDatum))
                , "id" ':= PTxId -- The hash of the pending transaction.
                ]
           )

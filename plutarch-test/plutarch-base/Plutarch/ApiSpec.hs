@@ -22,8 +22,6 @@ import Plutarch.Prelude
 import Plutarch.Test
 import Test.Hspec
 
--- import PlutusTx.AssocMap as PlutusMap
-
 spec :: Spec
 spec = do
   describe "api" $ do
@@ -166,11 +164,11 @@ getSym =
 checkSignatoryCont :: forall s. Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatoryCont = plam $ \ph ctx' ->
   pletFields @["txInfo", "purpose"] ctx' $ \ctx -> (`runCont` id) $ do
-    purpose <- cont (pmatch $ hrecField @"purpose" ctx)
+    purpose <- cont (pmatch $ getField @"purpose" ctx)
     pure $ case purpose of
       PSpending _ ->
         let signatories :: Term s (PBuiltinList (PAsData PPubKeyHash))
-            signatories = pfield @"signatories" # hrecField @"txInfo" ctx
+            signatories = pfield @"signatories" # getField @"txInfo" ctx
          in pif
               (pelem # pdata ph # signatories)
               -- Success!
@@ -184,9 +182,9 @@ checkSignatoryCont = plam $ \ph ctx' ->
 checkSignatoryTermCont :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatoryTermCont = plam $ \ph ctx' -> unTermCont $ do
   ctx <- tcont $ pletFields @["txInfo", "purpose"] ctx'
-  tcont (pmatch $ hrecField @"purpose" ctx) >>= \case
+  tcont (pmatch $ getField @"purpose" ctx) >>= \case
     PSpending _ -> do
-      let signatories = pfield @"signatories" # hrecField @"txInfo" ctx
+      let signatories = pfield @"signatories" # getField @"txInfo" ctx
       pure $
         pif
           (pelem # pdata ph # pfromData signatories)

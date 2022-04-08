@@ -21,7 +21,6 @@ module Plutarch.DataRepr.Internal (
   pdropDataRecord,
   DerivePConstantViaData (..),
   pasDataSum,
-  pdToBuiltin,
   DualReprHandler (..),
 ) where
 
@@ -56,7 +55,6 @@ import Generics.SOP (
 import Plutarch (
   Dig,
   PInner,
-  PMatch,
   PType,
   PlutusType,
   S,
@@ -109,12 +107,17 @@ data PDataRecord (as :: [PLabeledType]) (s :: S) where
     PDataRecord ((name ':= x) ': xs) s
   PDNil :: PDataRecord '[] s
 
+instance {-# OVERLAPPABLE #-} PlutusType (PDataRecord l) where
+  type PInner (PDataRecord l) _ = PBuiltinList PData
+  pcon' :: PDataRecord l s -> Term s (PBuiltinList PData)
+  pcon' (PDCons x xs) = pcon' $ PDCons x xs
+  pcon' PDNil = pcon' PDNil
+  pmatch' :: Term s (PBuiltinList PData) -> (PDataRecord l s -> Term s b) -> Term s b
+  pmatch' _ _ = error "PDataRecord l: pmatch' unsupported ('l' should be more specific)"
+
 instance PlutusType (PDataRecord ((name ':= x) ': xs)) where
   type PInner (PDataRecord ((name ':= x) ': xs)) _ = PBuiltinList PData
-  pcon' (PDCons x xs) = pto result
-    where
-      result :: Term _ (PDataRecord ((name ':= x) ': xs))
-      result = pdcons # x # xs
+  pcon' (PDCons x xs) = pcons # pforgetData x # pto xs
   pmatch' l' f = plet l' $ \l ->
     let x :: Term _ (PAsData x)
         x = punsafeCoerce $ phead # l
@@ -129,7 +132,7 @@ instance PlutusType (PDataRecord '[]) where
 
 -- | This uses data equality. 'PEq' instances of elements don't make any difference.
 instance PEq (PDataRecord xs) where
-  x #== y = pdToBuiltin x #== pdToBuiltin y
+  x #== y = pto x #== pto y
 
 -- Lexicographic ordering based 'Ord' instances for 'PDataRecord'.
 
@@ -184,10 +187,6 @@ pdcons = punsafeCoerce $ pcons @PBuiltinList @PData
 -- | An empty 'PDataRecord'.
 pdnil :: Term s (PDataRecord '[])
 pdnil = punsafeCoerce $ pnil @PBuiltinList @PData
-
--- | Convert a 'PDataRecord' into a builtin list of data values, losing type information in the process.
-pdToBuiltin :: Term s (PDataRecord xs) -> Term s (PBuiltinList PData)
-pdToBuiltin = punsafeCoerce
 
 data PLabeledType = Symbol := PType
 
@@ -299,8 +298,7 @@ pmatchDataSum d handlers =
     applyHandlers _ DRHNil = []
     applyHandlers args (DRHCons handler rest) = handler (punsafeCoerce args) : applyHandlers args rest
 
--- TODO: This 'PMatch' constraint needs to be changed to 'PlutusType (breaking change).
-class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
+class (PlutusType a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PLabeledType]]
   type PIsDataReprRepr a = PDataRecordFields2 (PCode 'SI a)
 
@@ -378,11 +376,11 @@ instance
       mkSOP :: NP (Term s) r -> SOP (Term s) (PCode s a)
       mkSOP = SOP . mkSum @_ @n @pcode
 
-newtype DualReprHandler s out def = LTRepr (Term s (PDataRecord def) -> Term s (PDataRecord def) -> Term s out)
+newtype DualReprHandler s out def = DualRepr (Term s (PDataRecord def) -> Term s (PDataRecord def) -> Term s out)
 
 -- | Optimized dual pmatch specialized for lexicographic '#<' and '#<=' implementations.
 pmatchLT :: Term s (PDataSum defs) -> Term s (PDataSum defs) -> NP (DualReprHandler s PBool) defs -> Term s PBool
-pmatchLT d1 d2 (LTRepr handler :* Nil) = handler (punDataSum # d1) (punDataSum # d2)
+pmatchLT d1 d2 (DualRepr handler :* Nil) = handler (punDataSum # d1) (punDataSum # d2)
 pmatchLT d1 d2 handlers = unTermCont $ do
   a <- tcont . plet $ pasConstr #$ pforgetData $ pdata d1
   b <- tcont . plet $ pasConstr #$ pforgetData $ pdata d2
@@ -414,7 +412,7 @@ pmatchLT d1 d2 handlers = unTermCont $ do
       NP (DualReprHandler s PBool) defs ->
       [Term s PBool]
     applyHandlers _ _ Nil = []
-    applyHandlers args1 args2 (LTRepr handler :* rest) =
+    applyHandlers args1 args2 (DualRepr handler :* rest) =
       handler (punsafeCoerce args1) (punsafeCoerce args2) :
       applyHandlers args1 args2 rest
 
@@ -455,7 +453,7 @@ mkLTHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
       Compose POrd PDataRecord y =>
       Const () (y : ys) ->
       (DualReprHandler s PBool y, Const () ys)
-    rer _ = (LTRepr (#<), Const ())
+    rer _ = (DualRepr (#<), Const ())
 
 mkLTEHandler :: forall def s. All (Compose POrd PDataRecord) def => NP (DualReprHandler s PBool) def
 mkLTEHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
@@ -465,7 +463,7 @@ mkLTEHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
       Compose POrd PDataRecord y =>
       Const () (y : ys) ->
       (DualReprHandler s PBool y, Const () ys)
-    rer _ = (LTRepr (#<=), Const ())
+    rer _ = (DualRepr (#<=), Const ())
 
 {- | Use this for implementing the necessary instances for getting the `Data` representation.
  You must implement 'PIsDataRepr' to use this.

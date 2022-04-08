@@ -208,15 +208,15 @@ ltTrip trip1 trip2 = unTermCont $ do
   a <- tcont $ pletFields @'["x", "y", "z"] trip1
   b <- tcont $ pletFields @'["x", "y", "z"] trip2
 
-  x <- tcont . plet . pfromData $ hrecField @"x" a
-  x' <- tcont . plet . pfromData $ hrecField @"x" b
+  x <- tcont . plet . pfromData $ getField @"x" a
+  x' <- tcont . plet . pfromData $ getField @"x" b
   pure $
     x #< x'
       #|| ( x #== x'
               #&& ( unTermCont $ do
-                      y <- tcont . plet . pfromData $ hrecField @"y" a
-                      y' <- tcont . plet . pfromData $ hrecField @"y" b
-                      pure $ y #< y' #|| (y #== y' #&& pfromData (hrecField @"z" a) #< pfromData (hrecField @"z" b))
+                      y <- tcont . plet . pfromData $ getField @"y" a
+                      y' <- tcont . plet . pfromData $ getField @"y" b
+                      pure $ y #< y' #|| (y #== y' #&& pfromData (getField @"z" a) #< pfromData (getField @"z" b))
                   )
           )
 
@@ -225,15 +225,15 @@ lteTrip trip1 trip2 = unTermCont $ do
   a <- tcont $ pletFields @'["x", "y", "z"] trip1
   b <- tcont $ pletFields @'["x", "y", "z"] trip2
 
-  x <- tcont . plet . pfromData $ hrecField @"x" a
-  x' <- tcont . plet . pfromData $ hrecField @"x" b
+  x <- tcont . plet . pfromData $ getField @"x" a
+  x' <- tcont . plet . pfromData $ getField @"x" b
   pure $
     x #< x'
       #|| ( x #== x'
               #&& ( unTermCont $ do
-                      y <- tcont . plet . pfromData $ hrecField @"y" a
-                      y' <- tcont . plet . pfromData $ hrecField @"y" b
-                      pure $ y #< y' #|| (y #== y' #&& pfromData (hrecField @"z" a) #<= pfromData (hrecField @"z" b))
+                      y <- tcont . plet . pfromData $ getField @"y" a
+                      y' <- tcont . plet . pfromData $ getField @"y" b
+                      pure $ y #< y' #|| (y #== y' #&& pfromData (getField @"z" a) #<= pfromData (getField @"z" b))
                   )
           )
 

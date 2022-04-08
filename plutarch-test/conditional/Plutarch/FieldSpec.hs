@@ -65,12 +65,12 @@ spec = do
             @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
                 in pmatch addr $ \(PAddress addrFields) ->
                     pletFields @'["credential", "stakingCredential"] addrFields $ \y ->
-                      ppairDataBuiltin # hrecField @"credential" y # hrecField @"stakingCredential" y
+                      ppairDataBuiltin # getField @"credential" y # getField @"stakingCredential" y
         "pfield" @\ do
           "newtype"
             @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
                 in pletFields @'["credential", "stakingCredential"] addr $ \y ->
-                    ppairDataBuiltin # hrecField @"credential" y # hrecField @"stakingCredential" y
+                    ppairDataBuiltin # getField @"credential" y # getField @"stakingCredential" y
       "pfield-pletFields" @\ do
         "pfield" @\ do
           "single"
@@ -80,7 +80,7 @@ spec = do
           "single"
             @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
                 in pletFields @'["credential"] addr $ \y ->
-                    pfromData $ hrecField @"credential" y
+                    pfromData $ getField @"credential" y
 
 --------------------------------------------------------------------------------
 
