@@ -126,8 +126,9 @@ newtype Flip f a b = Flip (f b a)
 
 ----------------------- HRecP and friends -----------------------------------------------
 
-type family HRecPApply (as :: [(Symbol, PType)]) (s :: S) :: [Type] where
-  HRecPApply ('(name, ty) ': rest) s = Labeled name (Reduce (ty s)) ': HRecPApply rest s
+type HRecPApply :: [(Symbol, PType)] -> S -> [(Symbol, Type)]
+type family HRecPApply as s where
+  HRecPApply ('(name, ty) ': rest) s = '(name, Reduce (ty s)) ': HRecPApply rest s
   HRecPApply '[] s = '[]
 
 newtype HRecP (as :: [(Symbol, PType)]) (s :: S) = HRecP (HRecGeneric (HRecPApply as s))

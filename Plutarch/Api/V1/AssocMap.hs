@@ -10,6 +10,7 @@ import qualified PlutusTx.AssocMap as PlutusMap
 
 import Plutarch.Builtin (PBuiltinMap)
 import Plutarch.Lift (
+  PConstantDecl,
   PConstantRepr,
   PConstanted,
   PLifted,
@@ -23,12 +24,8 @@ newtype PMap (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinMap k v)
   deriving (PlutusType, PIsData) via (DerivePNewtype (PMap k v) (PBuiltinMap k v))
 
 instance
-  ( Plutus.ToData (PLifted v)
-  , Plutus.ToData (PLifted k)
-  , Plutus.FromData (PLifted v)
-  , Plutus.FromData (PLifted k)
-  , PLift k
-  , PLift v
+  ( PLiftData k
+  , PLiftData v
   , Ord (PLifted k)
   ) =>
   PUnsafeLiftDecl (PMap k v)
@@ -36,17 +33,11 @@ instance
   type PLifted (PMap k v) = PlutusMap.Map (PLifted k) (PLifted v)
 
 instance
-  ( PLifted (PConstanted k) ~ k
-  , PLifted (PConstanted v) ~ v
-  , Plutus.ToData v
-  , Plutus.FromData v
-  , Plutus.ToData k
-  , Plutus.FromData k
-  , PConstant v
-  , PConstant k
+  ( PConstantData k
+  , PConstantData v
   , Ord k
   ) =>
-  PConstant (PlutusMap.Map k v)
+  PConstantDecl (PlutusMap.Map k v)
   where
   type PConstantRepr (PlutusMap.Map k v) = [(Plutus.Data, Plutus.Data)]
   type PConstanted (PlutusMap.Map k v) = PMap (PConstanted k) (PConstanted v)

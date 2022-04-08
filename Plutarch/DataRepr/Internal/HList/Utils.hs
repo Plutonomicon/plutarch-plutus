@@ -33,9 +33,10 @@ type family IndexList (n :: Nat) (l :: [k]) :: k where
   IndexList 0 (x ': _) = x
   IndexList n (x : xs) = IndexList (n - 1) xs
 
--- | Indexing list of labeled types by label
-type family IndexLabel (name :: Symbol) (as :: [Type]) :: Type where
-  IndexLabel name ((Labeled name a) ': _) = a
+-- | Indexing list of labeled pairs by label
+type IndexLabel :: Symbol -> [(Symbol, Type)] -> Type
+type family IndexLabel name as where
+  IndexLabel name ('(name, a) ': _) = a
   IndexLabel name (_ ': as) = IndexLabel name as
 
 -- | Return the single item from a singleton list

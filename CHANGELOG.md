@@ -127,6 +127,12 @@
 
   Fixed by: [#299](https://github.com/Plutonomicon/plutarch/pull/299)
 
+- Rename `PConstant` (the typeclass) to `PConstantDecl`. `PConstant` is now a type alias with extra constraints for better type checking.
+
+  Add `PLiftData` and `PConstantData` type aliases.
+
+  Added by: [#354](https://github.com/Plutonomicon/plutarch/pull/354)
+
 # 1.1.0
 
 - General repository changes.

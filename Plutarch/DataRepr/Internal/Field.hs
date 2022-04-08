@@ -153,11 +153,12 @@ type family CutSkip (bs :: [ToBind]) :: [ToBind] where
   Get the 'Term' representations to be bound based on the
   result of 'Bindings'.
 -}
-type family BoundTerms (ps :: [PLabeledType]) (bs :: [ToBind]) (s :: S) :: [Type] where
+type BoundTerms :: [PLabeledType] -> [ToBind] -> S -> [(Symbol, Type)]
+type family BoundTerms ps bs s where
   BoundTerms '[] _ _ = '[]
   BoundTerms _ '[] _ = '[]
   BoundTerms (_ ': ps) ( 'Skip ': bs) s = BoundTerms ps bs s
-  BoundTerms ((name ':= p) ': ps) ( 'Bind ': bs) s = (Labeled name (Term s (PAsData p))) ': (BoundTerms ps bs s)
+  BoundTerms ((name ':= p) ': ps) ( 'Bind ': bs) s = '(name, Term s (PAsData p)) ': BoundTerms ps bs s
 
 class BindFields (ps :: [PLabeledType]) (bs :: [ToBind]) where
   -- |

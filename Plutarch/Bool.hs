@@ -50,7 +50,7 @@ import Plutarch.Internal.Other (
  )
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
-  PConstant,
+  PConstantDecl,
   PLifted,
   PUnsafeLiftDecl,
   pconstant,
@@ -63,7 +63,7 @@ data PBool (s :: S) = PTrue | PFalse
   deriving stock (Show)
 
 instance PUnsafeLiftDecl PBool where type PLifted PBool = Bool
-deriving via (DerivePConstantDirect Bool PBool) instance (PConstant Bool)
+deriving via (DerivePConstantDirect Bool PBool) instance PConstantDecl Bool
 
 instance PlutusType PBool where
   type PInner PBool _ = PBool

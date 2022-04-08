@@ -15,12 +15,13 @@ module Plutarch.DataRepr (
   I.pdropDataRecord,
   I.DerivePConstantViaData (DerivePConstantViaData),
   I.pasDataSum,
+  I.PConstantData,
+  I.PLiftData,
 
   -- * Fields
   F.PDataFields (ptoFields, type PFields),
   F.pletFields,
   F.pfield,
-  F.hrecField,
   F.HRec,
 ) where
 

@@ -13,7 +13,7 @@ import Plutarch.DataRepr (
   PIsDataReprInstances (PIsDataReprInstances),
  )
 import Plutarch.Lift (
-  PConstant (PConstanted),
+  PConstantDecl (PConstanted),
   PUnsafeLiftDecl (PLifted),
  )
 import Plutarch.Prelude
@@ -47,23 +47,13 @@ newtype PTriplet (a :: PType) (s :: S)
 
 PlutusTx.makeIsDataIndexed ''Triplet ([('Triplet, 0)])
 
-instance
-  ( PConstanted (PLifted a) ~ a
-  , PlutusTx.FromData (PLifted a)
-  , PlutusTx.ToData (PLifted a)
-  ) =>
-  PUnsafeLiftDecl (PTriplet a)
-  where
+instance PLiftData a => PUnsafeLiftDecl (PTriplet a) where
   type PLifted (PTriplet a) = Triplet (PLifted a)
 
 deriving via
   (DerivePConstantViaData (Triplet a) (PTriplet (PConstanted a)))
   instance
-    ( PlutusTx.FromData a
-    , PlutusTx.ToData a
-    , PLifted (PConstanted a) ~ a
-    ) =>
-    PConstant (Triplet a)
+    PConstantData a => PConstantDecl (Triplet a)
 
 instance Arbitrary a => Arbitrary (Triplet a) where
   arbitrary = Triplet <$> arbitrary <*> arbitrary <*> arbitrary

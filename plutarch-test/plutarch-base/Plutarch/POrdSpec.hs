@@ -22,7 +22,7 @@ import Test.Tasty.QuickCheck (Arbitrary, arbitrary, oneof, property)
 import Plutarch.Api.V1 (PAddress, PCredential (PPubKeyCredential, PScriptCredential), PMaybeData)
 import Plutarch.Lift (
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
-  PConstant (PConstanted),
+  PConstantDecl,
   PUnsafeLiftDecl (PLifted),
  )
 import Plutarch.Prelude
@@ -101,10 +101,8 @@ spec = do
 propertySet ::
   forall p.
   ( PIsData p
-  , PLift p
+  , PLiftData p
   , POrd p
-  , PlutusTx.ToData (PLifted p)
-  , PlutusTx.FromData (PLifted p)
   , Ord (PLifted p)
   , Show (PLifted p)
   , Arbitrary (PLifted p)
@@ -121,13 +119,13 @@ propertySet typeName' = do
     specify ("(#==) @" <> typeName <> " ≡ (==) @" <> typeName) $
       property $ peqIso @p
 
-pltIso :: forall p h. (p ~ PConstanted h, h ~ PLifted p, PConstant h, Arbitrary h, Ord h, POrd p) => h -> h -> IO ()
+pltIso :: forall p. (PLift p, POrd p, Arbitrary (PLifted p), Ord (PLifted p)) => PLifted p -> PLifted p -> IO ()
 pltIso a b = plift (pconstant @p a #< pconstant b) `shouldBe` (a < b)
 
-plteIso :: forall p h. (p ~ PConstanted h, h ~ PLifted p, PConstant h, Arbitrary h, Ord h, POrd p) => h -> h -> IO ()
+plteIso :: forall p. (PLift p, POrd p, Arbitrary (PLifted p), Ord (PLifted p)) => PLifted p -> PLifted p -> IO ()
 plteIso a b = plift (pconstant @p a #<= pconstant b) `shouldBe` (a <= b)
 
-peqIso :: forall p h. (p ~ PConstanted h, h ~ PLifted p, PConstant h, Arbitrary h, Eq h, PEq p) => h -> h -> IO ()
+peqIso :: forall p. (PLift p, PEq p, Arbitrary (PLifted p), Eq (PLifted p)) => PLifted p -> PLifted p -> IO ()
 peqIso a b = plift (pconstant @p a #== pconstant b) `shouldBe` (a == b)
 
 newtype PAddress' s = PAddress' (Term s PAddress)
@@ -138,7 +136,7 @@ instance PUnsafeLiftDecl PAddress' where type PLifted PAddress' = Address'
 newtype Address' = Address' Address
   deriving stock (Show, Eq, Ord)
   deriving newtype (PlutusTx.FromData, PlutusTx.ToData)
-  deriving (PConstant) via (DerivePConstantViaNewtype Address' PAddress' PAddress)
+  deriving (PConstantDecl) via (DerivePConstantViaNewtype Address' PAddress' PAddress)
 
 instance Arbitrary Address' where
   arbitrary = Address' <$> arbitraryAddr
@@ -208,15 +206,15 @@ ltTrip trip1 trip2 = unTermCont $ do
   a <- tcont $ pletFields @'["x", "y", "z"] trip1
   b <- tcont $ pletFields @'["x", "y", "z"] trip2
 
-  x <- tcont . plet . pfromData $ hrecField @"x" a
-  x' <- tcont . plet . pfromData $ hrecField @"x" b
+  x <- tcont . plet . pfromData $ getField @"x" a
+  x' <- tcont . plet . pfromData $ getField @"x" b
   pure $
     x #< x'
       #|| ( x #== x'
               #&& ( unTermCont $ do
-                      y <- tcont . plet . pfromData $ hrecField @"y" a
-                      y' <- tcont . plet . pfromData $ hrecField @"y" b
-                      pure $ y #< y' #|| (y #== y' #&& pfromData (hrecField @"z" a) #< pfromData (hrecField @"z" b))
+                      y <- tcont . plet . pfromData $ getField @"y" a
+                      y' <- tcont . plet . pfromData $ getField @"y" b
+                      pure $ y #< y' #|| (y #== y' #&& pfromData (getField @"z" a) #< pfromData (getField @"z" b))
                   )
           )
 
@@ -225,15 +223,15 @@ lteTrip trip1 trip2 = unTermCont $ do
   a <- tcont $ pletFields @'["x", "y", "z"] trip1
   b <- tcont $ pletFields @'["x", "y", "z"] trip2
 
-  x <- tcont . plet . pfromData $ hrecField @"x" a
-  x' <- tcont . plet . pfromData $ hrecField @"x" b
+  x <- tcont . plet . pfromData $ getField @"x" a
+  x' <- tcont . plet . pfromData $ getField @"x" b
   pure $
     x #< x'
       #|| ( x #== x'
               #&& ( unTermCont $ do
-                      y <- tcont . plet . pfromData $ hrecField @"y" a
-                      y' <- tcont . plet . pfromData $ hrecField @"y" b
-                      pure $ y #< y' #|| (y #== y' #&& pfromData (hrecField @"z" a) #<= pfromData (hrecField @"z" b))
+                      y <- tcont . plet . pfromData $ getField @"y" a
+                      y' <- tcont . plet . pfromData $ getField @"y" b
+                      pure $ y #< y' #|| (y #== y' #&& pfromData (getField @"z" a) #<= pfromData (getField @"z" b))
                   )
           )
 
