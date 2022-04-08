@@ -7,7 +7,7 @@ import Plutarch (PlutusType (PInner, pcon', pmatch'), Term, pcon)
 import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
-  PConstant,
+  PConstantDecl,
   PLifted,
   PUnsafeLiftDecl,
   pconstant,
@@ -17,7 +17,7 @@ import Plutarch.Show (PShow (pshow'))
 data PUnit s = PUnit
 
 instance PUnsafeLiftDecl PUnit where type PLifted PUnit = ()
-deriving via (DerivePConstantDirect () PUnit) instance (PConstant ())
+deriving via (DerivePConstantDirect () PUnit) instance PConstantDecl ()
 
 instance PlutusType PUnit where
   type PInner PUnit _ = PUnit

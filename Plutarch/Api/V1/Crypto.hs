@@ -9,6 +9,7 @@ import qualified Plutus.V1.Ledger.Api as Plutus
 
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
+  PConstantDecl,
   PLifted,
   PUnsafeLiftDecl,
  )
@@ -21,4 +22,4 @@ instance PUnsafeLiftDecl PPubKeyHash where type PLifted PPubKeyHash = Plutus.Pub
 deriving via
   (DerivePConstantViaBuiltin Plutus.PubKeyHash PPubKeyHash PByteString)
   instance
-    (PConstant Plutus.PubKeyHash)
+    PConstantDecl Plutus.PubKeyHash

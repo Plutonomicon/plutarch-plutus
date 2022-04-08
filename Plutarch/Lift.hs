@@ -19,19 +19,19 @@ module Plutarch.Lift (
   LiftError,
 
   -- * Define your own conversion
-  PConstant (..),
+  PConstantDecl (..),
   PLift,
+  PConstant,
   DerivePConstantDirect (..),
   DerivePConstantViaNewtype (..),
   DerivePConstantViaBuiltin (..),
-  PConstantable,
 
   -- * Internal use
   PUnsafeLiftDecl (..),
 ) where
 
 import Control.Lens ((^?))
-import Data.Coerce
+import Data.Coerce (Coercible, coerce)
 import Data.Kind (Constraint, Type)
 import GHC.Stack (HasCallStack)
 import Plutarch.Evaluate (EvalError, evalScript)
@@ -49,7 +49,7 @@ Laws:
  - It must be that @PConstantRepr (PLifted p)@ when encoded as a constant
    in UPLC (via the 'UntypedPlutusCore.Constant' constructor) is a valid @p@.
 -}
-class (PConstant (PLifted p), PConstanted (PLifted p) ~ p) => PUnsafeLiftDecl (p :: PType) where
+class (PConstantDecl (PLifted p), PConstanted (PLifted p) ~ p) => PUnsafeLiftDecl (p :: PType) where
   type PLifted p = (r :: Type) | r -> p
 
 {- | Class of Haskell types `h` that can be represented as a Plutus core builtin
@@ -67,7 +67,12 @@ Laws:
 
 These laws must be upheld for the sake of soundness of the type system.
 -}
-class (PUnsafeLiftDecl (PConstanted h), PLC.DefaultUni `PLC.Includes` PConstantRepr h) => PConstant (h :: Type) where
+class
+  ( PUnsafeLiftDecl (PConstanted h)
+  , PLC.DefaultUni `PLC.Includes` PConstantRepr h
+  ) =>
+  PConstantDecl (h :: Type)
+  where
   type PConstantRepr h :: Type
   type PConstanted h :: PType
   pconstantToRepr :: h -> PConstantRepr h
@@ -80,7 +85,7 @@ The Haskell type is determined by `PLifted p`.
 This typeclass is closely tied with 'PConstant'.
 -}
 type PLift :: PType -> Constraint
-type PLift p = (p ~ PConstanted (PLifted p), PUnsafeLiftDecl p)
+type PLift p = PUnsafeLiftDecl p
 
 {- | Create a Plutarch-level constant, from a Haskell value.
 Example:
@@ -132,7 +137,7 @@ newtype DerivePConstantDirect (h :: Type) (p :: PType) = DerivePConstantDirect h
 
 instance
   (PLift p, PLC.DefaultUni `PLC.Includes` h) =>
-  PConstant (DerivePConstantDirect h p)
+  PConstantDecl (DerivePConstantDirect h p)
   where
   type PConstantRepr (DerivePConstantDirect h p) = h
   type PConstanted (DerivePConstantDirect h p) = p
@@ -161,8 +166,8 @@ Polymorphic types can be derived as follows:
 >      (PConstanted a)
 >  )
 >  instance
->    PConstantable a =>
->    PConstant (Foo a)
+>    PConstant a =>
+>    PConstantDecl (Foo a)
 -}
 newtype
   DerivePConstantViaNewtype
@@ -185,10 +190,10 @@ These constraints are sufficient to derive a @PConstant@ instance for the newtyp
 For deriving @PConstant@ for a wrapped type represented in UPLC as @Data@, see
 @DerivePConstantViaData@.
 -}
-type PConstantable :: Type -> Constraint
-type PConstantable a = (a ~ PLifted (PConstanted a), PConstant a)
+type PConstant :: Type -> Constraint
+type PConstant a = (a ~ PLifted (PConstanted a), PConstantDecl a)
 
-instance (PLift p, PLift p', Coercible h (PLifted p')) => PConstant (DerivePConstantViaNewtype h p p') where
+instance (PLift p, PLift p', Coercible h (PLifted p')) => PConstantDecl (DerivePConstantViaNewtype h p p') where
   type PConstantRepr (DerivePConstantViaNewtype h p p') = PConstantRepr (PLifted p')
   type PConstanted (DerivePConstantViaNewtype h p p') = p
   pconstantToRepr x = pconstantToRepr @(PLifted p') $ coerce x
@@ -214,7 +219,15 @@ instance FromBuiltin' BuiltinData Data where
 
 newtype DerivePConstantViaBuiltin (h :: Type) (p :: PType) (p' :: PType) = DerivePConstantViaBuiltin h
 
-instance (PLift p, PLift p', Coercible h h', ToBuiltin' (PLifted p') h', FromBuiltin' h' (PLifted p')) => PConstant (DerivePConstantViaBuiltin h p p') where
+instance
+  ( PLift p
+  , PLift p'
+  , Coercible h h'
+  , ToBuiltin' (PLifted p') h'
+  , FromBuiltin' h' (PLifted p')
+  ) =>
+  PConstantDecl (DerivePConstantViaBuiltin h p p')
+  where
   type PConstantRepr (DerivePConstantViaBuiltin h p p') = PConstantRepr (PLifted p')
   type PConstanted (DerivePConstantViaBuiltin h p p') = p
   pconstantToRepr x = pconstantToRepr @(PLifted p') $ fromBuiltin' (coerce x :: h')

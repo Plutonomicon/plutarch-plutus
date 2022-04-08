@@ -15,8 +15,8 @@ module Plutarch.DataRepr (
   I.pdropDataRecord,
   I.DerivePConstantViaData (DerivePConstantViaData),
   I.pasDataSum,
-  I.PConstantableData,
-  I.PLiftableData,
+  I.PConstantData,
+  I.PLiftData,
 
   -- * Fields
   F.PDataFields (ptoFields, type PFields),

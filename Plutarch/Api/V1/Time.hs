@@ -11,6 +11,7 @@ import qualified Plutus.V1.Ledger.Api as Plutus
 import Plutarch.Api.V1.Interval (PInterval)
 import Plutarch.Lift (
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
+  PConstantDecl,
   PLifted,
   PUnsafeLiftDecl,
  )
@@ -24,6 +25,6 @@ instance PUnsafeLiftDecl PPOSIXTime where type PLifted PPOSIXTime = Plutus.POSIX
 deriving via
   (DerivePConstantViaNewtype Plutus.POSIXTime PPOSIXTime PInteger)
   instance
-    (PConstant Plutus.POSIXTime)
+    PConstantDecl Plutus.POSIXTime
 
 type PPOSIXTimeRange = PInterval PPOSIXTime

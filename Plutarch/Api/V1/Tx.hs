@@ -23,6 +23,7 @@ import Plutarch.DataRepr (
   PIsDataReprInstances (PIsDataReprInstances),
  )
 import Plutarch.Lift (
+  PConstantDecl,
   PLifted,
   PUnsafeLiftDecl,
  )
@@ -38,7 +39,7 @@ newtype PTxId (s :: S)
     via PIsDataReprInstances PTxId
 
 instance PUnsafeLiftDecl PTxId where type PLifted PTxId = Plutus.TxId
-deriving via (DerivePConstantViaData Plutus.TxId PTxId) instance (PConstant Plutus.TxId)
+deriving via (DerivePConstantViaData Plutus.TxId PTxId) instance PConstantDecl Plutus.TxId
 
 newtype PTxOutRef (s :: S)
   = PTxOutRef
@@ -58,7 +59,7 @@ newtype PTxOutRef (s :: S)
     via PIsDataReprInstances PTxOutRef
 
 instance PUnsafeLiftDecl PTxOutRef where type PLifted PTxOutRef = Plutus.TxOutRef
-deriving via (DerivePConstantViaData Plutus.TxOutRef PTxOutRef) instance (PConstant Plutus.TxOutRef)
+deriving via (DerivePConstantViaData Plutus.TxOutRef PTxOutRef) instance PConstantDecl Plutus.TxOutRef
 
 newtype PTxInInfo (s :: S)
   = PTxInInfo
@@ -78,7 +79,7 @@ newtype PTxInInfo (s :: S)
     via PIsDataReprInstances PTxInInfo
 
 instance PUnsafeLiftDecl PTxInInfo where type PLifted PTxInInfo = Plutus.TxInInfo
-deriving via (DerivePConstantViaData Plutus.TxInInfo PTxInInfo) instance (PConstant Plutus.TxInInfo)
+deriving via (DerivePConstantViaData Plutus.TxInInfo PTxInInfo) instance PConstantDecl Plutus.TxInInfo
 
 newtype PTxOut (s :: S)
   = PTxOut
@@ -99,4 +100,4 @@ newtype PTxOut (s :: S)
     via (PIsDataReprInstances PTxOut)
 
 instance PUnsafeLiftDecl PTxOut where type PLifted PTxOut = Plutus.TxOut
-deriving via (DerivePConstantViaData Plutus.TxOut PTxOut) instance (PConstant Plutus.TxOut)
+deriving via (DerivePConstantViaData Plutus.TxOut PTxOut) instance PConstantDecl Plutus.TxOut

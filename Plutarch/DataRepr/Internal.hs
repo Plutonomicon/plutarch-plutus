@@ -1,7 +1,7 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# OPTIONS_GHC -Wno-orphans -Wno-redundant-constraints #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.DataRepr.Internal (
   PDataSum,
@@ -11,9 +11,9 @@ module Plutarch.DataRepr.Internal (
   pdcons,
   pdnil,
   DataReprHandlers (..),
-  PConstantableData,
+  PConstantData,
   PDataRecord (..),
-  PLiftableData,
+  PLiftData,
   PLabeledType (..),
   type PLabelIndex,
   type PUnLabel,
@@ -96,8 +96,8 @@ import Plutarch.Internal (S (SI))
 import Plutarch.Internal.Generic (MkSum (mkSum), PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Lift (
   PConstant,
+  PConstantDecl,
   PConstantRepr,
-  PConstantable,
   PConstanted,
   PLift,
   PLifted,
@@ -522,7 +522,7 @@ Polymorphic types can be derived as follows:
 >
 >instance
 >  forall a.
->  PLiftableData a =>
+>  PLiftData a =>
 >  PUnsafeLiftDecl (PBar a)
 >  where
 >  type PLifted (PBar a) = Bar (PLifted a)
@@ -533,18 +533,18 @@ Polymorphic types can be derived as follows:
 >      (PBar (PConstanted a))
 >  )
 >  instance
->    PConstantableData a =>
->    PConstant (Bar a)
+>    PConstantData a =>
+>    PConstantDecl (Bar a)
 -}
-type PConstantableData :: Type -> Constraint
-type PConstantableData h =
-  ( PConstantable h
+type PConstantData :: Type -> Constraint
+type PConstantData h =
+  ( PConstant h
   , Ledger.FromData (h)
   , Ledger.ToData (h)
   )
 
-type PLiftableData :: PType -> Constraint
-type PLiftableData p =
+type PLiftData :: PType -> Constraint
+type PLiftData p =
   ( PLift p
   , Ledger.FromData (PLifted p)
   , Ledger.ToData (PLifted p)
@@ -571,7 +571,14 @@ instance (PIsDataRepr a, All (Compose POrd PDataRecord) (PIsDataReprRepr a)) => 
   x #< y = pto x #< pto y
   x #<= y = pto x #<= pto y
 
-instance (PIsDataRepr p, PLift p, Ledger.FromData h, Ledger.ToData h) => PConstant (DerivePConstantViaData h p) where
+instance
+  ( PIsDataRepr p
+  , PLift p
+  , Ledger.FromData h
+  , Ledger.ToData h
+  ) =>
+  PConstantDecl (DerivePConstantViaData h p)
+  where
   type PConstantRepr (DerivePConstantViaData h p) = Ledger.Data
   type PConstanted (DerivePConstantViaData h p) = p
   pconstantToRepr (DerivePConstantViaData x) = Ledger.toData x

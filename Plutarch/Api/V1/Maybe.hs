@@ -7,7 +7,6 @@ module Plutarch.Api.V1.Maybe (
 
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic, I (I))
-import qualified PlutusTx
 
 import Plutarch.Builtin (pasConstr, pforgetData)
 import Plutarch.DataRepr.Internal (
@@ -17,7 +16,7 @@ import Plutarch.DataRepr.Internal (
  )
 import Plutarch.DataRepr.Internal.HList.Utils (IndexList)
 import Plutarch.Lift (
-  PConstant (PConstanted),
+  PConstantDecl (PConstanted),
   PUnsafeLiftDecl (..),
  )
 import Plutarch.Prelude
@@ -34,23 +33,13 @@ data PMaybeData a (s :: S)
     (PlutusType, PIsData, PEq)
     via PIsDataReprInstances (PMaybeData a)
 
-instance
-  ( PConstanted (PLifted a) ~ a
-  , PlutusTx.FromData (PLifted a)
-  , PlutusTx.ToData (PLifted a)
-  ) =>
-  PUnsafeLiftDecl (PMaybeData a)
-  where
+instance PLiftData a => PUnsafeLiftDecl (PMaybeData a) where
   type PLifted (PMaybeData a) = Maybe (PLifted a)
 
 deriving via
   (DerivePConstantViaData (Maybe a) (PMaybeData (PConstanted a)))
   instance
-    ( PlutusTx.FromData a
-    , PlutusTx.ToData a
-    , PLifted (PConstanted a) ~ a
-    ) =>
-    PConstant (Maybe a)
+    PConstantData a => PConstantDecl (Maybe a)
 
 -- Have to manually write this instance because the constructor id ordering is screwed for 'Maybe'....
 instance (PIsData a, POrd a) => POrd (PMaybeData a) where
