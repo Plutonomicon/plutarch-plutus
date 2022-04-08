@@ -1,0 +1,4 @@
+eq.true.nothing {"exBudgetCPU":684879,"exBudgetMemory":2400,"scriptSizeBytes":34}
+eq.true.just {"exBudgetCPU":1001385,"exBudgetMemory":3001,"scriptSizeBytes":38}
+eq.false.nothing-just {"exBudgetCPU":714652,"exBudgetMemory":2500,"scriptSizeBytes":36}
+eq.false.just-just {"exBudgetCPU":1001385,"exBudgetMemory":3001,"scriptSizeBytes":38}

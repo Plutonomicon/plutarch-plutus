@@ -34,7 +34,7 @@ newtype PTxId (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PlutusType, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields, PEq, POrd)
     via PIsDataReprInstances PTxId
 
 instance PUnsafeLiftDecl PTxId where type PLifted PTxId = Plutus.TxId
@@ -55,7 +55,7 @@ newtype PTxOutRef (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PlutusType, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields, PEq, POrd)
     via PIsDataReprInstances PTxOutRef
 
 instance PUnsafeLiftDecl PTxOutRef where type PLifted PTxOutRef = Plutus.TxOutRef
@@ -76,7 +76,7 @@ newtype PTxInInfo (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PlutusType, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields, PEq)
     via PIsDataReprInstances PTxInInfo
 
 instance PUnsafeLiftDecl PTxInInfo where type PLifted PTxInInfo = Plutus.TxInInfo
@@ -98,7 +98,7 @@ newtype PTxOut (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PlutusType, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields, PEq)
     via (PIsDataReprInstances PTxOut)
 
 instance PUnsafeLiftDecl PTxOut where type PLifted PTxOut = Plutus.TxOut

@@ -3,15 +3,12 @@
 
   inputs.haskell-nix.url = "github:L-as/haskell.nix?ref=master";
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
-  inputs.flake-compat-ci.url = "github:hercules-ci/flake-compat-ci";
   inputs.hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
-  inputs.flake-compat = {
-    url = "github:edolstra/flake-compat";
-    flake = false;
-  };
 
-  # https://github.com/input-output-hk/plutus/pull/4328
-  inputs.plutus.url = "github:L-as/plutus?ref=master";
+  inputs.iohk-nix.url = "github:input-output-hk/iohk-nix";
+  inputs.iohk-nix.flake = false;
+  # we use sphinxcontrib-haddock input
+  inputs.plutus.url = "github:L-as/plutus?ref=ghc9";
   # https://github.com/input-output-hk/cardano-prelude/pull/162
   inputs.cardano-prelude.url = "github:locallycompact/cardano-prelude?rev=93f95047bb36a055bdd56fb0cafd887c072cdce2";
   inputs.cardano-prelude.flake = false;
@@ -22,9 +19,6 @@
   # https://github.com/Quid2/flat/pull/27
   inputs.flat.url = "github:Quid2/flat?rev=41a040c413351e021982bb78bd00f750628f8060";
   inputs.flat.flake = false;
-  # https://github.com/input-output-hk/Win32-network/pull/10
-  inputs.Win32-network.url = "github:input-output-hk/Win32-network?rev=2d1a01c7cbb9f68a1aefe2934aad6c70644ebfea";
-  inputs.Win32-network.flake = false;
   # https://github.com/haskell-foundation/foundation/pull/555
   inputs.foundation.url = "github:haskell-foundation/foundation?rev=0bb195e1fea06d144dafc5af9a0ff79af0a5f4a0";
   inputs.foundation.flake = false;
@@ -48,17 +42,18 @@
   inputs.haskell-language-server.url = "github:haskell/haskell-language-server";
   inputs.haskell-language-server.flake = false;
 
-  # These use the PRs from https://github.com/NorfairKing/sydtest/issues/35
-  inputs.sydtest.url = "github:srid/sydtest/ghc921";
-  inputs.sydtest.flake = false;
-  inputs.validity.url = "github:srid/validity/ghc921";
-  inputs.validity.flake = false;
-  inputs.safe-coloured-text.url = "github:srid/safe-coloured-text/ghc921";
-  inputs.safe-coloured-text.flake = false;
-  inputs.autodocodec.url = "github:srid/autodocodec/ghc921";
-  inputs.autodocodec.flake = false;
+  # https://github.com/hspec/hspec/pull/648
+  inputs.hspec.url = "github:srid/hspec/askAncestors";
+  inputs.hspec.flake = false;
+  # Overriding hspec (above) necessitates overriding these for some reason.
+  inputs.hspec-hedgehog.url = "github:parsonsmatt/hspec-hedgehog";
+  inputs.hspec-hedgehog.flake = false;
+  inputs.hspec-golden.url = "github:stackbuilders/hspec-golden";
+  inputs.hspec-golden.flake = false;
 
-  outputs = inputs@{ self, nixpkgs, haskell-nix, plutus, flake-compat, flake-compat-ci, hercules-ci-effects, ... }:
+  inputs.emanote.url = "github:srid/emanote/master";
+
+  outputs = inputs@{ self, nixpkgs, iohk-nix, haskell-nix, plutus, hercules-ci-effects, ... }:
     let
       extraSources = [
         {
@@ -120,27 +115,21 @@
           ];
         }
         {
-          src = inputs.sydtest;
+          src = inputs.hspec;
           subdirs = [
-            "sydtest"
-            "sydtest-discover"
-            "sydtest-aeson"
+            "."
+            "hspec-core"
+            "hspec-contrib"
+            "hspec-discover"
           ];
         }
         {
-          src = inputs.validity;
-          subdirs = [
-            "validity"
-            "validity-aeson"
-          ];
+          src = inputs.hspec-hedgehog;
+          subdirs = [ "." ];
         }
         {
-          src = inputs.autodocodec;
-          subdirs = [
-            "autodocodec"
-            "autodocodec-schema"
-            "autodocodec-yaml"
-          ];
+          src = inputs.hspec-golden;
+          subdirs = [ "." ];
         }
       ];
 
@@ -148,59 +137,65 @@
 
       perSystem = nixpkgs.lib.genAttrs supportedSystems;
 
-      nixpkgsFor = system: import nixpkgs { inherit system; overlays = [ haskell-nix.overlay ]; inherit (haskell-nix) config; };
-      nixpkgsFor' = system: import nixpkgs { inherit system; inherit (haskell-nix) config; };
+      nixpkgsFor = system: import nixpkgs {
+        inherit system;
+        overlays = [ haskell-nix.overlay (import "${iohk-nix}/overlays/crypto") ];
+        inherit (haskell-nix) config;
+      };
+      nixpkgsFor' = system: import nixpkgs { inherit system; };
 
       ghcVersion = "ghc921";
 
+      # https://github.com/input-output-hk/haskell.nix/issues/1177
+      nonReinstallablePkgs = [
+        "rts"
+        "ghc-heap"
+        "ghc-prim"
+        "integer-gmp"
+        "integer-simple"
+        "base"
+        "deepseq"
+        "array"
+        "ghc-boot-th"
+        "pretty"
+        "template-haskell"
+        # ghcjs custom packages
+        "ghcjs-prim"
+        "ghcjs-th"
+        "ghc-bignum"
+        "exceptions"
+        "stm"
+        "ghc-boot"
+        "ghc"
+        "Cabal"
+        "Win32"
+        "array"
+        "binary"
+        "bytestring"
+        "containers"
+        "directory"
+        "filepath"
+        "ghc-boot"
+        "ghc-compact"
+        "ghc-prim"
+        # "ghci" "haskeline"
+        "hpc"
+        "mtl"
+        "parsec"
+        "process"
+        "text"
+        "time"
+        "transformers"
+        "unix"
+        "xhtml"
+        "terminfo"
+      ];
+
       tools.fourmolu = { };
       tools.haskell-language-server = {
-        modules = [{
-          # https://github.com/input-output-hk/haskell.nix/issues/1177
-          nonReinstallablePkgs = [
-            "rts"
-            "ghc-heap"
-            "ghc-prim"
-            "integer-gmp"
-            "integer-simple"
-            "base"
-            "deepseq"
-            "array"
-            "ghc-boot-th"
-            "pretty"
-            "template-haskell"
-            # ghcjs custom packages
-            "ghcjs-prim"
-            "ghcjs-th"
-            "ghc-bignum"
-            "exceptions"
-            "stm"
-            "ghc-boot"
-            "ghc"
-            "Cabal"
-            "Win32"
-            "array"
-            "binary"
-            "bytestring"
-            "containers"
-            "directory"
-            "filepath"
-            "ghc-boot"
-            "ghc-compact"
-            "ghc-prim"
-            # "ghci" "haskeline"
-            "hpc"
-            "mtl"
-            "parsec"
-            "process"
-            "text"
-            "time"
-            "transformers"
-            "unix"
-            "xhtml"
-            "terminfo"
-          ];
-        }];
+        modules = [
+          { inherit nonReinstallablePkgs; }
+        ];
         compiler-nix-name = ghcVersion;
         # For some reason it doesn't use the latest version automatically.
         index-state =
@@ -215,13 +210,13 @@
             primitive-unlifted < 1.0.0.0
 
           package haskell-language-server
-            flags: +use-ghc-stub +pedantic +ignore-plugins-ghc-bounds -alternateNumberFormat -brittany -callhierarchy -class -eval -floskell -fourmolu -haddockComments -hlint -importLens -ormolu -refineImports -retrie -splice -stylishhaskell -tactic -importLens
-
+            flags: +use-ghc-stub +pedantic +ignore-plugins-ghc-bounds -alternateNumberFormat -brittany -class -eval -haddockComments -hlint -retrie -splice -stylishhaskell -tactic
         '';
         src = "${inputs.haskell-language-server}";
       };
 
       haskellModule = system: {
+        inherit nonReinstallablePkgs; # Needed only so we can use hspec; https://github.com/Plutonomicon/plutarch/issues/409
         packages = {
           basement.src = "${inputs.foundation}/basement";
           basement.components.library.postUnpack = "\n";
@@ -229,12 +224,12 @@
           cardano-binary.ghcOptions = [ "-Wwarn" ];
           cardano-binary.src = "${inputs.cardano-base}/binary";
           cardano-binary.components.library.postUnpack = "\n";
-          cardano-crypto-class.components.library.pkgconfig = nixpkgs.lib.mkForce [ [ (import plutus { inherit system; }).pkgs.libsodium-vrf ] ];
+          cardano-crypto-class.components.library.pkgconfig = nixpkgs.lib.mkForce [ [ (nixpkgsFor system).libsodium-vrf ] ];
           cardano-crypto-class.doHaddock = false;
           cardano-crypto-class.ghcOptions = [ "-Wwarn" ];
           cardano-crypto-class.src = "${inputs.cardano-base}/cardano-crypto-class";
           cardano-crypto-class.components.library.postUnpack = "\n";
-          cardano-crypto-praos.components.library.pkgconfig = nixpkgs.lib.mkForce [ [ (import plutus { inherit system; }).pkgs.libsodium-vrf ] ];
+          cardano-crypto-praos.components.library.pkgconfig = nixpkgs.lib.mkForce [ [ (nixpkgsFor system).libsodium-vrf ] ];
           cardano-crypto.src = "${inputs.cardano-crypto}";
           cardano-crypto.components.library.postUnpack = "\n";
           cardano-prelude.doHaddock = false; # somehow above options are not applied?
@@ -249,8 +244,8 @@
           foundation.components.library.postUnpack = "\n";
           memory.src = "${inputs.hs-memory}";
           memory.components.library.postUnpack = "\n";
-          plutus-core.src = "${inputs.plutus}/plutus-core";
-          plutus-core.components.library.postUnpack = "\n";
+          #plutus-core.src = "${inputs.plutus}/plutus-core";
+          #plutus-core.components.library.postUnpack = "\n";
           plutus-tx.src = "${inputs.plutus}/plutus-tx";
           plutus-tx.components.library.postUnpack = "\n";
           plutus-ledger-api.src = "${inputs.plutus}/plutus-ledger-api";
@@ -265,9 +260,6 @@
       };
 
       cabalProjectLocal = ''
-        package plutus-tx-plugin
-          flags: +use-ghc-stub
-
         allow-newer:
           cardano-binary:base
           , cardano-crypto-class:base
@@ -287,202 +279,199 @@
           , size-based:template-haskell
 
         constraints:
-          OneTuple ^>= 0.3.1
-          , Only ^>= 0.1
-          , QuickCheck ^>= 2.14.2
-          , StateVar ^>= 1.2.2
-          , Stream ^>= 0.4.7.2
-          , adjunctions ^>= 4.4
-          , aeson ^>= 2.0.3.0
-          , algebraic-graphs ^>= 0.6
-          , ansi-terminal ^>= 0.11.1
-          , ansi-wl-pprint ^>= 0.6.9
-          , assoc ^>= 1.0.2
-          , async ^>= 2.2.4
-          , attoparsec ^>= 0.14.4
-          , barbies ^>= 2.0.3.1
-          , base-compat ^>= 0.12.1
-          , base-compat-batteries ^>= 0.12.1
-          , base-orphans ^>= 0.8.6
-          , base16-bytestring ^>= 1.0.2.0
-          , basement ^>= 0.0.12
-          , bifunctors ^>= 5.5.11
-          , bimap ^>= 0.4.0
-          , bin ^>= 0.1.2
-          , boring ^>= 0.2
-          , boxes ^>= 0.1.5
-          , cabal-doctest ^>= 1.0.9
-          , call-stack ^>= 0.4.0
-          , canonical-json ^>= 0.6.0.0
-          , cardano-binary ^>= 1.5.0
-          , cardano-crypto ^>= 1.1.0
-          , cardano-crypto-class ^>= 2.0.0
-          , cardano-prelude ^>= 0.1.0.0
-          , case-insensitive ^>= 1.2.1.0
-          , cassava ^>= 0.5.2.0
-          , cborg ^>= 0.2.6.0
-          , clock ^>= 0.8.2
-          , colour ^>= 2.3.6
-          , comonad ^>= 5.0.8
-          , composition-prelude ^>= 3.0.0.2
-          , concurrent-output ^>= 1.10.14
-          , constraints ^>= 0.13.2
-          , constraints-extras ^>= 0.3.2.1
-          , contravariant ^>= 1.5.5
-          , cryptonite ^>= 0.29
-          , data-default ^>= 0.7.1.1
-          , data-default-class ^>= 0.1.2.0
-          , data-default-instances-containers ^>= 0.0.1
-          , data-default-instances-dlist ^>= 0.0.1
-          , data-default-instances-old-locale ^>= 0.0.1
-          , data-fix ^>= 0.3.2
-          , dec ^>= 0.0.4
-          , dependent-map ^>= 0.4.0.0
-          , dependent-sum ^>= 0.7.1.0
-          , dependent-sum-template ^>= 0.1.1.1
-          , deriving-aeson ^>= 0.2.8
-          , deriving-compat ^>= 0.6
-          , dictionary-sharing ^>= 0.1.0.0
-          , distributive ^>= 0.6.2.1
-          , dlist ^>= 1.0
-          , dom-lt ^>= 0.2.3
-          , double-conversion ^>= 2.0.2.0
-          , erf ^>= 2.0.0.0
-          , exceptions ^>= 0.10.4
-          , extra ^>= 1.7.10
-          , fin ^>= 0.2.1
-          , flat ^>= 0.4.5
-          , foldl ^>= 1.4.12
-          , formatting ^>= 7.1.3
-          , foundation ^>= 0.0.26.1
-          , free ^>= 5.1.7
-          , half ^>= 0.3.1
-          , hashable ^>= 1.4.0.2
-          , haskell-lexer ^>= 1.1
-          , hedgehog ^>= 1.0.5
-          , indexed-traversable ^>= 0.1.2
-          , indexed-traversable-instances ^>= 0.1.1
-          , integer-logarithms ^>= 1.0.3.1
-          , invariant ^>= 0.5.5
-          , kan-extensions ^>= 5.2.3
-          , lazy-search ^>= 0.1.2.1
-          , lazysmallcheck ^>= 0.6
-          , lens ^>= 5.1
-          , lifted-async ^>= 0.10.2.2
-          , lifted-base ^>= 0.2.3.12
-          , list-t ^>= 1.0.5.1
-          , logict ^>= 0.7.0.3
-          , megaparsec ^>= 9.2.0
-          , memory ^>= 0.16.0
-          , microlens ^>= 0.4.12.0
-          , mmorph ^>= 1.2.0
-          , monad-control ^>= 1.0.3.1
-          , mono-traversable ^>= 1.0.15.3
-          , monoidal-containers ^>= 0.6.2.0
-          , mtl-compat ^>= 0.2.2
-          , newtype ^>= 0.2.2.0
-          , newtype-generics ^>= 0.6.1
-          , nothunks ^>= 0.1.3
-          , old-locale ^>= 1.0.0.7
-          , old-time ^>= 1.1.0.3
-          , optparse-applicative ^>= 0.16.1.0
-          , parallel ^>= 3.2.2.0
-          , parser-combinators ^>= 1.3.0
-          , plutus-core ^>= 0.1.0.0
-          , plutus-ledger-api ^>= 0.1.0.0
-          , plutus-tx ^>= 0.1.0.0
-          , pretty-show ^>= 1.10
-          , prettyprinter ^>= 1.7.1
-          , prettyprinter-configurable ^>= 0.1.0.0
-          , primitive ^>= 0.7.3.0
-          , profunctors ^>= 5.6.2
-          , protolude ^>= 0.3.0
-          , quickcheck-instances ^>= 0.3.27
-          , ral ^>= 0.2.1
-          , random ^>= 1.2.1
-          , rank2classes ^>= 1.4.4
-          , recursion-schemes ^>= 5.2.2.2
-          , reflection ^>= 2.1.6
-          , resourcet ^>= 1.2.4.3
-          , safe ^>= 0.3.19
-          , safe-exceptions ^>= 0.1.7.2
-          , scientific ^>= 0.3.7.0
-          , semialign ^>= 1.2.0.1
-          , semigroupoids ^>= 5.3.7
-          , semigroups ^>= 0.20
-          , serialise ^>= 0.2.4.0
-          , size-based ^>= 0.1.2.0
-          , some ^>= 1.0.3
-          , split ^>= 0.2.3.4
-          , splitmix ^>= 0.1.0.4
-          , stm ^>= 2.5.0.0
-          , strict ^>= 0.4.0.1
-          , syb ^>= 0.7.2.1
-          , tagged ^>= 0.8.6.1
-          , tasty ^>= 1.4.2.1
-          , tasty-golden ^>= 2.3.5
-          , tasty-hedgehog ^>= 1.1.0.0
-          , tasty-hunit ^>= 0.10.0.3
-          , temporary ^>= 1.3
-          , terminal-size ^>= 0.3.2.1
-          , testing-type-modifiers ^>= 0.1.0.1
-          , text-short ^>= 0.1.5
-          , th-abstraction ^>= 0.4.3.0
-          , th-compat ^>= 0.1.3
-          , th-expand-syns ^>= 0.4.9.0
-          , th-extras ^>= 0.0.0.6
-          , th-lift ^>= 0.8.2
-          , th-lift-instances ^>= 0.1.19
-          , th-orphans ^>= 0.13.12
-          , th-reify-many ^>= 0.1.10
-          , th-utilities ^>= 0.2.4.3
-          , these ^>= 1.1.1.1
-          , time-compat ^>= 1.9.6.1
-          , transformers-base ^>= 0.4.6
-          , transformers-compat ^>= 0.7.1
-          , type-equality ^>= 1
-          , typed-process ^>= 0.2.8.0
-          , unbounded-delays ^>= 0.1.1.1
-          , universe-base ^>= 1.1.3
-          , unliftio-core ^>= 0.2.0.1
-          , unordered-containers ^>= 0.2.16.0
-          , uuid-types ^>= 1.0.5
-          , vector ^>= 0.12.3.1
-          , vector-algorithms ^>= 0.8.0.4
-          , void ^>= 0.7.3
-          , wcwidth ^>= 0.0.2
-          , witherable ^>= 0.4.2
-          , wl-pprint-annotated ^>= 0.1.0.1
-          , word-array ^>= 0.1.0.0
+          OneTuple >= 0.3.1
+          , Only >= 0.1
+          , QuickCheck >= 2.14.2
+          , StateVar >= 1.2.2
+          , Stream >= 0.4.7.2
+          , adjunctions >= 4.4
+          , aeson >= 2.0.3.0
+          , algebraic-graphs >= 0.6
+          , ansi-terminal >= 0.11.1
+          , ansi-wl-pprint >= 0.6.9
+          , assoc >= 1.0.2
+          , async >= 2.2.4
+          , attoparsec >= 0.14.4
+          , barbies >= 2.0.3.1
+          , base-compat >= 0.12.1
+          , base-compat-batteries >= 0.12.1
+          , base-orphans >= 0.8.6
+          , base16-bytestring >= 1.0.2.0
+          , basement >= 0.0.12
+          , bifunctors >= 5.5.11
+          , bimap >= 0.4.0
+          , bin >= 0.1.2
+          , boring >= 0.2
+          , boxes >= 0.1.5
+          , cabal-doctest >= 1.0.9
+          , call-stack >= 0.4.0
+          , canonical-json >= 0.6.0.0
+          , cardano-binary >= 1.5.0
+          , cardano-crypto >= 1.1.0
+          , cardano-crypto-class >= 2.0.0
+          , cardano-prelude >= 0.1.0.0
+          , case-insensitive >= 1.2.1.0
+          , cassava >= 0.5.2.0
+          , cborg >= 0.2.6.0
+          , clock >= 0.8.2
+          , colour >= 2.3.6
+          , comonad >= 5.0.8
+          , composition-prelude >= 3.0.0.2
+          , concurrent-output >= 1.10.14
+          , constraints >= 0.13.2
+          , constraints-extras >= 0.3.2.1
+          , contravariant >= 1.5.5
+          , cryptonite >= 0.29
+          , data-default >= 0.7.1.1
+          , data-default-class >= 0.1.2.0
+          , data-default-instances-containers >= 0.0.1
+          , data-default-instances-dlist >= 0.0.1
+          , data-default-instances-old-locale >= 0.0.1
+          , data-fix >= 0.3.2
+          , dec >= 0.0.4
+          , dependent-map >= 0.4.0.0
+          , dependent-sum >= 0.7.1.0
+          , dependent-sum-template >= 0.1.1.1
+          , deriving-aeson >= 0.2.8
+          , deriving-compat >= 0.6
+          , dictionary-sharing >= 0.1.0.0
+          , distributive >= 0.6.2.1
+          , dlist >= 1.0
+          , dom-lt >= 0.2.3
+          , double-conversion >= 2.0.2.0
+          , erf >= 2.0.0.0
+          , exceptions >= 0.10.4
+          , extra >= 1.7.10
+          , fin >= 0.2.1
+          , flat >= 0.4.5
+          , foldl >= 1.4.12
+          , formatting >= 7.1.3
+          , foundation >= 0.0.26.1
+          , free >= 5.1.7
+          , half >= 0.3.1
+          , hashable >= 1.4.0.2
+          , haskell-lexer >= 1.1
+          , hedgehog >= 1.0.5
+          , indexed-traversable >= 0.1.2
+          , indexed-traversable-instances >= 0.1.1
+          , integer-logarithms >= 1.0.3.1
+          , invariant >= 0.5.5
+          , kan-extensions >= 5.2.3
+          , lazy-search >= 0.1.2.1
+          , lazysmallcheck >= 0.6
+          , lens >= 5.1
+          , lifted-async >= 0.10.2.2
+          , lifted-base >= 0.2.3.12
+          , list-t >= 1.0.5.1
+          , logict >= 0.7.0.3
+          , megaparsec >= 9.2.0
+          , memory >= 0.16.0
+          , microlens >= 0.4.12.0
+          , mmorph >= 1.2.0
+          , monad-control >= 1.0.3.1
+          , mono-traversable >= 1.0.15.3
+          , monoidal-containers >= 0.6.2.0
+          , mtl-compat >= 0.2.2
+          , newtype >= 0.2.2.0
+          , newtype-generics >= 0.6.1
+          , nothunks >= 0.1.3
+          , old-locale >= 1.0.0.7
+          , old-time >= 1.1.0.3
+          , optparse-applicative >= 0.16.1.0
+          , parallel >= 3.2.2.0
+          , parser-combinators >= 1.3.0
+          , plutus-core >= 0.1.0.0
+          , plutus-ledger-api >= 0.1.0.0
+          , plutus-tx >= 0.1.0.0
+          , pretty-show >= 1.10
+          , prettyprinter >= 1.7.1
+          , prettyprinter-configurable >= 0.1.0.0
+          , primitive >= 0.7.3.0
+          , profunctors >= 5.6.2
+          , protolude >= 0.3.0
+          , quickcheck-instances >= 0.3.27
+          , ral >= 0.2.1
+          , random >= 1.2.1
+          , rank2classes >= 1.4.4
+          , recursion-schemes >= 5.2.2.2
+          , reflection >= 2.1.6
+          , resourcet >= 1.2.4.3
+          , safe >= 0.3.19
+          , safe-exceptions >= 0.1.7.2
+          , scientific >= 0.3.7.0
+          , semialign >= 1.2.0.1
+          , semigroupoids >= 5.3.7
+          , semigroups >= 0.20
+          , serialise >= 0.2.4.0
+          , size-based >= 0.1.2.0
+          , some >= 1.0.3
+          , split >= 0.2.3.4
+          , splitmix >= 0.1.0.4
+          , stm >= 2.5.0.0
+          , strict >= 0.4.0.1
+          , syb >= 0.7.2.1
+          , tagged >= 0.8.6.1
+          , tasty >= 1.4.2.1
+          , tasty-golden >= 2.3.5
+          , tasty-hedgehog >= 1.1.0.0
+          , tasty-hunit >= 0.10.0.3
+          , temporary >= 1.3
+          , terminal-size >= 0.3.2.1
+          , testing-type-modifiers >= 0.1.0.1
+          , text-short >= 0.1.5
+          , th-abstraction >= 0.4.3.0
+          , th-compat >= 0.1.3
+          , th-expand-syns >= 0.4.9.0
+          , th-extras >= 0.0.0.6
+          , th-lift >= 0.8.2
+          , th-lift-instances >= 0.1.19
+          , th-orphans >= 0.13.12
+          , th-reify-many >= 0.1.10
+          , th-utilities >= 0.2.4.3
+          , these >= 1.1.1.1
+          , time-compat >= 1.9.6.1
+          , transformers-base >= 0.4.6
+          , transformers-compat >= 0.7.1
+          , type-equality >= 1
+          , typed-process >= 0.2.8.0
+          , unbounded-delays >= 0.1.1.1
+          , universe-base >= 1.1.3
+          , unliftio-core >= 0.2.0.1
+          , unordered-containers >= 0.2.16.0
+          , uuid-types >= 1.0.5
+          , vector >= 0.12.3.1
+          , vector-algorithms >= 0.8.0.4
+          , void >= 0.7.3
+          , wcwidth >= 0.0.2
+          , witherable >= 0.4.2
+          , wl-pprint-annotated >= 0.1.0.1
+          , word-array >= 0.1.0.0
       '';
 
       projectForGhc = ghcName: flagDevelopment: system:
         let pkgs = nixpkgsFor system; in
         let pkgs' = nixpkgsFor' system; in
+        let addSubDir = target: subdir: source:
+          if source.src == target
+          then source // { subdirs = source.subdirs ++ [ subdir ]; }
+          else source; in
         let pkgSet = (nixpkgsFor system).haskell-nix.cabalProject' ({
-          # This is truly a horrible hack but is necessary. We can't disable tests otherwise in haskell.nix.
-          src = if ghcName == ghcVersion then ./. else
-          pkgs.runCommand "fake-src" { } ''
-            cp -rT ${./.} $out
-            chmod u+w $out $out/plutarch.cabal
-            # Remove stanzas from .cabal that won't work in GHC 8.10
-            sed -i '/-- Everything below this line is deleted for GHC 8.10/,$d' $out/plutarch.cabal
-
-            # Prevent `sydtest-discover` from using GHC9 only modules when building with GHC810
-            # https://github.com/NorfairKing/sydtest/blob/master/sydtest-discover/src/Test/Syd/Discover.hs
-            chmod -R u+w $out/plutarch-test
-            rm -f $out/plutarch-test/src/Plutarch/MonadicSpec.hs
-            rm -f $out/plutarch-test/src/Plutarch/FieldSpec.hs
-          '';
+          src = ./.;
           compiler-nix-name = ghcName;
-          inherit extraSources;
+          extraSources =
+            if ghcName == ghcVersion then extraSources
+            else map (addSubDir inputs.plutus "plutus-tx-plugin") extraSources
+              ++ [{
+              src = inputs.Shrinker;
+              subdirs = [ "." ];
+            }];
           modules = [
             (haskellModule system)
             {
               # Workaround missing support for build-tools:
               # https://github.com/input-output-hk/haskell.nix/issues/231
               packages.plutarch-test.components.exes.plutarch-test.build-tools = [
-                pkgSet.hsPkgs.sydtest-discover
+                pkgSet.hsPkgs.hspec-discover
               ];
               packages.plutarch-test.flags.development = flagDevelopment;
               packages.plutarch.flags.development = flagDevelopment;
@@ -500,7 +489,7 @@
               pkgs'.hlint
               pkgs'.haskellPackages.cabal-fmt
               pkgs'.nixpkgs-fmt
-              pkgSet.hsPkgs.sydtest-discover.components.exes.sydtest-discover
+              pkgSet.hsPkgs.hspec-discover.components.exes.hspec-discover
             ];
 
             inherit tools;
@@ -508,15 +497,12 @@
             additional = ps: [
               ps.plutus-ledger-api
 
-              # sydtest dependencies
-              ps.sydtest
-              ps.sydtest-discover
-              ps.sydtest-aeson
-              ps.validity
-              ps.validity-aeson
-              ps.autodocodec
-              ps.autodocodec-schema
-              ps.autodocodec-yaml
+              ps.hspec
+              ps.hspec-core
+              ps.hspec-contrib
+              ps.hspec-discover
+              ps.hspec-hedgehog
+              ps.hspec-golden
               #ps.shrinker
               #ps.shrinker-testing
             ];
@@ -584,6 +570,35 @@
             '';
           };
         };
+      plutarchWebsiteStatic = system:
+        let
+          pkgs = nixpkgsFor system;
+          configFile = (pkgs.formats.yaml { }).generate "emanote-configFile" {
+            template.baseUrl = "/"; # Use this when pushing to github.io: "/plutarch/";
+          };
+          configDir = pkgs.runCommand "emanote-configDir" { } ''
+            mkdir -p $out
+            cp ${configFile} $out/index.yaml
+          '';
+        in
+        pkgs.runCommand "plutarch-docs-html" { }
+          ''
+            mkdir $out
+            ${inputs.emanote.defaultPackage.${system}}/bin/emanote \
+              --layers "${self}/docs;${configDir}" \
+              gen $out
+          '';
+      plutarchWebsiteLive = system: path:
+        rec {
+          type = "app";
+          # '' is required for escaping ${} in nix
+          script = (nixpkgsFor system).writers.writeBash "emanoteLiveReload.sh" ''
+            set -xe
+            export PORT="''${EMANOTE_PORT:-7072}"
+            ${inputs.emanote.defaultPackage.${system}}/bin/emanote --layers ${path} run --port "$PORT"
+          '';
+          program = builtins.toString script;
+        };
 
       # Checks the shell script using ShellCheck
       checkedShellScript = system: name: text:
@@ -598,7 +613,7 @@
         in
         {
           type = "app";
-          program = checkedShellScript system "plutatch-test-${name}"
+          program = checkedShellScript system "plutarch-test-${name}"
             ''
               cd ${self}/plutarch-test
               ${flake.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test;
@@ -607,7 +622,7 @@
 
       # Take a flake app (identified as the key in the 'apps' set), and return a
       # derivation that runs it in the compile phase.
-      # 
+      #
       # In effect, this allows us to run an 'app' as part of the build process (eg: in CI).
       flakeApp2Derivation = system: appName:
         (nixpkgsFor system).runCommand appName { } "${self.apps.${system}.${appName}.program} | tee $out";
@@ -635,22 +650,22 @@
 
       packages = perSystem (system: self.flake.${system}.packages // {
         haddock = haddock system;
+        website = plutarchWebsiteStatic system;
       });
       checks = perSystem
         (system:
           self.flake.${system}.checks
           // {
             formatCheck = formatCheckFor system;
-            benchmark = (nixpkgsFor system).runCommand "benchmark" { } "${self.apps.${system}.benchmark.program} | tee $out";
             test-ghc9-nodev = flakeApp2Derivation system "test-ghc9-nodev";
             test-ghc9-dev = flakeApp2Derivation system "test-ghc9-dev";
             test-ghc810-nodev = flakeApp2Derivation system "test-ghc810-nodev";
             test-ghc810-dev = flakeApp2Derivation system "test-ghc810-dev";
             "ghc810-plutarch:lib:plutarch" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch:lib:plutarch";
             "ghc810-plutarch:lib:plutarch-test" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch-test:lib:plutarch-test";
-            "ghc810-plutarch:lib:plutarch-benchmark" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch-benchmark:lib:plutarch-benchmark";
+            hls = checkedShellScript system "hls" "${self.project.${system}.pkgs.haskell-language-server}/bin/haskell-language-server";
           });
-      # Because `nix flake check` does not work with haskell.nix (due to IFD), 
+      # Because `nix flake check` does not work with haskell.nix (due to IFD),
       # we provide this attribute for running the checks locally, using:
       #   nix build .#check.x86_64-linux
       check = perSystem (system:
@@ -670,55 +685,22 @@
           test-ghc9-dev = plutarchTestApp system "ghc9-dev" self.projectMatrix.ghc9.dev;
           test-ghc810-nodev = plutarchTestApp system "ghc810-nodev" self.projectMatrix.ghc810.nodev;
           test-ghc810-dev = plutarchTestApp system "ghc810-dev" self.projectMatrix.ghc810.dev;
-          # TODO: The bellow apps will be removed eventually.
-          benchmark = {
-            type = "app";
-            program = "${self.flake.${system}.packages."plutarch-benchmark:bench:benchmark"}/bin/benchmark";
-          };
-          benchmark-diff = {
-            type = "app";
-            program = "${self.flake.${system}.packages."plutarch-benchmark:exe:benchmark-diff"}/bin/benchmark-diff";
-          };
+
+          # `nix run .#docs` should be run from the Git repo.
+          docs = plutarchWebsiteLive system "./docs";
+          # `nix run github:Plutonomicon/plutarch#website` can be run from anywhere
+          website = plutarchWebsiteLive system "${self}/docs";
         }
       );
       devShell = perSystem (system: self.flake.${system}.devShell);
 
-      effects = { src }:
+      effects = { ref, ... }:
         let
           pkgs = nixpkgs.legacyPackages.x86_64-linux;
           hci-effects = hercules-ci-effects.lib.withPkgs pkgs;
         in
         {
-          # Hercules 0.9 will allow us to calculate the merge-base so we can test all PRs.
-          # Right now we just hardcode this effect to test every commit against
-          # origin/staging. We set != "refs/head/master" so that merges into master don't
-          # cause a lot of unnecessary bogus benchmarks to appear in CI for the time
-          # being.
-          benchmark-diff = hci-effects.runIf (src.ref != "refs/heads/master") (
-            hci-effects.mkEffect {
-              src = self;
-              buildInputs = with pkgs; [ git nixFlakes ];
-              effectScript = ''
-                git clone https://github.com/Plutonomicon/plutarch.git plutarch
-                cd plutarch
-
-                git checkout $(git merge-base origin/staging ${src.rev})
-                nix --extra-experimental-features 'nix-command flakes' run .#benchmark -- --csv > before.csv
-
-                git checkout ${src.rev}
-                nix --extra-experimental-features 'nix-command flakes' run .#benchmark -- --csv > after.csv
-
-                echo
-                echo
-                echo "Benchmark diff between $(git merge-base origin/staging ${src.rev}) and ${src.rev}:"
-                echo
-                echo
-
-                nix --extra-experimental-features 'nix-command flakes' run .#benchmark-diff -- before.csv after.csv
-              '';
-            }
-          );
-          gh-pages = hci-effects.runIf (src.ref == "refs/heads/master") (
+          gh-pages = hci-effects.runIf (ref == "refs/heads/master") (
             hci-effects.mkEffect {
               src = self;
               buildInputs = with pkgs; [ openssh git ];
@@ -745,11 +727,6 @@
             }
           );
         };
-
-      ciNix = args@{ src }: flake-compat-ci.lib.recurseIntoFlakeWith {
-        flake = self;
-        systems = [ "x86_64-linux" ];
-        effectsArgs = args;
-      };
+      herculesCI.ciSystems = [ "x86_64-linux" ];
     };
 }

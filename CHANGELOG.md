@@ -2,6 +2,29 @@
 
 # Unreleased
 
+- Added `PEq` superclass constraint to `POrd`
+
+  Included by [#326](https://github.com/Plutonomicon/plutarch/pull/326)
+
+- Added module `Plutarch.Show` with the `PShow` type class, as well as functions `pshow` and `ptraceShowId`.
+
+  Started by [#352](https://github.com/Plutonomicon/plutarch/pull/352)
+
+- Add `puncons` and `ptryUncons` functions for deconstructing list.
+
+  Started by: [#333](https://github.com/Plutonomicon/plutarch/pull/333)
+
+- Add generic deriving for `PEq`
+
+  Started by [#335](https://github.com/Plutonomicon/plutarch/pull/335)
+- `Plutarch.Prelude` and `Plutarch.List` now export pfind, pelemAt, preverse and pcheckSroted.
+
+	Started by: [#306](https://github.com/Plutonomicon/plutarch/pull/306)
+
+- Added module `Plutarch.FFI` for interoperability with PlutusTx.
+
+- Added `DerivePConstantViaBuiltin`, deprecating `DerivePConstantViaNewtype`.
+
 - `TermCont`: Parametrize by result type; add `MonadFail` instance; etc.
 
   Also, export from `Plutarch.TermCont`, and then from `Plutarch.Prelude` (TermCont is no longer exported by `Plutarch.Internal`).
@@ -38,6 +61,19 @@
 
   Added by: [#251](https://github.com/Plutonomicon/plutarch/pull/251)
 
+- Added APIs for constructing, compiling, serialising & hashing Plutarch scripts.
+
+  Type synonyms for Plutarch-typed scripts `PValidator`,`PMintingPolicy` & `PStakeValidator`.
+
+  `mkValidator`, `mkStakeValidator` & `mkMintingPolicy` functions, for creating Plutus API compatible scripts.
+
+  `validatorHash`, `mintingPolicySymbol` & `stakeValidatorHash` to obtain script hashes.
+
+  Module: `Plutarch.V1.Api`
+
+  See: `Plutarch.ScriptsSpec` in `plutarch-test` for usage examples.
+
+  Added by: [#267](https://github.com/Plutonomicon/plutarch/pull/267)
 - Add `PTuple` construction and related utilities.
 
   Module: `Plutarch.Api.V1.Tuple`
@@ -57,6 +93,35 @@
   Module: `Plutarch.DataRepr`
 
   Added by: [#235](https://github.com/Plutonomicon/plutarch/pull/270)
+
+- Add `Plutarch.Test` for testing Plutarch code with goldens for UPLC printing and Plutus benchmarks.
+
+- Add Conversion types `PTryFrom`, `PMaybeFrom` and `PFrom`
+
+  Module: `Plutarch.TryFrom`
+
+  Added by: [#326](https://github.com/Plutonomicon/plutarch/pull/326)
+
+- `plutarch-extra`: Add a new directory scaffold "`plutarch-extra`" which will be home to everything too specific to not be in the
+  main Plutarch repo. Also refactored the test library.
+
+  Directory: `plutarch-extra`
+
+  Added by: [#329](https://github.com/Plutonomicon/plutarch/pull/329)
+
+- `plutarch-extra` export merged Prelude
+
+  Module: `Plutarch.PPrelude`
+
+  Added by: [#356](https://github.com/Plutonomicon/plutarch/pull/356)
+
+- Add `PConstant` instance for `Maybe`, with corresponding `PLift` instance for `PMaybeData`.
+
+  Added by: [#371](https://github.com/Plutonomicon/plutarch/pull/371)
+
+- Add `POrd` and `PEq` derivation for data encoded types via `PIsDataReprInstances`.
+
+  Added by: [#371](https://github.com/Plutonomicon/plutarch/pull/371)
 
 # 1.1.0
 

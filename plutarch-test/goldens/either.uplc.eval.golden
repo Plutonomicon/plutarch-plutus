@@ -1,0 +1,5 @@
+eq.true.left (program 1.0.0 True)
+eq.true.right (program 1.0.0 True)
+eq.false.left-right (program 1.0.0 False)
+eq.false.left-left (program 1.0.0 False)
+eq.false.right-right (program 1.0.0 False)

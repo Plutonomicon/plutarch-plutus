@@ -5,10 +5,12 @@
 module Plutarch.DataRepr.Internal.HList (
   -- * HRec and Label types
   HRec (HNil, HCons),
+  HRecGeneric (HRecGeneric),
   Labeled (Labeled, unLabeled),
 
   -- * Field indexing functions
   hrecField,
+  hrecField',
 
   -- * Type families
   type IndexList,
@@ -135,3 +137,16 @@ instance
   HasField name (HRec as) (Term s c)
   where
   getField = hrecField @name
+
+-- Generic HRec
+
+newtype HRecGeneric as = HRecGeneric (HRec as)
+
+instance
+  forall name a as.
+  ( (IndexLabel name as ~ a)
+  , ElemOf name a as
+  ) =>
+  HasField name (HRecGeneric as) a
+  where
+  getField (HRecGeneric x) = hrecField' @name x

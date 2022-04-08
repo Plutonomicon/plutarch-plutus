@@ -30,7 +30,7 @@ newtype PInterval a (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PlutusType, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields, PEq, POrd)
     via PIsDataReprInstances (PInterval a)
 
 newtype PLowerBound a (s :: S)
@@ -47,7 +47,7 @@ newtype PLowerBound a (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PlutusType, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields, PEq, POrd)
     via (PIsDataReprInstances (PLowerBound a))
 
 newtype PUpperBound a (s :: S)
@@ -64,7 +64,7 @@ newtype PUpperBound a (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PlutusType, PIsData, PDataFields)
+    (PlutusType, PIsData, PDataFields, PEq, POrd)
     via (PIsDataReprInstances (PUpperBound a))
 
 data PExtended a (s :: S)
@@ -75,5 +75,5 @@ data PExtended a (s :: S)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
   deriving
-    (PlutusType, PIsData)
+    (PlutusType, PIsData, PEq, POrd)
     via (PIsDataReprInstances (PExtended a))
