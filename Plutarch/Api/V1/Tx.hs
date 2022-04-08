@@ -40,6 +40,7 @@ newtype PTxId (s :: S)
 instance PUnsafeLiftDecl PTxId where type PLifted PTxId = Plutus.TxId
 deriving via (DerivePConstantViaData Plutus.TxId PTxId) instance (PConstant Plutus.TxId)
 
+-- | Reference to a transaction output with a index referencing which of the outputs is being referred to.
 newtype PTxOutRef (s :: S)
   = PTxOutRef
       ( Term
@@ -60,6 +61,7 @@ newtype PTxOutRef (s :: S)
 instance PUnsafeLiftDecl PTxOutRef where type PLifted PTxOutRef = Plutus.TxOutRef
 deriving via (DerivePConstantViaData Plutus.TxOutRef PTxOutRef) instance (PConstant Plutus.TxOutRef)
 
+-- | A input of the pending transaction.
 newtype PTxInInfo (s :: S)
   = PTxInInfo
       ( Term
@@ -80,6 +82,7 @@ newtype PTxInInfo (s :: S)
 instance PUnsafeLiftDecl PTxInInfo where type PLifted PTxInInfo = Plutus.TxInInfo
 deriving via (DerivePConstantViaData Plutus.TxInInfo PTxInInfo) instance (PConstant Plutus.TxInInfo)
 
+-- | A transaction output. This consists of a target address, value and maybe a datum hash
 newtype PTxOut (s :: S)
   = PTxOut
       ( Term

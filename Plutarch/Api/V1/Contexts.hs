@@ -34,21 +34,22 @@ import Plutarch.Lift (
  )
 import Plutarch.Prelude
 
+-- | A pending transaction. This is the view as seen by the validator script.
 newtype PTxInfo (s :: S)
   = PTxInfo
       ( Term
           s
           ( PDataRecord
-              '[ "inputs" ':= PBuiltinList (PAsData PTxInInfo)
-               , "outputs" ':= PBuiltinList (PAsData PTxOut)
-               , "fee" ':= PValue
-               , "mint" ':= PValue
-               , "dcert" ':= PBuiltinList (PAsData PDCert)
-               , "wdrl" ':= PBuiltinList (PAsData (PTuple PStakingCredential PInteger))
-               , "validRange" ':= PPOSIXTimeRange
-               , "signatories" ':= PBuiltinList (PAsData PPubKeyHash)
+              '[ "inputs" ':= PBuiltinList (PAsData PTxInInfo) -- Transaction inputs
+               , "outputs" ':= PBuiltinList (PAsData PTxOut) -- Transaction outputs
+               , "fee" ':= PValue -- The fee paid by this transaction.
+               , "mint" ':= PValue -- The value minted by the transaction.
+               , "dcert" ':= PBuiltinList (PAsData PDCert) -- Digests of the certificates included in this transaction.
+               , "wdrl" ':= PBuiltinList (PAsData (PTuple PStakingCredential PInteger)) -- Staking withdrawals
+               , "validRange" ':= PPOSIXTimeRange -- The valid range for the transaction.
+               , "signatories" ':= PBuiltinList (PAsData PPubKeyHash) -- Signatories attesting that they all signed the tx.
                , "datums" ':= PBuiltinList (PAsData (PTuple PDatumHash PDatum))
-               , "id" ':= PTxId
+               , "id" ':= PTxId -- The hash of the pending transaction.
                ]
           )
       )
@@ -62,6 +63,7 @@ newtype PTxInfo (s :: S)
 instance PUnsafeLiftDecl PTxInfo where type PLifted PTxInfo = Plutus.TxInfo
 deriving via (DerivePConstantViaData Plutus.TxInfo PTxInfo) instance (PConstant Plutus.TxInfo)
 
+-- | Script context consists of the script purpose and the pending transaction info.
 newtype PScriptContext (s :: S)
   = PScriptContext
       ( Term
@@ -84,6 +86,7 @@ deriving via (DerivePConstantViaData Plutus.ScriptContext PScriptContext) instan
 
 -- General types, used by V1 and V2
 
+-- | The purpose of the script that is currently running
 data PScriptPurpose (s :: S)
   = PMinting (Term s (PDataRecord '["_0" ':= PCurrencySymbol]))
   | PSpending (Term s (PDataRecord '["_0" ':= PTxOutRef]))
