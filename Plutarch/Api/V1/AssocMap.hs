@@ -17,6 +17,9 @@ module Plutarch.Api.V1.AssocMap (
   lookup,
   lookupData,
 
+  -- * Folds
+  all,
+
   -- * Traversals
   mapEitherWithKey,
   mapEitherWithKeyData,
@@ -45,6 +48,7 @@ import Plutarch.Maybe (pmaybe)
 import Plutarch.Prelude (
   DerivePNewtype (..),
   PAsData,
+  PBool,
   PBuiltinList,
   PBuiltinPair,
   PCon (pcon),
@@ -61,6 +65,7 @@ import Plutarch.Prelude (
   PlutusType,
   S,
   Term,
+  pall,
   pconcat,
   pfstBuiltin,
   phoistAcyclic,
@@ -76,9 +81,9 @@ import Plutarch.Prelude (
  )
 import Plutarch.Unsafe (punsafeFrom)
 
-import Prelude hiding (lookup)
+import Prelude hiding (all, lookup)
 
-newtype PMap (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinMap k v))
+newtype PMap (k :: PType) (v :: PType) (s :: S) = PMap (Term (s :: S) (PBuiltinMap k v))
   deriving (PlutusType, PIsData) via (DerivePNewtype (PMap k v) (PBuiltinMap k v))
 
 instance
@@ -255,6 +260,11 @@ difference = phoistAcyclic $
         (const pnil)
         # pto left
 
+all :: PIsData v => Term (s :: S) ((v :--> PBool) :--> PMap k v :--> PBool)
+all = phoistAcyclic $
+  plam $ \pred map ->
+    pall # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto map
+
 -- | Map keys/values and separate the @Left@ and @Right@ results.
 mapEitherWithKey ::
   (PIsData k, PIsData a, PIsData b, PIsData c) =>
@@ -267,7 +277,7 @@ mapEitherWithKey = phoistAcyclic $
 bidata ::
   forall (s :: S) (a :: PType) (b :: PType).
   (PIsData a, PIsData b) =>
-  Term s (PEither a b :--> PEither (PAsData a) (PAsData b))
+  Term (s :: S) (PEither a b :--> PEither (PAsData a) (PAsData b))
 bidata = peither # plam (pcon . PLeft . pdata) # plam (pcon . PRight . pdata)
 
 -- | Map data-encoded keys/values and separate the @Left@ and @Right@ results.

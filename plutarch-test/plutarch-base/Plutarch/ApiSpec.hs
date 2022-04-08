@@ -76,6 +76,20 @@ spec = do
             plift p @?= mint <> mintOtherToken
           "symbols" @| PValue.unionWith # plam (+) # pmint # pmintOtherSymbol @-> \p ->
             plift p @?= mint <> mintOtherSymbol
+        "isZero" @\ do
+          "true" @| PValue.isZero # (PValue.unionWith # plam (-) # pmint # pmint) @-> passert
+          "false" @| PValue.isZero # pmint @-> passertNot
+        "equality" @\ do
+          "triviallyTrue" @| pmint #== pmint @-> passert
+          "triviallyFalse" @| pmint #== pmintOtherToken @-> passertNot
+          "swappedTokensTrue"
+            @| PValue.unionWith # plam (+) # pmint # pmintOtherToken
+              #== PValue.unionWith # plam (+) # pmintOtherToken # pmint
+            @-> passert
+          "swappedSymbolsTrue"
+            @| PValue.unionWith # plam (+) # pmint # pmintOtherSymbol
+              #== PValue.unionWith # plam (+) # pmintOtherSymbol # pmint
+            @-> passert
     describe "map" $ do
       pgoldenSpec $ do
         let pmap, pdmap, emptyMap, doubleMap, otherMap :: Term _ (AssocMap.PMap PByteString PInteger)
@@ -120,11 +134,13 @@ spec = do
           "const" @| AssocMap.unionWithData # plam const # pmap # pmap @-> pshouldReallyBe pmap
           "emptyLeft" @| AssocMap.unionWithData # plam const # emptyMap # pmap @-> pshouldReallyBe pmap
           "emptyRight" @| AssocMap.unionWithData # plam const # pmap # emptyMap @-> pshouldReallyBe pmap
-
     {- TODO: fails due to incomplete normalization
             "mapEitherWithKey" @\ do
               "const" @| AssocMap.mapEitherWithKey # plam (const $ pcon . PRight) # pmap
                 @-> pshouldReallyBe (pcon $ PPair emptyMap pmap)
+        "mapEitherWithKey" @\ do
+          "const" @| AssocMap.mapEitherWithKey # plam (const $ pcon . PRight) # pmap
+            @-> \result-> passert $ result #== pcon (PPair emptyMap pmap)
     -}
     describe "example" $ do
       -- The checkSignatory family of functions implicitly use tracing due to

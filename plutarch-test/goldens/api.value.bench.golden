@@ -4,3 +4,9 @@ unionWith.const {"exBudgetCPU":45934490,"exBudgetMemory":111060,"scriptSizeBytes
 unionWith.(+) {"exBudgetCPU":45982834,"exBudgetMemory":110562,"scriptSizeBytes":451}
 unionWith.tokens {"exBudgetCPU":43483569,"exBudgetMemory":106834,"scriptSizeBytes":460}
 unionWith.symbols {"exBudgetCPU":24782993,"exBudgetMemory":61910,"scriptSizeBytes":452}
+isZero.true {"exBudgetCPU":52892795,"exBudgetMemory":127649,"scriptSizeBytes":526}
+isZero.false {"exBudgetCPU":8700981,"exBudgetMemory":21315,"scriptSizeBytes":178}
+equality.triviallyTrue {"exBudgetCPU":52892795,"exBudgetMemory":127649,"scriptSizeBytes":526}
+equality.triviallyFalse {"exBudgetCPU":48483518,"exBudgetMemory":119393,"scriptSizeBytes":536}
+equality.swappedTokensTrue {"exBudgetCPU":150951231,"exBudgetMemory":361225,"scriptSizeBytes":579}
+equality.swappedSymbolsTrue {"exBudgetCPU":135145220,"exBudgetMemory":323294,"scriptSizeBytes":570}

@@ -5,6 +5,7 @@ module Plutarch.Api.V1.Value (
   PValue (PValue),
   PCurrencySymbol (PCurrencySymbol),
   PTokenName (PTokenName),
+  isZero,
   singleton,
   unionWith,
   valueOf,
@@ -54,6 +55,9 @@ deriving via
   instance
     PConstantDecl Plutus.Value
 
+instance PEq PValue where
+  a #== b = isZero #$ unionWith # plam (-) # a # b
+
 -- | Construct a singleton 'PValue' containing only the given quantity of the given currency.
 singleton :: Term (s :: S) (PCurrencySymbol :--> PTokenName :--> PInteger :--> PValue)
 singleton = phoistAcyclic $
@@ -69,6 +73,11 @@ valueOf = phoistAcyclic $
       PJust submap -> pmatch (AssocMap.lookup # token # submap) $ \case
         PNothing -> 0
         PJust amount -> amount
+
+-- | Check if the value is zero.
+isZero :: Term (s :: S) (PValue :--> PBool)
+isZero = phoistAcyclic $
+  plam $ \value -> AssocMap.all # (AssocMap.all # plam (#== 0)) # pto value
 
 {- | Combine two 'PValue's applying the given function to any pair of
  quantities with the same asset class. Note that the result is _not_
