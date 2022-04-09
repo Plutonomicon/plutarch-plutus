@@ -21,7 +21,7 @@ import Generics.SOP (
 import Plutarch.DataRepr.Internal.HList.Utils (IndexList)
 import Plutarch.Internal (PType, S, Term, pforce, plam', punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
-import Plutarch.Internal.Generic (MkSum (mkSum), PCode, PGeneric, gpfrom, gpto)
+import Plutarch.Internal.Generic (MkNS, PCode, PGeneric, gpfrom, gpto, mkSum)
 import Plutarch.Internal.PLam ((#))
 import Plutarch.Internal.TypeFamily (ToPType, ToPType2)
 
@@ -198,14 +198,14 @@ instance
   , ToPType xs ~ IndexList n (PCode s a)
   , GPMatch a (n + 1) xss c s
   , PLamL (ToPType xs) c s
-  , MkSum n (PCode s a) (Term s)
+  , MkNS n (PCode s a) (NP (Term s))
   , All Top (ToPType xs)
   , All Top xs
   ) =>
   GPMatch a n (xs : xss) c s
   where
   gpmatch' f =
-    plamL @(ToPType xs) @c (f . SOP . mkSum @_ @n @(PCode s a) @(Term s))
+    plamL @(ToPType xs) @c (f . SOP . mkSum @n @(PCode s a) @(Term s))
       :* gpmatch' @a @(n + 1) @xss @c @s f
 
 {- |

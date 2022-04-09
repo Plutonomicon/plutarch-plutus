@@ -11,7 +11,9 @@ module Plutarch.Internal.Generic (
   gpto,
 
   -- * Helpers for when existing generics-sop combinators are insufficient.
-  MkSum (mkSum),
+  MkNS,
+  mkNS,
+  mkSum,
 ) where
 
 import Data.Kind (Constraint, Type)
@@ -56,17 +58,20 @@ Infrastructure to create a single sum constructor given its type index and value
 
 It is type-checked that the `x` here matches the type of nth constructor of `a`.
 -}
-class MkSum (idx :: Nat) (xss :: [[k]]) (f :: k -> Type) where
-  mkSum :: NP f (IndexList idx xss) -> NS (NP f) xss
+class MkNS (idx :: Nat) (xs :: [k]) (f :: k -> Type) where
+  mkNS :: f (IndexList idx xs) -> NS f xs
 
-instance {-# OVERLAPPING #-} MkSum 0 (xs ': xss) f where
-  mkSum = Z
+instance {-# OVERLAPPING #-} MkNS 0 (x ': xs) f where
+  mkNS = Z
 
 instance
   {-# OVERLAPPABLE #-}
-  ( MkSum (idx - 1) xss f
-  , IndexList idx (xs ': xss) ~ IndexList (idx - 1) xss
+  ( MkNS (idx - 1) xs f
+  , IndexList idx (x ': xs) ~ IndexList (idx - 1) xs
   ) =>
-  MkSum idx (xs ': xss) f
+  MkNS idx (x ': xs) f
   where
-  mkSum x = S $ mkSum @_ @(idx - 1) @xss x
+  mkNS x = S $ mkNS @_ @(idx - 1) @xs x
+
+mkSum :: forall idx xss f. MkNS idx xss (NP f) => NP f (IndexList idx xss) -> NS (NP f) xss
+mkSum = mkNS @_ @idx @xss @(NP f)

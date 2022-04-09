@@ -129,7 +129,7 @@ ptraces p develTraces =
   case evalScript (compile p) of
     (Left _, _, _) -> expectationFailure $ "Term failed to evaluate"
     (Right _, _, traceLog) -> do
-#ifdef Development 
+#ifdef Development
       traceLog `shouldBe` develTraces
 #else
       -- Tracing is disabled in non-developed modes, so we should expect an
@@ -151,7 +151,7 @@ plutarchDevFlagDescribe :: Spec -> Spec
 -- CPP support isn't great in fourmolu.
 {- ORMOLU_DISABLE -}
 plutarchDevFlagDescribe m =
-#ifdef Development 
+#ifdef Development
   describe "dev=true" m
 #else
   describe "dev=false" m
