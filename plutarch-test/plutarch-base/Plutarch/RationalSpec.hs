@@ -11,7 +11,7 @@ spec = do
       rat = id
       assertRat :: ClosedTerm PRational -> ClosedTerm PRational -> Expectation
       assertRat x p = passert $ p #== x
-  describe "rational" . pgoldenSpec $ do
+  describe "rational" . plutarchDevFlagDescribe . pgoldenSpec $ do
     "literal" @| rat 0.5
     "ops" @\ do
       "+" @| rat (1 / 2 + 1 / 2) @-> assertRat 1
@@ -44,3 +44,7 @@ spec = do
         "0.5" @| rat 0.5 @-> assertRat (pfromData (pdata 0.5))
         "2" @| rat 2 @-> assertRat (pfromData (pdata 2))
         "11/3" @| rat 11 / 3 @-> assertRat (pfromData (pdata $ 11 / 3))
+    "div by 0" @\ do
+      "1/0" @| ((1 :: Term s PRational) / 0) @-> pfails
+      "recip 0" @| recip (0 :: Term s PRational) @-> pfails
+      "1/(1-1)" @| ((1 :: Term s PRational) / (1 - 1)) @-> pfails

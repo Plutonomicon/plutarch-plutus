@@ -33,4 +33,3 @@ builtinlist.nil {"exBudgetCPU":3519719,"exBudgetMemory":10435,"scriptSizeBytes":
 builtinlist.1,2,3 {"exBudgetCPU":26855742,"exBudgetMemory":56248,"scriptSizeBytes":404}
 pair.int-str {"exBudgetCPU":35143888,"exBudgetMemory":77331,"scriptSizeBytes":464}
 pair.int-list {"exBudgetCPU":41712616,"exBudgetMemory":86350,"scriptSizeBytes":443}
-rational.1/2 {"exBudgetCPU":23497485,"exBudgetMemory":51676,"scriptSizeBytes":546}
