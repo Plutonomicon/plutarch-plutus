@@ -81,10 +81,10 @@ spec = do
         "4wheeler" @\ do
           let datrec =
                 pdcons
-                  # pconstantData 2 #$ pdcons
-                  # pconstantData 5 #$ pdcons
-                  # pconstantData 42 #$ pdcons
-                  # pconstantData 0
+                  # pconstantData @PInteger 2 #$ pdcons
+                  # pconstantData @PInteger 5 #$ pdcons
+                  # pconstantData @PInteger 42 #$ pdcons
+                  # pconstantData @PInteger 0
                   # pdnil
               expected =
                 pconstant $
@@ -94,7 +94,7 @@ spec = do
           "pdatasum"
             @| pcon @(PDataSum (PIsDataReprRepr PVehicle)) (PDataSum . Z $ Compose datrec) @== expected
         "2wheeler" @\ do
-          let datrec = pdcons # pconstantData 5 #$ pdcons # pconstantData 0 # pdnil
+          let datrec = pdcons # pconstantData @PInteger 5 #$ pdcons # pconstantData @PInteger 0 # pdnil
               expected = pconstant $ PlutusTx.Constr 1 [PlutusTx.I 5, PlutusTx.I 0]
           "normal"
             @| pcon (PTwoWheeler datrec) @== expected
@@ -113,8 +113,8 @@ spec = do
           let datrec =
                 pdcons
                   # pconstantData @PCurrencySymbol "ab" #$ pdcons
-                  # pconstantData "41" #$ pdcons
-                  # pconstantData "0e"
+                  # pconstantData @PCurrencySymbol "41" #$ pdcons
+                  # pconstantData @PCurrencySymbol "0e"
                   # pdnil
               expected =
                 pconstant $
