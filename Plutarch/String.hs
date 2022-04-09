@@ -15,7 +15,7 @@ import Plutarch.Internal.Other (
  )
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
-  PConstant,
+  PConstantDecl,
   PLifted,
   PUnsafeLiftDecl,
   pconstant,
@@ -27,7 +27,7 @@ import qualified PlutusCore as PLC
 data PString s
 
 instance PUnsafeLiftDecl PString where type PLifted PString = Text
-deriving via (DerivePConstantDirect Text PString) instance (PConstant Text)
+deriving via (DerivePConstantDirect Text PString) instance PConstantDecl Text
 
 {-# DEPRECATED pfromText "Use `pconstant` instead." #-}
 

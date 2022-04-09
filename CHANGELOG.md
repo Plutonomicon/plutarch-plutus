@@ -123,6 +123,12 @@
 
   Added by: [#371](https://github.com/Plutonomicon/plutarch/pull/371)
 
+- Rename `PConstant` (the typeclass) to `PConstantDecl`. `PConstant` is now a type alias with extra constraints for better type checking.
+
+  Add `PLiftData` and `PConstantData` type aliases.
+
+  Added by: [#354](https://github.com/Plutonomicon/plutarch/pull/354)
+
 - Add `PlutusType` instance for `PDataSum`. `PDataSum` can now be hand-constructed.
 
   Added by: [#345](https://github.com/Plutonomicon/plutarch/pull/345)

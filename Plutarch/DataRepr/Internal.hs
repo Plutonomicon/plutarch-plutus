@@ -2,7 +2,7 @@
 {-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# OPTIONS_GHC -Wno-orphans -Wno-redundant-constraints #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.DataRepr.Internal (
   PDataSum (..),
@@ -12,7 +12,9 @@ module Plutarch.DataRepr.Internal (
   pdcons,
   pdnil,
   DataReprHandlers (..),
+  PConstantData,
   PDataRecord (..),
+  PLiftData,
   PLabeledType (..),
   type PLabelIndex,
   type PUnLabel,
@@ -22,13 +24,12 @@ module Plutarch.DataRepr.Internal (
   pdropDataRecord,
   DerivePConstantViaData (..),
   pasDataSum,
-  pdToBuiltin,
   DualReprHandler (..),
 ) where
 
 import qualified Data.Functor.Compose as F
 import Data.Functor.Const (Const (Const))
-import Data.Kind (Type)
+import Data.Kind (Constraint, Type)
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy (Proxy))
 import Data.SOP.NP (cana_NP)
@@ -60,7 +61,6 @@ import Generics.SOP (
 import Plutarch (
   Dig,
   PInner,
-  PMatch,
   PType,
   PlutusType,
   S,
@@ -96,7 +96,17 @@ import Plutarch.DataRepr.Internal.HList (type Drop, type IndexList)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (S (SI), punsafeCoerce)
 import Plutarch.Internal.Generic (MkNS, PCode, PGeneric, gpfrom, gpto, mkNS, mkSum)
-import Plutarch.Lift (PConstant, PConstantRepr, PConstanted, PLift, pconstant, pconstantFromRepr, pconstantToRepr)
+import Plutarch.Lift (
+  PConstant,
+  PConstantDecl,
+  PConstantRepr,
+  PConstanted,
+  PLift,
+  PLifted,
+  pconstant,
+  pconstantFromRepr,
+  pconstantToRepr,
+ )
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont, tcont, unTermCont)
 import qualified Plutus.V1.Ledger.Api as Ledger
@@ -112,12 +122,17 @@ data PDataRecord (as :: [PLabeledType]) (s :: S) where
     PDataRecord ((name ':= x) ': xs) s
   PDNil :: PDataRecord '[] s
 
+instance {-# OVERLAPPABLE #-} PlutusType (PDataRecord l) where
+  type PInner (PDataRecord l) _ = PBuiltinList PData
+  pcon' :: PDataRecord l s -> Term s (PBuiltinList PData)
+  pcon' (PDCons x xs) = pcon' $ PDCons x xs
+  pcon' PDNil = pcon' PDNil
+  pmatch' :: Term s (PBuiltinList PData) -> (PDataRecord l s -> Term s b) -> Term s b
+  pmatch' _ _ = error "PDataRecord l: pmatch' unsupported ('l' should be more specific)"
+
 instance PlutusType (PDataRecord ((name ':= x) ': xs)) where
   type PInner (PDataRecord ((name ':= x) ': xs)) _ = PBuiltinList PData
-  pcon' (PDCons x xs) = pto result
-    where
-      result :: Term _ (PDataRecord ((name ':= x) ': xs))
-      result = pdcons # x # xs
+  pcon' (PDCons x xs) = pcons # pforgetData x # pto xs
   pmatch' l' f = plet l' $ \l ->
     let x :: Term _ (PAsData x)
         x = punsafeCoerce $ phead # l
@@ -132,7 +147,7 @@ instance PlutusType (PDataRecord '[]) where
 
 -- | This uses data equality. 'PEq' instances of elements don't make any difference.
 instance PEq (PDataRecord xs) where
-  x #== y = pdToBuiltin x #== pdToBuiltin y
+  x #== y = pto x #== pto y
 
 -- Lexicographic ordering based 'Ord' instances for 'PDataRecord'.
 
@@ -188,10 +203,6 @@ pdcons = punsafeCoerce $ pcons @PBuiltinList @PData
 pdnil :: Term s (PDataRecord '[])
 pdnil = punsafeCoerce $ pnil @PBuiltinList @PData
 
--- | Convert a 'PDataRecord' into a builtin list of data values, losing type information in the process.
-pdToBuiltin :: Term s (PDataRecord xs) -> Term s (PBuiltinList PData)
-pdToBuiltin = punsafeCoerce
-
 data PLabeledType = Symbol := PType
 
 {- Get the product types of a data record sum constructor
@@ -238,7 +249,7 @@ instance
   type PInner (PDataSum defs) _ = PData
   pcon' (PDataSum xss) =
     let constrIx = fromIntegral $ hindex xss
-        datRec = hcollapse $ hmap (K . pdToBuiltin . F.getCompose) xss
+        datRec = hcollapse $ hmap (K . (\x -> pto x) . F.getCompose) xss
      in pforgetData $ pconstrBuiltin # pconstant constrIx # datRec
 
   pmatch' d = pmatchDataSum target . mkDataSumHandler @_ @defs @0 @defs
@@ -317,8 +328,7 @@ pmatchDataSum d handlers =
     applyHandlers _ DRHNil = []
     applyHandlers args (DRHCons handler rest) = handler (punsafeCoerce args) : applyHandlers args rest
 
--- TODO: This 'PMatch' constraint needs to be changed to 'PlutusType (breaking change).
-class (PMatch a, PIsData a) => PIsDataRepr (a :: PType) where
+class (PlutusType a, PIsData a) => PIsDataRepr (a :: PType) where
   type PIsDataReprRepr a :: [[PLabeledType]]
   type PIsDataReprRepr a = PDataRecordFields2 (PCode 'SI a)
 
@@ -414,11 +424,11 @@ instance
       dataSumFrom :: Term s (PDataRecord def) -> PDataSum a s
       dataSumFrom = PDataSum . mkNS @_ @n . F.Compose
 
-newtype DualReprHandler s out def = LTRepr (Term s (PDataRecord def) -> Term s (PDataRecord def) -> Term s out)
+newtype DualReprHandler s out def = DualRepr (Term s (PDataRecord def) -> Term s (PDataRecord def) -> Term s out)
 
 -- | Optimized dual pmatch specialized for lexicographic '#<' and '#<=' implementations.
 pmatchLT :: Term s (PDataSum defs) -> Term s (PDataSum defs) -> NP (DualReprHandler s PBool) defs -> Term s PBool
-pmatchLT d1 d2 (LTRepr handler :* Nil) = handler (punDataSum # d1) (punDataSum # d2)
+pmatchLT d1 d2 (DualRepr handler :* Nil) = handler (punDataSum # d1) (punDataSum # d2)
 pmatchLT d1 d2 handlers = unTermCont $ do
   a <- tcont . plet $ pasConstr #$ pforgetData $ pdata d1
   b <- tcont . plet $ pasConstr #$ pforgetData $ pdata d2
@@ -450,7 +460,7 @@ pmatchLT d1 d2 handlers = unTermCont $ do
       NP (DualReprHandler s PBool) defs ->
       [Term s PBool]
     applyHandlers _ _ Nil = []
-    applyHandlers args1 args2 (LTRepr handler :* rest) =
+    applyHandlers args1 args2 (DualRepr handler :* rest) =
       handler (punsafeCoerce args1) (punsafeCoerce args2) :
       applyHandlers args1 args2 rest
 
@@ -491,7 +501,7 @@ mkLTHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
       Compose POrd PDataRecord y =>
       Const () (y : ys) ->
       (DualReprHandler s PBool y, Const () ys)
-    rer _ = (LTRepr (#<), Const ())
+    rer _ = (DualRepr (#<), Const ())
 
 mkLTEHandler :: forall def s. All (Compose POrd PDataRecord) def => NP (DualReprHandler s PBool) def
 mkLTEHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
@@ -501,7 +511,7 @@ mkLTEHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
       Compose POrd PDataRecord y =>
       Const () (y : ys) ->
       (DualReprHandler s PBool y, Const () ys)
-    rer _ = (LTRepr (#<=), Const ())
+    rer _ = (DualRepr (#<=), Const ())
 
 {- | Use this for implementing the necessary instances for getting the `Data` representation.
  You must implement 'PIsDataRepr' to use this.
@@ -517,6 +527,75 @@ instance PIsDataRepr a => PlutusType (PIsDataReprInstances a) where
   pcon' (PIsDataReprInstances x) = pconRepr x
   pmatch' x f = pmatchRepr x (f . PIsDataReprInstances)
 
+{- | Type synonym to simplify deriving of @PConstant@ via @DerivePConstantViaData@.
+
+A type @Foo a@ is considered "ConstantableData" if:
+
+- The wrapped type @a@ has a @PConstant@ instance.
+- The lifted type of @a@ has a @PUnsafeLiftDecl@ instance.
+- There is type equality between @a@ and @PLifted (PConstanted a)@.
+- The newtype has @FromData@ and @ToData@ instances
+
+These constraints are sufficient to derive a @PConstant@ instance for the newtype.
+
+For deriving @PConstant@ for a wrapped type represented in UPLC as @Data@, see
+@DerivePConstantViaData@.
+
+Polymorphic types can be derived as follows:
+
+>data Bar a = Bar a deriving stock (GHC.Generic)
+>
+>PlutusTx.makeLift ''Bar
+>PlutusTx.makeIsDataIndexed ''Bar [('Bar, 0)]
+>
+>data PBar (a :: PType) (s :: S)
+>  = PBar (Term s (PDataRecord '["_0" ':= a]))
+>  deriving stock (GHC.Generic)
+>  deriving anyclass (SOP.Generic, PIsDataRepr)
+>  deriving (PlutusType, PIsData, PDataFields) via PIsDataReprInstances (PBar a)
+>
+>instance
+>  forall a.
+>  PLiftData a =>
+>  PUnsafeLiftDecl (PBar a)
+>  where
+>  type PLifted (PBar a) = Bar (PLifted a)
+>
+>deriving via
+>  ( DerivePConstantViaData
+>      (Bar a)
+>      (PBar (PConstanted a))
+>  )
+>  instance
+>    PConstantData a =>
+>    PConstantDecl (Bar a)
+-}
+type PConstantData :: Type -> Constraint
+type PConstantData h =
+  ( PConstant h
+  , Ledger.FromData (h)
+  , Ledger.ToData (h)
+  )
+
+type PLiftData :: PType -> Constraint
+type PLiftData p =
+  ( PLift p
+  , Ledger.FromData (PLifted p)
+  , Ledger.ToData (PLifted p)
+  )
+
+{- |
+
+For deriving @PConstant@ for a wrapped type represented by a builtin type, see
+@DerivePConstantViaNewtype@.
+-}
+newtype
+  DerivePConstantViaData
+    (h :: Type)
+    (p :: PType) -- The Plutarch synonym to the Haskell type
+  = -- | The Haskell type for which @PConstant is being derived.
+    DerivePConstantViaData h
+
 -- | This uses data equality. 'PEq' instances of elements don't make any difference.
 instance PIsDataRepr a => PEq (PIsDataReprInstances a) where
   x #== y = pdata x #== pdata y
@@ -526,9 +605,14 @@ instance (PIsDataRepr a, All (Compose POrd PDataRecord) (PIsDataReprRepr a)) => 
   x #< y = pto x #< pto y
   x #<= y = pto x #<= pto y
 
-newtype DerivePConstantViaData (h :: Type) (p :: PType) = DerivePConstantViaData h
-
-instance (PIsDataRepr p, PLift p, Ledger.FromData h, Ledger.ToData h) => PConstant (DerivePConstantViaData h p) where
+instance
+  ( PIsDataRepr p
+  , PLift p
+  , Ledger.FromData h
+  , Ledger.ToData h
+  ) =>
+  PConstantDecl (DerivePConstantViaData h p)
+  where
   type PConstantRepr (DerivePConstantViaData h p) = Ledger.Data
   type PConstanted (DerivePConstantViaData h p) = p
   pconstantToRepr (DerivePConstantViaData x) = Ledger.toData x
