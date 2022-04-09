@@ -145,6 +145,10 @@
 
   Added by: [#415](https://github.com/Plutonomicon/plutarch/pull/415)
 
+- Add `PlutusType` instance for `PDataSum`. `PDataSum` can now be hand-constructed.
+
+  Added by: [#345](https://github.com/Plutonomicon/plutarch/pull/345)
+
 # 1.1.0
 
 - General repository changes.

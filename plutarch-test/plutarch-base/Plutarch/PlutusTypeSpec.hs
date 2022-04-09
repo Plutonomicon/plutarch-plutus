@@ -2,6 +2,9 @@
 
 module Plutarch.PlutusTypeSpec (spec) where
 
+import Data.Functor.Compose (Compose (Compose))
+import Data.SOP.NS (NS (S, Z))
+
 import Plutarch (pcon', pmatch')
 import Plutarch.Api.V1 (
   PAddress (PAddress),
@@ -9,6 +12,7 @@ import Plutarch.Api.V1 (
   PScriptPurpose (PCertifying, PMinting, PRewarding, PSpending),
  )
 import Plutarch.Builtin (pasByteStr, pasConstr)
+import Plutarch.DataRepr (PDataSum (PDataSum), pasDataSum)
 import Plutarch.Prelude
 import Plutarch.Test
 import Plutus.V1.Ledger.Address (Address (Address))
@@ -59,44 +63,90 @@ deconstrSpec = do
   describe "deconstr" . pgoldenSpec $ do
     "matching" @\ do
       "typed" @\ do
-        "newtype"
-          @| plam
-            ( \x -> pmatch x $ \(PAddress addrFields) ->
-                addrFields
-            )
-            # pconstant addrPC
-        "sumtype(ignore-fields)"
-          @| plam
-            ( \x -> pmatch x $ \case
-                PMinting _ -> pconstant ()
-                _ -> perror
-            )
-            # pconstant minting
-        "sumtype(partial-match)"
-          @| plam
-            ( \x -> pmatch x $ \case
-                PMinting hs -> hs
-                _ -> perror
-            )
-            # pconstant minting
+        "newtype" @\ do
+          "normal"
+            @| plam
+              ( \x -> pmatch x $ \(PAddress addrFields) ->
+                  addrFields
+              )
+              # pconstant addrPC
+          "datasum"
+            @| plam
+              ( \x -> pmatch (pasDataSum x) $ \(PDataSum datsum) -> case datsum of
+                  Z (Compose addrFields) -> addrFields
+                  _ -> perror
+              )
+              # pconstant addrPC
+        "sumtype(ignore-fields)" @\ do
+          "normal"
+            @| plam
+              ( \x -> pmatch x $ \case
+                  PMinting _ -> pconstant ()
+                  _ -> perror
+              )
+              # pconstant minting
+          "datasum"
+            @| plam
+              ( \x -> pmatch (pasDataSum x) $ \(PDataSum datsum) -> case datsum of
+                  Z _ -> pconstant ()
+                  _ -> perror
+              )
+              # pconstant minting
+        "sumtype(partial-match)" @\ do
+          "normal"
+            @| plam
+              ( \x -> pmatch x $ \case
+                  PMinting hs -> hs
+                  _ -> perror
+              )
+              # pconstant minting
+          "datasum"
+            @| plam
+              ( \x -> pmatch (pasDataSum x) $ \(PDataSum datsum) -> case datsum of
+                  Z (Compose hs) -> hs
+                  _ -> perror
+              )
+              # pconstant minting
         "sumtype(exhaustive)" @\ do
-          benchPurpose $
-            plam
-              ( \x -> pmatch x $ \case
-                  PMinting f -> plet f $ const $ phexByteStr "01"
-                  PSpending f -> plet f $ const $ phexByteStr "02"
-                  PRewarding f -> plet f $ const $ phexByteStr "03"
-                  PCertifying f -> plet f $ const $ phexByteStr "04"
-              )
+          ("normal" @\) $
+            benchPurpose $
+              plam
+                ( \x -> pmatch x $ \case
+                    PMinting f -> plet f $ const $ phexByteStr "01"
+                    PSpending f -> plet f $ const $ phexByteStr "02"
+                    PRewarding f -> plet f $ const $ phexByteStr "03"
+                    PCertifying f -> plet f $ const $ phexByteStr "04"
+                )
+          ("datasum" @\) $
+            benchPurpose $
+              plam
+                ( \x -> pmatch (pasDataSum x) $ \(PDataSum datsum) -> case datsum of
+                    Z (Compose f) -> plet f $ const $ phexByteStr "01"
+                    S (Z (Compose f)) -> plet f $ const $ phexByteStr "02"
+                    S (S (Z (Compose f))) -> plet f $ const $ phexByteStr "03"
+                    S (S (S (Z (Compose f)))) -> plet f $ const $ phexByteStr "04"
+                    _ -> perror
+                )
         "sumtype(exhaustive)(ignore-fields)" @\ do
-          benchPurpose $
-            plam
-              ( \x -> pmatch x $ \case
-                  PMinting _ -> phexByteStr "01"
-                  PSpending _ -> phexByteStr "02"
-                  PRewarding _ -> phexByteStr "03"
-                  PCertifying _ -> phexByteStr "04"
-              )
+          ("normal" @\) $
+            benchPurpose $
+              plam
+                ( \x -> pmatch x $ \case
+                    PMinting _ -> phexByteStr "01"
+                    PSpending _ -> phexByteStr "02"
+                    PRewarding _ -> phexByteStr "03"
+                    PCertifying _ -> phexByteStr "04"
+                )
+          ("datasum" @\) $
+            benchPurpose $
+              plam
+                ( \x -> pmatch (pasDataSum x) $ \(PDataSum datsum) -> case datsum of
+                    Z _ -> phexByteStr "01"
+                    S (Z _) -> phexByteStr "02"
+                    S (S (Z _)) -> phexByteStr "03"
+                    S (S (S (Z _))) -> phexByteStr "04"
+                    _ -> perror
+                )
       "raw" @\ do
         "newtype"
           @| plam
