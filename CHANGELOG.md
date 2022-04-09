@@ -129,6 +129,22 @@
 
   Added by: [#354](https://github.com/Plutonomicon/plutarch/pull/354)
 
+- Remove `hrecField` export. Use `getField` instead.
+
+  Removed by: [#415](https://github.com/Plutonomicon/plutarch/pull/415)
+
+- Rename the `"data"` field of `PTxInfo` to `"datums"`.
+
+  Renamed by: [#415](https://github.com/Plutonomicon/plutarch/pull/415)
+
+- Add `Num` instance for `PPOSIXTime` and export its constructor.
+
+  Added by: [#415](https://github.com/Plutonomicon/plutarch/pull/415)
+
+- `PlutusType` is now a superclass of `PIsDataRepr`, strengthening the existing `PMatch` superclass constraint.
+
+  Added by: [#415](https://github.com/Plutonomicon/plutarch/pull/415)
+
 # 1.1.0
 
 - General repository changes.
