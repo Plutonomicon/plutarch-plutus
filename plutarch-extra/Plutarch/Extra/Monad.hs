@@ -3,16 +3,16 @@
 
 -- | TermCont-related adapters for Plutarch functions.
 module Plutarch.Extra.Monad (
-  tlet,
-  tmatch,
+  pletC,
+  pmatchC,
 ) where
 
 import Plutarch.Prelude
 
 -- | Like `plet` but works in a `TermCont` monad
-tlet :: Term s a -> TermCont s (Term s a)
-tlet = tcont . plet
+pletC :: Term s a -> TermCont s (Term s a)
+pletC = tcont . plet
 
 -- | Like `pmatch` but works in a `TermCont` monad
-tmatch :: PMatch a => Term s a -> TermCont s (a s)
-tmatch = tcont . pmatch
+pmatchC :: PMatch a => Term s a -> TermCont s (a s)
+pmatchC = tcont . pmatch

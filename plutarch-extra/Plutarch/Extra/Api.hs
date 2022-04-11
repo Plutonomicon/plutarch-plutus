@@ -18,14 +18,14 @@ import Plutarch.Api.V1 (
  )
 import Plutarch.Prelude
 
-import Plutarch.Extra.Monad (tmatch)
+import Plutarch.Extra.Monad (pmatchC)
 
 -- | Find the output txns corresponding to the input being validated.
 pgetContinuingOutputs :: Term s (PScriptContext :--> PBuiltinList PTxOut)
 pgetContinuingOutputs = phoistAcyclic $
   plam $ \sc -> unTermCont $ do
     let txinfo = pfield @"txInfo" # sc
-    tmatch (pfindOwnInput # sc) >>= \case
+    pmatchC (pfindOwnInput # sc) >>= \case
       PJust te -> do
         let outs = pfield @"outputs" # txinfo
             resolved = pfield @"resolved" # te
@@ -48,7 +48,7 @@ pfindOwnInput :: Term s (PScriptContext :--> PMaybe PTxInInfo)
 pfindOwnInput = phoistAcyclic $
   plam $ \sc -> unTermCont $ do
     ctx <- tcont $ pletFields @["txInfo", "purpose"] sc
-    tmatch (getField @"purpose" ctx) >>= \case
+    pmatchC (getField @"purpose" ctx) >>= \case
       PSpending outRef' -> do
         let outRef = pfield @"_0" # outRef'
         pure $
