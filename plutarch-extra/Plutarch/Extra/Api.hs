@@ -8,56 +8,69 @@ import Plutarch.Api.V1 (
   PAddress,
   PDatum,
   PDatumHash,
-  PScriptContext,
-  PScriptPurpose (PSpending),
   PTuple,
   PTxInInfo,
-  PTxInfo,
   PTxOut,
   PTxOutRef,
  )
 import Plutarch.Prelude
 
-import Plutarch.Extra.Monad (pmatchC)
+{- | Find the output txns corresponding to the input being validated.
 
--- | Find the output txns corresponding to the input being validated.
-pgetContinuingOutputs :: Term s (PScriptContext :--> PBuiltinList PTxOut)
+  Takes as arguments the inputs, outputs and the spending transaction referenced
+  from `PScriptPurpose`.
+
+  __Example:__
+
+  @
+  ctx <- tcont $ pletFields @["txInfo", "purpose"] sc
+  pmatchC (getField @"purpose" ctx) >>= \case
+    PSpending outRef' -> do
+      let outRef = pfield @"_0" # outRef'
+          inputs = pfield @"inputs" # (getField @"txInfo" ctx)
+          outputs = pfield @"outputs" # (getField @"txInfo" ctx)
+      pure $ pgetContinuingOutputs # inputs # outputs # outRef
+    _ ->
+      pure $ ptraceError "not a spending tx"
+  @
+-}
+pgetContinuingOutputs :: Term s (PBuiltinList (PAsData PTxInInfo) :--> PBuiltinList (PAsData PTxOut) :--> PTxOutRef :--> PBuiltinList PTxOut)
 pgetContinuingOutputs = phoistAcyclic $
-  plam $ \sc -> unTermCont $ do
-    let txinfo = pfield @"txInfo" # sc
-    pmatchC (pfindOwnInput # sc) >>= \case
-      PJust te -> do
-        let outs = pfield @"outputs" # txinfo
-            resolved = pfield @"resolved" # te
-            outAdr = pfield @"address" # resolved
-        pure $ pfilter # (matches # outAdr) #$ pmap # plam pfromData # outs
+  plam $ \inputs outputs outRef ->
+    pmatch (pfindOwnInput # inputs # outRef) $ \case
+      PJust tx -> do
+        let resolved = pfield @"resolved" # tx
+            outAddr = pfield @"address" # resolved
+        pfilter # (matches # outAddr) #$ pmap # plam pfromData # outputs
       PNothing ->
-        pure $ ptraceError "can't get any continuing outputs"
+        ptraceError "can't get any continuing outputs"
   where
     matches :: Term s (PAddress :--> PTxOut :--> PBool)
     matches = phoistAcyclic $
       plam $ \adr txOut ->
         adr #== pfield @"address" # txOut
 
-{- | Find the input currently being validated.
+{- | Find the input being spent in the current transaction.
 
-  Tries to finds the transaction's input by looking for a `PTxInInfo` in the inputs
-  coresponding to the `PTxOutRef` which the script purpose is spending
+  Takes as arguments the inputs, as well as the spending transaction referenced from `PScriptPurpose`.
+
+  __Example:__
+
+  @
+  ctx <- tcont $ pletFields @["txInfo", "purpose"] sc
+  pmatchC (getField @"purpose" ctx) >>= \case
+    PSpending outRef' -> do
+      let outRef = pfield @"_0" # outRef'
+          inputs = pfield @"inputs" # (getField @"txInfo" ctx)
+      pure $ pfindOwnInput # inputs # outRef
+    _ ->
+      pure $ ptraceError "not a spending tx"
+  @
 -}
-pfindOwnInput :: Term s (PScriptContext :--> PMaybe PTxInInfo)
+pfindOwnInput :: Term s (PBuiltinList (PAsData PTxInInfo) :--> PTxOutRef :--> PMaybe PTxInInfo)
 pfindOwnInput = phoistAcyclic $
-  plam $ \sc -> unTermCont $ do
-    ctx <- tcont $ pletFields @["txInfo", "purpose"] sc
-    pmatchC (getField @"purpose" ctx) >>= \case
-      PSpending outRef' -> do
-        let outRef = pfield @"_0" # outRef'
-        pure $
-          pfind # (matches # outRef)
-            #$ pmap # plam pfromData
-            #$ pfromData
-            $ pfield @"inputs" # (getField @"txInfo" ctx)
-      _ ->
-        pure $ pcon PNothing
+  plam $ \inputs outRef ->
+    pfind # (matches # outRef) #$ pmap # plam pfromData #$ inputs
   where
     matches :: Term s (PTxOutRef :--> PTxInInfo :--> PBool)
     matches = phoistAcyclic $
@@ -65,16 +78,22 @@ pfindOwnInput = phoistAcyclic $
         pfield @"id" # outref
           #== pfield @"id" # (pfield @"outRef" # txininfo)
 
--- | Find the data corresponding to a data hash, if there is one
-pfindDatum :: Term s (PDatumHash :--> PTxInfo :--> PMaybe PDatum)
+{- | Lookup up the datum given the datum hash.
+
+  Takes as argument the datum assoc list from a `PTxInfo`.
+
+  __Example:__
+
+  @
+  pfindDatum # datumHash #$ pfield @"datums" # txinfo
+  @
+-}
+pfindDatum :: Term s (PDatumHash :--> PBuiltinList (PAsData (PTuple PDatumHash PDatum)) :--> PMaybe PDatum)
 pfindDatum = phoistAcyclic $
-  plam $ \dh txinfo -> unTermCont $ do
-    let txInfoData = pfield @"datums" # txinfo
-        maybeEnt = pfind # (matches # dh) # txInfoData
-    pure $
-      pmatch maybeEnt $ \case
-        PNothing -> pcon PNothing
-        PJust x -> pcon $ PJust $ pdsnd # x
+  plam $ \dh datums ->
+    pmatch (pfind # (matches # dh) # datums) $ \case
+      PNothing -> pcon PNothing
+      PJust x -> pcon $ PJust $ pdsnd # x
   where
     matches :: (PEq k, PIsData k) => Term s (k :--> PAsData (PTuple k v) :--> PBool)
     matches = phoistAcyclic $
