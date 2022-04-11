@@ -12,12 +12,12 @@ spec = do
   describe "extra.api" $ do
     let ctx = validContext0
     plutarchDevFlagDescribe . pgoldenSpec $ do
-      "findOwnInput"
-        @| findOwnInput # ctx @-> \res ->
+      "pfindOwnInput"
+        @| pfindOwnInput # ctx @-> \res ->
           passert $ res #== pcon (PJust $ pconstant inp)
-      "getContinuingOutputs"
-        @| getContinuingOutputs # ctx @-> \txOuts ->
+      "pgetContinuingOutputs"
+        @| pgetContinuingOutputs # ctx @-> \txOuts ->
           passert $ txOuts #== pconstant validOutputs0
-      "findDatum"
-        @| findDatum # pconstant "d0" # (pfield @"txInfo" # ctx) @-> \res ->
+      "pfindDatum"
+        @| pfindDatum # pconstant "d0" # (pfield @"txInfo" # ctx) @-> \res ->
           passert $ res #== pcon (PJust $ pconstant d0Dat)

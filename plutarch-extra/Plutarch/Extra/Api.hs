@@ -1,7 +1,7 @@
 module Plutarch.Extra.Api (
-  getContinuingOutputs,
-  findOwnInput,
-  findDatum,
+  pgetContinuingOutputs,
+  pfindOwnInput,
+  pfindDatum,
 ) where
 
 import GHC.Records (HasField (getField))
@@ -23,11 +23,11 @@ import Plutarch.Prelude
 import Plutarch.Extra.Monad (tmatch)
 
 -- | Find the output txns corresponding to the input being validated.
-getContinuingOutputs :: Term s (PScriptContext :--> PBuiltinList PTxOut)
-getContinuingOutputs = phoistAcyclic $
+pgetContinuingOutputs :: Term s (PScriptContext :--> PBuiltinList PTxOut)
+pgetContinuingOutputs = phoistAcyclic $
   plam $ \sc -> unTermCont $ do
     let txinfo = pfield @"txInfo" # sc
-    tmatch (findOwnInput # sc) >>= \case
+    tmatch (pfindOwnInput # sc) >>= \case
       PJust te -> do
         let outs = pfield @"outputs" # txinfo
             resolved = pfield @"resolved" # te
@@ -46,8 +46,8 @@ getContinuingOutputs = phoistAcyclic $
   Tries to finds the transaction's input by looking for a `PTxInInfo` in the inputs
   coresponding to the `PTxOutRef` which the script purpose is spending
 -}
-findOwnInput :: Term s (PScriptContext :--> PMaybe PTxInInfo)
-findOwnInput = phoistAcyclic $
+pfindOwnInput :: Term s (PScriptContext :--> PMaybe PTxInInfo)
+pfindOwnInput = phoistAcyclic $
   plam $ \sc -> unTermCont $ do
     ctx <- tcont $ pletFields @["txInfo", "purpose"] sc
     tmatch (getField @"purpose" ctx) >>= \case
@@ -68,8 +68,8 @@ findOwnInput = phoistAcyclic $
           #== pfield @"id" # (pfield @"outRef" # txininfo)
 
 -- | Find the data corresponding to a data hash, if there is one
-findDatum :: Term s (PDatumHash :--> PTxInfo :--> PMaybe PDatum)
-findDatum = phoistAcyclic $
+pfindDatum :: Term s (PDatumHash :--> PTxInfo :--> PMaybe PDatum)
+pfindDatum = phoistAcyclic $
   plam $ \dh txinfo -> unTermCont $ do
     let txInfoData = pfield @"data" # txinfo
         maybeEnt = pfind # (matches # dh) # txInfoData
