@@ -1,0 +1,7 @@
+{
+    "recommendations": [
+        "haskell.haskell",
+        "bbenoist.nix",
+        "jnoortheen.nix-ide"
+    ]
+}

@@ -1,0 +1,6 @@
+{
+    "haskell.formattingProvider": "fourmolu",
+    "search.exclude": {
+        "**/*.golden": true
+    }
+}

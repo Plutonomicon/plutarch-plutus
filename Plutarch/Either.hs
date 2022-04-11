@@ -1,12 +1,13 @@
 module Plutarch.Either (PEither (..)) where
 
-import Plutarch (PlutusType (PInner, pcon', pmatch'))
-import Plutarch.Prelude
+import qualified GHC.Generics as GHC
+import Generics.SOP (Generic, HasDatatypeInfo, I (I))
+import Plutarch (PType, PlutusType, S, Term)
+import Plutarch.Bool (PEq)
+import Plutarch.Show (PShow)
 
-data PEither (a :: PType) (b :: PType) (s :: S) = PLeft (Term s a) | PRight (Term s b)
-
-instance PlutusType (PEither a b) where
-  type PInner (PEither a b) c = (a :--> c) :--> (b :--> c) :--> c
-  pcon' (PLeft x) = plam $ \f _ -> f # x
-  pcon' (PRight y) = plam $ \_ g -> g # y
-  pmatch' p f = p # plam (f . PLeft) # plam (f . PRight)
+data PEither (a :: PType) (b :: PType) (s :: S)
+  = PLeft (Term s a)
+  | PRight (Term s b)
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic, HasDatatypeInfo, PlutusType, PEq, PShow)

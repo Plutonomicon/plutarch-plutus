@@ -1,0 +1,11 @@
+lam (program 1.0.0 ((\i0 -> (\i0 -> \i0 -> (\i0 -> addInteger (unIData (i3 i1)) (unIData (i3 (i4 i1)))) (i3 (i3 (i3 (i3 (i3 i1)))))) (force headList)) (force tailList)))
+app (program 1.0.0 ((\i0 -> (\i0 -> (\i0 -> (\i0 -> addInteger (unIData (i3 i1)) (unIData (i3 (i4 i1)))) (i3 (i3 (i3 (i3 (i3 i1)))))) [ #00
+                                                                                                                                  , #01
+                                                                                                                                  , #02
+                                                                                                                                  , #03
+                                                                                                                                  , #04
+                                                                                                                                  , #05
+                                                                                                                                  , #06
+                                                                                                                                  , #07
+                                                                                                                                  , #08
+                                                                                                                                  , #09 ]) (force headList)) (force tailList)))

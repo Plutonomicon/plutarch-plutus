@@ -5,12 +5,15 @@ module Plutarch.Crypto (
   pverifySignature,
 ) where
 
-import Plutarch (punsafeBuiltin)
+import Plutarch (
+  Term,
+  type (:-->),
+ )
+import Plutarch.Unsafe (punsafeBuiltin)
 
 -- import Plutarch.Api.V1 (PDatumHash, PPubKey (..), PPubKeyHash (..), PSignature (..))
 import Plutarch.Bool (PBool)
 import Plutarch.ByteString (PByteString)
-import Plutarch.Prelude
 import qualified PlutusCore as PLC
 
 -- | Hash a 'PByteString' using SHA-256.

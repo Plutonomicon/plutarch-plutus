@@ -1,74 +1,59 @@
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 
-module Plutarch.Evaluate (evaluateBudgetedScript, evaluateScript) where
+module Plutarch.Evaluate (evaluateBudgetedScript, evaluateScript, evalScript, evalScript', EvalError) where
 
-import Control.Monad.Except (runExceptT)
 import Data.Text (Text)
 import Plutus.V1.Ledger.Scripts (Script (Script))
 import qualified Plutus.V1.Ledger.Scripts as Scripts
-import PlutusCore (FreeVariableError, defaultVersion)
 import qualified PlutusCore as PLC
 import PlutusCore.Evaluation.Machine.ExBudget (
   ExBudget (ExBudget),
   ExRestrictingBudget (ExRestrictingBudget),
   minusExBudget,
  )
-import qualified PlutusCore.Evaluation.Machine.ExMemory as ExMemory
+import PlutusCore.Evaluation.Machine.ExMemory (ExCPU (ExCPU), ExMemory (ExMemory))
 import UntypedPlutusCore (
   Program (Program),
   Term,
-  termMapNames,
-  unNameDeBruijn,
  )
-import UntypedPlutusCore.DeBruijn (deBruijnTerm)
-import qualified UntypedPlutusCore.Evaluation.Machine.Cek as UPLC
+import qualified UntypedPlutusCore as UPLC
+import qualified UntypedPlutusCore.Evaluation.Machine.Cek as Cek
 
--- Stolen from pluto, thanks Morgan
-
-{- | Evaluate a script, returning the trace log and term result.
-
- This is same as `Plutus.V1.Ledger.Scripts.evaluateScript`, but returns the
- result as well.
--}
+{-# DEPRECATED evaluateScript "use evalScript" #-}
 evaluateScript :: Script -> Either Scripts.ScriptError (ExBudget, [Text], Script)
-evaluateScript = evaluateBudgetedScript $ ExBudget (ExMemory.ExCPU maxInt) (ExMemory.ExMemory maxInt)
+evaluateScript = evaluateBudgetedScript $ ExBudget (ExCPU maxInt) (ExMemory maxInt)
   where
     maxInt = fromIntegral (maxBound :: Int)
 
+{-# DEPRECATED evaluateBudgetedScript "use evalScript'" #-}
 evaluateBudgetedScript :: ExBudget -> Script -> Either Scripts.ScriptError (ExBudget, [Text], Script)
-evaluateBudgetedScript totalBudget s = do
-  p <- case Scripts.mkTermToEvaluate s of
-    Right p -> pure p
-    Left e -> Left . Scripts.MalformedScript $ show e
-  let (logOut, usedBudget, result) = evaluateCekBudgetedTrace totalBudget p
-  named <- case result of
-    Right term -> pure term
-    Left errWithCause@(UPLC.ErrorWithCause err cause) ->
-      Left $ case err of
-        UPLC.InternalEvaluationError internalEvalError ->
-          Scripts.EvaluationException (show errWithCause) (show internalEvalError)
-        UPLC.UserEvaluationError evalError ->
-          -- We use `show` here because plutus doesn't expose mkError
-          Scripts.EvaluationError logOut (show (evalError, cause))
-  term' <- runExceptT @FreeVariableError (deBruijnTerm named)
-  let Right term = term'
-  let s' = Script $ Program () (defaultVersion ()) $ termMapNames unNameDeBruijn term
-  pure (usedBudget, logOut, s')
+evaluateBudgetedScript budget script = case evalScript' budget script of
+  (Right res, remaining, logs) -> Right (remaining, logs, res)
+  (Left _, _, logs) -> Left $ Scripts.EvaluationError logs "evaluation failed"
 
-{- | Evaluate a program in the CEK machine against the given budget, with the
- usual text dynamic builtins and tracing, additionally returning the trace
- output.
--}
-evaluateCekBudgetedTrace ::
-  -- | The resource budget which must not be exceeded during evaluation
+type EvalError = (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun)
+
+-- | Evaluate a script with a big budget, returning the trace log and term result.
+evalScript :: Script -> (Either EvalError Script, ExBudget, [Text])
+evalScript script = evalScript' budget script
+  where
+    -- from https://github.com/input-output-hk/cardano-node/blob/master/configuration/cardano/mainnet-alonzo-genesis.json#L17
+    budget = ExBudget (ExCPU 10000000000) (ExMemory 10000000)
+
+-- | Evaluate a script with a specific budget, returning the trace log and term result.
+evalScript' :: ExBudget -> Script -> (Either (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun) Script, ExBudget, [Text])
+evalScript' budget (Script (Program _ _ t)) = case evalTerm budget (UPLC.termMapNames UPLC.fakeNameDeBruijn $ t) of
+  (res, remaining, logs) -> (Script . Program () (PLC.defaultVersion ()) . UPLC.termMapNames UPLC.unNameDeBruijn <$> res, remaining, logs)
+
+evalTerm ::
   ExBudget ->
-  Program PLC.Name PLC.DefaultUni PLC.DefaultFun () ->
-  ( [Text]
+  Term PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun () ->
+  ( Either
+      EvalError
+      (Term PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun ())
   , ExBudget
-  , Either
-      (UPLC.CekEvaluationException PLC.DefaultUni PLC.DefaultFun)
-      (Term PLC.Name PLC.DefaultUni PLC.DefaultFun ())
+  , [Text]
   )
-evaluateCekBudgetedTrace budget (Program _ _ t) =
-  case UPLC.runCek PLC.defaultCekParameters (UPLC.restricting (ExRestrictingBudget budget)) UPLC.logEmitter t of
-    (errOrRes, UPLC.RestrictingSt (ExRestrictingBudget final), logs) -> (logs, budget `minusExBudget` final, errOrRes)
+evalTerm budget t =
+  case Cek.runCekDeBruijn PLC.defaultCekParameters (Cek.restricting (ExRestrictingBudget budget)) Cek.logEmitter t of
+    (errOrRes, Cek.RestrictingSt (ExRestrictingBudget final), logs) -> (errOrRes, budget `minusExBudget` final, logs)

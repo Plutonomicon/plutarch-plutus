@@ -1,22 +1,33 @@
 {-# LANGUAGE CPP #-}
 
-module Plutarch.Trace (ptrace, ptraceIfTrue, ptraceIfFalse, ptraceError) where
+module Plutarch.Trace (
+  ptrace,
+  ptraceShowId,
+  ptraceIfTrue,
+  ptraceIfFalse,
+  ptraceError,
+) where
 
 -- CPP support isn't great in fourmolu.
 {- ORMOLU_DISABLE -}
 
+import Plutarch.Internal.Other (Term, perror)
 #ifdef Development
-import Plutarch (punsafeBuiltin)
+import Plutarch.Internal.Other (type (:-->), (#), phoistAcyclic, plet, pforce, pdelay)
 #endif
 #ifdef Development
 import Plutarch.Bool (PBool, pif)
 #else
 import Plutarch.Bool (PBool)
 #endif
-import Plutarch.Prelude
 import Plutarch.String (PString)
-
 #ifdef Development
+import Plutarch.Show (PShow, pshow)
+#else
+import Plutarch.Show (PShow)
+#endif
+#ifdef Development
+import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
 #endif
 
@@ -31,6 +42,14 @@ ptrace :: Term s PString -> Term s a -> Term s a
 ptrace s a = pforce $ ptrace' # s # pdelay a
 #else
 ptrace _ a = a
+#endif
+
+-- | Like Haskell's `traceShowId` but for Plutarch
+ptraceShowId :: PShow a => Term s a -> Term s a
+#ifdef Development
+ptraceShowId x = ptrace (pshow x) x
+#else 
+ptraceShowId a = a
 #endif
 
 -- | Trace the given message and terminate evaluation with a 'perror'.

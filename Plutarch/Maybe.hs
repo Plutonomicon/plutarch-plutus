@@ -1,17 +1,36 @@
-{-# LANGUAGE PartialTypeSignatures #-}
-{-# OPTIONS_GHC -Wno-partial-type-signatures #-}
+module Plutarch.Maybe (
+  PMaybe (PJust, PNothing),
+  pfromJust,
+) where
 
-module Plutarch.Maybe (PMaybe (..)) where
-
-import Plutarch (PlutusType (PInner, pcon', pmatch'))
-import Plutarch.Prelude
+import qualified GHC.Generics as GHC
+import Generics.SOP (Generic, HasDatatypeInfo, I (I))
+import Plutarch (
+  PType,
+  PlutusType,
+  S,
+  Term,
+  perror,
+  phoistAcyclic,
+  plam,
+  pmatch,
+  type (:-->),
+ )
+import Plutarch.Bool (PEq)
+import Plutarch.Show (PShow)
 
 -- | Plutus Maybe type, with Scott-encoded repr
-data PMaybe (a :: PType) (s :: S) = PJust (Term s a) | PNothing
+data PMaybe (a :: PType) (s :: S)
+  = PJust (Term s a)
+  | PNothing
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic, HasDatatypeInfo, PlutusType, PEq, PShow)
 
-instance PlutusType (PMaybe a) where
-  type PInner (PMaybe a) b = (a :--> b) :--> PDelayed b :--> b
-  pcon' :: forall s. PMaybe a s -> forall b. Term s (PInner (PMaybe a) b)
-  pcon' (PJust x) = plam $ \f _ -> f # x
-  pcon' PNothing = plam $ \_ g -> pforce g
-  pmatch' x f = x # plam (f . PJust) # pdelay (f PNothing)
+{- |
+ fallible unwrapping from @PMaybe@
+-}
+pfromJust :: Term s (PMaybe a :--> a)
+pfromJust = phoistAcyclic $
+  plam $ \maybe -> pmatch maybe $ \case
+    PNothing -> perror
+    PJust a -> a

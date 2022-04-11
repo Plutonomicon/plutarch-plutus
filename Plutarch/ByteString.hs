@@ -16,24 +16,28 @@ import qualified Data.ByteString as BS
 import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Stack (HasCallStack)
-import Plutarch (punsafeBuiltin)
 import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Other (
+  Term,
+  (#),
+  type (:-->),
+ )
 import Plutarch.Lift (
-  DerivePConstantViaCoercible (DerivePConstantViaCoercible),
-  PConstant,
+  DerivePConstantDirect (DerivePConstantDirect),
+  PConstantDecl,
   PLifted,
   PUnsafeLiftDecl,
   pconstant,
  )
-import Plutarch.Prelude
+import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinByteString'
 data PByteString s
 
 instance PUnsafeLiftDecl PByteString where type PLifted PByteString = ByteString
-deriving via (DerivePConstantViaCoercible ByteString PByteString ByteString) instance (PConstant ByteString)
+deriving via (DerivePConstantDirect ByteString PByteString) instance PConstantDecl ByteString
 
 instance PEq PByteString where
   x #== y = punsafeBuiltin PLC.EqualsByteString # x # y
