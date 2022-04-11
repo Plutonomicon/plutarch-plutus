@@ -4,8 +4,6 @@ module Plutarch.Extra.Api (
   pfindDatum,
 ) where
 
-import GHC.Records (HasField (getField))
-
 import Plutarch.Api.V1 (
   PAddress,
   PDatum,
@@ -71,7 +69,7 @@ pfindOwnInput = phoistAcyclic $
 pfindDatum :: Term s (PDatumHash :--> PTxInfo :--> PMaybe PDatum)
 pfindDatum = phoistAcyclic $
   plam $ \dh txinfo -> unTermCont $ do
-    let txInfoData = pfield @"data" # txinfo
+    let txInfoData = pfield @"datums" # txinfo
         maybeEnt = pfind # (matches # dh) # txInfoData
     pure $
       pmatch maybeEnt $ \case
