@@ -1,7 +1,7 @@
 module Plutarch.Extra.Api (
   pgetContinuingOutputs,
   pfindOwnInput,
-  pfindDatum,
+  pparseDatum,
 ) where
 
 import Plutarch.Api.V1 (
@@ -14,6 +14,7 @@ import Plutarch.Api.V1 (
   PTxOutRef,
  )
 import Plutarch.Prelude
+import Plutarch.TryFrom (PTryFrom, ptryFrom)
 
 {- | Find the output txns corresponding to the input being validated.
 
@@ -80,28 +81,30 @@ pfindOwnInput = phoistAcyclic $
 
 {- | Lookup up the datum given the datum hash.
 
-  Takes as argument the datum assoc list from a `PTxInfo`.
+  Takes as argument the datum assoc list from a `PTxInfo`. Validates the datum
+  using `PTryFrom`.
 
   __Example:__
 
   @
-  pfindDatum # datumHash #$ pfield @"datums" # txinfo
+  pparseDatum @MyType # datumHash #$ pfield @"datums" # txinfo
   @
 -}
-pfindDatum :: Term s (PDatumHash :--> PBuiltinList (PAsData (PTuple PDatumHash PDatum)) :--> PMaybe PDatum)
-pfindDatum = phoistAcyclic $
+pparseDatum :: forall a s. PTryFrom PData (PAsData a) => Term s (PDatumHash :--> PBuiltinList (PAsData (PTuple PDatumHash PDatum)) :--> PMaybe (PAsData a))
+pparseDatum = phoistAcyclic $
   plam $ \dh datums ->
     pmatch (pfind # (matches # dh) # datums) $ \case
-      PNothing -> pcon PNothing
-      PJust x -> pcon $ PJust $ pdsnd # x
+      PNothing ->
+        pcon PNothing
+      PJust datumTuple ->
+        let datum :: Term _ PData
+            datum = pto $ pfromData $ pfield @"_1" # pfromData datumTuple
+         in pcon $ PJust $ ptryFromData datum
   where
-    matches :: (PEq k, PIsData k) => Term s (k :--> PAsData (PTuple k v) :--> PBool)
+    matches :: forall k v s. (PEq k, PIsData k) => Term s (k :--> PAsData (PTuple k v) :--> PBool)
     matches = phoistAcyclic $
       plam $ \a ab ->
-        a #== pdfst # ab
+        a #== pfield @"_0" # ab
 
-pdfst :: PIsData k => Term s (PAsData (PTuple k v) :--> k)
-pdfst = pfield @"_0"
-
-pdsnd :: PIsData v => Term s (PAsData (PTuple k v) :--> v)
-pdsnd = pfield @"_1"
+ptryFromData :: forall a s. PTryFrom PData (PAsData a) => Term s PData -> Term s (PAsData a)
+ptryFromData x = unTermCont $ fst <$> tcont (ptryFrom @(PAsData a) x)

@@ -4,7 +4,7 @@ import Plutarch.Extra.Api
 import Plutarch.Prelude
 
 import Plutarch.Api.V1 (PScriptPurpose (PSpending))
-import Plutarch.ApiSpec (d0Dat, inp, validContext0, validOutputs0)
+import Plutarch.ApiSpec (d0DatValue, inp, validContext0, validOutputs0)
 import Plutarch.Extra.Monad (pmatchC)
 import Plutarch.Maybe (pfromJust)
 import Plutarch.Test
@@ -42,8 +42,17 @@ spec = do
            )
           @-> \txOuts ->
             passert $ (pmap # plam pfromData # txOuts) #== pconstant validOutputs0
-      "pfindDatum"
-        @| ( pfindDatum # pconstant "d0" # (pfield @"datums" #$ pfield @"txInfo" # ctx)
+      "pparseDatum"
+        @| ( pparseDatum @(PBuiltinList (PAsData PInteger)) # pconstant "d0" # (pfield @"datums" #$ pfield @"txInfo" # ctx)
            )
           @-> \res ->
-            passert $ res #== pcon (PJust $ pconstant d0Dat)
+            passert $ res #== pcon (PJust $ pdata $ d0DatTerm)
+
+-- | The Plutarch term we expect when decoding `d0Dat`.
+d0DatTerm :: Term s (PBuiltinList (PAsData PInteger))
+d0DatTerm = liftList $ flip fmap d0DatValue $ \i -> pdata $ pconstant i
+
+liftList :: PLift a => [Term s a] -> Term s (PBuiltinList a)
+liftList = \case
+  [] -> pnil
+  (x : xs) -> pcons # x # liftList xs

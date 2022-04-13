@@ -8,6 +8,7 @@ module Plutarch.ApiSpec (
   validOutputs0,
   invalidContext1,
   d0Dat,
+  d0DatValue,
   inp,
 ) where
 
@@ -260,5 +261,9 @@ validDatums1 :: [(DatumHash, Datum)]
 validDatums1 =
   [("d0", d0Dat)]
 
+-- | Mock datum that is a list of integers.
 d0Dat :: Datum
-d0Dat = Datum $ toBuiltinData [(1 :: Integer) .. 10]
+d0Dat = Datum $ toBuiltinData d0DatValue
+
+d0DatValue :: [Integer]
+d0DatValue = [1 .. 10]
