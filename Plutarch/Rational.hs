@@ -36,12 +36,12 @@ import Plutarch.Builtin (
   pforgetData,
  )
 import Plutarch.Integer (PInteger, PIntegral (pdiv, pmod))
+import Plutarch.Lift (pconstant)
 import Plutarch.List (PListLike (pcons, phead, pnil, ptail), pmap)
 import Plutarch.Pair (PPair (..))
 import Plutarch.Show (PShow (pshow'), pshow)
 import Plutarch.Trace (ptraceError)
 import Plutarch.Unsafe (punsafeCoerce, punsafeFrom)
-import Plutarch.Lift (pconstant)
 
 data PRational s
   = PRational (Term s PInteger) (Term s PInteger)
