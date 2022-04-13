@@ -19,8 +19,6 @@ module Plutarch.Extra.Numeric (
 
   -- * Helper functions
   pnegate,
-  pdiv',
-  prem',
   peven,
   pmonus,
   (#^),
@@ -87,6 +85,18 @@ type PHemiring a = (PAdditiveHemigroup a, PMultiplicativeMonoid a)
 class (POrd a, PSemiring a) => PEuclideanClosed a where
   pdivMod :: Term s (a :--> a :--> PPair a a)
 
+  -- | Gets only the division part of a 'pdivMod'.
+  peuclideanDiv :: Term s (a :--> a :--> a)
+  peuclideanDiv =
+    phoistAcyclic $
+      plam $ \x y -> pmatch (pdivMod # x # y) $ \(PPair d _) -> d
+
+  -- | Gets only the remainder part of a 'divMod'.
+  peuclideanRem :: Term s (a :--> a :--> a)
+  peuclideanRem =
+    phoistAcyclic $
+      plam $ \x y -> pmatch (pdivMod # x # y) $ \(PPair _ r) -> r
+
 {- | A 'PMultiplicativeMonoid' with a notion of multiplicative inverse (for
  non-zero values).
 
@@ -139,23 +149,11 @@ class (PEq a, POrd a, PRing a) => PIntegralDomain a r | a -> r, r -> a where
 pmonus :: PAdditiveHemigroup a => Term s a -> Term s a -> Term s a
 pmonus = (#^-)
 
--- | Gets only the division part of a 'pdivMod'.
-pdiv' :: PEuclideanClosed a => Term s (a :--> a :--> a)
-pdiv' =
-  phoistAcyclic $
-    plam $ \x y -> pmatch (pdivMod # x # y) $ \(PPair d _) -> d
-
--- | Gets only the remainder part of a 'divMod'.
-prem' :: PEuclideanClosed a => Term s (a :--> a :--> a)
-prem' =
-  phoistAcyclic $
-    plam $ \x y -> pmatch (pdivMod # x # y) $ \(PPair _ r) -> r
-
 peven :: (PEq a, PEuclideanClosed a) => Term s (a :--> PBool)
 peven =
   phoistAcyclic $
     ( plam $ \x ->
-        prem' # x # (pone #+ pone) #== pzero
+        peuclideanRem # x # (pone #+ pone) #== pzero
     )
 
 -- | Raise by an 'Integer' power.
@@ -190,7 +188,7 @@ pexpBySquaring = pfix #$ plam f
     f :: Term s (a :--> PInteger :--> a) -> Term s a -> Term s PInteger -> Term s a
     f self acc i =
       pif (i #== pone) acc $
-        plet (self # (acc #* acc) # (pdiv' # i # 2)) $ \x ->
+        plet (self # (acc #* acc) # (peuclideanDiv # i # 2)) $ \x ->
           pif (peven # i) x (acc #* x)
 
 -- Instances for existing core types.
@@ -223,6 +221,8 @@ instance PEuclideanClosed PInteger where
                   (prem # x # y)
             )
       )
+  peuclideanDiv = pquot
+  peuclideanRem = prem
 
 instance PAdditiveSemigroup PRational where
   (#+) = (+)

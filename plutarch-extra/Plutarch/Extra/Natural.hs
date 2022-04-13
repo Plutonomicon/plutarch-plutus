@@ -23,7 +23,6 @@ import Plutarch.Extra.Numeric (
   PIntegralDomain (pabs, paddExtend, pprojectAbs, prestrictMay),
   PMultiplicativeMonoid (..),
   PMultiplicativeSemigroup (..),
-  pdiv',
   peven,
   pnegate,
  )
@@ -202,5 +201,5 @@ pexpBySquaring = pfix #$ plam f
     f :: Term s (a :--> PInteger :--> a) -> Term s a -> Term s PInteger -> Term s a
     f self acc i =
       pif (i #== pone) acc $
-        plet (self # (acc #* acc) # (pdiv' # i # 2)) $ \x ->
+        plet (self # (acc #* acc) # (peuclideanDiv # i # 2)) $ \x ->
           pif (peven # i) x (acc #* x)
