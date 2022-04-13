@@ -6,6 +6,7 @@ import Plutarch.Prelude
 import Plutarch.Api.V1 (PScriptPurpose (PSpending))
 import Plutarch.ApiSpec (d0Dat, inp, validContext0, validOutputs0)
 import Plutarch.Extra.Monad (pmatchC)
+import Plutarch.Maybe (pfromJust)
 import Plutarch.Test
 import Test.Hspec
 
@@ -26,7 +27,7 @@ spec = do
                   pure perror
            )
           @-> \res ->
-            passert $ res #== pcon (PJust $ pconstant inp)
+            passert $ (pfromData $ pfromJust # res) #== pconstant inp
       "pgetContinuingOutputs"
         @| ( unTermCont $ do
               ctxF <- tcont $ pletFields @["txInfo", "purpose"] ctx
@@ -40,7 +41,7 @@ spec = do
                   pure perror
            )
           @-> \txOuts ->
-            passert $ txOuts #== pconstant validOutputs0
+            passert $ (pmap # plam pfromData # txOuts) #== pconstant validOutputs0
       "pfindDatum"
         @| ( pfindDatum # pconstant "d0" # (pfield @"datums" #$ pfield @"txInfo" # ctx)
            )

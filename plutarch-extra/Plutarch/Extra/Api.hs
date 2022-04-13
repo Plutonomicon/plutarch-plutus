@@ -34,18 +34,18 @@ import Plutarch.Prelude
       pure $ ptraceError "not a spending tx"
   @
 -}
-pgetContinuingOutputs :: Term s (PBuiltinList (PAsData PTxInInfo) :--> PBuiltinList (PAsData PTxOut) :--> PTxOutRef :--> PBuiltinList PTxOut)
+pgetContinuingOutputs :: Term s (PBuiltinList (PAsData PTxInInfo) :--> PBuiltinList (PAsData PTxOut) :--> PTxOutRef :--> PBuiltinList (PAsData PTxOut))
 pgetContinuingOutputs = phoistAcyclic $
   plam $ \inputs outputs outRef ->
     pmatch (pfindOwnInput # inputs # outRef) $ \case
       PJust tx -> do
         let resolved = pfield @"resolved" # tx
             outAddr = pfield @"address" # resolved
-        pfilter # (matches # outAddr) #$ pmap # plam pfromData # outputs
+        pfilter # (matches # outAddr) # outputs
       PNothing ->
         ptraceError "can't get any continuing outputs"
   where
-    matches :: Term s (PAddress :--> PTxOut :--> PBool)
+    matches :: Term s (PAddress :--> PAsData PTxOut :--> PBool)
     matches = phoistAcyclic $
       plam $ \adr txOut ->
         adr #== pfield @"address" # txOut
@@ -67,12 +67,12 @@ pgetContinuingOutputs = phoistAcyclic $
       pure $ ptraceError "not a spending tx"
   @
 -}
-pfindOwnInput :: Term s (PBuiltinList (PAsData PTxInInfo) :--> PTxOutRef :--> PMaybe PTxInInfo)
+pfindOwnInput :: Term s (PBuiltinList (PAsData PTxInInfo) :--> PTxOutRef :--> PMaybe (PAsData PTxInInfo))
 pfindOwnInput = phoistAcyclic $
   plam $ \inputs outRef ->
-    pfind # (matches # outRef) #$ pmap # plam pfromData #$ inputs
+    pfind # (matches # outRef) # inputs
   where
-    matches :: Term s (PTxOutRef :--> PTxInInfo :--> PBool)
+    matches :: Term s (PTxOutRef :--> PAsData PTxInInfo :--> PBool)
     matches = phoistAcyclic $
       plam $ \outref txininfo ->
         pfield @"id" # outref
