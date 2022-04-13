@@ -1,8 +1,11 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
 
--- | TermCont-related adapters for Plutarch functions.
-module Plutarch.Extra.Monad (
+{- | TermCont-related adapters for Plutarch functions.
+
+  TODO: More functions (pletFieldsC, ptraceC, ...) need to be added here.
+-}
+module Plutarch.Extra.TermCont (
   pletC,
   pmatchC,
 ) where

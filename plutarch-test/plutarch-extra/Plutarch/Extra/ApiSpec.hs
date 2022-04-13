@@ -5,7 +5,7 @@ import Plutarch.Prelude
 
 import Plutarch.Api.V1 (PScriptPurpose (PSpending))
 import Plutarch.ApiSpec (d0DatValue, inp, validContext0, validOutputs0)
-import Plutarch.Extra.Monad (pmatchC)
+import Plutarch.Extra.TermCont (pmatchC)
 import Plutarch.Maybe (pfromJust)
 import Plutarch.Test
 import Test.Hspec
