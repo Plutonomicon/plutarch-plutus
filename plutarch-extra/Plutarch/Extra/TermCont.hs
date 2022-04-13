@@ -1,6 +1,3 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE UndecidableInstances #-}
-
 {- | TermCont-related adapters for Plutarch functions.
 
   TODO: More functions (pletFieldsC, ptraceC, ...) need to be added here.
