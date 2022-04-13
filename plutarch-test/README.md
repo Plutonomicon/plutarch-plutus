@@ -23,7 +23,7 @@ $ vim cabal.project # And then uncomment the "flags: +developmenet" line.
 $ ghcid -c 'cabal repl plutarch-test:exe:plutarch-test' -T Main.main
 ```
 
-## The `developmenmt` flag
+## The `development` flag
 
 Plutarch has a `development` flag. Right now, the flag is used to control tracing functions, wherein turning on the flag will inject `Trace` instructions in the generated UPLC. 
 
