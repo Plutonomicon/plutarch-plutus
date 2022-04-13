@@ -10,101 +10,57 @@ module Plutarch.Extra.Natural (
 ) where
 
 import Plutarch (PlutusType (pcon', pmatch'))
-import Plutarch.Builtin (
-  pasInt,
-  pforgetData,
- )
 import Plutarch.Extra.Numeric (
   PAdditiveGroup ((#-)),
-  PAdditiveHemigroup (..),
-  PAdditiveMonoid (..),
-  PAdditiveSemigroup (..),
-  PEuclideanClosed (..),
+  PAdditiveHemigroup ((#^-)),
+  PAdditiveMonoid (pzero),
+  PAdditiveSemigroup ((#+)),
+  PEuclideanClosed (pdivMod, peuclideanDiv),
   PIntegralDomain (pabs, paddExtend, pprojectAbs, prestrictMay),
-  PMultiplicativeMonoid (..),
-  PMultiplicativeSemigroup (..),
+  PMultiplicativeMonoid (pone),
+  PMultiplicativeSemigroup ((#*)),
   peven,
   pnegate,
  )
 import Plutarch.Prelude
-import Plutarch.Unsafe (punsafeCoerce)
+import Plutarch.Unsafe (punsafeFrom)
 
 newtype PNatural (s :: S) = PNatural (Term s PInteger)
-
-instance PIsData PNatural where
-  pfromData x =
-    phoistAcyclic
-      ( plam $ \x' ->
-          pmatch (pnatFromInt $ pasInt # pforgetData x') $ \case
-            PJust n -> n
-            PNothing -> perror
-      )
-      # x
-  pdata x =
-    phoistAcyclic
-      ( plam $ \x' ->
-          (punsafeCoerce :: Term _ (PAsData PInteger) -> Term _ (PAsData PNatural)) $
-            pdata $ pnatToInt x'
-      )
-      # x
+  deriving (PIsData, PEq, POrd, PIntegral) via (DerivePNewtype PNatural PInteger)
 
 instance PlutusType PNatural where
   type PInner PNatural _ = PInteger
-  pcon' (PNatural n) = n
+  pcon' (PNatural n) = f # n
+    where
+      f = phoistAcyclic $ plam $ \n ->
+        pif (n #< 0)
+          (ptraceError "pcon(PNatural): negative integer")
+          n
   pmatch' p f = f $ PNatural p
-
-instance PEq PNatural where
-  l #== r =
-    phoistAcyclic
-      ( plam $ \l' r' ->
-          pnatToInt l'
-            #== pnatToInt r'
-      )
-      # l
-      # r
-
-instance POrd PNatural where
-  l #<= r =
-    phoistAcyclic
-      ( plam $ \l' r' ->
-          pnatToInt l'
-            #<= pnatToInt r'
-      )
-      # l
-      # r
-
-  l #< r =
-    phoistAcyclic
-      ( plam $ \l' r' ->
-          pnatToInt l'
-            #< pnatToInt r'
-      )
-      # l
-      # r
 
 instance PAdditiveSemigroup PNatural where
   (#+) x y =
     phoistAcyclic
       ( plam $ \x' y' ->
-          punsafeNatFromInt $ pnatToInt x' #+ pnatToInt y'
+          pcon . PNatural $ pnatToInt x' #+ pnatToInt y'
       )
       # x
       # y
 
 instance PAdditiveMonoid PNatural where
-  pzero = punsafeNatFromInt pzero
+  pzero = pcon $ PNatural pzero
 
 instance PMultiplicativeSemigroup PNatural where
   (#*) x y =
     phoistAcyclic
       ( plam $ \x' y' ->
-          punsafeNatFromInt $ pnatToInt x' #* pnatToInt y'
+          pcon . PNatural $ pnatToInt x' #* pnatToInt y'
       )
       # x
       # y
 
 instance PMultiplicativeMonoid PNatural where
-  pone = punsafeNatFromInt pone
+  pone = pcon $ PNatural pone
 
 instance PAdditiveHemigroup PNatural where
   x #^- y =
@@ -112,7 +68,7 @@ instance PAdditiveHemigroup PNatural where
       ( plam $ \n1 n2 ->
           plet (pnatToInt n1) $ \n1' ->
             plet (pnatToInt n2) $ \n2' ->
-              punsafeNatFromInt $
+              pcon . PNatural $
                 pif (n1' #<= n2') pzero (n1' #- n2')
       )
       # x
@@ -125,8 +81,8 @@ instance PEuclideanClosed PNatural where
           pmatch (pdivMod # (pnatToInt x) # (pnatToInt y)) $ \(PPair d r) ->
             pcon $
               PPair
-                (punsafeNatFromInt d)
-                (punsafeNatFromInt r)
+                (pcon $ PNatural d)
+                (pcon $ PNatural r)
       )
 
 -- | Scale by a 'Natural' multiplier.
@@ -150,7 +106,7 @@ pscaleNat n a =
     # a
 
 instance PIntegralDomain PInteger PNatural where
-  pprojectAbs = punsafeNatFromInt . pabs
+  pprojectAbs = pcon . PNatural . pabs
   paddExtend = pnatToInt
   prestrictMay = pnatFromInt
   pabs x' =
@@ -183,23 +139,16 @@ pnatFromInt x =
         pif
           (i #< 0)
           (pcon PNothing)
-          (pcon . PJust . pcon . PNatural $ i)
+          (pcon . PJust . (\x -> punsafeFrom x) $ i)
     )
     # x
-
--- We made sure that PInteger >= zero as it goes from PNatural.
-punsafeNatFromInt :: Term s PInteger -> Term s PNatural
-punsafeNatFromInt = pcon . PNatural
 
 -- We secretly know that i is always positive.
 pexpBySquaring ::
   forall s a.
   PMultiplicativeMonoid a =>
   Term s (a :--> PInteger :--> a)
-pexpBySquaring = pfix #$ plam f
-  where
-    f :: Term s (a :--> PInteger :--> a) -> Term s a -> Term s PInteger -> Term s a
-    f self acc i =
-      pif (i #== pone) acc $
-        plet (self # (acc #* acc) # (peuclideanDiv # i # 2)) $ \x ->
-          pif (peven # i) x (acc #* x)
+pexpBySquaring = phoistAcyclic $ pfix #$ plam $ \self acc i ->
+  pif (i #== pone) acc $
+    plet (self # (acc #* acc) # (peuclideanDiv # i # 2)) $ \x ->
+      pif (peven # i) x (acc #* x)
