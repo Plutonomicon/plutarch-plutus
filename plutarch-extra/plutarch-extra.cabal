@@ -82,6 +82,6 @@ library
     Plutarch.Extra
     Plutarch.Extra.Natural
     Plutarch.Extra.Numeric
-    Plutarch.ListUtils
+    Plutarch.Extra.ListUtils
 
 -- other-modules:
