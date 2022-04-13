@@ -74,7 +74,7 @@ type PSemiring a = (PAdditiveMonoid a, PMultiplicativeMonoid a)
 type PRing a = (PAdditiveGroup a, PMultiplicativeMonoid a)
 
 -- | An 'PAdditiveMonoid' with a notion of Plutarch level monus.
-class (PAdditiveMonoid a) => PAdditiveHemigroup a where
+class PAdditiveMonoid a => PAdditiveHemigroup a where
   (#^-) :: Term s a -> Term s a -> Term s a
 
 infixl 6 #^-
@@ -94,7 +94,7 @@ class (POrd a, PSemiring a) => PEuclideanClosed a where
  This does mean that '#/' and 'preciprocal' aren't total, but there's not much
  we can do about that.
 -}
-class (PMultiplicativeMonoid a) => PMultiplicativeGroup a where
+class PMultiplicativeMonoid a => PMultiplicativeGroup a where
   {-# MINIMAL (#/) | preciprocal #-}
   (#/) :: Term s a -> Term s a -> Term s a
   x #/ y = x #* preciprocal y
@@ -136,20 +136,20 @@ class (PEq a, POrd a, PRing a) => PIntegralDomain a r | a -> r, r -> a where
       )
       # x'
 
-pmonus :: (PAdditiveHemigroup a) => Term s a -> Term s a -> Term s a
+pmonus :: PAdditiveHemigroup a => Term s a -> Term s a -> Term s a
 pmonus = (#^-)
 
 -- | Gets only the division part of a 'pdivMod'.
-pdiv' :: (PEuclideanClosed a) => Term s (a :--> a :--> a)
+pdiv' :: PEuclideanClosed a => Term s (a :--> a :--> a)
 pdiv' =
-  phoistAcyclic
-    $ plam $ \x y -> pmatch (pdivMod # x # y) $ \(PPair d _) -> d
+  phoistAcyclic $
+    plam $ \x y -> pmatch (pdivMod # x # y) $ \(PPair d _) -> d
 
 -- | Gets only the remainder part of a 'divMod'.
-prem' :: (PEuclideanClosed a) => Term s (a :--> a :--> a)
+prem' :: PEuclideanClosed a => Term s (a :--> a :--> a)
 prem' =
-  phoistAcyclic
-    $ plam $ \x y -> pmatch (pdivMod # x # y) $ \(PPair _ r) -> r
+  phoistAcyclic $
+    plam $ \x y -> pmatch (pdivMod # x # y) $ \(PPair _ r) -> r
 
 peven :: (PEq a, PEuclideanClosed a) => Term s (a :--> PBool)
 peven =
@@ -162,18 +162,19 @@ peven =
 (#^) :: PMultiplicativeGroup a => Term s a -> Term s PInteger -> Term s a
 a #^ x = f # a # x
   where
-    f = phoistAcyclic
-      ( plam $ \x i ->
-          plet i $ \i' ->
-            plet x $ \x' ->
-              pif (i' #== pzero) pone $
-                pif (i' #== pone) x' $
-                  plet (pexpBySquaring # x') $ \sqX ->
-                    pif
-                      (i' #< pzero)
-                      (preciprocal $ sqX #$ pnegate i')
-                      (sqX # i')
-      )
+    f =
+      phoistAcyclic
+        ( plam $ \x i ->
+            plet i $ \i' ->
+              plet x $ \x' ->
+                pif (i' #== pzero) pone $
+                  pif (i' #== pone) x' $
+                    plet (pexpBySquaring # x') $ \sqX ->
+                      pif
+                        (i' #< pzero)
+                        (preciprocal $ sqX #$ pnegate i')
+                        (sqX # i')
+        )
 
 infixr 8 #^
 
@@ -182,7 +183,7 @@ infixr 8 #^
 -- We secretly know that i is always positive.
 pexpBySquaring ::
   forall s a.
-  (PMultiplicativeMonoid a) =>
+  PMultiplicativeMonoid a =>
   Term s (a :--> PInteger :--> a)
 pexpBySquaring = pfix #$ plam f
   where

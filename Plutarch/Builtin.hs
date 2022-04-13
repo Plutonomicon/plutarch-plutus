@@ -288,7 +288,7 @@ instance PIsData PBool where
     (phoistAcyclic $ plam toBool) # pforgetData x
     where
       toBool :: Term s PData -> Term s PBool
-      toBool d = pfstBuiltin # (pasConstr # d) #== pconstant 1
+      toBool d = pfstBuiltin # (pasConstr # d) #== 1
 
   pdata x =
     (phoistAcyclic $ plam toData) # x
@@ -296,7 +296,7 @@ instance PIsData PBool where
       toData :: Term s PBool -> Term s (PAsData PBool)
       toData b =
         punsafeBuiltin PLC.ConstrData
-          # (pif' # b # pconstant 1 # (pconstant 0 :: Term s PInteger))
+          # (pif' # b # 1 #$ 0 :: Term _ PInteger)
           # nil
 
       nil :: Term s (PBuiltinList PData)

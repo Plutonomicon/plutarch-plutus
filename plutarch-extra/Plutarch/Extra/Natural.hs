@@ -10,13 +10,25 @@ module Plutarch.Extra.Natural (
 ) where
 
 import Plutarch (PlutusType (pcon', pmatch'))
-import Plutarch.Unsafe (punsafeCoerce)
-import Plutarch.Extra.Numeric
 import Plutarch.Builtin (
   pasInt,
   pforgetData,
  )
+import Plutarch.Extra.Numeric (
+  PAdditiveGroup ((#-)),
+  PAdditiveHemigroup (..),
+  PAdditiveMonoid (..),
+  PAdditiveSemigroup (..),
+  PEuclideanClosed (..),
+  PIntegralDomain (pabs, paddExtend, pprojectAbs, prestrictMay),
+  PMultiplicativeMonoid (..),
+  PMultiplicativeSemigroup (..),
+  pdiv',
+  peven,
+  pnegate,
+ )
 import Plutarch.Prelude
+import Plutarch.Unsafe (punsafeCoerce)
 
 newtype PNatural (s :: S) = PNatural (Term s PInteger)
 
@@ -75,25 +87,25 @@ instance PAdditiveSemigroup PNatural where
   (#+) x y =
     phoistAcyclic
       ( plam $ \x' y' ->
-          pnatFromIntUnsafe $ pnatToInt x' #+ pnatToInt y'
+          punsafeNatFromInt $ pnatToInt x' #+ pnatToInt y'
       )
       # x
       # y
 
 instance PAdditiveMonoid PNatural where
-  pzero = pnatFromIntUnsafe pzero
+  pzero = punsafeNatFromInt pzero
 
 instance PMultiplicativeSemigroup PNatural where
   (#*) x y =
     phoistAcyclic
       ( plam $ \x' y' ->
-          pnatFromIntUnsafe $ pnatToInt x' #* pnatToInt y'
+          punsafeNatFromInt $ pnatToInt x' #* pnatToInt y'
       )
       # x
       # y
 
 instance PMultiplicativeMonoid PNatural where
-  pone = pnatFromIntUnsafe pone
+  pone = punsafeNatFromInt pone
 
 instance PAdditiveHemigroup PNatural where
   x #^- y =
@@ -101,7 +113,7 @@ instance PAdditiveHemigroup PNatural where
       ( plam $ \n1 n2 ->
           plet (pnatToInt n1) $ \n1' ->
             plet (pnatToInt n2) $ \n2' ->
-              pnatFromIntUnsafe $
+              punsafeNatFromInt $
                 pif (n1' #<= n2') pzero (n1' #- n2')
       )
       # x
@@ -114,14 +126,14 @@ instance PEuclideanClosed PNatural where
           pmatch (pdivMod # (pnatToInt x) # (pnatToInt y)) $ \(PPair d r) ->
             pcon $
               PPair
-                (pnatFromIntUnsafe d)
-                (pnatFromIntUnsafe r)
+                (punsafeNatFromInt d)
+                (punsafeNatFromInt r)
       )
 
 -- | Scale by a 'Natural' multiplier.
 pscaleNat ::
   forall s a.
-  (PAdditiveMonoid a) =>
+  PAdditiveMonoid a =>
   Term s PNatural ->
   Term s a ->
   Term s a
@@ -139,7 +151,7 @@ pscaleNat n a =
     # a
 
 instance PIntegralDomain PInteger PNatural where
-  pprojectAbs = pnatFromIntUnsafe . pabs
+  pprojectAbs = punsafeNatFromInt . pabs
   paddExtend = pnatToInt
   prestrictMay = pnatFromInt
   pabs x' =
@@ -150,7 +162,7 @@ instance PIntegralDomain PInteger PNatural where
       # x'
 
 -- | Raise by a 'PNatural' power.
-ppowNat :: (PMultiplicativeMonoid a) => Term s a -> Term s PNatural -> Term s a
+ppowNat :: PMultiplicativeMonoid a => Term s a -> Term s PNatural -> Term s a
 ppowNat a nat =
   phoistAcyclic
     ( plam $ \x n ->
@@ -170,20 +182,20 @@ pnatFromInt x =
   phoistAcyclic
     ( plam $ \i ->
         pif
-          (i #< pconstant 0)
+          (i #< 0)
           (pcon PNothing)
           (pcon . PJust . pcon . PNatural $ i)
     )
     # x
 
 -- We made sure that PInteger >= zero as it goes from PNatural.
-pnatFromIntUnsafe :: Term s PInteger -> Term s PNatural
-pnatFromIntUnsafe = pcon . PNatural
+punsafeNatFromInt :: Term s PInteger -> Term s PNatural
+punsafeNatFromInt = pcon . PNatural
 
 -- We secretly know that i is always positive.
 pexpBySquaring ::
   forall s a.
-  (PMultiplicativeMonoid a) =>
+  PMultiplicativeMonoid a =>
   Term s (a :--> PInteger :--> a)
 pexpBySquaring = pfix #$ plam f
   where
