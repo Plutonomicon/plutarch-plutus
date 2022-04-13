@@ -32,10 +32,12 @@ instance PlutusType PNatural where
   type PInner PNatural _ = PInteger
   pcon' (PNatural n) = f # n
     where
-      f = phoistAcyclic $ plam $ \n ->
-        pif (n #< 0)
-          (ptraceError "pcon(PNatural): negative integer")
-          n
+      f = phoistAcyclic $
+        plam $ \n ->
+          pif
+            (n #< 0)
+            (ptraceError "pcon(PNatural): negative integer")
+            n
   pmatch' p f = f $ PNatural p
 
 instance PAdditiveSemigroup PNatural where
@@ -148,7 +150,8 @@ pexpBySquaring ::
   forall s a.
   PMultiplicativeMonoid a =>
   Term s (a :--> PInteger :--> a)
-pexpBySquaring = phoistAcyclic $ pfix #$ plam $ \self acc i ->
-  pif (i #== pone) acc $
-    plet (self # (acc #* acc) # (peuclideanDiv # i # 2)) $ \x ->
-      pif (peven # i) x (acc #* x)
+pexpBySquaring = phoistAcyclic $
+  pfix #$ plam $ \self acc i ->
+    pif (i #== pone) acc $
+      plet (self # (acc #* acc) # (peuclideanDiv # i # 2)) $ \x ->
+        pif (peven # i) x (acc #* x)
