@@ -29,11 +29,9 @@ import Plutarch (
   PType,
   S,
   Term,
-  plam,
   plet,
   (#),
   (#$),
-  type (:-->),
  )
 
 import Plutarch.Builtin (
@@ -225,6 +223,6 @@ pfield ::
   , a ~ (PUnLabel (IndexList n as))
   , PFromDataable a b
   ) =>
-  Term s (p :--> b)
-pfield = plam $ \i ->
-  pmaybeFromAsData $ pindexDataRecord (Proxy @n) $ ptoFields @p i
+  Term s p ->
+  Term s b
+pfield = pmaybeFromAsData . pindexDataRecord (Proxy @n) . ptoFields @p

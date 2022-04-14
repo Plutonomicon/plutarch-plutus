@@ -167,11 +167,11 @@ _pmatchHelperCred f cred1 cred2 = unTermCont $ do
   y <- tcont $ pmatch cred2
   pure $ case (x, y) of
     (PPubKeyCredential a, PPubKeyCredential b) ->
-      pto (pfromData $ pfield @"_0" # a) `f` pto (pfromData $ pfield @"_0" # b)
+      pto (pfromData $ pfield @"_0" a) `f` pto (pfromData $ pfield @"_0" b)
     (PPubKeyCredential _, PScriptCredential _) -> pconstant True
     (PScriptCredential _, PPubKeyCredential _) -> pconstant False
     (PScriptCredential a, PScriptCredential b) ->
-      pto (pfromData $ pfield @"_0" # a) `f` pto (pfromData $ pfield @"_0" # b)
+      pto (pfromData $ pfield @"_0" a) `f` pto (pfromData $ pfield @"_0" b)
 
 ltCred :: Term s PCredential -> Term s PCredential -> Term s PBool
 ltCred = _pmatchHelperCred (#<)

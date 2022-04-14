@@ -305,10 +305,10 @@ validator = phoistAcyclic $
         trustedDatum = pfromData $ punsafeCoerce dat
     -- make the Datum and Redeemer trusted
 
-    txInfo :: (Term _ PTxInfo) <- tcont $ plet $ pfield @"txInfo" # ctx
+    txInfo :: (Term _ PTxInfo) <- tcont $ plet $ pfield @"txInfo" ctx
 
     PJust ownInput <- tcont $ pmatch $ pfindOwnInput # ctx
-    resolved <- tcont $ pletFields @["address", "datumHash"] $ pfield @"resolved" # ownInput
+    resolved <- tcont $ pletFields @["address", "datumHash"] $ pfield @"resolved" ownInput
 
     let ownAddress :: Term _ PAddress
         ownAddress = resolved.address
@@ -317,13 +317,13 @@ validator = phoistAcyclic $
         ownHash :: Term _ PDatumHash
         ownHash = unTermCont $ do
           PDJust dhash <- tcont $ pmatch resolved.datumHash
-          pure $ pfield @"_0" # dhash
+          pure $ pfield @"_0" dhash
 
         data' :: Term _ (PBuiltinList (PAsData (PTuple PDatumHash PDatum)))
-        data' = pfield @"datums" # txInfo
+        data' = pfield @"datums" txInfo
 
         outputs :: Term _ (PBuiltinList (PAsData PTxOut))
-        outputs = pfield @"outputs" # txInfo
+        outputs = pfield @"outputs" txInfo
         -- find the list of the outputs
 
         matchingHashDatum :: Term _ (PBuiltinList PDatum)
@@ -347,7 +347,7 @@ validator = phoistAcyclic $
           where
             pred :: Term _ (PAsData PTxOut :--> PBool)
             pred = plam $ \out -> unTermCont $ do
-              pure $ pfield @"address" # out #== (pdata $ ownAddress)
+              pure $ pfield @"address" out #== pdata ownAddress
 
         -- make sure that after filtering the outputs, only one output
         -- remains
@@ -368,12 +368,12 @@ pfindOwnInput = phoistAcyclic $
     ctx <- tcont $ pletFields @["txInfo", "purpose"] ctx'
     PSpending txoutRef <- tcont $ pmatch $ ctx.purpose
     let txInInfos :: Term _ (PBuiltinList (PAsData PTxInInfo))
-        txInInfos = pfield @"inputs" #$ ctx.txInfo
+        txInInfos = pfield @"inputs" ctx.txInfo
         target :: Term _ PTxOutRef
-        target = pfield @"_0" # txoutRef
+        target = pfield @"_0" txoutRef
         pred :: Term _ (PAsData PTxInInfo :--> PBool)
         pred = plam $ \actual ->
-          (pfield @"id" # target) #== (pfield @"id" #$ pfield @"outRef" # pfromData actual)
+          pfield @"id" target #== pfield @"id" (pfield @"outRef" $ pfromData actual)
     pure $ pfind # pred # txInInfos
 
 ------------------- Mocking a ScriptContext ----------------------------------------

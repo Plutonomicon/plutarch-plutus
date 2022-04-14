@@ -126,18 +126,16 @@ signatories = ["ab01fe235c", "123014", "abcdef"]
 
 getTxInfo :: Term s (PScriptContext :--> PAsData PTxInfo)
 getTxInfo =
-  plam $ \ctx ->
-    pfield @"txInfo" # ctx
+  plam $ pfield @"txInfo"
 
 getMint :: Term s (PAsData PTxInfo :--> PAsData PValue)
 getMint =
-  plam $ \info ->
-    pfield @"mint" # info
+  plam $ pfield @"mint"
 
 -- | Get validator from first input in ScriptContext's TxInfo
 getCredentials :: Term s PScriptContext -> Term s (PBuiltinList PData)
 getCredentials ctx =
-  let inp = pfield @"inputs" #$ pfield @"txInfo" # ctx
+  let inp = pfield @"inputs" $ pfield @"txInfo" ctx
    in pmap # inputCredentialHash # inp
 
 {- |
@@ -150,9 +148,9 @@ inputCredentialHash =
     plam $ \inp ->
       let credential :: Term _ (PAsData PCredential)
           credential =
-            (pfield @"credential")
-              #$ (pfield @"address")
-              #$ (pfield @"resolved" # inp)
+            pfield @"credential" $
+              pfield @"address" $
+                pfield @"resolved" inp
        in phead #$ psndBuiltin #$ pasConstr # pforgetData credential
 
 -- | Get first CurrencySymbol from Value
@@ -168,7 +166,7 @@ checkSignatoryCont = plam $ \ph ctx' ->
     pure $ case purpose of
       PSpending _ ->
         let signatories :: Term s (PBuiltinList (PAsData PPubKeyHash))
-            signatories = pfield @"signatories" # getField @"txInfo" ctx
+            signatories = pfield @"signatories" $ getField @"txInfo" ctx
          in pif
               (pelem # pdata ph # signatories)
               -- Success!
@@ -184,7 +182,7 @@ checkSignatoryTermCont = plam $ \ph ctx' -> unTermCont $ do
   ctx <- tcont $ pletFields @["txInfo", "purpose"] ctx'
   tcont (pmatch $ getField @"purpose" ctx) >>= \case
     PSpending _ -> do
-      let signatories = pfield @"signatories" # getField @"txInfo" ctx
+      let signatories = pfield @"signatories" $ getField @"txInfo" ctx
       pure $
         pif
           (pelem # pdata ph # pfromData signatories)

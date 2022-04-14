@@ -77,7 +77,7 @@ checkSignatory :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatory = plam $ \ph ctx' ->
   pletFields @["txInfo", "purpose"] ctx' $ \ctx -> P.do
     PSpending _ <- pmatch $ ctx.purpose
-    let signatories = pfield @"signatories" # ctx.txInfo
+    let signatories = pfield @"signatories" ctx.txInfo
     pif
       (pelem # pdata ph # pfromData signatories)
       -- Success!

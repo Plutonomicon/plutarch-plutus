@@ -75,7 +75,7 @@ spec = do
         "pfield" @\ do
           "single"
             @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
-                in pfromData $ pfield @"credential" # addr
+                in pfromData $ pfield @"credential" addr
         "pletFields" @\ do
           "single"
             @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
@@ -153,10 +153,10 @@ tripZY =
   'pletFields' is more efficient.
 -}
 by :: Term s PInteger
-by = pfield @"y" # tripB
+by = pfield @"y" tripB
 
 getY :: Term s (PTriplet PInteger :--> PAsData PInteger)
-getY = pfield @"y"
+getY = plam $ pfield @"y"
 
 {- |
   Due to the instance @(PDataFields a) -> PDataFields (PAsData a)@,

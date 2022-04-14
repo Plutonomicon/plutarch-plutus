@@ -135,7 +135,7 @@ exportedField =
     )
 
 getTxInfo :: Term _ (PAsData PScriptContext :--> PAsData PTxInfo)
-getTxInfo = pfield @"txInfo"
+getTxInfo = plam $ pfield @"txInfo"
 
 exportedTxInfo :: CompiledCode (PlutusTx.BuiltinData -> PlutusTx.BuiltinData)
 exportedTxInfo = foreignExport getTxInfo

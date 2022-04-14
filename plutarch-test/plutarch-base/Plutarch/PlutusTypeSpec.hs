@@ -211,10 +211,7 @@ deconstrSpec = do
     "fields" @\ do
       "typed" @\ do
         "extract-single"
-          @| plam
-            ( \x ->
-                pfield @"credential" # x
-            )
+          @| plam (pfield @"credential")
             # pconstant addrSC
       "raw" @\ do
         "extract-single"
@@ -229,11 +226,11 @@ deconstrSpec = do
         "toValidatorHash"
           @| plam
             ( \x ->
-                pmatch (pfromData $ pfield @"credential" # x) $ \case
+                pmatch (pfromData $ pfield @"credential" x) $ \case
                   PPubKeyCredential _ ->
                     pcon PNothing
                   PScriptCredential credFields ->
-                    pcon . PJust $ pto $ pfromData $ pfield @"_0" # credFields
+                    pcon . PJust $ pto $ pfromData $ pfield @"_0" credFields
             )
             # pconstant addrSC
       "raw" @\ do
