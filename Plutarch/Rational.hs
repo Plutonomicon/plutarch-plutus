@@ -7,11 +7,12 @@ module Plutarch.Rational (
   pround,
   ptruncate,
   pproperFraction,
+  pratLazy,
 ) where
 
 import Data.Ratio (denominator, numerator)
 import qualified GHC.Generics as GHC
-import Generics.SOP (Generic)
+import Generics.SOP (Generic, I (I))
 import Plutarch (
   PlutusType (..),
   Term,
@@ -21,48 +22,47 @@ import Plutarch (
   plam,
   plet,
   pmatch,
+  pto,
   (#),
   (#$),
   type (:-->),
  )
-import Plutarch.Bool (PEq (..), POrd (..), pif)
+import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
-  PData,
-  PIsData (..),
+  PIsData,
   pasInt,
   pasList,
+  pdata,
   pforgetData,
+  pfromData,
  )
-import Plutarch.Integer (PInteger, PIntegral (pdiv, pmod))
+import Plutarch.Integer (PInteger, pdiv, pmod)
 import Plutarch.Lift (pconstant)
-import Plutarch.List (PListLike (pcons, phead, pnil, ptail), pmap)
-import Plutarch.Pair (PPair (..))
-import Plutarch.Show (PShow (pshow'), pshow)
-import Plutarch.Trace (ptraceError)
+import Plutarch.List (pcons, phead, pnil, ptail)
+import Plutarch.NonZero (PNonZero, pnonZero')
+import Plutarch.Pair (PPair (PPair))
+import Plutarch.Show (PShow, pshow, pshow')
+import Plutarch.TermCont (tcont, unTermCont)
 import Plutarch.Unsafe (punsafeCoerce, punsafeFrom)
 
 data PRational s
-  = PRational (Term s PInteger) (Term s PInteger)
+  = PRational (Term s PInteger) (Term s PNonZero)
   deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
+  deriving anyclass (Generic, PEq)
 
 instance PlutusType PRational where
-  type PInner PRational b = (PInteger :--> PInteger :--> b) :--> b
-  pcon' (PRational x y) = failOnZero # y #$ plam $ \f -> f # x # y
-    where
-      failOnZero = phoistAcyclic $
-        plam $ \n x ->
-          pif
-            (n #== 0)
-            (ptraceError "pcon(PRational): division by 0")
-            x
+  type PInner PRational b = (PInteger :--> PNonZero :--> b) :--> b
+  pcon' (PRational x y') = plet y' $ \y -> plam $ \f -> f # x # y
   pmatch' ratF f = ratF #$ plam $ \a b -> f $ PRational a b
 
--- | 'PRational' builder that skips the "non-zero" check for denominator.
-punsafeRat :: Term s PInteger -> Term s PInteger -> Term s PRational
-punsafeRat x y = punsafeFrom $ plam $ \f -> f # x # y
+{- | Builds a rational with lazy non-zero denominator verification.
+
+i.e, if the denominator was zero, it'll error only after 'pmatch'ing on the resulting rational.
+-}
+pratLazy :: Term s PInteger -> Term s PNonZero -> Term s PRational
+pratLazy numr denm = punsafeFrom $ plam $ \f -> f # numr # denm
 
 instance PShow PRational where
   pshow' _ x =
@@ -70,53 +70,40 @@ instance PShow PRational where
     where
       pshowRat = phoistAcyclic $
         plam $ \n -> pmatch n $ \(PRational x y) ->
-          pshow x <> "/" <> pshow y
+          pshow x <> "/" <> pshow (pto y)
 
 instance PIsData PRational where
-  pfromData x' = phoistAcyclic (plam $ \x -> pListToRat #$ pmap # pasInt #$ pasList # pforgetData x) # x'
+  pfromData x' = phoistAcyclic (plam $ \x -> plistToRat #$ pasList # pforgetData x) # x'
+    where
+      plistToRat = plam $ \x -> pratLazy (pasInt #$ phead # x) $ punsafeFrom $ pasInt #$ phead #$ ptail # x
   pdata x' =
     phoistAcyclic
-      ( plam $ \x ->
-          (punsafeCoerce :: Term _ (PAsData (PBuiltinList (PAsData PInteger))) -> Term _ (PAsData PRational)) $
-            pdata $ pRatToList # x
+      ( plam $ \x -> unTermCont $ do
+          PRational a b <- tcont $ pmatch x
+          let
+            res :: Term _ (PBuiltinList (PAsData PInteger))
+            res = pcons # pdata a #$ pcons # pdata (pto b) #$ pnil
+          pure $ punsafeCoerce $ pdata res
       )
       # x'
-
-pRatToList :: Term s (PRational :--> PBuiltinList (PAsData PInteger))
-pRatToList = plam $ \x -> pmatch x $ \(PRational a b) ->
-  pcons # pdata a #$ pcons # pdata b #$ punsafeCoerce (pnil :: Term s (PBuiltinList PData))
-
-pListToRat :: Term s (PBuiltinList PInteger :--> PRational)
-pListToRat = plam $ \x -> pcon $ PRational (phead # x) (phead #$ ptail # x)
-
-instance PEq PRational where
-  l' #== r' =
-    phoistAcyclic
-      ( plam $ \l r ->
-          pmatch l $ \(PRational ln ld) ->
-            pmatch r $ \(PRational rn rd) ->
-              rd * ln #== rn * ld
-      )
-      # l'
-      # r'
 
 instance POrd PRational where
   l' #<= r' =
     phoistAcyclic
-      ( plam $ \l r ->
-          pmatch l $ \(PRational ln ld) ->
-            pmatch r $ \(PRational rn rd) ->
-              rd * ln #<= rn * ld
+      ( plam $ \l r -> unTermCont $ do
+          PRational ln ld <- tcont $ pmatch l
+          PRational rn rd <- tcont $ pmatch r
+          pure $ pto rd * ln #<= rn * pto ld
       )
       # l'
       # r'
 
   l' #< r' =
     phoistAcyclic
-      ( plam $ \l r ->
-          pmatch l $ \(PRational ln ld) ->
-            pmatch r $ \(PRational rn rd) ->
-              rd * ln #< rn * ld
+      ( plam $ \l r -> unTermCont $ do
+          PRational ln ld <- tcont $ pmatch l
+          PRational rn rd <- tcont $ pmatch r
+          pure $ pto rd * ln #< rn * pto ld
       )
       # l'
       # r'
@@ -124,35 +111,43 @@ instance POrd PRational where
 instance Num (Term s PRational) where
   x' + y' =
     phoistAcyclic
-      ( plam $ \x y ->
-          preduce #$ pmatch x $
-            \(PRational xn xd) ->
-              pmatch y $ \(PRational yn yd) ->
-                punsafeRat (xn * yd + yn * xd) (xd * yd)
+      ( plam $ \x y -> unTermCont $ do
+          PRational xn xd' <- tcont $ pmatch x
+          PRational yn yd' <- tcont $ pmatch y
+          xd <- tcont $ plet xd'
+          yd <- tcont $ plet yd'
+          pure $
+            preduce
+              #$ pratLazy (xn * pto yd + yn * pto xd)
+              $ punsafeFrom $ pto xd * pto yd
       )
       # x'
       # y'
 
   x' - y' =
     phoistAcyclic
-      ( plam $ \x y ->
-          preduce
-            #$ pmatch x
-            $ \(PRational xn xd) ->
-              pmatch y $ \(PRational yn yd) ->
-                punsafeRat (xn * yd - yn * xd) (xd * yd)
+      ( plam $ \x y -> unTermCont $ do
+          PRational xn xd' <- tcont $ pmatch x
+          PRational yn yd' <- tcont $ pmatch y
+          xd <- tcont $ plet xd'
+          yd <- tcont $ plet yd'
+          pure $
+            preduce
+              #$ pratLazy (xn * pto yd - yn * pto xd)
+              $ punsafeFrom $ pto xd * pto yd
       )
       # x'
       # y'
 
   x' * y' =
     phoistAcyclic
-      ( plam $ \x y ->
-          preduce
-            #$ pmatch x
-            $ \(PRational xn xd) ->
-              pmatch y $ \(PRational yn yd) ->
-                punsafeRat (xn * yn) (xd * yd)
+      ( plam $ \x y -> unTermCont $ do
+          PRational xn xd <- tcont $ pmatch x
+          PRational yn yd <- tcont $ pmatch y
+          pure $
+            preduce
+              #$ pratLazy (xn * yn)
+              $ punsafeFrom $ pto xd * pto yd
       )
       # x'
       # y'
@@ -161,7 +156,7 @@ instance Num (Term s PRational) where
     phoistAcyclic
       ( plam $ \x ->
           pmatch x $ \(PRational xn xd) ->
-            punsafeRat (negate xn) xd
+            pratLazy (negate xn) xd
       )
       # x'
 
@@ -169,13 +164,13 @@ instance Num (Term s PRational) where
     phoistAcyclic
       ( plam $ \x ->
           pmatch x $ \(PRational xn xd) ->
-            punsafeRat (abs xn) (abs xd)
+            pratLazy (abs xn) $ punsafeFrom $ abs $ pto xd
       )
       # x'
 
-  signum x'' =
+  signum x' =
     phoistAcyclic
-      ( plam $ \x' -> plet x' $ \x ->
+      ( plam $ \x ->
           pif
             (x #== 0)
             0
@@ -184,50 +179,47 @@ instance Num (Term s PRational) where
               (-1)
               1
       )
-      # x''
+      # x'
 
-  fromInteger n = punsafeFrom $ plam $ \f -> f # pconstant n # 1
+  fromInteger n = pratLazy (pconstant n) $ punsafeFrom 1
 
 instance Fractional (Term s PRational) where
   recip x' =
     phoistAcyclic
       ( plam $ \x ->
           pmatch x $ \(PRational xn xd) ->
-            pcon $ PRational xd xn
+            pcon . PRational (pto xd) $ pnonZero' # xn
       )
       # x'
 
   x' / y' =
     phoistAcyclic
-      ( plam $ \x y ->
-          preduce
-            #$ pmatch x
-            $ \(PRational xn xd) ->
-              pmatch y $ \(PRational yn yd) ->
-                plet (xd * yn) $ \den -> pcon $ PRational (xn * yd) den
+      ( plam $ \x y -> unTermCont $ do
+          PRational xn xd <- tcont $ pmatch x
+          PRational yn yd <- tcont $ pmatch y
+          pure $ preduce #$ pcon . PRational (xn * pto yd) $ pnonZero' #$ pto xd * yn
       )
       # x'
       # y'
 
   fromRational r =
-    punsafeRat (pconstant $ numerator r) (pconstant $ denominator r)
+    pratLazy (pconstant $ numerator r) $ punsafeFrom $ pconstant $ denominator r
 
 preduce :: Term s (PRational :--> PRational)
 preduce = phoistAcyclic $
-  plam $ \x ->
-    pmatch x $ \(PRational xn xd) ->
-      plet (pgcd # xn # xd) $ \r ->
-        plet (signum xd) $ \s ->
-          punsafeRat (s * pdiv # xn # r) (s * pdiv # xd # r)
+  plam $ \x -> unTermCont $ do
+    PRational xn xd' <- tcont $ pmatch x
+    xd <- tcont . plet $ pto xd'
+    r <- tcont . plet $ pgcd # xn # xd
+    s <- tcont . plet . signum $ xd
+    pure . pratLazy (s * pdiv # xn # r) $ punsafeFrom $ s * pdiv # xd # r
 
 pgcd :: Term s (PInteger :--> PInteger :--> PInteger)
 pgcd = phoistAcyclic $
-  plam $ \x' y' ->
-    plet (abs x') $ \x ->
-      plet (abs y') $ \y ->
-        plet (pmax # x # y) $ \a ->
-          plet (pmin # x # y) $ \b ->
-            pgcd' # a # b
+  plam $ \x' y' -> unTermCont $ do
+    x <- tcont . plet $ abs x'
+    y <- tcont . plet $ abs y'
+    pure $ pgcd' # (pmax # x # y) #$ pmin # x # y
 
 -- assumes inputs are non negative and a >= b
 pgcd' :: Term s (PInteger :--> PInteger :--> PInteger)
@@ -248,37 +240,42 @@ pmax = phoistAcyclic $ plam $ \a b -> pif (a #<= b) b a
 pnumerator :: Term s (PRational :--> PInteger)
 pnumerator = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational n _) -> n
 
-pdenominator :: Term s (PRational :--> PInteger)
+pdenominator :: Term s (PRational :--> PNonZero)
 pdenominator = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational _ d) -> d
 
 pfromInteger :: Term s (PInteger :--> PRational)
-pfromInteger = phoistAcyclic $ plam $ \n -> punsafeRat n 1
+pfromInteger = phoistAcyclic $ plam $ \n -> pratLazy n $ punsafeFrom 1
 
 pround :: Term s (PRational :--> PInteger)
 pround = phoistAcyclic $
-  plam $ \x ->
-    pmatch x $ \(PRational a b) ->
-      plet (pdiv # a # b) $ \base ->
-        plet (pmod # a # b) $ \rem ->
-          base
-            + pif
-              (pmod # b # 2 #== 1)
-              (pif (pdiv # b # 2 #< rem) 1 0)
-              ( pif
-                  (pdiv # b # 2 #== rem)
-                  (pmod # base # 2)
-                  (pif (rem #< pdiv # b # 2) 0 1)
-              )
+  plam $ \x -> unTermCont $ do
+    PRational a' b' <- tcont $ pmatch x
+    a <- tcont $ plet a'
+    b <- tcont $ plet b'
+    base <- tcont . plet $ pdiv # a # pto b
+    rem <- tcont . plet $ pmod # a # pto b
+    let result =
+          pif
+            (pmod # pto b # 2 #== 1)
+            (pif (pdiv # pto b # 2 #< rem) 1 0)
+            $ pif
+              (pdiv # pto b # 2 #== rem)
+              (pmod # base # 2)
+              (pif (rem #< pdiv # pto b # 2) 0 1)
+    pure $ base + result
 
 ptruncate :: Term s (PRational :--> PInteger)
 ptruncate = phoistAcyclic $
-  plam $ \x ->
-    pmatch x $ \(PRational a b) ->
-      plet (pdiv # a # b) $ \q ->
-        pif
-          (0 #<= a)
-          q
-          (q + pif (pmod # a # b #== 0) 0 1)
+  plam $ \x -> unTermCont $ do
+    PRational a' b' <- tcont $ pmatch x
+    a <- tcont $ plet a'
+    b <- tcont $ plet b'
+    q <- tcont . plet $ pdiv # a # pto b
+    pure $
+      pif
+        (0 #<= a)
+        q
+        (q + pif (pmod # a # pto b #== 0) 0 1)
 
 pproperFraction :: Term s (PRational :--> PPair PInteger PRational)
 pproperFraction = phoistAcyclic $
