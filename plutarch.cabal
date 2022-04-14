@@ -116,6 +116,7 @@ library
     Plutarch.List
     Plutarch.Maybe
     Plutarch.Monadic
+    Plutarch.NonZero
     Plutarch.Pair
     Plutarch.Prelude
     Plutarch.Rational
