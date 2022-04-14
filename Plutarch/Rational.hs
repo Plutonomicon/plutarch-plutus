@@ -80,9 +80,8 @@ instance PIsData PRational where
     phoistAcyclic
       ( plam $ \x -> unTermCont $ do
           PRational a b <- tcont $ pmatch x
-          let
-            res :: Term _ (PBuiltinList (PAsData PInteger))
-            res = pcons # pdata a #$ pcons # pdata (pto b) #$ pnil
+          let res :: Term _ (PBuiltinList (PAsData PInteger))
+              res = pcons # pdata a #$ pcons # pdata (pto b) #$ pnil
           pure $ punsafeCoerce $ pdata res
       )
       # x'
