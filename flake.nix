@@ -615,7 +615,7 @@
           type = "app";
           program = checkedShellScript system "plutarch-test-${name}"
             ''
-              cd ${self}/plutarch-test
+              { touch ./plutarch-test/.crumb 2> /dev/null && cd ./plutarch-test && rm .crumb ; } || cd ${self}/plutarch-test
               ${flake.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test;
             '';
         };

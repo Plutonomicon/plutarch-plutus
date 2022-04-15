@@ -22,6 +22,7 @@ import Plutarch.List (pconvertLists)
 import Plutarch.Prelude
 import Plutarch.Rec qualified as Rec
 import Plutarch.Rec.TH (deriveAll)
+import Plutarch.Test
 import Plutus.V1.Ledger.Api (
   Address (Address),
   Credential (ScriptCredential),
@@ -385,6 +386,12 @@ spec = describe "FFI" $ do
       it "evaluate a Data -> PubKeyHash -> Bool function to False" $
         printEvaluatedTerm (importedTxSignedBy' # pconstantData info # pconstant "0123")
           @?= Right "(program 1.0.0 False)"
+
+    describe "Benchmarks" $ do
+      pgoldenSpec $ do
+        "Value.isZero"
+          @| (foreignImport $$(PlutusTx.compile [||toBuiltin . Value.isZero||]) :: Term _ (PSValue :--> PBool))
+          @-> \isZero -> passertNot (isZero # foreignImport (PlutusTx.liftCode val))
   where
     sampleScottEncoding = "(program 1.0.0 (delay (\\i0 -> i1 False 6 \"Hello\")))"
     sampleScottField = "(program 1.0.0 (\\i0 -> force i1 (\\i0 -> \\i0 -> \\i0 -> i2)))"
