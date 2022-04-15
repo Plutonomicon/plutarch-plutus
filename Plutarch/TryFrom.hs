@@ -6,6 +6,7 @@ module Plutarch.TryFrom (
   PTryFrom (..),
   HRecP (..),
   ptryFrom,
+  Flip,
 ) where
 
 import Data.Proxy (Proxy (Proxy))

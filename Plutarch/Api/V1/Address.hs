@@ -26,6 +26,7 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
  )
 import Plutarch.Prelude
+import Plutarch.TryFrom (PTryFrom)
 
 data PCredential (s :: S)
   = PPubKeyCredential (Term s (PDataRecord '["_0" ':= PPubKeyHash]))
@@ -81,3 +82,18 @@ newtype PAddress (s :: S)
 
 instance PUnsafeLiftDecl PAddress where type PLifted PAddress = Plutus.Address
 deriving via (DerivePConstantViaData Plutus.Address PAddress) instance PConstantDecl Plutus.Address
+
+deriving via
+  PAsData (PIsDataReprInstances PAddress)
+  instance
+    PTryFrom PData (PAsData PAddress)
+
+deriving via
+  PAsData (PIsDataReprInstances PCredential)
+  instance
+    PTryFrom PData (PAsData PCredential)
+
+deriving via
+  PAsData (PIsDataReprInstances PStakingCredential)
+  instance
+    PTryFrom PData (PAsData PStakingCredential)

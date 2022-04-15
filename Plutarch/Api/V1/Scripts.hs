@@ -20,6 +20,8 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
  )
 import Plutarch.Prelude
+import Plutarch.TryFrom (Flip, PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
+import Plutarch.Unsafe (punsafeCoerce)
 
 newtype PDatum (s :: S) = PDatum (Term s PData)
   deriving (PlutusType, PIsData, PEq) via (DerivePNewtype PDatum PData)
@@ -65,3 +67,11 @@ deriving via
   (DerivePConstantViaBuiltin Plutus.ValidatorHash PValidatorHash PByteString)
   instance
     PConstantDecl Plutus.ValidatorHash
+
+instance PTryFrom PData (PAsData PValidatorHash) where
+  type PTryFromExcess PData (PAsData PValidatorHash) = Flip Term PValidatorHash
+  ptryFrom' opq = runTermCont $ do
+    (wrapped :: Term _ (PAsData PByteString), unwrapped :: Term _ PByteString) <-
+      tcont $ ptryFrom @(PAsData PByteString) opq
+    tcont $ \f -> pif (plengthBS # unwrapped #== 28) (f ()) (ptraceError "a ValidatorHash should be 28 bytes long")
+    pure (punsafeCoerce wrapped, pcon . PValidatorHash $ unwrapped)

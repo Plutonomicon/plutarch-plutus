@@ -20,6 +20,7 @@ import Plutarch.Lift (
   PUnsafeLiftDecl (..),
  )
 import Plutarch.Prelude
+import Plutarch.TryFrom (PTryFrom)
 import Plutarch.Unsafe (punsafeCoerce)
 
 -- | Data encoded Maybe type. Used in various ledger api types.
@@ -82,3 +83,8 @@ _pmaybeLT whenBothNothing ltF = phoistAcyclic $
               $ pconstant whenBothNothing
           )
           $ pconstant True
+
+deriving via
+  PAsData (PIsDataReprInstances (PMaybeData a))
+  instance
+    PTryFrom PData (PAsData a) => PTryFrom PData (PAsData (PMaybeData a))
