@@ -52,7 +52,7 @@ type PSubtype = PSubtypeDecl
 @PTryFrom a b@ represents a subtyping relationship between @a@ and @b@,
 and a way to go from @a@ to @b@.
 Laws:
-- @(punsafeCoerce . fst) <$> tcont (pdowncast x) ≡ pure x@
+- @(punsafeCoerce . fst) <$> tcont (ptryFrom x) ≡ pure x@
 -}
 class PSubtype a b => PTryFrom (a :: PType) (b :: PType) where
   type PTryFromExcess a b :: PType
