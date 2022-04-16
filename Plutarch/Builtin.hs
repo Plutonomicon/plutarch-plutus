@@ -22,6 +22,9 @@ module Plutarch.Builtin (
   PIsData (..),
   PAsData,
   pforgetData,
+  pforgetData',
+  prememberData,
+  prememberData',
   ppairDataBuiltin,
   pchooseListBuiltin,
   type PBuiltinMap,
@@ -95,7 +98,7 @@ import Plutarch.Reducible (Reducible (Reduce))
 
 import Data.Functor.Const (Const)
 
-import Plutarch.TryFrom (PTryFrom, PTryFromExcess, ptryFrom, ptryFrom')
+import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast, pupcastF)
 
 -- | Plutus 'BuiltinPair'
 data PBuiltinPair (a :: PType) (b :: PType) (s :: S)
@@ -251,19 +254,24 @@ instance PConstantDecl (PAsDataLifted a) where
 
 instance PUnsafeLiftDecl (PAsData a) where type PLifted (PAsData a) = PAsDataLifted a
 
-newtype Helper1 (a :: PType) (s :: S) = Helper1 (a s)
-
 pforgetData :: forall s a. Term s (PAsData a) -> Term s PData
-pforgetData x = coerce $ pforgetData' Proxy (coerce x :: Term s (Helper1 (PAsData a)))
+pforgetData = pupcast
 
--- | Like 'pforgetData', except it works for complex types.
+{- | Like 'pforgetData', except it works for complex types.
+ Equivalent to 'pupcastF'.
+-}
 pforgetData' :: forall a (p :: PType -> PType) s. Proxy p -> Term s (p (PAsData a)) -> Term s (p PData)
-pforgetData' Proxy = punsafeCoerce
+pforgetData' = pupcastF
 
 -- | Inverse of 'pforgetData''.
 prememberData :: forall (p :: PType -> PType) s. Proxy p -> Term s (p PData) -> Term s (p (PAsData PData))
 prememberData Proxy = punsafeCoerce
 
+-- | Like 'prememberData' but generalised.
+prememberData' :: forall a (p :: PType -> PType) s. PSubtype PData a => Proxy p -> Term s (p a) -> Term s (p (PAsData a))
+prememberData' Proxy = punsafeCoerce
+
+-- | Law: If @PSubtype PData a@, then @pdata a@ must be a no-op.
 class PIsData a where
   pfromData :: Term s (PAsData a) -> Term s a
   pdata :: Term s a -> Term s (PAsData a)
