@@ -222,7 +222,12 @@ pdataLiteral :: Data -> Term s PData
 pdataLiteral = pconstant
 
 type role PAsData representational phantom
-data PAsData (a :: PType) (s :: S)
+data PAsData (a :: PType) (s :: S) = PAsData (Term s a)
+
+instance PIsData a => PlutusType (PAsData a) where
+  type PInner (PAsData a) _ = PData
+  pcon' (PAsData t) = pforgetData $ pdata t
+  pmatch' t f = f (PAsData $ pfromData $ punsafeCoerce t)
 
 type role PAsDataLifted representational
 data PAsDataLifted (a :: PType)
