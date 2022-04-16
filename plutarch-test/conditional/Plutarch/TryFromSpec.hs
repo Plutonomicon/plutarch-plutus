@@ -3,6 +3,8 @@
 
 module Plutarch.TryFromSpec (spec) where
 
+import Data.Coerce (coerce)
+
 -- Haskell imports
 import qualified GHC.Generics as GHC
 
@@ -487,7 +489,9 @@ theField = unTermCont $ do
 
 ------------------- Sample usage DerivePNewType ------------------------------------
 
-newtype PWrapInt (s :: S) = PMkWrapInt (Term s PInteger)
-  deriving (PlutusType, PIsData, PEq, POrd) via (DerivePNewtype PWrapInt PInteger)
+newtype PWrapInt (s :: S) = PWrapInt (PInteger s)
+  deriving newtype (PIsData, PEq, POrd)
 
-deriving via DerivePNewtype (PAsData PWrapInt) (PAsData PInteger) instance PTryFrom PData (PAsData PWrapInt)
+instance PTryFrom PData (PAsData PWrapInt) where
+  type PTryFromExcess PData (PAsData PWrapInt) = PTryFromExcess PData (PAsData PInteger)
+  ptryFrom' t f = ptryFrom' t $ \(t', exc) -> f (coerce (t' :: Term _ (PAsData PInteger)), exc)
