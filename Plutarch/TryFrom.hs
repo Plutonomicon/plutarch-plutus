@@ -1,16 +1,19 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.TryFrom (
   PTryFrom (..),
   HRecP (..),
   ptryFrom,
+  PSubtype,
 ) where
 
 import Data.Proxy (Proxy (Proxy))
 
 import GHC.TypeLits (KnownNat, Nat, Symbol, natVal, type (+))
+
+import Data.Coerce (Coercible)
+import Data.Kind (Constraint)
 
 import Plutarch.Unsafe (punsafeCoerce, punsafeFrom)
 
@@ -87,30 +90,38 @@ import Data.Coerce (coerce)
 
 ----------------------- The class PTryFrom ----------------------------------------------
 
-{- |
-    This checks the data structure for validity.
-    If you don't care about parts of the structure
-    don't verify those parts, just put a `PData` at
-    the places you don't care about.
-    Be aware this might get really expensive, so only
-    use it if you cannot establish trust otherwise
-    (e.g. via only checking a part of your Data with
-    PTryFrom)
-    Laws:
-      - the operation `ptryFrom` mustn't change the representation of the underlying data
-      - the operation `ptryFrom` must always prove the integrity of the whole target type
-        - example:
-          `ptryFrom PData (PAsData (PBuiltinList PData))` must only succeed if the underlying
-          representation is a `BuiltinList` containing any `PData`
-        - all conversions are fallible, this happens if the representation doesn't match
-          the expected type.
-      - the operation `ptryFrom @b @a` proves equality between the less expressive `PType` `a` and
-        the more expressive `PType` `b`, hence the first element of the resulting Tuple
-        must always be wrapped in `PAsData` if the origin type was `PData` (see law 1)
-      - the result type `b` must always be safe than the origin type `a`, i.e. it must carry
-        more information
+class PSubtypeDecl (a :: PType) (b :: PType)
+
+-- Not `OVERLAPPABLE` or `OVERLAPPING` on purpose
+instance {-# OVERLAPS #-} PSubtypeDecl a a
+
+-- FIXME: Relax subtyping constraint to a @c@ rather than all @c@.
+-- This is currently not really possible because a type must have
+-- exactly one super type and no more.
+instance {-# OVERLAPS #-} (PSubtypeDecl a b, PInner c POpaque ~ b) => PSubtypeDecl a c
+
+{- | @PSubtype a b@ constitutes a subtyping relation between @a@ and @b@.
+ This concretely means that `\(x :: Term s b) -> punsafeCoerce x :: Term s a`
+ is legal and sound.
+
+ You can not make an instance for this yourself.
+ You must use the 'PInner' type family of 'PlutusType' to get this instance.
+
+ Caveat: Only @PInner a POpaque@ is considered unfortunately, as otherwise
+ getting GHC to figure out the relation with multiple supertypes is quite hard.
+
+ Subtyping is transitive.
 -}
-class PTryFrom (a :: PType) (b :: PType) where
+type PSubtype :: PType -> PType -> Constraint
+type PSubtype = PSubtypeDecl
+
+{- |
+@PTryFrom a b@ represents a subtyping relationship between @a@ and @b@,
+and a way to go from @a@ to @b@.
+Laws:
+- @(punsafeCoerce . fst) <$> tcont (pdowncast x) ≡ pure x@
+-}
+class PSubtype a b => PTryFrom (a :: PType) (b :: PType) where
   type PTryFromExcess a b :: PType
   ptryFrom' :: forall s r. Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
 
@@ -283,6 +294,9 @@ instance
     r <- tcont $ ptryFrom @(PDataRecord as) l
     pure (punsafeCoerce opq, r)
 
+class SumValidation (n :: Nat) (sum :: [[PLabeledType]]) where
+  validateSum :: Term s PInteger -> Term s (PBuiltinList PData) -> Term s POpaque
+
 instance {-# OVERLAPPING #-} SumValidation 0 ys => PTryFrom PData (PAsData (PDataSum ys)) where
   type PTryFromExcess PData (PAsData (PDataSum ys)) = Const ()
   ptryFrom' opq = runTermCont $ do
@@ -291,9 +305,6 @@ instance {-# OVERLAPPING #-} SumValidation 0 ys => PTryFrom PData (PAsData (PDat
     fields <- tcont $ plet $ psndBuiltin # x
     _ <- tcont $ plet $ validateSum @0 @ys constr fields
     pure (punsafeCoerce opq, ())
-
-class SumValidation (n :: Nat) (sum :: [[PLabeledType]]) where
-  validateSum :: Term s PInteger -> Term s (PBuiltinList PData) -> Term s POpaque
 
 instance
   {-# OVERLAPPABLE #-}
@@ -317,25 +328,6 @@ instance {-# OVERLAPPING #-} SumValidation n '[] where
   validateSum _ _ = ptraceError "reached end of sum while still not having found the constructor"
 
 ----------------------- other utility functions -----------------------------------------
-
-{- | if there is an instance to recover something that is unwrapped from something that is
- unwrapped, then there is also the possibility to recover the whole thing but wrapped
--}
-instance
-  ( PTryFrom a b
-  , PIsData a
-  , PIsData b
-  ) =>
-  PTryFrom (PAsData a) (PAsData b)
-  where
-  type PTryFromExcess (PAsData a) (PAsData b) = PTryFromExcess a b
-  ptryFrom' opq = runTermCont $ do
-    ver' <- snd <$> TermCont (ptryFrom @b @a (pfromData opq))
-    pure $ (punsafeCoerce opq, ver')
-
-instance PTryFrom PData PData where
-  type PTryFromExcess PData PData = Const ()
-  ptryFrom' opq = runTermCont $ pure $ (opq, ())
 
 instance PTryFrom PData (PAsData PData) where
   type PTryFromExcess PData (PAsData PData) = Const ()
@@ -361,6 +353,7 @@ instance
 
 instance
   ( PTryFrom a b
+  , (forall s. Coercible (c s) (Term s b))
   ) =>
   PTryFrom a (DerivePNewtype c b)
   where
