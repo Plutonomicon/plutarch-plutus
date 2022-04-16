@@ -37,6 +37,7 @@ common c
     FlexibleContexts
     FlexibleInstances
     ForeignFunctionInterface
+    FunctionalDependencies
     GADTSyntax
     GeneralisedNewtypeDeriving
     HexFloatLiterals
@@ -54,6 +55,7 @@ common c
     PatternGuards
     PolyKinds
     PostfixOperators
+    QuantifiedConstraints
     RankNTypes
     RelaxedPolyRec
     ScopedTypeVariables
