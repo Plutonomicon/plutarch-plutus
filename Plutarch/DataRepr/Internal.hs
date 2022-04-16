@@ -125,7 +125,7 @@ import Plutarch.TermCont (TermCont (TermCont), hashOpenTerm, runTermCont, tcont,
 import Plutarch.Trace (ptraceError)
 import Plutarch.TryFrom (PTryFrom, PTryFromExcess, ptryFrom, ptryFrom')
 import Plutarch.Unit (PUnit (PUnit))
-import Plutarch.Unsafe (punsafeCoerce, punsafeFrom)
+import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import qualified Plutus.V1.Ledger.Api as Ledger
 
 import Plutarch.Reducible (Reduce, Reducible)
@@ -764,4 +764,4 @@ instance
   ptryFrom' opq = runTermCont $ do
     let reprsum :: Term _ (PDataSum (PIsDataReprRepr a))
         reprsum = pfromData $ unTermCont $ fst <$> TermCont (ptryFrom opq)
-    pure $ (pdata $ punsafeFrom reprsum, ())
+    pure $ (pdata $ punsafeDowncast reprsum, ())

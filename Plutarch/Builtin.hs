@@ -84,7 +84,7 @@ import Plutarch.List (
  )
 import Plutarch.Show (PShow (pshow'))
 import Plutarch.Unit (PUnit)
-import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeFrom)
+import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeDowncast)
 import qualified PlutusCore as PLC
 import PlutusTx (Data (Constr), ToData)
 import qualified PlutusTx
@@ -371,7 +371,7 @@ instance PEq (PAsData a) where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
 
 instance (forall (s :: S). Coercible (a s) (Term s b), PIsData b) => PIsData (DerivePNewtype a b) where
-  pfromData x = punsafeFrom target
+  pfromData x = punsafeDowncast target
     where
       target :: Term _ b
       target = pfromData $ pinnerData x

@@ -5,13 +5,15 @@ module Plutarch.TryFrom (
   PTryFrom (..),
   ptryFrom,
   PSubtype,
+  pupcast,
+  pupcastF,
 ) where
 
 import Data.Coerce (Coercible)
 import Data.Kind (Constraint)
+import Data.Proxy (Proxy)
 
-import Plutarch.Unsafe (punsafeFrom)
-
+import Plutarch.Internal (punsafeCoerce)
 import Plutarch.Internal.Other (
   DerivePNewtype,
   PInner,
@@ -19,8 +21,6 @@ import Plutarch.Internal.Other (
   PType,
   Term,
  )
-
-import Plutarch.TermCont (TermCont (runTermCont), tcont)
 
 import Plutarch.Reducible (Reducible (Reduce))
 
@@ -69,4 +69,10 @@ instance
   PTryFrom a (DerivePNewtype c b)
   where
   type PTryFromExcess a (DerivePNewtype c b) = PTryFromExcess a b
-  ptryFrom' opq = runTermCont $ (\(inn, exc) -> (punsafeFrom inn, exc)) <$> tcont (ptryFrom @b @a opq)
+  ptryFrom' opq f = ptryFrom @b @a opq $ \(inn, exc) -> f (punsafeCoerce inn, exc)
+
+pupcast :: PSubtype a b => Term s b -> Term s a
+pupcast = punsafeCoerce
+
+pupcastF :: forall a b (p :: PType -> PType) s. PSubtype a b => Proxy p -> Term s (p b) -> Term s (p a)
+pupcastF _ = punsafeCoerce

@@ -26,7 +26,7 @@ import Plutarch.Rec (
  )
 import Plutarch.Rec.TH (deriveAll)
 import Plutarch.Test
-import Plutarch.Unsafe (punsafeCoerce, punsafeFrom)
+import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import Test.Hspec
 
 data FlatOuterRecord f = FlatOuterRecord
@@ -198,13 +198,13 @@ evenOdd = letrec evenOddRecursion
         }
 
 sampleData :: Term s (PAsData (PRecord SampleRecord))
-sampleData = pdata (punsafeFrom sampleRecord)
+sampleData = pdata (punsafeDowncast sampleRecord)
 
 flatOuterData :: Term s (PAsData (PRecord FlatOuterRecord))
-flatOuterData = pdata (punsafeFrom sampleFlatOuter)
+flatOuterData = pdata (punsafeDowncast sampleFlatOuter)
 
 shallowOuterData :: Term s (PAsData (PRecord ShallowOuterRecord))
-shallowOuterData = pdata (punsafeFrom sampleShallowOuter)
+shallowOuterData = pdata (punsafeDowncast sampleShallowOuter)
 
 spec :: Spec
 spec = do
