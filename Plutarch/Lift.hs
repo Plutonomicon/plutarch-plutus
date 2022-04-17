@@ -34,11 +34,13 @@ import Control.Lens ((^?))
 import Data.Coerce (Coercible, coerce)
 import Data.Kind (Constraint, Type)
 import GHC.Stack (HasCallStack)
-import Plutarch.Evaluate (EvalError, evalScript)
+import Plutarch.Evaluate (EvalError, evalScript')
 import Plutarch.Internal (ClosedTerm, PType, Term, compile, punsafeConstantInternal)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import qualified PlutusCore as PLC
 import PlutusCore.Builtin (ReadKnownError, readKnownConstant)
+import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
+import PlutusCore.Evaluation.Machine.ExMemory (ExCPU (ExCPU), ExMemory (ExMemory))
 import PlutusCore.Evaluation.Machine.Exception (ErrorWithCause (ErrorWithCause), MachineError, _UnliftingErrorE)
 import PlutusTx (BuiltinData, Data, builtinDataToData, dataToBuiltinData)
 import PlutusTx.Builtins.Class (FromBuiltin, ToBuiltin, fromBuiltin, toBuiltin)
@@ -105,14 +107,16 @@ data LiftError
 This will fully evaluate the arbitrary closed expression, and convert the resulting value.
 -}
 plift' :: forall p. PUnsafeLiftDecl p => ClosedTerm p -> Either LiftError (PLifted p)
-plift' prog = case evalScript (compile prog) of
-  (Right (Scripts.unScript -> UPLC.Program _ _ term), _, _) ->
-    case readKnownConstant @_ @(PConstantRepr (PLifted p)) @(MachineError PLC.DefaultFun) Nothing term of
-      Right r -> case pconstantFromRepr r of
-        Just h -> Right h
-        Nothing -> Left LiftError_FromRepr
-      Left e -> Left $ LiftError_ReadKnownError e
-  (Left e, _, _) -> Left $ LiftError_EvalError e
+plift' prog =
+  let maxBudget = ExBudget (ExCPU maxBound) (ExMemory maxBound)
+   in case evalScript' maxBudget (compile prog) of
+        (Right (Scripts.unScript -> UPLC.Program _ _ term), _, _) ->
+          case readKnownConstant @_ @(PConstantRepr (PLifted p)) @(MachineError PLC.DefaultFun) Nothing term of
+            Right r -> case pconstantFromRepr r of
+              Just h -> Right h
+              Nothing -> Left LiftError_FromRepr
+            Left e -> Left $ LiftError_ReadKnownError e
+        (Left e, _, _) -> Left $ LiftError_EvalError e
 
 -- | Like `plift'` but throws on failure.
 plift :: forall p. (HasCallStack, PLift p) => ClosedTerm p -> PLifted p

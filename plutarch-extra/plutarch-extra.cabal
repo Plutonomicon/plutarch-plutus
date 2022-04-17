@@ -81,6 +81,7 @@ library
   exposed-modules:
     Plutarch.Extra
     Plutarch.Extra.Api
+    Plutarch.Extra.ByteString
     Plutarch.Extra.TermCont
     Plutarch.ListUtils
 

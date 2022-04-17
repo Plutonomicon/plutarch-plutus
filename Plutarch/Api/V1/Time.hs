@@ -16,6 +16,8 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
  )
 import Plutarch.Prelude
+import Plutarch.TryFrom (Flip, PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
+import Plutarch.Unsafe (punsafeCoerce)
 
 newtype PPOSIXTime (s :: S)
   = PPOSIXTime (Term s PInteger)
@@ -30,3 +32,11 @@ deriving via
     PConstantDecl Plutus.POSIXTime
 
 type PPOSIXTimeRange = PInterval PPOSIXTime
+
+instance PTryFrom PData (PAsData PPOSIXTime) where
+  type PTryFromExcess PData (PAsData PPOSIXTime) = Flip Term PPOSIXTime
+  ptryFrom' opq = runTermCont $ do
+    (wrapped :: Term _ (PAsData PInteger), unwrapped :: Term _ PInteger) <-
+      tcont $ ptryFrom @(PAsData PInteger) opq
+    tcont $ \f -> pif (0 #<= unwrapped) (f ()) (ptraceError "POSIXTime must always be positive")
+    pure (punsafeCoerce wrapped, pcon $ PPOSIXTime unwrapped)

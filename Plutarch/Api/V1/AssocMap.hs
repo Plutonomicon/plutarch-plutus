@@ -19,6 +19,7 @@ import Plutarch.Lift (
   pconstantToRepr,
  )
 import Plutarch.Prelude
+import Plutarch.TryFrom (PTryFrom)
 
 newtype PMap (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinMap k v))
   deriving (PlutusType, PIsData) via (DerivePNewtype (PMap k v) (PBuiltinMap k v))
@@ -47,3 +48,11 @@ instance
       x' <- Plutus.fromData x
       y' <- Plutus.fromData y
       Just (x', y')
+
+deriving via
+  DerivePNewtype (PAsData (PMap k v)) (PAsData (PBuiltinMap k v))
+  instance
+    ( PTryFrom PData (PAsData k)
+    , PTryFrom PData (PAsData v)
+    ) =>
+    PTryFrom PData (PAsData (PMap k v))
