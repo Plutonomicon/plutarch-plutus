@@ -1,7 +1,7 @@
 {
   description = "plutarch";
 
-  inputs.haskell-nix.url = "github:L-as/haskell.nix?ref=master";
+  inputs.haskell-nix.url = "github:mlabs-haskell/haskell.nix";
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
   inputs.hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
 
@@ -19,37 +19,31 @@
   # https://github.com/Quid2/flat/pull/27
   inputs.flat.url = "github:Quid2/flat?rev=41a040c413351e021982bb78bd00f750628f8060";
   inputs.flat.flake = false;
-  # https://github.com/haskell-foundation/foundation/pull/555
-  inputs.foundation.url = "github:haskell-foundation/foundation?rev=0bb195e1fea06d144dafc5af9a0ff79af0a5f4a0";
-  inputs.foundation.flake = false;
   # https://github.com/locallycompact/protolude
   inputs.protolude.url = "github:protolude/protolude?rev=d821ef0ac7552cfa2c3e7a7bdf29539f57e3fae6";
   inputs.protolude.flake = false;
-  # https://github.com/vincenthz/hs-memory/pull/87
-  inputs.hs-memory.url = "github:vincenthz/hs-memory?rev=3cf661a8a9a8ac028df77daa88e8d65c55a3347a";
-  inputs.hs-memory.flake = false;
-  # https://github.com/haskell-crypto/cryptonite/issues/357
-  inputs.cryptonite.url = "github:haskell-crypto/cryptonite?rev=cec291d988f0f17828384f3358214ab9bf724a13";
-  inputs.cryptonite.flake = false;
   # https://github.com/JonasDuregard/sized-functors/pull/10
   inputs.sized-functors.url = "github:JonasDuregard/sized-functors?rev=fe6bf78a1b97ff7429630d0e8974c9bc40945dcf";
   inputs.sized-functors.flake = false;
-  # https://github.com/mokus0/th-extras/pull/17
-  inputs.th-extras.url = "github:mokus0/th-extras?rev=787ed752c1e5d41b5903b74e171ed087de38bffa";
-  inputs.th-extras.flake = false;
   inputs.Shrinker.url = "github:Plutonomicon/Shrinker";
   inputs.Shrinker.flake = false;
   inputs.haskell-language-server.url = "github:haskell/haskell-language-server";
   inputs.haskell-language-server.flake = false;
 
   # https://github.com/hspec/hspec/pull/648
-  inputs.hspec.url = "github:srid/hspec/askAncestors";
+  inputs.hspec.url = "github:hspec/hspec";
   inputs.hspec.flake = false;
   # Overriding hspec (above) necessitates overriding these for some reason.
   inputs.hspec-hedgehog.url = "github:parsonsmatt/hspec-hedgehog";
   inputs.hspec-hedgehog.flake = false;
   inputs.hspec-golden.url = "github:stackbuilders/hspec-golden";
   inputs.hspec-golden.flake = false;
+
+  inputs.secp256k1-haskell.url = "github:haskoin/secp256k1-haskell";
+  inputs.secp256k1-haskell.flake = false;
+
+  inputs.inline-r.url = "github:tweag/haskellR";
+  inputs.inline-r.flake = false;
 
   inputs.emanote.url = "github:srid/emanote/master";
 
@@ -61,28 +55,13 @@
           subdirs = [ "." ];
         }
         {
-          src = inputs.foundation;
-          subdirs = [
-            "foundation"
-            "basement"
-          ];
-        }
-        {
           src = inputs.cardano-prelude;
           subdirs = [
             "cardano-prelude"
           ];
         }
         {
-          src = inputs.hs-memory;
-          subdirs = [ "." ];
-        }
-        {
           src = inputs.cardano-crypto;
-          subdirs = [ "." ];
-        }
-        {
-          src = inputs.cryptonite;
           subdirs = [ "." ];
         }
         {
@@ -98,10 +77,6 @@
         }
         {
           src = inputs.sized-functors;
-          subdirs = [ "." ];
-        }
-        {
-          src = inputs.th-extras;
           subdirs = [ "." ];
         }
         {
@@ -131,6 +106,14 @@
           src = inputs.hspec-golden;
           subdirs = [ "." ];
         }
+        {
+          src = inputs.secp256k1-haskell;
+          subdirs = [ "." ];
+        }
+        {
+          src = inputs.inline-r;
+          subdirs = [ "inline-r" ];
+        }
       ];
 
       supportedSystems = with nixpkgs.lib.systems.supported; tier1 ++ tier2 ++ tier3;
@@ -144,7 +127,7 @@
       };
       nixpkgsFor' = system: import nixpkgs { inherit system; };
 
-      ghcVersion = "ghc921";
+      ghcVersion = "ghc922";
 
       # https://github.com/input-output-hk/haskell.nix/issues/1177
       nonReinstallablePkgs = [
@@ -210,54 +193,31 @@
             primitive-unlifted < 1.0.0.0
 
           package haskell-language-server
-            flags: +use-ghc-stub +pedantic +ignore-plugins-ghc-bounds -alternateNumberFormat -brittany -class -eval -haddockComments -hlint -retrie -splice -stylishhaskell -tactic
+            flags: +use-ghc-stub +pedantic +ignore-plugins-ghc-bounds -alternateNumberFormat -brittany -eval -haddockComments -hlint -retrie -splice -stylishhaskell -tactic
         '';
         src = "${inputs.haskell-language-server}";
       };
 
-      haskellModule = system: {
-        inherit nonReinstallablePkgs; # Needed only so we can use hspec; https://github.com/Plutonomicon/plutarch/issues/409
-        packages = {
-          basement.src = "${inputs.foundation}/basement";
-          basement.components.library.postUnpack = "\n";
-          cardano-binary.doHaddock = false;
-          cardano-binary.ghcOptions = [ "-Wwarn" ];
-          cardano-binary.src = "${inputs.cardano-base}/binary";
-          cardano-binary.components.library.postUnpack = "\n";
-          cardano-crypto-class.components.library.pkgconfig = nixpkgs.lib.mkForce [ [ (nixpkgsFor system).libsodium-vrf ] ];
-          cardano-crypto-class.doHaddock = false;
-          cardano-crypto-class.ghcOptions = [ "-Wwarn" ];
-          cardano-crypto-class.src = "${inputs.cardano-base}/cardano-crypto-class";
-          cardano-crypto-class.components.library.postUnpack = "\n";
-          cardano-crypto-praos.components.library.pkgconfig = nixpkgs.lib.mkForce [ [ (nixpkgsFor system).libsodium-vrf ] ];
-          cardano-crypto.src = "${inputs.cardano-crypto}";
-          cardano-crypto.components.library.postUnpack = "\n";
-          cardano-prelude.doHaddock = false; # somehow above options are not applied?
-          cardano-prelude.ghcOptions = [ "-Wwarn" ];
-          cardano-prelude.src = "${inputs.cardano-prelude}/cardano-prelude";
-          cardano-prelude.components.library.postUnpack = "\n";
-          cryptonite.src = "${inputs.cryptonite}";
-          cryptonite.components.library.postUnpack = "\n";
-          flat.src = "${inputs.flat}";
-          flat.components.library.postUnpack = "\n";
-          foundation.src = "${inputs.foundation}/foundation";
-          foundation.components.library.postUnpack = "\n";
-          memory.src = "${inputs.hs-memory}";
-          memory.components.library.postUnpack = "\n";
-          #plutus-core.src = "${inputs.plutus}/plutus-core";
-          #plutus-core.components.library.postUnpack = "\n";
-          plutus-tx.src = "${inputs.plutus}/plutus-tx";
-          plutus-tx.components.library.postUnpack = "\n";
-          plutus-ledger-api.src = "${inputs.plutus}/plutus-ledger-api";
-          plutus-ledger-api.components.library.postUnpack = "\n";
-          #prettyprinter-configurable.src = "${inputs.plutus}/prettyprinter-configurable";
-          #prettyprinter-configurable.components.library.postUnpack = "\n";
-          protolude.src = "${inputs.protolude}";
-          protolude.components.library.postUnpack = "\n";
-          word-array.src = "${inputs.plutus}/word-array";
-          word-array.components.library.postUnpack = "\n";
-        };
-      };
+      haskellModules = [
+        ({ config, pkgs, hsPkgs, ... }: {
+          inherit nonReinstallablePkgs; # Needed only so we can use hspec; https://github.com/Plutonomicon/plutarch/issues/409
+          packages = {
+            cardano-binary.doHaddock = false;
+            cardano-binary.ghcOptions = [ "-Wwarn" ];
+            cardano-crypto-class.components.library.pkgconfig = pkgs.lib.mkForce [ [ pkgs.libsodium-vrf ] ];
+            cardano-crypto-class.doHaddock = false;
+            cardano-crypto-class.ghcOptions = [ "-Wwarn" ];
+            cardano-crypto-praos.components.library.pkgconfig = pkgs.lib.mkForce [ [ pkgs.libsodium-vrf ] ];
+            cardano-prelude.doHaddock = false; # somehow above options are not applied?
+            cardano-prelude.ghcOptions = [ "-Wwarn" ];
+            # Workaround missing support for build-tools:
+            # https://github.com/input-output-hk/haskell.nix/issues/231
+            plutarch-test.components.exes.plutarch-test.build-tools = [
+              config.hsPkgs.hspec-discover
+            ];
+          };
+        })
+      ];
 
       cabalProjectLocal = ''
         allow-newer:
@@ -277,6 +237,7 @@
           , protolude:hashable
           , protolude:bytestring
           , size-based:template-haskell
+          , int-cast:base
 
         constraints:
           OneTuple >= 0.3.1
@@ -446,6 +407,7 @@
           , witherable >= 0.4.2
           , wl-pprint-annotated >= 0.1.0.1
           , word-array >= 0.1.0.0
+          , secp256k1-haskell >= 0.6
       '';
 
       projectForGhc = ghcName: flagDevelopment: system:
@@ -465,14 +427,8 @@
               src = inputs.Shrinker;
               subdirs = [ "." ];
             }];
-          modules = [
-            (haskellModule system)
+          modules = haskellModules ++ [
             {
-              # Workaround missing support for build-tools:
-              # https://github.com/input-output-hk/haskell.nix/issues/231
-              packages.plutarch-test.components.exes.plutarch-test.build-tools = [
-                pkgSet.hsPkgs.hspec-discover
-              ];
               packages.plutarch-test.flags.development = flagDevelopment;
               packages.plutarch.flags.development = flagDevelopment;
             }
@@ -503,8 +459,6 @@
               ps.hspec-discover
               ps.hspec-hedgehog
               ps.hspec-golden
-              #ps.shrinker
-              #ps.shrinker-testing
             ];
           };
         } // (if ghcName == ghcVersion then {
@@ -628,7 +582,7 @@
         (nixpkgsFor system).runCommand appName { } "${self.apps.${system}.${appName}.program} | tee $out";
     in
     {
-      inherit extraSources cabalProjectLocal haskellModule tools;
+      inherit extraSources cabalProjectLocal haskellModules tools;
 
       # Build matrix. Plutarch is built against different GHC versions, and 'development' flag.
       projectMatrix = {
