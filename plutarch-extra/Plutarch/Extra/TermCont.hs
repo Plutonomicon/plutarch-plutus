@@ -6,7 +6,6 @@ module Plutarch.Extra.TermCont (
   pletC,
   pmatchC,
   ptryFromC,
-  ptryFromC',
 ) where
 
 import Plutarch.Prelude
@@ -24,7 +23,3 @@ pmatchC = tcont . pmatch
 -- | Like `ptryFrom` but works in a `TermCont` monad
 ptryFromC :: forall b a s. PTryFrom a b => Term s a -> TermCont s (Term s b, Reduce (PTryFromExcess a b s))
 ptryFromC = tcont . ptryFrom
-
--- | Like `ptryFom'` but works in a `TermCont` monad
-ptryFromC' :: forall a b s. PTryFrom a b => Term s a -> TermCont s (Term s b, Reduce (PTryFromExcess a b s))
-ptryFromC' = tcont . ptryFrom
