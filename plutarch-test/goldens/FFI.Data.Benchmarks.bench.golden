@@ -1,1 +1,3 @@
 Value.isZero {"exBudgetCPU":744425,"exBudgetMemory":2600,"scriptSizeBytes":154}
+mappend @Value {"exBudgetCPU":3662179,"exBudgetMemory":12400,"scriptSizeBytes":529}
+(==) @Value {"exBudgetCPU":2977400,"exBudgetMemory":10100,"scriptSizeBytes":565}

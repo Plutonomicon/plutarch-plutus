@@ -1,11 +1,14 @@
 singleton {"exBudgetCPU":2956707,"exBudgetMemory":6256,"scriptSizeBytes":68}
 valueOf {"exBudgetCPU":10587665,"exBudgetMemory":23908,"scriptSizeBytes":198}
 unionWith.const {"exBudgetCPU":45934490,"exBudgetMemory":111060,"scriptSizeBytes":454}
-unionWith.(+) {"exBudgetCPU":45982834,"exBudgetMemory":110562,"scriptSizeBytes":451}
+unionWith.(+).itself {"exBudgetCPU":1846026,"exBudgetMemory":6300,"scriptSizeBytes":367}
+unionWith.(+).applied {"exBudgetCPU":45982834,"exBudgetMemory":110562,"scriptSizeBytes":451}
 unionWith.tokens {"exBudgetCPU":43483569,"exBudgetMemory":106834,"scriptSizeBytes":460}
 unionWith.symbols {"exBudgetCPU":24782993,"exBudgetMemory":61910,"scriptSizeBytes":452}
+isZero.itself {"exBudgetCPU":1042155,"exBudgetMemory":3600,"scriptSizeBytes":115}
 isZero.true {"exBudgetCPU":52892795,"exBudgetMemory":127649,"scriptSizeBytes":526}
 isZero.false {"exBudgetCPU":8700981,"exBudgetMemory":21315,"scriptSizeBytes":178}
+equality.itself {"exBudgetCPU":2113983,"exBudgetMemory":7200,"scriptSizeBytes":442}
 equality.triviallyTrue {"exBudgetCPU":52892795,"exBudgetMemory":127649,"scriptSizeBytes":526}
 equality.triviallyFalse {"exBudgetCPU":48483518,"exBudgetMemory":119393,"scriptSizeBytes":536}
 equality.swappedTokensTrue {"exBudgetCPU":150951231,"exBudgetMemory":361225,"scriptSizeBytes":579}

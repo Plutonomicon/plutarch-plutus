@@ -70,16 +70,21 @@ spec = do
         "unionWith" @\ do
           "const" @| PValue.unionWith # plam const # pmint # pmint @-> \p ->
             plift p @?= mint
-          "(+)" @| PValue.unionWith # plam (+) # pmint # pmint @-> \p ->
-            plift p @?= mint <> mint
+          "(+)" @\ do
+            "itself" @| PValue.unionWith # plam (+) @-> \plus ->
+              plift (plus # pmint # pmint) @?= mint <> mint
+            "applied" @| PValue.unionWith # plam (+) # pmint # pmint @-> \p ->
+              plift p @?= mint <> mint
           "tokens" @| PValue.unionWith # plam (+) # pmint # pmintOtherToken @-> \p ->
             plift p @?= mint <> mintOtherToken
           "symbols" @| PValue.unionWith # plam (+) # pmint # pmintOtherSymbol @-> \p ->
             plift p @?= mint <> mintOtherSymbol
         "isZero" @\ do
+          "itself" @| PValue.isZero @-> \z -> passertNot (z # pmint)
           "true" @| PValue.isZero # (PValue.unionWith # plam (-) # pmint # pmint) @-> passert
           "false" @| PValue.isZero # pmint @-> passertNot
         "equality" @\ do
+          "itself" @| plam ((#==) @PValue) @-> \eq -> passert (eq # pmint # pmint)
           "triviallyTrue" @| pmint #== pmint @-> passert
           "triviallyFalse" @| pmint #== pmintOtherToken @-> passertNot
           "swappedTokensTrue"

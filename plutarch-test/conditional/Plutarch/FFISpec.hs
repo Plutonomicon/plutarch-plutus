@@ -392,6 +392,16 @@ spec = describe "FFI" $ do
         "Value.isZero"
           @| (foreignImport $$(PlutusTx.compile [||toBuiltin . Value.isZero||]) :: Term _ (PSValue :--> PBool))
           @-> \isZero -> passertNot (isZero # foreignImport (PlutusTx.liftCode val))
+        "mappend @Value"
+          @| (foreignImport $$(PlutusTx.compile [||mappend @Value||]) :: Term _ (PSValue :--> PSValue :--> PSValue))
+          @-> \plus ->
+            (plus # foreignImport (PlutusTx.liftCode val) # foreignImport (PlutusTx.liftCode val))
+              #@?= (foreignImport (PlutusTx.liftCode $ val <> val) :: Term _ PSValue)
+        "(==) @Value"
+          @| (foreignImport $$(PlutusTx.compile [||\a (b :: Value) -> toBuiltin (a == b)||])
+                               :: Term _ (PSValue :--> PSValue :--> PBool))
+          @-> \eq ->
+            passert (eq # foreignImport (PlutusTx.liftCode val) # foreignImport (PlutusTx.liftCode val))
   where
     sampleScottEncoding = "(program 1.0.0 (delay (\\i0 -> i1 False 6 \"Hello\")))"
     sampleScottField = "(program 1.0.0 (\\i0 -> force i1 (\\i0 -> \\i0 -> \\i0 -> i2)))"
