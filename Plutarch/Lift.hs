@@ -38,8 +38,8 @@ import Plutarch.Evaluate (EvalError, evalScript)
 import Plutarch.Internal (ClosedTerm, PType, Term, compile, punsafeConstantInternal)
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import qualified PlutusCore as PLC
-import PlutusCore.Builtin (ReadKnownError, readKnownConstant)
-import PlutusCore.Evaluation.Machine.Exception (ErrorWithCause (ErrorWithCause), MachineError, _UnliftingErrorE)
+import PlutusCore.Builtin (KnownTypeError, readKnownConstant)
+import PlutusCore.Evaluation.Machine.Exception (_UnliftingErrorE)
 import PlutusTx (BuiltinData, Data, builtinDataToData, dataToBuiltinData)
 import PlutusTx.Builtins.Class (FromBuiltin, ToBuiltin, fromBuiltin, toBuiltin)
 import qualified UntypedPlutusCore as UPLC
@@ -97,7 +97,7 @@ pconstant x = punsafeConstantInternal $ PLC.someValue @(PConstantRepr (PLifted p
 -- | Error during script evaluation.
 data LiftError
   = LiftError_EvalError EvalError
-  | LiftError_ReadKnownError (ErrorWithCause ReadKnownError (MachineError PLC.DefaultFun))
+  | LiftError_KnownTypeError KnownTypeError
   | LiftError_FromRepr
   deriving stock (Eq)
 
@@ -107,11 +107,11 @@ This will fully evaluate the arbitrary closed expression, and convert the result
 plift' :: forall p. PUnsafeLiftDecl p => ClosedTerm p -> Either LiftError (PLifted p)
 plift' prog = case evalScript (compile prog) of
   (Right (Scripts.unScript -> UPLC.Program _ _ term), _, _) ->
-    case readKnownConstant @_ @(PConstantRepr (PLifted p)) @(MachineError PLC.DefaultFun) Nothing term of
+    case readKnownConstant term of
       Right r -> case pconstantFromRepr r of
         Just h -> Right h
         Nothing -> Left LiftError_FromRepr
-      Left e -> Left $ LiftError_ReadKnownError e
+      Left e -> Left $ LiftError_KnownTypeError e
   (Left e, _, _) -> Left $ LiftError_EvalError e
 
 -- | Like `plift'` but throws on failure.
@@ -119,13 +119,11 @@ plift :: forall p. (HasCallStack, PLift p) => ClosedTerm p -> PLifted p
 plift prog = case plift' prog of
   Right x -> x
   Left LiftError_FromRepr -> error "plift failed: pconstantFromRepr returned 'Nothing'"
-  Left (LiftError_ReadKnownError (ErrorWithCause e causeMaybe)) ->
+  Left (LiftError_KnownTypeError e) ->
     let unliftErrMaybe = e ^? _UnliftingErrorE
      in error $
           "plift failed: incorrect type: "
             <> maybe "absurd evaluation failure" show unliftErrMaybe
-            <> "\n"
-            <> maybe "" (\x -> "cause: " <> show x) causeMaybe
   Left (LiftError_EvalError e) -> error $ "plift failed: erring term: " <> show e
 
 {- | Newtype wrapper for deriving @PConstant@ when the wrapped type is directly
