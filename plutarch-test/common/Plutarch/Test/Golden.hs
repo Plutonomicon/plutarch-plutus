@@ -275,8 +275,8 @@ evalScriptAlwaysWithBenchmark script =
   let (res, exbudget, _traces) = evalScript script
       bench = mkBenchmark exbudget (scriptSize script)
    in ( case res of
-        Left _ -> compile perror
-        Right x -> x
+          Left _ -> compile perror
+          Right x -> x
       , bench
       )
 

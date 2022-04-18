@@ -1,5 +1,6 @@
 singleton {"exBudgetCPU":2956707,"exBudgetMemory":6256,"scriptSizeBytes":68}
-valueOf {"exBudgetCPU":10587665,"exBudgetMemory":23908,"scriptSizeBytes":198}
+valueOf.itself {"exBudgetCPU":1012382,"exBudgetMemory":3500,"scriptSizeBytes":130}
+valueOf.applied {"exBudgetCPU":10587665,"exBudgetMemory":23908,"scriptSizeBytes":198}
 unionWith.const {"exBudgetCPU":45934490,"exBudgetMemory":111060,"scriptSizeBytes":454}
 unionWith.(+).itself {"exBudgetCPU":1846026,"exBudgetMemory":6300,"scriptSizeBytes":367}
 unionWith.(+).applied {"exBudgetCPU":45982834,"exBudgetMemory":110562,"scriptSizeBytes":451}

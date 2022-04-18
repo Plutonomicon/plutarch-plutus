@@ -392,14 +392,26 @@ spec = describe "FFI" $ do
         "Value.isZero"
           @| (foreignImport $$(PlutusTx.compile [||toBuiltin . Value.isZero||]) :: Term _ (PSValue :--> PBool))
           @-> \isZero -> passertNot (isZero # foreignImport (PlutusTx.liftCode val))
+        "Value.valueOf"
+          @| ( foreignImport $$(PlutusTx.compile [||Value.valueOf||]) ::
+                Term _ (PSValue :--> PCurrencySymbol :--> PTokenName :--> PInteger)
+             )
+          @-> \valueOf ->
+            ( valueOf
+                # foreignImport (PlutusTx.liftCode val)
+                # foreignImport (PlutusTx.liftCode adaSymbol)
+                # foreignImport (PlutusTx.liftCode adaToken)
+            )
+              #@?= (2 :: Term _ PInteger)
         "mappend @Value"
           @| (foreignImport $$(PlutusTx.compile [||mappend @Value||]) :: Term _ (PSValue :--> PSValue :--> PSValue))
           @-> \plus ->
             (plus # foreignImport (PlutusTx.liftCode val) # foreignImport (PlutusTx.liftCode val))
               #@?= (foreignImport (PlutusTx.liftCode $ val <> val) :: Term _ PSValue)
         "(==) @Value"
-          @| (foreignImport $$(PlutusTx.compile [||\a (b :: Value) -> toBuiltin (a == b)||])
-                               :: Term _ (PSValue :--> PSValue :--> PBool))
+          @| ( foreignImport $$(PlutusTx.compile [||\a (b :: Value) -> toBuiltin (a == b)||]) ::
+                Term _ (PSValue :--> PSValue :--> PBool)
+             )
           @-> \eq ->
             passert (eq # foreignImport (PlutusTx.liftCode val) # foreignImport (PlutusTx.liftCode val))
   where

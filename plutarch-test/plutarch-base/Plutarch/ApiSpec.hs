@@ -65,8 +65,10 @@ spec = do
             pmintOtherSymbol = PValue.singleton # pconstant "c2" # pconstant "sometoken" # 1
         "singleton" @| pmint @-> \p ->
           plift p @?= mint
-        "valueOf" @| PValue.valueOf # pmint # pconstant "c0" # pconstant "sometoken" @-> \p ->
-          plift p @?= 1
+        "valueOf" @\ do
+          "itself" @| PValue.valueOf @-> \v -> plift (v # pmint # pconstant "c0" # pconstant "sometoken") @?= 1
+          "applied" @| PValue.valueOf # pmint # pconstant "c0" # pconstant "sometoken" @-> \p ->
+            plift p @?= 1
         "unionWith" @\ do
           "const" @| PValue.unionWith # plam const # pmint # pmint @-> \p ->
             plift p @?= mint
