@@ -16,6 +16,9 @@ module Plutarch.Api.V1.AssocMap (
   -- * Lookups
   lookup,
   lookupData,
+  findWithDefault,
+  foldAt,
+  foldAtData,
 
   -- * Folds
   all,
@@ -44,7 +47,6 @@ import Plutarch.Lift (
   pconstantFromRepr,
   pconstantToRepr,
  )
-import Plutarch.Maybe (pmaybe)
 import Plutarch.Prelude (
   DerivePNewtype (..),
   PAsData,
@@ -145,6 +147,35 @@ lookupDataWith = phoistAcyclic $
       (const $ pcon PNothing)
       # pto map
 
+-- | Look up the given key in a 'PMap', returning the default value if the key is absent.
+findWithDefault :: (PIsData k, PIsData v) => Term (s :: S) (v :--> k :--> PMap k v :--> v)
+findWithDefault = phoistAcyclic $ plam $ \def key -> foldAtData # pdata key # def # plam pfromData
+
+{- | Look up the given key in a 'PMap'; return the default if the key is
+ absent or apply the argument function to the value data if present.
+-}
+foldAt :: (PIsData k, PIsData v) => Term (s :: S) (k :--> r :--> (PAsData v :--> r) :--> PMap k v :--> r)
+foldAt = phoistAcyclic $
+  plam $ \key -> foldAtData # pdata key
+
+{- | Look up the given key data in a 'PMap'; return the default if the key is
+ absent or apply the argument function to the value data if present.
+-}
+foldAtData ::
+  (PIsData k, PIsData v) =>
+  Term (s :: S) (PAsData k :--> r :--> (PAsData v :--> r) :--> PMap k v :--> r)
+foldAtData = phoistAcyclic $
+  plam $ \key def apply map ->
+    precList
+      ( \self x xs ->
+          pif
+            (pfstBuiltin # x #== key)
+            (apply #$ psndBuiltin # x)
+            (self # xs)
+      )
+      (const def)
+      # pto map
+
 -- | Insert a new key/value pair into the map, overiding the previous if any.
 insert :: (PIsData k, PIsData v) => Term (s :: S) (k :--> v :--> PMap k v :--> PMap k v)
 insert = phoistAcyclic $
@@ -232,10 +263,11 @@ unionWithData = phoistAcyclic $
   plam $ \merge x y ->
     plet
       ( plam $ \k x' ->
-          pmaybe
+          foldAtData
+            # k
             # pcon (PLeft x')
             # plam (pcon . PRight . (merge # x' #))
-            # (lookupData # k # y)
+            # y
       )
       $ \leftOrBoth ->
         pmatch (mapEitherWithKeyData # leftOrBoth # x) $ \(PPair x' xy) ->
@@ -252,10 +284,11 @@ difference = phoistAcyclic $
       precList
         ( \self x xs ->
             plet (self # xs) $ \xs' ->
-              pmaybe
+              foldAtData
+                # (pfstBuiltin # x)
                 # (pcons # x # xs')
                 # (plam $ const xs')
-                # (lookupData # (pfstBuiltin # x) # right)
+                # right
         )
         (const pnil)
         # pto left

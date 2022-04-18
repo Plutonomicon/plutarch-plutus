@@ -111,6 +111,8 @@ spec = do
             doubleMap = AssocMap.singleton # pconstant "key" # 84
             otherMap = AssocMap.singleton # pconstant "newkey" # 6
         "lookup" @\ do
+          "itself" @| AssocMap.lookup
+            @-> \lookup -> passert $ lookup # pconstant "key" # pmap #== pcon (PJust 42)
           "hit" @| AssocMap.lookup # pconstant "key" # pmap
             @-> \result -> passert $ result #== pcon (PJust 42)
           "miss" @| AssocMap.lookup # pconstant "nokey" # pmap
@@ -120,6 +122,13 @@ spec = do
             @-> \result -> passert $ result #== pcon (PJust $ pdata 42)
           "miss" @| AssocMap.lookupData # pdata (pconstant "nokey") # pmap
             @-> \result -> passert $ result #== pcon PNothing
+        "findWithDefault" @\ do
+          "itself" @| AssocMap.findWithDefault
+            @-> \find -> (find # 12 # pconstant "key" # pmap) #@?= (42 :: Term _ PInteger)
+          "hit" @| AssocMap.findWithDefault # 12 # pconstant "key" # pmap
+            @-> \result -> passert $ result #== 42
+          "miss" @| AssocMap.findWithDefault # 12 # pconstant "nokey" # pmap
+            @-> \result -> passert $ result #== 12
         "singleton" @| pmap @-> pshouldReallyBe pdmap
         "singletonData" @| pdmap @-> pshouldReallyBe pmap
         "insert" @\ do

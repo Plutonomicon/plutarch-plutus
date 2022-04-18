@@ -69,11 +69,11 @@ singleton = phoistAcyclic $
 valueOf :: Term (s :: S) (PValue :--> PCurrencySymbol :--> PTokenName :--> PInteger)
 valueOf = phoistAcyclic $
   plam $ \value symbol token ->
-    pmatch (AssocMap.lookup # symbol # pto value) $ \case
-      PNothing -> 0
-      PJust submap -> pmatch (AssocMap.lookup # token # submap) $ \case
-        PNothing -> 0
-        PJust amount -> amount
+    AssocMap.foldAt
+      # symbol
+      # 0
+      # plam (\map -> AssocMap.foldAt # token # 0 # plam pfromData # pfromData map)
+      # pto value
 
 -- | Check if the value is zero.
 isZero :: Term (s :: S) (PValue :--> PBool)
