@@ -139,8 +139,9 @@ mkGoldenKeyFromSpecPath path =
   case nonEmpty path of
     Nothing -> error "cannot use currentGoldenKey from top-level spec"
     Just anc ->
-      case nonEmpty (NE.drop 1 . NE.reverse $ anc) of
-        Nothing -> error "cannot use currentGoldenKey from top-level spec (after sydtest-discover)"
+      -- hspec-discover adds a top-level entry; remove that.
+      case nonEmpty (NE.drop 1 anc) of
+        Nothing -> error "cannot use currentGoldenKey from top-level spec (after hspec-discover)"
         Just path ->
           sconcat $ fmap GoldenKey path
 
