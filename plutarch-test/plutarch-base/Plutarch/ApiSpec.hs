@@ -79,6 +79,11 @@ spec = do
             plift p @?= mint <> mintOtherToken
           "symbols" @| PValue.unionWith # plam (+) # pmint # pmintOtherSymbol @-> \p ->
             plift p @?= mint <> mintOtherSymbol
+        "unionWithData const" @\ do
+          "itself" @| PValue.unionWithData @-> \u ->
+            plift (u # plam const # pmint # pmint) @?= mint
+          "applied" @| PValue.unionWithData # plam const # pmint # pmint @-> \p ->
+            plift p @?= mint
         "isZero" @\ do
           "itself" @| PValue.isZero @-> \z -> passertNot (z # pmint)
           "true" @| PValue.isZero # (PValue.unionWith # plam (-) # pmint # pmint) @-> passert

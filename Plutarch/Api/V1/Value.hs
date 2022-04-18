@@ -8,6 +8,7 @@ module Plutarch.Api.V1.Value (
   isZero,
   singleton,
   unionWith,
+  unionWithData,
   valueOf,
 ) where
 
@@ -89,5 +90,25 @@ unionWith = phoistAcyclic $
     pcon . PValue $
       AssocMap.unionWith
         # (plam $ \x y -> AssocMap.unionWith # combine # x # y)
+        # pto x
+        # pto y
+
+{- | Combine two 'PValue's applying the given function to any pair of
+ data-encoded quantities with the same asset class. Note that the result is
+ _not_ normalized and may contain zero quantities.
+-}
+unionWithData ::
+  Term
+    (s :: S)
+    ( (PAsData PInteger :--> PAsData PInteger :--> PAsData PInteger)
+        :--> PValue
+        :--> PValue
+        :--> PValue
+    )
+unionWithData = phoistAcyclic $
+  plam $ \combine x y ->
+    pcon . PValue $
+      AssocMap.unionWith
+        # (plam $ \x y -> AssocMap.unionWithData # combine # x # y)
         # pto x
         # pto y

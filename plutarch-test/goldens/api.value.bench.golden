@@ -5,6 +5,8 @@ unionWith.(+).itself {"exBudgetCPU":1846026,"exBudgetMemory":6300,"scriptSizeByt
 unionWith.(+).applied {"exBudgetCPU":45982834,"exBudgetMemory":110562,"scriptSizeBytes":451}
 unionWith.tokens {"exBudgetCPU":43483569,"exBudgetMemory":106834,"scriptSizeBytes":460}
 unionWith.symbols {"exBudgetCPU":24782993,"exBudgetMemory":61910,"scriptSizeBytes":452}
+unionWithData const.itself {"exBudgetCPU":1846026,"exBudgetMemory":6300,"scriptSizeBytes":357}
+unionWithData const.applied {"exBudgetCPU":45127214,"exBudgetMemory":109764,"scriptSizeBytes":444}
 isZero.itself {"exBudgetCPU":1042155,"exBudgetMemory":3600,"scriptSizeBytes":115}
 isZero.true {"exBudgetCPU":52892795,"exBudgetMemory":127649,"scriptSizeBytes":526}
 isZero.false {"exBudgetCPU":8700981,"exBudgetMemory":21315,"scriptSizeBytes":178}
