@@ -50,7 +50,7 @@ import Plutarch (
   (#$),
   type (:-->),
  )
-import Plutarch.Bool (PBool (..), PEq, pif', (#==))
+import Plutarch.Bool (PBool (..), PEq, pif', (#&&), (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (
@@ -79,7 +79,7 @@ import Plutarch.List (
   plistEquals,
   pshowList,
  )
-import Plutarch.Show (PShow (pshow'))
+import Plutarch.Show (PShow (pshow'), pshow)
 import Plutarch.Unit (PUnit)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeFrom)
 import qualified PlutusCore as PLC
@@ -342,6 +342,12 @@ instance PIsData (PBuiltinPair PData PData) where
         (coerce (pforgetData' @PData (Proxy @(Helper3 PBuiltinPair PData))) :: Term s (PAsData (PBuiltinPair (PAsData PData) PData)) -> Term s (PAsData (PBuiltinPair PData PData)))
           . coerce (pforgetData' @PData (Proxy @(Helper2 (PBuiltinPair (PAsData PData)))))
 
+instance (PShow a, PShow b) => PShow (PBuiltinPair a b) where
+  pshow' _ pair = "(" <> pshow (pfstBuiltin # pair) <> "," <> pshow (psndBuiltin # pair) <> ")"
+
+instance (PEq a, PEq b) => PEq (PBuiltinPair a b) where
+  p1 #== p2 = pfstBuiltin # p1 #== pfstBuiltin # p2 #&& psndBuiltin # p1 #== psndBuiltin # p2
+
 instance PIsData PUnit where
   pfromData _ = pconstant ()
   pdata _ = punsafeCoerce $ pconstant (Constr 0 [])
@@ -360,6 +366,9 @@ instance (forall (s :: S). Coercible (a s) (Term s b), PIsData b) => PIsData (De
       target :: Term _ b
       target = pfromData $ pinnerData x
   pdata x = pouterData . pdata $ pto x
+
+instance (PIsData a, PShow a) => PShow (PAsData a) where
+  pshow' w x = pshow' w (pfromData x)
 
 pinnerData :: Term s (PAsData a) -> Term s (PAsData (PInner a b))
 pinnerData = punsafeCoerce
