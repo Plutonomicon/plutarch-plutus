@@ -1,10 +1,10 @@
 ptrace.one {"exBudgetCPU":388284,"exBudgetMemory":932,"scriptSizeBytes":16}
 ptrace.two {"exBudgetCPU":806241,"exBudgetMemory":1864,"scriptSizeBytes":30}
 ptraceShowId.right-42 {"exBudgetCPU":16124851,"exBudgetMemory":35093,"scriptSizeBytes":379}
-ptraceIfTrue.true {"exBudgetCPU":686015,"exBudgetMemory":1933,"scriptSizeBytes":27}
-ptraceIfTrue.false {"exBudgetCPU":387150,"exBudgetMemory":1401,"scriptSizeBytes":27}
-ptraceIfFalse.true {"exBudgetCPU":387150,"exBudgetMemory":1401,"scriptSizeBytes":27}
-ptraceIfFalse.false {"exBudgetCPU":686015,"exBudgetMemory":1933,"scriptSizeBytes":27}
-chained.false.true.false {"exBudgetCPU":1192157,"exBudgetMemory":3634,"scriptSizeBytes":51}
-chained.ptrace.true.false {"exBudgetCPU":834880,"exBudgetMemory":2433,"scriptSizeBytes":40}
-chained.ptrace.true.true {"exBudgetCPU":1103972,"exBudgetMemory":2865,"scriptSizeBytes":40}
+ptraceIfTrue.true {"exBudgetCPU":596696,"exBudgetMemory":1633,"scriptSizeBytes":23}
+ptraceIfTrue.false {"exBudgetCPU":297831,"exBudgetMemory":1101,"scriptSizeBytes":23}
+ptraceIfFalse.true {"exBudgetCPU":297831,"exBudgetMemory":1101,"scriptSizeBytes":23}
+ptraceIfFalse.false {"exBudgetCPU":596696,"exBudgetMemory":1633,"scriptSizeBytes":23}
+chained.false.true.false {"exBudgetCPU":1102838,"exBudgetMemory":3334,"scriptSizeBytes":49}
+chained.ptrace.true.false {"exBudgetCPU":745561,"exBudgetMemory":2133,"scriptSizeBytes":38}
+chained.ptrace.true.true {"exBudgetCPU":1014653,"exBudgetMemory":2565,"scriptSizeBytes":38}

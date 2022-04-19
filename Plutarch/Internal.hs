@@ -311,14 +311,19 @@ punsafeConstant = punsafeConstantInternal
 
 punsafeConstantInternal :: Some (ValueOf PLC.DefaultUni) -> Term s a
 punsafeConstantInternal c = Term $ \_ ->
-  case c of
-    -- These constants are smaller than variable references.
-    Some (ValueOf PLC.DefaultUniBool _) -> mkTermRes $ RConstant c
-    Some (ValueOf PLC.DefaultUniUnit _) -> mkTermRes $ RConstant c
-    Some (ValueOf PLC.DefaultUniInteger n) | n < 256 -> mkTermRes $ RConstant c
-    _ ->
+  if isSmallConstant c
+    then mkTermRes $ RConstant c
+    else
       let hoisted = HoistedTerm (hashRawTerm $ RConstant c) (RConstant c)
        in TermResult (RHoisted hoisted) [hoisted]
+
+isSmallConstant :: Some (ValueOf UPLC.DefaultUni) -> Bool
+isSmallConstant c = case c of
+  -- These constants are smaller than variable references.
+  Some (ValueOf PLC.DefaultUniBool _) -> True
+  Some (ValueOf PLC.DefaultUniUnit _) -> True
+  Some (ValueOf PLC.DefaultUniInteger n) | n < 256 -> True
+  _ -> False
 
 asClosedRawTerm :: ClosedTerm a -> TermResult
 asClosedRawTerm t = asRawTerm t 0
@@ -366,6 +371,7 @@ rawTermToUPLC m l (RApply x y) =
           -- Inline unconditionally if it's a variable or built-in.
           -- These terms are very small and are always WHNF.
           UPLC.Var () (DeBruijn (Index idx)) -> subst 1 (\lvl -> UPLC.Var () (DeBruijn . Index $ idx + lvl - 1)) body
+          arg@(UPLC.Constant () c) -> if isSmallConstant c then subst 1 (const arg) body else UPLC.Apply () t arg
           arg@UPLC.Builtin {} -> subst 1 (\_ -> arg) body
           arg -> UPLC.Apply () t arg
       f y t = UPLC.Apply () t (rawTermToUPLC m l y)

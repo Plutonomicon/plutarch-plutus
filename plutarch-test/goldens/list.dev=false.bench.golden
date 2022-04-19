@@ -13,9 +13,9 @@ pfoldl.nonempty {"exBudgetCPU":27690477,"exBudgetMemory":71413,"scriptSizeBytes"
 pfoldl.nonempty-primed {"exBudgetCPU":27690477,"exBudgetMemory":71413,"scriptSizeBytes":96}
 pfoldl.empty {"exBudgetCPU":1865937,"exBudgetMemory":5433,"scriptSizeBytes":85}
 pfoldl.empty-primed {"exBudgetCPU":1865937,"exBudgetMemory":5433,"scriptSizeBytes":85}
-elemAt.elemAt_3_[1..10] {"exBudgetCPU":22527179,"exBudgetMemory":56708,"scriptSizeBytes":127}
-elemAt.elemAt_0_[1..10] {"exBudgetCPU":17681228,"exBudgetMemory":43796,"scriptSizeBytes":127}
-elemAt.elemAt_9_[1..10] {"exBudgetCPU":32219081,"exBudgetMemory":82532,"scriptSizeBytes":127}
+elemAt.elemAt_3_[1..10] {"exBudgetCPU":22437860,"exBudgetMemory":56408,"scriptSizeBytes":125}
+elemAt.elemAt_0_[1..10] {"exBudgetCPU":17591909,"exBudgetMemory":43496,"scriptSizeBytes":125}
+elemAt.elemAt_9_[1..10] {"exBudgetCPU":32129762,"exBudgetMemory":82232,"scriptSizeBytes":125}
 find.find_(==3)_[1..4] {"exBudgetCPU":11027650,"exBudgetMemory":29622,"scriptSizeBytes":100}
 find.find_(==5)_[1..4] {"exBudgetCPU":13130537,"exBudgetMemory":36224,"scriptSizeBytes":100}
 x1+x2.builtin {"exBudgetCPU":1212996,"exBudgetMemory":2098,"scriptSizeBytes":29}

@@ -1,6 +1,6 @@
 unit {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":11}
-bool.true {"exBudgetCPU":387150,"exBudgetMemory":1401,"scriptSizeBytes":33}
-bool.false {"exBudgetCPU":387150,"exBudgetMemory":1401,"scriptSizeBytes":33}
+bool.true {"exBudgetCPU":297831,"exBudgetMemory":1101,"scriptSizeBytes":31}
+bool.false {"exBudgetCPU":297831,"exBudgetMemory":1101,"scriptSizeBytes":31}
 int.0 {"exBudgetCPU":6284427,"exBudgetMemory":14017,"scriptSizeBytes":317}
 int.5 {"exBudgetCPU":8760152,"exBudgetMemory":20027,"scriptSizeBytes":317}
 int.-5 {"exBudgetCPU":9393754,"exBudgetMemory":20832,"scriptSizeBytes":317}
