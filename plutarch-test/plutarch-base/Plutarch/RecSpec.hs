@@ -7,7 +7,7 @@ import qualified Rank2.TH
 import Prelude hiding (even, odd)
 
 import Plutarch (pcon', pmatch')
-import Plutarch.Builtin (pasConstr, pforgetData)
+import Plutarch.Builtin (pasConstr, pdataImpl, pforgetData, pfromDataImpl)
 import Plutarch.Prelude
 import Plutarch.Rec (
   DataReader (DataReader, readData),
@@ -67,16 +67,16 @@ instance RecordFromData FlatOuterRecord
 instance RecordFromData ShallowOuterRecord
 
 instance PIsData (PRecord SampleRecord) where
-  pfromData = readData (recordFromFieldReaders sampleReader)
-  pdata = writeData (recordDataFromFieldWriters sampleWriter)
+  pfromDataImpl = readData (recordFromFieldReaders sampleReader)
+  pdataImpl = pupcast . writeData (recordDataFromFieldWriters sampleWriter)
 
 instance PIsData (PRecord FlatOuterRecord) where
-  pfromData = readData (recordFromFieldReaders flatOuterReader)
-  pdata = writeData (recordDataFromFieldWriters flatOuterWriter)
+  pfromDataImpl = readData (recordFromFieldReaders flatOuterReader)
+  pdataImpl = pupcast . writeData (recordDataFromFieldWriters flatOuterWriter)
 
 instance PIsData (PRecord ShallowOuterRecord) where
-  pfromData = readData (recordFromFieldReaders shallowOuterReader)
-  pdata = writeData (recordDataFromFieldWriters shallowOuterWriter)
+  pfromDataImpl = readData (recordFromFieldReaders shallowOuterReader)
+  pdataImpl = pupcast . writeData (recordDataFromFieldWriters shallowOuterWriter)
 
 sampleReader :: SampleRecord (DataReader s)
 sampleReader =

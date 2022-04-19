@@ -57,9 +57,7 @@ import Plutarch.Builtin (
  )
 
 import Plutarch.TryFrom (
-  PTryFrom,
   PTryFromExcess,
-  ptryFrom,
   ptryFrom',
  )
 
