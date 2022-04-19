@@ -5,7 +5,7 @@ module Plutarch.DataRepr.Internal.FromData (PFromDataable, pmaybeFromAsData) whe
 
 import Plutarch.Internal.Other (PType, Term)
 
-import Plutarch.Builtin (PAsData, PIsData (pfromData))
+import Plutarch.Builtin (PAsData, PIsData, pfromData)
 
 {- |
     removes the PAsData if the hole requires it but leaves it

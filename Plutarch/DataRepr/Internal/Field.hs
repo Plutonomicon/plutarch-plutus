@@ -38,7 +38,8 @@ import Plutarch (
 
 import Plutarch.Builtin (
   PAsData,
-  PIsData (pfromData),
+  PIsData,
+  pfromData,
  )
 import Plutarch.DataRepr.Internal (
   PDataRecord,

@@ -94,8 +94,10 @@ import Plutarch.Builtin (
   pchooseListBuiltin,
   pconstrBuiltin,
   pdata,
+  pdataImpl,
   pforgetData,
   pfromData,
+  pfromDataImpl,
   pfstBuiltin,
   psndBuiltin,
  )
@@ -123,7 +125,7 @@ import Plutarch.Lift (
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.TermCont (TermCont (TermCont), hashOpenTerm, runTermCont, tcont, unTermCont)
 import Plutarch.Trace (ptraceError)
-import Plutarch.TryFrom (PTryFrom, PTryFromExcess, ptryFrom, ptryFrom')
+import Plutarch.TryFrom (PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
 import Plutarch.Unit (PUnit (PUnit))
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import qualified Plutus.V1.Ledger.Api as Ledger
@@ -250,8 +252,8 @@ type family PUnLabel (a :: PLabeledType) :: PType where
   PUnLabel (name ':= a) = a
 
 instance {-# OVERLAPPABLE #-} PIsData (PDataRecord xs) where
-  pfromData x = punsafeCoerce $ (pfromData (punsafeCoerce x) :: Term _ (PBuiltinList PData))
-  pdata x = punsafeCoerce $ pdata (punsafeCoerce x :: Term _ (PBuiltinList PData))
+  pfromDataImpl x = punsafeCoerce $ (pfromData (punsafeCoerce x) :: Term _ (PBuiltinList PData))
+  pdataImpl x = pupcast $ pdata (pupcast x :: Term _ (PBuiltinList PData))
 
 {- | A sum of 'PDataRecord's. The underlying representation is the `Constr` constructor,
 where the integer is the index of the variant and the list is the record.
@@ -277,8 +279,8 @@ instance
       target = punsafeCoerce d
 
 instance PIsData (PDataSum defs) where
-  pdata = punsafeCoerce
-  pfromData = punsafeCoerce
+  pfromDataImpl = punsafeCoerce
+  pdataImpl = punsafeCoerce
 
 instance PEq (PDataSum defs) where
   x #== y = pdata x #== pdata y
@@ -538,8 +540,8 @@ mkLTEHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
 newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
 
 instance PIsDataRepr a => PIsData (PIsDataReprInstances a) where
-  pdata = punsafeCoerce
-  pfromData = punsafeCoerce
+  pfromDataImpl = punsafeCoerce
+  pdataImpl = punsafeCoerce
 
 instance PIsDataRepr a => PlutusType (PIsDataReprInstances a) where
   type PInner (PIsDataReprInstances a) _ = PDataSum (PIsDataReprRepr a)

@@ -1,7 +1,4 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE DefaultSignatures #-}
-{-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Internal.Other (
@@ -114,6 +111,8 @@ where 'PBar' has a 'PIsData' instance, you can derive 'PlutusType' and 'PIsData'
 
 This will make 'PFoo' simply be represnted as 'PBar' under the hood.
 -}
+type role DerivePNewtype representational representational nominal
+
 newtype DerivePNewtype (a :: PType) (b :: PType) (s :: PI.S) = DerivePNewtype (a s)
 
 instance (forall (s :: PI.S). Coercible (a s) (Term s b)) => PlutusType (DerivePNewtype a b) where

@@ -19,6 +19,7 @@ common c
     ConstrainedClassMethods
     ConstraintKinds
     DataKinds
+    DefaultSignatures
     DeriveAnyClass
     DeriveDataTypeable
     DeriveFoldable
@@ -58,6 +59,7 @@ common c
     QuantifiedConstraints
     RankNTypes
     RelaxedPolyRec
+    RoleAnnotations
     ScopedTypeVariables
     StandaloneDeriving
     StandaloneKindSignatures

@@ -6,6 +6,9 @@ module Plutarch.TryFrom (
   PSubtype,
   pupcast,
   pupcastF,
+  pdowncastF,
+  POp (..),
+  POpArrow (..),
 ) where
 
 import Data.Coerce (Coercible)
@@ -19,6 +22,7 @@ import Plutarch.Internal.Other (
   POpaque,
   PType,
   Term,
+  (:-->),
  )
 
 import Plutarch.Reducible (Reducible (Reduce))
@@ -73,5 +77,23 @@ instance
 pupcast :: PSubtype a b => Term s b -> Term s a
 pupcast = punsafeCoerce
 
-pupcastF :: forall a b (p :: PType -> PType) s. PSubtype a b => Proxy p -> Term s (p b) -> Term s (p a)
+-- FIXME: Add safe way of deriving using `PlutusType`
+class PUnsafeContravariantDecl (a :: PType -> PType)
+type PContravariant = PUnsafeContravariantDecl
+
+-- FIXME: Add safe way of deriving using `PlutusType`
+class PUnsafeCovariantDecl (a :: PType -> PType)
+type PCovariant = PUnsafeCovariantDecl -- Really just PFunctor
+
+newtype POpArrow b a s = POpArrow (Term s a -> Term s b)
+newtype POp b a s = POp ((a :--> b) s)
+
+instance PUnsafeContravariantDecl (POpArrow b)
+instance PUnsafeContravariantDecl (POp b)
+instance PUnsafeCovariantDecl ((:-->) a)
+
+pupcastF :: forall a b (p :: PType -> PType) s. (PSubtype a b, PCovariant p) => Proxy p -> Term s (p b) -> Term s (p a)
 pupcastF _ = punsafeCoerce
+
+pdowncastF :: forall a b (p :: PType -> PType) s. (PSubtype a b, PContravariant p) => Proxy p -> Term s (p a) -> Term s (p b)
+pdowncastF _ = punsafeCoerce

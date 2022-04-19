@@ -30,10 +30,13 @@ import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
   PData,
-  PIsData (..),
+  PIsData,
   pasInt,
   pasList,
+  pdata,
+  pdataImpl,
   pforgetData,
+  pfromDataImpl,
  )
 import Plutarch.Integer (PInteger, PIntegral (pdiv, pmod))
 import Plutarch.List (PListLike (pcons, phead, pnil, ptail), pmap)
@@ -56,12 +59,11 @@ instance PShow PRational where
           pshow x <> "/" <> pshow y
 
 instance PIsData PRational where
-  pfromData x' = phoistAcyclic (plam $ \x -> pListToRat #$ pmap # pasInt #$ pasList # pforgetData x) # x'
-  pdata x' =
+  pfromDataImpl x' = phoistAcyclic (plam $ \x -> pListToRat #$ pmap # pasInt #$ pasList # pforgetData x) # x'
+  pdataImpl x' =
     phoistAcyclic
       ( plam $ \x ->
-          (punsafeCoerce :: Term _ (PAsData (PBuiltinList (PAsData PInteger))) -> Term _ (PAsData PRational)) $
-            pdata $ pRatToList # x
+          punsafeCoerce (pdata $ pRatToList # x :: Term _ (PAsData (PBuiltinList (PAsData PInteger))))
       )
       # x'
 
