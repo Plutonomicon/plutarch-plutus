@@ -49,73 +49,6 @@
 
   outputs = inputs@{ self, nixpkgs, iohk-nix, haskell-nix, plutus, hercules-ci-effects, ... }:
     let
-      extraSources = [
-        {
-          src = inputs.protolude;
-          subdirs = [ "." ];
-        }
-        {
-          src = inputs.cardano-prelude;
-          subdirs = [
-            "cardano-prelude"
-          ];
-        }
-        {
-          src = inputs.cardano-crypto;
-          subdirs = [ "." ];
-        }
-        {
-          src = inputs.flat;
-          subdirs = [ "." ];
-        }
-        {
-          src = inputs.cardano-base;
-          subdirs = [
-            "binary"
-            "cardano-crypto-class"
-          ];
-        }
-        {
-          src = inputs.sized-functors;
-          subdirs = [ "." ];
-        }
-        {
-          src = inputs.plutus;
-          subdirs = [
-            "plutus-core"
-            "plutus-ledger-api"
-            "plutus-tx"
-            "prettyprinter-configurable"
-            "word-array"
-          ];
-        }
-        {
-          src = inputs.hspec;
-          subdirs = [
-            "."
-            "hspec-core"
-            "hspec-contrib"
-            "hspec-discover"
-          ];
-        }
-        {
-          src = inputs.hspec-hedgehog;
-          subdirs = [ "." ];
-        }
-        {
-          src = inputs.hspec-golden;
-          subdirs = [ "." ];
-        }
-        {
-          src = inputs.secp256k1-haskell;
-          subdirs = [ "." ];
-        }
-        {
-          src = inputs.inline-r;
-          subdirs = [ "inline-r" ];
-        }
-      ];
-
       supportedSystems = with nixpkgs.lib.systems.supported; tier1 ++ tier2 ++ tier3;
 
       perSystem = nixpkgs.lib.genAttrs supportedSystems;
@@ -216,6 +149,73 @@
               config.hsPkgs.hspec-discover
             ];
           };
+          extraSources = [
+            {
+              src = inputs.protolude;
+              subdirs = [ "." ];
+            }
+            {
+              src = inputs.cardano-prelude;
+              subdirs = [
+                "cardano-prelude"
+              ];
+            }
+            {
+              src = inputs.cardano-crypto;
+              subdirs = [ "." ];
+            }
+            {
+              src = inputs.flat;
+              subdirs = [ "." ];
+            }
+            {
+              src = inputs.cardano-base;
+              subdirs = [
+                "binary"
+                "cardano-crypto-class"
+              ];
+            }
+            {
+              src = inputs.sized-functors;
+              subdirs = [ "." ];
+            }
+            {
+              src = inputs.plutus;
+              subdirs = [
+                "plutus-core"
+                "plutus-ledger-api"
+                "plutus-tx"
+                "prettyprinter-configurable"
+                "word-array"
+              ];
+            }
+            {
+              src = inputs.hspec;
+              subdirs = [
+                "."
+                "hspec-core"
+                "hspec-contrib"
+                "hspec-discover"
+              ];
+            }
+            {
+              src = inputs.hspec-hedgehog;
+              subdirs = [ "." ];
+            }
+            {
+              src = inputs.hspec-golden;
+              subdirs = [ "." ];
+            }
+            {
+              src = inputs.secp256k1-haskell;
+              subdirs = [ "." ];
+            }
+            {
+              src = inputs.inline-r;
+              subdirs = [ "inline-r" ];
+            }
+          ];
+          # FIXME: Add shrinker if on GHC 8.10.7
         })
       ];
 
@@ -420,13 +420,6 @@
         let pkgSet = (nixpkgsFor system).haskell-nix.cabalProject' ({
           src = ./.;
           compiler-nix-name = ghcName;
-          extraSources =
-            if ghcName == ghcVersion then extraSources
-            else map (addSubDir inputs.plutus "plutus-tx-plugin") extraSources
-              ++ [{
-              src = inputs.Shrinker;
-              subdirs = [ "." ];
-            }];
           modules = haskellModules ++ [
             {
               packages.plutarch-test.flags.development = flagDevelopment;
@@ -582,7 +575,7 @@
         (nixpkgsFor system).runCommand appName { } "${self.apps.${system}.${appName}.program} | tee $out";
     in
     {
-      inherit extraSources cabalProjectLocal haskellModules tools;
+      inherit cabalProjectLocal haskellModules tools;
 
       # Build matrix. Plutarch is built against different GHC versions, and 'development' flag.
       projectMatrix = {
