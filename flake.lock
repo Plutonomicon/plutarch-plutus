@@ -994,6 +994,22 @@
         "type": "github"
       }
     },
+    "relude": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1650271944,
+        "narHash": "sha256-JWnX09f0XplFlUwzaV6pECJnv/w9bIrVMU5h0d+Va8A=",
+        "owner": "kowainik",
+        "repo": "relude",
+        "rev": "3011495606b8437a3ccd21d03d743f4d31e9c257",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kowainik",
+        "repo": "relude",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "Shrinker": "Shrinker",
@@ -1018,6 +1034,7 @@
         ],
         "plutus": "plutus",
         "protolude": "protolude",
+        "relude": "relude",
         "sized-functors": "sized-functors",
         "th-extras": "th-extras"
       }

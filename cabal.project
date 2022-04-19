@@ -1,5 +1,6 @@
 packages:
   ./.
   ./plutarch-*
+  ./plutarch-extra/plutarch-preludes
 
 benchmarks: true

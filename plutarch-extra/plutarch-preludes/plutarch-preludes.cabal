@@ -1,5 +1,5 @@
 cabal-version: 2.4
-name:          plutarch-extra
+name:          plutarch-preludes
 version:       1.1.0
 
 common c
@@ -70,13 +70,11 @@ common deps
   build-depends:
     , base
     , plutarch
+    , relude
 
 library
   import:          c, deps
+  hs-source-dirs:  src
   exposed-modules:
-    Plutarch.Extra
-    Plutarch.Extra.Api
-    Plutarch.Extra.TermCont
-    Plutarch.ListUtils
-
--- other-modules:
+    PPrelude
+    PRelude

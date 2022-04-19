@@ -51,6 +51,9 @@
   inputs.hspec-golden.url = "github:stackbuilders/hspec-golden";
   inputs.hspec-golden.flake = false;
 
+  inputs.relude.url = "github:kowainik/relude";
+  inputs.relude.flake = false;
+
   inputs.emanote.url = "github:srid/emanote/master";
 
   outputs = inputs@{ self, nixpkgs, iohk-nix, haskell-nix, plutus, hercules-ci-effects, ... }:
@@ -58,6 +61,10 @@
       extraSources = [
         {
           src = inputs.protolude;
+          subdirs = [ "." ];
+        }
+        {
+          src = inputs.relude;
           subdirs = [ "." ];
         }
         {
@@ -503,6 +510,7 @@
               ps.hspec-discover
               ps.hspec-hedgehog
               ps.hspec-golden
+              ps.relude
               #ps.shrinker
               #ps.shrinker-testing
             ];
