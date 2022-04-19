@@ -455,8 +455,15 @@
           if source.src == target
           then source // { subdirs = source.subdirs ++ [ subdir ]; }
           else source; in
+        let flavor = "${ghcName}-${system}"; in
         let pkgSet = (nixpkgsFor system).haskell-nix.cabalProject' ({
           src = ./.;
+          index-state = "2022-02-15T00:00:00Z";
+          plan-sha256 = {
+            "ghc921-x86_64-linux" = "1qx40r75wy3b3aqx0jx1ajgqhz5vcksnki31gn55rzbhvv03jk4n";
+            "ghc8107-x86_64-linux" = "0xc9wf1v7k8rvvb3a728idnsph9ryl2y57kxqh7gz22lwd5aj8ga";
+          }.${flavor};
+          materialized = ./. + "/.materialized-${flavor}";
           compiler-nix-name = ghcName;
           extraSources =
             if ghcName == ghcVersion then extraSources
