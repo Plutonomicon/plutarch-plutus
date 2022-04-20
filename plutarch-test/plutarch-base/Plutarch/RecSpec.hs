@@ -210,8 +210,8 @@ spec :: Spec
 spec = do
   -- Plutarch.Rec.verifySoleConstructor uses tracing, so we must create two sets
   -- of golden.
-  describe "rec" . plutarchDevFlagDescribe . pgoldenSpec $ do
-    "simple" @\ do
+  describe "rec" $ do
+    describe "simple" . plutarchDevFlagDescribe . pgoldenSpec $ do
       -- Record construction
       "constr" @\ do
         "pcon" @| sampleRecord''
@@ -229,13 +229,13 @@ spec = do
         "pcon" @| pmatch' sampleRecord' (pcon @(PRecord SampleRecord))
         -- reconstructed field access
         "field-access" @| pto (pmatch' sampleRecord' (pcon @(PRecord SampleRecord))) # field sampleInt
-    "LetRec" @\ do
+    describe "LetRec" . plutarchDevFlagDescribe . pgoldenSpec $ do
       "record" @| sampleRecur # field sampleInt
       "record-field" @| sampleRecur # field sampleInt
       "even" @| evenOdd # field even
       "even.4" @| evenOdd # field even # (4 :: Term s PInteger)
       "even.5" @| evenOdd # field even # (5 :: Term s PInteger)
-    "nested" @\ do
+    describe "nested" . plutarchDevFlagDescribe . pgoldenSpec $ do
       "flat" @\ do
         "reconstr-with-rcon" @| sampleFlatOuter
         "nested-field-access" @| sampleFlatOuter # field (sampleInt . flatInner2)
@@ -293,7 +293,7 @@ spec = do
           $ \(PRecord ShallowOuterRecord {shallowInner2}) ->
             pmatch shallowInner2 $ \(PRecord SampleRecord {sampleString}) ->
               sampleString
-    "Data" @\ do
+    describe "Data" . plutarchDevFlagDescribe . pgoldenSpec $ do
       "pdata" @\ do
         "simple" @| sampleData
         "simple-value-deconstructed" @| pasConstr # pforgetData sampleData

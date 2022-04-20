@@ -1,0 +1,10 @@
+constr.pcon {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":30}
+constr.pcon' {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":30}
+constr.rcon {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":30}
+field.access-term {"exBudgetCPU":387149,"exBudgetMemory":1400,"scriptSizeBytes":33}
+field.value.direct-access {"exBudgetCPU":387149,"exBudgetMemory":1400,"scriptSizeBytes":33}
+field.value.pmatch {"exBudgetCPU":387149,"exBudgetMemory":1400,"scriptSizeBytes":33}
+field.value.pmatch' {"exBudgetCPU":387149,"exBudgetMemory":1400,"scriptSizeBytes":33}
+field.value.rmatch {"exBudgetCPU":387149,"exBudgetMemory":1400,"scriptSizeBytes":33}
+reconstr.pcon {"exBudgetCPU":387149,"exBudgetMemory":1400,"scriptSizeBytes":39}
+reconstr.field-access {"exBudgetCPU":744425,"exBudgetMemory":2600,"scriptSizeBytes":43}
