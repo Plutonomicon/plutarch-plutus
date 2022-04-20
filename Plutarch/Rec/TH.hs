@@ -20,7 +20,7 @@ deriveScottEncoded name = do
   a <- TH.newName "a"
   let qa = pure (TH.VarT a)
       ty = foldl apply (TH.conT name) (init tyVars)
-      apply t tvb = TH.appT t (TH.varT $ bindingName tvb)
+      apply t v = TH.appT t (TH.varT v)
 
   [d|type instance ScottEncoded $ty $qa = $(genScottEncoded con qa)|]
 
@@ -51,10 +51,10 @@ bindingName (TH.PlainTV name) = name
 bindingName (TH.KindedTV name _) = name
 #endif
 
-reifyConstructor :: TH.Name -> Q (TH.Con, [TH.TyVarBndr ()])
+reifyConstructor :: TH.Name -> Q (TH.Con, [TH.Name])
 reifyConstructor ty = do
   (TH.TyConI tyCon) <- TH.reify ty
   case tyCon of
-    TH.DataD _ _nm tyVars _kind [c] _ -> return (c, tyVars)
-    TH.NewtypeD _ _nm tyVars _kind c _ -> return (c, tyVars)
+    TH.DataD _ _nm tyVars _kind [c] _ -> return (c, bindingName <$> tyVars)
+    TH.NewtypeD _ _nm tyVars _kind c _ -> return (c, bindingName <$> tyVars)
     _ -> fail "Expected a single-constructor data or newtype"
