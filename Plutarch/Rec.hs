@@ -95,7 +95,7 @@ letrec r = Term term
   where
     term n = TermResult {getTerm = RApply rfix [RLamAbs 1 $ RApply (RVar 0) $ rawTerms], getDeps = deps}
       where
-        (Dual rawTerms, deps) = Rank2.foldMap (rawResult . ($ n+2) . asRawTerm) (r selfReferring)
+        (Dual rawTerms, deps) = Rank2.foldMap (rawResult . ($ n + 2) . asRawTerm) (r selfReferring)
         selfReferring = Rank2.fmap fromRecord accessors
         fromRecord :: ScottArgument r s a -> Term s a
         fromRecord (ScottArgument (Term access)) =

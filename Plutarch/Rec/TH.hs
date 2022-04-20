@@ -1,4 +1,5 @@
-{-# LANGUAGE CPP, TemplateHaskell #-}
+{-# LANGUAGE CPP #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Plutarch.Rec.TH (deriveAll, deriveScottEncoded) where
 
@@ -18,15 +19,8 @@ deriveScottEncoded name = do
   (con, tyVars) <- reifyConstructor name
   a <- TH.newName "a"
   let qa = pure (TH.VarT a)
-      ty = foldl apply (TH.conT name) (init tyVars) 
-
-#if MIN_VERSION_template_haskell(2,17,0)
-      apply t (TH.PlainTV name _)    = TH.appT t (TH.varT name)
-      apply t (TH.KindedTV name _ _) = TH.appT t (TH.varT name)
-#else
-      apply t (TH.PlainTV name)    = TH.appT t (TH.varT name)
-      apply t (TH.KindedTV name _) = TH.appT t (TH.varT name)
-#endif
+      ty = foldl apply (TH.conT name) (init tyVars)
+      apply t tvb = TH.appT t (TH.varT $ bindingName tvb)
 
   [d|type instance ScottEncoded $ty $qa = $(genScottEncoded con qa)|]
 
@@ -46,6 +40,16 @@ argType _ _ = error "Expected an HKD field type of form (f FieldType)"
 bare :: TH.Type -> Q TH.Type
 bare (TH.SigT t _) = bare t
 bare t = pure t
+
+#if MIN_VERSION_template_haskell(2,17,0)
+bindingName :: TH.TyVarBndr flag -> TH.Name
+bindingName (TH.PlainTV name _) = name
+bindingName (TH.KindedTV name _ _) = name
+#else
+bindingName :: TH.TyVarBndr -> TH.Name
+bindingName (TH.PlainTV name) = name
+bindingName (TH.KindedTV name _) = name
+#endif
 
 reifyConstructor :: TH.Name -> Q (TH.Con, [TH.TyVarBndr ()])
 reifyConstructor ty = do

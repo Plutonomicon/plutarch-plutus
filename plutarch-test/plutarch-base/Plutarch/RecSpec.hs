@@ -204,11 +204,11 @@ evenOdd = letrec evenOddRecursion
         }
 
 knownEvenOdd :: Term (s :: S) ((PInteger :--> PBool) :--> ScottEncoding EvenOdd (t :: PType))
-knownEvenOdd = plam $ \knownEven -> letrec $ \ EvenOdd {even, odd}->
-      EvenOdd
-        { even = plam $ \n -> pif (knownEven # n) (pcon PTrue) (odd #$ n - 1)
-        , odd = plam $ \n -> pif (knownEven # n) (pcon PFalse) (even #$ n - 1)
-        }
+knownEvenOdd = plam $ \knownEven -> letrec $ \EvenOdd {even, odd} ->
+  EvenOdd
+    { even = plam $ \n -> pif (knownEven # n) (pcon PTrue) (odd #$ n - 1)
+    , odd = plam $ \n -> pif (knownEven # n) (pcon PFalse) (even #$ n - 1)
+    }
 
 sampleData :: Term s (PAsData (PRecord SampleRecord))
 sampleData = pdata (punsafeFrom sampleRecord)
