@@ -56,10 +56,16 @@ data EvenOdd f = EvenOdd
   , odd :: f (PInteger :--> PBool)
   }
 
+data ParameterizedRecord p q f = ParameterizedRecord
+  { p1 :: f (PInteger :--> PBool)
+  , p2 :: f (PInteger :--> p :--> PBool)
+  }
+
 type instance ScottEncoded EvenOdd a = (PInteger :--> PBool) :--> (PInteger :--> PBool) :--> a
 
 $(Rank2.TH.deriveAll ''EvenOdd)
 $(deriveAll ''SampleRecord) -- also autoderives the @type instance ScottEncoded@
+$(deriveAll ''ParameterizedRecord)
 $(deriveAll ''FlatOuterRecord)
 $(deriveAll ''ShallowOuterRecord)
 instance RecordFromData SampleRecord

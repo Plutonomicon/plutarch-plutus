@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE CPP, TemplateHaskell #-}
 
 module Plutarch.Rec.TH (deriveAll, deriveScottEncoded) where
 
@@ -15,10 +15,20 @@ deriveAll name = (<>) <$> deriveScottEncoded name <*> Rank2.TH.deriveAll name
 -- | Use as a TH splice for @type instance ScottEncoded@ declarations.
 deriveScottEncoded :: TH.Name -> Q [TH.Dec]
 deriveScottEncoded name = do
-  con <- reifyConstructor name
+  (con, tyVars) <- reifyConstructor name
   a <- TH.newName "a"
   let qa = pure (TH.VarT a)
-  [d|type instance ScottEncoded $(pure $ TH.ConT name) $qa = $(genScottEncoded con qa)|]
+      ty = foldl apply (TH.conT name) (init tyVars) 
+
+#if MIN_VERSION_template_haskell(2,17,0)
+      apply t (TH.PlainTV name _)    = TH.appT t (TH.varT name)
+      apply t (TH.KindedTV name _ _) = TH.appT t (TH.varT name)
+#else
+      apply t (TH.PlainTV name)    = TH.appT t (TH.varT name)
+      apply t (TH.KindedTV name _) = TH.appT t (TH.varT name)
+#endif
+
+  [d|type instance ScottEncoded $ty $qa = $(genScottEncoded con qa)|]
 
 genScottEncoded :: TH.Con -> Q TH.Type -> Q TH.Type
 genScottEncoded (TH.InfixC (_, left) _name (_, right)) result = argType left (argType right result)
@@ -37,10 +47,10 @@ bare :: TH.Type -> Q TH.Type
 bare (TH.SigT t _) = bare t
 bare t = pure t
 
-reifyConstructor :: TH.Name -> Q TH.Con
+reifyConstructor :: TH.Name -> Q (TH.Con, [TH.TyVarBndr ()])
 reifyConstructor ty = do
   (TH.TyConI tyCon) <- TH.reify ty
   case tyCon of
-    TH.DataD _ _nm _tyVars _kind [c] _ -> return c
-    TH.NewtypeD _ _nm _tyVars _kind c _ -> return c
+    TH.DataD _ _nm tyVars _kind [c] _ -> return (c, tyVars)
+    TH.NewtypeD _ _nm tyVars _kind c _ -> return (c, tyVars)
     _ -> fail "Expected a single-constructor data or newtype"
