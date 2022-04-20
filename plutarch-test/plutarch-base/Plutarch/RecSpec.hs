@@ -197,6 +197,13 @@ evenOdd = letrec evenOddRecursion
         , odd = plam $ \n -> pif (n #== 0) (pcon PFalse) (even #$ n - 1)
         }
 
+knownEvenOdd :: Term (s :: S) ((PInteger :--> PBool) :--> ScottEncoding EvenOdd (t :: PType))
+knownEvenOdd = plam $ \knownEven -> letrec $ \ EvenOdd {even, odd}->
+      EvenOdd
+        { even = plam $ \n -> pif (knownEven # n) (pcon PTrue) (odd #$ n - 1)
+        , odd = plam $ \n -> pif (knownEven # n) (pcon PFalse) (even #$ n - 1)
+        }
+
 sampleData :: Term s (PAsData (PRecord SampleRecord))
 sampleData = pdata (punsafeFrom sampleRecord)
 
@@ -235,6 +242,9 @@ spec = do
       "even" @| evenOdd # field even
       "even.4" @| evenOdd # field even # (4 :: Term s PInteger)
       "even.5" @| evenOdd # field even # (5 :: Term s PInteger)
+      "knownEven" @| knownEvenOdd # plam (#== 4) # field even
+      "knownEven.6" @| knownEvenOdd # plam (#== 4) # field even # (6 :: Term s PInteger)
+      "knownEven.7" @| knownEvenOdd # plam (#== 4) # field even # (7 :: Term s PInteger)
     describe "nested" . plutarchDevFlagDescribe . pgoldenSpec $ do
       "flat" @\ do
         "reconstr-with-rcon" @| sampleFlatOuter
