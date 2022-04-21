@@ -1,5 +1,3 @@
-{-# LANGUAGE ImpredicativeTypes #-}
-
 -- NOTE: This module also contains ScriptContext mocks, which should ideally
 -- moved to a module of its own after cleaning up to expose a easy to reason
 -- about API.
@@ -41,6 +39,8 @@ import Plutarch.Prelude
 import Plutarch.Test
 import Test.Hspec
 
+newtype EnclosedTerm (p :: PType) = EnclosedTerm {getEnclosedTerm :: ClosedTerm p}
+
 spec :: Spec
 spec = do
   describe "api" $ do
@@ -68,9 +68,13 @@ spec = do
         let pmint = PValue.singleton # pconstant "c0" # pconstant "sometoken" # 1
             pmintOtherToken = PValue.singleton # pconstant "c0" # pconstant "othertoken" # 1
             pmintOtherSymbol = PValue.singleton # pconstant "c7" # pconstant "sometoken" # 1
-            growingSymbols, symbols :: [ClosedTerm PValue]
-            growingSymbols = scanl (\s v -> PValue.unionWith # plam (+) # s # v) pmint symbols
-            symbols = toSymbolicValue <$> [0 .. 15]
+            growingSymbols, symbols :: [EnclosedTerm PValue]
+            growingSymbols =
+              scanl
+                (\s v -> EnclosedTerm $ PValue.unionWith # plam (+) # getEnclosedTerm s # getEnclosedTerm v)
+                (EnclosedTerm pmint)
+                symbols
+            symbols = (\n -> EnclosedTerm (toSymbolicValue n)) <$> [0 .. 15]
             toSymbolicValue :: Integer -> ClosedTerm PValue
             toSymbolicValue n =
               PValue.singleton # pconstant (fromString $ "c" <> showHex n "") # pconstant "token" # 1
@@ -85,7 +89,8 @@ spec = do
               (zip [1 :: Int .. length growingSymbols] growingSymbols)
               ( \(size, v) ->
                   fromString (show size)
-                    @| PValue.valueOf # v # pconstant "c7" # pconstant "token" @-> \p -> plift p @?= if size < 9 then 0 else 1
+                    @| PValue.valueOf # getEnclosedTerm v # pconstant "c7" # pconstant "token"
+                    @-> \p -> plift p @?= if size < 9 then 0 else 1
               )
         "unionWith" @\ do
           "const" @| PValue.unionWith # plam const # pmint # pmint @-> \p ->
@@ -103,8 +108,8 @@ spec = do
             @\ forM_
               (zip [1 :: Int .. length growingSymbols] growingSymbols)
               ( \(size, v) ->
-                  fromString (show size) @| PValue.unionWith # plam const # v # pmintOtherSymbol
-                    @-> \v' -> passert (v' #== PValue.unionWith # plam const # pmintOtherSymbol # v)
+                  fromString (show size) @| PValue.unionWith # plam const # getEnclosedTerm v # pmintOtherSymbol
+                    @-> \v' -> passert (v' #== PValue.unionWith # plam const # pmintOtherSymbol # getEnclosedTerm v)
               )
         "unionWithData const" @\ do
           "itself" @| PValue.unionWithData @-> \u ->
@@ -130,7 +135,10 @@ spec = do
           "growing"
             @\ forM_
               (zip [1 :: Int .. length growingSymbols] growingSymbols)
-              (\(size, v) -> fromString (show size) @| v #== v @-> passert)
+              ( \(size, v) ->
+                  fromString (show size)
+                    @| getEnclosedTerm v #== getEnclosedTerm v @-> passert
+              )
     describe "map" $ do
       pgoldenSpec $ do
         let pmap, pdmap, emptyMap, doubleMap, otherMap :: Term _ (AssocMap.PMap PByteString PInteger)

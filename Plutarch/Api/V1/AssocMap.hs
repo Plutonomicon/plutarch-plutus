@@ -120,6 +120,7 @@ instance
       y' <- Plutus.fromData y
       Just (x', y')
 
+-- | Tests whether the map is empty.
 null :: Term s (PMap k v :--> PBool)
 null = plam (\map -> pnull # pto map)
 
@@ -346,16 +347,19 @@ difference = phoistAcyclic $
         (const pnil)
         # pto left
 
+-- | Tests if all values in the map satisfy the given predicate.
 all :: PIsData v => Term (s :: S) ((v :--> PBool) :--> PMap k v :--> PBool)
 all = phoistAcyclic $
   plam $ \pred map ->
     pall # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto map
 
+-- | Filters the map so it contains only the values that satisfy the given predicate.
 filter :: (PIsData k, PIsData a) => Term (s :: S) ((a :--> PBool) :--> PMap k a :--> PMap k a)
 filter = phoistAcyclic $
   plam $ \pred ->
     mapMaybe #$ plam $ \v -> pif (pred # v) (pcon $ PJust v) (pcon PNothing)
 
+-- | Maps and filters the map, much like 'Data.List.mapMaybe'.
 mapMaybe ::
   (PIsData k, PIsData a, PIsData b) =>
   Term (s :: S) ((a :--> PMaybe b) :--> PMap k a :--> PMap k b)

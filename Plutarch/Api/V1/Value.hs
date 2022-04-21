@@ -57,7 +57,7 @@ deriving via
   instance
     PConstantDecl Plutus.Value
 
--- | Works correctly only on 'normalize'd values!
+-- | Works correctly only on 'normalize'd and sorted values!
 instance PEq PValue where
   a #== b = pto a #== pto b
 
