@@ -61,6 +61,9 @@ deriving via
 instance PEq PValue where
   a #== b = pto a #== pto b
 
+instance Semigroup (Term s PValue) where
+  a <> b = unionWith # plam (+) # a # b
+
 -- | Construct a singleton 'PValue' containing only the given quantity of the given currency.
 singleton :: Term (s :: S) (PCurrencySymbol :--> PTokenName :--> PInteger :--> PValue)
 singleton = phoistAcyclic $

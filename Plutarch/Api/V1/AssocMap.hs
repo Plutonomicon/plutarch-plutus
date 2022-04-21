@@ -262,6 +262,9 @@ type instance
 
 $(Rank2.TH.deriveAll ''MapUnion)
 
+instance (POrd k, PIsData k, PIsData v, Semigroup (Term s v)) => Semigroup (Term s (PMap k v)) where
+  a <> b = unionWith # plam (<>) # a # b
+
 {- | Combine two 'PMap's applying the given function to any two values that
  share the same key.
 -}
