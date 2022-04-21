@@ -7,7 +7,7 @@ import qualified Rank2.TH
 import Prelude hiding (even, odd)
 
 import Plutarch (pcon', pmatch')
-import Plutarch.Builtin (pasConstr, pforgetData)
+import Plutarch.Builtin (pasConstr, pdataImpl, pforgetData, pfromDataImpl)
 import Plutarch.Prelude
 import Plutarch.Rec (
   DataReader (DataReader, readData),
@@ -26,7 +26,7 @@ import Plutarch.Rec (
  )
 import Plutarch.Rec.TH (deriveAll)
 import Plutarch.Test
-import Plutarch.Unsafe (punsafeCoerce, punsafeFrom)
+import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import Test.Hspec
 
 data FlatOuterRecord f = FlatOuterRecord
@@ -56,10 +56,16 @@ data EvenOdd f = EvenOdd
   , odd :: f (PInteger :--> PBool)
   }
 
+data ParameterizedRecord p q f = ParameterizedRecord
+  { p1 :: f (PInteger :--> PBool)
+  , p2 :: f (PInteger :--> p :--> PBool)
+  }
+
 type instance ScottEncoded EvenOdd a = (PInteger :--> PBool) :--> (PInteger :--> PBool) :--> a
 
 $(Rank2.TH.deriveAll ''EvenOdd)
 $(deriveAll ''SampleRecord) -- also autoderives the @type instance ScottEncoded@
+$(deriveAll ''ParameterizedRecord)
 $(deriveAll ''FlatOuterRecord)
 $(deriveAll ''ShallowOuterRecord)
 instance RecordFromData SampleRecord
@@ -67,16 +73,16 @@ instance RecordFromData FlatOuterRecord
 instance RecordFromData ShallowOuterRecord
 
 instance PIsData (PRecord SampleRecord) where
-  pfromData = readData (recordFromFieldReaders sampleReader)
-  pdata = writeData (recordDataFromFieldWriters sampleWriter)
+  pfromDataImpl = readData (recordFromFieldReaders sampleReader)
+  pdataImpl = pupcast . writeData (recordDataFromFieldWriters sampleWriter)
 
 instance PIsData (PRecord FlatOuterRecord) where
-  pfromData = readData (recordFromFieldReaders flatOuterReader)
-  pdata = writeData (recordDataFromFieldWriters flatOuterWriter)
+  pfromDataImpl = readData (recordFromFieldReaders flatOuterReader)
+  pdataImpl = pupcast . writeData (recordDataFromFieldWriters flatOuterWriter)
 
 instance PIsData (PRecord ShallowOuterRecord) where
-  pfromData = readData (recordFromFieldReaders shallowOuterReader)
-  pdata = writeData (recordDataFromFieldWriters shallowOuterWriter)
+  pfromDataImpl = readData (recordFromFieldReaders shallowOuterReader)
+  pdataImpl = pupcast . writeData (recordDataFromFieldWriters shallowOuterWriter)
 
 sampleReader :: SampleRecord (DataReader s)
 sampleReader =
@@ -197,21 +203,28 @@ evenOdd = letrec evenOddRecursion
         , odd = plam $ \n -> pif (n #== 0) (pcon PFalse) (even #$ n - 1)
         }
 
+knownEvenOdd :: Term (s :: S) ((PInteger :--> PBool) :--> ScottEncoding EvenOdd (t :: PType))
+knownEvenOdd = plam $ \knownEven -> letrec $ \EvenOdd {even, odd} ->
+  EvenOdd
+    { even = plam $ \n -> pif (knownEven # n) (pcon PTrue) (odd #$ n - 1)
+    , odd = plam $ \n -> pif (knownEven # n) (pcon PFalse) (even #$ n - 1)
+    }
+
 sampleData :: Term s (PAsData (PRecord SampleRecord))
-sampleData = pdata (punsafeFrom sampleRecord)
+sampleData = pdata (punsafeDowncast sampleRecord)
 
 flatOuterData :: Term s (PAsData (PRecord FlatOuterRecord))
-flatOuterData = pdata (punsafeFrom sampleFlatOuter)
+flatOuterData = pdata (punsafeDowncast sampleFlatOuter)
 
 shallowOuterData :: Term s (PAsData (PRecord ShallowOuterRecord))
-shallowOuterData = pdata (punsafeFrom sampleShallowOuter)
+shallowOuterData = pdata (punsafeDowncast sampleShallowOuter)
 
 spec :: Spec
 spec = do
   -- Plutarch.Rec.verifySoleConstructor uses tracing, so we must create two sets
   -- of golden.
-  describe "rec" . plutarchDevFlagDescribe . pgoldenSpec $ do
-    "simple" @\ do
+  describe "rec" $ do
+    describe "simple" . plutarchDevFlagDescribe . pgoldenSpec $ do
       -- Record construction
       "constr" @\ do
         "pcon" @| sampleRecord''
@@ -229,13 +242,16 @@ spec = do
         "pcon" @| pmatch' sampleRecord' (pcon @(PRecord SampleRecord))
         -- reconstructed field access
         "field-access" @| pto (pmatch' sampleRecord' (pcon @(PRecord SampleRecord))) # field sampleInt
-    "LetRec" @\ do
+    describe "LetRec" . plutarchDevFlagDescribe . pgoldenSpec $ do
       "record" @| sampleRecur # field sampleInt
       "record-field" @| sampleRecur # field sampleInt
       "even" @| evenOdd # field even
       "even.4" @| evenOdd # field even # (4 :: Term s PInteger)
       "even.5" @| evenOdd # field even # (5 :: Term s PInteger)
-    "nested" @\ do
+      "knownEven" @| knownEvenOdd # plam (#== 4) # field even
+      "knownEven.6" @| knownEvenOdd # plam (#== 4) # field even # (6 :: Term s PInteger)
+      "knownEven.7" @| knownEvenOdd # plam (#== 4) # field even # (7 :: Term s PInteger)
+    describe "nested" . plutarchDevFlagDescribe . pgoldenSpec $ do
       "flat" @\ do
         "reconstr-with-rcon" @| sampleFlatOuter
         "nested-field-access" @| sampleFlatOuter # field (sampleInt . flatInner2)
@@ -293,7 +309,7 @@ spec = do
           $ \(PRecord ShallowOuterRecord {shallowInner2}) ->
             pmatch shallowInner2 $ \(PRecord SampleRecord {sampleString}) ->
               sampleString
-    "Data" @\ do
+    describe "Data" . plutarchDevFlagDescribe . pgoldenSpec $ do
       "pdata" @\ do
         "simple" @| sampleData
         "simple-value-deconstructed" @| pasConstr # pforgetData sampleData

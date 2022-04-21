@@ -1,0 +1,22 @@
+pdata.simple (program 1.0.0 #d8799fd87980064d53616c75742c204d6f6e646521ff)
+pdata.simple-value-deconstructed (program 1.0.0 (0, [#d87980, #06, #4d53616c75742c204d6f6e646521]))
+pdata.flat-data-deconstructed (program 1.0.0 ( 0
+, [ #d87980
+  , #d87980
+  , #06
+  , #4d53616c75742c204d6f6e646521
+  , #04
+  , #d87980
+  , #09
+  , #4d53616c75742c204d6f6e646521
+  , #4c486f6c612c204d756e646f21 ] ))
+pdata.shallow-data-deconstructed (program 1.0.0 ( 0
+, [ #d87980
+  , #d8799fd87980064d53616c75742c204d6f6e646521ff
+  , #04
+  , #d8799fd87980094d53616c75742c204d6f6e646521ff
+  , #4c486f6c612c204d756e646f21 ] ))
+fieldFromData.simple (program 1.0.0 (\i0 -> unIData ((\i0 -> force (force ifThenElse (equalsInteger (force (force fstPair) i1) 0) (delay (force headList (force tailList (force (force sndPair) i1)))) (delay (force (force trace "verifySoleConstructor failed" (delay error)))))) (unConstrData i1))))
+fieldFromData.nested.flat (program 1.0.0 (\i0 -> unIData ((\i0 -> force (force ifThenElse (equalsInteger (force (force fstPair) i1) 0) (delay (force headList (force tailList (force tailList (force tailList (force tailList (force tailList (force tailList (force (force sndPair) i1))))))))) (delay (force (force trace "verifySoleConstructor failed" (delay error)))))) (unConstrData i1))))
+fieldFromData.nested.shallow (program 1.0.0 (\i0 -> (\i0 -> (\i0 -> force (force ifThenElse (equalsInteger (force (force fstPair) i1) 0) (delay (\i0 -> i1 ((\i0 -> equalsInteger (force (force fstPair) (unConstrData i1)) 1) (force headList (force (force sndPair) i2))) (unIData (force headList (force tailList (force (force sndPair) i2)))) (decodeUtf8 (unBData (force headList (force tailList (force tailList (force (force sndPair) i2)))))))) (delay (force (force trace "verifySoleConstructor failed" (delay error)))))) (unConstrData i1)) ((\i0 -> force (force ifThenElse (equalsInteger (force (force fstPair) i1) 0) (delay (force headList (force tailList (force tailList (force tailList (force (force sndPair) i1)))))) (delay (force (force trace "verifySoleConstructor failed" (delay error)))))) (unConstrData i1)) (\i0 -> \i0 -> \i0 -> i2)))
+pfromData (program 1.0.0 (\i0 -> (\i0 -> force (force ifThenElse (equalsInteger (force (force fstPair) i1) 0) (delay (\i0 -> i1 ((\i0 -> equalsInteger (force (force fstPair) (unConstrData i1)) 1) (force headList (force (force sndPair) i2))) (unIData (force headList (force tailList (force (force sndPair) i2)))) (decodeUtf8 (unBData (force headList (force tailList (force tailList (force (force sndPair) i2)))))))) (delay (force (force trace "verifySoleConstructor failed" (delay error)))))) (unConstrData i1) (\i0 -> \i0 -> \i0 -> i2)))

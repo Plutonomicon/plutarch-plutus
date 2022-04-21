@@ -107,7 +107,9 @@ module Plutarch.Prelude (
   psndBuiltin,
   PBuiltinPair,
   PBuiltinList (..),
-  PIsData (pfromData, pdata),
+  PIsData,
+  pfromData,
+  pdata,
   PAsData,
 
   -- * DataRepr and related functions
@@ -150,6 +152,10 @@ module Plutarch.Prelude (
   TermCont (TermCont, runTermCont),
   unTermCont,
   tcont,
+  pupcast,
+  ptryFrom,
+  PTryFrom,
+  PSubtype,
 ) where
 
 import Prelude ()
@@ -173,4 +179,5 @@ import Plutarch.Show
 import Plutarch.String
 import Plutarch.TermCont
 import Plutarch.Trace
+import Plutarch.TryFrom
 import Plutarch.Unit

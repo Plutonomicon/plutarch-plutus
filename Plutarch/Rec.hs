@@ -95,12 +95,12 @@ letrec r = Term term
   where
     term n = TermResult {getTerm = RApply rfix [RLamAbs 1 $ RApply (RVar 0) $ rawTerms], getDeps = deps}
       where
-        (Dual rawTerms, deps) = Rank2.foldMap (rawResult . ($ n) . asRawTerm) (r selfReferring)
+        (Dual rawTerms, deps) = Rank2.foldMap (rawResult . ($ n + 2) . asRawTerm) (r selfReferring)
+        selfReferring = Rank2.fmap fromRecord accessors
+        fromRecord :: ScottArgument r s a -> Term s a
+        fromRecord (ScottArgument (Term access)) =
+          Term $ \depth -> mapTerm (\field -> RApply (RVar $ depth - n - 1) [field]) (access 0)
     rawResult TermResult {getTerm, getDeps} = (Dual [getTerm], getDeps)
-    selfReferring = Rank2.fmap fromRecord accessors
-    fromRecord :: ScottArgument r s a -> Term s a
-    fromRecord (ScottArgument (Term access)) =
-      Term $ \depth -> mapTerm (\field -> RApply (RVar $ fieldCount (initial @r) + depth - 1) [field]) (access 0)
 
 -- | Converts a Haskell field function to a Scott-encoded record field accessor.
 field ::
