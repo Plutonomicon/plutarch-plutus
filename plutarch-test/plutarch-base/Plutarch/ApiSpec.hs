@@ -1,3 +1,5 @@
+{-# LANGUAGE ImpredicativeTypes #-}
+
 -- NOTE: This module also contains ScriptContext mocks, which should ideally
 -- moved to a module of its own after cleaning up to expose a easy to reason
 -- about API.
@@ -14,7 +16,10 @@ module Plutarch.ApiSpec (
 
 import Test.Tasty.HUnit
 
+import Control.Monad (forM_)
 import Control.Monad.Trans.Cont (cont, runCont)
+import Data.String (fromString)
+import Numeric (showHex)
 import Plutus.V1.Ledger.Api
 import qualified Plutus.V1.Ledger.Interval as Interval
 import qualified Plutus.V1.Ledger.Value as Value
@@ -62,13 +67,24 @@ spec = do
       pgoldenSpec $ do
         let pmint = PValue.singleton # pconstant "c0" # pconstant "sometoken" # 1
             pmintOtherToken = PValue.singleton # pconstant "c0" # pconstant "othertoken" # 1
-            pmintOtherSymbol = PValue.singleton # pconstant "c2" # pconstant "sometoken" # 1
+            pmintOtherSymbol = PValue.singleton # pconstant "c7" # pconstant "sometoken" # 1
+            growingSymbols, symbols :: [ClosedTerm PValue]
+            growingSymbols = scanl (\s v -> PValue.unionWith # plam (+) # s # v) pmint symbols
+            symbols = toSymbolicValue <$> [0..15]
+            toSymbolicValue :: Integer -> ClosedTerm PValue
+            toSymbolicValue n =
+              PValue.singleton # pconstant (fromString $ "c" <> showHex n "") # pconstant "token" # 1
         "singleton" @| pmint @-> \p ->
           plift p @?= mint
         "valueOf" @\ do
           "itself" @| PValue.valueOf @-> \v -> plift (v # pmint # pconstant "c0" # pconstant "sometoken") @?= 1
           "applied" @| PValue.valueOf # pmint # pconstant "c0" # pconstant "sometoken" @-> \p ->
             plift p @?= 1
+          "growing" @\
+            forM_ (zip [1 :: Int .. length growingSymbols] growingSymbols)
+            (\(size, v) ->
+              fromString (show size)
+              @| PValue.valueOf # v # pconstant "c7" # pconstant "token" @-> \p -> plift p @?= if size < 9 then 0 else 1)
         "unionWith" @\ do
           "const" @| PValue.unionWith # plam const # pmint # pmint @-> \p ->
             plift p @?= mint
@@ -81,6 +97,11 @@ spec = do
             plift p @?= mint <> mintOtherToken
           "symbols" @| PValue.unionWith # plam (+) # pmint # pmintOtherSymbol @-> \p ->
             plift p @?= mint <> mintOtherSymbol
+          "growing" @\
+            forM_ (zip [1 :: Int .. length growingSymbols] growingSymbols)
+            (\(size, v) ->
+              fromString (show size) @| PValue.unionWith # plam const # v # pmintOtherSymbol
+              @-> \v' -> passert (v' #== PValue.unionWith # plam const # pmintOtherSymbol # v))
         "unionWithData const" @\ do
           "itself" @| PValue.unionWithData @-> \u ->
             plift (u # plam const # pmint # pmint) @?= mint
@@ -102,6 +123,9 @@ spec = do
             @| PValue.unionWith # plam (+) # pmint # pmintOtherSymbol
               #== PValue.unionWith # plam (+) # pmintOtherSymbol # pmint
             @-> passert
+          "growing" @\
+            forM_ (zip [1 :: Int .. length growingSymbols] growingSymbols)
+            (\(size, v) -> fromString (show size) @| v #== v @-> passert)
     describe "map" $ do
       pgoldenSpec $ do
         let pmap, pdmap, emptyMap, doubleMap, otherMap :: Term _ (AssocMap.PMap PByteString PInteger)
@@ -127,6 +151,9 @@ spec = do
             @-> \find -> (find # 12 # pconstant "key" # pmap) #@?= (42 :: Term _ PInteger)
           "hit" @| AssocMap.findWithDefault # 12 # pconstant "key" # pmap
             @-> \result -> passert $ result #== 42
+          "hit2"
+            @| AssocMap.findWithDefault # 12 # pconstant "newkey" # (AssocMap.unionWith # plam const # pmap # otherMap)
+            @-> \result -> passert $ result #== 6
           "miss" @| AssocMap.findWithDefault # 12 # pconstant "nokey" # pmap
             @-> \result -> passert $ result #== 12
         "singleton" @| pmap @-> pshouldReallyBe pdmap
@@ -150,7 +177,7 @@ spec = do
           "emptyResult" @| AssocMap.difference # pmap # doubleMap @-> pshouldReallyBe emptyMap
         "unionWith" @\ do
           "const" @| AssocMap.unionWith # plam const # pmap # pmap @-> pshouldReallyBe pmap
-          "(+)" @| AssocMap.unionWith # plam (+) # pmap # pmap @-> pshouldReallyBe doubleMap
+          "double" @| AssocMap.unionWith # plam (+) # pmap # pmap @-> pshouldReallyBe doubleMap
         "unionWithData" @\ do
           "const" @| AssocMap.unionWithData # plam const # pmap # pmap @-> pshouldReallyBe pmap
           "emptyLeft" @| AssocMap.unionWithData # plam const # emptyMap # pmap @-> pshouldReallyBe pmap
@@ -227,7 +254,7 @@ mintOtherToken :: Value
 mintOtherToken = Value.singleton sym "othertoken" 1
 
 mintOtherSymbol :: Value
-mintOtherSymbol = Value.singleton "c2" "sometoken" 1
+mintOtherSymbol = Value.singleton "c7" "sometoken" 1
 
 ref :: TxOutRef
 ref = TxOutRef "a0" 0

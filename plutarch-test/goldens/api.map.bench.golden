@@ -5,6 +5,7 @@ lookupData.hit {"exBudgetCPU":4140352,"exBudgetMemory":9090,"scriptSizeBytes":11
 lookupData.miss {"exBudgetCPU":4885812,"exBudgetMemory":11122,"scriptSizeBytes":121}
 findWithDefault.itself {"exBudgetCPU":148965,"exBudgetMemory":600,"scriptSizeBytes":78}
 findWithDefault.hit {"exBudgetCPU":4797628,"exBudgetMemory":10354,"scriptSizeBytes":117}
+findWithDefault.hit2 {"exBudgetCPU":24561167,"exBudgetMemory":58410,"scriptSizeBytes":368}
 findWithDefault.miss {"exBudgetCPU":5153769,"exBudgetMemory":12022,"scriptSizeBytes":125}
 singleton {"exBudgetCPU":1374198,"exBudgetMemory":2828,"scriptSizeBytes":39}
 singletonData {"exBudgetCPU":1195560,"exBudgetMemory":2228,"scriptSizeBytes":34}
@@ -19,7 +20,7 @@ difference.emptyLeft {"exBudgetCPU":3012848,"exBudgetMemory":7860,"scriptSizeByt
 difference.emptyRight {"exBudgetCPU":6146958,"exBudgetMemory":15084,"scriptSizeBytes":159}
 difference.emptyResult {"exBudgetCPU":9303566,"exBudgetMemory":21242,"scriptSizeBytes":173}
 unionWith.const {"exBudgetCPU":21557964,"exBudgetMemory":50880,"scriptSizeBytes":344}
-unionWith.(+) {"exBudgetCPU":21606308,"exBudgetMemory":50382,"scriptSizeBytes":340}
+unionWith.double {"exBudgetCPU":21606308,"exBudgetMemory":50382,"scriptSizeBytes":340}
 unionWithData.const {"exBudgetCPU":20661369,"exBudgetMemory":49284,"scriptSizeBytes":331}
 unionWithData.emptyLeft {"exBudgetCPU":9901761,"exBudgetMemory":26280,"scriptSizeBytes":318}
 unionWithData.emptyRight {"exBudgetCPU":12885871,"exBudgetMemory":33472,"scriptSizeBytes":318}
