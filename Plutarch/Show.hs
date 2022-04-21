@@ -36,6 +36,7 @@ import Plutarch.Integer (PInteger, PIntegral (pquot, prem))
 import Plutarch.Internal (punsafeAsClosedTerm)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.Other (
+  DerivePNewtype,
   PlutusType,
   Term,
   perror,
@@ -44,6 +45,7 @@ import Plutarch.Internal.Other (
   plam,
   plet,
   pmatch,
+  pto,
   (#),
   (#$),
   type (:-->),
@@ -146,6 +148,9 @@ instance PShow PByteString where
               ( pconstant $ toInteger x
               , pconstant @PString $ T.pack $ intToDigit x : []
               )
+
+instance PShow b => PShow (DerivePNewtype a b) where
+  pshow' w x = pshow' w (pto x)
 
 -- | Case matching on bytestring, as if a list.
 pelimBS ::

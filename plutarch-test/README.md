@@ -13,14 +13,13 @@ $ nix run .#test-ghc810-nodev
 To run the tests using ghcid (fit for writing tests):
 
 ```sh-session
-$ ghcid -c 'cabal repl plutarch-test:exe:plutarch-test' -T Main.main
+bin/ghcid test
 ```
 
 To run ghcid with development flag set:
 
 ```sh-session
-$ vim cabal.project # And then uncomment the "flags: +developmenet" line.
-$ ghcid -c 'cabal repl plutarch-test:exe:plutarch-test' -T Main.main
+bin/ghcid test:dev
 ```
 
 Note: `cabal run` should be run inside `./plutarch-test` directory.
