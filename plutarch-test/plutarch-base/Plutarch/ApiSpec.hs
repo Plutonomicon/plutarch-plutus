@@ -70,7 +70,7 @@ spec = do
             pmintOtherSymbol = PValue.singleton # pconstant "c7" # pconstant "sometoken" # 1
             growingSymbols, symbols :: [ClosedTerm PValue]
             growingSymbols = scanl (\s v -> PValue.unionWith # plam (+) # s # v) pmint symbols
-            symbols = toSymbolicValue <$> [0..15]
+            symbols = toSymbolicValue <$> [0 .. 15]
             toSymbolicValue :: Integer -> ClosedTerm PValue
             toSymbolicValue n =
               PValue.singleton # pconstant (fromString $ "c" <> showHex n "") # pconstant "token" # 1
@@ -80,11 +80,13 @@ spec = do
           "itself" @| PValue.valueOf @-> \v -> plift (v # pmint # pconstant "c0" # pconstant "sometoken") @?= 1
           "applied" @| PValue.valueOf # pmint # pconstant "c0" # pconstant "sometoken" @-> \p ->
             plift p @?= 1
-          "growing" @\
-            forM_ (zip [1 :: Int .. length growingSymbols] growingSymbols)
-            (\(size, v) ->
-              fromString (show size)
-              @| PValue.valueOf # v # pconstant "c7" # pconstant "token" @-> \p -> plift p @?= if size < 9 then 0 else 1)
+          "growing"
+            @\ forM_
+              (zip [1 :: Int .. length growingSymbols] growingSymbols)
+              ( \(size, v) ->
+                  fromString (show size)
+                    @| PValue.valueOf # v # pconstant "c7" # pconstant "token" @-> \p -> plift p @?= if size < 9 then 0 else 1
+              )
         "unionWith" @\ do
           "const" @| PValue.unionWith # plam const # pmint # pmint @-> \p ->
             plift p @?= mint
@@ -97,11 +99,13 @@ spec = do
             plift p @?= mint <> mintOtherToken
           "symbols" @| PValue.unionWith # plam (+) # pmint # pmintOtherSymbol @-> \p ->
             plift p @?= mint <> mintOtherSymbol
-          "growing" @\
-            forM_ (zip [1 :: Int .. length growingSymbols] growingSymbols)
-            (\(size, v) ->
-              fromString (show size) @| PValue.unionWith # plam const # v # pmintOtherSymbol
-              @-> \v' -> passert (v' #== PValue.unionWith # plam const # pmintOtherSymbol # v))
+          "growing"
+            @\ forM_
+              (zip [1 :: Int .. length growingSymbols] growingSymbols)
+              ( \(size, v) ->
+                  fromString (show size) @| PValue.unionWith # plam const # v # pmintOtherSymbol
+                    @-> \v' -> passert (v' #== PValue.unionWith # plam const # pmintOtherSymbol # v)
+              )
         "unionWithData const" @\ do
           "itself" @| PValue.unionWithData @-> \u ->
             plift (u # plam const # pmint # pmint) @?= mint
@@ -123,9 +127,10 @@ spec = do
             @| PValue.unionWith # plam (+) # pmint # pmintOtherSymbol
               #== PValue.unionWith # plam (+) # pmintOtherSymbol # pmint
             @-> passert
-          "growing" @\
-            forM_ (zip [1 :: Int .. length growingSymbols] growingSymbols)
-            (\(size, v) -> fromString (show size) @| v #== v @-> passert)
+          "growing"
+            @\ forM_
+              (zip [1 :: Int .. length growingSymbols] growingSymbols)
+              (\(size, v) -> fromString (show size) @| v #== v @-> passert)
     describe "map" $ do
       pgoldenSpec $ do
         let pmap, pdmap, emptyMap, doubleMap, otherMap :: Term _ (AssocMap.PMap PByteString PInteger)
@@ -178,6 +183,12 @@ spec = do
         "unionWith" @\ do
           "const" @| AssocMap.unionWith # plam const # pmap # pmap @-> pshouldReallyBe pmap
           "double" @| AssocMap.unionWith # plam (+) # pmap # pmap @-> pshouldReallyBe doubleMap
+          "(+)"
+            @| AssocMap.unionWith # plam (+) # pmap # otherMap
+            @-> \p -> passert (p #== AssocMap.unionWith # plam (+) # otherMap # pmap)
+          "flip (+)"
+            @| AssocMap.unionWith # plam (+) # otherMap # pmap
+            @-> \p -> passert (p #== AssocMap.unionWith # plam (+) # pmap # otherMap)
         "unionWithData" @\ do
           "const" @| AssocMap.unionWithData # plam const # pmap # pmap @-> pshouldReallyBe pmap
           "emptyLeft" @| AssocMap.unionWithData # plam const # emptyMap # pmap @-> pshouldReallyBe pmap
