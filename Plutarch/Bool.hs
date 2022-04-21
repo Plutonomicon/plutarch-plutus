@@ -27,12 +27,11 @@ import Generics.SOP (
   Proxy (Proxy),
   SOP (SOP),
   ccompare_NS,
-  hcliftA2,
+  hcliftA2, Generic, HasDatatypeInfo
  )
 import Plutarch.Internal (plet, punsafeAsClosedTerm)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.Other (
-  DerivePNewtype,
   PDelayed,
   PlutusType (PInner, pcon', pmatch'),
   S,
@@ -46,7 +45,7 @@ import Plutarch.Internal.Other (
   pto,
   (#),
   (#$),
-  type (:-->),
+  type (:-->), DerivePNewtype
  )
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
@@ -57,10 +56,13 @@ import Plutarch.Lift (
  )
 import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
+import qualified GHC.Generics as GHC
 
 -- | Plutus 'BuiltinBool'
 data PBool (s :: S) = PTrue | PFalse
   deriving stock (Show)
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic, HasDatatypeInfo)
 
 instance PUnsafeLiftDecl PBool where type PLifted PBool = Bool
 deriving via (DerivePConstantDirect Bool PBool) instance PConstantDecl Bool
@@ -181,3 +183,4 @@ eqProd p1 p2 =
     eqTerm :: forall s a. PEq a => Term s a -> Term s a -> K (Term s PBool) a
     eqTerm a b =
       K $ a #== b
+

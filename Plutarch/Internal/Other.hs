@@ -38,10 +38,16 @@ module Plutarch.Internal.Other (
 ) where
 
 import Data.Coerce (Coercible, coerce)
+import Data.Kind
+import Data.SOP
+import GHC.TypeLits
+import Generics.SOP (Generic (Code, to), from)
 import Plutarch.Internal (ClosedTerm, PType, Term, compile, phoistAcyclic, punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
+import Plutarch.Internal.Generic
 import Plutarch.Internal.PLam (pinl, plam, (#), (#$))
 import Plutarch.Internal.PlutusType (PCon (pcon), PMatch (pmatch), PlutusType (PInner, pcon', pmatch'))
+import Plutarch.Internal.TypeFamily
 import Plutus.V1.Ledger.Scripts (Script (Script))
 import PlutusCore.Pretty (prettyPlcReadableDebug)
 
@@ -114,33 +120,90 @@ where 'PBar' has a 'PIsData' instance, you can derive 'PlutusType' and 'PIsData'
 
 This will make 'PFoo' simply be represnted as 'PBar' under the hood.
 -}
-newtype DerivePNewtype (a :: PType) (b :: PType) (s :: PI.S) = DerivePNewtype (a s)
+newtype DerivePNewtype (a :: PType) (s :: PI.S) = DerivePNewtype (a s)
 
-instance (forall (s :: PI.S). Coercible (a s) (Term s b)) => PlutusType (DerivePNewtype a b) where
-  type PInner (DerivePNewtype a b) _ = b
-  pcon' (DerivePNewtype t) = ptypeInner t
-  pmatch' x f = f . DerivePNewtype $ ptypeOuter x
+instance
+  ( s ~ 'PI.SI
+  , PCode s a ~ '[ '[SingletonSum (PCode s a)]]
+  , PGeneric s a
+  ) =>
+  PlutusType (DerivePNewtype a)
+  where
+  -- TODO: reject ADTs isomorphic to newtypes
+  type PInner (DerivePNewtype a) _ = SingletonSum (PCode 'PI.SI a)
+  pcon' (DerivePNewtype t) = undefined -- innerTerm t
+  pmatch' x f = f $ DerivePNewtype $ undefined -- outerTerm x
 
-instance Semigroup (Term s b) => Semigroup (Term s (DerivePNewtype a b)) where
+data InterpDerivStrat = PNewtype
+class DerivingStrat strat a => DerivePlutusType (strat :: InterpDerivStrat) a | a -> strat
+class DerivingStrat strat a where
+  type DerivedPInner a (b' :: PType) :: PType
+  derivedPcon' :: forall s b. a s -> Term s (DerivedPInner a b)
+  derivedPmatch' :: forall s b. (Term s (DerivedPInner a b)) -> (a s -> Term s b) -> Term s b
+
+instance
+  ( PGeneric s a
+  , SingletonSumC (PCode s a)
+  , SingletonSum (PCode 'PI.SI a) ~ SingletonSum (PCode s a)
+  ) =>
+  DerivingStrat 'PNewtype a
+  where
+  type DerivedPInner a _ = (SingletonSum (PCode 'PI.SI a))
+  derivedPcon' ::
+    forall s b.
+    a s ->
+    Term s (DerivedPInner a b)
+  derivedPcon' t = singletonSum @(PCode s a) $ gpfrom t
+  derivedPmatch' x f = f undefined
+-- derivedPmatch' x f = f $ gpto $ unSingletonSum x
+
+class SingletonSumC (code :: [[PType]]) where
+  type SingletonSum code :: PType
+  singletonSum :: forall s. SOP (Term s) code -> Term s (SingletonSum code)
+  unSingletonSum :: forall s. Term s (SingletonSum code) -> SOP (Term s) code
+
+instance SingletonSumC '[ '[x]] where
+  type SingletonSum '[ '[x]] = x
+  singletonSum t = hd $ unZ $ unSOP t
+  unSingletonSum t = SOP $ Z $ t :* Nil
+
+{-
+data Bar s
+newtype Foo s = Foo (Term s Bar)
+
+deriving instance
+  ( PlutusType a
+  , PGeneric s a
+  , PCode s a ~ '[ '[SingletonSum (PCode s a)]]
+  ) =>
+  DerivePlutusType 'PNewtype a
+instance PlutusType a where
+  type PInner a b = DerivedPInner a b
+
+x :: Term s Foo
+x = pcon $ Foo undefined
+-}
+
+anySTerm :: forall s1 s2 a. Term s1 a -> Term s2 a
+anySTerm (PI.Term x) = PI.Term x
+
+{-
+instance Semigroup (Term s (SingletonSum (PCode 'PI.SI a))) => Semigroup (Term s (DerivePNewtype a)) where
   x <> y = punsafeFrom $ pto x <> pto y
 
-instance Monoid (Term s b) => Monoid (Term s (DerivePNewtype a b)) where
-  mempty = punsafeFrom $ mempty @(Term s b)
+instance Monoid (Term s (SingletonSum (PCode 'PI.SI a))) => Monoid (Term s (DerivePNewtype a)) where
+  mempty = punsafeFrom $ mempty @(Term s (SingletonSum (PCode 'PI.SI a)))
 
-instance Num (Term s b) => Num (Term s (DerivePNewtype a b)) where
+instance Num (Term s (SingletonSum (PCode 'PI.SI a))) => Num (Term s (DerivePNewtype a)) where
   x + y = punsafeFrom $ pto x + pto y
   x - y = punsafeFrom $ pto x - pto y
   x * y = punsafeFrom $ pto x * pto y
   abs x = punsafeFrom $ abs $ pto x
   negate x = punsafeFrom $ negate $ pto x
   signum x = punsafeFrom $ signum $ pto x
-  fromInteger x = punsafeFrom $ fromInteger @(Term s b) x
-
-ptypeInner :: forall (x :: PType) y s. Coercible (x s) (Term s y) => x s -> Term s y
-ptypeInner = coerce
-
-ptypeOuter :: forall (x :: PType) y s. Coercible (x s) (Term s y) => Term s y -> x s
-ptypeOuter = coerce
+  fromInteger x = punsafeFrom $ fromInteger @(Term s ((SingletonSum (PCode 'PI.SI a)))) x
 
 punsafeFrom :: (forall b. Term s (PInner a b)) -> Term s a
 punsafeFrom x = PI.punsafeCoerce x
+
+-}

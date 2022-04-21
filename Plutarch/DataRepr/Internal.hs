@@ -56,7 +56,7 @@ import Generics.SOP (
   hcmap,
   hcollapse,
   hindex,
-  hmap,
+  hmap, HasDatatypeInfo
  )
 import Plutarch (
   Dig,
@@ -75,7 +75,7 @@ import Plutarch (
   pto,
   (#),
   (#$),
-  type (:-->),
+  type (:-->), DerivePNewtype(..)
  )
 import Plutarch.Bool (PBool, PEq, POrd, pif, (#<), (#<=), (#==))
 import Plutarch.Builtin (
@@ -110,6 +110,7 @@ import Plutarch.Lift (
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont, tcont, unTermCont)
 import qualified Plutus.V1.Ledger.Api as Ledger
+import qualified GHC.Generics as GHC
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is
  `PBuiltinList PData`.
@@ -627,3 +628,8 @@ class IsBuiltinList a where
 
 instance IsBuiltinList (PDataRecord l) where
   dataListFrom = punsafeCoerce
+
+newtype PBool' s = PBool' (Term s PBool)
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic, HasDatatypeInfo)
+  deriving (PlutusType, PEq) via (DerivePNewtype PBool' PBool)
