@@ -57,8 +57,9 @@ deriving via
   instance
     PConstantDecl Plutus.Value
 
+-- | Works correctly only on 'normalize'd values!
 instance PEq PValue where
-  a #== b = isZero #$ unionWith # plam (-) # a # b
+  a #== b = pto a #== pto b
 
 -- | Construct a singleton 'PValue' containing only the given quantity of the given currency.
 singleton :: Term (s :: S) (PCurrencySymbol :--> PTokenName :--> PInteger :--> PValue)
