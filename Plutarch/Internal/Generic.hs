@@ -7,6 +7,7 @@ module Plutarch.Internal.Generic (
   -- * Plutarch adapters for generics-sop API
   PGeneric,
   PCode,
+  PCode',
   gpfrom,
   gpto,
 
@@ -21,7 +22,7 @@ import GHC.TypeLits (Nat, type (-))
 import Generics.SOP (All, AllZip, Code, Generic (from, to), I, LiftedCoercible, NP, NS (S, Z), SOP, SameShapeAs, Top, hfromI, htoI)
 import Generics.SOP.Constraint (AllZipF)
 import Plutarch.DataRepr.Internal.HList.Utils (IndexList)
-import Plutarch.Internal (PType, S, Term)
+import Plutarch.Internal (PType, S, Term, S(SI))
 import Plutarch.Internal.TypeFamily (ToPType2)
 
 -- | `Generic` constraint extended to work with Plutarch types.
@@ -37,6 +38,7 @@ type PGeneric s a =
 
 -- | Like `Code` but for Plutarch types
 type PCode s a = ToPType2 (Code (a s))
+type PCode' a = ToPType2 (Code (a 'SI))
 
 {- | Like `from` but for Plutarch terms
 

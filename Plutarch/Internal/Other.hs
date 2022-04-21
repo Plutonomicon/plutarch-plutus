@@ -124,13 +124,13 @@ newtype DerivePNewtype (a :: PType) (s :: PI.S) = DerivePNewtype (a s)
 
 instance
   ( s ~ 'PI.SI
-  , PCode s a ~ '[ '[SingletonSum (PCode s a)]]
+  , PCode' a ~ '[ '[SingletonSum (PCode' a)]]
   , PGeneric s a
   ) =>
   PlutusType (DerivePNewtype a)
   where
   -- TODO: reject ADTs isomorphic to newtypes
-  type PInner (DerivePNewtype a) _ = SingletonSum (PCode 'PI.SI a)
+  type PInner (DerivePNewtype a) _ = SingletonSum (PCode' a)
   pcon' (DerivePNewtype t) = undefined -- innerTerm t
   pmatch' x f = f $ DerivePNewtype $ undefined -- outerTerm x
 
@@ -143,17 +143,17 @@ class DerivingStrat strat a where
 
 instance
   ( PGeneric s a
-  , SingletonSumC (PCode s a)
-  , SingletonSum (PCode 'PI.SI a) ~ SingletonSum (PCode s a)
+  , SingletonSumC (PCode' a)
+  , SingletonSum (PCode' a) ~ SingletonSum (PCode' a)
   ) =>
   DerivingStrat 'PNewtype a
   where
-  type DerivedPInner a _ = (SingletonSum (PCode 'PI.SI a))
+  type DerivedPInner a _ = (SingletonSum (PCode' a))
   derivedPcon' ::
     forall s b.
     a s ->
     Term s (DerivedPInner a b)
-  derivedPcon' t = singletonSum @(PCode s a) $ gpfrom t
+  derivedPcon' t = singletonSum @(PCode' a) $ gpfrom t
   derivedPmatch' x f = f undefined
 -- derivedPmatch' x f = f $ gpto $ unSingletonSum x
 
