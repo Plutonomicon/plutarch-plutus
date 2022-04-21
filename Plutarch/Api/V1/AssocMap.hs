@@ -18,11 +18,15 @@ module Plutarch.Api.V1.AssocMap (
   lookupData,
   findWithDefault,
   foldAt,
+  null,
 
   -- * Folds
   all,
 
-  -- * Traversals
+  -- * Filters and traversals
+  filter,
+  mapMaybe,
+  mapMaybeData,
   mapEitherWithKey,
   mapEitherWithKeyData,
 
@@ -72,6 +76,7 @@ import Plutarch.Prelude (
   pif,
   plam,
   plet,
+  pnull,
   precList,
   psndBuiltin,
   pto,
@@ -85,7 +90,7 @@ import Plutarch.Unsafe (punsafeFrom)
 
 import qualified Rank2.TH
 
-import Prelude hiding (all, lookup)
+import Prelude hiding (all, filter, lookup, null)
 
 newtype PMap (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinMap k v))
   deriving (PlutusType, PIsData, PEq, PShow) via (DerivePNewtype (PMap k v) (PBuiltinMap k v))
@@ -114,6 +119,9 @@ instance
       x' <- Plutus.fromData x
       y' <- Plutus.fromData y
       Just (x', y')
+
+null :: Term s (PMap k v :--> PBool)
+null = plam (\map -> pnull # pto map)
 
 -- | Look up the given key in a 'PMap'.
 lookup :: (PIsData k, PIsData v) => Term (s :: S) (k :--> PMap k v :--> PMaybe v)
@@ -339,6 +347,36 @@ all :: PIsData v => Term (s :: S) ((v :--> PBool) :--> PMap k v :--> PBool)
 all = phoistAcyclic $
   plam $ \pred map ->
     pall # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto map
+
+filter :: (PIsData k, PIsData a) => Term (s :: S) ((a :--> PBool) :--> PMap k a :--> PMap k a)
+filter = phoistAcyclic $
+  plam $ \pred ->
+    mapMaybe #$ plam $ \v -> pif (pred # v) (pcon $ PJust v) (pcon PNothing)
+
+mapMaybe ::
+  (PIsData k, PIsData a, PIsData b) =>
+  Term (s :: S) ((a :--> PMaybe b) :--> PMap k a :--> PMap k b)
+mapMaybe = phoistAcyclic $
+  plam $ \f -> mapMaybeData #$ plam $ \v -> pmatch (f # pfromData v) $ \case
+    PNothing -> pcon PNothing
+    PJust v' -> pcon $ PJust (pdata v')
+
+mapMaybeData ::
+  forall s k a b.
+  (PIsData k, PIsData a, PIsData b) =>
+  Term (s :: S) ((PAsData a :--> PMaybe (PAsData b)) :--> PMap k a :--> PMap k b)
+mapMaybeData = phoistAcyclic $
+  plam $ \f map ->
+    pcon . PMap $
+      precList
+        ( \self x xs ->
+            plet (self # xs) $ \xs' ->
+              pmatch (f #$ psndBuiltin # x) $ \case
+                PNothing -> xs'
+                PJust v -> pcons # (ppairDataBuiltin # (pfstBuiltin # x) # v) # xs'
+        )
+        (const pnil)
+        # pto map
 
 -- | Map keys/values and separate the @Left@ and @Right@ results.
 mapEitherWithKey ::

@@ -10,6 +10,7 @@ module Plutarch.Api.V1.Value (
   unionWith,
   unionWithData,
   valueOf,
+  normalize,
 ) where
 
 import qualified Plutus.V1.Ledger.Api as Plutus
@@ -82,7 +83,7 @@ isZero = phoistAcyclic $
 
 {- | Combine two 'PValue's applying the given function to any pair of
  quantities with the same asset class. Note that the result is _not_
- normalized and may contain zero quantities.
+ 'normalize'd and may contain zero quantities.
 -}
 unionWith :: Term (s :: S) ((PInteger :--> PInteger :--> PInteger) :--> PValue :--> PValue :--> PValue)
 unionWith = phoistAcyclic $
@@ -95,7 +96,7 @@ unionWith = phoistAcyclic $
 
 {- | Combine two 'PValue's applying the given function to any pair of
  data-encoded quantities with the same asset class. Note that the result is
- _not_ normalized and may contain zero quantities.
+ _not_ 'normalize'd and may contain zero quantities.
 -}
 unionWithData ::
   Term
@@ -112,3 +113,22 @@ unionWithData = phoistAcyclic $
         # (plam $ \x y -> AssocMap.unionWithData # combine # x # y)
         # pto x
         # pto y
+
+-- | Normalize the argument to contain no zero quantity nor empty token map.
+normalize :: Term s (PValue :--> PValue)
+normalize = phoistAcyclic $
+  plam $ \value ->
+    pcon . PValue $
+      AssocMap.mapMaybe # plam normalizeTokenMap # pto value
+  where
+    normalizeTokenMap tokenMap =
+      plet (AssocMap.mapMaybeData # plam nonZero # tokenMap) $ \normalMap ->
+        pif
+          (AssocMap.null # normalMap)
+          (pcon PNothing)
+          (pcon $ PJust normalMap)
+    nonZero intData =
+      pif (intData #== zeroData) (pcon PNothing) (pcon $ PJust intData)
+
+zeroData :: ClosedTerm (PAsData PInteger)
+zeroData = pdata 0
