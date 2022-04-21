@@ -85,7 +85,7 @@ import Plutarch.Unsafe (punsafeFrom)
 
 import Prelude hiding (all, lookup)
 
-newtype PMap (k :: PType) (v :: PType) (s :: S) = PMap (Term (s :: S) (PBuiltinMap k v))
+newtype PMap (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinMap k v))
   deriving (PlutusType, PIsData) via (DerivePNewtype (PMap k v) (PBuiltinMap k v))
 
 instance
