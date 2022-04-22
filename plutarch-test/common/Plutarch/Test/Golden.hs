@@ -3,6 +3,7 @@
 module Plutarch.Test.Golden (
   -- * DSL
   pgoldenSpec,
+  pgoldenSpec',
   (@|),
   (@\),
   (@->),
@@ -18,6 +19,10 @@ module Plutarch.Test.Golden (
   defaultGoldenBasePath,
   goldenTestPath,
 
+  -- * Golden config
+  GoldenConf (..),
+  goldenTestsFromConf,
+
   -- * Evaluation
   evalScriptAlwaysWithBenchmark,
   compileD,
@@ -25,6 +30,7 @@ module Plutarch.Test.Golden (
 
 import Control.Monad (forM_, unless)
 import qualified Data.Aeson.Text as Aeson
+import Data.Default (Default (def))
 import Data.List.NonEmpty (nonEmpty)
 import Data.Maybe (mapMaybe)
 import Data.Semigroup (sconcat)
@@ -71,7 +77,13 @@ data GoldenConf = GoldenConf
   -- ^ Whether to track evaluated UPLC golden.
   , trackBench :: Bool
   -- ^ Whether to track benchmark golden.
+  , goldenBasePath :: FilePath
+  -- ^ Directory to put the goldens in.
   }
+  deriving stock (Eq, Show)
+
+instance Default GoldenConf where
+  def = GoldenConf True True True defaultGoldenBasePath
 
 {- | Class of types that represent `GoldenValue`
 
@@ -188,18 +200,19 @@ infixr 0 @|
   for 'qux' will be "bar.qux".
 -}
 pgoldenSpec :: HasCallStack => PlutarchGoldens -> Spec
-pgoldenSpec = pgoldenSpec' $ GoldenConf True True True
+pgoldenSpec = pgoldenSpec' def
 
--- | Like 'pgoldenSpec' but takes a 'GoldenConf' to determine which goldens to track.
+{- | Like 'pgoldenSpec' but takes a 'GoldenConf' to determine which goldens to track.
+
+> pgoldenSpec = pgoldenSpec' def
+-}
 pgoldenSpec' :: HasCallStack => GoldenConf -> PlutarchGoldens -> Spec
-pgoldenSpec' (GoldenConf {trackPreEval, trackPostEval, trackBench}) map = do
+pgoldenSpec' conf@(GoldenConf {goldenBasePath}) map = do
   base <- currentGoldenKey
   let bs = runListSyntax map
-      goldenKeys = [(trackPreEval, UPLCPreEval), (trackPostEval, UPLCPostEval), (trackBench, Bench)]
-      goldenTests = [t | (True, t) <- goldenKeys]
   -- Golden tests
   describe "golden" $ do
-    goldenTestSpec base bs `mapM_` goldenTests
+    goldenTestSpec goldenBasePath base bs `mapM_` goldenTestsFromConf conf
   -- Assertion tests (if any)
   let asserts = flip mapMaybe bs $ \(k, v) -> do
         (k,) . (\f -> f (goldenValueEvaluated v) $ goldenValueBenchVal v) <$> goldenValueExpectation v
@@ -216,6 +229,11 @@ data GoldenTest
     Bench
   deriving stock (Eq, Show, Ord, Enum, Bounded)
 
+goldenTestsFromConf :: GoldenConf -> [GoldenTest]
+goldenTestsFromConf (GoldenConf {trackPreEval, trackPostEval, trackBench}) =
+  let goldenKeys = [(trackPreEval, UPLCPreEval), (trackPostEval, UPLCPostEval), (trackBench, Bench)]
+   in [t | (True, t) <- goldenKeys]
+
 goldenTestKey :: GoldenTest -> GoldenKey
 goldenTestKey = \case
   UPLCPreEval -> "uplc"
@@ -225,9 +243,9 @@ goldenTestKey = \case
 defaultGoldenBasePath :: FilePath
 defaultGoldenBasePath = "goldens"
 
-goldenTestPath :: GoldenKey -> GoldenTest -> FilePath
-goldenTestPath base gt =
-  goldenPath defaultGoldenBasePath $ base <> goldenTestKey gt
+goldenTestPath :: FilePath -> GoldenKey -> GoldenTest -> FilePath
+goldenTestPath goldenBasePath base gt =
+  goldenPath goldenBasePath $ base <> goldenTestKey gt
 
 goldenTestVal :: GoldenTest -> GoldenValue -> Text
 goldenTestVal t v = case t of
@@ -235,12 +253,12 @@ goldenTestVal t v = case t of
   UPLCPostEval -> goldenValueUplcPostEval v
   Bench -> goldenValueBench v
 
-goldenTestSpec :: GoldenKey -> [(GoldenKey, GoldenValue)] -> GoldenTest -> Spec
-goldenTestSpec base vals gt = do
+goldenTestSpec :: FilePath -> GoldenKey -> [(GoldenKey, GoldenValue)] -> GoldenTest -> Spec
+goldenTestSpec goldenBasePath base vals gt = do
   it (goldenKeyString $ goldenTestKey gt) $ do
     Golden
       { output = combineGoldens $ fmap (goldenTestVal gt) <$> vals
-      , goldenFile = goldenTestPath base gt
+      , goldenFile = goldenTestPath goldenBasePath base gt
       , actualFile = Nothing
       , encodePretty = show
       , writeToFile = TIO.writeFile

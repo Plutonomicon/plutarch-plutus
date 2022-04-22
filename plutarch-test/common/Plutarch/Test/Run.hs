@@ -1,10 +1,17 @@
-module Plutarch.Test.Run (noUnusedGoldens) where
+module Plutarch.Test.Run (noUnusedGoldens, noUnusedGoldens') where
 
 import Control.Monad (forM_)
+import Data.Default (def)
 import Data.Set (Set)
 import qualified Data.Set as Set
 import qualified Data.Text as T
-import Plutarch.Test.Golden (GoldenKey, defaultGoldenBasePath, goldenTestPath, mkGoldenKeyFromSpecPath)
+import Plutarch.Test.Golden (
+  GoldenConf (GoldenConf, goldenBasePath),
+  GoldenKey,
+  goldenTestPath,
+  goldenTestsFromConf,
+  mkGoldenKeyFromSpecPath,
+ )
 import System.Directory (listDirectory)
 import System.Exit (ExitCode (ExitFailure), exitWith)
 import System.FilePath ((</>))
@@ -20,11 +27,15 @@ import Test.Hspec.Core.Spec (SpecTree, Tree (Leaf, Node, NodeWithCleanup), runSp
   untracked golden files.
 -}
 noUnusedGoldens :: Spec -> IO ()
-noUnusedGoldens spec = do
+noUnusedGoldens = noUnusedGoldens' def
+
+-- | Like 'noUnusedGoldens' but takes a custom path to the golden storage.
+noUnusedGoldens' :: GoldenConf -> Spec -> IO ()
+noUnusedGoldens' conf@(GoldenConf {goldenBasePath}) spec = do
   -- A second traversal here (`runSpecM`) can be obviated after
   -- https://github.com/hspec/hspec/issues/649
-  usedGoldens <- goldenPathsUsedBy . snd <$> runSpecM spec
-  unusedGoldens usedGoldens >>= \case
+  usedGoldens <- goldenPathsUsedBy conf . snd <$> runSpecM spec
+  unusedGoldens goldenBasePath usedGoldens >>= \case
     [] -> pure ()
     unused -> do
       putStrLn "ERROR: Unused golden files found lying around! Namely:"
@@ -33,10 +44,10 @@ noUnusedGoldens spec = do
       exitWith (ExitFailure 1)
 
 -- | Given a list of "used" goldens, return any unused golden files on disk.
-unusedGoldens :: [FilePath] -> IO [FilePath]
-unusedGoldens usedGoldens' = do
+unusedGoldens :: FilePath -> [FilePath] -> IO [FilePath]
+unusedGoldens goldenBasePath usedGoldens' = do
   let usedGoldens = foldMap knownGoldens usedGoldens'
-  allGoldens <- Set.fromList . fmap (defaultGoldenBasePath </>) <$> listDirectory defaultGoldenBasePath
+  allGoldens <- Set.fromList . fmap (goldenBasePath </>) <$> listDirectory goldenBasePath
   pure $ Set.toList $ allGoldens `Set.difference` usedGoldens
   where
     knownGoldens :: FilePath -> Set FilePath
@@ -50,11 +61,11 @@ unusedGoldens usedGoldens' = do
         ]
     replace a b = T.unpack . T.replace a b . T.pack
 
-goldenPathsUsedBy :: [SpecTree a] -> [FilePath]
-goldenPathsUsedBy trees = do
+goldenPathsUsedBy :: GoldenConf -> [SpecTree a] -> [FilePath]
+goldenPathsUsedBy conf@(GoldenConf {goldenBasePath}) trees = do
   flip foldMap (queryGoldens trees) $ \k ->
-    flip fmap [minBound .. maxBound] $ \t ->
-      goldenTestPath k t
+    flip fmap (goldenTestsFromConf conf) $ \t ->
+      goldenTestPath goldenBasePath k t
 
 -- | Retrieve all golden keys used by the given test tree.
 queryGoldens :: [SpecTree a] -> [GoldenKey]

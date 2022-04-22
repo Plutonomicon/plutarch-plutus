@@ -25,7 +25,11 @@ module Plutarch.Test (
   (@:->),
   (@==),
   pgoldenSpec,
+  pgoldenSpec',
+  noUnusedGoldens,
+  noUnusedGoldens',
   PlutarchGoldens,
+  GoldenConf (..),
 
   -- * Benchmark type for use in `(@:->)`
   Benchmark (Benchmark, exBudgetCPU, exBudgetMemory, scriptSizeBytes),
@@ -42,15 +46,18 @@ import Plutarch.Test.Benchmark (
   ScriptSizeBytes,
  )
 import Plutarch.Test.Golden (
+  GoldenConf (GoldenConf, goldenBasePath, trackBench, trackPostEval, trackPreEval),
   PlutarchGoldens,
   TermExpectation,
   evalScriptAlwaysWithBenchmark,
   pgoldenSpec,
+  pgoldenSpec',
   (@->),
   (@:->),
   (@\),
   (@|),
  )
+import Plutarch.Test.Run (noUnusedGoldens, noUnusedGoldens')
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import Test.Hspec (Expectation, Spec, describe, expectationFailure, shouldBe, shouldSatisfy)
 import Test.Tasty.HUnit (assertFailure)
