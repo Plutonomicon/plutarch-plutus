@@ -64,6 +64,15 @@ data GoldenValue = GoldenValue
   -- ^ User test's expectation function
   }
 
+data GoldenConf = GoldenConf
+  { trackPreEval :: Bool
+  -- ^ Whether to track UPLC golden.
+  , trackPostEval :: Bool
+  -- ^ Whether to track evaluated UPLC golden.
+  , trackBench :: Bool
+  -- ^ Whether to track benchmark golden.
+  }
+
 {- | Class of types that represent `GoldenValue`
 
   This class exists for syntatic sugar provided by (@->) (via `TermExpectation`).
@@ -179,12 +188,18 @@ infixr 0 @|
   for 'qux' will be "bar.qux".
 -}
 pgoldenSpec :: HasCallStack => PlutarchGoldens -> Spec
-pgoldenSpec map = do
+pgoldenSpec = pgoldenSpec' $ GoldenConf True True True
+
+-- | Like 'pgoldenSpec' but takes a 'GoldenConf' to determine which goldens to track.
+pgoldenSpec' :: HasCallStack => GoldenConf -> PlutarchGoldens -> Spec
+pgoldenSpec' (GoldenConf {trackPreEval, trackPostEval, trackBench}) map = do
   base <- currentGoldenKey
   let bs = runListSyntax map
+      goldenKeys = [(trackPreEval, UPLCPreEval), (trackPostEval, UPLCPostEval), (trackBench, Bench)]
+      goldenTests = [t | (True, t) <- goldenKeys]
   -- Golden tests
   describe "golden" $ do
-    goldenTestSpec base bs `mapM_` [minBound .. maxBound]
+    goldenTestSpec base bs `mapM_` goldenTests
   -- Assertion tests (if any)
   let asserts = flip mapMaybe bs $ \(k, v) -> do
         (k,) . (\f -> f (goldenValueEvaluated v) $ goldenValueBenchVal v) <$> goldenValueExpectation v
