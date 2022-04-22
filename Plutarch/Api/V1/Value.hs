@@ -64,6 +64,9 @@ instance PEq PValue where
 instance Semigroup (Term s PValue) where
   a <> b = unionWith # plam (+) # a # b
 
+instance Monoid (Term s PValue) where
+  mempty = pcon (PValue AssocMap.empty)
+
 -- | Construct a singleton 'PValue' containing only the given quantity of the given currency.
 singleton :: Term (s :: S) (PCurrencySymbol :--> PTokenName :--> PInteger :--> PValue)
 singleton = phoistAcyclic $
