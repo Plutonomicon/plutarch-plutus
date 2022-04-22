@@ -139,6 +139,24 @@ spec = do
                   fromString (show size)
                     @| getEnclosedTerm v #== getEnclosedTerm v @-> passert
               )
+        "assertSorted" @\ do
+          "succeeds" @| PValue.assertSorted # (pmint <> pmintOtherSymbol) @-> psucceeds
+          "fails on malsorted symbols"
+            @| PValue.assertSorted
+              # ( pcon $
+                    PValue.PValue $
+                      pcon $
+                        AssocMap.PMap $
+                          pconcat # pto (pto pmintOtherSymbol) # pto (pto pmint)
+                )
+            @-> pfails
+          "fails on zero quantities"
+            @| PValue.assertSorted # (PValue.unionWith # plam (-) # pmint # pmint)
+            @-> pfails
+          "fails on empty token map"
+            @| PValue.assertSorted
+              # (pcon $ PValue.PValue $ AssocMap.singleton # pconstant "c0" # AssocMap.empty)
+            @-> pfails
     describe "map" $ do
       pgoldenSpec $ do
         let pmap, pdmap, emptyMap, doubleMap, otherMap :: Term _ (AssocMap.PMap PByteString PInteger)
