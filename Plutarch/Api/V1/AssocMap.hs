@@ -12,6 +12,8 @@ module Plutarch.Api.V1.AssocMap (
   insert,
   insertData,
   delete,
+  fromAscList,
+  assertSorted,
 
   -- * Lookups
   lookup,
@@ -22,9 +24,11 @@ module Plutarch.Api.V1.AssocMap (
 
   -- * Folds
   all,
+  any,
 
   -- * Filters and traversals
   filter,
+  map,
   mapMaybe,
   mapMaybeData,
   mapEitherWithKey,
@@ -53,7 +57,7 @@ import Plutarch.Lift (
 import Plutarch.Prelude (
   DerivePNewtype (..),
   PAsData,
-  PBool,
+  PBool (PFalse),
   PBuiltinPair,
   PCon (pcon),
   PConstantData,
@@ -71,6 +75,7 @@ import Plutarch.Prelude (
   S,
   Term,
   pall,
+  pany,
   pfstBuiltin,
   phoistAcyclic,
   pif,
@@ -80,6 +85,7 @@ import Plutarch.Prelude (
   precList,
   psndBuiltin,
   pto,
+  ptraceError,
   (#),
   (#$),
   type (:-->),
@@ -90,7 +96,7 @@ import Plutarch.Unsafe (punsafeFrom)
 
 import qualified Rank2.TH
 
-import Prelude hiding (all, filter, lookup, null)
+import Prelude hiding (all, any, filter, lookup, null)
 
 newtype PMap (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinMap k v))
   deriving (PlutusType, PIsData, PEq, PShow) via (DerivePNewtype (PMap k v) (PBuiltinMap k v))
@@ -250,6 +256,27 @@ singletonData :: (PIsData k, PIsData v) => Term (s :: S) (PAsData k :--> PAsData
 singletonData = phoistAcyclic $
   plam $ \key value -> punsafeFrom (pcons # (ppairDataBuiltin # key # value) # pnil)
 
+-- | Construct a 'PMap' from a list of key-value pairs, sorted by ascending key data.
+fromAscList :: (POrd k, PIsData k, PIsData v) => Term (s :: S) (PBuiltinMap k v :--> PMap k v)
+fromAscList = plam $ (assertSorted #) . pcon . PMap
+
+-- | Assert the map is properly sorted
+assertSorted :: (POrd k, PIsData k, PIsData v) => Term (s :: S) (PMap k v :--> PMap k v)
+assertSorted = phoistAcyclic $
+  plam $ \map ->
+    precList
+      ( \self x xs ->
+          plet (pfromData $ pfstBuiltin # x) $ \k ->
+            plam $ \badKey ->
+              pif
+                (badKey # k)
+                (ptraceError "unsorted map")
+                (self # xs # plam (#< k))
+      )
+      (const $ plam $ const map)
+      # pto map
+      # plam (const $ pcon PFalse)
+
 data MapUnion k v f = MapUnion
   { merge :: f (PBuiltinMap k v :--> PBuiltinMap k v :--> PBuiltinMap k v)
   , mergeInsert :: f (PBuiltinPair (PAsData k) (PAsData v) :--> PBuiltinMap k v :--> PBuiltinMap k v :--> PBuiltinMap k v)
@@ -355,6 +382,12 @@ all :: PIsData v => Term (s :: S) ((v :--> PBool) :--> PMap k v :--> PBool)
 all = phoistAcyclic $
   plam $ \pred map ->
     pall # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto map
+
+-- | Tests if anu value in the map satisfies the given predicate.
+any :: PIsData v => Term (s :: S) ((v :--> PBool) :--> PMap k v :--> PBool)
+any = phoistAcyclic $
+  plam $ \pred map ->
+    pany # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto map
 
 -- | Filters the map so it contains only the values that satisfy the given predicate.
 filter :: (PIsData k, PIsData a) => Term (s :: S) ((a :--> PBool) :--> PMap k a :--> PMap k a)

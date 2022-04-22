@@ -5,6 +5,7 @@ module Plutarch.Api.V1.Value (
   PValue (PValue),
   PCurrencySymbol (PCurrencySymbol),
   PTokenName (PTokenName),
+  assertSorted,
   isZero,
   singleton,
   unionWith,
@@ -136,6 +137,22 @@ normalize = phoistAcyclic $
           (pcon $ PJust normalMap)
     nonZero intData =
       pif (intData #== zeroData) (pcon PNothing) (pcon $ PJust intData)
+
+-- | Assert the value is properly sorted and normalized.
+assertSorted :: Term s (PValue :--> PValue)
+assertSorted = phoistAcyclic $
+  plam $ \value ->
+    pif
+      ( AssocMap.any
+          # ( plam $
+                \submap ->
+                  AssocMap.null # (AssocMap.assertSorted # submap)
+                    #|| AssocMap.any # plam (#== 0) # submap
+            )
+          # pto value
+      )
+      (ptraceError "Abnormal Value")
+      (pcon $ PValue $ AssocMap.assertSorted # pto value)
 
 zeroData :: ClosedTerm (PAsData PInteger)
 zeroData = pdata 0
