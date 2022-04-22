@@ -79,8 +79,8 @@ unusedGoldens goldenBasePath usedGoldens' = do
   allGoldens <- Set.fromList . fmap (goldenBasePath </>) <$> listDirectory goldenBasePath
   pure $
     Set.toList $
-    Set.filter (not . isPrefixOf (goldenBasePath </> "FFI.")) $
-    allGoldens `Set.difference` usedGoldens
+      Set.filter (not . isPrefixOf (goldenBasePath </> "FFI.")) $
+        allGoldens `Set.difference` usedGoldens
   where
     knownGoldens :: FilePath -> Set FilePath
     knownGoldens fp =
