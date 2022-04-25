@@ -64,7 +64,7 @@ spec = do
               PMinting c -> popaque c
               _ -> perror
     describe "value" $ do
-      pgoldenSpec $ do
+      plutarchDevFlagDescribe . pgoldenSpec $ do
         let pmint = PValue.singleton # pconstant "c0" # pconstant "sometoken" # 1
             pmintOtherToken = PValue.singleton # pconstant "c0" # pconstant "othertoken" # 1
             pmintOtherSymbol = PValue.singleton # pconstant "c7" # pconstant "sometoken" # 1
