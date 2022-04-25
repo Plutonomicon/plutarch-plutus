@@ -144,6 +144,8 @@
       };
       nixpkgsFor' = system: import nixpkgs { inherit system; };
 
+      index-state = "2022-02-15T00:00:00Z";
+
       ghcVersion = "ghc921";
 
       # https://github.com/input-output-hk/haskell.nix/issues/1177
@@ -192,17 +194,22 @@
       ];
 
       tools.fourmolu = { };
-      tools.haskell-language-server = {
-        modules = [
-          { inherit nonReinstallablePkgs; }
-        ];
+      tools.hoogle = {
+        inherit index-state;
         compiler-nix-name = ghcVersion;
-        # For some reason it doesn't use the latest version automatically.
-        index-state =
-          let l = builtins.attrNames (import "${haskell-nix.inputs.hackage}/index-state-hashes.nix"); in
-          builtins.elemAt l (builtins.length l - 1);
+        version = "5.0.18.3";
+        configureArgs = "--allow-newer";
+        plan-sha256 = builtins.replaceStrings [ " " "\n" ] [ "" "" ] (builtins.readFile (./. + "/.materialized/${ghcVersion}/hoogle.sha256"));
+        materialized = ./. + "/.materialized/${ghcVersion}/hoogle";
+      };
+      tools.haskell-language-server = {
+        modules = [{ inherit nonReinstallablePkgs; }];
+        compiler-nix-name = ghcVersion;
+        inherit index-state;
         name = "haskell-language-server";
         version = "latest";
+        plan-sha256 = builtins.replaceStrings [ " " "\n" ] [ "" "" ] (builtins.readFile (./. + "/.materialized/${ghcVersion}/haskell-language-server.sha256"));
+        materialized = ./. + "/.materialized/${ghcVersion}/haskell-language-server";
         cabalProjectLocal = ''
           allow-newer: *:*
 
@@ -212,7 +219,7 @@
           package haskell-language-server
             flags: +use-ghc-stub +pedantic +ignore-plugins-ghc-bounds -alternateNumberFormat -brittany -class -eval -haddockComments -hlint -retrie -splice -stylishhaskell -tactic
         '';
-        src = "${inputs.haskell-language-server}";
+        src = inputs.haskell-language-server;
       };
 
       haskellModule = system: {
@@ -455,16 +462,12 @@
           if source.src == target
           then source // { subdirs = source.subdirs ++ [ subdir ]; }
           else source; in
-        let flavor = "${ghcName}-${system}"; in
         let pkgSet = (nixpkgsFor system).haskell-nix.cabalProject' ({
           src = ./.;
-          index-state = "2022-02-15T00:00:00Z";
-          plan-sha256 = {
-            "ghc921-x86_64-linux" = "1qx40r75wy3b3aqx0jx1ajgqhz5vcksnki31gn55rzbhvv03jk4n";
-            "ghc8107-x86_64-linux" = "0xc9wf1v7k8rvvb3a728idnsph9ryl2y57kxqh7gz22lwd5aj8ga";
-          }.${flavor};
-          materialized = ./. + "/.materialized-${flavor}";
+          inherit index-state;
           compiler-nix-name = ghcName;
+          plan-sha256 = builtins.replaceStrings [ " " "\n" ] [ "" "" ] (builtins.readFile (./. + "/.materialized/${ghcName}/plutarch.sha256"));
+          materialized = ./. + "/.materialized/${ghcName}/plutarch";
           extraSources =
             if ghcName == ghcVersion then extraSources
             else map (addSubDir inputs.plutus "plutus-tx-plugin") extraSources
@@ -497,6 +500,7 @@
               pkgs'.haskellPackages.cabal-fmt
               pkgs'.nixpkgs-fmt
               pkgSet.hsPkgs.hspec-discover.components.exes.hspec-discover
+              (updateMaterializedFor system)
             ];
 
             inherit tools;
@@ -627,6 +631,26 @@
             '';
         };
 
+      # update materialized haskell.nix files
+      updateMaterializedFor = system:
+        let
+          projectGhc9 = projectFor true system;
+          projectGhc810 = projectFor810 true system;
+          t = (nixpkgsFor system).haskell-nix.tools ghcVersion { inherit (tools) hoogle haskell-language-server; };
+        in
+        (nixpkgsFor system).writeShellScriptBin "updateMaterialized" ''
+          set -e
+          echo "Updating materialized haskell.nix files..."
+          ${projectGhc9.plan-nix.passthru.generateMaterialized} .materialized/${projectGhc9.projectModule.compiler-nix-name}/plutarch
+          ${projectGhc9.plan-nix.passthru.calculateMaterializedSha} > .materialized/${projectGhc9.projectModule.compiler-nix-name}/plutarch.sha256
+          ${projectGhc810.plan-nix.passthru.generateMaterialized} .materialized/${projectGhc810.projectModule.compiler-nix-name}/plutarch
+          ${projectGhc810.plan-nix.passthru.calculateMaterializedSha} > .materialized/${projectGhc810.projectModule.compiler-nix-name}/plutarch.sha256
+          ${t.haskell-language-server.project.plan-nix.passthru.generateMaterialized} .materialized/${t.haskell-language-server.project.projectModule.compiler-nix-name}/haskell-language-server
+          ${t.haskell-language-server.project.plan-nix.passthru.calculateMaterializedSha} > .materialized/${t.haskell-language-server.project.projectModule.compiler-nix-name}/haskell-language-server.sha256
+          ${t.hoogle.project.plan-nix.passthru.generateMaterialized} .materialized/${ghcVersion}/hoogle
+          ${t.hoogle.project.plan-nix.passthru.calculateMaterializedSha} > .materialized/${ghcVersion}/hoogle.sha256
+        '';
+
       # Take a flake app (identified as the key in the 'apps' set), and return a
       # derivation that runs it in the compile phase.
       #
@@ -686,8 +710,7 @@
         ''
       );
       apps = perSystem (system:
-        self.flake.${system}.apps
-        // {
+        self.flake.${system}.apps // {
           test-ghc9-nodev = plutarchTestApp system "ghc9-nodev" self.projectMatrix.ghc9.nodev;
           test-ghc9-dev = plutarchTestApp system "ghc9-dev" self.projectMatrix.ghc9.dev;
           test-ghc810-nodev = plutarchTestApp system "ghc810-nodev" self.projectMatrix.ghc810.nodev;
@@ -697,6 +720,11 @@
           docs = plutarchWebsiteLive system "./docs";
           # `nix run github:Plutonomicon/plutarch#website` can be run from anywhere
           website = plutarchWebsiteLive system "${self}/docs";
+
+          updateMaterialized = {
+            type = "app";
+            program = "${updateMaterializedFor system}/bin/updateMaterialized";
+          };
         }
       );
       devShell = perSystem (system: self.flake.${system}.devShell);
