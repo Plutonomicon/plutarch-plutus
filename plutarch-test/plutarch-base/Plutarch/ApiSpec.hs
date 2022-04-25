@@ -139,6 +139,13 @@ spec = do
                   fromString (show size)
                     @| getEnclosedTerm v #== getEnclosedTerm v @-> passert
               )
+        "normalize" @\ do
+          "identity"
+            @| PValue.normalize # (pmint <> pmintOtherSymbol)
+            @-> \v -> passert (v #== pmint <> pmintOtherSymbol)
+          "empty"
+            @| PValue.normalize # (PValue.unionWith # plam (-) # pmint # pmint)
+            @-> \v -> passert (v #== mempty)
         "assertSorted" @\ do
           "succeeds" @| PValue.assertSorted # (pmint <> pmintOtherSymbol) @-> psucceeds
           "fails on malsorted symbols"

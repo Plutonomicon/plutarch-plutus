@@ -67,6 +67,8 @@ equality.growing.14 {"exBudgetCPU":908212928,"exBudgetMemory":1938364,"scriptSiz
 equality.growing.15 {"exBudgetCPU":1033264608,"exBudgetMemory":2201976,"scriptSizeBytes":872}
 equality.growing.16 {"exBudgetCPU":1166566304,"exBudgetMemory":2482772,"scriptSizeBytes":904}
 equality.growing.17 {"exBudgetCPU":1308118016,"exBudgetMemory":2780752,"scriptSizeBytes":935}
+normalize.identity {"exBudgetCPU":33656200,"exBudgetMemory":76346,"scriptSizeBytes":457}
+normalize.empty {"exBudgetCPU":31336597,"exBudgetMemory":72925,"scriptSizeBytes":456}
 assertSorted.succeeds {"exBudgetCPU":40578574,"exBudgetMemory":97314,"scriptSizeBytes":532}
 assertSorted.fails on malsorted symbols {"exBudgetCPU":28443494,"exBudgetMemory":62290,"scriptSizeBytes":348}
 assertSorted.fails on zero quantities {"exBudgetCPU":28508984,"exBudgetMemory":62224,"scriptSizeBytes":531}
