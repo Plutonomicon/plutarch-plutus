@@ -194,12 +194,12 @@
       ];
 
       tools.fourmolu = { };
-      tools.hoogle = {
+      tools.hoogle = rec {
         inherit index-state;
-        compiler-nix-name = ghcVersion;
-        configureArgs = "--allow-newer";
-        plan-sha256 = builtins.replaceStrings [ " " "\n" ] [ "" "" ] (builtins.readFile (./. + "/.materialized/${ghcVersion}/hoogle.sha256"));
-        materialized = ./. + "/.materialized/${ghcVersion}/hoogle";
+        compiler-nix-name = "ghc8107";
+        # configureArgs = "--allow-newer";
+        plan-sha256 = builtins.replaceStrings [ " " "\n" ] [ "" "" ] (builtins.readFile (./. + "/.materialized/${compiler-nix-name}/hoogle.sha256"));
+        materialized = ./. + "/.materialized/${compiler-nix-name}/hoogle";
       };
       tools.haskell-language-server = {
         modules = [{ inherit nonReinstallablePkgs; }];
@@ -646,8 +646,8 @@
           ${projectGhc810.plan-nix.passthru.calculateMaterializedSha} > .materialized/${projectGhc810.projectModule.compiler-nix-name}/plutarch.sha256
           ${t.haskell-language-server.project.plan-nix.passthru.generateMaterialized} .materialized/${t.haskell-language-server.project.projectModule.compiler-nix-name}/haskell-language-server
           ${t.haskell-language-server.project.plan-nix.passthru.calculateMaterializedSha} > .materialized/${t.haskell-language-server.project.projectModule.compiler-nix-name}/haskell-language-server.sha256
-          ${t.hoogle.project.plan-nix.passthru.generateMaterialized} .materialized/${ghcVersion}/hoogle
-          ${t.hoogle.project.plan-nix.passthru.calculateMaterializedSha} > .materialized/${ghcVersion}/hoogle.sha256
+          ${t.hoogle.project.plan-nix.passthru.generateMaterialized} .materialized/${t.hoogle.project.projectModule.compiler-nix-name}/hoogle
+          ${t.hoogle.project.plan-nix.passthru.calculateMaterializedSha} > .materialized/${t.hoogle.project.projectModule.compiler-nix-name}/hoogle.sha256
         '';
 
       # Take a flake app (identified as the key in the 'apps' set), and return a
