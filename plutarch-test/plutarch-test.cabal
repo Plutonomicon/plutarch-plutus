@@ -78,6 +78,7 @@ common deps
     , base
     , bytestring
     , containers
+    , data-default
     , directory
     , filepath
     , generics-sop
