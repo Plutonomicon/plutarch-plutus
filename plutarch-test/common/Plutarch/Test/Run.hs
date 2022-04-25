@@ -6,10 +6,9 @@ import Data.Set (Set)
 import qualified Data.Set as Set
 import qualified Data.Text as T
 import Plutarch.Test.Golden (
-  GoldenConf (GoldenConf, goldenBasePath),
+  GoldenConf (GoldenConf, chosenTests, goldenBasePath),
   GoldenKey,
   goldenTestPath,
-  goldenTestsFromConf,
   mkGoldenKeyFromSpecPath,
  )
 import System.Directory (listDirectory)
@@ -29,7 +28,10 @@ import Test.Hspec.Core.Spec (SpecTree, Tree (Leaf, Node, NodeWithCleanup), runSp
 noUnusedGoldens :: Spec -> IO ()
 noUnusedGoldens = noUnusedGoldens' def
 
--- | Like 'noUnusedGoldens' but takes a custom path to the golden storage.
+{- | Like 'noUnusedGoldens' but takes a custom path to the golden storage.
+
+NOTE: This relies on the same 'GoldenConf' being used in all 'pgoldenSpec'' calls.
+-}
 noUnusedGoldens' :: GoldenConf -> Spec -> IO ()
 noUnusedGoldens' conf@(GoldenConf {goldenBasePath}) spec = do
   -- A second traversal here (`runSpecM`) can be obviated after
@@ -62,9 +64,9 @@ unusedGoldens goldenBasePath usedGoldens' = do
     replace a b = T.unpack . T.replace a b . T.pack
 
 goldenPathsUsedBy :: GoldenConf -> [SpecTree a] -> [FilePath]
-goldenPathsUsedBy conf@(GoldenConf {goldenBasePath}) trees = do
+goldenPathsUsedBy (GoldenConf {chosenTests, goldenBasePath}) trees = do
   flip foldMap (queryGoldens trees) $ \k ->
-    flip fmap (goldenTestsFromConf conf) $ \t ->
+    flip fmap (Set.toList chosenTests) $ \t ->
       goldenTestPath goldenBasePath k t
 
 -- | Retrieve all golden keys used by the given test tree.

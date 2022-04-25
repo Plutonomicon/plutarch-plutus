@@ -30,6 +30,7 @@ module Plutarch.Test (
   noUnusedGoldens',
   PlutarchGoldens,
   GoldenConf (..),
+  GoldenTest (..),
 
   -- * Benchmark type for use in `(@:->)`
   Benchmark (Benchmark, exBudgetCPU, exBudgetMemory, scriptSizeBytes),
@@ -46,7 +47,8 @@ import Plutarch.Test.Benchmark (
   ScriptSizeBytes,
  )
 import Plutarch.Test.Golden (
-  GoldenConf (GoldenConf, goldenBasePath, trackBench, trackPostEval, trackPreEval),
+  GoldenConf (GoldenConf, chosenTests, goldenBasePath),
+  GoldenTest (GoldenT'Bench, GoldenT'UPLCPostEval, GoldenT'UPLCPreEval),
   PlutarchGoldens,
   TermExpectation,
   evalScriptAlwaysWithBenchmark,
