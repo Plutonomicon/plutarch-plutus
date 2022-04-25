@@ -197,7 +197,6 @@
       tools.hoogle = {
         inherit index-state;
         compiler-nix-name = ghcVersion;
-        version = "5.0.18.3";
         configureArgs = "--allow-newer";
         plan-sha256 = builtins.replaceStrings [ " " "\n" ] [ "" "" ] (builtins.readFile (./. + "/.materialized/${ghcVersion}/hoogle.sha256"));
         materialized = ./. + "/.materialized/${ghcVersion}/hoogle";
