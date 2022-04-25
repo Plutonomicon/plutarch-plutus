@@ -37,7 +37,12 @@
           (hsPkgs."plutarch" or (errorHandler.buildDepError "plutarch"))
           ];
         buildable = true;
-        modules = [ "Plutarch/Extra" "Plutarch/ListUtils" ];
+        modules = [
+          "Plutarch/Extra"
+          "Plutarch/Extra/Api"
+          "Plutarch/Extra/TermCont"
+          "Plutarch/ListUtils"
+          ];
         };
       sublibs = {
         "plutarch-preludes" = {

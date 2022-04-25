@@ -122,6 +122,7 @@
             "Plutarch/BoolSpec"
             "Plutarch/ByteStringSpec"
             "Plutarch/EitherSpec"
+            "Plutarch/Extra/ApiSpec"
             "Plutarch/IntegerSpec"
             "Plutarch/LiftSpec"
             "Plutarch/ListSpec"
