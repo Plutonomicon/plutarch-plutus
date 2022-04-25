@@ -6,6 +6,7 @@ Looking to contribute to Plutarch? Looking for functionalities that are not curr
 <summary> Table of Contents </summary>
 
 - [Code Style](#code-style)
+- [Updating Dependencies](#updating-dependencies)
 - [Pre-commit checks](#pre-commit-checks)
 - [Updating Changelog](#updating-changelog)
 - [Targeting branch for PR](#targeting-branch-for-pr)
@@ -29,6 +30,16 @@ You should generally follow the [MLabs style guide](https://github.com/mlabs-has
 
 - `ImportQualifiedPost`
 - `RecordWildCards`
+
+# Updating Dependencies
+
+After changing haskell dependencies in `*.cabal` or `flake.nix`, update the materialized nix files:
+
+```
+nix run '.#updateMaterialized'
+```
+
+See also https://input-output-hk.github.io/haskell.nix/tutorials/materialization.html.
 
 # Pre-commit checks
 
