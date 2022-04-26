@@ -80,6 +80,9 @@ spec = do
               PValue.singleton # pconstant (fromString $ "c" <> showHex n "") # pconstant "token" # 1
         "singleton" @| pmint @-> \p ->
           plift p @?= mint
+        "singletonData"
+          @| PValue.singletonData # pdata (pconstant "c0") # pdata (pconstant "sometoken") # pdata 1
+          @-> \p -> plift p @?= mint
         "valueOf" @\ do
           "itself" @| PValue.valueOf @-> \v -> plift (v # pmint # pconstant "c0" # pconstant "sometoken") @?= 1
           "applied" @| PValue.valueOf # pmint # pconstant "c0" # pconstant "sometoken" @-> \p ->

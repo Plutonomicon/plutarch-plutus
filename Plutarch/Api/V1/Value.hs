@@ -8,6 +8,7 @@ module Plutarch.Api.V1.Value (
   assertSorted,
   isZero,
   singleton,
+  singletonData,
   unionWith,
   unionWithData,
   valueOf,
@@ -73,6 +74,21 @@ singleton :: Term (s :: S) (PCurrencySymbol :--> PTokenName :--> PInteger :--> P
 singleton = phoistAcyclic $
   plam $ \symbol token amount ->
     punsafeFrom (AssocMap.singleton # symbol #$ AssocMap.singleton # token # amount)
+
+{- | Construct a singleton 'PValue' containing only the given quantity of the
+ given currency, taking data-encoded parameters.
+-}
+singletonData ::
+  Term
+    (s :: S)
+    (PAsData PCurrencySymbol :--> PAsData PTokenName :--> PAsData PInteger :--> PValue)
+singletonData = phoistAcyclic $
+  plam $ \symbol token amount ->
+    punsafeFrom
+      ( AssocMap.singletonData # symbol
+          #$ pdata
+          $ AssocMap.singletonData # token # amount
+      )
 
 -- | Get the quantity of the given currency in the 'PValue'.
 valueOf :: Term (s :: S) (PValue :--> PCurrencySymbol :--> PTokenName :--> PInteger)

@@ -1,4 +1,5 @@
 singleton (program 1.0.0 [(#41c0, #a149736f6d65746f6b656e01)])
+singletonData (program 1.0.0 [(#41c0, #a149736f6d65746f6b656e01)])
 valueOf.itself (program 1.0.0 (\i0 -> \i0 -> \i0 -> (\i0 -> (\i0 -> \i0 -> \i0 -> \i0 -> (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1))) (\i0 -> \i0 -> force (force (force chooseList) i1 (delay i5) (delay (force (force ifThenElse (equalsData (force (force fstPair) (force headList i1)) i6) (delay (i4 (force (force sndPair) (force headList i1)))) (delay (i2 (force tailList i1)))))))) i1) (bData i1)) i2 0 (\i0 -> (\i0 -> (\i0 -> \i0 -> \i0 -> \i0 -> (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1))) (\i0 -> \i0 -> force (force (force chooseList) i1 (delay i5) (delay (force (force ifThenElse (equalsData (force (force fstPair) (force headList i1)) i6) (delay (i4 (force (force sndPair) (force headList i1)))) (delay (i2 (force tailList i1)))))))) i1) (bData i1)) i2 0 unIData (unMapData i1)) i3))
 valueOf.applied (program 1.0.0 1)
 valueOf.growing.1 (program 1.0.0 0)

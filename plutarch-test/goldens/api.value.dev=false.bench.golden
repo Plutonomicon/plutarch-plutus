@@ -1,4 +1,5 @@
 singleton {"exBudgetCPU":2956707,"exBudgetMemory":6256,"scriptSizeBytes":68}
+singletonData {"exBudgetCPU":2867388,"exBudgetMemory":5956,"scriptSizeBytes":66}
 valueOf.itself {"exBudgetCPU":1101701,"exBudgetMemory":3800,"scriptSizeBytes":115}
 valueOf.applied {"exBudgetCPU":10409027,"exBudgetMemory":23308,"scriptSizeBytes":183}
 valueOf.growing.1 {"exBudgetCPU":7629468,"exBudgetMemory":18450,"scriptSizeBytes":194}
