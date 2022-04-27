@@ -3,7 +3,7 @@
 
 module Plutarch.Api.V1.Crypto (
   PPubKeyHash (PPubKeyHash),
-  PubKey (..),
+  PubKey (PubKey, getPubKey),
   pubKeyHash,
 ) where
 
