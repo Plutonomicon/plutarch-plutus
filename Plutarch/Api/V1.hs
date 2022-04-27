@@ -20,7 +20,6 @@ module Plutarch.Api.V1 (
   datumHash,
   redeemerHash,
   dataHash,
-  hashData,
   mkValidator,
   mkStakeValidator,
   mkMintingPolicy,
@@ -35,6 +34,7 @@ module Plutarch.Api.V1 (
 
   -- ** Crypto
   Crypto.PPubKeyHash (PPubKeyHash),
+  Crypto.pubKeyHash,
 
   -- ** DCert
   DCert.PDCert (
@@ -101,7 +101,7 @@ import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified Plutus.V1.Ledger.Scripts as Plutus
 
 import Plutarch (compile)
-import Plutarch.Api.Internal.Scripts (hashData, hashScriptWithPrefix)
+import Plutarch.Api.Internal.Hashing (hashData, hashScriptWithPrefix)
 import Plutarch.Api.V1.Contexts (PScriptContext)
 import Plutarch.Prelude
 
