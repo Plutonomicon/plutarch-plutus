@@ -31,8 +31,8 @@ module Plutarch.Api.V1 (
   Value.PValue (PValue),
   Value.PCurrencySymbol (PCurrencySymbol),
   Value.PTokenName (PTokenName),
-  Value.ValueState (Sorted, Unverified),
-  Value.ValueNormalization (Normalized, NotNormalized),
+  Value.ValueKeyGuarantees (Unsorted, Sorted),
+  Value.ValueAmountGuarantees (NoGuarantees, NonZero, Positive),
 
   -- ** Crypto
   Crypto.PPubKeyHash (PPubKeyHash),

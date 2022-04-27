@@ -6,13 +6,16 @@ module Plutarch.Api.V1.Value (
   PValue (PValue),
   PCurrencySymbol (PCurrencySymbol),
   PTokenName (PTokenName),
-  ValueState (Sorted, Unverified),
-  ValueNormalization (Normalized, NotNormalized),
+  ValueKeyGuarantees (Unsorted, Sorted),
+  ValueAmountGuarantees (NoGuarantees, NonZero, Positive),
   passertSorted,
+  passertPositive,
+  pforgetPositive,
   pnormalize,
-  pisZero,
   psingleton,
   psingletonData,
+  pconstantSingleton,
+  pconstantPositiveSingleton,
   punionWith,
   punionWithData,
   pvalueOf,
@@ -51,47 +54,83 @@ deriving via
   instance
     PConstantDecl Plutus.CurrencySymbol
 
-data ValueState = Sorted ValueNormalization | Unverified
-data ValueNormalization = Normalized | NotNormalized
+data ValueKeyGuarantees = Sorted | Unsorted
+data ValueAmountGuarantees = NoGuarantees | NonZero | Positive
 
-newtype PValue (state :: ValueState) (s :: S)
+newtype PValue (keys :: ValueKeyGuarantees) (amounts :: ValueAmountGuarantees) (s :: S)
   = PValue (Term s (PMap PCurrencySymbol (PMap PTokenName PInteger)))
   deriving
     (PlutusType, PIsData)
-    via (DerivePNewtype (PValue state) (PMap PCurrencySymbol (PMap PTokenName PInteger)))
-type role PValue nominal phantom
+    via (DerivePNewtype (PValue keys amounts) (PMap PCurrencySymbol (PMap PTokenName PInteger)))
+type role PValue nominal nominal phantom
 
-instance PUnsafeLiftDecl (PValue ( 'Sorted 'Normalized)) where
-  type PLifted (PValue ( 'Sorted 'Normalized)) = Plutus.Value
+instance PUnsafeLiftDecl (PValue 'Sorted 'NonZero) where
+  type PLifted (PValue 'Sorted 'NonZero) = Plutus.Value
 deriving via
   ( DerivePConstantViaNewtype
       Plutus.Value
-      (PValue ( 'Sorted 'Normalized))
+      (PValue 'Sorted 'NonZero)
       (PMap PCurrencySymbol (PMap PTokenName PInteger))
   )
   instance
     PConstantDecl Plutus.Value
 
-instance PEq (PValue ( 'Sorted 'Normalized)) where
+instance PEq (PValue 'Sorted 'Positive) where
   a #== b = pto a #== pto b
 
-instance PEq (PValue ( 'Sorted 'NotNormalized)) where
+instance PEq (PValue 'Sorted 'NonZero) where
+  a #== b = pto a #== pto b
+
+instance PEq (PValue 'Sorted 'NoGuarantees) where
   a #== b = AssocMap.pall # (AssocMap.pall # plam (#== 0)) # pto (punionWith # plam (-) # a # b)
 
-instance Semigroup (Term s (PValue ( 'Sorted normalization))) where
-  a <> b = pcon (PValue $ pto $ punionWith # plam (+) # a # b)
+instance Semigroup (Term s (PValue 'Sorted 'Positive)) where
+  a <> b = punsafeFrom (pto $ punionWith # plam (+) # a # b)
 
-instance Monoid (Term s (PValue ( 'Sorted normalization))) where
+instance Semigroup (Term s (PValue 'Sorted 'NonZero)) where
+  a <> b = pnormalize #$ punionWith # plam (+) # a # b
+
+instance Semigroup (Term s (PValue 'Sorted 'NoGuarantees)) where
+  a <> b = punionWith # plam (+) # a # b
+
+instance
+  Semigroup (Term s (PValue 'Sorted normalization)) =>
+  Monoid (Term s (PValue 'Sorted normalization))
+  where
   mempty = pcon (PValue AssocMap.pempty)
+
+-- | Construct a constant singleton 'PValue' containing only the given quantity of the given currency.
+pconstantSingleton ::
+  ClosedTerm PCurrencySymbol ->
+  ClosedTerm PTokenName ->
+  ClosedTerm PInteger ->
+  ClosedTerm (PValue 'Sorted 'NonZero)
+pconstantSingleton symbol token amount
+  | plift amount == 0 = mempty
+  | otherwise = punsafeFrom (AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount)
+
+-- | Construct a constant singleton 'PValue' containing only the given positive quantity of the given currency.
+pconstantPositiveSingleton ::
+  ClosedTerm PCurrencySymbol ->
+  ClosedTerm PTokenName ->
+  ClosedTerm PInteger ->
+  ClosedTerm (PValue 'Sorted 'Positive)
+pconstantPositiveSingleton symbol token amount
+  | plift amount == 0 = mempty
+  | plift amount < 0 = error "Negative amount"
+  | otherwise = punsafeFrom (AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount)
 
 -- | Construct a singleton 'PValue' containing only the given quantity of the given currency.
 psingleton ::
   Term
     (s :: S)
-    (PCurrencySymbol :--> PTokenName :--> PInteger :--> PValue ( 'Sorted 'Normalized))
+    (PCurrencySymbol :--> PTokenName :--> PInteger :--> PValue 'Sorted 'NonZero)
 psingleton = phoistAcyclic $
   plam $ \symbol token amount ->
-    punsafeFrom (AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount)
+    pif
+      (amount #== 0)
+      mempty
+      (punsafeFrom $ AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount)
 
 {- | Construct a singleton 'PValue' containing only the given quantity of the
  given currency, taking data-encoded parameters.
@@ -100,18 +139,22 @@ psingletonData ::
   Term
     (s :: S)
     ( PAsData PCurrencySymbol :--> PAsData PTokenName :--> PAsData PInteger
-        :--> PValue ( 'Sorted 'Normalized)
+        :--> PValue 'Sorted 'NonZero
     )
 psingletonData = phoistAcyclic $
   plam $ \symbol token amount ->
-    punsafeFrom
-      ( AssocMap.psingletonData # symbol
-          #$ pdata
-          $ AssocMap.psingletonData # token # amount
+    pif
+      (amount #== zeroData)
+      mempty
+      ( punsafeFrom
+          ( AssocMap.psingletonData # symbol
+              #$ pdata
+              $ AssocMap.psingletonData # token # amount
+          )
       )
 
 -- | Get the quantity of the given currency in the 'PValue'.
-pvalueOf :: Term (s :: S) (PValue _ :--> PCurrencySymbol :--> PTokenName :--> PInteger)
+pvalueOf :: Term (s :: S) (PValue _ _ :--> PCurrencySymbol :--> PTokenName :--> PInteger)
 pvalueOf = phoistAcyclic $
   plam $ \value symbol token ->
     AssocMap.pfoldAt
@@ -120,10 +163,6 @@ pvalueOf = phoistAcyclic $
       # plam (\map -> AssocMap.pfoldAt # token # 0 # plam pfromData # pfromData map)
       # pto value
 
--- | Check if the value is zero.
-pisZero :: Term (s :: S) (PValue ( 'Sorted 'Normalized) :--> PBool)
-pisZero = plam (\v -> AssocMap.pnull # pto v)
-
 {- | Combine two 'PValue's applying the given function to any pair of
  quantities with the same asset class. Note that the result is _not_
  'normalize'd and may contain zero quantities.
@@ -131,8 +170,8 @@ pisZero = plam (\v -> AssocMap.pnull # pto v)
 punionWith ::
   Term
     (s :: S)
-    ( (PInteger :--> PInteger :--> PInteger) :--> PValue ( 'Sorted _) :--> PValue ( 'Sorted _)
-        :--> PValue ( 'Sorted 'NotNormalized)
+    ( (PInteger :--> PInteger :--> PInteger) :--> PValue 'Sorted _ :--> PValue 'Sorted _
+        :--> PValue 'Sorted 'NoGuarantees
     )
 punionWith = phoistAcyclic $
   plam $ \combine x y ->
@@ -150,9 +189,9 @@ punionWithData ::
   Term
     (s :: S)
     ( (PAsData PInteger :--> PAsData PInteger :--> PAsData PInteger)
-        :--> PValue ( 'Sorted _)
-        :--> PValue ( 'Sorted _)
-        :--> PValue ( 'Sorted 'NotNormalized)
+        :--> PValue 'Sorted _
+        :--> PValue 'Sorted _
+        :--> PValue 'Sorted 'NoGuarantees
     )
 punionWithData = phoistAcyclic $
   plam $ \combine x y ->
@@ -163,7 +202,7 @@ punionWithData = phoistAcyclic $
         # pto y
 
 -- | Normalize the argument to contain no zero quantity nor empty token map.
-pnormalize :: Term s (PValue ( 'Sorted _) :--> PValue ( 'Sorted 'Normalized))
+pnormalize :: Term s (PValue 'Sorted _ :--> PValue 'Sorted 'NonZero)
 pnormalize = phoistAcyclic $
   plam $ \value ->
     pcon . PValue $
@@ -179,7 +218,7 @@ pnormalize = phoistAcyclic $
       pif (intData #== zeroData) (pcon PNothing) (pcon $ PJust intData)
 
 -- | Assert the value is properly sorted and normalized.
-passertSorted :: Term s (PValue _ :--> PValue ( 'Sorted 'Normalized))
+passertSorted :: Term s (PValue _ _ :--> PValue 'Sorted 'NonZero)
 passertSorted = phoistAcyclic $
   plam $ \value ->
     pif
@@ -193,6 +232,22 @@ passertSorted = phoistAcyclic $
       )
       (ptraceError "Abnormal Value")
       (pcon $ PValue $ AssocMap.passertSorted # pto value)
+
+-- | Assert all amounts in the value are positive.
+passertPositive :: Term s (PValue 'Sorted 'NonZero :--> PValue 'Sorted 'Positive)
+passertPositive = phoistAcyclic $
+  plam $ \value ->
+    pif
+      ( AssocMap.pall
+          # (plam $ \submap -> AssocMap.pall # plam (0 #<) # submap)
+          # pto value
+      )
+      (pcon $ PValue $ AssocMap.passertSorted # pto value)
+      (ptraceError "Negative Value")
+
+-- | Forget the knowledge of value's positivity.
+pforgetPositive :: Term s (PValue 'Sorted 'Positive) -> Term s (PValue 'Sorted 'NonZero)
+pforgetPositive v = punsafeFrom (pto v)
 
 zeroData :: ClosedTerm (PAsData PInteger)
 zeroData = pdata 0

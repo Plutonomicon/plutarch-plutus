@@ -31,8 +31,8 @@ import Plutarch.Api.V1 (
   PTxInInfo,
   PTxInfo,
   PValue,
-  ValueNormalization (Normalized),
-  ValueState (Sorted),
+  ValueAmountGuarantees (NonZero, Positive),
+  ValueKeyGuarantees (Sorted),
  )
 import qualified Plutarch.Api.V1.AssocMap as AssocMap
 import qualified Plutarch.Api.V1.Value as PValue
@@ -67,21 +67,21 @@ spec = do
               _ -> perror
     describe "value" $ do
       plutarchDevFlagDescribe . pgoldenSpec $ do
-        let pmint = PValue.psingleton # pconstant "c0" # pconstant "sometoken" # 1
-            pmintOtherToken = PValue.psingleton # pconstant "c0" # pconstant "othertoken" # 1
-            pmintOtherSymbol = PValue.psingleton # pconstant "c7" # pconstant "sometoken" # 1
-            growingSymbols, symbols :: [EnclosedTerm (PValue ( 'Sorted 'Normalized))]
+        let pmint = PValue.pconstantPositiveSingleton (pconstant "c0") (pconstant "sometoken") 1
+            pmintOtherToken = PValue.pconstantPositiveSingleton (pconstant "c0") (pconstant "othertoken") 1
+            pmintOtherSymbol = PValue.pconstantPositiveSingleton (pconstant "c7") (pconstant "sometoken") 1
+            growingSymbols, symbols :: [EnclosedTerm (PValue 'Sorted 'Positive)]
             growingSymbols =
               scanl
                 (\s v -> EnclosedTerm $ getEnclosedTerm s <> getEnclosedTerm v)
                 (EnclosedTerm pmint)
                 symbols
             symbols = (\n -> EnclosedTerm (toSymbolicValue n)) <$> [0 .. 15]
-            toSymbolicValue :: Integer -> ClosedTerm (PValue ( 'Sorted 'Normalized))
+            toSymbolicValue :: Integer -> ClosedTerm (PValue 'Sorted 'Positive)
             toSymbolicValue n =
-              PValue.psingleton # pconstant (fromString $ "c" <> showHex n "") # pconstant "token" # 1
+              PValue.pconstantPositiveSingleton (pconstant $ fromString $ "c" <> showHex n "") (pconstant "token") 1
         "singleton" @| pmint @-> \p ->
-          plift p @?= mint
+          plift (PValue.pforgetPositive p) @?= mint
         "singletonData"
           @| PValue.psingletonData # pdata (pconstant "c0") # pdata (pconstant "sometoken") # pdata 1
           @-> \p -> plift p @?= mint
@@ -121,12 +121,8 @@ spec = do
             plift (PValue.pnormalize #$ u # plam const # pmint # pmint) @?= mint
           "applied" @| PValue.punionWithData # plam const # pmint # pmint @-> \p ->
             plift (PValue.pnormalize # p) @?= mint
-        "isZero" @\ do
-          "itself" @| PValue.pisZero @-> \z -> passertNot (z # pmint)
-          "true" @| PValue.pisZero # (PValue.pnormalize #$ PValue.punionWith # plam (-) # pmint # pmint) @-> passert
-          "false" @| PValue.pisZero # pmint @-> passertNot
         "equality" @\ do
-          "itself" @| plam ((#==) @(PValue ( 'Sorted 'Normalized))) @-> \eq -> passert (eq # pmint # pmint)
+          "itself" @| plam ((#==) @(PValue 'Sorted 'Positive)) @-> \eq -> passert (eq # pmint # pmint)
           "triviallyTrue" @| pmint #== pmint @-> passert
           "triviallyFalse" @| pmint #== pmintOtherToken @-> passertNot
           "swappedTokensTrue"
@@ -146,7 +142,7 @@ spec = do
               )
         "normalize" @\ do
           "identity"
-            @| PValue.pnormalize # (pmint <> pmintOtherSymbol)
+            @| PValue.passertPositive # (PValue.pnormalize # (pmint <> pmintOtherSymbol))
             @-> \v -> passert (v #== pmint <> pmintOtherSymbol)
           "empty"
             @| PValue.pnormalize # (PValue.punionWith # plam (-) # pmint # pmint)
@@ -330,7 +326,7 @@ getTxInfo =
   plam $ \ctx ->
     pfield @"txInfo" # ctx
 
-getMint :: Term s (PAsData PTxInfo :--> PAsData (PValue ( 'Sorted 'Normalized)))
+getMint :: Term s (PAsData PTxInfo :--> PAsData (PValue 'Sorted 'NonZero))
 getMint =
   plam $ \info ->
     pfield @"mint" # info
@@ -357,7 +353,7 @@ inputCredentialHash =
        in phead #$ psndBuiltin #$ pasConstr # pforgetData credential
 
 -- | Get first CurrencySymbol from Value
-getSym :: Term s (PValue ( 'Sorted 'Normalized) :--> PAsData PCurrencySymbol)
+getSym :: Term s (PValue 'Sorted 'NonZero :--> PAsData PCurrencySymbol)
 getSym =
   plam $ \v -> pfstBuiltin #$ phead # pto (pto v)
 
