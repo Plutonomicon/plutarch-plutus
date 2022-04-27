@@ -82,7 +82,7 @@ library
   import:          c
   exposed-modules:
     Plutarch
-    Plutarch.Api.Internal.Scripts
+    Plutarch.Api.Internal.Hashing
     Plutarch.Api.V1
     Plutarch.Api.V1.Address
     Plutarch.Api.V1.AssocMap
