@@ -242,8 +242,8 @@ passertPositive = phoistAcyclic $
           # (plam $ \submap -> AssocMap.pall # plam (0 #<) # submap)
           # pto value
       )
-      (pcon $ PValue $ AssocMap.passertSorted # pto value)
-      (ptraceError "Negative Value")
+      (punsafeFrom $ pto value)
+      (ptraceError "Negative amount in Value")
 
 -- | Forget the knowledge of value's positivity.
 pforgetPositive :: Term s (PValue 'Sorted 'Positive) -> Term s (PValue 'Sorted 'NonZero)
