@@ -16,6 +16,7 @@ module Plutarch (
   S,
   PType,
   PlutusType (..),
+  prettyTerm,
   printTerm,
   printScript,
   (#$),
@@ -36,5 +37,6 @@ module Plutarch (
 ) where
 
 import Plutarch.Internal.Other
+import Plutarch.Pretty (prettyTerm)
 import qualified Plutarch.TermCont as PT
 import Prelude ()
