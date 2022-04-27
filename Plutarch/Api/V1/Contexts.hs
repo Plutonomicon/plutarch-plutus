@@ -22,7 +22,7 @@ import Plutarch.Api.V1.Scripts (PDatum, PDatumHash)
 import Plutarch.Api.V1.Time (PPOSIXTimeRange)
 import Plutarch.Api.V1.Tuple (PTuple)
 import Plutarch.Api.V1.Tx (PTxId, PTxInInfo, PTxOut, PTxOutRef)
-import Plutarch.Api.V1.Value (PCurrencySymbol, PValue)
+import Plutarch.Api.V1.Value (PCurrencySymbol, PValue, ValueNormalization (Normalized), ValueState (Sorted))
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
@@ -43,8 +43,8 @@ newtype PTxInfo (s :: S)
           ( PDataRecord
               '[ "inputs" ':= PBuiltinList (PAsData PTxInInfo) -- Transaction inputs
                , "outputs" ':= PBuiltinList (PAsData PTxOut) -- Transaction outputs
-               , "fee" ':= PValue -- The fee paid by this transaction.
-               , "mint" ':= PValue -- The value minted by the transaction.
+               , "fee" ':= PValue ( 'Sorted 'Normalized) -- The fee paid by this transaction.
+               , "mint" ':= PValue ( 'Sorted 'Normalized) -- The value minted by the transaction.
                , "dcert" ':= PBuiltinList (PAsData PDCert) -- Digests of the certificates included in this transaction.
                , "wdrl" ':= PBuiltinList (PAsData (PTuple PStakingCredential PInteger)) -- Staking withdrawals
                , "validRange" ':= PPOSIXTimeRange -- The valid range for the transaction.

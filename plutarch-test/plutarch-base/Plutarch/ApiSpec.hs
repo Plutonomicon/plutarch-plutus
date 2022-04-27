@@ -31,6 +31,8 @@ import Plutarch.Api.V1 (
   PTxInInfo,
   PTxInfo,
   PValue,
+  ValueNormalization (Normalized),
+  ValueState (Sorted),
  )
 import qualified Plutarch.Api.V1.AssocMap as AssocMap
 import qualified Plutarch.Api.V1.Value as PValue
@@ -68,14 +70,14 @@ spec = do
         let pmint = PValue.singleton # pconstant "c0" # pconstant "sometoken" # 1
             pmintOtherToken = PValue.singleton # pconstant "c0" # pconstant "othertoken" # 1
             pmintOtherSymbol = PValue.singleton # pconstant "c7" # pconstant "sometoken" # 1
-            growingSymbols, symbols :: [EnclosedTerm PValue]
+            growingSymbols, symbols :: [EnclosedTerm (PValue ( 'Sorted 'Normalized))]
             growingSymbols =
               scanl
-                (\s v -> EnclosedTerm $ PValue.unionWith # plam (+) # getEnclosedTerm s # getEnclosedTerm v)
+                (\s v -> EnclosedTerm $ getEnclosedTerm s <> getEnclosedTerm v)
                 (EnclosedTerm pmint)
                 symbols
             symbols = (\n -> EnclosedTerm (toSymbolicValue n)) <$> [0 .. 15]
-            toSymbolicValue :: Integer -> ClosedTerm PValue
+            toSymbolicValue :: Integer -> ClosedTerm (PValue ( 'Sorted 'Normalized))
             toSymbolicValue n =
               PValue.singleton # pconstant (fromString $ "c" <> showHex n "") # pconstant "token" # 1
         "singleton" @| pmint @-> \p ->
@@ -97,16 +99,16 @@ spec = do
               )
         "unionWith" @\ do
           "const" @| PValue.unionWith # plam const # pmint # pmint @-> \p ->
-            plift p @?= mint
+            plift (PValue.normalize # p) @?= mint
           "(+)" @\ do
             "itself" @| PValue.unionWith # plam (+) @-> \plus ->
-              plift (plus # pmint # pmint) @?= mint <> mint
+              plift (PValue.normalize #$ plus # pmint # pmint) @?= mint <> mint
             "applied" @| PValue.unionWith # plam (+) # pmint # pmint @-> \p ->
-              plift p @?= mint <> mint
+              plift (PValue.normalize # p) @?= mint <> mint
           "tokens" @| PValue.unionWith # plam (+) # pmint # pmintOtherToken @-> \p ->
-            plift p @?= mint <> mintOtherToken
+            plift (PValue.normalize # p) @?= mint <> mintOtherToken
           "symbols" @| PValue.unionWith # plam (+) # pmint # pmintOtherSymbol @-> \p ->
-            plift p @?= mint <> mintOtherSymbol
+            plift (PValue.normalize # p) @?= mint <> mintOtherSymbol
           "growing"
             @\ forM_
               (zip [1 :: Int .. length growingSymbols] growingSymbols)
@@ -116,24 +118,24 @@ spec = do
               )
         "unionWithData const" @\ do
           "itself" @| PValue.unionWithData @-> \u ->
-            plift (u # plam const # pmint # pmint) @?= mint
+            plift (PValue.normalize #$ u # plam const # pmint # pmint) @?= mint
           "applied" @| PValue.unionWithData # plam const # pmint # pmint @-> \p ->
-            plift p @?= mint
+            plift (PValue.normalize # p) @?= mint
         "isZero" @\ do
           "itself" @| PValue.isZero @-> \z -> passertNot (z # pmint)
-          "true" @| PValue.isZero # (PValue.unionWith # plam (-) # pmint # pmint) @-> passert
+          "true" @| PValue.isZero # (PValue.normalize #$ PValue.unionWith # plam (-) # pmint # pmint) @-> passert
           "false" @| PValue.isZero # pmint @-> passertNot
         "equality" @\ do
-          "itself" @| plam ((#==) @PValue) @-> \eq -> passert (eq # pmint # pmint)
+          "itself" @| plam ((#==) @(PValue ( 'Sorted 'Normalized))) @-> \eq -> passert (eq # pmint # pmint)
           "triviallyTrue" @| pmint #== pmint @-> passert
           "triviallyFalse" @| pmint #== pmintOtherToken @-> passertNot
           "swappedTokensTrue"
-            @| PValue.unionWith # plam (+) # pmint # pmintOtherToken
-              #== PValue.unionWith # plam (+) # pmintOtherToken # pmint
+            @| pto (PValue.unionWith # plam (+) # pmint # pmintOtherToken)
+              #== pto (PValue.unionWith # plam (+) # pmintOtherToken # pmint)
             @-> passert
           "swappedSymbolsTrue"
-            @| PValue.unionWith # plam (+) # pmint # pmintOtherSymbol
-              #== PValue.unionWith # plam (+) # pmintOtherSymbol # pmint
+            @| pto (PValue.unionWith # plam (+) # pmint # pmintOtherSymbol)
+              #== pto (PValue.unionWith # plam (+) # pmintOtherSymbol # pmint)
             @-> passert
           "growing"
             @\ forM_
@@ -328,7 +330,7 @@ getTxInfo =
   plam $ \ctx ->
     pfield @"txInfo" # ctx
 
-getMint :: Term s (PAsData PTxInfo :--> PAsData PValue)
+getMint :: Term s (PAsData PTxInfo :--> PAsData (PValue ( 'Sorted 'Normalized)))
 getMint =
   plam $ \info ->
     pfield @"mint" # info
@@ -355,7 +357,7 @@ inputCredentialHash =
        in phead #$ psndBuiltin #$ pasConstr # pforgetData credential
 
 -- | Get first CurrencySymbol from Value
-getSym :: Term s (PValue :--> PAsData PCurrencySymbol)
+getSym :: Term s (PValue ( 'Sorted 'Normalized) :--> PAsData PCurrencySymbol)
 getSym =
   plam $ \v -> pfstBuiltin #$ phead # pto (pto v)
 

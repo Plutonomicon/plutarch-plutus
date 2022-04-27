@@ -43,9 +43,9 @@ unionWith.growing.16 {"exBudgetCPU":595326358,"exBudgetMemory":1280392,"scriptSi
 unionWith.growing.17 {"exBudgetCPU":663706747,"exBudgetMemory":1424988,"scriptSizeBytes":610}
 unionWithData const.itself {"exBudgetCPU":1220793,"exBudgetMemory":4200,"scriptSizeBytes":226}
 unionWithData const.applied {"exBudgetCPU":22822970,"exBudgetMemory":53208,"scriptSizeBytes":319}
-isZero.itself {"exBudgetCPU":1042155,"exBudgetMemory":3600,"scriptSizeBytes":115}
-isZero.true {"exBudgetCPU":30677870,"exBudgetMemory":71393,"scriptSizeBytes":421}
-isZero.false {"exBudgetCPU":8700981,"exBudgetMemory":21315,"scriptSizeBytes":178}
+isZero.itself {"exBudgetCPU":59646,"exBudgetMemory":300,"scriptSizeBytes":6}
+isZero.true {"exBudgetCPU":31635462,"exBudgetMemory":73457,"scriptSizeBytes":460}
+isZero.false {"exBudgetCPU":3196026,"exBudgetMemory":6588,"scriptSizeBytes":71}
 equality.itself {"exBudgetCPU":833744,"exBudgetMemory":2900,"scriptSizeBytes":124}
 equality.triviallyTrue {"exBudgetCPU":13306769,"exBudgetMemory":28964,"scriptSizeBytes":212}
 equality.triviallyFalse {"exBudgetCPU":11575395,"exBudgetMemory":25036,"scriptSizeBytes":222}

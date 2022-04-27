@@ -16,7 +16,7 @@ import qualified Plutus.V1.Ledger.Api as Plutus
 import Plutarch.Api.V1.Address (PAddress)
 import Plutarch.Api.V1.Maybe (PMaybeData)
 import Plutarch.Api.V1.Scripts (PDatumHash)
-import Plutarch.Api.V1.Value (PValue)
+import Plutarch.Api.V1.Value (PValue, ValueNormalization (Normalized), ValueState (Sorted))
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
@@ -90,7 +90,7 @@ newtype PTxOut (s :: S)
           s
           ( PDataRecord
               '[ "address" ':= PAddress
-               , "value" ':= PValue
+               , "value" ':= PValue ( 'Sorted 'Normalized)
                , "datumHash" ':= PMaybeData PDatumHash
                ]
           )

@@ -1,3 +1,4 @@
+{-# LANGUAGE RoleAnnotations #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -5,6 +6,8 @@ module Plutarch.Api.V1.Value (
   PValue (PValue),
   PCurrencySymbol (PCurrencySymbol),
   PTokenName (PTokenName),
+  ValueState (Sorted, Unverified),
+  ValueNormalization (Normalized, NotNormalized),
   assertSorted,
   isZero,
   singleton,
@@ -48,29 +51,44 @@ deriving via
   instance
     PConstantDecl Plutus.CurrencySymbol
 
-newtype PValue (s :: S) = PValue (Term s (PMap PCurrencySymbol (PMap PTokenName PInteger)))
+data ValueState = Sorted ValueNormalization | Unverified
+data ValueNormalization = Normalized | NotNormalized
+
+newtype PValue (state :: ValueState) (s :: S)
+  = PValue (Term s (PMap PCurrencySymbol (PMap PTokenName PInteger)))
   deriving
     (PlutusType, PIsData)
-    via (DerivePNewtype PValue (PMap PCurrencySymbol (PMap PTokenName PInteger)))
+    via (DerivePNewtype (PValue state) (PMap PCurrencySymbol (PMap PTokenName PInteger)))
+type role PValue nominal phantom
 
-instance PUnsafeLiftDecl PValue where type PLifted PValue = Plutus.Value
+instance PUnsafeLiftDecl (PValue ( 'Sorted 'Normalized)) where
+  type PLifted (PValue ( 'Sorted 'Normalized)) = Plutus.Value
 deriving via
-  (DerivePConstantViaNewtype Plutus.Value PValue (PMap PCurrencySymbol (PMap PTokenName PInteger)))
+  ( DerivePConstantViaNewtype
+      Plutus.Value
+      (PValue ( 'Sorted 'Normalized))
+      (PMap PCurrencySymbol (PMap PTokenName PInteger))
+  )
   instance
     PConstantDecl Plutus.Value
 
--- | Works correctly only on 'normalize'd and sorted values!
-instance PEq PValue where
+instance PEq (PValue ( 'Sorted 'Normalized)) where
   a #== b = pto a #== pto b
 
-instance Semigroup (Term s PValue) where
-  a <> b = unionWith # plam (+) # a # b
+instance PEq (PValue ( 'Sorted 'NotNormalized)) where
+  a #== b = AssocMap.all # (AssocMap.all # plam (#== 0)) # pto (unionWith # plam (-) # a # b)
 
-instance Monoid (Term s PValue) where
+instance Semigroup (Term s (PValue ( 'Sorted normalization))) where
+  a <> b = pcon (PValue $ pto $ unionWith # plam (+) # a # b)
+
+instance Monoid (Term s (PValue ( 'Sorted normalization))) where
   mempty = pcon (PValue AssocMap.empty)
 
 -- | Construct a singleton 'PValue' containing only the given quantity of the given currency.
-singleton :: Term (s :: S) (PCurrencySymbol :--> PTokenName :--> PInteger :--> PValue)
+singleton ::
+  Term
+    (s :: S)
+    (PCurrencySymbol :--> PTokenName :--> PInteger :--> PValue ( 'Sorted 'Normalized))
 singleton = phoistAcyclic $
   plam $ \symbol token amount ->
     punsafeFrom (AssocMap.singleton # symbol #$ AssocMap.singleton # token # amount)
@@ -81,7 +99,9 @@ singleton = phoistAcyclic $
 singletonData ::
   Term
     (s :: S)
-    (PAsData PCurrencySymbol :--> PAsData PTokenName :--> PAsData PInteger :--> PValue)
+    ( PAsData PCurrencySymbol :--> PAsData PTokenName :--> PAsData PInteger
+        :--> PValue ( 'Sorted 'Normalized)
+    )
 singletonData = phoistAcyclic $
   plam $ \symbol token amount ->
     punsafeFrom
@@ -91,7 +111,7 @@ singletonData = phoistAcyclic $
       )
 
 -- | Get the quantity of the given currency in the 'PValue'.
-valueOf :: Term (s :: S) (PValue :--> PCurrencySymbol :--> PTokenName :--> PInteger)
+valueOf :: Term (s :: S) (PValue _ :--> PCurrencySymbol :--> PTokenName :--> PInteger)
 valueOf = phoistAcyclic $
   plam $ \value symbol token ->
     AssocMap.foldAt
@@ -101,15 +121,19 @@ valueOf = phoistAcyclic $
       # pto value
 
 -- | Check if the value is zero.
-isZero :: Term (s :: S) (PValue :--> PBool)
-isZero = phoistAcyclic $
-  plam $ \value -> AssocMap.all # (AssocMap.all # plam (#== 0)) # pto value
+isZero :: Term (s :: S) (PValue ( 'Sorted 'Normalized) :--> PBool)
+isZero = plam (\v -> AssocMap.null # pto v)
 
 {- | Combine two 'PValue's applying the given function to any pair of
  quantities with the same asset class. Note that the result is _not_
  'normalize'd and may contain zero quantities.
 -}
-unionWith :: Term (s :: S) ((PInteger :--> PInteger :--> PInteger) :--> PValue :--> PValue :--> PValue)
+unionWith ::
+  Term
+    (s :: S)
+    ( (PInteger :--> PInteger :--> PInteger) :--> PValue ( 'Sorted _) :--> PValue ( 'Sorted _)
+        :--> PValue ( 'Sorted 'NotNormalized)
+    )
 unionWith = phoistAcyclic $
   plam $ \combine x y ->
     pcon . PValue $
@@ -126,9 +150,9 @@ unionWithData ::
   Term
     (s :: S)
     ( (PAsData PInteger :--> PAsData PInteger :--> PAsData PInteger)
-        :--> PValue
-        :--> PValue
-        :--> PValue
+        :--> PValue ( 'Sorted _)
+        :--> PValue ( 'Sorted _)
+        :--> PValue ( 'Sorted 'NotNormalized)
     )
 unionWithData = phoistAcyclic $
   plam $ \combine x y ->
@@ -139,7 +163,7 @@ unionWithData = phoistAcyclic $
         # pto y
 
 -- | Normalize the argument to contain no zero quantity nor empty token map.
-normalize :: Term s (PValue :--> PValue)
+normalize :: Term s (PValue ( 'Sorted _) :--> PValue ( 'Sorted 'Normalized))
 normalize = phoistAcyclic $
   plam $ \value ->
     pcon . PValue $
@@ -155,7 +179,7 @@ normalize = phoistAcyclic $
       pif (intData #== zeroData) (pcon PNothing) (pcon $ PJust intData)
 
 -- | Assert the value is properly sorted and normalized.
-assertSorted :: Term s (PValue :--> PValue)
+assertSorted :: Term s (PValue _ :--> PValue ( 'Sorted 'Normalized))
 assertSorted = phoistAcyclic $
   plam $ \value ->
     pif
