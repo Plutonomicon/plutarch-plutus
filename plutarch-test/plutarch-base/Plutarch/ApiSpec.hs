@@ -67,9 +67,9 @@ spec = do
               _ -> perror
     describe "value" $ do
       plutarchDevFlagDescribe . pgoldenSpec $ do
-        let pmint = PValue.singleton # pconstant "c0" # pconstant "sometoken" # 1
-            pmintOtherToken = PValue.singleton # pconstant "c0" # pconstant "othertoken" # 1
-            pmintOtherSymbol = PValue.singleton # pconstant "c7" # pconstant "sometoken" # 1
+        let pmint = PValue.psingleton # pconstant "c0" # pconstant "sometoken" # 1
+            pmintOtherToken = PValue.psingleton # pconstant "c0" # pconstant "othertoken" # 1
+            pmintOtherSymbol = PValue.psingleton # pconstant "c7" # pconstant "sometoken" # 1
             growingSymbols, symbols :: [EnclosedTerm (PValue ( 'Sorted 'Normalized))]
             growingSymbols =
               scanl
@@ -79,63 +79,63 @@ spec = do
             symbols = (\n -> EnclosedTerm (toSymbolicValue n)) <$> [0 .. 15]
             toSymbolicValue :: Integer -> ClosedTerm (PValue ( 'Sorted 'Normalized))
             toSymbolicValue n =
-              PValue.singleton # pconstant (fromString $ "c" <> showHex n "") # pconstant "token" # 1
+              PValue.psingleton # pconstant (fromString $ "c" <> showHex n "") # pconstant "token" # 1
         "singleton" @| pmint @-> \p ->
           plift p @?= mint
         "singletonData"
-          @| PValue.singletonData # pdata (pconstant "c0") # pdata (pconstant "sometoken") # pdata 1
+          @| PValue.psingletonData # pdata (pconstant "c0") # pdata (pconstant "sometoken") # pdata 1
           @-> \p -> plift p @?= mint
         "valueOf" @\ do
-          "itself" @| PValue.valueOf @-> \v -> plift (v # pmint # pconstant "c0" # pconstant "sometoken") @?= 1
-          "applied" @| PValue.valueOf # pmint # pconstant "c0" # pconstant "sometoken" @-> \p ->
+          "itself" @| PValue.pvalueOf @-> \v -> plift (v # pmint # pconstant "c0" # pconstant "sometoken") @?= 1
+          "applied" @| PValue.pvalueOf # pmint # pconstant "c0" # pconstant "sometoken" @-> \p ->
             plift p @?= 1
           "growing"
             @\ forM_
               (zip [1 :: Int .. length growingSymbols] growingSymbols)
               ( \(size, v) ->
                   fromString (show size)
-                    @| PValue.valueOf # getEnclosedTerm v # pconstant "c7" # pconstant "token"
+                    @| PValue.pvalueOf # getEnclosedTerm v # pconstant "c7" # pconstant "token"
                     @-> \p -> plift p @?= if size < 9 then 0 else 1
               )
         "unionWith" @\ do
-          "const" @| PValue.unionWith # plam const # pmint # pmint @-> \p ->
-            plift (PValue.normalize # p) @?= mint
+          "const" @| PValue.punionWith # plam const # pmint # pmint @-> \p ->
+            plift (PValue.pnormalize # p) @?= mint
           "(+)" @\ do
-            "itself" @| PValue.unionWith # plam (+) @-> \plus ->
-              plift (PValue.normalize #$ plus # pmint # pmint) @?= mint <> mint
-            "applied" @| PValue.unionWith # plam (+) # pmint # pmint @-> \p ->
-              plift (PValue.normalize # p) @?= mint <> mint
-          "tokens" @| PValue.unionWith # plam (+) # pmint # pmintOtherToken @-> \p ->
-            plift (PValue.normalize # p) @?= mint <> mintOtherToken
-          "symbols" @| PValue.unionWith # plam (+) # pmint # pmintOtherSymbol @-> \p ->
-            plift (PValue.normalize # p) @?= mint <> mintOtherSymbol
+            "itself" @| PValue.punionWith # plam (+) @-> \plus ->
+              plift (PValue.pnormalize #$ plus # pmint # pmint) @?= mint <> mint
+            "applied" @| PValue.punionWith # plam (+) # pmint # pmint @-> \p ->
+              plift (PValue.pnormalize # p) @?= mint <> mint
+          "tokens" @| PValue.punionWith # plam (+) # pmint # pmintOtherToken @-> \p ->
+            plift (PValue.pnormalize # p) @?= mint <> mintOtherToken
+          "symbols" @| PValue.punionWith # plam (+) # pmint # pmintOtherSymbol @-> \p ->
+            plift (PValue.pnormalize # p) @?= mint <> mintOtherSymbol
           "growing"
             @\ forM_
               (zip [1 :: Int .. length growingSymbols] growingSymbols)
               ( \(size, v) ->
-                  fromString (show size) @| PValue.unionWith # plam const # getEnclosedTerm v # pmintOtherSymbol
-                    @-> \v' -> passert (v' #== PValue.unionWith # plam const # pmintOtherSymbol # getEnclosedTerm v)
+                  fromString (show size) @| PValue.punionWith # plam const # getEnclosedTerm v # pmintOtherSymbol
+                    @-> \v' -> passert (v' #== PValue.punionWith # plam const # pmintOtherSymbol # getEnclosedTerm v)
               )
         "unionWithData const" @\ do
-          "itself" @| PValue.unionWithData @-> \u ->
-            plift (PValue.normalize #$ u # plam const # pmint # pmint) @?= mint
-          "applied" @| PValue.unionWithData # plam const # pmint # pmint @-> \p ->
-            plift (PValue.normalize # p) @?= mint
+          "itself" @| PValue.punionWithData @-> \u ->
+            plift (PValue.pnormalize #$ u # plam const # pmint # pmint) @?= mint
+          "applied" @| PValue.punionWithData # plam const # pmint # pmint @-> \p ->
+            plift (PValue.pnormalize # p) @?= mint
         "isZero" @\ do
-          "itself" @| PValue.isZero @-> \z -> passertNot (z # pmint)
-          "true" @| PValue.isZero # (PValue.normalize #$ PValue.unionWith # plam (-) # pmint # pmint) @-> passert
-          "false" @| PValue.isZero # pmint @-> passertNot
+          "itself" @| PValue.pisZero @-> \z -> passertNot (z # pmint)
+          "true" @| PValue.pisZero # (PValue.pnormalize #$ PValue.punionWith # plam (-) # pmint # pmint) @-> passert
+          "false" @| PValue.pisZero # pmint @-> passertNot
         "equality" @\ do
           "itself" @| plam ((#==) @(PValue ( 'Sorted 'Normalized))) @-> \eq -> passert (eq # pmint # pmint)
           "triviallyTrue" @| pmint #== pmint @-> passert
           "triviallyFalse" @| pmint #== pmintOtherToken @-> passertNot
           "swappedTokensTrue"
-            @| pto (PValue.unionWith # plam (+) # pmint # pmintOtherToken)
-              #== pto (PValue.unionWith # plam (+) # pmintOtherToken # pmint)
+            @| pto (PValue.punionWith # plam (+) # pmint # pmintOtherToken)
+              #== pto (PValue.punionWith # plam (+) # pmintOtherToken # pmint)
             @-> passert
           "swappedSymbolsTrue"
-            @| pto (PValue.unionWith # plam (+) # pmint # pmintOtherSymbol)
-              #== pto (PValue.unionWith # plam (+) # pmintOtherSymbol # pmint)
+            @| pto (PValue.punionWith # plam (+) # pmint # pmintOtherSymbol)
+              #== pto (PValue.punionWith # plam (+) # pmintOtherSymbol # pmint)
             @-> passert
           "growing"
             @\ forM_
@@ -146,15 +146,15 @@ spec = do
               )
         "normalize" @\ do
           "identity"
-            @| PValue.normalize # (pmint <> pmintOtherSymbol)
+            @| PValue.pnormalize # (pmint <> pmintOtherSymbol)
             @-> \v -> passert (v #== pmint <> pmintOtherSymbol)
           "empty"
-            @| PValue.normalize # (PValue.unionWith # plam (-) # pmint # pmint)
+            @| PValue.pnormalize # (PValue.punionWith # plam (-) # pmint # pmint)
             @-> \v -> passert (v #== mempty)
         "assertSorted" @\ do
-          "succeeds" @| PValue.assertSorted # (pmint <> pmintOtherSymbol) @-> psucceeds
+          "succeeds" @| PValue.passertSorted # (pmint <> pmintOtherSymbol) @-> psucceeds
           "fails on malsorted symbols"
-            @| PValue.assertSorted
+            @| PValue.passertSorted
               # ( pcon $
                     PValue.PValue $
                       pcon $
@@ -163,80 +163,80 @@ spec = do
                 )
             @-> pfails
           "fails on zero quantities"
-            @| PValue.assertSorted # (PValue.unionWith # plam (-) # pmint # pmint)
+            @| PValue.passertSorted # (PValue.punionWith # plam (-) # pmint # pmint)
             @-> pfails
           "fails on empty token map"
-            @| PValue.assertSorted
-              # (pcon $ PValue.PValue $ AssocMap.singleton # pconstant "c0" # AssocMap.empty)
+            @| PValue.passertSorted
+              # (pcon $ PValue.PValue $ AssocMap.psingleton # pconstant "c0" # AssocMap.pempty)
             @-> pfails
     describe "map" $ do
       pgoldenSpec $ do
         let pmap, pdmap, emptyMap, doubleMap, otherMap :: Term _ (AssocMap.PMap PByteString PInteger)
-            pmap = AssocMap.singleton # pconstant "key" # 42
-            pdmap = AssocMap.singletonData # pdata (pconstant "key") # pdata 42
-            emptyMap = AssocMap.empty
-            doubleMap = AssocMap.singleton # pconstant "key" # 84
-            otherMap = AssocMap.singleton # pconstant "newkey" # 6
+            pmap = AssocMap.psingleton # pconstant "key" # 42
+            pdmap = AssocMap.psingletonData # pdata (pconstant "key") # pdata 42
+            emptyMap = AssocMap.pempty
+            doubleMap = AssocMap.psingleton # pconstant "key" # 84
+            otherMap = AssocMap.psingleton # pconstant "newkey" # 6
         "lookup" @\ do
-          "itself" @| AssocMap.lookup
+          "itself" @| AssocMap.plookup
             @-> \lookup -> passert $ lookup # pconstant "key" # pmap #== pcon (PJust 42)
-          "hit" @| AssocMap.lookup # pconstant "key" # pmap
+          "hit" @| AssocMap.plookup # pconstant "key" # pmap
             @-> \result -> passert $ result #== pcon (PJust 42)
-          "miss" @| AssocMap.lookup # pconstant "nokey" # pmap
+          "miss" @| AssocMap.plookup # pconstant "nokey" # pmap
             @-> \result -> passert $ result #== pcon PNothing
         "lookupData" @\ do
-          "hit" @| AssocMap.lookupData # pdata (pconstant "key") # pmap
+          "hit" @| AssocMap.plookupData # pdata (pconstant "key") # pmap
             @-> \result -> passert $ result #== pcon (PJust $ pdata 42)
-          "miss" @| AssocMap.lookupData # pdata (pconstant "nokey") # pmap
+          "miss" @| AssocMap.plookupData # pdata (pconstant "nokey") # pmap
             @-> \result -> passert $ result #== pcon PNothing
         "findWithDefault" @\ do
-          "itself" @| AssocMap.findWithDefault
+          "itself" @| AssocMap.pfindWithDefault
             @-> \find -> (find # 12 # pconstant "key" # pmap) #@?= (42 :: Term _ PInteger)
-          "hit" @| AssocMap.findWithDefault # 12 # pconstant "key" # pmap
+          "hit" @| AssocMap.pfindWithDefault # 12 # pconstant "key" # pmap
             @-> \result -> passert $ result #== 42
           "hit2"
-            @| AssocMap.findWithDefault # 12 # pconstant "newkey" # (AssocMap.unionWith # plam const # pmap # otherMap)
+            @| AssocMap.pfindWithDefault # 12 # pconstant "newkey" # (AssocMap.punionWith # plam const # pmap # otherMap)
             @-> \result -> passert $ result #== 6
-          "miss" @| AssocMap.findWithDefault # 12 # pconstant "nokey" # pmap
+          "miss" @| AssocMap.pfindWithDefault # 12 # pconstant "nokey" # pmap
             @-> \result -> passert $ result #== 12
         "singleton" @| pmap @-> pshouldReallyBe pdmap
         "singletonData" @| pdmap @-> pshouldReallyBe pmap
         "insert" @\ do
-          "empty" @| AssocMap.insert # pconstant "key" # 42 # emptyMap @-> pshouldReallyBe pmap
-          "replace" @| AssocMap.insert # pconstant "key" # 84 # pmap @-> pshouldReallyBe doubleMap
+          "empty" @| AssocMap.pinsert # pconstant "key" # 42 # emptyMap @-> pshouldReallyBe pmap
+          "replace" @| AssocMap.pinsert # pconstant "key" # 84 # pmap @-> pshouldReallyBe doubleMap
         "delete" @\ do
-          "empty" @| AssocMap.delete # pconstant "key" # emptyMap @-> pshouldReallyBe emptyMap
-          "only" @| AssocMap.delete # pconstant "key" # pmap @-> pshouldReallyBe emptyMap
-          "miss" @| AssocMap.delete # pconstant "nokey" # pmap @-> pshouldReallyBe pmap
+          "empty" @| AssocMap.pdelete # pconstant "key" # emptyMap @-> pshouldReallyBe emptyMap
+          "only" @| AssocMap.pdelete # pconstant "key" # pmap @-> pshouldReallyBe emptyMap
+          "miss" @| AssocMap.pdelete # pconstant "nokey" # pmap @-> pshouldReallyBe pmap
           "new"
-            @| AssocMap.delete # pconstant "newkey" # (AssocMap.insert # pconstant "newkey" # 6 # pmap)
+            @| AssocMap.pdelete # pconstant "newkey" # (AssocMap.pinsert # pconstant "newkey" # 6 # pmap)
             @-> pshouldReallyBe pmap
           "old"
-            @| AssocMap.delete # pconstant "key" # (AssocMap.insert # pconstant "newkey" # 6 # pmap)
+            @| AssocMap.pdelete # pconstant "key" # (AssocMap.pinsert # pconstant "newkey" # 6 # pmap)
             @-> pshouldReallyBe otherMap
         "difference" @\ do
-          "emptyLeft" @| AssocMap.difference # emptyMap # pmap @-> pshouldReallyBe emptyMap
-          "emptyRight" @| AssocMap.difference # pmap # emptyMap @-> pshouldReallyBe pmap
-          "emptyResult" @| AssocMap.difference # pmap # doubleMap @-> pshouldReallyBe emptyMap
+          "emptyLeft" @| AssocMap.pdifference # emptyMap # pmap @-> pshouldReallyBe emptyMap
+          "emptyRight" @| AssocMap.pdifference # pmap # emptyMap @-> pshouldReallyBe pmap
+          "emptyResult" @| AssocMap.pdifference # pmap # doubleMap @-> pshouldReallyBe emptyMap
         "unionWith" @\ do
-          "const" @| AssocMap.unionWith # plam const # pmap # pmap @-> pshouldReallyBe pmap
-          "double" @| AssocMap.unionWith # plam (+) # pmap # pmap @-> pshouldReallyBe doubleMap
+          "const" @| AssocMap.punionWith # plam const # pmap # pmap @-> pshouldReallyBe pmap
+          "double" @| AssocMap.punionWith # plam (+) # pmap # pmap @-> pshouldReallyBe doubleMap
           "(+)"
-            @| AssocMap.unionWith # plam (+) # pmap # otherMap
-            @-> \p -> passert (p #== AssocMap.unionWith # plam (+) # otherMap # pmap)
+            @| AssocMap.punionWith # plam (+) # pmap # otherMap
+            @-> \p -> passert (p #== AssocMap.punionWith # plam (+) # otherMap # pmap)
           "flip (+)"
-            @| AssocMap.unionWith # plam (+) # otherMap # pmap
-            @-> \p -> passert (p #== AssocMap.unionWith # plam (+) # pmap # otherMap)
+            @| AssocMap.punionWith # plam (+) # otherMap # pmap
+            @-> \p -> passert (p #== AssocMap.punionWith # plam (+) # pmap # otherMap)
         "unionWithData" @\ do
-          "const" @| AssocMap.unionWithData # plam const # pmap # pmap @-> pshouldReallyBe pmap
-          "emptyLeft" @| AssocMap.unionWithData # plam const # emptyMap # pmap @-> pshouldReallyBe pmap
-          "emptyRight" @| AssocMap.unionWithData # plam const # pmap # emptyMap @-> pshouldReallyBe pmap
+          "const" @| AssocMap.punionWithData # plam const # pmap # pmap @-> pshouldReallyBe pmap
+          "emptyLeft" @| AssocMap.punionWithData # plam const # emptyMap # pmap @-> pshouldReallyBe pmap
+          "emptyRight" @| AssocMap.punionWithData # plam const # pmap # emptyMap @-> pshouldReallyBe pmap
     {- TODO: fails due to incomplete normalization
             "mapEitherWithKey" @\ do
-              "const" @| AssocMap.mapEitherWithKey # plam (const $ pcon . PRight) # pmap
+              "const" @| AssocMap.pmapEitherWithKey # plam (const $ pcon . PRight) # pmap
                 @-> pshouldReallyBe (pcon $ PPair emptyMap pmap)
         "mapEitherWithKey" @\ do
-          "const" @| AssocMap.mapEitherWithKey # plam (const $ pcon . PRight) # pmap
+          "const" @| AssocMap.pmapEitherWithKey # plam (const $ pcon . PRight) # pmap
             @-> \result-> passert $ result #== pcon (PPair emptyMap pmap)
     -}
     describe "example" $ do
