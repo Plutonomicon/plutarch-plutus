@@ -49,7 +49,8 @@
 
   outputs = inputs@{ self, nixpkgs, iohk-nix, haskell-nix, plutus, hercules-ci-effects, ... }:
     let
-      supportedSystems = with nixpkgs.lib.systems.supported; tier1 ++ tier2 ++ tier3;
+      # This is same as tier1+tier2+tier3 but with aarch64-darwin added to the list.
+      supportedSystems = nixpkgs.lib.systems.supported.hydra;
 
       perSystem = nixpkgs.lib.genAttrs supportedSystems;
 
