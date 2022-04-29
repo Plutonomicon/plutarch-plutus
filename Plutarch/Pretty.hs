@@ -1,8 +1,11 @@
 {-# LANGUAGE PatternSynonyms #-}
 
-module Plutarch.Pretty (prettyTerm) where
+module Plutarch.Pretty (prettyTerm, prettyScript, prettyConstant) where
 
 import Data.Bifunctor (first)
+import Data.ByteString (ByteString)
+import qualified Data.ByteString as LBS
+import qualified Data.ByteString.Builder as BSB
 import Data.List (foldl')
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
@@ -11,6 +14,7 @@ import qualified Data.Set as Set
 import Data.String (fromString)
 import Data.Text (Text)
 import qualified Data.Text as Txt
+import qualified Data.Text.Encoding as TxtEnc
 
 import System.Random (
   Random (randomR),
@@ -24,6 +28,7 @@ import qualified Prettyprinter as PP
 
 import Plutus.V1.Ledger.Scripts (Script (unScript))
 import qualified PlutusCore as PLC
+import qualified PlutusCore.Data as Plutus
 import UntypedPlutusCore (
   DeBruijn (DeBruijn),
   DefaultFun,
@@ -36,8 +41,11 @@ import qualified UntypedPlutusCore as UPLC (Term)
 
 import Plutarch.Internal.Other (ClosedTerm, compile)
 
+prettyScript :: Script -> PP.Doc ()
+prettyScript = prettyUPLC . _progTerm . unScript
+
 prettyTerm :: ClosedTerm a -> PP.Doc ()
-prettyTerm x = prettyUPLC . _progTerm . unScript $ compile x
+prettyTerm x = prettyScript $ compile x
 
 {- This isn't suitable for pretty printing UPLC from any source. It's primarily suited for Plutarch output.
 
@@ -47,7 +55,7 @@ prettyUPLC :: UPLC.Term DeBruijn DefaultUni DefaultFun () -> PP.Doc ()
 prettyUPLC = go False mempty $ mkStdGen 42
   where
     go :: RandomGen g => Bool -> Map Index Text -> g -> UPLC.Term DeBruijn DefaultUni DefaultFun () -> PP.Doc ()
-    go _ _ _ (Constant _ c) = PP.pretty c
+    go _ _ _ (Constant _ c) = prettyConstant c
     go _ _ _ (Builtin _ b) = PP.pretty b
     go _ _ _ (Error _) = "ERROR"
     go _ nameMap _ (Var _ (DeBruijn x)) = case Map.lookup (x - 1) nameMap of
@@ -118,6 +126,45 @@ prettyUPLC = go False mempty $ mkStdGen 42
         let (l, f) = unwrapApply [] t
             args = l <> [arg]
          in PP.hang indentWidth $ PP.sep $ go False nameMap g f : (go True nameMap g <$> args)
+
+prettyConstant :: PLC.Some (PLC.ValueOf DefaultUni) -> PP.Doc ()
+prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniInteger n)) = PP.pretty n
+prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniByteString b)) = PP.pretty $ fromHex b
+prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniString s)) = PP.pretty s
+prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniUnit _)) = "()"
+prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniBool b)) = PP.pretty b
+prettyConstant (PLC.Some (PLC.ValueOf (PLC.DefaultUniList a) l)) =
+  PP.list $
+    map (prettyConstant . PLC.Some . PLC.ValueOf a) l
+prettyConstant (PLC.Some (PLC.ValueOf (PLC.DefaultUniPair a b) ~(x, y))) =
+  PP.tupled
+    [prettyConstant . PLC.Some $ PLC.ValueOf a x, prettyConstant . PLC.Some $ PLC.ValueOf b y]
+prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniData (Plutus.Constr ix dl))) =
+  "Σ" <> PP.pretty ix <> "."
+    <> PP.list (prettyConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniData <$> dl)
+prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniData (Plutus.Map ascList))) =
+  PP.group
+    . PP.encloseSep (PP.flatAlt "{ " "{") (PP.flatAlt " }" "}") ", "
+    $ map
+      ( \(a, b) ->
+          PP.hang indentWidth $
+            PP.sep
+              [ prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniData a)) <+> "="
+              , prettyConstant $ PLC.Some $ PLC.ValueOf PLC.DefaultUniData b
+              ]
+      )
+      ascList
+prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniData (Plutus.List l))) =
+  "#" <> PP.list (prettyConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniData <$> l)
+prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniData (Plutus.B b))) =
+  "#" <> prettyConstant (PLC.Some $ PLC.ValueOf PLC.DefaultUniByteString b)
+prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniData (Plutus.I i))) =
+  "#" <> prettyConstant (PLC.Some $ PLC.ValueOf PLC.DefaultUniInteger i)
+prettyConstant (PLC.Some (PLC.ValueOf uni _)) =
+  error $ "prettyConstant(impossible): " <> show uni
+
+fromHex :: ByteString -> Text
+fromHex = ("0x" <>) . TxtEnc.decodeUtf8 . LBS.toStrict . BSB.toLazyByteString . BSB.byteStringHex
 
 forcedPrefix :: String
 forcedPrefix = "fr"
