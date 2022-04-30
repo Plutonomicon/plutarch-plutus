@@ -4,8 +4,8 @@ module Plutarch.Pretty (prettyTerm, prettyScript, prettyConstant) where
 
 import Data.Bifunctor (first)
 import Data.ByteString (ByteString)
-import qualified Data.ByteString as LBS
 import qualified Data.ByteString.Builder as BSB
+import qualified Data.ByteString.Lazy as LBS
 import Data.List (foldl')
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
@@ -26,6 +26,7 @@ import System.Random (
 import Prettyprinter ((<+>))
 import qualified Prettyprinter as PP
 
+import Plutarch.Internal.Other (ClosedTerm, compile)
 import Plutus.V1.Ledger.Scripts (Script (unScript))
 import qualified PlutusCore as PLC
 import qualified PlutusCore.Data as Plutus
@@ -38,8 +39,6 @@ import UntypedPlutusCore (
   Term (Apply, Builtin, Constant, Delay, Error, Force, LamAbs, Var),
  )
 import qualified UntypedPlutusCore as UPLC (Term)
-
-import Plutarch.Internal.Other (ClosedTerm, compile)
 
 prettyScript :: Script -> PP.Doc ()
 prettyScript = prettyUPLC . _progTerm . unScript
