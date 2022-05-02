@@ -26,8 +26,6 @@ module Plutarch.Test (
   (@==),
   pgoldenSpec,
   pgoldenSpec',
-  noUnusedGoldens,
-  noUnusedGoldens',
   PlutarchGoldens,
   GoldenConf (..),
   GoldenTest (..),
@@ -35,6 +33,10 @@ module Plutarch.Test (
   -- * Benchmark type for use in `(@:->)`
   Benchmark (Benchmark, exBudgetCPU, exBudgetMemory, scriptSizeBytes),
   ScriptSizeBytes,
+
+  -- * Test runner related utilities
+  noUnusedGoldens,
+  noUnusedGoldens',
 ) where
 
 import Data.Text (Text)
