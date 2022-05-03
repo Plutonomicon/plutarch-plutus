@@ -9,6 +9,7 @@ module Plutarch.DataRepr.Internal.Field (
 
   -- * BindFields class mechanism
   BindFields (..),
+  type Bindings,
   type BoundTerms,
   type Drop,
 

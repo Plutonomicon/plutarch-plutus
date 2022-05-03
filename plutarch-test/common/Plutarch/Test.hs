@@ -37,6 +37,7 @@ module Plutarch.Test (
   -- * Test runner related utilities
   noUnusedGoldens,
   noUnusedGoldens',
+  hspecAndReturnForest,
 ) where
 
 import Data.Text (Text)
@@ -61,7 +62,7 @@ import Plutarch.Test.Golden (
   (@\),
   (@|),
  )
-import Plutarch.Test.Run (noUnusedGoldens, noUnusedGoldens')
+import Plutarch.Test.Run (hspecAndReturnForest, noUnusedGoldens, noUnusedGoldens')
 import qualified Plutus.V1.Ledger.Scripts as Scripts
 import Test.Hspec (Expectation, Spec, describe, expectationFailure, shouldBe, shouldSatisfy)
 import Test.Tasty.HUnit (assertFailure)
