@@ -1,7 +1,6 @@
 module Plutarch.Maybe (
   PMaybe (PJust, PNothing),
   pfromJust,
-  pmaybe,
 ) where
 
 import qualified GHC.Generics as GHC
@@ -15,7 +14,6 @@ import Plutarch (
   phoistAcyclic,
   plam,
   pmatch,
-  (#),
   type (:-->),
  )
 import Plutarch.Bool (PEq)
@@ -36,10 +34,3 @@ pfromJust = phoistAcyclic $
   plam $ \maybe -> pmatch maybe $ \case
     PNothing -> perror
     PJust a -> a
-
--- | 'PMaybe' destructor equivalent to 'maybe'
-pmaybe :: Term (s :: S) (b :--> (a :--> b) :--> PMaybe a :--> b)
-pmaybe = phoistAcyclic $
-  plam $ \nothing just maybe -> pmatch maybe $ \case
-    PNothing -> nothing
-    PJust a -> just # a

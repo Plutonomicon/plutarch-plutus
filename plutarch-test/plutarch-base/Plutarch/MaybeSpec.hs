@@ -3,7 +3,7 @@ module Plutarch.MaybeSpec (spec) where
 import Plutarch
 import Plutarch.Bool (PEq ((#==)))
 import Plutarch.Integer (PInteger)
-import Plutarch.Maybe (PMaybe (PJust, PNothing), pfromJust, pmaybe)
+import Plutarch.Maybe (PMaybe (PJust, PNothing), pfromJust)
 import Plutarch.Test
 import Test.Hspec
 
@@ -20,9 +20,3 @@ spec = do
     "pfromJust" @\ do
       "nothing" @| pfromJust # pcon PNothing @-> pfails
       "just" @| pfromJust # pcon (PJust 42) #== (42 :: Term _ PInteger) @-> passert
-    "pmaybe" @\ do
-      "nothing" @| pmaybe # 0 # psucc # pcon PNothing #== (0 :: Term _ PInteger) @-> passert
-      "just" @| pmaybe # 0 # psucc # pcon (PJust 41) #== 42 @-> passert
-
-psucc :: ClosedTerm (PInteger :--> PInteger)
-psucc = phoistAcyclic (plam (+ 1))

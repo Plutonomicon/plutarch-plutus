@@ -30,8 +30,6 @@ module Plutarch.Api.V1.AssocMap (
   pfilter,
   pmapMaybe,
   pmapMaybeData,
-  pmapEitherWithKey,
-  pmapEitherWithKeyData,
 
   -- * Combining
   pdifference,
@@ -43,7 +41,6 @@ import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified PlutusTx.AssocMap as PlutusMap
 
 import Plutarch.Builtin (PBuiltinList (PCons, PNil), PBuiltinMap, ppairDataBuiltin)
-import Plutarch.Either (peither)
 import Plutarch.Lift (
   PConstantDecl,
   PConstantRepr,
@@ -55,13 +52,12 @@ import Plutarch.Lift (
  )
 import qualified Plutarch.List as List
 import Plutarch.Prelude (
-  DerivePNewtype (..),
+  DerivePNewtype (DerivePNewtype),
   PAsData,
   PBool (PFalse),
   PBuiltinPair,
   PCon (pcon),
   PConstantData,
-  PEither (..),
   PEq ((#==)),
   PIsData,
   PLiftData,
@@ -69,7 +65,6 @@ import Plutarch.Prelude (
   PMatch (pmatch),
   PMaybe (..),
   POrd ((#<)),
-  PPair (..),
   PType,
   PlutusType,
   S,
@@ -418,45 +413,4 @@ pmapMaybeData = phoistAcyclic $
                 PJust v -> pcons # (ppairDataBuiltin # (pfstBuiltin # x) # v) # xs'
         )
         (const pnil)
-        # pto map
-
--- | Map keys/values and separate the @Left@ and @Right@ results.
-pmapEitherWithKey ::
-  (PIsData k, PIsData a, PIsData b, PIsData c) =>
-  Term (s :: S) ((k :--> a :--> PEither b c) :--> PMap k a :--> PPair (PMap k b) (PMap k c))
-pmapEitherWithKey = phoistAcyclic $
-  plam $ \f ->
-    pmapEitherWithKeyData #$ plam $ \k v ->
-      bidata #$ f # pfromData k # pfromData v
-
-bidata ::
-  forall (s :: S) (a :: PType) (b :: PType).
-  (PIsData a, PIsData b) =>
-  Term (s :: S) (PEither a b :--> PEither (PAsData a) (PAsData b))
-bidata = peither # plam (pcon . PLeft . pdata) # plam (pcon . PRight . pdata)
-
--- | Map data-encoded keys/values and separate the @Left@ and @Right@ results.
-pmapEitherWithKeyData ::
-  (PIsData k, PIsData a, PIsData b, PIsData c) =>
-  Term
-    (s :: S)
-    ( (PAsData k :--> PAsData a :--> PEither (PAsData b) (PAsData c))
-        :--> PMap k a
-        :--> PPair (PMap k b) (PMap k c)
-    )
-pmapEitherWithKeyData = phoistAcyclic $
-  plam $ \f map ->
-    ( flip pmatch $ \(PPair lefts rights) ->
-        pcon $ PPair (pcon $ PMap lefts) (pcon $ PMap rights)
-    )
-      $ precList
-        ( \self x xs ->
-            pmatch (self # xs) $ \(PPair lefts rights) ->
-              plet (pfstBuiltin # x) $ \key ->
-                peither
-                  # (plam $ \l -> pcon $ PPair (pcons # (ppairDataBuiltin # key # l) # lefts) rights)
-                  # (plam $ \r -> pcon $ PPair lefts (pcons # (ppairDataBuiltin # key # r) # rights))
-                  # (f # key #$ psndBuiltin # x)
-        )
-        (const $ pcon $ PPair pnil pnil)
         # pto map
