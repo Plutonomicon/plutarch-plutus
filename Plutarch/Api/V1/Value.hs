@@ -32,7 +32,7 @@ import Plutarch.Lift (
   PLifted,
   PUnsafeLiftDecl,
  )
-import Plutarch.Unsafe (punsafeFrom)
+import Plutarch.Unsafe (punsafeDowncast)
 
 import Plutarch.Prelude hiding (psingleton)
 
@@ -85,7 +85,7 @@ instance PEq (PValue 'Sorted 'NoGuarantees) where
   a #== b = AssocMap.pall # (AssocMap.pall # plam (#== 0)) # pto (punionWith # plam (-) # a # b)
 
 instance Semigroup (Term s (PValue 'Sorted 'Positive)) where
-  a <> b = punsafeFrom (pto $ punionWith # plam (+) # a # b)
+  a <> b = punsafeDowncast (pto $ punionWith # plam (+) # a # b)
 
 instance Semigroup (Term s (PValue 'Sorted 'NonZero)) where
   a <> b = pnormalize #$ punionWith # plam (+) # a # b
@@ -107,7 +107,7 @@ pconstantSingleton ::
   ClosedTerm (PValue 'Sorted 'NonZero)
 pconstantSingleton symbol token amount
   | plift amount == 0 = mempty
-  | otherwise = punsafeFrom (AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount)
+  | otherwise = punsafeDowncast (AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount)
 
 -- | Construct a constant singleton 'PValue' containing only the given positive quantity of the given currency.
 pconstantPositiveSingleton ::
@@ -118,7 +118,7 @@ pconstantPositiveSingleton ::
 pconstantPositiveSingleton symbol token amount
   | plift amount == 0 = mempty
   | plift amount < 0 = error "Negative amount"
-  | otherwise = punsafeFrom (AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount)
+  | otherwise = punsafeDowncast (AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount)
 
 -- | Construct a singleton 'PValue' containing only the given quantity of the given currency.
 psingleton ::
@@ -130,7 +130,7 @@ psingleton = phoistAcyclic $
     pif
       (amount #== 0)
       mempty
-      (punsafeFrom $ AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount)
+      (punsafeDowncast $ AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount)
 
 {- | Construct a singleton 'PValue' containing only the given quantity of the
  given currency, taking data-encoded parameters.
@@ -146,7 +146,7 @@ psingletonData = phoistAcyclic $
     pif
       (amount #== zeroData)
       mempty
-      ( punsafeFrom
+      ( punsafeDowncast
           ( AssocMap.psingletonData # symbol
               #$ pdata
               $ AssocMap.psingletonData # token # amount
@@ -242,12 +242,12 @@ passertPositive = phoistAcyclic $
           # (plam $ \submap -> AssocMap.pall # plam (0 #<) # submap)
           # pto value
       )
-      (punsafeFrom $ pto value)
+      (punsafeDowncast $ pto value)
       (ptraceError "Negative amount in Value")
 
 -- | Forget the knowledge of value's positivity.
 pforgetPositive :: Term s (PValue 'Sorted 'Positive) -> Term s (PValue 'Sorted 'NonZero)
-pforgetPositive v = punsafeFrom (pto v)
+pforgetPositive v = punsafeDowncast (pto v)
 
 zeroData :: ClosedTerm (PAsData PInteger)
 zeroData = pdata 0

@@ -63,7 +63,7 @@ import Plutarch.Prelude (
   PConstantData,
   PEither (..),
   PEq ((#==)),
-  PIsData (..),
+  PIsData,
   PLiftData,
   PListLike (pcons, pnil),
   PMatch (pmatch),
@@ -74,6 +74,8 @@ import Plutarch.Prelude (
   PlutusType,
   S,
   Term,
+  pdata,
+  pfromData,
   pfstBuiltin,
   phoistAcyclic,
   pif,
@@ -89,7 +91,7 @@ import Plutarch.Prelude (
  )
 import Plutarch.Rec (ScottEncoded, ScottEncoding, field, letrec)
 import Plutarch.Show (PShow)
-import Plutarch.Unsafe (punsafeFrom)
+import Plutarch.Unsafe (punsafeDowncast)
 
 import qualified Rank2.TH
 
@@ -222,7 +224,7 @@ rebuildAtKey ::
     )
 rebuildAtKey = phoistAcyclic $
   plam $ \handler key map ->
-    punsafeFrom $
+    punsafeDowncast $
       precList
         ( \self x xs ->
             plet (pfromData $ pfstBuiltin # x) $ \k ->
@@ -242,7 +244,7 @@ rebuildAtKey = phoistAcyclic $
 
 -- | Construct an empty 'PMap'.
 pempty :: Term (s :: S) (PMap k v)
-pempty = punsafeFrom pnil
+pempty = punsafeDowncast pnil
 
 -- | Construct a singleton 'PMap' with the given key and value.
 psingleton :: (PIsData k, PIsData v) => Term (s :: S) (k :--> v :--> PMap k v)
@@ -251,7 +253,7 @@ psingleton = phoistAcyclic $ plam $ \key value -> psingletonData # pdata key # p
 -- | Construct a singleton 'PMap' with the given data-encoded key and value.
 psingletonData :: (PIsData k, PIsData v) => Term (s :: S) (PAsData k :--> PAsData v :--> PMap k v)
 psingletonData = phoistAcyclic $
-  plam $ \key value -> punsafeFrom (pcons # (ppairDataBuiltin # key # value) # pnil)
+  plam $ \key value -> punsafeDowncast (pcons # (ppairDataBuiltin # key # value) # pnil)
 
 -- | Construct a 'PMap' from a list of key-value pairs, sorted by ascending key data.
 pfromAscList :: (POrd k, PIsData k, PIsData v) => Term (s :: S) (PBuiltinMap k v :--> PMap k v)
