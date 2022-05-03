@@ -12,6 +12,7 @@ module Plutarch.DataRepr.Internal.Field (
   type Bindings,
   type BoundTerms,
   type Drop,
+  type HRecOf,
 
   -- * Re-exports
   HRec (..),
@@ -113,6 +114,15 @@ instance
   type PFields (PAsData a) = PFields a
   ptoFields = ptoFields . pfromData
 
+-- | The 'HRec' yielded by 'pletFields @fs t'.
+type HRecOf t fs s =
+  HRec
+    ( BoundTerms
+        (PFields t)
+        (Bindings (PFields t) fs)
+        s
+    )
+
 {- |
   Bind a HRec of named fields containing all the specified
   fields.
@@ -125,7 +135,7 @@ pletFields ::
   , BindFields ps bs
   ) =>
   Term s a ->
-  (HRec (BoundTerms ps bs s) -> Term s b) ->
+  (HRecOf a fs s -> Term s b) ->
   Term s b
 pletFields t =
   runTermCont $

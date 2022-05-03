@@ -23,6 +23,7 @@ module Plutarch.DataRepr (
   F.pletFields,
   F.pfield,
   F.HRec,
+  F.HRecOf,
 ) where
 
 import qualified Plutarch.DataRepr.Internal as I
