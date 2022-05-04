@@ -11,11 +11,15 @@ module Plutarch.Extra.TermCont (
   ptryFromC,
 ) where
 
-import Plutarch.DataRepr
-import Plutarch.DataRepr.Internal.Field
+import Plutarch.DataRepr (HRec, PDataFields, PFields)
+import Plutarch.DataRepr.Internal.Field (
+  BindFields,
+  Bindings,
+  BoundTerms,
+ )
 import Plutarch.Prelude
-import Plutarch.Reducible
-import Plutarch.TryFrom
+import Plutarch.Reducible (Reduce)
+import Plutarch.TryFrom (PTryFromExcess)
 
 -- | Like `plet` but works in a `TermCont` monad
 pletC :: Term s a -> TermCont s (Term s a)
