@@ -17,6 +17,9 @@ module Plutarch.Api.V1 (
   mintingPolicySymbol,
   stakeValidatorHash,
   scriptHash,
+  datumHash,
+  redeemerHash,
+  dataHash,
   mkValidator,
   mkStakeValidator,
   mkMintingPolicy,
@@ -31,6 +34,7 @@ module Plutarch.Api.V1 (
 
   -- ** Crypto
   Crypto.PPubKeyHash (PPubKeyHash),
+  Crypto.pubKeyHash,
 
   -- ** DCert
   DCert.PDCert (
@@ -97,7 +101,7 @@ import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified Plutus.V1.Ledger.Scripts as Plutus
 
 import Plutarch (compile)
-import Plutarch.Api.Internal.Scripts (hashScriptWithPrefix)
+import Plutarch.Api.Internal.Hashing (hashData, hashScriptWithPrefix)
 import Plutarch.Api.V1.Contexts (PScriptContext)
 import Plutarch.Prelude
 
@@ -139,3 +143,15 @@ mintingPolicySymbol = coerce scriptHash
 -- | Hash a StakeValidator, with the correct prefix for Plutus V1
 stakeValidatorHash :: Plutus.StakeValidator -> Plutus.StakeValidatorHash
 stakeValidatorHash = coerce scriptHash
+
+-- | Hash a Datum.
+datumHash :: Plutus.Datum -> Plutus.DatumHash
+datumHash = coerce . dataHash
+
+-- | Hash a Redeemer.
+redeemerHash :: Plutus.Redeemer -> Plutus.RedeemerHash
+redeemerHash = coerce . dataHash
+
+-- | Hash the data encoded representation of given argument.
+dataHash :: Plutus.ToData a => a -> Plutus.BuiltinByteString
+dataHash = hashData . Plutus.toData

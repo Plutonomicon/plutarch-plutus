@@ -3,10 +3,14 @@
 
 module Plutarch.Api.V1.Crypto (
   PPubKeyHash (PPubKeyHash),
+  PubKey (PubKey, getPubKey),
+  pubKeyHash,
 ) where
 
 import qualified Plutus.V1.Ledger.Api as Plutus
 
+import Data.Coerce (coerce)
+import Plutarch.Api.Internal.Hashing (hashLedgerBytes)
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   PConstantDecl,
@@ -23,3 +27,9 @@ deriving via
   (DerivePConstantViaBuiltin Plutus.PubKeyHash PPubKeyHash PByteString)
   instance
     PConstantDecl Plutus.PubKeyHash
+
+newtype PubKey = PubKey {getPubKey :: Plutus.LedgerBytes}
+  deriving stock (Eq, Ord, Show)
+
+pubKeyHash :: PubKey -> Plutus.PubKeyHash
+pubKeyHash = coerce hashLedgerBytes
