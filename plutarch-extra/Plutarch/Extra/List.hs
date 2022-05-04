@@ -1,4 +1,4 @@
-module Plutarch.ListUtils (preverse, pcheckSorted) where
+module Plutarch.Extra.List (preverse, pcheckSorted) where
 
 import Plutarch.Prelude
 

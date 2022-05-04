@@ -82,6 +82,6 @@ library
     Plutarch.Extra
     Plutarch.Extra.Api
     Plutarch.Extra.TermCont
-    Plutarch.ListUtils
+    Plutarch.Extra.List
 
 -- other-modules:
