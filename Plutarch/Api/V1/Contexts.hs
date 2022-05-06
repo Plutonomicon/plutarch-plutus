@@ -27,7 +27,7 @@ import Plutarch.Api.V1.Value (
   PValue,
   ValueAmountGuarantees (NonZero, Positive),
   ValueKeyGuarantees (Sorted),
-  )
+ )
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
