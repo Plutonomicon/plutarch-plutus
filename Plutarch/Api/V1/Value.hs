@@ -246,7 +246,7 @@ passertPositive = phoistAcyclic $
       (ptraceError "Negative amount in Value")
 
 -- | Forget the knowledge of value's positivity.
-pforgetPositive :: Term s (PValue 'Sorted 'Positive) -> Term s (PValue 'Sorted 'NonZero)
+pforgetPositive :: Term s (PValue 'Sorted 'Positive) -> Term s (PValue k a)
 pforgetPositive v = punsafeDowncast (pto v)
 
 zeroData :: ClosedTerm (PAsData PInteger)
