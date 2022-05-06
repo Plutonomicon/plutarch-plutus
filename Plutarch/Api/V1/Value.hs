@@ -123,7 +123,7 @@ pconstantPositiveSingleton symbol token amount
 -- | Construct a singleton 'PValue' containing only the given quantity of the given currency.
 psingleton ::
   Term
-    (s :: S)
+    s
     (PCurrencySymbol :--> PTokenName :--> PInteger :--> PValue 'Sorted 'NonZero)
 psingleton = phoistAcyclic $
   plam $ \symbol token amount ->
@@ -137,7 +137,7 @@ psingleton = phoistAcyclic $
 -}
 psingletonData ::
   Term
-    (s :: S)
+    s
     ( PAsData PCurrencySymbol :--> PAsData PTokenName :--> PAsData PInteger
         :--> PValue 'Sorted 'NonZero
     )
@@ -154,7 +154,7 @@ psingletonData = phoistAcyclic $
       )
 
 -- | Get the quantity of the given currency in the 'PValue'.
-pvalueOf :: Term (s :: S) (PValue _ _ :--> PCurrencySymbol :--> PTokenName :--> PInteger)
+pvalueOf :: Term s (PValue _ _ :--> PCurrencySymbol :--> PTokenName :--> PInteger)
 pvalueOf = phoistAcyclic $
   plam $ \value symbol token ->
     AssocMap.pfoldAt
@@ -169,7 +169,7 @@ pvalueOf = phoistAcyclic $
 -}
 punionWith ::
   Term
-    (s :: S)
+    s
     ( (PInteger :--> PInteger :--> PInteger) :--> PValue 'Sorted _ :--> PValue 'Sorted _
         :--> PValue 'Sorted 'NoGuarantees
     )
@@ -187,7 +187,7 @@ punionWith = phoistAcyclic $
 -}
 punionWithData ::
   Term
-    (s :: S)
+    s
     ( (PAsData PInteger :--> PAsData PInteger :--> PAsData PInteger)
         :--> PValue 'Sorted _
         :--> PValue 'Sorted _
