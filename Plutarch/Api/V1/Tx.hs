@@ -94,7 +94,7 @@ newtype PTxOut (s :: S)
           s
           ( PDataRecord
               '[ "address" ':= PAddress
-               , "value" ':= PValue 'Sorted 'Positive
+               , "value" ':= PValue 'Sorted 'Positive  -- ^ negative values may appear in a future Cardano version
                , "datumHash" ':= PMaybeData PDatumHash
                ]
           )
