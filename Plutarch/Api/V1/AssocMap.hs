@@ -63,7 +63,7 @@ import Plutarch.Prelude (
   PLiftData,
   PListLike (pcons, pnil),
   PMatch (pmatch),
-  PMaybe (..),
+  PMaybe (PJust, PNothing),
   POrd ((#<)),
   PType,
   PlutusType,
