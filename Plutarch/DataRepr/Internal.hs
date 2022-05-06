@@ -18,6 +18,7 @@ module Plutarch.DataRepr.Internal (
   PLabeledType (..),
   type PLabelIndex,
   type PUnLabel,
+  type PLookupLabel,
   PIsDataRepr (..),
   PIsDataReprInstances (..),
   pindexDataRecord,
@@ -247,6 +248,11 @@ type family PDataRecordFields2 as where
 type family PLabelIndex (name :: Symbol) (as :: [PLabeledType]) :: Nat where
   PLabelIndex name ((name ':= a) ': as) = 0
   PLabelIndex name (_ ': as) = (PLabelIndex name as) + 1
+
+type PLookupLabel :: Symbol -> [PLabeledType] -> PType
+type family PLookupLabel name as where
+  PLookupLabel name ((name ':= a) ': as) = a
+  PLookupLabel name (_ ': as) = PLookupLabel name as
 
 type family PUnLabel (a :: PLabeledType) :: PType where
   PUnLabel (name ':= a) = a

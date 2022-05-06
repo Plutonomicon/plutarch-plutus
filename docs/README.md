@@ -139,6 +139,7 @@ Outside of the fundamental user guide, there are rules of thumb and general guid
 - [Prefer statically building constants whenever possible](./Tricks/Prefer%20statically%20building%20constants.md)
 - [Figuring out the representation of a Plutarch type](./Tricks/Representation%20of%20Plutarch%20type.md)
 - [Prefer pattern matching on the result of `pmatch` immediately](./Tricks/Prefer%20matching%20on%20pmatch%20result%20immediately.md)
+- [Working with bound fields yielded by `pletFields`](./Tricks/Working%20with%20bound%20fields.md)
 
 # Common Issues and Troubleshooting
 
