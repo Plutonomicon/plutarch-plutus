@@ -5,7 +5,7 @@ lookupData.hit {"exBudgetCPU":4140352,"exBudgetMemory":9090,"scriptSizeBytes":11
 lookupData.miss {"exBudgetCPU":4885812,"exBudgetMemory":11122,"scriptSizeBytes":121}
 findWithDefault.itself {"exBudgetCPU":148965,"exBudgetMemory":600,"scriptSizeBytes":78}
 findWithDefault.hit {"exBudgetCPU":4797628,"exBudgetMemory":10354,"scriptSizeBytes":117}
-findWithDefault.hit2 {"exBudgetCPU":16610415,"exBudgetMemory":37964,"scriptSizeBytes":344}
+findWithDefault.hit2 {"exBudgetCPU":16490188,"exBudgetMemory":38032,"scriptSizeBytes":340}
 findWithDefault.miss {"exBudgetCPU":5153769,"exBudgetMemory":12022,"scriptSizeBytes":125}
 singleton {"exBudgetCPU":1374198,"exBudgetMemory":2828,"scriptSizeBytes":39}
 singletonData {"exBudgetCPU":1195560,"exBudgetMemory":2228,"scriptSizeBytes":34}
@@ -19,10 +19,10 @@ delete.old {"exBudgetCPU":10735192,"exBudgetMemory":25178,"scriptSizeBytes":204}
 difference.emptyLeft {"exBudgetCPU":3012848,"exBudgetMemory":7860,"scriptSizeBytes":162}
 difference.emptyRight {"exBudgetCPU":6655369,"exBudgetMemory":15848,"scriptSizeBytes":165}
 difference.emptyResult {"exBudgetCPU":9811977,"exBudgetMemory":22006,"scriptSizeBytes":179}
-unionWith.const {"exBudgetCPU":12018584,"exBudgetMemory":28002,"scriptSizeBytes":263}
-unionWith.double {"exBudgetCPU":12066928,"exBudgetMemory":27504,"scriptSizeBytes":260}
-unionWith.(+) {"exBudgetCPU":11404475,"exBudgetMemory":27008,"scriptSizeBytes":265}
-unionWith.flip (+) {"exBudgetCPU":11404475,"exBudgetMemory":27008,"scriptSizeBytes":265}
-unionWithData.const {"exBudgetCPU":11121989,"exBudgetMemory":26406,"scriptSizeBytes":249}
-unionWithData.emptyLeft {"exBudgetCPU":3906038,"exBudgetMemory":10860,"scriptSizeBytes":237}
-unionWithData.emptyRight {"exBudgetCPU":5786277,"exBudgetMemory":15288,"scriptSizeBytes":236}
+unionWith.const {"exBudgetCPU":11898357,"exBudgetMemory":28070,"scriptSizeBytes":260}
+unionWith.double {"exBudgetCPU":11946701,"exBudgetMemory":27572,"scriptSizeBytes":255}
+unionWith.(+) {"exBudgetCPU":11284248,"exBudgetMemory":27076,"scriptSizeBytes":262}
+unionWith.flip (+) {"exBudgetCPU":11284248,"exBudgetMemory":27076,"scriptSizeBytes":262}
+unionWithData.const {"exBudgetCPU":11001762,"exBudgetMemory":26474,"scriptSizeBytes":246}
+unionWithData.emptyLeft {"exBudgetCPU":3906038,"exBudgetMemory":10860,"scriptSizeBytes":233}
+unionWithData.emptyRight {"exBudgetCPU":5786277,"exBudgetMemory":15288,"scriptSizeBytes":233}

@@ -344,30 +344,32 @@ mapUnion = plam $ \combine ->
       { merge = plam $ \xs ys -> pmatch xs $ \case
           PNil -> ys
           PCons x xs' -> mergeInsert # x # xs' # ys
-      , mergeInsert = plam $ \x xs ys -> pmatch ys $ \case
-          PNil -> pcons # x # xs
-          PCons y ys' ->
-            plet (pfstBuiltin # x) $ \xk ->
-              plet (pfstBuiltin # y) $ \yk ->
-                pif
-                  (xk #== yk)
-                  ( pcons
-                      # (ppairDataBuiltin # xk #$ combine # (psndBuiltin # x) # (psndBuiltin # y))
-                      #$ merge
-                      # xs
-                      # ys'
-                  )
-                  ( pif
-                      (pfromData xk #< pfromData yk)
+      , mergeInsert = plam $ \x xs ys ->
+          pmatch ys $ \case
+            PNil -> pcons # x # xs
+            PCons y1 ys' ->
+              plet y1 $ \y ->
+                plet (pfstBuiltin # x) $ \xk ->
+                  plet (pfstBuiltin # y) $ \yk ->
+                    pif
+                      (xk #== yk)
                       ( pcons
-                          # x
-                          # (mergeInsert # y # ys' # xs)
+                          # (ppairDataBuiltin # xk #$ combine # (psndBuiltin # x) # (psndBuiltin # y))
+                          #$ merge
+                          # xs
+                          # ys'
                       )
-                      ( pcons
-                          # y
-                          # (mergeInsert # x # xs # ys')
+                      ( pif
+                          (pfromData xk #< pfromData yk)
+                          ( pcons
+                              # x
+                              # (mergeInsert # y # ys' # xs)
+                          )
+                          ( pcons
+                              # y
+                              # (mergeInsert # x # xs # ys')
+                          )
                       )
-                  )
       }
 
 -- | Difference of two maps. Return elements of the first map not existing in the second map.
