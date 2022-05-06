@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -88,7 +87,7 @@ import Plutarch.Rec (ScottEncoded, ScottEncoding, field, letrec)
 import Plutarch.Show (PShow)
 import Plutarch.Unsafe (punsafeDowncast)
 
-import qualified Rank2.TH
+import qualified Rank2
 
 import Prelude hiding (all, any, filter, lookup, null)
 
@@ -282,7 +281,26 @@ type instance
       :--> (PBuiltinPair (PAsData k) (PAsData v) :--> PBuiltinMap k v :--> PBuiltinMap k v :--> PBuiltinMap k v)
       :--> a
 
-$(Rank2.TH.deriveAll ''MapUnion)
+instance Rank2.Functor (MapUnion k v) where
+  f <$> x@MapUnion {} =
+    MapUnion
+      { merge = f (merge x)
+      , mergeInsert = f (mergeInsert x)
+      }
+
+instance Rank2.Foldable (MapUnion k v) where
+  foldMap f x@MapUnion {} = f (merge x) <> f (mergeInsert x)
+
+instance Rank2.Traversable (MapUnion k v) where
+  traverse f x@MapUnion {} = MapUnion <$> f (merge x) <*> f (mergeInsert x)
+
+instance Rank2.Distributive (MapUnion k v) where
+  cotraverse w f =
+    MapUnion
+      { merge = w (merge <$> f)
+      , mergeInsert = w (mergeInsert <$> f)
+      }
+instance Rank2.DistributiveTraversable (MapUnion k v)
 
 instance (POrd k, PIsData k, PIsData v, Semigroup (Term s v)) => Semigroup (Term s (PMap k v)) where
   a <> b = punionWith # plam (<>) # a # b
