@@ -2,11 +2,12 @@
 
 module Plutarch.Pretty (prettyTerm, prettyScript, prettyConstant) where
 
+import Control.Monad ((<=<))
 import Data.Bifunctor (first)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Lazy as LBS
-import Data.List (foldl')
+import Data.List (find, foldl')
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 import Data.Set (Set)
@@ -38,7 +39,6 @@ import UntypedPlutusCore (
   Program (_progTerm),
   Term (Apply, Builtin, Constant, Delay, Error, Force, LamAbs, Var),
  )
-import qualified UntypedPlutusCore as UPLC (Term)
 
 prettyScript :: Script -> PP.Doc ()
 prettyScript = prettyUPLC . _progTerm . unScript
@@ -46,26 +46,29 @@ prettyScript = prettyUPLC . _progTerm . unScript
 prettyTerm :: ClosedTerm a -> PP.Doc ()
 prettyTerm x = prettyScript $ compile x
 
+data PrettyState = Normal | Applying | AppliedOver | UnaryArg
+  deriving stock (Bounded, Enum, Eq, Show)
+
 {- This isn't suitable for pretty printing UPLC from any source. It's primarily suited for Plutarch output.
 
 Practically speaking though, it should work with any _idiomatic_ UPLC.
 -}
-prettyUPLC :: UPLC.Term DeBruijn DefaultUni DefaultFun () -> PP.Doc ()
-prettyUPLC = go False mempty $ mkStdGen 42
+prettyUPLC :: Term DeBruijn DefaultUni DefaultFun () -> PP.Doc ()
+prettyUPLC = go Normal mempty $ mkStdGen 42
   where
-    go :: RandomGen g => Bool -> Map Index Text -> g -> UPLC.Term DeBruijn DefaultUni DefaultFun () -> PP.Doc ()
+    go :: RandomGen g => PrettyState -> Map Index Text -> g -> Term DeBruijn DefaultUni DefaultFun () -> PP.Doc ()
     go _ _ _ (Constant _ c) = prettyConstant c
     go _ _ _ (Builtin _ b) = PP.pretty b
     go _ _ _ (Error _) = "ERROR"
-    go _ nameMap _ (Var _ (DeBruijn x)) = case Map.lookup (x - 1) nameMap of
+    go _ nameMap _ (Var _ (DeBruijn x)) = case nameOfRef x nameMap of
       Just nm -> PP.pretty nm
       Nothing -> error "impossible: free variable"
-    go _ nameMap g (Force _ t@Apply {}) = "!" <> PP.parens (go False nameMap g t)
-    go _ nameMap g (Force _ t@LamAbs {}) = "!" <> PP.parens (go False nameMap g t)
-    go _ nameMap g (Force _ t) = "!" <> go False nameMap g t
-    go _ nameMap g (Delay _ t@Apply {}) = "~" <> PP.parens (go False nameMap g t)
-    go _ nameMap g (Delay _ t@LamAbs {}) = "~" <> PP.parens (go False nameMap g t)
-    go _ nameMap g (Delay _ t) = "~" <> go False nameMap g t
+    go _ nameMap g (Force _ t@Apply {}) = "!" <> PP.parens (go Normal nameMap g t)
+    go _ nameMap g (Force _ t@LamAbs {}) = "!" <> PP.parens (go Normal nameMap g t)
+    go _ nameMap g (Force _ t) = "!" <> go UnaryArg nameMap g t
+    go _ nameMap g (Delay _ t@Apply {}) = "~" <> PP.parens (go Normal nameMap g t)
+    go _ nameMap g (Delay _ t@LamAbs {}) = "~" <> PP.parens (go Normal nameMap g t)
+    go _ nameMap g (Delay _ t) = "~" <> go UnaryArg nameMap g t
     go _ nameMap g (LamAbs _ _ t') =
       PP.parens $
         let (depth, t) = unwrapLamAbs 0 t'
@@ -80,56 +83,71 @@ prettyUPLC = go False mempty $ mkStdGen 42
          in PP.hang indentWidth $
               PP.sep
                 [ "\\" <> PP.hsep (reverse $ map PP.pretty names) <+> "->"
-                , go False (Map.mapKeys (+ (depth + 1)) nameMap <> Map.fromList (zip [0 .. depth] names)) finalG t
+                , go Normal (Map.mapKeys (+ (depth + 1)) nameMap <> Map.fromList (zip [0 .. depth] names)) finalG t
                 ]
-    go _ nameMap g (Apply _ (LamAbs _ _ t) arg) =
-      let (l, ft) = unwrapBindings [] t
-          args = arg : reverse l
-          (names, _, finalG) =
-            foldr
-              ( \expr (l, existingNames, g) ->
-                  let (newName, newG) = case expr of
-                        Force _ (Force _ (Builtin _ b)) -> (fromString $ forcedPrefix <> show b, g)
-                        Force _ (Builtin _ b) -> (fromString $ forcedPrefix <> show b, g)
-                        PFixAst -> ("fix", g)
-                        ComposeAST (Builtin () PLC.SndPair) (Builtin () PLC.UnConstrData) -> ("unDataSum", g)
-                        ComposeAST (Var () (DeBruijn ix)) (Builtin () PLC.UnConstrData)
-                          | ix == 2 -> ("unDataSum", g)
-                        _ -> freshVarName existingNames g
-                   in (newName : l, Set.insert newName existingNames, newG)
+    go _ nameMap g (Apply _ (LamAbs _ _ t) firstArg) =
+      let (restArgs, coreF) = unwrapBindings [] t
+          (firstName, nextG) = smartName nameMap g firstArg
+          nextMap = Map.mapKeys (+ 1) nameMap <> Map.singleton 0 firstName
+          (finalDoc, finalMap, finalG) =
+            foldl'
+              ( \(docAcc, mp, currG) argExpr ->
+                  let (newName, newG) = smartName mp currG argExpr
+                      newDoc = docAcc <> PP.flatAlt PP.hardline "; " <> helper mp (newName, argExpr)
+                   in (newDoc, Map.mapKeys (+ 1) mp <> Map.singleton 0 newName, newG)
               )
-              ([], Set.fromList $ Map.elems nameMap, g)
-              args
-          bindings = zip names args
+              (helper nextMap (firstName, firstArg), nextMap, nextG)
+              $ reverse restArgs
           helper mp (name, expr) =
             PP.hang indentWidth $
               PP.sep
                 [ PP.pretty name <+> "="
-                , go False mp finalG expr
+                , go Normal mp nextG expr
                 ]
-          (finalDoc, finalMap) =
-            foldl'
-              ( \(doc, mp) (name, expr) ->
-                  let newDoc = doc <> PP.flatAlt PP.hardline "; " <> helper mp (name, expr)
-                   in (newDoc, Map.mapKeys (+ 1) mp <> Map.singleton 0 name)
-              )
-              (helper nameMap (head bindings), Map.mapKeys (+ 1) nameMap <> Map.singleton 0 (fst $ head bindings))
-              $ tail bindings
        in PP.align $
             PP.vsep
               [ "let" <+> PP.align finalDoc
-              , "in" <+> go False finalMap finalG ft
+              , "in" <+> go Normal finalMap finalG coreF
               ]
     go fl nameMap g (Apply _ t arg) =
-      (if fl then PP.parens else id) $
+      (if fl == AppliedOver then PP.parens else id) $
         let (l, f) = unwrapApply [] t
             args = l <> [arg]
-         in PP.hang indentWidth $ PP.sep $ go False nameMap g f : (go True nameMap g <$> args)
+         in PP.hang indentWidth $ PP.sep $ go Applying nameMap g f : (go AppliedOver nameMap g <$> args)
+
+smartName :: RandomGen g => Map Index Text -> g -> Term DeBruijn uni DefaultFun () -> (Text, g)
+smartName nameMap g = \case
+  Force _ (Force _ (Builtin _ b)) -> (forcedPrefix <> showText b, g)
+  Force _ (Builtin _ b) -> (forcedPrefix <> showText b, g)
+  PFixAst -> ("fix", g)
+  ComposeAST
+    (Builtin () PLC.SndPair)
+    (Builtin () PLC.UnConstrData) -> ("unDataSum", g)
+  ComposeAST
+    (Var () (DeBruijn (builtinFunFromName <=< flip nameOfRef nameMap -> Just PLC.SndPair)))
+    (Builtin () PLC.UnConstrData) -> ("unDataSum", g)
+  _ -> freshVarName (Set.fromList $ Map.elems nameMap) g
+
+showText :: Show a => a -> Text
+showText = Txt.pack . show
+
+nameOfRef :: (Ord k, Num k) => k -> Map k a -> Maybe a
+nameOfRef ix = Map.lookup (ix - 1)
+
+builtinFunFromName :: Text -> Maybe DefaultFun
+builtinFunFromName res =
+  if Txt.take prefixLen res == forcedPrefix
+    then helper $ Txt.drop prefixLen res
+    else helper res
+  where
+    prefixLen = Txt.length forcedPrefix
+    helper s = find (\e -> showText e == s) builtinFunNames
+    builtinFunNames = [minBound .. maxBound :: PLC.DefaultFun]
 
 prettyConstant :: PLC.Some (PLC.ValueOf DefaultUni) -> PP.Doc ()
 prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniInteger n)) = PP.pretty n
 prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniByteString b)) = PP.pretty $ fromHex b
-prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniString s)) = PP.pretty s
+prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniString s)) = PP.pretty $ show s
 prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniUnit _)) = "()"
 prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniBool b)) = PP.pretty b
 prettyConstant (PLC.Some (PLC.ValueOf (PLC.DefaultUniList a) l)) =
@@ -165,7 +183,7 @@ prettyConstant (PLC.Some (PLC.ValueOf uni _)) =
 fromHex :: ByteString -> Text
 fromHex = ("0x" <>) . TxtEnc.decodeUtf8 . LBS.toStrict . BSB.toLazyByteString . BSB.byteStringHex
 
-forcedPrefix :: String
+forcedPrefix :: Text
 forcedPrefix = "fr"
 
 freshVarName :: RandomGen g => Set Text -> g -> (Text, g)
@@ -194,22 +212,23 @@ keywords =
 indentWidth :: Int
 indentWidth = 2
 
-unwrapLamAbs :: Index -> UPLC.Term name uni fun ann -> (Index, UPLC.Term name uni fun ann)
+unwrapLamAbs :: Index -> Term name uni fun ann -> (Index, Term name uni fun ann)
 unwrapLamAbs d (LamAbs _ _ t) = unwrapLamAbs (d + 1) t
 unwrapLamAbs d a = (d, a)
 
-unwrapBindings :: [UPLC.Term name uni fun ann] -> UPLC.Term name uni fun ann -> ([UPLC.Term name uni fun ann], UPLC.Term name uni fun ann)
+unwrapBindings :: [Term name uni fun ann] -> Term name uni fun ann -> ([Term name uni fun ann], Term name uni fun ann)
 unwrapBindings l (Apply _ (LamAbs _ _ t) arg) = unwrapBindings (arg : l) t
 unwrapBindings l a = (l, a)
 
 unwrapApply ::
-  [UPLC.Term name uni fun ann] ->
-  UPLC.Term name uni fun ann ->
-  ([UPLC.Term name uni fun ann], UPLC.Term name uni fun ann)
+  [Term name uni fun ann] ->
+  Term name uni fun ann ->
+  ([Term name uni fun ann], Term name uni fun ann)
 unwrapApply l (Apply _ t arg) = unwrapApply (arg : l) t
 unwrapApply l arg = (l, arg)
 
-pattern PFixAst :: UPLC.Term name uni fun ()
+-- AST resulting from `pfix`. This is always constant.
+pattern PFixAst :: Term name uni fun ()
 pattern PFixAst <-
   LamAbs
     ()
@@ -260,5 +279,11 @@ pattern PFixAst <-
           )
       )
 
-pattern ComposeAST :: UPLC.Term DeBruijn uni fun () -> UPLC.Term DeBruijn uni fun () -> UPLC.Term DeBruijn uni fun ()
-pattern ComposeAST f g <- LamAbs () _ (Apply () f (Apply () g (Var () (DeBruijn 1))))
+-- If `f` and `g` are Var references, their indices are incremented once since they are within a lambda.
+pattern ComposeAST :: Term DeBruijn uni fun () -> Term DeBruijn uni fun () -> Term DeBruijn uni fun ()
+pattern ComposeAST f g <- LamAbs () _ (Apply () (incrVar -> f) (Apply () (incrVar -> g) (Var () (DeBruijn 1))))
+
+-- | Increment the debruijn index of a 'Var', leave any other AST node unchanged.
+incrVar :: Term DeBruijn uni fun () -> Term DeBruijn uni fun ()
+incrVar (Var () (DeBruijn n)) = Var () . DeBruijn $ n - 1
+incrVar n = n
