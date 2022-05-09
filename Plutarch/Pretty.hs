@@ -63,6 +63,21 @@ prettyUPLC = go Normal mempty $ mkStdGen 42
     go _ nameMap _ (Var _ (DeBruijn x)) = case nameOfRef x nameMap of
       Just nm -> PP.pretty nm
       Nothing -> error "impossible: free variable"
+    go fl nameMap g (IfThenElseLikeAST (Force () (Builtin () PLC.IfThenElse)) cond trueBranch falseBranch) =
+      (if fl `elem` [Applying, AppliedOver, UnaryArg] then PP.parens else id) $
+        prettyIfThenElse (go Normal nameMap g) cond trueBranch falseBranch
+    go
+      fl
+      nameMap
+      g
+      ( IfThenElseLikeAST
+          (Var () (DeBruijn (builtinFunAtRef nameMap -> Just PLC.IfThenElse)))
+          cond
+          trueBranch
+          falseBranch
+        ) =
+        (if fl `elem` [Applying, AppliedOver, UnaryArg] then PP.parens else id) $
+          prettyIfThenElse (go Normal nameMap g) cond trueBranch falseBranch
     go _ nameMap g (Force _ t@Apply {}) = "!" <> PP.parens (go Normal nameMap g t)
     go _ nameMap g (Force _ t@LamAbs {}) = "!" <> PP.parens (go Normal nameMap g t)
     go _ nameMap g (Force _ t) = "!" <> go UnaryArg nameMap g t
@@ -115,6 +130,10 @@ prettyUPLC = go Normal mempty $ mkStdGen 42
             args = l <> [arg]
          in PP.hang indentWidth $ PP.sep $ go Applying nameMap g f : (go AppliedOver nameMap g <$> args)
 
+prettyIfThenElse :: (t -> PP.Doc ann) -> t -> t -> t -> PP.Doc ann
+prettyIfThenElse cont cond trueBranch falseBranch =
+  PP.hang indentWidth $ PP.vsep ["if" <+> cont cond, "then" <+> cont trueBranch, "else" <+> cont falseBranch]
+
 smartName :: RandomGen g => Map Index Text -> g -> Term DeBruijn uni DefaultFun () -> (Text, g)
 smartName nameMap g = \case
   Force _ (Force _ (Builtin _ b)) -> (forcedPrefix <> showText b, g)
@@ -124,14 +143,17 @@ smartName nameMap g = \case
     (Builtin () PLC.SndPair)
     (Builtin () PLC.UnConstrData) -> ("unDataSum", g)
   ComposeAST
-    (Var () (DeBruijn (builtinFunFromName <=< flip nameOfRef nameMap -> Just PLC.SndPair)))
+    (Var () (DeBruijn (builtinFunAtRef nameMap -> Just PLC.SndPair)))
     (Builtin () PLC.UnConstrData) -> ("unDataSum", g)
   _ -> freshVarName (Set.fromList $ Map.elems nameMap) g
 
 showText :: Show a => a -> Text
 showText = Txt.pack . show
 
-nameOfRef :: (Ord k, Num k) => k -> Map k a -> Maybe a
+builtinFunAtRef :: Map Index Text -> Index -> Maybe DefaultFun
+builtinFunAtRef nameMap = builtinFunFromName <=< flip nameOfRef nameMap
+
+nameOfRef :: Index -> Map Index Text -> Maybe Text
 nameOfRef ix = Map.lookup (ix - 1)
 
 builtinFunFromName :: Text -> Maybe DefaultFun
@@ -282,6 +304,32 @@ pattern PFixAst <-
 -- If `f` and `g` are Var references, their indices are incremented once since they are within a lambda.
 pattern ComposeAST :: Term DeBruijn uni fun () -> Term DeBruijn uni fun () -> Term DeBruijn uni fun ()
 pattern ComposeAST f g <- LamAbs () _ (Apply () (incrVar -> f) (Apply () (incrVar -> g) (Var () (DeBruijn 1))))
+
+{- This AST represents a typical if/then/else usage if and only if 'ifThenElseMaybe' is either the
+builtin IfThenElse (forced once), or a reference to such.
+-}
+pattern IfThenElseLikeAST ::
+  Term name uni fun () ->
+  Term name uni fun () ->
+  Term name uni fun () ->
+  Term name uni fun () ->
+  Term name uni fun ()
+pattern IfThenElseLikeAST ifThenElseMaybe cond trueBranch falseBranch <-
+  Force
+    ()
+    ( Apply
+        ()
+        ( Apply
+            ()
+            ( Apply
+                ()
+                ifThenElseMaybe
+                cond
+              )
+            (Delay () trueBranch)
+          )
+        (Delay () falseBranch)
+      )
 
 -- | Increment the debruijn index of a 'Var', leave any other AST node unchanged.
 incrVar :: Term DeBruijn uni fun () -> Term DeBruijn uni fun ()
