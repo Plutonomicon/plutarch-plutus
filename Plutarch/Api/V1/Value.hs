@@ -6,8 +6,8 @@ module Plutarch.Api.V1.Value (
   PValue (PValue),
   PCurrencySymbol (PCurrencySymbol),
   PTokenName (PTokenName),
-  ValueKeyGuarantees (Unsorted, Sorted),
-  ValueAmountGuarantees (NoGuarantees, NonZero, Positive),
+  KeyGuarantees (Unsorted, Sorted),
+  AmountGuarantees (NoGuarantees, NonZero, Positive),
   passertSorted,
   passertPositive,
   pforgetPositive,
@@ -23,7 +23,7 @@ module Plutarch.Api.V1.Value (
 
 import qualified Plutus.V1.Ledger.Api as Plutus
 
-import Plutarch.Api.V1.AssocMap (PMap)
+import Plutarch.Api.V1.AssocMap (KeyGuarantees (Sorted, Unsorted), PMap)
 import qualified Plutarch.Api.V1.AssocMap as AssocMap
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
@@ -54,10 +54,9 @@ deriving via
   instance
     PConstantDecl Plutus.CurrencySymbol
 
-data ValueKeyGuarantees = Sorted | Unsorted
-data ValueAmountGuarantees = NoGuarantees | NonZero | Positive
+data AmountGuarantees = NoGuarantees | NonZero | Positive
 
-newtype PValue (keys :: ValueKeyGuarantees) (amounts :: ValueAmountGuarantees) (s :: S)
+newtype PValue (keys :: KeyGuarantees) (amounts :: AmountGuarantees) (s :: S)
   = PValue (Term s (PMap PCurrencySymbol (PMap PTokenName PInteger)))
   deriving
     (PlutusType, PIsData)

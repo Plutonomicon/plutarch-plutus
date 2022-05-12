@@ -23,10 +23,10 @@ import Plutarch.Api.V1.Time (PPOSIXTimeRange)
 import Plutarch.Api.V1.Tuple (PTuple)
 import Plutarch.Api.V1.Tx (PTxId, PTxInInfo, PTxOut, PTxOutRef)
 import Plutarch.Api.V1.Value (
+  AmountGuarantees (NonZero, Positive),
+  KeyGuarantees (Sorted),
   PCurrencySymbol,
   PValue,
-  ValueAmountGuarantees (NonZero, Positive),
-  ValueKeyGuarantees (Sorted),
  )
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),

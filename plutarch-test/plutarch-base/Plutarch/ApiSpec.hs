@@ -23,6 +23,8 @@ import qualified Plutus.V1.Ledger.Interval as Interval
 import qualified Plutus.V1.Ledger.Value as Value
 
 import Plutarch.Api.V1 (
+  AmountGuarantees (NonZero, Positive),
+  KeyGuarantees (Sorted),
   PCredential,
   PCurrencySymbol,
   PPubKeyHash,
@@ -31,8 +33,6 @@ import Plutarch.Api.V1 (
   PTxInInfo,
   PTxInfo,
   PValue,
-  ValueAmountGuarantees (NonZero, Positive),
-  ValueKeyGuarantees (Sorted),
  )
 import qualified Plutarch.Api.V1.AssocMap as AssocMap
 import qualified Plutarch.Api.V1.Value as PValue

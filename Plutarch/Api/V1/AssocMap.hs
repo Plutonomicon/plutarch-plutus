@@ -3,6 +3,7 @@
 
 module Plutarch.Api.V1.AssocMap (
   PMap (PMap),
+  KeyGuarantees (Unsorted, Sorted),
 
   -- * Creation
   pempty,
@@ -90,6 +91,8 @@ import Plutarch.Unsafe (punsafeDowncast)
 import qualified Rank2
 
 import Prelude hiding (all, any, filter, lookup, null)
+
+data KeyGuarantees = Sorted | Unsorted
 
 newtype PMap (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinMap k v))
   deriving (PlutusType, PIsData, PEq, PShow) via (DerivePNewtype (PMap k v) (PBuiltinMap k v))

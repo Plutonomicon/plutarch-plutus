@@ -17,9 +17,9 @@ import Plutarch.Api.V1.Address (PAddress)
 import Plutarch.Api.V1.Maybe (PMaybeData)
 import Plutarch.Api.V1.Scripts (PDatumHash)
 import Plutarch.Api.V1.Value (
+  AmountGuarantees (Positive),
+  KeyGuarantees (Sorted),
   PValue,
-  ValueAmountGuarantees (Positive),
-  ValueKeyGuarantees (Sorted),
  )
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
