@@ -359,7 +359,7 @@ pfindOwnInput = phoistAcyclic $
         target = pfield @"_0" # txoutRef
         pred :: Term _ (PAsData PTxInInfo :--> PBool)
         pred = plam $ \actual ->
-          (pfield @"id" # target) #== (pfield @"id" #$ pfield @"outRef" # pfromData actual)
+          target #== pfield @"outRef" # pfromData actual
     pure $ pfind # pred # txInInfos
 
 ------------- Helpers --------------------------------------------------------
