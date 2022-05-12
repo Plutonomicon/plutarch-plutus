@@ -11,6 +11,7 @@ module Plutarch.Api.V1.Value (
   passertSorted,
   passertPositive,
   pforgetPositive,
+  pforgetSorted,
   pnormalize,
   psingleton,
   psingletonData,
@@ -32,7 +33,7 @@ import Plutarch.Lift (
   PLifted,
   PUnsafeLiftDecl,
  )
-import Plutarch.Unsafe (punsafeDowncast)
+import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 
 import Plutarch.Prelude hiding (psingleton)
 
@@ -57,19 +58,19 @@ deriving via
 data AmountGuarantees = NoGuarantees | NonZero | Positive
 
 newtype PValue (keys :: KeyGuarantees) (amounts :: AmountGuarantees) (s :: S)
-  = PValue (Term s (PMap PCurrencySymbol (PMap PTokenName PInteger)))
+  = PValue (Term s (PMap keys PCurrencySymbol (PMap keys PTokenName PInteger)))
   deriving
     (PlutusType, PIsData)
-    via (DerivePNewtype (PValue keys amounts) (PMap PCurrencySymbol (PMap PTokenName PInteger)))
+    via (DerivePNewtype (PValue keys amounts) (PMap keys PCurrencySymbol (PMap keys PTokenName PInteger)))
 type role PValue nominal nominal phantom
 
-instance PUnsafeLiftDecl (PValue 'Sorted 'NonZero) where
-  type PLifted (PValue 'Sorted 'NonZero) = Plutus.Value
+instance PUnsafeLiftDecl (PValue 'Unsorted 'NonZero) where
+  type PLifted (PValue 'Unsorted 'NonZero) = Plutus.Value
 deriving via
   ( DerivePConstantViaNewtype
       Plutus.Value
-      (PValue 'Sorted 'NonZero)
-      (PMap PCurrencySymbol (PMap PTokenName PInteger))
+      (PValue 'Unsorted 'NonZero)
+      (PMap 'Unsorted PCurrencySymbol (PMap 'Unsorted PTokenName PInteger))
   )
   instance
     PConstantDecl Plutus.Value
@@ -246,7 +247,11 @@ passertPositive = phoistAcyclic $
 
 -- | Forget the knowledge of value's positivity.
 pforgetPositive :: Term s (PValue 'Sorted 'Positive) -> Term s (PValue k a)
-pforgetPositive v = punsafeDowncast (pto v)
+pforgetPositive = punsafeCoerce
+
+-- | Forget the knowledge of all value's guarantees.
+pforgetSorted :: Term s (PValue 'Sorted a) -> Term s (PValue k b)
+pforgetSorted = punsafeCoerce
 
 zeroData :: ClosedTerm (PAsData PInteger)
 zeroData = pdata 0

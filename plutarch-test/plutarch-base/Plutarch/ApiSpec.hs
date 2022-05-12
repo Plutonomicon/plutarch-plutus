@@ -84,7 +84,7 @@ spec = do
           plift (PValue.pforgetPositive p) @?= mint
         "singletonData"
           @| PValue.psingletonData # pdata (pconstant "c0") # pdata (pconstant "sometoken") # pdata 1
-          @-> \p -> plift p @?= mint
+          @-> \p -> plift (PValue.pforgetSorted p) @?= mint
         "valueOf" @\ do
           "itself" @| PValue.pvalueOf @-> \v -> plift (v # pmint # pconstant "c0" # pconstant "sometoken") @?= 1
           "applied" @| PValue.pvalueOf # pmint # pconstant "c0" # pconstant "sometoken" @-> \p ->
@@ -99,16 +99,16 @@ spec = do
               )
         "unionWith" @\ do
           "const" @| PValue.punionWith # plam const # pmint # pmint @-> \p ->
-            plift (PValue.pnormalize # p) @?= mint
+            plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint
           "(+)" @\ do
             "itself" @| PValue.punionWith # plam (+) @-> \plus ->
-              plift (PValue.pnormalize #$ plus # pmint # pmint) @?= mint <> mint
+              plift (PValue.pforgetSorted $ PValue.pnormalize #$ plus # pmint # pmint) @?= mint <> mint
             "applied" @| PValue.punionWith # plam (+) # pmint # pmint @-> \p ->
-              plift (PValue.pnormalize # p) @?= mint <> mint
+              plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint <> mint
           "tokens" @| PValue.punionWith # plam (+) # pmint # pmintOtherToken @-> \p ->
-            plift (PValue.pnormalize # p) @?= mint <> mintOtherToken
+            plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint <> mintOtherToken
           "symbols" @| PValue.punionWith # plam (+) # pmint # pmintOtherSymbol @-> \p ->
-            plift (PValue.pnormalize # p) @?= mint <> mintOtherSymbol
+            plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint <> mintOtherSymbol
           "growing"
             @\ forM_
               (zip [1 :: Int .. length growingSymbols] growingSymbols)
@@ -118,9 +118,9 @@ spec = do
               )
         "unionWithData const" @\ do
           "itself" @| PValue.punionWithData @-> \u ->
-            plift (PValue.pnormalize #$ u # plam const # pmint # pmint) @?= mint
+            plift (PValue.pforgetSorted $ PValue.pnormalize #$ u # plam const # pmint # pmint) @?= mint
           "applied" @| PValue.punionWithData # plam const # pmint # pmint @-> \p ->
-            plift (PValue.pnormalize # p) @?= mint
+            plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint
         "equality" @\ do
           "itself" @| plam ((#==) @(PValue 'Sorted 'Positive)) @-> \eq -> passert (eq # pmint # pmint)
           "triviallyTrue" @| pmint #== pmint @-> passert
@@ -167,7 +167,7 @@ spec = do
             @-> pfails
     describe "map" $ do
       pgoldenSpec $ do
-        let pmap, pdmap, emptyMap, doubleMap, otherMap :: Term _ (AssocMap.PMap PByteString PInteger)
+        let pmap, pdmap, emptyMap, doubleMap, otherMap :: Term _ (AssocMap.PMap 'Sorted PByteString PInteger)
             pmap = AssocMap.psingleton # pconstant "key" # 42
             pdmap = AssocMap.psingletonData # pdata (pconstant "key") # pdata 42
             emptyMap = AssocMap.pempty
