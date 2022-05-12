@@ -21,6 +21,7 @@ import Numeric (showHex)
 import Plutus.V1.Ledger.Api
 import qualified Plutus.V1.Ledger.Interval as Interval
 import qualified Plutus.V1.Ledger.Value as Value
+import PlutusTx.Monoid (inv)
 
 import Plutarch.Api.V1 (
   AmountGuarantees (NonZero, Positive),
@@ -121,6 +122,9 @@ spec = do
             plift (PValue.pforgetSorted $ PValue.pnormalize #$ u # plam const # pmint # pmint) @?= mint
           "applied" @| PValue.punionWithData # plam const # pmint # pmint @-> \p ->
             plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint
+        "inv"
+          @| inv (PValue.pforgetPositive pmint :: Term _ (PValue 'Sorted 'NonZero))
+          @-> \p -> plift (PValue.pforgetSorted p) @?= inv mint
         "equality" @\ do
           "itself" @| plam ((#==) @(PValue 'Sorted 'Positive)) @-> \eq -> passert (eq # pmint # pmint)
           "triviallyTrue" @| pmint #== pmint @-> passert
@@ -227,14 +231,6 @@ spec = do
           "const" @| AssocMap.punionWithData # plam const # pmap # pmap @-> pshouldReallyBe pmap
           "emptyLeft" @| AssocMap.punionWithData # plam const # emptyMap # pmap @-> pshouldReallyBe pmap
           "emptyRight" @| AssocMap.punionWithData # plam const # pmap # emptyMap @-> pshouldReallyBe pmap
-    {- TODO: fails due to incomplete normalization
-            "mapEitherWithKey" @\ do
-              "const" @| AssocMap.pmapEitherWithKey # plam (const $ pcon . PRight) # pmap
-                @-> pshouldReallyBe (pcon $ PPair emptyMap pmap)
-        "mapEitherWithKey" @\ do
-          "const" @| AssocMap.pmapEitherWithKey # plam (const $ pcon . PRight) # pmap
-            @-> \result-> passert $ result #== pcon (PPair emptyMap pmap)
-    -}
     describe "example" $ do
       -- The checkSignatory family of functions implicitly use tracing due to
       -- monadic syntax, and as such we need two sets of tests here.

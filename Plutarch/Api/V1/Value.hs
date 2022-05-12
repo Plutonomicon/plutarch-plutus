@@ -34,6 +34,8 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
  )
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
+import qualified PlutusTx.Monoid as PlutusTx
+import qualified PlutusTx.Semigroup as PlutusTx
 
 import Plutarch.Prelude hiding (psingleton)
 
@@ -87,10 +89,19 @@ instance PEq (PValue 'Sorted 'NoGuarantees) where
 instance Semigroup (Term s (PValue 'Sorted 'Positive)) where
   a <> b = punsafeDowncast (pto $ punionWith # plam (+) # a # b)
 
+instance PlutusTx.Semigroup (Term s (PValue 'Sorted 'Positive)) where
+  a <> b = punsafeDowncast (pto $ punionWith # plam (+) # a # b)
+
 instance Semigroup (Term s (PValue 'Sorted 'NonZero)) where
   a <> b = pnormalize #$ punionWith # plam (+) # a # b
 
+instance PlutusTx.Semigroup (Term s (PValue 'Sorted 'NonZero)) where
+  a <> b = pnormalize #$ punionWith # plam (+) # a # b
+
 instance Semigroup (Term s (PValue 'Sorted 'NoGuarantees)) where
+  a <> b = punionWith # plam (+) # a # b
+
+instance PlutusTx.Semigroup (Term s (PValue 'Sorted 'NoGuarantees)) where
   a <> b = punionWith # plam (+) # a # b
 
 instance
@@ -98,6 +109,24 @@ instance
   Monoid (Term s (PValue 'Sorted normalization))
   where
   mempty = pcon (PValue AssocMap.pempty)
+
+instance
+  PlutusTx.Semigroup (Term s (PValue 'Sorted normalization)) =>
+  PlutusTx.Monoid (Term s (PValue 'Sorted normalization))
+  where
+  mempty = pcon (PValue AssocMap.pempty)
+
+instance
+  PlutusTx.Semigroup (Term s (PValue 'Sorted 'NoGuarantees)) =>
+  PlutusTx.Group (Term s (PValue 'Sorted 'NoGuarantees))
+  where
+  inv a = pmapAmounts # plam negate # a
+
+instance
+  PlutusTx.Semigroup (Term s (PValue 'Sorted 'NonZero)) =>
+  PlutusTx.Group (Term s (PValue 'Sorted 'NonZero))
+  where
+  inv a = punsafeCoerce $ PlutusTx.inv (punsafeCoerce a :: Term s (PValue 'Sorted 'NoGuarantees))
 
 -- | Construct a constant singleton 'PValue' containing only the given quantity of the given currency.
 pconstantSingleton ::
@@ -255,3 +284,8 @@ pforgetSorted = punsafeCoerce
 
 zeroData :: ClosedTerm (PAsData PInteger)
 zeroData = pdata 0
+
+-- | Applies a function to every amount in the map.
+pmapAmounts :: Term s ((PInteger :--> PInteger) :--> PValue k a :--> PValue k 'NoGuarantees)
+pmapAmounts = phoistAcyclic $
+  plam $ \f v -> pcon $ PValue $ AssocMap.pmap # plam (AssocMap.pmap # f #) # pto v

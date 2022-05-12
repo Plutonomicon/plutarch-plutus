@@ -29,6 +29,8 @@ module Plutarch.Api.V1.AssocMap (
 
   -- * Filters and traversals
   pfilter,
+  pmap,
+  pmapData,
   pmapMaybe,
   pmapMaybeData,
 
@@ -40,6 +42,8 @@ module Plutarch.Api.V1.AssocMap (
 
 import qualified Plutus.V1.Ledger.Api as Plutus
 import qualified PlutusTx.AssocMap as PlutusMap
+import qualified PlutusTx.Monoid as PlutusTx
+import qualified PlutusTx.Semigroup as PlutusTx
 
 import Plutarch.Builtin (PBuiltinList (PCons, PNil), PBuiltinMap, ppairDataBuiltin)
 import Plutarch.Lift (
@@ -311,11 +315,35 @@ instance Rank2.Distributive (MapUnion k v) where
       }
 instance Rank2.DistributiveTraversable (MapUnion k v)
 
-instance (POrd k, PIsData k, PIsData v, Semigroup (Term s v)) => Semigroup (Term s (PMap 'Sorted k v)) where
+instance
+  (POrd k, PIsData k, PIsData v, Semigroup (Term s v)) =>
+  Semigroup (Term s (PMap 'Sorted k v))
+  where
   a <> b = punionWith # plam (<>) # a # b
 
-instance (POrd k, PIsData k, PIsData v, Semigroup (Term s v)) => Monoid (Term s (PMap 'Sorted k v)) where
+instance
+  (POrd k, PIsData k, PIsData v, Semigroup (Term s v)) =>
+  Monoid (Term s (PMap 'Sorted k v))
+  where
   mempty = pempty
+
+instance
+  (POrd k, PIsData k, PIsData v, PlutusTx.Semigroup (Term s v)) =>
+  PlutusTx.Semigroup (Term s (PMap 'Sorted k v))
+  where
+  a <> b = punionWith # plam (PlutusTx.<>) # a # b
+
+instance
+  (POrd k, PIsData k, PIsData v, PlutusTx.Semigroup (Term s v)) =>
+  PlutusTx.Monoid (Term s (PMap 'Sorted k v))
+  where
+  mempty = pempty
+
+instance
+  (POrd k, PIsData k, PIsData v, PlutusTx.Group (Term s v)) =>
+  PlutusTx.Group (Term s (PMap 'Sorted k v))
+  where
+  inv a = pmap # plam PlutusTx.inv # a
 
 {- | Combine two 'PMap's applying the given function to any two values that
  share the same key.
@@ -440,6 +468,29 @@ pmapMaybeData = phoistAcyclic $
               pmatch (f #$ psndBuiltin # x) $ \case
                 PNothing -> xs'
                 PJust v -> pcons # (ppairDataBuiltin # (pfstBuiltin # x) # v) # xs'
+        )
+        (const pnil)
+        # pto map
+
+-- | Applies a function to every value in the map, much like 'Data.List.map'.
+pmap ::
+  (PIsData k, PIsData a, PIsData b) =>
+  Term s ((a :--> b) :--> PMap g k a :--> PMap g k b)
+pmap = phoistAcyclic $
+  plam $ \f -> pmapData #$ plam $ \v -> pdata (f # pfromData v)
+
+pmapData ::
+  forall s g k a b.
+  (PIsData k, PIsData a, PIsData b) =>
+  Term s ((PAsData a :--> PAsData b) :--> PMap g k a :--> PMap g k b)
+pmapData = phoistAcyclic $
+  plam $ \f map ->
+    pcon . PMap $
+      precList
+        ( \self x xs ->
+            pcons
+              # (ppairDataBuiltin # (pfstBuiltin # x) # (f #$ psndBuiltin # x))
+              # (self # xs)
         )
         (const pnil)
         # pto map
