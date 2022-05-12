@@ -600,8 +600,9 @@ Polymorphic types can be derived as follows:
 type PConstantData :: Type -> Constraint
 type PConstantData h =
   ( PConstant h
-  , Ledger.FromData (h)
-  , Ledger.ToData (h)
+  , Ledger.FromData h
+  , Ledger.ToData h
+  , PIsData (PConstanted h)
   )
 
 type PLiftData :: PType -> Constraint
@@ -609,6 +610,7 @@ type PLiftData p =
   ( PLift p
   , Ledger.FromData (PLifted p)
   , Ledger.ToData (PLifted p)
+  , PIsData p
   )
 
 {- |
