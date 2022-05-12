@@ -16,7 +16,7 @@ import qualified Plutarch.Monadic as P
 
 foo :: Term s (PScriptContext :--> PString)
 foo = plam $ \ctx -> P.do
-  purpose <- pmatch pfield @"purpose" # ctx
+  purpose <- pmatch $ pfield @"purpose" # ctx
   case purpose of
     PMinting _ -> "It's minting!"
     PSpending _ -> "It's spending!"
@@ -247,7 +247,7 @@ Thus, you can use `PBuiltinList (PAsData PInteger)` as a field type, but not `PB
 > In this case, `PFourWheeler` is at the 0th index, `PTwoWheeler` is at the 1st index, and `PImmovableBox` is at the 3rd index. Thus, the corresponding `makeIsDataIndexed` usage should be:
 >
 > ```hs
-> PlutusTx.makeIsDataIndexed ''FourWheeler [('FourWheeler,0),('TwoWheeler,1),('ImmovableBox,2)]
+> PlutusTx.makeIsDataIndexed ''PVehicle [('FourWheeler,0),('TwoWheeler,1),('ImmovableBox,2)]
 > ```
 >
 > Also see: [Isomorphism between Haskell ADTs and `PIsDataRepr`](./../Tricks/makeIsDataIndexed,%20Haskell%20ADTs,%20and%20PIsDataRepr.md)
