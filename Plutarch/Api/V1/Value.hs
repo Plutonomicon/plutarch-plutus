@@ -64,7 +64,7 @@ newtype PValue (keys :: KeyGuarantees) (amounts :: AmountGuarantees) (s :: S)
   deriving
     (PlutusType, PIsData)
     via (DerivePNewtype (PValue keys amounts) (PMap keys PCurrencySymbol (PMap keys PTokenName PInteger)))
-type role PValue nominal nominal phantom
+type role PValue nominal nominal nominal
 
 instance PUnsafeLiftDecl (PValue 'Unsorted 'NonZero) where
   type PLifted (PValue 'Unsorted 'NonZero) = Plutus.Value

@@ -101,7 +101,7 @@ data KeyGuarantees = Sorted | Unsorted
 
 newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinMap k v))
   deriving (PlutusType, PIsData, PEq, PShow) via (DerivePNewtype (PMap keysort k v) (PBuiltinMap k v))
-type role PMap nominal nominal representational phantom
+type role PMap nominal nominal nominal nominal
 
 instance
   ( PLiftData k
