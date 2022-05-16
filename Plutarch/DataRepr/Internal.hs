@@ -18,6 +18,7 @@ module Plutarch.DataRepr.Internal (
   PLabeledType (..),
   type PLabelIndex,
   type PUnLabel,
+  type PLookupLabel,
   PIsDataRepr (..),
   PIsDataReprInstances (..),
   pindexDataRecord,
@@ -27,6 +28,7 @@ module Plutarch.DataRepr.Internal (
   DualReprHandler (..),
 ) where
 
+import Data.Coerce (coerce)
 import qualified Data.Functor.Compose as F
 import Data.Functor.Const (Const (Const))
 import Data.Kind (Constraint, Type)
@@ -61,17 +63,22 @@ import Generics.SOP (
 import Plutarch (
   Dig,
   PInner,
+  POpaque,
   PType,
   PlutusType,
   S,
   Term,
+  pcon,
   pcon',
+  pdelay,
   perror,
+  pforce,
   phoistAcyclic,
   plam,
   plet,
   pmatch,
   pmatch',
+  popaque,
   pto,
   (#),
   (#$),
@@ -85,16 +92,25 @@ import Plutarch.Builtin (
   PData,
   PIsData,
   pasConstr,
+  pchooseListBuiltin,
   pconstrBuiltin,
   pdata,
+  pdataImpl,
   pforgetData,
   pfromData,
+  pfromDataImpl,
   pfstBuiltin,
   psndBuiltin,
  )
-import Plutarch.DataRepr.Internal.HList (type Drop, type IndexList)
+import Plutarch.DataRepr.Internal.HList (
+  HRec (HCons, HNil),
+  HRecGeneric (HRecGeneric),
+  Labeled (Labeled),
+  type Drop,
+  type IndexList,
+ )
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal (S (SI), punsafeCoerce)
+import Plutarch.Internal (S (SI))
 import Plutarch.Internal.Generic (MkNS, PCode, PGeneric, gpfrom, gpto, mkNS, mkSum)
 import Plutarch.Lift (
   PConstant,
@@ -108,8 +124,14 @@ import Plutarch.Lift (
   pconstantToRepr,
  )
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
-import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont, tcont, unTermCont)
+import Plutarch.TermCont (TermCont (TermCont), hashOpenTerm, runTermCont, tcont, unTermCont)
+import Plutarch.Trace (ptraceError)
+import Plutarch.TryFrom (PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
+import Plutarch.Unit (PUnit (PUnit))
+import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import qualified Plutus.V1.Ledger.Api as Ledger
+
+import Plutarch.Reducible (Reduce, Reducible)
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is
  `PBuiltinList PData`.
@@ -227,12 +249,17 @@ type family PLabelIndex (name :: Symbol) (as :: [PLabeledType]) :: Nat where
   PLabelIndex name ((name ':= a) ': as) = 0
   PLabelIndex name (_ ': as) = (PLabelIndex name as) + 1
 
+type PLookupLabel :: Symbol -> [PLabeledType] -> PType
+type family PLookupLabel name as where
+  PLookupLabel name ((name ':= a) ': as) = a
+  PLookupLabel name (_ ': as) = PLookupLabel name as
+
 type family PUnLabel (a :: PLabeledType) :: PType where
   PUnLabel (name ':= a) = a
 
 instance {-# OVERLAPPABLE #-} PIsData (PDataRecord xs) where
-  pfromData x = punsafeCoerce $ (pfromData (punsafeCoerce x) :: Term _ (PBuiltinList PData))
-  pdata x = punsafeCoerce $ pdata (punsafeCoerce x :: Term _ (PBuiltinList PData))
+  pfromDataImpl x = punsafeCoerce $ (pfromData (punsafeCoerce x) :: Term _ (PBuiltinList PData))
+  pdataImpl x = pupcast $ pdata (pupcast x :: Term _ (PBuiltinList PData))
 
 {- | A sum of 'PDataRecord's. The underlying representation is the `Constr` constructor,
 where the integer is the index of the variant and the list is the record.
@@ -258,8 +285,8 @@ instance
       target = punsafeCoerce d
 
 instance PIsData (PDataSum defs) where
-  pdata = punsafeCoerce
-  pfromData = punsafeCoerce
+  pfromDataImpl = punsafeCoerce
+  pdataImpl = punsafeCoerce
 
 instance PEq (PDataSum defs) where
   x #== y = pdata x #== pdata y
@@ -519,8 +546,8 @@ mkLTEHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
 newtype PIsDataReprInstances (a :: PType) (s :: S) = PIsDataReprInstances (a s)
 
 instance PIsDataRepr a => PIsData (PIsDataReprInstances a) where
-  pdata = punsafeCoerce
-  pfromData = punsafeCoerce
+  pfromDataImpl = punsafeCoerce
+  pdataImpl = punsafeCoerce
 
 instance PIsDataRepr a => PlutusType (PIsDataReprInstances a) where
   type PInner (PIsDataReprInstances a) _ = PDataSum (PIsDataReprRepr a)
@@ -573,8 +600,9 @@ Polymorphic types can be derived as follows:
 type PConstantData :: Type -> Constraint
 type PConstantData h =
   ( PConstant h
-  , Ledger.FromData (h)
-  , Ledger.ToData (h)
+  , Ledger.FromData h
+  , Ledger.ToData h
+  , PIsData (PConstanted h)
   )
 
 type PLiftData :: PType -> Constraint
@@ -582,6 +610,7 @@ type PLiftData p =
   ( PLift p
   , Ledger.FromData (PLifted p)
   , Ledger.ToData (PLifted p)
+  , PIsData p
   )
 
 {- |
@@ -627,3 +656,122 @@ class IsBuiltinList a where
 
 instance IsBuiltinList (PDataRecord l) where
   dataListFrom = punsafeCoerce
+
+----------------------- HRecP and friends -----------------------------------------------
+
+type HRecPApply :: [(Symbol, PType)] -> S -> [(Symbol, Type)]
+type family HRecPApply as s where
+  HRecPApply ('(name, ty) ': rest) s = '(name, Reduce (ty s)) ': HRecPApply rest s
+  HRecPApply '[] s = '[]
+
+newtype HRecP (as :: [(Symbol, PType)]) (s :: S) = HRecP (HRecGeneric (HRecPApply as s))
+
+instance Reducible (HRecP as s) where type Reduce (HRecP as s) = HRecGeneric (HRecPApply as s)
+
+newtype Flip f a b = Flip (f b a)
+
+instance Reducible (f x y) => Reducible (Flip f y x) where
+  type Reduce (Flip f y x) = Reduce (f x y)
+
+-- We could have a more advanced instance but it's not needed really.
+newtype ExcessForField (a :: PType) (s :: S) = ExcessForField (Term s (PAsData a), Reduce (PTryFromExcess PData (PAsData a) s))
+
+instance Reducible (PTryFromExcess PData (PAsData a) s) => Reducible (ExcessForField a s) where
+  type Reduce (ExcessForField a s) = (Term s (PAsData a), Reduce (PTryFromExcess PData (PAsData a) s))
+
+-- FIXME: Should we always succede? If we always succede, performance would increase a lot.
+instance PTryFrom (PBuiltinList PData) (PDataRecord '[]) where
+  type PTryFromExcess (PBuiltinList PData) (PDataRecord '[]) = HRecP '[]
+  ptryFrom' opq = runTermCont $ do
+    _ <-
+      tcont . plet . pforce $
+        pchooseListBuiltin # opq # pdelay (pcon PUnit) # pdelay (ptraceError "list is longer than zero")
+    pure (pdnil, HRecGeneric HNil)
+
+type family UnHRecP (x :: PType) :: [(Symbol, PType)] where
+  UnHRecP (HRecP as) = as
+
+instance
+  ( PTryFrom PData (PAsData pty)
+  , PTryFrom (PBuiltinList PData) (PDataRecord as)
+  , PTryFromExcess (PBuiltinList PData) (PDataRecord as) ~ HRecP ase
+  ) =>
+  PTryFrom (PBuiltinList PData) (PDataRecord ((name ':= pty) ': as))
+  where
+  type
+    PTryFromExcess (PBuiltinList PData) (PDataRecord ((name ':= pty) ': as)) =
+      HRecP
+        ( '(name, ExcessForField pty)
+            ': UnHRecP (PTryFromExcess (PBuiltinList PData) (PDataRecord as))
+        )
+  ptryFrom' opq = runTermCont $ do
+    h <- tcont $ plet $ phead # opq
+    hv <- tcont $ ptryFrom @(PAsData pty) @PData h
+    t <- tcont $ plet $ ptail # opq
+    tv <- tcont $ ptryFrom @(PDataRecord as) @(PBuiltinList PData) t
+    pure (punsafeCoerce opq, HRecGeneric (HCons (Labeled hv) (coerce $ snd tv)))
+
+newtype Helper a b s = Helper (a s, b s)
+
+instance (Reducible (a s), Reducible (b s)) => Reducible (Helper a b s) where
+  type Reduce (Helper a b s) = (Reduce (a s), Reduce (b s))
+
+instance
+  ( PTryFrom (PBuiltinList PData) (PDataRecord as)
+  , PTryFromExcess (PBuiltinList PData) (PDataRecord as) ~ HRecP ase
+  ) =>
+  PTryFrom PData (PAsData (PDataRecord as))
+  where
+  type
+    PTryFromExcess PData (PAsData (PDataRecord as)) =
+      Helper (Flip Term (PDataRecord as)) (PTryFromExcess (PBuiltinList PData) (PDataRecord as))
+  ptryFrom' opq = runTermCont $ do
+    l <- snd <$> (tcont $ ptryFrom @(PAsData (PBuiltinList PData)) opq)
+    r <- tcont $ ptryFrom @(PDataRecord as) l
+    pure (punsafeCoerce opq, r)
+
+class SumValidation (n :: Nat) (sum :: [[PLabeledType]]) where
+  validateSum :: Term s PInteger -> Term s (PBuiltinList PData) -> Term s POpaque
+
+instance {-# OVERLAPPING #-} SumValidation 0 ys => PTryFrom PData (PAsData (PDataSum ys)) where
+  type PTryFromExcess PData (PAsData (PDataSum ys)) = Const ()
+  ptryFrom' opq = runTermCont $ do
+    x <- tcont $ plet $ pasConstr # opq
+    constr <- tcont $ plet $ pfstBuiltin # x
+    fields <- tcont $ plet $ psndBuiltin # x
+    _ <- tcont $ plet $ validateSum @0 @ys constr fields
+    pure (punsafeCoerce opq, ())
+
+instance
+  {-# OVERLAPPABLE #-}
+  forall (n :: Nat) (x :: [PLabeledType]) (xs :: [[PLabeledType]]).
+  ( PTryFrom (PBuiltinList PData) (PDataRecord x)
+  , SumValidation (n + 1) xs
+  , KnownNat n
+  ) =>
+  SumValidation n (x ': xs)
+  where
+  validateSum constr fields =
+    pif
+      (fromInteger (natVal $ Proxy @n) #== constr)
+      ( unTermCont $ do
+          _ <- tcont $ ptryFrom @(PDataRecord x) fields
+          pure $ popaque $ pcon PUnit
+      )
+      (validateSum @(n + 1) @xs constr fields)
+
+instance {-# OVERLAPPING #-} SumValidation n '[] where
+  validateSum _ _ = ptraceError "reached end of sum while still not having found the constructor"
+
+instance
+  ( PIsDataRepr a
+  , SumValidation 0 (PIsDataReprRepr a)
+  , PInner a b ~ PDataSum (PIsDataReprRepr a)
+  ) =>
+  PTryFrom PData (PAsData (PIsDataReprInstances a))
+  where
+  type PTryFromExcess PData (PAsData (PIsDataReprInstances a)) = Const ()
+  ptryFrom' opq = runTermCont $ do
+    let reprsum :: Term _ (PDataSum (PIsDataReprRepr a))
+        reprsum = pfromData $ unTermCont $ fst <$> TermCont (ptryFrom opq)
+    pure $ (pdata $ punsafeDowncast reprsum, ())

@@ -9,8 +9,12 @@ module Plutarch.DataRepr.Internal.Field (
 
   -- * BindFields class mechanism
   BindFields (..),
+  type Bindings,
   type BoundTerms,
   type Drop,
+  type HRecOf,
+  type PMemberFields,
+  type PMemberField,
 
   -- * Re-exports
   HRec (..),
@@ -24,7 +28,7 @@ import GHC.TypeLits (
   Symbol,
  )
 
-import Data.Kind (Type)
+import Data.Kind (Constraint, Type)
 import Plutarch (
   PType,
   S,
@@ -38,7 +42,8 @@ import Plutarch (
 
 import Plutarch.Builtin (
   PAsData,
-  PIsData (pfromData),
+  PIsData,
+  pfromData,
  )
 import Plutarch.DataRepr.Internal (
   PDataRecord,
@@ -51,6 +56,7 @@ import Plutarch.DataRepr.Internal (
   pindexDataRecord,
   punDataSum,
   type PLabelIndex,
+  type PLookupLabel,
   type PUnLabel,
  )
 import Plutarch.DataRepr.Internal.FromData (PFromDataable, pmaybeFromAsData)
@@ -59,6 +65,8 @@ import Plutarch.DataRepr.Internal.HList (
   Labeled (Labeled, unLabeled),
   hrecField,
   type Drop,
+  type ElemOf,
+  type IndexLabel,
   type IndexList,
   type SingleItem,
  )
@@ -111,6 +119,51 @@ instance
   type PFields (PAsData a) = PFields a
   ptoFields = ptoFields . pfromData
 
+-- | The 'HRec' yielded by 'pletFields @fs t'.
+type HRecOf t fs s =
+  HRec
+    ( BoundTerms
+        (PFields t)
+        (Bindings (PFields t) fs)
+        s
+    )
+
+{- | Constrain an 'HRec' to contain the specified fields from the given Plutarch type.
+
+=== Example ===
+
+@
+import qualified GHC.Generics as GHC
+import Generics.SOP
+
+import Plutarch.Prelude
+import Plutarch.DataRepr
+
+newtype PFooType s = PFooType (Term s (PDataRecord '["frst" ':= PInteger, "scnd" ':= PBool, "thrd" ':= PString]))
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
+  deriving
+    (PlutusType, PIsData, PDataFields, PEq)
+    via PIsDataReprInstances PFooType
+
+foo :: PMemberFields PFooType '["scnd", "frst"] s as => HRec as -> Term s PInteger
+foo h = pif (getField @"scnd" h) (getField @"frst" h) 0
+@
+-}
+type PMemberFields :: PType -> [Symbol] -> S -> [(Symbol, Type)] -> Constraint
+type family PMemberFields t fs s as where
+  PMemberFields _ '[] _ _ = ()
+  PMemberFields t (name ': rest) s as = (PMemberField t name s as, PMemberFields t rest s as)
+
+-- | Single field version of 'PMemberFields'.
+type PMemberField :: PType -> Symbol -> S -> [(Symbol, Type)] -> Constraint
+type family PMemberField t name s as where
+  PMemberField t name s as =
+    ( IndexLabel name as ~ Term s (PAsData (PLookupLabel name (PFields t)))
+    , ElemOf name (Term s (PAsData (PLookupLabel name (PFields t)))) as
+    )
+
 {- |
   Bind a HRec of named fields containing all the specified
   fields.
@@ -123,7 +176,7 @@ pletFields ::
   , BindFields ps bs
   ) =>
   Term s a ->
-  (HRec (BoundTerms ps bs s) -> Term s b) ->
+  (HRecOf a fs s -> Term s b) ->
   Term s b
 pletFields t =
   runTermCont $

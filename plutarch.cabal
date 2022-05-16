@@ -19,6 +19,7 @@ common c
     ConstrainedClassMethods
     ConstraintKinds
     DataKinds
+    DefaultSignatures
     DeriveAnyClass
     DeriveDataTypeable
     DeriveFoldable
@@ -37,6 +38,7 @@ common c
     FlexibleContexts
     FlexibleInstances
     ForeignFunctionInterface
+    FunctionalDependencies
     GADTSyntax
     GeneralisedNewtypeDeriving
     HexFloatLiterals
@@ -54,8 +56,10 @@ common c
     PatternGuards
     PolyKinds
     PostfixOperators
+    QuantifiedConstraints
     RankNTypes
     RelaxedPolyRec
+    RoleAnnotations
     ScopedTypeVariables
     StandaloneDeriving
     StandaloneKindSignatures
@@ -78,7 +82,7 @@ library
   import:          c
   exposed-modules:
     Plutarch
-    Plutarch.Api.Internal.Scripts
+    Plutarch.Api.Internal.Hashing
     Plutarch.Api.V1
     Plutarch.Api.V1.Address
     Plutarch.Api.V1.AssocMap

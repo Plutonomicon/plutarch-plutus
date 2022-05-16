@@ -20,8 +20,12 @@ module Plutarch.Builtin (
   PBuiltinList (..),
   pdataLiteral,
   PIsData (..),
+  pdata,
+  pfromData,
   PAsData,
   pforgetData,
+  prememberData,
+  prememberData',
   ppairDataBuiltin,
   pchooseListBuiltin,
   type PBuiltinMap,
@@ -32,6 +36,7 @@ import Data.Proxy (Proxy (Proxy))
 import Plutarch (
   DerivePNewtype,
   PInner,
+  POpaque,
   PType,
   PlutusType,
   S,
@@ -50,7 +55,7 @@ import Plutarch (
   (#$),
   type (:-->),
  )
-import Plutarch.Bool (PBool (..), PEq, pif', (#==))
+import Plutarch.Bool (PBool (..), PEq, pif', (#&&), (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (
@@ -76,15 +81,26 @@ import Plutarch.List (
     pnull,
     ptail
   ),
+  phead,
   plistEquals,
+  pmap,
   pshowList,
+  ptail,
  )
-import Plutarch.Show (PShow (pshow'))
+import Plutarch.Show (PShow (pshow'), pshow)
 import Plutarch.Unit (PUnit)
-import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeFrom)
+import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeDowncast)
 import qualified PlutusCore as PLC
 import PlutusTx (Data (Constr), ToData)
 import qualified PlutusTx
+
+import Plutarch.TermCont (TermCont (runTermCont), tcont, unTermCont)
+
+import Plutarch.Reducible (Reducible (Reduce))
+
+import Data.Functor.Const (Const)
+
+import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
 
 -- | Plutus 'BuiltinPair'
 data PBuiltinPair (a :: PType) (b :: PType) (s :: S)
@@ -222,9 +238,14 @@ pdataLiteral :: Data -> Term s PData
 pdataLiteral = pconstant
 
 type role PAsData representational phantom
-data PAsData (a :: PType) (s :: S)
+data PAsData (a :: PType) (s :: S) = PAsData (Term s a)
 
-type role PAsDataLifted representational
+instance PIsData a => PlutusType (PAsData a) where
+  type PInner (PAsData a) _ = PData
+  pcon' (PAsData t) = pforgetData $ pdata t
+  pmatch' t f = f (PAsData $ pfromData $ punsafeCoerce t)
+
+type role PAsDataLifted nominal
 data PAsDataLifted (a :: PType)
 
 instance PConstantDecl (PAsDataLifted a) where
@@ -235,48 +256,66 @@ instance PConstantDecl (PAsDataLifted a) where
 
 instance PUnsafeLiftDecl (PAsData a) where type PLifted (PAsData a) = PAsDataLifted a
 
-newtype Helper1 (a :: PType) (s :: S) = Helper1 (a s)
-
 pforgetData :: forall s a. Term s (PAsData a) -> Term s PData
-pforgetData x = coerce $ pforgetData' Proxy (coerce x :: Term s (Helper1 (PAsData a)))
+pforgetData = pupcast
 
--- | Like 'pforgetData', except it works for complex types.
+-- FIXME: remove, broken
+
+{- | Like 'pforgetData', except it works for complex types.
+ Equivalent to 'pupcastF'.
+-}
 pforgetData' :: forall a (p :: PType -> PType) s. Proxy p -> Term s (p (PAsData a)) -> Term s (p PData)
-pforgetData' Proxy = punsafeCoerce
+pforgetData' _ = punsafeCoerce
 
 -- | Inverse of 'pforgetData''.
 prememberData :: forall (p :: PType -> PType) s. Proxy p -> Term s (p PData) -> Term s (p (PAsData PData))
 prememberData Proxy = punsafeCoerce
 
+-- | Like 'prememberData' but generalised.
+prememberData' :: forall a (p :: PType -> PType) s. PSubtype PData a => Proxy p -> Term s (p a) -> Term s (p (PAsData a))
+prememberData' Proxy = punsafeCoerce
+
+{- | Laws:
+ - If @PSubtype PData a@, then @pdataImpl a@ must be `pupcast`.
+ - pdataImpl . pupcast . pfromDataImpl ≡ id
+ - pfromDataImpl . punsafeDowncast . pdataImpl ≡ id
+-}
 class PIsData a where
-  pfromData :: Term s (PAsData a) -> Term s a
-  pdata :: Term s a -> Term s (PAsData a)
+  pfromDataImpl :: Term s (PAsData a) -> Term s a
+  pdataImpl :: Term s a -> Term s PData
+
+pfromData :: PIsData a => Term s (PAsData a) -> Term s a
+pfromData = pfromDataImpl
+pdata :: PIsData a => Term s a -> Term s (PAsData a)
+pdata = punsafeCoerce . pdataImpl
 
 instance PIsData PData where
-  pfromData = punsafeCoerce
-  pdata = punsafeCoerce
+  pfromDataImpl = pupcast
+  pdataImpl = id
 
 instance PIsData a => PIsData (PBuiltinList (PAsData a)) where
-  pfromData x = punsafeCoerce $ pasList # pforgetData x
-  pdata x = punsafeBuiltin PLC.ListData # x
+  pfromDataImpl x = punsafeCoerce $ pasList # pforgetData x
+  pdataImpl x = punsafeBuiltin PLC.ListData # x
 
 newtype Helper2 f a s = Helper2 (PAsData (f a) s)
 
 instance PIsData (PBuiltinList PData) where
-  pfromData = pforgetData' @PData (Proxy @PBuiltinList) . pfromData . coerce (prememberData (Proxy @(Helper2 PBuiltinList)))
-  pdata = coerce (pforgetData' @PData (Proxy @(Helper2 PBuiltinList))) . pdata . (prememberData (Proxy @PBuiltinList))
+  pfromDataImpl = pforgetData' @PData (Proxy @PBuiltinList) . pfromData . coerce (prememberData (Proxy @(Helper2 PBuiltinList)))
+
+  -- pdataImpl = coerce (pforgetData' @PData (Proxy @(Helper2 PBuiltinList))) . pdata . (prememberData (Proxy @PBuiltinList))
+  pdataImpl = punsafeCoerce . pdata . (prememberData (Proxy @PBuiltinList)) -- FIXME
 
 instance PIsData (PBuiltinMap k v) where
-  pfromData x = punsafeCoerce $ pasMap # pforgetData x
-  pdata x = punsafeBuiltin PLC.MapData # x
+  pfromDataImpl x = punsafeCoerce $ pasMap # pforgetData x
+  pdataImpl x = punsafeBuiltin PLC.MapData # x
 
 instance PIsData PInteger where
-  pfromData x = pasInt # pforgetData x
-  pdata x = punsafeBuiltin PLC.IData # x
+  pfromDataImpl x = pasInt # pforgetData x
+  pdataImpl x = punsafeBuiltin PLC.IData # x
 
 instance PIsData PByteString where
-  pfromData x = pasByteStr # pforgetData x
-  pdata x = punsafeBuiltin PLC.BData # x
+  pfromDataImpl x = pasByteStr # pforgetData x
+  pdataImpl x = punsafeBuiltin PLC.BData # x
 
 {- |
   Instance for PBool following the Plutus IsData repr
@@ -284,16 +323,16 @@ instance PIsData PByteString where
   which is used in 'TxInfo' via 'Closure'.
 -}
 instance PIsData PBool where
-  pfromData x =
+  pfromDataImpl x =
     (phoistAcyclic $ plam toBool) # pforgetData x
     where
       toBool :: Term s PData -> Term s PBool
       toBool d = pfstBuiltin # (pasConstr # d) #== 1
 
-  pdata x =
+  pdataImpl x =
     (phoistAcyclic $ plam toData) # x
     where
-      toData :: Term s PBool -> Term s (PAsData PBool)
+      toData :: Term s PBool -> Term s PData
       toData b =
         punsafeBuiltin PLC.ConstrData
           # (pif' # b # 1 # (0 :: Term s PInteger))
@@ -304,12 +343,12 @@ instance PIsData PBool where
 
 -- | NB: `PAsData (PBuiltinPair (PAsData a) (PAsData b))` and `PAsData (PTuple a b)` have the same representation.
 instance PIsData (PBuiltinPair (PAsData a) (PAsData b)) where
-  pfromData x = f # x
+  pfromDataImpl x = f # x
     where
       f = phoistAcyclic $
         plam $ \pairDat -> plet (psndBuiltin #$ pasConstr # pforgetData pairDat) $
           \pd -> ppairDataBuiltin # punsafeCoerce (phead # pd) #$ punsafeCoerce (phead #$ ptail # pd)
-  pdata x = punsafeCoerce target
+  pdataImpl x = pupcast target
     where
       target :: Term _ (PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
       target = f # punsafeCoerce x
@@ -321,7 +360,7 @@ newtype Helper3 f b a s = Helper3 (PAsData (f a b) s)
 newtype Helper4 f b a s = Helper4 (f a b s)
 
 instance PIsData (PBuiltinPair PData PData) where
-  pfromData = f . pfromData . g
+  pfromDataImpl = f . pfromData . g
     where
       g :: Term s (PAsData (PBuiltinPair PData PData)) -> Term s (PAsData (PBuiltinPair (PAsData PData) (PAsData PData)))
       g =
@@ -332,7 +371,7 @@ instance PIsData (PBuiltinPair PData PData) where
       f =
         coerce (pforgetData' (Proxy @(Helper4 PBuiltinPair PData)))
           . (pforgetData' @PData (Proxy @(PBuiltinPair (PAsData PData))))
-  pdata = f . pdata . g
+  pdataImpl = pupcast . f . pdata . g
     where
       g :: Term s (PBuiltinPair PData PData) -> Term s (PBuiltinPair (PAsData PData) (PAsData PData))
       g = coerce (prememberData (Proxy @(Helper4 PBuiltinPair (PAsData PData)))) . prememberData (Proxy @(PBuiltinPair PData))
@@ -342,30 +381,36 @@ instance PIsData (PBuiltinPair PData PData) where
         (coerce (pforgetData' @PData (Proxy @(Helper3 PBuiltinPair PData))) :: Term s (PAsData (PBuiltinPair (PAsData PData) PData)) -> Term s (PAsData (PBuiltinPair PData PData)))
           . coerce (pforgetData' @PData (Proxy @(Helper2 (PBuiltinPair (PAsData PData)))))
 
+instance (PShow a, PShow b) => PShow (PBuiltinPair a b) where
+  pshow' _ pair = "(" <> pshow (pfstBuiltin # pair) <> "," <> pshow (psndBuiltin # pair) <> ")"
+
+instance (PEq a, PEq b) => PEq (PBuiltinPair a b) where
+  p1 #== p2 = pfstBuiltin # p1 #== pfstBuiltin # p2 #&& psndBuiltin # p1 #== psndBuiltin # p2
+
 instance PIsData PUnit where
-  pfromData _ = pconstant ()
-  pdata _ = punsafeCoerce $ pconstant (Constr 0 [])
+  pfromDataImpl _ = pconstant ()
+  pdataImpl _ = pconstant (Constr 0 [])
 
 -- This instance is kind of useless. There's no safe way to use 'pdata'.
 instance PIsData (PBuiltinPair PInteger (PBuiltinList PData)) where
-  pfromData x = pasConstr # pforgetData x
-  pdata x' = plet x' $ \x -> pconstrBuiltin # (pfstBuiltin # x) #$ psndBuiltin # x
+  pfromDataImpl x = pasConstr # pupcast x
+  pdataImpl x' = pupcast $ plet x' $ \x -> pconstrBuiltin # (pfstBuiltin # x) #$ psndBuiltin # x
 
 instance PEq (PAsData a) where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
 
-instance (forall (s :: S). Coercible (a s) (Term s b), PIsData b) => PIsData (DerivePNewtype a b) where
-  pfromData x = punsafeFrom target
-    where
-      target :: Term _ b
-      target = pfromData $ pinnerData x
-  pdata x = pouterData . pdata $ pto x
+instance
+  ( forall (s :: S). Coercible (a s) (Term s b)
+  , PInner a POpaque ~ b
+  , PIsData b
+  ) =>
+  PIsData (DerivePNewtype a b)
+  where
+  pfromDataImpl x = punsafeDowncast $ (pfromDataImpl (punsafeCoerce x) :: Term _ b)
+  pdataImpl x = pdataImpl $ pto x
 
-pinnerData :: Term s (PAsData a) -> Term s (PAsData (PInner a b))
-pinnerData = punsafeCoerce
-
-pouterData :: Term s (PAsData (PInner a b)) -> Term s (PAsData a)
-pouterData = punsafeCoerce
+instance (PIsData a, PShow a) => PShow (PAsData a) where
+  pshow' w x = pshow' w (pfromData x)
 
 pconstrBuiltin :: Term s (PInteger :--> PBuiltinList PData :--> PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
 pconstrBuiltin = punsafeBuiltin $ PLC.ConstrData
@@ -376,3 +421,100 @@ Example:
 -}
 pconstantData :: forall p h s. (ToData h, PLifted p ~ h, PConstanted h ~ p) => h -> Term s (PAsData p)
 pconstantData x = punsafeCoerce $ pconstant $ PlutusTx.toData x
+
+newtype Flip f a b = Flip (f b a)
+
+instance Reducible (f x y) => Reducible (Flip f y x) where
+  type Reduce (Flip f y x) = Reduce (f x y)
+
+instance PTryFrom PData (PAsData PInteger) where
+  type PTryFromExcess PData (PAsData PInteger) = Flip Term PInteger
+  ptryFrom' opq = runTermCont $ do
+    ver <- tcont $ plet (pasInt # opq)
+    pure $ (punsafeCoerce opq, ver)
+
+instance PTryFrom PData (PAsData PByteString) where
+  type PTryFromExcess PData (PAsData PByteString) = Flip Term PByteString
+  ptryFrom' opq = runTermCont $ do
+    ver <- tcont $ plet (pasByteStr # opq)
+    pure $ (punsafeCoerce opq, ver)
+
+instance
+  ( PTryFrom PData (PAsData a)
+  , PTryFrom PData (PAsData b)
+  ) =>
+  PTryFrom PData (PAsData (PBuiltinMap a b))
+  where
+  type PTryFromExcess PData (PAsData (PBuiltinMap a b)) = Flip Term (PBuiltinMap a b)
+  ptryFrom' opq = runTermCont $ do
+    verMap <- tcont $ plet (pasMap # opq)
+    let verifyPair :: Term _ (PBuiltinPair PData PData :--> PBuiltinPair (PAsData a) (PAsData b))
+        verifyPair = plam $ \tup -> unTermCont $ do
+          (verfst, _) <- tcont $ ptryFrom @(PAsData a) $ pfstBuiltin # tup
+          (versnd, _) <- tcont $ ptryFrom @(PAsData b) $ psndBuiltin # tup
+          pure $ ppairDataBuiltin # verfst # versnd
+    ver <- tcont $ plet $ pmap # verifyPair # verMap
+    pure (punsafeCoerce opq, ver)
+
+{- |
+    This verifies a list to be indeed a list but doesn't recover the inner data
+    use this instance instead of the one for `PData (PAsData (PBuiltinList (PAsData a)))`
+    as this is O(1) instead of O(n)
+-}
+
+-- TODO: add the excess inner type list
+instance PTryFrom PData (PAsData (PBuiltinList PData)) where
+  type PTryFromExcess PData (PAsData (PBuiltinList PData)) = Flip Term (PBuiltinList PData)
+  ptryFrom' opq = runTermCont $ do
+    ver <- tcont $ plet (pasList # opq)
+    pure $ (punsafeCoerce opq, ver)
+
+{- |
+    Recover a `PBuiltinList (PAsData a)`
+-}
+instance
+  ( PTryFrom PData (PAsData a)
+  , PIsData a
+  ) =>
+  PTryFrom PData (PAsData (PBuiltinList (PAsData a)))
+  where
+  type PTryFromExcess PData (PAsData (PBuiltinList (PAsData a))) = Flip Term (PBuiltinList (PAsData a))
+  ptryFrom' opq = runTermCont $ do
+    let lst :: Term _ (PBuiltinList PData)
+        lst = pasList # opq
+        verify :: Term _ (PData :--> PAsData a)
+        verify = plam $ \e ->
+          unTermCont $ do
+            (wrapped, _) <- tcont $ ptryFrom @(PAsData a) $ e
+            pure wrapped
+    ver <- tcont $ plet $ pmap # verify # lst
+    pure $ (punsafeCoerce opq, ver)
+
+{- |
+    Recover a `PAsData (PBuiltinPair a b)`
+-}
+instance
+  ( PTryFrom PData a
+  , a ~ PAsData a'
+  , PIsData a'
+  , PTryFrom PData b
+  , b ~ PAsData b'
+  , PIsData b'
+  ) =>
+  PTryFrom PData (PAsData (PBuiltinPair a b))
+  where
+  type PTryFromExcess PData (PAsData (PBuiltinPair a b)) = Flip Term (PBuiltinPair a b)
+  ptryFrom' opq = runTermCont $ do
+    tup <- tcont $ plet (pfromData $ punsafeCoerce opq)
+    let fst' :: Term _ a
+        fst' = unTermCont $ fst <$> tcont (ptryFrom @a $ pforgetData $ pfstBuiltin # tup)
+        snd' :: Term _ b
+        snd' = unTermCont $ fst <$> tcont (ptryFrom @b $ pforgetData $ psndBuiltin # tup)
+    ver <- tcont $ plet $ ppairDataBuiltin # fst' # snd'
+    pure $ (punsafeCoerce opq, ver)
+
+----------------------- other utility functions -----------------------------------------
+
+instance PTryFrom PData (PAsData PData) where
+  type PTryFromExcess PData (PAsData PData) = Const ()
+  ptryFrom' opq = runTermCont $ pure (pdata opq, ())

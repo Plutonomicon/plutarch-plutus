@@ -1,0 +1,8 @@
+record (program 1.0.0 12)
+record-field (program 1.0.0 12)
+even (program 1.0.0 (\i0 -> force (force ifThenElse (equalsInteger i1 0) (delay True) (delay ((\i0 -> (\i0 -> (\i0 -> \i0 -> i1 (\i0 -> force (force ifThenElse (equalsInteger i1 0) (delay True) (delay (i3 (\i0 -> \i0 -> i1) (subtractInteger i1 1))))) (\i0 -> force (force ifThenElse (equalsInteger i1 0) (delay False) (delay (i3 (\i0 -> \i0 -> i2) (subtractInteger i1 1)))))) (\i0 -> i2 i2 i1)) (\i0 -> (\i0 -> \i0 -> i1 (\i0 -> force (force ifThenElse (equalsInteger i1 0) (delay True) (delay (i3 (\i0 -> \i0 -> i1) (subtractInteger i1 1))))) (\i0 -> force (force ifThenElse (equalsInteger i1 0) (delay False) (delay (i3 (\i0 -> \i0 -> i2) (subtractInteger i1 1)))))) (\i0 -> i2 i2 i1)) i1) (\i0 -> \i0 -> i1) (subtractInteger i1 1))))))
+even.4 (program 1.0.0 True)
+even.5 (program 1.0.0 False)
+knownEven (program 1.0.0 (\i0 -> force (force ifThenElse ((\i0 -> equalsInteger i1 4) i1) (delay True) (delay ((\i0 -> (\i0 -> (\i0 -> \i0 -> i1 (\i0 -> force (force ifThenElse ((\i0 -> equalsInteger i1 4) i1) (delay True) (delay (i3 (\i0 -> \i0 -> i1) (subtractInteger i1 1))))) (\i0 -> force (force ifThenElse ((\i0 -> equalsInteger i1 4) i1) (delay False) (delay (i3 (\i0 -> \i0 -> i2) (subtractInteger i1 1)))))) (\i0 -> i2 i2 i1)) (\i0 -> (\i0 -> \i0 -> i1 (\i0 -> force (force ifThenElse ((\i0 -> equalsInteger i1 4) i1) (delay True) (delay (i3 (\i0 -> \i0 -> i1) (subtractInteger i1 1))))) (\i0 -> force (force ifThenElse ((\i0 -> equalsInteger i1 4) i1) (delay False) (delay (i3 (\i0 -> \i0 -> i2) (subtractInteger i1 1)))))) (\i0 -> i2 i2 i1)) i1) (\i0 -> \i0 -> i1) (subtractInteger i1 1))))))
+knownEven.6 (program 1.0.0 True)
+knownEven.7 (program 1.0.0 False)

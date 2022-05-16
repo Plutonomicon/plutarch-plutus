@@ -3,22 +3,14 @@
 
 module Plutarch.TryFromSpec (spec) where
 
+import Data.Coerce (coerce)
+
 -- Haskell imports
 import qualified GHC.Generics as GHC
 
 import Generics.SOP (Generic, I (I))
 
 -- Plutus and PlutusTx imports
-import Plutus.V1.Ledger.Api (
-  Address (Address),
-  Credential (ScriptCredential),
-  Datum (Datum),
-  DatumHash,
-  ScriptContext (ScriptContext),
-  ToData (toBuiltinData),
-  TxInfo (txInfoData, txInfoOutputs),
-  TxOut (TxOut, txOutAddress, txOutDatumHash, txOutValue),
- )
 
 import PlutusTx (
   Data (B, Constr, I),
@@ -55,17 +47,13 @@ import Plutarch.Builtin (
  )
 
 import Plutarch.TryFrom (
-  PTryFrom,
   PTryFromExcess,
-  ptryFrom,
   ptryFrom',
  )
 
 import Plutarch.Reducible (Reduce, Reducible)
 
-import Plutarch.ApiSpec (info, purpose)
-import qualified Plutarch.ApiSpec as Api
-
+import Plutarch.ApiSpec (invalidContext1, validContext0)
 import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
 
 import Test.Hspec
@@ -219,9 +207,7 @@ spec = do
         "sample usage contains the right value"
           @| pconstant 42 #== theField @-> passert
     "example" @\ do
-      let validContext0 = ctx validOutputs0 validList1
-          invalidContext1 = ctx invalidOutputs1 validList1
-          l1 :: Term _ (PAsData (PBuiltinList (PAsData PInteger)))
+      let l1 :: Term _ (PAsData (PBuiltinList (PAsData PInteger)))
           l1 = toDatadList [1 .. 5]
           l2 :: Term _ (PAsData (PBuiltinList (PAsData PInteger)))
           l2 = toDatadList [6 .. 10]
@@ -373,54 +359,10 @@ pfindOwnInput = phoistAcyclic $
         target = pfield @"_0" # txoutRef
         pred :: Term _ (PAsData PTxInInfo :--> PBool)
         pred = plam $ \actual ->
-          (pfield @"id" # target) #== (pfield @"id" #$ pfield @"outRef" # pfromData actual)
+          target #== pfield @"outRef" # pfromData actual
     pure $ pfind # pred # txInInfos
 
-------------------- Mocking a ScriptContext ----------------------------------------
-
-ctx :: [TxOut] -> [(DatumHash, Datum)] -> Term s PScriptContext
-ctx outs l = pconstant (ScriptContext (info' outs l) purpose)
-
-info' :: [TxOut] -> [(DatumHash, Datum)] -> TxInfo
-info' outs dat =
-  info
-    { txInfoData = dat
-    , txInfoOutputs = outs
-    }
-
-validOutputs0 :: [TxOut]
-validOutputs0 =
-  [ TxOut
-      { txOutAddress =
-          Address (ScriptCredential Api.validator) Nothing
-      , txOutValue = mempty
-      , txOutDatumHash = Just Api.datum
-      }
-  ]
-
-invalidOutputs1 :: [TxOut]
-invalidOutputs1 =
-  [ TxOut
-      { txOutAddress =
-          Address (ScriptCredential Api.validator) Nothing
-      , txOutValue = mempty
-      , txOutDatumHash = Just Api.datum
-      }
-  , TxOut
-      { txOutAddress =
-          Address (ScriptCredential Api.validator) Nothing
-      , txOutValue = mempty
-      , txOutDatumHash = Nothing
-      }
-  ]
-
-validList1 :: [(DatumHash, Datum)]
-validList1 =
-  let dat :: Datum
-      dat = Datum $ toBuiltinData [(1 :: Integer) .. 10]
-   in [("d0", dat)]
-
-------------------- Helpers --------------------------------------------------------
+------------- Helpers --------------------------------------------------------
 
 toDatadList :: [Integer] -> Term s (PAsData (PBuiltinList (PAsData PInteger)))
 toDatadList = pdata . (foldr go pnil)
@@ -487,7 +429,9 @@ theField = unTermCont $ do
 
 ------------------- Sample usage DerivePNewType ------------------------------------
 
-newtype PWrapInt (s :: S) = PMkWrapInt (Term s PInteger)
-  deriving (PlutusType, PIsData, PEq, POrd) via (DerivePNewtype PWrapInt PInteger)
+newtype PWrapInt (s :: S) = PWrapInt (PInteger s)
+  deriving newtype (PIsData, PEq, POrd)
 
-deriving via DerivePNewtype (PAsData PWrapInt) (PAsData PInteger) instance PTryFrom PData (PAsData PWrapInt)
+instance PTryFrom PData (PAsData PWrapInt) where
+  type PTryFromExcess PData (PAsData PWrapInt) = PTryFromExcess PData (PAsData PInteger)
+  ptryFrom' t f = ptryFrom' t $ \(t', exc) -> f (coerce (t' :: Term _ (PAsData PInteger)), exc)

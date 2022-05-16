@@ -21,7 +21,7 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
   pconstant,
  )
-import Plutarch.Unsafe (punsafeBuiltin, punsafeFrom)
+import Plutarch.Unsafe (punsafeBuiltin, punsafeDowncast)
 import qualified PlutusCore as PLC
 
 -- | Plutus BuiltinInteger
@@ -66,7 +66,7 @@ instance Num (Term s PInteger) where
   fromInteger = pconstant
 
 instance PIntegral b => PIntegral (DerivePNewtype a b) where
-  pdiv = phoistAcyclic $ plam $ \x y -> punsafeFrom $ pdiv # pto x # pto y
-  pmod = phoistAcyclic $ plam $ \x y -> punsafeFrom $ pmod # pto x # pto y
-  pquot = phoistAcyclic $ plam $ \x y -> punsafeFrom $ pquot # pto x # pto y
-  prem = phoistAcyclic $ plam $ \x y -> punsafeFrom $ prem # pto x # pto y
+  pdiv = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ pdiv # pto x # pto y
+  pmod = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ pmod # pto x # pto y
+  pquot = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ pquot # pto x # pto y
+  prem = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ prem # pto x # pto y

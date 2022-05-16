@@ -80,6 +80,8 @@ library
   import:          c, deps
   exposed-modules:
     Plutarch.Extra
-    Plutarch.ListUtils
+    Plutarch.Extra.Api
+    Plutarch.Extra.List
+    Plutarch.Extra.TermCont
 
 -- other-modules:

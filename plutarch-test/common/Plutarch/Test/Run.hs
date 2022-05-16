@@ -1,15 +1,39 @@
-module Plutarch.Test.Run (noUnusedGoldens) where
+module Plutarch.Test.Run (
+  noUnusedGoldens,
+  noUnusedGoldens',
+  hspecAndReturnForest,
+) where
 
 import Control.Monad (forM_)
+import Data.Default (def)
 import Data.Set (Set)
 import qualified Data.Set as Set
 import qualified Data.Text as T
-import Plutarch.Test.Golden (GoldenKey, defaultGoldenBasePath, goldenTestPath, mkGoldenKeyFromSpecPath)
+import Plutarch.Test.Golden (
+  GoldenConf (GoldenConf, chosenTests, goldenBasePath),
+  GoldenKey,
+  goldenTestPath,
+  mkGoldenKeyFromSpecPath,
+ )
 import System.Directory (listDirectory)
+import System.Environment (getArgs, withArgs)
 import System.Exit (ExitCode (ExitFailure), exitWith)
 import System.FilePath ((</>))
 import Test.Hspec (Spec)
-import Test.Hspec.Core.Spec (SpecTree, Tree (Leaf, Node, NodeWithCleanup), runSpecM)
+import Test.Hspec.Core.Runner (defaultConfig, evalSpec, evaluateSummary, readConfig, runSpecForest)
+import Test.Hspec.Core.Spec (SpecTree, Tree (Leaf, Node, NodeWithCleanup))
+
+{- | Like `hspec`,  but returns the test forest after running the tests.
+
+  Based on https://github.com/hspec/hspec/issues/649#issuecomment-1092423220
+-}
+hspecAndReturnForest :: Spec -> IO [SpecTree ()]
+hspecAndReturnForest spec0 = do
+  (config, spec) <- evalSpec defaultConfig spec0
+  getArgs >>= readConfig config
+    >>= withArgs [] . runSpecForest spec
+    >>= evaluateSummary -- use evaluateResult instead, if you are on #656
+  return spec
 
 {- | Ensures that there are no unused goldens left behind.
 
@@ -18,13 +42,28 @@ import Test.Hspec.Core.Spec (SpecTree, Tree (Leaf, Node, NodeWithCleanup), runSp
   actual files existing on disk. If any golden file exists on disk, but is not
   tracked by the `SpecTree` this function will fail, reporting the list of
   untracked golden files.
+
+  __Example:__
+
+  @
+  noUnusedGoldens =<< hspecAndReturnForest spec
+  @
 -}
-noUnusedGoldens :: Spec -> IO ()
-noUnusedGoldens spec = do
+noUnusedGoldens :: [SpecTree ()] -> IO ()
+noUnusedGoldens = noUnusedGoldens' def
+
+{- | Like 'noUnusedGoldens' but takes a custom path to the golden storage.
+
+  NOTE: This relies on the assumption that the same 'GoldenConf' is used in all
+'pgoldenSpec'' calls. This function will go away after
+https://github.com/Plutonomicon/plutarch/issues/458
+-}
+noUnusedGoldens' :: GoldenConf -> [SpecTree ()] -> IO ()
+noUnusedGoldens' conf@(GoldenConf {goldenBasePath}) specForest = do
   -- A second traversal here (`runSpecM`) can be obviated after
   -- https://github.com/hspec/hspec/issues/649
-  usedGoldens <- goldenPathsUsedBy . snd <$> runSpecM spec
-  unusedGoldens usedGoldens >>= \case
+  let usedGoldens = goldenPathsUsedBy conf specForest
+  unusedGoldens goldenBasePath usedGoldens >>= \case
     [] -> pure ()
     unused -> do
       putStrLn "ERROR: Unused golden files found lying around! Namely:"
@@ -33,10 +72,10 @@ noUnusedGoldens spec = do
       exitWith (ExitFailure 1)
 
 -- | Given a list of "used" goldens, return any unused golden files on disk.
-unusedGoldens :: [FilePath] -> IO [FilePath]
-unusedGoldens usedGoldens' = do
+unusedGoldens :: FilePath -> [FilePath] -> IO [FilePath]
+unusedGoldens goldenBasePath usedGoldens' = do
   let usedGoldens = foldMap knownGoldens usedGoldens'
-  allGoldens <- Set.fromList . fmap (defaultGoldenBasePath </>) <$> listDirectory defaultGoldenBasePath
+  allGoldens <- Set.fromList . fmap (goldenBasePath </>) <$> listDirectory goldenBasePath
   pure $ Set.toList $ allGoldens `Set.difference` usedGoldens
   where
     knownGoldens :: FilePath -> Set FilePath
@@ -50,11 +89,11 @@ unusedGoldens usedGoldens' = do
         ]
     replace a b = T.unpack . T.replace a b . T.pack
 
-goldenPathsUsedBy :: [SpecTree a] -> [FilePath]
-goldenPathsUsedBy trees = do
+goldenPathsUsedBy :: GoldenConf -> [SpecTree a] -> [FilePath]
+goldenPathsUsedBy (GoldenConf {chosenTests, goldenBasePath}) trees = do
   flip foldMap (queryGoldens trees) $ \k ->
-    flip fmap [minBound .. maxBound] $ \t ->
-      goldenTestPath k t
+    flip fmap (Set.toList chosenTests) $ \t ->
+      goldenTestPath goldenBasePath k t
 
 -- | Retrieve all golden keys used by the given test tree.
 queryGoldens :: [SpecTree a] -> [GoldenKey]
