@@ -1,6 +1,6 @@
 {-# LANGUAGE UndecidableInstances #-}
 
-module Plutarch.NonZero (PNonZero, pnonZero, pnonZero') where
+module Plutarch.NonZero (PNonZero, pnonZero, ptryNonZero) where
 
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic, HasDatatypeInfo, I (I))
@@ -35,8 +35,8 @@ pnonZero = phoistAcyclic $
       $ pcon . PJust . pcon $ PNonZero i
 
 -- | Partial version of 'pnonZero'. Errors if argument is zero.
-pnonZero' :: Term s (PInteger :--> PNonZero)
-pnonZero' = phoistAcyclic $
+ptryNonZero :: Term s (PInteger :--> PNonZero)
+ptryNonZero = phoistAcyclic $
   plam $ \i ->
     pif
       (i #== 0)
