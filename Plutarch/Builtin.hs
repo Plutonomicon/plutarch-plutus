@@ -32,6 +32,7 @@ module Plutarch.Builtin (
 ) where
 
 import Data.Coerce (Coercible, coerce)
+import Data.Functor.Const (Const)
 import Data.Proxy (Proxy (Proxy))
 import Plutarch (
   DerivePNewtype,
@@ -87,20 +88,15 @@ import Plutarch.List (
   pshowList,
   ptail,
  )
+import Plutarch.Reducible (Flip)
 import Plutarch.Show (PShow (pshow'), pshow)
+import Plutarch.TermCont (TermCont (runTermCont), tcont, unTermCont)
+import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
 import Plutarch.Unit (PUnit)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeDowncast)
 import qualified PlutusCore as PLC
 import PlutusTx (Data (Constr), ToData)
 import qualified PlutusTx
-
-import Plutarch.TermCont (TermCont (runTermCont), tcont, unTermCont)
-
-import Plutarch.Reducible (Reducible (Reduce))
-
-import Data.Functor.Const (Const)
-
-import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
 
 -- | Plutus 'BuiltinPair'
 data PBuiltinPair (a :: PType) (b :: PType) (s :: S)
@@ -421,11 +417,6 @@ Example:
 -}
 pconstantData :: forall p h s. (ToData h, PLifted p ~ h, PConstanted h ~ p) => h -> Term s (PAsData p)
 pconstantData x = punsafeCoerce $ pconstant $ PlutusTx.toData x
-
-newtype Flip f a b = Flip (f b a)
-
-instance Reducible (f x y) => Reducible (Flip f y x) where
-  type Reduce (Flip f y x) = Reduce (f x y)
 
 instance PTryFrom PData (PAsData PInteger) where
   type PTryFromExcess PData (PAsData PInteger) = Flip Term PInteger

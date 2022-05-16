@@ -51,7 +51,7 @@ import Plutarch.TryFrom (
   ptryFrom',
  )
 
-import Plutarch.Reducible (Reduce, Reducible)
+import Plutarch.Reducible (Flip)
 
 import Plutarch.ApiSpec (invalidContext1, validContext0)
 import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
@@ -270,11 +270,6 @@ newtype PNatural (s :: S) = PMkNatural (Term s PInteger)
 -- | partial
 pmkNatural :: Term s (PInteger :--> PNatural)
 pmkNatural = plam $ \i -> pif (i #< 0) (ptraceError "could not make natural") (pcon $ PMkNatural i)
-
-newtype Flip f b a = Flip (f a b)
-
-instance Reducible (f a b) => Reducible (Flip f b a) where
-  type Reduce (Flip f b a) = Reduce (f a b)
 
 instance PTryFrom PData (PAsData PNatural) where
   type PTryFromExcess PData (PAsData PNatural) = Flip Term PNatural

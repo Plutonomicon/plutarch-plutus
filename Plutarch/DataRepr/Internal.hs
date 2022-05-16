@@ -131,7 +131,7 @@ import Plutarch.Unit (PUnit (PUnit))
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import qualified Plutus.V1.Ledger.Api as Ledger
 
-import Plutarch.Reducible (Reduce, Reducible)
+import Plutarch.Reducible (Flip, Reduce, Reducible)
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is
  `PBuiltinList PData`.
@@ -667,11 +667,6 @@ type family HRecPApply as s where
 newtype HRecP (as :: [(Symbol, PType)]) (s :: S) = HRecP (HRecGeneric (HRecPApply as s))
 
 instance Reducible (HRecP as s) where type Reduce (HRecP as s) = HRecGeneric (HRecPApply as s)
-
-newtype Flip f a b = Flip (f b a)
-
-instance Reducible (f x y) => Reducible (Flip f y x) where
-  type Reduce (Flip f y x) = Reduce (f x y)
 
 -- We could have a more advanced instance but it's not needed really.
 newtype ExcessForField (a :: PType) (s :: S) = ExcessForField (Term s (PAsData a), Reduce (PTryFromExcess PData (PAsData a) s))
