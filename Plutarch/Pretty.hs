@@ -103,7 +103,6 @@ prettyUPLC = go Normal mempty $ mkStdGen 42
     go _ nameMap g (Apply _ (LamAbs _ _ t) firstArg) =
       let (restArgs, coreF) = unwrapBindings [] t
           (firstName, nextG) = smartName nameMap g firstArg
-          nextMap = Map.mapKeys (+ 1) nameMap <> Map.singleton 0 firstName
           (finalDoc, finalMap, finalG) =
             foldl'
               ( \(docAcc, mp, currG) argExpr ->
@@ -111,7 +110,7 @@ prettyUPLC = go Normal mempty $ mkStdGen 42
                       newDoc = docAcc <> PP.flatAlt PP.hardline "; " <> helper mp (newName, argExpr)
                    in (newDoc, Map.mapKeys (+ 1) mp <> Map.singleton 0 newName, newG)
               )
-              (helper nextMap (firstName, firstArg), nextMap, nextG)
+              (helper nameMap (firstName, firstArg), Map.mapKeys (+ 1) nameMap <> Map.singleton 0 firstName, nextG)
               $ reverse restArgs
           helper mp (name, expr) =
             PP.hang indentWidth $
