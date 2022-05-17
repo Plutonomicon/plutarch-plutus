@@ -1,5 +1,5 @@
 module Plutarch.Rational (
-  PRational (..),
+  PRational,
   preduce,
   pnumerator,
   pdenominator,
@@ -7,7 +7,9 @@ module Plutarch.Rational (
   pround,
   ptruncate,
   pproperFraction,
-  pratLazy,
+  prationalLazy,
+  prational,
+  punrational,
 ) where
 
 import Data.Ratio (denominator, numerator)
@@ -53,17 +55,30 @@ data PRational s
   deriving stock (GHC.Generic)
   deriving anyclass (Generic, PEq)
 
+{- | NOTE: This instance may delegate the nonzero invariant check during construction.
+
+As such, the constructor is not exported and users are expected to use 'prational', 'prationalLazy', and
+'punrational' instead.
+-}
 instance PlutusType PRational where
   type PInner PRational b = (PInteger :--> PNonZero :--> b) :--> b
-  pcon' (PRational x y') = plet y' $ \y -> plam $ \f -> f # x # y
+  pcon' (PRational x y) = plam $ \f -> f # x # y
   pmatch' ratF f = ratF #$ plam $ \a b -> f $ PRational a b
 
 {- | Builds a rational with lazy non-zero denominator verification.
 
 i.e, if the denominator was zero, it'll error only after 'pmatch'ing on the resulting rational.
 -}
-pratLazy :: Term s PInteger -> Term s PNonZero -> Term s PRational
-pratLazy numr denm = punsafeDowncast $ plam $ \f -> f # numr # denm
+prationalLazy :: Term s PInteger -> Term s PNonZero -> Term s PRational
+prationalLazy numr denm = pcon $ PRational numr denm
+
+-- | Build a rational, without delegating the denominator invariant.
+prational :: Term s (PInteger :--> PNonZero :--> PRational)
+prational = phoistAcyclic $ plam $ \numr denm -> pcon $ PRational numr denm
+
+-- | 'pmatch' specialized for 'PRational'.
+punrational :: Term s PRational -> ((Term s PInteger, Term s PNonZero) -> Term s b) -> Term s b
+punrational r f = pmatch r $ \(PRational x y) -> f (x, y)
 
 instance PShow PRational where
   pshow' _ x =
@@ -76,7 +91,7 @@ instance PShow PRational where
 instance PIsData PRational where
   pfromDataImpl x' = phoistAcyclic (plam $ \x -> plistToRat #$ pasList # pforgetData x) # x'
     where
-      plistToRat = plam $ \x -> pratLazy (pasInt #$ phead # x) $ punsafeDowncast $ pasInt #$ phead #$ ptail # x
+      plistToRat = plam $ \x -> prationalLazy (pasInt #$ phead # x) $ punsafeDowncast $ pasInt #$ phead #$ ptail # x
   pdataImpl x' =
     phoistAcyclic
       ( plam $ \x -> unTermCont $ do
@@ -118,7 +133,7 @@ instance Num (Term s PRational) where
           yd <- tcont $ plet yd'
           pure $
             preduce
-              #$ pratLazy (xn * pto yd + yn * pto xd)
+              #$ prationalLazy (xn * pto yd + yn * pto xd)
               $ punsafeDowncast $ pto xd * pto yd
       )
       # x'
@@ -133,7 +148,7 @@ instance Num (Term s PRational) where
           yd <- tcont $ plet yd'
           pure $
             preduce
-              #$ pratLazy (xn * pto yd - yn * pto xd)
+              #$ prationalLazy (xn * pto yd - yn * pto xd)
               $ punsafeDowncast $ pto xd * pto yd
       )
       # x'
@@ -146,7 +161,7 @@ instance Num (Term s PRational) where
           PRational yn yd <- tcont $ pmatch y
           pure $
             preduce
-              #$ pratLazy (xn * yn)
+              #$ prationalLazy (xn * yn)
               $ punsafeDowncast $ pto xd * pto yd
       )
       # x'
@@ -156,7 +171,7 @@ instance Num (Term s PRational) where
     phoistAcyclic
       ( plam $ \x ->
           pmatch x $ \(PRational xn xd) ->
-            pratLazy (negate xn) xd
+            prationalLazy (negate xn) xd
       )
       # x'
 
@@ -164,7 +179,7 @@ instance Num (Term s PRational) where
     phoistAcyclic
       ( plam $ \x ->
           pmatch x $ \(PRational xn xd) ->
-            pratLazy (abs xn) $ punsafeDowncast $ abs $ pto xd
+            prationalLazy (abs xn) $ punsafeDowncast $ abs $ pto xd
       )
       # x'
 
@@ -181,14 +196,14 @@ instance Num (Term s PRational) where
       )
       # x'
 
-  fromInteger n = pratLazy (pconstant n) $ punsafeDowncast 1
+  fromInteger n = prationalLazy (pconstant n) $ punsafeDowncast 1
 
 instance Fractional (Term s PRational) where
   recip x' =
     phoistAcyclic
       ( plam $ \x ->
-          pmatch x $ \(PRational xn xd) ->
-            pcon . PRational (pto xd) $ ptryNonZero # xn
+          pmatch x $ \(PRational xn xd) -> plet (ptryNonZero # xn) $ \denm ->
+            prationalLazy (pto xd) denm
       )
       # x'
 
@@ -197,13 +212,14 @@ instance Fractional (Term s PRational) where
       ( plam $ \x y -> unTermCont $ do
           PRational xn xd <- tcont $ pmatch x
           PRational yn yd <- tcont $ pmatch y
-          pure $ preduce #$ pcon . PRational (xn * pto yd) $ ptryNonZero #$ pto xd * yn
+          denm <- tcont . plet $ ptryNonZero #$ pto xd * yn
+          pure $ preduce #$ prationalLazy (xn * pto yd) denm
       )
       # x'
       # y'
 
   fromRational r =
-    pratLazy (pconstant $ numerator r) $ punsafeDowncast $ pconstant $ denominator r
+    prationalLazy (pconstant $ numerator r) $ punsafeDowncast $ pconstant $ denominator r
 
 preduce :: Term s (PRational :--> PRational)
 preduce = phoistAcyclic $
@@ -212,7 +228,7 @@ preduce = phoistAcyclic $
     xd <- tcont . plet $ pto xd'
     r <- tcont . plet $ pgcd # xn # xd
     s <- tcont . plet . signum $ xd
-    pure . pratLazy (s * pdiv # xn # r) $ punsafeDowncast $ s * pdiv # xd # r
+    pure . prationalLazy (s * pdiv # xn # r) $ punsafeDowncast $ s * pdiv # xd # r
 
 pgcd :: Term s (PInteger :--> PInteger :--> PInteger)
 pgcd = phoistAcyclic $
@@ -244,7 +260,7 @@ pdenominator :: Term s (PRational :--> PNonZero)
 pdenominator = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational _ d) -> d
 
 pfromInteger :: Term s (PInteger :--> PRational)
-pfromInteger = phoistAcyclic $ plam $ \n -> pratLazy n $ punsafeDowncast 1
+pfromInteger = phoistAcyclic $ plam $ \n -> prationalLazy n $ punsafeDowncast 1
 
 pround :: Term s (PRational :--> PInteger)
 pround = phoistAcyclic $
