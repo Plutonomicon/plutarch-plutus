@@ -51,16 +51,17 @@ import Plutarch.TryFrom (
   ptryFrom',
  )
 
-import Plutarch.Reducible (Flip)
+import Plutarch.Reducible (Flip, Reducible (Reduce))
 
 import Plutarch.ApiSpec (invalidContext1, validContext0)
 import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
 
+import Plutarch.Extra.TermCont
 import Test.Hspec
 
 spec :: Spec
 spec = do
-  describe "verification_untrusted_data" . plutarchDevFlagDescribe . pgoldenSpec $ do
+  describe "data-verif" . plutarchDevFlagDescribe . pgoldenSpec $ do
     "erroneous" @\ do
       "(String, Integer) /= (String, String)"
         @| checkDeep
@@ -94,6 +95,30 @@ spec = do
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
           (punsafeCoerce $ pconstant $ Constr 2 [PlutusTx.I 5, B "foo"])
           @-> pfails
+      "[ByteString] (with length == 2) /= PRational"
+        @| checkDeep
+          @PRational
+          @(PBuiltinList (PAsData PByteString))
+          (pdata $ pcons # pdata (phexByteStr "41") #$ pcons # pdata (phexByteStr "2b") # pnil)
+        @-> pfails
+      "[Integer] (with length == 0) /= PRational"
+        @| checkDeep
+          @PRational
+          @(PBuiltinList (PAsData PInteger))
+          (pdata $ pnil)
+        @-> pfails
+      "[Integer] (with length == 3) /= PRational"
+        @| checkDeep
+          @PRational
+          @(PBuiltinList (PAsData PInteger))
+          (pdata $ pcons # pconstantData 42 #$ pcons # pconstantData 7 #$ pcons # pconstantData 0 # pnil)
+        @-> pfails
+      "[Integer] (with length == 2, with 0 denominator) /= PRational"
+        @| checkDeep
+          @PRational
+          @(PBuiltinList (PAsData PInteger))
+          (pdata $ pcons # pconstantData 42 #$ pcons # pconstantData 0 # pnil)
+        @-> pfails
     "working" @\ do
       "(String, String) == (String, String)"
         @| checkDeep
@@ -106,6 +131,18 @@ spec = do
           @(PBuiltinList (PAsData PByteString))
           @(PBuiltinList (PAsData PByteString))
           (pdata $ (pcons # (pdata $ pconstant "foo")) #$ (psingleton # (pdata $ pconstant "bar")))
+        @-> psucceeds
+      "[Integer] (with length == 2) == PRational"
+        @| ( unTermCont $ do
+              let numr = pconstantData 42
+              let denm = pconstantData 31
+              (drat, nz) <-
+                checkDeep' @PRational @(PBuiltinList (PAsData PInteger))
+                  (pdata $ pcons # numr #$ pcons # denm # pnil)
+              pguardC "non-zero should be as expected" $ pto nz #== pfromData denm
+              pguardC "drat should be as expected" $ pfromData drat #== prational # pfromData numr # nz
+              pure $ pconstant ()
+           )
         @-> psucceeds
       "A { test := Integer, test2 := Integer } == { test := Integer, test2 := Integer }"
         @| checkDeep
@@ -237,7 +274,17 @@ checkDeep ::
   ) =>
   ClosedTerm (PAsData actual) ->
   ClosedTerm (PAsData target)
-checkDeep t = unTermCont $ fst <$> TermCont (ptryFrom @(PAsData target) $ pforgetData t)
+checkDeep t = unTermCont $ fst <$> checkDeep' t
+
+checkDeep' ::
+  forall (target :: PType) (actual :: PType) (s :: S).
+  ( PTryFrom PData (PAsData target)
+  , PIsData actual
+  , PIsData target
+  ) =>
+  ClosedTerm (PAsData actual) ->
+  TermCont s ((Term s (PAsData target), Reduce (PTryFromExcess PData (PAsData target) s)))
+checkDeep' t = TermCont (ptryFrom @(PAsData target) $ pforgetData t)
 
 checkDeepUnwrap ::
   forall (target :: PType) (actual :: PType) (s :: S).
