@@ -25,6 +25,7 @@ import Plutarch (
   plet,
   pmatch,
   pto,
+  runTermCont,
   (#),
   (#$),
   type (:-->),
@@ -33,6 +34,7 @@ import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
+  PData,
   PIsData,
   pasInt,
   pasList,
@@ -43,11 +45,14 @@ import Plutarch.Builtin (
  )
 import Plutarch.Integer (PInteger, pdiv, pmod)
 import Plutarch.Lift (pconstant)
-import Plutarch.List (pcons, phead, pnil, ptail)
+import Plutarch.List (pcons, phead, plength, pnil, ptail)
 import Plutarch.NonZero (PNonZero, ptryNonZero)
 import Plutarch.Pair (PPair (PPair))
+import Plutarch.Reducible
 import Plutarch.Show (PShow, pshow, pshow')
 import Plutarch.TermCont (tcont, unTermCont)
+import Plutarch.Trace
+import Plutarch.TryFrom
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 
 data PRational s
@@ -101,6 +106,16 @@ instance PIsData PRational where
           pure $ punsafeCoerce $ pdata res
       )
       # x'
+
+-- | NOTE: This instance produces a verified 'PNonZero' as the excess output.
+instance PTryFrom PData (PAsData PRational) where
+  type PTryFromExcess PData (PAsData PRational) = Flip Term PNonZero
+  ptryFrom' opq = runTermCont $ do
+    (_, ld) <- tcont $ ptryFrom @(PAsData (PBuiltinList PData)) opq
+    tcont $ \f -> pif (plength # ld #== 2) (f ()) (ptraceError "ptryFrom(PRational): data list length should be 2")
+    (_, denm) <- tcont $ ptryFrom @(PAsData PInteger) $ phead #$ ptail # ld
+    res <- tcont . plet $ ptryNonZero # denm
+    pure (punsafeCoerce opq, res)
 
 instance POrd PRational where
   l' #<= r' =

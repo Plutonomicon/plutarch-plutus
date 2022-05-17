@@ -41,7 +41,8 @@ instance PTryFrom PData (PAsData PNonZero) where
   ptryFrom' opq = runTermCont $ do
     (_, i) <- tcont $ ptryFrom @(PAsData PInteger) opq
     res <- tcont . plet $ ptryNonZero # i
-    pure (pdata res, res)
+    resData <- tcont . plet $ pdata res
+    pure (resData, res)
 
 -- | Build a 'PNonZero' from a 'PInteger'. Yields 'PNothing' if argument is zero.
 pnonZero :: Term s (PInteger :--> PMaybe PNonZero)

@@ -30,9 +30,10 @@ module Plutarch.Prelude (
 
   -- * Rational numbers and utilities
   PRational,
+  prational,
+  punrational,
   pnumerator,
   pdenominator,
-  pfromInteger,
   pround,
 
   -- * Booleans and boolean functions
