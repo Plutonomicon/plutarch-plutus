@@ -62,7 +62,7 @@ This typeclass is closely tied with 'PLift'.
 Laws:
  - @pconstantFromRepr . pconstantToRepr ≡ Just@
  - @(pconstantToRepr <$>) . pconstantFromRepr ≡ Just@
- - @plift . pfromData . punsafeCoerce . pconstant . PlutusTx.toData ≡ id@
+ - @plift . pfromData . flip ptryFrom fst . pconstant . PlutusTx.toData ≡ id@
  - @PlutusTx.fromData . plift . pforgetData . pdata . pconstant ≡ Just@
 
 These laws must be upheld for the sake of soundness of the type system.
