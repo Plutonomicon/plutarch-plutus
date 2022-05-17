@@ -60,7 +60,7 @@ import Test.Hspec
 
 spec :: Spec
 spec = do
-  describe "verification_untrusted_data" . plutarchDevFlagDescribe . pgoldenSpec $ do
+  describe "data-verif" . plutarchDevFlagDescribe . pgoldenSpec $ do
     "erroneous" @\ do
       "(String, Integer) /= (String, String)"
         @| checkDeep
