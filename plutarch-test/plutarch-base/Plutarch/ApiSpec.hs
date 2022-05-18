@@ -24,7 +24,7 @@ import qualified Plutus.V1.Ledger.Value as Value
 import PlutusTx.Monoid (inv)
 
 import Plutarch.Api.V1 (
-  AmountGuarantees (NonZero, Positive),
+  AmountGuarantees (NoGuarantees, NonZero, Positive),
   KeyGuarantees (Sorted),
   PCredential,
   PCurrencySymbol,
@@ -57,8 +57,9 @@ spec = do
             plift p @?= toData mint
           "credentials" @| getCredentials ctx @-> \p ->
             plift p @?= [toData validator]
-          "sym" @| pfromData (getSym #$ pfromData $ getMint #$ getTxInfo # ctx) @-> \p ->
-            plift p @?= sym
+          "sym"
+            @| pfromData (getSym #$ PValue.pnormalize #$ pfromData $ getMint #$ getTxInfo # ctx)
+            @-> \p -> plift p @?= sym
         "ScriptPurpose" @\ do
           "literal" @| pconstant @PScriptPurpose (Minting dummyCurrency)
           "decode"
@@ -322,7 +323,7 @@ getTxInfo =
   plam $ \ctx ->
     pfield @"txInfo" # ctx
 
-getMint :: Term s (PAsData PTxInfo :--> PAsData (PValue 'Sorted 'NonZero))
+getMint :: Term s (PAsData PTxInfo :--> PAsData (PValue 'Sorted 'NoGuarantees))
 getMint =
   plam $ \info ->
     pfield @"mint" # info

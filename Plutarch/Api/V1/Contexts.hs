@@ -23,7 +23,7 @@ import Plutarch.Api.V1.Time (PPOSIXTimeRange)
 import Plutarch.Api.V1.Tuple (PTuple)
 import Plutarch.Api.V1.Tx (PTxId, PTxInInfo, PTxOut, PTxOutRef)
 import Plutarch.Api.V1.Value (
-  AmountGuarantees (NonZero, Positive),
+  AmountGuarantees (NoGuarantees, Positive),
   KeyGuarantees (Sorted),
   PCurrencySymbol,
   PValue,
@@ -49,7 +49,7 @@ newtype PTxInfo (s :: S)
               '[ "inputs" ':= PBuiltinList (PAsData PTxInInfo) -- Transaction inputs
                , "outputs" ':= PBuiltinList (PAsData PTxOut) -- Transaction outputs
                , "fee" ':= PValue 'Sorted 'Positive -- The fee paid by this transaction.
-               , "mint" ':= PValue 'Sorted 'NonZero -- The value minted by the transaction.
+               , "mint" ':= PValue 'Sorted 'NoGuarantees -- The value minted by the transaction.
                , "dcert" ':= PBuiltinList (PAsData PDCert) -- Digests of the certificates included in this transaction.
                , "wdrl" ':= PBuiltinList (PAsData (PTuple PStakingCredential PInteger)) -- Staking withdrawals
                , "validRange" ':= PPOSIXTimeRange -- The valid range for the transaction.
