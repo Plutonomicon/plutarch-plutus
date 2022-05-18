@@ -139,7 +139,7 @@ Finally, we have `DerivePConstantViaData` for `Data` values:
 ```hs
 {-# LANGUAGE UndecidableInstances #-}
 
-import Plutarch.Lift (DerivePConstantViaNewtype (DerivePConstantViaNewtype))
+import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
 import Plutarch.Prelude
 
 import qualified Plutus.V1.Ledger.Api as Plutus
