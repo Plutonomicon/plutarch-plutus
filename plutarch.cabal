@@ -123,6 +123,11 @@ library
     Plutarch.Pair
     Plutarch.Prelude
     Plutarch.Pretty
+    Plutarch.Pretty.Internal.BuiltinConstant
+    Plutarch.Pretty.Internal.Config
+    Plutarch.Pretty.Internal.Name
+    Plutarch.Pretty.Internal.TermUtils
+    Plutarch.Pretty.Internal.Types
     Plutarch.Rational
     Plutarch.Rec
     Plutarch.Rec.TH
