@@ -81,6 +81,7 @@ library
   exposed-modules:
     Plutarch.Extra
     Plutarch.Extra.Api
+    Plutarch.Extra.Interval
     Plutarch.Extra.List
     Plutarch.Extra.TermCont
 
