@@ -16,7 +16,11 @@ import qualified Plutus.V1.Ledger.Api as Plutus
 import Plutarch.Api.V1.Address (PAddress)
 import Plutarch.Api.V1.Maybe (PMaybeData)
 import Plutarch.Api.V1.Scripts (PDatumHash)
-import Plutarch.Api.V1.Value (PValue)
+import Plutarch.Api.V1.Value (
+  AmountGuarantees (Positive),
+  KeyGuarantees (Sorted),
+  PValue,
+ )
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
@@ -90,7 +94,7 @@ newtype PTxOut (s :: S)
           s
           ( PDataRecord
               '[ "address" ':= PAddress
-               , "value" ':= PValue
+               , "value" ':= PValue 'Sorted 'Positive -- negative values may appear in a future Cardano version
                , "datumHash" ':= PMaybeData PDatumHash
                ]
           )
