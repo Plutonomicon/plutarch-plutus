@@ -442,16 +442,39 @@
         "stackage": "stackage"
       },
       "locked": {
-        "lastModified": 1653486569,
-        "narHash": "sha256-342b0LPX6kaBuEX8KZV40FwCCFre1lCtjdTQIDEt9kw=",
-        "owner": "mlabs-haskell",
+        "lastModified": 1653910415,
+        "narHash": "sha256-04WohZsQTyb2k7u1w+OGpnUgXQ8d9UqTZal4IHCSx+A=",
+        "owner": "input-output-hk",
         "repo": "haskell.nix",
-        "rev": "220f8a9cd166e726aea62843bdafa7ecded3375c",
+        "rev": "07619e19798ebd9e01fe9708335afbdb5151dead",
+        "type": "github"
+      },
+      "original": {
+        "owner": "input-output-hk",
+        "repo": "haskell.nix",
+        "type": "github"
+      }
+    },
+    "haskell-nix-extra-hackage": {
+      "inputs": {
+        "haskell-nix": [
+          "haskell-nix"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1653405678,
+        "narHash": "sha256-fPpPxuCZDF5b/iQgmUg2jspPObsK0mpcchUti/LR8D0=",
+        "owner": "mlabs-haskell",
+        "repo": "haskell-nix-extra-hackage",
+        "rev": "cf4613eb0d883a8c12c86d7cdbdaaf15fdc70128",
         "type": "github"
       },
       "original": {
         "owner": "mlabs-haskell",
-        "repo": "haskell.nix",
+        "repo": "haskell-nix-extra-hackage",
         "type": "github"
       }
     },
@@ -921,6 +944,7 @@
         "flat": "flat",
         "haskell-language-server": "haskell-language-server",
         "haskell-nix": "haskell-nix",
+        "haskell-nix-extra-hackage": "haskell-nix-extra-hackage",
         "hercules-ci-effects": "hercules-ci-effects",
         "inline-r": "inline-r",
         "iohk-nix": "iohk-nix",
