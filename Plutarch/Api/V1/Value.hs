@@ -52,7 +52,7 @@ import qualified Plutus.V1.Ledger.Api as Plutus
 
 import Plutarch.Api.V1.AssocMap (KeyGuarantees (Sorted, Unsorted), PMap)
 import qualified Plutarch.Api.V1.AssocMap as AssocMap
-import Plutarch.Bool (pif')
+import Plutarch.Bool (pand', pif')
 import Plutarch.FFI (foreignImport)
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
@@ -244,7 +244,7 @@ pisAdaOnlyValue = phoistAcyclic $
   plam $ \value ->
     pmatch (pto $ pto value) $ \case
       PNil -> pcon PTrue
-      PCons x xs -> pnull # xs #&& pfstBuiltin # x #== padaSymbolData
+      PCons x xs -> pand' # (pnull # xs) # (pfstBuiltin # x #== padaSymbolData)
 
 -- | Value without any non-Ada
 padaOnlyValue :: Term s (PValue 'Sorted v :--> PValue 'Sorted v)

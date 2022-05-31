@@ -75,10 +75,10 @@ assertSorted.fails on empty token map {"exBudgetCPU":1500103,"exBudgetMemory":42
 Ada.adaSymbol {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":8}
 Ada.adaToken {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":8}
 Ada.lovelaceValueOf {"exBudgetCPU":297830,"exBudgetMemory":1100,"scriptSizeBytes":53}
-Ada.isAdaOnlyValue.itself {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":46}
-Ada.isAdaOnlyValue.true on empty {"exBudgetCPU":566922,"exBudgetMemory":1532,"scriptSizeBytes":52}
-Ada.isAdaOnlyValue.trivially false {"exBudgetCPU":5456039,"exBudgetMemory":11150,"scriptSizeBytes":109}
-Ada.isAdaOnlyValue.less trivially false {"exBudgetCPU":15792457,"exBudgetMemory":37029,"scriptSizeBytes":353}
+Ada.isAdaOnlyValue.itself {"exBudgetCPU":29873,"exBudgetMemory":200,"scriptSizeBytes":45}
+Ada.isAdaOnlyValue.true on empty {"exBudgetCPU":566922,"exBudgetMemory":1532,"scriptSizeBytes":50}
+Ada.isAdaOnlyValue.trivially false {"exBudgetCPU":5396493,"exBudgetMemory":10950,"scriptSizeBytes":107}
+Ada.isAdaOnlyValue.less trivially false {"exBudgetCPU":16680641,"exBudgetMemory":37926,"scriptSizeBytes":351}
 Ada.adaOnlyValue.itself {"exBudgetCPU":238284,"exBudgetMemory":900,"scriptSizeBytes":52}
 Ada.adaOnlyValue.on empty {"exBudgetCPU":686014,"exBudgetMemory":1932,"scriptSizeBytes":51}
 Ada.adaOnlyValue.on non-Ada {"exBudgetCPU":5396493,"exBudgetMemory":10950,"scriptSizeBytes":109}
