@@ -100,7 +100,6 @@
         "terminfo"
       ];
 
-      tools.fourmolu = { };
       tools.haskell-language-server = {
         modules = [
           { inherit nonReinstallablePkgs; }
@@ -392,6 +391,7 @@
               pkgs'.cabal-install
               pkgs'.hlint
               pkgs'.haskellPackages.cabal-fmt
+              pkgs'.haskellPackages.fourmolu
               pkgs'.nixpkgs-fmt
               pkgSet.hsPkgs.hspec-discover.components.exes.hspec-discover
             ];
@@ -408,11 +408,11 @@
         let
           pkgs = nixpkgsFor system;
           pkgs' = nixpkgsFor' system;
-          t = pkgs.haskell-nix.tools ghcVersion { inherit (tools) fourmolu haskell-language-server; };
+          t = pkgs.haskell-nix.tools ghcVersion { inherit (tools) haskell-language-server; };
         in
         pkgs.runCommand "format-check"
           {
-            nativeBuildInputs = [ pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt t.fourmolu ];
+            nativeBuildInputs = [ pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt pkgs'.haskellPackages.fourmolu ];
           } ''
           export LC_CTYPE=C.UTF-8
           export LC_ALL=C.UTF-8
