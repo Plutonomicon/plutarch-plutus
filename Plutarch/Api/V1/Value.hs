@@ -54,7 +54,6 @@ import qualified Plutus.V1.Ledger.Api as Plutus
 import Plutarch.Api.V1.AssocMap (KeyGuarantees (Sorted, Unsorted), PMap)
 import qualified Plutarch.Api.V1.AssocMap as AssocMap
 import Plutarch.Bool (pand', pif')
-import Plutarch.FFI (foreignImport)
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
@@ -64,7 +63,6 @@ import Plutarch.Lift (
  )
 import qualified Plutarch.List as List
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
-import qualified PlutusTx as PlutusTx
 import qualified PlutusTx.Monoid as PlutusTx
 import qualified PlutusTx.Semigroup as PlutusTx
 
@@ -225,19 +223,19 @@ pvalueOf = phoistAcyclic $
 
 -- | The 'PCurrencySymbol' of the Ada currency.
 padaSymbol :: Term s PCurrencySymbol
-padaSymbol = phoistAcyclic (foreignImport $ PlutusTx.liftCode Plutus.adaSymbol)
+padaSymbol = pconstant Plutus.adaSymbol
 
 -- | Data-encoded 'PCurrencySymbol' of the Ada currency.
 padaSymbolData :: Term s (PAsData PCurrencySymbol)
-padaSymbolData = phoistAcyclic (pdata padaSymbol)
+padaSymbolData = pdata padaSymbol
 
 -- | The 'PTokenName' of the Ada currency.
 padaToken :: Term s PTokenName
-padaToken = phoistAcyclic (foreignImport $ PlutusTx.liftCode Plutus.adaToken)
+padaToken = pconstant Plutus.adaToken
 
 -- | Data-encoded 'PTokenName' of the Ada currency.
 padaTokenData :: Term s (PAsData PTokenName)
-padaTokenData = phoistAcyclic (pdata padaToken)
+padaTokenData = pdata padaToken
 
 -- | Test if the value contains nothing but Ada
 pisAdaOnlyValue :: Term s (PValue 'Sorted 'Positive :--> PBool)
