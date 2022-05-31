@@ -8,7 +8,7 @@
  such guarantee.
 
  Also for efficiency reasons, the Ada-specific functions assume that there
- can be only one token name for the Ada currency symbol, and they don't chek
+ can be only one token name for the Ada currency symbol, and they don't check
  whether it matches 'Plutus.adaToken'.
 -}
 module Plutarch.Api.V1.Value (
