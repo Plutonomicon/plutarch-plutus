@@ -157,8 +157,7 @@
           modules = haskellModules ++ [ h.module ] ++ (o.modules or []);
           extra-hackages = [ (import h.hackageNix) ] ++ (o.extra-hackages or []);
           extra-hackage-tarballs = { _xNJUd_plutarch-hackage = h.hackageTarball; } // (o.extra-hackage-tarballs or {});
-          cabalProjectLocal = (o.cabalProjectLocal or "") + (
-            if isGhc9 o.compiler-nix-name then ''
+          cabalProjectLocal = (o.cabalProjectLocal or "") + (''
               allow-newer:
                 cardano-binary:base
                 , cardano-crypto-class:base
@@ -339,7 +338,7 @@
                 , word-array >= 0.1.0.0
                 , secp256k1-haskell >= 0.6
                 , inline-r >= 0.10.5
-            '' else ""
+            ''
           );
         };
 
