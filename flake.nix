@@ -1,7 +1,7 @@
 {
   description = "plutarch";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs?rev=a0a69be4b5ee63f1b5e75887a406e9194012b492";
 
   inputs.haskell-nix.url = "github:input-output-hk/haskell.nix";
   inputs.haskell-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -41,7 +41,7 @@
 
   outputs = inputs@{ self, nixpkgs, iohk-nix, haskell-nix, hercules-ci-effects, haskell-nix-extra-hackage, ... }:
     let
-      supportedSystems = with nixpkgs.lib.systems.supported; tier1 ++ tier2 ++ tier3;
+      supportedSystems = nixpkgs.lib.systems.flakeExposed;
 
       perSystem = nixpkgs.lib.genAttrs supportedSystems;
 
