@@ -2,30 +2,58 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
+-- | Value-related functionality. In order to keep the interface efficient and
+-- safe at the same time, there is a type-level distinction between 'PValue's
+-- that are guaranteed to be properly normalized and those that provide no
+-- such guarantee.
+--
+-- Also for efficiency reasons, the Ada-specific functions assume that there
+-- can be only one token name for the Ada currency symbol, and they don't chek
+-- whether it matches 'Plutus.adaToken'.
 module Plutarch.Api.V1.Value (
   PValue (PValue),
   PCurrencySymbol (PCurrencySymbol),
   PTokenName (PTokenName),
   KeyGuarantees (Unsorted, Sorted),
   AmountGuarantees (NoGuarantees, NonZero, Positive),
+
+  -- * Conversions and assertions
   passertSorted,
   passertPositive,
   pforgetPositive,
   pforgetSorted,
   pnormalize,
+
+  -- * Creation
   psingleton,
   psingletonData,
   pconstantSingleton,
   pconstantPositiveSingleton,
+
+  -- * Combining values
   punionWith,
   punionWithData,
+
+  -- * Lookups
   pvalueOf,
+  plovelaceValueOf,
+
+  -- * Ada-specific
+  padaSymbol,
+  padaSymbolData,
+  padaToken,
+  padaTokenData,
+  pisAdaOnlyValue,
+  padaOnlyValue,
+  pnoAdaValue,
 ) where
 
 import qualified Plutus.V1.Ledger.Api as Plutus
 
 import Plutarch.Api.V1.AssocMap (KeyGuarantees (Sorted, Unsorted), PMap)
 import qualified Plutarch.Api.V1.AssocMap as AssocMap
+import Plutarch.Bool (pif')
+import Plutarch.FFI (foreignImport)
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
@@ -33,7 +61,9 @@ import Plutarch.Lift (
   PLifted,
   PUnsafeLiftDecl,
  )
+import qualified Plutarch.List as List
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
+import qualified PlutusTx as PlutusTx
 import qualified PlutusTx.Monoid as PlutusTx
 import qualified PlutusTx.Semigroup as PlutusTx
 
@@ -191,6 +221,60 @@ pvalueOf = phoistAcyclic $
       # 0
       # plam (\map -> AssocMap.pfoldAt # token # 0 # plam pfromData # pfromData map)
       # pto value
+
+-- | The 'PCurrencySymbol' of the Ada currency.
+padaSymbol :: Term s PCurrencySymbol
+padaSymbol = phoistAcyclic (foreignImport $ PlutusTx.liftCode Plutus.adaSymbol)
+
+-- | Data-encoded 'PCurrencySymbol' of the Ada currency.
+padaSymbolData :: Term s (PAsData PCurrencySymbol)
+padaSymbolData = phoistAcyclic (pdata padaSymbol)
+
+-- | The 'PTokenName' of the Ada currency.
+padaToken :: Term s PTokenName
+padaToken = phoistAcyclic (foreignImport $ PlutusTx.liftCode Plutus.adaToken)
+
+-- | Data-encoded 'PTokenName' of the Ada currency.
+padaTokenData :: Term s (PAsData PTokenName)
+padaTokenData = phoistAcyclic (pdata padaToken)
+
+-- | Test if the value contains nothing but Ada
+pisAdaOnlyValue :: Term s (PValue 'Sorted 'Positive :--> PBool)
+pisAdaOnlyValue = phoistAcyclic $
+  plam $ \value ->
+    pmatch (pto $ pto value) $ \case
+      PNil -> pcon PTrue
+      PCons x xs -> pnull # xs #&& pfstBuiltin # x #== padaSymbolData
+
+-- | Value without any non-Ada
+padaOnlyValue :: Term s (PValue 'Sorted v :--> PValue 'Sorted v)
+padaOnlyValue = phoistAcyclic $
+  plam $ \value ->
+    pmatch (pto $ pto value) $ \case
+      PNil -> value
+      PCons x _ ->
+        pif' # (pfstBuiltin # x #== padaSymbolData)
+          # pcon (PValue $ pcon $ AssocMap.PMap $ List.psingleton # x)
+          # pcon (PValue AssocMap.pempty)
+
+-- | Value without any Ada
+pnoAdaValue :: Term s (PValue 'Sorted v :--> PValue 'Sorted v)
+pnoAdaValue = phoistAcyclic $
+  plam $ \value ->
+    pmatch (pto $ pto value) $ \case
+      PNil -> value
+      PCons x xs -> pif' # (pfstBuiltin # x #== padaSymbolData) # pcon (PValue $ pcon $ AssocMap.PMap xs) # value
+
+-- | The amount of Lovelace in value
+plovelaceValueOf :: Term s (PValue 'Sorted v :--> PInteger)
+plovelaceValueOf = phoistAcyclic $
+  plam $ \value ->
+    pmatch (pto $ pto value) $ \case
+      PNil -> 0
+      PCons x _ ->
+        pif' # (pfstBuiltin # x #== padaSymbolData)
+          # (pfromData $ psndBuiltin #$ phead #$ pto $ pfromData $ psndBuiltin # x)
+          # 0
 
 {- | Combine two 'PValue's applying the given function to any pair of
  quantities with the same asset class. Note that the result is _not_
