@@ -2,14 +2,15 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
--- | Value-related functionality. In order to keep the interface efficient and
--- safe at the same time, there is a type-level distinction between 'PValue's
--- that are guaranteed to be properly normalized and those that provide no
--- such guarantee.
---
--- Also for efficiency reasons, the Ada-specific functions assume that there
--- can be only one token name for the Ada currency symbol, and they don't chek
--- whether it matches 'Plutus.adaToken'.
+{- | Value-related functionality. In order to keep the interface efficient and
+ safe at the same time, there is a type-level distinction between 'PValue's
+ that are guaranteed to be properly normalized and those that provide no
+ such guarantee.
+
+ Also for efficiency reasons, the Ada-specific functions assume that there
+ can be only one token name for the Ada currency symbol, and they don't chek
+ whether it matches 'Plutus.adaToken'.
+-}
 module Plutarch.Api.V1.Value (
   PValue (PValue),
   PCurrencySymbol (PCurrencySymbol),
