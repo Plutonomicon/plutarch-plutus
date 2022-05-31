@@ -52,8 +52,8 @@ import Plutarch.Internal (punsafeAsClosedTerm)
 import Plutarch.Prelude
 import Plutarch.Test.Benchmark (Benchmark, mkBenchmark, scriptSize)
 import Plutarch.Test.ListSyntax (ListSyntax, listSyntaxAdd, listSyntaxAddSubList, runListSyntax)
-import Plutus.V1.Ledger.Scripts (Script)
-import qualified Plutus.V1.Ledger.Scripts as Scripts
+import PlutusLedgerApi.V1.Scripts (Script)
+import qualified PlutusLedgerApi.V1.Scripts as Scripts
 import Test.Hspec (Expectation, Spec, describe, it)
 import Test.Hspec.Core.Spec (SpecM, getSpecDescriptionPath)
 

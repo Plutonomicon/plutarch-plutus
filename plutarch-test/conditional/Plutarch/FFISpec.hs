@@ -22,7 +22,7 @@ import Plutarch.List (pconvertLists)
 import Plutarch.Prelude
 import Plutarch.Rec qualified as Rec
 import Plutarch.Rec.TH (deriveAll)
-import Plutus.V1.Ledger.Api (
+import PlutusLedgerApi.V1 (
   Address (Address),
   Credential (ScriptCredential),
   CurrencySymbol,
@@ -52,15 +52,14 @@ import Plutus.V1.Ledger.Api (
   adaToken,
   getTxId,
  )
-import Plutus.V1.Ledger.Contexts qualified as Contexts
-import Plutus.V1.Ledger.Interval qualified as Interval
-import Plutus.V1.Ledger.Scripts (fromCompiledCode)
-import Plutus.V1.Ledger.Value qualified as Value
+import PlutusLedgerApi.V1.Contexts qualified as Contexts
+import PlutusLedgerApi.V1.Interval qualified as Interval
+import PlutusLedgerApi.V1.Scripts (fromCompiledCode)
+import PlutusLedgerApi.V1.Value qualified as Value
 import PlutusTx (CompiledCode, applyCode)
 import PlutusTx qualified
 import PlutusTx.Builtins.Internal (BuiltinBool, BuiltinUnit)
 import PlutusTx.Prelude
-import Shrink (shrinkScript, shrinkScriptSp, withoutTactics)
 
 import Test.Hspec
 import Test.Tasty.HUnit ((@?=))
@@ -73,15 +72,13 @@ printCode :: CompiledCode a -> String
 printCode = printScript . fromCompiledCode
 
 printShrunkCode :: CompiledCode a -> String
-printShrunkCode = printScript . shrink . shrink . shrink . fromCompiledCode
-  where
-    shrink = shrinkScriptSp (withoutTactics ["strongUnsubs", "weakUnsubs"])
+printShrunkCode = printScript . fromCompiledCode -- TODO: Plutonomy?
 
 printEvaluatedCode :: CompiledCode a -> Either EvalError String
 printEvaluatedCode = fmap printScript . fstOf3 . evalScript . fromCompiledCode
 
 printShrunkTerm :: ClosedTerm a -> String
-printShrunkTerm x = printScript $ shrinkScript $ compile x
+printShrunkTerm x = printScript $ compile x -- TODO: Plutonomy?
 
 printEvaluatedTerm :: ClosedTerm a -> Either EvalError String
 printEvaluatedTerm s = fmap printScript . fstOf3 . evalScript $ compile s

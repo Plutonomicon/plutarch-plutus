@@ -7,7 +7,7 @@ module Plutarch.Api.V1.Value (
   PTokenName (PTokenName),
 ) where
 
-import qualified Plutus.V1.Ledger.Api as Plutus
+import qualified PlutusLedgerApi.V1 as Plutus
 
 import Plutarch.Api.V1.AssocMap (PMap)
 import Plutarch.Lift (

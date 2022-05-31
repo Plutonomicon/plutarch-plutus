@@ -3,9 +3,10 @@
 module Plutarch.Evaluate (evaluateBudgetedScript, evaluateScript, evalScript, evalScript', EvalError) where
 
 import Data.Text (Text)
-import Plutus.V1.Ledger.Scripts (Script (Script))
-import qualified Plutus.V1.Ledger.Scripts as Scripts
+import PlutusLedgerApi.V1.Scripts (Script (Script))
+import qualified PlutusLedgerApi.V1.Scripts as Scripts
 import qualified PlutusCore as PLC
+import PlutusCore.Evaluation.Machine.ExBudgetingDefaults (defaultCekParameters)
 import PlutusCore.Evaluation.Machine.ExBudget (
   ExBudget (ExBudget),
   ExRestrictingBudget (ExRestrictingBudget),
@@ -55,5 +56,5 @@ evalTerm ::
   , [Text]
   )
 evalTerm budget t =
-  case Cek.runCekDeBruijn PLC.defaultCekParameters (Cek.restricting (ExRestrictingBudget budget)) Cek.logEmitter t of
+  case Cek.runCekDeBruijn defaultCekParameters (Cek.restricting (ExRestrictingBudget budget)) Cek.logEmitter t of
     (errOrRes, Cek.RestrictingSt (ExRestrictingBudget final), logs) -> (errOrRes, budget `minusExBudget` final, logs)

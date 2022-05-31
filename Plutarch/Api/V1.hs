@@ -97,8 +97,8 @@ import qualified Plutarch.Api.V1.Value as Value
 
 import Data.Coerce (coerce)
 
-import qualified Plutus.V1.Ledger.Api as Plutus
-import qualified Plutus.V1.Ledger.Scripts as Plutus
+import qualified PlutusLedgerApi.V1 as Plutus
+import qualified PlutusLedgerApi.V1.Scripts as Plutus
 
 import Plutarch (compile)
 import Plutarch.Api.Internal.Hashing (hashData, hashScriptWithPrefix)

@@ -16,22 +16,6 @@
         "type": "github"
       }
     },
-    "Shrinker": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1645834494,
-        "narHash": "sha256-q1GQipRjHJDuspJOD/cwCUKryW8lSFLe1Qf/IBkSeaM=",
-        "owner": "Plutonomicon",
-        "repo": "Shrinker",
-        "rev": "f23017cb938c83e979a89e9ec941252122fddddb",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Plutonomicon",
-        "repo": "Shrinker",
-        "type": "github"
-      }
-    },
     "cabal-32": {
       "flake": false,
       "locked": {
@@ -119,17 +103,17 @@
     "cardano-prelude": {
       "flake": false,
       "locked": {
-        "lastModified": 1641566029,
-        "narHash": "sha256-CylaHhO4zbZ1dEAv8yWp1swP1xys/s2Sbxg3a2pdnCI=",
-        "owner": "locallycompact",
+        "lastModified": 1653997332,
+        "narHash": "sha256-E+YSfUsvxdoOr7n7fz4xd7zb4z8XBRGNYOKipc2A1pw=",
+        "owner": "mlabs-haskell",
         "repo": "cardano-prelude",
-        "rev": "93f95047bb36a055bdd56fb0cafd887c072cdce2",
+        "rev": "713c7ae79a4d538fcd653c976a652913df1567b9",
         "type": "github"
       },
       "original": {
-        "owner": "locallycompact",
+        "owner": "mlabs-haskell",
         "repo": "cardano-prelude",
-        "rev": "93f95047bb36a055bdd56fb0cafd887c072cdce2",
+        "rev": "713c7ae79a4d538fcd653c976a652913df1567b9",
         "type": "github"
       }
     },
@@ -431,8 +415,7 @@
         "hydra": "hydra",
         "nix-tools": "nix-tools",
         "nixpkgs": [
-          "haskell-nix",
-          "nixpkgs-unstable"
+          "nixpkgs"
         ],
         "nixpkgs-2003": "nixpkgs-2003",
         "nixpkgs-2105": "nixpkgs-2105",
@@ -566,22 +549,6 @@
       "original": {
         "id": "hydra",
         "type": "indirect"
-      }
-    },
-    "inline-r": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1644844599,
-        "narHash": "sha256-q39Dp5hj4u5Lx6wWwPoc9CbyocH3KutYDmWVd3xevgo=",
-        "owner": "tweag",
-        "repo": "haskellR",
-        "rev": "c3ba1023480e26ade420896bcb629ceaad59f308",
-        "type": "github"
-      },
-      "original": {
-        "owner": "tweag",
-        "repo": "haskellR",
-        "type": "github"
       }
     },
     "iohk-nix": {
@@ -826,6 +793,22 @@
       }
     },
     "nixpkgs_5": {
+      "locked": {
+        "lastModified": 1653845079,
+        "narHash": "sha256-7ghaQZ+7JXLI9FgNH8+RQHAt3/ubT92j8NtjZleP6t4=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "b62ada430501de88dfbb08cea4eb98ead3a5e3e7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_6": {
       "flake": false,
       "locked": {
         "lastModified": 1645493675,
@@ -884,7 +867,7 @@
         "haskell-language-server": "haskell-language-server_2",
         "haskell-nix": "haskell-nix_2",
         "iohk-nix": "iohk-nix_2",
-        "nixpkgs": "nixpkgs_5",
+        "nixpkgs": "nixpkgs_6",
         "pre-commit-hooks-nix": "pre-commit-hooks-nix",
         "sphinxcontrib-haddock": "sphinxcontrib-haddock"
       },
@@ -936,7 +919,6 @@
     },
     "root": {
       "inputs": {
-        "Shrinker": "Shrinker",
         "cardano-base": "cardano-base",
         "cardano-crypto": "cardano-crypto",
         "cardano-prelude": "cardano-prelude",
@@ -946,12 +928,8 @@
         "haskell-nix": "haskell-nix",
         "haskell-nix-extra-hackage": "haskell-nix-extra-hackage",
         "hercules-ci-effects": "hercules-ci-effects",
-        "inline-r": "inline-r",
         "iohk-nix": "iohk-nix",
-        "nixpkgs": [
-          "haskell-nix",
-          "nixpkgs-unstable"
-        ],
+        "nixpkgs": "nixpkgs_5",
         "plutus": "plutus",
         "protolude": "protolude",
         "secp256k1-haskell": "secp256k1-haskell"

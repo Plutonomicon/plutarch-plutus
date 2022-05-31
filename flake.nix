@@ -1,8 +1,11 @@
 {
   description = "plutarch";
 
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
   inputs.haskell-nix.url = "github:input-output-hk/haskell.nix";
-  inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
+  inputs.haskell-nix.inputs.nixpkgs.follows = "nixpkgs";
+
   inputs.hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
 
   inputs.haskell-nix-extra-hackage.url = "github:mlabs-haskell/haskell-nix-extra-hackage";
@@ -13,29 +16,26 @@
   inputs.iohk-nix.flake = false;
   # we use sphinxcontrib-haddock input
   inputs.plutus.url = "github:input-output-hk/plutus";
-  # https://github.com/input-output-hk/cardano-prelude/pull/162
-  inputs.cardano-prelude.url = "github:locallycompact/cardano-prelude?rev=93f95047bb36a055bdd56fb0cafd887c072cdce2";
+  # https://github.com/input-output-hk/cardano-prelude/pull/163
+  inputs.cardano-prelude.url = "github:mlabs-haskell/cardano-prelude?rev=713c7ae79a4d538fcd653c976a652913df1567b9";
   inputs.cardano-prelude.flake = false;
   inputs.cardano-base.url = "github:input-output-hk/cardano-base";
   inputs.cardano-base.flake = false;
   inputs.cardano-crypto.url = "github:input-output-hk/cardano-crypto?rev=07397f0e50da97eaa0575d93bee7ac4b2b2576ec";
   inputs.cardano-crypto.flake = false;
-  inputs.flat.url = "github:Quid2/flat";
-  inputs.flat.flake = false;
-  inputs.Shrinker.url = "github:Plutonomicon/Shrinker";
-  inputs.Shrinker.flake = false;
   inputs.haskell-language-server.url = "github:haskell/haskell-language-server";
   inputs.haskell-language-server.flake = false;
 
   inputs.secp256k1-haskell.url = "github:haskoin/secp256k1-haskell";
   inputs.secp256k1-haskell.flake = false;
 
-  inputs.inline-r.url = "github:tweag/haskellR";
-  inputs.inline-r.flake = false;
-
   # https://github.com/protolude/protolude/pull/133#issuecomment-1112150422 RC not uploaded to hackage yet...
   inputs.protolude.url = "github:protolude/protolude";
   inputs.protolude.flake = false;
+
+  # 0.4.5 hasn't been published to Hackage...
+  inputs.flat.url = "github:Quid2/flat";
+  inputs.flat.flake = false;
 
   inputs.emanote.url = "github:srid/emanote/master";
 
@@ -45,84 +45,72 @@
 
       perSystem = nixpkgs.lib.genAttrs supportedSystems;
 
-      nixpkgsFor = system: import nixpkgs {
+      pkgsFor = system: import nixpkgs {
         inherit system;
         overlays = [ haskell-nix.overlay (import "${iohk-nix}/overlays/crypto") ];
-        inherit (haskell-nix) config;
+        # This only does bad things for us...
+        # inherit (haskell-nix) config;
       };
-      nixpkgsFor' = system: import nixpkgs { inherit system; };
+      pkgsFor' = system: import nixpkgs { inherit system; };
 
-      ghcVersion = "ghc922";
-      isGhc9 = x: builtins.trace "Checking whether ${x} is GHC 9.*" (true);
+      defaultGhcVersion = "ghc922";
+      isGhc9 = x: builtins.trace "Checking whether ${x} is GHC 9.*" (builtins.substring 3 1 x == "9");
 
       # https://github.com/input-output-hk/haskell.nix/issues/1177
       nonReinstallablePkgs = [
-        "rts"
-        "ghc-heap"
-        "ghc-prim"
-        "integer-gmp"
-        "integer-simple"
+        "array"
+        "array"
         "base"
-        "deepseq"
-        "array"
-        "ghc-boot-th"
-        "pretty"
-        "template-haskell"
-        # ghcjs custom packages
-        "ghcjs-prim"
-        "ghcjs-th"
-        "ghc-bignum"
-        "exceptions"
-        "stm"
-        "ghc-boot"
-        "ghc"
-        "Cabal"
-        "Win32"
-        "array"
         "binary"
         "bytestring"
+        "Cabal"
         "containers"
+        "deepseq"
         "directory"
+        "exceptions"
         "filepath"
+        "ghc"
+        "ghc-bignum"
         "ghc-boot"
+        "ghc-boot"
+        "ghc-boot-th"
         "ghc-compact"
+        "ghc-heap"
+        # "ghci"
+        # "haskeline"
+        "ghcjs-prim"
+        "ghcjs-th"
         "ghc-prim"
-        # "ghci" "haskeline"
+        "ghc-prim"
         "hpc"
+        "integer-gmp"
+        "integer-simple"
         "mtl"
         "parsec"
+        "pretty"
         "process"
+        "rts"
+        "stm"
+        "template-haskell"
+        "terminfo"
         "text"
         "time"
         "transformers"
         "unix"
+        "Win32"
         "xhtml"
-        "terminfo"
       ];
 
-      tools.fourmolu = { };
-      tools.haskell-language-server = {
-        modules = [
-          { inherit nonReinstallablePkgs; }
-        ];
-        compiler-nix-name = ghcVersion;
-        # For some reason it doesn't use the latest version automatically.
-        index-state =
-          let l = builtins.attrNames (import "${haskell-nix.inputs.hackage}/index-state-hashes.nix"); in
-          builtins.elemAt l (builtins.length l - 1);
-        name = "haskell-language-server";
-        version = "latest";
-        cabalProjectLocal = ''
-          allow-newer: *:*
-
-          constraints:
-            primitive-unlifted < 1.0.0.0
-
-          package haskell-language-server
-            flags: +use-ghc-stub +pedantic +ignore-plugins-ghc-bounds -alternateNumberFormat -brittany -eval -haddockComments -hlint -retrie -splice -stylishhaskell -tactic
-        '';
-        src = "${inputs.haskell-language-server}";
-      };
+      hlsFor' = compiler-nix-name: system:
+        let pkgs = pkgsFor system; in
+        pkgs.haskell-nix.cabalProject' {
+          modules = [
+            { inherit nonReinstallablePkgs; }
+          ];
+          inherit compiler-nix-name;
+          src = "${inputs.haskell-language-server}";
+        };
+      hlsFor = compiler-nix-name: system: (hlsFor' compiler-nix-name system).hsPkgs.haskell-language-server.components.exes.haskell-language-server;
 
       haskellModules = [
         ({ config, pkgs, hsPkgs, ... }: {
@@ -147,10 +135,10 @@
 
       myhackage = system: compiler-nix-name: haskell-nix-extra-hackage.mkHackageFor system compiler-nix-name (
         [
+          "${inputs.flat}"
           "${inputs.protolude}"
           "${inputs.cardano-prelude}/cardano-prelude"
           "${inputs.cardano-crypto}"
-          "${inputs.flat}"
           "${inputs.cardano-base}/binary"
           "${inputs.cardano-base}/cardano-crypto-class"
           "${inputs.plutus}/plutus-core"
@@ -159,11 +147,8 @@
           "${inputs.plutus}/prettyprinter-configurable"
           "${inputs.plutus}/word-array"
           "${inputs.secp256k1-haskell}"
-        ] ++ (
-          if isGhc9 compiler-nix-name
-            then [ "${inputs.inline-r}/inline-r" ]
-            else [ "${inputs.Shrinker}" ]
-        )
+          "${inputs.plutus}/plutus-tx-plugin" # necessary for FFI tests
+        ]
       );
 
       applyPlutarchDep = pkgs: o:
@@ -181,16 +166,8 @@
                 , canonical-json:bytestring
                 , plutus-core:ral
                 , plutus-core:some
-                , monoidal-containers:base
-                , hedgehog:mmorph
-                , text:deepseq
-                , hedgehog:template-haskell
-                , protolude:base
-                , protolude:ghc-prim
-                , protolude:transformers-compat
-                , protolude:hashable
-                , protolude:bytestring
                 , int-cast:base
+                , inline-r:singletons
 
               constraints:
                 OneTuple >= 0.3.1
@@ -361,20 +338,17 @@
                 , wl-pprint-annotated >= 0.1.0.1
                 , word-array >= 0.1.0.0
                 , secp256k1-haskell >= 0.6
+                , inline-r >= 0.10.5
             '' else ""
           );
         };
 
-      projectForGhc = ghcName: flagDevelopment: system:
-        let pkgs = nixpkgsFor system; in
-        let pkgs' = nixpkgsFor' system; in
-        let addSubDir = target: subdir: source:
-          if source.src == target
-          then source // { subdirs = source.subdirs ++ [ subdir ]; }
-          else source; in
+      projectForGhc = compiler-nix-name: flagDevelopment: system:
+        let pkgs = pkgsFor system; in
+        let pkgs' = pkgsFor' system; in
         let pkgSet = pkgs.haskell-nix.cabalProject' (applyPlutarchDep pkgs {
           src = ./.;
-          compiler-nix-name = ghcName;
+          inherit compiler-nix-name;
           modules = [
             {
               packages.plutarch-test.flags.development = flagDevelopment;
@@ -392,27 +366,25 @@
               pkgs'.cabal-install
               pkgs'.hlint
               pkgs'.haskellPackages.cabal-fmt
+              pkgs'.haskellPackages.fourmolu_0_6_0_0
               pkgs'.nixpkgs-fmt
               pkgSet.hsPkgs.hspec-discover.components.exes.hspec-discover
+              # (hlsFor compiler-nix-name system)
             ];
-
-            inherit tools;
           };
         }); in
         pkgSet;
 
-      projectFor = projectForGhc ghcVersion;
+      projectFor = projectForGhc defaultGhcVersion;
       projectFor810 = projectForGhc "ghc8107";
 
       formatCheckFor = system:
         let
-          pkgs = nixpkgsFor system;
-          pkgs' = nixpkgsFor' system;
-          t = pkgs.haskell-nix.tools ghcVersion { inherit (tools) fourmolu haskell-language-server; };
+          pkgs' = pkgsFor' system;
         in
-        pkgs.runCommand "format-check"
+        pkgs'.runCommand "format-check"
           {
-            nativeBuildInputs = [ pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt t.fourmolu ];
+            nativeBuildInputs = [ pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt pkgs'.haskellPackages.fourmolu_0_6_0_0 ];
           } ''
           export LC_CTYPE=C.UTF-8
           export LC_ALL=C.UTF-8
@@ -425,11 +397,11 @@
 
       haddock = system:
         let
-          pkgs = nixpkgsFor system;
+          pkgs = pkgsFor system;
           sphinxcontrib-haddock =
             pkgs.callPackage inputs.plutus.inputs.sphinxcontrib-haddock { pythonPackages = pkgs.python3Packages; };
           haddock-combine = pkgs.callPackage "${inputs.plutus}/nix/lib/haddock-combine.nix" {
-            ghc = pkgs.haskell-nix.compiler.${ghcVersion};
+            ghc = pkgs.haskell-nix.compiler.${defaultGhcVersion};
             inherit (sphinxcontrib-haddock) sphinxcontrib-haddock;
           };
           # If you use this, filter out pretty-show, it doesn't work if not.
@@ -461,7 +433,7 @@
         };
       plutarchWebsiteStatic = system:
         let
-          pkgs = nixpkgsFor system;
+          pkgs = pkgsFor system;
           configFile = (pkgs.formats.yaml { }).generate "emanote-configFile" {
             template.baseUrl = "/"; # Use this when pushing to github.io: "/plutarch/";
           };
@@ -481,7 +453,7 @@
         rec {
           type = "app";
           # '' is required for escaping ${} in nix
-          script = (nixpkgsFor system).writers.writeBash "emanoteLiveReload.sh" ''
+          script = (pkgsFor system).writers.writeBash "emanoteLiveReload.sh" ''
             set -xe
             export PORT="''${EMANOTE_PORT:-7072}"
             ${inputs.emanote.defaultPackage.${system}}/bin/emanote --layers ${path} run --port "$PORT"
@@ -491,7 +463,7 @@
 
       # Checks the shell script using ShellCheck
       checkedShellScript = system: name: text:
-        ((nixpkgsFor system).writeShellApplication {
+        ((pkgsFor system).writeShellApplication {
           inherit name text;
         }) + "/bin/${name}";
 
@@ -504,7 +476,6 @@
           type = "app";
           program = checkedShellScript system "plutarch-test-${name}"
             ''
-              cd ${self}/plutarch-test
               ${flake.packages."plutarch-test:exe:plutarch-test"}/bin/plutarch-test;
             '';
         };
@@ -514,10 +485,10 @@
       #
       # In effect, this allows us to run an 'app' as part of the build process (eg: in CI).
       flakeApp2Derivation = system: appName:
-        (nixpkgsFor system).runCommand appName { } "${self.apps.${system}.${appName}.program} | tee $out";
+        (pkgsFor system).runCommand appName { } "${self.apps.${system}.${appName}.program} | tee $out";
     in
     {
-      inherit tools applyPlutarchDep;
+      inherit hlsFor hlsFor' applyPlutarchDep;
 
       # Build matrix. Plutarch is built against different GHC versions, and 'development' flag.
       projectMatrix = {
@@ -558,7 +529,7 @@
       # we provide this attribute for running the checks locally, using:
       #   nix build .#check.x86_64-linux
       check = perSystem (system:
-        (nixpkgsFor system).runCommand "combined-test"
+        (pkgsFor system).runCommand "combined-test"
           {
             checksss = builtins.attrValues self.checks.${system};
           } ''

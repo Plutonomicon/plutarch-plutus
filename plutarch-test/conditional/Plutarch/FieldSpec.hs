@@ -2,8 +2,8 @@
 
 module Plutarch.FieldSpec (spec) where
 
-import Plutus.V1.Ledger.Address (Address (Address))
-import Plutus.V1.Ledger.Credential (Credential (PubKeyCredential))
+import PlutusLedgerApi.V1.Address (Address (Address))
+import PlutusLedgerApi.V1.Credential (Credential (PubKeyCredential))
 import qualified PlutusCore as PLC
 import qualified PlutusTx
 import Test.Tasty.HUnit

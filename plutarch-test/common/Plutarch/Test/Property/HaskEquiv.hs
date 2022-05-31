@@ -31,7 +31,7 @@ import Control.Monad.IO.Class (liftIO)
 import Data.SOP (NP (Nil, (:*)))
 import Data.Text (Text)
 import Hedgehog (Gen, Property, PropertyT, annotate, annotateShow, assert, forAll, property, (===))
-import Plutus.V1.Ledger.Scripts (Script (Script, unScript))
+import PlutusLedgerApi.V1.Scripts (Script (Script, unScript))
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
 import PlutusCore.Evaluation.Machine.ExMemory (ExCPU (ExCPU), ExMemory (ExMemory))
 

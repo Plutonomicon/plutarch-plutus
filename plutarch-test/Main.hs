@@ -11,8 +11,8 @@ import qualified Plutarch.MonadicSpec as MonadicSpec
 import Plutarch.Test.Run (noUnusedGoldens, hspecAndReturnForest)
 import Test.Hspec (Spec, describe)
 #else
-import qualified Plutarch.FFISpec as FFISpec
-import Test.Hspec (Spec, describe, hspec)
+-- import qualified Plutarch.FFISpec as FFISpec
+import Test.Hspec (Spec, hspec)
 #endif
 
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
@@ -39,6 +39,6 @@ spec = do
     FieldSpec.spec
     MonadicSpec.spec
 #else
-  describe "GHC-8-only" $ do
-    FFISpec.spec
+  -- describe "GHC-8-only" $ do
+  --   FFISpec.spec
 #endif

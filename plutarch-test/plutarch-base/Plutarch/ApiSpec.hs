@@ -15,9 +15,9 @@ module Plutarch.ApiSpec (
 import Test.Tasty.HUnit
 
 import Control.Monad.Trans.Cont (cont, runCont)
-import Plutus.V1.Ledger.Api
-import qualified Plutus.V1.Ledger.Interval as Interval
-import qualified Plutus.V1.Ledger.Value as Value
+import PlutusLedgerApi.V1
+import qualified PlutusLedgerApi.V1.Interval as Interval
+import qualified PlutusLedgerApi.V1.Value as Value
 
 import Plutarch.Api.V1 (
   PCredential,
