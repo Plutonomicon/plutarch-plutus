@@ -31,6 +31,8 @@ module Plutarch.Api.V1 (
   Value.PValue (PValue),
   Value.PCurrencySymbol (PCurrencySymbol),
   Value.PTokenName (PTokenName),
+  Value.KeyGuarantees (Unsorted, Sorted),
+  Value.AmountGuarantees (NoGuarantees, NonZero, Positive),
 
   -- ** Crypto
   Crypto.PPubKeyHash (PPubKeyHash),

@@ -6,6 +6,7 @@ module Plutarch.Test.Run (
 
 import Control.Monad (forM_)
 import Data.Default (def)
+import Data.List (isPrefixOf)
 import Data.Set (Set)
 import qualified Data.Set as Set
 import qualified Data.Text as T
@@ -76,7 +77,10 @@ unusedGoldens :: FilePath -> [FilePath] -> IO [FilePath]
 unusedGoldens goldenBasePath usedGoldens' = do
   let usedGoldens = foldMap knownGoldens usedGoldens'
   allGoldens <- Set.fromList . fmap (goldenBasePath </>) <$> listDirectory goldenBasePath
-  pure $ Set.toList $ allGoldens `Set.difference` usedGoldens
+  pure $
+    Set.toList $
+      Set.filter (not . isPrefixOf (goldenBasePath </> "FFI.")) $
+        allGoldens `Set.difference` usedGoldens
   where
     knownGoldens :: FilePath -> Set FilePath
     knownGoldens fp =

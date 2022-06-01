@@ -1,4 +1,4 @@
-module Plutarch.Either (PEither (..)) where
+module Plutarch.Either (PEither (PLeft, PRight)) where
 
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic, HasDatatypeInfo, I (I))

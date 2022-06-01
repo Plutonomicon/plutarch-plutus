@@ -22,7 +22,8 @@ import Plutarch.List (pconvertLists)
 import Plutarch.Prelude
 import Plutarch.Rec qualified as Rec
 import Plutarch.Rec.TH (deriveAll)
-import PlutusLedgerApi.V1 (
+import Plutarch.Test
+import Plutus.V1.Ledger.Api (
   Address (Address),
   Credential (ScriptCredential),
   CurrencySymbol,
@@ -52,14 +53,15 @@ import PlutusLedgerApi.V1 (
   adaToken,
   getTxId,
  )
-import PlutusLedgerApi.V1.Contexts qualified as Contexts
-import PlutusLedgerApi.V1.Interval qualified as Interval
-import PlutusLedgerApi.V1.Scripts (fromCompiledCode)
-import PlutusLedgerApi.V1.Value qualified as Value
+import Plutus.V1.Ledger.Contexts qualified as Contexts
+import Plutus.V1.Ledger.Interval qualified as Interval
+import Plutus.V1.Ledger.Scripts (fromCompiledCode)
+import Plutus.V1.Ledger.Value qualified as Value
 import PlutusTx (CompiledCode, applyCode)
 import PlutusTx qualified
 import PlutusTx.Builtins.Internal (BuiltinBool, BuiltinUnit)
 import PlutusTx.Prelude
+import Shrink (shrinkScript, shrinkScriptSp, withoutTactics)
 
 import Test.Hspec
 import Test.Tasty.HUnit ((@?=))
@@ -72,13 +74,15 @@ printCode :: CompiledCode a -> String
 printCode = printScript . fromCompiledCode
 
 printShrunkCode :: CompiledCode a -> String
-printShrunkCode = printScript . fromCompiledCode -- TODO: Plutonomy?
+printShrunkCode = printScript . shrink . shrink . shrink . fromCompiledCode
+  where
+    shrink = shrinkScriptSp (withoutTactics ["strongUnsubs", "weakUnsubs"])
 
 printEvaluatedCode :: CompiledCode a -> Either EvalError String
 printEvaluatedCode = fmap printScript . fstOf3 . evalScript . fromCompiledCode
 
 printShrunkTerm :: ClosedTerm a -> String
-printShrunkTerm x = printScript $ compile x -- TODO: Plutonomy?
+printShrunkTerm x = printScript $ shrinkScript $ compile x
 
 printEvaluatedTerm :: ClosedTerm a -> Either EvalError String
 printEvaluatedTerm s = fmap printScript . fstOf3 . evalScript $ compile s
@@ -382,6 +386,34 @@ spec = describe "FFI" $ do
       it "evaluate a Data -> PubKeyHash -> Bool function to False" $
         printEvaluatedTerm (importedTxSignedBy' # pconstantData info # pconstant "0123")
           @?= Right "(program 1.0.0 False)"
+
+    describe "Benchmarks" $ do
+      pgoldenSpec $ do
+        "Value.isZero"
+          @| (foreignImport $$(PlutusTx.compile [||toBuiltin . Value.isZero||]) :: Term _ (PSValue :--> PBool))
+          @-> \isZero -> passertNot (isZero # foreignImport (PlutusTx.liftCode val))
+        "Value.valueOf"
+          @| ( foreignImport $$(PlutusTx.compile [||Value.valueOf||]) ::
+                Term _ (PSValue :--> PCurrencySymbol :--> PTokenName :--> PInteger)
+             )
+          @-> \valueOf ->
+            ( valueOf
+                # foreignImport (PlutusTx.liftCode val)
+                # foreignImport (PlutusTx.liftCode adaSymbol)
+                # foreignImport (PlutusTx.liftCode adaToken)
+            )
+              #@?= (2 :: Term _ PInteger)
+        "mappend @Value"
+          @| (foreignImport $$(PlutusTx.compile [||mappend @Value||]) :: Term _ (PSValue :--> PSValue :--> PSValue))
+          @-> \plus ->
+            (plus # foreignImport (PlutusTx.liftCode val) # foreignImport (PlutusTx.liftCode val))
+              #@?= (foreignImport (PlutusTx.liftCode $ val <> val) :: Term _ PSValue)
+        "(==) @Value"
+          @| ( foreignImport $$(PlutusTx.compile [||\a (b :: Value) -> toBuiltin (a == b)||]) ::
+                Term _ (PSValue :--> PSValue :--> PBool)
+             )
+          @-> \eq ->
+            passert (eq # foreignImport (PlutusTx.liftCode val) # foreignImport (PlutusTx.liftCode val))
   where
     sampleScottEncoding = "(program 1.0.0 (delay (\\i0 -> i1 False 6 \"Hello\")))"
     sampleScottField = "(program 1.0.0 (\\i0 -> force i1 (\\i0 -> \\i0 -> \\i0 -> i2)))"
