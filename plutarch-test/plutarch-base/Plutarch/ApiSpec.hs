@@ -72,6 +72,7 @@ spec = do
         let pmint = PValue.pconstantPositiveSingleton (pconstant "c0") (pconstant "sometoken") 1
             pmintOtherToken = PValue.pconstantPositiveSingleton (pconstant "c0") (pconstant "othertoken") 1
             pmintOtherSymbol = PValue.pconstantPositiveSingleton (pconstant "c7") (pconstant "sometoken") 1
+            pada = PValue.pconstantPositiveSingleton PValue.padaSymbol PValue.padaToken 10_000_000
             growingSymbols, symbols :: [EnclosedTerm (PValue 'Sorted 'Positive)]
             growingSymbols =
               scanl
@@ -170,6 +171,29 @@ spec = do
             @| PValue.passertSorted
               # (pcon $ PValue.PValue $ AssocMap.psingleton # pconstant "c0" # AssocMap.pempty)
             @-> pfails
+        "Ada" @\ do
+          "adaSymbol" @| PValue.padaSymbol @-> psucceeds
+          "adaToken" @| PValue.padaToken @-> psucceeds
+          "lovelaceValueOf" @| PValue.plovelaceValueOf @-> \p -> passert (p # pada #== 10_000_000)
+          "isAdaOnlyValue" @\ do
+            "itself" @| PValue.pisAdaOnlyValue @-> \p -> passert (p # pada)
+            "true on empty" @| PValue.pisAdaOnlyValue # (mempty :: Term _ (PValue 'Sorted 'Positive)) @-> passert
+            "trivially false" @| PValue.pisAdaOnlyValue # pmint @-> passertNot
+            "less trivially false" @| PValue.pisAdaOnlyValue # (pmint <> pada) @-> passertNot
+          "adaOnlyValue" @\ do
+            "itself" @| PValue.padaOnlyValue @-> \p -> passert (p # (pada <> pmint) #== pada)
+            "on empty"
+              @| PValue.padaOnlyValue # (mempty :: Term _ (PValue 'Sorted 'Positive))
+              @-> \p -> passert (p #== mempty)
+            "on non-Ada" @| PValue.padaOnlyValue # pmint @-> \p -> passert (p #== mempty)
+            "on Ada" @| PValue.padaOnlyValue # pada @-> \p -> passert (p #== pada)
+          "noAdaValue" @\ do
+            "itself" @| PValue.pnoAdaValue @-> \p -> passert (p # (pada <> pmint) #== pmint)
+            "on empty"
+              @| PValue.pnoAdaValue # (mempty :: Term _ (PValue 'Sorted 'Positive))
+              @-> \p -> passert (p #== mempty)
+            "on non-Ada" @| PValue.pnoAdaValue # pmint @-> \p -> passert (p #== pmint)
+            "on Ada" @| PValue.pnoAdaValue # pada @-> \p -> passert (p #== mempty)
     describe "map" $ do
       pgoldenSpec $ do
         let pmap, pdmap, emptyMap, doubleMap, otherMap :: Term _ (AssocMap.PMap 'Sorted PByteString PInteger)
