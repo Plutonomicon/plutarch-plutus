@@ -106,10 +106,12 @@
         let pkgs = pkgsFor system; in
         pkgs.haskell-nix.cabalProject' {
           modules = [{
+            inherit nonReinstallablePkgs;
             reinstallableLibGhc = true;
           }];
           inherit compiler-nix-name;
           src = "${inputs.haskell-language-server}";
+          sha256map."https://github.com/pepeiborra/ekg-json"."7a0af7a8fd38045fd15fb13445bdcc7085325460" = "fVwKxGgM0S4Kv/4egVAAiAjV7QB5PBqMVMCfsv7otIQ=";
         };
       hlsFor = compiler-nix-name: system: (hlsFor' compiler-nix-name system).hsPkgs.haskell-language-server.components.exes.haskell-language-server;
 
