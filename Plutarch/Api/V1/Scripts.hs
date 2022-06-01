@@ -11,7 +11,7 @@ module Plutarch.Api.V1.Scripts (
   PValidatorHash (PValidatorHash),
 ) where
 
-import qualified Plutus.V1.Ledger.Api as Plutus
+import qualified PlutusLedgerApi.V1 as Plutus
 
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),

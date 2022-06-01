@@ -5,7 +5,7 @@ module Plutarch.POrdSpec (spec) where
 
 import Data.ByteString (ByteString)
 
-import Plutus.V1.Ledger.Api (
+import PlutusLedgerApi.V1 (
   Address (Address),
   Credential (PubKeyCredential, ScriptCredential),
   PubKeyHash (PubKeyHash),

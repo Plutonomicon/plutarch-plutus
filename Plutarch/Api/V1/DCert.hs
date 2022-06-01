@@ -16,7 +16,7 @@ module Plutarch.Api.V1.DCert (
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic, I (I))
 
-import qualified Plutus.V1.Ledger.Api as Plutus
+import qualified PlutusLedgerApi.V1 as Plutus
 
 import Plutarch.Api.V1.Address (PStakingCredential)
 import Plutarch.Api.V1.Crypto (PPubKeyHash)

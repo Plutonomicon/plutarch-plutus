@@ -19,7 +19,7 @@ module Plutarch.ScriptsSpec (
 
 import Data.Text (Text)
 
-import qualified Plutus.V1.Ledger.Api as Plutus
+import qualified PlutusLedgerApi.V1 as Plutus
 
 import Data.Coerce (coerce)
 

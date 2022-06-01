@@ -9,7 +9,7 @@ import Data.Functor.Compose (Compose (Compose))
 import Data.String (fromString)
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic, I (I), NS (S, Z))
-import Plutus.V1.Ledger.Api (
+import PlutusLedgerApi.V1 (
   Address (Address),
   Credential (PubKeyCredential, ScriptCredential),
   CurrencySymbol,

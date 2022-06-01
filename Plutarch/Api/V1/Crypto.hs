@@ -7,7 +7,7 @@ module Plutarch.Api.V1.Crypto (
   pubKeyHash,
 ) where
 
-import qualified Plutus.V1.Ledger.Api as Plutus
+import qualified PlutusLedgerApi.V1 as Plutus
 
 import Data.Coerce (coerce)
 import Plutarch.Api.Internal.Hashing (hashLedgerBytes)

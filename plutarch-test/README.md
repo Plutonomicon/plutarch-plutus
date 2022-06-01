@@ -3,6 +3,7 @@
 To run the tests using Nix:
 
 ```sh-session
+$ cd $projectroot/plutarch-test
 # Runs tests
 $ nix run .#test-ghc9-nodev
 # To run the above in GHC 8.10 instead:

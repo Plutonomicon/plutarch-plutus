@@ -14,7 +14,7 @@ import qualified Data.ByteString.Lazy as LB
 import qualified Data.ByteString.Short as SBS
 import Data.Int (Int64)
 import GHC.Generics (Generic)
-import Plutus.V1.Ledger.Api (ExBudget (ExBudget), ExCPU, ExMemory, Script)
+import PlutusLedgerApi.V1 (ExBudget (ExBudget), ExCPU, ExMemory, Script)
 
 data Benchmark = Benchmark
   { exBudgetCPU :: ExCPU
