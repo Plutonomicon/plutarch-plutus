@@ -40,7 +40,7 @@ module Plutarch.Api.V1.AssocMap (
   punionWithData,
 ) where
 
-import qualified Plutus.V1.Ledger.Api as Plutus
+import qualified PlutusLedgerApi.V1 as Plutus
 import qualified PlutusTx.AssocMap as PlutusMap
 import qualified PlutusTx.Monoid as PlutusTx
 import qualified PlutusTx.Semigroup as PlutusTx

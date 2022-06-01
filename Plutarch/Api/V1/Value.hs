@@ -49,7 +49,7 @@ module Plutarch.Api.V1.Value (
   pnoAdaValue,
 ) where
 
-import qualified Plutus.V1.Ledger.Api as Plutus
+import qualified PlutusLedgerApi.V1 as Plutus
 
 import Plutarch.Api.V1.AssocMap (KeyGuarantees (Sorted, Unsorted), PMap)
 import qualified Plutarch.Api.V1.AssocMap as AssocMap

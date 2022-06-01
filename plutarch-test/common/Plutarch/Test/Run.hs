@@ -21,7 +21,7 @@ import System.Environment (getArgs, withArgs)
 import System.Exit (ExitCode (ExitFailure), exitWith)
 import System.FilePath ((</>))
 import Test.Hspec (Spec)
-import Test.Hspec.Core.Runner (defaultConfig, evalSpec, evaluateSummary, readConfig, runSpecForest)
+import Test.Hspec.Core.Runner (defaultConfig, evalSpec, evaluateResult, readConfig, runSpecForest)
 import Test.Hspec.Core.Spec (SpecTree, Tree (Leaf, Node, NodeWithCleanup))
 
 {- | Like `hspec`,  but returns the test forest after running the tests.
@@ -33,7 +33,7 @@ hspecAndReturnForest spec0 = do
   (config, spec) <- evalSpec defaultConfig spec0
   getArgs >>= readConfig config
     >>= withArgs [] . runSpecForest spec
-    >>= evaluateSummary -- use evaluateResult instead, if you are on #656
+    >>= evaluateResult
   return spec
 
 {- | Ensures that there are no unused goldens left behind.

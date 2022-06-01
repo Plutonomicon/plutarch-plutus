@@ -52,8 +52,8 @@ import Plutarch.Internal (punsafeAsClosedTerm)
 import Plutarch.Prelude
 import Plutarch.Test.Benchmark (Benchmark, mkBenchmark, scriptSize)
 import Plutarch.Test.ListSyntax (ListSyntax, listSyntaxAdd, listSyntaxAddSubList, runListSyntax)
-import Plutus.V1.Ledger.Scripts (Script)
-import qualified Plutus.V1.Ledger.Scripts as Scripts
+import PlutusLedgerApi.V1.Scripts (Script)
+import qualified PlutusLedgerApi.V1.Scripts as Scripts
 import Test.Hspec (Expectation, Spec, describe, it)
 import Test.Hspec.Core.Spec (SpecM, getSpecDescriptionPath)
 
@@ -157,8 +157,9 @@ mkGoldenKeyFromSpecPath path =
   case nonEmpty path of
     Nothing -> error "cannot use currentGoldenKey from top-level spec"
     Just anc ->
-      case nonEmpty (NE.drop 1 . NE.reverse $ anc) of
-        Nothing -> error "cannot use currentGoldenKey from top-level spec (after sydtest-discover)"
+      -- hspec-discover adds a top-level entry; remove that.
+      case nonEmpty (NE.drop 1 anc) of
+        Nothing -> error "cannot use currentGoldenKey from top-level spec (after hspec-discover)"
         Just path ->
           sconcat $ fmap GoldenKey path
 
@@ -275,8 +276,8 @@ evalScriptAlwaysWithBenchmark script =
   let (res, exbudget, _traces) = evalScript script
       bench = mkBenchmark exbudget (scriptSize script)
    in ( case res of
-        Left _ -> compile perror
-        Right x -> x
+          Left _ -> compile perror
+          Right x -> x
       , bench
       )
 

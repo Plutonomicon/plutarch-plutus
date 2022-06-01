@@ -45,10 +45,10 @@ import GHC.Stack (HasCallStack)
 import GHC.Word (Word64)
 import Plutarch.Evaluate (evalScript)
 import Plutarch.Reducible (Reducible (Reduce))
-import Plutus.V1.Ledger.Scripts (Script (Script))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import qualified PlutusCore as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
+import PlutusLedgerApi.V1.Scripts (Script (Script))
 import qualified UntypedPlutusCore as UPLC
 
 {- $hoisted
@@ -204,7 +204,9 @@ plam' f = Term $ \i ->
     getArityBuiltin (RBuiltin PLC.Sha2_256) = Just 0
     getArityBuiltin (RBuiltin PLC.Sha3_256) = Just 0
     getArityBuiltin (RBuiltin PLC.Blake2b_256) = Just 0
-    getArityBuiltin (RBuiltin PLC.VerifySignature) = Just 2
+    getArityBuiltin (RBuiltin PLC.VerifyEd25519Signature) = Just 2
+    getArityBuiltin (RBuiltin PLC.VerifyEcdsaSecp256k1Signature) = Just 2
+    getArityBuiltin (RBuiltin PLC.VerifySchnorrSecp256k1Signature) = Just 2
     getArityBuiltin (RBuiltin PLC.AppendString) = Just 1
     getArityBuiltin (RBuiltin PLC.EqualsString) = Just 1
     getArityBuiltin (RBuiltin PLC.EncodeUtf8) = Just 0

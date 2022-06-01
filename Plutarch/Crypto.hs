@@ -30,4 +30,4 @@ pblake2b_256 = punsafeBuiltin PLC.Blake2b_256
 
 -- | Verify the signature against the public key and message.
 pverifySignature :: Term s (PByteString :--> PByteString :--> PByteString :--> PBool)
-pverifySignature = punsafeBuiltin PLC.VerifySignature
+pverifySignature = punsafeBuiltin PLC.VerifyEd25519Signature

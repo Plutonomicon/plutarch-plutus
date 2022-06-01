@@ -16,7 +16,7 @@ import qualified Plutarch.ApiSpec as ApiSpec
 import qualified Plutarch.Monadic as P
 import Plutarch.Prelude
 import Plutarch.Test
-import Plutus.V1.Ledger.Api
+import PlutusLedgerApi.V1
 import Test.Hspec
 
 spec :: Spec

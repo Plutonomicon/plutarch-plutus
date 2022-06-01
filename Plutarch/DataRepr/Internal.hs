@@ -129,7 +129,7 @@ import Plutarch.Trace (ptraceError)
 import Plutarch.TryFrom (PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
 import Plutarch.Unit (PUnit (PUnit))
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
-import qualified Plutus.V1.Ledger.Api as Ledger
+import qualified PlutusLedgerApi.V1 as Ledger
 
 import Plutarch.Reducible (Reduce, Reducible)
 

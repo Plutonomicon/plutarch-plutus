@@ -15,10 +15,10 @@ import Plutarch.Builtin (pasByteStr, pasConstr)
 import Plutarch.DataRepr (PDataSum (PDataSum), pasDataSum)
 import Plutarch.Prelude
 import Plutarch.Test
-import Plutus.V1.Ledger.Address (Address (Address))
-import Plutus.V1.Ledger.Api (DCert (DCertGenesis), toData)
-import Plutus.V1.Ledger.Contexts (ScriptPurpose (Certifying, Minting, Rewarding, Spending), TxOutRef (TxOutRef))
-import Plutus.V1.Ledger.Credential (
+import PlutusLedgerApi.V1 (DCert (DCertGenesis), toData)
+import PlutusLedgerApi.V1.Address (Address (Address))
+import PlutusLedgerApi.V1.Contexts (ScriptPurpose (Certifying, Minting, Rewarding, Spending), TxOutRef (TxOutRef))
+import PlutusLedgerApi.V1.Credential (
   Credential (PubKeyCredential, ScriptCredential),
   StakingCredential (StakingPtr),
  )

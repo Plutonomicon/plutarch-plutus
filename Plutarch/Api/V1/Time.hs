@@ -6,7 +6,7 @@ module Plutarch.Api.V1.Time (
   PPOSIXTimeRange,
 ) where
 
-import qualified Plutus.V1.Ledger.Api as Plutus
+import qualified PlutusLedgerApi.V1 as Plutus
 
 import Plutarch.Api.V1.Interval (PInterval)
 import Plutarch.Lift (
