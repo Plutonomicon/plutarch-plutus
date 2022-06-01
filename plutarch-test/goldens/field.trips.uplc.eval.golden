@@ -1,0 +1,7 @@
+lam.tripSum (program 1.0.0 (\i0 -> (\i0 -> (\i0 -> addInteger (addInteger (unIData (force headList i2)) (unIData (force headList i1))) (unIData (force headList (force tailList i1)))) (force tailList i1)) (force (force sndPair) (unConstrData i1))))
+lam.getY (program 1.0.0 (\i0 -> force headList (force tailList (force (force sndPair) (unConstrData i1)))))
+lam.tripYZ (program 1.0.0 (\i0 -> (\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))) (force tailList (force (force sndPair) (unConstrData i1)))))
+tripSum.A (program 1.0.0 1000)
+tripSum.B (program 1.0.0 100)
+tripSum.C (program 1.0.0 10)
+tripYZ=tripZY (program 1.0.0 (\i0 -> (\i0 -> addInteger (unIData (force headList i1)) (unIData (force headList (force tailList i1)))) (force tailList (force (force sndPair) (unConstrData i1)))))

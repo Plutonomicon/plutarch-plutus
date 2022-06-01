@@ -18,9 +18,9 @@ import Control.Monad (forM_)
 import Control.Monad.Trans.Cont (cont, runCont)
 import Data.String (fromString)
 import Numeric (showHex)
-import Plutus.V1.Ledger.Api
-import qualified Plutus.V1.Ledger.Interval as Interval
-import qualified Plutus.V1.Ledger.Value as Value
+import PlutusLedgerApi.V1
+import qualified PlutusLedgerApi.V1.Interval as Interval
+import qualified PlutusLedgerApi.V1.Value as Value
 import PlutusTx.Monoid (inv)
 
 import Plutarch.Api.V1 (
