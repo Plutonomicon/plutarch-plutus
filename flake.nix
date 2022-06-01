@@ -40,9 +40,9 @@
 
   outputs = inputs@{ self, nixpkgs, nixpkgs-latest, iohk-nix, haskell-nix, hercules-ci-effects, haskell-nix-extra-hackage, ... }:
     let
-      supportedSystems = nixpkgs.lib.systems.flakeExposed;
+      supportedSystems = nixpkgs-latest.lib.systems.flakeExposed;
 
-      perSystem = nixpkgs.lib.genAttrs supportedSystems;
+      perSystem = nixpkgs-latest.lib.genAttrs supportedSystems;
 
       pkgsFor = system: import nixpkgs {
         inherit system;
