@@ -39,8 +39,8 @@ import Plutarch.Internal (ClosedTerm, PType, Term, compile, phoistAcyclic, punsa
 import qualified Plutarch.Internal as PI
 import Plutarch.Internal.PLam (pinl, plam, (#), (#$))
 import Plutarch.Internal.PlutusType (PCon (pcon), PMatch (pmatch), PlutusType (PInner, pcon', pmatch'))
-import PlutusLedgerApi.V1.Scripts (Script (Script))
 import PlutusCore.Pretty (prettyPlcReadableDebug)
+import PlutusLedgerApi.V1.Scripts (Script (Script))
 
 -- | Prettyprint a compiled Script via the PLC pretty printer
 printScript :: Script -> String

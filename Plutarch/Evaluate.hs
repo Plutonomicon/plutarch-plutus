@@ -3,16 +3,16 @@
 module Plutarch.Evaluate (evaluateBudgetedScript, evaluateScript, evalScript, evalScript', EvalError) where
 
 import Data.Text (Text)
-import PlutusLedgerApi.V1.Scripts (Script (Script))
-import qualified PlutusLedgerApi.V1.Scripts as Scripts
 import qualified PlutusCore as PLC
-import PlutusCore.Evaluation.Machine.ExBudgetingDefaults (defaultCekParameters)
 import PlutusCore.Evaluation.Machine.ExBudget (
   ExBudget (ExBudget),
   ExRestrictingBudget (ExRestrictingBudget),
   minusExBudget,
  )
+import PlutusCore.Evaluation.Machine.ExBudgetingDefaults (defaultCekParameters)
 import PlutusCore.Evaluation.Machine.ExMemory (ExCPU (ExCPU), ExMemory (ExMemory))
+import PlutusLedgerApi.V1.Scripts (Script (Script))
+import qualified PlutusLedgerApi.V1.Scripts as Scripts
 import UntypedPlutusCore (
   Program (Program),
   Term,

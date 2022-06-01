@@ -157,10 +157,11 @@
       applyPlutarchDep = pkgs: o:
         let h = myhackage pkgs.system o.compiler-nix-name; in
         o // {
-          modules = haskellModules ++ [ h.module ] ++ (o.modules or []);
-          extra-hackages = [ (import h.hackageNix) ] ++ (o.extra-hackages or []);
-          extra-hackage-tarballs = { _xNJUd_plutarch-hackage = h.hackageTarball; } // (o.extra-hackage-tarballs or {});
-          cabalProjectLocal = (o.cabalProjectLocal or "") + (''
+          modules = haskellModules ++ [ h.module ] ++ (o.modules or [ ]);
+          extra-hackages = [ (import h.hackageNix) ] ++ (o.extra-hackages or [ ]);
+          extra-hackage-tarballs = { _xNJUd_plutarch-hackage = h.hackageTarball; } // (o.extra-hackage-tarballs or { });
+          cabalProjectLocal = (o.cabalProjectLocal or "") + (
+            ''
               allow-newer:
                 cardano-binary:base
                 , cardano-crypto-class:base
