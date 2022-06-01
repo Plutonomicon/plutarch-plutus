@@ -1,10 +1,9 @@
 {
   description = "plutarch";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs?rev=a0a69be4b5ee63f1b5e75887a406e9194012b492";
-
   inputs.haskell-nix.url = "github:input-output-hk/haskell.nix";
-  inputs.haskell-nix.inputs.nixpkgs.follows = "nixpkgs";
+  inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
+  inputs.nixpkgs-latest.url = "github:NixOS/nixpkgs?rev=a0a69be4b5ee63f1b5e75887a406e9194012b492";
 
   inputs.hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
 
@@ -39,7 +38,7 @@
 
   inputs.emanote.url = "github:srid/emanote/master";
 
-  outputs = inputs@{ self, nixpkgs, iohk-nix, haskell-nix, hercules-ci-effects, haskell-nix-extra-hackage, ... }:
+  outputs = inputs@{ self, nixpkgs, nixpkgs-latest, iohk-nix, haskell-nix, hercules-ci-effects, haskell-nix-extra-hackage, ... }:
     let
       supportedSystems = nixpkgs.lib.systems.flakeExposed;
 
@@ -51,9 +50,11 @@
         # This only does bad things for us...
         # inherit (haskell-nix) config;
       };
-      pkgsFor' = system: import nixpkgs { inherit system; };
+      pkgsFor' = system: import nixpkgs-latest { inherit system; };
 
-      defaultGhcVersion = "ghc922";
+      fourmoluFor = system: (pkgsFor' system).haskell.packages.ghc922.fourmolu_0_6_0_0;
+
+      defaultGhcVersion = "ghc923";
       isGhc9 = x: builtins.trace "Checking whether ${x} is GHC 9.*" (builtins.substring 3 1 x == "9");
 
       # https://github.com/input-output-hk/haskell.nix/issues/1177
@@ -104,9 +105,9 @@
       hlsFor' = compiler-nix-name: system:
         let pkgs = pkgsFor system; in
         pkgs.haskell-nix.cabalProject' {
-          modules = [
-            { inherit nonReinstallablePkgs; }
-          ];
+          modules = [{
+            reinstallableLibGhc = true;
+          }];
           inherit compiler-nix-name;
           src = "${inputs.haskell-language-server}";
         };
@@ -365,10 +366,10 @@
               pkgs'.cabal-install
               pkgs'.hlint
               pkgs'.haskellPackages.cabal-fmt
-              pkgs'.haskellPackages.fourmolu_0_6_0_0
+              (fourmoluFor system)
               pkgs'.nixpkgs-fmt
               pkgSet.hsPkgs.hspec-discover.components.exes.hspec-discover
-              # (hlsFor compiler-nix-name system)
+              (hlsFor compiler-nix-name system)
             ];
           };
         }); in
@@ -383,7 +384,7 @@
         in
         pkgs'.runCommand "format-check"
           {
-            nativeBuildInputs = [ pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt pkgs'.haskellPackages.fourmolu_0_6_0_0 ];
+            nativeBuildInputs = [ pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt (fourmoluFor system) ];
           } ''
           export LC_CTYPE=C.UTF-8
           export LC_ALL=C.UTF-8
