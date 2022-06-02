@@ -45,6 +45,9 @@ import qualified PlutusTx.AssocMap as PlutusMap
 import qualified PlutusTx.Monoid as PlutusTx
 import qualified PlutusTx.Semigroup as PlutusTx
 
+import qualified GHC.Generics as GHC
+import Generics.SOP (Generic, I (I))
+import Plutarch (pfix)
 import Plutarch.Builtin (PBuiltinList (PCons, PNil), PBuiltinMap, ppairDataBuiltin)
 import Plutarch.Lift (
   PConstantDecl,
@@ -89,11 +92,8 @@ import Plutarch.Prelude (
   (#$),
   type (:-->),
  )
-import Plutarch.Rec (ScottEncoded, ScottEncoding, field, letrec)
 import Plutarch.Show (PShow)
-import Plutarch.Unsafe (punsafeDowncast)
-
-import qualified Rank2
+import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 
 import Prelude hiding (all, any, filter, lookup, null)
 
@@ -283,38 +283,6 @@ passertSorted = phoistAcyclic $
 pforgetSorted :: Term s (PMap 'Sorted k v) -> Term s (PMap g k v)
 pforgetSorted v = punsafeDowncast (pto v)
 
-data MapUnion k v f = MapUnion
-  { merge :: f (PBuiltinMap k v :--> PBuiltinMap k v :--> PBuiltinMap k v)
-  , mergeInsert :: f (PBuiltinPair (PAsData k) (PAsData v) :--> PBuiltinMap k v :--> PBuiltinMap k v :--> PBuiltinMap k v)
-  }
-
-type instance
-  ScottEncoded (MapUnion k v) a =
-    (PBuiltinMap k v :--> PBuiltinMap k v :--> PBuiltinMap k v)
-      :--> (PBuiltinPair (PAsData k) (PAsData v) :--> PBuiltinMap k v :--> PBuiltinMap k v :--> PBuiltinMap k v)
-      :--> a
-
-instance Rank2.Functor (MapUnion k v) where
-  f <$> x@MapUnion {} =
-    MapUnion
-      { merge = f (merge x)
-      , mergeInsert = f (mergeInsert x)
-      }
-
-instance Rank2.Foldable (MapUnion k v) where
-  foldMap f x@MapUnion {} = f (merge x) <> f (mergeInsert x)
-
-instance Rank2.Traversable (MapUnion k v) where
-  traverse f x@MapUnion {} = MapUnion <$> f (merge x) <*> f (mergeInsert x)
-
-instance Rank2.Distributive (MapUnion k v) where
-  cotraverse w f =
-    MapUnion
-      { merge = w (merge <$> f)
-      , mergeInsert = w (mergeInsert <$> f)
-      }
-instance Rank2.DistributiveTraversable (MapUnion k v)
-
 instance
   (POrd k, PIsData k, PIsData v, Semigroup (Term s v)) =>
   Semigroup (Term s (PMap 'Sorted k v))
@@ -356,6 +324,53 @@ punionWith = phoistAcyclic $
     \combine -> punionWithData #$ plam $
       \x y -> pdata (combine # pfromData x # pfromData y)
 
+data MapUnionCarrier k v s = MapUnionCarrier
+  { merge :: Term s (PBuiltinMap k v :--> PBuiltinMap k v :--> PBuiltinMap k v)
+  , mergeInsert :: Term s (PBuiltinPair (PAsData k) (PAsData v) :--> PBuiltinMap k v :--> PBuiltinMap k v :--> PBuiltinMap k v)
+  }
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic, PlutusType)
+
+mapUnionCarrier :: (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapUnionCarrier k v :--> MapUnionCarrier k v)
+mapUnionCarrier = phoistAcyclic $ plam \combine self ->
+  let mergeInsert = (pmatch self \(MapUnionCarrier {mergeInsert}) -> mergeInsert)
+      merge = (pmatch self \(MapUnionCarrier {merge}) -> merge)
+   in pcon $
+        MapUnionCarrier
+          { merge = plam $ \xs ys -> pmatch xs $ \case
+              PNil -> ys
+              PCons x xs' -> mergeInsert # x # xs' # ys
+          , mergeInsert = plam $ \x xs ys ->
+              pmatch ys $ \case
+                PNil -> pcons # x # xs
+                PCons y1 ys' ->
+                  plet y1 $ \y ->
+                    plet (pfstBuiltin # x) $ \xk ->
+                      plet (pfstBuiltin # y) $ \yk ->
+                        pif
+                          (xk #== yk)
+                          ( pcons
+                              # (ppairDataBuiltin # xk #$ combine # (psndBuiltin # x) # (psndBuiltin # y))
+                              #$ merge
+                              # xs
+                              # ys'
+                          )
+                          ( pif
+                              (pfromData xk #< pfromData yk)
+                              ( pcons
+                                  # x
+                                  # (mergeInsert # y # ys' # xs)
+                              )
+                              ( pcons
+                                  # y
+                                  # (mergeInsert # x # xs # ys')
+                              )
+                          )
+          }
+
+mapUnion :: forall k v s. (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapUnionCarrier k v)
+mapUnion = phoistAcyclic $ plam \combine -> (punsafeCoerce pfix) # (mapUnionCarrier # combine :: Term _ (MapUnionCarrier k v :--> MapUnionCarrier k v))
+
 {- | Combine two 'PMap's applying the given function to any two data-encoded
  values that share the same key.
 -}
@@ -370,44 +385,7 @@ punionWithData ::
     )
 punionWithData = phoistAcyclic $
   plam $ \combine x y ->
-    pcon $ PMap $ mapUnion # combine # field merge # pto x # pto y
-
-mapUnion ::
-  (POrd k, PIsData k) =>
-  Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> ScottEncoding (MapUnion k v) (a :: PType))
-mapUnion = plam $ \combine ->
-  letrec $ \MapUnion {merge, mergeInsert} ->
-    MapUnion
-      { merge = plam $ \xs ys -> pmatch xs $ \case
-          PNil -> ys
-          PCons x xs' -> mergeInsert # x # xs' # ys
-      , mergeInsert = plam $ \x xs ys ->
-          pmatch ys $ \case
-            PNil -> pcons # x # xs
-            PCons y1 ys' ->
-              plet y1 $ \y ->
-                plet (pfstBuiltin # x) $ \xk ->
-                  plet (pfstBuiltin # y) $ \yk ->
-                    pif
-                      (xk #== yk)
-                      ( pcons
-                          # (ppairDataBuiltin # xk #$ combine # (psndBuiltin # x) # (psndBuiltin # y))
-                          #$ merge
-                          # xs
-                          # ys'
-                      )
-                      ( pif
-                          (pfromData xk #< pfromData yk)
-                          ( pcons
-                              # x
-                              # (mergeInsert # y # ys' # xs)
-                          )
-                          ( pcons
-                              # y
-                              # (mergeInsert # x # xs # ys')
-                          )
-                      )
-      }
+    pcon $ PMap $ (pmatch (mapUnion # combine) \(MapUnionCarrier {merge}) -> merge) # pto x # pto y
 
 -- | Difference of two maps. Return elements of the first map not existing in the second map.
 pdifference ::

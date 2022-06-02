@@ -9,6 +9,7 @@ module Plutarch.Internal.PLam (
 ) where
 
 import Data.Kind (Type)
+import GHC.Stack (HasCallStack)
 import Plutarch.Internal (PType, S, Term, papp, plam', (:-->))
 
 {- |
@@ -18,7 +19,7 @@ import Plutarch.Internal (PType, S, Term, papp, plam', (:-->))
   >>> f # x # y
   f x y
 -}
-(#) :: Term s (a :--> b) -> Term s a -> Term s b
+(#) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
 (#) = papp
 
 infixl 8 #
@@ -30,7 +31,7 @@ infixl 8 #
   >>> f # x #$ g # y # z
   f x (g y z)
 -}
-(#$) :: Term s (a :--> b) -> Term s a -> Term s b
+(#$) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
 (#$) = papp
 
 infixr 0 #$

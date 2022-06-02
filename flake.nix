@@ -346,18 +346,12 @@
           );
         };
 
-      projectForGhc = compiler-nix-name: flagDevelopment: system:
+      projectForGhc = compiler-nix-name: system:
         let pkgs = pkgsFor system; in
         let pkgs' = pkgsFor' system; in
         let pkgSet = pkgs.haskell-nix.cabalProject' (applyPlutarchDep pkgs {
           src = ./.;
           inherit compiler-nix-name;
-          modules = [
-            {
-              packages.plutarch-test.flags.development = flagDevelopment;
-              packages.plutarch.flags.development = flagDevelopment;
-            }
-          ];
           shell = {
             withHoogle = true;
 
@@ -495,21 +489,15 @@
 
       # Build matrix. Plutarch is built against different GHC versions, and 'development' flag.
       projectMatrix = {
-        ghc9 = {
-          nodev = perSystem (system: (projectFor false system));
-          dev = perSystem (system: (projectFor true system));
-        };
-        ghc810 = {
-          nodev = perSystem (system: (projectFor810 false system));
-          dev = perSystem (system: (projectFor810 true system));
-        };
+        ghc9 = perSystem projectFor;
+        ghc810 = perSystem projectFor810;
       };
 
       # Default build configuration.
-      project = self.projectMatrix.ghc9.nodev;
+      project = self.projectMatrix.ghc9;
       flake = perSystem (system: self.project.${system}.flake { });
 
-      haddockProject = perSystem (projectFor false);
+      haddockProject = self.project;
 
       packages = perSystem (system: self.flake.${system}.packages // {
         haddock = haddock system;
@@ -520,12 +508,10 @@
           self.flake.${system}.checks
           // {
             formatCheck = formatCheckFor system;
-            test-ghc9-nodev = flakeApp2Derivation system "test-ghc9-nodev";
-            test-ghc9-dev = flakeApp2Derivation system "test-ghc9-dev";
-            test-ghc810-nodev = flakeApp2Derivation system "test-ghc810-nodev";
-            test-ghc810-dev = flakeApp2Derivation system "test-ghc810-dev";
-            "ghc810-plutarch:lib:plutarch" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch:lib:plutarch";
-            "ghc810-plutarch:lib:plutarch-test" = (self.projectMatrix.ghc810.nodev.${system}.flake { }).packages."plutarch-test:lib:plutarch-test";
+            test-ghc9 = flakeApp2Derivation system "test-ghc9";
+            test-ghc810 = flakeApp2Derivation system "test-ghc810";
+            "ghc810-plutarch:lib:plutarch" = (self.projectMatrix.ghc810.${system}.flake { }).packages."plutarch:lib:plutarch";
+            "ghc810-plutarch:lib:plutarch-test" = (self.projectMatrix.ghc810.${system}.flake { }).packages."plutarch-test:lib:plutarch-test";
             hls = checkedShellScript system "hls" "${self.project.${system}.pkgs.haskell-language-server}/bin/haskell-language-server";
           });
       # Because `nix flake check` does not work with haskell.nix (due to IFD),
@@ -544,10 +530,8 @@
       apps = perSystem (system:
         self.flake.${system}.apps
         // {
-          test-ghc9-nodev = plutarchTestApp system "ghc9-nodev" self.projectMatrix.ghc9.nodev;
-          test-ghc9-dev = plutarchTestApp system "ghc9-dev" self.projectMatrix.ghc9.dev;
-          test-ghc810-nodev = plutarchTestApp system "ghc810-nodev" self.projectMatrix.ghc810.nodev;
-          test-ghc810-dev = plutarchTestApp system "ghc810-dev" self.projectMatrix.ghc810.dev;
+          test-ghc9 = plutarchTestApp system "ghc9" self.projectMatrix.ghc9;
+          test-ghc810 = plutarchTestApp system "ghc810" self.projectMatrix.ghc810;
 
           # `nix run .#docs` should be run from the Git repo.
           docs = plutarchWebsiteLive system "./docs";

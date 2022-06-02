@@ -32,10 +32,16 @@ module Plutarch.Internal.Other (
   popaque,
   plam,
   DerivePNewtype (DerivePNewtype),
+  PI.pgetConfig,
+  PI.Config (..),
+  PI.TracingMode (..),
+  PI.defaultConfig,
 ) where
 
 import Data.Coerce (Coercible, coerce)
-import Plutarch.Internal (ClosedTerm, PType, Term, compile, phoistAcyclic, punsafeCoerce, (:-->))
+import qualified Data.Text as T
+import GHC.Stack (HasCallStack)
+import Plutarch.Internal (ClosedTerm, Config, PType, Term, compile, phoistAcyclic, punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
 import Plutarch.Internal.PLam (pinl, plam, (#), (#$))
 import Plutarch.Internal.PlutusType (PCon (pcon), PMatch (pmatch), PlutusType (PInner, pcon', pmatch'))
@@ -54,8 +60,8 @@ printScript = show . prettyPlcReadableDebug . (\(Script s) -> s)
 
   > show . prettyPlcReadableDef . (\(Right p) -> p) . Scripts.mkTermToEvaluate . compile $ term
 -}
-printTerm :: ClosedTerm a -> String
-printTerm term = printScript $ compile term
+printTerm :: HasCallStack => Config -> ClosedTerm a -> String
+printTerm config term = printScript $ either (error . T.unpack) id $ compile config term
 
 {- |
   Safely coerce from a Term to it's 'PInner' representation.

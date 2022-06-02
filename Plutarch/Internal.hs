@@ -5,7 +5,7 @@ module Plutarch.Internal (
   (:-->),
   PDelayed,
   -- | $term
-  Term (Term, asRawTerm),
+  Term (..),
   asClosedRawTerm,
   mapTerm,
   plam',
@@ -31,8 +31,14 @@ module Plutarch.Internal (
   S (SI),
   PType,
   pthrow,
+  Config (..),
+  TracingMode (..),
+  defaultConfig,
+  pgetConfig,
+  TermMonad (..),
 ) where
 
+import Control.Monad.Reader (ReaderT (ReaderT), ask, runReaderT)
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
 import Crypto.Hash.IO (HashAlgorithm)
@@ -130,7 +136,21 @@ type PType = S -> Type
 
 type role Term phantom representational
 
-type TermMonad = Either Text
+data Config = Config
+  { tracingMode :: TracingMode
+  }
+
+data TracingMode = NoTracing | DoTracing | DetTracing
+
+-- Default is to be efficient
+defaultConfig :: Config
+defaultConfig =
+  Config
+    { tracingMode = NoTracing
+    }
+
+newtype TermMonad m = TermMonad {runTermMonad :: ReaderT Config (Either Text) m}
+  deriving newtype (Functor, Applicative, Monad)
 
 {- $term
  Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
@@ -265,7 +285,7 @@ plet v f = Term \i ->
     _ -> asRawTerm (papp (plam' f) v) i
 
 pthrow' :: HasCallStack => Text -> TermMonad a
-pthrow' msg = Left (fromString (prettyCallStack callStack) <> "\n\n" <> msg)
+pthrow' msg = TermMonad $ ReaderT $ const $ Left (fromString (prettyCallStack callStack) <> "\n\n" <> msg)
 
 pthrow :: HasCallStack => Text -> Term s a
 pthrow = Term . pure . pthrow'
@@ -311,6 +331,11 @@ pforce x = Term \i ->
 -}
 perror :: Term s a
 perror = Term \_ -> pure $ mkTermRes RError
+
+pgetConfig :: (Config -> Term s a) -> Term s a
+pgetConfig f = Term \lvl -> TermMonad $ do
+  config <- ask
+  runTermMonad $ asRawTerm (f config) lvl
 
 {- |
   Unsafely coerce the type-tag of a Term.
@@ -446,8 +471,9 @@ compile' t =
    in wrapped
 
 -- | Compile a (closed) Plutus Term to a usable script
-compile :: ClosedTerm a -> Either Text Script
-compile t = (Script . UPLC.Program () (PLC.defaultVersion ()) . compile') <$> asClosedRawTerm t
+compile :: Config -> ClosedTerm a -> Either Text Script
+compile config t = case asClosedRawTerm t of
+  TermMonad (ReaderT t') -> (Script . UPLC.Program () (UPLC.Version () 1 0 0) . compile') <$> t' config
 
-hashTerm :: ClosedTerm a -> Either Text Dig
-hashTerm t = hashRawTerm . getTerm <$> asRawTerm t 0
+hashTerm :: Config -> ClosedTerm a -> Either Text Dig
+hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTerm t 0) config

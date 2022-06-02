@@ -33,9 +33,10 @@ module Plutarch.Lift (
 import Control.Lens ((^?))
 import Data.Coerce (Coercible, coerce)
 import Data.Kind (Constraint, Type)
+import Data.Text (Text)
 import GHC.Stack (HasCallStack)
 import Plutarch.Evaluate (EvalError, evalScript)
-import Plutarch.Internal (ClosedTerm, PType, Term, compile, punsafeConstantInternal)
+import Plutarch.Internal (ClosedTerm, Config (Config, tracingMode), PType, Term, compile, punsafeConstantInternal, pattern DoTracing)
 import qualified PlutusCore as PLC
 import PlutusCore.Builtin (KnownTypeError, readKnownConstant)
 import PlutusCore.Evaluation.Machine.Exception (_UnliftingErrorE)
@@ -99,24 +100,27 @@ data LiftError
   = LiftError_EvalError EvalError
   | LiftError_KnownTypeError KnownTypeError
   | LiftError_FromRepr
+  | LiftError_CompilationError Text
   deriving stock (Eq)
 
 {- | Convert a Plutarch term to the associated Haskell value. Fail otherwise.
 This will fully evaluate the arbitrary closed expression, and convert the resulting value.
 -}
-plift' :: forall p. PUnsafeLiftDecl p => ClosedTerm p -> Either LiftError (PLifted p)
-plift' prog = case evalScript (compile prog) of
-  (Right (Scripts.unScript -> UPLC.Program _ _ term), _, _) ->
-    case readKnownConstant term of
-      Right r -> case pconstantFromRepr r of
-        Just h -> Right h
-        Nothing -> Left LiftError_FromRepr
-      Left e -> Left $ LiftError_KnownTypeError e
-  (Left e, _, _) -> Left $ LiftError_EvalError e
+plift' :: forall p. PUnsafeLiftDecl p => Config -> ClosedTerm p -> Either LiftError (PLifted p)
+plift' config prog = case compile config prog of
+  Left msg -> Left $ LiftError_CompilationError msg
+  Right script -> case evalScript script of
+    (Right (Scripts.unScript -> UPLC.Program _ _ term), _, _) ->
+      case readKnownConstant term of
+        Right r -> case pconstantFromRepr r of
+          Just h -> Right h
+          Nothing -> Left LiftError_FromRepr
+        Left e -> Left $ LiftError_KnownTypeError e
+    (Left e, _, _) -> Left $ LiftError_EvalError e
 
 -- | Like `plift'` but throws on failure.
 plift :: forall p. (HasCallStack, PLift p) => ClosedTerm p -> PLifted p
-plift prog = case plift' prog of
+plift prog = case plift' (Config {tracingMode = DoTracing}) prog of
   Right x -> x
   Left LiftError_FromRepr -> error "plift failed: pconstantFromRepr returned 'Nothing'"
   Left (LiftError_KnownTypeError e) ->
@@ -125,6 +129,7 @@ plift prog = case plift' prog of
           "plift failed: incorrect type: "
             <> maybe "absurd evaluation failure" show unliftErrMaybe
   Left (LiftError_EvalError e) -> error $ "plift failed: erring term: " <> show e
+  Left (LiftError_CompilationError msg) -> error $ "plift failed: compilation failed: " <> show msg
 
 {- | Newtype wrapper for deriving @PConstant@ when the wrapped type is directly
 represented by a builtin UPLC type that is /not/ @Data@.

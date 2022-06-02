@@ -102,10 +102,13 @@ import Data.Coerce (coerce)
 import qualified PlutusLedgerApi.V1 as Plutus
 import qualified PlutusLedgerApi.V1.Scripts as Plutus
 
-import Plutarch (compile)
+import Plutarch (Config, compile)
 import Plutarch.Api.Internal.Hashing (hashData, hashScriptWithPrefix)
 import Plutarch.Api.V1.Contexts (PScriptContext)
 import Plutarch.Prelude
+
+import qualified Data.Text as T
+import GHC.Stack (HasCallStack)
 
 -- On-chain Script Types
 
@@ -119,16 +122,16 @@ type PMintingPolicy = PData :--> PScriptContext :--> POpaque
 type PStakeValidator = PData :--> PScriptContext :--> POpaque
 
 -- | Compile a Validator
-mkValidator :: ClosedTerm PValidator -> Plutus.Validator
-mkValidator s = Plutus.Validator $ compile s
+mkValidator :: HasCallStack => Config -> ClosedTerm PValidator -> Plutus.Validator
+mkValidator config s = Plutus.Validator $ either (error . T.unpack) id $ compile config s
 
 -- | Compile a MintingPolicy
-mkMintingPolicy :: ClosedTerm PMintingPolicy -> Plutus.MintingPolicy
-mkMintingPolicy s = Plutus.MintingPolicy $ compile s
+mkMintingPolicy :: HasCallStack => Config -> ClosedTerm PMintingPolicy -> Plutus.MintingPolicy
+mkMintingPolicy config s = Plutus.MintingPolicy $ either (error . T.unpack) id $ compile config s
 
 -- | Compile a StakeValidator
-mkStakeValidator :: ClosedTerm PStakeValidator -> Plutus.StakeValidator
-mkStakeValidator s = Plutus.StakeValidator $ compile s
+mkStakeValidator :: HasCallStack => Config -> ClosedTerm PStakeValidator -> Plutus.StakeValidator
+mkStakeValidator config s = Plutus.StakeValidator $ either (error . T.unpack) id $ compile config s
 
 -- | Hash a Script, with the correct prefix for Plutus V1
 scriptHash :: Plutus.Script -> Plutus.ScriptHash

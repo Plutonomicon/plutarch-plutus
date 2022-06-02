@@ -19,6 +19,7 @@ module Plutarch.FFI (
 import Data.ByteString (ByteString)
 import Data.Kind (Constraint, Type)
 import Data.Text (Text)
+import qualified Data.Text as T
 import Data.Void (Void)
 import GHC.Generics (Generic)
 import GHC.TypeLits (TypeError)
@@ -32,10 +33,12 @@ import Generics.SOP.Type.Metadata (
  )
 import Plutarch (
   ClosedTerm,
+  Config,
   PDelayed,
   POpaque,
   PType,
   S,
+  compile,
   pcon,
   pdelay,
   pforce,
@@ -54,8 +57,6 @@ import Plutarch.Internal (
   RawTerm (RCompiled),
   Term (Term),
   TermResult (TermResult),
-  asClosedRawTerm,
-  compile',
  )
 import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.List (PList, PListLike (PElemConstraint, pcons, pelimList, pnil), pconvertLists, plistEquals)
@@ -63,7 +64,7 @@ import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Show (PShow)
 import Plutarch.String (PString)
 import Plutarch.Unit (PUnit)
-import PlutusLedgerApi.V1.Scripts (Script (unScript), fromCompiledCode)
+import PlutusLedgerApi.V1.Scripts (Script (Script, unScript), fromCompiledCode)
 import PlutusTx.Builtins.Internal (BuiltinBool, BuiltinByteString, BuiltinData, BuiltinUnit)
 import PlutusTx.Code (CompiledCode, CompiledCodeIn (DeserializedCode))
 import PlutusTx.Prelude (BuiltinString)
@@ -99,7 +100,7 @@ instance PEq a => PEq (PTxList a) where
   (#==) xs ys = plistEquals # xs # ys
 
 -- | Compile and export a Plutarch term so it can be used by `PlutusTx.applyCode`.
-foreignExport :: p >~< t => ClosedTerm p -> CompiledCode t
+foreignExport :: p >~< t => Config -> ClosedTerm p -> CompiledCode t
 foreignExport = unsafeForeignExport
 
 -- | Import compiled UPLC code (such as a spliced `PlutusTx.compile` result) as a Plutarch term.
@@ -107,7 +108,7 @@ foreignImport :: p >~< t => CompiledCode t -> ClosedTerm p
 foreignImport = unsafeForeignImport
 
 -- | Export Plutarch term of any type as @CompiledCode Void@.
-opaqueExport :: ClosedTerm p -> CompiledCode Void
+opaqueExport :: Config -> ClosedTerm p -> CompiledCode Void
 opaqueExport = unsafeForeignExport
 
 -- | Import compiled UPLC code of any type as a Plutarch opaque term.
@@ -115,18 +116,17 @@ opaqueImport :: CompiledCode t -> ClosedTerm POpaque
 opaqueImport = unsafeForeignImport
 
 -- | Seriously unsafe, may fail at run time or result in unexpected behaviour in your on-chain validator.
-unsafeForeignExport :: ClosedTerm p -> CompiledCode t
-unsafeForeignExport t = DeserializedCode program Nothing mempty
+unsafeForeignExport :: Config -> ClosedTerm p -> CompiledCode t
+unsafeForeignExport config t = DeserializedCode program Nothing mempty
   where
+    (Script (UPLC.Program _ version term)) = either (error . T.unpack) id $ compile config t
     program =
-      UPLC.Program () (UPLC.Version () 1 0 0) $
-        UPLC.termMapNames fakeNameDeBruijn $
-          compile' $
-            asClosedRawTerm t
+      UPLC.Program () version $
+        UPLC.termMapNames fakeNameDeBruijn term
 
 -- | Seriously unsafe, may fail at run time or result in unexpected behaviour in your on-chain validator.
 unsafeForeignImport :: CompiledCode t -> ClosedTerm p
-unsafeForeignImport c = Term $ const $ TermResult (RCompiled $ UPLC._progTerm $ unScript $ fromCompiledCode c) []
+unsafeForeignImport c = Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm $ unScript $ fromCompiledCode c) []
 
 -- | Convert a 'PList' to a 'PTxList', perhaps before exporting it with 'foreignExport'.
 plistToTx :: Term s (PList a :--> PTxList a)
