@@ -24,6 +24,7 @@ module Plutarch.Prelude (
   PMatch,
   pcon,
   pmatch,
+  PForall (PForall),
 
   -- * Integers and integer utilities
   PInteger,

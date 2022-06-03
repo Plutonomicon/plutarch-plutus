@@ -9,9 +9,11 @@ module Plutarch.Internal.Other (
   POpaque (..),
   popaque,
   DerivePNewtype (DerivePNewtype),
+  PForall (PForall),
 ) where
 
 import Data.Coerce (Coercible, coerce)
+import Data.Kind (Type)
 import qualified Data.Text as T
 import GHC.Stack (HasCallStack)
 import Plutarch.Internal (ClosedTerm, Config, PType, Term, compile, phoistAcyclic, punsafeCoerce, (:-->))
@@ -122,3 +124,5 @@ ptypeOuter = coerce
 
 punsafeDowncast :: (forall b. Term s (PInner a b)) -> Term s a
 punsafeDowncast x = PI.punsafeCoerce x
+
+data PForall (a :: Type) (b :: a -> PType) s = PForall (forall (x :: a). Term s (b x))

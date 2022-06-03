@@ -39,6 +39,7 @@ module Plutarch (
   PI.TracingMode (NoTracing, DoTracing, DetTracing),
   PI.pgetConfig,
   PI.defaultConfig,
+  PO.PForall (PForall),
 ) where
 
 import qualified Plutarch.Internal as PI
