@@ -24,8 +24,10 @@ module Plutarch.Internal.Other (
   (#$),
   (#),
   pinl,
-  PCon (..),
-  PMatch (..),
+  PCon,
+  PMatch,
+  pcon,
+  pmatch,
   pto,
   pfix,
   POpaque (..),
@@ -44,7 +46,7 @@ import GHC.Stack (HasCallStack)
 import Plutarch.Internal (ClosedTerm, Config, PType, Term, compile, phoistAcyclic, punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
 import Plutarch.Internal.PLam (pinl, plam, (#), (#$))
-import Plutarch.Internal.PlutusType (PCon (pcon), PMatch (pmatch), PlutusType (PInner, pcon', pmatch'))
+import Plutarch.Internal.PlutusType (PCon, PInner, PMatch, PlutusType, pcon, pcon', pmatch, pmatch')
 import PlutusCore.Pretty (prettyPlcReadableDebug)
 import PlutusLedgerApi.V1.Scripts (Script (Script))
 

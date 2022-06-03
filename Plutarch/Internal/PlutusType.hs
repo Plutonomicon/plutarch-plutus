@@ -3,9 +3,14 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Internal.PlutusType (
-  PlutusType (..),
-  PCon (..),
-  PMatch (..),
+  PlutusType,
+  PCon,
+  PMatch,
+  pcon',
+  pmatch',
+  pmatch,
+  pcon,
+  PInner,
 ) where
 
 import Data.Kind (Type)
@@ -81,7 +86,7 @@ import Plutarch.Internal.TypeFamily (ToPType, ToPType2)
 
   Further examples can be found in examples/PlutusType.hs
 -}
-class (PCon a, PMatch a) => PlutusType (a :: PType) where
+class PlutusType (a :: PType) where
   -- `b' :: k'` causes GHC to fail type checking at various places
   -- due to not being able to expand the type family.
   type PInner a (b' :: PType) :: PType
@@ -117,19 +122,18 @@ class (PCon a, PMatch a) => PlutusType (a :: PType) where
     Term s b
   pmatch' x f = gpmatch @a x (f . gpto)
 
-instance {-# OVERLAPPABLE #-} PlutusType a => PMatch a where
-  pmatch x f = pmatch' (punsafeCoerce x) f
+{-# DEPRECATED PCon "Use PlutusType" #-}
+type PCon = PlutusType
+{-# DEPRECATED PMatch "Use PlutusType" #-}
+type PMatch = PlutusType
 
-instance PlutusType a => PCon a where
-  pcon x = punsafeCoerce (pcon' x)
+-- | Construct a Plutarch Term via a Haskell datatype
+pcon :: PlutusType a => a s -> Term s a
+pcon x = punsafeCoerce (pcon' x)
 
-class PCon a where
-  -- | Construct a Plutarch Term via a Haskell datatype
-  pcon :: a s -> Term s a
-
-class PMatch a where
-  -- | Pattern match over Plutarch Terms via a Haskell datatype
-  pmatch :: Term s a -> (a s -> Term s b) -> Term s b
+-- | Pattern match over Plutarch Terms via a Haskell datatype
+pmatch :: PlutusType a => Term s a -> (a s -> Term s b) -> Term s b
+pmatch x f = pmatch' (punsafeCoerce x) f
 
 -- | Generic version of `pcon'`
 gpcon ::

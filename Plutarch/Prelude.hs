@@ -21,8 +21,10 @@ module Plutarch.Prelude (
   S,
   PType,
   PlutusType (PInner),
-  PCon (pcon),
-  PMatch (pmatch),
+  PCon,
+  PMatch,
+  pcon,
+  pmatch,
 
   -- * Integers and integer utilities
   PInteger,
