@@ -1,6 +1,4 @@
-A-as-0 (program 1.0.0 0)
-B-as-1 (program 1.0.0 1)
-swap.A (program 1.0.0 (force (force ifThenElse (equalsInteger 0 0) (delay 1) (delay 0))))
-swap.B (program 1.0.0 (force (force ifThenElse (equalsInteger 1 0) (delay 1) (delay 0))))
+swap.A (program 1.0.0 ((\i0 -> \i0 -> force i2) (delay (\i0 -> \i0 -> force i1)) (delay (\i0 -> \i0 -> force i2))))
+swap.B (program 1.0.0 ((\i0 -> \i0 -> force i1) (delay (\i0 -> \i0 -> force i1)) (delay (\i0 -> \i0 -> force i2))))
 scottenc.PMaybe (program 1.0.0 ((\i0 -> \i0 -> i2 42) (\i0 -> i1) (delay error)))
 scottenc.PPair (program 1.0.0 ((\i0 -> i1 42 "Universe") (\i0 -> \i0 -> i1)))

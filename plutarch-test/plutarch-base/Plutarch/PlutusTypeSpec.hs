@@ -5,7 +5,8 @@ module Plutarch.PlutusTypeSpec (spec) where
 import Data.Functor.Compose (Compose (Compose))
 import Data.SOP.NS (NS (S, Z))
 
-import Plutarch (pcon', pmatch')
+import GHC.Generics (Generic)
+import qualified Generics.SOP as SOP
 import Plutarch.Api.V1 (
   PAddress (PAddress),
   PCredential (PPubKeyCredential, PScriptCredential),
@@ -29,8 +30,6 @@ spec :: Spec
 spec = do
   describe "plutustype" $ do
     describe "example" . pgoldenSpec $ do
-      "A-as-0" @| pcon A @== pconstant @PInteger 0
-      "B-as-1" @| pcon B @== pconstant @PInteger 1
       "swap" @\ do
         "A" @| swap (pcon A) @== pcon B
         "B" @| swap (pcon B) @== pcon A
@@ -289,23 +288,9 @@ describe "sanity checks" $ do
     it "works" $
  -}
 
-{- |
-  A Sum type, which can be encoded as an Enum
--}
 data AB (s :: S) = A | B
-
-{- |
-  AB is encoded as an Enum, using values of PInteger
-  internally.
--}
-instance PlutusType AB where
-  type PInner AB _ = PInteger
-
-  pcon' A = 0
-  pcon' B = 1
-
-  pmatch' x f =
-    pif (x #== 0) (f A) (f B)
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic, PlutusType)
 
 {- |
   Instead of using `pcon'` and `pmatch'` directly,

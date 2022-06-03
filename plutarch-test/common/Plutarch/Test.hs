@@ -43,7 +43,7 @@ module Plutarch.Test (
 import Data.Text (Text)
 import qualified Data.Text as T
 
-import Plutarch (ClosedTerm, Config (Config, tracingMode), PCon (pcon), compile, printScript, pattern DetTracing)
+import Plutarch (ClosedTerm, Config (Config, tracingMode), compile, pcon, printScript, pattern DetTracing)
 import Plutarch.Bool (PBool (PFalse, PTrue))
 import Plutarch.Evaluate (evalScript)
 import Plutarch.Test.Benchmark (
