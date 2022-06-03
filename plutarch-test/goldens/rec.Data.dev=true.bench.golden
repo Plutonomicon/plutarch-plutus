@@ -1,8 +1,0 @@
-pdata.simple {"exBudgetCPU":1958023,"exBudgetMemory":5255,"scriptSizeBytes":70}
-pdata.simple-value-deconstructed {"exBudgetCPU":2036719,"exBudgetMemory":5487,"scriptSizeBytes":72}
-pdata.flat-data-deconstructed {"exBudgetCPU":5446621,"exBudgetMemory":14431,"scriptSizeBytes":169}
-pdata.shallow-data-deconstructed {"exBudgetCPU":6445889,"exBudgetMemory":17559,"scriptSizeBytes":200}
-fieldFromData.simple {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":72}
-fieldFromData.nested.flat {"exBudgetCPU":115100,"exBudgetMemory":600,"scriptSizeBytes":84}
-fieldFromData.nested.shallow {"exBudgetCPU":690100,"exBudgetMemory":3100,"scriptSizeBytes":161}
-pfromData {"exBudgetCPU":437100,"exBudgetMemory":2000,"scriptSizeBytes":118}

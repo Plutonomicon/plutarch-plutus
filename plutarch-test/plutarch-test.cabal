@@ -13,9 +13,11 @@ common c
     NoStarIsType
     BangPatterns
     BinaryLiterals
+    BlockArguments
     ConstrainedClassMethods
     ConstraintKinds
     DataKinds
+    DefaultSignatures
     DeriveAnyClass
     DeriveDataTypeable
     DeriveFoldable
@@ -50,17 +52,20 @@ common c
     OverloadedStrings
     PartialTypeSignatures
     PatternGuards
+    PatternSynonyms
     PolyKinds
     PostfixOperators
+    QuantifiedConstraints
     RankNTypes
     RelaxedPolyRec
+    RoleAnnotations
     ScopedTypeVariables
     StandaloneDeriving
     StandaloneKindSignatures
     TraditionalRecordSyntax
     TupleSections
     TypeApplications
-    TypeFamilies
+    TypeFamilyDependencies
     TypeOperators
     TypeSynonymInstances
     ViewPatterns
@@ -167,7 +172,6 @@ executable plutarch-test
     Plutarch.PlutusTypeSpec
     Plutarch.POrdSpec
     Plutarch.RationalSpec
-    Plutarch.RecSpec
     Plutarch.RecursionSpec
     Plutarch.ScriptsSpec
     Plutarch.ShowSpec

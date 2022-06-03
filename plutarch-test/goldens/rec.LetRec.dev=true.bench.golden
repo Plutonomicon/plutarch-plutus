@@ -1,8 +1,0 @@
-record {"exBudgetCPU":506100,"exBudgetMemory":2300,"scriptSizeBytes":52}
-record-field {"exBudgetCPU":506100,"exBudgetMemory":2300,"scriptSizeBytes":52}
-even {"exBudgetCPU":598100,"exBudgetMemory":2700,"scriptSizeBytes":82}
-even.4 {"exBudgetCPU":6620453,"exBudgetMemory":19018,"scriptSizeBytes":85}
-even.5 {"exBudgetCPU":7967419,"exBudgetMemory":22722,"scriptSizeBytes":85}
-knownEven {"exBudgetCPU":667100,"exBudgetMemory":3000,"scriptSizeBytes":85}
-knownEven.6 {"exBudgetCPU":4202521,"exBudgetMemory":12810,"scriptSizeBytes":87}
-knownEven.7 {"exBudgetCPU":5618487,"exBudgetMemory":16814,"scriptSizeBytes":87}

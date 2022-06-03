@@ -46,7 +46,7 @@ import Test.Hspec.Golden
 import qualified Data.List.NonEmpty as NE
 import Data.Set (Set)
 import qualified Data.Set as S
-import Plutarch (compile, printScript)
+import Plutarch (Config (Config, tracingMode), compile, printScript, pattern DetTracing)
 import Plutarch.Evaluate (evalScript)
 import Plutarch.Internal (punsafeAsClosedTerm)
 import Plutarch.Prelude
@@ -276,12 +276,10 @@ evalScriptAlwaysWithBenchmark script =
   let (res, exbudget, _traces) = evalScript script
       bench = mkBenchmark exbudget (scriptSize script)
    in ( case res of
-          Left _ -> compile perror
+          Left _ -> either undefined id $ compile (Config {tracingMode = DetTracing}) perror
           Right x -> x
       , bench
       )
 
--- TODO: Make this deterministic
--- See https://github.com/Plutonomicon/plutarch/pull/297
 compileD :: ClosedTerm a -> Scripts.Script
-compileD = compile
+compileD t = either (error . T.unpack) id $ compile (Config {tracingMode = DetTracing}) t

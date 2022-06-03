@@ -33,6 +33,10 @@ module Plutarch (
   PT.hashOpenTerm,
   PT.runTermCont,
   PT.unTermCont,
+  Config (Config, tracingMode),
+  TracingMode (NoTracing, DoTracing, DetTracing),
+  pgetConfig,
+  defaultConfig,
 ) where
 
 import Plutarch.Internal.Other

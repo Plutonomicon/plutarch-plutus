@@ -4,5 +4,4 @@ example1 {"exBudgetCPU":1860485,"exBudgetMemory":3710,"scriptSizeBytes":34}
 example2 {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":21}
 fib.lam {"exBudgetCPU":322100,"exBudgetMemory":1500,"scriptSizeBytes":72}
 fib.app.9 {"exBudgetCPU":189953707,"exBudgetMemory":433318,"scriptSizeBytes":75}
-fib.error {"exBudgetCPU":100,"exBudgetMemory":100,"scriptSizeBytes":5}
 uglyDouble {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":10}
