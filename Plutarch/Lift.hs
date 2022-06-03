@@ -35,7 +35,7 @@ import Data.Coerce (Coercible, coerce)
 import Data.Kind (Constraint, Type)
 import Data.Text (Text)
 import GHC.Stack (HasCallStack)
-import Plutarch.Evaluate (EvalError, evalScript)
+import Plutarch.Evaluate (EvalError, evalScriptHuge)
 import Plutarch.Internal (ClosedTerm, Config (Config, tracingMode), PType, Term, compile, punsafeConstantInternal, pattern DoTracing)
 import qualified PlutusCore as PLC
 import PlutusCore.Builtin (KnownTypeError, readKnownConstant)
@@ -109,7 +109,7 @@ This will fully evaluate the arbitrary closed expression, and convert the result
 plift' :: forall p. PUnsafeLiftDecl p => Config -> ClosedTerm p -> Either LiftError (PLifted p)
 plift' config prog = case compile config prog of
   Left msg -> Left $ LiftError_CompilationError msg
-  Right script -> case evalScript script of
+  Right script -> case evalScriptHuge script of
     (Right (Scripts.unScript -> UPLC.Program _ _ term), _, _) ->
       case readKnownConstant term of
         Right r -> case pconstantFromRepr r of

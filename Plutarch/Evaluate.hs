@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 
-module Plutarch.Evaluate (evaluateBudgetedScript, evaluateScript, evalScript, evalScript', EvalError) where
+module Plutarch.Evaluate (evalScript, evalScriptHuge, evalScript', EvalError) where
 
 import Data.Text (Text)
 import qualified PlutusCore as PLC
@@ -12,25 +12,12 @@ import PlutusCore.Evaluation.Machine.ExBudget (
 import PlutusCore.Evaluation.Machine.ExBudgetingDefaults (defaultCekParameters)
 import PlutusCore.Evaluation.Machine.ExMemory (ExCPU (ExCPU), ExMemory (ExMemory))
 import PlutusLedgerApi.V1.Scripts (Script (Script))
-import qualified PlutusLedgerApi.V1.Scripts as Scripts
 import UntypedPlutusCore (
   Program (Program),
   Term,
  )
 import qualified UntypedPlutusCore as UPLC
 import qualified UntypedPlutusCore.Evaluation.Machine.Cek as Cek
-
-{-# DEPRECATED evaluateScript "use evalScript" #-}
-evaluateScript :: Script -> Either Scripts.ScriptError (ExBudget, [Text], Script)
-evaluateScript = evaluateBudgetedScript $ ExBudget (ExCPU maxInt) (ExMemory maxInt)
-  where
-    maxInt = fromIntegral (maxBound :: Int)
-
-{-# DEPRECATED evaluateBudgetedScript "use evalScript'" #-}
-evaluateBudgetedScript :: ExBudget -> Script -> Either Scripts.ScriptError (ExBudget, [Text], Script)
-evaluateBudgetedScript budget script = case evalScript' budget script of
-  (Right res, remaining, logs) -> Right (remaining, logs, res)
-  (Left _, _, logs) -> Left $ Scripts.EvaluationError logs "evaluation failed"
 
 type EvalError = (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun)
 
@@ -40,6 +27,13 @@ evalScript script = evalScript' budget script
   where
     -- from https://github.com/input-output-hk/cardano-node/blob/master/configuration/cardano/mainnet-alonzo-genesis.json#L17
     budget = ExBudget (ExCPU 10000000000) (ExMemory 10000000)
+
+-- | Evaluate a script with a huge budget, returning the trace log and term result.
+evalScriptHuge :: Script -> (Either EvalError Script, ExBudget, [Text])
+evalScriptHuge script = evalScript' budget script
+  where
+    -- from https://github.com/input-output-hk/cardano-node/blob/master/configuration/cardano/mainnet-alonzo-genesis.json#L17
+    budget = ExBudget (ExCPU maxBound) (ExMemory maxBound)
 
 -- | Evaluate a script with a specific budget, returning the trace log and term result.
 evalScript' :: ExBudget -> Script -> (Either (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun) Script, ExBudget, [Text])
