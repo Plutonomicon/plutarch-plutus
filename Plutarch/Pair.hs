@@ -3,7 +3,8 @@ module Plutarch.Pair (PPair (..)) where
 import qualified GHC.Generics as GHC
 import Generics.SOP (Generic, HasDatatypeInfo, I (I))
 import Plutarch.Bool (PEq)
-import Plutarch.Internal.Other (PType, PlutusType, S, Term)
+import Plutarch.Internal (PType, S, Term)
+import Plutarch.Internal.PlutusType (PlutusType)
 import Plutarch.Show (PShow)
 
 {- |

@@ -18,11 +18,8 @@ import Data.Word (Word8)
 import GHC.Stack (HasCallStack)
 import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal.Other (
-  Term,
-  (#),
-  type (:-->),
- )
+import Plutarch.Internal (Term, (:-->))
+import Plutarch.Internal.PLam ((#))
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,

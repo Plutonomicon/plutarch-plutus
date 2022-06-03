@@ -8,11 +8,8 @@ import Data.Text (Text)
 import qualified Data.Text as Txt
 import Plutarch.Bool (PEq, (#==))
 import Plutarch.ByteString (PByteString)
-import Plutarch.Internal.Other (
-  Term,
-  (#),
-  type (:-->),
- )
+import Plutarch.Internal (Term, (:-->))
+import Plutarch.Internal.PLam ((#))
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,

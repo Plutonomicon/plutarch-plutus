@@ -15,15 +15,12 @@ import Data.Coerce (Coercible)
 import Data.Kind (Constraint)
 import Data.Proxy (Proxy)
 
-import Plutarch.Internal (punsafeCoerce)
+import Plutarch.Internal (PType, Term, punsafeCoerce, (:-->))
 import Plutarch.Internal.Other (
   DerivePNewtype,
-  PInner,
   POpaque,
-  PType,
-  Term,
-  (:-->),
  )
+import Plutarch.Internal.PlutusType (PInner)
 
 import Plutarch.Reducible (Reducible (Reduce))
 

@@ -33,23 +33,22 @@ import Generics.SOP (
 import Plutarch.Bool (PBool, PEq ((#==)), POrd ((#<)), pif)
 import Plutarch.ByteString (PByteString, pconsBS, pindexBS, plengthBS, psliceBS)
 import Plutarch.Integer (PInteger, PIntegral (pquot, prem))
-import Plutarch.Internal (punsafeAsClosedTerm)
+import Plutarch.Internal (
+  Term,
+  perror,
+  phoistAcyclic,
+  plet,
+  punsafeAsClosedTerm,
+  (:-->),
+ )
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.Other (
   DerivePNewtype,
-  PlutusType,
-  Term,
-  perror,
   pfix,
-  phoistAcyclic,
-  plam,
-  plet,
-  pmatch,
   pto,
-  (#),
-  (#$),
-  type (:-->),
  )
+import Plutarch.Internal.PLam (plam, (#), (#$))
+import Plutarch.Internal.PlutusType (PlutusType, pmatch)
 import Plutarch.Lift (pconstant)
 import Plutarch.String (PString, pdecodeUtf8, pencodeUtf8)
 

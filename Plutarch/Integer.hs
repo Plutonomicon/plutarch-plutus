@@ -4,16 +4,17 @@
 module Plutarch.Integer (PInteger, PIntegral (..)) where
 
 import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
-import Plutarch.Internal.Other (
-  DerivePNewtype,
+import Plutarch.Internal (
   Term,
   phoistAcyclic,
-  plam,
   plet,
-  pto,
-  (#),
-  type (:-->),
+  (:-->),
  )
+import Plutarch.Internal.Other (
+  DerivePNewtype,
+  pto,
+ )
+import Plutarch.Internal.PLam (plam, (#))
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,

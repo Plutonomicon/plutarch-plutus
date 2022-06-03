@@ -8,15 +8,22 @@ module Plutarch.Trace (
   ptraceError,
 ) where
 
--- CPP support isn't great in fourmolu.
-{- ORMOLU_DISABLE -}
-
-import Plutarch.Internal.Other (Term, perror, type (:-->), (#), phoistAcyclic, plet, pforce, pdelay,
-  tracingMode,
-  pattern NoTracing, pgetConfig)
 import Plutarch.Bool (PBool, pif)
-import Plutarch.String (PString)
+import Plutarch.Internal (
+  Term,
+  pdelay,
+  perror,
+  pforce,
+  pgetConfig,
+  phoistAcyclic,
+  plet,
+  tracingMode,
+  pattern NoTracing,
+  type (:-->),
+ )
+import Plutarch.Internal.PLam ((#))
 import Plutarch.Show (PShow, pshow)
+import Plutarch.String (PString)
 
 import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC

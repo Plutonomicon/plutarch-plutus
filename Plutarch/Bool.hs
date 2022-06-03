@@ -29,25 +29,24 @@ import Generics.SOP (
   ccompare_NS,
   hcliftA2,
  )
-import Plutarch.Internal (plet, punsafeAsClosedTerm)
-import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
-import Plutarch.Internal.Other (
-  DerivePNewtype,
+import Plutarch.Internal (
   PDelayed,
-  PlutusType (PInner, pcon', pmatch'),
   S,
   Term,
-  pcon,
   pdelay,
   pforce,
   phoistAcyclic,
-  plam,
-  pmatch,
-  pto,
-  (#),
-  (#$),
-  type (:-->),
+  plet,
+  punsafeAsClosedTerm,
+  (:-->),
  )
+import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
+import Plutarch.Internal.Other (
+  DerivePNewtype,
+  pto,
+ )
+import Plutarch.Internal.PLam (plam, (#), (#$))
+import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon, pcon', pmatch, pmatch')
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,

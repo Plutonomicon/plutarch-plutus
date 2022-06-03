@@ -42,14 +42,12 @@ import Plutarch (
   S,
   Term,
   pcon,
-  pcon',
   pdelay,
   pforce,
   phoistAcyclic,
   plam,
   plet,
   pmatch,
-  pmatch',
   pto,
   (#),
   (#$),
@@ -58,6 +56,7 @@ import Plutarch (
 import Plutarch.Bool (PBool (..), PEq, pif', (#&&), (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
+import Plutarch.Internal.PlutusType (pcon', pmatch')
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstant,

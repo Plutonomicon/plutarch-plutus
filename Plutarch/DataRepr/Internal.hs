@@ -69,7 +69,6 @@ import Plutarch (
   S,
   Term,
   pcon,
-  pcon',
   pdelay,
   perror,
   pforce,
@@ -77,7 +76,6 @@ import Plutarch (
   plam,
   plet,
   pmatch,
-  pmatch',
   popaque,
   pto,
   (#),
@@ -112,6 +110,7 @@ import Plutarch.DataRepr.Internal.HList (
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (S (SI))
 import Plutarch.Internal.Generic (MkNS, PCode, PGeneric, gpfrom, gpto, mkNS, mkSum)
+import Plutarch.Internal.PlutusType (pcon', pmatch')
 import Plutarch.Lift (
   PConstant,
   PConstantDecl,

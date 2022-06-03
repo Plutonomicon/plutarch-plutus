@@ -3,8 +3,9 @@
 
 module Plutarch.Unit (PUnit (..)) where
 
-import Plutarch (PlutusType (PInner, pcon', pmatch'), Term, pcon)
+import Plutarch (Term, pcon)
 import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, (#<), (#<=), (#==))
+import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon', pmatch')
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,

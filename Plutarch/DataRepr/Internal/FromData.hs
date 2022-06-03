@@ -3,7 +3,7 @@
 
 module Plutarch.DataRepr.Internal.FromData (PFromDataable, pmaybeFromAsData) where
 
-import Plutarch.Internal.Other (PType, Term)
+import Plutarch.Internal (PType, Term)
 
 import Plutarch.Builtin (PAsData, PIsData, pfromData)
 

@@ -2,42 +2,13 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Internal.Other (
-  (PI.:-->),
-  PI.ClosedTerm,
-  PI.compile,
-  PI.Dig,
-  PI.hashTerm,
-  PI.papp,
-  PI.pdelay,
-  PI.PDelayed,
-  PI.perror,
-  PI.pforce,
-  PI.phoistAcyclic,
-  PI.plam',
-  PI.plet,
-  PI.Term,
-  PI.S,
-  PI.PType,
-  PlutusType (..),
   printTerm,
   printScript,
-  (#$),
-  (#),
-  pinl,
-  PCon,
-  PMatch,
-  pcon,
-  pmatch,
   pto,
   pfix,
   POpaque (..),
   popaque,
-  plam,
   DerivePNewtype (DerivePNewtype),
-  PI.pgetConfig,
-  PI.Config (..),
-  PI.TracingMode (..),
-  PI.defaultConfig,
 ) where
 
 import Data.Coerce (Coercible, coerce)
@@ -45,8 +16,8 @@ import qualified Data.Text as T
 import GHC.Stack (HasCallStack)
 import Plutarch.Internal (ClosedTerm, Config, PType, Term, compile, phoistAcyclic, punsafeCoerce, (:-->))
 import qualified Plutarch.Internal as PI
-import Plutarch.Internal.PLam (pinl, plam, (#), (#$))
-import Plutarch.Internal.PlutusType (PCon, PInner, PMatch, PlutusType, pcon, pcon', pmatch, pmatch')
+import Plutarch.Internal.PLam (plam, (#))
+import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon', pmatch')
 import PlutusCore.Pretty (prettyPlcReadableDebug)
 import PlutusLedgerApi.V1.Scripts (Script (Script))
 

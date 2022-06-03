@@ -5,7 +5,6 @@ module Plutarch.Prelude (
   Term,
   ClosedTerm,
   plam,
-  plam',
   papp,
   pdelay,
   pforce,

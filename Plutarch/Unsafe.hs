@@ -7,8 +7,10 @@ module Plutarch.Unsafe (
   punsafeDowncast,
 ) where
 
+import Plutarch.Internal (Term)
 import qualified Plutarch.Internal as PI
-import Plutarch.Internal.Other (PInner, POpaque, Term)
+import Plutarch.Internal.Other (POpaque)
+import Plutarch.Internal.PlutusType (PInner)
 
 {- |
   Unsafely coerce from the 'PInner' representation of a Term,
