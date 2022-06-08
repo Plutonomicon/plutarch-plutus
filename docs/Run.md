@@ -82,34 +82,44 @@ You can compile a Plutarch term using `compile` (from `Plutarch` module), making
 I often use these helper functions to test Plutarch quickly:
 
 ```haskell
-import Data.Text                (Text)
-import Plutarch                 (ClosedTerm, compile)
-import Plutarch.Evaluate        (evalScript, EvalError)
-import Plutus.V1.Ledger.Api     (Data, ExBudget)
-import Plutus.V1.Ledger.Scripts (Script (unScript), applyArguments)
-import UntypedPlutusCore        (DeBruijn, DefaultFun, DefaultUni, Program)
+module Eval (evalT, evalSerialize, evalWithArgsT, evalWithArgsT') where
 
-evalT :: ClosedTerm a -> (Either EvalError (Program DeBruijn DefaultUni DefaultFun ()), ExBudget, [Text])
+import qualified Codec.CBOR.Write as Write
+import Codec.Serialise (Serialise, encode)
+import Data.Bifunctor (first)
+import qualified Data.ByteString.Base16 as Base16
+import Data.Text (Text, pack)
+import qualified Data.Text.Encoding as TE
+import Plutarch (ClosedTerm, compile, defaultConfig)
+import Plutarch.Evaluate (evalScript)
+import PlutusLedgerApi.V1 (Data, ExBudget)
+import PlutusLedgerApi.V1.Scripts (Script (unScript), applyArguments)
+import UntypedPlutusCore (DeBruijn, DefaultFun, DefaultUni, Program)
+
+evalSerialize :: ClosedTerm a -> Either Text Text
+evalSerialize x = encodeSerialise . (\(_, _, a) -> a) <$> evalT x
+  where
+    encodeSerialise :: Serialise a => a -> Text
+    encodeSerialise = TE.decodeUtf8 . Base16.encode . Write.toStrictByteString . encode
+
+evalT :: ClosedTerm a -> Either Text (Script, ExBudget, [Text])
 evalT x = evalWithArgsT x []
 
-evalWithArgsT :: ClosedTerm a -> [Data] -> (Either EvalError (Program DeBruijn DefaultUni DefaultFun ()), ExBudget, [Text])
-evalWithArgsT x args = (\(res, budg, trcs) -> (fmap unScript res, budg, trcs))
-  . evalScript
-  . flip applyArguments args
-  $ compile x
+evalWithArgsT :: ClosedTerm a -> [Data] -> Either Text (Script, ExBudget, [Text])
+evalWithArgsT x args = do
+  cmp <- compile defaultConfig x
+  let (escr, budg, trc) = evalScript $ applyArguments cmp args
+  scr <- first (pack . show) escr
+  pure (scr, budg, trc)
+
+evalWithArgsT' :: ClosedTerm a -> [Data] -> Either Text (Program DeBruijn DefaultUni DefaultFun (), ExBudget, [Text])
+evalWithArgsT' x args =
+  (\(res, budg, trcs) -> (unScript res, budg, trcs))
+    <$> evalWithArgsT x args
 ```
 
-The fields in the result triple correspond to script result, execution budget (how much memory and CPU units were used), and trace log - respectively. Often you're only interested in the script result, in that case you can use:
-
-```haskell
-evalT :: ClosedTerm a -> Either EvalError (Program DeBruijn DefaultUni DefaultFun ())
-evalT x = evalWithArgsT x []
-
-evalWithArgsT :: ClosedTerm a -> [Data] -> Either EvalError (Program DeBruijn DefaultUni DefaultFun ())
-evalWithArgsT x args = (\(res, _, _) -> fmap unScript res)
-  . evalScript
-  . flip applyArguments args
-  $ compile x
-```
+The fields in the result triple correspond to script result, execution budget (how much memory and CPU units were used), and trace log - respectively. 
+Of course if you're only interested in the result of the script evaluation, you can just ignore the exbudget and tracelog just like `evalSerialize` does. 
+`evalSerialize` is a function that you can use to quickly obtain a serialized script. 
 
 > Note: You can pretty much ignore the UPLC types involved here. All it really means is that the result is a "UPLC program". When it's printed, it's pretty legible - especially for debugging purposes. Although not necessary to use Plutarch, you may find the [Plutonomicon UPLC guide](https://github.com/Plutonomicon/plutonomicon/blob/main/uplc.md) useful.
