@@ -97,7 +97,7 @@ import PlutusLedgerApi.V1.Scripts (Script (unScript), applyArguments)
 import UntypedPlutusCore (DeBruijn, DefaultFun, DefaultUni, Program)
 
 evalSerialize :: ClosedTerm a -> Either Text Text
-evalSerialize x = encodeSerialise . (\(_, _, a) -> a) <$> evalT x
+evalSerialize x = encodeSerialise . (\(a, _, _) -> a) <$> evalT x
   where
     encodeSerialise :: Serialise a => a -> Text
     encodeSerialise = TE.decodeUtf8 . Base16.encode . Write.toStrictByteString . encode
