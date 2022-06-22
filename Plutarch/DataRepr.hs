@@ -8,15 +8,12 @@ module Plutarch.DataRepr (
   I.pdcons,
   I.pdnil,
   I.PLabeledType ((:=)),
-  I.PIsDataRepr (type PIsDataReprRepr, pmatchRepr),
-  I.pmatchDataSum,
-  I.PIsDataReprInstances (PIsDataReprInstances),
   I.pindexDataRecord,
   I.pdropDataRecord,
   I.DerivePConstantViaData (DerivePConstantViaData),
-  I.pasDataSum,
   I.PConstantData,
   I.PLiftData,
+  I.PlutusTypeData,
 
   -- * Fields
   F.PDataFields (ptoFields, type PFields),

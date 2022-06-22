@@ -22,25 +22,33 @@ import Plutarch.Lift (
 import Plutarch.Prelude
 
 newtype PDatum (s :: S) = PDatum (Term s PData)
-  deriving (PlutusType, PIsData, PEq) via (DerivePNewtype PDatum PData)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq)
+instance DerivePlutusType PDatum where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PDatum where type PLifted PDatum = Plutus.Datum
 deriving via (DerivePConstantViaBuiltin Plutus.Datum PDatum PData) instance PConstantDecl Plutus.Datum
 
 newtype PRedeemer (s :: S) = PRedeemer (Term s PData)
-  deriving (PlutusType, PIsData, PEq) via (DerivePNewtype PRedeemer PData)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq)
+instance DerivePlutusType PRedeemer where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PRedeemer where type PLifted PRedeemer = Plutus.Redeemer
 deriving via (DerivePConstantViaBuiltin Plutus.Redeemer PRedeemer PData) instance PConstantDecl Plutus.Redeemer
 
 newtype PDatumHash (s :: S) = PDatumHash (Term s PByteString)
-  deriving (PlutusType, PIsData, PEq, POrd) via (DerivePNewtype PDatumHash PByteString)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+instance DerivePlutusType PDatumHash where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PDatumHash where type PLifted PDatumHash = Plutus.DatumHash
 deriving via (DerivePConstantViaBuiltin Plutus.DatumHash PDatumHash PByteString) instance PConstantDecl Plutus.DatumHash
 
 newtype PStakeValidatorHash (s :: S) = PStakeValidatorHash (Term s PByteString)
-  deriving (PlutusType, PIsData, PEq, POrd) via (DerivePNewtype PStakeValidatorHash PByteString)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+instance DerivePlutusType PStakeValidatorHash where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PStakeValidatorHash where type PLifted PStakeValidatorHash = Plutus.StakeValidatorHash
 deriving via
@@ -49,7 +57,9 @@ deriving via
     PConstantDecl Plutus.StakeValidatorHash
 
 newtype PRedeemerHash (s :: S) = PRedeemerHash (Term s PByteString)
-  deriving (PlutusType, PIsData, PEq, POrd) via (DerivePNewtype PRedeemerHash PByteString)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+instance DerivePlutusType PRedeemerHash where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PRedeemerHash where type PLifted PRedeemerHash = Plutus.RedeemerHash
 deriving via
@@ -58,7 +68,9 @@ deriving via
     PConstantDecl Plutus.RedeemerHash
 
 newtype PValidatorHash (s :: S) = PValidatorHash (Term s PByteString)
-  deriving (PlutusType, PIsData, PEq, POrd) via (DerivePNewtype PValidatorHash PByteString)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+instance DerivePlutusType PValidatorHash where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PValidatorHash where type PLifted PValidatorHash = Plutus.ValidatorHash
 deriving via

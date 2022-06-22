@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -89,6 +90,7 @@ pindexBS = punsafeBuiltin PLC.IndexByteString
 hexDigitToWord8 :: HasCallStack => Char -> Word8
 hexDigitToWord8 = f . toLower
   where
+    f :: Char -> Word8
     f '0' = 0
     f '1' = 1
     f '2' = 2

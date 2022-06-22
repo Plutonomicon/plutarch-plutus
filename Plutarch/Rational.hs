@@ -1,19 +1,22 @@
+{-# LANGUAGE FlexibleInstances #-}
+
 module Plutarch.Rational (
   PRational (..),
   preduce,
   pnumerator,
   pdenominator,
-  pfromInteger,
+  Plutarch.Rational.pfromInteger,
   pround,
   ptruncate,
   pproperFraction,
 ) where
 
-import Data.Ratio (denominator, numerator)
-import qualified GHC.Generics as GHC
-import Generics.SOP (Generic, I (I))
+import GHC.Generics (Generic)
 import Plutarch (
-  PlutusType (..),
+  DPTStrat,
+  DerivePlutusType,
+  PlutusType,
+  PlutusTypeScott,
   Term,
   pcon,
   pfix,
@@ -40,6 +43,7 @@ import Plutarch.Builtin (
  )
 import Plutarch.Integer (PInteger, PIntegral (pdiv, pmod))
 import Plutarch.List (PListLike (pcons, phead, pnil, ptail), pmap)
+import Plutarch.Num (PFractional, PNum, pabs, pfromInteger, pnegate, precip, psignum, (#*), (#+), (#-), (#/))
 import Plutarch.Pair (PPair (..))
 import Plutarch.Show (PShow (pshow'), pshow)
 import Plutarch.Trace (ptraceError)
@@ -47,8 +51,9 @@ import Plutarch.Unsafe (punsafeCoerce)
 
 data PRational s
   = PRational (Term s PInteger) (Term s PInteger)
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic, PlutusType)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType)
+instance DerivePlutusType PRational where type DPTStrat _ = PlutusTypeScott
 
 instance PShow PRational where
   pshow' _ x =
@@ -106,8 +111,8 @@ instance POrd PRational where
       # l'
       # r'
 
-instance Num (Term s PRational) where
-  x' + y' =
+instance PNum PRational where
+  x' #+ y' =
     phoistAcyclic
       ( plam $ \x y ->
           preduce #$ pmatch x $
@@ -118,7 +123,7 @@ instance Num (Term s PRational) where
       # x'
       # y'
 
-  x' - y' =
+  x' #- y' =
     phoistAcyclic
       ( plam $ \x y ->
           preduce
@@ -130,7 +135,7 @@ instance Num (Term s PRational) where
       # x'
       # y'
 
-  x' * y' =
+  x' #* y' =
     phoistAcyclic
       ( plam $ \x y ->
           preduce
@@ -142,47 +147,39 @@ instance Num (Term s PRational) where
       # x'
       # y'
 
-  negate x' =
-    phoistAcyclic
-      ( plam $ \x ->
-          pmatch x $ \(PRational xn xd) ->
-            pcon $ PRational (negate xn) xd
-      )
-      # x'
+  pnegate =
+    phoistAcyclic $
+      plam $ \x ->
+        pmatch x $ \(PRational xn xd) ->
+          pcon $ PRational (negate xn) xd
 
-  abs x' =
-    phoistAcyclic
-      ( plam $ \x ->
-          pmatch x $ \(PRational xn xd) ->
-            pcon $ PRational (abs xn) (abs xd)
-      )
-      # x'
+  pabs =
+    phoistAcyclic $
+      plam $ \x ->
+        pmatch x $ \(PRational xn xd) ->
+          pcon $ PRational (abs xn) (abs xd)
 
-  signum x'' =
-    phoistAcyclic
-      ( plam $ \x' -> plet x' $ \x ->
-          pif
-            (x #== 0)
-            0
-            $ pif
-              (x #< 0)
-              (-1)
-              1
-      )
-      # x''
+  psignum =
+    phoistAcyclic $
+      plam $ \x' -> plet x' $ \x ->
+        pif
+          (x #== 0)
+          0
+          $ pif
+            (x #< 0)
+            (-1)
+            1
 
-  fromInteger n = pcon $ PRational (fromInteger n) 1
+  pfromInteger n = pcon $ PRational (fromInteger n) 1
 
-instance Fractional (Term s PRational) where
-  recip x' =
-    phoistAcyclic
-      ( plam $ \x ->
-          pmatch x $ \(PRational xn xd) ->
-            pfailOnZero # xn # (pcon (PRational xd xn))
-      )
-      # x'
+instance PFractional PRational where
+  precip =
+    phoistAcyclic $
+      plam $ \x ->
+        pmatch x $ \(PRational xn xd) ->
+          pfailOnZero # xn # (pcon (PRational xd xn))
 
-  x' / y' =
+  x' #/ y' =
     phoistAcyclic
       ( plam $ \x y ->
           preduce
@@ -195,9 +192,6 @@ instance Fractional (Term s PRational) where
       )
       # x'
       # y'
-
-  fromRational r =
-    pcon $ PRational (fromInteger $ numerator r) (fromInteger $ denominator r)
 
 pfailOnZero :: Term s (PInteger :--> a :--> a)
 pfailOnZero = phoistAcyclic $
@@ -279,4 +273,4 @@ pproperFraction :: Term s (PRational :--> PPair PInteger PRational)
 pproperFraction = phoistAcyclic $
   plam $ \x ->
     plet (ptruncate # x) $ \q ->
-      pcon $ PPair q (x - pfromInteger # q)
+      pcon $ PPair q (x - Plutarch.Rational.pfromInteger # q)

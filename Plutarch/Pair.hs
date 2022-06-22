@@ -1,10 +1,10 @@
 module Plutarch.Pair (PPair (..)) where
 
-import qualified GHC.Generics as GHC
-import Generics.SOP (Generic, HasDatatypeInfo, I (I))
+import GHC.Generics (Generic)
 import Plutarch.Bool (PEq)
 import Plutarch.Internal (PType, S, Term)
-import Plutarch.Internal.PlutusType (PlutusType)
+import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
+import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
 import Plutarch.Show (PShow)
 
 {- |
@@ -14,5 +14,7 @@ import Plutarch.Show (PShow)
 -}
 data PPair (a :: PType) (b :: PType) (s :: S)
   = PPair (Term s a) (Term s b)
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic, HasDatatypeInfo, PlutusType, PEq, PShow)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PEq, PShow)
+
+instance DerivePlutusType (PPair a b) where type DPTStrat _ = PlutusTypeScott

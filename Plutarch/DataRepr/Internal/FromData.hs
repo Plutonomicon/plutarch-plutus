@@ -1,4 +1,4 @@
-{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.DataRepr.Internal.FromData (PFromDataable, pmaybeFromAsData) where
@@ -22,8 +22,8 @@ import Plutarch.Builtin (PAsData, PIsData, pfromData)
 class PFromDataable (a :: PType) (b :: PType) | b -> a, a -> b where
   pmaybeFromAsData :: Term s (PAsData a) -> Term s b
 
-instance {-# OVERLAPS #-} PFromDataable a (PAsData a) where
+instance {-# OVERLAPPING #-} PFromDataable a (PAsData a) where
   pmaybeFromAsData = id
 
-instance {-# OVERLAPPABLE #-} (PIsData a, b ~ a) => PFromDataable a b where
+instance {-# OVERLAPPING #-} (PIsData a, b ~ a) => PFromDataable a b where
   pmaybeFromAsData = pfromData

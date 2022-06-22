@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -45,10 +46,7 @@ import qualified PlutusTx.AssocMap as PlutusMap
 import qualified PlutusTx.Monoid as PlutusTx
 import qualified PlutusTx.Semigroup as PlutusTx
 
-import qualified GHC.Generics as GHC
-import Generics.SOP (Generic, I (I))
-import Plutarch (pfix)
-import Plutarch.Builtin (PBuiltinList (PCons, PNil), PBuiltinMap, ppairDataBuiltin)
+import Plutarch.Builtin (PBuiltinMap, ppairDataBuiltin)
 import Plutarch.Lift (
   PConstantDecl,
   PConstantRepr,
@@ -59,39 +57,7 @@ import Plutarch.Lift (
   pconstantToRepr,
  )
 import qualified Plutarch.List as List
-import Plutarch.Prelude (
-  DerivePNewtype (DerivePNewtype),
-  PAsData,
-  PBool (PFalse),
-  PBuiltinPair,
-  PConstantData,
-  PEq ((#==)),
-  PIsData,
-  PLiftData,
-  PListLike (pcons, pnil),
-  PMaybe (PJust, PNothing),
-  POrd ((#<)),
-  PType,
-  PlutusType,
-  S,
-  Term,
-  pcon,
-  pdata,
-  pfromData,
-  pfstBuiltin,
-  phoistAcyclic,
-  pif,
-  plam,
-  plet,
-  pmatch,
-  precList,
-  psndBuiltin,
-  pto,
-  ptraceError,
-  (#),
-  (#$),
-  type (:-->),
- )
+import Plutarch.Prelude hiding (pall, pany, pfilter, pmap, pnull, psingleton)
 import Plutarch.Show (PShow)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 
@@ -99,9 +65,11 @@ import Prelude hiding (all, any, filter, lookup, null)
 
 data KeyGuarantees = Sorted | Unsorted
 
-newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinMap k v))
-  deriving (PlutusType, PIsData, PEq, PShow) via (DerivePNewtype (PMap keysort k v) (PBuiltinMap k v))
 type role PMap nominal nominal nominal nominal
+newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinMap k v))
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq, PShow)
+instance DerivePlutusType (PMap keysort k v) where type DPTStrat _ = PlutusTypeNewtype
 
 instance
   ( PLiftData k
@@ -328,8 +296,9 @@ data MapUnionCarrier k v s = MapUnionCarrier
   { merge :: Term s (PBuiltinMap k v :--> PBuiltinMap k v :--> PBuiltinMap k v)
   , mergeInsert :: Term s (PBuiltinPair (PAsData k) (PAsData v) :--> PBuiltinMap k v :--> PBuiltinMap k v :--> PBuiltinMap k v)
   }
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic, PlutusType)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType)
+instance DerivePlutusType (MapUnionCarrier k v) where type DPTStrat _ = PlutusTypeScott
 
 mapUnionCarrier :: (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapUnionCarrier k v :--> MapUnionCarrier k v)
 mapUnionCarrier = phoistAcyclic $ plam \combine self ->

@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -21,7 +22,7 @@ instance PUnsafeLiftDecl PUnit where type PLifted PUnit = ()
 deriving via (DerivePConstantDirect () PUnit) instance PConstantDecl ()
 
 instance PlutusType PUnit where
-  type PInner PUnit _ = PUnit
+  type PInner PUnit = PUnit
   pcon' PUnit = pconstant ()
   pmatch' _ f = f PUnit
 

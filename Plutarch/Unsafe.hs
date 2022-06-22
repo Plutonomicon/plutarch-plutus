@@ -1,5 +1,3 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
-
 module Plutarch.Unsafe (
   PI.punsafeBuiltin,
   PI.punsafeCoerce,
@@ -9,12 +7,11 @@ module Plutarch.Unsafe (
 
 import Plutarch.Internal (Term)
 import qualified Plutarch.Internal as PI
-import Plutarch.Internal.Other (POpaque)
 import Plutarch.Internal.PlutusType (PInner)
 
 {- |
   Unsafely coerce from the 'PInner' representation of a Term,
   assuming that the value is a safe construction of the Term.
 -}
-punsafeDowncast :: PInner b POpaque ~ a => Term s a -> Term s b
+punsafeDowncast :: Term s (PInner a) -> Term s a
 punsafeDowncast x = PI.punsafeCoerce x

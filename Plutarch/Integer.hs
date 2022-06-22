@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -7,14 +8,13 @@ import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
 import Plutarch.Internal (
   Term,
   phoistAcyclic,
-  plet,
   (:-->),
  )
 import Plutarch.Internal.Other (
-  DerivePNewtype,
   pto,
  )
 import Plutarch.Internal.PLam (plam, (#))
+import Plutarch.Internal.PlutusType (PInner)
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,
@@ -22,6 +22,7 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
   pconstant,
  )
+import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
 import Plutarch.Unsafe (punsafeBuiltin, punsafeDowncast)
 import qualified PlutusCore as PLC
 
@@ -33,9 +34,17 @@ deriving via (DerivePConstantDirect Integer PInteger) instance PConstantDecl Int
 
 class PIntegral a where
   pdiv :: Term s (a :--> a :--> a)
+  default pdiv :: PIntegral (PInner a) => Term s (a :--> a :--> a)
+  pdiv = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ pdiv # pto x # pto y
   pmod :: Term s (a :--> a :--> a)
+  default pmod :: PIntegral (PInner a) => Term s (a :--> a :--> a)
+  pmod = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ pmod # pto x # pto y
   pquot :: Term s (a :--> a :--> a)
+  default pquot :: PIntegral (PInner a) => Term s (a :--> a :--> a)
+  pquot = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ pquot # pto x # pto y
   prem :: Term s (a :--> a :--> a)
+  default prem :: PIntegral (PInner a) => Term s (a :--> a :--> a)
+  prem = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ prem # pto x # pto y
 
 instance PIntegral PInteger where
   pdiv = punsafeBuiltin PLC.DivideInteger
@@ -50,13 +59,13 @@ instance POrd PInteger where
   x #<= y = punsafeBuiltin PLC.LessThanEqualsInteger # x # y
   x #< y = punsafeBuiltin PLC.LessThanInteger # x # y
 
-instance Num (Term s PInteger) where
-  x + y = punsafeBuiltin PLC.AddInteger # x # y
-  x - y = punsafeBuiltin PLC.SubtractInteger # x # y
-  x * y = punsafeBuiltin PLC.MultiplyInteger # x # y
-  abs x' = plet x' $ \x -> pif (x #<= -1) (negate x) x
-  negate x = 0 - x
-  signum x' = plet x' $ \x ->
+instance PNum PInteger where
+  x #+ y = punsafeBuiltin PLC.AddInteger # x # y
+  x #- y = punsafeBuiltin PLC.SubtractInteger # x # y
+  x #* y = punsafeBuiltin PLC.MultiplyInteger # x # y
+  pabs = phoistAcyclic $ plam \x -> pif (x #<= -1) (negate x) x
+  pnegate = phoistAcyclic $ plam \x -> 0 #- x
+  psignum = plam \x ->
     pif
       (x #== 0)
       0
@@ -64,10 +73,4 @@ instance Num (Term s PInteger) where
         (x #<= 0)
         (-1)
         1
-  fromInteger = pconstant
-
-instance PIntegral b => PIntegral (DerivePNewtype a b) where
-  pdiv = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ pdiv # pto x # pto y
-  pmod = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ pmod # pto x # pto y
-  pquot = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ pquot # pto x # pto y
-  prem = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ prem # pto x # pto y
+  pfromInteger = pconstant
