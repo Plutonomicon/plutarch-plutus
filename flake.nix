@@ -7,7 +7,7 @@
 
   inputs.hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
 
-  inputs.haskell-nix-extra-hackage.url = "github:mlabs-haskell/haskell-nix-extra-hackage";
+  inputs.haskell-nix-extra-hackage.url = "github:mlabs-haskell/haskell-nix-extra-hackage?ref=separate-hackages";
   inputs.haskell-nix-extra-hackage.inputs.haskell-nix.follows = "haskell-nix";
   inputs.haskell-nix-extra-hackage.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -107,7 +107,7 @@
         pkgs.haskell-nix.cabalProject' {
           modules = [{
             inherit nonReinstallablePkgs;
-            reinstallableLibGhc = true;
+            reinstallableLibGhc = false;
           }];
           inherit compiler-nix-name;
           src = "${inputs.haskell-language-server}";
@@ -136,7 +136,7 @@
         })
       ];
 
-      myhackage = system: compiler-nix-name: haskell-nix-extra-hackage.mkHackageFor system compiler-nix-name (
+      myhackages = system: compiler-nix-name: haskell-nix-extra-hackage.mkHackagesFor system compiler-nix-name (
         [
           "${inputs.flat}"
           "${inputs.protolude}"
@@ -155,11 +155,11 @@
       );
 
       applyPlutarchDep = pkgs: o:
-        let h = myhackage pkgs.system o.compiler-nix-name; in
+        let h = myhackages pkgs.system o.compiler-nix-name; in
         o // {
-          modules = haskellModules ++ [ h.module ] ++ (o.modules or [ ]);
-          extra-hackages = [ (import h.hackageNix) ] ++ (o.extra-hackages or [ ]);
-          extra-hackage-tarballs = { _xNJUd_plutarch-hackage = h.hackageTarball; } // (o.extra-hackage-tarballs or { });
+          modules = haskellModules ++ h.modules ++ (o.modules or [ ]);
+          extra-hackages = h.extra-hackages ++ (o.extra-hackages or [ ]);
+          extra-hackage-tarballs = h.extra-hackage-tarballs // (o.extra-hackage-tarballs or { });
           cabalProjectLocal = (o.cabalProjectLocal or "") + (
             ''
               allow-newer:
