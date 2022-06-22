@@ -74,7 +74,7 @@ common c
     -Wno-missing-local-signatures -Wno-prepositive-qualified-module
     -Wno-missing-import-lists -fprint-explicit-foralls
     -fprint-equality-relations -fprint-explicit-kinds
-    -fprint-explicit-coercions
+    -fprint-explicit-coercions -Wno-all-missed-specializations
 
 library
   import:          c
@@ -142,7 +142,6 @@ library
     , cryptonite
     , flat
     , generics-sop
-    , hashable
     , lens
     , memory
     , mtl
@@ -152,4 +151,3 @@ library
     , serialise
     , sop-core
     , text
-    , transformers
