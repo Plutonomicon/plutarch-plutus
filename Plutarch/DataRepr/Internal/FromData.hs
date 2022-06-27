@@ -22,8 +22,8 @@ import Plutarch.Builtin (PAsData, PIsData, pfromData)
 class PFromDataable (a :: PType) (b :: PType) | b -> a, a -> b where
   pmaybeFromAsData :: Term s (PAsData a) -> Term s b
 
-instance {-# OVERLAPPING #-} PFromDataable a (PAsData a) where
+instance {-# OVERLAPPABLE #-} PFromDataable a (PAsData a) where
   pmaybeFromAsData = id
 
-instance {-# OVERLAPPING #-} (PIsData a, b ~ a) => PFromDataable a b where
+instance (PIsData a, b ~ a) => PFromDataable a b where
   pmaybeFromAsData = pfromData
