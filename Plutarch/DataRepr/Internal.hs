@@ -618,15 +618,6 @@ instance
 class SumValidation (n :: Nat) (sum :: [[PLabeledType]]) where
   validateSum :: Proxy n -> Proxy sum -> Term s PInteger -> Term s (PBuiltinList PData) -> Term s POpaque
 
-instance SumValidation 0 ys => PTryFrom PData (PAsData (PDataSum ys)) where
-  type PTryFromExcess PData (PAsData (PDataSum ys)) = Const ()
-  ptryFrom' opq = runTermCont $ do
-    x <- tcont $ plet $ pasConstr # opq
-    constr <- tcont $ plet $ pfstBuiltin # x
-    fields <- tcont $ plet $ psndBuiltin # x
-    _ <- tcont $ plet $ validateSum (Proxy @0) (Proxy @ys) constr fields
-    pure (punsafeCoerce opq, ())
-
 instance
   forall (n :: Nat) (x :: [PLabeledType]) (xs :: [[PLabeledType]]).
   ( PTryFrom (PBuiltinList PData) (PDataRecord x)
@@ -646,3 +637,18 @@ instance
 
 instance SumValidation n '[] where
   validateSum _ _ _ _ = ptraceError "reached end of sum while still not having found the constructor"
+
+instance SumValidation 0 ys => PTryFrom PData (PDataSum ys) where
+  type PTryFromExcess _ _ = Const ()
+  ptryFrom' opq = runTermCont $ do
+    x <- tcont $ plet $ pasConstr # opq
+    constr <- tcont $ plet $ pfstBuiltin # x
+    fields <- tcont $ plet $ psndBuiltin # x
+    _ <- tcont $ plet $ validateSum (Proxy @0) (Proxy @ys) constr fields
+    pure (punsafeCoerce opq, ())
+
+instance PTryFrom PData (PDataSum ys) => PTryFrom PData (PAsData (PDataSum ys)) where
+  type PTryFromExcess _ _ = Const ()
+  ptryFrom' x = runTermCont $ do
+    (y, exc) <- tcont $ ptryFrom x
+    pure (pdata y, exc)
