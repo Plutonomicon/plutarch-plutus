@@ -16,11 +16,15 @@ import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import Data.Char (toLower)
 import Data.Word (Word8)
+import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
 import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (Term, (:-->))
+import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Other (POpaque)
 import Plutarch.Internal.PLam ((#))
+import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,
@@ -32,7 +36,11 @@ import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinByteString'
-data PByteString s
+data PByteString s = PByteString (Term s POpaque)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType)
+
+instance DerivePlutusType PByteString where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PByteString where type PLifted PByteString = ByteString
 deriving via (DerivePConstantDirect ByteString PByteString) instance PConstantDecl ByteString

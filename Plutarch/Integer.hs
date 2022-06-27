@@ -4,17 +4,17 @@
 
 module Plutarch.Integer (PInteger, PIntegral (..)) where
 
+import GHC.Generics (Generic)
 import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
 import Plutarch.Internal (
   Term,
   phoistAcyclic,
   (:-->),
  )
-import Plutarch.Internal.Other (
-  pto,
- )
+import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Other (POpaque, pto)
 import Plutarch.Internal.PLam (plam, (#))
-import Plutarch.Internal.PlutusType (PInner)
+import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PInner, PlutusType)
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,
@@ -27,7 +27,11 @@ import Plutarch.Unsafe (punsafeBuiltin, punsafeDowncast)
 import qualified PlutusCore as PLC
 
 -- | Plutus BuiltinInteger
-data PInteger s
+data PInteger s = PInteger (Term s POpaque)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType)
+
+instance DerivePlutusType PInteger where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PInteger where type PLifted PInteger = Integer
 deriving via (DerivePConstantDirect Integer PInteger) instance PConstantDecl Integer
