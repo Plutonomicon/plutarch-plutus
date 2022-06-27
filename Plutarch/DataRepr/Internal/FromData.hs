@@ -25,5 +25,5 @@ class PFromDataable (a :: PType) (b :: PType) | b -> a, a -> b where
 instance {-# OVERLAPPABLE #-} PFromDataable a (PAsData a) where
   pmaybeFromAsData = id
 
-instance (PIsData a, b ~ a) => PFromDataable a b where
+instance {-# OVERLAPPABLE #-} (PIsData a, b ~ a) => PFromDataable a b where
   pmaybeFromAsData = pfromData
