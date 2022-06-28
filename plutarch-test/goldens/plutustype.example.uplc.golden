@@ -1,4 +1,4 @@
 swap.A (program 1.0.0 ((\i0 -> \i0 -> force i2) (delay (\i0 -> \i0 -> force i1)) (delay (\i0 -> \i0 -> force i2))))
 swap.B (program 1.0.0 ((\i0 -> \i0 -> force i1) (delay (\i0 -> \i0 -> force i1)) (delay (\i0 -> \i0 -> force i2))))
-scottenc.PMaybe (program 1.0.0 ((\i0 -> \i0 -> i2 42) (\i0 -> i1) (delay error)))
-scottenc.PPair (program 1.0.0 ((\i0 -> i1 42 "Universe") (\i0 -> \i0 -> i1)))
+scottenc.PMaybe (program 1.0.0 ((\i0 -> \i0 -> \i0 -> i2 i3) 42 (\i0 -> i1) (delay error)))
+scottenc.PPair (program 1.0.0 ((\i0 -> \i0 -> i1 i2 "Universe") 42 (\i0 -> \i0 -> i1)))

@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Rational (
   PRational (..),
@@ -9,8 +10,10 @@ module Plutarch.Rational (
   pround,
   ptruncate,
   pproperFraction,
+  PFractional (..),
 ) where
 
+import Data.Ratio (denominator, numerator)
 import GHC.Generics (Generic)
 import Plutarch (
   DPTStrat,
@@ -42,18 +45,30 @@ import Plutarch.Builtin (
   pfromDataImpl,
  )
 import Plutarch.Integer (PInteger, PIntegral (pdiv, pmod))
+import Plutarch.Internal (PType)
+import Plutarch.Lift (pconstant)
 import Plutarch.List (PListLike (pcons, phead, pnil, ptail), pmap)
-import Plutarch.Num (PFractional, PNum, pabs, pfromInteger, pnegate, precip, psignum, (#*), (#+), (#-), (#/))
+import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
 import Plutarch.Pair (PPair (..))
 import Plutarch.Show (PShow (pshow'), pshow)
 import Plutarch.Trace (ptraceError)
 import Plutarch.Unsafe (punsafeCoerce)
+
+class PFractional (a :: PType) where
+  (#/) :: Term s a -> Term s a -> Term s a
+  precip :: Term s (a :--> a)
+  pfromRational :: Term s (PRational :--> a)
 
 data PRational s
   = PRational (Term s PInteger) (Term s PInteger)
   deriving stock (Generic)
   deriving anyclass (PlutusType)
 instance DerivePlutusType PRational where type DPTStrat _ = PlutusTypeScott
+
+instance (PNum a, PFractional a) => Fractional (Term s a) where
+  (/) = (#/)
+  recip x = precip # x
+  fromRational x = pfromRational #$ pcon $ PRational (pconstant (numerator x)) (pconstant (denominator x))
 
 instance PShow PRational where
   pshow' _ x =
@@ -177,7 +192,7 @@ instance PFractional PRational where
     phoistAcyclic $
       plam $ \x ->
         pmatch x $ \(PRational xn xd) ->
-          pfailOnZero # xn # (pcon (PRational xd xn))
+          pfailOnZero # xn # pcon (PRational xd xn)
 
   x' #/ y' =
     phoistAcyclic
@@ -192,6 +207,8 @@ instance PFractional PRational where
       )
       # x'
       # y'
+
+  pfromRational = phoistAcyclic $ plam id
 
 pfailOnZero :: Term s (PInteger :--> a :--> a)
 pfailOnZero = phoistAcyclic $
