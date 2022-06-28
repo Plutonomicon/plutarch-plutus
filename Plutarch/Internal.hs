@@ -15,6 +15,7 @@ module Plutarch.Internal (
   pforce,
   phoistAcyclic,
   perror,
+  punsafeAsClosedTerm,
   punsafeCoerce,
   punsafeBuiltin,
   punsafeConstant,
@@ -191,7 +192,7 @@ plam' f = Term \i ->
         t@(getTerm -> RApply t'@(getArity -> Just _) [RVar 0]) -> t {getTerm = t'}
         -- eta-reduce for arity 2 + n
         t@(getTerm -> RLamAbs n (RApply t'@(getArity -> Just n') args))
-          | (maybe False (== [0 .. n + 1]) $ traverse (\case RVar n -> Just n; _ -> Nothing) args)
+          | (== Just [0 .. n + 1]) (traverse (\case RVar n -> Just n; _ -> Nothing) args)
               && n' >= n + 1 ->
               t {getTerm = t'}
         -- increment arity
@@ -386,6 +387,9 @@ subst idx x (UPLC.Var () (DeBruijn (Index idx'))) | idx == idx' = x idx
 subst idx _ y@(UPLC.Var () (DeBruijn (Index idx'))) | idx > idx' = y
 subst idx _ (UPLC.Var () (DeBruijn (Index idx'))) | idx < idx' = UPLC.Var () (DeBruijn . Index $ idx' - 1)
 subst _ _ y = y
+
+punsafeAsClosedTerm :: forall s a. Term s a -> ClosedTerm a
+punsafeAsClosedTerm (Term t) = Term t
 
 rawTermToUPLC ::
   (HoistedTerm -> Word64 -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) ->

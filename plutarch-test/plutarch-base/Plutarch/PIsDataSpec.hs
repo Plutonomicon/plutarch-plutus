@@ -7,8 +7,6 @@ import Data.Text.Encoding (encodeUtf8)
 
 import Data.Functor.Compose (Compose (Compose))
 import Data.String (fromString)
-import qualified GHC.Generics as GHC
-import Generics.SOP (Generic, I (I), NS (S, Z))
 import PlutusLedgerApi.V1 (
   Address (Address),
   Credential (PubKeyCredential, ScriptCredential),
@@ -17,6 +15,8 @@ import PlutusLedgerApi.V1 (
   StakingCredential (StakingHash),
   TxOutRef (TxOutRef),
  )
+
+import Generics.SOP (NS (S, Z))
 import qualified PlutusTx
 
 import Test.Tasty.QuickCheck (Arbitrary, property)
@@ -24,7 +24,7 @@ import Test.Tasty.QuickCheck (Arbitrary, property)
 import Plutarch.Api.V1
 import Plutarch.Api.V1.Tuple (pbuiltinPairFromTuple, ptupleFromBuiltin)
 import Plutarch.Builtin (pforgetData, ppairDataBuiltin)
-import Plutarch.DataRepr (PDataSum (PDataSum), PIsDataRepr (PIsDataReprRepr), PIsDataReprInstances (PIsDataReprInstances))
+import Plutarch.DataRepr (PDataSum (PDataSum))
 import Plutarch.Lift (PLifted)
 import Plutarch.Prelude
 import Plutarch.SpecTypes (PTriplet (PTriplet))
@@ -92,21 +92,21 @@ spec = do
           "normal"
             @| pcon (PFourWheeler datrec) @== expected
           "pdatasum"
-            @| pcon @(PDataSum (PIsDataReprRepr PVehicle)) (PDataSum . Z $ Compose datrec) @== expected
+            @| pcon @(PInner PVehicle) (PDataSum . Z $ Compose datrec) @== expected
         "2wheeler" @\ do
           let datrec = pdcons # pconstantData @PInteger 5 #$ pdcons # pconstantData @PInteger 0 # pdnil
               expected = pconstant $ PlutusTx.Constr 1 [PlutusTx.I 5, PlutusTx.I 0]
           "normal"
             @| pcon (PTwoWheeler datrec) @== expected
           "pdatasum"
-            @| pcon @(PDataSum (PIsDataReprRepr PVehicle)) (PDataSum . S . Z $ Compose datrec) @== expected
+            @| pcon @(PInner PVehicle) (PDataSum . S . Z $ Compose datrec) @== expected
         "immovable" @\ do
           let datrec = pdnil
               expected = pconstant $ PlutusTx.Constr 2 []
           "normal"
             @| pcon (PImmovableBox datrec) @== expected
           "pdatasum"
-            @| pcon @(PDataSum (PIsDataReprRepr PVehicle)) (PDataSum . S . S . Z $ Compose datrec) @== expected
+            @| pcon @(PInner PVehicle) (PDataSum . S . S . Z $ Compose datrec) @== expected
       -- Product construction
       "prod" @\ do
         "1" @\ do
@@ -127,7 +127,7 @@ spec = do
           "normal"
             @| pcon (PTriplet datrec) @== expected
           "pdatasum"
-            @| pcon @(PDataSum (PIsDataReprRepr (PTriplet PCurrencySymbol))) (PDataSum . Z $ Compose datrec)
+            @| pcon @(PInner (PTriplet PCurrencySymbol)) (PDataSum . Z $ Compose datrec)
               @== expected
         "2" @\ do
           let minting = Minting ""
@@ -148,7 +148,7 @@ spec = do
           "normal"
             @| pcon (PTriplet datrec) @== expected
           "datasum"
-            @| pcon @(PDataSum (PIsDataReprRepr (PTriplet PScriptPurpose))) (PDataSum . Z $ Compose datrec)
+            @| pcon @(PInner (PTriplet PScriptPurpose)) (PDataSum . Z $ Compose datrec)
               @== expected
       -- Enumerable sum type construction
       "enum" @\ do
@@ -225,17 +225,13 @@ data PVehicle (s :: S)
   = PFourWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger, "_2" ':= PInteger, "_3" ':= PInteger]))
   | PTwoWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
   | PImmovableBox (Term s (PDataRecord '[]))
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic, PIsDataRepr)
-  deriving
-    (PlutusType, PIsData)
-    via PIsDataReprInstances PVehicle
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData)
+instance DerivePlutusType PVehicle where type DPTStrat _ = PlutusTypeData
 
 data PEnumType (s :: S)
   = PA (Term s (PDataRecord '[]))
   | PB (Term s (PDataRecord '[]))
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic, PIsDataRepr)
-  deriving
-    (PlutusType, PIsData)
-    via PIsDataReprInstances PEnumType
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData)
+instance DerivePlutusType PEnumType where type DPTStrat _ = PlutusTypeData

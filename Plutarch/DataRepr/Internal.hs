@@ -226,7 +226,7 @@ data PLabeledType = Symbol := PType
 
 type family PLabelIndex (name :: Symbol) (as :: [PLabeledType]) :: Nat where
   PLabelIndex name ((name ':= _) ': _) = 0
-  PLabelIndex name (_ ': as) = (PLabelIndex name as) + 1
+  PLabelIndex name (_ ': as) = PLabelIndex name as + 1
 
 type PLookupLabel :: Symbol -> [PLabeledType] -> PType
 type family PLookupLabel name as where
@@ -237,7 +237,7 @@ type family PUnLabel (a :: PLabeledType) :: PType where
   PUnLabel (_ ':= a) = a
 
 instance PIsData (PDataRecord xs) where
-  pfromDataImpl x = punsafeCoerce $ (pfromData (punsafeCoerce x) :: Term _ (PBuiltinList PData))
+  pfromDataImpl x = punsafeCoerce (pfromData (punsafeCoerce x) :: Term _ (PBuiltinList PData))
   pdataImpl x = pupcast $ pdata (pupcast x :: Term _ (PBuiltinList PData))
 
 {- | A sum of 'PDataRecord's. The underlying representation is the `Constr` constructor,
@@ -261,7 +261,7 @@ instance IsPDataSum xs => IsPDataSum ('[PDataRecord l] : xs) where
   toSum (SOP (Z (x :* Nil))) = PDataSum $ Z $ coerce x
   toSum (SOP (S x)) = case toSum (SOP x) of
     PDataSum y -> PDataSum $ S y
-  fromSum (PDataSum (Z x)) = SOP $ Z $ (coerce x) :* Nil
+  fromSum (PDataSum (Z x)) = SOP $ Z $ coerce x :* Nil
   fromSum (PDataSum (S x)) = case fromSum (PDataSum x) of
     SOP y -> SOP $ S y
 
@@ -279,7 +279,7 @@ instance
   type PInner (PDataSum defs) = PData
   pcon' (PDataSum xss) =
     let constrIx = fromIntegral $ hindex xss
-        datRec = hcollapse $ hmap (K . (\x -> pto x) . F.getCompose) xss
+        datRec = hcollapse $ hmap (K . pto . F.getCompose) xss
      in pforgetData $ pconstrBuiltin # pconstant constrIx # datRec
   pmatch' d f =
     let handlers = conv f
@@ -304,7 +304,7 @@ instance
       conv =
         unA $
           para_SList
-            (A \_ -> DRHNil)
+            (A $ const DRHNil)
             ( \(A prev) -> A \f ->
                 DRHCons
                   (\x -> f (PDataSum (Z $ coerce x)))
@@ -376,7 +376,7 @@ instance PlutusTypeStrat PlutusTypeData where
   type PlutusTypeStratConstraint PlutusTypeData = PlutusTypeDataConstraint
   type DerivedPInner PlutusTypeData a = PDataSum (IsPDataSumDefs (PCode a))
   derivedPCon x = pcon $ toSum $ gpfrom x
-  derivedPMatch x f = pmatch x (\y -> f $ gpto $ fromSum $ y)
+  derivedPMatch x f = pmatch x (f . gpto . fromSum)
 
 newtype DualReprHandler s out def = DualRepr (Term s (PDataRecord def) -> Term s (PDataRecord def) -> Term s out)
 
@@ -625,7 +625,7 @@ instance
     PTryFromExcess PData (PAsData (PDataRecord as)) =
       Helper (Flip Term (PDataRecord as)) (PTryFromExcess (PBuiltinList PData) (PDataRecord as))
   ptryFrom' opq = runTermCont $ do
-    l <- snd <$> (tcont $ ptryFrom @(PAsData (PBuiltinList PData)) opq)
+    l <- snd <$> tcont (ptryFrom @(PAsData (PBuiltinList PData)) opq)
     r <- tcont $ ptryFrom @(PDataRecord as) l
     pure (punsafeCoerce opq, r)
 

@@ -1,11 +1,10 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Plutarch.Num (PNum (..), PFractional (..)) where
+module Plutarch.Num (PNum (..)) where
 
 import Plutarch.Internal (
   PType,
   Term,
-  pthrow,
   punsafeCoerce,
   (:-->),
  )
@@ -52,12 +51,3 @@ instance PNum a => Num (Term s a) where
   negate x = pnegate # x
   signum x = psignum # x
   fromInteger = pfromInteger
-
-class PFractional (a :: PType) where
-  (#/) :: Term s a -> Term s a -> Term s a
-  precip :: Term s (a :--> a)
-
-instance (PNum a, PFractional a) => Fractional (Term s a) where
-  (/) = (#/)
-  recip x = precip # x
-  fromRational _ = pthrow "unsupported operation"

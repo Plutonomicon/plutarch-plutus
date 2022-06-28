@@ -47,7 +47,7 @@ data PStakingCredential (s :: S)
       )
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PEq, POrd)
-instance DerivePlutusType (PStakingCredential) where type DPTStrat _ = PlutusTypeData
+instance DerivePlutusType PStakingCredential where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PStakingCredential where type PLifted PStakingCredential = Plutus.StakingCredential
 deriving via (DerivePConstantViaData Plutus.StakingCredential PStakingCredential) instance PConstantDecl Plutus.StakingCredential
@@ -58,7 +58,7 @@ newtype PAddress (s :: S)
           s
           ( PDataRecord
               '[ "credential" ':= PCredential
-               , "stakingCredential" ':= (PMaybeData PStakingCredential)
+               , "stakingCredential" ':= PMaybeData PStakingCredential
                ]
           )
       )
