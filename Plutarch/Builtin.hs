@@ -108,7 +108,6 @@ import Plutarch.TryFrom (
   ptryFrom,
   ptryFrom',
   pupcast,
-  pupcastF,
  )
 
 -- | Plutus 'BuiltinPair'
@@ -270,12 +269,16 @@ pdataLiteral = pconstant
 
 data PAsData (a :: PType) (s :: S) = PAsData (Term s a)
 
+type family IfSameThenData (a :: PType) (b :: PType) :: PType where
+  IfSameThenData a a = PData
+  IfSameThenData _ b = PAsData b
+
 instance PIsData a => PlutusType (PAsData a) where
-  type PInner (PAsData a) = PData
+  type PInner (PAsData a) = IfSameThenData a (PInner a)
   type PCovariant' (PAsData a) = PCovariant' a
   type PContravariant' (PAsData a) = PContravariant' a
   type PVariant' (PAsData a) = PVariant' a
-  pcon' (PAsData t) = pforgetData $ pdata t
+  pcon' (PAsData t) = punsafeCoerce $ pdata t
   pmatch' t f = f (PAsData $ pfromData $ punsafeCoerce t)
 
 type role PAsDataLifted nominal
@@ -290,7 +293,7 @@ instance PConstantDecl (PAsDataLifted a) where
 instance PUnsafeLiftDecl (PAsData a) where type PLifted (PAsData a) = PAsDataLifted a
 
 pforgetData :: forall s a. Term s (PAsData a) -> Term s PData
-pforgetData = pupcast
+pforgetData = punsafeCoerce
 
 -- FIXME: remove, broken
 
@@ -298,7 +301,7 @@ pforgetData = pupcast
  Equivalent to 'pupcastF'.
 -}
 pforgetData' :: forall a (p :: PType -> PType) s. PCovariant p => Proxy p -> Term s (p (PAsData a)) -> Term s (p PData)
-pforgetData' = pupcastF
+pforgetData' _ = let _ = witness (Proxy @(PCovariant p)) in punsafeCoerce
 
 -- | Inverse of 'pforgetData''.
 prememberData :: forall (p :: PType -> PType) s. PVariant p => Proxy p -> Term s (p PData) -> Term s (p (PAsData PData))
