@@ -7,6 +7,7 @@ import qualified PlutusTx
 
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
+  PDataFields,
  )
 import Plutarch.Lift (
   PConstantDecl (PConstanted),
@@ -35,8 +36,8 @@ newtype PTriplet (a :: PType) (s :: S)
                ]
           )
       )
-  deriving stock Generic
-  deriving anyclass (PlutusType)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd, PDataFields)
 
 instance DerivePlutusType (PTriplet a) where type DPTStrat _ = PlutusTypeData
 

@@ -29,13 +29,13 @@ module Plutarch.Internal.PlutusType (
 
 import Data.Kind (Constraint, Type)
 import Data.Proxy (Proxy (Proxy))
+import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 import Generics.SOP (All2)
 import Plutarch.Internal (PType, Term, plam', plet, punsafeCoerce, (:-->) (PLam))
 import Plutarch.Internal.Generic (PCode)
 import Plutarch.Internal.PLam ((#))
 import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
 import Plutarch.Internal.Witness (witness)
-import GHC.TypeLits (TypeError, ErrorMessage (ShowType, Text, (:<>:)))
 
 class PlutusTypeStrat (strategy :: Type) where
   type PlutusTypeStratConstraint strategy :: PType -> Constraint
@@ -52,7 +52,7 @@ class
   DerivePlutusType (a :: PType)
   where
   type DPTStrat a :: Type
-  type DPTStrat a = TypeError ('Text "Please specify a strategy for deriving PlutusType for type " ':<>: 'ShowType a)
+  type DPTStrat a = TypeError ( 'Text "Please specify a strategy for deriving PlutusType for type " ':<>: 'ShowType a)
 
 class PlutusType (a :: PType) where
   type PInner a :: PType
