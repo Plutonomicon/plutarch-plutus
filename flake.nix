@@ -102,8 +102,7 @@
         "xhtml"
       ];
 
-      hlsFor' = compiler-nix-name: system:
-        let pkgs = pkgsFor system; in
+      hlsFor' = compiler-nix-name: pkgs:
         pkgs.haskell-nix.cabalProject' {
           modules = [{
             inherit nonReinstallablePkgs;
@@ -113,7 +112,18 @@
           src = "${inputs.haskell-language-server}";
           sha256map."https://github.com/pepeiborra/ekg-json"."7a0af7a8fd38045fd15fb13445bdcc7085325460" = "fVwKxGgM0S4Kv/4egVAAiAjV7QB5PBqMVMCfsv7otIQ=";
         };
-      hlsFor = compiler-nix-name: system: (hlsFor' compiler-nix-name system).hsPkgs.haskell-language-server.components.exes.haskell-language-server;
+      hlsFor = compiler-nix-name: system:
+        let
+          pkgs = pkgsFor system;
+          oldGhc = "8107";
+        in
+        if (compiler-nix-name == "ghc${oldGhc}") then
+          pkgs.haskell-language-server.override
+            {
+              supportedGhcVersions = [ oldGhc ];
+            }
+        else
+          (hlsFor' compiler-nix-name pkgs).hsPkgs.haskell-language-server.components.exes.haskell-language-server;
 
       haskellModules = [
         ({ config, pkgs, hsPkgs, ... }: {
@@ -347,29 +357,31 @@
         };
 
       projectForGhc = compiler-nix-name: system:
-        let pkgs = pkgsFor system; in
-        let pkgs' = pkgsFor' system; in
-        let pkgSet = pkgs.haskell-nix.cabalProject' (applyPlutarchDep pkgs {
-          src = ./.;
-          inherit compiler-nix-name;
-          shell = {
-            withHoogle = true;
+        let
+          pkgs = pkgsFor system;
+          pkgs' = pkgsFor' system;
+          pkgSet = pkgs.haskell-nix.cabalProject' (applyPlutarchDep pkgs {
+            src = ./.;
+            inherit compiler-nix-name;
+            shell = {
+              withHoogle = true;
 
-            exactDeps = true;
+              exactDeps = true;
 
-            # We use the ones from Nixpkgs, since they are cached reliably.
-            # Eventually we will probably want to build these with haskell.nix.
-            nativeBuildInputs = [
-              pkgs'.cabal-install
-              pkgs'.hlint
-              pkgs'.haskellPackages.cabal-fmt
-              (fourmoluFor system)
-              pkgs'.nixpkgs-fmt
-              pkgSet.hsPkgs.hspec-discover.components.exes.hspec-discover
-              (hlsFor compiler-nix-name system)
-            ];
-          };
-        }); in
+              # We use the ones from Nixpkgs, since they are cached reliably.
+              # Eventually we will probably want to build these with haskell.nix.
+              nativeBuildInputs = [
+                pkgs'.cabal-install
+                pkgs'.hlint
+                pkgs'.haskellPackages.cabal-fmt
+                (fourmoluFor system)
+                pkgs'.nixpkgs-fmt
+                pkgSet.hsPkgs.hspec-discover.components.exes.hspec-discover
+                (hlsFor compiler-nix-name system)
+              ];
+            };
+          });
+        in
         pkgSet;
 
       projectFor = projectForGhc defaultGhcVersion;
