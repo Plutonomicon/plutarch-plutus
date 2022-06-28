@@ -35,12 +35,13 @@ import Plutarch.Internal.Generic (PCode)
 import Plutarch.Internal.PLam ((#))
 import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
 import Plutarch.Internal.Witness (witness)
+import GHC.TypeLits (TypeError, ErrorMessage (ShowType, Text, (:<>:)))
 
 class PlutusTypeStrat (strategy :: Type) where
   type PlutusTypeStratConstraint strategy :: PType -> Constraint
   type DerivedPInner strategy (a :: PType) :: PType
   derivedPCon :: forall a s. (DerivePlutusType a, DPTStrat a ~ strategy) => a s -> Term s (DerivedPInner strategy a)
-  derivedPMatch :: forall a s b. (DerivePlutusType a, DPTStrat a ~ strategy) => (Term s (DerivedPInner strategy a)) -> (a s -> Term s b) -> Term s b
+  derivedPMatch :: forall a s b. (DerivePlutusType a, DPTStrat a ~ strategy) => Term s (DerivedPInner strategy a) -> (a s -> Term s b) -> Term s b
 
 class
   ( PInner a ~ DerivedPInner (DPTStrat a) a
@@ -51,6 +52,7 @@ class
   DerivePlutusType (a :: PType)
   where
   type DPTStrat a :: Type
+  type DPTStrat a = TypeError ('Text "Please specify a strategy for deriving PlutusType for type " ':<>: 'ShowType a)
 
 class PlutusType (a :: PType) where
   type PInner a :: PType
@@ -65,9 +67,9 @@ class PlutusType (a :: PType) where
   default pcon' :: DerivePlutusType a => forall s. a s -> Term s (PInner a)
   pcon' = let _ = witness (Proxy @(PlutusType a)) in derivedPCon
 
-  pmatch' :: forall s b. (Term s (PInner a)) -> (a s -> Term s b) -> Term s b
+  pmatch' :: forall s b. Term s (PInner a) -> (a s -> Term s b) -> Term s b
   -- FIXME buggy GHC, needs AllowAmbiguousTypes
-  default pmatch' :: DerivePlutusType a => forall s b. (Term s (PInner a)) -> (a s -> Term s b) -> Term s b
+  default pmatch' :: DerivePlutusType a => forall s b. Term s (PInner a) -> (a s -> Term s b) -> Term s b
   pmatch' = derivedPMatch
 
 {-# DEPRECATED PCon "Use PlutusType" #-}
@@ -81,7 +83,7 @@ pcon x = punsafeCoerce (pcon' x)
 
 -- | Pattern match over Plutarch Terms via a Haskell datatype
 pmatch :: PlutusType a => Term s a -> (a s -> Term s b) -> Term s b
-pmatch x f = pmatch' (punsafeCoerce x) f
+pmatch x = pmatch' (punsafeCoerce x)
 
 class PCovariant' a => PCovariant'' a
 instance PCovariant' a => PCovariant'' a

@@ -5,17 +5,18 @@ module Plutarch.PlutusTypeSpec (spec) where
 import Data.Functor.Compose (Compose (Compose))
 import Data.SOP.NS (NS (S, Z))
 
-import GHC.Generics (Generic)
-import qualified Generics.SOP as SOP
 import Plutarch.Api.V1 (
   PAddress (PAddress),
   PCredential (PPubKeyCredential, PScriptCredential),
   PScriptPurpose (PCertifying, PMinting, PRewarding, PSpending),
+  PMaybeData,
+  PStakingCredential,
  )
 import Plutarch.Builtin (pasByteStr, pasConstr)
-import Plutarch.DataRepr (PDataSum (PDataSum), pasDataSum)
+import Plutarch.DataRepr (PDataSum (PDataSum))
 import Plutarch.Prelude
 import Plutarch.Test
+import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V1 (DCert (DCertGenesis), toData)
 import PlutusLedgerApi.V1.Address (Address (Address))
 import PlutusLedgerApi.V1.Contexts (ScriptPurpose (Certifying, Minting, Rewarding, Spending), TxOutRef (TxOutRef))
@@ -70,12 +71,17 @@ deconstrSpec = do
               )
               # pconstant addrPC
           "datasum"
-            @| plam
-              ( \x -> pmatch (pasDataSum x) $ \(PDataSum datsum) -> case datsum of
+            @|(plam
+              ( \x -> pmatch (pupcast @(PDataSum '[ '[ "credential" ':= PCredential
+               , "stakingCredential" ':= PMaybeData PStakingCredential
+               ]]) x) $ \(PDataSum datsum) -> case datsum of
                   Z (Compose addrFields) -> addrFields
                   _ -> perror
               )
-              # pconstant addrPC
+              # (pconstant addrPC :: Term _ PAddress) :: Term _ (PDataRecord 
+              '[ "credential" ':= PCredential
+               , "stakingCredential" ':= PMaybeData PStakingCredential
+               ]))
         "sumtype(ignore-fields)" @\ do
           "normal"
             @| plam
@@ -86,11 +92,11 @@ deconstrSpec = do
               # pconstant minting
           "datasum"
             @| plam
-              ( \x -> pmatch (pasDataSum x) $ \(PDataSum datsum) -> case datsum of
+              ( \x -> pmatch (pupcast x) $ \(PDataSum datsum) -> case datsum of
                   Z _ -> pconstant ()
                   _ -> perror
               )
-              # pconstant minting
+              # (pconstant minting :: Term _ PScriptPurpose)
         "sumtype(partial-match)" @\ do
           "normal"
             @| plam
@@ -101,7 +107,7 @@ deconstrSpec = do
               # pconstant minting
           "datasum"
             @| plam
-              ( \x -> pmatch (pasDataSum x) $ \(PDataSum datsum) -> case datsum of
+              ( \x -> pmatch (pupcast x) $ \(PDataSum datsum) -> case datsum of
                   Z (Compose hs) -> hs
                   _ -> perror
               )
@@ -289,8 +295,10 @@ describe "sanity checks" $ do
  -}
 
 data AB (s :: S) = A | B
-  deriving stock (Generic)
-  deriving anyclass (SOP.Generic, PlutusType)
+  deriving stock Generic
+  deriving anyclass PlutusType
+
+instance DerivePlutusType AB where type DPTStrat _ = PlutusTypeData
 
 {- |
   Instead of using `pcon'` and `pmatch'` directly,

@@ -3,14 +3,10 @@
 
 module Plutarch.SpecTypes (Triplet (..), PTriplet (..)) where
 
-import qualified GHC.Generics as GHC
-import Generics.SOP (Generic, I (I))
 import qualified PlutusTx
 
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
-  PIsDataReprInstances (PIsDataReprInstances),
  )
 import Plutarch.Lift (
   PConstantDecl (PConstanted),
@@ -39,13 +35,12 @@ newtype PTriplet (a :: PType) (s :: S)
                ]
           )
       )
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic, PIsDataRepr)
-  deriving
-    (PlutusType, PIsData, PDataFields, PEq, POrd)
-    via (PIsDataReprInstances (PTriplet a))
+  deriving stock Generic
+  deriving anyclass (PlutusType)
 
-PlutusTx.makeIsDataIndexed ''Triplet ([('Triplet, 0)])
+instance DerivePlutusType (PTriplet a) where type DPTStrat _ = PlutusTypeData
+
+PlutusTx.makeIsDataIndexed ''Triplet [('Triplet, 0)]
 
 instance PLiftData a => PUnsafeLiftDecl (PTriplet a) where
   type PLifted (PTriplet a) = Triplet (PLifted a)
