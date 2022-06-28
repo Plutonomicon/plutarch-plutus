@@ -3,7 +3,7 @@
 
   inputs.haskell-nix.url = "github:input-output-hk/haskell.nix";
   inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
-  inputs.nixpkgs-latest.url = "github:NixOS/nixpkgs?rev=a0a69be4b5ee63f1b5e75887a406e9194012b492";
+  inputs.nixpkgs-latest.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
   inputs.hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
 
@@ -51,11 +51,15 @@
         # inherit (haskell-nix) config;
       };
       pkgsFor' = system: import nixpkgs-latest { inherit system; };
+      pkgsForHls = system: import nixpkgs-latest { 
+        inherit system; 
+        overlays = [ haskell-nix.overlay (import "${iohk-nix}/overlays/crypto") ];
+      };
 
-      fourmoluFor = system: (pkgsFor' system).haskell.packages.ghc922.fourmolu_0_6_0_0;
 
-      defaultGhcVersion = "ghc923";
-      isGhc9 = x: builtins.trace "Checking whether ${x} is GHC 9.*" (builtins.substring 3 1 x == "9");
+      defaultGhcVersion = "923";
+
+      fourmoluFor = system: (pkgsFor' system).haskell.packages."ghc${defaultGhcVersion}".fourmolu_0_6_0_0;
 
       # https://github.com/input-output-hk/haskell.nix/issues/1177
       nonReinstallablePkgs = [
@@ -113,7 +117,13 @@
           src = "${inputs.haskell-language-server}";
           sha256map."https://github.com/pepeiborra/ekg-json"."7a0af7a8fd38045fd15fb13445bdcc7085325460" = "fVwKxGgM0S4Kv/4egVAAiAjV7QB5PBqMVMCfsv7otIQ=";
         };
-      hlsFor = compiler-nix-name: system: (hlsFor' compiler-nix-name system).hsPkgs.haskell-language-server.components.exes.haskell-language-server;
+      # hlsFor = compiler-nix-name: system: (hlsFor' compiler-nix-name system).hsPkgs.haskell-language-server.components.exes.haskell-language-server;
+
+      hlsFor = ghcVersion: pkgs: 
+        pkgs.haskell-language-server.override
+        {
+          supportedGhcVersions = [ghcVersion];
+        };
 
       haskellModules = [
         ({ config, pkgs, hsPkgs, ... }: {
@@ -346,10 +356,12 @@
           );
         };
 
-      projectForGhc = compiler-nix-name: system:
-        let pkgs = pkgsFor system; in
-        let pkgs' = pkgsFor' system; in
-        let pkgSet = pkgs.haskell-nix.cabalProject' (applyPlutarchDep pkgs {
+      projectForGhc = ghcVersion: system:
+      let 
+          pkgs = pkgsFor system; 
+          pkgs' = pkgsFor' system; 
+          compiler-nix-name = "ghc${ghcVersion}";
+          pkgSet = pkgs.haskell-nix.cabalProject' (applyPlutarchDep pkgs {
           src = ./.;
           inherit compiler-nix-name;
           shell = {
@@ -366,14 +378,14 @@
               (fourmoluFor system)
               pkgs'.nixpkgs-fmt
               pkgSet.hsPkgs.hspec-discover.components.exes.hspec-discover
-              (hlsFor compiler-nix-name system)
+              (hlsFor ghcVersion (pkgsForHls system))
             ];
           };
         }); in
         pkgSet;
 
       projectFor = projectForGhc defaultGhcVersion;
-      projectFor810 = projectForGhc "ghc8107";
+      projectFor810 = projectForGhc "8107";
 
       formatCheckFor = system:
         let
@@ -398,7 +410,7 @@
           sphinxcontrib-haddock =
             pkgs.callPackage inputs.plutus.inputs.sphinxcontrib-haddock { pythonPackages = pkgs.python3Packages; };
           haddock-combine = pkgs.callPackage "${inputs.plutus}/nix/lib/haddock-combine.nix" {
-            ghc = pkgs.haskell-nix.compiler.${defaultGhcVersion};
+            ghc = pkgs.haskell-nix.compiler."ghc${defaultGhcVersion}";
             inherit (sphinxcontrib-haddock) sphinxcontrib-haddock;
           };
           # If you use this, filter out pretty-show, it doesn't work if not.
