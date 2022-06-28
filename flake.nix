@@ -498,6 +498,7 @@
       flake = perSystem (system: self.project.${system}.flake { });
 
       haddockProject = self.project;
+      ghc810Flake = perSystem (system: self.projectMatrix.ghc810.${system}.flake { });
 
       packages = perSystem (system: self.flake.${system}.packages // {
         haddock = haddock system;
@@ -510,8 +511,8 @@
             formatCheck = formatCheckFor system;
             test-ghc9 = flakeApp2Derivation system "test-ghc9";
             test-ghc810 = flakeApp2Derivation system "test-ghc810";
-            "ghc810-plutarch:lib:plutarch" = (self.projectMatrix.ghc810.${system}.flake { }).packages."plutarch:lib:plutarch";
-            "ghc810-plutarch:lib:plutarch-test" = (self.projectMatrix.ghc810.${system}.flake { }).packages."plutarch-test:lib:plutarch-test";
+            "ghc810-plutarch:lib:plutarch" = (self.ghc810Flake.${system}).packages."plutarch:lib:plutarch";
+            "ghc810-plutarch:lib:plutarch-test" = (self.ghc810Flake.${system}).packages."plutarch-test:lib:plutarch-test";
             hls = checkedShellScript system "hls" "${self.project.${system}.pkgs.haskell-language-server}/bin/haskell-language-server";
           });
       # Because `nix flake check` does not work with haskell.nix (due to IFD),
@@ -539,7 +540,14 @@
           website = plutarchWebsiteLive system "${self}/docs";
         }
       );
-      devShell = perSystem (system: self.flake.${system}.devShell);
+
+      devShells = perSystem (system:
+        {
+          "ghc810" = self.ghc810Flake.${system}.devShell;
+          "ghc9" = self.flake.${system}.devShell;
+        });
+
+      devShell = perSystem (system: self.devShells.${system}."ghc9");
 
       effects = { ref, ... }:
         let
