@@ -6,6 +6,7 @@ module Plutarch.TryFrom (
   PTryFrom (..),
   ptryFrom,
   PSubtype,
+  PSubtype',
   pupcast,
   pupcastF,
   pdowncastF,
@@ -20,6 +21,14 @@ import Plutarch.Internal.Witness (witness)
 
 import Plutarch.Reducible (Reduce)
 
+type family Helper (a :: PType) (b :: PType) (bi :: PType) :: Bool where
+  Helper _ b b = 'False
+  Helper a _ bi = PSubtype' a bi
+
+type family PSubtype' (a :: PType) (b :: PType) :: Bool where
+  PSubtype' a a = 'True
+  PSubtype' a b = Helper a b (PInner b)
+
 {- | @PSubtype a b@ constitutes a subtyping relation between @a@ and @b@.
  This concretely means that `\(x :: Term s b) -> punsafeCoerce x :: Term s a`
  is legal and sound.
@@ -33,8 +42,7 @@ import Plutarch.Reducible (Reduce)
  Subtyping is transitive.
 -}
 type family PSubtype (a :: PType) (b :: PType) :: Constraint where
-  PSubtype a a = ()
-  PSubtype a b = PSubtype a (PInner b)
+  PSubtype a b = PSubtype' a b ~ 'True
 
 {- |
 @PTryFrom a b@ represents a subtyping relationship between @a@ and @b@,

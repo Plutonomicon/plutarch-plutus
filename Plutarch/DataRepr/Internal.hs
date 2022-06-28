@@ -123,7 +123,7 @@ import Plutarch.Lift (
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont, tcont, unTermCont)
 import Plutarch.Trace (ptraceError)
-import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
+import Plutarch.TryFrom (PSubtype, PSubtype', PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
 import Plutarch.Unit (PUnit (PUnit))
 import Plutarch.Unsafe (punsafeCoerce)
 import qualified PlutusLedgerApi.V1 as Ledger
@@ -564,8 +564,22 @@ newtype HRecP (as :: [(Symbol, PType)]) (s :: S) = HRecP (NoReduce (HRecGeneric 
 newtype Flip f a b = Flip (f b a)
   deriving stock (Generic)
 
+class Helper2 (b :: Bool) a where
+  type Helper2Excess b a :: PType
+  ptryFromData' :: forall s r. Proxy b -> Term s PData -> ((Term s (PAsData a), Reduce (Helper2Excess b a s)) -> Term s r) -> Term s r
+
+instance PTryFrom PData (PAsData a) => Helper2 'False a where
+  type Helper2Excess 'False a = PTryFromExcess PData (PAsData a)
+  ptryFromData' _ = ptryFrom'
+
+instance PTryFrom PData a => Helper2 'True a where
+  type Helper2Excess 'True a = PTryFromExcess PData a
+  ptryFromData' _ x = runTermCont $ do
+    (y, exc) <- tcont $ ptryFrom @a @PData x
+    pure (punsafeCoerce y, exc)
+
 -- We could have a more advanced instance but it's not needed really.
-newtype ExcessForField (a :: PType) (s :: S) = ExcessForField (Term s (PAsData a), Reduce (PTryFromExcess PData (PAsData a) s))
+newtype ExcessForField (b :: Bool) (a :: PType) (s :: S) = ExcessForField (Term s (PAsData a), Reduce (Helper2Excess b a s))
   deriving stock (Generic)
 
 instance PTryFrom (PBuiltinList PData) (PDataRecord '[]) where
@@ -580,7 +594,7 @@ type family UnHRecP (x :: PType) :: [(Symbol, PType)] where
   UnHRecP (HRecP as) = as
 
 instance
-  ( PTryFrom PData (PAsData pty)
+  ( Helper2 (PSubtype' PData pty) pty
   , PTryFrom (PBuiltinList PData) (PDataRecord as)
   , PTryFromExcess (PBuiltinList PData) (PDataRecord as) ~ HRecP ase
   ) =>
@@ -589,12 +603,12 @@ instance
   type
     PTryFromExcess (PBuiltinList PData) (PDataRecord ((name ':= pty) ': as)) =
       HRecP
-        ( '(name, ExcessForField pty)
+        ( '(name, ExcessForField (PSubtype' PData pty) pty)
             ': UnHRecP (PTryFromExcess (PBuiltinList PData) (PDataRecord as))
         )
   ptryFrom' opq = runTermCont $ do
     h <- tcont $ plet $ phead # opq
-    hv <- tcont $ ptryFrom @(PAsData pty) @PData h
+    hv <- tcont $ ptryFromData' (Proxy @(PSubtype' PData pty)) h
     t <- tcont $ plet $ ptail # opq
     tv <- tcont $ ptryFrom @(PDataRecord as) @(PBuiltinList PData) t
     pure (punsafeCoerce opq, HRecGeneric (HCons (Labeled hv) (coerce $ snd tv)))
