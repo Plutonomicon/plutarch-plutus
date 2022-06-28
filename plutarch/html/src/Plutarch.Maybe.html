@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.Maybe</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-2"></span><span>  </span><span class="annot"><a href="Plutarch.Maybe.html#PMaybe"><span class="hs-identifier">PMaybe</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Maybe.html#PJust"><span class="hs-identifier">PJust</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Maybe.html#PNothing"><span class="hs-identifier">PNothing</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-3"></span><span>  </span><span class="annot"><a href="Plutarch.Maybe.html#pfromJust"><span class="hs-identifier">pfromJust</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-4"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../file:///nix/store/r4n325d4bya4i1cviz6zrwmhm4j55yz4-ghc-9.2.3-doc/share/doc/ghc/html/libraries/base-4.16.2.0/src"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../file:///nix/store/r4n325d4bya4i1cviz6zrwmhm4j55yz4-ghc-9.2.3-doc/share/doc/ghc/html/libraries/base-4.16.2.0/src"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.html"><span class="hs-identifier">Plutarch</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-8"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DPTStrat"><span class="hs-identifier">DPTStrat</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-9"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DerivePlutusType"><span class="hs-identifier">DerivePlutusType</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#PType"><span class="hs-identifier">PType</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-11"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PlutusType"><span class="hs-identifier">PlutusType</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PlutusTypeScott"><span class="hs-identifier">PlutusTypeScott</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-13"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#S"><span class="hs-identifier">S</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-14"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier">Term</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-15"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#perror"><span class="hs-identifier">perror</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-16"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#phoistAcyclic"><span class="hs-identifier">phoistAcyclic</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-17"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PLam.html#plam"><span class="hs-identifier">plam</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-18"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#pmatch"><span class="hs-identifier">pmatch</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-19"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator">(:--&gt;)</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-20"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Bool.html"><span class="hs-identifier">Plutarch.Bool</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Bool.html#PEq"><span class="hs-identifier">PEq</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Show.html"><span class="hs-identifier">Plutarch.Show</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Show.html#PShow"><span class="hs-identifier">PShow</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="hs-comment">-- | Plutus Maybe type, with Scott-encoded repr</span><span>
+</span><span id="line-25"></span><span id="local-6989586621679266779"><span id="local-6989586621679266780"></span></span><span class="hs-keyword">data</span><span> </span><span id="PMaybe"><span class="annot"><a href="Plutarch.Maybe.html#PMaybe"><span class="hs-identifier hs-var">PMaybe</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679266885"><span class="annot"><a href="#local-6989586621679266885"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#PType"><span class="hs-identifier hs-type">PType</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679266884"><span class="annot"><a href="#local-6989586621679266884"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="PJust"><span class="annot"><a href="Plutarch.Maybe.html#PJust"><span class="hs-identifier hs-var">PJust</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679266884"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679266885"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="PNothing"><span class="annot"><a href="Plutarch.Maybe.html#PNothing"><span class="hs-identifier hs-var">PNothing</span></a></span></span><span>
+</span><span id="line-28"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(forall x. PMaybe a s -&gt; Rep (PMaybe a s) x)
+-&gt; (forall x. Rep (PMaybe a s) x -&gt; PMaybe a s)
+-&gt; Generic (PMaybe a s)
+forall x. Rep (PMaybe a s) x -&gt; PMaybe a s
+forall x. PMaybe a s -&gt; Rep (PMaybe a s) x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+forall (a :: PType) (s :: S) x. Rep (PMaybe a s) x -&gt; PMaybe a s
+forall (a :: PType) (s :: S) x. PMaybe a s -&gt; Rep (PMaybe a s) x
+$cto :: forall (a :: PType) (s :: S) x. Rep (PMaybe a s) x -&gt; PMaybe a s
+$cfrom :: forall (a :: PType) (s :: S) x. PMaybe a s -&gt; Rep (PMaybe a s) x
+</span><a href="../file:///nix/store/r4n325d4bya4i1cviz6zrwmhm4j55yz4-ghc-9.2.3-doc/share/doc/ghc/html/libraries/base-4.16.2.0/src"><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-29"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679266771"><span id="local-6989586621679266773"><span class="annot"><span class="annottext">(forall (s :: S). PMaybe a s -&gt; Term s (PInner (PMaybe a)))
+-&gt; (forall (s :: S) (b :: PType).
+    Term s (PInner (PMaybe a)) -&gt; (PMaybe a s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType (PMaybe a)
+forall (s :: S). PMaybe a s -&gt; Term s (PInner (PMaybe a))
+forall (s :: S) (b :: PType).
+Term s (PInner (PMaybe a)) -&gt; (PMaybe a s -&gt; Term s b) -&gt; Term s b
+forall (a :: PType).
+(forall (s :: S). a s -&gt; Term s (PInner a))
+-&gt; (forall (s :: S) (b :: PType).
+    Term s (PInner a) -&gt; (a s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType a
+forall (a :: PType) (s :: S).
+PMaybe a s -&gt; Term s (PInner (PMaybe a))
+forall (a :: PType) (s :: S) (b :: PType).
+Term s (PInner (PMaybe a)) -&gt; (PMaybe a s -&gt; Term s b) -&gt; Term s b
+pmatch' :: forall (s :: S) (b :: PType).
+Term s (PInner (PMaybe a)) -&gt; (PMaybe a s -&gt; Term s b) -&gt; Term s b
+$cpmatch' :: forall (a :: PType) (s :: S) (b :: PType).
+Term s (PInner (PMaybe a)) -&gt; (PMaybe a s -&gt; Term s b) -&gt; Term s b
+pcon' :: forall (s :: S). PMaybe a s -&gt; Term s (PInner (PMaybe a))
+$cpcon' :: forall (a :: PType) (s :: S).
+PMaybe a s -&gt; Term s (PInner (PMaybe a))
+</span><a href="Plutarch.Internal.PlutusType.html#C%3APlutusType"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679266768"><span class="annot"><span class="annottext">(forall (s :: S).
+ Term s (PMaybe a) -&gt; Term s (PMaybe a) -&gt; Term s PBool)
+-&gt; PEq (PMaybe a)
+forall (s :: S).
+Term s (PMaybe a) -&gt; Term s (PMaybe a) -&gt; Term s PBool
+forall (a :: PType) (s :: S).
+PEq a =&gt;
+Term s (PMaybe a) -&gt; Term s (PMaybe a) -&gt; Term s PBool
+forall (t :: PType).
+(forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool) -&gt; PEq t
+#== :: forall (s :: S).
+Term s (PMaybe a) -&gt; Term s (PMaybe a) -&gt; Term s PBool
+$c#== :: forall (a :: PType) (s :: S).
+PEq a =&gt;
+Term s (PMaybe a) -&gt; Term s (PMaybe a) -&gt; Term s PBool
+</span><a href="Plutarch.Bool.html#C%3APEq"><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679266765"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s (PMaybe a) -&gt; Term s PString)
+-&gt; PShow (PMaybe a)
+forall (s :: S). Bool -&gt; Term s (PMaybe a) -&gt; Term s PString
+forall (a :: PType) (s :: S).
+PShow a =&gt;
+Bool -&gt; Term s (PMaybe a) -&gt; Term s PString
+forall (t :: PType).
+(forall (s :: S). Bool -&gt; Term s t -&gt; Term s PString) -&gt; PShow t
+pshow' :: forall (s :: S). Bool -&gt; Term s (PMaybe a) -&gt; Term s PString
+$cpshow' :: forall (a :: PType) (s :: S).
+PShow a =&gt;
+Bool -&gt; Term s (PMaybe a) -&gt; Term s PString
+</span><a href="Plutarch.Show.html#C%3APShow"><span class="hs-identifier hs-var hs-var hs-var hs-var">PShow</span></a></span></span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679266847"><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DerivePlutusType"><span class="hs-identifier hs-type">DerivePlutusType</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Maybe.html#PMaybe"><span class="hs-identifier hs-type">PMaybe</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679266847"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span> </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DPTStrat"><span class="hs-identifier hs-var">DPTStrat</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PlutusTypeScott"><span class="hs-identifier hs-type">PlutusTypeScott</span></a></span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span class="hs-comment">{- |
+ fallible unwrapping from @PMaybe@
+-}</span><span>
+</span><span id="line-36"></span><span id="local-6989586621679266845"><span id="local-6989586621679266846"><span class="annot"><a href="Plutarch.Maybe.html#pfromJust"><span class="hs-identifier hs-type">pfromJust</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679266846"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Maybe.html#PMaybe"><span class="hs-identifier hs-type">PMaybe</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679266845"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679266845"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-37"></span><span id="pfromJust"><span class="annot"><span class="annottext">pfromJust :: forall (s :: S) (a :: PType). Term s (PMaybe a :--&gt; a)
+</span><a href="Plutarch.Maybe.html#pfromJust"><span class="hs-identifier hs-var hs-var">pfromJust</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ClosedTerm (PMaybe a :--&gt; a) -&gt; Term s (PMaybe a :--&gt; a)
+forall (a :: PType) (s :: S).
+HasCallStack =&gt;
+ClosedTerm a -&gt; Term s a
+</span><a href="Plutarch.Internal.html#phoistAcyclic"><span class="hs-identifier hs-var">phoistAcyclic</span></a></span><span> </span><span class="annot"><span class="annottext">(ClosedTerm (PMaybe a :--&gt; a) -&gt; Term s (PMaybe a :--&gt; a))
+-&gt; ClosedTerm (PMaybe a :--&gt; a) -&gt; Term s (PMaybe a :--&gt; a)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../file:///nix/store/r4n325d4bya4i1cviz6zrwmhm4j55yz4-ghc-9.2.3-doc/share/doc/ghc/html/libraries/base-4.16.2.0/src"><span class="hs-operator hs-var">$</span></a></span><span>
+</span><span id="line-38"></span><span>  </span><span class="annot"><span class="annottext">(Term s (PMaybe a) -&gt; Term s a) -&gt; Term s (PMaybe a :--&gt; a)
+forall a (b :: PType) (s :: S) (c :: PType).
+PLamN a b s =&gt;
+(Term s c -&gt; a) -&gt; Term s (c :--&gt; b)
+</span><a href="Plutarch.Internal.PLam.html#plam"><span class="hs-identifier hs-var">plam</span></a></span><span> </span><span class="annot"><span class="annottext">((Term s (PMaybe a) -&gt; Term s a) -&gt; Term s (PMaybe a :--&gt; a))
+-&gt; (Term s (PMaybe a) -&gt; Term s a) -&gt; Term s (PMaybe a :--&gt; a)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../file:///nix/store/r4n325d4bya4i1cviz6zrwmhm4j55yz4-ghc-9.2.3-doc/share/doc/ghc/html/libraries/base-4.16.2.0/src"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679266732"><span class="annot"><span class="annottext">Term s (PMaybe a)
+</span><a href="#local-6989586621679266732"><span class="hs-identifier hs-var">maybe</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s (PMaybe a) -&gt; (PMaybe a s -&gt; Term s a) -&gt; Term s a
+forall (a :: PType) (s :: S) (b :: PType).
+PlutusType a =&gt;
+Term s a -&gt; (a s -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.PlutusType.html#pmatch"><span class="hs-identifier hs-var">pmatch</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PMaybe a)
+</span><a href="#local-6989586621679266732"><span class="hs-identifier hs-var">maybe</span></a></span><span> </span><span class="annot"><span class="annottext">((PMaybe a s -&gt; Term s a) -&gt; Term s a)
+-&gt; (PMaybe a s -&gt; Term s a) -&gt; Term s a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../file:///nix/store/r4n325d4bya4i1cviz6zrwmhm4j55yz4-ghc-9.2.3-doc/share/doc/ghc/html/libraries/base-4.16.2.0/src"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-39"></span><span>    </span><span class="annot"><span class="annottext">PMaybe a s
+</span><a href="Plutarch.Maybe.html#PNothing"><span class="hs-identifier hs-var">PNothing</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s a
+forall (s :: S) (a :: PType). Term s a
+</span><a href="Plutarch.Internal.html#perror"><span class="hs-identifier hs-var">perror</span></a></span><span>
+</span><span id="line-40"></span><span>    </span><span class="annot"><a href="Plutarch.Maybe.html#PJust"><span class="hs-identifier hs-type">PJust</span></a></span><span> </span><span id="local-6989586621679266731"><span class="annot"><span class="annottext">Term s a
+</span><a href="#local-6989586621679266731"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s a
+</span><a href="#local-6989586621679266731"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-41"></span></pre></body></html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE UndecidableInstances #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# OPTIONS_GHC -Wno-orphans #-}</span><span>
+</span><span id="line-3"></span><span>
+</span><span id="line-4"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.Api.V1.Crypto</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-5"></span><span>  </span><span class="annot"><a href="Plutarch.Api.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier">PPubKeyHash</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Api.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier">PPubKeyHash</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-6"></span><span>  </span><span class="annot"><a href="Plutarch.Api.V1.Crypto.html#PubKey"><span class="hs-identifier">PubKey</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Api.V1.Crypto.html#PubKey"><span class="hs-identifier">PubKey</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Api.V1.Crypto.html#getPubKey"><span class="hs-identifier">getPubKey</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-7"></span><span>  </span><span class="annot"><a href="Plutarch.Api.V1.Crypto.html#pubKeyHash"><span class="hs-identifier">pubKeyHash</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-8"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><a href="../../../../plutus-ledger-api/html/src"><span class="hs-identifier">PlutusLedgerApi.V1</span></a></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Plutus</span></span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../file:///nix/store/r4n325d4bya4i1cviz6zrwmhm4j55yz4-ghc-9.2.3-doc/share/doc/ghc/html/libraries/base-4.16.2.0/src"><span class="hs-identifier">Data.Coerce</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../file:///nix/store/r4n325d4bya4i1cviz6zrwmhm4j55yz4-ghc-9.2.3-doc/share/doc/ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier">coerce</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Api.Internal.Hashing.html"><span class="hs-identifier">Plutarch.Api.Internal.Hashing</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Api.Internal.Hashing.html#hashLedgerBytes"><span class="hs-identifier">hashLedgerBytes</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Lift.html"><span class="hs-identifier">Plutarch.Lift</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-15"></span><span>  </span><span class="annot"><a href="Plutarch.Lift.html#DerivePConstantViaBuiltin"><span class="hs-identifier">DerivePConstantViaBuiltin</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Lift.html#DerivePConstantViaBuiltin"><span class="hs-identifier">DerivePConstantViaBuiltin</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-16"></span><span>  </span><span class="annot"><a href="Plutarch.Lift.html#PConstantDecl"><span class="hs-identifier">PConstantDecl</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-17"></span><span>  </span><span class="annot"><a href="Plutarch.Lift.html#PLifted"><span class="hs-identifier">PLifted</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-18"></span><span>  </span><span class="annot"><a href="Plutarch.Lift.html#PUnsafeLiftDecl"><span class="hs-identifier">PUnsafeLiftDecl</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-19"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Prelude.html"><span class="hs-identifier">Plutarch.Prelude</span></a></span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span id="local-6989586621679275491"><span id="local-6989586621679275492"></span></span><span class="hs-keyword">newtype</span><span> </span><span id="PPubKeyHash"><span class="annot"><a href="Plutarch.Api.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-var">PPubKeyHash</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679275605"><span class="annot"><a href="#local-6989586621679275605"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PPubKeyHash"><span class="annot"><a href="Plutarch.Api.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-var">PPubKeyHash</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679275605"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(forall x. PPubKeyHash s -&gt; Rep (PPubKeyHash s) x)
+-&gt; (forall x. Rep (PPubKeyHash s) x -&gt; PPubKeyHash s)
+-&gt; Generic (PPubKeyHash s)
+forall x. Rep (PPubKeyHash s) x -&gt; PPubKeyHash s
+forall x. PPubKeyHash s -&gt; Rep (PPubKeyHash s) x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+forall (s :: S) x. Rep (PPubKeyHash s) x -&gt; PPubKeyHash s
+forall (s :: S) x. PPubKeyHash s -&gt; Rep (PPubKeyHash s) x
+$cto :: forall (s :: S) x. Rep (PPubKeyHash s) x -&gt; PPubKeyHash s
+$cfrom :: forall (s :: S) x. PPubKeyHash s -&gt; Rep (PPubKeyHash s) x
+</span><a href="../file:///nix/store/r4n325d4bya4i1cviz6zrwmhm4j55yz4-ghc-9.2.3-doc/share/doc/ghc/html/libraries/base-4.16.2.0/src"><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679275483"><span id="local-6989586621679275485"><span class="annot"><span class="annottext">(forall (s :: S). PPubKeyHash s -&gt; Term s (PInner PPubKeyHash))
+-&gt; (forall (s :: S) (b :: PType).
+    Term s (PInner PPubKeyHash)
+    -&gt; (PPubKeyHash s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType PPubKeyHash
+forall (s :: S). PPubKeyHash s -&gt; Term s (PInner PPubKeyHash)
+forall (s :: S) (b :: PType).
+Term s (PInner PPubKeyHash)
+-&gt; (PPubKeyHash s -&gt; Term s b) -&gt; Term s b
+forall (a :: PType).
+(forall (s :: S). a s -&gt; Term s (PInner a))
+-&gt; (forall (s :: S) (b :: PType).
+    Term s (PInner a) -&gt; (a s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType a
+pmatch' :: forall (s :: S) (b :: PType).
+Term s (PInner PPubKeyHash)
+-&gt; (PPubKeyHash s -&gt; Term s b) -&gt; Term s b
+$cpmatch' :: forall (s :: S) (b :: PType).
+Term s (PInner PPubKeyHash)
+-&gt; (PPubKeyHash s -&gt; Term s b) -&gt; Term s b
+pcon' :: forall (s :: S). PPubKeyHash s -&gt; Term s (PInner PPubKeyHash)
+$cpcon' :: forall (s :: S). PPubKeyHash s -&gt; Term s (PInner PPubKeyHash)
+</span><a href="Plutarch.Internal.PlutusType.html#C%3APlutusType"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679275478"><span id="local-6989586621679275480"><span class="annot"><span class="annottext">(forall (s :: S).
+ Term s (PAsData PPubKeyHash) -&gt; Term s PPubKeyHash)
+-&gt; (forall (s :: S). Term s PPubKeyHash -&gt; Term s PData)
+-&gt; PIsData PPubKeyHash
+forall (s :: S). Term s (PAsData PPubKeyHash) -&gt; Term s PPubKeyHash
+forall (s :: S). Term s PPubKeyHash -&gt; Term s PData
+forall (a :: PType).
+(forall (s :: S). Term s (PAsData a) -&gt; Term s a)
+-&gt; (forall (s :: S). Term s a -&gt; Term s PData) -&gt; PIsData a
+pdataImpl :: forall (s :: S). Term s PPubKeyHash -&gt; Term s PData
+$cpdataImpl :: forall (s :: S). Term s PPubKeyHash -&gt; Term s PData
+pfromDataImpl :: forall (s :: S). Term s (PAsData PPubKeyHash) -&gt; Term s PPubKeyHash
+$cpfromDataImpl :: forall (s :: S). Term s (PAsData PPubKeyHash) -&gt; Term s PPubKeyHash
+</span><a href="Plutarch.Builtin.html#C%3APIsData"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679275475"><span class="annot"><span class="annottext">(forall (s :: S).
+ Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool)
+-&gt; PEq PPubKeyHash
+forall (s :: S).
+Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool
+forall (t :: PType).
+(forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool) -&gt; PEq t
+#== :: forall (s :: S).
+Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool
+$c#== :: forall (s :: S).
+Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool
+</span><a href="Plutarch.Bool.html#C%3APEq"><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679275468"><span id="local-6989586621679275470"><span class="annot"><span class="annottext">PEq PPubKeyHash
+PEq PPubKeyHash
+-&gt; (forall (s :: S).
+    Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool)
+-&gt; (forall (s :: S).
+    Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool)
+-&gt; POrd PPubKeyHash
+forall (s :: S).
+Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool
+forall (t :: PType).
+PEq t
+-&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
+-&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
+-&gt; POrd t
+#&lt; :: forall (s :: S).
+Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool
+$c#&lt; :: forall (s :: S).
+Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool
+#&lt;= :: forall (s :: S).
+Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool
+$c#&lt;= :: forall (s :: S).
+Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool
+</span><a href="Plutarch.Bool.html#C%3APOrd"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">POrd</span></a></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DerivePlutusType"><span class="hs-identifier hs-type">DerivePlutusType</span></a></span><span> </span><span class="annot"><a href="Plutarch.Api.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span> </span><span class="hs-keyword">where</span><span> </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DPTStrat"><span class="hs-identifier hs-var">DPTStrat</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.Internal.Newtype.html#PlutusTypeNewtype"><span class="hs-identifier hs-type">PlutusTypeNewtype</span></a></span><span>
+</span><span id="line-26"></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Lift.html#PUnsafeLiftDecl"><span class="hs-identifier hs-type">PUnsafeLiftDecl</span></a></span><span> </span><span class="annot"><a href="Plutarch.Api.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span> </span><span class="hs-keyword">where</span><span> </span><span class="hs-keyword">type</span><span> </span><span id="PLifted"><span class="annot"><a href="Plutarch.Lift.html#PLifted"><span class="hs-identifier hs-var">PLifted</span></a></span></span><span> </span><span class="annot"><a href="Plutarch.Api.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="../../../../plutus-ledger-api/html/src"><span class="hs-identifier hs-type">Plutus.PubKeyHash</span></a></span><span>
+</span><span id="line-28"></span><span id="local-6989586621679275421"><span id="local-6989586621679275432"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-29"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Lift.html#DerivePConstantViaBuiltin"><span class="hs-identifier hs-type">DerivePConstantViaBuiltin</span></a></span><span> </span><span class="annot"><a href="../../../../plutus-ledger-api/html/src"><span class="hs-identifier hs-type">Plutus.PubKeyHash</span></a></span><span> </span><span class="annot"><a href="Plutarch.Api.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-31"></span><span>    </span><span class="annot"><a href="Plutarch.Lift.html#PConstantDecl"><span class="hs-identifier hs-type">PConstantDecl</span></a></span><span> </span><span class="annot"><a href="../../../../plutus-ledger-api/html/src"><span class="hs-identifier hs-type">Plutus.PubKeyHash</span></a></span></span></span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">newtype</span><span> </span><span id="PubKey"><span class="annot"><a href="Plutarch.Api.V1.Crypto.html#PubKey"><span class="hs-identifier hs-var">PubKey</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PubKey"><span class="annot"><a href="Plutarch.Api.V1.Crypto.html#PubKey"><span class="hs-identifier hs-var">PubKey</span></a></span></span><span> </span><span class="hs-special">{</span><span id="getPubKey"><span class="annot"><span class="annottext">PubKey -&gt; LedgerBytes
+</span><a href="Plutarch.Api.V1.Crypto.html#getPubKey"><span class="hs-identifier hs-var hs-var">getPubKey</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../../plutus-ledger-api/html/src"><span class="hs-identifier hs-type">Plutus.LedgerBytes</span></a></span><span class="hs-special">}</span><span>
+</span><span id="line-34"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679275390"><span id="local-6989586621679275394"><span class="annot"><span class="annottext">PubKey -&gt; PubKey -&gt; Bool
+(PubKey -&gt; PubKey -&gt; Bool)
+-&gt; (PubKey -&gt; PubKey -&gt; Bool) -&gt; Eq PubKey
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: PubKey -&gt; PubKey -&gt; Bool
+$c/= :: PubKey -&gt; PubKey -&gt; Bool
+== :: PubKey -&gt; PubKey -&gt; Bool
+$c== :: PubKey -&gt; PubKey -&gt; Bool
+</span><a href="../file:///nix/store/r4n325d4bya4i1cviz6zrwmhm4j55yz4-ghc-9.2.3-doc/share/doc/ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679275367"><span id="local-6989586621679275369"><span id="local-6989586621679275372"><span id="local-6989586621679275375"><span id="local-6989586621679275378"><span id="local-6989586621679275381"><span id="local-6989586621679275385"><span class="annot"><span class="annottext">Eq PubKey
+Eq PubKey
+-&gt; (PubKey -&gt; PubKey -&gt; Ordering)
+-&gt; (PubKey -&gt; PubKey -&gt; Bool)
+-&gt; (PubKey -&gt; PubKey -&gt; Bool)
+-&gt; (PubKey -&gt; PubKey -&gt; Bool)
+-&gt; (PubKey -&gt; PubKey -&gt; Bool)
+-&gt; (PubKey -&gt; PubKey -&gt; PubKey)
+-&gt; (PubKey -&gt; PubKey -&gt; PubKey)
+-&gt; Ord PubKey
+PubKey -&gt; PubKey -&gt; Bool
+PubKey -&gt; PubKey -&gt; Ordering
+PubKey -&gt; PubKey -&gt; PubKey
+forall a.
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: PubKey -&gt; PubKey -&gt; PubKey
+$cmin :: PubKey -&gt; PubKey -&gt; PubKey
+max :: PubKey -&gt; PubKey -&gt; PubKey
+$cmax :: PubKey -&gt; PubKey -&gt; PubKey
+&gt;= :: PubKey -&gt; PubKey -&gt; Bool
+$c&gt;= :: PubKey -&gt; PubKey -&gt; Bool
+&gt; :: PubKey -&gt; PubKey -&gt; Bool
+$c&gt; :: PubKey -&gt; PubKey -&gt; Bool
+&lt;= :: PubKey -&gt; PubKey -&gt; Bool
+$c&lt;= :: PubKey -&gt; PubKey -&gt; Bool
+&lt; :: PubKey -&gt; PubKey -&gt; Bool
+$c&lt; :: PubKey -&gt; PubKey -&gt; Bool
+compare :: PubKey -&gt; PubKey -&gt; Ordering
+$ccompare :: PubKey -&gt; PubKey -&gt; Ordering
+</span><a href="../file:///nix/store/r4n325d4bya4i1cviz6zrwmhm4j55yz4-ghc-9.2.3-doc/share/doc/ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679275356"><span id="local-6989586621679275358"><span id="local-6989586621679275364"><span class="annot"><span class="annottext">Int -&gt; PubKey -&gt; ShowS
+[PubKey] -&gt; ShowS
+PubKey -&gt; String
+(Int -&gt; PubKey -&gt; ShowS)
+-&gt; (PubKey -&gt; String) -&gt; ([PubKey] -&gt; ShowS) -&gt; Show PubKey
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [PubKey] -&gt; ShowS
+$cshowList :: [PubKey] -&gt; ShowS
+show :: PubKey -&gt; String
+$cshow :: PubKey -&gt; String
+showsPrec :: Int -&gt; PubKey -&gt; ShowS
+$cshowsPrec :: Int -&gt; PubKey -&gt; ShowS
+</span><a href="../file:///nix/store/r4n325d4bya4i1cviz6zrwmhm4j55yz4-ghc-9.2.3-doc/share/doc/ghc/html/libraries/base-4.16.2.0/src"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span>
+</span><span id="line-36"></span><span class="annot"><a href="Plutarch.Api.V1.Crypto.html#pubKeyHash"><span class="hs-identifier hs-type">pubKeyHash</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Api.V1.Crypto.html#PubKey"><span class="hs-identifier hs-type">PubKey</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../../plutus-ledger-api/html/src"><span class="hs-identifier hs-type">Plutus.PubKeyHash</span></a></span><span>
+</span><span id="line-37"></span><span id="pubKeyHash"><span class="annot"><span class="annottext">pubKeyHash :: PubKey -&gt; PubKeyHash
+</span><a href="Plutarch.Api.V1.Crypto.html#pubKeyHash"><span class="hs-identifier hs-var hs-var">pubKeyHash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(LedgerBytes -&gt; BuiltinByteString) -&gt; PubKey -&gt; PubKeyHash
+</span><a href="../file:///nix/store/r4n325d4bya4i1cviz6zrwmhm4j55yz4-ghc-9.2.3-doc/share/doc/ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">LedgerBytes -&gt; BuiltinByteString
+</span><a href="Plutarch.Api.Internal.Hashing.html#hashLedgerBytes"><span class="hs-identifier hs-var">hashLedgerBytes</span></a></span><span>
+</span><span id="line-38"></span></pre></body></html>

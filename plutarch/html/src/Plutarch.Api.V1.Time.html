@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE UndecidableInstances #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# OPTIONS_GHC -Wno-orphans #-}</span><span>
+</span><span id="line-3"></span><span>
+</span><span id="line-4"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.Api.V1.Time</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-5"></span><span>  </span><span class="annot"><a href="Plutarch.Api.V1.Time.html#PPOSIXTime"><span class="hs-identifier">PPOSIXTime</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Api.V1.Time.html#PPOSIXTime"><span class="hs-identifier">PPOSIXTime</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-6"></span><span>  </span><span class="annot"><a href="Plutarch.Api.V1.Time.html#PPOSIXTimeRange"><span class="hs-identifier">PPOSIXTimeRange</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-7"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-8"></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Num.html"><span class="hs-identifier">Plutarch.Num</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Num.html#PNum"><span class="hs-identifier">PNum</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><a href="../../../../plutus-ledger-api/html/src"><span class="hs-identifier">PlutusLedgerApi.V1</span></a></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Plutus</span></span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Api.V1.Interval.html"><span class="hs-identifier">Plutarch.Api.V1.Interval</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Api.V1.Interval.html#PInterval"><span class="hs-identifier">PInterval</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Lift.html"><span class="hs-identifier">Plutarch.Lift</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-14"></span><span>  </span><span class="annot"><a href="Plutarch.Lift.html#DerivePConstantViaNewtype"><span class="hs-identifier">DerivePConstantViaNewtype</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Lift.html#DerivePConstantViaNewtype"><span class="hs-identifier">DerivePConstantViaNewtype</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-15"></span><span>  </span><span class="annot"><a href="Plutarch.Lift.html#PConstantDecl"><span class="hs-identifier">PConstantDecl</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-16"></span><span>  </span><span class="annot"><a href="Plutarch.Lift.html#PLifted"><span class="hs-identifier">PLifted</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-17"></span><span>  </span><span class="annot"><a href="Plutarch.Lift.html#PUnsafeLiftDecl"><span class="hs-identifier">PUnsafeLiftDecl</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-18"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Prelude.html"><span class="hs-identifier">Plutarch.Prelude</span></a></span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span id="local-6989586621679276276"><span id="local-6989586621679276277"></span></span><span class="hs-keyword">newtype</span><span> </span><span id="PPOSIXTime"><span class="annot"><a href="Plutarch.Api.V1.Time.html#PPOSIXTime"><span class="hs-identifier hs-var">PPOSIXTime</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679276407"><span class="annot"><a href="#local-6989586621679276407"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="PPOSIXTime"><span class="annot"><a href="Plutarch.Api.V1.Time.html#PPOSIXTime"><span class="hs-identifier hs-var">PPOSIXTime</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679276407"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(forall x. PPOSIXTime s -&gt; Rep (PPOSIXTime s) x)
+-&gt; (forall x. Rep (PPOSIXTime s) x -&gt; PPOSIXTime s)
+-&gt; Generic (PPOSIXTime s)
+forall x. Rep (PPOSIXTime s) x -&gt; PPOSIXTime s
+forall x. PPOSIXTime s -&gt; Rep (PPOSIXTime s) x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+forall (s :: S) x. Rep (PPOSIXTime s) x -&gt; PPOSIXTime s
+forall (s :: S) x. PPOSIXTime s -&gt; Rep (PPOSIXTime s) x
+$cto :: forall (s :: S) x. Rep (PPOSIXTime s) x -&gt; PPOSIXTime s
+$cfrom :: forall (s :: S) x. PPOSIXTime s -&gt; Rep (PPOSIXTime s) x
+</span><a href="../file:///nix/store/r4n325d4bya4i1cviz6zrwmhm4j55yz4-ghc-9.2.3-doc/share/doc/ghc/html/libraries/base-4.16.2.0/src"><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679276268"><span id="local-6989586621679276270"><span class="annot"><span class="annottext">(forall (s :: S). PPOSIXTime s -&gt; Term s (PInner PPOSIXTime))
+-&gt; (forall (s :: S) (b :: PType).
+    Term s (PInner PPOSIXTime)
+    -&gt; (PPOSIXTime s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType PPOSIXTime
+forall (s :: S). PPOSIXTime s -&gt; Term s (PInner PPOSIXTime)
+forall (s :: S) (b :: PType).
+Term s (PInner PPOSIXTime)
+-&gt; (PPOSIXTime s -&gt; Term s b) -&gt; Term s b
+forall (a :: PType).
+(forall (s :: S). a s -&gt; Term s (PInner a))
+-&gt; (forall (s :: S) (b :: PType).
+    Term s (PInner a) -&gt; (a s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType a
+pmatch' :: forall (s :: S) (b :: PType).
+Term s (PInner PPOSIXTime)
+-&gt; (PPOSIXTime s -&gt; Term s b) -&gt; Term s b
+$cpmatch' :: forall (s :: S) (b :: PType).
+Term s (PInner PPOSIXTime)
+-&gt; (PPOSIXTime s -&gt; Term s b) -&gt; Term s b
+pcon' :: forall (s :: S). PPOSIXTime s -&gt; Term s (PInner PPOSIXTime)
+$cpcon' :: forall (s :: S). PPOSIXTime s -&gt; Term s (PInner PPOSIXTime)
+</span><a href="Plutarch.Internal.PlutusType.html#C%3APlutusType"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679276263"><span id="local-6989586621679276265"><span class="annot"><span class="annottext">(forall (s :: S). Term s (PAsData PPOSIXTime) -&gt; Term s PPOSIXTime)
+-&gt; (forall (s :: S). Term s PPOSIXTime -&gt; Term s PData)
+-&gt; PIsData PPOSIXTime
+forall (s :: S). Term s (PAsData PPOSIXTime) -&gt; Term s PPOSIXTime
+forall (s :: S). Term s PPOSIXTime -&gt; Term s PData
+forall (a :: PType).
+(forall (s :: S). Term s (PAsData a) -&gt; Term s a)
+-&gt; (forall (s :: S). Term s a -&gt; Term s PData) -&gt; PIsData a
+pdataImpl :: forall (s :: S). Term s PPOSIXTime -&gt; Term s PData
+$cpdataImpl :: forall (s :: S). Term s PPOSIXTime -&gt; Term s PData
+pfromDataImpl :: forall (s :: S). Term s (PAsData PPOSIXTime) -&gt; Term s PPOSIXTime
+$cpfromDataImpl :: forall (s :: S). Term s (PAsData PPOSIXTime) -&gt; Term s PPOSIXTime
+</span><a href="Plutarch.Builtin.html#C%3APIsData"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679276260"><span class="annot"><span class="annottext">(forall (s :: S).
+ Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PBool)
+-&gt; PEq PPOSIXTime
+forall (s :: S).
+Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PBool
+forall (t :: PType).
+(forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool) -&gt; PEq t
+#== :: forall (s :: S).
+Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PBool
+$c#== :: forall (s :: S).
+Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PBool
+</span><a href="Plutarch.Bool.html#C%3APEq"><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679276253"><span id="local-6989586621679276255"><span class="annot"><span class="annottext">PEq PPOSIXTime
+PEq PPOSIXTime
+-&gt; (forall (s :: S).
+    Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PBool)
+-&gt; (forall (s :: S).
+    Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PBool)
+-&gt; POrd PPOSIXTime
+forall (s :: S).
+Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PBool
+forall (t :: PType).
+PEq t
+-&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
+-&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
+-&gt; POrd t
+#&lt; :: forall (s :: S).
+Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PBool
+$c#&lt; :: forall (s :: S).
+Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PBool
+#&lt;= :: forall (s :: S).
+Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PBool
+$c#&lt;= :: forall (s :: S).
+Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PBool
+</span><a href="Plutarch.Bool.html#C%3APOrd"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">POrd</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679276244"><span id="local-6989586621679276246"><span id="local-6989586621679276248"><span id="local-6989586621679276250"><span class="annot"><span class="annottext">(forall (s :: S).
+ Term s (PPOSIXTime :--&gt; (PPOSIXTime :--&gt; PPOSIXTime)))
+-&gt; (forall (s :: S).
+    Term s (PPOSIXTime :--&gt; (PPOSIXTime :--&gt; PPOSIXTime)))
+-&gt; (forall (s :: S).
+    Term s (PPOSIXTime :--&gt; (PPOSIXTime :--&gt; PPOSIXTime)))
+-&gt; (forall (s :: S).
+    Term s (PPOSIXTime :--&gt; (PPOSIXTime :--&gt; PPOSIXTime)))
+-&gt; PIntegral PPOSIXTime
+forall (s :: S).
+Term s (PPOSIXTime :--&gt; (PPOSIXTime :--&gt; PPOSIXTime))
+forall (a :: PType).
+(forall (s :: S). Term s (a :--&gt; (a :--&gt; a)))
+-&gt; (forall (s :: S). Term s (a :--&gt; (a :--&gt; a)))
+-&gt; (forall (s :: S). Term s (a :--&gt; (a :--&gt; a)))
+-&gt; (forall (s :: S). Term s (a :--&gt; (a :--&gt; a)))
+-&gt; PIntegral a
+prem :: forall (s :: S).
+Term s (PPOSIXTime :--&gt; (PPOSIXTime :--&gt; PPOSIXTime))
+$cprem :: forall (s :: S).
+Term s (PPOSIXTime :--&gt; (PPOSIXTime :--&gt; PPOSIXTime))
+pquot :: forall (s :: S).
+Term s (PPOSIXTime :--&gt; (PPOSIXTime :--&gt; PPOSIXTime))
+$cpquot :: forall (s :: S).
+Term s (PPOSIXTime :--&gt; (PPOSIXTime :--&gt; PPOSIXTime))
+pmod :: forall (s :: S).
+Term s (PPOSIXTime :--&gt; (PPOSIXTime :--&gt; PPOSIXTime))
+$cpmod :: forall (s :: S).
+Term s (PPOSIXTime :--&gt; (PPOSIXTime :--&gt; PPOSIXTime))
+pdiv :: forall (s :: S).
+Term s (PPOSIXTime :--&gt; (PPOSIXTime :--&gt; PPOSIXTime))
+$cpdiv :: forall (s :: S).
+Term s (PPOSIXTime :--&gt; (PPOSIXTime :--&gt; PPOSIXTime))
+</span><a href="Plutarch.Integer.html#C%3APIntegral"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">PIntegral</span></a></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679276229"><span id="local-6989586621679276231"><span id="local-6989586621679276233"><span id="local-6989586621679276235"><span id="local-6989586621679276237"><span id="local-6989586621679276239"><span id="local-6989586621679276241"><span class="annot"><span class="annottext">(forall (s :: S).
+ Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PPOSIXTime)
+-&gt; (forall (s :: S).
+    Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PPOSIXTime)
+-&gt; (forall (s :: S).
+    Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PPOSIXTime)
+-&gt; (forall (s :: S). Term s (PPOSIXTime :--&gt; PPOSIXTime))
+-&gt; (forall (s :: S). Term s (PPOSIXTime :--&gt; PPOSIXTime))
+-&gt; (forall (s :: S). Term s (PPOSIXTime :--&gt; PPOSIXTime))
+-&gt; (forall (s :: S). Integer -&gt; Term s PPOSIXTime)
+-&gt; PNum PPOSIXTime
+forall (s :: S). Term s (PPOSIXTime :--&gt; PPOSIXTime)
+forall (s :: S). Integer -&gt; Term s PPOSIXTime
+forall (s :: S).
+Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PPOSIXTime
+forall (a :: PType).
+(forall (s :: S). Term s a -&gt; Term s a -&gt; Term s a)
+-&gt; (forall (s :: S). Term s a -&gt; Term s a -&gt; Term s a)
+-&gt; (forall (s :: S). Term s a -&gt; Term s a -&gt; Term s a)
+-&gt; (forall (s :: S). Term s (a :--&gt; a))
+-&gt; (forall (s :: S). Term s (a :--&gt; a))
+-&gt; (forall (s :: S). Term s (a :--&gt; a))
+-&gt; (forall (s :: S). Integer -&gt; Term s a)
+-&gt; PNum a
+pfromInteger :: forall (s :: S). Integer -&gt; Term s PPOSIXTime
+$cpfromInteger :: forall (s :: S). Integer -&gt; Term s PPOSIXTime
+psignum :: forall (s :: S). Term s (PPOSIXTime :--&gt; PPOSIXTime)
+$cpsignum :: forall (s :: S). Term s (PPOSIXTime :--&gt; PPOSIXTime)
+pabs :: forall (s :: S). Term s (PPOSIXTime :--&gt; PPOSIXTime)
+$cpabs :: forall (s :: S). Term s (PPOSIXTime :--&gt; PPOSIXTime)
+pnegate :: forall (s :: S). Term s (PPOSIXTime :--&gt; PPOSIXTime)
+$cpnegate :: forall (s :: S). Term s (PPOSIXTime :--&gt; PPOSIXTime)
+#* :: forall (s :: S).
+Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PPOSIXTime
+$c#* :: forall (s :: S).
+Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PPOSIXTime
+#- :: forall (s :: S).
+Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PPOSIXTime
+$c#- :: forall (s :: S).
+Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PPOSIXTime
+#+ :: forall (s :: S).
+Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PPOSIXTime
+$c#+ :: forall (s :: S).
+Term s PPOSIXTime -&gt; Term s PPOSIXTime -&gt; Term s PPOSIXTime
+</span><a href="Plutarch.Num.html#C%3APNum"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">PNum</span></a></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DerivePlutusType"><span class="hs-identifier hs-type">DerivePlutusType</span></a></span><span> </span><span class="annot"><a href="Plutarch.Api.V1.Time.html#PPOSIXTime"><span class="hs-identifier hs-type">PPOSIXTime</span></a></span><span> </span><span class="hs-keyword">where</span><span> </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DPTStrat"><span class="hs-identifier hs-var">DPTStrat</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.Internal.Newtype.html#PlutusTypeNewtype"><span class="hs-identifier hs-type">PlutusTypeNewtype</span></a></span><span>
+</span><span id="line-26"></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Lift.html#PUnsafeLiftDecl"><span class="hs-identifier hs-type">PUnsafeLiftDecl</span></a></span><span> </span><span class="annot"><a href="Plutarch.Api.V1.Time.html#PPOSIXTime"><span class="hs-identifier hs-type">PPOSIXTime</span></a></span><span> </span><span class="hs-keyword">where</span><span> </span><span class="hs-keyword">type</span><span> </span><span id="PLifted"><span class="annot"><a href="Plutarch.Lift.html#PLifted"><span class="hs-identifier hs-var">PLifted</span></a></span></span><span> </span><span class="annot"><a href="Plutarch.Api.V1.Time.html#PPOSIXTime"><span class="hs-identifier hs-type">PPOSIXTime</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="../../../../plutus-ledger-api/html/src"><span class="hs-identifier hs-type">Plutus.POSIXTime</span></a></span><span>
+</span><span id="line-28"></span><span id="local-6989586621679276184"><span id="local-6989586621679276193"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-29"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Lift.html#DerivePConstantViaNewtype"><span class="hs-identifier hs-type">DerivePConstantViaNewtype</span></a></span><span> </span><span class="annot"><a href="../../../../plutus-ledger-api/html/src"><span class="hs-identifier hs-type">Plutus.POSIXTime</span></a></span><span> </span><span class="annot"><a href="Plutarch.Api.V1.Time.html#PPOSIXTime"><span class="hs-identifier hs-type">PPOSIXTime</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-31"></span><span>    </span><span class="annot"><a href="Plutarch.Lift.html#PConstantDecl"><span class="hs-identifier hs-type">PConstantDecl</span></a></span><span> </span><span class="annot"><a href="../../../../plutus-ledger-api/html/src"><span class="hs-identifier hs-type">Plutus.POSIXTime</span></a></span></span></span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">type</span><span> </span><span id="PPOSIXTimeRange"><span class="annot"><a href="Plutarch.Api.V1.Time.html#PPOSIXTimeRange"><span class="hs-identifier hs-var">PPOSIXTimeRange</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.Api.V1.Interval.html#PInterval"><span class="hs-identifier hs-type">PInterval</span></a></span><span> </span><span class="annot"><a href="Plutarch.Api.V1.Time.html#PPOSIXTime"><span class="hs-identifier hs-type">PPOSIXTime</span></a></span><span>
+</span><span id="line-34"></span></pre></body></html>
