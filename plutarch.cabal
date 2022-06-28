@@ -75,6 +75,7 @@ common c
     -Wno-missing-import-lists -fprint-explicit-foralls
     -fprint-equality-relations -fprint-explicit-kinds
     -fprint-explicit-coercions -Wno-all-missed-specializations
+    -Wno-unrecognised-warning-flags
 
 library
   import:          c
