@@ -32,7 +32,7 @@ Note that Plutus Core lacks the ability to represent functions using this encodi
 
 `Data` encoding is _ubiquitous_ in ledger API types. It is the type of the arguments that are passed to a script on the chain (including the datum, redeemer, and script context.) As a result, your datums and redeemers _must_ use `Data` encoding.
 
-## Scott encoding overview
+## Scott encoding 
 
 Scott encoding is an alternative way to encode ADTs in Plutus. Scott encoding uses functions (in the lambda calculus) to
 encode types.
@@ -111,7 +111,7 @@ m :: (a -> restOfTheProgram) -> restOfTheProgram -> restOfTheProgram
 
 This is the Scott encoding of "Maybe":
 
-```
+```hs
 type ScottEncodedMaybe a b = (a -> b) -> b -> b 
 ```
 
@@ -168,7 +168,7 @@ But `m` is merely a function waiting for two continuations, which we know are sp
 So to complete `foo`, we just apply `f` and `g` to `m`, and we get our full definition:
 
 
-```
+```hs
 foo' :: ScottEncodedMaybe Integer -> Integer
 foo' m = m f g
 
@@ -193,7 +193,7 @@ The constructor, which we will call `scottEncodedJust`, should have the type
 `Integer -> ScottEncodedMaybe Integer`. So the definition of `scottEncodedJust` will begin by
 pattern matching on an integer:
 
-```
+```hs
 scottEncodedJust :: Integer -> ScottEncodedMaybe Integer
 scottEncodedJust i = (...)
 ```
@@ -201,7 +201,7 @@ scottEncodedJust i = (...)
 We know that a `ScottEncodedMaybe Integer` is a function that takes two functions (the continuations) --
 we can thus introduce these as lambdas:
 
-```
+```hs
 -- Recall `b ~ restOfTheProgram``
 
 scottEncodedJust :: Integer -> ScottEncodedMaybe Integer
@@ -212,7 +212,7 @@ But in this case, we are positing that we _have_ been given an `Integer`, so the
 (using the given `Integer` as an argument) and the `g` continuation can be thrown away. This gives the final definition
 of the constructor as 
 
-```
+```hs
 scottEncodedJust :: Integer -> ScottEncodedMaybe Integer
 scottEncodedJust i = \(f :: Integer -> b) _ -> f i
 
@@ -227,12 +227,12 @@ And thus `m = scottEncodedJust 12` -- or equivalently, `m = \f _ -> f 12`.
 
 Correspondingly, we would have: 
 
-```
+```hs
 scottEncodedNothing :: ScottEncodedMaybe Integer
 scottEncodedNothing = \_ g -> g
 ```
 
-## A Recipe for Scott Encoding
+### A Recipe for Scott Encoding
 
 In Plutarch, Scott encoding of data types is handled through generic deriving. Thus, you will likely never need to
 write a type like `ScottEncodedMaybe` by hand. This section is thus included for completeness only.
@@ -252,7 +252,7 @@ be a function type taking `n` arguments.
 
 Thus, give a type such as 
 
-```
+```hs
 data MyType a b c = 
   Foo a b
   | Bar Integer
@@ -262,7 +262,7 @@ data MyType a b c =
 
 We would Scott encode this as 
 
-```
+```hs
 -- Step one: three type variables, `a`, `b`, and `c``
 data SEMyType a b c restOfTheProgram = (...)
 
@@ -291,17 +291,17 @@ The reverse recipe is straightforward:
 of arguments of the corresponding data constructor in `MyType`.
 
 
-## Scott Encoding representation in Plutarch
+### Scott Encoding representation in Plutarch
 
 > Note, this section does not cover how to derive a `PlutusType` Scott encoding repesentation for your types.
-> See [Typeclasses/PlutusType, PCon, and PMatch.md#implementing-plutustype-for-your-own-types-scott-encoding]
+> See [PlutusType, PCon, and PMatch](../Typeclasses/PlutusType,%20PCon,%20and%20PMatch.md#implementing-plutustype-for-your-own-types-scott-encoding).
 
 In Plutarch, Scott encoding is a way of encoding values to be use on-chain -- that is, Scott encoding is one of the 
 options we have for the representation associed with a `PType` via the `PlutusType` type class.
 
 As an example, printing a Scott encoded optional integer term (`Term s (PMaybe PInteger)`):
 
-```
+```hs
 ghci> import Plutarch
 ghci> justOne = pcon $ PJust (pconstant @PInteger 1)
 ghci> printTerm justOne
@@ -313,7 +313,7 @@ Using De Bruijn indexing means that variables are specified by how many "layers 
 above, this means that `i2` (for "index 2") refers to the lambda abstraction "two layers back":
 
 
-```
+```hs
                     `i2` refers to...
                    ___________
                   |           |
