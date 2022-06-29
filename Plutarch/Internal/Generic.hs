@@ -7,11 +7,14 @@
 module Plutarch.Internal.Generic (
   -- * Plutarch adapters for generics-sop API
   PGeneric,
+  PGeneric',
   PCode,
   gpfrom,
   gpto,
 ) where
 
+-- lol
+import Data.Constraint (Dict (Dict))
 import Data.Kind (Constraint)
 import GHC.Exts (Any)
 import GHC.Generics (Generic)
@@ -19,7 +22,7 @@ import Generics.SOP (All2, I, SOP, Top)
 import Generics.SOP.GGP (GCode, GDatatypeInfo, GFrom, GTo, gfrom, gto)
 import Plutarch.Internal (PType, S, Term)
 import Plutarch.Internal.TypeFamily (ToPType2)
-import Unsafe.Coerce (unsafeCoerce) -- lol
+import Unsafe.Coerce (unsafeCoerce)
 
 class GFrom a => GFrom' a
 instance GFrom a => GFrom' a
@@ -61,9 +64,11 @@ type PCode a = ToPType2 (GCode (a Any))
 gpfrom :: forall a s. PGeneric a => a s -> SOP (Term s) (PCode a)
 -- This could be done safely, but it's a PITA.
 -- Depends on `All` constraint above.
-gpfrom x = unsafeCoerce $ (gfrom x :: SOP I (GCode (a s)))
+gpfrom x = case (Dict :: Dict (PGeneric' a s)) of
+  Dict -> unsafeCoerce (gfrom x :: SOP I (GCode (a s)))
 
 gpto :: forall a s. PGeneric a => SOP (Term s) (PCode a) -> a s
 -- This could be done safely, but it's a PITA.
 -- Depends on `All` constraint above.
-gpto x = gto (unsafeCoerce x :: SOP I (GCode (a s)))
+gpto x = case (Dict :: Dict (PGeneric' a s)) of
+  Dict -> gto (unsafeCoerce x :: SOP I (GCode (a s)))

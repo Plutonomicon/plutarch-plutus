@@ -10,6 +10,7 @@ import Generics.SOP (
   NP (Nil, (:*)),
   NS (S, Z),
   SListI,
+  SListI2,
   SOP (SOP),
   case_SList,
   cpara_SList,
@@ -101,7 +102,7 @@ newtype GPCon' s r as = GPCon' {unGPCon' :: NP (Term s) (ScottList as r) -> NS (
   The partial encoding is any tail of the full scott encoded function, such that
   one of its elements corresponds to the sum choice.
 -}
-gpcon' :: All SListI as => NP (Term s) (ScottList as r) -> NS (NP (Term s)) as -> Term s r
+gpcon' :: SListI2 as => NP (Term s) (ScottList as r) -> NS (NP (Term s)) as -> Term s r
 gpcon' = unGPCon' $ cpara_SList (Proxy @SListI) (GPCon' \Nil -> \case {}) \(GPCon' prev) -> GPCon' \(arg :* args) -> \case
   Z x -> pappL arg x
   S xs -> prev args xs
@@ -109,7 +110,7 @@ gpcon' = unGPCon' $ cpara_SList (Proxy @SListI) (GPCon' \Nil -> \case {}) \(GPCo
 -- | Generic version of `pcon'`
 gpcon ::
   forall as r s.
-  (SListI (ScottList as r), All SListI as) =>
+  (SListI (ScottList as r), SListI2 as) =>
   SOP (Term s) as ->
   Term s (PScottEncoded as r)
 gpcon fields' =
@@ -120,15 +121,15 @@ newtype GPMatch' s r as = GPMatch' {unGPMatch' :: (SOP (Term s) as -> Term s r) 
 
 gpmatch' ::
   forall as r s.
-  All SListI as =>
+  SListI2 as =>
   (SOP (Term s) as -> Term s r) ->
   NP (Term s) (ScottList as r)
-gpmatch' = unGPMatch' $ cpara_SList (Proxy @SListI) (GPMatch' \_ -> Nil) \(GPMatch' prev) -> GPMatch' \f ->
+gpmatch' = unGPMatch' $ cpara_SList (Proxy @SListI) (GPMatch' (const Nil)) \(GPMatch' prev) -> GPMatch' \f ->
   plamL (\args -> f (SOP $ Z args)) :* prev (\(SOP x) -> f (SOP (S x)))
 
 gpmatch ::
   forall as r s.
-  (SListI (ScottList as r), All SListI as) =>
+  (SListI (ScottList as r), SListI2 as) =>
   Term s (PScottEncoded as r) ->
   (SOP (Term s) as -> Term s r) ->
   Term s r
@@ -139,13 +140,13 @@ instance SListI (ScottList (PCode a) r) => SListIScottList a r
 
 class
   ( forall r. SListIScottList a r
-  , All SListI (PCode a)
+  , SListI2 (PCode a)
   , PGeneric a
   ) =>
   PlutusTypeScottConstraint a
 instance
   ( forall r. SListIScottList a r
-  , All SListI (PCode a)
+  , SListI2 (PCode a)
   , PGeneric a
   ) =>
   PlutusTypeScottConstraint a
