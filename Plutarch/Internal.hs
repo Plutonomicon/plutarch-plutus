@@ -15,7 +15,6 @@ module Plutarch.Internal (
   pforce,
   phoistAcyclic,
   perror,
-  punsafeAsClosedTerm,
   punsafeCoerce,
   punsafeBuiltin,
   punsafeConstant,
@@ -387,9 +386,6 @@ subst idx x (UPLC.Var () (DeBruijn (Index idx'))) | idx == idx' = x idx
 subst idx _ y@(UPLC.Var () (DeBruijn (Index idx'))) | idx > idx' = y
 subst idx _ (UPLC.Var () (DeBruijn (Index idx'))) | idx < idx' = UPLC.Var () (DeBruijn . Index $ idx' - 1)
 subst _ _ y = y
-
-punsafeAsClosedTerm :: forall s a. Term s a -> ClosedTerm a
-punsafeAsClosedTerm (Term t) = Term t
 
 rawTermToUPLC ::
   (HoistedTerm -> Word64 -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) ->
