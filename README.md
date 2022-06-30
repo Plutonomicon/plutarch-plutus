@@ -48,6 +48,12 @@ Read the [Plutarch guide](./docs/README.md) to get started!
 # Contributing
 Contributions are more than welcome! Alongside the [User guide](#usage) above, you may also find the [Developers' guide](./docs/DEVGUIDE.md) useful for understanding the codebase.
 
+
+# Available support channels info
+
+You can find help, more information and ongoing discusion about the project here:
+- The Plutonomicon Discord server - https://discord.gg/FsKN5XD2
+
 # License
 
 ```
@@ -76,10 +82,4 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
-
-### Available support channels info
-
-You can find help, more information and ongoing discusion about the project here:
-- [link] - short description
-- [link] - short description
 
