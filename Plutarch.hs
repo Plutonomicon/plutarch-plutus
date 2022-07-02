@@ -22,7 +22,7 @@ module Plutarch (
   PP.PMatch,
   PO.printTerm,
   PO.printScript,
-  (PL.#$),
+  -- (PL.#$), FIXME? wtf? 
   (PL.#),
   PL.pinl,
   PO.pto,

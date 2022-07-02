@@ -24,7 +24,7 @@ import Plutarch.Internal (Term, (:-->))
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque)
 import Plutarch.Internal.PLam ((#))
-import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
+import Plutarch.Internal.PlutusType (DerivePlutusType, PlutusType)
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,
@@ -38,9 +38,7 @@ import qualified PlutusCore as PLC
 -- | Plutus 'BuiltinByteString'
 data PByteString s = PByteString (Term s POpaque)
   deriving stock (Generic)
-  deriving anyclass (PlutusType)
-
-instance DerivePlutusType PByteString where type DPTStrat _ = PlutusTypeNewtype
+  deriving anyclass (PlutusType, DerivePlutusType PlutusTypeNewtype)
 
 instance PUnsafeLiftDecl PByteString where type PLifted PByteString = ByteString
 deriving via (DerivePConstantDirect ByteString PByteString) instance PConstantDecl ByteString

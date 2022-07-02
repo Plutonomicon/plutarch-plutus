@@ -1,7 +1,8 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# OPTIONS_GHC -option -Wno-redundant-constraints #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE UndecidableSuperClasses #-}
+{-# LANGUAGE TypeFamilyDependencies #-}
 
 module Plutarch.Internal.PlutusType (
   PlutusType,
@@ -13,9 +14,8 @@ module Plutarch.Internal.PlutusType (
   pmatch,
   pcon,
   PInner,
-  PlutusTypeStrat,
+  PlutusTypeStratFor,
   DerivePlutusType,
-  DPTStrat,
   DerivedPInner,
   derivedPCon,
   derivedPMatch,
@@ -29,7 +29,6 @@ module Plutarch.Internal.PlutusType (
 
 import Data.Kind (Constraint, Type)
 import Data.Proxy (Proxy (Proxy))
-import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 import Generics.SOP (All2)
 import Plutarch.Internal (PType, Term, plam', plet, punsafeCoerce, (:-->) (PLam))
 import Plutarch.Internal.Generic (PCode)
@@ -37,26 +36,26 @@ import Plutarch.Internal.PLam ((#))
 import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
 import Plutarch.Internal.Witness (witness)
 
-class PlutusTypeStrat (strategy :: Type) where
-  type PlutusTypeStratConstraint strategy :: PType -> Constraint
-  type DerivedPInner strategy (a :: PType) :: PType
-  derivedPCon :: forall a s. (DerivePlutusType a, DPTStrat a ~ strategy) => a s -> Term s (DerivedPInner strategy a)
-  derivedPMatch :: forall a s b. (DerivePlutusType a, DPTStrat a ~ strategy) => Term s (DerivedPInner strategy a) -> (a s -> Term s b) -> Term s b
+class PlutusTypeStratFor (strat :: Type) (a :: PType) | a -> strat where
+  type PlutusTypeStratConstraint strat :: PType -> Constraint
+  type DerivedPInner (a :: PType) = (b :: PType) | b -> a
+  derivedPCon :: forall s. (DerivePlutusType strat a) => a s -> Term s (DerivedPInner a)
+  derivedPMatch :: forall s b. (DerivePlutusType strat a) => Term s (DerivedPInner a) -> (a s -> Term s b) -> Term s b
 
 class
-  ( PInner a ~ DerivedPInner (DPTStrat a) a
-  , PlutusTypeStrat (DPTStrat a)
-  , PlutusTypeStratConstraint (DPTStrat a) a
+  ( DerivePlutusType strat a
+  , PInner a ~ DerivedPInner a
+  , PlutusTypeStratFor strat a
+  , PlutusTypeStratConstraint strat a
   , PlutusType a
   ) =>
-  DerivePlutusType (a :: PType)
-  where
-  type DPTStrat a :: Type
-  type DPTStrat a = TypeError ( 'Text "Please specify a strategy for deriving PlutusType for type " ':<>: 'ShowType a)
+  DerivePlutusType (strat :: Type) (a :: PType) | a -> strat
+
 
 class PlutusType (a :: PType) where
   type PInner a :: PType
-  type PInner a = DerivedPInner (DPTStrat a) a
+  type PInner a = DerivedPInner a 
+  -- FIXME: how can I use this type family but with an automatically arising constraint from DerivePlutusType
   type PCovariant' a :: Constraint
   type PCovariant' a = All2 PCovariant'' (PCode a)
   type PContravariant' a :: Constraint
@@ -64,12 +63,12 @@ class PlutusType (a :: PType) where
   type PVariant' a :: Constraint
   type PVariant' a = All2 PVariant'' (PCode a)
   pcon' :: forall s. a s -> Term s (PInner a)
-  default pcon' :: DerivePlutusType a => forall s. a s -> Term s (PInner a)
+  default pcon' :: DerivePlutusType strat a => forall s. a s -> Term s (PInner a)
   pcon' = let _ = witness (Proxy @(PlutusType a)) in derivedPCon
 
   pmatch' :: forall s b. Term s (PInner a) -> (a s -> Term s b) -> Term s b
   -- FIXME buggy GHC, needs AllowAmbiguousTypes
-  default pmatch' :: DerivePlutusType a => forall s b. Term s (PInner a) -> (a s -> Term s b) -> Term s b
+  default pmatch' :: DerivePlutusType strat a => forall s b. Term s (PInner a) -> (a s -> Term s b) -> Term s b
   pmatch' = derivedPMatch
 
 {-# DEPRECATED PCon "Use PlutusType" #-}

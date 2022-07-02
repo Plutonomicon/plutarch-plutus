@@ -126,19 +126,19 @@ x #|| y = pforce $ por # x # pdelay y
 
 -- | Hoisted, Plutarch level, lazily evaluated boolean and function.
 pand :: Term s (PBool :--> PDelayed PBool :--> PDelayed PBool)
-pand = phoistAcyclic $ plam $ \x y -> pif' # x # y # (phoistAcyclic $ pdelay $ pcon PFalse)
+pand = phoistAcyclic $ plam $ \x y -> pif' # x # y # phoistAcyclic (pdelay $ pcon PFalse)
 
 -- | Hoisted, Plutarch level, strictly evaluated boolean and function.
 pand' :: Term s (PBool :--> PBool :--> PBool)
-pand' = phoistAcyclic $ plam $ \x y -> pif' # x # y # (pcon PFalse)
+pand' = phoistAcyclic $ plam $ \x y -> pif' # x # y # pcon PFalse
 
 -- | Hoisted, Plutarch level, lazily evaluated boolean or function.
 por :: Term s (PBool :--> PDelayed PBool :--> PDelayed PBool)
-por = phoistAcyclic $ plam $ \x -> pif' # x # (phoistAcyclic $ pdelay $ pcon PTrue)
+por = phoistAcyclic $ plam $ \x -> pif' # x # phoistAcyclic (pdelay $ pcon PTrue)
 
 -- | Hoisted, Plutarch level, strictly evaluated boolean or function.
 por' :: Term s (PBool :--> PBool :--> PBool)
-por' = phoistAcyclic $ plam $ \x -> pif' # x # (pcon PTrue)
+por' = phoistAcyclic $ plam $ \x -> pif' # x # pcon PTrue
 
 -- | Like Haskell's `and` but for Plutarch terms
 pands :: [Term s PBool] -> Term s PBool

@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE UndecidableSuperClasses #-}
@@ -23,7 +24,7 @@ import Plutarch.Internal.PlutusType (
   DerivedPInner,
   PInner,
   PlutusType,
-  PlutusTypeStrat,
+  PlutusTypeStratFor,
   PlutusTypeStratConstraint,
   derivedPCon,
   derivedPMatch,
@@ -151,8 +152,8 @@ instance
   ) =>
   PlutusTypeScottConstraint a
 
-instance PlutusTypeStrat PlutusTypeScott where
+instance PlutusTypeStratFor PlutusTypeScott a where
   type PlutusTypeStratConstraint PlutusTypeScott = PlutusTypeScottConstraint
-  type DerivedPInner PlutusTypeScott a = PForall (PScottEncoded (PCode a))
+  type DerivedPInner a = PForall (PScottEncoded (PCode a))
   derivedPCon x = pcon $ PForall $ gpcon $ gpfrom x
   derivedPMatch x' f = pmatch x' \(PForall x) -> gpmatch x (f . gpto)

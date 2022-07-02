@@ -14,7 +14,7 @@ import Plutarch.Internal (
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque, pto)
 import Plutarch.Internal.PLam (plam, (#))
-import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PInner, PlutusType)
+import Plutarch.Internal.PlutusType (DerivePlutusType, PInner, PlutusType)
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,
@@ -29,9 +29,8 @@ import qualified PlutusCore as PLC
 -- | Plutus BuiltinInteger
 data PInteger s = PInteger (Term s POpaque)
   deriving stock (Generic)
-  deriving anyclass (PlutusType)
+  deriving anyclass (PlutusType, DerivePlutusType PlutusTypeNewtype)
 
-instance DerivePlutusType PInteger where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PInteger where type PLifted PInteger = Integer
 deriving via (DerivePConstantDirect Integer PInteger) instance PConstantDecl Integer
@@ -68,7 +67,7 @@ instance PNum PInteger where
   x #- y = punsafeBuiltin PLC.SubtractInteger # x # y
   x #* y = punsafeBuiltin PLC.MultiplyInteger # x # y
   pabs = phoistAcyclic $ plam \x -> pif (x #<= -1) (negate x) x
-  pnegate = phoistAcyclic $ plam \x -> 0 #- x
+  pnegate = phoistAcyclic $ plam (0 #-)
   psignum = plam \x ->
     pif
       (x #== 0)
