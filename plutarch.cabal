@@ -95,6 +95,9 @@ library
     Plutarch.Api.V1.Tuple
     Plutarch.Api.V1.Tx
     Plutarch.Api.V1.Value
+    Plutarch.Api.V2
+    Plutarch.Api.V2.Contexts
+    Plutarch.Api.V2.Tx
     Plutarch.Bool
     Plutarch.Builtin
     Plutarch.ByteString

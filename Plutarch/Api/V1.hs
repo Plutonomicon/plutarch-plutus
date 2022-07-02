@@ -99,8 +99,8 @@ import qualified Plutarch.Api.V1.Value as Value
 
 import Data.Coerce (coerce)
 
-import qualified PlutusLedgerApi.V1 as Plutus
-import qualified PlutusLedgerApi.V1.Scripts as Plutus
+import qualified PlutusLedgerApi.V1 as PlutusV1
+import qualified PlutusLedgerApi.V1.Scripts as PlutusV1
 
 import Plutarch (Config, compile)
 import Plutarch.Api.Internal.Hashing (hashData, hashScriptWithPrefix)
@@ -122,41 +122,41 @@ type PMintingPolicy = PData :--> PScriptContext :--> POpaque
 type PStakeValidator = PData :--> PScriptContext :--> POpaque
 
 -- | Compile a Validator
-mkValidator :: HasCallStack => Config -> ClosedTerm PValidator -> Plutus.Validator
-mkValidator config s = Plutus.Validator $ either (error . T.unpack) id $ compile config s
+mkValidator :: HasCallStack => Config -> ClosedTerm PValidator -> PlutusV1.Validator
+mkValidator config s = PlutusV1.Validator $ either (error . T.unpack) id $ compile config s
 
 -- | Compile a MintingPolicy
-mkMintingPolicy :: HasCallStack => Config -> ClosedTerm PMintingPolicy -> Plutus.MintingPolicy
-mkMintingPolicy config s = Plutus.MintingPolicy $ either (error . T.unpack) id $ compile config s
+mkMintingPolicy :: HasCallStack => Config -> ClosedTerm PMintingPolicy -> PlutusV1.MintingPolicy
+mkMintingPolicy config s = PlutusV1.MintingPolicy $ either (error . T.unpack) id $ compile config s
 
 -- | Compile a StakeValidator
-mkStakeValidator :: HasCallStack => Config -> ClosedTerm PStakeValidator -> Plutus.StakeValidator
-mkStakeValidator config s = Plutus.StakeValidator $ either (error . T.unpack) id $ compile config s
+mkStakeValidator :: HasCallStack => Config -> ClosedTerm PStakeValidator -> PlutusV1.StakeValidator
+mkStakeValidator config s = PlutusV1.StakeValidator $ either (error . T.unpack) id $ compile config s
 
--- | Hash a Script, with the correct prefix for Plutus V1
-scriptHash :: Plutus.Script -> Plutus.ScriptHash
+-- | Hash a Script, with the correct prefix for PlutusV1 V1
+scriptHash :: PlutusV1.Script -> PlutusV1.ScriptHash
 scriptHash = hashScriptWithPrefix "\x01"
 
--- | Hash a Validator, with the correct prefix for Plutus V1
-validatorHash :: Plutus.Validator -> Plutus.ValidatorHash
+-- | Hash a Validator, with the correct prefix for PlutusV1 V1
+validatorHash :: PlutusV1.Validator -> PlutusV1.ValidatorHash
 validatorHash = coerce scriptHash
 
--- | Hash a MintingPolicy, with the correct prefix for Plutus V1
-mintingPolicySymbol :: Plutus.MintingPolicy -> Plutus.CurrencySymbol
+-- | Hash a MintingPolicy, with the correct prefix for PlutusV1 V1
+mintingPolicySymbol :: PlutusV1.MintingPolicy -> PlutusV1.CurrencySymbol
 mintingPolicySymbol = coerce scriptHash
 
--- | Hash a StakeValidator, with the correct prefix for Plutus V1
-stakeValidatorHash :: Plutus.StakeValidator -> Plutus.StakeValidatorHash
+-- | Hash a StakeValidator, with the correct prefix for PlutusV1 V1
+stakeValidatorHash :: PlutusV1.StakeValidator -> PlutusV1.StakeValidatorHash
 stakeValidatorHash = coerce scriptHash
 
 -- | Hash a Datum.
-datumHash :: Plutus.Datum -> Plutus.DatumHash
+datumHash :: PlutusV1.Datum -> PlutusV1.DatumHash
 datumHash = coerce . dataHash
 
 -- | Hash a Redeemer.
-redeemerHash :: Plutus.Redeemer -> Plutus.RedeemerHash
+redeemerHash :: PlutusV1.Redeemer -> PlutusV1.RedeemerHash
 redeemerHash = coerce . dataHash
 
 -- | Hash the data encoded representation of given argument.
-dataHash :: Plutus.ToData a => a -> Plutus.BuiltinByteString
-dataHash = hashData . Plutus.toData
+dataHash :: PlutusV1.ToData a => a -> PlutusV1.BuiltinByteString
+dataHash = hashData . PlutusV1.toData
