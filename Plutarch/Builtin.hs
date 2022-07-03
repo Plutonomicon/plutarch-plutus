@@ -174,7 +174,7 @@ instance PConstant a => PConstantDecl [a] where
   type PConstantRepr [a] = [PConstantRepr a]
   type PConstanted [a] = PBuiltinList (PConstanted a)
   pconstantToRepr x = pconstantToRepr <$> x
-  pconstantFromRepr x = traverse (pconstantFromRepr @a) x
+  pconstantFromRepr = traverse (pconstantFromRepr @a)
 
 instance PUnsafeLiftDecl a => PUnsafeLiftDecl (PBuiltinList a) where
   type PLifted (PBuiltinList a) = [PLifted a]

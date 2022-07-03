@@ -4,17 +4,17 @@
 module Plutarch.Api.V2.Contexts (
   PScriptContext (PScriptContext),
   PTxInfo (PTxInfo),
-  PScriptPurpose (PMinting, PSpending, PRewarding, PCertifying),
+  V1.PScriptPurpose (PMinting, PSpending, PRewarding, PCertifying),
 ) where
 
 import qualified Plutarch.Api.V1.Address as V1
+import qualified Plutarch.Api.V1.Contexts as V1
 import qualified Plutarch.Api.V1.Crypto as V1
 import qualified Plutarch.Api.V1.DCert as V1
 import qualified Plutarch.Api.V1.Scripts as V1
 import qualified Plutarch.Api.V1.Time as V1
-import qualified Plutarch.Api.V1.Tuple as V1
 import qualified Plutarch.Api.V1.Value as V1
-import Plutarch.Api.V2.Tx (PTxId, PTxInInfo, PTxOut, PTxOutRef)
+import Plutarch.Api.V2.Tx (PTxId, PTxInInfo, PTxOut)
 import qualified PlutusLedgerApi.V2 as Plutus
 
 import Plutarch.DataRepr (
@@ -37,7 +37,7 @@ newtype PScriptContext (s :: S)
           s
           ( PDataRecord
               '[ "txInfo" ':= PTxInfo
-               , "purpose" ':= PScriptPurpose
+               , "purpose" ':= V1.PScriptPurpose
                ]
           )
       )
@@ -76,16 +76,3 @@ instance DerivePlutusType PTxInfo where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PTxInfo where type PLifted _ = Plutus.TxInfo
 deriving via (DerivePConstantViaData Plutus.TxInfo PTxInfo) instance PConstantDecl Plutus.TxInfo
-
-data PScriptPurpose (s :: S)
-  = PMinting (Term s (PDataRecord '["_0" ':= V1.PCurrencySymbol]))
-  | PSpending (Term s (PDataRecord '["_0" ':= PTxOutRef]))
-  | PRewarding (Term s (PDataRecord '["_0" ':= V1.PStakingCredential]))
-  | PCertifying (Term s (PDataRecord '["_0" ':= V1.PDCert]))
-  deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq)
-
-instance DerivePlutusType PScriptPurpose where type DPTStrat _ = PlutusTypeData
-
-instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
-deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) instance PConstantDecl Plutus.ScriptPurpose
