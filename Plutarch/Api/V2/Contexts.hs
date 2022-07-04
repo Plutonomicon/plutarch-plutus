@@ -7,13 +7,7 @@ module Plutarch.Api.V2.Contexts (
   V1.PScriptPurpose (PMinting, PSpending, PRewarding, PCertifying),
 ) where
 
-import qualified Plutarch.Api.V1.Address as V1
-import qualified Plutarch.Api.V1.Contexts as V1
-import qualified Plutarch.Api.V1.Crypto as V1
-import qualified Plutarch.Api.V1.DCert as V1
-import qualified Plutarch.Api.V1.Scripts as V1
-import qualified Plutarch.Api.V1.Time as V1
-import qualified Plutarch.Api.V1.Value as V1
+import qualified Plutarch.Api.V1 as V1
 import Plutarch.Api.V2.Tx (PTxId, PTxInInfo, PTxOut)
 import qualified PlutusLedgerApi.V2 as Plutus
 
@@ -21,6 +15,7 @@ import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
  )
+
 import Plutarch.Lift (
   PConstantDecl,
   PLifted,
@@ -61,10 +56,11 @@ newtype PTxInfo (s :: S)
                , "fee" ':= V1.PValue 'V1.Sorted 'V1.Positive -- The fee paid by this transaction.
                , "mint" ':= V1.PValue 'V1.Sorted 'V1.NoGuarantees -- The value minted by the transaction.
                , "dcert" ':= PBuiltinList (PAsData V1.PDCert) -- Digests of the certificates included in this transaction.
-               , "wdrl" ':= PBuiltinList (PAsData (V1.PTuple V1.PStakingCredential PInteger)) -- Staking withdrawals
+               , "wdrl" ':= V1.PMap 'V1.Unsorted V1.PStakingCredential PInteger -- Staking withdrawals
                , "validRange" ':= V1.PPOSIXTimeRange -- The valid range for the transaction.
                , "signatories" ':= PBuiltinList (PAsData V1.PPubKeyHash) -- Signatories attesting that they all signed the tx.
-               , "datums" ':= PBuiltinList (PAsData (V1.PTuple V1.PDatumHash V1.PDatum))
+               , "redeemers" ':= V1.PMap 'V1.Unsorted V1.PScriptPurpose V1.PRedeemer
+               , "datums" ':= V1.PMap 'V1.Unsorted V1.PDatumHash V1.PDatum
                , "id" ':= PTxId -- The hash of the pending transaction.
                ]
           )
