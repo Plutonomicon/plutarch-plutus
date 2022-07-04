@@ -522,9 +522,6 @@
           // {
             formatCheck = formatCheckFor system;
             test-ghc9 = flakeApp2Derivation system "test-ghc9";
-            test-ghc810 = flakeApp2Derivation system "test-ghc810";
-            "ghc810-plutarch:lib:plutarch" = (self.ghc810Flake.${system}).packages."plutarch:lib:plutarch";
-            "ghc810-plutarch:lib:plutarch-test" = (self.ghc810Flake.${system}).packages."plutarch-test:lib:plutarch-test";
             hls = checkedShellScript system "hls" "${self.project.${system}.pkgs.haskell-language-server}/bin/haskell-language-server";
           });
       # Because `nix flake check` does not work with haskell.nix (due to IFD),
