@@ -1,10 +1,12 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Unit (PUnit (..)) where
 
-import Plutarch (PlutusType (PInner, pcon', pmatch'), Term, pcon)
+import Plutarch (Term, pcon, plet)
 import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, (#<), (#<=), (#==))
+import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon', pmatch')
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,
@@ -20,22 +22,22 @@ instance PUnsafeLiftDecl PUnit where type PLifted PUnit = ()
 deriving via (DerivePConstantDirect () PUnit) instance PConstantDecl ()
 
 instance PlutusType PUnit where
-  type PInner PUnit _ = PUnit
+  type PInner PUnit = PUnit
   pcon' PUnit = pconstant ()
-  pmatch' _ f = f PUnit
+  pmatch' x f = plet x \_ -> f PUnit
 
 instance PEq PUnit where
-  _ #== _ = pcon PTrue
+  x #== y = plet x \_ -> plet y \_ -> pcon PTrue
 
 instance POrd PUnit where
-  _ #<= _ = pcon PTrue
-  _ #< _ = pcon PFalse
+  x #<= y = plet x \_ -> plet y \_ -> pcon PTrue
+  x #< y = plet x \_ -> plet y \_ -> pcon PFalse
 
 instance Semigroup (Term s PUnit) where
-  _ <> _ = pcon PUnit
+  x <> y = plet x \_ -> plet y \_ -> pcon PUnit
 
 instance Monoid (Term s PUnit) where
   mempty = pcon PUnit
 
 instance PShow PUnit where
-  pshow' _ _ = "()"
+  pshow' _ x = plet x \_ -> "()"

@@ -50,13 +50,15 @@ module Plutarch.List (
 
 import Numeric.Natural (Natural)
 
-import qualified GHC.Generics as GHC
-import Generics.SOP (Generic, I (I))
+import GHC.Generics (Generic)
 import Plutarch (
   ClosedTerm,
+  DPTStrat,
+  DerivePlutusType,
   PDelayed,
   PType,
   PlutusType,
+  PlutusTypeScott,
   S,
   Term,
   pcon,
@@ -85,8 +87,9 @@ import Plutarch.Trace (ptraceError)
 data PList (a :: PType) (s :: S)
   = PSCons (Term s a) (Term s (PList a))
   | PSNil
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic, PlutusType)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType)
+instance DerivePlutusType (PList a) where type DPTStrat _ = PlutusTypeScott
 
 instance PShow a => PShow (PList a) where
   pshow' _ x = pshowList @PList @a # x

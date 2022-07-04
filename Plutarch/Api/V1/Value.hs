@@ -1,4 +1,4 @@
-{-# LANGUAGE RoleAnnotations #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -69,7 +69,9 @@ import qualified PlutusTx.Semigroup as PlutusTx
 import Plutarch.Prelude hiding (psingleton)
 
 newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
-  deriving (PlutusType, PIsData, PEq, POrd) via (DerivePNewtype PTokenName PByteString)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+instance DerivePlutusType PTokenName where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PTokenName where type PLifted PTokenName = Plutus.TokenName
 deriving via
@@ -78,7 +80,9 @@ deriving via
     PConstantDecl Plutus.TokenName
 
 newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
-  deriving (PlutusType, PIsData, PEq, POrd) via (DerivePNewtype PCurrencySymbol PByteString)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+instance DerivePlutusType PCurrencySymbol where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PCurrencySymbol where type PLifted PCurrencySymbol = Plutus.CurrencySymbol
 deriving via
@@ -88,12 +92,12 @@ deriving via
 
 data AmountGuarantees = NoGuarantees | NonZero | Positive
 
+type role PValue nominal nominal nominal
 newtype PValue (keys :: KeyGuarantees) (amounts :: AmountGuarantees) (s :: S)
   = PValue (Term s (PMap keys PCurrencySymbol (PMap keys PTokenName PInteger)))
-  deriving
-    (PlutusType, PIsData)
-    via (DerivePNewtype (PValue keys amounts) (PMap keys PCurrencySymbol (PMap keys PTokenName PInteger)))
-type role PValue nominal nominal nominal
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData)
+instance DerivePlutusType (PValue keys amounts) where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl (PValue 'Unsorted 'NonZero) where
   type PLifted (PValue 'Unsorted 'NonZero) = Plutus.Value

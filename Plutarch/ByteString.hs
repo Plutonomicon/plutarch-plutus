@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -15,14 +16,15 @@ import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import Data.Char (toLower)
 import Data.Word (Word8)
+import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
 import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal.Other (
-  Term,
-  (#),
-  type (:-->),
- )
+import Plutarch.Internal (Term, (:-->))
+import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Other (POpaque)
+import Plutarch.Internal.PLam ((#))
+import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,
@@ -34,7 +36,11 @@ import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinByteString'
-data PByteString s
+data PByteString s = PByteString (Term s POpaque)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType)
+
+instance DerivePlutusType PByteString where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PByteString where type PLifted PByteString = ByteString
 deriving via (DerivePConstantDirect ByteString PByteString) instance PConstantDecl ByteString
@@ -92,6 +98,7 @@ pindexBS = punsafeBuiltin PLC.IndexByteString
 hexDigitToWord8 :: HasCallStack => Char -> Word8
 hexDigitToWord8 = f . toLower
   where
+    f :: Char -> Word8
     f '0' = 0
     f '1' = 1
     f '2' = 2

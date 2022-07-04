@@ -1,77 +1,74 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE UndecidableSuperClasses #-}
 
 {- Common generics-sop utilities for use in Plutarch.
 -}
 module Plutarch.Internal.Generic (
   -- * Plutarch adapters for generics-sop API
   PGeneric,
+  PGeneric',
   PCode,
   gpfrom,
   gpto,
-
-  -- * Helpers for when existing generics-sop combinators are insufficient.
-  MkNS,
-  mkNS,
-  mkSum,
 ) where
 
-import Data.Kind (Constraint, Type)
-import GHC.TypeLits (Nat, type (-))
-import Generics.SOP (All, AllZip, Code, Generic (from, to), I, LiftedCoercible, NP, NS (S, Z), SOP, SameShapeAs, Top, hfromI, htoI)
-import Generics.SOP.Constraint (AllZipF)
-import Plutarch.DataRepr.Internal.HList.Utils (IndexList)
+-- lol
+import Data.Constraint (Dict (Dict))
+import Data.Kind (Constraint)
+import GHC.Exts (Any)
+import GHC.Generics (Generic)
+import Generics.SOP (All2, I, SOP, Top)
+import Generics.SOP.GGP (GCode, GDatatypeInfo, GFrom, GTo, gfrom, gto)
 import Plutarch.Internal (PType, S, Term)
 import Plutarch.Internal.TypeFamily (ToPType2)
+import Unsafe.Coerce (unsafeCoerce)
+
+class GFrom a => GFrom' a
+instance GFrom a => GFrom' a
+
+class GTo a => GTo' a
+instance GTo a => GTo' a
+
+type PGeneric' :: PType -> S -> Constraint
+class
+  ( Generic (a s)
+  , GFrom (a s)
+  , GTo (a s)
+  , All2 Top (PCode a) -- DO NOT REMOVE! Will cause unsound behavior otherwise. See `unsafeCoerce` below.
+  , All2 Top (GCode (a s))
+  , GDatatypeInfo (a s)
+  ) =>
+  PGeneric' a s
+instance
+  ( Generic (a s)
+  , GFrom (a s)
+  , GTo (a s)
+  , All2 Top (PCode a) -- DO NOT REMOVE! Will cause unsound behavior otherwise. See `unsafeCoerce` below.
+  , All2 Top (GCode (a s))
+  , GDatatypeInfo (a s)
+  ) =>
+  PGeneric' a s
 
 -- | `Generic` constraint extended to work with Plutarch types.
-type PGeneric :: S -> PType -> Constraint
-type PGeneric s a =
-  ( Generic (a s)
-  , SameShapeAs (Code (a s)) (PCode s a)
-  , SameShapeAs (PCode s a) (Code (a s))
-  , AllZipF (AllZip (LiftedCoercible I (Term s))) (Code (a s)) (PCode s a)
-  , AllZipF (AllZip (LiftedCoercible (Term s) I)) (PCode s a) (Code (a s))
-  , All Top (PCode s a)
-  )
+type PGeneric :: PType -> Constraint
+class (forall s. PGeneric' a s) => PGeneric a
+
+instance (forall s. PGeneric' a s) => PGeneric a
+
+type PCode :: PType -> [[PType]]
 
 -- | Like `Code` but for Plutarch types
-type PCode s a = ToPType2 (Code (a s))
+type PCode a = ToPType2 (GCode (a Any))
 
-{- | Like `from` but for Plutarch terms
+gpfrom :: forall a s. PGeneric a => a s -> SOP (Term s) (PCode a)
+-- This could be done safely, but it's a PITA.
+-- Depends on `All` constraint above.
+gpfrom x = case (Dict :: Dict (PGeneric' a s)) of
+  Dict -> unsafeCoerce (gfrom x :: SOP I (GCode (a s)))
 
-  Instead of `I`, this uses `Term s` as the container type.
--}
-gpfrom :: PGeneric s a => a s -> SOP (Term s) (PCode s a)
-gpfrom = hfromI . from
-
--- | Like `to` but for Plutarch terms. Analogous to `gpfrom`.
-gpto :: PGeneric s a => SOP (Term s) (PCode s a) -> a s
-gpto = to . htoI
-
-{- |
-Infrastructure to create a single sum constructor given its type index and value.
-
-- `mkSum @0 @(Code a) x` creates the first sum constructor;
-- `mkSum @1 @(Code a) x` creates the second sum constructor;
-- etc.
-
-It is type-checked that the `x` here matches the type of nth constructor of `a`.
--}
-class MkNS (idx :: Nat) (xs :: [k]) (f :: k -> Type) where
-  mkNS :: f (IndexList idx xs) -> NS f xs
-
-instance {-# OVERLAPPING #-} MkNS 0 (x ': xs) f where
-  mkNS = Z
-
-instance
-  {-# OVERLAPPABLE #-}
-  ( MkNS (idx - 1) xs f
-  , IndexList idx (x ': xs) ~ IndexList (idx - 1) xs
-  ) =>
-  MkNS idx (x ': xs) f
-  where
-  mkNS x = S $ mkNS @_ @(idx - 1) @xs x
-
-mkSum :: forall idx xss f. MkNS idx xss (NP f) => NP f (IndexList idx xss) -> NS (NP f) xss
-mkSum = mkNS @_ @idx @xss @(NP f)
+gpto :: forall a s. PGeneric a => SOP (Term s) (PCode a) -> a s
+-- This could be done safely, but it's a PITA.
+-- Depends on `All` constraint above.
+gpto x = case (Dict :: Dict (PGeneric' a s)) of
+  Dict -> gto (unsafeCoerce x :: SOP I (GCode (a s)))

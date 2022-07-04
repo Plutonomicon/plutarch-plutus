@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -6,13 +7,14 @@ module Plutarch.String (PString, pfromText, pencodeUtf8, pdecodeUtf8) where
 import Data.String (IsString, fromString)
 import Data.Text (Text)
 import qualified Data.Text as Txt
+import GHC.Generics (Generic)
 import Plutarch.Bool (PEq, (#==))
 import Plutarch.ByteString (PByteString)
-import Plutarch.Internal.Other (
-  Term,
-  (#),
-  type (:-->),
- )
+import Plutarch.Internal (Term, (:-->))
+import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Other (POpaque)
+import Plutarch.Internal.PLam ((#))
+import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,
@@ -24,7 +26,11 @@ import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
 
 -- | Plutus 'BuiltinString' values
-data PString s
+data PString s = PString (Term s POpaque)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType)
+
+instance DerivePlutusType PString where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PString where type PLifted PString = Text
 deriving via (DerivePConstantDirect Text PString) instance PConstantDecl Text

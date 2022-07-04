@@ -1,6 +1,4 @@
-A-as-0 {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":7}
-B-as-1 {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":7}
-swap.A {"exBudgetCPU":611589,"exBudgetMemory":1502,"scriptSizeBytes":21}
-swap.B {"exBudgetCPU":611589,"exBudgetMemory":1502,"scriptSizeBytes":21}
-scottenc.PMaybe {"exBudgetCPU":230100,"exBudgetMemory":1100,"scriptSizeBytes":14}
-scottenc.PPair {"exBudgetCPU":230100,"exBudgetMemory":1100,"scriptSizeBytes":26}
+swap.A {"exBudgetCPU":207100,"exBudgetMemory":1000,"scriptSizeBytes":16}
+swap.B {"exBudgetCPU":207100,"exBudgetMemory":1000,"scriptSizeBytes":16}
+scottenc.PMaybe {"exBudgetCPU":299100,"exBudgetMemory":1400,"scriptSizeBytes":16}
+scottenc.PPair {"exBudgetCPU":299100,"exBudgetMemory":1400,"scriptSizeBytes":28}

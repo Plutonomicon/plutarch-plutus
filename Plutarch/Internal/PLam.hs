@@ -1,4 +1,4 @@
-{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Internal.PLam (
@@ -52,10 +52,10 @@ infixr 0 #$
 class PLamN (a :: Type) (b :: PType) (s :: S) | a -> b, s b -> a where
   plam :: forall c. (Term s c -> a) -> Term s (c :--> b)
 
-instance (a' ~ Term s a) => PLamN a' a s where
+instance {-# OVERLAPPABLE #-} (a' ~ Term s a) => PLamN a' a s where
   plam = plam'
 
-instance {-# OVERLAPPING #-} (a' ~ Term s a, PLamN b' b s) => PLamN (a' -> b') (a :--> b) s where
+instance (a' ~ Term s a, PLamN b' b s) => PLamN (a' -> b') (a :--> b) s where
   plam f = plam' $ \x -> plam (f x)
 
 pinl :: Term s a -> (Term s a -> Term s b) -> Term s b

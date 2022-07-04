@@ -48,7 +48,6 @@ import Data.Set (Set)
 import qualified Data.Set as S
 import Plutarch (Config (Config, tracingMode), compile, printScript, pattern DetTracing)
 import Plutarch.Evaluate (evalScript)
-import Plutarch.Internal (punsafeAsClosedTerm)
 import Plutarch.Prelude
 import Plutarch.Test.Benchmark (Benchmark, mkBenchmark, scriptSize)
 import Plutarch.Test.ListSyntax (ListSyntax, listSyntaxAdd, listSyntaxAddSubList, runListSyntax)
@@ -105,20 +104,20 @@ mkGoldenValue' p mexp =
 -- `ClosedTerm a`. In practice, this instance should be used only for closed
 -- terms.
 instance HasGoldenValue Term where
-  mkGoldenValue p = mkGoldenValue' (punsafeAsClosedTerm p) Nothing
+  mkGoldenValue p = mkGoldenValue' p Nothing
 
 {- | A `Term` paired with its evaluation/benchmark expectation
 
   Example:
   >>> TermExpectation (pcon PTrue) $ \(p, _script, _benchmark) -> pshouldBe (pcon PTrue)
 -}
-data TermExpectation' s a = TermExpectation (Term s a) ((Term s a, Script, Benchmark) -> Expectation)
+data TermExpectation' (s :: S) a = TermExpectation (ClosedTerm a) ((ClosedTerm a, Script, Benchmark) -> Expectation)
 
 type TermExpectation a = forall s. TermExpectation' s a
 
 -- | Test an expectation on a golden Plutarch program
 (@->) :: ClosedTerm a -> (ClosedTerm a -> Expectation) -> TermExpectation a
-(@->) p f = p @:-> \(p', _, _) -> f $ punsafeAsClosedTerm p'
+(@->) p f = p @:-> \(p', _, _) -> f p'
 
 infixr 1 @->
 
@@ -130,13 +129,13 @@ infixr 1 @->
   re-evaluating the program).
 -}
 (@:->) :: ClosedTerm a -> ((ClosedTerm a, Script, Benchmark) -> Expectation) -> TermExpectation a
-(@:->) p f = TermExpectation p (\(p', pe, b) -> f (punsafeAsClosedTerm p', pe, b))
+(@:->) p f = TermExpectation p (\(p', pe, b) -> f (p', pe, b))
 
 infixr 1 @:->
 
 instance HasGoldenValue TermExpectation' where
   mkGoldenValue (TermExpectation p f) =
-    mkGoldenValue' (punsafeAsClosedTerm p) (Just $ (\pe b -> f (p, pe, b)))
+    mkGoldenValue' p (Just $ (\pe b -> f (p, pe, b)))
 
 -- | The key used in the .golden files containing multiple golden values
 newtype GoldenKey = GoldenKey Text

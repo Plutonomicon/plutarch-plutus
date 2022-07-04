@@ -7,7 +7,7 @@
 
   inputs.hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
 
-  inputs.haskell-nix-extra-hackage.url = "github:mlabs-haskell/haskell-nix-extra-hackage";
+  inputs.haskell-nix-extra-hackage.url = "github:mlabs-haskell/haskell-nix-extra-hackage?ref=separate-hackages";
   inputs.haskell-nix-extra-hackage.inputs.haskell-nix.follows = "haskell-nix";
   inputs.haskell-nix-extra-hackage.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -102,18 +102,28 @@
         "xhtml"
       ];
 
-      hlsFor' = compiler-nix-name: system:
-        let pkgs = pkgsFor system; in
+      hlsFor' = compiler-nix-name: pkgs:
         pkgs.haskell-nix.cabalProject' {
           modules = [{
             inherit nonReinstallablePkgs;
-            reinstallableLibGhc = true;
+            reinstallableLibGhc = false;
           }];
           inherit compiler-nix-name;
           src = "${inputs.haskell-language-server}";
           sha256map."https://github.com/pepeiborra/ekg-json"."7a0af7a8fd38045fd15fb13445bdcc7085325460" = "fVwKxGgM0S4Kv/4egVAAiAjV7QB5PBqMVMCfsv7otIQ=";
         };
-      hlsFor = compiler-nix-name: system: (hlsFor' compiler-nix-name system).hsPkgs.haskell-language-server.components.exes.haskell-language-server;
+      hlsFor = compiler-nix-name: system:
+        let
+          pkgs = pkgsFor system;
+          oldGhc = "8107";
+        in
+        if (compiler-nix-name == "ghc${oldGhc}") then
+          pkgs.haskell-language-server.override
+            {
+              supportedGhcVersions = [ oldGhc ];
+            }
+        else
+          (hlsFor' compiler-nix-name pkgs).hsPkgs.haskell-language-server.components.exes.haskell-language-server;
 
       haskellModules = [
         ({ config, pkgs, hsPkgs, ... }: {
@@ -136,7 +146,7 @@
         })
       ];
 
-      myhackage = system: compiler-nix-name: haskell-nix-extra-hackage.mkHackageFor system compiler-nix-name (
+      myhackages = system: compiler-nix-name: haskell-nix-extra-hackage.mkHackagesFor system compiler-nix-name (
         [
           "${inputs.flat}"
           "${inputs.protolude}"
@@ -155,11 +165,11 @@
       );
 
       applyPlutarchDep = pkgs: o:
-        let h = myhackage pkgs.system o.compiler-nix-name; in
+        let h = myhackages pkgs.system o.compiler-nix-name; in
         o // {
-          modules = haskellModules ++ [ h.module ] ++ (o.modules or [ ]);
-          extra-hackages = [ (import h.hackageNix) ] ++ (o.extra-hackages or [ ]);
-          extra-hackage-tarballs = { _xNJUd_plutarch-hackage = h.hackageTarball; } // (o.extra-hackage-tarballs or { });
+          modules = haskellModules ++ h.modules ++ (o.modules or [ ]);
+          extra-hackages = h.extra-hackages ++ (o.extra-hackages or [ ]);
+          extra-hackage-tarballs = h.extra-hackage-tarballs // (o.extra-hackage-tarballs or { });
           cabalProjectLocal = (o.cabalProjectLocal or "") + (
             ''
               allow-newer:
@@ -347,29 +357,31 @@
         };
 
       projectForGhc = compiler-nix-name: system:
-        let pkgs = pkgsFor system; in
-        let pkgs' = pkgsFor' system; in
-        let pkgSet = pkgs.haskell-nix.cabalProject' (applyPlutarchDep pkgs {
-          src = ./.;
-          inherit compiler-nix-name;
-          shell = {
-            withHoogle = true;
+        let
+          pkgs = pkgsFor system;
+          pkgs' = pkgsFor' system;
+          pkgSet = pkgs.haskell-nix.cabalProject' (applyPlutarchDep pkgs {
+            src = ./.;
+            inherit compiler-nix-name;
+            shell = {
+              withHoogle = true;
 
-            exactDeps = true;
+              exactDeps = true;
 
-            # We use the ones from Nixpkgs, since they are cached reliably.
-            # Eventually we will probably want to build these with haskell.nix.
-            nativeBuildInputs = [
-              pkgs'.cabal-install
-              pkgs'.hlint
-              pkgs'.haskellPackages.cabal-fmt
-              (fourmoluFor system)
-              pkgs'.nixpkgs-fmt
-              pkgSet.hsPkgs.hspec-discover.components.exes.hspec-discover
-              (hlsFor compiler-nix-name system)
-            ];
-          };
-        }); in
+              # We use the ones from Nixpkgs, since they are cached reliably.
+              # Eventually we will probably want to build these with haskell.nix.
+              nativeBuildInputs = [
+                pkgs'.cabal-install
+                pkgs'.hlint
+                pkgs'.haskellPackages.cabal-fmt
+                (fourmoluFor system)
+                pkgs'.nixpkgs-fmt
+                pkgSet.hsPkgs.hspec-discover.components.exes.hspec-discover
+                (hlsFor compiler-nix-name system)
+              ];
+            };
+          });
+        in
         pkgSet;
 
       projectFor = projectForGhc defaultGhcVersion;
@@ -498,6 +510,7 @@
       flake = perSystem (system: self.project.${system}.flake { });
 
       haddockProject = self.project;
+      ghc810Flake = perSystem (system: self.projectMatrix.ghc810.${system}.flake { });
 
       packages = perSystem (system: self.flake.${system}.packages // {
         haddock = haddock system;
@@ -510,8 +523,8 @@
             formatCheck = formatCheckFor system;
             test-ghc9 = flakeApp2Derivation system "test-ghc9";
             test-ghc810 = flakeApp2Derivation system "test-ghc810";
-            "ghc810-plutarch:lib:plutarch" = (self.projectMatrix.ghc810.${system}.flake { }).packages."plutarch:lib:plutarch";
-            "ghc810-plutarch:lib:plutarch-test" = (self.projectMatrix.ghc810.${system}.flake { }).packages."plutarch-test:lib:plutarch-test";
+            "ghc810-plutarch:lib:plutarch" = (self.ghc810Flake.${system}).packages."plutarch:lib:plutarch";
+            "ghc810-plutarch:lib:plutarch-test" = (self.ghc810Flake.${system}).packages."plutarch-test:lib:plutarch-test";
             hls = checkedShellScript system "hls" "${self.project.${system}.pkgs.haskell-language-server}/bin/haskell-language-server";
           });
       # Because `nix flake check` does not work with haskell.nix (due to IFD),
@@ -539,7 +552,14 @@
           website = plutarchWebsiteLive system "${self}/docs";
         }
       );
-      devShell = perSystem (system: self.flake.${system}.devShell);
+
+      devShells = perSystem (system:
+        {
+          "ghc810" = self.ghc810Flake.${system}.devShell;
+          "ghc9" = self.flake.${system}.devShell;
+        });
+
+      devShell = perSystem (system: self.devShells.${system}."ghc9");
 
       effects = { ref, ... }:
         let

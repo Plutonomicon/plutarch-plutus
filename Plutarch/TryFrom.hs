@@ -1,41 +1,33 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE UndecidableSuperClasses #-}
 
 module Plutarch.TryFrom (
   PTryFrom (..),
   ptryFrom,
   PSubtype,
+  PSubtype',
   pupcast,
   pupcastF,
   pdowncastF,
-  POp (..),
-  POpArrow (..),
 ) where
 
-import Data.Coerce (Coercible)
 import Data.Kind (Constraint)
-import Data.Proxy (Proxy)
+import Data.Proxy (Proxy (Proxy))
 
-import Plutarch.Internal (punsafeCoerce)
-import Plutarch.Internal.Other (
-  DerivePNewtype,
-  PInner,
-  POpaque,
-  PType,
-  Term,
-  (:-->),
- )
+import Plutarch.Internal (PType, Term, punsafeCoerce)
+import Plutarch.Internal.PlutusType (PContravariant, PCovariant, PInner)
+import Plutarch.Internal.Witness (witness)
 
-import Plutarch.Reducible (Reducible (Reduce))
+import Plutarch.Reducible (Reduce)
 
-class PSubtypeDecl (a :: PType) (b :: PType)
+type family Helper (a :: PType) (b :: PType) (bi :: PType) :: Bool where
+  Helper _ b b = 'False
+  Helper a _ bi = PSubtype' a bi
 
--- Not `OVERLAPPABLE` or `OVERLAPPING` on purpose
-instance {-# OVERLAPS #-} PSubtypeDecl a a
-
--- FIXME: Relax subtyping constraint to a @c@ rather than all @c@.
--- This is currently not really possible because a type must have
--- exactly one super type and no more.
-instance {-# OVERLAPS #-} (PSubtypeDecl a b, PInner c POpaque ~ b) => PSubtypeDecl a c
+type family PSubtype' (a :: PType) (b :: PType) :: Bool where
+  PSubtype' a a = 'True
+  PSubtype' a b = Helper a b (PInner b)
 
 {- | @PSubtype a b@ constitutes a subtyping relation between @a@ and @b@.
  This concretely means that `\(x :: Term s b) -> punsafeCoerce x :: Term s a`
@@ -49,8 +41,8 @@ instance {-# OVERLAPS #-} (PSubtypeDecl a b, PInner c POpaque ~ b) => PSubtypeDe
 
  Subtyping is transitive.
 -}
-type PSubtype :: PType -> PType -> Constraint
-type PSubtype = PSubtypeDecl
+type family PSubtype (a :: PType) (b :: PType) :: Constraint where
+  PSubtype a b = PSubtype' a b ~ 'True
 
 {- |
 @PTryFrom a b@ represents a subtyping relationship between @a@ and @b@,
@@ -60,40 +52,25 @@ Laws:
 -}
 class PSubtype a b => PTryFrom (a :: PType) (b :: PType) where
   type PTryFromExcess a b :: PType
+  type PTryFromExcess a b = PTryFromExcess a (PInner b)
   ptryFrom' :: forall s r. Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
+  default ptryFrom' :: forall s r. (PTryFrom a (PInner b), PTryFromExcess a b ~ PTryFromExcess a (PInner b)) => Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
+  ptryFrom' opq f = ptryFrom @(PInner b) @a opq \(inn, exc) -> f (punsafeCoerce inn, exc)
 
 ptryFrom :: forall b a s r. PTryFrom a b => Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
 ptryFrom = ptryFrom'
 
-instance
-  ( PTryFrom a b
-  , (forall s. Coercible (c s) (Term s b))
-  ) =>
-  PTryFrom a (DerivePNewtype c b)
-  where
-  type PTryFromExcess a (DerivePNewtype c b) = PTryFromExcess a b
-  ptryFrom' opq f = ptryFrom @b @a opq $ \(inn, exc) -> f (punsafeCoerce inn, exc)
-
-pupcast :: PSubtype a b => Term s b -> Term s a
-pupcast = punsafeCoerce
-
--- FIXME: Add safe way of deriving using `PlutusType`
-class PUnsafeContravariantDecl (a :: PType -> PType)
-type PContravariant = PUnsafeContravariantDecl
-
--- FIXME: Add safe way of deriving using `PlutusType`
-class PUnsafeCovariantDecl (a :: PType -> PType)
-type PCovariant = PUnsafeCovariantDecl -- Really just PFunctor
-
-newtype POpArrow b a s = POpArrow (Term s a -> Term s b)
-newtype POp b a s = POp ((a :--> b) s)
-
-instance PUnsafeContravariantDecl (POpArrow b)
-instance PUnsafeContravariantDecl (POp b)
-instance PUnsafeCovariantDecl ((:-->) a)
+pupcast :: forall a b s. PSubtype a b => Term s b -> Term s a
+pupcast = let _ = witness (Proxy @(PSubtype a b)) in punsafeCoerce
 
 pupcastF :: forall a b (p :: PType -> PType) s. (PSubtype a b, PCovariant p) => Proxy p -> Term s (p b) -> Term s (p a)
-pupcastF _ = punsafeCoerce
+pupcastF _ =
+  let _ = witness (Proxy @(PSubtype a b))
+      _ = witness (Proxy @(PCovariant p))
+   in punsafeCoerce
 
 pdowncastF :: forall a b (p :: PType -> PType) s. (PSubtype a b, PContravariant p) => Proxy p -> Term s (p a) -> Term s (p b)
-pdowncastF _ = punsafeCoerce
+pdowncastF _ =
+  let _ = witness (Proxy @(PSubtype a b))
+      _ = witness (Proxy @(PContravariant p))
+   in punsafeCoerce

@@ -1,5 +1,4 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE UndecidableSuperClasses #-}
 
@@ -208,6 +207,7 @@ class ToBuiltin' a arep | a -> arep where
 class FromBuiltin' arep a | arep -> a where
   fromBuiltin' :: arep -> a
 
+-- FIXME this overlappable instance is nonsense and disregards the fundep
 instance {-# OVERLAPPABLE #-} ToBuiltin a arep => ToBuiltin' a arep where
   toBuiltin' = toBuiltin
 

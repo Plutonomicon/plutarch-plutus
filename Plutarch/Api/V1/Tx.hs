@@ -8,9 +8,6 @@ module Plutarch.Api.V1.Tx (
   PTxInInfo (PTxInInfo),
 ) where
 
-import qualified GHC.Generics as GHC
-import Generics.SOP (Generic, I (I))
-
 import qualified PlutusLedgerApi.V1 as Plutus
 
 import Plutarch.Api.V1.Address (PAddress)
@@ -24,7 +21,6 @@ import Plutarch.Api.V1.Value (
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
-  PIsDataReprInstances (PIsDataReprInstances),
  )
 import Plutarch.Lift (
   PConstantDecl,
@@ -35,12 +31,9 @@ import Plutarch.Prelude
 
 newtype PTxId (s :: S)
   = PTxId (Term s (PDataRecord '["_0" ':= PByteString]))
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
-  deriving
-    (PlutusType, PIsData, PDataFields, PEq, POrd)
-    via PIsDataReprInstances PTxId
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, POrd)
+instance DerivePlutusType PTxId where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PTxId where type PLifted PTxId = Plutus.TxId
 deriving via (DerivePConstantViaData Plutus.TxId PTxId) instance PConstantDecl Plutus.TxId
@@ -56,12 +49,10 @@ newtype PTxOutRef (s :: S)
                ]
           )
       )
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
-  deriving
-    (PlutusType, PIsData, PDataFields, PEq, POrd)
-    via PIsDataReprInstances PTxOutRef
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, POrd)
+
+instance DerivePlutusType PTxOutRef where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PTxOutRef where type PLifted PTxOutRef = Plutus.TxOutRef
 deriving via (DerivePConstantViaData Plutus.TxOutRef PTxOutRef) instance PConstantDecl Plutus.TxOutRef
@@ -77,12 +68,10 @@ newtype PTxInInfo (s :: S)
                ]
           )
       )
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
-  deriving
-    (PlutusType, PIsData, PDataFields, PEq)
-    via PIsDataReprInstances PTxInInfo
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq)
+
+instance DerivePlutusType PTxInInfo where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PTxInInfo where type PLifted PTxInInfo = Plutus.TxInInfo
 deriving via (DerivePConstantViaData Plutus.TxInInfo PTxInInfo) instance PConstantDecl Plutus.TxInInfo
@@ -99,12 +88,10 @@ newtype PTxOut (s :: S)
                ]
           )
       )
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
-  deriving
-    (PlutusType, PIsData, PDataFields, PEq)
-    via (PIsDataReprInstances PTxOut)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq)
+
+instance DerivePlutusType PTxOut where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PTxOut where type PLifted PTxOut = Plutus.TxOut
 deriving via (DerivePConstantViaData Plutus.TxOut PTxOut) instance PConstantDecl Plutus.TxOut

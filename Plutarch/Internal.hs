@@ -2,7 +2,7 @@
 
 module Plutarch.Internal (
   -- | $hoisted
-  (:-->),
+  (:-->) (PLam),
   PDelayed,
   -- | $term
   Term (..),
@@ -14,7 +14,6 @@ module Plutarch.Internal (
   pdelay,
   pforce,
   phoistAcyclic,
-  punsafeAsClosedTerm,
   perror,
   punsafeCoerce,
   punsafeBuiltin,
@@ -54,7 +53,6 @@ import qualified Flat.Run as F
 import GHC.Stack (HasCallStack, callStack, prettyCallStack)
 import GHC.Word (Word64)
 import Plutarch.Evaluate (evalScript)
-import Plutarch.Reducible (Reducible (Reduce))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import qualified PlutusCore as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
@@ -134,8 +132,6 @@ data S = SI
 -- | Shorthand for Plutarch types.
 type PType = S -> Type
 
-type role Term phantom representational
-
 data Config = Config
   { tracingMode :: TracingMode
   }
@@ -151,6 +147,8 @@ defaultConfig =
 
 newtype TermMonad m = TermMonad {runTermMonad :: ReaderT Config (Either Text) m}
   deriving newtype (Functor, Applicative, Monad)
+
+type role Term nominal nominal
 
 {- $term
  Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
@@ -168,14 +166,13 @@ newtype TermMonad m = TermMonad {runTermMonad :: ReaderT Config (Either Text) m}
 -}
 newtype Term (s :: S) (a :: PType) = Term {asRawTerm :: Word64 -> TermMonad TermResult}
 
-instance Reducible (Term s a) where type Reduce (Term s a) = Term s a
-
 {- |
   *Closed* terms with no free variables.
 -}
 type ClosedTerm (a :: PType) = forall (s :: S). Term s a
 
 data (:-->) (a :: PType) (b :: PType) (s :: S)
+  = PLam (Term s a -> Term s b)
 infixr 0 :-->
 
 data PDelayed (a :: PType) (s :: S)
@@ -194,7 +191,7 @@ plam' f = Term \i ->
         t@(getTerm -> RApply t'@(getArity -> Just _) [RVar 0]) -> t {getTerm = t'}
         -- eta-reduce for arity 2 + n
         t@(getTerm -> RLamAbs n (RApply t'@(getArity -> Just n') args))
-          | (maybe False (== [0 .. n + 1]) $ traverse (\case RVar n -> Just n; _ -> Nothing) args)
+          | (== Just [0 .. n + 1]) (traverse (\case RVar n -> Just n; _ -> Nothing) args)
               && n' >= n + 1 ->
               t {getTerm = t'}
         -- increment arity
@@ -378,9 +375,6 @@ phoistAcyclic t = Term \_ ->
         let hoisted = HoistedTerm (hashRawTerm . getTerm $ t') (getTerm t')
          in pure $ TermResult (RHoisted hoisted) (hoisted : getDeps t')
       (Left e, _, _) -> pthrow' $ "Hoisted term errs! " <> fromString (show e)
-
-punsafeAsClosedTerm :: forall s a. Term s a -> ClosedTerm a
-punsafeAsClosedTerm (Term t) = (Term t)
 
 -- Couldn't find a definition for this in plutus-core
 subst :: Word64 -> (Word64 -> UTerm) -> UTerm -> UTerm
