@@ -8,6 +8,7 @@ import qualified ExtraSpec
 #if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
 import qualified Plutarch.FieldSpec as FieldSpec
 import qualified Plutarch.MonadicSpec as MonadicSpec
+import qualified Plutarch.TryFromSpec as TryFromSpec
 -- import Plutarch.Test.Run (noUnusedGoldens, hspecAndReturnForest)
 import Test.Hspec (Spec, hspec, describe)
 #else
@@ -41,6 +42,7 @@ spec = do
   describe "GHC-9-only" $ do
     FieldSpec.spec
     MonadicSpec.spec
+    TryFromSpec.spec
 #else
   -- describe "GHC-8-only" $ do
   --   FFISpec.spec
