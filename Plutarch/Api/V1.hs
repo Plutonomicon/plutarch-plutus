@@ -99,6 +99,7 @@ import qualified Plutarch.Api.V1.Value as Value
 
 import Data.Coerce (coerce)
 
+-- note about V2: This should there are no changes in Scripts or V1 itself that affect this module
 import qualified PlutusLedgerApi.V1 as Plutus
 import qualified PlutusLedgerApi.V1.Scripts as Plutus
 

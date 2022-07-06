@@ -9,9 +9,11 @@ module Plutarch.Api.V1.Scripts (
   PRedeemerHash (PRedeemerHash),
   PStakeValidatorHash (PStakeValidatorHash),
   PValidatorHash (PValidatorHash),
+  PScriptHash (PScriptHash),
 ) where
 
 import qualified PlutusLedgerApi.V1 as Plutus
+import qualified PlutusLedgerApi.V1.Scripts as Plutus
 
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
@@ -77,3 +79,25 @@ deriving via
   (DerivePConstantViaBuiltin Plutus.ValidatorHash PValidatorHash PByteString)
   instance
     PConstantDecl Plutus.ValidatorHash
+
+newtype PMintingPolicyHash (s :: S) = PMintingPolicyHash (Term s PByteString)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+instance DerivePlutusType PMintingPolicyHash where type DPTStrat _ = PlutusTypeNewtype
+
+instance PUnsafeLiftDecl PMintingPolicyHash where type PLifted PMintingPolicyHash = Plutus.MintingPolicyHash
+deriving via
+  (DerivePConstantViaBuiltin Plutus.MintingPolicyHash PMintingPolicyHash PByteString)
+  instance
+    PConstantDecl Plutus.MintingPolicyHash
+
+newtype PScriptHash (s :: S) = PScriptHash (Term s PByteString)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+instance DerivePlutusType PScriptHash where type DPTStrat _ = PlutusTypeNewtype
+
+instance PUnsafeLiftDecl PScriptHash where type PLifted PScriptHash = Plutus.ScriptHash
+deriving via
+  (DerivePConstantViaBuiltin Plutus.ScriptHash PScriptHash PByteString)
+  instance
+    PConstantDecl Plutus.ScriptHash

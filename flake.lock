@@ -874,11 +874,11 @@
         "sphinxcontrib-haddock": "sphinxcontrib-haddock"
       },
       "locked": {
-        "lastModified": 1653669501,
-        "narHash": "sha256-qJrjEeo9Jmar1TwihDFzKQNC1ui4M03iClJM1zMd5Uk=",
+        "lastModified": 1656595231,
+        "narHash": "sha256-3EBhSroECMOSP02qZGT0Zb3QHWibI/tYjdcaT5/YotY=",
         "owner": "input-output-hk",
         "repo": "plutus",
-        "rev": "fed48a71550a12290efc84eefb74305d93cde69d",
+        "rev": "b39a526e983cb931d0cc49b7d073d6d43abd22b5",
         "type": "github"
       },
       "original": {
