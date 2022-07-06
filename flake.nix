@@ -522,9 +522,6 @@
           // {
             formatCheck = formatCheckFor system;
             test-ghc9 = flakeApp2Derivation system "test-ghc9";
-            test-ghc810 = flakeApp2Derivation system "test-ghc810";
-            "ghc810-plutarch:lib:plutarch" = (self.ghc810Flake.${system}).packages."plutarch:lib:plutarch";
-            "ghc810-plutarch:lib:plutarch-test" = (self.ghc810Flake.${system}).packages."plutarch-test:lib:plutarch-test";
             hls = checkedShellScript system "hls" "${self.project.${system}.pkgs.haskell-language-server}/bin/haskell-language-server";
           });
       # Because `nix flake check` does not work with haskell.nix (due to IFD),
@@ -544,7 +541,6 @@
         self.flake.${system}.apps
         // {
           test-ghc9 = plutarchTestApp system "ghc9" self.projectMatrix.ghc9;
-          test-ghc810 = plutarchTestApp system "ghc810" self.projectMatrix.ghc810;
 
           # `nix run .#docs` should be run from the Git repo.
           docs = plutarchWebsiteLive system "./docs";
@@ -555,7 +551,6 @@
 
       devShells = perSystem (system:
         {
-          "ghc810" = self.ghc810Flake.${system}.devShell;
           "ghc9" = self.flake.${system}.devShell;
         });
 
