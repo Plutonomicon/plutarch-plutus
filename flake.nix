@@ -552,7 +552,6 @@
       devShells = perSystem (system:
         {
           "ghc9" = self.flake.${system}.devShell;
-          "ghc810" = self.ghc810Flake.${system}.devShell;
         });
 
       devShell = perSystem (system: self.devShells.${system}."ghc9");
