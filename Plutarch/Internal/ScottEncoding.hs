@@ -1,6 +1,9 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE UndecidableSuperClasses #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE ImpredicativeTypes #-}
 
 module Plutarch.Internal.ScottEncoding (PlutusTypeScott, PScottEncoded (PScottEncoded)) where
 
@@ -16,7 +19,7 @@ import Generics.SOP (
   cpara_SList,
   para_SList,
  )
-import Plutarch.Internal (PDelayed, PType, Term, pdelay, pforce, plam', plet, (:-->))
+import Plutarch.Internal (S, PDelayed, PType, Term, pdelay, pforce, plam', plet, (:-->))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Internal.PLam ((#))
 import Plutarch.Internal.PlutusType (
@@ -25,6 +28,7 @@ import Plutarch.Internal.PlutusType (
   PlutusType,
   PlutusTypeStrat,
   PlutusTypeStratConstraint,
+  DerivePlutusType,
   derivedPCon,
   derivedPMatch,
   pcon,
@@ -33,6 +37,7 @@ import Plutarch.Internal.PlutusType (
   pmatch',
  )
 import Plutarch.Internal.Quantification (PForall (PForall))
+import Data.Constraint (Dict(Dict))
 
 data PlutusTypeScott
 
@@ -102,7 +107,7 @@ newtype GPCon' s r as = GPCon' {unGPCon' :: NP (Term s) (ScottList as r) -> NS (
   The partial encoding is any tail of the full scott encoded function, such that
   one of its elements corresponds to the sum choice.
 -}
-gpcon' :: SListI2 as => NP (Term s) (ScottList as r) -> NS (NP (Term s)) as -> Term s r
+gpcon' :: forall r as s. SListI2 as => NP (Term s) (ScottList as r) -> NS (NP (Term s)) as -> Term s r
 gpcon' = unGPCon' $ cpara_SList (Proxy @SListI) (GPCon' \Nil -> \case {}) \(GPCon' prev) -> GPCon' \(arg :* args) -> \case
   Z x -> pappL arg x
   S xs -> prev args xs
@@ -154,5 +159,7 @@ instance
 instance PlutusTypeStrat PlutusTypeScott where
   type PlutusTypeStratConstraint PlutusTypeScott = PlutusTypeScottConstraint
   type DerivedPInner PlutusTypeScott a = PForall (PScottEncoded (PCode a))
-  derivedPCon x = pcon $ PForall $ gpcon $ gpfrom x
+  derivedPCon :: forall a s. a s -> Term s (PForall (PScottEncoded (PCode a)))
+  derivedPCon x = pcon $ PForall $ case Dict :: Dict (forall r. SListIScottList a (r :: PType)) of 
+                                     Dict -> gpcon $ gpfrom x
   derivedPMatch x' f = pmatch x' \(PForall x) -> gpmatch x (f . gpto)
