@@ -105,12 +105,12 @@ plookup :: (PIsData k, PIsData v) => Term s (k :--> PMap _ k v :--> PMaybe v)
 plookup = phoistAcyclic $
   plam $ \key ->
     plookupDataWith
-      # (phoistAcyclic $ plam $ \pair -> pcon $ PJust $ pfromData $ psndBuiltin # pair)
+      # phoistAcyclic (plam $ \pair -> pcon $ PJust $ pfromData $ psndBuiltin # pair)
       # pdata key
 
 -- | Look up the given key data in a 'PMap'.
 plookupData :: (PIsData k, PIsData v) => Term s (PAsData k :--> PMap _ k v :--> PMaybe (PAsData v))
-plookupData = plookupDataWith # (phoistAcyclic $ plam $ \pair -> pcon $ PJust $ psndBuiltin # pair)
+plookupData = plookupDataWith # phoistAcyclic (plam $ \pair -> pcon $ PJust $ psndBuiltin # pair)
 
 -- | Look up the given key data in a 'PMap', applying the given function to the found key-value pair.
 plookupDataWith ::
@@ -167,7 +167,7 @@ foldAtData = phoistAcyclic $
 pinsert :: (POrd k, PIsData k, PIsData v) => Term s (k :--> v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
 pinsert = phoistAcyclic $
   plam $ \key val ->
-    rebuildAtKey # (plam (pcons # (ppairDataBuiltin # pdata key # pdata val) #)) # key
+    rebuildAtKey # plam (pcons # (ppairDataBuiltin # pdata key # pdata val) #) # key
 
 -- | Insert a new data-encoded key/value pair into the map, overiding the previous if any.
 pinsertData ::
@@ -175,7 +175,7 @@ pinsertData ::
   Term s (PAsData k :--> PAsData v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
 pinsertData = phoistAcyclic $
   plam $ \key val ->
-    rebuildAtKey # (plam (pcons # (ppairDataBuiltin # key # val) #)) # pfromData key
+    rebuildAtKey # plam (pcons # (ppairDataBuiltin # key # val) #) # pfromData key
 
 -- | Delete a key from the map.
 pdelete :: (POrd k, PIsData k) => Term s (k :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
@@ -338,7 +338,7 @@ mapUnionCarrier = phoistAcyclic $ plam \combine self ->
           }
 
 mapUnion :: forall k v s. (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapUnionCarrier k v)
-mapUnion = phoistAcyclic $ plam \combine -> (punsafeCoerce pfix) # (mapUnionCarrier # combine :: Term _ (MapUnionCarrier k v :--> MapUnionCarrier k v))
+mapUnion = phoistAcyclic $ plam \combine -> punsafeCoerce pfix # (mapUnionCarrier # combine :: Term _ (MapUnionCarrier k v :--> MapUnionCarrier k v))
 
 {- | Combine two 'PMap's applying the given function to any two data-encoded
  values that share the same key.
