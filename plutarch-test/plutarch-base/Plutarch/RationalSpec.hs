@@ -11,7 +11,7 @@ spec = do
       rat = id
       assertRat :: ClosedTerm PRational -> ClosedTerm PRational -> Expectation
       assertRat x p = passert $ p #== x
-  describe "rational" . plutarchDevFlagDescribe . pgoldenSpec $ do
+  describe "rational" . pgoldenSpec $ do
     "literal" @| rat 0.5
     "ops" @\ do
       "+" @| rat (1 / 2 + 1 / 2) @-> assertRat 1

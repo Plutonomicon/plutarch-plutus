@@ -47,7 +47,6 @@ spec = do
                 in pmatch (pcon (PPair a b) :: Term s (PPair PInteger PString)) $ \(PPair _ y) -> y
              )
     describe "instances-sanity" $ do
-      plutarchDevFlagDescribe $ do
         it "PBuiltinList" $ do
           pmatchTargetEval $ pconstant [1 :: Integer, 2, 3, 4]
     deconstrSpec

@@ -499,7 +499,7 @@
     {
       inherit hlsFor hlsFor' applyPlutarchDep;
 
-      # Build matrix. Plutarch is built against different GHC versions, and 'development' flag.
+      # Build matrix. Plutarch is built against different GHC versions.
       projectMatrix = {
         ghc9 = perSystem projectFor;
         ghc810 = perSystem projectFor810;
