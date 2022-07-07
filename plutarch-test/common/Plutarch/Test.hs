@@ -15,9 +15,6 @@ module Plutarch.Test (
   -- * Budget expectation
   psatisfyWithinBenchmark,
 
-  -- * For Development flag tests
-  plutarchDevFlagDescribe,
-
   -- * Golden testing
   (@|),
   (@\),
@@ -65,7 +62,7 @@ import Plutarch.Test.Golden (
  )
 import Plutarch.Test.Run (hspecAndReturnForest, noUnusedGoldens, noUnusedGoldens')
 import qualified PlutusLedgerApi.V1.Scripts as Scripts
-import Test.Hspec (Expectation, Spec, describe, expectationFailure, shouldBe, shouldSatisfy)
+import Test.Hspec (Expectation, expectationFailure, shouldBe, shouldSatisfy)
 import Test.Tasty.HUnit (assertFailure)
 
 comp :: ClosedTerm a -> Scripts.Script
@@ -136,28 +133,13 @@ psatisfyWithinBenchmark bench maxBudget = do
   shouldSatisfy bench $ \_ ->
     scriptSizeBytes bench <= scriptSizeBytes maxBudget
 
-{- | Asserts that the term evaluates successfully with the given trace sequence
-
-  See also: `plutarchDevFlagDescribe`
--}
+-- | Asserts that the term evaluates successfully with the given trace sequence
 ptraces :: ClosedTerm a -> [Text] -> Expectation
 ptraces p develTraces =
   case evalScript $ comp p of
     (Left _, _, _) -> expectationFailure $ "Term failed to evaluate"
     (Right _, _, traceLog) -> do
       traceLog `shouldBe` develTraces
-
-{- | Like `describe`, but determines description from `Development` CPP flag
-
-  Useful to create two sets of othersise identical group of tests that differ
-  only by `Development` flag. This has the effect of creating two sets of golden
-  tests (with different filepaths) for corresponding flag values.
-
-  Typically meant to be used in conjunction with `ptraces`.
--}
-plutarchDevFlagDescribe :: Spec -> Spec
-plutarchDevFlagDescribe m =
-  describe "dev=true" m
 
 -- | Test that the Plutarch program evaluates to the given term
 (@==) :: ClosedTerm a -> ClosedTerm b -> TermExpectation a

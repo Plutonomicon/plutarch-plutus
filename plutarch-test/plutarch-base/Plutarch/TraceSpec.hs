@@ -6,7 +6,7 @@ import Test.Hspec
 
 spec :: Spec
 spec = do
-  describe "trace" . plutarchDevFlagDescribe . pgoldenSpec $ do
+  describe "trace" . pgoldenSpec $ do
     "ptrace" @\ do
       "one" @| ptrace "foo" (pcon PUnit) @-> \p ->
         ptraces p ["foo"]

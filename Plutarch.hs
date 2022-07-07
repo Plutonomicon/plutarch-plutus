@@ -37,7 +37,6 @@ module Plutarch (
   PI.Config (Config, tracingMode),
   PI.TracingMode (NoTracing, DoTracing, DetTracing),
   PI.pgetConfig,
-  PI.defaultConfig,
   PQ.PForall (PForall),
   PQ.PSome (PSome),
   PS.PScottEncoded (PScottEncoded),

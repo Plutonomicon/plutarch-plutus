@@ -32,7 +32,6 @@ module Plutarch.Internal (
   pthrow,
   Config (..),
   TracingMode (..),
-  defaultConfig,
   pgetConfig,
   TermMonad (..),
 ) where
@@ -42,6 +41,7 @@ import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
 import Crypto.Hash.IO (HashAlgorithm)
 import qualified Data.ByteString as BS
+import Data.Default (Default (def))
 import Data.Functor ((<&>))
 import Data.Kind (Type)
 import Data.List (foldl', groupBy, sortOn)
@@ -138,12 +138,12 @@ data Config = Config
 
 data TracingMode = NoTracing | DoTracing | DetTracing
 
--- Default is to be efficient
-defaultConfig :: Config
-defaultConfig =
-  Config
-    { tracingMode = NoTracing
-    }
+-- | Default is to be efficient
+instance Default Config where
+  def =
+    Config
+      { tracingMode = NoTracing
+      }
 
 newtype TermMonad m = TermMonad {runTermMonad :: ReaderT Config (Either Text) m}
   deriving newtype (Functor, Applicative, Monad)

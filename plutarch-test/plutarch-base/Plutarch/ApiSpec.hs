@@ -68,7 +68,7 @@ spec = do
               PMinting c -> popaque c
               _ -> perror
     describe "value" $ do
-      plutarchDevFlagDescribe . pgoldenSpec $ do
+      pgoldenSpec $ do
         let pmint = PValue.pconstantPositiveSingleton (pconstant "c0") (pconstant "sometoken") 1
             pmintOtherToken = PValue.pconstantPositiveSingleton (pconstant "c0") (pconstant "othertoken") 1
             pmintOtherSymbol = PValue.pconstantPositiveSingleton (pconstant "c7") (pconstant "sometoken") 1
@@ -260,7 +260,7 @@ spec = do
       -- The checkSignatory family of functions implicitly use tracing due to
       -- monadic syntax, and as such we need two sets of tests here.
       -- See Plutarch.MonadicSpec for GHC9 only syntax.
-      describe "signatory" . plutarchDevFlagDescribe . pgoldenSpec $ do
+      describe "signatory" . pgoldenSpec $ do
         let aSig :: PubKeyHash = "ab01fe235c"
         "cont" @\ do
           "succeeds" @| checkSignatoryCont # pconstant aSig # ctx @-> psucceeds
