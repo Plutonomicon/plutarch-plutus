@@ -17,18 +17,17 @@ module Plutarch.ScriptsSpec (
   spec,
 ) where
 
-import Data.Text (Text)
-
-import qualified PlutusLedgerApi.V1 as Plutus
-
-import Data.Coerce (coerce)
-
 import qualified Codec.CBOR.Write as Write
 import Codec.Serialise (Serialise, encode)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Base16 as Base16
+import Data.Coerce (coerce)
+import Data.Default (def)
+import Data.Text (Text)
 import qualified Data.Text.Encoding as TE
-import Plutarch (defaultConfig)
+
+import qualified PlutusLedgerApi.V1 as Plutus
+
 import Plutarch.Api.V1 (
   PScriptContext,
   mintingPolicySymbol,
@@ -130,8 +129,7 @@ adminPubKeyHash = "cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f"
   `pwrapValidatorFromData`
 -}
 authValidatorCompiled :: Plutus.Validator
-authValidatorCompiled =
-  mkValidator defaultConfig authValidatorTerm
+authValidatorCompiled = mkValidator def authValidatorTerm
 
 authValidatorTerm :: ClosedTerm PValidator
 authValidatorTerm =
@@ -148,8 +146,7 @@ authValidatorHash = validatorHash authValidatorCompiled
 
 -- | Similarly, for a MintingPolicy
 authPolicyCompiled :: Plutus.MintingPolicy
-authPolicyCompiled =
-  mkMintingPolicy defaultConfig authPolicyTerm
+authPolicyCompiled = mkMintingPolicy def authPolicyTerm
 
 authPolicyTerm :: ClosedTerm PMintingPolicy
 authPolicyTerm =
@@ -166,8 +163,7 @@ authPolicySymbol =
 
 -- | ...And for a StakeValidator
 authStakeValidatorCompiled :: Plutus.StakeValidator
-authStakeValidatorCompiled =
-  mkStakeValidator defaultConfig authStakeValidatorTerm
+authStakeValidatorCompiled = mkStakeValidator def authStakeValidatorTerm
 
 authStakeValidatorTerm :: ClosedTerm PStakeValidator
 authStakeValidatorTerm =

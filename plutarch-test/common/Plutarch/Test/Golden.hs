@@ -135,7 +135,7 @@ infixr 1 @:->
 
 instance HasGoldenValue TermExpectation' where
   mkGoldenValue (TermExpectation p f) =
-    mkGoldenValue' p (Just $ (\pe b -> f (p, pe, b)))
+    mkGoldenValue' p (Just $ \pe b -> f (p, pe, b))
 
 -- | The key used in the .golden files containing multiple golden values
 newtype GoldenKey = GoldenKey Text

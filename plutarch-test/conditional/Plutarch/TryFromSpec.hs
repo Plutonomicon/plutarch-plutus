@@ -52,7 +52,7 @@ import Test.Hspec
 
 spec :: Spec
 spec = do
-  describe "data-verif" . plutarchDevFlagDescribe . pgoldenSpec $ do
+  describe "data-verif" . pgoldenSpec $ do
     "erroneous" @\ do
       "(String, Integer) /= (String, String)"
         @| checkDeep

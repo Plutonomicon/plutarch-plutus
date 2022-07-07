@@ -88,6 +88,7 @@ import qualified Codec.CBOR.Write as Write
 import Codec.Serialise (Serialise, encode)
 import Data.Bifunctor (first)
 import qualified Data.ByteString.Base16 as Base16
+import Data.Default (def)
 import Data.Text (Text, pack)
 import qualified Data.Text.Encoding as TE
 import Plutarch (ClosedTerm, compile, defaultConfig)
@@ -107,7 +108,7 @@ evalT x = evalWithArgsT x []
 
 evalWithArgsT :: ClosedTerm a -> [Data] -> Either Text (Script, ExBudget, [Text])
 evalWithArgsT x args = do
-  cmp <- compile defaultConfig x
+  cmp <- compile def x
   let (escr, budg, trc) = evalScript $ applyArguments cmp args
   scr <- first (pack . show) escr
   pure (scr, budg, trc)
@@ -118,8 +119,8 @@ evalWithArgsT' x args =
     <$> evalWithArgsT x args
 ```
 
-The fields in the result triple correspond to script result, execution budget (how much memory and CPU units were used), and trace log - respectively. 
-Of course if you're only interested in the result of the script evaluation, you can just ignore the exbudget and tracelog just like `evalSerialize` does. 
-`evalSerialize` is a function that you can use to quickly obtain a serialized script. 
+The fields in the result triple correspond to script result, execution budget (how much memory and CPU units were used), and trace log - respectively.
+Of course if you're only interested in the result of the script evaluation, you can just ignore the exbudget and tracelog just like `evalSerialize` does.
+`evalSerialize` is a function that you can use to quickly obtain a serialized script.
 
 > Note: You can pretty much ignore the UPLC types involved here. All it really means is that the result is a "UPLC program". When it's printed, it's pretty legible - especially for debugging purposes. Although not necessary to use Plutarch, you may find the [Plutonomicon UPLC guide](https://github.com/Plutonomicon/plutonomicon/blob/main/uplc.md) useful.

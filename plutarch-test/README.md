@@ -25,12 +25,6 @@ bin/ghcid test:dev
 
 Note: `cabal run` should be run inside `./plutarch-test` directory.
 
-## The `development` flag
-
-Plutarch has a `development` flag. Right now, the flag is used to control tracing functions, wherein turning on the flag will inject `Trace` instructions in the generated UPLC. 
-
-Since this will impact the printTerm goldens in tests, we provide `plutarchDevFlagDescribe` that should be used everywhere in the test hierarchy where the immediate sub-tree of tests are known to use tracing functions (or any other development-flag-specific features to use tracing functions (or any other development-flag-specific features).
-
 ## Goldens
 
 ### Navigation
