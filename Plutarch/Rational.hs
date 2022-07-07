@@ -150,8 +150,9 @@ instance PNum PRational where
           yd <- tcont $ plet yd'
           pure $
             preduce
-              #$ pcon $ PRational (xn * pto yd + yn * pto xd)
-              $ punsafeDowncast $ pto xd * pto yd
+              #$ pcon
+              $ PRational (xn * pto yd + yn * pto xd) $
+                punsafeDowncast $ pto xd * pto yd
       )
       # x'
       # y'
@@ -165,8 +166,9 @@ instance PNum PRational where
           yd <- tcont $ plet yd'
           pure $
             preduce
-              #$ pcon $ PRational (xn * pto yd - yn * pto xd)
-              $ punsafeDowncast $ pto xd * pto yd
+              #$ pcon
+              $ PRational (xn * pto yd - yn * pto xd) $
+                punsafeDowncast $ pto xd * pto yd
       )
       # x'
       # y'
@@ -178,8 +180,9 @@ instance PNum PRational where
           PRational yn yd <- tcont $ pmatch y
           pure $
             preduce
-              #$ pcon $ PRational (xn * yn)
-              $ punsafeDowncast $ pto xd * pto yd
+              #$ pcon
+              $ PRational (xn * yn) $
+                punsafeDowncast $ pto xd * pto yd
       )
       # x'
       # y'
