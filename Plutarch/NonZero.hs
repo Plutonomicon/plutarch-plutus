@@ -1,40 +1,54 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.NonZero (PNonZero, pnonZero, ptryNonZero) where
 
 import Data.Functor.Const (Const)
-import qualified GHC.Generics as GHC
-import Generics.SOP (Generic, HasDatatypeInfo, I (I))
+import GHC.Generics (Generic)
 
 import Plutarch.Bool (PEq, POrd, pif, (#==))
 import Plutarch.Builtin (PAsData, PData, PIsData, pdata)
 import Plutarch.Integer (PInteger, PIntegral)
-import Plutarch.Internal.Other (
-  DerivePNewtype (DerivePNewtype),
+
+import Plutarch.Maybe (PMaybe (PJust, PNothing))
+
+import Plutarch (
+  DerivePlutusType (DPTStrat),
   PlutusType,
+  PlutusTypeNewtype,
   Term,
+  TermCont (runTermCont),
   pcon,
   phoistAcyclic,
   plam,
   plet,
+  pto,
   (#),
+  (#$),
   type (:-->),
  )
-import Plutarch.Maybe (PMaybe (PJust, PNothing))
-import Plutarch.Reducible (Flip)
+import Plutarch.Num (PNum (pfromInteger, (#-)))
 import Plutarch.Show (PShow)
-import Plutarch.TermCont (runTermCont, tcont)
+import Plutarch.TermCont (tcont)
 import Plutarch.Trace (ptraceError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 
 newtype PNonZero s = PNonZero (Term s PInteger)
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic, HasDatatypeInfo, PShow)
-  deriving (PlutusType, PIsData, PEq, POrd, PIntegral) via (DerivePNewtype PNonZero PInteger)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd, PIntegral, PShow)
+instance DerivePlutusType PNonZero where type DPTStrat _ = PlutusTypeNewtype
+
+instance PNum PNonZero where
+  x #- y = ptryNonZero #$ pto x #- pto y
+
+  pfromInteger 0 = error "pnonZero.pfromInteger: encountered 0"
+  pfromInteger x = pcon $ PNonZero $ pfromInteger x
 
 instance PTryFrom PInteger PNonZero where
   type PTryFromExcess PInteger PNonZero = Const ()
   ptryFrom' opq = runTermCont $ pure (ptryNonZero # opq, ())
+
+newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 
 instance PTryFrom PData (PAsData PNonZero) where
   type PTryFromExcess PData (PAsData PNonZero) = Flip Term PNonZero

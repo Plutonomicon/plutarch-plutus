@@ -19,7 +19,7 @@ module Plutarch.ScriptsSpec (
 
 import Data.Text (Text)
 
-import qualified Plutus.V1.Ledger.Api as Plutus
+import qualified PlutusLedgerApi.V1 as Plutus
 
 import Data.Coerce (coerce)
 
@@ -28,6 +28,7 @@ import Codec.Serialise (Serialise, encode)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Base16 as Base16
 import qualified Data.Text.Encoding as TE
+import Plutarch (defaultConfig)
 import Plutarch.Api.V1 (
   PScriptContext,
   mintingPolicySymbol,
@@ -130,7 +131,7 @@ adminPubKeyHash = "cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f"
 -}
 authValidatorCompiled :: Plutus.Validator
 authValidatorCompiled =
-  mkValidator authValidatorTerm
+  mkValidator defaultConfig authValidatorTerm
 
 authValidatorTerm :: ClosedTerm PValidator
 authValidatorTerm =
@@ -148,7 +149,7 @@ authValidatorHash = validatorHash authValidatorCompiled
 -- | Similarly, for a MintingPolicy
 authPolicyCompiled :: Plutus.MintingPolicy
 authPolicyCompiled =
-  mkMintingPolicy authPolicyTerm
+  mkMintingPolicy defaultConfig authPolicyTerm
 
 authPolicyTerm :: ClosedTerm PMintingPolicy
 authPolicyTerm =
@@ -166,7 +167,7 @@ authPolicySymbol =
 -- | ...And for a StakeValidator
 authStakeValidatorCompiled :: Plutus.StakeValidator
 authStakeValidatorCompiled =
-  mkStakeValidator authStakeValidatorTerm
+  mkStakeValidator defaultConfig authStakeValidatorTerm
 
 authStakeValidatorTerm :: ClosedTerm PStakeValidator
 authStakeValidatorTerm =

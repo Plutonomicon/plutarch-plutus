@@ -1,22 +1,26 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
+
 module Plutarch.Rational (
-  PRational,
+  PRational (PRational),
   preduce,
   pnumerator,
   pdenominator,
-  pfromInteger,
+  Plutarch.Rational.pfromInteger,
   pround,
   ptruncate,
   pproperFraction,
-  prationalLazy,
-  prational,
-  punrational,
+  PFractional (..),
 ) where
 
 import Data.Ratio (denominator, numerator)
-import qualified GHC.Generics as GHC
-import Generics.SOP (Generic, I (I))
+import GHC.Generics (Generic)
 import Plutarch (
-  PlutusType (..),
+  DPTStrat,
+  DerivePlutusType,
+  PType,
+  PlutusType,
+  PlutusTypeScott,
   Term,
   pcon,
   pfix,
@@ -47,43 +51,34 @@ import Plutarch.Integer (PInteger, pdiv, pmod)
 import Plutarch.Lift (pconstant)
 import Plutarch.List (pcons, phead, plength, pnil, ptail)
 import Plutarch.NonZero (PNonZero, ptryNonZero)
+import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
 import Plutarch.Pair (PPair (PPair))
-import Plutarch.Reducible
 import Plutarch.Show (PShow, pshow, pshow')
 import Plutarch.TermCont (tcont, unTermCont)
-import Plutarch.Trace
-import Plutarch.TryFrom
+import Plutarch.Trace (ptraceError)
+import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
+
+class PFractional (a :: PType) where
+  (#/) :: Term s a -> Term s a -> Term s a
+  precip :: Term s (a :--> a)
+  pfromRational :: Term s (PRational :--> a)
 
 data PRational s
   = PRational (Term s PInteger) (Term s PNonZero)
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic, PEq)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PEq)
 
-{- | NOTE: This instance may delegate the nonzero invariant check during construction.
+instance DerivePlutusType PRational where type DPTStrat _ = PlutusTypeScott
 
-As such, the constructor is not exported and users are expected to use 'prational', 'prationalLazy', and
-'punrational' instead.
--}
-instance PlutusType PRational where
-  type PInner PRational b = (PInteger :--> PNonZero :--> b) :--> b
-  pcon' (PRational x y) = plam $ \f -> f # x # y
-  pmatch' ratF f = ratF #$ plam $ \a b -> f $ PRational a b
-
-{- | Builds a rational with lazy non-zero denominator verification.
-
-i.e, if the denominator was zero, it'll error only after 'pmatch'ing on the resulting rational.
--}
-prationalLazy :: Term s PInteger -> Term s PNonZero -> Term s PRational
-prationalLazy numr denm = pcon $ PRational numr denm
-
--- | Build a rational, without delegating the denominator invariant.
-prational :: Term s (PInteger :--> PNonZero :--> PRational)
-prational = phoistAcyclic $ plam $ \numr denm -> pcon $ PRational numr denm
-
--- | 'pmatch' specialized for 'PRational'.
-punrational :: Term s PRational -> ((Term s PInteger, Term s PNonZero) -> Term s b) -> Term s b
-punrational r f = pmatch r $ \(PRational x y) -> f (x, y)
+instance (PNum a, PFractional a) => Fractional (Term s a) where
+  (/) = (#/)
+  recip x = precip # x
+  fromRational x =
+    pfromRational #$ pcon $
+      PRational
+        (pconstant $ numerator x)
+        (punsafeDowncast . pconstant $ denominator x)
 
 instance PShow PRational where
   pshow' _ x =
@@ -96,7 +91,12 @@ instance PShow PRational where
 instance PIsData PRational where
   pfromDataImpl x' = phoistAcyclic (plam $ \x -> plistToRat #$ pasList # pforgetData x) # x'
     where
-      plistToRat = plam $ \x -> prationalLazy (pasInt #$ phead # x) $ punsafeDowncast $ pasInt #$ phead #$ ptail # x
+      plistToRat :: Term s (PBuiltinList PData :--> PRational)
+      plistToRat = plam $ \x ->
+        pcon $
+          PRational (pasInt #$ phead # x)
+            . punsafeDowncast
+            $ pasInt #$ phead #$ ptail # x
   pdataImpl x' =
     phoistAcyclic
       ( plam $ \x -> unTermCont $ do
@@ -106,6 +106,8 @@ instance PIsData PRational where
           pure $ punsafeCoerce $ pdata res
       )
       # x'
+
+newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 
 -- | NOTE: This instance produces a verified 'PNonZero' as the excess output.
 instance PTryFrom PData (PAsData PRational) where
@@ -138,8 +140,8 @@ instance POrd PRational where
       # l'
       # r'
 
-instance Num (Term s PRational) where
-  x' + y' =
+instance PNum PRational where
+  x' #+ y' =
     phoistAcyclic
       ( plam $ \x y -> unTermCont $ do
           PRational xn xd' <- tcont $ pmatch x
@@ -148,13 +150,13 @@ instance Num (Term s PRational) where
           yd <- tcont $ plet yd'
           pure $
             preduce
-              #$ prationalLazy (xn * pto yd + yn * pto xd)
+              #$ pcon $ PRational (xn * pto yd + yn * pto xd)
               $ punsafeDowncast $ pto xd * pto yd
       )
       # x'
       # y'
 
-  x' - y' =
+  x' #- y' =
     phoistAcyclic
       ( plam $ \x y -> unTermCont $ do
           PRational xn xd' <- tcont $ pmatch x
@@ -163,78 +165,69 @@ instance Num (Term s PRational) where
           yd <- tcont $ plet yd'
           pure $
             preduce
-              #$ prationalLazy (xn * pto yd - yn * pto xd)
+              #$ pcon $ PRational (xn * pto yd - yn * pto xd)
               $ punsafeDowncast $ pto xd * pto yd
       )
       # x'
       # y'
 
-  x' * y' =
+  x' #* y' =
     phoistAcyclic
       ( plam $ \x y -> unTermCont $ do
           PRational xn xd <- tcont $ pmatch x
           PRational yn yd <- tcont $ pmatch y
           pure $
             preduce
-              #$ prationalLazy (xn * yn)
+              #$ pcon $ PRational (xn * yn)
               $ punsafeDowncast $ pto xd * pto yd
       )
       # x'
       # y'
 
-  negate x' =
-    phoistAcyclic
-      ( plam $ \x ->
-          pmatch x $ \(PRational xn xd) ->
-            prationalLazy (negate xn) xd
-      )
-      # x'
+  pnegate =
+    phoistAcyclic $
+      plam $ \x ->
+        pmatch x $ \(PRational xn xd) ->
+          pcon $ PRational (negate xn) xd
 
-  abs x' =
-    phoistAcyclic
-      ( plam $ \x ->
-          pmatch x $ \(PRational xn xd) ->
-            prationalLazy (abs xn) $ punsafeDowncast $ abs $ pto xd
-      )
-      # x'
+  pabs =
+    phoistAcyclic $
+      plam $ \x ->
+        pmatch x $ \(PRational xn xd) ->
+          pcon $ PRational (abs xn) (abs xd)
 
-  signum x' =
-    phoistAcyclic
-      ( plam $ \x ->
-          pif
-            (x #== 0)
-            0
-            $ pif
-              (x #< 0)
-              (-1)
-              1
-      )
-      # x'
+  psignum =
+    phoistAcyclic $
+      plam $ \x' -> plet x' $ \x ->
+        pif
+          (x #== 0)
+          0
+          $ pif
+            (x #< 0)
+            (-1)
+            1
 
-  fromInteger n = prationalLazy (pconstant n) $ punsafeDowncast 1
+  pfromInteger n = pcon $ PRational (fromInteger n) 1
 
-instance Fractional (Term s PRational) where
-  recip x' =
-    phoistAcyclic
-      ( plam $ \x ->
-          pmatch x $ \(PRational xn xd) -> plet (ptryNonZero # xn) $ \denm ->
-            prationalLazy (pto xd) denm
-      )
-      # x'
+instance PFractional PRational where
+  precip =
+    phoistAcyclic $
+      plam $ \x ->
+        pmatch x $ \(PRational xn xd) ->
+          pcon $ PRational (pto xd) $ ptryNonZero # xn
 
-  x' / y' =
+  x' #/ y' =
     phoistAcyclic
       ( plam $ \x y -> unTermCont $ do
           PRational xn xd <- tcont $ pmatch x
           PRational yn yd <- tcont $ pmatch y
           denm <- tcont . plet $ ptryNonZero #$ pto xd * yn
-          pure $ preduce #$ prationalLazy (xn * pto yd) denm
+          pure $ preduce #$ pcon $ PRational (xn * pto yd) denm
       )
       # x'
       # y'
 
-  fromRational r =
-    prationalLazy (pconstant $ numerator r) $ punsafeDowncast $ pconstant $ denominator r
+  pfromRational = phoistAcyclic $ plam id
 
 preduce :: Term s (PRational :--> PRational)
 preduce = phoistAcyclic $
@@ -243,7 +236,7 @@ preduce = phoistAcyclic $
     xd <- tcont . plet $ pto xd'
     r <- tcont . plet $ pgcd # xn # xd
     s <- tcont . plet . signum $ xd
-    pure . prationalLazy (s * pdiv # xn # r) $ punsafeDowncast $ s * pdiv # xd # r
+    pure . pcon $ PRational (s * pdiv # xn # r) $ punsafeDowncast $ s * pdiv # xd # r
 
 pgcd :: Term s (PInteger :--> PInteger :--> PInteger)
 pgcd = phoistAcyclic $
@@ -275,7 +268,7 @@ pdenominator :: Term s (PRational :--> PNonZero)
 pdenominator = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational _ d) -> d
 
 pfromInteger :: Term s (PInteger :--> PRational)
-pfromInteger = phoistAcyclic $ plam $ \n -> prationalLazy n $ punsafeDowncast 1
+pfromInteger = phoistAcyclic $ plam $ \n -> pcon $ PRational n $ punsafeDowncast 1
 
 pround :: Term s (PRational :--> PInteger)
 pround = phoistAcyclic $
@@ -312,4 +305,4 @@ pproperFraction :: Term s (PRational :--> PPair PInteger PRational)
 pproperFraction = phoistAcyclic $
   plam $ \x ->
     plet (ptruncate # x) $ \q ->
-      pcon $ PPair q (x - pfromInteger # q)
+      pcon $ PPair q (x - Plutarch.Rational.pfromInteger # q)

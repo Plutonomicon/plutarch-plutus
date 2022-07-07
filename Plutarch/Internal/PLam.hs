@@ -1,4 +1,4 @@
-{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Internal.PLam (
@@ -9,6 +9,7 @@ module Plutarch.Internal.PLam (
 ) where
 
 import Data.Kind (Type)
+import GHC.Stack (HasCallStack)
 import Plutarch.Internal (PType, S, Term, papp, plam', (:-->))
 
 {- |
@@ -18,7 +19,7 @@ import Plutarch.Internal (PType, S, Term, papp, plam', (:-->))
   >>> f # x # y
   f x y
 -}
-(#) :: Term s (a :--> b) -> Term s a -> Term s b
+(#) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
 (#) = papp
 
 infixl 8 #
@@ -30,7 +31,7 @@ infixl 8 #
   >>> f # x #$ g # y # z
   f x (g y z)
 -}
-(#$) :: Term s (a :--> b) -> Term s a -> Term s b
+(#$) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
 (#$) = papp
 
 infixr 0 #$
@@ -51,10 +52,10 @@ infixr 0 #$
 class PLamN (a :: Type) (b :: PType) (s :: S) | a -> b, s b -> a where
   plam :: forall c. (Term s c -> a) -> Term s (c :--> b)
 
-instance (a' ~ Term s a) => PLamN a' a s where
+instance {-# OVERLAPPABLE #-} (a' ~ Term s a) => PLamN a' a s where
   plam = plam'
 
-instance {-# OVERLAPPING #-} (a' ~ Term s a, PLamN b' b s) => PLamN (a' -> b') (a :--> b) s where
+instance (a' ~ Term s a, PLamN b' b s) => PLamN (a' -> b') (a :--> b) s where
   plam f = plam' $ \x -> plam (f x)
 
 pinl :: Term s a -> (Term s a -> Term s b) -> Term s b

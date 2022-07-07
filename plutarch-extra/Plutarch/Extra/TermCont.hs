@@ -26,7 +26,7 @@ pletC :: Term s a -> TermCont s (Term s a)
 pletC = tcont . plet
 
 -- | Like `pmatch` but works in a `TermCont` monad
-pmatchC :: PMatch a => Term s a -> TermCont s (a s)
+pmatchC :: PlutusType a => Term s a -> TermCont s (a s)
 pmatchC = tcont . pmatch
 
 -- | Like `pletFields` but works in a `TermCont` monad.

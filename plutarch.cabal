@@ -5,20 +5,17 @@ author:             Las Safin <me@las.rs>
 license:            MIT
 extra-source-files: README.md
 
-flag development
-  description: Enable tracing functions within plutarch.
-  manual:      True
-  default:     False
-
 common c
   default-language:   Haskell2010
   default-extensions:
     NoStarIsType
     BangPatterns
     BinaryLiterals
+    BlockArguments
     ConstrainedClassMethods
     ConstraintKinds
     DataKinds
+    DefaultSignatures
     DefaultSignatures
     DeriveAnyClass
     DeriveDataTypeable
@@ -29,14 +26,12 @@ common c
     DeriveTraversable
     DerivingStrategies
     DerivingVia
-    DoAndIfThenElse
     EmptyCase
     EmptyDataDecls
     EmptyDataDeriving
     ExistentialQuantification
     ExplicitForAll
     FlexibleContexts
-    FlexibleInstances
     ForeignFunctionInterface
     FunctionalDependencies
     GADTSyntax
@@ -54,6 +49,7 @@ common c
     OverloadedStrings
     PartialTypeSignatures
     PatternGuards
+    PatternSynonyms
     PolyKinds
     PostfixOperators
     QuantifiedConstraints
@@ -72,11 +68,14 @@ common c
     ViewPatterns
 
   ghc-options:
-    -Wall -Wcompat -Wincomplete-uni-patterns -Wno-unused-do-bind
-    -Wno-partial-type-signatures -Wmissing-export-lists -Werror
-    -Wincomplete-record-updates -Wmissing-deriving-strategies
-    -Wno-name-shadowing -Wunused-foralls -fprint-explicit-foralls
-    -fprint-explicit-kinds
+    -Weverything -Wno-unused-do-bind -Wno-missing-kind-signatures
+    -Wno-partial-type-signatures -Werror -Wno-implicit-prelude
+    -Wno-name-shadowing -Wno-unsafe -Wno-missing-safe-haskell-mode
+    -Wno-missing-local-signatures -Wno-prepositive-qualified-module
+    -Wno-missing-import-lists -fprint-explicit-foralls
+    -fprint-equality-relations -fprint-explicit-kinds
+    -fprint-explicit-coercions -Wno-all-missed-specializations
+    -Wno-unrecognised-warning-flags
 
 library
   import:          c
@@ -96,6 +95,9 @@ library
     Plutarch.Api.V1.Tuple
     Plutarch.Api.V1.Tx
     Plutarch.Api.V1.Value
+    Plutarch.Api.V2
+    Plutarch.Api.V2.Contexts
+    Plutarch.Api.V2.Tx
     Plutarch.Bool
     Plutarch.Builtin
     Plutarch.ByteString
@@ -112,20 +114,23 @@ library
     Plutarch.Integer
     Plutarch.Internal
     Plutarch.Internal.Generic
+    Plutarch.Internal.Newtype
     Plutarch.Internal.Other
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType
+    Plutarch.Internal.Quantification
+    Plutarch.Internal.ScottEncoding
     Plutarch.Internal.TypeFamily
+    Plutarch.Internal.Witness
     Plutarch.Lift
     Plutarch.List
     Plutarch.Maybe
     Plutarch.Monadic
     Plutarch.NonZero
+    Plutarch.Num
     Plutarch.Pair
     Plutarch.Prelude
     Plutarch.Rational
-    Plutarch.Rec
-    Plutarch.Rec.TH
     Plutarch.Reducible
     Plutarch.Show
     Plutarch.String
@@ -143,19 +148,12 @@ library
     , cryptonite
     , flat
     , generics-sop
-    , hashable
     , lens
     , memory
     , mtl
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
-    , rank2classes
     , serialise
     , sop-core
-    , template-haskell
     , text
-    , transformers
-
-  if flag(development)
-    cpp-options: -DDevelopment

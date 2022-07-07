@@ -2,10 +2,10 @@
 
 module Plutarch.Internal (
   -- | $hoisted
-  (:-->),
+  (:-->) (PLam),
   PDelayed,
   -- | $term
-  Term (Term, asRawTerm),
+  Term (..),
   asClosedRawTerm,
   mapTerm,
   plam',
@@ -14,7 +14,6 @@ module Plutarch.Internal (
   pdelay,
   pforce,
   phoistAcyclic,
-  punsafeAsClosedTerm,
   perror,
   punsafeCoerce,
   punsafeBuiltin,
@@ -30,25 +29,34 @@ module Plutarch.Internal (
   TermResult (TermResult, getDeps, getTerm),
   S (SI),
   PType,
+  pthrow,
+  Config (..),
+  TracingMode (..),
+  defaultConfig,
+  pgetConfig,
+  TermMonad (..),
 ) where
 
+import Control.Monad.Reader (ReaderT (ReaderT), ask, runReaderT)
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
 import Crypto.Hash.IO (HashAlgorithm)
 import qualified Data.ByteString as BS
+import Data.Functor ((<&>))
 import Data.Kind (Type)
 import Data.List (foldl', groupBy, sortOn)
 import qualified Data.Map.Lazy as M
 import qualified Data.Set as S
+import Data.String (fromString)
+import Data.Text (Text)
 import qualified Flat.Run as F
-import GHC.Stack (HasCallStack)
+import GHC.Stack (HasCallStack, callStack, prettyCallStack)
 import GHC.Word (Word64)
 import Plutarch.Evaluate (evalScript)
-import Plutarch.Reducible (Reducible (Reduce))
-import Plutus.V1.Ledger.Scripts (Script (Script))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import qualified PlutusCore as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
+import PlutusLedgerApi.V1.Scripts (Script (Script))
 import qualified UntypedPlutusCore as UPLC
 
 {- $hoisted
@@ -71,6 +79,8 @@ type Dig = Digest Blake2b_160
 data HoistedTerm = HoistedTerm Dig RawTerm
   deriving stock (Show)
 
+type UTerm = UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+
 data RawTerm
   = RVar Word64
   | RLamAbs Word64 RawTerm
@@ -79,7 +89,7 @@ data RawTerm
   | RDelay RawTerm
   | RConstant (Some (ValueOf PLC.DefaultUni))
   | RBuiltin PLC.DefaultFun
-  | RCompiled (UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ())
+  | RCompiled UTerm
   | RError
   | RHoisted HoistedTerm
   deriving stock (Show)
@@ -122,7 +132,23 @@ data S = SI
 -- | Shorthand for Plutarch types.
 type PType = S -> Type
 
-type role Term phantom representational
+data Config = Config
+  { tracingMode :: TracingMode
+  }
+
+data TracingMode = NoTracing | DoTracing | DetTracing
+
+-- Default is to be efficient
+defaultConfig :: Config
+defaultConfig =
+  Config
+    { tracingMode = NoTracing
+    }
+
+newtype TermMonad m = TermMonad {runTermMonad :: ReaderT Config (Either Text) m}
+  deriving newtype (Functor, Applicative, Monad)
+
+type role Term nominal nominal
 
 {- $term
  Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
@@ -138,9 +164,7 @@ type role Term phantom representational
  de-Bruijn index needed to reach its own level given the level it itself is
  instantiated with.
 -}
-newtype Term (s :: S) (a :: PType) = Term {asRawTerm :: Word64 -> TermResult}
-
-instance Reducible (Term s a) where type Reduce (Term s a) = Term s a
+newtype Term (s :: S) (a :: PType) = Term {asRawTerm :: Word64 -> TermMonad TermResult}
 
 {- |
   *Closed* terms with no free variables.
@@ -148,6 +172,7 @@ instance Reducible (Term s a) where type Reduce (Term s a) = Term s a
 type ClosedTerm (a :: PType) = forall (s :: S). Term s a
 
 data (:-->) (a :: PType) (b :: PType) (s :: S)
+  = PLam (Term s a -> Term s b)
 infixr 0 :-->
 
 data PDelayed (a :: PType) (s :: S)
@@ -159,14 +184,14 @@ data PDelayed (a :: PType) (s :: S)
   Use 'plam' instead, to support currying.
 -}
 plam' :: (Term s a -> Term s b) -> Term s (a :--> b)
-plam' f = Term $ \i ->
-  let v = Term $ \j -> mkTermRes $ RVar (j - (i + 1))
-   in case asRawTerm (f v) (i + 1) of
+plam' f = Term \i ->
+  let v = Term \j -> pure $ mkTermRes $ RVar (j - (i + 1))
+   in flip fmap (asRawTerm (f v) (i + 1)) \case
         -- eta-reduce for arity 1
         t@(getTerm -> RApply t'@(getArity -> Just _) [RVar 0]) -> t {getTerm = t'}
         -- eta-reduce for arity 2 + n
         t@(getTerm -> RLamAbs n (RApply t'@(getArity -> Just n') args))
-          | (maybe False (== [0 .. n + 1]) $ traverse (\case RVar n -> Just n; _ -> Nothing) args)
+          | (== Just [0 .. n + 1]) (traverse (\case RVar n -> Just n; _ -> Nothing) args)
               && n' >= n + 1 ->
               t {getTerm = t'}
         -- increment arity
@@ -204,7 +229,9 @@ plam' f = Term $ \i ->
     getArityBuiltin (RBuiltin PLC.Sha2_256) = Just 0
     getArityBuiltin (RBuiltin PLC.Sha3_256) = Just 0
     getArityBuiltin (RBuiltin PLC.Blake2b_256) = Just 0
-    getArityBuiltin (RBuiltin PLC.VerifySignature) = Just 2
+    getArityBuiltin (RBuiltin PLC.VerifyEd25519Signature) = Just 2
+    getArityBuiltin (RBuiltin PLC.VerifyEcdsaSecp256k1Signature) = Just 2
+    getArityBuiltin (RBuiltin PLC.VerifySchnorrSecp256k1Signature) = Just 2
     getArityBuiltin (RBuiltin PLC.AppendString) = Just 1
     getArityBuiltin (RBuiltin PLC.EqualsString) = Just 1
     getArityBuiltin (RBuiltin PLC.EncodeUtf8) = Just 0
@@ -246,43 +273,52 @@ plam' f = Term $ \i ->
   But sufficiently small terms in WHNF may be inlined for efficiency.
 -}
 plet :: Term s a -> (Term s a -> Term s b) -> Term s b
-plet v f = Term $ \i -> case asRawTerm v i of
-  -- Inline sufficiently small terms in WHNF
-  (getTerm -> RVar _) -> asRawTerm (f v) i
-  (getTerm -> RBuiltin _) -> asRawTerm (f v) i
-  (getTerm -> RHoisted _) -> asRawTerm (f v) i
-  _ -> asRawTerm (papp (plam' f) v) i
+plet v f = Term \i ->
+  asRawTerm v i >>= \case
+    -- Inline sufficiently small terms in WHNF
+    (getTerm -> RVar _) -> asRawTerm (f v) i
+    (getTerm -> RBuiltin _) -> asRawTerm (f v) i
+    (getTerm -> RHoisted _) -> asRawTerm (f v) i
+    _ -> asRawTerm (papp (plam' f) v) i
+
+pthrow' :: HasCallStack => Text -> TermMonad a
+pthrow' msg = TermMonad $ ReaderT $ const $ Left (fromString (prettyCallStack callStack) <> "\n\n" <> msg)
+
+pthrow :: HasCallStack => Text -> Term s a
+pthrow = Term . pure . pthrow'
 
 -- | Lambda Application.
-papp :: Term s (a :--> b) -> Term s a -> Term s b
-papp x y = Term $ \i -> case (asRawTerm x i, asRawTerm y i) of
-  -- Applying anything to an error is an error.
-  (getTerm -> RError, _) -> mkTermRes RError
-  -- Applying an error to anything is an error.
-  (_, getTerm -> RError) -> mkTermRes RError
-  -- Applying to `id` changes nothing.
-  (getTerm -> RLamAbs 0 (RVar 0), y') -> y'
-  (getTerm -> RHoisted (HoistedTerm _ (RLamAbs 0 (RVar 0))), y') -> y'
-  -- append argument
-  (x'@(getTerm -> RApply x'l x'r), y') -> TermResult (RApply x'l (getTerm y' : x'r)) (getDeps x' <> getDeps y')
-  -- new RApply
-  (x', y') -> TermResult (RApply (getTerm x') [getTerm y']) (getDeps x' <> getDeps y')
+papp :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
+papp x y = Term \i ->
+  (,) <$> (asRawTerm x i) <*> (asRawTerm y i) >>= \case
+    -- Applying anything to an error is an error.
+    (getTerm -> RError, _) -> pthrow' "application to an error"
+    -- Applying an error to anything is an error.
+    (_, getTerm -> RError) -> pthrow' "application with an error"
+    -- Applying to `id` changes nothing.
+    (getTerm -> RLamAbs 0 (RVar 0), y') -> pure y'
+    (getTerm -> RHoisted (HoistedTerm _ (RLamAbs 0 (RVar 0))), y') -> pure y'
+    -- append argument
+    (x'@(getTerm -> RApply x'l x'r), y') -> pure $ TermResult (RApply x'l (getTerm y' : x'r)) (getDeps x' <> getDeps y')
+    -- new RApply
+    (x', y') -> pure $ TermResult (RApply (getTerm x') [getTerm y']) (getDeps x' <> getDeps y')
 
 {- |
   Plutus \'delay\', used for laziness.
 -}
 pdelay :: Term s a -> Term s (PDelayed a)
-pdelay x = Term $ \i -> mapTerm RDelay $ asRawTerm x i
+pdelay x = Term \i -> mapTerm RDelay <$> asRawTerm x i
 
 {- |
   Plutus \'force\',
   used to force evaluation of 'PDelayed' terms.
 -}
 pforce :: Term s (PDelayed a) -> Term s a
-pforce x = Term $ \i -> case asRawTerm x i of
-  -- A force cancels a delay
-  t@(getTerm -> RDelay t') -> t {getTerm = t'}
-  t -> mapTerm RForce t
+pforce x = Term \i ->
+  asRawTerm x i <&> \case
+    -- A force cancels a delay
+    t@(getTerm -> RDelay t') -> t {getTerm = t'}
+    t -> mapTerm RForce t
 
 {- |
   Plutus \'error\'.
@@ -291,7 +327,12 @@ pforce x = Term $ \i -> case asRawTerm x i of
   the containing term is delayed, avoiding premature evaluation.
 -}
 perror :: Term s a
-perror = Term $ \_ -> mkTermRes RError
+perror = Term \_ -> pure $ mkTermRes RError
+
+pgetConfig :: (Config -> Term s a) -> Term s a
+pgetConfig f = Term \lvl -> TermMonad $ do
+  config <- ask
+  runTermMonad $ asRawTerm (f config) lvl
 
 {- |
   Unsafely coerce the type-tag of a Term.
@@ -303,15 +344,15 @@ punsafeCoerce :: Term s a -> Term s b
 punsafeCoerce (Term x) = Term x
 
 punsafeBuiltin :: UPLC.DefaultFun -> Term s a
-punsafeBuiltin f = Term $ \_ -> mkTermRes $ RBuiltin f
+punsafeBuiltin f = Term \_ -> pure $ mkTermRes $ RBuiltin f
 
 {-# DEPRECATED punsafeConstant "Use `pconstant` instead." #-}
 punsafeConstant :: Some (ValueOf PLC.DefaultUni) -> Term s a
 punsafeConstant = punsafeConstantInternal
 
 punsafeConstantInternal :: Some (ValueOf PLC.DefaultUni) -> Term s a
-punsafeConstantInternal c = Term $ \_ ->
-  case c of
+punsafeConstantInternal c = Term \_ ->
+  pure $ case c of
     -- These constants are smaller than variable references.
     Some (ValueOf PLC.DefaultUniBool _) -> mkTermRes $ RConstant c
     Some (ValueOf PLC.DefaultUniUnit _) -> mkTermRes $ RConstant c
@@ -320,25 +361,23 @@ punsafeConstantInternal c = Term $ \_ ->
       let hoisted = HoistedTerm (hashRawTerm $ RConstant c) (RConstant c)
        in TermResult (RHoisted hoisted) [hoisted]
 
-asClosedRawTerm :: ClosedTerm a -> TermResult
+asClosedRawTerm :: ClosedTerm a -> TermMonad TermResult
 asClosedRawTerm t = asRawTerm t 0
 
 -- FIXME: Give proper error message when mutually recursive.
 phoistAcyclic :: HasCallStack => ClosedTerm a -> Term s a
-phoistAcyclic t = case asRawTerm t 0 of
-  -- Built-ins are smaller than variable references
-  t'@(getTerm -> RBuiltin _) -> Term $ \_ -> t'
-  t' -> case evalScript . Script . UPLC.Program () (PLC.defaultVersion ()) $ compile' t' of
-    (Right _, _, _) ->
-      let hoisted = HoistedTerm (hashRawTerm . getTerm $ t') (getTerm t')
-       in Term $ \_ -> TermResult (RHoisted hoisted) (hoisted : getDeps t')
-    (Left e, _, _) -> error $ "Hoisted term errs! " <> show e
-
-punsafeAsClosedTerm :: forall s a. Term s a -> ClosedTerm a
-punsafeAsClosedTerm (Term t) = (Term t)
+phoistAcyclic t = Term \_ ->
+  asRawTerm t 0 >>= \case
+    -- Built-ins are smaller than variable references
+    t'@(getTerm -> RBuiltin _) -> pure $ t'
+    t' -> case evalScript . Script . UPLC.Program () (PLC.defaultVersion ()) $ compile' t' of
+      (Right _, _, _) ->
+        let hoisted = HoistedTerm (hashRawTerm . getTerm $ t') (getTerm t')
+         in pure $ TermResult (RHoisted hoisted) (hoisted : getDeps t')
+      (Left e, _, _) -> pthrow' $ "Hoisted term errs! " <> fromString (show e)
 
 -- Couldn't find a definition for this in plutus-core
-subst :: Word64 -> (Word64 -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun () -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+subst :: Word64 -> (Word64 -> UTerm) -> UTerm -> UTerm
 subst idx x (UPLC.Apply () yx yy) = UPLC.Apply () (subst idx x yx) (subst idx x yy)
 subst idx x (UPLC.LamAbs () name y) = UPLC.LamAbs () name (subst (idx + 1) x y)
 subst idx x (UPLC.Delay () y) = UPLC.Delay () (subst idx x y)
@@ -380,7 +419,7 @@ rawTermToUPLC _ _ RError = UPLC.Error ()
 rawTermToUPLC m l (RHoisted hoisted) = m hoisted l -- UPLC.Var () . DeBruijn . Index $ l - m hoisted
 
 -- The logic is mostly for hoisting
-compile' :: TermResult -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+compile' :: TermResult -> UTerm
 compile' t =
   let t' = getTerm t
       deps = getDeps t
@@ -426,10 +465,9 @@ compile' t =
    in wrapped
 
 -- | Compile a (closed) Plutus Term to a usable script
-compile :: ClosedTerm a -> Script
-compile t = Script $ UPLC.Program () (PLC.defaultVersion ()) (compile' $ asClosedRawTerm $ t)
+compile :: Config -> ClosedTerm a -> Either Text Script
+compile config t = case asClosedRawTerm t of
+  TermMonad (ReaderT t') -> (Script . UPLC.Program () (UPLC.Version () 1 0 0) . compile') <$> t' config
 
-hashTerm :: ClosedTerm a -> Dig
-hashTerm t =
-  let t' = asRawTerm t 0
-   in hashRawTerm . getTerm $ t'
+hashTerm :: Config -> ClosedTerm a -> Either Text Dig
+hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTerm t 0) config

@@ -7,7 +7,7 @@ module Plutarch.Api.V1.Crypto (
   pubKeyHash,
 ) where
 
-import qualified Plutus.V1.Ledger.Api as Plutus
+import qualified PlutusLedgerApi.V1 as Plutus
 
 import Data.Coerce (coerce)
 import Plutarch.Api.Internal.Hashing (hashLedgerBytes)
@@ -20,7 +20,9 @@ import Plutarch.Lift (
 import Plutarch.Prelude
 
 newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
-  deriving (PlutusType, PIsData, PEq, POrd) via (DerivePNewtype PPubKeyHash PByteString)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+instance DerivePlutusType PPubKeyHash where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PPubKeyHash where type PLifted PPubKeyHash = Plutus.PubKeyHash
 deriving via

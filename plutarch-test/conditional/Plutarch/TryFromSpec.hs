@@ -3,13 +3,6 @@
 
 module Plutarch.TryFromSpec (spec) where
 
-import Data.Coerce (coerce)
-
--- Haskell imports
-import qualified GHC.Generics as GHC
-
-import Generics.SOP (Generic, I (I))
-
 -- Plutus and PlutusTx imports
 
 import PlutusTx (
@@ -23,6 +16,7 @@ import Plutarch.Test
 
 import Plutarch.Unsafe (
   punsafeCoerce,
+  punsafeDowncast,
  )
 
 import Plutarch.Api.V1 (
@@ -51,10 +45,7 @@ import Plutarch.TryFrom (
   ptryFrom',
  )
 
-import Plutarch.Reducible (Flip, Reducible (Reduce))
-
 import Plutarch.ApiSpec (invalidContext1, validContext0)
-import Plutarch.DataRepr (PIsDataReprInstances (PIsDataReprInstances))
 
 import Plutarch.Extra.TermCont
 import Test.Hspec
@@ -312,18 +303,23 @@ fullCheck = unTermCont $ fst <$> TermCont (ptryFrom $ pforgetData sampleStructur
 ------------------- Example: untrusted Redeemer ------------------------------------
 
 newtype PNatural (s :: S) = PMkNatural (Term s PInteger)
-  deriving (PlutusType, PIsData, PEq, POrd) via (DerivePNewtype PNatural PInteger)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+instance DerivePlutusType PNatural where type DPTStrat _ = PlutusTypeNewtype
 
 -- | partial
 pmkNatural :: Term s (PInteger :--> PNatural)
 pmkNatural = plam $ \i -> pif (i #< 0) (ptraceError "could not make natural") (pcon $ PMkNatural i)
+
+newtype Flip f b a = Flip (f a b)
+  deriving stock (Generic)
 
 instance PTryFrom PData (PAsData PNatural) where
   type PTryFromExcess PData (PAsData PNatural) = Flip Term PNatural
   ptryFrom' opq = runTermCont $ do
     (ter, exc) <- TermCont $ ptryFrom @(PAsData PInteger) opq
     ver <- tcont $ plet $ pmkNatural #$ exc
-    pure $ (punsafeCoerce ter, ver)
+    pure (punsafeDowncast ter, ver)
 
 validator :: Term s PValidator
 validator = phoistAcyclic $
@@ -441,20 +437,15 @@ sampleABdata :: Term s PData
 sampleABdata = pforgetData sampleAB
 
 recoverAB :: Term s (PAsData PAB)
-recoverAB = unTermCont $ fst <$> (tcont $ ptryFrom sampleABdata)
+recoverAB = unTermCont $ fst <$> tcont (ptryFrom sampleABdata)
 
 data PAB (s :: S)
   = PA (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PByteString]))
   | PB (Term s (PDataRecord '["_0" ':= PBuiltinList (PAsData PInteger), "_1" ':= PByteString]))
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic, PIsDataRepr)
-  deriving
-    (PlutusType, PIsData)
-    via PIsDataReprInstances PAB
-
--- here we can derive the `PTryFrom` instance for PAB via the newtype wrapper
--- `PIsDataReprInstances`
-deriving via PAsData (PIsDataReprInstances PAB) instance PTryFrom PData (PAsData PAB)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData)
+instance DerivePlutusType PAB where type DPTStrat _ = PlutusTypeData
+instance PTryFrom PData (PAsData PAB)
 
 ------------------- Sample usage with recovered record type ------------------------
 
@@ -471,9 +462,8 @@ theField = unTermCont $ do
 
 ------------------- Sample usage DerivePNewType ------------------------------------
 
-newtype PWrapInt (s :: S) = PWrapInt (PInteger s)
-  deriving newtype (PIsData, PEq, POrd)
-
-instance PTryFrom PData (PAsData PWrapInt) where
-  type PTryFromExcess PData (PAsData PWrapInt) = PTryFromExcess PData (PAsData PInteger)
-  ptryFrom' t f = ptryFrom' t $ \(t', exc) -> f (coerce (t' :: Term _ (PAsData PInteger)), exc)
+newtype PWrapInt (s :: S) = PWrapInt (Term s PInteger)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PEq, POrd)
+instance DerivePlutusType PWrapInt where type DPTStrat _ = PlutusTypeNewtype
+instance PTryFrom PData (PAsData PWrapInt)

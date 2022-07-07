@@ -18,3 +18,7 @@ This section describes the primary typeclasses used in Plutarch.
     - [Alternatives to `OverloadedRecordDot`](./Typeclasses/PIsDataRepr%20and%20PDataFields.md#alternatives-to-overloadedrecorddot)
   - [All about constructing data values](./Typeclasses/PIsDataRepr%20and%20PDataFields.md#all-about-constructing-data-values)
   - [Implementing `PIsDataRepr` and friends](./Typeclasses/PIsDataRepr%20and%20PDataFields.md#implementing-pisdatarepr-and-friends)
+- [`PTryFrom`](./Typeclasses/PTryFrom.md)
+  - [Laws](./Typeclasses/PTryFrom.md#laws)
+  - [`PTryFromExcess`](./Typeclasses/PTryFrom.md#ptryfromexcess)
+  - [Recovering only partially](./Typeclasses/PTryFrom.md#recovering-only-partially)

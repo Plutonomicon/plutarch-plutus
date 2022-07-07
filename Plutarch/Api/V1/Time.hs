@@ -6,7 +6,8 @@ module Plutarch.Api.V1.Time (
   PPOSIXTimeRange,
 ) where
 
-import qualified Plutus.V1.Ledger.Api as Plutus
+import Plutarch.Num (PNum)
+import qualified PlutusLedgerApi.V1 as Plutus
 
 import Plutarch.Api.V1.Interval (PInterval)
 import Plutarch.Lift (
@@ -19,9 +20,9 @@ import Plutarch.Prelude
 
 newtype PPOSIXTime (s :: S)
   = PPOSIXTime (Term s PInteger)
-  deriving (PlutusType, PIsData, PEq, POrd, PIntegral) via (DerivePNewtype PPOSIXTime PInteger)
-
-deriving via (Term s (DerivePNewtype PPOSIXTime PInteger)) instance Num (Term s PPOSIXTime)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd, PIntegral, PNum)
+instance DerivePlutusType PPOSIXTime where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PPOSIXTime where type PLifted PPOSIXTime = Plutus.POSIXTime
 deriving via
