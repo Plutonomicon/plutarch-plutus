@@ -23,6 +23,7 @@ module Plutarch.Builtin (
   pforgetData,
   prememberData,
   prememberData',
+  pserialiseData,
   ppairDataBuiltin,
   pchooseListBuiltin,
   type PBuiltinMap,
@@ -262,6 +263,10 @@ pasInt = punsafeBuiltin PLC.UnIData
 
 pasByteStr :: Term s (PData :--> PByteString)
 pasByteStr = punsafeBuiltin PLC.UnBData
+
+-- | Serialise any builtin data to its cbor represented by a builtin bytestring
+pserialiseData :: Term s (PData :--> PByteString)
+pserialiseData = punsafeBuiltin PLC.SerialiseData
 
 {-# DEPRECATED pdataLiteral "Use `pconstant` instead." #-}
 pdataLiteral :: Data -> Term s PData
