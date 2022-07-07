@@ -46,6 +46,7 @@ import Plutarch.TryFrom (
  )
 
 import Plutarch.ApiSpec (invalidContext1, validContext0)
+import Plutarch.Reducible (Reduce)
 
 import Plutarch.Extra.TermCont
 import Test.Hspec
@@ -131,7 +132,7 @@ spec = do
                 checkDeep' @PRational @(PBuiltinList (PAsData PInteger))
                   (pdata $ pcons # numr #$ pcons # denm # pnil)
               pguardC "non-zero should be as expected" $ pto nz #== pfromData denm
-              pguardC "drat should be as expected" $ pfromData drat #== prational # pfromData numr # nz
+              pguardC "drat should be as expected" $ pfromData drat #== pcon (PRational (pfromData numr) nz)
               pure $ pconstant ()
            )
         @-> psucceeds
