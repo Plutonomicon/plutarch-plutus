@@ -1,44 +1,72 @@
 {
   description = "plutarch";
 
-  inputs.haskell-nix.url = "github:input-output-hk/haskell.nix";
-  inputs.nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
-  inputs.nixpkgs-latest.url = "github:NixOS/nixpkgs?rev=a0a69be4b5ee63f1b5e75887a406e9194012b492";
+  inputs = {
+    haskell-nix.url = "github:input-output-hk/haskell.nix";
+    nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
+    nixpkgs-latest.url = "github:NixOS/nixpkgs?rev=a0a69be4b5ee63f1b5e75887a406e9194012b492";
 
-  inputs.hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
+    hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
 
-  inputs.haskell-nix-extra-hackage.url = "github:mlabs-haskell/haskell-nix-extra-hackage?ref=separate-hackages";
-  inputs.haskell-nix-extra-hackage.inputs.haskell-nix.follows = "haskell-nix";
-  inputs.haskell-nix-extra-hackage.inputs.nixpkgs.follows = "nixpkgs";
+    haskell-nix-extra-hackage = {
+      url = "github:mlabs-haskell/haskell-nix-extra-hackage?ref=separate-hackages";
+      inputs = {
+        haskell-nix.follows = "haskell-nix";
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
 
-  inputs.iohk-nix.url = "github:input-output-hk/iohk-nix";
-  inputs.iohk-nix.flake = false;
-  # we use sphinxcontrib-haddock input
-  inputs.plutus.url = "github:input-output-hk/plutus";
-  # https://github.com/input-output-hk/cardano-prelude/pull/163
-  inputs.cardano-prelude.url = "github:mlabs-haskell/cardano-prelude?rev=713c7ae79a4d538fcd653c976a652913df1567b9";
-  inputs.cardano-prelude.flake = false;
-  inputs.cardano-base.url = "github:input-output-hk/cardano-base";
-  inputs.cardano-base.flake = false;
-  inputs.cardano-crypto.url = "github:input-output-hk/cardano-crypto?rev=07397f0e50da97eaa0575d93bee7ac4b2b2576ec";
-  inputs.cardano-crypto.flake = false;
-  inputs.haskell-language-server.url = "github:haskell/haskell-language-server";
-  inputs.haskell-language-server.flake = false;
+    iohk-nix = {
+      url = "github:input-output-hk/iohk-nix";
+      flake = false;
+    };
 
-  inputs.secp256k1-haskell.url = "github:haskoin/secp256k1-haskell";
-  inputs.secp256k1-haskell.flake = false;
+    # we use sphinxcontrib-haddock input
+    plutus.url = "github:input-output-hk/plutus";
+    # https://github.com/input-output-hk/cardano-prelude/pull/163
+    cardano-prelude = {
+      url = "github:mlabs-haskell/cardano-prelude?rev=713c7ae79a4d538fcd653c976a652913df1567b9";
+      flake = false;
+    };
 
-  # https://github.com/protolude/protolude/pull/133#issuecomment-1112150422 RC not uploaded to hackage yet...
-  inputs.protolude.url = "github:protolude/protolude";
-  inputs.protolude.flake = false;
+    cardano-base = {
+      url = "github:input-output-hk/cardano-base";
+      flake = false;
+    };
 
-  # 0.4.5 hasn't been published to Hackage...
-  inputs.flat.url = "github:Quid2/flat";
-  inputs.flat.flake = false;
+    cardano-crypto = {
+      url = "github:input-output-hk/cardano-crypto?rev=07397f0e50da97eaa0575d93bee7ac4b2b2576ec";
+      flake = false;
+    };
 
-  inputs.emanote.url = "github:srid/emanote/master";
+    haskell-language-server = {
+      url = "github:haskell/haskell-language-server";
+      flake = false;
+    };
 
-  outputs = inputs@{ self, nixpkgs, nixpkgs-latest, iohk-nix, haskell-nix, hercules-ci-effects, haskell-nix-extra-hackage, ... }:
+    secp256k1-haskell = {
+      url = "github:haskoin/secp256k1-haskell";
+      flake = false;
+    };
+
+    # https://github.com/protolude/protolude/pull/133#issuecomment-1112150422 RC not uploaded to hackage yet...
+    protolude = {
+      url = "github:protolude/protolude";
+      flake = false;
+    };
+
+    # 0.4.5 hasn't been published to Hackage...
+    flat = {
+      url = "github:Quid2/flat";
+      flake = false;
+    };
+
+    emanote.url = "github:srid/emanote/master";
+
+    pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
+  };
+
+  outputs = inputs@{ self, nixpkgs, nixpkgs-latest, iohk-nix, haskell-nix, hercules-ci-effects, haskell-nix-extra-hackage, pre-commit-hooks, ... }:
     let
       supportedSystems = nixpkgs-latest.lib.systems.flakeExposed;
 
@@ -379,6 +407,8 @@
                 pkgSet.hsPkgs.hspec-discover.components.exes.hspec-discover
                 (hlsFor compiler-nix-name system)
               ];
+
+              shellHook = (pre-commit-check-for system).shellHook;
             };
           });
         in
@@ -387,22 +417,31 @@
       projectFor = projectForGhc defaultGhcVersion;
       projectFor810 = projectForGhc "ghc8107";
 
-      formatCheckFor = system:
-        let
-          pkgs' = pkgsFor' system;
-        in
-        pkgs'.runCommand "format-check"
-          {
-            nativeBuildInputs = [ pkgs'.haskellPackages.cabal-fmt pkgs'.nixpkgs-fmt (fourmoluFor system) ];
-          } ''
-          export LC_CTYPE=C.UTF-8
-          export LC_ALL=C.UTF-8
-          export LANG=C.UTF-8
-          cd ${self}
-          ./bin/format || (echo "    Please run ./bin/format" ; exit 1)
-          mkdir $out
-        ''
-      ;
+      pre-commit-check-for = system: pre-commit-hooks.lib.${system}.run {
+        src = ./.;
+        settings = {
+          ormolu.defaultExtensions = [
+            "NondecreasingIndentation"
+            "PatternSynonyms"
+            "TypeApplications"
+          ];
+        };
+
+        hooks = {
+          nixpkgs-fmt.enable = true;
+          cabal-fmt.enable = true;
+          fourmolu.enable = true;
+          shellcheck.enable = true;
+          # at some point we have to fix the hints and 
+          # then we can activate this
+          # hlint.enable = true;
+        };
+
+        tools = {
+          fourmolu = fourmoluFor system;
+          hlint = (pkgsFor' system).hlint;
+        };
+      };
 
       haddock = system:
         let
@@ -520,7 +559,7 @@
         (system:
           self.flake.${system}.checks
           // {
-            formatCheck = formatCheckFor system;
+            formatCheck = pre-commit-check-for system;
             test-ghc9 = flakeApp2Derivation system "test-ghc9";
             hls = checkedShellScript system "hls" "${self.project.${system}.pkgs.haskell-language-server}/bin/haskell-language-server";
           });
