@@ -379,6 +379,15 @@
                 pkgSet.hsPkgs.hspec-discover.components.exes.hspec-discover
                 (hlsFor compiler-nix-name system)
               ];
+
+              shellHook = ''
+                set -x
+                if test -e .git/hooks
+                then
+                  test -e .git/hooks/pre-commit || ln -s ../../bin/check .git/hooks/pre-commit
+                fi
+                set +x
+              '';
             };
           });
         in
