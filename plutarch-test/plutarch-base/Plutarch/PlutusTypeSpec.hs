@@ -47,8 +47,8 @@ spec = do
                 in pmatch (pcon (PPair a b) :: Term s (PPair PInteger PString)) $ \(PPair _ y) -> y
              )
     describe "instances-sanity" $ do
-        it "PBuiltinList" $ do
-          pmatchTargetEval $ pconstant [1 :: Integer, 2, 3, 4]
+      it "PBuiltinList" $ do
+        pmatchTargetEval $ pconstant [1 :: Integer, 2, 3, 4]
     deconstrSpec
 
 {- | For comparing typed and untyped data deconstruction approaches.

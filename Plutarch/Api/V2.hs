@@ -53,7 +53,7 @@ import qualified Plutarch.Api.V2.Contexts as Contexts
 import qualified Plutarch.Api.V2.Tx as Tx
 
 import Plutarch.Api.Internal.Hashing (hashScriptWithPrefix)
-import Plutarch.Api.V1 (datumHash, redeemerHash, dataHash)
+import Plutarch.Api.V1 (dataHash, datumHash, redeemerHash)
 import qualified Plutarch.Api.V1.Address as V1
 import qualified Plutarch.Api.V1.Crypto as V1
 import qualified Plutarch.Api.V1.Maybe as V1
