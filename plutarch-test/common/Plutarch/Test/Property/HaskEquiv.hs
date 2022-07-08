@@ -30,12 +30,13 @@ import Control.Exception (SomeException, evaluate, try)
 import Control.Monad.IO.Class (liftIO)
 import Data.SOP (NP (Nil, (:*)))
 import Data.Text (Text)
+import qualified Data.Text as T
 import Hedgehog (Gen, Property, PropertyT, annotate, annotateShow, assert, forAll, property, (===))
-import Plutus.V1.Ledger.Scripts (Script (Script, unScript))
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
 import PlutusCore.Evaluation.Machine.ExMemory (ExCPU (ExCPU), ExMemory (ExMemory))
+import PlutusLedgerApi.V1.Scripts (Script (Script, unScript))
 
-import Plutarch (compile)
+import Plutarch (Config (Config, tracingMode), compile, pattern DetTracing)
 import Plutarch.Evaluate (EvalError, evalScript')
 import Plutarch.Prelude
 import Plutarch.Test.Property.Marshal (Marshal (marshal))
@@ -176,7 +177,7 @@ pshouldBe x y =
     _ -> assert False
 
 run :: ClosedTerm h -> (Either EvalError Script, ExBudget, [Text])
-run t = evalScriptHugeBudget $ compile t
+run t = evalScriptHugeBudget $ either (error . T.unpack) id $ compile (Config {tracingMode = DetTracing}) t
 
 {- | A more suitable version of `evalScript` geared towards property tests that
   can use lots of resources

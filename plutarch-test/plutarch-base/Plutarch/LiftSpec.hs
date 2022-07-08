@@ -2,7 +2,7 @@ module Plutarch.LiftSpec (spec) where
 
 import Data.Text (Text)
 import Plutarch.Api.V1 ()
-import Plutus.V1.Ledger.Api (PubKeyHash (PubKeyHash), ScriptPurpose (Minting), TxOutRef (TxOutRef))
+import PlutusLedgerApi.V1 (PubKeyHash (PubKeyHash), ScriptPurpose (Minting), TxOutRef (TxOutRef))
 import qualified PlutusTx
 
 import Plutarch.Lift (PLifted)

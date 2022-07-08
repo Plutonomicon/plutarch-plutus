@@ -8,10 +8,7 @@ module Plutarch.Api.V1.Interval (
   type PClosure,
 ) where
 
-import qualified GHC.Generics as GHC
-import Generics.SOP (Generic, I (I))
-
-import Plutarch.DataRepr (PDataFields, PIsDataReprInstances (PIsDataReprInstances))
+import Plutarch.DataRepr (PDataFields)
 import Plutarch.Prelude
 
 type PClosure = PBool
@@ -26,12 +23,9 @@ newtype PInterval a (s :: S)
                ]
           )
       )
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
-  deriving
-    (PlutusType, PIsData, PDataFields, PEq, POrd)
-    via PIsDataReprInstances (PInterval a)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, POrd)
+instance DerivePlutusType (PInterval a) where type DPTStrat _ = PlutusTypeData
 
 newtype PLowerBound a (s :: S)
   = PLowerBound
@@ -43,12 +37,9 @@ newtype PLowerBound a (s :: S)
                ]
           )
       )
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
-  deriving
-    (PlutusType, PIsData, PDataFields, PEq, POrd)
-    via (PIsDataReprInstances (PLowerBound a))
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, POrd)
+instance DerivePlutusType (PLowerBound a) where type DPTStrat _ = PlutusTypeData
 
 newtype PUpperBound a (s :: S)
   = PUpperBound
@@ -60,20 +51,14 @@ newtype PUpperBound a (s :: S)
                ]
           )
       )
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
-  deriving
-    (PlutusType, PIsData, PDataFields, PEq, POrd)
-    via (PIsDataReprInstances (PUpperBound a))
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, POrd)
+instance DerivePlutusType (PUpperBound a) where type DPTStrat _ = PlutusTypeData
 
 data PExtended a (s :: S)
   = PNegInf (Term s (PDataRecord '[]))
   | PFinite (Term s (PDataRecord '["_0" ':= a]))
   | PPosInf (Term s (PDataRecord '[]))
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
-  deriving
-    (PlutusType, PIsData, PEq, POrd)
-    via (PIsDataReprInstances (PExtended a))
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+instance DerivePlutusType (PExtended a) where type DPTStrat _ = PlutusTypeData

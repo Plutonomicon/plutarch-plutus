@@ -1,6 +1,3 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE DefaultSignatures #-}
-
 module Plutarch.Show (
   PShow (pshow'),
   pshow,
@@ -16,7 +13,6 @@ import Generics.SOP (
   All,
   All2,
   ConstructorName,
-  HasDatatypeInfo,
   K (K),
   NP,
   NS,
@@ -24,32 +20,28 @@ import Generics.SOP (
   SOP (SOP),
   constructorInfo,
   constructorName,
-  datatypeInfo,
   hcmap,
   hcollapse,
   hindex,
   hmap,
  )
+import Generics.SOP.GGP (gdatatypeInfo)
 import Plutarch.Bool (PBool, PEq ((#==)), POrd ((#<)), pif)
 import Plutarch.ByteString (PByteString, pconsBS, pindexBS, plengthBS, psliceBS)
 import Plutarch.Integer (PInteger, PIntegral (pquot, prem))
-import Plutarch.Internal (punsafeAsClosedTerm)
-import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
-import Plutarch.Internal.Other (
-  DerivePNewtype,
-  PlutusType,
+import Plutarch.Internal (
   Term,
   perror,
-  pfix,
   phoistAcyclic,
-  plam,
   plet,
-  pmatch,
-  pto,
-  (#),
-  (#$),
-  type (:-->),
+  (:-->),
  )
+import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
+import Plutarch.Internal.Other (
+  pfix,
+ )
+import Plutarch.Internal.PLam (plam, (#), (#$))
+import Plutarch.Internal.PlutusType (PlutusType, pmatch)
 import Plutarch.Lift (pconstant)
 import Plutarch.String (PString, pdecodeUtf8, pencodeUtf8)
 
@@ -59,7 +51,7 @@ class PShow t where
   --  If the wrap argument is True, optionally wrap the output in `(..)` if it
   --  represents multiple parameters.
   pshow' :: Bool -> Term s t -> Term s PString
-  default pshow' :: (PGeneric s t, PlutusType t, HasDatatypeInfo (t s), All2 PShow (PCode s t)) => Bool -> Term s t -> Term s PString
+  default pshow' :: (PGeneric t, PlutusType t, All2 PShow (PCode t)) => Bool -> Term s t -> Term s PString
   pshow' wrap x = gpshow wrap # x
 
 -- | Return the string representation of a Plutarch value
@@ -83,8 +75,8 @@ instance PShow PString where
               -- Non-ascii byte sequence will not use bytes < 128.
               -- So we are safe to rewrite the lower byte values.
               -- https://en.wikipedia.org/wiki/UTF-8#Encoding
-              let doubleQuote = 34 :: Term _ PInteger -- `"`
-                  escapeSlash = 92 :: Term _ PInteger -- `\`
+              let doubleQuote :: Term _ PInteger = 34 -- `"`
+                  escapeSlash :: Term _ PInteger = 92 -- `\`
                   rec = pconsBS # x #$ self # xs
                in pif
                     (x #== doubleQuote)
@@ -94,6 +86,7 @@ instance PShow PString where
 instance PShow PBool where
   pshow' _ x = pshowBool # x
     where
+      pshowBool :: Term s (PBool :--> PString)
       pshowBool = phoistAcyclic $
         plam $ \x ->
           -- Delegate to Haskell's Show instance
@@ -102,6 +95,7 @@ instance PShow PBool where
 instance PShow PInteger where
   pshow' _ x = pshowInt # x
     where
+      pshowInt :: Term s (PInteger :--> PString)
       pshowInt = phoistAcyclic $
         pfix #$ plam $ \self n ->
           let sign = pif (n #< 0) "-" ""
@@ -125,9 +119,11 @@ instance PShow PInteger where
 instance PShow PByteString where
   pshow' _ x = showByteString # x
     where
+      showByteString :: Term s (PByteString :--> PString)
       showByteString = phoistAcyclic $
         plam $ \bs ->
           "0x" <> showByteString' # bs
+      showByteString' :: Term s (PByteString :--> PString)
       showByteString' = phoistAcyclic $
         pfix #$ plam $ \self bs ->
           pelimBS # bs
@@ -148,9 +144,6 @@ instance PShow PByteString where
               ( pconstant $ toInteger x
               , pconstant @PString $ T.pack $ intToDigit x : []
               )
-
-instance PShow b => PShow (DerivePNewtype a b) where
-  pshow' w x = pshow' w (pto x)
 
 -- | Case matching on bytestring, as if a list.
 pelimBS ::
@@ -177,29 +170,29 @@ pcase otherwise x = \case
 -- | Generic version of `pshow`
 gpshow ::
   forall a s.
-  (PGeneric s a, HasDatatypeInfo (a s), PlutusType a, All2 PShow (PCode s a)) =>
+  (PGeneric a, PlutusType a, All2 PShow (PCode a)) =>
   Bool ->
   Term s (a :--> PString)
 gpshow wrap =
-  phoistAcyclic $
-    punsafeAsClosedTerm @s $
-      plam $ \x ->
-        pmatch x $ \x' ->
-          productGroup wrap " " $ gpshow' @a (gpfrom x')
+  let constructorNames :: [ConstructorName] =
+        hcollapse $ hmap (K . constructorName) $ constructorInfo $ gdatatypeInfo (Proxy @(a s))
+   in phoistAcyclic $
+        plam $ \x ->
+          pmatch x $ \x' ->
+            productGroup wrap " " $ gpshow' constructorNames (gpfrom x')
 
 -- | Like `gpshow`, but returns the individual parameters list
 gpshow' ::
   forall a s.
-  (PGeneric s a, HasDatatypeInfo (a s), All2 PShow (PCode s a)) =>
-  SOP (Term s) (PCode s a) ->
+  All2 PShow a =>
+  [ConstructorName] ->
+  SOP (Term s) a ->
   NonEmpty (Term s PString)
-gpshow' (SOP x) =
+gpshow' constructorNames (SOP x) =
   let cName = constructorNames !! hindex x
    in pconstant @PString (T.pack cName) :| showSum x
   where
-    constructorNames :: [ConstructorName] =
-      hcollapse $ hmap (K . constructorName) $ constructorInfo $ datatypeInfo (Proxy @(a s))
-    showSum :: NS (NP (Term s)) (PCode s a) -> [Term s PString]
+    showSum :: NS (NP (Term s)) a -> [Term s PString]
     showSum =
       hcollapse . hcmap (Proxy @(All PShow)) showProd
     showProd :: All PShow xs => NP (Term s) xs -> K [Term s PString] xs

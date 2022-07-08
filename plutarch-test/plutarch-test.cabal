@@ -2,20 +2,17 @@ cabal-version: 2.4
 name:          plutarch-test
 version:       1.1.0
 
-flag development
-  description: Enable tracing functions within plutarch.
-  manual:      True
-  default:     False
-
 common c
   default-language:   Haskell2010
   default-extensions:
     NoStarIsType
     BangPatterns
     BinaryLiterals
+    BlockArguments
     ConstrainedClassMethods
     ConstraintKinds
     DataKinds
+    DefaultSignatures
     DeriveAnyClass
     DeriveDataTypeable
     DeriveFoldable
@@ -50,17 +47,20 @@ common c
     OverloadedStrings
     PartialTypeSignatures
     PatternGuards
+    PatternSynonyms
     PolyKinds
     PostfixOperators
+    QuantifiedConstraints
     RankNTypes
     RelaxedPolyRec
+    RoleAnnotations
     ScopedTypeVariables
     StandaloneDeriving
     StandaloneKindSignatures
     TraditionalRecordSyntax
     TupleSections
     TypeApplications
-    TypeFamilies
+    TypeFamilyDependencies
     TypeOperators
     TypeSynonymInstances
     ViewPatterns
@@ -70,7 +70,7 @@ common c
     -Wno-partial-type-signatures -Wmissing-export-lists -Werror
     -Wincomplete-record-updates -Wmissing-deriving-strategies
     -Wno-name-shadowing -Wunused-foralls -fprint-explicit-foralls
-    -fprint-explicit-kinds
+    -fprint-explicit-kinds -Wno-unrecognised-warning-flags
 
 common deps
   build-depends:
@@ -120,9 +120,6 @@ library
     Plutarch.Test.Property.Marshal
     Plutarch.Test.Run
 
-  if flag(development)
-    cpp-options: -DDevelopment
-
 executable plutarch-test
   import:         c, deps
   main-is:        Main.hs
@@ -135,12 +132,12 @@ executable plutarch-test
     , rank2classes
     , serialise
 
-  if impl(ghc <9.0)
-    build-depends:
-      , plutus-tx-plugin
-      , shrinker
+  -- FIXME: Re-enable
+  -- if impl(ghc <9.0)
+  --   build-depends:
+  --     , plutus-tx-plugin
 
-    other-modules: Plutarch.FFISpec
+  --   other-modules: Plutarch.FFISpec
 
   if impl(ghc >=9.0)
     other-modules:
@@ -168,7 +165,6 @@ executable plutarch-test
     Plutarch.PlutusTypeSpec
     Plutarch.POrdSpec
     Plutarch.RationalSpec
-    Plutarch.RecSpec
     Plutarch.RecursionSpec
     Plutarch.ScriptsSpec
     Plutarch.ShowSpec
@@ -187,9 +183,6 @@ executable plutarch-test
     Plutarch.TraceSpec
     Plutarch.UnitSpec
     Plutarch.UPLCSpec
-
-  if flag(development)
-    cpp-options: -DDevelopment
 
   -- FIXME remove -Wwarn=deprecations
   ghc-options:    -threaded -rtsopts -with-rtsopts=-N -Wwarn=deprecations

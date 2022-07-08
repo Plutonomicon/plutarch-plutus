@@ -33,6 +33,5 @@ matching.raw.sumtype(exhaustive)(ignore-fields).rewarding (program 1.0.0 #03)
 matching.raw.sumtype(exhaustive)(ignore-fields).certifying (program 1.0.0 #04)
 fields.typed.extract-single (program 1.0.0 #d87a9f41abff)
 fields.raw.extract-single (program 1.0.0 #d87a9f41abff)
-combined.typed.toValidatorHash (program 1.0.0 (\i0 -> \i0 -> i2 (unBData (force headList [#41ab]))))
-combined.raw.toValidatorHash (program 1.0.0 (\i0 -> \i0 -> i2 (unBData (force headList (force (force sndPair) ( 1
-, [#41ab] ))))))
+combined.typed.toValidatorHash (program 1.0.0 (\i0 -> \i0 -> i2 #ab))
+combined.raw.toValidatorHash (program 1.0.0 (\i0 -> \i0 -> i2 #ab))
