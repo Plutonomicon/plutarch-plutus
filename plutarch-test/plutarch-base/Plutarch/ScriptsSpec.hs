@@ -42,6 +42,7 @@ import Plutarch.Api.V1 (
  )
 import Plutarch.Api.V1.Crypto (PPubKeyHash)
 import Plutarch.Builtin (pasByteStr)
+import Plutarch.Crypto (pverifyEd25519Signature)
 import Plutarch.Prelude
 import Plutarch.Test
 import Test.Hspec
@@ -78,7 +79,7 @@ authorizedValidator ::
   Term s POpaque
 authorizedValidator authKey datumMessage redeemerSig _ctx =
   pif
-    (pverifySignature # authKey # datumMessage # redeemerSig)
+    (pverifyEd25519Signature # authKey # datumMessage # redeemerSig)
     (popaque $ pcon PUnit)
     perror
 

@@ -110,7 +110,7 @@ pshowList' =
             (pshow x)
             xs
       )
-      (\_self -> "")
+      (const "")
 
 instance PEq a => PEq (PList a) where
   (#==) xs ys = plistEquals # xs # ys
@@ -121,7 +121,7 @@ instance PEq a => PEq (PList a) where
 type PIsListLike list a = (PListLike list, PElemConstraint list a)
 
 -- | Plutarch types that behave like lists.
-class PListLike (list :: (PType) -> PType) where
+class PListLike (list :: PType -> PType) where
   type PElemConstraint list (a :: PType) :: Constraint
 
   -- | Canonical eliminator for list-likes.

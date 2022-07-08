@@ -47,6 +47,7 @@ import qualified PlutusTx.Monoid as PlutusTx
 import qualified PlutusTx.Semigroup as PlutusTx
 
 import Plutarch.Builtin (PBuiltinMap, ppairDataBuiltin)
+import Plutarch.Internal.Witness (witness)
 import Plutarch.Lift (
   PConstantDecl,
   PConstantRepr,
@@ -62,6 +63,8 @@ import Plutarch.Show (PShow)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 
 import Prelude hiding (all, any, filter, lookup, null)
+
+import Data.Proxy (Proxy (Proxy))
 
 data KeyGuarantees = Sorted | Unsorted
 
@@ -231,21 +234,25 @@ pfromAscList :: (POrd k, PIsData k, PIsData v) => Term s (PBuiltinMap k v :--> P
 pfromAscList = plam $ (passertSorted #) . pcon . PMap
 
 -- | Assert the map is properly sorted.
-passertSorted :: (POrd k, PIsData k, PIsData v) => Term s (PMap _ k v :--> PMap 'Sorted k v)
-passertSorted = phoistAcyclic $
-  plam $ \map ->
-    precList
-      ( \self x xs ->
-          plet (pfromData $ pfstBuiltin # x) $ \k ->
-            plam $ \badKey ->
-              pif
-                (badKey # k)
-                (ptraceError "unsorted map")
-                (self # xs # plam (#< k))
-      )
-      (const $ plam $ const map)
-      # pto map
-      # plam (const $ pcon PFalse)
+passertSorted :: forall k v any s. (POrd k, PIsData k, PIsData v) => Term s (PMap any k v :--> PMap 'Sorted k v)
+passertSorted =
+  let _ = witness (Proxy :: Proxy (PIsData v))
+   in phoistAcyclic $
+        plam $ \map ->
+          precList
+            ( \self x xs ->
+                plet (pfromData $ pfstBuiltin # x) $ \k ->
+                  plam $ \badKey ->
+                    pif
+                      (badKey # k)
+                      (ptraceError "unsorted map")
+                      (self # xs # plam (#< k))
+            )
+            -- this is actually the empty map so we can
+            -- safely assum that it is sorted
+            (const . plam . const $ punsafeCoerce map)
+            # pto map
+            # plam (const $ pcon PFalse)
 
 -- | Forget the knowledge that keys were sorted.
 pforgetSorted :: Term s (PMap 'Sorted k v) -> Term s (PMap g k v)
