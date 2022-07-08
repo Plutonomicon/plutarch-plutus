@@ -71,8 +71,16 @@ data KeyGuarantees = Sorted | Unsorted
 type role PMap nominal nominal nominal nominal
 newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinMap k v))
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, PShow)
+  deriving anyclass (PlutusType, PIsData, PShow)
 instance DerivePlutusType (PMap keysort k v) where type DPTStrat _ = PlutusTypeNewtype
+
+instance PEq (PMap 'Unsorted k v)
+
+instance PEq (PMap 'Sorted k v) where
+  x #== y = peqViaData # x # y
+    where
+      peqViaData :: Term s (PMap 'Sorted k v :--> PMap 'Sorted k v :--> PBool)
+      peqViaData = phoistAcyclic $ plam $ \m0 m1 -> pdata m0 #== pdata m1
 
 instance
   ( PLiftData k
