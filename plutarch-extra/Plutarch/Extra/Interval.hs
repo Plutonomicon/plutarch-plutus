@@ -27,11 +27,11 @@ import qualified Plutarch.Monadic as P
 import Plutarch.Prelude
 
 -- check if `a` belongs to interval `i`
-member :: 
-  forall a (s :: S). 
-  (PEq a, POrd a, PIsData a) => 
-  Term s a -> 
-  Term s (PInterval a) -> 
+member ::
+  forall a (s :: S).
+  (PEq a, POrd a, PIsData a) =>
+  Term s a ->
+  Term s (PInterval a) ->
   Term s PBool
 member a i = i `contains` (singleton a)
 

@@ -38,8 +38,9 @@ spec = do
       it "hull of a and b contains a and b" . hedgehog . propertyTest $
         prop_hull
     describe "intersection" $ do
-      it "intersection of a and b is contained in a and b" . hedgehog 
-        . propertyTest $ prop_intersection
+      it "intersection of a and b is contained in a and b" . hedgehog
+        . propertyTest
+        $ prop_intersection
     describe "contains" $ do
       describe "contains on bounded intervals" $ do
         it "[a, b] contains [c, d] iff a <= c and d <= b" . hedgehog
