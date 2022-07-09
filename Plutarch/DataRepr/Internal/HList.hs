@@ -113,7 +113,7 @@ instance
   >>> 2
 -}
 hrecField ::
-  forall name a as b c s.
+  forall name c as a b s.
   ( ElemOf name a as
   , Term s (PAsData b) ~ a
   , PFromDataable b c
@@ -121,10 +121,11 @@ hrecField ::
   HRec as ->
   Term s c
 hrecField xs = pmaybeFromAsData $ hrecField' @name xs
+{-# DEPRECATED hrecField "please use getField from GHC.Records" #-}
 
 ---------- HasField instances
 instance
-  forall name a as b c s.
+  forall name c as a b s.
   ( IndexLabel name as ~ a
   , ElemOf name a as
   , Term s (PAsData b) ~ a
