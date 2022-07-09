@@ -70,6 +70,7 @@ common deps
   build-depends:
     , base
     , plutarch
+    , plutus-ledger-api
 
 library plutarch-preludes
   import:          c, deps

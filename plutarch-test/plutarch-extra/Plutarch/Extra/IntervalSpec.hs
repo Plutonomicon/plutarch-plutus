@@ -2,30 +2,70 @@ module Plutarch.Extra.IntervalSpec (spec) where
 
 import Plutarch.Api.V1.Interval (PInterval)
 import Plutarch.Extra.Interval (
-  after,
-  always,
-  before,
-  contains,
-  from,
-  hull,
-  intersection,
-  interval,
-  member,
-  never,
-  to,
+  pafter,
+  palways,
+  pbefore,
+  pcontains,
+  pfrom,
+  phull,
+  pintersection,
+  pinterval,
+  pmember,
+  pnever,
+  psingleton,
+  pto,
  )
-import Plutarch.Prelude
+import Plutarch.Prelude hiding (psingleton, pto)
 
 import Hedgehog (Property, PropertyT, assert, forAll, property)
 import qualified Hedgehog.Gen as Gen (int, list)
 import Hedgehog.Internal.Property (propertyTest)
 import qualified Hedgehog.Range as Range (constantBounded, singleton)
+import Plutarch.Test (passert, passertNot, pgoldenSpec, psucceeds, (@->), (@\), (@|))
 import Test.Hspec (Spec, describe, it)
 import Test.Hspec.Hedgehog (hedgehog)
 
 spec :: Spec
 spec = do
   describe "extra.intervalutils" $ do
+    describe "fixtures" $ do
+      let i1 :: Term s (PInterval PInteger)
+          i1 = mkInterval 1 2
+          i2 :: Term s (PInterval PInteger)
+          i2 = mkInterval 3 5
+          i3 :: Term s (PInterval PInteger)
+          i3 = mkInterval 2 4
+          i4 :: Term s (PInterval PInteger)
+          i4 = mkInterval 4 4
+          i5 :: Term s (PInterval PInteger)
+          i5 = mkInterval 3 4
+      pgoldenSpec $ do
+        "constants" @\ do
+          "always" @| palways @PInteger @-> psucceeds
+          "never" @| pnever @PInteger @-> psucceeds
+          "always" @| pcontains # palways @PInteger # i1 @-> passert
+          "never" @| pcontains # pnever @PInteger # i1 @-> passertNot
+        "contains" @\ do
+          "in interval" @| pcontains # i2 # i4 @-> passert
+          "out interval" @| pcontains # i4 # i2 @-> passertNot
+        "member" @\ do
+          "[b,c], a < b" @| pmember # pconstantData 1 # i3 @-> passertNot
+          "[b,c], a = b" @| pmember # pconstantData 2 # i3 @-> passert
+          "[b,c], a > b, a < c" @| pmember # pconstantData 3 # i3 @-> passert
+          "[b,c], a = c" @| pmember # pconstantData 4 # i3 @-> passert
+          "[b,c], a > c" @| pmember # pconstantData 5 # i3 @-> passertNot
+        "hull" @\ do
+          let theHull :: Term s (PInterval PInteger)
+              theHull = phull # (psingleton # pconstantData 3) # (psingleton # pconstantData 5)
+          "hull 3 5 contains 3 5" @| pcontains # theHull # i2 @-> passert
+          "2 not member of hull 3 5" @| pmember # pconstantData 2 # theHull @-> passertNot
+          "6 not member of hull 3 5" @| pmember # pconstantData 2 # theHull @-> passertNot
+        "intersection" @\ do
+          "intesection [2,4] [3,5] contains [3,4]"
+            @| pcontains # (pintersection # i3 # i2) # i5
+          "intesection [3,5] [2,4] contains [3,4]"
+            @| pcontains # (pintersection # i2 # i3) # i5
+
     describe "member" $ do
       it "a is a member of [b, c] iff b <= a and a <= c" . hedgehog
         . propertyTest
@@ -119,23 +159,23 @@ checkMember a b c = actual == expected
     i :: Term s (PInterval PInteger)
     i = mkInterval b c
 
-    actual = plift $ (pconstant a) `member` i
+    actual = plift $ pmember # pconstantData a # i
     expected = (min b c <= a) && (a <= max b c)
 
 checkAlways :: Integer -> Integer -> Bool
-checkAlways a b = plift $ always `contains` i
+checkAlways a b = plift $ pcontains # palways # i
   where
     i :: Term s (PInterval PInteger)
     i = mkInterval a b
 
 checkNever :: Integer -> Integer -> Bool
-checkNever a b = not (plift $ never `contains` i)
+checkNever a b = not (plift $ pcontains # pnever # i)
   where
     i :: Term s (PInterval PInteger)
     i = mkInterval a b
 
 checkHull :: Integer -> Integer -> Integer -> Integer -> Bool
-checkHull a b c d = plift $ (i3 `contains` i1) #&& (i3 `contains` i2)
+checkHull a b c d = plift $ (pcontains # i3 # i1) #&& (pcontains # i3 # i2)
   where
     i1 :: Term s (PInterval PInteger)
     i1 = mkInterval a b
@@ -143,10 +183,11 @@ checkHull a b c d = plift $ (i3 `contains` i1) #&& (i3 `contains` i2)
     i2 :: Term s (PInterval PInteger)
     i2 = mkInterval c d
 
-    i3 = hull i1 i2
+    i3 :: Term s (PInterval PInteger)
+    i3 = phull # i1 # i2
 
 checkIntersection :: Integer -> Integer -> Integer -> Integer -> Bool
-checkIntersection a b c d = plift $ (i1 `contains` i3) #&& (i2 `contains` i3)
+checkIntersection a b c d = plift $ (pcontains # i1 # i3) #&& (pcontains # i2 # i3)
   where
     i1 :: Term s (PInterval PInteger)
     i1 = mkInterval a b
@@ -154,7 +195,8 @@ checkIntersection a b c d = plift $ (i1 `contains` i3) #&& (i2 `contains` i3)
     i2 :: Term s (PInterval PInteger)
     i2 = mkInterval c d
 
-    i3 = intersection i1 i2
+    i3 :: Term s (PInterval PInteger)
+    i3 = pintersection # i1 # i2
 
 checkBoundedContains :: Integer -> Integer -> Integer -> Integer -> Bool
 checkBoundedContains a b c d = actual == expected
@@ -168,37 +210,37 @@ checkBoundedContains a b c d = actual == expected
     expected = (min a b <= min c d) && (max c d <= max a b)
 
     actual' :: ClosedTerm PBool
-    actual' = i1 `contains` i2
+    actual' = pcontains # i1 # i2
     actual = plift actual'
 
 checkUnboundedUpperContains :: Integer -> Integer -> Integer -> Bool
 checkUnboundedUpperContains a b c = actual == expected
   where
     i1 :: Term s (PInterval PInteger)
-    i1 = from (pconstant a)
+    i1 = pfrom # pconstantData a
     i2 :: Term s (PInterval PInteger)
     i2 = mkInterval b c
 
     expected :: Bool
-    expected = a <= (min b c)
+    expected = a <= min b c
 
     actual' :: ClosedTerm PBool
-    actual' = i1 `contains` i2
+    actual' = pcontains # i1 # i2
     actual = plift actual'
 
 checkUnboundedLowerContains :: Integer -> Integer -> Integer -> Bool
 checkUnboundedLowerContains a b c = actual == expected
   where
     i1 :: Term s (PInterval PInteger)
-    i1 = to (pconstant a)
+    i1 = pto # pconstantData a
     i2 :: Term s (PInterval PInteger)
     i2 = mkInterval b c
 
     expected :: Bool
-    expected = a >= (max b c)
+    expected = a >= max b c
 
     actual' :: ClosedTerm PBool
-    actual' = i1 `contains` i2
+    actual' = pcontains # i1 # i2
     actual = plift actual'
 
 checkBefore :: Integer -> Integer -> Integer -> Bool
@@ -208,10 +250,10 @@ checkBefore a b c = actual == expected
     i = mkInterval b c
 
     expected :: Bool
-    expected = a < (min b c)
+    expected = a < min b c
 
     actual' :: ClosedTerm PBool
-    actual' = (pconstant a) `before` i
+    actual' = pbefore # pconstant a # i
     actual = plift actual'
 
 checkAfter :: Integer -> Integer -> Integer -> Bool
@@ -221,14 +263,14 @@ checkAfter a b c = actual == expected
     i = mkInterval b c
 
     expected :: Bool
-    expected = (max b c) < a
+    expected = max b c < a
 
     actual' :: ClosedTerm PBool
-    actual' = (pconstant a) `after` i
+    actual' = pafter # pconstant a # i
     actual = plift actual'
 
 mkInterval :: forall s. Integer -> Integer -> Term s (PInterval PInteger)
-mkInterval a' b' = interval (pconstant a) (pconstant b)
+mkInterval a' b' = pinterval # pconstantData a # pconstantData b
   where
     a = min a' b'
     b = max a' b'
