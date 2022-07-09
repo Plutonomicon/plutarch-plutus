@@ -74,8 +74,6 @@ newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S) = PMa
   deriving anyclass (PlutusType, PIsData, PShow)
 instance DerivePlutusType (PMap keysort k v) where type DPTStrat _ = PlutusTypeNewtype
 
-instance PEq (PMap 'Unsorted k v)
-
 instance PEq (PMap 'Sorted k v) where
   x #== y = peqViaData # x # y
     where
