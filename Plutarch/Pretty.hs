@@ -57,6 +57,75 @@ prettyScript = prettyUPLC . _progTerm . unScript
 
 {- | Prettify a Plutarch term.
 
+This will call 'error' if there's a compilation failure. Use 'prettyTerm'' for a non-partial version.
+
+== Example ==
+
+@
+import Plutarch.Prelude
+import Plutarch.Api.V1
+import Plutarch.Extra.TermCont
+
+checkSignatory :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
+checkSignatory = plam $ \ph ctx' -> unTermCont $ do
+  ctx <- pletFieldsC @["txInfo", "purpose"] ctx'
+  purph <- pmatchC ctx.purpose
+  pure $ case purph of
+    PSpending _ ->
+      let signatories = pfield @"signatories" # ctx.txInfo
+      in pif
+          (pelem # pdata ph # pfromData signatories)
+          -- Success!
+          (pconstant ())
+          -- Signature not present.
+          perror
+    _ -> ptraceError "checkSignatoryCont: not a spending tx"
+@
+
+Prettification result:
+
+@
+let frSndPair = !!sndPair
+    unDataSum = (\xF -> frSndPair (unConstrData xF))
+    frTailList = !tailList
+    frHeadList = !headList
+    frIfThenElse = !ifThenElse
+in (\oP4ECBT qsrxlF0Y7 ->
+      let cjlB6yrGk = unDataSum qsrxlF0Y7
+          cRFO = unConstrData (frHeadList (frTailList cjlB6yrGk))
+          cs9iR = !!fstPair cRFO
+          w4 = frSndPair cRFO
+      in if equalsInteger 1 cs9iR
+           then if (\vModHwqYB ->
+                      let blM6d67 =
+                            (\x5sad ePDSInSEC ->
+                               !(!!chooseList
+                                   ePDSInSEC
+                                   ~False
+                                   ~(if equalsData
+                                          (frHeadList ePDSInSEC)
+                                          vModHwqYB
+                                       then True
+                                       else x5sad (frTailList ePDSInSEC))))
+                          mC = (\jfZs -> blM6d67 (\itzT -> jfZs jfZs itzT))
+                      in blM6d67 (\ispwp_oeT -> mC mC ispwp_oeT))
+                     (bData oP4ECBT)
+                     (unListData
+                        let q6X3 = frHeadList cjlB6yrGk
+                        in frHeadList
+                             let olbZ = unDataSum q6X3
+                             in frTailList
+                                  (frTailList
+                                     (frTailList
+                                        (frTailList
+                                           (frTailList
+                                              (frTailList
+                                                 (frTailList olbZ)))))))
+                  then ()
+                  else ERROR
+           else !(!trace "checkSignatoryCont: not a spending tx" ~ERROR))
+@
+
 == Semantics ==
 
 === Constants ===
@@ -146,12 +215,12 @@ To achieve better prettification, certain AST structures are given special handl
 
   Bindings to forced builtin functions inherit the builtin function name, prefixed with a `fr`.
 -}
-prettyTerm :: Config -> ClosedTerm a -> Either Text (PP.Doc ())
-prettyTerm conf x = prettyScript <$> compile conf x
+prettyTerm :: Config -> ClosedTerm a -> PP.Doc ()
+prettyTerm conf x = either (error . Txt.unpack) id $ prettyTerm' conf x
 
--- | Partial version of 'prettyTerm'. Calls 'error' upon compilation failure.
-prettyTerm' :: Config -> ClosedTerm a -> PP.Doc ()
-prettyTerm' conf x = either (error . Txt.unpack) prettyScript $ compile conf x
+-- | Non-partial 'prettyTerm'.
+prettyTerm' :: Config -> ClosedTerm p -> Either Text (PP.Doc ())
+prettyTerm' conf x = prettyScript <$> compile conf x
 
 {- This isn't suitable for pretty printing UPLC from any source. It's primarily suited for Plutarch output.
 Practically speaking though, it should work with any _idiomatic_ UPLC.
