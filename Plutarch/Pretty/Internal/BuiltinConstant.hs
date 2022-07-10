@@ -17,8 +17,8 @@ import Plutarch.Pretty.Internal.Config (indentWidth)
 
 prettyConstant :: PLC.Some (PLC.ValueOf DefaultUni) -> PP.Doc ()
 prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniInteger n)) = PP.pretty n
-prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniByteString b)) = PP.pretty $ fromHex b
-prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniString s)) = PP.pretty $ show s
+prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniByteString b)) = PP.pretty $ encodeHex b
+prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniString s)) = PP.pretty s
 prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniUnit _)) = "()"
 prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniBool b)) = PP.pretty b
 prettyConstant (PLC.Some (PLC.ValueOf (PLC.DefaultUniList a) l)) =
@@ -51,5 +51,5 @@ prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniData (Plutus.I i))) =
 prettyConstant (PLC.Some (PLC.ValueOf uni _)) =
   error $ "prettyConstant(impossible): " <> show uni
 
-fromHex :: ByteString -> Text
-fromHex = ("0x" <>) . TxtEnc.decodeUtf8 . LBS.toStrict . BSB.toLazyByteString . BSB.byteStringHex
+encodeHex :: ByteString -> Text
+encodeHex = ("0x" <>) . TxtEnc.decodeUtf8 . LBS.toStrict . BSB.toLazyByteString . BSB.byteStringHex
