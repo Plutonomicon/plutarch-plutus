@@ -1,6 +1,6 @@
 {-# LANGUAGE PatternSynonyms #-}
 
-module Plutarch.Pretty (prettyTerm, prettyScript) where
+module Plutarch.Pretty (prettyTerm, prettyTerm', prettyScript) where
 
 import Control.Monad.Reader (ReaderT (runReaderT))
 import Control.Monad.ST (runST)
@@ -8,13 +8,15 @@ import Control.Monad.State (MonadState (get, put), StateT (runStateT), modify, m
 import Data.Foldable (fold)
 import Data.Functor (($>), (<&>))
 import Data.Traversable (for)
+import Data.Text (Text)
+import qualified Data.Text as Txt
 
 import System.Random.Stateful (mkStdGen, newSTGenM)
 
 import Prettyprinter ((<+>))
 import qualified Prettyprinter as PP
 
-import Plutarch.Internal (ClosedTerm, compile)
+import Plutarch.Internal (ClosedTerm, compile, Config)
 import PlutusLedgerApi.V1.Scripts (Script (unScript))
 import qualified PlutusCore as PLC
 import UntypedPlutusCore (
@@ -49,11 +51,108 @@ import Plutarch.Pretty.Internal.Types (
   unaryCursor,
  )
 
+-- | 'prettyTerm' for pre-compiled 'Script's.
 prettyScript :: Script -> PP.Doc ()
 prettyScript = prettyUPLC . _progTerm . unScript
 
-prettyTerm :: ClosedTerm a -> PP.Doc ()
-prettyTerm x = prettyScript $ compile x
+{- | Prettify a Plutarch term.
+
+== Semantics ==
+
+=== Constants ===
+
+- Builtin integers are printed as regular integers. [0-9]+
+- Builtin bytestrings are printed in hex notation, prefixed by `0x`. 0x[0-9a-f]+/i
+- Builtin strings are printed as is.
+- Builtin unit is printed as the unit literal. ()
+- Builtin booleans are printed as the literal `True` or `False`.
+- Builtin lists are prettified as list literals, i.e delimited with `[` and `]`.
+- Builtin pairs are prettified as 2-ary tuple literals, e.g. `(a, b)`.
+- `I` data (i.e data encoded integers) are prettified like builtin integers with a `#` prefix. #[0-9]+
+- `B` data (i.e data encoded bytestrings) are prettified like builtin bytestrings with a `#` prefix. #0x[0-9a-f]+/i
+- `List` data (i.e data encoded lists) are prettified like builtin lists with a `#` prefix.
+- `Map` data is printed like record literals. Delimited by `{` and `}`.
+
+  Each key value pair is prettified like <key> = <value> and multiple pairs are joined with `,`.
+
+  For example, `Map [(I 42, I 0), (I 100, I 1)]` is prettified as `{ #42 = #0, #100 = #1 }`
+- Constr data has two core elements in its prettified form:
+
+  - The constructor index, prettified as an integer prefixed with `Σ` (sigma).
+  - Its fields, prettified as a list.
+
+  These two elements are then joined with a `.` (period).
+
+  For example, `Constr 1 [I 42]` is prettified as "Σ1.[#42]".
+
+=== Builtin functions ===
+
+Builtin functions are prettified into their name, in title case.
+
+=== Forced term ===
+
+Forced terms are prefixed with a `!`. The unary operator `!` has higher fixity than function application.
+
+=== Delayed term ===
+
+Delayed terms are prefixed with a `~`. The unary operator `~` has higher fixity than function application.
+
+=== Var ===
+
+Random names are generated for all variable bindings, and these names are used to refer to them.
+
+Names are always unique, between 1 and 8 characters in length, and begin with a lowercase letter.
+
+Names may consist of alphanumeric characters, underscore, or single quotes.
+
+=== LamAbs ===
+
+Lambdas are prettified similar to haskell lambdas, i.e `\x -> ...`.
+
+Lambdas with multiple arguments are detected and simplified: `\x y z -> ...`.
+
+=== Apply ===
+
+Application is, simply, a space - just like haskell. `f x`.
+
+Multi arg applications to the same function are detected and simplified: `f x y`.
+
+=== Error term ===
+
+`perror` is represented by the literal `ERROR`.
+
+=== Special handling ===
+
+To achieve better prettification, certain AST structures are given special handling logic.
+
+- The AST structure produced by `plet` (Single `Apply` + `LamAbs` pair) is prettified into Haskell-like let bindings.
+- Lazy if/then/else (`pif` in particular, not `pif'`) is detected and prettified into Haskell-like syntax:
+  `if cond then expr1 else expr2`.
+
+  Chains of if/then/else are nested:
+
+  @
+  if cond
+    then expr1
+    else if cond
+      then expr2
+      else expr3
+  @
+- When generating names for bindings, well known structures are identified and given special names.
+
+  This machinery is made to be extensible in the future.
+
+  For example, the structure of the `pfix` function is well known and constant - so it is simply called `fix` in the output.
+
+  Bindings to forced builtin functions inherit the builtin function name, prefixed with a `fr`.
+
+-}
+prettyTerm :: Config -> ClosedTerm a -> Either Text (PP.Doc ())
+prettyTerm conf x = prettyScript <$> compile conf x
+
+-- | Partial version of 'prettyTerm'. Calls 'error' upon compilation failure.
+prettyTerm' :: Config -> ClosedTerm a -> PP.Doc ()
+prettyTerm' conf x = either (error . Txt.unpack) prettyScript $ compile conf x
 
 {- This isn't suitable for pretty printing UPLC from any source. It's primarily suited for Plutarch output.
 Practically speaking though, it should work with any _idiomatic_ UPLC.
