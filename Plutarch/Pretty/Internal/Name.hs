@@ -52,13 +52,16 @@ freshVarName = do
   stGen <- ask
   PrettyState {ps'names} <- get
   let existingNames = Set.union ps'names keywords
-  nameLen <- lift . lift $ randomRM (1 :: Int, 7) stGen
-  newName <- fmap Txt.pack . for [1 .. nameLen] $ \_ -> do
-    chosenIx <- lift . lift $ uniformRM (1, Txt.length chars - 1) stGen
-    pure $ Txt.index chars chosenIx
+  nameTailLen <- lift . lift $ randomRM (0 :: Int, 7) stGen
+  beginChar <- chooseChar starterChars
+  newName <- fmap (Txt.pack . (beginChar:)) . for [0 .. nameTailLen] . const $ chooseChar chars
   if Set.member newName existingNames
     then freshVarName
     else modify' (memorizeName newName) $> newName
   where
-    chars :: Text
-    chars = "abcdefghijkmnprstuvwxyz"
+    chooseChar x = do
+      stGen <- ask
+      chosenIx <- lift . lift $ uniformRM (0, Txt.length x - 1) stGen
+      pure $ Txt.index x chosenIx
+    starterChars = Txt.pack ['a' .. 'z']
+    chars = Txt.append starterChars . Txt.pack $ ['A' .. 'Z'] ++ ['0' .. '9'] ++ ['_', '\'']
