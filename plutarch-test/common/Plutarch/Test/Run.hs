@@ -1,7 +1,12 @@
-module Plutarch.Test.Run (noUnusedGoldens, noUnusedGoldens') where
+module Plutarch.Test.Run (
+  noUnusedGoldens,
+  noUnusedGoldens',
+  hspecAndReturnForest,
+) where
 
 import Control.Monad (forM_)
 import Data.Default (def)
+import Data.List (isPrefixOf)
 import Data.Set (Set)
 import qualified Data.Set as Set
 import qualified Data.Text as T
@@ -12,10 +17,24 @@ import Plutarch.Test.Golden (
   mkGoldenKeyFromSpecPath,
  )
 import System.Directory (listDirectory)
+import System.Environment (getArgs, withArgs)
 import System.Exit (ExitCode (ExitFailure), exitWith)
 import System.FilePath ((</>))
 import Test.Hspec (Spec)
-import Test.Hspec.Core.Spec (SpecTree, Tree (Leaf, Node, NodeWithCleanup), runSpecM)
+import Test.Hspec.Core.Runner (defaultConfig, evalSpec, evaluateResult, readConfig, runSpecForest)
+import Test.Hspec.Core.Spec (SpecTree, Tree (Leaf, Node, NodeWithCleanup))
+
+{- | Like `hspec`,  but returns the test forest after running the tests.
+
+  Based on https://github.com/hspec/hspec/issues/649#issuecomment-1092423220
+-}
+hspecAndReturnForest :: Spec -> IO [SpecTree ()]
+hspecAndReturnForest spec0 = do
+  (config, spec) <- evalSpec defaultConfig spec0
+  getArgs >>= readConfig config
+    >>= withArgs [] . runSpecForest spec
+    >>= evaluateResult
+  return spec
 
 {- | Ensures that there are no unused goldens left behind.
 
@@ -24,19 +43,27 @@ import Test.Hspec.Core.Spec (SpecTree, Tree (Leaf, Node, NodeWithCleanup), runSp
   actual files existing on disk. If any golden file exists on disk, but is not
   tracked by the `SpecTree` this function will fail, reporting the list of
   untracked golden files.
+
+  __Example:__
+
+  @
+  noUnusedGoldens =<< hspecAndReturnForest spec
+  @
 -}
-noUnusedGoldens :: Spec -> IO ()
+noUnusedGoldens :: [SpecTree ()] -> IO ()
 noUnusedGoldens = noUnusedGoldens' def
 
 {- | Like 'noUnusedGoldens' but takes a custom path to the golden storage.
 
-NOTE: This relies on the same 'GoldenConf' being used in all 'pgoldenSpec'' calls.
+  NOTE: This relies on the assumption that the same 'GoldenConf' is used in all
+'pgoldenSpec'' calls. This function will go away after
+https://github.com/Plutonomicon/plutarch/issues/458
 -}
-noUnusedGoldens' :: GoldenConf -> Spec -> IO ()
-noUnusedGoldens' conf@(GoldenConf {goldenBasePath}) spec = do
+noUnusedGoldens' :: GoldenConf -> [SpecTree ()] -> IO ()
+noUnusedGoldens' conf@(GoldenConf {goldenBasePath}) specForest = do
   -- A second traversal here (`runSpecM`) can be obviated after
   -- https://github.com/hspec/hspec/issues/649
-  usedGoldens <- goldenPathsUsedBy conf . snd <$> runSpecM spec
+  let usedGoldens = goldenPathsUsedBy conf specForest
   unusedGoldens goldenBasePath usedGoldens >>= \case
     [] -> pure ()
     unused -> do
@@ -50,7 +77,10 @@ unusedGoldens :: FilePath -> [FilePath] -> IO [FilePath]
 unusedGoldens goldenBasePath usedGoldens' = do
   let usedGoldens = foldMap knownGoldens usedGoldens'
   allGoldens <- Set.fromList . fmap (goldenBasePath </>) <$> listDirectory goldenBasePath
-  pure $ Set.toList $ allGoldens `Set.difference` usedGoldens
+  pure $
+    Set.toList $
+      Set.filter (not . isPrefixOf (goldenBasePath </> "FFI.")) $
+        allGoldens `Set.difference` usedGoldens
   where
     knownGoldens :: FilePath -> Set FilePath
     knownGoldens fp =

@@ -75,8 +75,7 @@ pfindOwnInput = phoistAcyclic $
     matches :: Term s (PTxOutRef :--> PAsData PTxInInfo :--> PBool)
     matches = phoistAcyclic $
       plam $ \outref txininfo ->
-        pfield @"id" # outref
-          #== pfield @"id" # (pfield @"outRef" # txininfo)
+        outref #== pfield @"outRef" # txininfo
 
 {- | Lookup up the datum given the datum hash.
 

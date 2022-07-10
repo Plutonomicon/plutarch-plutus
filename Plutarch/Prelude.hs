@@ -5,7 +5,6 @@ module Plutarch.Prelude (
   Term,
   ClosedTerm,
   plam,
-  plam',
   papp,
   pdelay,
   pforce,
@@ -21,8 +20,16 @@ module Plutarch.Prelude (
   S,
   PType,
   PlutusType (PInner),
-  PCon (pcon),
-  PMatch (pmatch),
+  DerivePlutusType,
+  DPTStrat,
+  PlutusTypeScott,
+  PlutusTypeNewtype,
+  PlutusTypeData,
+  PCon,
+  PMatch,
+  pcon,
+  pmatch,
+  PForall (PForall),
 
   -- * Integers and integer utilities
   PInteger,
@@ -115,7 +122,6 @@ module Plutarch.Prelude (
   -- * DataRepr and related functions
   PDataRecord,
   PDataSum,
-  PIsDataRepr,
   PLabeledType ((:=)),
   pdcons,
   pdnil,
@@ -145,9 +151,6 @@ module Plutarch.Prelude (
   PConstantData,
   PLiftData,
 
-  -- * Typeclass derivers.
-  DerivePNewtype (DerivePNewtype),
-
   -- * Continuation monad
   TermCont (TermCont, runTermCont),
   unTermCont,
@@ -156,11 +159,13 @@ module Plutarch.Prelude (
   ptryFrom,
   PTryFrom,
   PSubtype,
+  Generic,
 ) where
 
 import Prelude ()
 
 import Data.Kind (Type)
+import GHC.Generics (Generic)
 import GHC.Records (getField)
 import Plutarch
 import Plutarch.Bool

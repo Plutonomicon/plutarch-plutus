@@ -1,4 +1,4 @@
-reverse.reverse_[1..5] {"exBudgetCPU":7592215,"exBudgetMemory":25600,"scriptSizeBytes":87}
-isSorted.[1..10] {"exBudgetCPU":18915730,"exBudgetMemory":59218,"scriptSizeBytes":115}
-isSorted.reverse_[1..10] {"exBudgetCPU":4047007,"exBudgetMemory":13203,"scriptSizeBytes":126}
-isSorted.reverse_[] {"exBudgetCPU":803971,"exBudgetMemory":2800,"scriptSizeBytes":56}
+reverse.reverse_[1..5] {"exBudgetCPU":5865100,"exBudgetMemory":25600,"scriptSizeBytes":87}
+isSorted.[1..10] {"exBudgetCPU":16166677,"exBudgetMemory":59218,"scriptSizeBytes":115}
+isSorted.reverse_[1..10] {"exBudgetCPU":3379609,"exBudgetMemory":13203,"scriptSizeBytes":126}
+isSorted.reverse_[] {"exBudgetCPU":621100,"exBudgetMemory":2800,"scriptSizeBytes":56}

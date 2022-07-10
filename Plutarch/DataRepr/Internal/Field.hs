@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.DataRepr.Internal.Field (
@@ -9,8 +10,12 @@ module Plutarch.DataRepr.Internal.Field (
 
   -- * BindFields class mechanism
   BindFields (..),
+  type Bindings,
   type BoundTerms,
   type Drop,
+  type HRecOf,
+  type PMemberFields,
+  type PMemberField,
 
   -- * Re-exports
   HRec (..),
@@ -24,13 +29,15 @@ import GHC.TypeLits (
   Symbol,
  )
 
-import Data.Kind (Type)
+import Data.Kind (Constraint, Type)
 import Plutarch (
+  PInner,
   PType,
   S,
   Term,
   plam,
   plet,
+  pto,
   (#),
   (#$),
   type (:-->),
@@ -44,14 +51,12 @@ import Plutarch.Builtin (
 import Plutarch.DataRepr.Internal (
   PDataRecord,
   PDataSum,
-  PIsDataRepr (type PIsDataReprRepr),
-  PIsDataReprInstances,
   PLabeledType ((:=)),
-  pasDataSum,
   pdropDataRecord,
   pindexDataRecord,
   punDataSum,
   type PLabelIndex,
+  type PLookupLabel,
   type PUnLabel,
  )
 import Plutarch.DataRepr.Internal.FromData (PFromDataable, pmaybeFromAsData)
@@ -60,14 +65,18 @@ import Plutarch.DataRepr.Internal.HList (
   Labeled (Labeled, unLabeled),
   hrecField,
   type Drop,
+  type ElemOf,
+  type IndexLabel,
   type IndexList,
-  type SingleItem,
  )
-import Plutarch.Internal (punsafeCoerce)
+import Plutarch.Internal.Witness (witness)
 import Plutarch.TermCont (TermCont (TermCont), runTermCont)
 
 --------------------------------------------------------------------------------
 ---------- PDataField class & deriving utils
+
+type family Helper (x :: PType) :: [PLabeledType] where
+  Helper (PDataSum '[y]) = y
 
 {- |
   Class allowing 'letFields' to work for a PType, usually via
@@ -77,8 +86,12 @@ class PDataFields (a :: PType) where
   -- | Fields in HRec bound by 'letFields'
   type PFields a :: [PLabeledType]
 
+  type PFields a = Helper (PInner a)
+
   -- | Convert a Term to a 'PDataList'
   ptoFields :: Term s a -> Term s (PDataRecord (PFields a))
+  default ptoFields :: PInner a ~ PDataSum '[PFields a] => Term s a -> Term s (PDataRecord (PFields a))
+  ptoFields x = punDataSum #$ pto x
 
 instance PDataFields (PDataRecord as) where
   type PFields (PDataRecord as) = as
@@ -89,20 +102,6 @@ instance PDataFields (PDataSum '[as]) where
   ptoFields = (punDataSum #)
 
 instance
-  forall a fields.
-  ( PIsDataRepr a
-  , PIsDataReprRepr a ~ '[fields]
-  , SingleItem (PIsDataReprRepr a) ~ fields
-  ) =>
-  PDataFields (PIsDataReprInstances a)
-  where
-  type
-    PFields (PIsDataReprInstances a) =
-      SingleItem (PIsDataReprRepr a)
-
-  ptoFields x = punDataSum #$ pasDataSum (punsafeCoerce x :: Term _ a)
-
-instance
   forall a.
   ( PIsData a
   , PDataFields a
@@ -111,6 +110,51 @@ instance
   where
   type PFields (PAsData a) = PFields a
   ptoFields = ptoFields . pfromData
+
+-- | The 'HRec' yielded by 'pletFields @fs t'.
+type HRecOf t fs s =
+  HRec
+    ( BoundTerms
+        (PFields t)
+        (Bindings (PFields t) fs)
+        s
+    )
+
+{- | Constrain an 'HRec' to contain the specified fields from the given Plutarch type.
+
+=== Example ===
+
+@
+import qualified GHC.Generics as GHC
+import Generics.SOP
+
+import Plutarch.Prelude
+import Plutarch.DataRepr
+
+newtype PFooType s = PFooType (Term s (PDataRecord '["frst" ':= PInteger, "scnd" ':= PBool, "thrd" ':= PString]))
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
+  deriving
+    (PlutusType, PIsData, PDataFields, PEq)
+    via PIsDataReprInstances PFooType
+
+foo :: PMemberFields PFooType '["scnd", "frst"] s as => HRec as -> Term s PInteger
+foo h = pif (getField @"scnd" h) (getField @"frst" h) 0
+@
+-}
+type PMemberFields :: PType -> [Symbol] -> S -> [(Symbol, Type)] -> Constraint
+type family PMemberFields t fs s as where
+  PMemberFields _ '[] _ _ = ()
+  PMemberFields t (name ': rest) s as = (PMemberField t name s as, PMemberFields t rest s as)
+
+-- | Single field version of 'PMemberFields'.
+type PMemberField :: PType -> Symbol -> S -> [(Symbol, Type)] -> Constraint
+type family PMemberField t name s as where
+  PMemberField t name s as =
+    ( IndexLabel name as ~ Term s (PAsData (PLookupLabel name (PFields t)))
+    , ElemOf name (Term s (PAsData (PLookupLabel name (PFields t)))) as
+    )
 
 {- |
   Bind a HRec of named fields containing all the specified
@@ -124,11 +168,11 @@ pletFields ::
   , BindFields ps bs
   ) =>
   Term s a ->
-  (HRec (BoundTerms ps bs s) -> Term s b) ->
+  (HRecOf a fs s -> Term s b) ->
   Term s b
 pletFields t =
   runTermCont $
-    bindFields @ps @bs $ ptoFields @a t
+    bindFields (Proxy @bs) $ ptoFields @a t
 
 data ToBind = Bind | Skip
 
@@ -168,45 +212,45 @@ class BindFields (ps :: [PLabeledType]) (bs :: [ToBind]) where
   --
   --    A continuation is returned to enable sharing of
   --    the generated bound-variables.
-  bindFields :: Term s (PDataRecord ps) -> TermCont s (HRec (BoundTerms ps bs s))
+  bindFields :: Proxy bs -> Term s (PDataRecord ps) -> TermCont s (HRec (BoundTerms ps bs s))
 
-instance {-# OVERLAPPING #-} BindFields ((l ':= p) ': ps) ( 'Bind ': '[]) where
-  bindFields t =
+instance {-# OVERLAPPABLE #-} BindFields ((l ':= p) ': ps) ( 'Bind ': '[]) where
+  bindFields _ t =
     pure $ HCons (Labeled $ pindexDataRecord (Proxy @0) t) HNil
 
 instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields ((l ':= p) ': ps) ( 'Bind ': bs) where
-  bindFields t = do
+  bindFields _ t = do
     t' <- TermCont $ plet t
-    xs <- bindFields @ps @bs (pdropDataRecord (Proxy @1) t')
+    xs <- bindFields (Proxy @bs) (pdropDataRecord (Proxy @1) t')
     pure $ HCons (Labeled $ pindexDataRecord (Proxy @0) t') xs
 
-instance {-# OVERLAPPING #-} (BindFields ps bs) => BindFields (p1 ': ps) ( 'Skip ': bs) where
-  bindFields t = do
-    bindFields @ps @bs $ pdropDataRecord (Proxy @1) t
+instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': ps) ( 'Skip ': bs) where
+  bindFields _ t = do
+    bindFields (Proxy @bs) $ pdropDataRecord (Proxy @1) t
 
-instance {-# OVERLAPPING #-} (BindFields ps bs) => BindFields (p1 ': p2 ': ps) ( 'Skip ': 'Skip ': bs) where
-  bindFields t = do
-    bindFields @ps @bs $ pdropDataRecord (Proxy @2) t
+instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': ps) ( 'Skip ': 'Skip ': bs) where
+  bindFields _ t = do
+    bindFields (Proxy @bs) $ pdropDataRecord (Proxy @2) t
 
-instance {-# OVERLAPPING #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': ps) ( 'Skip ': 'Skip ': 'Skip ': bs) where
-  bindFields t = do
-    bindFields @ps @bs $ pdropDataRecord (Proxy @3) t
+instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': ps) ( 'Skip ': 'Skip ': 'Skip ': bs) where
+  bindFields _ t = do
+    bindFields (Proxy @bs) $ pdropDataRecord (Proxy @3) t
 
-instance {-# OVERLAPPING #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': ps) ( 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
-  bindFields t = do
-    bindFields @ps @bs $ pdropDataRecord (Proxy @4) t
+instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': ps) ( 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
+  bindFields _ t = do
+    bindFields (Proxy @bs) $ pdropDataRecord (Proxy @4) t
 
-instance {-# OVERLAPPING #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': p5 ': ps) ( 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
-  bindFields t = do
-    bindFields @ps @bs $ pdropDataRecord (Proxy @5) t
+instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': p5 ': ps) ( 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
+  bindFields _ t = do
+    bindFields (Proxy @bs) $ pdropDataRecord (Proxy @5) t
 
-instance {-# OVERLAPPING #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': p5 ': p6 ': ps) ( 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
-  bindFields t = do
-    bindFields @ps @bs $ pdropDataRecord (Proxy @6) t
+instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': p5 ': p6 ': ps) ( 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
+  bindFields _ t = do
+    bindFields (Proxy @bs) $ pdropDataRecord (Proxy @6) t
 
-instance {-# OVERLAPPING #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': p5 ': p6 ': p7 ': ps) ( 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
-  bindFields t = do
-    bindFields @ps @bs $ pdropDataRecord (Proxy @7) t
+instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': p5 ': p6 ': p7 ': ps) ( 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
+  bindFields _ t = do
+    bindFields (Proxy @bs) $ pdropDataRecord (Proxy @7) t
 
 --------------------------------------------------------------------------------
 
@@ -218,14 +262,16 @@ instance {-# OVERLAPPING #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ':
   which will generate the bindings more efficiently.
 -}
 pfield ::
-  forall name p s a as n b.
+  forall name b p s a as n.
   ( PDataFields p
-  , as ~ (PFields p)
-  , n ~ (PLabelIndex name as)
+  , as ~ PFields p
+  , n ~ PLabelIndex name as
   , KnownNat n
-  , a ~ (PUnLabel (IndexList n as))
+  , a ~ PUnLabel (IndexList n as)
   , PFromDataable a b
   ) =>
   Term s (p :--> b)
-pfield = plam $ \i ->
-  pmaybeFromAsData $ pindexDataRecord (Proxy @n) $ ptoFields @p i
+pfield =
+  let _ = witness (Proxy @(n ~ PLabelIndex name as))
+   in plam $ \i ->
+        pmaybeFromAsData $ pindexDataRecord (Proxy @n) $ ptoFields @p i

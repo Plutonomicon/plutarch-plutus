@@ -9,7 +9,7 @@ import qualified Data.Text.Encoding as TxtEnc
 import Prettyprinter ((<+>))
 import qualified Prettyprinter as PP
 
-import qualified Plutus.V1.Ledger.Api as Plutus
+import qualified PlutusLedgerApi.V1 as Plutus
 import qualified PlutusCore as PLC
 import UntypedPlutusCore (DefaultUni)
 

@@ -153,6 +153,22 @@
 
   Added by: [#345](https://github.com/Plutonomicon/plutarch/pull/345)
 
+- Add `HRecOf`, `PMemberFields`, and `PMemberField` utility types.
+
+  Module: `Plutarch.DataRepr`.
+
+  Added by: [#466](https://github.com/Plutonomicon/plutarch/pull/466)
+
+- Move `Plutarch.ListUtils` to `Plutarch.Extra.List`.
+
+  Added by: [#466](https://github.com/Plutonomicon/plutarch/pull/466)
+
+- Add various `TermCont` utilities: `ptraceC`, `pletFieldsC`, `ptryFromC`, `pguardC`, and `pguardC'`.
+
+  Module: `Plutarch.Extra.TermCont`.
+
+  Added by: [#466](https://github.com/Plutonomicon/plutarch/pull/466)
+
 # 1.1.0
 
 - General repository changes.

@@ -64,7 +64,7 @@ common c
     -Wno-partial-type-signatures -Wmissing-export-lists -Werror
     -Wincomplete-record-updates -Wmissing-deriving-strategies
     -Wno-name-shadowing -Wunused-foralls -fprint-explicit-foralls
-    -fprint-explicit-kinds
+    -fprint-explicit-kinds -Wno-unrecognised-warning-flags
 
 common deps
   build-depends:
@@ -81,7 +81,7 @@ library
   exposed-modules:
     Plutarch.Extra
     Plutarch.Extra.Api
+    Plutarch.Extra.List
     Plutarch.Extra.TermCont
-    Plutarch.ListUtils
 
 -- other-modules:

@@ -1,4 +1,3 @@
-{-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -29,25 +28,22 @@ import Generics.SOP (
   ccompare_NS,
   hcliftA2,
  )
-import Plutarch.Internal (plet, punsafeAsClosedTerm)
-import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
-import Plutarch.Internal.Other (
-  DerivePNewtype,
+import Plutarch.Internal (
   PDelayed,
-  PlutusType (PInner, pcon', pmatch'),
   S,
   Term,
-  pcon,
   pdelay,
   pforce,
   phoistAcyclic,
-  plam,
-  pmatch,
-  pto,
-  (#),
-  (#$),
-  type (:-->),
+  plet,
+  (:-->),
  )
+import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
+import Plutarch.Internal.Other (
+  pto,
+ )
+import Plutarch.Internal.PLam (plam, (#), (#$))
+import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon, pcon', pmatch, pmatch')
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,
@@ -66,7 +62,7 @@ instance PUnsafeLiftDecl PBool where type PLifted PBool = Bool
 deriving via (DerivePConstantDirect Bool PBool) instance PConstantDecl Bool
 
 instance PlutusType PBool where
-  type PInner PBool _ = PBool
+  type PInner PBool = PBool
   pcon' PTrue = pconstant True
   pcon' PFalse = pconstant False
   pmatch' b f = pforce $ pif' # b # pdelay (f PTrue) # pdelay (f PFalse)
@@ -74,7 +70,7 @@ instance PlutusType PBool where
 class PEq t where
   (#==) :: Term s t -> Term s t -> Term s PBool
   default (#==) ::
-    (PGeneric s t, PlutusType t, All2 PEq (PCode s t)) =>
+    (PGeneric t, PlutusType t, All2 PEq (PCode t)) =>
     Term s t ->
     Term s t ->
     Term s PBool
@@ -84,7 +80,11 @@ infix 4 #==
 
 class PEq t => POrd t where
   (#<=) :: Term s t -> Term s t -> Term s PBool
+  default (#<=) :: (POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
+  x #<= y = pto x #<= pto y
   (#<) :: Term s t -> Term s t -> Term s PBool
+  default (#<) :: (POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
+  x #< y = pto x #< pto y
 
 infix 4 #<=
 infix 4 #<
@@ -95,13 +95,6 @@ instance PEq PBool where
 instance POrd PBool where
   x #< y = pif' # x # pconstant False # y
   x #<= y = pif' # x # y # pconstant True
-
-instance PEq b => PEq (DerivePNewtype a b) where
-  x #== y = pto x #== pto y
-
-instance POrd b => POrd (DerivePNewtype a b) where
-  x #<= y = pto x #<= pto y
-  x #< y = pto x #< pto y
 
 {- | Strict version of 'pif'.
  Emits slightly less code.
@@ -157,18 +150,17 @@ pands ts' =
 -- | Generic version of (#==)
 gpeq ::
   forall t s.
-  ( PGeneric s t
+  ( PGeneric t
   , PlutusType t
-  , All2 PEq (PCode s t)
+  , All2 PEq (PCode t)
   ) =>
   Term s (t :--> t :--> PBool)
 gpeq =
   phoistAcyclic $
-    punsafeAsClosedTerm @s $
-      plam $ \x y ->
-        pmatch x $ \x' ->
-          pmatch y $ \y' ->
-            gpeq' (gpfrom x') (gpfrom y')
+    plam $ \x y ->
+      pmatch x $ \x' ->
+        pmatch y $ \y' ->
+          gpeq' (gpfrom x') (gpfrom y')
 
 gpeq' :: All2 PEq xss => SOP (Term s) xss -> SOP (Term s) xss -> Term s PBool
 gpeq' (SOP c1) (SOP c2) =
