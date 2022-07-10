@@ -61,8 +61,8 @@ import qualified Plutarch.Internal.PLam as PL
 import qualified Plutarch.Internal.PlutusType as PP
 import qualified Plutarch.Internal.Quantification as PQ
 import qualified Plutarch.Internal.ScottEncoding as PS
-import qualified Plutarch.Pretty as PPR
 import Plutarch.Num ()
+import qualified Plutarch.Pretty as PPR
 import qualified Plutarch.TermCont as PT
 
 -- import orphan instances

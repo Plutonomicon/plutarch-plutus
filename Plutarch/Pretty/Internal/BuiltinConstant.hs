@@ -9,8 +9,8 @@ import qualified Data.Text.Encoding as TxtEnc
 import Prettyprinter ((<+>))
 import qualified Prettyprinter as PP
 
-import qualified PlutusLedgerApi.V1 as Plutus
 import qualified PlutusCore as PLC
+import qualified PlutusLedgerApi.V1 as Plutus
 import UntypedPlutusCore (DefaultUni)
 
 import Plutarch.Pretty.Internal.Config (indentWidth)

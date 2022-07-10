@@ -7,18 +7,18 @@ import Control.Monad.ST (runST)
 import Control.Monad.State (MonadState (get, put), StateT (runStateT), modify, modify')
 import Data.Foldable (fold)
 import Data.Functor (($>), (<&>))
-import Data.Traversable (for)
 import Data.Text (Text)
 import qualified Data.Text as Txt
+import Data.Traversable (for)
 
 import System.Random.Stateful (mkStdGen, newSTGenM)
 
 import Prettyprinter ((<+>))
 import qualified Prettyprinter as PP
 
-import Plutarch.Internal (ClosedTerm, compile, Config)
-import PlutusLedgerApi.V1.Scripts (Script (unScript))
+import Plutarch.Internal (ClosedTerm, Config, compile)
 import qualified PlutusCore as PLC
+import PlutusLedgerApi.V1.Scripts (Script (unScript))
 import UntypedPlutusCore (
   DeBruijn (DeBruijn),
   DefaultFun,
@@ -145,7 +145,6 @@ To achieve better prettification, certain AST structures are given special handl
   For example, the structure of the `pfix` function is well known and constant - so it is simply called `fix` in the output.
 
   Bindings to forced builtin functions inherit the builtin function name, prefixed with a `fr`.
-
 -}
 prettyTerm :: Config -> ClosedTerm a -> Either Text (PP.Doc ())
 prettyTerm conf x = prettyScript <$> compile conf x

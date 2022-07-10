@@ -54,7 +54,7 @@ freshVarName = do
   let existingNames = Set.union ps'names keywords
   nameTailLen <- lift . lift $ randomRM (0 :: Int, 7) stGen
   beginChar <- chooseChar starterChars
-  newName <- fmap (Txt.pack . (beginChar:)) . for [0 .. nameTailLen] . const $ chooseChar chars
+  newName <- fmap (Txt.pack . (beginChar :)) . for [0 .. nameTailLen] . const $ chooseChar chars
   if Set.member newName existingNames
     then freshVarName
     else modify' (memorizeName newName) $> newName
