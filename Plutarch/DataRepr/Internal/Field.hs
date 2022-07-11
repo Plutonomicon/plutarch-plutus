@@ -262,16 +262,16 @@ instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 '
   which will generate the bindings more efficiently.
 -}
 pfield ::
-  forall name p s a as n b.
+  forall name b p s a as n.
   ( PDataFields p
-  , as ~ (PFields p)
-  , n ~ (PLabelIndex name as)
+  , as ~ PFields p
+  , n ~ PLabelIndex name as
   , KnownNat n
-  , a ~ (PUnLabel (IndexList n as))
+  , a ~ PUnLabel (IndexList n as)
   , PFromDataable a b
   ) =>
   Term s (p :--> b)
 pfield =
-  let _ = witness (Proxy @(n ~ (PLabelIndex name as)))
+  let _ = witness (Proxy @(n ~ PLabelIndex name as))
    in plam $ \i ->
         pmaybeFromAsData $ pindexDataRecord (Proxy @n) $ ptoFields @p i
