@@ -16,6 +16,7 @@ module Plutarch.Prelude (
   pinl,
   pto,
   pfix,
+  pthrow,
   Type,
   S,
   PType,

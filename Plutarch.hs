@@ -11,6 +11,7 @@ module Plutarch (
   PI.pforce,
   PI.phoistAcyclic,
   PI.plet,
+  PI.pthrow,
   PI.Term,
   PI.S,
   PI.PType,
