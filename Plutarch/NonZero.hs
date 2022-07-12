@@ -23,6 +23,7 @@ import Plutarch (
   plam,
   plet,
   pto,
+  pthrow,
   (#),
   (#$),
   type (:-->),
@@ -41,7 +42,7 @@ instance DerivePlutusType PNonZero where type DPTStrat _ = PlutusTypeNewtype
 instance PNum PNonZero where
   x #- y = ptryNonZero #$ pto x #- pto y
 
-  pfromInteger 0 = error "pnonZero.pfromInteger: encountered 0"
+  pfromInteger 0 = pthrow "pnonZero.pfromInteger: encountered 0"
   pfromInteger x = pcon $ PNonZero $ pfromInteger x
 
 instance PTryFrom PInteger PNonZero where
