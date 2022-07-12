@@ -103,7 +103,7 @@ instance PIsData PRational where
           PRational a b <- tcont $ pmatch x
           let res :: Term _ (PBuiltinList (PAsData PInteger))
               res = pcons # pdata a #$ pcons # pdata (pto b) #$ pnil
-          pure $ punsafeCoerce $ pdata res
+          pure $ pdataImpl res
       )
       # x'
 
