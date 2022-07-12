@@ -26,7 +26,6 @@ module Plutarch.Builtin (
   pserialiseData,
   ppairDataBuiltin,
   pchooseListBuiltin,
-  type PBuiltinMap,
 ) where
 
 import Data.Proxy (Proxy (Proxy))
@@ -239,16 +238,6 @@ deriving via (DerivePConstantDirect Data PData) instance PConstantDecl Data
 instance PEq PData where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
 
-{- |
-  Map type used for Plutus `Data`'s Map constructor.
-
-  Note that the Plutus API doesn't use this most of the time,
-  instead encoding as a List of Tuple constructors.
-
-  Not to be confused with `PlutusTx.AssocMap.Map` / `PMap`
--}
-type PBuiltinMap a b = (PBuiltinList (PBuiltinPair (PAsData a) (PAsData b)))
-
 pasConstr :: Term s (PData :--> PBuiltinPair PInteger (PBuiltinList PData))
 pasConstr = punsafeBuiltin PLC.UnConstrData
 
@@ -353,10 +342,6 @@ instance PIsData (PBuiltinList PData) where
 
   -- pdataImpl = coerce (pforgetData' @PData (Proxy @(Helper2 PBuiltinList))) . pdata . (prememberData (Proxy @PBuiltinList))
   pdataImpl = punsafeCoerce . pdata . prememberData (Proxy @PBuiltinList) -- FIXME
-
-instance PIsData (PBuiltinMap k v) where
-  pfromDataImpl x = punsafeCoerce $ pasMap # pforgetData x
-  pdataImpl x = punsafeBuiltin PLC.MapData # x
 
 instance PIsData PInteger where
   pfromDataImpl x = pasInt # pforgetData x
@@ -473,23 +458,6 @@ instance PTryFrom PData (PAsData PByteString) where
   type PTryFromExcess PData (PAsData PByteString) = Flip Term PByteString
   ptryFrom' opq = runTermCont $ do
     ver <- tcont $ plet (pasByteStr # opq)
-    pure (punsafeCoerce opq, ver)
-
-instance
-  ( PTryFrom PData (PAsData a)
-  , PTryFrom PData (PAsData b)
-  ) =>
-  PTryFrom PData (PAsData (PBuiltinMap a b))
-  where
-  type PTryFromExcess PData (PAsData (PBuiltinMap a b)) = Flip Term (PBuiltinMap a b)
-  ptryFrom' opq = runTermCont $ do
-    verMap <- tcont $ plet (pasMap # opq)
-    let verifyPair :: Term _ (PBuiltinPair PData PData :--> PBuiltinPair (PAsData a) (PAsData b))
-        verifyPair = plam $ \tup -> unTermCont $ do
-          (verfst, _) <- tcont $ ptryFrom @(PAsData a) $ pfstBuiltin # tup
-          (versnd, _) <- tcont $ ptryFrom @(PAsData b) $ psndBuiltin # tup
-          pure $ ppairDataBuiltin # verfst # versnd
-    ver <- tcont $ plet $ pmap # verifyPair # verMap
     pure (punsafeCoerce opq, ver)
 
 {- |
