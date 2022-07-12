@@ -43,11 +43,11 @@ spec = do
         "constants" @\ do
           "always" @| palways @PInteger @-> psucceeds
           "never" @| pnever @PInteger @-> psucceeds
-          "always" @| pcontains # palways @PInteger # i1 @-> passert
-          "never" @| pcontains # pnever @PInteger # i1 @-> passertNot
         "contains" @\ do
           "in interval" @| pcontains # i2 # i4 @-> passert
           "out interval" @| pcontains # i4 # i2 @-> passertNot
+          "always" @| pcontains # palways @PInteger # i1 @-> passert
+          "never" @| pcontains # pnever @PInteger # i1 @-> passertNot
         "member" @\ do
           "[b,c], a < b" @| pmember # pconstantData 1 # i3 @-> passertNot
           "[b,c], a = b" @| pmember # pconstantData 2 # i3 @-> passert
