@@ -43,8 +43,8 @@ instance PNum PPositive where
   x #- y = ptryPositive #$ pto x #- pto y
 
   pfromInteger x
-     | x <= 0 = pthrow "PPositive.pfromInteger: encountered non positive"
-     | otherwise = pcon $ PPositive $ pfromInteger x
+    | x <= 0 = pthrow "PPositive.pfromInteger: encountered non positive"
+    | otherwise = pcon $ PPositive $ pfromInteger x
 
 instance PTryFrom PInteger PPositive where
   type PTryFromExcess PInteger PPositive = Const ()
