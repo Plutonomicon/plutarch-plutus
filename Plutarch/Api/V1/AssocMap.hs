@@ -46,7 +46,8 @@ import qualified PlutusTx.AssocMap as PlutusMap
 import qualified PlutusTx.Monoid as PlutusTx
 import qualified PlutusTx.Semigroup as PlutusTx
 
-import Plutarch.Builtin (PBuiltinMap, ppairDataBuiltin)
+import Plutarch.Builtin (pasMap, pdataImpl, pforgetData, pfromDataImpl, ppairDataBuiltin)
+import Plutarch.Internal (punsafeBuiltin)
 import Plutarch.Internal.Witness (witness)
 import Plutarch.Lift (
   PConstantDecl,
@@ -61,6 +62,7 @@ import qualified Plutarch.List as List
 import Plutarch.Prelude hiding (pall, pany, pfilter, pmap, pnull, psingleton)
 import Plutarch.Show (PShow)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
+import qualified PlutusCore as PLC
 
 import Prelude hiding (all, any, filter, lookup, null)
 
@@ -68,11 +70,17 @@ import Data.Proxy (Proxy (Proxy))
 
 data KeyGuarantees = Sorted | Unsorted
 
+type PBuiltinListOfPairs k v = PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+
 type role PMap nominal nominal nominal nominal
-newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinMap k v))
+newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))))
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PShow)
+  deriving anyclass (PlutusType, PShow)
 instance DerivePlutusType (PMap keysort k v) where type DPTStrat _ = PlutusTypeNewtype
+
+instance PIsData (PMap keysort k v) where
+  pfromDataImpl x = punsafeCoerce $ pasMap # pforgetData x
+  pdataImpl x = punsafeBuiltin PLC.MapData # x
 
 instance PEq (PMap 'Sorted k v) where
   x #== y = peqViaData # x # y
@@ -236,7 +244,7 @@ psingletonData = phoistAcyclic $
   plam $ \key value -> punsafeDowncast (pcons # (ppairDataBuiltin # key # value) # pnil)
 
 -- | Construct a 'PMap' from a list of key-value pairs, sorted by ascending key data.
-pfromAscList :: (POrd k, PIsData k, PIsData v) => Term s (PBuiltinMap k v :--> PMap 'Sorted k v)
+pfromAscList :: (POrd k, PIsData k, PIsData v) => Term s (PBuiltinListOfPairs k v :--> PMap 'Sorted k v)
 pfromAscList = plam $ (passertSorted #) . pcon . PMap
 
 -- | Assert the map is properly sorted.
@@ -306,8 +314,8 @@ punionWith = phoistAcyclic $
       \x y -> pdata (combine # pfromData x # pfromData y)
 
 data MapUnionCarrier k v s = MapUnionCarrier
-  { merge :: Term s (PBuiltinMap k v :--> PBuiltinMap k v :--> PBuiltinMap k v)
-  , mergeInsert :: Term s (PBuiltinPair (PAsData k) (PAsData v) :--> PBuiltinMap k v :--> PBuiltinMap k v :--> PBuiltinMap k v)
+  { merge :: Term s (PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v)
+  , mergeInsert :: Term s (PBuiltinPair (PAsData k) (PAsData v) :--> PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v)
   }
   deriving stock (Generic)
   deriving anyclass (PlutusType)
