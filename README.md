@@ -36,6 +36,10 @@ Read the [Plutarch guide](./docs/README.md) to get started!
 # Contributing
 Contributions are more than welcome! Alongside the [User guide](#usage) above, you may also find the [Developers' guide](./docs/DEVGUIDE.md) useful for understanding the codebase.
 
+## Developer communication channels
+
+We're in the Plutonomicon Discord: https://discord.gg/722KnTC8jF
+
 # License
 
 ```
