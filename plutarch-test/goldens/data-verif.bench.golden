@@ -4,13 +4,13 @@ erroneous.A { test := Integer, test2 := Integer } /= { test := String, test2 := 
 erroneous.Map Int String /= Map Int Int {"exBudgetCPU":733650,"exBudgetMemory":548,"scriptSizeBytes":165}
 erroneous.PDataSum constr 2 {"exBudgetCPU":700994,"exBudgetMemory":230,"scriptSizeBytes":197}
 erroneous.PDataSum wrong record type {"exBudgetCPU":990483,"exBudgetMemory":232,"scriptSizeBytes":256}
-erroneous.[ByteString] (with length == 2) /= PRational {"exBudgetCPU":1656457,"exBudgetMemory":554,"scriptSizeBytes":231}
-erroneous.[Integer] (with length == 0) /= PRational {"exBudgetCPU":761999,"exBudgetMemory":230,"scriptSizeBytes":193}
-erroneous.[Integer] (with length == 3) /= PRational {"exBudgetCPU":2227517,"exBudgetMemory":524,"scriptSizeBytes":239}
-erroneous.[Integer] (with length == 2, with 0 denominator) /= PRational {"exBudgetCPU":2156288,"exBudgetMemory":524,"scriptSizeBytes":225}
+erroneous.[ByteString] (with length == 2) /= PRational {"exBudgetCPU":1656457,"exBudgetMemory":554,"scriptSizeBytes":246}
+erroneous.[Integer] (with length == 0) /= PRational {"exBudgetCPU":761999,"exBudgetMemory":230,"scriptSizeBytes":208}
+erroneous.[Integer] (with length == 3) /= PRational {"exBudgetCPU":2227517,"exBudgetMemory":524,"scriptSizeBytes":254}
+erroneous.[Integer] (with length == 2, with 0 denominator) /= PRational {"exBudgetCPU":2152752,"exBudgetMemory":524,"scriptSizeBytes":240}
 working.(String, String) == (String, String) {"exBudgetCPU":4806613,"exBudgetMemory":14428,"scriptSizeBytes":123}
 working.[String] == [String] {"exBudgetCPU":4994603,"exBudgetMemory":16904,"scriptSizeBytes":114}
-working.[Integer] (with length == 2) == PRational {"exBudgetCPU":9654221,"exBudgetMemory":28350,"scriptSizeBytes":385}
+working.[Integer] (with length == 2) == PRational {"exBudgetCPU":9650685,"exBudgetMemory":28350,"scriptSizeBytes":400}
 working.A { test := Integer, test2 := Integer } == { test := Integer, test2 := Integer } {"exBudgetCPU":2950183,"exBudgetMemory":9876,"scriptSizeBytes":122}
 working.A { test := Integer, test2 := Integer } == [Integer] {"exBudgetCPU":2950183,"exBudgetMemory":9876,"scriptSizeBytes":122}
 working.A { test := String, test2 := Integer } == { test := String, test2 := Integer } {"exBudgetCPU":3007046,"exBudgetMemory":10176,"scriptSizeBytes":128}

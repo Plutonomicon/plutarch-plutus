@@ -126,9 +126,9 @@ library
     Plutarch.List
     Plutarch.Maybe
     Plutarch.Monadic
-    Plutarch.NonZero
     Plutarch.Num
     Plutarch.Pair
+    Plutarch.Positive
     Plutarch.Prelude
     Plutarch.Rational
     Plutarch.Reducible

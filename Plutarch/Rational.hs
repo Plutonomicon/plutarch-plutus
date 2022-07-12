@@ -50,9 +50,9 @@ import Plutarch.Builtin (
 import Plutarch.Integer (PInteger, pdiv, pmod)
 import Plutarch.Lift (pconstant)
 import Plutarch.List (pcons, phead, plength, pnil, ptail)
-import Plutarch.NonZero (PNonZero, ptryNonZero)
 import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
 import Plutarch.Pair (PPair (PPair))
+import Plutarch.Positive (PPositive, ptryPositive)
 import Plutarch.Show (PShow, pshow, pshow')
 import Plutarch.TermCont (tcont, unTermCont)
 import Plutarch.Trace (ptraceError)
@@ -65,7 +65,7 @@ class PFractional (a :: PType) where
   pfromRational :: Term s (PRational :--> a)
 
 data PRational s
-  = PRational (Term s PInteger) (Term s PNonZero)
+  = PRational (Term s PInteger) (Term s PPositive)
   deriving stock (Generic)
   deriving anyclass (PlutusType, PEq)
 
@@ -109,14 +109,14 @@ instance PIsData PRational where
 
 newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 
--- | NOTE: This instance produces a verified 'PNonZero' as the excess output.
+-- | NOTE: This instance produces a verified 'PPositive' as the excess output.
 instance PTryFrom PData (PAsData PRational) where
-  type PTryFromExcess PData (PAsData PRational) = Flip Term PNonZero
+  type PTryFromExcess PData (PAsData PRational) = Flip Term PPositive
   ptryFrom' opq = runTermCont $ do
     (_, ld) <- tcont $ ptryFrom @(PAsData (PBuiltinList PData)) opq
     tcont $ \f -> pif (plength # ld #== 2) (f ()) (ptraceError "ptryFrom(PRational): data list length should be 2")
     (_, denm) <- tcont $ ptryFrom @(PAsData PInteger) $ phead #$ ptail # ld
-    res <- tcont . plet $ ptryNonZero # denm
+    res <- tcont . plet $ ptryPositive # denm
     pure (punsafeCoerce opq, res)
 
 instance POrd PRational where
@@ -217,14 +217,14 @@ instance PFractional PRational where
     phoistAcyclic $
       plam $ \x ->
         pmatch x $ \(PRational xn xd) ->
-          pcon $ PRational (pto xd) $ ptryNonZero # xn
+          pcon $ PRational (pto xd) $ ptryPositive # xn
 
   x' #/ y' =
     phoistAcyclic
       ( plam $ \x y -> unTermCont $ do
           PRational xn xd <- tcont $ pmatch x
           PRational yn yd <- tcont $ pmatch y
-          denm <- tcont . plet $ ptryNonZero #$ pto xd * yn
+          denm <- tcont . plet $ ptryPositive #$ pto xd * yn
           pure $ preduce #$ pcon $ PRational (xn * pto yd) denm
       )
       # x'
@@ -267,7 +267,7 @@ pmax = phoistAcyclic $ plam $ \a b -> pif (a #<= b) b a
 pnumerator :: Term s (PRational :--> PInteger)
 pnumerator = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational n _) -> n
 
-pdenominator :: Term s (PRational :--> PNonZero)
+pdenominator :: Term s (PRational :--> PPositive)
 pdenominator = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational _ d) -> d
 
 pfromInteger :: Term s (PInteger :--> PRational)
