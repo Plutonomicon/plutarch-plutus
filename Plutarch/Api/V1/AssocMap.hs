@@ -46,7 +46,14 @@ import qualified PlutusTx.AssocMap as PlutusMap
 import qualified PlutusTx.Monoid as PlutusTx
 import qualified PlutusTx.Semigroup as PlutusTx
 
-import Plutarch.Builtin (pasMap, pdataImpl, pforgetData, pfromDataImpl, ppairDataBuiltin)
+import Plutarch.Builtin (
+  Flip,
+  pasMap,
+  pdataImpl,
+  pforgetData,
+  pfromDataImpl,
+  ppairDataBuiltin
+  )
 import Plutarch.Internal (punsafeBuiltin)
 import Plutarch.Internal.Witness (witness)
 import Plutarch.Lift (
@@ -57,9 +64,10 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
   pconstantFromRepr,
   pconstantToRepr,
- )
+  )
 import qualified Plutarch.List as List
 import Plutarch.Prelude hiding (pall, pany, pfilter, pmap, pnull, psingleton)
+import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Show (PShow)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import qualified PlutusCore as PLC
@@ -112,6 +120,34 @@ instance
       x' <- Plutus.fromData x
       y' <- Plutus.fromData y
       Just (x', y')
+
+instance
+  ( PTryFrom PData (PAsData k)
+  , PTryFrom PData (PAsData v)
+  ) =>
+  PTryFrom PData (PAsData (PMap 'Unsorted k v))
+  where
+  type PTryFromExcess PData (PAsData (PMap 'Unsorted k v)) = Flip Term (PMap 'Unsorted k v)
+  ptryFrom' opq = runTermCont $ do
+      opq' <- tcont . plet $ pasMap # opq
+      unwrapped <- tcont . plet $ List.pmap # ptryFromPair # opq'
+      pure (punsafeCoerce opq, pcon . PMap $ unwrapped)
+    where
+      ptryFromPair :: Term s (PBuiltinPair PData PData :--> PBuiltinPair (PAsData k) (PAsData v))
+      ptryFromPair = plam $ \p ->
+        ppairDataBuiltin # ptryFrom (pfstBuiltin # p) fst
+                         # ptryFrom (psndBuiltin # p) fst
+
+instance (POrd k, PIsData k, PIsData v,
+          PTryFrom PData (PAsData k),
+          PTryFrom PData (PAsData v)
+          ) =>
+          PTryFrom PData (PAsData (PMap 'Sorted k v)) where
+  type PTryFromExcess PData (PAsData (PMap 'Sorted k v)) = Flip Term (PMap 'Sorted k v)
+  ptryFrom' opq = runTermCont $ do
+    (opq', _) <- tcont $ ptryFrom @(PAsData (PMap 'Unsorted k v)) opq
+    unwrapped <- tcont $ plet . papp passertSorted . pfromData $ opq'
+    pure (punsafeCoerce opq, unwrapped)
 
 -- | Tests whether the map is empty.
 pnull :: Term s (PMap _ k v :--> PBool)

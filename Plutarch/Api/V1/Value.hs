@@ -52,9 +52,10 @@ module Plutarch.Api.V1.Value (
 
 import qualified PlutusLedgerApi.V1 as Plutus
 
-import Plutarch.Api.V1.AssocMap (KeyGuarantees (Sorted, Unsorted), PMap)
+import Plutarch.Api.V1.AssocMap (KeyGuarantees (Sorted, Unsorted), PMap (..))
 import qualified Plutarch.Api.V1.AssocMap as AssocMap
 import Plutarch.Bool (pand', pif')
+import Plutarch.Builtin (Flip)
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
@@ -63,6 +64,7 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
  )
 import qualified Plutarch.List as List
+import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import qualified PlutusTx.Monoid as PlutusTx
 import qualified PlutusTx.Semigroup as PlutusTx
@@ -80,10 +82,27 @@ deriving via
   instance
     PConstantDecl Plutus.TokenName
 
+instance PTryFrom PData (PAsData PTokenName) where
+  type PTryFromExcess PData (PAsData PTokenName) = Flip Term PTokenName
+  ptryFrom' opq = runTermCont $ do
+    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
+    tcont $ \f ->
+      pif (plengthBS # unwrapped #<= 32) (f ()) (ptraceError "a TokenName must be at most 32 Bytes long")
+    pure (punsafeCoerce opq, pcon . PTokenName $ unwrapped)
+
 newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PEq, POrd)
 instance DerivePlutusType PCurrencySymbol where type DPTStrat _ = PlutusTypeNewtype
+
+instance PTryFrom PData (PAsData PCurrencySymbol) where
+  type PTryFromExcess PData (PAsData PCurrencySymbol) = Flip Term PCurrencySymbol
+  ptryFrom' opq = runTermCont $ do
+    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
+    len <- tcont . plet $ plengthBS # unwrapped
+    tcont $ \f -> 
+      pif (len #== 0 #|| len #== 28) (f ()) (ptraceError "a CurrencySymbol must be 28 bytes long or empty")
+    pure (punsafeCoerce opq, pcon . PCurrencySymbol $ unwrapped)
 
 instance PUnsafeLiftDecl PCurrencySymbol where type PLifted PCurrencySymbol = Plutus.CurrencySymbol
 deriving via
@@ -161,6 +180,37 @@ instance
   PlutusTx.Group (Term s (PValue 'Sorted 'NonZero))
   where
   inv a = punsafeCoerce $ PlutusTx.inv (punsafeCoerce a :: Term s (PValue 'Sorted 'NoGuarantees))
+
+instance PTryFrom PData (PAsData (PValue 'Unsorted 'NoGuarantees))
+instance PTryFrom PData (PAsData (PValue 'Sorted 'NoGuarantees))
+
+instance PTryFrom PData (PAsData (PValue 'Sorted 'Positive)) where
+  type PTryFromExcess PData (PAsData (PValue 'Sorted 'Positive)) = Flip Term (PValue 'Sorted 'Positive)
+  ptryFrom' opq = runTermCont $ do
+    (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'Sorted 'NoGuarantees)) opq
+    unwrapped <- tcont . plet . papp passertPositive . pfromData $ opq'
+    pure (punsafeCoerce opq, unwrapped)
+
+instance PTryFrom PData (PAsData (PValue 'Unsorted 'Positive)) where
+  type PTryFromExcess PData (PAsData (PValue 'Unsorted 'Positive)) = Flip Term (PValue 'Unsorted 'Positive)
+  ptryFrom' opq = runTermCont $ do
+    (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'Unsorted 'NoGuarantees)) opq
+    unwrapped <- tcont . plet . papp passertPositive . pfromData $ opq'
+    pure (punsafeCoerce opq, unwrapped)
+
+instance PTryFrom PData (PAsData (PValue 'Sorted 'NonZero)) where
+  type PTryFromExcess PData (PAsData (PValue 'Sorted 'NonZero)) = Flip Term (PValue 'Sorted 'NonZero)
+  ptryFrom' opq = runTermCont $ do
+    (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'Sorted 'NoGuarantees)) opq
+    unwrapped <- tcont . plet . papp passertNonZero . pfromData $ opq'
+    pure (punsafeCoerce opq, unwrapped)
+
+instance PTryFrom PData (PAsData (PValue 'Unsorted 'NonZero)) where
+  type PTryFromExcess PData (PAsData (PValue 'Unsorted 'NonZero)) = Flip Term (PValue 'Unsorted 'NonZero)
+  ptryFrom' opq = runTermCont $ do
+    (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'Unsorted 'NoGuarantees)) opq
+    unwrapped <- tcont . plet . papp passertNonZero . pfromData $ opq'
+    pure (punsafeCoerce opq, unwrapped)
 
 -- | Construct a constant singleton 'PValue' containing only the given quantity of the given currency.
 pconstantSingleton ::
@@ -351,7 +401,7 @@ passertSorted = phoistAcyclic $
       (pcon $ PValue $ AssocMap.passertSorted # pto value)
 
 -- | Assert all amounts in the value are positive.
-passertPositive :: Term s (PValue 'Sorted 'NonZero :--> PValue 'Sorted 'Positive)
+passertPositive :: forall kg ag s. Term s (PValue kg ag :--> PValue kg 'Positive)
 passertPositive = phoistAcyclic $
   plam $ \value ->
     pif
@@ -361,6 +411,21 @@ passertPositive = phoistAcyclic $
       )
       (punsafeDowncast $ pto value)
       (ptraceError "Negative amount in Value")
+
+passertNonZero :: forall kg ag. ClosedTerm (PValue kg ag :--> PValue kg 'NonZero)
+passertNonZero = plam $ \val ->
+    pif (outer #$ pto . pto $ val) (punsafeCoerce val) (ptraceError "Zero amount in Value")
+  where
+    outer :: ClosedTerm (PBuiltinList (PBuiltinPair (PAsData PCurrencySymbol) (PAsData (PMap k PTokenName PInteger))) :--> PBool)
+    outer = pfix #$ plam $ \self m ->
+      pmatch m $ \case
+        PCons x xs -> inner # (pto . pfromData $ psndBuiltin # x) #&& self # xs
+        PNil -> pcon PTrue
+    inner :: ClosedTerm (PBuiltinList (PBuiltinPair (PAsData PTokenName) (PAsData PInteger)) :--> PBool)
+    inner = pfix #$ plam $ \self m ->
+      pmatch m $ \case
+        PCons x xs -> pnot # (psndBuiltin # x #== pconstantData 0) #&& self # xs
+        PNil -> pcon PTrue
 
 -- | Forget the knowledge of value's positivity.
 pforgetPositive :: Term s (PValue 'Sorted 'Positive) -> Term s (PValue k a)

@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -24,6 +25,8 @@ data PMaybeData a (s :: S)
   deriving anyclass (PlutusType, PIsData, PEq)
 
 instance DerivePlutusType (PMaybeData a) where type DPTStrat _ = PlutusTypeData
+instance PTryFrom PData a => PTryFrom PData (PMaybeData a)
+instance PTryFrom PData a => PTryFrom PData (PAsData (PMaybeData a))
 
 instance PLiftData a => PUnsafeLiftDecl (PMaybeData a) where
   type PLifted (PMaybeData a) = Maybe (PLifted a)

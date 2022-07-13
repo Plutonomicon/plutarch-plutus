@@ -1,5 +1,5 @@
-{-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Api.V1.Crypto (
@@ -23,14 +23,6 @@ import Plutarch.Prelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce)
 
-instance PTryFrom PData (PAsData PPubKeyHash) where
-  type PTryFromExcess PData (PAsData PPubKeyHash) = Flip Term PPubKeyHash
-  ptryFrom' opq = runTermCont $ do
-    (wrapped :: Term _ (PAsData PByteString), unwrapped :: Term _ PByteString) <-
-      tcont $ ptryFrom @(PAsData PByteString) opq
-    tcont $ \f -> pif (plengthBS # unwrapped #== 28) (f ()) (ptraceError "a PubKeyHash should be 28 bytes long")
-    pure (punsafeCoerce wrapped, pcon . PPubKeyHash $ unwrapped)
-
 newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PEq, POrd)
@@ -41,6 +33,14 @@ deriving via
   (DerivePConstantViaBuiltin Plutus.PubKeyHash PPubKeyHash PByteString)
   instance
     PConstantDecl Plutus.PubKeyHash
+
+instance PTryFrom PData (PAsData PPubKeyHash) where
+  type PTryFromExcess PData (PAsData PPubKeyHash) = Flip Term PPubKeyHash
+  ptryFrom' opq = runTermCont $ do
+    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
+    tcont $ \f -> 
+      pif (plengthBS # unwrapped #== 28) (f ()) (ptraceError "a PubKeyHash must be 28 bytes long")
+    pure (punsafeCoerce opq, pcon . PPubKeyHash $ unwrapped)
 
 newtype PubKey = PubKey {getPubKey :: Plutus.LedgerBytes}
   deriving stock (Eq, Ord, Show)

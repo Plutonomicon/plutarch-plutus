@@ -45,7 +45,6 @@ import Plutarch.Builtin (pasConstr, pforgetData)
 import Plutarch.Prelude
 import Plutarch.Test
 import Plutarch.Test.Property.Gen ()
-import Plutarch.TryFrom (PTryFrom, ptryFrom)
 
 import Test.Hspec
 import Test.Tasty.QuickCheck (Property, property, (===))
