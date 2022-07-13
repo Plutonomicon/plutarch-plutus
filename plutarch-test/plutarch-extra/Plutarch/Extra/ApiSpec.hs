@@ -14,7 +14,7 @@ spec :: Spec
 spec = do
   describe "extra.api" $ do
     let ctx = validContext0
-    plutarchDevFlagDescribe . pgoldenSpec $ do
+    pgoldenSpec $ do
       "pfindOwnInput"
         @| ( unTermCont $ do
               ctxF <- tcont $ pletFields @["txInfo", "purpose"] ctx

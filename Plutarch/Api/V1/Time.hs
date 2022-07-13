@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Api.V1.Time (
@@ -6,9 +7,11 @@ module Plutarch.Api.V1.Time (
   PPOSIXTimeRange,
 ) where
 
-import qualified Plutus.V1.Ledger.Api as Plutus
+import Plutarch.Num (PNum)
+import qualified PlutusLedgerApi.V1 as Plutus
 
 import Plutarch.Api.V1.Interval (PInterval)
+import Plutarch.Builtin (Flip)
 import Plutarch.Lift (
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
   PConstantDecl,
@@ -16,14 +19,14 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
  )
 import Plutarch.Prelude
-import Plutarch.TryFrom (Flip, PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
+import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce)
 
 newtype PPOSIXTime (s :: S)
   = PPOSIXTime (Term s PInteger)
-  deriving (PlutusType, PIsData, PEq, POrd, PIntegral) via (DerivePNewtype PPOSIXTime PInteger)
-
-deriving via (Term s (DerivePNewtype PPOSIXTime PInteger)) instance Num (Term s PPOSIXTime)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd, PIntegral, PNum)
+instance DerivePlutusType PPOSIXTime where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PPOSIXTime where type PLifted PPOSIXTime = Plutus.POSIXTime
 deriving via

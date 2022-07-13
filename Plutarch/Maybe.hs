@@ -3,11 +3,13 @@ module Plutarch.Maybe (
   pfromJust,
 ) where
 
-import qualified GHC.Generics as GHC
-import Generics.SOP (Generic, HasDatatypeInfo, I (I))
+import GHC.Generics (Generic)
 import Plutarch (
+  DPTStrat,
+  DerivePlutusType,
   PType,
   PlutusType,
+  PlutusTypeScott,
   S,
   Term,
   perror,
@@ -23,8 +25,10 @@ import Plutarch.Show (PShow)
 data PMaybe (a :: PType) (s :: S)
   = PJust (Term s a)
   | PNothing
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic, HasDatatypeInfo, PlutusType, PEq, PShow)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PEq, PShow)
+
+instance DerivePlutusType (PMaybe a) where type DPTStrat _ = PlutusTypeScott
 
 {- |
  fallible unwrapping from @PMaybe@

@@ -3,6 +3,7 @@
 module Plutarch.Test.Golden (
   -- * DSL
   pgoldenSpec,
+  pgoldenSpec',
   (@|),
   (@\),
   (@->),
@@ -18,6 +19,10 @@ module Plutarch.Test.Golden (
   defaultGoldenBasePath,
   goldenTestPath,
 
+  -- * Golden config
+  GoldenConf (..),
+  GoldenTest (..),
+
   -- * Evaluation
   evalScriptAlwaysWithBenchmark,
   compileD,
@@ -25,6 +30,7 @@ module Plutarch.Test.Golden (
 
 import Control.Monad (forM_, unless)
 import qualified Data.Aeson.Text as Aeson
+import Data.Default (Default (def))
 import Data.List.NonEmpty (nonEmpty)
 import Data.Maybe (mapMaybe)
 import Data.Semigroup (sconcat)
@@ -38,14 +44,15 @@ import System.FilePath ((</>))
 import Test.Hspec.Golden
 
 import qualified Data.List.NonEmpty as NE
-import Plutarch (compile, printScript)
+import Data.Set (Set)
+import qualified Data.Set as S
+import Plutarch (Config (Config, tracingMode), compile, printScript, pattern DetTracing)
 import Plutarch.Evaluate (evalScript)
-import Plutarch.Internal (punsafeAsClosedTerm)
 import Plutarch.Prelude
 import Plutarch.Test.Benchmark (Benchmark, mkBenchmark, scriptSize)
 import Plutarch.Test.ListSyntax (ListSyntax, listSyntaxAdd, listSyntaxAddSubList, runListSyntax)
-import Plutus.V1.Ledger.Scripts (Script)
-import qualified Plutus.V1.Ledger.Scripts as Scripts
+import PlutusLedgerApi.V1.Scripts (Script)
+import qualified PlutusLedgerApi.V1.Scripts as Scripts
 import Test.Hspec (Expectation, Spec, describe, it)
 import Test.Hspec.Core.Spec (SpecM, getSpecDescriptionPath)
 
@@ -63,6 +70,16 @@ data GoldenValue = GoldenValue
   , goldenValueExpectation :: Maybe (Script -> Benchmark -> Expectation)
   -- ^ User test's expectation function
   }
+
+data GoldenConf = GoldenConf
+  { chosenTests :: Set GoldenTest
+  , goldenBasePath :: FilePath
+  -- ^ Directory to put the goldens in.
+  }
+  deriving stock (Eq, Show)
+
+instance Default GoldenConf where
+  def = GoldenConf (S.fromList [minBound .. maxBound]) defaultGoldenBasePath
 
 {- | Class of types that represent `GoldenValue`
 
@@ -87,20 +104,20 @@ mkGoldenValue' p mexp =
 -- `ClosedTerm a`. In practice, this instance should be used only for closed
 -- terms.
 instance HasGoldenValue Term where
-  mkGoldenValue p = mkGoldenValue' (punsafeAsClosedTerm p) Nothing
+  mkGoldenValue p = mkGoldenValue' p Nothing
 
 {- | A `Term` paired with its evaluation/benchmark expectation
 
   Example:
   >>> TermExpectation (pcon PTrue) $ \(p, _script, _benchmark) -> pshouldBe (pcon PTrue)
 -}
-data TermExpectation' s a = TermExpectation (Term s a) ((Term s a, Script, Benchmark) -> Expectation)
+data TermExpectation' (s :: S) a = TermExpectation (ClosedTerm a) ((ClosedTerm a, Script, Benchmark) -> Expectation)
 
 type TermExpectation a = forall s. TermExpectation' s a
 
 -- | Test an expectation on a golden Plutarch program
 (@->) :: ClosedTerm a -> (ClosedTerm a -> Expectation) -> TermExpectation a
-(@->) p f = p @:-> \(p', _, _) -> f $ punsafeAsClosedTerm p'
+(@->) p f = p @:-> \(p', _, _) -> f p'
 
 infixr 1 @->
 
@@ -112,13 +129,13 @@ infixr 1 @->
   re-evaluating the program).
 -}
 (@:->) :: ClosedTerm a -> ((ClosedTerm a, Script, Benchmark) -> Expectation) -> TermExpectation a
-(@:->) p f = TermExpectation p (\(p', pe, b) -> f (punsafeAsClosedTerm p', pe, b))
+(@:->) p f = TermExpectation p (\(p', pe, b) -> f (p', pe, b))
 
 infixr 1 @:->
 
 instance HasGoldenValue TermExpectation' where
   mkGoldenValue (TermExpectation p f) =
-    mkGoldenValue' (punsafeAsClosedTerm p) (Just $ (\pe b -> f (p, pe, b)))
+    mkGoldenValue' p (Just $ \pe b -> f (p, pe, b))
 
 -- | The key used in the .golden files containing multiple golden values
 newtype GoldenKey = GoldenKey Text
@@ -139,8 +156,9 @@ mkGoldenKeyFromSpecPath path =
   case nonEmpty path of
     Nothing -> error "cannot use currentGoldenKey from top-level spec"
     Just anc ->
-      case nonEmpty (NE.drop 1 . NE.reverse $ anc) of
-        Nothing -> error "cannot use currentGoldenKey from top-level spec (after sydtest-discover)"
+      -- hspec-discover adds a top-level entry; remove that.
+      case nonEmpty (NE.drop 1 anc) of
+        Nothing -> error "cannot use currentGoldenKey from top-level spec (after hspec-discover)"
         Just path ->
           sconcat $ fmap GoldenKey path
 
@@ -179,12 +197,19 @@ infixr 0 @|
   for 'qux' will be "bar.qux".
 -}
 pgoldenSpec :: HasCallStack => PlutarchGoldens -> Spec
-pgoldenSpec map = do
+pgoldenSpec = pgoldenSpec' def
+
+{- | Like 'pgoldenSpec' but takes a 'GoldenConf' to determine which goldens to track.
+
+> pgoldenSpec = pgoldenSpec' def
+-}
+pgoldenSpec' :: HasCallStack => GoldenConf -> PlutarchGoldens -> Spec
+pgoldenSpec' conf@(GoldenConf {goldenBasePath}) map = do
   base <- currentGoldenKey
   let bs = runListSyntax map
   -- Golden tests
   describe "golden" $ do
-    goldenTestSpec base bs `mapM_` [minBound .. maxBound]
+    goldenTestSpec goldenBasePath base bs `mapM_` chosenTests conf
   -- Assertion tests (if any)
   let asserts = flip mapMaybe bs $ \(k, v) -> do
         (k,) . (\f -> f (goldenValueEvaluated v) $ goldenValueBenchVal v) <$> goldenValueExpectation v
@@ -194,38 +219,38 @@ pgoldenSpec map = do
 
 data GoldenTest
   = -- | The unevaluated UPLC (compiled target of Plutarch term)
-    UPLCPreEval
+    GoldenT'UPLCPreEval
   | -- | The evaluated UPLC (evaluated result of Plutarch term)
-    UPLCPostEval
+    GoldenT'UPLCPostEval
   | -- | Benchmark of Plutarch term (will never fail)
-    Bench
+    GoldenT'Bench
   deriving stock (Eq, Show, Ord, Enum, Bounded)
 
 goldenTestKey :: GoldenTest -> GoldenKey
 goldenTestKey = \case
-  UPLCPreEval -> "uplc"
-  UPLCPostEval -> "uplc.eval"
-  Bench -> "bench"
+  GoldenT'UPLCPreEval -> "uplc"
+  GoldenT'UPLCPostEval -> "uplc.eval"
+  GoldenT'Bench -> "bench"
 
 defaultGoldenBasePath :: FilePath
 defaultGoldenBasePath = "goldens"
 
-goldenTestPath :: GoldenKey -> GoldenTest -> FilePath
-goldenTestPath base gt =
-  goldenPath defaultGoldenBasePath $ base <> goldenTestKey gt
+goldenTestPath :: FilePath -> GoldenKey -> GoldenTest -> FilePath
+goldenTestPath goldenBasePath base gt =
+  goldenPath goldenBasePath $ base <> goldenTestKey gt
 
 goldenTestVal :: GoldenTest -> GoldenValue -> Text
 goldenTestVal t v = case t of
-  UPLCPreEval -> goldenValueUplcPreEval v
-  UPLCPostEval -> goldenValueUplcPostEval v
-  Bench -> goldenValueBench v
+  GoldenT'UPLCPreEval -> goldenValueUplcPreEval v
+  GoldenT'UPLCPostEval -> goldenValueUplcPostEval v
+  GoldenT'Bench -> goldenValueBench v
 
-goldenTestSpec :: GoldenKey -> [(GoldenKey, GoldenValue)] -> GoldenTest -> Spec
-goldenTestSpec base vals gt = do
+goldenTestSpec :: FilePath -> GoldenKey -> [(GoldenKey, GoldenValue)] -> GoldenTest -> Spec
+goldenTestSpec goldenBasePath base vals gt = do
   it (goldenKeyString $ goldenTestKey gt) $ do
     Golden
       { output = combineGoldens $ fmap (goldenTestVal gt) <$> vals
-      , goldenFile = goldenTestPath base gt
+      , goldenFile = goldenTestPath goldenBasePath base gt
       , actualFile = Nothing
       , encodePretty = show
       , writeToFile = TIO.writeFile
@@ -250,12 +275,10 @@ evalScriptAlwaysWithBenchmark script =
   let (res, exbudget, _traces) = evalScript script
       bench = mkBenchmark exbudget (scriptSize script)
    in ( case res of
-        Left _ -> compile perror
-        Right x -> x
+          Left _ -> either undefined id $ compile (Config {tracingMode = DetTracing}) perror
+          Right x -> x
       , bench
       )
 
--- TODO: Make this deterministic
--- See https://github.com/Plutonomicon/plutarch/pull/297
 compileD :: ClosedTerm a -> Scripts.Script
-compileD = compile
+compileD t = either (error . T.unpack) id $ compile (Config {tracingMode = DetTracing}) t

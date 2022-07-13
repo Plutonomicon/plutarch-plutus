@@ -5,34 +5,25 @@ module Plutarch.Api.V1.Maybe (
   PMaybeData (PDJust, PDNothing),
 ) where
 
-import qualified GHC.Generics as GHC
-import Generics.SOP (Generic, I (I))
-
 import Plutarch.Builtin (pasConstr, pforgetData)
 import Plutarch.DataRepr.Internal (
   DerivePConstantViaData (DerivePConstantViaData),
-  PIsDataReprInstances (PIsDataReprInstances),
-  PIsDataReprRepr,
  )
-import Plutarch.DataRepr.Internal.HList.Utils (IndexList)
 import Plutarch.Lift (
   PConstantDecl (PConstanted),
   PUnsafeLiftDecl (..),
  )
 import Plutarch.Prelude
-import Plutarch.TryFrom (PTryFrom)
 import Plutarch.Unsafe (punsafeCoerce)
 
 -- | Data encoded Maybe type. Used in various ledger api types.
 data PMaybeData a (s :: S)
   = PDJust (Term s (PDataRecord '["_0" ':= a]))
   | PDNothing (Term s (PDataRecord '[]))
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
-  deriving
-    (PlutusType, PIsData, PEq)
-    via PIsDataReprInstances (PMaybeData a)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq)
+
+instance DerivePlutusType (PMaybeData a) where type DPTStrat _ = PlutusTypeData
 
 instance PLiftData a => PUnsafeLiftDecl (PMaybeData a) where
   type PLifted (PMaybeData a) = Maybe (PLifted a)
@@ -48,10 +39,9 @@ instance (PIsData a, POrd a) => POrd (PMaybeData a) where
   x #<= y = _pmaybeLT True (#<=) # x # y
 
 _pmaybeLT ::
-  PIsData a =>
   Bool ->
   ( forall s rec.
-    (rec ~ (IndexList 0 (PIsDataReprRepr (PMaybeData a)))) =>
+    rec ~ '["_0" ':= a] =>
     Term s (PDataRecord rec) ->
     Term s (PDataRecord rec) ->
     Term s PBool
@@ -83,8 +73,3 @@ _pmaybeLT whenBothNothing ltF = phoistAcyclic $
               $ pconstant whenBothNothing
           )
           $ pconstant True
-
-deriving via
-  PAsData (PIsDataReprInstances (PMaybeData a))
-  instance
-    PTryFrom PData (PAsData a) => PTryFrom PData (PAsData (PMaybeData a))

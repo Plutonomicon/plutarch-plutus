@@ -28,7 +28,7 @@ import Test.Tasty.QuickCheck (
   vectorOf,
  )
 
-import Plutus.V1.Ledger.Api
+import PlutusLedgerApi.V1
 
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS

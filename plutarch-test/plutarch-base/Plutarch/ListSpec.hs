@@ -26,7 +26,7 @@ spec = do
         it "plutarch level find mirrors haskell level find" . hedgehog . propertyTest $ prop_pfindEquiv
       describe "elemAt" $ do
         it "plutarch level elemAt mirrors haskell level elemAt" . hedgehog . propertyTest $ prop_pelemAtEquiv
-    plutarchDevFlagDescribe . pgoldenSpec $ do
+    pgoldenSpec $ do
       let xs10 :: Term _ (PList PInteger)
           xs10 = integerList [1 .. 10]
           numList :: Term _ (PBuiltinList PInteger)

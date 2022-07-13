@@ -1,13 +1,21 @@
-module Plutarch.Either (PEither (..)) where
+module Plutarch.Either (PEither (PLeft, PRight)) where
 
-import qualified GHC.Generics as GHC
-import Generics.SOP (Generic, HasDatatypeInfo, I (I))
-import Plutarch (PType, PlutusType, S, Term)
+import GHC.Generics (Generic)
+import Plutarch (
+  DPTStrat,
+  DerivePlutusType,
+  PType,
+  PlutusType,
+  PlutusTypeScott,
+  S,
+  Term,
+ )
 import Plutarch.Bool (PEq)
 import Plutarch.Show (PShow)
 
 data PEither (a :: PType) (b :: PType) (s :: S)
   = PLeft (Term s a)
   | PRight (Term s b)
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic, HasDatatypeInfo, PlutusType, PEq, PShow)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PEq, PShow)
+instance DerivePlutusType (PEither a b) where type DPTStrat _ = PlutusTypeScott

@@ -5,14 +5,14 @@ module Plutarch.POrdSpec (spec) where
 
 import Data.ByteString (ByteString)
 
-import Plutus.V1.Ledger.Api (
+import PlutusLedgerApi.V1 (
   Address (Address),
   Credential (PubKeyCredential, ScriptCredential),
   PubKeyHash (PubKeyHash),
   StakingCredential (StakingHash, StakingPtr),
   ValidatorHash (ValidatorHash),
  )
-import qualified PlutusTx as PlutusTx
+import qualified PlutusTx
 import qualified PlutusTx.Builtins as PlutusTx
 
 import Test.QuickCheck.Instances ()
@@ -129,7 +129,9 @@ peqIso :: forall p. (PLift p, PEq p, Arbitrary (PLifted p), Eq (PLifted p)) => P
 peqIso a b = plift (pconstant @p a #== pconstant b) `shouldBe` (a == b)
 
 newtype PAddress' s = PAddress' (Term s PAddress)
-  deriving (PlutusType, PIsData, PEq, POrd) via DerivePNewtype PAddress' PAddress
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+instance DerivePlutusType PAddress' where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PAddress' where type PLifted PAddress' = Address'
 
@@ -211,11 +213,12 @@ ltTrip trip1 trip2 = unTermCont $ do
   pure $
     x #< x'
       #|| ( x #== x'
-              #&& ( unTermCont $ do
-                      y <- tcont . plet . pfromData $ getField @"y" a
-                      y' <- tcont . plet . pfromData $ getField @"y" b
-                      pure $ y #< y' #|| (y #== y' #&& pfromData (getField @"z" a) #< pfromData (getField @"z" b))
-                  )
+              #&& unTermCont
+                ( do
+                    y <- tcont . plet . pfromData $ getField @"y" a
+                    y' <- tcont . plet . pfromData $ getField @"y" b
+                    pure $ y #< y' #|| (y #== y' #&& pfromData (getField @"z" a) #< pfromData (getField @"z" b))
+                )
           )
 
 lteTrip :: Term s (PTriplet PInteger) -> Term s (PTriplet PInteger) -> Term s PBool
@@ -228,11 +231,12 @@ lteTrip trip1 trip2 = unTermCont $ do
   pure $
     x #< x'
       #|| ( x #== x'
-              #&& ( unTermCont $ do
-                      y <- tcont . plet . pfromData $ getField @"y" a
-                      y' <- tcont . plet . pfromData $ getField @"y" b
-                      pure $ y #< y' #|| (y #== y' #&& pfromData (getField @"z" a) #<= pfromData (getField @"z" b))
-                  )
+              #&& unTermCont
+                ( do
+                    y <- tcont . plet . pfromData $ getField @"y" a
+                    y' <- tcont . plet . pfromData $ getField @"y" b
+                    pure $ y #< y' #|| (y #== y' #&& pfromData (getField @"z" a) #<= pfromData (getField @"z" b))
+                )
           )
 
 -- manual 'pmatch' + 'PDataRecord' Ord impl.

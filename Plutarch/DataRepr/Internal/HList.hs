@@ -1,5 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.DataRepr.Internal.HList (
@@ -64,9 +64,7 @@ indexHRec HNil impossible = case impossible of {}
 -}
 hrecField' ::
   forall name a as.
-  ( (IndexLabel name as ~ a)
-  , ElemOf name a as
-  ) =>
+  ElemOf name a as =>
   HRec as ->
   a
 hrecField' xs = indexHRec xs $ elemOf @name @a @as
@@ -92,7 +90,7 @@ class IndexLabel name as ~ a => ElemOf name a as | as name -> a where
   --    There (There (There Here))
   elemOf :: Elem '(name, a) as
 
-instance {-# OVERLAPPING #-} ElemOf name a ('(name, a) ': as) where
+instance ElemOf name a ('(name, a) ': as) where
   elemOf :: Elem '(name, a) ('(name, a) ': as)
   elemOf = Here
 
@@ -115,19 +113,19 @@ instance
   >>> 2
 -}
 hrecField ::
-  forall name a as b c s.
-  ( IndexLabel name as ~ a
-  , ElemOf name a as
+  forall name c as a b s.
+  ( ElemOf name a as
   , Term s (PAsData b) ~ a
   , PFromDataable b c
   ) =>
   HRec as ->
   Term s c
 hrecField xs = pmaybeFromAsData $ hrecField' @name xs
+{-# DEPRECATED hrecField "please use getField from GHC.Records" #-}
 
 ---------- HasField instances
 instance
-  forall name a as b c s.
+  forall name c as a b s.
   ( IndexLabel name as ~ a
   , ElemOf name a as
   , Term s (PAsData b) ~ a

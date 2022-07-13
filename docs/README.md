@@ -96,6 +96,10 @@ The [Typeclasses section](./Typeclasses.md) discusses the primary typeclasses re
     - [Alternatives to `OverloadedRecordDot`](./Typeclasses/PIsDataRepr%20and%20PDataFields.md#alternatives-to-overloadedrecorddot)
   - [All about constructing data values](./Typeclasses/PIsDataRepr%20and%20PDataFields.md#all-about-constructing-data-values)
   - [Implementing `PIsDataRepr` and friends](./Typeclasses/PIsDataRepr%20and%20PDataFields.md#implementing-pisdatarepr-and-friends)
+- [`PTryFrom`](./Typeclasses/PTryFrom.md)
+  - [Laws](./Typeclasses/PTryFrom.md#laws)
+  - [`PTryFromExcess`](./Typeclasses/PTryFrom.md#ptryfromexcess)
+  - [Recovering only partially](./Typeclasses/PTryFrom.md#recovering-only-partially)
 
 ## Working with Types
 
@@ -139,6 +143,7 @@ Outside of the fundamental user guide, there are rules of thumb and general guid
 - [Prefer statically building constants whenever possible](./Tricks/Prefer%20statically%20building%20constants.md)
 - [Figuring out the representation of a Plutarch type](./Tricks/Representation%20of%20Plutarch%20type.md)
 - [Prefer pattern matching on the result of `pmatch` immediately](./Tricks/Prefer%20matching%20on%20pmatch%20result%20immediately.md)
+- [Working with bound fields yielded by `pletFields`](./Tricks/Working%20with%20bound%20fields.md)
 
 # Common Issues and Troubleshooting
 

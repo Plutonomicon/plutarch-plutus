@@ -17,6 +17,9 @@ module Plutarch.Api.V1 (
   mintingPolicySymbol,
   stakeValidatorHash,
   scriptHash,
+  datumHash,
+  redeemerHash,
+  dataHash,
   mkValidator,
   mkStakeValidator,
   mkMintingPolicy,
@@ -28,9 +31,12 @@ module Plutarch.Api.V1 (
   Value.PValue (PValue),
   Value.PCurrencySymbol (PCurrencySymbol),
   Value.PTokenName (PTokenName),
+  Value.KeyGuarantees (Unsorted, Sorted),
+  Value.AmountGuarantees (NoGuarantees, NonZero, Positive),
 
   -- ** Crypto
   Crypto.PPubKeyHash (PPubKeyHash),
+  Crypto.pubKeyHash,
 
   -- ** DCert
   DCert.PDCert (
@@ -93,13 +99,17 @@ import qualified Plutarch.Api.V1.Value as Value
 
 import Data.Coerce (coerce)
 
-import qualified Plutus.V1.Ledger.Api as Plutus
-import qualified Plutus.V1.Ledger.Scripts as Plutus
+-- note about V2: This should there are no changes in Scripts or V1 itself that affect this module
+import qualified PlutusLedgerApi.V1 as Plutus
+import qualified PlutusLedgerApi.V1.Scripts as Plutus
 
-import Plutarch (compile)
-import Plutarch.Api.Internal.Scripts (hashScriptWithPrefix)
+import Plutarch (Config, compile)
+import Plutarch.Api.Internal.Hashing (hashData, hashScriptWithPrefix)
 import Plutarch.Api.V1.Contexts (PScriptContext)
 import Plutarch.Prelude
+
+import qualified Data.Text as T
+import GHC.Stack (HasCallStack)
 
 -- On-chain Script Types
 
@@ -113,16 +123,16 @@ type PMintingPolicy = PData :--> PScriptContext :--> POpaque
 type PStakeValidator = PData :--> PScriptContext :--> POpaque
 
 -- | Compile a Validator
-mkValidator :: ClosedTerm PValidator -> Plutus.Validator
-mkValidator s = Plutus.Validator $ compile s
+mkValidator :: HasCallStack => Config -> ClosedTerm PValidator -> Plutus.Validator
+mkValidator config s = Plutus.Validator $ either (error . T.unpack) id $ compile config s
 
 -- | Compile a MintingPolicy
-mkMintingPolicy :: ClosedTerm PMintingPolicy -> Plutus.MintingPolicy
-mkMintingPolicy s = Plutus.MintingPolicy $ compile s
+mkMintingPolicy :: HasCallStack => Config -> ClosedTerm PMintingPolicy -> Plutus.MintingPolicy
+mkMintingPolicy config s = Plutus.MintingPolicy $ either (error . T.unpack) id $ compile config s
 
 -- | Compile a StakeValidator
-mkStakeValidator :: ClosedTerm PStakeValidator -> Plutus.StakeValidator
-mkStakeValidator s = Plutus.StakeValidator $ compile s
+mkStakeValidator :: HasCallStack => Config -> ClosedTerm PStakeValidator -> Plutus.StakeValidator
+mkStakeValidator config s = Plutus.StakeValidator $ either (error . T.unpack) id $ compile config s
 
 -- | Hash a Script, with the correct prefix for Plutus V1
 scriptHash :: Plutus.Script -> Plutus.ScriptHash
@@ -139,3 +149,15 @@ mintingPolicySymbol = coerce scriptHash
 -- | Hash a StakeValidator, with the correct prefix for Plutus V1
 stakeValidatorHash :: Plutus.StakeValidator -> Plutus.StakeValidatorHash
 stakeValidatorHash = coerce scriptHash
+
+-- | Hash a Datum.
+datumHash :: Plutus.Datum -> Plutus.DatumHash
+datumHash = coerce . dataHash
+
+-- | Hash a Redeemer.
+redeemerHash :: Plutus.Redeemer -> Plutus.RedeemerHash
+redeemerHash = coerce . dataHash
+
+-- | Hash the data encoded representation of given argument.
+dataHash :: Plutus.ToData a => a -> Plutus.BuiltinByteString
+dataHash = hashData . Plutus.toData
