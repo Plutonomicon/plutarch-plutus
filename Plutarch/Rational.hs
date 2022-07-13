@@ -49,7 +49,7 @@ import Plutarch.Builtin (
  )
 import Plutarch.Integer (PInteger, pdiv, pmod)
 import Plutarch.Lift (pconstant)
-import Plutarch.List (pcons, phead, plength, pnil, ptail)
+import Plutarch.List (pcons, phead, pnil, ptail)
 import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.Positive (PPositive, ptryPositive)
@@ -67,9 +67,20 @@ class PFractional (a :: PType) where
 data PRational s
   = PRational (Term s PInteger) (Term s PPositive)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PEq)
+  deriving anyclass (PlutusType)
 
 instance DerivePlutusType PRational where type DPTStrat _ = PlutusTypeScott
+
+instance PEq PRational where
+  l' #== r' =
+    phoistAcyclic
+      ( plam $ \l r ->
+          pmatch l $ \(PRational ln ld) ->
+            pmatch r $ \(PRational rn rd) ->
+              pto rd * ln #== rn * pto ld
+      )
+      # l'
+      # r'
 
 instance (PNum a, PFractional a) => Fractional (Term s a) where
   (/) = (#/)
@@ -114,8 +125,9 @@ instance PTryFrom PData (PAsData PRational) where
   type PTryFromExcess PData (PAsData PRational) = Flip Term PPositive
   ptryFrom' opq = runTermCont $ do
     (_, ld) <- tcont $ ptryFrom @(PAsData (PBuiltinList PData)) opq
-    tcont $ \f -> pif (plength # ld #== 2) (f ()) (ptraceError "ptryFrom(PRational): data list length should be 2")
-    (_, denm) <- tcont $ ptryFrom @(PAsData PInteger) $ phead #$ ptail # ld
+    ratTail <- tcont . plet $ ptail # ld
+    tcont $ \f -> pif (ptail # ratTail #== pnil) (f ()) $ ptraceError "ptryFrom(PRational): data list length should be 2"
+    (_, denm) <- tcont $ ptryFrom @(PAsData PInteger) $ phead # ratTail
     res <- tcont . plet $ ptryPositive # denm
     pure (punsafeCoerce opq, res)
 
@@ -157,6 +169,7 @@ instance PNum PRational where
       # x'
       # y'
 
+  -- TODO (Optimize): Could this be optimized with an impl in terms of `#+`.
   x' #- y' =
     phoistAcyclic
       ( plam $ \x y -> unTermCont $ do
@@ -219,6 +232,7 @@ instance PFractional PRational where
         pmatch x $ \(PRational xn xd) ->
           pcon $ PRational (pto xd) $ ptryPositive # xn
 
+  -- TODO (Optimize): Could this be optimized with an impl in terms of `#*`.
   x' #/ y' =
     phoistAcyclic
       ( plam $ \x y -> unTermCont $ do
@@ -238,14 +252,14 @@ preduce = phoistAcyclic $
     PRational xn xd' <- tcont $ pmatch x
     xd <- tcont . plet $ pto xd'
     r <- tcont . plet $ pgcd # xn # xd
-    s <- tcont . plet . signum $ xd
+    s <- tcont . plet $ psignum # xd
     pure . pcon $ PRational (s * pdiv # xn # r) $ punsafeDowncast $ s * pdiv # xd # r
 
 pgcd :: Term s (PInteger :--> PInteger :--> PInteger)
 pgcd = phoistAcyclic $
   plam $ \x' y' -> unTermCont $ do
-    x <- tcont . plet $ abs x'
-    y <- tcont . plet $ abs y'
+    x <- tcont . plet $ pabs # x'
+    y <- tcont . plet $ pabs # y'
     pure $ pgcd' # (pmax # x # y) #$ pmin # x # y
 
 -- assumes inputs are non negative and a >= b
@@ -271,7 +285,7 @@ pdenominator :: Term s (PRational :--> PPositive)
 pdenominator = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational _ d) -> d
 
 pfromInteger :: Term s (PInteger :--> PRational)
-pfromInteger = phoistAcyclic $ plam $ \n -> pcon $ PRational n $ punsafeDowncast 1
+pfromInteger = phoistAcyclic $ plam $ \n -> pcon $ PRational n 1
 
 pround :: Term s (PRational :--> PInteger)
 pround = phoistAcyclic $

@@ -13,9 +13,9 @@ truncate.5/4 {"exBudgetCPU":13893565,"exBudgetMemory":33539,"scriptSizeBytes":33
 truncate.7/4 {"exBudgetCPU":15349514,"exBudgetMemory":36642,"scriptSizeBytes":335}
 truncate.1/4 {"exBudgetCPU":12437616,"exBudgetMemory":30436,"scriptSizeBytes":335}
 truncate.-7/4 {"exBudgetCPU":17471417,"exBudgetMemory":40849,"scriptSizeBytes":349}
-properFraction.-1/2 {"exBudgetCPU":40964010,"exBudgetMemory":103120,"scriptSizeBytes":519}
-properFraction.-3/2 {"exBudgetCPU":42787436,"exBudgetMemory":106925,"scriptSizeBytes":521}
-properFraction.-4/3 {"exBudgetCPU":42787436,"exBudgetMemory":106925,"scriptSizeBytes":521}
+properFraction.-1/2 {"exBudgetCPU":40492313,"exBudgetMemory":101522,"scriptSizeBytes":513}
+properFraction.-3/2 {"exBudgetCPU":42315739,"exBudgetMemory":105327,"scriptSizeBytes":515}
+properFraction.-4/3 {"exBudgetCPU":42315739,"exBudgetMemory":105327,"scriptSizeBytes":515}
 data.id.0.5 {"exBudgetCPU":161100,"exBudgetMemory":800,"scriptSizeBytes":17}
 data.id.2 {"exBudgetCPU":161100,"exBudgetMemory":800,"scriptSizeBytes":17}
 data.id.11/3 {"exBudgetCPU":13897101,"exBudgetMemory":33539,"scriptSizeBytes":289}
