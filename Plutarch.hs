@@ -21,6 +21,8 @@ module Plutarch (
   PP.pmatch,
   PP.PCon,
   PP.PMatch,
+  PPR.prettyTerm,
+  PPR.prettyScript,
   PO.printTerm,
   PO.printScript,
   (PL.#$),
@@ -61,6 +63,7 @@ import qualified Plutarch.Internal.PlutusType as PP
 import qualified Plutarch.Internal.Quantification as PQ
 import qualified Plutarch.Internal.ScottEncoding as PS
 import Plutarch.Num ()
+import qualified Plutarch.Pretty as PPR
 import qualified Plutarch.TermCont as PT
 
 -- import orphan instances

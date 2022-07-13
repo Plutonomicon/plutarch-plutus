@@ -35,7 +35,6 @@ import Plutarch.Api.V1 (
  )
 
 import Plutarch.Builtin (
-  PBuiltinMap,
   pforgetData,
   ppairDataBuiltin,
  )
@@ -73,8 +72,6 @@ spec = do
           @(PDataRecord (("foo" ':= PByteString) ': ("bar" ':= PInteger) ': '[]))
           (pdata (pdcons @"foo" # (pdata $ pconstant "baz") #$ pdcons @"bar" # (pdata $ pconstant 42) # pdnil))
         @-> pfails
-      "Map Int String /= Map Int Int"
-        @| mapTestFails @-> pfails
       "PDataSum constr 2"
         @| checkDeep
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString]])
@@ -154,8 +151,6 @@ spec = do
           @(PDataRecord (("foo" ':= PByteString) ': ("bar" ':= PInteger) ': '[]))
           (pdata (pdcons @"foo" # (pdata $ pconstant "baz") #$ pdcons @"bar" # (pdata $ pconstant 42) # pdnil))
         @-> psucceeds
-      "Map Int String == Map Int String"
-        @| mapTestSucceeds @-> psucceeds
       "PDataSum constr 0"
         @| checkDeep
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
@@ -408,26 +403,6 @@ toDatadList = pdata . (foldr go pnil)
   where
     go :: Integer -> Term _ (PBuiltinList (PAsData PInteger)) -> Term _ (PBuiltinList (PAsData PInteger))
     go i acc = pcons # (pdata $ pconstant i) # acc
-
-------------------- Special cases for maps -----------------------------------------
-
-mapTestSucceeds :: ClosedTerm (PAsData (PBuiltinMap PByteString PInteger))
-mapTestSucceeds = unTermCont $ do
-  (val, _) <- TermCont $ ptryFrom $ pforgetData sampleMap
-  pure val
-
-mapTestFails :: ClosedTerm (PAsData (PBuiltinMap PInteger PInteger))
-mapTestFails = unTermCont $ do
-  (val, _) <- TermCont $ ptryFrom $ pforgetData sampleMap
-  pure val
-
-sampleMap :: Term _ (PAsData (PBuiltinMap PByteString PInteger))
-sampleMap =
-  pdata $
-    pcons
-      # (ppairDataBuiltin # (pdata $ pconstant "foo") # (pdata $ pconstant 42)) #$ pcons
-      # (ppairDataBuiltin # (pdata $ pconstant "bar") # (pdata $ pconstant 41))
-      # pnil
 
 ------------------- Sample type with PIsDataRepr -----------------------------------
 

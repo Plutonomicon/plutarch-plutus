@@ -130,6 +130,12 @@ library
     Plutarch.Pair
     Plutarch.Positive
     Plutarch.Prelude
+    Plutarch.Pretty
+    Plutarch.Pretty.Internal.BuiltinConstant
+    Plutarch.Pretty.Internal.Config
+    Plutarch.Pretty.Internal.Name
+    Plutarch.Pretty.Internal.TermUtils
+    Plutarch.Pretty.Internal.Types
     Plutarch.Rational
     Plutarch.Reducible
     Plutarch.Show
@@ -155,6 +161,8 @@ library
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
+    , prettyprinter
+    , random
     , serialise
     , sop-core
     , text
