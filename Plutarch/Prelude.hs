@@ -16,6 +16,7 @@ module Plutarch.Prelude (
   pinl,
   pto,
   pfix,
+  pthrow,
   Type,
   S,
   PType,
@@ -36,10 +37,9 @@ module Plutarch.Prelude (
   PIntegral (pdiv, pmod, pquot, prem),
 
   -- * Rational numbers and utilities
-  PRational,
+  PRational (PRational),
   pnumerator,
   pdenominator,
-  pfromInteger,
   pround,
 
   -- * Booleans and boolean functions

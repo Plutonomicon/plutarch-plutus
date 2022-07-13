@@ -28,6 +28,7 @@ module Plutarch.Builtin (
   pchooseListBuiltin,
 ) where
 
+import Data.Functor.Const (Const)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Generics (Generic)
 import Plutarch (
@@ -91,24 +92,13 @@ import Plutarch.List (
   ptail,
  )
 import Plutarch.Show (PShow (pshow'), pshow)
+import Plutarch.TermCont (TermCont (runTermCont), tcont, unTermCont)
+import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
 import Plutarch.Unit (PUnit)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeDowncast)
 import qualified PlutusCore as PLC
 import PlutusTx (Data (Constr), ToData)
 import qualified PlutusTx
-
-import Plutarch.TermCont (TermCont (runTermCont), tcont, unTermCont)
-
-import Data.Functor.Const (Const)
-
-import Plutarch.TryFrom (
-  PSubtype,
-  PTryFrom,
-  PTryFromExcess,
-  ptryFrom,
-  ptryFrom',
-  pupcast,
- )
 
 -- | Plutus 'BuiltinPair'
 data PBuiltinPair (a :: PType) (b :: PType) (s :: S) = PBuiltinPair (Term s (PBuiltinPair a b))

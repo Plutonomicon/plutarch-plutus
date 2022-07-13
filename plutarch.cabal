@@ -128,6 +128,7 @@ library
     Plutarch.Monadic
     Plutarch.Num
     Plutarch.Pair
+    Plutarch.Positive
     Plutarch.Prelude
     Plutarch.Pretty
     Plutarch.Pretty.Internal.BuiltinConstant
