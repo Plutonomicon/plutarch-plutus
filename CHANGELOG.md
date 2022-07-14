@@ -2,6 +2,14 @@
 
 # Unreleased
 
+- Changed fields of `PTxInfo` whose only representation is data to not be wrapped by `PAsData`.
+
+  Module: `Plutarch.Api.V1.Contexts`; `Plutarch.Api.V2.Contexts`
+  
+- Added `plistData` builtin function wrapper.
+
+  Module: `Plutarch.Builtin`
+
 - Added `PEq` superclass constraint to `POrd`
 
   Included by [#326](https://github.com/Plutonomicon/plutarch/pull/326)

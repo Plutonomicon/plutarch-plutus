@@ -362,7 +362,7 @@ getCredentials ctx =
   Get the hash of the Credential in an input, treating
   PubKey & ValidatorHash identically.
 -}
-inputCredentialHash :: Term s (PAsData PTxInInfo :--> PData)
+inputCredentialHash :: Term s (PTxInInfo :--> PData)
 inputCredentialHash =
   phoistAcyclic $
     plam $ \inp ->
