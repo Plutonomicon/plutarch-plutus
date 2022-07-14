@@ -27,23 +27,27 @@ spec = do
                   pure perror
            )
           @-> \res ->
-            passert $ (pfromData $ pfromJust # res) #== pconstant inp
+            passert (pfromJust # res #== pconstant inp)
       "pgetContinuingOutputs"
         @| ( unTermCont $ do
               ctxF <- tcont $ pletFields @["txInfo", "purpose"] ctx
               pmatchC (getField @"purpose" ctxF) >>= \case
                 PSpending outRef' -> do
                   let outRef = pfield @"_0" # outRef'
-                      inputs = pfield @"inputs" # (getField @"txInfo" ctxF)
-                      outputs = pfield @"outputs" # (getField @"txInfo" ctxF)
+                      inputs = pfield @"inputs" #$ getField @"txInfo" ctxF
+                      outputs = pfield @"outputs" #$ getField @"txInfo" ctxF
                   pure $ pgetContinuingOutputs # inputs # outputs # outRef
                 _ ->
                   pure perror
            )
           @-> \txOuts ->
-            passert $ (pmap # plam pfromData # txOuts) #== pconstant validOutputs0
+            passert $ txOuts #== pconstant validOutputs0
       "pparseDatum"
-        @| ( pparseDatum @(PBuiltinList (PAsData PInteger)) # pconstant "d0" # (pfield @"datums" #$ pfield @"txInfo" # ctx)
+        @| ( pparseDatum @(PBuiltinList (PAsData PInteger))
+              # pconstant "d0"
+                #$ pfield @"datums"
+                #$ pfield @"txInfo"
+              # ctx
            )
           @-> \res ->
             passert $ res #== pcon (PJust $ pdata $ d0DatTerm)
