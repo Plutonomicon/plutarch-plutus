@@ -37,8 +37,6 @@
   # https://github.com/mokus0/th-extras/pull/17
   inputs.th-extras.url = "github:mokus0/th-extras?rev=787ed752c1e5d41b5903b74e171ed087de38bffa";
   inputs.th-extras.flake = false;
-  inputs.Shrinker.url = "github:Plutonomicon/Shrinker";
-  inputs.Shrinker.flake = false;
   inputs.haskell-language-server.url = "github:haskell/haskell-language-server";
   inputs.haskell-language-server.flake = false;
 
@@ -458,13 +456,10 @@
         let pkgSet = (nixpkgsFor system).haskell-nix.cabalProject' ({
           src = ./.;
           compiler-nix-name = ghcName;
+          cabalProjectFileName = "cabal.project.nix";
           extraSources =
             if ghcName == ghcVersion then extraSources
-            else map (addSubDir inputs.plutus "plutus-tx-plugin") extraSources
-              ++ [{
-              src = inputs.Shrinker;
-              subdirs = [ "." ];
-            }];
+            else map (addSubDir inputs.plutus "plutus-tx-plugin") extraSources;
           modules = [
             (haskellModule system)
             {
@@ -503,9 +498,12 @@
               ps.hspec-discover
               ps.hspec-hedgehog
               ps.hspec-golden
-              #ps.shrinker
-              #ps.shrinker-testing
             ];
+
+            shellHook = ''
+              export NIX_SHELL_TARGET="scripts"
+              ln -fs cabal.project.nix cabal.project
+            '';
           };
         } // (if ghcName == ghcVersion then {
           inherit cabalProjectLocal;

@@ -1,0 +1,5 @@
+packages:
+  ./.
+  ./plutarch-*
+
+benchmarks: true
