@@ -238,7 +238,7 @@ mockCtx =
 Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf data (Constr 0 [List [Constr 0 [Constr 0 [Constr 0 [B ""],I 1],Constr 0 [Constr 0 [Constr 0 [B "\SOH#"],Constr 1 []],Map [],Constr 1 []]]],List [],Map [],Map [],List [],List [],Constr 0 [Constr 0 [Constr 1 [I 1],Constr 1 []],Constr 0 [Constr 1 [I 2],Constr 1 []]],List [],List [],Constr 0 [B ""]])))))
 ```
 
-> Aside: You can find the definition of `evalWithArgsT` above - [Compiling and Running](./GUIDE.md#compiling-and-running).
+> Aside: You can find the definition of `evalWithArgsT` above - [Compiling and Running](./README.md#compiling-and-running).
 
 But we're not done yet! We want `txInfoInputs`. You may have noticed where exactly it is located on the above output. See that `List …`? Inside the outermost `Constr`'s fields? That's our `txInfoInputs`!
 
