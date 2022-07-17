@@ -8,13 +8,12 @@
   inputs.iohk-nix.url = "github:input-output-hk/iohk-nix";
   inputs.iohk-nix.flake = false;
   # we use sphinxcontrib-haddock input
-  inputs.plutus.url = "github:L-as/plutus?ref=ghc9";
-  # https://github.com/input-output-hk/cardano-prelude/pull/162
-  inputs.cardano-prelude.url = "github:locallycompact/cardano-prelude?rev=93f95047bb36a055bdd56fb0cafd887c072cdce2";
+  inputs.plutus.url = "github:input-output-hk/plutus?ref=69ab98c384703172f898eb5bcad1078ded521426";
+  inputs.cardano-prelude.url = "github:input-output-hk/cardano-prelude?rev=bb4ed71ba8e587f672d06edf9d2e376f4b055555";
   inputs.cardano-prelude.flake = false;
-  inputs.cardano-base.url = "github:input-output-hk/cardano-base";
+  inputs.cardano-base.url = "github:input-output-hk/cardano-base?ref=0f3a867493059e650cda69e20a5cbf1ace289a57";
   inputs.cardano-base.flake = false;
-  inputs.cardano-crypto.url = "github:input-output-hk/cardano-crypto?rev=07397f0e50da97eaa0575d93bee7ac4b2b2576ec";
+  inputs.cardano-crypto.url = "github:input-output-hk/cardano-crypto?rev=f73079303f663e028288f9f4a9e08bcca39a923e";
   inputs.cardano-crypto.flake = false;
   # https://github.com/Quid2/flat/pull/27
   inputs.flat.url = "github:Quid2/flat?rev=41a040c413351e021982bb78bd00f750628f8060";
@@ -189,29 +188,7 @@
         "terminfo"
       ];
 
-      tools.fourmolu = { };
-      tools.haskell-language-server = {
-        modules = [
-          { inherit nonReinstallablePkgs; }
-        ];
-        compiler-nix-name = ghcVersion;
-        # For some reason it doesn't use the latest version automatically.
-        index-state =
-          let l = builtins.attrNames (import "${haskell-nix.inputs.hackage}/index-state-hashes.nix"); in
-          builtins.elemAt l (builtins.length l - 1);
-        name = "haskell-language-server";
-        version = "latest";
-        cabalProjectLocal = ''
-          allow-newer: *:*
-
-          constraints:
-            primitive-unlifted < 1.0.0.0
-
-          package haskell-language-server
-            flags: +use-ghc-stub +pedantic +ignore-plugins-ghc-bounds -alternateNumberFormat -brittany -class -eval -haddockComments -hlint -retrie -splice -stylishhaskell -tactic
-        '';
-        src = "${inputs.haskell-language-server}";
-      };
+      tools.haskell-language-server = {};
 
       haskellModule = system: {
         inherit nonReinstallablePkgs; # Needed only so we can use hspec; https://github.com/Plutonomicon/plutarch/issues/409
@@ -641,7 +618,7 @@
       };
 
       # Default build configuration.
-      project = self.projectMatrix.ghc9.nodev;
+      project = self.projectMatrix.ghc810.nodev;
       flake = perSystem (system: self.project.${system}.flake { });
 
       haddockProject = perSystem (projectFor false);
