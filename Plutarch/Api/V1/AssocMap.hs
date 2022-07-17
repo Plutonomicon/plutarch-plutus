@@ -91,7 +91,7 @@ import Plutarch.Prelude (
  )
 import Plutarch.Rec (ScottEncoded, ScottEncoding, field, letrec)
 import Plutarch.Show (PShow)
-import Plutarch.Unsafe (punsafeDowncast)
+import Plutarch.Unsafe (punsafeDowncast, punsafeCoerce)
 
 import qualified Rank2
 
@@ -263,7 +263,7 @@ pfromAscList :: (POrd k, PIsData k, PIsData v) => Term s (PBuiltinMap k v :--> P
 pfromAscList = plam $ (passertSorted #) . pcon . PMap
 
 -- | Assert the map is properly sorted.
-passertSorted :: (POrd k, PIsData k, PIsData v) => Term s (PMap _ k v :--> PMap 'Sorted k v)
+passertSorted :: (POrd k, PIsData k, PIsData v) => Term s (PMap any k v :--> PMap 'Sorted k v)
 passertSorted = phoistAcyclic $
   plam $ \map ->
     precList
@@ -275,7 +275,7 @@ passertSorted = phoistAcyclic $
                 (ptraceError "unsorted map")
                 (self # xs # plam (#< k))
       )
-      (const $ plam $ const map)
+      (const . plam . const $ punsafeCoerce map)
       # pto map
       # plam (const $ pcon PFalse)
 
