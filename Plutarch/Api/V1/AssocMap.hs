@@ -173,7 +173,7 @@ pfindWithDefault = phoistAcyclic $ plam $ \def key -> foldAtData # pdata key # d
 {- | Look up the given key in a 'PMap'; return the default if the key is
  absent or apply the argument function to the value data if present.
 -}
-pfoldAt :: (PIsData k, PIsData v) => Term s (k :--> r :--> (PAsData v :--> r) :--> PMap _ k v :--> r)
+pfoldAt :: (PIsData k, PIsData v) => Term s (k :--> r :--> (PAsData v :--> r) :--> PMap any k v :--> r)
 pfoldAt = phoistAcyclic $
   plam $ \key -> foldAtData # pdata key
 
@@ -182,7 +182,7 @@ pfoldAt = phoistAcyclic $
 -}
 foldAtData ::
   (PIsData k, PIsData v) =>
-  Term s (PAsData k :--> r :--> (PAsData v :--> r) :--> PMap _ k v :--> r)
+  Term s (PAsData k :--> r :--> (PAsData v :--> r) :--> PMap any k v :--> r)
 foldAtData = phoistAcyclic $
   plam $ \key def apply map ->
     precList
@@ -412,7 +412,7 @@ mapUnion = plam $ \combine ->
 -- | Difference of two maps. Return elements of the first map not existing in the second map.
 pdifference ::
   (PIsData k, PIsData a, PIsData b) =>
-  Term s (PMap g k a :--> PMap _ k b :--> PMap g k a)
+  Term s (PMap g k a :--> PMap any k b :--> PMap g k a)
 pdifference = phoistAcyclic $
   plam $ \left right ->
     pcon . PMap $
@@ -429,13 +429,13 @@ pdifference = phoistAcyclic $
         # pto left
 
 -- | Tests if all values in the map satisfy the given predicate.
-pall :: PIsData v => Term s ((v :--> PBool) :--> PMap _ k v :--> PBool)
+pall :: PIsData v => Term s ((v :--> PBool) :--> PMap any k v :--> PBool)
 pall = phoistAcyclic $
   plam $ \pred map ->
     List.pall # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto map
 
 -- | Tests if anu value in the map satisfies the given predicate.
-pany :: PIsData v => Term s ((v :--> PBool) :--> PMap _ k v :--> PBool)
+pany :: PIsData v => Term s ((v :--> PBool) :--> PMap any k v :--> PBool)
 pany = phoistAcyclic $
   plam $ \pred map ->
     List.pany # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto map

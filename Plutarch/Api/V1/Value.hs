@@ -212,7 +212,7 @@ psingletonData = phoistAcyclic $
       )
 
 -- | Get the quantity of the given currency in the 'PValue'.
-pvalueOf :: Term s (PValue _ _ :--> PCurrencySymbol :--> PTokenName :--> PInteger)
+pvalueOf :: Term s (PValue any0 any1 :--> PCurrencySymbol :--> PTokenName :--> PInteger)
 pvalueOf = phoistAcyclic $
   plam $ \value symbol token ->
     AssocMap.pfoldAt
@@ -282,7 +282,7 @@ plovelaceValueOf = phoistAcyclic $
 punionWith ::
   Term
     s
-    ( (PInteger :--> PInteger :--> PInteger) :--> PValue 'Sorted _ :--> PValue 'Sorted _
+    ( (PInteger :--> PInteger :--> PInteger) :--> PValue 'Sorted any0 :--> PValue 'Sorted any1
         :--> PValue 'Sorted 'NoGuarantees
     )
 punionWith = phoistAcyclic $
@@ -301,8 +301,8 @@ punionWithData ::
   Term
     s
     ( (PAsData PInteger :--> PAsData PInteger :--> PAsData PInteger)
-        :--> PValue 'Sorted _
-        :--> PValue 'Sorted _
+        :--> PValue 'Sorted any0
+        :--> PValue 'Sorted any1
         :--> PValue 'Sorted 'NoGuarantees
     )
 punionWithData = phoistAcyclic $
@@ -314,7 +314,7 @@ punionWithData = phoistAcyclic $
         # pto y
 
 -- | Normalize the argument to contain no zero quantity nor empty token map.
-pnormalize :: Term s (PValue 'Sorted _ :--> PValue 'Sorted 'NonZero)
+pnormalize :: Term s (PValue 'Sorted any :--> PValue 'Sorted 'NonZero)
 pnormalize = phoistAcyclic $
   plam $ \value ->
     pcon . PValue $
@@ -330,12 +330,12 @@ pnormalize = phoistAcyclic $
       pif (intData #== zeroData) (pcon PNothing) (pcon $ PJust intData)
 
 -- | Assert the value is properly sorted and normalized.
-passertSorted :: Term s (PValue _ _ :--> PValue 'Sorted 'NonZero)
-passertSorted = phoistAcyclic $
+passertSorted :: forall s any0 any1. Term s (PValue any0 any1 :--> PValue 'Sorted 'NonZero)
+passertSorted =
   plam $ \value ->
     pif
       ( AssocMap.pany
-          # ( plam $
+          # plam (
                 \submap ->
                   AssocMap.pnull # (AssocMap.passertSorted # submap)
                     #|| AssocMap.pany # plam (#== 0) # submap
@@ -343,7 +343,7 @@ passertSorted = phoistAcyclic $
           # pto value
       )
       (ptraceError "Abnormal Value")
-      (pcon $ PValue $ AssocMap.passertSorted # pto value)
+      . pcon . PValue . punsafeCoerce $ AssocMap.passertSorted # pto value
 
 -- | Assert all amounts in the value are positive.
 passertPositive :: Term s (PValue 'Sorted 'NonZero :--> PValue 'Sorted 'Positive)
