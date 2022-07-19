@@ -45,7 +45,7 @@ import qualified PlutusTx.AssocMap as PlutusMap
 import qualified PlutusTx.Monoid as PlutusTx
 import qualified PlutusTx.Semigroup as PlutusTx
 
-import Plutarch.Builtin (PBuiltinList (PCons, PNil), PBuiltinMap, ppairDataBuiltin)
+import Plutarch.Builtin (ppairDataBuiltin, PBuiltinMap)
 import Plutarch.Lift (
   PConstantDecl,
   PConstantRepr,
@@ -56,46 +56,17 @@ import Plutarch.Lift (
   pconstantToRepr,
  )
 import qualified Plutarch.List as List
-import Plutarch.Prelude (
-  DerivePNewtype (DerivePNewtype),
-  PAsData,
-  PBool (PFalse),
-  PBuiltinPair,
-  PCon (pcon),
-  PConstantData,
-  PEq ((#==)),
-  PIsData,
-  PLiftData,
-  PListLike (pcons, pnil),
-  PMatch (pmatch),
-  PMaybe (PJust, PNothing),
-  POrd ((#<)),
-  PType,
-  PlutusType,
-  S,
-  Term,
-  pdata,
-  pfromData,
-  pfstBuiltin,
-  phoistAcyclic,
-  pif,
-  plam,
-  plet,
-  precList,
-  psndBuiltin,
-  pto,
-  ptraceError,
-  (#),
-  (#$),
-  type (:-->),
- )
+import Plutarch.Prelude hiding (pall, pany, pfilter, pmap, pnull, psingleton)
 import Plutarch.Rec (ScottEncoded, ScottEncoding, field, letrec)
 import Plutarch.Show (PShow)
-import Plutarch.Unsafe (punsafeDowncast, punsafeCoerce)
+import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
+
 
 import qualified Rank2
 
 import Prelude hiding (all, any, filter, lookup, null)
+
+import Data.Traversable (for)
 
 data KeyGuarantees = Sorted | Unsorted
 
@@ -123,35 +94,34 @@ instance
   type PConstanted (PlutusMap.Map k v) = PMap 'Unsorted (PConstanted k) (PConstanted v)
   pconstantToRepr m = (\(x, y) -> (Plutus.toData x, Plutus.toData y)) <$> PlutusMap.toList m
   pconstantFromRepr m = fmap PlutusMap.fromList $
-    flip traverse m $ \(x, y) -> do
+    for m $ \(x, y) -> do
       x' <- Plutus.fromData x
       y' <- Plutus.fromData y
       Just (x', y')
 
 -- | Tests whether the map is empty.
-pnull :: Term s (PMap _ k v :--> PBool)
+pnull :: Term s (PMap any k v :--> PBool)
 pnull = plam (\map -> List.pnull # pto map)
 
 -- | Look up the given key in a 'PMap'.
-plookup :: (PIsData k, PIsData v) => Term s (k :--> PMap _ k v :--> PMaybe v)
+plookup :: (PIsData k, PIsData v) => Term s (k :--> PMap any k v :--> PMaybe v)
 plookup = phoistAcyclic $
   plam $ \key ->
     plookupDataWith
-      # (phoistAcyclic $ plam $ \pair -> pcon $ PJust $ pfromData $ psndBuiltin # pair)
+      # phoistAcyclic (plam $ \pair -> pcon $ PJust $ pfromData $ psndBuiltin # pair)
       # pdata key
 
 -- | Look up the given key data in a 'PMap'.
-plookupData :: (PIsData k, PIsData v) => Term s (PAsData k :--> PMap _ k v :--> PMaybe (PAsData v))
-plookupData = plookupDataWith # (phoistAcyclic $ plam $ \pair -> pcon $ PJust $ psndBuiltin # pair)
+plookupData :: Term s (PAsData k :--> PMap any k v :--> PMaybe (PAsData v))
+plookupData = plookupDataWith # phoistAcyclic (plam $ \pair -> pcon $ PJust $ psndBuiltin # pair)
 
 -- | Look up the given key data in a 'PMap', applying the given function to the found key-value pair.
 plookupDataWith ::
-  (PIsData k, PIsData v) =>
   Term
     s
     ( (PBuiltinPair (PAsData k) (PAsData v) :--> PMaybe x)
         :--> PAsData k
-        :--> PMap _ k v
+        :--> PMap any k v
         :--> PMaybe x
     )
 plookupDataWith = phoistAcyclic $
@@ -167,22 +137,20 @@ plookupDataWith = phoistAcyclic $
       # pto map
 
 -- | Look up the given key in a 'PMap', returning the default value if the key is absent.
-pfindWithDefault :: (PIsData k, PIsData v) => Term s (v :--> k :--> PMap _ k v :--> v)
+pfindWithDefault :: (PIsData k, PIsData v) => Term s (v :--> k :--> PMap any k v :--> v)
 pfindWithDefault = phoistAcyclic $ plam $ \def key -> foldAtData # pdata key # def # plam pfromData
 
 {- | Look up the given key in a 'PMap'; return the default if the key is
  absent or apply the argument function to the value data if present.
 -}
-pfoldAt :: (PIsData k, PIsData v) => Term s (k :--> r :--> (PAsData v :--> r) :--> PMap any k v :--> r)
+pfoldAt :: PIsData k => Term s (k :--> r :--> (PAsData v :--> r) :--> PMap any k v :--> r)
 pfoldAt = phoistAcyclic $
   plam $ \key -> foldAtData # pdata key
 
 {- | Look up the given key data in a 'PMap'; return the default if the key is
  absent or apply the argument function to the value data if present.
 -}
-foldAtData ::
-  (PIsData k, PIsData v) =>
-  Term s (PAsData k :--> r :--> (PAsData v :--> r) :--> PMap any k v :--> r)
+foldAtData :: Term s (PAsData k :--> r :--> (PAsData v :--> r) :--> PMap any k v :--> r)
 foldAtData = phoistAcyclic $
   plam $ \key def apply map ->
     precList
@@ -199,7 +167,7 @@ foldAtData = phoistAcyclic $
 pinsert :: (POrd k, PIsData k, PIsData v) => Term s (k :--> v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
 pinsert = phoistAcyclic $
   plam $ \key val ->
-    rebuildAtKey # (plam (pcons # (ppairDataBuiltin # pdata key # pdata val) #)) # key
+    rebuildAtKey # plam (pcons # (ppairDataBuiltin # pdata key # pdata val) #) # key
 
 -- | Insert a new data-encoded key/value pair into the map, overiding the previous if any.
 pinsertData ::
@@ -207,7 +175,7 @@ pinsertData ::
   Term s (PAsData k :--> PAsData v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
 pinsertData = phoistAcyclic $
   plam $ \key val ->
-    rebuildAtKey # (plam (pcons # (ppairDataBuiltin # key # val) #)) # pfromData key
+    rebuildAtKey # plam (pcons # (ppairDataBuiltin # key # val) #) # pfromData key
 
 -- | Delete a key from the map.
 pdelete :: (POrd k, PIsData k) => Term s (k :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
@@ -410,9 +378,7 @@ mapUnion = plam $ \combine ->
       }
 
 -- | Difference of two maps. Return elements of the first map not existing in the second map.
-pdifference ::
-  (PIsData k, PIsData a, PIsData b) =>
-  Term s (PMap g k a :--> PMap any k b :--> PMap g k a)
+pdifference :: PIsData k => Term s (PMap g k a :--> PMap any k b :--> PMap g k a)
 pdifference = phoistAcyclic $
   plam $ \left right ->
     pcon . PMap $
@@ -420,9 +386,9 @@ pdifference = phoistAcyclic $
         ( \self x xs ->
             plet (self # xs) $ \xs' ->
               pfoldAt
-                # (pfromData $ pfstBuiltin # x)
+                # pfromData (pfstBuiltin # x)
                 # (pcons # x # xs')
-                # (plam $ const xs')
+                # plam (const xs')
                 # right
         )
         (const pnil)
