@@ -37,18 +37,16 @@ import Plutarch.Pretty.Internal.TermUtils (
   pattern IfThenElseLikeAST,
  )
 import Plutarch.Pretty.Internal.Types (
-  PrettyCursor (AppliedOver, Applying, Normal, UnaryArg),
+  PrettyCursor (Normal, Special),
   PrettyMonad,
   PrettyState (PrettyState, ps'cursor, ps'nameMap),
-  appliedCursor,
-  applyingCursor,
   builtinFunAtRef,
   forkState,
   insertBindings,
   insertName,
   nameOfRef,
   normalizeCursor,
-  unaryCursor,
+  specializeCursor,
  )
 
 -- | 'prettyTerm' for pre-compiled 'Script's.
@@ -231,8 +229,6 @@ prettyUPLC uplc = runST $ do
   (doc, _) <- runReaderT (go uplc) stGen `runStateT` PrettyState mempty mempty Normal
   pure doc
   where
-    prettyUnaryParens unaryOp t = modify normalizeCursor *> go t <&> (\x -> unaryOp <> PP.parens x)
-
     go :: Term DeBruijn DefaultUni DefaultFun () -> PrettyMonad s (PP.Doc ())
     go (Constant _ c) = pure $ prettyConstant c
     go (Builtin _ b) = pure $ PP.pretty b
@@ -250,28 +246,25 @@ prettyUPLC uplc = runST $ do
         Var () (DeBruijn (builtinFunAtRef ps'nameMap -> Just PLC.IfThenElse)) ->
           prettyIfThenElse (forkState . go) cond trueBranch falseBranch
         _ -> case ast of
-          Force _ t@Apply {} -> prettyUnaryParens "!" t
+          Force _ t@Apply {} -> modify specializeCursor *> go t <&> ("!" <>)
           _ -> error "impossible: IfThenElseLikeAST"
-    go (Force _ t@Apply {}) = prettyUnaryParens "!" t
-    go (Force _ t@LamAbs {}) = prettyUnaryParens "!" t
-    go (Force _ t) = modify unaryCursor *> go t <&> ("!" <>)
-    go (Delay _ t@Apply {}) = prettyUnaryParens "~" t
-    go (Delay _ t@LamAbs {}) = prettyUnaryParens "~" t
-    go (Delay _ t) = modify unaryCursor *> go t <&> ("~" <>)
+    go (Force _ t) = modify specializeCursor *> go t <&> ("!" <>)
+    go (Delay _ t) = modify specializeCursor *> go t <&> ("~" <>)
     go (LamAbs _ _ t') = do
-      currState <- get
+      currState@PrettyState {ps'cursor} <- get
       let (depth, bodyTerm) = unwrapLamAbs 0 t'
       names <- traverse (const freshVarName) [0 .. depth]
       -- Add all the new names to the nameMap, starting with 0 index.
       put $ insertBindings names currState
       modify' normalizeCursor
       funcBody <- forkState $ go bodyTerm
-      pure . PP.parens . PP.hang indentWidth $
+      pure . parensOnCursor ps'cursor . PP.hang indentWidth $
         PP.sep
           [ "\\" <> PP.hsep (reverse $ map PP.pretty names) <+> "->"
           , funcBody
           ]
     go (Apply _ (LamAbs _ _ t) firstArg) = do
+      PrettyState {ps'cursor} <- get
       let (restArgs, coreF) = unwrapBindings [] t
           helper (name, expr) = do
             modify' normalizeCursor
@@ -290,7 +283,7 @@ prettyUPLC uplc = runST $ do
         modify' (insertName newName) $> PP.flatAlt PP.hardline "; " <> bindingDoc
       modify' normalizeCursor
       coreExprDoc <- go coreF
-      pure $
+      pure . parensOnCursor ps'cursor $
         PP.align $
           PP.vsep
             [ "let" <+> PP.align (firstBindingDoc <> restBindingDoc)
@@ -300,9 +293,9 @@ prettyUPLC uplc = runST $ do
       PrettyState {ps'cursor} <- get
       let (l, f) = unwrapApply [] t
           args = l <> [arg]
-      functionDoc <- forkState $ modify' applyingCursor *> go f
-      argsDoc <- modify' appliedCursor *> traverse (forkState . go) args
-      (if ps'cursor == AppliedOver then pure . PP.parens else pure) $
+      functionDoc <- forkState $ modify' specializeCursor *> go f
+      argsDoc <- modify' specializeCursor *> traverse (forkState . go) args
+      pure . parensOnCursor ps'cursor $
         PP.hang indentWidth $ PP.sep $ functionDoc : argsDoc
 
 prettyIfThenElse ::
@@ -317,5 +310,10 @@ prettyIfThenElse cont cond trueBranch falseBranch = do
   condAst <- cont cond
   trueAst <- cont trueBranch
   falseAst <- cont falseBranch
-  (if ps'cursor `elem` [Applying, AppliedOver, UnaryArg] then pure . PP.parens else pure) $
+  pure . parensOnCursor ps'cursor $
     PP.hang indentWidth $ PP.vsep ["if" <+> condAst, "then" <+> trueAst, "else" <+> falseAst]
+
+-- | Wrap prettification result parens depending on cursor state.
+parensOnCursor :: PrettyCursor -> PP.Doc ann -> PP.Doc ann
+parensOnCursor cursor = do
+  if cursor == Special then PP.parens else id
