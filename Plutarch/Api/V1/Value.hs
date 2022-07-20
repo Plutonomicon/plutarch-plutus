@@ -124,8 +124,12 @@ instance PEq (PValue 'Sorted 'NonZero) where
 Use 'pcheckBinRel' if 'AmountGuarantees' is 'NoGuarantees'.
 -}
 instance POrd (PValue 'Sorted 'Positive) where
-  a #< b = pforgetPositive @_ @'Sorted @'NonZero a #< pforgetPositive b
-  a #<= b = pforgetPositive @_ @'Sorted @'NonZero a #<= pforgetPositive b
+  a #< b = a' #< pforgetPositive b
+    where
+      a' = pforgetPositive a :: Term _ (PValue 'Sorted 'NonZero)
+  a #<= b = a' #<= pforgetPositive b
+    where
+      a' = pforgetPositive a :: Term _ (PValue 'Sorted 'NonZero)
 
 {- | Partial ordering implementation for sorted 'PValue' with 'NonZero' amounts.
 
@@ -238,7 +242,7 @@ pcheckBinRel = phoistAcyclic $
                 # l2
             )
             l1
-     in inner # pto (pto $ pto m1) # pto (pto $ pto m2)
+     in inner # (pto . pto $ pto m1) # (pto . pto $ pto m2)
   where
     dat0 :: ClosedTerm (PAsData PInteger)
     dat0 = pconstantData 0
@@ -456,22 +460,20 @@ pnormalize = phoistAcyclic $
       pif (intData #== zeroData) (pcon PNothing) (pcon $ PJust intData)
 
 -- | Assert the value is properly sorted and normalized.
-passertSorted :: forall anyKey anyAmount s. Term s (PValue anyKey anyAmount :--> PValue 'Sorted 'NonZero)
+passertSorted :: Term s (PValue anyKey anyAmount :--> PValue 'Sorted 'NonZero)
 passertSorted = phoistAcyclic $
   plam $ \value ->
     pif
       ( AssocMap.pany
-          # plam (
-                \submap ->
-                  AssocMap.pnull # (AssocMap.passertSorted # submap)
-                    #|| AssocMap.pany # plam (#== 0) # submap
+          # plam
+            ( \submap ->
+                AssocMap.pnull # (AssocMap.passertSorted # submap)
+                  #|| AssocMap.pany # plam (#== 0) # submap
             )
           # pto value
       )
       (ptraceError "Abnormal Value")
-      (let valueMap :: Term _ (PMap anyKey PCurrencySymbol (PMap 'Sorted PTokenName PInteger))
-            = punsafeCoerce $ pto value
-      in pcon $ PValue $ AssocMap.passertSorted # valueMap)
+      . pcon . PValue $ AssocMap.passertSorted #$ punsafeCoerce $ pto value
 
 -- | Assert all amounts in the value are positive.
 passertPositive :: Term s (PValue 'Sorted 'NonZero :--> PValue 'Sorted 'Positive)
