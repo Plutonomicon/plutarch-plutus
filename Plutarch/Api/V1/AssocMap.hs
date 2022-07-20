@@ -39,6 +39,9 @@ module Plutarch.Api.V1.AssocMap (
   pdifference,
   punionWith,
   punionWithData,
+
+  -- * Partial order operations
+  pcheckBinRel,
 ) where
 
 import qualified PlutusLedgerApi.V1 as Plutus
@@ -60,6 +63,7 @@ import Plutarch.Lift (
  )
 import qualified Plutarch.List as List
 import Plutarch.Prelude hiding (pall, pany, pfilter, pmap, pnull, psingleton)
+import qualified Plutarch.Prelude as PPrelude
 import Plutarch.Show (PShow)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import qualified PlutusCore as PLC
@@ -67,6 +71,7 @@ import qualified PlutusCore as PLC
 import Prelude hiding (all, any, filter, lookup, null)
 
 import Data.Proxy (Proxy (Proxy))
+import Data.Traversable (for)
 
 data KeyGuarantees = Sorted | Unsorted
 
@@ -108,17 +113,17 @@ instance
   type PConstanted (PlutusMap.Map k v) = PMap 'Unsorted (PConstanted k) (PConstanted v)
   pconstantToRepr m = (\(x, y) -> (Plutus.toData x, Plutus.toData y)) <$> PlutusMap.toList m
   pconstantFromRepr m = fmap PlutusMap.fromList $
-    flip traverse m $ \(x, y) -> do
+    for m $ \(x, y) -> do
       x' <- Plutus.fromData x
       y' <- Plutus.fromData y
       Just (x', y')
 
 -- | Tests whether the map is empty.
-pnull :: Term s (PMap _ k v :--> PBool)
+pnull :: Term s (PMap any k v :--> PBool)
 pnull = plam (\map -> List.pnull # pto map)
 
 -- | Look up the given key in a 'PMap'.
-plookup :: (PIsData k, PIsData v) => Term s (k :--> PMap _ k v :--> PMaybe v)
+plookup :: (PIsData k, PIsData v) => Term s (k :--> PMap any k v :--> PMaybe v)
 plookup = phoistAcyclic $
   plam $ \key ->
     plookupDataWith
@@ -126,17 +131,16 @@ plookup = phoistAcyclic $
       # pdata key
 
 -- | Look up the given key data in a 'PMap'.
-plookupData :: (PIsData k, PIsData v) => Term s (PAsData k :--> PMap _ k v :--> PMaybe (PAsData v))
+plookupData :: Term s (PAsData k :--> PMap any k v :--> PMaybe (PAsData v))
 plookupData = plookupDataWith # phoistAcyclic (plam $ \pair -> pcon $ PJust $ psndBuiltin # pair)
 
 -- | Look up the given key data in a 'PMap', applying the given function to the found key-value pair.
 plookupDataWith ::
-  (PIsData k, PIsData v) =>
   Term
     s
     ( (PBuiltinPair (PAsData k) (PAsData v) :--> PMaybe x)
         :--> PAsData k
-        :--> PMap _ k v
+        :--> PMap any k v
         :--> PMaybe x
     )
 plookupDataWith = phoistAcyclic $
@@ -152,22 +156,20 @@ plookupDataWith = phoistAcyclic $
       # pto map
 
 -- | Look up the given key in a 'PMap', returning the default value if the key is absent.
-pfindWithDefault :: (PIsData k, PIsData v) => Term s (v :--> k :--> PMap _ k v :--> v)
+pfindWithDefault :: (PIsData k, PIsData v) => Term s (v :--> k :--> PMap any k v :--> v)
 pfindWithDefault = phoistAcyclic $ plam $ \def key -> foldAtData # pdata key # def # plam pfromData
 
 {- | Look up the given key in a 'PMap'; return the default if the key is
  absent or apply the argument function to the value data if present.
 -}
-pfoldAt :: (PIsData k, PIsData v) => Term s (k :--> r :--> (PAsData v :--> r) :--> PMap _ k v :--> r)
+pfoldAt :: PIsData k => Term s (k :--> r :--> (PAsData v :--> r) :--> PMap any k v :--> r)
 pfoldAt = phoistAcyclic $
   plam $ \key -> foldAtData # pdata key
 
 {- | Look up the given key data in a 'PMap'; return the default if the key is
  absent or apply the argument function to the value data if present.
 -}
-foldAtData ::
-  (PIsData k, PIsData v) =>
-  Term s (PAsData k :--> r :--> (PAsData v :--> r) :--> PMap _ k v :--> r)
+foldAtData :: Term s (PAsData k :--> r :--> (PAsData v :--> r) :--> PMap any k v :--> r)
 foldAtData = phoistAcyclic $
   plam $ \key def apply map ->
     precList
@@ -323,8 +325,8 @@ instance DerivePlutusType (MapUnionCarrier k v) where type DPTStrat _ = PlutusTy
 
 mapUnionCarrier :: (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapUnionCarrier k v :--> MapUnionCarrier k v)
 mapUnionCarrier = phoistAcyclic $ plam \combine self ->
-  let mergeInsert = (pmatch self \(MapUnionCarrier {mergeInsert}) -> mergeInsert)
-      merge = (pmatch self \(MapUnionCarrier {merge}) -> merge)
+  let mergeInsert = pmatch self \(MapUnionCarrier {mergeInsert}) -> mergeInsert
+      merge = pmatch self \(MapUnionCarrier {merge}) -> merge
    in pcon $
         MapUnionCarrier
           { merge = plam $ \xs ys -> pmatch xs $ \case
@@ -378,9 +380,7 @@ punionWithData = phoistAcyclic $
     pcon $ PMap $ (pmatch (mapUnion # combine) \(MapUnionCarrier {merge}) -> merge) # pto x # pto y
 
 -- | Difference of two maps. Return elements of the first map not existing in the second map.
-pdifference ::
-  (PIsData k, PIsData a, PIsData b) =>
-  Term s (PMap g k a :--> PMap _ k b :--> PMap g k a)
+pdifference :: PIsData k => Term s (PMap g k a :--> PMap any k b :--> PMap g k a)
 pdifference = phoistAcyclic $
   plam $ \left right ->
     pcon . PMap $
@@ -388,22 +388,22 @@ pdifference = phoistAcyclic $
         ( \self x xs ->
             plet (self # xs) $ \xs' ->
               pfoldAt
-                # (pfromData $ pfstBuiltin # x)
+                # pfromData (pfstBuiltin # x)
                 # (pcons # x # xs')
-                # (plam $ const xs')
+                # plam (const xs')
                 # right
         )
         (const pnil)
         # pto left
 
 -- | Tests if all values in the map satisfy the given predicate.
-pall :: PIsData v => Term s ((v :--> PBool) :--> PMap _ k v :--> PBool)
+pall :: PIsData v => Term s ((v :--> PBool) :--> PMap any k v :--> PBool)
 pall = phoistAcyclic $
   plam $ \pred map ->
     List.pall # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto map
 
 -- | Tests if anu value in the map satisfies the given predicate.
-pany :: PIsData v => Term s ((v :--> PBool) :--> PMap _ k v :--> PBool)
+pany :: PIsData v => Term s ((v :--> PBool) :--> PMap any k v :--> PBool)
 pany = phoistAcyclic $
   plam $ \pred map ->
     List.pany # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto map
@@ -458,3 +458,55 @@ pmapData = phoistAcyclic $
         )
         (const pnil)
         # pto map
+
+{- | Given a comparison function and a "zero" value, check whether a binary relation holds over
+2 sorted 'PMap's.
+
+This is primarily intended to be used with 'PValue'.
+-}
+pcheckBinRel ::
+  forall k v s.
+  (POrd k, PIsData k, PIsData v) =>
+  Term
+    s
+    ( (v :--> v :--> PBool)
+        :--> v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PBool
+    )
+pcheckBinRel = phoistAcyclic $
+  plam $ \f z m1 m2 ->
+    let inner = pfix #$ plam $ \self l1 l2 ->
+          pelimList
+            ( \x xs ->
+                plet (pfromData $ psndBuiltin # x) $ \v1 ->
+                  pelimList
+                    ( \y ys -> unTermCont $ do
+                        v2 <- tcont . plet . pfromData $ psndBuiltin # y
+                        k1 <- tcont . plet . pfromData $ pfstBuiltin # x
+                        k2 <- tcont . plet . pfromData $ pfstBuiltin # y
+                        pure $
+                          pif
+                            (k1 #== k2)
+                            ( f # v1 # v2 #&& self
+                                # xs
+                                # ys
+                            )
+                            $ pif
+                              (k1 #< k2)
+                              (f # v1 # z #&& self # xs # l2)
+                              $ f # z # v2 #&& self
+                                # l1
+                                # ys
+                    )
+                    ( f # v1 # z
+                        #&& PPrelude.pall
+                          # plam (\p -> f # pfromData (psndBuiltin # p) # z)
+                          # xs
+                    )
+                    l2
+            )
+            (PPrelude.pall # plam (\p -> f # z #$ pfromData $ psndBuiltin # p) # l2)
+            l1
+     in inner # pto m1 # pto m2
