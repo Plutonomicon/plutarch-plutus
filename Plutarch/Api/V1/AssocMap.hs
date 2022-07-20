@@ -39,6 +39,9 @@ module Plutarch.Api.V1.AssocMap (
   pdifference,
   punionWith,
   punionWithData,
+
+  -- * Partial order operations
+  pcheckBinRel,
 ) where
 
 import qualified PlutusLedgerApi.V1 as Plutus
@@ -60,6 +63,7 @@ import Plutarch.Lift (
  )
 import qualified Plutarch.List as List
 import Plutarch.Prelude hiding (pall, pany, pfilter, pmap, pnull, psingleton)
+import qualified Plutarch.Prelude as PPrelude
 import Plutarch.Show (PShow)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import qualified PlutusCore as PLC
@@ -454,3 +458,55 @@ pmapData = phoistAcyclic $
         )
         (const pnil)
         # pto map
+
+{- | Given a comparison function and a "zero" value, check whether a binary relation holds over
+2 sorted 'PMap's.
+
+This is primarily intended to be used with 'PValue'.
+-}
+pcheckBinRel ::
+  forall k v s.
+  (POrd k, PIsData k, PIsData v) =>
+  Term
+    s
+    ( (v :--> v :--> PBool)
+        :--> v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PBool
+    )
+pcheckBinRel = phoistAcyclic $
+  plam $ \f z m1 m2 ->
+    let inner = pfix #$ plam $ \self l1 l2 ->
+          pelimList
+            ( \x xs ->
+                plet (pfromData $ psndBuiltin # x) $ \v1 ->
+                  pelimList
+                    ( \y ys -> unTermCont $ do
+                        v2 <- tcont . plet . pfromData $ psndBuiltin # y
+                        k1 <- tcont . plet $ pfromData $ pfstBuiltin # x
+                        k2 <- tcont . plet $ pfromData $ pfstBuiltin # y
+                        pure $
+                          pif
+                            (k1 #== k2)
+                            ( f # v1 # v2 #&& self
+                                # xs
+                                # ys
+                            )
+                            $ pif
+                              (k1 #< k2)
+                              (f # v1 # z #&& self # xs # l2)
+                              $ f # z # v2 #&& self
+                                # l1
+                                # ys
+                    )
+                    ( f # v1 # z
+                        #&& PPrelude.pall
+                          # plam (\p -> f # pfromData (psndBuiltin # p) # z)
+                          # xs
+                    )
+                    l2
+            )
+            (PPrelude.pall # plam (\p -> f # z #$ pfromData $ psndBuiltin # p) # l2)
+            l1
+     in inner # pto m1 # pto m2
