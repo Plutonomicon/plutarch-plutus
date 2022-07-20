@@ -129,10 +129,10 @@ Use 'pcheckBinRel' if 'AmountGuarantees' is 'NoGuarantees'.
 instance POrd (PValue 'Sorted 'NonZero) where
   a #< b = f # a # b
     where
-      f = phoistAcyclic $ pcheckBinRel #$ phoistAcyclic $ plam (\x y -> pfromData x #< pfromData y)
+      f = phoistAcyclic $ pcheckBinRel #$ phoistAcyclic $ plam (#<)
   a #<= b = f # a # b
     where
-      f = phoistAcyclic $ pcheckBinRel #$ phoistAcyclic $ plam (\x y -> pfromData x #<= pfromData y)
+      f = phoistAcyclic $ pcheckBinRel #$ phoistAcyclic $ plam (#<=)
 
 instance PEq (PValue 'Sorted 'NoGuarantees) where
   a #== b = AssocMap.pall # (AssocMap.pall # plam (#== 0)) # pto (punionWith # plam (-) # a # b)
@@ -178,105 +178,6 @@ instance
   PlutusTx.Group (Term s (PValue 'Sorted 'NonZero))
   where
   inv a = punsafeCoerce $ PlutusTx.inv (punsafeCoerce a :: Term s (PValue 'Sorted 'NoGuarantees))
-
--- | Check whether a binary relation holds over 2 sorted 'PValue's.
-pcheckBinRel ::
-  Term
-    s
-    ( (PAsData PInteger :--> PAsData PInteger :--> PBool)
-        :--> PValue 'Sorted any0
-        :--> PValue 'Sorted any1
-        :--> PBool
-    )
-pcheckBinRel = phoistAcyclic $
-  plam $ \f m1 m2 ->
-    let inner = pfix #$ plam $ \self l1 l2 ->
-          pelimList
-            ( \x xs ->
-                pelimList
-                  ( \y ys -> unTermCont $ do
-                      v1dat <- tcont . plet $ psndBuiltin # x
-                      v2dat <- tcont . plet $ psndBuiltin # y
-                      k1 <- tcont . plet $ pfromData $ pfstBuiltin # x
-                      k2 <- tcont . plet $ pfromData $ pfstBuiltin # y
-                      pure $
-                        pif
-                          (k1 #< k2)
-                          (pinnerCheckBinRel # f # pfromData v1dat # AssocMap.pempty #&& self # xs # l2)
-                          $ pif
-                            (k1 #== k2)
-                            ( pinnerCheckBinRel # f # pfromData v1dat # pfromData v2dat #&& self
-                                # xs
-                                # ys
-                            )
-                            $ pinnerCheckBinRel # f # AssocMap.pempty # pfromData v2dat #&& self
-                              # l1
-                              # ys
-                  )
-                  ( pinnerCheckBinRel # f # pfromData (psndBuiltin # x) # AssocMap.pempty
-                      #&& pall
-                        # plam
-                          ( \p ->
-                              let v1dat = psndBuiltin # p
-                               in pinnerCheckBinRel # f # pfromData v1dat # AssocMap.pempty
-                          )
-                        # xs
-                  )
-                  l2
-            )
-            ( pall
-                # plam
-                  ( \p ->
-                      let v1dat = psndBuiltin # p
-                       in pinnerCheckBinRel # f # AssocMap.pempty # pfromData v1dat
-                  )
-                # l2
-            )
-            l1
-     in inner # pto (pto $ pto m1) # pto (pto $ pto m2)
-  where
-    dat0 :: ClosedTerm (PAsData PInteger)
-    dat0 = pconstantData 0
-    pinnerCheckBinRel ::
-      ClosedTerm
-        ( (PAsData PInteger :--> PAsData PInteger :--> PBool)
-            :--> ( PMap 'Sorted PTokenName PInteger
-                    :--> (PMap 'Sorted PTokenName PInteger :--> PBool)
-                 )
-        )
-    pinnerCheckBinRel = phoistAcyclic $
-      plam $ \f m1 m2 ->
-        let inner = pfix #$ plam $ \self l1 l2 ->
-              pelimList
-                ( \x xs ->
-                    let k1dat = pfstBuiltin # x
-                        v1dat = psndBuiltin # x
-                     in pelimList
-                          ( \y ys ->
-                              let k2dat = pfstBuiltin # y
-                                  v2dat = psndBuiltin # y
-                               in unTermCont $ do
-                                    k1 <- tcont . plet $ pfromData k1dat
-                                    k2 <- tcont . plet $ pfromData k2dat
-                                    pure $
-                                      pif
-                                        (k1 #< k2)
-                                        (f # v1dat # dat0 #&& self # xs # l2)
-                                        $ pif
-                                          (k1 #== k2)
-                                          (f # v1dat # v2dat #&& self # xs # ys)
-                                          $ f # dat0 # v2dat #&& self # l1 # ys
-                          )
-                          ( f # v1dat # dat0
-                              #&& pall
-                                # plam (\p -> f # (psndBuiltin # p) # dat0)
-                                # xs
-                          )
-                          l2
-                )
-                (pall # plam (\p -> f # dat0 #$ psndBuiltin # p) # l2)
-                l1
-         in inner # pto m1 # pto m2
 
 -- | Construct a constant singleton 'PValue' containing only the given quantity of the given currency.
 pconstantSingleton ::
@@ -495,3 +396,11 @@ zeroData = pdata 0
 pmapAmounts :: Term s ((PInteger :--> PInteger) :--> PValue k a :--> PValue k 'NoGuarantees)
 pmapAmounts = phoistAcyclic $
   plam $ \f v -> pcon $ PValue $ AssocMap.pmap # plam (AssocMap.pmap # f #) # pto v
+
+{- | Given an amount comparison function, check whether a binary relation holds over
+2 sorted 'PValue's.
+-}
+pcheckBinRel :: Term s ((PInteger :--> PInteger :--> PBool) :--> PValue 'Sorted any0 :--> PValue 'Sorted any1 :--> PBool)
+pcheckBinRel = phoistAcyclic $
+  plam $ \f v1 v2 ->
+    AssocMap.pcheckBinRel # (AssocMap.pcheckBinRel # f # 0) # AssocMap.pempty # pto v1 # pto v2
