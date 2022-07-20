@@ -484,8 +484,8 @@ pcheckBinRel = phoistAcyclic $
                   pelimList
                     ( \y ys -> unTermCont $ do
                         v2 <- tcont . plet . pfromData $ psndBuiltin # y
-                        k1 <- tcont . plet $ pfromData $ pfstBuiltin # x
-                        k2 <- tcont . plet $ pfromData $ pfstBuiltin # y
+                        k1 <- tcont . plet . pfromData $ pfstBuiltin # x
+                        k2 <- tcont . plet . pfromData $ pfstBuiltin # y
                         pure $
                           pif
                             (k1 #== k2)

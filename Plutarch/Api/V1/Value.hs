@@ -411,5 +411,9 @@ pmapAmounts = phoistAcyclic $
 -}
 pcheckBinRel :: Term s ((PInteger :--> PInteger :--> PBool) :--> PValue 'Sorted any0 :--> PValue 'Sorted any1 :--> PBool)
 pcheckBinRel = phoistAcyclic $
-  plam $ \f v1 v2 ->
-    AssocMap.pcheckBinRel # (AssocMap.pcheckBinRel # f # 0) # AssocMap.pempty # pto v1 # pto v2
+  plam $ \f ->
+    subReduction2 $
+      AssocMap.pcheckBinRel # (AssocMap.pcheckBinRel # f # 0) # AssocMap.pempty
+  where
+    subReduction2 :: Term s (PInner a :--> PInner b :--> c) -> Term s (a :--> b :--> c)
+    subReduction2 = punsafeCoerce
