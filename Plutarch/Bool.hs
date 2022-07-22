@@ -87,6 +87,9 @@ class PEq t => POrd t where
   default (#<) :: (POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
   x #< y = pto x #< pto y
 
+infix 4 #<=
+infix 4 #<
+
 -- | Partial ordering relation.
 class PPartialOrd t where
   pleq :: Term s t -> Term s t -> Term s PBool
@@ -96,8 +99,8 @@ class PPartialOrd t where
   default ple :: (PPartialOrd (PInner t)) => Term s t -> Term s t -> Term s PBool
   x `ple` y = pto x `ple` pto y
 
-infix 4 #<=
-infix 4 #<
+infix 4 `pleq`
+infix 4 `ple`
 
 instance PEq PBool where
   x #== y' = plet y' $ \y -> pif' # x # y #$ pnot # y
