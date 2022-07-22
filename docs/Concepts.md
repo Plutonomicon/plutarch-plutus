@@ -9,3 +9,4 @@ This section describes various concepts applicable in Plutarch.
   - [Data encoding](./Concepts/Data%20and%20Scott%20encoding.md#data-encoding)
   - [Scott encoding](./Concepts/Data%20and%20Scott%20encoding.md#scott-encoding)
 - [Haskell synonym of Plutarch types](./Concepts/Haskell%20Synonym.md)
+- [PMatch introduction](./Concepts/PMatch.md)
