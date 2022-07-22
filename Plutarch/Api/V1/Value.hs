@@ -56,7 +56,7 @@ import qualified PlutusLedgerApi.V1 as Plutus
 
 import Plutarch.Api.V1.AssocMap (KeyGuarantees (Sorted, Unsorted), PMap)
 import qualified Plutarch.Api.V1.AssocMap as AssocMap
-import Plutarch.Bool (pand', pif')
+import Plutarch.Bool (PPartialOrd (ple, pleq), pand', pif')
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
@@ -123,11 +123,11 @@ instance PEq (PValue 'Sorted 'NonZero) where
 
 Use 'pcheckBinRel' if 'AmountGuarantees' is 'NoGuarantees'.
 -}
-instance POrd (PValue 'Sorted 'Positive) where
-  a #< b = a' #< pforgetPositive b
+instance PPartialOrd (PValue 'Sorted 'Positive) where
+  a `ple` b = a' `ple` pforgetPositive b
     where
       a' = pforgetPositive a :: Term _ (PValue 'Sorted 'NonZero)
-  a #<= b = a' #<= pforgetPositive b
+  a `pleq` b = a' `pleq` pforgetPositive b
     where
       a' = pforgetPositive a :: Term _ (PValue 'Sorted 'NonZero)
 
@@ -135,11 +135,11 @@ instance POrd (PValue 'Sorted 'Positive) where
 
 Use 'pcheckBinRel' if 'AmountGuarantees' is 'NoGuarantees'.
 -}
-instance POrd (PValue 'Sorted 'NonZero) where
-  a #< b = f # a # b
+instance PPartialOrd (PValue 'Sorted 'NonZero) where
+  a `ple` b = f # a # b
     where
       f = phoistAcyclic $ pcheckBinRel #$ phoistAcyclic $ plam (#<)
-  a #<= b = f # a # b
+  a `pleq` b = f # a # b
     where
       f = phoistAcyclic $ pcheckBinRel #$ phoistAcyclic $ plam (#<=)
 
