@@ -5,6 +5,7 @@ module Plutarch.Bool (
   PBool (..),
   PEq (..),
   POrd (..),
+  PPartialOrd (..),
   pif,
   pif',
   pnot,
@@ -85,6 +86,15 @@ class PEq t => POrd t where
   (#<) :: Term s t -> Term s t -> Term s PBool
   default (#<) :: (POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
   x #< y = pto x #< pto y
+
+-- | Partial ordering relation.
+class PPartialOrd t where
+  pleq :: Term s t -> Term s t -> Term s PBool
+  default pleq :: (PPartialOrd (PInner t)) => Term s t -> Term s t -> Term s PBool
+  x `pleq` y = pto x `pleq` pto y
+  ple :: Term s t -> Term s t -> Term s PBool
+  default ple :: (PPartialOrd (PInner t)) => Term s t -> Term s t -> Term s PBool
+  x `ple` y = pto x `ple` pto y
 
 infix 4 #<=
 infix 4 #<
