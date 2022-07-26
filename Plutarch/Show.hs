@@ -26,7 +26,7 @@ import Generics.SOP (
   hmap,
  )
 import Generics.SOP.GGP (gdatatypeInfo)
-import Plutarch.Bool (PBool, PEq ((#==)), POrd ((#<)), pif)
+import Plutarch.Bool (PBool, PEq, pif, (#<), (#==))
 import Plutarch.ByteString (PByteString, pconsBS, pindexBS, plengthBS, psliceBS)
 import Plutarch.Integer (PInteger, PIntegral (pquot, prem))
 import Plutarch.Internal (

@@ -56,7 +56,7 @@ import qualified PlutusLedgerApi.V1 as Plutus
 
 import Plutarch.Api.V1.AssocMap (KeyGuarantees (Sorted, Unsorted), PMap)
 import qualified Plutarch.Api.V1.AssocMap as AssocMap
-import Plutarch.Bool (PPartialOrd (ple, pleq), pand', pif')
+import Plutarch.Bool (pand', pif')
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
@@ -73,7 +73,7 @@ import Plutarch.Prelude hiding (psingleton)
 
 newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PTokenName where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PTokenName where type PLifted PTokenName = Plutus.TokenName
@@ -84,7 +84,7 @@ deriving via
 
 newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PCurrencySymbol where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PCurrencySymbol where type PLifted PCurrencySymbol = Plutus.CurrencySymbol
@@ -124,10 +124,10 @@ instance PEq (PValue 'Sorted 'NonZero) where
 Use 'pcheckBinRel' if 'AmountGuarantees' is 'NoGuarantees'.
 -}
 instance PPartialOrd (PValue 'Sorted 'Positive) where
-  a `ple` b = a' `ple` pforgetPositive b
+  a #< b = a' #< pforgetPositive b
     where
       a' = pforgetPositive a :: Term _ (PValue 'Sorted 'NonZero)
-  a `pleq` b = a' `pleq` pforgetPositive b
+  a #<= b = a' #<= pforgetPositive b
     where
       a' = pforgetPositive a :: Term _ (PValue 'Sorted 'NonZero)
 
@@ -136,10 +136,10 @@ instance PPartialOrd (PValue 'Sorted 'Positive) where
 Use 'pcheckBinRel' if 'AmountGuarantees' is 'NoGuarantees'.
 -}
 instance PPartialOrd (PValue 'Sorted 'NonZero) where
-  a `ple` b = f # a # b
+  a #< b = f # a # b
     where
       f = phoistAcyclic $ pcheckBinRel #$ phoistAcyclic $ plam (#<)
-  a `pleq` b = f # a # b
+  a #<= b = f # a # b
     where
       f = phoistAcyclic $ pcheckBinRel #$ phoistAcyclic $ plam (#<=)
 

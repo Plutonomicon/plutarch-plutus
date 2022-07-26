@@ -27,8 +27,8 @@ data PCredential (s :: S)
   = PPubKeyCredential (Term s (PDataRecord '["_0" ':= PPubKeyHash]))
   | PScriptCredential (Term s (PDataRecord '["_0" ':= PValidatorHash]))
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
-instance DerivePlutusType (PCredential) where type DPTStrat _ = PlutusTypeData
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
+instance DerivePlutusType PCredential where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PCredential where type PLifted PCredential = Plutus.Credential
 deriving via (DerivePConstantViaData Plutus.Credential PCredential) instance PConstantDecl Plutus.Credential
@@ -46,7 +46,7 @@ data PStakingCredential (s :: S)
           )
       )
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PStakingCredential where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PStakingCredential where type PLifted PStakingCredential = Plutus.StakingCredential
@@ -63,8 +63,8 @@ newtype PAddress (s :: S)
           )
       )
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, POrd)
-instance DerivePlutusType (PAddress) where type DPTStrat _ = PlutusTypeData
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PPartialOrd, POrd)
+instance DerivePlutusType PAddress where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PAddress where type PLifted PAddress = Plutus.Address
 deriving via (DerivePConstantViaData Plutus.Address PAddress) instance PConstantDecl Plutus.Address

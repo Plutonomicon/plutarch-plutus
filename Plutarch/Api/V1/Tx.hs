@@ -32,7 +32,7 @@ import Plutarch.Prelude
 newtype PTxId (s :: S)
   = PTxId (Term s (PDataRecord '["_0" ':= PByteString]))
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PTxId where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PTxId where type PLifted PTxId = Plutus.TxId
@@ -50,7 +50,7 @@ newtype PTxOutRef (s :: S)
           )
       )
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PPartialOrd, POrd)
 
 instance DerivePlutusType PTxOutRef where type DPTStrat _ = PlutusTypeData
 

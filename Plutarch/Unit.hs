@@ -5,7 +5,7 @@
 module Plutarch.Unit (PUnit (..)) where
 
 import Plutarch (Term, pcon, plet)
-import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, (#<), (#<=), (#==))
+import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, PPartialOrd, (#<), (#<=), (#==))
 import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon', pmatch')
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
@@ -29,9 +29,11 @@ instance PlutusType PUnit where
 instance PEq PUnit where
   x #== y = plet x \_ -> plet y \_ -> pcon PTrue
 
-instance POrd PUnit where
+instance PPartialOrd PUnit where
   x #<= y = plet x \_ -> plet y \_ -> pcon PTrue
   x #< y = plet x \_ -> plet y \_ -> pcon PFalse
+
+instance POrd PUnit
 
 instance Semigroup (Term s PUnit) where
   x <> y = plet x \_ -> plet y \_ -> pcon PUnit

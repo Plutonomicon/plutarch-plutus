@@ -6,7 +6,7 @@ module Plutarch.Positive (PPositive, ppositive, ptryPositive) where
 import Data.Functor.Const (Const)
 import GHC.Generics (Generic)
 
-import Plutarch.Bool (PEq, POrd, pif, (#<=))
+import Plutarch.Bool (PEq, POrd, PPartialOrd, pif, (#<=))
 import Plutarch.Builtin (PAsData, PData, PIsData, pdata)
 import Plutarch.Integer (PInteger, PIntegral)
 
@@ -36,7 +36,7 @@ import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 
 newtype PPositive s = PPositive (Term s PInteger)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd, PIntegral, PShow)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PIntegral, PShow)
 instance DerivePlutusType PPositive where type DPTStrat _ = PlutusTypeNewtype
 
 instance PNum PPositive where

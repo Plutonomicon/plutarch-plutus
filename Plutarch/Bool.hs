@@ -4,8 +4,8 @@
 module Plutarch.Bool (
   PBool (..),
   PEq (..),
-  POrd (..),
   PPartialOrd (..),
+  POrd,
   pif,
   pif',
   pnot,
@@ -79,7 +79,8 @@ class PEq t where
 
 infix 4 #==
 
-class PEq t => POrd t where
+-- | Partial ordering relation.
+class PEq t => PPartialOrd t where
   (#<=) :: Term s t -> Term s t -> Term s PBool
   default (#<=) :: (POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
   x #<= y = pto x #<= pto y
@@ -90,24 +91,17 @@ class PEq t => POrd t where
 infix 4 #<=
 infix 4 #<
 
--- | Partial ordering relation.
-class PPartialOrd t where
-  pleq :: Term s t -> Term s t -> Term s PBool
-  default pleq :: (PPartialOrd (PInner t)) => Term s t -> Term s t -> Term s PBool
-  x `pleq` y = pto x `pleq` pto y
-  ple :: Term s t -> Term s t -> Term s PBool
-  default ple :: (PPartialOrd (PInner t)) => Term s t -> Term s t -> Term s PBool
-  x `ple` y = pto x `ple` pto y
-
-infix 4 `pleq`
-infix 4 `ple`
+-- | Total ordering relation.
+class PPartialOrd t => POrd t
 
 instance PEq PBool where
   x #== y' = plet y' $ \y -> pif' # x # y #$ pnot # y
 
-instance POrd PBool where
+instance PPartialOrd PBool where
   x #< y = pif' # x # pconstant False # y
   x #<= y = pif' # x # y # pconstant True
+
+instance POrd PBool
 
 {- | Strict version of 'pif'.
  Emits slightly less code.

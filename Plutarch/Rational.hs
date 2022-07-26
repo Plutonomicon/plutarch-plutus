@@ -34,7 +34,7 @@ import Plutarch (
   (#$),
   type (:-->),
  )
-import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
+import Plutarch.Bool (PEq, POrd, PPartialOrd, pif, (#<), (#<=), (#==))
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
@@ -131,7 +131,7 @@ instance PTryFrom PData (PAsData PRational) where
     res <- tcont . plet $ ptryPositive # denm
     pure (punsafeCoerce opq, res)
 
-instance POrd PRational where
+instance PPartialOrd PRational where
   l' #<= r' =
     phoistAcyclic
       ( plam $ \l r -> unTermCont $ do
@@ -151,6 +151,8 @@ instance POrd PRational where
       )
       # l'
       # r'
+
+instance POrd PRational
 
 instance PNum PRational where
   x' #+ y' =
