@@ -73,7 +73,7 @@ import Plutarch.Prelude hiding (psingleton)
 
 newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PTokenName where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PTokenName where type PLifted PTokenName = Plutus.TokenName
@@ -84,7 +84,7 @@ deriving via
 
 newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PCurrencySymbol where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PCurrencySymbol where type PLifted PCurrencySymbol = Plutus.CurrencySymbol
@@ -123,7 +123,7 @@ instance PEq (PValue 'Sorted 'NonZero) where
 
 Use 'pcheckBinRel' if 'AmountGuarantees' is 'NoGuarantees'.
 -}
-instance POrd (PValue 'Sorted 'Positive) where
+instance PPartialOrd (PValue 'Sorted 'Positive) where
   a #< b = a' #< pforgetPositive b
     where
       a' = pforgetPositive a :: Term _ (PValue 'Sorted 'NonZero)
@@ -135,7 +135,7 @@ instance POrd (PValue 'Sorted 'Positive) where
 
 Use 'pcheckBinRel' if 'AmountGuarantees' is 'NoGuarantees'.
 -}
-instance POrd (PValue 'Sorted 'NonZero) where
+instance PPartialOrd (PValue 'Sorted 'NonZero) where
   a #< b = f # a # b
     where
       f = phoistAcyclic $ pcheckBinRel #$ phoistAcyclic $ plam (#<)

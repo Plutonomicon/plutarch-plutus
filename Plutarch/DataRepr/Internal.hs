@@ -74,7 +74,7 @@ import Plutarch (
   (#$),
   type (:-->),
  )
-import Plutarch.Bool (PBool, PEq, POrd, pif, (#<), (#<=), (#==))
+import Plutarch.Bool (PBool, PEq, POrd, PPartialOrd, pif, (#<), (#<=), (#==))
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
@@ -168,11 +168,13 @@ instance PEq (PDataRecord xs) where
 
 -- Lexicographic ordering based 'Ord' instances for 'PDataRecord'.
 
-instance POrd (PDataRecord '[]) where
+instance PPartialOrd (PDataRecord '[]) where
   _ #<= _ = pconstant True
   _ #< _ = pconstant False
 
-instance (POrd x, PIsData x) => POrd (PDataRecord '[label ':= x]) where
+instance POrd (PDataRecord '[])
+
+instance (POrd x, PIsData x) => PPartialOrd (PDataRecord '[label ':= x]) where
   l1 #< l2 = unTermCont $ do
     PDCons x _ <- tcont $ pmatch l1
     PDCons y _ <- tcont $ pmatch l2
@@ -185,7 +187,12 @@ instance (POrd x, PIsData x) => POrd (PDataRecord '[label ':= x]) where
 
     pure $ pfromData x #<= pfromData y
 
-instance (SListI xs, POrd x, PIsData x, POrd (PDataRecord (x' ': xs))) => POrd (PDataRecord ((label ':= x) ': x' ': xs)) where
+instance (POrd x, PIsData x) => POrd (PDataRecord '[label ':= x])
+
+instance
+  (SListI xs, POrd x, PIsData x, POrd (PDataRecord (x' ': xs))) =>
+  PPartialOrd (PDataRecord ((label ':= x) ': x' ': xs))
+  where
   l1 #< l2 = unTermCont $ do
     PDCons x xs <- tcont $ pmatch l1
     PDCons y ys <- tcont $ pmatch l2
@@ -203,6 +210,10 @@ instance (SListI xs, POrd x, PIsData x, POrd (PDataRecord (x' ': xs))) => POrd (
     b <- tcont . plet $ pfromData y
 
     pure $ pif (a #< b) (pconstant True) $ pif (a #== b) (xs #<= ys) $ pconstant False
+
+instance
+  (SListI xs, POrd x, PIsData x, POrd (PDataRecord (x' ': xs))) =>
+  POrd (PDataRecord ((label ':= x) ': x' ': xs))
 
 {- | Cons a field to a data record.
 
@@ -318,7 +329,7 @@ instance PIsData (PDataSum defs) where
 instance PEq (PDataSum defs) where
   x #== y = pdata x #== pdata y
 
-instance All (Compose POrd PDataRecord) defs => POrd (PDataSum defs) where
+instance All (Compose POrd PDataRecord) defs => PPartialOrd (PDataSum defs) where
   x' #< y' = f # x' # y'
     where
       f :: Term s (PDataSum defs :--> PDataSum defs :--> PBool)
@@ -327,6 +338,8 @@ instance All (Compose POrd PDataRecord) defs => POrd (PDataSum defs) where
     where
       f :: Term s (PDataSum defs :--> PDataSum defs :--> PBool)
       f = phoistAcyclic $ plam $ \x y -> pmatchLT x y mkLTEHandler
+
+instance All (Compose POrd PDataRecord) defs => POrd (PDataSum defs)
 
 -- | If there is only a single variant, then we can safely extract it.
 punDataSum :: Term s (PDataSum '[def] :--> PDataRecord def)

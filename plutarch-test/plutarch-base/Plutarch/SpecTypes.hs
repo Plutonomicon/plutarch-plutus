@@ -37,7 +37,7 @@ newtype PTriplet (a :: PType) (s :: S)
           )
       )
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd, PDataFields)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PDataFields)
 
 instance DerivePlutusType (PTriplet a) where type DPTStrat _ = PlutusTypeData
 

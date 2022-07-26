@@ -300,7 +300,7 @@ fullCheck = unTermCont $ fst <$> TermCont (ptryFrom $ pforgetData sampleStructur
 
 newtype PNatural (s :: S) = PMkNatural (Term s PInteger)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PNatural where type DPTStrat _ = PlutusTypeNewtype
 
 -- | partial
@@ -440,6 +440,6 @@ theField = unTermCont $ do
 
 newtype PWrapInt (s :: S) = PWrapInt (Term s PInteger)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PEq, POrd)
+  deriving anyclass (PlutusType, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PWrapInt where type DPTStrat _ = PlutusTypeNewtype
 instance PTryFrom PData (PAsData PWrapInt)

@@ -5,7 +5,7 @@
 module Plutarch.Integer (PInteger, PIntegral (..)) where
 
 import GHC.Generics (Generic)
-import Plutarch.Bool (PEq, POrd, pif, (#<), (#<=), (#==))
+import Plutarch.Bool (PEq, POrd, PPartialOrd, pif, (#<), (#<=), (#==))
 import Plutarch.Internal (
   Term,
   phoistAcyclic,
@@ -59,9 +59,11 @@ instance PIntegral PInteger where
 instance PEq PInteger where
   x #== y = punsafeBuiltin PLC.EqualsInteger # x # y
 
-instance POrd PInteger where
+instance PPartialOrd PInteger where
   x #<= y = punsafeBuiltin PLC.LessThanEqualsInteger # x # y
   x #< y = punsafeBuiltin PLC.LessThanInteger # x # y
+
+instance POrd PInteger
 
 instance PNum PInteger where
   x #+ y = punsafeBuiltin PLC.AddInteger # x # y

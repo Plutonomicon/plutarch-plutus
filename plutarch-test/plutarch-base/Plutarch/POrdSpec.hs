@@ -130,7 +130,7 @@ peqIso a b = plift (pconstant @p a #== pconstant b) `shouldBe` (a == b)
 
 newtype PAddress' s = PAddress' (Term s PAddress)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PAddress' where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PAddress' where type PLifted PAddress' = Address'
