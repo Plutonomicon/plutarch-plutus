@@ -41,5 +41,5 @@ instance PTryFrom PData (PAsData PPOSIXTime) where
   ptryFrom' opq = runTermCont $ do
     (wrapped :: Term _ (PAsData PInteger), unwrapped :: Term _ PInteger) <-
       tcont $ ptryFrom @(PAsData PInteger) opq
-    tcont $ \f -> pif (0 #<= unwrapped) (f ()) (ptraceError "POSIXTime must always be positive")
+    tcont $ \f -> pif (0 #<= unwrapped) (f ()) (ptraceError "ptryFrom(POSIXTime): must be positive")
     pure (punsafeCoerce wrapped, pcon $ PPOSIXTime unwrapped)

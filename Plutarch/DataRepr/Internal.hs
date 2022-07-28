@@ -600,7 +600,7 @@ instance PTryFrom (PBuiltinList PData) (PDataRecord '[]) where
   ptryFrom' opq = runTermCont $ do
     _ <-
       tcont . plet . pforce $
-        pchooseListBuiltin # opq # pdelay (pcon PUnit) # pdelay (ptraceError "list is longer than zero")
+        pchooseListBuiltin # opq # pdelay (pcon PUnit) # pdelay (ptraceError "ptryFrom(PDataRecord[]): list is longer than zero")
     pure (pdnil, HRecGeneric HNil)
 
 type family UnHRecP (x :: PType) :: [(Symbol, PType)] where

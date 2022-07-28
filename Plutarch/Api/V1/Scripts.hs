@@ -89,7 +89,7 @@ instance PTryFrom PData (PAsData PValidatorHash) where
   ptryFrom' opq = runTermCont $ do
     unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
     tcont $ \f ->
-      pif (plengthBS # unwrapped #== 28) (f ()) (ptraceError "a ValidatorHash must be 28 bytes long")
+      pif (plengthBS # unwrapped #== 28) (f ()) (ptraceError "ptryFrom(PValidatorHash): must be 28 bytes long")
     pure (punsafeCoerce opq, pcon . PValidatorHash $ unwrapped)
 
 newtype PMintingPolicyHash (s :: S) = PMintingPolicyHash (Term s PByteString)

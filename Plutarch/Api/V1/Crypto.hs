@@ -39,7 +39,7 @@ instance PTryFrom PData (PAsData PPubKeyHash) where
   ptryFrom' opq = runTermCont $ do
     unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
     tcont $ \f ->
-      pif (plengthBS # unwrapped #== 28) (f ()) (ptraceError "a PubKeyHash must be 28 bytes long")
+      pif (plengthBS # unwrapped #== 28) (f ()) (ptraceError "ptryFrom(PPubKeyHash): must be 28 bytes long")
     pure (punsafeCoerce opq, pcon . PPubKeyHash $ unwrapped)
 
 newtype PubKey = PubKey {getPubKey :: Plutus.LedgerBytes}

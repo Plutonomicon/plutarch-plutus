@@ -55,10 +55,10 @@ instance PTryFrom PData (PAsData PTxId) where
       pif
         (pfstBuiltin # opq' #== 0 #&& plength # (psndBuiltin # opq') #== 1)
         (f $ phead #$ psndBuiltin # opq')
-        (ptraceError "bad TxId constructor")
+        (ptraceError "ptryFrom(TxId): bad constructor")
     unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) dataBs snd
     tcont $ \f ->
-      pif (plengthBS # unwrapped #== 28) (f ()) (ptraceError "a TxId must be 28 bytes long")
+      pif (plengthBS # unwrapped #== 28) (f ()) (ptraceError "ptryFrom(TxId): must be 28 bytes long")
     pure (punsafeCoerce opq, pcon . PTxId $ pdcons # pdata unwrapped # pdnil)
 
 -- | Reference to a transaction output with a index referencing which of the outputs is being referred to.

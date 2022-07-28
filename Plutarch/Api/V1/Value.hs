@@ -90,7 +90,7 @@ instance PTryFrom PData (PAsData PTokenName) where
   ptryFrom' opq = runTermCont $ do
     unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
     tcont $ \f ->
-      pif (plengthBS # unwrapped #<= 32) (f ()) (ptraceError "a TokenName must be at most 32 Bytes long")
+      pif (plengthBS # unwrapped #<= 32) (f ()) (ptraceError "ptryFrom(TokenName): must be at most 32 Bytes long")
     pure (punsafeCoerce opq, pcon . PTokenName $ unwrapped)
 
 newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
@@ -104,7 +104,7 @@ instance PTryFrom PData (PAsData PCurrencySymbol) where
     unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
     len <- tcont . plet $ plengthBS # unwrapped
     tcont $ \f ->
-      pif (len #== 0 #|| len #== 28) (f ()) (ptraceError "a CurrencySymbol must be 28 bytes long or empty")
+      pif (len #== 0 #|| len #== 28) (f ()) (ptraceError "ptryFrom(CurrencySymbol): must be 28 bytes long or empty")
     pure (punsafeCoerce opq, pcon . PCurrencySymbol $ unwrapped)
 
 instance PUnsafeLiftDecl PCurrencySymbol where type PLifted PCurrencySymbol = Plutus.CurrencySymbol
