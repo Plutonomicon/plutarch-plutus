@@ -40,7 +40,7 @@ data PDCert (s :: S)
   | PDCertGenesis (Term s (PDataRecord '[]))
   | PDCertMir (Term s (PDataRecord '[]))
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PDCert where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PDCert where type PLifted PDCert = Plutus.DCert

@@ -37,9 +37,11 @@ deriving via
     PConstantData a => PConstantDecl (Maybe a)
 
 -- Have to manually write this instance because the constructor id ordering is screwed for 'Maybe'....
-instance (PIsData a, POrd a) => POrd (PMaybeData a) where
+instance (PIsData a, POrd a) => PPartialOrd (PMaybeData a) where
   x #< y = _pmaybeLT False (#<) # x # y
   x #<= y = _pmaybeLT True (#<=) # x # y
+
+instance (PIsData a, POrd a) => POrd (PMaybeData a)
 
 _pmaybeLT ::
   Bool ->

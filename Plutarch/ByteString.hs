@@ -18,7 +18,7 @@ import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
-import Plutarch.Bool (PEq, POrd, (#<), (#<=), (#==))
+import Plutarch.Bool (PEq, POrd, PPartialOrd, (#<), (#<=), (#==))
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (Term, (:-->))
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
@@ -48,9 +48,11 @@ deriving via (DerivePConstantDirect ByteString PByteString) instance PConstantDe
 instance PEq PByteString where
   x #== y = punsafeBuiltin PLC.EqualsByteString # x # y
 
-instance POrd PByteString where
+instance PPartialOrd PByteString where
   x #<= y = punsafeBuiltin PLC.LessThanEqualsByteString # x # y
   x #< y = punsafeBuiltin PLC.LessThanByteString # x # y
+
+instance POrd PByteString
 
 instance Semigroup (Term s PByteString) where
   x <> y = punsafeBuiltin PLC.AppendByteString # x # y

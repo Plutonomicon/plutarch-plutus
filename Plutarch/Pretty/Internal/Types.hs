@@ -4,9 +4,7 @@ module Plutarch.Pretty.Internal.Types (
   PrettyMonad,
   forkState,
   normalizeCursor,
-  unaryCursor,
-  applyingCursor,
-  appliedCursor,
+  specializeCursor,
   memorizeName,
   insertName,
   insertBindings,
@@ -31,7 +29,20 @@ import UntypedPlutusCore (DefaultFun, Index)
 
 import Plutarch.Pretty.Internal.Config (forcedPrefix)
 
-data PrettyCursor = Normal | Applying | AppliedOver | UnaryArg
+{- | Notifies the prettifier what "state" the cursor currently is, so it can decide
+whether or not to wrap the target expression in parens.
+
+Normal indicates no parens wrapping is necessary, even for complex expressions.
+
+Special indicates complex expressions should be wrapped in parens.
+
+Usually, "Special" just hints at one of three states:
+
+1. Applying - The expression is being applied like a function.
+2. Applied - The expression is being applied as a function argument.
+3. Unary arg - The expression is being used as an argument to a high arity unary operator (~ and !).
+-}
+data PrettyCursor = Normal | Special
   deriving stock (Bounded, Enum, Eq, Show)
 
 data PrettyState = PrettyState
@@ -48,14 +59,8 @@ forkState x = get >>= (\s -> x <* put s)
 normalizeCursor :: PrettyState -> PrettyState
 normalizeCursor x = x {ps'cursor = Normal}
 
-unaryCursor :: PrettyState -> PrettyState
-unaryCursor x = x {ps'cursor = UnaryArg}
-
-applyingCursor :: PrettyState -> PrettyState
-applyingCursor x = x {ps'cursor = Applying}
-
-appliedCursor :: PrettyState -> PrettyState
-appliedCursor x = x {ps'cursor = AppliedOver}
+specializeCursor :: PrettyState -> PrettyState
+specializeCursor x = x {ps'cursor = Special}
 
 memorizeName :: Text -> PrettyState -> PrettyState
 memorizeName n x@PrettyState {ps'names} = x {ps'names = Set.insert n ps'names}

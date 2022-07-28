@@ -45,7 +45,7 @@ deriving via (DerivePConstantViaBuiltin Plutus.Redeemer PRedeemer PData) instanc
 
 newtype PDatumHash (s :: S) = PDatumHash (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PDatumHash where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PDatumHash where type PLifted PDatumHash = Plutus.DatumHash
@@ -53,7 +53,7 @@ deriving via (DerivePConstantViaBuiltin Plutus.DatumHash PDatumHash PByteString)
 
 newtype PStakeValidatorHash (s :: S) = PStakeValidatorHash (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PStakeValidatorHash where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PStakeValidatorHash where type PLifted PStakeValidatorHash = Plutus.StakeValidatorHash
@@ -64,7 +64,7 @@ deriving via
 
 newtype PRedeemerHash (s :: S) = PRedeemerHash (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PRedeemerHash where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PRedeemerHash where type PLifted PRedeemerHash = Plutus.RedeemerHash
@@ -75,7 +75,7 @@ deriving via
 
 newtype PValidatorHash (s :: S) = PValidatorHash (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PValidatorHash where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PValidatorHash where type PLifted PValidatorHash = Plutus.ValidatorHash
@@ -88,13 +88,13 @@ instance PTryFrom PData (PAsData PValidatorHash) where
   type PTryFromExcess PData (PAsData PValidatorHash) = Flip Term PValidatorHash
   ptryFrom' opq = runTermCont $ do
     unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
-    tcont $ \f -> 
+    tcont $ \f ->
       pif (plengthBS # unwrapped #== 28) (f ()) (ptraceError "a ValidatorHash must be 28 bytes long")
     pure (punsafeCoerce opq, pcon . PValidatorHash $ unwrapped)
 
 newtype PMintingPolicyHash (s :: S) = PMintingPolicyHash (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PMintingPolicyHash where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PMintingPolicyHash where type PLifted PMintingPolicyHash = Plutus.MintingPolicyHash
@@ -105,7 +105,7 @@ deriving via
 
 newtype PScriptHash (s :: S) = PScriptHash (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PScriptHash where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PScriptHash where type PLifted PScriptHash = Plutus.ScriptHash

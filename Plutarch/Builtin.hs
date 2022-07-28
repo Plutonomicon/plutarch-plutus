@@ -11,6 +11,7 @@ module Plutarch.Builtin (
   pasMap,
   pasList,
   pasInt,
+  plistData,
   pconstantData,
   pconstrBuiltin,
   pasByteStr,
@@ -94,7 +95,7 @@ import Plutarch.List (
  )
 import Plutarch.Show (PShow (pshow'), pshow)
 import Plutarch.TermCont (TermCont (runTermCont), tcont, unTermCont)
-import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
+import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast, pupcastF)
 import Plutarch.Unit (PUnit)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeDowncast)
 import qualified PlutusCore as PLC
@@ -235,6 +236,9 @@ pasConstr = punsafeBuiltin PLC.UnConstrData
 pasMap :: Term s (PData :--> PBuiltinList (PBuiltinPair PData PData))
 pasMap = punsafeBuiltin PLC.UnMapData
 
+plistData :: Term s (PBuiltinList PData :--> PData)
+plistData = punsafeBuiltin PLC.ListData
+
 pasList :: Term s (PData :--> PBuiltinList PData)
 pasList = punsafeBuiltin PLC.UnListData
 
@@ -319,20 +323,14 @@ instance PIsData PData where
   pfromDataImpl = pupcast
   pdataImpl = id
 
-instance PIsData (PBuiltinList (PAsData a)) where
+instance forall (a :: PType). PSubtype PData a => PIsData (PBuiltinList a) where
   pfromDataImpl x = punsafeCoerce $ pasList # pforgetData x
-  pdataImpl x = punsafeBuiltin PLC.ListData # x
+  pdataImpl x = plistData # pupcastF @PData @a (Proxy @PBuiltinList) x
 
 newtype Helper2 f a s = Helper2 (Term s (PAsData (f a)))
   deriving stock (Generic)
   deriving anyclass (PlutusType)
 instance DerivePlutusType (Helper2 f a) where type DPTStrat _ = PlutusTypeNewtype
-
-instance PIsData (PBuiltinList PData) where
-  pfromDataImpl = pforgetData' @PData (Proxy @PBuiltinList) . pfromData . pto . prememberData (Proxy @(Helper2 PBuiltinList)) . pcon . Helper2
-
-  -- pdataImpl = coerce (pforgetData' @PData (Proxy @(Helper2 PBuiltinList))) . pdata . (prememberData (Proxy @PBuiltinList))
-  pdataImpl = punsafeCoerce . pdata . prememberData (Proxy @PBuiltinList) -- FIXME
 
 instance PIsData PInteger where
   pfromDataImpl x = pasInt # pforgetData x

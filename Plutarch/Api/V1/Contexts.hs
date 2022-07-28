@@ -42,11 +42,11 @@ newtype PTxInfo (s :: S)
       ( Term
           s
           ( PDataRecord
-              '[ "inputs" ':= PBuiltinList (PAsData PTxInInfo) -- Transaction inputs
-               , "outputs" ':= PBuiltinList (PAsData PTxOut) -- Transaction outputs
+              '[ "inputs" ':= PBuiltinList PTxInInfo -- Transaction inputs
+               , "outputs" ':= PBuiltinList PTxOut -- Transaction outputs
                , "fee" ':= PValue 'Sorted 'Positive -- The fee paid by this transaction.
                , "mint" ':= PValue 'Sorted 'NoGuarantees -- The value minted by the transaction.
-               , "dcert" ':= PBuiltinList (PAsData PDCert) -- Digests of the certificates included in this transaction.
+               , "dcert" ':= PBuiltinList PDCert -- Digests of the certificates included in this transaction.
                , "wdrl" ':= PBuiltinList (PAsData (PTuple PStakingCredential PInteger)) -- Staking withdrawals
                , "validRange" ':= PPOSIXTimeRange -- The valid range for the transaction.
                , "signatories" ':= PBuiltinList (PAsData PPubKeyHash) -- Signatories attesting that they all signed the tx.

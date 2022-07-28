@@ -25,7 +25,7 @@ import Plutarch.Unsafe (punsafeCoerce)
 
 newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PPubKeyHash where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PPubKeyHash where type PLifted PPubKeyHash = Plutus.PubKeyHash
@@ -38,7 +38,7 @@ instance PTryFrom PData (PAsData PPubKeyHash) where
   type PTryFromExcess PData (PAsData PPubKeyHash) = Flip Term PPubKeyHash
   ptryFrom' opq = runTermCont $ do
     unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
-    tcont $ \f -> 
+    tcont $ \f ->
       pif (plengthBS # unwrapped #== 28) (f ()) (ptraceError "a PubKeyHash must be 28 bytes long")
     pure (punsafeCoerce opq, pcon . PPubKeyHash $ unwrapped)
 

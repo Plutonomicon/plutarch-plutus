@@ -300,7 +300,7 @@ fullCheck = unTermCont $ fst <$> TermCont (ptryFrom $ pforgetData sampleStructur
 
 newtype PNatural (s :: S) = PMkNatural (Term s PInteger)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PNatural where type DPTStrat _ = PlutusTypeNewtype
 
 -- | partial
@@ -342,7 +342,7 @@ validator = phoistAcyclic $
         data' :: Term _ (PBuiltinList (PAsData (PTuple PDatumHash PDatum)))
         data' = pfield @"datums" # txInfo
 
-        outputs :: Term _ (PBuiltinList (PAsData PTxOut))
+        outputs :: Term _ (PBuiltinList PTxOut)
         outputs = pfield @"outputs" # txInfo
         -- find the list of the outputs
 
@@ -365,9 +365,9 @@ validator = phoistAcyclic $
         singleOutput :: Term _ PBool
         singleOutput = pnull #$ ptail #$ pfilter # pred # outputs
           where
-            pred :: Term _ (PAsData PTxOut :--> PBool)
+            pred :: Term _ (PTxOut :--> PBool)
             pred = plam $ \out -> unTermCont $ do
-              pure $ pfield @"address" # out #== (pdata $ ownAddress)
+              pure $ pfield @"address" # pdata out #== pdata ownAddress
 
         -- make sure that after filtering the outputs, only one output
         -- remains
@@ -382,18 +382,18 @@ validator = phoistAcyclic $
     pure $
       pif isValid (popaque $ pcon PUnit) (ptraceError "not valid")
 
-pfindOwnInput :: Term s (PScriptContext :--> PMaybe (PAsData PTxInInfo))
+pfindOwnInput :: Term s (PScriptContext :--> PMaybe PTxInInfo)
 pfindOwnInput = phoistAcyclic $
   plam $ \ctx' -> unTermCont $ do
     ctx <- tcont $ pletFields @["txInfo", "purpose"] ctx'
     PSpending txoutRef <- tcont $ pmatch $ ctx.purpose
-    let txInInfos :: Term _ (PBuiltinList (PAsData PTxInInfo))
+    let txInInfos :: Term _ (PBuiltinList PTxInInfo)
         txInInfos = pfield @"inputs" #$ ctx.txInfo
         target :: Term _ PTxOutRef
         target = pfield @"_0" # txoutRef
-        pred :: Term _ (PAsData PTxInInfo :--> PBool)
+        pred :: Term _ (PTxInInfo :--> PBool)
         pred = plam $ \actual ->
-          target #== pfield @"outRef" # pfromData actual
+          target #== pfield @"outRef" # actual
     pure $ pfind # pred # txInInfos
 
 ------------- Helpers --------------------------------------------------------
@@ -440,6 +440,6 @@ theField = unTermCont $ do
 
 newtype PWrapInt (s :: S) = PWrapInt (Term s PInteger)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PEq, POrd)
+  deriving anyclass (PlutusType, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PWrapInt where type DPTStrat _ = PlutusTypeNewtype
 instance PTryFrom PData (PAsData PWrapInt)

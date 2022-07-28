@@ -1,5 +1,5 @@
-{-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Api.V1.Time (
@@ -25,7 +25,7 @@ import Plutarch.Unsafe (punsafeCoerce)
 newtype PPOSIXTime (s :: S)
   = PPOSIXTime (Term s PInteger)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd, PIntegral, PNum)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PIntegral, PNum)
 instance DerivePlutusType PPOSIXTime where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PPOSIXTime where type PLifted PPOSIXTime = Plutus.POSIXTime

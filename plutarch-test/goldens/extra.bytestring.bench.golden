@@ -1,6 +1,6 @@
-allandhexdigit.allas {"exBudgetCPU":28360969,"exBudgetMemory":65297,"scriptSizeBytes":94}
-allandhexdigit.not all as {"exBudgetCPU":14762346,"exBudgetMemory":34251,"scriptSizeBytes":93}
-allandhexdigit.allhex {"exBudgetCPU":75395450,"exBudgetMemory":190441,"scriptSizeBytes":175}
-allandhexdigit.notallhex {"exBudgetCPU":53725465,"exBudgetMemory":136871,"scriptSizeBytes":175}
-allandhexdigit.pisHexDigit {"exBudgetCPU":75581389,"exBudgetMemory":209278,"scriptSizeBytes":187}
-allandhexdigit.pisNoneHexDigit {"exBudgetCPU":212115335,"exBudgetMemory":586255,"scriptSizeBytes":235}
+allandhexdigit.allas {"exBudgetCPU":26230811,"exBudgetMemory":65342,"scriptSizeBytes":94}
+allandhexdigit.not all as {"exBudgetCPU":13542795,"exBudgetMemory":34278,"scriptSizeBytes":93}
+allandhexdigit.allhex {"exBudgetCPU":72712677,"exBudgetMemory":190507,"scriptSizeBytes":175}
+allandhexdigit.notallhex {"exBudgetCPU":51813964,"exBudgetMemory":136919,"scriptSizeBytes":175}
+allandhexdigit.pisHexDigit {"exBudgetCPU":66411178,"exBudgetMemory":209278,"scriptSizeBytes":187}
+allandhexdigit.pisNoneHexDigit {"exBudgetCPU":192490411,"exBudgetMemory":586255,"scriptSizeBytes":235}

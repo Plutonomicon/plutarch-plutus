@@ -8,7 +8,7 @@ module Plutarch.Test.Property.Gen (
   bsOfLength,
 ) where
 
-import Control.Monad (MonadPlus, liftM2, mfilter, join)
+import Control.Monad (MonadPlus, join, liftM2, mfilter)
 import Data.List (nub, sortOn)
 import Data.Ratio ((%))
 
@@ -60,7 +60,7 @@ instance Arbitrary CurrencySymbol where
   arbitrary =
     let arbitrary' =
           join $ fmap (toBuiltin @ByteString) . bsOfLength <$> elements [0, 28]
-    in CurrencySymbol <$> arbitrary'
+     in CurrencySymbol <$> arbitrary'
 
 instance Arbitrary Value where
   arbitrary =

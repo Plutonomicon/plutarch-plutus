@@ -1,5 +1,5 @@
-{-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Api.V1.Address (
@@ -28,8 +28,8 @@ data PCredential (s :: S)
   = PPubKeyCredential (Term s (PDataRecord '["_0" ':= PPubKeyHash]))
   | PScriptCredential (Term s (PDataRecord '["_0" ':= PValidatorHash]))
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd, PTryFrom PData)
-instance DerivePlutusType (PCredential) where type DPTStrat _ = PlutusTypeData
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PTryFrom PData)
+instance DerivePlutusType PCredential where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PCredential where type PLifted PCredential = Plutus.Credential
 deriving via (DerivePConstantViaData Plutus.Credential PCredential) instance PConstantDecl Plutus.Credential
@@ -48,7 +48,7 @@ data PStakingCredential (s :: S)
           )
       )
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd, PTryFrom PData)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PTryFrom PData)
 instance DerivePlutusType PStakingCredential where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PStakingCredential where type PLifted PStakingCredential = Plutus.StakingCredential
@@ -66,8 +66,8 @@ newtype PAddress (s :: S)
           )
       )
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, POrd, PTryFrom PData)
-instance DerivePlutusType (PAddress) where type DPTStrat _ = PlutusTypeData
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PPartialOrd, POrd, PTryFrom PData)
+instance DerivePlutusType PAddress where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PAddress where type PLifted PAddress = Plutus.Address
 deriving via (DerivePConstantViaData Plutus.Address PAddress) instance PConstantDecl Plutus.Address

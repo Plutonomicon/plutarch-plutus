@@ -36,6 +36,9 @@ module Plutarch.Api.V1.Value (
   punionWith,
   punionWithData,
 
+  -- * Partial ordering operations
+  pcheckBinRel,
+
   -- * Lookups
   pvalueOf,
   plovelaceValueOf,
@@ -73,7 +76,7 @@ import Plutarch.Prelude hiding (psingleton)
 
 newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PTokenName where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PTokenName where type PLifted PTokenName = Plutus.TokenName
@@ -92,7 +95,7 @@ instance PTryFrom PData (PAsData PTokenName) where
 
 newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PCurrencySymbol where type DPTStrat _ = PlutusTypeNewtype
 
 instance PTryFrom PData (PAsData PCurrencySymbol) where
@@ -100,7 +103,7 @@ instance PTryFrom PData (PAsData PCurrencySymbol) where
   ptryFrom' opq = runTermCont $ do
     unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
     len <- tcont . plet $ plengthBS # unwrapped
-    tcont $ \f -> 
+    tcont $ \f ->
       pif (len #== 0 #|| len #== 28) (f ()) (ptraceError "a CurrencySymbol must be 28 bytes long or empty")
     pure (punsafeCoerce opq, pcon . PCurrencySymbol $ unwrapped)
 
@@ -135,6 +138,30 @@ instance PEq (PValue 'Sorted 'Positive) where
 
 instance PEq (PValue 'Sorted 'NonZero) where
   a #== b = pto a #== pto b
+
+{- | Partial ordering implementation for sorted 'PValue' with 'Positive' amounts.
+
+Use 'pcheckBinRel' if 'AmountGuarantees' is 'NoGuarantees'.
+-}
+instance PPartialOrd (PValue 'Sorted 'Positive) where
+  a #< b = a' #< pforgetPositive b
+    where
+      a' = pforgetPositive a :: Term _ (PValue 'Sorted 'NonZero)
+  a #<= b = a' #<= pforgetPositive b
+    where
+      a' = pforgetPositive a :: Term _ (PValue 'Sorted 'NonZero)
+
+{- | Partial ordering implementation for sorted 'PValue' with 'NonZero' amounts.
+
+Use 'pcheckBinRel' if 'AmountGuarantees' is 'NoGuarantees'.
+-}
+instance PPartialOrd (PValue 'Sorted 'NonZero) where
+  a #< b = f # a # b
+    where
+      f = phoistAcyclic $ pcheckBinRel #$ phoistAcyclic $ plam (#<)
+  a #<= b = f # a # b
+    where
+      f = phoistAcyclic $ pcheckBinRel #$ phoistAcyclic $ plam (#<=)
 
 instance PEq (PValue 'Sorted 'NoGuarantees) where
   a #== b = AssocMap.pall # (AssocMap.pall # plam (#== 0)) # pto (punionWith # plam (-) # a # b)
@@ -267,7 +294,7 @@ psingletonData = phoistAcyclic $
       )
 
 -- | Get the quantity of the given currency in the 'PValue'.
-pvalueOf :: Term s (PValue _ _ :--> PCurrencySymbol :--> PTokenName :--> PInteger)
+pvalueOf :: Term s (PValue anyKey anyAmount :--> PCurrencySymbol :--> PTokenName :--> PInteger)
 pvalueOf = phoistAcyclic $
   plam $ \value symbol token ->
     AssocMap.pfoldAt
@@ -327,7 +354,7 @@ plovelaceValueOf = phoistAcyclic $
       PNil -> 0
       PCons x _ ->
         pif' # (pfstBuiltin # x #== padaSymbolData)
-          # (pfromData $ psndBuiltin #$ phead #$ pto $ pfromData $ psndBuiltin # x)
+          # pfromData (psndBuiltin #$ phead #$ pto $ pfromData $ psndBuiltin # x)
           # 0
 
 {- | Combine two 'PValue's applying the given function to any pair of
@@ -337,14 +364,14 @@ plovelaceValueOf = phoistAcyclic $
 punionWith ::
   Term
     s
-    ( (PInteger :--> PInteger :--> PInteger) :--> PValue 'Sorted _ :--> PValue 'Sorted _
+    ( (PInteger :--> PInteger :--> PInteger) :--> PValue 'Sorted any0 :--> PValue 'Sorted any1
         :--> PValue 'Sorted 'NoGuarantees
     )
 punionWith = phoistAcyclic $
   plam $ \combine x y ->
     pcon . PValue $
       AssocMap.punionWith
-        # (plam $ \x y -> AssocMap.punionWith # combine # x # y)
+        # plam (\x y -> AssocMap.punionWith # combine # x # y)
         # pto x
         # pto y
 
@@ -356,20 +383,20 @@ punionWithData ::
   Term
     s
     ( (PAsData PInteger :--> PAsData PInteger :--> PAsData PInteger)
-        :--> PValue 'Sorted _
-        :--> PValue 'Sorted _
+        :--> PValue 'Sorted any0
+        :--> PValue 'Sorted any1
         :--> PValue 'Sorted 'NoGuarantees
     )
 punionWithData = phoistAcyclic $
   plam $ \combine x y ->
     pcon . PValue $
       AssocMap.punionWith
-        # (plam $ \x y -> AssocMap.punionWithData # combine # x # y)
+        # plam (\x y -> AssocMap.punionWithData # combine # x # y)
         # pto x
         # pto y
 
 -- | Normalize the argument to contain no zero quantity nor empty token map.
-pnormalize :: Term s (PValue 'Sorted _ :--> PValue 'Sorted 'NonZero)
+pnormalize :: Term s (PValue 'Sorted any :--> PValue 'Sorted 'NonZero)
 pnormalize = phoistAcyclic $
   plam $ \value ->
     pcon . PValue $
@@ -385,20 +412,22 @@ pnormalize = phoistAcyclic $
       pif (intData #== zeroData) (pcon PNothing) (pcon $ PJust intData)
 
 -- | Assert the value is properly sorted and normalized.
-passertSorted :: Term s (PValue _ _ :--> PValue 'Sorted 'NonZero)
+passertSorted :: Term s (PValue anyKey anyAmount :--> PValue 'Sorted 'NonZero)
 passertSorted = phoistAcyclic $
   plam $ \value ->
     pif
       ( AssocMap.pany
-          # ( plam $
-                \submap ->
-                  AssocMap.pnull # (AssocMap.passertSorted # submap)
-                    #|| AssocMap.pany # plam (#== 0) # submap
+          # plam
+            ( \submap ->
+                AssocMap.pnull # (AssocMap.passertSorted # submap)
+                  #|| AssocMap.pany # plam (#== 0) # submap
             )
           # pto value
       )
       (ptraceError "Abnormal Value")
-      (pcon $ PValue $ AssocMap.passertSorted # pto value)
+      . pcon
+      . PValue
+      $ AssocMap.passertSorted #$ punsafeCoerce $ pto value
 
 -- | Assert all amounts in the value are positive.
 passertPositive :: forall kg ag s. Term s (PValue kg ag :--> PValue kg 'Positive)
@@ -406,7 +435,7 @@ passertPositive = phoistAcyclic $
   plam $ \value ->
     pif
       ( AssocMap.pall
-          # (plam $ \submap -> AssocMap.pall # plam (0 #<) # submap)
+          # plam (\submap -> AssocMap.pall # plam (0 #<) # submap)
           # pto value
       )
       (punsafeDowncast $ pto value)
@@ -414,7 +443,7 @@ passertPositive = phoistAcyclic $
 
 passertNonZero :: forall kg ag. ClosedTerm (PValue kg ag :--> PValue kg 'NonZero)
 passertNonZero = plam $ \val ->
-    pif (outer #$ pto . pto $ val) (punsafeCoerce val) (ptraceError "Zero amount in Value")
+  pif (outer #$ pto . pto $ val) (punsafeCoerce val) (ptraceError "Zero amount in Value")
   where
     outer :: ClosedTerm (PBuiltinList (PBuiltinPair (PAsData PCurrencySymbol) (PAsData (PMap k PTokenName PInteger))) :--> PBool)
     outer = pfix #$ plam $ \self m ->
@@ -442,3 +471,15 @@ zeroData = pdata 0
 pmapAmounts :: Term s ((PInteger :--> PInteger) :--> PValue k a :--> PValue k 'NoGuarantees)
 pmapAmounts = phoistAcyclic $
   plam $ \f v -> pcon $ PValue $ AssocMap.pmap # plam (AssocMap.pmap # f #) # pto v
+
+{- | Given an amount comparison function, check whether a binary relation holds over
+2 sorted 'PValue's.
+-}
+pcheckBinRel :: Term s ((PInteger :--> PInteger :--> PBool) :--> PValue 'Sorted any0 :--> PValue 'Sorted any1 :--> PBool)
+pcheckBinRel = phoistAcyclic $
+  plam $ \f ->
+    subReduction2 $
+      AssocMap.pcheckBinRel # (AssocMap.pcheckBinRel # f # 0) # AssocMap.pempty
+  where
+    subReduction2 :: Term s (PInner a :--> PInner b :--> c) -> Term s (a :--> b :--> c)
+    subReduction2 = punsafeCoerce

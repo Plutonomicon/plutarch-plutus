@@ -37,7 +37,7 @@ import Plutarch.Unsafe (punsafeCoerce)
 newtype PTxId (s :: S)
   = PTxId (Term s (PDataRecord '["_0" ':= PByteString]))
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, POrd)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PPartialOrd, POrd)
 instance DerivePlutusType PTxId where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PTxId where type PLifted PTxId = Plutus.TxId
@@ -52,11 +52,12 @@ instance PTryFrom PData (PAsData PTxId) where
   ptryFrom' opq = runTermCont $ do
     opq' <- tcont . plet $ pasConstr # opq
     dataBs <- tcont $ \f ->
-      pif (pfstBuiltin # opq' #== 0 #&& plength # (psndBuiltin # opq') #== 1)
+      pif
+        (pfstBuiltin # opq' #== 0 #&& plength # (psndBuiltin # opq') #== 1)
         (f $ phead #$ psndBuiltin # opq')
         (ptraceError "bad TxId constructor")
     unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) dataBs snd
-    tcont $ \f -> 
+    tcont $ \f ->
       pif (plengthBS # unwrapped #== 28) (f ()) (ptraceError "a TxId must be 28 bytes long")
     pure (punsafeCoerce opq, pcon . PTxId $ pdcons # pdata unwrapped # pdnil)
 
@@ -72,7 +73,7 @@ newtype PTxOutRef (s :: S)
           )
       )
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, POrd, PTryFrom PData)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PPartialOrd, POrd, PTryFrom PData)
 
 instance DerivePlutusType PTxOutRef where type DPTStrat _ = PlutusTypeData
 
