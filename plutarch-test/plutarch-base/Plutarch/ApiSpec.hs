@@ -93,7 +93,7 @@ spec = do
             toSymbolicValue n =
               PValue.pconstantPositiveSingleton (pconstant $ fromString $ "c" <> showHex n "") (pconstant "token") 1
         "singleton" @| pmint @-> \p ->
-          plift (PValue.pforgetPositive p) @?= mint
+          plift (PValue.pforgetSorted $ PValue.pforgetPositive p) @?= mint
         "singletonData"
           @| PValue.psingletonData # pdata (pconstant "c0") # pdata (pconstant "sometoken") # pdata 1
           @-> \p -> plift (PValue.pforgetSorted p) @?= mint
