@@ -457,11 +457,11 @@ passertNonZero = plam $ \val ->
         PNil -> pcon PTrue
 
 -- | Forget the knowledge of value's positivity.
-pforgetPositive :: Term s (PValue 'Sorted 'Positive) -> Term s (PValue k a)
+pforgetPositive :: Term s (PValue k 'Positive) -> Term s (PValue k a)
 pforgetPositive = punsafeCoerce
 
 -- | Forget the knowledge of all value's guarantees.
-pforgetSorted :: Term s (PValue 'Sorted a) -> Term s (PValue k b)
+pforgetSorted :: Term s (PValue 'Sorted a) -> Term s (PValue k a)
 pforgetSorted = punsafeCoerce
 
 zeroData :: ClosedTerm (PAsData PInteger)
