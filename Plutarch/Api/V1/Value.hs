@@ -58,7 +58,6 @@ import qualified PlutusLedgerApi.V1 as Plutus
 import Plutarch.Api.V1.AssocMap (KeyGuarantees (Sorted, Unsorted), PMap (..))
 import qualified Plutarch.Api.V1.AssocMap as AssocMap
 import Plutarch.Bool (pand', pif')
-import Plutarch.Builtin (Flip)
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
@@ -73,6 +72,8 @@ import qualified PlutusTx.Monoid as PlutusTx
 import qualified PlutusTx.Semigroup as PlutusTx
 
 import Plutarch.Prelude hiding (psingleton)
+
+newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 
 newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
   deriving stock (Generic)

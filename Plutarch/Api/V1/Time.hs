@@ -11,7 +11,6 @@ import Plutarch.Num (PNum)
 import qualified PlutusLedgerApi.V1 as Plutus
 
 import Plutarch.Api.V1.Interval (PInterval)
-import Plutarch.Builtin (Flip)
 import Plutarch.Lift (
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
   PConstantDecl,
@@ -35,6 +34,8 @@ deriving via
     PConstantDecl Plutus.POSIXTime
 
 type PPOSIXTimeRange = PInterval PPOSIXTime
+
+newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 
 instance PTryFrom PData (PAsData PPOSIXTime) where
   type PTryFromExcess PData (PAsData PPOSIXTime) = Flip Term PPOSIXTime

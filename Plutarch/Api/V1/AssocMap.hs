@@ -50,7 +50,6 @@ import qualified PlutusTx.Monoid as PlutusTx
 import qualified PlutusTx.Semigroup as PlutusTx
 
 import Plutarch.Builtin (
-  Flip,
   pasMap,
   pdataImpl,
   pforgetData,
@@ -84,6 +83,8 @@ import Data.Traversable (for)
 data KeyGuarantees = Sorted | Unsorted
 
 type PBuiltinListOfPairs k v = PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+
+newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 
 type role PMap nominal nominal nominal nominal
 newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S) = PMap (Term s (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))))

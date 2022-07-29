@@ -3,7 +3,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Builtin (
-  Flip,
   PData,
   pfstBuiltin,
   psndBuiltin,

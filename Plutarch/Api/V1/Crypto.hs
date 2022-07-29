@@ -12,7 +12,6 @@ import qualified PlutusLedgerApi.V1 as Plutus
 
 import Data.Coerce (coerce)
 import Plutarch.Api.Internal.Hashing (hashLedgerBytes)
-import Plutarch.Builtin (Flip)
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   PConstantDecl,
@@ -44,6 +43,8 @@ instance PTryFrom PData (PAsData PPubKeyHash) where
 
 newtype PubKey = PubKey {getPubKey :: Plutus.LedgerBytes}
   deriving stock (Eq, Ord, Show)
+
+newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 
 pubKeyHash :: PubKey -> Plutus.PubKeyHash
 pubKeyHash = coerce hashLedgerBytes

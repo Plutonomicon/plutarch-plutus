@@ -16,7 +16,6 @@ module Plutarch.Api.V1.Scripts (
 import qualified PlutusLedgerApi.V1 as Plutus
 import qualified PlutusLedgerApi.V1.Scripts as Plutus
 
-import Plutarch.Builtin (Flip)
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   PConstantDecl,
@@ -113,3 +112,5 @@ deriving via
   (DerivePConstantViaBuiltin Plutus.ScriptHash PScriptHash PByteString)
   instance
     PConstantDecl Plutus.ScriptHash
+
+newtype Flip f a b = Flip (f b a) deriving stock (Generic)

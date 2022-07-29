@@ -20,7 +20,7 @@ import Plutarch.Api.V1.Value (
   KeyGuarantees (Sorted),
   PValue,
  )
-import Plutarch.Builtin (Flip, pasConstr)
+import Plutarch.Builtin (pasConstr)
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
@@ -33,6 +33,8 @@ import Plutarch.Lift (
 import Plutarch.Prelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce)
+
+newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 
 newtype PTxId (s :: S)
   = PTxId (Term s (PDataRecord '["_0" ':= PByteString]))
