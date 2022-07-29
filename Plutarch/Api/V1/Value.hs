@@ -20,6 +20,7 @@ module Plutarch.Api.V1.Value (
   -- * Conversions and assertions
   passertSorted,
   passertPositive,
+  passertNonZero,
   pforgetPositive,
   pforgetSorted,
   pnormalize,
@@ -370,7 +371,7 @@ passertSorted = phoistAcyclic $
       in pcon $ PValue $ AssocMap.passertSorted # valueMap)
 
 -- | Assert all amounts in the value are positive.
-passertPositive :: Term s (PValue 'Sorted 'NonZero :--> PValue 'Sorted 'Positive)
+passertPositive :: Term s (PValue k g :--> PValue k 'Positive)
 passertPositive = phoistAcyclic $
   plam $ \value ->
     pif
@@ -381,12 +382,28 @@ passertPositive = phoistAcyclic $
       (punsafeDowncast $ pto value)
       (ptraceError "Negative amount in Value")
 
+-- | Assert all amounts in the value are non-zero.
+passertNonZero :: forall kg ag. ClosedTerm (PValue kg ag :--> PValue kg 'NonZero)
+passertNonZero = plam $ \val ->
+  pif (outer #$ pto . pto $ val) (punsafeCoerce val) (ptraceError "Zero amount in Value")
+  where
+    outer :: ClosedTerm (PBuiltinList (PBuiltinPair (PAsData PCurrencySymbol) (PAsData (PMap k PTokenName PInteger))) :--> PBool)
+    outer = pfix #$ plam $ \self m ->
+      pmatch m $ \case
+        PCons x xs -> inner # (pto . pfromData $ psndBuiltin # x) #&& self # xs
+        PNil -> pcon PTrue
+    inner :: ClosedTerm (PBuiltinList (PBuiltinPair (PAsData PTokenName) (PAsData PInteger)) :--> PBool)
+    inner = pfix #$ plam $ \self m ->
+      pmatch m $ \case
+        PCons x xs -> pnot # (psndBuiltin # x #== pconstantData 0) #&& self # xs
+        PNil -> pcon PTrue
+
 -- | Forget the knowledge of value's positivity.
-pforgetPositive :: Term s (PValue 'Sorted 'Positive) -> Term s (PValue k a)
+pforgetPositive :: Term s (PValue k 'Positive) -> Term s (PValue k a)
 pforgetPositive = punsafeCoerce
 
 -- | Forget the knowledge of all value's guarantees.
-pforgetSorted :: Term s (PValue 'Sorted a) -> Term s (PValue k b)
+pforgetSorted :: Term s (PValue 'Sorted a) -> Term s (PValue k a)
 pforgetSorted = punsafeCoerce
 
 zeroData :: ClosedTerm (PAsData PInteger)
