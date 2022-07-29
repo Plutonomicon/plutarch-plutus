@@ -44,22 +44,23 @@ instance PUnsafeLiftDecl PTxId where type PLifted PTxId = Plutus.TxId
 deriving via (DerivePConstantViaData Plutus.TxId PTxId) instance PConstantDecl Plutus.TxId
 
 instance PTryFrom PData PTxId where
-  type PTryFromExcess PData PTxId = Flip Term PTxId
+  type PTryFromExcess PData PTxId = Flip Term PByteString
   ptryFrom' opq cont = ptryFrom @(PAsData PTxId) opq (cont . first punsafeCoerce)
 
 instance PTryFrom PData (PAsData PTxId) where
-  type PTryFromExcess PData (PAsData PTxId) = Flip Term PTxId
+  type PTryFromExcess PData (PAsData PTxId) = Flip Term PByteString
   ptryFrom' opq = runTermCont $ do
     opq' <- tcont . plet $ pasConstr # opq
-    dataBs <- tcont $ \f ->
-      pif
-        (pfstBuiltin # opq' #== 0 #&& plength # (psndBuiltin # opq') #== 1)
-        (f $ phead #$ psndBuiltin # opq')
-        (ptraceError "ptryFrom(TxId): bad constructor")
+    tcont $ \f ->
+      pif (pfstBuiltin # opq' #== 0) (f ()) $ ptraceError "ptryFrom(TxId): invalid constructor id"
+    flds <- tcont . plet $ psndBuiltin # opq'
+    let dataBs = phead # flds
+    tcont $ \f ->
+      pif (pnil #== ptail # flds) (f ()) $ ptraceError "ptryFrom(TxId): constructor fields len > 1"
     unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) dataBs snd
     tcont $ \f ->
-      pif (plengthBS # unwrapped #== 28) (f ()) (ptraceError "ptryFrom(TxId): must be 28 bytes long")
-    pure (punsafeCoerce opq, pcon . PTxId $ pdcons # pdata unwrapped # pdnil)
+      pif (plengthBS # unwrapped #== 28) (f ()) $ ptraceError "ptryFrom(TxId): must be 28 bytes long"
+    pure (punsafeCoerce opq, unwrapped)
 
 -- | Reference to a transaction output with a index referencing which of the outputs is being referred to.
 newtype PTxOutRef (s :: S)
