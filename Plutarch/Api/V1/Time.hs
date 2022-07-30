@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -17,6 +18,8 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
  )
 import Plutarch.Prelude
+import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
+import Plutarch.Unsafe (punsafeCoerce)
 
 newtype PPOSIXTime (s :: S)
   = PPOSIXTime (Term s PInteger)
@@ -31,3 +34,13 @@ deriving via
     PConstantDecl Plutus.POSIXTime
 
 type PPOSIXTimeRange = PInterval PPOSIXTime
+
+newtype Flip f a b = Flip (f b a) deriving stock (Generic)
+
+instance PTryFrom PData (PAsData PPOSIXTime) where
+  type PTryFromExcess PData (PAsData PPOSIXTime) = Flip Term PPOSIXTime
+  ptryFrom' opq = runTermCont $ do
+    (wrapped :: Term _ (PAsData PInteger), unwrapped :: Term _ PInteger) <-
+      tcont $ ptryFrom @(PAsData PInteger) opq
+    tcont $ \f -> pif (0 #<= unwrapped) (f ()) (ptraceError "ptryFrom(POSIXTime): must be positive")
+    pure (punsafeCoerce wrapped, pcon $ PPOSIXTime unwrapped)

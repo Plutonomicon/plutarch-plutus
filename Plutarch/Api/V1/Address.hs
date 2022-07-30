@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -27,11 +28,12 @@ data PCredential (s :: S)
   = PPubKeyCredential (Term s (PDataRecord '["_0" ':= PPubKeyHash]))
   | PScriptCredential (Term s (PDataRecord '["_0" ':= PValidatorHash]))
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PTryFrom PData)
 instance DerivePlutusType PCredential where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PCredential where type PLifted PCredential = Plutus.Credential
 deriving via (DerivePConstantViaData Plutus.Credential PCredential) instance PConstantDecl Plutus.Credential
+instance PTryFrom PData (PAsData PCredential)
 
 data PStakingCredential (s :: S)
   = PStakingHash (Term s (PDataRecord '["_0" ':= PCredential]))
@@ -46,11 +48,12 @@ data PStakingCredential (s :: S)
           )
       )
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PTryFrom PData)
 instance DerivePlutusType PStakingCredential where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PStakingCredential where type PLifted PStakingCredential = Plutus.StakingCredential
 deriving via (DerivePConstantViaData Plutus.StakingCredential PStakingCredential) instance PConstantDecl Plutus.StakingCredential
+instance PTryFrom PData (PAsData PStakingCredential)
 
 newtype PAddress (s :: S)
   = PAddress
@@ -63,8 +66,9 @@ newtype PAddress (s :: S)
           )
       )
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PPartialOrd, POrd)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PPartialOrd, POrd, PTryFrom PData)
 instance DerivePlutusType PAddress where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PAddress where type PLifted PAddress = Plutus.Address
 deriving via (DerivePConstantViaData Plutus.Address PAddress) instance PConstantDecl Plutus.Address
+instance PTryFrom PData (PAsData PAddress)

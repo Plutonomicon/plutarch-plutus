@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -22,6 +23,8 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
  )
 import Plutarch.Prelude
+import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
+import Plutarch.Unsafe (punsafeCoerce)
 
 newtype PDatum (s :: S) = PDatum (Term s PData)
   deriving stock (Generic)
@@ -80,6 +83,14 @@ deriving via
   instance
     PConstantDecl Plutus.ValidatorHash
 
+instance PTryFrom PData (PAsData PValidatorHash) where
+  type PTryFromExcess PData (PAsData PValidatorHash) = Flip Term PValidatorHash
+  ptryFrom' opq = runTermCont $ do
+    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
+    tcont $ \f ->
+      pif (plengthBS # unwrapped #== 28) (f ()) (ptraceError "ptryFrom(PValidatorHash): must be 28 bytes long")
+    pure (punsafeCoerce opq, pcon . PValidatorHash $ unwrapped)
+
 newtype PMintingPolicyHash (s :: S) = PMintingPolicyHash (Term s PByteString)
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
@@ -101,3 +112,5 @@ deriving via
   (DerivePConstantViaBuiltin Plutus.ScriptHash PScriptHash PByteString)
   instance
     PConstantDecl Plutus.ScriptHash
+
+newtype Flip f a b = Flip (f b a) deriving stock (Generic)

@@ -19,7 +19,7 @@ import Plutarch.DataRepr.Internal.Field (
  )
 import Plutarch.Prelude
 import Plutarch.Reducible (Reduce)
-import Plutarch.TryFrom (PTryFromExcess)
+import Plutarch.TryFrom (PTryFrom (PTryFromExcess))
 
 -- | Like `plet` but works in a `TermCont` monad
 pletC :: Term s a -> TermCont s (Term s a)

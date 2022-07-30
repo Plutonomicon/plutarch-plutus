@@ -1,3 +1,5 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
+
 -- NOTE: This module also contains ScriptContext mocks, which should ideally
 -- moved to a module of its own after cleaning up to expose a easy to reason
 -- about API.
@@ -28,9 +30,11 @@ import Plutarch.Api.V1 (
   KeyGuarantees (Sorted),
   PCredential,
   PCurrencySymbol,
+  PMaybeData,
   PPubKeyHash,
   PScriptContext,
   PScriptPurpose (PMinting, PSpending),
+  PStakingCredential,
   PTxInInfo,
   PTxInfo,
   PValue,
@@ -40,7 +44,12 @@ import qualified Plutarch.Api.V1.Value as PValue
 import Plutarch.Builtin (pasConstr, pforgetData)
 import Plutarch.Prelude
 import Plutarch.Test
+import Plutarch.Test.Property.Gen ()
+
 import Test.Hspec
+import Test.Tasty.QuickCheck (Property, property, (===))
+
+import Plutarch.Lift (PConstanted, PLifted, PUnsafeLiftDecl (PLifted))
 
 newtype EnclosedTerm (p :: PType) = EnclosedTerm {getEnclosedTerm :: ClosedTerm p}
 
@@ -84,7 +93,7 @@ spec = do
             toSymbolicValue n =
               PValue.pconstantPositiveSingleton (pconstant $ fromString $ "c" <> showHex n "") (pconstant "token") 1
         "singleton" @| pmint @-> \p ->
-          plift (PValue.pforgetPositive p) @?= mint
+          plift (PValue.pforgetSorted $ PValue.pforgetPositive p) @?= mint
         "singletonData"
           @| PValue.psingletonData # pdata (pconstant "c0") # pdata (pconstant "sometoken") # pdata 1
           @-> \p -> plift (PValue.pforgetSorted p) @?= mint
@@ -270,6 +279,26 @@ spec = do
           "fails" @| checkSignatoryTermCont # pconstant "41" # ctx @-> pfails
       describe "getFields" . pgoldenSpec $ do
         "0" @| getFields
+    describe "data recovery" $ do
+      describe "succeding property tests" $ do
+        it "recovering PAddress succeeds" $
+          property (propPlutarchtypeCanBeRecovered @Address)
+        it "recovering PTokenName succeeds" $
+          property (propPlutarchtypeCanBeRecovered @TokenName)
+        it "recovering PCredential succeeds" $
+          property (propPlutarchtypeCanBeRecovered @Credential)
+        it "recovering PStakingCredential succeeds" $
+          property (propPlutarchtypeCanBeRecovered @StakingCredential)
+        it "recovering PPubKeyHash succeeds" $
+          property (propPlutarchtypeCanBeRecovered @PubKeyHash)
+        it "recovering PValidatorHash succeeds" $
+          property (propPlutarchtypeCanBeRecovered @ValidatorHash)
+        it "recovering PValue succeeds" $
+          property (propPlutarchtypeCanBeRecovered @Value)
+        it "recovering PCurrencySymbol succeeds" $
+          property (propPlutarchtypeCanBeRecovered @CurrencySymbol)
+        it "recovering PMaybeData succeeds" $
+          property prop_pmaybedata_can_be_recovered
 
 --------------------------------------------------------------------------------
 
@@ -473,6 +502,37 @@ d0Dat = Datum $ toBuiltinData d0DatValue
 
 d0DatValue :: [Integer]
 d0DatValue = [1 .. 10]
+
+------------------- Property tests -------------------------------------------------
+
+propPlutarchtypeCanBeRecovered ::
+  forall a.
+  ( Eq a
+  , Show a
+  , PConstant a
+  , PIsData (PConstanted a)
+  , PTryFrom PData (PAsData (PConstanted a))
+  , PLifted (PConstanted a) ~ a
+  , ToData a
+  ) =>
+  a ->
+  Property
+propPlutarchtypeCanBeRecovered addr =
+  addr
+    === plift
+      ( unTermCont $
+          pfromData . fst <$> tcont (ptryFrom @(PAsData (PConstanted a)) $ pforgetData $ pconstantData addr)
+      )
+
+prop_pmaybedata_can_be_recovered :: Maybe StakingCredential -> Property
+prop_pmaybedata_can_be_recovered addr =
+  addr
+    === plift
+      ( unTermCont $
+          pfromData . fst
+            <$> tcont
+              (ptryFrom @(PAsData (PMaybeData PStakingCredential)) $ pforgetData $ pconstantData addr)
+      )
 
 pshouldReallyBe :: ClosedTerm a -> ClosedTerm a -> Expectation
 pshouldReallyBe a b = pshouldBe b a
