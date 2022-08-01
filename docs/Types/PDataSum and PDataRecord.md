@@ -27,8 +27,8 @@ To add an `a` to the `PDataRecord` term, you must have a `PAsData a`. The other 
 Here's how you'd build a `PDataRecord` with two integer fields, one is named `foo`, the other is named `bar`:
 
 ```hs
-test ::
-test = pdcons @"foo" @PInteger # 7 #$ pdcons @"bar" @PInteger # 42 # pnil
+test :: Term s (PDataRecord '[ "foo" ':= PInteger, "bar" ':= PInteger])
+test = pdcons @"foo" @PInteger # pdata 7 #$ pdcons @"bar" @PInteger # pdata 42 # pdnil
 ```
 
 `PDataSum` on the other hand, is more "free-standing". In particular, the following type:
