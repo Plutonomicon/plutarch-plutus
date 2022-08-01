@@ -1,6 +1,9 @@
-module Plutarch.Internal.TypeFamily (ToPType, ToPType2, UnTerm) where
+{-# LANGUAGE UndecidableInstances #-}
+
+module Plutarch.Internal.TypeFamily (ToPType, ToPType2, UnTerm, Snd) where
 
 import Data.Kind (Type)
+import GHC.TypeLits (ErrorMessage (Text), TypeError)
 import Plutarch.Internal (PType, Term)
 
 -- | Convert a list of `Term s a` to a list of `a`.
@@ -16,4 +19,8 @@ type family ToPType2 as where
 
 type UnTerm :: Type -> PType
 type family UnTerm x where
-  UnTerm (Term s a) = a
+  UnTerm (Term _ a) = a
+  UnTerm _ = TypeError ( 'Text "Non-term in Plutarch data type not allowed")
+
+type family Snd ab where
+  Snd '(_, b) = b

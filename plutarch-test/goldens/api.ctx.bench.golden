@@ -1,0 +1,7 @@
+term {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":140}
+get.txInfo {"exBudgetCPU":460976,"exBudgetMemory":1496,"scriptSizeBytes":149}
+get.mint {"exBudgetCPU":1597398,"exBudgetMemory":5388,"scriptSizeBytes":177}
+get.credentials {"exBudgetCPU":4834417,"exBudgetMemory":15200,"scriptSizeBytes":242}
+get.sym {"exBudgetCPU":10539781,"exBudgetMemory":31123,"scriptSizeBytes":339}
+ScriptPurpose.literal {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":48}
+ScriptPurpose.decode {"exBudgetCPU":1247652,"exBudgetMemory":3498,"scriptSizeBytes":74}

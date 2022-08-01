@@ -13,18 +13,14 @@ module Plutarch.Api.V1.DCert (
   ),
 ) where
 
-import qualified GHC.Generics as GHC
-import Generics.SOP (Generic, I (I))
-
-import qualified Plutus.V1.Ledger.Api as Plutus
+import qualified PlutusLedgerApi.V1 as Plutus
 
 import Plutarch.Api.V1.Address (PStakingCredential)
 import Plutarch.Api.V1.Crypto (PPubKeyHash)
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
-  PIsDataReprInstances (PIsDataReprInstances),
  )
-import Plutarch.Lift (PLifted, PUnsafeLiftDecl)
+import Plutarch.Lift (PConstantDecl, PLifted, PUnsafeLiftDecl)
 import Plutarch.Prelude
 
 data PDCert (s :: S)
@@ -43,12 +39,9 @@ data PDCert (s :: S)
   | PDCertPoolRetire (Term s (PDataRecord '["_0" ':= PPubKeyHash, "_1" ':= PInteger]))
   | PDCertGenesis (Term s (PDataRecord '[]))
   | PDCertMir (Term s (PDataRecord '[]))
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic)
-  deriving anyclass (PIsDataRepr)
-  deriving
-    (PlutusType, PIsData)
-    via (PIsDataReprInstances PDCert)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
+instance DerivePlutusType PDCert where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PDCert where type PLifted PDCert = Plutus.DCert
-deriving via (DerivePConstantViaData Plutus.DCert PDCert) instance (PConstant Plutus.DCert)
+deriving via (DerivePConstantViaData Plutus.DCert PDCert) instance PConstantDecl Plutus.DCert

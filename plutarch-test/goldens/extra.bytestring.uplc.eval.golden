@@ -1,0 +1,6 @@
+allandhexdigit.allas (program 1.0.0 True)
+allandhexdigit.not all as (program 1.0.0 False)
+allandhexdigit.allhex (program 1.0.0 True)
+allandhexdigit.notallhex (program 1.0.0 False)
+allandhexdigit.pisHexDigit (program 1.0.0 True)
+allandhexdigit.pisNoneHexDigit (program 1.0.0 False)

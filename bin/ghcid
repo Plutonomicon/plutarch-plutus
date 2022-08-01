@@ -1,0 +1,24 @@
+#!/bin/sh
+
+set -xe
+
+if [[ $1 == "" ]]
+then
+  echo "Running ghcid on plutarch"
+  ghcid
+elif [[ $1 == "extra" ]]
+then
+  echo "Running ghcid on plutarch-extra"
+  ghcid -c 'cabal repl plutarch-extra:lib:plutarch-extra'
+elif [[ $1 == "test:dev" ]]
+then
+  echo "Running ghcid on plutarch-test in development mode"
+  ghcid -c 'cabal repl plutarch-test:exe:plutarch-test -f development --builddir=dist-ghc9-dev' -T Main.main
+elif [[ $1 == "test" ]]
+then
+  echo "Running ghcid on plutarch-test in non-development mode"
+  ghcid -c 'cabal repl plutarch-test:exe:plutarch-test' -T Main.main
+else
+  echo "Invalid argument"
+  exit 2
+fi

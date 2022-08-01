@@ -1,11 +1,6 @@
-cabal-version: 2.4
+cabal-version: 3.0
 name:          plutarch-test
-version:       1.1.0
-
-flag development
-  description: Enable tracing functions within plutarch.
-  manual:      True
-  default:     False
+version:       1.2.0
 
 common c
   default-language:   Haskell2010
@@ -13,9 +8,11 @@ common c
     NoStarIsType
     BangPatterns
     BinaryLiterals
+    BlockArguments
     ConstrainedClassMethods
     ConstraintKinds
     DataKinds
+    DefaultSignatures
     DeriveAnyClass
     DeriveDataTypeable
     DeriveFoldable
@@ -34,6 +31,7 @@ common c
     FlexibleContexts
     FlexibleInstances
     ForeignFunctionInterface
+    FunctionalDependencies
     GADTSyntax
     GeneralisedNewtypeDeriving
     HexFloatLiterals
@@ -49,17 +47,20 @@ common c
     OverloadedStrings
     PartialTypeSignatures
     PatternGuards
+    PatternSynonyms
     PolyKinds
     PostfixOperators
+    QuantifiedConstraints
     RankNTypes
     RelaxedPolyRec
+    RoleAnnotations
     ScopedTypeVariables
     StandaloneDeriving
     StandaloneKindSignatures
     TraditionalRecordSyntax
     TupleSections
     TypeApplications
-    TypeFamilies
+    TypeFamilyDependencies
     TypeOperators
     TypeSynonymInstances
     ViewPatterns
@@ -69,20 +70,33 @@ common c
     -Wno-partial-type-signatures -Wmissing-export-lists -Werror
     -Wincomplete-record-updates -Wmissing-deriving-strategies
     -Wno-name-shadowing -Wunused-foralls -fprint-explicit-foralls
-    -fprint-explicit-kinds
+    -fprint-explicit-kinds -Wno-unrecognised-warning-flags
 
 common deps
   build-depends:
-    , aeson               >=2.0
+    , aeson                 >=2.0
     , base
     , bytestring
+    , containers
+    , data-default
+    , directory
     , filepath
     , generics-sop
+    , hedgehog
+    , hspec
+    , hspec-core
+    , hspec-discover
+    , hspec-golden
+    , hspec-hedgehog
+    , mtl
     , plutarch
-    , plutarch-benchmark
+    , plutarch-extra
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
+    , quickcheck-instances
+    , serialise
+    , sop-core
     , tasty
     , tasty-hunit
     , tasty-quickcheck
@@ -91,39 +105,85 @@ common deps
 
 library
   import:          c, deps
-  hs-source-dirs:  src
-  exposed-modules: Plutarch.Test
+  hs-source-dirs:  common
+  exposed-modules:
+    Plutarch.Test
+    Plutarch.Test.Property
+
+  other-modules:
+    Plutarch.Test.Benchmark
+    Plutarch.Test.Golden
+    Plutarch.Test.ListSyntax
+    Plutarch.Test.Property.Extra
+    Plutarch.Test.Property.Gen
+    Plutarch.Test.Property.HaskEquiv
+    Plutarch.Test.Property.Marshal
+    Plutarch.Test.Run
 
 executable plutarch-test
   import:         c, deps
-  type:           exitcode-stdio-1.0
   main-is:        Main.hs
-  hs-source-dirs: src
+  hs-source-dirs: plutarch-base plutarch-extra common conditional ./.
+  build-depends:
+    , base16-bytestring
+    , cborg
+    , containers
+    , plutarch-test
+    , rank2classes
+    , serialise
+
+  -- FIXME: Re-enable
+  -- if impl(ghc <9.0)
+  --   build-depends:
+  --     , plutus-tx-plugin
+
+  --   other-modules: Plutarch.FFISpec
 
   if impl(ghc >=9.0)
     other-modules:
       Plutarch.FieldSpec
       Plutarch.MonadicSpec
+      Plutarch.TryFromSpec
 
   other-modules:
+    BaseSpec
+    ExtraSpec
     Plutarch.ApiSpec
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
+    Plutarch.EitherSpec
+    Plutarch.Extra.ApiSpec
+    Plutarch.Extra.ByteStringSpec
+    Plutarch.Extra.IntervalSpec
+    Plutarch.Extra.ListSpec
     Plutarch.IntegerSpec
+    Plutarch.LiftSpec
     Plutarch.ListSpec
+    Plutarch.MaybeSpec
+    Plutarch.PairSpec
     Plutarch.PIsDataSpec
     Plutarch.PLamSpec
     Plutarch.PlutusTypeSpec
+    Plutarch.POrdSpec
     Plutarch.RationalSpec
     Plutarch.RecursionSpec
     Plutarch.ScriptsSpec
+    Plutarch.ShowSpec
+    Plutarch.SpecTypes
     Plutarch.StringSpec
     Plutarch.Test
+    Plutarch.Test.Benchmark
+    Plutarch.Test.Golden
+    Plutarch.Test.ListSyntax
+    Plutarch.Test.Property
+    Plutarch.Test.Property.Extra
+    Plutarch.Test.Property.Gen
+    Plutarch.Test.Property.HaskEquiv
+    Plutarch.Test.Property.Marshal
+    Plutarch.Test.Run
     Plutarch.TraceSpec
     Plutarch.UnitSpec
-    Spec
+    Plutarch.UPLCSpec
 
-  if flag(development)
-    cpp-options: -DDevelopment
-
-  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
+  -- FIXME remove -Wwarn=deprecations
+  ghc-options:    -threaded -rtsopts -with-rtsopts=-N -Wwarn=deprecations

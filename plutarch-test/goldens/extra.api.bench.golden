@@ -1,0 +1,3 @@
+pfindOwnInput {"exBudgetCPU":6900718,"exBudgetMemory":17404,"scriptSizeBytes":332}
+pgetContinuingOutputs {"exBudgetCPU":13974787,"exBudgetMemory":35970,"scriptSizeBytes":462}
+pparseDatum {"exBudgetCPU":18732961,"exBudgetMemory":59226,"scriptSizeBytes":378}

@@ -1,6 +1,6 @@
 module Plutarch.DataRepr (
   -- * DataRepr
-  I.PDataSum,
+  I.PDataSum (PDataSum),
   I.punDataSum,
   I.ptryIndexDataSum,
   I.DataReprHandlers (DRHNil, DRHCons),
@@ -8,20 +8,21 @@ module Plutarch.DataRepr (
   I.pdcons,
   I.pdnil,
   I.PLabeledType ((:=)),
-  I.PIsDataRepr (type PIsDataReprRepr, pmatchRepr),
-  I.pmatchDataSum,
-  I.PIsDataReprInstances (PIsDataReprInstances),
   I.pindexDataRecord,
   I.pdropDataRecord,
   I.DerivePConstantViaData (DerivePConstantViaData),
-  I.pasDataSum,
+  I.PConstantData,
+  I.PLiftData,
+  I.PlutusTypeData,
 
   -- * Fields
   F.PDataFields (ptoFields, type PFields),
   F.pletFields,
   F.pfield,
-  F.hrecField,
   F.HRec,
+  F.HRecOf,
+  F.PMemberFields,
+  F.PMemberField,
 ) where
 
 import qualified Plutarch.DataRepr.Internal as I

@@ -10,7 +10,18 @@ module Plutarch.TermCont (
 
 import Data.Kind (Type)
 import Data.String (fromString)
-import Plutarch.Internal (Dig, PType, S, Term (Term), asRawTerm, getTerm, hashRawTerm)
+import Plutarch.Internal (
+  Dig,
+  PType,
+  S,
+  Term (Term),
+  asRawTerm,
+  getTerm,
+  hashRawTerm,
+  pgetConfig,
+  tracingMode,
+  pattern DetTracing,
+ )
 import Plutarch.Trace (ptraceError)
 
 newtype TermCont :: forall (r :: PType). S -> Type -> Type where
@@ -38,12 +49,14 @@ instance Monad (TermCont s) where
 
 instance MonadFail (TermCont s) where
   fail s = TermCont $ \_ ->
-    ptraceError $ fromString s
+    pgetConfig \c -> case tracingMode c of
+      DetTracing -> ptraceError "Pattern matching failure in TermCont"
+      _ -> ptraceError $ fromString s
 
 tcont :: ((a -> Term s r) -> Term s r) -> TermCont @r s a
 tcont = TermCont
 
 hashOpenTerm :: Term s a -> TermCont s Dig
-hashOpenTerm x = TermCont $ \f -> Term $ \i ->
-  let inner = f $ hashRawTerm . getTerm $ asRawTerm x i
-   in asRawTerm inner i
+hashOpenTerm x = TermCont $ \f -> Term $ \i -> do
+  y <- asRawTerm x i
+  asRawTerm (f . hashRawTerm . getTerm $ y) i

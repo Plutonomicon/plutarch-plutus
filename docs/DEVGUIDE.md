@@ -17,6 +17,7 @@ Looking to contribute to Plutarch? Looking for functionalities that are not curr
 - [Lower Level Examples](#lower-level-examples)
   - [Extracting `txInfoInputs` from `ScriptContext` manually (UNTYPED)](#extracting-txinfoinputs-from-scriptcontext-manually-untyped)
 - [Useful Links](#useful-links)
+- [How to build docs](#how-to-build-docs)
 
 </details>
 
@@ -58,7 +59,7 @@ Parts of the [Pluto guide](https://github.com/Plutonomicon/pluto/blob/main/GUIDE
 
 ## Plutus Core constants (UNSAFE)
 
-> **NOTE**: The following information is almost never necessary with the existence of `pconstant`. Refer to [constant building](./Introduction/Plutarch%20Terms/Plutarch%20Constants.md) and [`PConstant` and `PLift`](./Typeclasses/PConstant%20and%20PLift.md) section of the Plutarch user guide.
+> **NOTE**: The following information is almost never necessary with the existence of `pconstant`. Refer to [constant building](./Introduction/Plutarch%20Terms/Plutarch%20Constants.md) and [`PConstant`/`PLift`](./Typeclasses/PConstant%20and%20PLift.md) section of the Plutarch user guide.
 
 Often, you will need to build a Plutus core constant. You can do this using `Some` and `ValueOf`. Here's how `pcon PTrue` creates a Plutarch term that actually evaluates to a Plutus core constant representing a boolean:
 
@@ -289,3 +290,23 @@ There's just one element in `txInfoInputs` in this example, and there it is. Of 
 - [Plutus builtin functions and types](https://playground.plutus.iohkdev.io/doc/haddock//plutus-tx/html/PlutusTx-Builtins-Internal.html)
 - [Plutus Core builtin function identifiers, aka `DefaultFun`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultFun)
 - [Plutus Core types, aka `DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)
+
+# How to build docs
+
+To run the docs locally from the Git working copy (useful when editing them),
+
+```sh-session
+nix run .#docs
+```
+
+To build the static HTML site,
+
+```sh-session
+nix build .#website
+```
+
+To run the docs directly without cloning the Git repo,
+
+```sh-session
+nix run github:Plutonomicon/plutarch#website
+```

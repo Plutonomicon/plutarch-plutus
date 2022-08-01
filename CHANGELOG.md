@@ -1,6 +1,37 @@
 # Revision history for plutarch
 
-# Unreleased
+# 1.2 (WIP changelog)
+
+- Changed fields of `PTxInfo` whose only representation is data to not be wrapped by `PAsData`.
+
+  Module: `Plutarch.Api.V1.Contexts`; `Plutarch.Api.V2.Contexts`
+
+- Added `plistData` builtin function wrapper.
+
+  Module: `Plutarch.Builtin`
+
+- Added `PEq` superclass constraint to `POrd`
+
+  Included by [#326](https://github.com/Plutonomicon/plutarch/pull/326)
+
+- Added module `Plutarch.Show` with the `PShow` type class, as well as functions `pshow` and `ptraceShowId`.
+
+  Started by [#352](https://github.com/Plutonomicon/plutarch/pull/352)
+
+- Add `puncons` and `ptryUncons` functions for deconstructing list.
+
+  Started by: [#333](https://github.com/Plutonomicon/plutarch/pull/333)
+
+- Add generic deriving for `PEq`
+
+  Started by [#335](https://github.com/Plutonomicon/plutarch/pull/335)
+- `Plutarch.Prelude` and `Plutarch.List` now export pfind, pelemAt, preverse and pcheckSroted.
+
+	Started by: [#306](https://github.com/Plutonomicon/plutarch/pull/306)
+
+- Added module `Plutarch.FFI` for interoperability with PlutusTx.
+
+- Added `DerivePConstantViaBuiltin`, deprecating `DerivePConstantViaNewtype`.
 
 - `TermCont`: Parametrize by result type; add `MonadFail` instance; etc.
 
@@ -41,7 +72,7 @@
 - Added APIs for constructing, compiling, serialising & hashing Plutarch scripts.
 
   Type synonyms for Plutarch-typed scripts `PValidator`,`PMintingPolicy` & `PStakeValidator`.
-  
+
   `mkValidator`, `mkStakeValidator` & `mkMintingPolicy` functions, for creating Plutus API compatible scripts.
 
   `validatorHash`, `mintingPolicySymbol` & `stakeValidatorHash` to obtain script hashes.
@@ -70,6 +101,81 @@
   Module: `Plutarch.DataRepr`
 
   Added by: [#235](https://github.com/Plutonomicon/plutarch/pull/270)
+
+- Add `Plutarch.Test` for testing Plutarch code with goldens for UPLC printing and Plutus benchmarks.
+
+- Add Conversion types `PTryFrom`, `PMaybeFrom` and `PFrom`
+
+  Module: `Plutarch.TryFrom`
+
+  Added by: [#326](https://github.com/Plutonomicon/plutarch/pull/326)
+
+- `plutarch-extra`: Add a new directory scaffold "`plutarch-extra`" which will be home to everything too specific to not be in the
+  main Plutarch repo. Also refactored the test library.
+
+  Directory: `plutarch-extra`
+
+  Added by: [#329](https://github.com/Plutonomicon/plutarch/pull/329)
+
+- `plutarch-extra` export merged Prelude
+
+  Module: `Plutarch.PPrelude`
+
+  Added by: [#356](https://github.com/Plutonomicon/plutarch/pull/356)
+
+- Add `PConstant` instance for `Maybe`, with corresponding `PLift` instance for `PMaybeData`.
+
+  Added by: [#371](https://github.com/Plutonomicon/plutarch/pull/371)
+
+- Add `POrd` and `PEq` derivation for data encoded types via `PIsDataReprInstances`.
+
+  Added by: [#371](https://github.com/Plutonomicon/plutarch/pull/371)
+
+- Make `PRational` construction machinery fail when the denominator is 0.
+
+  Fixed by: [#299](https://github.com/Plutonomicon/plutarch/pull/299)
+
+- Rename `PConstant` (the typeclass) to `PConstantDecl`. `PConstant` is now a type alias with extra constraints for better type checking.
+
+  Add `PLiftData` and `PConstantData` type aliases.
+
+  Added by: [#354](https://github.com/Plutonomicon/plutarch/pull/354)
+
+- Remove `hrecField` export. Use `getField` instead.
+
+  Removed by: [#415](https://github.com/Plutonomicon/plutarch/pull/415)
+
+- Rename the `"data"` field of `PTxInfo` to `"datums"`.
+
+  Renamed by: [#415](https://github.com/Plutonomicon/plutarch/pull/415)
+
+- Add `Num` instance for `PPOSIXTime` and export its constructor.
+
+  Added by: [#415](https://github.com/Plutonomicon/plutarch/pull/415)
+
+- `PlutusType` is now a superclass of `PIsDataRepr`, strengthening the existing `PMatch` superclass constraint.
+
+  Added by: [#415](https://github.com/Plutonomicon/plutarch/pull/415)
+
+- Add `PlutusType` instance for `PDataSum`. `PDataSum` can now be hand-constructed.
+
+  Added by: [#345](https://github.com/Plutonomicon/plutarch/pull/345)
+
+- Add `HRecOf`, `PMemberFields`, and `PMemberField` utility types.
+
+  Module: `Plutarch.DataRepr`.
+
+  Added by: [#466](https://github.com/Plutonomicon/plutarch/pull/466)
+
+- Move `Plutarch.ListUtils` to `Plutarch.Extra.List`.
+
+  Added by: [#466](https://github.com/Plutonomicon/plutarch/pull/466)
+
+- Add various `TermCont` utilities: `ptraceC`, `pletFieldsC`, `ptryFromC`, `pguardC`, and `pguardC'`.
+
+  Module: `Plutarch.Extra.TermCont`.
+
+  Added by: [#466](https://github.com/Plutonomicon/plutarch/pull/466)
 
 # 1.1.0
 

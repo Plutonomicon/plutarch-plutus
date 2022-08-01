@@ -53,6 +53,7 @@ The [Usage section](./Usage.md) fills in the gaps left by the previous. It illus
 
 - [Conditionals](./Usage/Conditionals.md)
 - [Recursion](./Usage/Recursion.md)
+- [Using the Plutarch Prelude](./Usage/Prelude%20mixin.md)
 - [Do syntax with `TermCont`](./Usage/Do%20syntax%20with%20TermCont.md)
 - [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](./Usage/Do%20syntax%20with%20QualifiedDo.md)
 - [Deriving typeclasses for `newtype`s](./Usage/Deriving%20for%20newtypes.md)
@@ -61,6 +62,7 @@ The [Usage section](./Usage.md) fills in the gaps left by the previous. It illus
 - [Tracing](./Usage/Tracing.md)
 - [Raising errors](./Usage/Raising%20errors.md)
 - [Unsafe functions](./Usage/Unsafe%20functions.md)
+- [Interoperability with PlutusTx](./Usage/FFI.md)
 
 ## Concepts
 
@@ -94,6 +96,10 @@ The [Typeclasses section](./Typeclasses.md) discusses the primary typeclasses re
     - [Alternatives to `OverloadedRecordDot`](./Typeclasses/PIsDataRepr%20and%20PDataFields.md#alternatives-to-overloadedrecorddot)
   - [All about constructing data values](./Typeclasses/PIsDataRepr%20and%20PDataFields.md#all-about-constructing-data-values)
   - [Implementing `PIsDataRepr` and friends](./Typeclasses/PIsDataRepr%20and%20PDataFields.md#implementing-pisdatarepr-and-friends)
+- [`PTryFrom`](./Typeclasses/PTryFrom.md)
+  - [Laws](./Typeclasses/PTryFrom.md#laws)
+  - [`PTryFromExcess`](./Typeclasses/PTryFrom.md#ptryfromexcess)
+  - [Recovering only partially](./Typeclasses/PTryFrom.md#recovering-only-partially)
 
 ## Working with Types
 
@@ -137,6 +143,7 @@ Outside of the fundamental user guide, there are rules of thumb and general guid
 - [Prefer statically building constants whenever possible](./Tricks/Prefer%20statically%20building%20constants.md)
 - [Figuring out the representation of a Plutarch type](./Tricks/Representation%20of%20Plutarch%20type.md)
 - [Prefer pattern matching on the result of `pmatch` immediately](./Tricks/Prefer%20matching%20on%20pmatch%20result%20immediately.md)
+- [Working with bound fields yielded by `pletFields`](./Tricks/Working%20with%20bound%20fields.md)
 
 # Common Issues and Troubleshooting
 
@@ -145,11 +152,11 @@ Due to the highly abstracted nature of Plutarch and its utilization of advanced 
 - [No instance for `PUnsafeLiftDecl a`](./Troubleshooting.md#no-instance-for-punsafeliftdecl-a)
 - [Couldn't match representation of type: ... arising from the 'deriving' clause](./Troubleshooting.md#couldnt-match-representation-of-type--arising-from-the-deriving-clause)
 - [Infinite loop / Infinite AST](./Troubleshooting.md#infinite-loop--infinite-ast)
-- [Couldn't match type `Plutarch.DataRepr.Internal.PUnLabel ...` arising from a use of `pfield` (or `hrecField`, or `pletFields`)](./Troubleshooting.md#couldnt-match-type-plutarchdatareprinternalpunlabel--arising-from-a-use-of-pfield-or-hrecfield-or-pletfields)
+- [Couldn't match type `Plutarch.DataRepr.Internal.PUnLabel ...` arising from a use of `pfield` (or `getField`, or `pletFields`)](./Troubleshooting.md#couldnt-match-type-plutarchdatareprinternalpunlabel--arising-from-a-use-of-pfield-or-getField-or-pletfields)
 - [Expected a type, but "fieldName" has kind `GHC.Types.Symbol`](./Troubleshooting.md#expected-a-type-but-fieldname-has-kind-ghctypessymbol)
 - [Lifting `PAsData`](./Troubleshooting.md#lifting-pasdata)
 - [Couldn't match type `PLifted (PConstanted Foo)` with `Foo`](./Troubleshooting.md#couldnt-match-type-plifted-pconstanted-foo-with-foo)
-- [Type match errors when using `pfield`/`hrecField` (or `OverloadedRecordDot` to access field)](./Troubleshooting.md#type-match-errors-when-using-pfieldhrecfield-or-overloadedrecorddot-to-access-field)
+- [Type match errors when using `pfield`/`getField` (or `OverloadedRecordDot` to access field)](./Troubleshooting.md#type-match-errors-when-using-pfieldgetField-or-overloadedrecorddot-to-access-field)
 
 # Useful Links
 

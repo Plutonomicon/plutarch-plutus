@@ -22,3 +22,4 @@ Currently, generic deriving supports the following typeclasses:
 
 - [`PlutusType`](./../Typeclasses/PlutusType,%20PCon,%20and%20PMatch.md#implementing-plutustype-for-your-own-types-scott-encoding) (Scott encoding only)
 - [`PIsDataRepr`](./../Typeclasses/PIsDataRepr%20and%20PDataFields.md#implementing-pisdatarepr-and-friends)
+- [`PEq`](./../Typeclasses/PEq%20and%20POrd.md)

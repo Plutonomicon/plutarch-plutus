@@ -3,8 +3,8 @@ module Plutarch.Prelude (
   (:-->),
   PDelayed,
   Term,
+  ClosedTerm,
   plam,
-  plam',
   papp,
   pdelay,
   pforce,
@@ -16,28 +16,37 @@ module Plutarch.Prelude (
   pinl,
   pto,
   pfix,
+  pthrow,
   Type,
   S,
   PType,
   PlutusType (PInner),
-  PCon (pcon),
-  PMatch (pmatch),
+  DerivePlutusType,
+  DPTStrat,
+  PlutusTypeScott,
+  PlutusTypeNewtype,
+  PlutusTypeData,
+  PCon,
+  PMatch,
+  pcon,
+  pmatch,
+  PForall (PForall),
 
   -- * Integers and integer utilities
   PInteger,
   PIntegral (pdiv, pmod, pquot, prem),
 
   -- * Rational numbers and utilities
-  PRational,
+  PRational (PRational),
   pnumerator,
   pdenominator,
-  pfromInteger,
   pround,
 
   -- * Booleans and boolean functions
   PBool (..),
   PEq ((#==)),
-  POrd ((#<=), (#<)),
+  PPartialOrd ((#<=), (#<)),
+  POrd,
   pif,
   pnot,
   (#&&),
@@ -64,6 +73,7 @@ module Plutarch.Prelude (
   PIsListLike,
   plistEquals,
   pelem,
+  pelemAt,
   plength,
   ptryIndex,
   pdrop,
@@ -74,12 +84,14 @@ module Plutarch.Prelude (
   pzip,
   pmap,
   pfilter,
+  pfind,
   precList,
   pfoldr,
   pfoldrLazy,
   pfoldl,
   pall,
   pany,
+  (#!!),
 
   -- * Scott encoded list type
   PList (..),
@@ -93,31 +105,38 @@ module Plutarch.Prelude (
   -- * Scott encoded pair type and utilities
   PPair (..),
 
+  -- * Opaque type
+  POpaque (POpaque),
+  popaque,
+
   -- * Builtin types and utilities
-  PData (..),
+  PData,
   pfstBuiltin,
   psndBuiltin,
   PBuiltinPair,
   PBuiltinList (..),
-  PIsData (pfromData, pdata),
+  PIsData,
+  pfromData,
+  pdata,
   PAsData,
 
   -- * DataRepr and related functions
   PDataRecord,
   PDataSum,
-  PIsDataRepr,
   PLabeledType ((:=)),
   pdcons,
   pdnil,
   pfield,
+  getField,
   pletFields,
-  hrecField,
 
   -- * Tracing
   ptrace,
+  ptraceShowId,
   ptraceIfFalse,
   ptraceIfTrue,
   ptraceError,
+  pshow,
 
   -- * Cryptographic hashes and signatures
   psha2_256,
@@ -130,19 +149,25 @@ module Plutarch.Prelude (
   plift,
   PConstant,
   PLift,
-
-  -- * Typeclass derivers.
-  DerivePNewtype (DerivePNewtype),
+  PConstantData,
+  PLiftData,
 
   -- * Continuation monad
   TermCont (TermCont, runTermCont),
   unTermCont,
   tcont,
+  pupcast,
+  ptryFrom,
+  PTryFrom,
+  PSubtype,
+  Generic,
 ) where
 
 import Prelude ()
 
 import Data.Kind (Type)
+import GHC.Generics (Generic)
+import GHC.Records (getField)
 import Plutarch
 import Plutarch.Bool
 import Plutarch.Builtin
@@ -156,7 +181,9 @@ import Plutarch.List
 import Plutarch.Maybe
 import Plutarch.Pair
 import Plutarch.Rational
+import Plutarch.Show
 import Plutarch.String
 import Plutarch.TermCont
 import Plutarch.Trace
+import Plutarch.TryFrom
 import Plutarch.Unit

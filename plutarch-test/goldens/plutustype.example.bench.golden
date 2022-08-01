@@ -1,0 +1,4 @@
+swap.A {"exBudgetCPU":207100,"exBudgetMemory":1000,"scriptSizeBytes":16}
+swap.B {"exBudgetCPU":207100,"exBudgetMemory":1000,"scriptSizeBytes":16}
+scottenc.PMaybe {"exBudgetCPU":299100,"exBudgetMemory":1400,"scriptSizeBytes":16}
+scottenc.PPair {"exBudgetCPU":299100,"exBudgetMemory":1400,"scriptSizeBytes":28}
