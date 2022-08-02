@@ -22,7 +22,7 @@ data PMaybeData a (s :: S)
   = PDJust (Term s (PDataRecord '["_0" ':= a]))
   | PDNothing (Term s (PDataRecord '[]))
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq)
+  deriving anyclass (PlutusType, PIsData, PEq, PShow)
 
 instance DerivePlutusType (PMaybeData a) where type DPTStrat _ = PlutusTypeData
 instance PTryFrom PData a => PTryFrom PData (PMaybeData a)

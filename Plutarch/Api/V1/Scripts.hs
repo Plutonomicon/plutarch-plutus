@@ -28,7 +28,7 @@ import Plutarch.Unsafe (punsafeCoerce)
 
 newtype PDatum (s :: S) = PDatum (Term s PData)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq)
+  deriving anyclass (PlutusType, PIsData, PEq, PShow)
 instance DerivePlutusType PDatum where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PDatum where type PLifted PDatum = Plutus.Datum
@@ -44,7 +44,7 @@ deriving via (DerivePConstantViaBuiltin Plutus.Redeemer PRedeemer PData) instanc
 
 newtype PDatumHash (s :: S) = PDatumHash (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PShow)
 instance DerivePlutusType PDatumHash where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PDatumHash where type PLifted PDatumHash = Plutus.DatumHash
@@ -74,7 +74,7 @@ deriving via
 
 newtype PValidatorHash (s :: S) = PValidatorHash (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PShow)
 instance DerivePlutusType PValidatorHash where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PValidatorHash where type PLifted PValidatorHash = Plutus.ValidatorHash
@@ -104,7 +104,7 @@ deriving via
 
 newtype PScriptHash (s :: S) = PScriptHash (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PShow)
 instance DerivePlutusType PScriptHash where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PScriptHash where type PLifted PScriptHash = Plutus.ScriptHash

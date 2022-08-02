@@ -70,7 +70,6 @@ import Plutarch.Lift (
 import qualified Plutarch.List as List
 import Plutarch.Prelude hiding (pall, pany, pfilter, pmap, pnull, psingleton)
 import qualified Plutarch.Prelude as PPrelude
-import Plutarch.Show (PShow)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import qualified PlutusCore as PLC
