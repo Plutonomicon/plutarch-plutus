@@ -1,0 +1,7 @@
+#!/bin/sh
+
+set -xe
+
+find -type f -name '*.hs' ! -path '*/dist-newstyle/*' ! -path '*/tmp/*' | xargs fourmolu -o-XTypeApplications -o-XQualifiedDo -o-XOverloadedRecordDot -o-XNondecreasingIndentation -o-XPatternSynonyms -m check
+find -type f -name '*.cabal' | xargs cabal-fmt -c
+nixpkgs-fmt --check *.nix
