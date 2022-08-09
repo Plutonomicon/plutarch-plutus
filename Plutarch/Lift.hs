@@ -15,7 +15,7 @@ module Plutarch.Lift (
   pconstant,
   plift,
   plift',
-  LiftError,
+  LiftError (..),
 
   -- * Define your own conversion
   PConstantDecl (..),
@@ -94,7 +94,10 @@ Example:
 pconstant :: forall p s. PLift p => PLifted p -> Term s p
 pconstant x = punsafeConstantInternal $ PLC.someValue @(PConstantRepr (PLifted p)) @PLC.DefaultUni $ pconstantToRepr x
 
--- | Error during script evaluation.
+{- | Error during script evaluation.
+
+ @since 1.2.1
+-}
 data LiftError
   = LiftError_EvalError EvalError
   | LiftError_KnownTypeError KnownTypeError
