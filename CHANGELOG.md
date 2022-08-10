@@ -3,12 +3,12 @@
 
 # 1.2.1 
 
- - Exported data constructors instance for `Plutarch.Lift (LiftError)`
+- Exported data constructors instance for `Plutarch.Lift (LiftError)`
  
- - Added `pliftTrace`
+- Added `pliftTrace`, deprecating `plift'`
 
   Module: `Plutarch.Lift`
-  
+
   Added by [#536](https://github.com/Plutonomicon/plutarch/pull/536)
 
 # 1.2 (WIP changelog)

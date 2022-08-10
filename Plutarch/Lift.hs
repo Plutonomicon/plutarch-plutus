@@ -14,8 +14,7 @@ module Plutarch.Lift (
   -- * Converstion between Plutarch terms and Haskell types
   pconstant,
   plift,
-  plift',
-  pliftTrace,  
+  pliftTrace,
   LiftError (..),
 
   -- * Define your own conversion
@@ -106,7 +105,8 @@ data LiftError
   | LiftError_CompilationError Text
   deriving stock (Eq)
 
-{- | Like `plift'` but provides trace from evaluation.
+{- | Convert a Plutarch term to the associated Haskell value and trace from evaluation. Fail otherwise.
+     This will fully evaluate the arbitrary closed expression, and convert the resulting value.
 
  @since 1.2.1
 -}
@@ -122,15 +122,9 @@ pliftTrace config prog = case compile config prog of
         Left e -> (Left $ LiftError_KnownTypeError e, trace)
     (Left e, _, _) -> (Left $ LiftError_EvalError e, mempty)
 
-{- | Convert a Plutarch term to the associated Haskell value. Fail otherwise.
-This will fully evaluate the arbitrary closed expression, and convert the resulting value.
--}
-plift' :: forall p. PUnsafeLiftDecl p => Config -> ClosedTerm p -> Either LiftError (PLifted p)
-plift' config prog = fst $ pliftTrace config prog
-
--- | Like `plift'` but throws on failure.
+-- | Like `pliftTrace` but throws on failure and does not return traces.
 plift :: forall p. (HasCallStack, PLift p) => ClosedTerm p -> PLifted p
-plift prog = case plift' (Config {tracingMode = DoTracing}) prog of
+plift prog = case fst $ pliftTrace (Config {tracingMode = DoTracing}) prog of
   Right x -> x
   Left LiftError_FromRepr -> error "plift failed: pconstantFromRepr returned 'Nothing'"
   Left (LiftError_KnownTypeError e) ->
