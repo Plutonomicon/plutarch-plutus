@@ -1,8 +1,11 @@
 # Revision history for plutarch
 
-# 1.2.1.
 
-- Added `pliftTrace`
+# 1.2.1 
+
+ - Exported data constructors instance for `Plutarch.Lift (LiftError)`
+ 
+ - Added `pliftTrace`
 
   Module: `Plutarch.Lift`
   
