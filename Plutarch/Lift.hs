@@ -15,7 +15,7 @@ module Plutarch.Lift (
   pconstant,
   plift,
   plift',  
-  pliftTrace,
+  tryplift,
   LiftError (..),
 
   -- * Define your own conversion
@@ -148,12 +148,12 @@ pliftCompiled (CompiledTerm term) =
       Nothing -> Left LiftError_FromRepr
     Left e -> Left $ LiftError_KnownTypeError e
 
-pliftTrace ::
+tryplift ::
   forall (p :: S -> Type).
   (PLift p) =>
   ClosedTerm p ->
   (Either LiftError (PLifted p), ExBudget, [Text])
-pliftTrace term =
+tryplift term =
   case compileTerm' (Config {tracingMode = DoTracing}) term of
     Right cterm ->
       let (cterm', budget, trace) = evalCompiled cterm
@@ -162,7 +162,7 @@ pliftTrace term =
             Left err -> (Left $ LiftError_EvalError err, budget, trace)
     Left err -> (Left $ LiftError_CompilationError err, mempty, mempty)
 
-{-# DEPRECATED plift' "use pliftTrace" #-}
+{-# DEPRECATED plift' "use tryplift" #-}
 
 plift' ::
   forall (p :: S -> Type).
@@ -170,17 +170,17 @@ plift' ::
   ClosedTerm p ->
   Either LiftError (PLifted p)
 plift' term =
-    let (lifted, _, _) = pliftTrace term
+    let (lifted, _, _) = tryplift term
     in lifted
 
--- | Like `pliftTrace` but throws on failure and does not return traces.
+-- | Like `tryplift` but throws on failure and does not return traces.
 plift ::
   forall (p :: S -> Type).
   (HasCallStack, PLift p) =>
   ClosedTerm p ->
   PLifted p
 plift term =
-    let (lifted, _, _) = pliftTrace term
+    let (lifted, _, _) = tryplift term
     in either (error . show . P.pretty) id lifted
 
 {- | Newtype wrapper for deriving @PConstant@ when the wrapped type is directly
