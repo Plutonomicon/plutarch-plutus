@@ -15,6 +15,7 @@ module Plutarch.Lift (
   pconstant,
   plift,
   plift',
+  pliftTrace,  
   LiftError,
 
   -- * Define your own conversion
@@ -129,6 +130,22 @@ plift prog = case plift' (Config {tracingMode = DoTracing}) prog of
             <> maybe "absurd evaluation failure" show unliftErrMaybe
   Left (LiftError_EvalError e) -> error $ "plift failed: erring term: " <> show e
   Left (LiftError_CompilationError msg) -> error $ "plift failed: compilation failed: " <> show msg
+
+{- | Like `plift'` but provides trace from evaluation.
+
+ @since 1.2.1
+-}
+pliftTrace :: forall p. PUnsafeLiftDecl p => Config -> ClosedTerm p -> (Either LiftError (PLifted p), [Text])
+pliftTrace config prog = case compile config prog of
+  Left msg -> (Left $ LiftError_CompilationError msg, mempty)
+  Right script -> case evalScriptHuge script of
+    (Right (Scripts.unScript -> UPLC.Program _ _ term), _, trace) ->
+      case readKnownConstant term of
+        Right r -> case pconstantFromRepr r of
+          Just h -> (Right h, trace)
+          Nothing -> (Left LiftError_FromRepr, trace)
+        Left e -> (Left $ LiftError_KnownTypeError e, trace)
+    (Left e, _, _) -> (Left $ LiftError_EvalError e, mempty)
 
 {- | Newtype wrapper for deriving @PConstant@ when the wrapped type is directly
 represented by a builtin UPLC type that is /not/ @Data@.
