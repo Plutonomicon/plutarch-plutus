@@ -34,10 +34,20 @@ module Plutarch.Internal (
   TracingMode (..),
   pgetConfig,
   TermMonad (..),
+  CompiledTerm (..),
+  compileTerm,
+  compileTerm',
+  evalCompiled,
 ) where
 
 import Control.Monad.Reader (ReaderT (ReaderT), ask, runReaderT)
-import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
+import Crypto.Hash (
+  Context,
+  Digest,
+  hashFinalize,
+  hashInit,
+  hashUpdate,
+ )
 import Crypto.Hash.Algorithms (Blake2b_160)
 import Crypto.Hash.IO (HashAlgorithm)
 import qualified Data.ByteString as BS
@@ -52,10 +62,11 @@ import Data.Text (Text)
 import qualified Flat.Run as F
 import GHC.Stack (HasCallStack, callStack, prettyCallStack)
 import GHC.Word (Word64)
-import Plutarch.Evaluate (evalScript)
+import Plutarch.Evaluate (EvalError, evalScript, evalScriptHuge)
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import qualified PlutusCore as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
+import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
 import PlutusLedgerApi.V1.Scripts (Script (Script))
 import qualified UntypedPlutusCore as UPLC
 
@@ -471,3 +482,29 @@ compile config t = case asClosedRawTerm t of
 
 hashTerm :: Config -> ClosedTerm a -> Either Text Dig
 hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTerm t 0) config
+
+newtype CompiledTerm (p :: S -> Type) = CompiledTerm UTerm
+
+compileTerm' ::
+  forall (p :: S -> Type).
+  Config ->
+  ClosedTerm p ->
+  Either Text (CompiledTerm p)
+compileTerm' config t = case asClosedRawTerm t of
+  TermMonad (ReaderT t') -> CompiledTerm . compile' <$> t' config
+
+compileTerm ::
+  forall (p :: S -> Type).
+  Config ->
+  ClosedTerm p ->
+  CompiledTerm p
+compileTerm config t = either (error . show) id $ compileTerm' config t
+
+evalCompiled ::
+  forall (p :: S -> Type).
+  CompiledTerm p ->
+  (Either EvalError (CompiledTerm p), ExBudget, [Text])
+evalCompiled (CompiledTerm term) = (fromScript <$> s, b, t)
+  where
+    (s, b, t) = evalScriptHuge (Script $ UPLC.Program () (UPLC.Version () 1 0 0) term)
+    fromScript (Script (UPLC.Program _ _ x)) = CompiledTerm x

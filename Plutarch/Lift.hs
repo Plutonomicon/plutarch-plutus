@@ -34,15 +34,35 @@ import Data.Coerce (Coercible, coerce)
 import Data.Kind (Constraint, Type)
 import Data.Text (Text)
 import GHC.Stack (HasCallStack)
-import Plutarch.Evaluate (EvalError, evalScriptHuge)
-import Plutarch.Internal (ClosedTerm, Config (Config, tracingMode), PType, Term, compile, punsafeConstantInternal, pattern DoTracing)
+import Plutarch.Evaluate (EvalError)
+import Plutarch.Internal (
+  ClosedTerm,
+  CompiledTerm (..),
+  Config (Config, tracingMode),
+  PType,
+  S,
+  Term,
+  TracingMode (DoTracing),
+  compileTerm',
+  evalCompiled,
+  punsafeConstantInternal,
+ )
 import qualified PlutusCore as PLC
 import PlutusCore.Builtin (KnownTypeError, readKnownConstant)
 import PlutusCore.Evaluation.Machine.Exception (_UnliftingErrorE)
-import qualified PlutusLedgerApi.V1.Scripts as Scripts
-import PlutusTx (BuiltinData, Data, builtinDataToData, dataToBuiltinData)
-import PlutusTx.Builtins.Class (FromBuiltin, ToBuiltin, fromBuiltin, toBuiltin)
-import qualified UntypedPlutusCore as UPLC
+import PlutusTx (
+  BuiltinData,
+  Data,
+  builtinDataToData,
+  dataToBuiltinData,
+ )
+import PlutusTx.Builtins.Class (
+  FromBuiltin,
+  ToBuiltin,
+  fromBuiltin,
+  toBuiltin,
+ )
+import qualified Prettyprinter as P
 
 {- |
 Laws:
@@ -105,35 +125,48 @@ data LiftError
   | LiftError_CompilationError Text
   deriving stock (Eq)
 
-{- | Convert a Plutarch term to the associated Haskell value and trace from evaluation. Fail otherwise.
-     This will fully evaluate the arbitrary closed expression, and convert the resulting value.
+instance P.Pretty LiftError where
+  pretty (LiftError_EvalError err) = "plift failed: erring term: " <> P.pretty (show err)
+  pretty (LiftError_KnownTypeError err) =
+    let unliftErrorMaybe = err ^? _UnliftingErrorE
+     in "plift failed: incorrect type: "
+          <> maybe "absurd evaluation failure" (P.pretty . show) unliftErrorMaybe
+  pretty LiftError_FromRepr = "plift failed: pconstantFromRepr returned 'Nothing'"
+  pretty (LiftError_CompilationError err) = "plift failed: compilation failed: " <> P.pretty (show err)
 
- @since 1.2.1
--}
-pliftTrace :: forall p. PUnsafeLiftDecl p => Config -> ClosedTerm p -> (Either LiftError (PLifted p), [Text])
-pliftTrace config prog = case compile config prog of
-  Left msg -> (Left $ LiftError_CompilationError msg, mempty)
-  Right script -> case evalScriptHuge script of
-    (Right (Scripts.unScript -> UPLC.Program _ _ term), _, trace) ->
-      case readKnownConstant term of
-        Right r -> case pconstantFromRepr r of
-          Just h -> (Right h, trace)
-          Nothing -> (Left LiftError_FromRepr, trace)
-        Left e -> (Left $ LiftError_KnownTypeError e, trace)
-    (Left e, _, _) -> (Left $ LiftError_EvalError e, mempty)
+pliftCompiled ::
+  forall (p :: S -> Type).
+  (PLift p) =>
+  CompiledTerm p ->
+  Either LiftError (PLifted p)
+pliftCompiled (CompiledTerm term) =
+  case readKnownConstant term of
+    Right r -> case pconstantFromRepr r of
+      Just h -> Right h
+      Nothing -> Left LiftError_FromRepr
+    Left e -> Left $ LiftError_KnownTypeError e
+
+pliftTrace ::
+  forall (p :: S -> Type).
+  (PLift p) =>
+  ClosedTerm p ->
+  Either LiftError (PLifted p)
+pliftTrace term =
+  case compileTerm' (Config {tracingMode = DoTracing}) term of
+    Right cterm ->
+      let (cterm', _, _) = evalCompiled cterm
+       in case cterm' of
+            Right cterm'' -> pliftCompiled cterm''
+            Left err -> Left $ LiftError_EvalError err
+    Left err -> Left $ LiftError_CompilationError err
 
 -- | Like `pliftTrace` but throws on failure and does not return traces.
-plift :: forall p. (HasCallStack, PLift p) => ClosedTerm p -> PLifted p
-plift prog = case fst $ pliftTrace (Config {tracingMode = DoTracing}) prog of
-  Right x -> x
-  Left LiftError_FromRepr -> error "plift failed: pconstantFromRepr returned 'Nothing'"
-  Left (LiftError_KnownTypeError e) ->
-    let unliftErrMaybe = e ^? _UnliftingErrorE
-     in error $
-          "plift failed: incorrect type: "
-            <> maybe "absurd evaluation failure" show unliftErrMaybe
-  Left (LiftError_EvalError e) -> error $ "plift failed: erring term: " <> show e
-  Left (LiftError_CompilationError msg) -> error $ "plift failed: compilation failed: " <> show msg
+plift ::
+  forall (p :: S -> Type).
+  (HasCallStack, PLift p) =>
+  ClosedTerm p ->
+  PLifted p
+plift term = either (error . show . P.pretty) id $ pliftTrace term
 
 {- | Newtype wrapper for deriving @PConstant@ when the wrapped type is directly
 represented by a builtin UPLC type that is /not/ @Data@.
