@@ -14,6 +14,7 @@ module Plutarch.Lift (
   -- * Converstion between Plutarch terms and Haskell types
   pconstant,
   plift,
+  plift',  
   pliftTrace,
   LiftError (..),
 
@@ -47,6 +48,7 @@ import Plutarch.Internal (
   evalCompiled,
   punsafeConstantInternal,
  )
+import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)    
 import qualified PlutusCore as PLC
 import PlutusCore.Builtin (KnownTypeError, readKnownConstant)
 import PlutusCore.Evaluation.Machine.Exception (_UnliftingErrorE)
@@ -150,15 +152,26 @@ pliftTrace ::
   forall (p :: S -> Type).
   (PLift p) =>
   ClosedTerm p ->
-  Either LiftError (PLifted p)
+  (Either LiftError (PLifted p), ExBudget, [Text])
 pliftTrace term =
   case compileTerm' (Config {tracingMode = DoTracing}) term of
     Right cterm ->
-      let (cterm', _, _) = evalCompiled cterm
+      let (cterm', budget, trace) = evalCompiled cterm
        in case cterm' of
-            Right cterm'' -> pliftCompiled cterm''
-            Left err -> Left $ LiftError_EvalError err
-    Left err -> Left $ LiftError_CompilationError err
+            Right cterm'' -> (pliftCompiled cterm'', budget, trace)
+            Left err -> (Left $ LiftError_EvalError err, budget, trace)
+    Left err -> (Left $ LiftError_CompilationError err, mempty, mempty)
+
+{-# DEPRECATED plift' "use pliftTrace" #-}
+
+plift' ::
+  forall (p :: S -> Type).
+  (PLift p) =>
+  ClosedTerm p ->
+  Either LiftError (PLifted p)
+plift' term =
+    let (lifted, _, _) = pliftTrace term
+    in lifted
 
 -- | Like `pliftTrace` but throws on failure and does not return traces.
 plift ::
@@ -166,7 +179,9 @@ plift ::
   (HasCallStack, PLift p) =>
   ClosedTerm p ->
   PLifted p
-plift term = either (error . show . P.pretty) id $ pliftTrace term
+plift term =
+    let (lifted, _, _) = pliftTrace term
+    in either (error . show . P.pretty) id lifted
 
 {- | Newtype wrapper for deriving @PConstant@ when the wrapped type is directly
 represented by a builtin UPLC type that is /not/ @Data@.
