@@ -4,12 +4,6 @@
 
 - Exported data constructors instance for `Plutarch.Lift (LiftError)`
  
-- Added `evalTerm` 
-  
-  Module: `Plutarch.Internal`
-  
-  Added By [#539](https://github.com/Plutonomicon/plutarch/pull/539)
-
 # 1.2 (WIP changelog)
 
 - Changed fields of `PTxInfo` whose only representation is data to not be wrapped by `PAsData`.

@@ -114,6 +114,7 @@ library
     Plutarch.FFI
     Plutarch.Integer
     Plutarch.Internal
+    Plutarch.Internal.Evaluate
     Plutarch.Internal.Generic
     Plutarch.Internal.Newtype
     Plutarch.Internal.Other
