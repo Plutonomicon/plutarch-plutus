@@ -2,8 +2,6 @@
 
 # 1.2.1 
 
-### Added
-
 - Exported data constructors instance for `Plutarch.Lift (LiftError)`
  
 - Added `evalTerm` 
