@@ -1,3 +1,4 @@
+{-# LANGUAGE ImpredicativeTypes #-}
 {-# LANGUAGE RoleAnnotations #-}
 
 module Plutarch.Internal (
@@ -34,6 +35,7 @@ module Plutarch.Internal (
   TracingMode (..),
   pgetConfig,
   TermMonad (..),
+  evalTerm,
 ) where
 
 import Control.Monad.Reader (ReaderT (ReaderT), ask, runReaderT)
@@ -52,10 +54,11 @@ import Data.Text (Text)
 import qualified Flat.Run as F
 import GHC.Stack (HasCallStack, callStack, prettyCallStack)
 import GHC.Word (Word64)
-import Plutarch.Evaluate (evalScript)
+import Plutarch.Evaluate (EvalError, evalScript, evalScriptHuge)
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import qualified PlutusCore as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
+import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
 import PlutusLedgerApi.V1.Scripts (Script (Script))
 import qualified UntypedPlutusCore as UPLC
 
@@ -471,3 +474,19 @@ compile config t = case asClosedRawTerm t of
 
 hashTerm :: Config -> ClosedTerm a -> Either Text Dig
 hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTerm t 0) config
+
+-- | Compile and evaluate term.
+evalTerm ::
+  Config ->
+  ClosedTerm a ->
+  Either Text (Either EvalError (ClosedTerm a), ExBudget, [Text])
+evalTerm config term = 
+  case compile config term of
+    Right script ->
+      let (s, b, t) = evalScriptHuge script
+       in Right (fromScript <$> s, b, t)
+    Left a -> Left a
+  where
+    fromScript :: Script -> ClosedTerm a
+    fromScript (Script script) =
+        Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm $ script) []
