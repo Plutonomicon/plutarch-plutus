@@ -5,7 +5,7 @@ module Plutarch.Internal (
   (:-->) (PLam),
   PDelayed,
   -- | $term
-  Term (..),
+  Term' (..),
   asClosedRawTerm,
   mapTerm,
   plam',
@@ -22,6 +22,7 @@ module Plutarch.Internal (
   compile,
   compile',
   ClosedTerm,
+  ClosedTerm',
   Dig,
   hashTerm,
   hashRawTerm,
@@ -34,6 +35,9 @@ module Plutarch.Internal (
   TracingMode (..),
   pgetConfig,
   TermMonad (..),
+  Term,
+  TermState (..),
+  pcoerceState,
 ) where
 
 import Control.Monad.Reader (ReaderT (ReaderT), ask, runReaderT)
@@ -148,7 +152,7 @@ instance Default Config where
 newtype TermMonad m = TermMonad {runTermMonad :: ReaderT Config (Either Text) m}
   deriving newtype (Functor, Applicative, Monad)
 
-type role Term nominal nominal
+type role Term' nominal nominal phantom
 
 {- $term
  Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
@@ -164,12 +168,19 @@ type role Term nominal nominal
  de-Bruijn index needed to reach its own level given the level it itself is
  instantiated with.
 -}
-newtype Term (s :: S) (a :: PType) = Term {asRawTerm :: Word64 -> TermMonad TermResult}
+data TermState = Evaluated | NotEvaluated
+newtype Term' (e :: TermState) (s :: S) (a :: PType) = Term' {asRawTerm :: Word64 -> TermMonad TermResult}
+type Term = Term' 'NotEvaluated
+
+pcoerceState :: Term' 'Evaluated s a -> Term' e2 s a
+pcoerceState (Term' x) = Term' x
 
 {- |
   *Closed* terms with no free variables.
 -}
 type ClosedTerm (a :: PType) = forall (s :: S). Term s a
+
+type ClosedTerm' (e :: TermState) (a :: PType) = forall (s :: S). Term' e s a
 
 data (:-->) (a :: PType) (b :: PType) (s :: S)
   = PLam (Term s a -> Term s b)
@@ -183,9 +194,9 @@ data PDelayed (a :: PType) (s :: S)
   Only works with a single argument.
   Use 'plam' instead, to support currying.
 -}
-plam' :: (Term s a -> Term s b) -> Term s (a :--> b)
-plam' f = Term \i ->
-  let v = Term \j -> pure $ mkTermRes $ RVar (j - (i + 1))
+plam' :: (Term' e1 s a -> Term' e2 s b) -> Term s (a :--> b)
+plam' f = Term' \i ->
+  let v = Term' \j -> pure $ mkTermRes $ RVar (j - (i + 1))
    in flip fmap (asRawTerm (f v) (i + 1)) \case
         -- eta-reduce for arity 1
         t@(getTerm -> RApply t'@(getArity -> Just _) [RVar 0]) -> t {getTerm = t'}
@@ -272,8 +283,8 @@ plam' f = Term \i ->
 
   But sufficiently small terms in WHNF may be inlined for efficiency.
 -}
-plet :: Term s a -> (Term s a -> Term s b) -> Term s b
-plet v f = Term \i ->
+plet :: Term' e1 s a -> (Term' e1 s a -> Term s b) -> Term s b
+plet v f = Term' \i ->
   asRawTerm v i >>= \case
     -- Inline sufficiently small terms in WHNF
     (getTerm -> RVar _) -> asRawTerm (f v) i
@@ -285,11 +296,15 @@ pthrow' :: HasCallStack => Text -> TermMonad a
 pthrow' msg = TermMonad $ ReaderT $ const $ Left (fromString (prettyCallStack callStack) <> "\n\n" <> msg)
 
 pthrow :: HasCallStack => Text -> Term s a
-pthrow = Term . pure . pthrow'
+pthrow = Term' . pure . pthrow'
 
 -- | Lambda Application.
-papp :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
-papp x y = Term \i ->
+papp ::
+  HasCallStack =>
+  Term' e1 s (a :--> b) ->
+  Term' e2 s a ->
+  Term s b
+papp x y = Term' \i ->
   (,) <$> (asRawTerm x i) <*> (asRawTerm y i) >>= \case
     -- Applying anything to an error is an error.
     (getTerm -> RError, _) -> pthrow' "application to an error"
@@ -306,15 +321,15 @@ papp x y = Term \i ->
 {- |
   Plutus \'delay\', used for laziness.
 -}
-pdelay :: Term s a -> Term s (PDelayed a)
-pdelay x = Term \i -> mapTerm RDelay <$> asRawTerm x i
+pdelay :: Term' e1 s a -> Term s (PDelayed a)
+pdelay x = Term' \i -> mapTerm RDelay <$> asRawTerm x i
 
 {- |
   Plutus \'force\',
   used to force evaluation of 'PDelayed' terms.
 -}
-pforce :: Term s (PDelayed a) -> Term s a
-pforce x = Term \i ->
+pforce :: Term' e1 s (PDelayed a) -> Term s a
+pforce x = Term' \i ->
   asRawTerm x i <&> \case
     -- A force cancels a delay
     t@(getTerm -> RDelay t') -> t {getTerm = t'}
@@ -327,10 +342,10 @@ pforce x = Term \i ->
   the containing term is delayed, avoiding premature evaluation.
 -}
 perror :: Term s a
-perror = Term \_ -> pure $ mkTermRes RError
+perror = Term' \_ -> pure $ mkTermRes RError
 
 pgetConfig :: (Config -> Term s a) -> Term s a
-pgetConfig f = Term \lvl -> TermMonad $ do
+pgetConfig f = Term' \lvl -> TermMonad $ do
   config <- ask
   runTermMonad $ asRawTerm (f config) lvl
 
@@ -340,18 +355,18 @@ pgetConfig f = Term \lvl -> TermMonad $ do
   This should mostly be avoided, though it can be safely
   used to assert known types of Datums, Redeemers or ScriptContext.
 -}
-punsafeCoerce :: Term s a -> Term s b
-punsafeCoerce (Term x) = Term x
+punsafeCoerce :: Term' e1 s a -> Term' e1 s b
+punsafeCoerce (Term' x) = Term' x
 
 punsafeBuiltin :: UPLC.DefaultFun -> Term s a
-punsafeBuiltin f = Term \_ -> pure $ mkTermRes $ RBuiltin f
+punsafeBuiltin f = Term' \_ -> pure $ mkTermRes $ RBuiltin f
 
 {-# DEPRECATED punsafeConstant "Use `pconstant` instead." #-}
 punsafeConstant :: Some (ValueOf PLC.DefaultUni) -> Term s a
 punsafeConstant = punsafeConstantInternal
 
 punsafeConstantInternal :: Some (ValueOf PLC.DefaultUni) -> Term s a
-punsafeConstantInternal c = Term \_ ->
+punsafeConstantInternal c = Term' \_ ->
   pure $ case c of
     -- These constants are smaller than variable references.
     Some (ValueOf PLC.DefaultUniBool _) -> mkTermRes $ RConstant c
@@ -366,7 +381,7 @@ asClosedRawTerm t = asRawTerm t 0
 
 -- FIXME: Give proper error message when mutually recursive.
 phoistAcyclic :: HasCallStack => ClosedTerm a -> Term s a
-phoistAcyclic t = Term \_ ->
+phoistAcyclic t = Term' \_ ->
   asRawTerm t 0 >>= \case
     -- Built-ins are smaller than variable references
     t'@(getTerm -> RBuiltin _) -> pure $ t'

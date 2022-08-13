@@ -20,7 +20,7 @@ import GHC.Exts (Any)
 import GHC.Generics (Generic)
 import Generics.SOP (All2, I, SOP, Top)
 import Generics.SOP.GGP (GCode, GDatatypeInfo, GFrom, GTo, gfrom, gto)
-import Plutarch.Internal (PType, S, Term)
+import Plutarch.Internal (PType, S, Term', TermState (..))
 import Plutarch.Internal.TypeFamily (ToPType2)
 import Unsafe.Coerce (unsafeCoerce)
 
@@ -61,13 +61,13 @@ type PCode :: PType -> [[PType]]
 -- | Like `Code` but for Plutarch types
 type PCode a = ToPType2 (GCode (a Any))
 
-gpfrom :: forall a s. PGeneric a => a s -> SOP (Term s) (PCode a)
+gpfrom :: forall a s. PGeneric a => a s -> SOP (Term' 'NotEvaluated s) (PCode a)
 -- This could be done safely, but it's a PITA.
 -- Depends on `All` constraint above.
 gpfrom x = case (Dict :: Dict (PGeneric' a s)) of
   Dict -> unsafeCoerce (gfrom x :: SOP I (GCode (a s)))
 
-gpto :: forall a s. PGeneric a => SOP (Term s) (PCode a) -> a s
+gpto :: forall a s. PGeneric a => SOP (Term' 'NotEvaluated s) (PCode a) -> a s
 -- This could be done safely, but it's a PITA.
 -- Depends on `All` constraint above.
 gpto x = case (Dict :: Dict (PGeneric' a s)) of

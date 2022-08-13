@@ -58,7 +58,8 @@ import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (
   RawTerm (RCompiled),
-  Term (Term),
+  Term,
+  Term' (Term'),
   TermResult (TermResult),
  )
 import Plutarch.Internal.Generic (PCode)
@@ -125,7 +126,7 @@ unsafeForeignExport config t = DeserializedCode program Nothing mempty
 
 -- | Seriously unsafe, may fail at run time or result in unexpected behaviour in your on-chain validator.
 unsafeForeignImport :: CompiledCode t -> ClosedTerm p
-unsafeForeignImport c = Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm $ unScript $ fromCompiledCode c) []
+unsafeForeignImport c = Term' $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm $ unScript $ fromCompiledCode c) []
 
 -- | Convert a 'PList' to a 'PTxList', perhaps before exporting it with 'foreignExport'.
 plistToTx :: Term s (PList a :--> PTxList a)

@@ -40,8 +40,17 @@ import Plutarch.Internal.Witness (witness)
 class PlutusTypeStrat (strategy :: Type) where
   type PlutusTypeStratConstraint strategy :: PType -> Constraint
   type DerivedPInner strategy (a :: PType) :: PType
-  derivedPCon :: forall a s. (DerivePlutusType a, DPTStrat a ~ strategy) => a s -> Term s (DerivedPInner strategy a)
-  derivedPMatch :: forall a s b. (DerivePlutusType a, DPTStrat a ~ strategy) => Term s (DerivedPInner strategy a) -> (a s -> Term s b) -> Term s b
+  derivedPCon ::
+    forall a s.
+    (DerivePlutusType a, DPTStrat a ~ strategy) =>
+    a s ->
+    Term s (DerivedPInner strategy a)
+  derivedPMatch ::
+    forall a s b.
+    (DerivePlutusType a, DPTStrat a ~ strategy) =>
+    Term s (DerivedPInner strategy a) ->
+    (a s -> Term s b) ->
+    Term s b
 
 class
   ( PInner a ~ DerivedPInner (DPTStrat a) a
@@ -63,13 +72,29 @@ class PlutusType (a :: PType) where
   type PContravariant' a = All2 PContravariant'' (PCode a)
   type PVariant' a :: Constraint
   type PVariant' a = All2 PVariant'' (PCode a)
-  pcon' :: forall s. a s -> Term s (PInner a)
-  default pcon' :: DerivePlutusType a => forall s. a s -> Term s (PInner a)
+  pcon' ::
+    forall s.
+    a s ->
+    Term s (PInner a)
+  default pcon' ::
+    DerivePlutusType a =>
+    forall s.
+    a s ->
+    Term s (PInner a)
   pcon' = let _ = witness (Proxy @(PlutusType a)) in derivedPCon
 
-  pmatch' :: forall s b. Term s (PInner a) -> (a s -> Term s b) -> Term s b
+  pmatch' ::
+    forall s b.
+    Term s (PInner a) ->
+    (a s -> Term s b) ->
+    Term s b
   -- FIXME buggy GHC, needs AllowAmbiguousTypes
-  default pmatch' :: DerivePlutusType a => forall s b. Term s (PInner a) -> (a s -> Term s b) -> Term s b
+  default pmatch' ::
+    DerivePlutusType a =>
+    forall s b.
+    Term s (PInner a) ->
+    (a s -> Term s b) ->
+    Term s b
   pmatch' = derivedPMatch
 
 {-# DEPRECATED PCon "Use PlutusType" #-}
@@ -82,7 +107,11 @@ pcon :: PlutusType a => a s -> Term s a
 pcon x = punsafeCoerce (pcon' x)
 
 -- | Pattern match over Plutarch Terms via a Haskell datatype
-pmatch :: PlutusType a => Term s a -> (a s -> Term s b) -> Term s b
+pmatch ::
+  PlutusType a =>
+  Term s a ->
+  (a s -> Term s b) ->
+  Term s b
 pmatch x = pmatch' (punsafeCoerce x)
 
 class PCovariant' a => PCovariant'' a

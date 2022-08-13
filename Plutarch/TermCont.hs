@@ -14,7 +14,8 @@ import Plutarch.Internal (
   Dig,
   PType,
   S,
-  Term (Term),
+  Term,
+  Term' (Term'),
   asRawTerm,
   getTerm,
   hashRawTerm,
@@ -57,6 +58,6 @@ tcont :: ((a -> Term s r) -> Term s r) -> TermCont @r s a
 tcont = TermCont
 
 hashOpenTerm :: Term s a -> TermCont s Dig
-hashOpenTerm x = TermCont $ \f -> Term $ \i -> do
+hashOpenTerm x = TermCont $ \f -> Term' $ \i -> do
   y <- asRawTerm x i
   asRawTerm (f . hashRawTerm . getTerm $ y) i

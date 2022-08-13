@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Num (PNum (..)) where
@@ -5,6 +6,8 @@ module Plutarch.Num (PNum (..)) where
 import Plutarch.Internal (
   PType,
   Term,
+  Term',
+  TermState (..),
   punsafeCoerce,
   (:-->),
  )
@@ -43,7 +46,7 @@ class PNum (a :: PType) where
   pfromInteger x = punsafeDowncast $ pfromInteger x
 
 -- orphan instance, but only visibly orphan when importing internal modules
-instance PNum a => Num (Term s a) where
+instance (PNum a, e ~ 'NotEvaluated) => Num (Term' e s a) where
   (+) = (#+)
   (-) = (#-)
   (*) = (#*)

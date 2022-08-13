@@ -11,7 +11,7 @@ module Plutarch.Internal.Other (
 
 import qualified Data.Text as T
 import GHC.Stack (HasCallStack)
-import Plutarch.Internal (ClosedTerm, Config, Term, compile, phoistAcyclic, punsafeCoerce, (:-->))
+import Plutarch.Internal (ClosedTerm, Config, Term, Term', compile, phoistAcyclic, punsafeCoerce, (:-->))
 import Plutarch.Internal.PLam (plam, (#))
 import Plutarch.Internal.PlutusType (
   PContravariant',
@@ -43,7 +43,7 @@ printTerm config term = printScript $ either (error . T.unpack) id $ compile con
 {- |
   Safely coerce from a Term to it's 'PInner' representation.
 -}
-pto :: Term s a -> Term s (PInner a)
+pto :: Term' e s a -> Term' e s (PInner a)
 pto x = punsafeCoerce x
 
 -- | An Arbitrary Term with an unknown type

@@ -10,7 +10,7 @@ module Plutarch.Internal.PLam (
 
 import Data.Kind (Type)
 import GHC.Stack (HasCallStack)
-import Plutarch.Internal (PType, S, Term, papp, plam', (:-->))
+import Plutarch.Internal (PType, S, Term, Term', papp, plam', (:-->))
 
 {- |
   High precedence infixl synonym of 'papp', to be used like
@@ -19,7 +19,7 @@ import Plutarch.Internal (PType, S, Term, papp, plam', (:-->))
   >>> f # x # y
   f x y
 -}
-(#) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
+(#) :: HasCallStack => Term' e1 s (a :--> b) -> Term' e2 s a -> Term s b
 (#) = papp
 
 infixl 8 #
@@ -31,7 +31,7 @@ infixl 8 #
   >>> f # x #$ g # y # z
   f x (g y z)
 -}
-(#$) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
+(#$) :: HasCallStack => Term' e1 s (a :--> b) -> Term' e2 s a -> Term s b
 (#$) = papp
 
 infixr 0 #$
