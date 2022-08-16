@@ -52,7 +52,7 @@ import Data.Text (Text)
 import qualified Flat.Run as F
 import GHC.Stack (HasCallStack, callStack, prettyCallStack)
 import GHC.Word (Word64)
-import Plutarch.Evaluate (evalScript)
+import Plutarch.Internal.Evaluate (evalScript)
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import qualified PlutusCore as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))

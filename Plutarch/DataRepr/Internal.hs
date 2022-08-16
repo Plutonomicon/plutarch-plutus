@@ -30,12 +30,15 @@ import Data.Kind (Constraint, Type)
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy (Proxy))
 import Data.SOP.NP (cana_NP)
+import Data.String (fromString)
 import GHC.Generics (Generic)
 import GHC.TypeLits (
   KnownNat,
+  KnownSymbol,
   Nat,
   Symbol,
   natVal,
+  symbolVal,
   type (+),
  )
 import Generics.SOP (
@@ -46,6 +49,7 @@ import Generics.SOP (
   NS (S, Z),
   SListI,
   SOP (SOP),
+  Top,
   case_SList,
   hcollapse,
   hindex,
@@ -58,6 +62,7 @@ import Plutarch (
   POpaque,
   PType,
   PlutusType,
+  PlutusTypeNewtype,
   S,
   Term,
   pcon,
@@ -101,6 +106,7 @@ import Plutarch.DataRepr.Internal.HList (
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Internal.PlutusType (
+  DerivePlutusType (DPTStrat),
   DerivedPInner,
   PlutusTypeStrat,
   PlutusTypeStratConstraint,
@@ -129,6 +135,8 @@ import Plutarch.Unsafe (punsafeCoerce)
 import qualified PlutusLedgerApi.V1 as Ledger
 
 import Plutarch.Reducible (NoReduce, Reduce)
+import Plutarch.Show (PShow (pshow'))
+import Plutarch.String (PString)
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is
  `PBuiltinList PData`.
@@ -173,6 +181,52 @@ instance PPartialOrd (PDataRecord '[]) where
   _ #< _ = pconstant False
 
 instance POrd (PDataRecord '[])
+
+instance PShow (PDataRecord '[]) where
+  pshow' _ _ = "[]"
+
+instance
+  (All Top xs, KnownSymbol label, PIsData x, PShow x, PShow (PDataRecordShowHelper xs)) =>
+  PShow (PDataRecord ((label ':= x) ': xs))
+  where
+  pshow' b xs = "[" <> pmatch xs go
+    where
+      go :: PDataRecord ((label ':= x) : xs) s -> Term s PString
+      go (PDCons y ys) =
+        showWithLabel (Proxy @label) b y
+          <> pshow' b (pcon $ PDataRecordShowHelper ys)
+
+{- | This type exists because we need different show strategies depending
+ on if the original list was non-empty. The idea is to implement the
+ following at the type-level:
+
+ @
+ showList' :: Show a => [a] -> String
+ showList' [] = "[]"
+ showList' (x:xs) = '[' : show x ++ go xs
+ where
+   go [] = "]"
+   go (y:ys) = ',' : show y ++ go ys
+ @
+-}
+newtype PDataRecordShowHelper as s = PDataRecordShowHelper (Term s (PDataRecord as))
+  deriving stock (Generic)
+  deriving anyclass (PlutusType)
+
+instance DerivePlutusType (PDataRecordShowHelper as) where type DPTStrat _ = PlutusTypeNewtype
+
+instance PShow (PDataRecordShowHelper '[]) where
+  pshow' _ _ = "]"
+
+instance
+  (All Top xs, KnownSymbol label, PIsData x, PShow x, PShow (PDataRecordShowHelper xs)) =>
+  PShow (PDataRecordShowHelper ((label ':= x) ': xs))
+  where
+  pshow' b xs = ", " <> pmatch (pto xs) go
+    where
+      go (PDCons y ys) =
+        showWithLabel (Proxy @label) b y
+          <> pshow' b (pcon $ PDataRecordShowHelper ys)
 
 instance (POrd x, PIsData x) => PPartialOrd (PDataRecord '[label ':= x]) where
   l1 #< l2 = unTermCont $ do
@@ -256,6 +310,13 @@ where the integer is the index of the variant and the list is the record.
 -}
 type PDataSum :: [[PLabeledType]] -> PType
 newtype PDataSum defs s = PDataSum (NS (F.Compose (Term s) PDataRecord) defs)
+
+instance (All Top defs, All (Compose PShow PDataRecord) defs) => PShow (PDataSum defs) where
+  pshow' b dsum = pmatch dsum showSum
+    where
+      showSum :: (All (Compose PShow PDataRecord) xs) => PDataSum xs s -> Term s PString
+      showSum (PDataSum (Z x)) = pshow' b (F.getCompose x)
+      showSum (PDataSum (S x)) = showSum (PDataSum x)
 
 class IsPDataSum (a :: [[PType]]) where
   type IsPDataSumDefs a :: [[PLabeledType]]
@@ -679,3 +740,15 @@ instance PTryFrom PData (PDataSum ys) => PTryFrom PData (PAsData (PDataSum ys)) 
   ptryFrom' x = runTermCont $ do
     (y, exc) <- tcont $ ptryFrom x
     pure (pdata y, exc)
+
+-- | Annotates a shown field with a label.
+showWithLabel ::
+  forall label t s.
+  (KnownSymbol label, PShow t) =>
+  Proxy label ->
+  Bool ->
+  Term s t ->
+  Term s PString
+showWithLabel proxy b x = lblStr <> " = " <> pshow' b x
+  where
+    lblStr = fromString $ symbolVal proxy

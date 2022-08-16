@@ -1,11 +1,15 @@
 # Revision history for plutarch
 
-# Unreleased
+# 1.2.1 
+
+- Exported data constructors instance for `Plutarch.Lift (LiftError)`
+ 
+# 1.2 (WIP changelog)
 
 - Changed fields of `PTxInfo` whose only representation is data to not be wrapped by `PAsData`.
 
   Module: `Plutarch.Api.V1.Contexts`; `Plutarch.Api.V2.Contexts`
-  
+
 - Added `plistData` builtin function wrapper.
 
   Module: `Plutarch.Builtin`

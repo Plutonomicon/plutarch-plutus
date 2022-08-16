@@ -17,7 +17,7 @@ termId x = x
 
 -- | Plutarch-level `id` lambda
 pid :: Term s (a :--> a)
-pid = plam x
+pid = plam termId
 
 -- | Equivalently:
 pid' :: Term s (a :--> a)

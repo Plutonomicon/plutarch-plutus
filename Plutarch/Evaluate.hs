@@ -1,54 +1,33 @@
-{-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
+{-# LANGUAGE ImpredicativeTypes #-}
 
-module Plutarch.Evaluate (evalScript, evalScriptHuge, evalScript', EvalError) where
+module Plutarch.Evaluate (
+  E.evalScript,
+  E.evalScriptHuge,
+  E.evalScript',
+  E.EvalError,
+  evalTerm,
+) where
+
+import qualified Plutarch.Internal.Evaluate as E
 
 import Data.Text (Text)
-import qualified PlutusCore as PLC
-import PlutusCore.Evaluation.Machine.ExBudget (
-  ExBudget (ExBudget),
-  ExRestrictingBudget (ExRestrictingBudget),
-  minusExBudget,
- )
-import PlutusCore.Evaluation.Machine.ExBudgetingDefaults (defaultCekParameters)
-import PlutusCore.Evaluation.Machine.ExMemory (ExCPU (ExCPU), ExMemory (ExMemory))
+import Plutarch.Internal (ClosedTerm, Config, RawTerm (RCompiled), Term (..), TermResult (TermResult), compile)
+import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
 import PlutusLedgerApi.V1.Scripts (Script (Script))
-import UntypedPlutusCore (
-  Program (Program),
-  Term,
- )
 import qualified UntypedPlutusCore as UPLC
-import qualified UntypedPlutusCore.Evaluation.Machine.Cek as Cek
 
-type EvalError = (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun)
-
--- | Evaluate a script with a big budget, returning the trace log and term result.
-evalScript :: Script -> (Either EvalError Script, ExBudget, [Text])
-evalScript script = evalScript' budget script
-  where
-    -- from https://github.com/input-output-hk/cardano-node/blob/master/configuration/cardano/mainnet-alonzo-genesis.json#L17
-    budget = ExBudget (ExCPU 10000000000) (ExMemory 10000000)
-
--- | Evaluate a script with a huge budget, returning the trace log and term result.
-evalScriptHuge :: Script -> (Either EvalError Script, ExBudget, [Text])
-evalScriptHuge script = evalScript' budget script
-  where
-    -- from https://github.com/input-output-hk/cardano-node/blob/master/configuration/cardano/mainnet-alonzo-genesis.json#L17
-    budget = ExBudget (ExCPU maxBound) (ExMemory maxBound)
-
--- | Evaluate a script with a specific budget, returning the trace log and term result.
-evalScript' :: ExBudget -> Script -> (Either (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun) Script, ExBudget, [Text])
-evalScript' budget (Script (Program _ _ t)) = case evalTerm budget (UPLC.termMapNames UPLC.fakeNameDeBruijn $ t) of
-  (res, remaining, logs) -> (Script . Program () (PLC.defaultVersion ()) . UPLC.termMapNames UPLC.unNameDeBruijn <$> res, remaining, logs)
-
+-- | Compile and evaluate term.
 evalTerm ::
-  ExBudget ->
-  Term PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun () ->
-  ( Either
-      EvalError
-      (Term PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun ())
-  , ExBudget
-  , [Text]
-  )
-evalTerm budget t =
-  case Cek.runCekDeBruijn defaultCekParameters (Cek.restricting (ExRestrictingBudget budget)) Cek.logEmitter t of
-    (errOrRes, Cek.RestrictingSt (ExRestrictingBudget final), logs) -> (errOrRes, budget `minusExBudget` final, logs)
+  Config ->
+  ClosedTerm a ->
+  Either Text (Either E.EvalError (ClosedTerm a), ExBudget, [Text])
+evalTerm config term =
+  case compile config term of
+    Right script ->
+      let (s, b, t) = E.evalScriptHuge script
+       in Right (fromScript <$> s, b, t)
+    Left a -> Left a
+  where
+    fromScript :: Script -> ClosedTerm a
+    fromScript (Script script) =
+      Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm $ script) []

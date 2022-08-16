@@ -59,7 +59,7 @@ Parts of the [Pluto guide](https://github.com/Plutonomicon/pluto/blob/main/GUIDE
 
 ## Plutus Core constants (UNSAFE)
 
-> **NOTE**: The following information is almost never necessary with the existence of `pconstant`. Refer to [constant building](Introduction/Plutarch%20Terms/Plutarch%20Constants.md) and [`PConstant`/`PLift`](./Typeclasses/PConstant%20and%20PLift.md) section of the Plutarch user guide.
+> **NOTE**: The following information is almost never necessary with the existence of `pconstant`. Refer to [constant building](./Introduction/Plutarch%20Terms/Plutarch%20Constants.md) and [`PConstant`/`PLift`](./Typeclasses/PConstant%20and%20PLift.md) section of the Plutarch user guide.
 
 Often, you will need to build a Plutus core constant. You can do this using `Some` and `ValueOf`. Here's how `pcon PTrue` creates a Plutarch term that actually evaluates to a Plutus core constant representing a boolean:
 

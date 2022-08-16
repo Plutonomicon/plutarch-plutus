@@ -40,6 +40,22 @@ Contributions are more than welcome! Alongside the [User guide](#usage) above, y
 
 We're in the Plutonomicon Discord: https://discord.gg/722KnTC8jF
 
+# Sponsors
+
+This list is incomplete:
+- Optim
+- Liqwid
+- Zamarad
+- Ikigai
+- SingularityNET
+- KWARXs
+- GeniusYield
+- Noblesteed
+- Xinsere
+- A lot of other people probably.
+
+Big thanks to everyone.
+
 # License
 
 ```
@@ -49,6 +65,7 @@ Copyright (c) 2021-2022 Minswap Team
 Copyright (c) 2021-2022 Liqwid Labs
 Copyright (c) 2021-2022 Platonic.Systems
 Copyright (c) 2021-2022 MLabs
+Copyright (c) 2022 Plutarch contributors and sponsors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
