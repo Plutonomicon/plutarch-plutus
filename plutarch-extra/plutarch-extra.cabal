@@ -85,6 +85,9 @@ library
     Plutarch.Extra.ByteString
     Plutarch.Extra.Interval
     Plutarch.Extra.List
+    Plutarch.Extra.Map
+    Plutarch.Extra.Map.Unsorted
+    Plutarch.Extra.Maybe
     Plutarch.Extra.TermCont
 
 -- other-modules:
