@@ -215,6 +215,10 @@ instance Fc (F a) a => PEq (PBuiltinList a) where
 
 data PData (s :: S) = PData (Term s PData)
 
+-- FIXME: Implement `PShow PData` that shows the contents.
+instance PShow PData where
+  pshow' _ _ = "<pdata>"
+
 instance PlutusType PData where
   type PInner PData = PData
   type PCovariant' PData = ()

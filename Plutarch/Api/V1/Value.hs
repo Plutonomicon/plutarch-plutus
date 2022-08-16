@@ -77,7 +77,7 @@ newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 
 newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PShow)
 instance DerivePlutusType PTokenName where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PTokenName where type PLifted PTokenName = Plutus.TokenName
@@ -96,7 +96,7 @@ instance PTryFrom PData (PAsData PTokenName) where
 
 newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PShow)
 instance DerivePlutusType PCurrencySymbol where type DPTStrat _ = PlutusTypeNewtype
 
 instance PTryFrom PData (PAsData PCurrencySymbol) where
@@ -120,7 +120,7 @@ type role PValue nominal nominal nominal
 newtype PValue (keys :: KeyGuarantees) (amounts :: AmountGuarantees) (s :: S)
   = PValue (Term s (PMap keys PCurrencySymbol (PMap keys PTokenName PInteger)))
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData)
+  deriving anyclass (PlutusType, PIsData, PShow)
 instance DerivePlutusType (PValue keys amounts) where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl (PValue 'Unsorted 'NonZero) where

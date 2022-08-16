@@ -131,12 +131,13 @@ module Plutarch.Prelude (
   pletFields,
 
   -- * Tracing
+  PShow,
+  pshow,
   ptrace,
   ptraceShowId,
   ptraceIfFalse,
   ptraceIfTrue,
   ptraceError,
-  pshow,
 
   -- * Cryptographic hashes and signatures
   psha2_256,

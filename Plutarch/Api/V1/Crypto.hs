@@ -24,7 +24,7 @@ import Plutarch.Unsafe (punsafeCoerce)
 
 newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PShow)
 instance DerivePlutusType PPubKeyHash where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PPubKeyHash where type PLifted PPubKeyHash = Plutus.PubKeyHash
