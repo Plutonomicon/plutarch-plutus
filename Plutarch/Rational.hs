@@ -64,6 +64,7 @@ class PFractional (a :: PType) where
   precip :: Term s (a :--> a)
   pfromRational :: Term s (PRational :--> a)
 
+-- | Note: This type is _not_ the synonym of 'PlutusTx.Rational'.
 data PRational s
   = PRational (Term s PInteger) (Term s PPositive)
   deriving stock (Generic)
@@ -99,6 +100,7 @@ instance PShow PRational where
         plam $ \n -> pmatch n $ \(PRational x y) ->
           pshow x <> "/" <> pshow (pto y)
 
+-- | This instance _does not_ correspond to 'PlutusTx.Rational's data encoding.
 instance PIsData PRational where
   pfromDataImpl x' = phoistAcyclic (plam $ \x -> plistToRat #$ pasList # pforgetData x) # x'
     where
