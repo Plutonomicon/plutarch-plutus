@@ -41,7 +41,7 @@ newtype PTxOut (s :: S)
           )
       )
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PDataFields, PEq)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PShow)
 
 instance DerivePlutusType PTxOut where type DPTStrat _ = PlutusTypeData
 
@@ -60,7 +60,7 @@ newtype PTxInInfo (s :: S)
           )
       )
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PDataFields, PEq)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PShow)
 
 instance DerivePlutusType PTxInInfo where type DPTStrat _ = PlutusTypeData
 
@@ -73,7 +73,7 @@ data POutputDatum (s :: S)
   | POutputDatumHash (Term s (PDataRecord '["datumHash" ':= V1.PDatumHash]))
   | POutputDatum (Term s (PDataRecord '["outputDatum" ':= V1.PDatum]))
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq)
+  deriving anyclass (PlutusType, PIsData, PEq, PShow)
 
 instance DerivePlutusType POutputDatum where type DPTStrat _ = PlutusTypeData
 

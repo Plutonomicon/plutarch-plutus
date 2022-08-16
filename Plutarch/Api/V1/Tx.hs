@@ -39,7 +39,7 @@ newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 newtype PTxId (s :: S)
   = PTxId (Term s (PDataRecord '["_0" ':= PByteString]))
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PPartialOrd, POrd)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PPartialOrd, POrd, PShow)
 instance DerivePlutusType PTxId where type DPTStrat _ = PlutusTypeData
 
 instance PUnsafeLiftDecl PTxId where type PLifted PTxId = Plutus.TxId
@@ -76,7 +76,7 @@ newtype PTxOutRef (s :: S)
           )
       )
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PPartialOrd, POrd, PTryFrom PData)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PPartialOrd, POrd, PTryFrom PData, PShow)
 
 instance DerivePlutusType PTxOutRef where type DPTStrat _ = PlutusTypeData
 
@@ -96,7 +96,7 @@ newtype PTxInInfo (s :: S)
           )
       )
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PDataFields, PEq)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PShow)
 
 instance DerivePlutusType PTxInInfo where type DPTStrat _ = PlutusTypeData
 
@@ -116,7 +116,7 @@ newtype PTxOut (s :: S)
           )
       )
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PDataFields, PEq)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PShow)
 
 instance DerivePlutusType PTxOut where type DPTStrat _ = PlutusTypeData
 
