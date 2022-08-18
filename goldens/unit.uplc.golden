@@ -1,5 +1,0 @@
-pcon (program 1.0.0 ())
-pmatch (program 1.0.0 ((\i0 -> True) ()))
-compare.== (program 1.0.0 ((\i0 -> (\i0 -> True) ()) ()))
-compare.< (program 1.0.0 ((\i0 -> (\i0 -> False) ()) ()))
-compare.<= (program 1.0.0 ((\i0 -> (\i0 -> True) ()) ()))

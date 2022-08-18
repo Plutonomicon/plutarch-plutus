@@ -1,4 +1,0 @@
-PData.1 (program 1.0.0 ((\i0 -> equalsData i1 i1) #9fd87a9f00ffff))
-PData.2 (program 1.0.0 ((\i0 -> force ifThenElse i1 False True) (equalsData #d87980 #182a)))
-PAsData.1 (program 1.0.0 (equalsData (iData 42) (iData 42)))
-PAsData.1 (program 1.0.0 ((\i0 -> force ifThenElse i1 False True) (equalsData (bData #12) (bData #ab))))

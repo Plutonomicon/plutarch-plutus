@@ -1,6 +1,0 @@
-auth_validator.0 {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":155}
-auth_validator.hash {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":70}
-auth_policy.0 {"exBudgetCPU":483100,"exBudgetMemory":2200,"scriptSizeBytes":144}
-auth_policy.hash {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":70}
-auth_stake_validator.0 {"exBudgetCPU":483100,"exBudgetMemory":2200,"scriptSizeBytes":144}
-auth_stake_validator.hash {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":70}
