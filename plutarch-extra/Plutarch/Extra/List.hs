@@ -75,22 +75,23 @@ pmergeBy ::
         :--> list a
         :--> list a
     )
-pmergeBy = phoistAcyclic $ pfix #$ plam go
-  where
-    go self comp a b =
-      pif (pnull # a) b $
-        pif (pnull # b) a $
-          unTermCont $ do
-            ah <- pletC $ phead # a
-            at <- pletC $ ptail # a
-            bh <- pletC $ phead # b
-            bt <- pletC $ ptail # b
-
-            pure $
-              pif
-                (comp # ah # bh)
-                (pcons # ah #$ self # comp # at # b)
-                (pcons # bh #$ self # comp # a # bt)
+pmergeBy =
+  phoistAcyclic $
+    pfix #$ plam $ \self comp a b ->
+      pelimList
+        ( \x xs ->
+            pelimList
+              ( \y ys ->
+                  pif
+                    (comp # x # y)
+                    (pcons # x #$ self # comp # xs # b)
+                    (pcons # y #$ self # comp # a # ys)
+              )
+              a
+              b
+        )
+        b
+        a
 
 {- | / O(nlogn) /. Merge sort, bottom-up version, given a custom comparator.
 
@@ -110,22 +111,26 @@ pmsortBy = phoistAcyclic $
   where
     mergeAll :: Term _ ((a :--> a :--> PBool) :--> l (l a) :--> l a)
     mergeAll = phoistAcyclic $
-      pfix #$ plam $ \self comp xs ->
-        pif (pnull # xs) pnil $
-          let y = phead # xs
-              ys = ptail # xs
-           in pif (pnull # ys) y $
-                self # comp #$ mergePairs # comp # xs
+      pfix #$ plam $ \self comp l ->
+        pelimList
+          ( \x xs ->
+              pif
+                (pnull # xs)
+                x
+                (self # comp #$ mergePairs # comp # l)
+          )
+          pnil
+          l
     mergePairs :: Term _ ((a :--> a :--> PBool) :--> l (l a) :--> l (l a))
     mergePairs = phoistAcyclic $
-      pfix #$ plam $ \self comp xs ->
-        pif (pnull # xs) pnil $
-          let y = phead # xs
-           in plet (ptail # xs) $ \ys ->
-                pif (pnull # ys) xs $
-                  let z = phead # ys
-                      zs = ptail # ys
-                   in pcons # (pmergeBy # comp # y # z) # (self # comp # zs)
+      pfix #$ plam $ \self comp l ->
+        pelimList
+          (\x xs ->
+               pelimList (\y ys ->
+                              pcons # (pmergeBy # comp # x # y) # (self # comp # ys))
+               l xs)
+          pnil
+          l
 
 {- | A special case of 'pmsortBy' which requires elements have 'POrd' instance.
 
@@ -138,7 +143,7 @@ pmsort = phoistAcyclic $ pmsortBy # comp
   where
     comp = phoistAcyclic $ plam (#<)
 
-{- | / O(nlogn) /. Sort and remove dupicate elements in a list.
+{- | / O(n log n) /. Sort and remove dupicate elements in a list.
 
     The first parameter is a equalator, which should return true if the two given values are equal.
     The second parameter is a comparator, which should returns true if the first value is less than the second value.
@@ -156,27 +161,19 @@ pnubSortBy ::
         :--> list a
     )
 pnubSortBy = phoistAcyclic $
-  plam $ \eq comp l -> pif (pnull # l) l $
-    unTermCont $ do
-      sl <- pletC $ pmsortBy # comp # l
-
-      let x = phead # sl
-          xs = ptail # sl
-
-      return $ go # eq # x # xs
+  plam $ \eq comp l ->
+    pelimList (\x xs -> go # eq # x # xs) l (pmsortBy # comp # l)
   where
-    go = phoistAcyclic pfix #$ plam go'
-    go' self eq seen l =
-      pif (pnull # l) (psingleton # seen) $
-        unTermCont $ do
-          x <- pletC $ phead # l
-          xs <- pletC $ ptail # l
-
-          return $
+    go = phoistAcyclic pfix #$ plam $ \self eq seen l ->
+      pelimList
+        ( \x xs ->
             pif
               (eq # x # seen)
               (self # eq # seen # xs)
               (pcons # seen #$ self # eq # x # xs)
+        )
+        (psingleton # seen)
+        l
 
 {- | Special version of 'pnubSortBy', which requires elements have 'POrd' instance.
 
