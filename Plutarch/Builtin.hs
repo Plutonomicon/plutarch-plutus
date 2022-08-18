@@ -27,6 +27,7 @@ module Plutarch.Builtin (
   pserialiseData,
   ppairDataBuiltin,
   pchooseListBuiltin,
+  pchooseData,
 ) where
 
 import Data.Functor.Const (Const)
@@ -232,6 +233,9 @@ deriving via (DerivePConstantDirect Data PData) instance PConstantDecl Data
 
 instance PEq PData where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
+
+pchooseData :: Term s (PData :--> a :--> a :--> a :--> a :--> a :--> a)
+pchooseData = phoistAcyclic $ pforce $ punsafeBuiltin PLC.ChooseData
 
 pasConstr :: Term s (PData :--> PBuiltinPair PInteger (PBuiltinList PData))
 pasConstr = punsafeBuiltin PLC.UnConstrData
