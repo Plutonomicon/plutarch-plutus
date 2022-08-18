@@ -2,3 +2,16 @@ reverse.reverse_[1..5] {"exBudgetCPU":5865100,"exBudgetMemory":25600,"scriptSize
 isSorted.[1..10] {"exBudgetCPU":16166677,"exBudgetMemory":59218,"scriptSizeBytes":115}
 isSorted.reverse_[1..10] {"exBudgetCPU":3379609,"exBudgetMemory":13203,"scriptSizeBytes":126}
 isSorted.reverse_[] {"exBudgetCPU":621100,"exBudgetMemory":2800,"scriptSizeBytes":56}
+sort.sort_[1..5] {"exBudgetCPU":67032600,"exBudgetMemory":267157,"scriptSizeBytes":279}
+sort.sort_[] {"exBudgetCPU":1920656,"exBudgetMemory":8101,"scriptSizeBytes":254}
+mergeBy.mergeBy_[1..5]_[1..5] {"exBudgetCPU":39249887,"exBudgetMemory":152438,"scriptSizeBytes":187}
+mergeBy.mergeBy_[]_[] {"exBudgetCPU":1322656,"exBudgetMemory":5501,"scriptSizeBytes":140}
+nubSort.nubSort_[1, 1, 2, 2, 3, 4, 5] {"exBudgetCPU":113851911,"exBudgetMemory":447104,"scriptSizeBytes":396}
+nubSort.nubSort_[] {"exBudgetCPU":1115656,"exBudgetMemory":4601,"scriptSizeBytes":329}
+pisUniq.isUniq_1_[1..5] {"exBudgetCPU":90106595,"exBudgetMemory":350492,"scriptSizeBytes":383}
+pisUniq.isUniq_1_[] {"exBudgetCPU":2267589,"exBudgetMemory":8702,"scriptSizeBytes":360}
+pmapMaybe.mapMaybe_[1..5] {"exBudgetCPU":11661436,"exBudgetMemory":48706,"scriptSizeBytes":116}
+pmapMaybe.mapMaybe_[] {"exBudgetCPU":839656,"exBudgetMemory":3401,"scriptSizeBytes":87}
+pmapMaybe.mapMaybe_[1..5]_Nothing {"exBudgetCPU":11755369,"exBudgetMemory":48207,"scriptSizeBytes":144}
+preplicate.preplicate_5_0 {"exBudgetCPU":14913020,"exBudgetMemory":41245,"scriptSizeBytes":94}
+preplicate.preplicate_0_0 {"exBudgetCPU":2073340,"exBudgetMemory":6235,"scriptSizeBytes":94}

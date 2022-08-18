@@ -1,0 +1,4 @@
+2:[1] {"exBudgetCPU":203593,"exBudgetMemory":732,"scriptSizeBytes":13}
+fails:True:[1] {"exBudgetCPU":65593,"exBudgetMemory":132,"scriptSizeBytes":13}
+(2,1) {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":10}
+fails:MkPair-1-2 {"exBudgetCPU":100,"exBudgetMemory":100,"scriptSizeBytes":11}

@@ -1,0 +1,5 @@
+eq (program 1.0.0 True)
+semigroup.laws.id.1 (program 1.0.0 True)
+semigroup.laws.id.2 (program 1.0.0 True)
+semigroup.concat (program 1.0.0 True)
+semigroup.mempty (program 1.0.0 True)

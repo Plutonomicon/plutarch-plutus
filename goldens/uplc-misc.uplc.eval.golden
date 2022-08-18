@@ -1,0 +1,5 @@
+perror (program 1.0.0 error)
+laziness.f.d (program 1.0.0 0)
+laziness.d.f.d (program 1.0.0 (delay 0))
+hoist.id.0 (program 1.0.0 (\i0 -> i1 0))
+hoist.fstPair (program 1.0.0 fstPair)

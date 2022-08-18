@@ -156,6 +156,7 @@ executable plutarch-test
     Plutarch.Extra.ByteStringSpec
     Plutarch.Extra.IntervalSpec
     Plutarch.Extra.ListSpec
+    Plutarch.Extra.MaybeSpec
     Plutarch.IntegerSpec
     Plutarch.LiftSpec
     Plutarch.ListSpec

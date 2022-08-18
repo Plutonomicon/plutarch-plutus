@@ -1,0 +1,12 @@
+PCredential.derived.true {"exBudgetCPU":1827327,"exBudgetMemory":5930,"scriptSizeBytes":101}
+PCredential.derived.false {"exBudgetCPU":2392816,"exBudgetMemory":7132,"scriptSizeBytes":101}
+PCredential.pmatch.true {"exBudgetCPU":2725204,"exBudgetMemory":7896,"scriptSizeBytes":137}
+PCredential.pmatch.false {"exBudgetCPU":2725204,"exBudgetMemory":7896,"scriptSizeBytes":137}
+PCredential.pmatch-pdatarecord.true {"exBudgetCPU":2725204,"exBudgetMemory":7896,"scriptSizeBytes":137}
+PCredential.pmatch-pdatarecord.false {"exBudgetCPU":2725204,"exBudgetMemory":7896,"scriptSizeBytes":137}
+PTriplet.derived.true {"exBudgetCPU":4318557,"exBudgetMemory":12654,"scriptSizeBytes":158}
+PTriplet.derived.false {"exBudgetCPU":4884046,"exBudgetMemory":13856,"scriptSizeBytes":158}
+PTriplet.pmatch.true {"exBudgetCPU":4732557,"exBudgetMemory":14454,"scriptSizeBytes":161}
+PTriplet.pmatch.false {"exBudgetCPU":5436046,"exBudgetMemory":16256,"scriptSizeBytes":161}
+PTriplet.pmatch-pdatarecord.true {"exBudgetCPU":4180557,"exBudgetMemory":12054,"scriptSizeBytes":153}
+PTriplet.pmatch-pdatarecord.false {"exBudgetCPU":4746046,"exBudgetMemory":13256,"scriptSizeBytes":153}

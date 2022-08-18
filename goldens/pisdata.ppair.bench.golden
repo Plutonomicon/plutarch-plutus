@@ -1,0 +1,5 @@
+simple {"exBudgetCPU":238611,"exBudgetMemory":864,"scriptSizeBytes":19}
+scriptcredential {"exBudgetCPU":191611,"exBudgetMemory":632,"scriptSizeBytes":28}
+isomorphism.pforgetData {"exBudgetCPU":1199105,"exBudgetMemory":3492,"scriptSizeBytes":52}
+isomorphism.pbuiltinPairFromTuple {"exBudgetCPU":1693045,"exBudgetMemory":5388,"scriptSizeBytes":68}
+isomorphism.ptupleFromBuiltin {"exBudgetCPU":1199105,"exBudgetMemory":3492,"scriptSizeBytes":52}
