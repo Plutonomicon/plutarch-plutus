@@ -273,6 +273,10 @@ instance PIsData a => PlutusType (PAsData a) where
   pcon' (PAsData t) = punsafeCoerce $ pdata t
   pmatch' t f = f (PAsData $ pfromData $ punsafeCoerce t)
 
+instance (PIsData a) => PIsData (PAsData a) where
+  pfromDataImpl = punsafeCoerce
+  pdataImpl = pdataImpl . pfromData
+
 type role PAsDataLifted nominal
 data PAsDataLifted (a :: PType)
 
@@ -518,3 +522,5 @@ instance PTryFrom PData (PAsData PData) where
 instance PTryFrom PData PData where
   type PTryFromExcess PData PData = Const ()
   ptryFrom' opq f = f (opq, ())
+
+instance PTryFrom PData (PAsData PUnit)

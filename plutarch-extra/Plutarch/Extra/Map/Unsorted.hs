@@ -5,9 +5,7 @@ import Plutarch.Extra.List (pmsortBy)
 import Plutarch.Extra.Map (pkvPairLt)
 import Plutarch.Prelude
 
-{- | / O(nlogn) /. Sort a `PMap` by the keys of each key-value pairs, in an ascending order.
- @since 2.0
--}
+-- | / O(nlogn) /. Sort a `PMap` by the keys of each key-value pairs, in an ascending order.
 psort ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
   (PIsData k, POrd k) =>

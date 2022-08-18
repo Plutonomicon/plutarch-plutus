@@ -50,6 +50,15 @@ instance DerivePlutusType PDatumHash where type DPTStrat _ = PlutusTypeNewtype
 instance PUnsafeLiftDecl PDatumHash where type PLifted PDatumHash = Plutus.DatumHash
 deriving via (DerivePConstantViaBuiltin Plutus.DatumHash PDatumHash PByteString) instance PConstantDecl Plutus.DatumHash
 
+instance PTryFrom PData (PAsData PDatumHash) where
+  type PTryFromExcess PData (PAsData PDatumHash) = Flip Term PDatumHash
+  ptryFrom' opq = runTermCont $ do
+    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
+
+    tcont $ \f ->
+      pif (plengthBS # unwrapped #== 32) (f ()) (ptraceError "ptryFrom(PDatumHash): must be 32 bytes long")
+    pure (punsafeCoerce opq, pcon $ PDatumHash unwrapped)
+
 newtype PStakeValidatorHash (s :: S) = PStakeValidatorHash (Term s PByteString)
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
@@ -112,5 +121,14 @@ deriving via
   (DerivePConstantViaBuiltin Plutus.ScriptHash PScriptHash PByteString)
   instance
     PConstantDecl Plutus.ScriptHash
+
+instance PTryFrom PData (PAsData PScriptHash) where
+  type PTryFromExcess PData (PAsData PScriptHash) = Flip Term PScriptHash
+  ptryFrom' opq = runTermCont $ do
+    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
+
+    tcont $ \f ->
+      pif (plengthBS # unwrapped #== 28) (f ()) (ptraceError "ptryFrom(PScriptHash): must be 28 bytes long")
+    pure (punsafeCoerce opq, pcon $ PScriptHash unwrapped)
 
 newtype Flip f a b = Flip (f b a) deriving stock (Generic)

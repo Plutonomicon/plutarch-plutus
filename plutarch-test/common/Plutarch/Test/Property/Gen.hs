@@ -30,6 +30,7 @@ import Test.Tasty.QuickCheck (
  )
 
 import PlutusLedgerApi.V1
+import PlutusLedgerApi.V1.Scripts
 
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
@@ -122,3 +123,15 @@ instance Arbitrary StakingCredential where
 
 instance Arbitrary Address where
   arbitrary = Address <$> arbitrary <*> arbitrary
+
+instance Arbitrary DatumHash where
+  arbitrary =
+    let arbitrary' =
+          toBuiltin @ByteString <$> bsOfLength 32
+     in DatumHash <$> arbitrary'
+
+instance Arbitrary ScriptHash where
+  arbitrary =
+    let arbitrary' =
+          toBuiltin @ByteString <$> bsOfLength 28
+     in ScriptHash <$> arbitrary'

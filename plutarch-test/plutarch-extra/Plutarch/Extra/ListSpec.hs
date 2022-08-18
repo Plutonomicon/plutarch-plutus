@@ -6,7 +6,7 @@ import Plutarch.Extra.List (
   pmapMaybe,
   pmergeBy,
   pmsort,
-  pnubSort,
+  pnub,
   preplicate,
   preverse,
  )
@@ -31,12 +31,14 @@ spec = do
     describe "properties" $ do
       describe "reverse" $ do
         it "plutarch level reversing behaves like haskell level reversing" . hedgehog . propertyTest $ prop_preverseEquiv
+      describe "checkSortedn" $ do
+        it "plutarch level checkSorted behaves like haskell level reversing" . hedgehog . propertyTest $ prop_pcheckSorted
       describe "sort" $ do
         it "plutarch level sorting behaves like haskell level sorting" . hedgehog . propertyTest $ prop_pmsortEquiv
       describe "mergeBy" $ do
         it "plutarch level 'mergeBy' behaves like haskell level counterpart" . hedgehog . propertyTest $ prop_pmergeByEquiv
-      describe "pnubSort" $ do
-        it "plutarch level 'pnubSort' behaves like haskell level counterpart" . hedgehog . propertyTest $ prop_pnubSort
+      describe "pnub" $ do
+        it "plutarch level 'pnub' behaves like haskell level counterpart" . hedgehog . propertyTest $ prop_pnub
       describe "pisUniq" $ do
         it "plutarch level 'pisUniq' behaves like haskell level counterpart" . hedgehog . propertyTest $ prop_pisUniq
       describe "pmapMaybe" $ do
@@ -46,19 +48,20 @@ spec = do
     pgoldenSpec $ do
       "reverse" @\ do
         "reverse_[1..5]" @| preverse # marshal [1 .. 5 :: Integer]
-      "isSorted" @\ do
-        "[1..10]" @| pcheckSorted # marshal [1 .. 10 :: Integer] @-> passert
         "reverse_[1..10]" @| (pnot #$ pcheckSorted #$ marshal $ reverse [1 .. 10 :: Integer]) @-> passert
         "reverse_[]" @| preverse # marshal ([] :: [Integer])
+      "checkSorted" @\ do
+        "checkSorted_[1..10]" @| pcheckSorted # marshal [1 .. 10 :: Integer] @-> passert
+        "checkSorted_[10..1]" @| (pnot #$ pcheckSorted # marshal (reverse [1 .. 10 :: Integer])) @-> passert
       "sort" @\ do
         "sort_[1..5]" @| pmsort # marshal ([1 .. 5 :: Integer])
         "sort_[]" @| pmsort # marshal ([] :: [Integer])
       "mergeBy" @\ do
         "mergeBy_[1..5]_[1..5]" @| pmergeBy # (plam \x y -> x #< y) # marshal [1 .. 5 :: Integer] # marshal [1 .. 5 :: Integer]
         "mergeBy_[]_[]" @| pmergeBy # (plam \x y -> x #< y) # marshal ([] :: [Integer]) # marshal ([] :: [Integer])
-      "nubSort" @\ do
-        "nubSort_[1, 1, 2, 2, 3, 4, 5]" @| pcheckSorted #$ pnubSort # marshal [1, 1, 2, 2, 3, 4, 5 :: Integer]
-        "nubSort_[]" @| pnubSort # marshal ([] :: [Integer])
+      "nub" @\ do
+        "nub_[1, 1, 2, 2, 3, 4, 5]" @| pcheckSorted #$ pnub # marshal [1, 1, 2, 2, 3, 4, 5 :: Integer]
+        "nub_[]" @| pnub # marshal ([] :: [Integer])
       "pisUniq" @\ do
         "isUniq_1_[1..5]" @| pisUniq # marshal [1 .. 5 :: Integer] @-> passert
         "isUniq_1_[]" @| pisUniq # marshal ([] :: [Integer])
@@ -78,6 +81,15 @@ prop_preverseEquiv = do
     @( 'TotalFun)
     (reverse :: [Integer] -> [Integer])
     preverse
+    (genList genInteger :* Nil)
+
+prop_pcheckSorted :: Property
+prop_pcheckSorted = do
+  prop_haskEquiv
+    @( 'OnPEq)
+    @( 'TotalFun)
+    ((\x -> sort x == x) :: [Integer] -> Bool)
+    pcheckSorted
     (genList genInteger :* Nil)
 
 prop_pmsortEquiv :: Property
@@ -108,13 +120,13 @@ prop_pmergeByEquiv = do
     pcond :: POrd a => Term s (a :--> a :--> PBool)
     pcond = plam $ \x y -> x #< y
 
-prop_pnubSort :: Property
-prop_pnubSort = do
+prop_pnub :: Property
+prop_pnub = do
   prop_haskEquiv
     @( 'OnPEq)
     @( 'TotalFun)
-    (sort . nub :: [Integer] -> [Integer])
-    pnubSort
+    (nub :: [Integer] -> [Integer])
+    pnub
     (genList genInteger :* Nil)
 
 prop_pisUniq :: Property

@@ -22,7 +22,6 @@ import Plutarch.Extra.TermCont (pletC, pmatchC)
 import qualified Plutarch.List
 import Plutarch.Prelude
 
--- | @since 1.0.0
 plookup ::
   forall (k :: S -> Type) (v :: S -> Type) (keys :: KeyGuarantees) (s :: S).
   (PIsData v, PIsData k, PEq k) =>
@@ -43,7 +42,6 @@ plookup = phoistAcyclic $
         k' <- pletC (pfromData $ pfstBuiltin # p)
         pure $ k' #== x
 
--- | @since 1.0.0
 plookup' ::
   forall (k :: S -> Type) (v :: S -> Type) (keys :: KeyGuarantees) (s :: S).
   (PIsData v, PIsData k, PEq k) =>
@@ -69,10 +67,7 @@ pmapFromList = pcon . PMap . foldl' go (pcon PNil)
       p <- pletC (ppairDataBuiltin # k' # v')
       pure . pcon . PCons p $ acc
 
-{- | Get the keys of a given map, the order of the keys is preserved.
-
-      @since 1.1.0
--}
+-- | Get the keys of a given map, the order of the keys is preserved.
 pkeys ::
   forall (k :: S -> Type) (v :: S -> Type) (keys :: KeyGuarantees) (s :: S).
   Term s (PMap keys k v :--> PBuiltinList (PAsData k))
@@ -81,10 +76,7 @@ pkeys = phoistAcyclic $
     PMap kvs <- pmatchC m
     pure $ Plutarch.Prelude.pmap # pfstBuiltin # kvs
 
-{- | / O(n) /. Update the value at a given key in a `PMap`, have the same functionalities as 'Data.Map.update'.
-
-     @since 1.1.0
--}
+-- | / O(n) /. Update the value at a given key in a `PMap`, have the same functionalities as 'Data.Map.update'.
 pupdate ::
   forall (k :: S -> Type) (v :: S -> Type) (keys :: KeyGuarantees) (s :: S).
   (PIsData k, PIsData v) =>
@@ -109,10 +101,7 @@ pupdate = phoistAcyclic $
             )
           # ps
 
-{- | / O(n) /. Map a function over all values in a 'PMap'.
-
-     @since 1.1.0
--}
+-- | / O(n) /. Map a function over all values in a 'PMap'.
 pmap ::
   forall (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (keys :: KeyGuarantees) (s :: S).
   (PIsData k, PIsData a, PIsData b) =>
@@ -132,24 +121,17 @@ pmap = phoistAcyclic $
             )
           # ps
 
-{- | Get the key of a key-value pair.
-
-     @since 1.1.0
--}
+-- | Get the key of a key-value pair.
 pkvPairKey :: (PIsData k) => Term s (PBuiltinPair (PAsData k) (PAsData v) :--> k)
 pkvPairKey = phoistAcyclic $ plam $ \(pfromData . (pfstBuiltin #) -> key) -> key
 
-{- | Compare two key-value pairs by their keys, return true if the first key is less than the second one.
-
-      @since 1.1.0
--}
+-- | Compare two key-value pairs by their keys, return true if the first key is less than the second one.
 pkvPairLt ::
   (PIsData k, POrd k) =>
   Term s (PBuiltinPair (PAsData k) (PAsData v) :--> PBuiltinPair (PAsData k) (PAsData v) :--> PBool)
 pkvPairLt = phoistAcyclic $
   plam $ \((pkvPairKey #) -> keyA) ((pkvPairKey #) -> keyB) -> keyA #< keyB
 
--- | @since 1.3.0
 pfoldlWithKey ::
   forall (a :: S -> Type) (k :: S -> Type) (v :: S -> Type) (keys :: KeyGuarantees) (s :: S).
   (PIsData k, PIsData v) =>

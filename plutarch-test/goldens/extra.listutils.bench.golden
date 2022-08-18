@@ -1,17 +1,18 @@
 reverse.reverse_[1..5] {"exBudgetCPU":5865100,"exBudgetMemory":25600,"scriptSizeBytes":87}
-isSorted.[1..10] {"exBudgetCPU":16166677,"exBudgetMemory":59218,"scriptSizeBytes":115}
-isSorted.reverse_[1..10] {"exBudgetCPU":3379609,"exBudgetMemory":13203,"scriptSizeBytes":126}
-isSorted.reverse_[] {"exBudgetCPU":621100,"exBudgetMemory":2800,"scriptSizeBytes":56}
+reverse.reverse_[1..10] {"exBudgetCPU":3448609,"exBudgetMemory":13503,"scriptSizeBytes":131}
+reverse.reverse_[] {"exBudgetCPU":621100,"exBudgetMemory":2800,"scriptSizeBytes":56}
+checkSorted.checkSorted_[1..10] {"exBudgetCPU":16856677,"exBudgetMemory":62218,"scriptSizeBytes":120}
+checkSorted.checkSorted_[10..1] {"exBudgetCPU":3448609,"exBudgetMemory":13503,"scriptSizeBytes":131}
 sort.sort_[1..5] {"exBudgetCPU":32611028,"exBudgetMemory":130420,"scriptSizeBytes":205}
 sort.sort_[] {"exBudgetCPU":1380100,"exBudgetMemory":6100,"scriptSizeBytes":182}
 mergeBy.mergeBy_[1..5]_[1..5] {"exBudgetCPU":17582767,"exBudgetMemory":65218,"scriptSizeBytes":135}
 mergeBy.mergeBy_[]_[] {"exBudgetCPU":690100,"exBudgetMemory":3100,"scriptSizeBytes":88}
-nubSort.nubSort_[1, 1, 2, 2, 3, 4, 5] {"exBudgetCPU":59246663,"exBudgetMemory":229946,"scriptSizeBytes":300}
-nubSort.nubSort_[] {"exBudgetCPU":1564100,"exBudgetMemory":6900,"scriptSizeBytes":232}
-pisUniq.isUniq_1_[1..5] {"exBudgetCPU":49612687,"exBudgetMemory":189449,"scriptSizeBytes":287}
-pisUniq.isUniq_1_[] {"exBudgetCPU":2716033,"exBudgetMemory":11001,"scriptSizeBytes":264}
-pmapMaybe.mapMaybe_[1..5] {"exBudgetCPU":11661436,"exBudgetMemory":48706,"scriptSizeBytes":116}
-pmapMaybe.mapMaybe_[] {"exBudgetCPU":839656,"exBudgetMemory":3401,"scriptSizeBytes":87}
-pmapMaybe.mapMaybe_[1..5]_Nothing {"exBudgetCPU":11755369,"exBudgetMemory":48207,"scriptSizeBytes":144}
+nub.nub_[1, 1, 2, 2, 3, 4, 5] {"exBudgetCPU":17577846,"exBudgetMemory":64020,"scriptSizeBytes":167}
+nub.nub_[] {"exBudgetCPU":345100,"exBudgetMemory":1600,"scriptSizeBytes":90}
+pisUniq.isUniq_1_[1..5] {"exBudgetCPU":17944759,"exBudgetMemory":63229,"scriptSizeBytes":147}
+pisUniq.isUniq_1_[] {"exBudgetCPU":1566033,"exBudgetMemory":6001,"scriptSizeBytes":124}
+pmapMaybe.mapMaybe_[1..5] {"exBudgetCPU":6486100,"exBudgetMemory":28300,"scriptSizeBytes":94}
+pmapMaybe.mapMaybe_[] {"exBudgetCPU":552100,"exBudgetMemory":2500,"scriptSizeBytes":66}
+pmapMaybe.mapMaybe_[1..5]_Nothing {"exBudgetCPU":6580033,"exBudgetMemory":27801,"scriptSizeBytes":122}
 preplicate.preplicate_5_0 {"exBudgetCPU":14913020,"exBudgetMemory":41245,"scriptSizeBytes":94}
 preplicate.preplicate_0_0 {"exBudgetCPU":2073340,"exBudgetMemory":6235,"scriptSizeBytes":94}

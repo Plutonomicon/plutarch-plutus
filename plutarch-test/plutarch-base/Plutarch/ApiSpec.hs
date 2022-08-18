@@ -45,6 +45,7 @@ import Plutarch.Builtin (pasConstr, pforgetData)
 import Plutarch.Prelude
 import Plutarch.Test
 import Plutarch.Test.Property.Gen ()
+import PlutusLedgerApi.V1.Scripts (ScriptHash)
 
 import Test.Hspec
 import Test.Tasty.QuickCheck (Property, property, (===))
@@ -297,6 +298,12 @@ spec = do
           property (propPlutarchtypeCanBeRecovered @Value)
         it "recovering PCurrencySymbol succeeds" $
           property (propPlutarchtypeCanBeRecovered @CurrencySymbol)
+        it "recovering PDatumHash succeeds" $
+          property (propPlutarchtypeCanBeRecovered @DatumHash)
+        it "recovering PScriptHash succeeds" $
+          property (propPlutarchtypeCanBeRecovered @ScriptHash)
+        it "recovering PUnit succeeds" $
+          property (propPlutarchtypeCanBeRecovered @())
         it "recovering PMaybeData succeeds" $
           property prop_pmaybedata_can_be_recovered
 
