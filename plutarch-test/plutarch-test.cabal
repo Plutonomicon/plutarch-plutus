@@ -108,12 +108,10 @@ library
   hs-source-dirs:  common
   exposed-modules:
     Plutarch.Test
-    Plutarch.Test.Property
-
-  other-modules:
     Plutarch.Test.Benchmark
     Plutarch.Test.Golden
     Plutarch.Test.ListSyntax
+    Plutarch.Test.Property
     Plutarch.Test.Property.Extra
     Plutarch.Test.Property.Gen
     Plutarch.Test.Property.HaskEquiv
