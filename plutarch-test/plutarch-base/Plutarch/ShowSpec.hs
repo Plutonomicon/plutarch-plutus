@@ -6,6 +6,7 @@ import qualified Data.Text as T
 
 import Plutarch.ListSpec (integerList)
 import Plutarch.Prelude
+import Plutarch.Show (pshowAndErr)
 import Plutarch.Test
 import Test.Hspec
 
@@ -64,6 +65,11 @@ spec = do
           xs0 = pconstant @(PBuiltinList PInteger) []
       "nil" @| pshow xs0 @== str "[]"
       "1,2,3" @| pshow xs3 @== str "[1, 2, 3]"
+    "pshowAndErr" @\ do
+      let xs3 = pconstant @(PBuiltinList PInteger) [1, 2, 3]
+          xs0 = pconstant @(PBuiltinList PInteger) []
+      "nil" @| pshowAndErr xs0 @-> pfails
+      "1,2,3" @| pshowAndErr xs3 @-> pfails
     "pair" @\ do
       "int-str"
         @| pshow (pcon @(PPair PInteger PString) $ PPair 42 "hello")
