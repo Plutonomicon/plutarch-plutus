@@ -40,8 +40,6 @@ prop_leftInverse ::
   forall e p p' h.
   ( LamArgs h ~ '[]
   , HaskEquiv e 'TotalFun (h -> h) (p :--> p) '[h]
-  , Show h
-  , Marshal h p
   ) =>
   ClosedTerm (p' :--> p) ->
   ClosedTerm (p :--> p') ->
