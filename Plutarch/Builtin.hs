@@ -88,8 +88,8 @@ import Plutarch.List (
     pnull,
     ptail
   ),
-  phead,
   pfoldr',
+  phead,
   plistEquals,
   pmap,
   pshowList,
@@ -221,38 +221,42 @@ data PData (s :: S) = PData (Term s PData)
 
 instance PShow PData where
   pshow' b t0 = wrap (go0 # t0)
-     where
-       wrap s = pif (pconstant b) ("(" <> s <> ")") s
-       go0 :: Term s (PData :--> PString)
-       go0 = phoistAcyclic $ pfix #$ plam $ \go t ->
-         let pshowConstr pp0 = plet pp0 $ \pp ->
-               "Constr "
-               <> pshow' False (pfstBuiltin # pp)
-               <> " "
-               <> pshowListPString # (pmap # go # (psndBuiltin # pp))
-             pshowMap pplist =
-               "Map " <> pshowListPString # (pmap # pshowPair # pplist)
-             pshowPair = plam $ \pp0 -> plet pp0 $ \pp ->
-               "(" <> (go # (pfstBuiltin # pp))
-               <> ", " <> (go # (psndBuiltin # pp))
-               <> ")"
-             pshowList xs = "List " <> pshowListPString # (pmap # go # xs)
-             pshowListPString = phoistAcyclic $ plam $ \plist ->
-               "[" <>
-               pelimList
-                 (\x0 xs0 ->
-                   x0 <> (pfoldr' (\x r -> ", " <> x <> r) # ("" :: Term s PString) # xs0)
-                 )
-                 ""
-                 plist
-               <> "]"
-          in pforce $ pchooseData
-               # t
-               # pdelay (pshowConstr (pasConstr # t))
-               # pdelay (pshowMap (pasMap # t))
-               # pdelay (pshowList (pasList # t))
-               # pdelay ("I " <> pshow (pasInt # t))
-               # pdelay ("B " <> pshow (pasByteStr # t))
+    where
+      wrap s = pif (pconstant b) ("(" <> s <> ")") s
+      go0 :: Term s (PData :--> PString)
+      go0 = phoistAcyclic $
+        pfix #$ plam $ \go t ->
+          let pshowConstr pp0 = plet pp0 $ \pp ->
+                "Constr "
+                  <> pshow' False (pfstBuiltin # pp)
+                  <> " "
+                  <> pshowListPString # (pmap # go # (psndBuiltin # pp))
+              pshowMap pplist =
+                "Map " <> pshowListPString # (pmap # pshowPair # pplist)
+              pshowPair = plam $ \pp0 -> plet pp0 $ \pp ->
+                "(" <> (go # (pfstBuiltin # pp))
+                  <> ", "
+                  <> (go # (psndBuiltin # pp))
+                  <> ")"
+              pshowList xs = "List " <> pshowListPString # (pmap # go # xs)
+              pshowListPString = phoistAcyclic $
+                plam $ \plist ->
+                  "["
+                    <> pelimList
+                      ( \x0 xs0 ->
+                          x0 <> (pfoldr' (\x r -> ", " <> x <> r) # ("" :: Term s PString) # xs0)
+                      )
+                      ""
+                      plist
+                    <> "]"
+           in pforce $
+                pchooseData
+                  # t
+                  # pdelay (pshowConstr (pasConstr # t))
+                  # pdelay (pshowMap (pasMap # t))
+                  # pdelay (pshowList (pasList # t))
+                  # pdelay ("I " <> pshow (pasInt # t))
+                  # pdelay ("B " <> pshow (pasByteStr # t))
 
 instance PlutusType PData where
   type PInner PData = PData
