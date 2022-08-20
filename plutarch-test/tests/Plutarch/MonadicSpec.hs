@@ -3,6 +3,7 @@
 
 module Plutarch.MonadicSpec (spec) where
 
+import Control.Monad.Trans.Cont (cont, runCont)
 import Plutarch.Api.V1 (
   PAddress (PAddress),
   PCredential,
@@ -13,6 +14,7 @@ import Plutarch.Api.V1 (
   PStakingCredential,
  )
 import qualified Plutarch.ApiSpec as ApiSpec
+import Plutarch.List (pconvertLists)
 import qualified Plutarch.Monadic as P
 import Plutarch.Prelude
 import Plutarch.Test
@@ -22,13 +24,10 @@ import Test.Hspec
 spec :: Spec
 spec = do
   describe "monadic" $ do
-    {- TODO: Uncomment this after flakiness is fixed
-      See https://github.com/Plutonomicon/plutarch/issues/290
-    -}
-    {- describe "pmatch-twice" . pgoldenSpec $ do
+    describe "pmatch-twice" . pgoldenSpec $ do
       -- We expect all these benchmarks to produce equivalent numbers
       let integerList :: [Integer] -> Term s (PList PInteger)
-          integerList xs = List.pconvertLists #$ pconstant @(PBuiltinList PInteger) xs
+          integerList xs = pconvertLists #$ pconstant @(PBuiltinList PInteger) xs
           xs = integerList [1 .. 10]
       "normal"
         @| pmatch xs
@@ -61,7 +60,6 @@ spec = do
           PSCons _ xs' <- TermCont $ pmatch xs
           PSCons _ xs'' <- TermCont $ pmatch xs'
           pure xs''
-          -}
     describe "api.example" $ do
       -- The checkSignatory family of functions implicitly use tracing due to
       -- monadic syntax, and as such we need two sets of tests here.

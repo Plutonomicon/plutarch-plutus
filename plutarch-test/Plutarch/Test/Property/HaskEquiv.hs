@@ -86,9 +86,7 @@ instance (PEq p, Marshal h p, LamArgs h ~ '[]) => HaskEquiv 'OnPEq 'TotalFun h p
   haskEquiv h p Nil = testPEq (marshal h) p
 
 instance
-  ( PEq p
-  , PIsData p
-  , Marshal h p
+  ( Marshal h p
   , HaskEquiv 'OnPEq 'TotalFun h p '[]
   , HaskEquiv 'OnPData 'TotalFun h p '[]
   ) =>
@@ -99,7 +97,7 @@ instance
     haskEquiv @( 'OnPData) @( 'TotalFun) h p Nil
 
 instance
-  (PIsData p, Marshal h p, HaskEquiv eq 'TotalFun h p '[]) =>
+  (Marshal h p, HaskEquiv eq 'TotalFun h p '[]) =>
   HaskEquiv eq 'PartialFun h p '[]
   where
   haskEquiv h p Nil = testPartial (\h' p' -> haskEquiv @eq @( 'TotalFun) h' p' Nil) h p
