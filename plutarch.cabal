@@ -39,6 +39,7 @@ common c
     GeneralisedNewtypeDeriving
     HexFloatLiterals
     ImplicitPrelude
+    ImpredicativeTypes
     InstanceSigs
     KindSignatures
     LambdaCase
@@ -53,6 +54,7 @@ common c
     PatternSynonyms
     PolyKinds
     PostfixOperators
+    QualifiedDo
     QuantifiedConstraints
     RankNTypes
     RelaxedPolyRec
@@ -67,6 +69,7 @@ common c
     TypeOperators
     TypeSynonymInstances
     ViewPatterns
+    OverloadedRecordDot
 
   ghc-options:
     -Weverything -Wno-unused-do-bind -Wno-missing-kind-signatures
@@ -120,8 +123,10 @@ library
     Plutarch.Internal.Other
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType
+    Plutarch.Internal.PrettyStack
     Plutarch.Internal.Quantification
     Plutarch.Internal.ScottEncoding
+    Plutarch.Internal.Trace
     Plutarch.Internal.TypeFamily
     Plutarch.Internal.Witness
     Plutarch.Lift

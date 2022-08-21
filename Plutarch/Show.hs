@@ -36,13 +36,15 @@ import Plutarch.Internal (
   phoistAcyclic,
   plet,
   punsafeCoerce,
+  (#),
+  (#$),
   (:-->),
  )
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.Other (
   pfix,
  )
-import Plutarch.Internal.PLam (plam, (#), (#$))
+import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PlutusType, pmatch)
 import Plutarch.Lift (pconstant)
 import Plutarch.String (PString, pdecodeUtf8, pencodeUtf8)

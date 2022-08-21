@@ -37,13 +37,15 @@ import Plutarch.Internal (
   pforce,
   phoistAcyclic,
   plet,
+  (#),
+  (#$),
   (:-->),
  )
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.Other (
   pto,
  )
-import Plutarch.Internal.PLam (plam, (#), (#$))
+import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon, pcon', pmatch, pmatch')
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
