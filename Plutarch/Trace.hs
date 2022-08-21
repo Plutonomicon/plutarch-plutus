@@ -9,23 +9,16 @@ module Plutarch.Trace (
 import Plutarch.Bool (PBool, pif)
 import Plutarch.Internal (
   Term,
-  pdelay,
   perror,
-  pforce,
   pgetConfig,
-  phoistAcyclic,
   plet,
   tracingMode,
   (#),
   pattern NoTracing,
-  type (:-->),
  )
 import Plutarch.Internal.Trace (ptrace, ptrace')
 import Plutarch.Show (PShow, pshow)
 import Plutarch.String (PString)
-
-import Plutarch.Unsafe (punsafeBuiltin)
-import qualified PlutusCore as PLC
 
 -- | Like Haskell's `traceShowId` but for Plutarch
 ptraceShowId :: PShow a => Term s a -> Term s a

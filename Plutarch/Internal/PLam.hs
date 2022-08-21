@@ -8,7 +8,7 @@ module Plutarch.Internal.PLam (
 
 import Data.Kind (Type)
 import qualified Data.Text as Text
-import GHC.Stack (HasCallStack, callStack, getCallStack, withFrozenCallStack)
+import GHC.Stack (HasCallStack, callStack, withFrozenCallStack)
 import Plutarch.Internal (
   PType,
   S,
