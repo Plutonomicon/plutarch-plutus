@@ -3,38 +3,26 @@
 
 module Plutarch.Internal.PLam (
   plam,
-  (#$),
-  (#),
   pinl,
 ) where
 
 import Data.Kind (Type)
-import GHC.Stack (HasCallStack)
-import Plutarch.Internal (PType, S, Term, papp, plam', (:-->))
-
-{- |
-  High precedence infixl synonym of 'papp', to be used like
-  function juxtaposition. e.g.:
-
-  >>> f # x # y
-  f x y
--}
-(#) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
-(#) = papp
-
-infixl 8 #
-
-{- |
-  Low precedence infixr synonym of 'papp', to be used like
-  '$', in combination with '#'. e.g.:
-
-  >>> f # x #$ g # y # z
-  f x (g y z)
--}
-(#$) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
-(#$) = papp
-
-infixr 0 #$
+import qualified Data.Text as Text
+import GHC.Stack (HasCallStack, callStack, getCallStack, withFrozenCallStack)
+import Plutarch.Internal (
+  PType,
+  S,
+  Term,
+  pgetConfig,
+  plam',
+  punsafeConstantInternal,
+  tracingMode,
+  (:-->),
+  pattern DoTracingAndBinds,
+ )
+import Plutarch.Internal.PrettyStack (prettyStack)
+import Plutarch.Internal.Trace (ptrace)
+import qualified PlutusCore as PLC
 
 {- $plam
  Lambda abstraction.
@@ -49,14 +37,21 @@ infixr 0 #$
  > const = plam (\x y -> x)
 -}
 
+mkstring :: Text.Text -> Term s a
+mkstring x = punsafeConstantInternal $ PLC.someValue @Text.Text @PLC.DefaultUni x
+
 class PLamN (a :: Type) (b :: PType) (s :: S) | a -> b, s b -> a where
-  plam :: forall c. (Term s c -> a) -> Term s (c :--> b)
+  plam :: forall c. HasCallStack => (Term s c -> a) -> Term s (c :--> b)
 
 instance {-# OVERLAPPABLE #-} (a' ~ Term s a) => PLamN a' a s where
-  plam = plam'
+  plam f =
+    let cs = callStack
+     in plam' \x -> pgetConfig \c -> case tracingMode c of
+          DoTracingAndBinds -> ptrace (mkstring $ prettyStack "L" cs) $ f x
+          _ -> f x
 
 instance (a' ~ Term s a, PLamN b' b s) => PLamN (a' -> b') (a :--> b) s where
-  plam f = plam' $ \x -> plam (f x)
+  plam f = withFrozenCallStack $ plam' $ \x -> plam (f x)
 
 pinl :: Term s a -> (Term s a -> Term s b) -> Term s b
 pinl v f = f v

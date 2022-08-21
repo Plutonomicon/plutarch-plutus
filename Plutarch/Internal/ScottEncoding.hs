@@ -16,9 +16,8 @@ import Generics.SOP (
   cpara_SList,
   para_SList,
  )
-import Plutarch.Internal (PDelayed, PType, Term, pdelay, pforce, plam', plet, (:-->))
+import Plutarch.Internal (PDelayed, PType, Term, pdelay, pforce, plam', plet, (#), (:-->))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
-import Plutarch.Internal.PLam ((#))
 import Plutarch.Internal.PlutusType (
   DerivedPInner,
   PInner,

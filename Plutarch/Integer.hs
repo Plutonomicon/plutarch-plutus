@@ -9,11 +9,12 @@ import Plutarch.Bool (PEq, POrd, PPartialOrd, pif, (#<), (#<=), (#==))
 import Plutarch.Internal (
   Term,
   phoistAcyclic,
+  (#),
   (:-->),
  )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque, pto)
-import Plutarch.Internal.PLam (plam, (#))
+import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PInner, PlutusType)
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),

@@ -11,8 +11,7 @@ module Plutarch.Internal.Other (
 
 import qualified Data.Text as T
 import GHC.Stack (HasCallStack)
-import Plutarch.Internal (ClosedTerm, Config, Term, compile, phoistAcyclic, punsafeCoerce, (:-->))
-import Plutarch.Internal.PLam (plam, (#))
+import Plutarch.Internal (ClosedTerm, Config, Term, compile, phoistAcyclic, plam', punsafeCoerce, (#), (:-->))
 import Plutarch.Internal.PlutusType (
   PContravariant',
   PCovariant',
@@ -83,6 +82,6 @@ popaque = punsafeCoerce
 pfix :: Term s (((a :--> b) :--> a :--> b) :--> a :--> b)
 pfix = phoistAcyclic $
   punsafeCoerce $
-    plam $ \f ->
-      (plam $ \(x :: Term s POpaque) -> f # (plam $ \(v :: Term s POpaque) -> (punsafeCoerce x) # x # v))
-        # punsafeCoerce (plam $ \(x :: Term s POpaque) -> f # (plam $ \(v :: Term s POpaque) -> (punsafeCoerce x) # x # v))
+    plam' $ \f ->
+      (plam' $ \(x :: Term s POpaque) -> f # (plam' $ \(v :: Term s POpaque) -> (punsafeCoerce x) # x # v))
+        # punsafeCoerce (plam' $ \(x :: Term s POpaque) -> f # (plam' $ \(v :: Term s POpaque) -> (punsafeCoerce x) # x # v))

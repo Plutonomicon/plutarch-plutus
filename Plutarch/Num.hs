@@ -6,10 +6,10 @@ import Plutarch.Internal (
   PType,
   Term,
   punsafeCoerce,
+  (#),
   (:-->),
  )
 import Plutarch.Internal.Other (pto)
-import Plutarch.Internal.PLam ((#))
 import Plutarch.Internal.PlutusType (PInner)
 import Plutarch.Unsafe (punsafeDowncast)
 

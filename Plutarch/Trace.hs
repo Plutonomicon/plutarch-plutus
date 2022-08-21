@@ -1,5 +1,3 @@
-{-# LANGUAGE CPP #-}
-
 module Plutarch.Trace (
   ptrace,
   ptraceShowId,
@@ -18,24 +16,16 @@ import Plutarch.Internal (
   phoistAcyclic,
   plet,
   tracingMode,
+  (#),
   pattern NoTracing,
   type (:-->),
  )
-import Plutarch.Internal.PLam ((#))
+import Plutarch.Internal.Trace (ptrace, ptrace')
 import Plutarch.Show (PShow, pshow)
 import Plutarch.String (PString)
 
 import Plutarch.Unsafe (punsafeBuiltin)
 import qualified PlutusCore as PLC
-
-ptrace' :: Term s (PString :--> a :--> a)
-ptrace' = phoistAcyclic $ pforce $ punsafeBuiltin PLC.Trace
-
--- | Trace the given message before evaluating the argument.
-ptrace :: Term s PString -> Term s a -> Term s a
-ptrace s a = pgetConfig \c -> case tracingMode c of
-  NoTracing -> a
-  _ -> pforce $ ptrace' # s # pdelay a
 
 -- | Like Haskell's `traceShowId` but for Plutarch
 ptraceShowId :: PShow a => Term s a -> Term s a
@@ -45,9 +35,7 @@ ptraceShowId a = pgetConfig \c -> case tracingMode c of
 
 -- | Trace the given message and terminate evaluation with a 'perror'.
 ptraceError :: Term s PString -> Term s a
-ptraceError s = pgetConfig \c -> case tracingMode c of
-  NoTracing -> perror
-  _ -> pforce $ ptrace' # s # pdelay perror
+ptraceError = flip ptrace perror
 
 -- | Trace the given message if the argument evaluates to true.
 ptraceIfTrue :: Term s PString -> Term s PBool -> Term s PBool

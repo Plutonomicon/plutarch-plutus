@@ -20,10 +20,9 @@ import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
 import Plutarch.Bool (PEq, POrd, PPartialOrd, (#<), (#<=), (#==))
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal (Term, (:-->))
+import Plutarch.Internal (Term, (#), (:-->))
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque)
-import Plutarch.Internal.PLam ((#))
 import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
