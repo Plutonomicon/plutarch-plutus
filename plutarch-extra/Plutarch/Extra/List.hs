@@ -125,7 +125,7 @@ pmsort = phoistAcyclic $ pmsortBy # comp
   where
     comp = phoistAcyclic $ plam (#<)
 
--- | /O(n log n)/. Remove dupicate elements in a list with the given function to decide duplicate.
+-- | /O(n log n)/. Remove duplicate elements in a list with the given function to decide duplicate.
 pnubBy ::
   forall (a :: S -> Type) (s :: S) list.
   (PIsListLike list a, PIsListLike list (list a)) =>
