@@ -26,18 +26,15 @@ import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 
 data PSubtypeRelation
   = SuperType
-  | Unrelated PType PType
+  | Unrelated
 
-type family Helper (a :: PType) (b :: PType) (bi :: PType) (oa :: PType) (ob :: PType) :: PSubtypeRelation where
-  Helper _ b b oa ob = 'Unrelated oa ob
-  Helper a _ bi oa ob = PSubtype'' a bi oa ob
-
-type family PSubtype'' (a :: PType) (b :: PType) (oa :: PType) (ob :: PType) :: PSubtypeRelation where
-  PSubtype'' a a _ _ = 'SuperType
-  PSubtype'' a b oa ob = Helper a b (PInner b) oa ob
+type family Helper (a :: PType) (b :: PType) (bi :: PType) :: PSubtypeRelation where
+  Helper _ b b = 'Unrelated
+  Helper a _ bi = PSubtype' a bi
 
 type family PSubtype' (a :: PType) (b :: PType) :: PSubtypeRelation where
-  PSubtype' a b = PSubtype'' a b a b
+  PSubtype' a a = 'SuperType
+  PSubtype' a b = Helper a b (PInner b)
 
 {- | @PSubtype a b@ constitutes a subtyping relation between @a@ and @b@.
  This concretely means that `\(x :: Term s b) -> punsafeCoerce x :: Term s a`
@@ -51,19 +48,21 @@ type family PSubtype' (a :: PType) (b :: PType) :: PSubtypeRelation where
 
  Subtyping is transitive.
 -}
-type family PSubtypeHelper (r :: PSubtypeRelation) :: Constraint where
-  PSubtypeHelper ( 'Unrelated a b) =
+type family PSubtypeHelper (a :: PType) (b :: PType) (r :: PSubtypeRelation) :: Constraint where
+  PSubtypeHelper a b 'Unrelated =
     TypeError
-      ( 'Text "\"" ':<>: 'ShowType a ':<>: 'Text "\""
-          ':<>: 'Text " is not a subtype of "
-          ':<>: 'Text "\""
+      ( 'Text "\""
           ':<>: 'ShowType b
           ':<>: 'Text "\""
+          ':<>: 'Text " is not a subtype of "
+          ':<>: 'Text "\""
+          ':<>: 'ShowType a
+          ':<>: 'Text "\""
       )
-  PSubtypeHelper 'SuperType = ()
+  PSubtypeHelper _ _ 'SuperType = ()
 
 type family PSubtype (a :: PType) (b :: PType) :: Constraint where
-  PSubtype a b = (PSubtype' a b ~ 'SuperType, PSubtypeHelper (PSubtype' a b))
+  PSubtype a b = (PSubtype' a b ~ 'SuperType, PSubtypeHelper a b (PSubtype' a b))
 
 {- |
 @PTryFrom a b@ represents a subtyping relationship between @a@ and @b@,
