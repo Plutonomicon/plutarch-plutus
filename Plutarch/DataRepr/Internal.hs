@@ -642,8 +642,8 @@ class Helper2 (b :: PSubTypeRelation) a where
   type Helper2Excess b a :: PType
   ptryFromData' :: forall s r. Proxy b -> Term s PData -> ((Term s (PAsData a), Reduce (Helper2Excess b a s)) -> Term s r) -> Term s r
 
-instance PTryFrom PData (PAsData a) => Helper2 'Unrelated a where
-  type Helper2Excess 'Unrelated a = PTryFromExcess PData (PAsData a)
+instance PTryFrom PData (PAsData a) => Helper2 ( 'Unrelated pa pb) a where
+  type Helper2Excess ( 'Unrelated _ _) a = PTryFromExcess PData (PAsData a)
   ptryFromData' _ = ptryFrom'
 
 instance PTryFrom PData a => Helper2 'SuperType a where

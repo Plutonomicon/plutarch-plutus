@@ -24,10 +24,10 @@ import Plutarch.Reducible (Reduce)
 
 data PSubTypeRelation
   = SuperType
-  | Unrelated
+  | Unrelated PType PType
 
 type family Helper (a :: PType) (b :: PType) (bi :: PType) :: PSubTypeRelation where
-  Helper _ b b = 'Unrelated
+  Helper a b b = 'Unrelated a b
   Helper a _ bi = PSubtype' a bi
 
 type family PSubtype' (a :: PType) (b :: PType) :: PSubTypeRelation where
