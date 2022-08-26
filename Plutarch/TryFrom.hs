@@ -22,6 +22,8 @@ import Plutarch.Internal.Witness (witness)
 
 import Plutarch.Reducible (Reduce)
 
+import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
+
 data PSubtypeRelation
   = SuperType
   | Unrelated PType PType
@@ -49,8 +51,19 @@ type family PSubtype' (a :: PType) (b :: PType) :: PSubtypeRelation where
 
  Subtyping is transitive.
 -}
+type family PSubtypeHelper (r :: PSubtypeRelation) :: Constraint where
+  PSubtypeHelper ( 'Unrelated a b) =
+    TypeError
+      ( 'Text "\"" ':<>: 'ShowType a ':<>: 'Text "\""
+          ':<>: 'Text " is not a subtype of "
+          ':<>: 'Text "\""
+          ':<>: 'ShowType b
+          ':<>: 'Text "\""
+      )
+  PSubtypeHelper 'SuperType = ()
+
 type family PSubtype (a :: PType) (b :: PType) :: Constraint where
-  PSubtype a b = PSubtype' a b ~ 'SuperType
+  PSubtype a b = (PSubtype' a b ~ 'SuperType, PSubtypeHelper (PSubtype' a b))
 
 {- |
 @PTryFrom a b@ represents a subtyping relationship between @a@ and @b@,
