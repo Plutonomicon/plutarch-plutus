@@ -9,7 +9,6 @@ tested-with:        GHC ==9.2.3
 common c
   default-language:   Haskell2010
   default-extensions:
-    NoStarIsType
     BangPatterns
     BinaryLiterals
     BlockArguments
@@ -39,6 +38,7 @@ common c
     GeneralisedNewtypeDeriving
     HexFloatLiterals
     ImplicitPrelude
+    ImportQualifiedPost
     ImpredicativeTypes
     InstanceSigs
     KindSignatures
@@ -47,7 +47,9 @@ common c
     MultiParamTypeClasses
     NamedFieldPuns
     NamedWildCards
+    NoStarIsType
     NumericUnderscores
+    OverloadedRecordDot
     OverloadedStrings
     PartialTypeSignatures
     PatternGuards
@@ -69,7 +71,6 @@ common c
     TypeOperators
     TypeSynonymInstances
     ViewPatterns
-    OverloadedRecordDot
 
   ghc-options:
     -Weverything -Wno-unused-do-bind -Wno-missing-kind-signatures
@@ -119,16 +120,20 @@ library
     Plutarch.Internal
     Plutarch.Internal.Evaluate
     Plutarch.Internal.Generic
+    Plutarch.Internal.Generic2
     Plutarch.Internal.Newtype
     Plutarch.Internal.Other
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType
+    Plutarch.Internal.PlutusType2
     Plutarch.Internal.PrettyStack
     Plutarch.Internal.Quantification
     Plutarch.Internal.ScottEncoding
     Plutarch.Internal.Trace
     Plutarch.Internal.TypeFamily
+    Plutarch.Internal.TypeFamily2
     Plutarch.Internal.Witness
+    Plutarch.Internal2
     Plutarch.Lift
     Plutarch.List
     Plutarch.Maybe
@@ -165,6 +170,7 @@ library
     , lens
     , memory
     , mtl
+    , plutarch-core
     , plutus-core
     , plutus-ledger-api
     , plutus-tx

@@ -38,7 +38,13 @@ module Plutarch.Internal (
   (#$),
 ) where
 
-import Control.Monad.Reader (ReaderT (ReaderT), ask, runReaderT)
+import Control.Applicative (Alternative)
+import Control.Monad (MonadPlus)
+import Control.Monad.Except (ExceptT(..), Except)
+import Control.Monad.Fix (MonadFix)
+import Control.Monad.Reader (MonadReader, ReaderT (ReaderT), asks)
+import Control.Monad.Zip (MonadZip)
+import Data.Functor.Identity (Identity(..))
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
 import Crypto.Hash.IO (HashAlgorithm)
@@ -60,6 +66,9 @@ import qualified PlutusCore as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
 import PlutusLedgerApi.V1.Scripts (Script (Script))
 import qualified UntypedPlutusCore as UPLC
+-- import qualified Plutarch.Core as Core()
+-- import Plutarch.EType (ETypeRepr(..))
+-- import Plutarch.Core (EConstructable', EPair)
 
 {- $hoisted
  __Explanation for hoisted terms:__
@@ -81,6 +90,7 @@ type Dig = Digest Blake2b_160
 data HoistedTerm = HoistedTerm Dig RawTerm
   deriving stock (Show)
 
+type UTerm :: Type
 type UTerm = UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 
 data RawTerm
@@ -147,10 +157,12 @@ instance Default Config where
       { tracingMode = NoTracing
       }
 
-newtype TermMonad m = TermMonad {runTermMonad :: ReaderT Config (Either Text) m}
-  deriving newtype (Functor, Applicative, Monad)
-
-type role Term nominal nominal
+newtype TermMonad m = TermMonad {runTermMonad :: Config -> Either Text m}
+  deriving 
+    ( Functor, Applicative, Alternative
+    , Monad, MonadPlus, MonadFix, MonadZip, MonadReader Config
+    )
+  via ReaderT Config (Except Text)
 
 {- $term
  Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
@@ -166,7 +178,10 @@ type role Term nominal nominal
  de-Bruijn index needed to reach its own level given the level it itself is
  instantiated with.
 -}
+type role Term nominal nominal
+
 newtype Term (s :: S) (a :: PType) = Term {asRawTerm :: Word64 -> TermMonad TermResult}
+
 
 {- |
   *Closed* terms with no free variables.
@@ -284,7 +299,7 @@ plet v f = Term \i ->
     _ -> asRawTerm (papp (plam' f) v) i
 
 pthrow' :: HasCallStack => Text -> TermMonad a
-pthrow' msg = TermMonad $ ReaderT $ const $ Left (fromString (prettyCallStack callStack) <> "\n\n" <> msg)
+pthrow' msg = TermMonad $ const $ Left (fromString (prettyCallStack callStack) <> "\n\n" <> msg)
 
 pthrow :: HasCallStack => Text -> Term s a
 pthrow = Term . pure . pthrow'
@@ -332,9 +347,9 @@ perror :: Term s a
 perror = Term \_ -> pure $ mkTermRes RError
 
 pgetConfig :: (Config -> Term s a) -> Term s a
-pgetConfig f = Term \lvl -> TermMonad $ do
-  config <- ask
-  runTermMonad $ asRawTerm (f config) lvl
+pgetConfig f = Term \lvl -> do
+  term <- asks f
+  asRawTerm term lvl
 
 {- |
   Unsafely coerce the type-tag of a Term.
@@ -389,11 +404,7 @@ subst idx _ y@(UPLC.Var () (DeBruijn (Index idx'))) | idx > idx' = y
 subst idx _ (UPLC.Var () (DeBruijn (Index idx'))) | idx < idx' = UPLC.Var () (DeBruijn . Index $ idx' - 1)
 subst _ _ y = y
 
-rawTermToUPLC ::
-  (HoistedTerm -> Word64 -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) ->
-  Word64 ->
-  RawTerm ->
-  UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+rawTermToUPLC :: (HoistedTerm -> Word64 -> UTerm) -> Word64 -> RawTerm -> UTerm
 rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i + 1) -- Why the fuck does it start from 1 and not 0?
 rawTermToUPLC m l (RLamAbs n t) =
   foldr
@@ -422,12 +433,9 @@ rawTermToUPLC m l (RHoisted hoisted) = m hoisted l -- UPLC.Var () . DeBruijn . I
 
 -- The logic is mostly for hoisting
 compile' :: TermResult -> UTerm
-compile' t =
-  let t' = getTerm t
-      deps = getDeps t
-
-      f :: Word64 -> Maybe Word64 -> (Bool, Maybe Word64)
-      f n Nothing = (True, Just n)
+compile' TermResult{getTerm, getDeps} =
+  let f :: Word64 -> Maybe Word64 -> (Bool, Maybe Word64)
+      f n Nothing  = (True, Just n)
       f _ (Just n) = (False, Just n)
 
       g ::
@@ -446,30 +454,86 @@ compile' t =
           . filter ((== 1) . length)
           . groupBy (\(HoistedTerm x _) (HoistedTerm y _) -> x == y)
           . sortOn (\(HoistedTerm hash _) -> hash)
-          $ deps
+          $ getDeps
 
       -- map: term -> de Bruijn level
       -- defs: the terms, level 0 is last
       -- n: # of terms
-      (map, defs, n) = foldr g (M.empty, [], 0) $ filter (\(HoistedTerm hash _) -> not $ S.member hash toInline) deps
+      (map, defs, n) = foldr g (M.empty, [], 0) $ filter (\(HoistedTerm hash _) -> S.notMember hash toInline) getDeps
 
       map' (HoistedTerm hash term) l = case M.lookup hash map of
         Just l' -> UPLC.Var () . DeBruijn . Index $ l - l'
         Nothing -> rawTermToUPLC map' l term
 
-      body = rawTermToUPLC map' n t'
+      body :: UTerm
+      body = rawTermToUPLC map' n getTerm
 
+      wrapped :: UTerm
       wrapped =
         foldl'
-          (\b (lvl, def) -> UPLC.Apply () (UPLC.LamAbs () (DeBruijn . Index $ 0) b) (rawTermToUPLC map' lvl def))
+          (\b (lvl, def) -> UPLC.Apply () (UPLC.LamAbs () (DeBruijn $ Index 0) b) (rawTermToUPLC map' lvl def))
           body
           defs
    in wrapped
 
+-- The logic is mostly for hoisting
+-- compile'' :: TermResult -> UTerm
+-- compile'' TermResult{getTerm, getDeps} =
+--   let f :: Word64 -> Maybe Word64 -> (Bool, Maybe Word64)
+--       f n Nothing  = (True, Just n)
+--       f _ (Just n) = (False, Just n)
+
+--       g ::
+--         HoistedTerm ->
+--         (M.Map Dig Word64, [(Word64, RawTerm)], Word64) ->
+--         (M.Map Dig Word64, [(Word64, RawTerm)], Word64)
+--       g (HoistedTerm hash term) (map, defs, n) = case M.alterF (f n) hash map of
+--         (True, map) -> (map, (n, term) : defs, n + 1)
+--         (False, map) -> (map, defs, n)
+
+--       toInline :: S.Set Dig
+--       toInline =
+--         S.fromList
+--           . fmap (\(HoistedTerm hash _) -> hash)
+--           . (head <$>)
+--           . filter ((== 1) . length)
+--           . groupBy (\(HoistedTerm x _) (HoistedTerm y _) -> x == y)
+--           . sortOn (\(HoistedTerm hash _) -> hash)
+--           $ getDeps
+
+--       -- map: term -> de Bruijn level
+--       -- defs: the terms, level 0 is last
+--       -- n: # of terms
+--       (map, defs, n) = foldr g (M.empty, [], 0) $ filter (\(HoistedTerm hash _) -> S.notMember hash toInline) getDeps
+
+--       map' (HoistedTerm hash term) l = case M.lookup hash map of
+--         Just l' -> UPLC.Var () . DeBruijn . Index $ l - l'
+--         Nothing -> rawTermToUPLC map' l term
+
+--       body :: UTerm
+--       body = rawTermToUPLC map' n getTerm
+
+--       wrapped :: UTerm
+--       wrapped =
+--         foldl'
+--           (\b (lvl, def) -> UPLC.Apply () (UPLC.LamAbs () (DeBruijn $ Index 0) b) (rawTermToUPLC map' lvl def))
+--           body
+--           defs
+--    in wrapped
+
 -- | Compile a (closed) Plutus Term to a usable script
 compile :: Config -> ClosedTerm a -> Either Text Script
 compile config t = case asClosedRawTerm t of
-  TermMonad (ReaderT t') -> (Script . UPLC.Program () (UPLC.Version () 1 0 0) . compile') <$> t' config
+  TermMonad t' -> (Script . UPLC.Program () (UPLC.Version () 1 0 0) . compile') <$> t' config
+
+-- compile''' :: Config -> ClosedTerm a -> Either Text Script
+-- compile''' config (asClosedRawTerm -> TermMonad t) = do
+--   termResult <- t config
+
+--   pure do 
+--     Script do 
+--       UPLC.Program () (UPLC.Version () 1 0 0) do
+--         compile' termResult
 
 hashTerm :: Config -> ClosedTerm a -> Either Text Dig
 hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTerm t 0) config
@@ -497,3 +561,5 @@ infixl 8 #
 (#$) = papp
 
 infixr 0 #$
+
+

@@ -62,7 +62,7 @@ data PBool (s :: S) = PTrue | PFalse
   deriving stock (Show)
 
 instance PUnsafeLiftDecl PBool where type PLifted PBool = Bool
-deriving via (DerivePConstantDirect Bool PBool) instance PConstantDecl Bool
+deriving via DerivePConstantDirect Bool PBool instance PConstantDecl Bool
 
 instance PlutusType PBool where
   type PInner PBool = PBool

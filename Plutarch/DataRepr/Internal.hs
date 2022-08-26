@@ -611,6 +611,8 @@ newtype
     (p :: PType) -- The Plutarch synonym to the Haskell type
   = -- | The Haskell type for which @PConstant is being derived.
     DerivePConstantViaData h
+  deriving
+  newtype (Ledger.ToData, Ledger.FromData)
 
 instance
   ( PSubtype PData p
@@ -622,8 +624,8 @@ instance
   where
   type PConstantRepr (DerivePConstantViaData h p) = Ledger.Data
   type PConstanted (DerivePConstantViaData h p) = p
-  pconstantToRepr (DerivePConstantViaData x) = Ledger.toData x
-  pconstantFromRepr x = DerivePConstantViaData <$> Ledger.fromData x
+  pconstantToRepr= Ledger.toData
+  pconstantFromRepr = Ledger.fromData
 
 ----------------------- HRecP and friends -----------------------------------------------
 
