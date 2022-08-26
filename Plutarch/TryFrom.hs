@@ -5,7 +5,7 @@
 module Plutarch.TryFrom (
   PTryFrom (..),
   ptryFrom,
-  PSubTypeRelation (..),
+  PSubtypeRelation (..),
   PSubtype,
   PSubtype',
   pupcast,
@@ -22,17 +22,20 @@ import Plutarch.Internal.Witness (witness)
 
 import Plutarch.Reducible (Reduce)
 
-data PSubTypeRelation
+data PSubtypeRelation
   = SuperType
   | Unrelated PType PType
 
-type family Helper (a :: PType) (b :: PType) (bi :: PType) :: PSubTypeRelation where
-  Helper a b b = 'Unrelated a b
-  Helper a _ bi = PSubtype' a bi
+type family Helper (a :: PType) (b :: PType) (bi :: PType) (oa :: PType) (ob :: PType) :: PSubtypeRelation where
+  Helper _ b b oa ob = 'Unrelated oa ob
+  Helper a _ bi oa ob = PSubtype'' a bi oa ob
 
-type family PSubtype' (a :: PType) (b :: PType) :: PSubTypeRelation where
-  PSubtype' a a = 'SuperType
-  PSubtype' a b = Helper a b (PInner b)
+type family PSubtype'' (a :: PType) (b :: PType) (oa :: PType) (ob :: PType) :: PSubtypeRelation where
+  PSubtype'' a a _ _ = 'SuperType
+  PSubtype'' a b oa ob = Helper a b (PInner b) oa ob
+
+type family PSubtype' (a :: PType) (b :: PType) :: PSubtypeRelation where
+  PSubtype' a b = PSubtype'' a b a b
 
 {- | @PSubtype a b@ constitutes a subtyping relation between @a@ and @b@.
  This concretely means that `\(x :: Term s b) -> punsafeCoerce x :: Term s a`
