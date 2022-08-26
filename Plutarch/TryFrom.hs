@@ -5,6 +5,7 @@
 module Plutarch.TryFrom (
   PTryFrom (..),
   ptryFrom,
+  PSubTypeRelation (..),
   PSubtype,
   PSubtype',
   pupcast,
@@ -21,12 +22,16 @@ import Plutarch.Internal.Witness (witness)
 
 import Plutarch.Reducible (Reduce)
 
-type family Helper (a :: PType) (b :: PType) (bi :: PType) :: Bool where
-  Helper _ b b = 'False
+data PSubTypeRelation
+  = SuperType
+  | Unrelated
+
+type family Helper (a :: PType) (b :: PType) (bi :: PType) :: PSubTypeRelation where
+  Helper _ b b = 'Unrelated
   Helper a _ bi = PSubtype' a bi
 
-type family PSubtype' (a :: PType) (b :: PType) :: Bool where
-  PSubtype' a a = 'True
+type family PSubtype' (a :: PType) (b :: PType) :: PSubTypeRelation where
+  PSubtype' a a = 'SuperType
   PSubtype' a b = Helper a b (PInner b)
 
 {- | @PSubtype a b@ constitutes a subtyping relation between @a@ and @b@.
@@ -42,7 +47,7 @@ type family PSubtype' (a :: PType) (b :: PType) :: Bool where
  Subtyping is transitive.
 -}
 type family PSubtype (a :: PType) (b :: PType) :: Constraint where
-  PSubtype a b = PSubtype' a b ~ 'True
+  PSubtype a b = PSubtype' a b ~ 'SuperType
 
 {- |
 @PTryFrom a b@ represents a subtyping relationship between @a@ and @b@,

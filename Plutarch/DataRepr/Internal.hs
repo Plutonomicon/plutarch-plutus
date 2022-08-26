@@ -129,7 +129,7 @@ import Plutarch.Lift (
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont, tcont, unTermCont)
 import Plutarch.Trace (ptraceError)
-import Plutarch.TryFrom (PSubtype, PSubtype', PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
+import Plutarch.TryFrom (PSubTypeRelation (SuperType, Unrelated), PSubtype, PSubtype', PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
 import Plutarch.Unit (PUnit (PUnit))
 import Plutarch.Unsafe (punsafeCoerce)
 import qualified PlutusLedgerApi.V1 as Ledger
@@ -638,22 +638,22 @@ newtype HRecP (as :: [(Symbol, PType)]) (s :: S) = HRecP (NoReduce (HRecGeneric 
 newtype Flip f a b = Flip (f b a)
   deriving stock (Generic)
 
-class Helper2 (b :: Bool) a where
+class Helper2 (b :: PSubTypeRelation) a where
   type Helper2Excess b a :: PType
   ptryFromData' :: forall s r. Proxy b -> Term s PData -> ((Term s (PAsData a), Reduce (Helper2Excess b a s)) -> Term s r) -> Term s r
 
-instance PTryFrom PData (PAsData a) => Helper2 'False a where
-  type Helper2Excess 'False a = PTryFromExcess PData (PAsData a)
+instance PTryFrom PData (PAsData a) => Helper2 'Unrelated a where
+  type Helper2Excess 'Unrelated a = PTryFromExcess PData (PAsData a)
   ptryFromData' _ = ptryFrom'
 
-instance PTryFrom PData a => Helper2 'True a where
-  type Helper2Excess 'True a = PTryFromExcess PData a
+instance PTryFrom PData a => Helper2 'SuperType a where
+  type Helper2Excess 'SuperType a = PTryFromExcess PData a
   ptryFromData' _ x = runTermCont $ do
     (y, exc) <- tcont $ ptryFrom @a @PData x
     pure (punsafeCoerce y, exc)
 
 -- We could have a more advanced instance but it's not needed really.
-newtype ExcessForField (b :: Bool) (a :: PType) (s :: S) = ExcessForField (Term s (PAsData a), Reduce (Helper2Excess b a s))
+newtype ExcessForField (b :: PSubTypeRelation) (a :: PType) (s :: S) = ExcessForField (Term s (PAsData a), Reduce (Helper2Excess b a s))
   deriving stock (Generic)
 
 instance PTryFrom (PBuiltinList PData) (PDataRecord '[]) where
