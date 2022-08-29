@@ -88,5 +88,6 @@ library
     Plutarch.Extra.List
     Plutarch.Extra.RationalData
     Plutarch.Extra.TermCont
+    Plutarch.Extra.Maybe    
 
 -- other-modules:
