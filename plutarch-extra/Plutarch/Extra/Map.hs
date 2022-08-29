@@ -57,8 +57,6 @@ import qualified Plutarch.List as PList
 
  This is necessarily linear in the size of the map performance-wise, as we
  have to scan the entire map to find the key in the worst case.
-
- @since 3.3.0
 -}
 padjust ::
     forall (k :: S -> Type) (v :: S -> Type) (s :: S).
@@ -89,8 +87,6 @@ padjust = phoistAcyclic $
  works for 'Unsorted' 'PMap's. This requires a number of equality comparisons
  between keys proportional to the product of the lengths of both arguments:
  that is, this function is quadratic.
-
- @since 3.3.0
 -}
 pkeysEqualUnsorted ::
     forall (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
@@ -146,8 +142,6 @@ pkeysEqualUnsorted = phoistAcyclic $
 {- | Gives 'PTrue' if both argument 'PMap's contain mappings for exactly the
  same set of keys. Requires a number of equality comparisons between keys
  proportional to the length of the shorter argument.
-
- @since 1.1.0
 -}
 pkeysEqual ::
     forall (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
@@ -182,20 +176,14 @@ pkeysEqual = phoistAcyclic $
                                 (self # t # t') -- continue
                                 (pcon PFalse) -- key mismatch
 
-{- | Get the key of a key-value pair.
-
- @since 1.1.0
--}
+-- | Get the key of a key-value pair.
 pkvPairKey ::
     forall (k :: S -> Type) (v :: S -> Type) (s :: S).
     (PIsData k) =>
     Term s (PBuiltinPair (PAsData k) (PAsData v) :--> k)
 pkvPairKey = phoistAcyclic $ plam $ \kv -> pfromData (pfstBuiltin # kv)
 
-{- | Get the value of a key-value pair.
-
- @since 3.3.0
--}
+-- | Get the value of a key-value pair.
 pkvPairValue ::
     forall (k :: S -> Type) (v :: S -> Type) (s :: S).
     (PIsData v) =>
@@ -204,8 +192,6 @@ pkvPairValue = phoistAcyclic $ plam $ \kv -> pfromData (psndBuiltin # kv)
 
 {- | Compare two key-value pairs by their keys. Gives 'PTrue' if the key of the
  first argument pair is less than the key of the second argument pair.
-
- @since 3.3.0
 -}
 pkvPairLt ::
     forall (k :: S -> Type) (v :: S -> Type) (s :: S).
@@ -220,10 +206,7 @@ pkvPairLt = phoistAcyclic $
     plam $ \kv kv' ->
         (pkvPairKey # kv) #< (pkvPairKey # kv')
 
-{- | As 'plookup', but errors when the key is missing.
-
- @since 3.3.0
--}
+-- | As 'plookup', but errors when the key is missing.
 ptryLookup ::
     forall (k :: S -> Type) (v :: S -> Type) (keys :: KeyGuarantees) (s :: S).
     (PIsData k, PIsData v) =>
@@ -240,8 +223,6 @@ ptryLookup = phoistAcyclic $
 
  If there are duplicate keys in the input, the /last/ key will \'win\' in a
  lookup.
-
- @since 3.3.0
 -}
 punsortedMapFromFoldable ::
     forall (k :: S -> Type) (v :: S -> Type) (f :: Type -> Type) (s :: S).
@@ -266,8 +247,6 @@ punsortedMapFromFoldable = pcon . PMap . foldl' go (pcon PNil)
 
  If there are duplicate keys, only the /last/ key-value pair will remain in
  the result.
-
- @since 3.3.0
 -}
 psortedMapFromFoldable ::
     forall (k :: S -> Type) (v :: S -> Type) (f :: Type -> Type) (s :: S).
@@ -292,8 +271,6 @@ psortedMapFromFoldable = foldl' go pempty
  You will need to specify what manner of list-like structure you want; we have
  arranged the type signature to make specifying this easy with
  @TypeApplications@.
-
- @since 3.3.0
 -}
 pkeys ::
     forall
@@ -322,8 +299,6 @@ pkeys = phoistAcyclic $
 
  Performance will be equivalent to a lookup followed by an insert (or delete),
  as well as the cost of calling the \'updater\'.
-
- @since 3.3.0
 -}
 pupdate ::
     forall (k :: S -> Type) (v :: S -> Type) (s :: S).
@@ -338,8 +313,6 @@ pupdate = phoistAcyclic $
 
 {- | Left-associative fold of a 'PMap' with keys. Keys and values will be
  presented in key order.
-
- @since 3.3.0
 -}
 pfoldlWithKey ::
     forall (a :: S -> Type) (k :: S -> Type) (v :: S -> Type) (s :: S).
@@ -352,8 +325,6 @@ pfoldlWithKey = phoistAcyclic $
 
 {- | Project all key-value pairs into a 'Monoid', then combine. Keys and values
  will be presented in key order.
-
- @since 3.3.0
 -}
 pfoldMapWithKey ::
     forall (m :: S -> Type) (k :: S -> Type) (v :: S -> Type) (s :: S).
