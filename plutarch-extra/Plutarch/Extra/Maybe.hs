@@ -55,10 +55,7 @@ import Plutarch.Trace (ptraceError)
 --------------------------------------------------------------------------------
 -- Utility functions for working with 'PMaybe'.
 
-{- | Extracts the element out of a 'PJust' and throws an error if its argument is 'PNothing'.
-
-    @since 1.1.0
--}
+-- | Extracts the element out of a 'PJust' and throws an error if its argument is 'PNothing'.
 pfromJust ::
     forall (a :: S -> Type) (s :: S).
     Term s (PMaybe a :--> a)
@@ -67,10 +64,7 @@ pfromJust = phoistAcyclic $
         PNothing -> ptraceError "pfromJust: found PNothing"
         PJust x -> x
 
-{- | Extracts the element out of a 'PJust' and throws a custom error if it's given a 'PNothing'.
-
-    @since 1.0.0
--}
+-- | Extracts the element out of a 'PJust' and throws a custom error if it's given a 'PNothing'.
 ptraceIfNothing ::
     forall (a :: S -> Type) (s :: S).
     -- | The custom error message.
@@ -81,10 +75,7 @@ ptraceIfNothing err t = pmatch t $ \case
     PNothing -> ptraceError err
     PJust x -> x
 
-{- | Yields true if the given 'PMaybe' value is of form @'PJust' _@.
-
-    @since 1.1.0
--}
+-- | Yields true if the given 'PMaybe' value is of form @'PJust' _@.
 pisJust ::
     forall (a :: S -> Type) (s :: S).
     Term s (PMaybe a :--> PBool)
@@ -94,10 +85,7 @@ pisJust = phoistAcyclic $
             PJust _ -> pconstant True
             _ -> pconstant False
 
-{- | Extract a 'PMaybe' by providing a default value in case of 'PJust'.
-
-    @since 1.1.0
--}
+-- | Extract a 'PMaybe' by providing a default value in case of 'PJust'.
 pfromMaybe ::
     forall (a :: S -> Type) (s :: S).
     Term s (a :--> PMaybe a :--> a)
@@ -106,25 +94,17 @@ pfromMaybe = phoistAcyclic $
         PJust a' -> a'
         PNothing -> e
 
-{- | Construct a 'PJust' value.
-
- @since 2.0.2
--}
+-- | Construct a 'PJust' value.
 pjust :: forall (a :: S -> Type) (s :: S). Term s (a :--> PMaybe a)
 pjust = phoistAcyclic $ plam $ pcon . PJust
 
-{- | Construct a 'PNothing' value.
-
- @since 2.0.2
--}
+-- | Construct a 'PNothing' value.
 pnothing :: forall (a :: S -> Type) (s :: S). Term s (PMaybe a)
 pnothing = phoistAcyclic $ pcon PNothing
 
 {- | Given a default value, a function and a 'PMaybe' value, yields the default
       value if the 'PMaybe' value is 'PNothing' and applies the function to the
       value stored in the 'PJust' otherwise.
-
- @since 2.0.2
 -}
 pmaybe ::
     forall (b :: S -> Type) (a :: S -> Type) (s :: S).
@@ -137,10 +117,7 @@ pmaybe = phoistAcyclic $
 --------------------------------------------------------------------------------
 -- Utility functions for working with 'PMaybeData'.
 
-{- | Extracts the element out of a 'PDJust' and throws an error if its argument is 'PDNothing'.
-
-    @since 1.1.0
--}
+-- | Extracts the element out of a 'PDJust' and throws an error if its argument is 'PDNothing'.
 pfromDJust ::
     forall (a :: S -> Type) (s :: S).
     (PIsData a) =>
@@ -150,10 +127,7 @@ pfromDJust = phoistAcyclic $
         PDNothing _ -> ptraceError "pfromDJust: found PDNothing"
         PDJust x -> pfromData $ pfield @"_0" # x
 
-{- | Yield True if a given 'PMaybeData' is of form @'PDJust' _@.
-
-    @since 1.1.0
--}
+-- | Yield True if a given 'PMaybeData' is of form @'PDJust' _@.
 pisDJust ::
     forall (a :: S -> Type) (s :: S).
     Term s (PMaybeData a :--> PBool)
@@ -162,10 +136,7 @@ pisDJust = phoistAcyclic $
         PDJust _ -> pconstant True
         _ -> pconstant False
 
-{- | Special version of 'pmaybe' that works with 'PMaybeData'
-
- @since 1.3.0
--}
+-- | Special version of 'pmaybe' that works with 'PMaybeData'
 pmaybeData ::
     forall (a :: S -> Type) (b :: S -> Type) (s :: S).
     PIsData a =>
@@ -176,10 +147,7 @@ pmaybeData = phoistAcyclic $
             PDJust x -> f #$ pfield @"_0" # x
             _ -> d
 
-{- | Construct a 'PDJust' value
-
- @since 1.3.0
--}
+-- | Construct a 'PDJust' value
 pdjust ::
     forall (a :: S -> Type) (s :: S).
     PIsData a =>
@@ -187,10 +155,7 @@ pdjust ::
 pdjust = phoistAcyclic $
     plam $ \x -> pcon $ PDJust $ pdcons @"_0" # pdata x #$ pdnil
 
-{- | Construct a 'PDNothing' value
-
- @since 1.3.0
--}
+-- | Construct a 'PDNothing' value
 pdnothing ::
     forall (a :: S -> Type) (s :: S).
     Term s (PMaybeData a)
@@ -199,10 +164,7 @@ pdnothing = phoistAcyclic $ pcon $ PDNothing pdnil
 --------------------------------------------------------------------------------
 -- Conversion between 'PMaybe' and 'PMaybeData'.
 
-{- | Copnsturct a 'PMaybeData' given a 'PMaybe'. Could be useful if you want to "lift" from 'PMaybe' to 'Maybe'.
-
-    @since 1.1.0
--}
+-- | Copnsturct a 'PMaybeData' given a 'PMaybe'. Could be useful if you want to "lift" from 'PMaybe' to 'Maybe'.
 pmaybeToMaybeData ::
     forall (a :: S -> Type) (s :: S).
     (PIsData a) =>
@@ -212,10 +174,7 @@ pmaybeToMaybeData = phoistAcyclic $
         PNothing -> pcon $ PDNothing pdnil
         PJust x -> pcon $ PDJust $ pdcons @"_0" # pdata x # pdnil
 
-{- | Escape with a particular value on expecting 'Just'. For use in monadic context.
-
-    @since 1.1.0
--}
+-- | Escape with a particular value on expecting 'Just'. For use in monadic context.
 pexpectJustC ::
     forall (a :: S -> Type) (r :: S -> Type) (s :: S).
     Term s r ->
@@ -228,7 +187,6 @@ pexpectJustC escape ma = tcont $ \f ->
 
 {- | Extract the value stored in a PMaybe container.
      If there's no value, throw an error with the given message.
-     @since 1.3.0
 -}
 passertPJust :: forall (a :: S -> Type) (s :: S). Term s (PString :--> PMaybe a :--> a)
 passertPJust = phoistAcyclic $
@@ -238,7 +196,6 @@ passertPJust = phoistAcyclic $
 
 {- | Extract the value stored in a PMaybeData container.
      If there's no value, throw an error with the given message.
-     @since 1.3.0
 -}
 passertPDJust :: forall (a :: S -> Type) (s :: S). (PIsData a) => Term s (PString :--> PMaybeData a :--> a)
 passertPDJust = phoistAcyclic $
