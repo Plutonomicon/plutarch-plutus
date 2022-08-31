@@ -161,7 +161,6 @@ module Plutarch.Prelude (
   ptryFrom,
   PTryFrom,
   PSubtype,
-  PSubtypeRelation (Unrelated, SuperType),
   Generic,
 ) where
 

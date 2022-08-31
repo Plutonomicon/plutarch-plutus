@@ -25,15 +25,15 @@ import Plutarch.Reducible (Reduce)
 import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 
 data PSubtypeRelation
-  = SuperType
-  | Unrelated
+  = PSubtypeRelation
+  | PNoSubtypeRelation
 
 type family Helper (a :: PType) (b :: PType) (bi :: PType) :: PSubtypeRelation where
-  Helper _ b b = 'Unrelated
+  Helper _ b b = 'PNoSubtypeRelation
   Helper a _ bi = PSubtype' a bi
 
 type family PSubtype' (a :: PType) (b :: PType) :: PSubtypeRelation where
-  PSubtype' a a = 'SuperType
+  PSubtype' a a = 'PSubtypeRelation
   PSubtype' a b = Helper a b (PInner b)
 
 {- | @PSubtype a b@ constitutes a subtyping relation between @a@ and @b@.
@@ -49,7 +49,7 @@ type family PSubtype' (a :: PType) (b :: PType) :: PSubtypeRelation where
  Subtyping is transitive.
 -}
 type family PSubtypeHelper (a :: PType) (b :: PType) (r :: PSubtypeRelation) :: Constraint where
-  PSubtypeHelper a b 'Unrelated =
+  PSubtypeHelper a b 'PNoSubtypeRelation =
     TypeError
       ( 'Text "\""
           ':<>: 'ShowType b
@@ -59,10 +59,10 @@ type family PSubtypeHelper (a :: PType) (b :: PType) (r :: PSubtypeRelation) :: 
           ':<>: 'ShowType a
           ':<>: 'Text "\""
       )
-  PSubtypeHelper _ _ 'SuperType = ()
+  PSubtypeHelper _ _ 'PSubtypeRelation = ()
 
 type family PSubtype (a :: PType) (b :: PType) :: Constraint where
-  PSubtype a b = (PSubtype' a b ~ 'SuperType, PSubtypeHelper a b (PSubtype' a b))
+  PSubtype a b = (PSubtype' a b ~ 'PSubtypeRelation, PSubtypeHelper a b (PSubtype' a b))
 
 {- |
 @PTryFrom a b@ represents a subtyping relationship between @a@ and @b@,

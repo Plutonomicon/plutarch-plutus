@@ -129,7 +129,7 @@ import Plutarch.Lift (
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont, tcont, unTermCont)
 import Plutarch.Trace (ptraceError)
-import Plutarch.TryFrom (PSubtype, PSubtype', PSubtypeRelation (SuperType, Unrelated), PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
+import Plutarch.TryFrom (PSubtype, PSubtype', PSubtypeRelation (PNoSubtypeRelation, PSubtypeRelation), PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
 import Plutarch.Unit (PUnit (PUnit))
 import Plutarch.Unsafe (punsafeCoerce)
 import qualified PlutusLedgerApi.V1 as Ledger
@@ -642,12 +642,12 @@ class Helper2 (b :: PSubtypeRelation) a where
   type Helper2Excess b a :: PType
   ptryFromData' :: forall s r. Proxy b -> Term s PData -> ((Term s (PAsData a), Reduce (Helper2Excess b a s)) -> Term s r) -> Term s r
 
-instance PTryFrom PData (PAsData a) => Helper2 'Unrelated a where
-  type Helper2Excess 'Unrelated a = PTryFromExcess PData (PAsData a)
+instance PTryFrom PData (PAsData a) => Helper2 'PNoSubtypeRelation a where
+  type Helper2Excess 'PNoSubtypeRelation a = PTryFromExcess PData (PAsData a)
   ptryFromData' _ = ptryFrom'
 
-instance PTryFrom PData a => Helper2 'SuperType a where
-  type Helper2Excess 'SuperType a = PTryFromExcess PData a
+instance PTryFrom PData a => Helper2 'PSubtypeRelation a where
+  type Helper2Excess 'PSubtypeRelation a = PTryFromExcess PData a
   ptryFromData' _ x = runTermCont $ do
     (y, exc) <- tcont $ ptryFrom @a @PData x
     pure (punsafeCoerce y, exc)
