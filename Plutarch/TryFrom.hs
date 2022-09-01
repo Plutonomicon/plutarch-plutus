@@ -5,6 +5,7 @@
 module Plutarch.TryFrom (
   PTryFrom (..),
   ptryFrom,
+  PSubtypeRelation (..),
   PSubtype,
   PSubtype',
   pupcast,
@@ -21,12 +22,18 @@ import Plutarch.Internal.Witness (witness)
 
 import Plutarch.Reducible (Reduce)
 
-type family Helper (a :: PType) (b :: PType) (bi :: PType) :: Bool where
-  Helper _ b b = 'False
+import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
+
+data PSubtypeRelation
+  = PSubtypeRelation
+  | PNoSubtypeRelation
+
+type family Helper (a :: PType) (b :: PType) (bi :: PType) :: PSubtypeRelation where
+  Helper _ b b = 'PNoSubtypeRelation
   Helper a _ bi = PSubtype' a bi
 
-type family PSubtype' (a :: PType) (b :: PType) :: Bool where
-  PSubtype' a a = 'True
+type family PSubtype' (a :: PType) (b :: PType) :: PSubtypeRelation where
+  PSubtype' a a = 'PSubtypeRelation
   PSubtype' a b = Helper a b (PInner b)
 
 {- | @PSubtype a b@ constitutes a subtyping relation between @a@ and @b@.
@@ -41,8 +48,21 @@ type family PSubtype' (a :: PType) (b :: PType) :: Bool where
 
  Subtyping is transitive.
 -}
+type family PSubtypeHelper (a :: PType) (b :: PType) (r :: PSubtypeRelation) :: Constraint where
+  PSubtypeHelper a b 'PNoSubtypeRelation =
+    TypeError
+      ( 'Text "\""
+          ':<>: 'ShowType b
+          ':<>: 'Text "\""
+          ':<>: 'Text " is not a subtype of "
+          ':<>: 'Text "\""
+          ':<>: 'ShowType a
+          ':<>: 'Text "\""
+      )
+  PSubtypeHelper _ _ 'PSubtypeRelation = ()
+
 type family PSubtype (a :: PType) (b :: PType) :: Constraint where
-  PSubtype a b = PSubtype' a b ~ 'True
+  PSubtype a b = (PSubtype' a b ~ 'PSubtypeRelation, PSubtypeHelper a b (PSubtype' a b))
 
 {- |
 @PTryFrom a b@ represents a subtyping relationship between @a@ and @b@,
