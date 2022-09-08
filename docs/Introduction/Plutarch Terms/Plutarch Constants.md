@@ -73,7 +73,7 @@ PMaybe :: PType -> S -> Type
 
 Let's dissect what this means.
 
-- `PMaybe` builds a `PType` from a `PType`; given a `PType`, we can tag a computation with the type `PMaybe a` to indicate that its return value should is semantically either `Just a` or `Nothing`. Such a tagging would look like a value with the type `Term s (PMaybe a)`.
+- `PMaybe` builds a `PType` from a `PType`; given a `PType`, we can tag a computation with the type `PMaybe a` to indicate that its return value should be semantically either `Just a` or `Nothing`. Such a tagging would look like a value with the type `Term s (PMaybe a)`.
 - `PJust` and `PNothing` are data constructors. They are _not_ tags. `PJust :: Term s a -> PMaybe (a :: PType) (s :: S)` is a helper to signify the concept of `Just x`. It contains a Plutarch term.
 
 Now suppose that we want to carry around a constant `Term` in a Plutarch script that can be either `PJust a` or `PNothing`. To do so, we need a function to go from `PJust a` (which we _can_ instantiate as a Haskell value, unlike `PInteger`) to a `Term s (PMaybe a)`. This function is `pcon`:
