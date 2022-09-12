@@ -18,10 +18,13 @@ module Plutarch.Api.V2 (
   V1.PDatumHash (PDatumHash),
   V1.PAddress (PAddress),
   V1.KeyGuarantees (Sorted, Unsorted),
-  V1.AmountGuarantees (NoGuarantees, Positive),
+  V1.AmountGuarantees (NoGuarantees, Positive, NonZero),
   V1.PScriptHash (PScriptHash),
   V1.PPubKeyHash (PPubKeyHash),
   V1.PStakingCredential (PStakingHash, PStakingPtr),
+  V1.PValue (V1.PValue),
+  V1.PCurrencySymbol (V1.PCurrencySymbol),
+  V1.PTokenName (V1.PTokenName),
   type V1.PPOSIXTimeRange,
 
   -- ** Script Utils
