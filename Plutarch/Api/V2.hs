@@ -30,6 +30,7 @@ module Plutarch.Api.V2 (
   type V1.PClosure,
   V1.PLowerBound (PLowerBound),
   V1.PUpperBound (PUpperBound),
+  V1.PPOSIXTime (PPOSIXTime),
   type V1.PPOSIXTimeRange,
 
   -- ** Script Utils
