@@ -32,6 +32,7 @@ module Plutarch.Api.V2 (
   V1.PUpperBound (PUpperBound),
   V1.PPOSIXTime (PPOSIXTime),
   type V1.PPOSIXTimeRange,
+  V1.PMap (PMap),
 
   -- ** Script Utils
   validatorHash,
@@ -64,6 +65,7 @@ import qualified Plutarch.Api.V2.Tx as Tx
 import Plutarch.Api.Internal.Hashing (hashScriptWithPrefix)
 import Plutarch.Api.V1 (dataHash, datumHash, redeemerHash)
 import qualified Plutarch.Api.V1.Address as V1
+import qualified Plutarch.Api.V1.AssocMap as V1
 import qualified Plutarch.Api.V1.Crypto as V1
 import qualified Plutarch.Api.V1.Interval as V1
 import qualified Plutarch.Api.V1.Maybe as V1
