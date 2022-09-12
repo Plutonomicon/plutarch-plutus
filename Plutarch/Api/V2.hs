@@ -22,9 +22,14 @@ module Plutarch.Api.V2 (
   V1.PScriptHash (PScriptHash),
   V1.PPubKeyHash (PPubKeyHash),
   V1.PStakingCredential (PStakingHash, PStakingPtr),
-  V1.PValue (V1.PValue),
-  V1.PCurrencySymbol (V1.PCurrencySymbol),
-  V1.PTokenName (V1.PTokenName),
+  V1.PValue (PValue),
+  V1.PCurrencySymbol (PCurrencySymbol),
+  V1.PTokenName (PTokenName),
+  V1.PInterval (PInterval),
+  V1.PExtended (PFinite, PPosInf, PNegInf),
+  type V1.PClosure,
+  V1.PLowerBound (PLowerBound),
+  V1.PUpperBound (PUpperBound),
   type V1.PPOSIXTimeRange,
 
   -- ** Script Utils
@@ -59,6 +64,7 @@ import Plutarch.Api.Internal.Hashing (hashScriptWithPrefix)
 import Plutarch.Api.V1 (dataHash, datumHash, redeemerHash)
 import qualified Plutarch.Api.V1.Address as V1
 import qualified Plutarch.Api.V1.Crypto as V1
+import qualified Plutarch.Api.V1.Interval as V1
 import qualified Plutarch.Api.V1.Maybe as V1
 import qualified Plutarch.Api.V1.Scripts as V1
 import qualified Plutarch.Api.V1.Time as V1
