@@ -16,7 +16,7 @@ import PlutusLedgerApi.V1 (
   TxOutRef (TxOutRef),
  )
 
-import Generics.SOP (NS (S, Z))
+import Data.SOP (NS (S, Z))
 import qualified PlutusTx
 
 import Test.Tasty.QuickCheck (Arbitrary, property)

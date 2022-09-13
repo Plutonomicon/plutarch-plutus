@@ -39,7 +39,6 @@ import Plutarch (
   plet,
   pto,
   (#),
-  (#$),
   type (:-->),
  )
 
@@ -77,6 +76,7 @@ import Plutarch.TermCont (TermCont (TermCont), runTermCont)
 
 type family Helper (x :: PType) :: [PLabeledType] where
   Helper (PDataSum '[y]) = y
+  Helper (PDataRecord y) = y
 
 {- |
   Class allowing 'letFields' to work for a PType, usually via
@@ -90,8 +90,8 @@ class PDataFields (a :: PType) where
 
   -- | Convert a Term to a 'PDataList'
   ptoFields :: Term s a -> Term s (PDataRecord (PFields a))
-  default ptoFields :: PInner a ~ PDataSum '[PFields a] => Term s a -> Term s (PDataRecord (PFields a))
-  ptoFields x = punDataSum #$ pto x
+  default ptoFields :: (PDataFields (PInner a), PFields (PInner a) ~ PFields a) => Term s a -> Term s (PDataRecord (PFields a))
+  ptoFields x = ptoFields $ pto x
 
 instance PDataFields (PDataRecord as) where
   type PFields (PDataRecord as) = as

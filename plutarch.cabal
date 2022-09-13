@@ -39,6 +39,7 @@ common c
     GeneralisedNewtypeDeriving
     HexFloatLiterals
     ImplicitPrelude
+    ImpredicativeTypes
     InstanceSigs
     KindSignatures
     LambdaCase
@@ -53,6 +54,7 @@ common c
     PatternSynonyms
     PolyKinds
     PostfixOperators
+    QualifiedDo
     QuantifiedConstraints
     RankNTypes
     RelaxedPolyRec
@@ -67,16 +69,17 @@ common c
     TypeOperators
     TypeSynonymInstances
     ViewPatterns
+    OverloadedRecordDot
 
   ghc-options:
     -Weverything -Wno-unused-do-bind -Wno-missing-kind-signatures
     -Wno-partial-type-signatures -Werror -Wno-implicit-prelude
     -Wno-name-shadowing -Wno-unsafe -Wno-missing-safe-haskell-mode
     -Wno-missing-local-signatures -Wno-prepositive-qualified-module
-    -Wno-missing-import-lists -fprint-explicit-foralls
+    -Wno-missing-import-lists -Wno-monomorphism-restriction
+    -Wno-all-missed-specializations -Wno-unrecognised-warning-flags
     -fprint-equality-relations -fprint-explicit-kinds
-    -fprint-explicit-coercions -Wno-all-missed-specializations
-    -Wno-unrecognised-warning-flags
+    -fprint-explicit-coercions -fprint-explicit-foralls
 
 library
   import:          c
@@ -114,13 +117,16 @@ library
     Plutarch.FFI
     Plutarch.Integer
     Plutarch.Internal
+    Plutarch.Internal.Evaluate
     Plutarch.Internal.Generic
     Plutarch.Internal.Newtype
     Plutarch.Internal.Other
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType
+    Plutarch.Internal.PrettyStack
     Plutarch.Internal.Quantification
     Plutarch.Internal.ScottEncoding
+    Plutarch.Internal.Trace
     Plutarch.Internal.TypeFamily
     Plutarch.Internal.Witness
     Plutarch.Lift

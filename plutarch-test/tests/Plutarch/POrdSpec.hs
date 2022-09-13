@@ -100,8 +100,7 @@ spec = do
 
 propertySet ::
   forall p.
-  ( PIsData p
-  , PLiftData p
+  ( PLiftData p
   , POrd p
   , Ord (PLifted p)
   , Show (PLifted p)
@@ -119,13 +118,13 @@ propertySet typeName' = do
     specify ("(#==) @" <> typeName <> " ≡ (==) @" <> typeName) $
       property $ peqIso @p
 
-pltIso :: forall p. (PLift p, POrd p, Arbitrary (PLifted p), Ord (PLifted p)) => PLifted p -> PLifted p -> IO ()
+pltIso :: forall p. (PLift p, POrd p, Ord (PLifted p)) => PLifted p -> PLifted p -> IO ()
 pltIso a b = plift (pconstant @p a #< pconstant b) `shouldBe` (a < b)
 
-plteIso :: forall p. (PLift p, POrd p, Arbitrary (PLifted p), Ord (PLifted p)) => PLifted p -> PLifted p -> IO ()
+plteIso :: forall p. (PLift p, POrd p, Ord (PLifted p)) => PLifted p -> PLifted p -> IO ()
 plteIso a b = plift (pconstant @p a #<= pconstant b) `shouldBe` (a <= b)
 
-peqIso :: forall p. (PLift p, PEq p, Arbitrary (PLifted p), Eq (PLifted p)) => PLifted p -> PLifted p -> IO ()
+peqIso :: forall p. (PLift p, PEq p, Eq (PLifted p)) => PLifted p -> PLifted p -> IO ()
 peqIso a b = plift (pconstant @p a #== pconstant b) `shouldBe` (a == b)
 
 newtype PAddress' s = PAddress' (Term s PAddress)

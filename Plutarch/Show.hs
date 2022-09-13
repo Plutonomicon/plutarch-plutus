@@ -1,6 +1,7 @@
 module Plutarch.Show (
   PShow (pshow'),
   pshow,
+  pshowAndErr,
 ) where
 
 import Data.Char (intToDigit)
@@ -26,7 +27,7 @@ import Generics.SOP (
   hmap,
  )
 import Generics.SOP.GGP (gdatatypeInfo)
-import Plutarch.Bool (PBool, PEq, pif, (#<), (#==))
+import Plutarch.Bool (PBool, PEq, pif, pif', (#<), (#==))
 import Plutarch.ByteString (PByteString, pconsBS, pindexBS, plengthBS, psliceBS)
 import Plutarch.Integer (PInteger, PIntegral (pquot, prem))
 import Plutarch.Internal (
@@ -34,13 +35,16 @@ import Plutarch.Internal (
   perror,
   phoistAcyclic,
   plet,
+  punsafeCoerce,
+  (#),
+  (#$),
   (:-->),
  )
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.Other (
   pfix,
  )
-import Plutarch.Internal.PLam (plam, (#), (#$))
+import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PlutusType, pmatch)
 import Plutarch.Lift (pconstant)
 import Plutarch.String (PString, pdecodeUtf8, pencodeUtf8)
@@ -209,3 +213,9 @@ productGroup wrap sep = \case
   xs ->
     let xs' = sconcat $ NE.intersperse sep xs
      in if wrap then fromString "(" <> xs' <> fromString ")" else xs'
+
+{- | Causes an error where the input is shown in the message.
+ Works for all types.
+-}
+pshowAndErr :: Term s a -> Term s b
+pshowAndErr x = punsafeCoerce $ pindexBS # (punsafeCoerce $ pif' # (punsafeCoerce x) # x # x) # 0
