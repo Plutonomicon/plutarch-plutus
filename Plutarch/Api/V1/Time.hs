@@ -24,7 +24,7 @@ import Plutarch.Unsafe (punsafeCoerce)
 newtype PPOSIXTime (s :: S)
   = PPOSIXTime (Term s PInteger)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PIntegral, PNum)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PIntegral, PNum, PShow)
 instance DerivePlutusType PPOSIXTime where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PPOSIXTime where type PLifted PPOSIXTime = Plutus.POSIXTime
