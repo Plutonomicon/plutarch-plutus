@@ -1,0 +1,4 @@
+normal {"exBudgetCPU":11674304,"exBudgetMemory":39792,"scriptSizeBytes":77}
+do {"exBudgetCPU":11835304,"exBudgetMemory":40492,"scriptSizeBytes":141}
+cont {"exBudgetCPU":11674304,"exBudgetMemory":39792,"scriptSizeBytes":77}
+termcont {"exBudgetCPU":11835304,"exBudgetMemory":40492,"scriptSizeBytes":131}

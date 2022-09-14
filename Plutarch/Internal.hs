@@ -34,6 +34,8 @@ module Plutarch.Internal (
   TracingMode (..),
   pgetConfig,
   TermMonad (..),
+  (#),
+  (#$),
 ) where
 
 import Control.Monad.Reader (ReaderT (ReaderT), ask, runReaderT)
@@ -52,7 +54,7 @@ import Data.Text (Text)
 import qualified Flat.Run as F
 import GHC.Stack (HasCallStack, callStack, prettyCallStack)
 import GHC.Word (Word64)
-import Plutarch.Evaluate (evalScript)
+import Plutarch.Internal.Evaluate (evalScript)
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import qualified PlutusCore as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
@@ -136,7 +138,7 @@ data Config = Config
   { tracingMode :: TracingMode
   }
 
-data TracingMode = NoTracing | DoTracing | DetTracing
+data TracingMode = NoTracing | DetTracing | DoTracing | DoTracingAndBinds
 
 -- | Default is to be efficient
 instance Default Config where
@@ -471,3 +473,27 @@ compile config t = case asClosedRawTerm t of
 
 hashTerm :: Config -> ClosedTerm a -> Either Text Dig
 hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTerm t 0) config
+
+{- |
+  High precedence infixl synonym of 'papp', to be used like
+  function juxtaposition. e.g.:
+
+  >>> f # x # y
+  f x y
+-}
+(#) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
+(#) = papp
+
+infixl 8 #
+
+{- |
+  Low precedence infixr synonym of 'papp', to be used like
+  '$', in combination with '#'. e.g.:
+
+  >>> f # x #$ g # y # z
+  f x (g y z)
+-}
+(#$) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
+(#$) = papp
+
+infixr 0 #$

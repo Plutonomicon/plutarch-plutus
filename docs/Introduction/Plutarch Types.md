@@ -20,7 +20,7 @@ ghci> :k PMaybe
 PMaybe :: PType -> S -> Type
 ```
 
-Since the kind arrow `->` is right-associative, we first read this as `PMaybe :: PType -> (S -> Type)`; and since we know that that `PType` and `S -> Type` and synonyms, we read this as `PMaybe :: PType -> PType`, which should agree without intuition.
+Since the kind arrow `->` is right-associative, we first read this as `PMaybe :: PType -> (S -> Type)`; and since we know that that `PType` and `S -> Type` and synonyms, we read this as `PMaybe :: PType -> PType`, which should agree with our intuition.
 
 The kind `S -> Type` is mysterious at first, but we recall that `PType`s are _tags_ on (unexecuted) computations indicating their result type. The `S` kind represents the computational context; thus, a `PType` expects to receive a _computational context_ represented by a value `s` whose type has kind `S` that it will tag to produce a `Type`. Note that end-users never instantiate the value `s` with a concrete value; it is simply a type-level mechanism to maintain functional purity.
 

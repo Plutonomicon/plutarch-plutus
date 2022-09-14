@@ -71,6 +71,7 @@ common deps
     , base
     , plutarch
     , plutus-ledger-api
+    , plutus-tx
 
 library plutarch-preludes
   import:          c, deps
@@ -85,6 +86,8 @@ library
     Plutarch.Extra.ByteString
     Plutarch.Extra.Interval
     Plutarch.Extra.List
+    Plutarch.Extra.Maybe
+    Plutarch.Extra.RationalData
     Plutarch.Extra.TermCont
 
 -- other-modules:

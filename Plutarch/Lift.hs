@@ -15,7 +15,7 @@ module Plutarch.Lift (
   pconstant,
   plift,
   plift',
-  LiftError,
+  LiftError (..),
 
   -- * Define your own conversion
   PConstantDecl (..),
@@ -34,8 +34,8 @@ import Data.Coerce (Coercible, coerce)
 import Data.Kind (Constraint, Type)
 import Data.Text (Text)
 import GHC.Stack (HasCallStack)
-import Plutarch.Evaluate (EvalError, evalScriptHuge)
 import Plutarch.Internal (ClosedTerm, Config (Config, tracingMode), PType, Term, compile, punsafeConstantInternal, pattern DoTracing)
+import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
 import qualified PlutusCore as PLC
 import PlutusCore.Builtin (KnownTypeError, readKnownConstant)
 import PlutusCore.Evaluation.Machine.Exception (_UnliftingErrorE)
@@ -94,7 +94,10 @@ Example:
 pconstant :: forall p s. PLift p => PLifted p -> Term s p
 pconstant x = punsafeConstantInternal $ PLC.someValue @(PConstantRepr (PLifted p)) @PLC.DefaultUni $ pconstantToRepr x
 
--- | Error during script evaluation.
+{- | Error during script evaluation.
+
+ @since 1.2.1
+-}
 data LiftError
   = LiftError_EvalError EvalError
   | LiftError_KnownTypeError KnownTypeError

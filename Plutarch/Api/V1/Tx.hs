@@ -61,7 +61,7 @@ instance PTryFrom PData (PAsData PTxId) where
       pif (pnil #== ptail # flds) (f ()) $ ptraceError "ptryFrom(TxId): constructor fields len > 1"
     unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) dataBs snd
     tcont $ \f ->
-      pif (plengthBS # unwrapped #== 28) (f ()) $ ptraceError "ptryFrom(TxId): must be 28 bytes long"
+      pif (plengthBS # unwrapped #== 32) (f ()) $ ptraceError "ptryFrom(TxId): must be 32 bytes long"
     pure (punsafeCoerce opq, unwrapped)
 
 -- | Reference to a transaction output with a index referencing which of the outputs is being referred to.
