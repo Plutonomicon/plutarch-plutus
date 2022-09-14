@@ -1,5 +1,6 @@
 {-# Options_GHC -w #-}
 {-# Language FlexibleInstances #-}
+{-# Language LiberalTypeSynonyms #-}
 {-# Language ImpredicativeTypes #-}
 {-# Language UndecidableInstances #-}
 {-# Language AllowAmbiguousTypes #-}
@@ -18,6 +19,10 @@ import Control.Monad.Reader (MonadReader, ReaderT (ReaderT), asks)
 import Control.Monad.Zip (MonadZip)
 import Data.Default (Default (def))
 import Data.Functor.Identity (Identity(..))
+import Data.List (foldl', groupBy, sortOn)
+import qualified Data.ByteString as BS
+import Crypto.Hash.IO (HashAlgorithm)
+import qualified Flat.Run as F
 import Data.Kind (Type)
 import Data.Text (Text)
 import GHC.Word (Word64)
@@ -30,9 +35,40 @@ import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
 import PlutusCore.Default (DefaultUni(..))
 import PlutusLedgerApi.V1.Scripts (Script (Script))
 import UntypedPlutusCore qualified as UPLC
+import Data.Functor ((<&>))
+
+-- import Control.Applicative (Alternative)
+-- import Control.Monad (MonadPlus)
+-- import Control.Monad.Except (ExceptT(..), Except)
+-- import Control.Monad.Fix (MonadFix)
+-- import Control.Monad.Reader (MonadReader, runReaderT, ReaderT (ReaderT), asks)
+-- import Control.Monad.Zip (MonadZip)
+-- import Data.Functor.Identity (Identity(..))
+-- import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
+-- import Crypto.Hash.Algorithms (Blake2b_160)
+-- import Crypto.Hash.IO (HashAlgorithm)
+-- import qualified Data.ByteString as BS
+-- import Data.Default (Default (def))
+-- import Data.Kind (Type)
+-- import Data.List (foldl', groupBy, sortOn)
+import qualified Data.Map.Lazy as M
+import qualified Data.Set as S
+-- import Data.String (fromString)
+-- import Data.Text (Text)
+-- import qualified Flat.Run as F
+-- import GHC.Stack (HasCallStack, callStack, prettyCallStack)
+-- import GHC.Word (Word64)
+import Plutarch.Internal.Evaluate (evalScript)
+-- import PlutusCore (Some (Some), ValueOf (ValueOf))
+-- import qualified PlutusCore as PLC
+-- import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
+-- import PlutusLedgerApi.V1.Scripts (Script (Script))
+-- import qualified UntypedPlutusCore as UPLC
 
 import Plutarch.PType
-import Plutarch.Core
+import Plutarch.Core 
+import Plutarch.Lam 
+import Plutarch.Core qualified as Core
 
 type Dig = Digest Blake2b_160
 
@@ -193,8 +229,8 @@ instance (PHasRepr a, PHasRepr b) => PConstructable' Impl' (PPair a b) where
 
       one :: Term Impl' a
       two :: Term Impl' b
-      one = TheImpl thePair # plam2 \a b -> a
-      two = TheImpl thePair # plam2 \a b -> b
+      one = TheImpl thePair # plam \a b -> a
+      two = TheImpl thePair # plam \a b -> b
 
       in next (PPair one two)
 
@@ -211,17 +247,105 @@ instance m ~ TermMonad => PEmbeds m Impl' where
     impl <- terms
     runTheImpl impl lvl 
 
-asClosedRawTerm :: forall cls a edsl. ClosedTerm cls a -> cls edsl => UnEDSLKind edsl (PRepr a)
-asClosedRawTerm closed
-  | Term term <- closed @edsl
-  = term
+-- asClosedRawTerm :: forall cls a edsl. ClosedTerm cls a -> cls edsl => UnEDSLKind edsl (PRepr a)
+-- asClosedRawTerm closed
+--   | Term term <- closed @edsl
+--   = term
 
-asClosedRawTerm' :: ClosedTerm cls a
-                 -> (cls Impl' => TermMonad TermResult)
-asClosedRawTerm' (TheImpl term) = term deBruijnInitIndex
+-- asClosedRawTerm' :: ClosedTerm cls a
+--                  -> (cls Impl' => TermMonad TermResult)
+-- asClosedRawTerm' (TheImpl term) = term deBruijnInitIndex
 
-compile' :: forall a. IsPType Impl' a => Term Impl' a -> TermMonad TermResult
-compile' (TheImpl term) = term deBruijnInitIndex
+-- Couldn't find a definition for this in plutus-core
+subst :: Word64 -> (Word64 -> UTerm) -> UTerm -> UTerm
+subst idx x (UPLC.Apply () yx yy) = UPLC.Apply () (subst idx x yx) (subst idx x yy)
+subst idx x (UPLC.LamAbs () name y) = UPLC.LamAbs () name (subst (idx + 1) x y)
+subst idx x (UPLC.Delay () y) = UPLC.Delay () (subst idx x y)
+subst idx x (UPLC.Force () y) = UPLC.Force () (subst idx x y)
+subst idx x (UPLC.Var () (DeBruijn (Index idx'))) | idx == idx' = x idx
+subst idx _ y@(UPLC.Var () (DeBruijn (Index idx'))) | idx > idx' = y
+subst idx _ (UPLC.Var () (DeBruijn (Index idx'))) | idx < idx' = UPLC.Var () (DeBruijn . Index $ idx' - 1)
+subst _ _ y = y
+
+rawTermToUPLC ::
+  (HoistedTerm -> Word64 -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) ->
+  Word64 ->
+  RawTerm ->
+  UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i + 1) -- Why the fuck does it start from 1 and not 0?
+rawTermToUPLC m l (RLamAbs n t) =
+  foldr
+    (.)
+    id
+    (replicate (fromIntegral $ n + 1) $ UPLC.LamAbs () (DeBruijn . Index $ 0))
+    $ (rawTermToUPLC m (l + n + 1) t)
+rawTermToUPLC m l (RApply x y) =
+  let f y t@(UPLC.LamAbs () _ body) =
+        case rawTermToUPLC m l y of
+          -- Inline unconditionally if it's a variable or built-in.
+          -- These terms are very small and are always WHNF.
+          UPLC.Var () (DeBruijn (Index idx)) -> subst 1 (\lvl -> UPLC.Var () (DeBruijn . Index $ idx + lvl - 1)) body
+          arg@UPLC.Builtin {} -> subst 1 (\_ -> arg) body
+          arg -> UPLC.Apply () t arg
+      f y t = UPLC.Apply () t (rawTermToUPLC m l y)
+   in foldr (.) id (f <$> y) $ (rawTermToUPLC m l x)
+rawTermToUPLC m l (RDelay t) = UPLC.Delay () (rawTermToUPLC m l t)
+rawTermToUPLC m l (RForce t) = UPLC.Force () (rawTermToUPLC m l t)
+rawTermToUPLC _ _ (RBuiltin f) = UPLC.Builtin () f
+rawTermToUPLC _ _ (RConstant c) = UPLC.Constant () c
+rawTermToUPLC _ _ (RCompiled code) = code
+rawTermToUPLC _ _ RError = UPLC.Error ()
+-- rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted
+rawTermToUPLC m l (RHoisted hoisted) = m hoisted l -- UPLC.Var () . DeBruijn . Index $ l - m hoisted
+
+-- The logic is mostly for hoisting
+compile' :: TermResult -> UTerm
+compile' t =
+  let t' = getTerm t
+      deps = getDeps t
+
+      f :: Word64 -> Maybe Word64 -> (Bool, Maybe Word64)
+      f n Nothing = (True, Just n)
+      f _ (Just n) = (False, Just n)
+
+      g ::
+        HoistedTerm ->
+        (M.Map Dig Word64, [(Word64, RawTerm)], Word64) ->
+        (M.Map Dig Word64, [(Word64, RawTerm)], Word64)
+      g (HoistedTerm hash term) (map, defs, n) = case M.alterF (f n) hash map of
+        (True, map) -> (map, (n, term) : defs, n + 1)
+        (False, map) -> (map, defs, n)
+
+      toInline :: S.Set Dig
+      toInline =
+        S.fromList
+          . fmap (\(HoistedTerm hash _) -> hash)
+          . (head <$>)
+          . filter ((== 1) . length)
+          . groupBy (\(HoistedTerm x _) (HoistedTerm y _) -> x == y)
+          . sortOn (\(HoistedTerm hash _) -> hash)
+          $ deps
+
+      -- map: term -> de Bruijn level
+      -- defs: the terms, level 0 is last
+      -- n: # of terms
+      (map, defs, n) = foldr g (M.empty, [], 0) $ filter (\(HoistedTerm hash _) -> not $ S.member hash toInline) deps
+
+      map' (HoistedTerm hash term) l = case M.lookup hash map of
+        Just l' -> UPLC.Var () . DeBruijn . Index $ l - l'
+        Nothing -> rawTermToUPLC map' l term
+
+      body = rawTermToUPLC map' n t'
+
+      wrapped =
+        foldl'
+          (\b (lvl, def) -> UPLC.Apply () (UPLC.LamAbs () (DeBruijn . Index $ 0) b) (rawTermToUPLC map' lvl def))
+          body
+          defs
+   in wrapped
+
+-- compile :: forall a. IsPType Impl' a => TheImpl a -> TermMonad TermResult
+-- compile (TheImpl term) = term deBruijnInitIndex
 
 -- compile :: forall cls a. Config -> ClosedTerm cls a -> Either Text Script
 -- compile config t = case asClosedRawTerm @cls @a t of
@@ -308,3 +432,58 @@ getArityBuiltin (RBuiltin PLC.MkPairData) = Just 1
 getArityBuiltin (RBuiltin PLC.MkNilData) = Just 0
 getArityBuiltin (RBuiltin PLC.MkNilPairData) = Just 0
 getArityBuiltin _ = Nothing
+
+hashRawTerm' :: HashAlgorithm alg => RawTerm -> Context alg -> Context alg
+hashRawTerm' (RVar x) = flip hashUpdate ("0" :: BS.ByteString) . flip hashUpdate (F.flat (fromIntegral x :: Integer))
+hashRawTerm' (RLamAbs n x) =
+  flip hashUpdate ("1" :: BS.ByteString) . flip hashUpdate (F.flat (fromIntegral n :: Integer)) . hashRawTerm' x
+hashRawTerm' (RApply x y) =
+  flip hashUpdate ("2" :: BS.ByteString) . hashRawTerm' x . flip (foldl' $ flip hashRawTerm') y
+hashRawTerm' (RForce x) = flip hashUpdate ("3" :: BS.ByteString) . hashRawTerm' x
+hashRawTerm' (RDelay x) = flip hashUpdate ("4" :: BS.ByteString) . hashRawTerm' x
+hashRawTerm' (RConstant x) = flip hashUpdate ("5" :: BS.ByteString) . flip hashUpdate (F.flat x)
+hashRawTerm' (RBuiltin x) = flip hashUpdate ("6" :: BS.ByteString) . flip hashUpdate (F.flat x)
+hashRawTerm' RError = flip hashUpdate ("7" :: BS.ByteString)
+hashRawTerm' (RHoisted (HoistedTerm hash _)) = flip hashUpdate ("8" :: BS.ByteString) . flip hashUpdate hash
+hashRawTerm' (RCompiled code) = flip hashUpdate ("9" :: BS.ByteString) . flip hashUpdate (F.flat code)
+
+hashRawTerm :: RawTerm -> Dig
+hashRawTerm t = hashFinalize . hashRawTerm' t $ hashInit
+
+punsafeBuiltin :: UPLC.DefaultFun -> TheImpl a
+punsafeBuiltin f = TheImpl \_ -> pure $ mkTermRes $ RBuiltin f
+
+punsafeConstantInternal :: Some (ValueOf PLC.DefaultUni) -> Impl a
+punsafeConstantInternal c = Impl \_ -> pure 
+  case c of
+    -- These constants are smaller than variable references.
+    Some (ValueOf PLC.DefaultUniBool _) -> mkTermRes $ RConstant c
+    Some (ValueOf PLC.DefaultUniUnit _) -> mkTermRes $ RConstant c
+    Some (ValueOf PLC.DefaultUniInteger n) | n < 256 -> mkTermRes $ RConstant c
+    _ ->
+      let hoisted = HoistedTerm (hashRawTerm $ RConstant c) (RConstant c)
+       in TermResult (RHoisted hoisted) [hoisted]
+
+-- instance PForce Impl' where
+--   pforce :: TheImpl (PDelayed a) -> TheImpl a
+--   pforce (TheImpl x) = TheImpl \i ->
+--     x i <&> \case
+--       -- A force cancels a delay
+--       t@(getTerm -> RDelay t') -> t {getTerm = t'}
+--       t -> mapTerm RForce t
+
+--   pdelay :: TheImpl a -> TheImpl (PDelayed a)
+--   pdelay (TheImpl x) = TheImpl \i -> mapTerm RDelay <$> x i
+
+-- instance PHoist Impl' where
+--   -- FIXME: Give proper error message when mutually recursive.
+--   phoistAcyclic :: HasCallStack => TheImpl a -> TheImpl a
+--   phoistAcyclic (TheImpl t) = TheImpl \_ -> 
+--     t 0 >>= \case
+--       -- Built-ins are smaller than variable references
+--       t'@(getTerm -> RBuiltin _) -> pure $ t'
+--       t' -> case evalScript . Script . UPLC.Program () (PLC.defaultVersion ()) $ compile' t' of
+--         (Right _, _, _) ->
+--           let hoisted = HoistedTerm (hashRawTerm . getTerm $ t') (getTerm t')
+--            in pure $ TermResult (RHoisted hoisted) (hoisted : getDeps t')
+--         (Left e, _, _) -> pthrow' $ "Hoisted term errs! " <> fromString (show e)

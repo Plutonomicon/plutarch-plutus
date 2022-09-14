@@ -104,6 +104,7 @@ library
     Plutarch.Api.V2.Contexts
     Plutarch.Api.V2.Tx
     Plutarch.Bool
+    Plutarch.Bool2
     Plutarch.Builtin
     Plutarch.ByteString
     Plutarch.Crypto
@@ -114,6 +115,7 @@ library
     Plutarch.DataRepr.Internal.HList
     Plutarch.DataRepr.Internal.HList.Utils
     Plutarch.Either
+    Plutarch.Either2
     Plutarch.Evaluate
     Plutarch.FFI
     Plutarch.Integer
@@ -122,6 +124,7 @@ library
     Plutarch.Internal.Generic
     Plutarch.Internal.Generic2
     Plutarch.Internal.Newtype
+    Plutarch.Internal.Newtype2
     Plutarch.Internal.Other
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType
@@ -135,13 +138,17 @@ library
     Plutarch.Internal.Witness
     Plutarch.Internal2
     Plutarch.Lift
+    Plutarch.Lift2
     Plutarch.List
     Plutarch.Maybe
     Plutarch.Monadic
     Plutarch.Num
     Plutarch.Pair
+    Plutarch.Pair2
     Plutarch.Positive
+    Plutarch.Plutus
     Plutarch.Prelude
+    Plutarch.Prelude2
     Plutarch.Pretty
     Plutarch.Pretty.Internal.BuiltinConstant
     Plutarch.Pretty.Internal.Config
@@ -156,7 +163,9 @@ library
     Plutarch.Trace
     Plutarch.TryFrom
     Plutarch.Unit
+    Plutarch.Unit2
     Plutarch.Unsafe
+    Plutarch.Unsafe2
 
   build-depends:
     , base

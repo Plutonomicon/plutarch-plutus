@@ -1,6 +1,9 @@
-module Plutarch.Prelude (
+{-# Language UndecidableSuperClasses #-}
+{-# Language UndecidableInstances #-}
+{-# Language FlexibleInstances #-}
+module Plutarch.Prelude2 (
   -- * eDSL types and functions.
-  (#->),
+  (:-->),
   PDelayed,
   Term,
   ClosedTerm,
@@ -166,25 +169,38 @@ module Plutarch.Prelude (
 
 import Prelude ()
 
+import Plutarch.Core 
+
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import GHC.Records (getField)
-import Plutarch
-import Plutarch.Bool
-import Plutarch.Builtin
-import Plutarch.ByteString
-import Plutarch.Crypto
-import Plutarch.DataRepr
-import Plutarch.Either
-import Plutarch.Integer
-import Plutarch.Lift
-import Plutarch.List
-import Plutarch.Maybe
-import Plutarch.Pair
-import Plutarch.Rational
-import Plutarch.Show
-import Plutarch.String
-import Plutarch.TermCont
-import Plutarch.Trace
-import Plutarch.TryFrom
-import Plutarch.Unit
+-- import Plutarch
+-- import Plutarch.Bool
+-- import Plutarch.Builtin
+-- import Plutarch.ByteString
+-- import Plutarch.Crypto
+-- import Plutarch.DataRepr
+-- import Plutarch.Either
+-- import Plutarch.Integer
+import Plutarch.Internal2
+-- import Plutarch.Lift
+-- import Plutarch.List
+-- import Plutarch.Maybe
+-- import Plutarch.Pair
+-- import Plutarch.Rational
+-- import Plutarch.Show
+-- import Plutarch.String
+-- import Plutarch.TermCont
+-- import Plutarch.Trace
+-- import Plutarch.TryFrom
+-- import Plutarch.Unit
+
+class    PLC a => PLC' a
+instance PLC a => PLC' a
+
+class    PSOP a => PSOP' a
+instance PSOP a => PSOP' a
+
+type PPlutus = PLC' & PSOP' & PHoist & PForce
+
+

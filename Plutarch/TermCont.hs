@@ -46,7 +46,7 @@ instance MonadFail (TermCont s) where
 tcont :: ((a -> Term s r) -> Term s r) -> TermCont @r s a
 tcont = TermCont
 
-hashOpenTerm :: Term s a -> TermCont s Dig
+hashOpenTermPPlutus' s => Term s a -> TermCont s Dig
 hashOpenTerm x = TermCont $ \f -> Term $ \i -> do
   y <- asRawTerm x i
   asRawTerm (f . hashRawTerm . getTerm $ y) i
