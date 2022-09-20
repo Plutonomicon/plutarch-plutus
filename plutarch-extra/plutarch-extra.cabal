@@ -87,6 +87,7 @@ library
     Plutarch.Extra.Interval
     Plutarch.Extra.List
     Plutarch.Extra.Maybe
+    Plutarch.Extra.Ord
     Plutarch.Extra.RationalData
     Plutarch.Extra.TermCont
 
