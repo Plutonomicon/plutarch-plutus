@@ -247,7 +247,7 @@ pconstantSingleton ::
   ClosedTerm PInteger ->
   ClosedTerm (PValue 'Sorted 'NonZero)
 pconstantSingleton symbol token amount
-  | plift amount == 0 = mempty
+  | plift amount == 0 = ptraceError "pconstantSingleton: Given a zero argument, expecting nonzero."
   | otherwise = punsafeDowncast (AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount)
 
 -- | Construct a constant singleton 'PValue' containing only the given positive quantity of the given currency.
@@ -257,7 +257,7 @@ pconstantPositiveSingleton ::
   ClosedTerm PInteger ->
   ClosedTerm (PValue 'Sorted 'Positive)
 pconstantPositiveSingleton symbol token amount
-  | plift amount == 0 = mempty
+  | plift amount == 0 = ptraceError "pconstantPositiveSingleton: Given a zero argument, expecting nonzero."
   | plift amount < 0 = error "Negative amount"
   | otherwise = punsafeDowncast (AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount)
 
@@ -270,7 +270,7 @@ psingleton = phoistAcyclic $
   plam $ \symbol token amount ->
     pif
       (amount #== 0)
-      mempty
+      (ptraceError "psingleton: Given a zero argument, expecting nonzero.")
       (punsafeDowncast $ AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount)
 
 {- | Construct a singleton 'PValue' containing only the given quantity of the
@@ -286,7 +286,7 @@ psingletonData = phoistAcyclic $
   plam $ \symbol token amount ->
     pif
       (amount #== zeroData)
-      mempty
+      (ptraceError "psingletonData: Given a zero argument, expecting nonzero.")
       ( punsafeDowncast
           ( AssocMap.psingletonData # symbol
               #$ pdata
