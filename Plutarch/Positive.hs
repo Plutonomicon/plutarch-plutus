@@ -4,6 +4,7 @@
 module Plutarch.Positive (PPositive, ppositive, ptryPositive) where
 
 import Data.Functor.Const (Const)
+import Data.Text (pack)
 import GHC.Generics (Generic)
 
 import Plutarch.Bool (PEq, POrd, PPartialOrd, pif, (#<=))
@@ -11,6 +12,7 @@ import Plutarch.Builtin (PAsData, PData, PIsData, pdata)
 import Plutarch.Integer (PInteger, PIntegral)
 
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
+import Plutarch.Show (pshow)
 
 import Plutarch (
   DerivePlutusType (DPTStrat),
@@ -43,7 +45,9 @@ instance PNum PPositive where
   x #- y = ptryPositive #$ pto x #- pto y
 
   pfromInteger x
-    | x <= 0 = pthrow "PPositive.pfromInteger: encountered non positive"
+    | x <= 0 =
+        pthrow $
+          "PPositive.pfromInteger: encountered non positive: " <> pack (show x)
     | otherwise = pcon $ PPositive $ pfromInteger x
 
 instance PTryFrom PInteger PPositive where
@@ -75,5 +79,5 @@ ptryPositive = phoistAcyclic $
   plam $ \i ->
     pif
       (i #<= 0)
-      (ptraceError "ptryPositive: building with non positive")
+      (ptraceError $ "ptryPositive: building with non positive: " <> pshow i)
       $ pcon $ PPositive i

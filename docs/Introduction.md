@@ -70,7 +70,7 @@ with `p`, for example
 -- A Plutarch-level lambda term
 pf :: Term s (a :--> b :--> c)
 
--- Rcovering a Haskell level function from a Plutarch level function
+-- Recovering a Haskell level function from a Plutarch level function
 hf :: Term s a -> Term s b -> Term s c
 hf x y = pf # x # y
 ```
