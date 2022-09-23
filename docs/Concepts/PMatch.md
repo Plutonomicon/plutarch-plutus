@@ -91,62 +91,64 @@ As Plutarch is an eDSL in Haskell, it does not allow us to work on Plutus-level 
 Manipulating ADTs can be done in terms of `pcon` and `pmatch`.
 
 ```haskell
-class PCon a where
-  -- | Construct a Plutarch Term via a Haskell datatype
-  pcon :: a s -> Term s a
+class PlutusType (a :: PType) where
+  -- ...
+  type PInner a :: PType
+  pcon' :: forall s. a s -> Term s (PInner a)
+  pmatch' :: forall s b. Term s (PInner a) -> (a s -> Term s b) -> Term s b
 
-class PMatch a where
-  -- | Pattern match over Plutarch Terms via a Haskell datatype
-  pmatch :: Term s a -> (a s -> Term s b) -> Term s b
+-- | Construct a Plutarch Term via a Haskell datatype
+pcon :: PlutusType a => a s -> Term s a
+pcon x = ...
 
+-- | Pattern match over Plutarch Terms via a Haskell datatype
+pmatch :: PlutusType a => Term s a -> (a s -> Term s b) -> Term s b
+pmatch x = ...
 ```
 
 These functions could be written manually, but is a bit tedious and error-prone, thus generic representation from `generics-sop` is used.
 Under the hood all necessary transformations are done to be able to access the data on Haskell level.
 
-Also - as parsing data costs computation resources, it is common to pass tagged raw data until it's really needed to parse, thus additional typeclass is introduced:
-
-```haskell
-class (PCon a, PMatch a) => PlutusType (a :: PType) where
-  type PInner a (b' :: PType) :: PType
-  pcon' :: forall s b. a s -> Term s (PInner a b)
-  pmatch' :: forall s b. (Term s (PInner a b)) -> (a s -> Term s b) -> Term s b
-```
-
-Which serves 2 purposes:
+Also - as parsing data costs computation resources, it is common to pass tagged raw data until it's really needed to parse.
+`PlutusType` typeclass serves 2 purposes:
 
 1. Adds derivation via anyclass for Haskell ADTs
 2. Manipulates given `PType` on its internal representation (provided as type `PInner`), rather than parsing/constructing the datatype back and forth.
 
 `pcon'` and `pmatch'` are coerced to `pcon` and `pmatch`.
 
-Examples on how to derive `PlutusType` to either Data or Scott encoding, from haddocks of `PlutusType`:
+Examples on how to derive `PlutusType` to either Data or Scott encoding:
 
 ```haskell
 {- |
-
+  > {-# LANGUAGE DeriveAnyClass        #-}
+  > {-# LANGUAGE DeriveGeneric         #-}
+  > {-# LANGUAGE DerivingStrategies    #-}
+  > {-# LANGUAGE LambdaCase            #-}
+  > {-# LANGUAGE DataKinds             #-}
+  > {-# LANGUAGE PartialTypeSignatures #-}
+  > {-# LANGUAGE ScopedTypeVariables   #-}
+  > {-# LANGUAGE TypeFamilies          #-}
+  > {-# LANGUAGE TypeOperators         #-}
   > import qualified GHC.Generics as GHC
-  > import Generics.SOP
+  > import qualified Generics.SOP as SOP
+  > import Plutarch
   >
   > data MyType (a :: PType) (b :: PType) (s :: S)
   >   = One (Term s a)
   >   | Two (Term s b)
   >   deriving stock (GHC.Generic)
-  >   deriving anyclass (Generic, PlutusType)
+  >   deriving anyclass (SOP.Generic, PlutusType)
+  > instance DerivePlutusType (MyType a b) where type DPTStrat _ = PlutusTypeScott
 
-  If you instead want to use data encoding, you should first implement "Plutarch.PDataRepr.PIsDataRepr", and then
-  derive 'PlutusType' via "Plutarch.PDataRepr.PIsDataReprInstances":
+  If you instead want to use data encoding, you should derive 'PlutusType' and provide data strategy:
 
-  > import qualified GHC.Generics as GHC
-  > import Generics.SOP
-  > import Plutarch.DataRepr
-  >
-  > data MyType (a :: PType) (b :: PType) (s :: S)
+  > data MyTypeD (a :: PType) (b :: PType) (s :: S)
   >   = One (Term s (PDataRecord '[ "_0" ':= a ]))
   >   | Two (Term s (PDataRecord '[ "_0" ':= b ]))
   >   deriving stock (GHC.Generic)
-  >   deriving anyclass (Generic, PIsDataRepr)
-  >   deriving (PlutusType, PIsData) via PIsDataReprInstances (MyType a b)
+  >   deriving anyclass (SOP.Generic, PlutusType)
+  > instance DerivePlutusType (MyType a b) where type DPTStrat _ = PlutusTypeData
 
   Alternatively, you may derive 'PlutusType' by hand as well. A simple example, encoding a
   Sum type as an Enum via PInteger:
@@ -168,24 +170,35 @@ Examples on how to derive `PlutusType` to either Data or Scott encoding, from ha
 
   > swap :: Term s AB -> Term s AB
   > swap x = pmatch x $ \\case
-  >  A -> pcon B
-  >  B -> pcon A
-
-  Further examples can be found in examples/PlutusType.hs
+  >   A -> pcon B
+  >   B -> pcon A
 
 ```
 
-Maybe encoded in both ways:
+`Maybe` manually encoded in both ways:
 
 ```haskell
 -- | Scott
-data PMaybe a s = PJust (Term s a) | PNothing
+data PSMaybe a s = PSJust (Term s a) | PSNothing
 
-instance PlutusType (PMaybe a) where
-  type PInner (PMaybe a) b = (a :--> b) :--> PDelayed b :--> b
-  pcon' (PJust x) = plam $ \f (_ :: Term _ _) -> f # x
-  pcon' PNothing = plam $ \_ g -> pforce g
-  pmatch' x f = x # (plam $ \inner -> f (PJust inner)) # (pdelay $ f PNothing)
+-- | Newtype wrapper around function that represents Scott encoding,
+-- | Plutarch uses generic one for deriving.
+newtype ScottEncodedMaybe a b s = ScottEncodedMaybe (Term s ((a :--> b) :--> PDelayed b :--> b))
+
+instance PlutusType (ScottEncodedMaybe a r) where
+  type PInner (ScottEncodedMaybe a r) = (a :--> r) :--> PDelayed r :--> r
+  pcon' (ScottEncodedMaybe x) = x
+  pmatch' x f = f (ScottEncodedMaybe x)
+
+instance PlutusType (PSMaybe a) where
+  -- The resulting type of pattern matching on Maybe is quantified via `PForall`
+  type PInner (PSMaybe a) = PForall (ScottEncodedMaybe a)
+  pcon' (PSJust x) = pcon $ PForall $ pcon $ ScottEncodedMaybe $ plam $ \f _ -> f # x
+  pcon' PSNothing = pcon $ PForall $ pcon $ ScottEncodedMaybe $ plam $ \_ g -> pforce g
+  pmatch' x' f =
+    pmatch x' $ \(PForall sem) ->
+      pmatch sem $ \(ScottEncodedMaybe x) ->
+        x # plam (f . PSJust) # pdelay (f PSNothing)
 
 -- | Maybe encoded using Constr
 data PMaybeData a (s :: S)
@@ -194,8 +207,8 @@ data PMaybeData a (s :: S)
 
 -- | Note - thing hold in PMaybeData must be able to be represented as Data too, not needed in case of Scott version
 instance PIsData a => PlutusType (PMaybeData a) where
-  type PInner (PMaybeData a) _ = PData
-  pcon' (PDJust x) = pforgetData $ pconstrBuiltin # 0 #$ psingleton # (pforgetData (pdata x))
+  type PInner (PMaybeData a) = PData
+  pcon' (PDJust x) = pforgetData $ pconstrBuiltin # 0 #$ psingleton # pforgetData (pdata x)
   pcon' PDNothing = pforgetData $ pconstrBuiltin # 1 # pnil
   pmatch' x f = (`runTermCont` f) $ do
     constrPair <- TermCont $ plet (pasConstr # x)
