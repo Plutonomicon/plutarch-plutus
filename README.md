@@ -26,27 +26,35 @@ More benchmarks, with reproducible code, soon to follow.
 * Add this repo as a source repository package to your `cabal.project`.
 * Add the `plutarch` package as a dependency to your cabal file.
 
-This package takes in a flag, `development`, that defaults to false. It's used to turn on "development mode". Following is a list of effects and their variations based on whether or not development mode is on.
-
-| On | Off |
-| -- | --- |
-| Tracing functions from `Plutarch.Trace` log given message to the trace log. | Tracing functions from `Plutarch.Trace` do not log. They merely return their argument. |
-
-You can turn on development mode by passing in the `development` flag in your `cabal.project` file:
-```hs
-package plutarch
-  flags: +development
-```
-
 # Benchmarks
 
-See the [`plutarch-benchmark`](./plutarch-benchmark) library for how to benchmark plutarch, and benchmarking your own scripts.
+See the [`plutarch-test`](./plutarch-test) for testing and golden files containing benchmarks and UPLCs.
 
 # Usage
 Read the [Plutarch guide](./docs/README.md) to get started!
 
 # Contributing
 Contributions are more than welcome! Alongside the [User guide](#usage) above, you may also find the [Developers' guide](./docs/DEVGUIDE.md) useful for understanding the codebase.
+
+## Developer communication channels
+
+We're in the Plutonomicon Discord: https://discord.gg/722KnTC8jF
+
+# Sponsors
+
+This list is incomplete:
+- Optim
+- Liqwid
+- Zamarad
+- Ikigai
+- SingularityNET
+- KWARXs
+- GeniusYield
+- Noblesteed
+- Xinsere
+- A lot of other people probably.
+
+Big thanks to everyone.
 
 # License
 
@@ -57,6 +65,7 @@ Copyright (c) 2021-2022 Minswap Team
 Copyright (c) 2021-2022 Liqwid Labs
 Copyright (c) 2021-2022 Platonic.Systems
 Copyright (c) 2021-2022 MLabs
+Copyright (c) 2022 Plutarch contributors and sponsors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

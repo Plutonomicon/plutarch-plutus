@@ -1,0 +1,7 @@
+lam.tripSum {"exBudgetCPU":207100,"exBudgetMemory":1000,"scriptSizeBytes":46}
+lam.getY {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":16}
+lam.tripYZ {"exBudgetCPU":207100,"exBudgetMemory":1000,"scriptSizeBytes":36}
+tripSum.A {"exBudgetCPU":2864483,"exBudgetMemory":8048,"scriptSizeBytes":80}
+tripSum.B {"exBudgetCPU":2864483,"exBudgetMemory":8048,"scriptSizeBytes":77}
+tripSum.C {"exBudgetCPU":2864483,"exBudgetMemory":8048,"scriptSizeBytes":77}
+tripYZ=tripZY {"exBudgetCPU":207100,"exBudgetMemory":1000,"scriptSizeBytes":36}

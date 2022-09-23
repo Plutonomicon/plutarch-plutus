@@ -1,0 +1,2 @@
+do.succeeds {"exBudgetCPU":6217368,"exBudgetMemory":16009,"scriptSizeBytes":344}
+do.fails {"exBudgetCPU":10465180,"exBudgetMemory":21069,"scriptSizeBytes":340}

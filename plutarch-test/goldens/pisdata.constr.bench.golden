@@ -1,0 +1,13 @@
+sop.4wheeler.normal {"exBudgetCPU":926213,"exBudgetMemory":2760,"scriptSizeBytes":45}
+sop.4wheeler.pdatasum {"exBudgetCPU":926213,"exBudgetMemory":2760,"scriptSizeBytes":45}
+sop.2wheeler.normal {"exBudgetCPU":611227,"exBudgetMemory":1896,"scriptSizeBytes":30}
+sop.2wheeler.pdatasum {"exBudgetCPU":611227,"exBudgetMemory":1896,"scriptSizeBytes":30}
+sop.immovable.normal {"exBudgetCPU":204241,"exBudgetMemory":632,"scriptSizeBytes":12}
+sop.immovable.pdatasum {"exBudgetCPU":204241,"exBudgetMemory":632,"scriptSizeBytes":12}
+prod.1.normal {"exBudgetCPU":768720,"exBudgetMemory":2328,"scriptSizeBytes":40}
+prod.1.pdatasum {"exBudgetCPU":768720,"exBudgetMemory":2328,"scriptSizeBytes":40}
+prod.2.normal {"exBudgetCPU":768720,"exBudgetMemory":2328,"scriptSizeBytes":68}
+prod.2.datasum {"exBudgetCPU":768720,"exBudgetMemory":2328,"scriptSizeBytes":68}
+enum.PA {"exBudgetCPU":204241,"exBudgetMemory":632,"scriptSizeBytes":12}
+enum.PB {"exBudgetCPU":204241,"exBudgetMemory":632,"scriptSizeBytes":12}
+pconstant-pcon-rel {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":22}

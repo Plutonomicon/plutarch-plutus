@@ -16,7 +16,7 @@ import qualified Plutarch.Monadic as P
 
 foo :: Term s (PScriptContext :--> PString)
 foo = plam $ \ctx -> P.do
-  purpose <- pmatch pfield @"purpose" # ctx
+  purpose <- pmatch $ pfield @"purpose" # ctx
   case purpose of
     PMinting _ -> "It's minting!"
     PSpending _ -> "It's spending!"
@@ -105,7 +105,7 @@ mockCtx =
 Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf string "It's minting!"))))
 ```
 
-> Aside: You can find the definition of `evalWithArgsT` at [Compiling and Running](../GUIDE.md#compiling-and-running).
+> Aside: You can find the definition of `evalWithArgsT` at [Compiling and Running](../README.md#compiling-and-running).
 
 ## All about extracting fields
 
@@ -115,7 +115,7 @@ Once a type has a `PDataFields` instance, field extraction can be done with thes
 
 - `pletFields`
 - `pfield`
-- `hrecField` (when not using `OverloadedRecordDot` or [record dot preprocessor](https://hackage.haskell.org/package/record-dot-preprocessor))
+- `getField` (when not using `OverloadedRecordDot` or [record dot preprocessor](https://hackage.haskell.org/package/record-dot-preprocessor))
 
 Each has its own purpose. However, `pletFields` is arguably the most general purpose and most efficient. Whenever you need to extract several fields from the same variable, you should use `pletFields`:
 
@@ -157,15 +157,15 @@ You can then access the fields on this `HRec` using `OverloadedRecordDot`.
 
 Next up is `pfield`. You should _only ever_ use this if you just want one field from a variable and no more. Its usage is simply `pfield @"fieldName" # variable`. You can, however, also use `pletFields` in this case (e.g. `pletFields @'["fieldName"] variable`). `pletFields` with a singular field has the same efficiency as `pfield`!
 
-Finally, `hrecField` is merely there to supplement the lack of record dot syntax. See: [Alternative to `OverloadedRecordDot`](#alternatives-to-overloadedrecorddot).
+Finally, `getField` is merely there to supplement the lack of record dot syntax. See: [Alternative to `OverloadedRecordDot`](#alternatives-to-overloadedrecorddot).
 
-> Note: An important thing to realize is that `pfield` and `hrecField` (or overloaded record dot on `HRec`) are _return type polymorphic_. They can return both `PAsData Foo` or `Foo` terms, depending on the surrounding context. This is very useful in the case of `pmatch`, as `pmatch` doesn't work on `PAsData` terms. So you can simply write `pmatch $ pfield ...` and `pfield` will correctly choose to _unwrap_ the `PAsData` term.
+> Note: An important thing to realize is that `pfield` and `getField` (or overloaded record dot on `HRec`) are _return type polymorphic_. They can return both `PAsData Foo` or `Foo` terms, depending on the surrounding context. This is very useful in the case of `pmatch`, as `pmatch` doesn't work on `PAsData` terms. So you can simply write `pmatch $ pfield ...` and `pfield` will correctly choose to _unwrap_ the `PAsData` term.
 
 ### Alternatives to `OverloadedRecordDot`
 
 If `OverloadedRecordDot` is not available, you can also try using the [record dot preprocessor plugin](https://hackage.haskell.org/package/record-dot-preprocessor).
 
-If you don't want to use either, you can simply use `hrecField`. In fact, `ctx.purpose` above just translates to `hrecField @"purpose" ctx`. Nothing magical there!
+If you don't want to use either, you can simply use `getField`. In fact, `ctx.purpose` above just translates to `getField @"purpose" ctx`. Nothing magical there!
 
 ## All about constructing data values
 
@@ -247,12 +247,17 @@ Thus, you can use `PBuiltinList (PAsData PInteger)` as a field type, but not `PB
 > In this case, `PFourWheeler` is at the 0th index, `PTwoWheeler` is at the 1st index, and `PImmovableBox` is at the 3rd index. Thus, the corresponding `makeIsDataIndexed` usage should be:
 >
 > ```hs
-> PlutusTx.makeIsDataIndexed ''FourWheeler [('FourWheeler,0),('TwoWheeler,1),('ImmovableBox,2)]
+> PlutusTx.makeIsDataIndexed ''PVehicle [('FourWheeler,0),('TwoWheeler,1),('ImmovableBox,2)]
 > ```
 >
 > Also see: [Isomorphism between Haskell ADTs and `PIsDataRepr`](./../Tricks/makeIsDataIndexed,%20Haskell%20ADTs,%20and%20PIsDataRepr.md)
 
 And you'd simply derive `PIsDataRepr` using generics. However, you **must** also derive `PIsData` and `PlutusType` using `PIsDataReprInstances`. For single constructor data types, you should also derive `PDataFields`.
+
+Furthermore, you can also derive the following typeclasses via `PIsDataReprInstances`:
+
+- [`PEq`](./PEq%20and%20POrd.md)
+- [`POrd`](./PEq%20and%20POrd.md)
 
 Combine all that, and you have:
 

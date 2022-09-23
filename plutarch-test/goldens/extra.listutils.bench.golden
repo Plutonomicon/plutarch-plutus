@@ -1,0 +1,4 @@
+reverse.reverse_[1..5] {"exBudgetCPU":5865100,"exBudgetMemory":25600,"scriptSizeBytes":87}
+isSorted.[1..10] {"exBudgetCPU":16166677,"exBudgetMemory":59218,"scriptSizeBytes":115}
+isSorted.reverse_[1..10] {"exBudgetCPU":3379609,"exBudgetMemory":13203,"scriptSizeBytes":126}
+isSorted.reverse_[] {"exBudgetCPU":621100,"exBudgetMemory":2800,"scriptSizeBytes":56}

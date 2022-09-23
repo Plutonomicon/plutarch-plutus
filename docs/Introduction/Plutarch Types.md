@@ -2,7 +2,7 @@
 
 When this guide uses the term "Plutarch Type" we explicitly talk about a type of _kind_ `PType`. We will refer to  _" types of kind `PType` "_ simply as `PType`s. We explicitly qualify when referring to the _kind_ `PType`.
 
-> Note to beginners: Plutarch uses a language extension called `DataKinds`. This means that there are kinds beyond `Type` (aka `*`). We refer the read to \[[3](./../Concepts.md#references)] for an extended beginner-level introduction to these concepts if desired.
+> Note to beginners: Plutarch uses a language extension called `DataKinds`. This means that there are kinds beyond `Type` (aka `*`). We refer the read to \[[3](./../Introduction.md#references)] for an extended beginner-level introduction to these concepts if desired.
 
 `PType` is defined as `type PType = S -> Type`; that is, it is a _kind synonym_ for `S -> Type` (where `S` and `Type` are themselves kinds). This synonym is important to keep in mind because when querying the kind of something like `PBool` in, say, GHCi, we will _not_ see `PType` as the kind. Instead, we get
 
@@ -20,7 +20,7 @@ ghci> :k PMaybe
 PMaybe :: PType -> S -> Type
 ```
 
-Since the kind arrow `->` is right-associative, we first read this as `PMaybe :: PType -> (S -> Type)`; and since we know that that `PType` and `S -> Type` and synonyms, we read this as `PMaybe :: PType -> PType`, which should agree without intuition.
+Since the kind arrow `->` is right-associative, we first read this as `PMaybe :: PType -> (S -> Type)`; and since we know that that `PType` and `S -> Type` and synonyms, we read this as `PMaybe :: PType -> PType`, which should agree with our intuition.
 
 The kind `S -> Type` is mysterious at first, but we recall that `PType`s are _tags_ on (unexecuted) computations indicating their result type. The `S` kind represents the computational context; thus, a `PType` expects to receive a _computational context_ represented by a value `s` whose type has kind `S` that it will tag to produce a `Type`. Note that end-users never instantiate the value `s` with a concrete value; it is simply a type-level mechanism to maintain functional purity.
 

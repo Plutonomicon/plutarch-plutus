@@ -1,4 +1,3 @@
 /result*
-/dist-newstyle
+/dist-*
 .direnv
-bench.csv

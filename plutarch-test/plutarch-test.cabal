@@ -1,11 +1,6 @@
-cabal-version: 2.4
+cabal-version: 3.0
 name:          plutarch-test
-version:       1.1.0
-
-flag development
-  description: Enable tracing functions within plutarch.
-  manual:      True
-  default:     False
+version:       1.2.0
 
 common c
   default-language:   Haskell2010
@@ -13,9 +8,11 @@ common c
     NoStarIsType
     BangPatterns
     BinaryLiterals
+    BlockArguments
     ConstrainedClassMethods
     ConstraintKinds
     DataKinds
+    DefaultSignatures
     DeriveAnyClass
     DeriveDataTypeable
     DeriveFoldable
@@ -34,6 +31,7 @@ common c
     FlexibleContexts
     FlexibleInstances
     ForeignFunctionInterface
+    FunctionalDependencies
     GADTSyntax
     GeneralisedNewtypeDeriving
     HexFloatLiterals
@@ -49,81 +47,131 @@ common c
     OverloadedStrings
     PartialTypeSignatures
     PatternGuards
+    PatternSynonyms
     PolyKinds
     PostfixOperators
+    QuantifiedConstraints
     RankNTypes
     RelaxedPolyRec
+    RoleAnnotations
     ScopedTypeVariables
     StandaloneDeriving
     StandaloneKindSignatures
     TraditionalRecordSyntax
     TupleSections
     TypeApplications
-    TypeFamilies
+    TypeFamilyDependencies
     TypeOperators
     TypeSynonymInstances
     ViewPatterns
 
   ghc-options:
-    -Wall -Wcompat -Wincomplete-uni-patterns -Wno-unused-do-bind
-    -Wno-partial-type-signatures -Wmissing-export-lists -Werror
-    -Wincomplete-record-updates -Wmissing-deriving-strategies
-    -Wno-name-shadowing -Wunused-foralls -fprint-explicit-foralls
-    -fprint-explicit-kinds
+    -Weverything -Wno-unused-do-bind -Wno-missing-kind-signatures
+    -Wno-partial-type-signatures -Werror -Wno-implicit-prelude
+    -Wno-name-shadowing -Wno-unsafe -Wno-missing-safe-haskell-mode
+    -Wno-missing-local-signatures -Wno-prepositive-qualified-module
+    -Wno-missing-import-lists -Wno-monomorphism-restriction
+    -Wno-all-missed-specializations -Wno-unrecognised-warning-flags
+    -fprint-equality-relations -fprint-explicit-kinds
+    -fprint-explicit-coercions -fprint-explicit-foralls
 
-common deps
+library
+  import:          c
+  hs-source-dirs:  .
+  exposed-modules:
+    Plutarch.Test
+    Plutarch.Test.Benchmark
+    Plutarch.Test.Golden
+    Plutarch.Test.ListSyntax
+    Plutarch.Test.Property
+    Plutarch.Test.Property.Extra
+    Plutarch.Test.Property.Gen
+    Plutarch.Test.Property.HaskEquiv
+    Plutarch.Test.Property.Marshal
+    Plutarch.Test.Run
+
   build-depends:
-    , aeson               >=2.0
+    , aeson                 >=2.0
     , base
     , bytestring
+    , containers
+    , data-default
+    , directory
     , filepath
-    , generics-sop
+    , hedgehog
+    , hspec
+    , hspec-core
+    , hspec-golden
+    , mtl
     , plutarch
-    , plutarch-benchmark
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
-    , tasty
+    , quickcheck-instances
+    , serialise
+    , sop-core
+    , tasty-hunit
+    , tasty-quickcheck
+    , text
+
+executable plutarch-test
+  import:         c
+  main-is:        Main.hs
+  hs-source-dirs: tests
+  build-depends:
+    , base
+    , base16-bytestring
+    , bytestring
+    , cborg
+    , data-default
+    , hedgehog
+    , hspec
+    , hspec-hedgehog
+    , plutarch
+    , plutarch-extra
+    , plutarch-test
+    , plutus-core
+    , plutus-ledger-api
+    , plutus-tx
+    , quickcheck-instances
+    , serialise
+    , sop-core
     , tasty-hunit
     , tasty-quickcheck
     , text
     , transformers
 
-library
-  import:          c, deps
-  hs-source-dirs:  src
-  exposed-modules: Plutarch.Test
-
-executable plutarch-test
-  import:         c, deps
-  type:           exitcode-stdio-1.0
-  main-is:        Main.hs
-  hs-source-dirs: src
-
-  if impl(ghc >=9.0)
-    other-modules:
-      Plutarch.FieldSpec
-      Plutarch.MonadicSpec
-
   other-modules:
     Plutarch.ApiSpec
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
+    Plutarch.EitherSpec
+    Plutarch.Extra.ApiSpec
+    Plutarch.Extra.ByteStringSpec
+    Plutarch.Extra.IntervalSpec
+    Plutarch.Extra.ListSpec
+    Plutarch.Extra.MaybeSpec
+    Plutarch.FieldSpec
     Plutarch.IntegerSpec
+    Plutarch.LiftSpec
     Plutarch.ListSpec
+    Plutarch.MaybeSpec
+    Plutarch.MonadicSpec
+    Plutarch.PairSpec
     Plutarch.PIsDataSpec
     Plutarch.PLamSpec
     Plutarch.PlutusTypeSpec
+    Plutarch.POrdSpec
     Plutarch.RationalSpec
     Plutarch.RecursionSpec
     Plutarch.ScriptsSpec
+    Plutarch.ShowSpec
+    Plutarch.SpecTypes
     Plutarch.StringSpec
-    Plutarch.Test
     Plutarch.TraceSpec
+    Plutarch.TryFromSpec
     Plutarch.UnitSpec
+    Plutarch.UPLCSpec
     Spec
-
-  if flag(development)
-    cpp-options: -DDevelopment
 
   ghc-options:    -threaded -rtsopts -with-rtsopts=-N

@@ -3,6 +3,7 @@ module Plutarch.Monadic ((>>=), (>>), fail) where
 import Prelude hiding (fail, (>>), (>>=))
 
 import Data.String (fromString)
+import Plutarch (pgetConfig, tracingMode, pattern DetTracing)
 import Plutarch.Prelude
 
 {- | Bind function used within do syntax.
@@ -49,4 +50,7 @@ Enables elegant usage of 'ptrace' and similar.
 @
 -}
 fail :: String -> Term s a
-fail msg = ptraceError (fromString msg)
+fail s =
+  pgetConfig \c -> case tracingMode c of
+    DetTracing -> ptraceError "Pattern matching failure in QualifiedDo syntax"
+    _ -> ptraceError $ fromString s
