@@ -1,5 +1,5 @@
 module Plutarch.Pretty.Internal.Types (
-  PrettyCursor (..),
+    PrettyCursor (..),
   PrettyState (..),
   PrettyMonad,
   forkState,
@@ -96,7 +96,7 @@ builtinFunFromName res =
   where
     prefixLen = Txt.length forcedPrefix
     helper s = find (\e -> showText e == s) builtinFunNames
-    builtinFunNames = [minBound .. maxBound :: PLC.DefaultFun]
+    builtinFunNames = [minBound .. maxBound] :: [PLC.DefaultFun]
 
 showText :: Show a => a -> Text
 showText = Txt.pack . show

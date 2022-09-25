@@ -2,6 +2,7 @@ module Plutarch (
   (PI.:-->),
   PI.ClosedTerm,
   PI.compile,
+  PI.Script,
   PI.Dig,
   PI.hashTerm,
   PI.papp,

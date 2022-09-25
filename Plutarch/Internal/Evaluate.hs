@@ -11,13 +11,13 @@ import PlutusCore.Evaluation.Machine.ExBudget (
  )
 import PlutusCore.Evaluation.Machine.ExBudgetingDefaults (defaultCekParameters)
 import PlutusCore.Evaluation.Machine.ExMemory (ExCPU (ExCPU), ExMemory (ExMemory))
-import PlutusLedgerApi.V1.Scripts (Script (Script))
 import UntypedPlutusCore (
   Program (Program),
   Term,
  )
 import qualified UntypedPlutusCore as UPLC
 import qualified UntypedPlutusCore.Evaluation.Machine.Cek as Cek
+import Plutarch.Script (Script (Script))
 
 type EvalError = (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun)
 

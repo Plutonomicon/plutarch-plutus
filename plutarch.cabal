@@ -1,75 +1,56 @@
 cabal-version:      3.0
 name:               plutarch
-version:            1.2.0
+version:            1.3.0
 author:             Las Safin <me@las.rs>
 license:            MIT
 extra-source-files: README.md
 tested-with:        GHC ==9.2.3
 
 common c
-  default-language:   Haskell2010
+  default-language:   GHC2021
   default-extensions:
+    NoFlexibleInstances
+    NoMonomorphismRestriction
     NoStarIsType
-    BangPatterns
-    BinaryLiterals
     BlockArguments
-    ConstrainedClassMethods
-    ConstraintKinds
     DataKinds
     DefaultSignatures
-    DefaultSignatures
     DeriveAnyClass
-    DeriveDataTypeable
-    DeriveFoldable
-    DeriveFunctor
-    DeriveGeneric
-    DeriveLift
-    DeriveTraversable
     DerivingStrategies
     DerivingVia
-    EmptyCase
-    EmptyDataDecls
-    EmptyDataDeriving
-    ExistentialQuantification
-    ExplicitForAll
-    FlexibleContexts
-    ForeignFunctionInterface
+    DisambiguateRecordFields
+    DuplicateRecordFields
     FunctionalDependencies
-    GADTSyntax
-    GeneralisedNewtypeDeriving
-    HexFloatLiterals
-    ImplicitPrelude
+    GADTs
     ImpredicativeTypes
-    InstanceSigs
-    KindSignatures
     LambdaCase
-    MonomorphismRestriction
-    MultiParamTypeClasses
-    NamedFieldPuns
-    NamedWildCards
-    NumericUnderscores
+    LexicalNegation
+    LiberalTypeSynonyms
+    MonadComprehensions
+    MultiWayIf
+    NegativeLiterals
+    NondecreasingIndentation
+    NumDecimals
+    OverloadedLabels
+    OverloadedLists
     OverloadedStrings
-    PartialTypeSignatures
-    PatternGuards
+    PackageImports
     PatternSynonyms
-    PolyKinds
-    PostfixOperators
     QualifiedDo
     QuantifiedConstraints
+    QuasiQuotes
     RankNTypes
-    RelaxedPolyRec
+    RecordWildCards
+    RecursiveDo
     RoleAnnotations
-    ScopedTypeVariables
-    StandaloneDeriving
-    StandaloneKindSignatures
-    TraditionalRecordSyntax
-    TupleSections
-    TypeApplications
+    TypeFamilies
     TypeFamilyDependencies
-    TypeOperators
-    TypeSynonymInstances
+    UnicodeSyntax
+    UnliftedFFITypes
+    UnliftedNewtypes
     ViewPatterns
     OverloadedRecordDot
+    PartialTypeSignatures
 
   ghc-options:
     -Weverything -Wno-unused-do-bind -Wno-missing-kind-signatures
@@ -79,7 +60,7 @@ common c
     -Wno-missing-import-lists -Wno-monomorphism-restriction
     -Wno-all-missed-specializations -Wno-unrecognised-warning-flags
     -fprint-equality-relations -fprint-explicit-kinds
-    -fprint-explicit-coercions -fprint-explicit-foralls
+    -fprint-explicit-foralls
 
 library
   import:          c
@@ -93,6 +74,7 @@ library
     Plutarch.Api.V1.Crypto
     Plutarch.Api.V1.DCert
     Plutarch.Api.V1.Interval
+    Plutarch.Script
     Plutarch.Api.V1.Maybe
     Plutarch.Api.V1.Scripts
     Plutarch.Api.V1.Time

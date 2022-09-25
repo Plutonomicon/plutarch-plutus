@@ -61,7 +61,7 @@ import Plutarch.Test.Golden (
   (@|),
  )
 import Plutarch.Test.Run (hspecAndReturnForest, noUnusedGoldens, noUnusedGoldens')
-import qualified PlutusLedgerApi.V1.Scripts as Scripts
+import qualified Plutarch.Script as Scripts
 import Test.Hspec (Expectation, expectationFailure, shouldBe, shouldSatisfy)
 import Test.Tasty.HUnit (assertFailure)
 

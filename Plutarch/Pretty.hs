@@ -18,7 +18,7 @@ import qualified Prettyprinter as PP
 
 import Plutarch.Internal (ClosedTerm, Config, compile)
 import qualified PlutusCore as PLC
-import PlutusLedgerApi.V1.Scripts (Script (unScript))
+import Plutarch.Script (Script (unScript))
 import UntypedPlutusCore (
   DeBruijn (DeBruijn),
   DefaultFun,

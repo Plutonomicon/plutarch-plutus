@@ -51,8 +51,8 @@ import Plutarch.Evaluate (evalScript)
 import Plutarch.Prelude
 import Plutarch.Test.Benchmark (Benchmark, mkBenchmark, scriptSize)
 import Plutarch.Test.ListSyntax (ListSyntax, listSyntaxAdd, listSyntaxAddSubList, runListSyntax)
-import PlutusLedgerApi.V1.Scripts (Script)
-import qualified PlutusLedgerApi.V1.Scripts as Scripts
+import Plutarch.Script (Script)
+import qualified Plutarch.Script as Scripts
 import Test.Hspec (Expectation, Spec, describe, it)
 import Test.Hspec.Core.Spec (SpecM, getSpecDescriptionPath)
 

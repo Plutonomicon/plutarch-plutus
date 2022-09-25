@@ -81,11 +81,11 @@ instance PShow PString where
               -- https://en.wikipedia.org/wiki/UTF-8#Encoding
               let doubleQuote :: Term _ PInteger = 34 -- `"`
                   escapeSlash :: Term _ PInteger = 92 -- `\`
-                  rec = pconsBS # x #$ self # xs
+                  rec_ = pconsBS # x #$ self # xs
                in pif
                     (x #== doubleQuote)
-                    (pconsBS # escapeSlash # rec)
-                    rec
+                    (pconsBS # escapeSlash # rec_)
+                    rec_
 
 instance PShow PBool where
   pshow' _ x = pshowBool # x

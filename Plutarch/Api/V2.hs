@@ -35,29 +35,11 @@ module Plutarch.Api.V2 (
   V1.PMap (PMap),
 
   -- ** Script Utils
-  validatorHash,
-  mintingPolicySymbol,
-  stakeValidatorHash,
   scriptHash,
   datumHash,
   redeemerHash,
   dataHash,
-  mkValidator,
-  mkStakeValidator,
-  mkMintingPolicy,
-  type PValidator,
-  type PMintingPolicy,
-  type PStakeValidator,
 ) where
-
-import Data.Coerce (coerce)
-import qualified Data.Text as T
-import GHC.Stack (HasCallStack)
-
-import qualified PlutusLedgerApi.V1.Scripts as Plutus
-
-import Plutarch (Config, compile)
-import Plutarch.Prelude
 
 import qualified Plutarch.Api.V2.Contexts as Contexts
 import qualified Plutarch.Api.V2.Tx as Tx
@@ -73,43 +55,9 @@ import qualified Plutarch.Api.V1.Scripts as V1
 import qualified Plutarch.Api.V1.Time as V1
 import qualified Plutarch.Api.V1.Tuple as V1
 import qualified Plutarch.Api.V1.Value as V1
-import qualified PlutusLedgerApi.V1.Value as Plutus
-
--- On-chain Script Types
-
--- | a Validator Term
-type PValidator = PData :--> PData :--> Contexts.PScriptContext :--> POpaque
-
--- | a MintingPolicy Term
-type PMintingPolicy = PData :--> Contexts.PScriptContext :--> POpaque
-
--- | a StakeValidator Term
-type PStakeValidator = PData :--> Contexts.PScriptContext :--> POpaque
-
--- | Compile a Validator
-mkValidator :: HasCallStack => Config -> ClosedTerm PValidator -> Plutus.Validator
-mkValidator config s = Plutus.Validator $ either (error . T.unpack) id $ compile config s
-
--- | Compile a MintingPolicy
-mkMintingPolicy :: HasCallStack => Config -> ClosedTerm PMintingPolicy -> Plutus.MintingPolicy
-mkMintingPolicy config s = Plutus.MintingPolicy $ either (error . T.unpack) id $ compile config s
-
--- | Compile a StakeValidator
-mkStakeValidator :: HasCallStack => Config -> ClosedTerm PStakeValidator -> Plutus.StakeValidator
-mkStakeValidator config s = Plutus.StakeValidator $ either (error . T.unpack) id $ compile config s
+import PlutusLedgerApi.V1.Scripts (ScriptHash)
+import Plutarch.Script (Script)
 
 -- | Hash a Script, with the correct prefix for Plutus V2
-scriptHash :: Plutus.Script -> Plutus.ScriptHash
+scriptHash :: Script -> ScriptHash
 scriptHash = hashScriptWithPrefix "\x02"
-
--- | Hash a Validator, with the correct prefix for Plutus V2
-validatorHash :: Plutus.Validator -> Plutus.ValidatorHash
-validatorHash = coerce scriptHash
-
--- | Hash a MintingPolicy, with the correct prefix for Plutus V2
-mintingPolicySymbol :: Plutus.MintingPolicy -> Plutus.CurrencySymbol
-mintingPolicySymbol = coerce scriptHash
-
--- | Hash a StakeValidator, with the correct prefix for Plutus V2
-stakeValidatorHash :: Plutus.StakeValidator -> Plutus.StakeValidatorHash
-stakeValidatorHash = coerce scriptHash

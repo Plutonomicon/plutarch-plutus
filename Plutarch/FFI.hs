@@ -69,12 +69,13 @@ import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Show (PShow)
 import Plutarch.String (PString)
 import Plutarch.Unit (PUnit)
-import PlutusLedgerApi.V1.Scripts (Script (Script, unScript), fromCompiledCode)
+import Plutarch.Script (Script (Script))
 import PlutusTx.Builtins.Internal (BuiltinBool, BuiltinByteString, BuiltinData, BuiltinUnit)
-import PlutusTx.Code (CompiledCode, CompiledCodeIn (DeserializedCode))
+import PlutusTx.Code (getPlc, CompiledCode, CompiledCodeIn (DeserializedCode))
 import PlutusTx.Prelude (BuiltinString)
 import UntypedPlutusCore (fakeNameDeBruijn)
 import qualified UntypedPlutusCore as UPLC
+import Control.Lens (over)
 
 {- | Plutarch type of lists compatible with the PlutusTx encoding of Haskell
  lists and convertible with the regular 'PList' using 'plistToTx' and
@@ -125,7 +126,12 @@ unsafeForeignExport config t = DeserializedCode program Nothing mempty
 
 -- | Seriously unsafe, may fail at run time or result in unexpected behaviour in your on-chain validator.
 unsafeForeignImport :: CompiledCode t -> ClosedTerm p
-unsafeForeignImport c = Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm $ unScript $ fromCompiledCode c) []
+unsafeForeignImport c = Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm $ toNameless $ getPlc c) []
+  where
+    toNameless ::
+      UPLC.Program UPLC.NamedDeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
+      UPLC.Program UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+    toNameless = over UPLC.progTerm $ UPLC.termMapNames UPLC.unNameDeBruijn
 
 -- | Convert a 'PList' to a 'PTxList', perhaps before exporting it with 'foreignExport'.
 plistToTx :: Term s (PList a :--> PTxList a)

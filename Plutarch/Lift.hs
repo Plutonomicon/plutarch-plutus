@@ -39,7 +39,7 @@ import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
 import qualified PlutusCore as PLC
 import PlutusCore.Builtin (KnownTypeError, readKnownConstant)
 import PlutusCore.Evaluation.Machine.Exception (_UnliftingErrorE)
-import qualified PlutusLedgerApi.V1.Scripts as Scripts
+import Plutarch.Script (unScript)
 import PlutusTx (BuiltinData, Data, builtinDataToData, dataToBuiltinData)
 import PlutusTx.Builtins.Class (FromBuiltin, ToBuiltin, fromBuiltin, toBuiltin)
 import qualified UntypedPlutusCore as UPLC
@@ -112,7 +112,7 @@ plift' :: forall p. PUnsafeLiftDecl p => Config -> ClosedTerm p -> Either LiftEr
 plift' config prog = case compile config prog of
   Left msg -> Left $ LiftError_CompilationError msg
   Right script -> case evalScriptHuge script of
-    (Right (Scripts.unScript -> UPLC.Program _ _ term), _, _) ->
+    (Right (unScript -> UPLC.Program _ _ term), _, _) ->
       case readKnownConstant term of
         Right r -> case pconstantFromRepr r of
           Just h -> Right h

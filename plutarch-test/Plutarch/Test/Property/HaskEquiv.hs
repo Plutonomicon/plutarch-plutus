@@ -34,7 +34,7 @@ import qualified Data.Text as T
 import Hedgehog (Gen, Property, PropertyT, annotate, annotateShow, assert, forAll, property, (===))
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
 import PlutusCore.Evaluation.Machine.ExMemory (ExCPU (ExCPU), ExMemory (ExMemory))
-import PlutusLedgerApi.V1.Scripts (Script (Script, unScript))
+import Plutarch.Script (Script (Script, unScript))
 
 import Plutarch (Config (Config, tracingMode), compile, pattern DetTracing)
 import Plutarch.Evaluate (EvalError, evalScript')

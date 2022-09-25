@@ -12,7 +12,7 @@ import qualified PlutusLedgerApi.V1 as Plutus
 
 import Plutarch.Api.V1.Crypto (PPubKeyHash)
 import Plutarch.Api.V1.Maybe (PMaybeData)
-import Plutarch.Api.V1.Scripts (PValidatorHash)
+import Plutarch.Api.V1.Scripts (PScriptHash)
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
@@ -26,7 +26,7 @@ import Plutarch.Prelude
 
 data PCredential (s :: S)
   = PPubKeyCredential (Term s (PDataRecord '["_0" ':= PPubKeyHash]))
-  | PScriptCredential (Term s (PDataRecord '["_0" ':= PValidatorHash]))
+  | PScriptCredential (Term s (PDataRecord '["_0" ':= PScriptHash]))
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PShow, PTryFrom PData)
 instance DerivePlutusType PCredential where type DPTStrat _ = PlutusTypeData

@@ -45,10 +45,10 @@ instance (PIsData a, POrd a) => POrd (PMaybeData a)
 
 _pmaybeLT ::
   Bool ->
-  ( forall s rec.
-    rec ~ '["_0" ':= a] =>
-    Term s (PDataRecord rec) ->
-    Term s (PDataRecord rec) ->
+  ( forall s rec_.
+    rec_ ~ '["_0" ':= a] =>
+    Term s (PDataRecord rec_) ->
+    Term s (PDataRecord rec_) ->
     Term s PBool
   ) ->
   Term s (PMaybeData a :--> PMaybeData a :--> PBool)

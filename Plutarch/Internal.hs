@@ -7,6 +7,7 @@ module Plutarch.Internal (
   -- | $term
   Term (..),
   asClosedRawTerm,
+  Script,
   mapTerm,
   plam',
   plet,
@@ -58,7 +59,7 @@ import Plutarch.Internal.Evaluate (evalScript)
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import qualified PlutusCore as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
-import PlutusLedgerApi.V1.Scripts (Script (Script))
+import Plutarch.Script (Script (Script))
 import qualified UntypedPlutusCore as UPLC
 
 {- $hoisted
@@ -81,7 +82,7 @@ type Dig = Digest Blake2b_160
 data HoistedTerm = HoistedTerm Dig RawTerm
   deriving stock (Show)
 
-type UTerm = UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+type UTerm = UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 
 data RawTerm
   = RVar Word64

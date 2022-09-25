@@ -22,7 +22,7 @@ import Plutarch.Internal.PlutusType (
   pmatch',
  )
 import PlutusCore.Pretty (prettyPlcReadableDebug)
-import PlutusLedgerApi.V1.Scripts (Script (Script))
+import Plutarch.Script (Script (Script))
 
 -- | Prettyprint a compiled Script via the PLC pretty printer
 printScript :: Script -> String

@@ -13,7 +13,7 @@ import qualified Plutarch.Internal.Evaluate as E
 import Data.Text (Text)
 import Plutarch.Internal (ClosedTerm, Config, RawTerm (RCompiled), Term (..), TermResult (TermResult), compile)
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
-import PlutusLedgerApi.V1.Scripts (Script (Script))
+import Plutarch.Script (Script (Script))
 import qualified UntypedPlutusCore as UPLC
 
 -- | Compile and evaluate term.
