@@ -11,6 +11,7 @@ module Plutarch.Extra.Map (
   -- * Modification
   pupdate,
   padjust,
+  pmapWithKey,
 
   -- * Folds
   pfoldMapWithKey,
@@ -31,7 +32,6 @@ import Data.Foldable (foldl')
 import Plutarch.Api.V1.AssocMap (
   KeyGuarantees (Sorted, Unsorted),
   PMap (PMap),
-  pdelete,
   pempty,
   pinsert,
   plookup,
@@ -41,11 +41,27 @@ import Plutarch.Extra.Maybe (passertPJust)
 import qualified Plutarch.List as PList
 import Plutarch.Prelude
 
+{- | Like regular 'fmap' but it provides key of each element that is being
+     modified.
+-}
+pmapWithKey ::
+  forall (k :: PType) (a :: PType) (b :: PType) (keysort :: KeyGuarantees) (s :: S).
+  (PIsData k, PIsData a, PIsData b) =>
+  Term s ((k :--> a :--> b) :--> PMap keysort k a :--> PMap 'Unsorted k b)
+pmapWithKey = phoistAcyclic $
+  plam $ \f kvs ->
+    pmatch kvs $ \(PMap kvs') ->
+      pcon . PMap $ PList.pmap #
+        (plam $ \x ->
+            plet (pkvPairKey # x) $ \key ->
+              ppairDataBuiltin #
+                pdata key #$
+                pdata $ f # key # (pkvPairValue # x)
+        ) #
+        kvs'
+
 {- | If a value exists at the specified key, apply the function argument to it;
  otherwise, do nothing.
-
- This is necessarily linear in the size of the map performance-wise, as we
- have to scan the entire map to find the key in the worst case.
 -}
 padjust ::
   forall (k :: PType) (v :: PType) (s :: S).
@@ -53,24 +69,7 @@ padjust ::
   Term s ((v :--> v) :--> k :--> PMap 'Unsorted k v :--> PMap 'Unsorted k v)
 padjust = phoistAcyclic $
   plam $ \f key kvs ->
-    pmatch kvs $ \(PMap kvs') ->
-      pcon . PMap $ PList.pmap # (go # f # key) # kvs'
-  where
-    go ::
-      forall (s' :: S).
-      Term
-        s'
-        ( (v :--> v)
-            :--> k
-            :--> PBuiltinPair (PAsData k) (PAsData v)
-            :--> PBuiltinPair (PAsData k) (PAsData v)
-        )
-    go = phoistAcyclic $
-      plam $ \f target kv ->
-        pif
-          ((pkvPairKey # kv) #== target)
-          (ppairDataBuiltin # (pfstBuiltin # kv) # pdata (f #$ pkvPairValue # kv))
-          kv
+    pmapWithKey # (plam $ \k' a -> pif (k' #== key) (f # a) a) # kvs
 
 {- | As 'pkeysEqual', but requires only 'PEq' constraints for the keys, and
  works for 'Unsorted' 'PMap's. This requires a number of equality comparisons
@@ -294,11 +293,21 @@ pupdate ::
   (PIsData k, PIsData v, POrd k) =>
   Term s ((v :--> PMaybe v) :--> k :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
 pupdate = phoistAcyclic $
-  plam $ \updater key kvs -> pmatch (plookup # key # kvs) $ \case
-    PNothing -> kvs
-    PJust val -> pmatch (updater # val) $ \case
-      PNothing -> pdelete # key # kvs
-      PJust newVal -> pinsert # key # newVal # kvs
+  plam $ \updater key kvs -> pmatch kvs $ \(PMap kvs') ->
+    pcon . PMap $ (
+      precList
+      (\self x xs ->
+         plet (pfromData $ pfstBuiltin # x) $ \k ->
+          pif
+            (k #== key)
+            (pmatch (updater # (pfromData $ psndBuiltin # x)) $ \case
+                PNothing -> self # xs
+                PJust v -> pcons # (ppairDataBuiltin # pdata k # pdata v) #$ self # xs
+            )
+            (pif (key #<= k) (pcons # x # xs) (pcons # x #$ self # xs))
+      )
+      (const pnil)
+      # kvs')
 
 {- | Left-associative fold of a 'PMap' with keys. Keys and values will be
  presented in key order.
