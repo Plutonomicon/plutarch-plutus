@@ -37,7 +37,7 @@ newtype PScriptContext (s :: S)
           )
       )
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PDataFields, PEq)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PShow)
 
 instance DerivePlutusType PScriptContext where type DPTStrat _ = PlutusTypeData
 
@@ -66,7 +66,7 @@ newtype PTxInfo (s :: S)
           )
       )
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PDataFields, PEq)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PShow)
 
 instance DerivePlutusType PTxInfo where type DPTStrat _ = PlutusTypeData
 
