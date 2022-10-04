@@ -25,12 +25,12 @@ A delayed term evaluates when it is _forced_ using the `pforce` function. Forcin
 pforce :: Term s (PDelayed a) -> Term s a
 ```
 
-Thus, if we wanted a lazy `pif`, we could do the following:
+Thus, if we wanted a lazy `hif`, we could do the following:
 
 ```hs
--- | Utilizing Haskell level functions with `pdelay` and `pforce` to have lazy wrapper around `pif`.
-hif :: Term s PBool -> Term s a -> Term s a -> Term s a
-hif cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay whenFalse
+-- | Utilizing Haskell level functions with `pdelay` and `pforce` to have lazy wrapper around `pif'`.
+hif' :: Term s PBool -> Term s a -> Term s a -> Term s a
+hif' cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay whenFalse
 ```
 
 A note of caution: calling `pforce` on the same delayed term twice will execute the computation each time. Users familiar with Haskell's handling of laziness -- where forcing a thunk twice never duplicates computation -- should note that UPLC behaves differently.
