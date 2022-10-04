@@ -35,9 +35,10 @@ As a preview, the bridge Plutarch provides between Haskell and UPLC looks someth
     |                  *Haskell World*                   |
     ------------------------------------------------------
     | Values with types like `Bool`, `Integer`, `Maybe a`|
+    | and regular Haskell functions like a -> b          |
     ------------------------------------------------------
                                ^                     |
-     (functions like `plift`)--|                     |--(functions like `pconstant`)
+     (functions like `plift`)--|                     |--(functions like `pconstant` or `plam`)
                                |                     |
                                |                     v         (`pcon`)
     -------------------------------------------------------    |                     -------------------------------------------------------
