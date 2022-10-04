@@ -10,6 +10,7 @@ When this guide uses the term "Plutarch Type" we explicitly talk about a type of
 ghci> :k PBool
 PBool :: S -> Type
 ```
+(Note: `Type` is the same thing as `*`)
 
 Thus, any time we see the kind `S -> Type`, we should mentally substitute its kind synonym `PType`. We reiterate: types of kind `PType`, should be considered as _tags_ on computation. They do not represent types of values in the same way as standard Haskell types.
 
