@@ -97,6 +97,13 @@ These types deserve some explaination.
 
 That is, if we ask `justTerm` what it will return when evaluated, it responds, "You should interpret the value I give you as either `Nothing` or `Just Integer`." Of course, we know that the result will always be `Just 3`; but this is the general mechanism to declare a function requiring a `Maybe`.
 
+If you don't want to pretend to not know `x` during compile time, another example may be:
+
+```hs 
+hPJustPInteger :: Term s PInteger -> Term s (PMaybe PInteger)
+hPJustPInteger x = pcon (PJust x)
+```
+
 The `pcon` function is a method of the [`PCon` typeclass](./../../Typeclasses/PlutusType,%20PCon,%20and%20PMatch.md).
 
 ## Overloaded literals

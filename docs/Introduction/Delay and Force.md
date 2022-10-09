@@ -7,7 +7,11 @@ Plutarch, like UPLC, is strict by default; this is in contrast to Haskell, which
 This behavior may be undesirable, for example, when one of two `Term`s are branched upon within an `if` statement. The Plutarch level function `pif'` is naturally strict in its arguments - and therefore evaluate both branches before even entering the function body.
 
 ```hs
-pif' :: Term s (PBool :--> b :--> b :--> b)
+-- obscuring the then-else part of the syntax, solely to make the Haskell- and Plutarch-versions look more alike
+hif :: Bool -> a -> a -> a
+hif cond whenTrue whenFalse = if cond then whenTrue else whenFalse
+
+pif' :: Term s (PBool :--> pa :--> pa :--> pa)
 pif' = plam hif
 ```
 
