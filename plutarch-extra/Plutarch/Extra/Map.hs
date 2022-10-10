@@ -1,4 +1,5 @@
 {-# LANGUAGE QuantifiedConstraints #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Extra.Map (
   -- * Lookup
@@ -29,6 +30,7 @@ module Plutarch.Extra.Map (
 ) where
 
 import Data.Foldable (foldl')
+import GHC.Exts (IsList (Item, fromList, toList))
 import Plutarch.Api.V1.AssocMap (
   KeyGuarantees (Sorted, Unsorted),
   PMap (PMap),
@@ -51,14 +53,16 @@ pmapWithKey ::
 pmapWithKey = phoistAcyclic $
   plam $ \f kvs ->
     pmatch kvs $ \(PMap kvs') ->
-      pcon . PMap $ PList.pmap #
-        (plam $ \x ->
-            plet (pkvPairKey # x) $ \key ->
-              ppairDataBuiltin #
-                pdata key #$
-                pdata $ f # key # (pkvPairValue # x)
-        ) #
-        kvs'
+      pcon . PMap $
+        PList.pmap
+          # ( plam $ \x ->
+                plet (pkvPairKey # x) $ \key ->
+                  ppairDataBuiltin
+                    # pdata key
+                    #$ pdata
+                    $ f # key # (pkvPairValue # x)
+            )
+          # kvs'
 
 {- | If a value exists at the specified key, apply the function argument to it;
  otherwise, do nothing.
@@ -250,6 +254,16 @@ psortedMapFromFoldable = foldl' go pempty
       Term s' (PMap 'Sorted k v)
     go acc (key, val) = pinsert # key # val # acc
 
+instance (PIsData k, PIsData v, POrd k) => IsList (Term s (PMap 'Unsorted k v)) where
+  type Item (Term s (PMap 'Unsorted k v)) = (Term s k, Term s v)
+  fromList = punsortedMapFromFoldable
+  toList = error "unimplemented"
+
+instance (PIsData k, PIsData v, POrd k) => IsList (Term s (PMap 'Sorted k v)) where
+  type Item (Term s (PMap 'Sorted k v)) = (Term s k, Term s v)
+  fromList = psortedMapFromFoldable
+  toList = error "unimplemented"
+
 {- | Get a list-like structure full of the keys of the argument 'PMap'. If the
  'PMap' is 'Sorted', the keys will maintain that order, and will be unique;
  otherwise, the order is unspecified, and duplicates may exist.
@@ -294,20 +308,21 @@ pupdate ::
   Term s ((v :--> PMaybe v) :--> k :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
 pupdate = phoistAcyclic $
   plam $ \updater key kvs -> pmatch kvs $ \(PMap kvs') ->
-    pcon . PMap $ (
-      precList
-      (\self x xs ->
-         plet (pfromData $ pfstBuiltin # x) $ \k ->
-          pif
-            (k #== key)
-            (pmatch (updater # (pfromData $ psndBuiltin # x)) $ \case
-                PNothing -> self # xs
-                PJust v -> pcons # (ppairDataBuiltin # pdata k # pdata v) #$ self # xs
-            )
-            (pif (key #<= k) (pcons # x # xs) (pcons # x #$ self # xs))
+    pcon . PMap $
+      ( precList
+          ( \self x xs ->
+              plet (pfromData $ pfstBuiltin # x) $ \k ->
+                pif
+                  (k #== key)
+                  ( pmatch (updater # (pfromData $ psndBuiltin # x)) $ \case
+                      PNothing -> self # xs
+                      PJust v -> pcons # (ppairDataBuiltin # pdata k # pdata v) #$ self # xs
+                  )
+                  (pif (key #<= k) (pcons # x # xs) (pcons # x #$ self # xs))
+          )
+          (const pnil)
+          # kvs'
       )
-      (const pnil)
-      # kvs')
 
 {- | Left-associative fold of a 'PMap' with keys. Keys and values will be
  presented in key order.
