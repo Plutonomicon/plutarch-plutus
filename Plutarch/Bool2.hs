@@ -8,189 +8,280 @@
 module Plutarch.Bool2 where
 
 import Data.List.NonEmpty (nonEmpty)
--- import Generics.SOP (
---   All,
---   All2,
---   HCollapse (hcollapse),
---   K (K),
---   NP,
---   Proxy (Proxy),
---   SOP (SOP),
---   ccompare_NS,
---   hcliftA2,
---  )
--- import Plutarch.Internal (
---   PDelayed,
---   S,
---   Term,
---   pdelay,
---   pforce,
---   phoistAcyclic,
---   plet,
---   (#),
---   (#$),
---   (#->),
---  )
 import Data.Kind (Type, Constraint)
-
+import Generics.SOP (
+  All,
+  All2,
+  HCollapse (hcollapse),
+  K (K),
+  NP,
+  Proxy (Proxy),
+  SOP (SOP),
+  ccompare_NS,
+  hcliftA2,
+ )
 import Plutarch.Core (Term)
-import Plutarch.Core
+import Plutarch.Generics
+import Data.Functor.Compose
+import Plutarch.Core hiding (PBool(..))
 import Plutarch.PType
--- import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
--- import Plutarch.Internal.Other (
---   pto,
---  )
--- import Plutarch.Internal.PLam (plam)
 import GHC.Generics
+import Data.SOP.Constraint qualified as SOP
+import qualified Generics.SOP as SOP
+import qualified Data.SOP as SOP
+
 import Plutarch.Lam
 import Plutarch.Internal2
 import Plutarch.Internal.PlutusType2
-import Plutarch.Plutus
--- import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon, pcon', pmatch, pmatch')
-import Plutarch.Lift2 (
-  DerivePConstantDirect (DerivePConstantDirect),
-  PConstantDecl,
-  PLifted,
-  PUnsafeLiftDecl,
-  pconstant,
- )
-import Plutarch.Unsafe2 (punsafeBuiltin)
+import Plutarch.Plutus (PHoist(..), PForce(..), PDelayed(..))
 
-type PBoolCls s = (PPlutus' s, PIfThenElse s, PConstructable s PBool)
+type PBool :: PType
+data PBool ef = PFalse | PTrue
+  deriving 
+  stock (Show, Generic)
 
--- | Plutus 'BuiltinBool'
+  deriving PHasRepr
+  via HasPrimitiveRepr PBool
 
-instance PConstructable' Impl' PBool where
-  pconImpl :: PConcrete Impl' PBool -> Impl PBool
-  pconImpl = undefined 
+instance ( PLC edsl
+         , PHoist edsl 
+         , PConstructable edsl PBool
+         , PConstructable edsl (PLet PBool)
+         , PIfThenElse edsl
+         )
+      => PEq edsl PBool where
+  x #== y' = plet y' $ \y -> pif' # x # y #$ pnot # y
 
-  pmatchImpl :: Impl PBool -> (PConcrete Impl' PBool -> Term Impl' b) -> Term Impl' b
-  pmatchImpl = undefined 
+type  PIfThenElse :: PDSLKind -> Constraint
+class PIfThenElse edsl where
+  pif' :: Term edsl (PBool #-> a #-> a #-> a)
 
-instance PUnsafeLiftDecl PBool where type PLifted PBool = Bool
-deriving via DerivePConstantDirect Bool PBool instance PConstantDecl Bool
+infix 4 #==
 
-instance PlutusType PBool where
-  type PInner PBool = PBool
---   pcon' PTrue = pconstant True
---   pcon' PFalse = pconstant False
---   pmatch' b f = pforce $ pif' # b # pdelay (f PTrue) # pdelay (f PFalse)
+type  PEq :: PDSLKind -> PType -> Constraint
+class PEq edsl a where
+  (#==) :: Term edsl a -> Term edsl a -> Term edsl PBool
+  default (#==) 
+    :: PGeneric a
+    => PlutusType a
+    => All2 (PEq edsl) (PCode a)
+    => PHoist edsl
+    => PLC edsl
+    => PConstructable edsl PBool
+    => PIfThenElse edsl
+    => PConstructable edsl a
+    => PForce edsl
+    => IsPType edsl (PDelayed PBool)
+    => SOP.AllZip2 (SOP.LiftedCoercible (Pf' (Helper edsl)) (Term edsl)) (PCode a) (PCode a) 
+    => Term edsl a -> Term edsl a -> Term edsl PBool
+  a #== b = gpeq # a # b
 
--- instance PConstructable' ('PDSLKind (Term edsl)) PBool where
---   -- pconImpl :: PConcrete Impl' PBool -> Impl PBool
---   pconImpl PFalse = undefined 
---   pconImpl PTrue  = undefined 
+infix 4 #<=
+infix 4 #<
 
-  -- pmatchImpl :: Impl PBool -> (PConcrete Impl' PBool -> Term Impl' b) -> Term Impl' b
-  -- pmatchImpl (Impl impl) next = undefined 
+type  PPartialOrd :: PDSLKind -> PType -> Constraint
+class PEq edsl a => PPartialOrd edsl a where
+  (#<=) :: Term edsl a -> Term edsl a -> Term edsl PBool
+  (#<)  :: Term edsl a -> Term edsl a -> Term edsl PBool
+  default (#<=) 
+    :: POrd edsl (PInner a) 
+    => PUntyped edsl
+    => IsPType edsl a
+    => IsPType edsl (PInner a)
+    => Term edsl a -> Term edsl a -> Term edsl PBool
+  x #<= y = pto x #<= pto y
+  default (#<) 
+    :: POrd edsl (PInner a) 
+    => PUntyped edsl
+    => IsPType edsl a
+    => IsPType edsl (PInner a)
+    => Term edsl a -> Term edsl a -> Term edsl PBool
+  x #< y = pto x #< pto y
 
--- instance PConstructable' Impl' PBool where
---   pconImpl :: PConcrete Impl' PBool -> Impl PBool
---   pconImpl PFalse = pconstant True
---   pconImpl PTrue  = pconstant False
+type  POrd :: PDSLKind -> PType -> Constraint
+class PPartialOrd edsl a => POrd edsl a
 
---   pmatchImpl :: Impl PBool -> (PConcrete Impl' PBool -> Term Impl' b) -> Term Impl' b
---   pmatchImpl (Impl impl) next = undefined 
+pmin 
+  :: POrd edsl a 
+  => PConstructable edsl PBool
+  => IsPType edsl a
+  => PLC edsl
+  => PHoist edsl
+  => Term edsl (a #-> a #-> a)
+pmin = phoistAcyclic $ plam \a b -> pif (a #<= b) a b
 
--- class (PDSL edsl,
---        IsPTypeBackend
---          edsl
---          @Plutarch.PType.PPType
---          (a |> Sym (Plutarch.PType.D:R:PHs[0]))) =>
---       PConstructable' edsl a where
---   pconImpl :: GHC.Stack.Types.HasCallStack =>
---               PConcrete edsl a -> UnEDSLKind edsl a
---   pmatchImpl :: forall (b :: Plutarch.PType.PType).
---                 (GHC.Stack.Types.HasCallStack,
---                  IsPType
---                    edsl
---                    @Plutarch.PType.PPType
---                    (b |> Sym (Plutarch.PType.D:R:PHs[0]))) =>
---                 UnEDSLKind edsl a
---                 -> (PConcrete edsl a -> Term edsl b) -> Term edsl bu
+pmax 
+  :: POrd edsl a 
+  => PConstructable edsl PBool
+  => IsPType edsl a
+  => PLC edsl
+  => PHoist edsl
+  => Term edsl (a #-> a #-> a)
+pmax = phoistAcyclic $ plam \a b -> pif (a #<= b) b a
+
+--
 
 -- | Lazy if-then-else.
--- pif :: PConstructable' edsl (PSOPed PBool) => Term edsl PBool -> Term edsl a -> Term edsl a -> Term edsl a
--- pif b case_true case_false = pmatch b $ \case
---   PTrue -> case_true
---   PFalse -> case_false
-
-class    PLC a => PLC' a
-instance PLC a => PLC' a
-
-class    PSOP a => PSOP' a
-instance PSOP a => PSOP' a
+pif :: PConstructable edsl PBool 
+    => IsPType edsl a
+    => Term edsl PBool 
+    -> Term edsl a 
+    -> Term edsl a 
+    -> Term edsl a
+pif b case_true case_false = pmatch b \case
+  PTrue  -> case_true
+  PFalse -> case_false
 
 -- | Boolean negation for 'PBool' terms.
-pnot :: PBoolCls edsl
+pnot :: PIfThenElse edsl
+     => PLC edsl 
+     => PHoist edsl 
+     => PConstructable edsl PBool
      => Term edsl (PBool #-> PBool)
-pnot = phoistAcyclic do plam \x -> pif' # x # pcon PFalse # pcon PTrue
+pnot = phoistAcyclic $ plam \x -> 
+  pif' # x # pcon PFalse # pcon PTrue
 
 -- | Lazily evaluated boolean and for 'PBool' terms.
 infixr 3 #&&
 
-(#&&) :: PBoolCls s
-      => Term s PBool -> Term s PBool -> Term s PBool
+(#&&) :: PConstructable edsl PBool
+      => PLC edsl
+      => PHoist edsl
+      => PIfThenElse edsl
+      => PForce edsl
+      => IsPType edsl (PDelayed PBool)
+      => Term edsl PBool -> Term edsl PBool -> Term edsl PBool
 x #&& y = pforce $ pand # x # pdelay y
 
 -- | Lazily evaluated boolean or for 'PBool' terms.
 infixr 2 #||
 
-(#||) :: PBoolCls s
-      => Term s PBool -> Term s PBool -> Term s PBool
+(#||) 
+  :: PConstructable edsl PBool
+  => PLC edsl 
+  => PForce edsl 
+  => PHoist edsl 
+  => PIfThenElse edsl 
+  => IsPType edsl (PDelayed PBool)
+  => Term edsl PBool -> Term edsl PBool -> Term edsl PBool
 x #|| y = pforce $ por # x # pdelay y
 
--- -- | Hoisted, Plutarch level, lazily evaluated boolean and function.
-pand :: PBoolCls s => PIfThenElse s => PForce s => Term s (PBool #-> PDelayed PBool #-> PDelayed PBool)
+-- | Hoisted, Plutarch level, lazily evaluated boolean and function.
+pand :: PConstructable edsl PBool
+     => PForce edsl
+     => PLC edsl 
+     => PHoist edsl 
+     => PIfThenElse edsl 
+     => IsPType edsl (PDelayed PBool)
+     => Term edsl (PBool #-> PDelayed PBool #-> PDelayed PBool)
 pand = phoistAcyclic $ plam $ \x y -> pif' # x # y # (phoistAcyclic $ pdelay $ pcon PFalse)
 
 -- | Hoisted, Plutarch level, strictly evaluated boolean and function.
-pand' :: PBoolCls s
-      => Term s (PBool #-> PBool #-> PBool)
+pand' :: PConstructable edsl PBool
+      => PLC edsl 
+      => PHoist edsl 
+      => PIfThenElse edsl 
+      => Term edsl (PBool #-> PBool #-> PBool)
 pand' = phoistAcyclic $ plam $ \x y -> pif' # x # y # (pcon PFalse)
 
 -- | Hoisted, Plutarch level, lazily evaluated boolean or function.
-por :: PBoolCls s
-     => Term s (PBool #-> PDelayed PBool #-> PDelayed PBool)
+por :: PConstructable edsl PBool
+    => PLC edsl 
+    => PForce edsl 
+    => PHoist edsl 
+    => PIfThenElse edsl 
+    => IsPType edsl (PDelayed PBool)
+    => Term edsl (PBool #-> PDelayed PBool #-> PDelayed PBool)
 por = phoistAcyclic $ plam $ \x -> pif' # x # (phoistAcyclic $ pdelay $ pcon PTrue)
 
 -- | Hoisted, Plutarch level, strictly evaluated boolean or function.
-por' :: PBoolCls s
-     => Term s (PBool #-> PBool #-> PBool)
+por' :: PConstructable edsl PBool
+     => PLC edsl 
+     => PHoist edsl 
+     => PIfThenElse edsl 
+     => Term edsl (PBool #-> PBool #-> PBool)
 por' = phoistAcyclic $ plam $ \x -> pif' # x # (pcon PTrue)
 
 -- | Like Haskell's `and` but for Plutarch terms
-pands :: PBoolCls s
-      => [Term s PBool] -> Term s PBool
+pands :: PConstructable edsl PBool
+      => PLC edsl
+      => PHoist edsl
+      => PIfThenElse edsl
+      => PForce edsl
+      => IsPType edsl (PDelayed PBool)
+      => [Term edsl PBool] -> Term edsl PBool
 pands ts' =
   case nonEmpty ts' of
     Nothing -> pcon PTrue
     Just ts -> foldl1 (#&&) ts
 
--- -- | Generic version of (#==)
--- gpeq ::
---   forall t s.
---   ( PGeneric t
---   , PlutusType t
---   , All2 PEq (PCode t)
---   ) =>
---   Term s (t #-> t #-> PBool)
--- gpeq =
---   phoistAcyclic $
---     plam $ \x y ->
---       pmatch x $ \x' ->
---         pmatch y $ \y' ->
---           gpeq' (gpfrom x') (gpfrom y')
+-- | Generic version of (#==)
+gpeq 
+  :: forall edsl a. ()
+  => PGeneric a
+  => PlutusType a
+  => All2 (PEq edsl) (PCode a)
+  => PHoist edsl
+  => PLC edsl
+  => PConstructable edsl PBool
+  => PIfThenElse edsl
+  => PConstructable edsl a
+  => PForce edsl
+  => IsPType edsl (PDelayed PBool)
+  => SOP.AllZip2 (SOP.LiftedCoercible (Pf' (Helper edsl)) (Term edsl)) (PCode a) (PCode a) 
+  => Term edsl (a #-> a #-> PBool)
+gpeq = phoistAcyclic (plam body) where
 
--- gpeq' :: All2 PEq xss => SOP (Term s) xss -> SOP (Term s) xss -> Term s PBool
--- gpeq' (SOP c1) (SOP c2) =
---   ccompare_NS (Proxy @(All PEq)) (pcon PFalse) eqProd (pcon PFalse) c1 c2
+  body :: Term edsl a -> Term edsl a -> Term edsl PBool 
+  body x y = 
+    pmatch x \x' -> 
+    pmatch y \y' -> 
+      gpeq' (gfromConcrete x') (gfromConcrete y')
 
--- eqProd :: All PEq xs => NP (Term s) xs -> NP (Term s) xs -> Term s PBool
--- eqProd p1 p2 =
---   pands $ hcollapse $ hcliftA2 (Proxy :: Proxy PEq) eqTerm p1 p2
---   where
---     eqTerm :: forall s a. PEq a => Term s a -> Term s a -> K (Term s PBool) a
---     eqTerm a b =
---       K $ a #== b
+gpeq' 
+  :: forall edsl xss. ()
+  => PConstructable edsl PBool
+  => PLC edsl
+  => PHoist edsl
+  => PIfThenElse edsl
+  => PForce edsl
+  => IsPType edsl (PDelayed PBool)
+  => All2 (PEq edsl) xss 
+  => SOP (Term edsl) xss -> SOP (Term edsl) xss -> Term edsl PBool
+gpeq' (SOP c1) (SOP c2) =
+  ccompare_NS (Proxy @(All (PEq edsl))) (pcon PFalse) eqProd (pcon PFalse) c1 c2
 
+eqProd 
+  :: forall edsl xs. ()
+  => PConstructable edsl PBool
+  => PLC edsl
+  => PHoist edsl
+  => PIfThenElse edsl
+  => PForce edsl
+  => IsPType edsl (PDelayed PBool)
+  => All (PEq edsl) xs 
+  => NP (Term edsl) xs -> NP (Term edsl) xs -> Term edsl PBool
+eqProd p1 p2 =
+  pands $ hcollapse $ hcliftA2 (Proxy @(PEq edsl)) eqTerm p1 p2 
+  where
+    eqTerm :: PEq edsl a => Term edsl a -> Term edsl a -> K (Term edsl PBool) u
+    eqTerm a b = K (a #== b)
+
+type
+  GetPNewtype' :: [[PType]] -> PType
+type family 
+  GetPNewtype' a where
+  GetPNewtype' '[ '[a]] = a
+
+type GetPNewtype :: PType -> PType
+type GetPNewtype a = GetPNewtype' (PCode a)
+
+derivedPCon' 
+  :: PGeneric a 
+  => PCode a ~ '[ '[GetPNewtype a]]
+  => SOP.AllZip2 (SOP.LiftedCoercible (Pf' (Helper edsl)) (Term edsl)) (PCode a) (PCode a)
+  => PConcrete edsl a 
+  -> Term edsl (GetPNewtype a)
+derivedPCon' a = case gfromConcrete a of
+    SOP.SOP (SOP.Z (x SOP.:* SOP.Nil)) -> x
+    SOP.SOP (SOP.S x) -> case x of {}

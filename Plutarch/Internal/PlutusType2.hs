@@ -59,11 +59,6 @@ class PlutusTypeStrat strategy where
 --   type DPTStrat a :: Type
 --   type DPTStrat a = TypeError ( 'Text "Please specify a strategy for deriving PlutusType for type " ':<>: 'ShowType a)
 
-type  PlutusType :: PType -> Constraint
-class PlutusType pl where
-  type PInner pl :: PType
---   type PInner a = DerivedPInner (DPTStrat a) a
-
 
 --   type PCovariant' a :: Constraint
 --   type PCovariant' a = All2 PCovariant'' (PCode a)
@@ -112,8 +107,8 @@ class PlutusType pl where
 -- class (forall t. PVariant'' t => PVariant'' (a t)) => PVariant a
 -- instance (forall t. PVariant'' t => PVariant'' (a t)) => PVariant a
 
-instance PlutusType (a #-> b) where
-  type PInner (a #-> b) = a #-> b
+-- instance PlutusType (a #-> b) where
+--   type PInner (a #-> b) = a #-> b
 -- --   type PCovariant' (a #-> b) = (PContravariant' a, PCovariant' b)
 -- --   type PContravariant' (a #-> b) = (PCovariant' a, PContravariant' b)
 -- --   type PVariant' (a #-> b) = (PVariant' a, PVariant' b)
@@ -126,18 +121,8 @@ instance PlutusType (a #-> b) where
 
 -- --   pmatch' f g = plet f \f' -> g (PLam (f' #))
 
-instance PlutusType (PForall f) where
-  type PInner (PForall f) = PForall f
--- --   pcon' (PForall x) = punsafeCoerce x
--- --   pmatch' x f = f (PForall $ punsafeCoerce x)
-
-instance PlutusType (PSome f) where
-  type PInner (PSome f) = PSome f
-  -- pcon' (PSome x) = punsafeCoerce x
--- --   pmatch' x f = f (PSome $ punsafeCoerce x)
-
-instance PlutusType (PFix f) where
-  type PInner (PFix f) = f (PFix f)
+-- instance PlutusType (PFix f) where
+--   type PInner (PFix f) = f (PFix f)
 
   -- pcon' :: PFix f ef -> ef /$ f (PFix f)
   -- pcon' (PFix x) = x

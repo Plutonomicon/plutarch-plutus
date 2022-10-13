@@ -882,7 +882,7 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "narHash": "sha256-YSexM3SiLUEKZiZ43n/pCw9vzrG5kcnan2q70voS3/c=",
+        "narHash": "sha256-K7Puu1J+l9BXCsz1/MUQosFkg1PtVMqdXy29B+7+m9k=",
         "path": "/home/baldur/code/plutarch-core",
         "type": "path"
       },

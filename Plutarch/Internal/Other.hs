@@ -42,7 +42,7 @@ printTerm config term = printScript $ either (error . T.unpack) id $ compile con
 {- |
   Safely coerce from a Term to it's 'PInner' representation.
 -}
-ptoPPlutus' s => Term s a -> Term s (PInner a)
+pto :: Term edsl a -> Term edsl (PInner a)
 pto x = punsafeCoerce x
 
 -- | An Arbitrary Term with an unknown type

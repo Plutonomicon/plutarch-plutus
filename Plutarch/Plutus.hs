@@ -17,14 +17,6 @@ type (&) :: (k -> Constraint) -> (k -> Constraint) -> (k -> Constraint)
 class    (cls a, cls1 a) => (cls & cls1) a
 instance (cls a, cls1 a) => (cls & cls1) a
 
-type PBool :: PType
-data PBool p = PFalse | PTrue
-  deriving 
-  stock (Show, Generic)
-
-  deriving PHasRepr
-  via PIsPrimitive PBool
-
 -- data PUnit s = PUnit
 --   deriving 
 --   stock (Show, Generic)
@@ -32,16 +24,9 @@ data PBool p = PFalse | PTrue
 --   deriving PHasRepr
 --   via PIsPrimitive PBool
 
-instance PLink edsl ()   PUnit
-instance PLink edsl Bool PBool
+-- instance PLink edsl ()   PUnit
+-- instance PLink edsl Bool PBool
 
-type  PIfThenElse :: PDSLKind -> Constraint
-class PIfThenElse edsl where
-  pif' :: Term edsl (PBool #-> a #-> a #-> a)
-
-type  PEq :: PDSLKind -> PType -> Constraint
-class PEq edsl t where
-  (#==) :: Term edsl t -> Term edsl t -> Term edsl PBool
 --   default (#==) ::
 --     (PGeneric t, PlutusType t, All2 PEq (PCode t)) =>
 --     Term s t ->
@@ -49,23 +34,27 @@ class PEq edsl t where
 --     Term s PBool
 --   a #== b = gpeq # a # b
 
-infix 4 #==
+-- instance PEq edsl PBool where
+--   (#==) :: Term edsl PBool -> Term edsl PBool -> Term edsl PBool
+--   (#==) = undefined 
 
--- | Partial ordering relation.
-type  PPartialOrd :: PDSLKind -> PType -> Constraint
-class PEq edsl t => PPartialOrd edsl t where
-  (#<=) :: Term edsl t -> Term edsl t -> Term edsl PBool
--- --   default (#<=) :: (POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
--- --   x #<= y = pto x #<= pto y
-  (#<) :: Term edsl t -> Term edsl t -> Term edsl PBool
--- --   default (#<) :: (POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
--- --   x #< y = pto x #< pto y
+-- infix 4 #==
 
-infix 4 #<=
-infix 4 #<
+-- -- | Partial ordering relation.
+-- type  PPartialOrd :: PDSLKind -> PType -> Constraint
+-- class PEq edsl t => PPartialOrd edsl t where
+--   (#<=) :: Term edsl t -> Term edsl t -> Term edsl PBool
+-- -- --   default (#<=) :: (POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
+-- -- --   x #<= y = pto x #<= pto y
+--   (#<) :: Term edsl t -> Term edsl t -> Term edsl PBool
+-- -- --   default (#<) :: (POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
+-- -- --   x #< y = pto x #< pto y
 
--- | Total ordering relation.
-class PPartialOrd edsl t => POrd edsl t
+-- infix 4 #<=
+-- infix 4 #<
+
+-- -- | Total ordering relation.
+-- class PPartialOrd edsl t => POrd edsl t
 
 -- -- instance PPartialOrd PBool where
 -- --   x #< y = pif' # x # pconstant False # y
@@ -87,6 +76,8 @@ class PPartialOrd edsl t => POrd edsl t
 -}
 type PDelayed :: PType -> PType
 data PDelayed a p
+  deriving PHasRepr
+  via HasPrimitiveRepr (PDelayed a)
 
 type  PForce :: PDSLKind -> Constraint
 class PForce edsl where
@@ -99,14 +90,14 @@ class PHoist edsl where
   -- Use ClosedTerm?
   phoistAcyclic :: HasCallStack => Term edsl a -> Term edsl a
 
-type PPlutus' :: PDSLKind -> Constraint
-type PPlutus' edsl = 
-  ( PLC edsl
-  , PSOP edsl
-  , PHoist edsl
-  , forall a. IsPType edsl a => IsPType edsl (PDelayed a)
-  , PForce edsl
-  )
+-- type PPlutus' :: PDSLKind -> Constraint
+-- type PPlutus' edsl = 
+--   ( PLC edsl
+--   , PSOP edsl
+--   , PHoist edsl
+--   , forall a. IsPType edsl a => IsPType edsl (PDelayed a)
+--   , PForce edsl
+--   )
 
 class PLink edsl a p => PEmbed edsl a p where
   pembed :: a -> Term edsl p
@@ -116,22 +107,22 @@ class PLink edsl a p => PExtract edsl a p where
 
 class PLink edsl a p | a -> p, p -> a
 
--- class (PConstantDecl (PLifted p), PConstanted (PLifted p) ~ p) => PUnsafeLiftDecl (p :: PType) where
---   type PLifted p = (r :: Type) | r -> p
+-- -- class (PConstantDecl (PLifted p), PConstanted (PLifted p) ~ p) => PUnsafeLiftDecl (p :: PType) where
+-- --   type PLifted p = (r :: Type) | r -> p
 
--- class
---   ( PUnsafeLiftDecl (PConstanted h)
---   , PLC.DefaultUni `PLC.Includes` PConstantRepr h
---   ) =>
---   PConstantDecl (h :: Type)
---   where
---   type PConstantRepr h :: Type
---   type PConstanted h :: PType
---   pconstantToRepr :: h -> PConstantRepr h
---   pconstantFromRepr :: PConstantRepr h -> Maybe h
+-- -- class
+-- --   ( PUnsafeLiftDecl (PConstanted h)
+-- --   , PLC.DefaultUni `PLC.Includes` PConstantRepr h
+-- --   ) =>
+-- --   PConstantDecl (h :: Type)
+-- --   where
+-- --   type PConstantRepr h :: Type
+-- --   type PConstanted h :: PType
+-- --   pconstantToRepr :: h -> PConstantRepr h
+-- --   pconstantFromRepr :: PConstantRepr h -> Maybe h
 
--- type PLift :: PType -> Constraint
--- type PLift = PUnsafeLiftDecl
+-- -- type PLift :: PType -> Constraint
+-- -- type PLift = PUnsafeLiftDecl
 
 
 

@@ -122,6 +122,12 @@ newtype TermMonad m = TermMonad {runTermMonad :: Config -> Either Text m}
     )
   via ReaderT Config (Except Text)
 
+pgetConfig :: (Config -> ef /$ a) -> ef /$ a
+pgetConfig f = undefined 
+-- pgetConfig f = Term \lvl -> TermMonad $ do
+--   config <- ask
+--   runTermMonad $ asRawTerm (f config) lvl
+
 deBruijnInitIndex :: Word64
 deBruijnInitIndex = 0
 
@@ -487,3 +493,19 @@ punsafeConstantInternal c = Impl \_ -> pure
 --           let hoisted = HoistedTerm (hashRawTerm . getTerm $ t') (getTerm t')
 --            in pure $ TermResult (RHoisted hoisted) (hoisted : getDeps t')
 --         (Left e, _, _) -> pthrow' $ "Hoisted term errs! " <> fromString (show e)
+
+
+{- |
+  Low precedence infixr synonym of 'papp', to be used like
+  '$', in combination with '#'. e.g.:
+
+  >>> f # x #$ g # y # z
+  f x (g y z)
+-}
+infixr 0 #$
+(#$) :: HasCallStack
+     => PLC edsl
+     => IsPType edsl a
+     => IsPType edsl b
+     => Term edsl (a #-> b) -> Term edsl a -> Term edsl b
+(#$) = (#)

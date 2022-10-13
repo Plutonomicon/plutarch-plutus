@@ -80,7 +80,7 @@ common c
     -Wno-missing-import-lists -Wno-monomorphism-restriction
     -Wno-all-missed-specializations -Wno-unrecognised-warning-flags
     -fprint-equality-relations -fprint-explicit-kinds
-    -fprint-explicit-coercions -fprint-explicit-foralls
+    -fprint-explicit-foralls
 
 library
   import:          c
@@ -106,6 +106,7 @@ library
     Plutarch.Bool
     Plutarch.Bool2
     Plutarch.Builtin
+    Plutarch.Builtin2
     Plutarch.ByteString
     Plutarch.Crypto
     Plutarch.DataRepr
@@ -119,20 +120,23 @@ library
     Plutarch.Evaluate
     Plutarch.FFI
     Plutarch.Integer
+    Plutarch.Integer2
     Plutarch.Internal
     Plutarch.Internal.Evaluate
     Plutarch.Internal.Generic
-    Plutarch.Internal.Generic2
     Plutarch.Internal.Newtype
     Plutarch.Internal.Newtype2
     Plutarch.Internal.Other
+    Plutarch.Internal.Other2
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType
     Plutarch.Internal.PlutusType2
     Plutarch.Internal.PrettyStack
     Plutarch.Internal.Quantification
     Plutarch.Internal.ScottEncoding
+    Plutarch.Internal.ScottEncoding2
     Plutarch.Internal.Trace
+    Plutarch.Internal.Trace2
     Plutarch.Internal.TypeFamily
     Plutarch.Internal.TypeFamily2
     Plutarch.Internal.Witness
@@ -140,12 +144,16 @@ library
     Plutarch.Lift
     Plutarch.Lift2
     Plutarch.List
+    Plutarch.List2
     Plutarch.Maybe
+    Plutarch.Maybe2
     Plutarch.Monadic
     Plutarch.Num
+    Plutarch.Num2
     Plutarch.Pair
     Plutarch.Pair2
     Plutarch.Positive
+    Plutarch.Positive2
     Plutarch.Plutus
     Plutarch.Prelude
     Plutarch.Prelude2
@@ -156,11 +164,14 @@ library
     Plutarch.Pretty.Internal.TermUtils
     Plutarch.Pretty.Internal.Types
     Plutarch.Rational
+    Plutarch.Rational2
     Plutarch.Reducible
     Plutarch.Show
     Plutarch.String
+    Plutarch.String2
     Plutarch.TermCont
     Plutarch.Trace
+    Plutarch.Trace2
     Plutarch.TryFrom
     Plutarch.Unit
     Plutarch.Unit2
