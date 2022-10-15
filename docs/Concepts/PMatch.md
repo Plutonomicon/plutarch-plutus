@@ -6,7 +6,7 @@
 
 A `Term` or `ClosedTerm` represents Plutus Lambda Calculus expression in Plutarch world.
 Allows for additional checks and safety compared to UPLC.
-See more: [Plutrach Terms](https://github.com/Plutonomicon/plutarch-plutus/blob/master/docs/Introduction/Plutarch%20Terms.md).
+See more: [Plutarch Terms](https://github.com/Plutonomicon/plutarch-plutus/blob/master/docs/Introduction/Plutarch%20Terms.md).
 
 ### Data and Scott encoding
 
