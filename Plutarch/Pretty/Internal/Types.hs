@@ -1,5 +1,5 @@
 module Plutarch.Pretty.Internal.Types (
-    PrettyCursor (..),
+  PrettyCursor (..),
   PrettyState (..),
   PrettyMonad,
   forkState,
@@ -17,14 +17,14 @@ import Control.Monad.ST (ST)
 import Control.Monad.State (MonadState (get, put), StateT)
 import Data.List (find)
 import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
+import Data.Map.Strict qualified as Map
 import Data.Set (Set)
-import qualified Data.Set as Set
+import Data.Set qualified as Set
 import Data.Text (Text)
-import qualified Data.Text as Txt
+import Data.Text qualified as Txt
 import System.Random.Stateful (STGenM, StdGen)
 
-import qualified PlutusCore as PLC
+import PlutusCore qualified as PLC
 import UntypedPlutusCore (DefaultFun, Index)
 
 import Plutarch.Pretty.Internal.Config (forcedPrefix)

@@ -16,13 +16,14 @@ module Plutarch.FFI (
   unsafeForeignImport,
 ) where
 
+import Control.Lens (over)
 import Data.Kind (Constraint, Type)
 import Data.Proxy (Proxy (Proxy))
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Data.Void (Void)
 import GHC.Generics (Generic)
-import qualified GHC.TypeLits as TypeLits
-import qualified Generics.SOP as SOP
+import GHC.TypeLits qualified as TypeLits
+import Generics.SOP qualified as SOP
 import Generics.SOP.GGP (GCode, GDatatypeInfoOf)
 import Generics.SOP.Type.Metadata (
   ConstructorInfo (Constructor, Infix, Record),
@@ -66,16 +67,15 @@ import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.Internal.Witness (witness)
 import Plutarch.List (PList, PListLike (PElemConstraint, pcons, pelimList, pnil), pconvertLists, plistEquals)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
+import Plutarch.Script (Script (Script))
 import Plutarch.Show (PShow)
 import Plutarch.String (PString)
 import Plutarch.Unit (PUnit)
-import Plutarch.Script (Script (Script))
 import PlutusTx.Builtins.Internal (BuiltinBool, BuiltinByteString, BuiltinData, BuiltinUnit)
-import PlutusTx.Code (getPlc, CompiledCode, CompiledCodeIn (DeserializedCode))
+import PlutusTx.Code (CompiledCode, CompiledCodeIn (DeserializedCode), getPlc)
 import PlutusTx.Prelude (BuiltinString)
 import UntypedPlutusCore (fakeNameDeBruijn)
-import qualified UntypedPlutusCore as UPLC
-import Control.Lens (over)
+import UntypedPlutusCore qualified as UPLC
 
 {- | Plutarch type of lists compatible with the PlutusTx encoding of Haskell
  lists and convertible with the regular 'PList' using 'plistToTx' and
@@ -213,7 +213,7 @@ type TypeEncoding a = (TypeEncoding' (GCode a) (GDatatypeInfoOf a))
 type TypeEncoding' :: [[Type]] -> DatatypeInfo -> [[Type]]
 type family TypeEncoding' a rep where
   TypeEncoding' '[ '[b]] ( 'Newtype _ _ _) = TypeEncoding b
--- Matching the behaviour of PlutusTx.Lift.Class.sortedCons
+  -- Matching the behaviour of PlutusTx.Lift.Class.sortedCons
   TypeEncoding' sop ( 'ADT _ "Bool" _ _) = sop
   TypeEncoding' sop ( 'ADT _ _ cons _) = Fst (SortedBy '(sop, NamesOf cons))
 

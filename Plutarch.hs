@@ -56,16 +56,16 @@ module Plutarch (
   PP.PVariant',
 ) where
 
-import qualified Plutarch.Internal as PI
-import qualified Plutarch.Internal.Newtype as PN
-import qualified Plutarch.Internal.Other as PO
-import qualified Plutarch.Internal.PLam as PL
-import qualified Plutarch.Internal.PlutusType as PP
-import qualified Plutarch.Internal.Quantification as PQ
-import qualified Plutarch.Internal.ScottEncoding as PS
+import Plutarch.Internal qualified as PI
+import Plutarch.Internal.Newtype qualified as PN
+import Plutarch.Internal.Other qualified as PO
+import Plutarch.Internal.PLam qualified as PL
+import Plutarch.Internal.PlutusType qualified as PP
+import Plutarch.Internal.Quantification qualified as PQ
+import Plutarch.Internal.ScottEncoding qualified as PS
 import Plutarch.Num ()
-import qualified Plutarch.Pretty as PPR
-import qualified Plutarch.TermCont as PT
+import Plutarch.Pretty qualified as PPR
+import Plutarch.TermCont qualified as PT
 
 -- import orphan instances
 import Prelude ()

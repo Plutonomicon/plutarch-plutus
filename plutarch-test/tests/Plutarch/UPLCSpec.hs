@@ -33,8 +33,10 @@ spec = do
         )
         (1, 2)
     "fails:MkPair-1-2"
-      @| punsafeBuiltin PLC.MkPairData # (1 :: Term _ PInteger) # (2 :: Term _ PInteger)
-        @-> pfails
+      @| punsafeBuiltin PLC.MkPairData
+      # (1 :: Term _ PInteger)
+      # (2 :: Term _ PInteger)
+      @-> pfails
   describe "uplc-misc" . pgoldenSpec $ do
     "perror" @| perror @-> pfails
     -- FIXME readd test

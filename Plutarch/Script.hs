@@ -1,5 +1,12 @@
-module Plutarch.Script (Script(..)) where
+module Plutarch.Script (Script (..), serialiseScript) where
 
-import qualified UntypedPlutusCore as UPLC
+import Data.ByteString.Short (ShortByteString)
+import PlutusLedgerApi.Common (serialiseUPLC)
+import UntypedPlutusCore qualified as UPLC
 
-newtype Script = Script { unScript :: UPLC.Program UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () }
+newtype Script = Script {unScript :: UPLC.Program UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()}
+  deriving newtype (Eq)
+  deriving stock (Show)
+
+serialiseScript :: Script -> ShortByteString
+serialiseScript = serialiseUPLC . unScript

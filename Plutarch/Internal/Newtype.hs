@@ -3,7 +3,7 @@
 
 module Plutarch.Internal.Newtype (PlutusTypeNewtype) where
 
-import qualified Generics.SOP as SOP
+import Generics.SOP qualified as SOP
 import Plutarch.Internal (PType)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Internal.PlutusType (

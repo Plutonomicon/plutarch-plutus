@@ -19,8 +19,9 @@ spec = do
       "laziness" @\ do
         "pand" @| pand # pcon PFalse # pdelay perror @-> \p ->
           passert $ pnot # pforce p
-        "op" @| pcon PFalse #&& perror @-> \p ->
-          passert $ pnot # p
+        "op"
+          @| pcon PFalse #&& perror @-> \p ->
+            passert $ pnot # p
         "pand.perror" @\ do
           -- FIXME
           -- "false" @| pand # pcon PFalse # perror @-> pfails
@@ -34,8 +35,9 @@ spec = do
       "laziness" @\ do
         "por" @| por # pcon PTrue # pdelay perror @-> \p ->
           passert (pforce p)
-        "op" @| pcon PTrue #|| perror @-> \p ->
-          passert p
+        "op"
+          @| pcon PTrue #|| perror @-> \p ->
+            passert p
         "pand.perror" @\ do
           -- FIXME
           -- "false" @| por # pcon PFalse # perror @-> pfails

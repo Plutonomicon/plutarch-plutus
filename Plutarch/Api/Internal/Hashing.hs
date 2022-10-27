@@ -13,13 +13,13 @@ import Crypto.Hash.Algorithms (
  )
 import Data.ByteArray (convert)
 import Data.ByteString (ByteString)
-import Data.ByteString.Short (fromShort)
 import Data.ByteString.Lazy (toStrict)
+import Data.ByteString.Short (fromShort)
 
-import qualified PlutusLedgerApi.V1 as Plutus
-import PlutusLedgerApi.Common (serialiseUPLC)
-import qualified PlutusTx.Builtins as PlutusTx
 import Plutarch.Script (Script (unScript))
+import PlutusLedgerApi.Common (serialiseUPLC)
+import PlutusLedgerApi.V1 qualified as Plutus
+import PlutusTx.Builtins qualified as PlutusTx
 
 _plutusHashWith :: HashAlgorithm alg => alg -> ByteString -> PlutusTx.BuiltinByteString
 _plutusHashWith alg = PlutusTx.toBuiltin . convert @_ @ByteString . hashWith alg

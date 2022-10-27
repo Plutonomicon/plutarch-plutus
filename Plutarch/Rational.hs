@@ -106,10 +106,10 @@ instance PIsData PRational where
     where
       plistToRat :: Term s (PBuiltinList PData :--> PRational)
       plistToRat = plam $ \x ->
-        pcon $
-          PRational (pasInt #$ phead # x)
+        pcon
+          $ PRational (pasInt #$ phead # x)
             . punsafeDowncast
-            $ pasInt #$ phead #$ ptail # x
+          $ pasInt #$ phead #$ ptail # x
   pdataImpl x' =
     phoistAcyclic
       ( plam $ \x -> unTermCont $ do
@@ -164,11 +164,12 @@ instance PNum PRational where
           PRational yn yd' <- tcont $ pmatch y
           xd <- tcont $ plet xd'
           yd <- tcont $ plet yd'
-          pure $
-            preduce
+          pure
+            $ preduce
               #$ pcon
-              $ PRational (xn * pto yd + yn * pto xd) $
-                punsafeDowncast $ pto xd * pto yd
+            $ PRational (xn * pto yd + yn * pto xd)
+            $ punsafeDowncast
+            $ pto xd * pto yd
       )
       # x'
       # y'
@@ -181,11 +182,12 @@ instance PNum PRational where
           PRational yn yd' <- tcont $ pmatch y
           xd <- tcont $ plet xd'
           yd <- tcont $ plet yd'
-          pure $
-            preduce
+          pure
+            $ preduce
               #$ pcon
-              $ PRational (xn * pto yd - yn * pto xd) $
-                punsafeDowncast $ pto xd * pto yd
+            $ PRational (xn * pto yd - yn * pto xd)
+            $ punsafeDowncast
+            $ pto xd * pto yd
       )
       # x'
       # y'
@@ -195,11 +197,12 @@ instance PNum PRational where
       ( plam $ \x y -> unTermCont $ do
           PRational xn xd <- tcont $ pmatch x
           PRational yn yd <- tcont $ pmatch y
-          pure $
-            preduce
+          pure
+            $ preduce
               #$ pcon
-              $ PRational (xn * yn) $
-                punsafeDowncast $ pto xd * pto yd
+            $ PRational (xn * yn)
+            $ punsafeDowncast
+            $ pto xd * pto yd
       )
       # x'
       # y'

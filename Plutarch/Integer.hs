@@ -25,7 +25,7 @@ import Plutarch.Lift (
  )
 import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
 import Plutarch.Unsafe (punsafeBuiltin, punsafeDowncast)
-import qualified PlutusCore as PLC
+import PlutusCore qualified as PLC
 
 -- | Plutus BuiltinInteger
 data PInteger s = PInteger (Term s POpaque)

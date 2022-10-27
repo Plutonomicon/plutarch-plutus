@@ -101,9 +101,9 @@ import Plutarch.TermCont (TermCont (runTermCont), tcont, unTermCont)
 import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast, pupcastF)
 import Plutarch.Unit (PUnit)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeDowncast)
-import qualified PlutusCore as PLC
+import PlutusCore qualified as PLC
 import PlutusTx (Data (Constr), ToData)
-import qualified PlutusTx
+import PlutusTx qualified
 
 -- | Plutus 'BuiltinPair'
 data PBuiltinPair (a :: PType) (b :: PType) (s :: S) = PBuiltinPair (Term s (PBuiltinPair a b))
@@ -234,7 +234,8 @@ instance PShow PData where
               pshowMap pplist =
                 "Map " <> pshowListPString # (pmap # pshowPair # pplist)
               pshowPair = plam $ \pp0 -> plet pp0 $ \pp ->
-                "(" <> (go # (pfstBuiltin # pp))
+                "("
+                  <> (go # (pfstBuiltin # pp))
                   <> ", "
                   <> (go # (psndBuiltin # pp))
                   <> ")"
@@ -421,7 +422,8 @@ instance PIsData (PBuiltinPair (PAsData a) (PAsData b)) where
       target :: Term _ (PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
       target = f # punsafeCoerce x
       f = phoistAcyclic $
-        plam $ \pair -> pconstrBuiltin # 0 #$ pcons # (pfstBuiltin # pair) #$ pcons # (psndBuiltin # pair) # pnil
+        plam $
+          \pair -> pconstrBuiltin # 0 #$ pcons # (pfstBuiltin # pair) #$ pcons # (psndBuiltin # pair) # pnil
 
 newtype Helper3 f b a s = Helper3 (Term s (PAsData (f a b)))
   deriving stock (Generic)

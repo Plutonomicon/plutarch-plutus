@@ -108,7 +108,6 @@ library
     , plutus-ledger-api
     , plutus-tx
     , quickcheck-instances
-    , serialise
     , sop-core
     , tasty-hunit
     , tasty-quickcheck
@@ -122,8 +121,6 @@ executable plutarch-test
     , base
     , base16-bytestring
     , bytestring
-    , cborg
-    , data-default
     , hedgehog
     , hspec
     , hspec-hedgehog

@@ -8,13 +8,13 @@ module Plutarch.Evaluate (
   evalTerm,
 ) where
 
-import qualified Plutarch.Internal.Evaluate as E
+import Plutarch.Internal.Evaluate qualified as E
 
 import Data.Text (Text)
 import Plutarch.Internal (ClosedTerm, Config, RawTerm (RCompiled), Term (..), TermResult (TermResult), compile)
-import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
 import Plutarch.Script (Script (Script))
-import qualified UntypedPlutusCore as UPLC
+import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
+import UntypedPlutusCore qualified as UPLC
 
 -- | Compile and evaluate term.
 evalTerm ::

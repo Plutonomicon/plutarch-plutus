@@ -16,12 +16,12 @@ spec = do
         "fst"
           @| pcon @(PPair PInteger PString) (PPair 42 "Hello")
             #== pcon (PPair 24 "Hello")
-          @-> passertNot
+            @-> passertNot
         "snd"
           @| pcon @(PPair PInteger PString) (PPair 42 "Hello")
             #== pcon (PPair 42 "World")
-          @-> passertNot
+            @-> passertNot
         "both"
           @| pcon @(PPair PInteger PString) (PPair 42 "Hello")
             #== pcon (PPair 24 "World")
-          @-> passertNot
+            @-> passertNot

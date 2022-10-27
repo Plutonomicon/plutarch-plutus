@@ -9,14 +9,14 @@ import Control.Monad.State (
   modify',
  )
 import Data.Functor (($>))
-import qualified Data.Set as Set
+import Data.Set qualified as Set
 import Data.Text (Text)
-import qualified Data.Text as Txt
+import Data.Text qualified as Txt
 import Data.Traversable (for)
 
 import System.Random.Stateful (randomRM, uniformRM)
 
-import qualified PlutusCore as PLC
+import PlutusCore qualified as PLC
 import UntypedPlutusCore (
   DeBruijn (DeBruijn),
   DefaultFun,

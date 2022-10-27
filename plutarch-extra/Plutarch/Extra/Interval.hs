@@ -218,8 +218,11 @@ pinterval' = phoistAcyclic $
   plam $ \lower upper ->
     pcon $
       PInterval $
-        pdcons @"from" # lower
-          #$ pdcons @"to" # upper # pdnil
+        pdcons @"from"
+          # lower
+          #$ pdcons @"to"
+          # upper
+          # pdnil
 
 -- | closed interval from PExtended
 pclosedInterval ::
@@ -240,7 +243,9 @@ pclosedInterval = phoistAcyclic $
         upper =
           pcon $
             PUpperBound $
-              pdcons @"_0" # pdata end #$ pdcons @"_1"
+              pdcons @"_0"
+                # pdata end
+                #$ pdcons @"_1"
                 # closure
                 # pdnil
 
@@ -248,7 +253,9 @@ pclosedInterval = phoistAcyclic $
         lower =
           pcon $
             PLowerBound $
-              pdcons @"_0" # pdata start #$ pdcons @"_1"
+              pdcons @"_0"
+                # pdata start
+                #$ pdcons @"_1"
                 # closure
                 # pdnil
      in pinterval' # pdata lower # pdata upper

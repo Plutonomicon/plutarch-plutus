@@ -59,19 +59,19 @@ spec = do
           @(PBuiltinPair (PAsData PInteger) (PAsData PByteString))
           @(PBuiltinPair (PAsData PByteString) (PAsData PByteString))
           (pdata $ ppairDataBuiltin # (pdata $ pconstant "foo") # (pdata $ pconstant "bar"))
-        @-> pfails
+          @-> pfails
       "[String] /= [Integer]"
         @| checkDeep
           @(PBuiltinList (PAsData PByteString))
           @(PBuiltinList (PAsData PInteger))
           (pdata $ (pcons # (pdata $ pconstant 3)) #$ (psingleton # (pdata $ pconstant 4)))
-        @-> pfails
+          @-> pfails
       "A { test := Integer, test2 := Integer } /= { test := String, test2 := Integer }"
         @| checkDeep
           @(PDataRecord (("foo" ':= PInteger) ': ("bar" ':= PInteger) ': '[]))
           @(PDataRecord (("foo" ':= PByteString) ': ("bar" ':= PInteger) ': '[]))
           (pdata (pdcons @"foo" # (pdata $ pconstant "baz") #$ pdcons @"bar" # (pdata $ pconstant 42) # pdnil))
-        @-> pfails
+          @-> pfails
       "PDataSum constr 2"
         @| checkDeep
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString]])
@@ -89,38 +89,38 @@ spec = do
           @PRational
           @(PBuiltinList (PAsData PByteString))
           (pdata $ pcons # pdata (phexByteStr "41") #$ pcons # pdata (phexByteStr "2b") # pnil)
-        @-> pfails
+          @-> pfails
       "[Integer] (with length == 0) /= PRational"
         @| checkDeep
           @PRational
           @(PBuiltinList (PAsData PInteger))
           (pdata $ pnil)
-        @-> pfails
+          @-> pfails
       "[Integer] (with length == 3) /= PRational"
         @| checkDeep
           @PRational
           @(PBuiltinList (PAsData PInteger))
           (pdata $ pcons # pconstantData 42 #$ pcons # pconstantData 7 #$ pcons # pconstantData 0 # pnil)
-        @-> pfails
+          @-> pfails
       "[Integer] (with length == 2, with 0 denominator) /= PRational"
         @| checkDeep
           @PRational
           @(PBuiltinList (PAsData PInteger))
           (pdata $ pcons # pconstantData 42 #$ pcons # pconstantData 0 # pnil)
-        @-> pfails
+          @-> pfails
     "working" @\ do
       "(String, String) == (String, String)"
         @| checkDeep
           @(PBuiltinPair (PAsData PByteString) (PAsData PByteString))
           @(PBuiltinPair (PAsData PByteString) (PAsData PByteString))
           (pdata $ ppairDataBuiltin # (pdata $ pconstant "foo") # (pdata $ pconstant "bar"))
-        @-> psucceeds
+          @-> psucceeds
       "[String] == [String]"
         @| checkDeep
           @(PBuiltinList (PAsData PByteString))
           @(PBuiltinList (PAsData PByteString))
           (pdata $ (pcons # (pdata $ pconstant "foo")) #$ (psingleton # (pdata $ pconstant "bar")))
-        @-> psucceeds
+          @-> psucceeds
       "[Integer] (with length == 2) == PRational"
         @| ( unTermCont $ do
               let numr = pconstantData 42
@@ -132,53 +132,54 @@ spec = do
               pguardC "drat should be as expected" $ pfromData drat #== pcon (PRational (pfromData numr) nz)
               pure $ pconstant ()
            )
-        @-> psucceeds
+          @-> psucceeds
       "A { test := Integer, test2 := Integer } == { test := Integer, test2 := Integer }"
         @| checkDeep
           @(PDataRecord (("foo" ':= PInteger) ': ("bar" ':= PInteger) ': '[]))
           @(PDataRecord (("foo" ':= PInteger) ': ("bar" ':= PInteger) ': '[]))
           (pdata (pdcons @"foo" # (pdata $ pconstant 7) #$ pdcons @"bar" # (pdata $ pconstant 42) # pdnil))
-        @-> psucceeds
+          @-> psucceeds
       "A { test := Integer, test2 := Integer } == [Integer]"
         @| checkDeep
           @(PDataRecord (("foo" ':= PInteger) ': ("bar" ':= PInteger) ': '[]))
           @(PBuiltinList (PAsData PInteger))
           (pdata (pcons # (pdata $ pconstant 7) #$ pcons # (pdata $ pconstant 42) # pnil))
-        @-> psucceeds
+          @-> psucceeds
       "A { test := String, test2 := Integer } == { test := String, test2 := Integer }"
         @| checkDeep
           @(PDataRecord (("foo" ':= PByteString) ': ("bar" ':= PInteger) ': '[]))
           @(PDataRecord (("foo" ':= PByteString) ': ("bar" ':= PInteger) ': '[]))
           (pdata (pdcons @"foo" # (pdata $ pconstant "baz") #$ pdcons @"bar" # (pdata $ pconstant 42) # pdnil))
-        @-> psucceeds
+          @-> psucceeds
       "PDataSum constr 0"
         @| checkDeep
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
           (punsafeCoerce $ pconstant $ Constr 0 [PlutusTx.I 5, B "foo"])
-        @-> psucceeds
+          @-> psucceeds
       "PDataSum constr 1"
         @| checkDeep
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
           @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
           (punsafeCoerce $ pconstant $ Constr 1 [PlutusTx.I 5, B "foo"])
-        @-> psucceeds
+          @-> psucceeds
       "recover PWrapInt"
-        @| pconstant 42 #== (unTermCont $ snd <$> tcont (ptryFrom @(PAsData PWrapInt) (pforgetData $ pdata $ pconstant @PInteger 42)))
-        @-> passert
+        @| pconstant 42
+          #== (unTermCont $ snd <$> tcont (ptryFrom @(PAsData PWrapInt) (pforgetData $ pdata $ pconstant @PInteger 42)))
+          @-> passert
     "recovering a record partially vs completely" @\ do
       "partially"
         @| checkDeep
           @(PDataRecord '["foo" ':= PInteger, "bar" ':= PData])
           @(PDataRecord '["foo" ':= PInteger, "bar" ':= PByteString])
           (pdata $ pdcons @"foo" # (pdata $ pconstant 3) #$ pdcons @"bar" # (pdata $ pconstant "baz") # pdnil)
-        @-> psucceeds
+          @-> psucceeds
       "completely"
         @| checkDeep
           @(PDataRecord '["foo" ':= PInteger, "bar" ':= PByteString])
           @(PDataRecord '["foo" ':= PInteger, "bar" ':= PByteString])
           (pdata (pdcons @"foo" # (pdata $ pconstant 3) #$ pdcons @"bar" # (pdata $ pconstant "baz") # pdnil))
-        @-> psucceeds
+          @-> psucceeds
     "removing the data wrapper" @\ do
       "erroneous" @\ do
         "(String, Integer) /= (String, String)"
@@ -186,14 +187,14 @@ spec = do
             @(PBuiltinPair (PAsData PByteString) (PAsData PByteString))
             @(PBuiltinPair (PAsData PInteger) (PAsData PByteString))
             (pdata $ ppairDataBuiltin # (pdata $ pconstant 42) # (pdata $ pconstant "bar"))
-          @-> pfails
+            @-> pfails
         "[String] /= [Integer]"
           @| ( checkDeepUnwrap
                 @(PBuiltinList (PAsData PInteger))
                 @(PBuiltinList (PAsData PByteString))
                 (pdata $ (pcons # (pdata $ pconstant "foo")) #$ (psingleton # (pdata $ pconstant "baz")))
              )
-          @-> pfails
+            @-> pfails
       "working" @\ do
         "(String, String) == (String, String)"
           @| ( checkDeepUnwrap
@@ -201,13 +202,13 @@ spec = do
                 @(PBuiltinPair (PAsData PByteString) (PAsData PByteString))
                 (pdata $ ppairDataBuiltin # (pdata $ pconstant "foo") # (pdata $ pconstant "bar"))
              )
-          @-> psucceeds
+            @-> psucceeds
         "[String] == [String]"
           @| checkDeepUnwrap
             @(PBuiltinList (PAsData PByteString))
             @(PBuiltinList (PAsData PByteString))
             (pdata $ (pcons # (pdata $ pconstant "foo")) #$ (psingleton # (pdata $ pconstant "bar")))
-          @-> psucceeds
+            @-> psucceeds
       "partial checks" @\ do
         -- this is way more expensive ...
         "check whole structure"
@@ -221,13 +222,13 @@ spec = do
             @(PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])])
             @(PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])])
             (pdata $ pdcons # (pdata $ pdcons # pdata (pconstant 42) # pdnil) # pdnil)
-          @-> psucceeds
+            @-> psucceeds
         "fails"
           @| checkDeep
             @(PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PByteString])])
             @(PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])])
             (pdata $ pdcons # (pdata $ pdcons # pdata (pconstant 42) # pdnil) # pdnil)
-          @-> pfails
+            @-> pfails
         "sample usage contains the right value"
           @| pconstant 42 #== theField @-> passert
     "example" @\ do
@@ -240,13 +241,29 @@ spec = do
           l4 :: Term _ (PAsData (PBuiltinList (PAsData PInteger)))
           l4 = toDatadList [6, 8, 8, 9, 10]
       "concatenate two lists, legal"
-        @| validator # pforgetData l1 # pforgetData l2 # validContext0 @-> psucceeds
+        @| validator
+        # pforgetData l1
+        # pforgetData l2
+        # validContext0
+        @-> psucceeds
       "concatenate two lists, illegal (list too short)"
-        @| validator # pforgetData l1 # pforgetData l3 # validContext0 @-> pfails
+        @| validator
+        # pforgetData l1
+        # pforgetData l3
+        # validContext0
+        @-> pfails
       "concatenate two lists, illegal (wrong elements in list)"
-        @| validator # pforgetData l1 # pforgetData l4 # validContext0 @-> pfails
+        @| validator
+        # pforgetData l1
+        # pforgetData l4
+        # validContext0
+        @-> pfails
       "concatenate two lists, illegal (more than one output)"
-        @| validator # pforgetData l1 # pforgetData l2 # invalidContext1 @-> pfails
+        @| validator
+        # pforgetData l1
+        # pforgetData l2
+        # invalidContext1
+        @-> pfails
     "example2" @\ do
       "recovering a record succeeds"
         @| recoverAB @-> psucceeds

@@ -43,24 +43,24 @@ import Control.Monad.Reader (ReaderT (ReaderT), ask, runReaderT)
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
 import Crypto.Hash.IO (HashAlgorithm)
-import qualified Data.ByteString as BS
+import Data.ByteString qualified as BS
 import Data.Default (Default (def))
 import Data.Functor ((<&>))
 import Data.Kind (Type)
 import Data.List (foldl', groupBy, sortOn)
-import qualified Data.Map.Lazy as M
-import qualified Data.Set as S
+import Data.Map.Lazy qualified as M
+import Data.Set qualified as S
 import Data.String (fromString)
 import Data.Text (Text)
-import qualified Flat.Run as F
+import Flat.Run qualified as F
 import GHC.Stack (HasCallStack, callStack, prettyCallStack)
 import GHC.Word (Word64)
 import Plutarch.Internal.Evaluate (evalScript)
-import PlutusCore (Some (Some), ValueOf (ValueOf))
-import qualified PlutusCore as PLC
-import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
 import Plutarch.Script (Script (Script))
-import qualified UntypedPlutusCore as UPLC
+import PlutusCore (Some (Some), ValueOf (ValueOf))
+import PlutusCore qualified as PLC
+import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
+import UntypedPlutusCore qualified as UPLC
 
 {- $hoisted
  __Explanation for hoisted terms:__

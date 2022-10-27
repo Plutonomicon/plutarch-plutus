@@ -15,6 +15,9 @@ module Plutarch.Api.V1 (
   datumHash,
   redeemerHash,
   dataHash,
+  PValidator,
+  PStakeValidator,
+  PMintingPolicy,
 
   -- ** Value
   Value.PValue (PValue),
@@ -73,26 +76,30 @@ module Plutarch.Api.V1 (
 
 --------------------------------------------------------------------------------
 
-import qualified Plutarch.Api.V1.Address as Address
-import qualified Plutarch.Api.V1.AssocMap as AssocMap
-import qualified Plutarch.Api.V1.Contexts as Contexts
-import qualified Plutarch.Api.V1.Crypto as Crypto
-import qualified Plutarch.Api.V1.DCert as DCert
-import qualified Plutarch.Api.V1.Interval as Interval
-import qualified Plutarch.Api.V1.Maybe as Maybe
-import qualified Plutarch.Api.V1.Scripts as Scripts
-import qualified Plutarch.Api.V1.Time as Time
-import qualified Plutarch.Api.V1.Tuple as Tuple
-import qualified Plutarch.Api.V1.Tx as Tx
-import qualified Plutarch.Api.V1.Value as Value
+import Plutarch.Api.V1.Address qualified as Address
+import Plutarch.Api.V1.AssocMap qualified as AssocMap
+import Plutarch.Api.V1.Contexts qualified as Contexts
+import Plutarch.Api.V1.Crypto qualified as Crypto
+import Plutarch.Api.V1.DCert qualified as DCert
+import Plutarch.Api.V1.Interval qualified as Interval
+import Plutarch.Api.V1.Maybe qualified as Maybe
+import Plutarch.Api.V1.Scripts qualified as Scripts
+import Plutarch.Api.V1.Time qualified as Time
+import Plutarch.Api.V1.Tuple qualified as Tuple
+import Plutarch.Api.V1.Tx qualified as Tx
+import Plutarch.Api.V1.Value qualified as Value
 
-import Data.Coerce (coerce)
+import Plutarch (POpaque, (:-->))
+import Plutarch.Builtin (PData)
 
 -- note about V2: This should there are no changes in Scripts or V1 itself that affect this module
-import qualified PlutusLedgerApi.V1 as Plutus
-import qualified Plutarch.Script as Plutus
+
+import Plutarch.Script qualified as Plutus
+import PlutusLedgerApi.V1 qualified as Plutus
 
 import Plutarch.Api.Internal.Hashing (hashData, hashScriptWithPrefix)
+
+import Data.Coerce (coerce)
 
 -- On-chain Script Types
 
@@ -111,3 +118,12 @@ redeemerHash = coerce . dataHash
 -- | Hash the data encoded representation of given argument.
 dataHash :: Plutus.ToData a => a -> Plutus.BuiltinByteString
 dataHash = hashData . Plutus.toData
+
+-- | a Validator Term
+type PValidator = PData :--> PData :--> Contexts.PScriptContext :--> POpaque
+
+-- | a MintingPolicy Term
+type PMintingPolicy = PData :--> Contexts.PScriptContext :--> POpaque
+
+-- | a StakeValidator Term
+type PStakeValidator = PData :--> Contexts.PScriptContext :--> POpaque

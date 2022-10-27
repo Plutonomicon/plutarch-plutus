@@ -6,7 +6,7 @@ module Plutarch.String (PString, pfromText, pencodeUtf8, pdecodeUtf8) where
 
 import Data.String (IsString, fromString)
 import Data.Text (Text)
-import qualified Data.Text as Text
+import Data.Text qualified as Text
 import GHC.Generics (Generic)
 import Plutarch.Bool (PEq, (#==))
 import Plutarch.ByteString (PByteString)
@@ -22,7 +22,7 @@ import Plutarch.Lift (
   pconstant,
  )
 import Plutarch.Unsafe (punsafeBuiltin)
-import qualified PlutusCore as PLC
+import PlutusCore qualified as PLC
 
 -- | Plutus 'BuiltinString' values
 data PString s = PString (Term s POpaque)

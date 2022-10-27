@@ -8,17 +8,17 @@ import Control.Monad.State (MonadState (get, put), StateT (runStateT), modify, m
 import Data.Foldable (fold)
 import Data.Functor (($>), (<&>))
 import Data.Text (Text)
-import qualified Data.Text as Txt
+import Data.Text qualified as Txt
 import Data.Traversable (for)
 
 import System.Random.Stateful (mkStdGen, newSTGenM)
 
 import Prettyprinter ((<+>))
-import qualified Prettyprinter as PP
+import Prettyprinter qualified as PP
 
 import Plutarch.Internal (ClosedTerm, Config, compile)
-import qualified PlutusCore as PLC
 import Plutarch.Script (Script (unScript))
+import PlutusCore qualified as PLC
 import UntypedPlutusCore (
   DeBruijn (DeBruijn),
   DefaultFun,
@@ -296,7 +296,9 @@ prettyUPLC uplc = runST $ do
       functionDoc <- forkState $ modify' specializeCursor *> go f
       argsDoc <- modify' specializeCursor *> traverse (forkState . go) args
       pure . parensOnCursor ps'cursor $
-        PP.hang indentWidth $ PP.sep $ functionDoc : argsDoc
+        PP.hang indentWidth $
+          PP.sep $
+            functionDoc : argsDoc
 
 prettyIfThenElse ::
   (t -> PrettyMonad s (PP.Doc ann)) ->
@@ -311,7 +313,8 @@ prettyIfThenElse cont cond trueBranch falseBranch = do
   trueAst <- cont trueBranch
   falseAst <- cont falseBranch
   pure . parensOnCursor ps'cursor $
-    PP.hang indentWidth $ PP.vsep ["if" <+> condAst, "then" <+> trueAst, "else" <+> falseAst]
+    PP.hang indentWidth $
+      PP.vsep ["if" <+> condAst, "then" <+> trueAst, "else" <+> falseAst]
 
 -- | Wrap prettification result parens depending on cursor state.
 parensOnCursor :: PrettyCursor -> PP.Doc ann -> PP.Doc ann

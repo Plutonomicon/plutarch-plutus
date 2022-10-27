@@ -100,11 +100,11 @@ instance Arbitrary PubKeyHash where
           toBuiltin @ByteString <$> bsOfLength 28
      in PubKeyHash <$> arbitrary'
 
-instance Arbitrary ValidatorHash where
+instance Arbitrary ScriptHash where
   arbitrary =
     let arbitrary' =
           toBuiltin @ByteString <$> bsOfLength 28
-     in ValidatorHash <$> arbitrary'
+     in ScriptHash <$> arbitrary'
 
 instance Arbitrary Credential where
   arbitrary =

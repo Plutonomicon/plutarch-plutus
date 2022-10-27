@@ -39,24 +39,34 @@ module Plutarch.Api.V2 (
   datumHash,
   redeemerHash,
   dataHash,
+  PValidator,
+  PStakeValidator,
+  PMintingPolicy,
 ) where
 
-import qualified Plutarch.Api.V2.Contexts as Contexts
-import qualified Plutarch.Api.V2.Tx as Tx
+import Plutarch.Api.V2.Contexts qualified as Contexts
+import Plutarch.Api.V2.Tx qualified as Tx
 
 import Plutarch.Api.Internal.Hashing (hashScriptWithPrefix)
-import Plutarch.Api.V1 (dataHash, datumHash, redeemerHash)
-import qualified Plutarch.Api.V1.Address as V1
-import qualified Plutarch.Api.V1.AssocMap as V1
-import qualified Plutarch.Api.V1.Crypto as V1
-import qualified Plutarch.Api.V1.Interval as V1
-import qualified Plutarch.Api.V1.Maybe as V1
-import qualified Plutarch.Api.V1.Scripts as V1
-import qualified Plutarch.Api.V1.Time as V1
-import qualified Plutarch.Api.V1.Tuple as V1
-import qualified Plutarch.Api.V1.Value as V1
-import PlutusLedgerApi.V1.Scripts (ScriptHash)
+import Plutarch.Api.V1 (
+  PMintingPolicy,
+  PStakeValidator,
+  PValidator,
+  dataHash,
+  datumHash,
+  redeemerHash,
+ )
+import Plutarch.Api.V1.Address qualified as V1
+import Plutarch.Api.V1.AssocMap qualified as V1
+import Plutarch.Api.V1.Crypto qualified as V1
+import Plutarch.Api.V1.Interval qualified as V1
+import Plutarch.Api.V1.Maybe qualified as V1
+import Plutarch.Api.V1.Scripts qualified as V1
+import Plutarch.Api.V1.Time qualified as V1
+import Plutarch.Api.V1.Tuple qualified as V1
+import Plutarch.Api.V1.Value qualified as V1
 import Plutarch.Script (Script)
+import PlutusLedgerApi.V1.Scripts (ScriptHash)
 
 -- | Hash a Script, with the correct prefix for Plutus V2
 scriptHash :: Script -> ScriptHash

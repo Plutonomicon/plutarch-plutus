@@ -31,7 +31,8 @@ import Test.Hspec.Core.Spec (SpecTree, Tree (Leaf, Node, NodeWithCleanup))
 hspecAndReturnForest :: Spec -> IO [SpecTree ()]
 hspecAndReturnForest spec0 = do
   (config, spec) <- evalSpec defaultConfig spec0
-  getArgs >>= readConfig config
+  getArgs
+    >>= readConfig config
     >>= withArgs [] . runSpecForest spec
     >>= evaluateResult
   return spec

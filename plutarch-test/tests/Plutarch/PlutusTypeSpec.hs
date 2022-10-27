@@ -66,7 +66,7 @@ deconstrSpec = do
               ( \x -> pmatch x $ \(PAddress addrFields) ->
                   addrFields
               )
-              # pconstant addrPC
+            # pconstant addrPC
           "datasum"
             @| ( plam
                   ( \x -> pmatch (pupcast @(PInner PAddress) x) $ \(PDataSum datsum) -> case datsum of
@@ -82,14 +82,14 @@ deconstrSpec = do
                   PMinting _ -> pconstant ()
                   _ -> perror
               )
-              # pconstant minting
+            # pconstant minting
           "datasum"
             @| plam
               ( \x -> pmatch (pupcast @(PInner PScriptPurpose) x) $ \(PDataSum datsum) -> case datsum of
                   Z _ -> pconstant ()
                   _ -> perror
               )
-              # pconstant minting
+            # pconstant minting
         "sumtype(partial-match)" @\ do
           "normal"
             @| plam
@@ -97,14 +97,14 @@ deconstrSpec = do
                   PMinting hs -> hs
                   _ -> perror
               )
-              # pconstant minting
+            # pconstant minting
           "datasum"
             @| plam
               ( \x -> pmatch (pupcast @(PInner PScriptPurpose) x) $ \(PDataSum datsum) -> case datsum of
                   Z (Compose hs) -> hs
                   _ -> perror
               )
-              # pconstant minting
+            # pconstant minting
         "sumtype(exhaustive)" @\ do
           ("normal" @\) $
             benchPurpose $
@@ -185,10 +185,10 @@ deconstrSpec = do
                           $ pif
                             (constr #== 2)
                             (phexByteStr "03")
-                            $ pif
-                              (constr #== 3)
-                              (phexByteStr "04")
-                              $ phexByteStr "01"
+                          $ pif
+                            (constr #== 3)
+                            (phexByteStr "04")
+                          $ phexByteStr "01"
               )
         "sumtype(exhaustive)(ignore-fields)" @\ do
           benchPurpose' $
@@ -201,10 +201,10 @@ deconstrSpec = do
                       $ pif
                         (constr #== 2)
                         (phexByteStr "03")
-                        $ pif
-                          (constr #== 3)
-                          (phexByteStr "04")
-                          $ phexByteStr "01"
+                      $ pif
+                        (constr #== 3)
+                        (phexByteStr "04")
+                      $ phexByteStr "01"
               )
     "fields" @\ do
       "typed" @\ do
@@ -213,7 +213,7 @@ deconstrSpec = do
             ( \x ->
                 pfield @"credential" # x
             )
-            # pconstant addrSC
+          # pconstant addrSC
       "raw" @\ do
         "extract-single"
           @| plam
@@ -233,7 +233,7 @@ deconstrSpec = do
                   PScriptCredential credFields ->
                     pcon . PJust $ pto $ pfromData $ pfield @"_0" # credFields
             )
-            # pconstant addrSC
+          # pconstant addrSC
       "raw" @\ do
         "toValidatorHash"
           @| plam
@@ -243,9 +243,10 @@ deconstrSpec = do
                       pif
                         (pfstBuiltin # deconstrCred #== 0)
                         (pcon PNothing)
-                        $ pcon . PJust $ pasByteStr #$ phead #$ psndBuiltin # deconstrCred
+                        $ pcon . PJust
+                        $ pasByteStr #$ phead #$ psndBuiltin # deconstrCred
             )
-            # pconstant (toData addrSC)
+          # pconstant (toData addrSC)
   where
     addrSC = Address (ScriptCredential "ab") Nothing
     addrPC = Address (PubKeyCredential "ab") Nothing

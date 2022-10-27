@@ -45,8 +45,8 @@ spec = do
       "pparseDatum"
         @| ( pparseDatum @(PBuiltinList (PAsData PInteger))
               # pconstant "d0"
-                #$ pfield @"datums"
-                #$ pfield @"txInfo"
+              #$ pfield @"datums"
+              #$ pfield @"txInfo"
               # ctx
            )
           @-> \res ->

@@ -53,10 +53,10 @@ module Plutarch.Api.V1.Value (
   pnoAdaValue,
 ) where
 
-import qualified PlutusLedgerApi.V1 as Plutus
+import PlutusLedgerApi.V1 qualified as Plutus
 
 import Plutarch.Api.V1.AssocMap (KeyGuarantees (Sorted, Unsorted), PMap (..))
-import qualified Plutarch.Api.V1.AssocMap as AssocMap
+import Plutarch.Api.V1.AssocMap qualified as AssocMap
 import Plutarch.Bool (pand', pif')
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
@@ -65,11 +65,11 @@ import Plutarch.Lift (
   PLifted,
   PUnsafeLiftDecl,
  )
-import qualified Plutarch.List as List
+import Plutarch.List qualified as List
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
-import qualified PlutusTx.Monoid as PlutusTx
-import qualified PlutusTx.Semigroup as PlutusTx
+import PlutusTx.Monoid qualified as PlutusTx
+import PlutusTx.Semigroup qualified as PlutusTx
 
 import Plutarch.Prelude hiding (psingleton)
 
@@ -279,7 +279,9 @@ psingleton = phoistAcyclic $
 psingletonData ::
   Term
     s
-    ( PAsData PCurrencySymbol :--> PAsData PTokenName :--> PAsData PInteger
+    ( PAsData PCurrencySymbol
+        :--> PAsData PTokenName
+        :--> PAsData PInteger
         :--> PValue 'Sorted 'NonZero
     )
 psingletonData = phoistAcyclic $
@@ -288,8 +290,9 @@ psingletonData = phoistAcyclic $
       (amount #== zeroData)
       mempty
       ( punsafeDowncast
-          ( AssocMap.psingletonData # symbol
-              #$ pdata
+          ( AssocMap.psingletonData
+              # symbol
+                #$ pdata
               $ AssocMap.psingletonData # token # amount
           )
       )
@@ -335,7 +338,8 @@ padaOnlyValue = phoistAcyclic $
     pmatch (pto $ pto value) $ \case
       PNil -> value
       PCons x _ ->
-        pif' # (pfstBuiltin # x #== padaSymbolData)
+        pif'
+          # (pfstBuiltin # x #== padaSymbolData)
           # pcon (PValue $ pcon $ AssocMap.PMap $ List.psingleton # x)
           # pcon (PValue AssocMap.pempty)
 
@@ -354,7 +358,8 @@ plovelaceValueOf = phoistAcyclic $
     pmatch (pto $ pto value) $ \case
       PNil -> 0
       PCons x _ ->
-        pif' # (pfstBuiltin # x #== padaSymbolData)
+        pif'
+          # (pfstBuiltin # x #== padaSymbolData)
           # pfromData (psndBuiltin #$ phead #$ pto $ pfromData $ psndBuiltin # x)
           # 0
 
@@ -365,7 +370,9 @@ plovelaceValueOf = phoistAcyclic $
 punionWith ::
   Term
     s
-    ( (PInteger :--> PInteger :--> PInteger) :--> PValue 'Sorted any0 :--> PValue 'Sorted any1
+    ( (PInteger :--> PInteger :--> PInteger)
+        :--> PValue 'Sorted any0
+        :--> PValue 'Sorted any1
         :--> PValue 'Sorted 'NoGuarantees
     )
 punionWith = phoistAcyclic $
@@ -420,15 +427,19 @@ passertSorted = phoistAcyclic $
       ( AssocMap.pany
           # plam
             ( \submap ->
-                AssocMap.pnull # (AssocMap.passertSorted # submap)
-                  #|| AssocMap.pany # plam (#== 0) # submap
+                AssocMap.pnull
+                  # (AssocMap.passertSorted # submap)
+                    #|| AssocMap.pany
+                  # plam (#== 0)
+                  # submap
             )
           # pto value
       )
       (ptraceError "Abnormal Value")
       . pcon
       . PValue
-      $ AssocMap.passertSorted #$ punsafeCoerce $ pto value
+      $ AssocMap.passertSorted #$ punsafeCoerce
+      $ pto value
 
 -- | Assert all amounts in the value are positive.
 passertPositive :: forall kg ag s. Term s (PValue kg ag :--> PValue kg 'Positive)
@@ -471,7 +482,8 @@ zeroData = pdata 0
 -- | Applies a function to every amount in the map.
 pmapAmounts :: Term s ((PInteger :--> PInteger) :--> PValue k a :--> PValue k 'NoGuarantees)
 pmapAmounts = phoistAcyclic $
-  plam $ \f v -> pcon $ PValue $ AssocMap.pmap # plam (AssocMap.pmap # f #) # pto v
+  plam $
+    \f v -> pcon $ PValue $ AssocMap.pmap # plam (AssocMap.pmap # f #) # pto v
 
 {- | Given an amount comparison function, check whether a binary relation holds over
 2 sorted 'PValue's.

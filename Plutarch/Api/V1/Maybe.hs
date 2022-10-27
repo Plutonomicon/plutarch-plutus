@@ -60,21 +60,21 @@ _pmaybeLT whenBothNothing ltF = phoistAcyclic $
     cid1 <- tcont . plet $ pfstBuiltin # a
     cid2 <- tcont . plet $ pfstBuiltin # b
 
-    pure $
-      pif
+    pure
+      $ pif
         (cid1 #< cid2)
         (pconstant False)
-        $ pif
-          (cid1 #== cid2)
-          {- Some hand optimization here: usually, the fields would be 'plet'ed here if using 'POrd' derivation
-            machinery. However, in this case - there's no need for the fields for the 'Nothing' case.
+      $ pif
+        (cid1 #== cid2)
+        {- Some hand optimization here: usually, the fields would be 'plet'ed here if using 'POrd' derivation
+          machinery. However, in this case - there's no need for the fields for the 'Nothing' case.
 
-            Would be nice if this could be done on the auto derivation case....
-          -}
-          ( pif
-              (cid1 #== 0)
-              (ltF (punsafeCoerce $ psndBuiltin # a) (punsafeCoerce $ psndBuiltin # b))
-              -- Both are 'Nothing'. Let caller choose answer.
-              $ pconstant whenBothNothing
-          )
-          $ pconstant True
+          Would be nice if this could be done on the auto derivation case....
+        -}
+        ( pif
+            (cid1 #== 0)
+            (ltF (punsafeCoerce $ psndBuiltin # a) (punsafeCoerce $ psndBuiltin # b))
+            -- Both are 'Nothing'. Let caller choose answer.
+            $ pconstant whenBothNothing
+        )
+      $ pconstant True

@@ -87,11 +87,15 @@ spec = do
 mkTrip ::
   forall a s. (PIsData a) => Term s a -> Term s a -> Term s a -> Term s (PTriplet a)
 mkTrip x y z =
-  punsafeBuiltin PLC.ConstrData # (0 :: Term _ PInteger)
-    # ( ( pcons # (pdata x)
-            #$ pcons # (pdata y)
-            #$ pcons # (pdata z)
-              # pnil
+  punsafeBuiltin PLC.ConstrData
+    # (0 :: Term _ PInteger)
+    # ( ( pcons
+            # (pdata x)
+            #$ pcons
+            # (pdata y)
+            #$ pcons
+            # (pdata z)
+            # pnil
         ) ::
           Term _ (PBuiltinList (PAsData a))
       )

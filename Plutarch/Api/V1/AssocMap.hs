@@ -44,10 +44,10 @@ module Plutarch.Api.V1.AssocMap (
   pcheckBinRel,
 ) where
 
-import qualified PlutusLedgerApi.V1 as Plutus
-import qualified PlutusTx.AssocMap as PlutusMap
-import qualified PlutusTx.Monoid as PlutusTx
-import qualified PlutusTx.Semigroup as PlutusTx
+import PlutusLedgerApi.V1 qualified as Plutus
+import PlutusTx.AssocMap qualified as PlutusMap
+import PlutusTx.Monoid qualified as PlutusTx
+import PlutusTx.Semigroup qualified as PlutusTx
 
 import Plutarch.Builtin (
   pasMap,
@@ -67,12 +67,12 @@ import Plutarch.Lift (
   pconstantFromRepr,
   pconstantToRepr,
  )
-import qualified Plutarch.List as List
+import Plutarch.List qualified as List
 import Plutarch.Prelude hiding (pall, pany, pfilter, pmap, pnull, psingleton)
-import qualified Plutarch.Prelude as PPrelude
+import Plutarch.Prelude qualified as PPrelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
-import qualified PlutusCore as PLC
+import PlutusCore qualified as PLC
 
 import Prelude hiding (all, any, filter, lookup, null)
 
@@ -140,7 +140,8 @@ instance
     where
       ptryFromPair :: Term s (PBuiltinPair PData PData :--> PBuiltinPair (PAsData k) (PAsData v))
       ptryFromPair = plam $ \p ->
-        ppairDataBuiltin # ptryFrom (pfstBuiltin # p) fst
+        ppairDataBuiltin
+          # ptryFrom (pfstBuiltin # p) fst
           # ptryFrom (psndBuiltin # p) fst
 
 instance
@@ -204,7 +205,8 @@ pfindWithDefault = phoistAcyclic $ plam $ \def key -> foldAtData # pdata key # d
 -}
 pfoldAt :: PIsData k => Term s (k :--> r :--> (PAsData v :--> r) :--> PMap any k v :--> r)
 pfoldAt = phoistAcyclic $
-  plam $ \key -> foldAtData # pdata key
+  plam $
+    \key -> foldAtData # pdata key
 
 {- | Look up the given key data in a 'PMap'; return the default if the key is
  absent or apply the argument function to the value data if present.
@@ -283,7 +285,8 @@ psingleton = phoistAcyclic $ plam $ \key value -> psingletonData # pdata key # p
 -- | Construct a singleton 'PMap' with the given data-encoded key and value.
 psingletonData :: Term s (PAsData k :--> PAsData v :--> PMap 'Sorted k v)
 psingletonData = phoistAcyclic $
-  plam $ \key value -> punsafeDowncast (pcons # (ppairDataBuiltin # key # value) # pnil)
+  plam $
+    \key value -> punsafeDowncast (pcons # (ppairDataBuiltin # key # value) # pnil)
 
 -- | Construct a 'PMap' from a list of key-value pairs, sorted by ascending key data.
 pfromAscList :: (POrd k, PIsData k, PIsData v) => Term s (PBuiltinListOfPairs k v :--> PMap 'Sorted k v)
@@ -383,7 +386,7 @@ mapUnionCarrier = phoistAcyclic $ plam \combine self ->
                           (xk #== yk)
                           ( pcons
                               # (ppairDataBuiltin # xk #$ combine # (psndBuiltin # x) # (psndBuiltin # y))
-                              #$ merge
+                                #$ merge
                               # xs
                               # ys'
                           )
@@ -483,7 +486,8 @@ pmap ::
   (PIsData a, PIsData b) =>
   Term s ((a :--> b) :--> PMap g k a :--> PMap g k b)
 pmap = phoistAcyclic $
-  plam $ \f -> pmapData #$ plam $ \v -> pdata (f # pfromData v)
+  plam $
+    \f -> pmapData #$ plam $ \v -> pdata (f # pfromData v)
 
 pmapData ::
   Term s ((PAsData a :--> PAsData b) :--> PMap g k a :--> PMap g k b)
@@ -526,24 +530,30 @@ pcheckBinRel = phoistAcyclic $
                         v2 <- tcont . plet . pfromData $ psndBuiltin # y
                         k1 <- tcont . plet . pfromData $ pfstBuiltin # x
                         k2 <- tcont . plet . pfromData $ pfstBuiltin # y
-                        pure $
-                          pif
+                        pure
+                          $ pif
                             (k1 #== k2)
-                            ( f # v1 # v2 #&& self
+                            ( f
+                                # v1
+                                # v2 #&& self
                                 # xs
                                 # ys
                             )
-                            $ pif
-                              (k1 #< k2)
-                              (f # v1 # z #&& self # xs # l2)
-                              $ f # z # v2 #&& self
-                                # l1
-                                # ys
+                          $ pif
+                            (k1 #< k2)
+                            (f # v1 # z #&& self # xs # l2)
+                          $ f
+                            # z
+                            # v2 #&& self
+                            # l1
+                            # ys
                     )
-                    ( f # v1 # z
-                        #&& PPrelude.pall
-                          # plam (\p -> f # pfromData (psndBuiltin # p) # z)
-                          # xs
+                    ( f
+                        # v1
+                        # z
+                          #&& PPrelude.pall
+                        # plam (\p -> f # pfromData (psndBuiltin # p) # z)
+                        # xs
                     )
                     l2
             )

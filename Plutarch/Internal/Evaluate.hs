@@ -3,7 +3,8 @@
 module Plutarch.Internal.Evaluate (evalScript, evalScriptHuge, evalScript', EvalError) where
 
 import Data.Text (Text)
-import qualified PlutusCore as PLC
+import Plutarch.Script (Script (Script))
+import PlutusCore qualified as PLC
 import PlutusCore.Evaluation.Machine.ExBudget (
   ExBudget (ExBudget),
   ExRestrictingBudget (ExRestrictingBudget),
@@ -15,9 +16,8 @@ import UntypedPlutusCore (
   Program (Program),
   Term,
  )
-import qualified UntypedPlutusCore as UPLC
-import qualified UntypedPlutusCore.Evaluation.Machine.Cek as Cek
-import Plutarch.Script (Script (Script))
+import UntypedPlutusCore qualified as UPLC
+import UntypedPlutusCore.Evaluation.Machine.Cek qualified as Cek
 
 type EvalError = (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun)
 

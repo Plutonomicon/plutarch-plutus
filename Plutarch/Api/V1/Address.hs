@@ -8,7 +8,7 @@ module Plutarch.Api.V1.Address (
   PAddress (PAddress),
 ) where
 
-import qualified PlutusLedgerApi.V1 as Plutus
+import PlutusLedgerApi.V1 qualified as Plutus
 
 import Plutarch.Api.V1.Crypto (PPubKeyHash)
 import Plutarch.Api.V1.Maybe (PMaybeData)

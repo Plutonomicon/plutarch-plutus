@@ -55,7 +55,7 @@ import Plutarch.Lift (
   pconstant,
  )
 import Plutarch.Unsafe (punsafeBuiltin)
-import qualified PlutusCore as PLC
+import PlutusCore qualified as PLC
 
 -- | Plutus 'BuiltinBool'
 data PBool (s :: S) = PTrue | PFalse

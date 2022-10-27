@@ -6,7 +6,7 @@ module Plutarch.Unsafe (
 ) where
 
 import Plutarch.Internal (Term)
-import qualified Plutarch.Internal as PI
+import Plutarch.Internal qualified as PI
 import Plutarch.Internal.PlutusType (PInner)
 
 {- |

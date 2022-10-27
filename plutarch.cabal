@@ -33,8 +33,10 @@ common c
     NumDecimals
     OverloadedLabels
     OverloadedLists
+    OverloadedRecordDot
     OverloadedStrings
     PackageImports
+    PartialTypeSignatures
     PatternSynonyms
     QualifiedDo
     QuantifiedConstraints
@@ -49,8 +51,6 @@ common c
     UnliftedFFITypes
     UnliftedNewtypes
     ViewPatterns
-    OverloadedRecordDot
-    PartialTypeSignatures
 
   ghc-options:
     -Weverything -Wno-unused-do-bind -Wno-missing-kind-signatures
@@ -74,7 +74,6 @@ library
     Plutarch.Api.V1.Crypto
     Plutarch.Api.V1.DCert
     Plutarch.Api.V1.Interval
-    Plutarch.Script
     Plutarch.Api.V1.Maybe
     Plutarch.Api.V1.Scripts
     Plutarch.Api.V1.Time
@@ -127,6 +126,7 @@ library
     Plutarch.Pretty.Internal.Types
     Plutarch.Rational
     Plutarch.Reducible
+    Plutarch.Script
     Plutarch.Show
     Plutarch.String
     Plutarch.TermCont

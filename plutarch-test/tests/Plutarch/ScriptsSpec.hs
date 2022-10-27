@@ -17,34 +17,31 @@ module Plutarch.ScriptsSpec (
   spec,
 ) where
 
-import qualified Codec.CBOR.Write as Write
-import Codec.Serialise (Serialise, encode)
+import Codec.Serialise (serialise)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Base16 as Base16
+import Data.ByteString.Lazy (toStrict)
+import Data.ByteString.Short (fromShort)
 import Data.Coerce (coerce)
-import Data.Default (def)
 import Data.Text (Text)
 import qualified Data.Text.Encoding as TE
 
 import qualified PlutusLedgerApi.V1 as Plutus
 
 import Plutarch.Api.V1 (
+  PMintingPolicy,
   PScriptContext,
-  mintingPolicySymbol,
-  mkMintingPolicy,
-  mkStakeValidator,
-  mkValidator,
-  stakeValidatorHash,
-  validatorHash,
-  type PMintingPolicy,
-  type PStakeValidator,
-  type PValidator,
+  PStakeValidator,
+  PValidator,
+  scriptHash,
  )
 import Plutarch.Api.V1.Crypto (PPubKeyHash)
 import Plutarch.Builtin (pasByteStr)
 import Plutarch.Crypto (pverifyEd25519Signature)
 import Plutarch.Prelude
+import Plutarch.Script (Script, serialiseScript)
 import Plutarch.Test
+import Plutarch.Test.Golden (compileD)
 import Test.Hspec
 
 spec :: Spec
@@ -60,8 +57,8 @@ spec = do
       "0" @| authStakeValidatorTerm
       "hash" @| pconstant stakeValidatorHashEncoded
 
-encodeSerialise :: Serialise a => a -> Text
-encodeSerialise = TE.decodeUtf8 . Base16.encode . Write.toStrictByteString . encode
+base16 :: ByteString -> Text
+base16 = TE.decodeUtf8 . Base16.encode
 
 type PSignature = PByteString
 type PPubKey = PByteString
@@ -126,11 +123,11 @@ adminPubKeyHash :: Plutus.PubKeyHash
 adminPubKeyHash = "cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f"
 
 {- |
-  We can compile a `Validator` using `mkValidator` &
+  We can compile a `Validator` using `compile` &
   `pwrapValidatorFromData`
 -}
-authValidatorCompiled :: Plutus.Validator
-authValidatorCompiled = mkValidator def authValidatorTerm
+authValidatorCompiled :: Script
+authValidatorCompiled = compileD authValidatorTerm
 
 authValidatorTerm :: ClosedTerm PValidator
 authValidatorTerm =
@@ -141,13 +138,13 @@ authValidatorTerm =
       (pasByteStr # redeemer)
       ctx
 
--- | `validatorHash` gets the Plutus `ValidatorHash`
-authValidatorHash :: Plutus.ValidatorHash
-authValidatorHash = validatorHash authValidatorCompiled
+-- | `scriptHash` gets the Plutus `ScriptHash`
+authValidatorHash :: Plutus.ScriptHash
+authValidatorHash = scriptHash authValidatorCompiled
 
 -- | Similarly, for a MintingPolicy
-authPolicyCompiled :: Plutus.MintingPolicy
-authPolicyCompiled = mkMintingPolicy def authPolicyTerm
+authPolicyCompiled :: Script
+authPolicyCompiled = compileD authPolicyTerm
 
 authPolicyTerm :: ClosedTerm PMintingPolicy
 authPolicyTerm =
@@ -160,11 +157,11 @@ authPolicyTerm =
 -- | `mintingPolicySymbol` gets the Plutus `CurrencySymbol`
 authPolicySymbol :: Plutus.CurrencySymbol
 authPolicySymbol =
-  mintingPolicySymbol authPolicyCompiled
+  Plutus.CurrencySymbol $ Plutus.getScriptHash $ scriptHash authPolicyCompiled
 
 -- | ...And for a StakeValidator
-authStakeValidatorCompiled :: Plutus.StakeValidator
-authStakeValidatorCompiled = mkStakeValidator def authStakeValidatorTerm
+authStakeValidatorCompiled :: Script
+authStakeValidatorCompiled = compileD authStakeValidatorTerm
 
 authStakeValidatorTerm :: ClosedTerm PStakeValidator
 authStakeValidatorTerm =
@@ -175,20 +172,20 @@ authStakeValidatorTerm =
       ctx
 
 -- | `stakeValidatorHash` gets the Plutus `StakeValidatorHash`
-authStakeValidatorHash :: Plutus.StakeValidatorHash
-authStakeValidatorHash = stakeValidatorHash authStakeValidatorCompiled
+authStakeValidatorHash :: Plutus.ScriptHash
+authStakeValidatorHash = scriptHash authStakeValidatorCompiled
 
 -- | `encodeSerialise` will get the hex-encoded serialisation of a script
 validatorEncoded :: Text
-validatorEncoded = encodeSerialise authValidatorCompiled
+validatorEncoded = base16 . fromShort . serialiseScript $ authValidatorCompiled
 
 -- | Similarly, with a `MintingPolicy`
 policyEncoded :: Text
-policyEncoded = encodeSerialise authPolicyCompiled
+policyEncoded = base16 . fromShort . serialiseScript $ authPolicyCompiled
 
 -- | And with a `StakeValidator`
 stakeValidatorEncoded :: Text
-stakeValidatorEncoded = encodeSerialise authStakeValidatorCompiled
+stakeValidatorEncoded = base16 . fromShort . serialiseScript $ authStakeValidatorCompiled
 
 {- |
   We can also encode `ValidatorHash` the same way.
@@ -200,12 +197,12 @@ stakeValidatorEncoded = encodeSerialise authStakeValidatorCompiled
   Also note that this is not the addr1/CIP-0019 Address encoding of the script.
 -}
 validatorHashEncoded :: Text
-validatorHashEncoded = encodeSerialise (coerce authValidatorHash :: Plutus.BuiltinByteString)
+validatorHashEncoded = base16 . toStrict . serialise $ (coerce authValidatorHash :: Plutus.BuiltinByteString)
 
 -- | The same goes for `CurrencySymbol`
 policySymEncoded :: Text
-policySymEncoded = encodeSerialise (coerce authPolicySymbol :: Plutus.BuiltinByteString)
+policySymEncoded = base16 . toStrict . serialise $ (coerce authPolicySymbol :: Plutus.BuiltinByteString)
 
 -- | ... And `StakeValidatorHash`
 stakeValidatorHashEncoded :: Text
-stakeValidatorHashEncoded = encodeSerialise (coerce authStakeValidatorHash :: Plutus.BuiltinByteString)
+stakeValidatorHashEncoded = base16 . toStrict . serialise $ (coerce authStakeValidatorHash :: Plutus.BuiltinByteString)

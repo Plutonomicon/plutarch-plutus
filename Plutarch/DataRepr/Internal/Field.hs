@@ -172,7 +172,8 @@ pletFields ::
   Term s b
 pletFields t =
   runTermCont $
-    bindFields (Proxy @bs) $ ptoFields @a t
+    bindFields (Proxy @bs) $
+      ptoFields @a t
 
 data ToBind = Bind | Skip
 

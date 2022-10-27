@@ -36,13 +36,13 @@ import Data.Text (Text)
 import GHC.Stack (HasCallStack)
 import Plutarch.Internal (ClosedTerm, Config (Config, tracingMode), PType, Term, compile, punsafeConstantInternal, pattern DoTracing)
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
-import qualified PlutusCore as PLC
+import Plutarch.Script (unScript)
+import PlutusCore qualified as PLC
 import PlutusCore.Builtin (KnownTypeError, readKnownConstant)
 import PlutusCore.Evaluation.Machine.Exception (_UnliftingErrorE)
-import Plutarch.Script (unScript)
 import PlutusTx (BuiltinData, Data, builtinDataToData, dataToBuiltinData)
 import PlutusTx.Builtins.Class (FromBuiltin, ToBuiltin, fromBuiltin, toBuiltin)
-import qualified UntypedPlutusCore as UPLC
+import UntypedPlutusCore qualified as UPLC
 
 {- |
 Laws:

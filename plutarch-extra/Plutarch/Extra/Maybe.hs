@@ -130,7 +130,8 @@ pdjust ::
   PIsData a =>
   Term s (a :--> PMaybeData a)
 pdjust = phoistAcyclic $
-  plam $ \x -> pcon $ PDJust $ pdcons @"_0" # pdata x #$ pdnil
+  plam $
+    \x -> pcon $ PDJust $ pdcons @"_0" # pdata x #$ pdnil
 
 -- | Construct a 'PDNothing' value
 pdnothing ::

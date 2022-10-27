@@ -6,10 +6,10 @@ module Plutarch.Show (
 
 import Data.Char (intToDigit)
 import Data.List.NonEmpty (NonEmpty ((:|)))
-import qualified Data.List.NonEmpty as NE
+import Data.List.NonEmpty qualified as NE
 import Data.Semigroup (sconcat)
 import Data.String (IsString (fromString))
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Generics.SOP (
   All,
   All2,
@@ -72,9 +72,10 @@ instance PShow PString where
       pshowUtf8Bytes :: Term s (PByteString :--> PByteString)
       pshowUtf8Bytes = phoistAcyclic $
         pfix #$ plam $ \self bs ->
-          pelimBS # bs
+          pelimBS
             # bs
-            #$ plam
+            # bs
+              #$ plam
             $ \x xs ->
               -- Non-ascii byte sequence will not use bytes < 128.
               -- So we are safe to rewrite the lower byte values.
@@ -130,9 +131,10 @@ instance PShow PByteString where
       showByteString' :: Term s (PByteString :--> PString)
       showByteString' = phoistAcyclic $
         pfix #$ plam $ \self bs ->
-          pelimBS # bs
+          pelimBS
+            # bs
             # (pconstant @PString "")
-            #$ plam
+              #$ plam
             $ \x xs -> showByte # x <> self # xs
       showByte :: Term s (PInteger :--> PString)
       showByte = phoistAcyclic $

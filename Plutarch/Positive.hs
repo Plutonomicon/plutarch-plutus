@@ -71,7 +71,8 @@ ppositive = phoistAcyclic $
     pif
       (i #<= 0)
       (pcon PNothing)
-      $ pcon . PJust . pcon $ PPositive i
+      $ pcon . PJust . pcon
+      $ PPositive i
 
 -- | Partial version of 'PPositive'. Errors if argument is zero.
 ptryPositive :: Term s (PInteger :--> PPositive)
@@ -80,4 +81,5 @@ ptryPositive = phoistAcyclic $
     pif
       (i #<= 0)
       (ptraceError $ "ptryPositive: building with non positive: " <> pshow i)
-      $ pcon $ PPositive i
+      $ pcon
+      $ PPositive i

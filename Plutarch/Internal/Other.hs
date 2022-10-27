@@ -9,7 +9,7 @@ module Plutarch.Internal.Other (
   popaque,
 ) where
 
-import qualified Data.Text as T
+import Data.Text qualified as T
 import GHC.Stack (HasCallStack)
 import Plutarch.Internal (ClosedTerm, Config, Term, compile, phoistAcyclic, plam', punsafeCoerce, (#), (:-->))
 import Plutarch.Internal.PlutusType (
@@ -21,8 +21,8 @@ import Plutarch.Internal.PlutusType (
   pcon',
   pmatch',
  )
-import PlutusCore.Pretty (prettyPlcReadableDebug)
 import Plutarch.Script (Script (Script))
+import PlutusCore.Pretty (prettyPlcReadableDebug)
 
 -- | Prettyprint a compiled Script via the PLC pretty printer
 printScript :: Script -> String

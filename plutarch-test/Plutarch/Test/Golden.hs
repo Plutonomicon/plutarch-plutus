@@ -49,10 +49,10 @@ import qualified Data.Set as S
 import Plutarch (Config (Config, tracingMode), compile, printScript, pattern DetTracing)
 import Plutarch.Evaluate (evalScript)
 import Plutarch.Prelude
-import Plutarch.Test.Benchmark (Benchmark, mkBenchmark, scriptSize)
-import Plutarch.Test.ListSyntax (ListSyntax, listSyntaxAdd, listSyntaxAddSubList, runListSyntax)
 import Plutarch.Script (Script)
 import qualified Plutarch.Script as Scripts
+import Plutarch.Test.Benchmark (Benchmark, mkBenchmark, scriptSize)
+import Plutarch.Test.ListSyntax (ListSyntax, listSyntaxAdd, listSyntaxAddSubList, runListSyntax)
 import Test.Hspec (Expectation, Spec, describe, it)
 import Test.Hspec.Core.Spec (SpecM, getSpecDescriptionPath)
 

@@ -1,13 +1,13 @@
 module Plutarch.Pretty.Internal.Config (keywords, indentWidth, forcedPrefix) where
 
 import Data.Set (Set)
-import qualified Data.Set as Set
+import Data.Set qualified as Set
 import Data.String (fromString)
 import Data.Text (Text)
 
-import qualified Prettyprinter as PP
+import Prettyprinter qualified as PP
 
-import qualified PlutusCore as PLC
+import PlutusCore qualified as PLC
 
 keywords :: Set Text
 keywords =

@@ -13,7 +13,7 @@ module Plutarch.ByteString (
 ) where
 
 import Data.ByteString (ByteString)
-import qualified Data.ByteString as BS
+import Data.ByteString qualified as BS
 import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Generics (Generic)
@@ -32,7 +32,7 @@ import Plutarch.Lift (
   pconstant,
  )
 import Plutarch.Unsafe (punsafeBuiltin)
-import qualified PlutusCore as PLC
+import PlutusCore qualified as PLC
 
 -- | Plutus 'BuiltinByteString'
 data PByteString s = PByteString (Term s POpaque)
