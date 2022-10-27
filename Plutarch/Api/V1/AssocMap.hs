@@ -74,6 +74,8 @@ import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusCore qualified as PLC
 
+import Data.Foldable (foldl')
+import GHC.Exts (IsList (Item, fromList, toList))
 import Prelude hiding (all, any, filter, lookup, null)
 
 import Data.Proxy (Proxy (Proxy))
@@ -318,6 +320,62 @@ passertSorted =
 -- | Forget the knowledge that keys were sorted.
 pforgetSorted :: Term s (PMap 'Sorted k v) -> Term s (PMap g k v)
 pforgetSorted v = punsafeDowncast (pto v)
+
+{- | Given a 'Foldable' of key-value pairs, construct an unsorted 'PMap'.
+ Performs linearly with respect to its argument.
+
+ = Note
+
+ If there are duplicate keys in the input, the /last/ key will \'win\' in a
+ lookup.
+-}
+punsortedMapFromFoldable ::
+  forall (k :: PType) (v :: PType) (f :: Type -> Type) (s :: S).
+  (Foldable f, PIsData k, PIsData v) =>
+  f (Term s k, Term s v) ->
+  Term s (PMap 'Unsorted k v)
+punsortedMapFromFoldable = pcon . PMap . foldl' go (pcon PNil)
+  where
+    go ::
+      forall (s' :: S).
+      Term s' (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))) ->
+      (Term s' k, Term s' v) ->
+      Term s' (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v)))
+    go acc (key, val) =
+      pcon . PCons (ppairDataBuiltin # pdata key # pdata val) $ acc
+
+{- | Given a 'Foldable' of (not necessarily sorted) key-value pairs, construct a
+ 'PMap' which is guaranteed sorted. Performs a linear number of ordered
+ insertions with respect to the length of its argument.
+
+ = Note
+
+ If there are duplicate keys, only the /last/ key-value pair will remain in
+ the result.
+-}
+psortedMapFromFoldable ::
+  forall (k :: PType) (v :: PType) (f :: Type -> Type) (s :: S).
+  (Foldable f, POrd k, PIsData k, PIsData v) =>
+  f (Term s k, Term s v) ->
+  Term s (PMap 'Sorted k v)
+psortedMapFromFoldable = foldl' go pempty
+  where
+    go ::
+      forall (s' :: S).
+      Term s' (PMap 'Sorted k v) ->
+      (Term s' k, Term s' v) ->
+      Term s' (PMap 'Sorted k v)
+    go acc (key, val) = pinsert # key # val # acc
+
+instance (PIsData k, PIsData v, POrd k) => IsList (Term s (PMap 'Unsorted k v)) where
+  type Item (Term s (PMap 'Unsorted k v)) = (Term s k, Term s v)
+  fromList = punsortedMapFromFoldable
+  toList = error "unimplemented"
+
+instance (PIsData k, PIsData v, POrd k) => IsList (Term s (PMap 'Sorted k v)) where
+  type Item (Term s (PMap 'Sorted k v)) = (Term s k, Term s v)
+  fromList = psortedMapFromFoldable
+  toList = error "unimplemented"
 
 instance
   (POrd k, PIsData k, PIsData v, Semigroup (Term s v)) =>

@@ -33,7 +33,7 @@ deriving via (DerivePConstantViaBuiltin Plutus.Datum PDatum PData) instance PCon
 
 newtype PRedeemer (s :: S) = PRedeemer (Term s PData)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq)
+  deriving anyclass (PlutusType, PIsData, PEq, PShow)
 instance DerivePlutusType PRedeemer where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PRedeemer where type PLifted PRedeemer = Plutus.Redeemer
@@ -49,7 +49,7 @@ deriving via (DerivePConstantViaBuiltin Plutus.DatumHash PDatumHash PByteString)
 
 newtype PRedeemerHash (s :: S) = PRedeemerHash (Term s PByteString)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd)
+  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PShow)
 instance DerivePlutusType PRedeemerHash where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PRedeemerHash where type PLifted PRedeemerHash = Plutus.RedeemerHash
@@ -57,6 +57,7 @@ deriving via
   (DerivePConstantViaBuiltin Plutus.RedeemerHash PRedeemerHash PByteString)
   instance
     PConstantDecl Plutus.RedeemerHash
+
 
 newtype PScriptHash (s :: S) = PScriptHash (Term s PByteString)
   deriving stock (Generic)
