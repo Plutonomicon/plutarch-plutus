@@ -41,6 +41,7 @@
             nativeBuildInputs = [ config.packages."plutarch-test:exe:plutarch-test" ];
           } ''
           plutarch-test
+          touch $out
         '';
       };
     };
