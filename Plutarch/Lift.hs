@@ -94,6 +94,8 @@ Example:
 pconstant :: forall p s. PLift p => PLifted p -> Term s p
 pconstant x = punsafeConstantInternal $ PLC.someValue @(PConstantRepr (PLifted p)) @PLC.DefaultUni $ pconstantToRepr x
 
+{-# HLINT ignore LiftError "Use camelCase" #-}
+
 {- | Error during script evaluation.
 
  @since 1.2.1

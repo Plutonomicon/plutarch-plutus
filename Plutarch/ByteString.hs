@@ -35,7 +35,7 @@ import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
 
 -- | Plutus 'BuiltinByteString'
-data PByteString s = PByteString (Term s POpaque)
+newtype PByteString s = PByteString (Term s POpaque)
   deriving stock (Generic)
   deriving anyclass (PlutusType)
 
@@ -116,4 +116,4 @@ hexDigitToWord8 = f . toLower
     f 'd' = 13
     f 'e' = 14
     f 'f' = 15
-    f c = error $ "InvalidHexDigit " ++ [c]
+    f c = error ("InvalidHexDigit " <> [c])

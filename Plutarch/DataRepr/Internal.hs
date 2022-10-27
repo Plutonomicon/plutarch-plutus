@@ -451,7 +451,7 @@ instance PlutusTypeStrat PlutusTypeData where
   type PlutusTypeStratConstraint PlutusTypeData = PlutusTypeDataConstraint
   type DerivedPInner PlutusTypeData a = PDataSum (IsPDataSumDefs (PCode a))
   derivedPCon x = pcon $ toSum $ gpfrom x
-  derivedPMatch x f = pmatch x (\y -> f $ gpto $ fromSum $ y)
+  derivedPMatch x f = pmatch x (f . gpto . fromSum)
 
 newtype DualReprHandler s out def = DualRepr (Term s (PDataRecord def) -> Term s (PDataRecord def) -> Term s out)
 

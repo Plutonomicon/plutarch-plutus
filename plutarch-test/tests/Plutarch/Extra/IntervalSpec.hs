@@ -18,9 +18,9 @@ import Plutarch.Extra.Interval (
 import Plutarch.Prelude hiding (psingleton, pto)
 
 import Hedgehog (Property, PropertyT, assert, forAll, property)
-import qualified Hedgehog.Gen as Gen (int, list)
+import Hedgehog.Gen qualified as Gen (int, list)
 import Hedgehog.Internal.Property (propertyTest)
-import qualified Hedgehog.Range as Range (constantBounded, singleton)
+import Hedgehog.Range qualified as Range (constantBounded, singleton)
 import Plutarch.Test (passert, passertNot, pgoldenSpec, psucceeds, (@->), (@\), (@|))
 import Test.Hspec (Spec, describe, it)
 import Test.Hspec.Hedgehog (hedgehog)

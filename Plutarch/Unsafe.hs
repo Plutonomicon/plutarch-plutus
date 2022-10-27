@@ -14,4 +14,4 @@ import Plutarch.Internal.PlutusType (PInner)
   assuming that the value is a safe construction of the Term.
 -}
 punsafeDowncast :: Term s (PInner a) -> Term s a
-punsafeDowncast x = PI.punsafeCoerce x
+punsafeDowncast = PI.punsafeCoerce

@@ -19,14 +19,14 @@ module Plutarch.ScriptsSpec (
 
 import Codec.Serialise (serialise)
 import Data.ByteString (ByteString)
-import qualified Data.ByteString.Base16 as Base16
+import Data.ByteString.Base16 qualified as Base16
 import Data.ByteString.Lazy (toStrict)
 import Data.ByteString.Short (fromShort)
 import Data.Coerce (coerce)
 import Data.Text (Text)
-import qualified Data.Text.Encoding as TE
+import Data.Text.Encoding qualified as TE
 
-import qualified PlutusLedgerApi.V1 as Plutus
+import PlutusLedgerApi.V1 qualified as Plutus
 
 import Plutarch.Api.V1 (
   PMintingPolicy,

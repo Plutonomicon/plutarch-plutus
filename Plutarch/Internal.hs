@@ -135,7 +135,7 @@ data S = SI
 -- | Shorthand for Plutarch types.
 type PType = S -> Type
 
-data Config = Config
+newtype Config = Config
   { tracingMode :: TracingMode
   }
 
@@ -174,7 +174,7 @@ newtype Term (s :: S) (a :: PType) = Term {asRawTerm :: Word64 -> TermMonad Term
 -}
 type ClosedTerm (a :: PType) = forall (s :: S). Term s a
 
-data (:-->) (a :: PType) (b :: PType) (s :: S)
+newtype (:-->) (a :: PType) (b :: PType) (s :: S)
   = PLam (Term s a -> Term s b)
 infixr 0 :-->
 
@@ -293,7 +293,7 @@ pthrow = Term . pure . pthrow'
 -- | Lambda Application.
 papp :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
 papp x y = Term \i ->
-  (,) <$> (asRawTerm x i) <*> (asRawTerm y i) >>= \case
+  (,) <$> asRawTerm x i <*> asRawTerm y i >>= \case
     -- Applying anything to an error is an error.
     (getTerm -> RError, _) -> pthrow' "application to an error"
     -- Applying an error to anything is an error.
@@ -310,7 +310,7 @@ papp x y = Term \i ->
   Plutus \'delay\', used for laziness.
 -}
 pdelay :: Term s a -> Term s (PDelayed a)
-pdelay x = Term \i -> mapTerm RDelay <$> asRawTerm x i
+pdelay x = Term (fmap (mapTerm RDelay) . asRawTerm x)
 
 {- |
   Plutus \'force\',
@@ -372,7 +372,7 @@ phoistAcyclic :: HasCallStack => ClosedTerm a -> Term s a
 phoistAcyclic t = Term \_ ->
   asRawTerm t 0 >>= \case
     -- Built-ins are smaller than variable references
-    t'@(getTerm -> RBuiltin _) -> pure $ t'
+    t'@(getTerm -> RBuiltin _) -> pure t'
     t' -> case evalScript . Script . UPLC.Program () (PLC.defaultVersion ()) $ compile' t' of
       (Right _, _, _) ->
         let hoisted = HoistedTerm (hashRawTerm . getTerm $ t') (getTerm t')
@@ -397,21 +397,17 @@ rawTermToUPLC ::
   UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i + 1) -- Why the fuck does it start from 1 and not 0?
 rawTermToUPLC m l (RLamAbs n t) =
-  foldr
-    (.)
-    id
-    (replicate (fromIntegral $ n + 1) $ UPLC.LamAbs () (DeBruijn . Index $ 0))
-    $ (rawTermToUPLC m (l + n + 1) t)
+  foldr ($) (rawTermToUPLC m (l + n + 1) t) (replicate (fromIntegral $ n + 1) $ UPLC.LamAbs () (DeBruijn . Index $ 0))
 rawTermToUPLC m l (RApply x y) =
   let f y t@(UPLC.LamAbs () _ body) =
         case rawTermToUPLC m l y of
           -- Inline unconditionally if it's a variable or built-in.
           -- These terms are very small and are always WHNF.
           UPLC.Var () (DeBruijn (Index idx)) -> subst 1 (\lvl -> UPLC.Var () (DeBruijn . Index $ idx + lvl - 1)) body
-          arg@UPLC.Builtin {} -> subst 1 (\_ -> arg) body
+          arg@UPLC.Builtin {} -> subst 1 (const arg) body
           arg -> UPLC.Apply () t arg
       f y t = UPLC.Apply () t (rawTermToUPLC m l y)
-   in foldr (.) id (f <$> y) $ (rawTermToUPLC m l x)
+   in foldr ($) (rawTermToUPLC m l x) (f <$> y)
 rawTermToUPLC m l (RDelay t) = UPLC.Delay () (rawTermToUPLC m l t)
 rawTermToUPLC m l (RForce t) = UPLC.Force () (rawTermToUPLC m l t)
 rawTermToUPLC _ _ (RBuiltin f) = UPLC.Builtin () f
@@ -435,9 +431,9 @@ compile' t =
         HoistedTerm ->
         (M.Map Dig Word64, [(Word64, RawTerm)], Word64) ->
         (M.Map Dig Word64, [(Word64, RawTerm)], Word64)
-      g (HoistedTerm hash term) (map, defs, n) = case M.alterF (f n) hash map of
-        (True, map) -> (map, (n, term) : defs, n + 1)
-        (False, map) -> (map, defs, n)
+      g (HoistedTerm hash term) (m, defs, n) = case M.alterF (f n) hash m of
+        (True, m) -> (m, (n, term) : defs, n + 1)
+        (False, m) -> (m, defs, n)
 
       toInline :: S.Set Dig
       toInline =
@@ -452,9 +448,9 @@ compile' t =
       -- map: term -> de Bruijn level
       -- defs: the terms, level 0 is last
       -- n: # of terms
-      (map, defs, n) = foldr g (M.empty, [], 0) $ filter (\(HoistedTerm hash _) -> not $ S.member hash toInline) deps
+      (m, defs, n) = foldr g (M.empty, [], 0) $ filter (\(HoistedTerm hash _) -> not $ S.member hash toInline) deps
 
-      map' (HoistedTerm hash term) l = case M.lookup hash map of
+      map' (HoistedTerm hash term) l = case M.lookup hash m of
         Just l' -> UPLC.Var () . DeBruijn . Index $ l - l'
         Nothing -> rawTermToUPLC map' l term
 
@@ -470,7 +466,7 @@ compile' t =
 -- | Compile a (closed) Plutus Term to a usable script
 compile :: Config -> ClosedTerm a -> Either Text Script
 compile config t = case asClosedRawTerm t of
-  TermMonad (ReaderT t') -> (Script . UPLC.Program () (UPLC.Version () 1 0 0) . compile') <$> t' config
+  TermMonad (ReaderT t') -> Script . UPLC.Program () (UPLC.Version () 1 0 0) . compile' <$> t' config
 
 hashTerm :: Config -> ClosedTerm a -> Either Text Dig
 hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTerm t 0) config

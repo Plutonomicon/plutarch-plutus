@@ -304,7 +304,7 @@ pvalueOf = phoistAcyclic $
     AssocMap.pfoldAt
       # symbol
       # 0
-      # plam (\map -> AssocMap.pfoldAt # token # 0 # plam pfromData # pfromData map)
+      # plam (\m -> AssocMap.pfoldAt # token # 0 # plam pfromData # pfromData m)
       # pto value
 
 -- | The 'PCurrencySymbol' of the Ada currency.

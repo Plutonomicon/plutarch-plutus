@@ -64,4 +64,4 @@ freshVarName = do
       chosenIx <- lift . lift $ uniformRM (0, Txt.length x - 1) stGen
       pure $ Txt.index x chosenIx
     starterChars = Txt.pack ['a' .. 'z']
-    chars = Txt.append starterChars . Txt.pack $ ['A' .. 'Z'] ++ ['0' .. '9'] ++ ['_', '\'']
+    chars = Txt.append starterChars . Txt.pack $ (['A' .. 'Z'] <> (['0' .. '9'] <> ['_', '\'']))

@@ -10,7 +10,7 @@ spec = do
   describe "bool" . pgoldenSpec $ do
     "pnot" @\ do
       "lam" @| pnot
-      "app" @| pnot # (pcon PTrue) @-> passertNot
+      "app" @| pnot # pcon PTrue @-> passertNot
     "pand" @\ do
       "tf" @| pcon PTrue #&& pcon PFalse @-> passertNot
       "ft" @| pcon PFalse #&& pcon PTrue @-> passertNot

@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 {- |
@@ -30,7 +31,7 @@ import Control.Exception (SomeException, evaluate, try)
 import Control.Monad.IO.Class (liftIO)
 import Data.SOP (NP (Nil, (:*)))
 import Data.Text (Text)
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Hedgehog (Gen, Property, PropertyT, annotate, annotateShow, assert, forAll, property, (===))
 import Plutarch.Script (Script (Script, unScript))
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
@@ -93,14 +94,14 @@ instance
   HaskEquiv 'OnBoth 'TotalFun h p '[]
   where
   haskEquiv h p Nil = do
-    haskEquiv @( 'OnPEq) @( 'TotalFun) h p Nil
-    haskEquiv @( 'OnPData) @( 'TotalFun) h p Nil
+    haskEquiv @OnPEq @TotalFun h p Nil
+    haskEquiv @OnPData @TotalFun h p Nil
 
 instance
   (Marshal h p, HaskEquiv eq 'TotalFun h p '[]) =>
   HaskEquiv eq 'PartialFun h p '[]
   where
-  haskEquiv h p Nil = testPartial (\h' p' -> haskEquiv @eq @( 'TotalFun) h' p' Nil) h p
+  haskEquiv h p Nil = testPartial (\h' p' -> haskEquiv @eq @TotalFun h' p' Nil) h p
 
 {- |
   The given Plutarch term is equivalent to the given Haskell type upto the given
@@ -130,8 +131,7 @@ prop_haskEquiv h p = do
   property . haskEquiv @e @t h p
 
 testDataEq' :: (PIsData a, Marshal h a) => h -> ClosedTerm a -> PropertyT IO ()
-testDataEq' x y =
-  testDataEq (marshal x) y
+testDataEq' x = testDataEq (marshal x)
 
 testDataEq :: (PIsData a) => ClosedTerm a -> ClosedTerm a -> PropertyT IO ()
 testDataEq x y = pshouldBe (pdata x) (pdata y)

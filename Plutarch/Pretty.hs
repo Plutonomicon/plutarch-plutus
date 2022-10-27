@@ -260,7 +260,7 @@ prettyUPLC uplc = runST $ do
       funcBody <- forkState $ go bodyTerm
       pure . parensOnCursor ps'cursor . PP.hang indentWidth $
         PP.sep
-          [ "\\" <> PP.hsep (reverse $ map PP.pretty names) <+> "->"
+          [ "\\" <> PP.hsep (reverse $ fmap PP.pretty names) <+> "->"
           , funcBody
           ]
     go (Apply _ (LamAbs _ _ t) firstArg) = do

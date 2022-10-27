@@ -4,6 +4,7 @@ import Plutarch.Prelude
 import Plutarch.Test
 import Test.Hspec
 
+{-# HLINT ignore spec "Monoid law, left identity" #-}
 spec :: Spec
 spec = do
   describe "str" $ do

@@ -9,7 +9,7 @@ module Plutarch.Test.Benchmark (
 ) where
 
 import Data.Aeson (ToJSON)
-import qualified Data.ByteString.Short as SBS
+import Data.ByteString.Short qualified as SBS
 import Data.Int (Int64)
 import GHC.Generics (Generic)
 import Plutarch.Script (Script (unScript))

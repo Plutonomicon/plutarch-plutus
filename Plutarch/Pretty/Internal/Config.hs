@@ -13,7 +13,7 @@ keywords :: Set Text
 keywords =
   Set.fromList $
     ["let", "in"]
-      <> map (fromString . show . PP.pretty) [(minBound @PLC.DefaultFun) .. maxBound]
+      <> fmap (fromString . show . PP.pretty) [(minBound @PLC.DefaultFun) .. maxBound]
 
 indentWidth :: Int
 indentWidth = 2

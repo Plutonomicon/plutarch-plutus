@@ -21,8 +21,8 @@ import Control.Monad.Trans.Cont (cont, runCont)
 import Data.String (fromString)
 import Numeric (showHex)
 import PlutusLedgerApi.V1
-import qualified PlutusLedgerApi.V1.Interval as Interval
-import qualified PlutusLedgerApi.V1.Value as Value
+import PlutusLedgerApi.V1.Interval qualified as Interval
+import PlutusLedgerApi.V1.Value qualified as Value
 import PlutusTx.Monoid (inv)
 
 import Plutarch.Api.V1 (
@@ -39,8 +39,8 @@ import Plutarch.Api.V1 (
   PTxInfo,
   PValue,
  )
-import qualified Plutarch.Api.V1.AssocMap as AssocMap
-import qualified Plutarch.Api.V1.Value as PValue
+import Plutarch.Api.V1.AssocMap qualified as AssocMap
+import Plutarch.Api.V1.Value qualified as PValue
 import Plutarch.Builtin (pasConstr, pforgetData)
 import Plutarch.Prelude
 import Plutarch.Test
@@ -91,7 +91,7 @@ spec = do
                 (\s v -> EnclosedTerm $ getEnclosedTerm s <> getEnclosedTerm v)
                 (EnclosedTerm pmint)
                 symbols
-            symbols = (\n -> EnclosedTerm (toSymbolicValue n)) <$> [0 .. 15]
+            symbols = EnclosedTerm . toSymbolicValue <$> [0 .. 15]
             toSymbolicValue :: Integer -> ClosedTerm (PValue 'Sorted 'Positive)
             toSymbolicValue n =
               PValue.pconstantPositiveSingleton (pconstant $ fromString $ "c" <> showHex n "") (pconstant "token") 1
@@ -183,11 +183,11 @@ spec = do
           "succeeds" @| PValue.passertSorted # (pmint <> pmintOtherSymbol) @-> psucceeds
           "fails on malsorted symbols"
             @| PValue.passertSorted
-            # ( pcon $
-                  PValue.PValue $
-                    pcon $
-                      AssocMap.PMap $
-                        pconcat # pto (pto pmintOtherSymbol) # pto (pto pmint)
+            # pcon
+              ( PValue.PValue $
+                  pcon $
+                    AssocMap.PMap $
+                      pconcat # pto (pto pmintOtherSymbol) # pto (pto pmint)
               )
             @-> pfails
           "fails on zero quantities"
@@ -196,7 +196,7 @@ spec = do
             @-> pfails
           "fails on empty token map"
             @| PValue.passertSorted
-            # (pcon $ PValue.PValue $ AssocMap.psingleton # pconstant "c0" # AssocMap.pempty)
+            # pcon (PValue.PValue $ AssocMap.psingleton # pconstant "c0" # AssocMap.pempty)
             @-> pfails
         "Ada" @\ do
           "adaSymbol" @| PValue.padaSymbol @-> psucceeds

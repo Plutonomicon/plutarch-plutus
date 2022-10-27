@@ -79,6 +79,8 @@ import Prelude hiding (all, any, filter, lookup, null)
 import Data.Proxy (Proxy (Proxy))
 import Data.Traversable (for)
 
+import Data.Bifunctor (bimap)
+
 data KeyGuarantees = Sorted | Unsorted
 
 type PBuiltinListOfPairs k v = PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
@@ -119,7 +121,7 @@ instance
   where
   type PConstantRepr (PlutusMap.Map k v) = [(Plutus.Data, Plutus.Data)]
   type PConstanted (PlutusMap.Map k v) = PMap 'Unsorted (PConstanted k) (PConstanted v)
-  pconstantToRepr m = (\(x, y) -> (Plutus.toData x, Plutus.toData y)) <$> PlutusMap.toList m
+  pconstantToRepr m = bimap Plutus.toData Plutus.toData <$> PlutusMap.toList m
   pconstantFromRepr m = fmap PlutusMap.fromList $
     for m $ \(x, y) -> do
       x' <- Plutus.fromData x
@@ -161,7 +163,7 @@ instance
 
 -- | Tests whether the map is empty.
 pnull :: Term s (PMap any k v :--> PBool)
-pnull = plam (\map -> List.pnull # pto map)
+pnull = plam (\m -> List.pnull # pto m)
 
 -- | Look up the given key in a 'PMap'.
 plookup :: (PIsData k, PIsData v) => Term s (k :--> PMap any k v :--> PMaybe v)
@@ -185,7 +187,7 @@ plookupDataWith ::
         :--> PMaybe x
     )
 plookupDataWith = phoistAcyclic $
-  plam $ \unwrap key map ->
+  plam $ \unwrap key m ->
     precList
       ( \self x xs ->
           pif
@@ -194,7 +196,7 @@ plookupDataWith = phoistAcyclic $
             (self # xs)
       )
       (const $ pcon PNothing)
-      # pto map
+      # pto m
 
 -- | Look up the given key in a 'PMap', returning the default value if the key is absent.
 pfindWithDefault :: (PIsData k, PIsData v) => Term s (v :--> k :--> PMap any k v :--> v)
@@ -213,7 +215,7 @@ pfoldAt = phoistAcyclic $
 -}
 foldAtData :: Term s (PAsData k :--> r :--> (PAsData v :--> r) :--> PMap any k v :--> r)
 foldAtData = phoistAcyclic $
-  plam $ \key def apply map ->
+  plam $ \key def apply m ->
     precList
       ( \self x xs ->
           pif
@@ -222,7 +224,7 @@ foldAtData = phoistAcyclic $
             (self # xs)
       )
       (const def)
-      # pto map
+      # pto m
 
 -- | Insert a new key/value pair into the map, overiding the previous if any.
 pinsert :: (POrd k, PIsData k, PIsData v) => Term s (k :--> v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
@@ -255,7 +257,7 @@ rebuildAtKey ::
         :--> PMap g k v
     )
 rebuildAtKey = phoistAcyclic $
-  plam $ \handler key map ->
+  plam $ \handler key m ->
     punsafeDowncast $
       precList
         ( \self x xs ->
@@ -271,7 +273,7 @@ rebuildAtKey = phoistAcyclic $
                   )
         )
         (const $ plam (#$ handler # pnil))
-        # pto map
+        # pto m
         # plam id
 
 -- | Construct an empty 'PMap'.
@@ -297,7 +299,7 @@ passertSorted :: forall k v any s. (POrd k, PIsData k, PIsData v) => Term s (PMa
 passertSorted =
   let _ = witness (Proxy :: Proxy (PIsData v))
    in phoistAcyclic $
-        plam $ \map ->
+        plam $ \m ->
           precList
             ( \self x xs ->
                 plet (pfromData $ pfstBuiltin # x) $ \k ->
@@ -309,8 +311,8 @@ passertSorted =
             )
             -- this is actually the empty map so we can
             -- safely assum that it is sorted
-            (const . plam . const $ punsafeCoerce map)
-            # pto map
+            (const . plam . const $ punsafeCoerce m)
+            # pto m
             # plam (const $ pcon PFalse)
 
 -- | Forget the knowledge that keys were sorted.
@@ -442,14 +444,14 @@ pdifference = phoistAcyclic $
 -- | Tests if all values in the map satisfy the given predicate.
 pall :: PIsData v => Term s ((v :--> PBool) :--> PMap any k v :--> PBool)
 pall = phoistAcyclic $
-  plam $ \pred map ->
-    List.pall # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto map
+  plam $ \pred m ->
+    List.pall # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto m
 
 -- | Tests if anu value in the map satisfies the given predicate.
 pany :: PIsData v => Term s ((v :--> PBool) :--> PMap any k v :--> PBool)
 pany = phoistAcyclic $
-  plam $ \pred map ->
-    List.pany # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto map
+  plam $ \pred m ->
+    List.pany # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto m
 
 -- | Filters the map so it contains only the values that satisfy the given predicate.
 pfilter :: PIsData v => Term s ((v :--> PBool) :--> PMap g k v :--> PMap g k v)
@@ -469,7 +471,7 @@ pmapMaybe = phoistAcyclic $
 pmapMaybeData ::
   Term s ((PAsData a :--> PMaybe (PAsData b)) :--> PMap g k a :--> PMap g k b)
 pmapMaybeData = phoistAcyclic $
-  plam $ \f map ->
+  plam $ \f m ->
     pcon . PMap $
       precList
         ( \self x xs ->
@@ -479,7 +481,7 @@ pmapMaybeData = phoistAcyclic $
                 PJust v -> pcons # (ppairDataBuiltin # (pfstBuiltin # x) # v) # xs'
         )
         (const pnil)
-        # pto map
+        # pto m
 
 -- | Applies a function to every value in the map, much like 'Data.List.map'.
 pmap ::
@@ -492,7 +494,7 @@ pmap = phoistAcyclic $
 pmapData ::
   Term s ((PAsData a :--> PAsData b) :--> PMap g k a :--> PMap g k b)
 pmapData = phoistAcyclic $
-  plam $ \f map ->
+  plam $ \f m ->
     pcon . PMap $
       precList
         ( \self x xs ->
@@ -501,7 +503,7 @@ pmapData = phoistAcyclic $
               # (self # xs)
         )
         (const pnil)
-        # pto map
+        # pto m
 
 {- | Given a comparison function and a "zero" value, check whether a binary relation holds over
 2 sorted 'PMap's.

@@ -1,6 +1,6 @@
 module Plutarch.UPLCSpec (spec) where
 
-import qualified PlutusCore as PLC
+import PlutusCore qualified as PLC
 
 import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude

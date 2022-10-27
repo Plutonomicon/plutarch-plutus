@@ -12,7 +12,7 @@ import Plutarch.Builtin (PAsData, PData, PIsData, pdata)
 import Plutarch.Integer (PInteger, PIntegral)
 
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
-import Plutarch.Show (pshow)
+import Plutarch.Show (PShow, pshow)
 
 import Plutarch (
   DerivePlutusType (DPTStrat),
@@ -31,7 +31,6 @@ import Plutarch (
   type (:-->),
  )
 import Plutarch.Num (PNum (pfromInteger, (#-)))
-import Plutarch.Show (PShow)
 import Plutarch.TermCont (tcont)
 import Plutarch.Trace (ptraceError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)

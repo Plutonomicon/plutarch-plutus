@@ -25,7 +25,7 @@ import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
 
 -- | Plutus 'BuiltinString' values
-data PString s = PString (Term s POpaque)
+newtype PString s = PString (Term s POpaque)
   deriving stock (Generic)
   deriving anyclass (PlutusType)
 

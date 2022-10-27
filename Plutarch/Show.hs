@@ -105,7 +105,9 @@ instance PShow PInteger where
         pfix #$ plam $ \self n ->
           let sign = pif (n #< 0) "-" ""
            in sign
-                <> ( plet (pquot # abs n # 10) $ \q ->
+                <> plet
+                  (pquot # abs n # 10)
+                  ( \q ->
                       plet (prem # abs n # 10) $ \r ->
                         pif
                           (q #== 0)
@@ -113,7 +115,7 @@ instance PShow PInteger where
                           ( plet (self # q) $ \prefix ->
                               prefix <> pshowDigit # r
                           )
-                   )
+                  )
       pshowDigit :: Term s (PInteger :--> PString)
       pshowDigit = phoistAcyclic $
         plam $ \digit ->
@@ -133,7 +135,7 @@ instance PShow PByteString where
         pfix #$ plam $ \self bs ->
           pelimBS
             # bs
-            # (pconstant @PString "")
+            # pconstant @PString ""
               #$ plam
             $ \x xs -> showByte # x <> self # xs
       showByte :: Term s (PInteger :--> PString)
@@ -148,7 +150,7 @@ instance PShow PByteString where
           pcase perror n $
             flip fmap [0 .. 15] $ \(x :: Int) ->
               ( pconstant $ toInteger x
-              , pconstant @PString $ T.pack $ intToDigit x : []
+              , pconstant @PString $ T.pack [intToDigit x]
               )
 
 -- | Case matching on bytestring, as if a list.
@@ -169,9 +171,9 @@ pelimBS = phoistAcyclic $
             f # x # xs
 
 pcase :: PEq a => Term s b -> Term s a -> [(Term s a, Term s b)] -> Term s b
-pcase otherwise x = \case
-  [] -> otherwise
-  ((x', r) : cs) -> pif (x #== x') r $ pcase otherwise x cs
+pcase y x = \case
+  [] -> y
+  ((x', r) : cs) -> pif (x #== x') r $ pcase y x cs
 
 -- | Generic version of `pshow`
 gpshow ::
@@ -220,4 +222,4 @@ productGroup wrap sep = \case
  Works for all types.
 -}
 pshowAndErr :: Term s a -> Term s b
-pshowAndErr x = punsafeCoerce $ pindexBS # (punsafeCoerce $ pif' # (punsafeCoerce x) # x # x) # 0
+pshowAndErr x = punsafeCoerce $ pindexBS # punsafeCoerce (pif' # punsafeCoerce x # x # x) # 0

@@ -167,8 +167,8 @@ instance DerivePlutusType (PTxList' a r) where type DPTStrat _ = PlutusTypeNewty
 instance PlutusType (PTxList a) where
   type PInner (PTxList a) = PForall (PTxList' a)
   pcon' (PTxCons x xs) = pcon $ PForall $ pcon $ PTxList' $ pdelay $ plam $ \_nil cons -> cons # x # xs
-  pcon' PTxNil = pcon $ PForall $ pcon $ PTxList' $ phoistAcyclic $ pdelay $ plam $ \nil _cons -> nil
-  pmatch' elim f = pmatch elim \(PForall elim) -> pforce (pto elim) # f PTxNil # (plam $ \x xs -> f $ PTxCons x xs)
+  pcon' PTxNil = pcon $ PForall $ pcon $ PTxList' $ phoistAcyclic $ pdelay $ plam const
+  pmatch' elim f = pmatch elim \(PForall elim) -> pforce (pto elim) # f PTxNil # plam (\x xs -> f $ PTxCons x xs)
 
 instance PListLike PTxList where
   type PElemConstraint PTxList _ = ()
@@ -185,7 +185,7 @@ instance PlutusType (PTxMaybe a) where
   type PInner (PTxMaybe a) = PForall (PTxMaybe' a)
   pcon' (PTxJust x) = pcon $ PForall $ pcon $ PTxMaybe' $ pdelay $ plam $ \just _nothing -> just # x
   pcon' PTxNothing = pcon $ PForall $ pcon $ PTxMaybe' $ phoistAcyclic $ pdelay $ plam $ \_just nothing -> nothing
-  pmatch' elim f = pmatch elim \(PForall elim) -> pforce (pto elim) # (plam $ f . PTxJust) # f PTxNothing
+  pmatch' elim f = pmatch elim \(PForall elim) -> pforce (pto elim) # plam (f . PTxJust) # f PTxNothing
 
 type family F (p :: [PType]) (t :: [Type]) :: Constraint where
   F '[] '[] = ()
@@ -223,7 +223,7 @@ type family Fst x where
 
 type SortedBy :: ([[Type]], [ConstructorName]) -> ([[Type]], [ConstructorName])
 type family SortedBy xs where
-  SortedBy '((ts ': tss), (name ': names)) = Insert ts name (SortedBy '(tss, names))
+  SortedBy '(ts ': tss, name ': names) = Insert ts name (SortedBy '(tss, names))
   SortedBy '( '[], '[]) = '( '[], '[])
 
 type Insert :: [Type] -> ConstructorName -> ([[Type]], [ConstructorName]) -> ([[Type]], [ConstructorName])

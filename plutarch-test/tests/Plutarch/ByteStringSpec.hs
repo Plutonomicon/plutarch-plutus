@@ -1,17 +1,18 @@
 module Plutarch.ByteStringSpec (spec) where
 
-import qualified Data.ByteString as BS
+import Data.ByteString qualified as BS
 import Plutarch.Prelude
 import Plutarch.Test
 import Test.Hspec
 
+{-# HLINT ignore spec "Monoid law, left identity" #-}
 spec :: Spec
 spec = do
   describe "bytestring" . pgoldenSpec $ do
     "empty" @| mempty #== phexByteStr "" @-> passert
     "phexByteStr"
       @| ( let a :: [String] = ["42", "ab", "df", "c9"]
-            in pconstant @PByteString (BS.pack $ map readByte a) #== phexByteStr (concat a)
+            in pconstant @PByteString (BS.pack $ fmap readByte a) #== phexByteStr (concat a)
          )
         @-> passert
     "plengthByteStr" @| (plengthBS # phexByteStr "012f") #== 2 @-> passert
@@ -30,7 +31,7 @@ spec = do
     let s1 = phexByteStr "12"
         s2 = phexByteStr "34"
     "semigroup" @\ do
-      "concats" @| s1 <> s2 @== (phexByteStr "1234")
+      "concats" @| s1 <> s2 @== phexByteStr "1234"
       "laws" @\ do
         "id.1" @| (mempty <> s1) #== s1 @-> passert
         "id.2" @| s1 #== (mempty <> s1) @-> passert

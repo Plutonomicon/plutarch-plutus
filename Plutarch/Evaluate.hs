@@ -30,4 +30,4 @@ evalTerm config term =
   where
     fromScript :: Script -> ClosedTerm a
     fromScript (Script script) =
-      Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm $ script) []
+      Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm script) []

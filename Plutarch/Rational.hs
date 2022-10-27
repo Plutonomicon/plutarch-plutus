@@ -271,7 +271,7 @@ pgcd = phoistAcyclic $
 
 -- assumes inputs are non negative and a >= b
 pgcd' :: Term s (PInteger :--> PInteger :--> PInteger)
-pgcd' = phoistAcyclic $ pfix #$ plam $ f
+pgcd' = phoistAcyclic $ pfix #$ plam f
   where
     f self a b =
       pif

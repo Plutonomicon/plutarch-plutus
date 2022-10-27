@@ -28,7 +28,7 @@ import Plutarch.Unsafe (punsafeBuiltin, punsafeDowncast)
 import PlutusCore qualified as PLC
 
 -- | Plutus BuiltinInteger
-data PInteger s = PInteger (Term s POpaque)
+newtype PInteger s = PInteger (Term s POpaque)
   deriving stock (Generic)
   deriving anyclass (PlutusType)
 
@@ -71,7 +71,7 @@ instance PNum PInteger where
   x #- y = punsafeBuiltin PLC.SubtractInteger # x # y
   x #* y = punsafeBuiltin PLC.MultiplyInteger # x # y
   pabs = phoistAcyclic $ plam \x -> pif (x #<= -1) (negate x) x
-  pnegate = phoistAcyclic $ plam \x -> 0 #- x
+  pnegate = phoistAcyclic $ plam (0 #-)
   psignum = plam \x ->
     pif
       (x #== 0)

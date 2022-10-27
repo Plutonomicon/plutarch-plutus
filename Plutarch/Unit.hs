@@ -42,4 +42,4 @@ instance Monoid (Term s PUnit) where
   mempty = pcon PUnit
 
 instance PShow PUnit where
-  pshow' _ x = plet x \_ -> "()"
+  pshow' _ x = plet x (const "()")

@@ -12,8 +12,8 @@ import PlutusLedgerApi.V1 (
   ScriptHash (ScriptHash),
   StakingCredential (StakingHash, StakingPtr),
  )
-import qualified PlutusTx
-import qualified PlutusTx.Builtins as PlutusTx
+import PlutusTx qualified
+import PlutusTx.Builtins qualified as PlutusTx
 
 import Test.QuickCheck.Instances ()
 
@@ -110,7 +110,7 @@ propertySet ::
   Spec
 propertySet typeName' = do
   describe typeName' $ do
-    let typeName = '(' : typeName' ++ ")"
+    let typeName = '(' : (typeName' <> ")")
     specify ("(#<) @" <> typeName <> " ≡ (<) @" <> typeName) $
       property $
         pltIso @p

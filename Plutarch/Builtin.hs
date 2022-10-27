@@ -106,7 +106,7 @@ import PlutusTx (Data (Constr), ToData)
 import PlutusTx qualified
 
 -- | Plutus 'BuiltinPair'
-data PBuiltinPair (a :: PType) (b :: PType) (s :: S) = PBuiltinPair (Term s (PBuiltinPair a b))
+newtype PBuiltinPair (a :: PType) (b :: PType) (s :: S) = PBuiltinPair (Term s (PBuiltinPair a b))
 
 instance PlutusType (PBuiltinPair a b) where
   type PInner (PBuiltinPair a b) = PBuiltinPair a b
@@ -217,7 +217,7 @@ instance PIsData (PBuiltinList a) => Fc 'True a where
 instance Fc (F a) a => PEq (PBuiltinList a) where
   (#==) = fc (Proxy @(F a))
 
-data PData (s :: S) = PData (Term s PData)
+newtype PData (s :: S) = PData (Term s PData)
 
 instance PShow PData where
   pshow' b t0 = wrap (go0 # t0)
@@ -302,7 +302,7 @@ pserialiseData = punsafeBuiltin PLC.SerialiseData
 pdataLiteral :: Data -> Term s PData
 pdataLiteral = pconstant
 
-data PAsData (a :: PType) (s :: S) = PAsData (Term s a)
+newtype PAsData (a :: PType) (s :: S) = PAsData (Term s a)
 
 type family IfSameThenData (a :: PType) (b :: PType) :: PType where
   IfSameThenData a a = PData

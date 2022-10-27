@@ -25,7 +25,7 @@ prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniUnit _)) = "()"
 prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniBool b)) = PP.pretty b
 prettyConstant (PLC.Some (PLC.ValueOf (PLC.DefaultUniList a) l)) =
   PP.list $
-    map (prettyConstant . PLC.Some . PLC.ValueOf a) l
+    fmap (prettyConstant . PLC.Some . PLC.ValueOf a) l
 prettyConstant (PLC.Some (PLC.ValueOf (PLC.DefaultUniPair a b) ~(x, y))) =
   PP.tupled
     [prettyConstant . PLC.Some $ PLC.ValueOf a x, prettyConstant . PLC.Some $ PLC.ValueOf b y]
@@ -37,7 +37,7 @@ prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniData (Plutus.Constr ix dl)))
 prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniData (Plutus.Map ascList))) =
   PP.group
     . PP.encloseSep (PP.flatAlt "{ " "{") (PP.flatAlt " }" "}") ", "
-    $ map
+    $ fmap
       ( \(a, b) ->
           PP.hang indentWidth $
             PP.sep
