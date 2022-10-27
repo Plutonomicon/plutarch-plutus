@@ -2,7 +2,7 @@ module Plutarch.ShowSpec (spec) where
 
 import Control.Monad (forM_)
 import Data.String (IsString (fromString))
-import qualified Data.Text as T
+import Data.Text qualified as T
 
 import Plutarch.ListSpec (integerList)
 import Plutarch.Prelude
@@ -12,7 +12,7 @@ import Test.Hspec
 
 spec :: Spec
 spec = do
-  let str x = pconstant @PString x
+  let str = pconstant @PString
   describe "show" . pgoldenSpec $ do
     "unit" @| pshow (pcon PUnit) @== str "()"
     "bool" @\ do
@@ -21,10 +21,10 @@ spec = do
     "int" @\ do
       "0" @| pshow (pconstant @PInteger 0) @== str "0"
       forM_ [5, 10, 14, 102] $ \n -> do
-        (fromString $ show n)
+        fromString (show n)
           @| pshow (pconstant @PInteger n)
           @== pconstant (T.pack $ show n)
-        (fromString $ show (-n))
+        fromString (show (-n))
           @| pshow (pconstant @PInteger (-n))
           @== pconstant (T.pack $ show (-n))
     "bytestring" @\ do

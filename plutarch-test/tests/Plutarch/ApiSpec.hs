@@ -21,8 +21,8 @@ import Control.Monad.Trans.Cont (cont, runCont)
 import Data.String (fromString)
 import Numeric (showHex)
 import PlutusLedgerApi.V1
-import qualified PlutusLedgerApi.V1.Interval as Interval
-import qualified PlutusLedgerApi.V1.Value as Value
+import PlutusLedgerApi.V1.Interval qualified as Interval
+import PlutusLedgerApi.V1.Value qualified as Value
 import PlutusTx.Monoid (inv)
 
 import Plutarch.Api.V1 (
@@ -39,8 +39,8 @@ import Plutarch.Api.V1 (
   PTxInfo,
   PValue,
  )
-import qualified Plutarch.Api.V1.AssocMap as AssocMap
-import qualified Plutarch.Api.V1.Value as PValue
+import Plutarch.Api.V1.AssocMap qualified as AssocMap
+import Plutarch.Api.V1.Value qualified as PValue
 import Plutarch.Builtin (pasConstr, pforgetData)
 import Plutarch.Prelude
 import Plutarch.Test
@@ -60,15 +60,18 @@ spec = do
       pgoldenSpec $ do
         "term" @| ctx
         "get" @\ do
-          "txInfo" @| pfromData (getTxInfo # ctx) @-> \p ->
-            plift p @?= info
-          "mint" @| pforgetData (getMint #$ getTxInfo # ctx) @-> \p ->
-            plift p @?= toData mint
-          "credentials" @| getCredentials ctx @-> \p ->
-            plift p @?= [toData validator]
+          "txInfo"
+            @| pfromData (getTxInfo # ctx) @-> \p ->
+              plift p @?= info
+          "mint"
+            @| pforgetData (getMint #$ getTxInfo # ctx) @-> \p ->
+              plift p @?= toData mint
+          "credentials"
+            @| getCredentials ctx @-> \p ->
+              plift p @?= [toData validator]
           "sym"
             @| pfromData (getSym #$ PValue.pnormalize #$ pfromData $ getMint #$ getTxInfo # ctx)
-            @-> \p -> plift p @?= sym
+              @-> \p -> plift p @?= sym
         "ScriptPurpose" @\ do
           "literal" @| pconstant @PScriptPurpose (Minting dummyCurrency)
           "decode"
@@ -88,14 +91,18 @@ spec = do
                 (\s v -> EnclosedTerm $ getEnclosedTerm s <> getEnclosedTerm v)
                 (EnclosedTerm pmint)
                 symbols
-            symbols = (\n -> EnclosedTerm (toSymbolicValue n)) <$> [0 .. 15]
+            symbols = EnclosedTerm . toSymbolicValue <$> [0 .. 15]
             toSymbolicValue :: Integer -> ClosedTerm (PValue 'Sorted 'Positive)
             toSymbolicValue n =
               PValue.pconstantPositiveSingleton (pconstant $ fromString $ "c" <> showHex n "") (pconstant "token") 1
-        "singleton" @| pmint @-> \p ->
-          plift (PValue.pforgetSorted $ PValue.pforgetPositive p) @?= mint
+        "singleton"
+          @| pmint @-> \p ->
+            plift (PValue.pforgetSorted $ PValue.pforgetPositive p) @?= mint
         "singletonData"
-          @| PValue.psingletonData # pdata (pconstant "c0") # pdata (pconstant "sometoken") # pdata 1
+          @| PValue.psingletonData
+          # pdata (pconstant "c0")
+          # pdata (pconstant "sometoken")
+          # pdata 1
           @-> \p -> plift (PValue.pforgetSorted p) @?= mint
         "valueOf" @\ do
           "itself" @| PValue.pvalueOf @-> \v -> plift (v # pmint # pconstant "c0" # pconstant "sometoken") @?= 1
@@ -106,7 +113,10 @@ spec = do
               (zip [1 :: Int .. length growingSymbols] growingSymbols)
               ( \(size, v) ->
                   fromString (show size)
-                    @| PValue.pvalueOf # getEnclosedTerm v # pconstant "c7" # pconstant "token"
+                    @| PValue.pvalueOf
+                    # getEnclosedTerm v
+                    # pconstant "c7"
+                    # pconstant "token"
                     @-> \p -> plift p @?= if size < 9 then 0 else 1
               )
         "unionWith" @\ do
@@ -125,17 +135,22 @@ spec = do
             @\ forM_
               (zip [1 :: Int .. length growingSymbols] growingSymbols)
               ( \(size, v) ->
-                  fromString (show size) @| PValue.punionWith # plam const # getEnclosedTerm v # pmintOtherSymbol
+                  fromString (show size)
+                    @| PValue.punionWith
+                    # plam const
+                    # getEnclosedTerm v
+                    # pmintOtherSymbol
                     @-> \v' -> passert (v' #== PValue.punionWith # plam const # pmintOtherSymbol # getEnclosedTerm v)
               )
         "unionWithData const" @\ do
-          "itself" @| PValue.punionWithData @-> \u ->
-            plift (PValue.pforgetSorted $ PValue.pnormalize #$ u # plam const # pmint # pmint) @?= mint
+          "itself"
+            @| PValue.punionWithData @-> \u ->
+              plift (PValue.pforgetSorted $ PValue.pnormalize #$ u # plam const # pmint # pmint) @?= mint
           "applied" @| PValue.punionWithData # plam const # pmint # pmint @-> \p ->
             plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint
         "inv"
           @| inv (PValue.pforgetPositive pmint :: Term _ (PValue 'Sorted 'NonZero))
-          @-> \p -> plift (PValue.pforgetSorted p) @?= inv mint
+            @-> \p -> plift (PValue.pforgetSorted p) @?= inv mint
         "equality" @\ do
           "itself" @| plam ((#==) @(PValue 'Sorted 'Positive)) @-> \eq -> passert (eq # pmint # pmint)
           "triviallyTrue" @| pmint #== pmint @-> passert
@@ -143,11 +158,11 @@ spec = do
           "swappedTokensTrue"
             @| pto (PValue.punionWith # plam (+) # pmint # pmintOtherToken)
               #== pto (PValue.punionWith # plam (+) # pmintOtherToken # pmint)
-            @-> passert
+              @-> passert
           "swappedSymbolsTrue"
             @| pto (PValue.punionWith # plam (+) # pmint # pmintOtherSymbol)
               #== pto (PValue.punionWith # plam (+) # pmintOtherSymbol # pmint)
-            @-> passert
+              @-> passert
           "growing"
             @\ forM_
               (zip [1 :: Int .. length growingSymbols] growingSymbols)
@@ -157,28 +172,31 @@ spec = do
               )
         "normalize" @\ do
           "identity"
-            @| PValue.passertPositive # (PValue.pnormalize # (pmint <> pmintOtherSymbol))
+            @| PValue.passertPositive
+            # (PValue.pnormalize # (pmint <> pmintOtherSymbol))
             @-> \v -> passert (v #== pmint <> pmintOtherSymbol)
           "empty"
-            @| PValue.pnormalize # (PValue.punionWith # plam (-) # pmint # pmint)
+            @| PValue.pnormalize
+            # (PValue.punionWith # plam (-) # pmint # pmint)
             @-> \v -> passert (v #== mempty)
         "assertSorted" @\ do
           "succeeds" @| PValue.passertSorted # (pmint <> pmintOtherSymbol) @-> psucceeds
           "fails on malsorted symbols"
             @| PValue.passertSorted
-              # ( pcon $
-                    PValue.PValue $
-                      pcon $
-                        AssocMap.PMap $
-                          pconcat # pto (pto pmintOtherSymbol) # pto (pto pmint)
-                )
+            # pcon
+              ( PValue.PValue $
+                  pcon $
+                    AssocMap.PMap $
+                      pconcat # pto (pto pmintOtherSymbol) # pto (pto pmint)
+              )
             @-> pfails
           "fails on zero quantities"
-            @| PValue.passertSorted # (PValue.punionWith # plam (-) # pmint # pmint)
+            @| PValue.passertSorted
+            # (PValue.punionWith # plam (-) # pmint # pmint)
             @-> pfails
           "fails on empty token map"
             @| PValue.passertSorted
-              # (pcon $ PValue.PValue $ AssocMap.psingleton # pconstant "c0" # AssocMap.pempty)
+            # pcon (PValue.PValue $ AssocMap.psingleton # pconstant "c0" # AssocMap.pempty)
             @-> pfails
         "Ada" @\ do
           "adaSymbol" @| PValue.padaSymbol @-> psucceeds
@@ -192,14 +210,16 @@ spec = do
           "adaOnlyValue" @\ do
             "itself" @| PValue.padaOnlyValue @-> \p -> passert (p # (pada <> pmint) #== pada)
             "on empty"
-              @| PValue.padaOnlyValue # (mempty :: Term _ (PValue 'Sorted 'Positive))
+              @| PValue.padaOnlyValue
+              # (mempty :: Term _ (PValue 'Sorted 'Positive))
               @-> \p -> passert (p #== mempty)
             "on non-Ada" @| PValue.padaOnlyValue # pmint @-> \p -> passert (p #== mempty)
             "on Ada" @| PValue.padaOnlyValue # pada @-> \p -> passert (p #== pada)
           "noAdaValue" @\ do
             "itself" @| PValue.pnoAdaValue @-> \p -> passert (p # (pada <> pmint) #== pmint)
             "on empty"
-              @| PValue.pnoAdaValue # (mempty :: Term _ (PValue 'Sorted 'Positive))
+              @| PValue.pnoAdaValue
+              # (mempty :: Term _ (PValue 'Sorted 'Positive))
               @-> \p -> passert (p #== mempty)
             "on non-Ada" @| PValue.pnoAdaValue # pmint @-> \p -> passert (p #== pmint)
             "on Ada" @| PValue.pnoAdaValue # pada @-> \p -> passert (p #== mempty)
@@ -212,26 +232,51 @@ spec = do
             doubleMap = AssocMap.psingleton # pconstant "key" # 84
             otherMap = AssocMap.psingleton # pconstant "newkey" # 6
         "lookup" @\ do
-          "itself" @| AssocMap.plookup
-            @-> \lookup -> passert $ lookup # pconstant "key" # pmap #== pcon (PJust 42)
-          "hit" @| AssocMap.plookup # pconstant "key" # pmap
+          "itself"
+            @| AssocMap.plookup
+              @-> \lookup -> passert $ lookup # pconstant "key" # pmap #== pcon (PJust 42)
+          "hit"
+            @| AssocMap.plookup
+            # pconstant "key"
+            # pmap
             @-> \result -> passert $ result #== pcon (PJust 42)
-          "miss" @| AssocMap.plookup # pconstant "nokey" # pmap
+          "miss"
+            @| AssocMap.plookup
+            # pconstant "nokey"
+            # pmap
             @-> \result -> passert $ result #== pcon PNothing
         "lookupData" @\ do
-          "hit" @| AssocMap.plookupData # pdata (pconstant "key") # pmap
+          "hit"
+            @| AssocMap.plookupData
+            # pdata (pconstant "key")
+            # pmap
             @-> \result -> passert $ result #== pcon (PJust $ pdata 42)
-          "miss" @| AssocMap.plookupData # pdata (pconstant "nokey") # pmap
+          "miss"
+            @| AssocMap.plookupData
+            # pdata (pconstant "nokey")
+            # pmap
             @-> \result -> passert $ result #== pcon PNothing
         "findWithDefault" @\ do
-          "itself" @| AssocMap.pfindWithDefault
-            @-> \find -> (find # 12 # pconstant "key" # pmap) #@?= (42 :: Term _ PInteger)
-          "hit" @| AssocMap.pfindWithDefault # 12 # pconstant "key" # pmap
+          "itself"
+            @| AssocMap.pfindWithDefault
+              @-> \find -> (find # 12 # pconstant "key" # pmap) #@?= (42 :: Term _ PInteger)
+          "hit"
+            @| AssocMap.pfindWithDefault
+            # 12
+            # pconstant "key"
+            # pmap
             @-> \result -> passert $ result #== 42
           "hit2"
-            @| AssocMap.pfindWithDefault # 12 # pconstant "newkey" # (AssocMap.punionWith # plam const # pmap # otherMap)
+            @| AssocMap.pfindWithDefault
+            # 12
+            # pconstant "newkey"
+            # (AssocMap.punionWith # plam const # pmap # otherMap)
             @-> \result -> passert $ result #== 6
-          "miss" @| AssocMap.pfindWithDefault # 12 # pconstant "nokey" # pmap
+          "miss"
+            @| AssocMap.pfindWithDefault
+            # 12
+            # pconstant "nokey"
+            # pmap
             @-> \result -> passert $ result #== 12
         "singleton" @| pmap @-> pshouldReallyBe pdmap
         "singletonData" @| pdmap @-> pshouldReallyBe pmap
@@ -243,10 +288,14 @@ spec = do
           "only" @| AssocMap.pdelete # pconstant "key" # pmap @-> pshouldReallyBe emptyMap
           "miss" @| AssocMap.pdelete # pconstant "nokey" # pmap @-> pshouldReallyBe pmap
           "new"
-            @| AssocMap.pdelete # pconstant "newkey" # (AssocMap.pinsert # pconstant "newkey" # 6 # pmap)
+            @| AssocMap.pdelete
+            # pconstant "newkey"
+            # (AssocMap.pinsert # pconstant "newkey" # 6 # pmap)
             @-> pshouldReallyBe pmap
           "old"
-            @| AssocMap.pdelete # pconstant "key" # (AssocMap.pinsert # pconstant "newkey" # 6 # pmap)
+            @| AssocMap.pdelete
+            # pconstant "key"
+            # (AssocMap.pinsert # pconstant "newkey" # 6 # pmap)
             @-> pshouldReallyBe otherMap
         "difference" @\ do
           "emptyLeft" @| AssocMap.pdifference # emptyMap # pmap @-> pshouldReallyBe emptyMap
@@ -256,10 +305,16 @@ spec = do
           "const" @| AssocMap.punionWith # plam const # pmap # pmap @-> pshouldReallyBe pmap
           "double" @| AssocMap.punionWith # plam (+) # pmap # pmap @-> pshouldReallyBe doubleMap
           "(+)"
-            @| AssocMap.punionWith # plam (+) # pmap # otherMap
+            @| AssocMap.punionWith
+            # plam (+)
+            # pmap
+            # otherMap
             @-> \p -> passert (p #== AssocMap.punionWith # plam (+) # otherMap # pmap)
           "flip (+)"
-            @| AssocMap.punionWith # plam (+) # otherMap # pmap
+            @| AssocMap.punionWith
+            # plam (+)
+            # otherMap
+            # pmap
             @-> \p -> passert (p #== AssocMap.punionWith # plam (+) # pmap # otherMap)
         "unionWithData" @\ do
           "const" @| AssocMap.punionWithData # plam const # pmap # pmap @-> pshouldReallyBe pmap
@@ -291,8 +346,8 @@ spec = do
           property (propPlutarchtypeCanBeRecovered @StakingCredential)
         it "recovering PPubKeyHash succeeds" $
           property (propPlutarchtypeCanBeRecovered @PubKeyHash)
-        it "recovering PValidatorHash succeeds" $
-          property (propPlutarchtypeCanBeRecovered @ValidatorHash)
+        it "recovering PScriptHash succeeds" $
+          property (propPlutarchtypeCanBeRecovered @ScriptHash)
         it "recovering PValue succeeds" $
           property (propPlutarchtypeCanBeRecovered @Value)
         it "recovering PCurrencySymbol succeeds" $
@@ -357,7 +412,7 @@ ref = TxOutRef "a0" 0
 purpose :: ScriptPurpose
 purpose = Spending ref
 
-validator :: ValidatorHash
+validator :: ScriptHash
 validator = "a1"
 
 datum :: DatumHash

@@ -25,7 +25,7 @@ import Plutarch.Internal (
 import Plutarch.Trace (ptraceError)
 
 newtype TermCont :: forall (r :: PType). S -> Type -> Type where
-  TermCont :: forall r s a. {runTermCont :: ((a -> Term s r) -> Term s r)} -> TermCont @r s a
+  TermCont :: forall r s a. {runTermCont :: (a -> Term s r) -> Term s r} -> TermCont @r s a
 
 unTermCont :: TermCont @a s (Term s a) -> Term s a
 unTermCont t = runTermCont t id
@@ -37,8 +37,7 @@ instance Applicative (TermCont s) where
   pure x = TermCont $ \f -> f x
   x <*> y = do
     x <- x
-    y <- y
-    pure (x y)
+    x <$> y
 
 instance Monad (TermCont s) where
   (TermCont f) >>= g = TermCont $ \h ->

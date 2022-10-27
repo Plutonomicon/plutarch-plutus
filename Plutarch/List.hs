@@ -228,7 +228,7 @@ plength =
 
 -- | Index a BuiltinList, throwing an error if the index is out of bounds.
 ptryIndex :: (PIsListLike list a) => Natural -> Term s (list a) -> Term s a
-ptryIndex n xs = phead # (pdrop n xs)
+ptryIndex n xs = phead # pdrop n xs
 
 {- |
   Drop the first n fields of a List.
@@ -241,7 +241,7 @@ pdrop :: (PIsListLike list a) => Natural -> Term s (list a) -> Term s (list a)
 pdrop n xs = pdrop' n # xs
   where
     pdrop' :: (PIsListLike list a) => Natural -> ClosedTerm (list a :--> list a)
-    pdrop' 0 = plam $ \x -> x
+    pdrop' 0 = plam id
     pdrop' 1 = ptail
     pdrop' n' = phoistAcyclic $ plam $ \x -> ptail #$ pdrop' (n' - 1) # x
 

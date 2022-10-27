@@ -1,5 +1,7 @@
-{-# LANGUAGE DefaultSignatures #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
+
+{-# HLINT ignore "Eta reduce" #-}
 
 module Plutarch.Test.Property.Marshal (
   Marshal (marshal),
@@ -15,7 +17,7 @@ class Marshal h (p :: PType) | h -> p where
   marshal x = pconstant x
 
 instance Marshal h p => Marshal [h] (PList p) where
-  marshal xs = foldr (\h t -> pcons # marshal h # t) pnil xs
+  marshal = foldr (\h t -> pcons # marshal h # t) pnil
 
 instance Marshal ha pa => Marshal (Maybe ha) (PMaybe pa) where
   marshal (Just x) = pcon $ PJust $ marshal x
@@ -25,10 +27,10 @@ instance (Marshal ha pa, Marshal hb pb) => Marshal (ha, hb) (PPair pa pb) where
   marshal (a, b) = pcon $ PPair (marshal a) (marshal b)
 
 instance Marshal Integer PInteger where
-  marshal n = fromInteger n
+  marshal x = fromInteger x
 
 instance Marshal Rational PRational where
-  marshal r = fromRational r
+  marshal x = fromRational x
 
 instance Marshal Bool PBool where
   marshal True = pcon PTrue

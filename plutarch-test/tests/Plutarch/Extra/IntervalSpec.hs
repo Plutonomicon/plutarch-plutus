@@ -18,9 +18,9 @@ import Plutarch.Extra.Interval (
 import Plutarch.Prelude hiding (psingleton, pto)
 
 import Hedgehog (Property, PropertyT, assert, forAll, property)
-import qualified Hedgehog.Gen as Gen (int, list)
+import Hedgehog.Gen qualified as Gen (int, list)
 import Hedgehog.Internal.Property (propertyTest)
-import qualified Hedgehog.Range as Range (constantBounded, singleton)
+import Hedgehog.Range qualified as Range (constantBounded, singleton)
 import Plutarch.Test (passert, passertNot, pgoldenSpec, psucceeds, (@->), (@\), (@|))
 import Test.Hspec (Spec, describe, it)
 import Test.Hspec.Hedgehog (hedgehog)
@@ -62,12 +62,17 @@ spec = do
           "6 not member of hull 3 5" @| pmember # pconstantData 2 # theHull @-> passertNot
         "intersection" @\ do
           "intesection [2,4] [3,5] contains [3,4]"
-            @| pcontains # (pintersection # i3 # i2) # i5
+            @| pcontains
+            # (pintersection # i3 # i2)
+            # i5
           "intesection [3,5] [2,4] contains [3,4]"
-            @| pcontains # (pintersection # i2 # i3) # i5
+            @| pcontains
+            # (pintersection # i2 # i3)
+            # i5
 
     describe "member" $ do
-      it "a is a member of [b, c] iff b <= a and a <= c" . hedgehog
+      it "a is a member of [b, c] iff b <= a and a <= c"
+        . hedgehog
         . propertyTest
         $ prop_member
     describe "always" $ do
@@ -78,28 +83,34 @@ spec = do
       it "hull of a and b contains a and b" . hedgehog . propertyTest $
         prop_hull
     describe "intersection" $ do
-      it "intersection of a and b is contained in a and b" . hedgehog
+      it "intersection of a and b is contained in a and b"
+        . hedgehog
         . propertyTest
         $ prop_intersection
     describe "contains" $ do
       describe "contains on bounded intervals" $ do
-        it "[a, b] contains [c, d] iff a <= c and d <= b" . hedgehog
+        it "[a, b] contains [c, d] iff a <= c and d <= b"
+          . hedgehog
           . propertyTest
           $ prop_containsBounded
       describe "contains on unbounded (from above) intervals" $ do
-        it "[a, inf] contains [c, d] iff a <= c" . hedgehog
+        it "[a, inf] contains [c, d] iff a <= c"
+          . hedgehog
           . propertyTest
           $ prop_containsUnboundedUpper
       describe "contains on unbounded (from below) intervals" $ do
-        it "[-inf, b] contains [c, d] iff d <= b" . hedgehog
+        it "[-inf, b] contains [c, d] iff d <= b"
+          . hedgehog
           . propertyTest
           $ prop_containsUnboundedLower
     describe "before" $ do
-      it "a is before [b, c] iff a < b" . hedgehog
+      it "a is before [b, c] iff a < b"
+        . hedgehog
         . propertyTest
         $ prop_before
     describe "after" $ do
-      it "a is after [b, c] iff c < a" . hedgehog
+      it "a is after [b, c] iff c < a"
+        . hedgehog
         . propertyTest
         $ prop_after
 

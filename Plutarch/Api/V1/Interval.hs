@@ -14,7 +14,7 @@ import Plutarch.DataRepr (
   PDataFields,
  )
 import Plutarch.Prelude
-import qualified PlutusLedgerApi.V1.Interval as Plutus
+import PlutusLedgerApi.V1.Interval qualified as Plutus
 
 import Plutarch.Lift (
   PConstantDecl (PConstanted),

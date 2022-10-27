@@ -3,7 +3,8 @@
 module Plutarch.Internal.Evaluate (evalScript, evalScriptHuge, evalScript', EvalError) where
 
 import Data.Text (Text)
-import qualified PlutusCore as PLC
+import Plutarch.Script (Script (Script))
+import PlutusCore qualified as PLC
 import PlutusCore.Evaluation.Machine.ExBudget (
   ExBudget (ExBudget),
   ExRestrictingBudget (ExRestrictingBudget),
@@ -11,33 +12,32 @@ import PlutusCore.Evaluation.Machine.ExBudget (
  )
 import PlutusCore.Evaluation.Machine.ExBudgetingDefaults (defaultCekParameters)
 import PlutusCore.Evaluation.Machine.ExMemory (ExCPU (ExCPU), ExMemory (ExMemory))
-import PlutusLedgerApi.V1.Scripts (Script (Script))
 import UntypedPlutusCore (
   Program (Program),
   Term,
  )
-import qualified UntypedPlutusCore as UPLC
-import qualified UntypedPlutusCore.Evaluation.Machine.Cek as Cek
+import UntypedPlutusCore qualified as UPLC
+import UntypedPlutusCore.Evaluation.Machine.Cek qualified as Cek
 
 type EvalError = (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun)
 
 -- | Evaluate a script with a big budget, returning the trace log and term result.
 evalScript :: Script -> (Either EvalError Script, ExBudget, [Text])
-evalScript script = evalScript' budget script
+evalScript = evalScript' budget
   where
     -- from https://github.com/input-output-hk/cardano-node/blob/master/configuration/cardano/mainnet-alonzo-genesis.json#L17
     budget = ExBudget (ExCPU 10000000000) (ExMemory 10000000)
 
 -- | Evaluate a script with a huge budget, returning the trace log and term result.
 evalScriptHuge :: Script -> (Either EvalError Script, ExBudget, [Text])
-evalScriptHuge script = evalScript' budget script
+evalScriptHuge = evalScript' budget
   where
     -- from https://github.com/input-output-hk/cardano-node/blob/master/configuration/cardano/mainnet-alonzo-genesis.json#L17
     budget = ExBudget (ExCPU maxBound) (ExMemory maxBound)
 
 -- | Evaluate a script with a specific budget, returning the trace log and term result.
 evalScript' :: ExBudget -> Script -> (Either (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun) Script, ExBudget, [Text])
-evalScript' budget (Script (Program _ _ t)) = case evalTerm budget (UPLC.termMapNames UPLC.fakeNameDeBruijn $ t) of
+evalScript' budget (Script (Program _ _ t)) = case evalTerm budget (UPLC.termMapNames UPLC.fakeNameDeBruijn t) of
   (res, remaining, logs) -> (Script . Program () (PLC.defaultVersion ()) . UPLC.termMapNames UPLC.unNameDeBruijn <$> res, remaining, logs)
 
 evalTerm ::

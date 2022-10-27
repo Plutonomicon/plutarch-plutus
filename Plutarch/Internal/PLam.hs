@@ -7,7 +7,7 @@ module Plutarch.Internal.PLam (
 ) where
 
 import Data.Kind (Type)
-import qualified Data.Text as Text
+import Data.Text qualified as Text
 import GHC.Stack (HasCallStack, callStack, withFrozenCallStack)
 import Plutarch.Internal (
   PType,
@@ -22,7 +22,7 @@ import Plutarch.Internal (
  )
 import Plutarch.Internal.PrettyStack (prettyStack)
 import Plutarch.Internal.Trace (ptrace)
-import qualified PlutusCore as PLC
+import PlutusCore qualified as PLC
 
 {- $plam
  Lambda abstraction.

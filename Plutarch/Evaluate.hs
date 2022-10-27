@@ -8,13 +8,13 @@ module Plutarch.Evaluate (
   evalTerm,
 ) where
 
-import qualified Plutarch.Internal.Evaluate as E
+import Plutarch.Internal.Evaluate qualified as E
 
 import Data.Text (Text)
 import Plutarch.Internal (ClosedTerm, Config, RawTerm (RCompiled), Term (..), TermResult (TermResult), compile)
+import Plutarch.Script (Script (Script))
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
-import PlutusLedgerApi.V1.Scripts (Script (Script))
-import qualified UntypedPlutusCore as UPLC
+import UntypedPlutusCore qualified as UPLC
 
 -- | Compile and evaluate term.
 evalTerm ::
@@ -30,4 +30,4 @@ evalTerm config term =
   where
     fromScript :: Script -> ClosedTerm a
     fromScript (Script script) =
-      Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm $ script) []
+      Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm script) []

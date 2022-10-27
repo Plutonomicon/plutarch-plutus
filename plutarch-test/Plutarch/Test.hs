@@ -1,6 +1,3 @@
-{-# LANGUAGE CPP #-}
-{-# LANGUAGE ImpredicativeTypes #-}
-
 -- | Common functions for testing Plutarch code
 module Plutarch.Test (
   -- * Plutarch specific `Expectation` operators
@@ -38,11 +35,12 @@ module Plutarch.Test (
 ) where
 
 import Data.Text (Text)
-import qualified Data.Text as T
+import Data.Text qualified as T
 
 import Plutarch (ClosedTerm, Config (Config, tracingMode), compile, pcon, printScript, pattern DetTracing)
 import Plutarch.Bool (PBool (PFalse, PTrue))
 import Plutarch.Evaluate (evalScript)
+import Plutarch.Script qualified as Scripts
 import Plutarch.Test.Benchmark (
   Benchmark (Benchmark, exBudgetCPU, exBudgetMemory, scriptSizeBytes),
   ScriptSizeBytes,
@@ -61,7 +59,6 @@ import Plutarch.Test.Golden (
   (@|),
  )
 import Plutarch.Test.Run (hspecAndReturnForest, noUnusedGoldens, noUnusedGoldens')
-import qualified PlutusLedgerApi.V1.Scripts as Scripts
 import Test.Hspec (Expectation, expectationFailure, shouldBe, shouldSatisfy)
 import Test.Tasty.HUnit (assertFailure)
 
@@ -105,7 +102,7 @@ passertNot p = p #@?= pcon PFalse
 psucceeds :: ClosedTerm a -> Expectation
 psucceeds p =
   case evalScript $ comp p of
-    (Left _, _, _) -> expectationFailure $ "Term failed to evaluate"
+    (Left _, _, _) -> expectationFailure "Term failed to evaluate"
     (Right _, _, _) -> pure ()
 
 -- | Asserts the term evaluates without success
@@ -113,7 +110,7 @@ pfails :: ClosedTerm a -> Expectation
 pfails p = do
   case evalScript $ comp p of
     (Left _, _, _) -> pure ()
-    (Right _, _, _) -> expectationFailure $ "Term succeeded"
+    (Right _, _, _) -> expectationFailure "Term succeeded"
 
 {- | Check that the given benchmark is within certain maximum values.
 
@@ -137,7 +134,7 @@ psatisfyWithinBenchmark bench maxBudget = do
 ptraces :: ClosedTerm a -> [Text] -> Expectation
 ptraces p develTraces =
   case evalScript $ comp p of
-    (Left _, _, _) -> expectationFailure $ "Term failed to evaluate"
+    (Left _, _, _) -> expectationFailure "Term failed to evaluate"
     (Right _, _, traceLog) -> do
       traceLog `shouldBe` develTraces
 

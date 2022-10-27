@@ -73,11 +73,6 @@ common deps
     , plutus-ledger-api
     , plutus-tx
 
-library plutarch-preludes
-  import:          c, deps
-  hs-source-dirs:  preludes
-  exposed-modules: PPrelude
-
 library
   import:          c, deps
   exposed-modules:
@@ -89,5 +84,3 @@ library
     Plutarch.Extra.Maybe
     Plutarch.Extra.RationalData
     Plutarch.Extra.TermCont
-
--- other-modules:

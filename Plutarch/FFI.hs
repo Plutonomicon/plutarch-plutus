@@ -16,13 +16,14 @@ module Plutarch.FFI (
   unsafeForeignImport,
 ) where
 
+import Control.Lens (over)
 import Data.Kind (Constraint, Type)
 import Data.Proxy (Proxy (Proxy))
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Data.Void (Void)
 import GHC.Generics (Generic)
-import qualified GHC.TypeLits as TypeLits
-import qualified Generics.SOP as SOP
+import GHC.TypeLits qualified as TypeLits
+import Generics.SOP qualified as SOP
 import Generics.SOP.GGP (GCode, GDatatypeInfoOf)
 import Generics.SOP.Type.Metadata (
   ConstructorInfo (Constructor, Infix, Record),
@@ -66,15 +67,15 @@ import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.Internal.Witness (witness)
 import Plutarch.List (PList, PListLike (PElemConstraint, pcons, pelimList, pnil), pconvertLists, plistEquals)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
+import Plutarch.Script (Script (Script))
 import Plutarch.Show (PShow)
 import Plutarch.String (PString)
 import Plutarch.Unit (PUnit)
-import PlutusLedgerApi.V1.Scripts (Script (Script, unScript), fromCompiledCode)
 import PlutusTx.Builtins.Internal (BuiltinBool, BuiltinByteString, BuiltinData, BuiltinUnit)
-import PlutusTx.Code (CompiledCode, CompiledCodeIn (DeserializedCode))
+import PlutusTx.Code (CompiledCode, CompiledCodeIn (DeserializedCode), getPlc)
 import PlutusTx.Prelude (BuiltinString)
 import UntypedPlutusCore (fakeNameDeBruijn)
-import qualified UntypedPlutusCore as UPLC
+import UntypedPlutusCore qualified as UPLC
 
 {- | Plutarch type of lists compatible with the PlutusTx encoding of Haskell
  lists and convertible with the regular 'PList' using 'plistToTx' and
@@ -125,7 +126,12 @@ unsafeForeignExport config t = DeserializedCode program Nothing mempty
 
 -- | Seriously unsafe, may fail at run time or result in unexpected behaviour in your on-chain validator.
 unsafeForeignImport :: CompiledCode t -> ClosedTerm p
-unsafeForeignImport c = Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm $ unScript $ fromCompiledCode c) []
+unsafeForeignImport c = Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm $ toNameless $ getPlc c) []
+  where
+    toNameless ::
+      UPLC.Program UPLC.NamedDeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
+      UPLC.Program UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+    toNameless = over UPLC.progTerm $ UPLC.termMapNames UPLC.unNameDeBruijn
 
 -- | Convert a 'PList' to a 'PTxList', perhaps before exporting it with 'foreignExport'.
 plistToTx :: Term s (PList a :--> PTxList a)
@@ -161,8 +167,8 @@ instance DerivePlutusType (PTxList' a r) where type DPTStrat _ = PlutusTypeNewty
 instance PlutusType (PTxList a) where
   type PInner (PTxList a) = PForall (PTxList' a)
   pcon' (PTxCons x xs) = pcon $ PForall $ pcon $ PTxList' $ pdelay $ plam $ \_nil cons -> cons # x # xs
-  pcon' PTxNil = pcon $ PForall $ pcon $ PTxList' $ phoistAcyclic $ pdelay $ plam $ \nil _cons -> nil
-  pmatch' elim f = pmatch elim \(PForall elim) -> pforce (pto elim) # f PTxNil # (plam $ \x xs -> f $ PTxCons x xs)
+  pcon' PTxNil = pcon $ PForall $ pcon $ PTxList' $ phoistAcyclic $ pdelay $ plam const
+  pmatch' elim f = pmatch elim \(PForall elim) -> pforce (pto elim) # f PTxNil # plam (\x xs -> f $ PTxCons x xs)
 
 instance PListLike PTxList where
   type PElemConstraint PTxList _ = ()
@@ -179,7 +185,7 @@ instance PlutusType (PTxMaybe a) where
   type PInner (PTxMaybe a) = PForall (PTxMaybe' a)
   pcon' (PTxJust x) = pcon $ PForall $ pcon $ PTxMaybe' $ pdelay $ plam $ \just _nothing -> just # x
   pcon' PTxNothing = pcon $ PForall $ pcon $ PTxMaybe' $ phoistAcyclic $ pdelay $ plam $ \_just nothing -> nothing
-  pmatch' elim f = pmatch elim \(PForall elim) -> pforce (pto elim) # (plam $ f . PTxJust) # f PTxNothing
+  pmatch' elim f = pmatch elim \(PForall elim) -> pforce (pto elim) # plam (f . PTxJust) # f PTxNothing
 
 type family F (p :: [PType]) (t :: [Type]) :: Constraint where
   F '[] '[] = ()
@@ -207,7 +213,7 @@ type TypeEncoding a = (TypeEncoding' (GCode a) (GDatatypeInfoOf a))
 type TypeEncoding' :: [[Type]] -> DatatypeInfo -> [[Type]]
 type family TypeEncoding' a rep where
   TypeEncoding' '[ '[b]] ( 'Newtype _ _ _) = TypeEncoding b
--- Matching the behaviour of PlutusTx.Lift.Class.sortedCons
+  -- Matching the behaviour of PlutusTx.Lift.Class.sortedCons
   TypeEncoding' sop ( 'ADT _ "Bool" _ _) = sop
   TypeEncoding' sop ( 'ADT _ _ cons _) = Fst (SortedBy '(sop, NamesOf cons))
 
@@ -217,7 +223,7 @@ type family Fst x where
 
 type SortedBy :: ([[Type]], [ConstructorName]) -> ([[Type]], [ConstructorName])
 type family SortedBy xs where
-  SortedBy '((ts ': tss), (name ': names)) = Insert ts name (SortedBy '(tss, names))
+  SortedBy '(ts ': tss, name ': names) = Insert ts name (SortedBy '(tss, names))
   SortedBy '( '[], '[]) = '( '[], '[])
 
 type Insert :: [Type] -> ConstructorName -> ([[Type]], [ConstructorName]) -> ([[Type]], [ConstructorName])

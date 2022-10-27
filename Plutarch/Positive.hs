@@ -12,7 +12,7 @@ import Plutarch.Builtin (PAsData, PData, PIsData, pdata)
 import Plutarch.Integer (PInteger, PIntegral)
 
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
-import Plutarch.Show (pshow)
+import Plutarch.Show (PShow, pshow)
 
 import Plutarch (
   DerivePlutusType (DPTStrat),
@@ -31,7 +31,6 @@ import Plutarch (
   type (:-->),
  )
 import Plutarch.Num (PNum (pfromInteger, (#-)))
-import Plutarch.Show (PShow)
 import Plutarch.TermCont (tcont)
 import Plutarch.Trace (ptraceError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
@@ -71,7 +70,8 @@ ppositive = phoistAcyclic $
     pif
       (i #<= 0)
       (pcon PNothing)
-      $ pcon . PJust . pcon $ PPositive i
+      $ pcon . PJust . pcon
+      $ PPositive i
 
 -- | Partial version of 'PPositive'. Errors if argument is zero.
 ptryPositive :: Term s (PInteger :--> PPositive)
@@ -80,4 +80,5 @@ ptryPositive = phoistAcyclic $
     pif
       (i #<= 0)
       (ptraceError $ "ptryPositive: building with non positive: " <> pshow i)
-      $ pcon $ PPositive i
+      $ pcon
+      $ PPositive i

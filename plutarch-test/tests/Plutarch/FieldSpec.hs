@@ -2,10 +2,10 @@
 
 module Plutarch.FieldSpec (spec) where
 
-import qualified PlutusCore as PLC
+import PlutusCore qualified as PLC
 import PlutusLedgerApi.V1.Address (Address (Address))
 import PlutusLedgerApi.V1.Credential (Credential (PubKeyCredential))
-import qualified PlutusTx
+import PlutusTx qualified
 import Test.Tasty.HUnit
 
 import Plutarch.Api.V1 (PAddress (PAddress))
@@ -87,11 +87,15 @@ spec = do
 mkTrip ::
   forall a s. (PIsData a) => Term s a -> Term s a -> Term s a -> Term s (PTriplet a)
 mkTrip x y z =
-  punsafeBuiltin PLC.ConstrData # (0 :: Term _ PInteger)
-    # ( ( pcons # (pdata x)
-            #$ pcons # (pdata y)
-            #$ pcons # (pdata z)
-              # pnil
+  punsafeBuiltin PLC.ConstrData
+    # (0 :: Term _ PInteger)
+    # ( ( pcons
+            # pdata x
+            #$ pcons
+            # pdata y
+            #$ pcons
+            # pdata z
+            # pnil
         ) ::
           Term _ (PBuiltinList (PAsData a))
       )
@@ -119,7 +123,7 @@ tripTrip = mkTrip tripA tripB tripC
   The fields in the 'HRec' can them be accessed with
   RecordDotSyntax.
 -}
-tripSum :: Term s ((PTriplet PInteger) :--> PInteger)
+tripSum :: Term s (PTriplet PInteger :--> PInteger)
 tripSum =
   plam $ \x -> pletFields @["x", "y", "z"] x $
     \fs ->
@@ -130,7 +134,7 @@ tripSum =
 {- |
    A subset of fields can be specified.
 -}
-tripYZ :: Term s ((PTriplet PInteger) :--> PInteger)
+tripYZ :: Term s (PTriplet PInteger :--> PInteger)
 tripYZ =
   plam $ \x -> pletFields @["y", "z"] x $
     \fs ->
@@ -140,7 +144,7 @@ tripYZ =
   The ordering of fields specified is irrelevant,
   this is equivalent to 'tripYZ'.
 -}
-tripZY :: Term s ((PTriplet PInteger) :--> PInteger)
+tripZY :: Term s (PTriplet PInteger :--> PInteger)
 tripZY =
   plam $ \x -> pletFields @["z", "y"] x $
     \fs ->

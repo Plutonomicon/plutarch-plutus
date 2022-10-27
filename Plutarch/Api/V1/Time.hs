@@ -8,7 +8,7 @@ module Plutarch.Api.V1.Time (
 ) where
 
 import Plutarch.Num (PNum)
-import qualified PlutusLedgerApi.V1 as Plutus
+import PlutusLedgerApi.V1 qualified as Plutus
 
 import Plutarch.Api.V1.Interval (PInterval)
 import Plutarch.Lift (

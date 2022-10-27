@@ -25,5 +25,5 @@ module Plutarch.DataRepr (
   F.PMemberField,
 ) where
 
-import qualified Plutarch.DataRepr.Internal as I
-import qualified Plutarch.DataRepr.Internal.Field as F
+import Plutarch.DataRepr.Internal qualified as I
+import Plutarch.DataRepr.Internal.Field qualified as F

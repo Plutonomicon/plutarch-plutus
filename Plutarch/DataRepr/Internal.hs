@@ -24,7 +24,7 @@ module Plutarch.DataRepr.Internal (
 ) where
 
 import Data.Coerce (coerce)
-import qualified Data.Functor.Compose as F
+import Data.Functor.Compose qualified as F
 import Data.Functor.Const (Const (Const))
 import Data.Kind (Constraint, Type)
 import Data.List (groupBy, maximumBy, sortOn)
@@ -132,7 +132,7 @@ import Plutarch.Trace (ptraceError)
 import Plutarch.TryFrom (PSubtype, PSubtype', PSubtypeRelation (PNoSubtypeRelation, PSubtypeRelation), PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
 import Plutarch.Unit (PUnit (PUnit))
 import Plutarch.Unsafe (punsafeCoerce)
-import qualified PlutusLedgerApi.V1 as Ledger
+import PlutusLedgerApi.V1 qualified as Ledger
 
 import Plutarch.Reducible (NoReduce, Reduce)
 import Plutarch.Show (PShow (pshow'))
@@ -159,16 +159,17 @@ instance SListI l => PlutusType (PDataRecord l) where
   pcon' (PDCons x xs) = pcons # pforgetData x # pto xs
   pcon' PDNil = pcon' PDNil
   pmatch' :: Term s (PBuiltinList PData) -> (PDataRecord l s -> Term s b) -> Term s b
-  pmatch' l' = unH $
-    case_SList
+  pmatch' l' = unH
+    $ case_SList
       (H $ \f -> f PDNil)
-      $ H $ \f ->
-        plet l' \l ->
-          let x :: Term _ (PAsData x)
-              x = punsafeCoerce $ phead # l
-              xs :: Term _ (PDataRecord xs)
-              xs = punsafeCoerce $ ptail # l
-           in f $ PDCons x xs
+    $ H
+    $ \f ->
+      plet l' \l ->
+        let x :: Term _ (PAsData x)
+            x = punsafeCoerce $ phead # l
+            xs :: Term _ (PDataRecord xs)
+            xs = punsafeCoerce $ ptail # l
+         in f $ PDCons x xs
 
 -- | This uses data equality. 'PEq' instances of elements don't make any difference.
 instance PEq (PDataRecord xs) where
@@ -450,7 +451,7 @@ instance PlutusTypeStrat PlutusTypeData where
   type PlutusTypeStratConstraint PlutusTypeData = PlutusTypeDataConstraint
   type DerivedPInner PlutusTypeData a = PDataSum (IsPDataSumDefs (PCode a))
   derivedPCon x = pcon $ toSum $ gpfrom x
-  derivedPMatch x f = pmatch x (\y -> f $ gpto $ fromSum $ y)
+  derivedPMatch x f = pmatch x (f . gpto . fromSum)
 
 newtype DualReprHandler s out def = DualRepr (Term s (PDataRecord def) -> Term s (PDataRecord def) -> Term s out)
 
@@ -464,23 +465,23 @@ pmatchLT d1 d2 handlers = unTermCont $ do
   cid1 <- tcont . plet $ pfstBuiltin # a
   cid2 <- tcont . plet $ pfstBuiltin # b
 
-  pure $
-    pif
+  pure
+    $ pif
       (cid1 #< cid2)
       -- Left arg's constructor id is less, no need to continue.
       (pconstant True)
-      $ pif
-        (cid1 #== cid2)
-        -- Matching constructors, compare fields now.
-        ( unTermCont $ do
-            flds1 <- tcont . plet $ psndBuiltin # a
-            flds2 <- tcont . plet $ psndBuiltin # b
-            let handlers' = applyHandlers flds1 flds2 handlers
-            common <- findCommon handlers'
-            pure $ reprHandlersGo common 0 (applyHandlers flds1 flds2 handlers) cid1
-        )
-        -- Left arg's constructor id is greater, no need to continue.
-        $ pconstant False
+    $ pif
+      (cid1 #== cid2)
+      -- Matching constructors, compare fields now.
+      ( unTermCont $ do
+          flds1 <- tcont . plet $ psndBuiltin # a
+          flds2 <- tcont . plet $ psndBuiltin # b
+          let handlers' = applyHandlers flds1 flds2 handlers
+          common <- findCommon handlers'
+          pure $ reprHandlersGo common 0 (applyHandlers flds1 flds2 handlers) cid1
+      )
+    -- Left arg's constructor id is greater, no need to continue.
+    $ pconstant False
   where
     applyHandlers ::
       Term s (PBuiltinList PData) ->
@@ -489,8 +490,8 @@ pmatchLT d1 d2 handlers = unTermCont $ do
       [Term s PBool]
     applyHandlers _ _ Nil = []
     applyHandlers args1 args2 (DualRepr handler :* rest) =
-      handler (punsafeCoerce args1) (punsafeCoerce args2) :
-      applyHandlers args1 args2 rest
+      handler (punsafeCoerce args1) (punsafeCoerce args2)
+        : applyHandlers args1 args2 rest
 
 reprHandlersGo ::
   (Dig, Term s out) ->

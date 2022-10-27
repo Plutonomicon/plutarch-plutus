@@ -16,20 +16,22 @@ spec = do
     let ctx = validContext0
     pgoldenSpec $ do
       "pfindOwnInput"
-        @| ( unTermCont $ do
+        @| unTermCont
+          ( do
               ctxF <- tcont $ pletFields @["txInfo", "purpose"] ctx
               pmatchC (getField @"purpose" ctxF) >>= \case
                 PSpending outRef' -> do
                   let outRef = pfield @"_0" # outRef'
-                      inputs = pfield @"inputs" # (getField @"txInfo" ctxF)
+                      inputs = pfield @"inputs" # getField @"txInfo" ctxF
                   pure $ pfindOwnInput # inputs # outRef
                 _ ->
                   pure perror
-           )
+          )
           @-> \res ->
             passert (pfromJust # res #== pconstant inp)
       "pgetContinuingOutputs"
-        @| ( unTermCont $ do
+        @| unTermCont
+          ( do
               ctxF <- tcont $ pletFields @["txInfo", "purpose"] ctx
               pmatchC (getField @"purpose" ctxF) >>= \case
                 PSpending outRef' -> do
@@ -39,18 +41,18 @@ spec = do
                   pure $ pgetContinuingOutputs # inputs # outputs # outRef
                 _ ->
                   pure perror
-           )
+          )
           @-> \txOuts ->
             passert $ txOuts #== pconstant validOutputs0
       "pparseDatum"
         @| ( pparseDatum @(PBuiltinList (PAsData PInteger))
               # pconstant "d0"
-                #$ pfield @"datums"
-                #$ pfield @"txInfo"
+              #$ pfield @"datums"
+              #$ pfield @"txInfo"
               # ctx
            )
           @-> \res ->
-            passert $ res #== pcon (PJust $ pdata $ d0DatTerm)
+            passert $ res #== pcon (PJust $ pdata d0DatTerm)
 
 -- | The Plutarch term we expect when decoding `d0Dat`.
 d0DatTerm :: Term s (PBuiltinList (PAsData PInteger))

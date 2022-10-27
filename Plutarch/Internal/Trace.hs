@@ -17,7 +17,7 @@ import Plutarch.Internal (
 import {-# SOURCE #-} Plutarch.String (PString)
 
 import Plutarch.Unsafe (punsafeBuiltin)
-import qualified PlutusCore as PLC
+import PlutusCore qualified as PLC
 
 ptrace' :: Term s (PString :--> a :--> a)
 ptrace' = phoistAcyclic $ pforce $ punsafeBuiltin PLC.Trace

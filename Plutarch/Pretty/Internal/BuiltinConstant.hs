@@ -1,16 +1,16 @@
 module Plutarch.Pretty.Internal.BuiltinConstant (prettyConstant) where
 
 import Data.ByteString (ByteString)
-import qualified Data.ByteString.Builder as BSB
-import qualified Data.ByteString.Lazy as LBS
+import Data.ByteString.Builder qualified as BSB
+import Data.ByteString.Lazy qualified as LBS
 import Data.Text (Text)
-import qualified Data.Text.Encoding as TxtEnc
+import Data.Text.Encoding qualified as TxtEnc
 
 import Prettyprinter ((<+>))
-import qualified Prettyprinter as PP
+import Prettyprinter qualified as PP
 
-import qualified PlutusCore as PLC
-import qualified PlutusLedgerApi.V1 as Plutus
+import PlutusCore qualified as PLC
+import PlutusLedgerApi.V1 qualified as Plutus
 import UntypedPlutusCore (DefaultUni)
 
 import Plutarch.Pretty.Internal.Config (indentWidth)
@@ -25,17 +25,19 @@ prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniUnit _)) = "()"
 prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniBool b)) = PP.pretty b
 prettyConstant (PLC.Some (PLC.ValueOf (PLC.DefaultUniList a) l)) =
   PP.list $
-    map (prettyConstant . PLC.Some . PLC.ValueOf a) l
+    fmap (prettyConstant . PLC.Some . PLC.ValueOf a) l
 prettyConstant (PLC.Some (PLC.ValueOf (PLC.DefaultUniPair a b) ~(x, y))) =
   PP.tupled
     [prettyConstant . PLC.Some $ PLC.ValueOf a x, prettyConstant . PLC.Some $ PLC.ValueOf b y]
 prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniData (Plutus.Constr ix dl))) =
-  "Σ" <> PP.pretty ix <> "."
+  "Σ"
+    <> PP.pretty ix
+    <> "."
     <> PP.list (prettyConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniData <$> dl)
 prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniData (Plutus.Map ascList))) =
   PP.group
     . PP.encloseSep (PP.flatAlt "{ " "{") (PP.flatAlt " }" "}") ", "
-    $ map
+    $ fmap
       ( \(a, b) ->
           PP.hang indentWidth $
             PP.sep

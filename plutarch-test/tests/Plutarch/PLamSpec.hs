@@ -1,7 +1,7 @@
 module Plutarch.PLamSpec (spec) where
 
 import Data.ByteString (ByteString)
-import qualified PlutusCore as PLC
+import PlutusCore qualified as PLC
 
 import Plutarch.Prelude
 import Plutarch.Test
@@ -11,26 +11,26 @@ import Test.Hspec
 spec :: Spec
 spec = do
   describe "plam" . pgoldenSpec $ do
-    "id" @| plam (\x -> x)
+    "id" @| plam id
     "flip.const" @| plam (\_ y -> y)
-    "plet" @| plam (\x _ -> plet x $ \_ -> perror)
+    "plet" @| plam (\x _ -> plet x $ const perror)
     "primitives" @\ do
       "bool" @\ do
         "true" @| plam $ \_ -> pconstant True
       "int" @\ do
-        "0" @| plam $ \_ -> (0 :: Term _ PInteger)
-        "1" @| plam $ \_ -> (1 :: Term _ PInteger)
-        "512" @| plam $ \_ -> (512 :: Term _ PInteger)
-        "1048576" @| plam $ \_ -> (1048576 :: Term _ PInteger)
+        "0" @| plam $ const (0 :: Term _ PInteger)
+        "1" @| plam $ const (1 :: Term _ PInteger)
+        "512" @| plam $ const (512 :: Term _ PInteger)
+        "1048576" @| plam $ const (1048576 :: Term _ PInteger)
       "bytestring" @\ do
         "1" @| plam $ \_ -> pconstant ("1" :: ByteString)
         "1111111" @| plam $ \_ -> pconstant ("1111111" :: ByteString)
       "unit" @\ do
         "list" @| plam $ \_ -> pconstant ([()] :: [()])
         "()" @| plam $ \_ -> pconstant ()
-      "id" @| plam $ \x -> x
+      "id" @| plam $ id
       "fun" @\ do
-        "lam+" @| plam $ \_ -> (plam (+) :: Term _ (PInteger :--> PInteger :--> PInteger))
+        "lam+" @| plam $ const (plam (+) :: Term _ (PInteger :--> PInteger :--> PInteger))
         "+" @| (plam (+) :: Term _ (PInteger :--> PInteger :--> PInteger))
     "η-reduction-optimisations" @\ do
       "λx y. addInteger x y => addInteger"
@@ -38,13 +38,13 @@ spec = do
         $ \x y -> (x :: Term _ PInteger) + y
       "λx y. hoist (force mkCons) x y => force mkCons"
         @| plam
-        $ \x y -> (pforce $ punsafeBuiltin PLC.MkCons) # x # y
+        $ \x y -> pforce (punsafeBuiltin PLC.MkCons) # x # y
       "λx y. hoist mkCons x y => mkCons x y"
         @| plam
-        $ \x y -> (punsafeBuiltin PLC.MkCons) # x # y
+        $ \x y -> punsafeBuiltin PLC.MkCons # x # y
       "λx y. hoist (λx y. x + y - y - x) x y => λx y. x + y - y - x"
         @| plam
-        $ \x y -> (phoistAcyclic $ plam $ \(x :: Term _ PInteger) y -> x + y - y - x) # x # y
+        $ \x y -> phoistAcyclic (plam $ \(x :: Term _ PInteger) y -> x + y - y - x) # x # y
       "λx y. x + x"
         @| plam
         $ \(x :: Term _ PInteger) (_ :: Term _ PInteger) -> x + x
@@ -56,16 +56,16 @@ spec = do
         $ \(x :: Term _ PInteger) -> x
       "let x = hoist (λx. x + x) in 0 => 0"
         @| plet (phoistAcyclic $ plam $ \(x :: Term _ PInteger) -> x + x)
-        $ \_ -> (0 :: Term _ PInteger)
+        $ const (0 :: Term _ PInteger)
       "let x = hoist (λx. x + x) in x"
         @| plet (phoistAcyclic $ plam $ \(x :: Term _ PInteger) -> x + x)
-        $ \x -> x
+        $ id
       "λx y. sha2_256 x y =>!"
-        @| (plam $ \x y -> punsafeBuiltin PLC.Sha2_256 # x # y)
+        @| plam (\x y -> punsafeBuiltin PLC.Sha2_256 # x # y)
       "let f = hoist (λx. x) in λx y. f x y => λx y. x y"
-        @| (plam $ \x y -> (phoistAcyclic $ plam $ \x -> x) # x # y)
+        @| plam (\x y -> phoistAcyclic (plam id) # x # y)
       "let f = hoist (λx. x True) in λx y. f x y => λx y. (λz. z True) x y"
-        @| (plam $ \x y -> ((phoistAcyclic $ plam $ \x -> x # pcon PTrue)) # x # y)
+        @| plam (\x y -> phoistAcyclic (plam $ \x -> x # pcon PTrue) # x # y)
       "λy. (λx. x + x) y"
         @| plam
-        $ \y -> (plam $ \(x :: Term _ PInteger) -> x + x) # y
+        $ \y -> plam (\(x :: Term _ PInteger) -> x + x) # y

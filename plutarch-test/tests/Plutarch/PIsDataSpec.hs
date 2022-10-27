@@ -17,11 +17,12 @@ import PlutusLedgerApi.V1 (
  )
 
 import Data.SOP (NS (S, Z))
-import qualified PlutusTx
+import PlutusTx qualified
 
 import Test.Tasty.QuickCheck (Arbitrary, property)
 
 import Plutarch.Api.V1
+import Plutarch.Api.V1.Scripts
 import Plutarch.Api.V1.Tuple (pbuiltinPairFromTuple, ptupleFromBuiltin)
 import Plutarch.Builtin (pforgetData, ppairDataBuiltin)
 import Plutarch.DataRepr (PDataSum (PDataSum))
@@ -41,18 +42,19 @@ spec = do
       "PData" @\ do
         "1"
           @| (let dat = pconstant @PData (PlutusTx.List [PlutusTx.Constr 1 [PlutusTx.I 0]]) in dat #== dat)
-          @-> passert
+            @-> passert
         "2"
           @| (pnot #$ pconstant @PData (PlutusTx.Constr 0 []) #== pconstant @PData (PlutusTx.I 42))
-          @-> passert
+            @-> passert
       "PAsData" @\ do
         "1"
           @| let dat = pdata @PInteger 42
-              in dat #== dat
+              in dat
+                  #== dat
                   @-> passert
         "1"
           @| (pnot #$ pdata (phexByteStr "12") #== pdata (phexByteStr "ab"))
-          @-> passert
+            @-> passert
     describe "ppair" . pgoldenSpec $ do
       -- pfromData (pdata (I 1, B 0x41)) ≡ (I 1, I A)
       "simple"
@@ -67,8 +69,9 @@ spec = do
             ppairDataBuiltin
               # pconstantData @PTxId "41"
               #$ pconstantData (ScriptCredential "82")
-      "scriptcredential" @| scPair @-> \p ->
-        pfromData (pdata p) `pshouldBe` p
+      "scriptcredential"
+        @| scPair @-> \p ->
+          pfromData (pdata p) `pshouldBe` p
       let scTuple = pdata $ ptuple # pconstantData @PTxId "41" #$ pconstantData $ ScriptCredential "82"
       "isomorphism" @\ do
         "pforgetData" @| pforgetData (pdata scPair) @== pforgetData scTuple
@@ -81,39 +84,50 @@ spec = do
         "4wheeler" @\ do
           let datrec =
                 pdcons
-                  # pconstantData @PInteger 2 #$ pdcons
-                  # pconstantData @PInteger 5 #$ pdcons
-                  # pconstantData @PInteger 42 #$ pdcons
+                  # pconstantData @PInteger 2
+                  #$ pdcons
+                  # pconstantData @PInteger 5
+                  #$ pdcons
+                  # pconstantData @PInteger 42
+                  #$ pdcons
                   # pconstantData @PInteger 0
                   # pdnil
               expected =
                 pconstant $
                   PlutusTx.Constr 0 [PlutusTx.I 2, PlutusTx.I 5, PlutusTx.I 42, PlutusTx.I 0]
           "normal"
-            @| pcon (PFourWheeler datrec) @== expected
+            @| pcon (PFourWheeler datrec)
+            @== expected
           "pdatasum"
-            @| pcon @(PInner PVehicle) (PDataSum . Z $ Compose datrec) @== expected
+            @| pcon @(PInner PVehicle) (PDataSum . Z $ Compose datrec)
+            @== expected
         "2wheeler" @\ do
           let datrec = pdcons # pconstantData @PInteger 5 #$ pdcons # pconstantData @PInteger 0 # pdnil
               expected = pconstant $ PlutusTx.Constr 1 [PlutusTx.I 5, PlutusTx.I 0]
           "normal"
-            @| pcon (PTwoWheeler datrec) @== expected
+            @| pcon (PTwoWheeler datrec)
+            @== expected
           "pdatasum"
-            @| pcon @(PInner PVehicle) (PDataSum . S . Z $ Compose datrec) @== expected
+            @| pcon @(PInner PVehicle) (PDataSum . S . Z $ Compose datrec)
+            @== expected
         "immovable" @\ do
           let datrec = pdnil
               expected = pconstant $ PlutusTx.Constr 2 []
           "normal"
-            @| pcon (PImmovableBox datrec) @== expected
+            @| pcon (PImmovableBox datrec)
+            @== expected
           "pdatasum"
-            @| pcon @(PInner PVehicle) (PDataSum . S . S . Z $ Compose datrec) @== expected
+            @| pcon @(PInner PVehicle) (PDataSum . S . S . Z $ Compose datrec)
+            @== expected
       -- Product construction
       "prod" @\ do
         "1" @\ do
           let datrec =
                 pdcons
-                  # pconstantData @PCurrencySymbol "ab" #$ pdcons
-                  # pconstantData @PCurrencySymbol "41" #$ pdcons
+                  # pconstantData @PCurrencySymbol "ab"
+                  #$ pdcons
+                  # pconstantData @PCurrencySymbol "41"
+                  #$ pdcons
                   # pconstantData @PCurrencySymbol "0e"
                   # pdnil
               expected =
@@ -125,10 +139,11 @@ spec = do
                     , PlutusTx.toData @CurrencySymbol "0e"
                     ]
           "normal"
-            @| pcon (PTriplet datrec) @== expected
+            @| pcon (PTriplet datrec)
+            @== expected
           "pdatasum"
             @| pcon @(PInner (PTriplet PCurrencySymbol)) (PDataSum . Z $ Compose datrec)
-              @== expected
+            @== expected
         "2" @\ do
           let minting = Minting ""
               spending = Spending $ TxOutRef "ab" 0
@@ -136,8 +151,10 @@ spec = do
 
               datrec =
                 pdcons
-                  # pconstantData minting #$ pdcons
-                  # pconstantData spending #$ pdcons
+                  # pconstantData minting
+                  #$ pdcons
+                  # pconstantData spending
+                  #$ pdcons
                   # pconstantData rewarding
                   # pdnil
               expected =
@@ -146,10 +163,11 @@ spec = do
                     0
                     [PlutusTx.toData minting, PlutusTx.toData spending, PlutusTx.toData rewarding]
           "normal"
-            @| pcon (PTriplet datrec) @== expected
+            @| pcon (PTriplet datrec)
+            @== expected
           "datasum"
             @| pcon @(PInner (PTriplet PScriptPurpose)) (PDataSum . Z $ Compose datrec)
-              @== expected
+            @== expected
       -- Enumerable sum type construction
       "enum" @\ do
         "PA" @| pcon (PA pdnil) @== pconstant (PlutusTx.Constr 0 [])
@@ -162,7 +180,7 @@ spec = do
                  pscriptCredential =
                   pcon $
                     PScriptCredential $
-                      pdcons # pdata (pcon $ PValidatorHash $ phexByteStr valHash) # pdnil
+                      pdcons # pdata (pcon $ PScriptHash $ phexByteStr valHash) # pdnil
               in pconstant addr
                   @== pcon (PAddress $ pdcons # pdata pscriptCredential #$ pdcons # pdata (pcon $ PDNothing pdnil) # pdnil)
            )
@@ -182,11 +200,14 @@ propertySet ::
 propertySet typeName = do
   describe typeName $ do
     specify ("x ~ " <> typeName <> ": pfromData (pdata x) ≡ x") $
-      property $ ptoFromEqual @p
+      property $
+        ptoFromEqual @p
     specify ("x ~ " <> typeName <> ": pfromData (PlutusTx.toData x) ≡ x") $
-      property $ pfromDataCompat @p
+      property $
+        pfromDataCompat @p
     specify ("x ~ " <> typeName <> ": PlutusTx.fromData (pdata x) ≡ Just x") $
-      property $ pdataCompat @p
+      property $
+        pdataCompat @p
 
 ptoFromEqual ::
   forall p.

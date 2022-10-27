@@ -36,13 +36,13 @@ import Data.Text (Text)
 import GHC.Stack (HasCallStack)
 import Plutarch.Internal (ClosedTerm, Config (Config, tracingMode), PType, Term, compile, punsafeConstantInternal, pattern DoTracing)
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
-import qualified PlutusCore as PLC
+import Plutarch.Script (unScript)
+import PlutusCore qualified as PLC
 import PlutusCore.Builtin (KnownTypeError, readKnownConstant)
 import PlutusCore.Evaluation.Machine.Exception (_UnliftingErrorE)
-import qualified PlutusLedgerApi.V1.Scripts as Scripts
 import PlutusTx (BuiltinData, Data, builtinDataToData, dataToBuiltinData)
 import PlutusTx.Builtins.Class (FromBuiltin, ToBuiltin, fromBuiltin, toBuiltin)
-import qualified UntypedPlutusCore as UPLC
+import UntypedPlutusCore qualified as UPLC
 
 {- |
 Laws:
@@ -94,6 +94,8 @@ Example:
 pconstant :: forall p s. PLift p => PLifted p -> Term s p
 pconstant x = punsafeConstantInternal $ PLC.someValue @(PConstantRepr (PLifted p)) @PLC.DefaultUni $ pconstantToRepr x
 
+{-# HLINT ignore LiftError "Use camelCase" #-}
+
 {- | Error during script evaluation.
 
  @since 1.2.1
@@ -112,7 +114,7 @@ plift' :: forall p. PUnsafeLiftDecl p => Config -> ClosedTerm p -> Either LiftEr
 plift' config prog = case compile config prog of
   Left msg -> Left $ LiftError_CompilationError msg
   Right script -> case evalScriptHuge script of
-    (Right (Scripts.unScript -> UPLC.Program _ _ term), _, _) ->
+    (Right (unScript -> UPLC.Program _ _ term), _, _) ->
       case readKnownConstant term of
         Right r -> case pconstantFromRepr r of
           Just h -> Right h

@@ -17,9 +17,17 @@ spec = do
       "iterateN" @\ do
         "lam" @| iterateN
         "app" @\ do
-          "succ" @| iterateN # 10 # succ # 0
+          "succ"
+            @| iterateN
+            # 10
+            # succ
+            # 0
             @== pconstant @PInteger 10
-          "double" @| iterateN # 10 # double # 1
+          "double"
+            @| iterateN
+            # 10
+            # double
+            # 1
             @== pconstant @PInteger 1024
 
 succ :: Term s (PInteger :--> PInteger)

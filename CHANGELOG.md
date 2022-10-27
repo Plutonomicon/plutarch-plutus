@@ -1,5 +1,10 @@
 # Revision history for plutarch
 
+# 1.3.0
+
+- Support newer Plutus
+- Remove most of the Nix code and switch to mlabs-tooling.nix
+
 # 1.2.1 
 
 - Exported data constructors instance for `Plutarch.Lift (LiftError)`
