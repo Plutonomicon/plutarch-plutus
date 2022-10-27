@@ -52,7 +52,7 @@ following table shows the correspondence between the two universes of types:
 When it comes to user-defined types, you have a choice of passing their values
 encoded as `Data` or directly. In the latter case, you'll have to declare your
 type twice with two kinds: as a Haskell `Type` and as a Plutarch
-`PType`. Futhermore, both types must be instances of `SOP.Generic`, as in this
+`PType`. Furthermore, both types must be instances of `SOP.Generic`, as in this
 example:
 
 ```haskell
