@@ -58,7 +58,6 @@ deriving via
   instance
     PConstantDecl Plutus.RedeemerHash
 
-
 newtype PScriptHash (s :: S) = PScriptHash (Term s PByteString)
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PShow)

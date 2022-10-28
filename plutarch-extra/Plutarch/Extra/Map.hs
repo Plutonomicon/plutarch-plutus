@@ -48,7 +48,8 @@ pmapWithKey = phoistAcyclic $
     pmatch kvs $ \(PMap kvs') ->
       pcon . PMap $
         PList.pmap
-          # ( plam $ \x ->
+          # plam
+            ( \x ->
                 plet (pkvPairKey # x) $ \key ->
                   ppairDataBuiltin
                     # pdata key
@@ -66,7 +67,7 @@ padjust ::
   Term s ((v :--> v) :--> k :--> PMap 'Unsorted k v :--> PMap 'Unsorted k v)
 padjust = phoistAcyclic $
   plam $ \f key kvs ->
-    pmapWithKey # (plam $ \k' a -> pif (k' #== key) (f # a) a) # kvs
+    pmapWithKey # plam (\k' a -> pif (k' #== key) (f # a) a) # kvs
 
 {- | As 'pkeysEqual', but requires only 'PEq' constraints for the keys, and
  works for 'Unsorted' 'PMap's. This requires a number of equality comparisons
@@ -198,7 +199,8 @@ ptryLookup ::
   Term s (k :--> PMap keys k v :--> v)
 ptryLookup = phoistAcyclic $
   plam $ \k kvs ->
-    passertPJust # "plookupPartial: No value found for key."
+    passertPJust
+      # "plookupPartial: No value found for key."
       # (plookup # k # kvs)
 
 {- | Get a list-like structure full of the keys of the argument 'PMap'. If the
@@ -251,7 +253,7 @@ pupdate = phoistAcyclic $
               plet (pfromData $ pfstBuiltin # x) $ \k ->
                 pif
                   (k #== key)
-                  ( pmatch (updater # (pfromData $ psndBuiltin # x)) $ \case
+                  ( pmatch (updater # pfromData (psndBuiltin # x)) $ \case
                       PNothing -> self # xs
                       PJust v -> pcons # (ppairDataBuiltin # pdata k # pdata v) #$ self # xs
                   )
