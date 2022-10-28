@@ -6,9 +6,9 @@ import Plutarch.List (pconvertLists, pfoldl')
 import Plutarch.Prelude
 
 import Hedgehog (Property)
-import qualified Hedgehog.Gen as Gen
+import Hedgehog.Gen qualified as Gen
 import Hedgehog.Internal.Property (Property (propertyTest))
-import qualified Hedgehog.Range as Range
+import Hedgehog.Range qualified as Range
 import Plutarch.Test
 import Plutarch.Test.Property
 import Plutarch.Test.Property.Gen (genInteger, genList)
@@ -40,11 +40,11 @@ spec = do
       "pconcat" @\ do
         "identity" @| (pconcat # xs10 # pnil #== pconcat # pnil # xs10) #&& (pconcat # pnil # xs10 #== xs10) @-> passert
       "pmap" @\ do
-        "eg" @| pmap # (plam $ \x -> x + x) # xs10 #== (integerList $ fmap (* 2) [1 .. 10]) @-> passert
-        "identity" @| pmap @PList # (plam $ \(x :: Term _ PInteger) -> x) # pnil #== pnil @-> passert
+        "eg" @| pmap # plam (\x -> x + x) # xs10 #== integerList (fmap (* 2) [1 .. 10]) @-> passert
+        "identity" @| pmap @PList # plam (\(x :: Term _ PInteger) -> x) # pnil #== pnil @-> passert
       "pfilter" @\ do
-        "evens" @| pfilter # (plam $ \x -> pmod # x # 2 #== 0) # xs10 #== integerList [2, 4, 6, 8, 10] @-> passert
-        "gt5" @| pfilter # (plam $ \x -> 5 #< x) # xs10 #== integerList [6 .. 10] @-> passert
+        "evens" @| pfilter # plam (\x -> pmod # x # 2 #== 0) # xs10 #== integerList [2, 4, 6, 8, 10] @-> passert
+        "gt5" @| pfilter # plam (5 #<) # xs10 #== integerList [6 .. 10] @-> passert
       "pzipWith" @\ do
         "double" @| pzipWith' (+) # xs10 # xs10 #== integerList (fmap (* 2) [1 .. 10]) @-> passert
       "pfoldl" @\ do
@@ -100,8 +100,8 @@ spec = do
 prop_pfindEquiv :: Property
 prop_pfindEquiv =
   prop_haskEquiv
-    @( 'OnPEq)
-    @( 'TotalFun)
+    @OnPEq
+    @TotalFun
     (find @[] @Integer even)
     (pfind # peven)
     (genList genInteger :* Nil)
@@ -113,8 +113,8 @@ prop_pfindEquiv =
 prop_pelemAtEquiv :: Property
 prop_pelemAtEquiv =
   prop_haskEquiv
-    @( 'OnBoth)
-    @( 'PartialFun)
+    @OnBoth
+    @PartialFun
     elemAt
     pelemAt
     $ Gen.integral (Range.linear (-10) 100)

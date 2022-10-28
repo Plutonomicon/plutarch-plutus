@@ -13,7 +13,7 @@ module Plutarch.Api.V1.DCert (
   ),
 ) where
 
-import qualified PlutusLedgerApi.V1 as Plutus
+import PlutusLedgerApi.V1 qualified as Plutus
 
 import Plutarch.Api.V1.Address (PStakingCredential)
 import Plutarch.Api.V1.Crypto (PPubKeyHash)

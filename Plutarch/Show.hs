@@ -6,10 +6,10 @@ module Plutarch.Show (
 
 import Data.Char (intToDigit)
 import Data.List.NonEmpty (NonEmpty ((:|)))
-import qualified Data.List.NonEmpty as NE
+import Data.List.NonEmpty qualified as NE
 import Data.Semigroup (sconcat)
 import Data.String (IsString (fromString))
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Generics.SOP (
   All,
   All2,
@@ -72,20 +72,21 @@ instance PShow PString where
       pshowUtf8Bytes :: Term s (PByteString :--> PByteString)
       pshowUtf8Bytes = phoistAcyclic $
         pfix #$ plam $ \self bs ->
-          pelimBS # bs
+          pelimBS
             # bs
-            #$ plam
+            # bs
+              #$ plam
             $ \x xs ->
               -- Non-ascii byte sequence will not use bytes < 128.
               -- So we are safe to rewrite the lower byte values.
               -- https://en.wikipedia.org/wiki/UTF-8#Encoding
               let doubleQuote :: Term _ PInteger = 34 -- `"`
                   escapeSlash :: Term _ PInteger = 92 -- `\`
-                  rec = pconsBS # x #$ self # xs
+                  rec_ = pconsBS # x #$ self # xs
                in pif
                     (x #== doubleQuote)
-                    (pconsBS # escapeSlash # rec)
-                    rec
+                    (pconsBS # escapeSlash # rec_)
+                    rec_
 
 instance PShow PBool where
   pshow' _ x = pshowBool # x
@@ -104,7 +105,9 @@ instance PShow PInteger where
         pfix #$ plam $ \self n ->
           let sign = pif (n #< 0) "-" ""
            in sign
-                <> ( plet (pquot # abs n # 10) $ \q ->
+                <> plet
+                  (pquot # abs n # 10)
+                  ( \q ->
                       plet (prem # abs n # 10) $ \r ->
                         pif
                           (q #== 0)
@@ -112,7 +115,7 @@ instance PShow PInteger where
                           ( plet (self # q) $ \prefix ->
                               prefix <> pshowDigit # r
                           )
-                   )
+                  )
       pshowDigit :: Term s (PInteger :--> PString)
       pshowDigit = phoistAcyclic $
         plam $ \digit ->
@@ -130,9 +133,10 @@ instance PShow PByteString where
       showByteString' :: Term s (PByteString :--> PString)
       showByteString' = phoistAcyclic $
         pfix #$ plam $ \self bs ->
-          pelimBS # bs
-            # (pconstant @PString "")
-            #$ plam
+          pelimBS
+            # bs
+            # pconstant @PString ""
+              #$ plam
             $ \x xs -> showByte # x <> self # xs
       showByte :: Term s (PInteger :--> PString)
       showByte = phoistAcyclic $
@@ -146,7 +150,7 @@ instance PShow PByteString where
           pcase perror n $
             flip fmap [0 .. 15] $ \(x :: Int) ->
               ( pconstant $ toInteger x
-              , pconstant @PString $ T.pack $ intToDigit x : []
+              , pconstant @PString $ T.pack [intToDigit x]
               )
 
 -- | Case matching on bytestring, as if a list.
@@ -167,9 +171,9 @@ pelimBS = phoistAcyclic $
             f # x # xs
 
 pcase :: PEq a => Term s b -> Term s a -> [(Term s a, Term s b)] -> Term s b
-pcase otherwise x = \case
-  [] -> otherwise
-  ((x', r) : cs) -> pif (x #== x') r $ pcase otherwise x cs
+pcase y x = \case
+  [] -> y
+  ((x', r) : cs) -> pif (x #== x') r $ pcase y x cs
 
 -- | Generic version of `pshow`
 gpshow ::
@@ -218,4 +222,4 @@ productGroup wrap sep = \case
  Works for all types.
 -}
 pshowAndErr :: Term s a -> Term s b
-pshowAndErr x = punsafeCoerce $ pindexBS # (punsafeCoerce $ pif' # (punsafeCoerce x) # x # x) # 0
+pshowAndErr x = punsafeCoerce $ pindexBS # punsafeCoerce (pif' # punsafeCoerce x # x # x) # 0

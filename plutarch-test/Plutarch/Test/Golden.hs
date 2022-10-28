@@ -29,30 +29,30 @@ module Plutarch.Test.Golden (
 ) where
 
 import Control.Monad (forM_, unless)
-import qualified Data.Aeson.Text as Aeson
+import Data.Aeson.Text qualified as Aeson
 import Data.Default (Default (def))
 import Data.List.NonEmpty (nonEmpty)
 import Data.Maybe (mapMaybe)
 import Data.Semigroup (sconcat)
 import Data.String (IsString)
 import Data.Text (Text)
-import qualified Data.Text as T
-import qualified Data.Text.IO as TIO
-import qualified Data.Text.Lazy as TL
+import Data.Text qualified as T
+import Data.Text.IO qualified as TIO
+import Data.Text.Lazy qualified as TL
 import GHC.Stack (HasCallStack)
 import System.FilePath ((</>))
 import Test.Hspec.Golden
 
-import qualified Data.List.NonEmpty as NE
+import Data.List.NonEmpty qualified as NE
 import Data.Set (Set)
-import qualified Data.Set as S
+import Data.Set qualified as S
 import Plutarch (Config (Config, tracingMode), compile, printScript, pattern DetTracing)
 import Plutarch.Evaluate (evalScript)
 import Plutarch.Prelude
+import Plutarch.Script (Script)
+import Plutarch.Script qualified as Scripts
 import Plutarch.Test.Benchmark (Benchmark, mkBenchmark, scriptSize)
 import Plutarch.Test.ListSyntax (ListSyntax, listSyntaxAdd, listSyntaxAddSubList, runListSyntax)
-import PlutusLedgerApi.V1.Scripts (Script)
-import qualified PlutusLedgerApi.V1.Scripts as Scripts
 import Test.Hspec (Expectation, Spec, describe, it)
 import Test.Hspec.Core.Spec (SpecM, getSpecDescriptionPath)
 
@@ -204,9 +204,9 @@ pgoldenSpec = pgoldenSpec' def
 > pgoldenSpec = pgoldenSpec' def
 -}
 pgoldenSpec' :: HasCallStack => GoldenConf -> PlutarchGoldens -> Spec
-pgoldenSpec' conf@(GoldenConf {goldenBasePath}) map = do
+pgoldenSpec' conf@(GoldenConf {goldenBasePath}) m = do
   base <- currentGoldenKey
-  let bs = runListSyntax map
+  let bs = runListSyntax m
   -- Golden tests
   describe "golden" $ do
     goldenTestSpec goldenBasePath base bs `mapM_` chosenTests conf
@@ -275,7 +275,7 @@ evalScriptAlwaysWithBenchmark script =
   let (res, exbudget, _traces) = evalScript script
       bench = mkBenchmark exbudget (scriptSize script)
    in ( case res of
-          Left _ -> either undefined id $ compile (Config {tracingMode = DetTracing}) perror
+          Left _ -> either (error "not supposed to fail") id $ compile (Config {tracingMode = DetTracing}) perror
           Right x -> x
       , bench
       )

@@ -2,7 +2,7 @@
 
 module Main (main) where
 
-import qualified Spec
+import Spec qualified
 
 import Test.Hspec (Spec, hspec)
 

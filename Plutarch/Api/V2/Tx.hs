@@ -9,11 +9,11 @@ module Plutarch.Api.V2.Tx (
   POutputDatum (POutputDatumHash, PNoOutputDatum, POutputDatum),
 ) where
 
-import qualified Plutarch.Api.V1.Address as V1
-import qualified Plutarch.Api.V1.Maybe as V1
-import qualified Plutarch.Api.V1.Scripts as V1
-import qualified Plutarch.Api.V1.Tx as V1
-import qualified Plutarch.Api.V1.Value as V1
+import Plutarch.Api.V1.Address qualified as V1
+import Plutarch.Api.V1.Maybe qualified as V1
+import Plutarch.Api.V1.Scripts qualified as V1
+import Plutarch.Api.V1.Tx qualified as V1
+import Plutarch.Api.V1.Value qualified as V1
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
@@ -24,7 +24,7 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
  )
 import Plutarch.Prelude
-import qualified PlutusLedgerApi.V2 as Plutus
+import PlutusLedgerApi.V2 qualified as Plutus
 
 -- | A transaction output. This consists of a target address, value and maybe a datum hash
 newtype PTxOut (s :: S)

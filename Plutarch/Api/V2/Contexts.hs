@@ -7,9 +7,9 @@ module Plutarch.Api.V2.Contexts (
   V1.PScriptPurpose (PMinting, PSpending, PRewarding, PCertifying),
 ) where
 
-import qualified Plutarch.Api.V1 as V1
+import Plutarch.Api.V1 qualified as V1
 import Plutarch.Api.V2.Tx (PTxId, PTxInInfo, PTxOut)
-import qualified PlutusLedgerApi.V2 as Plutus
+import PlutusLedgerApi.V2 qualified as Plutus
 
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),

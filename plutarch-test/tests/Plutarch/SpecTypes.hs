@@ -3,7 +3,7 @@
 
 module Plutarch.SpecTypes (Triplet (..), PTriplet (..)) where
 
-import qualified PlutusTx
+import PlutusTx qualified
 
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),

@@ -163,8 +163,8 @@ type family PMemberField t name s as where
 pletFields ::
   forall fs a s b ps bs.
   ( PDataFields a
-  , ps ~ (PFields a)
-  , bs ~ (Bindings ps fs)
+  , ps ~ PFields a
+  , bs ~ Bindings ps fs
   , BindFields ps bs
   ) =>
   Term s a ->
@@ -172,7 +172,8 @@ pletFields ::
   Term s b
 pletFields t =
   runTermCont $
-    bindFields (Proxy @bs) $ ptoFields @a t
+    bindFields (Proxy @bs) $
+      ptoFields @a t
 
 data ToBind = Bind | Skip
 
@@ -187,7 +188,7 @@ type family BindField (p :: Symbol) (fs :: [Symbol]) :: ToBind where
 -- | Map 'BindField' over @[PLabeledType]@, with 'Skips' removed at tail
 type family Bindings (ps :: [PLabeledType]) (fs :: [Symbol]) :: [ToBind] where
   Bindings '[] _ = '[]
-  Bindings ((name ':= _) ': ps) fs = (BindField name fs) ': (CutSkip (Bindings ps fs))
+  Bindings ((name ':= _) ': ps) fs = BindField name fs ': CutSkip (Bindings ps fs)
 
 -- | Remove 'Skip's at tail
 type family CutSkip (bs :: [ToBind]) :: [ToBind] where

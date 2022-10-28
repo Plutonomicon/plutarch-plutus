@@ -3,9 +3,9 @@ module Plutarch.Extra.MaybeSpec (spec) where
 import Plutarch.Extra.Maybe
 import Plutarch.Prelude
 
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, isJust)
 import Hedgehog (Property)
-import qualified Hedgehog.Gen as Gen
+import Hedgehog.Gen qualified as Gen
 import Hedgehog.Internal.Property (propertyTest)
 import Plutarch.Api.V1.Maybe (PMaybeData)
 import Plutarch.Test
@@ -29,7 +29,7 @@ spec = modifyMaxSuccess (const 10_000) $ do
         "isJust_Just" @| (pisJust #$ pjust # marshal (5 :: Integer)) @-> passert
         "isJust_Nothing" @| (pnot #$ pisJust # pnothing) @-> passert
       "Just" @\ do
-        "Just_0" @| ((pcon $ PJust 0) #== pjust # marshal (0 :: Integer)) @-> passert
+        "Just_0" @| (pcon (PJust 0) #== pjust # marshal (0 :: Integer)) @-> passert
       "fromDJust" @\ do
         "fromDJust_Just" @| (5 #== (pfromDJust #$ pdjust # marshal (5 :: Integer))) @-> passert
         "fromDJust_Nothing" @| pfromDJust # (pdnothing :: Term s (PMaybeData PInteger)) @-> pfails
@@ -40,8 +40,8 @@ spec = modifyMaxSuccess (const 10_000) $ do
 prop_pfromJust :: Property
 prop_pfromJust = do
   prop_haskEquiv
-    @( 'OnPEq)
-    @( 'PartialFun)
+    @OnPEq
+    @PartialFun
     (fromJust :: Maybe Integer -> Integer)
     pfromJust
     (Gen.maybe genInteger :* Nil)
@@ -49,17 +49,17 @@ prop_pfromJust = do
 prop_pisJust :: Property
 prop_pisJust = do
   prop_haskEquiv
-    @( 'OnPEq)
-    @( 'TotalFun)
-    (maybe False (const True) :: Maybe Integer -> Bool)
+    @OnPEq
+    @TotalFun
+    (isJust :: Maybe Integer -> Bool)
     pisJust
     (Gen.maybe genInteger :* Nil)
 
 prop_pjust :: Property
 prop_pjust = do
   prop_haskEquiv
-    @( 'OnPEq)
-    @( 'TotalFun)
+    @OnPEq
+    @TotalFun
     (Just :: Integer -> Maybe Integer)
     pjust
     (genInteger :* Nil)

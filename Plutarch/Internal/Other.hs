@@ -9,7 +9,7 @@ module Plutarch.Internal.Other (
   popaque,
 ) where
 
-import qualified Data.Text as T
+import Data.Text qualified as T
 import GHC.Stack (HasCallStack)
 import Plutarch.Internal (ClosedTerm, Config, Term, compile, phoistAcyclic, plam', punsafeCoerce, (#), (:-->))
 import Plutarch.Internal.PlutusType (
@@ -21,8 +21,8 @@ import Plutarch.Internal.PlutusType (
   pcon',
   pmatch',
  )
+import Plutarch.Script (Script (Script))
 import PlutusCore.Pretty (prettyPlcReadableDebug)
-import PlutusLedgerApi.V1.Scripts (Script (Script))
 
 -- | Prettyprint a compiled Script via the PLC pretty printer
 printScript :: Script -> String
@@ -43,10 +43,10 @@ printTerm config term = printScript $ either (error . T.unpack) id $ compile con
   Safely coerce from a Term to it's 'PInner' representation.
 -}
 pto :: Term s a -> Term s (PInner a)
-pto x = punsafeCoerce x
+pto = punsafeCoerce
 
 -- | An Arbitrary Term with an unknown type
-data POpaque s = POpaque (Term s POpaque)
+newtype POpaque s = POpaque (Term s POpaque)
 
 instance PlutusType POpaque where
   type PInner POpaque = POpaque
@@ -83,5 +83,5 @@ pfix :: Term s (((a :--> b) :--> a :--> b) :--> a :--> b)
 pfix = phoistAcyclic $
   punsafeCoerce $
     plam' $ \f ->
-      (plam' $ \(x :: Term s POpaque) -> f # (plam' $ \(v :: Term s POpaque) -> (punsafeCoerce x) # x # v))
-        # punsafeCoerce (plam' $ \(x :: Term s POpaque) -> f # (plam' $ \(v :: Term s POpaque) -> (punsafeCoerce x) # x # v))
+      plam' (\(x :: Term s POpaque) -> f # plam' (\(v :: Term s POpaque) -> punsafeCoerce x # x # v))
+        # punsafeCoerce (plam' $ \(x :: Term s POpaque) -> f # plam' (\(v :: Term s POpaque) -> punsafeCoerce x # x # v))

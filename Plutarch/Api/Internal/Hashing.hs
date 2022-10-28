@@ -13,11 +13,13 @@ import Crypto.Hash.Algorithms (
  )
 import Data.ByteArray (convert)
 import Data.ByteString (ByteString)
-import qualified Data.ByteString.Lazy as Lazy
+import Data.ByteString.Lazy (toStrict)
+import Data.ByteString.Short (fromShort)
 
-import qualified PlutusLedgerApi.V1 as Plutus
-import qualified PlutusLedgerApi.V1.Scripts as Plutus
-import qualified PlutusTx.Builtins as PlutusTx
+import Plutarch.Script (Script (unScript))
+import PlutusLedgerApi.Common (serialiseUPLC)
+import PlutusLedgerApi.V1 qualified as Plutus
+import PlutusTx.Builtins qualified as PlutusTx
 
 _plutusHashWith :: HashAlgorithm alg => alg -> ByteString -> PlutusTx.BuiltinByteString
 _plutusHashWith alg = PlutusTx.toBuiltin . convert @_ @ByteString . hashWith alg
@@ -29,15 +31,15 @@ hashBlake2b_256 :: ByteString -> PlutusTx.BuiltinByteString
 hashBlake2b_256 = _plutusHashWith Blake2b_256
 
 -- | Hash a Script with the given version prefix
-hashScriptWithPrefix :: ByteString -> Plutus.Script -> Plutus.ScriptHash
+hashScriptWithPrefix :: ByteString -> Script -> Plutus.ScriptHash
 hashScriptWithPrefix prefix scr =
   Plutus.ScriptHash
     . hashBlake2b_224
-    $ prefix <> Lazy.toStrict (serialise scr)
+    $ prefix <> (fromShort . serialiseUPLC . unScript $ scr)
 
 -- | Hash Plutus 'Data'.
 hashData :: Plutus.Data -> PlutusTx.BuiltinByteString
-hashData = hashBlake2b_256 . Lazy.toStrict . serialise
+hashData = hashBlake2b_256 . toStrict . serialise
 
 -- | Hash 'LedgerBytes'.
 hashLedgerBytes :: Plutus.LedgerBytes -> PlutusTx.BuiltinByteString

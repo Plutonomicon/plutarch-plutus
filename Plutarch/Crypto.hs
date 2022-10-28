@@ -19,7 +19,7 @@ import Plutarch.Unsafe (punsafeBuiltin)
 
 import Plutarch.Bool (PBool)
 import Plutarch.ByteString (PByteString)
-import qualified PlutusCore as PLC
+import PlutusCore qualified as PLC
 
 -- | Hash a 'PByteString' using SHA-256.
 psha2_256 :: Term s (PByteString :--> PByteString)

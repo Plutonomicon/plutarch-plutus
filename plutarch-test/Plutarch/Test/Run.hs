@@ -8,8 +8,8 @@ import Control.Monad (forM_)
 import Data.Default (def)
 import Data.List (isPrefixOf)
 import Data.Set (Set)
-import qualified Data.Set as Set
-import qualified Data.Text as T
+import Data.Set qualified as Set
+import Data.Text qualified as T
 import Plutarch.Test.Golden (
   GoldenConf (GoldenConf, chosenTests, goldenBasePath),
   GoldenKey,
@@ -31,10 +31,11 @@ import Test.Hspec.Core.Spec (SpecTree, Tree (Leaf, Node, NodeWithCleanup))
 hspecAndReturnForest :: Spec -> IO [SpecTree ()]
 hspecAndReturnForest spec0 = do
   (config, spec) <- evalSpec defaultConfig spec0
-  getArgs >>= readConfig config
+  getArgs
+    >>= readConfig config
     >>= withArgs [] . runSpecForest spec
     >>= evaluateResult
-  return spec
+  pure spec
 
 {- | Ensures that there are no unused goldens left behind.
 
@@ -107,7 +108,7 @@ queryGoldens =
   where
     go ancestors = \case
       Node "golden" _children ->
-        ancestors : []
+        [ancestors]
       Node k children ->
         concatMap (go $ T.pack k : ancestors) children
       NodeWithCleanup _ _ trees ->

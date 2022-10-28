@@ -8,13 +8,13 @@ module Plutarch.Test.Benchmark (
   scriptSize,
 ) where
 
-import Codec.Serialise (serialise)
 import Data.Aeson (ToJSON)
-import qualified Data.ByteString.Lazy as LB
-import qualified Data.ByteString.Short as SBS
+import Data.ByteString.Short qualified as SBS
 import Data.Int (Int64)
 import GHC.Generics (Generic)
-import PlutusLedgerApi.V1 (ExBudget (ExBudget), ExCPU, ExMemory, Script)
+import Plutarch.Script (Script (unScript))
+import PlutusLedgerApi.Common (serialiseUPLC)
+import PlutusLedgerApi.V1 (ExBudget (ExBudget), ExCPU, ExMemory)
 
 data Benchmark = Benchmark
   { exBudgetCPU :: ExCPU
@@ -34,8 +34,8 @@ newtype ScriptSizeBytes = ScriptSizeBytes Int64
   deriving stock (Eq, Ord, Show, Generic)
   deriving newtype (Num, ToJSON)
 
+serialiseScriptShort :: Script -> SBS.ShortByteString
+serialiseScriptShort = serialiseUPLC . unScript
+
 scriptSize :: Script -> ScriptSizeBytes
 scriptSize = ScriptSizeBytes . fromIntegral . SBS.length . serialiseScriptShort
-
-serialiseScriptShort :: Script -> SBS.ShortByteString
-serialiseScriptShort = SBS.toShort . LB.toStrict . serialise

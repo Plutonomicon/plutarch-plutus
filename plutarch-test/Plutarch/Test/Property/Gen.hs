@@ -8,13 +8,13 @@ module Plutarch.Test.Property.Gen (
   bsOfLength,
 ) where
 
-import Control.Monad (MonadPlus, join, liftM2, mfilter)
+import Control.Monad (MonadPlus, liftM2, mfilter)
 import Data.List (nub, sortOn)
 import Data.Ratio ((%))
 
 import Hedgehog (MonadGen)
-import qualified Hedgehog.Gen as Gen
-import qualified Hedgehog.Range as Range
+import Hedgehog.Gen qualified as Gen
+import Hedgehog.Range qualified as Range
 
 import Test.Tasty.QuickCheck (
   Arbitrary,
@@ -32,11 +32,11 @@ import Test.Tasty.QuickCheck (
 import PlutusLedgerApi.V1
 
 import Data.ByteString (ByteString)
-import qualified Data.ByteString as BS
+import Data.ByteString qualified as BS
 import Data.ByteString.Internal (c2w)
 import Test.QuickCheck.Instances ()
 
-import qualified PlutusTx.AssocMap as PlutusMap
+import PlutusTx.AssocMap qualified as PlutusMap
 
 genInteger :: MonadGen g => g Integer
 genInteger = Gen.integral (Range.linear (-1_000_000_000) 1_000_000_000)
@@ -59,7 +59,7 @@ instance Arbitrary BuiltinByteString where
 instance Arbitrary CurrencySymbol where
   arbitrary =
     let arbitrary' =
-          join $ fmap (toBuiltin @ByteString) . bsOfLength <$> elements [0, 28]
+          ((fmap (toBuiltin @ByteString) . bsOfLength) =<< elements [0, 28])
      in CurrencySymbol <$> arbitrary'
 
 instance Arbitrary Value where
@@ -85,7 +85,7 @@ instance Arbitrary TokenName where
         <$> vectorOf
           ln
           ( oneof $
-              map
+              fmap
                 (fmap c2w)
                 [ choose ('a', 'f')
                 , choose ('A', 'F')
@@ -100,11 +100,11 @@ instance Arbitrary PubKeyHash where
           toBuiltin @ByteString <$> bsOfLength 28
      in PubKeyHash <$> arbitrary'
 
-instance Arbitrary ValidatorHash where
+instance Arbitrary ScriptHash where
   arbitrary =
     let arbitrary' =
           toBuiltin @ByteString <$> bsOfLength 28
-     in ValidatorHash <$> arbitrary'
+     in ScriptHash <$> arbitrary'
 
 instance Arbitrary Credential where
   arbitrary =

@@ -46,7 +46,7 @@ prop_leftInverse ::
   Gen h ->
   Property
 prop_leftInverse l r arg =
-  prop_haskEquiv @e @( 'TotalFun) (id @h) (plam $ \x -> l #$ r # x) (arg :* Nil)
+  prop_haskEquiv @e @TotalFun (id @h) (plam $ \x -> l #$ r # x) (arg :* Nil)
 
 {- |
   A Plutarch term that is a `PIsData` can be encoded to and decoded back to the
@@ -64,7 +64,7 @@ prop_dataRoundTrip ::
   Property
 prop_dataRoundTrip =
   prop_leftInverse
-    @( 'OnPEq)
+    @OnPEq
     @p
     @(PAsData p)
     @h

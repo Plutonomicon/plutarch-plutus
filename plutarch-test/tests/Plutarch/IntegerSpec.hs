@@ -45,7 +45,7 @@ fib = phoistAcyclic $
       $ pif
         (n #== 1)
         1
-        $ self # (n - 1) + self # (n - 2)
+      $ self # (n - 1) + self # (n - 2)
 
 uglyDouble :: Term s (PInteger :--> PInteger)
 uglyDouble = plam $ \n -> plet n $ \n1 -> plet n1 $ \n2 -> n2 + n2

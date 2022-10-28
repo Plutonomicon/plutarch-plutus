@@ -8,7 +8,7 @@ module Plutarch.Api.V1.Contexts (
   PScriptPurpose (PMinting, PSpending, PRewarding, PCertifying),
 ) where
 
-import qualified PlutusLedgerApi.V1 as Plutus
+import PlutusLedgerApi.V1 qualified as Plutus
 
 import Plutarch.Api.V1.Address (
   PStakingCredential,

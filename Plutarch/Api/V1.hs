@@ -9,23 +9,15 @@ module Plutarch.Api.V1 (
   Scripts.PDatumHash (PDatumHash),
   Scripts.PRedeemer (PRedeemer),
   Scripts.PRedeemerHash (PRedeemerHash),
-  Scripts.PStakeValidatorHash (PStakeValidatorHash),
-  Scripts.PValidatorHash (PValidatorHash),
 
   -- ** Script Utils
-  validatorHash,
-  mintingPolicySymbol,
-  stakeValidatorHash,
   scriptHash,
   datumHash,
   redeemerHash,
   dataHash,
-  mkValidator,
-  mkStakeValidator,
-  mkMintingPolicy,
-  type PValidator,
-  type PMintingPolicy,
-  type PStakeValidator,
+  PValidator,
+  PStakeValidator,
+  PMintingPolicy,
 
   -- ** Value
   Value.PValue (PValue),
@@ -84,71 +76,36 @@ module Plutarch.Api.V1 (
 
 --------------------------------------------------------------------------------
 
-import qualified Plutarch.Api.V1.Address as Address
-import qualified Plutarch.Api.V1.AssocMap as AssocMap
-import qualified Plutarch.Api.V1.Contexts as Contexts
-import qualified Plutarch.Api.V1.Crypto as Crypto
-import qualified Plutarch.Api.V1.DCert as DCert
-import qualified Plutarch.Api.V1.Interval as Interval
-import qualified Plutarch.Api.V1.Maybe as Maybe
-import qualified Plutarch.Api.V1.Scripts as Scripts
-import qualified Plutarch.Api.V1.Time as Time
-import qualified Plutarch.Api.V1.Tuple as Tuple
-import qualified Plutarch.Api.V1.Tx as Tx
-import qualified Plutarch.Api.V1.Value as Value
+import Plutarch.Api.V1.Address qualified as Address
+import Plutarch.Api.V1.AssocMap qualified as AssocMap
+import Plutarch.Api.V1.Contexts qualified as Contexts
+import Plutarch.Api.V1.Crypto qualified as Crypto
+import Plutarch.Api.V1.DCert qualified as DCert
+import Plutarch.Api.V1.Interval qualified as Interval
+import Plutarch.Api.V1.Maybe qualified as Maybe
+import Plutarch.Api.V1.Scripts qualified as Scripts
+import Plutarch.Api.V1.Time qualified as Time
+import Plutarch.Api.V1.Tuple qualified as Tuple
+import Plutarch.Api.V1.Tx qualified as Tx
+import Plutarch.Api.V1.Value qualified as Value
+
+import Plutarch (POpaque, (:-->))
+import Plutarch.Builtin (PData)
+
+-- note about V2: This should there are no changes in Scripts or V1 itself that affect this module
+
+import Plutarch.Script qualified as Plutus
+import PlutusLedgerApi.V1 qualified as Plutus
+
+import Plutarch.Api.Internal.Hashing (hashData, hashScriptWithPrefix)
 
 import Data.Coerce (coerce)
 
--- note about V2: This should there are no changes in Scripts or V1 itself that affect this module
-import qualified PlutusLedgerApi.V1 as Plutus
-import qualified PlutusLedgerApi.V1.Scripts as Plutus
-
-import Plutarch (Config, compile)
-import Plutarch.Api.Internal.Hashing (hashData, hashScriptWithPrefix)
-import Plutarch.Api.V1.Contexts (PScriptContext)
-import Plutarch.Prelude
-
-import qualified Data.Text as T
-import GHC.Stack (HasCallStack)
-
 -- On-chain Script Types
-
--- | a Validator Term
-type PValidator = PData :--> PData :--> PScriptContext :--> POpaque
-
--- | a MintingPolicy Term
-type PMintingPolicy = PData :--> PScriptContext :--> POpaque
-
--- | a StakeValidator Term
-type PStakeValidator = PData :--> PScriptContext :--> POpaque
-
--- | Compile a Validator
-mkValidator :: HasCallStack => Config -> ClosedTerm PValidator -> Plutus.Validator
-mkValidator config s = Plutus.Validator $ either (error . T.unpack) id $ compile config s
-
--- | Compile a MintingPolicy
-mkMintingPolicy :: HasCallStack => Config -> ClosedTerm PMintingPolicy -> Plutus.MintingPolicy
-mkMintingPolicy config s = Plutus.MintingPolicy $ either (error . T.unpack) id $ compile config s
-
--- | Compile a StakeValidator
-mkStakeValidator :: HasCallStack => Config -> ClosedTerm PStakeValidator -> Plutus.StakeValidator
-mkStakeValidator config s = Plutus.StakeValidator $ either (error . T.unpack) id $ compile config s
 
 -- | Hash a Script, with the correct prefix for Plutus V1
 scriptHash :: Plutus.Script -> Plutus.ScriptHash
 scriptHash = hashScriptWithPrefix "\x01"
-
--- | Hash a Validator, with the correct prefix for Plutus V1
-validatorHash :: Plutus.Validator -> Plutus.ValidatorHash
-validatorHash = coerce scriptHash
-
--- | Hash a MintingPolicy, with the correct prefix for Plutus V1
-mintingPolicySymbol :: Plutus.MintingPolicy -> Plutus.CurrencySymbol
-mintingPolicySymbol = coerce scriptHash
-
--- | Hash a StakeValidator, with the correct prefix for Plutus V1
-stakeValidatorHash :: Plutus.StakeValidator -> Plutus.StakeValidatorHash
-stakeValidatorHash = coerce scriptHash
 
 -- | Hash a Datum.
 datumHash :: Plutus.Datum -> Plutus.DatumHash
@@ -161,3 +118,12 @@ redeemerHash = coerce . dataHash
 -- | Hash the data encoded representation of given argument.
 dataHash :: Plutus.ToData a => a -> Plutus.BuiltinByteString
 dataHash = hashData . Plutus.toData
+
+-- | a Validator Term
+type PValidator = PData :--> PData :--> Contexts.PScriptContext :--> POpaque
+
+-- | a MintingPolicy Term
+type PMintingPolicy = PData :--> Contexts.PScriptContext :--> POpaque
+
+-- | a StakeValidator Term
+type PStakeValidator = PData :--> Contexts.PScriptContext :--> POpaque

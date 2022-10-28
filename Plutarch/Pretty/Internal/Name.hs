@@ -9,14 +9,14 @@ import Control.Monad.State (
   modify',
  )
 import Data.Functor (($>))
-import qualified Data.Set as Set
+import Data.Set qualified as Set
 import Data.Text (Text)
-import qualified Data.Text as Txt
+import Data.Text qualified as Txt
 import Data.Traversable (for)
 
 import System.Random.Stateful (randomRM, uniformRM)
 
-import qualified PlutusCore as PLC
+import PlutusCore qualified as PLC
 import UntypedPlutusCore (
   DeBruijn (DeBruijn),
   DefaultFun,
@@ -64,4 +64,4 @@ freshVarName = do
       chosenIx <- lift . lift $ uniformRM (0, Txt.length x - 1) stGen
       pure $ Txt.index x chosenIx
     starterChars = Txt.pack ['a' .. 'z']
-    chars = Txt.append starterChars . Txt.pack $ ['A' .. 'Z'] ++ ['0' .. '9'] ++ ['_', '\'']
+    chars = Txt.append starterChars . Txt.pack $ (['A' .. 'Z'] <> (['0' .. '9'] <> ['_', '\'']))

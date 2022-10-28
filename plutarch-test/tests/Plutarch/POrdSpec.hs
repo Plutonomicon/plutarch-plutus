@@ -9,11 +9,11 @@ import PlutusLedgerApi.V1 (
   Address (Address),
   Credential (PubKeyCredential, ScriptCredential),
   PubKeyHash (PubKeyHash),
+  ScriptHash (ScriptHash),
   StakingCredential (StakingHash, StakingPtr),
-  ValidatorHash (ValidatorHash),
  )
-import qualified PlutusTx
-import qualified PlutusTx.Builtins as PlutusTx
+import PlutusTx qualified
+import PlutusTx.Builtins qualified as PlutusTx
 
 import Test.QuickCheck.Instances ()
 
@@ -75,10 +75,10 @@ spec = do
     ltWith f x y = do
       "true"
         @| (pconstant x `f` pconstant y)
-        @-> passert
+          @-> passert
       "false"
         @| (pconstant y `f` pconstant x)
-        @-> passertNot
+          @-> passertNot
     lteWith ::
       PLift p =>
       (forall s. Term s p -> Term s p -> Term s PBool) ->
@@ -90,13 +90,13 @@ spec = do
         @\ do
           "eq"
             @| (pconstant x `f` pconstant x)
-            @-> passert
+              @-> passert
           "less"
             @| (pconstant x `f` pconstant y)
-            @-> passert
+              @-> passert
       "false"
         @| (pconstant y `f` pconstant x)
-        @-> passertNot
+          @-> passertNot
 
 propertySet ::
   forall p.
@@ -110,13 +110,16 @@ propertySet ::
   Spec
 propertySet typeName' = do
   describe typeName' $ do
-    let typeName = '(' : typeName' ++ ")"
+    let typeName = '(' : (typeName' <> ")")
     specify ("(#<) @" <> typeName <> " ≡ (<) @" <> typeName) $
-      property $ pltIso @p
+      property $
+        pltIso @p
     specify ("(#<=) @" <> typeName <> " ≡ (<=) @" <> typeName) $
-      property $ plteIso @p
+      property $
+        plteIso @p
     specify ("(#==) @" <> typeName <> " ≡ (==) @" <> typeName) $
-      property $ peqIso @p
+      property $
+        peqIso @p
 
 pltIso :: forall p. (PLift p, POrd p, Ord (PLifted p)) => PLifted p -> PLifted p -> IO ()
 pltIso a b = plift (pconstant @p a #< pconstant b) `shouldBe` (a < b)
@@ -146,7 +149,7 @@ instance Arbitrary Address' where
       arbitraryCred =
         oneof
           [ PubKeyCredential . PubKeyHash . PlutusTx.toBuiltin @ByteString <$> arbitrary
-          , ScriptCredential . ValidatorHash . PlutusTx.toBuiltin @ByteString <$> arbitrary
+          , ScriptCredential . ScriptHash . PlutusTx.toBuiltin @ByteString <$> arbitrary
           ]
       arbitraryStakingCred =
         oneof
@@ -210,8 +213,10 @@ ltTrip trip1 trip2 = unTermCont $ do
   x <- tcont . plet . pfromData $ getField @"x" a
   x' <- tcont . plet . pfromData $ getField @"x" b
   pure $
-    x #< x'
-      #|| ( x #== x'
+    x
+      #< x'
+      #|| ( x
+              #== x'
               #&& unTermCont
                 ( do
                     y <- tcont . plet . pfromData $ getField @"y" a
@@ -228,8 +233,10 @@ lteTrip trip1 trip2 = unTermCont $ do
   x <- tcont . plet . pfromData $ getField @"x" a
   x' <- tcont . plet . pfromData $ getField @"x" b
   pure $
-    x #< x'
-      #|| ( x #== x'
+    x
+      #< x'
+      #|| ( x
+              #== x'
               #&& unTermCont
                 ( do
                     y <- tcont . plet . pfromData $ getField @"y" a

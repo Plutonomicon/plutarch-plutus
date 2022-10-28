@@ -5,15 +5,14 @@ module Plutarch.Test.ListSyntax (
   listSyntaxAddSubList,
 ) where
 
-import Control.Monad (void)
 import Control.Monad.Writer (Writer, execWriter, tell)
+import Data.Foldable (for_)
 
 listSyntaxAddSubList :: Semigroup k => k -> ListSyntax (k, v) -> ListSyntax (k, v)
 listSyntaxAddSubList name m =
-  void $
-    flip traverse (runListSyntax m) $ \(k, v) -> do
-      let k' = name <> k
-      listSyntaxAdd (k', v)
+  for_ (runListSyntax m) $ \(k, v) -> do
+    let k' = name <> k
+    listSyntaxAdd (k', v)
 
 newtype ListSyntaxM elem a = ListSyntax {unListSyntax :: Writer [elem] a}
   deriving newtype (Functor, Applicative, Monad)

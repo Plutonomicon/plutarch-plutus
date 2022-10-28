@@ -13,9 +13,9 @@ import Plutarch.Api.V1 (
   PScriptPurpose (PSpending),
   PStakingCredential,
  )
-import qualified Plutarch.ApiSpec as ApiSpec
+import Plutarch.ApiSpec qualified as ApiSpec
 import Plutarch.List (pconvertLists)
-import qualified Plutarch.Monadic as P
+import Plutarch.Monadic qualified as P
 import Plutarch.Prelude
 import Plutarch.Test
 import PlutusLedgerApi.V1

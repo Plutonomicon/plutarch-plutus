@@ -13,7 +13,7 @@ module Plutarch.ByteString (
 ) where
 
 import Data.ByteString (ByteString)
-import qualified Data.ByteString as BS
+import Data.ByteString qualified as BS
 import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Generics (Generic)
@@ -32,10 +32,10 @@ import Plutarch.Lift (
   pconstant,
  )
 import Plutarch.Unsafe (punsafeBuiltin)
-import qualified PlutusCore as PLC
+import PlutusCore qualified as PLC
 
 -- | Plutus 'BuiltinByteString'
-data PByteString s = PByteString (Term s POpaque)
+newtype PByteString s = PByteString (Term s POpaque)
   deriving stock (Generic)
   deriving anyclass (PlutusType)
 
@@ -116,4 +116,4 @@ hexDigitToWord8 = f . toLower
     f 'd' = 13
     f 'e' = 14
     f 'f' = 15
-    f c = error $ "InvalidHexDigit " ++ [c]
+    f c = error ("InvalidHexDigit " <> [c])

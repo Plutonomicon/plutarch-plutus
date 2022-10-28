@@ -11,9 +11,9 @@ import Plutarch.Internal (Term)
 newtype NoReduce a = NoReduce a
 
 type family GReduce (def :: Type) (rep :: Type -> Type) :: Type where
--- newtype
+  -- newtype
   GReduce _ (D1 ( 'MetaData _ _ _ 'True) (C1 _ (S1 _ (Rec0 (x :: Type))))) = Reduce x
--- data
+  -- data
   GReduce def _ = def
 
 {- | This class provides a work-around for partially applying
