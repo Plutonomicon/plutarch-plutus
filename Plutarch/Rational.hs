@@ -47,7 +47,7 @@ import Plutarch.Builtin (
   pforgetData,
   pfromDataImpl,
  )
-import Plutarch.Integer (PInteger, pdiv, pmod)
+import Plutarch.Integer (PInteger, PIntegral (pquot), pdiv, pmod)
 import Plutarch.Lift (pconstant)
 import Plutarch.List (pcons, phead, pnil, ptail)
 import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
@@ -311,16 +311,9 @@ pround = phoistAcyclic $
 
 ptruncate :: Term s (PRational :--> PInteger)
 ptruncate = phoistAcyclic $
-  plam $ \x -> unTermCont $ do
-    PRational a' b' <- tcont $ pmatch x
-    a <- tcont $ plet a'
-    b <- tcont $ plet b'
-    q <- tcont . plet $ pdiv # a # pto b
-    pure $
-      pif
-        (0 #<= a)
-        q
-        (q + pif (pmod # a # pto b #== 0) 0 1)
+  plam $ \x ->
+    pmatch x $ \(PRational a b) ->
+      pquot # a # pto b
 
 pproperFraction :: Term s (PRational :--> PPair PInteger PRational)
 pproperFraction = phoistAcyclic $
