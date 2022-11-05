@@ -1,3 +1,15 @@
+<details>
+<summary> imports </summary>
+<p>
+
+```haskell
+{-# LANGUAGE OverloadedStrings #-}
+module Plutarch.Docs.PlutarchConstants (x, s, i, xd, hexs, justTerm, hPJustPInteger) where 
+import Plutarch.Prelude
+```
+
+</p>
+</details>
 # Plutarch Constant `Term`s
 
 When evaluated, a constant Plutarch `Term` will always yield the same result. There are several ways of building constant `Term`s:
@@ -32,9 +44,7 @@ PConstanted (PLifted p) ~ p
 
 For example:
 
-```hs
-import Plutarch.Prelude
-
+```haskell
 -- | A Plutarch level boolean. Its value is "True", in this case.
 x :: Term s PBool
 x = pconstant True
@@ -44,12 +54,10 @@ The familiar `Bool` has a `PConstant` instance and it corresponds to `PBool` (wh
 
 You can also directly create a [`PAsData`](./../../Types/PAsData.md) term using `pconstantData`:
 
-```hs
-import Plutarch.Prelude
-
+```haskell
 -- | A Plutarch level boolean encoded as `Data`.
-x :: Term s (PAsData PBool)
-x = pconstantData True
+xd :: Term s (PAsData PBool)
+xd = pconstantData True
 ```
 
 ## Dynamic building of constant `Term`s with `pcon`
@@ -67,7 +75,7 @@ data PMaybe (a :: PType) (s :: S)
 and the following kind:
 
 ```hs
-ghci> :k PMaybe
+>>> :k PMaybe
 PMaybe :: PType -> S -> Type
 ```
 
@@ -78,16 +86,15 @@ Let's dissect what this means.
 
 Now suppose that we want to carry around a constant `Term` in a Plutarch script that can be either `PJust a` or `PNothing`. To do so, we need a function to go from `PJust a` (which we _can_ instantiate as a Haskell value, unlike `PInteger`) to a `Term s (PMaybe a)`. This function is `pcon`:
 
-```hs
-pcon :: a s -> Term s a
-
+```haskell
+-- pcon :: a s -> Term s a
 -- For example:
 
-x :: Term s PInteger
-x = pconstant 3
+x' :: Term s PInteger
+x' = pconstant 3
 
 justTerm :: Term s (PMaybe PInteger)
-justTerm = pcon (PJust x)
+justTerm = pcon (PJust x')
 ```
 
 These types deserve some explaination.
@@ -99,7 +106,7 @@ That is, if we ask `justTerm` what it will return when evaluated, it responds, "
 
 If you don't want to pretend to not know `x` during compile time, another example may be:
 
-```hs 
+```haskell
 hPJustPInteger :: Term s PInteger -> Term s (PMaybe PInteger)
 hPJustPInteger x = pcon (PJust x)
 ```
@@ -110,30 +117,23 @@ The `pcon` function is a method of the [`PCon` typeclass](./../../Typeclasses/Pl
 
 `pconstant` and `pcon` are the long-form ways of building constants. Specific constant Haskell literals are overloaded to help construct Plutarch constants. We provide two examples below.
 
-```hs
-{-# LANGUAGE OverloadedStrings #-}
-
-import Plutarch.Prelude
-
+```haskell
 -- | A Plutarch level integer. Its value is 1, in this case.
-x :: Term s PInteger
-x = 1
+i :: Term s PInteger
+i = 1
 
 -- | A Plutarch level string (this is actually `Text`). Its value is "foobar", in this case.
-y :: Term s PString
-y = "foobar"
+s :: Term s PString
+s = "foobar"
 ```
 
 ## Helper functions
 
 Finally, Plutarch provides helper functions to build certain types of constants:
 
-```hs
-import qualified Data.ByteString as BS
-import Plutarch.Prelude
-
+```haskell
 -- | A plutarch level bytestring. Its value is [65], in this case.
-x :: Term s PByteString
-x = phexByteStr "41"
+hexs :: Term s PByteString
+hexs = phexByteStr "41"
 -- ^ 'phexByteStr' interprets a hex string as a bytestring. 0x41 is 65 - of course.
 ```

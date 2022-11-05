@@ -1,3 +1,14 @@
+<details>
+<summary> imports </summary>
+<p>
+
+```haskell
+module Plutarch.Docs.Introduction (hf) where 
+import Plutarch.Prelude
+```
+
+</p>
+</details>
 > Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high-quality documentation for Plutarch users!
 
 # Overview
@@ -64,12 +75,13 @@ Further, you may notice two general categories of functions in Plutarch: "Haskel
 functions _as_ lambda terms. By convention, we will prefix the Haskell-level functions with `h` and the Plutarch-level lambdas
 with `p`, for example
 
-```hs
+```haskell
 -- This example is listed here as a preview; the unfamiliar parts will
 -- be detailed below.
 
 -- A Plutarch-level lambda term
 pf :: Term s (a :--> b :--> c)
+pf = undefined
 
 -- Recovering a Haskell level function from a Plutarch level function
 hf :: Term s a -> Term s b -> Term s c

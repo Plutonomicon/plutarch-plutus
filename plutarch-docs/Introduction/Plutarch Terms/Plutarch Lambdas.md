@@ -1,3 +1,15 @@
+<details>
+<summary> imports </summary>
+<p>
+
+```haskell
+{-# LANGUAGE OverloadedStrings #-}
+module Plutarch.Docs.PlutarchLambdas (pid, pid') where 
+import Plutarch.Prelude
+```
+
+</p>
+</details>
 # Lambdas; Plutarch-level Function `Term`s.
 
 Lambdas are the second form of Plutarch `Term`s. Lambda terms are represented at the type level by the infix type constructor `:-->`; a value of type `Term s (a :--> b)` evaluates to a function that takes a value of type `a` and produces a value of type `b`.
@@ -10,7 +22,7 @@ plam :: (Term s a -> Term s b) -> Term s (a :--> b)
 
 To create the identity function as a Plutarch lambda, we would thus use:
 
-```hs
+```haskell
 -- | Haskell-level `id` function specialized to the `Term s a` type``
 termId :: Term s a -> Term s a
 termId x = x

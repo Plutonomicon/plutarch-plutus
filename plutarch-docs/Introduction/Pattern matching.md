@@ -1,3 +1,14 @@
+<details>
+<summary> imports </summary>
+<p>
+
+```haskell
+module Plutarch.Docs.PatternMatching (pisJust) where 
+import Plutarch.Prelude
+```
+
+</p>
+</details>
 # Pattern matching constant `Term`s with `pmatch`.
 
 We've shown how to construct `Term`s out of the data constructors of types with kind `PType` (i.e., `pcon . PJust`). Next, it is natural that we may want to pattern match on `Term` with a known `PType` tag (i.e., of a value with type `Term s (PMaybe a)`) to produce another `Term` (i.e., depending on whether the value matches `PJust _` or `Nothing`.)
@@ -5,12 +16,12 @@ We've shown how to construct `Term`s out of the data constructors of types with 
 The function that we need is a method of the `PMatch` typeclass. For the time being, we will ignore the details of implementation and only look at the type:
 
 ```hs
-pmatch :: forall (a :: PType) (s :: S) (b :: PType).
-    PMatch a =>               {- We have two constraints on the type `a`:
-                                  it has a `PMatch` instance. -}
-    Term s a ->               -- Given a `Term` tagged with `a`...
-    (a s -> Term s b) ->      -- ...and a function from `a s` to a Term s b`...
-    Term s b                  -- ...produce a `Term s b`
+pmatch :: 
+  forall (a :: PType) (b :: PType) (s :: S).
+  ( PlutusType a       -- `a` has to be a `PlutusType` instance. 
+  ) => Term s a        -- Given a `Term` tagged with `a` and
+  -> (a s -> Term s b) -- a continuation from `a s` to a Term s b`, 
+  -> Term s b          -- produce a `Term s b`.
 ```
 
 The annotation of the second argument deserves some focus; the second argument has its type displayed as `(a s -> Term s b)`. First, recall that `a` is declared to have kind `PType`, and `PType` is a kind synonym for `S -> Type`. Thus, since `s` has kind `S`, we have that `a s` has the _kind_ `Type`. That is, it is a regular Haskell type.
@@ -19,15 +30,15 @@ What this means, in practice, is that `pmatch` matches on the possible values of
 
 We have already introduced a type with kind `PType` suitable for branching: `PMaybe`. Here is an example:
 
-```hs
-{- | This function takes in a Haskell-level `PMaybe` value (specifically, _not_ a `Term`)
+```haskell
+{- | This function takes in a Haskell-level `PMaybe s` value (specifically, _not_ a `Term`)
      and returns a `Term` depending on the Haskell-level pattern match on `PMaybe`s data
      constructors.
 -}
 continuation :: PMaybe a s -> Term s PBool
-continuation x = case x of
-  PJust _ -> pconstant True
-  PNothing -> pconstant False
+continuation = \case
+  PJust _ -> pcon PTrue
+  PNothing -> pcon PFalse
 
 {- | A Haskell-level `isJust` on Plutarch `Term`s. `pmatch` can match on
      the possibilities of `PJust _` or `PNothing` being the result of an evaluated

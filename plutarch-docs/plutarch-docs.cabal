@@ -70,6 +70,10 @@ executable plutarch-docs
     Plutarch.Docs.DataAndScottEncoding
     Plutarch.Docs.DelayAndForce
     Plutarch.Docs.Hoisting
+    Plutarch.Docs.Introduction
+    Plutarch.Docs.PatternMatching
+    Plutarch.Docs.PlutarchConstants
+    Plutarch.Docs.PlutarchLambdas
     Plutarch.Docs.PMatch
     Plutarch.Docs.Run
     Plutarch.Docs.ValidatorExample
