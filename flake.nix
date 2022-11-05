@@ -18,7 +18,7 @@
     {
       imports = [
         (tooling.lib.mkHaskellFlakeModule1 {
-          docsPath = ./docs;
+          docsPath = ./plutarch-docs;
           toHaddock = [ "plutarch" "plutus-core" "plutus-tx" "plutus-ledger-api" ];
           project.src = ./.;
           project.modules = [
@@ -29,7 +29,7 @@
                 plutarch-docs.components.exes.plutarch-docs.build-tools = [
                   config.hsPkgs.markdown-unlit
                 ];
-                plutarch-docs.components.exes.plutarch-test.build-tools = [
+                plutarch-test.components.exes.plutarch-test.build-tools = [
                   config.hsPkgs.hspec-discover
                 ];
               };
