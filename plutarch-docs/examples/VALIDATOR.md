@@ -1,3 +1,26 @@
+<details>
+<summary> imports </summary>
+<p>
+
+```haskell
+{-# LANGUAGE QualifiedDo #-}
+{-# LANGUAGE OverloadedRecordDot #-}
+module Plutarch.Docs.ValidatorExample (alwaysSucceeds, checkSignatory, res', res, alwaysFails) where 
+
+import Plutarch.Prelude
+import Plutarch.Api.V1 (PDatum, PRedeemer, PScriptContext)
+import Plutarch.Api.V1.Crypto (PPubKeyHash)
+import Plutarch.Api.V1.Contexts (PScriptPurpose(PSpending))
+import Plutarch.Docs.Run (evalWithArgsT)
+import Plutarch.Script (Script)
+import qualified PlutusTx
+import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
+import qualified Plutarch.Monadic as P
+import Data.Text (Text)
+```
+
+</p>
+</details>
 Examples of validators and minting policies written in Plutarch.
 
 > Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high quality documentation for Plutarch users!
@@ -11,60 +34,43 @@ Examples of validators and minting policies written in Plutarch.
 
 # Validator that always succeeds
 
-```hs
-import Plutarch.Prelude
-import Plutarch.Api.V1.Contexts
-import Plutarch.Api.V1.Scripts
-
+```haskell
 alwaysSucceeds :: Term s (PAsData PDatum :--> PAsData PRedeemer :--> PAsData PScriptContext :--> PUnit)
-alwaysSucceeds = plam $ \datm redm ctx -> pconstant ()
+alwaysSucceeds = plam $ \_datm _redm _ctx -> pconstant ()
 ```
 
-All the arguments are ignored. So we use the generic `PDatum` and `PRedeemer` types.
+All the arguments are ignored. 
 
 Execution:
 
-```hs
-import qualified PlutusTx
-
-> alwaysSucceeds `evalWithArgsT` [PlutusTx.toData (), PlutusTx.toData (), PlutusTx.toData ()]
-Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf unit ()))))
+```haskell
+res' :: Either Text (Script, ExBudget, [Text])
+res' = alwaysSucceeds `evalWithArgsT` [PlutusTx.toData (), PlutusTx.toData (), PlutusTx.toData ()]
+-- >>> res'
+-- Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf unit ()))))
 ```
 
 # Validator that always fails
 
-```hs
-import Plutarch.Prelude
-import Plutarch.Api.V1.Contexts
-import Plutarch.Api.V1.Scripts
-
+```haskell
 alwaysFails :: Term s (PAsData PDatum :--> PAsData PRedeemer :--> PAsData PScriptContext :--> PUnit)
-alwaysFails = plam $ \datm redm ctx -> perror
+alwaysFails = plam $ \_datm _redm _ctx -> perror
 ```
 
 Similar to the example above.
 
 Execution:
 
-```hs
-import qualified PlutusTx
-
-> alwaysFails `evalWithArgsT` [PlutusTx.toData (), PlutusTx.toData (), PlutusTx.toData ()]
-Left (EvaluationError [] "(CekEvaluationFailure,Nothing)")
+```haskell
+res :: Either Text (Script, ExBudget, [Text])
+res = alwaysFails `evalWithArgsT` [PlutusTx.toData (), PlutusTx.toData (), PlutusTx.toData ()]
+-- >>> res 
+-- Left (EvaluationError [] "(CekEvaluationFailure,Nothing)")
 ```
 
 # Validator that checks whether a value is present within signatories
 
-```hs
--- NOTE: REQUIRES GHC 9!
-{-# LANGUAGE QualifiedDo #-}
-{-# LANGUAGE OverloadedRecordDot #-}
-
-import Plutarch.Prelude
-import Plutarch.Api.V1.Contexts
-import Plutarch.Api.V1.Crypto
-import Plutarch.Api.V1.Scripts
-import qualified Plutarch.Monadic as P
+```haskell
 
 checkSignatory :: Term s (PPubKeyHash :--> PAsData PDatum :--> PAsData PRedeemer :--> PAsData PScriptContext :--> PUnit)
 checkSignatory = plam $ \ph _ _ ctx' -> P.do

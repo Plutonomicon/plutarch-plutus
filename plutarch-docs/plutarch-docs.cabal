@@ -66,14 +66,27 @@ executable plutarch-docs
   default-language: GHC2021
   main-is:          Main.lhs
   other-modules:
-    DataAndScottEncoding
-    Hoisting
-    PMatch
+    Plutarch.Docs.BasicExample
+    Plutarch.Docs.DataAndScottEncoding
+    Plutarch.Docs.DelayAndForce
+    Plutarch.Docs.Hoisting
+    Plutarch.Docs.PMatch
+    Plutarch.Docs.Run
+    Plutarch.Docs.ValidatorExample
 
   hs-source-dirs:   . compilable
   ghc-options:      -pgmL markdown-unlit
   build-depends:
     , base
+    , bytestring
+    , cborg
+    , data-default
     , generics-sop
+    , lens
     , markdown-unlit
     , plutarch
+    , plutus-core
+    , plutus-ledger-api
+    , plutus-tx
+    , serialise
+    , text

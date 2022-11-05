@@ -1,3 +1,15 @@
+<details>
+<summary> imports </summary>
+<p>
+
+```haskell
+module Plutarch.Docs.BasicExample (fib) where 
+
+import Plutarch.Prelude
+```
+
+</p>
+</details>
 Basic examples demonstrating Plutarch usage.
 
 > Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high quality documentation for Plutarch users!
@@ -6,9 +18,7 @@ Basic examples demonstrating Plutarch usage.
 
 # Fibonacci number at given index
 
-```hs
-import Plutarch.Prelude
-
+```haskell
 fib :: Term s (PInteger :--> PInteger)
 fib = phoistAcyclic $
   pfix #$ plam $ \self n ->
@@ -20,9 +30,6 @@ fib = phoistAcyclic $
         1
         $ self # (n - 1) + self # (n - 2)
 ```
-
-from [examples](https://github.com/Plutonomicon/plutarch/tree/master/plutarch-test).
-
 Execution:
 
 ```hs

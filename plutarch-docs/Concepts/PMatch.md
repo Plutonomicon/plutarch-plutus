@@ -1,7 +1,7 @@
 <details>
-<summary>
-imports
-</summary>
+<summary> imports </summary>
+<p>
+
 ```haskell
 {-# LANGUAGE DeriveAnyClass                #-}
 {-# LANGUAGE DeriveGeneric                 #-}
@@ -13,7 +13,7 @@ imports
 {-# LANGUAGE TypeFamilies                  #-}
 {-# LANGUAGE TypeOperators                 #-}
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
-module PMatch (Tree(..), swap, TreeCode) where 
+module Plutarch.Docs.PMatch (Tree(..), swap, TreeCode) where 
 import Plutarch.Prelude
 import qualified GHC.Generics as GHC
 import qualified Generics.SOP as SOP
@@ -21,6 +21,8 @@ import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Builtin (pforgetData, pasConstr, pconstrBuiltin)
 import Plutarch.Unsafe (punsafeCoerce)
 ```
+
+</p>
 </details>
 # PMatch introduction
 

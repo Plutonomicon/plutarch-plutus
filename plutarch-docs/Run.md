@@ -1,3 +1,24 @@
+<details>
+<summary> imports </summary>
+<p>
+
+```haskell
+module Plutarch.Docs.Run (applyArguments, evalT, evalSerialize, evalWithArgsT, evalWithArgsT') where 
+import Data.Bifunctor (first)
+import Data.ByteString.Short (ShortByteString)
+import Data.Default (def)
+import Data.Text (Text, pack)
+import Plutarch (ClosedTerm, compile)
+import Plutarch.Script (Script (Script, unScript), serialiseScript)
+import Plutarch.Evaluate (evalScript)
+import PlutusLedgerApi.V1 (Data, ExBudget)
+import PlutusCore.MkPlc (mkIterApp, mkConstant)
+import UntypedPlutusCore (DeBruijn, DefaultFun, DefaultUni, Program, progTerm)
+import Control.Lens.Combinators (over)
+```
+
+</p>
+</details>
 This document describes how to compile and run Plutarch - whether for on chain deployment or off chain testing.
 
 > Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high quality documentation for Plutarch users!
@@ -82,26 +103,14 @@ You can compile a Plutarch term using `compile` (from `Plutarch` module), making
 I often use these helper functions to test Plutarch quickly:
 
 ```haskell
-module Eval (evalT, evalSerialize, evalWithArgsT, evalWithArgsT') where
+applyArguments :: Script -> [Data] -> Script
+applyArguments (Script p) args =
+    let termArgs = mkConstant () <$> args
+        applied t = mkIterApp () t termArgs
+    in Script $ over progTerm applied p
 
-import qualified Codec.CBOR.Write as Write
-import Codec.Serialise (Serialise, encode)
-import Data.Bifunctor (first)
-import qualified Data.ByteString.Base16 as Base16
-import Data.Default (def)
-import Data.Text (Text, pack)
-import qualified Data.Text.Encoding as TE
-import Plutarch (ClosedTerm, compile, defaultConfig)
-import Plutarch.Evaluate (evalScript)
-import PlutusLedgerApi.V1 (Data, ExBudget)
-import PlutusLedgerApi.V1.Scripts (Script (unScript), applyArguments)
-import UntypedPlutusCore (DeBruijn, DefaultFun, DefaultUni, Program)
-
-evalSerialize :: ClosedTerm a -> Either Text Text
-evalSerialize x = encodeSerialise . (\(a, _, _) -> a) <$> evalT x
-  where
-    encodeSerialise :: Serialise a => a -> Text
-    encodeSerialise = TE.decodeUtf8 . Base16.encode . Write.toStrictByteString . encode
+evalSerialize :: ClosedTerm a -> Either Text ShortByteString
+evalSerialize x = serialiseScript . (\(a, _, _) -> a) <$> evalT x
 
 evalT :: ClosedTerm a -> Either Text (Script, ExBudget, [Text])
 evalT x = evalWithArgsT x []

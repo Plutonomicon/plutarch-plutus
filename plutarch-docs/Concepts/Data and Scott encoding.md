@@ -1,11 +1,17 @@
 <details>
-<summary>
-imports
-</summary>
+<summary> imports </summary>
+<p>
+
 ```haskell
-module DataAndScottEncoding (nothing, just, foo) where 
+{-# LANGUAGE RankNTypes #-}
+module Plutarch.Docs.DataAndScottEncoding (nothing, just, foo) where 
+
+import Prelude (Integer, (+))
 ```
+
+</p>
 </details>
+
 # Data encoding and Scott encoding
 
 In Plutus Core, there are really two (conflicting) ways to represent non-trivial ADTs: [`Constr`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:Data) data encoding, or Scott encoding. You should use only one of these representations for your non-trivial types.
@@ -47,10 +53,6 @@ Whereas `Nothing` would be represented as this function:
 We covered construction. What about usage/deconstruction? That's also just as simple. Let's say you have a function, `foo :: Maybe Integer -> Integer`, it takes in a Scott encoded `Maybe Integer`, and adds `42` to its `Just` value. If it's `Nothing`, it just returns `0`.
 
 ```haskell
-{-# LANGUAGE RankNTypes #-}
-
-import Prelude (Integer, (+))
-
 type Maybe a = forall b. (a -> b) -> b -> b
 
 just :: a -> Maybe a

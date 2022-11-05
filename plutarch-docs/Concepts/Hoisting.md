@@ -1,13 +1,15 @@
 <details>
-<summary>
-imports
-</summary>
+<summary> imports </summary>
+<p>
+
 ```haskell
-module Hoisting (hor, (#||)) where 
+module Plutarch.Docs.Hoisting (hor, (#||)) where 
 
 import Plutarch.Prelude hiding ((#||))
 import Plutarch.Bool (pif')
 ```
+
+</p>
 </details>
 # Hoisting, metaprogramming, and fundamentals
 

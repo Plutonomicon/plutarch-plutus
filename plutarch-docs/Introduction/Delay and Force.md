@@ -1,6 +1,18 @@
+<details>
+<summary> imports </summary>
+<p>
+
+```haskell
+module Plutarch.Docs.DelayAndForce (hif, pif') where 
+import Plutarch.Prelude
+import Plutarch.Bool (pif')
+```
+
+</p>
+</details>
 # Strictness and Laziness; Delayed Terms and Forcing
 
-Plutarch, like UPLC, is strict by default; this is in contrast to Haskell, which is nonstrict. In practice, this means that calling a function in Plutarch evaluates _all_ arguments to the Plutarch lambda `Term` beforehand.
+Plutarch, like UPLC, is strict by default; this is in contrast to Haskell, which is lazy. In practice, this means that calling a function in Plutarch evaluates _all_ arguments to the Plutarch lambda `Term` beforehand.
 
 > Note: the below example does not correspond precisely to the implementation of `pif` or `pif'`; it is for didactic purposes only
 
@@ -31,7 +43,7 @@ pforce :: Term s (PDelayed a) -> Term s a
 
 Thus, if we wanted a lazy `pif`, we could do the following:
 
-```hs
+```haskell
 -- | Utilizing Haskell level functions with `pdelay` and `pforce` to have lazy wrapper around `pif`.
 hif :: Term s PBool -> Term s a -> Term s a -> Term s a
 hif cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay whenFalse
