@@ -1927,16 +1927,15 @@
         "plutus": "plutus"
       },
       "locked": {
-        "lastModified": 1666902999,
-        "narHash": "sha256-SEnfqMx+34jQ0docFibV15zOYwXm0a6Tfvu4MyUQxyw=",
+        "lastModified": 1666903620,
+        "narHash": "sha256-SXiO1YfXxm+BM9pXvBaq+ZZwu3KzVuSaj3VkPCLDZJw=",
         "owner": "mlabs-haskell",
         "repo": "mlabs-tooling.nix",
-        "rev": "56c8b9799a5b21399a4fd5b3c17291d940544aa1",
+        "rev": "38e004af21b23d91f2be59c4451bdacab3840882",
         "type": "github"
       },
       "original": {
         "owner": "mlabs-haskell",
-        "ref": "las/work",
         "repo": "mlabs-tooling.nix",
         "type": "github"
       }

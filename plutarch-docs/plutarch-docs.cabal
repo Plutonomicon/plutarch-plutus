@@ -1,0 +1,79 @@
+cabal-version: 3.6
+name:          plutarch-docs
+version:       1.3.0
+build-type:    Simple
+
+common c
+  default-language:   GHC2021
+  default-extensions:
+    NoFlexibleInstances
+    NoMonomorphismRestriction
+    NoStarIsType
+    BlockArguments
+    DataKinds
+    DefaultSignatures
+    DeriveAnyClass
+    DerivingStrategies
+    DerivingVia
+    DisambiguateRecordFields
+    DuplicateRecordFields
+    FunctionalDependencies
+    GADTs
+    ImpredicativeTypes
+    LambdaCase
+    LexicalNegation
+    LiberalTypeSynonyms
+    MonadComprehensions
+    MultiWayIf
+    NegativeLiterals
+    NondecreasingIndentation
+    NumDecimals
+    OverloadedLabels
+    OverloadedRecordDot
+    OverloadedStrings
+    PackageImports
+    PartialTypeSignatures
+    PatternSynonyms
+    QualifiedDo
+    QuantifiedConstraints
+    QuasiQuotes
+    RankNTypes
+    RecordWildCards
+    RecursiveDo
+    RoleAnnotations
+    TypeFamilies
+    TypeFamilyDependencies
+    UnicodeSyntax
+    UnliftedFFITypes
+    UnliftedNewtypes
+    ViewPatterns
+
+  ghc-options:
+    -Weverything -Wno-unused-do-bind -Wno-missing-kind-signatures
+    -Wno-partial-type-signatures -Werror -Wno-implicit-prelude
+    -Wno-name-shadowing -Wno-unsafe -Wno-missing-safe-haskell-mode
+    -Wno-missing-local-signatures -Wno-prepositive-qualified-module
+    -Wno-missing-import-lists -Wno-monomorphism-restriction
+    -Wno-all-missed-specializations -Wno-unrecognised-warning-flags
+    -Wno-unrecognised-pragmas -Wno-unticked-promoted-constructors
+    -fprint-equality-relations -fprint-explicit-kinds
+    -fprint-explicit-foralls -Wno-unused-packages
+
+library
+
+executable plutarch-docs
+  import:           c
+  default-language: GHC2021
+  main-is:          Main.lhs
+  other-modules:
+    DataAndScottEncoding
+    Hoisting
+    PMatch
+
+  hs-source-dirs:   . compilable
+  ghc-options:      -pgmL markdown-unlit
+  build-depends:
+    , base
+    , generics-sop
+    , markdown-unlit
+    , plutarch

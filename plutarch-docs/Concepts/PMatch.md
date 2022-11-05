@@ -1,3 +1,27 @@
+<details>
+<summary>
+imports
+</summary>
+```haskell
+{-# LANGUAGE DeriveAnyClass                #-}
+{-# LANGUAGE DeriveGeneric                 #-}
+{-# LANGUAGE DerivingStrategies            #-}
+{-# LANGUAGE LambdaCase                    #-}
+{-# LANGUAGE DataKinds                     #-}
+{-# LANGUAGE PartialTypeSignatures         #-}
+{-# LANGUAGE ScopedTypeVariables           #-}
+{-# LANGUAGE TypeFamilies                  #-}
+{-# LANGUAGE TypeOperators                 #-}
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
+module PMatch (Tree(..), swap, TreeCode) where 
+import Plutarch.Prelude
+import qualified GHC.Generics as GHC
+import qualified Generics.SOP as SOP
+import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
+import Plutarch.Builtin (pforgetData, pasConstr, pconstrBuiltin)
+import Plutarch.Unsafe (punsafeCoerce)
+```
+</details>
 # PMatch introduction
 
 ## Prerequisites
@@ -22,6 +46,9 @@ Usually depends that given datatype derives `Generic` typeclass also or some oth
 
 ### generics-sop
 
+A really good introduction to `generics-sop` by the maker of the library, Andres Löh, can be found 
+[in this YouTube video recorded at the 2020 ZuriHac](https://www.youtube.com/watch?v=pwnrfREbhWY)
+
 Overall image of [generics-sop](https://github.com/well-typed/generics-sop) package.
 
 [Introduction by srid](https://github.com/srid/generics-sop-examples/blob/master/doc/draft.md).
@@ -32,8 +59,8 @@ Generic representation of ADTs as sum of products, which can be automatically de
 Some commonly used types/functions:
 
 ```
-I - Identity
-K - Constant
+I - Identity functor (`newtype I a = I a`)
+K - Constant functor (`newtype K a b = K a`)
 
 Z - zero (as in Peano numbers)
 S - successor (as in Peano numbers)
@@ -44,7 +71,7 @@ Picking nth element of sum comes from composing Z and S
 
 <https://hackage.haskell.org/package/generics-sop-0.5.1.2/docs/Generics-SOP.html#t:NP>
 NP - n-ary Product
-Type level list of elements parametrized with additional type constuctor `f`.
+Value level witness for a list of types parametrized by some functor f.
 
 SOP - sum of products
 `SOP I` corresponds to haskell's structure of given SOP encoded datatype.
@@ -56,55 +83,33 @@ The code of a datatype.
 This is a list of lists of its components. The outer list contains one element per constructor. The inner list contains one element per constructor argument (field).
 ```
 
+```haskell
 data Tree = Leaf Int | Node Tree Tree
+```
 
 is supposed to have the following `Code`:
 
 ```haskell
-type instance Code (Tree a) =
-'[ '[ Int ]
-, '[ Tree, Tree ]
-]
+type TreeCode =
+  '[ '[ Int ]
+   , '[ Tree, Tree ]
+   ]
 ```
 
-```haskell
--- Generic representation of given Haskell's ADT
+```hs
+-- Generic representation of given Haskell datatype
 type Rep a = SOP I (Code a)
 ```
 
-All these things allow more fancy type level programming, f.e. creating a constraint that every subtype used in SOP matches some constraint:
-
-```haskell
-class (Eq a) => MyClass a
-
-foo :: (All Eq xs) => NP f xs -> z
-foo = [..]
-
-bar :: (All MyClass xs) => NP f xs -> x
-bar = foo
-
-```
+This mechanism allows for generic programming over Haskell types and Plutarch types
 
 ## Intro
 
 As Plutarch is an eDSL in Haskell, it does not allow us to work on Plutus-level variables directly.
-Manipulating ADTs can be done in terms of `pcon` and `pmatch`.
+Manipulating ADTs can be done in terms of `pcon` and `pmatch` which belong to a class called `PlutusType`. 
 
-```haskell
-class PlutusType (a :: PType) where
-  -- ...
-  type PInner a :: PType
-  pcon' :: forall s. a s -> Term s (PInner a)
-  pmatch' :: forall s b. Term s (PInner a) -> (a s -> Term s b) -> Term s b
-
--- | Construct a Plutarch Term via a Haskell datatype
-pcon :: PlutusType a => a s -> Term s a
-pcon x = ...
-
--- | Pattern match over Plutarch Terms via a Haskell datatype
-pmatch :: PlutusType a => Term s a -> (a s -> Term s b) -> Term s b
-pmatch x = ...
-```
+How this class is implemented is not that important but can be looked up in `Plutarch/Internal/PlutusType.hs`
+by the interested reader. 
 
 These functions could be written manually, but is a bit tedious and error-prone, thus generic representation from `generics-sop` is used.
 Under the hood all necessary transformations are done to be able to access the data on Haskell level.
@@ -115,64 +120,47 @@ Also - as parsing data costs computation resources, it is common to pass tagged 
 1. Adds derivation via anyclass for Haskell ADTs
 2. Manipulates given `PType` on its internal representation (provided as type `PInner`), rather than parsing/constructing the datatype back and forth.
 
-`pcon'` and `pmatch'` are coerced to `pcon` and `pmatch`.
-
 Examples on how to derive `PlutusType` to either Data or Scott encoding:
 
 ```haskell
-{- |
-  > {-# LANGUAGE DeriveAnyClass        #-}
-  > {-# LANGUAGE DeriveGeneric         #-}
-  > {-# LANGUAGE DerivingStrategies    #-}
-  > {-# LANGUAGE LambdaCase            #-}
-  > {-# LANGUAGE DataKinds             #-}
-  > {-# LANGUAGE PartialTypeSignatures #-}
-  > {-# LANGUAGE ScopedTypeVariables   #-}
-  > {-# LANGUAGE TypeFamilies          #-}
-  > {-# LANGUAGE TypeOperators         #-}
-  > import qualified GHC.Generics as GHC
-  > import qualified Generics.SOP as SOP
-  > import Plutarch
-  >
-  > data MyType (a :: PType) (b :: PType) (s :: S)
-  >   = One (Term s a)
-  >   | Two (Term s b)
-  >   deriving stock (GHC.Generic)
-  >   deriving anyclass (SOP.Generic, PlutusType)
-  > instance DerivePlutusType (MyType a b) where type DPTStrat _ = PlutusTypeScott
+data MyType (a :: PType) (b :: PType) (s :: S)
+  = One (Term s a)
+  | Two (Term s b)
+  deriving stock (GHC.Generic)
+  deriving anyclass (SOP.Generic, PlutusType)
+instance DerivePlutusType (MyType a b) where type DPTStrat _ = PlutusTypeScott
 
-  If you instead want to use data encoding, you should derive 'PlutusType' and provide data strategy:
+-- If you instead want to use data encoding, you should derive 'PlutusType' and provide data strategy:
 
-  > data MyTypeD (a :: PType) (b :: PType) (s :: S)
-  >   = One (Term s (PDataRecord '[ "_0" ':= a ]))
-  >   | Two (Term s (PDataRecord '[ "_0" ':= b ]))
-  >   deriving stock (GHC.Generic)
-  >   deriving anyclass (SOP.Generic, PlutusType)
-  > instance DerivePlutusType (MyType a b) where type DPTStrat _ = PlutusTypeData
+data MyTypeD (a :: PType) (b :: PType) (s :: S)
+  = OneD (Term s (PDataRecord '[ "_0" ':= a ]))
+  | TwoD (Term s (PDataRecord '[ "_0" ':= b ]))
+  deriving stock (GHC.Generic)
+  deriving anyclass (SOP.Generic, PlutusType)
+instance DerivePlutusType (MyTypeD a b) where type DPTStrat _ = PlutusTypeData
 
-  Alternatively, you may derive 'PlutusType' by hand as well. A simple example, encoding a
-  Sum type as an Enum via PInteger:
+-- Alternatively, you may derive 'PlutusType' by hand as well. A simple example, encoding a
+-- Sum type as an Enum via PInteger:
 
-  > data AB (s :: S) = A | B
-  >
-  > instance PlutusType AB where
-  >   type PInner AB _ = PInteger
-  >
-  >   pcon' A = 0
-  >   pcon' B = 1
-  >
-  >   pmatch' x f =
-  >     pif (x #== 0) (f A) (f B)
-  >
+data AB (s :: S) = A | B
 
-  instead of using `pcon'` and `pmatch'` directly,
-  use 'pcon' and 'pmatch', to hide the `PInner` type:
+instance PlutusType AB where
+  type PInner AB = PInteger
 
-  > swap :: Term s AB -> Term s AB
-  > swap x = pmatch x $ \\case
-  >   A -> pcon B
-  >   B -> pcon A
+  pcon' A = 0
+  pcon' B = 1
 
+  pmatch' x f =
+    pif (x #== 0) (f A) (f B)
+
+
+-- instead of using `pcon'` and `pmatch'` directly,
+-- use 'pcon' and 'pmatch', to hide the `PInner` type:
+
+swap :: Term s AB -> Term s AB
+swap x = pmatch x $ \case
+  A -> pcon B
+  B -> pcon A
 ```
 
 `Maybe` manually encoded in both ways:
@@ -235,8 +223,6 @@ For `pcon`:
 
 - Scott encoding - encode data type as lambda
 - Data encoding - create a `Constr` with corresponding number of constructor
-
-Up to these - there's type level programming done to make things type safe and generic.
 
 ## Recommended patterns when working with pcon/pmatch
 

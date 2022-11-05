@@ -12,7 +12,7 @@
     auto-optimise-store = "true";
   };
 
-  inputs.tooling.url = "github:mlabs-haskell/mlabs-tooling.nix?ref=las/work";
+  inputs.tooling.url = "github:mlabs-haskell/mlabs-tooling.nix";
 
   outputs = inputs@{ self, tooling, ... }: tooling.lib.mkFlake { inherit self; }
     {
@@ -26,7 +26,10 @@
               packages = {
                 # Workaround missing support for build-tools:
                 # https://github.com/input-output-hk/haskell.nix/issues/231
-                plutarch-test.components.exes.plutarch-test.build-tools = [
+                plutarch-docs.components.exes.plutarch-docs.build-tools = [
+                  config.hsPkgs.markdown-unlit
+                ];
+                plutarch-docs.components.exes.plutarch-test.build-tools = [
                   config.hsPkgs.hspec-discover
                 ];
               };

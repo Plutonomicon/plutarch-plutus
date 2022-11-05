@@ -1,10 +1,21 @@
+<details>
+<summary>
+imports
+</summary>
+```haskell
+module Hoisting (hor, (#||)) where 
+
+import Plutarch.Prelude hiding ((#||))
+import Plutarch.Bool (pif')
+```
+</details>
 # Hoisting, metaprogramming, and fundamentals
 
 Plutarch has a two-stage compilation process. First GHC compiles our code, then our code generates an _AST_ of our Plutus script, which is then serialized using `compile`.
 
 The important thing to note, is that when you have a definition like:
 
-```haskell
+```hs
 x :: Term s PInteger
 x = something complex
 ```
@@ -33,14 +44,14 @@ Choosing convenience over efficiency is difficult, but if you notice that your o
 
 Consider "boolean or":
 
-```hs
-(#||) :: Term s PBool -> Term s PBool -> Term s PBool
-x #|| y = pif x (pconstant True) $ pif y (pconstant True) $ pconstant False
+```haskell
+hor :: Term s PBool -> Term s PBool -> Term s PBool
+x `hor` y = pif x (pconstant True) $ pif y (pconstant True) $ pconstant False
 ```
 
 You can factor out most of the logic to a Plutarch level function, and apply that in the operator definition:
 
-```hs
+```haskell
 (#||) :: Term s PBool -> Term s PBool -> Term s PBool
 x #|| y = pforce $ por # x # pdelay y
 
