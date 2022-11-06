@@ -81,3 +81,6 @@ newtype CurrencySymbol = CurrencySymbol { unCurrencySymbol :: BuiltinByteString 
 ```
 
 Here, for example, `CurrencySymbol` has the very same `Data` representation as `BuiltinByteString`. No extra information is added.
+
+> note that in plutarch what matters is not whether you declare a datatype as haskell data or as haskell newtype but in what 
+  way you derive the plutuscore representation

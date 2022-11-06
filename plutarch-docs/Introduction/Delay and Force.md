@@ -10,6 +10,7 @@ import Plutarch.Bool (pif')
 
 </p>
 </details>
+
 # Strictness and Laziness; Delayed Terms and Forcing
 
 Plutarch, like UPLC, is strict by default; this is in contrast to Haskell, which is lazy. In practice, this means that calling a function in Plutarch evaluates _all_ arguments to the Plutarch lambda `Term` beforehand.

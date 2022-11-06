@@ -1,33 +1,46 @@
+<details>
+<summary> imports </summary>
+<p>
+
+```haskell
+module Plutarch.Docs.PEqAndPOrd (PMaybe'(..)) where 
+
+import Plutarch.Prelude
+```
+
+</p>
+</details>
+
 # `PEq` & `POrd`
 
 Plutarch level equality is provided by the `PEq` typeclass:
 
-```haskell
+```hs
 class PEq t where
   (#==) :: Term s t -> Term s t -> Term s PBool
 ```
 
 `PInteger` implements `PEq` as you would expect. So you could do:
 
-```haskell
+```hs
 1 #== 2
 ```
-
 That would yield a `Term s PBool`, which you would probably use with `pif` (or similar).
 
-Similarly, `POrd` emulates `Ord`:
+Similarly, `PPartialOrd` (and `POrd`) emulates `Ord`: (where `PPartialOrd` represents partial orders 
+and `POrd` represents total orders)
 
-```haskell
-class POrd t where
-  (#<=) :: Term s t -> Term s t -> Term s PBool
+```hs
+class PEq => PPartialOrd t where
   (#<) :: Term s t -> Term s t -> Term s PBool
+  (#<=) :: Term s t -> Term s t -> Term s PBool
+
+class PPartialOrd => POrd t
 ```
 
 It works as you would expect:
 
-```haskell
-{-# LANGUAGE OverloadedStrings #-}
-
+```hs
 pif (1 #< 7) "indeed" "what"
 ```
 
@@ -35,28 +48,18 @@ evaluates to `"indeed"` - of type `Term s PString`.
 
 For scott encoded types, you can easily derive `PEq` via generic deriving:
 
-```hs
-import qualified GHC.Generics as GHC
-import Generics.SOP
-
-import Plutarch.Prelude
-
-data PMaybe a s
-  = PNothing
-  | PJust (Term s a)
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic, PlutusType, PEq)
+```haskell
+data PMaybe' a s
+  = PNothing'
+  | PJust' (Term s a)
+  deriving stock Generic
+  deriving anyclass (PlutusType, PEq)
+instance DerivePlutusType (PMaybe' a) where type DPTStrat _ = PlutusTypeScott
 ```
 
-For data encoded types, you can derive `PEq` and `POrd` via `PIsDataReprInstances`:
+For data encoded types, you can derive `PEq`, `PPartialOrd` and `POrd` via there data representation:
 
-```hs
-import qualified GHC.Generics as GHC
-import Generics.SOP
-
-import Plutarch.Prelude
-import Plutarch.DataRepr
-
+```haskell
 newtype PTriplet a s
   = PTriplet
       ( Term
@@ -68,11 +71,10 @@ newtype PTriplet a s
                ]
           )
       )
-  deriving stock (GHC.Generic)
-  deriving anyclass (Generic, PIsDataRepr)
-  deriving
-    (PlutusType, PIsData, PEq, POrd)
-    via (PIsDataReprInstances (PTriplet a))
+  deriving stock Generic
+  deriving anyclass (PlutusType, PEq, PPartialOrd)
+
+instance DerivePlutusType (PTriplet a) where type DPTStrat _ = PlutusTypeData
 ```
 
 > Aside: `PEq` derivation for data encoded types uses "Data equality". It simply ensures the structure (as represented through [data encoding](../Concepts/Data%20and%20Scott%20encoding.md#data-encoding)) of both values are _exactly_ the same. It does not take into account any custom `PEq` instances for the individual fields within.

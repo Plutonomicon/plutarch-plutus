@@ -1,11 +1,24 @@
+<details>
+<summary> imports </summary>
+<p>
+
+```haskell
+module Plutarch.Docs.PreferMatchingOnResult (this, this') where 
+import Plutarch.Prelude
+import Plutarch.Api.V1 (PScriptPurpose (PSpending, PMinting, PRewarding, PCertifying))
+```
+
+</p>
+</details>
+
 # Prefer pattern matching on the result of `pmatch` immediately
 
 You should always try and pattern match on the result of `pmatch` _immediately_. This is because the semantics of `pmatch` will make anything you write _before_ the pattern match be inlined for every single branch:
 
-```hs
+```haskell
 this :: Term s (PScriptPurpose :--> PInteger)
 this = plam $ \x -> pmatch x $ \l ->
-  plet $ 1 + 2 $ \i -> case l of
+  plet (1 + 2) $ \i -> case l of
     PMinting _ -> i + 3
     PSpending _ -> i + 4
     PRewarding _ -> i + 5
@@ -16,9 +29,9 @@ Notice how the above code `plet`s a computation _before_ matching on `l`, the `p
 
 You _should always_ match on the result immediately, whenever possible:
 
-```hs
-this :: Term s (PScriptPurpose :--> PInteger)
-this = plam $ \x -> plet $ 1 + 2 $ \i ->
+```haskell
+this' :: Term s (PScriptPurpose :--> PInteger)
+this' = plam $ \x -> plet  (1 + 2) $ \i ->
   pmatch x $ \case
     PMinting _ -> i + 3
     PSpending _ -> i + 4

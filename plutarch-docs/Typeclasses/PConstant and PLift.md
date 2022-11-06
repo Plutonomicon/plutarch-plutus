@@ -1,13 +1,34 @@
+<details>
+<summary> imports </summary>
+<p>
+
+```haskell
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
+{-# LANGUAGE UndecidableInstances #-}
+module Plutarch.Docs.PConstantAndPLift (b, purp) where 
+import Plutarch.Prelude
+import PlutusLedgerApi.V1.Contexts (ScriptPurpose (Minting))
+import Plutarch.Api.V1.Contexts (PScriptPurpose)
+```
+
+</p>
+</details>
+
 # `PConstant` & `PLift`
 
-These two closely tied together typeclasses establish a bridge between a Plutarch level type (that is represented as a builtin type, i.e. [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) and its corresponding [Haskell synonym](./../Concepts/Haskell%20Synonym.md). The gory details of these two are not too useful to users, but you can read all about it if you want at [Developers' corner](../DEVGUIDE.md#pconstant-and-plift).
+These two closely tied together typeclasses establish a bridge between a Plutarch level type (that is represented 
+as a builtin type, i.e. 
+[`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) 
+and its corresponding [Haskell synonym](./../Concepts/Haskell%20Synonym.md). The gory details of these 
+two are not too useful to users, but you can read all about it if you want at 
+[Developers' corner](../DEVGUIDE.md#pconstant-and-plift).
 
 What's more important, are the abilities that `PConstant`/`PLift` instances have:
 
 ```hs
 pconstant :: PLift p => PLifted p -> Term s p
 
-plift :: (PLift p, HasCallStack) => ClosedTerm p -> PLifted p
+plift :: (HasCallStack, PLift p) => ClosedTerm p -> PLifted p
 ```
 
 These typeclasses also bestow the associated type families:
@@ -18,23 +39,27 @@ type PLifted :: PType -> Type
 type PConstanted :: Type -> PType
 ```
 
-These are meant to be inverse type families of each other. In particular, `PLifted p` represents the Haskell synonym of the Plutarch type, `p`. Similarly, `PConstanted h` represents the Plutarch type corresponding to the Haskell type, `h`.
+These are meant to be inverse type families of each other. In particular, `PLifted p` represents the Haskell synonym 
+of the Plutarch type, `p`. Similarly, `PConstanted h` represents the Plutarch type corresponding to the Haskell type, 
+`h`.
 
-`pconstant` lets you build a Plutarch value from its corresponding Haskell synonym. For example, the Haskell synonym of [`PBool`](./../Types/PBool.md) is [`Bool`](https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Bool.html#t:Bool).
+`pconstant` lets you build a Plutarch value from its corresponding Haskell synonym. For example, the Haskell synonym 
+of [`PBool`](./../Types/PBool.md) is 
+[`Bool`](https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Bool.html#t:Bool).
 
-```hs
+```haskell
 b :: Term s PBool
 b = pconstant False
 ```
 
 On the other end, `plift` lets you obtain the Haskell synonym of a Plutarch value (that is represented as a builtin value, i.e. [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)):
 
-```hs
-import Plutus.V1.Ledger.Contexts
-
+```haskell
 purp :: Term s PScriptPurpose
 purp = pconstant $ Minting "be"
+```
 
+```hs
 > plift purp
 Minting "be"
 ```
@@ -51,21 +76,33 @@ It's simply the `PAsData` building cousin of `pconstant`!
 
 ## Implementing `PConstant` & `PLift`
 
-If your custom Plutarch type is represented by a builtin type under the hood (i.e. not [Scott encoded](./../Concepts/Data%20and%20Scott%20encoding.md#scott-encoding) - rather one of the [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni) types) - you can implement `PLift` for it by using the provided machinery.
+If your custom Plutarch type is represented by a builtin type under the hood 
+(i.e. not [Scott encoded](./../Concepts/Data%20and%20Scott%20encoding.md#scott-encoding) - rather one of the 
+[`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni) types) 
+- you can implement `PLift` for it by using the provided machinery.
 
 This comes in three flavors:
 
-- Plutarch type represented **directly** by a builtin type that **is not** `Data` (`DefaultUniData`) ==> `DerivePConstantDirect`
+- Plutarch type represented **directly** by a builtin type that **is not** `Data` (`DefaultUniData`) 
+  ==> `DerivePConstantDirect`
 
-  Ex: `PInteger` is directly represented as a builtin integer.
-- Plutarch type represented **indirectly** by a builtin type that **is not** `Data` (`DefaultUniData`) ==> `DerivePConstantViaNewtype`
+  *Ex:* `PInteger` is directly represented as a builtin integer.
 
-  Ex: `PPubKeyHash` is a newtype to a `PByteString`, and `PByteString` is _directly_ represented as a builtin bytestring.
-- Plutarch type represented by `Data`, i.e. [data encoded](./../Concepts/Data%20and%20Scott%20encoding.md#data-encoding) (`DefaultUniData`) ==> `DerivePConstantViaData`
+- Plutarch type represented **indirectly** by a builtin type that **is not** `Data` (`DefaultUniData`) 
+  ==> `DerivePConstantViaNewtype`
 
-  Ex: `PScriptPurpose` is represented as a `Data` value. It is synonymous to `ScriptPurpose` from the Plutus ledger api.
+  *Ex:* `PPubKeyHash` is a newtype to a `PByteString`, and `PByteString` is _directly_ represented as a 
+  `BuiltingBytestring`.
 
-Whichever path you need to go down, there is one common part- implementing `PLift`, or rather `PUnsafeLiftDecl`. See, `PLift` is actually just a type synonym to `PUnsafeLiftDecl` (with a bit more machinery). Essentially an empty typeclass with an associated type family that provides insight on the relationship between a Plutarch type and its Haskell synonym.
+- Plutarch type represented by `Data`, i.e. [data encoded](./../Concepts/Data%20and%20Scott%20encoding.md#data-encoding)
+  (`DefaultUniData`) ==> `DerivePConstantViaData`
+
+  *Ex:* `PScriptPurpose` is represented as a `Data` value. It is synonymous to `ScriptPurpose` from the Plutus Ledger API
+
+Whichever path you need to go down, there is one common part- implementing `PLift`, or rather `PUnsafeLiftDecl`. See, 
+`PLift` is actually just a type synonym to `PUnsafeLiftDecl` (with a bit more machinery). Essentially an empty 
+typeclass with an associated type family that provides insight on the relationship between a Plutarch type and its 
+Haskell synonym.
 
 ```hs
 instance PUnsafeLiftDecl YourPlutarchType where
@@ -94,14 +131,10 @@ Some examples:
   instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
   ```
 
-Now, let's get to implementing `PConstant` for the Haskell synonym, via the three methods. The first of which is `DerivePConstantDirect`:
+Now, let's get to implementing `PConstant` for the Haskell synonym, via the three methods. 
+The first of which is `DerivePConstantDirect`:
 
 ```hs
-{-# LANGUAGE UndecidableInstances #-}
-
-import Plutarch.Lift (DerivePConstantDirect (DerivePConstantDirect), PConstantDecl, PUnsafeLiftDecl)
-import Plutarch.Prelude
-
 deriving via (DerivePConstantDirect Integer PInteger) instance PConstantDecl Integer
 ```
 
@@ -140,23 +173,14 @@ deriving via (DerivePConstantViaNewtype Plutus.ValidatorHash PValidatorHash PByt
 Finally, we have `DerivePConstantViaData` for `Data` values:
 
 ```hs
-{-# LANGUAGE UndecidableInstances #-}
-
-import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
-import Plutarch.Lift (PConstantDecl, PUnsafeLiftDecl)
-import Plutarch.Prelude
-
-import qualified Plutus.V1.Ledger.Api as Plutus
-
 data PScriptPurpose (s :: S)
   = PMinting (Term s (PDataRecord '["_0" ':= PCurrencySymbol]))
   | PSpending (Term s (PDataRecord '["_0" ':= PTxOutRef]))
   | PRewarding (Term s (PDataRecord '["_0" ':= PStakingCredential]))
   | PCertifying (Term s (PDataRecord '["_0" ':= PDCert]))
 
-...
-
-deriving via (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose)
+deriving via 
+  (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) 
   instance PConstantDecl Plutus.ScriptPurpose
 ```
 
@@ -183,23 +207,15 @@ If you're using `DerivePConstantViaData`, you should use the `PLiftData` and `PC
 Here's how you'd set up all this for `PMaybeData a`:
 
 ```hs
-import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
-import Plutarch.Lift (PConstantDecl, PUnsafeLiftDecl)
-import Plutarch.Prelude
-
-import PlutusTx (FromData, ToData)
-
 data PMaybeData a (s :: S)
   = PDJust (Term s (PDataRecord '["_0" ':= a]))
   | PDNothing (Term s (PDataRecord '[]))
 
-instance PLiftData p => PUnsafeLiftDecl (PMaybeData p) where
-  type PLifted (PMaybeData p) = Maybe (PLifted p)
+instance PLiftData a => PUnsafeLiftDecl (PMaybeData a) where
+  type PLifted (PMaybeData a) = Maybe (PLifted a)
 
 deriving via
-  ( DerivePConstantViaData
-      (Maybe h)
-      (PMaybeData (PConstanted h))
-  )
-  instance PConstantData h => PConstantDecl (Maybe h)
+  (DerivePConstantViaData (Maybe a) (PMaybeData (PConstanted a)))
+  instance
+    PConstantData a => PConstantDecl (Maybe a)
 ```

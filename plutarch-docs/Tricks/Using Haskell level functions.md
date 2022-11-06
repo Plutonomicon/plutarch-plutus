@@ -1,3 +1,15 @@
+<details>
+<summary> imports </summary>
+<p>
+
+```haskell
+module Plutarch.Docs.UsingHaskellLevelFunctions (pelimList, pelimList') where 
+import Plutarch.Prelude hiding (pelimList)
+```
+
+</p>
+</details>
+
 # When to use Haskell level functions?
 
 Although you should generally [prefer Plutarch level functions](./Prefer%20Plutarch%20functions.md), there are times when a Haskell level function is actually much better. However, figuring out _when_ that is the case - is a delicate art.
@@ -8,7 +20,7 @@ Outside of that straightforward use case, figuring out when to use Haskell level
 
 However, if the function is used _only once_, and making it Plutarch level causes extra `plam`s and `#`s to be introduced - you should just make it Haskell level. For example, consider the `pelimList` implementation:
 
-```hs
+```haskell
 pelimList :: PLift a => Term s (a :--> PBuiltinList a :--> r) -> Term s r -> Term s (PBuiltinList a) -> Term s r
 pelimList match_cons match_nil ls = pmatch ls $ \case
   PCons x xs -> match_cons # x # xs
@@ -34,9 +46,14 @@ pmatch ls $ \case
 
 Extra `plam`s and `#`s have been introduced. Really, `pelimList` could have taken a Haskell level function instead:
 
-```hs
-pelimList :: PLift a => (Term s a -> Term s (PBuiltinList a) :--> Term s r) -> Term s r -> Term s (PBuiltinList a) -> Term s r
-pelimList match_cons match_nil ls = pmatch ls $ \case
+```haskell
+pelimList' :: 
+  forall (a :: PType) (r :: PType) (s :: S).
+  PLift a 
+  => (Term s a -> Term s (PBuiltinList a) -> Term s r) 
+  -> Term s r -> Term s (PBuiltinList a) 
+  -> Term s r
+pelimList' match_cons match_nil ls = pmatch ls $ \case
   PCons x xs -> match_cons x xs
   PNil -> match_nil
 ```

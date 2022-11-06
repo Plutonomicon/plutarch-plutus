@@ -3,15 +3,6 @@
 <p>
 
 ```haskell
-{-# LANGUAGE DeriveAnyClass                #-}
-{-# LANGUAGE DeriveGeneric                 #-}
-{-# LANGUAGE DerivingStrategies            #-}
-{-# LANGUAGE LambdaCase                    #-}
-{-# LANGUAGE DataKinds                     #-}
-{-# LANGUAGE PartialTypeSignatures         #-}
-{-# LANGUAGE ScopedTypeVariables           #-}
-{-# LANGUAGE TypeFamilies                  #-}
-{-# LANGUAGE TypeOperators                 #-}
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 module Plutarch.Docs.PMatch (Tree(..), swap, TreeCode) where 
 import Plutarch.Prelude
@@ -24,6 +15,7 @@ import Plutarch.Unsafe (punsafeCoerce)
 
 </p>
 </details>
+
 # PMatch introduction
 
 ## Prerequisites

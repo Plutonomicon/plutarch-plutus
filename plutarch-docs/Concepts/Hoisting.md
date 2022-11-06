@@ -11,6 +11,7 @@ import Plutarch.Bool (pif')
 
 </p>
 </details>
+
 # Hoisting, metaprogramming, and fundamentals
 
 Plutarch has a two-stage compilation process. First GHC compiles our code, then our code generates an _AST_ of our Plutus script, which is then serialized using `compile`.

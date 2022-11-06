@@ -1,13 +1,28 @@
+<details>
+<summary> imports </summary>
+<p>
+
+```haskell
+module Plutarch.Docs.WorkDuplication (abs, abs', pf, pf') where 
+import Plutarch.Prelude
+import Prelude hiding (abs)
+```
+
+</p>
+</details>
+
 # Don't duplicate work
 
 Haskell bindings are simply "inlined" during Plutarch compilation.
 
 Consider the simple snippet:
 
-```hs
+```haskell
 pf :: Term s PInteger
 pf =
-  let foo = 1 + 2      -- | A Haskell binding.
+  let 
+    foo :: forall s. Term s PInteger
+    foo = 1 + 2      -- | A Haskell binding.
   in pif
        (foo #== 3)     -- | A.) ...then inline here...
        foo             -- | B.) ...and inline here.
@@ -62,7 +77,7 @@ Plutarch provides the `plet :: Term s a -> (Term s a -> Term s b) -> Term s b` f
 to accomplish exactly this. To demonstrate this technique, the implementation of `pf'` that
 will lead to the above UPLC is given as:
 
-```hs
+```haskell
 {-
 Note: the letter labels on our annotations match the operations in the
 previous example.
@@ -102,8 +117,8 @@ Oh no. `reallyExpensiveFunction` is going to be _applied three times_. That's 3 
 Isntead, consider using `plet`:
 
 ```haskell
-abs :: Term s PInteger -> Term s PInteger
-abs x' = plet x' $ \x -> pif (x #<= -1) (negate x) x
+abs' :: Term s PInteger -> Term s PInteger
+abs' x' = plet x' $ \x -> pif (x #<= -1) (negate x) x
 ```
 
 Of course, what you _really_ should do , is prefer Plutarch level functions whenever possible. Since arguments to Plutarch level functions are pre-evaluated and those bindings are completely ok to use as many times as you want!
