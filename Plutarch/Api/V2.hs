@@ -49,9 +49,6 @@ import Plutarch.Api.V2.Tx qualified as Tx
 
 import Plutarch.Api.Internal.Hashing (hashScriptWithPrefix)
 import Plutarch.Api.V1 (
-  PMintingPolicy,
-  PStakeValidator,
-  PValidator,
   dataHash,
   datumHash,
   redeemerHash,
@@ -65,9 +62,22 @@ import Plutarch.Api.V1.Scripts qualified as V1
 import Plutarch.Api.V1.Time qualified as V1
 import Plutarch.Api.V1.Tuple qualified as V1
 import Plutarch.Api.V1.Value qualified as V1
+
+import Plutarch (POpaque, (:-->))
+import Plutarch.Builtin (PData)
+
 import Plutarch.Script (Script)
 import PlutusLedgerApi.V1.Scripts (ScriptHash)
 
 -- | Hash a Script, with the correct prefix for Plutus V2
 scriptHash :: Script -> ScriptHash
 scriptHash = hashScriptWithPrefix "\x02"
+
+-- | a Validator Term
+type PValidator = PData :--> PData :--> Contexts.PScriptContext :--> POpaque
+
+-- | a MintingPolicy Term
+type PMintingPolicy = PData :--> Contexts.PScriptContext :--> POpaque
+
+-- | a StakeValidator Term
+type PStakeValidator = PData :--> Contexts.PScriptContext :--> POpaque
