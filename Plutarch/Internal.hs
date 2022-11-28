@@ -7,7 +7,7 @@ module Plutarch.Internal (
   -- | $term
   Term (..),
   asClosedRawTerm,
-  Script,
+  Script (Script),
   mapTerm,
   plam',
   plet,
