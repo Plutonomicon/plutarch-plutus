@@ -1,3 +1,15 @@
+<details>
+<summary> imports </summary>
+<p>
+
+```haskell
+module Plutarch.Docs.PTuple () where 
+import Plutarch.Prelude ()
+```
+
+</p>
+</details>
+
 # `PTuple`
 
 These are [data encoded](./../Concepts/Data%20and%20Scott%20encoding.md#data-encoding) pairs. You can build `PTuple`s using `ptuple`:

@@ -6,8 +6,6 @@
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 module Plutarch.Docs.PMatch (Tree(..), swap, TreeCode) where 
 import Plutarch.Prelude
-import qualified GHC.Generics as GHC
-import qualified Generics.SOP as SOP
 import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Builtin (pforgetData, pasConstr, pconstrBuiltin)
 import Plutarch.Unsafe (punsafeCoerce)
@@ -16,7 +14,7 @@ import Plutarch.Unsafe (punsafeCoerce)
 </p>
 </details>
 
-# PMatch introduction
+# Generic programming over Plutarch types
 
 ## Prerequisites
 
@@ -105,7 +103,7 @@ Manipulating ADTs can be done in terms of `pcon` and `pmatch` which belong to a 
 How this class is implemented is not that important but can be looked up in `Plutarch/Internal/PlutusType.hs`
 by the interested reader. 
 
-These functions could be written manually, but is a bit tedious and error-prone, thus generic representation from `generics-sop` is used.
+These functions could be written manually, but is a bit tedious and error-prone, thus generic representation from `GHC.Generics` is used.
 Under the hood all necessary transformations are done to be able to access the data on Haskell level.
 
 Also - as parsing data costs computation resources, it is common to pass tagged raw data until it's really needed to parse.
@@ -120,8 +118,8 @@ Examples on how to derive `PlutusType` to either Data or Scott encoding:
 data MyType (a :: PType) (b :: PType) (s :: S)
   = One (Term s a)
   | Two (Term s b)
-  deriving stock (GHC.Generic)
-  deriving anyclass (SOP.Generic, PlutusType)
+  deriving stock Generic
+  deriving anyclass PlutusType
 instance DerivePlutusType (MyType a b) where type DPTStrat _ = PlutusTypeScott
 
 -- If you instead want to use data encoding, you should derive 'PlutusType' and provide data strategy:
@@ -129,8 +127,8 @@ instance DerivePlutusType (MyType a b) where type DPTStrat _ = PlutusTypeScott
 data MyTypeD (a :: PType) (b :: PType) (s :: S)
   = OneD (Term s (PDataRecord '[ "_0" ':= a ]))
   | TwoD (Term s (PDataRecord '[ "_0" ':= b ]))
-  deriving stock (GHC.Generic)
-  deriving anyclass (SOP.Generic, PlutusType)
+  deriving stock Generic
+  deriving anyclass PlutusType
 instance DerivePlutusType (MyTypeD a b) where type DPTStrat _ = PlutusTypeData
 
 -- Alternatively, you may derive 'PlutusType' by hand as well. A simple example, encoding a

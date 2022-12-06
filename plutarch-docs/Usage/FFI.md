@@ -1,15 +1,40 @@
+<details>
+<summary> imports </summary>
+<p>
+
+```hs
+{-# OPTIONS_GHC -Wno-unused-imports #-}
+{-# LANGUAGE TemplateHaskell #-}
+module Plutarch.Docs.FFI () where 
+import Plutarch.Prelude
+import Plutarch.FFI
+
+import PlutusTx qualified
+import PlutusTx.Builtins qualified as PlutusTx
+import PlutusTx.Builtins.Internal qualified as PlutusTx
+
+import Generics.SOP qualified as SOP
+import Data.Default (def)
+```
+
+</p>
+</details>
+
 # Interoperability with PlutusTx
+
+> Note: This module needs the PlutusTx plugin. As it does not yet work under `ghc92`+, some of this documentation is not part 
+> of the CI, the documentation is up to date as of Plutarch 1.3.
 
 If you already have a codebase built using PlutusTx, you can choose to
 re-write only its critical parts in Plutarch and to call them from
 PlutusTx. The function to use is `Plutarch.FFI.foreignExport`:
 
-```haskell
-doubleInPlutarch :: Term s (PInteger :--> PInteger)
+```hs
+doubleInPlutarch :: ClosedTerm (PInteger :--> PInteger)
 doubleInPlutarch = plam (2 *)
 
 doubleExported :: PlutusTx.CompiledCode (Integer -> Integer)
-doubleExported = foreignExport doubleInPlutarch
+doubleExported = foreignExport def doubleInPlutarch
 
 doubleUseInPlutusTx :: PlutusTx.CompiledCode Integer
 doubleUseInPlutusTx = doubleExported `PlutusTx.applyCode` PlutusTx.liftCode 21
@@ -18,8 +43,8 @@ doubleUseInPlutusTx = doubleExported `PlutusTx.applyCode` PlutusTx.liftCode 21
 Alternatively, you may go in the opposite direction and call an existing
 PlutusTx function from Plutarch using `Plutarch.FFI.foreignImport`:
 
-```haskell
-doubleInPlutusTx :: CompiledCode (Integer -> Integer)
+```hs
+doubleInPlutusTx :: PlutusTx.CompiledCode (Integer -> Integer)
 doubleInPlutusTx = $$(PlutusTx.compile [||(2 *) :: Integer -> Integer||])
 
 doubleImported :: Term s (PInteger :--> PInteger)
@@ -55,11 +80,11 @@ type twice with two kinds: as a Haskell `Type` and as a Plutarch
 `PType`. Furthermore, both types must be instances of `SOP.Generic`, as in this
 example:
 
-```haskell
+```hs
 data SampleRecord = SampleRecord
-  { sampleBool :: BuiltinBool
-  , sampleInt :: Integer
-  , sampleString :: BuiltinString
+  { sampleBool :: PlutusTx.BuiltinBool
+  , sampleInt :: PlutusTx.Integer
+  , sampleString :: PlutusTx.BuiltinString
   }
   deriving stock (Generic)
   deriving anyclass (SOP.Generic)
@@ -69,8 +94,9 @@ data PSampleRecord (s :: S) = PSampleRecord
   , psampleInt :: Term s PInteger
   , psampleString :: Term s PString
   }
-  deriving stock (Generic)
+  deriving stock Generic
   deriving anyclass (SOP.Generic, PlutusType)
+instance DerivePlutusType PSampleRecord where type DPTStrat _ = PlutusTypeScott
 ```
 
 With these two declarations in place, the preceding table can gain another

@@ -1,6 +1,20 @@
-# `PTryFrom`
+<details>
+<summary> imports </summary>
+<p>
 
 ```haskell
+module Plutarch.Docs.PTryFrom (recoverListFromPData, theField, untrustedRecord, recoverListPartially) where 
+
+import Plutarch.Prelude
+import Plutarch.Builtin (pforgetData)
+```
+
+</p>
+</details>
+
+# `PTryFrom`
+
+```hs
 class PTryFrom (a :: PType) (b :: PType) where
   type PTryFromExcess a b :: PType
   ptryFrom :: forall s r. Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
@@ -12,10 +26,11 @@ class PTryFrom (a :: PType) (b :: PType) where
 A good example is getting a `PData` from a redeemer and wanting to prove that it is of a certain kind, e.g. a `PAsData (PBuiltinList (PAsData PInteger))`. We could do this with: 
 
 ```haskell
-recoverListFromPData opq = unTermCont $ fst <$> ptryFromData @(PAsData (PBuiltinList (PAsData PInteger)) opq
+recoverListFromPData :: forall (s :: S). Term s PData -> Term s (PAsData (PBuiltinList (PAsData PInteger)))
+recoverListFromPData = unTermCont . fmap fst . tcont . ptryFrom @(PAsData (PBuiltinList (PAsData PInteger)))
 ```
 
-As you can see, it uses the utility function `ptryFromData @b`, which does the same as `ptryFrom @PData @b`. 
+> Note: You can find a specialized version of `ptryFrom` in `Plutarch.Extra` that is the same as `ptryFrom @PData @(PAsData a)`
 
 ## Laws
 
@@ -28,10 +43,14 @@ As you can see, it uses the utility function `ptryFromData @b`, which does the s
      element of the resulting Tuple must always be wrapped in `PAsData` if the origin type was `PData` (see law 1)
 - the result type `b` must always be safer than the origin type `a`, i.e. it must carry more information
 
+> Note: doing this in a manner that doesn't error would be really costly and hence we only offer a version that fails with `perror`.
+
 ## `PTryFromExcess`
 
-An important note is, that `PTryFrom` carries a type `PTryFromExcess` which safes data that arose as "excess" during the act of verifying. For `PData (PAsData PSomething)` instances this most times 
-carries a `PSomething`, i.e. the type that has been proven equality for but without `PAsData` wrapper. In cases where this type is not useful, the excess type is just an empty `HRec`.
+An important note is, that `PTryFrom` carries a type `PTryFromExcess` which safes data that arose as "excess" during the act of verifying. For 
+`PData (PAsData PSomething)` instances this most times 
+carries a `PSomething`, i.e. the type that has been proven equality for but without `PAsData` wrapper. In cases where this type is not useful, 
+the excess type is just an empty `HRec`.
 
 In case of the recovered type being a record or anything that contains a record, the excess type is more interesting: 
 It contains an `HRec`, that has all the fields that have been recoverd and all *their* excess stored. If you recover a `PAsData (PDataRecord xs)` from `PData`, there is another field under the accessor `"unwrapped"` that contains the unwrapped record, which representation wise is just a `PBuiltinList
@@ -42,29 +61,30 @@ Generally, when recovering a `PDataRecord`, the procedure is as follows
 ```haskell
 untrustedRecord :: Term s PData
 untrustedRecord =
-  let rec :: Term s (PAsData (PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])]))
-      rec = pdata $ pdcons # (pdata $ pdcons # pdata (pconstant 42) # pdnil) # pdnil
-   in pforgetData rec
+  let r :: Term s (PAsData (PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])]))
+      r = pdata $ pdcons # (pdata $ pdcons # pdata (pconstant 42) # pdnil) # pdnil
+   in pforgetData r
 
 -- obviously, `untrustedRecord` would be what we get from our untrusted party
 
 theField :: Term s PInteger
 theField = unTermCont $ do
-  (_, exc) <- tcont (ptryFromData @(PAsData (PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])])) untrustedRecord)
-  pure $ exc._0._1
+  (_, exc) <- tcont (ptryFrom @(PAsData (PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])])) untrustedRecord)
+  pure $ snd (snd $ snd (snd exc)._0)._1
 ```
 
 Because the record excess stores the field already in its unwrapped form, you don't have to `pfromData` it again. 
 
-If you don't use `OverloadedRecordDot`, there is an equivalent function `getExcessField` that does the same and works with type applications. 
+If you don't use `OverloadedRecordDot`, there is an equivalent function `getField` (from `GHC.Records`) that does the same and works with type applications. 
 
 ## Recovering only partially
 
-In case we don't want to verify the whole structure but rather part of it (this can be a reasonable decision to lower the fees), we can just leave the part of the data that is not to be 
-verified a `PData` which serves as the base case: 
+In case we don't want to verify the whole structure but rather part of it (this can be a reasonable decision to lower the fees), we can just leave the part 
+of the data that is not to be verified a `PData` which serves as the base case: 
 
 ```haskell
-recoverListPartially = ptryFrom @PData @(PAsData (PBuiltinList PData))
+recoverListPartially :: forall r s. Term s PData  -> ((Term s (PAsData (PBuiltinList PData)), Term s (PBuiltinList PData)) -> Term s r) -> Term s r
+recoverListPartially = ptryFrom @(PAsData (PBuiltinList PData)) @PData
 ```
 
 This is especially important with something like `PDataSum` which simply cannot store the excess types over the barrier of `pmatch` because obviously,

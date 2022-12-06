@@ -67,22 +67,47 @@ executable plutarch-docs
   main-is:          Main.lhs
   other-modules:
     Plutarch.Docs.BasicExample
+    Plutarch.Docs.Conditionals
     Plutarch.Docs.DataAndScottEncoding
     Plutarch.Docs.DelayAndForce
+    Plutarch.Docs.DerivingForNewtype
+    Plutarch.Docs.DerivingGenerics
     Plutarch.Docs.DifferencePconPconstant
     Plutarch.Docs.Hoisting
     Plutarch.Docs.Introduction
     Plutarch.Docs.OptimizingUnhoistable
+    Plutarch.Docs.PAsData
     Plutarch.Docs.PatternMatching
+    Plutarch.Docs.PBool
+    Plutarch.Docs.PBuiltinList
+    Plutarch.Docs.PBuiltinPair
+    Plutarch.Docs.PByteString
     Plutarch.Docs.PConstantAndPLift
+    Plutarch.Docs.PData
     Plutarch.Docs.PDataFields
+    Plutarch.Docs.PDataSumAndRecord
     Plutarch.Docs.PEqAndPOrd
+    Plutarch.Docs.PInteger
+    Plutarch.Docs.PList
+    Plutarch.Docs.PListLike
     Plutarch.Docs.PlutarchConstants
     Plutarch.Docs.PlutarchLambdas
+    Plutarch.Docs.PlutusTypePConAndPMatch
     Plutarch.Docs.PMatch
     Plutarch.Docs.PreferMatchingOnResult
     Plutarch.Docs.PreferStaticallyBuilding
+    Plutarch.Docs.PString
+    Plutarch.Docs.PTryFrom
+    Plutarch.Docs.PTuple
+    Plutarch.Docs.PUnit
+    Plutarch.Docs.QDo
+    Plutarch.Docs.RaiseErrs
+    Plutarch.Docs.Recursion
     Plutarch.Docs.Run
+    Plutarch.Docs.TermCont
+    Plutarch.Docs.Tracing
+    Plutarch.Docs.Unsafe
+    Plutarch.Docs.UsePlet
     Plutarch.Docs.UsingHaskellLevelFunctions
     Plutarch.Docs.ValidatorExample
     Plutarch.Docs.WorkDuplication

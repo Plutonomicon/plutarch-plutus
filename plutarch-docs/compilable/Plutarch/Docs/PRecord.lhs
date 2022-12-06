@@ -1,18 +1,31 @@
+<details>
+<summary> imports </summary>
+<p>
+
+```haskell
+module Plutarch.Docs.PRecord () where 
+import Plutarch.Prelude ()
+```
+
+</p>
+</details>
+
 # `PRecord`
 
 You can define and use product ADTs, including records with named fields in Plutarch similar to Haskell's records. For a Haskell data type like
 
-```hs
-data Circle = Circle{
-  x, y :: Integer,
-  radius :: Natural
+```haskell
+data Circle 
+  = Circle 
+  { x, y :: Integer
+  , radius :: Natural
   }
 ```
 
 the equivalent in Plutarch would be
 
 ```hs
-data Circle f = Circle{
+data PCircle f = PCircle{
   x, y :: f PInteger,
   radius :: f PNatural
   }

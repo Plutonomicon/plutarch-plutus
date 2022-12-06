@@ -1,14 +1,25 @@
+<details>
+<summary> imports </summary>
+<p>
+
+```haskell
+{-# LANGUAGE OverloadedStrings #-}
+
+module Plutarch.Docs.PString (pfoo) where 
+import Plutarch.Prelude
+```
+
+</p>
+</details>
+
 # `PString`
 
 `Term s PString` has a `IsString` instance. This allows you to make Plutarch level string terms from regular string literals, provided you have `OverloadedStrings` turned on.
 
 ```haskell
-{-# LANGUAGE OverloadedStrings #-}
-
-"foo"
+pfoo :: forall s. Term s PString
+pfoo = "foo"
 ```
-
-where "foo" is actually `Term s PString`.
 
 It also has a `PEq` instance. And its terms have `Semigroup` and `Monoid` instances - which work the way you would expect.
 

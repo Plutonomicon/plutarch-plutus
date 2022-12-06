@@ -13,7 +13,4 @@ This section describes the fundamental, commonly used Plutarch types.
 - [`PTuple`](./Types/PTuple.md)
 - [`PAsData`](./Types/PAsData.md)
 - [`PDataSum` & `PDataRecord`](./Types/PDataSum%20and%20PDataRecord.md)
-- [`PRecord`](./Types/PRecord.md)
-  - [letrec](./Types/PRecord.md#letrec)
-  - [Record Data](./Types/PRecord.md#record-data)
 - [`PData`](./Types/PData.md)
