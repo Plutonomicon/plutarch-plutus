@@ -3,7 +3,8 @@
 <p>
 
 ```haskell
-module Plutarch.Docs.PTryFrom (recoverListFromPData, theField, untrustedRecord, recoverListPartially) where 
+{-# LANGUAGE FlexibleInstances #-}
+module Plutarch.Docs.PTryFrom (recoverListFromPData, theField, untrustedRecord, recoverListPartially, recoverAB) where 
 
 import Plutarch.Prelude
 import Plutarch.Builtin (pforgetData)
@@ -31,6 +32,44 @@ recoverListFromPData = unTermCont . fmap fst . tcont . ptryFrom @(PAsData (PBuil
 ```
 
 > Note: You can find a specialized version of `ptryFrom` in `Plutarch.Extra` that is the same as `ptryFrom @PData @(PAsData a)`
+
+## Implementing `PTryFrom`
+
+Implementing `PTryFrom` for your type should be easy as soon as you have a datatype deriving its Plutarch data representation 
+via `PlutusTypeData` as `PTryFrom` also has a generic `default` implementation.
+
+```haskell
+-- your datatype
+data PAB (s :: S)
+  = PA (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PByteString]))
+  | PB (Term s (PDataRecord '["_0" ':= PBuiltinList (PAsData PInteger), "_1" ':= PByteString]))
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData)
+
+-- getting the generic `Data` representation for your type
+instance DerivePlutusType PAB where type DPTStrat _ = PlutusTypeData
+-- getting a generic `PTryFrom` instance that recovers your type 
+-- from an opaque `PData`
+instance PTryFrom PData (PAsData PAB)
+
+-- a valid AB
+sampleAB :: Term s (PAsData PAB)
+sampleAB = pdata $ pcon $ PA (pdcons @"_0" # pdata (pconstant 4) #$ pdcons # pdata (pconstant "foo") # pdnil)
+
+-- we forget the structure of our `sampleAB`
+sampleABdata :: Term s PData
+sampleABdata = pforgetData sampleAB
+
+-- recovers an `AB` from an opaque `PData`
+recoverAB :: Term s (PAsData PAB)
+recoverAB = unTermCont $ fst <$> tcont (ptryFrom sampleABdata)
+
+```
+
+> Note: There are other valid implementations for recovering your datatype from `PData`, in some cases you might,
+> for example, want to include additional checks, think making sure that some `PNatural` is indeed positive.
+> In this case you will have to hand-roll the implementation of `PTryFrom`. For some examples, see `plutarch-test`'s 
+> `PTryFromSpec.hs`
 
 ## Laws
 

@@ -75,7 +75,6 @@ The [Concepts section](./Concepts.md) details additional concepts.
   - [Data encoding](./Concepts/Data%20and%20Scott%20encoding.md#data-encoding)
   - [Scott encoding](./Concepts/Data%20and%20Scott%20encoding.md#scott-encoding)
 - [Haskell synonym of Plutarch types](./Concepts/Haskell%20Synonym.md)
-- [PMatch introduction](./Concepts/PMatch.md)
 
 ## Typeclasses
 
@@ -96,9 +95,9 @@ The [Typeclasses section](./Typeclasses.md) discusses the primary typeclasses re
   - [All about extracting fields](./Typeclasses/PIsDataRepr%20and%20PDataFields.md#all-about-extracting-fields)
     - [Alternatives to `OverloadedRecordDot`](./Typeclasses/PIsDataRepr%20and%20PDataFields.md#alternatives-to-overloadedrecorddot)
   - [All about constructing data values](./Typeclasses/PIsDataRepr%20and%20PDataFields.md#all-about-constructing-data-values)
-  - [Implementing `PIsDataRepr` and friends](./Typeclasses/PIsDataRepr%20and%20PDataFields.md#implementing-pisdatarepr-and-friends)
 - [`PTryFrom`](./Typeclasses/PTryFrom.md)
   - [Laws](./Typeclasses/PTryFrom.md#laws)
+  - [Implementing `PTryFrom`](./Typeclasses/PTryFrom.md#implementing-ptryfrom)
   - [`PTryFromExcess`](./Typeclasses/PTryFrom.md#ptryfromexcess)
   - [Recovering only partially](./Typeclasses/PTryFrom.md#recovering-only-partially)
 
