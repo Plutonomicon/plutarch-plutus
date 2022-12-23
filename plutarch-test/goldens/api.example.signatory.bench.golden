@@ -1,4 +1,0 @@
-cont.succeeds {"exBudgetCPU":6217368,"exBudgetMemory":16009,"scriptSizeBytes":335}
-cont.fails {"exBudgetCPU":10465180,"exBudgetMemory":21069,"scriptSizeBytes":331}
-termcont.succeeds {"exBudgetCPU":6217368,"exBudgetMemory":16009,"scriptSizeBytes":335}
-termcont.fails {"exBudgetCPU":10465180,"exBudgetMemory":21069,"scriptSizeBytes":331}

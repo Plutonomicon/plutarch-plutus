@@ -1,1 +1,0 @@
-../../../Tricks/Working with bound fields.md

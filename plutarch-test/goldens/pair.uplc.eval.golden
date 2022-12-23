@@ -1,4 +1,0 @@
-eq.true (program 1.0.0 True)
-eq.false.fst (program 1.0.0 False)
-eq.false.snd (program 1.0.0 False)
-eq.false.both (program 1.0.0 False)

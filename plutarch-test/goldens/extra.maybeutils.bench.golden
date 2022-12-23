@@ -1,9 +1,0 @@
-fromJust.fromJust_Just {"exBudgetCPU":669033,"exBudgetMemory":2101,"scriptSizeBytes":57}
-fromJust.fromJust_Nothing {"exBudgetCPU":212442,"exBudgetMemory":132,"scriptSizeBytes":48}
-isJust.isJust_Just {"exBudgetCPU":368100,"exBudgetMemory":1700,"scriptSizeBytes":20}
-isJust.isJust_Nothing {"exBudgetCPU":586656,"exBudgetMemory":2301,"scriptSizeBytes":23}
-Just.Just_0 {"exBudgetCPU":1014033,"exBudgetMemory":3601,"scriptSizeBytes":43}
-fromDJust.fromDJust_Just {"exBudgetCPU":2296825,"exBudgetMemory":6259,"scriptSizeBytes":95}
-fromDJust.fromDJust_Nothing {"exBudgetCPU":790135,"exBudgetMemory":262,"scriptSizeBytes":81}
-isDJust.isDJust_Just {"exBudgetCPU":1794286,"exBudgetMemory":5294,"scriptSizeBytes":52}
-isDJust.isDJust_Nothing {"exBudgetCPU":1854349,"exBudgetMemory":5431,"scriptSizeBytes":53}

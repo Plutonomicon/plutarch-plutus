@@ -1,1 +1,0 @@
-../../../examples/VALIDATOR.md

@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+  <meta charset='UTF-8' />
+  <meta name='viewport' content='width=device-width, initial-scale=1' />
+  <title>
+    Introduction – Plutarch Guide
+  </title>
+  
+    
+      <meta property='og:description' content='Plutarch is an eDSL in Haskell for writing on-chain scripts for Cardano. With some caveats, Plutarch is a simply-typed lambda calculus (or STLC). Writing a script in Plutarch allows us to leverage the language features provided by Haskell while retaining the ability to compile to compact Untyped Plutus Core (or UPLC, which is an untyped lambda calculus).' />
+      <meta property='og:site_name' content='Plutarch Guide' />
+      <meta property='og:image' content />
+      <meta property='og:type' content='website' />
+      <meta property='og:title' content='Introduction' />
+    
+    
+      <base href='/documentation' />
+      <link href='favicon.svg' rel='icon' />
+    
+    <!-- Prism.js (doesn't work great in live server) --><link href='https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/themes/prism-tomorrow.min.css' rel='stylesheet' />
+<script src='https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/prism.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/plugins/autoloader/prism-autoloader.min.js'></script>
+
+
+  
+  <link href='tailwind.css?instanceId=15231e14-da74-4a78-9765-cd8fb5b442f9' rel='stylesheet' type='text/css' />
+
+  <!-- Heist error element -->
+  <style>
+    strong.error {
+      color: lightcoral;
+      font-size: 90%;
+      font-family: monospace;
+    }
+  </style>
+  <!-- What goes in this file will appear on near the end of <head>--><link rel='preload' href='_emanote-static/fonts/Maven_Pro/WorkSans-VariableFont_wght.ttf' as='font' type='font/ttf' crossorigin />
+
+<style>
+  @font-face {
+    font-family: 'WorkSans';
+    /* FIXME: This ought to be: ${ema:emanoteStaticLayerUrl}/fonts/Maven_Pro/WorkSans-VariableFont_wght.ttf */
+    src: url(_emanote-static/fonts/Work_Sans/WorkSans-VariableFont_wght.ttf) format("truetype");
+    font-display: swap;
+  }
+
+  body {
+    font-family: 'WorkSans', sans-serif;
+    font-variation-settings: 'wght' 350;
+  }
+
+  a.mavenLinkBold {
+    font-variation-settings: 'wght' 400;
+  }
+
+  strong {
+    font-variation-settings: 'wght' 500;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  header,
+  .header-font {
+    font-family: 'WorkSans', sans-serif;
+  }
+
+  h1 {
+    font-variation-settings: 'wght' 500;
+  }
+
+  h2 {
+    font-variation-settings: 'wght' 400;
+  }
+
+  h3 {
+    font-variation-settings: 'wght' 300;
+  }
+</style>
+
+  
+  <link rel='stylesheet' href='_emanote-static/stork/flat.css' />
+<!-- Custom Stork-search styling for Emanote -->
+<style>
+  #stork-search-container {
+    z-index: 1000;
+    background-color: rgb(15 23 42/.8);
+  }
+
+  .stork-overflow-hidden-important {
+    overflow: hidden !important;
+  }
+</style>
+
+
+<script src='_emanote-static/stork/stork.js'></script>
+
+  
+    <script data-emanote-base-url='/documentation'>
+      window.emanote = {};
+      window.emanote.stork = {
+        searchShown: false,
+        toggleSearch: function () {
+          document.getElementById('stork-search-container').classList.toggle('hidden');
+          window.emanote.stork.searchShown = document.body.classList.toggle('stork-overflow-hidden-important');
+          if (window.emanote.stork.searchShown) {
+            document.getElementById('stork-search-input').focus();
+          }
+        },
+        clearSearch: function () {
+          document.getElementById('stork-search-container').classList.add('hidden');
+          document.body.classList.remove('stork-overflow-hidden-important');
+          window.emanote.stork.searchShown = false;
+        },
+
+        init: function () {
+          const indexName = 'emanote-search'; // used to match input[data-stork] attribute value
+          const baseUrl = document.currentScript.getAttribute('data-emanote-base-url') || '/';
+          const indexUrl = baseUrl + '-/stork.st';
+          if (document.readyState !== 'complete') {
+            window.addEventListener('load', function () {
+              stork.initialize(baseUrl + '_emanote-static/stork/stork.wasm');
+              stork.register(indexName, indexUrl);
+            });
+
+            document.addEventListener('keydown', event => {
+              if (window.emanote.stork.searchShown && event.key === 'Escape') {
+                window.emanote.stork.clearSearch();
+                event.preventDefault();
+              } else if ((event.key == 'k' || event.key == 'K') && (event.ctrlKey || event.metaKey)) {
+                window.emanote.stork.toggleSearch();
+                event.preventDefault();
+              }
+            });
+          } else {
+            // Override existing on Ema's hot-reload
+            stork.register(indexName, indexUrl, { forceOverwrite: true });
+          }
+        }
+      };
+
+      window.emanote.stork.init();
+    </script>
+  
+
+</head>
+
+<!-- DoNotFormat -->
+
+
+
+<!-- DoNotFormat -->
+
+<body class='bg-gray-400 overflow-y-scroll'>
+  
+    <div class='container mx-auto'>
+
+      <nav id='breadcrumbs' class='w-full text-gray-700 md:hidden'>
+  <div class='flex justify-left'>
+    <div class='w-full px-2 py-2 bg-gray-50'>
+      <ul class='flex flex-wrap text-lg'>
+        <li class='inline-flex items-center'>
+          
+            
+              <img style='width: 1rem;' src='favicon.svg' />
+            
+          
+        </li>
+        
+          
+            <li class='inline-flex items-center'>
+              <a class='px-1 font-bold' href=''>
+                Plutarch Guide
+              </a>
+              <svg fill='currentColor' viewBox='0 0 20 20' class='w-auto h-5 text-gray-400'>
+                <path fill-rule='evenodd' d='M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z' clip-rule='evenodd'></path>
+              </svg>
+            </li>
+          
+        
+      </ul>
+    </div>
+    <button class='inline px-2 py-1 bg-gray-50 outline-none cursor-pointer focus:outline-none' title='Search (Ctrl+K)' type='button' onclick='window.emanote.stork.toggleSearch()'>
+      <svg xmlns='http://www.w3.org/2000/svg' style='width: 1rem;' class='hover:text-green-700' f
+ fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2'>
+  <path stroke-linecap='round' stroke-linejoin='round' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'></path>
+</svg>
+    </button>
+    <button class='inline px-2 py-1 text-white bg-green-600 outline-none cursor-pointer focus:outline-none' title='Toggle sidebar' type='button' onclick="toggleHidden('sidebar')">
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 6h16M4 12h16M4 18h16'></path>
+      </svg>
+    </button>
+    <script>
+      function toggleHidden(elemId) {
+        document.getElementById(elemId).classList.toggle("hidden");
+      }
+    </script>
+  </div>
+</nav>
+
+      <div id='container' class='flex flex-nowrap flex-col md:flex-row bg-gray-50 md:mt-8 md:shadow-2xl md:mb-8'>
+        <!-- Sidebar column -->
+        <nav id='sidebar' class='flex-shrink hidden leading-relaxed md:block md:sticky md:top-0 md:h-full md:w-48 xl:w-64'>
+          <div class='px-2 py-2 text-gray-800'>
+            <div id='indexing-links' class='flex flex-row float-right p-2 space-x-2 text-gray-500'>
+              <a href='-/tags.html' title='View tags'>
+                <svg style='width: 1rem;' class='hover:text-green-700' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+                  <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z'>
+                  </path>
+                </svg>
+              </a>
+              <a href='-/all.html' title='Expand full tree'>
+                <svg style='width: 1rem;' class='hover:text-green-700' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+                  <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4'>
+                  </path>
+                </svg>
+              </a>
+              <a title='Search (Ctrl+K)' class='cursor-pointer' onclick='window.emanote.stork.toggleSearch()'>
+                <svg xmlns='http://www.w3.org/2000/svg' style='width: 1rem;' class='hover:text-green-700' f
+ fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2'>
+  <path stroke-linecap='round' stroke-linejoin='round' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'></path>
+</svg>
+              </a>
+            </div>
+
+            <div id='site-logo' class='pl-2'>
+              <div class='flex items-center my-2 space-x-2 justify-left'>
+                <a href='' title='Go to Home'>
+                  
+                    
+                      <!-- The style width attribute here is to prevent huge
+                      icon from displaying at those rare occasions when Tailwind
+                      hasn't kicked in immediately on page load 
+                      -->
+                      <img style='width: 1rem;' class='transition transform hover:scale-110 hover:opacity-80' src='favicon.svg' />
+                    
+                  
+                </a>
+                <a class='font-bold truncate' title='Go to Home' href=''>
+                  Home
+                </a>
+              </div>
+            </div>
+
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+  
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-500' viewBox='0 0 20 20' fill='currentColor'>
+        <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z'></path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Concepts' href='Concepts.html'>
+      Concepts
+    </a>
+    
+      
+        <span class='text-gray-300' title='5 children inside'>
+          5
+        </span>
+      
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='DEVGUIDE' href='DEVGUIDE.html'>
+      DEVGUIDE
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+  
+
+
+  
+  
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-700' viewBox='0 0 20 20' fill='currentColor'>
+        <path fill-rule='evenodd' d='M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1H8a3 3 0 00-3 3v1.5a1.5 1.5 0 01-3 0V6z' clip-rule='evenodd'></path>
+        <path d='M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z'></path>
+      </svg>
+      
+  
+    <a class='font-bold text-green-600 hover:underline truncate' title='Introduction' href='Introduction.html'>
+      Introduction
+    </a>
+    
+      
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+    
+      <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Delay and Force' href='Introduction/Delay%20and%20Force.html'>
+      Delay and Force
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+    
+      <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Pattern matching' href='Introduction/Pattern%20matching.html'>
+      Pattern matching
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+    
+      <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+  
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-500' viewBox='0 0 20 20' fill='currentColor'>
+        <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z'></path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Plutarch Terms' href='Introduction/Plutarch%20Terms.html'>
+      Plutarch <code>Term</code>s
+    </a>
+    
+      
+        <span class='text-gray-300' title='2 children inside'>
+          2
+        </span>
+      
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+    
+      <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Plutarch Types' href='Introduction/Plutarch%20Types.html'>
+      Plutarch Types
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+    
+      <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Untyped Plutus Core (UPLC)' href='Introduction/Untyped%20Plutus%20Core.html'>
+      Untyped Plutus Core (UPLC)
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+    
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='README' href='README.html'>
+      README
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Run' href='Run.html'>
+      Run
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+  
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-500' viewBox='0 0 20 20' fill='currentColor'>
+        <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z'></path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Tricks' href='Tricks.html'>
+      Tricks
+    </a>
+    
+      
+        <span class='text-gray-300' title='12 children inside'>
+          12
+        </span>
+      
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Troubleshooting' href='Troubleshooting.html'>
+      Troubleshooting
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+  
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-500' viewBox='0 0 20 20' fill='currentColor'>
+        <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z'></path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Typeclasses' href='Typeclasses.html'>
+      Typeclasses
+    </a>
+    
+      
+        <span class='text-gray-300' title='8 children inside'>
+          8
+        </span>
+      
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+  
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-500' viewBox='0 0 20 20' fill='currentColor'>
+        <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z'></path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Types' href='Types.html'>
+      Types
+    </a>
+    
+      
+        <span class='text-gray-300' title='12 children inside'>
+          12
+        </span>
+      
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+  
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-500' viewBox='0 0 20 20' fill='currentColor'>
+        <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z'></path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Usage' href='Usage.html'>
+      Usage
+    </a>
+    
+      
+        <span class='text-gray-300' title='12 children inside'>
+          12
+        </span>
+      
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+  
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-500' viewBox='0 0 20 20' fill='currentColor'>
+        <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z'></path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='examples' href='examples.html'>
+      examples
+    </a>
+    
+      
+        <span class='text-gray-300' title='2 children inside'>
+          2
+        </span>
+      
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+
+          </div>
+        </nav>
+
+        <!-- Main body column -->
+        <div class='flex-1 w-full overflow-x-auto bg-white'>
+          <main class='px-4 py-4'>
+            <h1 class='flex items-end justify-center mb-4 p-3 bg-green-100 text-5xl font-extrabold text-black rounded'>
+  <a class='z-40 tracking-tighter '>
+    Introduction
+  </a>
+</h1>
+            <article class='overflow-auto'>
+  <!-- What goes in this file will appear on top of note body-->
+  <div xmlhtmlRaw><details>
+<summary> imports </summary>
+<p>
+</div><div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>module Plutarch.Docs.Introduction (hf) where 
+import Plutarch.Prelude</code></pre></div><div xmlhtmlRaw></p>
+</details>
+> Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high-quality documentation for Plutarch users!
+</div><h1 id='overview' class='pb-2 mb-2 text-5xl font-bold text-center'>Overview</h1>
+    <p class='mb-3'>
+      Plutarch is an eDSL in Haskell for writing on-chain scripts for Cardano. With some caveats, Plutarch is a <a href='https://en.wikipedia.org/wiki/Simply_typed_lambda_calculus' class='text-green-600 hover:underline' target='_blank' rel='noopener'>simply-typed lambda calculus</a> (or STLC). Writing a script in Plutarch allows us to leverage the language features provided by Haskell while retaining the ability to compile to compact Untyped Plutus Core (or UPLC, which is an untyped lambda calculus).
+    </p>
+  
+    <p class='mb-3'>
+      When we talk about “Plutarch scripts,” we are referring to values of type <code class='py-0.5 px-0.5 bg-gray-100'>Term (s :: S) (a :: PType)</code>. <code class='py-0.5 px-0.5 bg-gray-100'>Term</code> is a <code class='py-0.5 px-0.5 bg-gray-100'>newtype</code> wrapper around a more complex type, the details of which Plutarch end-users can ignore. A <code class='py-0.5 px-0.5 bg-gray-100'>Term</code> is a typed lambda term; it can be thought of as representing a computation that, if successfully evaluated, will return a value of type <code class='py-0.5 px-0.5 bg-gray-100'>a</code>.
+    </p>
+  
+    <p class='mb-3'>
+      The two type variables of the <code class='py-0.5 px-0.5 bg-gray-100'>Term s a</code> declaration have particular kinds:
+    </p>
+  
+    <ul class='my-3 ml-6 space-y-1 list-disc'>
+      
+        <li>
+          <code class='py-0.5 px-0.5 bg-gray-100'>s :: S</code> is like the <code class='py-0.5 px-0.5 bg-gray-100'>s</code> of <code class='py-0.5 px-0.5 bg-gray-100'>ST s a</code>. It represents the computation context in a manner that mimics mutable state while providing a familiar functional interface. Sections 1 through 4 of [<a href='#references' class='text-green-600 mavenLinkBold hover:underline'>1</a>] give an accessible introduction to how this works. <code class='py-0.5 px-0.5 bg-gray-100'>s</code> is never instantiated with a concrete value; it is merely a type-level way to ensure that computational contexts remain properly encapsulated (i.e., different state threads don’t interact). For more in-depth coverage of this and other eDSL design principles used in Plutarch, see [<a href='#references' class='text-green-600 mavenLinkBold hover:underline'>2</a>].
+        </li>
+      
+        <li>
+          <code class='py-0.5 px-0.5 bg-gray-100'>a :: PType</code> is short-hand for “Plutarch Type”. We prefix these types with a capital <code class='py-0.5 px-0.5 bg-gray-100'>P</code>, such as <code class='py-0.5 px-0.5 bg-gray-100'>PInteger</code>, <code class='py-0.5 px-0.5 bg-gray-100'>PBool</code>, and so forth. <em>Tagging</em> a <code class='py-0.5 px-0.5 bg-gray-100'>Term</code> with a <code class='py-0.5 px-0.5 bg-gray-100'>PType</code> indicates the type of the <code class='py-0.5 px-0.5 bg-gray-100'>Term</code>’s return value. Doing this allows us to bridge between the simple type system of Plutarch and the untyped UPLC.
+        </li>
+      
+    </ul>
+  
+    <p class='mb-3'>
+      Note that we <em>should not</em> think of a type of kind <code class='py-0.5 px-0.5 bg-gray-100'>PType</code> as carrying a value; it is a tag for a computation that may produce a value. For instance, the definition of <code class='py-0.5 px-0.5 bg-gray-100'>PInteger</code> is simply
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>data PInteger s</code></pre></div>
+    <p class='mb-3'>
+      That is, there are no data constructors. <em>If</em> a value of type <code class='py-0.5 px-0.5 bg-gray-100'>Term s PInteger</code> successfully executes the computation within context <code class='py-0.5 px-0.5 bg-gray-100'>s</code>, the value <em>computed</em> will be an integer. We will never encounter values such as <code class='py-0.5 px-0.5 bg-gray-100'>y :: PInteger; y = 3</code>; they simply do not exist. While readers new to Plutarch may need some time to fit this into their mental model, it is a crucial distinction to keep in mind.
+    </p>
+  
+    <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
+      
+    <p class='mb-3'>
+      For brevity, we will say a “value of type <code class='py-0.5 px-0.5 bg-gray-100'>Term s a</code> will evaluate to (…)”. This phrase will carry two implicit notions: one, that <code class='py-0.5 px-0.5 bg-gray-100'>Term s a</code> represents a computation executed in the context <code class='py-0.5 px-0.5 bg-gray-100'>s</code>; two, evaluating <code class='py-0.5 px-0.5 bg-gray-100'>Term s a</code> is not guaranteed to succeed.
+    </p>
+  
+    </blockquote>
+  
+    <p class='mb-3'>
+      In brief, when writing Plutarch scripts, we have a few tasks:
+    </p>
+  
+    <ul class='my-3 ml-6 space-y-1 list-disc'>
+      
+        <li>
+          A.) Defining <em>Plutarch Types</em> (or <em><code class='py-0.5 px-0.5 bg-gray-100'>PType</code>s</em>). We prefix these types with a capital <code class='py-0.5 px-0.5 bg-gray-100'>P</code>, such as <code class='py-0.5 px-0.5 bg-gray-100'>PInteger</code>, <code class='py-0.5 px-0.5 bg-gray-100'>PMaybe a</code>, <code class='py-0.5 px-0.5 bg-gray-100'>PBool</code>, and so forth. As previously mentioned, these form the “tags” for Plutarch <code class='py-0.5 px-0.5 bg-gray-100'>Term</code>’s, representing the type of the result of compiling and evaluating a Plutarch Script.
+        </li>
+      
+        <li>
+          B.) Working with <em>Plutarch <code class='py-0.5 px-0.5 bg-gray-100'>Terms</code></em>, which are values of the type <code class='py-0.5 px-0.5 bg-gray-100'>Term (s :: S) (a :: PType)</code>. These are the Plutarch scripts themselves, from which we build up more complex scripts before compiling and executing them on-chain.
+        </li>
+      
+        <li>
+          C.) Writing Haskell-level functions <em>between Plutarch Terms</em> (i.e., with types like <code class='py-0.5 px-0.5 bg-gray-100'>Term s a -&gt; Term s b</code>). Doing so allows us to leverage Haskell’s language features and ecosystem.
+        </li>
+      
+        <li>
+          D.) Efficiently Converting the functions from <em>(C.)</em> to <em>Plutarch-level functions</em>, which are of the type <code class='py-0.5 px-0.5 bg-gray-100'>Term s (a :--&gt; b)</code>. We can <em>directly</em> convert the functions from (C.) to Plutarch-level functions at the most naive level using <code class='py-0.5 px-0.5 bg-gray-100'>plam</code>. Additional Plutarch utilities provide for optimization opportunities.
+        </li>
+      
+        <li>
+          E.) Compiling and executing the functions from <em>(D.)</em>, targetting UPLC for on-chain usage.
+        </li>
+      
+    </ul>
+  
+    <p class='mb-3'>
+      As a preview, the bridge Plutarch provides between Haskell and UPLC looks something like this:
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='language-none'>------------------------------------------------------
+|                  *Haskell World*                   |
+------------------------------------------------------
+| Values with types like `Bool`, `Integer`, `Maybe a`|
+| and regular Haskell functions like a -&gt; b          |
+------------------------------------------------------
+                           ^                     |
+ (functions like `plift`)--|                     |--(functions like `pconstant` or `plam`)
+                           |                     |
+                           |                     v         (`pcon`)
+-------------------------------------------------------    |                     -------------------------------------------------------
+|                  *Plutarch Term World*              | &lt;----------------------- |                  *Plutarch Type World*              |
+-------------------------------------------------------                          -------------------------------------------------------
+| STLC terms; constants like `Term s PInteger` and    | -----------------------&gt; | Types like `PInteger`, `PMaybe a`                   |
+| lambdas like `Term s (PInteger :--&gt; PBool)`         |        |                 |                                                     |
+-------------------------------------------------------        (`pmatch`)        -------------------------------------------------------
+                              |
+                              |
+                              |--(`compile`)
+                              |
+                              |
+                              v
+-------------------------------------------------------
+|                    *UPLC World*                     |
+-------------------------------------------------------
+| Untyped lambda calculus terms. Values of type `Data`|
+|                                                     |
+-------------------------------------------------------</code></pre></div>
+    <p class='mb-3'>
+      Further, you may notice two general categories of functions in Plutarch: “Haskell-level” functions between terms, and “Plutarch-level” functions <em>as</em> lambda terms. By convention, we will prefix the Haskell-level functions with <code class='py-0.5 px-0.5 bg-gray-100'>h</code> and the Plutarch-level lambdas with <code class='py-0.5 px-0.5 bg-gray-100'>p</code>, for example
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>-- This example is listed here as a preview; the unfamiliar parts will
+-- be detailed below.
+
+-- A Plutarch-level lambda term
+pf :: Term s (a :--&gt; b :--&gt; c)
+pf = undefined
+
+-- Recovering a Haskell level function from a Plutarch level function
+hf :: Term s a -&gt; Term s b -&gt; Term s c
+hf x y = pf # x # y</code></pre></div>
+    <p class='mb-3'>
+      Note that <code class='py-0.5 px-0.5 bg-gray-100'>pf</code> is truly just a Plutarch <code class='py-0.5 px-0.5 bg-gray-100'>Term</code> and should not be treated specially.
+    </p>
+  
+    <p class='mb-3'>
+      The remainder of this document cover the bridge between Haskell and Plutarch at a high level. It will <em>not</em> cover all techniques necessary to write production-ready scripts. Nor will it cover the bridge between Plutarch and UPLC beyond the minimum. Nonetheless, it should provide sufficient background to prepare the reader for further study.
+    </p>
+  
+    <p class='mb-3'>
+      Sections:-
+    </p>
+  
+    <ul class='my-3 ml-6 space-y-1 list-disc'>
+      
+        <li>
+          <a href='Introduction/Untyped%20Plutus%20Core.html' class='text-green-600 mavenLinkBold hover:underline'>Untyped Plutus Core (UPLC)</a>
+        </li>
+      
+        <li>
+          <a href='Introduction/Plutarch%20Types.html' class='text-green-600 mavenLinkBold hover:underline'>Plutarch Types</a>
+        </li>
+      
+        <li>
+          <a href='Introduction/Plutarch%20Terms.html' class='text-green-600 mavenLinkBold hover:underline'>Plutarch <code class='py-0.5 px-0.5 bg-gray-100'>Term</code>s</a>
+    <ul class='my-3 ml-6 space-y-1 list-disc'>
+      
+        <li>
+          <a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html' class='text-green-600 mavenLinkBold hover:underline'>Plutarch Constant <code class='py-0.5 px-0.5 bg-gray-100'>Term</code>s</a>
+    <ul class='my-3 ml-6 space-y-1 list-disc'>
+      
+        <li>
+          <a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html#static-building-of-constant-terms-with-pconstant' class='text-green-600 mavenLinkBold hover:underline'>Static building of constant <code class='py-0.5 px-0.5 bg-gray-100'>Term</code>s with <code class='py-0.5 px-0.5 bg-gray-100'>pconstant</code></a>
+        </li>
+      
+        <li>
+          <a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html#dynamic-building-of-constant-terms-with-pcon' class='text-green-600 mavenLinkBold hover:underline'>Dynamic building of constant <code class='py-0.5 px-0.5 bg-gray-100'>Term</code>s with <code class='py-0.5 px-0.5 bg-gray-100'>pcon</code></a>
+        </li>
+      
+        <li>
+          <a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html#overloaded-literals' class='text-green-600 mavenLinkBold hover:underline'>Overloaded literals</a>
+        </li>
+      
+        <li>
+          <a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html#helper-functions' class='text-green-600 mavenLinkBold hover:underline'>Helper functions</a>
+        </li>
+      
+    </ul>
+  
+        </li>
+      
+        <li>
+          <a href='Introduction/Plutarch%20Terms/Plutarch%20Lambdas.html#lambdas-plutarch-level-function-terms' class='text-green-600 mavenLinkBold hover:underline'>Lambdas; Plutarch-level Function <code class='py-0.5 px-0.5 bg-gray-100'>Term</code>s.</a>
+    <ul class='my-3 ml-6 space-y-1 list-disc'>
+      
+        <li>
+          <a href='Introduction/Plutarch%20Terms/Plutarch%20Lambdas.html#function-application' class='text-green-600 mavenLinkBold hover:underline'>Function Application</a>
+        </li>
+      
+    </ul>
+  
+        </li>
+      
+    </ul>
+  
+        </li>
+      
+        <li>
+          <a href='Introduction/Pattern%20matching.html' class='text-green-600 mavenLinkBold hover:underline'>Pattern matching constant <code class='py-0.5 px-0.5 bg-gray-100'>Term</code>s with <code class='py-0.5 px-0.5 bg-gray-100'>pmatch</code>.</a>
+        </li>
+      
+        <li>
+          <a href='Introduction/Delay%20and%20Force.html' class='text-green-600 mavenLinkBold hover:underline'>Strictness and Laziness; Delayed Terms and Forcing</a>
+        </li>
+      
+    </ul>
+  <h1 id='references' class='pb-2 mb-2 text-5xl font-bold text-center'>References</h1>
+    <ul class='my-3 ml-6 space-y-1 list-disc'>
+      
+        <li>
+          [1]<a href='https://www.microsoft.com/en-us/research/wp-content/uploads/1994/06/lazy-functional-state-threads.pdf' class='text-green-600 hover:underline' target='_blank' rel='noopener'>Lazy Functional State Threads, by John Launchbury and Simon L Peyton Jones</a>
+        </li>
+      
+        <li>
+          [2]<a href='https://bentnib.org/unembedding.pdf' class='text-green-600 hover:underline' target='_blank' rel='noopener'>Unembedding Domain-Specific Languages, by Robert Atkey, Sam Lindley, and Jeremy Yallop</a>
+        </li>
+      
+        <li>
+          [3]<a href='https://www.parsonsmatt.org/2017/04/26/basic_type_level_programming_in_haskell.html' class='text-green-600 hover:underline' target='_blank' rel='noopener'>Matt Parson: Basic Type Level Programming in Haskell</a>
+        </li>
+      
+    </ul>
+  
+  <!-- What goes in this file will appear below the note body-->
+</article>
+            <div class='flex flex-col lg:flex-row lg:space-x-2'>
+              
+              
+  <div class='flex-1 p-4 mt-8 bg-gray-100 rounded'>
+    <header class='mb-2 text-xl font-semibold text-gray-500'>Links to this page</header>
+    <ul class='space-y-1'>
+      
+        <li>
+          <a class='text-green-600 mavenLinkBold hover:bg-green-50' href='README.html'>
+            README
+          </a>
+          
+            <div class='mb-4 overflow-auto text-sm text-gray-500'>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><a href='Introduction.html#overview' class='text-gray-600 font-bold hover:bg-gray-50'>Overview</a></div>
+    </div>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><a href='Introduction.html#references' class='text-gray-600 font-bold hover:bg-gray-50'>References</a></div>
+    </div>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><p>The <a href='Introduction.html' class='text-gray-600 font-bold hover:bg-gray-50'>Introduction section</a> serves as a introduction to Plutarch’s basic concepts and core syntactic constructs. It will help build a mental model of Plutarch, but is insufficient to write production-ready code.</p></div>
+    </div>
+  
+</div>
+          
+        </li>
+      
+        <li>
+          <a class='text-green-600 mavenLinkBold hover:bg-green-50' href='Introduction/Plutarch%20Types.html'>
+            Plutarch Types
+          </a>
+          
+            <div class='mb-4 overflow-auto text-sm text-gray-500'>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><p>Note to beginners: Plutarch uses a language extension called <code>DataKinds</code>. This means that there are kinds beyond <code>Type</code> (aka <code>*</code>). We refer the read to [<a href='Introduction.html#references' class='text-gray-600 font-bold hover:bg-gray-50'>3</a>] for an extended beginner-level introduction to these concepts if desired.</p></div>
+    </div>
+  
+</div>
+          
+        </li>
+      
+    </ul>
+  </div>
+
+            </div>
+            
+  <section class='flex flex-wrap items-end justify-center my-4 space-x-2 space-y-2 font-mono text-sm'>
+    
+  </section>
+
+            <!-- What goes in this file will at the very end of the main div -->
+          </main>
+        </div>
+      </div>
+      <footer class='flex items-center justify-center mt-2 mb-8 space-x-4 text-center text-gray-800'>
+  
+  <div>
+    <a href='' title='Go to Home page'>
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-6 h-6 hover:text-green-700' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'></path>
+      </svg>
+    </a>
+  </div>
+  <div>
+    <a href='-/all.html' title='View Index'>
+      <svg class='w-6 h-6 hover:text-green-700' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4'>
+        </path>
+      </svg>
+    </a>
+  </div>
+  <div>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 0.7.14.0'>
+      <img class='w-6 h-6 hover:text-green-700' src='_emanote-static/emanote-logo.svg' />
+    </a>
+  </div>
+  <div>
+    <a href='-/tags.html' title='View tags'>
+      <svg class='w-6 h-6 hover:text-green-700' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z'>
+        </path>
+      </svg>
+    </a>
+  </div>
+  <div>
+    <a href='-/tasks.html' title='View tasks'>
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-6 h-6 hover:text-green-700' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'></path>
+      </svg>
+    </a>
+  </div>
+</footer>
+    </div>
+  
+  <div id='stork-search-container' class='hidden fixed w-screen h-screen inset-0 backdrop-filter backdrop-blur-sm'>
+  <div class='fixed w-screen h-screen inset-0' onclick='window.emanote.stork.toggleSearch()'></div>
+
+  <div class='container mx-auto p-10 mt-10'>
+    <div class='stork-wrapper-flat container mx-auto'>
+      <input id='stork-search-input' data-stork='emanote-search' class='stork-input' placeholder='Search (Ctrl+K) ...' />
+      <div data-stork='emanote-search-output' class='stork-output'></div>
+    </div>
+  </div>
+</div>
+</body>
+
+</html>

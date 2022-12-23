@@ -1,1 +1,0 @@
-../../../Tricks/Prefer statically building constants.md

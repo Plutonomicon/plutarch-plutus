@@ -1,1 +1,0 @@
-../../../Tricks/Prefer matching on pmatch result immediately.md

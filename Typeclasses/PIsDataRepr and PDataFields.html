@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+  <meta charset='UTF-8' />
+  <meta name='viewport' content='width=device-width, initial-scale=1' />
+  <title>
+    PIsDataRepr and PDataFields – Plutarch Guide
+  </title>
+  
+    
+      <meta property='og:description' content='Deriving PlutusType with DPTStrat PlutusTypeData allows for easily constructing and deconstructing Constr BuiltinData/Data values. It allows fully type safe matching on Data encoded values, without embedding type information within the generated script - unlike PlutusTx. PDataFields, on top of that, allows for ergonomic field access.' />
+      <meta property='og:site_name' content='Plutarch Guide' />
+      <meta property='og:image' content />
+      <meta property='og:type' content='website' />
+      <meta property='og:title' content='PIsDataRepr and PDataFields' />
+    
+    
+      <base href='/documentation' />
+      <link href='favicon.svg' rel='icon' />
+    
+    <!-- Prism.js (doesn't work great in live server) --><link href='https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/themes/prism-tomorrow.min.css' rel='stylesheet' />
+<script src='https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/prism.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/plugins/autoloader/prism-autoloader.min.js'></script>
+
+
+  
+  <link href='tailwind.css?instanceId=15231e14-da74-4a78-9765-cd8fb5b442f9' rel='stylesheet' type='text/css' />
+
+  <!-- Heist error element -->
+  <style>
+    strong.error {
+      color: lightcoral;
+      font-size: 90%;
+      font-family: monospace;
+    }
+  </style>
+  <!-- What goes in this file will appear on near the end of <head>--><link rel='preload' href='_emanote-static/fonts/Maven_Pro/WorkSans-VariableFont_wght.ttf' as='font' type='font/ttf' crossorigin />
+
+<style>
+  @font-face {
+    font-family: 'WorkSans';
+    /* FIXME: This ought to be: ${ema:emanoteStaticLayerUrl}/fonts/Maven_Pro/WorkSans-VariableFont_wght.ttf */
+    src: url(_emanote-static/fonts/Work_Sans/WorkSans-VariableFont_wght.ttf) format("truetype");
+    font-display: swap;
+  }
+
+  body {
+    font-family: 'WorkSans', sans-serif;
+    font-variation-settings: 'wght' 350;
+  }
+
+  a.mavenLinkBold {
+    font-variation-settings: 'wght' 400;
+  }
+
+  strong {
+    font-variation-settings: 'wght' 500;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  header,
+  .header-font {
+    font-family: 'WorkSans', sans-serif;
+  }
+
+  h1 {
+    font-variation-settings: 'wght' 500;
+  }
+
+  h2 {
+    font-variation-settings: 'wght' 400;
+  }
+
+  h3 {
+    font-variation-settings: 'wght' 300;
+  }
+</style>
+
+  
+  <link rel='stylesheet' href='_emanote-static/stork/flat.css' />
+<!-- Custom Stork-search styling for Emanote -->
+<style>
+  #stork-search-container {
+    z-index: 1000;
+    background-color: rgb(15 23 42/.8);
+  }
+
+  .stork-overflow-hidden-important {
+    overflow: hidden !important;
+  }
+</style>
+
+
+<script src='_emanote-static/stork/stork.js'></script>
+
+  
+    <script data-emanote-base-url='/documentation'>
+      window.emanote = {};
+      window.emanote.stork = {
+        searchShown: false,
+        toggleSearch: function () {
+          document.getElementById('stork-search-container').classList.toggle('hidden');
+          window.emanote.stork.searchShown = document.body.classList.toggle('stork-overflow-hidden-important');
+          if (window.emanote.stork.searchShown) {
+            document.getElementById('stork-search-input').focus();
+          }
+        },
+        clearSearch: function () {
+          document.getElementById('stork-search-container').classList.add('hidden');
+          document.body.classList.remove('stork-overflow-hidden-important');
+          window.emanote.stork.searchShown = false;
+        },
+
+        init: function () {
+          const indexName = 'emanote-search'; // used to match input[data-stork] attribute value
+          const baseUrl = document.currentScript.getAttribute('data-emanote-base-url') || '/';
+          const indexUrl = baseUrl + '-/stork.st';
+          if (document.readyState !== 'complete') {
+            window.addEventListener('load', function () {
+              stork.initialize(baseUrl + '_emanote-static/stork/stork.wasm');
+              stork.register(indexName, indexUrl);
+            });
+
+            document.addEventListener('keydown', event => {
+              if (window.emanote.stork.searchShown && event.key === 'Escape') {
+                window.emanote.stork.clearSearch();
+                event.preventDefault();
+              } else if ((event.key == 'k' || event.key == 'K') && (event.ctrlKey || event.metaKey)) {
+                window.emanote.stork.toggleSearch();
+                event.preventDefault();
+              }
+            });
+          } else {
+            // Override existing on Ema's hot-reload
+            stork.register(indexName, indexUrl, { forceOverwrite: true });
+          }
+        }
+      };
+
+      window.emanote.stork.init();
+    </script>
+  
+
+</head>
+
+<!-- DoNotFormat -->
+
+
+
+<!-- DoNotFormat -->
+
+<body class='bg-gray-400 overflow-y-scroll'>
+  
+    <div class='container mx-auto'>
+
+      <nav id='breadcrumbs' class='w-full text-gray-700 md:hidden'>
+  <div class='flex justify-left'>
+    <div class='w-full px-2 py-2 bg-gray-50'>
+      <ul class='flex flex-wrap text-lg'>
+        <li class='inline-flex items-center'>
+          
+            
+              <img style='width: 1rem;' src='favicon.svg' />
+            
+          
+        </li>
+        
+          
+            <li class='inline-flex items-center'>
+              <a class='px-1 font-bold' href=''>
+                Plutarch Guide
+              </a>
+              <svg fill='currentColor' viewBox='0 0 20 20' class='w-auto h-5 text-gray-400'>
+                <path fill-rule='evenodd' d='M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z' clip-rule='evenodd'></path>
+              </svg>
+            </li>
+          
+            <li class='inline-flex items-center'>
+              <a class='px-1 font-bold' href='Typeclasses.html'>
+                Typeclasses
+              </a>
+              <svg fill='currentColor' viewBox='0 0 20 20' class='w-auto h-5 text-gray-400'>
+                <path fill-rule='evenodd' d='M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z' clip-rule='evenodd'></path>
+              </svg>
+            </li>
+          
+        
+      </ul>
+    </div>
+    <button class='inline px-2 py-1 bg-gray-50 outline-none cursor-pointer focus:outline-none' title='Search (Ctrl+K)' type='button' onclick='window.emanote.stork.toggleSearch()'>
+      <svg xmlns='http://www.w3.org/2000/svg' style='width: 1rem;' class='hover:text-green-700' f
+ fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2'>
+  <path stroke-linecap='round' stroke-linejoin='round' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'></path>
+</svg>
+    </button>
+    <button class='inline px-2 py-1 text-white bg-green-600 outline-none cursor-pointer focus:outline-none' title='Toggle sidebar' type='button' onclick="toggleHidden('sidebar')">
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 6h16M4 12h16M4 18h16'></path>
+      </svg>
+    </button>
+    <script>
+      function toggleHidden(elemId) {
+        document.getElementById(elemId).classList.toggle("hidden");
+      }
+    </script>
+  </div>
+</nav>
+
+      <div id='container' class='flex flex-nowrap flex-col md:flex-row bg-gray-50 md:mt-8 md:shadow-2xl md:mb-8'>
+        <!-- Sidebar column -->
+        <nav id='sidebar' class='flex-shrink hidden leading-relaxed md:block md:sticky md:top-0 md:h-full md:w-48 xl:w-64'>
+          <div class='px-2 py-2 text-gray-800'>
+            <div id='indexing-links' class='flex flex-row float-right p-2 space-x-2 text-gray-500'>
+              <a href='-/tags.html' title='View tags'>
+                <svg style='width: 1rem;' class='hover:text-green-700' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+                  <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z'>
+                  </path>
+                </svg>
+              </a>
+              <a href='-/all.html' title='Expand full tree'>
+                <svg style='width: 1rem;' class='hover:text-green-700' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+                  <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4'>
+                  </path>
+                </svg>
+              </a>
+              <a title='Search (Ctrl+K)' class='cursor-pointer' onclick='window.emanote.stork.toggleSearch()'>
+                <svg xmlns='http://www.w3.org/2000/svg' style='width: 1rem;' class='hover:text-green-700' f
+ fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2'>
+  <path stroke-linecap='round' stroke-linejoin='round' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'></path>
+</svg>
+              </a>
+            </div>
+
+            <div id='site-logo' class='pl-2'>
+              <div class='flex items-center my-2 space-x-2 justify-left'>
+                <a href='' title='Go to Home'>
+                  
+                    
+                      <!-- The style width attribute here is to prevent huge
+                      icon from displaying at those rare occasions when Tailwind
+                      hasn't kicked in immediately on page load 
+                      -->
+                      <img style='width: 1rem;' class='transition transform hover:scale-110 hover:opacity-80' src='favicon.svg' />
+                    
+                  
+                </a>
+                <a class='font-bold truncate' title='Go to Home' href=''>
+                  Home
+                </a>
+              </div>
+            </div>
+
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+  
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-500' viewBox='0 0 20 20' fill='currentColor'>
+        <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z'></path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Concepts' href='Concepts.html'>
+      Concepts
+    </a>
+    
+      
+        <span class='text-gray-300' title='5 children inside'>
+          5
+        </span>
+      
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='DEVGUIDE' href='DEVGUIDE.html'>
+      DEVGUIDE
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+  
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-500' viewBox='0 0 20 20' fill='currentColor'>
+        <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z'></path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Introduction' href='Introduction.html'>
+      Introduction
+    </a>
+    
+      
+        <span class='text-gray-300' title='5 children inside'>
+          5
+        </span>
+      
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='README' href='README.html'>
+      README
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Run' href='Run.html'>
+      Run
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+  
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-500' viewBox='0 0 20 20' fill='currentColor'>
+        <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z'></path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Tricks' href='Tricks.html'>
+      Tricks
+    </a>
+    
+      
+        <span class='text-gray-300' title='12 children inside'>
+          12
+        </span>
+      
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Troubleshooting' href='Troubleshooting.html'>
+      Troubleshooting
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+      
+      
+    
+
+
+
+  
+  
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-700' viewBox='0 0 20 20' fill='currentColor'>
+        <path fill-rule='evenodd' d='M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1H8a3 3 0 00-3 3v1.5a1.5 1.5 0 01-3 0V6z' clip-rule='evenodd'></path>
+        <path d='M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z'></path>
+      </svg>
+      
+  
+    <a class='font-bold hover:underline truncate' title='Typeclasses' href='Typeclasses.html'>
+      Typeclasses
+    </a>
+    
+      
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+    
+      <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='PConstant and PLift' href='Typeclasses/PConstant%20and%20PLift.html'>
+      PConstant and PLift
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+    
+      <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='PEq and POrd' href='Typeclasses/PEq%20and%20POrd.html'>
+      PEq and POrd
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+    
+      <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='PIntegral' href='Typeclasses/PIntegral.html'>
+      <code>PIntegral</code>
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+    
+      <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='PIsData' href='Typeclasses/PIsData.html'>
+      <code>PIsData</code>
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+    
+      <!-- Variable bindings for this tree-->
+  
+  
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'>
+        </path>
+      </svg>
+      
+  
+    <a class='font-bold text-green-600 hover:underline truncate' title='PIsDataRepr and PDataFields' href='Typeclasses/PIsDataRepr%20and%20PDataFields.html'>
+      PIsDataRepr and PDataFields
+    </a>
+    
+      
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+    
+  
+</div>
+    
+      <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='PListLike' href='Typeclasses/PListLike.html'>
+      PListLike
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+    
+      <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='PTryFrom' href='Typeclasses/PTryFrom.html'>
+      PTryFrom
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+    
+      <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
+        </path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='PlutusType, PCon, and PMatch' href='Typeclasses/PlutusType%2C%20PCon%2C%20and%20PMatch.html'>
+      PlutusType, PCon, and PMatch
+    </a>
+    
+      
+        
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+    
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+  
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-500' viewBox='0 0 20 20' fill='currentColor'>
+        <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z'></path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Types' href='Types.html'>
+      Types
+    </a>
+    
+      
+        <span class='text-gray-300' title='12 children inside'>
+          12
+        </span>
+      
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+  
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-500' viewBox='0 0 20 20' fill='currentColor'>
+        <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z'></path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='Usage' href='Usage.html'>
+      Usage
+    </a>
+    
+      
+        <span class='text-gray-300' title='12 children inside'>
+          12
+        </span>
+      
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+              <!-- Variable bindings for this tree-->
+  
+    
+  
+
+
+
+  
+  
+
+<!-- Rendering of this tree -->
+<div class='pl-2'>
+  <!-- Node's rootLabel-->
+  <div class='flex items-center my-2 space-x-2 justify-left'>
+    
+    
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-500' viewBox='0 0 20 20' fill='currentColor'>
+        <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z'></path>
+      </svg>
+    
+  
+    <a class='hover:underline truncate' title='examples' href='examples.html'>
+      examples
+    </a>
+    
+      
+        <span class='text-gray-300' title='2 children inside'>
+          2
+        </span>
+      
+    
+  </div>
+
+  <!-- Node's children forest, displayed only on active trees
+    TODO: Use <details> to toggle visibility?
+  -->
+  
+</div>
+            
+
+          </div>
+        </nav>
+
+        <!-- Main body column -->
+        <div class='flex-1 w-full overflow-x-auto bg-white'>
+          <main class='px-4 py-4'>
+            <h1 class='flex items-end justify-center mb-4 p-3 bg-green-100 text-5xl font-extrabold text-black rounded'>
+  <a class='z-40 tracking-tighter '>
+    PIsDataRepr and PDataFields
+  </a>
+</h1>
+            <article class='overflow-auto'>
+  <!-- What goes in this file will appear on top of note body-->
+  <div xmlhtmlRaw><details>
+<summary> imports </summary>
+<p>
+</div><div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>{-# LANGUAGE QualifiedDo #-}
+module Plutarch.Docs.PDataFields (foo, foo', res, mockCtx, purpose, Vehicle (..), PVehicle (..), PVehicle' (..), PFoo (..), test) where 
+
+import Plutarch.Prelude
+import Plutarch.Api.V1.Contexts (PScriptContext, PScriptPurpose (PSpending, PMinting, PRewarding, PCertifying))
+import Plutarch.Api.V1.Value (PCurrencySymbol)
+import Plutarch.DataRepr (PDataFields)
+import qualified Plutarch.Monadic as P
+import PlutusLedgerApi.V1 (TxInfo (TxInfo), POSIXTime(POSIXTime), ScriptPurpose (Minting), ScriptContext (ScriptContext))
+import PlutusLedgerApi.V1.Value (CurrencySymbol (CurrencySymbol))
+import PlutusLedgerApi.V1.Interval (interval)
+import qualified PlutusTx
+import Plutarch.Docs.Run (evalWithArgsT)</code></pre></div><div xmlhtmlRaw></p>
+</details>
+</div><h1 id='plutustype-via-plutustypedata--pdatafields' class='pb-2 mb-2 text-5xl font-bold text-center'><code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code> via <code class='py-0.5 px-0.5 bg-gray-100'>PlutusTypeData</code> & <code class='py-0.5 px-0.5 bg-gray-100'>PDataFields</code></h1>
+    <p class='mb-3'>
+      Deriving <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code> with <code class='py-0.5 px-0.5 bg-gray-100'>DPTStrat PlutusTypeData</code> allows for easily constructing <em>and</em> deconstructing <code class='py-0.5 px-0.5 bg-gray-100'>Constr</code> <a href='https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md' class='text-green-600 hover:underline' target='_blank' rel='noopener'><code class='py-0.5 px-0.5 bg-gray-100'>BuiltinData</code>/<code class='py-0.5 px-0.5 bg-gray-100'>Data</code></a> values. It allows fully type safe matching on <a href='Concepts/Data%20and%20Scott%20encoding.html' class='text-green-600 mavenLinkBold hover:underline'><code class='py-0.5 px-0.5 bg-gray-100'>Data</code> encoded</a> values, without embedding type information within the generated script - unlike PlutusTx. <code class='py-0.5 px-0.5 bg-gray-100'>PDataFields</code>, on top of that, allows for ergonomic field access.
+    </p>
+  
+    <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
+      
+    <p class='mb-3'>
+      Aside: What’s a <code class='py-0.5 px-0.5 bg-gray-100'>Constr</code> data value? Briefly, it’s how Plutus Core encodes non-trivial ADTs into <code class='py-0.5 px-0.5 bg-gray-100'>Data</code>/<code class='py-0.5 px-0.5 bg-gray-100'>BuiltinData</code>. Together with <code class='py-0.5 px-0.5 bg-gray-100'>BuiltinList</code>s it allows for a sum-of-products encoding. Essentially, whenever you have a custom non-trivial ADT (that isn’t just an integer, bytestring, string/text, list, or assoc map) - and you want to represent it as a data encoded value - you should derive <code class='py-0.5 px-0.5 bg-gray-100'>PIsData</code> for it
+    </p>
+  
+    </blockquote>
+  
+    <p class='mb-3'>
+      For example, <code class='py-0.5 px-0.5 bg-gray-100'>PScriptContext</code> - which is the Plutarch synonym to <a href='https://playground.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Contexts.html#t:ScriptContext' class='text-green-600 hover:underline' target='_blank' rel='noopener'><code class='py-0.5 px-0.5 bg-gray-100'>ScriptContext</code></a>
+    </p>
+  
+    <ul class='my-3 ml-6 space-y-1 list-disc'>
+      
+        <li>
+          has the necessary instances. This lets you easily keep track of its type, match on it, deconstruct it - you name it!
+        </li>
+      
+    </ul>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>foo :: Term s (PScriptContext :--&gt; PString)
+foo = plam $ \ctx -&gt; P.do
+  purpose &lt;- pmatch $ pfield @"purpose" # ctx
+  case purpose of
+    PMinting _ -&gt; "It's minting!"
+    PSpending _ -&gt; "It's spending!"
+    PRewarding _ -&gt; "It's rewarding!"
+    PCertifying _ -&gt; "It's certifying!"</code></pre></div>
+    <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
+      
+    <p class='mb-3'>
+      Note: The above snippet uses GHC 9 features (<code class='py-0.5 px-0.5 bg-gray-100'>QualifiedDo</code>). Be sure to check out <a href='Usage/Do%20syntax%20with%20TermCont.html' class='text-green-600 mavenLinkBold hover:underline'>Do syntax with <code class='py-0.5 px-0.5 bg-gray-100'>TermCont</code></a>.
+    </p>
+  
+    </blockquote>
+  
+    <p class='mb-3'>
+      Of course, just like <code class='py-0.5 px-0.5 bg-gray-100'>ScriptContext</code> - <code class='py-0.5 px-0.5 bg-gray-100'>PScriptContext</code> is represented as a <code class='py-0.5 px-0.5 bg-gray-100'>Data</code> value in Plutus Core. Plutarch just lets you keep track of the <em>exact representation</em> of it within the type system.
+    </p>
+  
+    <p class='mb-3'>
+      Here’s how <code class='py-0.5 px-0.5 bg-gray-100'>PScriptContext</code> is defined:
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>newtype PScriptContext (s :: S)
+  = PScriptContext
+      ( Term
+          s
+          ( PDataRecord
+              '[ "txInfo" ':= PTxInfo
+               , "purpose" ':= PScriptPurpose
+               ]
+          )
+      )</code></pre></div>
+    <p class='mb-3'>
+      It’s a constructor containing a <a href='Types/PDataSum%20and%20PDataRecord.html' class='text-green-600 mavenLinkBold hover:underline'><code class='py-0.5 px-0.5 bg-gray-100'>PDataRecord</code></a> term. It has 2 fields- <code class='py-0.5 px-0.5 bg-gray-100'>txInfo</code> and <code class='py-0.5 px-0.5 bg-gray-100'>purpose</code>.
+    </p>
+  
+    <p class='mb-3'>
+      First, we extract the <code class='py-0.5 px-0.5 bg-gray-100'>purpose</code> field using <code class='py-0.5 px-0.5 bg-gray-100'>pfield @"purpose"</code>:
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>pfield :: Term s (PScriptContext :--&gt; PScriptPurpose)</code></pre></div>
+    <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
+      
+    <p class='mb-3'>
+      Note: When extracting several fields from the same variable, you should instead use <code class='py-0.5 px-0.5 bg-gray-100'>pletFields</code>. See: <a href='#all-about-extracting-fields' class='text-green-600 mavenLinkBold hover:underline'>Extracting fields</a>
+    </p>
+  
+    </blockquote>
+  
+    <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
+      
+    <p class='mb-3'>
+      Aside: <code class='py-0.5 px-0.5 bg-gray-100'>pfield</code> is actually return type polymorhpic. It could’ve returned either <code class='py-0.5 px-0.5 bg-gray-100'>PAsData PScriptPurpose</code> and <code class='py-0.5 px-0.5 bg-gray-100'>PScriptPurpose</code>. In this case, GHC correctly infers that we actually want a <code class='py-0.5 px-0.5 bg-gray-100'>PScriptPurpose</code>, since <code class='py-0.5 px-0.5 bg-gray-100'>pmatch</code> doesn’t work on <code class='py-0.5 px-0.5 bg-gray-100'>PAsData PScriptPurpose</code>!
+    </p>
+  
+    <p class='mb-3'>
+      Sometimes GHC isn’t so smart, and you’re forced to provide an explicit type annotation. Or you can simply use <code class='py-0.5 px-0.5 bg-gray-100'>pfromData $ pfield ....</code>.
+    </p>
+  
+    </blockquote>
+  
+    <p class='mb-3'>
+      Now, we can <code class='py-0.5 px-0.5 bg-gray-100'>pmatch</code> on our <code class='py-0.5 px-0.5 bg-gray-100'>Term s PScriptPurpose</code> to extract the Haskell ADT (<code class='py-0.5 px-0.5 bg-gray-100'>PScriptPurpose s</code>) out of the Plutarch term:
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>pmatch :: Term s PScriptPurpose -&gt; (PScriptPurpose s -&gt; Term s PString) -&gt; Term s PString</code></pre></div>
+    <p class='mb-3'>
+      Now that we have <code class='py-0.5 px-0.5 bg-gray-100'>PScriptPurpose s</code>, we can just <code class='py-0.5 px-0.5 bg-gray-100'>case</code> match on it! <code class='py-0.5 px-0.5 bg-gray-100'>PScriptPurpose</code> is defined as:
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>data PScriptPurpose (s :: S)
+  = PMinting (Term s (PDataRecord '["_0" ':= PCurrencySymbol]))
+  | PSpending (Term s (PDataRecord '["_0" ':= PTxOutRef]))
+  | PRewarding (Term s (PDataRecord '["_0" ':= PStakingCredential]))
+  | PCertifying (Term s (PDataRecord '["_0" ':= PDCert]))</code></pre></div>
+    <p class='mb-3'>
+      It’s just a Plutarch sum type.
+    </p>
+  
+    <p class='mb-3'>
+      We’re not really interested in the fields (the <code class='py-0.5 px-0.5 bg-gray-100'>PDataRecord</code> term), so we just match on the constructor with the familar <code class='py-0.5 px-0.5 bg-gray-100'>case</code>. Easy!
+    </p>
+  
+    <p class='mb-3'>
+      Let’s pass in a <code class='py-0.5 px-0.5 bg-gray-100'>ScriptContext</code> as a <code class='py-0.5 px-0.5 bg-gray-100'>Data</code> value from Haskell to this Plutarch script and see if it works!
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>mockCtx :: ScriptContext
+mockCtx =
+  ScriptContext
+    (TxInfo
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      (interval (POSIXTime 1) (POSIXTime 2))
+      mempty
+      mempty
+      ""
+    )
+    (Minting (CurrencySymbol ""))
+
+res :: Either _ _
+res = foo `evalWithArgsT` [PlutusTx.toData mockCtx]
+-- Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf string "It's minting!"))))</code></pre></div>
+    <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
+      
+    <p class='mb-3'>
+      Aside: You can find the definition of <code class='py-0.5 px-0.5 bg-gray-100'>evalWithArgsT</code> at <a href='README.html#compiling-and-running' class='text-green-600 mavenLinkBold hover:underline'>Compiling and Running</a>.
+    </p>
+  
+    </blockquote>
+  <h2 id='all-about-extracting-fields' class='inline-block mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>All about extracting fields</h2>
+    <p class='mb-3'>
+      We caught a glimpse of field extraction in the example above, thanks to <code class='py-0.5 px-0.5 bg-gray-100'>pfield</code>. However, that barely touched the surface.
+    </p>
+  
+    <p class='mb-3'>
+      Once a type has a <code class='py-0.5 px-0.5 bg-gray-100'>PDataFields</code> instance, field extraction can be done with these 3 functions:
+    </p>
+  
+    <ul class='my-3 ml-6 space-y-1 list-disc'>
+      
+        <li>
+          <code class='py-0.5 px-0.5 bg-gray-100'>pletFields</code>
+        </li>
+      
+        <li>
+          <code class='py-0.5 px-0.5 bg-gray-100'>pfield</code>
+        </li>
+      
+        <li>
+          <code class='py-0.5 px-0.5 bg-gray-100'>getField</code> (when not using <code class='py-0.5 px-0.5 bg-gray-100'>OverloadedRecordDot</code> or <a href='https://hackage.haskell.org/package/record-dot-preprocessor' class='text-green-600 hover:underline' target='_blank' rel='noopener'>record dot preprocessor</a>)
+        </li>
+      
+    </ul>
+  
+    <p class='mb-3'>
+      Each has its own purpose. However, <code class='py-0.5 px-0.5 bg-gray-100'>pletFields</code> is arguably the most general purpose and most efficient. Whenever you need to extract several fields from the same variable, you should use <code class='py-0.5 px-0.5 bg-gray-100'>pletFields</code>:
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>foo' :: Term s (PScriptContext :--&gt; PUnit)
+foo' = plam $ \ctx' -&gt; P.do
+  ctx &lt;- pletFields @["txInfo", "purpose"] ctx'
+  let
+    _purpose = ctx.purpose
+    _txInfo = ctx.txInfo
+  -- &lt;use purpose and txInfo here&gt;
+  pconstant ()</code></pre></div>
+    <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
+      
+    <p class='mb-3'>
+      Note: The above snippet uses GHC 9 features (<code class='py-0.5 px-0.5 bg-gray-100'>QualifiedDo</code> and <code class='py-0.5 px-0.5 bg-gray-100'>OverloadedRecordDot</code>). Be sure to check out <a href='Usage/Do%20syntax%20with%20TermCont.html' class='text-green-600 mavenLinkBold hover:underline'>Do syntax with <code class='py-0.5 px-0.5 bg-gray-100'>TermCont</code></a> and <a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#alternatives-to-overloadedrecorddot' class='text-green-600 mavenLinkBold hover:underline'>alternatives to <code class='py-0.5 px-0.5 bg-gray-100'>OverloadedRecordDot</code></a>.
+    </p>
+  
+    </blockquote>
+  
+    <p class='mb-3'>
+      In essence, <code class='py-0.5 px-0.5 bg-gray-100'>pletFields</code> takes in a type level list of the field names that you want to access and a continuation function that takes in an <code class='py-0.5 px-0.5 bg-gray-100'>HRec</code>. This <code class='py-0.5 px-0.5 bg-gray-100'>HRec</code> is essentially a collection of the bound fields. You don’t have to worry too much about the details of <code class='py-0.5 px-0.5 bg-gray-100'>HRec</code>. This particular usage has type:
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>pletFields :: Term s PScriptContext
+  -&gt; (HRec
+        (BoundTerms
+           '[ "txInfo" ':= PTxInfo, "purpose" ':= PScriptPurpose]
+           '[ 'Bind, 'Bind]
+           s)
+      -&gt; Term s PUnit)
+  -&gt; Term s PUnit</code></pre></div>
+    <p class='mb-3'>
+      You can then access the fields on this <code class='py-0.5 px-0.5 bg-gray-100'>HRec</code> using <code class='py-0.5 px-0.5 bg-gray-100'>OverloadedRecordDot</code>.
+    </p>
+  
+    <p class='mb-3'>
+      Next up is <code class='py-0.5 px-0.5 bg-gray-100'>pfield</code>. You should <em>only ever</em> use this if you just want one field from a variable and no more. Its usage is simply <code class='py-0.5 px-0.5 bg-gray-100'>pfield @"fieldName" # variable</code>. You can, however, also use <code class='py-0.5 px-0.5 bg-gray-100'>pletFields</code> in this case (e.g. <code class='py-0.5 px-0.5 bg-gray-100'>pletFields @'["fieldName"] variable</code>). <code class='py-0.5 px-0.5 bg-gray-100'>pletFields</code> with a singular field has the same efficiency as <code class='py-0.5 px-0.5 bg-gray-100'>pfield</code>!
+    </p>
+  
+    <p class='mb-3'>
+      Finally, <code class='py-0.5 px-0.5 bg-gray-100'>getField</code> is merely there to supplement the lack of record dot syntax. See: <a href='#alternatives-to-overloadedrecorddot' class='text-green-600 mavenLinkBold hover:underline'>Alternative to <code class='py-0.5 px-0.5 bg-gray-100'>OverloadedRecordDot</code></a>.
+    </p>
+  
+    <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
+      
+    <p class='mb-3'>
+      Note: An important thing to realize is that <code class='py-0.5 px-0.5 bg-gray-100'>pfield</code> and <code class='py-0.5 px-0.5 bg-gray-100'>getField</code> (or overloaded record dot on <code class='py-0.5 px-0.5 bg-gray-100'>HRec</code>) are <em>return type polymorphic</em>. They can return both <code class='py-0.5 px-0.5 bg-gray-100'>PAsData Foo</code> or <code class='py-0.5 px-0.5 bg-gray-100'>Foo</code> terms, depending on the surrounding context. This is very useful in the case of <code class='py-0.5 px-0.5 bg-gray-100'>pmatch</code>, as <code class='py-0.5 px-0.5 bg-gray-100'>pmatch</code> doesn’t work on <code class='py-0.5 px-0.5 bg-gray-100'>PAsData</code> terms. So you can simply write <code class='py-0.5 px-0.5 bg-gray-100'>pmatch $ pfield ...</code> and <code class='py-0.5 px-0.5 bg-gray-100'>pfield</code> will correctly choose to <em>unwrap</em> the <code class='py-0.5 px-0.5 bg-gray-100'>PAsData</code> term.
+    </p>
+  
+    </blockquote>
+  <h3 id='alternatives-to-overloadedrecorddot' class='mt-6 mb-2 text-3xl font-bold text-gray-700'>Alternatives to <code class='py-0.5 px-0.5 bg-gray-100'>OverloadedRecordDot</code></h3>
+    <p class='mb-3'>
+      If <code class='py-0.5 px-0.5 bg-gray-100'>OverloadedRecordDot</code> is not available, you can also try using the <a href='https://hackage.haskell.org/package/record-dot-preprocessor' class='text-green-600 hover:underline' target='_blank' rel='noopener'>record dot preprocessor plugin</a>.
+    </p>
+  
+    <p class='mb-3'>
+      If you don’t want to use either, you can simply use <code class='py-0.5 px-0.5 bg-gray-100'>getField</code>. In fact, <code class='py-0.5 px-0.5 bg-gray-100'>ctx.purpose</code> above just translates to <code class='py-0.5 px-0.5 bg-gray-100'>getField @"purpose" ctx</code>. Nothing magical there!
+    </p>
+  <h2 id='all-about-constructing-data-values' class='inline-block mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>All about constructing data values</h2>
+    <p class='mb-3'>
+      We learned about type safe matching (through <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code>) as well as type safe field access (through <code class='py-0.5 px-0.5 bg-gray-100'>PDataFields</code>) - how about construction? You can derive <a href='Typeclasses/PlutusType%2C%20PCon%2C%20and%20PMatch.html' class='text-green-600 mavenLinkBold hover:underline'><code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code></a>, using a data representation by using <code class='py-0.5 px-0.5 bg-gray-100'>DPTStrat _ = PlutusTypeData</code> and <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code> bestows the ability to not only <em>deconstruct</em>, but also <strong>construct</strong> values - you can do that just as easily!
+    </p>
+  
+    <p class='mb-3'>
+      Let’s see how we could build a <code class='py-0.5 px-0.5 bg-gray-100'>PMinting</code> <code class='py-0.5 px-0.5 bg-gray-100'>PScriptPurpose</code> given a <code class='py-0.5 px-0.5 bg-gray-100'>PCurrencySymbol</code>:
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>currSym :: Term s PCurrencySymbol
+currSym = pconstant $ CurrencySymbol "foo"
+
+purpose :: Term s PScriptPurpose
+purpose = pcon $ PMinting fields
+  where
+    currSymDat :: Term _ (PAsData PCurrencySymbol)
+    currSymDat = pdata currSym
+    fields :: Term _ (PDataRecord '[ "_0" ':= PCurrencySymbol ])
+    fields = pdcons # currSymDat # pdnil</code></pre></div>
+    <p class='mb-3'>
+      All the type annotations are here to help!
+    </p>
+  
+    <p class='mb-3'>
+      This is just like regular <code class='py-0.5 px-0.5 bg-gray-100'>pcon</code> usage you’ve <a href='Typeclasses/PlutusType%2C%20PCon%2C%20and%20PMatch.html' class='text-green-600 mavenLinkBold hover:underline'>from <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code>/<code class='py-0.5 px-0.5 bg-gray-100'>PCon</code></a>. It takes in the Haskell ADT of your Plutarch type and gives back a Plutarch term.
+    </p>
+  
+    <p class='mb-3'>
+      What’s more interesting, is the <code class='py-0.5 px-0.5 bg-gray-100'>fields</code> binding. Recall that <code class='py-0.5 px-0.5 bg-gray-100'>PMinting</code> is a constructor with one argument, that argument is a <a href='Types/PDataSum%20and%20PDataRecord.html' class='text-green-600 mavenLinkBold hover:underline'><code class='py-0.5 px-0.5 bg-gray-100'>PDataRecord</code></a> term. In particular, we want: <code class='py-0.5 px-0.5 bg-gray-100'>Term s (PDataRecord '["_0" ':= PCurrencySymbol ])</code>. It encodes the exact type, position, and name of the field. So, all we have to do is create a <code class='py-0.5 px-0.5 bg-gray-100'>PDataRecord</code> term!
+    </p>
+  
+    <p class='mb-3'>
+      Of course, we do that using <code class='py-0.5 px-0.5 bg-gray-100'>pdcons</code> - which is just the familiar <code class='py-0.5 px-0.5 bg-gray-100'>cons</code> but for <code class='py-0.5 px-0.5 bg-gray-100'>PDataRecord</code> terms.
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>pdcons :: forall label a l s. Term s (PAsData a :--&gt; PDataRecord l :--&gt; PDataRecord ((label ':= a) ': l))</code></pre></div>
+    <p class='mb-3'>
+      It takes a <code class='py-0.5 px-0.5 bg-gray-100'>PAsData a</code> and adds that <code class='py-0.5 px-0.5 bg-gray-100'>a</code> to the <code class='py-0.5 px-0.5 bg-gray-100'>PDataRecord</code> heterogenous list. We feed it a <code class='py-0.5 px-0.5 bg-gray-100'>PAsData PCurrencySymbol</code> term and <code class='py-0.5 px-0.5 bg-gray-100'>pdnil</code> - the empty data record. That should give us:
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>pdcons # currSymDat # pdnil :: Term _ (PDataRecord '[ label ':= PCurrencySymbol ])</code></pre></div>
+    <p class='mb-3'>
+      Cool! Wait, what’s <code class='py-0.5 px-0.5 bg-gray-100'>label</code>? It’s the field name associated with the field, in our case, we want the field name to be <code class='py-0.5 px-0.5 bg-gray-100'>_0</code> - because that’s what the <code class='py-0.5 px-0.5 bg-gray-100'>PMinting</code> constructor wants. You can either specify the label with a type application or you can just have a type annotation for the binding (which is what we do here). Or you can let GHC try and match up the <code class='py-0.5 px-0.5 bg-gray-100'>label</code> with the surrounding environment!
+    </p>
+  
+    <p class='mb-3'>
+      Now that we have <code class='py-0.5 px-0.5 bg-gray-100'>fields</code>, we can use it with <code class='py-0.5 px-0.5 bg-gray-100'>PMinting</code> to build a <code class='py-0.5 px-0.5 bg-gray-100'>PScriptPurpose s</code> and feed it to <code class='py-0.5 px-0.5 bg-gray-100'>pcon</code> - we’re done!
+    </p>
+  <h2 id='implementing-pisdata-and-friends' class='inline-block mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Implementing <code class='py-0.5 px-0.5 bg-gray-100'>PIsData</code> and friends</h2>
+    <p class='mb-3'>
+      Implementing these is rather simple with generic deriving. All you need is a well formed type using <code class='py-0.5 px-0.5 bg-gray-100'>PDataRecord</code>. For example, suppose you wanted to implement <code class='py-0.5 px-0.5 bg-gray-100'>PIsData</code> for the Plutarch version of this Haskell type:
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>data Vehicle
+  = FourWheeler Integer Integer Integer Integer
+  | TwoWheeler Integer Integer
+  | ImmovableBox</code></pre></div>
+    <p class='mb-3'>
+      You’d declare the corresponding Plutarch type as:
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>data PVehicle' (s :: S)
+  = PFourWheeler' (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger, "_2" ':= PInteger, "_3" ':= PInteger]))
+  | PTwoWheeler' (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
+  | PImmovableBox' (Term s (PDataRecord '[]))</code></pre></div>
+    <p class='mb-3'>
+      Each field type must also have a <code class='py-0.5 px-0.5 bg-gray-100'>PIsData</code> instance. We’ve fulfilled this criteria above as <code class='py-0.5 px-0.5 bg-gray-100'>PInteger</code> does indeed have a <code class='py-0.5 px-0.5 bg-gray-100'>PIsData</code> instance. However, think of <code class='py-0.5 px-0.5 bg-gray-100'>PBuiltinList</code>s, as an example. <code class='py-0.5 px-0.5 bg-gray-100'>PBuiltinList</code>’s <code class='py-0.5 px-0.5 bg-gray-100'>PIsData</code> instance is restricted to only <code class='py-0.5 px-0.5 bg-gray-100'>PAsData</code> elements.
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>instance PIsData a =&gt; PIsData (PBuiltinList (PAsData a))</code></pre></div>
+    <p class='mb-3'>
+      Thus, you can use <code class='py-0.5 px-0.5 bg-gray-100'>PBuiltinList (PAsData PInteger)</code> as a field type, but not <code class='py-0.5 px-0.5 bg-gray-100'>PBuiltinList PInteger</code>.
+    </p>
+  
+    <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
+      
+    <p class='mb-3'>
+      Note: The constructor ordering in <code class='py-0.5 px-0.5 bg-gray-100'>PVehicle</code> matters! If you used <a href='https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed' class='text-green-600 hover:underline' target='_blank' rel='noopener'><code class='py-0.5 px-0.5 bg-gray-100'>makeIsDataIndexed</code></a> on <code class='py-0.5 px-0.5 bg-gray-100'>Vehicle</code> to assign an index to each constructor - the Plutarch type’s constructors must follow the same indexing order.
+    </p>
+  
+    <p class='mb-3'>
+      In this case, <code class='py-0.5 px-0.5 bg-gray-100'>PFourWheeler</code> is at the 0th index, <code class='py-0.5 px-0.5 bg-gray-100'>PTwoWheeler</code> is at the 1st index, and <code class='py-0.5 px-0.5 bg-gray-100'>PImmovableBox</code> is at the 3rd index. Thus, the corresponding <code class='py-0.5 px-0.5 bg-gray-100'>makeIsDataIndexed</code> usage should be:
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>PlutusTx.makeIsDataIndexed ''PVehicle [('FourWheeler,0),('TwoWheeler,1),('ImmovableBox,2)]</code></pre></div>
+    <p class='mb-3'>
+      Also see: <a href='Tricks/makeIsDataIndexed%2C%20Haskell%20ADTs%2C%20and%20PIsDataRepr.html' class='text-green-600 mavenLinkBold hover:underline'>Isomorphism between Haskell ADTs and <code class='py-0.5 px-0.5 bg-gray-100'>PIsData</code></a>
+    </p>
+  
+    </blockquote>
+  
+    <p class='mb-3'>
+      And you’d simply derive <code class='py-0.5 px-0.5 bg-gray-100'>PlutustType</code> with plutus data representation using generics. You can then also derive <code class='py-0.5 px-0.5 bg-gray-100'>PIsData</code> and if the dataype only has one ocnstructor <code class='py-0.5 px-0.5 bg-gray-100'>PDataFields</code>.
+    </p>
+  
+    <p class='mb-3'>
+      Furthermore, you can also derive the following typeclasses after deriving <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code> with <code class='py-0.5 px-0.5 bg-gray-100'>DTPStrat _ = PlutusTypeData</code>
+    </p>
+  
+    <ul class='my-3 ml-6 space-y-1 list-disc'>
+      
+        <li>
+          <a href='Typeclasses/PEq%20and%20POrd.html' class='text-green-600 mavenLinkBold hover:underline'><code class='py-0.5 px-0.5 bg-gray-100'>PEq</code></a>
+        </li>
+      
+        <li>
+          <a href='Typeclasses/PEq%20and%20POrd.html' class='text-green-600 mavenLinkBold hover:underline'><code class='py-0.5 px-0.5 bg-gray-100'>POrd</code></a>
+        </li>
+      
+    </ul>
+  
+    <p class='mb-3'>
+      Combine all that, and you have:
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>data PVehicle (s :: S)
+  = PFourWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger, "_2" ':= PInteger, "_3" ':= PInteger]))
+  | PTwoWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
+  | PImmovableBox (Term s (PDataRecord '[]))
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData)
+instance DerivePlutusType PVehicle where type DPTStrat _ = PlutusTypeData</code></pre></div>
+    <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
+      
+    <p class='mb-3'>
+      Note: You cannot derive <code class='py-0.5 px-0.5 bg-gray-100'>PIsData</code> for types that are represented using <a href='Concepts/Data%20and%20Scott%20encoding.html#scott-encoding' class='text-green-600 mavenLinkBold hover:underline'>Scott encoding</a>. Your types must be well formed and should be using <code class='py-0.5 px-0.5 bg-gray-100'>PDataRecord</code> terms instead.
+    </p>
+  
+    </blockquote>
+  
+    <p class='mb-3'>
+      That’s it! Now you can represent <code class='py-0.5 px-0.5 bg-gray-100'>PVehicle</code> as a <code class='py-0.5 px-0.5 bg-gray-100'>Data</code> value, as well as deconstruct and access its fields super ergonomically. Let’s try it!
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>test :: Term s (PVehicle :--&gt; PInteger)
+test = plam $ \veh' -&gt; P.do
+  veh &lt;- pmatch veh'
+  case veh of
+    PFourWheeler fwh' -&gt; P.do
+      fwh &lt;- pletFields @'["_0", "_1", "_2", "_3"] fwh'
+      fwh._0 + fwh._1 + fwh._2 + fwh._3
+    PTwoWheeler twh' -&gt; P.do
+      twh &lt;- pletFields @'["_0", "_1"] twh'
+      twh._0 + twh._1
+    PImmovableBox _ -&gt; 0</code></pre></div>
+    <p class='mb-3'>
+      What about types with singular constructors? It’s quite similar to the sum type case. Here’s how it looks:
+    </p>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>newtype PFoo (s :: S) = PMkFoo (Term s (PDataRecord '["foo" ':= PByteString]))
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PDataFields, PIsData)
+instance DerivePlutusType PFoo where type DPTStrat _ = PlutusTypeData</code></pre></div>
+    <p class='mb-3'>
+      Just an extra <code class='py-0.5 px-0.5 bg-gray-100'>PDataFields</code> derivation compared to the sum type usage!
+    </p>
+  
+  <!-- What goes in this file will appear below the note body-->
+</article>
+            <div class='flex flex-col lg:flex-row lg:space-x-2'>
+              
+              
+  <div class='flex-1 p-4 mt-8 bg-gray-100 rounded'>
+    <header class='mb-2 text-xl font-semibold text-gray-500'>Links to this page</header>
+    <ul class='space-y-1'>
+      
+        <li>
+          <a class='text-green-600 mavenLinkBold hover:bg-green-50' href='examples/VALIDATOR.html'>
+            VALIDATOR
+          </a>
+          
+            <div class='mb-4 overflow-auto text-sm text-gray-500'>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><p>All you have to do is <a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#implementing-pisdatarepr-and-friends' class='text-gray-600 font-bold hover:bg-gray-50'>implement <code>PIsDataRepr</code> and friends</a> for your custom datum/redeemer and you can use it just like <code>PScriptContext</code> in your validators!</p></div>
+    </div>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><p>Note: The above snippet uses GHC 9 features (<code>QualifiedDo</code> and <code>OverloadedRecordDot</code>). Be sure to check out <a href='Usage/Do%20syntax%20with%20TermCont.html' class='text-gray-600 font-bold hover:bg-gray-50'>Do syntax with <code>TermCont</code></a> and <a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#alternatives-to-overloadedrecorddot' class='text-gray-600 font-bold hover:bg-gray-50'>alternatives to <code>OverloadedRecordDot</code></a>.</p></div>
+    </div>
+  
+</div>
+          
+        </li>
+      
+        <li>
+          <a class='text-green-600 mavenLinkBold hover:bg-green-50' href='Typeclasses.html'>
+            Typeclasses
+          </a>
+          
+            <div class='mb-4 overflow-auto text-sm text-gray-500'>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#all-about-constructing-data-values' class='text-gray-600 font-bold hover:bg-gray-50'>All about constructing data values</a></div>
+    </div>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#all-about-extracting-fields' class='text-gray-600 font-bold hover:bg-gray-50'>All about extracting fields</a></div>
+    </div>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#alternatives-to-overloadedrecorddot' class='text-gray-600 font-bold hover:bg-gray-50'>Alternatives to <code>OverloadedRecordDot</code></a></div>
+    </div>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#implementing-pisdatarepr-and-friends' class='text-gray-600 font-bold hover:bg-gray-50'>Implementing <code>PIsDataRepr</code> and friends</a></div>
+    </div>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html' class='text-gray-600 font-bold hover:bg-gray-50'><code>PIsDataRepr</code> & <code>PDataFields</code></a></div>
+    </div>
+  
+</div>
+          
+        </li>
+      
+        <li>
+          <a class='text-green-600 mavenLinkBold hover:bg-green-50' href='Tricks/makeIsDataIndexed%2C%20Haskell%20ADTs%2C%20and%20PIsDataRepr.html'>
+            The isomorphism between <code>makeIsDataIndexed</code>, Haskell ADTs, and <code>PIsDataRepr</code>
+          </a>
+          
+            <div class='mb-4 overflow-auto text-sm text-gray-500'>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><p>When <a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#implementing-pisdatarepr-and-friends' class='text-gray-600 font-bold hover:bg-gray-50'>implementing <code>PIsDataRepr</code></a> for a Plutarch type, if the Plutarch type also has a <a href='Concepts/Haskell%20Synonym.html' class='text-gray-600 font-bold hover:bg-gray-50'>Haskell synonym</a> (e.g. <code>ScriptContext</code> is the Haskell synonym to <code>PScriptContext</code>) that uses <a href='https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed' class='text-gray-600 hover:underline' target='_blank' rel='noopener'><code>makeIsDataIndexed</code></a> - you must make sure the constructor ordering is correct.</p></div>
+    </div>
+  
+</div>
+          
+        </li>
+      
+        <li>
+          <a class='text-green-600 mavenLinkBold hover:bg-green-50' href='README.html'>
+            README
+          </a>
+          
+            <div class='mb-4 overflow-auto text-sm text-gray-500'>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#all-about-constructing-data-values' class='text-gray-600 font-bold hover:bg-gray-50'>All about constructing data values</a></div>
+    </div>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#all-about-extracting-fields' class='text-gray-600 font-bold hover:bg-gray-50'>All about extracting fields</a></div>
+    </div>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#alternatives-to-overloadedrecorddot' class='text-gray-600 font-bold hover:bg-gray-50'>Alternatives to <code>OverloadedRecordDot</code></a></div>
+    </div>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html' class='text-gray-600 font-bold hover:bg-gray-50'><code>PIsDataRepr</code> & <code>PDataFields</code></a></div>
+    </div>
+  
+</div>
+          
+        </li>
+      
+        <li>
+          <a class='text-green-600 mavenLinkBold hover:bg-green-50' href='Types/PTuple.html'>
+            PTuple
+          </a>
+          
+            <div class='mb-4 overflow-auto text-sm text-gray-500'>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><p><code>PTuple</code> has a <a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#all-about-extracting-fields' class='text-gray-600 font-bold hover:bg-gray-50'><code>PDataFields</code></a> instance. As such, you can extract its fields using <code>pletFields</code> or <code>pfield</code>.</p></div>
+    </div>
+  
+</div>
+          
+        </li>
+      
+        <li>
+          <a class='text-green-600 mavenLinkBold hover:bg-green-50' href='Typeclasses/PIsDataRepr%20and%20PDataFields.html'>
+            PIsDataRepr and PDataFields
+          </a>
+          
+            <div class='mb-4 overflow-auto text-sm text-gray-500'>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><p>Note: The above snippet uses GHC 9 features (<code>QualifiedDo</code> and <code>OverloadedRecordDot</code>). Be sure to check out <a href='Usage/Do%20syntax%20with%20TermCont.html' class='text-gray-600 font-bold hover:bg-gray-50'>Do syntax with <code>TermCont</code></a> and <a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#alternatives-to-overloadedrecorddot' class='text-gray-600 font-bold hover:bg-gray-50'>alternatives to <code>OverloadedRecordDot</code></a>.</p></div>
+    </div>
+  
+</div>
+          
+        </li>
+      
+        <li>
+          <a class='text-green-600 mavenLinkBold hover:bg-green-50' href='Typeclasses/PIsData.html'>
+            <code>PIsData</code>
+          </a>
+          
+            <div class='mb-4 overflow-auto text-sm text-gray-500'>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><p>For the simple constructors that merely wrap a builtin type into <code>Data</code>, e.g. <code>Integer</code>s, <code>Bytestrings</code>, lists, and <code>AssocMap</code>, <code>PIsData</code> works in much the same way as above. However, what about <code>Constr</code> data values? When you have an ADT that doesn’t correspond to those simple builtin types directly - but you still need to encode it as <code>Data</code> (e.g. <code>PScriptContext</code>). In this case, you should <a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#implementing-pisdatarepr-and-friends' class='text-gray-600 font-bold hover:bg-gray-50'>implement <code>PIsDataRepr</code></a> and you’ll get the <code>PIsData</code> instance for free!</p></div>
+    </div>
+  
+</div>
+          
+        </li>
+      
+        <li>
+          <a class='text-green-600 mavenLinkBold hover:bg-green-50' href='Types/PDataSum%20and%20PDataRecord.html'>
+            PDataSum and PDataRecord
+          </a>
+          
+            <div class='mb-4 overflow-auto text-sm text-gray-500'>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><p>Plutarch sum and product types are represented using <code>PDataSum</code> and <code>PDataRecord</code> respectively. These types are crucial to the <a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html' class='text-gray-600 font-bold hover:bg-gray-50'><code>PIsDataRepr</code></a> machinery.</p></div>
+    </div>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><p><code>Foo</code> is a Plutarch type with a single constructor with a single field, named <code>fooField</code>, of type <code>PInteger</code>. You can <a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#implementing-pisdatarepr-and-friends' class='text-gray-600 font-bold hover:bg-gray-50'>implement <code>PlutusType</code> via Data</a> for it so that `PAsData Foo` is represented as a `Constr` encoded data value.</p></div>
+    </div>
+  
+</div>
+          
+        </li>
+      
+        <li>
+          <a class='text-green-600 mavenLinkBold hover:bg-green-50' href='Tricks/Don%27t%20duplicate%20work.html'>
+            Don't duplicate work
+          </a>
+          
+            <div class='mb-4 overflow-auto text-sm text-gray-500'>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><p>In general, <code>plet</code>ing something back-to-back several times will be optimized to a singular <code>plet</code> anyway. However, you should know that for data encoded types (types that follow “<a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#implementing-pisdatarepr-and-friends' class='text-gray-600 font-bold hover:bg-gray-50'>implementing <code>PIsDataRepr</code> and friends</a>") and Scott encoded types, <code>pmatch</code> handlers get pre-evaluated bindings. For <code>PBuiltinList</code>, and <code>PDataRecord</code> - the bindings are not pre-evaluated.</p></div>
+    </div>
+  
+</div>
+          
+        </li>
+      
+        <li>
+          <a class='text-green-600 mavenLinkBold hover:bg-green-50' href='Usage/Deriving%20with%20generics.html'>
+            Deriving with generics
+          </a>
+          
+            <div class='mb-4 overflow-auto text-sm text-gray-500'>
+  
+    <div class='pl-2 mt-2 border-l-2 border-green-200 hover:border-green-500'>
+      <div><p>This will use a <a href='Concepts/Data%20and%20Scott%20encoding.html#scott-encoding' class='text-gray-600 font-bold hover:bg-gray-50'>Scott encoding representation</a> for `MyType`, which is typically what you want. If you want to use <a href='Concepts/Data%20and%20Scott%20encoding.html' class='text-gray-600 font-bold hover:bg-gray-50'>data encoding representation</a> instead in your <code>PlutusType</code> instance - you should derive it using <code>PlutusTypeData</code>. Check out: <a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#implementing-pisdatarepr-and-friends' class='text-gray-600 font-bold hover:bg-gray-50'>implementing <code>PIsDataRepr</code> and friends</a></p></div>
+    </div>
+  
+</div>
+          
+        </li>
+      
+    </ul>
+  </div>
+
+            </div>
+            
+  <section class='flex flex-wrap items-end justify-center my-4 space-x-2 space-y-2 font-mono text-sm'>
+    
+  </section>
+
+            <!-- What goes in this file will at the very end of the main div -->
+          </main>
+        </div>
+      </div>
+      <footer class='flex items-center justify-center mt-2 mb-8 space-x-4 text-center text-gray-800'>
+  
+  <div>
+    <a href='' title='Go to Home page'>
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-6 h-6 hover:text-green-700' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'></path>
+      </svg>
+    </a>
+  </div>
+  <div>
+    <a href='-/all.html' title='View Index'>
+      <svg class='w-6 h-6 hover:text-green-700' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4'>
+        </path>
+      </svg>
+    </a>
+  </div>
+  <div>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 0.7.14.0'>
+      <img class='w-6 h-6 hover:text-green-700' src='_emanote-static/emanote-logo.svg' />
+    </a>
+  </div>
+  <div>
+    <a href='-/tags.html' title='View tags'>
+      <svg class='w-6 h-6 hover:text-green-700' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z'>
+        </path>
+      </svg>
+    </a>
+  </div>
+  <div>
+    <a href='-/tasks.html' title='View tasks'>
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-6 h-6 hover:text-green-700' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'></path>
+      </svg>
+    </a>
+  </div>
+</footer>
+    </div>
+  
+  <div id='stork-search-container' class='hidden fixed w-screen h-screen inset-0 backdrop-filter backdrop-blur-sm'>
+  <div class='fixed w-screen h-screen inset-0' onclick='window.emanote.stork.toggleSearch()'></div>
+
+  <div class='container mx-auto p-10 mt-10'>
+    <div class='stork-wrapper-flat container mx-auto'>
+      <input id='stork-search-input' data-stork='emanote-search' class='stork-input' placeholder='Search (Ctrl+K) ...' />
+      <div data-stork='emanote-search-output' class='stork-output'></div>
+    </div>
+  </div>
+</div>
+</body>
+
+</html>
