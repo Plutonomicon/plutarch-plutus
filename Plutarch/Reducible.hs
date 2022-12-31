@@ -12,7 +12,7 @@ newtype NoReduce a = NoReduce a
 
 type family GReduce (def :: Type) (rep :: Type -> Type) :: Type where
   -- newtype
-  GReduce _ (D1 ( 'MetaData _ _ _ 'True) (C1 _ (S1 _ (Rec0 (x :: Type))))) = Reduce x
+  GReduce _ (D1 ('MetaData _ _ _ 'True) (C1 _ (S1 _ (Rec0 (x :: Type))))) = Reduce x
   -- data
   GReduce def _ = def
 
