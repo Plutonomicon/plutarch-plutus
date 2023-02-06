@@ -1,42 +1,37 @@
 # Strictness and Laziness; Delayed Terms and Forcing
 
-Plutarch, like UPLC, is strict by default; this is in contrast to Haskell, which is nonstrict. In practice, this means that calling a function in Plutarch evaluates _all_ arguments to the Plutarch lambda `Term` beforehand.
+Plutarch, like UPLC, is strict by default; this is in contrast to Haskell, which is non-strict by default (often called "lazy"). This means that evaluating a function application in Plutarch (`#`) always evaluates the argument before exectuing the function.
 
-> Note: the below example does not correspond precisely to the implementation of `pif` or `pif'`; it is for didactic purposes only
+This behavior may be undesirable. For example, it is usually unwanted to evaluate both the `then` and `else` branches of an `if` function, for efficiency reasons.
 
-This behavior may be undesirable, for example, when one of two `Term`s are branched upon within an `if` statement. The Plutarch level function `pif'` is naturally strict in its arguments - and therefore evaluate both branches before even entering the function body.
+The Plutarch level function `pif'` is naturally strict in its arguments, so it does exactly that. For the purpose of this chapter we take `pif'` as a given, and create the lazy version `pif` based on that.
+
+> Note: The example below does not correspond to the actual implementations of `pif` or `pif'`. It is for pedagogic purposes only.
 
 ```hs
--- obscuring the then-else part of the syntax, solely to make the Haskell- and Plutarch-versions look more alike
-hif :: Bool -> a -> a -> a
-hif cond whenTrue whenFalse = if cond then whenTrue else whenFalse
-
-pif' :: Term s (PBool :--> pa :--> pa :--> pa)
-pif' = plam hif
+-- | Strict if-then-else.
+pif' :: Term s (PBool :--> a :--> a :--> a)
 ```
 
-A strict `if` is undesirable for the obvious reason: we only follow one branch at runtime, so it doesn't make sense to evaluate both before examining the `PBool` value to which we apply `pif`.
-
-To avoid this, we use `pdelay` to create a "delayed `Term`." `pdelay` wraps the `PType` tag of a term, overriding the default strict behavior and indicating that the term should _not_ be evaluated immediately. `pdelay` has the following type:
+To prevent evaluation of a term when it gets used as an argument in a function application, we can use `pdelay` to mark the argument term as delayed. On the type-level, it wraps the `PType` tag of a `Term`, as can be seen in its type signature.
 
 ```hs
 pdelay :: Term s a -> Term s (PDelayed a)
 ```
 
-A delayed term evaluates when it is _forced_ using the `pforce` function. Forcing a term strips the `PDelayed` wrapper:
+The `pforce` function is the inverse to that, it converts a delayed term such that it gets evaluated when used in a function application (`#`). Forcing a term strips the `PDelayed` wrapper on the type-level:
 
 ```hs
 pforce :: Term s (PDelayed a) -> Term s a
 ```
 
-Thus, if we wanted a lazy `pif`, we could do the following:
+We now have the tools needed to create the lazy `pif` based on `pif'`:
 
 ```hs
--- | Utilizing Haskell level functions with `pdelay` and `pforce` to have lazy wrapper around `pif`.
-hif :: Term s PBool -> Term s a -> Term s a -> Term s a
-hif cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay whenFalse
+pif :: Term s PBool -> Term s a -> Term s a -> Term s a
+pif cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay whenFalse
 ```
 
-A note of caution: calling `pforce` on the same delayed term twice will execute the computation each time. Users familiar with Haskell's handling of laziness -- where forcing a thunk twice never duplicates computation -- should note that UPLC behaves differently.
+A word of caution: Calling `pforce` on the same delayed term in multiple different places can lead to duplicate evaluation of the term. Users familiar with Haskell's handling of laziness -- where forcing a thunk twice never duplicates computation -- should note that UPLC behaves differently.
 
-Finally, readers should note that `pdelay` and `pforce` are extremely powerful tools when writing Plutarch scripts and are encouraged to familiarize themselves accordingly.
+Note that `pdelay` is not the only way to get lazy behavior. Haskell-level `Term` arguments, the branches of `pmatch`, and continuation functions on the Plutarch level are all naturally lazy.
