@@ -5,8 +5,6 @@
 
 [Herc badge]: https://img.shields.io/badge/ci--by--hercules-green.svg
 [Herc link]: https://hercules-ci.com/github/Plutonomicon/plutarch
-[Cachix badge]: https://img.shields.io/badge/cachix-public--plutonomicon-blue.svg
-[Cachix link]: https://public-plutonomicon.cachix.org
 
 Plutarch is a typed eDSL in Haskell for writing efficient Plutus Core validators.
 
