@@ -42,6 +42,12 @@ class PNum (a :: PType) where
   default pfromInteger :: PNum (PInner a) => Integer -> Term s a
   pfromInteger x = punsafeDowncast $ pfromInteger x
 
+-- prohibit mixing arithmetic operators such as
+-- (2 #+ 3 #* 4) without explicit precedence.
+infix (#+) 6
+infix (#-) 6
+infix (#*) 6
+
 -- orphan instance, but only visibly orphan when importing internal modules
 instance PNum a => Num (Term s a) where
   (+) = (#+)
