@@ -420,14 +420,23 @@ punionWith = phoistAcyclic $
     \combine -> punionWithData #$ plam $
       \x y -> pdata (combine # pfromData x # pfromData y)
 
+-- | Helper indirection for mutual recursion in the implementations of 'merge' and 'mergeInsert'.
 data MapMergeCarrier k v s = MapMergeCarrier
   { merge :: Term s (PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v)
   , mergeInsert :: Term s (PBuiltinPair (PAsData k) (PAsData v) :--> PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v)
+  -- ^ First and second param are head and tail of the same list, conceptually.
   }
   deriving stock (Generic)
   deriving anyclass (PlutusType)
+
 instance DerivePlutusType (MapMergeCarrier k v) where type DPTStrat _ = PlutusTypeScott
 
+{- | Creates a 'MapMergeCarrier' for map union, using the given value merge function.
+
+ The indirection needs to be resolved using a 'punsafeCoerce pfix'.
+
+ Contains the actual mutually recursive implementations of 'merge' and 'mergeInsert'.
+-}
 mapUnionCarrier :: (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapMergeCarrier k v :--> MapMergeCarrier k v)
 mapUnionCarrier = phoistAcyclic $ plam \combine self ->
   let mergeInsert = pmatch self \(MapMergeCarrier {mergeInsert}) -> mergeInsert
@@ -448,9 +457,9 @@ mapUnionCarrier = phoistAcyclic $ plam \combine self ->
                           (xk #== yk)
                           ( pcons
                               # (ppairDataBuiltin # xk #$ combine # (psndBuiltin # x) # (psndBuiltin # y))
-                              #$ merge
-                                # xs
-                                # ys'
+                                #$ merge
+                              # xs
+                              # ys'
                           )
                           ( pif
                               (pfromData xk #< pfromData yk)
@@ -495,6 +504,12 @@ pinsecWith = phoistAcyclic $
     \combine -> pinsecWithData #$ plam $
       \x y -> pdata (combine # pfromData x # pfromData y)
 
+{- | Creates a 'MapMergeCarrier' for map intersection, using the given value merge function.
+
+ The indirection needs to be resolved using a 'punsafeCoerce pfix'.
+
+ Contains the actual mutually recursive implementations of 'merge' and 'mergeInsert'.
+-}
 mapInsecCarrier :: (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapMergeCarrier k v :--> MapMergeCarrier k v)
 mapInsecCarrier = phoistAcyclic $ plam \combine self ->
   let mergeInsert = pmatch self \(MapMergeCarrier {mergeInsert}) -> mergeInsert
@@ -515,9 +530,9 @@ mapInsecCarrier = phoistAcyclic $ plam \combine self ->
                           (xk #== yk)
                           ( pcons
                               # (ppairDataBuiltin # xk #$ combine # (psndBuiltin # x) # (psndBuiltin # y))
-                              #$ merge
-                                # xs
-                                # ys'
+                                #$ merge
+                              # xs
+                              # ys'
                           )
                           ( pif
                               (pfromData xk #< pfromData yk)
@@ -658,7 +673,8 @@ pcheckBinRel = phoistAcyclic $
                             (k1 #== k2)
                             ( f
                                 # v1
-                                # v2 #&& self
+                                # v2
+                                  #&& self
                                 # xs
                                 # ys
                             )
@@ -667,7 +683,8 @@ pcheckBinRel = phoistAcyclic $
                             (f # v1 # z #&& self # xs # l2)
                           $ f
                             # z
-                            # v2 #&& self
+                            # v2
+                              #&& self
                             # l1
                             # ys
                     )
