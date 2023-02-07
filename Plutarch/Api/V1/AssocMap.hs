@@ -39,8 +39,8 @@ module Plutarch.Api.V1.AssocMap (
   pdifference,
   punionWith,
   punionWithData,
-  pinsecWith,
-  pinsecWithData,
+  pintersectionWith,
+  pintersectionWithData,
 
   -- * Partial order operations
   pcheckBinRel,
@@ -409,8 +409,8 @@ instance
   where
   inv a = pmap # plam PlutusTx.inv # a
 
-{- | Union two 'PMap's applying the given function to any two values that
- share the same key.
+{- | Build the union of two 'PMap's, merging values that share the same key using the
+given function.
 -}
 punionWith ::
   (POrd k, PIsData k, PIsData v) =>
@@ -477,8 +477,8 @@ mapUnionCarrier = phoistAcyclic $ plam \combine self ->
 mapUnion :: forall k v s. (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapMergeCarrier k v)
 mapUnion = phoistAcyclic $ plam \combine -> punsafeCoerce pfix # (mapUnionCarrier # combine :: Term _ (MapMergeCarrier k v :--> MapMergeCarrier k v))
 
-{- | Union two 'PMap's applying the given function to any two data-encoded
- values that share the same key.
+{- | Build the union of two 'PMap's, merging data-encoded values that share
+ the same key using the given function.
 -}
 punionWithData ::
   (POrd k, PIsData k) =>
@@ -493,15 +493,15 @@ punionWithData = phoistAcyclic $
   plam $ \combine x y ->
     pcon $ PMap $ (pmatch (mapUnion # combine) \(MapMergeCarrier {merge}) -> merge) # pto x # pto y
 
-{- | Intersect two 'PMap's applying the given function to any two values that
- share the same key.
+{- | Build the intersection of two 'PMap's, merging values that share the same key using the
+given function.
 -}
-pinsecWith ::
+pintersectionWith ::
   (POrd k, PIsData k, PIsData v) =>
   Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
-pinsecWith = phoistAcyclic $
+pintersectionWith = phoistAcyclic $
   plam $
-    \combine -> pinsecWithData #$ plam $
+    \combine -> pintersectionWithData #$ plam $
       \x y -> pdata (combine # pfromData x # pfromData y)
 
 {- | Creates a 'MapMergeCarrier' for map intersection, using the given value merge function.
@@ -510,8 +510,8 @@ pinsecWith = phoistAcyclic $
 
  Contains the actual mutually recursive implementations of 'merge' and 'mergeInsert'.
 -}
-mapInsecCarrier :: (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapMergeCarrier k v :--> MapMergeCarrier k v)
-mapInsecCarrier = phoistAcyclic $ plam \combine self ->
+mapIntersectionCarrier :: (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapMergeCarrier k v :--> MapMergeCarrier k v)
+mapIntersectionCarrier = phoistAcyclic $ plam \combine self ->
   let mergeInsert = pmatch self \(MapMergeCarrier {mergeInsert}) -> mergeInsert
       merge = pmatch self \(MapMergeCarrier {merge}) -> merge
    in pcon $
@@ -541,13 +541,13 @@ mapInsecCarrier = phoistAcyclic $ plam \combine self ->
                           )
           }
 
-mapInsec :: forall k v s. (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapMergeCarrier k v)
-mapInsec = phoistAcyclic $ plam \combine -> punsafeCoerce pfix # (mapInsecCarrier # combine :: Term _ (MapMergeCarrier k v :--> MapMergeCarrier k v))
+mapIntersection :: forall k v s. (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapMergeCarrier k v)
+mapIntersection = phoistAcyclic $ plam \combine -> punsafeCoerce pfix # (mapIntersectionCarrier # combine :: Term _ (MapMergeCarrier k v :--> MapMergeCarrier k v))
 
-{- | Intersect two 'PMap's applying the given function to any two data-encoded
- values that share the same key.
+{- | Build the intersection of two 'PMap's, merging data-encoded values that share the same key using the
+given function.
 -}
-pinsecWithData ::
+pintersectionWithData ::
   (POrd k, PIsData k) =>
   Term
     s
@@ -556,9 +556,9 @@ pinsecWithData ::
         :--> PMap 'Sorted k v
         :--> PMap 'Sorted k v
     )
-pinsecWithData = phoistAcyclic $
+pintersectionWithData = phoistAcyclic $
   plam $ \combine x y ->
-    pcon $ PMap $ (pmatch (mapInsec # combine) \(MapMergeCarrier {merge}) -> merge) # pto x # pto y
+    pcon $ PMap $ (pmatch (mapIntersection # combine) \(MapMergeCarrier {merge}) -> merge) # pto x # pto y
 
 -- | Difference of two maps. Return elements of the first map not existing in the second map.
 pdifference :: PIsData k => Term s (PMap g k a :--> PMap any k b :--> PMap g k a)
