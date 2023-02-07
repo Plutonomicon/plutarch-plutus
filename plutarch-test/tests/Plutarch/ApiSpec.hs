@@ -19,6 +19,7 @@ import Test.Tasty.HUnit
 import Control.Monad (forM_)
 import Control.Monad.Trans.Cont (cont, runCont)
 import Data.String (fromString)
+import GHC.Exts (IsList (fromList))
 import Numeric (showHex)
 import PlutusLedgerApi.V1
 import PlutusLedgerApi.V1.Interval qualified as Interval
@@ -227,10 +228,13 @@ spec = do
       pgoldenSpec $ do
         let pmap, pdmap, emptyMap, doubleMap, otherMap :: Term _ (AssocMap.PMap 'Sorted PByteString PInteger)
             pmap = AssocMap.psingleton # pconstant "key" # 42
+            pmap' = AssocMap.psingleton # pconstant "key" # 23
+            psumMap = AssocMap.psingleton # pconstant "key" # 65
             pdmap = AssocMap.psingletonData # pdata (pconstant "key") # pdata 42
             emptyMap = AssocMap.pempty
             doubleMap = AssocMap.psingleton # pconstant "key" # 84
             otherMap = AssocMap.psingleton # pconstant "newkey" # 6
+            pmapUnion = fromList [(pconstant "key", 42), (pconstant "newkey", 6)]
         "lookup" @\ do
           "itself"
             @| AssocMap.plookup
@@ -308,18 +312,45 @@ spec = do
             @| AssocMap.punionWith
             # plam (+)
             # pmap
-            # otherMap
-            @-> \p -> passert (p #== AssocMap.punionWith # plam (+) # otherMap # pmap)
-          "flip (+)"
+            # pmap'
+            @-> pshouldReallyBe psumMap
+          "preservesCombineCommutativity"
             @| AssocMap.punionWith
             # plam (+)
-            # otherMap
+            # pmap'
             # pmap
-            @-> \p -> passert (p #== AssocMap.punionWith # plam (+) # pmap # otherMap)
+            @-> \p -> passert (p #== AssocMap.punionWith # plam (+) # pmap # pmap')
         "unionWithData" @\ do
           "const" @| AssocMap.punionWithData # plam const # pmap # pmap @-> pshouldReallyBe pmap
           "emptyLeft" @| AssocMap.punionWithData # plam const # emptyMap # pmap @-> pshouldReallyBe pmap
           "emptyRight" @| AssocMap.punionWithData # plam const # pmap # emptyMap @-> pshouldReallyBe pmap
+          "distinctKeys" @| AssocMap.punionWithData # plam const # pmap # otherMap @-> pshouldReallyBe pmapUnion
+        "intersectionWith" @\ do
+          "const" @| AssocMap.pintersectionWith # plam const # pmap # pmap @-> pshouldReallyBe pmap
+          "double" @| AssocMap.pintersectionWith # plam (+) # pmap # pmap @-> pshouldReallyBe doubleMap
+          "(+)"
+            @| AssocMap.pintersectionWith
+            # plam (+)
+            # pmap
+            # pmap'
+            @-> pshouldReallyBe psumMap
+          "preservesCombineCommutativity"
+            @| AssocMap.pintersectionWith
+            # plam (+)
+            # pmap'
+            # pmap
+            @-> pshouldReallyBe (AssocMap.pintersectionWith # plam (+) # pmap # pmap')
+          "partialKeyMismatch"
+            @| AssocMap.pintersectionWith
+            # plam (+)
+            # (AssocMap.punionWithData # plam const # pmap # otherMap)
+            # pmap'
+            @-> pshouldReallyBe psumMap
+        "intersectionWithData" @\ do
+          "const" @| AssocMap.pintersectionWithData # plam const # pmap # pmap @-> pshouldReallyBe pmap
+          "emptyLeft" @| AssocMap.pintersectionWithData # plam const # emptyMap # pmap @-> pshouldReallyBe emptyMap
+          "emptyRight" @| AssocMap.pintersectionWithData # plam const # pmap # emptyMap @-> pshouldReallyBe emptyMap
+          "keyMismatch" @| AssocMap.pintersectionWithData # plam const # pmap # otherMap @-> pshouldReallyBe emptyMap
     describe "example" $ do
       -- The checkSignatory family of functions implicitly use tracing due to
       -- monadic syntax, and as such we need two sets of tests here.
