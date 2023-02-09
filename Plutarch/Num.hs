@@ -44,9 +44,9 @@ class PNum (a :: PType) where
 
 -- prohibit mixing arithmetic operators such as
 -- (2 #+ 3 #* 4) without explicit precedence.
-infix (#+) 6
-infix (#-) 6
-infix (#*) 6
+infix 6 #+
+infix 6 #-
+infix 6 #*
 
 -- orphan instance, but only visibly orphan when importing internal modules
 instance PNum a => Num (Term s a) where

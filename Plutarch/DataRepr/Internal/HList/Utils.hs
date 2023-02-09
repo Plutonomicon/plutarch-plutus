@@ -29,7 +29,7 @@ data Elem (a :: k) (as :: [k]) where
 
 -- | Indexing type-level lists
 type family IndexList (n :: Nat) (l :: [k]) :: k where
-  IndexList _ '[] = TypeError ( 'Text "IndexList: index out of bounds")
+  IndexList _ '[] = TypeError ('Text "IndexList: index out of bounds")
   IndexList 0 (x ': _) = x
   IndexList n (_ : xs) = IndexList (n - 1) xs
 

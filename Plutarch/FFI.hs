@@ -212,10 +212,10 @@ type TypeEncoding a = (TypeEncoding' (GCode a) (GDatatypeInfoOf a))
 
 type TypeEncoding' :: [[Type]] -> DatatypeInfo -> [[Type]]
 type family TypeEncoding' a rep where
-  TypeEncoding' '[ '[b]] ( 'Newtype _ _ _) = TypeEncoding b
+  TypeEncoding' '[ '[b]] ('Newtype _ _ _) = TypeEncoding b
   -- Matching the behaviour of PlutusTx.Lift.Class.sortedCons
-  TypeEncoding' sop ( 'ADT _ "Bool" _ _) = sop
-  TypeEncoding' sop ( 'ADT _ _ cons _) = Fst (SortedBy '(sop, NamesOf cons))
+  TypeEncoding' sop ('ADT _ "Bool" _ _) = sop
+  TypeEncoding' sop ('ADT _ _ cons _) = Fst (SortedBy '(sop, NamesOf cons))
 
 type Fst :: (a, b) -> a
 type family Fst x where
@@ -242,7 +242,7 @@ type family Cons ts name xs where
 
 type NamesOf :: [ConstructorInfo] -> [ConstructorName]
 type family NamesOf cs where
-  NamesOf ( 'Constructor name ': cs) = name ': NamesOf cs
-  NamesOf ( 'Infix name _ _ ': cs) = name ': NamesOf cs
-  NamesOf ( 'Record name _ ': cs) = name ': NamesOf cs
+  NamesOf ('Constructor name ': cs) = name ': NamesOf cs
+  NamesOf ('Infix name _ _ ': cs) = name ': NamesOf cs
+  NamesOf ('Record name _ ': cs) = name ': NamesOf cs
   NamesOf '[] = '[]

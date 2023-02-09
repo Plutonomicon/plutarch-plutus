@@ -203,8 +203,8 @@ type BoundTerms :: [PLabeledType] -> [ToBind] -> S -> [(Symbol, Type)]
 type family BoundTerms ps bs s where
   BoundTerms '[] _ _ = '[]
   BoundTerms _ '[] _ = '[]
-  BoundTerms (_ ': ps) ( 'Skip ': bs) s = BoundTerms ps bs s
-  BoundTerms ((name ':= p) ': ps) ( 'Bind ': bs) s = '(name, Term s (PAsData p)) ': BoundTerms ps bs s
+  BoundTerms (_ ': ps) ('Skip ': bs) s = BoundTerms ps bs s
+  BoundTerms ((name ':= p) ': ps) ('Bind ': bs) s = '(name, Term s (PAsData p)) ': BoundTerms ps bs s
 
 class BindFields (ps :: [PLabeledType]) (bs :: [ToBind]) where
   -- |
@@ -215,41 +215,41 @@ class BindFields (ps :: [PLabeledType]) (bs :: [ToBind]) where
   --    the generated bound-variables.
   bindFields :: Proxy bs -> Term s (PDataRecord ps) -> TermCont s (HRec (BoundTerms ps bs s))
 
-instance {-# OVERLAPPABLE #-} BindFields ((l ':= p) ': ps) ( 'Bind ': '[]) where
+instance {-# OVERLAPPABLE #-} BindFields ((l ':= p) ': ps) ('Bind ': '[]) where
   bindFields _ t =
     pure $ HCons (Labeled $ pindexDataRecord (Proxy @0) t) HNil
 
-instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields ((l ':= p) ': ps) ( 'Bind ': bs) where
+instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields ((l ':= p) ': ps) ('Bind ': bs) where
   bindFields _ t = do
     t' <- TermCont $ plet t
     xs <- bindFields (Proxy @bs) (pdropDataRecord (Proxy @1) t')
     pure $ HCons (Labeled $ pindexDataRecord (Proxy @0) t') xs
 
-instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': ps) ( 'Skip ': bs) where
+instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': ps) ('Skip ': bs) where
   bindFields _ t = do
     bindFields (Proxy @bs) $ pdropDataRecord (Proxy @1) t
 
-instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': ps) ( 'Skip ': 'Skip ': bs) where
+instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': ps) ('Skip ': 'Skip ': bs) where
   bindFields _ t = do
     bindFields (Proxy @bs) $ pdropDataRecord (Proxy @2) t
 
-instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': ps) ( 'Skip ': 'Skip ': 'Skip ': bs) where
+instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': ps) ('Skip ': 'Skip ': 'Skip ': bs) where
   bindFields _ t = do
     bindFields (Proxy @bs) $ pdropDataRecord (Proxy @3) t
 
-instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': ps) ( 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
+instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': ps) ('Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
   bindFields _ t = do
     bindFields (Proxy @bs) $ pdropDataRecord (Proxy @4) t
 
-instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': p5 ': ps) ( 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
+instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': p5 ': ps) ('Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
   bindFields _ t = do
     bindFields (Proxy @bs) $ pdropDataRecord (Proxy @5) t
 
-instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': p5 ': p6 ': ps) ( 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
+instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': p5 ': p6 ': ps) ('Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
   bindFields _ t = do
     bindFields (Proxy @bs) $ pdropDataRecord (Proxy @6) t
 
-instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': p5 ': p6 ': p7 ': ps) ( 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
+instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields (p1 ': p2 ': p3 ': p4 ': p5 ': p6 ': p7 ': ps) ('Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': 'Skip ': bs) where
   bindFields _ t = do
     bindFields (Proxy @bs) $ pdropDataRecord (Proxy @7) t
 
