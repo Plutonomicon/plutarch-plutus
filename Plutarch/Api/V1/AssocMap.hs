@@ -409,17 +409,6 @@ instance
   where
   inv a = pmap # plam PlutusTx.inv # a
 
-{- | Build the union of two 'PMap's, merging values that share the same key using the
-given function.
--}
-punionWith ::
-  (POrd k, PIsData k, PIsData v) =>
-  Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
-punionWith = phoistAcyclic $
-  plam $
-    \combine -> punionWithData #$ plam $
-      \x y -> pdata (combine # pfromData x # pfromData y)
-
 -- | Helper indirection for mutual recursion in the implementations of 'merge' and 'mergeInsert'.
 data MapMergeCarrier k v s = MapMergeCarrier
   { merge :: Term s (PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v)
@@ -523,8 +512,25 @@ mapUnionCarrier = phoistAcyclic $ plam \combine self ->
 mapUnion :: forall k v s. (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapMergeCarrier k v)
 mapUnion = phoistAcyclic $ plam \combine -> punsafeCoerce pfix # (mapUnionCarrier # combine :: Term _ (MapMergeCarrier k v :--> MapMergeCarrier k v))
 
+{- | Build the union of two 'PMap's, merging values that share the same key using the
+given function.
+
+ Beware: The merging function does not get called for key-value-pairs that are in only one
+ of the maps.
+-}
+punionWith ::
+  (POrd k, PIsData k, PIsData v) =>
+  Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
+punionWith = phoistAcyclic $
+  plam $
+    \combine -> punionWithData #$ plam $
+      \x y -> pdata (combine # pfromData x # pfromData y)
+
 {- | Build the union of two 'PMap's, merging data-encoded values that share
  the same key using the given function.
+
+ Beware: The merging function does not get called for key-value-pairs that are in only one
+ of the maps.
 -}
 punionWithData ::
   (POrd k, PIsData k) =>
@@ -538,17 +544,6 @@ punionWithData ::
 punionWithData = phoistAcyclic $
   plam $ \combine x y ->
     pcon $ PMap $ (pmatch (mapUnion # combine) \(MapMergeCarrier {merge}) -> merge) # pto x # pto y
-
-{- | Build the intersection of two 'PMap's, merging values that share the same key using the
-given function.
--}
-pintersectionWith ::
-  (POrd k, PIsData k, PIsData v) =>
-  Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
-pintersectionWith = phoistAcyclic $
-  plam $
-    \combine -> pintersectionWithData #$ plam $
-      \x y -> pdata (combine # pfromData x # pfromData y)
 
 {- | Creates a 'MapMergeCarrier' for map intersection, using the given value merge function.
 
@@ -597,6 +592,17 @@ mapIntersectionCarrier = phoistAcyclic $ plam \combine self ->
 
 mapIntersection :: forall k v s. (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapMergeCarrier k v)
 mapIntersection = phoistAcyclic $ plam \combine -> punsafeCoerce pfix # (mapIntersectionCarrier # combine :: Term _ (MapMergeCarrier k v :--> MapMergeCarrier k v))
+
+{- | Build the intersection of two 'PMap's, merging values that share the same key using the
+given function.
+-}
+pintersectionWith ::
+  (POrd k, PIsData k, PIsData v) =>
+  Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
+pintersectionWith = phoistAcyclic $
+  plam $
+    \combine -> pintersectionWithData #$ plam $
+      \x y -> pdata (combine # pfromData x # pfromData y)
 
 {- | Build the intersection of two 'PMap's, merging data-encoded values that share the same key using the
 given function.
