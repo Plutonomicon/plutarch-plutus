@@ -308,6 +308,15 @@ spec = do
           "emptyLeft" @| AssocMap.pdifference # emptyMap # pmap @-> pshouldReallyBe emptyMap
           "emptyRight" @| AssocMap.pdifference # pmap # emptyMap @-> pshouldReallyBe pmap
           "emptyResult" @| AssocMap.pdifference # pmap # doubleMap @-> pshouldReallyBe emptyMap
+        "zipMapsWith" @\ do
+          "(-)"
+            @| AssocMap.pzipMapsWith
+            # plam (-)
+            # 1
+            # 0
+            # mkTestMap [("a", 42), ("b", 23)]
+            # mkTestMap [("b", 10), ("c", 8)]
+            @-> pshouldReallyBe (mkTestMap [("a", 42), ("b", 13), ("c", -7)])
         "unionWith" @\ do
           "const"
             @| AssocMap.punionWith

@@ -36,6 +36,8 @@ module Plutarch.Api.V1.AssocMap (
   pmapMaybeData,
 
   -- * Combining
+  pzipMapsWith,
+  pzipMapsWithData,
   pdifference,
   punionWith,
   punionWithData,
@@ -456,6 +458,150 @@ flipOrder :: BinArgOrder -> BinArgOrder
 flipOrder = \case
   LeftRight -> RightLeft
   RightLeft -> LeftRight
+
+{- | Creates a 'MapMergeCarrier' for map zip, using the given value merge function.
+
+ The indirection needs to be resolved using a 'punsafeCoerce pfix'.
+
+ Contains the actual mutually recursive implementations of 'merge' and 'mergeInsert'.
+-}
+mapZipCarrier ::
+  (POrd k, PIsData k) =>
+  Term
+    s
+    ( (PAsData v :--> PAsData v :--> PAsData v)
+        :--> PAsData v
+        :--> PAsData v
+        :--> MapMergeCarrier k v
+        :--> MapMergeCarrier k v
+    )
+mapZipCarrier = phoistAcyclic $ plam \combine defLeft defRight self ->
+  -- For recursive calls: Resolving to the record fields.
+  -- Sadly, unpacking the record outside of the recursion results in non-termination.
+  let mergeInsertLeftRight = pmatch self \(MapMergeCarrier {mergeInsertLeftRight}) -> mergeInsertLeftRight
+      mergeInsertRightLeft = pmatch self \(MapMergeCarrier {mergeInsertRightLeft}) -> mergeInsertRightLeft
+      merge = pmatch self \(MapMergeCarrier {merge}) -> merge
+      mergeInsert argOrder = branchOrder argOrder mergeInsertLeftRight mergeInsertRightLeft
+      mergeInsertImpl argOrder x xs ys =
+        pmatch ys $ \case
+          PNil -> pcons # x # xs
+          PCons y1 ys' -> unTermCont $ do
+            y <- tcont $ plet y1
+            xk <- tcont $ plet (pfstBuiltin # x)
+            yk <- tcont $ plet (pfstBuiltin # y)
+            pure $
+              pif
+                (xk #== yk)
+                ( pcons
+                    # ( ppairDataBuiltin
+                          # xk
+                            #$ applyOrder argOrder combine (psndBuiltin # x) (psndBuiltin # y)
+                      )
+                      #$ applyOrder argOrder merge xs ys'
+                )
+                ( pif
+                    (pfromData xk #< pfromData yk)
+                    ( pcons
+                        # ( ppairDataBuiltin
+                              # xk
+                                #$ applyOrder
+                                  argOrder
+                                  combine
+                                  (psndBuiltin # x)
+                                  (branchOrder (flipOrder argOrder) defLeft defRight)
+                          )
+                        # (mergeInsert (flipOrder argOrder) # y # ys' # xs)
+                    )
+                    ( pcons
+                        # ( ppairDataBuiltin
+                              # yk
+                                #$ applyOrder
+                                  argOrder
+                                  combine
+                                  (branchOrder argOrder defLeft defRight)
+                                  (psndBuiltin # y)
+                          )
+                        # (mergeInsert argOrder # x # xs # ys')
+                    )
+                )
+   in pcon $
+        MapMergeCarrier
+          { merge = plam $ \ls rs -> pmatch ls $ \case
+              PNil -> rs
+              PCons l ls' -> mergeInsertLeftRight # l # ls' # rs
+          , mergeInsertLeftRight = plam $ mergeInsertImpl LeftRight
+          , mergeInsertRightLeft = plam $ mergeInsertImpl RightLeft
+          }
+
+mapZip ::
+  forall k v s.
+  (POrd k, PIsData k) =>
+  Term
+    s
+    ( ( PAsData v
+          :--> PAsData v
+          :--> PAsData v
+      )
+        :--> PAsData v
+        :--> PAsData v
+        :--> MapMergeCarrier k v
+    )
+mapZip = phoistAcyclic $
+  plam \combine defLeft defRight ->
+    punsafeCoerce pfix
+      # ( mapZipCarrier # combine # defLeft # defRight ::
+            Term _ (MapMergeCarrier k v :--> MapMergeCarrier k v)
+        )
+
+{- | Build the zip of two 'PMap's, merging values that share the same key using the
+given function.
+
+ Beware: The merging function does not get called for key-value-pairs that are in only one
+ of the maps.
+-}
+pzipMapsWith ::
+  (POrd k, PIsData k, PIsData v) =>
+  Term
+    s
+    ( (v :--> v :--> v)
+        :--> v
+        :--> v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+    )
+pzipMapsWith = phoistAcyclic $
+  plam $
+    \combine defLeft defRight ->
+      pzipMapsWithData
+        # (plam $ \x y -> pdata (combine # pfromData x # pfromData y))
+        # pdata defLeft
+        # pdata defRight
+
+{- | Build the zip of two 'PMap's, merging data-encoded values that share
+ the same key using the given function.
+
+ Beware: The merging function does not get called for key-value-pairs that are in only one
+ of the maps.
+-}
+pzipMapsWithData ::
+  (POrd k, PIsData k) =>
+  Term
+    s
+    ( (PAsData v :--> PAsData v :--> PAsData v)
+        :--> PAsData v
+        :--> PAsData v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+    )
+pzipMapsWithData = phoistAcyclic $
+  plam $ \combine defLeft defRight x y ->
+    pcon $
+      PMap $
+        (pmatch (mapZip # combine # defLeft # defRight) \(MapMergeCarrier {merge}) -> merge)
+          # pto x
+          # pto y
 
 {- | Creates a 'MapMergeCarrier' for map union, using the given value merge function.
 
