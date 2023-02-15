@@ -50,6 +50,7 @@ import Plutarch.Test.Property.Gen ()
 import Test.Hspec
 import Test.Tasty.QuickCheck (Property, property, (===))
 
+import Data.ByteString (ByteString)
 import Plutarch.Lift (PConstanted, PLifted, PUnsafeLiftDecl (PLifted))
 
 newtype EnclosedTerm (p :: PType) = EnclosedTerm {getEnclosedTerm :: ClosedTerm p}
@@ -235,6 +236,8 @@ spec = do
             doubleMap = AssocMap.psingleton # pconstant "key" # 84
             otherMap = AssocMap.psingleton # pconstant "newkey" # 6
             pmapUnion = fromList [(pconstant "key", 42), (pconstant "newkey", 6)]
+            mkTestMap :: forall (s :: S). [(ByteString, Integer)] -> Term s (AssocMap.PMap 'Sorted PByteString PInteger)
+            mkTestMap = fromList . map (\(s, i) -> (pconstant s, pconstant i))
         "lookup" @\ do
           "itself"
             @| AssocMap.plookup
@@ -306,8 +309,24 @@ spec = do
           "emptyRight" @| AssocMap.pdifference # pmap # emptyMap @-> pshouldReallyBe pmap
           "emptyResult" @| AssocMap.pdifference # pmap # doubleMap @-> pshouldReallyBe emptyMap
         "unionWith" @\ do
-          "const" @| AssocMap.punionWith # plam const # pmap # pmap @-> pshouldReallyBe pmap
-          "double" @| AssocMap.punionWith # plam (+) # pmap # pmap @-> pshouldReallyBe doubleMap
+          "const"
+            @| AssocMap.punionWith
+            # plam const
+            # mkTestMap [("a", 42), ("b", 6)]
+            # mkTestMap [("b", 7), ("c", 23)]
+            @-> pshouldReallyBe (mkTestMap [("a", 42), ("b", 6), ("c", 23)])
+          "flip const"
+            @| AssocMap.punionWith
+            # plam (flip const)
+            # mkTestMap [("a", 42), ("b", 6)]
+            # mkTestMap [("b", 7), ("c", 23)]
+            @-> pshouldReallyBe (mkTestMap [("a", 42), ("b", 7), ("c", 23)])
+          "double"
+            @| AssocMap.punionWith
+            # plam (+)
+            # pmap
+            # pmap
+            @-> pshouldReallyBe doubleMap
           "(+)"
             @| AssocMap.punionWith
             # plam (+)
@@ -326,7 +345,18 @@ spec = do
           "emptyRight" @| AssocMap.punionWithData # plam const # pmap # emptyMap @-> pshouldReallyBe pmap
           "distinctKeys" @| AssocMap.punionWithData # plam const # pmap # otherMap @-> pshouldReallyBe pmapUnion
         "intersectionWith" @\ do
-          "const" @| AssocMap.pintersectionWith # plam const # pmap # pmap @-> pshouldReallyBe pmap
+          "const"
+            @| AssocMap.pintersectionWith
+            # plam const
+            # mkTestMap [("a", 42), ("b", 6)]
+            # mkTestMap [("b", 7), ("c", 23)]
+            @-> pshouldReallyBe (mkTestMap [("b", 6)])
+          "flip const"
+            @| AssocMap.pintersectionWith
+            # plam (flip const)
+            # mkTestMap [("a", 42), ("b", 6)]
+            # mkTestMap [("b", 7), ("c", 23)]
+            @-> pshouldReallyBe (mkTestMap [("b", 7)])
           "double" @| AssocMap.pintersectionWith # plam (+) # pmap # pmap @-> pshouldReallyBe doubleMap
           "(+)"
             @| AssocMap.pintersectionWith
