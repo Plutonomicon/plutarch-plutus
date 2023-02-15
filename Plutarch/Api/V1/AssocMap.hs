@@ -423,13 +423,50 @@ punionWith = phoistAcyclic $
 -- | Helper indirection for mutual recursion in the implementations of 'merge' and 'mergeInsert'.
 data MapMergeCarrier k v s = MapMergeCarrier
   { merge :: Term s (PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v)
-  , mergeInsert :: Term s (PBuiltinPair (PAsData k) (PAsData v) :--> PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v)
-  -- ^ First and second param are head and tail of the same list, conceptually.
+  -- ^ Entry point. Params are known as left and right.
+  , mergeInsertLeftRight ::
+      Term s (PBuiltinPair (PAsData k) (PAsData v) :--> PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v)
+  -- ^ First and second param are head and tail of the same list (coming from left original arg), conceptually.
+  , mergeInsertRightLeft ::
+      Term s (PBuiltinPair (PAsData k) (PAsData v) :--> PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v)
+  -- ^ First and second param are head and tail of the same list (coming from right original arg), conceptually.
   }
   deriving stock (Generic)
   deriving anyclass (PlutusType)
 
 instance DerivePlutusType (MapMergeCarrier k v) where type DPTStrat _ = PlutusTypeScott
+
+-- | Argument order marker, for use in implementation details of binary operations.
+data BinArgOrder = LeftRight | RightLeft
+
+-- | Apply given Plutarch fun with given reified (on Haskell-level) arg order.
+applyOrder ::
+  forall (s :: S) (a :: PType) (b :: PType).
+  -- | The reified order to resolve first/second arg to left/right.
+  BinArgOrder ->
+  -- | A function that expects argument order 'left right'.
+  Term s (a :--> a :--> b) ->
+  -- | First arg.
+  Term s a ->
+  -- | Second arg.
+  Term s a ->
+  Term s b
+applyOrder argOrder pfun =
+  case argOrder of
+    LeftRight -> \l r -> pfun # l # r
+    RightLeft -> \r l -> pfun # l # r
+
+-- | Metaprogramming branch: Select Plutarch implementation based on given reified arg order.
+branchOrder :: forall (p :: Type). BinArgOrder -> p -> p -> p
+branchOrder argOrder leftRightFun rightLeftFun =
+  case argOrder of
+    LeftRight -> leftRightFun
+    RightLeft -> rightLeftFun
+
+flipOrder :: BinArgOrder -> BinArgOrder
+flipOrder = \case
+  LeftRight -> RightLeft
+  RightLeft -> LeftRight
 
 {- | Creates a 'MapMergeCarrier' for map union, using the given value merge function.
 
@@ -437,41 +474,50 @@ instance DerivePlutusType (MapMergeCarrier k v) where type DPTStrat _ = PlutusTy
 
  Contains the actual mutually recursive implementations of 'merge' and 'mergeInsert'.
 -}
-mapUnionCarrier :: (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapMergeCarrier k v :--> MapMergeCarrier k v)
+mapUnionCarrier ::
+  (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapMergeCarrier k v :--> MapMergeCarrier k v)
 mapUnionCarrier = phoistAcyclic $ plam \combine self ->
-  let mergeInsert = pmatch self \(MapMergeCarrier {mergeInsert}) -> mergeInsert
+  -- For recursive calls: Resolving to the record fields.
+  -- Sadly, unpacking the record outside of the recursion results in non-termination.
+  let mergeInsertLeftRight = pmatch self \(MapMergeCarrier {mergeInsertLeftRight}) -> mergeInsertLeftRight
+      mergeInsertRightLeft = pmatch self \(MapMergeCarrier {mergeInsertRightLeft}) -> mergeInsertRightLeft
       merge = pmatch self \(MapMergeCarrier {merge}) -> merge
+      mergeInsert argOrder = branchOrder argOrder mergeInsertLeftRight mergeInsertRightLeft
+      mergeInsertImpl argOrder x xs ys =
+        pmatch ys $ \case
+          PNil -> pcons # x # xs
+          PCons y1 ys' -> unTermCont $ do
+            y <- tcont $ plet y1
+            xk <- tcont $ plet (pfstBuiltin # x)
+            yk <- tcont $ plet (pfstBuiltin # y)
+            pure $
+              pif
+                (xk #== yk)
+                ( pcons
+                    # ( ppairDataBuiltin
+                          # xk
+                            #$ applyOrder argOrder combine (psndBuiltin # x) (psndBuiltin # y)
+                      )
+                      #$ applyOrder argOrder merge xs ys'
+                )
+                ( pif
+                    (pfromData xk #< pfromData yk)
+                    ( pcons
+                        # x
+                        # (mergeInsert (flipOrder argOrder) # y # ys' # xs)
+                    )
+                    ( pcons
+                        # y
+                        # (mergeInsert argOrder # x # xs # ys')
+                    )
+                )
    in pcon $
         MapMergeCarrier
-          { merge = plam $ \xs ys -> pmatch xs $ \case
-              PNil -> ys
-              PCons x xs' -> mergeInsert # x # xs' # ys
-          , mergeInsert = plam $ \x xs ys ->
-              pmatch ys $ \case
-                PNil -> pcons # x # xs
-                PCons y1 ys' ->
-                  plet y1 $ \y ->
-                    plet (pfstBuiltin # x) $ \xk ->
-                      plet (pfstBuiltin # y) $ \yk ->
-                        pif
-                          (xk #== yk)
-                          ( pcons
-                              # (ppairDataBuiltin # xk #$ combine # (psndBuiltin # x) # (psndBuiltin # y))
-                                #$ merge
-                              # xs
-                              # ys'
-                          )
-                          ( pif
-                              (pfromData xk #< pfromData yk)
-                              ( pcons
-                                  # x
-                                  # (mergeInsert # y # ys' # xs)
-                              )
-                              ( pcons
-                                  # y
-                                  # (mergeInsert # x # xs # ys')
-                              )
-                          )
+          { merge = plam $ \ls rs -> pmatch ls $ \case
+              PNil -> rs
+              PCons l ls' -> mergeInsertLeftRight # l # ls' # rs
+          , mergeInsertLeftRight = plam $ mergeInsertImpl LeftRight
+          , mergeInsertRightLeft = plam $ mergeInsertImpl RightLeft
           }
 
 mapUnion :: forall k v s. (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapMergeCarrier k v)
@@ -512,33 +558,41 @@ pintersectionWith = phoistAcyclic $
 -}
 mapIntersectionCarrier :: (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapMergeCarrier k v :--> MapMergeCarrier k v)
 mapIntersectionCarrier = phoistAcyclic $ plam \combine self ->
-  let mergeInsert = pmatch self \(MapMergeCarrier {mergeInsert}) -> mergeInsert
+  -- For recursive calls: Resolving to the record fields.
+  -- Sadly, unpacking the record outside of the recursion results in non-termination.
+  let mergeInsertLeftRight = pmatch self \(MapMergeCarrier {mergeInsertLeftRight}) -> mergeInsertLeftRight
+      mergeInsertRightLeft = pmatch self \(MapMergeCarrier {mergeInsertRightLeft}) -> mergeInsertRightLeft
       merge = pmatch self \(MapMergeCarrier {merge}) -> merge
+      mergeInsert argOrder = branchOrder argOrder mergeInsertLeftRight mergeInsertRightLeft
+      mergeInsertImpl argOrder x xs ys =
+        pmatch ys $ \case
+          PNil -> pnil -- diff to mapUnionCarrier here
+          PCons y1 ys' -> unTermCont $ do
+            y <- tcont $ plet y1
+            xk <- tcont $ plet (pfstBuiltin # x)
+            yk <- tcont $ plet (pfstBuiltin # y)
+            pure $
+              pif
+                (xk #== yk)
+                ( pcons
+                    # ( ppairDataBuiltin
+                          # xk
+                            #$ applyOrder argOrder combine (psndBuiltin # x) (psndBuiltin # y)
+                      )
+                      #$ applyOrder argOrder merge xs ys'
+                )
+                ( pif
+                    (pfromData xk #< pfromData yk)
+                    (mergeInsert (flipOrder argOrder) # y # ys' # xs) -- diff to mapUnionCarrier here
+                    (mergeInsert argOrder # x # xs # ys') -- diff to mapUnionCarrier here
+                )
    in pcon $
         MapMergeCarrier
-          { merge = plam $ \xs ys -> pmatch xs $ \case
+          { merge = plam $ \ls rs -> pmatch ls $ \case
               PNil -> pnil -- diff to mapUnionCarrier here
-              PCons x xs' -> mergeInsert # x # xs' # ys
-          , mergeInsert = plam $ \x xs ys ->
-              pmatch ys $ \case
-                PNil -> pnil -- diff to mapUnionCarrier here
-                PCons y1 ys' ->
-                  plet y1 $ \y ->
-                    plet (pfstBuiltin # x) $ \xk ->
-                      plet (pfstBuiltin # y) $ \yk ->
-                        pif
-                          (xk #== yk)
-                          ( pcons
-                              # (ppairDataBuiltin # xk #$ combine # (psndBuiltin # x) # (psndBuiltin # y))
-                                #$ merge
-                              # xs
-                              # ys'
-                          )
-                          ( pif
-                              (pfromData xk #< pfromData yk)
-                              (mergeInsert # y # ys' # xs) -- diff to mapUnionCarrier here
-                              (mergeInsert # x # xs # ys') -- diff to mapUnionCarrier here
-                          )
+              PCons l ls' -> mergeInsertLeftRight # l # ls' # rs
+          , mergeInsertLeftRight = plam $ mergeInsertImpl LeftRight
+          , mergeInsertRightLeft = plam $ mergeInsertImpl RightLeft
           }
 
 mapIntersection :: forall k v s. (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapMergeCarrier k v)
