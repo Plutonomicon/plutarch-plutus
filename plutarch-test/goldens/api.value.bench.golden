@@ -3,74 +3,74 @@ singletonData {"exBudgetCPU":3189793,"exBudgetMemory":7490,"scriptSizeBytes":80}
 valueOf.itself {"exBudgetCPU":851100,"exBudgetMemory":3800,"scriptSizeBytes":115}
 valueOf.applied {"exBudgetCPU":8887341,"exBudgetMemory":23308,"scriptSizeBytes":183}
 valueOf.growing.1 {"exBudgetCPU":6189368,"exBudgetMemory":18450,"scriptSizeBytes":193}
-valueOf.growing.2 {"exBudgetCPU":23110115,"exBudgetMemory":69740,"scriptSizeBytes":533}
-valueOf.growing.3 {"exBudgetCPU":34965961,"exBudgetMemory":102846,"scriptSizeBytes":564}
-valueOf.growing.4 {"exBudgetCPU":50715107,"exBudgetMemory":144312,"scriptSizeBytes":583}
-valueOf.growing.5 {"exBudgetCPU":70702553,"exBudgetMemory":195638,"scriptSizeBytes":601}
-valueOf.growing.6 {"exBudgetCPU":94928299,"exBudgetMemory":256824,"scriptSizeBytes":619}
-valueOf.growing.7 {"exBudgetCPU":123392345,"exBudgetMemory":327870,"scriptSizeBytes":638}
-valueOf.growing.8 {"exBudgetCPU":156094691,"exBudgetMemory":408776,"scriptSizeBytes":656}
-valueOf.growing.9 {"exBudgetCPU":195789724,"exBudgetMemory":504700,"scriptSizeBytes":674}
-valueOf.growing.10 {"exBudgetCPU":234550596,"exBudgetMemory":601396,"scriptSizeBytes":692}
-valueOf.growing.11 {"exBudgetCPU":277549768,"exBudgetMemory":707952,"scriptSizeBytes":710}
-valueOf.growing.12 {"exBudgetCPU":324787240,"exBudgetMemory":824368,"scriptSizeBytes":729}
-valueOf.growing.13 {"exBudgetCPU":376263012,"exBudgetMemory":950644,"scriptSizeBytes":747}
-valueOf.growing.14 {"exBudgetCPU":431977084,"exBudgetMemory":1086780,"scriptSizeBytes":765}
-valueOf.growing.15 {"exBudgetCPU":491929456,"exBudgetMemory":1232776,"scriptSizeBytes":784}
-valueOf.growing.16 {"exBudgetCPU":556120128,"exBudgetMemory":1388632,"scriptSizeBytes":802}
-valueOf.growing.17 {"exBudgetCPU":624549100,"exBudgetMemory":1554348,"scriptSizeBytes":821}
-unionWith.const {"exBudgetCPU":19400570,"exBudgetMemory":61240,"scriptSizeBytes":450}
-unionWith.(+).itself {"exBudgetCPU":1012100,"exBudgetMemory":4500,"scriptSizeBytes":365}
-unionWith.(+).applied {"exBudgetCPU":19492047,"exBudgetMemory":60742,"scriptSizeBytes":446}
-unionWith.tokens {"exBudgetCPU":19263429,"exBudgetMemory":60246,"scriptSizeBytes":456}
-unionWith.symbols {"exBudgetCPU":11836712,"exBudgetMemory":38432,"scriptSizeBytes":447}
-unionWith.growing.1 {"exBudgetCPU":11905712,"exBudgetMemory":38732,"scriptSizeBytes":451}
-unionWith.growing.2 {"exBudgetCPU":28757459,"exBudgetMemory":89722,"scriptSizeBytes":486}
-unionWith.growing.3 {"exBudgetCPU":42157531,"exBudgetMemory":127558,"scriptSizeBytes":507}
-unionWith.growing.4 {"exBudgetCPU":59726903,"exBudgetMemory":174954,"scriptSizeBytes":525}
-unionWith.growing.5 {"exBudgetCPU":81534575,"exBudgetMemory":232210,"scriptSizeBytes":544}
-unionWith.growing.6 {"exBudgetCPU":107580547,"exBudgetMemory":299326,"scriptSizeBytes":562}
-unionWith.growing.7 {"exBudgetCPU":137864819,"exBudgetMemory":376302,"scriptSizeBytes":581}
-unionWith.growing.8 {"exBudgetCPU":172387391,"exBudgetMemory":463138,"scriptSizeBytes":599}
-unionWith.growing.9 {"exBudgetCPU":218700238,"exBudgetMemory":582248,"scriptSizeBytes":614}
-unionWith.growing.10 {"exBudgetCPU":259051388,"exBudgetMemory":684572,"scriptSizeBytes":633}
-unionWith.growing.11 {"exBudgetCPU":302050560,"exBudgetMemory":791128,"scriptSizeBytes":651}
-unionWith.growing.12 {"exBudgetCPU":349288032,"exBudgetMemory":907544,"scriptSizeBytes":669}
-unionWith.growing.13 {"exBudgetCPU":400763804,"exBudgetMemory":1033820,"scriptSizeBytes":688}
-unionWith.growing.14 {"exBudgetCPU":456477876,"exBudgetMemory":1169956,"scriptSizeBytes":706}
-unionWith.growing.15 {"exBudgetCPU":516430248,"exBudgetMemory":1315952,"scriptSizeBytes":725}
-unionWith.growing.16 {"exBudgetCPU":580620920,"exBudgetMemory":1471808,"scriptSizeBytes":743}
-unionWith.growing.17 {"exBudgetCPU":649049892,"exBudgetMemory":1637524,"scriptSizeBytes":761}
-unionWithData const.itself {"exBudgetCPU":1012100,"exBudgetMemory":4500,"scriptSizeBytes":355}
-unionWithData const.applied {"exBudgetCPU":19036856,"exBudgetMemory":59944,"scriptSizeBytes":439}
+valueOf.growing.2 {"exBudgetCPU":22995115,"exBudgetMemory":69240,"scriptSizeBytes":458}
+valueOf.growing.3 {"exBudgetCPU":34712961,"exBudgetMemory":101746,"scriptSizeBytes":489}
+valueOf.growing.4 {"exBudgetCPU":50255107,"exBudgetMemory":142312,"scriptSizeBytes":508}
+valueOf.growing.5 {"exBudgetCPU":69966553,"exBudgetMemory":192438,"scriptSizeBytes":526}
+valueOf.growing.6 {"exBudgetCPU":93847299,"exBudgetMemory":252124,"scriptSizeBytes":544}
+valueOf.growing.7 {"exBudgetCPU":121897345,"exBudgetMemory":321370,"scriptSizeBytes":563}
+valueOf.growing.8 {"exBudgetCPU":154116691,"exBudgetMemory":400176,"scriptSizeBytes":581}
+valueOf.growing.9 {"exBudgetCPU":193259724,"exBudgetMemory":493700,"scriptSizeBytes":599}
+valueOf.growing.10 {"exBudgetCPU":231399596,"exBudgetMemory":587696,"scriptSizeBytes":617}
+valueOf.growing.11 {"exBudgetCPU":273708768,"exBudgetMemory":691252,"scriptSizeBytes":635}
+valueOf.growing.12 {"exBudgetCPU":320187240,"exBudgetMemory":804368,"scriptSizeBytes":654}
+valueOf.growing.13 {"exBudgetCPU":370835012,"exBudgetMemory":927044,"scriptSizeBytes":672}
+valueOf.growing.14 {"exBudgetCPU":425652084,"exBudgetMemory":1059280,"scriptSizeBytes":690}
+valueOf.growing.15 {"exBudgetCPU":484638456,"exBudgetMemory":1201076,"scriptSizeBytes":709}
+valueOf.growing.16 {"exBudgetCPU":547794128,"exBudgetMemory":1352432,"scriptSizeBytes":727}
+valueOf.growing.17 {"exBudgetCPU":615119100,"exBudgetMemory":1513348,"scriptSizeBytes":746}
+unionWith.const {"exBudgetCPU":19446570,"exBudgetMemory":61440,"scriptSizeBytes":375}
+unionWith.(+).itself {"exBudgetCPU":1012100,"exBudgetMemory":4500,"scriptSizeBytes":290}
+unionWith.(+).applied {"exBudgetCPU":19538047,"exBudgetMemory":60942,"scriptSizeBytes":371}
+unionWith.tokens {"exBudgetCPU":19010429,"exBudgetMemory":59146,"scriptSizeBytes":381}
+unionWith.symbols {"exBudgetCPU":11698712,"exBudgetMemory":37832,"scriptSizeBytes":373}
+unionWith.growing.1 {"exBudgetCPU":11767712,"exBudgetMemory":38132,"scriptSizeBytes":377}
+unionWith.growing.2 {"exBudgetCPU":28504459,"exBudgetMemory":88622,"scriptSizeBytes":411}
+unionWith.growing.3 {"exBudgetCPU":41697531,"exBudgetMemory":125558,"scriptSizeBytes":432}
+unionWith.growing.4 {"exBudgetCPU":58990903,"exBudgetMemory":171754,"scriptSizeBytes":450}
+unionWith.growing.5 {"exBudgetCPU":80453575,"exBudgetMemory":227510,"scriptSizeBytes":469}
+unionWith.growing.6 {"exBudgetCPU":106085547,"exBudgetMemory":292826,"scriptSizeBytes":487}
+unionWith.growing.7 {"exBudgetCPU":135886819,"exBudgetMemory":367702,"scriptSizeBytes":506}
+unionWith.growing.8 {"exBudgetCPU":169857391,"exBudgetMemory":452138,"scriptSizeBytes":524}
+unionWith.growing.9 {"exBudgetCPU":215572238,"exBudgetMemory":568648,"scriptSizeBytes":539}
+unionWith.growing.10 {"exBudgetCPU":255233388,"exBudgetMemory":667972,"scriptSizeBytes":558}
+unionWith.growing.11 {"exBudgetCPU":297542560,"exBudgetMemory":771528,"scriptSizeBytes":576}
+unionWith.growing.12 {"exBudgetCPU":344021032,"exBudgetMemory":884644,"scriptSizeBytes":594}
+unionWith.growing.13 {"exBudgetCPU":394668804,"exBudgetMemory":1007320,"scriptSizeBytes":613}
+unionWith.growing.14 {"exBudgetCPU":449485876,"exBudgetMemory":1139556,"scriptSizeBytes":631}
+unionWith.growing.15 {"exBudgetCPU":508472248,"exBudgetMemory":1281352,"scriptSizeBytes":650}
+unionWith.growing.16 {"exBudgetCPU":571627920,"exBudgetMemory":1432708,"scriptSizeBytes":668}
+unionWith.growing.17 {"exBudgetCPU":638952892,"exBudgetMemory":1593624,"scriptSizeBytes":686}
+unionWithData const.itself {"exBudgetCPU":1012100,"exBudgetMemory":4500,"scriptSizeBytes":280}
+unionWithData const.applied {"exBudgetCPU":19082856,"exBudgetMemory":60144,"scriptSizeBytes":364}
 inv {"exBudgetCPU":8006438,"exBudgetMemory":25962,"scriptSizeBytes":175}
 equality.itself {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":15}
 equality.triviallyTrue {"exBudgetCPU":5254875,"exBudgetMemory":13977,"scriptSizeBytes":100}
 equality.triviallyFalse {"exBudgetCPU":5185875,"exBudgetMemory":13677,"scriptSizeBytes":109}
-equality.swappedTokensTrue {"exBudgetCPU":39743299,"exBudgetMemory":118657,"scriptSizeBytes":509}
-equality.swappedSymbolsTrue {"exBudgetCPU":24865139,"exBudgetMemory":74429,"scriptSizeBytes":500}
+equality.swappedTokensTrue {"exBudgetCPU":39375299,"exBudgetMemory":117057,"scriptSizeBytes":435}
+equality.swappedSymbolsTrue {"exBudgetCPU":24451139,"exBudgetMemory":72629,"scriptSizeBytes":426}
 equality.growing.1 {"exBudgetCPU":5254875,"exBudgetMemory":13977,"scriptSizeBytes":100}
-equality.growing.2 {"exBudgetCPU":39705229,"exBudgetMemory":118657,"scriptSizeBytes":504}
-equality.growing.3 {"exBudgetCPU":58198907,"exBudgetMemory":174309,"scriptSizeBytes":540}
-equality.growing.4 {"exBudgetCPU":85169185,"exBudgetMemory":249681,"scriptSizeBytes":575}
-equality.growing.5 {"exBudgetCPU":120616063,"exBudgetMemory":344773,"scriptSizeBytes":610}
-equality.growing.6 {"exBudgetCPU":164539541,"exBudgetMemory":459585,"scriptSizeBytes":645}
-equality.growing.7 {"exBudgetCPU":216939619,"exBudgetMemory":594117,"scriptSizeBytes":681}
-equality.growing.8 {"exBudgetCPU":277816297,"exBudgetMemory":748369,"scriptSizeBytes":716}
-equality.growing.9 {"exBudgetCPU":347169575,"exBudgetMemory":922341,"scriptSizeBytes":751}
-equality.growing.10 {"exBudgetCPU":424999453,"exBudgetMemory":1116033,"scriptSizeBytes":786}
-equality.growing.11 {"exBudgetCPU":511305931,"exBudgetMemory":1329445,"scriptSizeBytes":822}
-equality.growing.12 {"exBudgetCPU":606089009,"exBudgetMemory":1562577,"scriptSizeBytes":857}
-equality.growing.13 {"exBudgetCPU":709348687,"exBudgetMemory":1815429,"scriptSizeBytes":892}
-equality.growing.14 {"exBudgetCPU":821084965,"exBudgetMemory":2088001,"scriptSizeBytes":927}
-equality.growing.15 {"exBudgetCPU":941297843,"exBudgetMemory":2380293,"scriptSizeBytes":963}
-equality.growing.16 {"exBudgetCPU":1069987321,"exBudgetMemory":2692305,"scriptSizeBytes":998}
-equality.growing.17 {"exBudgetCPU":1207153399,"exBudgetMemory":3024037,"scriptSizeBytes":1033}
-normalize.identity {"exBudgetCPU":36699548,"exBudgetMemory":110557,"scriptSizeBytes":677}
-normalize.empty {"exBudgetCPU":26104001,"exBudgetMemory":79361,"scriptSizeBytes":559}
-assertSorted.succeeds {"exBudgetCPU":31227271,"exBudgetMemory":99482,"scriptSizeBytes":632}
+equality.growing.2 {"exBudgetCPU":39475229,"exBudgetMemory":117657,"scriptSizeBytes":430}
+equality.growing.3 {"exBudgetCPU":57692907,"exBudgetMemory":172109,"scriptSizeBytes":465}
+equality.growing.4 {"exBudgetCPU":84249185,"exBudgetMemory":245681,"scriptSizeBytes":500}
+equality.growing.5 {"exBudgetCPU":119144063,"exBudgetMemory":338373,"scriptSizeBytes":535}
+equality.growing.6 {"exBudgetCPU":162377541,"exBudgetMemory":450185,"scriptSizeBytes":571}
+equality.growing.7 {"exBudgetCPU":213949619,"exBudgetMemory":581117,"scriptSizeBytes":606}
+equality.growing.8 {"exBudgetCPU":273860297,"exBudgetMemory":731169,"scriptSizeBytes":641}
+equality.growing.9 {"exBudgetCPU":342109575,"exBudgetMemory":900341,"scriptSizeBytes":676}
+equality.growing.10 {"exBudgetCPU":418697453,"exBudgetMemory":1088633,"scriptSizeBytes":712}
+equality.growing.11 {"exBudgetCPU":503623931,"exBudgetMemory":1296045,"scriptSizeBytes":747}
+equality.growing.12 {"exBudgetCPU":596889009,"exBudgetMemory":1522577,"scriptSizeBytes":782}
+equality.growing.13 {"exBudgetCPU":698492687,"exBudgetMemory":1768229,"scriptSizeBytes":817}
+equality.growing.14 {"exBudgetCPU":808434965,"exBudgetMemory":2033001,"scriptSizeBytes":853}
+equality.growing.15 {"exBudgetCPU":926715843,"exBudgetMemory":2316893,"scriptSizeBytes":888}
+equality.growing.16 {"exBudgetCPU":1053335321,"exBudgetMemory":2619905,"scriptSizeBytes":923}
+equality.growing.17 {"exBudgetCPU":1188293399,"exBudgetMemory":2942037,"scriptSizeBytes":958}
+normalize.identity {"exBudgetCPU":36561548,"exBudgetMemory":109957,"scriptSizeBytes":602}
+normalize.empty {"exBudgetCPU":26150001,"exBudgetMemory":79561,"scriptSizeBytes":484}
+assertSorted.succeeds {"exBudgetCPU":31089271,"exBudgetMemory":98882,"scriptSizeBytes":557}
 assertSorted.fails on malsorted symbols {"exBudgetCPU":20705777,"exBudgetMemory":62290,"scriptSizeBytes":340}
-assertSorted.fails on zero quantities {"exBudgetCPU":26420727,"exBudgetMemory":82160,"scriptSizeBytes":632}
+assertSorted.fails on zero quantities {"exBudgetCPU":26420727,"exBudgetMemory":82160,"scriptSizeBytes":557}
 assertSorted.fails on empty token map {"exBudgetCPU":1240239,"exBudgetMemory":455,"scriptSizeBytes":262}
 Ada.adaSymbol {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":8}
 Ada.adaToken {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":8}
@@ -78,7 +78,7 @@ Ada.lovelaceValueOf {"exBudgetCPU":230100,"exBudgetMemory":1100,"scriptSizeBytes
 Ada.isAdaOnlyValue.itself {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":45}
 Ada.isAdaOnlyValue.true on empty {"exBudgetCPU":497454,"exBudgetMemory":1532,"scriptSizeBytes":50}
 Ada.isAdaOnlyValue.trivially false {"exBudgetCPU":4349105,"exBudgetMemory":10950,"scriptSizeBytes":107}
-Ada.isAdaOnlyValue.less trivially false {"exBudgetCPU":14315877,"exBudgetMemory":42426,"scriptSizeBytes":483}
+Ada.isAdaOnlyValue.less trivially false {"exBudgetCPU":14039877,"exBudgetMemory":41226,"scriptSizeBytes":408}
 Ada.adaOnlyValue.itself {"exBudgetCPU":184100,"exBudgetMemory":900,"scriptSizeBytes":52}
 Ada.adaOnlyValue.on empty {"exBudgetCPU":589454,"exBudgetMemory":1932,"scriptSizeBytes":51}
 Ada.adaOnlyValue.on non-Ada {"exBudgetCPU":4356574,"exBudgetMemory":10950,"scriptSizeBytes":109}
