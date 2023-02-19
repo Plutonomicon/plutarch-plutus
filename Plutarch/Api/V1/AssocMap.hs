@@ -86,7 +86,7 @@ import Data.Proxy (Proxy (Proxy))
 import Data.Traversable (for)
 
 import Data.Bifunctor (bimap)
-import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
+import Plutarch.Bool (PSBool, psif, psif', psnot, pstrue)
 
 data KeyGuarantees = Sorted | Unsorted
 
@@ -432,60 +432,6 @@ data MapMergeCarrier k v s = MapMergeCarrier
 
 instance DerivePlutusType (MapMergeCarrier k v) where type DPTStrat _ = PlutusTypeScott
 
--- | 'PInner' of 'PSBool'.
-newtype PSBoolRaw (a :: PType) (s :: S) = PSBoolRaw (Term s (a :--> a :--> a))
-
-instance PlutusType (PSBoolRaw a) where
-  type PInner (PSBoolRaw a) = a :--> a :--> a
-  pcon' (PSBoolRaw x) = x
-  pmatch' x f = f (PSBoolRaw x)
-
--- | Scott-encoded bool with strict 'pmatch'.
-data PSBool (s :: S)
-  = PSTrue
-  | PSFalse
-
-instance PlutusType PSBool where
-  type PInner PSBool = PForall PSBoolRaw
-  pcon' PSTrue = pcon $ PForall $ pcon $ PSBoolRaw $ plam $ \a _ -> a
-  pcon' PSFalse = pcon $ PForall $ pcon $ PSBoolRaw $ plam $ \_ b -> b
-  pmatch' x' f =
-    pmatch x' $ \(PForall raw) ->
-      pmatch raw $ \(PSBoolRaw x) ->
-        x # f PSTrue # f PSFalse
-
--- | Strict @if@ on Scott-encoded bool.
-psif' :: forall (s :: S) (a :: PType). Term s PSBool -> Term s a -> Term s a -> Term s a
-psif' b t f = pmatch b \case
-  PSTrue -> t
-  PSFalse -> f
-
--- | Lazy @if@ on Scott-encoded bool.
-psif :: forall (s :: S) (a :: PType). Term s PSBool -> Term s a -> Term s a -> Term s a
-psif b t f = pforce $ psif' b (pdelay t) (pdelay f)
-
-pstrue :: forall (s :: S). Term s PSBool
-pstrue = pcon PSTrue
-
-psfalse :: forall (s :: S). Term s PSBool
-psfalse = pcon PSFalse
-
--- | @not@ on Scott-encoded bool.
-psnot :: forall (s :: S). Term s PSBool -> Term s PSBool
-psnot b = psif' b psfalse pstrue
-
--- psand' :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
--- psand' a b = psif' a b psfalse
-
--- psand :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
--- psand a b = psif a b psfalse
-
--- psor' :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
--- psor' a b = psif' a pstrue b
-
--- psor :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
--- psor a b = psif a pstrue b
-
 -- | Apply given Plutarch fun with given reified (on Haskell-level) arg order.
 applyOrder ::
   forall (s :: S) (a :: PType) (b :: PType).
@@ -575,7 +521,7 @@ mapZipCarrier = phoistAcyclic $ plam \combine defLeft defRight self ->
         MapMergeCarrier
           { merge = plam $ \ls rs -> pmatch ls $ \case
               PNil -> rs
-              PCons l ls' -> mergeInsert # pcon PSTrue # l # ls' # rs
+              PCons l ls' -> mergeInsert # pstrue # l # ls' # rs
           , mergeInsert = plam $ mergeInsertImpl
           }
 
@@ -702,7 +648,7 @@ mapUnionCarrier = phoistAcyclic $ plam \combine self ->
         MapMergeCarrier
           { merge = plam $ \ls rs -> pmatch ls $ \case
               PNil -> rs
-              PCons l ls' -> mergeInsert # pcon PSTrue # l # ls' # rs
+              PCons l ls' -> mergeInsert # pstrue # l # ls' # rs
           , mergeInsert = plam $ mergeInsertImpl
           }
 
@@ -788,7 +734,7 @@ mapIntersectionCarrier = phoistAcyclic $ plam \combine self ->
         MapMergeCarrier
           { merge = plam $ \ls rs -> pmatch ls $ \case
               PNil -> pnil -- diff to mapUnionCarrier here
-              PCons l ls' -> mergeInsert # pcon PSTrue # l # ls' # rs
+              PCons l ls' -> mergeInsert # pstrue # l # ls' # rs
           , mergeInsert = plam $ mergeInsertImpl
           }
 
