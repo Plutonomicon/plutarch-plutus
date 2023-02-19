@@ -16,6 +16,7 @@ module Plutarch.Bool (
   pand',
   por',
   PSBool (..),
+  pmatchStrict,
   pstrue,
   psfalse,
   psif,
@@ -191,7 +192,7 @@ instance PlutusType (PSBoolRaw a) where
   pcon' (PSBoolRaw x) = x
   pmatch' x f = f (PSBoolRaw x)
 
--- | Scott-encoded bool with strict 'pmatch'.
+-- | Scott-encoded bool.
 data PSBool (s :: S)
   = PSTrue
   | PSFalse
@@ -203,7 +204,18 @@ instance PlutusType PSBool where
   pmatch' x' f =
     pmatch x' $ \(PForall raw) ->
       pmatch raw $ \(PSBoolRaw x) ->
-        x # f PSTrue # f PSFalse
+        pforce $ x # pdelay (f PSTrue) # pdelay (f PSFalse)
+
+-- | Strict version of 'pmatch' for 'PSBool'.
+pmatchStrict ::
+  forall (r :: PType) (s :: S).
+  Term s PSBool ->
+  (PSBool s -> Term s r) ->
+  Term s r
+pmatchStrict x' f =
+  pmatch (pto x') $ \(PForall raw) ->
+    pmatch raw $ \(PSBoolRaw x) ->
+      x # f PSTrue # f PSFalse
 
 pstrue :: forall (s :: S). Term s PSBool
 pstrue = pcon PSTrue
@@ -213,7 +225,7 @@ psfalse = pcon PSFalse
 
 -- | Strict @if@ on Scott-encoded bool.
 psif' :: forall (s :: S) (a :: PType). Term s PSBool -> Term s a -> Term s a -> Term s a
-psif' b t f = pmatch b \case
+psif' b t f = pmatchStrict b \case
   PSTrue -> t
   PSFalse -> f
 
