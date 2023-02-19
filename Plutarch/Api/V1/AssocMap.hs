@@ -86,7 +86,6 @@ import Data.Proxy (Proxy (Proxy))
 import Data.Traversable (for)
 
 import Data.Bifunctor (bimap)
-import Plutarch.Bool (pif')
 
 data KeyGuarantees = Sorted | Unsorted
 
@@ -419,7 +418,7 @@ data MapMergeCarrier k v s = MapMergeCarrier
   , mergeInsert ::
       Term
         s
-        ( PBool
+        ( PSBool
             :--> PBuiltinPair (PAsData k) (PAsData v)
             :--> PBuiltinListOfPairs k v
             :--> PBuiltinListOfPairs k v
@@ -432,15 +431,40 @@ data MapMergeCarrier k v s = MapMergeCarrier
 
 instance DerivePlutusType (MapMergeCarrier k v) where type DPTStrat _ = PlutusTypeScott
 
+-- | Scott-encoded bool.
+data PSBool (s :: S)
+  = PSTrue
+  | PSFalse
+  deriving stock (Generic)
+  deriving anyclass (PlutusType)
+
+instance DerivePlutusType (PSBool) where type DPTStrat _ = PlutusTypeScott
+
+-- | Not on Scott-encoded bool.
+psnot :: forall (s :: S). Term s PSBool -> Term s PSBool
+psnot b = pmatch b \case
+  PSTrue -> pcon PSFalse
+  PSFalse -> pcon PSTrue
+
+-- | Lazy @if@ on Scott-encoded bool.
+psif :: forall (s :: S) (a :: PType). Term s PSBool -> Term s a -> Term s a -> Term s a
+psif b t f = pmatch b \case
+  PSTrue -> t
+  PSFalse -> f
+
 -- | Apply given Plutarch fun with given reified (on Haskell-level) arg order.
 applyOrder ::
   forall (s :: S) (a :: PType) (b :: PType).
   -- | The reified order to resolve first/second arg to left/right.
-  Term s PBool ->
+  Term s PSBool ->
   -- | A function that expects argument order 'left right'.
   Term s (a :--> a :--> b) ->
-  Term s (a :--> a :--> b)
-applyOrder argOrder pfun = pif' # argOrder # pfun # (plam $ \r l -> pfun # l # r)
+  -- | First arg.
+  Term s a ->
+  -- | Second arg.
+  Term s a ->
+  Term s b
+applyOrder argOrder pfun a b = psif argOrder (pfun # a # b) (pfun # b # a)
 
 {- | Creates a 'MapMergeCarrier' for map zip, using the given value merge function.
 
@@ -476,13 +500,17 @@ mapZipCarrier = phoistAcyclic $ plam \combine defLeft defRight self ->
                 ( pcons
                     # ( ppairDataBuiltin
                           # xk
-                            #$ applyOrder argOrder combine
-                          # (psndBuiltin # x)
-                          # (psndBuiltin # y)
+                            #$ applyOrder
+                              argOrder
+                              combine
+                              (psndBuiltin # x)
+                              (psndBuiltin # y)
                       )
-                      #$ applyOrder argOrder merge
-                    # xs
-                    # ys'
+                      #$ applyOrder
+                        argOrder
+                        merge
+                        xs
+                        ys'
                 )
                 ( pif
                     (pfromData xk #< pfromData yk)
@@ -492,10 +520,10 @@ mapZipCarrier = phoistAcyclic $ plam \combine defLeft defRight self ->
                                 #$ applyOrder
                                   argOrder
                                   combine
-                              # (psndBuiltin # x)
-                              # (pif' # argOrder # defRight # defLeft)
+                                  (psndBuiltin # x)
+                                  (psif argOrder defRight defLeft)
                           )
-                        # (mergeInsert # (pnot # argOrder) # y # ys' # xs)
+                        # (mergeInsert # (psnot argOrder) # y # ys' # xs)
                     )
                     ( pcons
                         # ( ppairDataBuiltin
@@ -503,8 +531,8 @@ mapZipCarrier = phoistAcyclic $ plam \combine defLeft defRight self ->
                                 #$ applyOrder
                                   argOrder
                                   combine
-                              # (pif' # argOrder # defLeft # defRight)
-                              # (psndBuiltin # y)
+                                  (psif argOrder defLeft defRight)
+                                  (psndBuiltin # y)
                           )
                         # (mergeInsert # argOrder # x # xs # ys')
                     )
@@ -513,7 +541,7 @@ mapZipCarrier = phoistAcyclic $ plam \combine defLeft defRight self ->
         MapMergeCarrier
           { merge = plam $ \ls rs -> pmatch ls $ \case
               PNil -> rs
-              PCons l ls' -> mergeInsert # pcon PTrue # l # ls' # rs
+              PCons l ls' -> mergeInsert # pcon PSTrue # l # ls' # rs
           , mergeInsert = plam $ mergeInsertImpl
           }
 
@@ -613,19 +641,23 @@ mapUnionCarrier = phoistAcyclic $ plam \combine self ->
                 ( pcons
                     # ( ppairDataBuiltin
                           # xk
-                            #$ applyOrder argOrder combine
-                          # (psndBuiltin # x)
-                          # (psndBuiltin # y)
+                            #$ applyOrder
+                              argOrder
+                              combine
+                              (psndBuiltin # x)
+                              (psndBuiltin # y)
                       )
-                      #$ applyOrder argOrder merge
-                    # xs
-                    # ys'
+                      #$ applyOrder
+                        argOrder
+                        merge
+                        xs
+                        ys'
                 )
                 ( pif
                     (pfromData xk #< pfromData yk)
                     ( pcons
                         # x
-                        # (mergeInsert # (pnot # argOrder) # y # ys' # xs)
+                        # (mergeInsert # (psnot argOrder) # y # ys' # xs)
                     )
                     ( pcons
                         # y
@@ -636,7 +668,7 @@ mapUnionCarrier = phoistAcyclic $ plam \combine self ->
         MapMergeCarrier
           { merge = plam $ \ls rs -> pmatch ls $ \case
               PNil -> rs
-              PCons l ls' -> mergeInsert # pcon PTrue # l # ls' # rs
+              PCons l ls' -> mergeInsert # pcon PSTrue # l # ls' # rs
           , mergeInsert = plam $ mergeInsertImpl
           }
 
@@ -701,24 +733,28 @@ mapIntersectionCarrier = phoistAcyclic $ plam \combine self ->
                 ( pcons
                     # ( ppairDataBuiltin
                           # xk
-                            #$ applyOrder argOrder combine
-                          # (psndBuiltin # x)
-                          # (psndBuiltin # y)
+                            #$ applyOrder
+                              argOrder
+                              combine
+                              (psndBuiltin # x)
+                              (psndBuiltin # y)
                       )
-                      #$ applyOrder argOrder merge
-                    # xs
-                    # ys'
+                      #$ applyOrder
+                        argOrder
+                        merge
+                        xs
+                        ys'
                 )
                 ( pif
                     (pfromData xk #< pfromData yk)
-                    (mergeInsert # (pnot # argOrder) # y # ys' # xs) -- diff to mapUnionCarrier here
+                    (mergeInsert # (psnot argOrder) # y # ys' # xs) -- diff to mapUnionCarrier here
                     (mergeInsert # argOrder # x # xs # ys') -- diff to mapUnionCarrier here
                 )
    in pcon $
         MapMergeCarrier
           { merge = plam $ \ls rs -> pmatch ls $ \case
               PNil -> pnil -- diff to mapUnionCarrier here
-              PCons l ls' -> mergeInsert # pcon PTrue # l # ls' # rs
+              PCons l ls' -> mergeInsert # pcon PSTrue # l # ls' # rs
           , mergeInsert = plam $ mergeInsertImpl
           }
 
