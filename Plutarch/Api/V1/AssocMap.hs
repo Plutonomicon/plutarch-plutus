@@ -469,7 +469,10 @@ mapZipCarrier = phoistAcyclic $ plam \combine defLeft defRight self ->
       merge = pmatch self \(MapMergeCarrier {merge}) -> merge
       mergeInsertImpl argOrder x xs ys =
         pmatch ys $ \case
-          PNil -> pcons # x # xs
+          PNil ->
+            let rest = pcons # x # xs
+                handle = plam $ \x -> applyOrder argOrder combine x (psif' argOrder defRight defLeft)
+             in pto $ pmapData # handle # pcon (PMap rest)
           PCons y1 ys' -> unTermCont $ do
             y <- tcont $ plet y1
             xk <- tcont $ plet (pfstBuiltin # x)
@@ -520,7 +523,7 @@ mapZipCarrier = phoistAcyclic $ plam \combine defLeft defRight self ->
    in pcon $
         MapMergeCarrier
           { merge = plam $ \ls rs -> pmatch ls $ \case
-              PNil -> rs
+              PNil -> pto $ pmapData # (combine # defLeft) # pcon (PMap rs)
               PCons l ls' -> mergeInsert # pstrue # l # ls' # rs
           , mergeInsert = plam $ mergeInsertImpl
           }

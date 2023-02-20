@@ -19,7 +19,7 @@ delete.old {"exBudgetCPU":7780191,"exBudgetMemory":25178,"scriptSizeBytes":204}
 difference.emptyLeft {"exBudgetCPU":2067458,"exBudgetMemory":7860,"scriptSizeBytes":162}
 difference.emptyRight {"exBudgetCPU":4494995,"exBudgetMemory":15848,"scriptSizeBytes":165}
 difference.emptyResult {"exBudgetCPU":7452717,"exBudgetMemory":22006,"scriptSizeBytes":179}
-zipMapsWith.(-) {"exBudgetCPU":24924251,"exBudgetMemory":75994,"scriptSizeBytes":484}
+zipMapsWith.(-) {"exBudgetCPU":27914201,"exBudgetMemory":84680,"scriptSizeBytes":554}
 unionWith.const {"exBudgetCPU":23178141,"exBudgetMemory":71066,"scriptSizeBytes":414}
 unionWith.flip const {"exBudgetCPU":23178141,"exBudgetMemory":71066,"scriptSizeBytes":414}
 unionWith.double {"exBudgetCPU":9809814,"exBudgetMemory":30672,"scriptSizeBytes":301}
