@@ -36,11 +36,9 @@ module Plutarch.Api.V1.AssocMap (
   pmapMaybeData,
 
   -- * Combining
-  pzipMapsWith,
-  pzipMapsWithData,
+  pzipWith,
+  pzipWithData,
   pdifference,
-  punionWith,
-  punionWithData,
   pintersectionWith,
   pintersectionWithData,
 
@@ -72,7 +70,7 @@ import Plutarch.Lift (
   pconstantToRepr,
  )
 import Plutarch.List qualified as List
-import Plutarch.Prelude hiding (pall, pany, pfilter, pmap, pnull, psingleton)
+import Plutarch.Prelude hiding (pall, pany, pfilter, pmap, pnull, psingleton, pzipWith)
 import Plutarch.Prelude qualified as PPrelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
@@ -86,7 +84,7 @@ import Data.Proxy (Proxy (Proxy))
 import Data.Traversable (for)
 
 import Data.Bifunctor (bimap)
-import Plutarch.Bool (PSBool, psif, psif', psnot, pstrue)
+import Plutarch.Bool (PSBool (PSFalse, PSTrue), pstrue)
 
 data KeyGuarantees = Sorted | Unsorted
 
@@ -383,60 +381,40 @@ instance (PIsData k, PIsData v, POrd k) => IsList (Term s (PMap 'Sorted k v)) wh
   toList = error "unimplemented"
 
 instance
-  (POrd k, PIsData k, PIsData v, Semigroup (Term s v)) =>
+  (POrd k, PIsData k, PIsData v, forall (s' :: S). Monoid (Term s' v)) =>
   Semigroup (Term s (PMap 'Sorted k v))
   where
-  a <> b = punionWith # plam (<>) # a # b
+  a <> b = pzipWith (Just mempty) (Just mempty) # plam (<>) # a # b
 
 instance
-  (POrd k, PIsData k, PIsData v, Semigroup (Term s v)) =>
+  (POrd k, PIsData k, PIsData v, forall (s' :: S). Monoid (Term s' v)) =>
   Monoid (Term s (PMap 'Sorted k v))
   where
   mempty = pempty
 
 instance
-  (POrd k, PIsData k, PIsData v, PlutusTx.Semigroup (Term s v)) =>
+  (POrd k, PIsData k, PIsData v, forall (s' :: S). PlutusTx.Monoid (Term s' v)) =>
   PlutusTx.Semigroup (Term s (PMap 'Sorted k v))
   where
-  a <> b = punionWith # plam (PlutusTx.<>) # a # b
+  a <> b = pzipWith (Just PlutusTx.mempty) (Just PlutusTx.mempty) # plam (PlutusTx.<>) # a # b
 
 instance
-  (POrd k, PIsData k, PIsData v, PlutusTx.Semigroup (Term s v)) =>
+  (POrd k, PIsData k, PIsData v, forall (s' :: S). PlutusTx.Monoid (Term s' v)) =>
   PlutusTx.Monoid (Term s (PMap 'Sorted k v))
   where
   mempty = pempty
 
 instance
-  (POrd k, PIsData k, PIsData v, PlutusTx.Group (Term s v)) =>
+  (POrd k, PIsData k, PIsData v, forall (s' :: S). PlutusTx.Group (Term s' v)) =>
   PlutusTx.Group (Term s (PMap 'Sorted k v))
   where
   inv a = pmap # plam PlutusTx.inv # a
-
--- | Helper indirection for mutual recursion in the implementations of 'merge' and 'mergeInsert'.
-data MapMergeCarrier k v s = MapMergeCarrier
-  { merge :: Term s (PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v)
-  -- ^ Entry point. Params are known as left and right.
-  , mergeInsert ::
-      Term
-        s
-        ( PSBool
-            :--> PBuiltinPair (PAsData k) (PAsData v)
-            :--> PBuiltinListOfPairs k v
-            :--> PBuiltinListOfPairs k v
-            :--> PBuiltinListOfPairs k v
-        )
-  -- ^ True indicates left before right. Second and third param are head and tail of the same list, conceptually.
-  }
-  deriving stock (Generic)
-  deriving anyclass (PlutusType)
-
-instance DerivePlutusType (MapMergeCarrier k v) where type DPTStrat _ = PlutusTypeScott
 
 -- | Apply given Plutarch fun with given reified (on Haskell-level) arg order.
 applyOrder ::
   forall (s :: S) (a :: PType) (b :: PType).
   -- | The reified order to resolve first/second arg to left/right.
-  Term s PSBool ->
+  PSBool s ->
   -- | A function that expects argument order 'left right'.
   Term s (a :--> a :--> b) ->
   -- | First arg.
@@ -444,305 +422,190 @@ applyOrder ::
   -- | Second arg.
   Term s a ->
   Term s b
-applyOrder argOrder pfun a b = psif argOrder (pfun # a # b) (pfun # b # a)
+applyOrder argOrder pfun a b =
+  case argOrder of
+    PSTrue -> (pfun # a # b)
+    PSFalse -> (pfun # b # a)
 
-{- | Creates a 'MapMergeCarrier' for map zip, using the given value merge function.
-
- The indirection needs to be resolved using a 'punsafeCoerce pfix'.
-
- Contains the actual mutually recursive implementations of 'merge' and 'mergeInsert'.
--}
-mapZipCarrier ::
+zipMergeInsert ::
+  forall (s :: S) (k :: PType) (v :: PType).
   (POrd k, PIsData k) =>
+  Maybe (ClosedTerm (PAsData v)) ->
+  Maybe (ClosedTerm (PAsData v)) ->
   Term
     s
     ( (PAsData v :--> PAsData v :--> PAsData v)
-        :--> PAsData v
-        :--> PAsData v
-        :--> MapMergeCarrier k v
-        :--> MapMergeCarrier k v
+        :--> PSBool
+        :--> PBuiltinPair (PAsData k) (PAsData v)
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
     )
-mapZipCarrier = phoistAcyclic $ plam \combine defLeft defRight self ->
-  -- For recursive calls: Resolving to the record fields.
-  -- Sadly, unpacking the record outside of the recursion results in non-termination.
-  let mergeInsert = pmatch self \(MapMergeCarrier {mergeInsert}) -> mergeInsert
-      merge = pmatch self \(MapMergeCarrier {merge}) -> merge
-      mergeInsertImpl argOrder x xs ys =
-        pmatch ys $ \case
-          PNil ->
-            let rest = pcons # x # xs
-                handle = plam $ \x -> applyOrder argOrder combine x (psif' argOrder defRight defLeft)
-             in pto $ pmapData # handle # pcon (PMap rest)
-          PCons y1 ys' -> unTermCont $ do
-            y <- tcont $ plet y1
-            xk <- tcont $ plet (pfstBuiltin # x)
-            yk <- tcont $ plet (pfstBuiltin # y)
-            pure $
-              pif
-                (xk #== yk)
-                ( pcons
-                    # ( ppairDataBuiltin
-                          # xk
-                            #$ applyOrder
-                              argOrder
-                              combine
-                              (psndBuiltin # x)
-                              (psndBuiltin # y)
-                      )
-                      #$ applyOrder
-                        argOrder
-                        merge
-                        xs
-                        ys'
+zipMergeInsert defLeft defRight =
+  plam $ \combine -> pfix #$ plam $ \self argOrder x xs' ys ->
+    pmatch ys $ \case
+      PNil ->
+        pmatch argOrder \argOrder' ->
+          let defY = if (argOrder' == PSTrue) then defRight else defLeft
+           in case defY of
+                Just defY' ->
+                  let handle = plam $ \x' -> applyOrder argOrder' combine x' defY'
+                   in pto $ pmapData # handle # pcon (PMap $ pcons # x # xs')
+                Nothing -> pcon PNil
+      PCons y1 ys' -> unTermCont $ do
+        y <- tcont $ plet y1
+        xk <- tcont $ plet (pfstBuiltin # x)
+        yk <- tcont $ plet (pfstBuiltin # y)
+        pure $
+          pif
+            (xk #== yk)
+            ( pcons
+                # ( ppairDataBuiltin
+                      # xk
+                        #$ pmatch argOrder \argOrder' ->
+                          applyOrder
+                            argOrder'
+                            combine
+                            (psndBuiltin # x)
+                            (psndBuiltin # y)
+                  )
+                  #$ pmatch argOrder \argOrder' ->
+                    applyOrder
+                      argOrder'
+                      (zipMerge self combine defLeft)
+                      xs'
+                      ys'
+            )
+            ( pif
+                (pfromData xk #< pfromData yk)
+                ( pmatch argOrder $ \argOrder' ->
+                    let -- default for the y-side
+                        def = if (argOrder' == PSTrue) then defRight else defLeft
+                        notOrder = pcon $ if (argOrder' == PSTrue) then PSFalse else PSTrue
+                     in case def of
+                          Just def' ->
+                            pcons
+                              # ( ppairDataBuiltin
+                                    # xk
+                                      #$ applyOrder argOrder' combine (psndBuiltin # x) def'
+                                )
+                              # (self # notOrder # y # ys' # xs')
+                          Nothing -> self # notOrder # y # ys' # xs'
                 )
-                ( pif
-                    (pfromData xk #< pfromData yk)
-                    ( pcons
-                        # ( ppairDataBuiltin
-                              # xk
-                                #$ applyOrder
-                                  argOrder
-                                  combine
-                                  (psndBuiltin # x)
-                                  (psif' argOrder defRight defLeft)
-                          )
-                        # (mergeInsert # (psnot argOrder) # y # ys' # xs)
-                    )
-                    ( pcons
-                        # ( ppairDataBuiltin
-                              # yk
-                                #$ applyOrder
-                                  argOrder
-                                  combine
-                                  (psif' argOrder defLeft defRight)
-                                  (psndBuiltin # y)
-                          )
-                        # (mergeInsert # argOrder # x # xs # ys')
-                    )
+                ( pmatch argOrder $ \argOrder' ->
+                    let -- default for the x-side
+                        def = if (argOrder' == PSTrue) then defLeft else defRight
+                     in case def of
+                          Just def' ->
+                            pcons
+                              # ( ppairDataBuiltin
+                                    # yk
+                                      #$ applyOrder argOrder' combine def' (psndBuiltin # y)
+                                )
+                              # (self # argOrder # x # xs' # ys')
+                          Nothing -> self # argOrder # x # xs' # ys'
                 )
-   in pcon $
-        MapMergeCarrier
-          { merge = plam $ \ls rs -> pmatch ls $ \case
-              PNil -> pto $ pmapData # (combine # defLeft) # pcon (PMap rs)
-              PCons l ls' -> mergeInsert # pstrue # l # ls' # rs
-          , mergeInsert = plam $ mergeInsertImpl
-          }
+            )
 
-mapZip ::
-  forall k v s.
-  (POrd k, PIsData k) =>
+zipMerge ::
+  forall (s :: S) (k :: PType) (v :: PType).
   Term
     s
-    ( ( PAsData v
-          :--> PAsData v
-          :--> PAsData v
-      )
-        :--> PAsData v
-        :--> PAsData v
-        :--> MapMergeCarrier k v
-    )
-mapZip = phoistAcyclic $
-  plam \combine defLeft defRight ->
-    punsafeCoerce pfix
-      # ( mapZipCarrier # combine # defLeft # defRight ::
-            Term _ (MapMergeCarrier k v :--> MapMergeCarrier k v)
-        )
-
-{- | Build the zip of two 'PMap's, merging values that share the same key using the
-given function.
-
- Beware: The merging function does not get called for key-value-pairs that are in only one
- of the maps.
--}
-pzipMapsWith ::
-  (POrd k, PIsData k, PIsData v) =>
+    ( PSBool
+        :--> PBuiltinPair (PAsData k) (PAsData v)
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+    ) ->
+  Term s (PAsData v :--> PAsData v :--> PAsData v) ->
+  Maybe (ClosedTerm (PAsData v)) ->
   Term
     s
-    ( (v :--> v :--> v)
-        :--> v
-        :--> v
-        :--> PMap 'Sorted k v
-        :--> PMap 'Sorted k v
-        :--> PMap 'Sorted k v
+    ( PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
     )
-pzipMapsWith = phoistAcyclic $
-  plam $
-    \combine defLeft defRight ->
-      pzipMapsWithData
-        # (plam $ \x y -> pdata (combine # pfromData x # pfromData y))
-        # pdata defLeft
-        # pdata defRight
+zipMerge mergeInsertRec combine defLeft = plam $ \ls rs -> pmatch ls $ \case
+  PNil -> case defLeft of
+    Just defLeft' -> pto $ pmapData # (combine # defLeft') # pcon (PMap rs)
+    Nothing -> pcon PNil
+  PCons l ls' -> mergeInsertRec # pstrue # l # ls' # rs
 
 {- | Build the zip of two 'PMap's, merging data-encoded values that share
  the same key using the given function.
 
- Beware: The merging function does not get called for key-value-pairs that are in only one
- of the maps.
+  Giving defaults is similar to SQL joins (though with the NULL replaced by the
+  default):
+  - 'Nothing' 'Nothing': inner join, a.k.a. intersection
+  - 'Just' 'Nothing': left outer join
+  - 'Nothing' 'Just': right outer join
+  - 'Just' 'Just': full outer join, a.k.a. union
 -}
-pzipMapsWithData ::
+pzipWithData ::
+  forall (s :: S) (k :: PType) (v :: PType).
   (POrd k, PIsData k) =>
+  -- | Default value for left side. If it is 'Nothing', occurrence of a given
+  -- key on the left side is mandatory for it to occur in the output. In this
+  -- case, key-value-pairs with a certain key that only occurs on the right side
+  -- get dropped.
+  Maybe (ClosedTerm (PAsData v)) ->
+  -- | Default value for right side. If it is 'Nothing', occurrence of a given
+  -- key on the right side is mandatory for it to occur in the output. In this
+  -- case, key-value-pairs with a certain key that only occurs on the left side
+  -- get dropped.
+  Maybe (ClosedTerm (PAsData v)) ->
+  -- | Value-merging-function, left side, right side.
   Term
     s
     ( (PAsData v :--> PAsData v :--> PAsData v)
-        :--> PAsData v
-        :--> PAsData v
         :--> PMap 'Sorted k v
         :--> PMap 'Sorted k v
         :--> PMap 'Sorted k v
     )
-pzipMapsWithData = phoistAcyclic $
-  plam $ \combine defLeft defRight x y ->
-    pcon $
-      PMap $
-        (pmatch (mapZip # combine # defLeft # defRight) \(MapMergeCarrier {merge}) -> merge)
-          # pto x
-          # pto y
+pzipWithData defLeft defRight = phoistAcyclic $
+  plam $ \combine x y ->
+    pcon $ PMap $ zipMerge (zipMergeInsert defLeft defRight # combine) combine defLeft # pto x # pto y
 
-{- | Creates a 'MapMergeCarrier' for map union, using the given value merge function.
-
- The indirection needs to be resolved using a 'punsafeCoerce pfix'.
-
- Contains the actual mutually recursive implementations of 'merge' and 'mergeInsert'.
--}
-mapUnionCarrier ::
-  (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapMergeCarrier k v :--> MapMergeCarrier k v)
-mapUnionCarrier = phoistAcyclic $ plam \combine self ->
-  -- For recursive calls: Resolving to the record fields.
-  -- Sadly, unpacking the record outside of the recursion results in non-termination.
-  let mergeInsert = pmatch self \(MapMergeCarrier {mergeInsert}) -> mergeInsert
-      merge = pmatch self \(MapMergeCarrier {merge}) -> merge
-      mergeInsertImpl argOrder x xs ys =
-        pmatch ys $ \case
-          PNil -> pcons # x # xs
-          PCons y1 ys' -> unTermCont $ do
-            y <- tcont $ plet y1
-            xk <- tcont $ plet (pfstBuiltin # x)
-            yk <- tcont $ plet (pfstBuiltin # y)
-            pure $
-              pif
-                (xk #== yk)
-                ( pcons
-                    # ( ppairDataBuiltin
-                          # xk
-                            #$ applyOrder
-                              argOrder
-                              combine
-                              (psndBuiltin # x)
-                              (psndBuiltin # y)
-                      )
-                      #$ applyOrder
-                        argOrder
-                        merge
-                        xs
-                        ys'
-                )
-                ( pif
-                    (pfromData xk #< pfromData yk)
-                    ( pcons
-                        # x
-                        # (mergeInsert # (psnot argOrder) # y # ys' # xs)
-                    )
-                    ( pcons
-                        # y
-                        # (mergeInsert # argOrder # x # xs # ys')
-                    )
-                )
-   in pcon $
-        MapMergeCarrier
-          { merge = plam $ \ls rs -> pmatch ls $ \case
-              PNil -> rs
-              PCons l ls' -> mergeInsert # pstrue # l # ls' # rs
-          , mergeInsert = plam $ mergeInsertImpl
-          }
-
-mapUnion :: forall k v s. (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapMergeCarrier k v)
-mapUnion = phoistAcyclic $ plam \combine -> punsafeCoerce pfix # (mapUnionCarrier # combine :: Term _ (MapMergeCarrier k v :--> MapMergeCarrier k v))
-
-{- | Build the union of two 'PMap's, merging values that share the same key using the
-given function.
-
- Beware: The merging function does not get called for key-value-pairs that are in only one
- of the maps.
--}
-punionWith ::
-  (POrd k, PIsData k, PIsData v) =>
-  Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
-punionWith = phoistAcyclic $
-  plam $
-    \combine -> punionWithData #$ plam $
-      \x y -> pdata (combine # pfromData x # pfromData y)
-
-{- | Build the union of two 'PMap's, merging data-encoded values that share
+{- | Build the zip of two 'PMap's, merging values that share
  the same key using the given function.
 
- Beware: The merging function does not get called for key-value-pairs that are in only one
- of the maps.
+  Giving defaults is similar to SQL joins (though with the NULL replaced by the
+  default):
+  - 'Nothing' 'Nothing': inner join, a.k.a. intersection
+  - 'Just' 'Nothing': left outer join
+  - 'Nothing' 'Just': right outer join
+  - 'Just' 'Just': full outer join, a.k.a. union
 -}
-punionWithData ::
-  (POrd k, PIsData k) =>
+pzipWith ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (POrd k, PIsData k, PIsData v) =>
+  -- | Default value for left side. If it is 'Nothing', occurrence of a given
+  -- key on the left side is mandatory for it to occur in the output. In this
+  -- case, key-value-pairs with a certain key that only occurs on the right side
+  -- get dropped.
+  Maybe (ClosedTerm v) ->
+  -- | Default value for right side. If it is 'Nothing', occurrence of a given
+  -- key on the right side is mandatory for it to occur in the output. In this
+  -- case, key-value-pairs with a certain key that only occurs on the left side
+  -- get dropped.
+  Maybe (ClosedTerm v) ->
+  -- | Value-merging-function, left side, right side.
   Term
     s
-    ( (PAsData v :--> PAsData v :--> PAsData v)
+    ( (v :--> v :--> v)
         :--> PMap 'Sorted k v
         :--> PMap 'Sorted k v
         :--> PMap 'Sorted k v
     )
-punionWithData = phoistAcyclic $
-  plam $ \combine x y ->
-    pcon $ PMap $ (pmatch (mapUnion # combine) \(MapMergeCarrier {merge}) -> merge) # pto x # pto y
-
-{- | Creates a 'MapMergeCarrier' for map intersection, using the given value merge function.
-
- The indirection needs to be resolved using a 'punsafeCoerce pfix'.
-
- Contains the actual mutually recursive implementations of 'merge' and 'mergeInsert'.
--}
-mapIntersectionCarrier :: (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapMergeCarrier k v :--> MapMergeCarrier k v)
-mapIntersectionCarrier = phoistAcyclic $ plam \combine self ->
-  -- For recursive calls: Resolving to the record fields.
-  -- Sadly, unpacking the record outside of the recursion results in non-termination.
-  let mergeInsert = pmatch self \(MapMergeCarrier {mergeInsert}) -> mergeInsert
-      merge = pmatch self \(MapMergeCarrier {merge}) -> merge
-      mergeInsertImpl argOrder x xs ys =
-        pmatch ys $ \case
-          PNil -> pnil -- diff to mapUnionCarrier here
-          PCons y1 ys' -> unTermCont $ do
-            y <- tcont $ plet y1
-            xk <- tcont $ plet (pfstBuiltin # x)
-            yk <- tcont $ plet (pfstBuiltin # y)
-            pure $
-              pif
-                (xk #== yk)
-                ( pcons
-                    # ( ppairDataBuiltin
-                          # xk
-                            #$ applyOrder
-                              argOrder
-                              combine
-                              (psndBuiltin # x)
-                              (psndBuiltin # y)
-                      )
-                      #$ applyOrder
-                        argOrder
-                        merge
-                        xs
-                        ys'
-                )
-                ( pif
-                    (pfromData xk #< pfromData yk)
-                    (mergeInsert # (psnot argOrder) # y # ys' # xs) -- diff to mapUnionCarrier here
-                    (mergeInsert # argOrder # x # xs # ys') -- diff to mapUnionCarrier here
-                )
-   in pcon $
-        MapMergeCarrier
-          { merge = plam $ \ls rs -> pmatch ls $ \case
-              PNil -> pnil -- diff to mapUnionCarrier here
-              PCons l ls' -> mergeInsert # pstrue # l # ls' # rs
-          , mergeInsert = plam $ mergeInsertImpl
-          }
-
-mapIntersection :: forall k v s. (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapMergeCarrier k v)
-mapIntersection = phoistAcyclic $ plam \combine -> punsafeCoerce pfix # (mapIntersectionCarrier # combine :: Term _ (MapMergeCarrier k v :--> MapMergeCarrier k v))
+pzipWith defLeft defRight = phoistAcyclic $
+  plam $ \combine ls rs ->
+    pzipWithData (pdata' <$> defLeft) (pdata' <$> defRight)
+      # (plam $ \x y -> pdata (combine # pfromData x # pfromData y))
+      # ls
+      # rs
+  where
+    pdata' :: forall (a :: PType). PIsData a => ClosedTerm a -> ClosedTerm (PAsData a)
+    pdata' a = pdata a
 
 {- | Build the intersection of two 'PMap's, merging values that share the same key using the
 given function.
@@ -750,10 +613,7 @@ given function.
 pintersectionWith ::
   (POrd k, PIsData k, PIsData v) =>
   Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
-pintersectionWith = phoistAcyclic $
-  plam $
-    \combine -> pintersectionWithData #$ plam $
-      \x y -> pdata (combine # pfromData x # pfromData y)
+pintersectionWith = pzipWith Nothing Nothing
 
 {- | Build the intersection of two 'PMap's, merging data-encoded values that share the same key using the
 given function.
@@ -767,9 +627,7 @@ pintersectionWithData ::
         :--> PMap 'Sorted k v
         :--> PMap 'Sorted k v
     )
-pintersectionWithData = phoistAcyclic $
-  plam $ \combine x y ->
-    pcon $ PMap $ (pmatch (mapIntersection # combine) \(MapMergeCarrier {merge}) -> merge) # pto x # pto y
+pintersectionWithData = pzipWithData Nothing Nothing
 
 -- | Difference of two maps. Return elements of the first map not existing in the second map.
 pdifference :: PIsData k => Term s (PMap g k a :--> PMap any k b :--> PMap g k a)

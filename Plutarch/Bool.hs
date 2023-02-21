@@ -196,6 +196,7 @@ instance PlutusType (PSBoolRaw a) where
 data PSBool (s :: S)
   = PSTrue
   | PSFalse
+  deriving stock (Eq, Ord, Show)
 
 instance PlutusType PSBool where
   type PInner PSBool = PForall PSBoolRaw

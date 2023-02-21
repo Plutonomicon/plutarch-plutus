@@ -33,8 +33,8 @@ module Plutarch.Api.V1.Value (
   pconstantPositiveSingleton,
 
   -- * Combining values
-  punionWith,
-  punionWithData,
+  pzipWith,
+  pzipWithData,
 
   -- * Partial ordering operations
   pcheckBinRel,
@@ -71,7 +71,7 @@ import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusTx.Monoid qualified as PlutusTx
 import PlutusTx.Semigroup qualified as PlutusTx
 
-import Plutarch.Prelude hiding (psingleton)
+import Plutarch.Prelude hiding (psingleton, pzipWith)
 
 newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 
@@ -165,25 +165,25 @@ instance PPartialOrd (PValue 'Sorted 'NonZero) where
       f = phoistAcyclic $ pcheckBinRel #$ phoistAcyclic $ plam (#<=)
 
 instance PEq (PValue 'Sorted 'NoGuarantees) where
-  a #== b = AssocMap.pall # (AssocMap.pall # plam (#== 0)) # pto (punionWith # plam (-) # a # b)
+  a #== b = AssocMap.pall # (AssocMap.pall # plam (#== 0)) # pto (pzipWith # plam (-) # a # b)
 
 instance Semigroup (Term s (PValue 'Sorted 'Positive)) where
-  a <> b = punsafeDowncast (pto $ punionWith # plam (+) # a # b)
+  a <> b = punsafeDowncast (pto $ pzipWith # plam (+) # a # b)
 
 instance PlutusTx.Semigroup (Term s (PValue 'Sorted 'Positive)) where
-  a <> b = punsafeDowncast (pto $ punionWith # plam (+) # a # b)
+  a <> b = punsafeDowncast (pto $ pzipWith # plam (+) # a # b)
 
 instance Semigroup (Term s (PValue 'Sorted 'NonZero)) where
-  a <> b = pnormalize #$ punionWith # plam (+) # a # b
+  a <> b = pnormalize #$ pzipWith # plam (+) # a # b
 
 instance PlutusTx.Semigroup (Term s (PValue 'Sorted 'NonZero)) where
-  a <> b = pnormalize #$ punionWith # plam (+) # a # b
+  a <> b = pnormalize #$ pzipWith # plam (+) # a # b
 
 instance Semigroup (Term s (PValue 'Sorted 'NoGuarantees)) where
-  a <> b = punionWith # plam (+) # a # b
+  a <> b = pzipWith # plam (+) # a # b
 
 instance PlutusTx.Semigroup (Term s (PValue 'Sorted 'NoGuarantees)) where
-  a <> b = punionWith # plam (+) # a # b
+  a <> b = pzipWith # plam (+) # a # b
 
 instance
   Semigroup (Term s (PValue 'Sorted normalization)) =>
@@ -367,7 +367,7 @@ plovelaceValueOf = phoistAcyclic $
  quantities with the same asset class. Note that the result is _not_
  'normalize'd and may contain zero quantities.
 -}
-punionWith ::
+pzipWith ::
   Term
     s
     ( (PInteger :--> PInteger :--> PInteger)
@@ -375,11 +375,11 @@ punionWith ::
         :--> PValue 'Sorted any1
         :--> PValue 'Sorted 'NoGuarantees
     )
-punionWith = phoistAcyclic $
+pzipWith = phoistAcyclic $
   plam $ \combine x y ->
     pcon . PValue $
-      AssocMap.punionWith
-        # plam (\x y -> AssocMap.punionWith # combine # x # y)
+      AssocMap.pzipWith (Just AssocMap.pempty) (Just AssocMap.pempty)
+        # plam (\x y -> AssocMap.pzipWith (Just $ pconstant 0) (Just $ pconstant 0) # combine # x # y)
         # pto x
         # pto y
 
@@ -387,7 +387,7 @@ punionWith = phoistAcyclic $
  data-encoded quantities with the same asset class. Note that the result is
  _not_ 'normalize'd and may contain zero quantities.
 -}
-punionWithData ::
+pzipWithData ::
   Term
     s
     ( (PAsData PInteger :--> PAsData PInteger :--> PAsData PInteger)
@@ -395,11 +395,11 @@ punionWithData ::
         :--> PValue 'Sorted any1
         :--> PValue 'Sorted 'NoGuarantees
     )
-punionWithData = phoistAcyclic $
+pzipWithData = phoistAcyclic $
   plam $ \combine x y ->
     pcon . PValue $
-      AssocMap.punionWith
-        # plam (\x y -> AssocMap.punionWithData # combine # x # y)
+      AssocMap.pzipWith (Just AssocMap.pempty) (Just AssocMap.pempty)
+        # plam (\x y -> AssocMap.pzipWithData (Just $ pdata $ pconstant 0) (Just $ pdata $ pconstant 0) # combine # x # y)
         # pto x
         # pto y
 
