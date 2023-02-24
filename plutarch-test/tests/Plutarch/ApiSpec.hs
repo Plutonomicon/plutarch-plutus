@@ -121,34 +121,34 @@ spec = do
                     # pconstant "token"
                     @-> \p -> plift p @?= if size < 9 then 0 else 1
               )
-        "zipWith" @\ do
-          "const" @| PValue.pzipWith # plam const # pmint # pmint @-> \p ->
+        "unionWith" @\ do
+          "const" @| PValue.punionWith # plam const # pmint # pmint @-> \p ->
             plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint
           "(+)" @\ do
-            "itself" @| PValue.pzipWith # plam (+) @-> \plus ->
+            "itself" @| PValue.punionWith # plam (+) @-> \plus ->
               plift (PValue.pforgetSorted $ PValue.pnormalize #$ plus # pmint # pmint) @?= mint <> mint
-            "applied" @| PValue.pzipWith # plam (+) # pmint # pmint @-> \p ->
+            "applied" @| PValue.punionWith # plam (+) # pmint # pmint @-> \p ->
               plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint <> mint
-          "tokens" @| PValue.pzipWith # plam (+) # pmint # pmintOtherToken @-> \p ->
+          "tokens" @| PValue.punionWith # plam (+) # pmint # pmintOtherToken @-> \p ->
             plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint <> mintOtherToken
-          "symbols" @| PValue.pzipWith # plam (+) # pmint # pmintOtherSymbol @-> \p ->
+          "symbols" @| PValue.punionWith # plam (+) # pmint # pmintOtherSymbol @-> \p ->
             plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint <> mintOtherSymbol
           "growing"
             @\ forM_
               (zip [1 :: Int .. length growingSymbols] growingSymbols)
               ( \(size, v) ->
                   fromString (show size)
-                    @| PValue.pzipWith
-                    # plam (+)
+                    @| PValue.punionWith
+                    # plam const
                     # getEnclosedTerm v
                     # pmintOtherSymbol
-                    @-> \v' -> passert (v' #== PValue.pzipWith # plam (+) # pmintOtherSymbol # getEnclosedTerm v)
+                    @-> \v' -> passert (v' #== PValue.punionWith # plam const # pmintOtherSymbol # getEnclosedTerm v)
               )
-        "zipWithData const" @\ do
+        "unionWithData const" @\ do
           "itself"
-            @| PValue.pzipWithData @-> \u ->
+            @| PValue.punionWithData @-> \u ->
               plift (PValue.pforgetSorted $ PValue.pnormalize #$ u # plam const # pmint # pmint) @?= mint
-          "applied" @| PValue.pzipWithData # plam const # pmint # pmint @-> \p ->
+          "applied" @| PValue.punionWithData # plam const # pmint # pmint @-> \p ->
             plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint
         "inv"
           @| inv (PValue.pforgetPositive pmint :: Term _ (PValue 'Sorted 'NonZero))
@@ -158,12 +158,12 @@ spec = do
           "triviallyTrue" @| pmint #== pmint @-> passert
           "triviallyFalse" @| pmint #== pmintOtherToken @-> passertNot
           "swappedTokensTrue"
-            @| pto (PValue.pzipWith # plam (+) # pmint # pmintOtherToken)
-              #== pto (PValue.pzipWith # plam (+) # pmintOtherToken # pmint)
+            @| pto (PValue.punionWith # plam (+) # pmint # pmintOtherToken)
+              #== pto (PValue.punionWith # plam (+) # pmintOtherToken # pmint)
               @-> passert
           "swappedSymbolsTrue"
-            @| pto (PValue.pzipWith # plam (+) # pmint # pmintOtherSymbol)
-              #== pto (PValue.pzipWith # plam (+) # pmintOtherSymbol # pmint)
+            @| pto (PValue.punionWith # plam (+) # pmint # pmintOtherSymbol)
+              #== pto (PValue.punionWith # plam (+) # pmintOtherSymbol # pmint)
               @-> passert
           "growing"
             @\ forM_
@@ -179,7 +179,7 @@ spec = do
             @-> \v -> passert (v #== pmint <> pmintOtherSymbol)
           "empty"
             @| PValue.pnormalize
-            # (PValue.pzipWith # plam (-) # pmint # pmint)
+            # (PValue.punionWith # plam (-) # pmint # pmint)
             @-> \v -> passert (v #== mempty)
         "assertSorted" @\ do
           "succeeds" @| PValue.passertSorted # (pmint <> pmintOtherSymbol) @-> psucceeds
@@ -194,7 +194,7 @@ spec = do
             @-> pfails
           "fails on zero quantities"
             @| PValue.passertSorted
-            # (PValue.pzipWith # plam (-) # pmint # pmint)
+            # (PValue.punionWith # plam (-) # pmint # pmint)
             @-> pfails
           "fails on empty token map"
             @| PValue.passertSorted
@@ -238,8 +238,6 @@ spec = do
             pmapUnion = fromList [(pconstant "key", 42), (pconstant "newkey", 6)]
             mkTestMap :: forall (s :: S). [(ByteString, Integer)] -> Term s (AssocMap.PMap 'Sorted PByteString PInteger)
             mkTestMap = fromList . map (\(s, i) -> (pconstant s, pconstant i))
-            pzipMapsWithIntData = AssocMap.pzipWithData (Just $ pdata $ pconstant 0) (Just $ pdata $ pconstant 0)
-            pzipMapsWithInt = AssocMap.pzipWith (Just $ pconstant 0) (Just $ pconstant 0)
         "lookup" @\ do
           "itself"
             @| AssocMap.plookup
@@ -279,7 +277,7 @@ spec = do
             @| AssocMap.pfindWithDefault
             # 12
             # pconstant "newkey"
-            # (pzipMapsWithInt # plam (flip const) # pmap # otherMap)
+            # (AssocMap.punionWith # plam const # pmap # otherMap)
             @-> \result -> passert $ result #== 6
           "miss"
             @| AssocMap.pfindWithDefault
@@ -310,63 +308,49 @@ spec = do
           "emptyLeft" @| AssocMap.pdifference # emptyMap # pmap @-> pshouldReallyBe emptyMap
           "emptyRight" @| AssocMap.pdifference # pmap # emptyMap @-> pshouldReallyBe pmap
           "emptyResult" @| AssocMap.pdifference # pmap # doubleMap @-> pshouldReallyBe emptyMap
-        "zipWith" @\ do
+        "zipMapsWith" @\ do
           "(-)"
-            @| AssocMap.pzipWith (Just $ pconstant 1) (Just $ pconstant 0)
+            @| AssocMap.pzipWithDefaults 1 0
             # plam (-)
             # mkTestMap [("a", 42), ("b", 23)]
             # mkTestMap [("b", 10), ("c", 8)]
             @-> pshouldReallyBe (mkTestMap [("a", 42), ("b", 13), ("c", -7)])
+        "unionWith" @\ do
           "const"
-            @| pzipMapsWithInt
+            @| AssocMap.punionWith
             # plam const
             # mkTestMap [("a", 42), ("b", 6)]
             # mkTestMap [("b", 7), ("c", 23)]
-            @-> pshouldReallyBe (mkTestMap [("a", 42), ("b", 6), ("c", 0)])
+            @-> pshouldReallyBe (mkTestMap [("a", 42), ("b", 6), ("c", 23)])
           "flip const"
-            @| pzipMapsWithInt
+            @| AssocMap.punionWith
             # plam (flip const)
             # mkTestMap [("a", 42), ("b", 6)]
             # mkTestMap [("b", 7), ("c", 23)]
-            @-> pshouldReallyBe (mkTestMap [("a", 0), ("b", 7), ("c", 23)])
+            @-> pshouldReallyBe (mkTestMap [("a", 42), ("b", 7), ("c", 23)])
           "double"
-            @| pzipMapsWithInt
+            @| AssocMap.punionWith
             # plam (+)
             # pmap
             # pmap
             @-> pshouldReallyBe doubleMap
           "(+)"
-            @| pzipMapsWithInt
+            @| AssocMap.punionWith
             # plam (+)
             # pmap
             # pmap'
             @-> pshouldReallyBe psumMap
           "preservesCombineCommutativity"
-            @| pzipMapsWithInt
+            @| AssocMap.punionWith
             # plam (+)
             # pmap'
             # pmap
-            @-> \p -> passert (p #== pzipMapsWithInt # plam (+) # pmap # pmap')
-        "zipWithData" @\ do
-          "const" @| pzipMapsWithIntData # plam const # pmap # pmap @-> pshouldReallyBe pmap
-          "emptyLeft"
-            @| pzipMapsWithIntData
-            # (plam \x y -> pdata $ pfromData x + pfromData y)
-            # emptyMap
-            # pmap
-            @-> pshouldReallyBe pmap
-          "emptyRight"
-            @| pzipMapsWithIntData
-            # (plam \x y -> pdata $ pfromData x + pfromData y)
-            # pmap
-            # emptyMap
-            @-> pshouldReallyBe pmap
-          "distinctKeys"
-            @| pzipMapsWithIntData
-            # (plam \x y -> pdata $ pfromData x + pfromData y)
-            # pmap
-            # otherMap
-            @-> pshouldReallyBe pmapUnion
+            @-> \p -> passert (p #== AssocMap.punionWith # plam (+) # pmap # pmap')
+        "unionWithData" @\ do
+          "const" @| AssocMap.punionWithData # plam const # pmap # pmap @-> pshouldReallyBe pmap
+          "emptyLeft" @| AssocMap.punionWithData # plam const # emptyMap # pmap @-> pshouldReallyBe pmap
+          "emptyRight" @| AssocMap.punionWithData # plam const # pmap # emptyMap @-> pshouldReallyBe pmap
+          "distinctKeys" @| AssocMap.punionWithData # plam const # pmap # otherMap @-> pshouldReallyBe pmapUnion
         "intersectionWith" @\ do
           "const"
             @| AssocMap.pintersectionWith
@@ -396,7 +380,7 @@ spec = do
           "partialKeyMismatch"
             @| AssocMap.pintersectionWith
             # plam (+)
-            # (pzipMapsWithIntData # plam const # pmap # otherMap)
+            # (AssocMap.punionWithData # plam const # pmap # otherMap)
             # pmap'
             @-> pshouldReallyBe psumMap
         "intersectionWithData" @\ do

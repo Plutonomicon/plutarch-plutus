@@ -36,11 +36,19 @@ module Plutarch.Api.V1.AssocMap (
   pmapMaybeData,
 
   -- * Combining
+  BothPresentHandler (..),
+  OnePresentHandler (..),
+  MergeHandler (..),
   pzipWith,
   pzipWithData,
-  pdifference,
+  pzipWithDefaults,
+  pzipWithDataDefaults,
   pintersectionWith,
   pintersectionWithData,
+  punionWith,
+  punionWithData,
+  pdifference,
+  punsortedDifference,
 
   -- * Partial order operations
   pcheckBinRel,
@@ -84,7 +92,7 @@ import Data.Proxy (Proxy (Proxy))
 import Data.Traversable (for)
 
 import Data.Bifunctor (bimap)
-import Plutarch.Bool (PSBool (PSFalse, PSTrue), pstrue)
+import Plutarch.Bool (PSBool (PSFalse, PSTrue), psfalse, pstrue)
 
 data KeyGuarantees = Sorted | Unsorted
 
@@ -381,10 +389,10 @@ instance (PIsData k, PIsData v, POrd k) => IsList (Term s (PMap 'Sorted k v)) wh
   toList = error "unimplemented"
 
 instance
-  (POrd k, PIsData k, PIsData v, forall (s' :: S). Monoid (Term s' v)) =>
+  (POrd k, PIsData k, PIsData v, Semigroup (Term s v)) =>
   Semigroup (Term s (PMap 'Sorted k v))
   where
-  a <> b = pzipWith (Just mempty) (Just mempty) # plam (<>) # a # b
+  a <> b = punionWith # plam (<>) # a # b
 
 instance
   (POrd k, PIsData k, PIsData v, forall (s' :: S). Monoid (Term s' v)) =>
@@ -393,10 +401,10 @@ instance
   mempty = pempty
 
 instance
-  (POrd k, PIsData k, PIsData v, forall (s' :: S). PlutusTx.Monoid (Term s' v)) =>
+  (POrd k, PIsData k, PIsData v, PlutusTx.Semigroup (Term s v)) =>
   PlutusTx.Semigroup (Term s (PMap 'Sorted k v))
   where
-  a <> b = pzipWith (Just PlutusTx.mempty) (Just PlutusTx.mempty) # plam (PlutusTx.<>) # a # b
+  a <> b = punionWith # plam (PlutusTx.<>) # a # b
 
 instance
   (POrd k, PIsData k, PIsData v, forall (s' :: S). PlutusTx.Monoid (Term s' v)) =>
@@ -410,10 +418,61 @@ instance
   where
   inv a = pmap # plam PlutusTx.inv # a
 
+data BothPresentHandler k v s
+  = DropBoth
+  | -- | 'PSTrue' ~ left, 'PSFalse' ~ right
+    PassArg (PSBool s)
+  | HandleBoth (Term s k -> Term s v -> Term s v -> Term s v)
+
+data OnePresentHandler k v s
+  = DropOne
+  | PassOne
+  | HandleOne (Term s k -> Term s v -> Term s v)
+
+{- | Signals how to handle value merging for matching keys in 'zipWith'.
+
+ Param order: What to do when the left is present only, what to do when the
+ right is present only, what to do when both are present.
+-}
+data MergeHandler k v s
+  = MergeHandler (BothPresentHandler k v s) (OnePresentHandler k v s) (OnePresentHandler k v s)
+
+bothPresentOnData ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (PIsData k, PIsData v) =>
+  BothPresentHandler k v s ->
+  BothPresentHandler (PAsData k) (PAsData v) s
+bothPresentOnData = \case
+  DropBoth -> DropBoth
+  PassArg arg -> PassArg arg
+  HandleBoth f -> HandleBoth \k x y -> pdata $ f (pfromData k) (pfromData x) (pfromData y)
+
+onePresentOnData ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (PIsData k, PIsData v) =>
+  OnePresentHandler k v s ->
+  OnePresentHandler (PAsData k) (PAsData v) s
+onePresentOnData = \case
+  DropOne -> DropOne
+  PassOne -> PassOne
+  HandleOne f -> HandleOne \x y -> pdata $ f (pfromData x) (pfromData y)
+
+mergeHandlerOnData ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (PIsData k, PIsData v) =>
+  MergeHandler k v s ->
+  MergeHandler (PAsData k) (PAsData v) s
+mergeHandlerOnData (MergeHandler bothPresent leftPresent rightPresent) =
+  MergeHandler (bothPresentOnData bothPresent) (onePresentOnData leftPresent) (onePresentOnData rightPresent)
+
+branchOrder :: forall (s :: S) (a :: Type). PSBool s -> a -> a -> a
+branchOrder PSTrue t _ = t
+branchOrder PSFalse _ f = f
+
 -- | Apply given Plutarch fun with given reified (on Haskell-level) arg order.
 applyOrder ::
   forall (s :: S) (a :: PType) (b :: PType).
-  -- | The reified order to resolve first/second arg to left/right.
+  -- | 'PSTrue' means first arg is left, second arg is right.
   PSBool s ->
   -- | A function that expects argument order 'left right'.
   Term s (a :--> a :--> b) ->
@@ -422,93 +481,102 @@ applyOrder ::
   -- | Second arg.
   Term s a ->
   Term s b
-applyOrder argOrder pfun a b =
-  case argOrder of
-    PSTrue -> (pfun # a # b)
-    PSFalse -> (pfun # b # a)
+applyOrder argOrder pfun a b = branchOrder argOrder (pfun # a # b) (pfun # b # a)
+
+applyOrder' ::
+  forall (s :: S) (a :: Type) (b :: Type).
+  -- | 'PSTrue' means first arg is left, second arg is right.
+  PSBool s ->
+  -- | A function that expects argument order 'left right'.
+  (a -> a -> b) ->
+  -- | First arg.
+  a ->
+  -- | Second arg.
+  a ->
+  b
+applyOrder' argOrder fun a b = branchOrder argOrder (fun a b) (fun b a)
 
 zipMergeInsert ::
   forall (s :: S) (k :: PType) (v :: PType).
   (POrd k, PIsData k) =>
-  Maybe (ClosedTerm (PAsData v)) ->
-  Maybe (ClosedTerm (PAsData v)) ->
+  MergeHandler (PAsData k) (PAsData v) s ->
+  -- | 'PSTrue' means first arg is left, second arg is right.
+  -- The first list gets passed in deconstructed form as head and tail
+  -- separately.
   Term
     s
-    ( (PAsData v :--> PAsData v :--> PAsData v)
-        :--> PSBool
+    ( PSBool
         :--> PBuiltinPair (PAsData k) (PAsData v)
         :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
         :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
         :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
     )
-zipMergeInsert defLeft defRight =
-  plam $ \combine -> pfix #$ plam $ \self argOrder x xs' ys ->
-    pmatch ys $ \case
-      PNil ->
-        pmatch argOrder \argOrder' ->
-          let defY = if (argOrder' == PSTrue) then defRight else defLeft
-           in case defY of
-                Just defY' ->
-                  let handle = plam $ \x' -> applyOrder argOrder' combine x' defY'
-                   in pto $ pmapData # handle # pcon (PMap $ pcons # x # xs')
-                Nothing -> pcon PNil
-      PCons y1 ys' -> unTermCont $ do
-        y <- tcont $ plet y1
-        xk <- tcont $ plet (pfstBuiltin # x)
-        yk <- tcont $ plet (pfstBuiltin # y)
-        pure $
-          pif
-            (xk #== yk)
-            ( pcons
-                # ( ppairDataBuiltin
-                      # xk
-                        #$ pmatch argOrder \argOrder' ->
-                          applyOrder
-                            argOrder'
-                            combine
-                            (psndBuiltin # x)
-                            (psndBuiltin # y)
+zipMergeInsert (MergeHandler bothPresent leftPresent rightPresent) =
+  pfix #$ plam $ \self argOrder' x xs' ys ->
+    pmatch argOrder' \argOrder ->
+      pmatch ys $ \case
+        PNil ->
+          -- picking handler for presence of x-side only
+          case branchOrder argOrder leftPresent rightPresent of
+            DropOne -> pcon PNil
+            PassOne -> pcons # x # xs'
+            HandleOne handler ->
+              List.pmap
+                # ( plam $ \pair ->
+                      plet (pfstBuiltin # pair) \k ->
+                        ppairDataBuiltin # k # handler k (psndBuiltin # pair)
                   )
-                  #$ pmatch argOrder \argOrder' ->
-                    applyOrder
-                      argOrder'
-                      (zipMerge self combine defLeft)
-                      xs'
-                      ys'
-            )
-            ( pif
-                (pfromData xk #< pfromData yk)
-                ( pmatch argOrder $ \argOrder' ->
-                    let -- default for the y-side
-                        def = if (argOrder' == PSTrue) then defRight else defLeft
-                        notOrder = pcon $ if (argOrder' == PSTrue) then PSFalse else PSTrue
-                     in case def of
-                          Just def' ->
-                            pcons
-                              # ( ppairDataBuiltin
-                                    # xk
-                                      #$ applyOrder argOrder' combine (psndBuiltin # x) def'
-                                )
-                              # (self # notOrder # y # ys' # xs')
-                          Nothing -> self # notOrder # y # ys' # xs'
-                )
-                ( pmatch argOrder $ \argOrder' ->
-                    let -- default for the x-side
-                        def = if (argOrder' == PSTrue) then defLeft else defRight
-                     in case def of
-                          Just def' ->
-                            pcons
-                              # ( ppairDataBuiltin
-                                    # yk
-                                      #$ applyOrder argOrder' combine def' (psndBuiltin # y)
-                                )
-                              # (self # argOrder # x # xs' # ys')
-                          Nothing -> self # argOrder # x # xs' # ys'
-                )
-            )
+                # (pcons # x # xs')
+        PCons y1 ys' -> unTermCont $ do
+          y <- tcont $ plet y1
+          xk <- tcont $ plet (pfstBuiltin # x)
+          yk <- tcont $ plet (pfstBuiltin # y)
+          pure $
+            pif
+              (xk #== yk)
+              ( case bothPresent of
+                  DropBoth -> applyOrder argOrder (zipMerge rightPresent self) xs' ys'
+                  PassArg passLeft ->
+                    if passLeft == argOrder
+                      then pcons # x # applyOrder argOrder (zipMerge rightPresent self) xs' ys
+                      else pcons # y # applyOrder argOrder (zipMerge rightPresent self) (pcons # x # xs') ys'
+                  HandleBoth merge ->
+                    pcons
+                      # ( ppairDataBuiltin
+                            # xk
+                              #$ applyOrder' argOrder (merge xk) (psndBuiltin # x) (psndBuiltin # y)
+                        )
+                        #$ applyOrder
+                          argOrder
+                          (zipMerge rightPresent self)
+                          xs'
+                          ys'
+              )
+              ( pif
+                  (pfromData xk #< pfromData yk)
+                  ( -- picking handler for presence of only x-side
+                    case branchOrder argOrder leftPresent rightPresent of
+                      DropOne -> self # branchOrder argOrder psfalse pstrue # y # ys' # xs'
+                      PassOne -> pcons # x # applyOrder argOrder (zipMerge rightPresent self) xs' ys
+                      HandleOne handler ->
+                        pcons
+                          # (ppairDataBuiltin # xk # handler xk (psndBuiltin # x))
+                          # (self # branchOrder argOrder psfalse pstrue # y # ys' # xs')
+                  )
+                  ( -- picking handler for presence of only y-side
+                    case branchOrder argOrder rightPresent leftPresent of
+                      DropOne -> self # argOrder' # x # xs' # ys'
+                      PassOne -> pcons # y # applyOrder argOrder (zipMerge rightPresent self) (pcons # x # xs') ys'
+                      HandleOne handler ->
+                        pcons
+                          # (ppairDataBuiltin # yk # handler yk (psndBuiltin # y))
+                          # (self # argOrder' # x # xs' # ys')
+                  )
+              )
 
 zipMerge ::
   forall (s :: S) (k :: PType) (v :: PType).
+  OnePresentHandler (PAsData k) (PAsData v) s ->
   Term
     s
     ( PSBool
@@ -517,44 +585,63 @@ zipMerge ::
         :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
         :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
     ) ->
-  Term s (PAsData v :--> PAsData v :--> PAsData v) ->
-  Maybe (ClosedTerm (PAsData v)) ->
   Term
     s
     ( PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
         :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
         :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
     )
-zipMerge mergeInsertRec combine defLeft = plam $ \ls rs -> pmatch ls $ \case
-  PNil -> case defLeft of
-    Just defLeft' -> pto $ pmapData # (combine # defLeft') # pcon (PMap rs)
-    Nothing -> pcon PNil
+zipMerge rightPresent mergeInsertRec = plam $ \ls rs -> pmatch ls $ \case
+  PNil ->
+    case rightPresent of
+      DropOne -> pcon PNil
+      PassOne -> rs
+      HandleOne handler ->
+        List.pmap
+          # ( plam $ \pair ->
+                plet (pfstBuiltin # pair) \k ->
+                  ppairDataBuiltin # k # handler k (psndBuiltin # pair)
+            )
+          # rs
   PCons l ls' -> mergeInsertRec # pstrue # l # ls' # rs
 
-{- | Build the zip of two 'PMap's, merging data-encoded values that share
- the same key using the given function.
-
-  Giving defaults is similar to SQL joins (though with the NULL replaced by the
-  default):
-  - 'Nothing' 'Nothing': inner join, a.k.a. intersection
-  - 'Just' 'Nothing': left outer join
-  - 'Nothing' 'Just': right outer join
-  - 'Just' 'Just': full outer join, a.k.a. union
+{- | Zip two 'PMap's, using a 'MergeHandler' to decide how to merge based on key
+ presence on the left and right.
 -}
 pzipWithData ::
   forall (s :: S) (k :: PType) (v :: PType).
   (POrd k, PIsData k) =>
-  -- | Default value for left side. If it is 'Nothing', occurrence of a given
-  -- key on the left side is mandatory for it to occur in the output. In this
-  -- case, key-value-pairs with a certain key that only occurs on the right side
-  -- get dropped.
-  Maybe (ClosedTerm (PAsData v)) ->
-  -- | Default value for right side. If it is 'Nothing', occurrence of a given
-  -- key on the right side is mandatory for it to occur in the output. In this
-  -- case, key-value-pairs with a certain key that only occurs on the left side
-  -- get dropped.
-  Maybe (ClosedTerm (PAsData v)) ->
-  -- | Value-merging-function, left side, right side.
+  MergeHandler (PAsData k) (PAsData v) s ->
+  Term
+    s
+    ( PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+    )
+pzipWithData mh@(MergeHandler _ _ rightPresent) =
+  plam $ \x y ->
+    pcon $ PMap $ zipMerge rightPresent (zipMergeInsert mh) # pto x # pto y
+
+{- | Zip two 'PMap's, using a 'MergeHandler' to decide how to merge based on key
+ presence on the left and right.
+-}
+pzipWith ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (POrd k, PIsData k, PIsData v) =>
+  MergeHandler k v s ->
+  Term
+    s
+    ( PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+    )
+pzipWith mh = pzipWithData (mergeHandlerOnData mh)
+
+pzipWithDataDefaults ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (POrd k, PIsData k) =>
+  ClosedTerm (PAsData v) ->
+  ClosedTerm (PAsData v) ->
   Term
     s
     ( (PAsData v :--> PAsData v :--> PAsData v)
@@ -562,34 +649,18 @@ pzipWithData ::
         :--> PMap 'Sorted k v
         :--> PMap 'Sorted k v
     )
-pzipWithData defLeft defRight = phoistAcyclic $
-  plam $ \combine x y ->
-    pcon $ PMap $ zipMerge (zipMergeInsert defLeft defRight # combine) combine defLeft # pto x # pto y
+pzipWithDataDefaults defLeft defRight = phoistAcyclic $ plam \combine ->
+  pzipWithData $
+    MergeHandler
+      (HandleBoth \_ vl vr -> combine # vl # vr)
+      (HandleOne \_ vl -> combine # vl # defRight)
+      (HandleOne \_ vr -> combine # defLeft # vr)
 
-{- | Build the zip of two 'PMap's, merging values that share
- the same key using the given function.
-
-  Giving defaults is similar to SQL joins (though with the NULL replaced by the
-  default):
-  - 'Nothing' 'Nothing': inner join, a.k.a. intersection
-  - 'Just' 'Nothing': left outer join
-  - 'Nothing' 'Just': right outer join
-  - 'Just' 'Just': full outer join, a.k.a. union
--}
-pzipWith ::
+pzipWithDefaults ::
   forall (s :: S) (k :: PType) (v :: PType).
   (POrd k, PIsData k, PIsData v) =>
-  -- | Default value for left side. If it is 'Nothing', occurrence of a given
-  -- key on the left side is mandatory for it to occur in the output. In this
-  -- case, key-value-pairs with a certain key that only occurs on the right side
-  -- get dropped.
-  Maybe (ClosedTerm v) ->
-  -- | Default value for right side. If it is 'Nothing', occurrence of a given
-  -- key on the right side is mandatory for it to occur in the output. In this
-  -- case, key-value-pairs with a certain key that only occurs on the left side
-  -- get dropped.
-  Maybe (ClosedTerm v) ->
-  -- | Value-merging-function, left side, right side.
+  ClosedTerm v ->
+  ClosedTerm v ->
   Term
     s
     ( (v :--> v :--> v)
@@ -597,15 +668,36 @@ pzipWith ::
         :--> PMap 'Sorted k v
         :--> PMap 'Sorted k v
     )
-pzipWith defLeft defRight = phoistAcyclic $
-  plam $ \combine ls rs ->
-    pzipWithData (pdata' <$> defLeft) (pdata' <$> defRight)
-      # (plam $ \x y -> pdata (combine # pfromData x # pfromData y))
-      # ls
-      # rs
-  where
-    pdata' :: forall (a :: PType). PIsData a => ClosedTerm a -> ClosedTerm (PAsData a)
-    pdata' a = pdata a
+pzipWithDefaults defLeft defRight = phoistAcyclic $ plam \combine ->
+  pzipWith $
+    MergeHandler
+      (HandleBoth \_ vl vr -> combine # vl # vr)
+      (HandleOne \_ vl -> combine # vl # defRight)
+      (HandleOne \_ vr -> combine # defLeft # vr)
+
+{- | Build the union of two 'PMap's, merging values that share the same key using the
+given function.
+-}
+punionWith ::
+  (POrd k, PIsData k, PIsData v) =>
+  Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
+punionWith = phoistAcyclic $ plam \merge ->
+  pzipWith $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) PassOne PassOne
+
+{- | Build the union of two 'PMap's, merging values that share the same key using the
+given function.
+-}
+punionWithData ::
+  (POrd k, PIsData k) =>
+  Term
+    s
+    ( (PAsData v :--> PAsData v :--> PAsData v)
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+    )
+punionWithData = phoistAcyclic $ plam \merge ->
+  pzipWithData $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) PassOne PassOne
 
 {- | Build the intersection of two 'PMap's, merging values that share the same key using the
 given function.
@@ -613,7 +705,8 @@ given function.
 pintersectionWith ::
   (POrd k, PIsData k, PIsData v) =>
   Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
-pintersectionWith = pzipWith Nothing Nothing
+pintersectionWith = phoistAcyclic $ plam \merge ->
+  pzipWith $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) DropOne DropOne
 
 {- | Build the intersection of two 'PMap's, merging data-encoded values that share the same key using the
 given function.
@@ -627,11 +720,23 @@ pintersectionWithData ::
         :--> PMap 'Sorted k v
         :--> PMap 'Sorted k v
     )
-pintersectionWithData = pzipWithData Nothing Nothing
+pintersectionWithData = phoistAcyclic $ plam \merge ->
+  pzipWithData $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) DropOne DropOne
 
 -- | Difference of two maps. Return elements of the first map not existing in the second map.
-pdifference :: PIsData k => Term s (PMap g k a :--> PMap any k b :--> PMap g k a)
-pdifference = phoistAcyclic $
+pdifference ::
+  (PIsData k, POrd k, PIsData v) =>
+  Term s (PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
+pdifference =
+  phoistAcyclic $
+    pzipWith $
+      MergeHandler DropBoth PassOne DropOne
+
+{- | Difference of two maps. Return elements of the first map not existing in the second map.
+ Warning: O(n^2).
+-}
+punsortedDifference :: PIsData k => Term s (PMap g k a :--> PMap any k b :--> PMap g k a)
+punsortedDifference = phoistAcyclic $
   plam $ \left right ->
     pcon . PMap $
       precList
