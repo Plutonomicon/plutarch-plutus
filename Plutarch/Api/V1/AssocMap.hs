@@ -45,8 +45,8 @@ module Plutarch.Api.V1.AssocMap (
   pzipWithDataDefaults,
   pintersectionWith,
   pintersectionWithData,
-  punionWith,
-  punionWithData,
+  punionResolvingCollisionsWith,
+  punionResolvingCollisionsWithData,
   pdifference,
   punsortedDifference,
 
@@ -392,7 +392,7 @@ instance
   (POrd k, PIsData k, PIsData v, Semigroup (Term s v)) =>
   Semigroup (Term s (PMap 'Sorted k v))
   where
-  a <> b = punionWith # plam (<>) # a # b
+  a <> b = punionResolvingCollisionsWith # plam (<>) # a # b
 
 instance
   (POrd k, PIsData k, PIsData v, forall (s' :: S). Monoid (Term s' v)) =>
@@ -404,7 +404,7 @@ instance
   (POrd k, PIsData k, PIsData v, PlutusTx.Semigroup (Term s v)) =>
   PlutusTx.Semigroup (Term s (PMap 'Sorted k v))
   where
-  a <> b = punionWith # plam (PlutusTx.<>) # a # b
+  a <> b = punionResolvingCollisionsWith # plam (PlutusTx.<>) # a # b
 
 instance
   (POrd k, PIsData k, PIsData v, forall (s' :: S). PlutusTx.Monoid (Term s' v)) =>
@@ -678,16 +678,16 @@ pzipWithDefaults defLeft defRight = phoistAcyclic $ plam \combine ->
 {- | Build the union of two 'PMap's, merging values that share the same key using the
 given function.
 -}
-punionWith ::
+punionResolvingCollisionsWith ::
   (POrd k, PIsData k, PIsData v) =>
   Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
-punionWith = phoistAcyclic $ plam \merge ->
+punionResolvingCollisionsWith = phoistAcyclic $ plam \merge ->
   pzipWith $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) PassOne PassOne
 
 {- | Build the union of two 'PMap's, merging values that share the same key using the
 given function.
 -}
-punionWithData ::
+punionResolvingCollisionsWithData ::
   (POrd k, PIsData k) =>
   Term
     s
@@ -696,7 +696,7 @@ punionWithData ::
         :--> PMap 'Sorted k v
         :--> PMap 'Sorted k v
     )
-punionWithData = phoistAcyclic $ plam \merge ->
+punionResolvingCollisionsWithData = phoistAcyclic $ plam \merge ->
   pzipWithData $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) PassOne PassOne
 
 {- | Build the intersection of two 'PMap's, merging values that share the same key using the

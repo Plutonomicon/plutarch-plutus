@@ -20,15 +20,15 @@ difference.emptyLeft {"exBudgetCPU":1814458,"exBudgetMemory":6760,"scriptSizeByt
 difference.emptyRight {"exBudgetCPU":3243736,"exBudgetMemory":11688,"scriptSizeBytes":345}
 difference.emptyResult {"exBudgetCPU":6533757,"exBudgetMemory":18846,"scriptSizeBytes":358}
 zipMapsWith.(-) {"exBudgetCPU":24470238,"exBudgetMemory":70120,"scriptSizeBytes":693}
-unionWith.const {"exBudgetCPU":21280744,"exBudgetMemory":61930,"scriptSizeBytes":560}
-unionWith.flip const {"exBudgetCPU":21280744,"exBudgetMemory":61930,"scriptSizeBytes":560}
-unionWith.double {"exBudgetCPU":7762814,"exBudgetMemory":21772,"scriptSizeBytes":446}
-unionWith.(+) {"exBudgetCPU":7762814,"exBudgetMemory":21772,"scriptSizeBytes":446}
-unionWith.preservesCombineCommutativity {"exBudgetCPU":7762814,"exBudgetMemory":21772,"scriptSizeBytes":446}
-unionWithData.const {"exBudgetCPU":7445623,"exBudgetMemory":21574,"scriptSizeBytes":439}
-unionWithData.emptyLeft {"exBudgetCPU":2067458,"exBudgetMemory":7860,"scriptSizeBytes":427}
-unionWithData.emptyRight {"exBudgetCPU":3427736,"exBudgetMemory":12488,"scriptSizeBytes":426}
-unionWithData.distinctKeys {"exBudgetCPU":7358365,"exBudgetMemory":20912,"scriptSizeBytes":445}
+unionResolvingCollisionsWith.const {"exBudgetCPU":21280744,"exBudgetMemory":61930,"scriptSizeBytes":560}
+unionResolvingCollisionsWith.flip const {"exBudgetCPU":21280744,"exBudgetMemory":61930,"scriptSizeBytes":560}
+unionResolvingCollisionsWith.double {"exBudgetCPU":7762814,"exBudgetMemory":21772,"scriptSizeBytes":446}
+unionResolvingCollisionsWith.(+) {"exBudgetCPU":7762814,"exBudgetMemory":21772,"scriptSizeBytes":446}
+unionResolvingCollisionsWith.preservesCombineCommutativity {"exBudgetCPU":7762814,"exBudgetMemory":21772,"scriptSizeBytes":446}
+unionResolvingCollisionsWithData.const {"exBudgetCPU":7445623,"exBudgetMemory":21574,"scriptSizeBytes":439}
+unionResolvingCollisionsWithData.emptyLeft {"exBudgetCPU":2067458,"exBudgetMemory":7860,"scriptSizeBytes":427}
+unionResolvingCollisionsWithData.emptyRight {"exBudgetCPU":3427736,"exBudgetMemory":12488,"scriptSizeBytes":426}
+unionResolvingCollisionsWithData.distinctKeys {"exBudgetCPU":7358365,"exBudgetMemory":20912,"scriptSizeBytes":445}
 intersectionWith.const {"exBudgetCPU":20743648,"exBudgetMemory":60734,"scriptSizeBytes":474}
 intersectionWith.flip const {"exBudgetCPU":20743648,"exBudgetMemory":60734,"scriptSizeBytes":474}
 intersectionWith.double {"exBudgetCPU":7762814,"exBudgetMemory":21772,"scriptSizeBytes":360}

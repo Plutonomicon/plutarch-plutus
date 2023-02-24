@@ -1,14 +1,30 @@
 # Revision history for plutarch
 
+# 1.4.0
+
+- Renamed `punionWith` and `punionWithData` of `Plutarch.Api.V1.AssocMap` to
+  `punionResolvingCollisionsWith` and `punionResolvingCollisionsWithData`, since
+  they have been misused for what should have been `pzipWith` and `pzipWithData`.
+- Renamed `punionWith` and `punionWithData` of `Plutarch.Api.V1.Value` to
+  `punionResolvingCollisionsWith` and `punionResolvingCollisionsWithData`, since
+  they have been misused for what should have been `pzipWith` and `pzipWithData`.
+- Introduced `pzipWith`, `pzipWithData`, `pzipWithDefaults`,
+  `pzipWithDataDefaults`, `pintersectionWith`, and `pintersectionWithData` in
+  `Plutarch.Api.V1.AssocMap`. Also introduced the types `BothPresentHandler`,
+  `OnePresentHandler`, and `MergeHandler` for instructing `pzipWith` and
+  `pzipWithData`.
+- Renamed `pdifference` in `AssocMap` to `punsortedDifference` (O(n^2)).
+  Introduced new `pdifference` with stricter constraints and O(n).
+
 # 1.3.0
 
 - Support newer Plutus
 - Remove most of the Nix code and switch to mlabs-tooling.nix
 
-# 1.2.1 
+# 1.2.1
 
 - Exported data constructors instance for `Plutarch.Lift (LiftError)`
- 
+
 # 1.2 (WIP changelog)
 
 - Changed fields of `PTxInfo` whose only representation is data to not be wrapped by `PAsData`.
@@ -36,7 +52,7 @@
   Started by [#335](https://github.com/Plutonomicon/plutarch/pull/335)
 - `Plutarch.Prelude` and `Plutarch.List` now export pfind, pelemAt, preverse and pcheckSroted.
 
-	Started by: [#306](https://github.com/Plutonomicon/plutarch/pull/306)
+ Started by: [#306](https://github.com/Plutonomicon/plutarch/pull/306)
 
 - Added module `Plutarch.FFI` for interoperability with PlutusTx.
 
@@ -200,30 +216,30 @@
   - Benchmarks and perf diffing on PRs to keep track of performance regressions.
 
     Worked on through:
-    * [#102](https://github.com/Plutonomicon/plutarch/pull/102)
-    * [#144](https://github.com/Plutonomicon/plutarch/pull/144)
-    * [#146](https://github.com/Plutonomicon/plutarch/pull/146)
-    * [#164](https://github.com/Plutonomicon/plutarch/pull/164)
-    * [#167](https://github.com/Plutonomicon/plutarch/pull/167)
-    * [#178](https://github.com/Plutonomicon/plutarch/pull/178)
+    - [#102](https://github.com/Plutonomicon/plutarch/pull/102)
+    - [#144](https://github.com/Plutonomicon/plutarch/pull/144)
+    - [#146](https://github.com/Plutonomicon/plutarch/pull/146)
+    - [#164](https://github.com/Plutonomicon/plutarch/pull/164)
+    - [#167](https://github.com/Plutonomicon/plutarch/pull/167)
+    - [#178](https://github.com/Plutonomicon/plutarch/pull/178)
 
 - Significantly improve `plam` type inference - works seamlessly now (!!!)
 
   Worked on through:
-  * [#29](https://github.com/Plutonomicon/plutarch/pull/29)
-  * [#149](https://github.com/Plutonomicon/plutarch/pull/149)
-  * [#162](https://github.com/Plutonomicon/plutarch/pull/162)
-  * [#168](https://github.com/Plutonomicon/plutarch/pull/168)
-  * [#170](https://github.com/Plutonomicon/plutarch/pull/170)
+  - [#29](https://github.com/Plutonomicon/plutarch/pull/29)
+  - [#149](https://github.com/Plutonomicon/plutarch/pull/149)
+  - [#162](https://github.com/Plutonomicon/plutarch/pull/162)
+  - [#168](https://github.com/Plutonomicon/plutarch/pull/168)
+  - [#170](https://github.com/Plutonomicon/plutarch/pull/170)
 
   Relevant issue: [#2](https://github.com/Plutonomicon/plutarch/issues/2)
 - Many, many optimizations on generated code.
 
   Worked on through:
-  * [#34](https://github.com/Plutonomicon/plutarch/pull/34)
-  * [#37](https://github.com/Plutonomicon/plutarch/pull/37)
-  * [#42](https://github.com/Plutonomicon/plutarch/pull/42)
-  * [#44](https://github.com/Plutonomicon/plutarch/pull/44)
+  - [#34](https://github.com/Plutonomicon/plutarch/pull/34)
+  - [#37](https://github.com/Plutonomicon/plutarch/pull/37)
+  - [#42](https://github.com/Plutonomicon/plutarch/pull/42)
+  - [#44](https://github.com/Plutonomicon/plutarch/pull/44)
 - Add haddocks and examples to many functions
 
   Started by: [#49](https://github.com/Plutonomicon/plutarch/pull/49)
@@ -277,7 +293,7 @@
     Module: `Plutarch.Trace`
 
     Added in: [#39](https://github.com/Plutonomicon/plutarch/pull/39)
-  - Builtin pair construction utility:- `ppairDataBuiltin `
+  - Builtin pair construction utility:- `ppairDataBuiltin`
 
     Module: `Plutarch.Builtin`
 
@@ -305,12 +321,12 @@
   Module: `Plutarch.DataRepr`
 
   Worked on through
-  * [#31](https://github.com/Plutonomicon/plutarch/pull/31)
-  * [#169](https://github.com/Plutonomicon/plutarch/pull/169)
-  * [#173](https://github.com/Plutonomicon/plutarch/pull/173)
-  * [#176](https://github.com/Plutonomicon/plutarch/pull/176)
-  * [#171](https://github.com/Plutonomicon/plutarch/pull/171)
-  * [#185](https://github.com/Plutonomicon/plutarch/pull/185)
+  - [#31](https://github.com/Plutonomicon/plutarch/pull/31)
+  - [#169](https://github.com/Plutonomicon/plutarch/pull/169)
+  - [#173](https://github.com/Plutonomicon/plutarch/pull/173)
+  - [#176](https://github.com/Plutonomicon/plutarch/pull/176)
+  - [#171](https://github.com/Plutonomicon/plutarch/pull/171)
+  - [#185](https://github.com/Plutonomicon/plutarch/pull/185)
 - Add `PLift` and `PConstant` - enabling conversion between Plutarch terms and Haskell types.
 
   This comes with convenient derivers. See the relevant section on the guide.
@@ -318,9 +334,9 @@
   Module: `Plutarch.Lift`; another deriver within `Plutarch.DataRepr.Internal`
 
   Worked on through
-  * [#62](https://github.com/Plutonomicon/plutarch/pull/62)
-  * [#109](https://github.com/Plutonomicon/plutarch/pull/109)
-  * [#130](https://github.com/Plutonomicon/plutarch/pull/130)
+  - [#62](https://github.com/Plutonomicon/plutarch/pull/62)
+  - [#109](https://github.com/Plutonomicon/plutarch/pull/109)
+  - [#130](https://github.com/Plutonomicon/plutarch/pull/130)
 - Deprecate `punsafeConstant`. Use `pconstant` instead!
 - Add `PIsList` & `PList` + instances for `PBuiltinList` - ergonomic list functions for all!
 
@@ -332,21 +348,21 @@
   Module: `Plutarch.Rec`
 
   Worked on through:
-  * [#60](https://github.com/Plutonomicon/plutarch/pull/60)
-  * [#114](https://github.com/Plutonomicon/plutarch/pull/114)
-  * [#125](https://github.com/Plutonomicon/plutarch/pull/125)
-  * [#175](https://github.com/Plutonomicon/plutarch/pull/175)
+  - [#60](https://github.com/Plutonomicon/plutarch/pull/60)
+  - [#114](https://github.com/Plutonomicon/plutarch/pull/114)
+  - [#125](https://github.com/Plutonomicon/plutarch/pull/125)
+  - [#175](https://github.com/Plutonomicon/plutarch/pull/175)
 - The Plutus V1 ledger api types implemented in Plutarch!
 
   Module: `Plutarch.Api.V1`
 
   Worked on through:
-  * [#66](https://github.com/Plutonomicon/plutarch/pull/66)
-  * [#130](https://github.com/Plutonomicon/plutarch/pull/130)
-  * [#151](https://github.com/Plutonomicon/plutarch/pull/151)
-  * [#161](https://github.com/Plutonomicon/plutarch/pull/161)
-  * [#163](https://github.com/Plutonomicon/plutarch/pull/163)
-  * [#173](https://github.com/Plutonomicon/plutarch/pull/173)
+  - [#66](https://github.com/Plutonomicon/plutarch/pull/66)
+  - [#130](https://github.com/Plutonomicon/plutarch/pull/130)
+  - [#151](https://github.com/Plutonomicon/plutarch/pull/151)
+  - [#161](https://github.com/Plutonomicon/plutarch/pull/161)
+  - [#163](https://github.com/Plutonomicon/plutarch/pull/163)
+  - [#173](https://github.com/Plutonomicon/plutarch/pull/173)
 - Implement Plutarch rational type.
 
   Module: `Plutarch.Rational`
@@ -383,6 +399,7 @@
   Added in: [#189](https://github.com/Plutonomicon/plutarch/pull/189)
 
 Thanks to:
+
 - @blamario
 - @emiflake
 - @Geometer1729
