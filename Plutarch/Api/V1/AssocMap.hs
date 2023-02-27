@@ -511,68 +511,71 @@ zipMergeInsert ::
         :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
         :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
     )
-zipMergeInsert (MergeHandler bothPresent leftPresent rightPresent) =
-  pfix #$ plam $ \self argOrder' x xs' ys ->
-    pmatch argOrder' \argOrder ->
-      pmatch ys $ \case
-        PNil ->
-          -- picking handler for presence of x-side only
-          case branchOrder argOrder leftPresent rightPresent of
-            DropOne -> pcon PNil
-            PassOne -> pcons # x # xs'
-            HandleOne handler ->
-              List.pmap
-                # ( plam $ \pair ->
-                      plet (pfstBuiltin # pair) \k ->
-                        ppairDataBuiltin # k # handler k (psndBuiltin # pair)
-                  )
-                # (pcons # x # xs')
-        PCons y1 ys' -> unTermCont $ do
-          y <- tcont $ plet y1
-          xk <- tcont $ plet (pfstBuiltin # x)
-          yk <- tcont $ plet (pfstBuiltin # y)
-          pure $
-            pif
-              (xk #== yk)
-              ( case bothPresent of
-                  DropBoth -> applyOrder argOrder (zipMerge rightPresent self) xs' ys'
-                  PassArg passLeft ->
-                    if passLeft == argOrder
-                      then pcons # x # applyOrder argOrder (zipMerge rightPresent self) xs' ys
-                      else pcons # y # applyOrder argOrder (zipMerge rightPresent self) (pcons # x # xs') ys'
-                  HandleBoth merge ->
-                    pcons
-                      # ( ppairDataBuiltin
-                            # xk
-                              #$ applyOrder' argOrder (merge xk) (psndBuiltin # x) (psndBuiltin # y)
-                        )
-                        #$ applyOrder
-                          argOrder
-                          (zipMerge rightPresent self)
-                          xs'
-                          ys'
-              )
-              ( pif
-                  (pfromData xk #< pfromData yk)
-                  ( -- picking handler for presence of only x-side
-                    case branchOrder argOrder leftPresent rightPresent of
-                      DropOne -> self # branchOrder argOrder psfalse pstrue # y # ys' # xs'
-                      PassOne -> pcons # x # applyOrder argOrder (zipMerge rightPresent self) xs' ys
-                      HandleOne handler ->
-                        pcons
-                          # (ppairDataBuiltin # xk # handler xk (psndBuiltin # x))
-                          # (self # branchOrder argOrder psfalse pstrue # y # ys' # xs')
-                  )
-                  ( -- picking handler for presence of only y-side
-                    case branchOrder argOrder rightPresent leftPresent of
-                      DropOne -> self # argOrder' # x # xs' # ys'
-                      PassOne -> pcons # y # applyOrder argOrder (zipMerge rightPresent self) (pcons # x # xs') ys'
-                      HandleOne handler ->
-                        pcons
-                          # (ppairDataBuiltin # yk # handler yk (psndBuiltin # y))
-                          # (self # argOrder' # x # xs' # ys')
-                  )
-              )
+zipMergeInsert (MergeHandler bothPresent leftPresent rightPresent) = unTermCont $ do
+  -- deduplicates all the zipMerge calls through plet, almost as good as hoisting
+  zipMerge' <- tcont $ plet $ plam $ zipMerge rightPresent
+  pure $ pfix #$ plam $ \self argOrder' x xs' ys -> unTermCont $ do
+    -- we need argOrder in many places, might as well unpack it only once
+    -- (though this basically duplicates the rest of the function in the script)
+    argOrder <- tcont $ pmatch argOrder'
+    let zipMergeRec = zipMerge' # self
+        xs = pcons # x # xs'
+        zipMergeOrdered = applyOrder argOrder zipMergeRec
+    pure $ pmatch ys $ \case
+      PNil ->
+        -- picking handler for presence of x-side only
+        case branchOrder argOrder leftPresent rightPresent of
+          DropOne -> pcon PNil
+          PassOne -> pcons # x # xs'
+          HandleOne handler ->
+            List.pmap
+              # ( plam $ \pair ->
+                    plet (pfstBuiltin # pair) \k ->
+                      ppairDataBuiltin # k # handler k (psndBuiltin # pair)
+                )
+              # xs
+      PCons y1 ys' -> unTermCont $ do
+        y <- tcont $ plet y1
+        xk <- tcont $ plet (pfstBuiltin # x)
+        yk <- tcont $ plet (pfstBuiltin # y)
+        pure $
+          pif
+            (xk #== yk)
+            ( case bothPresent of
+                DropBoth -> zipMergeOrdered xs' ys'
+                PassArg passLeft ->
+                  if passLeft == argOrder
+                    then pcons # x # zipMergeOrdered xs' ys
+                    else pcons # y # zipMergeOrdered xs ys'
+                HandleBoth merge ->
+                  pcons
+                    # ( ppairDataBuiltin
+                          # xk
+                            #$ applyOrder' argOrder (merge xk) (psndBuiltin # x) (psndBuiltin # y)
+                      )
+                      #$ zipMergeOrdered xs' ys'
+            )
+            ( pif
+                (pfromData xk #< pfromData yk)
+                ( -- picking handler for presence of only x-side
+                  case branchOrder argOrder leftPresent rightPresent of
+                    DropOne -> self # branchOrder argOrder psfalse pstrue # y # ys' # xs'
+                    PassOne -> pcons # x # zipMergeOrdered xs' ys
+                    HandleOne handler ->
+                      pcons
+                        # (ppairDataBuiltin # xk # handler xk (psndBuiltin # x))
+                        # (self # branchOrder argOrder psfalse pstrue # y # ys' # xs')
+                )
+                ( -- picking handler for presence of only y-side
+                  case branchOrder argOrder rightPresent leftPresent of
+                    DropOne -> self # argOrder' # x # xs' # ys'
+                    PassOne -> pcons # y # zipMergeOrdered xs ys'
+                    HandleOne handler ->
+                      pcons
+                        # (ppairDataBuiltin # yk # handler yk (psndBuiltin # y))
+                        # (self # argOrder' # x # xs' # ys')
+                )
+            )
 
 zipMerge ::
   forall (s :: S) (k :: PType) (v :: PType).
