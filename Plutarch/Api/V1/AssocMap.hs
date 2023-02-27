@@ -515,14 +515,12 @@ zipMergeInsert (MergeHandler bothPresent leftPresent rightPresent) = unTermCont 
   -- deduplicates all the zipMerge calls through plet, almost as good as hoisting
   zipMerge' <- tcont $ plet $ plam $ zipMerge rightPresent
   pure $ pfix #$ plam $ \self argOrder' x xs' ys -> unTermCont $ do
-    -- we need argOrder in many places, might as well unpack it only once
-    -- (though this basically duplicates the rest of the function in the script)
-    argOrder <- tcont $ pmatch argOrder'
     let zipMergeRec = zipMerge' # self
         xs = pcons # x # xs'
-        zipMergeOrdered = applyOrder argOrder zipMergeRec
+        zipMergeOrdered xSide ySide =
+          pmatch argOrder' $ \argOrder -> applyOrder argOrder zipMergeRec xSide ySide
     pure $ pmatch ys $ \case
-      PNil ->
+      PNil -> pmatch argOrder' $ \argOrder ->
         -- picking handler for presence of x-side only
         case branchOrder argOrder leftPresent rightPresent of
           DropOne -> pcon PNil
@@ -543,37 +541,39 @@ zipMergeInsert (MergeHandler bothPresent leftPresent rightPresent) = unTermCont 
             (xk #== yk)
             ( case bothPresent of
                 DropBoth -> zipMergeOrdered xs' ys'
-                PassArg passLeft ->
+                PassArg passLeft -> pmatch argOrder' $ \argOrder ->
                   if passLeft == argOrder
-                    then pcons # x # zipMergeOrdered xs' ys
-                    else pcons # y # zipMergeOrdered xs ys'
-                HandleBoth merge ->
+                    then pcons # x # (applyOrder argOrder zipMergeRec) xs' ys
+                    else pcons # y # (applyOrder argOrder zipMergeRec) xs ys'
+                HandleBoth merge -> pmatch argOrder' $ \argOrder ->
                   pcons
                     # ( ppairDataBuiltin
                           # xk
                             #$ applyOrder' argOrder (merge xk) (psndBuiltin # x) (psndBuiltin # y)
                       )
-                      #$ zipMergeOrdered xs' ys'
+                      #$ (applyOrder argOrder zipMergeRec) xs' ys'
             )
             ( pif
                 (pfromData xk #< pfromData yk)
-                ( -- picking handler for presence of only x-side
-                  case branchOrder argOrder leftPresent rightPresent of
-                    DropOne -> self # branchOrder argOrder psfalse pstrue # y # ys' # xs'
-                    PassOne -> pcons # x # zipMergeOrdered xs' ys
-                    HandleOne handler ->
-                      pcons
-                        # (ppairDataBuiltin # xk # handler xk (psndBuiltin # x))
-                        # (self # branchOrder argOrder psfalse pstrue # y # ys' # xs')
+                ( pmatch argOrder' $ \argOrder ->
+                    -- picking handler for presence of only x-side
+                    case branchOrder argOrder leftPresent rightPresent of
+                      DropOne -> self # branchOrder argOrder psfalse pstrue # y # ys' # xs'
+                      PassOne -> pcons # x # (applyOrder argOrder zipMergeRec) xs' ys
+                      HandleOne handler ->
+                        pcons
+                          # (ppairDataBuiltin # xk # handler xk (psndBuiltin # x))
+                          # (self # branchOrder argOrder psfalse pstrue # y # ys' # xs')
                 )
-                ( -- picking handler for presence of only y-side
-                  case branchOrder argOrder rightPresent leftPresent of
-                    DropOne -> self # argOrder' # x # xs' # ys'
-                    PassOne -> pcons # y # zipMergeOrdered xs ys'
-                    HandleOne handler ->
-                      pcons
-                        # (ppairDataBuiltin # yk # handler yk (psndBuiltin # y))
-                        # (self # argOrder' # x # xs' # ys')
+                ( pmatch argOrder' $ \argOrder ->
+                    -- picking handler for presence of only y-side
+                    case branchOrder argOrder rightPresent leftPresent of
+                      DropOne -> self # argOrder' # x # xs' # ys'
+                      PassOne -> pcons # y # (applyOrder argOrder zipMergeRec) xs ys'
+                      HandleOne handler ->
+                        pcons
+                          # (ppairDataBuiltin # yk # handler yk (psndBuiltin # y))
+                          # (self # argOrder' # x # xs' # ys')
                 )
             )
 

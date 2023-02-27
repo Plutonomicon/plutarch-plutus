@@ -5,7 +5,7 @@ lookupData.hit {"exBudgetCPU":3939176,"exBudgetMemory":9822,"scriptSizeBytes":11
 lookupData.miss {"exBudgetCPU":4325532,"exBudgetMemory":11122,"scriptSizeBytes":124}
 findWithDefault.itself {"exBudgetCPU":115100,"exBudgetMemory":600,"scriptSizeBytes":78}
 findWithDefault.hit {"exBudgetCPU":4097533,"exBudgetMemory":10354,"scriptSizeBytes":117}
-findWithDefault.hit2 {"exBudgetCPU":13292868,"exBudgetMemory":33068,"scriptSizeBytes":437}
+findWithDefault.hit2 {"exBudgetCPU":13292868,"exBudgetMemory":33068,"scriptSizeBytes":406}
 findWithDefault.miss {"exBudgetCPU":4532532,"exBudgetMemory":12022,"scriptSizeBytes":125}
 singleton {"exBudgetCPU":742104,"exBudgetMemory":2828,"scriptSizeBytes":39}
 singletonData {"exBudgetCPU":604104,"exBudgetMemory":2228,"scriptSizeBytes":34}
@@ -16,26 +16,26 @@ delete.only {"exBudgetCPU":3873793,"exBudgetMemory":12492,"scriptSizeBytes":163}
 delete.miss {"exBudgetCPU":4366498,"exBudgetMemory":14786,"scriptSizeBytes":169}
 delete.new {"exBudgetCPU":9803231,"exBudgetMemory":30904,"scriptSizeBytes":205}
 delete.old {"exBudgetCPU":7780191,"exBudgetMemory":25178,"scriptSizeBytes":204}
-difference.emptyLeft {"exBudgetCPU":1814458,"exBudgetMemory":6760,"scriptSizeBytes":296}
-difference.emptyRight {"exBudgetCPU":3312736,"exBudgetMemory":11988,"scriptSizeBytes":299}
-difference.emptyResult {"exBudgetCPU":6740757,"exBudgetMemory":19746,"scriptSizeBytes":312}
-zipMapsWith.(-) {"exBudgetCPU":24608238,"exBudgetMemory":70720,"scriptSizeBytes":658}
-unionResolvingCollisionsWith.const {"exBudgetCPU":21694744,"exBudgetMemory":63730,"scriptSizeBytes":480}
-unionResolvingCollisionsWith.flip const {"exBudgetCPU":21694744,"exBudgetMemory":63730,"scriptSizeBytes":480}
-unionResolvingCollisionsWith.double {"exBudgetCPU":7969814,"exBudgetMemory":22672,"scriptSizeBytes":366}
-unionResolvingCollisionsWith.(+) {"exBudgetCPU":7969814,"exBudgetMemory":22672,"scriptSizeBytes":366}
-unionResolvingCollisionsWith.preservesCombineCommutativity {"exBudgetCPU":7969814,"exBudgetMemory":22672,"scriptSizeBytes":366}
-unionResolvingCollisionsWithData.const {"exBudgetCPU":7652623,"exBudgetMemory":22474,"scriptSizeBytes":359}
-unionResolvingCollisionsWithData.emptyLeft {"exBudgetCPU":2067458,"exBudgetMemory":7860,"scriptSizeBytes":347}
-unionResolvingCollisionsWithData.emptyRight {"exBudgetCPU":3496736,"exBudgetMemory":12788,"scriptSizeBytes":346}
-unionResolvingCollisionsWithData.distinctKeys {"exBudgetCPU":7634365,"exBudgetMemory":22112,"scriptSizeBytes":365}
-intersectionWith.const {"exBudgetCPU":20881648,"exBudgetMemory":61334,"scriptSizeBytes":462}
-intersectionWith.flip const {"exBudgetCPU":20881648,"exBudgetMemory":61334,"scriptSizeBytes":462}
-intersectionWith.double {"exBudgetCPU":7969814,"exBudgetMemory":22672,"scriptSizeBytes":348}
-intersectionWith.(+) {"exBudgetCPU":7969814,"exBudgetMemory":22672,"scriptSizeBytes":348}
-intersectionWith.preservesCombineCommutativity {"exBudgetCPU":7969814,"exBudgetMemory":22672,"scriptSizeBytes":348}
-intersectionWith.partialKeyMismatch {"exBudgetCPU":15236860,"exBudgetMemory":42552,"scriptSizeBytes":631}
-intersectionWithData.const {"exBudgetCPU":7652623,"exBudgetMemory":22474,"scriptSizeBytes":341}
-intersectionWithData.emptyLeft {"exBudgetCPU":2067458,"exBudgetMemory":7860,"scriptSizeBytes":329}
-intersectionWithData.emptyRight {"exBudgetCPU":3339243,"exBudgetMemory":12356,"scriptSizeBytes":328}
-intersectionWithData.keyMismatch {"exBudgetCPU":8024054,"exBudgetMemory":23912,"scriptSizeBytes":347}
+difference.emptyLeft {"exBudgetCPU":1814458,"exBudgetMemory":6760,"scriptSizeBytes":265}
+difference.emptyRight {"exBudgetCPU":3312736,"exBudgetMemory":11988,"scriptSizeBytes":268}
+difference.emptyResult {"exBudgetCPU":6740757,"exBudgetMemory":19746,"scriptSizeBytes":281}
+zipMapsWith.(-) {"exBudgetCPU":24608238,"exBudgetMemory":70720,"scriptSizeBytes":627}
+unionResolvingCollisionsWith.const {"exBudgetCPU":21694744,"exBudgetMemory":63730,"scriptSizeBytes":449}
+unionResolvingCollisionsWith.flip const {"exBudgetCPU":21694744,"exBudgetMemory":63730,"scriptSizeBytes":449}
+unionResolvingCollisionsWith.double {"exBudgetCPU":7969814,"exBudgetMemory":22672,"scriptSizeBytes":335}
+unionResolvingCollisionsWith.(+) {"exBudgetCPU":7969814,"exBudgetMemory":22672,"scriptSizeBytes":335}
+unionResolvingCollisionsWith.preservesCombineCommutativity {"exBudgetCPU":7969814,"exBudgetMemory":22672,"scriptSizeBytes":335}
+unionResolvingCollisionsWithData.const {"exBudgetCPU":7652623,"exBudgetMemory":22474,"scriptSizeBytes":328}
+unionResolvingCollisionsWithData.emptyLeft {"exBudgetCPU":2067458,"exBudgetMemory":7860,"scriptSizeBytes":316}
+unionResolvingCollisionsWithData.emptyRight {"exBudgetCPU":3496736,"exBudgetMemory":12788,"scriptSizeBytes":315}
+unionResolvingCollisionsWithData.distinctKeys {"exBudgetCPU":7634365,"exBudgetMemory":22112,"scriptSizeBytes":334}
+intersectionWith.const {"exBudgetCPU":20881648,"exBudgetMemory":61334,"scriptSizeBytes":431}
+intersectionWith.flip const {"exBudgetCPU":20881648,"exBudgetMemory":61334,"scriptSizeBytes":431}
+intersectionWith.double {"exBudgetCPU":7969814,"exBudgetMemory":22672,"scriptSizeBytes":317}
+intersectionWith.(+) {"exBudgetCPU":7969814,"exBudgetMemory":22672,"scriptSizeBytes":317}
+intersectionWith.preservesCombineCommutativity {"exBudgetCPU":7969814,"exBudgetMemory":22672,"scriptSizeBytes":317}
+intersectionWith.partialKeyMismatch {"exBudgetCPU":15236860,"exBudgetMemory":42552,"scriptSizeBytes":569}
+intersectionWithData.const {"exBudgetCPU":7652623,"exBudgetMemory":22474,"scriptSizeBytes":310}
+intersectionWithData.emptyLeft {"exBudgetCPU":2067458,"exBudgetMemory":7860,"scriptSizeBytes":298}
+intersectionWithData.emptyRight {"exBudgetCPU":3339243,"exBudgetMemory":12356,"scriptSizeBytes":297}
+intersectionWithData.keyMismatch {"exBudgetCPU":8024054,"exBudgetMemory":23912,"scriptSizeBytes":316}
