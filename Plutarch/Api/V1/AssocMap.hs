@@ -51,6 +51,7 @@ module Plutarch.Api.V1.AssocMap (
   pzipWithDataDefaults,
   pintersectionWith,
   pintersectionWithData,
+  pleftBiasedUnion,
   punionResolvingCollisionsWith,
   punionResolvingCollisionsWithData,
   pdifference,
@@ -579,9 +580,9 @@ zipMergeInsert (MergeHandler bothPresent leftPresent rightPresent) = unTermCont 
             ( case bothPresent of
                 DropBoth -> zipMergeOrdered xs' ys'
                 PassArg passLeft -> pmatch argOrder' $ \argOrder ->
-                  if passLeft == argOrder
-                    then pcons # x # (applyOrder argOrder zipMergeRec) xs' ys
-                    else pcons # y # (applyOrder argOrder zipMergeRec) xs ys'
+                  pcons
+                    # (if passLeft == argOrder then x else y)
+                    # (applyOrder argOrder zipMergeRec) xs' ys'
                 HandleBoth merge -> pmatch argOrder' $ \argOrder ->
                   pcons
                     # ( ppairDataBuiltin
@@ -880,6 +881,19 @@ pzipWithDefaults defLeft defRight = phoistAcyclic $ plam \combine ->
         (HandleBoth \_ vl vr -> combine # vl # vr)
         (HandleOne \_ vl -> combine # vl # defRight)
         (HandleOne \_ vr -> combine # defLeft # vr)
+
+{- | Build the union of two 'PMap's. Take the value from the left argument for colliding keys.
+
+ Prefer this over 'punionResolvingCollisionsWith NonCommutative # plam const'. It performs better.
+-}
+pleftBiasedUnion ::
+  (POrd k, PIsData k, PIsData v) =>
+  Term s (PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
+pleftBiasedUnion =
+  phoistAcyclic $
+    pzipWith $
+      SomeMergeHandler $
+        MergeHandler (PassArg PSTrue) PassOne PassOne
 
 {- | Build the union of two 'PMap's, merging values that share the same key using the
 given function.

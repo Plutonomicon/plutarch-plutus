@@ -19,7 +19,9 @@ delete.old {"exBudgetCPU":7780191,"exBudgetMemory":25178,"scriptSizeBytes":204}
 difference.emptyLeft {"exBudgetCPU":1814458,"exBudgetMemory":6760,"scriptSizeBytes":265}
 difference.emptyRight {"exBudgetCPU":3312736,"exBudgetMemory":11988,"scriptSizeBytes":268}
 difference.emptyResult {"exBudgetCPU":6740757,"exBudgetMemory":19746,"scriptSizeBytes":281}
+difference.partialOverlap {"exBudgetCPU":20557164,"exBudgetMemory":60306,"scriptSizeBytes":390}
 zipMapsWith.(-) {"exBudgetCPU":24608238,"exBudgetMemory":70720,"scriptSizeBytes":627}
+leftBiasedUnion.const {"exBudgetCPU":20714657,"exBudgetMemory":60738,"scriptSizeBytes":407}
 unionResolvingCollisionsWith.const {"exBudgetCPU":21694744,"exBudgetMemory":63730,"scriptSizeBytes":449}
 unionResolvingCollisionsWith.flip const {"exBudgetCPU":21694744,"exBudgetMemory":63730,"scriptSizeBytes":449}
 unionResolvingCollisionsWith.double {"exBudgetCPU":7716814,"exBudgetMemory":21572,"scriptSizeBytes":247}

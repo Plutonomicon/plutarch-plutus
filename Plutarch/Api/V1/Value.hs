@@ -33,6 +33,8 @@ module Plutarch.Api.V1.Value (
   pconstantPositiveSingleton,
 
   -- * Combining values
+  pleftBiasedCurrencyUnion,
+  pleftBiasedTokenUnion,
   punionResolvingCollisionsWith,
   punionResolvingCollisionsWithData,
 
@@ -55,7 +57,7 @@ module Plutarch.Api.V1.Value (
 
 import PlutusLedgerApi.V1 qualified as Plutus
 
-import Plutarch.Api.V1.AssocMap (Commutativity (Commutative), KeyGuarantees (Sorted, Unsorted), PMap (..))
+import Plutarch.Api.V1.AssocMap (Commutativity (Commutative, NonCommutative), KeyGuarantees (Sorted, Unsorted), PMap (..))
 import Plutarch.Api.V1.AssocMap qualified as AssocMap
 import Plutarch.Bool (pand', pif')
 import Plutarch.Lift (
@@ -367,6 +369,38 @@ plovelaceValueOf = phoistAcyclic $
           # (pfstBuiltin # x #== padaSymbolData)
           # pfromData (psndBuiltin #$ phead #$ pto $ pfromData $ psndBuiltin # x)
           # 0
+
+-- | Combine two 'PValue's, taking the tokens from the left only, if a currency occurs on both sides.
+pleftBiasedCurrencyUnion ::
+  Term
+    s
+    ( PValue 'Sorted any0
+        :--> PValue 'Sorted any1
+        :--> PValue 'Sorted 'NoGuarantees
+    )
+pleftBiasedCurrencyUnion = phoistAcyclic $
+  plam \x y -> pcon . PValue $ AssocMap.pleftBiasedUnion # pto x # pto y
+
+{- | Combine two 'PValue's, taking the tokens from the left only, if a token name
+ of the same currency occurs on both sides.
+
+ Prefer this over 'punionResolvingCollisionsWith NonCommutative # plam const'.
+ It is equivalent, but performs better.
+-}
+pleftBiasedTokenUnion ::
+  Term
+    s
+    ( PValue 'Sorted any0
+        :--> PValue 'Sorted any1
+        :--> PValue 'Sorted 'NoGuarantees
+    )
+pleftBiasedTokenUnion = phoistAcyclic $
+  plam $ \x y ->
+    pcon . PValue $
+      AssocMap.punionResolvingCollisionsWith NonCommutative
+        # plam (\x y -> AssocMap.pleftBiasedUnion # x # y)
+        # pto x
+        # pto y
 
 {- | Combine two 'PValue's applying the given function to any pair of
  quantities with the same asset class. Note that the result is _not_

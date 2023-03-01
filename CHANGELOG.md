@@ -19,6 +19,9 @@
   function.
 - Renamed `pdifference` in `AssocMap` to `punsortedDifference` (O(n^2)).
   Introduced new `pdifference` with stricter constraints and O(n).
+- Added `pleftBiasedUnion` in `Plutarch.Api.V1.AssocMap`.
+- Added `pleftBiasedCurrencyUnion` and `pleftBiasedTokenUnion` in
+  `Plutarch.Api.V1.Value`.
 
 # 1.3.0
 

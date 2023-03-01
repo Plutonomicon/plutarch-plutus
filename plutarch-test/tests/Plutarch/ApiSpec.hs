@@ -122,6 +122,40 @@ spec = do
                     # pconstant "token"
                     @-> \p -> plift p @?= if size < 9 then 0 else 1
               )
+        "leftBiasedCurrencyUnion" @\ do
+          "growing"
+            @\ forM_
+              (zip [1 :: Int .. length growingSymbols] growingSymbols)
+              ( \(size, v) ->
+                  fromString (show size)
+                    @| PValue.pleftBiasedCurrencyUnion
+                    # getEnclosedTerm v
+                    # pmintOtherSymbol
+                    @-> pshouldReallyBe
+                      ( pcon . PValue.PValue $
+                          AssocMap.punionResolvingCollisionsWith Commutative
+                            # (plam $ \_ _ -> ptraceError "unexpected collision")
+                            # pto (getEnclosedTerm v)
+                            # (AssocMap.pdifference # pto pmintOtherSymbol # pto (getEnclosedTerm v))
+                      )
+              )
+        "leftBiasedTokenUnion" @\ do
+          "growing"
+            @\ forM_
+              (zip [1 :: Int .. length growingSymbols] growingSymbols)
+              ( \(size, v) ->
+                  fromString (show size)
+                    @| PValue.pleftBiasedTokenUnion
+                    # getEnclosedTerm v
+                    # pmintOtherSymbol
+                    @-> \v' ->
+                      passert
+                        ( v'
+                            #== PValue.pleftBiasedTokenUnion
+                            # pmintOtherSymbol
+                            # getEnclosedTerm v
+                        )
+              )
         "unionResolvingCollisionsWith" @\ do
           "const" @| PValue.punionResolvingCollisionsWith NonCommutative # plam const # pmint # pmint @-> \p ->
             plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint
@@ -316,6 +350,11 @@ spec = do
           "emptyLeft" @| AssocMap.pdifference # emptyMap # pmap @-> pshouldReallyBe emptyMap
           "emptyRight" @| AssocMap.pdifference # pmap # emptyMap @-> pshouldReallyBe pmap
           "emptyResult" @| AssocMap.pdifference # pmap # doubleMap @-> pshouldReallyBe emptyMap
+          "partialOverlap"
+            @| AssocMap.pdifference
+            # mkTestMap [("a", 42), ("b", 23)]
+            # mkTestMap [("b", 10), ("c", 8)]
+            @-> pshouldReallyBe (mkTestMap [("a", 42)])
         "zipMapsWith" @\ do
           "(-)"
             @| AssocMap.pzipWithDefaults 1 0
@@ -323,6 +362,12 @@ spec = do
             # mkTestMap [("a", 42), ("b", 23)]
             # mkTestMap [("b", 10), ("c", 8)]
             @-> pshouldReallyBe (mkTestMap [("a", 42), ("b", 13), ("c", -7)])
+        "leftBiasedUnion" @\ do
+          "const"
+            @| AssocMap.pleftBiasedUnion
+            # mkTestMap [("a", 42), ("b", 6)]
+            # mkTestMap [("b", 7), ("c", 23)]
+            @-> pshouldReallyBe (mkTestMap [("a", 42), ("b", 6), ("c", 23)])
         "unionResolvingCollisionsWith" @\ do
           "const"
             @| AssocMap.punionResolvingCollisionsWith NonCommutative
