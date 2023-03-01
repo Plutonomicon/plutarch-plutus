@@ -40,6 +40,7 @@ import Plutarch.Api.V1 (
   PTxInfo,
   PValue,
  )
+import Plutarch.Api.V1.AssocMap (Commutativity (..))
 import Plutarch.Api.V1.AssocMap qualified as AssocMap
 import Plutarch.Api.V1.Value qualified as PValue
 import Plutarch.Builtin (pasConstr, pforgetData)
@@ -122,33 +123,40 @@ spec = do
                     @-> \p -> plift p @?= if size < 9 then 0 else 1
               )
         "unionResolvingCollisionsWith" @\ do
-          "const" @| PValue.punionResolvingCollisionsWith # plam const # pmint # pmint @-> \p ->
+          "const" @| PValue.punionResolvingCollisionsWith NonCommutative # plam const # pmint # pmint @-> \p ->
             plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint
           "(+)" @\ do
-            "itself" @| PValue.punionResolvingCollisionsWith # plam (+) @-> \plus ->
+            "itself" @| PValue.punionResolvingCollisionsWith Commutative # plam (+) @-> \plus ->
               plift (PValue.pforgetSorted $ PValue.pnormalize #$ plus # pmint # pmint) @?= mint <> mint
-            "applied" @| PValue.punionResolvingCollisionsWith # plam (+) # pmint # pmint @-> \p ->
+            "applied" @| PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmint # pmint @-> \p ->
               plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint <> mint
-          "tokens" @| PValue.punionResolvingCollisionsWith # plam (+) # pmint # pmintOtherToken @-> \p ->
+          "tokens" @| PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmint # pmintOtherToken @-> \p ->
             plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint <> mintOtherToken
-          "symbols" @| PValue.punionResolvingCollisionsWith # plam (+) # pmint # pmintOtherSymbol @-> \p ->
+          "symbols" @| PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmint # pmintOtherSymbol @-> \p ->
             plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint <> mintOtherSymbol
           "growing"
             @\ forM_
               (zip [1 :: Int .. length growingSymbols] growingSymbols)
               ( \(size, v) ->
                   fromString (show size)
-                    @| PValue.punionResolvingCollisionsWith
+                    @| PValue.punionResolvingCollisionsWith NonCommutative
                     # plam const
                     # getEnclosedTerm v
                     # pmintOtherSymbol
-                    @-> \v' -> passert (v' #== PValue.punionResolvingCollisionsWith # plam const # pmintOtherSymbol # getEnclosedTerm v)
+                    @-> \v' ->
+                      passert
+                        ( v'
+                            #== PValue.punionResolvingCollisionsWith NonCommutative
+                            # plam const
+                            # pmintOtherSymbol
+                            # getEnclosedTerm v
+                        )
               )
         "unionResolvingCollisionsWithData const" @\ do
           "itself"
-            @| PValue.punionResolvingCollisionsWithData @-> \u ->
+            @| PValue.punionResolvingCollisionsWithData NonCommutative @-> \u ->
               plift (PValue.pforgetSorted $ PValue.pnormalize #$ u # plam const # pmint # pmint) @?= mint
-          "applied" @| PValue.punionResolvingCollisionsWithData # plam const # pmint # pmint @-> \p ->
+          "applied" @| PValue.punionResolvingCollisionsWithData NonCommutative # plam const # pmint # pmint @-> \p ->
             plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint
         "inv"
           @| inv (PValue.pforgetPositive pmint :: Term _ (PValue 'Sorted 'NonZero))
@@ -158,12 +166,12 @@ spec = do
           "triviallyTrue" @| pmint #== pmint @-> passert
           "triviallyFalse" @| pmint #== pmintOtherToken @-> passertNot
           "swappedTokensTrue"
-            @| pto (PValue.punionResolvingCollisionsWith # plam (+) # pmint # pmintOtherToken)
-              #== pto (PValue.punionResolvingCollisionsWith # plam (+) # pmintOtherToken # pmint)
+            @| pto (PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmint # pmintOtherToken)
+              #== pto (PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmintOtherToken # pmint)
               @-> passert
           "swappedSymbolsTrue"
-            @| pto (PValue.punionResolvingCollisionsWith # plam (+) # pmint # pmintOtherSymbol)
-              #== pto (PValue.punionResolvingCollisionsWith # plam (+) # pmintOtherSymbol # pmint)
+            @| pto (PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmint # pmintOtherSymbol)
+              #== pto (PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmintOtherSymbol # pmint)
               @-> passert
           "growing"
             @\ forM_
@@ -179,7 +187,7 @@ spec = do
             @-> \v -> passert (v #== pmint <> pmintOtherSymbol)
           "empty"
             @| PValue.pnormalize
-            # (PValue.punionResolvingCollisionsWith # plam (-) # pmint # pmint)
+            # (PValue.punionResolvingCollisionsWith NonCommutative # plam (-) # pmint # pmint)
             @-> \v -> passert (v #== mempty)
         "assertSorted" @\ do
           "succeeds" @| PValue.passertSorted # (pmint <> pmintOtherSymbol) @-> psucceeds
@@ -194,7 +202,7 @@ spec = do
             @-> pfails
           "fails on zero quantities"
             @| PValue.passertSorted
-            # (PValue.punionResolvingCollisionsWith # plam (-) # pmint # pmint)
+            # (PValue.punionResolvingCollisionsWith NonCommutative # plam (-) # pmint # pmint)
             @-> pfails
           "fails on empty token map"
             @| PValue.passertSorted
@@ -277,7 +285,7 @@ spec = do
             @| AssocMap.pfindWithDefault
             # 12
             # pconstant "newkey"
-            # (AssocMap.punionResolvingCollisionsWith # plam const # pmap # otherMap)
+            # (AssocMap.punionResolvingCollisionsWith NonCommutative # plam const # pmap # otherMap)
             @-> \result -> passert $ result #== 6
           "miss"
             @| AssocMap.pfindWithDefault
@@ -317,77 +325,117 @@ spec = do
             @-> pshouldReallyBe (mkTestMap [("a", 42), ("b", 13), ("c", -7)])
         "unionResolvingCollisionsWith" @\ do
           "const"
-            @| AssocMap.punionResolvingCollisionsWith
+            @| AssocMap.punionResolvingCollisionsWith NonCommutative
             # plam const
             # mkTestMap [("a", 42), ("b", 6)]
             # mkTestMap [("b", 7), ("c", 23)]
             @-> pshouldReallyBe (mkTestMap [("a", 42), ("b", 6), ("c", 23)])
           "flip const"
-            @| AssocMap.punionResolvingCollisionsWith
+            @| AssocMap.punionResolvingCollisionsWith NonCommutative
             # plam (flip const)
             # mkTestMap [("a", 42), ("b", 6)]
             # mkTestMap [("b", 7), ("c", 23)]
             @-> pshouldReallyBe (mkTestMap [("a", 42), ("b", 7), ("c", 23)])
           "double"
-            @| AssocMap.punionResolvingCollisionsWith
+            @| AssocMap.punionResolvingCollisionsWith Commutative
             # plam (+)
             # pmap
             # pmap
             @-> pshouldReallyBe doubleMap
           "(+)"
-            @| AssocMap.punionResolvingCollisionsWith
+            @| AssocMap.punionResolvingCollisionsWith Commutative
             # plam (+)
             # pmap
             # pmap'
             @-> pshouldReallyBe psumMap
           "preservesCombineCommutativity"
-            @| AssocMap.punionResolvingCollisionsWith
+            @| AssocMap.punionResolvingCollisionsWith Commutative
             # plam (+)
             # pmap'
             # pmap
-            @-> \p -> passert (p #== AssocMap.punionResolvingCollisionsWith # plam (+) # pmap # pmap')
+            @-> \p -> passert (p #== AssocMap.punionResolvingCollisionsWith Commutative # plam (+) # pmap # pmap')
         "unionResolvingCollisionsWithData" @\ do
-          "const" @| AssocMap.punionResolvingCollisionsWithData # plam const # pmap # pmap @-> pshouldReallyBe pmap
-          "emptyLeft" @| AssocMap.punionResolvingCollisionsWithData # plam const # emptyMap # pmap @-> pshouldReallyBe pmap
-          "emptyRight" @| AssocMap.punionResolvingCollisionsWithData # plam const # pmap # emptyMap @-> pshouldReallyBe pmap
-          "distinctKeys" @| AssocMap.punionResolvingCollisionsWithData # plam const # pmap # otherMap @-> pshouldReallyBe pmapunionResolvingCollisions
+          "const"
+            @| AssocMap.punionResolvingCollisionsWithData NonCommutative
+            # plam const
+            # pmap
+            # pmap
+            @-> pshouldReallyBe pmap
+          "emptyLeft"
+            @| AssocMap.punionResolvingCollisionsWithData NonCommutative
+            # plam const
+            # emptyMap
+            # pmap
+            @-> pshouldReallyBe pmap
+          "emptyRight"
+            @| AssocMap.punionResolvingCollisionsWithData NonCommutative
+            # plam const
+            # pmap
+            # emptyMap
+            @-> pshouldReallyBe pmap
+          "distinctKeys"
+            @| AssocMap.punionResolvingCollisionsWithData NonCommutative
+            # plam const
+            # pmap
+            # otherMap
+            @-> pshouldReallyBe pmapunionResolvingCollisions
         "intersectionWith" @\ do
           "const"
-            @| AssocMap.pintersectionWith
+            @| AssocMap.pintersectionWith NonCommutative
             # plam const
             # mkTestMap [("a", 42), ("b", 6)]
             # mkTestMap [("b", 7), ("c", 23)]
             @-> pshouldReallyBe (mkTestMap [("b", 6)])
           "flip const"
-            @| AssocMap.pintersectionWith
+            @| AssocMap.pintersectionWith NonCommutative
             # plam (flip const)
             # mkTestMap [("a", 42), ("b", 6)]
             # mkTestMap [("b", 7), ("c", 23)]
             @-> pshouldReallyBe (mkTestMap [("b", 7)])
-          "double" @| AssocMap.pintersectionWith # plam (+) # pmap # pmap @-> pshouldReallyBe doubleMap
+          "double" @| AssocMap.pintersectionWith Commutative # plam (+) # pmap # pmap @-> pshouldReallyBe doubleMap
           "(+)"
-            @| AssocMap.pintersectionWith
+            @| AssocMap.pintersectionWith Commutative
             # plam (+)
             # pmap
             # pmap'
             @-> pshouldReallyBe psumMap
           "preservesCombineCommutativity"
-            @| AssocMap.pintersectionWith
+            @| AssocMap.pintersectionWith Commutative
             # plam (+)
             # pmap'
             # pmap
-            @-> pshouldReallyBe (AssocMap.pintersectionWith # plam (+) # pmap # pmap')
+            @-> pshouldReallyBe (AssocMap.pintersectionWith Commutative # plam (+) # pmap # pmap')
           "partialKeyMismatch"
-            @| AssocMap.pintersectionWith
+            @| AssocMap.pintersectionWith Commutative
             # plam (+)
-            # (AssocMap.punionResolvingCollisionsWithData # plam const # pmap # otherMap)
+            # (AssocMap.punionResolvingCollisionsWithData NonCommutative # plam const # pmap # otherMap)
             # pmap'
             @-> pshouldReallyBe psumMap
         "intersectionWithData" @\ do
-          "const" @| AssocMap.pintersectionWithData # plam const # pmap # pmap @-> pshouldReallyBe pmap
-          "emptyLeft" @| AssocMap.pintersectionWithData # plam const # emptyMap # pmap @-> pshouldReallyBe emptyMap
-          "emptyRight" @| AssocMap.pintersectionWithData # plam const # pmap # emptyMap @-> pshouldReallyBe emptyMap
-          "keyMismatch" @| AssocMap.pintersectionWithData # plam const # pmap # otherMap @-> pshouldReallyBe emptyMap
+          "const"
+            @| AssocMap.pintersectionWithData NonCommutative
+            # plam const
+            # pmap
+            # pmap
+            @-> pshouldReallyBe pmap
+          "emptyLeft"
+            @| AssocMap.pintersectionWithData NonCommutative
+            # plam const
+            # emptyMap
+            # pmap
+            @-> pshouldReallyBe emptyMap
+          "emptyRight"
+            @| AssocMap.pintersectionWithData NonCommutative
+            # plam const
+            # pmap
+            # emptyMap
+            @-> pshouldReallyBe emptyMap
+          "keyMismatch"
+            @| AssocMap.pintersectionWithData NonCommutative
+            # plam const
+            # pmap
+            # otherMap
+            @-> pshouldReallyBe emptyMap
     describe "example" $ do
       -- The checkSignatory family of functions implicitly use tracing due to
       -- monadic syntax, and as such we need two sets of tests here.

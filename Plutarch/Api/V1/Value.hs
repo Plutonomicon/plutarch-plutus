@@ -55,7 +55,7 @@ module Plutarch.Api.V1.Value (
 
 import PlutusLedgerApi.V1 qualified as Plutus
 
-import Plutarch.Api.V1.AssocMap (KeyGuarantees (Sorted, Unsorted), PMap (..))
+import Plutarch.Api.V1.AssocMap (Commutativity (Commutative), KeyGuarantees (Sorted, Unsorted), PMap (..))
 import Plutarch.Api.V1.AssocMap qualified as AssocMap
 import Plutarch.Bool (pand', pif')
 import Plutarch.Lift (
@@ -165,25 +165,30 @@ instance PPartialOrd (PValue 'Sorted 'NonZero) where
       f = phoistAcyclic $ pcheckBinRel #$ phoistAcyclic $ plam (#<=)
 
 instance PEq (PValue 'Sorted 'NoGuarantees) where
-  a #== b = AssocMap.pall # (AssocMap.pall # plam (#== 0)) # pto (punionResolvingCollisionsWith # plam (-) # a # b)
+  a #== b =
+    AssocMap.pall
+      # (AssocMap.pall # plam (#== 0))
+      -- While '(-)' is not commutative, we don't need that property here.
+      -- TODO benchmark with '(==)'
+      # pto (punionResolvingCollisionsWith Commutative # plam (-) # a # b)
 
 instance Semigroup (Term s (PValue 'Sorted 'Positive)) where
-  a <> b = punsafeDowncast (pto $ punionResolvingCollisionsWith # plam (+) # a # b)
+  a <> b = punsafeDowncast (pto $ punionResolvingCollisionsWith Commutative # plam (+) # a # b)
 
 instance PlutusTx.Semigroup (Term s (PValue 'Sorted 'Positive)) where
-  a <> b = punsafeDowncast (pto $ punionResolvingCollisionsWith # plam (+) # a # b)
+  a <> b = punsafeDowncast (pto $ punionResolvingCollisionsWith Commutative # plam (+) # a # b)
 
 instance Semigroup (Term s (PValue 'Sorted 'NonZero)) where
-  a <> b = pnormalize #$ punionResolvingCollisionsWith # plam (+) # a # b
+  a <> b = pnormalize #$ punionResolvingCollisionsWith Commutative # plam (+) # a # b
 
 instance PlutusTx.Semigroup (Term s (PValue 'Sorted 'NonZero)) where
-  a <> b = pnormalize #$ punionResolvingCollisionsWith # plam (+) # a # b
+  a <> b = pnormalize #$ punionResolvingCollisionsWith Commutative # plam (+) # a # b
 
 instance Semigroup (Term s (PValue 'Sorted 'NoGuarantees)) where
-  a <> b = punionResolvingCollisionsWith # plam (+) # a # b
+  a <> b = punionResolvingCollisionsWith Commutative # plam (+) # a # b
 
 instance PlutusTx.Semigroup (Term s (PValue 'Sorted 'NoGuarantees)) where
-  a <> b = punionResolvingCollisionsWith # plam (+) # a # b
+  a <> b = punionResolvingCollisionsWith Commutative # plam (+) # a # b
 
 instance
   Semigroup (Term s (PValue 'Sorted normalization)) =>
@@ -368,6 +373,7 @@ plovelaceValueOf = phoistAcyclic $
  'normalize'd and may contain zero quantities.
 -}
 punionResolvingCollisionsWith ::
+  Commutativity ->
   Term
     s
     ( (PInteger :--> PInteger :--> PInteger)
@@ -375,11 +381,11 @@ punionResolvingCollisionsWith ::
         :--> PValue 'Sorted any1
         :--> PValue 'Sorted 'NoGuarantees
     )
-punionResolvingCollisionsWith = phoistAcyclic $
+punionResolvingCollisionsWith commutativity = phoistAcyclic $
   plam $ \combine x y ->
     pcon . PValue $
-      AssocMap.punionResolvingCollisionsWith
-        # plam (\x y -> AssocMap.punionResolvingCollisionsWith # combine # x # y)
+      AssocMap.punionResolvingCollisionsWith commutativity
+        # plam (\x y -> AssocMap.punionResolvingCollisionsWith commutativity # combine # x # y)
         # pto x
         # pto y
 
@@ -388,6 +394,7 @@ punionResolvingCollisionsWith = phoistAcyclic $
  _not_ 'normalize'd and may contain zero quantities.
 -}
 punionResolvingCollisionsWithData ::
+  Commutativity ->
   Term
     s
     ( (PAsData PInteger :--> PAsData PInteger :--> PAsData PInteger)
@@ -395,11 +402,11 @@ punionResolvingCollisionsWithData ::
         :--> PValue 'Sorted any1
         :--> PValue 'Sorted 'NoGuarantees
     )
-punionResolvingCollisionsWithData = phoistAcyclic $
+punionResolvingCollisionsWithData commutativity = phoistAcyclic $
   plam $ \combine x y ->
     pcon . PValue $
-      AssocMap.punionResolvingCollisionsWith
-        # plam (\x y -> AssocMap.punionResolvingCollisionsWithData # combine # x # y)
+      AssocMap.punionResolvingCollisionsWith commutativity
+        # plam (\x y -> AssocMap.punionResolvingCollisionsWithData commutativity # combine # x # y)
         # pto x
         # pto y
 

@@ -37,10 +37,16 @@ module Plutarch.Api.V1.AssocMap (
 
   -- * Combining
   BothPresentHandler (..),
+  BothPresentHandlerCommutative (..),
   OnePresentHandler (..),
   MergeHandler (..),
+  MergeHandlerCommutative (..),
+  SomeMergeHandler (..),
+  Commutativity (..),
   pzipWith,
   pzipWithData,
+  pzipWithDefault,
+  pzipWithDataDefault,
   pzipWithDefaults,
   pzipWithDataDefaults,
   pintersectionWith,
@@ -392,7 +398,7 @@ instance
   (POrd k, PIsData k, PIsData v, Semigroup (Term s v)) =>
   Semigroup (Term s (PMap 'Sorted k v))
   where
-  a <> b = punionResolvingCollisionsWith # plam (<>) # a # b
+  a <> b = punionResolvingCollisionsWith NonCommutative # plam (<>) # a # b
 
 instance
   (POrd k, PIsData k, PIsData v, forall (s' :: S). Monoid (Term s' v)) =>
@@ -404,7 +410,7 @@ instance
   (POrd k, PIsData k, PIsData v, PlutusTx.Semigroup (Term s v)) =>
   PlutusTx.Semigroup (Term s (PMap 'Sorted k v))
   where
-  a <> b = punionResolvingCollisionsWith # plam (PlutusTx.<>) # a # b
+  a <> b = punionResolvingCollisionsWith NonCommutative # plam (PlutusTx.<>) # a # b
 
 instance
   (POrd k, PIsData k, PIsData v, forall (s' :: S). PlutusTx.Monoid (Term s' v)) =>
@@ -424,6 +430,10 @@ data BothPresentHandler k v s
     PassArg (PSBool s)
   | HandleBoth (Term s k -> Term s v -> Term s v -> Term s v)
 
+data BothPresentHandlerCommutative k v s
+  = DropBothCommutative
+  | HandleBothCommutative (Term s k -> Term s v -> Term s v -> Term s v)
+
 data OnePresentHandler k v s
   = DropOne
   | PassOne
@@ -437,6 +447,15 @@ data OnePresentHandler k v s
 data MergeHandler k v s
   = MergeHandler (BothPresentHandler k v s) (OnePresentHandler k v s) (OnePresentHandler k v s)
 
+data MergeHandlerCommutative k v s
+  = MergeHandlerCommutative (BothPresentHandlerCommutative k v s) (OnePresentHandler k v s)
+
+data SomeMergeHandler k v s
+  = SomeMergeHandlerCommutative (MergeHandlerCommutative k v s)
+  | SomeMergeHandler (MergeHandler k v s)
+
+data Commutativity = Commutative | NonCommutative deriving stock (Eq, Ord, Show)
+
 bothPresentOnData ::
   forall (s :: S) (k :: PType) (v :: PType).
   (PIsData k, PIsData v) =>
@@ -446,6 +465,16 @@ bothPresentOnData = \case
   DropBoth -> DropBoth
   PassArg arg -> PassArg arg
   HandleBoth f -> HandleBoth \k x y -> pdata $ f (pfromData k) (pfromData x) (pfromData y)
+
+bothPresentCommutativeOnData ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (PIsData k, PIsData v) =>
+  BothPresentHandlerCommutative k v s ->
+  BothPresentHandlerCommutative (PAsData k) (PAsData v) s
+bothPresentCommutativeOnData = \case
+  DropBothCommutative -> DropBothCommutative
+  HandleBothCommutative f ->
+    HandleBothCommutative \k x y -> pdata $ f (pfromData k) (pfromData x) (pfromData y)
 
 onePresentOnData ::
   forall (s :: S) (k :: PType) (v :: PType).
@@ -464,6 +493,14 @@ mergeHandlerOnData ::
   MergeHandler (PAsData k) (PAsData v) s
 mergeHandlerOnData (MergeHandler bothPresent leftPresent rightPresent) =
   MergeHandler (bothPresentOnData bothPresent) (onePresentOnData leftPresent) (onePresentOnData rightPresent)
+
+mergeHandlerCommutativeOnData ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (PIsData k, PIsData v) =>
+  MergeHandlerCommutative k v s ->
+  MergeHandlerCommutative (PAsData k) (PAsData v) s
+mergeHandlerCommutativeOnData (MergeHandlerCommutative bothPresent onePresent) =
+  MergeHandlerCommutative (bothPresentCommutativeOnData bothPresent) (onePresentOnData onePresent)
 
 branchOrder :: forall (s :: S) (a :: Type). PSBool s -> a -> a -> a
 branchOrder PSTrue t _ = t
@@ -608,37 +645,201 @@ zipMerge rightPresent mergeInsertRec = plam $ \ls rs -> pmatch ls $ \case
           # rs
   PCons l ls' -> mergeInsertRec # pstrue # l # ls' # rs
 
-{- | Zip two 'PMap's, using a 'MergeHandler' to decide how to merge based on key
+zipMergeInsertCommutative ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (POrd k, PIsData k) =>
+  MergeHandlerCommutative (PAsData k) (PAsData v) s ->
+  -- | 'PSTrue' means first arg is left, second arg is right.
+  -- The first list gets passed in deconstructed form as head and tail
+  -- separately.
+  Term
+    s
+    ( PBuiltinPair (PAsData k) (PAsData v)
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+    )
+zipMergeInsertCommutative (MergeHandlerCommutative bothPresent onePresent) = unTermCont $ do
+  -- deduplicates all the zipMerge calls through plet, almost as good as hoisting
+  zipMerge' <- tcont $ plet $ plam $ zipMergeCommutative onePresent
+  pure $ pfix #$ plam $ \self x xs' ys -> unTermCont $ do
+    let zipMergeRec = zipMerge' # self
+        xs = pcons # x # xs'
+    pure $ pmatch ys $ \case
+      PNil ->
+        -- picking handler for presence of x-side only
+        case onePresent of
+          DropOne -> pcon PNil
+          PassOne -> pcons # x # xs'
+          HandleOne handler ->
+            List.pmap
+              # ( plam $ \pair ->
+                    plet (pfstBuiltin # pair) \k ->
+                      ppairDataBuiltin # k # handler k (psndBuiltin # pair)
+                )
+              # xs
+      PCons y1 ys' -> unTermCont $ do
+        y <- tcont $ plet y1
+        xk <- tcont $ plet (pfstBuiltin # x)
+        yk <- tcont $ plet (pfstBuiltin # y)
+        pure $
+          pif
+            (xk #== yk)
+            ( case bothPresent of
+                DropBothCommutative -> zipMergeRec # xs' # ys'
+                HandleBothCommutative merge ->
+                  pcons
+                    # ( ppairDataBuiltin
+                          # xk
+                            #$ (merge xk) (psndBuiltin # x) (psndBuiltin # y)
+                      )
+                      #$ zipMergeRec
+                    # xs'
+                    # ys'
+            )
+            ( pif
+                (pfromData xk #< pfromData yk)
+                ( case onePresent of
+                    DropOne -> self # y # ys' # xs'
+                    PassOne -> pcons # x # (zipMergeRec # xs' # ys)
+                    HandleOne handler ->
+                      pcons
+                        # (ppairDataBuiltin # xk # handler xk (psndBuiltin # x))
+                        # (self # y # ys' # xs')
+                )
+                ( case onePresent of
+                    DropOne -> self # x # xs' # ys'
+                    PassOne -> pcons # y # (zipMergeRec # ys' # xs)
+                    HandleOne handler ->
+                      pcons
+                        # (ppairDataBuiltin # yk # handler yk (psndBuiltin # y))
+                        # (self # x # xs' # ys')
+                )
+            )
+
+zipMergeCommutative ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  OnePresentHandler (PAsData k) (PAsData v) s ->
+  Term
+    s
+    ( PBuiltinPair (PAsData k) (PAsData v)
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+    ) ->
+  Term
+    s
+    ( PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+    )
+zipMergeCommutative onePresent mergeInsertRec = plam $ \ls rs -> pmatch ls $ \case
+  PNil ->
+    case onePresent of
+      DropOne -> pcon PNil
+      PassOne -> rs
+      HandleOne handler ->
+        List.pmap
+          # ( plam $ \pair ->
+                plet (pfstBuiltin # pair) \k ->
+                  ppairDataBuiltin # k # handler k (psndBuiltin # pair)
+            )
+          # rs
+  PCons l ls' -> mergeInsertRec # l # ls' # rs
+
+{- | Zip two 'PMap's, using a 'SomeMergeHandler' to decide how to merge based on key
  presence on the left and right.
+
+ Note that using a 'MergeHandlerCommutative' is less costly than a 'MergeHandler'.
 -}
 pzipWithData ::
   forall (s :: S) (k :: PType) (v :: PType).
   (POrd k, PIsData k) =>
-  MergeHandler (PAsData k) (PAsData v) s ->
+  SomeMergeHandler (PAsData k) (PAsData v) s ->
   Term
     s
     ( PMap 'Sorted k v
         :--> PMap 'Sorted k v
         :--> PMap 'Sorted k v
     )
-pzipWithData mh@(MergeHandler _ _ rightPresent) =
+pzipWithData (SomeMergeHandler mh@(MergeHandler _ _ rightPresent)) =
   plam $ \x y ->
     pcon $ PMap $ zipMerge rightPresent (zipMergeInsert mh) # pto x # pto y
+pzipWithData (SomeMergeHandlerCommutative mh@(MergeHandlerCommutative _ onePresent)) =
+  plam $ \x y ->
+    pcon $ PMap $ zipMergeCommutative onePresent (zipMergeInsertCommutative mh) # pto x # pto y
 
-{- | Zip two 'PMap's, using a 'MergeHandler' to decide how to merge based on key
+{- | Zip two 'PMap's, using a 'SomeMergeHandler' to decide how to merge based on key
  presence on the left and right.
+
+ Note that using a 'MergeHandlerCommutative' is less costly than a 'MergeHandler'.
 -}
 pzipWith ::
   forall (s :: S) (k :: PType) (v :: PType).
   (POrd k, PIsData k, PIsData v) =>
-  MergeHandler k v s ->
+  SomeMergeHandler k v s ->
   Term
     s
     ( PMap 'Sorted k v
         :--> PMap 'Sorted k v
         :--> PMap 'Sorted k v
     )
-pzipWith mh = pzipWithData (mergeHandlerOnData mh)
+pzipWith (SomeMergeHandler mh@(MergeHandler _ _ _)) =
+  pzipWithData (SomeMergeHandler $ mergeHandlerOnData mh)
+pzipWith (SomeMergeHandlerCommutative mh@(MergeHandlerCommutative _ _)) =
+  pzipWithData (SomeMergeHandlerCommutative $ mergeHandlerCommutativeOnData mh)
+
+pzipWithDataDefault ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (POrd k, PIsData k) =>
+  ClosedTerm (PAsData v) ->
+  Commutativity ->
+  Term
+    s
+    ( (PAsData v :--> PAsData v :--> PAsData v)
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+    )
+pzipWithDataDefault def NonCommutative = phoistAcyclic $ plam \combine ->
+  pzipWithData $
+    SomeMergeHandler $
+      MergeHandler
+        (HandleBoth \_ vl vr -> combine # vl # vr)
+        (HandleOne \_ vl -> combine # vl # def)
+        (HandleOne \_ vr -> combine # def # vr)
+pzipWithDataDefault def Commutative = phoistAcyclic $ plam \combine ->
+  pzipWithData $
+    SomeMergeHandlerCommutative $
+      MergeHandlerCommutative
+        (HandleBothCommutative \_ vl vr -> combine # vl # vr)
+        (HandleOne \_ vl -> combine # vl # def)
+
+pzipWithDefault ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (POrd k, PIsData k, PIsData v) =>
+  ClosedTerm (v) ->
+  Commutativity ->
+  Term
+    s
+    ( (v :--> v :--> v)
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+    )
+pzipWithDefault def NonCommutative = phoistAcyclic $ plam \combine ->
+  pzipWith $
+    SomeMergeHandler $
+      MergeHandler
+        (HandleBoth \_ vl vr -> combine # vl # vr)
+        (HandleOne \_ vl -> combine # vl # def)
+        (HandleOne \_ vr -> combine # def # vr)
+pzipWithDefault def Commutative = phoistAcyclic $ plam \combine ->
+  pzipWith $
+    SomeMergeHandlerCommutative $
+      MergeHandlerCommutative
+        (HandleBothCommutative \_ vl vr -> combine # vl # vr)
+        (HandleOne \_ vl -> combine # vl # def)
 
 pzipWithDataDefaults ::
   forall (s :: S) (k :: PType) (v :: PType).
@@ -654,10 +855,11 @@ pzipWithDataDefaults ::
     )
 pzipWithDataDefaults defLeft defRight = phoistAcyclic $ plam \combine ->
   pzipWithData $
-    MergeHandler
-      (HandleBoth \_ vl vr -> combine # vl # vr)
-      (HandleOne \_ vl -> combine # vl # defRight)
-      (HandleOne \_ vr -> combine # defLeft # vr)
+    SomeMergeHandler $
+      MergeHandler
+        (HandleBoth \_ vl vr -> combine # vl # vr)
+        (HandleOne \_ vl -> combine # vl # defRight)
+        (HandleOne \_ vr -> combine # defLeft # vr)
 
 pzipWithDefaults ::
   forall (s :: S) (k :: PType) (v :: PType).
@@ -673,25 +875,32 @@ pzipWithDefaults ::
     )
 pzipWithDefaults defLeft defRight = phoistAcyclic $ plam \combine ->
   pzipWith $
-    MergeHandler
-      (HandleBoth \_ vl vr -> combine # vl # vr)
-      (HandleOne \_ vl -> combine # vl # defRight)
-      (HandleOne \_ vr -> combine # defLeft # vr)
+    SomeMergeHandler $
+      MergeHandler
+        (HandleBoth \_ vl vr -> combine # vl # vr)
+        (HandleOne \_ vl -> combine # vl # defRight)
+        (HandleOne \_ vr -> combine # defLeft # vr)
 
 {- | Build the union of two 'PMap's, merging values that share the same key using the
 given function.
 -}
 punionResolvingCollisionsWith ::
   (POrd k, PIsData k, PIsData v) =>
+  Commutativity ->
   Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
-punionResolvingCollisionsWith = phoistAcyclic $ plam \merge ->
-  pzipWith $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) PassOne PassOne
+punionResolvingCollisionsWith NonCommutative = phoistAcyclic $ plam \merge ->
+  pzipWith $ SomeMergeHandler $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) PassOne PassOne
+punionResolvingCollisionsWith Commutative = phoistAcyclic $ plam \merge ->
+  pzipWith $
+    SomeMergeHandlerCommutative $
+      MergeHandlerCommutative (HandleBothCommutative \_ vl vr -> merge # vl # vr) PassOne
 
 {- | Build the union of two 'PMap's, merging values that share the same key using the
 given function.
 -}
 punionResolvingCollisionsWithData ::
   (POrd k, PIsData k) =>
+  Commutativity ->
   Term
     s
     ( (PAsData v :--> PAsData v :--> PAsData v)
@@ -699,23 +908,33 @@ punionResolvingCollisionsWithData ::
         :--> PMap 'Sorted k v
         :--> PMap 'Sorted k v
     )
-punionResolvingCollisionsWithData = phoistAcyclic $ plam \merge ->
-  pzipWithData $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) PassOne PassOne
+punionResolvingCollisionsWithData NonCommutative = phoistAcyclic $ plam \merge ->
+  pzipWithData $ SomeMergeHandler $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) PassOne PassOne
+punionResolvingCollisionsWithData Commutative = phoistAcyclic $ plam \merge ->
+  pzipWithData $
+    SomeMergeHandlerCommutative $
+      MergeHandlerCommutative (HandleBothCommutative \_ vl vr -> merge # vl # vr) PassOne
 
 {- | Build the intersection of two 'PMap's, merging values that share the same key using the
 given function.
 -}
 pintersectionWith ::
   (POrd k, PIsData k, PIsData v) =>
+  Commutativity ->
   Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
-pintersectionWith = phoistAcyclic $ plam \merge ->
-  pzipWith $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) DropOne DropOne
+pintersectionWith NonCommutative = phoistAcyclic $ plam \merge ->
+  pzipWith $ SomeMergeHandler $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) DropOne DropOne
+pintersectionWith Commutative = phoistAcyclic $ plam \merge ->
+  pzipWith $
+    SomeMergeHandlerCommutative $
+      MergeHandlerCommutative (HandleBothCommutative \_ vl vr -> merge # vl # vr) DropOne
 
 {- | Build the intersection of two 'PMap's, merging data-encoded values that share the same key using the
 given function.
 -}
 pintersectionWithData ::
   (POrd k, PIsData k) =>
+  Commutativity ->
   Term
     s
     ( (PAsData v :--> PAsData v :--> PAsData v)
@@ -723,8 +942,12 @@ pintersectionWithData ::
         :--> PMap 'Sorted k v
         :--> PMap 'Sorted k v
     )
-pintersectionWithData = phoistAcyclic $ plam \merge ->
-  pzipWithData $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) DropOne DropOne
+pintersectionWithData NonCommutative = phoistAcyclic $ plam \merge ->
+  pzipWithData $ SomeMergeHandler $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) DropOne DropOne
+pintersectionWithData Commutative = phoistAcyclic $ plam \merge ->
+  pzipWithData $
+    SomeMergeHandlerCommutative $
+      MergeHandlerCommutative (HandleBothCommutative \_ vl vr -> merge # vl # vr) DropOne
 
 -- | Difference of two maps. Return elements of the first map not existing in the second map.
 pdifference ::
@@ -733,7 +956,8 @@ pdifference ::
 pdifference =
   phoistAcyclic $
     pzipWith $
-      MergeHandler DropBoth PassOne DropOne
+      SomeMergeHandler $
+        MergeHandler DropBoth PassOne DropOne
 
 {- | Difference of two maps. Return elements of the first map not existing in the second map.
  Warning: O(n^2).

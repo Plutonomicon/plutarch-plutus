@@ -8,11 +8,15 @@
 - Renamed `punionWith` and `punionWithData` of `Plutarch.Api.V1.Value` to
   `punionResolvingCollisionsWith` and `punionResolvingCollisionsWithData`, since
   they have been misused for what should have been `pzipWith` and `pzipWithData`.
-- Introduced `pzipWith`, `pzipWithData`, `pzipWithDefaults`,
-  `pzipWithDataDefaults`, `pintersectionWith`, and `pintersectionWithData` in
-  `Plutarch.Api.V1.AssocMap`. Also introduced the types `BothPresentHandler`,
-  `OnePresentHandler`, and `MergeHandler` for instructing `pzipWith` and
-  `pzipWithData`.
+- Introduced `pzipWith`, `pzipWithData`, `pzipWithDefault`, `pzipWithDataDefault`,
+  `pzipWithDefaults`, `pzipWithDataDefaults`, `pintersectionWith`, and
+  `pintersectionWithData` in `Plutarch.Api.V1.AssocMap`. Also introduced the
+  types `BothPresentHandler`, `BothPresentHandlerCommutative`,
+  `OnePresentHandler`, `MergeHandler` and `SomeMergeHandler` for instructing
+  `pzipWith` and `pzipWithData`.
+- Added `Commutativity` in `AssocMap` for instructing various `AssocMap` and
+  `Value` operations about the commutativity of the given value-merging
+  function.
 - Renamed `pdifference` in `AssocMap` to `punsortedDifference` (O(n^2)).
   Introduced new `pdifference` with stricter constraints and O(n).
 
