@@ -11,11 +11,19 @@
     auto-optimise-store = "true";
   };
 
-  inputs.tooling.url = "github:mlabs-haskell/mlabs-tooling.nix";
+  inputs = {
+    # FIXME: we need to think about what's going on here, both hci-effects and tooling
+    #        implement the same argument, I don't know how to solve this atm
+    tooling.url = "github:mlabs-haskell/mlabs-tooling.nix/mangoiv/fix-herculesCI-arg";
+    hci-effects.url = "github:hercules-ci/hercules-ci-effects/fdbc15b55db8d037504934d3af52f788e0593380";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+  };
 
-  outputs = inputs@{ self, tooling, nixpkgs, ... }: tooling.lib.mkFlake { inherit self; }
+
+  outputs = inputs@{ self, tooling, nixpkgs, hci-effects, flake-parts, ... }: flake-parts.lib.mkFlake { inherit inputs; }
     ({ withSystem, ... }: {
       imports = [
+        hci-effects.flakeModule
         (tooling.lib.mkHaskellFlakeModule1 {
           docsPath = ./plutarch-docs;
           toHaddock = [ "plutarch" "plutus-core" "plutus-tx" "plutus-ledger-api" ];
@@ -37,9 +45,17 @@
         })
       ];
 
-      systems = [ "x86_64-linux" "aarch64-linux" ];
+      systems =
+        if builtins.hasAttr "currentSystem" builtins
+        then [ builtins.currentSystem ]
+        else [ "x86_64-linux" "aarch64-linux" ];
 
-      perSystem = { config, pkgs, ... }: {
+      hercules-ci.github-pages.branch = "mangoiv/docdrive";
+      herculesCI.ciSystems = [ "x86_64-linux" ];
+
+      perSystem = { config, pkgs, self', system, ... }: {
+        hercules-ci.github-pages.settings.contents = config.packages.docs;
+
         checks.plutarch-test = pkgs.runCommand "plutarch-test"
           {
             nativeBuildInputs = [ config.packages."plutarch-test:exe:plutarch-test" ];
