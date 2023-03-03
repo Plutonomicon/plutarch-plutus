@@ -25,22 +25,62 @@
 
 
   
-  <link href='tailwind.css?instanceId=15231e14-da74-4a78-9765-cd8fb5b442f9' rel='stylesheet' type='text/css' />
+  <link href='tailwind.css?instanceId=47b1fe1d-5f00-4eac-a223-fc6b7695e945' rel='stylesheet' type='text/css' />
 
-  <!-- Heist error element -->
   <style>
+    /* Heist error element */
     strong.error {
       color: lightcoral;
       font-size: 90%;
       font-family: monospace;
     }
+
+    /* External link icon */
+    a[data-linkicon=""]::after {
+      content: ""
+    }
+
+    a[data-linkicon=none]::after {
+      content: ""
+    }
+
+    a[data-linkicon="external"]::after {
+      content: url('data:image/svg+xml,\
+      <svg xmlns="http://www.w3.org/2000/svg" height="0.7em" viewBox="0 0 20 20"> \
+        <g style="stroke:gray;stroke-width:1"> \
+          <line x1="5" y1="5" x2="5" y2="14" /> \
+          <line x1="14" y1="9" x2="14" y2="14" /> \
+          <line x1="5" y1="14" x2="14" y2="14" /> \
+          <line x1="5" y1="5" x2="9" y2="5"  /> \
+          <line x1="10" y1="2" x2="17" y2="2"  /> \
+          <line x1="17" y1="2" x2="17" y2="9" /> \
+          <line x1="10" y1="9" x2="17" y2="2" style="stroke-width:1.0" /> \
+        </g> \
+      </svg>');
+    }
+
+    a[data-linkicon="external"][href^="mailto:"]::after {
+      content: url('data:image/svg+xml,\
+        <svg \
+          xmlns="http://www.w3.org/2000/svg" \
+          height="0.7em" \
+          fill="none" \
+          viewBox="0 0 24 24" \
+          stroke="gray" \
+          stroke-width="2"> \
+          <path \
+            stroke-linecap="round" \
+            stroke-linejoin="round" \
+            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /> \
+        </svg>');
+    }
   </style>
-  <!-- What goes in this file will appear on near the end of <head>--><link rel='preload' href='_emanote-static/fonts/Maven_Pro/WorkSans-VariableFont_wght.ttf' as='font' type='font/ttf' crossorigin />
+  <!-- What goes in this file will appear on near the end of <head>--><link rel='preload' href='_emanote-static/fonts/Work_Sans/WorkSans-VariableFont_wght.ttf' as='font' type='font/ttf' crossorigin />
 
 <style>
   @font-face {
     font-family: 'WorkSans';
-    /* FIXME: This ought to be: ${ema:emanoteStaticLayerUrl}/fonts/Maven_Pro/WorkSans-VariableFont_wght.ttf */
+    /* FIXME: This ought to be: ${ema:emanoteStaticLayerUrl}/fonts/Work_Sans/WorkSans-VariableFont_wght.ttf */
     src: url(_emanote-static/fonts/Work_Sans/WorkSans-VariableFont_wght.ttf) format("truetype");
     font-display: swap;
   }
@@ -81,6 +121,7 @@
     font-variation-settings: 'wght' 300;
   }
 </style>
+
 
   
   <link rel='stylesheet' href='_emanote-static/stork/flat.css' />
@@ -887,11 +928,11 @@ import Plutarch.Unsafe (punsafeCoerce)</code></pre></div><div xmlhtmlRaw></p>
 </details>
 </div><h1 id='generic-programming-over-plutarch-types' class='pb-2 mb-2 text-5xl font-bold text-center'>Generic programming over Plutarch types</h1><h2 id='prerequisites' class='inline-block mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Prerequisites</h2><h3 id='term' class='mt-6 mb-2 text-3xl font-bold text-gray-700'><code class='py-0.5 px-0.5 bg-gray-100'>Term</code></h3>
     <p class='mb-3'>
-      A <code class='py-0.5 px-0.5 bg-gray-100'>Term</code> or <code class='py-0.5 px-0.5 bg-gray-100'>ClosedTerm</code> represents Plutus Lambda Calculus expression in Plutarch world. Allows for additional checks and safety compared to UPLC. See more: <a href='https://github.com/Plutonomicon/plutarch-plutus/blob/master/docs/Introduction/Plutarch%20Terms.md' class='text-green-600 hover:underline' target='_blank' rel='noopener'>Plutarch Terms</a>.
+      A <code class='py-0.5 px-0.5 bg-gray-100'>Term</code> or <code class='py-0.5 px-0.5 bg-gray-100'>ClosedTerm</code> represents Plutus Lambda Calculus expression in Plutarch world. Allows for additional checks and safety compared to UPLC. See more: <a href='https://github.com/Plutonomicon/plutarch-plutus/blob/master/docs/Introduction/Plutarch%20Terms.md' class='text-green-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>Plutarch Terms</a>.
     </p>
   <h3 id='data-and-scott-encoding' class='mt-6 mb-2 text-3xl font-bold text-gray-700'>Data and Scott encoding</h3>
     <p class='mb-3'>
-      Datatypes can be encoded using Scott and <code class='py-0.5 px-0.5 bg-gray-100'>Data</code> encoding. These concepts are well explained in Plutonomicon: <a href='https://github.com/Plutonomicon/plutarch-plutus/blob/master/docs/Concepts/Data%20and%20Scott%20encoding.md#data-encoding' class='text-green-600 hover:underline' target='_blank' rel='noopener'>Data encoding</a> and <a href='https://github.com/Plutonomicon/plutarch-plutus/blob/master/docs/Concepts/Data%20and%20Scott%20encoding.md#scott-encoding' class='text-green-600 hover:underline' target='_blank' rel='noopener'>Scott encoding</a>.
+      Datatypes can be encoded using Scott and <code class='py-0.5 px-0.5 bg-gray-100'>Data</code> encoding. These concepts are well explained in Plutonomicon: <a href='https://github.com/Plutonomicon/plutarch-plutus/blob/master/docs/Concepts/Data%20and%20Scott%20encoding.md#data-encoding' class='text-green-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>Data encoding</a> and <a href='https://github.com/Plutonomicon/plutarch-plutus/blob/master/docs/Concepts/Data%20and%20Scott%20encoding.md#scott-encoding' class='text-green-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>Scott encoding</a>.
     </p>
   <h3 id='anyclass-deriving-strategy' class='mt-6 mb-2 text-3xl font-bold text-gray-700'><code class='py-0.5 px-0.5 bg-gray-100'>anyclass</code> deriving strategy</h3>
     <p class='mb-3'>
@@ -899,15 +940,15 @@ import Plutarch.Unsafe (punsafeCoerce)</code></pre></div><div xmlhtmlRaw></p>
     </p>
   <h3 id='generics-sop' class='mt-6 mb-2 text-3xl font-bold text-gray-700'>generics-sop</h3>
     <p class='mb-3'>
-      A really good introduction to <code class='py-0.5 px-0.5 bg-gray-100'>generics-sop</code> by the maker of the library, Andres Löh, can be found <a href='https://www.youtube.com/watch?v=pwnrfREbhWY' class='text-green-600 hover:underline' target='_blank' rel='noopener'>in this YouTube video recorded at the 2020 ZuriHac</a>
+      A really good introduction to <code class='py-0.5 px-0.5 bg-gray-100'>generics-sop</code> by the maker of the library, Andres Löh, can be found <a href='https://www.youtube.com/watch?v=pwnrfREbhWY' class='text-green-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>in this YouTube video recorded at the 2020 ZuriHac</a>
     </p>
   
     <p class='mb-3'>
-      Overall image of <a href='https://github.com/well-typed/generics-sop' class='text-green-600 hover:underline' target='_blank' rel='noopener'>generics-sop</a> package.
+      Overall image of <a href='https://github.com/well-typed/generics-sop' class='text-green-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>generics-sop</a> package.
     </p>
   
     <p class='mb-3'>
-      <a href='https://github.com/srid/generics-sop-examples/blob/master/doc/draft.md' class='text-green-600 hover:underline' target='_blank' rel='noopener'>Introduction by srid</a>.
+      <a href='https://github.com/srid/generics-sop-examples/blob/master/doc/draft.md' class='text-green-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>Introduction by srid</a>.
     </p>
   
     <p class='mb-3'>
@@ -1098,9 +1139,10 @@ instance PIsData a =&gt; PlutusType (PMaybeData a) where
     </ul>
   <h2 id='recommended-patterns-when-working-with-pconpmatch' class='inline-block mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Recommended patterns when working with pcon/pmatch</h2>
     <p class='mb-3'>
-      <a href='https://github.com/Plutonomicon/plutarch/blob/master/docs/Tricks/Prefer%20matching%20on%20pmatch%20result%20immediately.md' class='text-green-600 hover:underline' target='_blank' rel='noopener'>Tricks - Prefer matching on pmatch result immediately</a> <a href='https://github.com/Plutonomicon/plutarch/blob/master/docs/Typeclasses/PlutusType,%20PCon,%20and%20PMatch.md' class='text-green-600 hover:underline' target='_blank' rel='noopener'>Typeclasses - PlutusType, PCon, and PMatch - derive instances automatically</a>
+      <a href='https://github.com/Plutonomicon/plutarch/blob/master/docs/Tricks/Prefer%20matching%20on%20pmatch%20result%20immediately.md' class='text-green-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>Tricks - Prefer matching on pmatch result immediately</a> <a href='https://github.com/Plutonomicon/plutarch/blob/master/docs/Typeclasses/PlutusType,%20PCon,%20and%20PMatch.md' class='text-green-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>Typeclasses - PlutusType, PCon, and PMatch - derive instances automatically</a>
     </p>
   
+
   <!-- What goes in this file will appear below the note body-->
 </article>
             <div class='flex flex-col lg:flex-row lg:space-x-2'>
@@ -1134,7 +1176,7 @@ instance PIsData a =&gt; PlutusType (PMaybeData a) where
     </a>
   </div>
   <div>
-    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 0.7.14.0'>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.0.1.4'>
       <img class='w-6 h-6 hover:text-green-700' src='_emanote-static/emanote-logo.svg' />
     </a>
   </div>
@@ -1166,6 +1208,9 @@ instance PIsData a =&gt; PlutusType (PMaybeData a) where
     </div>
   </div>
 </div>
+  
+    
+  
 </body>
 
 </html>

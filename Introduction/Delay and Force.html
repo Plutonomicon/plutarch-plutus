@@ -9,7 +9,7 @@
   </title>
   
     
-      <meta property='og:description' content='Plutarch, like UPLC, is strict by default; this is in contrast to Haskell, which is lazy. In practice, this means that calling a function in Plutarch evaluates all arguments to the Plutarch lambda Term beforehand.' />
+      <meta property='og:description' content='Plutarch, like UPLC, is strict by default; this is in contrast to Haskell, which is non-strict by default (often called lazy). This means that evaluating a function application in Plutarch (#) always evaluates the argument before exectuing the function.' />
       <meta property='og:site_name' content='Plutarch Guide' />
       <meta property='og:image' content />
       <meta property='og:type' content='website' />
@@ -25,22 +25,62 @@
 
 
   
-  <link href='tailwind.css?instanceId=15231e14-da74-4a78-9765-cd8fb5b442f9' rel='stylesheet' type='text/css' />
+  <link href='tailwind.css?instanceId=47b1fe1d-5f00-4eac-a223-fc6b7695e945' rel='stylesheet' type='text/css' />
 
-  <!-- Heist error element -->
   <style>
+    /* Heist error element */
     strong.error {
       color: lightcoral;
       font-size: 90%;
       font-family: monospace;
     }
+
+    /* External link icon */
+    a[data-linkicon=""]::after {
+      content: ""
+    }
+
+    a[data-linkicon=none]::after {
+      content: ""
+    }
+
+    a[data-linkicon="external"]::after {
+      content: url('data:image/svg+xml,\
+      <svg xmlns="http://www.w3.org/2000/svg" height="0.7em" viewBox="0 0 20 20"> \
+        <g style="stroke:gray;stroke-width:1"> \
+          <line x1="5" y1="5" x2="5" y2="14" /> \
+          <line x1="14" y1="9" x2="14" y2="14" /> \
+          <line x1="5" y1="14" x2="14" y2="14" /> \
+          <line x1="5" y1="5" x2="9" y2="5"  /> \
+          <line x1="10" y1="2" x2="17" y2="2"  /> \
+          <line x1="17" y1="2" x2="17" y2="9" /> \
+          <line x1="10" y1="9" x2="17" y2="2" style="stroke-width:1.0" /> \
+        </g> \
+      </svg>');
+    }
+
+    a[data-linkicon="external"][href^="mailto:"]::after {
+      content: url('data:image/svg+xml,\
+        <svg \
+          xmlns="http://www.w3.org/2000/svg" \
+          height="0.7em" \
+          fill="none" \
+          viewBox="0 0 24 24" \
+          stroke="gray" \
+          stroke-width="2"> \
+          <path \
+            stroke-linecap="round" \
+            stroke-linejoin="round" \
+            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /> \
+        </svg>');
+    }
   </style>
-  <!-- What goes in this file will appear on near the end of <head>--><link rel='preload' href='_emanote-static/fonts/Maven_Pro/WorkSans-VariableFont_wght.ttf' as='font' type='font/ttf' crossorigin />
+  <!-- What goes in this file will appear on near the end of <head>--><link rel='preload' href='_emanote-static/fonts/Work_Sans/WorkSans-VariableFont_wght.ttf' as='font' type='font/ttf' crossorigin />
 
 <style>
   @font-face {
     font-family: 'WorkSans';
-    /* FIXME: This ought to be: ${ema:emanoteStaticLayerUrl}/fonts/Maven_Pro/WorkSans-VariableFont_wght.ttf */
+    /* FIXME: This ought to be: ${ema:emanoteStaticLayerUrl}/fonts/Work_Sans/WorkSans-VariableFont_wght.ttf */
     src: url(_emanote-static/fonts/Work_Sans/WorkSans-VariableFont_wght.ttf) format("truetype");
     font-display: swap;
   }
@@ -81,6 +121,7 @@
     font-variation-settings: 'wght' 300;
   }
 </style>
+
 
   
   <link rel='stylesheet' href='_emanote-static/stork/flat.css' />
@@ -886,52 +927,49 @@ import Plutarch.Bool (pif')</code></pre></div><div xmlhtmlRaw></p>
 </details>
 </div><h1 id='strictness-and-laziness-delayed-terms-and-forcing' class='pb-2 mb-2 text-5xl font-bold text-center'>Strictness and Laziness; Delayed Terms and Forcing</h1>
     <p class='mb-3'>
-      Plutarch, like UPLC, is strict by default; this is in contrast to Haskell, which is lazy. In practice, this means that calling a function in Plutarch evaluates <em>all</em> arguments to the Plutarch lambda <code class='py-0.5 px-0.5 bg-gray-100'>Term</code> beforehand.
+      Plutarch, like UPLC, is strict by default; this is in contrast to Haskell, which is non-strict by default (often called “lazy”). This means that evaluating a function application in Plutarch (<code class='py-0.5 px-0.5 bg-gray-100'>#</code>) always evaluates the argument before exectuing the function.
+    </p>
+  
+    <p class='mb-3'>
+      This behavior may be undesirable. For example, it is usually unwanted to evaluate both the <code class='py-0.5 px-0.5 bg-gray-100'>then</code> and <code class='py-0.5 px-0.5 bg-gray-100'>else</code> branches of an <code class='py-0.5 px-0.5 bg-gray-100'>if</code> function, for efficiency reasons.
+    </p>
+  
+    <p class='mb-3'>
+      The Plutarch level function <code class='py-0.5 px-0.5 bg-gray-100'>pif'</code> is naturally strict in its arguments, so it does exactly that. For the purpose of this chapter we take <code class='py-0.5 px-0.5 bg-gray-100'>pif'</code> as a given, and create the lazy version <code class='py-0.5 px-0.5 bg-gray-100'>pif</code> based on that.
     </p>
   
     <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
       
     <p class='mb-3'>
-      Note: the below example does not correspond precisely to the implementation of <code class='py-0.5 px-0.5 bg-gray-100'>pif</code> or <code class='py-0.5 px-0.5 bg-gray-100'>pif'</code>; it is for didactic purposes only
+      Note: The example below does not correspond to the actual implementations of <code class='py-0.5 px-0.5 bg-gray-100'>pif</code> or <code class='py-0.5 px-0.5 bg-gray-100'>pif'</code>. It is for pedagogic purposes only.
     </p>
   
     </blockquote>
-  
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>-- | Strict if-then-else.
+pif' :: Term s (PBool :--&gt; a :--&gt; a :--&gt; a)</code></pre></div>
     <p class='mb-3'>
-      This behavior may be undesirable, for example, when one of two <code class='py-0.5 px-0.5 bg-gray-100'>Term</code>s are branched upon within an <code class='py-0.5 px-0.5 bg-gray-100'>if</code> statement. The Plutarch level function <code class='py-0.5 px-0.5 bg-gray-100'>pif'</code> is naturally strict in its arguments - and therefore evaluate both branches before even entering the function body.
-    </p>
-  <div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>-- obscuring the then-else part of the syntax, solely to make the Haskell- and Plutarch-versions look more alike
-hif :: Bool -&gt; a -&gt; a -&gt; a
-hif cond whenTrue whenFalse = if cond then whenTrue else whenFalse
-
-pif' :: Term s (PBool :--&gt; pa :--&gt; pa :--&gt; pa)
-pif' = plam hif</code></pre></div>
-    <p class='mb-3'>
-      A strict <code class='py-0.5 px-0.5 bg-gray-100'>if</code> is undesirable for the obvious reason: we only follow one branch at runtime, so it doesn’t make sense to evaluate both before examining the <code class='py-0.5 px-0.5 bg-gray-100'>PBool</code> value to which we apply <code class='py-0.5 px-0.5 bg-gray-100'>pif</code>.
-    </p>
-  
-    <p class='mb-3'>
-      To avoid this, we use <code class='py-0.5 px-0.5 bg-gray-100'>pdelay</code> to create a “delayed <code class='py-0.5 px-0.5 bg-gray-100'>Term</code>.” <code class='py-0.5 px-0.5 bg-gray-100'>pdelay</code> wraps the <code class='py-0.5 px-0.5 bg-gray-100'>PType</code> tag of a term, overriding the default strict behavior and indicating that the term should <em>not</em> be evaluated immediately. <code class='py-0.5 px-0.5 bg-gray-100'>pdelay</code> has the following type:
+      To prevent evaluation of a term when it gets used as an argument in a function application, we can use <code class='py-0.5 px-0.5 bg-gray-100'>pdelay</code> to mark the argument term as delayed. On the type-level, it wraps the <code class='py-0.5 px-0.5 bg-gray-100'>PType</code> tag of a <code class='py-0.5 px-0.5 bg-gray-100'>Term</code>, as can be seen in its type signature.
     </p>
   <div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>pdelay :: Term s a -&gt; Term s (PDelayed a)</code></pre></div>
     <p class='mb-3'>
-      A delayed term evaluates when it is <em>forced</em> using the <code class='py-0.5 px-0.5 bg-gray-100'>pforce</code> function. Forcing a term strips the <code class='py-0.5 px-0.5 bg-gray-100'>PDelayed</code> wrapper:
+      The <code class='py-0.5 px-0.5 bg-gray-100'>pforce</code> function is the inverse to that, it converts a delayed term such that it gets evaluated when used in a function application (<code class='py-0.5 px-0.5 bg-gray-100'>#</code>). Forcing a term strips the <code class='py-0.5 px-0.5 bg-gray-100'>PDelayed</code> wrapper on the type-level:
     </p>
   <div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>pforce :: Term s (PDelayed a) -&gt; Term s a</code></pre></div>
     <p class='mb-3'>
-      Thus, if we wanted a lazy <code class='py-0.5 px-0.5 bg-gray-100'>pif</code>, we could do the following:
+      We now have the tools needed to create the lazy <code class='py-0.5 px-0.5 bg-gray-100'>pif</code> based on <code class='py-0.5 px-0.5 bg-gray-100'>pif'</code>:
     </p>
   <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>-- | Utilizing Haskell level functions with `pdelay` and `pforce` to have lazy wrapper around `pif`.
 hif :: Term s PBool -&gt; Term s a -&gt; Term s a -&gt; Term s a
 hif cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay whenFalse</code></pre></div>
     <p class='mb-3'>
-      A note of caution: calling <code class='py-0.5 px-0.5 bg-gray-100'>pforce</code> on the same delayed term twice will execute the computation each time. Users familiar with Haskell’s handling of laziness – where forcing a thunk twice never duplicates computation – should note that UPLC behaves differently.
+      A word of caution: Calling <code class='py-0.5 px-0.5 bg-gray-100'>pforce</code> on the same delayed term in multiple different places can lead to duplicate evaluation of the term. Users familiar with Haskell’s handling of laziness – where forcing a thunk twice never duplicates computation – should note that UPLC behaves differently.
     </p>
   
     <p class='mb-3'>
-      Finally, readers should note that <code class='py-0.5 px-0.5 bg-gray-100'>pdelay</code> and <code class='py-0.5 px-0.5 bg-gray-100'>pforce</code> are extremely powerful tools when writing Plutarch scripts and are encouraged to familiarize themselves accordingly.
+      Note that <code class='py-0.5 px-0.5 bg-gray-100'>pdelay</code> is not the only way to get lazy behavior. Haskell-level <code class='py-0.5 px-0.5 bg-gray-100'>Term</code> arguments, the branches of <code class='py-0.5 px-0.5 bg-gray-100'>pmatch</code>, and continuation functions on the Plutarch level are all naturally lazy.
     </p>
   
+
   <!-- What goes in this file will appear below the note body-->
 </article>
             <div class='flex flex-col lg:flex-row lg:space-x-2'>
@@ -1032,7 +1070,7 @@ hif cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay wh
     </a>
   </div>
   <div>
-    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 0.7.14.0'>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.0.1.4'>
       <img class='w-6 h-6 hover:text-green-700' src='_emanote-static/emanote-logo.svg' />
     </a>
   </div>
@@ -1064,6 +1102,9 @@ hif cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay wh
     </div>
   </div>
 </div>
+  
+    
+  
 </body>
 
 </html>
