@@ -15,17 +15,16 @@
     # FIXME: we need to think about what's going on here, both hci-effects and tooling
     #        implement the same argument, I don't know how to solve this atm
     tooling.url = "github:mlabs-haskell/mlabs-tooling.nix/mangoiv/fix-herculesCI-arg";
-    hci-effects.url = "github:hercules-ci/hercules-ci-effects/fdbc15b55db8d037504934d3af52f788e0593380";
-    flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
 
-  outputs = inputs@{ self, tooling, nixpkgs, hci-effects, flake-parts, ... }: flake-parts.lib.mkFlake { inherit inputs; }
+  outputs = inputs@{ self, tooling, nixpkgs, ... }: tooling.lib.mkFlake { inherit inputs; }
     ({ withSystem, ... }: {
       imports = [
-        hci-effects.flakeModule
+        tooling.lib.hercules-flakeModule
         (tooling.lib.mkHaskellFlakeModule1 {
           docsPath = ./plutarch-docs;
+          baseUrl = "/plutarch-plutus/";
           toHaddock = [ "plutarch" "plutus-core" "plutus-tx" "plutus-ledger-api" ];
           project.src = ./.;
           project.modules = [
