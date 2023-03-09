@@ -20,7 +20,7 @@ type family ToPType2 as where
 type UnTerm :: Type -> PType
 type family UnTerm x where
   UnTerm (Term _ a) = a
-  UnTerm _ = TypeError ( 'Text "Non-term in Plutarch data type not allowed")
+  UnTerm _ = TypeError ('Text "Non-term in Plutarch data type not allowed")
 
 type family Snd ab where
   Snd '(_, b) = b
