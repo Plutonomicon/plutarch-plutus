@@ -565,7 +565,7 @@ zipMergeInsert (MergeHandler bothPresent leftPresent rightPresent) = unTermCont 
           PassOne -> pcons # x # xs'
           HandleOne handler ->
             List.pmap
-              # ( plam $ \pair ->
+              # ( plam \pair ->
                     plet (pfstBuiltin # pair) \k ->
                       ppairDataBuiltin # k # handler k (psndBuiltin # pair)
                 )
@@ -582,14 +582,14 @@ zipMergeInsert (MergeHandler bothPresent leftPresent rightPresent) = unTermCont 
                 PassArg passLeft -> pmatch argOrder' $ \argOrder ->
                   pcons
                     # (if passLeft == argOrder then x else y)
-                    # (applyOrder argOrder zipMergeRec) xs' ys'
+                    # applyOrder argOrder zipMergeRec xs' ys'
                 HandleBoth merge -> pmatch argOrder' $ \argOrder ->
                   pcons
                     # ( ppairDataBuiltin
                           # xk
                             #$ applyOrder' argOrder (merge xk) (psndBuiltin # x) (psndBuiltin # y)
                       )
-                      #$ (applyOrder argOrder zipMergeRec) xs' ys'
+                      #$ applyOrder argOrder zipMergeRec xs' ys'
             )
             ( pif
                 (pfromData xk #< pfromData yk)
@@ -597,7 +597,7 @@ zipMergeInsert (MergeHandler bothPresent leftPresent rightPresent) = unTermCont 
                     -- picking handler for presence of only x-side
                     case branchOrder argOrder leftPresent rightPresent of
                       DropOne -> self # branchOrder argOrder psfalse pstrue # y # ys' # xs'
-                      PassOne -> pcons # x # (applyOrder argOrder zipMergeRec) xs' ys
+                      PassOne -> pcons # x # applyOrder argOrder zipMergeRec xs' ys
                       HandleOne handler ->
                         pcons
                           # (ppairDataBuiltin # xk # handler xk (psndBuiltin # x))
@@ -607,7 +607,7 @@ zipMergeInsert (MergeHandler bothPresent leftPresent rightPresent) = unTermCont 
                     -- picking handler for presence of only y-side
                     case branchOrder argOrder rightPresent leftPresent of
                       DropOne -> self # argOrder' # x # xs' # ys'
-                      PassOne -> pcons # y # (applyOrder argOrder zipMergeRec) xs ys'
+                      PassOne -> pcons # y # applyOrder argOrder zipMergeRec xs ys'
                       HandleOne handler ->
                         pcons
                           # (ppairDataBuiltin # yk # handler yk (psndBuiltin # y))
@@ -639,7 +639,7 @@ zipMerge rightPresent mergeInsertRec = plam $ \ls rs -> pmatch ls $ \case
       PassOne -> rs
       HandleOne handler ->
         List.pmap
-          # ( plam $ \pair ->
+          # ( plam \pair ->
                 plet (pfstBuiltin # pair) \k ->
                   ppairDataBuiltin # k # handler k (psndBuiltin # pair)
             )
@@ -674,7 +674,7 @@ zipMergeInsertCommutative (MergeHandlerCommutative bothPresent onePresent) = unT
           PassOne -> pcons # x # xs'
           HandleOne handler ->
             List.pmap
-              # ( plam $ \pair ->
+              # ( plam \pair ->
                     plet (pfstBuiltin # pair) \k ->
                       ppairDataBuiltin # k # handler k (psndBuiltin # pair)
                 )
@@ -692,7 +692,7 @@ zipMergeInsertCommutative (MergeHandlerCommutative bothPresent onePresent) = unT
                   pcons
                     # ( ppairDataBuiltin
                           # xk
-                            #$ (merge xk) (psndBuiltin # x) (psndBuiltin # y)
+                            #$ merge xk (psndBuiltin # x) (psndBuiltin # y)
                       )
                       #$ zipMergeRec
                     # xs'
@@ -741,7 +741,7 @@ zipMergeCommutative onePresent mergeInsertRec = plam $ \ls rs -> pmatch ls $ \ca
       PassOne -> rs
       HandleOne handler ->
         List.pmap
-          # ( plam $ \pair ->
+          # ( plam \pair ->
                 plet (pfstBuiltin # pair) \k ->
                   ppairDataBuiltin # k # handler k (psndBuiltin # pair)
             )
@@ -785,7 +785,7 @@ pzipWith ::
         :--> PMap 'Sorted k v
         :--> PMap 'Sorted k v
     )
-pzipWith (SomeMergeHandler mh@(MergeHandler _ _ _)) =
+pzipWith (SomeMergeHandler mh@MergeHandler {}) =
   pzipWithData (SomeMergeHandler $ mergeHandlerOnData mh)
 pzipWith (SomeMergeHandlerCommutative mh@(MergeHandlerCommutative _ _)) =
   pzipWithData (SomeMergeHandlerCommutative $ mergeHandlerCommutativeOnData mh)
@@ -819,7 +819,7 @@ pzipWithDataDefault def Commutative = phoistAcyclic $ plam \combine ->
 pzipWithDefault ::
   forall (s :: S) (k :: PType) (v :: PType).
   (POrd k, PIsData k, PIsData v) =>
-  ClosedTerm (v) ->
+  ClosedTerm v ->
   Commutativity ->
   Term
     s

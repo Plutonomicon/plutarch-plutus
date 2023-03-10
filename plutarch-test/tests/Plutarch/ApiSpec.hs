@@ -134,7 +134,7 @@ spec = do
                     @-> pshouldReallyBe
                       ( pcon . PValue.PValue $
                           AssocMap.punionResolvingCollisionsWith Commutative
-                            # (plam $ \_ _ -> ptraceError "unexpected collision")
+                            # (plam \_ _ -> ptraceError "unexpected collision")
                             # pto (getEnclosedTerm v)
                             # (AssocMap.pdifference # pto pmintOtherSymbol # pto (getEnclosedTerm v))
                       )
@@ -279,7 +279,7 @@ spec = do
             otherMap = AssocMap.psingleton # pconstant "newkey" # 6
             pmapunionResolvingCollisions = fromList [(pconstant "key", 42), (pconstant "newkey", 6)]
             mkTestMap :: forall (s :: S). [(ByteString, Integer)] -> Term s (AssocMap.PMap 'Sorted PByteString PInteger)
-            mkTestMap = fromList . map (\(s, i) -> (pconstant s, pconstant i))
+            mkTestMap = fromList . bimap pconstant pconstant
         "lookup" @\ do
           "itself"
             @| AssocMap.plookup
@@ -377,7 +377,7 @@ spec = do
             @-> pshouldReallyBe (mkTestMap [("a", 42), ("b", 6), ("c", 23)])
           "flip const"
             @| AssocMap.punionResolvingCollisionsWith NonCommutative
-            # plam (flip const)
+            # plam (const id)
             # mkTestMap [("a", 42), ("b", 6)]
             # mkTestMap [("b", 7), ("c", 23)]
             @-> pshouldReallyBe (mkTestMap [("a", 42), ("b", 7), ("c", 23)])
@@ -433,7 +433,7 @@ spec = do
             @-> pshouldReallyBe (mkTestMap [("b", 6)])
           "flip const"
             @| AssocMap.pintersectionWith NonCommutative
-            # plam (flip const)
+            # plam (const id)
             # mkTestMap [("a", 42), ("b", 6)]
             # mkTestMap [("b", 7), ("c", 23)]
             @-> pshouldReallyBe (mkTestMap [("b", 7)])

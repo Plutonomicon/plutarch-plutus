@@ -200,8 +200,8 @@ data PSBool (s :: S)
 
 instance PlutusType PSBool where
   type PInner PSBool = PForall PSBoolRaw
-  pcon' PSTrue = pcon $ PForall $ pcon $ PSBoolRaw $ plam $ \a _ -> a
-  pcon' PSFalse = pcon $ PForall $ pcon $ PSBoolRaw $ plam $ \_ b -> b
+  pcon' PSTrue = pcon $ PForall $ pcon $ PSBoolRaw $ plam const
+  pcon' PSFalse = pcon $ PForall $ pcon $ PSBoolRaw $ plam (const id)
   pmatch' x' f =
     pmatch x' $ \(PForall raw) ->
       pmatch raw $ \(PSBoolRaw x) ->
@@ -245,7 +245,7 @@ psand :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
 psand a b = psif a b psfalse
 
 psor' :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
-psor' a b = psif' a pstrue b
+psor' a = psif' a pstrue
 
 psor :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
-psor a b = psif a pstrue b
+psor a = psif a pstrue
