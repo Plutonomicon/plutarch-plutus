@@ -1,5 +1,1 @@
-```haskell
-module Main (main) where 
-main :: IO ()
-main = putStrLn "Plutarch Docs"
-```
+/nix/store/mwjgkibyr49khjch41j0bhmm4hscm2ac-emanote-docs/compilable/Main.lhs
