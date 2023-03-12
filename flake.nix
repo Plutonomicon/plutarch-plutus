@@ -11,14 +11,12 @@
     auto-optimise-store = "true";
   };
 
-  inputs = {
-    # FIXME: we need to think about what's going on here, both hci-effects and tooling
-    #        implement the same argument, I don't know how to solve this atm
-    tooling.url = "github:mlabs-haskell/mlabs-tooling.nix/mangoiv/fix-herculesCI-arg";
-  };
+  # FIXME: we need to think about what's going on here, both hci-effects and tooling
+  #        implement the same argument, I don't know how to solve this atm
+  inputs.tooling.url = "github:mlabs-haskell/mlabs-tooling.nix/mangoiv/fix-herculesCI-arg";
 
 
-  outputs = inputs@{ self, tooling, nixpkgs, ... }: tooling.lib.mkFlake { inherit inputs; }
+  outputs = inputs@{ tooling, ... }: tooling.lib.mkFlake { inherit inputs; }
     ({ withSystem, ... }: {
       imports = [
         tooling.lib.hercules-flakeModule
@@ -53,7 +51,12 @@
       herculesCI.ciSystems = [ "x86_64-linux" ];
 
       perSystem = { config, pkgs, self', system, ... }: {
-        hercules-ci.github-pages.settings.contents = config.packages.docs;
+        packages.combined-docs = pkgs.runCommand "combined-docs" { buildInputs = with config.packages; [ docs haddock ]; } ''
+          mkdir -p $out/share/doc
+          cp -r ${config.packages.docs}/* $out
+          cp -r ${config.packages.haddock}/share/doc/* $out/share/doc
+        '';
+        hercules-ci.github-pages.settings.contents = config.packages.combined-docs;
 
         checks.plutarch-test = pkgs.runCommand "plutarch-test"
           {
