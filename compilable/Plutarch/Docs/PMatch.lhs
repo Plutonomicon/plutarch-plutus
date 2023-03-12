@@ -4,7 +4,7 @@
 
 ```haskell
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
-module Plutarch.Docs.PMatch (Tree(..), swap, TreeCode) where 
+module Plutarch.Docs.PMatch (Tree(..), swap, TreeRepr) where 
 import Plutarch.Prelude
 import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Builtin (pforgetData, pasConstr, pconstrBuiltin)
@@ -79,10 +79,10 @@ This is a list of lists of its components. The outer list contains one element p
 data Tree = Leaf Int | Node Tree Tree
 ```
 
-is supposed to have the following `Code`:
+is supposed to have the following Representation:
 
 ```haskell
-type TreeCode =
+type TreeRepr =
   '[ '[ Int ]
    , '[ Tree, Tree ]
    ]
@@ -103,7 +103,8 @@ Manipulating ADTs can be done in terms of `pcon` and `pmatch` which belong to a 
 How this class is implemented is not that important but can be looked up in `Plutarch/Internal/PlutusType.hs`
 by the interested reader. 
 
-These functions could be written manually, but is a bit tedious and error-prone, thus generic representation from `GHC.Generics` is used.
+These typeclass methods could be written manually, but is a bit tedious and error-prone, thus the generic
+representation from `GHC.Generics` is used.
 Under the hood all necessary transformations are done to be able to access the data on Haskell level.
 
 Also - as parsing data costs computation resources, it is common to pass tagged raw data until it's really needed to parse.

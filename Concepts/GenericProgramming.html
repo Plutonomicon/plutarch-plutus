@@ -26,7 +26,7 @@
 
 
   
-  <link href='tailwind.css?instanceId=f4878428-f620-48c2-814d-7e3f9a7d12ef' rel='stylesheet' type='text/css' />
+  <link href='tailwind.css?instanceId=976605fe-439b-45f5-b16d-f7f606401901' rel='stylesheet' type='text/css' />
 
   <style>
     /* Heist error element */
@@ -956,7 +956,7 @@
 <summary> imports </summary>
 <p>
 </div><div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>{-# OPTIONS_GHC -Wno-redundant-constraints #-}
-module Plutarch.Docs.PMatch (Tree(..), swap, TreeCode) where 
+module Plutarch.Docs.PMatch (Tree(..), swap, TreeRepr) where 
 import Plutarch.Prelude
 import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Builtin (pforgetData, pasConstr, pconstrBuiltin)
@@ -1017,9 +1017,9 @@ The code of a datatype.
 
 This is a list of lists of its components. The outer list contains one element per constructor. The inner list contains one element per constructor argument (field).</code></pre></div><div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>data Tree = Leaf Int | Node Tree Tree</code></pre></div>
     <p class='mb-3'>
-      is supposed to have the following <code class='py-0.5 px-0.5 bg-gray-100'>Code</code>:
+      is supposed to have the following Representation:
     </p>
-  <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>type TreeCode =
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>type TreeRepr =
   '[ '[ Int ]
    , '[ Tree, Tree ]
    ]</code></pre></div><div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>-- Generic representation of given Haskell datatype
@@ -1037,7 +1037,7 @@ type Rep a = SOP I (Code a)</code></pre></div>
     </p>
   
     <p class='mb-3'>
-      These functions could be written manually, but is a bit tedious and error-prone, thus generic representation from <code class='py-0.5 px-0.5 bg-gray-100'>GHC.Generics</code> is used. Under the hood all necessary transformations are done to be able to access the data on Haskell level.
+      These typeclass methods could be written manually, but is a bit tedious and error-prone, thus the generic representation from <code class='py-0.5 px-0.5 bg-gray-100'>GHC.Generics</code> is used. Under the hood all necessary transformations are done to be able to access the data on Haskell level.
     </p>
   
     <p class='mb-3'>
