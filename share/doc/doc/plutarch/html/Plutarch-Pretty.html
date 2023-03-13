@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Plutarch.Pretty</title><link href="linuwial.css" rel="stylesheet" type="text/css" title="Linuwial" /><link rel="stylesheet" type="text/css" href="quick-jump.css" /><link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700" /><script src="haddock-bundle.min.js" async="async" type="text/javascript"></script><script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: { processClass: "mathjax", ignoreClass: ".*" } });</script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script></head><body><div id="package-header"><span class="caption">plutarch-1.3.0</span><ul class="links" id="page-menu"><li><a href="src/Plutarch.Pretty.html">Source</a></li><li><a href="index.html">Contents</a></li><li><a href="doc-index.html">Index</a></li></ul></div><div id="content"><div id="module-header"><table class="info"><tr><th>Safe Haskell</th><td>Safe-Inferred</td></tr><tr><th>Language</th><td>GHC2021</td></tr></table><p class="caption">Plutarch.Pretty</p></div><div id="synopsis"><details id="syn"><summary>Synopsis</summary><ul class="details-toggle" data-details-id="syn"><li class="src short"><a href="#v:prettyTerm">prettyTerm</a> :: <a href="Plutarch-Internal.html#t:Config" title="Plutarch.Internal">Config</a> -&gt; <a href="Plutarch-Internal.html#t:ClosedTerm" title="Plutarch.Internal">ClosedTerm</a> a -&gt; <a href="../../plutus-core/html/PlutusPrelude.html#t:Doc" title="PlutusPrelude">Doc</a> ()</li><li class="src short"><a href="#v:prettyTerm-39-">prettyTerm'</a> :: <a href="Plutarch-Internal.html#t:Config" title="Plutarch.Internal">Config</a> -&gt; <a href="Plutarch-Internal.html#t:ClosedTerm" title="Plutarch.Internal">ClosedTerm</a> p -&gt; <a href="../../ghc/html/libraries/base-4.16.4.0/Data-Either.html#t:Either" title="Data.Either">Either</a> <a href="../../flat/html/Flat-Types.html#t:Text" title="Flat.Types">Text</a> (<a href="../../plutus-core/html/PlutusPrelude.html#t:Doc" title="PlutusPrelude">Doc</a> ())</li><li class="src short"><a href="#v:prettyScript">prettyScript</a> :: <a href="Plutarch-Script.html#t:Script" title="Plutarch.Script">Script</a> -&gt; <a href="../../plutus-core/html/PlutusPrelude.html#t:Doc" title="PlutusPrelude">Doc</a> ()</li></ul></details></div><div id="interface"><h1>Documentation</h1><div class="top"><p class="src"><a id="v:prettyTerm" class="def">prettyTerm</a> :: <a href="Plutarch-Internal.html#t:Config" title="Plutarch.Internal">Config</a> -&gt; <a href="Plutarch-Internal.html#t:ClosedTerm" title="Plutarch.Internal">ClosedTerm</a> a -&gt; <a href="../../plutus-core/html/PlutusPrelude.html#t:Doc" title="PlutusPrelude">Doc</a> () <a href="src/Plutarch.Pretty.html#prettyTerm" class="link">Source</a> <a href="#v:prettyTerm" class="selflink">#</a></p><div class="doc"><p>Prettify a Plutarch term.</p><p>This will call <code><a href="../../ghc/html/libraries/base-4.16.4.0/Prelude.html#v:error" title="Prelude">error</a></code> if there's a compilation failure. Use <code><a href="Plutarch-Pretty.html#v:prettyTerm-39-" title="Plutarch.Pretty">prettyTerm'</a></code> for a non-partial version.</p><h2>Example ==</h2><pre>import Plutarch.Prelude
+import Plutarch.Api.V1
+import Plutarch.Extra.TermCont
+
+checkSignatory :: Term s (PPubKeyHash :--&gt; PScriptContext :--&gt; PUnit)
+checkSignatory = plam $ ph ctx' -&gt; unTermCont $ do
+  ctx &lt;- pletFieldsC <code>[&quot;txInfo&quot;, &quot;purpose&quot;] ctx'
+  purph &lt;- pmatchC ctx.purpose
+  pure $ case purph of
+    PSpending _ -&gt;
+      let signatories = pfield </code>&quot;signatories&quot; # ctx.txInfo
+      in pif
+          (pelem # pdata ph # pfromData signatories)
+          -- Success!
+          (pconstant ())
+          -- Signature not present.
+          perror
+    _ -&gt; ptraceError &quot;checkSignatoryCont: not a spending tx&quot;
+</pre><p>Prettification result:</p><pre>let frSndPair = !!sndPair
+    unDataSum = (xF -&gt; frSndPair (unConstrData xF))
+    frTailList = !tailList
+    frHeadList = !headList
+    frIfThenElse = !ifThenElse
+in (oP4ECBT qsrxlF0Y7 -&gt;
+      let cjlB6yrGk = unDataSum qsrxlF0Y7
+          cRFO = unConstrData (frHeadList (frTailList cjlB6yrGk))
+          cs9iR = !!fstPair cRFO
+          w4 = frSndPair cRFO
+      in if equalsInteger 1 cs9iR
+           then if (vModHwqYB -&gt;
+                      let blM6d67 =
+                            (x5sad ePDSInSEC -&gt;
+                               !(!!chooseList
+                                   ePDSInSEC
+                                   ~False
+                                   ~(if equalsData
+                                          (frHeadList ePDSInSEC)
+                                          vModHwqYB
+                                       then True
+                                       else x5sad (frTailList ePDSInSEC))))
+                          mC = (jfZs -&gt; blM6d67 (itzT -&gt; jfZs jfZs itzT))
+                      in blM6d67 (ispwp_oeT -&gt; mC mC ispwp_oeT))
+                     (bData oP4ECBT)
+                     (unListData
+                        let q6X3 = frHeadList cjlB6yrGk
+                        in frHeadList
+                             let olbZ = unDataSum q6X3
+                             in frTailList
+                                  (frTailList
+                                     (frTailList
+                                        (frTailList
+                                           (frTailList
+                                              (frTailList
+                                                 (frTailList olbZ)))))))
+                  then ()
+                  else ERROR
+           else !(!trace &quot;checkSignatoryCont: not a spending tx&quot; ~ERROR))
+</pre><h2>Semantics ==</h2><h3>Constants ===</h3><ul><li>Builtin integers are printed as regular integers. [0-9]+</li><li>Builtin bytestrings are printed in hex notation, prefixed by `0x`. 0x[0-9a-f]+/i</li><li>Builtin strings are printed as is.</li><li>Builtin unit is printed as the unit literal. ()</li><li>Builtin booleans are printed as the literal <code><a href="../../ghc/html/libraries/base-4.16.4.0/Data-Bool.html#v:True" title="Data.Bool">True</a></code> or <code><a href="../../ghc/html/libraries/base-4.16.4.0/Data-Bool.html#v:False" title="Data.Bool">False</a></code>.</li><li>Builtin lists are prettified as list literals, i.e delimited with `[` and `]`.</li><li>Builtin pairs are prettified as 2-ary tuple literals, e.g. `(a, b)`.</li><li><code>I</code> data (i.e data encoded integers) are prettified like builtin integers with a <code>#</code> prefix. #[0-9]+</li><li><code>B</code> data (i.e data encoded bytestrings) are prettified like builtin bytestrings with a <code>#</code> prefix. #0x[0-9a-f]+/i</li><li><code>List</code> data (i.e data encoded lists) are prettified like builtin lists with a <code>#</code> prefix.</li><li><code>Map</code> data is printed like record literals. Delimited by `{` and `}`.</li></ul><p>Each key value pair is prettified like <a href="key">key</a> = <a href="value">value</a> and multiple pairs are joined with `,`.</p><p>For example, `Map [(I 42, I 0), (I 100, I 1)]` is prettified as `{ #42 = #0, #100 = #1 }`
+- Constr data has two core elements in its prettified form:</p><ul><li>The constructor index, prettified as an integer prefixed with <code>&#931;</code> (sigma).</li><li>Its fields, prettified as a list.</li></ul><p>These two elements are then joined with a <code><a href="../../ghc/html/libraries/base-4.16.4.0/Data-Function.html#v:." title="Data.Function">.</a></code> (period).</p><p>For example, `Constr 1 [I 42]` is prettified as &quot;&#931;1.[#42]&quot;.</p><h3>Builtin functions ===</h3><p>Builtin functions are prettified into their name, in title case.</p><h3>Forced term ===</h3><p>Forced terms are prefixed with a <code>!</code>. The unary operator <code>!</code> has higher fixity than function application.</p><h3>Delayed term ===</h3><p>Delayed terms are prefixed with a <code>~</code>. The unary operator <code>~</code> has higher fixity than function application.</p><h3>Var ===</h3><p>Random names are generated for all variable bindings, and these names are used to refer to them.</p><p>Names are always unique, between 1 and 8 characters in length, and begin with a lowercase letter.</p><p>Names may consist of alphanumeric characters, underscore, or single quotes.</p><h3>LamAbs ===</h3><p>Lambdas are prettified similar to haskell lambdas, i.e `x -&gt; ...`.</p><p>Lambdas with multiple arguments are detected and simplified: `x y z -&gt; ...`.</p><h3>Apply ===</h3><p>Application is, simply, a space - just like haskell. `f x`.</p><p>Multi arg applications to the same function are detected and simplified: `f x y`.</p><h3>Error term ===</h3><p><code>perror</code> is represented by the literal <code>ERROR</code>.</p><h3>Special handling ===</h3><p>To achieve better prettification, certain AST structures are given special handling logic.</p><ul><li>The AST structure produced by <code>plet</code> (Single <code><a href="../../plutus-core/html/UntypedPlutusCore-Core-Type.html#v:Apply" title="UntypedPlutusCore.Core.Type">Apply</a></code> + <code><a href="../../plutus-core/html/UntypedPlutusCore-Core-Type.html#v:LamAbs" title="UntypedPlutusCore.Core.Type">LamAbs</a></code> pair) is prettified into Haskell-like let bindings.</li><li>Lazy if<em>then</em>else (<code>pif</code> in particular, not <code>pif</code>`) is detected and prettified into Haskell-like syntax:
+  `if cond then expr1 else expr2`.</li></ul><p>Chains of if<em>then</em>else are nested:</p><pre> if cond
+   then expr1
+   else if cond
+     then expr2
+     else expr3
+ </pre><ul><li>When generating names for bindings, well known structures are identified and given special names.</li></ul><p>This machinery is made to be extensible in the future.</p><p>For example, the structure of the <code>pfix</code> function is well known and constant - so it is simply called <code>fix</code> in the output.</p><p>Bindings to forced builtin functions inherit the builtin function name, prefixed with a <code>fr</code>.</p></div></div><div class="top"><p class="src"><a id="v:prettyTerm-39-" class="def">prettyTerm'</a> :: <a href="Plutarch-Internal.html#t:Config" title="Plutarch.Internal">Config</a> -&gt; <a href="Plutarch-Internal.html#t:ClosedTerm" title="Plutarch.Internal">ClosedTerm</a> p -&gt; <a href="../../ghc/html/libraries/base-4.16.4.0/Data-Either.html#t:Either" title="Data.Either">Either</a> <a href="../../flat/html/Flat-Types.html#t:Text" title="Flat.Types">Text</a> (<a href="../../plutus-core/html/PlutusPrelude.html#t:Doc" title="PlutusPrelude">Doc</a> ()) <a href="src/Plutarch.Pretty.html#prettyTerm%27" class="link">Source</a> <a href="#v:prettyTerm-39-" class="selflink">#</a></p><div class="doc"><p>Non-partial <code><a href="Plutarch-Pretty.html#v:prettyTerm" title="Plutarch.Pretty">prettyTerm</a></code>.</p></div></div><div class="top"><p class="src"><a id="v:prettyScript" class="def">prettyScript</a> :: <a href="Plutarch-Script.html#t:Script" title="Plutarch.Script">Script</a> -&gt; <a href="../../plutus-core/html/PlutusPrelude.html#t:Doc" title="PlutusPrelude">Doc</a> () <a href="src/Plutarch.Pretty.html#prettyScript" class="link">Source</a> <a href="#v:prettyScript" class="selflink">#</a></p><div class="doc"><p><code><a href="Plutarch-Pretty.html#v:prettyTerm" title="Plutarch.Pretty">prettyTerm</a></code> for pre-compiled <code><a href="Plutarch-Script.html#t:Script" title="Plutarch.Script">Script</a></code>s.</p></div></div></div></div><div id="footer"><p>Produced by <a href="http://www.haskell.org/haddock/">Haddock</a> version 2.26.0</p></div></body></html>

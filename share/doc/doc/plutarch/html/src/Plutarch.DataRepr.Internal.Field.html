@@ -1,0 +1,978 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE AllowAmbiguousTypes #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE FlexibleInstances #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE UndecidableInstances #-}</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.DataRepr.Internal.Field</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-6"></span><span>  </span><span class="annot"><span class="hs-comment">-- * PDataField class &amp; deriving utils</span></span><span>
+</span><span id="line-7"></span><span>  </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PDataFields"><span class="hs-identifier">PDataFields</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-8"></span><span>  </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#pletFields"><span class="hs-identifier">pletFields</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-9"></span><span>  </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#pfield"><span class="hs-identifier">pfield</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span>
+</span><span id="line-11"></span><span>  </span><span class="annot"><span class="hs-comment">-- * BindFields class mechanism</span></span><span>
+</span><span id="line-12"></span><span>  </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier">BindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-13"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Bindings"><span class="hs-identifier">Bindings</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-14"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BoundTerms"><span class="hs-identifier">BoundTerms</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-15"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.Utils.html#Drop"><span class="hs-identifier">Drop</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-16"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#HRecOf"><span class="hs-identifier">HRecOf</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-17"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PMemberFields"><span class="hs-identifier">PMemberFields</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-18"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PMemberField"><span class="hs-identifier">PMemberField</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-19"></span><span>
+</span><span id="line-20"></span><span>  </span><span class="annot"><span class="hs-comment">-- * Re-exports</span></span><span>
+</span><span id="line-21"></span><span>  </span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.html#HRec"><span class="hs-identifier">HRec</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-22"></span><span>  </span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.Utils.html#Labeled"><span class="hs-identifier">Labeled</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.Utils.html#Labeled"><span class="hs-identifier">Labeled</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.Utils.html#%24sel%3AunLabeled%3ALabeled"><span class="hs-identifier">unLabeled</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-23"></span><span>  </span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.html#hrecField"><span class="hs-identifier">hrecField</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-24"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier">Data.Proxy</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier">Proxy</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier">Proxy</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier">GHC.TypeLits</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-28"></span><span>  </span><span class="annot"><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier">KnownNat</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-29"></span><span>  </span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier">Symbol</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-30"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier">Data.Kind</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier">Constraint</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier">Type</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-33"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.html"><span class="hs-identifier">Plutarch</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-34"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PInner"><span class="hs-identifier">PInner</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-35"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#PType"><span class="hs-identifier">PType</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-36"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#S"><span class="hs-identifier">S</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-37"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier">Term</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-38"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PLam.html#plam"><span class="hs-identifier">plam</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-39"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#plet"><span class="hs-identifier">plet</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-40"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Other.html#pto"><span class="hs-identifier">pto</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-41"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#%23"><span class="hs-operator">(#)</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator">(:--&gt;)</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-43"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Builtin.html"><span class="hs-identifier">Plutarch.Builtin</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-46"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.html#PAsData"><span class="hs-identifier">PAsData</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-47"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.html#PIsData"><span class="hs-identifier">PIsData</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-48"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.html#pfromData"><span class="hs-identifier">pfromData</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-49"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-50"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.html"><span class="hs-identifier">Plutarch.DataRepr.Internal</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-51"></span><span>  </span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PDataRecord"><span class="hs-identifier">PDataRecord</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-52"></span><span>  </span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PDataSum"><span class="hs-identifier">PDataSum</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-53"></span><span>  </span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PLabeledType"><span class="hs-identifier">PLabeledType</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#%3A%3D"><span class="hs-operator">(:=)</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-54"></span><span>  </span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#pdropDataRecord"><span class="hs-identifier">pdropDataRecord</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-55"></span><span>  </span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#pindexDataRecord"><span class="hs-identifier">pindexDataRecord</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-56"></span><span>  </span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#punDataSum"><span class="hs-identifier">punDataSum</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-57"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PLabelIndex"><span class="hs-identifier">PLabelIndex</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-58"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PLookupLabel"><span class="hs-identifier">PLookupLabel</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-59"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PUnLabel"><span class="hs-identifier">PUnLabel</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-60"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-61"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.FromData.html"><span class="hs-identifier">Plutarch.DataRepr.Internal.FromData</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.FromData.html#PFromDataable"><span class="hs-identifier">PFromDataable</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.FromData.html#pmaybeFromAsData"><span class="hs-identifier">pmaybeFromAsData</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-62"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.html"><span class="hs-identifier">Plutarch.DataRepr.Internal.HList</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-63"></span><span>  </span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.html#HRec"><span class="hs-identifier">HRec</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.html#HCons"><span class="hs-identifier">HCons</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.html#HNil"><span class="hs-identifier">HNil</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-64"></span><span>  </span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.Utils.html#Labeled"><span class="hs-identifier">Labeled</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.Utils.html#Labeled"><span class="hs-identifier">Labeled</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.Utils.html#%24sel%3AunLabeled%3ALabeled"><span class="hs-identifier">unLabeled</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-65"></span><span>  </span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.html#hrecField"><span class="hs-identifier">hrecField</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-66"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.Utils.html#Drop"><span class="hs-identifier">Drop</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-67"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.html#ElemOf"><span class="hs-identifier">ElemOf</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-68"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.Utils.html#IndexLabel"><span class="hs-identifier">IndexLabel</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-69"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.Utils.html#IndexList"><span class="hs-identifier">IndexList</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-70"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-71"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.Witness.html"><span class="hs-identifier">Plutarch.Internal.Witness</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Witness.html#witness"><span class="hs-identifier">witness</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-72"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.TermCont.html"><span class="hs-identifier">Plutarch.TermCont</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.TermCont.html#TermCont"><span class="hs-identifier">TermCont</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.TermCont.html#TermCont"><span class="hs-identifier">TermCont</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.TermCont.html#%24sel%3ArunTermCont%3ATermCont"><span class="hs-identifier">runTermCont</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-73"></span><span>
+</span><span id="line-74"></span><span class="hs-comment">--------------------------------------------------------------------------------</span><span>
+</span><span id="line-75"></span><span class="hs-comment">---------- PDataField class &amp; deriving utils</span><span>
+</span><span id="line-76"></span><span>
+</span><span id="line-77"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">family</span><span> </span><span id="Helper"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Helper"><span class="hs-identifier hs-var">Helper</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679936368"><span class="annot"><a href="#local-6989586621679936368"><span class="hs-identifier hs-type">x</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#PType"><span class="hs-identifier hs-type">PType</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PLabeledType"><span class="hs-identifier hs-type">PLabeledType</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-78"></span><span>  </span><span id="Helper"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Helper"><span class="hs-identifier hs-var">Helper</span></a></span></span><span> </span><span id="local-6989586621679936367"><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PDataSum"><span class="hs-identifier hs-type">PDataSum</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679936367"><span class="hs-identifier hs-type">y</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679936367"><span class="hs-identifier hs-type">y</span></a></span><span>
+</span><span id="line-79"></span><span>  </span><span id="Helper"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Helper"><span class="hs-identifier hs-var">Helper</span></a></span></span><span> </span><span id="local-6989586621679936366"><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PDataRecord"><span class="hs-identifier hs-type">PDataRecord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936366"><span class="hs-identifier hs-type">y</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679936366"><span class="hs-identifier hs-type">y</span></a></span><span>
+</span><span id="line-80"></span><span>
+</span><span id="line-81"></span><span class="hs-comment">{- |
+  Class allowing 'letFields' to work for a PType, usually via
+  `PIsDataRepr`, but is derived for some other types for convenience.
+-}</span><span>
+</span><span id="line-85"></span><span class="hs-keyword">class</span><span> </span><span id="PDataFields"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PDataFields"><span class="hs-identifier hs-var">PDataFields</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679936636"><span class="annot"><a href="#local-6989586621679936636"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#PType"><span class="hs-identifier hs-type">PType</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-86"></span><span>  </span><span class="hs-comment">-- | Fields in HRec bound by 'letFields'</span><span>
+</span><span id="line-87"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PFields"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PFields"><span class="hs-identifier hs-var">PFields</span></a></span></span><span> </span><span id="local-6989586621679936636"><span class="annot"><a href="#local-6989586621679936636"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PLabeledType"><span class="hs-identifier hs-type">PLabeledType</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-88"></span><span>
+</span><span id="line-89"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PFields"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PFields"><span class="hs-identifier hs-var">PFields</span></a></span></span><span> </span><span id="local-6989586621679936365"><span class="annot"><a href="#local-6989586621679936365"><span class="hs-identifier hs-type hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Helper"><span class="hs-identifier hs-type">Helper</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PInner"><span class="hs-identifier hs-type">PInner</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936365"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-90"></span><span>
+</span><span id="line-91"></span><span>  </span><span class="hs-comment">-- | Convert a Term to a 'PDataList'</span><span>
+</span><span id="line-92"></span><span>  </span><span id="ptoFields"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#ptoFields"><span class="hs-identifier hs-type">ptoFields</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679936626"><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936626"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936636"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936626"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PDataRecord"><span class="hs-identifier hs-type">PDataRecord</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PFields"><span class="hs-identifier hs-type">PFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936636"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span></span><span>
+</span><span id="line-93"></span><span>  </span><span class="hs-keyword">default</span><span> </span><span id="ptoFields"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#ptoFields"><span class="hs-identifier hs-type">ptoFields</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679936631"><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PDataFields"><span class="hs-identifier hs-type">PDataFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PInner"><span class="hs-identifier hs-type">PInner</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936636"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PFields"><span class="hs-identifier hs-type">PFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PInner"><span class="hs-identifier hs-type">PInner</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936636"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PFields"><span class="hs-identifier hs-type">PFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936636"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936631"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936636"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936631"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PDataRecord"><span class="hs-identifier hs-type">PDataRecord</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PFields"><span class="hs-identifier hs-type">PFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936636"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span></span><span>
+</span><span id="line-94"></span><span>  </span><span id="local-6989586621679936362"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#ptoFields"><span class="hs-identifier hs-var hs-var">ptoFields</span></a></span><span> </span><span id="local-6989586621679936357"><span class="annot"><span class="annottext">Term s a
+</span><a href="#local-6989586621679936357"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (a :: PType) (s :: S).
+PDataFields a =&gt;
+Term s a -&gt; Term s (PDataRecord (PFields a))
+</span><a href="Plutarch.DataRepr.Internal.Field.html#ptoFields"><span class="hs-identifier hs-var">ptoFields</span></a></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (s :: S) (a :: PType). Term s a -&gt; Term s (PInner a)
+</span><a href="Plutarch.Internal.Other.html#pto"><span class="hs-identifier hs-var">pto</span></a></span><span> </span><span class="annot"><span class="annottext">Term s a
+</span><a href="#local-6989586621679936357"><span class="hs-identifier hs-var">x</span></a></span></span><span>
+</span><span id="line-95"></span><span>
+</span><span id="line-96"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679936619"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PDataFields"><span class="hs-identifier hs-type">PDataFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PDataRecord"><span class="hs-identifier hs-type">PDataRecord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936619"><span class="hs-keyword hs-type">as</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-97"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PFields"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PFields"><span class="hs-identifier hs-var">PFields</span></a></span></span><span> </span><span id="local-6989586621679936619"><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PDataRecord"><span class="hs-identifier hs-type">PDataRecord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936619"><span class="hs-keyword hs-type">as</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679936619"><span class="hs-keyword hs-type">as</span></a></span><span>
+</span><span id="line-98"></span><span>  </span><span id="local-6989586621679936353"><span class="annot"><span class="annottext">ptoFields :: forall (s :: S).
+Term s (PDataRecord as)
+-&gt; Term s (PDataRecord (PFields (PDataRecord as)))
+</span><a href="#local-6989586621679936353"><span class="hs-identifier hs-var hs-var hs-var hs-var">ptoFields</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall a. a -&gt; a
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">id</span></a></span><span>
+</span><span id="line-99"></span><span>
+</span><span id="line-100"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679936615"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PDataFields"><span class="hs-identifier hs-type">PDataFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PDataSum"><span class="hs-identifier hs-type">PDataSum</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679936615"><span class="hs-keyword hs-type">as</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-101"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PFields"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PFields"><span class="hs-identifier hs-var">PFields</span></a></span></span><span> </span><span id="local-6989586621679936615"><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PDataSum"><span class="hs-identifier hs-type">PDataSum</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679936615"><span class="hs-keyword hs-type">as</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679936615"><span class="hs-keyword hs-type">as</span></a></span><span>
+</span><span id="line-102"></span><span>  </span><span id="local-6989586621679936348"><span class="annot"><span class="annottext">ptoFields :: forall (s :: S).
+Term s (PDataSum ((':) @[PLabeledType] as ('[] @[PLabeledType])))
+-&gt; Term
+     s
+     (PDataRecord
+        (PFields
+           (PDataSum ((':) @[PLabeledType] as ('[] @[PLabeledType])))))
+</span><a href="#local-6989586621679936348"><span class="hs-identifier hs-var hs-var hs-var hs-var">ptoFields</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (s :: S) (def :: [PLabeledType]).
+Term
+  s
+  (PDataSum ((':) @[PLabeledType] def ('[] @[PLabeledType]))
+   :--&gt; PDataRecord def)
+</span><a href="Plutarch.DataRepr.Internal.html#punDataSum"><span class="hs-identifier hs-var">punDataSum</span></a></span><span> </span><span class="hs-operator">#</span><span class="hs-special">)</span><span>
+</span><span id="line-103"></span><span>
+</span><span id="line-104"></span><span class="hs-keyword">instance</span><span>
+</span><span id="line-105"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679936606"><span class="annot"><a href="#local-6989586621679936606"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span>
+</span><span id="line-106"></span><span>  </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Plutarch.Builtin.html#PIsData"><span class="hs-identifier hs-type">PIsData</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936606"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-107"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PDataFields"><span class="hs-identifier hs-type">PDataFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936606"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-108"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-109"></span><span>  </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PDataFields"><span class="hs-identifier hs-type">PDataFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.html#PAsData"><span class="hs-identifier hs-type">PAsData</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936606"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-110"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-111"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PFields"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PFields"><span class="hs-identifier hs-var">PFields</span></a></span></span><span> </span><span id="local-6989586621679936606"><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.html#PAsData"><span class="hs-identifier hs-type">PAsData</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936606"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PFields"><span class="hs-identifier hs-type">PFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936606"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-112"></span><span>  </span><span id="local-6989586621679936341"><span class="annot"><span class="annottext">ptoFields :: forall (s :: S).
+Term s (PAsData a) -&gt; Term s (PDataRecord (PFields (PAsData a)))
+</span><a href="#local-6989586621679936341"><span class="hs-identifier hs-var hs-var hs-var hs-var">ptoFields</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (a :: PType) (s :: S).
+PDataFields a =&gt;
+Term s a -&gt; Term s (PDataRecord (PFields a))
+</span><a href="Plutarch.DataRepr.Internal.Field.html#ptoFields"><span class="hs-identifier hs-var">ptoFields</span></a></span><span> </span><span class="annot"><span class="annottext">forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">forall (a :: PType) (s :: S).
+PIsData a =&gt;
+Term s (PAsData a) -&gt; Term s a
+</span><a href="Plutarch.Builtin.html#pfromData"><span class="hs-identifier hs-var">pfromData</span></a></span><span>
+</span><span id="line-113"></span><span>
+</span><span id="line-114"></span><span class="hs-comment">-- | The 'HRec' yielded by 'pletFields @fs t'.</span><span>
+</span><span id="line-115"></span><span class="hs-keyword">type</span><span> </span><span id="HRecOf"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#HRecOf"><span class="hs-identifier hs-var">HRecOf</span></a></span></span><span> </span><span id="local-6989586621679936339"><span class="annot"><a href="#local-6989586621679936339"><span class="hs-identifier hs-type">t</span></a></span></span><span> </span><span id="local-6989586621679936338"><span class="annot"><a href="#local-6989586621679936338"><span class="hs-identifier hs-type">fs</span></a></span></span><span> </span><span id="local-6989586621679936337"><span class="annot"><a href="#local-6989586621679936337"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-116"></span><span>  </span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.html#HRec"><span class="hs-identifier hs-type">HRec</span></a></span><span>
+</span><span id="line-117"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BoundTerms"><span class="hs-identifier hs-type">BoundTerms</span></a></span><span>
+</span><span id="line-118"></span><span>        </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PFields"><span class="hs-identifier hs-type">PFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936339"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-119"></span><span>        </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Bindings"><span class="hs-identifier hs-type">Bindings</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PFields"><span class="hs-identifier hs-type">PFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936339"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679936338"><span class="hs-identifier hs-type">fs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-120"></span><span>        </span><span class="annot"><a href="#local-6989586621679936337"><span class="hs-identifier hs-type">s</span></a></span><span>
+</span><span id="line-121"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-122"></span><span>
+</span><span id="line-123"></span><span class="hs-comment">{- | Constrain an 'HRec' to contain the specified fields from the given Plutarch type.
+
+=== Example ===
+
+@
+import qualified GHC.Generics as GHC
+import Generics.SOP
+
+import Plutarch.Prelude
+import Plutarch.DataRepr
+
+newtype PFooType s = PFooType (Term s (PDataRecord '[&quot;frst&quot; ':= PInteger, &quot;scnd&quot; ':= PBool, &quot;thrd&quot; ':= PString]))
+  deriving stock (GHC.Generic)
+  deriving anyclass (Generic)
+  deriving anyclass (PIsDataRepr)
+  deriving
+    (PlutusType, PIsData, PDataFields, PEq)
+    via PIsDataReprInstances PFooType
+
+foo :: PMemberFields PFooType '[&quot;scnd&quot;, &quot;frst&quot;] s as =&gt; HRec as -&gt; Term s PInteger
+foo h = pif (getField @&quot;scnd&quot; h) (getField @&quot;frst&quot; h) 0
+@
+-}</span><span>
+</span><span id="line-146"></span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PMemberFields"><span class="hs-identifier hs-type">PMemberFields</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#PType"><span class="hs-identifier hs-type">PType</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier hs-type">Symbol</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#S"><span class="hs-identifier hs-type">S</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier hs-type">Symbol</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier hs-type">Constraint</span></a></span><span>
+</span><span id="line-147"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">family</span><span> </span><span id="PMemberFields"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PMemberFields"><span class="hs-identifier hs-var">PMemberFields</span></a></span></span><span> </span><span id="local-6989586621679936336"><span class="annot"><a href="#local-6989586621679936336"><span class="hs-identifier hs-type">t</span></a></span></span><span> </span><span id="local-6989586621679936335"><span class="annot"><a href="#local-6989586621679936335"><span class="hs-identifier hs-type">fs</span></a></span></span><span> </span><span id="local-6989586621679936334"><span class="annot"><a href="#local-6989586621679936334"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span id="local-6989586621679936333"><span class="annot"><a href="#local-6989586621679936333"><span class="hs-keyword hs-type">as</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-148"></span><span>  </span><span id="PMemberFields"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PMemberFields"><span class="hs-identifier hs-var">PMemberFields</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-149"></span><span>  </span><span id="PMemberFields"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PMemberFields"><span class="hs-identifier hs-var">PMemberFields</span></a></span></span><span> </span><span id="local-6989586621679936328"><span id="local-6989586621679936329"><span id="local-6989586621679936330"><span id="local-6989586621679936331"><span id="local-6989586621679936332"><span class="annot"><a href="#local-6989586621679936332"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679936331"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936330"><span class="hs-identifier hs-type">rest</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679936329"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936328"><span class="hs-keyword hs-type">as</span></a></span></span></span></span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PMemberField"><span class="hs-identifier hs-type">PMemberField</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936332"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936331"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936329"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936328"><span class="hs-keyword hs-type">as</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PMemberFields"><span class="hs-identifier hs-type">PMemberFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936332"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936330"><span class="hs-identifier hs-type">rest</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936329"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936328"><span class="hs-keyword hs-type">as</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-150"></span><span>
+</span><span id="line-151"></span><span class="hs-comment">-- | Single field version of 'PMemberFields'.</span><span>
+</span><span id="line-152"></span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PMemberField"><span class="hs-identifier hs-type">PMemberField</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#PType"><span class="hs-identifier hs-type">PType</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier hs-type">Symbol</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#S"><span class="hs-identifier hs-type">S</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier hs-type">Symbol</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier hs-type">Constraint</span></a></span><span>
+</span><span id="line-153"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">family</span><span> </span><span id="PMemberField"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PMemberField"><span class="hs-identifier hs-var">PMemberField</span></a></span></span><span> </span><span id="local-6989586621679936327"><span class="annot"><a href="#local-6989586621679936327"><span class="hs-identifier hs-type">t</span></a></span></span><span> </span><span id="local-6989586621679936326"><span class="annot"><a href="#local-6989586621679936326"><span class="hs-identifier hs-type">name</span></a></span></span><span> </span><span id="local-6989586621679936325"><span class="annot"><a href="#local-6989586621679936325"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span id="local-6989586621679936324"><span class="annot"><a href="#local-6989586621679936324"><span class="hs-keyword hs-type">as</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-154"></span><span>  </span><span id="PMemberField"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PMemberField"><span class="hs-identifier hs-var">PMemberField</span></a></span></span><span> </span><span id="local-6989586621679936320"><span id="local-6989586621679936321"><span id="local-6989586621679936322"><span id="local-6989586621679936323"><span class="annot"><a href="#local-6989586621679936323"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936322"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936321"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936320"><span class="hs-keyword hs-type">as</span></a></span></span></span></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-155"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.Utils.html#IndexLabel"><span class="hs-identifier hs-type">IndexLabel</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936322"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936320"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936321"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.html#PAsData"><span class="hs-identifier hs-type">PAsData</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PLookupLabel"><span class="hs-identifier hs-type">PLookupLabel</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936322"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PFields"><span class="hs-identifier hs-type">PFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936323"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-156"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.html#ElemOf"><span class="hs-identifier hs-type">ElemOf</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936322"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936321"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.html#PAsData"><span class="hs-identifier hs-type">PAsData</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PLookupLabel"><span class="hs-identifier hs-type">PLookupLabel</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936322"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PFields"><span class="hs-identifier hs-type">PFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936323"><span class="hs-identifier hs-type">t</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679936320"><span class="hs-keyword hs-type">as</span></a></span><span>
+</span><span id="line-157"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-158"></span><span>
+</span><span id="line-159"></span><span class="hs-comment">{- |
+  Bind a HRec of named fields containing all the specified
+  fields.
+-}</span><span>
+</span><span id="line-163"></span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#pletFields"><span class="hs-identifier hs-type">pletFields</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-164"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679936595"><span class="annot"><a href="#local-6989586621679936595"><span class="hs-identifier hs-type">fs</span></a></span></span><span> </span><span id="local-6989586621679936598"><span class="annot"><a href="#local-6989586621679936598"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679936592"><span class="annot"><a href="#local-6989586621679936592"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span id="local-6989586621679936590"><span class="annot"><a href="#local-6989586621679936590"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span id="local-6989586621679936597"><span class="annot"><a href="#local-6989586621679936597"><span class="hs-identifier hs-type">ps</span></a></span></span><span> </span><span id="local-6989586621679936596"><span class="annot"><a href="#local-6989586621679936596"><span class="hs-identifier hs-type">bs</span></a></span></span><span class="hs-operator">.</span><span>
+</span><span id="line-165"></span><span>  </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PDataFields"><span class="hs-identifier hs-type">PDataFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936598"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-166"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679936597"><span class="hs-identifier hs-type">ps</span></a></span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PFields"><span class="hs-identifier hs-type">PFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936598"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-167"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679936596"><span class="hs-identifier hs-type">bs</span></a></span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Bindings"><span class="hs-identifier hs-type">Bindings</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936597"><span class="hs-identifier hs-type">ps</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936595"><span class="hs-identifier hs-type">fs</span></a></span><span>
+</span><span id="line-168"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-type">BindFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936597"><span class="hs-identifier hs-type">ps</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936596"><span class="hs-identifier hs-type">bs</span></a></span><span>
+</span><span id="line-169"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-170"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936592"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936598"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-171"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#HRecOf"><span class="hs-identifier hs-type">HRecOf</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936598"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936595"><span class="hs-identifier hs-type">fs</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936592"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936592"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936590"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-172"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936592"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936590"><span class="hs-identifier hs-type">b</span></a></span><span>
+</span><span id="line-173"></span><span id="pletFields"><span class="annot"><span class="annottext">pletFields :: forall (fs :: [Symbol]) (a :: PType) (s :: S) (b :: PType)
+       (ps :: [PLabeledType]) (bs :: [ToBind]).
+(PDataFields a,
+ (ps :: [PLabeledType]) ~ (PFields a :: [PLabeledType]),
+ (bs :: [ToBind]) ~ (Bindings ps fs :: [ToBind]),
+ BindFields ps bs) =&gt;
+Term s a -&gt; (HRecOf a fs s -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.DataRepr.Internal.Field.html#pletFields"><span class="hs-identifier hs-var hs-var">pletFields</span></a></span></span><span> </span><span id="local-6989586621679936309"><span class="annot"><span class="annottext">Term s a
+</span><a href="#local-6989586621679936309"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-174"></span><span>  </span><span class="annot"><span class="annottext">forall (r :: PType) (s :: S) a.
+TermCont @r s a -&gt; (a -&gt; Term s r) -&gt; Term s r
+</span><a href="Plutarch.TermCont.html#%24sel%3ArunTermCont%3ATermCont"><span class="hs-identifier hs-var">runTermCont</span></a></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">$</span></a></span><span>
+</span><span id="line-175"></span><span>    </span><span class="annot"><span class="annottext">forall (ps :: [PLabeledType]) (bs :: [ToBind]) {r :: PType}
+       (s :: S).
+BindFields ps bs =&gt;
+Proxy @[ToBind] bs
+-&gt; Term s (PDataRecord ps)
+-&gt; TermCont @r s (HRec (BoundTerms ps bs s))
+</span><a href="Plutarch.DataRepr.Internal.Field.html#bindFields"><span class="hs-identifier hs-var">bindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679936596"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">$</span></a></span><span>
+</span><span id="line-176"></span><span>      </span><span class="annot"><span class="annottext">forall (a :: PType) (s :: S).
+PDataFields a =&gt;
+Term s a -&gt; Term s (PDataRecord (PFields a))
+</span><a href="Plutarch.DataRepr.Internal.Field.html#ptoFields"><span class="hs-identifier hs-var">ptoFields</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679936598"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><span class="annottext">Term s a
+</span><a href="#local-6989586621679936309"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-177"></span><span>
+</span><span id="line-178"></span><span class="hs-keyword">data</span><span> </span><span id="ToBind"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#ToBind"><span class="hs-identifier hs-var">ToBind</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Bind"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Bind"><span class="hs-identifier hs-var">Bind</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Skip"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-var">Skip</span></a></span></span><span>
+</span><span id="line-179"></span><span>
+</span><span id="line-180"></span><span class="hs-comment">{- | Get whether a field should be bound based on its inclusion in a
+     list of fields.
+-}</span><span>
+</span><span id="line-183"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">family</span><span> </span><span id="BindField"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindField"><span class="hs-identifier hs-var">BindField</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679936306"><span class="annot"><a href="#local-6989586621679936306"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier hs-type">Symbol</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679936305"><span class="annot"><a href="#local-6989586621679936305"><span class="hs-identifier hs-type">fs</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier hs-type">Symbol</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#ToBind"><span class="hs-identifier hs-type">ToBind</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-184"></span><span>  </span><span id="BindField"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindField"><span class="hs-identifier hs-var">BindField</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span>
+</span><span id="line-185"></span><span>  </span><span id="BindField"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindField"><span class="hs-identifier hs-var">BindField</span></a></span></span><span> </span><span id="local-6989586621679936304"><span class="annot"><a href="#local-6989586621679936304"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679936304"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span class="hs-special">)</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Bind"><span class="hs-identifier hs-type">Bind</span></a></span><span>
+</span><span id="line-186"></span><span>  </span><span id="BindField"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindField"><span class="hs-identifier hs-var">BindField</span></a></span></span><span> </span><span id="local-6989586621679936302"><span id="local-6989586621679936303"><span class="annot"><a href="#local-6989586621679936303"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936302"><span class="hs-keyword hs-type">as</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindField"><span class="hs-identifier hs-type">BindField</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936303"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936302"><span class="hs-keyword hs-type">as</span></a></span><span>
+</span><span id="line-187"></span><span>
+</span><span id="line-188"></span><span class="hs-comment">-- | Map 'BindField' over @[PLabeledType]@, with 'Skips' removed at tail</span><span>
+</span><span id="line-189"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">family</span><span> </span><span id="Bindings"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Bindings"><span class="hs-identifier hs-var">Bindings</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679936301"><span class="annot"><a href="#local-6989586621679936301"><span class="hs-identifier hs-type">ps</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PLabeledType"><span class="hs-identifier hs-type">PLabeledType</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679936300"><span class="annot"><a href="#local-6989586621679936300"><span class="hs-identifier hs-type">fs</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier hs-type">Symbol</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#ToBind"><span class="hs-identifier hs-type">ToBind</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-190"></span><span>  </span><span id="Bindings"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Bindings"><span class="hs-identifier hs-var">Bindings</span></a></span></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-191"></span><span>  </span><span id="Bindings"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Bindings"><span class="hs-identifier hs-var">Bindings</span></a></span></span><span> </span><span id="local-6989586621679936297"><span id="local-6989586621679936298"><span id="local-6989586621679936299"><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679936299"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936298"><span class="hs-identifier hs-type">ps</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679936297"><span class="hs-identifier hs-type">fs</span></a></span></span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindField"><span class="hs-identifier hs-type">BindField</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936299"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936297"><span class="hs-identifier hs-type">fs</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#CutSkip"><span class="hs-identifier hs-type">CutSkip</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Bindings"><span class="hs-identifier hs-type">Bindings</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936298"><span class="hs-identifier hs-type">ps</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936297"><span class="hs-identifier hs-type">fs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-192"></span><span>
+</span><span id="line-193"></span><span class="hs-comment">-- | Remove 'Skip's at tail</span><span>
+</span><span id="line-194"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">family</span><span> </span><span id="CutSkip"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#CutSkip"><span class="hs-identifier hs-var">CutSkip</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679936295"><span class="annot"><a href="#local-6989586621679936295"><span class="hs-identifier hs-type">bs</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#ToBind"><span class="hs-identifier hs-type">ToBind</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#ToBind"><span class="hs-identifier hs-type">ToBind</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-195"></span><span>  </span><span id="CutSkip"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#CutSkip"><span class="hs-identifier hs-var">CutSkip</span></a></span></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-196"></span><span>  </span><span id="CutSkip"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#CutSkip"><span class="hs-identifier hs-var">CutSkip</span></a></span></span><span> </span><span id="local-6989586621679936294"><span class="annot"><a href="#local-6989586621679936294"><span class="hs-identifier hs-type hs-type">bs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679936294"><span class="hs-identifier hs-type">bs</span></a></span><span>
+</span><span id="line-197"></span><span>
+</span><span id="line-198"></span><span class="hs-comment">{- |
+  Get the 'Term' representations to be bound based on the
+  result of 'Bindings'.
+-}</span><span>
+</span><span id="line-202"></span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BoundTerms"><span class="hs-identifier hs-type">BoundTerms</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PLabeledType"><span class="hs-identifier hs-type">PLabeledType</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#ToBind"><span class="hs-identifier hs-type">ToBind</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#S"><span class="hs-identifier hs-type">S</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier hs-type">Symbol</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-203"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">family</span><span> </span><span id="BoundTerms"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BoundTerms"><span class="hs-identifier hs-var">BoundTerms</span></a></span></span><span> </span><span id="local-6989586621679936293"><span class="annot"><a href="#local-6989586621679936293"><span class="hs-identifier hs-type">ps</span></a></span></span><span> </span><span id="local-6989586621679936292"><span class="annot"><a href="#local-6989586621679936292"><span class="hs-identifier hs-type">bs</span></a></span></span><span> </span><span id="local-6989586621679936291"><span class="annot"><a href="#local-6989586621679936291"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-204"></span><span>  </span><span id="BoundTerms"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BoundTerms"><span class="hs-identifier hs-var">BoundTerms</span></a></span></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-205"></span><span>  </span><span id="BoundTerms"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BoundTerms"><span class="hs-identifier hs-var">BoundTerms</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-206"></span><span>  </span><span id="BoundTerms"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BoundTerms"><span class="hs-identifier hs-var">BoundTerms</span></a></span></span><span> </span><span id="local-6989586621679936288"><span id="local-6989586621679936289"><span id="local-6989586621679936290"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936290"><span class="hs-identifier hs-type">ps</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936289"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679936288"><span class="hs-identifier hs-type">s</span></a></span></span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BoundTerms"><span class="hs-identifier hs-type">BoundTerms</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936290"><span class="hs-identifier hs-type">ps</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936289"><span class="hs-identifier hs-type">bs</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936288"><span class="hs-identifier hs-type">s</span></a></span><span>
+</span><span id="line-207"></span><span>  </span><span id="BoundTerms"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BoundTerms"><span class="hs-identifier hs-var">BoundTerms</span></a></span></span><span> </span><span id="local-6989586621679936283"><span id="local-6989586621679936284"><span id="local-6989586621679936285"><span id="local-6989586621679936286"><span id="local-6989586621679936287"><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679936287"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="#local-6989586621679936286"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936285"><span class="hs-identifier hs-type">ps</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Bind"><span class="hs-identifier hs-type">Bind</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936284"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679936283"><span class="hs-identifier hs-type">s</span></a></span></span></span></span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">'</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679936287"><span class="hs-identifier hs-type">name</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936283"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.html#PAsData"><span class="hs-identifier hs-type">PAsData</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936286"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BoundTerms"><span class="hs-identifier hs-type">BoundTerms</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936285"><span class="hs-identifier hs-type">ps</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936284"><span class="hs-identifier hs-type">bs</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936283"><span class="hs-identifier hs-type">s</span></a></span><span>
+</span><span id="line-208"></span><span>
+</span><span id="line-209"></span><span class="hs-keyword">class</span><span> </span><span id="BindFields"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-var">BindFields</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679936577"><span class="annot"><a href="#local-6989586621679936577"><span class="hs-identifier hs-type">ps</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PLabeledType"><span class="hs-identifier hs-type">PLabeledType</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679936576"><span class="annot"><a href="#local-6989586621679936576"><span class="hs-identifier hs-type">bs</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#ToBind"><span class="hs-identifier hs-type">ToBind</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-210"></span><span>  </span><span class="hs-comment">-- |</span><span>
+</span><span id="line-211"></span><span>  </span><span class="hs-comment">--    Bind all the fields in a 'PDataList' term to a corresponding</span><span>
+</span><span id="line-212"></span><span>  </span><span class="hs-comment">--    HList of Terms.</span><span>
+</span><span id="line-213"></span><span>  </span><span class="hs-comment">--</span><span>
+</span><span id="line-214"></span><span>  </span><span class="hs-comment">--    A continuation is returned to enable sharing of</span><span>
+</span><span id="line-215"></span><span>  </span><span class="hs-comment">--    the generated bound-variables.</span><span>
+</span><span id="line-216"></span><span>  </span><span id="bindFields"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#bindFields"><span class="hs-identifier hs-type">bindFields</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679936574"><span class="annot"><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-type">Proxy</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936576"><span class="hs-identifier hs-type">bs</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936574"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PDataRecord"><span class="hs-identifier hs-type">PDataRecord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936577"><span class="hs-identifier hs-type">ps</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.TermCont.html#TermCont"><span class="hs-identifier hs-type">TermCont</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936574"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.html#HRec"><span class="hs-identifier hs-type">HRec</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BoundTerms"><span class="hs-identifier hs-type">BoundTerms</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936577"><span class="hs-identifier hs-type">ps</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936576"><span class="hs-identifier hs-type">bs</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936574"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span></span><span>
+</span><span id="line-217"></span><span>
+</span><span id="line-218"></span><span class="hs-keyword">instance</span><span> </span><span class="hs-pragma">{-# OVERLAPPABLE</span><span> </span><span class="hs-pragma">#-}</span><span> </span><span id="local-6989586621679936563"><span id="local-6989586621679936564"><span id="local-6989586621679936565"><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-type">BindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679936565"><span class="hs-identifier hs-type">l</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="#local-6989586621679936564"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936563"><span class="hs-identifier hs-type">ps</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Bind"><span class="hs-identifier hs-type">Bind</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-219"></span><span>  </span><span id="local-6989586621679936276"><span class="annot"><span class="annottext">bindFields :: forall {r :: PType} (s :: S).
+Proxy @[ToBind] ((':) @ToBind 'Bind ('[] @ToBind))
+-&gt; Term s (PDataRecord ((':) @PLabeledType (l ':= p) ps))
+-&gt; TermCont
+     @r
+     s
+     (HRec
+        (BoundTerms
+           ((':) @PLabeledType (l ':= p) ps)
+           ((':) @ToBind 'Bind ('[] @ToBind))
+           s))
+</span><a href="#local-6989586621679936276"><span class="hs-identifier hs-var hs-var hs-var hs-var">bindFields</span></a></span></span><span> </span><span class="annot"><span class="annottext">Proxy @[ToBind] ((':) @ToBind 'Bind ('[] @ToBind))
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679936275"><span class="annot"><span class="annottext">Term s (PDataRecord ((':) @PLabeledType (l ':= p) ps))
+</span><a href="#local-6989586621679936275"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-220"></span><span>    </span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (name :: Symbol) a (as1 :: [(Symbol, Type)]).
+Labeled @Symbol name a
+-&gt; HRec as1 -&gt; HRec ((':) @(Symbol, Type) '(name, a) as1)
+</span><a href="Plutarch.DataRepr.Internal.HList.html#HCons"><span class="hs-identifier hs-var">HCons</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (sym :: k) a. a -&gt; Labeled @k sym a
+</span><a href="Plutarch.DataRepr.Internal.HList.Utils.html#Labeled"><span class="hs-identifier hs-var">Labeled</span></a></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (n :: Nat) (s :: S) (as :: [PLabeledType]).
+KnownNat n =&gt;
+Proxy @Nat n
+-&gt; Term s (PDataRecord as)
+-&gt; Term s (PAsData (PUnLabel (IndexList @PLabeledType n as)))
+</span><a href="Plutarch.DataRepr.Internal.html#pindexDataRecord"><span class="hs-identifier hs-var">pindexDataRecord</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s (PDataRecord ((':) @PLabeledType (l ':= p) ps))
+</span><a href="#local-6989586621679936275"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">HRec ('[] @(Symbol, Type))
+</span><a href="Plutarch.DataRepr.Internal.HList.html#HNil"><span class="hs-identifier hs-var">HNil</span></a></span><span>
+</span><span id="line-221"></span><span>
+</span><span id="line-222"></span><span class="hs-keyword">instance</span><span> </span><span class="hs-pragma">{-# OVERLAPPABLE</span><span> </span><span class="hs-pragma">#-}</span><span> </span><span id="local-6989586621679936536"><span id="local-6989586621679936537"><span id="local-6989586621679936538"><span id="local-6989586621679936539"><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-type">BindFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936539"><span class="hs-identifier hs-type">ps</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936538"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-type">BindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679936537"><span class="hs-identifier hs-type">l</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="#local-6989586621679936536"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936539"><span class="hs-identifier hs-type">ps</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Bind"><span class="hs-identifier hs-type">Bind</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936538"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-223"></span><span>  </span><span id="local-6989586621679936264"><span class="annot"><span class="annottext">bindFields :: forall {r :: PType} (s :: S).
+Proxy @[ToBind] ((':) @ToBind 'Bind bs)
+-&gt; Term s (PDataRecord ((':) @PLabeledType (l ':= p) ps))
+-&gt; TermCont
+     @r
+     s
+     (HRec
+        (BoundTerms
+           ((':) @PLabeledType (l ':= p) ps) ((':) @ToBind 'Bind bs) s))
+</span><a href="#local-6989586621679936264"><span class="hs-identifier hs-var hs-var hs-var hs-var">bindFields</span></a></span></span><span> </span><span class="annot"><span class="annottext">Proxy @[ToBind] ((':) @ToBind 'Bind bs)
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679936263"><span class="annot"><span class="annottext">Term s (PDataRecord ((':) @PLabeledType (l ':= p) ps))
+</span><a href="#local-6989586621679936263"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-224"></span><span>    </span><span id="local-6989586621679936262"><span class="annot"><span class="annottext">Term s (PDataRecord ((':) @PLabeledType (l ':= p) ps))
+</span><a href="#local-6989586621679936262"><span class="hs-identifier hs-var">t'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (r :: PType) (a :: S) b.
+((b -&gt; Term a r) -&gt; Term a r) -&gt; TermCont @r a b
+</span><a href="Plutarch.TermCont.html#TermCont"><span class="hs-identifier hs-var">TermCont</span></a></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (s :: S) (a :: PType) (b :: PType).
+Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.html#plet"><span class="hs-identifier hs-var">plet</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PDataRecord ((':) @PLabeledType (l ':= p) ps))
+</span><a href="#local-6989586621679936263"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-225"></span><span>    </span><span id="local-6989586621679936261"><span class="annot"><span class="annottext">HRec (BoundTerms ps bs s)
+</span><a href="#local-6989586621679936261"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (ps :: [PLabeledType]) (bs :: [ToBind]) {r :: PType}
+       (s :: S).
+BindFields ps bs =&gt;
+Proxy @[ToBind] bs
+-&gt; Term s (PDataRecord ps)
+-&gt; TermCont @r s (HRec (BoundTerms ps bs s))
+</span><a href="Plutarch.DataRepr.Internal.Field.html#bindFields"><span class="hs-identifier hs-var">bindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679936538"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (n :: Nat) (s :: S) (xs :: [PLabeledType]).
+KnownNat n =&gt;
+Proxy @Nat n
+-&gt; Term s (PDataRecord xs)
+-&gt; Term s (PDataRecord (Drop @PLabeledType n xs))
+</span><a href="Plutarch.DataRepr.Internal.html#pdropDataRecord"><span class="hs-identifier hs-var">pdropDataRecord</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s (PDataRecord ((':) @PLabeledType (l ':= p) ps))
+</span><a href="#local-6989586621679936262"><span class="hs-identifier hs-var">t'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-226"></span><span>    </span><span class="annot"><span class="annottext">forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (name :: Symbol) a (as1 :: [(Symbol, Type)]).
+Labeled @Symbol name a
+-&gt; HRec as1 -&gt; HRec ((':) @(Symbol, Type) '(name, a) as1)
+</span><a href="Plutarch.DataRepr.Internal.HList.html#HCons"><span class="hs-identifier hs-var">HCons</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (sym :: k) a. a -&gt; Labeled @k sym a
+</span><a href="Plutarch.DataRepr.Internal.HList.Utils.html#Labeled"><span class="hs-identifier hs-var">Labeled</span></a></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (n :: Nat) (s :: S) (as :: [PLabeledType]).
+KnownNat n =&gt;
+Proxy @Nat n
+-&gt; Term s (PDataRecord as)
+-&gt; Term s (PAsData (PUnLabel (IndexList @PLabeledType n as)))
+</span><a href="Plutarch.DataRepr.Internal.html#pindexDataRecord"><span class="hs-identifier hs-var">pindexDataRecord</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s (PDataRecord ((':) @PLabeledType (l ':= p) ps))
+</span><a href="#local-6989586621679936262"><span class="hs-identifier hs-var">t'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">HRec (BoundTerms ps bs s)
+</span><a href="#local-6989586621679936261"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-227"></span><span>
+</span><span id="line-228"></span><span class="hs-keyword">instance</span><span> </span><span class="hs-pragma">{-# OVERLAPPABLE</span><span> </span><span class="hs-pragma">#-}</span><span> </span><span id="local-6989586621679936515"><span id="local-6989586621679936516"><span id="local-6989586621679936517"><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-type">BindFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936517"><span class="hs-identifier hs-type">ps</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936516"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-type">BindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679936515"><span class="hs-identifier hs-type">p1</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936517"><span class="hs-identifier hs-type">ps</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936516"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-229"></span><span>  </span><span id="local-6989586621679936255"><span class="annot"><span class="annottext">bindFields :: forall {r :: PType} (s :: S).
+Proxy @[ToBind] ((':) @ToBind 'Skip bs)
+-&gt; Term s (PDataRecord ((':) @PLabeledType p1 ps))
+-&gt; TermCont
+     @r
+     s
+     (HRec
+        (BoundTerms ((':) @PLabeledType p1 ps) ((':) @ToBind 'Skip bs) s))
+</span><a href="#local-6989586621679936255"><span class="hs-identifier hs-var hs-var hs-var hs-var">bindFields</span></a></span></span><span> </span><span class="annot"><span class="annottext">Proxy @[ToBind] ((':) @ToBind 'Skip bs)
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679936254"><span class="annot"><span class="annottext">Term s (PDataRecord ((':) @PLabeledType p1 ps))
+</span><a href="#local-6989586621679936254"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-230"></span><span>    </span><span class="annot"><span class="annottext">forall (ps :: [PLabeledType]) (bs :: [ToBind]) {r :: PType}
+       (s :: S).
+BindFields ps bs =&gt;
+Proxy @[ToBind] bs
+-&gt; Term s (PDataRecord ps)
+-&gt; TermCont @r s (HRec (BoundTerms ps bs s))
+</span><a href="Plutarch.DataRepr.Internal.Field.html#bindFields"><span class="hs-identifier hs-var">bindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679936516"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (n :: Nat) (s :: S) (xs :: [PLabeledType]).
+KnownNat n =&gt;
+Proxy @Nat n
+-&gt; Term s (PDataRecord xs)
+-&gt; Term s (PDataRecord (Drop @PLabeledType n xs))
+</span><a href="Plutarch.DataRepr.Internal.html#pdropDataRecord"><span class="hs-identifier hs-var">pdropDataRecord</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s (PDataRecord ((':) @PLabeledType p1 ps))
+</span><a href="#local-6989586621679936254"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-231"></span><span>
+</span><span id="line-232"></span><span class="hs-keyword">instance</span><span> </span><span class="hs-pragma">{-# OVERLAPPABLE</span><span> </span><span class="hs-pragma">#-}</span><span> </span><span id="local-6989586621679936505"><span id="local-6989586621679936506"><span id="local-6989586621679936507"><span id="local-6989586621679936508"><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-type">BindFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936508"><span class="hs-identifier hs-type">ps</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936507"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-type">BindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679936506"><span class="hs-identifier hs-type">p1</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936505"><span class="hs-identifier hs-type">p2</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936508"><span class="hs-identifier hs-type">ps</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936507"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-233"></span><span>  </span><span id="local-6989586621679936248"><span class="annot"><span class="annottext">bindFields :: forall {r :: PType} (s :: S).
+Proxy @[ToBind] ((':) @ToBind 'Skip ((':) @ToBind 'Skip bs))
+-&gt; Term
+     s (PDataRecord ((':) @PLabeledType p1 ((':) @PLabeledType p2 ps)))
+-&gt; TermCont
+     @r
+     s
+     (HRec
+        (BoundTerms
+           ((':) @PLabeledType p1 ((':) @PLabeledType p2 ps))
+           ((':) @ToBind 'Skip ((':) @ToBind 'Skip bs))
+           s))
+</span><a href="#local-6989586621679936248"><span class="hs-identifier hs-var hs-var hs-var hs-var">bindFields</span></a></span></span><span> </span><span class="annot"><span class="annottext">Proxy @[ToBind] ((':) @ToBind 'Skip ((':) @ToBind 'Skip bs))
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679936247"><span class="annot"><span class="annottext">Term
+  s (PDataRecord ((':) @PLabeledType p1 ((':) @PLabeledType p2 ps)))
+</span><a href="#local-6989586621679936247"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-234"></span><span>    </span><span class="annot"><span class="annottext">forall (ps :: [PLabeledType]) (bs :: [ToBind]) {r :: PType}
+       (s :: S).
+BindFields ps bs =&gt;
+Proxy @[ToBind] bs
+-&gt; Term s (PDataRecord ps)
+-&gt; TermCont @r s (HRec (BoundTerms ps bs s))
+</span><a href="Plutarch.DataRepr.Internal.Field.html#bindFields"><span class="hs-identifier hs-var">bindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679936507"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (n :: Nat) (s :: S) (xs :: [PLabeledType]).
+KnownNat n =&gt;
+Proxy @Nat n
+-&gt; Term s (PDataRecord xs)
+-&gt; Term s (PDataRecord (Drop @PLabeledType n xs))
+</span><a href="Plutarch.DataRepr.Internal.html#pdropDataRecord"><span class="hs-identifier hs-var">pdropDataRecord</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term
+  s (PDataRecord ((':) @PLabeledType p1 ((':) @PLabeledType p2 ps)))
+</span><a href="#local-6989586621679936247"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-235"></span><span>
+</span><span id="line-236"></span><span class="hs-keyword">instance</span><span> </span><span class="hs-pragma">{-# OVERLAPPABLE</span><span> </span><span class="hs-pragma">#-}</span><span> </span><span id="local-6989586621679936493"><span id="local-6989586621679936494"><span id="local-6989586621679936495"><span id="local-6989586621679936496"><span id="local-6989586621679936497"><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-type">BindFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936497"><span class="hs-identifier hs-type">ps</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936496"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-type">BindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679936495"><span class="hs-identifier hs-type">p1</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936494"><span class="hs-identifier hs-type">p2</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936493"><span class="hs-identifier hs-type">p3</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936497"><span class="hs-identifier hs-type">ps</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936496"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-237"></span><span>  </span><span id="local-6989586621679936241"><span class="annot"><span class="annottext">bindFields :: forall {r :: PType} (s :: S).
+Proxy
+  @[ToBind]
+  ((':) @ToBind 'Skip ((':) @ToBind 'Skip ((':) @ToBind 'Skip bs)))
+-&gt; Term
+     s
+     (PDataRecord
+        ((':)
+           @PLabeledType
+           p1
+           ((':) @PLabeledType p2 ((':) @PLabeledType p3 ps))))
+-&gt; TermCont
+     @r
+     s
+     (HRec
+        (BoundTerms
+           ((':)
+              @PLabeledType
+              p1
+              ((':) @PLabeledType p2 ((':) @PLabeledType p3 ps)))
+           ((':) @ToBind 'Skip ((':) @ToBind 'Skip ((':) @ToBind 'Skip bs)))
+           s))
+</span><a href="#local-6989586621679936241"><span class="hs-identifier hs-var hs-var hs-var hs-var">bindFields</span></a></span></span><span> </span><span class="annot"><span class="annottext">Proxy
+  @[ToBind]
+  ((':) @ToBind 'Skip ((':) @ToBind 'Skip ((':) @ToBind 'Skip bs)))
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679936240"><span class="annot"><span class="annottext">Term
+  s
+  (PDataRecord
+     ((':)
+        @PLabeledType
+        p1
+        ((':) @PLabeledType p2 ((':) @PLabeledType p3 ps))))
+</span><a href="#local-6989586621679936240"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-238"></span><span>    </span><span class="annot"><span class="annottext">forall (ps :: [PLabeledType]) (bs :: [ToBind]) {r :: PType}
+       (s :: S).
+BindFields ps bs =&gt;
+Proxy @[ToBind] bs
+-&gt; Term s (PDataRecord ps)
+-&gt; TermCont @r s (HRec (BoundTerms ps bs s))
+</span><a href="Plutarch.DataRepr.Internal.Field.html#bindFields"><span class="hs-identifier hs-var">bindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679936496"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (n :: Nat) (s :: S) (xs :: [PLabeledType]).
+KnownNat n =&gt;
+Proxy @Nat n
+-&gt; Term s (PDataRecord xs)
+-&gt; Term s (PDataRecord (Drop @PLabeledType n xs))
+</span><a href="Plutarch.DataRepr.Internal.html#pdropDataRecord"><span class="hs-identifier hs-var">pdropDataRecord</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-number">3</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term
+  s
+  (PDataRecord
+     ((':)
+        @PLabeledType
+        p1
+        ((':) @PLabeledType p2 ((':) @PLabeledType p3 ps))))
+</span><a href="#local-6989586621679936240"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-239"></span><span>
+</span><span id="line-240"></span><span class="hs-keyword">instance</span><span> </span><span class="hs-pragma">{-# OVERLAPPABLE</span><span> </span><span class="hs-pragma">#-}</span><span> </span><span id="local-6989586621679936479"><span id="local-6989586621679936480"><span id="local-6989586621679936481"><span id="local-6989586621679936482"><span id="local-6989586621679936483"><span id="local-6989586621679936484"><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-type">BindFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936484"><span class="hs-identifier hs-type">ps</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936483"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-type">BindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679936482"><span class="hs-identifier hs-type">p1</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936481"><span class="hs-identifier hs-type">p2</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936480"><span class="hs-identifier hs-type">p3</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936479"><span class="hs-identifier hs-type">p4</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936484"><span class="hs-identifier hs-type">ps</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936483"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-241"></span><span>  </span><span id="local-6989586621679936234"><span class="annot"><span class="annottext">bindFields :: forall {r :: PType} (s :: S).
+Proxy
+  @[ToBind]
+  ((':)
+     @ToBind
+     'Skip
+     ((':) @ToBind 'Skip ((':) @ToBind 'Skip ((':) @ToBind 'Skip bs))))
+-&gt; Term
+     s
+     (PDataRecord
+        ((':)
+           @PLabeledType
+           p1
+           ((':)
+              @PLabeledType
+              p2
+              ((':) @PLabeledType p3 ((':) @PLabeledType p4 ps)))))
+-&gt; TermCont
+     @r
+     s
+     (HRec
+        (BoundTerms
+           ((':)
+              @PLabeledType
+              p1
+              ((':)
+                 @PLabeledType
+                 p2
+                 ((':) @PLabeledType p3 ((':) @PLabeledType p4 ps))))
+           ((':)
+              @ToBind
+              'Skip
+              ((':) @ToBind 'Skip ((':) @ToBind 'Skip ((':) @ToBind 'Skip bs))))
+           s))
+</span><a href="#local-6989586621679936234"><span class="hs-identifier hs-var hs-var hs-var hs-var">bindFields</span></a></span></span><span> </span><span class="annot"><span class="annottext">Proxy
+  @[ToBind]
+  ((':)
+     @ToBind
+     'Skip
+     ((':) @ToBind 'Skip ((':) @ToBind 'Skip ((':) @ToBind 'Skip bs))))
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679936233"><span class="annot"><span class="annottext">Term
+  s
+  (PDataRecord
+     ((':)
+        @PLabeledType
+        p1
+        ((':)
+           @PLabeledType
+           p2
+           ((':) @PLabeledType p3 ((':) @PLabeledType p4 ps)))))
+</span><a href="#local-6989586621679936233"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-242"></span><span>    </span><span class="annot"><span class="annottext">forall (ps :: [PLabeledType]) (bs :: [ToBind]) {r :: PType}
+       (s :: S).
+BindFields ps bs =&gt;
+Proxy @[ToBind] bs
+-&gt; Term s (PDataRecord ps)
+-&gt; TermCont @r s (HRec (BoundTerms ps bs s))
+</span><a href="Plutarch.DataRepr.Internal.Field.html#bindFields"><span class="hs-identifier hs-var">bindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679936483"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (n :: Nat) (s :: S) (xs :: [PLabeledType]).
+KnownNat n =&gt;
+Proxy @Nat n
+-&gt; Term s (PDataRecord xs)
+-&gt; Term s (PDataRecord (Drop @PLabeledType n xs))
+</span><a href="Plutarch.DataRepr.Internal.html#pdropDataRecord"><span class="hs-identifier hs-var">pdropDataRecord</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-number">4</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term
+  s
+  (PDataRecord
+     ((':)
+        @PLabeledType
+        p1
+        ((':)
+           @PLabeledType
+           p2
+           ((':) @PLabeledType p3 ((':) @PLabeledType p4 ps)))))
+</span><a href="#local-6989586621679936233"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-243"></span><span>
+</span><span id="line-244"></span><span class="hs-keyword">instance</span><span> </span><span class="hs-pragma">{-# OVERLAPPABLE</span><span> </span><span class="hs-pragma">#-}</span><span> </span><span id="local-6989586621679936463"><span id="local-6989586621679936464"><span id="local-6989586621679936465"><span id="local-6989586621679936466"><span id="local-6989586621679936467"><span id="local-6989586621679936468"><span id="local-6989586621679936469"><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-type">BindFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936469"><span class="hs-identifier hs-type">ps</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936468"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-type">BindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679936467"><span class="hs-identifier hs-type">p1</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936466"><span class="hs-identifier hs-type">p2</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936465"><span class="hs-identifier hs-type">p3</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936464"><span class="hs-identifier hs-type">p4</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936463"><span class="hs-identifier hs-type">p5</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936469"><span class="hs-identifier hs-type">ps</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936468"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-245"></span><span>  </span><span id="local-6989586621679936227"><span class="annot"><span class="annottext">bindFields :: forall {r :: PType} (s :: S).
+Proxy
+  @[ToBind]
+  ((':)
+     @ToBind
+     'Skip
+     ((':)
+        @ToBind
+        'Skip
+        ((':) @ToBind 'Skip ((':) @ToBind 'Skip ((':) @ToBind 'Skip bs)))))
+-&gt; Term
+     s
+     (PDataRecord
+        ((':)
+           @PLabeledType
+           p1
+           ((':)
+              @PLabeledType
+              p2
+              ((':)
+                 @PLabeledType
+                 p3
+                 ((':) @PLabeledType p4 ((':) @PLabeledType p5 ps))))))
+-&gt; TermCont
+     @r
+     s
+     (HRec
+        (BoundTerms
+           ((':)
+              @PLabeledType
+              p1
+              ((':)
+                 @PLabeledType
+                 p2
+                 ((':)
+                    @PLabeledType
+                    p3
+                    ((':) @PLabeledType p4 ((':) @PLabeledType p5 ps)))))
+           ((':)
+              @ToBind
+              'Skip
+              ((':)
+                 @ToBind
+                 'Skip
+                 ((':) @ToBind 'Skip ((':) @ToBind 'Skip ((':) @ToBind 'Skip bs)))))
+           s))
+</span><a href="#local-6989586621679936227"><span class="hs-identifier hs-var hs-var hs-var hs-var">bindFields</span></a></span></span><span> </span><span class="annot"><span class="annottext">Proxy
+  @[ToBind]
+  ((':)
+     @ToBind
+     'Skip
+     ((':)
+        @ToBind
+        'Skip
+        ((':) @ToBind 'Skip ((':) @ToBind 'Skip ((':) @ToBind 'Skip bs)))))
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679936226"><span class="annot"><span class="annottext">Term
+  s
+  (PDataRecord
+     ((':)
+        @PLabeledType
+        p1
+        ((':)
+           @PLabeledType
+           p2
+           ((':)
+              @PLabeledType
+              p3
+              ((':) @PLabeledType p4 ((':) @PLabeledType p5 ps))))))
+</span><a href="#local-6989586621679936226"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-246"></span><span>    </span><span class="annot"><span class="annottext">forall (ps :: [PLabeledType]) (bs :: [ToBind]) {r :: PType}
+       (s :: S).
+BindFields ps bs =&gt;
+Proxy @[ToBind] bs
+-&gt; Term s (PDataRecord ps)
+-&gt; TermCont @r s (HRec (BoundTerms ps bs s))
+</span><a href="Plutarch.DataRepr.Internal.Field.html#bindFields"><span class="hs-identifier hs-var">bindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679936468"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (n :: Nat) (s :: S) (xs :: [PLabeledType]).
+KnownNat n =&gt;
+Proxy @Nat n
+-&gt; Term s (PDataRecord xs)
+-&gt; Term s (PDataRecord (Drop @PLabeledType n xs))
+</span><a href="Plutarch.DataRepr.Internal.html#pdropDataRecord"><span class="hs-identifier hs-var">pdropDataRecord</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-number">5</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term
+  s
+  (PDataRecord
+     ((':)
+        @PLabeledType
+        p1
+        ((':)
+           @PLabeledType
+           p2
+           ((':)
+              @PLabeledType
+              p3
+              ((':) @PLabeledType p4 ((':) @PLabeledType p5 ps))))))
+</span><a href="#local-6989586621679936226"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-247"></span><span>
+</span><span id="line-248"></span><span class="hs-keyword">instance</span><span> </span><span class="hs-pragma">{-# OVERLAPPABLE</span><span> </span><span class="hs-pragma">#-}</span><span> </span><span id="local-6989586621679936445"><span id="local-6989586621679936446"><span id="local-6989586621679936447"><span id="local-6989586621679936448"><span id="local-6989586621679936449"><span id="local-6989586621679936450"><span id="local-6989586621679936451"><span id="local-6989586621679936452"><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-type">BindFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936452"><span class="hs-identifier hs-type">ps</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936451"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-type">BindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679936450"><span class="hs-identifier hs-type">p1</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936449"><span class="hs-identifier hs-type">p2</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936448"><span class="hs-identifier hs-type">p3</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936447"><span class="hs-identifier hs-type">p4</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936446"><span class="hs-identifier hs-type">p5</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936445"><span class="hs-identifier hs-type">p6</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936452"><span class="hs-identifier hs-type">ps</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936451"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-249"></span><span>  </span><span id="local-6989586621679936220"><span class="annot"><span class="annottext">bindFields :: forall {r :: PType} (s :: S).
+Proxy
+  @[ToBind]
+  ((':)
+     @ToBind
+     'Skip
+     ((':)
+        @ToBind
+        'Skip
+        ((':)
+           @ToBind
+           'Skip
+           ((':)
+              @ToBind 'Skip ((':) @ToBind 'Skip ((':) @ToBind 'Skip bs))))))
+-&gt; Term
+     s
+     (PDataRecord
+        ((':)
+           @PLabeledType
+           p1
+           ((':)
+              @PLabeledType
+              p2
+              ((':)
+                 @PLabeledType
+                 p3
+                 ((':)
+                    @PLabeledType
+                    p4
+                    ((':) @PLabeledType p5 ((':) @PLabeledType p6 ps)))))))
+-&gt; TermCont
+     @r
+     s
+     (HRec
+        (BoundTerms
+           ((':)
+              @PLabeledType
+              p1
+              ((':)
+                 @PLabeledType
+                 p2
+                 ((':)
+                    @PLabeledType
+                    p3
+                    ((':)
+                       @PLabeledType
+                       p4
+                       ((':) @PLabeledType p5 ((':) @PLabeledType p6 ps))))))
+           ((':)
+              @ToBind
+              'Skip
+              ((':)
+                 @ToBind
+                 'Skip
+                 ((':)
+                    @ToBind
+                    'Skip
+                    ((':)
+                       @ToBind 'Skip ((':) @ToBind 'Skip ((':) @ToBind 'Skip bs))))))
+           s))
+</span><a href="#local-6989586621679936220"><span class="hs-identifier hs-var hs-var hs-var hs-var">bindFields</span></a></span></span><span> </span><span class="annot"><span class="annottext">Proxy
+  @[ToBind]
+  ((':)
+     @ToBind
+     'Skip
+     ((':)
+        @ToBind
+        'Skip
+        ((':)
+           @ToBind
+           'Skip
+           ((':)
+              @ToBind 'Skip ((':) @ToBind 'Skip ((':) @ToBind 'Skip bs))))))
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679936219"><span class="annot"><span class="annottext">Term
+  s
+  (PDataRecord
+     ((':)
+        @PLabeledType
+        p1
+        ((':)
+           @PLabeledType
+           p2
+           ((':)
+              @PLabeledType
+              p3
+              ((':)
+                 @PLabeledType
+                 p4
+                 ((':) @PLabeledType p5 ((':) @PLabeledType p6 ps)))))))
+</span><a href="#local-6989586621679936219"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-250"></span><span>    </span><span class="annot"><span class="annottext">forall (ps :: [PLabeledType]) (bs :: [ToBind]) {r :: PType}
+       (s :: S).
+BindFields ps bs =&gt;
+Proxy @[ToBind] bs
+-&gt; Term s (PDataRecord ps)
+-&gt; TermCont @r s (HRec (BoundTerms ps bs s))
+</span><a href="Plutarch.DataRepr.Internal.Field.html#bindFields"><span class="hs-identifier hs-var">bindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679936451"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (n :: Nat) (s :: S) (xs :: [PLabeledType]).
+KnownNat n =&gt;
+Proxy @Nat n
+-&gt; Term s (PDataRecord xs)
+-&gt; Term s (PDataRecord (Drop @PLabeledType n xs))
+</span><a href="Plutarch.DataRepr.Internal.html#pdropDataRecord"><span class="hs-identifier hs-var">pdropDataRecord</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-number">6</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term
+  s
+  (PDataRecord
+     ((':)
+        @PLabeledType
+        p1
+        ((':)
+           @PLabeledType
+           p2
+           ((':)
+              @PLabeledType
+              p3
+              ((':)
+                 @PLabeledType
+                 p4
+                 ((':) @PLabeledType p5 ((':) @PLabeledType p6 ps)))))))
+</span><a href="#local-6989586621679936219"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-251"></span><span>
+</span><span id="line-252"></span><span class="hs-keyword">instance</span><span> </span><span class="hs-pragma">{-# OVERLAPPABLE</span><span> </span><span class="hs-pragma">#-}</span><span> </span><span id="local-6989586621679936425"><span id="local-6989586621679936426"><span id="local-6989586621679936427"><span id="local-6989586621679936428"><span id="local-6989586621679936429"><span id="local-6989586621679936430"><span id="local-6989586621679936431"><span id="local-6989586621679936432"><span id="local-6989586621679936433"><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-type">BindFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936433"><span class="hs-identifier hs-type">ps</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936432"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#BindFields"><span class="hs-identifier hs-type">BindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679936431"><span class="hs-identifier hs-type">p1</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936430"><span class="hs-identifier hs-type">p2</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936429"><span class="hs-identifier hs-type">p3</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936428"><span class="hs-identifier hs-type">p4</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936427"><span class="hs-identifier hs-type">p5</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936426"><span class="hs-identifier hs-type">p6</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936425"><span class="hs-identifier hs-type">p7</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936433"><span class="hs-identifier hs-type">ps</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="hs-special">'</span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#Skip"><span class="hs-identifier hs-type">Skip</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679936432"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-253"></span><span>  </span><span id="local-6989586621679936213"><span class="annot"><span class="annottext">bindFields :: forall {r :: PType} (s :: S).
+Proxy
+  @[ToBind]
+  ((':)
+     @ToBind
+     'Skip
+     ((':)
+        @ToBind
+        'Skip
+        ((':)
+           @ToBind
+           'Skip
+           ((':)
+              @ToBind
+              'Skip
+              ((':)
+                 @ToBind 'Skip ((':) @ToBind 'Skip ((':) @ToBind 'Skip bs)))))))
+-&gt; Term
+     s
+     (PDataRecord
+        ((':)
+           @PLabeledType
+           p1
+           ((':)
+              @PLabeledType
+              p2
+              ((':)
+                 @PLabeledType
+                 p3
+                 ((':)
+                    @PLabeledType
+                    p4
+                    ((':)
+                       @PLabeledType
+                       p5
+                       ((':) @PLabeledType p6 ((':) @PLabeledType p7 ps))))))))
+-&gt; TermCont
+     @r
+     s
+     (HRec
+        (BoundTerms
+           ((':)
+              @PLabeledType
+              p1
+              ((':)
+                 @PLabeledType
+                 p2
+                 ((':)
+                    @PLabeledType
+                    p3
+                    ((':)
+                       @PLabeledType
+                       p4
+                       ((':)
+                          @PLabeledType
+                          p5
+                          ((':) @PLabeledType p6 ((':) @PLabeledType p7 ps)))))))
+           ((':)
+              @ToBind
+              'Skip
+              ((':)
+                 @ToBind
+                 'Skip
+                 ((':)
+                    @ToBind
+                    'Skip
+                    ((':)
+                       @ToBind
+                       'Skip
+                       ((':)
+                          @ToBind 'Skip ((':) @ToBind 'Skip ((':) @ToBind 'Skip bs)))))))
+           s))
+</span><a href="#local-6989586621679936213"><span class="hs-identifier hs-var hs-var hs-var hs-var">bindFields</span></a></span></span><span> </span><span class="annot"><span class="annottext">Proxy
+  @[ToBind]
+  ((':)
+     @ToBind
+     'Skip
+     ((':)
+        @ToBind
+        'Skip
+        ((':)
+           @ToBind
+           'Skip
+           ((':)
+              @ToBind
+              'Skip
+              ((':)
+                 @ToBind 'Skip ((':) @ToBind 'Skip ((':) @ToBind 'Skip bs)))))))
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679936212"><span class="annot"><span class="annottext">Term
+  s
+  (PDataRecord
+     ((':)
+        @PLabeledType
+        p1
+        ((':)
+           @PLabeledType
+           p2
+           ((':)
+              @PLabeledType
+              p3
+              ((':)
+                 @PLabeledType
+                 p4
+                 ((':)
+                    @PLabeledType
+                    p5
+                    ((':) @PLabeledType p6 ((':) @PLabeledType p7 ps))))))))
+</span><a href="#local-6989586621679936212"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-254"></span><span>    </span><span class="annot"><span class="annottext">forall (ps :: [PLabeledType]) (bs :: [ToBind]) {r :: PType}
+       (s :: S).
+BindFields ps bs =&gt;
+Proxy @[ToBind] bs
+-&gt; Term s (PDataRecord ps)
+-&gt; TermCont @r s (HRec (BoundTerms ps bs s))
+</span><a href="Plutarch.DataRepr.Internal.Field.html#bindFields"><span class="hs-identifier hs-var">bindFields</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679936432"><span class="hs-identifier hs-type">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (n :: Nat) (s :: S) (xs :: [PLabeledType]).
+KnownNat n =&gt;
+Proxy @Nat n
+-&gt; Term s (PDataRecord xs)
+-&gt; Term s (PDataRecord (Drop @PLabeledType n xs))
+</span><a href="Plutarch.DataRepr.Internal.html#pdropDataRecord"><span class="hs-identifier hs-var">pdropDataRecord</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-number">7</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term
+  s
+  (PDataRecord
+     ((':)
+        @PLabeledType
+        p1
+        ((':)
+           @PLabeledType
+           p2
+           ((':)
+              @PLabeledType
+              p3
+              ((':)
+                 @PLabeledType
+                 p4
+                 ((':)
+                    @PLabeledType
+                    p5
+                    ((':) @PLabeledType p6 ((':) @PLabeledType p7 ps))))))))
+</span><a href="#local-6989586621679936212"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-255"></span><span>
+</span><span id="line-256"></span><span class="hs-comment">--------------------------------------------------------------------------------</span><span>
+</span><span id="line-257"></span><span>
+</span><span id="line-258"></span><span class="hs-comment">{- |
+  Get a single field from a Term.
+
+  *NB*: If you access more than one field from
+  the same value you should use 'pletFields' instead,
+  which will generate the bindings more efficiently.
+-}</span><span>
+</span><span id="line-265"></span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#pfield"><span class="hs-identifier hs-type">pfield</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-266"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679936419"><span class="annot"><a href="#local-6989586621679936419"><span class="hs-identifier hs-type">name</span></a></span></span><span> </span><span id="local-6989586621679936416"><span class="annot"><a href="#local-6989586621679936416"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span id="local-6989586621679936422"><span class="annot"><a href="#local-6989586621679936422"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span id="local-6989586621679936414"><span class="annot"><a href="#local-6989586621679936414"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span id="local-6989586621679936417"><span class="annot"><a href="#local-6989586621679936417"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679936421"><span class="annot"><a href="#local-6989586621679936421"><span class="hs-keyword hs-type">as</span></a></span></span><span> </span><span id="local-6989586621679936420"><span class="annot"><a href="#local-6989586621679936420"><span class="hs-identifier hs-type">n</span></a></span></span><span class="hs-operator">.</span><span>
+</span><span id="line-267"></span><span>  </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PDataFields"><span class="hs-identifier hs-type">PDataFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936422"><span class="hs-identifier hs-type">p</span></a></span><span>
+</span><span id="line-268"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679936421"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.Field.html#PFields"><span class="hs-identifier hs-type">PFields</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936422"><span class="hs-identifier hs-type">p</span></a></span><span>
+</span><span id="line-269"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679936420"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PLabelIndex"><span class="hs-identifier hs-type">PLabelIndex</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936419"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936421"><span class="hs-keyword hs-type">as</span></a></span><span>
+</span><span id="line-270"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-type">KnownNat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936420"><span class="hs-identifier hs-type">n</span></a></span><span>
+</span><span id="line-271"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679936417"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PUnLabel"><span class="hs-identifier hs-type">PUnLabel</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.DataRepr.Internal.HList.Utils.html#IndexList"><span class="hs-identifier hs-type">IndexList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936420"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936421"><span class="hs-keyword hs-type">as</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-272"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.FromData.html#PFromDataable"><span class="hs-identifier hs-type">PFromDataable</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936417"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936416"><span class="hs-identifier hs-type">b</span></a></span><span>
+</span><span id="line-273"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-274"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936414"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679936422"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936416"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-275"></span><span id="pfield"><span class="annot"><span class="annottext">pfield :: forall (name :: Symbol) (b :: PType) (p :: PType) (s :: S)
+       (a :: PType) (as :: [PLabeledType]) (n :: Nat).
+(PDataFields p,
+ (as :: [PLabeledType]) ~ (PFields p :: [PLabeledType]),
+ (n :: Nat) ~ (PLabelIndex name as :: Nat), KnownNat n,
+ (a :: PType) ~ (PUnLabel (IndexList @PLabeledType n as) :: PType),
+ PFromDataable a b) =&gt;
+Term s (p :--&gt; b)
+</span><a href="Plutarch.DataRepr.Internal.Field.html#pfield"><span class="hs-identifier hs-var hs-var">pfield</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-276"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span class="annot"><span class="annottext">()
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (c :: Constraint). c =&gt; Proxy @Constraint c -&gt; ()
+</span><a href="Plutarch.Internal.Witness.html#witness"><span class="hs-identifier hs-var">witness</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679936420"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><a href="../../../../ghc/html/libraries/ghc-prim-0.8.0/src"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="Plutarch.DataRepr.Internal.html#PLabelIndex"><span class="hs-identifier hs-type">PLabelIndex</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936419"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679936421"><span class="hs-keyword hs-type">as</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-277"></span><span>   </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">forall a (b :: PType) (s :: S) (c :: PType).
+(PLamN a b s, HasCallStack) =&gt;
+(Term s c -&gt; a) -&gt; Term s (c :--&gt; b)
+</span><a href="Plutarch.Internal.PLam.html#plam"><span class="hs-identifier hs-var">plam</span></a></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679936190"><span class="annot"><span class="annottext">Term s p
+</span><a href="#local-6989586621679936190"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-278"></span><span>        </span><span class="annot"><span class="annottext">forall (a :: PType) (b :: PType) (s :: S).
+PFromDataable a b =&gt;
+Term s (PAsData a) -&gt; Term s b
+</span><a href="Plutarch.DataRepr.Internal.FromData.html#pmaybeFromAsData"><span class="hs-identifier hs-var">pmaybeFromAsData</span></a></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (n :: Nat) (s :: S) (as :: [PLabeledType]).
+KnownNat n =&gt;
+Proxy @Nat n
+-&gt; Term s (PDataRecord as)
+-&gt; Term s (PAsData (PUnLabel (IndexList @PLabeledType n as)))
+</span><a href="Plutarch.DataRepr.Internal.html#pindexDataRecord"><span class="hs-identifier hs-var">pindexDataRecord</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679936420"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../../ghc/html/libraries/base-4.16.4.0/src"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (a :: PType) (s :: S).
+PDataFields a =&gt;
+Term s a -&gt; Term s (PDataRecord (PFields a))
+</span><a href="Plutarch.DataRepr.Internal.Field.html#ptoFields"><span class="hs-identifier hs-var">ptoFields</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679936422"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><span class="annottext">Term s p
+</span><a href="#local-6989586621679936190"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-279"></span></pre></body></html>
