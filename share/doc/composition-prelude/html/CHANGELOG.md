@@ -1,1 +1,1 @@
-/nix/store/3yrsg3yqdpczwdizakxcnnimppn4pb0v-combine-haddock/share/doc/composition-prelude/html/CHANGELOG.md
+/nix/store/3yp1yfwzwir6m2dhibh2fm302dzs41yv-combine-haddock/share/doc/composition-prelude/html/CHANGELOG.md

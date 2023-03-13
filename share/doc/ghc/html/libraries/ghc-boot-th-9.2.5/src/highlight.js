@@ -1,1 +1,1 @@
-/nix/store/3yrsg3yqdpczwdizakxcnnimppn4pb0v-combine-haddock/share/doc/ghc/html/libraries/ghc-boot-th-9.2.5/src/highlight.js
+/nix/store/3yp1yfwzwir6m2dhibh2fm302dzs41yv-combine-haddock/share/doc/ghc/html/libraries/ghc-boot-th-9.2.5/src/highlight.js
