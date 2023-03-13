@@ -43,11 +43,11 @@ A really good introduction to `generics-sop` by the maker of the library, Andres
 
 Overall image of [generics-sop](https://github.com/well-typed/generics-sop) package.
 
-[Introduction by srid](https://github.com/srid/generics-sop-examples/blob/master/doc/draft.md).
+[Introduction by srid](https://srid.ca/generics-sop-intro).
 
 Why is sum-of-products considered? It's very close to what developers think JSON is.
 
-Generic representation of ADTs as sum of products, which can be automatically derived with TH.
+Generic representation of ADTs as sum of products, which can be automatically derived.
 Some commonly used types/functions:
 
 ```
