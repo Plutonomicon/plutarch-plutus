@@ -440,17 +440,27 @@ data OnePresentHandler k v s
   | PassOne
   | HandleOne (Term s k -> Term s v -> Term s v)
 
-{- | Signals how to handle value merging for matching keys in 'zipWith'.
+{- | Signals how to handle value merging for matching keys in 'pzipWith'.
 
- Param order: What to do when the left is present only, what to do when the
- right is present only, what to do when both are present.
+ No restrictions on commutativity: Safe to use for both commutative and
+ non-commutative merging operations.
 -}
-data MergeHandler k v s
-  = MergeHandler (BothPresentHandler k v s) (OnePresentHandler k v s) (OnePresentHandler k v s)
+data MergeHandler k v s = MergeHandler
+  { mhBoth :: BothPresentHandler k v s
+  , mhLeft :: OnePresentHandler k v s
+  , mhRight :: OnePresentHandler k v s
+  }
 
-data MergeHandlerCommutative k v s
-  = MergeHandlerCommutative (BothPresentHandlerCommutative k v s) (OnePresentHandler k v s)
+{- | Signals how to handle value merging for matching keys in 'pzipWith'.
 
+ Safe to use for commutative merging operations only.
+-}
+data MergeHandlerCommutative k v s = MergeHandlerCommutative
+  { mhcBoth :: BothPresentHandlerCommutative k v s
+  , mhcOne :: OnePresentHandler k v s
+  }
+
+-- | Signals how to handle value merging for matching keys in 'pzipWith'.
 data SomeMergeHandler k v s
   = SomeMergeHandlerCommutative (MergeHandlerCommutative k v s)
   | SomeMergeHandler (MergeHandler k v s)
@@ -790,6 +800,12 @@ pzipWith (SomeMergeHandler mh@MergeHandler {}) =
 pzipWith (SomeMergeHandlerCommutative mh@(MergeHandlerCommutative _ _)) =
   pzipWithData (SomeMergeHandlerCommutative $ mergeHandlerCommutativeOnData mh)
 
+{- | Zip two 'PMap's, using the given value merge function for key collisions,
+ the commutativity of the merge function, and a default value that can stand in
+ for both sides.
+
+ Note that using 'Commutative' is less costly than 'NonCommutative'.
+-}
 pzipWithDataDefault ::
   forall (s :: S) (k :: PType) (v :: PType).
   (POrd k, PIsData k) =>
@@ -816,6 +832,12 @@ pzipWithDataDefault def Commutative = phoistAcyclic $ plam \combine ->
         (HandleBothCommutative \_ vl vr -> combine # vl # vr)
         (HandleOne \_ vl -> combine # vl # def)
 
+{- | Zip two 'PMap's, using the given value merge function for key collisions,
+ the commutativity of the merge function, and a default value that can stand in
+ for both sides.
+
+ Note that using 'Commutative' is less costly than 'NonCommutative'.
+-}
 pzipWithDefault ::
   forall (s :: S) (k :: PType) (v :: PType).
   (POrd k, PIsData k, PIsData v) =>
@@ -842,6 +864,12 @@ pzipWithDefault def Commutative = phoistAcyclic $ plam \combine ->
         (HandleBothCommutative \_ vl vr -> combine # vl # vr)
         (HandleOne \_ vl -> combine # vl # def)
 
+{- | Zip two 'PMap's, using the given potentially non-commutative value merge
+ function for key collisions, and different values for the sides.
+
+ Use `pzipWithDataDefault` if your merge function is commutative for better
+ performance.
+-}
 pzipWithDataDefaults ::
   forall (s :: S) (k :: PType) (v :: PType).
   (POrd k, PIsData k) =>
@@ -862,6 +890,12 @@ pzipWithDataDefaults defLeft defRight = phoistAcyclic $ plam \combine ->
         (HandleOne \_ vl -> combine # vl # defRight)
         (HandleOne \_ vr -> combine # defLeft # vr)
 
+{- | Zip two 'PMap's, using the given potentially non-commutative value merge
+ function for key collisions, and different values for the sides.
+
+ Use `pzipWithDefault` if your merge function is commutative for better
+ performance.
+-}
 pzipWithDefaults ::
   forall (s :: S) (k :: PType) (v :: PType).
   (POrd k, PIsData k, PIsData v) =>
@@ -898,20 +932,6 @@ pleftBiasedUnion =
 {- | Build the union of two 'PMap's, merging values that share the same key using the
 given function.
 -}
-punionResolvingCollisionsWith ::
-  (POrd k, PIsData k, PIsData v) =>
-  Commutativity ->
-  Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
-punionResolvingCollisionsWith NonCommutative = phoistAcyclic $ plam \merge ->
-  pzipWith $ SomeMergeHandler $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) PassOne PassOne
-punionResolvingCollisionsWith Commutative = phoistAcyclic $ plam \merge ->
-  pzipWith $
-    SomeMergeHandlerCommutative $
-      MergeHandlerCommutative (HandleBothCommutative \_ vl vr -> merge # vl # vr) PassOne
-
-{- | Build the union of two 'PMap's, merging values that share the same key using the
-given function.
--}
 punionResolvingCollisionsWithData ::
   (POrd k, PIsData k) =>
   Commutativity ->
@@ -929,19 +949,19 @@ punionResolvingCollisionsWithData Commutative = phoistAcyclic $ plam \merge ->
     SomeMergeHandlerCommutative $
       MergeHandlerCommutative (HandleBothCommutative \_ vl vr -> merge # vl # vr) PassOne
 
-{- | Build the intersection of two 'PMap's, merging values that share the same key using the
+{- | Build the union of two 'PMap's, merging values that share the same key using the
 given function.
 -}
-pintersectionWith ::
+punionResolvingCollisionsWith ::
   (POrd k, PIsData k, PIsData v) =>
   Commutativity ->
   Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
-pintersectionWith NonCommutative = phoistAcyclic $ plam \merge ->
-  pzipWith $ SomeMergeHandler $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) DropOne DropOne
-pintersectionWith Commutative = phoistAcyclic $ plam \merge ->
+punionResolvingCollisionsWith NonCommutative = phoistAcyclic $ plam \merge ->
+  pzipWith $ SomeMergeHandler $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) PassOne PassOne
+punionResolvingCollisionsWith Commutative = phoistAcyclic $ plam \merge ->
   pzipWith $
     SomeMergeHandlerCommutative $
-      MergeHandlerCommutative (HandleBothCommutative \_ vl vr -> merge # vl # vr) DropOne
+      MergeHandlerCommutative (HandleBothCommutative \_ vl vr -> merge # vl # vr) PassOne
 
 {- | Build the intersection of two 'PMap's, merging data-encoded values that share the same key using the
 given function.
@@ -960,6 +980,20 @@ pintersectionWithData NonCommutative = phoistAcyclic $ plam \merge ->
   pzipWithData $ SomeMergeHandler $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) DropOne DropOne
 pintersectionWithData Commutative = phoistAcyclic $ plam \merge ->
   pzipWithData $
+    SomeMergeHandlerCommutative $
+      MergeHandlerCommutative (HandleBothCommutative \_ vl vr -> merge # vl # vr) DropOne
+
+{- | Build the intersection of two 'PMap's, merging values that share the same key using the
+given function.
+-}
+pintersectionWith ::
+  (POrd k, PIsData k, PIsData v) =>
+  Commutativity ->
+  Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
+pintersectionWith NonCommutative = phoistAcyclic $ plam \merge ->
+  pzipWith $ SomeMergeHandler $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) DropOne DropOne
+pintersectionWith Commutative = phoistAcyclic $ plam \merge ->
+  pzipWith $
     SomeMergeHandlerCommutative $
       MergeHandlerCommutative (HandleBothCommutative \_ vl vr -> merge # vl # vr) DropOne
 
