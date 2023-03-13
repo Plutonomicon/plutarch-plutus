@@ -18,6 +18,7 @@ import Test.Tasty.HUnit
 
 import Control.Monad (forM_)
 import Control.Monad.Trans.Cont (cont, runCont)
+import Data.Bifunctor (bimap)
 import Data.String (fromString)
 import GHC.Exts (IsList (fromList))
 import Numeric (showHex)
@@ -279,7 +280,7 @@ spec = do
             otherMap = AssocMap.psingleton # pconstant "newkey" # 6
             pmapunionResolvingCollisions = fromList [(pconstant "key", 42), (pconstant "newkey", 6)]
             mkTestMap :: forall (s :: S). [(ByteString, Integer)] -> Term s (AssocMap.PMap 'Sorted PByteString PInteger)
-            mkTestMap = fromList . bimap pconstant pconstant
+            mkTestMap = fromList . fmap (bimap pconstant pconstant)
         "lookup" @\ do
           "itself"
             @| AssocMap.plookup
