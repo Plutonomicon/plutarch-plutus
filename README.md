@@ -1,6 +1,7 @@
 # Plutarch
 
-[![Hercules-ci][Herc badge]][Herc link] [![github pages link](https://img.shields.io/badge/docs-github.io-blueviolet)](https://plutonomicon.github.io/plutarch-plutus/)
+[![Hercules-ci][Herc badge]][Herc link]
+[![github pages link](https://img.shields.io/badge/docs-github.io-blueviolet)](https://plutonomicon.github.io/plutarch-plutus/)
 
 [Herc badge]: https://img.shields.io/badge/ci--by--hercules-green.svg
 [Herc link]: https://hercules-ci.com/github/Plutonomicon/plutarch
