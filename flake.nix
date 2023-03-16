@@ -47,7 +47,7 @@
         then [ builtins.currentSystem ]
         else [ "x86_64-linux" "aarch64-linux" ];
 
-      hercules-ci.github-pages.branch = "mangoiv/docdrive";
+      hercules-ci.github-pages.branch = "master";
       herculesCI.ciSystems = [ "x86_64-linux" ];
 
       perSystem = { config, pkgs, self', system, ... }: {
