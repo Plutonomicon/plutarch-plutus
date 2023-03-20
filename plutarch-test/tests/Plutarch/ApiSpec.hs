@@ -18,16 +18,18 @@ import Test.Tasty.HUnit
 
 import Control.Monad (forM_)
 import Control.Monad.Trans.Cont (cont, runCont)
+import Data.Bifunctor (bimap)
 import Data.String (fromString)
+import GHC.Exts (IsList (fromList))
 import Numeric (showHex)
 import PlutusLedgerApi.V1
 import PlutusLedgerApi.V1.Interval qualified as Interval
 import PlutusLedgerApi.V1.Value qualified as Value
+import PlutusTx.AssocMap qualified as PlutusMap
 import PlutusTx.Monoid (inv)
 
 import Plutarch.Api.V1 (
   AmountGuarantees (NoGuarantees, NonZero, Positive),
-  KeyGuarantees (Sorted),
   PCredential,
   PCurrencySymbol,
   PMaybeData,
@@ -39,6 +41,18 @@ import Plutarch.Api.V1 (
   PTxInfo,
   PValue,
  )
+import Plutarch.Api.V1.AssocMap (
+  BothPresentHandlerCommutative_ (..),
+  BothPresentHandler_ (..),
+  Commutativity (..),
+  KeyGuarantees (..),
+  MergeHandlerCommutative_ (..),
+  MergeHandler_ (..),
+  OnePresentHandler_ (DropOne, HandleOne, PassOne),
+  PMap (..),
+  SomeMergeHandler,
+  SomeMergeHandler_ (..),
+ )
 import Plutarch.Api.V1.AssocMap qualified as AssocMap
 import Plutarch.Api.V1.Value qualified as PValue
 import Plutarch.Builtin (pasConstr, pforgetData)
@@ -47,8 +61,22 @@ import Plutarch.Test
 import Plutarch.Test.Property.Gen ()
 
 import Test.Hspec
-import Test.Tasty.QuickCheck (Property, property, (===))
+import Test.Tasty.QuickCheck (
+  Gen,
+  Property,
+  arbitrary,
+  chooseInteger,
+  elements,
+  forAll,
+  oneof,
+  property,
+  shuffle,
+  withMaxSuccess,
+  (===),
+ )
 
+import Data.ByteString (ByteString)
+import Data.List (sort)
 import Plutarch.Lift (PConstanted, PLifted, PUnsafeLiftDecl (PLifted))
 
 newtype EnclosedTerm (p :: PType) = EnclosedTerm {getEnclosedTerm :: ClosedTerm p}
@@ -119,34 +147,75 @@ spec = do
                     # pconstant "token"
                     @-> \p -> plift p @?= if size < 9 then 0 else 1
               )
-        "unionWith" @\ do
-          "const" @| PValue.punionWith # plam const # pmint # pmint @-> \p ->
+        "leftBiasedCurrencyUnion" @\ do
+          "growing"
+            @\ forM_
+              (zip [1 :: Int .. length growingSymbols] growingSymbols)
+              ( \(size, v) ->
+                  fromString (show size)
+                    @| PValue.pleftBiasedCurrencyUnion
+                    # getEnclosedTerm v
+                    # pmintOtherSymbol
+                    @-> pshouldReallyBe
+                      ( pcon . PValue.PValue $
+                          AssocMap.punionResolvingCollisionsWith Commutative
+                            # (plam \_ _ -> ptraceError "unexpected collision")
+                            # pto (getEnclosedTerm v)
+                            # (AssocMap.pdifference # pto pmintOtherSymbol # pto (getEnclosedTerm v))
+                      )
+              )
+        "leftBiasedTokenUnion" @\ do
+          "growing"
+            @\ forM_
+              (zip [1 :: Int .. length growingSymbols] growingSymbols)
+              ( \(size, v) ->
+                  fromString (show size)
+                    @| PValue.pleftBiasedTokenUnion
+                    # getEnclosedTerm v
+                    # pmintOtherSymbol
+                    @-> \v' ->
+                      passert
+                        ( v'
+                            #== PValue.pleftBiasedTokenUnion
+                            # pmintOtherSymbol
+                            # getEnclosedTerm v
+                        )
+              )
+        "unionResolvingCollisionsWith" @\ do
+          "const" @| PValue.punionResolvingCollisionsWith NonCommutative # plam const # pmint # pmint @-> \p ->
             plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint
           "(+)" @\ do
-            "itself" @| PValue.punionWith # plam (+) @-> \plus ->
+            "itself" @| PValue.punionResolvingCollisionsWith Commutative # plam (+) @-> \plus ->
               plift (PValue.pforgetSorted $ PValue.pnormalize #$ plus # pmint # pmint) @?= mint <> mint
-            "applied" @| PValue.punionWith # plam (+) # pmint # pmint @-> \p ->
+            "applied" @| PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmint # pmint @-> \p ->
               plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint <> mint
-          "tokens" @| PValue.punionWith # plam (+) # pmint # pmintOtherToken @-> \p ->
+          "tokens" @| PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmint # pmintOtherToken @-> \p ->
             plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint <> mintOtherToken
-          "symbols" @| PValue.punionWith # plam (+) # pmint # pmintOtherSymbol @-> \p ->
+          "symbols" @| PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmint # pmintOtherSymbol @-> \p ->
             plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint <> mintOtherSymbol
           "growing"
             @\ forM_
               (zip [1 :: Int .. length growingSymbols] growingSymbols)
               ( \(size, v) ->
                   fromString (show size)
-                    @| PValue.punionWith
+                    @| PValue.punionResolvingCollisionsWith NonCommutative
                     # plam const
                     # getEnclosedTerm v
                     # pmintOtherSymbol
-                    @-> \v' -> passert (v' #== PValue.punionWith # plam const # pmintOtherSymbol # getEnclosedTerm v)
+                    @-> \v' ->
+                      passert
+                        ( v'
+                            #== PValue.punionResolvingCollisionsWith NonCommutative
+                            # plam const
+                            # pmintOtherSymbol
+                            # getEnclosedTerm v
+                        )
               )
-        "unionWithData const" @\ do
+        "unionResolvingCollisionsWithData const" @\ do
           "itself"
-            @| PValue.punionWithData @-> \u ->
+            @| PValue.punionResolvingCollisionsWithData NonCommutative @-> \u ->
               plift (PValue.pforgetSorted $ PValue.pnormalize #$ u # plam const # pmint # pmint) @?= mint
-          "applied" @| PValue.punionWithData # plam const # pmint # pmint @-> \p ->
+          "applied" @| PValue.punionResolvingCollisionsWithData NonCommutative # plam const # pmint # pmint @-> \p ->
             plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint
         "inv"
           @| inv (PValue.pforgetPositive pmint :: Term _ (PValue 'Sorted 'NonZero))
@@ -156,12 +225,12 @@ spec = do
           "triviallyTrue" @| pmint #== pmint @-> passert
           "triviallyFalse" @| pmint #== pmintOtherToken @-> passertNot
           "swappedTokensTrue"
-            @| pto (PValue.punionWith # plam (+) # pmint # pmintOtherToken)
-              #== pto (PValue.punionWith # plam (+) # pmintOtherToken # pmint)
+            @| pto (PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmint # pmintOtherToken)
+              #== pto (PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmintOtherToken # pmint)
               @-> passert
           "swappedSymbolsTrue"
-            @| pto (PValue.punionWith # plam (+) # pmint # pmintOtherSymbol)
-              #== pto (PValue.punionWith # plam (+) # pmintOtherSymbol # pmint)
+            @| pto (PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmint # pmintOtherSymbol)
+              #== pto (PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmintOtherSymbol # pmint)
               @-> passert
           "growing"
             @\ forM_
@@ -177,7 +246,7 @@ spec = do
             @-> \v -> passert (v #== pmint <> pmintOtherSymbol)
           "empty"
             @| PValue.pnormalize
-            # (PValue.punionWith # plam (-) # pmint # pmint)
+            # (PValue.punionResolvingCollisionsWith NonCommutative # plam (-) # pmint # pmint)
             @-> \v -> passert (v #== mempty)
         "assertSorted" @\ do
           "succeeds" @| PValue.passertSorted # (pmint <> pmintOtherSymbol) @-> psucceeds
@@ -192,7 +261,7 @@ spec = do
             @-> pfails
           "fails on zero quantities"
             @| PValue.passertSorted
-            # (PValue.punionWith # plam (-) # pmint # pmint)
+            # (PValue.punionResolvingCollisionsWith NonCommutative # plam (-) # pmint # pmint)
             @-> pfails
           "fails on empty token map"
             @| PValue.passertSorted
@@ -227,10 +296,15 @@ spec = do
       pgoldenSpec $ do
         let pmap, pdmap, emptyMap, doubleMap, otherMap :: Term _ (AssocMap.PMap 'Sorted PByteString PInteger)
             pmap = AssocMap.psingleton # pconstant "key" # 42
+            pmap' = AssocMap.psingleton # pconstant "key" # 23
+            psumMap = AssocMap.psingleton # pconstant "key" # 65
             pdmap = AssocMap.psingletonData # pdata (pconstant "key") # pdata 42
             emptyMap = AssocMap.pempty
             doubleMap = AssocMap.psingleton # pconstant "key" # 84
             otherMap = AssocMap.psingleton # pconstant "newkey" # 6
+            pmapunionResolvingCollisions = fromList [(pconstant "key", 42), (pconstant "newkey", 6)]
+            mkTestMap :: forall (s :: S). [(ByteString, Integer)] -> Term s (AssocMap.PMap 'Sorted PByteString PInteger)
+            mkTestMap = fromList . fmap (bimap pconstant pconstant)
         "lookup" @\ do
           "itself"
             @| AssocMap.plookup
@@ -270,7 +344,7 @@ spec = do
             @| AssocMap.pfindWithDefault
             # 12
             # pconstant "newkey"
-            # (AssocMap.punionWith # plam const # pmap # otherMap)
+            # (AssocMap.punionResolvingCollisionsWith NonCommutative # plam const # pmap # otherMap)
             @-> \result -> passert $ result #== 6
           "miss"
             @| AssocMap.pfindWithDefault
@@ -301,25 +375,137 @@ spec = do
           "emptyLeft" @| AssocMap.pdifference # emptyMap # pmap @-> pshouldReallyBe emptyMap
           "emptyRight" @| AssocMap.pdifference # pmap # emptyMap @-> pshouldReallyBe pmap
           "emptyResult" @| AssocMap.pdifference # pmap # doubleMap @-> pshouldReallyBe emptyMap
-        "unionWith" @\ do
-          "const" @| AssocMap.punionWith # plam const # pmap # pmap @-> pshouldReallyBe pmap
-          "double" @| AssocMap.punionWith # plam (+) # pmap # pmap @-> pshouldReallyBe doubleMap
+          "partialOverlap"
+            @| AssocMap.pdifference
+            # mkTestMap [("a", 42), ("b", 23)]
+            # mkTestMap [("b", 10), ("c", 8)]
+            @-> pshouldReallyBe (mkTestMap [("a", 42)])
+        "zipMapsWith" @\ do
+          "(-)"
+            @| AssocMap.pzipWithDefaults 1 0
+            # plam (-)
+            # mkTestMap [("a", 42), ("b", 23)]
+            # mkTestMap [("b", 10), ("c", 8)]
+            @-> pshouldReallyBe (mkTestMap [("a", 42), ("b", 13), ("c", -7)])
+        "leftBiasedUnion" @\ do
+          "const"
+            @| AssocMap.pleftBiasedUnion
+            # mkTestMap [("a", 42), ("b", 6)]
+            # mkTestMap [("b", 7), ("c", 23)]
+            @-> pshouldReallyBe (mkTestMap [("a", 42), ("b", 6), ("c", 23)])
+        "unionResolvingCollisionsWith" @\ do
+          "const"
+            @| AssocMap.punionResolvingCollisionsWith NonCommutative
+            # plam const
+            # mkTestMap [("a", 42), ("b", 6)]
+            # mkTestMap [("b", 7), ("c", 23)]
+            @-> pshouldReallyBe (mkTestMap [("a", 42), ("b", 6), ("c", 23)])
+          "flip const"
+            @| AssocMap.punionResolvingCollisionsWith NonCommutative
+            # plam (const id)
+            # mkTestMap [("a", 42), ("b", 6)]
+            # mkTestMap [("b", 7), ("c", 23)]
+            @-> pshouldReallyBe (mkTestMap [("a", 42), ("b", 7), ("c", 23)])
+          "double"
+            @| AssocMap.punionResolvingCollisionsWith Commutative
+            # plam (+)
+            # pmap
+            # pmap
+            @-> pshouldReallyBe doubleMap
           "(+)"
-            @| AssocMap.punionWith
+            @| AssocMap.punionResolvingCollisionsWith Commutative
             # plam (+)
             # pmap
-            # otherMap
-            @-> \p -> passert (p #== AssocMap.punionWith # plam (+) # otherMap # pmap)
-          "flip (+)"
-            @| AssocMap.punionWith
+            # pmap'
+            @-> pshouldReallyBe psumMap
+          "preservesCombineCommutativity"
+            @| AssocMap.punionResolvingCollisionsWith Commutative
             # plam (+)
-            # otherMap
+            # pmap'
             # pmap
-            @-> \p -> passert (p #== AssocMap.punionWith # plam (+) # pmap # otherMap)
-        "unionWithData" @\ do
-          "const" @| AssocMap.punionWithData # plam const # pmap # pmap @-> pshouldReallyBe pmap
-          "emptyLeft" @| AssocMap.punionWithData # plam const # emptyMap # pmap @-> pshouldReallyBe pmap
-          "emptyRight" @| AssocMap.punionWithData # plam const # pmap # emptyMap @-> pshouldReallyBe pmap
+            @-> \p -> passert (p #== AssocMap.punionResolvingCollisionsWith Commutative # plam (+) # pmap # pmap')
+        "unionResolvingCollisionsWithData" @\ do
+          "const"
+            @| AssocMap.punionResolvingCollisionsWithData NonCommutative
+            # plam const
+            # pmap
+            # pmap
+            @-> pshouldReallyBe pmap
+          "emptyLeft"
+            @| AssocMap.punionResolvingCollisionsWithData NonCommutative
+            # plam const
+            # emptyMap
+            # pmap
+            @-> pshouldReallyBe pmap
+          "emptyRight"
+            @| AssocMap.punionResolvingCollisionsWithData NonCommutative
+            # plam const
+            # pmap
+            # emptyMap
+            @-> pshouldReallyBe pmap
+          "distinctKeys"
+            @| AssocMap.punionResolvingCollisionsWithData NonCommutative
+            # plam const
+            # pmap
+            # otherMap
+            @-> pshouldReallyBe pmapunionResolvingCollisions
+        "intersectionWith" @\ do
+          "const"
+            @| AssocMap.pintersectionWith NonCommutative
+            # plam const
+            # mkTestMap [("a", 42), ("b", 6)]
+            # mkTestMap [("b", 7), ("c", 23)]
+            @-> pshouldReallyBe (mkTestMap [("b", 6)])
+          "flip const"
+            @| AssocMap.pintersectionWith NonCommutative
+            # plam (const id)
+            # mkTestMap [("a", 42), ("b", 6)]
+            # mkTestMap [("b", 7), ("c", 23)]
+            @-> pshouldReallyBe (mkTestMap [("b", 7)])
+          "double" @| AssocMap.pintersectionWith Commutative # plam (+) # pmap # pmap @-> pshouldReallyBe doubleMap
+          "(+)"
+            @| AssocMap.pintersectionWith Commutative
+            # plam (+)
+            # pmap
+            # pmap'
+            @-> pshouldReallyBe psumMap
+          "preservesCombineCommutativity"
+            @| AssocMap.pintersectionWith Commutative
+            # plam (+)
+            # pmap'
+            # pmap
+            @-> pshouldReallyBe (AssocMap.pintersectionWith Commutative # plam (+) # pmap # pmap')
+          "partialKeyMismatch"
+            @| AssocMap.pintersectionWith Commutative
+            # plam (+)
+            # (AssocMap.punionResolvingCollisionsWithData NonCommutative # plam const # pmap # otherMap)
+            # pmap'
+            @-> pshouldReallyBe psumMap
+        "intersectionWithData" @\ do
+          "const"
+            @| AssocMap.pintersectionWithData NonCommutative
+            # plam const
+            # pmap
+            # pmap
+            @-> pshouldReallyBe pmap
+          "emptyLeft"
+            @| AssocMap.pintersectionWithData NonCommutative
+            # plam const
+            # emptyMap
+            # pmap
+            @-> pshouldReallyBe emptyMap
+          "emptyRight"
+            @| AssocMap.pintersectionWithData NonCommutative
+            # plam const
+            # pmap
+            # emptyMap
+            @-> pshouldReallyBe emptyMap
+          "keyMismatch"
+            @| AssocMap.pintersectionWithData NonCommutative
+            # plam const
+            # pmap
+            # otherMap
+            @-> pshouldReallyBe emptyMap
     describe "example" $ do
       -- The checkSignatory family of functions implicitly use tracing due to
       -- monadic syntax, and as such we need two sets of tests here.
@@ -334,26 +520,31 @@ spec = do
           "fails" @| checkSignatoryTermCont # pconstant "41" # ctx @-> pfails
       describe "getFields" . pgoldenSpec $ do
         "0" @| getFields
-    describe "data recovery" $ do
-      describe "succeding property tests" $ do
-        it "recovering PAddress succeeds" $
-          property (propPlutarchtypeCanBeRecovered @Address)
-        it "recovering PTokenName succeeds" $
-          property (propPlutarchtypeCanBeRecovered @TokenName)
-        it "recovering PCredential succeeds" $
-          property (propPlutarchtypeCanBeRecovered @Credential)
-        it "recovering PStakingCredential succeeds" $
-          property (propPlutarchtypeCanBeRecovered @StakingCredential)
-        it "recovering PPubKeyHash succeeds" $
-          property (propPlutarchtypeCanBeRecovered @PubKeyHash)
-        it "recovering PScriptHash succeeds" $
-          property (propPlutarchtypeCanBeRecovered @ScriptHash)
-        it "recovering PValue succeeds" $
-          property (propPlutarchtypeCanBeRecovered @Value)
-        it "recovering PCurrencySymbol succeeds" $
-          property (propPlutarchtypeCanBeRecovered @CurrencySymbol)
-        it "recovering PMaybeData succeeds" $
-          property prop_pmaybedata_can_be_recovered
+      describe "data recovery" $ do
+        describe "succeding property tests" $ do
+          it "recovering PAddress succeeds" $
+            property (propPlutarchtypeCanBeRecovered @Address)
+          it "recovering PTokenName succeeds" $
+            property (propPlutarchtypeCanBeRecovered @TokenName)
+          it "recovering PCredential succeeds" $
+            property (propPlutarchtypeCanBeRecovered @Credential)
+          it "recovering PStakingCredential succeeds" $
+            property (propPlutarchtypeCanBeRecovered @StakingCredential)
+          it "recovering PPubKeyHash succeeds" $
+            property (propPlutarchtypeCanBeRecovered @PubKeyHash)
+          it "recovering PScriptHash succeeds" $
+            property (propPlutarchtypeCanBeRecovered @ScriptHash)
+          it "recovering PValue succeeds" $
+            property (propPlutarchtypeCanBeRecovered @Value)
+          it "recovering PCurrencySymbol succeeds" $
+            property (propPlutarchtypeCanBeRecovered @CurrencySymbol)
+          it "recovering PMaybeData succeeds" $
+            property prop_pmaybedata_can_be_recovered
+    describe "AssocMap.pzipWith" $ do
+      it "matches independently constructed expectation" $
+        withMaxSuccess 1000 $
+          forAll genSomeMergeHandler $
+            \mh -> forAll genSets . prop_pzipWith $ mh
 
 --------------------------------------------------------------------------------
 
@@ -591,3 +782,201 @@ prop_pmaybedata_can_be_recovered addr =
 
 pshouldReallyBe :: ClosedTerm a -> ClosedTerm a -> Expectation
 pshouldReallyBe a b = pshouldBe b a
+
+---------- AssocMap pzipWith property test infrastructure --------
+
+prop_pzipWith :: SomeMergeHandler_ DummyFun DummyKeyType DummyValueType -> RelatedSets -> Property
+prop_pzipWith mh sets@RelatedSets {left, right} =
+  expectationZipWith mh sets
+    === pMapToKVs
+      ( AssocMap.pzipWith (unDummifySomeMergeHandler mh)
+          # keysToPMap True left
+          # keysToPMap False right
+      )
+
+data RelatedSets = RelatedSets
+  { leftOnly :: [Integer]
+  -- ^ left \ right
+  , rightOnly :: [Integer]
+  -- ^ right \ left
+  , intersection :: [Integer]
+  -- ^ intersection of left and right
+  , left :: [Integer]
+  , right :: [Integer]
+  }
+  deriving stock (Show)
+
+genSets :: Gen RelatedSets
+genSets = do
+  -- ensuring case coverage by picking sections of Venn diagram
+  haveLeftOnly <- arbitrary @Bool
+  haveRightOnly <- arbitrary @Bool
+  haveIntersection <- arbitrary @Bool
+
+  let mkCount pred = if pred then chooseInteger (1, 10) else pure 0
+  leftOnlyCount <- mkCount haveLeftOnly
+  rightOnlyCount <- mkCount haveRightOnly
+  intersectionCount <- mkCount haveIntersection
+  holeCount <- chooseInteger (0, 10)
+  let distinctCount = leftOnlyCount + rightOnlyCount + intersectionCount + holeCount
+
+  let sorted = [1 .. distinctCount]
+  unsorted <- shuffle sorted
+
+  let (leftOnly, unsorted') = splitAt (fromIntegral leftOnlyCount) unsorted
+      (intersection, unsorted'') = splitAt (fromIntegral intersectionCount) unsorted'
+      (rightOnly, _) = splitAt (fromIntegral rightOnlyCount) unsorted''
+      left = leftOnly <> intersection
+      right = rightOnly <> intersection
+
+  pure RelatedSets {leftOnly, rightOnly, intersection, left, right}
+
+-- carefully chosen to yield unique results with the ops/factors below
+leftDummyVal :: Integer
+leftDummyVal = 2
+
+-- carefully chosen to yield unique results with the ops/factors below
+rightDummyVal :: Integer
+rightDummyVal = 3
+
+-- | True ~ left, False ~ right
+dummyVal :: Bool -> Integer
+dummyVal side = if side then leftDummyVal else rightDummyVal
+
+mhOneFactorLeft :: Integer
+mhOneFactorLeft = 10
+
+mhOneFactorRight :: Integer
+mhOneFactorRight = 100
+
+mhcOneFactor :: Integer
+mhcOneFactor = 1000
+
+commutativeOp :: Num a => a -> a -> a
+commutativeOp = (+)
+
+nonCommutativeOp :: Num a => a -> a -> a
+nonCommutativeOp = (-)
+
+data DummyKeyType
+data DummyValueType
+data DummyFun a b = DummyFun deriving stock (Show)
+
+genOnePresentHandler :: Gen (OnePresentHandler_ DummyFun DummyKeyType DummyValueType)
+genOnePresentHandler =
+  elements
+    [ DropOne
+    , PassOne
+    , HandleOne DummyFun
+    ]
+
+genBothPresentHandler :: Gen (BothPresentHandler_ DummyFun DummyKeyType DummyValueType)
+genBothPresentHandler = do
+  side <- elements [True, False]
+  elements
+    [ DropBoth
+    , PassArg side
+    , HandleBoth DummyFun
+    ]
+
+genBothPresentHandlerCommutative ::
+  Gen (BothPresentHandlerCommutative_ DummyFun DummyKeyType DummyValueType)
+genBothPresentHandlerCommutative = do
+  elements
+    [ DropBothCommutative
+    , HandleBothCommutative DummyFun
+    ]
+
+genMergeHandler :: Gen (MergeHandler_ DummyFun DummyKeyType DummyValueType)
+genMergeHandler =
+  MergeHandler <$> genBothPresentHandler <*> genOnePresentHandler <*> genOnePresentHandler
+
+genMergeHandlerCommutative :: Gen (MergeHandlerCommutative_ DummyFun DummyKeyType DummyValueType)
+genMergeHandlerCommutative =
+  MergeHandlerCommutative <$> genBothPresentHandlerCommutative <*> genOnePresentHandler
+
+genSomeMergeHandler :: Gen (SomeMergeHandler_ DummyFun DummyKeyType DummyValueType)
+genSomeMergeHandler =
+  oneof
+    [ SomeMergeHandler <$> genMergeHandler
+    , SomeMergeHandlerCommutative <$> genMergeHandlerCommutative
+    ]
+
+unDummifySomeMergeHandler ::
+  forall (s :: S).
+  SomeMergeHandler_ DummyFun DummyKeyType DummyValueType ->
+  SomeMergeHandler PInteger PInteger s
+unDummifySomeMergeHandler = \case
+  SomeMergeHandler mh -> SomeMergeHandler $ unMH mh
+  SomeMergeHandlerCommutative mh -> SomeMergeHandlerCommutative $ unMHC mh
+  where
+    unMH MergeHandler {mhBoth, mhLeft, mhRight} =
+      MergeHandler
+        { mhBoth = unBoth mhBoth
+        , mhLeft =
+            unOne mhOneFactorLeft mhLeft
+        , mhRight = unOne mhOneFactorRight mhRight
+        }
+    unMHC MergeHandlerCommutative {mhcBoth, mhcOne} =
+      MergeHandlerCommutative
+        { mhcBoth = unBothC mhcBoth
+        , mhcOne = unOne mhcOneFactor mhcOne
+        }
+    unBoth = \case
+      DropBoth -> DropBoth
+      PassArg arg -> PassArg arg
+      HandleBoth DummyFun -> HandleBoth (const nonCommutativeOp)
+    unBothC = \case
+      DropBothCommutative -> DropBothCommutative
+      HandleBothCommutative DummyFun -> HandleBothCommutative (const commutativeOp)
+    unOne factor = \case
+      DropOne -> DropOne
+      PassOne -> PassOne
+      HandleOne DummyFun -> HandleOne (const (* pconstant factor))
+
+keysToPMap ::
+  forall (s :: S).
+  Bool ->
+  [Integer] ->
+  Term s (PMap 'Sorted PInteger PInteger)
+keysToPMap side keys =
+  fromList $
+    fmap (\k -> (pconstant k, pconstant $ dummyVal side)) keys
+
+pMapToKVs :: ClosedTerm (PMap 'Sorted PInteger PInteger) -> [(Integer, Integer)]
+pMapToKVs pm = PlutusMap.toList $ plift $ AssocMap.pforgetSorted pm
+
+expectationZipWith ::
+  SomeMergeHandler_ DummyFun DummyKeyType DummyValueType -> RelatedSets -> [(Integer, Integer)]
+expectationZipWith
+  (SomeMergeHandler MergeHandler {mhBoth, mhLeft, mhRight})
+  RelatedSets {leftOnly, rightOnly, intersection} =
+    let b = case mhBoth of
+          DropBoth -> []
+          PassArg side -> fmap (,dummyVal side) intersection
+          HandleBoth DummyFun ->
+            fmap (,leftDummyVal `nonCommutativeOp` rightDummyVal) intersection
+        l = case mhLeft of
+          DropOne -> []
+          PassOne -> fmap (,leftDummyVal) leftOnly
+          HandleOne DummyFun -> fmap (,mhOneFactorLeft * leftDummyVal) leftOnly
+        r = case mhRight of
+          DropOne -> []
+          PassOne -> fmap (,rightDummyVal) rightOnly
+          HandleOne DummyFun -> fmap (,mhOneFactorRight * rightDummyVal) rightOnly
+     in sort (b <> l <> r)
+expectationZipWith
+  (SomeMergeHandlerCommutative MergeHandlerCommutative {mhcBoth, mhcOne})
+  RelatedSets {leftOnly, rightOnly, intersection} =
+    let b = case mhcBoth of
+          DropBothCommutative -> []
+          HandleBothCommutative _ ->
+            fmap (,leftDummyVal `commutativeOp` rightDummyVal) intersection
+        o = case mhcOne of
+          DropOne -> []
+          PassOne ->
+            fmap (,leftDummyVal) leftOnly <> fmap (,rightDummyVal) rightOnly
+          HandleOne DummyFun ->
+            fmap (,mhcOneFactor * leftDummyVal) leftOnly
+              <> fmap (,mhcOneFactor * rightDummyVal) rightOnly
+     in sort (b <> o)
