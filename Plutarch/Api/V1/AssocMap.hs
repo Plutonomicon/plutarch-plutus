@@ -36,9 +36,32 @@ module Plutarch.Api.V1.AssocMap (
   pmapMaybeData,
 
   -- * Combining
+  BothPresentHandler,
+  BothPresentHandler_ (..),
+  BothPresentHandlerCommutative,
+  BothPresentHandlerCommutative_ (..),
+  OnePresentHandler,
+  OnePresentHandler_ (..),
+  MergeHandler,
+  MergeHandler_ (..),
+  MergeHandlerCommutative,
+  MergeHandlerCommutative_ (..),
+  SomeMergeHandler,
+  SomeMergeHandler_ (..),
+  Commutativity (..),
+  pzipWith,
+  pzipWithData,
+  pzipWithDefault,
+  pzipWithDataDefault,
+  pzipWithDefaults,
+  pzipWithDataDefaults,
+  pintersectionWith,
+  pintersectionWithData,
+  pleftBiasedUnion,
+  punionResolvingCollisionsWith,
+  punionResolvingCollisionsWithData,
   pdifference,
-  punionWith,
-  punionWithData,
+  punsortedDifference,
 
   -- * Partial order operations
   pcheckBinRel,
@@ -68,7 +91,7 @@ import Plutarch.Lift (
   pconstantToRepr,
  )
 import Plutarch.List qualified as List
-import Plutarch.Prelude hiding (pall, pany, pfilter, pmap, pnull, psingleton)
+import Plutarch.Prelude hiding (pall, pany, pfilter, pmap, pnull, psingleton, pzipWith)
 import Plutarch.Prelude qualified as PPrelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
@@ -82,6 +105,7 @@ import Data.Proxy (Proxy (Proxy))
 import Data.Traversable (for)
 
 import Data.Bifunctor (bimap)
+import Plutarch.Bool (PSBool (PSFalse, PSTrue), psfalse, pstrue)
 
 data KeyGuarantees = Sorted | Unsorted
 
@@ -381,10 +405,10 @@ instance
   (POrd k, PIsData k, PIsData v, Semigroup (Term s v)) =>
   Semigroup (Term s (PMap 'Sorted k v))
   where
-  a <> b = punionWith # plam (<>) # a # b
+  a <> b = punionResolvingCollisionsWith NonCommutative # plam (<>) # a # b
 
 instance
-  (POrd k, PIsData k, PIsData v, Semigroup (Term s v)) =>
+  (POrd k, PIsData k, PIsData v, forall (s' :: S). Monoid (Term s' v)) =>
   Monoid (Term s (PMap 'Sorted k v))
   where
   mempty = pempty
@@ -393,84 +417,454 @@ instance
   (POrd k, PIsData k, PIsData v, PlutusTx.Semigroup (Term s v)) =>
   PlutusTx.Semigroup (Term s (PMap 'Sorted k v))
   where
-  a <> b = punionWith # plam (PlutusTx.<>) # a # b
+  a <> b = punionResolvingCollisionsWith NonCommutative # plam (PlutusTx.<>) # a # b
 
 instance
-  (POrd k, PIsData k, PIsData v, PlutusTx.Semigroup (Term s v)) =>
+  (POrd k, PIsData k, PIsData v, forall (s' :: S). PlutusTx.Monoid (Term s' v)) =>
   PlutusTx.Monoid (Term s (PMap 'Sorted k v))
   where
   mempty = pempty
 
 instance
-  (POrd k, PIsData k, PIsData v, PlutusTx.Group (Term s v)) =>
+  (POrd k, PIsData k, PIsData v, forall (s' :: S). PlutusTx.Group (Term s' v)) =>
   PlutusTx.Group (Term s (PMap 'Sorted k v))
   where
   inv a = pmap # plam PlutusTx.inv # a
 
-{- | Combine two 'PMap's applying the given function to any two values that
- share the same key.
--}
-punionWith ::
-  (POrd k, PIsData k, PIsData v) =>
-  Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
-punionWith = phoistAcyclic $
-  plam $
-    \combine -> punionWithData #$ plam $
-      \x y -> pdata (combine # pfromData x # pfromData y)
+type BothPresentHandler k v s = BothPresentHandler_ (->) (Term s k) (Term s v)
 
-data MapUnionCarrier k v s = MapUnionCarrier
-  { merge :: Term s (PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v)
-  , mergeInsert :: Term s (PBuiltinPair (PAsData k) (PAsData v) :--> PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v :--> PBuiltinListOfPairs k v)
+data BothPresentHandler_ f k v
+  = DropBoth
+  | -- | True ~ left, False ~ right
+    PassArg Bool
+  | HandleBoth (k `f` (v `f` (v `f` v)))
+
+deriving stock instance (forall a b. Show (f a b)) => Show (BothPresentHandler_ f k v)
+
+type BothPresentHandlerCommutative k v s = BothPresentHandlerCommutative_ (->) (Term s k) (Term s v)
+
+data BothPresentHandlerCommutative_ f k v
+  = DropBothCommutative
+  | HandleBothCommutative (k `f` (v `f` (v `f` v)))
+
+deriving stock instance (forall a b. Show (f a b)) => Show (BothPresentHandlerCommutative_ f k v)
+
+type OnePresentHandler k v s = OnePresentHandler_ (->) (Term s k) (Term s v)
+
+data OnePresentHandler_ f k v
+  = DropOne
+  | PassOne
+  | HandleOne (k `f` (v `f` v))
+
+deriving stock instance (forall a b. Show (f a b)) => Show (OnePresentHandler_ f k v)
+
+type MergeHandler k v s = MergeHandler_ (->) (Term s k) (Term s v)
+
+{- | Signals how to handle value merging for matching keys in 'pzipWith'.
+
+ No restrictions on commutativity: Safe to use for both commutative and
+ non-commutative merging operations.
+-}
+data MergeHandler_ f k v = MergeHandler
+  { mhBoth :: BothPresentHandler_ f k v
+  , mhLeft :: OnePresentHandler_ f k v
+  , mhRight :: OnePresentHandler_ f k v
   }
-  deriving stock (Generic)
-  deriving anyclass (PlutusType)
-instance DerivePlutusType (MapUnionCarrier k v) where type DPTStrat _ = PlutusTypeScott
 
-mapUnionCarrier :: (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapUnionCarrier k v :--> MapUnionCarrier k v)
-mapUnionCarrier = phoistAcyclic $ plam \combine self ->
-  let mergeInsert = pmatch self \(MapUnionCarrier {mergeInsert}) -> mergeInsert
-      merge = pmatch self \(MapUnionCarrier {merge}) -> merge
-   in pcon $
-        MapUnionCarrier
-          { merge = plam $ \xs ys -> pmatch xs $ \case
-              PNil -> ys
-              PCons x xs' -> mergeInsert # x # xs' # ys
-          , mergeInsert = plam $ \x xs ys ->
-              pmatch ys $ \case
-                PNil -> pcons # x # xs
-                PCons y1 ys' ->
-                  plet y1 $ \y ->
-                    plet (pfstBuiltin # x) $ \xk ->
-                      plet (pfstBuiltin # y) $ \yk ->
-                        pif
-                          (xk #== yk)
-                          ( pcons
-                              # (ppairDataBuiltin # xk #$ combine # (psndBuiltin # x) # (psndBuiltin # y))
-                                #$ merge
-                              # xs
-                              # ys'
-                          )
-                          ( pif
-                              (pfromData xk #< pfromData yk)
-                              ( pcons
-                                  # x
-                                  # (mergeInsert # y # ys' # xs)
-                              )
-                              ( pcons
-                                  # y
-                                  # (mergeInsert # x # xs # ys')
-                              )
-                          )
-          }
+deriving stock instance (forall a b. Show (f a b)) => Show (MergeHandler_ f k v)
 
-mapUnion :: forall k v s. (POrd k, PIsData k) => Term s ((PAsData v :--> PAsData v :--> PAsData v) :--> MapUnionCarrier k v)
-mapUnion = phoistAcyclic $ plam \combine -> punsafeCoerce pfix # (mapUnionCarrier # combine :: Term _ (MapUnionCarrier k v :--> MapUnionCarrier k v))
+type MergeHandlerCommutative k v s = MergeHandlerCommutative_ (->) (Term s k) (Term s v)
 
-{- | Combine two 'PMap's applying the given function to any two data-encoded
- values that share the same key.
+{- | Signals how to handle value merging for matching keys in 'pzipWith'.
+
+ Safe to use for commutative merging operations only.
 -}
-punionWithData ::
+data MergeHandlerCommutative_ f k v = MergeHandlerCommutative
+  { mhcBoth :: BothPresentHandlerCommutative_ f k v
+  , mhcOne :: OnePresentHandler_ f k v
+  }
+
+deriving stock instance (forall a b. Show (f a b)) => Show (MergeHandlerCommutative_ f k v)
+
+type SomeMergeHandler k v s = SomeMergeHandler_ (->) (Term s k) (Term s v)
+
+-- | Signals how to handle value merging for matching keys in 'pzipWith'.
+data SomeMergeHandler_ f k v
+  = SomeMergeHandlerCommutative (MergeHandlerCommutative_ f k v)
+  | SomeMergeHandler (MergeHandler_ f k v)
+
+deriving stock instance (forall a b. Show (f a b)) => Show (SomeMergeHandler_ f k v)
+
+data Commutativity = Commutative | NonCommutative deriving stock (Eq, Ord, Show)
+
+bothPresentOnData ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (PIsData k, PIsData v) =>
+  BothPresentHandler k v s ->
+  BothPresentHandler (PAsData k) (PAsData v) s
+bothPresentOnData = \case
+  DropBoth -> DropBoth
+  PassArg arg -> PassArg arg
+  HandleBoth f -> HandleBoth \k x y -> pdata $ f (pfromData k) (pfromData x) (pfromData y)
+
+bothPresentCommutativeOnData ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (PIsData k, PIsData v) =>
+  BothPresentHandlerCommutative k v s ->
+  BothPresentHandlerCommutative (PAsData k) (PAsData v) s
+bothPresentCommutativeOnData = \case
+  DropBothCommutative -> DropBothCommutative
+  HandleBothCommutative f ->
+    HandleBothCommutative \k x y -> pdata $ f (pfromData k) (pfromData x) (pfromData y)
+
+onePresentOnData ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (PIsData k, PIsData v) =>
+  OnePresentHandler k v s ->
+  OnePresentHandler (PAsData k) (PAsData v) s
+onePresentOnData = \case
+  DropOne -> DropOne
+  PassOne -> PassOne
+  HandleOne f -> HandleOne \x y -> pdata $ f (pfromData x) (pfromData y)
+
+mergeHandlerOnData ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (PIsData k, PIsData v) =>
+  MergeHandler k v s ->
+  MergeHandler (PAsData k) (PAsData v) s
+mergeHandlerOnData (MergeHandler bothPresent leftPresent rightPresent) =
+  MergeHandler (bothPresentOnData bothPresent) (onePresentOnData leftPresent) (onePresentOnData rightPresent)
+
+mergeHandlerCommutativeOnData ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (PIsData k, PIsData v) =>
+  MergeHandlerCommutative k v s ->
+  MergeHandlerCommutative (PAsData k) (PAsData v) s
+mergeHandlerCommutativeOnData (MergeHandlerCommutative bothPresent onePresent) =
+  MergeHandlerCommutative (bothPresentCommutativeOnData bothPresent) (onePresentOnData onePresent)
+
+branchOrder :: forall (s :: S) (a :: Type). PSBool s -> a -> a -> a
+branchOrder PSTrue t _ = t
+branchOrder PSFalse _ f = f
+
+-- | Apply given Plutarch fun with given reified (on Haskell-level) arg order.
+applyOrder ::
+  forall (s :: S) (a :: PType) (b :: PType).
+  -- | 'PSTrue' means first arg is left, second arg is right.
+  PSBool s ->
+  -- | A function that expects argument order 'left right'.
+  Term s (a :--> a :--> b) ->
+  -- | First arg.
+  Term s a ->
+  -- | Second arg.
+  Term s a ->
+  Term s b
+applyOrder argOrder pfun a b = branchOrder argOrder (pfun # a # b) (pfun # b # a)
+
+applyOrder' ::
+  forall (s :: S) (a :: Type) (b :: Type).
+  -- | 'PSTrue' means first arg is left, second arg is right.
+  PSBool s ->
+  -- | A function that expects argument order 'left right'.
+  (a -> a -> b) ->
+  -- | First arg.
+  a ->
+  -- | Second arg.
+  a ->
+  b
+applyOrder' argOrder fun a b = branchOrder argOrder (fun a b) (fun b a)
+
+zipMergeInsert ::
+  forall (s :: S) (k :: PType) (v :: PType).
   (POrd k, PIsData k) =>
+  MergeHandler (PAsData k) (PAsData v) s ->
+  -- | 'PSTrue' means first arg is left, second arg is right.
+  -- The first list gets passed in deconstructed form as head and tail
+  -- separately.
+  Term
+    s
+    ( PSBool
+        :--> PBuiltinPair (PAsData k) (PAsData v)
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+    )
+zipMergeInsert (MergeHandler bothPresent leftPresent rightPresent) = unTermCont $ do
+  -- deduplicates all the zipMerge calls through plet, almost as good as hoisting
+  zipMerge' <- tcont $ plet $ plam $ zipMerge rightPresent
+  pure $ pfix #$ plam $ \self argOrder' x xs' ys -> unTermCont $ do
+    let zipMergeRec = zipMerge' # self
+        xs = pcons # x # xs'
+        zipMergeOrdered xSide ySide =
+          pmatch argOrder' $ \argOrder -> applyOrder argOrder zipMergeRec xSide ySide
+    pure $ pmatch ys $ \case
+      PNil -> pmatch argOrder' $ \argOrder ->
+        -- picking handler for presence of x-side only
+        case branchOrder argOrder leftPresent rightPresent of
+          DropOne -> pcon PNil
+          PassOne -> pcons # x # xs'
+          HandleOne handler ->
+            List.pmap
+              # ( plam \pair ->
+                    plet (pfstBuiltin # pair) \k ->
+                      ppairDataBuiltin # k # handler k (psndBuiltin # pair)
+                )
+              # xs
+      PCons y1 ys' -> unTermCont $ do
+        y <- tcont $ plet y1
+        xk <- tcont $ plet (pfstBuiltin # x)
+        yk <- tcont $ plet (pfstBuiltin # y)
+        pure $
+          pif
+            (xk #== yk)
+            ( case bothPresent of
+                DropBoth -> zipMergeOrdered xs' ys'
+                PassArg passLeft -> pmatch argOrder' $ \argOrder ->
+                  pcons
+                    # (if passLeft == (argOrder == PSTrue) then x else y)
+                    # applyOrder argOrder zipMergeRec xs' ys'
+                HandleBoth merge -> pmatch argOrder' $ \argOrder ->
+                  pcons
+                    # ( ppairDataBuiltin
+                          # xk
+                            #$ applyOrder' argOrder (merge xk) (psndBuiltin # x) (psndBuiltin # y)
+                      )
+                      #$ applyOrder argOrder zipMergeRec xs' ys'
+            )
+            ( pif
+                (pfromData xk #< pfromData yk)
+                ( pmatch argOrder' $ \argOrder ->
+                    -- picking handler for presence of only x-side
+                    case branchOrder argOrder leftPresent rightPresent of
+                      DropOne -> self # branchOrder argOrder psfalse pstrue # y # ys' # xs'
+                      PassOne -> pcons # x # applyOrder argOrder zipMergeRec xs' ys
+                      HandleOne handler ->
+                        pcons
+                          # (ppairDataBuiltin # xk # handler xk (psndBuiltin # x))
+                          # (self # branchOrder argOrder psfalse pstrue # y # ys' # xs')
+                )
+                ( pmatch argOrder' $ \argOrder ->
+                    -- picking handler for presence of only y-side
+                    case branchOrder argOrder rightPresent leftPresent of
+                      DropOne -> self # argOrder' # x # xs' # ys'
+                      PassOne -> pcons # y # applyOrder argOrder zipMergeRec xs ys'
+                      HandleOne handler ->
+                        pcons
+                          # (ppairDataBuiltin # yk # handler yk (psndBuiltin # y))
+                          # (self # argOrder' # x # xs' # ys')
+                )
+            )
+
+zipMerge ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  OnePresentHandler (PAsData k) (PAsData v) s ->
+  Term
+    s
+    ( PSBool
+        :--> PBuiltinPair (PAsData k) (PAsData v)
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+    ) ->
+  Term
+    s
+    ( PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+    )
+zipMerge rightPresent mergeInsertRec = plam $ \ls rs -> pmatch ls $ \case
+  PNil ->
+    case rightPresent of
+      DropOne -> pcon PNil
+      PassOne -> rs
+      HandleOne handler ->
+        List.pmap
+          # ( plam \pair ->
+                plet (pfstBuiltin # pair) \k ->
+                  ppairDataBuiltin # k # handler k (psndBuiltin # pair)
+            )
+          # rs
+  PCons l ls' -> mergeInsertRec # pstrue # l # ls' # rs
+
+zipMergeInsertCommutative ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (POrd k, PIsData k) =>
+  MergeHandlerCommutative (PAsData k) (PAsData v) s ->
+  -- | 'PSTrue' means first arg is left, second arg is right.
+  -- The first list gets passed in deconstructed form as head and tail
+  -- separately.
+  Term
+    s
+    ( PBuiltinPair (PAsData k) (PAsData v)
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+    )
+zipMergeInsertCommutative (MergeHandlerCommutative bothPresent onePresent) = unTermCont $ do
+  -- deduplicates all the zipMerge calls through plet, almost as good as hoisting
+  zipMerge' <- tcont $ plet $ plam $ zipMergeCommutative onePresent
+  pure $ pfix #$ plam $ \self x xs' ys -> unTermCont $ do
+    let zipMergeRec = zipMerge' # self
+        xs = pcons # x # xs'
+    pure $ pmatch ys $ \case
+      PNil ->
+        -- picking handler for presence of x-side only
+        case onePresent of
+          DropOne -> pcon PNil
+          PassOne -> pcons # x # xs'
+          HandleOne handler ->
+            List.pmap
+              # ( plam \pair ->
+                    plet (pfstBuiltin # pair) \k ->
+                      ppairDataBuiltin # k # handler k (psndBuiltin # pair)
+                )
+              # xs
+      PCons y1 ys' -> unTermCont $ do
+        y <- tcont $ plet y1
+        xk <- tcont $ plet (pfstBuiltin # x)
+        yk <- tcont $ plet (pfstBuiltin # y)
+        pure $
+          pif
+            (xk #== yk)
+            ( case bothPresent of
+                DropBothCommutative -> zipMergeRec # xs' # ys'
+                HandleBothCommutative merge ->
+                  pcons
+                    # ( ppairDataBuiltin
+                          # xk
+                            #$ merge xk (psndBuiltin # x) (psndBuiltin # y)
+                      )
+                      #$ zipMergeRec
+                    # xs'
+                    # ys'
+            )
+            ( pif
+                (pfromData xk #< pfromData yk)
+                ( case onePresent of
+                    DropOne -> self # y # ys' # xs'
+                    PassOne -> pcons # x # (zipMergeRec # xs' # ys)
+                    HandleOne handler ->
+                      pcons
+                        # (ppairDataBuiltin # xk # handler xk (psndBuiltin # x))
+                        # (self # y # ys' # xs')
+                )
+                ( case onePresent of
+                    DropOne -> self # x # xs' # ys'
+                    PassOne -> pcons # y # (zipMergeRec # ys' # xs)
+                    HandleOne handler ->
+                      pcons
+                        # (ppairDataBuiltin # yk # handler yk (psndBuiltin # y))
+                        # (self # x # xs' # ys')
+                )
+            )
+
+zipMergeCommutative ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  OnePresentHandler (PAsData k) (PAsData v) s ->
+  Term
+    s
+    ( PBuiltinPair (PAsData k) (PAsData v)
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+    ) ->
+  Term
+    s
+    ( PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+    )
+zipMergeCommutative onePresent mergeInsertRec = plam $ \ls rs -> pmatch ls $ \case
+  PNil ->
+    case onePresent of
+      DropOne -> pcon PNil
+      PassOne -> rs
+      HandleOne handler ->
+        List.pmap
+          # ( plam \pair ->
+                plet (pfstBuiltin # pair) \k ->
+                  ppairDataBuiltin # k # handler k (psndBuiltin # pair)
+            )
+          # rs
+  PCons l ls' -> mergeInsertRec # l # ls' # rs
+
+{- | Zip two 'PMap's, using a 'SomeMergeHandler' to decide how to merge based on key
+ presence on the left and right.
+
+ Note that using a 'MergeHandlerCommutative' is less costly than a 'MergeHandler'.
+-}
+pzipWithData ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (POrd k, PIsData k) =>
+  SomeMergeHandler (PAsData k) (PAsData v) s ->
+  Term
+    s
+    ( PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+    )
+pzipWithData (SomeMergeHandler mh@(MergeHandler _ _ rightPresent)) =
+  plam $ \x y ->
+    pcon $ PMap $ zipMerge rightPresent (zipMergeInsert mh) # pto x # pto y
+pzipWithData (SomeMergeHandlerCommutative mh@(MergeHandlerCommutative _ onePresent)) =
+  plam $ \x y ->
+    pcon $ PMap $ zipMergeCommutative onePresent (zipMergeInsertCommutative mh) # pto x # pto y
+
+{- | Zip two 'PMap's, using a 'SomeMergeHandler' to decide how to merge based on key
+ presence on the left and right.
+
+ Note that using a 'MergeHandlerCommutative' is less costly than a 'MergeHandler'.
+-}
+pzipWith ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (POrd k, PIsData k, PIsData v) =>
+  SomeMergeHandler k v s ->
+  Term
+    s
+    ( PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+    )
+pzipWith (SomeMergeHandler mh) =
+  pzipWithData (SomeMergeHandler $ mergeHandlerOnData mh)
+pzipWith (SomeMergeHandlerCommutative mhc) =
+  pzipWithData (SomeMergeHandlerCommutative $ mergeHandlerCommutativeOnData mhc)
+
+defaultMergeHandlerNonCommutative ::
+  forall (s :: S) (v :: PType) (k :: PType).
+  Term s v ->
+  Term s v ->
+  Term s (v :--> (v :--> v)) ->
+  SomeMergeHandler k v s
+defaultMergeHandlerNonCommutative defLeft defRight combine =
+  SomeMergeHandler $
+    MergeHandler
+      (HandleBoth \_ vl vr -> combine # vl # vr)
+      (HandleOne \_ vl -> combine # vl # defRight)
+      (HandleOne \_ vr -> combine # defLeft # vr)
+
+defaultMergeHandlerCommutative ::
+  forall (s :: S) (v :: PType) (k :: PType).
+  Term s v ->
+  Term s (v :--> (v :--> v)) ->
+  SomeMergeHandler k v s
+defaultMergeHandlerCommutative def combine =
+  SomeMergeHandlerCommutative $
+    MergeHandlerCommutative
+      (HandleBothCommutative \_ vl vr -> combine # vl # vr)
+      (HandleOne \_ vl -> combine # vl # def)
+
+{- | Zip two 'PMap's, using the given value merge function for key collisions,
+ the commutativity of the merge function, and a default value that can stand in
+ for both sides.
+
+ Note that using 'Commutative' is less costly than 'NonCommutative'.
+-}
+pzipWithDataDefault ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (POrd k, PIsData k) =>
+  ClosedTerm (PAsData v) ->
+  Commutativity ->
   Term
     s
     ( (PAsData v :--> PAsData v :--> PAsData v)
@@ -478,13 +872,198 @@ punionWithData ::
         :--> PMap 'Sorted k v
         :--> PMap 'Sorted k v
     )
-punionWithData = phoistAcyclic $
-  plam $ \combine x y ->
-    pcon $ PMap $ (pmatch (mapUnion # combine) \(MapUnionCarrier {merge}) -> merge) # pto x # pto y
+pzipWithDataDefault def NonCommutative =
+  phoistAcyclic $
+    plam $
+      pzipWithData . defaultMergeHandlerNonCommutative def def
+pzipWithDataDefault def Commutative =
+  phoistAcyclic $
+    plam $
+      pzipWithData . defaultMergeHandlerCommutative def
+
+{- | Zip two 'PMap's, using the given value merge function for key collisions,
+ the commutativity of the merge function, and a default value that can stand in
+ for both sides.
+
+ Note that using 'Commutative' is less costly than 'NonCommutative'.
+-}
+pzipWithDefault ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (POrd k, PIsData k, PIsData v) =>
+  ClosedTerm v ->
+  Commutativity ->
+  Term
+    s
+    ( (v :--> v :--> v)
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+    )
+pzipWithDefault def NonCommutative =
+  phoistAcyclic $
+    plam $
+      pzipWith . defaultMergeHandlerNonCommutative def def
+pzipWithDefault def Commutative =
+  phoistAcyclic $
+    plam $
+      pzipWith . defaultMergeHandlerCommutative def
+
+{- | Zip two 'PMap's, using the given potentially non-commutative value merge
+ function for key collisions, and different values for the sides.
+
+ Use `pzipWithDataDefault` if your merge function is commutative for better
+ performance.
+-}
+pzipWithDataDefaults ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (POrd k, PIsData k) =>
+  ClosedTerm (PAsData v) ->
+  ClosedTerm (PAsData v) ->
+  Term
+    s
+    ( (PAsData v :--> PAsData v :--> PAsData v)
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+    )
+pzipWithDataDefaults defLeft defRight =
+  phoistAcyclic $
+    plam $
+      pzipWithData . defaultMergeHandlerNonCommutative defLeft defRight
+
+{- | Zip two 'PMap's, using the given potentially non-commutative value merge
+ function for key collisions, and different values for the sides.
+
+ Use `pzipWithDefault` if your merge function is commutative for better
+ performance.
+-}
+pzipWithDefaults ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (POrd k, PIsData k, PIsData v) =>
+  ClosedTerm v ->
+  ClosedTerm v ->
+  Term
+    s
+    ( (v :--> v :--> v)
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+    )
+pzipWithDefaults defLeft defRight =
+  phoistAcyclic $
+    plam $
+      pzipWith . defaultMergeHandlerNonCommutative defLeft defRight
+
+{- | Build the union of two 'PMap's. Take the value from the left argument for colliding keys.
+
+ Prefer this over 'punionResolvingCollisionsWith NonCommutative # plam const'. It performs better.
+-}
+pleftBiasedUnion ::
+  (POrd k, PIsData k, PIsData v) =>
+  Term s (PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
+pleftBiasedUnion =
+  phoistAcyclic $
+    pzipWith $
+      SomeMergeHandler $
+        MergeHandler (PassArg True) PassOne PassOne
+
+unionMergeHandler ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  Commutativity ->
+  Term s (v :--> (v :--> v)) ->
+  SomeMergeHandler k v s
+unionMergeHandler NonCommutative merge =
+  SomeMergeHandler $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) PassOne PassOne
+unionMergeHandler Commutative merge =
+  SomeMergeHandlerCommutative $
+    MergeHandlerCommutative (HandleBothCommutative \_ vl vr -> merge # vl # vr) PassOne
+
+{- | Build the union of two 'PMap's, merging values that share the same key using the
+given function.
+-}
+punionResolvingCollisionsWithData ::
+  (POrd k, PIsData k) =>
+  Commutativity ->
+  Term
+    s
+    ( (PAsData v :--> PAsData v :--> PAsData v)
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+    )
+punionResolvingCollisionsWithData commutativity =
+  phoistAcyclic $
+    plam $
+      pzipWithData . unionMergeHandler commutativity
+
+{- | Build the union of two 'PMap's, merging values that share the same key using the
+given function.
+-}
+punionResolvingCollisionsWith ::
+  (POrd k, PIsData k, PIsData v) =>
+  Commutativity ->
+  Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
+punionResolvingCollisionsWith commutativity =
+  phoistAcyclic $
+    plam $
+      pzipWith . unionMergeHandler commutativity
+
+intersectionMergeHandler ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  Commutativity ->
+  Term s (v :--> (v :--> v)) ->
+  SomeMergeHandler k v s
+intersectionMergeHandler NonCommutative merge =
+  SomeMergeHandler $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) DropOne DropOne
+intersectionMergeHandler Commutative merge =
+  SomeMergeHandlerCommutative $
+    MergeHandlerCommutative (HandleBothCommutative \_ vl vr -> merge # vl # vr) DropOne
+
+{- | Build the intersection of two 'PMap's, merging data-encoded values that share the same key using the
+given function.
+-}
+pintersectionWithData ::
+  (POrd k, PIsData k) =>
+  Commutativity ->
+  Term
+    s
+    ( (PAsData v :--> PAsData v :--> PAsData v)
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+    )
+pintersectionWithData commutativity =
+  phoistAcyclic $
+    plam $
+      pzipWithData . intersectionMergeHandler commutativity
+
+{- | Build the intersection of two 'PMap's, merging values that share the same key using the
+given function.
+-}
+pintersectionWith ::
+  (POrd k, PIsData k, PIsData v) =>
+  Commutativity ->
+  Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
+pintersectionWith commutativity =
+  phoistAcyclic $
+    plam $
+      pzipWith . intersectionMergeHandler commutativity
 
 -- | Difference of two maps. Return elements of the first map not existing in the second map.
-pdifference :: PIsData k => Term s (PMap g k a :--> PMap any k b :--> PMap g k a)
-pdifference = phoistAcyclic $
+pdifference ::
+  (PIsData k, POrd k, PIsData v) =>
+  Term s (PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
+pdifference =
+  phoistAcyclic $
+    pzipWith $
+      SomeMergeHandler $
+        MergeHandler DropBoth PassOne DropOne
+
+{- | Difference of two maps. Return elements of the first map not existing in the second map.
+ Warning: O(n^2).
+-}
+punsortedDifference :: PIsData k => Term s (PMap g k a :--> PMap any k b :--> PMap g k a)
+punsortedDifference = phoistAcyclic $
   plam $ \left right ->
     pcon . PMap $
       precList
@@ -595,7 +1174,8 @@ pcheckBinRel = phoistAcyclic $
                             (k1 #== k2)
                             ( f
                                 # v1
-                                # v2 #&& self
+                                # v2
+                                  #&& self
                                 # xs
                                 # ys
                             )
@@ -604,7 +1184,8 @@ pcheckBinRel = phoistAcyclic $
                             (f # v1 # z #&& self # xs # l2)
                           $ f
                             # z
-                            # v2 #&& self
+                            # v2
+                              #&& self
                             # l1
                             # ys
                     )
