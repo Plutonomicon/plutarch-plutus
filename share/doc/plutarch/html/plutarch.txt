@@ -880,8 +880,36 @@ pand' :: Term s (PBool :--> (PBool :--> PBool))
 
 -- | Hoisted, Plutarch level, strictly evaluated boolean or function.
 por' :: Term s (PBool :--> (PBool :--> PBool))
+
+-- | Scott-encoded bool.
+data PSBool (s :: S)
+PSTrue :: PSBool (s :: S)
+PSFalse :: PSBool (s :: S)
+
+-- | Strict version of <a>pmatch</a> for <a>PSBool</a>.
+pmatchStrict :: forall (r :: PType) (s :: S). Term s PSBool -> (PSBool s -> Term s r) -> Term s r
+pstrue :: forall (s :: S). Term s PSBool
+psfalse :: forall (s :: S). Term s PSBool
+
+-- | Lazy <tt>if</tt> on Scott-encoded bool.
+psif :: forall (s :: S) (a :: PType). Term s PSBool -> Term s a -> Term s a -> Term s a
+
+-- | Strict <tt>if</tt> on Scott-encoded bool.
+psif' :: forall (s :: S) (a :: PType). Term s PSBool -> Term s a -> Term s a -> Term s a
+
+-- | <tt>not</tt> on Scott-encoded bool.
+psnot :: forall (s :: S). Term s PSBool -> Term s PSBool
+psand :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
+psand' :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
+psor :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
+psor' :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
 instance forall (s :: Plutarch.Internal.S). GHC.Show.Show (Plutarch.Bool.PBool s)
+instance forall (s :: Plutarch.Internal.S). GHC.Show.Show (Plutarch.Bool.PSBool s)
+instance forall (s :: Plutarch.Internal.S). GHC.Classes.Ord (Plutarch.Bool.PSBool s)
+instance forall (s :: Plutarch.Internal.S). GHC.Classes.Eq (Plutarch.Bool.PSBool s)
 instance Plutarch.Lift.PConstantDecl GHC.Types.Bool
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Bool.PSBool
+instance forall (a :: Plutarch.Internal.PType). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Bool.PSBoolRaw a)
 instance Plutarch.Bool.PPartialOrd Plutarch.Bool.PBool
 instance Plutarch.Bool.POrd Plutarch.Bool.PBool
 instance Plutarch.Bool.PEq Plutarch.Bool.PBool
@@ -3309,18 +3337,131 @@ pmapData :: Term s ((PAsData a :--> PAsData b) :--> (PMap g k a :--> PMap g k b)
 -- | Maps and filters the map, much like <a>mapMaybe</a>.
 pmapMaybe :: (PIsData a, PIsData b) => Term s ((a :--> PMaybe b) :--> (PMap g k a :--> PMap g k b))
 pmapMaybeData :: Term s ((PAsData a :--> PMaybe (PAsData b)) :--> (PMap g k a :--> PMap g k b))
+type BothPresentHandler k v s = BothPresentHandler_ (->) (Term s k) (Term s v)
+data BothPresentHandler_ f k v
+DropBoth :: BothPresentHandler_ f k v
+
+-- | True ~ left, False ~ right
+PassArg :: Bool -> BothPresentHandler_ f k v
+HandleBoth :: (k `f` (v `f` (v `f` v))) -> BothPresentHandler_ f k v
+type BothPresentHandlerCommutative k v s = BothPresentHandlerCommutative_ (->) (Term s k) (Term s v)
+data BothPresentHandlerCommutative_ f k v
+DropBothCommutative :: BothPresentHandlerCommutative_ f k v
+HandleBothCommutative :: (k `f` (v `f` (v `f` v))) -> BothPresentHandlerCommutative_ f k v
+type OnePresentHandler k v s = OnePresentHandler_ (->) (Term s k) (Term s v)
+data OnePresentHandler_ f k v
+DropOne :: OnePresentHandler_ f k v
+PassOne :: OnePresentHandler_ f k v
+HandleOne :: (k `f` (v `f` v)) -> OnePresentHandler_ f k v
+type MergeHandler k v s = MergeHandler_ (->) (Term s k) (Term s v)
+
+-- | Signals how to handle value merging for matching keys in
+--   <a>pzipWith</a>.
+--   
+--   No restrictions on commutativity: Safe to use for both commutative and
+--   non-commutative merging operations.
+data MergeHandler_ f k v
+MergeHandler :: BothPresentHandler_ f k v -> OnePresentHandler_ f k v -> OnePresentHandler_ f k v -> MergeHandler_ f k v
+[$sel:mhBoth:MergeHandler] :: MergeHandler_ f k v -> BothPresentHandler_ f k v
+[$sel:mhLeft:MergeHandler] :: MergeHandler_ f k v -> OnePresentHandler_ f k v
+[$sel:mhRight:MergeHandler] :: MergeHandler_ f k v -> OnePresentHandler_ f k v
+type MergeHandlerCommutative k v s = MergeHandlerCommutative_ (->) (Term s k) (Term s v)
+
+-- | Signals how to handle value merging for matching keys in
+--   <a>pzipWith</a>.
+--   
+--   Safe to use for commutative merging operations only.
+data MergeHandlerCommutative_ f k v
+MergeHandlerCommutative :: BothPresentHandlerCommutative_ f k v -> OnePresentHandler_ f k v -> MergeHandlerCommutative_ f k v
+[$sel:mhcBoth:MergeHandlerCommutative] :: MergeHandlerCommutative_ f k v -> BothPresentHandlerCommutative_ f k v
+[$sel:mhcOne:MergeHandlerCommutative] :: MergeHandlerCommutative_ f k v -> OnePresentHandler_ f k v
+type SomeMergeHandler k v s = SomeMergeHandler_ (->) (Term s k) (Term s v)
+
+-- | Signals how to handle value merging for matching keys in
+--   <a>pzipWith</a>.
+data SomeMergeHandler_ f k v
+SomeMergeHandlerCommutative :: MergeHandlerCommutative_ f k v -> SomeMergeHandler_ f k v
+SomeMergeHandler :: MergeHandler_ f k v -> SomeMergeHandler_ f k v
+data Commutativity
+Commutative :: Commutativity
+NonCommutative :: Commutativity
+
+-- | Zip two <a>PMap</a>s, using a <a>SomeMergeHandler</a> to decide how to
+--   merge based on key presence on the left and right.
+--   
+--   Note that using a <a>MergeHandlerCommutative</a> is less costly than a
+--   <a>MergeHandler</a>.
+pzipWith :: forall (s :: S) (k :: PType) (v :: PType). (POrd k, PIsData k, PIsData v) => SomeMergeHandler k v s -> Term s (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v))
+
+-- | Zip two <a>PMap</a>s, using a <a>SomeMergeHandler</a> to decide how to
+--   merge based on key presence on the left and right.
+--   
+--   Note that using a <a>MergeHandlerCommutative</a> is less costly than a
+--   <a>MergeHandler</a>.
+pzipWithData :: forall (s :: S) (k :: PType) (v :: PType). (POrd k, PIsData k) => SomeMergeHandler (PAsData k) (PAsData v) s -> Term s (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v))
+
+-- | Zip two <a>PMap</a>s, using the given value merge function for key
+--   collisions, the commutativity of the merge function, and a default
+--   value that can stand in for both sides.
+--   
+--   Note that using <a>Commutative</a> is less costly than
+--   <a>NonCommutative</a>.
+pzipWithDefault :: forall (s :: S) (k :: PType) (v :: PType). (POrd k, PIsData k, PIsData v) => ClosedTerm v -> Commutativity -> Term s ((v :--> (v :--> v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
+
+-- | Zip two <a>PMap</a>s, using the given value merge function for key
+--   collisions, the commutativity of the merge function, and a default
+--   value that can stand in for both sides.
+--   
+--   Note that using <a>Commutative</a> is less costly than
+--   <a>NonCommutative</a>.
+pzipWithDataDefault :: forall (s :: S) (k :: PType) (v :: PType). (POrd k, PIsData k) => ClosedTerm (PAsData v) -> Commutativity -> Term s ((PAsData v :--> (PAsData v :--> PAsData v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
+
+-- | Zip two <a>PMap</a>s, using the given potentially non-commutative
+--   value merge function for key collisions, and different values for the
+--   sides.
+--   
+--   Use <a>pzipWithDefault</a> if your merge function is commutative for
+--   better performance.
+pzipWithDefaults :: forall (s :: S) (k :: PType) (v :: PType). (POrd k, PIsData k, PIsData v) => ClosedTerm v -> ClosedTerm v -> Term s ((v :--> (v :--> v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
+
+-- | Zip two <a>PMap</a>s, using the given potentially non-commutative
+--   value merge function for key collisions, and different values for the
+--   sides.
+--   
+--   Use <a>pzipWithDataDefault</a> if your merge function is commutative
+--   for better performance.
+pzipWithDataDefaults :: forall (s :: S) (k :: PType) (v :: PType). (POrd k, PIsData k) => ClosedTerm (PAsData v) -> ClosedTerm (PAsData v) -> Term s ((PAsData v :--> (PAsData v :--> PAsData v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
+
+-- | Build the intersection of two <a>PMap</a>s, merging values that share
+--   the same key using the given function.
+pintersectionWith :: (POrd k, PIsData k, PIsData v) => Commutativity -> Term s ((v :--> (v :--> v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
+
+-- | Build the intersection of two <a>PMap</a>s, merging data-encoded
+--   values that share the same key using the given function.
+pintersectionWithData :: (POrd k, PIsData k) => Commutativity -> Term s ((PAsData v :--> (PAsData v :--> PAsData v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
+
+-- | Build the union of two <a>PMap</a>s. Take the value from the left
+--   argument for colliding keys.
+--   
+--   Prefer this over 'punionResolvingCollisionsWith NonCommutative # plam
+--   const'. It performs better.
+pleftBiasedUnion :: (POrd k, PIsData k, PIsData v) => Term s (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v))
+
+-- | Build the union of two <a>PMap</a>s, merging values that share the
+--   same key using the given function.
+punionResolvingCollisionsWith :: (POrd k, PIsData k, PIsData v) => Commutativity -> Term s ((v :--> (v :--> v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
+
+-- | Build the union of two <a>PMap</a>s, merging values that share the
+--   same key using the given function.
+punionResolvingCollisionsWithData :: (POrd k, PIsData k) => Commutativity -> Term s ((PAsData v :--> (PAsData v :--> PAsData v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
 
 -- | Difference of two maps. Return elements of the first map not existing
 --   in the second map.
-pdifference :: PIsData k => Term s (PMap g k a :--> (PMap any k b :--> PMap g k a))
+pdifference :: (PIsData k, POrd k, PIsData v) => Term s (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v))
 
--- | Combine two <a>PMap</a>s applying the given function to any two values
---   that share the same key.
-punionWith :: (POrd k, PIsData k, PIsData v) => Term s ((v :--> (v :--> v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
-
--- | Combine two <a>PMap</a>s applying the given function to any two
---   data-encoded values that share the same key.
-punionWithData :: (POrd k, PIsData k) => Term s ((PAsData v :--> (PAsData v :--> PAsData v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
+-- | Difference of two maps. Return elements of the first map not existing
+--   in the second map. Warning: O(n^2).
+punsortedDifference :: PIsData k => Term s (PMap g k a :--> (PMap any k b :--> PMap g k a))
 
 -- | Given a comparison function and a "zero" value, check whether a binary
 --   relation holds over 2 sorted <a>PMap</a>s.
@@ -3331,9 +3472,17 @@ instance forall k1 k2 (f :: k2 -> k1 -> Type) (a :: k1) (b :: k2). GHC.Generics.
 instance forall (keysort :: Plutarch.Api.V1.AssocMap.KeyGuarantees) (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType). (Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, Plutarch.Show.PShow k, Plutarch.Show.PShow v) => Plutarch.Show.PShow (Plutarch.Api.V1.AssocMap.PMap keysort k v)
 instance forall (keysort :: Plutarch.Api.V1.AssocMap.KeyGuarantees) (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Api.V1.AssocMap.PMap keysort k v)
 instance forall (keysort :: Plutarch.Api.V1.AssocMap.KeyGuarantees) (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Api.V1.AssocMap.PMap keysort k v s)
-instance forall (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Api.V1.AssocMap.MapUnionCarrier k v)
-instance forall (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Api.V1.AssocMap.MapUnionCarrier k v s)
-instance forall (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Api.V1.AssocMap.MapUnionCarrier k v)
+instance GHC.Show.Show Plutarch.Api.V1.AssocMap.Commutativity
+instance GHC.Classes.Ord Plutarch.Api.V1.AssocMap.Commutativity
+instance GHC.Classes.Eq Plutarch.Api.V1.AssocMap.Commutativity
+instance forall (f :: Type -> Type -> Type) k v. (forall a b. GHC.Show.Show (f a b)) => GHC.Show.Show (Plutarch.Api.V1.AssocMap.BothPresentHandler_ f k v)
+instance forall (f :: Type -> Type -> Type) k v. (forall a b. GHC.Show.Show (f a b)) => GHC.Show.Show (Plutarch.Api.V1.AssocMap.BothPresentHandlerCommutative_ f k v)
+instance forall (f :: Type -> Type -> Type) k v. (forall a b. GHC.Show.Show (f a b)) => GHC.Show.Show (Plutarch.Api.V1.AssocMap.OnePresentHandler_ f k v)
+instance forall (f :: Type -> Type -> Type) k v. (forall a b. GHC.Show.Show (f a b)) => GHC.Show.Show (Plutarch.Api.V1.AssocMap.MergeHandler_ f k v)
+instance forall (f :: Type -> Type -> Type) k v. (forall a b. GHC.Show.Show (f a b)) => GHC.Show.Show (Plutarch.Api.V1.AssocMap.MergeHandlerCommutative_ f k v)
+instance forall (f :: Type -> Type -> Type) k v. (forall a b. GHC.Show.Show (f a b)) => GHC.Show.Show (Plutarch.Api.V1.AssocMap.SomeMergeHandler_ f k v)
+instance forall (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). (Plutarch.Bool.POrd k, Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, GHC.Base.Semigroup (Plutarch.Internal.Term s v)) => GHC.Base.Semigroup (Plutarch.Internal.Term s (Plutarch.Api.V1.AssocMap.PMap 'Plutarch.Api.V1.AssocMap.Sorted k v))
+instance forall (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). (Plutarch.Bool.POrd k, Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term s v)) => PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term s (Plutarch.Api.V1.AssocMap.PMap 'Plutarch.Api.V1.AssocMap.Sorted k v))
 instance forall (keysort :: Plutarch.Api.V1.AssocMap.KeyGuarantees) (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Api.V1.AssocMap.PMap keysort k v)
 instance forall (keysort :: Plutarch.Api.V1.AssocMap.KeyGuarantees) (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType). Plutarch.Builtin.PIsData (Plutarch.Api.V1.AssocMap.PMap keysort k v)
 instance forall (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType). Plutarch.Bool.PEq (Plutarch.Api.V1.AssocMap.PMap 'Plutarch.Api.V1.AssocMap.Sorted k v)
@@ -3343,11 +3492,9 @@ instance forall (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType). (
 instance forall (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType). (Plutarch.Bool.POrd k, Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData k), Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData v)) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.Api.V1.AssocMap.PMap 'Plutarch.Api.V1.AssocMap.Sorted k v))
 instance forall (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). (Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, Plutarch.Bool.POrd k) => GHC.Exts.IsList (Plutarch.Internal.Term s (Plutarch.Api.V1.AssocMap.PMap 'Plutarch.Api.V1.AssocMap.Unsorted k v))
 instance forall (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). (Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, Plutarch.Bool.POrd k) => GHC.Exts.IsList (Plutarch.Internal.Term s (Plutarch.Api.V1.AssocMap.PMap 'Plutarch.Api.V1.AssocMap.Sorted k v))
-instance forall (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). (Plutarch.Bool.POrd k, Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, GHC.Base.Semigroup (Plutarch.Internal.Term s v)) => GHC.Base.Semigroup (Plutarch.Internal.Term s (Plutarch.Api.V1.AssocMap.PMap 'Plutarch.Api.V1.AssocMap.Sorted k v))
-instance forall (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). (Plutarch.Bool.POrd k, Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, GHC.Base.Semigroup (Plutarch.Internal.Term s v)) => GHC.Base.Monoid (Plutarch.Internal.Term s (Plutarch.Api.V1.AssocMap.PMap 'Plutarch.Api.V1.AssocMap.Sorted k v))
-instance forall (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). (Plutarch.Bool.POrd k, Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term s v)) => PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term s (Plutarch.Api.V1.AssocMap.PMap 'Plutarch.Api.V1.AssocMap.Sorted k v))
-instance forall (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). (Plutarch.Bool.POrd k, Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term s v)) => PlutusTx.Monoid.Monoid (Plutarch.Internal.Term s (Plutarch.Api.V1.AssocMap.PMap 'Plutarch.Api.V1.AssocMap.Sorted k v))
-instance forall (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). (Plutarch.Bool.POrd k, Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, PlutusTx.Monoid.Group (Plutarch.Internal.Term s v)) => PlutusTx.Monoid.Group (Plutarch.Internal.Term s (Plutarch.Api.V1.AssocMap.PMap 'Plutarch.Api.V1.AssocMap.Sorted k v))
+instance forall (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). (Plutarch.Bool.POrd k, Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, forall (s' :: Plutarch.Internal.S). GHC.Base.Monoid (Plutarch.Internal.Term s' v)) => GHC.Base.Monoid (Plutarch.Internal.Term s (Plutarch.Api.V1.AssocMap.PMap 'Plutarch.Api.V1.AssocMap.Sorted k v))
+instance forall (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). (Plutarch.Bool.POrd k, Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, forall (s' :: Plutarch.Internal.S). PlutusTx.Monoid.Monoid (Plutarch.Internal.Term s' v)) => PlutusTx.Monoid.Monoid (Plutarch.Internal.Term s (Plutarch.Api.V1.AssocMap.PMap 'Plutarch.Api.V1.AssocMap.Sorted k v))
+instance forall (k :: Plutarch.Internal.PType) (v :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). (Plutarch.Bool.POrd k, Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, forall (s' :: Plutarch.Internal.S). PlutusTx.Monoid.Group (Plutarch.Internal.Term s' v)) => PlutusTx.Monoid.Group (Plutarch.Internal.Term s (Plutarch.Api.V1.AssocMap.PMap 'Plutarch.Api.V1.AssocMap.Sorted k v))
 
 
 -- | Value-related functionality. In order to keep the interface efficient
@@ -3405,15 +3552,26 @@ pconstantSingleton :: ClosedTerm PCurrencySymbol -> ClosedTerm PTokenName -> Clo
 --   positive quantity of the given currency.
 pconstantPositiveSingleton :: ClosedTerm PCurrencySymbol -> ClosedTerm PTokenName -> ClosedTerm PInteger -> ClosedTerm (PValue 'Sorted 'Positive)
 
+-- | Combine two <a>PValue</a>s, taking the tokens from the left only, if a
+--   currency occurs on both sides.
+pleftBiasedCurrencyUnion :: Term s (PValue 'Sorted any0 :--> (PValue 'Sorted any1 :--> PValue 'Sorted 'NoGuarantees))
+
+-- | Combine two <a>PValue</a>s, taking the tokens from the left only, if a
+--   token name of the same currency occurs on both sides.
+--   
+--   Prefer this over 'punionResolvingCollisionsWith NonCommutative # plam
+--   const'. It is equivalent, but performs better.
+pleftBiasedTokenUnion :: Term s (PValue 'Sorted any0 :--> (PValue 'Sorted any1 :--> PValue 'Sorted 'NoGuarantees))
+
 -- | Combine two <a>PValue</a>s applying the given function to any pair of
 --   quantities with the same asset class. Note that the result is _not_
 --   <tt>normalize</tt>d and may contain zero quantities.
-punionWith :: Term s ((PInteger :--> (PInteger :--> PInteger)) :--> (PValue 'Sorted any0 :--> (PValue 'Sorted any1 :--> PValue 'Sorted 'NoGuarantees)))
+punionResolvingCollisionsWith :: Commutativity -> Term s ((PInteger :--> (PInteger :--> PInteger)) :--> (PValue 'Sorted any0 :--> (PValue 'Sorted any1 :--> PValue 'Sorted 'NoGuarantees)))
 
 -- | Combine two <a>PValue</a>s applying the given function to any pair of
 --   data-encoded quantities with the same asset class. Note that the
 --   result is _not_ <tt>normalize</tt>d and may contain zero quantities.
-punionWithData :: Term s ((PAsData PInteger :--> (PAsData PInteger :--> PAsData PInteger)) :--> (PValue 'Sorted any0 :--> (PValue 'Sorted any1 :--> PValue 'Sorted 'NoGuarantees)))
+punionResolvingCollisionsWithData :: Commutativity -> Term s ((PAsData PInteger :--> (PAsData PInteger :--> PAsData PInteger)) :--> (PValue 'Sorted any0 :--> (PValue 'Sorted any1 :--> PValue 'Sorted 'NoGuarantees)))
 
 -- | Given an amount comparison function, check whether a binary relation
 --   holds over 2 sorted <a>PValue</a>s.
