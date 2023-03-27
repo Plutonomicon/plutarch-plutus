@@ -3,3 +3,4 @@ packages:
   ./plutarch-*
 
 benchmarks: true
+tests: true

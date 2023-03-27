@@ -11,13 +11,18 @@
     auto-optimise-store = "true";
   };
 
-  inputs.tooling.url = "github:mlabs-haskell/mlabs-tooling.nix";
+  # FIXME: we need to think about what's going on here, both hci-effects and tooling
+  #        implement the same argument, I don't know how to solve this atm
+  inputs.tooling.url = "github:mlabs-haskell/mlabs-tooling.nix/mangoiv/fix-herculesCI-arg";
 
-  outputs = inputs@{ self, tooling, ... }: tooling.lib.mkFlake { inherit self; }
-    {
+
+  outputs = inputs@{ tooling, ... }: tooling.lib.mkFlake { inherit inputs; }
+    ({ withSystem, ... }: {
       imports = [
+        tooling.lib.hercules-flakeModule
         (tooling.lib.mkHaskellFlakeModule1 {
-          docsPath = ./docs;
+          docsPath = ./plutarch-docs;
+          baseUrl = "/plutarch-plutus/";
           toHaddock = [ "plutarch" "plutus-core" "plutus-tx" "plutus-ledger-api" ];
           project.src = ./.;
           project.modules = [
@@ -25,6 +30,9 @@
               packages = {
                 # Workaround missing support for build-tools:
                 # https://github.com/input-output-hk/haskell.nix/issues/231
+                plutarch-docs.components.exes.plutarch-docs.build-tools = [
+                  config.hsPkgs.markdown-unlit
+                ];
                 plutarch-test.components.exes.plutarch-test.build-tools = [
                   config.hsPkgs.hspec-discover
                 ];
@@ -34,7 +42,22 @@
         })
       ];
 
-      perSystem = { config, pkgs, ... }: {
+      systems =
+        if builtins.hasAttr "currentSystem" builtins
+        then [ builtins.currentSystem ]
+        else [ "x86_64-linux" "aarch64-linux" ];
+
+      hercules-ci.github-pages.branch = "master";
+      herculesCI.ciSystems = [ "x86_64-linux" ];
+
+      perSystem = { config, pkgs, self', system, ... }: {
+        packages.combined-docs = pkgs.runCommand "combined-docs" { buildInputs = with config.packages; [ docs haddock ]; } ''
+          mkdir -p $out/share/doc
+          cp -r ${config.packages.docs}/* $out
+          cp -r ${config.packages.haddock}/share/doc/* $out/share/doc
+        '';
+        hercules-ci.github-pages.settings.contents = config.packages.combined-docs;
+
         checks.plutarch-test = pkgs.runCommand "plutarch-test"
           {
             nativeBuildInputs = [ config.packages."plutarch-test:exe:plutarch-test" ];
@@ -43,5 +66,5 @@
           touch $out
         '';
       };
-    };
+    });
 }

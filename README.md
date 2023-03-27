@@ -8,6 +8,8 @@
 
 Plutarch is a typed eDSL in Haskell for writing efficient Plutus Core validators.
 
+[**Continue to our website**](https://plutonomicon.github.io/plutarch-plutus/)
+
 # Why Plutarch?
 Plutarch written validators are often significantly more efficient than Plutus Tx written validators. With Plutarch, you have much more fine gained control of the Plutus Core you generate, without giving up any type information.
 
@@ -29,7 +31,7 @@ More benchmarks, with reproducible code, soon to follow.
 See the [`plutarch-test`](./plutarch-test) for testing and golden files containing benchmarks and UPLCs.
 
 # Usage
-Read the [Plutarch guide](./docs/README.md) to get started!
+Read the [Plutarch guide](./plutarch-docs/README.md) to get started!
 
 # Contributing
 Contributions are more than welcome! Alongside the [User guide](#usage) above, you may also find the [Developers' guide](./docs/DEVGUIDE.md) useful for understanding the codebase.

@@ -325,7 +325,7 @@ instance PTryFrom PData (PAsData PNatural) where
   type PTryFromExcess PData (PAsData PNatural) = Flip Term PNatural
   ptryFrom' opq = runTermCont $ do
     (ter, exc) <- TermCont $ ptryFrom @(PAsData PInteger) opq
-    ver <- tcont $ plet $ pmkNatural #$ exc
+    ver <- tcont $ plet $ pmkNatural # exc
     pure (punsafeDowncast ter, ver)
 
 validator :: Term s PValidator

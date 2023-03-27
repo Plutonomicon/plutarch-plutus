@@ -1,3 +1,0 @@
-# Plutarch Guide
-
-See [[README]]
