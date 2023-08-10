@@ -76,7 +76,7 @@ pguardC s cond = tcont $ \f -> pif cond (f ()) $ ptraceError s
 @
 is42 :: Term s (PInteger :--> PBool)
 is42 = plam $ \i -> unTermCont $ do
-  pguardC "expected 42" (pconstant False) $ i #== 42
+  pguardC' (pconstant False) $ i #== 42
   pure $ pconstant True
 @
 -}
