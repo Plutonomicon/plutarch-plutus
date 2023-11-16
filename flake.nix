@@ -11,60 +11,57 @@
     auto-optimise-store = "true";
   };
 
-  # FIXME: we need to think about what's going on here, both hci-effects and tooling
-  #        implement the same argument, I don't know how to solve this atm
-  inputs.tooling.url = "github:mlabs-haskell/mlabs-tooling.nix/mangoiv/fix-herculesCI-arg";
+  inputs = {
+    nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
+    nixpkgs-latest.url = "github:NixOS/nixpkgs";
 
+    flake-parts.url = "github:hercules-ci/flake-parts";
 
-  outputs = inputs@{ tooling, ... }: tooling.lib.mkFlake { inherit inputs; }
-    ({ withSystem, ... }: {
-      imports = [
-        tooling.lib.hercules-flakeModule
-        (tooling.lib.mkHaskellFlakeModule1 {
-          docsPath = ./plutarch-docs;
-          baseUrl = "/plutarch-plutus/";
-          toHaddock = [ "plutarch" "plutus-core" "plutus-tx" "plutus-ledger-api" ];
-          project.src = ./.;
-          project.modules = [
-            ({ config, pkgs, hsPkgs, ... }: {
-              packages = {
-                # Workaround missing support for build-tools:
-                # https://github.com/input-output-hk/haskell.nix/issues/231
-                plutarch-docs.components.exes.plutarch-docs.build-tools = [
-                  config.hsPkgs.markdown-unlit
-                ];
-                plutarch-test.components.exes.plutarch-test.build-tools = [
-                  config.hsPkgs.hspec-discover
-                ];
-              };
-            })
-          ];
-        })
-      ];
+    haskell-nix.url = "github:input-output-hk/haskell.nix";
+    iohk-nix.url = "github:input-output-hk/iohk-nix";
+    iohk-nix.inputs.nixpkgs.follows = "nixpkgs";
 
-      systems =
-        if builtins.hasAttr "currentSystem" builtins
-        then [ builtins.currentSystem ]
-        else [ "x86_64-linux" "aarch64-linux" ];
+    CHaP.url = "github:input-output-hk/cardano-haskell-packages?ref=repo";
+    CHaP.flake = false;
 
-      hercules-ci.github-pages.branch = "master";
-      herculesCI.ciSystems = [ "x86_64-linux" ];
+    pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
+    hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
+  };
 
-      perSystem = { config, pkgs, self', system, ... }: {
-        packages.combined-docs = pkgs.runCommand "combined-docs" { buildInputs = with config.packages; [ docs haddock ]; } ''
-          mkdir -p $out/share/doc
-          cp -r ${config.packages.docs}/* $out
-          cp -r ${config.packages.haddock}/share/doc/* $out/share/doc
-        '';
-        hercules-ci.github-pages.settings.contents = config.packages.combined-docs;
-
-        checks.plutarch-test = pkgs.runCommand "plutarch-test"
+  outputs = inputs@{self, flake-parts, nixpkgs, haskell-nix, iohk-nix, CHaP, ...}:
+    flake-parts.lib.mkFlake {inherit inputs;} {
+      debug = true;
+      systems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux" ];
+      perSystem = { options, config, self', inputs', lib, system, ... }:
+        let
+          pkgs =
+            import nixpkgs {
+              inherit system;
+              overlays = [
+                haskell-nix.overlay
+                iohk-nix.overlays.crypto
+              ];
+              inherit (haskell-nix) config;
+            };
+          project = pkgs.haskell-nix.cabalProject' {
+            src = ./.;
+            compiler-nix-name = "ghc963";
+            inputMap = {
+              "https://input-output-hk.github.io/cardano-haskell-packages" = CHaP;
+            };
+            shell = {
+              withHoogle = true;
+              exactDeps = true;
+            };
+          };
+          flake = project.flake {};
+        in
           {
-            nativeBuildInputs = [ config.packages."plutarch-test:exe:plutarch-test" ];
-          } ''
-          plutarch-test
-          touch $out
-        '';
+            # TODO: Bring back CI, Bring back docs
+            packages = flake.packages;
+            devShells = flake.devShells;
+          };
+      flake = {
       };
-    });
+    };
 }
