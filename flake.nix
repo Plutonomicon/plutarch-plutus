@@ -30,8 +30,14 @@
 
   outputs = inputs@{self, flake-parts, nixpkgs, haskell-nix, iohk-nix, CHaP, ...}:
     flake-parts.lib.mkFlake {inherit inputs;} {
-      debug = true;
+      imports = [
+        inputs.hercules-ci-effects.flakeModule
+      ];
       systems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux" ];
+      herculesCI = {
+        ciSystems = [ "x86_64-linux" ];
+        onPush.default.outputs = self.checks.x86_64-linux;
+      };
       perSystem = { options, config, self', inputs', lib, system, ... }:
         let
           pkgs =
@@ -63,6 +69,13 @@
             # TODO: Bring back CI, Bring back docs
             packages = flake.packages;
             devShells = flake.devShells;
+            checks.plutarch-test = pkgs.runCommand "plutarch-test"
+              {
+                nativeBuildInputs = [ flake.packages."plutarch-test:exe:plutarch-test" ];
+              } ''
+                plutarch-test
+                touch $out
+              '';
           };
     };
 }
