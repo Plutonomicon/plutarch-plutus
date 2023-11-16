@@ -51,7 +51,10 @@
             };
             shell = {
               withHoogle = true;
-              exactDeps = true;
+              exactDeps = false;
+              nativeBuildInputs = [
+                project.hsPkgs.hspec-discover.components.exes."hspec-discover"
+              ];
             };
           };
           flake = project.flake {};
@@ -61,7 +64,5 @@
             packages = flake.packages;
             devShells = flake.devShells;
           };
-      flake = {
-      };
     };
 }
