@@ -31,7 +31,7 @@ data Elem (a :: k) (as :: [k]) where
 type family IndexList (n :: Nat) (l :: [k]) :: k where
   IndexList _ '[] = TypeError ('Text "IndexList: index out of bounds")
   IndexList 0 (x ': _) = x
-  IndexList n (_ : xs) = IndexList (n - 1) xs
+  IndexList n (_ ': xs) = IndexList (n - 1) xs
 
 -- | Indexing list of labeled pairs by label
 type IndexLabel :: Symbol -> [(Symbol, Type)] -> Type

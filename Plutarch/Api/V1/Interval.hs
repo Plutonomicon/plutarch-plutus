@@ -29,8 +29,8 @@ newtype PInterval a (s :: S)
       ( Term
           s
           ( PDataRecord
-              '[ "from" ':= PLowerBound a
-               , "to" ':= PUpperBound a
+              '[ "from" ' := PLowerBound a
+               , "to" ' := PUpperBound a
                ]
           )
       )
@@ -54,8 +54,8 @@ newtype PLowerBound a (s :: S)
       ( Term
           s
           ( PDataRecord
-              '[ "_0" ':= PExtended a
-               , "_1" ':= PClosure
+              '[ "_0" ' := PExtended a
+               , "_1" ' := PClosure
                ]
           )
       )
@@ -79,8 +79,8 @@ newtype PUpperBound a (s :: S)
       ( Term
           s
           ( PDataRecord
-              '[ "_0" ':= PExtended a
-               , "_1" ':= PClosure
+              '[ "_0" ' := PExtended a
+               , "_1" ' := PClosure
                ]
           )
       )
@@ -90,7 +90,7 @@ instance DerivePlutusType (PUpperBound a) where type DPTStrat _ = PlutusTypeData
 
 data PExtended a (s :: S)
   = PNegInf (Term s (PDataRecord '[]))
-  | PFinite (Term s (PDataRecord '["_0" ':= a]))
+  | PFinite (Term s (PDataRecord '["_0" ' := a]))
   | PPosInf (Term s (PDataRecord '[]))
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PShow)

@@ -24,8 +24,8 @@ newtype PRationalData s
       ( Term
           s
           ( PDataRecord
-              '[ "numerator" ':= PInteger
-               , "denominator" ':= PPositive
+              '[ "numerator" ' := PInteger
+               , "denominator" ' := PPositive
                ]
           )
       )

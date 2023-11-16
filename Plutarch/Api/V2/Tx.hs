@@ -32,11 +32,11 @@ newtype PTxOut (s :: S)
       ( Term
           s
           ( PDataRecord
-              '[ "address" ':= V1.PAddress
+              '[ "address" ' := V1.PAddress
                , -- negative values may appear in a future Cardano version
-                 "value" ':= V1.PValue 'V1.Sorted 'V1.Positive
-               , "datum" ':= POutputDatum
-               , "referenceScript" ':= V1.PMaybeData V1.PScriptHash
+                 "value" ' := V1.PValue 'V1.Sorted 'V1.Positive
+               , "datum" ' := POutputDatum
+               , "referenceScript" ' := V1.PMaybeData V1.PScriptHash
                ]
           )
       )
@@ -54,8 +54,8 @@ newtype PTxInInfo (s :: S)
       ( Term
           s
           ( PDataRecord
-              '[ "outRef" ':= V1.PTxOutRef
-               , "resolved" ':= PTxOut
+              '[ "outRef" ' := V1.PTxOutRef
+               , "resolved" ' := PTxOut
                ]
           )
       )
@@ -70,8 +70,8 @@ deriving via (DerivePConstantViaData Plutus.TxInInfo PTxInInfo) instance PConsta
 -- | The datum attached to an output: either nothing, a datum hash or an inline datum (CIP 32)
 data POutputDatum (s :: S)
   = PNoOutputDatum (Term s (PDataRecord '[]))
-  | POutputDatumHash (Term s (PDataRecord '["datumHash" ':= V1.PDatumHash]))
-  | POutputDatum (Term s (PDataRecord '["outputDatum" ':= V1.PDatum]))
+  | POutputDatumHash (Term s (PDataRecord '["datumHash" ' := V1.PDatumHash]))
+  | POutputDatum (Term s (PDataRecord '["outputDatum" ' := V1.PDatum]))
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PEq, PShow)
 

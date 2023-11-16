@@ -6,8 +6,8 @@ import Plutarch.Unsafe (punsafeCoerce)
 
 type PTuple a b =
   PDataSum
-    '[ '[ "_0" ':= a
-        , "_1" ':= b
+    '[ '[ "_0" ' := a
+        , "_1" ' := b
         ]
      ]
 

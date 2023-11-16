@@ -467,8 +467,8 @@ isPosInf x = case x of
 
 type EndPoint a =
   PDataRecord
-    '[ "_0" ':= PExtended a
-     , "_1" ':= PClosure
+    '[ "_0" ' := PExtended a
+     , "_1" ' := PClosure
      ]
 
 uToE :: Term s (PUpperBound a :--> EndPoint a)

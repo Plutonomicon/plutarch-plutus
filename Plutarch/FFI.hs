@@ -121,12 +121,14 @@ unsafeForeignExport config t = DeserializedCode program Nothing mempty
   where
     (Script (UPLC.Program _ version term)) = either (error . T.unpack) id $ compile config t
     program =
-      UPLC.Program () version $
-        UPLC.termMapNames fakeNameDeBruijn term
+      fmap (const mempty) $
+        UPLC.Program () version $
+          UPLC.termMapNames fakeNameDeBruijn term
 
 -- | Seriously unsafe, may fail at run time or result in unexpected behaviour in your on-chain validator.
 unsafeForeignImport :: CompiledCode t -> ClosedTerm p
-unsafeForeignImport c = Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm $ toNameless $ getPlc c) []
+unsafeForeignImport c =
+  Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm $ toNameless $ fmap (const ()) $ getPlc c) []
   where
     toNameless ::
       UPLC.Program UPLC.NamedDeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
@@ -189,11 +191,11 @@ instance PlutusType (PTxMaybe a) where
 
 type family F (p :: [PType]) (t :: [Type]) :: Constraint where
   F '[] '[] = ()
-  F (x : xs) (y : ys) = (x >~< y, F xs ys)
+  F (x ': xs) (y ': ys) = (x >~< y, F xs ys)
 
 type family G (p :: [[PType]]) (t :: [[Type]]) :: Constraint where
   G '[] '[] = ()
-  G (x : xs) (y : ys) = (F x y, G xs ys)
+  G (x ': xs) (y ': ys) = (F x y, G xs ys)
 
 -- | Equality of inner types - Plutarch on the left and Haskell on the right.
 type family (p :: PType) >~< (t :: Type) :: Constraint where
@@ -228,7 +230,7 @@ type family SortedBy xs where
 
 type Insert :: [Type] -> ConstructorName -> ([[Type]], [ConstructorName]) -> ([[Type]], [ConstructorName])
 type family Insert ts name xs where
-  Insert ts1 name1 '(ts2 ': tss, name2 : names) = Insert' (TypeLits.CmpSymbol name1 name2) ts1 name1 '(ts2 ': tss, name2 : names)
+  Insert ts1 name1 '(ts2 ': tss, name2 ': names) = Insert' (TypeLits.CmpSymbol name1 name2) ts1 name1 '(ts2 ': tss, name2 ': names)
   Insert ts name '( '[], '[]) = '( '[ts], '[name])
 
 type Insert' :: Ordering -> [Type] -> ConstructorName -> ([[Type]], [ConstructorName]) -> ([[Type]], [ConstructorName])

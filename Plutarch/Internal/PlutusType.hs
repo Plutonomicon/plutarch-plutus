@@ -51,7 +51,7 @@ class
   DerivePlutusType (a :: PType)
   where
   type DPTStrat a :: Type
-  type DPTStrat a = TypeError ('Text "Please specify a strategy for deriving PlutusType for type " ':<>: 'ShowType a)
+  type DPTStrat a = TypeError ('Text "Please specify a strategy for deriving PlutusType for type " ' :<>: 'ShowType a)
 
 class PlutusType (a :: PType) where
   type PInner a :: PType

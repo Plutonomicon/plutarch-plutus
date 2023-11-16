@@ -55,7 +55,7 @@ import Data.Text (Text)
 import Flat.Run qualified as F
 import GHC.Stack (HasCallStack, callStack, prettyCallStack)
 import GHC.Word (Word64)
-import Plutarch.Internal.Evaluate (evalScript)
+import Plutarch.Internal.Evaluate (uplcVersion, evalScript)
 import Plutarch.Script (Script (Script))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
@@ -97,19 +97,35 @@ data RawTerm
   | RHoisted HoistedTerm
   deriving stock (Show)
 
-hashRawTerm' :: HashAlgorithm alg => RawTerm -> Context alg -> Context alg
-hashRawTerm' (RVar x) = flip hashUpdate ("0" :: BS.ByteString) . flip hashUpdate (F.flat (fromIntegral x :: Integer))
+addHashIndex :: forall alg. HashAlgorithm alg => Integer -> Context alg -> Context alg
+addHashIndex i = flip hashUpdate ((fromString $ show i) :: BS.ByteString)
+
+hashUTerm :: forall alg. HashAlgorithm alg => UTerm -> Context alg -> Context alg
+hashUTerm (UPLC.Var _ name) = addHashIndex 0 . flip hashUpdate (F.flat name)
+hashUTerm (UPLC.LamAbs _ name uterm) = addHashIndex 1 . flip hashUpdate (F.flat name) . hashUTerm uterm
+hashUTerm (UPLC.Apply _ uterm1 uterm2) = addHashIndex 2 . hashUTerm uterm1 . hashUTerm uterm2
+hashUTerm (UPLC.Force _ uterm) = addHashIndex 3 . hashUTerm uterm
+hashUTerm (UPLC.Delay _ uterm) = addHashIndex 4 . hashUTerm uterm
+hashUTerm (UPLC.Constant _ val) = addHashIndex 5 . flip hashUpdate (F.flat val)
+hashUTerm (UPLC.Builtin _ fun) = addHashIndex 6 . flip hashUpdate (F.flat fun)
+hashUTerm (UPLC.Error _) = addHashIndex 7
+hashUTerm (UPLC.Constr _ idx uterms) =
+  addHashIndex 8 . addHashIndex (fromIntegral idx) . (foldl1 (.) $ hashUTerm <$> uterms)
+hashUTerm (UPLC.Case _ uterm uterms) = addHashIndex 9 . hashUTerm uterm . (foldl1 (.) $ hashUTerm <$> uterms)
+
+hashRawTerm' :: forall alg. HashAlgorithm alg => RawTerm -> Context alg -> Context alg
+hashRawTerm' (RVar x) = addHashIndex 0 . flip hashUpdate (F.flat (fromIntegral x :: Integer))
 hashRawTerm' (RLamAbs n x) =
-  flip hashUpdate ("1" :: BS.ByteString) . flip hashUpdate (F.flat (fromIntegral n :: Integer)) . hashRawTerm' x
+  addHashIndex 1 . flip hashUpdate (F.flat (fromIntegral n :: Integer)) . hashRawTerm' x
 hashRawTerm' (RApply x y) =
-  flip hashUpdate ("2" :: BS.ByteString) . hashRawTerm' x . flip (foldl' $ flip hashRawTerm') y
-hashRawTerm' (RForce x) = flip hashUpdate ("3" :: BS.ByteString) . hashRawTerm' x
-hashRawTerm' (RDelay x) = flip hashUpdate ("4" :: BS.ByteString) . hashRawTerm' x
-hashRawTerm' (RConstant x) = flip hashUpdate ("5" :: BS.ByteString) . flip hashUpdate (F.flat x)
-hashRawTerm' (RBuiltin x) = flip hashUpdate ("6" :: BS.ByteString) . flip hashUpdate (F.flat x)
-hashRawTerm' RError = flip hashUpdate ("7" :: BS.ByteString)
-hashRawTerm' (RHoisted (HoistedTerm hash _)) = flip hashUpdate ("8" :: BS.ByteString) . flip hashUpdate hash
-hashRawTerm' (RCompiled code) = flip hashUpdate ("9" :: BS.ByteString) . flip hashUpdate (F.flat code)
+  addHashIndex 2 . hashRawTerm' x . flip (foldl' $ flip hashRawTerm') y
+hashRawTerm' (RForce x) = addHashIndex 3 . hashRawTerm' x
+hashRawTerm' (RDelay x) = addHashIndex 4 . hashRawTerm' x
+hashRawTerm' (RConstant x) = addHashIndex 5 . flip hashUpdate (F.flat x)
+hashRawTerm' (RBuiltin x) = addHashIndex 6 . flip hashUpdate (F.flat x)
+hashRawTerm' RError = addHashIndex 7
+hashRawTerm' (RHoisted (HoistedTerm hash _)) = addHashIndex 8 . flip hashUpdate hash
+hashRawTerm' (RCompiled code) = addHashIndex 9 . flip hashUpdate (hashUTerm @alg code hashInit)
 
 hashRawTerm :: RawTerm -> Dig
 hashRawTerm t = hashFinalize . hashRawTerm' t $ hashInit
@@ -373,7 +389,7 @@ phoistAcyclic t = Term \_ ->
   asRawTerm t 0 >>= \case
     -- Built-ins are smaller than variable references
     t'@(getTerm -> RBuiltin _) -> pure t'
-    t' -> case evalScript . Script . UPLC.Program () (PLC.defaultVersion ()) $ compile' t' of
+    t' -> case evalScript . Script . UPLC.Program () uplcVersion $ compile' t' of
       (Right _, _, _) ->
         let hoisted = HoistedTerm (hashRawTerm . getTerm $ t') (getTerm t')
          in pure $ TermResult (RHoisted hoisted) (hoisted : getDeps t')
@@ -466,7 +482,7 @@ compile' t =
 -- | Compile a (closed) Plutus Term to a usable script
 compile :: Config -> ClosedTerm a -> Either Text Script
 compile config t = case asClosedRawTerm t of
-  TermMonad (ReaderT t') -> Script . UPLC.Program () (UPLC.Version () 1 0 0) . compile' <$> t' config
+  TermMonad (ReaderT t') -> Script . UPLC.Program () uplcVersion . compile' <$> t' config
 
 hashTerm :: Config -> ClosedTerm a -> Either Text Dig
 hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTerm t 0) config

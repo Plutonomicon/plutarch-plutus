@@ -120,7 +120,8 @@ hrecField ::
   ) =>
   HRec as ->
   Term s c
-hrecField xs = pmaybeFromAsData $ hrecField' @name xs
+hrecField xs =
+  pmaybeFromAsData @b @c $ hrecField' @name xs
 {-# DEPRECATED hrecField "please use getField from GHC.Records" #-}
 
 ---------- HasField instances

@@ -12,7 +12,8 @@ module Plutarch.Pretty.Internal.Types (
   nameOfRef,
 ) where
 
-import Control.Monad.Reader (ReaderT, (<=<))
+import Control.Monad.Reader (ReaderT)
+import Control.Monad ((<=<))
 import Control.Monad.ST (ST)
 import Control.Monad.State (MonadState (get, put), StateT)
 import Data.List (find)

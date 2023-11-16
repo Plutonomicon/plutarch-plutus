@@ -131,7 +131,7 @@ import Generics.SOP
 import Plutarch.Prelude
 import Plutarch.DataRepr
 
-newtype PFooType s = PFooType (Term s (PDataRecord '["frst" ':= PInteger, "scnd" ':= PBool, "thrd" ':= PString]))
+newtype PFooType s = PFooType (Term s (PDataRecord '["frst" ' := PInteger, "scnd" ' := PBool, "thrd" ' := PString]))
   deriving stock (GHC.Generic)
   deriving anyclass (Generic)
   deriving anyclass (PIsDataRepr)
@@ -188,7 +188,7 @@ type family BindField (p :: Symbol) (fs :: [Symbol]) :: ToBind where
 -- | Map 'BindField' over @[PLabeledType]@, with 'Skips' removed at tail
 type family Bindings (ps :: [PLabeledType]) (fs :: [Symbol]) :: [ToBind] where
   Bindings '[] _ = '[]
-  Bindings ((name ':= _) ': ps) fs = BindField name fs ': CutSkip (Bindings ps fs)
+  Bindings ((name ' := _) ': ps) fs = BindField name fs ': CutSkip (Bindings ps fs)
 
 -- | Remove 'Skip's at tail
 type family CutSkip (bs :: [ToBind]) :: [ToBind] where
@@ -204,7 +204,7 @@ type family BoundTerms ps bs s where
   BoundTerms '[] _ _ = '[]
   BoundTerms _ '[] _ = '[]
   BoundTerms (_ ': ps) ('Skip ': bs) s = BoundTerms ps bs s
-  BoundTerms ((name ':= p) ': ps) ('Bind ': bs) s = '(name, Term s (PAsData p)) ': BoundTerms ps bs s
+  BoundTerms ((name ' := p) ': ps) ('Bind ': bs) s = '(name, Term s (PAsData p)) ': BoundTerms ps bs s
 
 class BindFields (ps :: [PLabeledType]) (bs :: [ToBind]) where
   -- |
@@ -215,11 +215,11 @@ class BindFields (ps :: [PLabeledType]) (bs :: [ToBind]) where
   --    the generated bound-variables.
   bindFields :: Proxy bs -> Term s (PDataRecord ps) -> TermCont s (HRec (BoundTerms ps bs s))
 
-instance {-# OVERLAPPABLE #-} BindFields ((l ':= p) ': ps) ('Bind ': '[]) where
+instance {-# OVERLAPPABLE #-} BindFields ((l ' := p) ': ps) ('Bind ': '[]) where
   bindFields _ t =
     pure $ HCons (Labeled $ pindexDataRecord (Proxy @0) t) HNil
 
-instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields ((l ':= p) ': ps) ('Bind ': bs) where
+instance {-# OVERLAPPABLE #-} (BindFields ps bs) => BindFields ((l ' := p) ': ps) ('Bind ': bs) where
   bindFields _ t = do
     t' <- TermCont $ plet t
     xs <- bindFields (Proxy @bs) (pdropDataRecord (Proxy @1) t')

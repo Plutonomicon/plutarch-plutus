@@ -52,12 +52,12 @@ type family PSubtypeHelper (a :: PType) (b :: PType) (r :: PSubtypeRelation) :: 
   PSubtypeHelper a b 'PNoSubtypeRelation =
     TypeError
       ( 'Text "\""
-          ':<>: 'ShowType b
-          ':<>: 'Text "\""
-          ':<>: 'Text " is not a subtype of "
-          ':<>: 'Text "\""
-          ':<>: 'ShowType a
-          ':<>: 'Text "\""
+          ' :<>: 'ShowType b
+          ' :<>: 'Text "\""
+          ' :<>: 'Text " is not a subtype of "
+          ' :<>: 'Text "\""
+          ' :<>: 'ShowType a
+          ' :<>: 'Text "\""
       )
   PSubtypeHelper _ _ 'PSubtypeRelation = ()
 

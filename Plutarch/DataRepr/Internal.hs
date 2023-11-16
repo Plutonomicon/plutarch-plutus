@@ -147,7 +147,7 @@ data PDataRecord (as :: [PLabeledType]) (s :: S) where
     PUnLabel name_x ~ x =>
     Term s (PAsData x) ->
     (Term s (PDataRecord xs)) ->
-    -- GHC bug prevents `name ':= x` from working well
+    -- GHC bug prevents `name ' := x` from working well
     PDataRecord (name_x ': xs) s
   PDNil :: PDataRecord '[] s
 
@@ -188,11 +188,11 @@ instance PShow (PDataRecord '[]) where
 
 instance
   (All Top xs, KnownSymbol label, PIsData x, PShow x, PShow (PDataRecordShowHelper xs)) =>
-  PShow (PDataRecord ((label ':= x) ': xs))
+  PShow (PDataRecord ((label ' := x) ': xs))
   where
   pshow' b xs = "[" <> pmatch xs go
     where
-      go :: PDataRecord ((label ':= x) : xs) s -> Term s PString
+      go :: PDataRecord ((label ' := x) ': xs) s -> Term s PString
       go (PDCons y ys) =
         showWithLabel (Proxy @label) b y
           <> pshow' b (pcon $ PDataRecordShowHelper ys)
@@ -221,7 +221,7 @@ instance PShow (PDataRecordShowHelper '[]) where
 
 instance
   (All Top xs, KnownSymbol label, PIsData x, PShow x, PShow (PDataRecordShowHelper xs)) =>
-  PShow (PDataRecordShowHelper ((label ':= x) ': xs))
+  PShow (PDataRecordShowHelper ((label ' := x) ': xs))
   where
   pshow' b xs = ", " <> pmatch (pto xs) go
     where
@@ -229,7 +229,7 @@ instance
         showWithLabel (Proxy @label) b y
           <> pshow' b (pcon $ PDataRecordShowHelper ys)
 
-instance (POrd x, PIsData x) => PPartialOrd (PDataRecord '[label ':= x]) where
+instance (POrd x, PIsData x) => PPartialOrd (PDataRecord '[label ' := x]) where
   l1 #< l2 = unTermCont $ do
     PDCons x _ <- tcont $ pmatch l1
     PDCons y _ <- tcont $ pmatch l2
@@ -242,11 +242,11 @@ instance (POrd x, PIsData x) => PPartialOrd (PDataRecord '[label ':= x]) where
 
     pure $ pfromData x #<= pfromData y
 
-instance (POrd x, PIsData x) => POrd (PDataRecord '[label ':= x])
+instance (POrd x, PIsData x) => POrd (PDataRecord '[label ' := x])
 
 instance
   (SListI xs, POrd x, PIsData x, POrd (PDataRecord (x' ': xs))) =>
-  PPartialOrd (PDataRecord ((label ':= x) ': x' ': xs))
+  PPartialOrd (PDataRecord ((label ' := x) ': x' ': xs))
   where
   l1 #< l2 = unTermCont $ do
     PDCons x xs <- tcont $ pmatch l1
@@ -268,7 +268,7 @@ instance
 
 instance
   (SListI xs, POrd x, PIsData x, POrd (PDataRecord (x' ': xs))) =>
-  POrd (PDataRecord ((label ':= x) ': x' ': xs))
+  POrd (PDataRecord ((label ' := x) ': x' ': xs))
 
 {- | Cons a field to a data record.
 
@@ -276,12 +276,12 @@ You can specify the label to associate with the field using type applications-
 
 @
 
-foo :: Term s (PDataRecord '[ "fooField" ':= PByteString ])
+foo :: Term s (PDataRecord '[ "fooField" ' := PByteString ])
 foo = pdcons @"fooField" # pdata (phexByteStr "ab") # pdnil
 
 @
 -}
-pdcons :: forall label a l s. Term s (PAsData a :--> PDataRecord l :--> PDataRecord ((label ':= a) ': l))
+pdcons :: forall label a l s. Term s (PAsData a :--> PDataRecord l :--> PDataRecord ((label ' := a) ': l))
 pdcons = punsafeCoerce $ pcons @PBuiltinList @PData
 
 -- | An empty 'PDataRecord'.
@@ -291,16 +291,16 @@ pdnil = punsafeCoerce $ pnil @PBuiltinList @PData
 data PLabeledType = Symbol := PType
 
 type family PLabelIndex (name :: Symbol) (as :: [PLabeledType]) :: Nat where
-  PLabelIndex name ((name ':= _) ': _) = 0
+  PLabelIndex name ((name ' := _) ': _) = 0
   PLabelIndex name (_ ': as) = PLabelIndex name as + 1
 
 type PLookupLabel :: Symbol -> [PLabeledType] -> PType
 type family PLookupLabel name as where
-  PLookupLabel name ((name ':= a) ': _) = a
+  PLookupLabel name ((name ' := a) ': _) = a
   PLookupLabel name (_ ': as) = PLookupLabel name as
 
 type family PUnLabel (a :: PLabeledType) :: PType where
-  PUnLabel (_ ':= a) = a
+  PUnLabel (_ ' := a) = a
 
 instance PIsData (PDataRecord xs) where
   pfromDataImpl x = punsafeCoerce (pfromData (punsafeCoerce x) :: Term _ (PBuiltinList PData))
@@ -329,8 +329,8 @@ instance IsPDataSum '[] where
   toSum (SOP x) = case x of {}
   fromSum (PDataSum x) = case x of {}
 
-instance IsPDataSum xs => IsPDataSum ('[PDataRecord l] : xs) where
-  type IsPDataSumDefs ('[PDataRecord l] : xs) = (l : IsPDataSumDefs xs)
+instance IsPDataSum xs => IsPDataSum ('[PDataRecord l] ': xs) where
+  type IsPDataSumDefs ('[PDataRecord l] ': xs) = (l ': IsPDataSumDefs xs)
   toSum (SOP (Z (x :* Nil))) = PDataSum $ Z $ coerce x
   toSum (SOP (S x)) = case toSum (SOP x) of
     PDataSum y -> PDataSum $ S y
@@ -340,7 +340,7 @@ instance IsPDataSum xs => IsPDataSum ('[PDataRecord l] : xs) where
 
 data DataReprHandlers (out :: PType) (defs :: [[PLabeledType]]) (s :: S) where
   DRHNil :: DataReprHandlers out '[] s
-  DRHCons :: (Term s (PDataRecord def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def : defs) s
+  DRHCons :: (Term s (PDataRecord def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def ': defs) s
 
 newtype A s out defs = A {unA :: (PDataSum defs s -> Term s out) -> DataReprHandlers out defs s}
 
@@ -410,7 +410,7 @@ punDataSum = phoistAcyclic $
     (punsafeCoerce $ psndBuiltin # (pasConstr #$ pforgetData $ pdata t) :: Term _ (PDataRecord def))
 
 -- | Try getting the nth variant. Errs if it's another variant.
-ptryIndexDataSum :: (KnownNat n) => Proxy n -> Term s (PDataSum (def : defs) :--> PDataRecord (IndexList n (def : defs)))
+ptryIndexDataSum :: (KnownNat n) => Proxy n -> Term s (PDataSum (def ': defs) :--> PDataRecord (IndexList n (def ': defs)))
 ptryIndexDataSum n = phoistAcyclic $
   plam $ \t ->
     plet (pasConstr #$ pforgetData $ pdata t) $ \d ->
@@ -528,7 +528,7 @@ mkLTHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
     rer ::
       forall (y :: [PLabeledType]) (ys :: [[PLabeledType]]).
       Compose POrd PDataRecord y =>
-      Const () (y : ys) ->
+      Const () (y ': ys) ->
       (DualReprHandler s PBool y, Const () ys)
     rer _ = (DualRepr (#<), Const ())
 
@@ -538,7 +538,7 @@ mkLTEHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
     rer ::
       forall (y :: [PLabeledType]) (ys :: [[PLabeledType]]).
       Compose POrd PDataRecord y =>
-      Const () (y : ys) ->
+      Const () (y ': ys) ->
       (DualReprHandler s PBool y, Const () ys)
     rer _ = (DualRepr (#<=), Const ())
 
@@ -564,7 +564,7 @@ Polymorphic types can be derived as follows:
 >PlutusTx.makeIsDataIndexed ''Bar [('Bar, 0)]
 >
 >data PBar (a :: PType) (s :: S)
->  = PBar (Term s (PDataRecord '["_0" ':= a]))
+>  = PBar (Term s (PDataRecord '["_0" ' := a]))
 >  deriving stock (GHC.Generic)
 >  deriving anyclass (SOP.Generic, PIsDataRepr)
 >  deriving (PlutusType, PIsData, PDataFields) via PIsDataReprInstances (PBar a)
@@ -673,10 +673,10 @@ instance
   , PTryFrom (PBuiltinList PData) (PDataRecord as)
   , PTryFromExcess (PBuiltinList PData) (PDataRecord as) ~ HRecP ase
   ) =>
-  PTryFrom (PBuiltinList PData) (PDataRecord ((name ':= pty) ': as))
+  PTryFrom (PBuiltinList PData) (PDataRecord ((name ' := pty) ': as))
   where
   type
-    PTryFromExcess (PBuiltinList PData) (PDataRecord ((name ':= pty) ': as)) =
+    PTryFromExcess (PBuiltinList PData) (PDataRecord ((name ' := pty) ': as)) =
       HRecP
         ( '(name, ExcessForField (PSubtype' PData pty) pty)
             ': UnHRecP (PTryFromExcess (PBuiltinList PData) (PDataRecord as))

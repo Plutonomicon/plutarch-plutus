@@ -100,6 +100,7 @@ executable plutarch-test
   import:         c
   main-is:        Main.hs
   hs-source-dirs: tests
+  build-tool-depends: hspec-discover:hspec-discover    
   build-depends:
     , base
     , base16-bytestring
@@ -120,7 +121,7 @@ executable plutarch-test
     , tasty-quickcheck
     , text
     , transformers
-
+  
   other-modules:
     Plutarch.ApiSpec
     Plutarch.BoolSpec

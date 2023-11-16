@@ -2,7 +2,7 @@ module Plutarch.Script (Script (..), serialiseScript, deserialiseScript) where
 
 import Data.ByteString.Short (ShortByteString)
 import GHC.Generics (Generic)
-import PlutusLedgerApi.Common (deserialiseUPLC, serialiseUPLC)
+import PlutusLedgerApi.Common (uncheckedDeserialiseUPLC, serialiseUPLC)
 import UntypedPlutusCore qualified as UPLC
 
 newtype Script = Script {unScript :: UPLC.Program UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()}
@@ -13,4 +13,4 @@ serialiseScript :: Script -> ShortByteString
 serialiseScript = serialiseUPLC . unScript
 
 deserialiseScript :: ShortByteString -> Script
-deserialiseScript = Script . deserialiseUPLC
+deserialiseScript = Script . uncheckedDeserialiseUPLC

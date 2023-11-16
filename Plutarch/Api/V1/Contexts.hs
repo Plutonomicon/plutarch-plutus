@@ -42,16 +42,16 @@ newtype PTxInfo (s :: S)
       ( Term
           s
           ( PDataRecord
-              '[ "inputs" ':= PBuiltinList PTxInInfo -- Transaction inputs
-               , "outputs" ':= PBuiltinList PTxOut -- Transaction outputs
-               , "fee" ':= PValue 'Sorted 'Positive -- The fee paid by this transaction.
-               , "mint" ':= PValue 'Sorted 'NoGuarantees -- The value minted by the transaction.
-               , "dcert" ':= PBuiltinList PDCert -- Digests of the certificates included in this transaction.
-               , "wdrl" ':= PBuiltinList (PAsData (PTuple PStakingCredential PInteger)) -- Staking withdrawals
-               , "validRange" ':= PPOSIXTimeRange -- The valid range for the transaction.
-               , "signatories" ':= PBuiltinList (PAsData PPubKeyHash) -- Signatories attesting that they all signed the tx.
-               , "datums" ':= PBuiltinList (PAsData (PTuple PDatumHash PDatum))
-               , "id" ':= PTxId -- The hash of the pending transaction.
+              '[ "inputs" ' := PBuiltinList PTxInInfo -- Transaction inputs
+               , "outputs" ' := PBuiltinList PTxOut -- Transaction outputs
+               , "fee" ' := PValue 'Sorted 'Positive -- The fee paid by this transaction.
+               , "mint" ' := PValue 'Sorted 'NoGuarantees -- The value minted by the transaction.
+               , "dcert" ' := PBuiltinList PDCert -- Digests of the certificates included in this transaction.
+               , "wdrl" ' := PBuiltinList (PAsData (PTuple PStakingCredential PInteger)) -- Staking withdrawals
+               , "validRange" ' := PPOSIXTimeRange -- The valid range for the transaction.
+               , "signatories" ' := PBuiltinList (PAsData PPubKeyHash) -- Signatories attesting that they all signed the tx.
+               , "datums" ' := PBuiltinList (PAsData (PTuple PDatumHash PDatum))
+               , "id" ' := PTxId -- The hash of the pending transaction.
                ]
           )
       )
@@ -69,8 +69,8 @@ newtype PScriptContext (s :: S)
       ( Term
           s
           ( PDataRecord
-              '[ "txInfo" ':= PTxInfo
-               , "purpose" ':= PScriptPurpose
+              '[ "txInfo" ' := PTxInfo
+               , "purpose" ' := PScriptPurpose
                ]
           )
       )
@@ -86,10 +86,10 @@ deriving via (DerivePConstantViaData Plutus.ScriptContext PScriptContext) instan
 
 -- | The purpose of the script that is currently running
 data PScriptPurpose (s :: S)
-  = PMinting (Term s (PDataRecord '["_0" ':= PCurrencySymbol]))
-  | PSpending (Term s (PDataRecord '["_0" ':= PTxOutRef]))
-  | PRewarding (Term s (PDataRecord '["_0" ':= PStakingCredential]))
-  | PCertifying (Term s (PDataRecord '["_0" ':= PDCert]))
+  = PMinting (Term s (PDataRecord '["_0" ' := PCurrencySymbol]))
+  | PSpending (Term s (PDataRecord '["_0" ' := PTxOutRef]))
+  | PRewarding (Term s (PDataRecord '["_0" ' := PStakingCredential]))
+  | PCertifying (Term s (PDataRecord '["_0" ' := PDCert]))
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PEq, PShow)
 
