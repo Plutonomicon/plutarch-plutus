@@ -19,7 +19,7 @@ Whenever you need to represent a non-trivial ADT using [`Data` encoding](./../Co
 More often than not, you'll be using `PDataRecord`. This is used to denote all the fields of a constructor:
 
 ```haskell
-newtype Foo (s :: S) = Foo (Term s (PDataRecord '["fooField" ':= PInteger]))
+newtype Foo (s :: S) = Foo (Term s (PDataRecord '["fooField" ' := PInteger]))
 ```
 
 `Foo` is a Plutarch type with a single constructor with a single field, named `fooField`, of type `PInteger`. You can 
@@ -29,7 +29,7 @@ for it so that `PAsData Foo` is represented as a `Constr` encoded data value.
 You can build `PDataRecord` terms using `pdcons` and `pdnil`. These are the familiar `cons` and `nil` but for `PDataRecord` terms.
 
 ```hs
-pdcons :: forall label a l s. Term s (PAsData a :--> PDataRecord l :--> PDataRecord ((label ':= a) ': l))
+pdcons :: forall label a l s. Term s (PAsData a :--> PDataRecord l :--> PDataRecord ((label ' := a) ': l))
 
 pdnil :: forall s. Term s (PDataRecord '[])
 ```
@@ -41,7 +41,7 @@ or let GHC match up the types.
 Here's how you'd build a `PDataRecord` with two integer fields, one is named `foo`, the other is named `bar`:
 
 ```haskell
-test :: Term s (PDataRecord '[ "foo" ':= PInteger, "bar" ':= PInteger])
+test :: Term s (PDataRecord '[ "foo" ' := PInteger, "bar" ' := PInteger])
 test = pdcons # pdata 7 #$ pdcons # pdata 42 # pdnil
 ```
 
@@ -49,10 +49,10 @@ test = pdcons # pdata 7 #$ pdcons # pdata 42 # pdnil
 
 ```hs
 PDataSum
-  [ '[ "_0" ':= PInteger
-     , "_1" ':= PByteString
+  [ '[ "_0" ' := PInteger
+     , "_1" ' := PByteString
      ]
-  , '[ "myField" ':= PBool
+  , '[ "myField" ' := PBool
      ]
   ]
 ```

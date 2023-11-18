@@ -74,8 +74,8 @@ you can derive `PlutusType` via `PlutusTypeData`:
 
 ```haskell
 data PMyTypeData (a :: PType) (b :: PType) (s :: S)
-  = POneD (Term s (PDataRecord '[ "_0" ':= a ]))
-  | PTwoD (Term s (PDataRecord '[ "_0" ':= b ]))
+  = POneD (Term s (PDataRecord '[ "_0" ' := a ]))
+  | PTwoD (Term s (PDataRecord '[ "_0" ' := b ]))
   deriving stock Generic
   deriving anyclass (PlutusType)
 

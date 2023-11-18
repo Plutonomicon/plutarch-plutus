@@ -65,9 +65,9 @@ newtype PTriplet a s
       ( Term
           s
           ( PDataRecord
-              '[ "x" ':= a
-               , "y" ':= a
-               , "z" ':= a
+              '[ "x" ' := a
+               , "y" ' := a
+               , "z" ' := a
                ]
           )
       )

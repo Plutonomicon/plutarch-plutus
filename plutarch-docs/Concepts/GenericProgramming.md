@@ -126,8 +126,8 @@ instance DerivePlutusType (MyType a b) where type DPTStrat _ = PlutusTypeScott
 -- If you instead want to use data encoding, you should derive 'PlutusType' and provide data strategy:
 
 data MyTypeD (a :: PType) (b :: PType) (s :: S)
-  = OneD (Term s (PDataRecord '[ "_0" ':= a ]))
-  | TwoD (Term s (PDataRecord '[ "_0" ':= b ]))
+  = OneD (Term s (PDataRecord '[ "_0" ' := a ]))
+  | TwoD (Term s (PDataRecord '[ "_0" ' := b ]))
   deriving stock Generic
   deriving anyclass PlutusType
 instance DerivePlutusType (MyTypeD a b) where type DPTStrat _ = PlutusTypeData

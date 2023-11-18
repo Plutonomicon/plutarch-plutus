@@ -115,6 +115,7 @@ executable plutarch-docs
 
   hs-source-dirs:   . compilable
   ghc-options:      -pgmL markdown-unlit
+  build-tool-depends: markdown-unlit:markdown-unlit      
   build-depends:
     , base
     , bytestring

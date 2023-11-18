@@ -60,6 +60,7 @@
               exactDeps = false;
               nativeBuildInputs = [
                 project.hsPkgs.hspec-discover.components.exes."hspec-discover"
+                project.hsPkgs.markdown-unlit.components.exes."markdown-unlit"
               ];
             };
           };

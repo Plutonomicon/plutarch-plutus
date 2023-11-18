@@ -59,8 +59,8 @@ newtype PScriptContext (s :: S)
       ( Term
           s
           ( PDataRecord
-              '[ "txInfo" ':= PTxInfo
-               , "purpose" ':= PScriptPurpose
+              '[ "txInfo" ' := PTxInfo
+               , "purpose" ' := PScriptPurpose
                ]
           )
       )
@@ -91,10 +91,10 @@ Now that we have `PScriptPurpose s`, we can just `case` match on it! `PScriptPur
 
 ```hs
 data PScriptPurpose (s :: S)
-  = PMinting (Term s (PDataRecord '["_0" ':= PCurrencySymbol]))
-  | PSpending (Term s (PDataRecord '["_0" ':= PTxOutRef]))
-  | PRewarding (Term s (PDataRecord '["_0" ':= PStakingCredential]))
-  | PCertifying (Term s (PDataRecord '["_0" ':= PDCert]))
+  = PMinting (Term s (PDataRecord '["_0" ' := PCurrencySymbol]))
+  | PSpending (Term s (PDataRecord '["_0" ' := PTxOutRef]))
+  | PRewarding (Term s (PDataRecord '["_0" ' := PStakingCredential]))
+  | PCertifying (Term s (PDataRecord '["_0" ' := PDCert]))
 ```
 
 It's just a Plutarch sum type.
@@ -159,7 +159,7 @@ In essence, `pletFields` takes in a type level list of the field names that you 
 pletFields :: Term s PScriptContext
   -> (HRec
         (BoundTerms
-           '[ "txInfo" ':= PTxInfo, "purpose" ':= PScriptPurpose]
+           '[ "txInfo" ' := PTxInfo, "purpose" ' := PScriptPurpose]
            '[ 'Bind, 'Bind]
            s)
       -> Term s PUnit)
@@ -199,7 +199,7 @@ purpose = pcon $ PMinting fields
   where
     currSymDat :: Term _ (PAsData PCurrencySymbol)
     currSymDat = pdata currSym
-    fields :: Term _ (PDataRecord '[ "_0" ':= PCurrencySymbol ])
+    fields :: Term _ (PDataRecord '[ "_0" ' := PCurrencySymbol ])
     fields = pdcons # currSymDat # pdnil
 ```
 
@@ -207,18 +207,18 @@ All the type annotations are here to help!
 
 This is just like regular `pcon` usage you've [from `PlutusType`/`PCon`](./PlutusType,%20PCon,%20and%20PMatch.md). It takes in the Haskell ADT of your Plutarch type and gives back a Plutarch term.
 
-What's more interesting, is the `fields` binding. Recall that `PMinting` is a constructor with one argument, that argument is a [`PDataRecord`](../Types/PDataSum%20and%20PDataRecord.md) term. In particular, we want: `Term s (PDataRecord '["_0" ':= PCurrencySymbol ])`. It encodes the exact type, position, and name of the field. So, all we have to do is create a `PDataRecord` term!
+What's more interesting, is the `fields` binding. Recall that `PMinting` is a constructor with one argument, that argument is a [`PDataRecord`](../Types/PDataSum%20and%20PDataRecord.md) term. In particular, we want: `Term s (PDataRecord '["_0" ' := PCurrencySymbol ])`. It encodes the exact type, position, and name of the field. So, all we have to do is create a `PDataRecord` term!
 
 Of course, we do that using `pdcons` - which is just the familiar `cons` but for `PDataRecord` terms.
 
 ```hs
-pdcons :: forall label a l s. Term s (PAsData a :--> PDataRecord l :--> PDataRecord ((label ':= a) ': l))
+pdcons :: forall label a l s. Term s (PAsData a :--> PDataRecord l :--> PDataRecord ((label ' := a) ': l))
 ```
 
 It takes a `PAsData a` and adds that `a` to the `PDataRecord` heterogenous list. We feed it a `PAsData PCurrencySymbol` term and `pdnil` - the empty data record. That should give us:
 
 ```hs
-pdcons # currSymDat # pdnil :: Term _ (PDataRecord '[ label ':= PCurrencySymbol ])
+pdcons # currSymDat # pdnil :: Term _ (PDataRecord '[ label ' := PCurrencySymbol ])
 ```
 
 Cool! Wait, what's `label`? It's the field name associated with the field, in our case, we want the field name to be `_0` - because that's what the `PMinting` constructor wants. You can 
@@ -243,8 +243,8 @@ You'd declare the corresponding Plutarch type as:
 
 ```haskell
 data PVehicle' (s :: S)
-  = PFourWheeler' (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger, "_2" ':= PInteger, "_3" ':= PInteger]))
-  | PTwoWheeler' (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
+  = PFourWheeler' (Term s (PDataRecord '["_0" ' := PInteger, "_1" ' := PInteger, "_2" ' := PInteger, "_3" ' := PInteger]))
+  | PTwoWheeler' (Term s (PDataRecord '["_0" ' := PInteger, "_1" ' := PInteger]))
   | PImmovableBox' (Term s (PDataRecord '[]))
 ```
 
@@ -278,8 +278,8 @@ Combine all that, and you have:
 
 ```haskell
 data PVehicle (s :: S)
-  = PFourWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger, "_2" ':= PInteger, "_3" ':= PInteger]))
-  | PTwoWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
+  = PFourWheeler (Term s (PDataRecord '["_0" ' := PInteger, "_1" ' := PInteger, "_2" ' := PInteger, "_3" ' := PInteger]))
+  | PTwoWheeler (Term s (PDataRecord '["_0" ' := PInteger, "_1" ' := PInteger]))
   | PImmovableBox (Term s (PDataRecord '[]))
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData)
@@ -308,7 +308,7 @@ test = plam $ \veh' -> P.do
 What about types with singular constructors? It's quite similar to the sum type case. Here's how it looks:
 
 ```haskell
-newtype PFoo (s :: S) = PMkFoo (Term s (PDataRecord '["foo" ':= PByteString]))
+newtype PFoo (s :: S) = PMkFoo (Term s (PDataRecord '["foo" ' := PByteString]))
   deriving stock (Generic)
   deriving anyclass (PlutusType, PDataFields, PIsData)
 instance DerivePlutusType PFoo where type DPTStrat _ = PlutusTypeData

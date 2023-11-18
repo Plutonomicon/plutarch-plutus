@@ -14,7 +14,7 @@ makeIsDataIndexed ''Maybe [('Just, 0), ('Nothing, 1)]
 
 ```hs
 data PMaybeData a (s :: S)
-  = PDJust (Term s (PDataRecord '["_0" ':= a]))
+  = PDJust (Term s (PDataRecord '["_0" ' := a]))
   | PDNothing (Term s (PDataRecord '[]))
 ```
 
@@ -23,7 +23,7 @@ It'd be a very subtle mistake to instead define it as:
 ```hs
 data PMaybeData a (s :: S)
   = PDNothing (Term s (PDataRecord '[]))
-  | PDJust (Term s (PDataRecord '["_0" ':= a]))
+  | PDJust (Term s (PDataRecord '["_0" ' := a]))
 ```
 
 The constructor ordering is wrong!
@@ -36,16 +36,16 @@ newtype PTxInfo (s :: S)
       ( Term
           s
           ( PDataRecord
-              '[ "inputs" ':= PBuiltinList (PAsData PTxInInfo)
-               , "outputs" ':= PBuiltinList (PAsData PTxOut)
-               , "fee" ':= PValue
-               , "mint" ':= PValue
-               , "dcert" ':= PBuiltinList (PAsData PDCert)
-               , "wdrl" ':= PBuiltinList (PAsData (PTuple PStakingCredential PInteger))
-               , "validRange" ':= PPOSIXTimeRange
-               , "signatories" ':= PBuiltinList (PAsData PPubKeyHash)
-               , "datums" ':= PBuiltinList (PAsData (PTuple PDatumHash PDatum))
-               , "id" ':= PTxId
+              '[ "inputs" ' := PBuiltinList (PAsData PTxInInfo)
+               , "outputs" ' := PBuiltinList (PAsData PTxOut)
+               , "fee" ' := PValue
+               , "mint" ' := PValue
+               , "dcert" ' := PBuiltinList (PAsData PDCert)
+               , "wdrl" ' := PBuiltinList (PAsData (PTuple PStakingCredential PInteger))
+               , "validRange" ' := PPOSIXTimeRange
+               , "signatories" ' := PBuiltinList (PAsData PPubKeyHash)
+               , "datums" ' := PBuiltinList (PAsData (PTuple PDatumHash PDatum))
+               , "id" ' := PTxId
                ]
           )
       )

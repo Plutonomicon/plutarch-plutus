@@ -37,7 +37,7 @@ The real juice of that massive type is the `HRecOf`, which is a utility type ali
 
 ```haskell
 newtype PFooType s 
-  = PFooType (Term s (PDataRecord '["frst" ':= PInteger, "scnd" ':= PBool, "thrd" ':= PString]))
+  = PFooType (Term s (PDataRecord '["frst" ' := PInteger, "scnd" ' := PBool, "thrd" ' := PString]))
   deriving stock (Generic)
   deriving anyclass (PlutusType, PDataFields)
 instance DerivePlutusType PFooType where type DPTStrat _ = PlutusTypeData
