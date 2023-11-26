@@ -182,16 +182,16 @@ dotPlus =
             + pfromData c.z
 
 type SomeFields =
-  '[ "_0" ' := PInteger
-   , "_1" ' := PInteger
-   , "_2" ' := PInteger
-   , "_3" ' := PInteger
-   , "_4" ' := PInteger
-   , "_5" ' := PInteger
-   , "_6" ' := PInteger
-   , "_7" ' := PInteger
-   , "_8" ' := PInteger
-   , "_9" ' := PInteger
+  '[ "_0" ':= PInteger
+   , "_1" ':= PInteger
+   , "_2" ':= PInteger
+   , "_3" ':= PInteger
+   , "_4" ':= PInteger
+   , "_5" ':= PInteger
+   , "_6" ':= PInteger
+   , "_7" ':= PInteger
+   , "_8" ':= PInteger
+   , "_9" ':= PInteger
    ]
 
 someFields :: Term s (PDataRecord SomeFields)

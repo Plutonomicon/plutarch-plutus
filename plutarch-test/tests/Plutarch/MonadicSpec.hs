@@ -83,7 +83,7 @@ checkSignatory = plam $ \ph ctx' ->
       -- Signature not present.
       perror
 
-getFields :: Term s (PAddress :--> PDataRecord '["credential" ' := PCredential, "stakingCredential" ' := PMaybeData PStakingCredential])
+getFields :: Term s (PAddress :--> PDataRecord '["credential" ':= PCredential, "stakingCredential" ':= PMaybeData PStakingCredential])
 getFields = phoistAcyclic $
   plam $ \addr -> P.do
     PAddress addrFields <- pmatch addr

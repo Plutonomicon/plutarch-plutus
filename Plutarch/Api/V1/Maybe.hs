@@ -19,7 +19,7 @@ import Plutarch.Unsafe (punsafeCoerce)
 
 -- | Data encoded Maybe type. Used in various ledger api types.
 data PMaybeData a (s :: S)
-  = PDJust (Term s (PDataRecord '["_0" ' := a]))
+  = PDJust (Term s (PDataRecord '["_0" ':= a]))
   | PDNothing (Term s (PDataRecord '[]))
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PEq, PShow)
@@ -46,7 +46,7 @@ instance (PIsData a, POrd a) => POrd (PMaybeData a)
 _pmaybeLT ::
   Bool ->
   ( forall s rec_.
-    rec_ ~ '["_0" ' := a] =>
+    rec_ ~ '["_0" ':= a] =>
     Term s (PDataRecord rec_) ->
     Term s (PDataRecord rec_) ->
     Term s PBool

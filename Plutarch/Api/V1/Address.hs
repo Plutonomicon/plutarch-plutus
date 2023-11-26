@@ -25,8 +25,8 @@ import Plutarch.Lift (
 import Plutarch.Prelude
 
 data PCredential (s :: S)
-  = PPubKeyCredential (Term s (PDataRecord '["_0" ' := PPubKeyHash]))
-  | PScriptCredential (Term s (PDataRecord '["_0" ' := PScriptHash]))
+  = PPubKeyCredential (Term s (PDataRecord '["_0" ':= PPubKeyHash]))
+  | PScriptCredential (Term s (PDataRecord '["_0" ':= PScriptHash]))
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PShow, PTryFrom PData)
 instance DerivePlutusType PCredential where type DPTStrat _ = PlutusTypeData
@@ -36,14 +36,14 @@ deriving via (DerivePConstantViaData Plutus.Credential PCredential) instance PCo
 instance PTryFrom PData (PAsData PCredential)
 
 data PStakingCredential (s :: S)
-  = PStakingHash (Term s (PDataRecord '["_0" ' := PCredential]))
+  = PStakingHash (Term s (PDataRecord '["_0" ':= PCredential]))
   | PStakingPtr
       ( Term
           s
           ( PDataRecord
-              '[ "_0" ' := PInteger
-               , "_1" ' := PInteger
-               , "_2" ' := PInteger
+              '[ "_0" ':= PInteger
+               , "_1" ':= PInteger
+               , "_2" ':= PInteger
                ]
           )
       )
@@ -60,8 +60,8 @@ newtype PAddress (s :: S)
       ( Term
           s
           ( PDataRecord
-              '[ "credential" ' := PCredential
-               , "stakingCredential" ' := PMaybeData PStakingCredential
+              '[ "credential" ':= PCredential
+               , "stakingCredential" ':= PMaybeData PStakingCredential
                ]
           )
       )

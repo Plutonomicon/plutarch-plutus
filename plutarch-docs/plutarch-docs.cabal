@@ -56,8 +56,10 @@ common c
     -Wno-missing-import-lists -Wno-monomorphism-restriction
     -Wno-all-missed-specializations -Wno-unrecognised-warning-flags
     -Wno-unrecognised-pragmas -Wno-unticked-promoted-constructors
+    -Wno-unused-packages -Wno-operator-whitespace
     -fprint-equality-relations -fprint-explicit-kinds
-    -fprint-explicit-foralls -Wno-unused-packages
+    -fprint-explicit-foralls 
+    
 
 library
 

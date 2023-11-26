@@ -41,8 +41,8 @@ via `PlutusTypeData` as `PTryFrom` also has a generic `default` implementation.
 ```haskell
 -- your datatype
 data PAB (s :: S)
-  = PA (Term s (PDataRecord '["_0" ' := PInteger, "_1" ' := PByteString]))
-  | PB (Term s (PDataRecord '["_0" ' := PBuiltinList (PAsData PInteger), "_1" ' := PByteString]))
+  = PA (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PByteString]))
+  | PB (Term s (PDataRecord '["_0" ':= PBuiltinList (PAsData PInteger), "_1" ':= PByteString]))
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData)
 
@@ -100,7 +100,7 @@ Generally, when recovering a `PDataRecord`, the procedure is as follows
 ```haskell
 untrustedRecord :: Term s PData
 untrustedRecord =
-  let r :: Term s (PAsData (PDataRecord '["_0" ' := (PDataRecord '["_1" ' := PInteger])]))
+  let r :: Term s (PAsData (PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])]))
       r = pdata $ pdcons # (pdata $ pdcons # pdata (pconstant 42) # pdnil) # pdnil
    in pforgetData r
 
@@ -108,7 +108,7 @@ untrustedRecord =
 
 theField :: Term s PInteger
 theField = unTermCont $ do
-  (_, exc) <- tcont (ptryFrom @(PAsData (PDataRecord '["_0" ' := (PDataRecord '["_1" ' := PInteger])])) untrustedRecord)
+  (_, exc) <- tcont (ptryFrom @(PAsData (PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])])) untrustedRecord)
   pure $ snd (snd $ snd (snd exc)._0)._1
 ```
 

@@ -59,8 +59,9 @@ common c
     -Wno-missing-local-signatures -Wno-prepositive-qualified-module
     -Wno-missing-import-lists -Wno-monomorphism-restriction
     -Wno-all-missed-specializations -Wno-unrecognised-warning-flags
-    -Wno-unrecognised-pragmas -fprint-equality-relations
-    -fprint-explicit-kinds -fprint-explicit-foralls
+    -Wno-unrecognised-pragmas -Wno-operator-whitespace
+    -fprint-equality-relations -fprint-explicit-kinds
+    -fprint-explicit-foralls    
 
 library
   import:          c

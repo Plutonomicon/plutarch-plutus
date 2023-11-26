@@ -37,7 +37,7 @@ import Plutarch.Unsafe (punsafeCoerce)
 newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 
 newtype PTxId (s :: S)
-  = PTxId (Term s (PDataRecord '["_0" ' := PByteString]))
+  = PTxId (Term s (PDataRecord '["_0" ':= PByteString]))
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PPartialOrd, POrd, PShow)
 instance DerivePlutusType PTxId where type DPTStrat _ = PlutusTypeData
@@ -70,8 +70,8 @@ newtype PTxOutRef (s :: S)
       ( Term
           s
           ( PDataRecord
-              '[ "id" ' := PTxId
-               , "idx" ' := PInteger
+              '[ "id" ':= PTxId
+               , "idx" ':= PInteger
                ]
           )
       )
@@ -90,8 +90,8 @@ newtype PTxInInfo (s :: S)
       ( Term
           s
           ( PDataRecord
-              '[ "outRef" ' := PTxOutRef
-               , "resolved" ' := PTxOut
+              '[ "outRef" ':= PTxOutRef
+               , "resolved" ':= PTxOut
                ]
           )
       )
@@ -109,9 +109,9 @@ newtype PTxOut (s :: S)
       ( Term
           s
           ( PDataRecord
-              '[ "address" ' := PAddress
-               , "value" ' := PValue 'Sorted 'Positive -- negative values may appear in a future Cardano version
-               , "datumHash" ' := PMaybeData PDatumHash
+              '[ "address" ':= PAddress
+               , "value" ':= PValue 'Sorted 'Positive -- negative values may appear in a future Cardano version
+               , "datumHash" ':= PMaybeData PDatumHash
                ]
           )
       )

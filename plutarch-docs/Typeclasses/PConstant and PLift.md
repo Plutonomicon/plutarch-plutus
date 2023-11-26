@@ -174,10 +174,10 @@ Finally, we have `DerivePConstantViaData` for `Data` values:
 
 ```hs
 data PScriptPurpose (s :: S)
-  = PMinting (Term s (PDataRecord '["_0" ' := PCurrencySymbol]))
-  | PSpending (Term s (PDataRecord '["_0" ' := PTxOutRef]))
-  | PRewarding (Term s (PDataRecord '["_0" ' := PStakingCredential]))
-  | PCertifying (Term s (PDataRecord '["_0" ' := PDCert]))
+  = PMinting (Term s (PDataRecord '["_0" ':= PCurrencySymbol]))
+  | PSpending (Term s (PDataRecord '["_0" ':= PTxOutRef]))
+  | PRewarding (Term s (PDataRecord '["_0" ':= PStakingCredential]))
+  | PCertifying (Term s (PDataRecord '["_0" ':= PDCert]))
 
 deriving via 
   (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) 
@@ -208,7 +208,7 @@ Here's how you'd set up all this for `PMaybeData a`:
 
 ```hs
 data PMaybeData a (s :: S)
-  = PDJust (Term s (PDataRecord '["_0" ' := a]))
+  = PDJust (Term s (PDataRecord '["_0" ':= a]))
   | PDNothing (Term s (PDataRecord '[]))
 
 instance PLiftData a => PUnsafeLiftDecl (PMaybeData a) where

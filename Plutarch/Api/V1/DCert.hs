@@ -24,19 +24,19 @@ import Plutarch.Lift (PConstantDecl, PLifted, PUnsafeLiftDecl)
 import Plutarch.Prelude
 
 data PDCert (s :: S)
-  = PDCertDelegRegKey (Term s (PDataRecord '["_0" ' := PStakingCredential]))
-  | PDCertDelegDeRegKey (Term s (PDataRecord '["_0" ' := PStakingCredential]))
+  = PDCertDelegRegKey (Term s (PDataRecord '["_0" ':= PStakingCredential]))
+  | PDCertDelegDeRegKey (Term s (PDataRecord '["_0" ':= PStakingCredential]))
   | PDCertDelegDelegate
       ( Term
           s
           ( PDataRecord
-              '[ "_0" ' := PStakingCredential
-               , "_1" ' := PPubKeyHash
+              '[ "_0" ':= PStakingCredential
+               , "_1" ':= PPubKeyHash
                ]
           )
       )
-  | PDCertPoolRegister (Term s (PDataRecord '["_0" ' := PPubKeyHash, "_1" ' := PPubKeyHash]))
-  | PDCertPoolRetire (Term s (PDataRecord '["_0" ' := PPubKeyHash, "_1" ' := PInteger]))
+  | PDCertPoolRegister (Term s (PDataRecord '["_0" ':= PPubKeyHash, "_1" ':= PPubKeyHash]))
+  | PDCertPoolRetire (Term s (PDataRecord '["_0" ':= PPubKeyHash, "_1" ':= PInteger]))
   | PDCertGenesis (Term s (PDataRecord '[]))
   | PDCertMir (Term s (PDataRecord '[]))
   deriving stock (Generic)

@@ -243,8 +243,8 @@ pdataCompat ::
 pdataCompat x = PlutusTx.fromData @(PLifted p) (plift $ pforgetData $ pdata $ pconstant @p x) `shouldBe` Just x
 
 data PVehicle (s :: S)
-  = PFourWheeler (Term s (PDataRecord '["_0" ' := PInteger, "_1" ' := PInteger, "_2" ' := PInteger, "_3" ' := PInteger]))
-  | PTwoWheeler (Term s (PDataRecord '["_0" ' := PInteger, "_1" ' := PInteger]))
+  = PFourWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger, "_2" ':= PInteger, "_3" ':= PInteger]))
+  | PTwoWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
   | PImmovableBox (Term s (PDataRecord '[]))
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData)

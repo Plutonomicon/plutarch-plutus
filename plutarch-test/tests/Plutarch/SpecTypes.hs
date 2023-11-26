@@ -30,9 +30,9 @@ newtype PTriplet (a :: PType) (s :: S)
       ( Term
           s
           ( PDataRecord
-              '[ "x" ' := a
-               , "y" ' := a
-               , "z" ' := a
+              '[ "x" ':= a
+               , "y" ':= a
+               , "z" ':= a
                ]
           )
       )
