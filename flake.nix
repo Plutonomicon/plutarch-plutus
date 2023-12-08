@@ -28,17 +28,18 @@
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
   };
 
-  outputs = inputs@{self, flake-parts, nixpkgs, haskell-nix, iohk-nix, CHaP, ...}:
-    flake-parts.lib.mkFlake {inherit inputs;} {
+  outputs = inputs@{ self, flake-parts, nixpkgs, haskell-nix, iohk-nix, CHaP, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
         inputs.hercules-ci-effects.flakeModule
+        inputs.pre-commit-hooks.flakeModule
       ];
       systems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux" ];
       herculesCI = {
         ciSystems = [ "x86_64-linux" ];
         onPush.default.outputs = self.checks.x86_64-linux;
       };
-      perSystem = { options, config, self', inputs', lib, system, ... }:
+      perSystem = { config, system, ... }:
         let
           pkgs =
             import nixpkgs {
@@ -62,21 +63,41 @@
                 project.hsPkgs.hspec-discover.components.exes."hspec-discover"
                 project.hsPkgs.markdown-unlit.components.exes."markdown-unlit"
               ];
+              shellHook = config.pre-commit.installationScript;
             };
           };
-          flake = project.flake {};
+          flake = project.flake { };
         in
-          {
-            # TODO: Bring back CI, Bring back docs
-            packages = flake.packages;
-            devShells = flake.devShells;
-            checks.plutarch-test = pkgs.runCommand "plutarch-test"
-              {
-                nativeBuildInputs = [ flake.packages."plutarch-test:exe:plutarch-test" ];
-              } ''
-                plutarch-test
-                touch $out
-              '';
+        {
+          pre-commit = {
+            settings = {
+              src = ./.;
+              settings = {
+                ormolu.defaultExtensions = [
+                  "TypeApplications"
+                  "PatternSynonyms"
+                ];
+              };
+
+              hooks = {
+                nixpkgs-fmt.enable = true;
+                cabal-fmt.enable = true;
+                fourmolu.enable = true;
+                hlint.enable = true;
+                statix.enable = true;
+                deadnix.enable = true;
+              };
+            };
           };
+
+          inherit (flake) packages devShells;
+          checks.plutarch-test = pkgs.runCommand "plutarch-test"
+            {
+              nativeBuildInputs = [ flake.packages."plutarch-test:exe:plutarch-test" ];
+            } ''
+            plutarch-test
+            touch $out
+          '';
+        };
     };
 }
