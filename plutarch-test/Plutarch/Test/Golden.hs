@@ -147,11 +147,11 @@ goldenKeyString (GoldenKey s) = T.unpack s
 instance Semigroup GoldenKey where
   GoldenKey s1 <> GoldenKey s2 = GoldenKey $ s1 <> "." <> s2
 
-currentGoldenKey :: HasCallStack => SpecM () GoldenKey
+currentGoldenKey :: (HasCallStack) => SpecM () GoldenKey
 currentGoldenKey = do
   mkGoldenKeyFromSpecPath . fmap T.pack <$> getSpecDescriptionPath
 
-mkGoldenKeyFromSpecPath :: HasCallStack => [Text] -> GoldenKey
+mkGoldenKeyFromSpecPath :: (HasCallStack) => [Text] -> GoldenKey
 mkGoldenKeyFromSpecPath path =
   case nonEmpty path of
     Nothing -> error "cannot use currentGoldenKey from top-level spec"
@@ -169,7 +169,7 @@ goldenPath baseDir (GoldenKey k) =
 type PlutarchGoldens = ListSyntax (GoldenKey, GoldenValue)
 
 -- | Specify goldens for the given Plutarch program
-(@|) :: forall t a. HasGoldenValue t => GoldenKey -> (forall s. t s a) -> PlutarchGoldens
+(@|) :: forall t a. (HasGoldenValue t) => GoldenKey -> (forall s. t s a) -> PlutarchGoldens
 (@|) k v = listSyntaxAdd (k, mkGoldenValue v)
 
 infixr 0 @|
@@ -196,14 +196,14 @@ infixr 0 @|
   Hierarchy is represented by intercalating with a dot; for instance, the key
   for 'qux' will be "bar.qux".
 -}
-pgoldenSpec :: HasCallStack => PlutarchGoldens -> Spec
+pgoldenSpec :: (HasCallStack) => PlutarchGoldens -> Spec
 pgoldenSpec = pgoldenSpec' def
 
 {- | Like 'pgoldenSpec' but takes a 'GoldenConf' to determine which goldens to track.
 
 > pgoldenSpec = pgoldenSpec' def
 -}
-pgoldenSpec' :: HasCallStack => GoldenConf -> PlutarchGoldens -> Spec
+pgoldenSpec' :: (HasCallStack) => GoldenConf -> PlutarchGoldens -> Spec
 pgoldenSpec' conf@(GoldenConf {goldenBasePath}) m = do
   base <- currentGoldenKey
   let bs = runListSyntax m

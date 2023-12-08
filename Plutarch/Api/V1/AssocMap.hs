@@ -231,7 +231,7 @@ pfindWithDefault = phoistAcyclic $ plam $ \def key -> foldAtData # pdata key # d
 {- | Look up the given key in a 'PMap'; return the default if the key is
  absent or apply the argument function to the value data if present.
 -}
-pfoldAt :: PIsData k => Term s (k :--> r :--> (PAsData v :--> r) :--> PMap any k v :--> r)
+pfoldAt :: (PIsData k) => Term s (k :--> r :--> (PAsData v :--> r) :--> PMap any k v :--> r)
 pfoldAt = phoistAcyclic $
   plam $
     \key -> foldAtData # pdata key
@@ -1062,7 +1062,7 @@ pdifference =
 {- | Difference of two maps. Return elements of the first map not existing in the second map.
  Warning: O(n^2).
 -}
-punsortedDifference :: PIsData k => Term s (PMap g k a :--> PMap any k b :--> PMap g k a)
+punsortedDifference :: (PIsData k) => Term s (PMap g k a :--> PMap any k b :--> PMap g k a)
 punsortedDifference = phoistAcyclic $
   plam $ \left right ->
     pcon . PMap $
@@ -1079,19 +1079,19 @@ punsortedDifference = phoistAcyclic $
         # pto left
 
 -- | Tests if all values in the map satisfy the given predicate.
-pall :: PIsData v => Term s ((v :--> PBool) :--> PMap any k v :--> PBool)
+pall :: (PIsData v) => Term s ((v :--> PBool) :--> PMap any k v :--> PBool)
 pall = phoistAcyclic $
   plam $ \pred m ->
     List.pall # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto m
 
 -- | Tests if anu value in the map satisfies the given predicate.
-pany :: PIsData v => Term s ((v :--> PBool) :--> PMap any k v :--> PBool)
+pany :: (PIsData v) => Term s ((v :--> PBool) :--> PMap any k v :--> PBool)
 pany = phoistAcyclic $
   plam $ \pred m ->
     List.pany # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto m
 
 -- | Filters the map so it contains only the values that satisfy the given predicate.
-pfilter :: PIsData v => Term s ((v :--> PBool) :--> PMap g k v :--> PMap g k v)
+pfilter :: (PIsData v) => Term s ((v :--> PBool) :--> PMap g k v :--> PMap g k v)
 pfilter = phoistAcyclic $
   plam $ \pred ->
     pmapMaybe #$ plam $ \v -> pif (pred # v) (pcon $ PJust v) (pcon PNothing)

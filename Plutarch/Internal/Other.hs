@@ -36,7 +36,7 @@ printScript = show . prettyPlcReadableDebug . (\(Script s) -> s)
 
   > show . prettyPlcReadableDef . (\(Right p) -> p) . Scripts.mkTermToEvaluate . compile $ term
 -}
-printTerm :: HasCallStack => Config -> ClosedTerm a -> String
+printTerm :: (HasCallStack) => Config -> ClosedTerm a -> String
 printTerm config term = printScript $ either (error . T.unpack) id $ compile config term
 
 {- |

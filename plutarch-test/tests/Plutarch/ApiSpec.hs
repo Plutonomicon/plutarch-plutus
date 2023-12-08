@@ -89,17 +89,20 @@ spec = do
         "term" @| ctx
         "get" @\ do
           "txInfo"
-            @| pfromData (getTxInfo # ctx) @-> \p ->
+            @| pfromData (getTxInfo # ctx)
+            @-> \p ->
               plift p @?= info
           "mint"
-            @| pforgetData (getMint #$ getTxInfo # ctx) @-> \p ->
+            @| pforgetData (getMint #$ getTxInfo # ctx)
+            @-> \p ->
               plift p @?= toData mint
           "credentials"
-            @| getCredentials ctx @-> \p ->
+            @| getCredentials ctx
+            @-> \p ->
               plift p @?= [toData validator]
           "sym"
             @| pfromData (getSym #$ PValue.pnormalize #$ pfromData $ getMint #$ getTxInfo # ctx)
-              @-> \p -> plift p @?= sym
+            @-> \p -> plift p @?= sym
         "ScriptPurpose" @\ do
           "literal" @| pconstant @PScriptPurpose (Minting dummyCurrency)
           "decode"
@@ -124,7 +127,8 @@ spec = do
             toSymbolicValue n =
               PValue.pconstantPositiveSingleton (pconstant $ fromString $ "c" <> showHex n "") (pconstant "token") 1
         "singleton"
-          @| pmint @-> \p ->
+          @| pmint
+          @-> \p ->
             plift (PValue.pforgetSorted $ PValue.pforgetPositive p) @?= mint
         "singletonData"
           @| PValue.psingletonData
@@ -213,31 +217,34 @@ spec = do
               )
         "unionResolvingCollisionsWithData const" @\ do
           "itself"
-            @| PValue.punionResolvingCollisionsWithData NonCommutative @-> \u ->
+            @| PValue.punionResolvingCollisionsWithData NonCommutative
+            @-> \u ->
               plift (PValue.pforgetSorted $ PValue.pnormalize #$ u # plam const # pmint # pmint) @?= mint
           "applied" @| PValue.punionResolvingCollisionsWithData NonCommutative # plam const # pmint # pmint @-> \p ->
             plift (PValue.pforgetSorted $ PValue.pnormalize # p) @?= mint
         "inv"
           @| inv (PValue.pforgetPositive pmint :: Term _ (PValue 'Sorted 'NonZero))
-            @-> \p -> plift (PValue.pforgetSorted p) @?= inv mint
+          @-> \p -> plift (PValue.pforgetSorted p) @?= inv mint
         "equality" @\ do
           "itself" @| plam ((#==) @(PValue 'Sorted 'Positive)) @-> \eq -> passert (eq # pmint # pmint)
           "triviallyTrue" @| pmint #== pmint @-> passert
           "triviallyFalse" @| pmint #== pmintOtherToken @-> passertNot
           "swappedTokensTrue"
             @| pto (PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmint # pmintOtherToken)
-              #== pto (PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmintOtherToken # pmint)
-              @-> passert
+            #== pto (PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmintOtherToken # pmint)
+            @-> passert
           "swappedSymbolsTrue"
             @| pto (PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmint # pmintOtherSymbol)
-              #== pto (PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmintOtherSymbol # pmint)
-              @-> passert
+            #== pto (PValue.punionResolvingCollisionsWith Commutative # plam (+) # pmintOtherSymbol # pmint)
+            @-> passert
           "growing"
             @\ forM_
               (zip [1 :: Int .. length growingSymbols] growingSymbols)
               ( \(size, v) ->
                   fromString (show size)
-                    @| getEnclosedTerm v #== getEnclosedTerm v @-> passert
+                    @| getEnclosedTerm v
+                    #== getEnclosedTerm v
+                    @-> passert
               )
         "normalize" @\ do
           "identity"
@@ -308,7 +315,7 @@ spec = do
         "lookup" @\ do
           "itself"
             @| AssocMap.plookup
-              @-> \lookup -> passert $ lookup # pconstant "key" # pmap #== pcon (PJust 42)
+            @-> \lookup -> passert $ lookup # pconstant "key" # pmap #== pcon (PJust 42)
           "hit"
             @| AssocMap.plookup
             # pconstant "key"
@@ -333,7 +340,7 @@ spec = do
         "findWithDefault" @\ do
           "itself"
             @| AssocMap.pfindWithDefault
-              @-> \find -> (find # 12 # pconstant "key" # pmap) #@?= (42 :: Term _ PInteger)
+            @-> \find -> (find # 12 # pconstant "key" # pmap) #@?= (42 :: Term _ PInteger)
           "hit"
             @| AssocMap.pfindWithDefault
             # 12
@@ -852,10 +859,10 @@ mhOneFactorRight = 100
 mhcOneFactor :: Integer
 mhcOneFactor = 1000
 
-commutativeOp :: Num a => a -> a -> a
+commutativeOp :: (Num a) => a -> a -> a
 commutativeOp = (+)
 
-nonCommutativeOp :: Num a => a -> a -> a
+nonCommutativeOp :: (Num a) => a -> a -> a
 nonCommutativeOp = (-)
 
 data DummyKeyType

@@ -27,8 +27,8 @@ spec = do
                 _ ->
                   pure perror
           )
-          @-> \res ->
-            passert (pfromJust # res #== pconstant inp)
+        @-> \res ->
+          passert (pfromJust # res #== pconstant inp)
       "pgetContinuingOutputs"
         @| unTermCont
           ( do
@@ -42,8 +42,8 @@ spec = do
                 _ ->
                   pure perror
           )
-          @-> \txOuts ->
-            passert $ txOuts #== pconstant validOutputs0
+        @-> \txOuts ->
+          passert $ txOuts #== pconstant validOutputs0
       "pparseDatum"
         @| ( pparseDatum @(PBuiltinList (PAsData PInteger))
               # pconstant "d0"
@@ -51,14 +51,14 @@ spec = do
               #$ pfield @"txInfo"
               # ctx
            )
-          @-> \res ->
-            passert $ res #== pcon (PJust $ pdata d0DatTerm)
+        @-> \res ->
+          passert $ res #== pcon (PJust $ pdata d0DatTerm)
 
 -- | The Plutarch term we expect when decoding `d0Dat`.
 d0DatTerm :: Term s (PBuiltinList (PAsData PInteger))
 d0DatTerm = liftList $ flip fmap d0DatValue $ \i -> pdata $ pconstant i
 
-liftList :: PLift a => [Term s a] -> Term s (PBuiltinList a)
+liftList :: (PLift a) => [Term s a] -> Term s (PBuiltinList a)
 liftList = \case
   [] -> pnil
   (x : xs) -> pcons # x # liftList xs

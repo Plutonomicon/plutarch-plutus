@@ -33,5 +33,5 @@ type family Reduce (x :: Type) :: Type where
   Reduce (a -> b) = a -> b
   Reduce x = GReduce x (Rep x)
 
-reduce :: Coercible a (Reduce a) => a -> Reduce a
+reduce :: (Coercible a (Reduce a)) => a -> Reduce a
 reduce = coerce

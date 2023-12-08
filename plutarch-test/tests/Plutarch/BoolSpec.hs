@@ -20,7 +20,9 @@ spec = do
         "pand" @| pand # pcon PFalse # pdelay perror @-> \p ->
           passert $ pnot # pforce p
         "op"
-          @| pcon PFalse #&& perror @-> \p ->
+          @| pcon PFalse
+          #&& perror
+          @-> \p ->
             passert $ pnot # p
         "pand.perror" @\ do
           -- FIXME
@@ -36,7 +38,9 @@ spec = do
         "por" @| por # pcon PTrue # pdelay perror @-> \p ->
           passert (pforce p)
         "op"
-          @| pcon PTrue #|| perror @-> \p ->
+          @| pcon PTrue
+          #|| perror
+          @-> \p ->
             passert p
         "pand.perror" @\ do
           -- FIXME

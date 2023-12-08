@@ -15,7 +15,7 @@ import PlutusCore.Evaluation.Machine.ExMemory (ExCPU (ExCPU), ExMemory (ExMemory
 import UntypedPlutusCore (
   Program (Program),
   Term,
-  Version(Version),
+  Version (Version),
  )
 import UntypedPlutusCore qualified as UPLC
 import UntypedPlutusCore.Evaluation.Machine.Cek qualified as Cek

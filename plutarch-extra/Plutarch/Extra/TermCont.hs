@@ -26,7 +26,7 @@ pletC :: Term s a -> TermCont s (Term s a)
 pletC = tcont . plet
 
 -- | Like `pmatch` but works in a `TermCont` monad
-pmatchC :: PlutusType a => Term s a -> TermCont s (a s)
+pmatchC :: (PlutusType a) => Term s a -> TermCont s (a s)
 pmatchC = tcont . pmatch
 
 -- | Like `pletFields` but works in a `TermCont` monad.
@@ -84,5 +84,5 @@ pguardC' :: Term s a -> Term s PBool -> TermCont @a s ()
 pguardC' r cond = tcont $ \f -> pif cond (f ()) r
 
 -- | 'TermCont' producing version of 'ptryFrom'.
-ptryFromC :: forall b r a s. PTryFrom a b => Term s a -> TermCont @r s (Term s b, Reduce (PTryFromExcess a b s))
+ptryFromC :: forall b r a s. (PTryFrom a b) => Term s a -> TermCont @r s (Term s b, Reduce (PTryFromExcess a b s))
 ptryFromC = tcont . ptryFrom

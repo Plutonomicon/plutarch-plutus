@@ -116,7 +116,7 @@ redeemerHash :: Plutus.Redeemer -> Plutus.RedeemerHash
 redeemerHash = coerce . dataHash
 
 -- | Hash the data encoded representation of given argument.
-dataHash :: Plutus.ToData a => a -> Plutus.BuiltinByteString
+dataHash :: (Plutus.ToData a) => a -> Plutus.BuiltinByteString
 dataHash = hashData . Plutus.toData
 
 -- | a Validator Term

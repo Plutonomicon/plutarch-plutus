@@ -64,7 +64,7 @@ indexHRec HNil impossible = case impossible of {}
 -}
 hrecField' ::
   forall name a as.
-  ElemOf name a as =>
+  (ElemOf name a as) =>
   HRec as ->
   a
 hrecField' xs = indexHRec xs $ elemOf @name @a @as
@@ -78,7 +78,7 @@ hrecField' xs = indexHRec xs $ elemOf @name @a @as
   but perhaps the `Elem` encoding will be useful.
 -}
 type ElemOf :: Symbol -> Type -> [(Symbol, Type)] -> Constraint
-class IndexLabel name as ~ a => ElemOf name a as | as name -> a where
+class (IndexLabel name as ~ a) => ElemOf name a as | as name -> a where
   -- | Construct the `Elem` corresponding to a Nat index.
   --
   --    Example:

@@ -14,13 +14,13 @@ spec = do
       @| ( let a :: [String] = ["42", "ab", "df", "c9"]
             in pconstant @PByteString (BS.pack $ fmap readByte a) #== phexByteStr (concat a)
          )
-        @-> passert
+      @-> passert
     "plengthByteStr" @| (plengthBS # phexByteStr "012f") #== 2 @-> passert
     "pconsBS"
       @| ( let xs = phexByteStr "48fCd1"
             in (plengthBS #$ pconsBS # 91 # xs) #== (1 + plengthBS # xs)
          )
-        @-> passert
+      @-> passert
     "pindexByteStr"
       @| (pindexBS # phexByteStr "4102af" # 1)
       @== pconstant @PInteger 0x02
@@ -41,5 +41,5 @@ spec = do
 >>> readByte "41"
 65
 -}
-readByte :: Num a => String -> a
+readByte :: (Num a) => String -> a
 readByte a = fromInteger $ read $ "0x" <> a

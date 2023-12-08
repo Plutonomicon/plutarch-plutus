@@ -116,7 +116,7 @@ pisDJust = phoistAcyclic $
 -- | Special version of 'pmaybe' that works with 'PMaybeData'
 pmaybeData ::
   forall (a :: PType) (b :: PType) (s :: S).
-  PIsData a =>
+  (PIsData a) =>
   Term s (b :--> (a :--> b) :--> PMaybeData a :--> b)
 pmaybeData = phoistAcyclic $
   plam $ \d f m -> pmatch m $
@@ -127,7 +127,7 @@ pmaybeData = phoistAcyclic $
 -- | Construct a 'PDJust' value
 pdjust ::
   forall (a :: PType) (s :: S).
-  PIsData a =>
+  (PIsData a) =>
   Term s (a :--> PMaybeData a)
 pdjust = phoistAcyclic $
   plam $

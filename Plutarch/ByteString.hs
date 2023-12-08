@@ -60,7 +60,7 @@ instance Monoid (Term s PByteString) where
   mempty = pconstant BS.empty
 
 -- | Interpret a hex string as a PByteString.
-phexByteStr :: HasCallStack => String -> Term s PByteString
+phexByteStr :: (HasCallStack) => String -> Term s PByteString
 phexByteStr = pconstant . BS.pack . f
   where
     f "" = []
@@ -96,7 +96,7 @@ plengthBS = punsafeBuiltin PLC.LengthOfByteString
 pindexBS :: Term s (PByteString :--> PInteger :--> PInteger)
 pindexBS = punsafeBuiltin PLC.IndexByteString
 
-hexDigitToWord8 :: HasCallStack => Char -> Word8
+hexDigitToWord8 :: (HasCallStack) => Char -> Word8
 hexDigitToWord8 = f . toLower
   where
     f :: Char -> Word8

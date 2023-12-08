@@ -82,8 +82,11 @@
               hooks = {
                 nixpkgs-fmt.enable = true;
                 cabal-fmt.enable = true;
-                fourmolu.enable = true;
-                hlint.enable = true;
+                fourmolu = {
+                  enable = true;
+                  excludes = [ "\.lhs" ];
+                };
+                hlint.enable = false;
                 statix.enable = true;
                 deadnix.enable = true;
               };

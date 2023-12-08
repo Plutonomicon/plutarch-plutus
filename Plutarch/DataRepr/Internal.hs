@@ -144,7 +144,7 @@ import Plutarch.String (PString)
 data PDataRecord (as :: [PLabeledType]) (s :: S) where
   PDCons ::
     forall name_x x xs s.
-    PUnLabel name_x ~ x =>
+    (PUnLabel name_x ~ x) =>
     Term s (PAsData x) ->
     (Term s (PDataRecord xs)) ->
     -- GHC bug prevents `name ':= x` from working well
@@ -153,7 +153,7 @@ data PDataRecord (as :: [PLabeledType]) (s :: S) where
 
 newtype H s (l :: [PLabeledType]) = H {unH :: forall r. (PDataRecord l s -> Term s r) -> Term s r}
 
-instance SListI l => PlutusType (PDataRecord l) where
+instance (SListI l) => PlutusType (PDataRecord l) where
   type PInner (PDataRecord l) = PBuiltinList PData
   pcon' :: PDataRecord l s -> Term s (PBuiltinList PData)
   pcon' (PDCons x xs) = pcons # pforgetData x # pto xs
@@ -329,7 +329,7 @@ instance IsPDataSum '[] where
   toSum (SOP x) = case x of {}
   fromSum (PDataSum x) = case x of {}
 
-instance IsPDataSum xs => IsPDataSum ('[PDataRecord l] ': xs) where
+instance (IsPDataSum xs) => IsPDataSum ('[PDataRecord l] ': xs) where
   type IsPDataSumDefs ('[PDataRecord l] ': xs) = (l ': IsPDataSumDefs xs)
   toSum (SOP (Z (x :* Nil))) = PDataSum $ Z $ coerce x
   toSum (SOP (S x)) = case toSum (SOP x) of
@@ -373,7 +373,7 @@ instance
       applyHandlers _ DRHNil = []
       applyHandlers args (DRHCons handler rest) = handler (punsafeCoerce args) : applyHandlers args rest
 
-      conv :: forall out s defs. SListI defs => (PDataSum defs s -> Term s out) -> DataReprHandlers out defs s
+      conv :: forall out s defs. (SListI defs) => (PDataSum defs s -> Term s out) -> DataReprHandlers out defs s
       conv =
         unA $
           para_SList
@@ -391,7 +391,7 @@ instance PIsData (PDataSum defs) where
 instance PEq (PDataSum defs) where
   x #== y = pdata x #== pdata y
 
-instance All (Compose POrd PDataRecord) defs => PPartialOrd (PDataSum defs) where
+instance (All (Compose POrd PDataRecord) defs) => PPartialOrd (PDataSum defs) where
   x' #< y' = f # x' # y'
     where
       f :: Term s (PDataSum defs :--> PDataSum defs :--> PBool)
@@ -401,7 +401,7 @@ instance All (Compose POrd PDataRecord) defs => PPartialOrd (PDataSum defs) wher
       f :: Term s (PDataSum defs :--> PDataSum defs :--> PBool)
       f = phoistAcyclic $ plam $ \x y -> pmatchLT x y mkLTEHandler
 
-instance All (Compose POrd PDataRecord) defs => POrd (PDataSum defs)
+instance (All (Compose POrd PDataRecord) defs) => POrd (PDataSum defs)
 
 -- | If there is only a single variant, then we can safely extract it.
 punDataSum :: Term s (PDataSum '[def] :--> PDataRecord def)
@@ -522,22 +522,22 @@ findCommon handlers = do
   l <- hashHandlers handlers
   pure $ head . maximumBy (\x y -> length x `compare` length y) . groupBy (\x y -> fst x == fst y) . sortOn fst $ l
 
-mkLTHandler :: forall def s. All (Compose POrd PDataRecord) def => NP (DualReprHandler s PBool) def
+mkLTHandler :: forall def s. (All (Compose POrd PDataRecord) def) => NP (DualReprHandler s PBool) def
 mkLTHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
   where
     rer ::
       forall (y :: [PLabeledType]) (ys :: [[PLabeledType]]).
-      Compose POrd PDataRecord y =>
+      (Compose POrd PDataRecord y) =>
       Const () (y ': ys) ->
       (DualReprHandler s PBool y, Const () ys)
     rer _ = (DualRepr (#<), Const ())
 
-mkLTEHandler :: forall def s. All (Compose POrd PDataRecord) def => NP (DualReprHandler s PBool) def
+mkLTEHandler :: forall def s. (All (Compose POrd PDataRecord) def) => NP (DualReprHandler s PBool) def
 mkLTEHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
   where
     rer ::
       forall (y :: [PLabeledType]) (ys :: [[PLabeledType]]).
-      Compose POrd PDataRecord y =>
+      (Compose POrd PDataRecord y) =>
       Const () (y ': ys) ->
       (DualReprHandler s PBool y, Const () ys)
     rer _ = (DualRepr (#<=), Const ())
@@ -643,11 +643,11 @@ class Helper2 (b :: PSubtypeRelation) a where
   type Helper2Excess b a :: PType
   ptryFromData' :: forall s r. Proxy b -> Term s PData -> ((Term s (PAsData a), Reduce (Helper2Excess b a s)) -> Term s r) -> Term s r
 
-instance PTryFrom PData (PAsData a) => Helper2 'PNoSubtypeRelation a where
+instance (PTryFrom PData (PAsData a)) => Helper2 'PNoSubtypeRelation a where
   type Helper2Excess 'PNoSubtypeRelation a = PTryFromExcess PData (PAsData a)
   ptryFromData' _ = ptryFrom'
 
-instance PTryFrom PData a => Helper2 'PSubtypeRelation a where
+instance (PTryFrom PData a) => Helper2 'PSubtypeRelation a where
   type Helper2Excess 'PSubtypeRelation a = PTryFromExcess PData a
   ptryFromData' _ x = runTermCont $ do
     (y, exc) <- tcont $ ptryFrom @a @PData x
@@ -727,7 +727,7 @@ instance
 instance SumValidation n '[] where
   validateSum _ _ _ _ = ptraceError "reached end of sum while still not having found the constructor"
 
-instance SumValidation 0 ys => PTryFrom PData (PDataSum ys) where
+instance (SumValidation 0 ys) => PTryFrom PData (PDataSum ys) where
   type PTryFromExcess _ _ = Const ()
   ptryFrom' opq = runTermCont $ do
     x <- tcont $ plet $ pasConstr # opq
@@ -736,7 +736,7 @@ instance SumValidation 0 ys => PTryFrom PData (PDataSum ys) where
     _ <- tcont $ plet $ validateSum (Proxy @0) (Proxy @ys) constr fields
     pure (punsafeCoerce opq, ())
 
-instance PTryFrom PData (PDataSum ys) => PTryFrom PData (PAsData (PDataSum ys)) where
+instance (PTryFrom PData (PDataSum ys)) => PTryFrom PData (PAsData (PDataSum ys)) where
   type PTryFromExcess _ _ = Const ()
   ptryFrom' x = runTermCont $ do
     (y, exc) <- tcont $ ptryFrom x

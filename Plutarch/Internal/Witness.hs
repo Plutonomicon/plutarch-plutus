@@ -4,5 +4,5 @@ module Plutarch.Internal.Witness (witness) where
 
 import Data.Proxy (Proxy)
 
-witness :: c => Proxy c -> ()
+witness :: (c) => Proxy c -> ()
 witness _ = ()

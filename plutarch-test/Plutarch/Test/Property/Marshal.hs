@@ -16,10 +16,10 @@ class Marshal h (p :: PType) | h -> p where
   default marshal :: (PLifted p ~ h, PLift p) => h -> ClosedTerm p
   marshal x = pconstant x
 
-instance Marshal h p => Marshal [h] (PList p) where
+instance (Marshal h p) => Marshal [h] (PList p) where
   marshal = foldr (\h t -> pcons # marshal h # t) pnil
 
-instance Marshal ha pa => Marshal (Maybe ha) (PMaybe pa) where
+instance (Marshal ha pa) => Marshal (Maybe ha) (PMaybe pa) where
   marshal (Just x) = pcon $ PJust $ marshal x
   marshal Nothing = pcon PNothing
 

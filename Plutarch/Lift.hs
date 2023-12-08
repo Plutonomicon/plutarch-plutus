@@ -91,7 +91,7 @@ type PLift = PUnsafeLiftDecl
 Example:
 > pconstant @PInteger 42
 -}
-pconstant :: forall p s. PLift p => PLifted p -> Term s p
+pconstant :: forall p s. (PLift p) => PLifted p -> Term s p
 pconstant x = punsafeConstantInternal $ PLC.someValue @(PConstantRepr (PLifted p)) @PLC.DefaultUni $ pconstantToRepr x
 
 {-# HLINT ignore LiftError "Use camelCase" #-}
@@ -110,7 +110,7 @@ data LiftError
 {- | Convert a Plutarch term to the associated Haskell value. Fail otherwise.
 This will fully evaluate the arbitrary closed expression, and convert the resulting value.
 -}
-plift' :: forall p. PUnsafeLiftDecl p => Config -> ClosedTerm p -> Either LiftError (PLifted p)
+plift' :: forall p. (PUnsafeLiftDecl p) => Config -> ClosedTerm p -> Either LiftError (PLifted p)
 plift' config prog = case compile config prog of
   Left msg -> Left $ LiftError_CompilationError msg
   Right script -> case evalScriptHuge script of
@@ -213,10 +213,10 @@ class FromBuiltin' arep a | arep -> a where
   fromBuiltin' :: arep -> a
 
 -- FIXME this overlappable instance is nonsense and disregards the fundep
-instance {-# OVERLAPPABLE #-} ToBuiltin a arep => ToBuiltin' a arep where
+instance {-# OVERLAPPABLE #-} (ToBuiltin a arep) => ToBuiltin' a arep where
   toBuiltin' = toBuiltin
 
-instance {-# OVERLAPPABLE #-} FromBuiltin arep a => FromBuiltin' arep a where
+instance {-# OVERLAPPABLE #-} (FromBuiltin arep a) => FromBuiltin' arep a where
   fromBuiltin' = fromBuiltin
 
 instance ToBuiltin' Data BuiltinData where

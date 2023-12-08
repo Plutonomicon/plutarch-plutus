@@ -271,7 +271,7 @@ deconstrSpec = do
       "certifying" @| f #$ pconstant $ toData certifying
 
 -- | Make sure the target of 'pmatch' is only evaluated once.
-pmatchTargetEval :: PlutusType p => ClosedTerm p -> Expectation
+pmatchTargetEval :: (PlutusType p) => ClosedTerm p -> Expectation
 pmatchTargetEval target =
   pmatch (ptrace (pconstant tag) target) (\x -> plet (pcon x) $ \_ -> pconstant ())
     `ptraces` replicate 1 tag

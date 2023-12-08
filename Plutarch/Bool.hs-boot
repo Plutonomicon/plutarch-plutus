@@ -1,6 +1,6 @@
 module Plutarch.Bool (PBool (..), pif) where
 
-import Plutarch.Internal (Term, S)
+import Plutarch.Internal (S, Term)
 
 data PBool (s :: S) = PTrue | PFalse
 

@@ -61,7 +61,7 @@ common c
     -Wno-all-missed-specializations -Wno-unrecognised-warning-flags
     -Wno-unrecognised-pragmas -Wno-operator-whitespace
     -fprint-equality-relations -fprint-explicit-kinds
-    -fprint-explicit-foralls    
+    -fprint-explicit-foralls
 
 library
   import:          c
@@ -137,7 +137,7 @@ library
     Plutarch.Unsafe
 
   build-depends:
-    , base >=4.9   && <5
+    , base               >=4.9 && <5
     , bytestring
     , constraints
     , containers

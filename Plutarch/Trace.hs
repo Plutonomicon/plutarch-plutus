@@ -21,7 +21,7 @@ import Plutarch.Show (PShow, pshow)
 import Plutarch.String (PString)
 
 -- | Like Haskell's `traceShowId` but for Plutarch
-ptraceShowId :: PShow a => Term s a -> Term s a
+ptraceShowId :: (PShow a) => Term s a -> Term s a
 ptraceShowId a = pgetConfig \c -> case tracingMode c of
   NoTracing -> a
   _ -> ptrace (pshow a) a

@@ -279,10 +279,10 @@ pgcd' = phoistAcyclic $ pfix #$ plam f
         a
         $ self # b #$ pmod # a # b
 
-pmin :: POrd a => Term s (a :--> a :--> a)
+pmin :: (POrd a) => Term s (a :--> a :--> a)
 pmin = phoistAcyclic $ plam $ \a b -> pif (a #<= b) a b
 
-pmax :: POrd a => Term s (a :--> a :--> a)
+pmax :: (POrd a) => Term s (a :--> a :--> a)
 pmax = phoistAcyclic $ plam $ \a b -> pif (a #<= b) b a
 
 pnumerator :: Term s (PRational :--> PInteger)

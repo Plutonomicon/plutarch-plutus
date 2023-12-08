@@ -8,7 +8,7 @@ module Plutarch.Test.ListSyntax (
 import Control.Monad.Writer (Writer, execWriter, tell)
 import Data.Foldable (for_)
 
-listSyntaxAddSubList :: Semigroup k => k -> ListSyntax (k, v) -> ListSyntax (k, v)
+listSyntaxAddSubList :: (Semigroup k) => k -> ListSyntax (k, v) -> ListSyntax (k, v)
 listSyntaxAddSubList name m =
   for_ (runListSyntax m) $ \(k, v) -> do
     let k' = name <> k

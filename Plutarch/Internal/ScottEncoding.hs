@@ -61,34 +61,34 @@ instance PlutusType (PScottEncoded a r) where
 newtype PLamL' s b as = PLamL' {unPLamL' :: (NP (Term s) as -> Term s b) -> Term s (ScottFn' as b)}
 
 -- Explicitly variadic `plam`.
-plamL' :: SListI as => (NP (Term s) as -> Term s b) -> Term s (ScottFn' as b)
+plamL' :: (SListI as) => (NP (Term s) as -> Term s b) -> Term s (ScottFn' as b)
 plamL' = unPLamL' $ para_SList (PLamL' \f -> f Nil) (\(PLamL' prev) -> PLamL' \f -> plam' \a -> prev \as -> f (a :* as))
 
 newtype PLamL s b as = PLamL {unPLamL :: (NP (Term s) as -> Term s b) -> Term s (ScottFn as b)}
 
 -- `pdelay`s the 0-arity case.
-plamL :: SListI as => (NP (Term s) as -> Term s b) -> Term s (ScottFn as b)
+plamL :: (SListI as) => (NP (Term s) as -> Term s b) -> Term s (ScottFn as b)
 plamL = unPLamL $ case_SList (PLamL \f -> pdelay $ f Nil) (PLamL plamL')
 
 newtype PAppL' s r as = PAppL' {unPAppL' :: Term s (ScottFn' as r) -> NP (Term s) as -> Term s r}
 
-pappL' :: SListI as => Term s (ScottFn' as c) -> NP (Term s) as -> Term s c
+pappL' :: (SListI as) => Term s (ScottFn' as c) -> NP (Term s) as -> Term s c
 pappL' = unPAppL' $ para_SList (PAppL' \f Nil -> f) (\(PAppL' prev) -> PAppL' \f (x :* xs) -> prev (f # x) xs)
 
 newtype PAppL s r as = PAppL {unPAppL :: Term s (ScottFn as r) -> NP (Term s) as -> Term s r}
 
-pappL :: SListI as => Term s (ScottFn as r) -> NP (Term s) as -> Term s r
+pappL :: (SListI as) => Term s (ScottFn as r) -> NP (Term s) as -> Term s r
 pappL = unPAppL $ case_SList (PAppL \f Nil -> pforce f) (PAppL pappL')
 
 newtype PLetL s r as = PLetL {unPLetL :: NP (Term s) as -> (NP (Term s) as -> Term s r) -> Term s r}
 
-pletL' :: SListI as => NP (Term s) as -> (NP (Term s) as -> Term s r) -> Term s r
+pletL' :: (SListI as) => NP (Term s) as -> (NP (Term s) as -> Term s r) -> Term s r
 pletL' = unPLetL $ para_SList
   (PLetL \Nil f -> f Nil)
   \(PLetL prev) -> PLetL \(x :* xs) f -> plet x \x' ->
     prev xs (\xs' -> f (x' :* xs'))
 
-pletL :: All SListI as => SOP (Term s) as -> (SOP (Term s) as -> Term s r) -> Term s r
+pletL :: (All SListI as) => SOP (Term s) as -> (SOP (Term s) as -> Term s r) -> Term s r
 pletL (SOP (Z x)) f = pletL' x \x' -> f (SOP $ Z x')
 pletL (SOP (S xs)) f = pletL (SOP xs) \(SOP xs') -> f (SOP $ S xs')
 
@@ -101,7 +101,7 @@ newtype GPCon' s r as = GPCon' {unGPCon' :: NP (Term s) (ScottList as r) -> NS (
   The partial encoding is any tail of the full scott encoded function, such that
   one of its elements corresponds to the sum choice.
 -}
-gpcon' :: SListI2 as => NP (Term s) (ScottList as r) -> NS (NP (Term s)) as -> Term s r
+gpcon' :: (SListI2 as) => NP (Term s) (ScottList as r) -> NS (NP (Term s)) as -> Term s r
 gpcon' = unGPCon' $ cpara_SList (Proxy @SListI) (GPCon' \Nil -> \case {}) \(GPCon' prev) -> GPCon' \(arg :* args) -> \case
   Z x -> pappL arg x
   S xs -> prev args xs
@@ -120,7 +120,7 @@ newtype GPMatch' s r as = GPMatch' {unGPMatch' :: (SOP (Term s) as -> Term s r) 
 
 gpmatch' ::
   forall as r s.
-  SListI2 as =>
+  (SListI2 as) =>
   (SOP (Term s) as -> Term s r) ->
   NP (Term s) (ScottList as r)
 gpmatch' = unGPMatch' $ cpara_SList (Proxy @SListI) (GPMatch' (const Nil)) \(GPMatch' prev) -> GPMatch' \f ->
@@ -134,8 +134,8 @@ gpmatch ::
   Term s r
 gpmatch x' f = pmatch x' \(PScottEncoded x) -> pappL x (gpmatch' f)
 
-class SListI (ScottList (PCode a) r) => SListIScottList a r
-instance SListI (ScottList (PCode a) r) => SListIScottList a r
+class (SListI (ScottList (PCode a) r)) => SListIScottList a r
+instance (SListI (ScottList (PCode a) r)) => SListIScottList a r
 
 class
   ( forall r. SListIScottList a r

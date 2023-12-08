@@ -96,15 +96,15 @@ data PTxMaybe (a :: PType) (s :: S)
   deriving stock (Generic)
   deriving anyclass (SOP.Generic, SOP.HasDatatypeInfo, PEq, PShow)
 
-instance PEq a => PEq (PTxList a) where
+instance (PEq a) => PEq (PTxList a) where
   (#==) xs ys = plistEquals # xs # ys
 
 -- | Compile and export a Plutarch term so it can be used by `PlutusTx.applyCode`.
-foreignExport :: forall p t. p >~< t => Config -> ClosedTerm p -> CompiledCode t
+foreignExport :: forall p t. (p >~< t) => Config -> ClosedTerm p -> CompiledCode t
 foreignExport = let _ = witness (Proxy @(p >~< t)) in unsafeForeignExport
 
 -- | Import compiled UPLC code (such as a spliced `PlutusTx.compile` result) as a Plutarch term.
-foreignImport :: forall p t. p >~< t => CompiledCode t -> ClosedTerm p
+foreignImport :: forall p t. (p >~< t) => CompiledCode t -> ClosedTerm p
 foreignImport = let _ = witness (Proxy @(p >~< t)) in unsafeForeignImport
 
 -- | Export Plutarch term of any type as @CompiledCode Void@.

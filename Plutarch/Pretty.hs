@@ -24,7 +24,7 @@ import UntypedPlutusCore (
   DefaultFun,
   DefaultUni,
   Program (_progTerm),
-  Term (Apply, Builtin, Constant, Delay, Error, Force, LamAbs, Var, Constr, Case),
+  Term (Apply, Builtin, Case, Constant, Constr, Delay, Error, Force, LamAbs, Var),
  )
 
 import Plutarch.Pretty.Internal.BuiltinConstant (prettyConstant)

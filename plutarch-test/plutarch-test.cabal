@@ -97,10 +97,10 @@ library
     , text
 
 executable plutarch-test
-  import:         c
-  main-is:        Main.hs
-  hs-source-dirs: tests
-  build-tool-depends: hspec-discover:hspec-discover    
+  import:             c
+  main-is:            Main.hs
+  hs-source-dirs:     tests
+  build-tool-depends: hspec-discover:hspec-discover
   build-depends:
     , base
     , base16-bytestring
@@ -121,7 +121,7 @@ executable plutarch-test
     , tasty-quickcheck
     , text
     , transformers
-  
+
   other-modules:
     Plutarch.ApiSpec
     Plutarch.BoolSpec
@@ -155,4 +155,4 @@ executable plutarch-test
     Plutarch.UPLCSpec
     Spec
 
-  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:        -threaded -rtsopts -with-rtsopts=-N
