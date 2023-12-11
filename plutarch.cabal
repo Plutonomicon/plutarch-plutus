@@ -4,7 +4,7 @@ version:            1.3.0
 author:             Las Safin <me@las.rs>
 license:            MIT
 extra-source-files: README.md
-tested-with:        GHC ==9.2.4
+tested-with:        GHC ==9.6.3
 
 common c
   default-language:   GHC2021
