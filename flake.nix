@@ -74,12 +74,6 @@
               src = ./.;
               settings = {
                 ormolu.cabalDefaultExtensions = true;
-                typos.config = ''
-                  [default.extend-identifiers]
-                  DPTStrat = "DPTStrat"
-                  [default.extend-words]
-                  deriver = "deriver"
-                '';
               };
 
               hooks = {
@@ -92,11 +86,8 @@
                 hlint.enable = false;
                 statix.enable = true;
                 deadnix.enable = true;
-                typos = {
-                  enable = true;
-                  excludes = [ "\.lhs" "\.hs" "\.nix" "\.golden" "\.cabal" ];
-
-                };
+                typos.enable = true;
+                yamllint.enable = true;
               };
             };
           };
