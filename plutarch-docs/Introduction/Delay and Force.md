@@ -13,7 +13,7 @@ import Plutarch.Bool (pif')
 
 # Strictness and Laziness; Delayed Terms and Forcing
 
-Plutarch, like UPLC, is strict by default; this is in contrast to Haskell, which is non-strict by default (often called "lazy"). This means that evaluating a function application in Plutarch (`#`) always evaluates the argument before exectuing the function.
+Plutarch, like UPLC, is strict by default; this is in contrast to Haskell, which is non-strict by default (often called "lazy"). This means that evaluating a function application in Plutarch (`#`) always evaluates the argument before executing the function.
 
 This behavior may be undesirable. For example, it is usually unwanted to evaluate both the `then` and `else` branches of an `if` function, for efficiency reasons.
 

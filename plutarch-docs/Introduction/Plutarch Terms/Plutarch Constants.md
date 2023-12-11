@@ -23,7 +23,7 @@ When evaluated, a constant Plutarch `Term` will always yield the same result. Th
 
 If we know the desired value of a constant `Term` at compile-time, we can build the `Term` directly from [Haskell synonyms](./../../Concepts/Haskell%20Synonym.md). The function to do so is `pconstant`.
 
-Constructing constants in this way utilizes the [`PConstant`/`PLift`](./../../Typeclasses/PConstant%20and%20PLift.md) typeclasses. These typeclasses expose the following [associated type familes](https://wiki.haskell.org/GHC/Type_families#An_associated_type_synonym_example):
+Constructing constants in this way utilizes the [`PConstant`/`PLift`](./../../Typeclasses/PConstant%20and%20PLift.md) typeclasses. These typeclasses expose the following [associated type families](https://wiki.haskell.org/GHC/Type_families#An_associated_type_synonym_example):
 
 ```hs
 type PLifted :: PType -> Type
@@ -97,7 +97,7 @@ justTerm :: Term s (PMaybe PInteger)
 justTerm = pcon (PJust x')
 ```
 
-These types deserve some explaination.
+These types deserve some explanation.
 
 - We are familiar by now with the type of `x`; it is a computation that returns a value that can be interpreted as a Haskell integer if evaluated successfully (in this case, 3).
 - The type of `justTerm` represents a computation tagged with the `PMaybe PInteger` type.

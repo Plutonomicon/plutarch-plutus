@@ -28,7 +28,7 @@ Note: `cabal run` should be run inside `./plutarch-test` directory.
 
 ### Navigation
 
-To quickly nagivate and preview the golden files in the terminal, run:
+To quickly navigate and preview the golden files in the terminal, run:
 
 ```sh-session
 nix run nixpkgs#ranger -- ./plutarch-test/goldens/
