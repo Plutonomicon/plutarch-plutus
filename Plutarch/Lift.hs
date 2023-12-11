@@ -11,7 +11,7 @@ This module defines functions, associated type families, and newtypes for use wi
 Plutarch to convert to and from PTypes and Haskell types.
 -}
 module Plutarch.Lift (
-  -- * Converstion between Plutarch terms and Haskell types
+  -- * Conversion between Plutarch terms and Haskell types
   pconstant,
   plift,
   plift',

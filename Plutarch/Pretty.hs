@@ -24,7 +24,7 @@ import UntypedPlutusCore (
   DefaultFun,
   DefaultUni,
   Program (_progTerm),
-  Term (Apply, Builtin, Constant, Delay, Error, Force, LamAbs, Var),
+  Term (Apply, Builtin, Case, Constant, Constr, Delay, Error, Force, LamAbs, Var),
  )
 
 import Plutarch.Pretty.Internal.BuiltinConstant (prettyConstant)
@@ -299,6 +299,8 @@ prettyUPLC uplc = runST $ do
         PP.hang indentWidth $
           PP.sep $
             functionDoc : argsDoc
+    go (Constr _ _ _) = pure $ PP.pretty ("UPLC.Constr not implemented" :: String)
+    go (Case _ _ _) = pure $ PP.pretty ("UPLC.Case not implemented" :: String)
 
 prettyIfThenElse ::
   (t -> PrettyMonad s (PP.Doc ann)) ->

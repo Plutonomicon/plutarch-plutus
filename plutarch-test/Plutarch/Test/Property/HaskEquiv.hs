@@ -133,7 +133,7 @@ prop_haskEquiv h p = do
 testDataEq' :: (PIsData a, Marshal h a) => h -> ClosedTerm a -> PropertyT IO ()
 testDataEq' x = testDataEq (marshal x)
 
-testDataEq :: (PIsData a) => ClosedTerm a -> ClosedTerm a -> PropertyT IO ()
+testDataEq :: PIsData a => ClosedTerm a -> ClosedTerm a -> PropertyT IO ()
 testDataEq x y = pshouldBe (pdata x) (pdata y)
 
 testPartial :: (h -> ClosedTerm p -> PropertyT IO ()) -> h -> ClosedTerm p -> PropertyT IO ()

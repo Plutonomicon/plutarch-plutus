@@ -19,10 +19,10 @@ spec = do
       "*" @| rat ((1 - 3 / 2) * (2 - 5 / 2)) @-> assertRat (1 / 4)
       "harmonic-sum"
         @| rat (1 / 2 + 1 / 3 + 1 / 4 + 1 / 5)
-          @-> assertRat (77 / 60)
+        @-> assertRat (77 / 60)
       "multi-product"
         @| rat (1 / 2 * 2 / 3 * 3 / 4 * 4 / 5 * 5 / 6)
-          @-> assertRat (1 / 6)
+        @-> assertRat (1 / 6)
     "compare" @| rat (2 / 9) #< rat (3 / 10) @-> passert
     "round" @\ do
       -- NOTE: These will eventually be replaced by property tests.

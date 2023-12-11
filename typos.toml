@@ -1,0 +1,18 @@
+[default.extend-words]
+substituters= "substituters"
+hask= "hask"
+lits="lits"
+Nd= "Nd"
+DPTStrat = "DPTStrat"
+Strat = "Strat"
+deriver = "deriver"
+preverse = "preverse"
+intesection = "intesection"
+
+[type.pdf]
+extend-glob = ["*.pdf"]
+check-file = false
+
+[type.png]
+extend-glob = ["*.png"]
+check-file = false

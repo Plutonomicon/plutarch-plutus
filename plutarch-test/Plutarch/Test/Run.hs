@@ -39,7 +39,7 @@ hspecAndReturnForest spec0 = do
 
 {- | Ensures that there are no unused goldens left behind.
 
-  Use this on any `SpecTree` that interally uses `pgoldenSpec` to define the
+  Use this on any `SpecTree` that internally uses `pgoldenSpec` to define the
   golden tests. These golden file paths are accumulated, and compared to the
   actual files existing on disk. If any golden file exists on disk, but is not
   tracked by the `SpecTree` this function will fail, reporting the list of

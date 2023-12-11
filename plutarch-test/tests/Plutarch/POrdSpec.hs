@@ -75,10 +75,10 @@ spec = do
     ltWith f x y = do
       "true"
         @| (pconstant x `f` pconstant y)
-          @-> passert
+        @-> passert
       "false"
         @| (pconstant y `f` pconstant x)
-          @-> passertNot
+        @-> passertNot
     lteWith ::
       PLift p =>
       (forall s. Term s p -> Term s p -> Term s PBool) ->
@@ -90,13 +90,13 @@ spec = do
         @\ do
           "eq"
             @| (pconstant x `f` pconstant x)
-              @-> passert
+            @-> passert
           "less"
             @| (pconstant x `f` pconstant y)
-              @-> passert
+            @-> passert
       "false"
         @| (pconstant y `f` pconstant x)
-          @-> passertNot
+        @-> passertNot
 
 propertySet ::
   forall p.

@@ -75,7 +75,7 @@ instance PShow PString where
           pelimBS
             # bs
             # bs
-              #$ plam
+            #$ plam
             $ \x xs ->
               -- Non-ascii byte sequence will not use bytes < 128.
               -- So we are safe to rewrite the lower byte values.
@@ -136,7 +136,7 @@ instance PShow PByteString where
           pelimBS
             # bs
             # pconstant @PString ""
-              #$ plam
+            #$ plam
             $ \x xs -> showByte # x <> self # xs
       showByte :: Term s (PInteger :--> PString)
       showByte = phoistAcyclic $

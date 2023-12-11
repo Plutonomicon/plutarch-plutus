@@ -39,14 +39,14 @@ newtype PInterval a (s :: S)
 instance DerivePlutusType (PInterval a) where type DPTStrat _ = PlutusTypeData
 
 instance
-  (PLiftData a) =>
+  PLiftData a =>
   PUnsafeLiftDecl (PInterval a)
   where
   type PLifted (PInterval a) = (Plutus.Interval (PLifted a))
 deriving via
   (DerivePConstantViaData (Plutus.Interval a) (PInterval (PConstanted a)))
   instance
-    (PConstantData a) =>
+    PConstantData a =>
     PConstantDecl (Plutus.Interval a)
 
 newtype PLowerBound a (s :: S)
@@ -64,14 +64,14 @@ newtype PLowerBound a (s :: S)
 instance DerivePlutusType (PLowerBound a) where type DPTStrat _ = PlutusTypeData
 
 instance
-  (PLiftData a) =>
+  PLiftData a =>
   PUnsafeLiftDecl (PLowerBound a)
   where
   type PLifted (PLowerBound a) = (Plutus.LowerBound (PLifted a))
 deriving via
   (DerivePConstantViaData (Plutus.LowerBound a) (PLowerBound (PConstanted a)))
   instance
-    (PConstantData a) =>
+    PConstantData a =>
     PConstantDecl (Plutus.LowerBound a)
 
 newtype PUpperBound a (s :: S)
@@ -97,12 +97,12 @@ data PExtended a (s :: S)
 instance DerivePlutusType (PExtended a) where type DPTStrat _ = PlutusTypeData
 
 instance
-  (PLiftData a) =>
+  PLiftData a =>
   PUnsafeLiftDecl (PUpperBound a)
   where
   type PLifted (PUpperBound a) = (Plutus.UpperBound (PLifted a))
 deriving via
   (DerivePConstantViaData (Plutus.UpperBound a) (PUpperBound (PConstanted a)))
   instance
-    (PConstantData a) =>
+    PConstantData a =>
     PConstantDecl (Plutus.UpperBound a)

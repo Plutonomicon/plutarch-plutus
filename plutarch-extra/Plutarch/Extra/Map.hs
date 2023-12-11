@@ -165,14 +165,14 @@ pkeysEqual = phoistAcyclic $
 -- | Get the key of a key-value pair.
 pkvPairKey ::
   forall (k :: PType) (v :: PType) (s :: S).
-  (PIsData k) =>
+  PIsData k =>
   Term s (PBuiltinPair (PAsData k) (PAsData v) :--> k)
 pkvPairKey = phoistAcyclic $ plam $ \kv -> pfromData (pfstBuiltin # kv)
 
 -- | Get the value of a key-value pair.
 pkvPairValue ::
   forall (k :: PType) (v :: PType) (s :: S).
-  (PIsData v) =>
+  PIsData v =>
   Term s (PBuiltinPair (PAsData k) (PAsData v) :--> v)
 pkvPairValue = phoistAcyclic $ plam $ \kv -> pfromData (psndBuiltin # kv)
 

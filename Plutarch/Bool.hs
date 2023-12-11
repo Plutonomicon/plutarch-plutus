@@ -85,10 +85,10 @@ infix 4 #==
 -- | Partial ordering relation.
 class PEq t => PPartialOrd t where
   (#<=) :: Term s t -> Term s t -> Term s PBool
-  default (#<=) :: (POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
+  default (#<=) :: POrd (PInner t) => Term s t -> Term s t -> Term s PBool
   x #<= y = pto x #<= pto y
   (#<) :: Term s t -> Term s t -> Term s PBool
-  default (#<) :: (POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
+  default (#<) :: POrd (PInner t) => Term s t -> Term s t -> Term s PBool
   x #< y = pto x #< pto y
 
 infix 4 #<=

@@ -5,9 +5,6 @@ version:       1.2.0
 common c
   default-language:   GHC2021
   default-extensions:
-    NoFlexibleInstances
-    NoMonomorphismRestriction
-    NoStarIsType
     BlockArguments
     DataKinds
     DefaultSignatures
@@ -25,6 +22,9 @@ common c
     MonadComprehensions
     MultiWayIf
     NegativeLiterals
+    NoFlexibleInstances
+    NoMonomorphismRestriction
+    NoStarIsType
     NondecreasingIndentation
     NumDecimals
     OverloadedLabels
@@ -55,8 +55,8 @@ common c
     -Wno-missing-import-lists -Wno-monomorphism-restriction
     -Wno-all-missed-specializations -Wno-unrecognised-warning-flags
     -Wno-unrecognised-pragmas -Wno-unticked-promoted-constructors
-    -fprint-equality-relations -fprint-explicit-kinds
-    -fprint-explicit-foralls
+    -Wno-operator-whitespace -fprint-equality-relations
+    -fprint-explicit-kinds -fprint-explicit-foralls
 
 library
   import:          c
@@ -97,9 +97,10 @@ library
     , text
 
 executable plutarch-test
-  import:         c
-  main-is:        Main.hs
-  hs-source-dirs: tests
+  import:             c
+  main-is:            Main.hs
+  hs-source-dirs:     tests
+  build-tool-depends: hspec-discover:hspec-discover
   build-depends:
     , base
     , base16-bytestring
@@ -154,4 +155,4 @@ executable plutarch-test
     Plutarch.UPLCSpec
     Spec
 
-  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:        -threaded -rtsopts -with-rtsopts=-N

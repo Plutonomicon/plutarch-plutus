@@ -227,7 +227,7 @@ plength =
      in go # 0
 
 -- | Index a BuiltinList, throwing an error if the index is out of bounds.
-ptryIndex :: (PIsListLike list a) => Natural -> Term s (list a) -> Term s a
+ptryIndex :: PIsListLike list a => Natural -> Term s (list a) -> Term s a
 ptryIndex n xs = phead # pdrop n xs
 
 {- |
@@ -237,10 +237,10 @@ ptryIndex n xs = phead # pdrop n xs
   repeated applications of 'ptail', which will be more
   efficient in many circumstances.
 -}
-pdrop :: (PIsListLike list a) => Natural -> Term s (list a) -> Term s (list a)
+pdrop :: PIsListLike list a => Natural -> Term s (list a) -> Term s (list a)
 pdrop n xs = pdrop' n # xs
   where
-    pdrop' :: (PIsListLike list a) => Natural -> ClosedTerm (list a :--> list a)
+    pdrop' :: PIsListLike list a => Natural -> ClosedTerm (list a :--> list a)
     pdrop' 0 = plam id
     pdrop' 1 = ptail
     pdrop' n' = phoistAcyclic $ plam $ \x -> ptail #$ pdrop' (n' - 1) # x
@@ -417,7 +417,7 @@ plistEquals =
         xlist
 
 -- | / O(n) /. Like Haskell level `(!!)` but on the plutarch level
-(#!!) :: (PIsListLike l a) => Term s (l a) -> Term s PInteger -> Term s a
+(#!!) :: PIsListLike l a => Term s (l a) -> Term s PInteger -> Term s a
 l #!! i = pelemAt # i # l
 
 {- | / O(n) /. Like Haskell level `(!!)` but on the Plutarch level, not infix and

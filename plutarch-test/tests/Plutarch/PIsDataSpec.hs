@@ -42,10 +42,10 @@ spec = do
       "PData" @\ do
         "1"
           @| (let dat = pconstant @PData (PlutusTx.List [PlutusTx.Constr 1 [PlutusTx.I 0]]) in dat #== dat)
-            @-> passert
+          @-> passert
         "2"
           @| (pnot #$ pconstant @PData (PlutusTx.Constr 0 []) #== pconstant @PData (PlutusTx.I 42))
-            @-> passert
+          @-> passert
       "PAsData" @\ do
         "1"
           @| let dat = pdata @PInteger 42
@@ -54,7 +54,7 @@ spec = do
                   @-> passert
         "1"
           @| (pnot #$ pdata (phexByteStr "12") #== pdata (phexByteStr "ab"))
-            @-> passert
+          @-> passert
     describe "ppair" . pgoldenSpec $ do
       -- pfromData (pdata (I 1, B 0x41)) ≡ (I 1, I A)
       "simple"
@@ -62,15 +62,16 @@ spec = do
               # pconstantData @PInteger 1
               #$ pdata (pconstant $ encodeUtf8 "A")
            )
-          @-> \p ->
-            pfromData (pdata p) `pshouldBe` p
+        @-> \p ->
+          pfromData (pdata p) `pshouldBe` p
       -- pfromdata (pdata (ptxid 0x41, pscriptcredential 0x82)) ≡ (ptxid 0x41, pscriptcredential 0x82)
       let scPair =
             ppairDataBuiltin
               # pconstantData @PTxId "41"
               #$ pconstantData (ScriptCredential "82")
       "scriptcredential"
-        @| scPair @-> \p ->
+        @| scPair
+        @-> \p ->
           pfromData (pdata p) `pshouldBe` p
       let scTuple = pdata $ ptuple # pconstantData @PTxId "41" #$ pconstantData $ ScriptCredential "82"
       "isomorphism" @\ do

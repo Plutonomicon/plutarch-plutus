@@ -38,7 +38,7 @@ In brief, when writing Plutarch scripts, we have a few tasks:
 - B.) Working with _Plutarch `Terms`_, which are values of the type `Term (s :: S) (a :: PType)`. These are the Plutarch scripts themselves, from which we build up more complex scripts before compiling and executing them on-chain.
 - C.) Writing Haskell-level functions _between Plutarch Terms_ (i.e., with types like `Term s a -> Term s b`). Doing so allows us to leverage Haskell's language features and ecosystem.
 - D.) Efficiently Converting the functions from _(C.)_ to _Plutarch-level functions_, which are of the type `Term s (a :--> b)`. We can _directly_ convert the functions from (C.) to Plutarch-level functions at the most naive level using `plam`. Additional Plutarch utilities provide for optimization opportunities.
-- E.) Compiling and executing the functions from _(D.)_, targetting UPLC for on-chain usage.
+- E.) Compiling and executing the functions from _(D.)_, targeting UPLC for on-chain usage.
 
 As a preview, the bridge Plutarch provides between Haskell and UPLC looks something like this:
 

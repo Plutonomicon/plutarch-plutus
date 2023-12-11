@@ -252,13 +252,13 @@ foldAtData = phoistAcyclic $
       (const def)
       # pto m
 
--- | Insert a new key/value pair into the map, overiding the previous if any.
+-- | Insert a new key/value pair into the map, overriding the previous if any.
 pinsert :: (POrd k, PIsData k, PIsData v) => Term s (k :--> v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
 pinsert = phoistAcyclic $
   plam $ \key val ->
     rebuildAtKey # plam (pcons # (ppairDataBuiltin # pdata key # pdata val) #) # key
 
--- | Insert a new data-encoded key/value pair into the map, overiding the previous if any.
+-- | Insert a new data-encoded key/value pair into the map, overriding the previous if any.
 pinsertData ::
   (POrd k, PIsData k) =>
   Term s (PAsData k :--> PAsData v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
@@ -336,7 +336,7 @@ passertSorted =
                       (self # xs # plam (#< k))
             )
             -- this is actually the empty map so we can
-            -- safely assum that it is sorted
+            -- safely assume that it is sorted
             (const . plam . const $ punsafeCoerce m)
             # pto m
             # plam (const $ pcon PFalse)
@@ -627,9 +627,9 @@ zipMergeInsert (MergeHandler bothPresent leftPresent rightPresent) = unTermCont 
                   pcons
                     # ( ppairDataBuiltin
                           # xk
-                            #$ applyOrder' argOrder (merge xk) (psndBuiltin # x) (psndBuiltin # y)
+                          #$ applyOrder' argOrder (merge xk) (psndBuiltin # x) (psndBuiltin # y)
                       )
-                      #$ applyOrder argOrder zipMergeRec xs' ys'
+                    #$ applyOrder argOrder zipMergeRec xs' ys'
             )
             ( pif
                 (pfromData xk #< pfromData yk)
@@ -732,9 +732,9 @@ zipMergeInsertCommutative (MergeHandlerCommutative bothPresent onePresent) = unT
                   pcons
                     # ( ppairDataBuiltin
                           # xk
-                            #$ merge xk (psndBuiltin # x) (psndBuiltin # y)
+                          #$ merge xk (psndBuiltin # x) (psndBuiltin # y)
                       )
-                      #$ zipMergeRec
+                    #$ zipMergeRec
                     # xs'
                     # ys'
             )
@@ -1175,7 +1175,7 @@ pcheckBinRel = phoistAcyclic $
                             ( f
                                 # v1
                                 # v2
-                                  #&& self
+                                #&& self
                                 # xs
                                 # ys
                             )
@@ -1185,14 +1185,14 @@ pcheckBinRel = phoistAcyclic $
                           $ f
                             # z
                             # v2
-                              #&& self
+                            #&& self
                             # l1
                             # ys
                     )
                     ( f
                         # v1
                         # z
-                          #&& PPrelude.pall
+                        #&& PPrelude.pall
                         # plam (\p -> f # pfromData (psndBuiltin # p) # z)
                         # xs
                     )

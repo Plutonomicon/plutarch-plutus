@@ -114,7 +114,7 @@ pif ((reallyExpensiveFunction # arg) #<= -1) (negate (reallyExpensiveFunction # 
 
 Oh no. `reallyExpensiveFunction` is going to be _applied three times_. That's 3 times the cost!
 
-Isntead, consider using `plet`:
+Instead, consider using `plet`:
 
 ```haskell
 abs' :: Term s PInteger -> Term s PInteger
@@ -141,6 +141,6 @@ Another slightly obscure case can be observed in scott encoded types. When you b
 (\f -> f <complex expr> <another complex expr>)
 ```
 
-This is practically psuedocode. However, it demonstrates that your expressions are not evaluated when _building_ the scott encoded pair. Indeed, they will be evaluated when you `pmatch` on it. As such, if you `pmatch` on this pair multiple times, those expressions will evaluate multiple times!
+This is practically pseudocode. However, it demonstrates that your expressions are not evaluated when _building_ the scott encoded pair. Indeed, they will be evaluated when you `pmatch` on it. As such, if you `pmatch` on this pair multiple times, those expressions will evaluate multiple times!
 
 If you _must_ `pmatch` on such types several times, `plet` the fields before building the container type!

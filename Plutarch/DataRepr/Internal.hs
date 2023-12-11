@@ -192,7 +192,7 @@ instance
   where
   pshow' b xs = "[" <> pmatch xs go
     where
-      go :: PDataRecord ((label ':= x) : xs) s -> Term s PString
+      go :: PDataRecord ((label ':= x) ': xs) s -> Term s PString
       go (PDCons y ys) =
         showWithLabel (Proxy @label) b y
           <> pshow' b (pcon $ PDataRecordShowHelper ys)
@@ -315,7 +315,7 @@ newtype PDataSum defs s = PDataSum (NS (F.Compose (Term s) PDataRecord) defs)
 instance (All Top defs, All (Compose PShow PDataRecord) defs) => PShow (PDataSum defs) where
   pshow' b dsum = pmatch dsum showSum
     where
-      showSum :: (All (Compose PShow PDataRecord) xs) => PDataSum xs s -> Term s PString
+      showSum :: All (Compose PShow PDataRecord) xs => PDataSum xs s -> Term s PString
       showSum (PDataSum (Z x)) = pshow' b (F.getCompose x)
       showSum (PDataSum (S x)) = showSum (PDataSum x)
 
@@ -329,8 +329,8 @@ instance IsPDataSum '[] where
   toSum (SOP x) = case x of {}
   fromSum (PDataSum x) = case x of {}
 
-instance IsPDataSum xs => IsPDataSum ('[PDataRecord l] : xs) where
-  type IsPDataSumDefs ('[PDataRecord l] : xs) = (l : IsPDataSumDefs xs)
+instance IsPDataSum xs => IsPDataSum ('[PDataRecord l] ': xs) where
+  type IsPDataSumDefs ('[PDataRecord l] ': xs) = (l ': IsPDataSumDefs xs)
   toSum (SOP (Z (x :* Nil))) = PDataSum $ Z $ coerce x
   toSum (SOP (S x)) = case toSum (SOP x) of
     PDataSum y -> PDataSum $ S y
@@ -340,13 +340,12 @@ instance IsPDataSum xs => IsPDataSum ('[PDataRecord l] : xs) where
 
 data DataReprHandlers (out :: PType) (defs :: [[PLabeledType]]) (s :: S) where
   DRHNil :: DataReprHandlers out '[] s
-  DRHCons :: (Term s (PDataRecord def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def : defs) s
+  DRHCons :: (Term s (PDataRecord def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def ': defs) s
 
 newtype A s out defs = A {unA :: (PDataSum defs s -> Term s out) -> DataReprHandlers out defs s}
 
 instance
-  ( SListI defs
-  ) =>
+  SListI defs =>
   PlutusType (PDataSum defs)
   where
   type PInner (PDataSum defs) = PData
@@ -410,7 +409,7 @@ punDataSum = phoistAcyclic $
     (punsafeCoerce $ psndBuiltin # (pasConstr #$ pforgetData $ pdata t) :: Term _ (PDataRecord def))
 
 -- | Try getting the nth variant. Errs if it's another variant.
-ptryIndexDataSum :: (KnownNat n) => Proxy n -> Term s (PDataSum (def : defs) :--> PDataRecord (IndexList n (def : defs)))
+ptryIndexDataSum :: KnownNat n => Proxy n -> Term s (PDataSum (def ': defs) :--> PDataRecord (IndexList n (def ': defs)))
 ptryIndexDataSum n = phoistAcyclic $
   plam $ \t ->
     plet (pasConstr #$ pforgetData $ pdata t) $ \d ->
@@ -421,13 +420,13 @@ ptryIndexDataSum n = phoistAcyclic $
             perror
 
 -- | Safely index a 'PDataRecord'.
-pindexDataRecord :: (KnownNat n) => Proxy n -> Term s (PDataRecord as) -> Term s (PAsData (PUnLabel (IndexList n as)))
+pindexDataRecord :: KnownNat n => Proxy n -> Term s (PDataRecord as) -> Term s (PAsData (PUnLabel (IndexList n as)))
 pindexDataRecord n xs =
   punsafeCoerce $
     ptryIndex @PBuiltinList @PData (fromInteger $ natVal n) (punsafeCoerce xs)
 
 -- | Safely drop the first n items of a 'PDataRecord'.
-pdropDataRecord :: (KnownNat n) => Proxy n -> Term s (PDataRecord xs) -> Term s (PDataRecord (Drop n xs))
+pdropDataRecord :: KnownNat n => Proxy n -> Term s (PDataRecord xs) -> Term s (PDataRecord (Drop n xs))
 pdropDataRecord n xs =
   punsafeCoerce $
     pdrop @PBuiltinList @PData (fromInteger $ natVal n) (punsafeCoerce xs)
@@ -528,7 +527,7 @@ mkLTHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
     rer ::
       forall (y :: [PLabeledType]) (ys :: [[PLabeledType]]).
       Compose POrd PDataRecord y =>
-      Const () (y : ys) ->
+      Const () (y ': ys) ->
       (DualReprHandler s PBool y, Const () ys)
     rer _ = (DualRepr (#<), Const ())
 
@@ -538,7 +537,7 @@ mkLTEHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
     rer ::
       forall (y :: [PLabeledType]) (ys :: [[PLabeledType]]).
       Compose POrd PDataRecord y =>
-      Const () (y : ys) ->
+      Const () (y ': ys) ->
       (DualReprHandler s PBool y, Const () ys)
     rer _ = (DualRepr (#<=), Const ())
 

@@ -25,7 +25,8 @@ spec = do
             in pforce (punsafeBuiltin PLC.MkCons) # pcon PTrue # l @-> pfails
          )
     "(2,1)"
-      @| punsafeConstantInternal . PLC.Some
+      @| punsafeConstantInternal
+      . PLC.Some
       $ PLC.ValueOf
         ( PLC.DefaultUniApply
             (PLC.DefaultUniApply PLC.DefaultUniProtoPair PLC.DefaultUniInteger)

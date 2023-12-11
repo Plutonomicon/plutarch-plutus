@@ -299,7 +299,7 @@ psingletonData = phoistAcyclic $
       ( punsafeDowncast
           ( AssocMap.psingletonData
               # symbol
-                #$ pdata
+              #$ pdata
               $ AssocMap.psingletonData # token # amount
           )
       )
@@ -470,7 +470,7 @@ passertSorted = phoistAcyclic $
             ( \submap ->
                 AssocMap.pnull
                   # (AssocMap.passertSorted # submap)
-                    #|| AssocMap.pany
+                  #|| AssocMap.pany
                   # plam (#== 0)
                   # submap
             )

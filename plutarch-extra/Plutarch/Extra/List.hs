@@ -3,7 +3,7 @@ module Plutarch.Extra.List (preverse, pcheckSorted) where
 import Plutarch.Prelude
 
 -- | / O(n) /. reverses a list
-preverse :: (PIsListLike l a) => Term s (l a :--> l a)
+preverse :: PIsListLike l a => Term s (l a :--> l a)
 preverse =
   phoistAcyclic $
     pfoldl # plam (\ys y -> pcons # y # ys) # pnil

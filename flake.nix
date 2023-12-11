@@ -11,60 +11,114 @@
     auto-optimise-store = "true";
   };
 
-  # FIXME: we need to think about what's going on here, both hci-effects and tooling
-  #        implement the same argument, I don't know how to solve this atm
-  inputs.tooling.url = "github:mlabs-haskell/mlabs-tooling.nix/mangoiv/fix-herculesCI-arg";
+  inputs = {
+    nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
+    nixpkgs-latest.url = "github:NixOS/nixpkgs";
 
+    flake-parts.url = "github:hercules-ci/flake-parts";
 
-  outputs = inputs@{ tooling, ... }: tooling.lib.mkFlake { inherit inputs; }
-    ({ withSystem, ... }: {
+    haskell-nix.url = "github:input-output-hk/haskell.nix";
+    iohk-nix.url = "github:input-output-hk/iohk-nix";
+    iohk-nix.inputs.nixpkgs.follows = "nixpkgs";
+
+    CHaP.url = "github:input-output-hk/cardano-haskell-packages?ref=repo";
+    CHaP.flake = false;
+
+    pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
+    hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
+  };
+
+  outputs = inputs@{ self, flake-parts, nixpkgs, haskell-nix, iohk-nix, CHaP, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
-        tooling.lib.hercules-flakeModule
-        (tooling.lib.mkHaskellFlakeModule1 {
-          docsPath = ./plutarch-docs;
-          baseUrl = "/plutarch-plutus/";
-          toHaddock = [ "plutarch" "plutus-core" "plutus-tx" "plutus-ledger-api" ];
-          project.src = ./.;
-          project.modules = [
-            ({ config, pkgs, hsPkgs, ... }: {
-              packages = {
-                # Workaround missing support for build-tools:
-                # https://github.com/input-output-hk/haskell.nix/issues/231
-                plutarch-docs.components.exes.plutarch-docs.build-tools = [
-                  config.hsPkgs.markdown-unlit
-                ];
-                plutarch-test.components.exes.plutarch-test.build-tools = [
-                  config.hsPkgs.hspec-discover
-                ];
-              };
-            })
-          ];
-        })
+        inputs.hercules-ci-effects.flakeModule
+        inputs.pre-commit-hooks.flakeModule
       ];
-
-      systems =
-        if builtins.hasAttr "currentSystem" builtins
-        then [ builtins.currentSystem ]
-        else [ "x86_64-linux" "aarch64-linux" ];
-
-      hercules-ci.github-pages.branch = "master";
-      herculesCI.ciSystems = [ "x86_64-linux" ];
-
-      perSystem = { config, pkgs, self', system, ... }: {
-        packages.combined-docs = pkgs.runCommand "combined-docs" { buildInputs = with config.packages; [ docs haddock ]; } ''
-          mkdir -p $out/share/doc
-          cp -r ${config.packages.docs}/* $out
-          cp -r ${config.packages.haddock}/share/doc/* $out/share/doc
-        '';
-        hercules-ci.github-pages.settings.contents = config.packages.combined-docs;
-
-        checks.plutarch-test = pkgs.runCommand "plutarch-test"
-          {
-            nativeBuildInputs = [ config.packages."plutarch-test:exe:plutarch-test" ];
-          } ''
-          plutarch-test
-          touch $out
-        '';
+      systems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux" ];
+      herculesCI = {
+        ciSystems = [ "x86_64-linux" ];
+        onPush.default.outputs = self.checks.x86_64-linux;
       };
-    });
+
+      # Automatix flake update CI effect. It will perform flake update every Sunday at 12:45, weekly.
+      hercules-ci.flake-update = {
+        enable = true;
+        updateBranch = "updated-flake-lock";
+        # Next two parameters should always be set explicitly
+        createPullRequest = true;
+        autoMergeMethod = null;
+        when = {
+          minute = 45;
+          hour = 12;
+          dayOfWeek = "Sun";
+        };
+      };
+
+      perSystem = { config, system, ... }:
+        let
+          pkgs =
+            import nixpkgs {
+              inherit system;
+              overlays = [
+                haskell-nix.overlay
+                iohk-nix.overlays.crypto
+              ];
+              inherit (haskell-nix) config;
+            };
+          project = pkgs.haskell-nix.cabalProject' {
+            src = ./.;
+            compiler-nix-name = "ghc963";
+            index-state = "2023-11-26T21:52:49Z"; # NOTE(bladyjoker): Follow https://github.com/input-output-hk/plutus/blob/master/cabal.project
+            inputMap = {
+              "https://input-output-hk.github.io/cardano-haskell-packages" = CHaP;
+            };
+            shell = {
+              withHoogle = true;
+              exactDeps = false;
+              nativeBuildInputs = [
+                project.hsPkgs.hspec-discover.components.exes."hspec-discover"
+                project.hsPkgs.markdown-unlit.components.exes."markdown-unlit"
+              ];
+              shellHook = config.pre-commit.installationScript;
+            };
+          };
+          flake = project.flake { };
+        in
+        {
+          pre-commit = {
+            settings = {
+              src = ./.;
+              settings = {
+                ormolu.cabalDefaultExtensions = true;
+              };
+
+              hooks = {
+                nixpkgs-fmt.enable = true;
+                cabal-fmt.enable = true;
+                fourmolu = {
+                  enable = true;
+                  excludes = [ "\.lhs" ];
+                };
+                hlint.enable = false;
+                statix.enable = true;
+                deadnix.enable = true;
+                typos = {
+                  enable = true;
+                  excludes = [ "\.golden" ];
+                };
+                yamllint.enable = true;
+              };
+            };
+          };
+
+          inherit (flake) packages devShells;
+          checks.plutarch-test = pkgs.runCommand "plutarch-test"
+            {
+              nativeBuildInputs = [ flake.packages."plutarch-test:exe:plutarch-test" ];
+            } ''
+            plutarch-test
+            touch $out
+          '';
+        };
+    };
 }
