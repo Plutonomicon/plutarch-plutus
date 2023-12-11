@@ -41,9 +41,9 @@ mkstring :: Text.Text -> Term s a
 mkstring x = punsafeConstantInternal $ PLC.someValue @Text.Text @PLC.DefaultUni x
 
 class PLamN (a :: Type) (b :: PType) (s :: S) | a -> b, s b -> a where
-  plam :: forall c. (HasCallStack) => (Term s c -> a) -> Term s (c :--> b)
+  plam :: forall c. HasCallStack => (Term s c -> a) -> Term s (c :--> b)
 
-instance {-# OVERLAPPABLE #-} (a' ~ Term s a) => PLamN a' a s where
+instance {-# OVERLAPPABLE #-} a' ~ Term s a => PLamN a' a s where
   plam f =
     let cs = callStack
      in plam' \x -> pgetConfig \c -> case tracingMode c of

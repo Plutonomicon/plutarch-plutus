@@ -97,7 +97,7 @@ pmaybe = phoistAcyclic $
 -- | Extracts the element out of a 'PDJust' and throws an error if its argument is 'PDNothing'.
 pfromDJust ::
   forall (a :: PType) (s :: S).
-  (PIsData a) =>
+  PIsData a =>
   Term s (PMaybeData a :--> a)
 pfromDJust = phoistAcyclic $
   plam $ \t -> pmatch t $ \case
@@ -116,7 +116,7 @@ pisDJust = phoistAcyclic $
 -- | Special version of 'pmaybe' that works with 'PMaybeData'
 pmaybeData ::
   forall (a :: PType) (b :: PType) (s :: S).
-  (PIsData a) =>
+  PIsData a =>
   Term s (b :--> (a :--> b) :--> PMaybeData a :--> b)
 pmaybeData = phoistAcyclic $
   plam $ \d f m -> pmatch m $
@@ -127,7 +127,7 @@ pmaybeData = phoistAcyclic $
 -- | Construct a 'PDJust' value
 pdjust ::
   forall (a :: PType) (s :: S).
-  (PIsData a) =>
+  PIsData a =>
   Term s (a :--> PMaybeData a)
 pdjust = phoistAcyclic $
   plam $
@@ -145,7 +145,7 @@ pdnothing = phoistAcyclic $ pcon $ PDNothing pdnil
 -- | Copnsturct a 'PMaybeData' given a 'PMaybe'. Could be useful if you want to "lift" from 'PMaybe' to 'Maybe'.
 pmaybeToMaybeData ::
   forall (a :: PType) (s :: S).
-  (PIsData a) =>
+  PIsData a =>
   Term s (PMaybe a :--> PMaybeData a)
 pmaybeToMaybeData = phoistAcyclic $
   plam $ \t -> pmatch t $ \case
@@ -171,7 +171,7 @@ passertPJust = phoistAcyclic $
     _ -> ptraceError emsg
 
 -- | Extract the value stored in a PMaybeData container. If there's no value, throw an error with the given message.
-passertPDJust :: forall (a :: PType) (s :: S). (PIsData a) => Term s (PString :--> PMaybeData a :--> a)
+passertPDJust :: forall (a :: PType) (s :: S). PIsData a => Term s (PString :--> PMaybeData a :--> a)
 passertPDJust = phoistAcyclic $
   plam $ \emsg mv' -> pmatch mv' $ \case
     PDJust ((pfield @"_0" #) -> v) -> v

@@ -83,19 +83,19 @@ class PEq t where
 infix 4 #==
 
 -- | Partial ordering relation.
-class (PEq t) => PPartialOrd t where
+class PEq t => PPartialOrd t where
   (#<=) :: Term s t -> Term s t -> Term s PBool
-  default (#<=) :: (POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
+  default (#<=) :: POrd (PInner t) => Term s t -> Term s t -> Term s PBool
   x #<= y = pto x #<= pto y
   (#<) :: Term s t -> Term s t -> Term s PBool
-  default (#<) :: (POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
+  default (#<) :: POrd (PInner t) => Term s t -> Term s t -> Term s PBool
   x #< y = pto x #< pto y
 
 infix 4 #<=
 infix 4 #<
 
 -- | Total ordering relation.
-class (PPartialOrd t) => POrd t
+class PPartialOrd t => POrd t
 
 instance PEq PBool where
   x #== y' = plet y' $ \y -> pif' # x # y #$ pnot # y
@@ -172,15 +172,15 @@ gpeq =
         pmatch y $ \y' ->
           gpeq' (gpfrom x') (gpfrom y')
 
-gpeq' :: (All2 PEq xss) => SOP (Term s) xss -> SOP (Term s) xss -> Term s PBool
+gpeq' :: All2 PEq xss => SOP (Term s) xss -> SOP (Term s) xss -> Term s PBool
 gpeq' (SOP c1) (SOP c2) =
   ccompare_NS (Proxy @(All PEq)) (pcon PFalse) eqProd (pcon PFalse) c1 c2
 
-eqProd :: (All PEq xs) => NP (Term s) xs -> NP (Term s) xs -> Term s PBool
+eqProd :: All PEq xs => NP (Term s) xs -> NP (Term s) xs -> Term s PBool
 eqProd p1 p2 =
   pands $ hcollapse $ hcliftA2 (Proxy :: Proxy PEq) eqTerm p1 p2
   where
-    eqTerm :: forall s a. (PEq a) => Term s a -> Term s a -> K (Term s PBool) a
+    eqTerm :: forall s a. PEq a => Term s a -> Term s a -> K (Term s PBool) a
     eqTerm a b =
       K $ a #== b
 

@@ -151,8 +151,8 @@ deconstrSpec = do
             ( \x ->
                 psndBuiltin #$ pasConstr # x
             )
-            #$ pconstant
-              (toData addrPC)
+          #$ pconstant
+            (toData addrPC)
         "sumtype(ignore-fields)"
           @| plam
             ( \x ->
@@ -161,7 +161,7 @@ deconstrSpec = do
                   (pconstant ())
                   perror
             )
-            #$ pconstant (toData minting)
+          #$ pconstant (toData minting)
         "sumtype(partial-match)"
           @| plam
             ( \x ->
@@ -171,7 +171,7 @@ deconstrSpec = do
                     (psndBuiltin # d)
                     perror
             )
-            #$ pconstant (toData minting)
+          #$ pconstant (toData minting)
         "sumtype(exhaustive)" @\ do
           benchPurpose' $
             plam
@@ -220,7 +220,7 @@ deconstrSpec = do
             ( \x ->
                 phead #$ psndBuiltin #$ pasConstr # x
             )
-            #$ pconstant
+          #$ pconstant
           $ toData addrSC
     "combined" @\ do
       "typed" @\ do
@@ -271,7 +271,7 @@ deconstrSpec = do
       "certifying" @| f #$ pconstant $ toData certifying
 
 -- | Make sure the target of 'pmatch' is only evaluated once.
-pmatchTargetEval :: (PlutusType p) => ClosedTerm p -> Expectation
+pmatchTargetEval :: PlutusType p => ClosedTerm p -> Expectation
 pmatchTargetEval target =
   pmatch (ptrace (pconstant tag) target) (\x -> plet (pcon x) $ \_ -> pconstant ())
     `ptraces` replicate 1 tag

@@ -58,7 +58,7 @@ spec = do
 d0DatTerm :: Term s (PBuiltinList (PAsData PInteger))
 d0DatTerm = liftList $ flip fmap d0DatValue $ \i -> pdata $ pconstant i
 
-liftList :: (PLift a) => [Term s a] -> Term s (PBuiltinList a)
+liftList :: PLift a => [Term s a] -> Term s (PBuiltinList a)
 liftList = \case
   [] -> pnil
   (x : xs) -> pcons # x # liftList xs

@@ -9,9 +9,6 @@ tested-with:        GHC ==9.6.3
 common c
   default-language:   GHC2021
   default-extensions:
-    NoFlexibleInstances
-    NoMonomorphismRestriction
-    NoStarIsType
     BlockArguments
     DataKinds
     DefaultSignatures
@@ -29,6 +26,9 @@ common c
     MonadComprehensions
     MultiWayIf
     NegativeLiterals
+    NoFlexibleInstances
+    NoMonomorphismRestriction
+    NoStarIsType
     NondecreasingIndentation
     NumDecimals
     OverloadedLabels

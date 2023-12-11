@@ -67,7 +67,7 @@ spec = do
         "pmatch-pdatarecord" @\ lteWith lteTrip' c1 c2
   where
     ltWith ::
-      (PLift p) =>
+      PLift p =>
       (forall s. Term s p -> Term s p -> Term s PBool) ->
       PLifted p ->
       PLifted p ->
@@ -80,7 +80,7 @@ spec = do
         @| (pconstant y `f` pconstant x)
         @-> passertNot
     lteWith ::
-      (PLift p) =>
+      PLift p =>
       (forall s. Term s p -> Term s p -> Term s PBool) ->
       PLifted p ->
       PLifted p ->
@@ -185,7 +185,7 @@ lteCred = _pmatchHelperCred (#<=)
 
 -- manual 'pmatch' + 'PDataRecord' Ord impl.
 _pmatchDataRecHelperCred ::
-  (forall l. (POrd (PDataRecord l)) => Term s (PDataRecord l) -> Term s (PDataRecord l) -> Term s PBool) ->
+  (forall l. POrd (PDataRecord l) => Term s (PDataRecord l) -> Term s (PDataRecord l) -> Term s PBool) ->
   Term s PCredential ->
   Term s PCredential ->
   Term s PBool
@@ -247,7 +247,7 @@ lteTrip trip1 trip2 = unTermCont $ do
 
 -- manual 'pmatch' + 'PDataRecord' Ord impl.
 _pmatchDataRecHelperTrip ::
-  (forall l. (POrd (PDataRecord l)) => Term s (PDataRecord l) -> Term s (PDataRecord l) -> Term s PBool) ->
+  (forall l. POrd (PDataRecord l) => Term s (PDataRecord l) -> Term s (PDataRecord l) -> Term s PBool) ->
   Term s (PTriplet PInteger) ->
   Term s (PTriplet PInteger) ->
   Term s PBool

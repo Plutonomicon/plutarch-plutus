@@ -59,7 +59,7 @@ class PShow t where
   pshow' wrap x = gpshow wrap # x
 
 -- | Return the string representation of a Plutarch value
-pshow :: (PShow a) => Term s a -> Term s PString
+pshow :: PShow a => Term s a -> Term s PString
 pshow = pshow' False
 
 instance PShow PString where
@@ -75,7 +75,7 @@ instance PShow PString where
           pelimBS
             # bs
             # bs
-              #$ plam
+            #$ plam
             $ \x xs ->
               -- Non-ascii byte sequence will not use bytes < 128.
               -- So we are safe to rewrite the lower byte values.
@@ -136,7 +136,7 @@ instance PShow PByteString where
           pelimBS
             # bs
             # pconstant @PString ""
-              #$ plam
+            #$ plam
             $ \x xs -> showByte # x <> self # xs
       showByte :: Term s (PInteger :--> PString)
       showByte = phoistAcyclic $
@@ -170,7 +170,7 @@ pelimBS = phoistAcyclic $
           plet (psliceBS # 1 # (n - 1) # bs) $ \xs ->
             f # x # xs
 
-pcase :: (PEq a) => Term s b -> Term s a -> [(Term s a, Term s b)] -> Term s b
+pcase :: PEq a => Term s b -> Term s a -> [(Term s a, Term s b)] -> Term s b
 pcase y x = \case
   [] -> y
   ((x', r) : cs) -> pif (x #== x') r $ pcase y x cs
@@ -192,7 +192,7 @@ gpshow wrap =
 -- | Like `gpshow`, but returns the individual parameters list
 gpshow' ::
   forall a s.
-  (All2 PShow a) =>
+  All2 PShow a =>
   [ConstructorName] ->
   SOP (Term s) a ->
   NonEmpty (Term s PString)
@@ -203,10 +203,10 @@ gpshow' constructorNames (SOP x) =
     showSum :: NS (NP (Term s)) a -> [Term s PString]
     showSum =
       hcollapse . hcmap (Proxy @(All PShow)) showProd
-    showProd :: (All PShow xs) => NP (Term s) xs -> K [Term s PString] xs
+    showProd :: All PShow xs => NP (Term s) xs -> K [Term s PString] xs
     showProd =
       K . hcollapse . hcmap (Proxy @PShow) showTerm
-    showTerm :: forall b. (PShow b) => Term s b -> K (Term s PString) b
+    showTerm :: forall b. PShow b => Term s b -> K (Term s PString) b
     showTerm =
       K . pshow' True
 

@@ -97,10 +97,10 @@ data RawTerm
   | RHoisted HoistedTerm
   deriving stock (Show)
 
-addHashIndex :: forall alg. (HashAlgorithm alg) => Integer -> Context alg -> Context alg
+addHashIndex :: forall alg. HashAlgorithm alg => Integer -> Context alg -> Context alg
 addHashIndex i = flip hashUpdate ((fromString $ show i) :: BS.ByteString)
 
-hashUTerm :: forall alg. (HashAlgorithm alg) => UTerm -> Context alg -> Context alg
+hashUTerm :: forall alg. HashAlgorithm alg => UTerm -> Context alg -> Context alg
 hashUTerm (UPLC.Var _ name) = addHashIndex 0 . flip hashUpdate (F.flat name)
 hashUTerm (UPLC.LamAbs _ name uterm) = addHashIndex 1 . flip hashUpdate (F.flat name) . hashUTerm uterm
 hashUTerm (UPLC.Apply _ uterm1 uterm2) = addHashIndex 2 . hashUTerm uterm1 . hashUTerm uterm2
@@ -113,7 +113,7 @@ hashUTerm (UPLC.Constr _ idx uterms) =
   addHashIndex 8 . addHashIndex (fromIntegral idx) . (foldl1 (.) $ hashUTerm <$> uterms)
 hashUTerm (UPLC.Case _ uterm uterms) = addHashIndex 9 . hashUTerm uterm . (foldl1 (.) $ hashUTerm <$> uterms)
 
-hashRawTerm' :: forall alg. (HashAlgorithm alg) => RawTerm -> Context alg -> Context alg
+hashRawTerm' :: forall alg. HashAlgorithm alg => RawTerm -> Context alg -> Context alg
 hashRawTerm' (RVar x) = addHashIndex 0 . flip hashUpdate (F.flat (fromIntegral x :: Integer))
 hashRawTerm' (RLamAbs n x) =
   addHashIndex 1 . flip hashUpdate (F.flat (fromIntegral n :: Integer)) . hashRawTerm' x
@@ -285,7 +285,7 @@ plam' f = Term \i ->
 {- |
   Let bindings.
 
-  This is appoximately a shorthand for a lambda and application:
+  This is approximately a shorthand for a lambda and application:
 
   @plet v f@ == @ papp (plam f) v@
 
@@ -300,14 +300,14 @@ plet v f = Term \i ->
     (getTerm -> RHoisted _) -> asRawTerm (f v) i
     _ -> asRawTerm (papp (plam' f) v) i
 
-pthrow' :: (HasCallStack) => Text -> TermMonad a
+pthrow' :: HasCallStack => Text -> TermMonad a
 pthrow' msg = TermMonad $ ReaderT $ const $ Left (fromString (prettyCallStack callStack) <> "\n\n" <> msg)
 
-pthrow :: (HasCallStack) => Text -> Term s a
+pthrow :: HasCallStack => Text -> Term s a
 pthrow = Term . pure . pthrow'
 
 -- | Lambda Application.
-papp :: (HasCallStack) => Term s (a :--> b) -> Term s a -> Term s b
+papp :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
 papp x y = Term \i ->
   (,) <$> asRawTerm x i <*> asRawTerm y i >>= \case
     -- Applying anything to an error is an error.
@@ -384,7 +384,7 @@ asClosedRawTerm :: ClosedTerm a -> TermMonad TermResult
 asClosedRawTerm t = asRawTerm t 0
 
 -- FIXME: Give proper error message when mutually recursive.
-phoistAcyclic :: (HasCallStack) => ClosedTerm a -> Term s a
+phoistAcyclic :: HasCallStack => ClosedTerm a -> Term s a
 phoistAcyclic t = Term \_ ->
   asRawTerm t 0 >>= \case
     -- Built-ins are smaller than variable references
@@ -494,7 +494,7 @@ hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTe
   >>> f # x # y
   f x y
 -}
-(#) :: (HasCallStack) => Term s (a :--> b) -> Term s a -> Term s b
+(#) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
 (#) = papp
 
 infixl 8 #
@@ -506,7 +506,7 @@ infixl 8 #
   >>> f # x #$ g # y # z
   f x (g y z)
 -}
-(#$) :: (HasCallStack) => Term s (a :--> b) -> Term s a -> Term s b
+(#$) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
 (#$) = papp
 
 infixr 0 #$

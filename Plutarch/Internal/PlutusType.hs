@@ -63,12 +63,12 @@ class PlutusType (a :: PType) where
   type PVariant' a :: Constraint
   type PVariant' a = All2 PVariant'' (PCode a)
   pcon' :: forall s. a s -> Term s (PInner a)
-  default pcon' :: (DerivePlutusType a) => forall s. a s -> Term s (PInner a)
+  default pcon' :: DerivePlutusType a => forall s. a s -> Term s (PInner a)
   pcon' = let _ = witness (Proxy @(PlutusType a)) in derivedPCon
 
   pmatch' :: forall s b. Term s (PInner a) -> (a s -> Term s b) -> Term s b
   -- FIXME buggy GHC, needs AllowAmbiguousTypes
-  default pmatch' :: (DerivePlutusType a) => forall s b. Term s (PInner a) -> (a s -> Term s b) -> Term s b
+  default pmatch' :: DerivePlutusType a => forall s b. Term s (PInner a) -> (a s -> Term s b) -> Term s b
   pmatch' = derivedPMatch
 
 {-# DEPRECATED PCon "Use PlutusType" #-}
@@ -77,30 +77,30 @@ type PCon = PlutusType
 type PMatch = PlutusType
 
 -- | Construct a Plutarch Term via a Haskell datatype
-pcon :: (PlutusType a) => a s -> Term s a
+pcon :: PlutusType a => a s -> Term s a
 pcon x = punsafeCoerce (pcon' x)
 
 -- | Pattern match over Plutarch Terms via a Haskell datatype
-pmatch :: (PlutusType a) => Term s a -> (a s -> Term s b) -> Term s b
+pmatch :: PlutusType a => Term s a -> (a s -> Term s b) -> Term s b
 pmatch x = pmatch' (punsafeCoerce x)
 
-class (PCovariant' a) => PCovariant'' a
-instance (PCovariant' a) => PCovariant'' a
+class PCovariant' a => PCovariant'' a
+instance PCovariant' a => PCovariant'' a
 
-class (PContravariant' a) => PContravariant'' a
-instance (PContravariant' a) => PContravariant'' a
+class PContravariant' a => PContravariant'' a
+instance PContravariant' a => PContravariant'' a
 
-class (PVariant' a) => PVariant'' a
-instance (PVariant' a) => PVariant'' a
+class PVariant' a => PVariant'' a
+instance PVariant' a => PVariant'' a
 
-class (forall t. (PCovariant'' t) => PCovariant'' (a t)) => PCovariant a
-instance (forall t. (PCovariant'' t) => PCovariant'' (a t)) => PCovariant a
+class (forall t. PCovariant'' t => PCovariant'' (a t)) => PCovariant a
+instance (forall t. PCovariant'' t => PCovariant'' (a t)) => PCovariant a
 
-class (forall t. (PCovariant'' t) => PContravariant'' (a t)) => PContravariant a
-instance (forall t. (PCovariant'' t) => PContravariant'' (a t)) => PContravariant a
+class (forall t. PCovariant'' t => PContravariant'' (a t)) => PContravariant a
+instance (forall t. PCovariant'' t => PContravariant'' (a t)) => PContravariant a
 
-class (forall t. (PVariant'' t) => PVariant'' (a t)) => PVariant a
-instance (forall t. (PVariant'' t) => PVariant'' (a t)) => PVariant a
+class (forall t. PVariant'' t => PVariant'' (a t)) => PVariant a
+instance (forall t. PVariant'' t => PVariant'' (a t)) => PVariant a
 
 instance PlutusType (a :--> b) where
   type PInner (a :--> b) = a :--> b

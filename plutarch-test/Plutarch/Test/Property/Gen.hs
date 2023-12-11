@@ -38,13 +38,13 @@ import Test.QuickCheck.Instances ()
 
 import PlutusTx.AssocMap qualified as PlutusMap
 
-genInteger :: (MonadGen g) => g Integer
+genInteger :: MonadGen g => g Integer
 genInteger = Gen.integral (Range.linear (-1_000_000_000) 1_000_000_000)
 
 genRational :: (MonadPlus g, MonadGen g) => g Rational
 genRational = liftM2 (%) genInteger (mfilter (/= 0) genInteger)
 
-genList :: (MonadGen g) => g a -> g [a]
+genList :: MonadGen g => g a -> g [a]
 genList = Gen.list (Range.linear 0 100)
 
 ------------------- Arbitrary instances for several ApiTypes -----------------------

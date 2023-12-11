@@ -39,6 +39,21 @@
         ciSystems = [ "x86_64-linux" ];
         onPush.default.outputs = self.checks.x86_64-linux;
       };
+
+      # Automatix flake update CI effect. It will perform flake update every Sunday at 12:45, weekly.
+      hercules-ci.flake-update = {
+        enable = true;
+        updateBranch = "updated-flake-lock";
+        # Next two parameters should always be set explicitly
+        createPullRequest = true;
+        autoMergeMethod = null;
+        when = {
+          minute = 45;
+          hour = 12;
+          dayOfWeek = "Sun";
+        };
+      };
+
       perSystem = { config, system, ... }:
         let
           pkgs =
@@ -87,7 +102,10 @@
                 hlint.enable = false;
                 statix.enable = true;
                 deadnix.enable = true;
-                typos.enable = true;
+                typos = {
+                  enable = true;
+                  excludes = [ "\.golden" ];
+                };
                 yamllint.enable = true;
               };
             };

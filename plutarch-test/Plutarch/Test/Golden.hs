@@ -83,7 +83,7 @@ instance Default GoldenConf where
 
 {- | Class of types that represent `GoldenValue`
 
-  This class exists for syntatic sugar provided by (@->) (via `TermExpectation`).
+  This class exists for syntactic sugar provided by (@->) (via `TermExpectation`).
 -}
 class HasGoldenValue (t :: S -> PType -> Type) where
   mkGoldenValue :: forall a. (forall s. t s a) -> GoldenValue
@@ -147,11 +147,11 @@ goldenKeyString (GoldenKey s) = T.unpack s
 instance Semigroup GoldenKey where
   GoldenKey s1 <> GoldenKey s2 = GoldenKey $ s1 <> "." <> s2
 
-currentGoldenKey :: (HasCallStack) => SpecM () GoldenKey
+currentGoldenKey :: HasCallStack => SpecM () GoldenKey
 currentGoldenKey = do
   mkGoldenKeyFromSpecPath . fmap T.pack <$> getSpecDescriptionPath
 
-mkGoldenKeyFromSpecPath :: (HasCallStack) => [Text] -> GoldenKey
+mkGoldenKeyFromSpecPath :: HasCallStack => [Text] -> GoldenKey
 mkGoldenKeyFromSpecPath path =
   case nonEmpty path of
     Nothing -> error "cannot use currentGoldenKey from top-level spec"
@@ -169,7 +169,7 @@ goldenPath baseDir (GoldenKey k) =
 type PlutarchGoldens = ListSyntax (GoldenKey, GoldenValue)
 
 -- | Specify goldens for the given Plutarch program
-(@|) :: forall t a. (HasGoldenValue t) => GoldenKey -> (forall s. t s a) -> PlutarchGoldens
+(@|) :: forall t a. HasGoldenValue t => GoldenKey -> (forall s. t s a) -> PlutarchGoldens
 (@|) k v = listSyntaxAdd (k, mkGoldenValue v)
 
 infixr 0 @|
@@ -196,14 +196,14 @@ infixr 0 @|
   Hierarchy is represented by intercalating with a dot; for instance, the key
   for 'qux' will be "bar.qux".
 -}
-pgoldenSpec :: (HasCallStack) => PlutarchGoldens -> Spec
+pgoldenSpec :: HasCallStack => PlutarchGoldens -> Spec
 pgoldenSpec = pgoldenSpec' def
 
 {- | Like 'pgoldenSpec' but takes a 'GoldenConf' to determine which goldens to track.
 
 > pgoldenSpec = pgoldenSpec' def
 -}
-pgoldenSpec' :: (HasCallStack) => GoldenConf -> PlutarchGoldens -> Spec
+pgoldenSpec' :: HasCallStack => GoldenConf -> PlutarchGoldens -> Spec
 pgoldenSpec' conf@(GoldenConf {goldenBasePath}) m = do
   base <- currentGoldenKey
   let bs = runListSyntax m
@@ -267,7 +267,7 @@ goldenTestSpec goldenBasePath base vals gt = do
 {- | Like `evalScript` but doesn't throw `EvalError`, and returns `Benchmark`.
 
   On `EvalError`, this function returns `perror` as evaluated script. Plutus
-  does not provide an accurate way to tell if the program evalutes to `Error` or
+  does not provide an accurate way to tell if the program evaluates to `Error` or
   not; see https://github.com/input-output-hk/plutus/issues/4270
 -}
 evalScriptAlwaysWithBenchmark :: Scripts.Script -> (Scripts.Script, Benchmark)

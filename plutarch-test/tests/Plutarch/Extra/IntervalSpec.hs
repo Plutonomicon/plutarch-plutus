@@ -286,7 +286,7 @@ mkInterval a' b' = pinterval # pconstantData a # pconstantData b
     a = min a' b'
     b = max a' b'
 
-genIntegerList :: (Monad m) => Int -> PropertyT m [Integer]
+genIntegerList :: Monad m => Int -> PropertyT m [Integer]
 genIntegerList n =
   (fmap . fmap) toInteger $
     forAll $

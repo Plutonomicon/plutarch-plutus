@@ -43,13 +43,13 @@ instance DerivePlutusType (PTriplet a) where type DPTStrat _ = PlutusTypeData
 
 PlutusTx.makeIsDataIndexed ''Triplet [('Triplet, 0)]
 
-instance (PLiftData a) => PUnsafeLiftDecl (PTriplet a) where
+instance PLiftData a => PUnsafeLiftDecl (PTriplet a) where
   type PLifted (PTriplet a) = Triplet (PLifted a)
 
 deriving via
   (DerivePConstantViaData (Triplet a) (PTriplet (PConstanted a)))
   instance
-    (PConstantData a) => PConstantDecl (Triplet a)
+    PConstantData a => PConstantDecl (Triplet a)
 
-instance (Arbitrary a) => Arbitrary (Triplet a) where
+instance Arbitrary a => Arbitrary (Triplet a) where
   arbitrary = Triplet <$> arbitrary <*> arbitrary <*> arbitrary

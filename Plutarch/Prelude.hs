@@ -144,7 +144,7 @@ module Plutarch.Prelude (
   psha3_256,
   pverifySignature,
 
-  -- * Converstion between Plutarch terms and Haskell types
+  -- * Conversion between Plutarch terms and Haskell types
   pconstant,
   pconstantData,
   plift,

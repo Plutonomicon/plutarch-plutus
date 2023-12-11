@@ -277,24 +277,21 @@ spec = do
 
 checkDeep ::
   forall (target :: PType) (actual :: PType).
-  ( PTryFrom PData (PAsData target)
-  ) =>
+  PTryFrom PData (PAsData target) =>
   ClosedTerm (PAsData actual) ->
   ClosedTerm (PAsData target)
 checkDeep t = unTermCont $ fst <$> checkDeep' t
 
 checkDeep' ::
   forall (target :: PType) (actual :: PType) (s :: S).
-  ( PTryFrom PData (PAsData target)
-  ) =>
+  PTryFrom PData (PAsData target) =>
   ClosedTerm (PAsData actual) ->
   TermCont s (Term s (PAsData target), Reduce (PTryFromExcess PData (PAsData target) s))
 checkDeep' t = TermCont (ptryFrom @(PAsData target) $ pforgetData t)
 
 checkDeepUnwrap ::
   forall (target :: PType) (actual :: PType) (s :: S).
-  ( PTryFrom PData (PAsData target)
-  ) =>
+  PTryFrom PData (PAsData target) =>
   Term s (PAsData actual) ->
   Term s (PAsData target)
 checkDeepUnwrap t = unTermCont $ fst <$> TermCont (ptryFrom @(PAsData target) $ pforgetData t)

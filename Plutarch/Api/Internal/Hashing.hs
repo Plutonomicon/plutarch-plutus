@@ -21,7 +21,7 @@ import PlutusLedgerApi.Common (serialiseUPLC)
 import PlutusLedgerApi.V1 qualified as Plutus
 import PlutusTx.Builtins qualified as PlutusTx
 
-_plutusHashWith :: (HashAlgorithm alg) => alg -> ByteString -> PlutusTx.BuiltinByteString
+_plutusHashWith :: HashAlgorithm alg => alg -> ByteString -> PlutusTx.BuiltinByteString
 _plutusHashWith alg = PlutusTx.toBuiltin . convert @_ @ByteString . hashWith alg
 
 hashBlake2b_224 :: ByteString -> PlutusTx.BuiltinByteString

@@ -54,7 +54,7 @@ data PrettyState = PrettyState
 
 type PrettyMonad s = ReaderT (STGenM StdGen s) (StateT PrettyState (ST s))
 
-forkState :: (MonadState s m) => m b -> m b
+forkState :: MonadState s m => m b -> m b
 forkState x = get >>= (\s -> x <* put s)
 
 normalizeCursor :: PrettyState -> PrettyState
@@ -99,5 +99,5 @@ builtinFunFromName res =
     helper s = find (\e -> showText e == s) builtinFunNames
     builtinFunNames = [minBound .. maxBound] :: [PLC.DefaultFun]
 
-showText :: (Show a) => a -> Text
+showText :: Show a => a -> Text
 showText = Txt.pack . show

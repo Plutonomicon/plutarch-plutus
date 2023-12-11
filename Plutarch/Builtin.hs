@@ -165,16 +165,16 @@ pnullBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.NullList
 pconsBuiltin :: Term s (a :--> PBuiltinList a :--> PBuiltinList a)
 pconsBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.MkCons
 
-instance (PConstant a) => PConstantDecl [a] where
+instance PConstant a => PConstantDecl [a] where
   type PConstantRepr [a] = [PConstantRepr a]
   type PConstanted [a] = PBuiltinList (PConstanted a)
   pconstantToRepr x = pconstantToRepr <$> x
   pconstantFromRepr = traverse (pconstantFromRepr @a)
 
-instance (PUnsafeLiftDecl a) => PUnsafeLiftDecl (PBuiltinList a) where
+instance PUnsafeLiftDecl a => PUnsafeLiftDecl (PBuiltinList a) where
   type PLifted (PBuiltinList a) = [PLifted a]
 
-instance (PLift a) => PlutusType (PBuiltinList a) where
+instance PLift a => PlutusType (PBuiltinList a) where
   type PInner (PBuiltinList a) = PBuiltinList a
   type PCovariant' (PBuiltinList a) = PCovariant' a
   type PContravariant' (PBuiltinList a) = PContravariant' a
@@ -211,10 +211,10 @@ class Fc (x :: Bool) (a :: PType) where
 instance (PLift a, PEq a) => Fc 'False a where
   fc _ xs ys = plistEquals # xs # ys
 
-instance (PIsData (PBuiltinList a)) => Fc 'True a where
+instance PIsData (PBuiltinList a) => Fc 'True a where
   fc _ xs ys = pdata xs #== pdata ys
 
-instance (Fc (F a) a) => PEq (PBuiltinList a) where
+instance Fc (F a) a => PEq (PBuiltinList a) where
   (#==) = fc (Proxy @(F a))
 
 newtype PData (s :: S) = PData (Term s PData)
@@ -308,7 +308,7 @@ type family IfSameThenData (a :: PType) (b :: PType) :: PType where
   IfSameThenData a a = PData
   IfSameThenData _ b = PAsData b
 
-instance (PIsData a) => PlutusType (PAsData a) where
+instance PIsData a => PlutusType (PAsData a) where
   type PInner (PAsData a) = IfSameThenData a (PInner a)
   type PCovariant' (PAsData a) = PCovariant' a
   type PContravariant' (PAsData a) = PContravariant' a
@@ -335,11 +335,11 @@ pforgetData = punsafeCoerce
 {- | Like 'pforgetData', except it works for complex types.
  Equivalent to 'pupcastF'.
 -}
-pforgetData' :: forall a (p :: PType -> PType) s. (PCovariant p) => Proxy p -> Term s (p (PAsData a)) -> Term s (p PData)
+pforgetData' :: forall a (p :: PType -> PType) s. PCovariant p => Proxy p -> Term s (p (PAsData a)) -> Term s (p PData)
 pforgetData' _ = let _ = witness (Proxy @(PCovariant p)) in punsafeCoerce
 
 -- | Inverse of 'pforgetData''.
-prememberData :: forall (p :: PType -> PType) s. (PVariant p) => Proxy p -> Term s (p PData) -> Term s (p (PAsData PData))
+prememberData :: forall (p :: PType -> PType) s. PVariant p => Proxy p -> Term s (p PData) -> Term s (p (PAsData PData))
 prememberData Proxy = let _ = witness (Proxy @(PVariant p)) in punsafeCoerce
 
 -- | Like 'prememberData' but generalised.
@@ -353,23 +353,23 @@ prememberData' Proxy = let _ = witness (Proxy @(PSubtype PData a, PVariant p)) i
 -}
 class PIsData a where
   pfromDataImpl :: Term s (PAsData a) -> Term s a
-  default pfromDataImpl :: (PIsData (PInner a)) => Term s (PAsData a) -> Term s a
+  default pfromDataImpl :: PIsData (PInner a) => Term s (PAsData a) -> Term s a
   pfromDataImpl x = punsafeDowncast $ pfromDataImpl (punsafeCoerce x :: Term _ (PAsData (PInner a)))
 
   pdataImpl :: Term s a -> Term s PData
-  default pdataImpl :: (PIsData (PInner a)) => Term s a -> Term s PData
+  default pdataImpl :: PIsData (PInner a) => Term s a -> Term s PData
   pdataImpl x = pdataImpl $ pto x
 
-pfromData :: (PIsData a) => Term s (PAsData a) -> Term s a
+pfromData :: PIsData a => Term s (PAsData a) -> Term s a
 pfromData = pfromDataImpl
-pdata :: (PIsData a) => Term s a -> Term s (PAsData a)
+pdata :: PIsData a => Term s a -> Term s (PAsData a)
 pdata = punsafeCoerce . pdataImpl
 
 instance PIsData PData where
   pfromDataImpl = pupcast
   pdataImpl = id
 
-instance forall (a :: PType). (PSubtype PData a) => PIsData (PBuiltinList a) where
+instance forall (a :: PType). PSubtype PData a => PIsData (PBuiltinList a) where
   pfromDataImpl x = punsafeCoerce $ pasList # pforgetData x
   pdataImpl x = plistData # pupcastF @PData @a (Proxy @PBuiltinList) x
 

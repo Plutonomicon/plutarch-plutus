@@ -24,11 +24,11 @@ import Plutarch.Internal (PType, S, Term)
 import Plutarch.Internal.TypeFamily (ToPType2)
 import Unsafe.Coerce (unsafeCoerce)
 
-class (GFrom a) => GFrom' a
-instance (GFrom a) => GFrom' a
+class GFrom a => GFrom' a
+instance GFrom a => GFrom' a
 
-class (GTo a) => GTo' a
-instance (GTo a) => GTo' a
+class GTo a => GTo' a
+instance GTo a => GTo' a
 
 type PGeneric' :: PType -> S -> Constraint
 class
@@ -61,13 +61,13 @@ type PCode :: PType -> [[PType]]
 -- | Like `Code` but for Plutarch types
 type PCode a = ToPType2 (GCode (a Any))
 
-gpfrom :: forall a s. (PGeneric a) => a s -> SOP (Term s) (PCode a)
+gpfrom :: forall a s. PGeneric a => a s -> SOP (Term s) (PCode a)
 -- This could be done safely, but it's a PITA.
 -- Depends on `All` constraint above.
 gpfrom x = case (Dict :: Dict (PGeneric' a s)) of
   Dict -> unsafeCoerce (gfrom x :: SOP I (GCode (a s)))
 
-gpto :: forall a s. (PGeneric a) => SOP (Term s) (PCode a) -> a s
+gpto :: forall a s. PGeneric a => SOP (Term s) (PCode a) -> a s
 -- This could be done safely, but it's a PITA.
 -- Depends on `All` constraint above.
 gpto x = case (Dict :: Dict (PGeneric' a s)) of

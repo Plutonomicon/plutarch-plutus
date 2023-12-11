@@ -45,7 +45,7 @@ pmember = phoistAcyclic $ plam $ \a i -> pcontains # i # (psingleton # a)
 -}
 pinterval ::
   forall a (s :: S).
-  (PIsData a) =>
+  PIsData a =>
   Term
     s
     ( PAsData a
@@ -64,7 +64,7 @@ pinterval = phoistAcyclic $
 {- | create an interval that includes all values that are greater than or equal
  - to a
 -}
-pfrom :: forall a s. (PIsData a) => Term s (PAsData a :--> PInterval a)
+pfrom :: forall a s. PIsData a => Term s (PAsData a :--> PInterval a)
 pfrom = phoistAcyclic $
   plam $ \a ->
     let start :: Term _ (PExtended a)
@@ -76,7 +76,7 @@ pfrom = phoistAcyclic $
 {- | create an interval that includes all values that are smaller than or equal
  - to a
 -}
-pto :: forall a (s :: S). (PIsData a) => Term s (PAsData a :--> PInterval a)
+pto :: forall a (s :: S). PIsData a => Term s (PAsData a :--> PInterval a)
 pto = phoistAcyclic $
   plam $ \a ->
     let start :: Term _ (PExtended a)
@@ -95,7 +95,7 @@ pnever :: forall a (s :: S). (PIsData a, PLiftData a) => Term s (PInterval a)
 pnever = pconstant Plutus.never
 
 -- | create and interval [a, a]
-psingleton :: forall a (s :: S). (PIsData a) => Term s (PAsData a :--> PInterval a)
+psingleton :: forall a (s :: S). PIsData a => Term s (PAsData a :--> PInterval a)
 psingleton = phoistAcyclic $
   plam $ \a ->
     plet (pcon $ PFinite $ pdcons @"_0" # a # pdnil) $ \start ->
@@ -207,7 +207,7 @@ pafter = phoistAcyclic $
 -- | interval from upper and lower
 pinterval' ::
   forall a (s :: S).
-  (PIsData a) =>
+  PIsData a =>
   Term
     s
     ( PAsData (PLowerBound a)
@@ -227,7 +227,7 @@ pinterval' = phoistAcyclic $
 -- | closed interval from PExtended
 pclosedInterval ::
   forall a (s :: S).
-  (PIsData a) =>
+  PIsData a =>
   Term
     s
     ( PExtended a

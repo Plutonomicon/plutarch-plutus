@@ -528,7 +528,7 @@ spec = do
       describe "getFields" . pgoldenSpec $ do
         "0" @| getFields
       describe "data recovery" $ do
-        describe "succeding property tests" $ do
+        describe "succeeding property tests" $ do
           it "recovering PAddress succeeds" $
             property (propPlutarchtypeCanBeRecovered @Address)
           it "recovering PTokenName succeeds" $
@@ -859,10 +859,10 @@ mhOneFactorRight = 100
 mhcOneFactor :: Integer
 mhcOneFactor = 1000
 
-commutativeOp :: (Num a) => a -> a -> a
+commutativeOp :: Num a => a -> a -> a
 commutativeOp = (+)
 
-nonCommutativeOp :: (Num a) => a -> a -> a
+nonCommutativeOp :: Num a => a -> a -> a
 nonCommutativeOp = (-)
 
 data DummyKeyType

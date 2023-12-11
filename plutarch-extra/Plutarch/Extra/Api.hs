@@ -88,7 +88,7 @@ pfindOwnInput = phoistAcyclic $
   pparseDatum @MyType # datumHash #$ pfield @"datums" # txinfo
   @
 -}
-pparseDatum :: forall a s. (PTryFrom PData (PAsData a)) => Term s (PDatumHash :--> PBuiltinList (PAsData (PTuple PDatumHash PDatum)) :--> PMaybe (PAsData a))
+pparseDatum :: forall a s. PTryFrom PData (PAsData a) => Term s (PDatumHash :--> PBuiltinList (PAsData (PTuple PDatumHash PDatum)) :--> PMaybe (PAsData a))
 pparseDatum = phoistAcyclic $
   plam $ \dh datums ->
     pmatch (pfind # (matches # dh) # datums) $ \case
@@ -104,5 +104,5 @@ pparseDatum = phoistAcyclic $
       plam $ \a ab ->
         a #== pfield @"_0" # ab
 
-ptryFromData :: forall a s. (PTryFrom PData (PAsData a)) => Term s PData -> Term s (PAsData a)
+ptryFromData :: forall a s. PTryFrom PData (PAsData a) => Term s PData -> Term s (PAsData a)
 ptryFromData x = unTermCont $ fst <$> tcont (ptryFrom @(PAsData a) x)

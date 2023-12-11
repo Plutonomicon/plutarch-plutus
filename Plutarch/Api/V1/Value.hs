@@ -193,25 +193,25 @@ instance PlutusTx.Semigroup (Term s (PValue 'Sorted 'NoGuarantees)) where
   a <> b = punionResolvingCollisionsWith Commutative # plam (+) # a # b
 
 instance
-  (Semigroup (Term s (PValue 'Sorted normalization))) =>
+  Semigroup (Term s (PValue 'Sorted normalization)) =>
   Monoid (Term s (PValue 'Sorted normalization))
   where
   mempty = pcon (PValue AssocMap.pempty)
 
 instance
-  (PlutusTx.Semigroup (Term s (PValue 'Sorted normalization))) =>
+  PlutusTx.Semigroup (Term s (PValue 'Sorted normalization)) =>
   PlutusTx.Monoid (Term s (PValue 'Sorted normalization))
   where
   mempty = pcon (PValue AssocMap.pempty)
 
 instance
-  (PlutusTx.Semigroup (Term s (PValue 'Sorted 'NoGuarantees))) =>
+  PlutusTx.Semigroup (Term s (PValue 'Sorted 'NoGuarantees)) =>
   PlutusTx.Group (Term s (PValue 'Sorted 'NoGuarantees))
   where
   inv a = pmapAmounts # plam negate # a
 
 instance
-  (PlutusTx.Semigroup (Term s (PValue 'Sorted 'NonZero))) =>
+  PlutusTx.Semigroup (Term s (PValue 'Sorted 'NonZero)) =>
   PlutusTx.Group (Term s (PValue 'Sorted 'NonZero))
   where
   inv a = punsafeCoerce $ PlutusTx.inv (punsafeCoerce a :: Term s (PValue 'Sorted 'NoGuarantees))
@@ -299,7 +299,7 @@ psingletonData = phoistAcyclic $
       ( punsafeDowncast
           ( AssocMap.psingletonData
               # symbol
-                #$ pdata
+              #$ pdata
               $ AssocMap.psingletonData # token # amount
           )
       )
@@ -470,7 +470,7 @@ passertSorted = phoistAcyclic $
             ( \submap ->
                 AssocMap.pnull
                   # (AssocMap.passertSorted # submap)
-                    #|| AssocMap.pany
+                  #|| AssocMap.pany
                   # plam (#== 0)
                   # submap
             )

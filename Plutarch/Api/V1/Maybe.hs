@@ -25,16 +25,16 @@ data PMaybeData a (s :: S)
   deriving anyclass (PlutusType, PIsData, PEq, PShow)
 
 instance DerivePlutusType (PMaybeData a) where type DPTStrat _ = PlutusTypeData
-instance (PTryFrom PData a) => PTryFrom PData (PMaybeData a)
-instance (PTryFrom PData a) => PTryFrom PData (PAsData (PMaybeData a))
+instance PTryFrom PData a => PTryFrom PData (PMaybeData a)
+instance PTryFrom PData a => PTryFrom PData (PAsData (PMaybeData a))
 
-instance (PLiftData a) => PUnsafeLiftDecl (PMaybeData a) where
+instance PLiftData a => PUnsafeLiftDecl (PMaybeData a) where
   type PLifted (PMaybeData a) = Maybe (PLifted a)
 
 deriving via
   (DerivePConstantViaData (Maybe a) (PMaybeData (PConstanted a)))
   instance
-    (PConstantData a) => PConstantDecl (Maybe a)
+    PConstantData a => PConstantDecl (Maybe a)
 
 -- Have to manually write this instance because the constructor id ordering is screwed for 'Maybe'....
 instance (PIsData a, POrd a) => PPartialOrd (PMaybeData a) where
@@ -46,7 +46,7 @@ instance (PIsData a, POrd a) => POrd (PMaybeData a)
 _pmaybeLT ::
   Bool ->
   ( forall s rec_.
-    (rec_ ~ '["_0" ':= a]) =>
+    rec_ ~ '["_0" ':= a] =>
     Term s (PDataRecord rec_) ->
     Term s (PDataRecord rec_) ->
     Term s PBool

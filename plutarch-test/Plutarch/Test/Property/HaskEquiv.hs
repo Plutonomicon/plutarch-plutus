@@ -62,7 +62,7 @@ data Totality
   Class of pairs of Plutarch and Haskell types that are semantically
   equivalent, upto the given `Equality` and `Totality`.
 -}
-class (LamArgs h ~ args) => HaskEquiv (e :: Equality) (t :: Totality) h p args | h -> p where
+class LamArgs h ~ args => HaskEquiv (e :: Equality) (t :: Totality) h p args | h -> p where
   -- | Test that `h` and `p` are equal when applied on the given `args`.
   haskEquiv :: h -> ClosedTerm p -> NP Gen args -> PropertyT IO ()
 
@@ -122,7 +122,7 @@ instance
 -}
 prop_haskEquiv ::
   forall (e :: Equality) (t :: Totality) h p.
-  (HaskEquiv e t h p (LamArgs h)) =>
+  HaskEquiv e t h p (LamArgs h) =>
   h ->
   ClosedTerm p ->
   NP Gen (LamArgs h) ->
@@ -133,7 +133,7 @@ prop_haskEquiv h p = do
 testDataEq' :: (PIsData a, Marshal h a) => h -> ClosedTerm a -> PropertyT IO ()
 testDataEq' x = testDataEq (marshal x)
 
-testDataEq :: (PIsData a) => ClosedTerm a -> ClosedTerm a -> PropertyT IO ()
+testDataEq :: PIsData a => ClosedTerm a -> ClosedTerm a -> PropertyT IO ()
 testDataEq x y = pshouldBe (pdata x) (pdata y)
 
 testPartial :: (h -> ClosedTerm p -> PropertyT IO ()) -> h -> ClosedTerm p -> PropertyT IO ()
@@ -147,7 +147,7 @@ testPartial baseTest h p =
           assert False
     Right _ -> baseTest h p
 
-testPEq :: (PEq a) => ClosedTerm a -> ClosedTerm a -> PropertyT IO ()
+testPEq :: PEq a => ClosedTerm a -> ClosedTerm a -> PropertyT IO ()
 testPEq x y =
   -- Evaluate the terms once so we can annotate them individually.
   -- Then, evaluate `x #== y`.

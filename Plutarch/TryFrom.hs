@@ -70,17 +70,17 @@ and a way to go from @a@ to @b@.
 Laws:
 - @(punsafeCoerce . fst) <$> tcont (ptryFrom x) ≡ pure x@
 -}
-class (PSubtype a b) => PTryFrom (a :: PType) (b :: PType) where
+class PSubtype a b => PTryFrom (a :: PType) (b :: PType) where
   type PTryFromExcess a b :: PType
   type PTryFromExcess a b = PTryFromExcess a (PInner b)
   ptryFrom' :: forall s r. Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
   default ptryFrom' :: forall s r. (PTryFrom a (PInner b), PTryFromExcess a b ~ PTryFromExcess a (PInner b)) => Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
   ptryFrom' opq f = ptryFrom @(PInner b) @a opq \(inn, exc) -> f (punsafeCoerce inn, exc)
 
-ptryFrom :: forall b a s r. (PTryFrom a b) => Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
+ptryFrom :: forall b a s r. PTryFrom a b => Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
 ptryFrom = ptryFrom'
 
-pupcast :: forall a b s. (PSubtype a b) => Term s b -> Term s a
+pupcast :: forall a b s. PSubtype a b => Term s b -> Term s a
 pupcast = let _ = witness (Proxy @(PSubtype a b)) in punsafeCoerce
 
 pupcastF :: forall a b (p :: PType -> PType) s. (PSubtype a b, PCovariant p) => Proxy p -> Term s (p b) -> Term s (p a)

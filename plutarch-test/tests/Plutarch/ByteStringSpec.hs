@@ -41,5 +41,5 @@ spec = do
 >>> readByte "41"
 65
 -}
-readByte :: (Num a) => String -> a
+readByte :: Num a => String -> a
 readByte a = fromInteger $ read $ "0x" <> a
