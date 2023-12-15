@@ -28,31 +28,13 @@
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
   };
 
-  outputs = inputs@{ self, flake-parts, nixpkgs, haskell-nix, iohk-nix, CHaP, ... }:
+  outputs = inputs@{ flake-parts, nixpkgs, haskell-nix, iohk-nix, CHaP, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
-        inputs.hercules-ci-effects.flakeModule
-        inputs.pre-commit-hooks.flakeModule
+        ./pre-commit.nix
+        ./hercules-ci.nix
       ];
       systems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux" ];
-      herculesCI = {
-        ciSystems = [ "x86_64-linux" ];
-        onPush.default.outputs = self.checks.x86_64-linux;
-      };
-
-      # Automatix flake update CI effect. It will perform flake update every Sunday at 12:45, weekly.
-      hercules-ci.flake-update = {
-        enable = true;
-        updateBranch = "updated-flake-lock";
-        # Next two parameters should always be set explicitly
-        createPullRequest = true;
-        autoMergeMethod = null;
-        when = {
-          minute = 45;
-          hour = 12;
-          dayOfWeek = "Sun";
-        };
-      };
 
       perSystem = { config, system, ... }:
         let
@@ -92,32 +74,6 @@
           flake = project.flake { };
         in
         {
-          pre-commit = {
-            settings = {
-              src = ./.;
-              settings = {
-                ormolu.cabalDefaultExtensions = true;
-              };
-
-              hooks = {
-                nixpkgs-fmt.enable = true;
-                cabal-fmt.enable = true;
-                fourmolu = {
-                  enable = true;
-                  excludes = [ "\.lhs" ];
-                };
-                hlint.enable = false;
-                statix.enable = true;
-                deadnix.enable = true;
-                typos = {
-                  enable = true;
-                  excludes = [ "\.golden" ];
-                };
-                yamllint.enable = true;
-              };
-            };
-          };
-
           inherit (flake) packages devShells;
           checks = flake.checks // {
             plutarch-test = pkgs.runCommand "plutarch-test"
