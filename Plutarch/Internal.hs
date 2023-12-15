@@ -45,7 +45,6 @@ import Crypto.Hash.Algorithms (Blake2b_160)
 import Crypto.Hash.IO (HashAlgorithm)
 import Data.ByteString qualified as BS
 import Data.Default (Default (def))
-import Data.Functor ((<&>))
 import Data.Kind (Type)
 import Data.List (foldl', groupBy, sortOn)
 import Data.Map.Lazy qualified as M
@@ -110,8 +109,8 @@ hashUTerm (UPLC.Constant _ val) = addHashIndex 5 . flip hashUpdate (F.flat val)
 hashUTerm (UPLC.Builtin _ fun) = addHashIndex 6 . flip hashUpdate (F.flat fun)
 hashUTerm (UPLC.Error _) = addHashIndex 7
 hashUTerm (UPLC.Constr _ idx uterms) =
-  addHashIndex 8 . addHashIndex (fromIntegral idx) . (foldl1 (.) $ hashUTerm <$> uterms)
-hashUTerm (UPLC.Case _ uterm uterms) = addHashIndex 9 . hashUTerm uterm . (foldl1 (.) $ hashUTerm <$> uterms)
+  addHashIndex 8 . addHashIndex (fromIntegral idx) . foldl1 (.) (hashUTerm <$> uterms)
+hashUTerm (UPLC.Case _ uterm uterms) = addHashIndex 9 . hashUTerm uterm . foldl1 (.) (hashUTerm <$> uterms)
 
 hashRawTerm' :: forall alg. HashAlgorithm alg => RawTerm -> Context alg -> Context alg
 hashRawTerm' (RVar x) = addHashIndex 0 . flip hashUpdate (F.flat (fromIntegral x :: Integer))
@@ -333,11 +332,16 @@ pdelay x = Term (fmap (mapTerm RDelay) . asRawTerm x)
   used to force evaluation of 'PDelayed' terms.
 -}
 pforce :: Term s (PDelayed a) -> Term s a
-pforce x = Term \i ->
-  asRawTerm x i <&> \case
-    -- A force cancels a delay
-    t@(getTerm -> RDelay t') -> t {getTerm = t'}
-    t -> mapTerm RForce t
+pforce x =
+  Term
+    ( fmap
+        ( \case
+            -- A force cancels a delay
+            t@(getTerm -> RDelay t') -> t {getTerm = t'}
+            t -> mapTerm RForce t
+        )
+        . asRawTerm x
+    )
 
 {- |
   Plutus \'error\'.
@@ -423,7 +427,7 @@ rawTermToUPLC m l (RApply x y) =
           arg@UPLC.Builtin {} -> subst 1 (const arg) body
           arg -> UPLC.Apply () t arg
       f y t = UPLC.Apply () t (rawTermToUPLC m l y)
-   in foldr ($) (rawTermToUPLC m l x) (f <$> y)
+   in foldr f (rawTermToUPLC m l x) y
 rawTermToUPLC m l (RDelay t) = UPLC.Delay () (rawTermToUPLC m l t)
 rawTermToUPLC m l (RForce t) = UPLC.Force () (rawTermToUPLC m l t)
 rawTermToUPLC _ _ (RBuiltin f) = UPLC.Builtin () f

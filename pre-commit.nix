@@ -21,7 +21,7 @@
               enable = true;
               excludes = [ "\.lhs" ];
             };
-            hlint.enable = false;
+            hlint.enable = true;
             statix.enable = true;
             deadnix.enable = true;
             typos = {

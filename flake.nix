@@ -61,6 +61,14 @@
                 project.hsPkgs.hspec-discover.components.exes."hspec-discover"
                 project.hsPkgs.markdown-unlit.components.exes."markdown-unlit"
               ];
+              #   FIXME (peter-mlabs): This is currently broken.
+              #   In the future you can do something like
+              #
+              #     find -name '*.hs' -not -path './dist-*/*' -exec hlint -j --refactor --refactor-options="--inplace" {} +
+              #
+              #   to auto-refactor all files.
+              #
+              # buildInputs = [ pkgs.haskellPackages.apply-refact ];
               shellHook = config.pre-commit.installationScript;
               tools = {
                 cabal = { };
