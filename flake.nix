@@ -80,6 +80,13 @@
                 project.hsPkgs.markdown-unlit.components.exes."markdown-unlit"
               ];
               shellHook = config.pre-commit.installationScript;
+              tools = {
+                cabal = { };
+                haskell-language-server = { };
+                hlint = { };
+                cabal-fmt = { };
+                fourmolu = { };
+              };
             };
           };
           flake = project.flake { };
@@ -112,13 +119,15 @@
           };
 
           inherit (flake) packages devShells;
-          checks.plutarch-test = pkgs.runCommand "plutarch-test"
-            {
-              nativeBuildInputs = [ flake.packages."plutarch-test:exe:plutarch-test" ];
-            } ''
-            plutarch-test
-            touch $out
-          '';
+          checks = flake.checks // {
+            plutarch-test = pkgs.runCommand "plutarch-test"
+              {
+                nativeBuildInputs = [ flake.packages."plutarch-test:exe:plutarch-test" ];
+              } ''
+              plutarch-test
+              touch $out
+            '';
+          };
         };
     };
 }
