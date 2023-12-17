@@ -2,6 +2,9 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
+--  Some functions in this module seem to be sensitive to parentheses
+{-# HLINT ignore "Redundant bracket" #-}
+
 module Plutarch.Api.V1.AssocMap (
   PMap (PMap),
   KeyGuarantees (Unsorted, Sorted),
@@ -714,6 +717,7 @@ zipMergeInsertCommutative (MergeHandlerCommutative bothPresent onePresent) = unT
           PassOne -> pcons # x # xs'
           HandleOne handler ->
             List.pmap
+              {- HLINT ignore "Redundant bracket" -}
               # ( plam \pair ->
                     plet (pfstBuiltin # pair) \k ->
                       ppairDataBuiltin # k # handler k (psndBuiltin # pair)
