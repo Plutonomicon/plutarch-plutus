@@ -75,13 +75,16 @@
         {
           inherit (flake) packages devShells;
           checks = flake.checks // {
-            plutarch-test = pkgs.runCommand "plutarch-test"
+            plutarch-test = pkgs.stdenv.mkDerivation
               {
+                name = "plutarch-test";
+                src = ./plutarch-test;
                 nativeBuildInputs = [ flake.packages."plutarch-test:exe:plutarch-test" ];
-              } ''
-              plutarch-test
-              touch $out
-            '';
+                buildPhase = ''
+                  plutarch-test
+                  touch $out
+                '';
+              };
           };
         };
     };
