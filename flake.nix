@@ -57,10 +57,6 @@
             shell = {
               withHoogle = true;
               exactDeps = false;
-              nativeBuildInputs = [
-                project.hsPkgs.hspec-discover.components.exes."hspec-discover"
-                project.hsPkgs.markdown-unlit.components.exes."markdown-unlit"
-              ];
               # TODO(peter-mlabs): Use `apply-refact` for repo wide refactoring `find -name '*.hs' -not -path './dist-*/*' -exec hlint -j --refactor --refactor-options="--inplace" {} +``
               shellHook = config.pre-commit.installationScript;
               tools = {
@@ -69,6 +65,8 @@
                 hlint = { };
                 cabal-fmt = { };
                 fourmolu = { };
+                hspec-discover = { };
+                markdown-unlit = { };
               };
             };
           };

@@ -57,6 +57,7 @@ common c
     -Wno-unrecognised-pragmas -Wno-unticked-promoted-constructors
     -Wno-operator-whitespace -fprint-equality-relations
     -fprint-explicit-kinds -fprint-explicit-foralls
+    -Wno-missing-export-lists
 
 library
   import:          c

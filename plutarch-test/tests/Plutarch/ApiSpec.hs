@@ -161,12 +161,13 @@ spec = do
                     # getEnclosedTerm v
                     # pmintOtherSymbol
                     @-> pshouldReallyBe
-                      ( pcon . PValue.PValue $
-                          AssocMap.punionResolvingCollisionsWith Commutative
-                            # plam \_ _ ->
-                              ptraceError "unexpected collision"
+                      ( pcon $
+                          PValue.PValue
+                            ( AssocMap.punionResolvingCollisionsWith Commutative
+                                # plam (\_ _ -> ptraceError "unexpected collision")
                                 # pto (getEnclosedTerm v)
                                 # (AssocMap.pdifference # pto pmintOtherSymbol # pto (getEnclosedTerm v))
+                            )
                       )
               )
         "leftBiasedTokenUnion" @\ do
