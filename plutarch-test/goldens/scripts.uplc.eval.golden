@@ -1,6 +1,103 @@
-auth_validator.0 (program 1.0.0 (\i0 -> \i0 -> \i0 -> force (force ifThenElse (verifyEd25519Signature #3131363631613861636139623039626239336565666461323935623564613262653366393434643166343235336162323964613137646235383066353064303264323632313865333366626261356530636331623063306361646662363761356639613930313537646363313965656364376339333733623034313563383838 (unBData i3) (unBData i2)) (delay ()) (delay error))))
+auth_validator.0 (program 1.0.0 (\i0
+                 i0
+                 i0 ->
+                  force (force ifThenElse
+                           (verifyEd25519Signature
+                              #3131363631613861636139623039626239336565666461323935623564613262653366393434643166343235336162323964613137646235383066353064303264323632313865333366626261356530636331623063306361646662363761356639613930313537646363313965656364376339333733623034313563383838
+                              (unBData i3)
+                              (unBData i2))
+                           (delay ())
+                           (delay error))))
 auth_validator.hash (program 1.0.0 "581c8ac3f00bb148ff48cb551e7d5ea877863d152e75f459e0066f3dd047")
-auth_policy.0 (program 1.0.0 (\i0 -> \i0 -> force (force ifThenElse ((\i0 -> (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1))) (\i0 -> \i0 -> force (force (force chooseList) i1 (delay False) (delay (force (force ifThenElse (equalsData (force headList i1) i3) (delay True) (delay (i2 (force tailList i1))))))))) #581ccc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f (unListData ((\i0 -> force headList ((\i0 -> force tailList (force tailList (force tailList (force tailList (force tailList (force tailList (force tailList i1))))))) ((\i0 -> force (force sndPair) (unConstrData i1)) i1))) (force headList ((\i0 -> force (force sndPair) (unConstrData i1)) i1))))) (delay ()) (delay error))))
+auth_policy.0 (program 1.0.0 (\i0
+                 i0 ->
+                  force (force ifThenElse
+                           ((\i0 ->
+                               (\i0 ->
+                                  (\i0 -> i2 (\i0 -> i2 i2 i1))
+                                    (\i0 -> i2 (\i0 -> i2 i2 i1)))
+                                 (\i0
+                                   i0 ->
+                                    force (force (force chooseList)
+                                             i1
+                                             (delay False)
+                                             (delay (force (force ifThenElse
+                                                              (equalsData
+                                                                 (force headList
+                                                                    i1)
+                                                                 i3)
+                                                              (delay True)
+                                                              (delay (i2
+                                                                        (force tailList
+                                                                           i1)))))))))
+                              #581ccc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f
+                              (unListData
+                                 ((\i0 ->
+                                     force headList
+                                       ((\i0 ->
+                                           force tailList
+                                             (force tailList
+                                                (force tailList
+                                                   (force tailList
+                                                      (force tailList
+                                                         (force tailList
+                                                            (force tailList
+                                                               i1)))))))
+                                          ((\i0 ->
+                                              force (force sndPair)
+                                                (unConstrData i1))
+                                             i1)))
+                                    (force headList
+                                       ((\i0 ->
+                                           force (force sndPair)
+                                             (unConstrData i1))
+                                          i1)))))
+                           (delay ())
+                           (delay error))))
 auth_policy.hash (program 1.0.0 "581cb9f49b1f51a0c1c285c9fde6b1da21e7094f7c19efb6eeace1ada858")
-auth_stake_validator.0 (program 1.0.0 (\i0 -> \i0 -> force (force ifThenElse ((\i0 -> (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1))) (\i0 -> \i0 -> force (force (force chooseList) i1 (delay False) (delay (force (force ifThenElse (equalsData (force headList i1) i3) (delay True) (delay (i2 (force tailList i1))))))))) #581ccc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f (unListData ((\i0 -> force headList ((\i0 -> force tailList (force tailList (force tailList (force tailList (force tailList (force tailList (force tailList i1))))))) ((\i0 -> force (force sndPair) (unConstrData i1)) i1))) (force headList ((\i0 -> force (force sndPair) (unConstrData i1)) i1))))) (delay ()) (delay error))))
+auth_stake_validator.0 (program 1.0.0 (\i0
+                 i0 ->
+                  force (force ifThenElse
+                           ((\i0 ->
+                               (\i0 ->
+                                  (\i0 -> i2 (\i0 -> i2 i2 i1))
+                                    (\i0 -> i2 (\i0 -> i2 i2 i1)))
+                                 (\i0
+                                   i0 ->
+                                    force (force (force chooseList)
+                                             i1
+                                             (delay False)
+                                             (delay (force (force ifThenElse
+                                                              (equalsData
+                                                                 (force headList
+                                                                    i1)
+                                                                 i3)
+                                                              (delay True)
+                                                              (delay (i2
+                                                                        (force tailList
+                                                                           i1)))))))))
+                              #581ccc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f
+                              (unListData
+                                 ((\i0 ->
+                                     force headList
+                                       ((\i0 ->
+                                           force tailList
+                                             (force tailList
+                                                (force tailList
+                                                   (force tailList
+                                                      (force tailList
+                                                         (force tailList
+                                                            (force tailList
+                                                               i1)))))))
+                                          ((\i0 ->
+                                              force (force sndPair)
+                                                (unConstrData i1))
+                                             i1)))
+                                    (force headList
+                                       ((\i0 ->
+                                           force (force sndPair)
+                                             (unConstrData i1))
+                                          i1)))))
+                           (delay ())
+                           (delay error))))
 auth_stake_validator.hash (program 1.0.0 "581cb9f49b1f51a0c1c285c9fde6b1da21e7094f7c19efb6eeace1ada858")

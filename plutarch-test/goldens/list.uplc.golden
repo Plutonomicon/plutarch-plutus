@@ -1,25 +1,769 @@
-pmatch (program 1.0.0 ((\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1))) (\i0 -> \i0 -> force (force (force chooseList) i1 (delay (\i0 -> \i0 -> force i1)) (delay ((\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3) (force headList i1) (i2 (force tailList i1)))))) [1,3,1] (\i0 -> \i0 -> error) (delay error)))
-phead (program 1.0.0 (equalsInteger 1 ((\i0 -> i1 (\i0 -> \i0 -> i2) (delay error)) ((\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1))) (\i0 -> \i0 -> force (force (force chooseList) i1 (delay (\i0 -> \i0 -> force i1)) (delay ((\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3) (force headList i1) (i2 (force tailList i1)))))) [1,2,3,4,5,6,7,8,9,10]))))
-ptail (program 1.0.0 ((\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> i2 (\i0 -> \i0 -> \i0 -> i2 (\i0 -> \i0 -> i3 (\i0 -> \i0 -> force (force ifThenElse (equalsInteger i4 i2) (delay (i7 i3 i1)) (delay False))) (delay False)) (delay (i1 (\i0 -> \i0 -> False) (delay True)))) (i1 [2,3,4,5,6,7,8,9,10]) ((\i0 -> i1 (\i0 -> \i0 -> i1) (delay error)) (i1 [1,2,3,4,5,6,7,8,9,10]))) (i1 (\i0 -> \i0 -> force (i4 i1 (delay (\i0 -> \i0 -> force i1)) (delay (i5 (i6 i1) (i2 (i7 i1)))))))) (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))) (force (force chooseList))) (\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3)) (force headList)) (force tailList)))
-pnull.empty (program 1.0.0 ((\i0 -> i1 (\i0 -> \i0 -> False) (delay True)) ((\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1))) (\i0 -> \i0 -> force (force (force chooseList) i1 (delay (\i0 -> \i0 -> force i1)) (delay ((\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3) (force headList i1) (i2 (force tailList i1)))))) [])))
-pnull.nonempty (program 1.0.0 ((\i0 -> force ifThenElse i1 False True) ((\i0 -> i1 (\i0 -> \i0 -> False) (delay True)) ((\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1))) (\i0 -> \i0 -> force (force (force chooseList) i1 (delay (\i0 -> \i0 -> force i1)) (delay ((\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3) (force headList i1) (i2 (force tailList i1)))))) [1,2,3,4,5,6,7,8,9,10]))))
-pconcat.identity (program 1.0.0 ((\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> force ((\i0 -> \i0 -> i4 i2 i1 (delay False)) (i1 (i3 (i4 i10) (\i0 -> \i0 -> force i1)) (i3 (\i0 -> \i0 -> force i1) (i4 i10))) (delay (i1 (i3 (\i0 -> \i0 -> force i1) (i4 i10)) (i4 i10))))) (i4 (\i0 -> \i0 -> \i0 -> i2 (\i0 -> \i0 -> i3 (\i0 -> \i0 -> force (i8 (equalsInteger i4 i2) (delay (i7 i3 i1)) (delay False))) (delay False)) (delay (i1 (\i0 -> \i0 -> False) (delay True)))))) (force ifThenElse)) (\i0 -> \i0 -> i4 (\i0 -> \i0 -> i1 (\i0 -> \i0 -> i10 i2 (i4 i1)) (delay i3)) i2)) (i1 (\i0 -> \i0 -> force (i4 i1 (delay (\i0 -> \i0 -> force i1)) (delay (i5 (i6 i1) (i2 (i7 i1)))))))) (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))) (force (force chooseList))) (\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3)) (force headList)) (force tailList)) [1,2,3,4,5,6,7,8,9,10]))
-pmap.eg (program 1.0.0 ((\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> i2 (\i0 -> \i0 -> \i0 -> i2 (\i0 -> \i0 -> i3 (\i0 -> \i0 -> force (force ifThenElse (equalsInteger i4 i2) (delay (i7 i3 i1)) (delay False))) (delay False)) (delay (i1 (\i0 -> \i0 -> False) (delay True)))) ((\i0 -> i3 (\i0 -> \i0 -> i1 (\i0 -> \i0 -> i9 (i5 i2) (i4 i1)) (delay (\i0 -> \i0 -> force i1)))) (\i0 -> addInteger i1 i1) (i1 [1,2,3,4,5,6,7,8,9,10])) (i1 [2,4,6,8,10,12,14,16,18,20])) (i1 (\i0 -> \i0 -> force (i4 i1 (delay (\i0 -> \i0 -> force i1)) (delay (i5 (i6 i1) (i2 (i7 i1)))))))) (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))) (force (force chooseList))) (\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3)) (force headList)) (force tailList)))
-pmap.identity (program 1.0.0 ((\i0 -> i1 (\i0 -> \i0 -> \i0 -> i2 (\i0 -> \i0 -> i3 (\i0 -> \i0 -> force (force ifThenElse (equalsInteger i4 i2) (delay (i7 i3 i1)) (delay False))) (delay False)) (delay (i1 (\i0 -> \i0 -> False) (delay True)))) ((\i0 -> i2 (\i0 -> \i0 -> i1 (\i0 -> \i0 -> (\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3) (i5 i2) (i4 i1)) (delay (\i0 -> \i0 -> force i1)))) (\i0 -> i1) (\i0 -> \i0 -> force i1)) (\i0 -> \i0 -> force i1)) (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))))
-pfilter.evens (program 1.0.0 ((\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> i3 (\i0 -> \i0 -> \i0 -> i2 (\i0 -> \i0 -> i3 (\i0 -> \i0 -> force (i8 (equalsInteger i4 i2) (delay (i7 i3 i1)) (delay False))) (delay False)) (delay (i1 (\i0 -> \i0 -> False) (delay True)))) ((\i0 -> i4 (\i0 -> \i0 -> i1 (\i0 -> \i0 -> force (i6 (i5 i2) (delay (i10 i2 (i4 i1))) (delay (i4 i1)))) (delay (\i0 -> \i0 -> force i1)))) (\i0 -> equalsInteger (modInteger i1 2) 0) (i2 [1,2,3,4,5,6,7,8,9,10])) (i2 [2,4,6,8,10])) (force ifThenElse)) (i1 (\i0 -> \i0 -> force (i4 i1 (delay (\i0 -> \i0 -> force i1)) (delay (i5 (i6 i1) (i2 (i7 i1)))))))) (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))) (force (force chooseList))) (\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3)) (force headList)) (force tailList)))
-pfilter.gt5 (program 1.0.0 ((\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> i3 (\i0 -> \i0 -> \i0 -> i2 (\i0 -> \i0 -> i3 (\i0 -> \i0 -> force (i8 (equalsInteger i4 i2) (delay (i7 i3 i1)) (delay False))) (delay False)) (delay (i1 (\i0 -> \i0 -> False) (delay True)))) ((\i0 -> i4 (\i0 -> \i0 -> i1 (\i0 -> \i0 -> force (i6 (i5 i2) (delay (i10 i2 (i4 i1))) (delay (i4 i1)))) (delay (\i0 -> \i0 -> force i1)))) (\i0 -> lessThanInteger 5 i1) (i2 [1,2,3,4,5,6,7,8,9,10])) (i2 [6,7,8,9,10])) (force ifThenElse)) (i1 (\i0 -> \i0 -> force (i4 i1 (delay (\i0 -> \i0 -> force i1)) (delay (i5 (i6 i1) (i2 (i7 i1)))))))) (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))) (force (force chooseList))) (\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3)) (force headList)) (force tailList)))
-pzipWith.double (program 1.0.0 ((\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> i3 (\i0 -> \i0 -> \i0 -> i2 (\i0 -> \i0 -> i3 (\i0 -> \i0 -> force (force ifThenElse (equalsInteger i4 i2) (delay (i7 i3 i1)) (delay False))) (delay False)) (delay (i1 (\i0 -> \i0 -> False) (delay True)))) (i3 (\i0 -> \i0 -> \i0 -> i2 (\i0 -> \i0 -> i3 (\i0 -> \i0 -> i12 (addInteger i4 i2) (i7 i3 i1)) (delay (\i0 -> \i0 -> force i1))) (delay (\i0 -> \i0 -> force i1))) (i2 i1) (i2 i1)) (i2 [2,4,6,8,10,12,14,16,18,20])) [1,2,3,4,5,6,7,8,9,10]) (i1 (\i0 -> \i0 -> force (i4 i1 (delay (\i0 -> \i0 -> force i1)) (delay (i5 (i6 i1) (i2 (i7 i1)))))))) (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))) (force (force chooseList))) (\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3)) (force headList)) (force tailList)))
-pfoldl.nonempty (program 1.0.0 ((\i0 -> equalsInteger (i1 (\i0 -> \i0 -> \i0 -> i1 (\i0 -> \i0 -> i5 (subtractInteger i4 i2) i1) (delay i2)) 0 (i1 (\i0 -> \i0 -> force (force (force chooseList) i1 (delay (\i0 -> \i0 -> force i1)) (delay ((\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3) (force headList i1) (i2 (force tailList i1)))))) [1,2,3,4,5,6,7,8,9,10])) -55) (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))))
-pfoldl.nonempty-primed (program 1.0.0 ((\i0 -> equalsInteger (i1 (\i0 -> \i0 -> \i0 -> i1 (\i0 -> \i0 -> i5 (subtractInteger i4 i2) i1) (delay i2)) 0 (i1 (\i0 -> \i0 -> force (force (force chooseList) i1 (delay (\i0 -> \i0 -> force i1)) (delay ((\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3) (force headList i1) (i2 (force tailList i1)))))) [1,2,3,4,5,6,7,8,9,10])) -55) (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))))
-pfoldl.empty (program 1.0.0 ((\i0 -> equalsInteger (i1 (\i0 -> \i0 -> \i0 -> i1 (\i0 -> \i0 -> i5 (subtractInteger i4 i2) i1) (delay i2)) 0 (i1 (\i0 -> \i0 -> force (force (force chooseList) i1 (delay (\i0 -> \i0 -> force i1)) (delay ((\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3) (force headList i1) (i2 (force tailList i1)))))) [])) 0) (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))))
-pfoldl.empty-primed (program 1.0.0 ((\i0 -> equalsInteger (i1 (\i0 -> \i0 -> \i0 -> i1 (\i0 -> \i0 -> i5 (subtractInteger i4 i2) i1) (delay i2)) 0 (i1 (\i0 -> \i0 -> force (force (force chooseList) i1 (delay (\i0 -> \i0 -> force i1)) (delay ((\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3) (force headList i1) (i2 (force tailList i1)))))) [])) 0) (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))))
-elemAt.elemAt_3_[1..10] (program 1.0.0 ((\i0 -> (\i0 -> (\i0 -> \i0 -> force (i3 (lessThanInteger i2 0) (delay (force (force trace "pelemAt: negative index" (delay error)))) (delay (i4 (\i0 -> \i0 -> \i0 -> force (i6 (equalsInteger i2 0) (delay (i1 (\i0 -> \i0 -> i2) (delay error))) (delay (i3 (subtractInteger i2 1) (i1 (\i0 -> \i0 -> i1) (delay error)))))) i2 i1)))) 3 (i2 (\i0 -> \i0 -> force (force (force chooseList) i1 (delay (\i0 -> \i0 -> force i1)) (delay ((\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3) (force headList i1) (i2 (force tailList i1)))))) [1,2,3,4,5,6,7,8,9,10])) (force ifThenElse)) (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))))
-elemAt.elemAt_0_[1..10] (program 1.0.0 ((\i0 -> (\i0 -> (\i0 -> \i0 -> force (i3 (lessThanInteger i2 0) (delay (force (force trace "pelemAt: negative index" (delay error)))) (delay (i4 (\i0 -> \i0 -> \i0 -> force (i6 (equalsInteger i2 0) (delay (i1 (\i0 -> \i0 -> i2) (delay error))) (delay (i3 (subtractInteger i2 1) (i1 (\i0 -> \i0 -> i1) (delay error)))))) i2 i1)))) 0 (i2 (\i0 -> \i0 -> force (force (force chooseList) i1 (delay (\i0 -> \i0 -> force i1)) (delay ((\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3) (force headList i1) (i2 (force tailList i1)))))) [1,2,3,4,5,6,7,8,9,10])) (force ifThenElse)) (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))))
-elemAt.elemAt_9_[1..10] (program 1.0.0 ((\i0 -> (\i0 -> (\i0 -> \i0 -> force (i3 (lessThanInteger i2 0) (delay (force (force trace "pelemAt: negative index" (delay error)))) (delay (i4 (\i0 -> \i0 -> \i0 -> force (i6 (equalsInteger i2 0) (delay (i1 (\i0 -> \i0 -> i2) (delay error))) (delay (i3 (subtractInteger i2 1) (i1 (\i0 -> \i0 -> i1) (delay error)))))) i2 i1)))) 9 (i2 (\i0 -> \i0 -> force (force (force chooseList) i1 (delay (\i0 -> \i0 -> force i1)) (delay ((\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3) (force headList i1) (i2 (force tailList i1)))))) [1,2,3,4,5,6,7,8,9,10])) (force ifThenElse)) (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))))
-find.find_(==3)_[1..4] (program 1.0.0 ((\i0 -> i1 (\i0 -> \i0 -> \i0 -> i1 (\i0 -> \i0 -> force (force ifThenElse (i4 i2) (delay (\i0 -> \i0 -> i2 i4)) (delay (i5 i4 i1)))) (delay (\i0 -> \i0 -> force i1))) (\i0 -> equalsInteger i1 3) (i1 (\i0 -> \i0 -> force (force (force chooseList) i1 (delay (\i0 -> \i0 -> force i1)) (delay ((\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3) (force headList i1) (i2 (force tailList i1)))))) [1,2,3,4])) (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))))
-find.find_(==5)_[1..4] (program 1.0.0 ((\i0 -> i1 (\i0 -> \i0 -> \i0 -> i1 (\i0 -> \i0 -> force (force ifThenElse (i4 i2) (delay (\i0 -> \i0 -> i2 i4)) (delay (i5 i4 i1)))) (delay (\i0 -> \i0 -> force i1))) (\i0 -> equalsInteger i1 5) (i1 (\i0 -> \i0 -> force (force (force chooseList) i1 (delay (\i0 -> \i0 -> force i1)) (delay ((\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3) (force headList i1) (i2 (force tailList i1)))))) [1,2,3,4])) (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))))
-x1+x2.builtin (program 1.0.0 ((\i0 -> (\i0 -> addInteger (i1 (force tailList i2)) (i1 i2)) (force headList)) [1,2,3,4,5]))
-x1+x2.pmatch (program 1.0.0 ((\i0 -> (\i0 -> (\i0 -> force (i1 i3 (delay error) (delay ((\i0 -> force (i2 i1 (delay error) (delay (addInteger (i3 i4) (i3 i1))))) (force tailList i3))))) (force (force chooseList))) (force headList)) [1,2,3,4,5]))
-uncons.ChooseList (program 1.0.0 ((\i0 -> force (force (force chooseList) i1 (delay error) (delay (force tailList i1)))) [1,2,3,4,5]))
-uncons.head-and-tail (program 1.0.0 ((\i0 -> (\i0 -> force tailList i2) (force headList i1)) [1,2,3,4,5]))
-uncons.head-and-tail-and-null (program 1.0.0 ((\i0 -> (\i0 -> force (force ifThenElse i1 (delay error) (delay ((\i0 -> force tailList i3) (force headList i2))))) (force nullList i1)) [1,2,3,4,5]))
+pmatch (program 1.0.0 ((\i0 ->
+                   (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))
+                  (\i0
+                    i0 ->
+                     force (force (force chooseList)
+                              i1
+                              (delay (\i0 i0 -> force i1))
+                              (delay ((\i0 i0 i0 i0 -> i2 i4 i3)
+                                        (force headList i1)
+                                        (i2 (force tailList i1))))))
+                  [1,3,1]
+                  (\i0 i0 -> error)
+                  (delay error)))
+phead (program 1.0.0 (equalsInteger
+                  1
+                  ((\i0 -> i1 (\i0 i0 -> i2) (delay error))
+                     ((\i0 ->
+                         (\i0 -> i2 (\i0 -> i2 i2 i1))
+                           (\i0 -> i2 (\i0 -> i2 i2 i1)))
+                        (\i0
+                          i0 ->
+                           force (force (force chooseList)
+                                    i1
+                                    (delay (\i0 i0 -> force i1))
+                                    (delay ((\i0 i0 i0 i0 -> i2 i4 i3)
+                                              (force headList i1)
+                                              (i2 (force tailList i1))))))
+                        [1,2,3,4,5,6,7,8,9,10]))))
+ptail (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      (\i0 ->
+                         (\i0 ->
+                            (\i0 ->
+                               (\i0 ->
+                                  i2
+                                    (\i0
+                                      i0
+                                      i0 ->
+                                       i2
+                                         (\i0
+                                           i0 ->
+                                            i3
+                                              (\i0
+                                                i0 ->
+                                                 force (force ifThenElse
+                                                          (equalsInteger i4 i2)
+                                                          (delay (i7 i3 i1))
+                                                          (delay False)))
+                                              (delay False))
+                                         (delay (i1
+                                                   (\i0 i0 -> False)
+                                                   (delay True))))
+                                    (i1 [2,3,4,5,6,7,8,9,10])
+                                    ((\i0 -> i1 (\i0 i0 -> i1) (delay error))
+                                       (i1 [1,2,3,4,5,6,7,8,9,10])))
+                                 (i1
+                                    (\i0
+                                      i0 ->
+                                       force (i4
+                                                i1
+                                                (delay (\i0 i0 -> force i1))
+                                                (delay (i5
+                                                          (i6 i1)
+                                                          (i2 (i7 i1))))))))
+                              (\i0 ->
+                                 (\i0 -> i2 (\i0 -> i2 i2 i1))
+                                   (\i0 -> i2 (\i0 -> i2 i2 i1))))
+                           (force (force chooseList)))
+                        (\i0 i0 i0 i0 -> i2 i4 i3))
+                     (force headList))
+                  (force tailList)))
+pnull.empty (program 1.0.0 ((\i0 -> i1 (\i0 i0 -> False) (delay True))
+                  ((\i0 ->
+                      (\i0 -> i2 (\i0 -> i2 i2 i1))
+                        (\i0 -> i2 (\i0 -> i2 i2 i1)))
+                     (\i0
+                       i0 ->
+                        force (force (force chooseList)
+                                 i1
+                                 (delay (\i0 i0 -> force i1))
+                                 (delay ((\i0 i0 i0 i0 -> i2 i4 i3)
+                                           (force headList i1)
+                                           (i2 (force tailList i1))))))
+                     [])))
+pnull.nonempty (program 1.0.0 ((\i0 -> force ifThenElse i1 False True)
+                  ((\i0 -> i1 (\i0 i0 -> False) (delay True))
+                     ((\i0 ->
+                         (\i0 -> i2 (\i0 -> i2 i2 i1))
+                           (\i0 -> i2 (\i0 -> i2 i2 i1)))
+                        (\i0
+                          i0 ->
+                           force (force (force chooseList)
+                                    i1
+                                    (delay (\i0 i0 -> force i1))
+                                    (delay ((\i0 i0 i0 i0 -> i2 i4 i3)
+                                              (force headList i1)
+                                              (i2 (force tailList i1))))))
+                        [1,2,3,4,5,6,7,8,9,10]))))
+pconcat.identity (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      (\i0 ->
+                         (\i0 ->
+                            (\i0 ->
+                               (\i0 ->
+                                  (\i0 ->
+                                     (\i0 ->
+                                        (\i0 ->
+                                           (\i0 ->
+                                              force ((\i0
+                                                       i0 ->
+                                                        i4 i2 i1 (delay False))
+                                                       (i1
+                                                          (i3
+                                                             (i4 i10)
+                                                             (\i0
+                                                               i0 ->
+                                                                force i1))
+                                                          (i3
+                                                             (\i0
+                                                               i0 ->
+                                                                force i1)
+                                                             (i4 i10)))
+                                                       (delay (i1
+                                                                 (i3
+                                                                    (\i0
+                                                                      i0 ->
+                                                                       force i1)
+                                                                    (i4 i10))
+                                                                 (i4 i10)))))
+                                             (i4
+                                                (\i0
+                                                  i0
+                                                  i0 ->
+                                                   i2
+                                                     (\i0
+                                                       i0 ->
+                                                        i3
+                                                          (\i0
+                                                            i0 ->
+                                                             force (i8
+                                                                      (equalsInteger
+                                                                         i4
+                                                                         i2)
+                                                                      (delay (i7
+                                                                                i3
+                                                                                i1))
+                                                                      (delay False)))
+                                                          (delay False))
+                                                     (delay (i1
+                                                               (\i0 i0 -> False)
+                                                               (delay True))))))
+                                          (force ifThenElse))
+                                       (\i0
+                                         i0 ->
+                                          i4
+                                            (\i0
+                                              i0 ->
+                                               i1
+                                                 (\i0 i0 -> i10 i2 (i4 i1))
+                                                 (delay i3))
+                                            i2))
+                                    (i1
+                                       (\i0
+                                         i0 ->
+                                          force (i4
+                                                   i1
+                                                   (delay (\i0 i0 -> force i1))
+                                                   (delay (i5
+                                                             (i6 i1)
+                                                             (i2 (i7 i1))))))))
+                                 (\i0 ->
+                                    (\i0 -> i2 (\i0 -> i2 i2 i1))
+                                      (\i0 -> i2 (\i0 -> i2 i2 i1))))
+                              (force (force chooseList)))
+                           (\i0 i0 i0 i0 -> i2 i4 i3))
+                        (force headList))
+                     (force tailList))
+                  [1,2,3,4,5,6,7,8,9,10]))
+pmap.eg (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      (\i0 ->
+                         (\i0 ->
+                            (\i0 ->
+                               (\i0 ->
+                                  i2
+                                    (\i0
+                                      i0
+                                      i0 ->
+                                       i2
+                                         (\i0
+                                           i0 ->
+                                            i3
+                                              (\i0
+                                                i0 ->
+                                                 force (force ifThenElse
+                                                          (equalsInteger i4 i2)
+                                                          (delay (i7 i3 i1))
+                                                          (delay False)))
+                                              (delay False))
+                                         (delay (i1
+                                                   (\i0 i0 -> False)
+                                                   (delay True))))
+                                    ((\i0 ->
+                                        i3
+                                          (\i0
+                                            i0 ->
+                                             i1
+                                               (\i0 i0 -> i9 (i5 i2) (i4 i1))
+                                               (delay (\i0 i0 -> force i1))))
+                                       (\i0 -> addInteger i1 i1)
+                                       (i1 [1,2,3,4,5,6,7,8,9,10]))
+                                    (i1 [2,4,6,8,10,12,14,16,18,20]))
+                                 (i1
+                                    (\i0
+                                      i0 ->
+                                       force (i4
+                                                i1
+                                                (delay (\i0 i0 -> force i1))
+                                                (delay (i5
+                                                          (i6 i1)
+                                                          (i2 (i7 i1))))))))
+                              (\i0 ->
+                                 (\i0 -> i2 (\i0 -> i2 i2 i1))
+                                   (\i0 -> i2 (\i0 -> i2 i2 i1))))
+                           (force (force chooseList)))
+                        (\i0 i0 i0 i0 -> i2 i4 i3))
+                     (force headList))
+                  (force tailList)))
+pmap.identity (program 1.0.0 ((\i0 ->
+                   i1
+                     (\i0
+                       i0
+                       i0 ->
+                        i2
+                          (\i0
+                            i0 ->
+                             i3
+                               (\i0
+                                 i0 ->
+                                  force (force ifThenElse
+                                           (equalsInteger i4 i2)
+                                           (delay (i7 i3 i1))
+                                           (delay False)))
+                               (delay False))
+                          (delay (i1 (\i0 i0 -> False) (delay True))))
+                     ((\i0 ->
+                         i2
+                           (\i0
+                             i0 ->
+                              i1
+                                (\i0
+                                  i0 ->
+                                   (\i0 i0 i0 i0 -> i2 i4 i3) (i5 i2) (i4 i1))
+                                (delay (\i0 i0 -> force i1))))
+                        (\i0 -> i1)
+                        (\i0 i0 -> force i1))
+                     (\i0 i0 -> force i1))
+                  (\i0 ->
+                     (\i0 -> i2 (\i0 -> i2 i2 i1))
+                       (\i0 -> i2 (\i0 -> i2 i2 i1)))))
+pfilter.evens (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      (\i0 ->
+                         (\i0 ->
+                            (\i0 ->
+                               (\i0 ->
+                                  (\i0 ->
+                                     i3
+                                       (\i0
+                                         i0
+                                         i0 ->
+                                          i2
+                                            (\i0
+                                              i0 ->
+                                               i3
+                                                 (\i0
+                                                   i0 ->
+                                                    force (i8
+                                                             (equalsInteger
+                                                                i4
+                                                                i2)
+                                                             (delay (i7 i3 i1))
+                                                             (delay False)))
+                                                 (delay False))
+                                            (delay (i1
+                                                      (\i0 i0 -> False)
+                                                      (delay True))))
+                                       ((\i0 ->
+                                           i4
+                                             (\i0
+                                               i0 ->
+                                                i1
+                                                  (\i0
+                                                    i0 ->
+                                                     force (i6
+                                                              (i5 i2)
+                                                              (delay (i10
+                                                                        i2
+                                                                        (i4
+                                                                           i1)))
+                                                              (delay (i4 i1))))
+                                                  (delay (\i0 i0 -> force i1))))
+                                          (\i0 ->
+                                             equalsInteger (modInteger i1 2) 0)
+                                          (i2 [1,2,3,4,5,6,7,8,9,10]))
+                                       (i2 [2,4,6,8,10]))
+                                    (force ifThenElse))
+                                 (i1
+                                    (\i0
+                                      i0 ->
+                                       force (i4
+                                                i1
+                                                (delay (\i0 i0 -> force i1))
+                                                (delay (i5
+                                                          (i6 i1)
+                                                          (i2 (i7 i1))))))))
+                              (\i0 ->
+                                 (\i0 -> i2 (\i0 -> i2 i2 i1))
+                                   (\i0 -> i2 (\i0 -> i2 i2 i1))))
+                           (force (force chooseList)))
+                        (\i0 i0 i0 i0 -> i2 i4 i3))
+                     (force headList))
+                  (force tailList)))
+pfilter.gt5 (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      (\i0 ->
+                         (\i0 ->
+                            (\i0 ->
+                               (\i0 ->
+                                  (\i0 ->
+                                     i3
+                                       (\i0
+                                         i0
+                                         i0 ->
+                                          i2
+                                            (\i0
+                                              i0 ->
+                                               i3
+                                                 (\i0
+                                                   i0 ->
+                                                    force (i8
+                                                             (equalsInteger
+                                                                i4
+                                                                i2)
+                                                             (delay (i7 i3 i1))
+                                                             (delay False)))
+                                                 (delay False))
+                                            (delay (i1
+                                                      (\i0 i0 -> False)
+                                                      (delay True))))
+                                       ((\i0 ->
+                                           i4
+                                             (\i0
+                                               i0 ->
+                                                i1
+                                                  (\i0
+                                                    i0 ->
+                                                     force (i6
+                                                              (i5 i2)
+                                                              (delay (i10
+                                                                        i2
+                                                                        (i4
+                                                                           i1)))
+                                                              (delay (i4 i1))))
+                                                  (delay (\i0 i0 -> force i1))))
+                                          (\i0 -> lessThanInteger 5 i1)
+                                          (i2 [1,2,3,4,5,6,7,8,9,10]))
+                                       (i2 [6,7,8,9,10]))
+                                    (force ifThenElse))
+                                 (i1
+                                    (\i0
+                                      i0 ->
+                                       force (i4
+                                                i1
+                                                (delay (\i0 i0 -> force i1))
+                                                (delay (i5
+                                                          (i6 i1)
+                                                          (i2 (i7 i1))))))))
+                              (\i0 ->
+                                 (\i0 -> i2 (\i0 -> i2 i2 i1))
+                                   (\i0 -> i2 (\i0 -> i2 i2 i1))))
+                           (force (force chooseList)))
+                        (\i0 i0 i0 i0 -> i2 i4 i3))
+                     (force headList))
+                  (force tailList)))
+pzipWith.double (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      (\i0 ->
+                         (\i0 ->
+                            (\i0 ->
+                               (\i0 ->
+                                  (\i0 ->
+                                     i3
+                                       (\i0
+                                         i0
+                                         i0 ->
+                                          i2
+                                            (\i0
+                                              i0 ->
+                                               i3
+                                                 (\i0
+                                                   i0 ->
+                                                    force (force ifThenElse
+                                                             (equalsInteger
+                                                                i4
+                                                                i2)
+                                                             (delay (i7 i3 i1))
+                                                             (delay False)))
+                                                 (delay False))
+                                            (delay (i1
+                                                      (\i0 i0 -> False)
+                                                      (delay True))))
+                                       (i3
+                                          (\i0
+                                            i0
+                                            i0 ->
+                                             i2
+                                               (\i0
+                                                 i0 ->
+                                                  i3
+                                                    (\i0
+                                                      i0 ->
+                                                       i12
+                                                         (addInteger i4 i2)
+                                                         (i7 i3 i1))
+                                                    (delay (\i0
+                                                             i0 ->
+                                                              force i1)))
+                                               (delay (\i0 i0 -> force i1)))
+                                          (i2 i1)
+                                          (i2 i1))
+                                       (i2 [2,4,6,8,10,12,14,16,18,20]))
+                                    [1,2,3,4,5,6,7,8,9,10])
+                                 (i1
+                                    (\i0
+                                      i0 ->
+                                       force (i4
+                                                i1
+                                                (delay (\i0 i0 -> force i1))
+                                                (delay (i5
+                                                          (i6 i1)
+                                                          (i2 (i7 i1))))))))
+                              (\i0 ->
+                                 (\i0 -> i2 (\i0 -> i2 i2 i1))
+                                   (\i0 -> i2 (\i0 -> i2 i2 i1))))
+                           (force (force chooseList)))
+                        (\i0 i0 i0 i0 -> i2 i4 i3))
+                     (force headList))
+                  (force tailList)))
+pfoldl.nonempty (program 1.0.0 ((\i0 ->
+                   equalsInteger
+                     (i1
+                        (\i0
+                          i0
+                          i0 ->
+                           i1
+                             (\i0 i0 -> i5 (subtractInteger i4 i2) i1)
+                             (delay i2))
+                        0
+                        (i1
+                           (\i0
+                             i0 ->
+                              force (force (force chooseList)
+                                       i1
+                                       (delay (\i0 i0 -> force i1))
+                                       (delay ((\i0 i0 i0 i0 -> i2 i4 i3)
+                                                 (force headList i1)
+                                                 (i2 (force tailList i1))))))
+                           [1,2,3,4,5,6,7,8,9,10]))
+                     -55)
+                  (\i0 ->
+                     (\i0 -> i2 (\i0 -> i2 i2 i1))
+                       (\i0 -> i2 (\i0 -> i2 i2 i1)))))
+pfoldl.nonempty-primed (program 1.0.0 ((\i0 ->
+                   equalsInteger
+                     (i1
+                        (\i0
+                          i0
+                          i0 ->
+                           i1
+                             (\i0 i0 -> i5 (subtractInteger i4 i2) i1)
+                             (delay i2))
+                        0
+                        (i1
+                           (\i0
+                             i0 ->
+                              force (force (force chooseList)
+                                       i1
+                                       (delay (\i0 i0 -> force i1))
+                                       (delay ((\i0 i0 i0 i0 -> i2 i4 i3)
+                                                 (force headList i1)
+                                                 (i2 (force tailList i1))))))
+                           [1,2,3,4,5,6,7,8,9,10]))
+                     -55)
+                  (\i0 ->
+                     (\i0 -> i2 (\i0 -> i2 i2 i1))
+                       (\i0 -> i2 (\i0 -> i2 i2 i1)))))
+pfoldl.empty (program 1.0.0 ((\i0 ->
+                   equalsInteger
+                     (i1
+                        (\i0
+                          i0
+                          i0 ->
+                           i1
+                             (\i0 i0 -> i5 (subtractInteger i4 i2) i1)
+                             (delay i2))
+                        0
+                        (i1
+                           (\i0
+                             i0 ->
+                              force (force (force chooseList)
+                                       i1
+                                       (delay (\i0 i0 -> force i1))
+                                       (delay ((\i0 i0 i0 i0 -> i2 i4 i3)
+                                                 (force headList i1)
+                                                 (i2 (force tailList i1))))))
+                           []))
+                     0)
+                  (\i0 ->
+                     (\i0 -> i2 (\i0 -> i2 i2 i1))
+                       (\i0 -> i2 (\i0 -> i2 i2 i1)))))
+pfoldl.empty-primed (program 1.0.0 ((\i0 ->
+                   equalsInteger
+                     (i1
+                        (\i0
+                          i0
+                          i0 ->
+                           i1
+                             (\i0 i0 -> i5 (subtractInteger i4 i2) i1)
+                             (delay i2))
+                        0
+                        (i1
+                           (\i0
+                             i0 ->
+                              force (force (force chooseList)
+                                       i1
+                                       (delay (\i0 i0 -> force i1))
+                                       (delay ((\i0 i0 i0 i0 -> i2 i4 i3)
+                                                 (force headList i1)
+                                                 (i2 (force tailList i1))))))
+                           []))
+                     0)
+                  (\i0 ->
+                     (\i0 -> i2 (\i0 -> i2 i2 i1))
+                       (\i0 -> i2 (\i0 -> i2 i2 i1)))))
+elemAt.elemAt_3_[1..10] (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      (\i0
+                        i0 ->
+                         force (i3
+                                  (lessThanInteger i2 0)
+                                  (delay (force (force trace
+                                                   "pelemAt: negative index"
+                                                   (delay error))))
+                                  (delay (i4
+                                            (\i0
+                                              i0
+                                              i0 ->
+                                               force (i6
+                                                        (equalsInteger i2 0)
+                                                        (delay (i1
+                                                                  (\i0 i0 -> i2)
+                                                                  (delay error)))
+                                                        (delay (i3
+                                                                  (subtractInteger
+                                                                     i2
+                                                                     1)
+                                                                  (i1
+                                                                     (\i0
+                                                                       i0 ->
+                                                                        i1)
+                                                                     (delay error))))))
+                                            i2
+                                            i1))))
+                        3
+                        (i2
+                           (\i0
+                             i0 ->
+                              force (force (force chooseList)
+                                       i1
+                                       (delay (\i0 i0 -> force i1))
+                                       (delay ((\i0 i0 i0 i0 -> i2 i4 i3)
+                                                 (force headList i1)
+                                                 (i2 (force tailList i1))))))
+                           [1,2,3,4,5,6,7,8,9,10]))
+                     (force ifThenElse))
+                  (\i0 ->
+                     (\i0 -> i2 (\i0 -> i2 i2 i1))
+                       (\i0 -> i2 (\i0 -> i2 i2 i1)))))
+elemAt.elemAt_0_[1..10] (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      (\i0
+                        i0 ->
+                         force (i3
+                                  (lessThanInteger i2 0)
+                                  (delay (force (force trace
+                                                   "pelemAt: negative index"
+                                                   (delay error))))
+                                  (delay (i4
+                                            (\i0
+                                              i0
+                                              i0 ->
+                                               force (i6
+                                                        (equalsInteger i2 0)
+                                                        (delay (i1
+                                                                  (\i0 i0 -> i2)
+                                                                  (delay error)))
+                                                        (delay (i3
+                                                                  (subtractInteger
+                                                                     i2
+                                                                     1)
+                                                                  (i1
+                                                                     (\i0
+                                                                       i0 ->
+                                                                        i1)
+                                                                     (delay error))))))
+                                            i2
+                                            i1))))
+                        0
+                        (i2
+                           (\i0
+                             i0 ->
+                              force (force (force chooseList)
+                                       i1
+                                       (delay (\i0 i0 -> force i1))
+                                       (delay ((\i0 i0 i0 i0 -> i2 i4 i3)
+                                                 (force headList i1)
+                                                 (i2 (force tailList i1))))))
+                           [1,2,3,4,5,6,7,8,9,10]))
+                     (force ifThenElse))
+                  (\i0 ->
+                     (\i0 -> i2 (\i0 -> i2 i2 i1))
+                       (\i0 -> i2 (\i0 -> i2 i2 i1)))))
+elemAt.elemAt_9_[1..10] (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      (\i0
+                        i0 ->
+                         force (i3
+                                  (lessThanInteger i2 0)
+                                  (delay (force (force trace
+                                                   "pelemAt: negative index"
+                                                   (delay error))))
+                                  (delay (i4
+                                            (\i0
+                                              i0
+                                              i0 ->
+                                               force (i6
+                                                        (equalsInteger i2 0)
+                                                        (delay (i1
+                                                                  (\i0 i0 -> i2)
+                                                                  (delay error)))
+                                                        (delay (i3
+                                                                  (subtractInteger
+                                                                     i2
+                                                                     1)
+                                                                  (i1
+                                                                     (\i0
+                                                                       i0 ->
+                                                                        i1)
+                                                                     (delay error))))))
+                                            i2
+                                            i1))))
+                        9
+                        (i2
+                           (\i0
+                             i0 ->
+                              force (force (force chooseList)
+                                       i1
+                                       (delay (\i0 i0 -> force i1))
+                                       (delay ((\i0 i0 i0 i0 -> i2 i4 i3)
+                                                 (force headList i1)
+                                                 (i2 (force tailList i1))))))
+                           [1,2,3,4,5,6,7,8,9,10]))
+                     (force ifThenElse))
+                  (\i0 ->
+                     (\i0 -> i2 (\i0 -> i2 i2 i1))
+                       (\i0 -> i2 (\i0 -> i2 i2 i1)))))
+find.find_(==3)_[1..4] (program 1.0.0 ((\i0 ->
+                   i1
+                     (\i0
+                       i0
+                       i0 ->
+                        i1
+                          (\i0
+                            i0 ->
+                             force (force ifThenElse
+                                      (i4 i2)
+                                      (delay (\i0 i0 -> i2 i4))
+                                      (delay (i5 i4 i1))))
+                          (delay (\i0 i0 -> force i1)))
+                     (\i0 -> equalsInteger i1 3)
+                     (i1
+                        (\i0
+                          i0 ->
+                           force (force (force chooseList)
+                                    i1
+                                    (delay (\i0 i0 -> force i1))
+                                    (delay ((\i0 i0 i0 i0 -> i2 i4 i3)
+                                              (force headList i1)
+                                              (i2 (force tailList i1))))))
+                        [1,2,3,4]))
+                  (\i0 ->
+                     (\i0 -> i2 (\i0 -> i2 i2 i1))
+                       (\i0 -> i2 (\i0 -> i2 i2 i1)))))
+find.find_(==5)_[1..4] (program 1.0.0 ((\i0 ->
+                   i1
+                     (\i0
+                       i0
+                       i0 ->
+                        i1
+                          (\i0
+                            i0 ->
+                             force (force ifThenElse
+                                      (i4 i2)
+                                      (delay (\i0 i0 -> i2 i4))
+                                      (delay (i5 i4 i1))))
+                          (delay (\i0 i0 -> force i1)))
+                     (\i0 -> equalsInteger i1 5)
+                     (i1
+                        (\i0
+                          i0 ->
+                           force (force (force chooseList)
+                                    i1
+                                    (delay (\i0 i0 -> force i1))
+                                    (delay ((\i0 i0 i0 i0 -> i2 i4 i3)
+                                              (force headList i1)
+                                              (i2 (force tailList i1))))))
+                        [1,2,3,4]))
+                  (\i0 ->
+                     (\i0 -> i2 (\i0 -> i2 i2 i1))
+                       (\i0 -> i2 (\i0 -> i2 i2 i1)))))
+x1+x2.builtin (program 1.0.0 ((\i0 ->
+                   (\i0 -> addInteger (i1 (force tailList i2)) (i1 i2))
+                     (force headList))
+                  [1,2,3,4,5]))
+x1+x2.pmatch (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      (\i0 ->
+                         force (i1
+                                  i3
+                                  (delay error)
+                                  (delay ((\i0 ->
+                                             force (i2
+                                                      i1
+                                                      (delay error)
+                                                      (delay (addInteger
+                                                                (i3 i4)
+                                                                (i3 i1)))))
+                                            (force tailList i3)))))
+                        (force (force chooseList)))
+                     (force headList))
+                  [1,2,3,4,5]))
+uncons.ChooseList (program 1.0.0 ((\i0 ->
+                   force (force (force chooseList)
+                            i1
+                            (delay error)
+                            (delay (force tailList i1))))
+                  [1,2,3,4,5]))
+uncons.head-and-tail (program 1.0.0 ((\i0 -> (\i0 -> force tailList i2) (force headList i1))
+                  [1,2,3,4,5]))
+uncons.head-and-tail-and-null (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      force (force ifThenElse
+                               i1
+                               (delay error)
+                               (delay ((\i0 -> force tailList i3)
+                                         (force headList i2)))))
+                     (force nullList i1))
+                  [1,2,3,4,5]))

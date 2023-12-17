@@ -1,6 +1,72 @@
 singleton (program 1.0.0 [(#41c0, #a149736f6d65746f6b656e01)])
 singletonData (program 1.0.0 [(#41c0, #a149736f6d65746f6b656e01)])
-valueOf.itself (program 1.0.0 (\i0 -> \i0 -> \i0 -> (\i0 -> (\i0 -> \i0 -> \i0 -> \i0 -> (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1))) (\i0 -> \i0 -> force (force (force chooseList) i1 (delay i5) (delay (force (force ifThenElse (equalsData (force (force fstPair) (force headList i1)) i6) (delay (i4 (force (force sndPair) (force headList i1)))) (delay (i2 (force tailList i1)))))))) i1) (bData i1)) i2 0 (\i0 -> (\i0 -> (\i0 -> \i0 -> \i0 -> \i0 -> (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1))) (\i0 -> \i0 -> force (force (force chooseList) i1 (delay i5) (delay (force (force ifThenElse (equalsData (force (force fstPair) (force headList i1)) i6) (delay (i4 (force (force sndPair) (force headList i1)))) (delay (i2 (force tailList i1)))))))) i1) (bData i1)) i2 0 unIData (unMapData i1)) i3))
+valueOf.itself (program 1.0.0 (\i0
+                 i0
+                 i0 ->
+                  (\i0 ->
+                     (\i0
+                       i0
+                       i0
+                       i0 ->
+                        (\i0 ->
+                           (\i0 -> i2 (\i0 -> i2 i2 i1))
+                             (\i0 -> i2 (\i0 -> i2 i2 i1)))
+                          (\i0
+                            i0 ->
+                             force (force (force chooseList)
+                                      i1
+                                      (delay i5)
+                                      (delay (force (force ifThenElse
+                                                       (equalsData
+                                                          (force (force fstPair)
+                                                             (force headList
+                                                                i1))
+                                                          i6)
+                                                       (delay (i4
+                                                                 (force (force sndPair)
+                                                                    (force headList
+                                                                       i1))))
+                                                       (delay (i2
+                                                                 (force tailList
+                                                                    i1))))))))
+                          i1)
+                       (bData i1))
+                    i2
+                    0
+                    (\i0 ->
+                       (\i0 ->
+                          (\i0
+                            i0
+                            i0
+                            i0 ->
+                             (\i0 ->
+                                (\i0 -> i2 (\i0 -> i2 i2 i1))
+                                  (\i0 -> i2 (\i0 -> i2 i2 i1)))
+                               (\i0
+                                 i0 ->
+                                  force (force (force chooseList)
+                                           i1
+                                           (delay i5)
+                                           (delay (force (force ifThenElse
+                                                            (equalsData
+                                                               (force (force fstPair)
+                                                                  (force headList
+                                                                     i1))
+                                                               i6)
+                                                            (delay (i4
+                                                                      (force (force sndPair)
+                                                                         (force headList
+                                                                            i1))))
+                                                            (delay (i2
+                                                                      (force tailList
+                                                                         i1))))))))
+                               i1)
+                            (bData i1))
+                         i2
+                         0
+                         unIData
+                         (unMapData i1))
+                    i3))
 valueOf.applied (program 1.0.0 1)
 valueOf.growing.1 (program 1.0.0 0)
 valueOf.growing.2 (program 1.0.0 0)
@@ -310,7 +376,177 @@ leftBiasedTokenUnion.growing.17 (program 1.0.0 [ (#41c0, #a249736f6d65746f6b656e
                , (#41ce, #a145746f6b656e01)
                , (#41cf, #a145746f6b656e01) ])
 unionResolvingCollisionsWith.const (program 1.0.0 [(#41c0, #a149736f6d65746f6b656e01)])
-unionResolvingCollisionsWith.(+).itself (program 1.0.0 (\i0 -> \i0 -> (\i0 -> \i0 -> \i0 -> force (force (force chooseList) i2 (delay i1) (delay ((\i0 -> (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1))) (\i0 -> \i0 -> \i0 -> \i0 -> force (force (force chooseList) i1 (delay (force mkCons i3 i2)) (delay ((\i0 -> (\i0 -> (\i0 -> force (force ifThenElse (equalsData i2 i1) (delay (force mkCons (mkPairData i2 (mapData (i11 (unMapData (force (force sndPair) i6)) (unMapData (force (force sndPair) i3))))) (i8 i7 i5 (force tailList i4)))) (delay (force (force ifThenElse (lessThanByteString (unBData i2) (unBData i1)) (delay (force mkCons i6 (i8 i7 i5 i4))) (delay (force mkCons i3 (i8 i7 (force tailList i4) (force mkCons i6 i5))))))))) (force (force fstPair) i2)) (force (force fstPair) i4)) (force headList i1)))))) (\i0 -> \i0 -> \i0 -> force (force (force chooseList) i2 (delay i1) (delay (i3 (force headList i2) (force tailList i2) i1)))) (force headList i2) (force tailList i2) i1)))) (\i0 -> \i0 -> force (force (force chooseList) i2 (delay i1) (delay ((\i0 -> (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1))) (\i0 -> \i0 -> \i0 -> \i0 -> force (force (force chooseList) i1 (delay (force mkCons i3 i2)) (delay ((\i0 -> (\i0 -> (\i0 -> force (force ifThenElse (equalsData i2 i1) (delay (force mkCons (mkPairData i2 (iData (addInteger (unIData (force (force sndPair) i6)) (unIData (force (force sndPair) i3))))) (i8 i7 i5 (force tailList i4)))) (delay (force (force ifThenElse (lessThanByteString (unBData i2) (unBData i1)) (delay (force mkCons i6 (i8 i7 i5 i4))) (delay (force mkCons i3 (i8 i7 (force tailList i4) (force mkCons i6 i5))))))))) (force (force fstPair) i2)) (force (force fstPair) i4)) (force headList i1)))))) (\i0 -> \i0 -> \i0 -> force (force (force chooseList) i2 (delay i1) (delay (i3 (force headList i2) (force tailList i2) i1)))) (force headList i2) (force tailList i2) i1)))) i2 i1))
+unionResolvingCollisionsWith.(+).itself (program 1.0.0 (\i0
+                 i0 ->
+                  (\i0
+                    i0
+                    i0 ->
+                     force (force (force chooseList)
+                              i2
+                              (delay i1)
+                              (delay ((\i0 ->
+                                         (\i0 ->
+                                            (\i0 -> i2 (\i0 -> i2 i2 i1))
+                                              (\i0 -> i2 (\i0 -> i2 i2 i1)))
+                                           (\i0
+                                             i0
+                                             i0
+                                             i0 ->
+                                              force (force (force chooseList)
+                                                       i1
+                                                       (delay (force mkCons
+                                                                 i3
+                                                                 i2))
+                                                       (delay ((\i0 ->
+                                                                  (\i0 ->
+                                                                     (\i0 ->
+                                                                        force (force ifThenElse
+                                                                                 (equalsData
+                                                                                    i2
+                                                                                    i1)
+                                                                                 (delay (force mkCons
+                                                                                           (mkPairData
+                                                                                              i2
+                                                                                              (mapData
+                                                                                                 (i11
+                                                                                                    (unMapData
+                                                                                                       (force (force sndPair)
+                                                                                                          i6))
+                                                                                                    (unMapData
+                                                                                                       (force (force sndPair)
+                                                                                                          i3)))))
+                                                                                           (i8
+                                                                                              i7
+                                                                                              i5
+                                                                                              (force tailList
+                                                                                                 i4))))
+                                                                                 (delay (force (force ifThenElse
+                                                                                                  (lessThanByteString
+                                                                                                     (unBData
+                                                                                                        i2)
+                                                                                                     (unBData
+                                                                                                        i1))
+                                                                                                  (delay (force mkCons
+                                                                                                            i6
+                                                                                                            (i8
+                                                                                                               i7
+                                                                                                               i5
+                                                                                                               i4)))
+                                                                                                  (delay (force mkCons
+                                                                                                            i3
+                                                                                                            (i8
+                                                                                                               i7
+                                                                                                               (force tailList
+                                                                                                                  i4)
+                                                                                                               (force mkCons
+                                                                                                                  i6
+                                                                                                                  i5)))))))))
+                                                                       (force (force fstPair)
+                                                                          i2))
+                                                                    (force (force fstPair)
+                                                                       i4))
+                                                                 (force headList
+                                                                    i1))))))
+                                        (\i0
+                                          i0
+                                          i0 ->
+                                           force (force (force chooseList)
+                                                    i2
+                                                    (delay i1)
+                                                    (delay (i3
+                                                              (force headList
+                                                                 i2)
+                                                              (force tailList
+                                                                 i2)
+                                                              i1))))
+                                        (force headList i2)
+                                        (force tailList i2)
+                                        i1))))
+                    (\i0
+                      i0 ->
+                       force (force (force chooseList)
+                                i2
+                                (delay i1)
+                                (delay ((\i0 ->
+                                           (\i0 ->
+                                              (\i0 -> i2 (\i0 -> i2 i2 i1))
+                                                (\i0 -> i2 (\i0 -> i2 i2 i1)))
+                                             (\i0
+                                               i0
+                                               i0
+                                               i0 ->
+                                                force (force (force chooseList)
+                                                         i1
+                                                         (delay (force mkCons
+                                                                   i3
+                                                                   i2))
+                                                         (delay ((\i0 ->
+                                                                    (\i0 ->
+                                                                       (\i0 ->
+                                                                          force (force ifThenElse
+                                                                                   (equalsData
+                                                                                      i2
+                                                                                      i1)
+                                                                                   (delay (force mkCons
+                                                                                             (mkPairData
+                                                                                                i2
+                                                                                                (iData
+                                                                                                   (addInteger
+                                                                                                      (unIData
+                                                                                                         (force (force sndPair)
+                                                                                                            i6))
+                                                                                                      (unIData
+                                                                                                         (force (force sndPair)
+                                                                                                            i3)))))
+                                                                                             (i8
+                                                                                                i7
+                                                                                                i5
+                                                                                                (force tailList
+                                                                                                   i4))))
+                                                                                   (delay (force (force ifThenElse
+                                                                                                    (lessThanByteString
+                                                                                                       (unBData
+                                                                                                          i2)
+                                                                                                       (unBData
+                                                                                                          i1))
+                                                                                                    (delay (force mkCons
+                                                                                                              i6
+                                                                                                              (i8
+                                                                                                                 i7
+                                                                                                                 i5
+                                                                                                                 i4)))
+                                                                                                    (delay (force mkCons
+                                                                                                              i3
+                                                                                                              (i8
+                                                                                                                 i7
+                                                                                                                 (force tailList
+                                                                                                                    i4)
+                                                                                                                 (force mkCons
+                                                                                                                    i6
+                                                                                                                    i5)))))))))
+                                                                         (force (force fstPair)
+                                                                            i2))
+                                                                      (force (force fstPair)
+                                                                         i4))
+                                                                   (force headList
+                                                                      i1))))))
+                                          (\i0
+                                            i0
+                                            i0 ->
+                                             force (force (force chooseList)
+                                                      i2
+                                                      (delay i1)
+                                                      (delay (i3
+                                                                (force headList
+                                                                   i2)
+                                                                (force tailList
+                                                                   i2)
+                                                                i1))))
+                                          (force headList i2)
+                                          (force tailList i2)
+                                          i1))))
+                    i2
+                    i1))
 unionResolvingCollisionsWith.(+).applied (program 1.0.0 [(#41c0, #a149736f6d65746f6b656e02)])
 unionResolvingCollisionsWith.tokens (program 1.0.0 [(#41c0, #a24a6f74686572746f6b656e0149736f6d65746f6b656e01)])
 unionResolvingCollisionsWith.symbols (program 1.0.0 [ (#41c0, #a149736f6d65746f6b656e01)
@@ -460,10 +696,257 @@ unionResolvingCollisionsWith.growing.17 (program 1.0.0 [ (#41c0, #a249736f6d6574
                , (#41cd, #a145746f6b656e01)
                , (#41ce, #a145746f6b656e01)
                , (#41cf, #a145746f6b656e01) ])
-unionResolvingCollisionsWithData const.itself (program 1.0.0 (\i0 -> \i0 -> \i0 -> (\i0 -> \i0 -> \i0 -> force (force (force chooseList) i2 (delay i1) (delay ((\i0 -> (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1))) (\i0 -> \i0 -> \i0 -> \i0 -> \i0 -> force (force (force chooseList) i1 (delay (force (i4 (delay (force mkCons i3 i2)) (delay (force mkCons i3 i2))))) (delay ((\i0 -> (\i0 -> (\i0 -> force (force ifThenElse (equalsData i2 i1) (delay (force (i7 (delay (force mkCons (mkPairData i2 (mapData (i12 (unMapData (force (force sndPair) i6)) (unMapData (force (force sndPair) i3))))) (i9 i8 i5 (force tailList i4)))) (delay (force mkCons (mkPairData i2 (mapData (i12 (unMapData (force (force sndPair) i3)) (unMapData (force (force sndPair) i6))))) (i9 i8 (force tailList i4) i5)))))) (delay (force (force ifThenElse (lessThanByteString (unBData i2) (unBData i1)) (delay (force (i7 (delay (force mkCons i6 (i9 i8 i5 i4))) (delay (force mkCons i6 (i9 i8 i4 i5)))))) (delay (force (i7 (delay (force mkCons i3 (i9 i8 (force mkCons i6 i5) (force tailList i4)))) (delay (force mkCons i3 (i9 i8 (force tailList i4) (force mkCons i6 i5)))))))))))) (force (force fstPair) i2)) (force (force fstPair) i4)) (force headList i1)))))) (\i0 -> \i0 -> \i0 -> force (force (force chooseList) i2 (delay i1) (delay (i3 (\i0 -> \i0 -> i2) (force headList i2) (force tailList i2) i1)))) (\i0 -> \i0 -> i2) (force headList i2) (force tailList i2) i1)))) (\i0 -> \i0 -> force (force (force chooseList) i2 (delay i1) (delay ((\i0 -> (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1))) (\i0 -> \i0 -> \i0 -> \i0 -> \i0 -> force (force (force chooseList) i1 (delay (force (i4 (delay (force mkCons i3 i2)) (delay (force mkCons i3 i2))))) (delay ((\i0 -> (\i0 -> (\i0 -> force (force ifThenElse (equalsData i2 i1) (delay (force (i7 (delay (force mkCons (mkPairData i2 (i14 (force (force sndPair) i6) (force (force sndPair) i3))) (i9 i8 i5 (force tailList i4)))) (delay (force mkCons (mkPairData i2 (i14 (force (force sndPair) i3) (force (force sndPair) i6))) (i9 i8 (force tailList i4) i5)))))) (delay (force (force ifThenElse (lessThanByteString (unBData i2) (unBData i1)) (delay (force (i7 (delay (force mkCons i6 (i9 i8 i5 i4))) (delay (force mkCons i6 (i9 i8 i4 i5)))))) (delay (force (i7 (delay (force mkCons i3 (i9 i8 (force mkCons i6 i5) (force tailList i4)))) (delay (force mkCons i3 (i9 i8 (force tailList i4) (force mkCons i6 i5)))))))))))) (force (force fstPair) i2)) (force (force fstPair) i4)) (force headList i1)))))) (\i0 -> \i0 -> \i0 -> force (force (force chooseList) i2 (delay i1) (delay (i3 (\i0 -> \i0 -> i2) (force headList i2) (force tailList i2) i1)))) (\i0 -> \i0 -> i2) (force headList i2) (force tailList i2) i1)))) i2 i1))
+unionResolvingCollisionsWithData const.itself (program 1.0.0 (\i0
+                 i0
+                 i0 ->
+                  (\i0
+                    i0
+                    i0 ->
+                     force (force (force chooseList)
+                              i2
+                              (delay i1)
+                              (delay ((\i0 ->
+                                         (\i0 ->
+                                            (\i0 -> i2 (\i0 -> i2 i2 i1))
+                                              (\i0 -> i2 (\i0 -> i2 i2 i1)))
+                                           (\i0
+                                             i0
+                                             i0
+                                             i0
+                                             i0 ->
+                                              force (force (force chooseList)
+                                                       i1
+                                                       (delay (force (i4
+                                                                        (delay (force mkCons
+                                                                                  i3
+                                                                                  i2))
+                                                                        (delay (force mkCons
+                                                                                  i3
+                                                                                  i2)))))
+                                                       (delay ((\i0 ->
+                                                                  (\i0 ->
+                                                                     (\i0 ->
+                                                                        force (force ifThenElse
+                                                                                 (equalsData
+                                                                                    i2
+                                                                                    i1)
+                                                                                 (delay (force (i7
+                                                                                                  (delay (force mkCons
+                                                                                                            (mkPairData
+                                                                                                               i2
+                                                                                                               (mapData
+                                                                                                                  (i12
+                                                                                                                     (unMapData
+                                                                                                                        (force (force sndPair)
+                                                                                                                           i6))
+                                                                                                                     (unMapData
+                                                                                                                        (force (force sndPair)
+                                                                                                                           i3)))))
+                                                                                                            (i9
+                                                                                                               i8
+                                                                                                               i5
+                                                                                                               (force tailList
+                                                                                                                  i4))))
+                                                                                                  (delay (force mkCons
+                                                                                                            (mkPairData
+                                                                                                               i2
+                                                                                                               (mapData
+                                                                                                                  (i12
+                                                                                                                     (unMapData
+                                                                                                                        (force (force sndPair)
+                                                                                                                           i3))
+                                                                                                                     (unMapData
+                                                                                                                        (force (force sndPair)
+                                                                                                                           i6)))))
+                                                                                                            (i9
+                                                                                                               i8
+                                                                                                               (force tailList
+                                                                                                                  i4)
+                                                                                                               i5))))))
+                                                                                 (delay (force (force ifThenElse
+                                                                                                  (lessThanByteString
+                                                                                                     (unBData
+                                                                                                        i2)
+                                                                                                     (unBData
+                                                                                                        i1))
+                                                                                                  (delay (force (i7
+                                                                                                                   (delay (force mkCons
+                                                                                                                             i6
+                                                                                                                             (i9
+                                                                                                                                i8
+                                                                                                                                i5
+                                                                                                                                i4)))
+                                                                                                                   (delay (force mkCons
+                                                                                                                             i6
+                                                                                                                             (i9
+                                                                                                                                i8
+                                                                                                                                i4
+                                                                                                                                i5))))))
+                                                                                                  (delay (force (i7
+                                                                                                                   (delay (force mkCons
+                                                                                                                             i3
+                                                                                                                             (i9
+                                                                                                                                i8
+                                                                                                                                (force mkCons
+                                                                                                                                   i6
+                                                                                                                                   i5)
+                                                                                                                                (force tailList
+                                                                                                                                   i4))))
+                                                                                                                   (delay (force mkCons
+                                                                                                                             i3
+                                                                                                                             (i9
+                                                                                                                                i8
+                                                                                                                                (force tailList
+                                                                                                                                   i4)
+                                                                                                                                (force mkCons
+                                                                                                                                   i6
+                                                                                                                                   i5))))))))))))
+                                                                       (force (force fstPair)
+                                                                          i2))
+                                                                    (force (force fstPair)
+                                                                       i4))
+                                                                 (force headList
+                                                                    i1))))))
+                                        (\i0
+                                          i0
+                                          i0 ->
+                                           force (force (force chooseList)
+                                                    i2
+                                                    (delay i1)
+                                                    (delay (i3
+                                                              (\i0 i0 -> i2)
+                                                              (force headList
+                                                                 i2)
+                                                              (force tailList
+                                                                 i2)
+                                                              i1))))
+                                        (\i0 i0 -> i2)
+                                        (force headList i2)
+                                        (force tailList i2)
+                                        i1))))
+                    (\i0
+                      i0 ->
+                       force (force (force chooseList)
+                                i2
+                                (delay i1)
+                                (delay ((\i0 ->
+                                           (\i0 ->
+                                              (\i0 -> i2 (\i0 -> i2 i2 i1))
+                                                (\i0 -> i2 (\i0 -> i2 i2 i1)))
+                                             (\i0
+                                               i0
+                                               i0
+                                               i0
+                                               i0 ->
+                                                force (force (force chooseList)
+                                                         i1
+                                                         (delay (force (i4
+                                                                          (delay (force mkCons
+                                                                                    i3
+                                                                                    i2))
+                                                                          (delay (force mkCons
+                                                                                    i3
+                                                                                    i2)))))
+                                                         (delay ((\i0 ->
+                                                                    (\i0 ->
+                                                                       (\i0 ->
+                                                                          force (force ifThenElse
+                                                                                   (equalsData
+                                                                                      i2
+                                                                                      i1)
+                                                                                   (delay (force (i7
+                                                                                                    (delay (force mkCons
+                                                                                                              (mkPairData
+                                                                                                                 i2
+                                                                                                                 (i14
+                                                                                                                    (force (force sndPair)
+                                                                                                                       i6)
+                                                                                                                    (force (force sndPair)
+                                                                                                                       i3)))
+                                                                                                              (i9
+                                                                                                                 i8
+                                                                                                                 i5
+                                                                                                                 (force tailList
+                                                                                                                    i4))))
+                                                                                                    (delay (force mkCons
+                                                                                                              (mkPairData
+                                                                                                                 i2
+                                                                                                                 (i14
+                                                                                                                    (force (force sndPair)
+                                                                                                                       i3)
+                                                                                                                    (force (force sndPair)
+                                                                                                                       i6)))
+                                                                                                              (i9
+                                                                                                                 i8
+                                                                                                                 (force tailList
+                                                                                                                    i4)
+                                                                                                                 i5))))))
+                                                                                   (delay (force (force ifThenElse
+                                                                                                    (lessThanByteString
+                                                                                                       (unBData
+                                                                                                          i2)
+                                                                                                       (unBData
+                                                                                                          i1))
+                                                                                                    (delay (force (i7
+                                                                                                                     (delay (force mkCons
+                                                                                                                               i6
+                                                                                                                               (i9
+                                                                                                                                  i8
+                                                                                                                                  i5
+                                                                                                                                  i4)))
+                                                                                                                     (delay (force mkCons
+                                                                                                                               i6
+                                                                                                                               (i9
+                                                                                                                                  i8
+                                                                                                                                  i4
+                                                                                                                                  i5))))))
+                                                                                                    (delay (force (i7
+                                                                                                                     (delay (force mkCons
+                                                                                                                               i3
+                                                                                                                               (i9
+                                                                                                                                  i8
+                                                                                                                                  (force mkCons
+                                                                                                                                     i6
+                                                                                                                                     i5)
+                                                                                                                                  (force tailList
+                                                                                                                                     i4))))
+                                                                                                                     (delay (force mkCons
+                                                                                                                               i3
+                                                                                                                               (i9
+                                                                                                                                  i8
+                                                                                                                                  (force tailList
+                                                                                                                                     i4)
+                                                                                                                                  (force mkCons
+                                                                                                                                     i6
+                                                                                                                                     i5))))))))))))
+                                                                         (force (force fstPair)
+                                                                            i2))
+                                                                      (force (force fstPair)
+                                                                         i4))
+                                                                   (force headList
+                                                                      i1))))))
+                                          (\i0
+                                            i0
+                                            i0 ->
+                                             force (force (force chooseList)
+                                                      i2
+                                                      (delay i1)
+                                                      (delay (i3
+                                                                (\i0 i0 -> i2)
+                                                                (force headList
+                                                                   i2)
+                                                                (force tailList
+                                                                   i2)
+                                                                i1))))
+                                          (\i0 i0 -> i2)
+                                          (force headList i2)
+                                          (force tailList i2)
+                                          i1))))
+                    i2
+                    i1))
 unionResolvingCollisionsWithData const.applied (program 1.0.0 [(#41c0, #a149736f6d65746f6b656e01)])
 inv (program 1.0.0 [(#41c0, #a149736f6d65746f6b656e20)])
-equality.itself (program 1.0.0 (\i0 -> \i0 -> equalsData (mapData i2) (mapData i1)))
+equality.itself (program 1.0.0 (\i0 i0 -> equalsData (mapData i2) (mapData i1)))
 equality.triviallyTrue (program 1.0.0 True)
 equality.triviallyFalse (program 1.0.0 False)
 equality.swappedTokensTrue (program 1.0.0 True)
@@ -495,16 +978,61 @@ assertSorted.fails on zero quantities (program 1.0.0 error)
 assertSorted.fails on empty token map (program 1.0.0 error)
 Ada.adaSymbol (program 1.0.0 #)
 Ada.adaToken (program 1.0.0 #)
-Ada.lovelaceValueOf (program 1.0.0 (\i0 -> force (force (force chooseList) i1 (delay 0) (delay (force ifThenElse (equalsData (force (force fstPair) (force headList i1)) (bData #)) (unIData (force (force sndPair) (force headList (unMapData (force (force sndPair) (force headList i1)))))) 0)))))
-Ada.isAdaOnlyValue.itself (program 1.0.0 (\i0 -> force (force (force chooseList) i1 (delay True) (delay ((\i0 -> \i0 -> force ifThenElse i2 i1 False) (force nullList (force tailList i1)) (equalsData (force (force fstPair) (force headList i1)) (bData #)))))))
+Ada.lovelaceValueOf (program 1.0.0 (\i0 ->
+                  force (force (force chooseList)
+                           i1
+                           (delay 0)
+                           (delay (force ifThenElse
+                                     (equalsData
+                                        (force (force fstPair)
+                                           (force headList i1))
+                                        (bData #))
+                                     (unIData
+                                        (force (force sndPair)
+                                           (force headList
+                                              (unMapData
+                                                 (force (force sndPair)
+                                                    (force headList i1))))))
+                                     0)))))
+Ada.isAdaOnlyValue.itself (program 1.0.0 (\i0 ->
+                  force (force (force chooseList)
+                           i1
+                           (delay True)
+                           (delay ((\i0 i0 -> force ifThenElse i2 i1 False)
+                                     (force nullList (force tailList i1))
+                                     (equalsData
+                                        (force (force fstPair)
+                                           (force headList i1))
+                                        (bData #)))))))
 Ada.isAdaOnlyValue.true on empty (program 1.0.0 True)
 Ada.isAdaOnlyValue.trivially false (program 1.0.0 False)
 Ada.isAdaOnlyValue.less trivially false (program 1.0.0 False)
-Ada.adaOnlyValue.itself (program 1.0.0 (\i0 -> force (force (force chooseList) i1 (delay i1) (delay (force ifThenElse (equalsData (force (force fstPair) (force headList i1)) (bData #)) ((\i0 -> force mkCons i1 [  ]) (force headList i1)) [  ])))))
+Ada.adaOnlyValue.itself (program 1.0.0 (\i0 ->
+                  force (force (force chooseList)
+                           i1
+                           (delay i1)
+                           (delay (force ifThenElse
+                                     (equalsData
+                                        (force (force fstPair)
+                                           (force headList i1))
+                                        (bData #))
+                                     ((\i0 -> force mkCons i1 [])
+                                        (force headList i1))
+                                     [])))))
 Ada.adaOnlyValue.on empty (program 1.0.0 [])
 Ada.adaOnlyValue.on non-Ada (program 1.0.0 [])
 Ada.adaOnlyValue.on Ada (program 1.0.0 [(#40, #a1401a00989680)])
-Ada.noAdaValue.itself (program 1.0.0 (\i0 -> force (force (force chooseList) i1 (delay i1) (delay (force ifThenElse (equalsData (force (force fstPair) (force headList i1)) (bData #)) (force tailList i1) i1)))))
+Ada.noAdaValue.itself (program 1.0.0 (\i0 ->
+                  force (force (force chooseList)
+                           i1
+                           (delay i1)
+                           (delay (force ifThenElse
+                                     (equalsData
+                                        (force (force fstPair)
+                                           (force headList i1))
+                                        (bData #))
+                                     (force tailList i1)
+                                     i1)))))
 Ada.noAdaValue.on empty (program 1.0.0 [])
 Ada.noAdaValue.on non-Ada (program 1.0.0 [(#41c0, #a149736f6d65746f6b656e01)])
 Ada.noAdaValue.on Ada (program 1.0.0 [])
