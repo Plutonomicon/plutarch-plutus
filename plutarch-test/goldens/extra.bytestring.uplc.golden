@@ -1,6 +1,300 @@
-allandhexdigit.allas (program 1.0.0 ((\i0 -> (\i0 -> \i0 -> (\i0 -> (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1))) (\i0 -> \i0 -> force (i6 (lessThanInteger i1 i3) (delay (force (i6 (i5 (indexByteString i4 i1)) (delay (i2 (addInteger i1 1))) (delay False)))) (delay True))) 0) (lengthOfByteString i1)) (\i0 -> equalsInteger i1 97) #61616161616161616161616161) (force ifThenElse)))
-allandhexdigit.not all as (program 1.0.0 ((\i0 -> (\i0 -> \i0 -> (\i0 -> (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1))) (\i0 -> \i0 -> force (i6 (lessThanInteger i1 i3) (delay (force (i6 (i5 (indexByteString i4 i1)) (delay (i2 (addInteger i1 1))) (delay False)))) (delay True))) 0) (lengthOfByteString i1)) (\i0 -> equalsInteger i1 97) #616161616161626161616161) (force ifThenElse)))
-allandhexdigit.allhex (program 1.0.0 ((\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> \i0 -> (\i0 -> (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1))) (\i0 -> \i0 -> force (i9 (lessThanInteger i1 i3) (delay (force (i9 (i5 (indexByteString i4 i1)) (delay (i2 (addInteger i1 1))) (delay False)))) (delay True))) 0) (lengthOfByteString i1)) (\i0 -> force (i2 (force (i4 (lessThanEqualsInteger i1 57) (delay (lessThanEqualsInteger 48 i1)))) (delay (force (i2 (force (i4 (lessThanEqualsInteger i1 70) (delay (lessThanEqualsInteger 65 i1)))) (delay (force (i4 (lessThanEqualsInteger i1 102) (delay (lessThanEqualsInteger 97 i1)))))))))) #3561376331386561653837373864313533343466) (\i0 -> i4 i1 i2)) (delay True)) (\i0 -> \i0 -> i3 i2 i1 i4)) (force ifThenElse)) (delay False)))
-allandhexdigit.notallhex (program 1.0.0 ((\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> \i0 -> (\i0 -> (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1))) (\i0 -> \i0 -> force (i9 (lessThanInteger i1 i3) (delay (force (i9 (i5 (indexByteString i4 i1)) (delay (i2 (addInteger i1 1))) (delay False)))) (delay True))) 0) (lengthOfByteString i1)) (\i0 -> force (i2 (force (i4 (lessThanEqualsInteger i1 57) (delay (lessThanEqualsInteger 48 i1)))) (delay (force (i2 (force (i4 (lessThanEqualsInteger i1 70) (delay (lessThanEqualsInteger 65 i1)))) (delay (force (i4 (lessThanEqualsInteger i1 102) (delay (lessThanEqualsInteger 97 i1)))))))))) #3561376331386561653837373867313533343466) (\i0 -> i4 i1 i2)) (delay True)) (\i0 -> \i0 -> i3 i2 i1 i4)) (force ifThenElse)) (delay False)))
-allandhexdigit.pisHexDigit (program 1.0.0 ((\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> i7 (\i0 -> \i0 -> i1 (\i0 -> \i0 -> force (i8 (i5 i2) (delay (i4 i1)))) (delay True))) (\i0 -> force (i2 (force (i4 (lessThanEqualsInteger i1 57) (delay (lessThanEqualsInteger 48 i1)))) (delay (force (i2 (force (i4 (lessThanEqualsInteger i1 70) (delay (lessThanEqualsInteger 65 i1)))) (delay (force (i4 (lessThanEqualsInteger i1 102) (delay (lessThanEqualsInteger 97 i1)))))))))) (i6 (\i0 -> \i0 -> force (force (force chooseList) i1 (delay (\i0 -> \i0 -> force i1)) (delay ((\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3) (force headList i1) (i2 (force tailList i1)))))) [49,50,51,52,53,54,55,56,57,48,97,98,99,100,101,102])) (\i0 -> i4 i1 i2)) (delay True)) (\i0 -> \i0 -> i3 i2 i1 i4)) (force ifThenElse)) (delay False)) (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))))
-allandhexdigit.pisNoneHexDigit (program 1.0.0 ((\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> (\i0 -> i7 (\i0 -> \i0 -> i1 (\i0 -> \i0 -> force (i6 (i5 i2) (delay (i4 i1)))) (delay False))) (\i0 -> force (i2 (force (i4 (lessThanEqualsInteger i1 57) (delay (lessThanEqualsInteger 48 i1)))) (delay (force (i2 (force (i4 (lessThanEqualsInteger i1 70) (delay (lessThanEqualsInteger 65 i1)))) (delay (force (i4 (lessThanEqualsInteger i1 102) (delay (lessThanEqualsInteger 97 i1)))))))))) (i6 (\i0 -> \i0 -> force (force (force chooseList) i1 (delay (\i0 -> \i0 -> force i1)) (delay ((\i0 -> \i0 -> \i0 -> \i0 -> i2 i4 i3) (force headList i1) (i2 (force tailList i1)))))) [103,104,105,107,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,32,33,64,35,36,37,94,38,42,40,41,91,93,123,125,96,126])) (\i0 -> i4 i1 i2)) (delay True)) (\i0 -> \i0 -> i3 i2 i1 i4)) (force ifThenElse)) (delay False)) (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))))
+allandhexdigit.allas (program 1.0.0 ((\i0 ->
+                   (\i0
+                     i0 ->
+                      (\i0 ->
+                         (\i0 ->
+                            (\i0 -> i2 (\i0 -> i2 i2 i1))
+                              (\i0 -> i2 (\i0 -> i2 i2 i1)))
+                           (\i0
+                             i0 ->
+                              force (i6
+                                       (lessThanInteger i1 i3)
+                                       (delay (force (i6
+                                                        (i5
+                                                           (indexByteString
+                                                              i4
+                                                              i1))
+                                                        (delay (i2
+                                                                  (addInteger
+                                                                     i1
+                                                                     1)))
+                                                        (delay False))))
+                                       (delay True)))
+                           0)
+                        (lengthOfByteString i1))
+                     (\i0 -> equalsInteger i1 97)
+                     #61616161616161616161616161)
+                  (force ifThenElse)))
+allandhexdigit.not all as (program 1.0.0 ((\i0 ->
+                   (\i0
+                     i0 ->
+                      (\i0 ->
+                         (\i0 ->
+                            (\i0 -> i2 (\i0 -> i2 i2 i1))
+                              (\i0 -> i2 (\i0 -> i2 i2 i1)))
+                           (\i0
+                             i0 ->
+                              force (i6
+                                       (lessThanInteger i1 i3)
+                                       (delay (force (i6
+                                                        (i5
+                                                           (indexByteString
+                                                              i4
+                                                              i1))
+                                                        (delay (i2
+                                                                  (addInteger
+                                                                     i1
+                                                                     1)))
+                                                        (delay False))))
+                                       (delay True)))
+                           0)
+                        (lengthOfByteString i1))
+                     (\i0 -> equalsInteger i1 97)
+                     #616161616161626161616161)
+                  (force ifThenElse)))
+allandhexdigit.allhex (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      (\i0 ->
+                         (\i0 ->
+                            (\i0 ->
+                               (\i0
+                                 i0 ->
+                                  (\i0 ->
+                                     (\i0 ->
+                                        (\i0 -> i2 (\i0 -> i2 i2 i1))
+                                          (\i0 -> i2 (\i0 -> i2 i2 i1)))
+                                       (\i0
+                                         i0 ->
+                                          force (i9
+                                                   (lessThanInteger i1 i3)
+                                                   (delay (force (i9
+                                                                    (i5
+                                                                       (indexByteString
+                                                                          i4
+                                                                          i1))
+                                                                    (delay (i2
+                                                                              (addInteger
+                                                                                 i1
+                                                                                 1)))
+                                                                    (delay False))))
+                                                   (delay True)))
+                                       0)
+                                    (lengthOfByteString i1))
+                                 (\i0 ->
+                                    force (i2
+                                             (force (i4
+                                                       (lessThanEqualsInteger
+                                                          i1
+                                                          57)
+                                                       (delay (lessThanEqualsInteger
+                                                                 48
+                                                                 i1))))
+                                             (delay (force (i2
+                                                              (force (i4
+                                                                        (lessThanEqualsInteger
+                                                                           i1
+                                                                           70)
+                                                                        (delay (lessThanEqualsInteger
+                                                                                  65
+                                                                                  i1))))
+                                                              (delay (force (i4
+                                                                               (lessThanEqualsInteger
+                                                                                  i1
+                                                                                  102)
+                                                                               (delay (lessThanEqualsInteger
+                                                                                         97
+                                                                                         i1))))))))))
+                                 #3561376331386561653837373864313533343466)
+                              (\i0 -> i4 i1 i2))
+                           (delay True))
+                        (\i0 i0 -> i3 i2 i1 i4))
+                     (force ifThenElse))
+                  (delay False)))
+allandhexdigit.notallhex (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      (\i0 ->
+                         (\i0 ->
+                            (\i0 ->
+                               (\i0
+                                 i0 ->
+                                  (\i0 ->
+                                     (\i0 ->
+                                        (\i0 -> i2 (\i0 -> i2 i2 i1))
+                                          (\i0 -> i2 (\i0 -> i2 i2 i1)))
+                                       (\i0
+                                         i0 ->
+                                          force (i9
+                                                   (lessThanInteger i1 i3)
+                                                   (delay (force (i9
+                                                                    (i5
+                                                                       (indexByteString
+                                                                          i4
+                                                                          i1))
+                                                                    (delay (i2
+                                                                              (addInteger
+                                                                                 i1
+                                                                                 1)))
+                                                                    (delay False))))
+                                                   (delay True)))
+                                       0)
+                                    (lengthOfByteString i1))
+                                 (\i0 ->
+                                    force (i2
+                                             (force (i4
+                                                       (lessThanEqualsInteger
+                                                          i1
+                                                          57)
+                                                       (delay (lessThanEqualsInteger
+                                                                 48
+                                                                 i1))))
+                                             (delay (force (i2
+                                                              (force (i4
+                                                                        (lessThanEqualsInteger
+                                                                           i1
+                                                                           70)
+                                                                        (delay (lessThanEqualsInteger
+                                                                                  65
+                                                                                  i1))))
+                                                              (delay (force (i4
+                                                                               (lessThanEqualsInteger
+                                                                                  i1
+                                                                                  102)
+                                                                               (delay (lessThanEqualsInteger
+                                                                                         97
+                                                                                         i1))))))))))
+                                 #3561376331386561653837373867313533343466)
+                              (\i0 -> i4 i1 i2))
+                           (delay True))
+                        (\i0 i0 -> i3 i2 i1 i4))
+                     (force ifThenElse))
+                  (delay False)))
+allandhexdigit.pisHexDigit (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      (\i0 ->
+                         (\i0 ->
+                            (\i0 ->
+                               (\i0 ->
+                                  (\i0 ->
+                                     i7
+                                       (\i0
+                                         i0 ->
+                                          i1
+                                            (\i0
+                                              i0 ->
+                                               force (i8
+                                                        (i5 i2)
+                                                        (delay (i4 i1))))
+                                            (delay True)))
+                                    (\i0 ->
+                                       force (i2
+                                                (force (i4
+                                                          (lessThanEqualsInteger
+                                                             i1
+                                                             57)
+                                                          (delay (lessThanEqualsInteger
+                                                                    48
+                                                                    i1))))
+                                                (delay (force (i2
+                                                                 (force (i4
+                                                                           (lessThanEqualsInteger
+                                                                              i1
+                                                                              70)
+                                                                           (delay (lessThanEqualsInteger
+                                                                                     65
+                                                                                     i1))))
+                                                                 (delay (force (i4
+                                                                                  (lessThanEqualsInteger
+                                                                                     i1
+                                                                                     102)
+                                                                                  (delay (lessThanEqualsInteger
+                                                                                            97
+                                                                                            i1))))))))))
+                                    (i6
+                                       (\i0
+                                         i0 ->
+                                          force (force (force chooseList)
+                                                   i1
+                                                   (delay (\i0 i0 -> force i1))
+                                                   (delay ((\i0
+                                                             i0
+                                                             i0
+                                                             i0 ->
+                                                              i2 i4 i3)
+                                                             (force headList i1)
+                                                             (i2
+                                                                (force tailList
+                                                                   i1))))))
+                                       [49,50,51,52,53,54,55,56,57,48,97,98,99,100,101,102]))
+                                 (\i0 -> i4 i1 i2))
+                              (delay True))
+                           (\i0 i0 -> i3 i2 i1 i4))
+                        (force ifThenElse))
+                     (delay False))
+                  (\i0 ->
+                     (\i0 -> i2 (\i0 -> i2 i2 i1))
+                       (\i0 -> i2 (\i0 -> i2 i2 i1)))))
+allandhexdigit.pisNoneHexDigit (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      (\i0 ->
+                         (\i0 ->
+                            (\i0 ->
+                               (\i0 ->
+                                  (\i0 ->
+                                     i7
+                                       (\i0
+                                         i0 ->
+                                          i1
+                                            (\i0
+                                              i0 ->
+                                               force (i6
+                                                        (i5 i2)
+                                                        (delay (i4 i1))))
+                                            (delay False)))
+                                    (\i0 ->
+                                       force (i2
+                                                (force (i4
+                                                          (lessThanEqualsInteger
+                                                             i1
+                                                             57)
+                                                          (delay (lessThanEqualsInteger
+                                                                    48
+                                                                    i1))))
+                                                (delay (force (i2
+                                                                 (force (i4
+                                                                           (lessThanEqualsInteger
+                                                                              i1
+                                                                              70)
+                                                                           (delay (lessThanEqualsInteger
+                                                                                     65
+                                                                                     i1))))
+                                                                 (delay (force (i4
+                                                                                  (lessThanEqualsInteger
+                                                                                     i1
+                                                                                     102)
+                                                                                  (delay (lessThanEqualsInteger
+                                                                                            97
+                                                                                            i1))))))))))
+                                    (i6
+                                       (\i0
+                                         i0 ->
+                                          force (force (force chooseList)
+                                                   i1
+                                                   (delay (\i0 i0 -> force i1))
+                                                   (delay ((\i0
+                                                             i0
+                                                             i0
+                                                             i0 ->
+                                                              i2 i4 i3)
+                                                             (force headList i1)
+                                                             (i2
+                                                                (force tailList
+                                                                   i1))))))
+                                       [103,104,105,107,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,32,33,64,35,36,37,94,38,42,40,41,91,93,123,125,96,126]))
+                                 (\i0 -> i4 i1 i2))
+                              (delay True))
+                           (\i0 i0 -> i3 i2 i1 i4))
+                        (force ifThenElse))
+                     (delay False))
+                  (\i0 ->
+                     (\i0 -> i2 (\i0 -> i2 i2 i1))
+                       (\i0 -> i2 (\i0 -> i2 i2 i1)))))

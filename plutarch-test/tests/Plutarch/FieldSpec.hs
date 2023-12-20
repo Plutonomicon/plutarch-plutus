@@ -17,70 +17,69 @@ import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import Test.Hspec
 
 spec :: Spec
-spec = do
-  describe "field" $ do
-    -- example: Trips
-    describe "trips" . pgoldenSpec $ do
-      -- compilation
-      "lam" @\ do
-        "tripSum" @| tripSum
-        "getY" @| getY
-        "tripYZ" @| tripYZ
-      "tripSum" @\ do
-        "A" @| tripSum # tripA @-> \p ->
-          plift p @?= 1000
-        "B" @| tripSum # tripB @-> \p ->
-          plift p @?= 100
-        "C" @| tripSum # tripC @-> \p ->
-          plift p @?= 10
-      "tripYZ=tripZY" @| tripZY @== tripYZ
-    -- rangeFields
-    describe "rangeFields" . pgoldenSpec $ do
-      -- compilation
-      "lam" @| rangeFields
-      "app" @| rangeFields # someFields @-> \p -> plift p @?= 11
-    -- dropFields
-    describe "dropFields" . pgoldenSpec $ do
-      -- compilation
-      "lam" @| dropFields
-      "app" @| dropFields # someFields @-> \p -> plift p @?= 17
-    -- pletFields
-    describe "pletFields" . pgoldenSpec $ do
-      -- compilation
-      "letSomeFields" @\ do
-        "lam" @| letSomeFields
-        "order" @| letSomeFields' @== letSomeFields
-        "app" @| letSomeFields # someFields @-> \p -> plift p @?= 14
-      "nFields" @\ do
-        "lam" @| nFields
-        "app" @| nFields # someFields @-> \p -> plift p @?= 1
-    describe "other" . pgoldenSpec $ do
-      "by" @| by @-> \p -> plift p @?= 10
-      "dotPlus" @| dotPlus @-> \p -> plift p @?= 19010
-    describe "data" . pgoldenSpec $ do
-      "pmatch-pfield" @\ do
-        -- These two should ideally have the exact same efficiency.
-        "pmatch" @\ do
-          "newtype"
-            @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
-                in pmatch addr $ \(PAddress addrFields) ->
-                    pletFields @'["credential", "stakingCredential"] addrFields $ \y ->
-                      ppairDataBuiltin # getField @"credential" y # getField @"stakingCredential" y
-        "pfield" @\ do
-          "newtype"
-            @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
-                in pletFields @'["credential", "stakingCredential"] addr $ \y ->
+spec = describe "field" $ do
+  -- example: Trips
+  describe "trips" . pgoldenSpec $ do
+    -- compilation
+    "lam" @\ do
+      "tripSum" @| tripSum
+      "getY" @| getY
+      "tripYZ" @| tripYZ
+    "tripSum" @\ do
+      "A" @| tripSum # tripA @-> \p ->
+        plift p @?= 1000
+      "B" @| tripSum # tripB @-> \p ->
+        plift p @?= 100
+      "C" @| tripSum # tripC @-> \p ->
+        plift p @?= 10
+    "tripYZ=tripZY" @| tripZY @== tripYZ
+  -- rangeFields
+  describe "rangeFields" . pgoldenSpec $ do
+    -- compilation
+    "lam" @| rangeFields
+    "app" @| rangeFields # someFields @-> \p -> plift p @?= 11
+  -- dropFields
+  describe "dropFields" . pgoldenSpec $ do
+    -- compilation
+    "lam" @| dropFields
+    "app" @| dropFields # someFields @-> \p -> plift p @?= 17
+  -- pletFields
+  describe "pletFields" . pgoldenSpec $ do
+    -- compilation
+    "letSomeFields" @\ do
+      "lam" @| letSomeFields
+      "order" @| letSomeFields' @== letSomeFields
+      "app" @| letSomeFields # someFields @-> \p -> plift p @?= 14
+    "nFields" @\ do
+      "lam" @| nFields
+      "app" @| nFields # someFields @-> \p -> plift p @?= 1
+  describe "other" . pgoldenSpec $ do
+    "by" @| by @-> \p -> plift p @?= 10
+    "dotPlus" @| dotPlus @-> \p -> plift p @?= 19010
+  describe "data" . pgoldenSpec $ do
+    "pmatch-pfield" @\ do
+      -- These two should ideally have the exact same efficiency.
+      "pmatch" @\ do
+        "newtype"
+          @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+              in pmatch addr $ \(PAddress addrFields) ->
+                  pletFields @'["credential", "stakingCredential"] addrFields $ \y ->
                     ppairDataBuiltin # getField @"credential" y # getField @"stakingCredential" y
-      "pfield-pletFields" @\ do
-        "pfield" @\ do
-          "single"
-            @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
-                in pfromData $ pfield @"credential" # addr
-        "pletFields" @\ do
-          "single"
-            @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
-                in pletFields @'["credential"] addr $ \y ->
-                    pfromData $ getField @"credential" y
+      "pfield" @\ do
+        "newtype"
+          @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+              in pletFields @'["credential", "stakingCredential"] addr $ \y ->
+                  ppairDataBuiltin # getField @"credential" y # getField @"stakingCredential" y
+    "pfield-pletFields" @\ do
+      "pfield" @\ do
+        "single"
+          @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+              in pfromData $ pfield @"credential" # addr
+      "pletFields" @\ do
+        "single"
+          @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+              in pletFields @'["credential"] addr $ \y ->
+                  pfromData $ getField @"credential" y
 
 --------------------------------------------------------------------------------
 
@@ -171,12 +170,12 @@ getY = pfield @"y"
 dotPlus :: Term s PInteger
 dotPlus =
   pletFields @["x", "y", "z"] tripTrip $ \ts ->
-    pletFields @["x", "y", "z"] (ts.x) $ \a ->
-      pletFields @["x", "y", "z"] (ts.y) $ \b ->
-        pletFields @["x", "y", "z"] (ts.z) $ \c ->
-          (pfromData a.x * pfromData b.x)
-            + (pfromData a.y * pfromData b.y)
-            + (pfromData a.z * pfromData b.z)
+    pletFields @["x", "y", "z"] ts.x $ \a ->
+      pletFields @["x", "y", "z"] ts.y $ \b ->
+        pletFields @["x", "y", "z"] ts.z $ \c ->
+          pfromData a.x * pfromData b.x
+            + pfromData a.y * pfromData b.y
+            + pfromData a.z * pfromData b.z
             + pfromData c.x
             + pfromData c.y
             + pfromData c.z

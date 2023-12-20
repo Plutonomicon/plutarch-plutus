@@ -238,8 +238,7 @@ prettyUPLC uplc = runST $ do
       pure $ case nameOfRef x ps'nameMap of
         Just nm -> PP.pretty nm
         Nothing -> error "impossible: free variable"
-    go (IfThenElseLikeAST (Force () (Builtin () PLC.IfThenElse)) cond trueBranch falseBranch) = do
-      prettyIfThenElse (forkState . go) cond trueBranch falseBranch
+    go (IfThenElseLikeAST (Force () (Builtin () PLC.IfThenElse)) cond trueBranch falseBranch) = prettyIfThenElse (forkState . go) cond trueBranch falseBranch
     go ast@(IfThenElseLikeAST scrutinee cond trueBranch falseBranch) = do
       PrettyState {ps'nameMap} <- get
       case scrutinee of
@@ -299,8 +298,8 @@ prettyUPLC uplc = runST $ do
         PP.hang indentWidth $
           PP.sep $
             functionDoc : argsDoc
-    go (Constr _ _ _) = pure $ PP.pretty ("UPLC.Constr not implemented" :: String)
-    go (Case _ _ _) = pure $ PP.pretty ("UPLC.Case not implemented" :: String)
+    go (Constr {}) = pure $ PP.pretty ("UPLC.Constr not implemented" :: String)
+    go (Case {}) = pure $ PP.pretty ("UPLC.Case not implemented" :: String)
 
 prettyIfThenElse ::
   (t -> PrettyMonad s (PP.Doc ann)) ->
@@ -320,5 +319,4 @@ prettyIfThenElse cont cond trueBranch falseBranch = do
 
 -- | Wrap prettification result parens depending on cursor state.
 parensOnCursor :: PrettyCursor -> PP.Doc ann -> PP.Doc ann
-parensOnCursor cursor = do
-  if cursor == Special then PP.parens else id
+parensOnCursor cursor = if cursor == Special then PP.parens else id

@@ -605,7 +605,8 @@ zipMergeInsert (MergeHandler bothPresent leftPresent rightPresent) = unTermCont 
           PassOne -> pcons # x # xs'
           HandleOne handler ->
             List.pmap
-              # ( plam \pair ->
+              # plam
+                ( \pair ->
                     plet (pfstBuiltin # pair) \k ->
                       ppairDataBuiltin # k # handler k (psndBuiltin # pair)
                 )
@@ -679,7 +680,8 @@ zipMerge rightPresent mergeInsertRec = plam $ \ls rs -> pmatch ls $ \case
       PassOne -> rs
       HandleOne handler ->
         List.pmap
-          # ( plam \pair ->
+          # plam
+            ( \pair ->
                 plet (pfstBuiltin # pair) \k ->
                   ppairDataBuiltin # k # handler k (psndBuiltin # pair)
             )
@@ -714,7 +716,8 @@ zipMergeInsertCommutative (MergeHandlerCommutative bothPresent onePresent) = unT
           PassOne -> pcons # x # xs'
           HandleOne handler ->
             List.pmap
-              # ( plam \pair ->
+              # plam
+                ( \pair ->
                     plet (pfstBuiltin # pair) \k ->
                       ppairDataBuiltin # k # handler k (psndBuiltin # pair)
                 )
@@ -781,7 +784,8 @@ zipMergeCommutative onePresent mergeInsertRec = plam $ \ls rs -> pmatch ls $ \ca
       PassOne -> rs
       HandleOne handler ->
         List.pmap
-          # ( plam \pair ->
+          # plam
+            ( \pair ->
                 plet (pfstBuiltin # pair) \k ->
                   ppairDataBuiltin # k # handler k (psndBuiltin # pair)
             )

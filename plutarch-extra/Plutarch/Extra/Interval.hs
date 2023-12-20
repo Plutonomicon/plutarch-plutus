@@ -273,7 +273,7 @@ pbefore' ::
 pbefore' = phoistAcyclic $
   plam $ \a y' -> P.do
     y <- pletFields @'["_0", "_1"] y'
-    yt <- plet $ y._0
+    yt <- plet y._0
     let yc = y._1
 
     pif
@@ -294,7 +294,7 @@ pafter' ::
 pafter' = phoistAcyclic $
   plam $ \a y' -> P.do
     y <- pletFields @'["_0", "_1"] y'
-    yt <- plet $ y._0
+    yt <- plet y._0
     let yc = y._1
 
     pif
@@ -317,11 +317,11 @@ leqP = phoistAcyclic $
     x <- pletFields @'["_0", "_1"] x'
     y <- pletFields @'["_0", "_1"] y'
 
-    xt <- plet $ x._0
-    yt <- plet $ y._0
+    xt <- plet x._0
+    yt <- plet y._0
 
-    xc <- plet $ x._1
-    yc <- plet $ y._1
+    xc <- plet x._1
+    yc <- plet y._1
 
     pif
       (xc #&& yc #|| (pnot # xc) #&& (pnot # yc))
