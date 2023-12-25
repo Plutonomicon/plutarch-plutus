@@ -16,18 +16,21 @@
 
           hooks = {
             nixpkgs-fmt.enable = true;
+            statix.enable = true;
+            deadnix.enable = true;
+
             cabal-fmt.enable = true;
             fourmolu = {
               enable = true;
               excludes = [ "\.lhs" ];
             };
             hlint.enable = true;
-            statix.enable = true;
-            deadnix.enable = true;
+
             typos = {
               enable = true;
               excludes = [ "\.golden" ];
             };
+
             yamllint.enable = true;
           };
         };
