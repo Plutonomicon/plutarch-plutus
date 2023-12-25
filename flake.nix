@@ -12,14 +12,13 @@
   };
 
   inputs = {
-    nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
-    nixpkgs-latest.url = "github:NixOS/nixpkgs";
+    nixpkgs.url = "github:NixOS/nixpkgs";
 
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     haskell-nix.url = "github:input-output-hk/haskell.nix";
     iohk-nix.url = "github:input-output-hk/iohk-nix";
-    iohk-nix.inputs.nixpkgs.follows = "nixpkgs";
+    iohk-nix.inputs.nixpkgs.follows = "haskell-nix/nixpkgs";
 
     CHaP.url = "github:input-output-hk/cardano-haskell-packages?ref=repo";
     CHaP.flake = false;
@@ -34,12 +33,13 @@
         ./pre-commit.nix
         ./hercules-ci.nix
       ];
+      debug = true;
       systems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux" ];
 
       perSystem = { config, system, ... }:
         let
           pkgs =
-            import nixpkgs {
+            import haskell-nix.inputs.nixpkgs {
               inherit system;
               overlays = [
                 haskell-nix.overlay
