@@ -25,18 +25,25 @@
 
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
+
+    emanote.url = "github:srid/emanote";
+    sphinxcontrib-haddock = {
+      url = "github:michaelpj/sphinxcontrib-haddock";
+      flake = false;
+    };
   };
 
   outputs = inputs@{ flake-parts, nixpkgs, haskell-nix, iohk-nix, CHaP, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
-        ./pre-commit.nix
-        ./hercules-ci.nix
+        ./nix/pre-commit.nix
+        ./nix/hercules-ci.nix
+        inputs.emanote.flakeModule
       ];
       debug = true;
       systems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux" ];
 
-      perSystem = { config, system, ... }:
+      perSystem = { config, system, lib, ... }:
         let
           pkgs =
             import haskell-nix.inputs.nixpkgs {
@@ -56,6 +63,7 @@
             };
             shell = {
               withHoogle = true;
+              withHaddock = true;
               exactDeps = false;
               # TODO(peter-mlabs): Use `apply-refact` for repo wide refactoring `find -name '*.hs' -not -path './dist-*/*' -exec hlint -j --refactor --refactor-options="--inplace" {} +``
               shellHook = config.pre-commit.installationScript;
@@ -73,7 +81,30 @@
           flake = project.flake { };
         in
         {
-          inherit (flake) packages devShells;
+          inherit (flake) devShells;
+          emanote = {
+            sites.plutarch-docs = {
+              layers = [ ./plutarch-docs ];
+              layersString = [ "./plutarch-docs" ];
+            };
+          };
+
+          packages = flake.packages // {
+            haddock = (import ./nix/combine-haddock.nix) { inherit pkgs lib; } {
+              inherit (pkgs.callPackage inputs.sphinxcontrib-haddock {
+                pythonPackages = pkgs.python3Packages;
+              }) sphinxcontrib-haddock;
+              cabalProject = project;
+              hspkgsNames = [ ];
+              prologue = pkgs.writeTextFile {
+                name = "prologue";
+                text = ''
+                  == Haddock
+                '';
+              };
+            };
+          };
+
           checks = flake.checks // {
             plutarch-test = pkgs.stdenv.mkDerivation
               {
