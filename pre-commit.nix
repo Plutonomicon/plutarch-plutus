@@ -31,7 +31,10 @@
               excludes = [ "\.golden" ];
             };
 
-            yamllint.enable = true;
+            yamllint = {
+              enable = true;
+              excludes = [ ".github" ];
+            };
           };
         };
       };

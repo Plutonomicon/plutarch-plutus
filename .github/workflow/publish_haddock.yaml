@@ -1,0 +1,43 @@
+name: "publish haddock"
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  gen_haddock:
+    runs-on: ubuntu-latest
+    outputs:
+      html_dock_path: ${{ steps.haddock_path.outputs.html_dock_path }}
+    steps:
+    - uses: actions/checkout@v3
+    - uses: cachix/install-nix-action@v18
+      with:
+        extra_nix_config: |
+          extra-experimental-features = nix-command flakes ca-derivations
+          extra-substituters = https://cache.iog.io
+          extra-trusted-public-keys = hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ=
+    - name: Build Haddock
+      id: build
+      run: nix develop --command cabal haddock --builddir=./out | tee >(tail -1 > haddock_path)
+
+    - name: Get Haddock path
+      id: haddock_path
+      run: echo "html_dock_path=$(cat haddock_path)" >> $GITHUB_OUTPUT
+
+    - name: Setup directory
+      run: |
+        mkdir pages
+        mkdir pages/docs
+        cp ${{ steps.haddock_path.outputs.html_dock_path }}/* pages/docs -r
+        cp out pages -r
+
+    - name: Publish Documentation
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/master'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./pages
