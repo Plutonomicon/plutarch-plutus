@@ -84,6 +84,7 @@
             sites.plutarch-docs = {
               layers = [ ./plutarch-docs ];
               layersString = [ "./plutarch-docs" ];
+              baseUrl = "/plutarch-plutus/";
             };
           };
 
