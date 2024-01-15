@@ -38,6 +38,7 @@
       ];
       debug = true;
       systems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux" ];
+      hercules-ci.github-pages.branch = "master";
 
       perSystem = { config, system, lib, self', ... }:
         let
@@ -53,7 +54,8 @@
           project = pkgs.haskell-nix.cabalProject' {
             src = ./.;
             compiler-nix-name = "ghc963";
-            index-state = "2023-11-26T21:52:49Z"; # NOTE(bladyjoker): Follow https://github.com/input-output-hk/plutus/blob/master/cabal.project
+            # NOTE(bladyjoker): Follow https://github.com/input-output-hk/plutus/blob/master/cabal.project
+            index-state = "2023-11-26T21:52:49Z";
             inputMap = {
               "https://input-output-hk.github.io/cardano-haskell-packages" = CHaP;
             };
@@ -85,6 +87,7 @@
             };
           };
 
+          hercules-ci.github-pages.settings.contents = self'.packages.combined-docs;
           packages = flake.packages // {
             haddock = (import ./nix/combine-haddock.nix) { inherit pkgs lib; } {
               cabalProject = project;
