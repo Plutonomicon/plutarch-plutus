@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE LambdaCase #-}</span><span>
+</span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">UntypedPlutusCore.Transform.CaseReduce</span><span>
+</span><span id="line-3"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Transform.CaseReduce.html#caseReduce"><span class="hs-identifier">caseReduce</span></a></span><span>
+</span><span id="line-4"></span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="PlutusCore.MkPlc.html"><span class="hs-identifier">PlutusCore.MkPlc</span></a></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.html"><span class="hs-identifier">UntypedPlutusCore.Core</span></a></span><span>
+</span><span id="line-8"></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Lens</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">transformOf</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-operator">(^?)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Data.List.Extras.html"><span class="hs-identifier">Data.List.Extras</span></a></span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span id="local-6989586621680935620"><span id="local-6989586621680935621"><span id="local-6989586621680935622"><span id="local-6989586621680935623"><span class="annot"><a href="UntypedPlutusCore.Transform.CaseReduce.html#caseReduce"><span class="hs-identifier hs-type">caseReduce</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680935620"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680935621"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680935622"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680935623"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680935620"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680935621"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680935622"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680935623"><span class="hs-identifier hs-type">a</span></a></span></span></span></span></span><span>
+</span><span id="line-13"></span><span id="caseReduce"><span class="annot"><span class="annottext">caseReduce :: forall name (uni :: * -&gt; *) fun a.
+Term name uni fun a -&gt; Term name uni fun a
+</span><a href="UntypedPlutusCore.Transform.CaseReduce.html#caseReduce"><span class="hs-identifier hs-var hs-var">caseReduce</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ASetter
+  (Term name uni fun a)
+  (Term name uni fun a)
+  (Term name uni fun a)
+  (Term name uni fun a)
+-&gt; (Term name uni fun a -&gt; Term name uni fun a)
+-&gt; Term name uni fun a
+-&gt; Term name uni fun a
+forall a b. ASetter a b a b -&gt; (b -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">transformOf</span></span><span> </span><span class="annot"><span class="annottext">ASetter
+  (Term name uni fun a)
+  (Term name uni fun a)
+  (Term name uni fun a)
+  (Term name uni fun a)
+forall name (uni :: * -&gt; *) fun ann (f :: * -&gt; *).
+Applicative f =&gt;
+(Term name uni fun ann -&gt; f (Term name uni fun ann))
+-&gt; Term name uni fun ann -&gt; f (Term name uni fun ann)
+</span><a href="UntypedPlutusCore.Core.Plated.html#termSubterms"><span class="hs-identifier hs-var">termSubterms</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun a -&gt; Term name uni fun a
+forall name (uni :: * -&gt; *) fun a.
+Term name uni fun a -&gt; Term name uni fun a
+</span><a href="UntypedPlutusCore.Transform.CaseReduce.html#processTerm"><span class="hs-identifier hs-var">processTerm</span></a></span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span id="local-6989586621680935669"><span id="local-6989586621680935670"><span id="local-6989586621680935671"><span id="local-6989586621680935672"><span class="annot"><a href="UntypedPlutusCore.Transform.CaseReduce.html#processTerm"><span class="hs-identifier hs-type">processTerm</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680935669"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680935670"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680935671"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680935672"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680935669"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680935670"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680935671"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680935672"><span class="hs-identifier hs-type">a</span></a></span></span></span></span></span><span>
+</span><span id="line-16"></span><span id="processTerm"><span class="annot"><span class="annottext">processTerm :: forall name (uni :: * -&gt; *) fun a.
+Term name uni fun a -&gt; Term name uni fun a
+</span><a href="UntypedPlutusCore.Transform.CaseReduce.html#processTerm"><span class="hs-identifier hs-var hs-var">processTerm</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-17"></span><span>    </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Case"><span class="hs-identifier hs-type">Case</span></a></span><span> </span><span id="local-6989586621680935680"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621680935680"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Constr"><span class="hs-identifier hs-type">Constr</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621680935682"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621680935682"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621680935683"><span class="annot"><span class="annottext">[Term name uni fun a]
+</span><a href="#local-6989586621680935683"><span class="hs-identifier hs-var">args</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621680935684"><span class="annot"><span class="annottext">[Term name uni fun a]
+</span><a href="#local-6989586621680935684"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span id="local-6989586621680935685"><span class="annot"><span class="annottext">Term name uni fun a
+</span><a href="#local-6989586621680935685"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Term name uni fun a]
+</span><a href="#local-6989586621680935684"><span class="hs-identifier hs-var">cs</span></a></span><span> </span><span class="annot"><span class="annottext">[Term name uni fun a]
+-&gt; Getting
+     (First (Term name uni fun a))
+     [Term name uni fun a]
+     (Term name uni fun a)
+-&gt; Maybe (Term name uni fun a)
+forall s a. s -&gt; Getting (First a) s a -&gt; Maybe a
+</span><span class="hs-operator hs-var">^?</span></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Traversal' [Term name uni fun a] (Term name uni fun a)
+forall a. Word64 -&gt; Traversal' [a] a
+</span><a href="Data.List.Extras.html#wix"><span class="hs-identifier hs-var">wix</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621680935682"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">a
+-&gt; Term name uni fun a
+-&gt; [Term name uni fun a]
+-&gt; Term name uni fun a
+forall (term :: * -&gt; *) tyname name (uni :: * -&gt; *) fun ann.
+TermLike term tyname name uni fun =&gt;
+ann -&gt; term ann -&gt; [term ann] -&gt; term ann
+</span><a href="PlutusCore.MkPlc.html#mkIterApp"><span class="hs-identifier hs-var">mkIterApp</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621680935680"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun a
+</span><a href="#local-6989586621680935685"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">[Term name uni fun a]
+</span><a href="#local-6989586621680935683"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><span id="line-18"></span><span>    </span><span id="local-6989586621680935688"><span class="annot"><span class="annottext">Term name uni fun a
+</span><a href="#local-6989586621680935688"><span class="hs-identifier hs-var">t</span></a></span></span><span>                                                     </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term name uni fun a
+</span><a href="#local-6989586621680935688"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-19"></span></pre></body></html>

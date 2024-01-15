@@ -6,9 +6,6 @@ build-type:    Simple
 common c
   default-language:   GHC2021
   default-extensions:
-    NoFlexibleInstances
-    NoMonomorphismRestriction
-    NoStarIsType
     BlockArguments
     DataKinds
     DefaultSignatures
@@ -26,6 +23,9 @@ common c
     MonadComprehensions
     MultiWayIf
     NegativeLiterals
+    NoFlexibleInstances
+    NoMonomorphismRestriction
+    NoStarIsType
     NondecreasingIndentation
     NumDecimals
     OverloadedLabels
@@ -56,15 +56,16 @@ common c
     -Wno-missing-import-lists -Wno-monomorphism-restriction
     -Wno-all-missed-specializations -Wno-unrecognised-warning-flags
     -Wno-unrecognised-pragmas -Wno-unticked-promoted-constructors
+    -Wno-unused-packages -Wno-operator-whitespace
     -fprint-equality-relations -fprint-explicit-kinds
-    -fprint-explicit-foralls -Wno-unused-packages
+    -fprint-explicit-foralls
 
 library
 
 executable plutarch-docs
-  import:           c
-  default-language: GHC2021
-  main-is:          Main.lhs
+  import:             c
+  default-language:   GHC2021
+  main-is:            Main.lhs
   other-modules:
     Plutarch.Docs.BasicExample
     Plutarch.Docs.Conditionals
@@ -113,8 +114,9 @@ executable plutarch-docs
     Plutarch.Docs.WorkDuplication
     Plutarch.Docs.WorkingWithBoundFields
 
-  hs-source-dirs:   . compilable
-  ghc-options:      -pgmL markdown-unlit
+  hs-source-dirs:     . compilable
+  ghc-options:        -pgmL markdown-unlit
+  build-tool-depends: markdown-unlit:markdown-unlit
   build-depends:
     , base
     , bytestring

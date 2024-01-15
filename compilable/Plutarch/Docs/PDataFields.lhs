@@ -99,7 +99,7 @@ data PScriptPurpose (s :: S)
 
 It's just a Plutarch sum type.
 
-We're not really interested in the fields (the `PDataRecord` term), so we just match on the constructor with the familar `case`. Easy!
+We're not really interested in the fields (the `PDataRecord` term), so we just match on the constructor with the familiar `case`. Easy!
 
 Let's pass in a `ScriptContext` as a `Data` value from Haskell to this Plutarch script and see if it works!
 
@@ -269,7 +269,7 @@ Thus, you can use `PBuiltinList (PAsData PInteger)` as a field type, but not `PB
 
 And you'd simply derive `PlutustType` with plutus data representation using generics. You can then also derive `PIsData` and if the dataype only has one ocnstructor `PDataFields`. 
 
-Furthermore, you can also derive the following typeclasses after deriving `PlutusType` with `DTPStrat _ = PlutusTypeData`
+Furthermore, you can also derive the following typeclasses after deriving `PlutusType` with `DPTStrat _ = PlutusTypeData`
 
 - [`PEq`](./PEq%20and%20POrd.md)
 - [`POrd`](./PEq%20and%20POrd.md)

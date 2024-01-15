@@ -1,0 +1,342 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE FlexibleInstances #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE UndecidableInstances #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# OPTIONS_GHC -Wno-orphans #-}</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.ByteString</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-6"></span><span>  </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier">PByteString</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-7"></span><span>  </span><span class="annot"><a href="Plutarch.ByteString.html#phexByteStr"><span class="hs-identifier">phexByteStr</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-8"></span><span>  </span><span class="annot"><a href="Plutarch.ByteString.html#pbyteStr"><span class="hs-identifier">pbyteStr</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-9"></span><span>  </span><span class="annot"><a href="Plutarch.ByteString.html#pconsBS"><span class="hs-identifier">pconsBS</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span>  </span><span class="annot"><a href="Plutarch.ByteString.html#psliceBS"><span class="hs-identifier">psliceBS</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-11"></span><span>  </span><span class="annot"><a href="Plutarch.ByteString.html#plengthBS"><span class="hs-identifier">plengthBS</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span>  </span><span class="annot"><a href="Plutarch.ByteString.html#pindexBS"><span class="hs-identifier">pindexBS</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-13"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ByteString</span></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">BS</span></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Char.html"><span class="hs-identifier">Data.Char</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Unicode.html#toLower"><span class="hs-identifier">toLower</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Word.html"><span class="hs-identifier">Data.Word</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Word.html#Word8"><span class="hs-identifier">Word8</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Stack.html"><span class="hs-identifier">GHC.Stack</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Stack.Types.html#HasCallStack"><span class="hs-identifier">HasCallStack</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Bool.html"><span class="hs-identifier">Plutarch.Bool</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Bool.html#PEq"><span class="hs-identifier">PEq</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#POrd"><span class="hs-identifier">POrd</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#PPartialOrd"><span class="hs-identifier">PPartialOrd</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#%23%3C"><span class="hs-operator">(#&lt;)</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#%23%3C%3D"><span class="hs-operator">(#&lt;=)</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#%23%3D%3D"><span class="hs-operator">(#==)</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Integer.html"><span class="hs-identifier">Plutarch.Integer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier">PInteger</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.html"><span class="hs-identifier">Plutarch.Internal</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier">Term</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%23"><span class="hs-operator">(#)</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator">(:--&gt;)</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.Newtype.html"><span class="hs-identifier">Plutarch.Internal.Newtype</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Newtype.html#PlutusTypeNewtype"><span class="hs-identifier">PlutusTypeNewtype</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.Other.html"><span class="hs-identifier">Plutarch.Internal.Other</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Other.html#POpaque"><span class="hs-identifier">POpaque</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html"><span class="hs-identifier">Plutarch.Internal.PlutusType</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DPTStrat"><span class="hs-identifier">DPTStrat</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DerivePlutusType"><span class="hs-identifier">DerivePlutusType</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PlutusType"><span class="hs-identifier">PlutusType</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Lift.html"><span class="hs-identifier">Plutarch.Lift</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-28"></span><span>  </span><span class="annot"><a href="Plutarch.Lift.html#DerivePConstantDirect"><span class="hs-identifier">DerivePConstantDirect</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Lift.html#DerivePConstantDirect"><span class="hs-identifier">DerivePConstantDirect</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-29"></span><span>  </span><span class="annot"><a href="Plutarch.Lift.html#PConstantDecl"><span class="hs-identifier">PConstantDecl</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-30"></span><span>  </span><span class="annot"><a href="Plutarch.Lift.html#PLifted"><span class="hs-identifier">PLifted</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-31"></span><span>  </span><span class="annot"><a href="Plutarch.Lift.html#PUnsafeLiftDecl"><span class="hs-identifier">PUnsafeLiftDecl</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-32"></span><span>  </span><span class="annot"><a href="Plutarch.Lift.html#pconstant"><span class="hs-identifier">pconstant</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-33"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-34"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Unsafe.html"><span class="hs-identifier">Plutarch.Unsafe</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#punsafeBuiltin"><span class="hs-identifier">punsafeBuiltin</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PLC</span></span><span>
+</span><span id="line-36"></span><span>
+</span><span id="line-37"></span><span class="annot"><span class="hs-comment">-- | Plutus 'BuiltinByteString'</span></span><span>
+</span><span id="line-38"></span><span class="hs-keyword">newtype</span><span> </span><span id="PByteString"><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-var">PByteString</span></a></span></span><span> </span><span id="local-6989586621679906075"><span class="annot"><a href="#local-6989586621679906075"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PByteString"><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-var">PByteString</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679906075"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Other.html#POpaque"><span class="hs-identifier hs-type">POpaque</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679906078"><span id="local-6989586621679906080"><span class="annot"><span class="annottext">(forall x. PByteString s -&gt; Rep (PByteString s) x)
+-&gt; (forall x. Rep (PByteString s) x -&gt; PByteString s)
+-&gt; Generic (PByteString s)
+forall x. Rep (PByteString s) x -&gt; PByteString s
+forall x. PByteString s -&gt; Rep (PByteString s) x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+forall (s :: S) x. Rep (PByteString s) x -&gt; PByteString s
+forall (s :: S) x. PByteString s -&gt; Rep (PByteString s) x
+$cfrom :: forall (s :: S) x. PByteString s -&gt; Rep (PByteString s) x
+from :: forall x. PByteString s -&gt; Rep (PByteString s) x
+$cto :: forall (s :: S) x. Rep (PByteString s) x -&gt; PByteString s
+to :: forall x. Rep (PByteString s) x -&gt; PByteString s
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679906084"><span id="local-6989586621679906090"><span class="annot"><span class="annottext">(forall (s :: S). PByteString s -&gt; Term s (PInner PByteString))
+-&gt; (forall (s :: S) (b :: PType).
+    Term s (PInner PByteString)
+    -&gt; (PByteString s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType PByteString
+forall (s :: S). PByteString s -&gt; Term s (PInner PByteString)
+forall (s :: S) (b :: PType).
+Term s (PInner PByteString)
+-&gt; (PByteString s -&gt; Term s b) -&gt; Term s b
+forall (a :: PType).
+(forall (s :: S). a s -&gt; Term s (PInner a))
+-&gt; (forall (s :: S) (b :: PType).
+    Term s (PInner a) -&gt; (a s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType a
+$cpcon' :: forall (s :: S). PByteString s -&gt; Term s (PInner PByteString)
+pcon' :: forall (s :: S). PByteString s -&gt; Term s (PInner PByteString)
+$cpmatch' :: forall (s :: S) (b :: PType).
+Term s (PInner PByteString)
+-&gt; (PByteString s -&gt; Term s b) -&gt; Term s b
+pmatch' :: forall (s :: S) (b :: PType).
+Term s (PInner PByteString)
+-&gt; (PByteString s -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.PlutusType.html#PlutusType"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></a></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-41"></span><span>
+</span><span id="line-42"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DerivePlutusType"><span class="hs-identifier hs-type">DerivePlutusType</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="hs-keyword">where</span><span> </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DPTStrat"><span class="hs-identifier hs-var">DPTStrat</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.Internal.Newtype.html#PlutusTypeNewtype"><span class="hs-identifier hs-type">PlutusTypeNewtype</span></a></span><span>
+</span><span id="line-43"></span><span>
+</span><span id="line-44"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Lift.html#PUnsafeLiftDecl"><span class="hs-identifier hs-type">PUnsafeLiftDecl</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="hs-keyword">where</span><span> </span><span class="hs-keyword">type</span><span> </span><span id="PLifted"><span class="annot"><a href="Plutarch.Lift.html#PLifted"><span class="hs-identifier hs-var">PLifted</span></a></span></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span>
+</span><span id="line-45"></span><span id="local-6989586621679906129"><span id="local-6989586621679906137"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Lift.html#DerivePConstantDirect"><span class="hs-identifier hs-type">DerivePConstantDirect</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Lift.html#PConstantDecl"><span class="hs-identifier hs-type">PConstantDecl</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span></span></span><span>
+</span><span id="line-46"></span><span>
+</span><span id="line-47"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#PEq"><span class="hs-identifier hs-type">PEq</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-48"></span><span>  </span><span id="local-6989586621679906158"><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679906158"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679906159"><span class="annot"><span class="annottext">#== :: forall (s :: S).
+Term s PByteString -&gt; Term s PByteString -&gt; Term s PBool
+</span><a href="Plutarch.Bool.html#%23%3D%3D"><span class="hs-operator hs-var hs-var hs-var hs-var">#==</span></a></span></span><span> </span><span id="local-6989586621679906160"><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679906160"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun -&gt; Term s (PByteString :--&gt; (PByteString :--&gt; PBool))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.EqualsByteString</span></span><span> </span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; (PByteString :--&gt; PBool))
+-&gt; Term s PByteString -&gt; Term s (PByteString :--&gt; PBool)
+forall (s :: S) (a :: PType) (b :: PType).
+HasCallStack =&gt;
+Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679906158"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; PBool)
+-&gt; Term s PByteString -&gt; Term s PBool
+forall (s :: S) (a :: PType) (b :: PType).
+HasCallStack =&gt;
+Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679906160"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-49"></span><span>
+</span><span id="line-50"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#PPartialOrd"><span class="hs-identifier hs-type">PPartialOrd</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-51"></span><span>  </span><span id="local-6989586621679906172"><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679906172"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679906173"><span class="annot"><span class="annottext">#&lt;= :: forall (s :: S).
+Term s PByteString -&gt; Term s PByteString -&gt; Term s PBool
+</span><a href="Plutarch.Bool.html#%23%3C%3D"><span class="hs-operator hs-var hs-var hs-var hs-var">#&lt;=</span></a></span></span><span> </span><span id="local-6989586621679906174"><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679906174"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun -&gt; Term s (PByteString :--&gt; (PByteString :--&gt; PBool))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.LessThanEqualsByteString</span></span><span> </span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; (PByteString :--&gt; PBool))
+-&gt; Term s PByteString -&gt; Term s (PByteString :--&gt; PBool)
+forall (s :: S) (a :: PType) (b :: PType).
+HasCallStack =&gt;
+Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679906172"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; PBool)
+-&gt; Term s PByteString -&gt; Term s PBool
+forall (s :: S) (a :: PType) (b :: PType).
+HasCallStack =&gt;
+Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679906174"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-52"></span><span>  </span><span id="local-6989586621679906180"><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679906180"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679906181"><span class="annot"><span class="annottext">#&lt; :: forall (s :: S).
+Term s PByteString -&gt; Term s PByteString -&gt; Term s PBool
+</span><a href="Plutarch.Bool.html#%23%3C"><span class="hs-operator hs-var hs-var hs-var hs-var">#&lt;</span></a></span></span><span> </span><span id="local-6989586621679906182"><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679906182"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun -&gt; Term s (PByteString :--&gt; (PByteString :--&gt; PBool))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.LessThanByteString</span></span><span> </span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; (PByteString :--&gt; PBool))
+-&gt; Term s PByteString -&gt; Term s (PByteString :--&gt; PBool)
+forall (s :: S) (a :: PType) (b :: PType).
+HasCallStack =&gt;
+Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679906180"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; PBool)
+-&gt; Term s PByteString -&gt; Term s PBool
+forall (s :: S) (a :: PType) (b :: PType).
+HasCallStack =&gt;
+Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679906182"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-53"></span><span>
+</span><span id="line-54"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#POrd"><span class="hs-identifier hs-type">POrd</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span>
+</span><span id="line-55"></span><span>
+</span><span id="line-56"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679906031"><span id="local-6989586621679906190"><span id="local-6989586621679906194"><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-type">Semigroup</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679906031"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-57"></span><span>  </span><span id="local-6989586621679906203"><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679906203"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679906204"><span class="annot"><span class="annottext">&lt;&gt; :: Term s PByteString -&gt; Term s PByteString -&gt; Term s PByteString
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></a></span></span><span> </span><span id="local-6989586621679906205"><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679906205"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term s (PByteString :--&gt; (PByteString :--&gt; PByteString))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.AppendByteString</span></span><span> </span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; (PByteString :--&gt; PByteString))
+-&gt; Term s PByteString -&gt; Term s (PByteString :--&gt; PByteString)
+forall (s :: S) (a :: PType) (b :: PType).
+HasCallStack =&gt;
+Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679906203"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; PByteString)
+-&gt; Term s PByteString -&gt; Term s PByteString
+forall (s :: S) (a :: PType) (b :: PType).
+HasCallStack =&gt;
+Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679906205"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-58"></span><span>
+</span><span id="line-59"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679906034"><span id="local-6989586621679906211"><span id="local-6989586621679906215"><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-type">Monoid</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679906034"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-60"></span><span>  </span><span id="local-6989586621679906219"><span class="annot"><span class="annottext">mempty :: Term s PByteString
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PLifted PByteString -&gt; Term s PByteString
+forall (p :: PType) (s :: S). PLift p =&gt; PLifted p -&gt; Term s p
+</span><a href="Plutarch.Lift.html#pconstant"><span class="hs-identifier hs-var">pconstant</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+PLifted PByteString
+</span><span class="hs-identifier hs-var">BS.empty</span></span><span>
+</span><span id="line-61"></span><span>
+</span><span id="line-62"></span><span class="annot"><span class="hs-comment">-- | Interpret a hex string as a PByteString.</span></span><span>
+</span><span id="line-63"></span><span id="local-6989586621679906037"><span class="annot"><a href="Plutarch.ByteString.html#phexByteStr"><span class="hs-identifier hs-type">phexByteStr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Stack.Types.html#HasCallStack"><span class="hs-identifier hs-type">HasCallStack</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#String"><span class="hs-identifier hs-type">String</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679906037"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span></span><span>
+</span><span id="line-64"></span><span id="phexByteStr"><span class="annot"><span class="annottext">phexByteStr :: forall (s :: S). HasCallStack =&gt; String -&gt; Term s PByteString
+</span><a href="Plutarch.ByteString.html#phexByteStr"><span class="hs-identifier hs-var hs-var">phexByteStr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PLifted PByteString -&gt; Term s PByteString
+forall (p :: PType) (s :: S). PLift p =&gt; PLifted p -&gt; Term s p
+</span><a href="Plutarch.Lift.html#pconstant"><span class="hs-identifier hs-var">pconstant</span></a></span><span> </span><span class="annot"><span class="annottext">(PLifted PByteString -&gt; Term s PByteString)
+-&gt; (String -&gt; PLifted PByteString) -&gt; String -&gt; Term s PByteString
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; ByteString
+</span><span class="hs-identifier hs-var">BS.pack</span></span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; ByteString)
+-&gt; (String -&gt; [Word8]) -&gt; String -&gt; ByteString
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Word8]
+</span><a href="#local-6989586621679906225"><span class="hs-identifier hs-var">f</span></a></span><span>
+</span><span id="line-65"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-66"></span><span>    </span><span id="local-6989586621679906225"><span class="annot"><span class="annottext">f :: String -&gt; [Word8]
+</span><a href="#local-6989586621679906225"><span class="hs-identifier hs-var hs-var">f</span></a></span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&quot;</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-67"></span><span>    </span><span class="annot"><a href="#local-6989586621679906225"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Item String
+</span><span class="hs-identifier">_</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; [Word8]
+forall a. HasCallStack =&gt; String -&gt; a
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Err.html#error"><span class="hs-identifier hs-var">error</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;UnevenLength&quot;</span></span><span>
+</span><span id="line-68"></span><span>    </span><span class="annot"><a href="#local-6989586621679906225"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679906248"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679906248"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#%3A"><span class="hs-glyph hs-type">:</span></a></span><span> </span><span id="local-6989586621679906249"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679906249"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#%3A"><span class="hs-glyph hs-type">:</span></a></span><span> </span><span id="local-6989586621679906250"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679906250"><span class="hs-identifier hs-var">rest</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HasCallStack =&gt; Char -&gt; Word8
+Char -&gt; Word8
+</span><a href="Plutarch.ByteString.html#hexDigitToWord8"><span class="hs-identifier hs-var">hexDigitToWord8</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679906248"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Word8
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Num.html#%2A"><span class="hs-operator hs-var">*</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">16</span></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Word8
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Num.html#%2B"><span class="hs-operator hs-var">+</span></a></span><span> </span><span class="annot"><span class="annottext">HasCallStack =&gt; Char -&gt; Word8
+Char -&gt; Word8
+</span><a href="Plutarch.ByteString.html#hexDigitToWord8"><span class="hs-identifier hs-var">hexDigitToWord8</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679906249"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; [Word8] -&gt; [Word8]
+forall a. a -&gt; [a] -&gt; [a]
+</span><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#%3A"><span class="hs-glyph hs-var">:</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; [Word8]
+</span><a href="#local-6989586621679906225"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679906250"><span class="hs-identifier hs-var">rest</span></a></span><span>
+</span><span id="line-69"></span><span>
+</span><span id="line-70"></span><span class="hs-pragma">{-# DEPRECATED</span><span> </span><span class="hs-pragma">pbyteStr</span><span> </span><span class="hs-pragma">&quot;Use `pconstant` instead.&quot;</span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-71"></span><span>
+</span><span id="line-72"></span><span class="annot"><span class="hs-comment">-- | Construct a PByteString term from a Haskell bytestring.</span></span><span>
+</span><span id="line-73"></span><span id="local-6989586621679906049"><span class="annot"><a href="Plutarch.ByteString.html#pbyteStr"><span class="hs-identifier hs-type">pbyteStr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679906049"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span></span><span>
+</span><span id="line-74"></span><span id="pbyteStr"><span class="annot"><span class="annottext">pbyteStr :: forall (s :: S). ByteString -&gt; Term s PByteString
+</span><a href="Plutarch.ByteString.html#pbyteStr"><span class="hs-identifier hs-var hs-var">pbyteStr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Term s PByteString
+PLifted PByteString -&gt; Term s PByteString
+forall (p :: PType) (s :: S). PLift p =&gt; PLifted p -&gt; Term s p
+</span><a href="Plutarch.Lift.html#pconstant"><span class="hs-identifier hs-var">pconstant</span></a></span><span>
+</span><span id="line-75"></span><span>
+</span><span id="line-76"></span><span class="hs-comment">-----------------------------------------------------------</span><span>
+</span><span id="line-77"></span><span class="hs-comment">-- The following functions should be import qualified. --</span><span>
+</span><span id="line-78"></span><span class="hs-comment">-----------------------------------------------------------</span><span>
+</span><span id="line-79"></span><span>
+</span><span id="line-80"></span><span class="annot"><span class="hs-comment">-- | Prepend a byte, represented by a non negative 'PInteger', to a 'PBytestring'.</span></span><span>
+</span><span id="line-81"></span><span id="local-6989586621679906051"><span class="annot"><a href="Plutarch.ByteString.html#pconsBS"><span class="hs-identifier hs-type">pconsBS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679906051"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-82"></span><span id="pconsBS"><span class="annot"><span class="annottext">pconsBS :: forall (s :: S).
+Term s (PInteger :--&gt; (PByteString :--&gt; PByteString))
+</span><a href="Plutarch.ByteString.html#pconsBS"><span class="hs-identifier hs-var hs-var">pconsBS</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun -&gt; Term s (PInteger :--&gt; (PByteString :--&gt; PByteString))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.ConsByteString</span></span><span>
+</span><span id="line-83"></span><span>
+</span><span id="line-84"></span><span class="annot"><span class="hs-comment">{- | Slice a 'PByteString' with given start index and slice length.
+
+&gt;&gt;&gt; (pslice # 2 # 3 phexByteStr &quot;4102afde5b2a&quot;) #== phexByteStr &quot;afde5b&quot;
+-}</span></span><span>
+</span><span id="line-88"></span><span id="local-6989586621679906054"><span class="annot"><a href="Plutarch.ByteString.html#psliceBS"><span class="hs-identifier hs-type">psliceBS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679906054"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-89"></span><span id="psliceBS"><span class="annot"><span class="annottext">psliceBS :: forall (s :: S).
+Term
+  s (PInteger :--&gt; (PInteger :--&gt; (PByteString :--&gt; PByteString)))
+</span><a href="Plutarch.ByteString.html#psliceBS"><span class="hs-identifier hs-var hs-var">psliceBS</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term
+     s (PInteger :--&gt; (PInteger :--&gt; (PByteString :--&gt; PByteString)))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.SliceByteString</span></span><span>
+</span><span id="line-90"></span><span>
+</span><span id="line-91"></span><span class="annot"><span class="hs-comment">-- | Find the length of a 'PByteString'.</span></span><span>
+</span><span id="line-92"></span><span id="local-6989586621679906056"><span class="annot"><a href="Plutarch.ByteString.html#plengthBS"><span class="hs-identifier hs-type">plengthBS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679906056"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-93"></span><span id="plengthBS"><span class="annot"><span class="annottext">plengthBS :: forall (s :: S). Term s (PByteString :--&gt; PInteger)
+</span><a href="Plutarch.ByteString.html#plengthBS"><span class="hs-identifier hs-var hs-var">plengthBS</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun -&gt; Term s (PByteString :--&gt; PInteger)
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.LengthOfByteString</span></span><span>
+</span><span id="line-94"></span><span>
+</span><span id="line-95"></span><span class="annot"><span class="hs-comment">-- | 'PByteString' indexing function.</span></span><span>
+</span><span id="line-96"></span><span id="local-6989586621679906058"><span class="annot"><a href="Plutarch.ByteString.html#pindexBS"><span class="hs-identifier hs-type">pindexBS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679906058"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-97"></span><span id="pindexBS"><span class="annot"><span class="annottext">pindexBS :: forall (s :: S). Term s (PByteString :--&gt; (PInteger :--&gt; PInteger))
+</span><a href="Plutarch.ByteString.html#pindexBS"><span class="hs-identifier hs-var hs-var">pindexBS</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun -&gt; Term s (PByteString :--&gt; (PInteger :--&gt; PInteger))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.IndexByteString</span></span><span>
+</span><span id="line-98"></span><span>
+</span><span id="line-99"></span><span class="annot"><a href="Plutarch.ByteString.html#hexDigitToWord8"><span class="hs-identifier hs-type">hexDigitToWord8</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Stack.Types.html#HasCallStack"><span class="hs-identifier hs-type">HasCallStack</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Char"><span class="hs-identifier hs-type">Char</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span>
+</span><span id="line-100"></span><span id="hexDigitToWord8"><span class="annot"><span class="annottext">hexDigitToWord8 :: HasCallStack =&gt; Char -&gt; Word8
+</span><a href="Plutarch.ByteString.html#hexDigitToWord8"><span class="hs-identifier hs-var hs-var">hexDigitToWord8</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Word8
+</span><a href="#local-6989586621679906283"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Word8) -&gt; (Char -&gt; Char) -&gt; Char -&gt; Word8
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Char
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Unicode.html#toLower"><span class="hs-identifier hs-var">toLower</span></a></span><span>
+</span><span id="line-101"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-102"></span><span>    </span><span class="annot"><a href="#local-6989586621679906283"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Char"><span class="hs-identifier hs-type">Char</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span>
+</span><span id="line-103"></span><span>    </span><span id="local-6989586621679906283"><span class="annot"><span class="annottext">f :: Char -&gt; Word8
+</span><a href="#local-6989586621679906283"><span class="hs-identifier hs-var hs-var">f</span></a></span></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'0'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-104"></span><span>    </span><span class="annot"><a href="#local-6989586621679906283"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'1'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">1</span></span><span>
+</span><span id="line-105"></span><span>    </span><span class="annot"><a href="#local-6989586621679906283"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'2'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">2</span></span><span>
+</span><span id="line-106"></span><span>    </span><span class="annot"><a href="#local-6989586621679906283"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'3'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">3</span></span><span>
+</span><span id="line-107"></span><span>    </span><span class="annot"><a href="#local-6989586621679906283"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'4'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">4</span></span><span>
+</span><span id="line-108"></span><span>    </span><span class="annot"><a href="#local-6989586621679906283"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'5'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">5</span></span><span>
+</span><span id="line-109"></span><span>    </span><span class="annot"><a href="#local-6989586621679906283"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'6'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">6</span></span><span>
+</span><span id="line-110"></span><span>    </span><span class="annot"><a href="#local-6989586621679906283"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'7'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">7</span></span><span>
+</span><span id="line-111"></span><span>    </span><span class="annot"><a href="#local-6989586621679906283"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'8'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">8</span></span><span>
+</span><span id="line-112"></span><span>    </span><span class="annot"><a href="#local-6989586621679906283"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'9'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">9</span></span><span>
+</span><span id="line-113"></span><span>    </span><span class="annot"><a href="#local-6989586621679906283"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'a'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">10</span></span><span>
+</span><span id="line-114"></span><span>    </span><span class="annot"><a href="#local-6989586621679906283"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'b'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">11</span></span><span>
+</span><span id="line-115"></span><span>    </span><span class="annot"><a href="#local-6989586621679906283"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'c'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">12</span></span><span>
+</span><span id="line-116"></span><span>    </span><span class="annot"><a href="#local-6989586621679906283"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'d'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">13</span></span><span>
+</span><span id="line-117"></span><span>    </span><span class="annot"><a href="#local-6989586621679906283"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'e'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">14</span></span><span>
+</span><span id="line-118"></span><span>    </span><span class="annot"><a href="#local-6989586621679906283"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'f'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8
+</span><span class="hs-number">15</span></span><span>
+</span><span id="line-119"></span><span>    </span><span class="annot"><a href="#local-6989586621679906283"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span id="local-6989586621679906284"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679906284"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Word8
+forall a. HasCallStack =&gt; String -&gt; a
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Err.html#error"><span class="hs-identifier hs-var">error</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;InvalidHexDigit &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
+Item String
+</span><a href="#local-6989586621679906284"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-120"></span></pre></body></html>

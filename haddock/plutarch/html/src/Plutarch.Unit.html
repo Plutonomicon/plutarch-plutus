@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE FlexibleInstances #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE UndecidableInstances #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# OPTIONS_GHC -Wno-orphans #-}</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.Unit</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier">PUnit</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-6"></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.html"><span class="hs-identifier">Plutarch</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier">Term</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#pcon"><span class="hs-identifier">pcon</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#plet"><span class="hs-identifier">plet</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Bool.html"><span class="hs-identifier">Plutarch.Bool</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Bool.html#PBool"><span class="hs-identifier">PBool</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Bool.html#PFalse"><span class="hs-identifier">PFalse</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#PTrue"><span class="hs-identifier">PTrue</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#PEq"><span class="hs-identifier">PEq</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#POrd"><span class="hs-identifier">POrd</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#PPartialOrd"><span class="hs-identifier">PPartialOrd</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#%23%3C"><span class="hs-operator">(#&lt;)</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#%23%3C%3D"><span class="hs-operator">(#&lt;=)</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#%23%3D%3D"><span class="hs-operator">(#==)</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html"><span class="hs-identifier">Plutarch.Internal.PlutusType</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PInner"><span class="hs-identifier">PInner</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PlutusType"><span class="hs-identifier">PlutusType</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#pcon%27"><span class="hs-identifier">pcon'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#pmatch%27"><span class="hs-identifier">pmatch'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Lift.html"><span class="hs-identifier">Plutarch.Lift</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-11"></span><span>  </span><span class="annot"><a href="Plutarch.Lift.html#DerivePConstantDirect"><span class="hs-identifier">DerivePConstantDirect</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Lift.html#DerivePConstantDirect"><span class="hs-identifier">DerivePConstantDirect</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span>  </span><span class="annot"><a href="Plutarch.Lift.html#PConstantDecl"><span class="hs-identifier">PConstantDecl</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-13"></span><span>  </span><span class="annot"><a href="Plutarch.Lift.html#PLifted"><span class="hs-identifier">PLifted</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-14"></span><span>  </span><span class="annot"><a href="Plutarch.Lift.html#PUnsafeLiftDecl"><span class="hs-identifier">PUnsafeLiftDecl</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-15"></span><span>  </span><span class="annot"><a href="Plutarch.Lift.html#pconstant"><span class="hs-identifier">pconstant</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-16"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Show.html"><span class="hs-identifier">Plutarch.Show</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Show.html#PShow"><span class="hs-identifier">PShow</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Show.html#pshow%27"><span class="hs-identifier">pshow'</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">data</span><span> </span><span id="PUnit"><span class="annot"><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier hs-var">PUnit</span></a></span></span><span> </span><span id="local-6989586621679907624"><span class="annot"><a href="#local-6989586621679907624"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PUnit"><span class="annot"><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier hs-var">PUnit</span></a></span></span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Lift.html#PUnsafeLiftDecl"><span class="hs-identifier hs-type">PUnsafeLiftDecl</span></a></span><span> </span><span class="annot"><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier hs-type">PUnit</span></a></span><span> </span><span class="hs-keyword">where</span><span> </span><span class="hs-keyword">type</span><span> </span><span id="PLifted"><span class="annot"><a href="Plutarch.Lift.html#PLifted"><span class="hs-identifier hs-var">PLifted</span></a></span></span><span> </span><span class="annot"><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier hs-type">PUnit</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span id="local-6989586621679907685"><span id="local-6989586621679907693"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Lift.html#DerivePConstantDirect"><span class="hs-identifier hs-type">DerivePConstantDirect</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="annot"><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier hs-type">PUnit</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Lift.html#PConstantDecl"><span class="hs-identifier hs-type">PConstantDecl</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PlutusType"><span class="hs-identifier hs-type">PlutusType</span></a></span><span> </span><span class="annot"><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier hs-type">PUnit</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-25"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PInner"><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PInner"><span class="hs-identifier hs-var">PInner</span></a></span></span><span> </span><span class="annot"><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier hs-type">PUnit</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier hs-type">PUnit</span></a></span><span>
+</span><span id="line-26"></span><span>  </span><span id="local-6989586621679907713"><span class="annot"><span class="annottext">pcon' :: forall (s :: S). PUnit @S s -&gt; Term s (PInner (PUnit @S))
+</span><a href="Plutarch.Internal.PlutusType.html#pcon%27"><span class="hs-identifier hs-var hs-var hs-var hs-var">pcon'</span></a></span></span><span> </span><span class="annot"><span class="annottext">PUnit @S s
+</span><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier hs-var">PUnit</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PLifted (PInner (PUnit @S)) -&gt; Term s (PInner (PUnit @S))
+forall (p :: PType) (s :: S). PLift p =&gt; PLifted p -&gt; Term s p
+</span><a href="Plutarch.Lift.html#pconstant"><span class="hs-identifier hs-var">pconstant</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span>  </span><span id="local-6989586621679907714"><span class="annot"><span class="annottext">pmatch' :: forall (s :: S) (b :: PType).
+Term s (PInner (PUnit @S)) -&gt; (PUnit @S s -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.PlutusType.html#pmatch%27"><span class="hs-identifier hs-var hs-var hs-var hs-var">pmatch'</span></a></span></span><span> </span><span id="local-6989586621679907715"><span class="annot"><span class="annottext">Term s (PInner (PUnit @S))
+</span><a href="#local-6989586621679907715"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679907716"><span class="annot"><span class="annottext">PUnit @S s -&gt; Term s b
+</span><a href="#local-6989586621679907716"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s (PInner (PUnit @S))
+-&gt; (Term s (PInner (PUnit @S)) -&gt; Term s b) -&gt; Term s b
+forall (s :: S) (a :: PType) (b :: PType).
+Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.html#plet"><span class="hs-identifier hs-var">plet</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PInner (PUnit @S))
+</span><a href="#local-6989586621679907715"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">Term s (PInner (PUnit @S))
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">PUnit @S s -&gt; Term s b
+</span><a href="#local-6989586621679907716"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">PUnit @S s
+forall {k} (s :: k). PUnit @k s
+</span><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier hs-var">PUnit</span></a></span><span>
+</span><span id="line-28"></span><span>
+</span><span id="line-29"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#PEq"><span class="hs-identifier hs-type">PEq</span></a></span><span> </span><span class="annot"><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier hs-type">PUnit</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-30"></span><span>  </span><span id="local-6989586621679907722"><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><a href="#local-6989586621679907722"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679907723"><span class="annot"><span class="annottext">#== :: forall (s :: S).
+Term s (PUnit @S) -&gt; Term s (PUnit @S) -&gt; Term s PBool
+</span><a href="Plutarch.Bool.html#%23%3D%3D"><span class="hs-operator hs-var hs-var hs-var hs-var">#==</span></a></span></span><span> </span><span id="local-6989586621679907724"><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><a href="#local-6989586621679907724"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s (PUnit @S)
+-&gt; (Term s (PUnit @S) -&gt; Term s PBool) -&gt; Term s PBool
+forall (s :: S) (a :: PType) (b :: PType).
+Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.html#plet"><span class="hs-identifier hs-var">plet</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><a href="#local-6989586621679907722"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s (PUnit @S)
+-&gt; (Term s (PUnit @S) -&gt; Term s PBool) -&gt; Term s PBool
+forall (s :: S) (a :: PType) (b :: PType).
+Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.html#plet"><span class="hs-identifier hs-var">plet</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><a href="#local-6989586621679907724"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">PBool s -&gt; Term s PBool
+forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
+</span><a href="Plutarch.Internal.PlutusType.html#pcon"><span class="hs-identifier hs-var">pcon</span></a></span><span> </span><span class="annot"><span class="annottext">PBool s
+forall (s :: S). PBool s
+</span><a href="Plutarch.Bool.html#PTrue"><span class="hs-identifier hs-var">PTrue</span></a></span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#PPartialOrd"><span class="hs-identifier hs-type">PPartialOrd</span></a></span><span> </span><span class="annot"><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier hs-type">PUnit</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-33"></span><span>  </span><span id="local-6989586621679907732"><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><a href="#local-6989586621679907732"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679907733"><span class="annot"><span class="annottext">#&lt;= :: forall (s :: S).
+Term s (PUnit @S) -&gt; Term s (PUnit @S) -&gt; Term s PBool
+</span><a href="Plutarch.Bool.html#%23%3C%3D"><span class="hs-operator hs-var hs-var hs-var hs-var">#&lt;=</span></a></span></span><span> </span><span id="local-6989586621679907734"><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><a href="#local-6989586621679907734"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s (PUnit @S)
+-&gt; (Term s (PUnit @S) -&gt; Term s PBool) -&gt; Term s PBool
+forall (s :: S) (a :: PType) (b :: PType).
+Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.html#plet"><span class="hs-identifier hs-var">plet</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><a href="#local-6989586621679907732"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s (PUnit @S)
+-&gt; (Term s (PUnit @S) -&gt; Term s PBool) -&gt; Term s PBool
+forall (s :: S) (a :: PType) (b :: PType).
+Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.html#plet"><span class="hs-identifier hs-var">plet</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><a href="#local-6989586621679907734"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">PBool s -&gt; Term s PBool
+forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
+</span><a href="Plutarch.Internal.PlutusType.html#pcon"><span class="hs-identifier hs-var">pcon</span></a></span><span> </span><span class="annot"><span class="annottext">PBool s
+forall (s :: S). PBool s
+</span><a href="Plutarch.Bool.html#PTrue"><span class="hs-identifier hs-var">PTrue</span></a></span><span>
+</span><span id="line-34"></span><span>  </span><span id="local-6989586621679907736"><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><a href="#local-6989586621679907736"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679907737"><span class="annot"><span class="annottext">#&lt; :: forall (s :: S).
+Term s (PUnit @S) -&gt; Term s (PUnit @S) -&gt; Term s PBool
+</span><a href="Plutarch.Bool.html#%23%3C"><span class="hs-operator hs-var hs-var hs-var hs-var">#&lt;</span></a></span></span><span> </span><span id="local-6989586621679907738"><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><a href="#local-6989586621679907738"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s (PUnit @S)
+-&gt; (Term s (PUnit @S) -&gt; Term s PBool) -&gt; Term s PBool
+forall (s :: S) (a :: PType) (b :: PType).
+Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.html#plet"><span class="hs-identifier hs-var">plet</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><a href="#local-6989586621679907736"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s (PUnit @S)
+-&gt; (Term s (PUnit @S) -&gt; Term s PBool) -&gt; Term s PBool
+forall (s :: S) (a :: PType) (b :: PType).
+Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.html#plet"><span class="hs-identifier hs-var">plet</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><a href="#local-6989586621679907738"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">PBool s -&gt; Term s PBool
+forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
+</span><a href="Plutarch.Internal.PlutusType.html#pcon"><span class="hs-identifier hs-var">pcon</span></a></span><span> </span><span class="annot"><span class="annottext">PBool s
+forall (s :: S). PBool s
+</span><a href="Plutarch.Bool.html#PFalse"><span class="hs-identifier hs-var">PFalse</span></a></span><span>
+</span><span id="line-35"></span><span>
+</span><span id="line-36"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#POrd"><span class="hs-identifier hs-type">POrd</span></a></span><span> </span><span class="annot"><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier hs-type">PUnit</span></a></span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679907644"><span id="local-6989586621679907745"><span id="local-6989586621679907749"><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-type">Semigroup</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679907644"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier hs-type">PUnit</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-39"></span><span>  </span><span id="local-6989586621679907755"><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><a href="#local-6989586621679907755"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679907756"><span class="annot"><span class="annottext">&lt;&gt; :: Term s (PUnit @S) -&gt; Term s (PUnit @S) -&gt; Term s (PUnit @S)
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></a></span></span><span> </span><span id="local-6989586621679907757"><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><a href="#local-6989586621679907757"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s (PUnit @S)
+-&gt; (Term s (PUnit @S) -&gt; Term s (PUnit @S)) -&gt; Term s (PUnit @S)
+forall (s :: S) (a :: PType) (b :: PType).
+Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.html#plet"><span class="hs-identifier hs-var">plet</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><a href="#local-6989586621679907755"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s (PUnit @S)
+-&gt; (Term s (PUnit @S) -&gt; Term s (PUnit @S)) -&gt; Term s (PUnit @S)
+forall (s :: S) (a :: PType) (b :: PType).
+Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.html#plet"><span class="hs-identifier hs-var">plet</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><a href="#local-6989586621679907757"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">PUnit @S s -&gt; Term s (PUnit @S)
+forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
+</span><a href="Plutarch.Internal.PlutusType.html#pcon"><span class="hs-identifier hs-var">pcon</span></a></span><span> </span><span class="annot"><span class="annottext">PUnit @S s
+forall {k} (s :: k). PUnit @k s
+</span><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier hs-var">PUnit</span></a></span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679907647"><span id="local-6989586621679907762"><span id="local-6989586621679907766"><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-type">Monoid</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679907647"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier hs-type">PUnit</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-42"></span><span>  </span><span id="local-6989586621679907770"><span class="annot"><span class="annottext">mempty :: Term s (PUnit @S)
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PUnit @S s -&gt; Term s (PUnit @S)
+forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
+</span><a href="Plutarch.Internal.PlutusType.html#pcon"><span class="hs-identifier hs-var">pcon</span></a></span><span> </span><span class="annot"><span class="annottext">PUnit @S s
+forall {k} (s :: k). PUnit @k s
+</span><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier hs-var">PUnit</span></a></span><span>
+</span><span id="line-43"></span><span>
+</span><span id="line-44"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Show.html#PShow"><span class="hs-identifier hs-type">PShow</span></a></span><span> </span><span class="annot"><a href="Plutarch.Unit.html#PUnit"><span class="hs-identifier hs-type">PUnit</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-45"></span><span>  </span><span id="local-6989586621679907776"><span class="annot"><span class="annottext">pshow' :: forall (s :: S). Bool -&gt; Term s (PUnit @S) -&gt; Term s PString
+</span><a href="Plutarch.Show.html#pshow%27"><span class="hs-identifier hs-var hs-var hs-var hs-var">pshow'</span></a></span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679907777"><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><a href="#local-6989586621679907777"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s (PUnit @S)
+-&gt; (Term s (PUnit @S) -&gt; Term s PString) -&gt; Term s PString
+forall (s :: S) (a :: PType) (b :: PType).
+Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.html#plet"><span class="hs-identifier hs-var">plet</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PUnit @S)
+</span><a href="#local-6989586621679907777"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PString -&gt; Term s (PUnit @S) -&gt; Term s PString
+forall a b. a -&gt; b -&gt; a
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#const"><span class="hs-identifier hs-var">const</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PString
+</span><span class="hs-string">&quot;()&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span></pre></body></html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.Test.Run</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-2"></span><span>  </span><span class="annot"><a href="Plutarch.Test.Run.html#noUnusedGoldens"><span class="hs-identifier">noUnusedGoldens</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-3"></span><span>  </span><span class="annot"><a href="Plutarch.Test.Run.html#noUnusedGoldens%27"><span class="hs-identifier">noUnusedGoldens'</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-4"></span><span>  </span><span class="annot"><a href="Plutarch.Test.Run.html#hspecAndReturnForest"><span class="hs-identifier">hspecAndReturnForest</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-5"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-6"></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Control.Monad.html"><span class="hs-identifier">Control.Monad</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Foldable.html#forM_"><span class="hs-identifier">forM_</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Default</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">def</span></span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.List.html"><span class="hs-identifier">Data.List</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.OldList.html#isPrefixOf"><span class="hs-identifier">isPrefixOf</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Set</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Set</span></span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Set</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Set</span></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">T</span></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html"><span class="hs-identifier">Plutarch.Test.Golden</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-14"></span><span>  </span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenConf"><span class="hs-identifier">GoldenConf</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenConf"><span class="hs-identifier">GoldenConf</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#%24sel%3AchosenTests%3AGoldenConf"><span class="hs-identifier">chosenTests</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#%24sel%3AgoldenBasePath%3AGoldenConf"><span class="hs-identifier">goldenBasePath</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-15"></span><span>  </span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenKey"><span class="hs-identifier">GoldenKey</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-16"></span><span>  </span><span class="annot"><a href="Plutarch.Test.Golden.html#goldenTestPath"><span class="hs-identifier">goldenTestPath</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-17"></span><span>  </span><span class="annot"><a href="Plutarch.Test.Golden.html#mkGoldenKeyFromSpecPath"><span class="hs-identifier">mkGoldenKeyFromSpecPath</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-18"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">System.Directory</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">listDirectory</span></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/System.Environment.html"><span class="hs-identifier">System.Environment</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/System.Environment.html#getArgs"><span class="hs-identifier">getArgs</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/System.Environment.html#withArgs"><span class="hs-identifier">withArgs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/System.Exit.html"><span class="hs-identifier">System.Exit</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.IO.Exception.html#ExitCode"><span class="hs-identifier">ExitCode</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.IO.Exception.html#ExitFailure"><span class="hs-identifier">ExitFailure</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/System.Exit.html#exitWith"><span class="hs-identifier">exitWith</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/template-haskell-2.20.0.0/src/System.FilePath.html"><span class="hs-identifier">System.FilePath</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-operator">(&lt;/&gt;)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Test.Hspec</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Spec</span></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Test.Hspec.Core.Runner</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">defaultConfig</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">evalSpec</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">evaluateResult</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">readConfig</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">runSpecForest</span></span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Test.Hspec.Core.Spec</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">SpecTree</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Tree</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Leaf</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Node</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">NodeWithCleanup</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span>
+</span><span id="line-27"></span><span class="annot"><span class="hs-comment">{- | Like `hspec`,  but returns the test forest after running the tests.
+
+  Based on https://github.com/hspec/hspec/issues/649#issuecomment-1092423220
+-}</span></span><span>
+</span><span id="line-31"></span><span class="annot"><a href="Plutarch.Test.Run.html#hspecAndReturnForest"><span class="hs-identifier hs-type">hspecAndReturnForest</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Spec</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#IO"><span class="hs-identifier hs-type">IO</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">SpecTree</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-32"></span><span id="hspecAndReturnForest"><span class="annot"><span class="annottext">hspecAndReturnForest :: Spec -&gt; IO [SpecTree ()]
+</span><a href="Plutarch.Test.Run.html#hspecAndReturnForest"><span class="hs-identifier hs-var hs-var">hspecAndReturnForest</span></a></span></span><span> </span><span id="local-6989586621679216571"><span class="annot"><span class="annottext">Spec
+</span><a href="#local-6989586621679216571"><span class="hs-identifier hs-var">spec0</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-33"></span><span>  </span><span class="hs-special">(</span><span id="local-6989586621679216572"><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679216572"><span class="hs-identifier hs-var">config</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679216573"><span class="annot"><span class="annottext">[SpecTree ()]
+</span><a href="#local-6989586621679216573"><span class="hs-identifier hs-var">spec</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Config -&gt; Spec -&gt; IO (Config, [SpecTree ()])
+forall a. Config -&gt; SpecWith a -&gt; IO (Config, [SpecTree a])
+</span><span class="hs-identifier hs-var">evalSpec</span></span><span> </span><span class="annot"><span class="annottext">Config
+</span><span class="hs-identifier hs-var">defaultConfig</span></span><span> </span><span class="annot"><span class="annottext">Spec
+</span><a href="#local-6989586621679216571"><span class="hs-identifier hs-var">spec0</span></a></span><span>
+</span><span id="line-34"></span><span>  </span><span class="annot"><span class="annottext">IO [FilePath]
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/System.Environment.html#getArgs"><span class="hs-identifier hs-var">getArgs</span></a></span><span>
+</span><span id="line-35"></span><span>    </span><span class="annot"><span class="annottext">IO [FilePath] -&gt; ([FilePath] -&gt; IO Config) -&gt; IO Config
+forall a b. IO a -&gt; (a -&gt; IO b) -&gt; IO b
+forall (m :: Type -&gt; Type) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%3E%3E%3D"><span class="hs-operator hs-var">&gt;&gt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Config -&gt; [FilePath] -&gt; IO Config
+</span><span class="hs-identifier hs-var">readConfig</span></span><span> </span><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679216572"><span class="hs-identifier hs-var">config</span></a></span><span>
+</span><span id="line-36"></span><span>    </span><span class="annot"><span class="annottext">IO Config -&gt; (Config -&gt; IO SpecResult) -&gt; IO SpecResult
+forall a b. IO a -&gt; (a -&gt; IO b) -&gt; IO b
+forall (m :: Type -&gt; Type) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%3E%3E%3D"><span class="hs-operator hs-var">&gt;&gt;=</span></a></span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; IO SpecResult -&gt; IO SpecResult
+forall a. [FilePath] -&gt; IO a -&gt; IO a
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/System.Environment.html#withArgs"><span class="hs-identifier hs-var">withArgs</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">(IO SpecResult -&gt; IO SpecResult)
+-&gt; (Config -&gt; IO SpecResult) -&gt; Config -&gt; IO SpecResult
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[SpecTree ()] -&gt; Config -&gt; IO SpecResult
+</span><span class="hs-identifier hs-var">runSpecForest</span></span><span> </span><span class="annot"><span class="annottext">[SpecTree ()]
+</span><a href="#local-6989586621679216573"><span class="hs-identifier hs-var">spec</span></a></span><span>
+</span><span id="line-37"></span><span>    </span><span class="annot"><span class="annottext">IO SpecResult -&gt; (SpecResult -&gt; IO ()) -&gt; IO ()
+forall a b. IO a -&gt; (a -&gt; IO b) -&gt; IO b
+forall (m :: Type -&gt; Type) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%3E%3E%3D"><span class="hs-operator hs-var">&gt;&gt;=</span></a></span><span> </span><span class="annot"><span class="annottext">SpecResult -&gt; IO ()
+</span><span class="hs-identifier hs-var">evaluateResult</span></span><span>
+</span><span id="line-38"></span><span>  </span><span class="annot"><span class="annottext">[SpecTree ()] -&gt; IO [SpecTree ()]
+forall a. a -&gt; IO a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">[SpecTree ()]
+</span><a href="#local-6989586621679216573"><span class="hs-identifier hs-var">spec</span></a></span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="annot"><span class="hs-comment">{- | Ensures that there are no unused goldens left behind.
+
+  Use this on any `SpecTree` that internally uses `pgoldenSpec` to define the
+  golden tests. These golden file paths are accumulated, and compared to the
+  actual files existing on disk. If any golden file exists on disk, but is not
+  tracked by the `SpecTree` this function will fail, reporting the list of
+  untracked golden files.
+
+  __Example:__
+
+  @
+  noUnusedGoldens =&lt;&lt; hspecAndReturnForest spec
+  @
+-}</span></span><span>
+</span><span id="line-54"></span><span class="annot"><a href="Plutarch.Test.Run.html#noUnusedGoldens"><span class="hs-identifier hs-type">noUnusedGoldens</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">SpecTree</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#IO"><span class="hs-identifier hs-type">IO</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-55"></span><span id="noUnusedGoldens"><span class="annot"><span class="annottext">noUnusedGoldens :: [SpecTree ()] -&gt; IO ()
+</span><a href="Plutarch.Test.Run.html#noUnusedGoldens"><span class="hs-identifier hs-var hs-var">noUnusedGoldens</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GoldenConf -&gt; [SpecTree ()] -&gt; IO ()
+</span><a href="Plutarch.Test.Run.html#noUnusedGoldens%27"><span class="hs-identifier hs-var">noUnusedGoldens'</span></a></span><span> </span><span class="annot"><span class="annottext">GoldenConf
+forall a. Default a =&gt; a
+</span><span class="hs-identifier hs-var">def</span></span><span>
+</span><span id="line-56"></span><span>
+</span><span id="line-57"></span><span class="annot"><span class="hs-comment">{- | Like 'noUnusedGoldens' but takes a custom path to the golden storage.
+
+  NOTE: This relies on the assumption that the same 'GoldenConf' is used in all
+'pgoldenSpec'' calls. This function will go away after
+https://github.com/Plutonomicon/plutarch/issues/458
+-}</span></span><span>
+</span><span id="line-63"></span><span class="annot"><a href="Plutarch.Test.Run.html#noUnusedGoldens%27"><span class="hs-identifier hs-type">noUnusedGoldens'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenConf"><span class="hs-identifier hs-type">GoldenConf</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">SpecTree</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#IO"><span class="hs-identifier hs-type">IO</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-64"></span><span id="noUnusedGoldens%27"><span class="annot"><span class="annottext">noUnusedGoldens' :: GoldenConf -&gt; [SpecTree ()] -&gt; IO ()
+</span><a href="Plutarch.Test.Run.html#noUnusedGoldens%27"><span class="hs-identifier hs-var hs-var">noUnusedGoldens'</span></a></span></span><span> </span><span id="local-6989586621679216575"><span class="annot"><span class="annottext">conf :: GoldenConf
+</span><a href="#local-6989586621679216575"><span class="hs-identifier hs-var">conf</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenConf"><span class="hs-identifier hs-type">GoldenConf</span></a></span><span> </span><span class="hs-special">{</span><span id="local-6989586621679216576"><span class="annot"><span class="annottext">FilePath
+$sel:goldenBasePath:GoldenConf :: GoldenConf -&gt; FilePath
+goldenBasePath :: FilePath
+</span><a href="Plutarch.Test.Golden.html#%24sel%3AgoldenBasePath%3AGoldenConf"><span class="hs-identifier hs-var hs-var">goldenBasePath</span></a></span></span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679216577"><span class="annot"><span class="annottext">[SpecTree ()]
+</span><a href="#local-6989586621679216577"><span class="hs-identifier hs-var">specForest</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-65"></span><span>  </span><span class="hs-comment">-- A second traversal here (`runSpecM`) can be obviated after</span><span>
+</span><span id="line-66"></span><span>  </span><span class="hs-comment">-- https://github.com/hspec/hspec/issues/649</span><span>
+</span><span id="line-67"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679216578"><span class="annot"><span class="annottext">usedGoldens :: [FilePath]
+</span><a href="#local-6989586621679216578"><span class="hs-identifier hs-var hs-var">usedGoldens</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GoldenConf -&gt; [SpecTree ()] -&gt; [FilePath]
+forall a. GoldenConf -&gt; [SpecTree a] -&gt; [FilePath]
+</span><a href="Plutarch.Test.Run.html#goldenPathsUsedBy"><span class="hs-identifier hs-var">goldenPathsUsedBy</span></a></span><span> </span><span class="annot"><span class="annottext">GoldenConf
+</span><a href="#local-6989586621679216575"><span class="hs-identifier hs-var">conf</span></a></span><span> </span><span class="annot"><span class="annottext">[SpecTree ()]
+</span><a href="#local-6989586621679216577"><span class="hs-identifier hs-var">specForest</span></a></span><span>
+</span><span id="line-68"></span><span>  </span><span class="annot"><span class="annottext">FilePath -&gt; [FilePath] -&gt; IO [FilePath]
+</span><a href="Plutarch.Test.Run.html#unusedGoldens"><span class="hs-identifier hs-var">unusedGoldens</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679216576"><span class="hs-identifier hs-var">goldenBasePath</span></a></span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679216578"><span class="hs-identifier hs-var">usedGoldens</span></a></span><span> </span><span class="annot"><span class="annottext">IO [FilePath] -&gt; ([FilePath] -&gt; IO ()) -&gt; IO ()
+forall a b. IO a -&gt; (a -&gt; IO b) -&gt; IO b
+forall (m :: Type -&gt; Type) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%3E%3E%3D"><span class="hs-operator hs-var">&gt;&gt;=</span></a></span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-69"></span><span>    </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; IO ()
+forall a. a -&gt; IO a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-70"></span><span>    </span><span id="local-6989586621679216581"><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679216581"><span class="hs-identifier hs-var">unused</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-71"></span><span>      </span><span class="annot"><span class="annottext">FilePath -&gt; IO ()
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/System.IO.html#putStrLn"><span class="hs-identifier hs-var">putStrLn</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;ERROR: Unused golden files found lying around! Namely:&quot;</span></span><span>
+</span><span id="line-72"></span><span>      </span><span class="annot"><span class="annottext">[FilePath] -&gt; (FilePath -&gt; IO ()) -&gt; IO ()
+forall (t :: Type -&gt; Type) (m :: Type -&gt; Type) a b.
+(Foldable t, Monad m) =&gt;
+t a -&gt; (a -&gt; m b) -&gt; m ()
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Foldable.html#forM_"><span class="hs-identifier hs-var">forM_</span></a></span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679216581"><span class="hs-identifier hs-var">unused</span></a></span><span> </span><span class="annot"><span class="annottext">((FilePath -&gt; IO ()) -&gt; IO ()) -&gt; (FilePath -&gt; IO ()) -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679216583"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679216583"><span class="hs-identifier hs-var">fp</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-73"></span><span>        </span><span class="annot"><span class="annottext">FilePath -&gt; IO ()
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/System.IO.html#putStrLn"><span class="hs-identifier hs-var">putStrLn</span></a></span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; IO ()) -&gt; FilePath -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;- &quot;</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679216583"><span class="hs-identifier hs-var">fp</span></a></span><span>
+</span><span id="line-74"></span><span>      </span><span class="annot"><span class="annottext">ExitCode -&gt; IO ()
+forall a. ExitCode -&gt; IO a
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/System.Exit.html#exitWith"><span class="hs-identifier hs-var">exitWith</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; ExitCode
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.IO.Exception.html#ExitFailure"><span class="hs-identifier hs-var">ExitFailure</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-75"></span><span>
+</span><span id="line-76"></span><span class="annot"><span class="hs-comment">-- | Given a list of &quot;used&quot; goldens, return any unused golden files on disk.</span></span><span>
+</span><span id="line-77"></span><span class="annot"><a href="Plutarch.Test.Run.html#unusedGoldens"><span class="hs-identifier hs-type">unusedGoldens</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#IO"><span class="hs-identifier hs-type">IO</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-78"></span><span id="unusedGoldens"><span class="annot"><span class="annottext">unusedGoldens :: FilePath -&gt; [FilePath] -&gt; IO [FilePath]
+</span><a href="Plutarch.Test.Run.html#unusedGoldens"><span class="hs-identifier hs-var hs-var">unusedGoldens</span></a></span></span><span> </span><span id="local-6989586621679216584"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679216584"><span class="hs-identifier hs-var">goldenBasePath</span></a></span></span><span> </span><span id="local-6989586621679216585"><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679216585"><span class="hs-identifier hs-var">usedGoldens'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-79"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679216586"><span class="annot"><span class="annottext">usedGoldens :: Set FilePath
+</span><a href="#local-6989586621679216586"><span class="hs-identifier hs-var hs-var">usedGoldens</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; Set FilePath) -&gt; [FilePath] -&gt; Set FilePath
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; [a] -&gt; m
+forall (t :: Type -&gt; Type) m a.
+(Foldable t, Monoid m) =&gt;
+(a -&gt; m) -&gt; t a -&gt; m
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Foldable.html#foldMap"><span class="hs-identifier hs-var">foldMap</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; Set FilePath
+</span><a href="#local-6989586621679216588"><span class="hs-identifier hs-var">knownGoldens</span></a></span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679216585"><span class="hs-identifier hs-var">usedGoldens'</span></a></span><span>
+</span><span id="line-80"></span><span>  </span><span id="local-6989586621679216589"><span class="annot"><span class="annottext">Set FilePath
+</span><a href="#local-6989586621679216589"><span class="hs-identifier hs-var">allGoldens</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; Set FilePath
+forall a. Ord a =&gt; [a] -&gt; Set a
+</span><span class="hs-identifier hs-var">Set.fromList</span></span><span> </span><span class="annot"><span class="annottext">([FilePath] -&gt; Set FilePath)
+-&gt; ([FilePath] -&gt; [FilePath]) -&gt; [FilePath] -&gt; Set FilePath
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; FilePath) -&gt; [FilePath] -&gt; [FilePath]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679216584"><span class="hs-identifier hs-var">goldenBasePath</span></a></span><span> </span><span class="hs-operator">&lt;/&gt;</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([FilePath] -&gt; Set FilePath) -&gt; IO [FilePath] -&gt; IO (Set FilePath)
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO [FilePath]
+</span><span class="hs-identifier hs-var">listDirectory</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679216584"><span class="hs-identifier hs-var">goldenBasePath</span></a></span><span>
+</span><span id="line-81"></span><span>  </span><span class="annot"><span class="annottext">[FilePath] -&gt; IO [FilePath]
+forall a. a -&gt; IO a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">([FilePath] -&gt; IO [FilePath]) -&gt; [FilePath] -&gt; IO [FilePath]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
+</span><span id="line-82"></span><span>    </span><span class="annot"><span class="annottext">Set FilePath -&gt; [FilePath]
+forall a. Set a -&gt; [a]
+</span><span class="hs-identifier hs-var">Set.toList</span></span><span> </span><span class="annot"><span class="annottext">(Set FilePath -&gt; [FilePath]) -&gt; Set FilePath -&gt; [FilePath]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
+</span><span id="line-83"></span><span>      </span><span class="annot"><span class="annottext">(FilePath -&gt; Bool) -&gt; Set FilePath -&gt; Set FilePath
+forall a. (a -&gt; Bool) -&gt; Set a -&gt; Set a
+</span><span class="hs-identifier hs-var">Set.filter</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Bool -&gt; Bool
+</span><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#not"><span class="hs-identifier hs-var">not</span></a></span><span> </span><span class="annot"><span class="annottext">(Bool -&gt; Bool) -&gt; (FilePath -&gt; Bool) -&gt; FilePath -&gt; Bool
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; Bool
+forall a. Eq a =&gt; [a] -&gt; [a] -&gt; Bool
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.OldList.html#isPrefixOf"><span class="hs-identifier hs-var">isPrefixOf</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679216584"><span class="hs-identifier hs-var">goldenBasePath</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+</span><span class="hs-operator hs-var">&lt;/&gt;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;FFI.&quot;</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Set FilePath -&gt; Set FilePath) -&gt; Set FilePath -&gt; Set FilePath
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
+</span><span id="line-84"></span><span>        </span><span class="annot"><span class="annottext">Set FilePath
+</span><a href="#local-6989586621679216589"><span class="hs-identifier hs-var">allGoldens</span></a></span><span> </span><span class="annot"><span class="annottext">Set FilePath -&gt; Set FilePath -&gt; Set FilePath
+forall a. Ord a =&gt; Set a -&gt; Set a -&gt; Set a
+</span><span class="hs-operator hs-var">`Set.difference`</span></span><span> </span><span class="annot"><span class="annottext">Set FilePath
+</span><a href="#local-6989586621679216586"><span class="hs-identifier hs-var">usedGoldens</span></a></span><span>
+</span><span id="line-85"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-86"></span><span>    </span><span class="annot"><a href="#local-6989586621679216588"><span class="hs-identifier hs-type">knownGoldens</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span>
+</span><span id="line-87"></span><span>    </span><span id="local-6989586621679216588"><span class="annot"><span class="annottext">knownGoldens :: FilePath -&gt; Set FilePath
+</span><a href="#local-6989586621679216588"><span class="hs-identifier hs-var hs-var">knownGoldens</span></a></span></span><span> </span><span id="local-6989586621679216596"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679216596"><span class="hs-identifier hs-var">fp</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-88"></span><span>      </span><span class="annot"><span class="annottext">[FilePath] -&gt; Set FilePath
+forall a. Ord a =&gt; [a] -&gt; Set a
+</span><span class="hs-identifier hs-var">Set.fromList</span></span><span>
+</span><span id="line-89"></span><span>        </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679216596"><span class="hs-identifier hs-var">fp</span></a></span><span>
+</span><span id="line-90"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="hs-comment">-- Inject goldens for other flag values to be comprehensive in our</span><span>
+</span><span id="line-91"></span><span>          </span><span class="hs-comment">-- search.</span><span>
+</span><span id="line-92"></span><span>          </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; FilePath -&gt; FilePath
+</span><a href="#local-6989586621679216597"><span class="hs-identifier hs-var">replace</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;dev=true&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;dev=false&quot;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679216596"><span class="hs-identifier hs-var">fp</span></a></span><span>
+</span><span id="line-93"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; FilePath -&gt; FilePath
+</span><a href="#local-6989586621679216597"><span class="hs-identifier hs-var">replace</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;dev=false&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;dev=true&quot;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679216596"><span class="hs-identifier hs-var">fp</span></a></span><span>
+</span><span id="line-94"></span><span>        </span><span class="hs-special">]</span><span>
+</span><span id="line-95"></span><span>    </span><span id="local-6989586621679216597"><span class="annot"><span class="annottext">replace :: Text -&gt; Text -&gt; FilePath -&gt; FilePath
+</span><a href="#local-6989586621679216597"><span class="hs-identifier hs-var hs-var">replace</span></a></span></span><span> </span><span id="local-6989586621679216600"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679216600"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679216601"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679216601"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; FilePath
+</span><span class="hs-identifier hs-var">T.unpack</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; FilePath) -&gt; (FilePath -&gt; Text) -&gt; FilePath -&gt; FilePath
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">HasCallStack =&gt; Text -&gt; Text -&gt; Text -&gt; Text
+Text -&gt; Text -&gt; Text -&gt; Text
+</span><span class="hs-identifier hs-var">T.replace</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679216600"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679216601"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Text) -&gt; (FilePath -&gt; Text) -&gt; FilePath -&gt; Text
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; Text
+</span><span class="hs-identifier hs-var">T.pack</span></span><span>
+</span><span id="line-96"></span><span>
+</span><span id="line-97"></span><span id="local-6989586621679216457"><span class="annot"><a href="Plutarch.Test.Run.html#goldenPathsUsedBy"><span class="hs-identifier hs-type">goldenPathsUsedBy</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenConf"><span class="hs-identifier hs-type">GoldenConf</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">SpecTree</span></span><span> </span><span class="annot"><a href="#local-6989586621679216457"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-98"></span><span id="goldenPathsUsedBy"><span class="annot"><span class="annottext">goldenPathsUsedBy :: forall a. GoldenConf -&gt; [SpecTree a] -&gt; [FilePath]
+</span><a href="Plutarch.Test.Run.html#goldenPathsUsedBy"><span class="hs-identifier hs-var hs-var">goldenPathsUsedBy</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenConf"><span class="hs-identifier hs-type">GoldenConf</span></a></span><span> </span><span class="hs-special">{</span><span id="local-6989586621679216609"><span class="annot"><span class="annottext">Set GoldenTest
+$sel:chosenTests:GoldenConf :: GoldenConf -&gt; Set GoldenTest
+chosenTests :: Set GoldenTest
+</span><a href="Plutarch.Test.Golden.html#%24sel%3AchosenTests%3AGoldenConf"><span class="hs-identifier hs-var hs-var">chosenTests</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679216610"><span class="annot"><span class="annottext">FilePath
+$sel:goldenBasePath:GoldenConf :: GoldenConf -&gt; FilePath
+goldenBasePath :: FilePath
+</span><a href="Plutarch.Test.Golden.html#%24sel%3AgoldenBasePath%3AGoldenConf"><span class="hs-identifier hs-var hs-var">goldenBasePath</span></a></span></span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679216611"><span class="annot"><span class="annottext">[SpecTree a]
+</span><a href="#local-6989586621679216611"><span class="hs-identifier hs-var">trees</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-99"></span><span>  </span><span class="annot"><span class="annottext">((GoldenKey -&gt; [FilePath]) -&gt; [GoldenKey] -&gt; [FilePath])
+-&gt; [GoldenKey] -&gt; (GoldenKey -&gt; [FilePath]) -&gt; [FilePath]
+forall a b c. (a -&gt; b -&gt; c) -&gt; b -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#flip"><span class="hs-identifier hs-var">flip</span></a></span><span> </span><span class="annot"><span class="annottext">(GoldenKey -&gt; [FilePath]) -&gt; [GoldenKey] -&gt; [FilePath]
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; [a] -&gt; m
+forall (t :: Type -&gt; Type) m a.
+(Foldable t, Monoid m) =&gt;
+(a -&gt; m) -&gt; t a -&gt; m
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Foldable.html#foldMap"><span class="hs-identifier hs-var">foldMap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[SpecTree a] -&gt; [GoldenKey]
+forall a. [SpecTree a] -&gt; [GoldenKey]
+</span><a href="Plutarch.Test.Run.html#queryGoldens"><span class="hs-identifier hs-var">queryGoldens</span></a></span><span> </span><span class="annot"><span class="annottext">[SpecTree a]
+</span><a href="#local-6989586621679216611"><span class="hs-identifier hs-var">trees</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((GoldenKey -&gt; [FilePath]) -&gt; [FilePath])
+-&gt; (GoldenKey -&gt; [FilePath]) -&gt; [FilePath]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679216614"><span class="annot"><span class="annottext">GoldenKey
+</span><a href="#local-6989586621679216614"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-100"></span><span>    </span><span class="annot"><span class="annottext">((GoldenTest -&gt; FilePath) -&gt; [GoldenTest] -&gt; [FilePath])
+-&gt; [GoldenTest] -&gt; (GoldenTest -&gt; FilePath) -&gt; [FilePath]
+forall a b c. (a -&gt; b -&gt; c) -&gt; b -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#flip"><span class="hs-identifier hs-var">flip</span></a></span><span> </span><span class="annot"><span class="annottext">(GoldenTest -&gt; FilePath) -&gt; [GoldenTest] -&gt; [FilePath]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Set GoldenTest -&gt; [GoldenTest]
+forall a. Set a -&gt; [a]
+</span><span class="hs-identifier hs-var">Set.toList</span></span><span> </span><span class="annot"><span class="annottext">Set GoldenTest
+</span><a href="#local-6989586621679216609"><span class="hs-identifier hs-var">chosenTests</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((GoldenTest -&gt; FilePath) -&gt; [FilePath])
+-&gt; (GoldenTest -&gt; FilePath) -&gt; [FilePath]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679216615"><span class="annot"><span class="annottext">GoldenTest
+</span><a href="#local-6989586621679216615"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-101"></span><span>      </span><span class="annot"><span class="annottext">FilePath -&gt; GoldenKey -&gt; GoldenTest -&gt; FilePath
+</span><a href="Plutarch.Test.Golden.html#goldenTestPath"><span class="hs-identifier hs-var">goldenTestPath</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679216610"><span class="hs-identifier hs-var">goldenBasePath</span></a></span><span> </span><span class="annot"><span class="annottext">GoldenKey
+</span><a href="#local-6989586621679216614"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">GoldenTest
+</span><a href="#local-6989586621679216615"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-102"></span><span>
+</span><span id="line-103"></span><span class="annot"><span class="hs-comment">-- | Retrieve all golden keys used by the given test tree.</span></span><span>
+</span><span id="line-104"></span><span id="local-6989586621679216490"><span class="annot"><a href="Plutarch.Test.Run.html#queryGoldens"><span class="hs-identifier hs-type">queryGoldens</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">SpecTree</span></span><span> </span><span class="annot"><a href="#local-6989586621679216490"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenKey"><span class="hs-identifier hs-type">GoldenKey</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-105"></span><span id="queryGoldens"><span class="annot"><span class="annottext">queryGoldens :: forall a. [SpecTree a] -&gt; [GoldenKey]
+</span><a href="Plutarch.Test.Run.html#queryGoldens"><span class="hs-identifier hs-var hs-var">queryGoldens</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-106"></span><span>  </span><span class="hs-comment">-- `drop 1`, to drop the hspec-discover generated root node.</span><span>
+</span><span id="line-107"></span><span>  </span><span class="annot"><span class="annottext">([Text] -&gt; GoldenKey) -&gt; [[Text]] -&gt; [GoldenKey]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="annot"><span class="annottext">HasCallStack =&gt; [Text] -&gt; GoldenKey
+[Text] -&gt; GoldenKey
+</span><a href="Plutarch.Test.Golden.html#mkGoldenKeyFromSpecPath"><span class="hs-identifier hs-var">mkGoldenKeyFromSpecPath</span></a></span><span> </span><span class="annot"><span class="annottext">([[Text]] -&gt; [GoldenKey])
+-&gt; ([Tree (IO ()) (Item a)] -&gt; [[Text]])
+-&gt; [Tree (IO ()) (Item a)]
+-&gt; [GoldenKey]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Tree (IO ()) (Item a) -&gt; [[Text]])
+-&gt; [Tree (IO ()) (Item a)] -&gt; [[Text]]
+forall (t :: Type -&gt; Type) a b.
+Foldable t =&gt;
+(a -&gt; [b]) -&gt; t a -&gt; [b]
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Foldable.html#concatMap"><span class="hs-identifier hs-var">concatMap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Text] -&gt; Tree (IO ()) (Item a) -&gt; [[Text]]
+forall {c} {a}. [Text] -&gt; Tree c a -&gt; [[Text]]
+</span><a href="#local-6989586621679216621"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-108"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-109"></span><span>    </span><span id="local-6989586621679216621"><span class="annot"><span class="annottext">go :: [Text] -&gt; Tree c a -&gt; [[Text]]
+</span><a href="#local-6989586621679216621"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679216630"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679216630"><span class="hs-identifier hs-var">ancestors</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-110"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Node</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;golden&quot;</span></span><span> </span><span id="local-6989586621679216631"><span class="annot"><span class="annottext">[Tree c a]
+</span><a href="#local-6989586621679216631"><span class="hs-identifier hs-var">_children</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-111"></span><span>        </span><span class="hs-special">[</span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679216630"><span class="hs-identifier hs-var">ancestors</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-112"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Node</span></span><span> </span><span id="local-6989586621679216632"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679216632"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621679216633"><span class="annot"><span class="annottext">[Tree c a]
+</span><a href="#local-6989586621679216633"><span class="hs-identifier hs-var">children</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-113"></span><span>        </span><span class="annot"><span class="annottext">(Tree c a -&gt; [[Text]]) -&gt; [Tree c a] -&gt; [[Text]]
+forall (t :: Type -&gt; Type) a b.
+Foldable t =&gt;
+(a -&gt; [b]) -&gt; t a -&gt; [b]
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Foldable.html#concatMap"><span class="hs-identifier hs-var">concatMap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Text] -&gt; Tree c a -&gt; [[Text]]
+</span><a href="#local-6989586621679216621"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">([Text] -&gt; Tree c a -&gt; [[Text]]) -&gt; [Text] -&gt; Tree c a -&gt; [[Text]]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; Text
+</span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679216632"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; [Text] -&gt; [Text]
+forall a. a -&gt; [a] -&gt; [a]
+</span><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#%3A"><span class="hs-glyph hs-var">:</span></a></span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679216630"><span class="hs-identifier hs-var">ancestors</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Tree c a]
+</span><a href="#local-6989586621679216633"><span class="hs-identifier hs-var">children</span></a></span><span>
+</span><span id="line-114"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">NodeWithCleanup</span></span><span> </span><span class="annot"><span class="annottext">Maybe (FilePath, Location)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">c
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679216634"><span class="annot"><span class="annottext">[Tree c a]
+</span><a href="#local-6989586621679216634"><span class="hs-identifier hs-var">trees</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-115"></span><span>        </span><span class="annot"><span class="annottext">(Tree c a -&gt; [[Text]]) -&gt; [Tree c a] -&gt; [[Text]]
+forall (t :: Type -&gt; Type) a b.
+Foldable t =&gt;
+(a -&gt; [b]) -&gt; t a -&gt; [b]
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Foldable.html#concatMap"><span class="hs-identifier hs-var">concatMap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Text] -&gt; Tree c a -&gt; [[Text]]
+</span><a href="#local-6989586621679216621"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679216630"><span class="hs-identifier hs-var">ancestors</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Tree c a]
+</span><a href="#local-6989586621679216634"><span class="hs-identifier hs-var">trees</span></a></span><span>
+</span><span id="line-116"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Leaf</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-117"></span><span>        </span><span class="annot"><span class="annottext">[[Text]]
+forall a. Monoid a =&gt; a
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var">mempty</span></a></span><span>
+</span><span id="line-118"></span></pre></body></html>

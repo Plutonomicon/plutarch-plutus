@@ -1,0 +1,894 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE FlexibleInstances #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE UndecidableInstances #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE UndecidableSuperClasses #-}</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.Internal.ScottEncoding</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PlutusTypeScott"><span class="hs-identifier">PlutusTypeScott</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PScottEncoded"><span class="hs-identifier">PScottEncoded</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PScottEncoded"><span class="hs-identifier">PScottEncoded</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-6"></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Proxy.html"><span class="hs-identifier">Data.Proxy</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Proxy.html#Proxy"><span class="hs-identifier">Proxy</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Proxy.html#Proxy"><span class="hs-identifier">Proxy</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Generics.SOP</span></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-9"></span><span>  </span><span class="annot"><span class="hs-identifier">All</span></span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span>  </span><span class="annot"><span class="hs-identifier">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Nil</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-operator">(:*)</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-11"></span><span>  </span><span class="annot"><span class="hs-identifier">NS</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">S</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Z</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span>  </span><span class="annot"><span class="hs-identifier">SListI</span></span><span class="hs-special">,</span><span>
+</span><span id="line-13"></span><span>  </span><span class="annot"><span class="hs-identifier">SListI2</span></span><span class="hs-special">,</span><span>
+</span><span id="line-14"></span><span>  </span><span class="annot"><span class="hs-identifier">SOP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">SOP</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-15"></span><span>  </span><span class="annot"><span class="hs-identifier">case_SList</span></span><span class="hs-special">,</span><span>
+</span><span id="line-16"></span><span>  </span><span class="annot"><span class="hs-identifier">cpara_SList</span></span><span class="hs-special">,</span><span>
+</span><span id="line-17"></span><span>  </span><span class="annot"><span class="hs-identifier">para_SList</span></span><span class="hs-special">,</span><span>
+</span><span id="line-18"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.html"><span class="hs-identifier">Plutarch.Internal</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#PDelayed"><span class="hs-identifier">PDelayed</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#PType"><span class="hs-identifier">PType</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier">Term</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#pdelay"><span class="hs-identifier">pdelay</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#pforce"><span class="hs-identifier">pforce</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#plam%27"><span class="hs-identifier">plam'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#plet"><span class="hs-identifier">plet</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%23"><span class="hs-operator">(#)</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator">(:--&gt;)</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.Generic.html"><span class="hs-identifier">Plutarch.Internal.Generic</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Generic.html#PCode"><span class="hs-identifier">PCode</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.Generic.html#PGeneric"><span class="hs-identifier">PGeneric</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.Generic.html#gpfrom"><span class="hs-identifier">gpfrom</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.Generic.html#gpto"><span class="hs-identifier">gpto</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html"><span class="hs-identifier">Plutarch.Internal.PlutusType</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-22"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DerivedPInner"><span class="hs-identifier">DerivedPInner</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-23"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PInner"><span class="hs-identifier">PInner</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-24"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PlutusType"><span class="hs-identifier">PlutusType</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-25"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PlutusTypeStrat"><span class="hs-identifier">PlutusTypeStrat</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-26"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PlutusTypeStratConstraint"><span class="hs-identifier">PlutusTypeStratConstraint</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-27"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#derivedPCon"><span class="hs-identifier">derivedPCon</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-28"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#derivedPMatch"><span class="hs-identifier">derivedPMatch</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-29"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#pcon"><span class="hs-identifier">pcon</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-30"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#pcon%27"><span class="hs-identifier">pcon'</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-31"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#pmatch"><span class="hs-identifier">pmatch</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-32"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#pmatch%27"><span class="hs-identifier">pmatch'</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-33"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-34"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.Quantification.html"><span class="hs-identifier">Plutarch.Internal.Quantification</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Quantification.html#PForall"><span class="hs-identifier">PForall</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Quantification.html#PForall"><span class="hs-identifier">PForall</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span>
+</span><span id="line-36"></span><span class="hs-keyword">data</span><span> </span><span id="PlutusTypeScott"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PlutusTypeScott"><span class="hs-identifier hs-var">PlutusTypeScott</span></a></span></span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn%27"><span class="hs-identifier hs-type">ScottFn'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.Internal.html#PType"><span class="hs-identifier hs-type">PType</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#PType"><span class="hs-identifier hs-type">PType</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#PType"><span class="hs-identifier hs-type">PType</span></a></span><span>
+</span><span id="line-39"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">family</span><span> </span><span id="ScottFn%27"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn%27"><span class="hs-identifier hs-var">ScottFn'</span></a></span></span><span> </span><span id="local-6989586621679903495"><span class="annot"><a href="#local-6989586621679903495"><span class="hs-identifier hs-type">xs</span></a></span></span><span> </span><span id="local-6989586621679903496"><span class="annot"><a href="#local-6989586621679903496"><span class="hs-identifier hs-type">r</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-40"></span><span>  </span><span id="ScottFn%27"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn%27"><span class="hs-identifier hs-var">ScottFn'</span></a></span></span><span> </span><span id="local-6989586621679903497"><span class="hs-special">'</span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><a href="#local-6989586621679903497"><span class="hs-identifier hs-type">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679903497"><span class="hs-identifier hs-type">r</span></a></span><span>
+</span><span id="line-41"></span><span>  </span><span id="ScottFn%27"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn%27"><span class="hs-identifier hs-var">ScottFn'</span></a></span></span><span> </span><span id="local-6989586621679903498"><span id="local-6989586621679903499"><span id="local-6989586621679903500"><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679903498"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679903499"><span class="hs-identifier hs-type">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903500"><span class="hs-identifier hs-type">r</span></a></span></span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679903498"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn%27"><span class="hs-identifier hs-type">ScottFn'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903499"><span class="hs-identifier hs-type">xs</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903500"><span class="hs-identifier hs-type">r</span></a></span><span>
+</span><span id="line-42"></span><span>
+</span><span id="line-43"></span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn"><span class="hs-identifier hs-type">ScottFn</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.Internal.html#PType"><span class="hs-identifier hs-type">PType</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#PType"><span class="hs-identifier hs-type">PType</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#PType"><span class="hs-identifier hs-type">PType</span></a></span><span>
+</span><span id="line-44"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">family</span><span> </span><span id="ScottFn"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn"><span class="hs-identifier hs-var">ScottFn</span></a></span></span><span> </span><span id="local-6989586621679903501"><span class="annot"><a href="#local-6989586621679903501"><span class="hs-identifier hs-type">xs</span></a></span></span><span> </span><span id="local-6989586621679903502"><span class="annot"><a href="#local-6989586621679903502"><span class="hs-identifier hs-type">r</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-45"></span><span>  </span><span id="ScottFn"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn"><span class="hs-identifier hs-var">ScottFn</span></a></span></span><span> </span><span id="local-6989586621679903503"><span class="hs-special">'</span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><a href="#local-6989586621679903503"><span class="hs-identifier hs-type">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#PDelayed"><span class="hs-identifier hs-type">PDelayed</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903503"><span class="hs-identifier hs-type">r</span></a></span><span>
+</span><span id="line-46"></span><span>  </span><span id="ScottFn"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn"><span class="hs-identifier hs-var">ScottFn</span></a></span></span><span> </span><span id="local-6989586621679903504"><span id="local-6989586621679903505"><span class="annot"><a href="#local-6989586621679903504"><span class="hs-identifier hs-type">xs</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903505"><span class="hs-identifier hs-type">r</span></a></span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn%27"><span class="hs-identifier hs-type">ScottFn'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903504"><span class="hs-identifier hs-type">xs</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903505"><span class="hs-identifier hs-type">r</span></a></span><span>
+</span><span id="line-47"></span><span>
+</span><span id="line-48"></span><span class="hs-comment">-- scottList l r = map (flip scottFn r) l</span><span>
+</span><span id="line-49"></span><span class="hs-keyword">type</span><span> </span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottList"><span class="hs-identifier hs-type">ScottList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.Internal.html#PType"><span class="hs-identifier hs-type">PType</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#PType"><span class="hs-identifier hs-type">PType</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.Internal.html#PType"><span class="hs-identifier hs-type">PType</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-50"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">family</span><span> </span><span id="ScottList"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottList"><span class="hs-identifier hs-var">ScottList</span></a></span></span><span> </span><span id="local-6989586621679903506"><span class="annot"><a href="#local-6989586621679903506"><span class="hs-identifier hs-type">code</span></a></span></span><span> </span><span id="local-6989586621679903507"><span class="annot"><a href="#local-6989586621679903507"><span class="hs-identifier hs-type">r</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-51"></span><span>  </span><span id="ScottList"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottList"><span class="hs-identifier hs-var">ScottList</span></a></span></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-52"></span><span>  </span><span id="ScottList"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottList"><span class="hs-identifier hs-var">ScottList</span></a></span></span><span> </span><span id="local-6989586621679903508"><span id="local-6989586621679903509"><span id="local-6989586621679903510"><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679903508"><span class="hs-identifier hs-type">xs</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="#local-6989586621679903509"><span class="hs-identifier hs-type">xss</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903510"><span class="hs-identifier hs-type">r</span></a></span></span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn"><span class="hs-identifier hs-type">ScottFn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903508"><span class="hs-identifier hs-type">xs</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903510"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-glyph">:</span><span> </span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottList"><span class="hs-identifier hs-type">ScottList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903509"><span class="hs-identifier hs-type">xss</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903510"><span class="hs-identifier hs-type">r</span></a></span><span>
+</span><span id="line-53"></span><span>
+</span><span id="line-54"></span><span class="hs-keyword">newtype</span><span> </span><span id="PScottEncoded"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PScottEncoded"><span class="hs-identifier hs-var">PScottEncoded</span></a></span></span><span> </span><span id="local-6989586621679903209"><span class="annot"><a href="#local-6989586621679903209"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679903210"><span class="annot"><a href="#local-6989586621679903210"><span class="hs-identifier hs-type">r</span></a></span></span><span> </span><span id="local-6989586621679903208"><span class="annot"><a href="#local-6989586621679903208"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PScottEncoded"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PScottEncoded"><span class="hs-identifier hs-var">PScottEncoded</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903208"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn"><span class="hs-identifier hs-type">ScottFn</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottList"><span class="hs-identifier hs-type">ScottList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903209"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903210"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903210"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-55"></span><span>
+</span><span id="line-56"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679903201"><span id="local-6989586621679903202"><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PlutusType"><span class="hs-identifier hs-type">PlutusType</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PScottEncoded"><span class="hs-identifier hs-type">PScottEncoded</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903201"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903202"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-57"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PInner"><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PInner"><span class="hs-identifier hs-var">PInner</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PScottEncoded"><span class="hs-identifier hs-type">PScottEncoded</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903201"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903202"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn"><span class="hs-identifier hs-type">ScottFn</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottList"><span class="hs-identifier hs-type">ScottList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903201"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903202"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903202"><span class="hs-identifier hs-type">r</span></a></span><span>
+</span><span id="line-58"></span><span>  </span><span id="local-6989586621679903515"><span class="annot"><span class="annottext">pcon' :: forall (s :: S).
+PScottEncoded a r s -&gt; Term s (PInner (PScottEncoded a r))
+</span><a href="Plutarch.Internal.PlutusType.html#pcon%27"><span class="hs-identifier hs-var hs-var hs-var hs-var">pcon'</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PScottEncoded"><span class="hs-identifier hs-type">PScottEncoded</span></a></span><span> </span><span id="local-6989586621679903516"><span class="annot"><span class="annottext">Term s (ScottFn (ScottList a r) r)
+</span><a href="#local-6989586621679903516"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s (PInner (PScottEncoded a r))
+Term s (ScottFn (ScottList a r) r)
+</span><a href="#local-6989586621679903516"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-59"></span><span>  </span><span id="local-6989586621679903517"><span class="annot"><span class="annottext">pmatch' :: forall (s :: S) (b :: PType).
+Term s (PInner (PScottEncoded a r))
+-&gt; (PScottEncoded a r s -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.PlutusType.html#pmatch%27"><span class="hs-identifier hs-var hs-var hs-var hs-var">pmatch'</span></a></span></span><span> </span><span id="local-6989586621679903518"><span class="annot"><span class="annottext">Term s (PInner (PScottEncoded a r))
+</span><a href="#local-6989586621679903518"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679903519"><span class="annot"><span class="annottext">PScottEncoded a r s -&gt; Term s b
+</span><a href="#local-6989586621679903519"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PScottEncoded a r s -&gt; Term s b
+</span><a href="#local-6989586621679903519"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (ScottFn (ScottList a r) r) -&gt; PScottEncoded a r s
+forall (a :: [[PType]]) (r :: PType) (s :: S).
+Term s (ScottFn (ScottList a r) r) -&gt; PScottEncoded a r s
+</span><a href="Plutarch.Internal.ScottEncoding.html#PScottEncoded"><span class="hs-identifier hs-var">PScottEncoded</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PInner (PScottEncoded a r))
+Term s (ScottFn (ScottList a r) r)
+</span><a href="#local-6989586621679903518"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-60"></span><span>
+</span><span id="line-61"></span><span class="hs-keyword">newtype</span><span> </span><span id="PLamL%27"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PLamL%27"><span class="hs-identifier hs-var">PLamL'</span></a></span></span><span> </span><span id="local-6989586621679903211"><span class="annot"><a href="#local-6989586621679903211"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span id="local-6989586621679903212"><span class="annot"><a href="#local-6989586621679903212"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span id="local-6989586621679903213"><span class="annot"><a href="#local-6989586621679903213"><span class="hs-keyword hs-type">as</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PLamL%27"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PLamL%27"><span class="hs-identifier hs-var">PLamL'</span></a></span></span><span> </span><span class="hs-special">{</span><span id="%24sel%3AunPLamL%27%3APLamL%27"><span class="annot"><span class="annottext">forall (s :: S) (b :: PType) (as :: [PType]).
+PLamL' s b as
+-&gt; (NP @PType (Term s) as -&gt; Term s b) -&gt; Term s (ScottFn' as b)
+</span><a href="Plutarch.Internal.ScottEncoding.html#%24sel%3AunPLamL%27%3APLamL%27"><span class="hs-identifier hs-var hs-var">unPLamL'</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903211"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903213"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903211"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903212"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903211"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn%27"><span class="hs-identifier hs-type">ScottFn'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903213"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903212"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span class="hs-special">}</span><span>
+</span><span id="line-62"></span><span>
+</span><span id="line-63"></span><span class="hs-comment">-- Explicitly variadic `plam`.</span><span>
+</span><span id="line-64"></span><span id="local-6989586621679903220"><span id="local-6989586621679903222"><span id="local-6989586621679903223"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#plamL%27"><span class="hs-identifier hs-type">plamL'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SListI</span></span><span> </span><span class="annot"><a href="#local-6989586621679903220"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903222"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903220"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903222"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903223"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903222"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn%27"><span class="hs-identifier hs-type">ScottFn'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903220"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903223"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-65"></span><span id="plamL%27"><span class="annot"><span class="annottext">plamL' :: forall (as :: [PType]) (s :: S) (b :: PType).
+SListI @PType as =&gt;
+(NP @PType (Term s) as -&gt; Term s b) -&gt; Term s (ScottFn' as b)
+</span><a href="Plutarch.Internal.ScottEncoding.html#plamL%27"><span class="hs-identifier hs-var hs-var">plamL'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PLamL' s b as
+-&gt; (NP @PType (Term s) as -&gt; Term s b) -&gt; Term s (ScottFn' as b)
+forall (s :: S) (b :: PType) (as :: [PType]).
+PLamL' s b as
+-&gt; (NP @PType (Term s) as -&gt; Term s b) -&gt; Term s (ScottFn' as b)
+</span><a href="Plutarch.Internal.ScottEncoding.html#%24sel%3AunPLamL%27%3APLamL%27"><span class="hs-identifier hs-var">unPLamL'</span></a></span><span> </span><span class="annot"><span class="annottext">(PLamL' s b as
+ -&gt; (NP @PType (Term s) as -&gt; Term s b) -&gt; Term s (ScottFn' as b))
+-&gt; PLamL' s b as
+-&gt; (NP @PType (Term s) as -&gt; Term s b)
+-&gt; Term s (ScottFn' as b)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">PLamL' s b ('[] @PType)
+-&gt; (forall (y :: PType) (ys :: [PType]).
+    SListI @PType ys =&gt;
+    PLamL' s b ys -&gt; PLamL' s b ((':) @PType y ys))
+-&gt; PLamL' s b as
+forall {k} (xs :: [k]) (r :: [k] -&gt; Type).
+SListI @k xs =&gt;
+r ('[] @k)
+-&gt; (forall (y :: k) (ys :: [k]).
+    SListI @k ys =&gt;
+    r ys -&gt; r ((':) @k y ys))
+-&gt; r xs
+</span><span class="hs-identifier hs-var">para_SList</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">((NP @PType (Term s) ('[] @PType) -&gt; Term s b)
+ -&gt; Term s (ScottFn' ('[] @PType) b))
+-&gt; PLamL' s b ('[] @PType)
+forall (s :: S) (b :: PType) (as :: [PType]).
+((NP @PType (Term s) as -&gt; Term s b) -&gt; Term s (ScottFn' as b))
+-&gt; PLamL' s b as
+</span><a href="Plutarch.Internal.ScottEncoding.html#PLamL%27"><span class="hs-identifier hs-var">PLamL'</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679903525"><span class="annot"><span class="annottext">NP @PType (Term s) ('[] @PType) -&gt; Term s b
+</span><a href="#local-6989586621679903525"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) ('[] @PType) -&gt; Term s b
+</span><a href="#local-6989586621679903525"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) ('[] @PType)
+forall {k} (a :: k -&gt; Type). NP @k a ('[] @k)
+</span><span class="hs-identifier hs-var">Nil</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PLamL%27"><span class="hs-identifier hs-type">PLamL'</span></a></span><span> </span><span id="local-6989586621679903527"><span class="annot"><span class="annottext">(NP @PType (Term s) ys -&gt; Term s b) -&gt; Term s (ScottFn' ys b)
+</span><a href="#local-6989586621679903527"><span class="hs-identifier hs-var">prev</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">((NP @PType (Term s) ((':) @PType y ys) -&gt; Term s b)
+ -&gt; Term s (ScottFn' ((':) @PType y ys) b))
+-&gt; PLamL' s b ((':) @PType y ys)
+forall (s :: S) (b :: PType) (as :: [PType]).
+((NP @PType (Term s) as -&gt; Term s b) -&gt; Term s (ScottFn' as b))
+-&gt; PLamL' s b as
+</span><a href="Plutarch.Internal.ScottEncoding.html#PLamL%27"><span class="hs-identifier hs-var">PLamL'</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679903528"><span class="annot"><span class="annottext">NP @PType (Term s) ((':) @PType y ys) -&gt; Term s b
+</span><a href="#local-6989586621679903528"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Term s y -&gt; Term s (ScottFn' ys b))
+-&gt; Term s (y :--&gt; ScottFn' ys b)
+forall (s :: S) (a :: PType) (b :: PType).
+(Term s a -&gt; Term s b) -&gt; Term s (a :--&gt; b)
+</span><a href="Plutarch.Internal.html#plam%27"><span class="hs-identifier hs-var">plam'</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679903529"><span class="annot"><span class="annottext">Term s y
+</span><a href="#local-6989586621679903529"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(NP @PType (Term s) ys -&gt; Term s b) -&gt; Term s (ScottFn' ys b)
+</span><a href="#local-6989586621679903527"><span class="hs-identifier hs-var">prev</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679903530"><span class="annot"><span class="annottext">NP @PType (Term s) ys
+</span><a href="#local-6989586621679903530"><span class="hs-keyword hs-var">as</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) ((':) @PType y ys) -&gt; Term s b
+</span><a href="#local-6989586621679903528"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s y
+</span><a href="#local-6989586621679903529"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Term s y
+-&gt; NP @PType (Term s) ys -&gt; NP @PType (Term s) ((':) @PType y ys)
+forall {k} (a :: k -&gt; Type) (x :: k) (xs :: [k]).
+a x -&gt; NP @k a xs -&gt; NP @k a ((':) @k x xs)
+</span><span class="hs-operator hs-var">:*</span></span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) ys
+</span><a href="#local-6989586621679903530"><span class="hs-keyword hs-var">as</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-66"></span><span>
+</span><span id="line-67"></span><span class="hs-keyword">newtype</span><span> </span><span id="PLamL"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PLamL"><span class="hs-identifier hs-var">PLamL</span></a></span></span><span> </span><span id="local-6989586621679903245"><span class="annot"><a href="#local-6989586621679903245"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span id="local-6989586621679903246"><span class="annot"><a href="#local-6989586621679903246"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span id="local-6989586621679903247"><span class="annot"><a href="#local-6989586621679903247"><span class="hs-keyword hs-type">as</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PLamL"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PLamL"><span class="hs-identifier hs-var">PLamL</span></a></span></span><span> </span><span class="hs-special">{</span><span id="%24sel%3AunPLamL%3APLamL"><span class="annot"><span class="annottext">forall (s :: S) (b :: PType) (as :: [PType]).
+PLamL s b as
+-&gt; (NP @PType (Term s) as -&gt; Term s b) -&gt; Term s (ScottFn as b)
+</span><a href="Plutarch.Internal.ScottEncoding.html#%24sel%3AunPLamL%3APLamL"><span class="hs-identifier hs-var hs-var">unPLamL</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903245"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903247"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903245"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903246"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903245"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn"><span class="hs-identifier hs-type">ScottFn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903247"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903246"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span class="hs-special">}</span><span>
+</span><span id="line-68"></span><span>
+</span><span id="line-69"></span><span class="hs-comment">-- `pdelay`s the 0-arity case.</span><span>
+</span><span id="line-70"></span><span id="local-6989586621679903252"><span id="local-6989586621679903253"><span id="local-6989586621679903254"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#plamL"><span class="hs-identifier hs-type">plamL</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SListI</span></span><span> </span><span class="annot"><a href="#local-6989586621679903252"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903253"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903252"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903253"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903254"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903253"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn"><span class="hs-identifier hs-type">ScottFn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903252"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903254"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-71"></span><span id="plamL"><span class="annot"><span class="annottext">plamL :: forall (as :: [PType]) (s :: S) (b :: PType).
+SListI @PType as =&gt;
+(NP @PType (Term s) as -&gt; Term s b) -&gt; Term s (ScottFn as b)
+</span><a href="Plutarch.Internal.ScottEncoding.html#plamL"><span class="hs-identifier hs-var hs-var">plamL</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PLamL s b as
+-&gt; (NP @PType (Term s) as -&gt; Term s b) -&gt; Term s (ScottFn as b)
+forall (s :: S) (b :: PType) (as :: [PType]).
+PLamL s b as
+-&gt; (NP @PType (Term s) as -&gt; Term s b) -&gt; Term s (ScottFn as b)
+</span><a href="Plutarch.Internal.ScottEncoding.html#%24sel%3AunPLamL%3APLamL"><span class="hs-identifier hs-var">unPLamL</span></a></span><span> </span><span class="annot"><span class="annottext">(PLamL s b as
+ -&gt; (NP @PType (Term s) as -&gt; Term s b) -&gt; Term s (ScottFn as b))
+-&gt; PLamL s b as
+-&gt; (NP @PType (Term s) as -&gt; Term s b)
+-&gt; Term s (ScottFn as b)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">PLamL s b ('[] @PType)
+-&gt; (forall (y :: PType) (ys :: [PType]).
+    SListI @PType ys =&gt;
+    PLamL s b ((':) @PType y ys))
+-&gt; PLamL s b as
+forall {k} (xs :: [k]) (r :: [k] -&gt; Type).
+SListI @k xs =&gt;
+r ('[] @k)
+-&gt; (forall (y :: k) (ys :: [k]). SListI @k ys =&gt; r ((':) @k y ys))
+-&gt; r xs
+</span><span class="hs-identifier hs-var">case_SList</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">((NP @PType (Term s) ('[] @PType) -&gt; Term s b)
+ -&gt; Term s (ScottFn ('[] @PType) b))
+-&gt; PLamL s b ('[] @PType)
+forall (s :: S) (b :: PType) (as :: [PType]).
+((NP @PType (Term s) as -&gt; Term s b) -&gt; Term s (ScottFn as b))
+-&gt; PLamL s b as
+</span><a href="Plutarch.Internal.ScottEncoding.html#PLamL"><span class="hs-identifier hs-var">PLamL</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679903536"><span class="annot"><span class="annottext">NP @PType (Term s) ('[] @PType) -&gt; Term s b
+</span><a href="#local-6989586621679903536"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s b -&gt; Term s (PDelayed b)
+forall (s :: S) (a :: PType). Term s a -&gt; Term s (PDelayed a)
+</span><a href="Plutarch.Internal.html#pdelay"><span class="hs-identifier hs-var">pdelay</span></a></span><span> </span><span class="annot"><span class="annottext">(Term s b -&gt; Term s (PDelayed b))
+-&gt; Term s b -&gt; Term s (PDelayed b)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) ('[] @PType) -&gt; Term s b
+</span><a href="#local-6989586621679903536"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) ('[] @PType)
+forall {k} (a :: k -&gt; Type). NP @k a ('[] @k)
+</span><span class="hs-identifier hs-var">Nil</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">((NP @PType (Term s) ((':) @PType y ys) -&gt; Term s b)
+ -&gt; Term s (ScottFn ((':) @PType y ys) b))
+-&gt; PLamL s b ((':) @PType y ys)
+forall (s :: S) (b :: PType) (as :: [PType]).
+((NP @PType (Term s) as -&gt; Term s b) -&gt; Term s (ScottFn as b))
+-&gt; PLamL s b as
+</span><a href="Plutarch.Internal.ScottEncoding.html#PLamL"><span class="hs-identifier hs-var">PLamL</span></a></span><span> </span><span class="annot"><span class="annottext">(NP @PType (Term s) ((':) @PType y ys) -&gt; Term s b)
+-&gt; Term s (ScottFn ((':) @PType y ys) b)
+(NP @PType (Term s) ((':) @PType y ys) -&gt; Term s b)
+-&gt; Term s (ScottFn' ((':) @PType y ys) b)
+forall (as :: [PType]) (s :: S) (b :: PType).
+SListI @PType as =&gt;
+(NP @PType (Term s) as -&gt; Term s b) -&gt; Term s (ScottFn' as b)
+</span><a href="Plutarch.Internal.ScottEncoding.html#plamL%27"><span class="hs-identifier hs-var">plamL'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-72"></span><span>
+</span><span id="line-73"></span><span class="hs-keyword">newtype</span><span> </span><span id="PAppL%27"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PAppL%27"><span class="hs-identifier hs-var">PAppL'</span></a></span></span><span> </span><span id="local-6989586621679903276"><span class="annot"><a href="#local-6989586621679903276"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span id="local-6989586621679903277"><span class="annot"><a href="#local-6989586621679903277"><span class="hs-identifier hs-type">r</span></a></span></span><span> </span><span id="local-6989586621679903278"><span class="annot"><a href="#local-6989586621679903278"><span class="hs-keyword hs-type">as</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PAppL%27"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PAppL%27"><span class="hs-identifier hs-var">PAppL'</span></a></span></span><span> </span><span class="hs-special">{</span><span id="%24sel%3AunPAppL%27%3APAppL%27"><span class="annot"><span class="annottext">forall (s :: S) (r :: PType) (as :: [PType]).
+PAppL' s r as
+-&gt; Term s (ScottFn' as r) -&gt; NP @PType (Term s) as -&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#%24sel%3AunPAppL%27%3APAppL%27"><span class="hs-identifier hs-var hs-var">unPAppL'</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903276"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn%27"><span class="hs-identifier hs-type">ScottFn'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903278"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903277"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903276"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903278"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903276"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903277"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">}</span><span>
+</span><span id="line-74"></span><span>
+</span><span id="line-75"></span><span id="local-6989586621679903283"><span id="local-6989586621679903284"><span id="local-6989586621679903285"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#pappL%27"><span class="hs-identifier hs-type">pappL'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SListI</span></span><span> </span><span class="annot"><a href="#local-6989586621679903283"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903284"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn%27"><span class="hs-identifier hs-type">ScottFn'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903283"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903285"><span class="hs-identifier hs-type">c</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903284"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903283"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903284"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903285"><span class="hs-identifier hs-type">c</span></a></span></span></span></span><span>
+</span><span id="line-76"></span><span id="pappL%27"><span class="annot"><span class="annottext">pappL' :: forall (as :: [PType]) (s :: S) (c :: PType).
+SListI @PType as =&gt;
+Term s (ScottFn' as c) -&gt; NP @PType (Term s) as -&gt; Term s c
+</span><a href="Plutarch.Internal.ScottEncoding.html#pappL%27"><span class="hs-identifier hs-var hs-var">pappL'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PAppL' s c as
+-&gt; Term s (ScottFn' as c) -&gt; NP @PType (Term s) as -&gt; Term s c
+forall (s :: S) (r :: PType) (as :: [PType]).
+PAppL' s r as
+-&gt; Term s (ScottFn' as r) -&gt; NP @PType (Term s) as -&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#%24sel%3AunPAppL%27%3APAppL%27"><span class="hs-identifier hs-var">unPAppL'</span></a></span><span> </span><span class="annot"><span class="annottext">(PAppL' s c as
+ -&gt; Term s (ScottFn' as c) -&gt; NP @PType (Term s) as -&gt; Term s c)
+-&gt; PAppL' s c as
+-&gt; Term s (ScottFn' as c)
+-&gt; NP @PType (Term s) as
+-&gt; Term s c
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">PAppL' s c ('[] @PType)
+-&gt; (forall (y :: PType) (ys :: [PType]).
+    SListI @PType ys =&gt;
+    PAppL' s c ys -&gt; PAppL' s c ((':) @PType y ys))
+-&gt; PAppL' s c as
+forall {k} (xs :: [k]) (r :: [k] -&gt; Type).
+SListI @k xs =&gt;
+r ('[] @k)
+-&gt; (forall (y :: k) (ys :: [k]).
+    SListI @k ys =&gt;
+    r ys -&gt; r ((':) @k y ys))
+-&gt; r xs
+</span><span class="hs-identifier hs-var">para_SList</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Term s (ScottFn' ('[] @PType) c)
+ -&gt; NP @PType (Term s) ('[] @PType) -&gt; Term s c)
+-&gt; PAppL' s c ('[] @PType)
+forall (s :: S) (r :: PType) (as :: [PType]).
+(Term s (ScottFn' as r) -&gt; NP @PType (Term s) as -&gt; Term s r)
+-&gt; PAppL' s r as
+</span><a href="Plutarch.Internal.ScottEncoding.html#PAppL%27"><span class="hs-identifier hs-var">PAppL'</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679903547"><span class="annot"><span class="annottext">Term s (ScottFn' ('[] @PType) c)
+</span><a href="#local-6989586621679903547"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) ('[] @PType)
+</span><span class="hs-identifier hs-var">Nil</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s c
+Term s (ScottFn' ('[] @PType) c)
+</span><a href="#local-6989586621679903547"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PAppL%27"><span class="hs-identifier hs-type">PAppL'</span></a></span><span> </span><span id="local-6989586621679903550"><span class="annot"><span class="annottext">Term s (ScottFn' ys c) -&gt; NP @PType (Term s) ys -&gt; Term s c
+</span><a href="#local-6989586621679903550"><span class="hs-identifier hs-var">prev</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Term s (ScottFn' ((':) @PType y ys) c)
+ -&gt; NP @PType (Term s) ((':) @PType y ys) -&gt; Term s c)
+-&gt; PAppL' s c ((':) @PType y ys)
+forall (s :: S) (r :: PType) (as :: [PType]).
+(Term s (ScottFn' as r) -&gt; NP @PType (Term s) as -&gt; Term s r)
+-&gt; PAppL' s r as
+</span><a href="Plutarch.Internal.ScottEncoding.html#PAppL%27"><span class="hs-identifier hs-var">PAppL'</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679903551"><span class="annot"><span class="annottext">Term s (ScottFn' ((':) @PType y ys) c)
+</span><a href="#local-6989586621679903551"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679903559"><span class="annot"><span class="annottext">Term s x
+</span><a href="#local-6989586621679903559"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:*</span></span><span> </span><span id="local-6989586621679903560"><span class="annot"><span class="annottext">NP @PType (Term s) xs
+</span><a href="#local-6989586621679903560"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s (ScottFn' ys c) -&gt; NP @PType (Term s) ys -&gt; Term s c
+</span><a href="#local-6989586621679903550"><span class="hs-identifier hs-var">prev</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (x :--&gt; ScottFn' ys c)
+Term s (ScottFn' ((':) @PType y ys) c)
+</span><a href="#local-6989586621679903551"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (x :--&gt; ScottFn' ys c) -&gt; Term s x -&gt; Term s (ScottFn' ys c)
+forall (s :: S) (a :: PType) (b :: PType).
+HasCallStack =&gt;
+Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s x
+</span><a href="#local-6989586621679903559"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) ys
+NP @PType (Term s) xs
+</span><a href="#local-6989586621679903560"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-77"></span><span>
+</span><span id="line-78"></span><span class="hs-keyword">newtype</span><span> </span><span id="PAppL"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PAppL"><span class="hs-identifier hs-var">PAppL</span></a></span></span><span> </span><span id="local-6989586621679903297"><span class="annot"><a href="#local-6989586621679903297"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span id="local-6989586621679903298"><span class="annot"><a href="#local-6989586621679903298"><span class="hs-identifier hs-type">r</span></a></span></span><span> </span><span id="local-6989586621679903299"><span class="annot"><a href="#local-6989586621679903299"><span class="hs-keyword hs-type">as</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PAppL"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PAppL"><span class="hs-identifier hs-var">PAppL</span></a></span></span><span> </span><span class="hs-special">{</span><span id="%24sel%3AunPAppL%3APAppL"><span class="annot"><span class="annottext">forall (s :: S) (r :: PType) (as :: [PType]).
+PAppL s r as
+-&gt; Term s (ScottFn as r) -&gt; NP @PType (Term s) as -&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#%24sel%3AunPAppL%3APAppL"><span class="hs-identifier hs-var hs-var">unPAppL</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903297"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn"><span class="hs-identifier hs-type">ScottFn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903299"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903298"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903297"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903299"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903297"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903298"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">}</span><span>
+</span><span id="line-79"></span><span>
+</span><span id="line-80"></span><span id="local-6989586621679903304"><span id="local-6989586621679903305"><span id="local-6989586621679903306"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#pappL"><span class="hs-identifier hs-type">pappL</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SListI</span></span><span> </span><span class="annot"><a href="#local-6989586621679903304"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903305"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottFn"><span class="hs-identifier hs-type">ScottFn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903304"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903306"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903305"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903304"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903305"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903306"><span class="hs-identifier hs-type">r</span></a></span></span></span></span><span>
+</span><span id="line-81"></span><span id="pappL"><span class="annot"><span class="annottext">pappL :: forall (as :: [PType]) (s :: S) (r :: PType).
+SListI @PType as =&gt;
+Term s (ScottFn as r) -&gt; NP @PType (Term s) as -&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#pappL"><span class="hs-identifier hs-var hs-var">pappL</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PAppL s r as
+-&gt; Term s (ScottFn as r) -&gt; NP @PType (Term s) as -&gt; Term s r
+forall (s :: S) (r :: PType) (as :: [PType]).
+PAppL s r as
+-&gt; Term s (ScottFn as r) -&gt; NP @PType (Term s) as -&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#%24sel%3AunPAppL%3APAppL"><span class="hs-identifier hs-var">unPAppL</span></a></span><span> </span><span class="annot"><span class="annottext">(PAppL s r as
+ -&gt; Term s (ScottFn as r) -&gt; NP @PType (Term s) as -&gt; Term s r)
+-&gt; PAppL s r as
+-&gt; Term s (ScottFn as r)
+-&gt; NP @PType (Term s) as
+-&gt; Term s r
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">PAppL s r ('[] @PType)
+-&gt; (forall (y :: PType) (ys :: [PType]).
+    SListI @PType ys =&gt;
+    PAppL s r ((':) @PType y ys))
+-&gt; PAppL s r as
+forall {k} (xs :: [k]) (r :: [k] -&gt; Type).
+SListI @k xs =&gt;
+r ('[] @k)
+-&gt; (forall (y :: k) (ys :: [k]). SListI @k ys =&gt; r ((':) @k y ys))
+-&gt; r xs
+</span><span class="hs-identifier hs-var">case_SList</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Term s (ScottFn ('[] @PType) r)
+ -&gt; NP @PType (Term s) ('[] @PType) -&gt; Term s r)
+-&gt; PAppL s r ('[] @PType)
+forall (s :: S) (r :: PType) (as :: [PType]).
+(Term s (ScottFn as r) -&gt; NP @PType (Term s) as -&gt; Term s r)
+-&gt; PAppL s r as
+</span><a href="Plutarch.Internal.ScottEncoding.html#PAppL"><span class="hs-identifier hs-var">PAppL</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679903566"><span class="annot"><span class="annottext">Term s (ScottFn ('[] @PType) r)
+</span><a href="#local-6989586621679903566"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) ('[] @PType)
+</span><span class="hs-identifier hs-var">Nil</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s (PDelayed r) -&gt; Term s r
+forall (s :: S) (a :: PType). Term s (PDelayed a) -&gt; Term s a
+</span><a href="Plutarch.Internal.html#pforce"><span class="hs-identifier hs-var">pforce</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PDelayed r)
+Term s (ScottFn ('[] @PType) r)
+</span><a href="#local-6989586621679903566"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Term s (ScottFn ((':) @PType y ys) r)
+ -&gt; NP @PType (Term s) ((':) @PType y ys) -&gt; Term s r)
+-&gt; PAppL s r ((':) @PType y ys)
+forall (s :: S) (r :: PType) (as :: [PType]).
+(Term s (ScottFn as r) -&gt; NP @PType (Term s) as -&gt; Term s r)
+-&gt; PAppL s r as
+</span><a href="Plutarch.Internal.ScottEncoding.html#PAppL"><span class="hs-identifier hs-var">PAppL</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (ScottFn ((':) @PType y ys) r)
+-&gt; NP @PType (Term s) ((':) @PType y ys) -&gt; Term s r
+Term s (ScottFn' ((':) @PType y ys) r)
+-&gt; NP @PType (Term s) ((':) @PType y ys) -&gt; Term s r
+forall (as :: [PType]) (s :: S) (c :: PType).
+SListI @PType as =&gt;
+Term s (ScottFn' as c) -&gt; NP @PType (Term s) as -&gt; Term s c
+</span><a href="Plutarch.Internal.ScottEncoding.html#pappL%27"><span class="hs-identifier hs-var">pappL'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-82"></span><span>
+</span><span id="line-83"></span><span class="hs-keyword">newtype</span><span> </span><span id="PLetL"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PLetL"><span class="hs-identifier hs-var">PLetL</span></a></span></span><span> </span><span id="local-6989586621679903314"><span class="annot"><a href="#local-6989586621679903314"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span id="local-6989586621679903315"><span class="annot"><a href="#local-6989586621679903315"><span class="hs-identifier hs-type">r</span></a></span></span><span> </span><span id="local-6989586621679903316"><span class="annot"><a href="#local-6989586621679903316"><span class="hs-keyword hs-type">as</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PLetL"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PLetL"><span class="hs-identifier hs-var">PLetL</span></a></span></span><span> </span><span class="hs-special">{</span><span id="%24sel%3AunPLetL%3APLetL"><span class="annot"><span class="annottext">forall (s :: S) (r :: PType) (as :: [PType]).
+PLetL s r as
+-&gt; NP @PType (Term s) as
+-&gt; (NP @PType (Term s) as -&gt; Term s r)
+-&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#%24sel%3AunPLetL%3APLetL"><span class="hs-identifier hs-var hs-var">unPLetL</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903314"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903316"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903314"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903316"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903314"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903315"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903314"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903315"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">}</span><span>
+</span><span id="line-84"></span><span>
+</span><span id="line-85"></span><span id="local-6989586621679903321"><span id="local-6989586621679903322"><span id="local-6989586621679903323"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#pletL%27"><span class="hs-identifier hs-type">pletL'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SListI</span></span><span> </span><span class="annot"><a href="#local-6989586621679903321"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903322"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903321"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903322"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903321"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903322"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903323"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903322"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903323"><span class="hs-identifier hs-type">r</span></a></span></span></span></span><span>
+</span><span id="line-86"></span><span id="pletL%27"><span class="annot"><span class="annottext">pletL' :: forall (as :: [PType]) (s :: S) (r :: PType).
+SListI @PType as =&gt;
+NP @PType (Term s) as
+-&gt; (NP @PType (Term s) as -&gt; Term s r) -&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#pletL%27"><span class="hs-identifier hs-var hs-var">pletL'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PLetL s r as
+-&gt; NP @PType (Term s) as
+-&gt; (NP @PType (Term s) as -&gt; Term s r)
+-&gt; Term s r
+forall (s :: S) (r :: PType) (as :: [PType]).
+PLetL s r as
+-&gt; NP @PType (Term s) as
+-&gt; (NP @PType (Term s) as -&gt; Term s r)
+-&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#%24sel%3AunPLetL%3APLetL"><span class="hs-identifier hs-var">unPLetL</span></a></span><span> </span><span class="annot"><span class="annottext">(PLetL s r as
+ -&gt; NP @PType (Term s) as
+ -&gt; (NP @PType (Term s) as -&gt; Term s r)
+ -&gt; Term s r)
+-&gt; PLetL s r as
+-&gt; NP @PType (Term s) as
+-&gt; (NP @PType (Term s) as -&gt; Term s r)
+-&gt; Term s r
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">PLetL s r ('[] @PType)
+-&gt; (forall (y :: PType) (ys :: [PType]).
+    SListI @PType ys =&gt;
+    PLetL s r ys -&gt; PLetL s r ((':) @PType y ys))
+-&gt; PLetL s r as
+forall {k} (xs :: [k]) (r :: [k] -&gt; Type).
+SListI @k xs =&gt;
+r ('[] @k)
+-&gt; (forall (y :: k) (ys :: [k]).
+    SListI @k ys =&gt;
+    r ys -&gt; r ((':) @k y ys))
+-&gt; r xs
+</span><span class="hs-identifier hs-var">para_SList</span></span><span>
+</span><span id="line-87"></span><span>  </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(NP @PType (Term s) ('[] @PType)
+ -&gt; (NP @PType (Term s) ('[] @PType) -&gt; Term s r) -&gt; Term s r)
+-&gt; PLetL s r ('[] @PType)
+forall (s :: S) (r :: PType) (as :: [PType]).
+(NP @PType (Term s) as
+ -&gt; (NP @PType (Term s) as -&gt; Term s r) -&gt; Term s r)
+-&gt; PLetL s r as
+</span><a href="Plutarch.Internal.ScottEncoding.html#PLetL"><span class="hs-identifier hs-var">PLetL</span></a></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">NP @PType (Term s) ('[] @PType)
+</span><span class="hs-identifier hs-var">Nil</span></span><span> </span><span id="local-6989586621679903577"><span class="annot"><span class="annottext">NP @PType (Term s) ('[] @PType) -&gt; Term s r
+</span><a href="#local-6989586621679903577"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) ('[] @PType) -&gt; Term s r
+</span><a href="#local-6989586621679903577"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) ('[] @PType)
+forall {k} (a :: k -&gt; Type). NP @k a ('[] @k)
+</span><span class="hs-identifier hs-var">Nil</span></span><span class="hs-special">)</span><span>
+</span><span id="line-88"></span><span>  </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PLetL"><span class="hs-identifier hs-type">PLetL</span></a></span><span> </span><span id="local-6989586621679903579"><span class="annot"><span class="annottext">NP @PType (Term s) ys
+-&gt; (NP @PType (Term s) ys -&gt; Term s r) -&gt; Term s r
+</span><a href="#local-6989586621679903579"><span class="hs-identifier hs-var">prev</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(NP @PType (Term s) ((':) @PType y ys)
+ -&gt; (NP @PType (Term s) ((':) @PType y ys) -&gt; Term s r) -&gt; Term s r)
+-&gt; PLetL s r ((':) @PType y ys)
+forall (s :: S) (r :: PType) (as :: [PType]).
+(NP @PType (Term s) as
+ -&gt; (NP @PType (Term s) as -&gt; Term s r) -&gt; Term s r)
+-&gt; PLetL s r as
+</span><a href="Plutarch.Internal.ScottEncoding.html#PLetL"><span class="hs-identifier hs-var">PLetL</span></a></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679903585"><span class="annot"><span class="annottext">Term s x
+</span><a href="#local-6989586621679903585"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:*</span></span><span> </span><span id="local-6989586621679903586"><span class="annot"><span class="annottext">NP @PType (Term s) xs
+</span><a href="#local-6989586621679903586"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679903587"><span class="annot"><span class="annottext">NP @PType (Term s) ((':) @PType y ys) -&gt; Term s r
+</span><a href="#local-6989586621679903587"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s x -&gt; (Term s x -&gt; Term s r) -&gt; Term s r
+forall (s :: S) (a :: PType) (b :: PType).
+Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.html#plet"><span class="hs-identifier hs-var">plet</span></a></span><span> </span><span class="annot"><span class="annottext">Term s x
+</span><a href="#local-6989586621679903585"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679903588"><span class="annot"><span class="annottext">Term s x
+</span><a href="#local-6989586621679903588"><span class="hs-identifier hs-var">x'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-89"></span><span>    </span><span class="annot"><span class="annottext">NP @PType (Term s) ys
+-&gt; (NP @PType (Term s) ys -&gt; Term s r) -&gt; Term s r
+</span><a href="#local-6989586621679903579"><span class="hs-identifier hs-var">prev</span></a></span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) ys
+NP @PType (Term s) xs
+</span><a href="#local-6989586621679903586"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679903589"><span class="annot"><span class="annottext">NP @PType (Term s) ys
+</span><a href="#local-6989586621679903589"><span class="hs-identifier hs-var">xs'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) ((':) @PType y ys) -&gt; Term s r
+</span><a href="#local-6989586621679903587"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s x
+</span><a href="#local-6989586621679903588"><span class="hs-identifier hs-var">x'</span></a></span><span> </span><span class="annot"><span class="annottext">Term s x
+-&gt; NP @PType (Term s) ys -&gt; NP @PType (Term s) ((':) @PType x ys)
+forall {k} (a :: k -&gt; Type) (x :: k) (xs :: [k]).
+a x -&gt; NP @k a xs -&gt; NP @k a ((':) @k x xs)
+</span><span class="hs-operator hs-var">:*</span></span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) ys
+</span><a href="#local-6989586621679903589"><span class="hs-identifier hs-var">xs'</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-90"></span><span>
+</span><span id="line-91"></span><span id="local-6989586621679903334"><span id="local-6989586621679903335"><span id="local-6989586621679903337"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#pletL"><span class="hs-identifier hs-type">pletL</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">All</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">SListI</span></span><span> </span><span class="annot"><a href="#local-6989586621679903334"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SOP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903335"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903334"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">SOP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903335"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903334"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903335"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903337"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903335"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903337"><span class="hs-identifier hs-type">r</span></a></span></span></span></span><span>
+</span><span id="line-92"></span><span id="pletL"><span class="annot"><span class="annottext">pletL :: forall (as :: [[PType]]) (s :: S) (r :: PType).
+All @[PType] (SListI @PType) as =&gt;
+SOP @PType (Term s) as
+-&gt; (SOP @PType (Term s) as -&gt; Term s r) -&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#pletL"><span class="hs-identifier hs-var hs-var">pletL</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">SOP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Z</span></span><span> </span><span id="local-6989586621679903598"><span class="annot"><span class="annottext">NP @PType (Term s) x
+</span><a href="#local-6989586621679903598"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679903599"><span class="annot"><span class="annottext">SOP @PType (Term s) as -&gt; Term s r
+</span><a href="#local-6989586621679903599"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) x
+-&gt; (NP @PType (Term s) x -&gt; Term s r) -&gt; Term s r
+forall (as :: [PType]) (s :: S) (r :: PType).
+SListI @PType as =&gt;
+NP @PType (Term s) as
+-&gt; (NP @PType (Term s) as -&gt; Term s r) -&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#pletL%27"><span class="hs-identifier hs-var">pletL'</span></a></span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) x
+</span><a href="#local-6989586621679903598"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679903600"><span class="annot"><span class="annottext">NP @PType (Term s) x
+</span><a href="#local-6989586621679903600"><span class="hs-identifier hs-var">x'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">SOP @PType (Term s) as -&gt; Term s r
+</span><a href="#local-6989586621679903599"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">NS @[PType] (NP @PType (Term s)) as -&gt; SOP @PType (Term s) as
+forall k (f :: k -&gt; Type) (xss :: [[k]]).
+NS @[k] (NP @k f) xss -&gt; SOP @k f xss
+</span><span class="hs-identifier hs-var">SOP</span></span><span> </span><span class="annot"><span class="annottext">(NS @[PType] (NP @PType (Term s)) as -&gt; SOP @PType (Term s) as)
+-&gt; NS @[PType] (NP @PType (Term s)) as -&gt; SOP @PType (Term s) as
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) x
+-&gt; NS @[PType] (NP @PType (Term s)) ((':) @[PType] x xs)
+forall {k} (a :: k -&gt; Type) (x :: k) (xs :: [k]).
+a x -&gt; NS @k a ((':) @k x xs)
+</span><span class="hs-identifier hs-var">Z</span></span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) x
+</span><a href="#local-6989586621679903600"><span class="hs-identifier hs-var">x'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-93"></span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#pletL"><span class="hs-identifier hs-var">pletL</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">SOP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span> </span><span id="local-6989586621679903605"><span class="annot"><span class="annottext">NS @[PType] (NP @PType (Term s)) xs
+</span><a href="#local-6989586621679903605"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679903606"><span class="annot"><span class="annottext">SOP @PType (Term s) as -&gt; Term s r
+</span><a href="#local-6989586621679903606"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SOP @PType (Term s) xs
+-&gt; (SOP @PType (Term s) xs -&gt; Term s r) -&gt; Term s r
+forall (as :: [[PType]]) (s :: S) (r :: PType).
+All @[PType] (SListI @PType) as =&gt;
+SOP @PType (Term s) as
+-&gt; (SOP @PType (Term s) as -&gt; Term s r) -&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#pletL"><span class="hs-identifier hs-var">pletL</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">NS @[PType] (NP @PType (Term s)) xs -&gt; SOP @PType (Term s) xs
+forall k (f :: k -&gt; Type) (xss :: [[k]]).
+NS @[k] (NP @k f) xss -&gt; SOP @k f xss
+</span><span class="hs-identifier hs-var">SOP</span></span><span> </span><span class="annot"><span class="annottext">NS @[PType] (NP @PType (Term s)) xs
+</span><a href="#local-6989586621679903605"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">SOP</span></span><span> </span><span id="local-6989586621679903607"><span class="annot"><span class="annottext">NS @[PType] (NP @PType (Term s)) xs
+</span><a href="#local-6989586621679903607"><span class="hs-identifier hs-var">xs'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">SOP @PType (Term s) as -&gt; Term s r
+</span><a href="#local-6989586621679903606"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">NS @[PType] (NP @PType (Term s)) as -&gt; SOP @PType (Term s) as
+forall k (f :: k -&gt; Type) (xss :: [[k]]).
+NS @[k] (NP @k f) xss -&gt; SOP @k f xss
+</span><span class="hs-identifier hs-var">SOP</span></span><span> </span><span class="annot"><span class="annottext">(NS @[PType] (NP @PType (Term s)) as -&gt; SOP @PType (Term s) as)
+-&gt; NS @[PType] (NP @PType (Term s)) as -&gt; SOP @PType (Term s) as
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">NS @[PType] (NP @PType (Term s)) xs
+-&gt; NS @[PType] (NP @PType (Term s)) ((':) @[PType] x xs)
+forall {k} (a :: k -&gt; Type) (xs :: [k]) (x :: k).
+NS @k a xs -&gt; NS @k a ((':) @k x xs)
+</span><span class="hs-identifier hs-var">S</span></span><span> </span><span class="annot"><span class="annottext">NS @[PType] (NP @PType (Term s)) xs
+</span><a href="#local-6989586621679903607"><span class="hs-identifier hs-var">xs'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-94"></span><span>
+</span><span id="line-95"></span><span class="hs-keyword">newtype</span><span> </span><span id="GPCon%27"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#GPCon%27"><span class="hs-identifier hs-var">GPCon'</span></a></span></span><span> </span><span id="local-6989586621679903361"><span class="annot"><a href="#local-6989586621679903361"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span id="local-6989586621679903362"><span class="annot"><a href="#local-6989586621679903362"><span class="hs-identifier hs-type">r</span></a></span></span><span> </span><span id="local-6989586621679903363"><span class="annot"><a href="#local-6989586621679903363"><span class="hs-keyword hs-type">as</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="GPCon%27"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#GPCon%27"><span class="hs-identifier hs-var">GPCon'</span></a></span></span><span> </span><span class="hs-special">{</span><span id="%24sel%3AunGPCon%27%3AGPCon%27"><span class="annot"><span class="annottext">forall (s :: S) (r :: PType) (as :: [[PType]]).
+GPCon' s r as
+-&gt; NP @PType (Term s) (ScottList as r)
+-&gt; NS @[PType] (NP @PType (Term s)) as
+-&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#%24sel%3AunGPCon%27%3AGPCon%27"><span class="hs-identifier hs-var hs-var">unGPCon'</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903361"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottList"><span class="hs-identifier hs-type">ScottList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903363"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903362"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NS</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903361"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903363"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903361"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903362"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">}</span><span>
+</span><span id="line-96"></span><span>
+</span><span id="line-97"></span><span class="annot"><span class="hs-comment">{- |
+  `gpcon'`, given a *partial* scott encoding (as a `PLamL`) and a sum choice, applies
+  that encoding to the sum choice.
+
+  The partial encoding is any tail of the full scott encoded function, such that
+  one of its elements corresponds to the sum choice.
+-}</span></span><span>
+</span><span id="line-104"></span><span id="local-6989586621679903368"><span id="local-6989586621679903370"><span id="local-6989586621679903371"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#gpcon%27"><span class="hs-identifier hs-type">gpcon'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SListI2</span></span><span> </span><span class="annot"><a href="#local-6989586621679903368"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903370"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottList"><span class="hs-identifier hs-type">ScottList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903368"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903371"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NS</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903370"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903368"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903370"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903371"><span class="hs-identifier hs-type">r</span></a></span></span></span></span><span>
+</span><span id="line-105"></span><span id="gpcon%27"><span class="annot"><span class="annottext">gpcon' :: forall (as :: [[PType]]) (s :: S) (r :: PType).
+SListI2 @PType as =&gt;
+NP @PType (Term s) (ScottList as r)
+-&gt; NS @[PType] (NP @PType (Term s)) as -&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#gpcon%27"><span class="hs-identifier hs-var hs-var">gpcon'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GPCon' s r as
+-&gt; NP @PType (Term s) (ScottList as r)
+-&gt; NS @[PType] (NP @PType (Term s)) as
+-&gt; Term s r
+forall (s :: S) (r :: PType) (as :: [[PType]]).
+GPCon' s r as
+-&gt; NP @PType (Term s) (ScottList as r)
+-&gt; NS @[PType] (NP @PType (Term s)) as
+-&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#%24sel%3AunGPCon%27%3AGPCon%27"><span class="hs-identifier hs-var">unGPCon'</span></a></span><span> </span><span class="annot"><span class="annottext">(GPCon' s r as
+ -&gt; NP @PType (Term s) (ScottList as r)
+ -&gt; NS @[PType] (NP @PType (Term s)) as
+ -&gt; Term s r)
+-&gt; GPCon' s r as
+-&gt; NP @PType (Term s) (ScottList as r)
+-&gt; NS @[PType] (NP @PType (Term s)) as
+-&gt; Term s r
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Proxy @([PType] -&gt; Constraint) (SListI @PType)
+-&gt; GPCon' s r ('[] @[PType])
+-&gt; (forall (y :: [PType]) (ys :: [[PType]]).
+    (SListI @PType y, All @[PType] (SListI @PType) ys) =&gt;
+    GPCon' s r ys -&gt; GPCon' s r ((':) @[PType] y ys))
+-&gt; GPCon' s r as
+forall k (c :: k -&gt; Constraint) (xs :: [k])
+       (proxy :: (k -&gt; Constraint) -&gt; Type) (r :: [k] -&gt; Type).
+All @k c xs =&gt;
+proxy c
+-&gt; r ('[] @k)
+-&gt; (forall (y :: k) (ys :: [k]).
+    (c y, All @k c ys) =&gt;
+    r ys -&gt; r ((':) @k y ys))
+-&gt; r xs
+forall (proxy :: ([PType] -&gt; Constraint) -&gt; Type)
+       (r :: [[PType]] -&gt; Type).
+proxy (SListI @PType)
+-&gt; r ('[] @[PType])
+-&gt; (forall (y :: [PType]) (ys :: [[PType]]).
+    (SListI @PType y, All @[PType] (SListI @PType) ys) =&gt;
+    r ys -&gt; r ((':) @[PType] y ys))
+-&gt; r as
+</span><span class="hs-identifier hs-var">cpara_SList</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+forall (t :: [PType] -&gt; Constraint).
+Proxy @([PType] -&gt; Constraint) t
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Proxy.html#Proxy"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-identifier hs-type">SListI</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(NP @PType (Term s) (ScottList ('[] @[PType]) r)
+ -&gt; NS @[PType] (NP @PType (Term s)) ('[] @[PType]) -&gt; Term s r)
+-&gt; GPCon' s r ('[] @[PType])
+forall (s :: S) (r :: PType) (as :: [[PType]]).
+(NP @PType (Term s) (ScottList as r)
+ -&gt; NS @[PType] (NP @PType (Term s)) as -&gt; Term s r)
+-&gt; GPCon' s r as
+</span><a href="Plutarch.Internal.ScottEncoding.html#GPCon%27"><span class="hs-identifier hs-var">GPCon'</span></a></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">NP @PType (Term s) (ScottList ('[] @[PType]) r)
+</span><span class="hs-identifier hs-var">Nil</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span> </span><span class="hs-special">{</span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#GPCon%27"><span class="hs-identifier hs-type">GPCon'</span></a></span><span> </span><span id="local-6989586621679903616"><span class="annot"><span class="annottext">NP @PType (Term s) (ScottList ys r)
+-&gt; NS @[PType] (NP @PType (Term s)) ys -&gt; Term s r
+</span><a href="#local-6989586621679903616"><span class="hs-identifier hs-var">prev</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(NP @PType (Term s) (ScottList ((':) @[PType] y ys) r)
+ -&gt; NS @[PType] (NP @PType (Term s)) ((':) @[PType] y ys)
+ -&gt; Term s r)
+-&gt; GPCon' s r ((':) @[PType] y ys)
+forall (s :: S) (r :: PType) (as :: [[PType]]).
+(NP @PType (Term s) (ScottList as r)
+ -&gt; NS @[PType] (NP @PType (Term s)) as -&gt; Term s r)
+-&gt; GPCon' s r as
+</span><a href="Plutarch.Internal.ScottEncoding.html#GPCon%27"><span class="hs-identifier hs-var">GPCon'</span></a></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679903625"><span class="annot"><span class="annottext">Term s x
+</span><a href="#local-6989586621679903625"><span class="hs-identifier hs-var">arg</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:*</span></span><span> </span><span id="local-6989586621679903626"><span class="annot"><span class="annottext">NP @PType (Term s) xs
+</span><a href="#local-6989586621679903626"><span class="hs-identifier hs-var">args</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-106"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Z</span></span><span> </span><span id="local-6989586621679903631"><span class="annot"><span class="annottext">NP @PType (Term s) x
+</span><a href="#local-6989586621679903631"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s (ScottFn x r) -&gt; NP @PType (Term s) x -&gt; Term s r
+forall (as :: [PType]) (s :: S) (r :: PType).
+SListI @PType as =&gt;
+Term s (ScottFn as r) -&gt; NP @PType (Term s) as -&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#pappL"><span class="hs-identifier hs-var">pappL</span></a></span><span> </span><span class="annot"><span class="annottext">Term s x
+Term s (ScottFn x r)
+</span><a href="#local-6989586621679903625"><span class="hs-identifier hs-var">arg</span></a></span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) x
+</span><a href="#local-6989586621679903631"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-107"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span> </span><span id="local-6989586621679903635"><span class="annot"><span class="annottext">NS @[PType] (NP @PType (Term s)) xs
+</span><a href="#local-6989586621679903635"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) (ScottList ys r)
+-&gt; NS @[PType] (NP @PType (Term s)) ys -&gt; Term s r
+</span><a href="#local-6989586621679903616"><span class="hs-identifier hs-var">prev</span></a></span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) xs
+NP @PType (Term s) (ScottList ys r)
+</span><a href="#local-6989586621679903626"><span class="hs-identifier hs-var">args</span></a></span><span> </span><span class="annot"><span class="annottext">NS @[PType] (NP @PType (Term s)) ys
+NS @[PType] (NP @PType (Term s)) xs
+</span><a href="#local-6989586621679903635"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-108"></span><span>
+</span><span id="line-109"></span><span class="annot"><span class="hs-comment">-- | Generic version of `pcon'`</span></span><span>
+</span><span id="line-110"></span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#gpcon"><span class="hs-identifier hs-type">gpcon</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-111"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679903390"><span class="annot"><a href="#local-6989586621679903390"><span class="hs-keyword hs-type">as</span></a></span></span><span> </span><span id="local-6989586621679903391"><span class="annot"><a href="#local-6989586621679903391"><span class="hs-identifier hs-type">r</span></a></span></span><span> </span><span id="local-6989586621679903392"><span class="annot"><a href="#local-6989586621679903392"><span class="hs-identifier hs-type">s</span></a></span></span><span class="hs-operator">.</span><span>
+</span><span id="line-112"></span><span>  </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">SListI</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottList"><span class="hs-identifier hs-type">ScottList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903390"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903391"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SListI2</span></span><span> </span><span class="annot"><a href="#local-6989586621679903390"><span class="hs-keyword hs-type">as</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-113"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">SOP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903392"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903390"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-114"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903392"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PScottEncoded"><span class="hs-identifier hs-type">PScottEncoded</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903390"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903391"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-115"></span><span id="gpcon"><span class="annot"><span class="annottext">gpcon :: forall (as :: [[PType]]) (r :: PType) (s :: S).
+(SListI @PType (ScottList as r), SListI2 @PType as) =&gt;
+SOP @PType (Term s) as -&gt; Term s (PScottEncoded as r)
+</span><a href="Plutarch.Internal.ScottEncoding.html#gpcon"><span class="hs-identifier hs-var hs-var">gpcon</span></a></span></span><span> </span><span id="local-6989586621679903643"><span class="annot"><span class="annottext">SOP @PType (Term s) as
+</span><a href="#local-6989586621679903643"><span class="hs-identifier hs-var">fields'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-116"></span><span>  </span><span class="annot"><span class="annottext">SOP @PType (Term s) as
+-&gt; (SOP @PType (Term s) as -&gt; Term s (PScottEncoded as r))
+-&gt; Term s (PScottEncoded as r)
+forall (as :: [[PType]]) (s :: S) (r :: PType).
+All @[PType] (SListI @PType) as =&gt;
+SOP @PType (Term s) as
+-&gt; (SOP @PType (Term s) as -&gt; Term s r) -&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#pletL"><span class="hs-identifier hs-var">pletL</span></a></span><span> </span><span class="annot"><span class="annottext">SOP @PType (Term s) as
+</span><a href="#local-6989586621679903643"><span class="hs-identifier hs-var">fields'</span></a></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">SOP</span></span><span> </span><span id="local-6989586621679903644"><span class="annot"><span class="annottext">NS @[PType] (NP @PType (Term s)) as
+</span><a href="#local-6989586621679903644"><span class="hs-identifier hs-var">fields</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-117"></span><span>    </span><span class="annot"><span class="annottext">PScottEncoded as r s -&gt; Term s (PScottEncoded as r)
+forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
+</span><a href="Plutarch.Internal.PlutusType.html#pcon"><span class="hs-identifier hs-var">pcon</span></a></span><span> </span><span class="annot"><span class="annottext">(PScottEncoded as r s -&gt; Term s (PScottEncoded as r))
+-&gt; PScottEncoded as r s -&gt; Term s (PScottEncoded as r)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (ScottFn (ScottList as r) r) -&gt; PScottEncoded as r s
+forall (a :: [[PType]]) (r :: PType) (s :: S).
+Term s (ScottFn (ScottList a r) r) -&gt; PScottEncoded a r s
+</span><a href="Plutarch.Internal.ScottEncoding.html#PScottEncoded"><span class="hs-identifier hs-var">PScottEncoded</span></a></span><span> </span><span class="annot"><span class="annottext">(Term s (ScottFn (ScottList as r) r) -&gt; PScottEncoded as r s)
+-&gt; Term s (ScottFn (ScottList as r) r) -&gt; PScottEncoded as r s
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">(NP @PType (Term s) (ScottList as r) -&gt; Term s r)
+-&gt; Term s (ScottFn (ScottList as r) r)
+forall (as :: [PType]) (s :: S) (b :: PType).
+SListI @PType as =&gt;
+(NP @PType (Term s) as -&gt; Term s b) -&gt; Term s (ScottFn as b)
+</span><a href="Plutarch.Internal.ScottEncoding.html#plamL"><span class="hs-identifier hs-var">plamL</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679903645"><span class="annot"><span class="annottext">NP @PType (Term s) (ScottList as r)
+</span><a href="#local-6989586621679903645"><span class="hs-identifier hs-var">args</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">NP @PType (Term s) (ScottList as r)
+-&gt; NS @[PType] (NP @PType (Term s)) as -&gt; Term s r
+forall (as :: [[PType]]) (s :: S) (r :: PType).
+SListI2 @PType as =&gt;
+NP @PType (Term s) (ScottList as r)
+-&gt; NS @[PType] (NP @PType (Term s)) as -&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#gpcon%27"><span class="hs-identifier hs-var">gpcon'</span></a></span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) (ScottList as r)
+</span><a href="#local-6989586621679903645"><span class="hs-identifier hs-var">args</span></a></span><span> </span><span class="annot"><span class="annottext">NS @[PType] (NP @PType (Term s)) as
+</span><a href="#local-6989586621679903644"><span class="hs-identifier hs-var">fields</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903392"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903391"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-118"></span><span>
+</span><span id="line-119"></span><span class="hs-keyword">newtype</span><span> </span><span id="GPMatch%27"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#GPMatch%27"><span class="hs-identifier hs-var">GPMatch'</span></a></span></span><span> </span><span id="local-6989586621679903398"><span class="annot"><a href="#local-6989586621679903398"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span id="local-6989586621679903399"><span class="annot"><a href="#local-6989586621679903399"><span class="hs-identifier hs-type">r</span></a></span></span><span> </span><span id="local-6989586621679903400"><span class="annot"><a href="#local-6989586621679903400"><span class="hs-keyword hs-type">as</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="GPMatch%27"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#GPMatch%27"><span class="hs-identifier hs-var">GPMatch'</span></a></span></span><span> </span><span class="hs-special">{</span><span id="%24sel%3AunGPMatch%27%3AGPMatch%27"><span class="annot"><span class="annottext">forall (s :: S) (r :: PType) (as :: [[PType]]).
+GPMatch' s r as
+-&gt; (SOP @PType (Term s) as -&gt; Term s r)
+-&gt; NP @PType (Term s) (ScottList as r)
+</span><a href="Plutarch.Internal.ScottEncoding.html#%24sel%3AunGPMatch%27%3AGPMatch%27"><span class="hs-identifier hs-var hs-var">unGPMatch'</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">SOP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903398"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903400"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903398"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903399"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903398"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottList"><span class="hs-identifier hs-type">ScottList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903400"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903399"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span class="hs-special">}</span><span>
+</span><span id="line-120"></span><span>
+</span><span id="line-121"></span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#gpmatch%27"><span class="hs-identifier hs-type">gpmatch'</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-122"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679903405"><span class="annot"><a href="#local-6989586621679903405"><span class="hs-keyword hs-type">as</span></a></span></span><span> </span><span id="local-6989586621679903407"><span class="annot"><a href="#local-6989586621679903407"><span class="hs-identifier hs-type">r</span></a></span></span><span> </span><span id="local-6989586621679903406"><span class="annot"><a href="#local-6989586621679903406"><span class="hs-identifier hs-type">s</span></a></span></span><span class="hs-operator">.</span><span>
+</span><span id="line-123"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">SListI2</span></span><span> </span><span class="annot"><a href="#local-6989586621679903405"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-124"></span><span>  </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">SOP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903406"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903405"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903406"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903407"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-125"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">NP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903406"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottList"><span class="hs-identifier hs-type">ScottList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903405"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903407"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-126"></span><span id="gpmatch%27"><span class="annot"><span class="annottext">gpmatch' :: forall (as :: [[PType]]) (r :: PType) (s :: S).
+SListI2 @PType as =&gt;
+(SOP @PType (Term s) as -&gt; Term s r)
+-&gt; NP @PType (Term s) (ScottList as r)
+</span><a href="Plutarch.Internal.ScottEncoding.html#gpmatch%27"><span class="hs-identifier hs-var hs-var">gpmatch'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GPMatch' s r as
+-&gt; (SOP @PType (Term s) as -&gt; Term s r)
+-&gt; NP @PType (Term s) (ScottList as r)
+forall (s :: S) (r :: PType) (as :: [[PType]]).
+GPMatch' s r as
+-&gt; (SOP @PType (Term s) as -&gt; Term s r)
+-&gt; NP @PType (Term s) (ScottList as r)
+</span><a href="Plutarch.Internal.ScottEncoding.html#%24sel%3AunGPMatch%27%3AGPMatch%27"><span class="hs-identifier hs-var">unGPMatch'</span></a></span><span> </span><span class="annot"><span class="annottext">(GPMatch' s r as
+ -&gt; (SOP @PType (Term s) as -&gt; Term s r)
+ -&gt; NP @PType (Term s) (ScottList as r))
+-&gt; GPMatch' s r as
+-&gt; (SOP @PType (Term s) as -&gt; Term s r)
+-&gt; NP @PType (Term s) (ScottList as r)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Proxy @([PType] -&gt; Constraint) (SListI @PType)
+-&gt; GPMatch' s r ('[] @[PType])
+-&gt; (forall (y :: [PType]) (ys :: [[PType]]).
+    (SListI @PType y, All @[PType] (SListI @PType) ys) =&gt;
+    GPMatch' s r ys -&gt; GPMatch' s r ((':) @[PType] y ys))
+-&gt; GPMatch' s r as
+forall k (c :: k -&gt; Constraint) (xs :: [k])
+       (proxy :: (k -&gt; Constraint) -&gt; Type) (r :: [k] -&gt; Type).
+All @k c xs =&gt;
+proxy c
+-&gt; r ('[] @k)
+-&gt; (forall (y :: k) (ys :: [k]).
+    (c y, All @k c ys) =&gt;
+    r ys -&gt; r ((':) @k y ys))
+-&gt; r xs
+forall (proxy :: ([PType] -&gt; Constraint) -&gt; Type)
+       (r :: [[PType]] -&gt; Type).
+proxy (SListI @PType)
+-&gt; r ('[] @[PType])
+-&gt; (forall (y :: [PType]) (ys :: [[PType]]).
+    (SListI @PType y, All @[PType] (SListI @PType) ys) =&gt;
+    r ys -&gt; r ((':) @[PType] y ys))
+-&gt; r as
+</span><span class="hs-identifier hs-var">cpara_SList</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall {k} (t :: k). Proxy @k t
+forall (t :: [PType] -&gt; Constraint).
+Proxy @([PType] -&gt; Constraint) t
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Proxy.html#Proxy"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-identifier hs-type">SListI</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">((SOP @PType (Term s) ('[] @[PType]) -&gt; Term s r)
+ -&gt; NP @PType (Term s) (ScottList ('[] @[PType]) r))
+-&gt; GPMatch' s r ('[] @[PType])
+forall (s :: S) (r :: PType) (as :: [[PType]]).
+((SOP @PType (Term s) as -&gt; Term s r)
+ -&gt; NP @PType (Term s) (ScottList as r))
+-&gt; GPMatch' s r as
+</span><a href="Plutarch.Internal.ScottEncoding.html#GPMatch%27"><span class="hs-identifier hs-var">GPMatch'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">NP @PType (Term s) (ScottList ('[] @[PType]) r)
+-&gt; (SOP @PType (Term s) ('[] @[PType]) -&gt; Term s r)
+-&gt; NP @PType (Term s) (ScottList ('[] @[PType]) r)
+forall a b. a -&gt; b -&gt; a
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#const"><span class="hs-identifier hs-var">const</span></a></span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) ('[] @PType)
+NP @PType (Term s) (ScottList ('[] @[PType]) r)
+forall {k} (a :: k -&gt; Type). NP @k a ('[] @k)
+</span><span class="hs-identifier hs-var">Nil</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#GPMatch%27"><span class="hs-identifier hs-type">GPMatch'</span></a></span><span> </span><span id="local-6989586621679903655"><span class="annot"><span class="annottext">(SOP @PType (Term s) ys -&gt; Term s r)
+-&gt; NP @PType (Term s) (ScottList ys r)
+</span><a href="#local-6989586621679903655"><span class="hs-identifier hs-var">prev</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">((SOP @PType (Term s) ((':) @[PType] y ys) -&gt; Term s r)
+ -&gt; NP @PType (Term s) (ScottList ((':) @[PType] y ys) r))
+-&gt; GPMatch' s r ((':) @[PType] y ys)
+forall (s :: S) (r :: PType) (as :: [[PType]]).
+((SOP @PType (Term s) as -&gt; Term s r)
+ -&gt; NP @PType (Term s) (ScottList as r))
+-&gt; GPMatch' s r as
+</span><a href="Plutarch.Internal.ScottEncoding.html#GPMatch%27"><span class="hs-identifier hs-var">GPMatch'</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679903656"><span class="annot"><span class="annottext">SOP @PType (Term s) ((':) @[PType] y ys) -&gt; Term s r
+</span><a href="#local-6989586621679903656"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-127"></span><span>  </span><span class="annot"><span class="annottext">(NP @PType (Term s) y -&gt; Term s r) -&gt; Term s (ScottFn y r)
+forall (as :: [PType]) (s :: S) (b :: PType).
+SListI @PType as =&gt;
+(NP @PType (Term s) as -&gt; Term s b) -&gt; Term s (ScottFn as b)
+</span><a href="Plutarch.Internal.ScottEncoding.html#plamL"><span class="hs-identifier hs-var">plamL</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679903657"><span class="annot"><span class="annottext">NP @PType (Term s) y
+</span><a href="#local-6989586621679903657"><span class="hs-identifier hs-var">args</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">SOP @PType (Term s) ((':) @[PType] y ys) -&gt; Term s r
+</span><a href="#local-6989586621679903656"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">NS @[PType] (NP @PType (Term s)) ((':) @[PType] y ys)
+-&gt; SOP @PType (Term s) ((':) @[PType] y ys)
+forall k (f :: k -&gt; Type) (xss :: [[k]]).
+NS @[k] (NP @k f) xss -&gt; SOP @k f xss
+</span><span class="hs-identifier hs-var">SOP</span></span><span> </span><span class="annot"><span class="annottext">(NS @[PType] (NP @PType (Term s)) ((':) @[PType] y ys)
+ -&gt; SOP @PType (Term s) ((':) @[PType] y ys))
+-&gt; NS @[PType] (NP @PType (Term s)) ((':) @[PType] y ys)
+-&gt; SOP @PType (Term s) ((':) @[PType] y ys)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) y
+-&gt; NS @[PType] (NP @PType (Term s)) ((':) @[PType] y ys)
+forall {k} (a :: k -&gt; Type) (x :: k) (xs :: [k]).
+a x -&gt; NS @k a ((':) @k x xs)
+</span><span class="hs-identifier hs-var">Z</span></span><span> </span><span class="annot"><span class="annottext">NP @PType (Term s) y
+</span><a href="#local-6989586621679903657"><span class="hs-identifier hs-var">args</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s (ScottFn y r)
+-&gt; NP @PType (Term s) (ScottList ys r)
+-&gt; NP @PType (Term s) ((':) @PType (ScottFn y r) (ScottList ys r))
+forall {k} (a :: k -&gt; Type) (x :: k) (xs :: [k]).
+a x -&gt; NP @k a xs -&gt; NP @k a ((':) @k x xs)
+</span><span class="hs-operator hs-var">:*</span></span><span> </span><span class="annot"><span class="annottext">(SOP @PType (Term s) ys -&gt; Term s r)
+-&gt; NP @PType (Term s) (ScottList ys r)
+</span><a href="#local-6989586621679903655"><span class="hs-identifier hs-var">prev</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">SOP</span></span><span> </span><span id="local-6989586621679903658"><span class="annot"><span class="annottext">NS @[PType] (NP @PType (Term s)) ys
+</span><a href="#local-6989586621679903658"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">SOP @PType (Term s) ((':) @[PType] y ys) -&gt; Term s r
+</span><a href="#local-6989586621679903656"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">NS @[PType] (NP @PType (Term s)) ((':) @[PType] y ys)
+-&gt; SOP @PType (Term s) ((':) @[PType] y ys)
+forall k (f :: k -&gt; Type) (xss :: [[k]]).
+NS @[k] (NP @k f) xss -&gt; SOP @k f xss
+</span><span class="hs-identifier hs-var">SOP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">NS @[PType] (NP @PType (Term s)) ys
+-&gt; NS @[PType] (NP @PType (Term s)) ((':) @[PType] y ys)
+forall {k} (a :: k -&gt; Type) (xs :: [k]) (x :: k).
+NS @k a xs -&gt; NS @k a ((':) @k x xs)
+</span><span class="hs-identifier hs-var">S</span></span><span> </span><span class="annot"><span class="annottext">NS @[PType] (NP @PType (Term s)) ys
+</span><a href="#local-6989586621679903658"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-128"></span><span>
+</span><span id="line-129"></span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#gpmatch"><span class="hs-identifier hs-type">gpmatch</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-130"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679903415"><span class="annot"><a href="#local-6989586621679903415"><span class="hs-keyword hs-type">as</span></a></span></span><span> </span><span id="local-6989586621679903416"><span class="annot"><a href="#local-6989586621679903416"><span class="hs-identifier hs-type">r</span></a></span></span><span> </span><span id="local-6989586621679903417"><span class="annot"><a href="#local-6989586621679903417"><span class="hs-identifier hs-type">s</span></a></span></span><span class="hs-operator">.</span><span>
+</span><span id="line-131"></span><span>  </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">SListI</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottList"><span class="hs-identifier hs-type">ScottList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903415"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903416"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SListI2</span></span><span> </span><span class="annot"><a href="#local-6989586621679903415"><span class="hs-keyword hs-type">as</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-132"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903417"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PScottEncoded"><span class="hs-identifier hs-type">PScottEncoded</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903415"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903416"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-133"></span><span>  </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">SOP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903417"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903415"><span class="hs-keyword hs-type">as</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903417"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903416"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-134"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903417"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903416"><span class="hs-identifier hs-type">r</span></a></span><span>
+</span><span id="line-135"></span><span id="gpmatch"><span class="annot"><span class="annottext">gpmatch :: forall (as :: [[PType]]) (r :: PType) (s :: S).
+(SListI @PType (ScottList as r), SListI2 @PType as) =&gt;
+Term s (PScottEncoded as r)
+-&gt; (SOP @PType (Term s) as -&gt; Term s r) -&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#gpmatch"><span class="hs-identifier hs-var hs-var">gpmatch</span></a></span></span><span> </span><span id="local-6989586621679903665"><span class="annot"><span class="annottext">Term s (PScottEncoded as r)
+</span><a href="#local-6989586621679903665"><span class="hs-identifier hs-var">x'</span></a></span></span><span> </span><span id="local-6989586621679903666"><span class="annot"><span class="annottext">SOP @PType (Term s) as -&gt; Term s r
+</span><a href="#local-6989586621679903666"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s (PScottEncoded as r)
+-&gt; (PScottEncoded as r s -&gt; Term s r) -&gt; Term s r
+forall (a :: PType) (s :: S) (b :: PType).
+PlutusType a =&gt;
+Term s a -&gt; (a s -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.PlutusType.html#pmatch"><span class="hs-identifier hs-var">pmatch</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PScottEncoded as r)
+</span><a href="#local-6989586621679903665"><span class="hs-identifier hs-var">x'</span></a></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PScottEncoded"><span class="hs-identifier hs-type">PScottEncoded</span></a></span><span> </span><span id="local-6989586621679903667"><span class="annot"><span class="annottext">Term s (ScottFn (ScottList as r) r)
+</span><a href="#local-6989586621679903667"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s (ScottFn (ScottList as r) r)
+-&gt; NP @PType (Term s) (ScottList as r) -&gt; Term s r
+forall (as :: [PType]) (s :: S) (r :: PType).
+SListI @PType as =&gt;
+Term s (ScottFn as r) -&gt; NP @PType (Term s) as -&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#pappL"><span class="hs-identifier hs-var">pappL</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (ScottFn (ScottList as r) r)
+</span><a href="#local-6989586621679903667"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(SOP @PType (Term s) as -&gt; Term s r)
+-&gt; NP @PType (Term s) (ScottList as r)
+forall (as :: [[PType]]) (r :: PType) (s :: S).
+SListI2 @PType as =&gt;
+(SOP @PType (Term s) as -&gt; Term s r)
+-&gt; NP @PType (Term s) (ScottList as r)
+</span><a href="Plutarch.Internal.ScottEncoding.html#gpmatch%27"><span class="hs-identifier hs-var">gpmatch'</span></a></span><span> </span><span class="annot"><span class="annottext">SOP @PType (Term s) as -&gt; Term s r
+</span><a href="#local-6989586621679903666"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-136"></span><span>
+</span><span id="line-137"></span><span class="hs-keyword">class</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SListI</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottList"><span class="hs-identifier hs-type">ScottList</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Generic.html#PCode"><span class="hs-identifier hs-type">PCode</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903424"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903425"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span id="SListIScottList"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#SListIScottList"><span class="hs-identifier hs-var">SListIScottList</span></a></span></span><span> </span><span id="local-6989586621679903424"><span class="annot"><a href="#local-6989586621679903424"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621679903425"><span class="annot"><a href="#local-6989586621679903425"><span class="hs-identifier hs-type">r</span></a></span></span><span>
+</span><span id="line-138"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679903669"><span id="local-6989586621679903670"><span class="annot"><span class="hs-identifier hs-type">SListI</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#ScottList"><span class="hs-identifier hs-type">ScottList</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Generic.html#PCode"><span class="hs-identifier hs-type">PCode</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903669"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679903670"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#SListIScottList"><span class="hs-identifier hs-type">SListIScottList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903669"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903670"><span class="hs-identifier hs-type">r</span></a></span></span></span><span>
+</span><span id="line-139"></span><span>
+</span><span id="line-140"></span><span class="hs-keyword">class</span><span>
+</span><span id="line-141"></span><span>  </span><span class="hs-special">(</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679903432"><span class="annot"><a href="#local-6989586621679903432"><span class="hs-identifier hs-type">r</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#SListIScottList"><span class="hs-identifier hs-type">SListIScottList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903430"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903432"><span class="hs-identifier hs-type">r</span></a></span><span>
+</span><span id="line-142"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SListI2</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Generic.html#PCode"><span class="hs-identifier hs-type">PCode</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903430"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-143"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.Generic.html#PGeneric"><span class="hs-identifier hs-type">PGeneric</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903430"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-144"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-145"></span><span>  </span><span id="PlutusTypeScottConstraint"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PlutusTypeScottConstraint"><span class="hs-identifier hs-var">PlutusTypeScottConstraint</span></a></span></span><span> </span><span id="local-6989586621679903430"><span class="annot"><a href="#local-6989586621679903430"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-146"></span><span class="hs-keyword">instance</span><span>
+</span><span id="line-147"></span><span>  </span><span id="local-6989586621679903679"><span class="hs-special">(</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679903691"><span class="annot"><a href="#local-6989586621679903691"><span class="hs-identifier hs-type">r</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#SListIScottList"><span class="hs-identifier hs-type">SListIScottList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903679"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903691"><span class="hs-identifier hs-type">r</span></a></span><span>
+</span><span id="line-148"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SListI2</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Generic.html#PCode"><span class="hs-identifier hs-type">PCode</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903679"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-149"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.Generic.html#PGeneric"><span class="hs-identifier hs-type">PGeneric</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903679"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-150"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-151"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PlutusTypeScottConstraint"><span class="hs-identifier hs-type">PlutusTypeScottConstraint</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903679"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-152"></span><span>
+</span><span id="line-153"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PlutusTypeStrat"><span class="hs-identifier hs-type">PlutusTypeStrat</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PlutusTypeScott"><span class="hs-identifier hs-type">PlutusTypeScott</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-154"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PlutusTypeStratConstraint"><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PlutusTypeStratConstraint"><span class="hs-identifier hs-var">PlutusTypeStratConstraint</span></a></span></span><span> </span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PlutusTypeScott"><span class="hs-identifier hs-type">PlutusTypeScott</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PlutusTypeScottConstraint"><span class="hs-identifier hs-type">PlutusTypeScottConstraint</span></a></span><span>
+</span><span id="line-155"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="DerivedPInner"><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DerivedPInner"><span class="hs-identifier hs-var">DerivedPInner</span></a></span></span><span> </span><span id="local-6989586621679903696"><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PlutusTypeScott"><span class="hs-identifier hs-type">PlutusTypeScott</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903696"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.Internal.Quantification.html#PForall"><span class="hs-identifier hs-type">PForall</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.ScottEncoding.html#PScottEncoded"><span class="hs-identifier hs-type">PScottEncoded</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Generic.html#PCode"><span class="hs-identifier hs-type">PCode</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679903696"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-156"></span><span>  </span><span id="local-6989586621679903710"><span class="annot"><span class="annottext">derivedPCon :: forall (a :: PType) (s :: S).
+(DerivePlutusType a,
+ (DPTStrat a :: Type) ~ (PlutusTypeScott :: Type)) =&gt;
+a s -&gt; Term s (DerivedPInner PlutusTypeScott a)
+</span><a href="Plutarch.Internal.PlutusType.html#derivedPCon"><span class="hs-identifier hs-var hs-var hs-var hs-var">derivedPCon</span></a></span></span><span> </span><span id="local-6989586621679903711"><span class="annot"><span class="annottext">a s
+</span><a href="#local-6989586621679903711"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DerivedPInner PlutusTypeScott a s
+-&gt; Term s (DerivedPInner PlutusTypeScott a)
+forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
+</span><a href="Plutarch.Internal.PlutusType.html#pcon"><span class="hs-identifier hs-var">pcon</span></a></span><span> </span><span class="annot"><span class="annottext">(DerivedPInner PlutusTypeScott a s
+ -&gt; Term s (DerivedPInner PlutusTypeScott a))
+-&gt; DerivedPInner PlutusTypeScott a s
+-&gt; Term s (DerivedPInner PlutusTypeScott a)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">(forall (x :: PType). Term s (PScottEncoded (PCode a) x))
+-&gt; PForall @PType (PScottEncoded (PCode a)) s
+forall a (b :: a -&gt; PType) (s :: S).
+(forall (x :: a). Term s (b x)) -&gt; PForall @a b s
+</span><a href="Plutarch.Internal.Quantification.html#PForall"><span class="hs-identifier hs-var">PForall</span></a></span><span> </span><span class="annot"><span class="annottext">((forall (x :: PType). Term s (PScottEncoded (PCode a) x))
+ -&gt; PForall @PType (PScottEncoded (PCode a)) s)
+-&gt; (forall (x :: PType). Term s (PScottEncoded (PCode a) x))
+-&gt; PForall @PType (PScottEncoded (PCode a)) s
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">SOP @PType (Term s) (PCode a) -&gt; Term s (PScottEncoded (PCode a) x)
+forall (as :: [[PType]]) (r :: PType) (s :: S).
+(SListI @PType (ScottList as r), SListI2 @PType as) =&gt;
+SOP @PType (Term s) as -&gt; Term s (PScottEncoded as r)
+</span><a href="Plutarch.Internal.ScottEncoding.html#gpcon"><span class="hs-identifier hs-var">gpcon</span></a></span><span> </span><span class="annot"><span class="annottext">(SOP @PType (Term s) (PCode a)
+ -&gt; Term s (PScottEncoded (PCode a) x))
+-&gt; SOP @PType (Term s) (PCode a)
+-&gt; Term s (PScottEncoded (PCode a) x)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">a s -&gt; SOP @PType (Term s) (PCode a)
+forall (a :: PType) (s :: S).
+PGeneric a =&gt;
+a s -&gt; SOP @PType (Term s) (PCode a)
+</span><a href="Plutarch.Internal.Generic.html#gpfrom"><span class="hs-identifier hs-var">gpfrom</span></a></span><span> </span><span class="annot"><span class="annottext">a s
+</span><a href="#local-6989586621679903711"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-157"></span><span>  </span><span id="local-6989586621679903729"><span class="annot"><span class="annottext">derivedPMatch :: forall (a :: PType) (s :: S) (b :: PType).
+(DerivePlutusType a,
+ (DPTStrat a :: Type) ~ (PlutusTypeScott :: Type)) =&gt;
+Term s (DerivedPInner PlutusTypeScott a)
+-&gt; (a s -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.PlutusType.html#derivedPMatch"><span class="hs-identifier hs-var hs-var hs-var hs-var">derivedPMatch</span></a></span></span><span> </span><span id="local-6989586621679903730"><span class="annot"><span class="annottext">Term s (DerivedPInner PlutusTypeScott a)
+</span><a href="#local-6989586621679903730"><span class="hs-identifier hs-var">x'</span></a></span></span><span> </span><span id="local-6989586621679903731"><span class="annot"><span class="annottext">a s -&gt; Term s b
+</span><a href="#local-6989586621679903731"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s (DerivedPInner PlutusTypeScott a)
+-&gt; (DerivedPInner PlutusTypeScott a s -&gt; Term s b) -&gt; Term s b
+forall (a :: PType) (s :: S) (b :: PType).
+PlutusType a =&gt;
+Term s a -&gt; (a s -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.PlutusType.html#pmatch"><span class="hs-identifier hs-var">pmatch</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (DerivedPInner PlutusTypeScott a)
+</span><a href="#local-6989586621679903730"><span class="hs-identifier hs-var">x'</span></a></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Quantification.html#PForall"><span class="hs-identifier hs-type">PForall</span></a></span><span> </span><span id="local-6989586621679903732"><span class="annot"><span class="annottext">forall (x :: PType).
+Term
+  s
+  (PScottEncoded
+     (ToPType2 (ToSumCode (Rep (a (Any @S))) ('[] @[Type]))) x)
+</span><a href="#local-6989586621679903732"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term
+  s
+  (PScottEncoded
+     (ToPType2 (ToSumCode (Rep (a (Any @S))) ('[] @[Type]))) b)
+-&gt; (SOP
+      @PType
+      (Term s)
+      (ToPType2 (ToSumCode (Rep (a (Any @S))) ('[] @[Type])))
+    -&gt; Term s b)
+-&gt; Term s b
+forall (as :: [[PType]]) (r :: PType) (s :: S).
+(SListI @PType (ScottList as r), SListI2 @PType as) =&gt;
+Term s (PScottEncoded as r)
+-&gt; (SOP @PType (Term s) as -&gt; Term s r) -&gt; Term s r
+</span><a href="Plutarch.Internal.ScottEncoding.html#gpmatch"><span class="hs-identifier hs-var">gpmatch</span></a></span><span> </span><span class="annot"><span class="annottext">Term
+  s
+  (PScottEncoded
+     (ToPType2 (ToSumCode (Rep (a (Any @S))) ('[] @[Type]))) b)
+forall (x :: PType).
+Term
+  s
+  (PScottEncoded
+     (ToPType2 (ToSumCode (Rep (a (Any @S))) ('[] @[Type]))) x)
+</span><a href="#local-6989586621679903732"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a s -&gt; Term s b
+</span><a href="#local-6989586621679903731"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">(a s -&gt; Term s b)
+-&gt; (SOP
+      @PType
+      (Term s)
+      (ToPType2 (ToSumCode (Rep (a (Any @S))) ('[] @[Type])))
+    -&gt; a s)
+-&gt; SOP
+     @PType
+     (Term s)
+     (ToPType2 (ToSumCode (Rep (a (Any @S))) ('[] @[Type])))
+-&gt; Term s b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">SOP
+  @PType
+  (Term s)
+  (ToPType2 (ToSumCode (Rep (a (Any @S))) ('[] @[Type])))
+-&gt; a s
+forall (a :: PType) (s :: S).
+PGeneric a =&gt;
+SOP @PType (Term s) (PCode a) -&gt; a s
+</span><a href="Plutarch.Internal.Generic.html#gpto"><span class="hs-identifier hs-var">gpto</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-158"></span></pre></body></html>

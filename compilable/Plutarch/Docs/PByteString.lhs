@@ -13,7 +13,7 @@ import qualified Data.ByteString as BS
 
 # `PByteString`
 
-Plutarch level bytestring terms can be created using `phexByteStr` and `pconstant` (`pbyteStr` ist deprecated). `phexByteStr` interprets a hex string literal as a 
+Plutarch level bytestring terms can be created using `phexByteStr` and `pconstant` (`pbyteStr` is deprecated). `phexByteStr` interprets a hex string literal as a 
 `Term s PByteString` and `pconstant` (`pbyteStr`) merely converts a `ByteString` into a `Term s PByteString`.
 
 ```haskell

@@ -55,7 +55,7 @@ doubleUseInPlutarch = doubleImported # 21
 ```
 
 Note how Plutarch type `PInteger :--> PInteger` corresponds to Haskell
-function type `Integer -> Integer`. If the types didn't corespond, the
+function type `Integer -> Integer`. If the types didn't correspond, the
 `foreignExport` and `foreignImport` applications wouldn't compile. The
 following table shows the correspondence between the two universes of types:
 

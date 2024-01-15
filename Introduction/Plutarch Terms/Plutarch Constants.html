@@ -1,4 +1,13 @@
 <!DOCTYPE html>
+<!-- DoNotFormat -->
+<!-- DoNotFormat -->
+
+
+
+
+<!-- DoNotFormat -->
+<!-- DoNotFormat -->
+
 <html lang='en'>
 
 <head>
@@ -16,7 +25,7 @@
       <meta property='og:title' content='Plutarch Constants' />
     
     
-      <base href='/plutarch-plutus/' />
+      <base href='/' />
       <link href='https://raw.githubusercontent.com/Plutonomicon/plutonomicon/main/logo.png' rel='icon' />
     
     <!-- highlight.js -->
@@ -41,7 +50,8 @@
 
 
   
-  <link href='tailwind.css?instanceId=ace95cd6-ff49-4884-8bf5-3be00f4c0b49' rel='stylesheet' type='text/css' />
+  
+  <link href='tailwind.css?instanceId=56e42d5c-a28a-4895-b6a5-93413d101da6' rel='stylesheet' type='text/css' />
 
   <style>
     /* Heist error element */
@@ -49,6 +59,53 @@
       color: lightcoral;
       font-size: 90%;
       font-family: monospace;
+    }
+
+    /* Callouts */
+    div.callout {
+      background-color: #f5f5f5;
+      padding: 1em 1em 0.5em;
+      border-radius: 0.5em;
+      margin-bottom: 1em;
+    }
+
+    .callout[data-callout="note"] {
+      --callout-color: 8, 109, 221;
+    }
+
+    .callout[data-callout="info"] {
+      --callout-color: 8, 109, 221;
+    }
+
+    .callout[data-callout="tip"] {
+      --callout-color: 8, 191, 188;
+    }
+
+    .callout[data-callout="warning"] {
+      --callout-color: 236, 117, 0;
+    }
+
+    .callout[data-callout="failure"] {
+      --callout-color: 233, 49, 71;
+    }
+
+    div.callout {
+      background-color: rgba(var(--callout-color), 0.1);
+    }
+
+    .callout .callout-title {
+      color: rgb(var(--callout-color));
+    }
+
+    div.callout-title {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5em;
+      font-variation-settings: 'wght' 600;
+    }
+
+    div.callout-title div.callout-title-inner {
+      margin-left: 0.5em;
     }
 
     /* External link icon */
@@ -140,6 +197,29 @@
 
 
   
+    <style>
+      /* For use in sidebar.tpl, as we cannot achieve this in tailwind itself! */
+      #sidebar:hover {
+        width: auto;
+      }
+
+      /* md:min-w-48  */
+      @media (min-width: 768px) {
+        #sidebar {
+          min-width: 12rem;
+        }
+      }
+
+      /* xl:min-w-64  */
+      @media (min-width: 1280px) {
+        #sidebar {
+          min-width: 16rem;
+        }
+      }
+    </style>
+
+    
+  
   <link rel='stylesheet' href='_emanote-static/stork/flat.css' />
 <!-- Custom Stork-search styling for Emanote -->
 <style>
@@ -157,7 +237,7 @@
 <script src='_emanote-static/stork/stork.js'></script>
 
   
-    <script id='emanote-stork' data-emanote-base-url='/plutarch-plutus/'>
+    <script id='emanote-stork' data-emanote-base-url='/'>
       window.emanote = {};
       window.emanote.stork = {
         searchShown: false,
@@ -249,9 +329,11 @@
 
 <body class='bg-gray-400 overflow-y-scroll'>
   
-    <div class='container mx-auto'>
+    <div class='container mx-auto md:mt-8 '>
+      
 
-      <nav id='breadcrumbs' class='w-full text-gray-700 md:hidden'>
+      
+        <nav id='breadcrumbs' class='w-full text-gray-700 md:hidden'>
   <div class='flex justify-left'>
     <div class='w-full px-2 py-2 bg-gray-50'>
       <ul class='flex flex-wrap text-lg'>
@@ -274,7 +356,7 @@
             </li>
           
             <li class='inline-flex items-center'>
-              <a class='px-1 font-bold' href='Introduction'>
+              <a class='px-1 font-bold' href='Introduction.html'>
                 Introduction
               </a>
               <svg fill='currentColor' viewBox='0 0 20 20' class='w-auto h-5 text-gray-400'>
@@ -283,7 +365,7 @@
             </li>
           
             <li class='inline-flex items-center'>
-              <a class='px-1 font-bold' href='Introduction/Plutarch%20Terms'>
+              <a class='px-1 font-bold' href='Introduction/Plutarch%20Terms.html'>
                 Plutarch <code>Term</code>s
               </a>
               <svg fill='currentColor' viewBox='0 0 20 20' class='w-auto h-5 text-gray-400'>
@@ -312,58 +394,57 @@
     </script>
   </div>
 </nav>
+      
 
-      <div id='container' class='flex flex-nowrap flex-col md:flex-row bg-gray-50 md:mt-8 md:shadow-2xl md:mb-8'>
-        <!-- Sidebar column -->
-        <nav id='sidebar' class='flex-shrink hidden leading-relaxed md:block md:sticky md:top-0 md:h-full md:w-48 xl:w-64'>
-          <div class='px-2 py-2 text-gray-800'>
-            <div id='indexing-links' class='flex flex-row float-right p-2 space-x-2 text-gray-500'>
-              <a href='-/tags' title='View tags'>
-                <svg style='width: 1rem;' class='hover:text-blue-700' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
-                  <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z'>
-                  </path>
-                </svg>
-              </a>
-              <a href='-/all' title='Expand full tree'>
-                <svg style='width: 1rem;' class='hover:text-blue-700' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
-                  <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4'>
-                  </path>
-                </svg>
-              </a>
-              <a title='Search (Ctrl+K)' class='cursor-pointer' onclick='window.emanote.stork.toggleSearch()'>
-                <svg xmlns='http://www.w3.org/2000/svg' style='width: 1rem;' class='hover:text-blue-700' f
+      
+        <div id='container' class='flex flex-nowrap flex-col md:flex-row bg-gray-50 md:shadow-2xl md:mb-8'>
+          <!-- Sidebar column -->
+          <nav id='sidebar' class='flex-shrink hidden leading-relaxed md:block md:sticky md:top-0 md:max-h-screen md:overflow-y-auto md:w-48 xl:w-64'>
+  <div class='px-2 py-2 text-gray-800'>
+    <div id='indexing-links' class='flex flex-row float-right p-2 space-x-2 text-gray-500'>
+      <a href='-/tags.html' title='View tags'>
+        <svg style='width: 1rem;' class='hover:text-blue-700' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+          <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z'>
+          </path>
+        </svg>
+      </a>
+      <a href='-/all.html' title='Expand full tree'>
+        <svg style='width: 1rem;' class='hover:text-blue-700' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+          <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4'>
+          </path>
+        </svg>
+      </a>
+      <a title='Search (Ctrl+K)' class='cursor-pointer' onclick='window.emanote.stork.toggleSearch()'>
+        <svg xmlns='http://www.w3.org/2000/svg' style='width: 1rem;' class='hover:text-blue-700' f
  fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2'>
   <path stroke-linecap='round' stroke-linejoin='round' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'></path>
 </svg>
-              </a>
-            </div>
+      </a>
+    </div>
 
-            <div id='site-logo' class='pl-2'>
-              <div class='flex items-center my-2 space-x-2 justify-left'>
-                <a href='' title='Go to Home'>
-                  
-                    
-                      <!-- The style width attribute here is to prevent huge
+    <div id='site-logo' class='pl-2'>
+      <div class='flex items-center my-2 space-x-2 justify-left'>
+        <a href='' title='Go to Home'>
+          
+            
+              <!-- The style width attribute here is to prevent huge
                       icon from displaying at those rare occasions when Tailwind
                       hasn't kicked in immediately on page load 
                       -->
-                      <img style='width: 1rem;' class='transition transform hover:scale-110 hover:opacity-80' src='https://raw.githubusercontent.com/Plutonomicon/plutonomicon/main/logo.png' />
-                    
-                  
-                </a>
-                <a class='font-bold truncate' title='Go to Home' href=''>
-                  Home
-                </a>
-              </div>
-            </div>
-
+              <img style='width: 1rem;' class='transition transform hover:scale-110 hover:opacity-80' src='https://raw.githubusercontent.com/Plutonomicon/plutonomicon/main/logo.png' />
             
-              <!-- Variable bindings for this tree-->
+          
+        </a>
+        <a class='font-bold truncate' title='Go to Home' href=''>
+          Home
+        </a>
+      </div>
+    </div>
+
+    
+      <!-- Variable bindings for this tree-->
+
   
-    
-      
-      
-    
 
 
 
@@ -374,15 +455,18 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
+    <span>
+      
+        
     
-    
-      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-700' viewBox='0 0 20 20' fill='currentColor'>
-        <path fill-rule='evenodd' d='M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1H8a3 3 0 00-3 3v1.5a1.5 1.5 0 01-3 0V6z' clip-rule='evenodd'></path>
-        <path d='M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z'></path>
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' class='w-4 h-4 flex-shrink-0 inline text-gray-700' fill='currentColor'>
+        <path fill-rule='evenodd' d='M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm3 10.5a.75.75 0 0 0 0-1.5H9a.75.75 0 0 0 0 1.5h6Z' clip-rule='evenodd'></path>
       </svg>
       
   
-    <a class='font-bold hover:underline truncate' title='Concepts' href='Concepts'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Concepts' href='Concepts.html'>
       Concepts
     </a>
     
@@ -395,11 +479,8 @@
   
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -410,7 +491,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -418,7 +501,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Data and Scott encoding' href='Concepts/Data%20and%20Scott%20encoding'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Data and Scott encoding' href='Concepts/Data%20and%20Scott%20encoding.html'>
       Data and Scott encoding
     </a>
     
@@ -434,11 +519,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -449,7 +531,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -457,7 +541,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='GenericProgramming' href='Concepts/GenericProgramming'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='GenericProgramming' href='Concepts/GenericProgramming.html'>
       GenericProgramming
     </a>
     
@@ -473,11 +559,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -488,7 +571,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -496,7 +581,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Haskell synonym of Plutarch types' href='Concepts/Haskell%20Synonym'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Haskell synonym of Plutarch types' href='Concepts/Haskell%20Synonym.html'>
       Haskell synonym of Plutarch types
     </a>
     
@@ -512,11 +599,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -527,7 +611,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -535,7 +621,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Hoisting' href='Concepts/Hoisting'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Hoisting' href='Concepts/Hoisting.html'>
       Hoisting
     </a>
     
@@ -551,11 +639,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -566,7 +651,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -574,7 +661,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='What is the s?' href='Concepts/What%20is%20the%20S'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='What is the s?' href='Concepts/What%20is%20the%20S.html'>
       What is the <code>s</code>?
     </a>
     
@@ -591,13 +680,10 @@
     
   
 </div>
-            
-              <!-- Variable bindings for this tree-->
+    
+      <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -608,7 +694,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -616,7 +704,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='DEVGUIDE' href='DEVGUIDE'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='DEVGUIDE' href='DEVGUIDE.html'>
       DEVGUIDE
     </a>
     
@@ -630,13 +720,14 @@
     
   
 </div>
-            
-              <!-- Variable bindings for this tree-->
+    
+      <!-- Variable bindings for this tree-->
+
   
     
       
-      
     
+  
 
 
 
@@ -647,15 +738,18 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
+    <span>
+      
+        
     
-    
-      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-700' viewBox='0 0 20 20' fill='currentColor'>
-        <path fill-rule='evenodd' d='M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1H8a3 3 0 00-3 3v1.5a1.5 1.5 0 01-3 0V6z' clip-rule='evenodd'></path>
-        <path d='M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z'></path>
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' class='w-4 h-4 flex-shrink-0 inline text-gray-700' fill='currentColor'>
+        <path fill-rule='evenodd' d='M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm3 10.5a.75.75 0 0 0 0-1.5H9a.75.75 0 0 0 0 1.5h6Z' clip-rule='evenodd'></path>
       </svg>
       
   
-    <a class='font-bold hover:underline truncate' title='Introduction' href='Introduction'>
+        
+    </span>
+    <a class='mavenLinkBold hover:bg-blue-200 rounded px-1.5 truncate' title='Introduction' href='Introduction.html'>
       Introduction
     </a>
     
@@ -668,11 +762,8 @@
   
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -683,7 +774,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -691,7 +784,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Delay and Force' href='Introduction/Delay%20and%20Force'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Delay and Force' href='Introduction/Delay%20and%20Force.html'>
       Delay and Force
     </a>
     
@@ -707,11 +802,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -722,7 +814,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -730,7 +824,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Pattern matching' href='Introduction/Pattern%20matching'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Pattern matching' href='Introduction/Pattern%20matching.html'>
       Pattern matching
     </a>
     
@@ -746,11 +842,12 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
     
       
-      
     
+  
 
 
 
@@ -761,15 +858,18 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
+    <span>
+      
+        
     
-    
-      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-700' viewBox='0 0 20 20' fill='currentColor'>
-        <path fill-rule='evenodd' d='M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1H8a3 3 0 00-3 3v1.5a1.5 1.5 0 01-3 0V6z' clip-rule='evenodd'></path>
-        <path d='M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z'></path>
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' class='w-4 h-4 flex-shrink-0 inline text-gray-700' fill='currentColor'>
+        <path fill-rule='evenodd' d='M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm3 10.5a.75.75 0 0 0 0-1.5H9a.75.75 0 0 0 0 1.5h6Z' clip-rule='evenodd'></path>
       </svg>
       
   
-    <a class='font-bold hover:underline truncate' title='Plutarch Terms' href='Introduction/Plutarch%20Terms'>
+        
+    </span>
+    <a class='mavenLinkBold hover:bg-blue-200 rounded px-1.5 truncate' title='Plutarch Terms' href='Introduction/Plutarch%20Terms.html'>
       Plutarch <code>Term</code>s
     </a>
     
@@ -782,6 +882,7 @@
   
     
       <!-- Variable bindings for this tree-->
+
   
   
 
@@ -793,7 +894,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'>
@@ -801,7 +904,9 @@
       </svg>
       
   
-    <a class='font-bold text-blue-600 hover:underline truncate' title='Plutarch Constants' href='Introduction/Plutarch%20Terms/Plutarch%20Constants'>
+        
+    </span>
+    <a class='mavenLinkBold bg-blue-100 hover:bg-blue-200 rounded px-1.5 truncate' title='Plutarch Constants' href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html'>
       Plutarch Constants
     </a>
     
@@ -817,11 +922,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -832,7 +934,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -840,7 +944,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Plutarch Lambdas' href='Introduction/Plutarch%20Terms/Plutarch%20Lambdas'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Plutarch Lambdas' href='Introduction/Plutarch%20Terms/Plutarch%20Lambdas.html'>
       Plutarch Lambdas
     </a>
     
@@ -859,11 +965,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -874,7 +977,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -882,7 +987,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Plutarch Types' href='Introduction/Plutarch%20Types'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Plutarch Types' href='Introduction/Plutarch%20Types.html'>
       Plutarch Types
     </a>
     
@@ -898,11 +1005,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -913,7 +1017,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -921,7 +1027,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Untyped Plutus Core (UPLC)' href='Introduction/Untyped%20Plutus%20Core'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Untyped Plutus Core (UPLC)' href='Introduction/Untyped%20Plutus%20Core.html'>
       Untyped Plutus Core (UPLC)
     </a>
     
@@ -938,13 +1046,10 @@
     
   
 </div>
-            
-              <!-- Variable bindings for this tree-->
+    
+      <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -955,7 +1060,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -963,7 +1070,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='README' href='README'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='README' href='README.html'>
       README
     </a>
     
@@ -977,13 +1086,10 @@
     
   
 </div>
-            
-              <!-- Variable bindings for this tree-->
+    
+      <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -994,7 +1100,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1002,7 +1110,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Run' href='Run'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Run' href='Run.html'>
       Run
     </a>
     
@@ -1016,13 +1126,10 @@
     
   
 </div>
-            
-              <!-- Variable bindings for this tree-->
+    
+      <!-- Variable bindings for this tree-->
+
   
-    
-      
-      
-    
 
 
 
@@ -1033,15 +1140,18 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
+    <span>
+      
+        
     
-    
-      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-700' viewBox='0 0 20 20' fill='currentColor'>
-        <path fill-rule='evenodd' d='M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1H8a3 3 0 00-3 3v1.5a1.5 1.5 0 01-3 0V6z' clip-rule='evenodd'></path>
-        <path d='M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z'></path>
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' class='w-4 h-4 flex-shrink-0 inline text-gray-700' fill='currentColor'>
+        <path fill-rule='evenodd' d='M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm3 10.5a.75.75 0 0 0 0-1.5H9a.75.75 0 0 0 0 1.5h6Z' clip-rule='evenodd'></path>
       </svg>
       
   
-    <a class='font-bold hover:underline truncate' title='Tricks' href='Tricks'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Tricks' href='Tricks.html'>
       Tricks
     </a>
     
@@ -1054,11 +1164,8 @@
   
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1069,7 +1176,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1077,7 +1186,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Difference between pcon and pconstant' href='Tricks/Difference%20between%20pcon%20and%20pconstant'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Difference between pcon and pconstant' href='Tricks/Difference%20between%20pcon%20and%20pconstant.html'>
       Difference between pcon and pconstant
     </a>
     
@@ -1093,11 +1204,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1108,7 +1216,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1116,7 +1226,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title="Don't duplicate work" href='Tricks/Don%27t%20duplicate%20work'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title="Don't duplicate work" href='Tricks/Don%27t%20duplicate%20work.html'>
       Don't duplicate work
     </a>
     
@@ -1132,11 +1244,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1147,7 +1256,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1155,7 +1266,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Optimizing unhoistable lambdas' href='Tricks/Optimizing%20unhoistable%20lambdas'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Optimizing unhoistable lambdas' href='Tricks/Optimizing%20unhoistable%20lambdas.html'>
       Optimizing unhoistable lambdas
     </a>
     
@@ -1171,11 +1284,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1186,7 +1296,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1194,7 +1306,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Plutarch functions are strict' href='Tricks/Plutarch%20functions%20strict'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Plutarch functions are strict' href='Tricks/Plutarch%20functions%20strict.html'>
       Plutarch functions are strict
     </a>
     
@@ -1210,11 +1324,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1225,7 +1336,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1233,7 +1346,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Prefer Plutarch level functions' href='Tricks/Prefer%20Plutarch%20functions'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Prefer Plutarch level functions' href='Tricks/Prefer%20Plutarch%20functions.html'>
       Prefer Plutarch level functions
     </a>
     
@@ -1249,11 +1364,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1264,7 +1376,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1272,7 +1386,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Prefer matching on pmatch result immediately' href='Tricks/Prefer%20matching%20on%20pmatch%20result%20immediately'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Prefer matching on pmatch result immediately' href='Tricks/Prefer%20matching%20on%20pmatch%20result%20immediately.html'>
       Prefer matching on pmatch result immediately
     </a>
     
@@ -1288,11 +1404,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1303,7 +1416,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1311,7 +1426,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Prefer statically building constants' href='Tricks/Prefer%20statically%20building%20constants'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Prefer statically building constants' href='Tricks/Prefer%20statically%20building%20constants.html'>
       Prefer statically building constants
     </a>
     
@@ -1327,11 +1444,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1342,7 +1456,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1350,7 +1466,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Figuring out the representation of a Plutarch type' href='Tricks/Representation%20of%20Plutarch%20type'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Figuring out the representation of a Plutarch type' href='Tricks/Representation%20of%20Plutarch%20type.html'>
       Figuring out the representation of a Plutarch type
     </a>
     
@@ -1366,11 +1484,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1381,7 +1496,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1389,7 +1506,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Let Haskell level functions take responsibility of evaluation' href='Tricks/Responsibility%20of%20evaluation%20in%20Haskell%20functions'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Let Haskell level functions take responsibility of evaluation' href='Tricks/Responsibility%20of%20evaluation%20in%20Haskell%20functions.html'>
       Let Haskell level functions take responsibility of evaluation
     </a>
     
@@ -1405,11 +1524,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1420,7 +1536,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1428,7 +1546,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Using Haskell level functions' href='Tricks/Using%20Haskell%20level%20functions'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Using Haskell level functions' href='Tricks/Using%20Haskell%20level%20functions.html'>
       Using Haskell level functions
     </a>
     
@@ -1444,11 +1564,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1459,7 +1576,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1467,7 +1586,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Working with bound fields' href='Tricks/Working%20with%20bound%20fields'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Working with bound fields' href='Tricks/Working%20with%20bound%20fields.html'>
       Working with bound fields
     </a>
     
@@ -1483,11 +1604,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1498,7 +1616,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1506,7 +1626,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='The isomorphism between makeIsDataIndexed, Haskell ADTs, and PIsDataRepr' href='Tricks/makeIsDataIndexed%2C%20Haskell%20ADTs%2C%20and%20PIsDataRepr'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='The isomorphism between makeIsDataIndexed, Haskell ADTs, and PIsDataRepr' href='Tricks/makeIsDataIndexed%2C%20Haskell%20ADTs%2C%20and%20PIsDataRepr.html'>
       The isomorphism between <code>makeIsDataIndexed</code>, Haskell ADTs, and <code>PIsDataRepr</code>
     </a>
     
@@ -1523,13 +1645,10 @@
     
   
 </div>
-            
-              <!-- Variable bindings for this tree-->
+    
+      <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1540,7 +1659,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1548,7 +1669,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Troubleshooting' href='Troubleshooting'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Troubleshooting' href='Troubleshooting.html'>
       Troubleshooting
     </a>
     
@@ -1562,13 +1685,10 @@
     
   
 </div>
-            
-              <!-- Variable bindings for this tree-->
+    
+      <!-- Variable bindings for this tree-->
+
   
-    
-      
-      
-    
 
 
 
@@ -1579,15 +1699,18 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
+    <span>
+      
+        
     
-    
-      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-700' viewBox='0 0 20 20' fill='currentColor'>
-        <path fill-rule='evenodd' d='M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1H8a3 3 0 00-3 3v1.5a1.5 1.5 0 01-3 0V6z' clip-rule='evenodd'></path>
-        <path d='M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z'></path>
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' class='w-4 h-4 flex-shrink-0 inline text-gray-700' fill='currentColor'>
+        <path fill-rule='evenodd' d='M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm3 10.5a.75.75 0 0 0 0-1.5H9a.75.75 0 0 0 0 1.5h6Z' clip-rule='evenodd'></path>
       </svg>
       
   
-    <a class='font-bold hover:underline truncate' title='Typeclasses' href='Typeclasses'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Typeclasses' href='Typeclasses.html'>
       Typeclasses
     </a>
     
@@ -1600,11 +1723,8 @@
   
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1615,7 +1735,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1623,7 +1745,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PConstant and PLift' href='Typeclasses/PConstant%20and%20PLift'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PConstant and PLift' href='Typeclasses/PConstant%20and%20PLift.html'>
       PConstant and PLift
     </a>
     
@@ -1639,11 +1763,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1654,7 +1775,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1662,7 +1785,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PEq and POrd' href='Typeclasses/PEq%20and%20POrd'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PEq and POrd' href='Typeclasses/PEq%20and%20POrd.html'>
       PEq and POrd
     </a>
     
@@ -1678,11 +1803,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1693,7 +1815,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1701,7 +1825,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PIntegral' href='Typeclasses/PIntegral'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PIntegral' href='Typeclasses/PIntegral.html'>
       <code>PIntegral</code>
     </a>
     
@@ -1717,11 +1843,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1732,7 +1855,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1740,7 +1865,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PIsData' href='Typeclasses/PIsData'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PIsData' href='Typeclasses/PIsData.html'>
       <code>PIsData</code>
     </a>
     
@@ -1756,11 +1883,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1771,7 +1895,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1779,7 +1905,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PIsDataRepr and PDataFields' href='Typeclasses/PIsDataRepr%20and%20PDataFields'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PIsDataRepr and PDataFields' href='Typeclasses/PIsDataRepr%20and%20PDataFields.html'>
       PIsDataRepr and PDataFields
     </a>
     
@@ -1795,11 +1923,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1810,7 +1935,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1818,7 +1945,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PListLike' href='Typeclasses/PListLike'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PListLike' href='Typeclasses/PListLike.html'>
       PListLike
     </a>
     
@@ -1834,11 +1963,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1849,7 +1975,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1857,7 +1985,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PTryFrom' href='Typeclasses/PTryFrom'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PTryFrom' href='Typeclasses/PTryFrom.html'>
       PTryFrom
     </a>
     
@@ -1873,11 +2003,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1888,7 +2015,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1896,7 +2025,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PlutusType, PCon, and PMatch' href='Typeclasses/PlutusType%2C%20PCon%2C%20and%20PMatch'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PlutusType, PCon, and PMatch' href='Typeclasses/PlutusType%2C%20PCon%2C%20and%20PMatch.html'>
       PlutusType, PCon, and PMatch
     </a>
     
@@ -1913,13 +2044,10 @@
     
   
 </div>
-            
-              <!-- Variable bindings for this tree-->
+    
+      <!-- Variable bindings for this tree-->
+
   
-    
-      
-      
-    
 
 
 
@@ -1930,15 +2058,18 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
+    <span>
+      
+        
     
-    
-      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-700' viewBox='0 0 20 20' fill='currentColor'>
-        <path fill-rule='evenodd' d='M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1H8a3 3 0 00-3 3v1.5a1.5 1.5 0 01-3 0V6z' clip-rule='evenodd'></path>
-        <path d='M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z'></path>
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' class='w-4 h-4 flex-shrink-0 inline text-gray-700' fill='currentColor'>
+        <path fill-rule='evenodd' d='M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm3 10.5a.75.75 0 0 0 0-1.5H9a.75.75 0 0 0 0 1.5h6Z' clip-rule='evenodd'></path>
       </svg>
       
   
-    <a class='font-bold hover:underline truncate' title='Types' href='Types'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Types' href='Types.html'>
       Types
     </a>
     
@@ -1951,11 +2082,8 @@
   
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -1966,7 +2094,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -1974,7 +2104,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PAsData' href='Types/PAsData'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PAsData' href='Types/PAsData.html'>
       PAsData
     </a>
     
@@ -1990,11 +2122,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2005,7 +2134,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2013,7 +2144,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PBool' href='Types/PBool'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PBool' href='Types/PBool.html'>
       PBool
     </a>
     
@@ -2029,11 +2162,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2044,7 +2174,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2052,7 +2184,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PBuiltinList' href='Types/PBuiltinList'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PBuiltinList' href='Types/PBuiltinList.html'>
       PBuiltinList
     </a>
     
@@ -2068,11 +2202,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2083,7 +2214,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2091,7 +2224,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PBuiltinPair' href='Types/PBuiltinPair'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PBuiltinPair' href='Types/PBuiltinPair.html'>
       PBuiltinPair
     </a>
     
@@ -2107,11 +2242,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2122,7 +2254,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2130,7 +2264,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PByteString' href='Types/PByteString'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PByteString' href='Types/PByteString.html'>
       PByteString
     </a>
     
@@ -2146,11 +2282,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2161,7 +2294,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2169,7 +2304,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PData' href='Types/PData'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PData' href='Types/PData.html'>
       PData
     </a>
     
@@ -2185,11 +2322,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2200,7 +2334,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2208,7 +2344,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PDataSum and PDataRecord' href='Types/PDataSum%20and%20PDataRecord'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PDataSum and PDataRecord' href='Types/PDataSum%20and%20PDataRecord.html'>
       PDataSum and PDataRecord
     </a>
     
@@ -2224,11 +2362,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2239,7 +2374,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2247,7 +2384,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PInteger' href='Types/PInteger'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PInteger' href='Types/PInteger.html'>
       PInteger
     </a>
     
@@ -2263,11 +2402,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2278,7 +2414,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2286,7 +2424,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PList' href='Types/PList'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PList' href='Types/PList.html'>
       PList
     </a>
     
@@ -2302,11 +2442,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2317,7 +2454,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2325,7 +2464,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PString' href='Types/PString'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PString' href='Types/PString.html'>
       PString
     </a>
     
@@ -2341,11 +2482,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2356,7 +2494,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2364,7 +2504,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PTuple' href='Types/PTuple'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PTuple' href='Types/PTuple.html'>
       PTuple
     </a>
     
@@ -2380,11 +2522,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2395,7 +2534,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2403,7 +2544,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='PUnit' href='Types/PUnit'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PUnit' href='Types/PUnit.html'>
       PUnit
     </a>
     
@@ -2420,13 +2563,10 @@
     
   
 </div>
-            
-              <!-- Variable bindings for this tree-->
+    
+      <!-- Variable bindings for this tree-->
+
   
-    
-      
-      
-    
 
 
 
@@ -2437,15 +2577,18 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
+    <span>
+      
+        
     
-    
-      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-700' viewBox='0 0 20 20' fill='currentColor'>
-        <path fill-rule='evenodd' d='M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1H8a3 3 0 00-3 3v1.5a1.5 1.5 0 01-3 0V6z' clip-rule='evenodd'></path>
-        <path d='M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z'></path>
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' class='w-4 h-4 flex-shrink-0 inline text-gray-700' fill='currentColor'>
+        <path fill-rule='evenodd' d='M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm3 10.5a.75.75 0 0 0 0-1.5H9a.75.75 0 0 0 0 1.5h6Z' clip-rule='evenodd'></path>
       </svg>
       
   
-    <a class='font-bold hover:underline truncate' title='Usage' href='Usage'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Usage' href='Usage.html'>
       Usage
     </a>
     
@@ -2458,11 +2601,8 @@
   
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2473,7 +2613,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2481,7 +2623,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Avoid work duplication using plet' href='Usage/Avoid%20work%20duplication%20using%20plet'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Avoid work duplication using plet' href='Usage/Avoid%20work%20duplication%20using%20plet.html'>
       Avoid work duplication using plet
     </a>
     
@@ -2497,11 +2641,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2512,7 +2653,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2520,7 +2663,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Conditionals' href='Usage/Conditionals'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Conditionals' href='Usage/Conditionals.html'>
       Conditionals
     </a>
     
@@ -2536,11 +2681,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2551,7 +2693,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2559,7 +2703,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Deriving for newtypes' href='Usage/Deriving%20for%20newtypes'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Deriving for newtypes' href='Usage/Deriving%20for%20newtypes.html'>
       Deriving for newtypes
     </a>
     
@@ -2575,11 +2721,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2590,7 +2733,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2598,7 +2743,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Deriving with generics' href='Usage/Deriving%20with%20generics'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Deriving with generics' href='Usage/Deriving%20with%20generics.html'>
       Deriving with generics
     </a>
     
@@ -2614,11 +2761,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2629,7 +2773,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2637,7 +2783,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Do syntax with QualifiedDo' href='Usage/Do%20syntax%20with%20QualifiedDo'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Do syntax with QualifiedDo' href='Usage/Do%20syntax%20with%20QualifiedDo.html'>
       Do syntax with QualifiedDo
     </a>
     
@@ -2653,11 +2801,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2668,7 +2813,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2676,7 +2823,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Do syntax with TermCont' href='Usage/Do%20syntax%20with%20TermCont'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Do syntax with TermCont' href='Usage/Do%20syntax%20with%20TermCont.html'>
       Do syntax with TermCont
     </a>
     
@@ -2692,11 +2841,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2707,7 +2853,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2715,7 +2863,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='FFI' href='Usage/FFI'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='FFI' href='Usage/FFI.html'>
       FFI
     </a>
     
@@ -2731,11 +2881,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2746,7 +2893,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2754,7 +2903,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Using the Plutarch Prelude' href='Usage/Prelude%20mixin'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Using the Plutarch Prelude' href='Usage/Prelude%20mixin.html'>
       Using the Plutarch Prelude
     </a>
     
@@ -2770,11 +2921,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2785,7 +2933,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2793,7 +2943,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Raising errors' href='Usage/Raising%20errors'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Raising errors' href='Usage/Raising%20errors.html'>
       Raising errors
     </a>
     
@@ -2809,11 +2961,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2824,7 +2973,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2832,7 +2983,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Recursion' href='Usage/Recursion'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Recursion' href='Usage/Recursion.html'>
       Recursion
     </a>
     
@@ -2848,11 +3001,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2863,7 +3013,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2871,7 +3023,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Tracing' href='Usage/Tracing'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Tracing' href='Usage/Tracing.html'>
       Tracing
     </a>
     
@@ -2887,11 +3041,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2902,7 +3053,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2910,7 +3063,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='Unsafe functions' href='Usage/Unsafe%20functions'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='Unsafe functions' href='Usage/Unsafe%20functions.html'>
       Unsafe functions
     </a>
     
@@ -2927,13 +3082,10 @@
     
   
 </div>
-            
-              <!-- Variable bindings for this tree-->
+    
+      <!-- Variable bindings for this tree-->
+
   
-    
-      
-      
-    
 
 
 
@@ -2944,15 +3096,18 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
+    <span>
+      
+        
     
-    
-      <svg xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 flex-shrink-0 inline text-gray-700' viewBox='0 0 20 20' fill='currentColor'>
-        <path fill-rule='evenodd' d='M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1H8a3 3 0 00-3 3v1.5a1.5 1.5 0 01-3 0V6z' clip-rule='evenodd'></path>
-        <path d='M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z'></path>
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' class='w-4 h-4 flex-shrink-0 inline text-gray-700' fill='currentColor'>
+        <path fill-rule='evenodd' d='M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm3 10.5a.75.75 0 0 0 0-1.5H9a.75.75 0 0 0 0 1.5h6Z' clip-rule='evenodd'></path>
       </svg>
       
   
-    <a class='font-bold hover:underline truncate' title='examples' href='examples'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='examples' href='examples.html'>
       examples
     </a>
     
@@ -2965,11 +3120,8 @@
   
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -2980,7 +3132,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -2988,7 +3142,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='BASIC' href='examples/BASIC'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='BASIC' href='examples/BASIC.html'>
       BASIC
     </a>
     
@@ -3004,11 +3160,8 @@
 </div>
     
       <!-- Variable bindings for this tree-->
+
   
-    
-      
-    
-    
 
 
 
@@ -3019,7 +3172,9 @@
 <div class='pl-2'>
   <!-- Node's rootLabel-->
   <div class='flex items-center my-2 space-x-2 justify-left'>
-    
+    <span>
+      
+        
     
       <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
@@ -3027,7 +3182,9 @@
       </svg>
     
   
-    <a class='hover:underline truncate' title='VALIDATOR' href='examples/VALIDATOR'>
+        
+    </span>
+    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='VALIDATOR' href='examples/VALIDATOR.html'>
       VALIDATOR
     </a>
     
@@ -3044,20 +3201,19 @@
     
   
 </div>
-            
+    
 
-          </div>
-        </nav>
-
-        <!-- Main body column -->
-        <div class='flex-1 w-full overflow-x-auto bg-white'>
-          <main class='px-4 py-4'>
-            <h1 class='flex items-end justify-center mb-4 p-3 bg-blue-100 text-5xl font-extrabold text-black rounded'>
+  </div>
+</nav>
+          <!-- Main body column -->
+          <div class='flex-1 w-full overflow-x-auto bg-white'>
+  <main class='px-4 py-4'>
+    <h1 class='flex items-end justify-center mb-4 p-3 bg-blue-100 text-5xl font-extrabold text-black rounded'>
   <a class='z-40 tracking-tighter '>
     Plutarch Constants
   </a>
 </h1>
-            <article class='overflow-auto'>
+    <article class='overflow-auto'>
   <!-- What goes in this file will appear on top of note body-->
   <div xmlhtmlRaw><details>
 <summary> imports </summary>
@@ -3091,13 +3247,13 @@ import Plutarch.Prelude</code></pre></div><div xmlhtmlRaw></p>
         </li>
       
     </ul>
-  <h2 id='static-building-of-constant-terms-with-pconstant' class='inline-block mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Static building of constant <code class='py-0.5 px-0.5 bg-gray-100'>Term</code>s with <code class='py-0.5 px-0.5 bg-gray-100'>pconstant</code></h2>
+  <h2 id='static-building-of-constant-terms-with-pconstant' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Static building of constant <code class='py-0.5 px-0.5 bg-gray-100'>Term</code>s with <code class='py-0.5 px-0.5 bg-gray-100'>pconstant</code></h2>
     <p class='mb-3'>
-      If we know the desired value of a constant <code class='py-0.5 px-0.5 bg-gray-100'>Term</code> at compile-time, we can build the <code class='py-0.5 px-0.5 bg-gray-100'>Term</code> directly from <a href='Concepts/Haskell%20Synonym' class='text-blue-600 mavenLinkBold hover:underline'>Haskell synonyms</a>. The function to do so is <code class='py-0.5 px-0.5 bg-gray-100'>pconstant</code>.
+      If we know the desired value of a constant <code class='py-0.5 px-0.5 bg-gray-100'>Term</code> at compile-time, we can build the <code class='py-0.5 px-0.5 bg-gray-100'>Term</code> directly from <a href='Concepts/Haskell%20Synonym.html' class='text-blue-600 mavenLinkBold hover:underline'>Haskell synonyms</a>. The function to do so is <code class='py-0.5 px-0.5 bg-gray-100'>pconstant</code>.
     </p>
   
     <p class='mb-3'>
-      Constructing constants in this way utilizes the <a href='Typeclasses/PConstant%20and%20PLift' class='text-blue-600 mavenLinkBold hover:underline'><code class='py-0.5 px-0.5 bg-gray-100'>PConstant</code>/<code class='py-0.5 px-0.5 bg-gray-100'>PLift</code></a> typeclasses. These typeclasses expose the following <a href='https://wiki.haskell.org/GHC/Type_families#An_associated_type_synonym_example' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>associated type familes</a>:
+      Constructing constants in this way utilizes the <a href='Typeclasses/PConstant%20and%20PLift.html' class='text-blue-600 mavenLinkBold hover:underline'><code class='py-0.5 px-0.5 bg-gray-100'>PConstant</code>/<code class='py-0.5 px-0.5 bg-gray-100'>PLift</code></a> typeclasses. These typeclasses expose the following <a href='https://wiki.haskell.org/GHC/Type_families#An_associated_type_synonym_example' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>associated type families</a>:
     </p>
   <div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>type PLifted :: PType -&gt; Type
 
@@ -3126,11 +3282,11 @@ x = pconstant True</code></pre></div>
     </p>
   
     <p class='mb-3'>
-      You can also directly create a <a href='Types/PAsData' class='text-blue-600 mavenLinkBold hover:underline'><code class='py-0.5 px-0.5 bg-gray-100'>PAsData</code></a> term using <code class='py-0.5 px-0.5 bg-gray-100'>pconstantData</code>:
+      You can also directly create a <a href='Types/PAsData.html' class='text-blue-600 mavenLinkBold hover:underline'><code class='py-0.5 px-0.5 bg-gray-100'>PAsData</code></a> term using <code class='py-0.5 px-0.5 bg-gray-100'>pconstantData</code>:
     </p>
   <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>-- | A Plutarch level boolean encoded as `Data`.
 xd :: Term s (PAsData PBool)
-xd = pconstantData True</code></pre></div><h2 id='dynamic-building-of-constant-terms-with-pcon' class='inline-block mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Dynamic building of constant <code class='py-0.5 px-0.5 bg-gray-100'>Term</code>s with <code class='py-0.5 px-0.5 bg-gray-100'>pcon</code></h2>
+xd = pconstantData True</code></pre></div><h2 id='dynamic-building-of-constant-terms-with-pcon' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Dynamic building of constant <code class='py-0.5 px-0.5 bg-gray-100'>Term</code>s with <code class='py-0.5 px-0.5 bg-gray-100'>pcon</code></h2>
     <p class='mb-3'>
       Sometimes the value that we want to treat as a constant <code class='py-0.5 px-0.5 bg-gray-100'>Term</code> is not known at compile time. To explain how to construct constants when we can only determine the value at runtime, we will examine the <code class='py-0.5 px-0.5 bg-gray-100'>PMaybe</code> Plutarch type. It can serve the same purpose as the <code class='py-0.5 px-0.5 bg-gray-100'>Maybe</code> type in Haskell: to represent the situation where computation may not produce a sensible result.
     </p>
@@ -3174,7 +3330,7 @@ x' = pconstant 3
 justTerm :: Term s (PMaybe PInteger)
 justTerm = pcon (PJust x')</code></pre></div>
     <p class='mb-3'>
-      These types deserve some explaination.
+      These types deserve some explanation.
     </p>
   
     <ul class='my-3 ml-6 space-y-1 list-disc'>
@@ -3199,9 +3355,9 @@ justTerm = pcon (PJust x')</code></pre></div>
   <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>hPJustPInteger :: Term s PInteger -&gt; Term s (PMaybe PInteger)
 hPJustPInteger x = pcon (PJust x)</code></pre></div>
     <p class='mb-3'>
-      The <code class='py-0.5 px-0.5 bg-gray-100'>pcon</code> function is a method of the <a href='Typeclasses/PlutusType%2C%20PCon%2C%20and%20PMatch' class='text-blue-600 mavenLinkBold hover:underline'><code class='py-0.5 px-0.5 bg-gray-100'>PCon</code> typeclass</a>.
+      The <code class='py-0.5 px-0.5 bg-gray-100'>pcon</code> function is a method of the <a href='Typeclasses/PlutusType%2C%20PCon%2C%20and%20PMatch.html' class='text-blue-600 mavenLinkBold hover:underline'><code class='py-0.5 px-0.5 bg-gray-100'>PCon</code> typeclass</a>.
     </p>
-  <h2 id='overloaded-literals' class='inline-block mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Overloaded literals</h2>
+  <h2 id='overloaded-literals' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Overloaded literals</h2>
     <p class='mb-3'>
       <code class='py-0.5 px-0.5 bg-gray-100'>pconstant</code> and <code class='py-0.5 px-0.5 bg-gray-100'>pcon</code> are the long-form ways of building constants. Specific constant Haskell literals are overloaded to help construct Plutarch constants. We provide two examples below.
     </p>
@@ -3211,7 +3367,7 @@ i = 1
 
 -- | A Plutarch level string (this is actually `Text`). Its value is "foobar", in this case.
 s :: Term s PString
-s = "foobar"</code></pre></div><h2 id='helper-functions' class='inline-block mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Helper functions</h2>
+s = "foobar"</code></pre></div><h2 id='helper-functions' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Helper functions</h2>
     <p class='mb-3'>
       Finally, Plutarch provides helper functions to build certain types of constants:
     </p>
@@ -3222,38 +3378,38 @@ hexs = phexByteStr "41"
 
   <!-- What goes in this file will appear below the note body-->
 </article>
-            <div class='flex flex-col lg:flex-row lg:space-x-2'>
-              
-              
+    <div class='flex flex-col lg:flex-row lg:space-x-2'>
+      
+      
   <div class='flex-1 p-4 mt-8 bg-gray-100 rounded'>
     <header class='mb-2 text-xl font-semibold text-gray-500'>Links to this page</header>
     <ul class='space-y-1'>
       
         <li>
-          <a class='text-blue-600 mavenLinkBold hover:bg-blue-50' href='README'>
+          <a class='text-blue-600 mavenLinkBold hover:bg-blue-50' href='README.html'>
             README
           </a>
           
             <div class='mb-4 overflow-auto text-sm text-gray-500'>
   
     <div class='pl-2 mt-2 border-l-2 border-blue-200 hover:border-blue-500'>
-      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants#dynamic-building-of-constant-terms-with-pcon' class='text-gray-600 font-bold hover:bg-gray-50'>Dynamic building of constant <code>Term</code>s with <code>pcon</code></a></div>
+      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html#dynamic-building-of-constant-terms-with-pcon' class='text-gray-600 font-bold hover:bg-gray-50'>Dynamic building of constant <code>Term</code>s with <code>pcon</code></a></div>
     </div>
   
     <div class='pl-2 mt-2 border-l-2 border-blue-200 hover:border-blue-500'>
-      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants#helper-functions' class='text-gray-600 font-bold hover:bg-gray-50'>Helper functions</a></div>
+      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html#helper-functions' class='text-gray-600 font-bold hover:bg-gray-50'>Helper functions</a></div>
     </div>
   
     <div class='pl-2 mt-2 border-l-2 border-blue-200 hover:border-blue-500'>
-      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants#overloaded-literals' class='text-gray-600 font-bold hover:bg-gray-50'>Overloaded literals</a></div>
+      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html#overloaded-literals' class='text-gray-600 font-bold hover:bg-gray-50'>Overloaded literals</a></div>
     </div>
   
     <div class='pl-2 mt-2 border-l-2 border-blue-200 hover:border-blue-500'>
-      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants' class='text-gray-600 font-bold hover:bg-gray-50'>Plutarch Constant <code>Term</code>s</a></div>
+      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html' class='text-gray-600 font-bold hover:bg-gray-50'>Plutarch Constant <code>Term</code>s</a></div>
     </div>
   
     <div class='pl-2 mt-2 border-l-2 border-blue-200 hover:border-blue-500'>
-      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants#static-building-of-constant-terms-with-pconstant' class='text-gray-600 font-bold hover:bg-gray-50'>Static building of constant <code>Term</code>s with <code>pconstant</code></a></div>
+      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html#static-building-of-constant-terms-with-pconstant' class='text-gray-600 font-bold hover:bg-gray-50'>Static building of constant <code>Term</code>s with <code>pconstant</code></a></div>
     </div>
   
 </div>
@@ -3261,30 +3417,30 @@ hexs = phexByteStr "41"
         </li>
       
         <li>
-          <a class='text-blue-600 mavenLinkBold hover:bg-blue-50' href='Introduction/Plutarch%20Terms'>
+          <a class='text-blue-600 mavenLinkBold hover:bg-blue-50' href='Introduction/Plutarch%20Terms.html'>
             Plutarch <code>Term</code>s
           </a>
           
             <div class='mb-4 overflow-auto text-sm text-gray-500'>
   
     <div class='pl-2 mt-2 border-l-2 border-blue-200 hover:border-blue-500'>
-      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants#dynamic-building-of-constant-terms-with-pcon' class='text-gray-600 font-bold hover:bg-gray-50'>Dynamic building of constant <code>Term</code>s with <code>pcon</code></a></div>
+      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html#dynamic-building-of-constant-terms-with-pcon' class='text-gray-600 font-bold hover:bg-gray-50'>Dynamic building of constant <code>Term</code>s with <code>pcon</code></a></div>
     </div>
   
     <div class='pl-2 mt-2 border-l-2 border-blue-200 hover:border-blue-500'>
-      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants#helper-functions' class='text-gray-600 font-bold hover:bg-gray-50'>Helper functions</a></div>
+      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html#helper-functions' class='text-gray-600 font-bold hover:bg-gray-50'>Helper functions</a></div>
     </div>
   
     <div class='pl-2 mt-2 border-l-2 border-blue-200 hover:border-blue-500'>
-      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants#overloaded-literals' class='text-gray-600 font-bold hover:bg-gray-50'>Overloaded literals</a></div>
+      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html#overloaded-literals' class='text-gray-600 font-bold hover:bg-gray-50'>Overloaded literals</a></div>
     </div>
   
     <div class='pl-2 mt-2 border-l-2 border-blue-200 hover:border-blue-500'>
-      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants' class='text-gray-600 font-bold hover:bg-gray-50'>Plutarch Constant <code>Term</code>s</a></div>
+      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html' class='text-gray-600 font-bold hover:bg-gray-50'>Plutarch Constant <code>Term</code>s</a></div>
     </div>
   
     <div class='pl-2 mt-2 border-l-2 border-blue-200 hover:border-blue-500'>
-      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants#static-building-of-constant-terms-with-pconstant' class='text-gray-600 font-bold hover:bg-gray-50'>Static building of constant <code>Term</code>s with <code>pconstant</code></a></div>
+      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html#static-building-of-constant-terms-with-pconstant' class='text-gray-600 font-bold hover:bg-gray-50'>Static building of constant <code>Term</code>s with <code>pconstant</code></a></div>
     </div>
   
 </div>
@@ -3292,30 +3448,30 @@ hexs = phexByteStr "41"
         </li>
       
         <li>
-          <a class='text-blue-600 mavenLinkBold hover:bg-blue-50' href='Introduction'>
+          <a class='text-blue-600 mavenLinkBold hover:bg-blue-50' href='Introduction.html'>
             Introduction
           </a>
           
             <div class='mb-4 overflow-auto text-sm text-gray-500'>
   
     <div class='pl-2 mt-2 border-l-2 border-blue-200 hover:border-blue-500'>
-      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants#dynamic-building-of-constant-terms-with-pcon' class='text-gray-600 font-bold hover:bg-gray-50'>Dynamic building of constant <code>Term</code>s with <code>pcon</code></a></div>
+      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html#dynamic-building-of-constant-terms-with-pcon' class='text-gray-600 font-bold hover:bg-gray-50'>Dynamic building of constant <code>Term</code>s with <code>pcon</code></a></div>
     </div>
   
     <div class='pl-2 mt-2 border-l-2 border-blue-200 hover:border-blue-500'>
-      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants#helper-functions' class='text-gray-600 font-bold hover:bg-gray-50'>Helper functions</a></div>
+      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html#helper-functions' class='text-gray-600 font-bold hover:bg-gray-50'>Helper functions</a></div>
     </div>
   
     <div class='pl-2 mt-2 border-l-2 border-blue-200 hover:border-blue-500'>
-      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants#overloaded-literals' class='text-gray-600 font-bold hover:bg-gray-50'>Overloaded literals</a></div>
+      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html#overloaded-literals' class='text-gray-600 font-bold hover:bg-gray-50'>Overloaded literals</a></div>
     </div>
   
     <div class='pl-2 mt-2 border-l-2 border-blue-200 hover:border-blue-500'>
-      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants' class='text-gray-600 font-bold hover:bg-gray-50'>Plutarch Constant <code>Term</code>s</a></div>
+      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html' class='text-gray-600 font-bold hover:bg-gray-50'>Plutarch Constant <code>Term</code>s</a></div>
     </div>
   
     <div class='pl-2 mt-2 border-l-2 border-blue-200 hover:border-blue-500'>
-      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants#static-building-of-constant-terms-with-pconstant' class='text-gray-600 font-bold hover:bg-gray-50'>Static building of constant <code>Term</code>s with <code>pconstant</code></a></div>
+      <div><a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html#static-building-of-constant-terms-with-pconstant' class='text-gray-600 font-bold hover:bg-gray-50'>Static building of constant <code>Term</code>s with <code>pconstant</code></a></div>
     </div>
   
 </div>
@@ -3323,14 +3479,14 @@ hexs = phexByteStr "41"
         </li>
       
         <li>
-          <a class='text-blue-600 mavenLinkBold hover:bg-blue-50' href='DEVGUIDE'>
+          <a class='text-blue-600 mavenLinkBold hover:bg-blue-50' href='DEVGUIDE.html'>
             DEVGUIDE
           </a>
           
             <div class='mb-4 overflow-auto text-sm text-gray-500'>
   
     <div class='pl-2 mt-2 border-l-2 border-blue-200 hover:border-blue-500'>
-      <div><p><strong>NOTE</strong>: The following information is almost never necessary with the existence of <code>pconstant</code>. Refer to <a href='Introduction/Plutarch%20Terms/Plutarch%20Constants' class='text-gray-600 font-bold hover:bg-gray-50'>constant building</a> and <a href='Typeclasses/PConstant%20and%20PLift' class='text-gray-600 font-bold hover:bg-gray-50'><code>PConstant</code>/<code>PLift</code></a> section of the Plutarch user guide.</p></div>
+      <div><p><strong>NOTE</strong>: The following information is almost never necessary with the existence of <code>pconstant</code>. Refer to <a href='Introduction/Plutarch%20Terms/Plutarch%20Constants.html' class='text-gray-600 font-bold hover:bg-gray-50'>constant building</a> and <a href='Typeclasses/PConstant%20and%20PLift.html' class='text-gray-600 font-bold hover:bg-gray-50'><code>PConstant</code>/<code>PLift</code></a> section of the Plutarch user guide.</p></div>
     </div>
   
 </div>
@@ -3340,16 +3496,18 @@ hexs = phexByteStr "41"
     </ul>
   </div>
 
-            </div>
-            
+    </div>
+    
   <section class='flex flex-wrap items-end justify-center my-4 space-x-2 space-y-2 font-mono text-sm'>
     
   </section>
 
-            <!-- What goes in this file will at the very end of the main div -->
-          </main>
+    <!-- What goes in this file will at the very end of the main div -->
+  </main>
+</div>
         </div>
-      </div>
+        
+
       <footer class='flex items-center justify-center mt-2 mb-8 space-x-4 text-center text-gray-800'>
   
   <div>
@@ -3360,20 +3518,19 @@ hexs = phexByteStr "41"
     </a>
   </div>
   <div>
-    <a href='-/all' title='View Index'>
-      <svg class='w-6 h-6 hover:text-blue-700' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
-        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4'>
-        </path>
+    <a href='-/all.html' title='View Index'>
+      <svg xmlns='http://www.w3.org/2000/svg' class='w-6 h-6 hover:text-blue-700' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'></path>
       </svg>
     </a>
   </div>
   <div>
-    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.0.3.3'>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.4.0'>
       <img class='w-6 h-6 hover:text-blue-700' src='_emanote-static/emanote-logo.svg' />
     </a>
   </div>
   <div>
-    <a href='-/tags' title='View tags'>
+    <a href='-/tags.html' title='View tags'>
       <svg class='w-6 h-6 hover:text-blue-700' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z'>
         </path>
@@ -3381,7 +3538,7 @@ hexs = phexByteStr "41"
     </a>
   </div>
   <div>
-    <a href='-/tasks' title='View tasks'>
+    <a href='-/tasks.html' title='View tasks'>
       <svg xmlns='http://www.w3.org/2000/svg' class='w-6 h-6 hover:text-blue-700' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'></path>
       </svg>

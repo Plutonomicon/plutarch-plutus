@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE FlexibleInstances #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE UndecidableInstances #-}</span><span>
+</span><span id="line-3"></span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# HLINT ignore &quot;Eta reduce&quot; #-}</span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.Test.Property.Marshal</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-7"></span><span>  </span><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#Marshal"><span class="hs-identifier">Marshal</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#marshal"><span class="hs-identifier">marshal</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-8"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Lift</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">PLifted</span></span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Prelude</span></span><span>
+</span><span id="line-12"></span><span>
+</span><span id="line-13"></span><span class="annot"><span class="hs-comment">-- | Class of Haskell types that can be marshalled to a Plutarch term.</span></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">class</span><span> </span><span id="Marshal"><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#Marshal"><span class="hs-identifier hs-var">Marshal</span></a></span></span><span> </span><span id="local-6989586621679215499"><span class="annot"><a href="#local-6989586621679215499"><span class="hs-identifier hs-type">h</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679215497"><span class="annot"><a href="#local-6989586621679215497"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PType</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><a href="#local-6989586621679215499"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679215497"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-15"></span><span>  </span><span id="marshal"><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#marshal"><span class="hs-identifier hs-type">marshal</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679215499"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679215497"><span class="hs-identifier hs-type">p</span></a></span><span>
+</span><span id="line-16"></span><span>  </span><span class="hs-keyword">default</span><span> </span><span id="marshal"><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#marshal"><span class="hs-identifier hs-type">marshal</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLifted</span></span><span> </span><span class="annot"><a href="#local-6989586621679215497"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#~"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679215499"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLift</span></span><span> </span><span class="annot"><a href="#local-6989586621679215497"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679215499"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679215497"><span class="hs-identifier hs-type">p</span></a></span><span>
+</span><span id="line-17"></span><span>  </span><span id="local-6989586621679215585"><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#marshal"><span class="hs-identifier hs-var hs-var">marshal</span></a></span><span> </span><span id="local-6989586621679215592"><span class="annot"><span class="annottext">h
+</span><a href="#local-6989586621679215592"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PLifted p -&gt; Term s p
+forall (p :: PType) (s :: S). PLift p =&gt; PLifted p -&gt; Term s p
+</span><span class="hs-identifier hs-var">pconstant</span></span><span> </span><span class="annot"><span class="annottext">h
+PLifted p
+</span><a href="#local-6989586621679215592"><span class="hs-identifier hs-var">x</span></a></span></span><span>
+</span><span id="line-18"></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679215515"><span id="local-6989586621679215516"><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#Marshal"><span class="hs-identifier hs-type">Marshal</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679215515"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679215516"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#Marshal"><span class="hs-identifier hs-type">Marshal</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679215515"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PList</span></span><span> </span><span class="annot"><a href="#local-6989586621679215516"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-20"></span><span>  </span><span id="local-6989586621679215600"><span class="annot"><span class="annottext">marshal :: [h] -&gt; ClosedTerm (PList p)
+</span><a href="Plutarch.Test.Property.Marshal.html#marshal"><span class="hs-identifier hs-var hs-var hs-var hs-var">marshal</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(h -&gt; ClosedTerm (PList p) -&gt; ClosedTerm (PList p))
+-&gt; ClosedTerm (PList p) -&gt; [h] -&gt; ClosedTerm (PList p)
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; [a] -&gt; b
+forall (t :: Type -&gt; Type) a b.
+Foldable t =&gt;
+(a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Foldable.html#foldr"><span class="hs-identifier hs-var">foldr</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679215611"><span class="annot"><span class="annottext">h
+</span><a href="#local-6989586621679215611"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span id="local-6989586621679215612"><span class="annot"><span class="annottext">ClosedTerm (PList p)
+</span><a href="#local-6989586621679215612"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s (p :--&gt; (PList p :--&gt; PList p))
+forall (a :: PType) (s :: S).
+PElemConstraint PList a =&gt;
+Term s (a :--&gt; (PList a :--&gt; PList a))
+forall (list :: PType -&gt; PType) (a :: PType) (s :: S).
+(PListLike list, PElemConstraint list a) =&gt;
+Term s (a :--&gt; (list a :--&gt; list a))
+</span><span class="hs-identifier hs-var">pcons</span></span><span> </span><span class="annot"><span class="annottext">Term s (p :--&gt; (PList p :--&gt; PList p))
+-&gt; Term s p -&gt; Term s (PList p :--&gt; PList p)
+forall (s :: S) (a :: PType) (b :: PType).
+HasCallStack =&gt;
+Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
+</span><span class="hs-operator hs-var">#</span></span><span> </span><span class="annot"><span class="annottext">h -&gt; ClosedTerm p
+forall h (p :: PType). Marshal h p =&gt; h -&gt; ClosedTerm p
+</span><a href="Plutarch.Test.Property.Marshal.html#marshal"><span class="hs-identifier hs-var">marshal</span></a></span><span> </span><span class="annot"><span class="annottext">h
+</span><a href="#local-6989586621679215611"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PList p :--&gt; PList p)
+-&gt; Term s (PList p) -&gt; Term s (PList p)
+forall (s :: S) (a :: PType) (b :: PType).
+HasCallStack =&gt;
+Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
+</span><span class="hs-operator hs-var">#</span></span><span> </span><span class="annot"><span class="annottext">Term s (PList p)
+ClosedTerm (PList p)
+</span><a href="#local-6989586621679215612"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s (PList p)
+ClosedTerm (PList p)
+forall (a :: PType) (s :: S).
+PElemConstraint PList a =&gt;
+Term s (PList a)
+forall (list :: PType -&gt; PType) (a :: PType) (s :: S).
+(PListLike list, PElemConstraint list a) =&gt;
+Term s (list a)
+</span><span class="hs-identifier hs-var">pnil</span></span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679215537"><span id="local-6989586621679215538"><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#Marshal"><span class="hs-identifier hs-type">Marshal</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679215537"><span class="hs-identifier hs-type">ha</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679215538"><span class="hs-identifier hs-type">pa</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#Marshal"><span class="hs-identifier hs-type">Marshal</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679215537"><span class="hs-identifier hs-type">ha</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PMaybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679215538"><span class="hs-identifier hs-type">pa</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-23"></span><span>  </span><span id="local-6989586621679215626"><span class="annot"><span class="annottext">marshal :: Maybe ha -&gt; ClosedTerm (PMaybe pa)
+</span><a href="Plutarch.Test.Property.Marshal.html#marshal"><span class="hs-identifier hs-var hs-var hs-var hs-var">marshal</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span id="local-6989586621679215627"><span class="annot"><span class="annottext">ha
+</span><a href="#local-6989586621679215627"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PMaybe pa s -&gt; Term s (PMaybe pa)
+forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
+</span><span class="hs-identifier hs-var">pcon</span></span><span> </span><span class="annot"><span class="annottext">(PMaybe pa s -&gt; Term s (PMaybe pa))
+-&gt; PMaybe pa s -&gt; Term s (PMaybe pa)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Term s pa -&gt; PMaybe pa s
+forall (a :: PType) (s :: S). Term s a -&gt; PMaybe a s
+</span><span class="hs-identifier hs-var">PJust</span></span><span> </span><span class="annot"><span class="annottext">(Term s pa -&gt; PMaybe pa s) -&gt; Term s pa -&gt; PMaybe pa s
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ha -&gt; ClosedTerm pa
+forall h (p :: PType). Marshal h p =&gt; h -&gt; ClosedTerm p
+</span><a href="Plutarch.Test.Property.Marshal.html#marshal"><span class="hs-identifier hs-var">marshal</span></a></span><span> </span><span class="annot"><span class="annottext">ha
+</span><a href="#local-6989586621679215627"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-24"></span><span>  </span><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#marshal"><span class="hs-identifier hs-var">marshal</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe ha
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PMaybe pa s -&gt; Term s (PMaybe pa)
+forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
+</span><span class="hs-identifier hs-var">pcon</span></span><span> </span><span class="annot"><span class="annottext">PMaybe pa s
+forall (a :: PType) (s :: S). PMaybe a s
+</span><span class="hs-identifier hs-var">PNothing</span></span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679215554"><span id="local-6989586621679215555"><span id="local-6989586621679215556"><span id="local-6989586621679215557"><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#Marshal"><span class="hs-identifier hs-type">Marshal</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679215554"><span class="hs-identifier hs-type">ha</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679215555"><span class="hs-identifier hs-type">pa</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#Marshal"><span class="hs-identifier hs-type">Marshal</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679215556"><span class="hs-identifier hs-type">hb</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679215557"><span class="hs-identifier hs-type">pb</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#Marshal"><span class="hs-identifier hs-type">Marshal</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679215554"><span class="hs-identifier hs-type">ha</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679215556"><span class="hs-identifier hs-type">hb</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PPair</span></span><span> </span><span class="annot"><a href="#local-6989586621679215555"><span class="hs-identifier hs-type">pa</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679215557"><span class="hs-identifier hs-type">pb</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-27"></span><span>  </span><span id="local-6989586621679215639"><span class="annot"><span class="annottext">marshal :: (ha, hb) -&gt; ClosedTerm (PPair pa pb)
+</span><a href="Plutarch.Test.Property.Marshal.html#marshal"><span class="hs-identifier hs-var hs-var hs-var hs-var">marshal</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679215640"><span class="annot"><span class="annottext">ha
+</span><a href="#local-6989586621679215640"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679215641"><span class="annot"><span class="annottext">hb
+</span><a href="#local-6989586621679215641"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PPair pa pb s -&gt; Term s (PPair pa pb)
+forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
+</span><span class="hs-identifier hs-var">pcon</span></span><span> </span><span class="annot"><span class="annottext">(PPair pa pb s -&gt; Term s (PPair pa pb))
+-&gt; PPair pa pb s -&gt; Term s (PPair pa pb)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Term s pa -&gt; Term s pb -&gt; PPair pa pb s
+forall (a :: PType) (b :: PType) (s :: S).
+Term s a -&gt; Term s b -&gt; PPair a b s
+</span><span class="hs-identifier hs-var">PPair</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ha -&gt; ClosedTerm pa
+forall h (p :: PType). Marshal h p =&gt; h -&gt; ClosedTerm p
+</span><a href="Plutarch.Test.Property.Marshal.html#marshal"><span class="hs-identifier hs-var">marshal</span></a></span><span> </span><span class="annot"><span class="annottext">ha
+</span><a href="#local-6989586621679215640"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">hb -&gt; ClosedTerm pb
+forall h (p :: PType). Marshal h p =&gt; h -&gt; ClosedTerm p
+</span><a href="Plutarch.Test.Property.Marshal.html#marshal"><span class="hs-identifier hs-var">marshal</span></a></span><span> </span><span class="annot"><span class="annottext">hb
+</span><a href="#local-6989586621679215641"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span>
+</span><span id="line-29"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#Marshal"><span class="hs-identifier hs-type">Marshal</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-30"></span><span>  </span><span id="local-6989586621679215649"><span class="annot"><span class="annottext">marshal :: Integer -&gt; ClosedTerm PInteger
+</span><a href="Plutarch.Test.Property.Marshal.html#marshal"><span class="hs-identifier hs-var hs-var hs-var hs-var">marshal</span></a></span></span><span> </span><span id="local-6989586621679215650"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679215650"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Term s PInteger
+forall a. Num a =&gt; Integer -&gt; a
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Num.html#fromInteger"><span class="hs-identifier hs-var">fromInteger</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679215650"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#Marshal"><span class="hs-identifier hs-type">Marshal</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Real.html#Rational"><span class="hs-identifier hs-type">Rational</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PRational</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-33"></span><span>  </span><span id="local-6989586621679215659"><span class="annot"><span class="annottext">marshal :: Rational -&gt; ClosedTerm PRational
+</span><a href="Plutarch.Test.Property.Marshal.html#marshal"><span class="hs-identifier hs-var hs-var hs-var hs-var">marshal</span></a></span></span><span> </span><span id="local-6989586621679215660"><span class="annot"><span class="annottext">Rational
+</span><a href="#local-6989586621679215660"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Rational -&gt; Term s PRational
+forall a. Fractional a =&gt; Rational -&gt; a
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Real.html#fromRational"><span class="hs-identifier hs-var">fromRational</span></a></span><span> </span><span class="annot"><span class="annottext">Rational
+</span><a href="#local-6989586621679215660"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-34"></span><span>
+</span><span id="line-35"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#Marshal"><span class="hs-identifier hs-type">Marshal</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Bool"><span class="hs-identifier hs-type">Bool</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PBool</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-36"></span><span>  </span><span id="local-6989586621679215666"><span class="annot"><span class="annottext">marshal :: Bool -&gt; ClosedTerm PBool
+</span><a href="Plutarch.Test.Property.Marshal.html#marshal"><span class="hs-identifier hs-var hs-var hs-var hs-var">marshal</span></a></span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#True"><span class="hs-identifier hs-var">True</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PBool s -&gt; Term s PBool
+forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
+</span><span class="hs-identifier hs-var">pcon</span></span><span> </span><span class="annot"><span class="annottext">PBool s
+forall (s :: S). PBool s
+</span><span class="hs-identifier hs-var">PTrue</span></span><span>
+</span><span id="line-37"></span><span>  </span><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#marshal"><span class="hs-identifier hs-var">marshal</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#False"><span class="hs-identifier hs-var">False</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PBool s -&gt; Term s PBool
+forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
+</span><span class="hs-identifier hs-var">pcon</span></span><span> </span><span class="annot"><span class="annottext">PBool s
+forall (s :: S). PBool s
+</span><span class="hs-identifier hs-var">PFalse</span></span><span>
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Test.Property.Marshal.html#Marshal"><span class="hs-identifier hs-type">Marshal</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PUnit</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-40"></span><span>  </span><span id="local-6989586621679215673"><span class="annot"><span class="annottext">marshal :: () -&gt; ClosedTerm (PUnit @S)
+</span><a href="Plutarch.Test.Property.Marshal.html#marshal"><span class="hs-identifier hs-var hs-var hs-var hs-var">marshal</span></a></span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PUnit @S s -&gt; Term s (PUnit @S)
+forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
+</span><span class="hs-identifier hs-var">pcon</span></span><span> </span><span class="annot"><span class="annottext">PUnit @S s
+forall {k} (s :: k). PUnit @k s
+</span><span class="hs-identifier hs-var">PUnit</span></span><span>
+</span><span id="line-41"></span></pre></body></html>

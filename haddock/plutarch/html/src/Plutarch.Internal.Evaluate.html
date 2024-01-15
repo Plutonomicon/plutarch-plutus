@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.Internal.Evaluate</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Evaluate.html#uplcVersion"><span class="hs-identifier">uplcVersion</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.Evaluate.html#evalScript"><span class="hs-identifier">evalScript</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.Evaluate.html#evalScriptHuge"><span class="hs-identifier">evalScriptHuge</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.Evaluate.html#evalScript%27"><span class="hs-identifier">evalScript'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.Evaluate.html#EvalError"><span class="hs-identifier">EvalError</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Text</span></span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Script.html"><span class="hs-identifier">Plutarch.Script</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier">Script</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier">Script</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PLC</span></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore.Evaluation.Machine.ExBudget</span></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-9"></span><span>  </span><span class="annot"><span class="hs-identifier">ExBudget</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ExBudget</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span>  </span><span class="annot"><span class="hs-identifier">ExRestrictingBudget</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ExRestrictingBudget</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-11"></span><span>  </span><span class="annot"><span class="hs-identifier">minusExBudget</span></span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore.Evaluation.Machine.ExBudgetingDefaults</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">defaultCekParameters</span></span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore.Evaluation.Machine.ExMemory</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ExCPU</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ExCPU</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">ExMemory</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ExMemory</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">UntypedPlutusCore</span></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-16"></span><span>  </span><span class="annot"><span class="hs-identifier">Program</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Program</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-17"></span><span>  </span><span class="annot"><span class="hs-identifier">Term</span></span><span class="hs-special">,</span><span>
+</span><span id="line-18"></span><span>  </span><span class="annot"><span class="hs-identifier">Version</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Version</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-19"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">UntypedPlutusCore</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">UPLC</span></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">UntypedPlutusCore.Evaluation.Machine.Cek</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Cek</span></span><span>
+</span><span id="line-22"></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">type</span><span> </span><span id="EvalError"><span class="annot"><a href="Plutarch.Internal.Evaluate.html#EvalError"><span class="hs-identifier hs-var">EvalError</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Cek.CekEvaluationException</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.NamedDeBruijn</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.DefaultUni</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.DefaultFun</span></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span>
+</span><span id="line-25"></span><span class="annot"><a href="Plutarch.Internal.Evaluate.html#uplcVersion"><span class="hs-identifier hs-type">uplcVersion</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Version</span></span><span>
+</span><span id="line-26"></span><span id="uplcVersion"><span class="annot"><span class="annottext">uplcVersion :: Version
+</span><a href="Plutarch.Internal.Evaluate.html#uplcVersion"><span class="hs-identifier hs-var hs-var">uplcVersion</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Natural -&gt; Natural -&gt; Natural -&gt; Version
+</span><span class="hs-identifier hs-var">Version</span></span><span> </span><span class="annot"><span class="annottext">Natural
+</span><span class="hs-number">1</span></span><span> </span><span class="annot"><span class="annottext">Natural
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Natural
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-27"></span><span>
+</span><span id="line-28"></span><span class="annot"><span class="hs-comment">-- | Evaluate a script with a big budget, returning the trace log and term result.</span></span><span>
+</span><span id="line-29"></span><span class="annot"><a href="Plutarch.Internal.Evaluate.html#evalScript"><span class="hs-identifier hs-type">evalScript</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-type">Script</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Evaluate.html#EvalError"><span class="hs-identifier hs-type">EvalError</span></a></span><span> </span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-type">Script</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span id="evalScript"><span class="annot"><span class="annottext">evalScript :: Script -&gt; (Either EvalError Script, ExBudget, [Text])
+</span><a href="Plutarch.Internal.Evaluate.html#evalScript"><span class="hs-identifier hs-var hs-var">evalScript</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExBudget -&gt; Script -&gt; (Either EvalError Script, ExBudget, [Text])
+</span><a href="Plutarch.Internal.Evaluate.html#evalScript%27"><span class="hs-identifier hs-var">evalScript'</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679900301"><span class="hs-identifier hs-var">budget</span></a></span><span>
+</span><span id="line-31"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-32"></span><span>    </span><span class="hs-comment">-- from https://github.com/input-output-hk/cardano-node/blob/master/configuration/cardano/mainnet-alonzo-genesis.json#L17</span><span>
+</span><span id="line-33"></span><span>    </span><span id="local-6989586621679900301"><span class="annot"><span class="annottext">budget :: ExBudget
+</span><a href="#local-6989586621679900301"><span class="hs-identifier hs-var hs-var">budget</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExMemory -&gt; ExBudget
+</span><span class="hs-identifier hs-var">ExBudget</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CostingInteger -&gt; ExCPU
+</span><span class="hs-identifier hs-var">ExCPU</span></span><span> </span><span class="annot"><span class="annottext">CostingInteger
+</span><span class="hs-number">10000000000</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CostingInteger -&gt; ExMemory
+</span><span class="hs-identifier hs-var">ExMemory</span></span><span> </span><span class="annot"><span class="annottext">CostingInteger
+</span><span class="hs-number">10000000</span></span><span class="hs-special">)</span><span>
+</span><span id="line-34"></span><span>
+</span><span id="line-35"></span><span class="annot"><span class="hs-comment">-- | Evaluate a script with a huge budget, returning the trace log and term result.</span></span><span>
+</span><span id="line-36"></span><span class="annot"><a href="Plutarch.Internal.Evaluate.html#evalScriptHuge"><span class="hs-identifier hs-type">evalScriptHuge</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-type">Script</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Evaluate.html#EvalError"><span class="hs-identifier hs-type">EvalError</span></a></span><span> </span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-type">Script</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span id="evalScriptHuge"><span class="annot"><span class="annottext">evalScriptHuge :: Script -&gt; (Either EvalError Script, ExBudget, [Text])
+</span><a href="Plutarch.Internal.Evaluate.html#evalScriptHuge"><span class="hs-identifier hs-var hs-var">evalScriptHuge</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExBudget -&gt; Script -&gt; (Either EvalError Script, ExBudget, [Text])
+</span><a href="Plutarch.Internal.Evaluate.html#evalScript%27"><span class="hs-identifier hs-var">evalScript'</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679900305"><span class="hs-identifier hs-var">budget</span></a></span><span>
+</span><span id="line-38"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-39"></span><span>    </span><span class="hs-comment">-- from https://github.com/input-output-hk/cardano-node/blob/master/configuration/cardano/mainnet-alonzo-genesis.json#L17</span><span>
+</span><span id="line-40"></span><span>    </span><span id="local-6989586621679900305"><span class="annot"><span class="annottext">budget :: ExBudget
+</span><a href="#local-6989586621679900305"><span class="hs-identifier hs-var hs-var">budget</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExMemory -&gt; ExBudget
+</span><span class="hs-identifier hs-var">ExBudget</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CostingInteger -&gt; ExCPU
+</span><span class="hs-identifier hs-var">ExCPU</span></span><span> </span><span class="annot"><span class="annottext">CostingInteger
+forall a. Bounded a =&gt; a
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Enum.html#maxBound"><span class="hs-identifier hs-var">maxBound</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CostingInteger -&gt; ExMemory
+</span><span class="hs-identifier hs-var">ExMemory</span></span><span> </span><span class="annot"><span class="annottext">CostingInteger
+forall a. Bounded a =&gt; a
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Enum.html#maxBound"><span class="hs-identifier hs-var">maxBound</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-41"></span><span>
+</span><span id="line-42"></span><span class="annot"><span class="hs-comment">-- | Evaluate a script with a specific budget, returning the trace log and term result.</span></span><span>
+</span><span id="line-43"></span><span class="annot"><a href="Plutarch.Internal.Evaluate.html#evalScript%27"><span class="hs-identifier hs-type">evalScript'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-type">Script</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Cek.CekEvaluationException</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.NamedDeBruijn</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.DefaultUni</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.DefaultFun</span></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-type">Script</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span id="evalScript%27"><span class="annot"><span class="annottext">evalScript' :: ExBudget -&gt; Script -&gt; (Either EvalError Script, ExBudget, [Text])
+</span><a href="Plutarch.Internal.Evaluate.html#evalScript%27"><span class="hs-identifier hs-var hs-var">evalScript'</span></a></span></span><span> </span><span id="local-6989586621679900310"><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679900310"><span class="hs-identifier hs-var">budget</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-type">Script</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Program</span></span><span> </span><span class="annot"><span class="annottext">()
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Version
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679900311"><span class="annot"><span class="annottext">Term DeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679900311"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ExBudget
+-&gt; Term NamedDeBruijn DefaultUni DefaultFun ()
+-&gt; (Either EvalError (Term NamedDeBruijn DefaultUni DefaultFun ()),
+    ExBudget, [Text])
+</span><a href="Plutarch.Internal.Evaluate.html#evalTerm"><span class="hs-identifier hs-var">evalTerm</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679900310"><span class="hs-identifier hs-var">budget</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(DeBruijn -&gt; NamedDeBruijn)
+-&gt; Term DeBruijn DefaultUni DefaultFun ()
+-&gt; Term NamedDeBruijn DefaultUni DefaultFun ()
+forall name name' (uni :: Type -&gt; Type) fun ann.
+(name -&gt; name') -&gt; Term name uni fun ann -&gt; Term name' uni fun ann
+</span><span class="hs-identifier hs-var">UPLC.termMapNames</span></span><span> </span><span class="annot"><span class="annottext">DeBruijn -&gt; NamedDeBruijn
+</span><span class="hs-identifier hs-var">UPLC.fakeNameDeBruijn</span></span><span> </span><span class="annot"><span class="annottext">Term DeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679900311"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-45"></span><span>  </span><span class="hs-special">(</span><span id="local-6989586621679900315"><span class="annot"><span class="annottext">Either EvalError (Term NamedDeBruijn DefaultUni DefaultFun ())
+</span><a href="#local-6989586621679900315"><span class="hs-identifier hs-var">res</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679900316"><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679900316"><span class="hs-identifier hs-var">remaining</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679900317"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679900317"><span class="hs-identifier hs-var">logs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Program DeBruijn DefaultUni DefaultFun () -&gt; Script
+</span><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-var">Script</span></a></span><span> </span><span class="annot"><span class="annottext">(Program DeBruijn DefaultUni DefaultFun () -&gt; Script)
+-&gt; (Term NamedDeBruijn DefaultUni DefaultFun ()
+    -&gt; Program DeBruijn DefaultUni DefaultFun ())
+-&gt; Term NamedDeBruijn DefaultUni DefaultFun ()
+-&gt; Script
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">()
+-&gt; Version
+-&gt; Term DeBruijn DefaultUni DefaultFun ()
+-&gt; Program DeBruijn DefaultUni DefaultFun ()
+forall name (uni :: Type -&gt; Type) fun ann.
+ann -&gt; Version -&gt; Term name uni fun ann -&gt; Program name uni fun ann
+</span><span class="hs-identifier hs-var">Program</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Version
+</span><a href="Plutarch.Internal.Evaluate.html#uplcVersion"><span class="hs-identifier hs-var">uplcVersion</span></a></span><span> </span><span class="annot"><span class="annottext">(Term DeBruijn DefaultUni DefaultFun ()
+ -&gt; Program DeBruijn DefaultUni DefaultFun ())
+-&gt; (Term NamedDeBruijn DefaultUni DefaultFun ()
+    -&gt; Term DeBruijn DefaultUni DefaultFun ())
+-&gt; Term NamedDeBruijn DefaultUni DefaultFun ()
+-&gt; Program DeBruijn DefaultUni DefaultFun ()
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(NamedDeBruijn -&gt; DeBruijn)
+-&gt; Term NamedDeBruijn DefaultUni DefaultFun ()
+-&gt; Term DeBruijn DefaultUni DefaultFun ()
+forall name name' (uni :: Type -&gt; Type) fun ann.
+(name -&gt; name') -&gt; Term name uni fun ann -&gt; Term name' uni fun ann
+</span><span class="hs-identifier hs-var">UPLC.termMapNames</span></span><span> </span><span class="annot"><span class="annottext">NamedDeBruijn -&gt; DeBruijn
+</span><span class="hs-identifier hs-var">UPLC.unNameDeBruijn</span></span><span> </span><span class="annot"><span class="annottext">(Term NamedDeBruijn DefaultUni DefaultFun () -&gt; Script)
+-&gt; Either EvalError (Term NamedDeBruijn DefaultUni DefaultFun ())
+-&gt; Either EvalError Script
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Either EvalError (Term NamedDeBruijn DefaultUni DefaultFun ())
+</span><a href="#local-6989586621679900315"><span class="hs-identifier hs-var">res</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679900316"><span class="hs-identifier hs-var">remaining</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679900317"><span class="hs-identifier hs-var">logs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span>
+</span><span id="line-47"></span><span class="annot"><a href="Plutarch.Internal.Evaluate.html#evalTerm"><span class="hs-identifier hs-type">evalTerm</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-48"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-49"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.NamedDeBruijn</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.DefaultUni</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.DefaultFun</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-50"></span><span>  </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span>
+</span><span id="line-51"></span><span>      </span><span class="annot"><a href="Plutarch.Internal.Evaluate.html#EvalError"><span class="hs-identifier hs-type">EvalError</span></a></span><span>
+</span><span id="line-52"></span><span>      </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.NamedDeBruijn</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.DefaultUni</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.DefaultFun</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-53"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span>
+</span><span id="line-54"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span class="hs-special">]</span><span>
+</span><span id="line-55"></span><span>  </span><span class="hs-special">)</span><span>
+</span><span id="line-56"></span><span id="evalTerm"><span class="annot"><span class="annottext">evalTerm :: ExBudget
+-&gt; Term NamedDeBruijn DefaultUni DefaultFun ()
+-&gt; (Either EvalError (Term NamedDeBruijn DefaultUni DefaultFun ()),
+    ExBudget, [Text])
+</span><a href="Plutarch.Internal.Evaluate.html#evalTerm"><span class="hs-identifier hs-var hs-var">evalTerm</span></a></span></span><span> </span><span id="local-6989586621679900321"><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679900321"><span class="hs-identifier hs-var">budget</span></a></span></span><span> </span><span id="local-6989586621679900322"><span class="annot"><span class="annottext">Term NamedDeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679900322"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-57"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">MachineParameters
+  CekMachineCosts DefaultFun (CekValue DefaultUni DefaultFun ())
+-&gt; ExBudgetMode RestrictingSt DefaultUni DefaultFun
+-&gt; EmitterMode DefaultUni DefaultFun
+-&gt; Term NamedDeBruijn DefaultUni DefaultFun ()
+-&gt; (Either EvalError (Term NamedDeBruijn DefaultUni DefaultFun ()),
+    RestrictingSt, [Text])
+forall (uni :: Type -&gt; Type) fun ann cost.
+ThrowableBuiltins uni fun =&gt;
+MachineParameters CekMachineCosts fun (CekValue uni fun ann)
+-&gt; ExBudgetMode cost uni fun
+-&gt; EmitterMode uni fun
+-&gt; NTerm uni fun ann
+-&gt; (Either
+      (CekEvaluationException NamedDeBruijn uni fun) (NTerm uni fun ()),
+    cost, [Text])
+</span><span class="hs-identifier hs-var">Cek.runCekDeBruijn</span></span><span> </span><span class="annot"><span class="annottext">MachineParameters
+  CekMachineCosts DefaultFun (CekValue DefaultUni DefaultFun ())
+forall ann.
+Typeable @Type ann =&gt;
+MachineParameters
+  CekMachineCosts DefaultFun (CekValue DefaultUni DefaultFun ann)
+</span><span class="hs-identifier hs-var">defaultCekParameters</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ExRestrictingBudget
+-&gt; ExBudgetMode RestrictingSt DefaultUni DefaultFun
+forall (uni :: Type -&gt; Type) fun.
+ThrowableBuiltins uni fun =&gt;
+ExRestrictingBudget -&gt; ExBudgetMode RestrictingSt uni fun
+</span><span class="hs-identifier hs-var">Cek.restricting</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ExBudget -&gt; ExRestrictingBudget
+</span><span class="hs-identifier hs-var">ExRestrictingBudget</span></span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679900321"><span class="hs-identifier hs-var">budget</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">EmitterMode DefaultUni DefaultFun
+forall (uni :: Type -&gt; Type) fun. EmitterMode uni fun
+</span><span class="hs-identifier hs-var">Cek.logEmitter</span></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679900322"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-58"></span><span>    </span><span class="hs-special">(</span><span id="local-6989586621679900326"><span class="annot"><span class="annottext">Either EvalError (Term NamedDeBruijn DefaultUni DefaultFun ())
+</span><a href="#local-6989586621679900326"><span class="hs-identifier hs-var">errOrRes</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Cek.RestrictingSt</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ExRestrictingBudget</span></span><span> </span><span id="local-6989586621679900328"><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679900328"><span class="hs-identifier hs-var">final</span></a></span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span id="local-6989586621679900329"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679900329"><span class="hs-identifier hs-var">logs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either EvalError (Term NamedDeBruijn DefaultUni DefaultFun ())
+</span><a href="#local-6989586621679900326"><span class="hs-identifier hs-var">errOrRes</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679900321"><span class="hs-identifier hs-var">budget</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget -&gt; ExBudget -&gt; ExBudget
+</span><span class="hs-operator hs-var">`minusExBudget`</span></span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679900328"><span class="hs-identifier hs-var">final</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679900329"><span class="hs-identifier hs-var">logs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-59"></span></pre></body></html>
