@@ -13,4 +13,4 @@ Plutarch is a typed eDSL in Haskell for writing efficient Plutus Core validators
 #### [[README|Continue to README]]{.flex .justify-center .items-center .my-8}
 
 <!-- this has to be an absolute link because otherwise emanote is mad -->
-#### [View Haddock](https://plutonomicon.github.io/plutarch-plutus/share/doc/index.html){.flex .justify-center .items-center .my-8}
+#### [View Haddock](https://plutonomicon.github.io/plutarch-plutus/haddock/index.html){.flex .justify-center .items-center .my-8}
