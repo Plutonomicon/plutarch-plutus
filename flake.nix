@@ -27,10 +27,6 @@
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
 
     emanote.url = "github:srid/emanote";
-    sphinxcontrib-haddock = {
-      url = "github:michaelpj/sphinxcontrib-haddock";
-      flake = false;
-    };
   };
 
   outputs = inputs@{ flake-parts, nixpkgs, haskell-nix, iohk-nix, CHaP, ... }:
@@ -43,7 +39,7 @@
       debug = true;
       systems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux" ];
 
-      perSystem = { config, system, lib, ... }:
+      perSystem = { config, system, lib, self', ... }:
         let
           pkgs =
             import haskell-nix.inputs.nixpkgs {
@@ -91,18 +87,24 @@
 
           packages = flake.packages // {
             haddock = (import ./nix/combine-haddock.nix) { inherit pkgs lib; } {
-              inherit (pkgs.callPackage inputs.sphinxcontrib-haddock {
-                pythonPackages = pkgs.python3Packages;
-              }) sphinxcontrib-haddock;
               cabalProject = project;
-              hspkgsNames = [ ];
-              prologue = pkgs.writeTextFile {
-                name = "prologue";
-                text = ''
-                  == Haddock
-                '';
-              };
+              targetPackages = [
+                "plutarch"
+                "plutus-core"
+                "plutus-tx"
+                "plutus-ledger-api"
+              ];
+              prologue = ''
+                = Plutarch Documentation
+                Documentation of Plutarch /and/ Documentation of Plutus libraries.
+              '';
             };
+            combined-docs = pkgs.runCommand "combined-docs"
+              { } ''
+              mkdir -p $out/haddock
+              cp ${self'.packages.haddock}/share/doc/* $out/haddock -r
+              cp ${self'.packages.plutarch-docs}/* $out -r
+            '';
           };
 
           checks = flake.checks // {

@@ -1,7 +1,7 @@
 { pkgs, lib, ... }:
 { cabalProject
-, sphinxcontrib-haddock
-, prologue
+, prologue ? "= Combined Haddock"
+, targetPackages
 }:
 let
 
@@ -11,12 +11,22 @@ let
   hsPkgs =
     lib.attrValues (
       pkgs.haskell-nix.haskellLib.collectComponents' "library" (
-        pkgs.haskell-nix.haskellLib.selectProjectPackages cabalProject.hsPkgs
+        pkgs.haskell-nix.haskellLib.selectProjectPackages cabalProject.hsPkgs // (
+          lib.filterAttrs
+            (name: _: lib.elem name targetPackages)
+            cabalProject.hsPkgs
+        )
       )
     );
 
 
   hsPkgs-docs = map (x: x.doc) (lib.filter (x: x ? doc) hsPkgs);
+
+  prologueFile =
+    pkgs.writeTextFile {
+      name = "prologue";
+      text = prologue;
+    };
 
   the-mighty-command = ''
     hsdocsRec="$(cat graph* | grep -F /nix/store | sort | uniq)"
@@ -65,11 +75,7 @@ let
       for interfaceFile in $(find . -name "*.haddock"); do
         # this is '$PACKAGE/html'
         docdir=$(dirname $interfaceFile)
-        interfaceOpts+=("--read-interface=$interfaceFile")
-        # Jam this in here for now
-        pushd $out/share/doc
-        ${sphinxcontrib-haddock}/bin/haddock_inventory $docdir
-        popd
+        interfaceOpts+=("--read-interface=$docdir,$interfaceFile")
       done
       popd
     done
@@ -79,7 +85,7 @@ let
       --gen-contents \
       --gen-index \
       --quickjump \
-      ${lib.optionalString (prologue != null) "--prologue ${prologue}"} \
+      --prologue ${prologueFile} \
       "''${interfaceOpts[@]}"
 
     # TODO: remove patch when haddock > 2.24.0
@@ -116,8 +122,6 @@ let
         (lib.imap0 (i: pkg: [ "graph-${toString i}" pkg ]) hsPkgs-docs);
   };
 
-
   combined-haddock = pkgs.runCommand "combine-haddock" command-args the-mighty-command;
 in
 combined-haddock
-

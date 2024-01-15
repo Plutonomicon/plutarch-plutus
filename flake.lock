@@ -1035,8 +1035,7 @@
         "hercules-ci-effects": "hercules-ci-effects",
         "iohk-nix": "iohk-nix",
         "nixpkgs": "nixpkgs_4",
-        "pre-commit-hooks": "pre-commit-hooks",
-        "sphinxcontrib-haddock": "sphinxcontrib-haddock"
+        "pre-commit-hooks": "pre-commit-hooks"
       }
     },
     "secp256k1": {
@@ -1070,22 +1069,6 @@
         "owner": "input-output-hk",
         "repo": "libsodium",
         "rev": "dbb48cce5429cb6585c9034f002568964f1ce567",
-        "type": "github"
-      }
-    },
-    "sphinxcontrib-haddock": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1594136664,
-        "narHash": "sha256-O9YT3iCUBHP3CEF88VDLLCO2HSP3HqkNA2q2939RnVY=",
-        "owner": "michaelpj",
-        "repo": "sphinxcontrib-haddock",
-        "rev": "f3956b3256962b2d27d5a4e96edb7951acf5de34",
-        "type": "github"
-      },
-      "original": {
-        "owner": "michaelpj",
-        "repo": "sphinxcontrib-haddock",
         "type": "github"
       }
     },
