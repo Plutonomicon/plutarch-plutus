@@ -34,7 +34,7 @@
 </span><span id="line-33"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="addressStakingCredential"><span class="annot"><span class="annottext">Address -&gt; Maybe StakingCredential
 </span><a href="PlutusLedgerApi.V1.Address.html#addressStakingCredential"><span class="hs-identifier hs-var hs-var">addressStakingCredential</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Credential.html#StakingCredential"><span class="hs-identifier hs-type">StakingCredential</span></a></span><span> </span><span class="annot"><span class="hs-comment">-- ^ the staking credential</span></span><span>
 </span><span id="line-34"></span><span>    </span><span class="hs-special">}</span><span>
-</span><span id="line-35"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679943148"><span id="local-6989586621679943155"><span class="annot"><span class="annottext">Address -&gt; Address -&gt; Bool
+</span><span id="line-35"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679943149"><span id="local-6989586621679943156"><span class="annot"><span class="annottext">Address -&gt; Address -&gt; Bool
 (Address -&gt; Address -&gt; Bool)
 -&gt; (Address -&gt; Address -&gt; Bool) -&gt; Eq Address
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -42,7 +42,7 @@ $c== :: Address -&gt; Address -&gt; Bool
 == :: Address -&gt; Address -&gt; Bool
 $c/= :: Address -&gt; Address -&gt; Bool
 /= :: Address -&gt; Address -&gt; Bool
-</span><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679943163"><span id="local-6989586621679943170"><span id="local-6989586621679943175"><span id="local-6989586621679943179"><span id="local-6989586621679943182"><span id="local-6989586621679943185"><span id="local-6989586621679943188"><span class="annot"><span class="annottext">Eq Address
+</span><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679943164"><span id="local-6989586621679943171"><span id="local-6989586621679943176"><span id="local-6989586621679943180"><span id="local-6989586621679943183"><span id="local-6989586621679943186"><span id="local-6989586621679943189"><span class="annot"><span class="annottext">Eq Address
 Eq Address =&gt;
 (Address -&gt; Address -&gt; Ordering)
 -&gt; (Address -&gt; Address -&gt; Bool)
@@ -79,7 +79,7 @@ $cmax :: Address -&gt; Address -&gt; Address
 max :: Address -&gt; Address -&gt; Address
 $cmin :: Address -&gt; Address -&gt; Address
 min :: Address -&gt; Address -&gt; Address
-</span><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679943193"><span id="local-6989586621679943202"><span id="local-6989586621679943206"><span class="annot"><span class="annottext">Int -&gt; Address -&gt; ShowS
+</span><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679943194"><span id="local-6989586621679943203"><span id="local-6989586621679943207"><span class="annot"><span class="annottext">Int -&gt; Address -&gt; ShowS
 [Address] -&gt; ShowS
 Address -&gt; String
 (Int -&gt; Address -&gt; ShowS)
@@ -92,7 +92,7 @@ $cshow :: Address -&gt; String
 show :: Address -&gt; String
 $cshowList :: [Address] -&gt; ShowS
 showList :: [Address] -&gt; ShowS
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679943211"><span id="local-6989586621679943213"><span class="annot"><span class="annottext">(forall x. Address -&gt; Rep Address x)
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679943212"><span id="local-6989586621679943214"><span class="annot"><span class="annottext">(forall x. Address -&gt; Rep Address x)
 -&gt; (forall x. Rep Address x -&gt; Address) -&gt; Generic Address
 forall x. Rep Address x -&gt; Address
 forall x. Address -&gt; Rep Address x
@@ -103,20 +103,20 @@ from :: forall x. Address -&gt; Rep Address x
 $cto :: forall x. Rep Address x -&gt; Address
 to :: forall x. Rep Address x -&gt; Address
 </span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-36"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679943217"><span class="annot"><span class="annottext">Address -&gt; ()
+</span><span id="line-36"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679943218"><span class="annot"><span class="annottext">Address -&gt; ()
 (Address -&gt; ()) -&gt; NFData Address
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: Address -&gt; ()
 rnf :: Address -&gt; ()
 </span><a href="../../../ghc-9.6.3/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">)</span><span>
 </span><span id="line-37"></span><span>
-</span><span id="line-38"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679943241"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-39"></span><span>    </span><span id="local-6989586621679943247"><span class="annot"><span class="annottext">pretty :: forall ann. Address -&gt; Doc ann
-</span><a href="#local-6989586621679943247"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span><span> </span><span id="local-6989586621679943249"><span class="annot"><span class="annottext">Credential
-</span><a href="#local-6989586621679943249"><span class="hs-identifier hs-var">cred</span></a></span></span><span> </span><span id="local-6989586621679943250"><span class="annot"><span class="annottext">Maybe StakingCredential
-</span><a href="#local-6989586621679943250"><span class="hs-identifier hs-var">stakingCred</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-40"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679943255"><span class="annot"><span class="annottext">staking :: Doc ann
-</span><a href="#local-6989586621679943255"><span class="hs-identifier hs-var hs-var">staking</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Doc ann
+</span><span id="line-38"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679943242"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-39"></span><span>    </span><span id="local-6989586621679943248"><span class="annot"><span class="annottext">pretty :: forall ann. Address -&gt; Doc ann
+</span><a href="#local-6989586621679943248"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span><span> </span><span id="local-6989586621679943250"><span class="annot"><span class="annottext">Credential
+</span><a href="#local-6989586621679943250"><span class="hs-identifier hs-var">cred</span></a></span></span><span> </span><span id="local-6989586621679943251"><span class="annot"><span class="annottext">Maybe StakingCredential
+</span><a href="#local-6989586621679943251"><span class="hs-identifier hs-var">stakingCred</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-40"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679943256"><span class="annot"><span class="annottext">staking :: Doc ann
+</span><a href="#local-6989586621679943256"><span class="hs-identifier hs-var hs-var">staking</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Doc ann
 -&gt; (StakingCredential -&gt; Doc ann)
 -&gt; Maybe StakingCredential
 -&gt; Doc ann
@@ -126,48 +126,48 @@ forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. StakingCredential -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Maybe StakingCredential
-</span><a href="#local-6989586621679943250"><span class="hs-identifier hs-var">stakingCred</span></a></span><span> </span><span class="hs-keyword">in</span><span>
+</span><a href="#local-6989586621679943251"><span class="hs-identifier hs-var">stakingCred</span></a></span><span> </span><span class="hs-keyword">in</span><span>
 </span><span id="line-41"></span><span>        </span><span class="annot"><span class="annottext">Credential -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. Credential -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Credential
-</span><a href="#local-6989586621679943249"><span class="hs-identifier hs-var">cred</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
+</span><a href="#local-6989586621679943250"><span class="hs-identifier hs-var">cred</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 </span><span class="hs-operator hs-var">&lt;+&gt;</span></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann
 </span><span class="hs-identifier hs-var">parens</span></span><span> </span><span class="annot"><span class="annottext">Doc ann
 forall {ann}. Doc ann
-</span><a href="#local-6989586621679943255"><span class="hs-identifier hs-var">staking</span></a></span><span>
+</span><a href="#local-6989586621679943256"><span class="hs-identifier hs-var">staking</span></a></span><span>
 </span><span id="line-42"></span><span>
 </span><span id="line-43"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.Eq</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-44"></span><span>    </span><span class="hs-pragma">{-# INLINABLE</span><span> </span><span class="hs-pragma">(</span><span class="hs-pragma">==</span><span class="hs-pragma">)</span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-45"></span><span>    </span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span><span> </span><span id="local-6989586621679943269"><span class="annot"><span class="annottext">Credential
-</span><a href="#local-6989586621679943269"><span class="hs-identifier hs-var">cred</span></a></span></span><span> </span><span id="local-6989586621679943270"><span class="annot"><span class="annottext">Maybe StakingCredential
-</span><a href="#local-6989586621679943270"><span class="hs-identifier hs-var">stakingCred</span></a></span></span><span> </span><span id="local-6989586621679943271"><span class="annot"><span class="annottext">== :: Address -&gt; Address -&gt; Bool
-</span><span class="hs-operator hs-var hs-var hs-var hs-var">==</span></span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span><span> </span><span id="local-6989586621679943272"><span class="annot"><span class="annottext">Credential
-</span><a href="#local-6989586621679943272"><span class="hs-identifier hs-var">cred'</span></a></span></span><span> </span><span id="local-6989586621679943273"><span class="annot"><span class="annottext">Maybe StakingCredential
-</span><a href="#local-6989586621679943273"><span class="hs-identifier hs-var">stakingCred'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-45"></span><span>    </span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span><span> </span><span id="local-6989586621679943270"><span class="annot"><span class="annottext">Credential
+</span><a href="#local-6989586621679943270"><span class="hs-identifier hs-var">cred</span></a></span></span><span> </span><span id="local-6989586621679943271"><span class="annot"><span class="annottext">Maybe StakingCredential
+</span><a href="#local-6989586621679943271"><span class="hs-identifier hs-var">stakingCred</span></a></span></span><span> </span><span id="local-6989586621679943272"><span class="annot"><span class="annottext">== :: Address -&gt; Address -&gt; Bool
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">==</span></span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span><span> </span><span id="local-6989586621679943273"><span class="annot"><span class="annottext">Credential
+</span><a href="#local-6989586621679943273"><span class="hs-identifier hs-var">cred'</span></a></span></span><span> </span><span id="local-6989586621679943274"><span class="annot"><span class="annottext">Maybe StakingCredential
+</span><a href="#local-6989586621679943274"><span class="hs-identifier hs-var">stakingCred'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-46"></span><span>        </span><span class="annot"><span class="annottext">Credential
-</span><a href="#local-6989586621679943269"><span class="hs-identifier hs-var">cred</span></a></span><span> </span><span class="annot"><span class="annottext">Credential -&gt; Credential -&gt; Bool
+</span><a href="#local-6989586621679943270"><span class="hs-identifier hs-var">cred</span></a></span><span> </span><span class="annot"><span class="annottext">Credential -&gt; Credential -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">PlutusTx.==</span></span><span> </span><span class="annot"><span class="annottext">Credential
-</span><a href="#local-6989586621679943272"><span class="hs-identifier hs-var">cred'</span></a></span><span>
+</span><a href="#local-6989586621679943273"><span class="hs-identifier hs-var">cred'</span></a></span><span>
 </span><span id="line-47"></span><span>        </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">PlutusTx.&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Maybe StakingCredential
-</span><a href="#local-6989586621679943270"><span class="hs-identifier hs-var">stakingCred</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe StakingCredential -&gt; Maybe StakingCredential -&gt; Bool
+</span><a href="#local-6989586621679943271"><span class="hs-identifier hs-var">stakingCred</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe StakingCredential -&gt; Maybe StakingCredential -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">PlutusTx.==</span></span><span> </span><span class="annot"><span class="annottext">Maybe StakingCredential
-</span><a href="#local-6989586621679943273"><span class="hs-identifier hs-var">stakingCred'</span></a></span><span>
+</span><a href="#local-6989586621679943274"><span class="hs-identifier hs-var">stakingCred'</span></a></span><span>
 </span><span id="line-48"></span><span>
 </span><span id="line-49"></span><span class="hs-pragma">{-# INLINABLE</span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#pubKeyHashAddress"><span class="hs-pragma hs-type">pubKeyHashAddress</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-50"></span><span class="annot"><span class="hs-comment">-- | The address that should be targeted by a transaction output locked by the public key with the given hash.</span></span><span>
 </span><span id="line-51"></span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#pubKeyHashAddress"><span class="hs-identifier hs-type">pubKeyHashAddress</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Crypto.html#PubKeyHash"><span class="hs-identifier hs-type">PubKeyHash</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span><span>
 </span><span id="line-52"></span><span id="pubKeyHashAddress"><span class="annot"><span class="annottext">pubKeyHashAddress :: PubKeyHash -&gt; Address
-</span><a href="PlutusLedgerApi.V1.Address.html#pubKeyHashAddress"><span class="hs-identifier hs-var hs-var">pubKeyHashAddress</span></a></span></span><span> </span><span id="local-6989586621679943275"><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679943275"><span class="hs-identifier hs-var">pkh</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Credential -&gt; Maybe StakingCredential -&gt; Address
+</span><a href="PlutusLedgerApi.V1.Address.html#pubKeyHashAddress"><span class="hs-identifier hs-var hs-var">pubKeyHashAddress</span></a></span></span><span> </span><span id="local-6989586621679943276"><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679943276"><span class="hs-identifier hs-var">pkh</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Credential -&gt; Maybe StakingCredential -&gt; Address
 </span><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-var">Address</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PubKeyHash -&gt; Credential
 </span><a href="PlutusLedgerApi.V1.Credential.html#PubKeyCredential"><span class="hs-identifier hs-var">PubKeyCredential</span></a></span><span> </span><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679943275"><span class="hs-identifier hs-var">pkh</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Maybe StakingCredential
+</span><a href="#local-6989586621679943276"><span class="hs-identifier hs-var">pkh</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Maybe StakingCredential
 forall a. Maybe a
 </span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span>
 </span><span id="line-53"></span><span>
@@ -175,12 +175,12 @@ forall a. Maybe a
 </span><span id="line-55"></span><span class="annot"><span class="hs-comment">-- | The PubKeyHash of the address, if any</span></span><span>
 </span><span id="line-56"></span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#toPubKeyHash"><span class="hs-identifier hs-type">toPubKeyHash</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Crypto.html#PubKeyHash"><span class="hs-identifier hs-type">PubKeyHash</span></a></span><span>
 </span><span id="line-57"></span><span id="toPubKeyHash"><span class="annot"><span class="annottext">toPubKeyHash :: Address -&gt; Maybe PubKeyHash
-</span><a href="PlutusLedgerApi.V1.Address.html#toPubKeyHash"><span class="hs-identifier hs-var hs-var">toPubKeyHash</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Credential.html#PubKeyCredential"><span class="hs-identifier hs-type">PubKeyCredential</span></a></span><span> </span><span id="local-6989586621679943277"><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679943277"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Maybe StakingCredential
+</span><a href="PlutusLedgerApi.V1.Address.html#toPubKeyHash"><span class="hs-identifier hs-var hs-var">toPubKeyHash</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Credential.html#PubKeyCredential"><span class="hs-identifier hs-type">PubKeyCredential</span></a></span><span> </span><span id="local-6989586621679943278"><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679943278"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Maybe StakingCredential
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PubKeyHash -&gt; Maybe PubKeyHash
 forall a. a -&gt; Maybe a
 </span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-var">Just</span></a></span><span> </span><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679943277"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><a href="#local-6989586621679943278"><span class="hs-identifier hs-var">k</span></a></span><span>
 </span><span id="line-58"></span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#toPubKeyHash"><span class="hs-identifier hs-var">toPubKeyHash</span></a></span><span> </span><span class="annot"><span class="annottext">Address
 </span><span class="hs-identifier">_</span></span><span>                                </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe PubKeyHash
 forall a. Maybe a
@@ -190,12 +190,12 @@ forall a. Maybe a
 </span><span id="line-61"></span><span class="annot"><span class="hs-comment">-- | The validator hash of the address, if any</span></span><span>
 </span><span id="line-62"></span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#toScriptHash"><span class="hs-identifier hs-type">toScriptHash</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#ScriptHash"><span class="hs-identifier hs-type">ScriptHash</span></a></span><span>
 </span><span id="line-63"></span><span id="toScriptHash"><span class="annot"><span class="annottext">toScriptHash :: Address -&gt; Maybe ScriptHash
-</span><a href="PlutusLedgerApi.V1.Address.html#toScriptHash"><span class="hs-identifier hs-var hs-var">toScriptHash</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Credential.html#ScriptCredential"><span class="hs-identifier hs-type">ScriptCredential</span></a></span><span> </span><span id="local-6989586621679943279"><span class="annot"><span class="annottext">ScriptHash
-</span><a href="#local-6989586621679943279"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Maybe StakingCredential
+</span><a href="PlutusLedgerApi.V1.Address.html#toScriptHash"><span class="hs-identifier hs-var hs-var">toScriptHash</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Credential.html#ScriptCredential"><span class="hs-identifier hs-type">ScriptCredential</span></a></span><span> </span><span id="local-6989586621679943280"><span class="annot"><span class="annottext">ScriptHash
+</span><a href="#local-6989586621679943280"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Maybe StakingCredential
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScriptHash -&gt; Maybe ScriptHash
 forall a. a -&gt; Maybe a
 </span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-var">Just</span></a></span><span> </span><span class="annot"><span class="annottext">ScriptHash
-</span><a href="#local-6989586621679943279"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><a href="#local-6989586621679943280"><span class="hs-identifier hs-var">k</span></a></span><span>
 </span><span id="line-64"></span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#toScriptHash"><span class="hs-identifier hs-var">toScriptHash</span></a></span><span> </span><span class="annot"><span class="annottext">Address
 </span><span class="hs-identifier">_</span></span><span>                                </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe ScriptHash
 forall a. Maybe a
@@ -205,11 +205,11 @@ forall a. Maybe a
 </span><span id="line-67"></span><span class="annot"><span class="hs-comment">-- | The address that should be used by a transaction output locked by the given validator script hash.</span></span><span>
 </span><span id="line-68"></span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#scriptHashAddress"><span class="hs-identifier hs-type">scriptHashAddress</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#ScriptHash"><span class="hs-identifier hs-type">ScriptHash</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span><span>
 </span><span id="line-69"></span><span id="scriptHashAddress"><span class="annot"><span class="annottext">scriptHashAddress :: ScriptHash -&gt; Address
-</span><a href="PlutusLedgerApi.V1.Address.html#scriptHashAddress"><span class="hs-identifier hs-var hs-var">scriptHashAddress</span></a></span></span><span> </span><span id="local-6989586621679943280"><span class="annot"><span class="annottext">ScriptHash
-</span><a href="#local-6989586621679943280"><span class="hs-identifier hs-var">vh</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Credential -&gt; Maybe StakingCredential -&gt; Address
+</span><a href="PlutusLedgerApi.V1.Address.html#scriptHashAddress"><span class="hs-identifier hs-var hs-var">scriptHashAddress</span></a></span></span><span> </span><span id="local-6989586621679943281"><span class="annot"><span class="annottext">ScriptHash
+</span><a href="#local-6989586621679943281"><span class="hs-identifier hs-var">vh</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Credential -&gt; Maybe StakingCredential -&gt; Address
 </span><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-var">Address</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ScriptHash -&gt; Credential
 </span><a href="PlutusLedgerApi.V1.Credential.html#ScriptCredential"><span class="hs-identifier hs-var">ScriptCredential</span></a></span><span> </span><span class="annot"><span class="annottext">ScriptHash
-</span><a href="#local-6989586621679943280"><span class="hs-identifier hs-var">vh</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Maybe StakingCredential
+</span><a href="#local-6989586621679943281"><span class="hs-identifier hs-var">vh</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Maybe StakingCredential
 forall a. Maybe a
 </span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span>
 </span><span id="line-70"></span><span>
@@ -218,10 +218,10 @@ forall a. Maybe a
 </span><span id="line-73"></span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#stakingCredential"><span class="hs-identifier hs-type">stakingCredential</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Credential.html#StakingCredential"><span class="hs-identifier hs-type">StakingCredential</span></a></span><span>
 </span><span id="line-74"></span><span id="stakingCredential"><span class="annot"><span class="annottext">stakingCredential :: Address -&gt; Maybe StakingCredential
 </span><a href="PlutusLedgerApi.V1.Address.html#stakingCredential"><span class="hs-identifier hs-var hs-var">stakingCredential</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Address.html#Address"><span class="hs-identifier hs-type">Address</span></a></span><span> </span><span class="annot"><span class="annottext">Credential
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679943281"><span class="annot"><span class="annottext">Maybe StakingCredential
-</span><a href="#local-6989586621679943281"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe StakingCredential
-</span><a href="#local-6989586621679943281"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679943282"><span class="annot"><span class="annottext">Maybe StakingCredential
+</span><a href="#local-6989586621679943282"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe StakingCredential
+</span><a href="#local-6989586621679943282"><span class="hs-identifier hs-var">s</span></a></span><span>
 </span><span id="line-75"></span><span>
-</span><span id="line-76"></span><span id="local-6989586621679943283"><span id="local-6989586621679943285"><span id="local-6989586621679943287"><span class="hs-identifier">PlutusTx.makeIsDataIndexed</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Address</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="hs-special">'</span><span class="hs-identifier">Address</span><span class="hs-special">,</span><span class="hs-number">0</span><span class="hs-special">)</span><span class="hs-special">]</span></span></span></span><span>
-</span><span id="line-77"></span><span id="local-6989586621679943361"><span id="local-6989586621679943391"><span class="hs-identifier">PlutusTx.makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Address</span></span></span><span>
+</span><span id="line-76"></span><span id="local-6989586621679943284"><span id="local-6989586621679943286"><span id="local-6989586621679943288"><span class="hs-identifier">PlutusTx.makeIsDataIndexed</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Address</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="hs-special">'</span><span class="hs-identifier">Address</span><span class="hs-special">,</span><span class="hs-number">0</span><span class="hs-special">)</span><span class="hs-special">]</span></span></span></span><span>
+</span><span id="line-77"></span><span id="local-6989586621679943362"><span id="local-6989586621679943392"><span class="hs-identifier">PlutusTx.makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Address</span></span></span><span>
 </span><span id="line-78"></span></pre></body></html>
