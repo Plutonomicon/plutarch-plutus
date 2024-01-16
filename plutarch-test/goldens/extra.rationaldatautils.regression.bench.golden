@@ -1,0 +1,3 @@
+0/1 #< 758566050/758566050 should be true {"exBudgetCPU":2786341,"exBudgetMemory":8053,"scriptSizeBytes":85}
+758566050/758566050 #<= 1/1 should be true {"exBudgetCPU":2713331,"exBudgetMemory":7753,"scriptSizeBytes":74}
+1/1 #== 2/2 should be true {"exBudgetCPU":2360859,"exBudgetMemory":3693,"scriptSizeBytes":40}

@@ -1,0 +1,3 @@
+0/1 #< 758566050/758566050 should be true (program 1.0.0 True)
+758566050/758566050 #<= 1/1 should be true (program 1.0.0 True)
+1/1 #== 2/2 should be true (program 1.0.0 True)
