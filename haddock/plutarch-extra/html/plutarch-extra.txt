@@ -308,8 +308,6 @@ module Plutarch.Extra.RationalData
 --   <a>Rational</a>.
 data PRationalData s
 prationalFromData :: ClosedTerm (PRationalData :--> PRational)
-instance Plutarch.Bool.POrd Plutarch.Extra.RationalData.PRationalData
-instance Plutarch.Bool.PPartialOrd Plutarch.Extra.RationalData.PRationalData
 instance Plutarch.Bool.PEq Plutarch.Extra.RationalData.PRationalData
 instance Plutarch.DataRepr.Internal.Field.PDataFields Plutarch.Extra.RationalData.PRationalData
 instance Plutarch.Builtin.PIsData Plutarch.Extra.RationalData.PRationalData
@@ -319,5 +317,7 @@ instance forall k1 k2 (f :: k2 -> k1 -> GHC.Types.Type) (a :: k1) (b :: k2). GHC
 instance Plutarch.Lift.PConstantDecl PlutusTx.Ratio.Rational
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData Plutarch.Extra.RationalData.PRationalData
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.Extra.RationalData.PRationalData)
+instance Plutarch.Bool.PPartialOrd Plutarch.Extra.RationalData.PRationalData
+instance Plutarch.Bool.POrd Plutarch.Extra.RationalData.PRationalData
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Extra.RationalData.PRationalData
 instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.Extra.RationalData.PRationalData
