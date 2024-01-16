@@ -7,7 +7,6 @@ module Plutarch.Extra.RationalData (
 ) where
 
 import Data.Bifunctor (first)
-
 import Plutarch.Builtin (pasConstr)
 import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData), PDataFields)
 import Plutarch.Extra.TermCont (pguardC, pletC, pletFieldsC)
@@ -30,7 +29,15 @@ newtype PRationalData s
           )
       )
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PDataFields, PEq, PPartialOrd, POrd)
+  deriving anyclass (PlutusType, PIsData, PDataFields, PEq)
+
+-- | @since 1.2.1
+instance PPartialOrd PRationalData where
+  (#<=) = liftCompareOp (#<=)
+  (#<) = liftCompareOp (#<)
+
+-- | @since 1.2.1
+instance POrd PRationalData
 
 instance DerivePlutusType PRationalData where type DPTStrat _ = PlutusTypeData
 
@@ -61,3 +68,27 @@ prationalFromData = phoistAcyclic $
   plam $ \x -> unTermCont $ do
     l <- pletFieldsC @'["numerator", "denominator"] x
     pure . pcon $ PRational (getField @"numerator" l) (getField @"denominator" l)
+
+-- Helpers
+
+liftCompareOp ::
+  forall (s :: S).
+  (forall (s' :: S). Term s' PInteger -> Term s' PInteger -> Term s' PBool) ->
+  Term s PRationalData ->
+  Term s PRationalData ->
+  Term s PBool
+liftCompareOp f x y = phoistAcyclic (plam go) # x # y
+  where
+    go ::
+      forall (s' :: S).
+      Term s' PRationalData ->
+      Term s' PRationalData ->
+      Term s' PBool
+    go l r = unTermCont $ do
+      l' <- pletFieldsC @'["numerator", "denominator"] l
+      r' <- pletFieldsC @'["numerator", "denominator"] r
+      let ln = pfromData $ getField @"numerator" l'
+      let ld = pfromData $ getField @"denominator" l'
+      let rn = pfromData $ getField @"numerator" r'
+      let rd = pfromData $ getField @"denominator" r'
+      pure $ f (ln * pto rd) (rn * pto ld)

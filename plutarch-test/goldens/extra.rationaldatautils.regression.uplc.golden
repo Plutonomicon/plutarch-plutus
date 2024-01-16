@@ -1,0 +1,50 @@
+0/1 #< 758566050/758566050 should be true (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      (\i0 ->
+                         (\i0 ->
+                            (\i0
+                              i0 ->
+                               (\i0 ->
+                                  (\i0 ->
+                                     lessThanInteger
+                                       (multiplyInteger
+                                          (unIData (i5 i2))
+                                          (unIData (i5 (i6 i1))))
+                                       (multiplyInteger
+                                          (unIData (i5 i1))
+                                          (unIData (i5 (i6 i2)))))
+                                    (i6 i2))
+                                 (i5 i2))
+                              #d8799f0001ff
+                              #d8799f0101ff)
+                           (force headList))
+                        (force tailList))
+                     (\i0 -> i2 (unConstrData i1)))
+                  (force (force sndPair))))
+758566050/758566050 #<= 1/1 should be true (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      (\i0 ->
+                         (\i0 ->
+                            (\i0 ->
+                               (\i0 ->
+                                  (\i0 ->
+                                     lessThanEqualsInteger
+                                       (multiplyInteger
+                                          (unIData (i3 i2))
+                                          (unIData (i3 (i4 i1))))
+                                       (multiplyInteger
+                                          (unIData (i3 i1))
+                                          (unIData (i3 (i4 i2)))))
+                                    (i4 i6))
+                                 (i3 i5))
+                              (force headList))
+                           (force tailList))
+                        (\i0 -> i2 (unConstrData i1)))
+                     (force (force sndPair)))
+                  #d8799f0101ff))
+1/1 #== 2/2 should be true (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      (\i0 -> equalsData (listData (i1 i3)) (listData (i1 i3)))
+                        (\i0 -> i2 (unConstrData i1)))
+                     (force (force sndPair)))
+                  #d8799f0101ff))
