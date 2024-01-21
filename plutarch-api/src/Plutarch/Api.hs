@@ -1300,24 +1300,6 @@ pparseDatum = phoistAcyclic $ plam $ \dh datums ->
       Term s' (PDatumHash :--> PAsData (PBuiltinPair (PAsData PDatumHash) (PAsData PDatum)) :--> PBool)
     matches = phoistAcyclic $ plam $ \a ab -> a #== pfromData (pfstBuiltin # pfromData ab)
 
-{-
-pparseDatum = phoistAcyclic $
-  plam $ \dh datums ->
-    pmatch (pfind # (matches # dh) # datums) $ \case
-      PNothing ->
-        pcon PNothing
-      PJust datumTuple ->
-        let datum :: Term _ PData
-            datum = pto $ pfromData $ pfield @"_1" # pfromData datumTuple
-         in pcon $ PJust $ ptryFromData datum
-  where
-    matches :: forall (k :: S -> Type) (v :: S -> Type) (s' :: S) .
-      (PEq k, PIsData k) => Term s' (k :--> PAsData (PBuiltinPair (PAsData k) (PAsData v)) :--> PBool)
-    matches = phoistAcyclic $
-      plam $ \a ab ->
-        a #== pfield @"_0" # ab
--}
-
 -- Helpers
 
 hashScriptWithPrefix :: ByteString -> Script -> Plutus.ScriptHash
@@ -1377,4 +1359,4 @@ ptryFromData ::
   PTryFrom PData (PAsData a) =>
   Term s PData ->
   Term s (PAsData a)
-ptryFromData x = unTermCont $ fst <$> tcont (ptryFrom @(PAsData a) x)
+ptryFromData x = ptryFrom @(PAsData a) x fst
