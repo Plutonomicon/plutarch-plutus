@@ -1,7 +1,9 @@
 cabal-version:      3.0
 name:               plutarch
 version:            1.5.0
-author:             Las Safin <me@las.rs>
+author:
+  Las Safin <me@las.rs>, Koz Ross <koz@mlabs.city>, Seungheon Oh <seungheon.oh@mlabs.city>
+
 license:            MIT
 extra-source-files: README.md
 tested-with:        GHC ==9.6.3
@@ -67,23 +69,6 @@ library
   import:          c
   exposed-modules:
     Plutarch
-    Plutarch.Api.Internal.Hashing
-    Plutarch.Api.V1
-    Plutarch.Api.V1.Address
-    Plutarch.Api.V1.AssocMap
-    Plutarch.Api.V1.Contexts
-    Plutarch.Api.V1.Crypto
-    Plutarch.Api.V1.DCert
-    Plutarch.Api.V1.Interval
-    Plutarch.Api.V1.Maybe
-    Plutarch.Api.V1.Scripts
-    Plutarch.Api.V1.Time
-    Plutarch.Api.V1.Tuple
-    Plutarch.Api.V1.Tx
-    Plutarch.Api.V1.Value
-    Plutarch.Api.V2
-    Plutarch.Api.V2.Contexts
-    Plutarch.Api.V2.Tx
     Plutarch.Bool
     Plutarch.Builtin
     Plutarch.ByteString
@@ -147,13 +132,11 @@ library
     , flat
     , generics-sop
     , lens
-    , memory
     , mtl
     , plutus-core        >=1.20.0.0
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter
     , random
-    , serialise
     , sop-core
     , text
