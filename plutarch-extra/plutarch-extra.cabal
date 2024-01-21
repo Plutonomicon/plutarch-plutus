@@ -70,6 +70,7 @@ common deps
   build-depends:
     , base
     , plutarch
+    , plutarch-api
     , plutus-ledger-api
     , plutus-tx
 
@@ -77,7 +78,6 @@ library
   import:          c, deps
   exposed-modules:
     Plutarch.Extra
-    Plutarch.Extra.Api
     Plutarch.Extra.ByteString
     Plutarch.Extra.Interval
     Plutarch.Extra.List

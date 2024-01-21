@@ -26,7 +26,7 @@ module Plutarch.Extra.Map (
   pkvPairLt,
 ) where
 
-import Plutarch.Api.V1.AssocMap (
+import Plutarch.Api.AssocMap (
   KeyGuarantees (Sorted, Unsorted),
   PMap (PMap),
   plookup,
