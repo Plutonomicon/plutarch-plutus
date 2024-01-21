@@ -1218,7 +1218,7 @@ redeemerHash = coerce . dataHash
       pure $ ptraceError "not a spending tx"
   @
 
-  @since 2.0.0
+  @since 2.1.0
 -}
 pgetContinuingOutputs ::
   forall (s :: S).
@@ -1257,7 +1257,7 @@ pgetContinuingOutputs = phoistAcyclic $
       pure $ ptraceError "not a spending tx"
   @
 
-  @since 2.0.0
+  @since 2.1.0
 -}
 pfindOwnInput ::
   forall (s :: S).
@@ -1284,7 +1284,7 @@ pfindOwnInput = phoistAcyclic $
   pparseDatum @MyType # datumHash #$ pfield @"datums" # txinfo
   @
 
-  @since 2.0.0
+  @since 2.1.0
 -}
 pparseDatum ::
   forall (a :: S -> Type) (s :: S).
