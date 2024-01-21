@@ -3,7 +3,7 @@
 
 
 @package plutarch-api
-@version 2.0.0
+@version 2.1.0
 
 
 -- | Useful tools that aren't part of the Plutarch API per se, but get used
@@ -250,6 +250,47 @@ POutputDatumHash :: Term s (PDataRecord '["datumHash" ':= PDatumHash]) -> POutpu
 -- | Inline datum as per <a>CIP-0032</a>
 POutputDatum :: Term s (PDataRecord '["outputDatum" ':= PDatum]) -> POutputDatum (s :: S)
 
+-- | Find the output txns corresponding to the input being validated.
+--   
+--   Takes as arguments the inputs, outputs and the spending transaction
+--   referenced from <a>PScriptPurpose</a>.
+--   
+--   <b>Example:</b>
+--   
+--   <pre>
+--   ctx &lt;- tcont $ pletFields <tt>["txInfo", "purpose"] sc
+--   pmatchC (getField </tt>"purpose" ctx) &gt;&gt;= case
+--     PSpending outRef' -&gt; do
+--       let outRef = pfield <tt>"_0" # outRef'
+--           inputs = pfield </tt>"inputs" # (getField <tt>"txInfo" ctx)
+--           outputs = pfield </tt>"outputs" # (getField @"txInfo" ctx)
+--       pure $ pgetContinuingOutputs # inputs # outputs # outRef
+--     _ -&gt;
+--       pure $ ptraceError "not a spending tx"
+--   
+--   </pre>
+pgetContinuingOutputs :: forall (s :: S). Term s (PBuiltinList PTxInInfo :--> (PBuiltinList PTxOut :--> (PTxOutRef :--> PBuiltinList PTxOut)))
+
+-- | Find the input being spent in the current transaction.
+--   
+--   Takes as arguments the inputs, as well as the spending transaction
+--   referenced from <a>PScriptPurpose</a>.
+--   
+--   <b>Example:</b>
+--   
+--   <pre>
+--   ctx &lt;- tcont $ pletFields <tt>["txInfo", "purpose"] sc
+--   pmatchC (getField </tt>"purpose" ctx) &gt;&gt;= case
+--     PSpending outRef' -&gt; do
+--       let outRef = pfield <tt>"_0" # outRef'
+--           inputs = pfield </tt>"inputs" # (getField @"txInfo" ctx)
+--       pure $ pfindOwnInput # inputs # outRef
+--     _ -&gt;
+--       pure $ ptraceError "not a spending tx"
+--   
+--   </pre>
+pfindOwnInput :: forall (s :: S). Term s (PBuiltinList PTxInInfo :--> (PTxOutRef :--> PMaybe PTxInInfo))
+
 newtype PDatum (s :: S)
 PDatum :: Term s PData -> PDatum (s :: S)
 
@@ -273,6 +314,19 @@ datumHash :: Datum -> DatumHash
 redeemerHash :: Redeemer -> RedeemerHash
 
 dataHash :: forall (a :: Type). ToData a => a -> BuiltinByteString
+
+-- | Lookup up the datum given the datum hash.
+--   
+--   Takes as argument the datum assoc list from a <a>PTxInfo</a>.
+--   Validates the datum using <a>PTryFrom</a>.
+--   
+--   <b>Example:</b>
+--   
+--   <pre>
+--   pparseDatum <tt>MyType # datumHash #$ pfield </tt>"datums" # txinfo
+--   
+--   </pre>
+pparseDatum :: forall (a :: S -> Type) (s :: S). PTryFrom PData (PAsData a) => Term s (PDatumHash :--> (PBuiltinList (PAsData (PBuiltinPair (PAsData PDatumHash) (PAsData PDatum))) :--> PMaybe (PAsData a)))
 
 newtype PValue (keys :: KeyGuarantees) (amounts :: AmountGuarantees) (s :: S)
 PValue :: Term s (PMap keys PCurrencySymbol (PMap keys PTokenName PInteger)) -> PValue (keys :: KeyGuarantees) (amounts :: AmountGuarantees) (s :: S)
@@ -349,8 +403,6 @@ pubKeyHash :: PubKey -> PubKeyHash
 data PMaybeData (a :: S -> Type) (s :: S)
 PDJust :: Term s (PDataRecord '["_0" ':= a]) -> PMaybeData (a :: S -> Type) (s :: S)
 PDNothing :: Term s (PDataRecord '[]) -> PMaybeData (a :: S -> Type) (s :: S)
-
-ptuple :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). Term s (PAsData a :--> (PAsData b :--> PDataSum '[ '["_0" ':= a, "_1" ':= b]]))
 instance Plutarch.Show.PShow Plutarch.Api.PDatum
 instance Plutarch.Bool.PEq Plutarch.Api.PDatum
 instance Plutarch.Builtin.PIsData Plutarch.Api.PDatum
