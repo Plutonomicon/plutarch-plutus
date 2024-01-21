@@ -16,8 +16,7 @@ module Plutarch.Extra.Interval (
   pafter,
 ) where
 
-import Plutarch.Api.V1.Interval (
-  PClosure,
+import Plutarch.Api (
   PExtended (PFinite, PNegInf, PPosInf),
   PInterval (PInterval),
   PLowerBound (PLowerBound),
@@ -236,7 +235,7 @@ pclosedInterval ::
     )
 pclosedInterval = phoistAcyclic $
   plam $ \start end ->
-    let closure :: Term _ (PAsData PClosure)
+    let closure :: Term _ (PAsData PBool)
         closure = pconstantData True
 
         upper :: Term _ (PUpperBound a)
@@ -468,7 +467,7 @@ isPosInf x = case x of
 type EndPoint a =
   PDataRecord
     '[ "_0" ':= PExtended a
-     , "_1" ':= PClosure
+     , "_1" ':= PBool
      ]
 
 uToE :: Term s (PUpperBound a :--> EndPoint a)

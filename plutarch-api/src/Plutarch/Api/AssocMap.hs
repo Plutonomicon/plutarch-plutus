@@ -34,6 +34,9 @@ module Plutarch.Api.AssocMap (
 
   -- ** Queries
   pnull,
+  plookup,
+  plookupData,
+  plookupDataWith,
 ) where
 
 import Data.Bifunctor (bimap)
@@ -383,6 +386,51 @@ pmapData = phoistAcyclic $
         )
         (const pnil)
         # pto m
+
+{- | Look up the given key in a 'PMap'.
+
+@since 2.1.1
+-}
+plookup ::
+  forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (s :: S).
+  (PIsData k, PIsData v) =>
+  Term s (k :--> PMap any k v :--> PMaybe v)
+plookup = phoistAcyclic $
+  plam $ \key ->
+    plookupDataWith
+      # phoistAcyclic (plam $ \pair -> pcon $ PJust $ pfromData $ psndBuiltin # pair)
+      # pdata key
+
+{- | as 'plookup', except over Data representation.
+
+@since 2.1.1
+-}
+plookupData :: Term s (PAsData k :--> PMap any k v :--> PMaybe (PAsData v))
+plookupData = plookupDataWith # phoistAcyclic (plam $ \pair -> pcon $ PJust $ psndBuiltin # pair)
+
+{- | Look up the given key data in a 'PMap', applying the given function to the found key-value pair.
+
+@since 2.1.1
+-}
+plookupDataWith ::
+  Term
+    s
+    ( (PBuiltinPair (PAsData k) (PAsData v) :--> PMaybe x)
+        :--> PAsData k
+        :--> PMap any k v
+        :--> PMaybe x
+    )
+plookupDataWith = phoistAcyclic $
+  plam $ \unwrap key m ->
+    precList
+      ( \self x xs ->
+          pif
+            (pfstBuiltin # x #== key)
+            (unwrap # x)
+            (self # xs)
+      )
+      (const $ pcon PNothing)
+      # pto m
 
 -- Helpers
 

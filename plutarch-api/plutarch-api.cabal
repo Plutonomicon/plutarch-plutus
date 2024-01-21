@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name:          plutarch-api
-version:       2.1.0
+version:       2.1.1
 
 common common-lang
   default-language:   Haskell2010

@@ -26,7 +26,7 @@ module Plutarch.Extra.Maybe (
   passertPDJust,
 ) where
 
-import Plutarch.Api.V1.Maybe (PMaybeData (PDJust, PDNothing))
+import Plutarch.Api (PMaybeData (PDJust, PDNothing))
 import Plutarch.Prelude
 
 --------------------------------------------------------------------------------
