@@ -55,9 +55,14 @@ module Plutarch.Api.AssocMap (
   -- ** Modification
   pinsert,
   pdelete,
+
+  -- ** Construction
+  punsortedMapFromFoldable,
+  psortedMapFromFoldable,
 ) where
 
 import Data.Bifunctor (bimap)
+import Data.Foldable (foldl')
 import Data.Proxy (Proxy (Proxy))
 import Data.Traversable (for)
 import Plutarch.Api.Utils (Mret)
@@ -1159,3 +1164,32 @@ intersectionMergeHandler NonCommutative merge =
 intersectionMergeHandler Commutative merge =
   SomeMergeHandlerCommutative $
     MergeHandlerCommutative (HandleBothCommutative \_ vl vr -> merge # vl # vr) DropOne
+
+punsortedMapFromFoldable ::
+  forall (k :: PType) (v :: PType) (f :: Type -> Type) (s :: S).
+  (Foldable f, PIsData k, PIsData v) =>
+  f (Term s k, Term s v) ->
+  Term s (PMap 'Unsorted k v)
+punsortedMapFromFoldable = pcon . PMap . foldl' go (pcon PNil)
+  where
+    go ::
+      forall (s' :: S).
+      Term s' (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))) ->
+      (Term s' k, Term s' v) ->
+      Term s' (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v)))
+    go acc (key, val) =
+      pcon . PCons (ppairDataBuiltin # pdata key # pdata val) $ acc
+
+psortedMapFromFoldable ::
+  forall (k :: PType) (v :: PType) (f :: Type -> Type) (s :: S).
+  (Foldable f, POrd k, PIsData k, PIsData v) =>
+  f (Term s k, Term s v) ->
+  Term s (PMap 'Sorted k v)
+psortedMapFromFoldable = foldl' go pempty
+  where
+    go ::
+      forall (s' :: S).
+      Term s' (PMap 'Sorted k v) ->
+      (Term s' k, Term s' v) ->
+      Term s' (PMap 'Sorted k v)
+    go acc (key, val) = pinsert # key # val # acc
