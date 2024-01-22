@@ -1,0 +1,63 @@
+cabal-version: 3.0
+name:          plutarch-api
+version:       2.1.0
+
+common common-lang
+  default-language:   Haskell2010
+  ghc-options:
+    -Wall -Wcompat -Wincomplete-record-updates
+    -Wincomplete-uni-patterns -Wredundant-constraints -Werror
+    -Wmissing-deriving-strategies -Wmissing-export-lists
+
+  build-depends:      base
+  default-extensions:
+    BangPatterns
+    BinaryLiterals
+    DataKinds
+    DeriveAnyClass
+    DeriveGeneric
+    DeriveTraversable
+    DerivingVia
+    DuplicateRecordFields
+    EmptyCase
+    FlexibleContexts
+    FlexibleInstances
+    GeneralizedNewtypeDeriving
+    HexFloatLiterals
+    ImportQualifiedPost
+    InstanceSigs
+    KindSignatures
+    LambdaCase
+    MultiParamTypeClasses
+    NoStarIsType
+    NumericUnderscores
+    OverloadedLabels
+    OverloadedStrings
+    PackageImports
+    ScopedTypeVariables
+    StandaloneDeriving
+    TupleSections
+    TypeApplications
+    TypeFamilies
+    TypeOperators
+    UndecidableInstances
+
+library
+  import:          common-lang
+  exposed-modules:
+    Plutarch.Api
+    Plutarch.Api.AssocMap
+    Plutarch.Api.Utils
+    Plutarch.Api.Value
+
+  build-depends:
+    , bytestring
+    , cryptonite
+    , memory
+    , plutarch
+    , plutus-core
+    , plutus-ledger-api
+    , plutus-tx
+    , serialise
+
+  hs-source-dirs:  src
