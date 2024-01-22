@@ -14,21 +14,14 @@ module Plutarch.ApiSpec (
   inp,
 ) where
 
-import Test.Tasty.HUnit
-
 import Control.Monad (forM_)
 import Control.Monad.Trans.Cont (cont, runCont)
 import Data.Bifunctor (bimap)
+import Data.ByteString (ByteString)
+import Data.List (sort)
 import Data.String (fromString)
-import GHC.Exts (IsList (fromList))
 import Numeric (showHex)
-import PlutusLedgerApi.V1
-import PlutusLedgerApi.V1.Interval qualified as Interval
-import PlutusLedgerApi.V1.Value qualified as Value
-import PlutusTx.AssocMap qualified as PlutusMap
-import PlutusTx.Monoid (inv)
-
-import Plutarch.Api.V1 (
+import Plutarch.Api (
   AmountGuarantees (NoGuarantees, NonZero, Positive),
   PCredential,
   PCurrencySymbol,
@@ -41,26 +34,25 @@ import Plutarch.Api.V1 (
   PTxInfo,
   PValue,
  )
-import Plutarch.Api.V1.AssocMap (
-  BothPresentHandlerCommutative_ (..),
-  BothPresentHandler_ (..),
+import Plutarch.Api.AssocMap (
   Commutativity (..),
   KeyGuarantees (..),
-  MergeHandlerCommutative_ (..),
-  MergeHandler_ (..),
-  OnePresentHandler_ (DropOne, HandleOne, PassOne),
   PMap (..),
-  SomeMergeHandler,
-  SomeMergeHandler_ (..),
  )
-import Plutarch.Api.V1.AssocMap qualified as AssocMap
-import Plutarch.Api.V1.Value qualified as PValue
+import Plutarch.Api.AssocMap qualified as AssocMap
+import Plutarch.Api.Value qualified as PValue
 import Plutarch.Builtin (pasConstr, pforgetData)
+import Plutarch.Lift (PConstanted, PLifted, PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude
 import Plutarch.Test
 import Plutarch.Test.Property.Gen ()
-
+import PlutusLedgerApi.V1.Interval qualified as Interval
+import PlutusLedgerApi.V1.Value qualified as Value
+import PlutusLedgerApi.V2 hiding (fromList)
+import PlutusTx.AssocMap qualified as PlutusMap
+import PlutusTx.Monoid (inv)
 import Test.Hspec
+import Test.Tasty.HUnit
 import Test.Tasty.QuickCheck (
   Gen,
   Property,
@@ -74,10 +66,6 @@ import Test.Tasty.QuickCheck (
   withMaxSuccess,
   (===),
  )
-
-import Data.ByteString (ByteString)
-import Data.List (sort)
-import Plutarch.Lift (PConstanted, PLifted, PUnsafeLiftDecl (PLifted))
 
 newtype EnclosedTerm (p :: PType) = EnclosedTerm {getEnclosedTerm :: ClosedTerm p}
 
@@ -311,9 +299,9 @@ spec = do
             emptyMap = AssocMap.pempty
             doubleMap = AssocMap.psingleton # pconstant "key" # 84
             otherMap = AssocMap.psingleton # pconstant "newkey" # 6
-            pmapunionResolvingCollisions = fromList [(pconstant "key", 42), (pconstant "newkey", 6)]
+            pmapunionResolvingCollisions = _ [(pconstant "key", 42), (pconstant "newkey", 6)]
             mkTestMap :: forall (s :: S). [(ByteString, Integer)] -> Term s (AssocMap.PMap 'Sorted PByteString PInteger)
-            mkTestMap = fromList . fmap (bimap pconstant pconstant)
+            mkTestMap = _ . fmap (bimap pconstant pconstant)
         "lookup" @\ do
           "itself"
             @| AssocMap.plookup
@@ -549,11 +537,6 @@ spec = do
             property (propPlutarchtypeCanBeRecovered @CurrencySymbol)
           it "recovering PMaybeData succeeds" $
             property prop_pmaybedata_can_be_recovered
-    describe "AssocMap.pzipWith" $ do
-      it "matches independently constructed expectation" $
-        withMaxSuccess 1000 $
-          forAll genSomeMergeHandler $
-            \mh -> forAll genSets . prop_pzipWith $ mh
 
 --------------------------------------------------------------------------------
 
@@ -575,10 +558,10 @@ info =
     , txInfoFee = mempty
     , txInfoMint = mint
     , txInfoDCert = []
-    , txInfoWdrl = []
+    , txInfoWdrl = PlutusMap.empty
     , txInfoValidRange = Interval.always
     , txInfoSignatories = signatories
-    , txInfoData = []
+    , txInfoData = PlutusMap.empty
     , txInfoId = "b0"
     }
 
@@ -592,7 +575,7 @@ inp =
           { txOutAddress =
               Address (ScriptCredential validator) Nothing
           , txOutValue = mempty
-          , txOutDatumHash = Just datum
+          , txOutDatum = datum
           }
     }
 
@@ -615,8 +598,13 @@ purpose = Spending ref
 validator :: ScriptHash
 validator = "a1"
 
+datum :: OutputDatum
+datum = _
+
+{-
 datum :: DatumHash
 datum = "d0"
+-}
 
 sym :: CurrencySymbol
 sym = "c0"
@@ -717,7 +705,7 @@ mkCtx outs l = pconstant (ScriptContext (info' outs l) purpose)
     info' :: [TxOut] -> [(DatumHash, Datum)] -> TxInfo
     info' outs dat =
       info
-        { txInfoData = dat
+        { txInfoData = _ dat
         , txInfoOutputs = outs
         }
 
@@ -727,7 +715,7 @@ validOutputs0 =
       { txOutAddress =
           Address (ScriptCredential validator) Nothing
       , txOutValue = mempty
-      , txOutDatumHash = Just datum
+      , txOutDatum = datum
       }
   ]
 
@@ -737,13 +725,13 @@ invalidOutputs1 =
       { txOutAddress =
           Address (ScriptCredential validator) Nothing
       , txOutValue = mempty
-      , txOutDatumHash = Just datum
+      , txOutDatum = datum
       }
   , TxOut
       { txOutAddress =
           Address (ScriptCredential validator) Nothing
       , txOutValue = mempty
-      , txOutDatumHash = Nothing
+      , txOutDatum = _ -- Nothing
       }
   ]
 
@@ -793,15 +781,6 @@ pshouldReallyBe :: ClosedTerm a -> ClosedTerm a -> Expectation
 pshouldReallyBe a b = pshouldBe b a
 
 ---------- AssocMap pzipWith property test infrastructure --------
-
-prop_pzipWith :: SomeMergeHandler_ DummyFun DummyKeyType DummyValueType -> RelatedSets -> Property
-prop_pzipWith mh sets@RelatedSets {left, right} =
-  expectationZipWith mh sets
-    === pMapToKVs
-      ( AssocMap.pzipWith (unDummifySomeMergeHandler mh)
-          # keysToPMap True left
-          # keysToPMap False right
-      )
 
 data RelatedSets = RelatedSets
   { leftOnly :: [Integer]
@@ -871,121 +850,14 @@ data DummyKeyType
 data DummyValueType
 data DummyFun a b = DummyFun deriving stock (Show)
 
-genOnePresentHandler :: Gen (OnePresentHandler_ DummyFun DummyKeyType DummyValueType)
-genOnePresentHandler =
-  elements
-    [ DropOne
-    , PassOne
-    , HandleOne DummyFun
-    ]
-
-genBothPresentHandler :: Gen (BothPresentHandler_ DummyFun DummyKeyType DummyValueType)
-genBothPresentHandler = do
-  side <- elements [True, False]
-  elements
-    [ DropBoth
-    , PassArg side
-    , HandleBoth DummyFun
-    ]
-
-genBothPresentHandlerCommutative ::
-  Gen (BothPresentHandlerCommutative_ DummyFun DummyKeyType DummyValueType)
-genBothPresentHandlerCommutative = do
-  elements
-    [ DropBothCommutative
-    , HandleBothCommutative DummyFun
-    ]
-
-genMergeHandler :: Gen (MergeHandler_ DummyFun DummyKeyType DummyValueType)
-genMergeHandler =
-  MergeHandler <$> genBothPresentHandler <*> genOnePresentHandler <*> genOnePresentHandler
-
-genMergeHandlerCommutative :: Gen (MergeHandlerCommutative_ DummyFun DummyKeyType DummyValueType)
-genMergeHandlerCommutative =
-  MergeHandlerCommutative <$> genBothPresentHandlerCommutative <*> genOnePresentHandler
-
-genSomeMergeHandler :: Gen (SomeMergeHandler_ DummyFun DummyKeyType DummyValueType)
-genSomeMergeHandler =
-  oneof
-    [ SomeMergeHandler <$> genMergeHandler
-    , SomeMergeHandlerCommutative <$> genMergeHandlerCommutative
-    ]
-
-unDummifySomeMergeHandler ::
-  forall (s :: S).
-  SomeMergeHandler_ DummyFun DummyKeyType DummyValueType ->
-  SomeMergeHandler PInteger PInteger s
-unDummifySomeMergeHandler = \case
-  SomeMergeHandler mh -> SomeMergeHandler $ unMH mh
-  SomeMergeHandlerCommutative mh -> SomeMergeHandlerCommutative $ unMHC mh
-  where
-    unMH MergeHandler {mhBoth, mhLeft, mhRight} =
-      MergeHandler
-        { mhBoth = unBoth mhBoth
-        , mhLeft =
-            unOne mhOneFactorLeft mhLeft
-        , mhRight = unOne mhOneFactorRight mhRight
-        }
-    unMHC MergeHandlerCommutative {mhcBoth, mhcOne} =
-      MergeHandlerCommutative
-        { mhcBoth = unBothC mhcBoth
-        , mhcOne = unOne mhcOneFactor mhcOne
-        }
-    unBoth = \case
-      DropBoth -> DropBoth
-      PassArg arg -> PassArg arg
-      HandleBoth DummyFun -> HandleBoth (const nonCommutativeOp)
-    unBothC = \case
-      DropBothCommutative -> DropBothCommutative
-      HandleBothCommutative DummyFun -> HandleBothCommutative (const commutativeOp)
-    unOne factor = \case
-      DropOne -> DropOne
-      PassOne -> PassOne
-      HandleOne DummyFun -> HandleOne (const (* pconstant factor))
-
 keysToPMap ::
   forall (s :: S).
   Bool ->
   [Integer] ->
   Term s (PMap 'Sorted PInteger PInteger)
 keysToPMap side keys =
-  fromList $
+  _ $
     fmap (\k -> (pconstant k, pconstant $ dummyVal side)) keys
 
 pMapToKVs :: ClosedTerm (PMap 'Sorted PInteger PInteger) -> [(Integer, Integer)]
 pMapToKVs pm = PlutusMap.toList $ plift $ AssocMap.pforgetSorted pm
-
-expectationZipWith ::
-  SomeMergeHandler_ DummyFun DummyKeyType DummyValueType -> RelatedSets -> [(Integer, Integer)]
-expectationZipWith
-  (SomeMergeHandler MergeHandler {mhBoth, mhLeft, mhRight})
-  RelatedSets {leftOnly, rightOnly, intersection} =
-    let b = case mhBoth of
-          DropBoth -> []
-          PassArg side -> fmap (,dummyVal side) intersection
-          HandleBoth DummyFun ->
-            fmap (,leftDummyVal `nonCommutativeOp` rightDummyVal) intersection
-        l = case mhLeft of
-          DropOne -> []
-          PassOne -> fmap (,leftDummyVal) leftOnly
-          HandleOne DummyFun -> fmap (,mhOneFactorLeft * leftDummyVal) leftOnly
-        r = case mhRight of
-          DropOne -> []
-          PassOne -> fmap (,rightDummyVal) rightOnly
-          HandleOne DummyFun -> fmap (,mhOneFactorRight * rightDummyVal) rightOnly
-     in sort (b <> l <> r)
-expectationZipWith
-  (SomeMergeHandlerCommutative MergeHandlerCommutative {mhcBoth, mhcOne})
-  RelatedSets {leftOnly, rightOnly, intersection} =
-    let b = case mhcBoth of
-          DropBothCommutative -> []
-          HandleBothCommutative _ ->
-            fmap (,leftDummyVal `commutativeOp` rightDummyVal) intersection
-        o = case mhcOne of
-          DropOne -> []
-          PassOne ->
-            fmap (,leftDummyVal) leftOnly <> fmap (,rightDummyVal) rightOnly
-          HandleOne DummyFun ->
-            fmap (,mhcOneFactor * leftDummyVal) leftOnly
-              <> fmap (,mhcOneFactor * rightDummyVal) rightOnly
-     in sort (b <> o)

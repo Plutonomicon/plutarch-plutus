@@ -1,5 +1,6 @@
 {-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE QuantifiedConstraints #-}
+{-# LANGUAGE RankNTypes #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 {- | This module is designed to be imported qualified, as many of its
@@ -15,9 +16,12 @@ module Plutarch.Api.AssocMap (
 
   -- ** Creation
   pempty,
+  psingleton,
+  psingletonData,
 
   -- ** Transformation
   passertSorted,
+  pforgetSorted,
   pmap,
   pmapData,
   pmapMaybe,
@@ -28,15 +32,29 @@ module Plutarch.Api.AssocMap (
 
   -- ** Folds
   pall,
+  pany,
 
   -- ** Combination
   punionResolvingCollisionsWith,
+  punionResolvingCollisionsWithData,
+  pleftBiasedUnion,
+  pdifference,
+  pzipWithDefaults,
+  pintersectionWith,
+  pintersectionWithData,
 
   -- ** Queries
   pnull,
   plookup,
   plookupData,
   plookupDataWith,
+  pfindWithDefault,
+  pfoldAt,
+  pfoldAtData,
+
+  -- ** Modification
+  pinsert,
+  pdelete,
 ) where
 
 import Data.Bifunctor (bimap)
@@ -63,7 +81,7 @@ import Plutarch.Lift (
   pconstantToRepr,
  )
 import Plutarch.List qualified as List
-import Plutarch.Prelude hiding (pall, pmap, pnull, pzipWith)
+import Plutarch.Prelude hiding (pall, pany, pmap, pnull, psingleton, pzipWith)
 import Plutarch.Prelude qualified as PPrelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
@@ -314,6 +332,27 @@ punionResolvingCollisionsWith commutativity =
     plam $
       pzipWith . unionMergeHandler commutativity
 
+{- | Build the union of two 'PMap's, merging values that share the same key using the
+given function.
+
+@since 2.1.1
+-}
+punionResolvingCollisionsWithData ::
+  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
+  (POrd k, PIsData k) =>
+  Commutativity ->
+  Term
+    s
+    ( (PAsData v :--> PAsData v :--> PAsData v)
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+    )
+punionResolvingCollisionsWithData commutativity =
+  phoistAcyclic $
+    plam $
+      pzipWithData . unionMergeHandler commutativity
+
 {- | Maps and filters the map, much like 'Data.List.mapMaybe'.
 
 @since 2.0.0
@@ -432,7 +471,239 @@ plookupDataWith = phoistAcyclic $
       (const $ pcon PNothing)
       # pto m
 
+{- | Construct a singleton 'PMap' with the given key and value.
+
+@since 2.1.1
+-}
+psingleton ::
+  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
+  (PIsData k, PIsData v) =>
+  Term s (k :--> v :--> PMap 'Sorted k v)
+psingleton = phoistAcyclic $ plam $ \key value -> psingletonData # pdata key # pdata value
+
+{- | Construct a singleton 'PMap' with the given data-encoded key and value.
+
+@since 2.1.1
+-}
+psingletonData ::
+  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
+  Term s (PAsData k :--> PAsData v :--> PMap 'Sorted k v)
+psingletonData = phoistAcyclic $
+  plam $
+    \key value -> punsafeDowncast (pcons # (ppairDataBuiltin # key # value) # pnil)
+
+{- | Look up the given key in a 'PMap'; return the default if the key is
+ absent or apply the argument function to the value data if present.
+
+ @since 2.1.1
+-}
+pfoldAt ::
+  forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (r :: S -> Type) (s :: S).
+  PIsData k =>
+  Term s (k :--> r :--> (PAsData v :--> r) :--> PMap any k v :--> r)
+pfoldAt = phoistAcyclic $
+  plam $
+    \key -> pfoldAtData # pdata key
+
+{- | Look up the given key data in a 'PMap'; return the default if the key is
+ absent or apply the argument function to the value data if present.
+
+ @since 2.1.1
+-}
+pfoldAtData ::
+  forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (r :: S -> Type) (s :: S).
+  Term s (PAsData k :--> r :--> (PAsData v :--> r) :--> PMap any k v :--> r)
+pfoldAtData = phoistAcyclic $
+  plam $ \key def apply m ->
+    precList
+      ( \self x xs ->
+          pif
+            (pfstBuiltin # x #== key)
+            (apply #$ psndBuiltin # x)
+            (self # xs)
+      )
+      (const def)
+      # pto m
+
+{- | Build the union of two 'PMap's. Take the value from the left argument for colliding keys.
+
+ Prefer this over 'punionResolvingCollisionsWith NonCommutative # plam const'. It performs better.
+
+ @since 2.1.1
+-}
+pleftBiasedUnion ::
+  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
+  (POrd k, PIsData k, PIsData v) =>
+  Term s (PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
+pleftBiasedUnion =
+  phoistAcyclic $
+    pzipWith $
+      SomeMergeHandler $
+        MergeHandler (PassArg True) PassOne PassOne
+
+{- | Difference of two maps. Return elements of the first map not existing in the second map.
+
+@since 2.1.1
+-}
+pdifference ::
+  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
+  (PIsData k, POrd k, PIsData v) =>
+  Term s (PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
+pdifference =
+  phoistAcyclic $
+    pzipWith $
+      SomeMergeHandler $
+        MergeHandler DropBoth PassOne DropOne
+
+{- | Tests if anu value in the map satisfies the given predicate.
+
+@since 2.1.1
+-}
+pany ::
+  forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (s :: S).
+  PIsData v =>
+  Term s ((v :--> PBool) :--> PMap any k v :--> PBool)
+pany = phoistAcyclic $
+  plam $ \pred m ->
+    List.pany # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto m
+
+{- | Look up the given key in a 'PMap', returning the default value if the key is absent.
+
+@since 2.1.1
+-}
+pfindWithDefault ::
+  forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (s :: S).
+  (PIsData k, PIsData v) =>
+  Term s (v :--> k :--> PMap any k v :--> v)
+pfindWithDefault = phoistAcyclic $ plam $ \def key -> pfoldAtData # pdata key # def # plam pfromData
+
+{- | Insert a new key/value pair into the map, overriding the previous if any.
+
+@since 2.1.1
+-}
+pinsert ::
+  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
+  (POrd k, PIsData k, PIsData v) =>
+  Term s (k :--> v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
+pinsert = phoistAcyclic $
+  plam $ \key val ->
+    rebuildAtKey # plam (pcons # (ppairDataBuiltin # pdata key # pdata val) #) # key
+
+{- | Delete a key from the map.
+
+@since 2.1.1
+-}
+pdelete ::
+  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
+  (POrd k, PIsData k) =>
+  Term s (k :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
+pdelete = rebuildAtKey # plam id
+
+{- | Zip two 'PMap's, using the given potentially non-commutative value merge
+ function for key collisions, and different values for the sides.
+
+ Use `pzipWithDefault` if your merge function is commutative for better
+ performance.
+
+ @since 2.1.1
+-}
+pzipWithDefaults ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  (POrd k, PIsData k, PIsData v) =>
+  (forall (s' :: S). Term s' v) ->
+  (forall (s' :: S). Term s' v) ->
+  Term
+    s
+    ( (v :--> v :--> v)
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+    )
+pzipWithDefaults defLeft defRight =
+  phoistAcyclic $
+    plam $
+      pzipWith . defaultMergeHandlerNonCommutative defLeft defRight
+
+{- | Build the intersection of two 'PMap's, merging values that share the same key using the
+given function.
+
+@since 2.1.1
+-}
+pintersectionWith ::
+  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
+  (POrd k, PIsData k, PIsData v) =>
+  Commutativity ->
+  Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
+pintersectionWith commutativity =
+  phoistAcyclic $
+    plam $
+      pzipWith . intersectionMergeHandler commutativity
+
+{- | Build the intersection of two 'PMap's, merging data-encoded values that share the same key using the
+given function.
+
+@since 2.1.1
+-}
+pintersectionWithData ::
+  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
+  (POrd k, PIsData k) =>
+  Commutativity ->
+  Term
+    s
+    ( (PAsData v :--> PAsData v :--> PAsData v)
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+        :--> PMap 'Sorted k v
+    )
+pintersectionWithData commutativity =
+  phoistAcyclic $
+    plam $
+      pzipWithData . intersectionMergeHandler commutativity
+
+{- | Forget the knowledge that keys were sorted.
+
+@since 2.1.1
+-}
+pforgetSorted ::
+  forall (g :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S).
+  Term s (PMap 'Sorted k v) ->
+  Term s (PMap g k v)
+pforgetSorted v = punsafeDowncast (pto v)
+
 -- Helpers
+
+-- | Rebuild the map at the given key.
+rebuildAtKey ::
+  forall (g :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S).
+  (POrd k, PIsData k) =>
+  Term
+    s
+    ( ( PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+          :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+      )
+        :--> k
+        :--> PMap g k v
+        :--> PMap g k v
+    )
+rebuildAtKey = phoistAcyclic $
+  plam $ \handler key m ->
+    punsafeDowncast $
+      precList
+        ( \self x xs ->
+            plet (pfromData $ pfstBuiltin # x) $ \k ->
+              plam $ \prefix ->
+                pif
+                  (k #< key)
+                  (self # xs #$ plam $ \suffix -> prefix #$ pcons # x # suffix)
+                  ( pif
+                      (k #== key)
+                      (prefix #$ handler # xs)
+                      (prefix #$ handler #$ pcons # x # xs)
+                  )
+        )
+        (const $ plam (#$ handler # pnil))
+        # pto m
+        # plam id
 
 -- TODO: Get rid of this whole mess.
 type SomeMergeHandler (k :: S -> Type) (v :: S -> Type) (s :: S) =
@@ -864,3 +1135,27 @@ applyOrder' ::
   a ->
   b
 applyOrder' argOrder fun a b = branchOrder argOrder (fun a b) (fun b a)
+
+defaultMergeHandlerNonCommutative ::
+  forall (s :: S) (v :: PType) (k :: PType).
+  Term s v ->
+  Term s v ->
+  Term s (v :--> (v :--> v)) ->
+  SomeMergeHandler k v s
+defaultMergeHandlerNonCommutative defLeft defRight combine =
+  SomeMergeHandler $
+    MergeHandler
+      (HandleBoth \_ vl vr -> combine # vl # vr)
+      (HandleOne \_ vl -> combine # vl # defRight)
+      (HandleOne \_ vr -> combine # defLeft # vr)
+
+intersectionMergeHandler ::
+  forall (s :: S) (k :: PType) (v :: PType).
+  Commutativity ->
+  Term s (v :--> (v :--> v)) ->
+  SomeMergeHandler k v s
+intersectionMergeHandler NonCommutative merge =
+  SomeMergeHandler $ MergeHandler (HandleBoth \_ vl vr -> merge # vl # vr) DropOne DropOne
+intersectionMergeHandler Commutative merge =
+  SomeMergeHandlerCommutative $
+    MergeHandlerCommutative (HandleBothCommutative \_ vl vr -> merge # vl # vr) DropOne

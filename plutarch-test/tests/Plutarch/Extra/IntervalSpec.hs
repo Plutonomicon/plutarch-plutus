@@ -1,6 +1,10 @@
 module Plutarch.Extra.IntervalSpec (spec) where
 
-import Plutarch.Api.V1.Interval (PInterval)
+import Hedgehog (Property, PropertyT, assert, forAll, property)
+import Hedgehog.Gen qualified as Gen (int, list)
+import Hedgehog.Internal.Property (propertyTest)
+import Hedgehog.Range qualified as Range (constantBounded, singleton)
+import Plutarch.Api (PInterval)
 import Plutarch.Extra.Interval (
   pafter,
   palways,
@@ -16,11 +20,6 @@ import Plutarch.Extra.Interval (
   pto,
  )
 import Plutarch.Prelude hiding (psingleton, pto)
-
-import Hedgehog (Property, PropertyT, assert, forAll, property)
-import Hedgehog.Gen qualified as Gen (int, list)
-import Hedgehog.Internal.Property (propertyTest)
-import Hedgehog.Range qualified as Range (constantBounded, singleton)
 import Plutarch.Test (passert, passertNot, pgoldenSpec, psucceeds, (@->), (@\), (@|))
 import Test.Hspec (Spec, describe, it)
 import Test.Hspec.Hedgehog (hedgehog)
