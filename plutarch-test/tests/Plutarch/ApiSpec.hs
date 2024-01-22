@@ -38,6 +38,7 @@ import Plutarch.Api.AssocMap (
   Commutativity (..),
   KeyGuarantees (..),
   PMap (..),
+  psortedMapFromFoldable,
  )
 import Plutarch.Api.AssocMap qualified as AssocMap
 import Plutarch.Api.Value qualified as PValue
@@ -299,9 +300,9 @@ spec = do
             emptyMap = AssocMap.pempty
             doubleMap = AssocMap.psingleton # pconstant "key" # 84
             otherMap = AssocMap.psingleton # pconstant "newkey" # 6
-            pmapunionResolvingCollisions = _ [(pconstant "key", 42), (pconstant "newkey", 6)]
+            pmapunionResolvingCollisions = psortedMapFromFoldable [(pconstant "key", 42), (pconstant "newkey", 6)]
             mkTestMap :: forall (s :: S). [(ByteString, Integer)] -> Term s (AssocMap.PMap 'Sorted PByteString PInteger)
-            mkTestMap = _ . fmap (bimap pconstant pconstant)
+            mkTestMap = psortedMapFromFoldable . fmap (bimap pconstant pconstant)
         "lookup" @\ do
           "itself"
             @| AssocMap.plookup
@@ -856,7 +857,7 @@ keysToPMap ::
   [Integer] ->
   Term s (PMap 'Sorted PInteger PInteger)
 keysToPMap side keys =
-  _ $
+  psortedMapFromFoldable $
     fmap (\k -> (pconstant k, pconstant $ dummyVal side)) keys
 
 pMapToKVs :: ClosedTerm (PMap 'Sorted PInteger PInteger) -> [(Integer, Integer)]
