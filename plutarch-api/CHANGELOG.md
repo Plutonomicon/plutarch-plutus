@@ -8,7 +8,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-* `plookup`, `plookupData`, `plookupDataWith` to `Plutarch.Api.AssocMap`
+* `padaSymbol`, `padaToken`, `plookup`, `plookupData`, `plookupDataWith`, 
+  `psingleton`, `psingletonData`, `pfoldAt`, `pfoldAtData`, `pleftBiasedUnion`,
+  `pdifference`, `punionResolvingCollisionsWithData`, `pany`, `pfindWithDefault` 
+  `pinsert`, `pdelete`, `pzipWithDefaults`, `pintersectionWith`,
+  `pintersectionWithData`, `pforgetSorted` to `Plutarch.Api.AssocMap`
+* `pconstantPositiveSingleton`, `pforgetSorted`, `psingleton`, `psingletonData` 
+  `pleftBiasedCurrencyUnion`, `pleftBiasedTokenUnion`,
+  `punionResolvingCollisionsWithData`, `pvalueOf`, `passertSorted`,
+  `padaSymbolData`, `plovelaceValueOf`, `pisAdaOnlyValue`, `padaOnlyValue`, 
+  `pnoAdaValue` to `Plutarch.Api.Value`
 
 ## 2.1.0 -- 22-01-2024
 

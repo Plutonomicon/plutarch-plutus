@@ -1,3 +1,4 @@
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE RoleAnnotations #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -19,20 +20,47 @@ module Plutarch.Api.Value (
 
   -- * Functions
 
+  -- ** Creation
+
+  -- *** PCurrencySymbol
+  padaSymbol,
+  padaSymbolData,
+
+  -- *** PTokenName
+  padaToken,
+
+  -- *** PValue
+  psingleton,
+  psingletonData,
+  pconstantPositiveSingleton,
+
   -- ** Transformation
   passertPositive,
+  passertSorted,
   pforgetPositive,
+  pforgetSorted,
   pnormalize,
+  padaOnlyValue,
+  pnoAdaValue,
 
   -- ** Partial ordering
   pcheckBinRel,
 
   -- ** Combination
+  pleftBiasedCurrencyUnion,
+  pleftBiasedTokenUnion,
   punionResolvingCollisionsWith,
+  punionResolvingCollisionsWithData,
+
+  -- ** Queries
+  pvalueOf,
+  plovelaceValueOf,
+  pisAdaOnlyValue,
 ) where
 
 import Plutarch.Api.AssocMap qualified as AssocMap
 import Plutarch.Api.Utils (Mret)
+import Plutarch.Bool (pand', pif')
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
@@ -40,7 +68,8 @@ import Plutarch.Lift (
   PLifted,
   PUnsafeLiftDecl,
  )
-import Plutarch.Prelude
+import Plutarch.List qualified as List
+import Plutarch.Prelude hiding (psingleton)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusLedgerApi.V2 qualified as Plutus
@@ -442,6 +471,264 @@ passertPositive = phoistAcyclic $
       )
       (punsafeDowncast $ pto value)
       (ptraceError "Negative amount in Value")
+
+{- | Construct a constant singleton 'PValue' containing only the given
+positive quantity of the given currency.
+
+@since 2.1.1
+-}
+pconstantPositiveSingleton ::
+  forall (s :: S).
+  (forall (s' :: S). Term s' PCurrencySymbol) ->
+  (forall (s' :: S). Term s' PTokenName) ->
+  (forall (s' :: S). Term s' PInteger) ->
+  Term s (PValue 'AssocMap.Sorted 'Positive)
+pconstantPositiveSingleton symbol token amount
+  | plift amount == 0 = mempty
+  | plift amount < 0 = error "Negative amount"
+  | otherwise = punsafeDowncast (AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount)
+
+{- | The 'PCurrencySymbol' of the Ada currency.
+
+@since 2.1.1
+-}
+padaSymbol :: forall (s :: S). Term s PCurrencySymbol
+padaSymbol = pconstant Plutus.adaSymbol
+
+{- | Data-encoded 'PCurrencySymbol' of the Ada currency.
+
+@since 2.1.1
+-}
+padaSymbolData :: forall (s :: S). Term s (PAsData PCurrencySymbol)
+padaSymbolData = pdata padaSymbol
+
+{- | The 'PTokenName' of the Ada currency.
+
+@since 2.1.1
+-}
+padaToken :: Term s PTokenName
+padaToken = pconstant Plutus.adaToken
+
+{- | Forget the knowledge of all value's guarantees.
+
+@since 2.1.1
+-}
+pforgetSorted ::
+  forall (a :: AmountGuarantees) (k :: AssocMap.KeyGuarantees) (s :: S).
+  Term s (PValue 'AssocMap.Sorted a) ->
+  Term s (PValue k a)
+pforgetSorted = punsafeCoerce
+
+{- | Construct a singleton 'PValue' containing only the given quantity of the
+given currency.
+
+@since 2.1.1
+-}
+psingleton ::
+  forall (s :: S).
+  Term
+    s
+    (PCurrencySymbol :--> PTokenName :--> PInteger :--> PValue 'AssocMap.Sorted 'NonZero)
+psingleton = phoistAcyclic $
+  plam $ \symbol token amount ->
+    pif
+      (amount #== 0)
+      mempty
+      (punsafeDowncast $ AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount)
+
+{- | Construct a singleton 'PValue' containing only the given quantity of the
+ given currency, taking data-encoded parameters.
+
+ @since 2.1.1
+-}
+psingletonData ::
+  forall (s :: S).
+  Term
+    s
+    ( PAsData PCurrencySymbol
+        :--> PAsData PTokenName
+        :--> PAsData PInteger
+        :--> PValue 'AssocMap.Sorted 'NonZero
+    )
+psingletonData = phoistAcyclic $
+  plam $ \symbol token amount ->
+    pif
+      (amount #== zeroData)
+      mempty
+      ( punsafeDowncast
+          ( AssocMap.psingletonData
+              # symbol
+              #$ pdata
+              $ AssocMap.psingletonData # token # amount
+          )
+      )
+
+{- | Get the quantity of the given currency in the 'PValue'.
+
+@since 2.1.1
+-}
+pvalueOf ::
+  forall (anyKey :: AssocMap.KeyGuarantees) (anyAmount :: AmountGuarantees) (s :: S).
+  Term s (PValue anyKey anyAmount :--> PCurrencySymbol :--> PTokenName :--> PInteger)
+pvalueOf = phoistAcyclic $
+  plam $ \value symbol token ->
+    AssocMap.pfoldAt
+      # symbol
+      # 0
+      # plam (\m -> AssocMap.pfoldAt # token # 0 # plam pfromData # pfromData m)
+      # pto value
+
+{- | Get the amount of Lovelace in the 'PValue'.
+
+@since 2.1.1
+-}
+plovelaceValueOf ::
+  forall (v :: AmountGuarantees) (s :: S).
+  Term s (PValue 'AssocMap.Sorted v :--> PInteger)
+plovelaceValueOf = phoistAcyclic $
+  plam $ \value ->
+    pmatch (pto $ pto value) $ \case
+      PNil -> 0
+      PCons x _ ->
+        pif'
+          # (pfstBuiltin # x #== padaSymbolData)
+          # pfromData (psndBuiltin #$ phead #$ pto $ pfromData $ psndBuiltin # x)
+          # 0
+
+{- | Combine two 'PValue's, taking the tokens from the left only, if a
+currency occurs on both sides.
+
+@since 2.1.1
+-}
+pleftBiasedCurrencyUnion ::
+  forall (any0 :: AmountGuarantees) (any1 :: AmountGuarantees) (s :: S).
+  Term
+    s
+    ( PValue 'AssocMap.Sorted any0
+        :--> PValue 'AssocMap.Sorted any1
+        :--> PValue 'AssocMap.Sorted 'NoGuarantees
+    )
+pleftBiasedCurrencyUnion = phoistAcyclic $
+  plam $
+    \x y -> pcon . PValue $ AssocMap.pleftBiasedUnion # pto x # pto y
+
+{- | Combine two 'PValue's, taking the tokens from the left only, if a token name
+ of the same currency occurs on both sides.
+
+ Prefer this over 'punionResolvingCollisionsWith NonCommutative # plam const'.
+ It is equivalent, but performs better.
+
+ @since 2.1.1
+-}
+pleftBiasedTokenUnion ::
+  forall (any0 :: AmountGuarantees) (any1 :: AmountGuarantees) (s :: S).
+  Term
+    s
+    ( PValue 'AssocMap.Sorted any0
+        :--> PValue 'AssocMap.Sorted any1
+        :--> PValue 'AssocMap.Sorted 'NoGuarantees
+    )
+pleftBiasedTokenUnion = phoistAcyclic $
+  plam $ \x y ->
+    pcon . PValue $
+      AssocMap.punionResolvingCollisionsWith AssocMap.NonCommutative
+        # plam (\x' y' -> AssocMap.pleftBiasedUnion # x' # y')
+        # pto x
+        # pto y
+
+{- | Combine two 'PValue's applying the given function to any pair of
+ data-encoded quantities with the same asset class. Note that the result is
+ _not_ 'normalize'd and may contain zero quantities.
+
+ @since 2.1.1
+-}
+punionResolvingCollisionsWithData ::
+  forall (any0 :: AmountGuarantees) (any1 :: AmountGuarantees) (s :: S).
+  AssocMap.Commutativity ->
+  Term
+    s
+    ( (PAsData PInteger :--> PAsData PInteger :--> PAsData PInteger)
+        :--> PValue 'AssocMap.Sorted any0
+        :--> PValue 'AssocMap.Sorted any1
+        :--> PValue 'AssocMap.Sorted 'NoGuarantees
+    )
+punionResolvingCollisionsWithData commutativity = phoistAcyclic $
+  plam $ \combine x y ->
+    pcon . PValue $
+      AssocMap.punionResolvingCollisionsWith commutativity
+        # plam (\x' y' -> AssocMap.punionResolvingCollisionsWithData commutativity # combine # x' # y')
+        # pto x
+        # pto y
+
+{- | Assert the value is properly sorted and normalized.
+
+@since 2.1.1
+-}
+passertSorted ::
+  forall (anyKey :: AssocMap.KeyGuarantees) (anyAmount :: AmountGuarantees) (s :: S).
+  Term s (PValue anyKey anyAmount :--> PValue 'AssocMap.Sorted 'NonZero)
+passertSorted = phoistAcyclic $
+  plam $ \value ->
+    pif
+      ( AssocMap.pany
+          # plam
+            ( \submap ->
+                AssocMap.pnull
+                  # (AssocMap.passertSorted # submap)
+                  #|| AssocMap.pany
+                  # plam (#== 0)
+                  # submap
+            )
+          # pto value
+      )
+      (ptraceError "Abnormal Value")
+      . pcon
+      . PValue
+      $ AssocMap.passertSorted #$ punsafeCoerce
+      $ pto value
+
+{- | Test if the value contains nothing but Ada
+
+@since 2.1.1
+-}
+pisAdaOnlyValue ::
+  forall (s :: S).
+  Term s (PValue 'AssocMap.Sorted 'Positive :--> PBool)
+pisAdaOnlyValue = phoistAcyclic $
+  plam $ \value ->
+    pmatch (pto $ pto value) $ \case
+      PNil -> pcon PTrue
+      PCons x xs -> pand' # (pnull # xs) # (pfstBuiltin # x #== padaSymbolData)
+
+{- | Strip all non-Ada from a 'PValue'.
+
+@since 2.1.1
+-}
+padaOnlyValue ::
+  forall (v :: AmountGuarantees) (s :: S).
+  Term s (PValue 'AssocMap.Sorted v :--> PValue 'AssocMap.Sorted v)
+padaOnlyValue = phoistAcyclic $
+  plam $ \value ->
+    pmatch (pto $ pto value) $ \case
+      PNil -> value
+      PCons x _ ->
+        pif'
+          # (pfstBuiltin # x #== padaSymbolData)
+          # pcon (PValue $ pcon $ AssocMap.PMap $ List.psingleton # x)
+          # pcon (PValue AssocMap.pempty)
+
+{- | Strip all Ada from a 'PValue'.
+
+@since 2.1.1
+-}
+pnoAdaValue ::
+  forall (v :: AmountGuarantees) (s :: S).
+  Term s (PValue 'AssocMap.Sorted v :--> PValue 'AssocMap.Sorted v)
+pnoAdaValue = phoistAcyclic $
+  plam $ \value ->
+    pmatch (pto $ pto value) $ \case
+      PNil -> value
+      PCons x xs -> pif' # (pfstBuiltin # x #== padaSymbolData) # pcon (PValue $ pcon $ AssocMap.PMap xs) # value
 
 -- Helpers
 
