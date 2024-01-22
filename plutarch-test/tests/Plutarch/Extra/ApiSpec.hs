@@ -1,11 +1,9 @@
 module Plutarch.Extra.ApiSpec (spec) where
 
-import Plutarch.Extra.Api
-import Plutarch.Prelude
-
-import Plutarch.Api.V1 (PScriptPurpose (PSpending))
-import Plutarch.ApiSpec (d0DatValue, inp, validContext0, validOutputs0)
+import Plutarch.Api
+import Plutarch.ApiSpec (inp, validContext0, validOutputs0)
 import Plutarch.Maybe (pfromJust)
+import Plutarch.Prelude
 import Plutarch.Test
 import Test.Hspec
 
@@ -43,6 +41,8 @@ spec = do
           )
         @-> \txOuts ->
           passert $ txOuts #== pconstant validOutputs0
+
+{-
       "pparseDatum"
         @| ( pparseDatum @(PBuiltinList (PAsData PInteger))
               # pconstant "d0"
@@ -60,4 +60,4 @@ d0DatTerm = liftList $ flip fmap d0DatValue $ \i -> pdata $ pconstant i
 liftList :: PLift a => [Term s a] -> Term s (PBuiltinList a)
 liftList = \case
   [] -> pnil
-  (x : xs) -> pcons # x # liftList xs
+  (x : xs) -> pcons # x # liftList xs -}

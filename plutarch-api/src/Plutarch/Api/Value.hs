@@ -365,6 +365,14 @@ instance PTryFrom PData (PAsData (PValue 'AssocMap.Sorted 'NonZero)) where
     unwrapped <- tcont . plet . papp passertNonZero . pfromData $ opq'
     pure (punsafeCoerce opq, unwrapped)
 
+-- | @since 2.1.1
+instance PTryFrom PData (PAsData (PValue 'AssocMap.Unsorted 'NonZero)) where
+  type PTryFromExcess PData (PAsData (PValue 'AssocMap.Unsorted 'NonZero)) = Mret (PValue 'AssocMap.Unsorted 'NonZero)
+  ptryFrom' opq = runTermCont $ do
+    (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Unsorted 'NoGuarantees)) opq
+    unwrapped <- tcont . plet . papp passertNonZero . pfromData $ opq'
+    pure (punsafeCoerce opq, unwrapped)
+
 {- | \'Forget\' that a 'Value' has an only-positive guarantee.
 
 @since 2.0.0

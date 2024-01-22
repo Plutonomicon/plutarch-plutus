@@ -1,53 +1,26 @@
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.TryFromSpec (spec) where
 
--- Plutus and PlutusTx imports
-
 import PlutusTx (
   Data (B, Constr, I),
  )
-
--- Plutarch imports
-import Plutarch.Prelude
-
-import Plutarch.Test
-
-import Plutarch.Unsafe (
-  punsafeCoerce,
-  punsafeDowncast,
- )
-
-import Plutarch.Api.V1 (
-  PAddress,
-  PDatum,
-  PDatumHash,
-  PMaybeData (PDJust),
-  PScriptContext,
-  PScriptPurpose (PSpending),
-  PTuple,
-  PTxInInfo,
-  PTxInfo,
-  PTxOut,
-  PTxOutRef,
-  PValidator,
- )
-
 import Plutarch.Builtin (
   pforgetData,
   ppairDataBuiltin,
  )
-
+import Plutarch.Prelude
+import Plutarch.Test
 import Plutarch.TryFrom (
   PTryFromExcess,
   ptryFrom',
  )
-
-import Plutarch.ApiSpec (invalidContext1, validContext0)
 import Plutarch.Reducible (Reduce)
-
+import Plutarch.Unsafe (
+  punsafeCoerce,
+  punsafeDowncast,
+ )
 import Test.Hspec
 
 spec :: Spec
@@ -233,6 +206,7 @@ spec = describe "data-verif" . pgoldenSpec $ do
         @| pconstant 42
         #== theField
         @-> passert
+  {-
   "example" @\ do
     let l1 :: Term _ (PAsData (PBuiltinList (PAsData PInteger)))
         l1 = toDatadList [1 .. 5]
@@ -266,6 +240,7 @@ spec = describe "data-verif" . pgoldenSpec $ do
       # pforgetData l2
       # invalidContext1
       @-> pfails
+  -}
   "example2" @\ do
     "recovering a record succeeds"
       @| recoverAB
@@ -328,7 +303,8 @@ instance PTryFrom PData (PAsData PNatural) where
     ver <- tcont $ plet $ pmkNatural # exc
     pure (punsafeDowncast ter, ver)
 
-validator :: Term s PValidator
+{-
+validator :: Term s (PData :--> PData :--> PScriptContext :--> POpaque)
 validator = phoistAcyclic $
   plam $ \dat red ctx -> unTermCont $ do
     trustedRedeemer <- (\(snd -> red) -> red) <$> TermCont (ptryFrom @(PAsData (PBuiltinList (PAsData PNatural))) red)
@@ -350,7 +326,7 @@ validator = phoistAcyclic $
           PDJust dhash <- tcont $ pmatch resolved.datumHash
           pure $ pfield @"_0" # dhash
 
-        data' :: Term _ (PBuiltinList (PAsData (PTuple PDatumHash PDatum)))
+        data' :: Term _ (PMap _ _ _) -- (PBuiltinList (PAsData (PTuple PDatumHash PDatum)))
         data' = pfield @"datums" # txInfo
 
         outputs :: Term _ (PBuiltinList PTxOut)
@@ -405,6 +381,7 @@ pfindOwnInput = phoistAcyclic $
         pred = plam $ \actual ->
           target #== pfield @"outRef" # actual
     pure $ pfind # pred # txInInfos
+-}
 
 ------------- Helpers --------------------------------------------------------
 

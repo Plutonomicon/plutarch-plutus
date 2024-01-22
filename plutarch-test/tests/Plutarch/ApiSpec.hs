@@ -18,7 +18,6 @@ import Control.Monad (forM_)
 import Control.Monad.Trans.Cont (cont, runCont)
 import Data.Bifunctor (bimap)
 import Data.ByteString (ByteString)
-import Data.List (sort)
 import Data.String (fromString)
 import Numeric (showHex)
 import Plutarch.Api (
@@ -37,7 +36,6 @@ import Plutarch.Api (
 import Plutarch.Api.AssocMap (
   Commutativity (..),
   KeyGuarantees (..),
-  PMap (..),
   psortedMapFromFoldable,
  )
 import Plutarch.Api.AssocMap qualified as AssocMap
@@ -55,16 +53,8 @@ import PlutusTx.Monoid (inv)
 import Test.Hspec
 import Test.Tasty.HUnit
 import Test.Tasty.QuickCheck (
-  Gen,
   Property,
-  arbitrary,
-  chooseInteger,
-  elements,
-  forAll,
-  oneof,
   property,
-  shuffle,
-  withMaxSuccess,
   (===),
  )
 
@@ -564,6 +554,8 @@ info =
     , txInfoSignatories = signatories
     , txInfoData = PlutusMap.empty
     , txInfoId = "b0"
+    , txInfoReferenceInputs = []
+    , txInfoRedeemers = PlutusMap.empty
     }
 
 -- | A script input
@@ -577,6 +569,7 @@ inp =
               Address (ScriptCredential validator) Nothing
           , txOutValue = mempty
           , txOutDatum = datum
+          , txOutReferenceScript = Nothing
           }
     }
 
@@ -600,12 +593,7 @@ validator :: ScriptHash
 validator = "a1"
 
 datum :: OutputDatum
-datum = _
-
-{-
-datum :: DatumHash
-datum = "d0"
--}
+datum = OutputDatumHash "d0"
 
 sym :: CurrencySymbol
 sym = "c0"
@@ -706,7 +694,7 @@ mkCtx outs l = pconstant (ScriptContext (info' outs l) purpose)
     info' :: [TxOut] -> [(DatumHash, Datum)] -> TxInfo
     info' outs dat =
       info
-        { txInfoData = _ dat
+        { txInfoData = PlutusMap.fromList dat
         , txInfoOutputs = outs
         }
 
@@ -717,6 +705,7 @@ validOutputs0 =
           Address (ScriptCredential validator) Nothing
       , txOutValue = mempty
       , txOutDatum = datum
+      , txOutReferenceScript = Nothing
       }
   ]
 
@@ -727,12 +716,14 @@ invalidOutputs1 =
           Address (ScriptCredential validator) Nothing
       , txOutValue = mempty
       , txOutDatum = datum
+      , txOutReferenceScript = Nothing
       }
   , TxOut
       { txOutAddress =
           Address (ScriptCredential validator) Nothing
       , txOutValue = mempty
-      , txOutDatum = _ -- Nothing
+      , txOutDatum = NoOutputDatum
+      , txOutReferenceScript = Nothing
       }
   ]
 
@@ -794,71 +785,3 @@ data RelatedSets = RelatedSets
   , right :: [Integer]
   }
   deriving stock (Show)
-
-genSets :: Gen RelatedSets
-genSets = do
-  -- ensuring case coverage by picking sections of Venn diagram
-  haveLeftOnly <- arbitrary @Bool
-  haveRightOnly <- arbitrary @Bool
-  haveIntersection <- arbitrary @Bool
-
-  let mkCount pred = if pred then chooseInteger (1, 10) else pure 0
-  leftOnlyCount <- mkCount haveLeftOnly
-  rightOnlyCount <- mkCount haveRightOnly
-  intersectionCount <- mkCount haveIntersection
-  holeCount <- chooseInteger (0, 10)
-  let distinctCount = leftOnlyCount + rightOnlyCount + intersectionCount + holeCount
-
-  let sorted = [1 .. distinctCount]
-  unsorted <- shuffle sorted
-
-  let (leftOnly, unsorted') = splitAt (fromIntegral leftOnlyCount) unsorted
-      (intersection, unsorted'') = splitAt (fromIntegral intersectionCount) unsorted'
-      (rightOnly, _) = splitAt (fromIntegral rightOnlyCount) unsorted''
-      left = leftOnly <> intersection
-      right = rightOnly <> intersection
-
-  pure RelatedSets {leftOnly, rightOnly, intersection, left, right}
-
--- carefully chosen to yield unique results with the ops/factors below
-leftDummyVal :: Integer
-leftDummyVal = 2
-
--- carefully chosen to yield unique results with the ops/factors below
-rightDummyVal :: Integer
-rightDummyVal = 3
-
--- | True ~ left, False ~ right
-dummyVal :: Bool -> Integer
-dummyVal side = if side then leftDummyVal else rightDummyVal
-
-mhOneFactorLeft :: Integer
-mhOneFactorLeft = 10
-
-mhOneFactorRight :: Integer
-mhOneFactorRight = 100
-
-mhcOneFactor :: Integer
-mhcOneFactor = 1000
-
-commutativeOp :: Num a => a -> a -> a
-commutativeOp = (+)
-
-nonCommutativeOp :: Num a => a -> a -> a
-nonCommutativeOp = (-)
-
-data DummyKeyType
-data DummyValueType
-data DummyFun a b = DummyFun deriving stock (Show)
-
-keysToPMap ::
-  forall (s :: S).
-  Bool ->
-  [Integer] ->
-  Term s (PMap 'Sorted PInteger PInteger)
-keysToPMap side keys =
-  psortedMapFromFoldable $
-    fmap (\k -> (pconstant k, pconstant $ dummyVal side)) keys
-
-pMapToKVs :: ClosedTerm (PMap 'Sorted PInteger PInteger) -> [(Integer, Integer)]
-pMapToKVs pm = PlutusMap.toList $ plift $ AssocMap.pforgetSorted pm
