@@ -200,3 +200,86 @@ pgetContinuingOutputs (program 1.0.0 ((\i0 ->
                         (force tailList))
                      (\i0 -> i2 (unConstrData i1)))
                   (force (force sndPair))))
+pparseDatum (program 1.0.0 ((\i0 ->
+                   (\i0 ->
+                      (\i0 ->
+                         (\i0 ->
+                            (\i0 ->
+                               (\i0 ->
+                                  (\i0
+                                    i0 ->
+                                     (\i0
+                                       i0
+                                       i0 ->
+                                        i6
+                                          (\i0
+                                            i0 ->
+                                             force (i9
+                                                      i1
+                                                      (delay (\i0
+                                                               i0 ->
+                                                                force i1))
+                                                      (delay (force (force ifThenElse
+                                                                       (equalsData
+                                                                          (force (force fstPair)
+                                                                             (i11
+                                                                                i1))
+                                                                          i4)
+                                                                       (delay (i5
+                                                                                 (i11
+                                                                                    i1)))
+                                                                       (delay (i2
+                                                                                 (i10
+                                                                                    i1))))))))
+                                          i1)
+                                       (\i0 -> (\i0 i0 i0 -> i2 i3) (i9 i1))
+                                       (bData i2)
+                                       i1
+                                       (\i0 ->
+                                          (\i0 i0 i0 -> i2 i3)
+                                            ((\i0 -> i2)
+                                               ((\i0 ->
+                                                   i5
+                                                     (\i0
+                                                       i0 ->
+                                                        force (i8
+                                                                 i1
+                                                                 (delay [])
+                                                                 (delay (force mkCons
+                                                                           (i3
+                                                                              (i10
+                                                                                 i1))
+                                                                           (i2
+                                                                              (i9
+                                                                                 i1)))))))
+                                                  (\i0 ->
+                                                     (\i0 -> i2) (unIData i1))
+                                                  (unListData i1))))
+                                       (delay (\i0 i0 -> force i1)))
+                                    #d0
+                                    ((\i0 ->
+                                        unMapData
+                                          (i5
+                                             ((\i0 ->
+                                                 i5
+                                                   (i5
+                                                      (i5
+                                                         (i5
+                                                            (i5
+                                                               (i5
+                                                                  (i5
+                                                                     (i5
+                                                                        (i5
+                                                                           (i5
+                                                                              i1))))))))))
+                                                (i6 i1))))
+                                       ((\i0 -> i5 (i6 i1))
+                                          #d8799fd8799f9fd8799fd8799fd8799f41a0ff00ffd8799fd8799fd87a9f41a1ffd87a80ffa0d87a9f41d0ffd87a80ffffff809fd8799fd8799fd87a9f41a1ffd87a80ffa0d87a9f41d0ffd87a80ffffa0a141c0a149736f6d65746f6b656e0180a0d8799fd8799fd87980d87a80ffd8799fd87b80d87a80ffff9f45ab01fe235c4312301443abcdefffa0a141d09f0102030405060708090affd8799f41b0ffffd87a9fd8799fd8799f41a0ff00ffffff)))
+                                 (\i0 ->
+                                    (\i0 -> i2 (\i0 -> i2 i2 i1))
+                                      (\i0 -> i2 (\i0 -> i2 i2 i1))))
+                              (force (force chooseList)))
+                           (force tailList))
+                        (force headList))
+                     (\i0 -> i2 (unConstrData i1)))
+                  (force (force sndPair))))
