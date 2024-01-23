@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2.1.2 -- 22-01-2024
+
+### Modified 
+
+* `pparseDatum` now takes `PMap` as datum lookup table inorder to be compatible with Ledger V2 types.
+
 ## 2.1.1 -- 22-01-2024
 
 ### Added

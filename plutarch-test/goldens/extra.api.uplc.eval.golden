@@ -3,3 +3,4 @@ pfindOwnInput (program 1.0.0 (\i0
                   i2
                     #d8799fd8799fd8799f41a0ff00ffd8799fd8799fd87a9f41a1ffd87a80ffa0d87a9f41d0ffd87a80ffff))
 pgetContinuingOutputs (program 1.0.0 [#d8799fd8799fd87a9f41a1ffd87a80ffa0d87a9f41d0ffd87a80ff])
+pparseDatum (program 1.0.0 (\i0 i0 -> i2 #9f0102030405060708090aff))

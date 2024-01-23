@@ -1284,21 +1284,16 @@ pfindOwnInput = phoistAcyclic $
   pparseDatum @MyType # datumHash #$ pfield @"datums" # txinfo
   @
 
-  @since 2.1.0
+  @since 2.1.2
 -}
 pparseDatum ::
   forall (a :: S -> Type) (s :: S).
   PTryFrom PData (PAsData a) =>
-  Term s (PDatumHash :--> PBuiltinList (PAsData (PBuiltinPair (PAsData PDatumHash) (PAsData PDatum))) :--> PMaybe (PAsData a))
+  Term s (PDatumHash :--> AssocMap.PMap 'AssocMap.Unsorted PDatumHash PDatum :--> PMaybe (PAsData a))
 pparseDatum = phoistAcyclic $ plam $ \dh datums ->
-  pmatch (pfind # (matches # dh) # datums) $ \case
+  pmatch (AssocMap.plookup # dh # datums) $ \case
     PNothing -> pcon PNothing
-    PJust datumTuple -> pcon . PJust . ptryFromData . pforgetData $ psndBuiltin # pfromData datumTuple
-  where
-    matches ::
-      forall (s' :: S).
-      Term s' (PDatumHash :--> PAsData (PBuiltinPair (PAsData PDatumHash) (PAsData PDatum)) :--> PBool)
-    matches = phoistAcyclic $ plam $ \a ab -> a #== pfromData (pfstBuiltin # pfromData ab)
+    PJust datum -> pcon . PJust $ ptryFrom (pto datum) fst
 
 -- Helpers
 
@@ -1353,10 +1348,3 @@ pmaybeLT whenBothNothing ltF = phoistAcyclic $
             $ pconstant whenBothNothing
         )
       $ pconstant True
-
-ptryFromData ::
-  forall (a :: S -> Type) (s :: S).
-  PTryFrom PData (PAsData a) =>
-  Term s PData ->
-  Term s (PAsData a)
-ptryFromData x = ptryFrom @(PAsData a) x fst
