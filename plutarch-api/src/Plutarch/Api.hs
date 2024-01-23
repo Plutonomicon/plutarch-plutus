@@ -69,10 +69,10 @@ module Plutarch.Api (
   PPosixTime (..),
 
   -- * Interval
-  PInterval (..),
-  PLowerBound (..),
-  PUpperBound (..),
-  PExtended (..),
+  Interval.PInterval (..),
+  Interval.PLowerBound (..),
+  Interval.PUpperBound (..),
+  Interval.PExtended (..),
 
   -- * Crypto
 
@@ -99,6 +99,7 @@ import Data.ByteString (ByteString, toStrict)
 import Data.ByteString.Short (fromShort)
 import Data.Coerce (coerce)
 import Plutarch.Api.AssocMap qualified as AssocMap
+import Plutarch.Api.Interval qualified as Interval
 import Plutarch.Api.Utils (Mret)
 import Plutarch.Api.Value qualified as Value
 import Plutarch.Builtin (pasConstr, pforgetData)
@@ -179,7 +180,7 @@ newtype PTxInfo (s :: S)
                , "mint" ':= Value.PValue 'AssocMap.Sorted 'Value.NoGuarantees -- value minted by transaction
                , "dcert" ':= PBuiltinList PDCert -- Digests of certificates included in this transaction
                , "wdrl" ':= AssocMap.PMap 'AssocMap.Unsorted PStakingCredential PInteger -- Staking withdrawals
-               , "validRange" ':= PInterval PPosixTime
+               , "validRange" ':= Interval.PInterval PPosixTime
                , "signatories" ':= PBuiltinList (PAsData PPubKeyHash)
                , "redeemers" ':= AssocMap.PMap 'AssocMap.Unsorted PScriptPurpose PRedeemer
                , "datums" ':= AssocMap.PMap 'AssocMap.Unsorted PDatumHash PDatum
@@ -682,56 +683,6 @@ instance PTryFrom PData (PAsData PPosixTime) where
     pure (punsafeCoerce wrapped, pcon $ PPosixTime unwrapped)
 
 -- | @since 2.0.0
-newtype PInterval (a :: S -> Type) (s :: S)
-  = PInterval
-      ( Term
-          s
-          ( PDataRecord
-              '[ "from" ':= PLowerBound a
-               , "to" ':= PUpperBound a
-               ]
-          )
-      )
-  deriving stock
-    ( -- | @since 2.0.0
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
-    , -- | @since 2.0.0
-      PIsData
-    , -- | @since 2.0.0
-      PDataFields
-    , -- | @since 2.0.0
-      PEq
-    , -- | @since 2.0.0
-      PPartialOrd
-    , -- | @since 2.0.0
-      POrd
-    , -- | @since 2.0.0
-      PShow
-    )
-
--- | @since 2.0.0
-instance DerivePlutusType (PInterval a) where
-  type DPTStrat _ = PlutusTypeData
-
--- | @since 2.0.0
-instance
-  PLiftData a =>
-  PUnsafeLiftDecl (PInterval a)
-  where
-  type PLifted (PInterval a) = (Plutus.Interval (PLifted a))
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData (Plutus.Interval a) (PInterval (PConstanted a)))
-  instance
-    PConstantData a =>
-    PConstantDecl (Plutus.Interval a)
-
--- | @since 2.0.0
 newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
   deriving stock
     ( -- | @since 2.0.0
@@ -1054,134 +1005,6 @@ instance PTryFrom PData (PAsData PScriptHash) where
         (f ())
         (ptraceError "ptryFrom(PScriptHash): must be 28 bytes long")
     pure (punsafeCoerce opq, pcon . PScriptHash $ unwrapped)
-
--- | @since 2.0.0
-newtype PUpperBound (a :: S -> Type) (s :: S)
-  = PUpperBound
-      ( Term
-          s
-          ( PDataRecord
-              '[ "_0" ':= PExtended a
-               , "_1" ':= PBool
-               ]
-          )
-      )
-  deriving stock
-    ( -- | @since 2.0.0
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
-    , -- | @since 2.0.0
-      PIsData
-    , -- | @since 2.0.0
-      PDataFields
-    , -- | @since 2.0.0
-      PEq
-    , -- | @since 2.0.0
-      PPartialOrd
-    , -- | @since 2.0.0
-      POrd
-    , -- | @since 2.0.0
-      PShow
-    )
-
--- | @since 2.0.0
-instance DerivePlutusType (PUpperBound a) where
-  type DPTStrat _ = PlutusTypeData
-
--- | @since 2.0.0
-instance
-  PLiftData a =>
-  PUnsafeLiftDecl (PUpperBound a)
-  where
-  type PLifted (PUpperBound a) = (Plutus.UpperBound (PLifted a))
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData (Plutus.UpperBound a) (PUpperBound (PConstanted a)))
-  instance
-    PConstantData a =>
-    PConstantDecl (Plutus.UpperBound a)
-
--- | @since 2.0.0
-data PExtended (a :: S -> Type) (s :: S)
-  = PNegInf (Term s (PDataRecord '[]))
-  | PFinite (Term s (PDataRecord '["_0" ':= a]))
-  | PPosInf (Term s (PDataRecord '[]))
-  deriving stock
-    ( -- | @since 2.0.0
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
-    , -- | @since 2.0.0
-      PIsData
-    , -- | @since 2.0.0
-      PEq
-    , -- | @since 2.0.0
-      PPartialOrd
-    , -- | @since 2.0.0
-      POrd
-    , -- | @since 2.0.0
-      PShow
-    )
-
--- | @since 2.0.0
-instance DerivePlutusType (PExtended a) where
-  type DPTStrat _ = PlutusTypeData
-
--- | @since 2.0.0
-newtype PLowerBound (a :: S -> Type) (s :: S)
-  = PLowerBound
-      ( Term
-          s
-          ( PDataRecord
-              '[ "_0" ':= PExtended a
-               , "_1" ':= PBool
-               ]
-          )
-      )
-  deriving stock
-    ( -- | @since 2.0.0
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
-    , -- | @since 2.0.0
-      PIsData
-    , -- | @since 2.0.0
-      PDataFields
-    , -- | @since 2.0.0
-      PEq
-    , -- | @since 2.0.0
-      PPartialOrd
-    , -- | @since 2.0.0
-      POrd
-    , -- | @since 2.0.0
-      PShow
-    )
-
--- | @since 2.0.0
-instance DerivePlutusType (PLowerBound a) where
-  type DPTStrat _ = PlutusTypeData
-
--- | @since 2.0.0
-instance
-  PLiftData a =>
-  PUnsafeLiftDecl (PLowerBound a)
-  where
-  type PLifted (PLowerBound a) = (Plutus.LowerBound (PLifted a))
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData (Plutus.LowerBound a) (PLowerBound (PConstanted a)))
-  instance
-    PConstantData a =>
-    PConstantDecl (Plutus.LowerBound a)
 
 -- | @since 2.0.0
 datumHash :: Plutus.Datum -> Plutus.DatumHash
