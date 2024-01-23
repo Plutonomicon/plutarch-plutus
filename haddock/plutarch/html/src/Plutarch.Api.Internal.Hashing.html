@@ -21,12 +21,12 @@
 </span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusLedgerApi.V1</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Plutus</span></span><span>
 </span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx.Builtins</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx</span></span><span>
 </span><span id="line-23"></span><span>
-</span><span id="line-24"></span><span id="local-6989586621679904248"><span class="annot"><a href="Plutarch.Api.Internal.Hashing.html#_plutusHashWith"><span class="hs-identifier hs-type">_plutusHashWith</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">HashAlgorithm</span></span><span> </span><span class="annot"><a href="#local-6989586621679904248"><span class="hs-identifier hs-type">alg</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679904248"><span class="hs-identifier hs-type">alg</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span></span><span>
+</span><span id="line-24"></span><span id="local-6989586621679753478"><span class="annot"><a href="Plutarch.Api.Internal.Hashing.html#_plutusHashWith"><span class="hs-identifier hs-type">_plutusHashWith</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">HashAlgorithm</span></span><span> </span><span class="annot"><a href="#local-6989586621679753478"><span class="hs-identifier hs-type">alg</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679753478"><span class="hs-identifier hs-type">alg</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span></span><span>
 </span><span id="line-25"></span><span id="_plutusHashWith"><span class="annot"><span class="annottext">_plutusHashWith :: forall alg.
 HashAlgorithm alg =&gt;
 alg -&gt; ByteString -&gt; BuiltinByteString
-</span><a href="Plutarch.Api.Internal.Hashing.html#_plutusHashWith"><span class="hs-identifier hs-var hs-var">_plutusHashWith</span></a></span></span><span> </span><span id="local-6989586621679904313"><span class="annot"><span class="annottext">alg
-</span><a href="#local-6989586621679904313"><span class="hs-identifier hs-var">alg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; BuiltinByteString
+</span><a href="Plutarch.Api.Internal.Hashing.html#_plutusHashWith"><span class="hs-identifier hs-var hs-var">_plutusHashWith</span></a></span></span><span> </span><span id="local-6989586621679753543"><span class="annot"><span class="annottext">alg
+</span><a href="#local-6989586621679753543"><span class="hs-identifier hs-var">alg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; BuiltinByteString
 forall a arep. ToBuiltin a arep =&gt; a -&gt; arep
 </span><span class="hs-identifier hs-var">PlutusTx.toBuiltin</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; BuiltinByteString)
 -&gt; (ByteString -&gt; ByteString) -&gt; ByteString -&gt; BuiltinByteString
@@ -42,7 +42,7 @@ forall ba alg.
 (ByteArrayAccess ba, HashAlgorithm alg) =&gt;
 alg -&gt; ba -&gt; Digest alg
 </span><span class="hs-identifier hs-var">hashWith</span></span><span> </span><span class="annot"><span class="annottext">alg
-</span><a href="#local-6989586621679904313"><span class="hs-identifier hs-var">alg</span></a></span><span>
+</span><a href="#local-6989586621679753543"><span class="hs-identifier hs-var">alg</span></a></span><span>
 </span><span id="line-26"></span><span>
 </span><span id="line-27"></span><span class="annot"><a href="Plutarch.Api.Internal.Hashing.html#hashBlake2b_224"><span class="hs-identifier hs-type">hashBlake2b_224</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span>
 </span><span id="line-28"></span><span id="hashBlake2b_224"><span class="annot"><span class="annottext">hashBlake2b_224 :: ByteString -&gt; BuiltinByteString
@@ -65,9 +65,9 @@ alg -&gt; ByteString -&gt; BuiltinByteString
 </span><span id="line-33"></span><span class="annot"><span class="hs-comment">-- | Hash a Script with the given version prefix</span></span><span>
 </span><span id="line-34"></span><span class="annot"><a href="Plutarch.Api.Internal.Hashing.html#hashScriptWithPrefix"><span class="hs-identifier hs-type">hashScriptWithPrefix</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-type">Script</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.ScriptHash</span></span><span>
 </span><span id="line-35"></span><span id="hashScriptWithPrefix"><span class="annot"><span class="annottext">hashScriptWithPrefix :: ByteString -&gt; Script -&gt; ScriptHash
-</span><a href="Plutarch.Api.Internal.Hashing.html#hashScriptWithPrefix"><span class="hs-identifier hs-var hs-var">hashScriptWithPrefix</span></a></span></span><span> </span><span id="local-6989586621679904318"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679904318"><span class="hs-identifier hs-var">prefix</span></a></span></span><span> </span><span id="local-6989586621679904319"><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679904319"><span class="hs-identifier hs-var">scr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Plutarch.Api.Internal.Hashing.html#hashScriptWithPrefix"><span class="hs-identifier hs-var hs-var">hashScriptWithPrefix</span></a></span></span><span> </span><span id="local-6989586621679753548"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679753548"><span class="hs-identifier hs-var">prefix</span></a></span></span><span> </span><span id="local-6989586621679753549"><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679753549"><span class="hs-identifier hs-var">scr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-36"></span><span>  </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; ScriptHash
 </span><span class="hs-identifier hs-var">Plutus.ScriptHash</span></span><span>
 </span><span id="line-37"></span><span>    </span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; ScriptHash)
@@ -78,7 +78,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span id="line-38"></span><span>    </span><span class="annot"><span class="annottext">(ByteString -&gt; ScriptHash) -&gt; ByteString -&gt; ScriptHash
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679904318"><span class="hs-identifier hs-var">prefix</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="#local-6989586621679753548"><span class="hs-identifier hs-var">prefix</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ShortByteString -&gt; ByteString
 </span><span class="hs-identifier hs-var">fromShort</span></span><span> </span><span class="annot"><span class="annottext">(ShortByteString -&gt; ByteString)
@@ -94,7 +94,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="Plutarch.Script.html#%24sel%3AunScript%3AScript"><span class="hs-identifier hs-var">unScript</span></a></span><span> </span><span class="annot"><span class="annottext">(Script -&gt; ByteString) -&gt; Script -&gt; ByteString
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679904319"><span class="hs-identifier hs-var">scr</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679753549"><span class="hs-identifier hs-var">scr</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-39"></span><span>
 </span><span id="line-40"></span><span class="annot"><span class="hs-comment">-- | Hash Plutus 'Data'.</span></span><span>
 </span><span id="line-41"></span><span class="annot"><a href="Plutarch.Api.Internal.Hashing.html#hashData"><span class="hs-identifier hs-type">hashData</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.Data</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span>

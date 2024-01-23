@@ -158,7 +158,7 @@ plam' :: (Term s a -> Term s b) -> Term s (a :--> b)
 plet :: Term s a -> (Term s a -> Term s b) -> Term s b
 
 -- | Lambda Application.
-papp :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
+papp :: Term s (a :--> b) -> Term s a -> Term s b
 
 -- | Plutus 'delay', used for laziness.
 pdelay :: Term s a -> Term s (PDelayed a)
@@ -236,7 +236,7 @@ TermMonad :: ReaderT Config (Either Text) m -> TermMonad m
 --   &gt;&gt;&gt; f # x # y
 --   f x y
 --   </pre>
-(#) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
+(#) :: Term s (a :--> b) -> Term s a -> Term s b
 infixl 8 #
 
 -- | Low precedence infixr synonym of <a>papp</a>, to be used like
@@ -246,7 +246,7 @@ infixl 8 #
 --   &gt;&gt;&gt; f # x #$ g # y # z
 --   f x (g y z)
 --   </pre>
-(#$) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
+(#$) :: Term s (a :--> b) -> Term s a -> Term s b
 infixr 0 #$
 instance GHC.Show.Show Plutarch.Internal.HoistedTerm
 instance GHC.Show.Show Plutarch.Internal.RawTerm
@@ -1089,7 +1089,7 @@ type Dig = Digest Blake2b_160
 hashTerm :: Config -> ClosedTerm a -> Either Text Dig
 
 -- | Lambda Application.
-papp :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
+papp :: Term s (a :--> b) -> Term s a -> Term s b
 
 -- | Plutus 'delay', used for laziness.
 pdelay :: Term s a -> Term s (PDelayed a)
@@ -1127,7 +1127,7 @@ type PType = S -> Type
 --   &gt;&gt;&gt; f # x #$ g # y # z
 --   f x (g y z)
 --   </pre>
-(#$) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
+(#$) :: Term s (a :--> b) -> Term s a -> Term s b
 infixr 0 #$
 
 -- | High precedence infixl synonym of <a>papp</a>, to be used like
@@ -1137,7 +1137,7 @@ infixr 0 #$
 --   &gt;&gt;&gt; f # x # y
 --   f x y
 --   </pre>
-(#) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
+(#) :: Term s (a :--> b) -> Term s a -> Term s b
 infixl 8 #
 class PlutusType (a :: PType)
 type PInner a :: PType
@@ -2436,7 +2436,7 @@ type ClosedTerm (a :: PType) = forall (s :: S). Term s a
 plam :: forall c. (PLamN a b s, HasCallStack) => (Term s c -> a) -> Term s (c :--> b)
 
 -- | Lambda Application.
-papp :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
+papp :: Term s (a :--> b) -> Term s a -> Term s b
 
 -- | Plutus 'delay', used for laziness.
 pdelay :: Term s a -> Term s (PDelayed a)
@@ -2458,7 +2458,7 @@ perror :: Term s a
 --   &gt;&gt;&gt; f # x #$ g # y # z
 --   f x (g y z)
 --   </pre>
-(#$) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
+(#$) :: Term s (a :--> b) -> Term s a -> Term s b
 infixr 0 #$
 
 -- | High precedence infixl synonym of <a>papp</a>, to be used like
@@ -2468,7 +2468,7 @@ infixr 0 #$
 --   &gt;&gt;&gt; f # x # y
 --   f x y
 --   </pre>
-(#) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
+(#) :: Term s (a :--> b) -> Term s a -> Term s b
 infixl 8 #
 
 -- | Let bindings.
