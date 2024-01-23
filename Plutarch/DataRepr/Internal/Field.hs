@@ -35,9 +35,11 @@ import Plutarch (
   PType,
   S,
   Term,
+  TermCont (TermCont),
   plam,
   plet,
   pto,
+  runTermCont,
   (#),
   type (:-->),
  )
@@ -69,7 +71,6 @@ import Plutarch.DataRepr.Internal.HList (
   type IndexList,
  )
 import Plutarch.Internal.Witness (witness)
-import Plutarch.TermCont (TermCont (TermCont), runTermCont)
 
 --------------------------------------------------------------------------------
 ---------- PDataField class & deriving utils

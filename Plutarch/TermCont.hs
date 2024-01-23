@@ -1,61 +1,100 @@
-{-# OPTIONS_GHC -Wno-unused-foralls #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
 
 module Plutarch.TermCont (
-  hashOpenTerm,
-  TermCont (TermCont),
-  runTermCont,
-  unTermCont,
-  tcont,
+  TC.hashOpenTerm,
+  TC.TermCont (TermCont),
+  TC.runTermCont,
+  TC.unTermCont,
+  TC.tcont,
+  pletC,
+  pmatchC,
+  pletFieldsC,
+  ptraceC,
+  pguardC,
+  pguardC',
+  ptryFromC,
 ) where
 
-import Data.Kind (Type)
-import Data.String (fromString)
-import Plutarch.Internal (
-  Dig,
-  PType,
-  S,
-  Term (Term),
-  asRawTerm,
-  getTerm,
-  hashRawTerm,
-  pgetConfig,
-  tracingMode,
-  pattern DetTracing,
+import Plutarch.Bool (PBool, pif)
+import Plutarch.Internal (Term, plet)
+import Plutarch.Internal.PlutusType (PlutusType, pmatch)
+import Plutarch.String (PString)
+import Plutarch.Trace (ptrace, ptraceError)
+
+import Plutarch.DataRepr (HRec, PDataFields, PFields, pletFields)
+import Plutarch.DataRepr.Internal.Field (
+  BindFields,
+  Bindings,
+  BoundTerms,
  )
-import Plutarch.Trace (ptraceError)
+import Plutarch.Internal.TermCont
+import Plutarch.Reducible (Reduce)
+import Plutarch.TryFrom (PTryFrom (PTryFromExcess), ptryFrom)
 
-newtype TermCont :: forall (r :: PType). S -> Type -> Type where
-  TermCont :: forall r s a. {runTermCont :: (a -> Term s r) -> Term s r} -> TermCont @r s a
+import Plutarch.Internal.TermCont qualified as TC
 
-unTermCont :: TermCont @a s (Term s a) -> Term s a
-unTermCont t = runTermCont t id
+-- | Like `plet` but works in a `TermCont` monad
+pletC :: Term s a -> TermCont s (Term s a)
+pletC = tcont . plet
 
-instance Functor (TermCont s) where
-  fmap f (TermCont g) = TermCont $ \h -> g (h . f)
+-- | Like `pmatch` but works in a `TermCont` monad
+pmatchC :: PlutusType a => Term s a -> TermCont s (a s)
+pmatchC = tcont . pmatch
 
-instance Applicative (TermCont s) where
-  pure x = TermCont $ \f -> f x
-  x <*> y = do
-    x <- x
-    x <$> y
+-- | Like `pletFields` but works in a `TermCont` monad.
+pletFieldsC ::
+  forall fs a s b ps bs.
+  ( PDataFields a
+  , ps ~ PFields a
+  , bs ~ Bindings ps fs
+  , BindFields ps bs
+  ) =>
+  Term s a ->
+  TermCont @b s (HRec (BoundTerms ps bs s))
+pletFieldsC x = tcont $ pletFields @fs x
 
-instance Monad (TermCont s) where
-  (TermCont f) >>= g = TermCont $ \h ->
-    f
-      ( \x ->
-          runTermCont (g x) h
-      )
+{- | Like `ptrace` but works in a `TermCont` monad.
 
-instance MonadFail (TermCont s) where
-  fail s = TermCont $ \_ ->
-    pgetConfig \c -> case tracingMode c of
-      DetTracing -> ptraceError "Pattern matching failure in TermCont"
-      _ -> ptraceError $ fromString s
+=== Example ===
 
-tcont :: ((a -> Term s r) -> Term s r) -> TermCont @r s a
-tcont = TermCont
+@
+foo :: Term s PUnit
+foo = unTermCont $ do
+  ptraceC "returning unit!"
+  pure $ pconstant ()
+@
+-}
+ptraceC :: Term s PString -> TermCont s ()
+ptraceC s = tcont $ \f -> ptrace s (f ())
 
-hashOpenTerm :: Term s a -> TermCont s Dig
-hashOpenTerm x = TermCont $ \f -> Term $ \i -> do
-  y <- asRawTerm x i
-  asRawTerm (f . hashRawTerm . getTerm $ y) i
+{- | Trace a message and raise error if 'cond' is false. Otherwise, continue.
+
+=== Example ===
+
+@
+onlyAllow42 :: Term s (PInteger :--> PUnit)
+onlyAllow42 = plam $ \i -> unTermCont $ do
+  pguardC "expected 42" $ i #== 42
+  pure $ pconstant ()
+@
+-}
+pguardC :: Term s PString -> Term s PBool -> TermCont s ()
+pguardC s cond = tcont $ \f -> pif cond (f ()) $ ptraceError s
+
+{- | Stop computation and return given term if 'cond' is false. Otherwise, continue.
+
+=== Example ===
+
+@
+is42 :: Term s (PInteger :--> PBool)
+is42 = plam $ \i -> unTermCont $ do
+  pguardC' (pconstant False) $ i #== 42
+  pure $ pconstant True
+@
+-}
+pguardC' :: Term s a -> Term s PBool -> TermCont @a s ()
+pguardC' r cond = tcont $ \f -> pif cond (f ()) r
+
+-- | 'TermCont' producing version of 'ptryFrom'.
+ptryFromC :: forall b r a s. PTryFrom a b => Term s a -> TermCont @r s (Term s b, Reduce (PTryFromExcess a b s))
+ptryFromC = tcont . ptryFrom

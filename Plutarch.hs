@@ -38,6 +38,7 @@ module Plutarch (
   PT.hashOpenTerm,
   PT.runTermCont,
   PT.unTermCont,
+  PT.tcont,
   PI.Config (Config, tracingMode),
   PI.TracingMode (NoTracing, DoTracing, DetTracing, DoTracingAndBinds),
   PI.pgetConfig,
@@ -63,9 +64,9 @@ import Plutarch.Internal.PLam qualified as PL
 import Plutarch.Internal.PlutusType qualified as PP
 import Plutarch.Internal.Quantification qualified as PQ
 import Plutarch.Internal.ScottEncoding qualified as PS
+import Plutarch.Internal.TermCont qualified as PT
 import Plutarch.Num ()
 import Plutarch.Pretty qualified as PPR
-import Plutarch.TermCont qualified as PT
 
 -- import orphan instances
 import Prelude ()
