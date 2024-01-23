@@ -306,13 +306,13 @@ pthrow :: HasCallStack => Text -> Term s a
 pthrow = Term . pure . pthrow'
 
 -- | Lambda Application.
-papp :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
+papp :: Term s (a :--> b) -> Term s a -> Term s b
 papp x y = Term \i ->
   (,) <$> asRawTerm x i <*> asRawTerm y i >>= \case
     -- Applying anything to an error is an error.
-    (getTerm -> RError, _) -> pthrow' "application to an error"
+    (getTerm -> RError, _) -> pure $ mkTermRes RError
     -- Applying an error to anything is an error.
-    (_, getTerm -> RError) -> pthrow' "application with an error"
+    (_, getTerm -> RError) -> pure $ mkTermRes RError
     -- Applying to `id` changes nothing.
     (getTerm -> RLamAbs 0 (RVar 0), y') -> pure y'
     (getTerm -> RHoisted (HoistedTerm _ (RLamAbs 0 (RVar 0))), y') -> pure y'
@@ -498,7 +498,7 @@ hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTe
   >>> f # x # y
   f x y
 -}
-(#) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
+(#) :: Term s (a :--> b) -> Term s a -> Term s b
 (#) = papp
 
 infixl 8 #
@@ -510,7 +510,7 @@ infixl 8 #
   >>> f # x #$ g # y # z
   f x (g y z)
 -}
-(#$) :: HasCallStack => Term s (a :--> b) -> Term s a -> Term s b
+(#$) :: Term s (a :--> b) -> Term s a -> Term s b
 (#$) = papp
 
 infixr 0 #$
