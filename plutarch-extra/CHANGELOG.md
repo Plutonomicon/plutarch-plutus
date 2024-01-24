@@ -8,12 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
-* `Plutarch.Extra.Interval`, `Plutarch.Extra.Map`, and `Plutarch.Extra.Maybe` use 
-   `plutarch-api` definitions
+* `Plutarch.Extra.Map`, and `Plutarch.Extra.Maybe` use `plutarch-api` definitions
 
 ### Removed
 
 * `Plutarch.Extra.Api` as these functions are now in `plutarch-api`
+* `Plutarch.Extra.Interval`, as these functions are now in `plutarch-api`
 
 ## 1.2.1 -- 17-01-2024
 

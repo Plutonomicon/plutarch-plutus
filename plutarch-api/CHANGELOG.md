@@ -19,6 +19,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `padaSymbolData`, `plovelaceValueOf`, `pisAdaOnlyValue`, `padaOnlyValue`, 
   `pnoAdaValue` to `Plutarch.Api.Value`
 * `PTryFrom` instance for `PData (PAsData (PValue Unsorted NonZero))`
+* `Plutarch.Api.Interval` module, with extra functionality originally from
+  `plutarch-extra`
 
 ### Modified 
 
