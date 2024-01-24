@@ -2,7 +2,7 @@
 </span><span id="line-2"></span><span>
 </span><span id="line-3"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Prelude</span></span><span>
 </span><span id="line-4"></span><span>
-</span><span id="line-5"></span><span id="local-6989586621679178286"><span class="annot"><a href="Plutarch.Extra.ByteString.html#pallBS"><span class="hs-identifier hs-type">pallBS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679178286"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:--&gt;</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PBool</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-operator hs-type">:--&gt;</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PByteString</span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:--&gt;</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PBool</span></span><span class="hs-special">)</span></span><span>
+</span><span id="line-5"></span><span id="local-6989586621679177890"><span class="annot"><a href="Plutarch.Extra.ByteString.html#pallBS"><span class="hs-identifier hs-type">pallBS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679177890"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:--&gt;</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PBool</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-operator hs-type">:--&gt;</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PByteString</span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:--&gt;</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PBool</span></span><span class="hs-special">)</span></span><span>
 </span><span id="line-6"></span><span id="pallBS"><span class="annot"><span class="annottext">pallBS :: forall (s :: S).
 Term s ((PInteger :--&gt; PBool) :--&gt; (PByteString :--&gt; PBool))
 </span><a href="Plutarch.Extra.ByteString.html#pallBS"><span class="hs-identifier hs-var hs-var">pallBS</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (s :: S).
@@ -36,9 +36,9 @@ HasCallStack =&gt;
     -&gt; Term s PByteString -&gt; Term s PBool)
 -&gt; Term s ((PInteger :--&gt; PBool) :--&gt; (PByteString :--&gt; PBool))
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679178364"><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PBool)
-</span><a href="#local-6989586621679178364"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679178365"><span class="annot"><span class="annottext">Term s PByteString
-</span><a href="#local-6989586621679178365"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s PInteger
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679177968"><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PBool)
+</span><a href="#local-6989586621679177968"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679177969"><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679177969"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s PInteger
 -&gt; (Term s PInteger -&gt; Term s PBool) -&gt; Term s PBool
 forall (s :: S) (a :: PType) (b :: PType).
 Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
@@ -49,14 +49,14 @@ forall (s :: S). Term s (PByteString :--&gt; PInteger)
 forall (s :: S) (a :: PType) (b :: PType).
 Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><span class="hs-operator hs-var">#</span></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
-</span><a href="#local-6989586621679178365"><span class="hs-identifier hs-var">str</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((Term s PInteger -&gt; Term s PBool) -&gt; Term s PBool)
+</span><a href="#local-6989586621679177969"><span class="hs-identifier hs-var">str</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((Term s PInteger -&gt; Term s PBool) -&gt; Term s PBool)
 -&gt; (Term s PInteger -&gt; Term s PBool) -&gt; Term s PBool
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679178369"><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679178369"><span class="hs-identifier hs-var">ln</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-8"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span class="annot"><a href="#local-6989586621679178370"><span class="hs-identifier hs-type">helper</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:--&gt;</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PBool</span></span><span class="hs-special">)</span><span>
-</span><span id="line-9"></span><span>        </span><span id="local-6989586621679178370"><span class="annot"><span class="annottext">helper :: Term s (PInteger :--&gt; PBool)
-</span><a href="#local-6989586621679178370"><span class="hs-identifier hs-var hs-var">helper</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679177973"><span class="annot"><span class="annottext">Term s PInteger
+</span><a href="#local-6989586621679177973"><span class="hs-identifier hs-var">ln</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-8"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span class="annot"><a href="#local-6989586621679177974"><span class="hs-identifier hs-type">helper</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:--&gt;</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PBool</span></span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span>        </span><span id="local-6989586621679177974"><span class="annot"><span class="annottext">helper :: Term s (PInteger :--&gt; PBool)
+</span><a href="#local-6989586621679177974"><span class="hs-identifier hs-var hs-var">helper</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term
   s
   (((PInteger :--&gt; PBool) :--&gt; (PInteger :--&gt; PBool))
    :--&gt; (PInteger :--&gt; PBool))
@@ -85,27 +85,27 @@ HasCallStack =&gt;
     -&gt; Term s PInteger -&gt; Term s PBool)
 -&gt; Term s ((PInteger :--&gt; PBool) :--&gt; (PInteger :--&gt; PBool))
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679178387"><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PBool)
-</span><a href="#local-6989586621679178387"><span class="hs-identifier hs-var">self</span></a></span></span><span> </span><span id="local-6989586621679178388"><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679178388"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679177991"><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PBool)
+</span><a href="#local-6989586621679177991"><span class="hs-identifier hs-var">self</span></a></span></span><span> </span><span id="local-6989586621679177992"><span class="annot"><span class="annottext">Term s PInteger
+</span><a href="#local-6989586621679177992"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-10"></span><span>          </span><span class="annot"><span class="annottext">Term s PBool -&gt; Term s PBool -&gt; Term s PBool -&gt; Term s PBool
 forall (s :: S) (a :: PType).
 Term s PBool -&gt; Term s a -&gt; Term s a -&gt; Term s a
 </span><span class="hs-identifier hs-var">pif</span></span><span>
 </span><span id="line-11"></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679178388"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
+</span><a href="#local-6989586621679177992"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
 forall (s :: S). Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
 forall (t :: PType) (s :: S).
 PPartialOrd t =&gt;
 Term s t -&gt; Term s t -&gt; Term s PBool
 </span><span class="hs-operator hs-var">#&lt;</span></span><span> </span><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679178369"><span class="hs-identifier hs-var">ln</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679177973"><span class="hs-identifier hs-var">ln</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-12"></span><span>            </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="annottext">Term s PBool -&gt; Term s PBool -&gt; Term s PBool -&gt; Term s PBool
 forall (s :: S) (a :: PType).
 Term s PBool -&gt; Term s a -&gt; Term s a -&gt; Term s a
 </span><span class="hs-identifier hs-var">pif</span></span><span>
 </span><span id="line-13"></span><span>                </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PBool)
-</span><a href="#local-6989586621679178364"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PBool) -&gt; Term s PInteger -&gt; Term s PBool
+</span><a href="#local-6989586621679177968"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PBool) -&gt; Term s PInteger -&gt; Term s PBool
 forall (s :: S) (a :: PType) (b :: PType).
 Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><span class="hs-operator hs-var">#$</span></span><span> </span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; (PInteger :--&gt; PInteger))
@@ -115,18 +115,18 @@ forall (s :: S). Term s (PByteString :--&gt; (PInteger :--&gt; PInteger))
 forall (s :: S) (a :: PType) (b :: PType).
 Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><span class="hs-operator hs-var">#</span></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
-</span><a href="#local-6989586621679178365"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PInteger)
+</span><a href="#local-6989586621679177969"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PInteger)
 -&gt; Term s PInteger -&gt; Term s PInteger
 forall (s :: S) (a :: PType) (b :: PType).
 Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><span class="hs-operator hs-var">#</span></span><span> </span><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679178388"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679177992"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-14"></span><span>                </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PBool)
-</span><a href="#local-6989586621679178387"><span class="hs-identifier hs-var">self</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PBool) -&gt; Term s PInteger -&gt; Term s PBool
+</span><a href="#local-6989586621679177991"><span class="hs-identifier hs-var">self</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PBool) -&gt; Term s PInteger -&gt; Term s PBool
 forall (s :: S) (a :: PType) (b :: PType).
 Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><span class="hs-operator hs-var">#</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679178388"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PInteger
+</span><a href="#local-6989586621679177992"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PInteger
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Num.html#%2B"><span class="hs-operator hs-var">+</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger
 </span><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
@@ -142,13 +142,13 @@ forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
 forall (s :: S). PBool s
 </span><span class="hs-identifier hs-var">PTrue</span></span><span class="hs-special">)</span><span>
 </span><span id="line-18"></span><span>     </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PBool)
-</span><a href="#local-6989586621679178370"><span class="hs-identifier hs-var">helper</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PBool) -&gt; Term s PInteger -&gt; Term s PBool
+</span><a href="#local-6989586621679177974"><span class="hs-identifier hs-var">helper</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PBool) -&gt; Term s PInteger -&gt; Term s PBool
 forall (s :: S) (a :: PType) (b :: PType).
 Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><span class="hs-operator hs-var">#</span></span><span> </span><span class="annot"><span class="annottext">Term s PInteger
 </span><span class="hs-number">0</span></span><span>
 </span><span id="line-19"></span><span>
-</span><span id="line-20"></span><span id="local-6989586621679178342"><span class="annot"><a href="Plutarch.Extra.ByteString.html#pisHexDigit"><span class="hs-identifier hs-type">pisHexDigit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679178342"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:--&gt;</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PBool</span></span><span class="hs-special">)</span></span><span>
+</span><span id="line-20"></span><span id="local-6989586621679177946"><span class="annot"><a href="Plutarch.Extra.ByteString.html#pisHexDigit"><span class="hs-identifier hs-type">pisHexDigit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679177946"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:--&gt;</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PBool</span></span><span class="hs-special">)</span></span><span>
 </span><span id="line-21"></span><span id="pisHexDigit"><span class="annot"><span class="annottext">pisHexDigit :: forall (s :: S). Term s (PInteger :--&gt; PBool)
 </span><a href="Plutarch.Extra.ByteString.html#pisHexDigit"><span class="hs-identifier hs-var hs-var">pisHexDigit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (s :: S). Term s (PInteger :--&gt; PBool))
 -&gt; Term s (PInteger :--&gt; PBool)
@@ -172,10 +172,10 @@ HasCallStack =&gt;
 -&gt; (Term s PInteger -&gt; Term s PBool)
 -&gt; Term s (PInteger :--&gt; PBool)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679178415"><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679178415"><span class="hs-identifier hs-var">chr</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679178019"><span class="annot"><span class="annottext">Term s PInteger
+</span><a href="#local-6989586621679178019"><span class="hs-identifier hs-var">chr</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-23"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679178415"><span class="hs-identifier hs-var">chr</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
+</span><a href="#local-6989586621679178019"><span class="hs-identifier hs-var">chr</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
 forall (s :: S). Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
 forall (t :: PType) (s :: S).
 PPartialOrd t =&gt;
@@ -190,7 +190,7 @@ forall (t :: PType) (s :: S).
 PPartialOrd t =&gt;
 Term s t -&gt; Term s t -&gt; Term s PBool
 </span><span class="hs-operator hs-var">#&lt;=</span></span><span> </span><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679178415"><span class="hs-identifier hs-var">chr</span></a></span><span class="hs-special">)</span><span class="hs-cpp">
+</span><a href="#local-6989586621679178019"><span class="hs-identifier hs-var">chr</span></a></span><span class="hs-special">)</span><span class="hs-cpp">
       #|| (chr #&lt;= 70 #&amp;&amp; 65 #&lt;= chr)
 </span><span class="hs-cpp">      #|| (chr #&lt;= 102 #&amp;&amp; 97 #&lt;= chr)
 </span></pre></body></html>

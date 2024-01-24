@@ -282,7 +282,6 @@ module Plutarch.Pretty
 --   <pre>
 --   import Plutarch.Prelude
 --   import Plutarch.Api.V1
---   import Plutarch.Extra.TermCont
 --   
 --   checkSignatory :: Term s (PPubKeyHash :--&gt; PScriptContext :--&gt; PUnit)
 --   checkSignatory = plam $ ph ctx' -&gt; unTermCont $ do
@@ -1060,17 +1059,17 @@ ptraceIfFalse :: Term s PString -> Term s PBool -> Term s PBool
 -- | Trace the given message and terminate evaluation with a <a>perror</a>.
 ptraceError :: Term s PString -> Term s a
 
-module Plutarch.TermCont
+module Plutarch.Internal.TermCont
 hashOpenTerm :: Term s a -> TermCont s Dig
 newtype TermCont :: forall (r :: PType). S -> Type -> Type
 [TermCont] :: forall r s a. ((a -> Term s r) -> Term s r) -> TermCont @r s a
 ($sel:runTermCont:TermCont) :: TermCont @r s a -> (a -> Term s r) -> Term s r
 unTermCont :: TermCont @a s (Term s a) -> Term s a
 tcont :: ((a -> Term s r) -> Term s r) -> TermCont @r s a
-instance forall (r :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). GHC.Base.Functor (Plutarch.TermCont.TermCont @r s)
-instance forall (r :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). GHC.Base.Applicative (Plutarch.TermCont.TermCont @r s)
-instance forall (r :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). GHC.Base.Monad (Plutarch.TermCont.TermCont @r s)
-instance forall (r :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). Control.Monad.Fail.MonadFail (Plutarch.TermCont.TermCont @r s)
+instance forall (r :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). GHC.Base.Functor (Plutarch.Internal.TermCont.TermCont @r s)
+instance forall (r :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). GHC.Base.Applicative (Plutarch.Internal.TermCont.TermCont @r s)
+instance forall (r :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). GHC.Base.Monad (Plutarch.Internal.TermCont.TermCont @r s)
+instance forall (r :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). Control.Monad.Fail.MonadFail (Plutarch.Internal.TermCont.TermCont @r s)
 
 module Plutarch
 data (:-->) (a :: PType) (b :: PType) (s :: S)
@@ -1164,7 +1163,6 @@ type PMatch = PlutusType
 --   <pre>
 --   import Plutarch.Prelude
 --   import Plutarch.Api.V1
---   import Plutarch.Extra.TermCont
 --   
 --   checkSignatory :: Term s (PPubKeyHash :--&gt; PScriptContext :--&gt; PUnit)
 --   checkSignatory = plam $ ph ctx' -&gt; unTermCont $ do
@@ -1403,6 +1401,7 @@ newtype TermCont :: forall (r :: PType). S -> Type -> Type
 hashOpenTerm :: Term s a -> TermCont s Dig
 ($sel:runTermCont:TermCont) :: TermCont @r s a -> (a -> Term s r) -> Term s r
 unTermCont :: TermCont @a s (Term s a) -> Term s a
+tcont :: ((a -> Term s r) -> Term s r) -> TermCont @r s a
 newtype Config
 Config :: TracingMode -> Config
 [$sel:tracingMode:Config] :: Config -> TracingMode
@@ -1760,59 +1759,6 @@ instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (
 instance forall a b. (Plutarch.Lift.PConstant a, Plutarch.Lift.PConstant b) => Plutarch.Lift.PConstantDecl (a, b)
 instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (Plutarch.Show.PShow a, Plutarch.Show.PShow b) => Plutarch.Show.PShow (Plutarch.Builtin.PBuiltinPair a b)
 instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (Plutarch.Bool.PEq a, Plutarch.Bool.PEq b) => Plutarch.Bool.PEq (Plutarch.Builtin.PBuiltinPair a b)
-
-module Plutarch.Positive
-data PPositive s
-
--- | Build a <a>PPositive</a> from a <a>PInteger</a>. Yields
---   <a>PNothing</a> if argument is zero.
-ppositive :: Term s (PInteger :--> PMaybe PPositive)
-
--- | Partial version of <a>PPositive</a>. Errors if argument is zero.
-ptryPositive :: Term s (PInteger :--> PPositive)
-instance Plutarch.Show.PShow Plutarch.Positive.PPositive
-instance Plutarch.Integer.PIntegral Plutarch.Positive.PPositive
-instance Plutarch.Bool.POrd Plutarch.Positive.PPositive
-instance Plutarch.Bool.PPartialOrd Plutarch.Positive.PPositive
-instance Plutarch.Bool.PEq Plutarch.Positive.PPositive
-instance Plutarch.Builtin.PIsData Plutarch.Positive.PPositive
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Positive.PPositive
-instance forall (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Positive.PPositive s)
-instance forall k1 k2 (f :: k2 -> k1 -> GHC.Types.Type) (a :: k1) (b :: k2). GHC.Generics.Generic (Plutarch.Positive.Flip @{k2} @{k1} f a b)
-instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.Positive.PPositive)
-instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Positive.PPositive
-instance Plutarch.Num.PNum Plutarch.Positive.PPositive
-instance Plutarch.TryFrom.PTryFrom Plutarch.Integer.PInteger Plutarch.Positive.PPositive
-
-module Plutarch.Rational
-
--- | Note: This type is _not_ the synonym of <a>Rational</a>.
-data PRational s
-PRational :: Term s PInteger -> Term s PPositive -> PRational s
-preduce :: Term s (PRational :--> PRational)
-pnumerator :: Term s (PRational :--> PInteger)
-pdenominator :: Term s (PRational :--> PPositive)
-pfromInteger :: Term s (PInteger :--> PRational)
-pround :: Term s (PRational :--> PInteger)
-ptruncate :: Term s (PRational :--> PInteger)
-pproperFraction :: Term s (PRational :--> PPair PInteger PRational)
-class PFractional (a :: PType)
-(#/) :: PFractional a => Term s a -> Term s a -> Term s a
-precip :: PFractional a => Term s (a :--> a)
-pfromRational :: PFractional a => Term s (PRational :--> a)
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Rational.PRational
-instance forall (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Rational.PRational s)
-instance forall k1 k2 (f :: k2 -> k1 -> GHC.Types.Type) (a :: k1) (b :: k2). GHC.Generics.Generic (Plutarch.Rational.Flip @{k2} @{k1} f a b)
-instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.Rational.PRational)
-instance forall (a :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). (Plutarch.Num.PNum a, Plutarch.Rational.PFractional a) => GHC.Real.Fractional (Plutarch.Internal.Term s a)
-instance Plutarch.Rational.PFractional Plutarch.Rational.PRational
-instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Rational.PRational
-instance Plutarch.Bool.PEq Plutarch.Rational.PRational
-instance Plutarch.Show.PShow Plutarch.Rational.PRational
-instance Plutarch.Builtin.PIsData Plutarch.Rational.PRational
-instance Plutarch.Bool.PPartialOrd Plutarch.Rational.PRational
-instance Plutarch.Bool.POrd Plutarch.Rational.PRational
-instance Plutarch.Num.PNum Plutarch.Rational.PRational
 
 module Plutarch.FFI
 
@@ -2423,6 +2369,117 @@ type family PMemberFields t fs s as
 -- | Single field version of <a>PMemberFields</a>.
 type family PMemberField t name s as
 
+module Plutarch.TermCont
+hashOpenTerm :: Term s a -> TermCont s Dig
+newtype TermCont :: forall (r :: PType). S -> Type -> Type
+[TermCont] :: forall r s a. ((a -> Term s r) -> Term s r) -> TermCont @r s a
+($sel:runTermCont:TermCont) :: TermCont @r s a -> (a -> Term s r) -> Term s r
+unTermCont :: TermCont @a s (Term s a) -> Term s a
+tcont :: ((a -> Term s r) -> Term s r) -> TermCont @r s a
+
+-- | Like <a>plet</a> but works in a <a>TermCont</a> monad
+pletC :: Term s a -> TermCont s (Term s a)
+
+-- | Like <a>pmatch</a> but works in a <a>TermCont</a> monad
+pmatchC :: PlutusType a => Term s a -> TermCont s (a s)
+
+-- | Like <a>pletFields</a> but works in a <a>TermCont</a> monad.
+pletFieldsC :: forall fs a s b ps bs. (PDataFields a, ps ~ PFields a, bs ~ Bindings ps fs, BindFields ps bs) => Term s a -> TermCont @b s (HRec (BoundTerms ps bs s))
+
+-- | Like <a>ptrace</a> but works in a <a>TermCont</a> monad.
+--   
+--   <h3>Example ===</h3>
+--   
+--   <pre>
+--   foo :: Term s PUnit
+--   foo = unTermCont $ do
+--     ptraceC "returning unit!"
+--     pure $ pconstant ()
+--   </pre>
+ptraceC :: Term s PString -> TermCont s ()
+
+-- | Trace a message and raise error if <tt>cond</tt> is false. Otherwise,
+--   continue.
+--   
+--   <h3>Example ===</h3>
+--   
+--   <pre>
+--   onlyAllow42 :: Term s (PInteger :--&gt; PUnit)
+--   onlyAllow42 = plam $ i -&gt; unTermCont $ do
+--     pguardC "expected 42" $ i #== 42
+--     pure $ pconstant ()
+--   </pre>
+pguardC :: Term s PString -> Term s PBool -> TermCont s ()
+
+-- | Stop computation and return given term if <tt>cond</tt> is false.
+--   Otherwise, continue.
+--   
+--   <h3>Example ===</h3>
+--   
+--   <pre>
+--   is42 :: Term s (PInteger :--&gt; PBool)
+--   is42 = plam $ i -&gt; unTermCont $ do
+--     pguardC' (pconstant False) $ i #== 42
+--     pure $ pconstant True
+--   </pre>
+pguardC' :: Term s a -> Term s PBool -> TermCont @a s ()
+
+-- | <a>TermCont</a> producing version of <a>ptryFrom</a>.
+ptryFromC :: forall b r a s. PTryFrom a b => Term s a -> TermCont @r s (Term s b, Reduce (PTryFromExcess a b s))
+
+module Plutarch.Positive
+data PPositive s
+
+-- | Build a <a>PPositive</a> from a <a>PInteger</a>. Yields
+--   <a>PNothing</a> if argument is zero.
+ppositive :: Term s (PInteger :--> PMaybe PPositive)
+
+-- | Partial version of <a>PPositive</a>. Errors if argument is zero.
+ptryPositive :: Term s (PInteger :--> PPositive)
+instance Plutarch.Show.PShow Plutarch.Positive.PPositive
+instance Plutarch.Integer.PIntegral Plutarch.Positive.PPositive
+instance Plutarch.Bool.POrd Plutarch.Positive.PPositive
+instance Plutarch.Bool.PPartialOrd Plutarch.Positive.PPositive
+instance Plutarch.Bool.PEq Plutarch.Positive.PPositive
+instance Plutarch.Builtin.PIsData Plutarch.Positive.PPositive
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Positive.PPositive
+instance forall (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Positive.PPositive s)
+instance forall k1 k2 (f :: k2 -> k1 -> GHC.Types.Type) (a :: k1) (b :: k2). GHC.Generics.Generic (Plutarch.Positive.Flip @{k2} @{k1} f a b)
+instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.Positive.PPositive)
+instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Positive.PPositive
+instance Plutarch.Num.PNum Plutarch.Positive.PPositive
+instance Plutarch.TryFrom.PTryFrom Plutarch.Integer.PInteger Plutarch.Positive.PPositive
+
+module Plutarch.Rational
+
+-- | Note: This type is _not_ the synonym of <a>Rational</a>.
+data PRational s
+PRational :: Term s PInteger -> Term s PPositive -> PRational s
+preduce :: Term s (PRational :--> PRational)
+pnumerator :: Term s (PRational :--> PInteger)
+pdenominator :: Term s (PRational :--> PPositive)
+pfromInteger :: Term s (PInteger :--> PRational)
+pround :: Term s (PRational :--> PInteger)
+ptruncate :: Term s (PRational :--> PInteger)
+pproperFraction :: Term s (PRational :--> PPair PInteger PRational)
+class PFractional (a :: PType)
+(#/) :: PFractional a => Term s a -> Term s a -> Term s a
+precip :: PFractional a => Term s (a :--> a)
+pfromRational :: PFractional a => Term s (PRational :--> a)
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Rational.PRational
+instance forall (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Rational.PRational s)
+instance forall k1 k2 (f :: k2 -> k1 -> GHC.Types.Type) (a :: k1) (b :: k2). GHC.Generics.Generic (Plutarch.Rational.Flip @{k2} @{k1} f a b)
+instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.Rational.PRational)
+instance forall (a :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). (Plutarch.Num.PNum a, Plutarch.Rational.PFractional a) => GHC.Real.Fractional (Plutarch.Internal.Term s a)
+instance Plutarch.Rational.PFractional Plutarch.Rational.PRational
+instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Rational.PRational
+instance Plutarch.Bool.PEq Plutarch.Rational.PRational
+instance Plutarch.Show.PShow Plutarch.Rational.PRational
+instance Plutarch.Builtin.PIsData Plutarch.Rational.PRational
+instance Plutarch.Bool.PPartialOrd Plutarch.Rational.PRational
+instance Plutarch.Bool.POrd Plutarch.Rational.PRational
+instance Plutarch.Num.PNum Plutarch.Rational.PRational
+
 module Plutarch.Prelude
 data (:-->) (a :: PType) (b :: PType) (s :: S)
 infixr 0 :-->
@@ -2954,6 +3011,56 @@ newtype TermCont :: forall (r :: PType). S -> Type -> Type
 [TermCont] :: forall r s a. ((a -> Term s r) -> Term s r) -> TermCont @r s a
 unTermCont :: TermCont @a s (Term s a) -> Term s a
 tcont :: ((a -> Term s r) -> Term s r) -> TermCont @r s a
+
+-- | Like <a>plet</a> but works in a <a>TermCont</a> monad
+pletC :: Term s a -> TermCont s (Term s a)
+
+-- | Like <a>pmatch</a> but works in a <a>TermCont</a> monad
+pmatchC :: PlutusType a => Term s a -> TermCont s (a s)
+
+-- | Like <a>pletFields</a> but works in a <a>TermCont</a> monad.
+pletFieldsC :: forall fs a s b ps bs. (PDataFields a, ps ~ PFields a, bs ~ Bindings ps fs, BindFields ps bs) => Term s a -> TermCont @b s (HRec (BoundTerms ps bs s))
+
+-- | Like <a>ptrace</a> but works in a <a>TermCont</a> monad.
+--   
+--   <h3>Example ===</h3>
+--   
+--   <pre>
+--   foo :: Term s PUnit
+--   foo = unTermCont $ do
+--     ptraceC "returning unit!"
+--     pure $ pconstant ()
+--   </pre>
+ptraceC :: Term s PString -> TermCont s ()
+
+-- | Trace a message and raise error if <tt>cond</tt> is false. Otherwise,
+--   continue.
+--   
+--   <h3>Example ===</h3>
+--   
+--   <pre>
+--   onlyAllow42 :: Term s (PInteger :--&gt; PUnit)
+--   onlyAllow42 = plam $ i -&gt; unTermCont $ do
+--     pguardC "expected 42" $ i #== 42
+--     pure $ pconstant ()
+--   </pre>
+pguardC :: Term s PString -> Term s PBool -> TermCont s ()
+
+-- | Stop computation and return given term if <tt>cond</tt> is false.
+--   Otherwise, continue.
+--   
+--   <h3>Example ===</h3>
+--   
+--   <pre>
+--   is42 :: Term s (PInteger :--&gt; PBool)
+--   is42 = plam $ i -&gt; unTermCont $ do
+--     pguardC' (pconstant False) $ i #== 42
+--     pure $ pconstant True
+--   </pre>
+pguardC' :: Term s a -> Term s PBool -> TermCont @a s ()
+
+-- | <a>TermCont</a> producing version of <a>ptryFrom</a>.
+ptryFromC :: forall b r a s. PTryFrom a b => Term s a -> TermCont @r s (Term s b, Reduce (PTryFromExcess a b s))
 pupcast :: forall a b s. PSubtype a b => Term s b -> Term s a
 ptryFrom :: forall b a s r. PTryFrom a b => Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
 
