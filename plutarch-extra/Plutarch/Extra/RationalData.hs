@@ -9,7 +9,6 @@ module Plutarch.Extra.RationalData (
 import Data.Bifunctor (first)
 import Plutarch.Builtin (pasConstr)
 import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData), PDataFields)
-import Plutarch.Extra.TermCont (pguardC, pletC, pletFieldsC)
 import Plutarch.Lift (PConstantDecl, PUnsafeLiftDecl (PLifted))
 import Plutarch.Positive (PPositive)
 import Plutarch.Prelude

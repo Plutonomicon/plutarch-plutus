@@ -62,7 +62,6 @@ This will call 'error' if there's a compilation failure. Use 'prettyTerm'' for a
 @
 import Plutarch.Prelude
 import Plutarch.Api.V1
-import Plutarch.Extra.TermCont
 
 checkSignatory :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
 checkSignatory = plam $ \ph ctx' -> unTermCont $ do

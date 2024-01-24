@@ -47,6 +47,7 @@ import Plutarch (
   PlutusTypeNewtype,
   S,
   Term,
+  TermCont (runTermCont),
   pcon,
   pdelay,
   pfix,
@@ -56,6 +57,8 @@ import Plutarch (
   plet,
   pmatch,
   pto,
+  tcont,
+  unTermCont,
   (#),
   (#$),
   type (:-->),
@@ -97,7 +100,6 @@ import Plutarch.List (
  )
 import Plutarch.Show (PShow (pshow'), pshow)
 import Plutarch.String (PString)
-import Plutarch.TermCont (TermCont (runTermCont), tcont, unTermCont)
 import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast, pupcastF)
 import Plutarch.Unit (PUnit)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeDowncast)
