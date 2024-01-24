@@ -80,6 +80,5 @@ library
     Plutarch.Extra
     Plutarch.Extra.ByteString
     Plutarch.Extra.List
-    Plutarch.Extra.Map
     Plutarch.Extra.Maybe
     Plutarch.Extra.RationalData
