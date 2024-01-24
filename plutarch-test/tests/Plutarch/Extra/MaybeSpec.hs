@@ -4,8 +4,19 @@ import Data.Maybe (fromJust, isJust)
 import Hedgehog (Property)
 import Hedgehog.Gen qualified as Gen
 import Hedgehog.Internal.Property (propertyTest)
-import Plutarch.Api (PMaybeData)
-import Plutarch.Extra.Maybe
+import Plutarch.Api (
+  PMaybeData,
+  pdjust,
+  pdnothing,
+  pfromDJust,
+  pisDJust,
+ )
+import Plutarch.Extra.Maybe (
+  pfromJust,
+  pisJust,
+  pjust,
+  pnothing,
+ )
 import Plutarch.Prelude
 import Plutarch.Test
 import Plutarch.Test.Property

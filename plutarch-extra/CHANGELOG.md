@@ -15,6 +15,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 * `Plutarch.Extra.Api` as these functions are now in `plutarch-api`
 * `Plutarch.Extra.Interval`, as these functions are now in `plutarch-api`
 * `Plutarch.Extra.Map`, as these functions are now in `plutarch-api`
+* `pfromDJust`, `pisDJust`, `pmaybeData`, `pdjust`, `pdnothing`,
+  `pmaybeToMaybeData`, `passertDJust` from `Plutarch.Extra.Maybe` (these are now
+  in `plutarch-api`)
 
 ## 1.2.1 -- 17-01-2024
 
