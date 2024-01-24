@@ -24,6 +24,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 * `PTryFrom` instance for `PData (PAsData (PValue Unsorted NonZero))`
 * `Plutarch.Api.Interval` module, with extra functionality originally from
   `plutarch-extra`
+* `pfromDJust`, `pisDJust`, `pmaybeData`, `pdjust`, `pdnothing`,
+  `pmaybeToMaybeData`, `passertDJust` in `Plutarch.Api` (ported from
+  `plutarch-extra`)
 
 ### Modified 
 
