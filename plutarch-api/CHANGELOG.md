@@ -12,7 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `psingleton`, `psingletonData`, `pfoldAt`, `pfoldAtData`, `pleftBiasedUnion`,
   `pdifference`, `punionResolvingCollisionsWithData`, `pany`, `pfindWithDefault` 
   `pinsert`, `pdelete`, `pzipWithDefaults`, `pintersectionWith`,
-  `pintersectionWithData`, `pforgetSorted` to `Plutarch.Api.AssocMap`
+  `pintersectionWithData`, `pforgetSorted`, `punsortedMapFromFoldable`,
+  `psortedMapFromFoldable`, `pmapWithKey`, `ptryLookup`, `pkeysEqual`,
+  `pkeysEqualUnsorted`, `pupdate`, `padjust`, `pfomdMapWithKey`,
+  `pfoldlWithKey`, `pkeys`, `pkvPairKey`, `pkvPairValue`, `pkvPairLt` to `Plutarch.Api.AssocMap`
 * `pconstantPositiveSingleton`, `pforgetSorted`, `psingleton`, `psingletonData` 
   `pleftBiasedCurrencyUnion`, `pleftBiasedTokenUnion`,
   `punionResolvingCollisionsWithData`, `pvalueOf`, `passertSorted`,
