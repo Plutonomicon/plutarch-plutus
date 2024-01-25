@@ -2,19 +2,18 @@
 
 module Plutarch.FieldSpec (spec) where
 
-import PlutusCore qualified as PLC
-import PlutusLedgerApi.V1.Address (Address (Address))
-import PlutusLedgerApi.V1.Credential (Credential (PubKeyCredential))
-import PlutusTx qualified
-import Test.Tasty.HUnit
-
-import Plutarch.Api.V1 (PAddress (PAddress))
+import Plutarch.Api (PAddress (PAddress))
 import Plutarch.Builtin (ppairDataBuiltin)
 import Plutarch.Prelude
 import Plutarch.SpecTypes (PTriplet)
 import Plutarch.Test
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
+import PlutusCore qualified as PLC
+import PlutusLedgerApi.V1.Address (Address (Address))
+import PlutusLedgerApi.V1.Credential (Credential (PubKeyCredential))
+import PlutusTx qualified
 import Test.Hspec
+import Test.Tasty.HUnit
 
 spec :: Spec
 spec = describe "field" $ do

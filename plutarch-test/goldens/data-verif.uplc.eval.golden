@@ -235,8 +235,4 @@ removing the data wrapper.partial checks.check structure partly (program
 removing the data wrapper.recovering a nested record.succeeds (program 1.0.0 (List [List [I 42]]))
 removing the data wrapper.recovering a nested record.fails (program 1.0.0 error)
 removing the data wrapper.recovering a nested record.sample usage contains the right value (program 1.0.0 True)
-example.concatenate two lists, legal (program 1.0.0 ())
-example.concatenate two lists, illegal (list too short) (program 1.0.0 error)
-example.concatenate two lists, illegal (wrong elements in list) (program 1.0.0 error)
-example.concatenate two lists, illegal (more than one output) (program 1.0.0 error)
 example2.recovering a record succeeds (program 1.0.0 (Constr 0 [I 4, B #666f6f]))

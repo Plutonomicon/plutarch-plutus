@@ -126,6 +126,7 @@ executable plutarch-docs
     , lens
     , markdown-unlit
     , plutarch
+    , plutarch-api
     , plutarch-extra
     , plutus-core
     , plutus-ledger-api

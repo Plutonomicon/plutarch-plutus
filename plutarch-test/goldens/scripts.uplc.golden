@@ -9,7 +9,7 @@ auth_validator.0 (program
               (unBData i2))
            (delay ())
            (delay error))))
-auth_validator.hash (program 1.0.0 "581c8ac3f00bb148ff48cb551e7d5ea877863d152e75f459e0066f3dd047")
+auth_validator.hash (program 1.0.0 "581c16241bd6e0480489ceec94b1f96d1be8d2e4a1a08169a79518baf973")
 auth_policy.0 (program
    1.0.0
    ((\i0 ->
@@ -39,7 +39,8 @@ auth_policy.0 (program
                               ((\i0 ->
                                   i6
                                     ((\i0 ->
-                                        i6 (i6 (i6 (i6 (i6 (i6 (i6 i1)))))))
+                                        i6
+                                          (i6 (i6 (i6 (i6 (i6 (i6 (i6 i1))))))))
                                        (i7 i1)))
                                  (i5 (i6 i1)))))
                         (delay ())
@@ -49,7 +50,7 @@ auth_policy.0 (program
             (force headList))
          (\i0 -> i2 (unConstrData i1)))
       (force (force sndPair))))
-auth_policy.hash (program 1.0.0 "581cb9f49b1f51a0c1c285c9fde6b1da21e7094f7c19efb6eeace1ada858")
+auth_policy.hash (program 1.0.0 "581c3f8d3bab4f2b59895b29d4ba5a00b0410719f1f36abe7dfba8444fc8")
 auth_stake_validator.0 (program
    1.0.0
    ((\i0 ->
@@ -79,7 +80,8 @@ auth_stake_validator.0 (program
                               ((\i0 ->
                                   i6
                                     ((\i0 ->
-                                        i6 (i6 (i6 (i6 (i6 (i6 (i6 i1)))))))
+                                        i6
+                                          (i6 (i6 (i6 (i6 (i6 (i6 (i6 i1))))))))
                                        (i7 i1)))
                                  (i5 (i6 i1)))))
                         (delay ())
@@ -89,4 +91,4 @@ auth_stake_validator.0 (program
             (force headList))
          (\i0 -> i2 (unConstrData i1)))
       (force (force sndPair))))
-auth_stake_validator.hash (program 1.0.0 "581cb9f49b1f51a0c1c285c9fde6b1da21e7094f7c19efb6eeace1ada858")
+auth_stake_validator.hash (program 1.0.0 "581c3f8d3bab4f2b59895b29d4ba5a00b0410719f1f36abe7dfba8444fc8")

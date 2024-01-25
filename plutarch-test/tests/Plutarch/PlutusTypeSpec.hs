@@ -4,8 +4,7 @@ module Plutarch.PlutusTypeSpec (spec) where
 
 import Data.Functor.Compose (Compose (Compose))
 import Data.SOP.NS (NS (S, Z))
-
-import Plutarch.Api.V1 (
+import Plutarch.Api (
   PAddress (PAddress),
   PCredential (PPubKeyCredential, PScriptCredential),
   PScriptPurpose (PCertifying, PMinting, PRewarding, PSpending),
@@ -22,7 +21,6 @@ import PlutusLedgerApi.V1.Credential (
   Credential (PubKeyCredential, ScriptCredential),
   StakingCredential (StakingPtr),
  )
-
 import Test.Hspec
 
 spec :: Spec

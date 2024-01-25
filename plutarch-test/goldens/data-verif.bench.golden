@@ -27,8 +27,4 @@ removing the data wrapper.partial checks.check structure partly {"exBudgetCPU":4
 removing the data wrapper.recovering a nested record.succeeds {"exBudgetCPU":3700361,"exBudgetMemory":12008,"scriptSizeBytes":167}
 removing the data wrapper.recovering a nested record.fails {"exBudgetCPU":419232,"exBudgetMemory":420,"scriptSizeBytes":167}
 removing the data wrapper.recovering a nested record.sample usage contains the right value {"exBudgetCPU":3442374,"exBudgetMemory":10849,"scriptSizeBytes":157}
-example.concatenate two lists, legal {"exBudgetCPU":40490231,"exBudgetMemory":108115,"scriptSizeBytes":893}
-example.concatenate two lists, illegal (list too short) {"exBudgetCPU":34624552,"exBudgetMemory":84921,"scriptSizeBytes":886}
-example.concatenate two lists, illegal (wrong elements in list) {"exBudgetCPU":40012573,"exBudgetMemory":105147,"scriptSizeBytes":893}
-example.concatenate two lists, illegal (more than one output) {"exBudgetCPU":26315696,"exBudgetMemory":63576,"scriptSizeBytes":914}
 example2.recovering a record succeeds {"exBudgetCPU":4617699,"exBudgetMemory":14942,"scriptSizeBytes":366}

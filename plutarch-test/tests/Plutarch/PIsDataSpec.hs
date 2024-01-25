@@ -6,7 +6,15 @@ module Plutarch.PIsDataSpec (spec) where
 import Data.Text.Encoding (encodeUtf8)
 
 import Data.Functor.Compose (Compose (Compose))
+import Data.SOP (NS (S, Z))
 import Data.String (fromString)
+import Plutarch.Api
+import Plutarch.Builtin (pforgetData, ppairDataBuiltin)
+import Plutarch.DataRepr (PDataSum (PDataSum))
+import Plutarch.Lift (PLifted)
+import Plutarch.Prelude
+import Plutarch.SpecTypes (PTriplet (PTriplet))
+import Plutarch.Test
 import PlutusLedgerApi.V1 (
   Address (Address),
   Credential (PubKeyCredential, ScriptCredential),
@@ -15,22 +23,9 @@ import PlutusLedgerApi.V1 (
   StakingCredential (StakingHash),
   TxOutRef (TxOutRef),
  )
-
-import Data.SOP (NS (S, Z))
 import PlutusTx qualified
-
-import Test.Tasty.QuickCheck (Arbitrary, property)
-
-import Plutarch.Api.V1
-import Plutarch.Api.V1.Scripts
-import Plutarch.Api.V1.Tuple (pbuiltinPairFromTuple, ptupleFromBuiltin)
-import Plutarch.Builtin (pforgetData, ppairDataBuiltin)
-import Plutarch.DataRepr (PDataSum (PDataSum))
-import Plutarch.Lift (PLifted)
-import Plutarch.Prelude
-import Plutarch.SpecTypes (PTriplet (PTriplet))
-import Plutarch.Test
 import Test.Hspec
+import Test.Tasty.QuickCheck (Arbitrary, property)
 
 spec :: Spec
 spec = do
@@ -73,11 +68,6 @@ spec = do
         @| scPair
         @-> \p ->
           pfromData (pdata p) `pshouldBe` p
-      let scTuple = pdata $ ptuple # pconstantData @PTxId "41" #$ pconstantData $ ScriptCredential "82"
-      "isomorphism" @\ do
-        "pforgetData" @| pforgetData (pdata scPair) @== pforgetData scTuple
-        "pbuiltinPairFromTuple" @| pfromData (pbuiltinPairFromTuple scTuple) @== scPair
-        "ptupleFromBuiltin" @| ptupleFromBuiltin (pdata scPair) @== scTuple
     -- Data construction tests
     describe "constr" . pgoldenSpec $ do
       -- Sum of products construction

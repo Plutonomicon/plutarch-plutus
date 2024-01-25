@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name:          plutarch-test
-version:       1.2.0
+version:       1.2.1
 
 common c
   default-language:   GHC2021
@@ -110,6 +110,7 @@ executable plutarch-test
     , hspec
     , hspec-hedgehog
     , plutarch
+    , plutarch-api
     , plutarch-extra
     , plutarch-test
     , plutus-core

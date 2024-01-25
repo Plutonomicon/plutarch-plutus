@@ -8,25 +8,13 @@ module Plutarch.Extra.Maybe (
   pjust,
   pnothing,
 
-  -- * Utility functions for working with 'PMaybeData'
-  pfromDJust,
-  pisDJust,
-  pmaybeData,
-  pdjust,
-  pdnothing,
-
-  -- * Conversion between 'PMaybe' and 'PMaybeData'
-  pmaybeToMaybeData,
-
   -- * TermCont-based combinators
   pexpectJustC,
 
   -- * Assertions
   passertPJust,
-  passertPDJust,
 ) where
 
-import Plutarch.Api.V1.Maybe (PMaybeData (PDJust, PDNothing))
 import Plutarch.Prelude
 
 --------------------------------------------------------------------------------
@@ -91,67 +79,6 @@ pmaybe = phoistAcyclic $
     PJust v -> f # v
     _ -> d
 
---------------------------------------------------------------------------------
--- Utility functions for working with 'PMaybeData'.
-
--- | Extracts the element out of a 'PDJust' and throws an error if its argument is 'PDNothing'.
-pfromDJust ::
-  forall (a :: PType) (s :: S).
-  PIsData a =>
-  Term s (PMaybeData a :--> a)
-pfromDJust = phoistAcyclic $
-  plam $ \t -> pmatch t $ \case
-    PDNothing _ -> ptraceError "pfromDJust: found PDNothing"
-    PDJust x -> pfromData $ pfield @"_0" # x
-
--- | Yield True if a given 'PMaybeData' is of form @'PDJust' _@.
-pisDJust ::
-  forall (a :: PType) (s :: S).
-  Term s (PMaybeData a :--> PBool)
-pisDJust = phoistAcyclic $
-  plam $ \x -> pmatch x $ \case
-    PDJust _ -> pconstant True
-    _ -> pconstant False
-
--- | Special version of 'pmaybe' that works with 'PMaybeData'
-pmaybeData ::
-  forall (a :: PType) (b :: PType) (s :: S).
-  PIsData a =>
-  Term s (b :--> (a :--> b) :--> PMaybeData a :--> b)
-pmaybeData = phoistAcyclic $
-  plam $ \d f m -> pmatch m $
-    \case
-      PDJust x -> f #$ pfield @"_0" # x
-      _ -> d
-
--- | Construct a 'PDJust' value
-pdjust ::
-  forall (a :: PType) (s :: S).
-  PIsData a =>
-  Term s (a :--> PMaybeData a)
-pdjust = phoistAcyclic $
-  plam $
-    \x -> pcon $ PDJust $ pdcons @"_0" # pdata x #$ pdnil
-
--- | Construct a 'PDNothing' value
-pdnothing ::
-  forall (a :: PType) (s :: S).
-  Term s (PMaybeData a)
-pdnothing = phoistAcyclic $ pcon $ PDNothing pdnil
-
---------------------------------------------------------------------------------
--- Conversion between 'PMaybe' and 'PMaybeData'.
-
--- | Copnsturct a 'PMaybeData' given a 'PMaybe'. Could be useful if you want to "lift" from 'PMaybe' to 'Maybe'.
-pmaybeToMaybeData ::
-  forall (a :: PType) (s :: S).
-  PIsData a =>
-  Term s (PMaybe a :--> PMaybeData a)
-pmaybeToMaybeData = phoistAcyclic $
-  plam $ \t -> pmatch t $ \case
-    PNothing -> pcon $ PDNothing pdnil
-    PJust x -> pcon $ PDJust $ pdcons @"_0" # pdata x # pdnil
-
 -- | Escape with a particular value on expecting 'Just'. For use in monadic context.
 pexpectJustC ::
   forall (a :: PType) (r :: PType) (s :: S).
@@ -168,11 +95,4 @@ passertPJust :: forall (a :: PType) (s :: S). Term s (PString :--> PMaybe a :-->
 passertPJust = phoistAcyclic $
   plam $ \emsg mv' -> pmatch mv' $ \case
     PJust v -> v
-    _ -> ptraceError emsg
-
--- | Extract the value stored in a PMaybeData container. If there's no value, throw an error with the given message.
-passertPDJust :: forall (a :: PType) (s :: S). PIsData a => Term s (PString :--> PMaybeData a :--> a)
-passertPDJust = phoistAcyclic $
-  plam $ \emsg mv' -> pmatch mv' $ \case
-    PDJust ((pfield @"_0" #) -> v) -> v
     _ -> ptraceError emsg

@@ -3,9 +3,9 @@
 <p>
 
 ```haskell
-module Plutarch.Docs.PreferMatchingOnResult (this, this') where 
+module Plutarch.Docs.PreferMatchingOnResult (this, this') where
 import Plutarch.Prelude
-import Plutarch.Api.V1 (PScriptPurpose (PSpending, PMinting, PRewarding, PCertifying))
+import Plutarch.Api (PScriptPurpose (PSpending, PMinting, PRewarding, PCertifying))
 ```
 
 </p>

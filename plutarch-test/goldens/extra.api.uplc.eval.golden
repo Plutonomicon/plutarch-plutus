@@ -7,11 +7,15 @@ pfindOwnInput (program
            , Constr 0
                [ Constr 0 [Constr 1 [B #a1], Constr 1 []]
                , Map []
-               , Constr 0 [B #d0] ] ])))
+               , Constr 1 [B #d0]
+               , Constr 1 [] ] ])))
 pgetContinuingOutputs (program
    1.0.0
    [ Constr 0
-       [Constr 0 [Constr 1 [B #a1], Constr 1 []], Map [], Constr 0 [B #d0]] ])
+       [ Constr 0 [Constr 1 [B #a1], Constr 1 []]
+       , Map []
+       , Constr 1 [B #d0]
+       , Constr 1 [] ] ])
 pparseDatum (program
    1.0.0
    (\i0 i0 -> i2 (List [I 1, I 2, I 3, I 4, I 5, I 6, I 7, I 8, I 9, I 10])))
