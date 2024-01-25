@@ -1,7 +1,7 @@
 module Plutarch.Extra.ApiSpec (spec) where
 
 import Plutarch.Api
-import Plutarch.ApiSpec (inp, validContext0, validOutputs0, d0DatValue)
+import Plutarch.ApiSpec (d0DatValue, inp, validContext0, validOutputs0)
 import Plutarch.Maybe (pfromJust)
 import Plutarch.Prelude
 import Plutarch.Test

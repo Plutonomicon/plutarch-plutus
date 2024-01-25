@@ -1,6 +1,21 @@
-pfindOwnInput (program 1.0.0 (\i0
-                 i0 ->
-                  i2
-                    #d8799fd8799fd8799f41a0ff00ffd8799fd8799fd87a9f41a1ffd87a80ffa0d87a9f41d0ffd87a80ffff))
-pgetContinuingOutputs (program 1.0.0 [#d8799fd8799fd87a9f41a1ffd87a80ffa0d87a9f41d0ffd87a80ff])
-pparseDatum (program 1.0.0 (\i0 i0 -> i2 #9f0102030405060708090aff))
+pfindOwnInput (program
+   1.0.0
+   (\i0 i0 ->
+      i2
+        (Constr 0
+           [ Constr 0 [Constr 0 [B #a0], I 0]
+           , Constr 0
+               [ Constr 0 [Constr 1 [B #a1], Constr 1 []]
+               , Map []
+               , Constr 1 [B #d0]
+               , Constr 1 [] ] ])))
+pgetContinuingOutputs (program
+   1.0.0
+   [ Constr 0
+       [ Constr 0 [Constr 1 [B #a1], Constr 1 []]
+       , Map []
+       , Constr 1 [B #d0]
+       , Constr 1 [] ] ])
+pparseDatum (program
+   1.0.0
+   (\i0 i0 -> i2 (List [I 1, I 2, I 3, I 4, I 5, I 6, I 7, I 8, I 9, I 10])))
