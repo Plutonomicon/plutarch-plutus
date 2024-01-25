@@ -1,5 +1,9 @@
 # Revision history for plutarch
 
+# 1.5.0
+
+- Bump `plutus-core` and `plutus-ledger-api` to `1.20.0.0`
+
 # 1.4.0
 
 - Renamed `punionWith` and `punionWithData` of `Plutarch.Api.V1.AssocMap` to
