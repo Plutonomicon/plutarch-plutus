@@ -3,23 +3,23 @@
 
 module Plutarch.TryFromSpec (spec) where
 
-import PlutusTx (
-  Data (B, Constr, I),
- )
 import Plutarch.Builtin (
   pforgetData,
   ppairDataBuiltin,
  )
 import Plutarch.Prelude
+import Plutarch.Reducible (Reduce)
 import Plutarch.Test
 import Plutarch.TryFrom (
   PTryFromExcess,
   ptryFrom',
  )
-import Plutarch.Reducible (Reduce)
 import Plutarch.Unsafe (
   punsafeCoerce,
   punsafeDowncast,
+ )
+import PlutusTx (
+  Data (B, Constr, I),
  )
 import Test.Hspec
 
