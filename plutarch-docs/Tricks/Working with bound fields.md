@@ -3,11 +3,11 @@
 <p>
 
 ```haskell
-module Plutarch.Docs.WorkingWithBoundFields (foo, foo', coreValidator) where 
+module Plutarch.Docs.WorkingWithBoundFields (foo, foo', coreValidator) where
 
 import Plutarch.Prelude
 import Plutarch.DataRepr (HRec, HRecOf, PDataFields, PMemberFields)
-import Plutarch.Api.V1 (PTxInfo, PScriptContext)
+import Plutarch.Api (PTxInfo, PScriptContext)
 ```
 
 </p>
@@ -15,7 +15,7 @@ import Plutarch.Api.V1 (PTxInfo, PScriptContext)
 
 # Working with bound fields yielded by `pletFields`
 
-You may have noticed that `pletFields` actually returns a Haskell level heterogenous list, with all the interesting fields 
+You may have noticed that `pletFields` actually returns a Haskell level heterogenous list, with all the interesting fields
 "bound" to it. Only the fields you actually use from these bindings are extracted and put into the resulting script. Therefore,
 you _only pay for what you use_.
 
@@ -35,7 +35,7 @@ pletFields ::
 The real juice of that massive type is the `HRecOf`, which is a utility type alias you can use in functions that operate on the return value of `pletFields`:
 
 ```haskell
-newtype PFooType s 
+newtype PFooType s
   = PFooType (Term s (PDataRecord '["frst" ':= PInteger, "scnd" ':= PBool, "thrd" ':= PString]))
   deriving stock (Generic)
   deriving anyclass (PlutusType, PDataFields)
@@ -50,22 +50,22 @@ foo h = pif (getField @"scnd" h) (getField @"frst" h) 0
 This is very useful for single use functions that you use as "branches" in your validators - they work more like macros or templates rather than real functions. For example, you might have different branches for different constructors of a redeemer, but all branches end up needing to do common field extraction. You could abstract it out using:
 
 ```haskell
-data PSomeRedm s 
+data PSomeRedm s
   = FirstRedm (Term s (PDataRecord '[]))
   | SecondRedm (Term s (PDataRecord '[]))
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData)
 instance DerivePlutusType PSomeRedm where type DPTStrat _ = PlutusTypeData
 
-firstRedmCheck :: 
-  HRecOf PTxInfo '[ "inputs", "outputs", "mint", "datums" ] s 
+firstRedmCheck ::
+  HRecOf PTxInfo '[ "inputs", "outputs", "mint", "datums" ] s
   -> TermCont s (Term s PUnit)
 firstRedmCheck _info = do
   -- Do checks with info fields here.
   pure $ pconstant ()
 
 secondRedmCheck ::
-  HRecOf PTxInfo '[ "inputs", "outputs", "mint", "datums" ] s 
+  HRecOf PTxInfo '[ "inputs", "outputs", "mint", "datums" ] s
   -> TermCont s (Term s PUnit)
 secondRedmCheck _info = do
   -- Do checks with info fields here.
@@ -82,7 +82,7 @@ coreValidator = plam $ \_ (pfromData -> redm) ctx' -> unTermCont $ do
 
 Without it, you may have to fallback to deconstructing `info` with `pletFields` in every single branch.
 
-However, this is rather _nominal_. What if you don't need the exact same fields in all 
+However, this is rather _nominal_. What if you don't need the exact same fields in all
 branches? Let's go back to the example with `foo` and `FooType`. What if someone has:
 
 ```hs
@@ -91,8 +91,8 @@ foo fooTypeHrec
 -- uh oh
 ```
 
-The type required by `foo` should _morally_ work just fine with `fooTypeHrec`, but it won't! 
-What we really want, is some sort of row polymorphism. This is where the `PMemberFields` type 
+The type required by `foo` should _morally_ work just fine with `fooTypeHrec`, but it won't!
+What we really want, is some sort of row polymorphism. This is where the `PMemberFields` type
 from `Plutarch.DataRepr` comes in:
 
 ```haskell
