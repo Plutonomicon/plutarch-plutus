@@ -23,6 +23,9 @@
       <meta property='og:image' content />
       <meta property='og:type' content='website' />
       <meta property='og:title' content='Troubleshooting' />
+      
+        <meta name='twitter:card' content='summary_large_image' />
+      
     
     
       <base href='/plutarch-plutus/' />
@@ -51,7 +54,7 @@
 
   
   
-  <link href='tailwind.css?instanceId=83710d14-4ebc-48e2-a0d6-7d5adbff8033' rel='stylesheet' type='text/css' />
+  <link href='tailwind.css?instanceId=a509efe6-703a-4502-bda4-eef5d3bca437' rel='stylesheet' type='text/css' />
 
   <style>
     /* Heist error element */
@@ -199,10 +202,6 @@
   
     <style>
       /* For use in sidebar.tpl, as we cannot achieve this in tailwind itself! */
-      #sidebar:hover {
-        width: auto;
-      }
-
       /* md:min-w-48  */
       @media (min-width: 768px) {
         #sidebar {
@@ -3190,6 +3189,12 @@
     <article class='overflow-auto'>
   <!-- What goes in this file will appear on top of note body-->
   
+
+
+
+
+
+
     <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
       
     <p class='mb-3'>
@@ -3236,15 +3241,57 @@
       
     </ul>
   <div xmlhtmlRaw></details>
-</div><h1 id='no-instance-for-punsafeliftdecl-a' class='pb-2 mb-2 text-5xl font-bold text-center'>No instance for <code class='py-0.5 px-0.5 bg-gray-100'>PUnsafeLiftDecl a</code></h1>
+</div>
+    <h1 id='no-instance-for-punsafeliftdecl-a' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  No instance for <code class='py-0.5 px-0.5 bg-gray-100'>PUnsafeLiftDecl a</code>
+  
+  <a href='Troubleshooting.html#no-instance-for-punsafeliftdecl-a'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       You should add <code class='py-0.5 px-0.5 bg-gray-100'>PLift a</code> to the context! <code class='py-0.5 px-0.5 bg-gray-100'>PLift</code> is just a synonym to <code class='py-0.5 px-0.5 bg-gray-100'>PUnsafeLiftDecl</code>.
     </p>
-  <h1 id='couldnt-match-representation-of-type--arising-from-the-deriving-clause' class='pb-2 mb-2 text-5xl font-bold text-center'>Couldn’t match representation of type: … arising from the ‘deriving’ clause</h1>
+  
+    <h1 id='couldnt-match-representation-of-type--arising-from-the-deriving-clause' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Couldn’t match representation of type: … arising from the ‘deriving’ clause
+  
+  <a href='Troubleshooting.html#couldnt-match-representation-of-type--arising-from-the-deriving-clause'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       If you’re getting these errors when deriving typeclasses using the machinery provided by Plutarch (e.g. generic deriving of <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code>) - it means you’re missing a constructor import.
     </p>
-  <h1 id='infinite-loop--infinite-ast' class='pb-2 mb-2 text-5xl font-bold text-center'>Infinite loop / Infinite AST</h1>
+  
+    <h1 id='infinite-loop--infinite-ast' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Infinite loop / Infinite AST
+  
+  <a href='Troubleshooting.html#infinite-loop--infinite-ast'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       While may not be immediately obvious, things like the following are a no-go in Plutarch:
     </p>
@@ -3260,7 +3307,21 @@ f = phoistAcyclic $ plam $ \n -&gt;
     <p class='mb-3'>
       Relevant issue: <a href='https://github.com/Plutonomicon/plutarch/issues/19' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>#19</a>
     </p>
-  <h1 id='couldnt-match-type-plutarchdatareprinternalpunlabel--arising-from-a-use-of-pfield-getfield' class='pb-2 mb-2 text-5xl font-bold text-center'>Couldn’t match type <code class='py-0.5 px-0.5 bg-gray-100'>Plutarch.DataRepr.Internal.PUnLabel ...</code> arising from a use of <code class='py-0.5 px-0.5 bg-gray-100'>pfield</code>, <code class='py-0.5 px-0.5 bg-gray-100'>getField</code>,</h1>
+  
+    <h1 id='couldnt-match-type-plutarchdatareprinternalpunlabel--arising-from-a-use-of-pfield-getfield' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Couldn’t match type <code class='py-0.5 px-0.5 bg-gray-100'>Plutarch.DataRepr.Internal.PUnLabel ...</code> arising from a use of <code class='py-0.5 px-0.5 bg-gray-100'>pfield</code>, <code class='py-0.5 px-0.5 bg-gray-100'>getField</code>,
+  
+  <a href='Troubleshooting.html#couldnt-match-type-plutarchdatareprinternalpunlabel--arising-from-a-use-of-pfield-getfield'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       <code class='py-0.5 px-0.5 bg-gray-100'>pletFields</code>, <code class='py-0.5 px-0.5 bg-gray-100'>hrecField</code> (deprecated)
     </p>
@@ -3268,7 +3329,21 @@ f = phoistAcyclic $ plam $ \n -&gt;
     <p class='mb-3'>
       You might get some weird errors when using <code class='py-0.5 px-0.5 bg-gray-100'>pfield</code>/<code class='py-0.5 px-0.5 bg-gray-100'>getField</code>/<code class='py-0.5 px-0.5 bg-gray-100'>pletFields</code> like the above. Don’t be scared! It just means that the type application you used is incorrect. Specifically, the type application names a non-existent field. Re-check the field name string you used in the type application for typos!
     </p>
-  <h1 id='expected-a-type-but-fieldname-has-kind-ghctypessymbol' class='pb-2 mb-2 text-5xl font-bold text-center'>Expected a type, but “fieldName” has kind <code class='py-0.5 px-0.5 bg-gray-100'>GHC.Types.Symbol</code></h1>
+  
+    <h1 id='expected-a-type-but-fieldname-has-kind-ghctypessymbol' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Expected a type, but “fieldName” has kind <code class='py-0.5 px-0.5 bg-gray-100'>GHC.Types.Symbol</code>
+  
+  <a href='Troubleshooting.html#expected-a-type-but-fieldname-has-kind-ghctypessymbol'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       This just means the argument of a type application wasn’t correctly promoted. Most likely arising from a usage of <code class='py-0.5 px-0.5 bg-gray-100'>pletFields</code>. In the case of <code class='py-0.5 px-0.5 bg-gray-100'>pfield</code> and <code class='py-0.5 px-0.5 bg-gray-100'>getField</code>, the argument of type application should have kind <code class='py-0.5 px-0.5 bg-gray-100'>Symbol</code>. A simple string literal representing the field name should work in this case. In the case of <code class='py-0.5 px-0.5 bg-gray-100'>pletFields</code>, the argument of type application should have kind <code class='py-0.5 px-0.5 bg-gray-100'>[Symbol]</code> - a type level list of types with kind <code class='py-0.5 px-0.5 bg-gray-100'>Symbol</code>. When you use a singleton list here, like <code class='py-0.5 px-0.5 bg-gray-100'>["foo"]</code> - it’s actually parsed as something of <em>kind</em> <code class='py-0.5 px-0.5 bg-gray-100'>Type</code> (like <code class='py-0.5 px-0.5 bg-gray-100'>[a]</code>).
     </p>
@@ -3276,11 +3351,39 @@ f = phoistAcyclic $ plam $ \n -&gt;
     <p class='mb-3'>
       All you need to do, is put a <code class='py-0.5 px-0.5 bg-gray-100'>'</code> (quote) in front of the list, like so- <code class='py-0.5 px-0.5 bg-gray-100'>@'["foo"]</code>. This will promote the list constructor to the type level.
     </p>
-  <h1 id='lifting-pasdata' class='pb-2 mb-2 text-5xl font-bold text-center'>Lifting <code class='py-0.5 px-0.5 bg-gray-100'>PAsData</code></h1>
+  
+    <h1 id='lifting-pasdata' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Lifting <code class='py-0.5 px-0.5 bg-gray-100'>PAsData</code>
+  
+  <a href='Troubleshooting.html#lifting-pasdata'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       Don’t try to lift a <code class='py-0.5 px-0.5 bg-gray-100'>PAsData</code> term! It’s intentionally blocked and partial. The <code class='py-0.5 px-0.5 bg-gray-100'>PLift</code> instance for <code class='py-0.5 px-0.5 bg-gray-100'>PAsData</code> is only there to make some important functionality work correctly. But the instance methods will simply <code class='py-0.5 px-0.5 bg-gray-100'>error</code> if used. Instead, you should either use <code class='py-0.5 px-0.5 bg-gray-100'>pforgetData</code> and <code class='py-0.5 px-0.5 bg-gray-100'>plift</code> that, or extract the <code class='py-0.5 px-0.5 bg-gray-100'>Term s a</code> out of <code class='py-0.5 px-0.5 bg-gray-100'>Term s (PAsData a)</code> using <code class='py-0.5 px-0.5 bg-gray-100'>pfromData</code> and <code class='py-0.5 px-0.5 bg-gray-100'>plift</code> that instead!
     </p>
-  <h1 id='couldnt-match-type-plifted-pconstanted-foo-with-foo' class='pb-2 mb-2 text-5xl font-bold text-center'>Couldn’t match type <code class='py-0.5 px-0.5 bg-gray-100'>PLifted (PConstanted Foo)</code> with <code class='py-0.5 px-0.5 bg-gray-100'>Foo</code></h1>
+  
+    <h1 id='couldnt-match-type-plifted-pconstanted-foo-with-foo' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Couldn’t match type <code class='py-0.5 px-0.5 bg-gray-100'>PLifted (PConstanted Foo)</code> with <code class='py-0.5 px-0.5 bg-gray-100'>Foo</code>
+  
+  <a href='Troubleshooting.html#couldnt-match-type-plifted-pconstanted-foo-with-foo'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       <code class='py-0.5 px-0.5 bg-gray-100'>PLifted (PConstanted h)</code> should always just be <code class='py-0.5 px-0.5 bg-gray-100'>h</code> - right? What’s this then?
     </p>
@@ -3296,7 +3399,21 @@ f = phoistAcyclic $ plam $ \n -&gt;
     <p class='mb-3'>
       Relevant issue: <a href='https://github.com/Plutonomicon/plutarch/issues/252' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>#252</a>
     </p>
-  <h1 id='type-match-errors-when-using-pfieldgetfield-or-overloadedrecorddot-or-hrecfielddeprecated-to-access-field' class='pb-2 mb-2 text-5xl font-bold text-center'>Type match errors when using <code class='py-0.5 px-0.5 bg-gray-100'>pfield</code>/<code class='py-0.5 px-0.5 bg-gray-100'>getField</code> (or <code class='py-0.5 px-0.5 bg-gray-100'>OverloadedRecordDot</code>, or <code class='py-0.5 px-0.5 bg-gray-100'>hrecField</code>(deprecated)) to access field</h1>
+  
+    <h1 id='type-match-errors-when-using-pfieldgetfield-or-overloadedrecorddot-or-hrecfielddeprecated-to-access-field' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Type match errors when using <code class='py-0.5 px-0.5 bg-gray-100'>pfield</code>/<code class='py-0.5 px-0.5 bg-gray-100'>getField</code> (or <code class='py-0.5 px-0.5 bg-gray-100'>OverloadedRecordDot</code>, or <code class='py-0.5 px-0.5 bg-gray-100'>hrecField</code>(deprecated)) to access field
+  
+  <a href='Troubleshooting.html#type-match-errors-when-using-pfieldgetfield-or-overloadedrecorddot-or-hrecfielddeprecated-to-access-field'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       You might get nonsensical “Couldn’t match type” errors when extracting fields. This has to do with GHC incorrectly inferring the return type. Field extraction is meant to be polymorphic in its return type in the sense that it might either return a <code class='py-0.5 px-0.5 bg-gray-100'>Term s (PAsData p)</code> term, or simply a <code class='py-0.5 px-0.5 bg-gray-100'>Term s p</code> (automatic <code class='py-0.5 px-0.5 bg-gray-100'>pfromData</code>). Unfortunately, sometimes this polymorphism makes it harder for GHC to infer the types. Also be aware that this automatic <code class='py-0.5 px-0.5 bg-gray-100'>pfromData</code> will infer <code class='py-0.5 px-0.5 bg-gray-100'>PAsData</code>d terms more eagerly.
     </p>
@@ -3309,7 +3426,6 @@ f = phoistAcyclic $ plam $ \n -&gt;
       Relevant issue: <a href='https://github.com/Plutonomicon/plutarch/issues/275' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>#275</a>
     </p>
   
-
   <!-- What goes in this file will appear below the note body-->
 </article>
     <div class='flex flex-col lg:flex-row lg:space-x-2'>
@@ -3394,7 +3510,7 @@ f = phoistAcyclic $ plam $ \n -&gt;
     </a>
   </div>
   <div>
-    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.4.0'>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.11.0'>
       <img class='w-6 h-6 hover:text-blue-700' src='_emanote-static/emanote-logo.svg' />
     </a>
   </div>

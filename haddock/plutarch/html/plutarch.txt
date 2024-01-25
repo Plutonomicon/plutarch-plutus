@@ -3,7 +3,7 @@
 
 
 @package plutarch
-@version 1.3.0
+@version 1.5.0
 
 module Plutarch.DataRepr.Internal.HList.Utils
 newtype Labeled sym a

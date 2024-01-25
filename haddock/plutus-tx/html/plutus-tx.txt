@@ -6,7 +6,7 @@
 --   
 --   Libraries for Plutus Tx and its prelude
 @package plutus-tx
-@version 1.7.0.0
+@version 1.20.0.0
 
 module PlutusTx.Bool
 data () => Bool
@@ -347,6 +347,10 @@ fmap :: Functor f => (a -> b) -> f a -> f b
 (<$>) :: Functor f => (a -> b) -> f a -> f b
 infixl 4 <$>
 
+-- | Plutus Tx version of <a>(&lt;&amp;&gt;)</a>.
+(<&>) :: Functor f => f a -> (a -> b) -> f b
+infixl 1 <&>
+
 -- | Plutus Tx version of <a>(&lt;$)</a>.
 (<$) :: Functor f => a -> f b -> f a
 infixl 4 <$
@@ -401,12 +405,12 @@ mustBeReplaced :: String -> a
 module PlutusTx.Builtins.Internal
 error :: BuiltinUnit -> a
 data BuiltinBool
-BuiltinBool :: Bool -> BuiltinBool
+BuiltinBool :: ~Bool -> BuiltinBool
 true :: BuiltinBool
 false :: BuiltinBool
 ifThenElse :: BuiltinBool -> a -> a -> a
 data BuiltinUnit
-BuiltinUnit :: () -> BuiltinUnit
+BuiltinUnit :: ~() -> BuiltinUnit
 unitval :: BuiltinUnit
 chooseUnit :: BuiltinUnit -> a -> a
 type BuiltinInteger = Integer
@@ -423,7 +427,7 @@ equalsInteger :: BuiltinInteger -> BuiltinInteger -> BuiltinBool
 
 -- | An opaque type representing Plutus Core ByteStrings.
 data BuiltinByteString
-BuiltinByteString :: ByteString -> BuiltinByteString
+BuiltinByteString :: ~ByteString -> BuiltinByteString
 appendByteString :: BuiltinByteString -> BuiltinByteString -> BuiltinByteString
 consByteString :: BuiltinInteger -> BuiltinByteString -> BuiltinByteString
 sliceByteString :: BuiltinInteger -> BuiltinInteger -> BuiltinByteString -> BuiltinByteString
@@ -432,7 +436,9 @@ indexByteString :: BuiltinByteString -> BuiltinInteger -> BuiltinInteger
 emptyByteString :: BuiltinByteString
 sha2_256 :: BuiltinByteString -> BuiltinByteString
 sha3_256 :: BuiltinByteString -> BuiltinByteString
+blake2b_224 :: BuiltinByteString -> BuiltinByteString
 blake2b_256 :: BuiltinByteString -> BuiltinByteString
+keccak_256 :: BuiltinByteString -> BuiltinByteString
 verifyEd25519Signature :: BuiltinByteString -> BuiltinByteString -> BuiltinByteString -> BuiltinBool
 verifyEcdsaSecp256k1Signature :: BuiltinByteString -> BuiltinByteString -> BuiltinByteString -> BuiltinBool
 verifySchnorrSecp256k1Signature :: BuiltinByteString -> BuiltinByteString -> BuiltinByteString -> BuiltinBool
@@ -442,19 +448,19 @@ lessThanByteString :: BuiltinByteString -> BuiltinByteString -> BuiltinBool
 lessThanEqualsByteString :: BuiltinByteString -> BuiltinByteString -> BuiltinBool
 decodeUtf8 :: BuiltinByteString -> BuiltinString
 data BuiltinString
-BuiltinString :: Text -> BuiltinString
+BuiltinString :: ~Text -> BuiltinString
 appendString :: BuiltinString -> BuiltinString -> BuiltinString
 emptyString :: BuiltinString
 equalsString :: BuiltinString -> BuiltinString -> BuiltinBool
 trace :: BuiltinString -> a -> a
 encodeUtf8 :: BuiltinString -> BuiltinByteString
 data BuiltinPair a b
-BuiltinPair :: (a, b) -> BuiltinPair a b
+BuiltinPair :: ~(a, b) -> BuiltinPair a b
 fst :: BuiltinPair a b -> a
 snd :: BuiltinPair a b -> b
 mkPairData :: BuiltinData -> BuiltinData -> BuiltinPair BuiltinData BuiltinData
 data BuiltinList a
-BuiltinList :: [a] -> BuiltinList a
+BuiltinList :: ~[a] -> BuiltinList a
 null :: BuiltinList a -> BuiltinBool
 head :: BuiltinList a -> a
 tail :: BuiltinList a -> BuiltinList a
@@ -477,7 +483,7 @@ mkCons :: a -> BuiltinList a -> BuiltinList a
 --   <a>builtinDataToData</a> and <a>dataToBuiltinData</a>, but note that
 --   these will not work on-chain.
 data BuiltinData
-BuiltinData :: Data -> BuiltinData
+BuiltinData :: ~Data -> BuiltinData
 
 -- | Convert a <a>BuiltinData</a> into a <a>Data</a>. Only works off-chain.
 builtinDataToData :: BuiltinData -> Data
@@ -497,13 +503,70 @@ unsafeDataAsI :: BuiltinData -> BuiltinInteger
 unsafeDataAsB :: BuiltinData -> BuiltinByteString
 equalsData :: BuiltinData -> BuiltinData -> BuiltinBool
 serialiseData :: BuiltinData -> BuiltinByteString
+
+-- | Note [Wrapping the BLS12-381 types in PlutusTx]
+--   
+--   As explained in Note [Wrapping the BLS12-381 types in Plutus Core],
+--   the types exported by the Haskell bindings for the <tt>blst</tt>
+--   library are ForeignPtrs which have to be wrapped in newtypes to keep
+--   the PLC builtin machinery happy. However, there's a further
+--   complication in PlutusTx: if you try to use the newtypes directly then
+--   the plugin sees through the newtypes to the foreign pointers and fails
+--   because it doesn't know how to handle them. To avoid this we further
+--   wrap the newtypes in datatypes here. We could have done this in Plutus
+--   Core by using `data` instead of `newtype`, but then the code here
+--   dealing with BLS types and builtins doesn't look like the code for the
+--   other builtins. Because of this it seemed safer and more uniform to
+--   add the datatype wrapper here rather than in the Plutus Core code.
+data BuiltinBLS12_381_G1_Element
+BuiltinBLS12_381_G1_Element :: ~Element -> BuiltinBLS12_381_G1_Element
+bls12_381_G1_equals :: BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element -> BuiltinBool
+bls12_381_G1_add :: BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element
+bls12_381_G1_neg :: BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element
+bls12_381_G1_scalarMul :: BuiltinInteger -> BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element
+bls12_381_G1_compress :: BuiltinBLS12_381_G1_Element -> BuiltinByteString
+bls12_381_G1_uncompress :: BuiltinByteString -> BuiltinBLS12_381_G1_Element
+bls12_381_G1_hashToGroup :: BuiltinByteString -> BuiltinByteString -> BuiltinBLS12_381_G1_Element
+bls12_381_G1_compressed_zero :: BuiltinByteString
+bls12_381_G1_compressed_generator :: BuiltinByteString
+data BuiltinBLS12_381_G2_Element
+BuiltinBLS12_381_G2_Element :: ~Element -> BuiltinBLS12_381_G2_Element
+bls12_381_G2_equals :: BuiltinBLS12_381_G2_Element -> BuiltinBLS12_381_G2_Element -> BuiltinBool
+bls12_381_G2_add :: BuiltinBLS12_381_G2_Element -> BuiltinBLS12_381_G2_Element -> BuiltinBLS12_381_G2_Element
+bls12_381_G2_neg :: BuiltinBLS12_381_G2_Element -> BuiltinBLS12_381_G2_Element
+bls12_381_G2_scalarMul :: BuiltinInteger -> BuiltinBLS12_381_G2_Element -> BuiltinBLS12_381_G2_Element
+bls12_381_G2_compress :: BuiltinBLS12_381_G2_Element -> BuiltinByteString
+bls12_381_G2_uncompress :: BuiltinByteString -> BuiltinBLS12_381_G2_Element
+bls12_381_G2_hashToGroup :: BuiltinByteString -> BuiltinByteString -> BuiltinBLS12_381_G2_Element
+bls12_381_G2_compressed_zero :: BuiltinByteString
+bls12_381_G2_compressed_generator :: BuiltinByteString
+data BuiltinBLS12_381_MlResult
+BuiltinBLS12_381_MlResult :: ~MlResult -> BuiltinBLS12_381_MlResult
+bls12_381_millerLoop :: BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G2_Element -> BuiltinBLS12_381_MlResult
+bls12_381_mulMlResult :: BuiltinBLS12_381_MlResult -> BuiltinBLS12_381_MlResult -> BuiltinBLS12_381_MlResult
+bls12_381_finalVerify :: BuiltinBLS12_381_MlResult -> BuiltinBLS12_381_MlResult -> BuiltinBool
+integerToByteString :: BuiltinBool -> BuiltinInteger -> BuiltinInteger -> BuiltinByteString
+byteStringToInteger :: BuiltinBool -> BuiltinByteString -> BuiltinInteger
 instance Data.Data.Data PlutusTx.Builtins.Internal.BuiltinBool
 instance Data.Data.Data PlutusTx.Builtins.Internal.BuiltinUnit
 instance Data.Data.Data PlutusTx.Builtins.Internal.BuiltinByteString
 instance Data.Data.Data PlutusTx.Builtins.Internal.BuiltinString
 instance (Data.Data.Data a, Data.Data.Data b) => Data.Data.Data (PlutusTx.Builtins.Internal.BuiltinPair a b)
 instance Data.Data.Data a => Data.Data.Data (PlutusTx.Builtins.Internal.BuiltinList a)
+instance GHC.Generics.Generic PlutusTx.Builtins.Internal.BuiltinData
 instance Data.Data.Data PlutusTx.Builtins.Internal.BuiltinData
+instance GHC.Show.Show PlutusTx.Builtins.Internal.BuiltinBLS12_381_MlResult
+instance GHC.Classes.Eq PlutusTx.Builtins.Internal.BuiltinBLS12_381_MlResult
+instance Control.DeepSeq.NFData PlutusTx.Builtins.Internal.BuiltinBLS12_381_MlResult
+instance Prettyprinter.Internal.Pretty PlutusTx.Builtins.Internal.BuiltinBLS12_381_MlResult
+instance GHC.Show.Show PlutusTx.Builtins.Internal.BuiltinBLS12_381_G2_Element
+instance GHC.Classes.Eq PlutusTx.Builtins.Internal.BuiltinBLS12_381_G2_Element
+instance Control.DeepSeq.NFData PlutusTx.Builtins.Internal.BuiltinBLS12_381_G2_Element
+instance Prettyprinter.Internal.Pretty PlutusTx.Builtins.Internal.BuiltinBLS12_381_G2_Element
+instance GHC.Show.Show PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
+instance GHC.Classes.Eq PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
+instance Control.DeepSeq.NFData PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
+instance Prettyprinter.Internal.Pretty PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
 instance GHC.Show.Show PlutusTx.Builtins.Internal.BuiltinData
 instance GHC.Classes.Eq PlutusTx.Builtins.Internal.BuiltinData
 instance GHC.Classes.Ord PlutusTx.Builtins.Internal.BuiltinData
@@ -553,6 +616,9 @@ instance PlutusTx.Builtins.Class.ToBuiltin (PlutusTx.Builtins.Internal.BuiltinDa
 instance PlutusTx.Builtins.Class.ToBuiltin [PlutusTx.Builtins.Internal.BuiltinData] (PlutusTx.Builtins.Internal.BuiltinList PlutusTx.Builtins.Internal.BuiltinData)
 instance PlutusTx.Builtins.Class.ToBuiltin [(PlutusTx.Builtins.Internal.BuiltinData, PlutusTx.Builtins.Internal.BuiltinData)] (PlutusTx.Builtins.Internal.BuiltinList (PlutusTx.Builtins.Internal.BuiltinPair PlutusTx.Builtins.Internal.BuiltinData PlutusTx.Builtins.Internal.BuiltinData))
 instance PlutusTx.Builtins.Class.ToBuiltin PlutusTx.Builtins.Internal.BuiltinData PlutusTx.Builtins.Internal.BuiltinData
+instance PlutusTx.Builtins.Class.ToBuiltin PlutusCore.Crypto.BLS12_381.G1.Element PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
+instance PlutusTx.Builtins.Class.ToBuiltin PlutusCore.Crypto.BLS12_381.G2.Element PlutusTx.Builtins.Internal.BuiltinBLS12_381_G2_Element
+instance PlutusTx.Builtins.Class.ToBuiltin PlutusCore.Crypto.BLS12_381.Pairing.MlResult PlutusTx.Builtins.Internal.BuiltinBLS12_381_MlResult
 instance PlutusTx.Builtins.Class.FromBuiltin PlutusTx.Builtins.Internal.BuiltinInteger GHC.Num.Integer.Integer
 instance PlutusTx.Builtins.Class.FromBuiltin PlutusTx.Builtins.Internal.BuiltinBool GHC.Types.Bool
 instance PlutusTx.Builtins.Class.FromBuiltin PlutusTx.Builtins.Internal.BuiltinUnit ()
@@ -561,6 +627,9 @@ instance PlutusTx.Builtins.Class.FromBuiltin PlutusTx.Builtins.Internal.BuiltinS
 instance (PlutusTx.Builtins.Class.FromBuiltin arep a, PlutusTx.Builtins.Class.FromBuiltin brep b) => PlutusTx.Builtins.Class.FromBuiltin (PlutusTx.Builtins.Internal.BuiltinPair arep brep) (a, b)
 instance PlutusTx.Builtins.Class.FromBuiltin arep a => PlutusTx.Builtins.Class.FromBuiltin (PlutusTx.Builtins.Internal.BuiltinList arep) [a]
 instance PlutusTx.Builtins.Class.FromBuiltin PlutusTx.Builtins.Internal.BuiltinData PlutusTx.Builtins.Internal.BuiltinData
+instance PlutusTx.Builtins.Class.FromBuiltin PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element PlutusCore.Crypto.BLS12_381.G1.Element
+instance PlutusTx.Builtins.Class.FromBuiltin PlutusTx.Builtins.Internal.BuiltinBLS12_381_G2_Element PlutusCore.Crypto.BLS12_381.G2.Element
+instance PlutusTx.Builtins.Class.FromBuiltin PlutusTx.Builtins.Internal.BuiltinBLS12_381_MlResult PlutusCore.Crypto.BLS12_381.Pairing.MlResult
 instance Data.String.IsString PlutusTx.Builtins.Internal.BuiltinString
 instance Data.String.IsString PlutusTx.Builtins.Internal.BuiltinByteString
 
@@ -611,8 +680,14 @@ sha2_256 :: BuiltinByteString -> BuiltinByteString
 -- | The SHA3-256 hash of a <tt>ByteString</tt>
 sha3_256 :: BuiltinByteString -> BuiltinByteString
 
+-- | The BLAKE2B-224 hash of a <tt>ByteString</tt>
+blake2b_224 :: BuiltinByteString -> BuiltinByteString
+
 -- | The BLAKE2B-256 hash of a <tt>ByteString</tt>
 blake2b_256 :: BuiltinByteString -> BuiltinByteString
+
+-- | The KECCAK-256 hash of a <tt>ByteString</tt>
+keccak_256 :: BuiltinByteString -> BuiltinByteString
 
 -- | Ed25519 signature verification. Verify that the signature is a
 --   signature of the message by the public key. This will fail if key or
@@ -840,13 +915,74 @@ equalsString :: BuiltinString -> BuiltinString -> Bool
 
 -- | Convert a String into a ByteString.
 encodeUtf8 :: BuiltinString -> BuiltinByteString
+
+-- | Turn a builtin pair into a normal pair, useful in patterns.
+pairToPair :: BuiltinPair a b -> (a, b)
 matchList :: forall a r. BuiltinList a -> r -> (a -> BuiltinList a -> r) -> r
+headMaybe :: BuiltinList a -> Maybe a
+head :: BuiltinList a -> a
+tail :: BuiltinList a -> BuiltinList a
+
+-- | Uncons a builtin list, failing if the list is empty, useful in
+--   patterns.
+uncons :: BuiltinList a -> Maybe (a, BuiltinList a)
+
+-- | Uncons a builtin list, failing if the list is empty, useful in
+--   patterns.
+unsafeUncons :: BuiltinList a -> (a, BuiltinList a)
 
 -- | Emit the given string as a trace message before evaluating the
 --   argument.
 trace :: BuiltinString -> a -> a
+
+-- | Note [Wrapping the BLS12-381 types in PlutusTx]
+--   
+--   As explained in Note [Wrapping the BLS12-381 types in Plutus Core],
+--   the types exported by the Haskell bindings for the <tt>blst</tt>
+--   library are ForeignPtrs which have to be wrapped in newtypes to keep
+--   the PLC builtin machinery happy. However, there's a further
+--   complication in PlutusTx: if you try to use the newtypes directly then
+--   the plugin sees through the newtypes to the foreign pointers and fails
+--   because it doesn't know how to handle them. To avoid this we further
+--   wrap the newtypes in datatypes here. We could have done this in Plutus
+--   Core by using `data` instead of `newtype`, but then the code here
+--   dealing with BLS types and builtins doesn't look like the code for the
+--   other builtins. Because of this it seemed safer and more uniform to
+--   add the datatype wrapper here rather than in the Plutus Core code.
+data BuiltinBLS12_381_G1_Element
+bls12_381_G1_equals :: BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element -> Bool
+bls12_381_G1_add :: BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element
+bls12_381_G1_scalarMul :: Integer -> BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element
+bls12_381_G1_neg :: BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element
+bls12_381_G1_compress :: BuiltinBLS12_381_G1_Element -> BuiltinByteString
+bls12_381_G1_uncompress :: BuiltinByteString -> BuiltinBLS12_381_G1_Element
+bls12_381_G1_hashToGroup :: BuiltinByteString -> BuiltinByteString -> BuiltinBLS12_381_G1_Element
+bls12_381_G1_compressed_zero :: BuiltinByteString
+bls12_381_G1_compressed_generator :: BuiltinByteString
+data BuiltinBLS12_381_G2_Element
+bls12_381_G2_equals :: BuiltinBLS12_381_G2_Element -> BuiltinBLS12_381_G2_Element -> Bool
+bls12_381_G2_add :: BuiltinBLS12_381_G2_Element -> BuiltinBLS12_381_G2_Element -> BuiltinBLS12_381_G2_Element
+bls12_381_G2_scalarMul :: Integer -> BuiltinBLS12_381_G2_Element -> BuiltinBLS12_381_G2_Element
+bls12_381_G2_neg :: BuiltinBLS12_381_G2_Element -> BuiltinBLS12_381_G2_Element
+bls12_381_G2_compress :: BuiltinBLS12_381_G2_Element -> BuiltinByteString
+bls12_381_G2_uncompress :: BuiltinByteString -> BuiltinBLS12_381_G2_Element
+bls12_381_G2_hashToGroup :: BuiltinByteString -> BuiltinByteString -> BuiltinBLS12_381_G2_Element
+bls12_381_G2_compressed_zero :: BuiltinByteString
+bls12_381_G2_compressed_generator :: BuiltinByteString
+data BuiltinBLS12_381_MlResult
+bls12_381_millerLoop :: BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G2_Element -> BuiltinBLS12_381_MlResult
+bls12_381_mulMlResult :: BuiltinBLS12_381_MlResult -> BuiltinBLS12_381_MlResult -> BuiltinBLS12_381_MlResult
+bls12_381_finalVerify :: BuiltinBLS12_381_MlResult -> BuiltinBLS12_381_MlResult -> Bool
 fromBuiltin :: FromBuiltin arep a => arep -> a
 toBuiltin :: ToBuiltin a arep => a -> arep
+
+-- | Convert a <tt>BuiltinInteger</tt> into a <a>BuiltinByteString</a>, as
+--   described in <a>CIP-0087</a>.
+integerToByteString :: Bool -> Integer -> Integer -> BuiltinByteString
+
+-- | Convert a <a>BuiltinByteString</a> to a <tt>BuiltinInteger</tt>, as
+--   described in <a>CIP-0087</a>.
+byteStringToInteger :: Bool -> BuiltinByteString -> Integer
 
 module PlutusTx.Trace
 
@@ -886,20 +1022,32 @@ class Lift uni a
 lift :: Lift uni a => a -> RTCompile uni fun (Term TyName Name uni fun ())
 type RTCompile uni fun = DefT Name uni fun () Quote
 instance (TypeError ...) => PlutusTx.Lift.Class.Lift uni GHC.Types.Int
-instance Universe.Core.Includes uni GHC.Num.Integer.Integer => PlutusTx.Lift.Class.Lift uni GHC.Num.Integer.Integer
-instance Universe.Core.Includes uni Data.ByteString.Internal.Type.ByteString => PlutusTx.Lift.Class.Lift uni Data.ByteString.Internal.Type.ByteString
-instance Universe.Core.Includes uni PlutusCore.Data.Data => PlutusTx.Lift.Class.Lift uni PlutusTx.Builtins.Internal.BuiltinData
-instance Universe.Core.Includes uni Data.ByteString.Internal.Type.ByteString => PlutusTx.Lift.Class.Lift uni PlutusTx.Builtins.Internal.BuiltinByteString
-instance Universe.Core.Includes uni Data.Text.Internal.Text => PlutusTx.Lift.Class.Lift uni PlutusTx.Builtins.Internal.BuiltinString
-instance (PlutusTx.Builtins.Class.FromBuiltin arep a, Universe.Core.Includes uni [a]) => PlutusTx.Lift.Class.Lift uni (PlutusTx.Builtins.Internal.BuiltinList arep)
+instance PlutusCore.Core.Type.HasTermLevel uni GHC.Num.Integer.Integer => PlutusTx.Lift.Class.Lift uni GHC.Num.Integer.Integer
+instance PlutusCore.Core.Type.HasTermLevel uni PlutusCore.Data.Data => PlutusTx.Lift.Class.Lift uni PlutusTx.Builtins.Internal.BuiltinData
+instance PlutusCore.Core.Type.HasTermLevel uni Data.ByteString.Internal.Type.ByteString => PlutusTx.Lift.Class.Lift uni PlutusTx.Builtins.Internal.BuiltinByteString
+instance PlutusCore.Core.Type.HasTermLevel uni Data.Text.Internal.Text => PlutusTx.Lift.Class.Lift uni PlutusTx.Builtins.Internal.BuiltinString
+instance PlutusCore.Core.Type.HasTermLevel uni () => PlutusTx.Lift.Class.Lift uni PlutusTx.Builtins.Internal.BuiltinUnit
+instance PlutusCore.Core.Type.HasTermLevel uni GHC.Types.Bool => PlutusTx.Lift.Class.Lift uni PlutusTx.Builtins.Internal.BuiltinBool
+instance (PlutusTx.Builtins.Class.FromBuiltin arep a, PlutusCore.Core.Type.HasTermLevel uni [a]) => PlutusTx.Lift.Class.Lift uni (PlutusTx.Builtins.Internal.BuiltinList arep)
+instance (PlutusTx.Builtins.Class.FromBuiltin arep a, PlutusTx.Builtins.Class.FromBuiltin brep b, PlutusCore.Core.Type.HasTermLevel uni (a, b)) => PlutusTx.Lift.Class.Lift uni (PlutusTx.Builtins.Internal.BuiltinPair arep brep)
+instance PlutusCore.Core.Type.HasTermLevel uni PlutusCore.Crypto.BLS12_381.G1.Element => PlutusTx.Lift.Class.Lift uni PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
+instance PlutusCore.Core.Type.HasTermLevel uni PlutusCore.Crypto.BLS12_381.G2.Element => PlutusTx.Lift.Class.Lift uni PlutusTx.Builtins.Internal.BuiltinBLS12_381_G2_Element
+instance PlutusCore.Core.Type.HasTermLevel uni PlutusCore.Crypto.BLS12_381.Pairing.MlResult => PlutusTx.Lift.Class.Lift uni PlutusTx.Builtins.Internal.BuiltinBLS12_381_MlResult
 instance forall (uni :: * -> *) k (f :: * -> k) a. (PlutusTx.Lift.Class.Typeable uni f, PlutusTx.Lift.Class.Typeable uni a) => PlutusTx.Lift.Class.Typeable uni (f a)
 instance PlutusTx.Lift.Class.Typeable uni (->)
 instance (TypeError ...) => PlutusTx.Lift.Class.Typeable uni GHC.Types.Int
-instance Universe.Core.Includes uni GHC.Num.Integer.Integer => PlutusTx.Lift.Class.Typeable uni GHC.Num.Integer.Integer
-instance Universe.Core.Includes uni Data.ByteString.Internal.Type.ByteString => PlutusTx.Lift.Class.Typeable uni Data.ByteString.Internal.Type.ByteString
-instance Universe.Core.Includes uni PlutusCore.Data.Data => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinData
-instance Universe.Core.Includes uni Data.ByteString.Internal.Type.ByteString => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinByteString
-instance Universe.Core.Includes uni Data.Text.Internal.Text => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinString
+instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni GHC.Num.Integer.Integer => PlutusTx.Lift.Class.Typeable uni GHC.Num.Integer.Integer
+instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni Data.ByteString.Internal.Type.ByteString => PlutusTx.Lift.Class.Typeable uni Data.ByteString.Internal.Type.ByteString
+instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni PlutusCore.Data.Data => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinData
+instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni Data.ByteString.Internal.Type.ByteString => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinByteString
+instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni Data.Text.Internal.Text => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinString
+instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni () => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinUnit
+instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni GHC.Types.Bool => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinBool
+instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni [] => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinList
+instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni (,) => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinPair
+instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni PlutusCore.Crypto.BLS12_381.G1.Element => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
+instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni PlutusCore.Crypto.BLS12_381.G2.Element => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinBLS12_381_G2_Element
+instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni PlutusCore.Crypto.BLS12_381.Pairing.MlResult => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinBLS12_381_MlResult
 
 module PlutusTx.ErrorCodes
 
@@ -960,6 +1108,9 @@ predOrderingBadArgumentError :: BuiltinString
 -- | PlutusTx.Enum.Ordering.toEnum: bad argument
 toEnumOrderingBadArgumentError :: BuiltinString
 
+-- | PlutusTx.List.last: empty list
+lastEmptyListError :: BuiltinString
+
 module PlutusTx.Eq
 
 -- | The <a>Eq</a> class defines equality (<a>==</a>).
@@ -972,6 +1123,8 @@ instance PlutusTx.Eq.Eq GHC.Num.Integer.Integer
 instance PlutusTx.Eq.Eq PlutusTx.Builtins.Internal.BuiltinByteString
 instance PlutusTx.Eq.Eq PlutusTx.Builtins.Internal.BuiltinData
 instance PlutusTx.Eq.Eq PlutusTx.Builtins.Internal.BuiltinString
+instance PlutusTx.Eq.Eq PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
+instance PlutusTx.Eq.Eq PlutusTx.Builtins.Internal.BuiltinBLS12_381_G2_Element
 instance PlutusTx.Eq.Eq a => PlutusTx.Eq.Eq [a]
 instance PlutusTx.Eq.Eq GHC.Types.Bool
 instance PlutusTx.Eq.Eq a => PlutusTx.Eq.Eq (GHC.Maybe.Maybe a)
@@ -1013,6 +1166,9 @@ instance PlutusTx.Eq.Eq GHC.Types.Ordering
 
 module PlutusTx.List
 
+-- | Plutus Tx version of <a>uncons</a>.
+uncons :: [a] -> Maybe (a, [a])
+
 -- | Test whether a list is empty.
 null :: [a] -> Bool
 
@@ -1022,7 +1178,7 @@ null :: [a] -> Bool
 --   &gt;&gt;&gt; map (\i -&gt; i + 1) [1, 2, 3]
 --   [2,3,4]
 --   </pre>
-map :: (a -> b) -> [a] -> [b]
+map :: forall a b. (a -> b) -> [a] -> [b]
 
 -- | Returns the conjunction of a list of Bools.
 and :: [Bool] -> Bool
@@ -1032,10 +1188,10 @@ or :: [Bool] -> Bool
 
 -- | Determines whether any element of the structure satisfies the
 --   predicate.
-any :: (a -> Bool) -> [a] -> Bool
+any :: forall a. (a -> Bool) -> [a] -> Bool
 
 -- | Determines whether all elements of the list satisfy the predicate.
-all :: (a -> Bool) -> [a] -> Bool
+all :: forall a. (a -> Bool) -> [a] -> Bool
 
 -- | Does the element occur in the list?
 elem :: Eq a => a -> [a] -> Bool
@@ -1045,7 +1201,7 @@ notElem :: Eq a => a -> [a] -> Bool
 
 -- | Returns the leftmost element matching the predicate, or <a>Nothing</a>
 --   if there's no such element.
-find :: (a -> Bool) -> [a] -> Maybe a
+find :: forall a. (a -> Bool) -> [a] -> Maybe a
 
 -- | Plutus Tx version of <a>filter</a>.
 --   
@@ -1073,13 +1229,48 @@ findIndex :: (a -> Bool) -> [a] -> Maybe Integer
 --   &gt;&gt;&gt; foldr (\i s -&gt; s + i) 0 [1, 2, 3, 4]
 --   10
 --   </pre>
-foldr :: (a -> b -> b) -> b -> [a] -> b
+foldr :: forall a b. (a -> b -> b) -> b -> [a] -> b
+
+-- | Plutus Tx velsion of <a>foldl</a>.
+--   
+--   <pre>
+--   &gt;&gt;&gt; foldl (\s i -&gt; s + i) 0 [1, 2, 3, 4]
+--   10
+--   </pre>
+foldl :: forall a b. (b -> a -> b) -> b -> [a] -> b
+
+-- | Cons each element of the first list to the second one in reverse order
+--   (i.e. the last element of the first list is the head of the result).
+--   
+--   <pre>
+--   revAppend xs ys === reverse xs ++ ys
+--   </pre>
+--   
+--   <pre>
+--   &gt;&gt;&gt; revAppend "abc" "de"
+--   "cbade"
+--   </pre>
+revAppend :: forall a. [a] -> [a] -> [a]
 
 -- | Plutus Tx version of <a>reverse</a>.
 reverse :: [a] -> [a]
 
+-- | Plutus Tx version of <a>concat</a>.
+--   
+--   <pre>
+--   &gt;&gt;&gt; concat [[1, 2], [3], [4, 5]]
+--   [1,2,3,4,5]
+--   </pre>
+concat :: [[a]] -> [a]
+
+-- | Plutus Tx version of <a>concatMap</a>.
+concatMap :: (a -> [b]) -> [a] -> [b]
+
 -- | Plutus Tx version of <a>zip</a>.
 zip :: [a] -> [b] -> [(a, b)]
+
+-- | Plutus Tx version of <a>unzip</a>.
+unzip :: [(a, b)] -> ([a], [b])
 
 -- | Plutus Tx version of <a>(++)</a>.
 --   
@@ -1096,11 +1287,14 @@ infixr 5 ++
 --   &gt;&gt;&gt; [10, 11, 12] !! 2
 --   12
 --   </pre>
-(!!) :: [a] -> Integer -> a
+(!!) :: forall a. [a] -> Integer -> a
 infixl 9 !!
 
 -- | Plutus Tx version of <a>head</a>.
 head :: [a] -> a
+
+-- | Plutus Tx version of <a>last</a>.
+last :: [a] -> a
 
 -- | Plutus Tx version of <a>tail</a>.
 tail :: [a] -> [a]
@@ -1121,10 +1315,13 @@ nub :: Eq a => [a] -> [a]
 nubBy :: (a -> a -> Bool) -> [a] -> [a]
 
 -- | Plutus Tx version of <a>zipWith</a>.
-zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
+zipWith :: forall a b c. (a -> b -> c) -> [a] -> [b] -> [c]
 
 -- | Plutus Tx version of <a>dropWhile</a>.
-dropWhile :: (a -> Bool) -> [a] -> [a]
+dropWhile :: forall a. (a -> Bool) -> [a] -> [a]
+
+-- | Plutus Tx version of <a>replicate</a>.
+replicate :: forall a. Integer -> a -> [a]
 
 -- | Plutus Tx version of <a>partition</a>.
 partition :: (a -> Bool) -> [a] -> ([a], [a])
@@ -1457,19 +1654,19 @@ loadFromFile :: FilePath -> SpliceQ (CompiledCode a)
 module PlutusTx.Lift
 
 -- | Get a Plutus Core term corresponding to the given value.
-safeLift :: (Lift uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), GEq uni, AsTypeErrorExt e uni (Provenance ()), AsFreeVariableError e, AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun)) => Version -> a -> m (Term TyName Name uni fun (), Term NamedDeBruijn uni fun ())
+safeLift :: (Lift uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), GEq uni, AsTypeErrorExt e uni (Provenance ()), AsFreeVariableError e, AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> m (Term TyName Name uni fun (), Term NamedDeBruijn uni fun ())
 
 -- | Get a Plutus Core program corresponding to the given value.
-safeLiftProgram :: (Lift uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), GEq uni, AsTypeErrorExt e uni (Provenance ()), AsFreeVariableError e, AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun)) => Version -> a -> m (Program TyName Name uni fun (), Program NamedDeBruijn uni fun ())
-safeLiftCode :: (Lift uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), GEq uni, AsTypeErrorExt e uni (Provenance ()), AsFreeVariableError e, AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun)) => Version -> a -> m (CompiledCodeIn uni fun a)
+safeLiftProgram :: (Lift uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), GEq uni, AsTypeErrorExt e uni (Provenance ()), AsFreeVariableError e, AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> m (Program TyName Name uni fun (), Program NamedDeBruijn uni fun ())
+safeLiftCode :: (Lift uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), GEq uni, AsTypeErrorExt e uni (Provenance ()), AsFreeVariableError e, AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> m (CompiledCodeIn uni fun a)
 
 -- | Get a Plutus Core term corresponding to the given value, throwing any
 --   errors that occur as exceptions and ignoring fresh names.
-lift :: (Lift uni a, ThrowableBuiltins uni fun, Typecheckable uni fun, GEq uni, Default (CostingPart uni fun)) => Version -> a -> (Term TyName Name uni fun (), Term NamedDeBruijn uni fun ())
+lift :: (Lift uni a, ThrowableBuiltins uni fun, Typecheckable uni fun, GEq uni, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> (Term TyName Name uni fun (), Term NamedDeBruijn uni fun ())
 
 -- | Get a Plutus Core program corresponding to the given value, throwing
 --   any errors that occur as exceptions and ignoring fresh names.
-liftProgram :: (Lift uni a, ThrowableBuiltins uni fun, Typecheckable uni fun, GEq uni, Default (CostingPart uni fun)) => Version -> a -> (Program TyName Name uni fun (), Program NamedDeBruijn uni fun ())
+liftProgram :: (Lift uni a, ThrowableBuiltins uni fun, Typecheckable uni fun, GEq uni, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> (Program TyName Name uni fun (), Program NamedDeBruijn uni fun ())
 
 -- | Get a Plutus Core program in the default universe with the default
 --   version, corresponding to the given value, throwing any errors that
@@ -1479,19 +1676,19 @@ liftProgramDef :: Lift DefaultUni a => a -> (Program TyName Name DefaultUni Defa
 -- | Get a Plutus Core program corresponding to the given value as a
 --   <a>CompiledCodeIn</a>, throwing any errors that occur as exceptions
 --   and ignoring fresh names.
-liftCode :: (Lift uni a, GEq uni, ThrowableBuiltins uni fun, Typecheckable uni fun, Default (CostingPart uni fun)) => Version -> a -> CompiledCodeIn uni fun a
+liftCode :: (Lift uni a, GEq uni, ThrowableBuiltins uni fun, Typecheckable uni fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> CompiledCodeIn uni fun a
 
 -- | Get a Plutus Core program with the default version, corresponding to
 --   the given value as a <a>CompiledCodeIn</a>, throwing any errors that
 --   occur as exceptions and ignoring fresh names.
-liftCodeDef :: (Lift uni a, GEq uni, ThrowableBuiltins uni fun, Typecheckable uni fun, Default (CostingPart uni fun)) => a -> CompiledCodeIn uni fun a
+liftCodeDef :: (Lift uni a, GEq uni, ThrowableBuiltins uni fun, Typecheckable uni fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => a -> CompiledCodeIn uni fun a
 
 -- | Check that PLC term has the given type.
-typeCheckAgainst :: forall e a uni fun m. (Typeable uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), AsTypeErrorExt e uni (Provenance ()), AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, GEq uni, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun)) => Proxy a -> Program TyName Name uni fun () -> m ()
+typeCheckAgainst :: forall e a uni fun m. (Typeable uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), AsTypeErrorExt e uni (Provenance ()), AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, GEq uni, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun)) => Proxy a -> Program TyName Name uni fun () -> m ()
 
 -- | Try to interpret a PLC program as a <a>CompiledCodeIn</a> of the given
 --   type. Returns successfully iff the program has the right type.
-typeCode :: forall e a uni fun m. (Typeable uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), AsTypeErrorExt e uni (Provenance ()), AsFreeVariableError e, AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, GEq uni, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun)) => Proxy a -> Program TyName Name uni fun () -> m (CompiledCodeIn uni fun a)
+typeCode :: forall e a uni fun m. (Typeable uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), AsTypeErrorExt e uni (Provenance ()), AsFreeVariableError e, AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, GEq uni, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Proxy a -> Program TyName Name uni fun () -> m (CompiledCodeIn uni fun a)
 makeTypeable :: Type -> Name -> Q [Dec]
 makeLift :: Name -> Q [Dec]
 data LiftError
@@ -1528,6 +1725,7 @@ infixl 4 <*
 unless :: Applicative f => Bool -> f () -> f ()
 instance PlutusTx.Applicative.Applicative GHC.Maybe.Maybe
 instance PlutusTx.Applicative.Applicative (Data.Either.Either a)
+instance PlutusTx.Applicative.Applicative []
 instance PlutusTx.Applicative.Applicative Data.Functor.Identity.Identity
 instance PlutusTx.Monoid.Monoid m => PlutusTx.Applicative.Applicative (Data.Functor.Const.Const m)
 
@@ -1568,163 +1766,27 @@ instance PlutusTx.IsData.Class.UnsafeFromData GHC.Num.Integer.Integer
 instance PlutusTx.IsData.Class.UnsafeFromData PlutusTx.Builtins.Internal.BuiltinByteString
 instance PlutusTx.IsData.Class.UnsafeFromData a => PlutusTx.IsData.Class.UnsafeFromData [a]
 instance PlutusTx.IsData.Class.UnsafeFromData GHC.Base.Void
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusTx.Builtins.Internal.BuiltinBLS12_381_G2_Element
+instance (TypeError ...) => PlutusTx.IsData.Class.UnsafeFromData PlutusTx.Builtins.Internal.BuiltinBLS12_381_MlResult
 instance PlutusTx.IsData.Class.FromData PlutusTx.Builtins.Internal.BuiltinData
 instance (TypeError ...) => PlutusTx.IsData.Class.FromData GHC.Types.Int
 instance PlutusTx.IsData.Class.FromData GHC.Num.Integer.Integer
 instance PlutusTx.IsData.Class.FromData PlutusTx.Builtins.Internal.BuiltinByteString
 instance PlutusTx.IsData.Class.FromData a => PlutusTx.IsData.Class.FromData [a]
 instance PlutusTx.IsData.Class.FromData GHC.Base.Void
+instance PlutusTx.IsData.Class.FromData PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
+instance PlutusTx.IsData.Class.FromData PlutusTx.Builtins.Internal.BuiltinBLS12_381_G2_Element
+instance (TypeError ...) => PlutusTx.IsData.Class.FromData PlutusTx.Builtins.Internal.BuiltinBLS12_381_MlResult
 instance PlutusTx.IsData.Class.ToData PlutusTx.Builtins.Internal.BuiltinData
 instance (TypeError ...) => PlutusTx.IsData.Class.ToData GHC.Types.Int
 instance PlutusTx.IsData.Class.ToData GHC.Num.Integer.Integer
 instance PlutusTx.IsData.Class.ToData PlutusTx.Builtins.Internal.BuiltinByteString
 instance PlutusTx.IsData.Class.ToData a => PlutusTx.IsData.Class.ToData [a]
 instance PlutusTx.IsData.Class.ToData GHC.Base.Void
-
-module PlutusTx.IsData
-
--- | Generate a <a>FromData</a> and a <a>ToData</a> instance for a type.
---   This may not be stable in the face of constructor additions,
---   renamings, etc. Use <a>makeIsDataIndexed</a> if you need stability.
-unstableMakeIsData :: Name -> Q [Dec]
-
--- | Generate a <a>FromData</a> and a <a>ToData</a> instance for a type,
---   using an explicit mapping of constructor names to indices. Use this
---   for types where you need to keep the representation stable.
-makeIsDataIndexed :: Name -> [(Name, Int)] -> Q [Dec]
-
-module PlutusTx.Ratio
-
--- | Represents an arbitrary-precision ratio.
-data Rational
-
--- | Makes a <a>Rational</a> from a numerator and a denominator.
---   
---   <h1>Important note</h1>
---   
---   If given a zero denominator, this function will error. If you don't
---   mind a size increase, and care about safety, use <a>ratio</a> instead.
-unsafeRatio :: Integer -> Integer -> Rational
-
--- | Converts an <a>Integer</a> into the equivalent <a>Rational</a>.
-fromInteger :: Integer -> Rational
-
--- | Safely constructs a <a>Rational</a> from a numerator and a
---   denominator. Returns <tt>Nothing</tt> if given a zero denominator.
-ratio :: Integer -> Integer -> Maybe Rational
-
--- | Returns the numerator of its argument.
---   
---   <h1>Note</h1>
---   
---   It is <i>not</i> true in general that <tt><a>numerator</a>
---   <tt>&lt;$&gt;</tt> <a>ratio</a> x y = x</tt>; this will only hold if
---   <tt>x</tt> and <tt>y</tt> are coprime. This is due to <a>Rational</a>
---   normalizing the numerator and denominator.
-numerator :: Rational -> Integer
-
--- | Returns the denominator of its argument. This will always be greater
---   than, or equal to, 1, although the type does not describe this.
---   
---   <h1>Note</h1>
---   
---   It is <i>not</i> true in general that <tt><a>denominator</a>
---   <tt>&lt;$&gt;</tt> <a>ratio</a> x y = y</tt>; this will only hold if
---   <tt>x</tt> and <tt>y</tt> are coprime. This is due to <a>Rational</a>
---   normalizing the numerator and denominator.
-denominator :: Rational -> Integer
-
--- | <tt><a>round</a> r</tt> returns the nearest <a>Integer</a> value to
---   <tt>r</tt>. If <tt>r</tt> is equidistant between two values, the even
---   value will be given.
-round :: Rational -> Integer
-
--- | Returns the whole-number part of its argument, dropping any leftover
---   fractional part. More precisely, <tt><a>truncate</a> r = n</tt> where
---   <tt>(n, _) = <a>properFraction</a> r</tt>, but is much more efficient.
-truncate :: Rational -> Integer
-
--- | <tt><a>properFraction</a> r</tt> returns the pair <tt>(n, f)</tt>,
---   such that all of the following hold:
---   
---   <ul>
---   <li><tt><a>fromInteger</a> n <a>+</a> f = r</tt>;</li>
---   <li><tt>n</tt> and <tt>f</tt> both have the same sign as <tt>r</tt>;
---   and</li>
---   <li><tt><a>abs</a> f <a>&lt;</a> <a>one</a></tt>.</li>
---   </ul>
-properFraction :: Rational -> (Integer, Rational)
-
--- | Gives the reciprocal of the argument; specifically, for <tt>r
---   <a>/=</a> <a>zero</a></tt>, <tt>r <a>*</a> <a>recip</a> r =
---   <a>one</a></tt>.
---   
---   <h1>Important note</h1>
---   
---   The reciprocal of zero is mathematically undefined; thus,
---   <tt><a>recip</a> <a>zero</a></tt> will error. Use with care.
-recip :: Rational -> Rational
-
--- | Returns the absolute value of its argument.
---   
---   <h1>Note</h1>
---   
---   This is specialized for <a>Rational</a>; use this instead of the
---   generic version in <tt>PlutusTx.Numeric</tt>, as said generic version
---   produces much larger on-chain code than the specialized version here.
-abs :: Rational -> Rational
-
--- | Produces the additive inverse of its argument.
---   
---   <h1>Note</h1>
---   
---   This is specialized for <a>Rational</a>; use this instead of the
---   generic version of this function, as it is significantly smaller
---   on-chain.
-negate :: Rational -> Rational
-
--- | <ol>
---   <li>5</li>
---   </ol>
-half :: Rational
-
--- | Converts a GHC <a>Rational</a>, preserving value. Does not work
---   on-chain.
-fromGHC :: Rational -> Rational
-
--- | Converts a <a>Rational</a> to a GHC <a>Rational</a>, preserving value.
---   Does not work on-chain.
-toGHC :: Rational -> Rational
-
--- | Given a numerator and denominator, produces a <a>Rational</a> by
---   dividing both numerator and denominator by their greatest common
---   divisor.
-reduce :: Integer -> Integer -> Rational
-
--- | <tt><a>gcd</a> x y</tt> is the non-negative factor of both <tt>x</tt>
---   and <tt>y</tt> of which every common factor of <tt>x</tt> and
---   <tt>y</tt> is also a factor; for example <tt><a>gcd</a> 4 2 = 2</tt>,
---   <tt><a>gcd</a> (-4) 6 = 2</tt>, <tt><a>gcd</a> 0 4</tt> = <tt>4</tt>.
---   <tt><a>gcd</a> 0 0</tt> = <tt>0</tt>.
-gcd :: Integer -> Integer -> Integer
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusTx.Ratio.Rational
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusTx.Ratio.Rational
-instance GHC.Show.Show PlutusTx.Ratio.Rational
-instance GHC.Classes.Eq PlutusTx.Ratio.Rational
-instance PlutusTx.Eq.Eq PlutusTx.Ratio.Rational
-instance PlutusTx.Ord.Ord PlutusTx.Ratio.Rational
-instance GHC.Classes.Ord PlutusTx.Ratio.Rational
-instance PlutusTx.Numeric.AdditiveSemigroup PlutusTx.Ratio.Rational
-instance PlutusTx.Numeric.AdditiveMonoid PlutusTx.Ratio.Rational
-instance PlutusTx.Numeric.AdditiveGroup PlutusTx.Ratio.Rational
-instance PlutusTx.Numeric.MultiplicativeSemigroup PlutusTx.Ratio.Rational
-instance PlutusTx.Numeric.MultiplicativeMonoid PlutusTx.Ratio.Rational
-instance PlutusTx.Numeric.Module GHC.Num.Integer.Integer PlutusTx.Ratio.Rational
-instance PlutusTx.IsData.Class.ToData PlutusTx.Ratio.Rational
-instance PlutusTx.IsData.Class.FromData PlutusTx.Ratio.Rational
-instance PlutusTx.IsData.Class.UnsafeFromData PlutusTx.Ratio.Rational
-instance Data.Aeson.Types.ToJSON.ToJSON PlutusTx.Ratio.Rational
-instance Data.Aeson.Types.FromJSON.FromJSON PlutusTx.Ratio.Rational
+instance PlutusTx.IsData.Class.ToData PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
+instance PlutusTx.IsData.Class.ToData PlutusTx.Builtins.Internal.BuiltinBLS12_381_G2_Element
+instance (TypeError ...) => PlutusTx.IsData.Class.ToData PlutusTx.Builtins.Internal.BuiltinBLS12_381_MlResult
 
 module PlutusTx.Foldable
 
@@ -1859,6 +1921,157 @@ deriveShowExpForArg :: Integer -> Name -> Q Exp
 -- | Add parens if it is an infix data constructor.
 parenInfixConName :: Name -> String
 
+module PlutusTx.IsData
+
+-- | Generate a <a>FromData</a> and a <a>ToData</a> instance for a type.
+--   This may not be stable in the face of constructor additions,
+--   renamings, etc. Use <a>makeIsDataIndexed</a> if you need stability.
+unstableMakeIsData :: Name -> Q [Dec]
+
+-- | Generate a <a>FromData</a> and a <a>ToData</a> instance for a type,
+--   using an explicit mapping of constructor names to indices. Use this
+--   for types where you need to keep the representation stable.
+makeIsDataIndexed :: Name -> [(Name, Int)] -> Q [Dec]
+mkConstrCreateExpr :: Integer -> [Name] -> ExpQ
+mkUnsafeConstrMatchPattern :: Integer -> [Name] -> PatQ
+mkConstrPartsMatchPattern :: Integer -> [Name] -> PatQ
+mkUnsafeConstrPartsMatchPattern :: Integer -> [Name] -> PatQ
+
+module PlutusTx.Ratio
+
+-- | Represents an arbitrary-precision ratio.
+data Rational
+
+-- | Makes a <a>Rational</a> from a numerator and a denominator.
+--   
+--   <h1>Important note</h1>
+--   
+--   If given a zero denominator, this function will error. If you don't
+--   mind a size increase, and care about safety, use <a>ratio</a> instead.
+unsafeRatio :: Integer -> Integer -> Rational
+
+-- | Converts an <a>Integer</a> into the equivalent <a>Rational</a>.
+fromInteger :: Integer -> Rational
+
+-- | Safely constructs a <a>Rational</a> from a numerator and a
+--   denominator. Returns <tt>Nothing</tt> if given a zero denominator.
+ratio :: Integer -> Integer -> Maybe Rational
+
+-- | Returns the numerator of its argument.
+--   
+--   <h1>Note</h1>
+--   
+--   It is <i>not</i> true in general that <tt><a>numerator</a>
+--   <tt>&lt;$&gt;</tt> <a>ratio</a> x y = x</tt>; this will only hold if
+--   <tt>x</tt> and <tt>y</tt> are coprime. This is due to <a>Rational</a>
+--   normalizing the numerator and denominator.
+numerator :: Rational -> Integer
+
+-- | Returns the denominator of its argument. This will always be greater
+--   than, or equal to, 1, although the type does not describe this.
+--   
+--   <h1>Note</h1>
+--   
+--   It is <i>not</i> true in general that <tt><a>denominator</a>
+--   <tt>&lt;$&gt;</tt> <a>ratio</a> x y = y</tt>; this will only hold if
+--   <tt>x</tt> and <tt>y</tt> are coprime. This is due to <a>Rational</a>
+--   normalizing the numerator and denominator.
+denominator :: Rational -> Integer
+
+-- | <tt><a>round</a> r</tt> returns the nearest <a>Integer</a> value to
+--   <tt>r</tt>. If <tt>r</tt> is equidistant between two values, the even
+--   value will be given.
+round :: Rational -> Integer
+
+-- | Returns the whole-number part of its argument, dropping any leftover
+--   fractional part. More precisely, <tt><a>truncate</a> r = n</tt> where
+--   <tt>(n, _) = <a>properFraction</a> r</tt>, but is much more efficient.
+truncate :: Rational -> Integer
+
+-- | <tt><a>properFraction</a> r</tt> returns the pair <tt>(n, f)</tt>,
+--   such that all of the following hold:
+--   
+--   <ul>
+--   <li><tt><a>fromInteger</a> n <a>+</a> f = r</tt>;</li>
+--   <li><tt>n</tt> and <tt>f</tt> both have the same sign as <tt>r</tt>;
+--   and</li>
+--   <li><tt><a>abs</a> f <a>&lt;</a> <a>one</a></tt>.</li>
+--   </ul>
+properFraction :: Rational -> (Integer, Rational)
+
+-- | Gives the reciprocal of the argument; specifically, for <tt>r
+--   <a>/=</a> <a>zero</a></tt>, <tt>r <a>*</a> <a>recip</a> r =
+--   <a>one</a></tt>.
+--   
+--   <h1>Important note</h1>
+--   
+--   The reciprocal of zero is mathematically undefined; thus,
+--   <tt><a>recip</a> <a>zero</a></tt> will error. Use with care.
+recip :: Rational -> Rational
+
+-- | Returns the absolute value of its argument.
+--   
+--   <h1>Note</h1>
+--   
+--   This is specialized for <a>Rational</a>; use this instead of the
+--   generic version in <tt>PlutusTx.Numeric</tt>, as said generic version
+--   produces much larger on-chain code than the specialized version here.
+abs :: Rational -> Rational
+
+-- | Produces the additive inverse of its argument.
+--   
+--   <h1>Note</h1>
+--   
+--   This is specialized for <a>Rational</a>; use this instead of the
+--   generic version of this function, as it is significantly smaller
+--   on-chain.
+negate :: Rational -> Rational
+
+-- | <ol>
+--   <li>5</li>
+--   </ol>
+half :: Rational
+
+-- | Converts a GHC <a>Rational</a>, preserving value. Does not work
+--   on-chain.
+fromGHC :: Rational -> Rational
+
+-- | Converts a <a>Rational</a> to a GHC <a>Rational</a>, preserving value.
+--   Does not work on-chain.
+toGHC :: Rational -> Rational
+
+-- | Given a numerator and denominator, produces a <a>Rational</a> by
+--   dividing both numerator and denominator by their greatest common
+--   divisor.
+reduce :: Integer -> Integer -> Rational
+
+-- | <tt><a>gcd</a> x y</tt> is the non-negative factor of both <tt>x</tt>
+--   and <tt>y</tt> of which every common factor of <tt>x</tt> and
+--   <tt>y</tt> is also a factor; for example <tt><a>gcd</a> 4 2 = 2</tt>,
+--   <tt><a>gcd</a> (-4) 6 = 2</tt>, <tt><a>gcd</a> 0 4</tt> = <tt>4</tt>.
+--   <tt><a>gcd</a> 0 0</tt> = <tt>0</tt>.
+gcd :: Integer -> Integer -> Integer
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusTx.Ratio.Rational
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusTx.Ratio.Rational
+instance GHC.Generics.Generic PlutusTx.Ratio.Rational
+instance GHC.Show.Show PlutusTx.Ratio.Rational
+instance GHC.Classes.Eq PlutusTx.Ratio.Rational
+instance Prettyprinter.Internal.Pretty PlutusTx.Ratio.Rational
+instance PlutusTx.Eq.Eq PlutusTx.Ratio.Rational
+instance PlutusTx.Ord.Ord PlutusTx.Ratio.Rational
+instance GHC.Classes.Ord PlutusTx.Ratio.Rational
+instance PlutusTx.Numeric.AdditiveSemigroup PlutusTx.Ratio.Rational
+instance PlutusTx.Numeric.AdditiveMonoid PlutusTx.Ratio.Rational
+instance PlutusTx.Numeric.AdditiveGroup PlutusTx.Ratio.Rational
+instance PlutusTx.Numeric.MultiplicativeSemigroup PlutusTx.Ratio.Rational
+instance PlutusTx.Numeric.MultiplicativeMonoid PlutusTx.Ratio.Rational
+instance PlutusTx.Numeric.Module GHC.Num.Integer.Integer PlutusTx.Ratio.Rational
+instance PlutusTx.IsData.Class.ToData PlutusTx.Ratio.Rational
+instance PlutusTx.IsData.Class.FromData PlutusTx.Ratio.Rational
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusTx.Ratio.Rational
+instance Data.Aeson.Types.ToJSON.ToJSON PlutusTx.Ratio.Rational
+instance Data.Aeson.Types.FromJSON.FromJSON PlutusTx.Ratio.Rational
+
 module PlutusTx.Enum
 
 -- | Class <a>Enum</a> defines operations on sequentially ordered types.
@@ -1885,8 +2098,14 @@ toEnum :: Enum a => Integer -> a
 -- | Convert to an <a>Integer</a>.
 fromEnum :: Enum a => a -> Integer
 
--- | Construct a list from the given range.
+-- | Construct a list from the given range (corresponds to [a..b]).
 enumFromTo :: Enum a => a -> a -> [a]
+
+-- | Construct a list from the given range (corresponds to [a,b..c]). This
+--   has the same semantics as the Haskell version,so if a==b and c&gt;=b
+--   then you get an infinite list, which you probably don't want in Plutus
+--   Core.
+enumFromThenTo :: Enum a => a -> a -> a -> [a]
 instance PlutusTx.Enum.Enum GHC.Num.Integer.Integer
 instance PlutusTx.Enum.Enum ()
 instance PlutusTx.Enum.Enum GHC.Types.Bool
@@ -1998,7 +2217,7 @@ even :: Integer -> Bool
 odd :: Integer -> Bool
 
 -- | Plutus Tx version of <a>zipWith</a>.
-zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
+zipWith :: forall a b c. (a -> b -> c) -> [a] -> [b] -> [c]
 
 -- | Plutus Tx version of <a>sortBy</a>.
 sortBy :: (a -> a -> Ordering) -> [a] -> [a]
@@ -2032,19 +2251,28 @@ zip :: [a] -> [b] -> [(a, b)]
 --   &gt;&gt;&gt; map (\i -&gt; i + 1) [1, 2, 3]
 --   [2,3,4]
 --   </pre>
-map :: (a -> b) -> [a] -> [b]
+map :: forall a b. (a -> b) -> [a] -> [b]
 
 -- | Plutus Tx version of <a>listToMaybe</a>.
 listToMaybe :: [a] -> Maybe a
 
+-- | Plutus Tx version of <a>uncons</a>.
+uncons :: [a] -> Maybe (a, [a])
+
 -- | Plutus Tx version of <a>tail</a>.
 tail :: [a] -> [a]
+
+-- | Plutus Tx version of <a>last</a>.
+last :: [a] -> a
 
 -- | Test whether a list is empty.
 null :: [a] -> Bool
 
+-- | Plutus Tx version of <a>replicate</a>.
+replicate :: forall a. Integer -> a -> [a]
+
 -- | Plutus Tx version of <a>dropWhile</a>.
-dropWhile :: (a -> Bool) -> [a] -> [a]
+dropWhile :: forall a. (a -> Bool) -> [a] -> [a]
 
 -- | Plutus Tx version of <a>take</a>.
 take :: Integer -> [a] -> [a]
@@ -2066,10 +2294,10 @@ or :: [Bool] -> Bool
 
 -- | Determines whether any element of the structure satisfies the
 --   predicate.
-any :: (a -> Bool) -> [a] -> Bool
+any :: forall a. (a -> Bool) -> [a] -> Bool
 
 -- | Determines whether all elements of the list satisfy the predicate.
-all :: (a -> Bool) -> [a] -> Bool
+all :: forall a. (a -> Bool) -> [a] -> Bool
 
 -- | Does the element occur in the list?
 elem :: Eq a => a -> [a] -> Bool
@@ -2083,12 +2311,15 @@ notElem :: Eq a => a -> [a] -> Bool
 --   &gt;&gt;&gt; [10, 11, 12] !! 2
 --   12
 --   </pre>
-(!!) :: [a] -> Integer -> a
+(!!) :: forall a. [a] -> Integer -> a
 infixl 9 !!
+
+-- | Plutus Tx version of <a>unzip</a>.
+unzip :: [(a, b)] -> ([a], [b])
 
 -- | Returns the leftmost element matching the predicate, or <a>Nothing</a>
 --   if there's no such element.
-find :: (a -> Bool) -> [a] -> Maybe a
+find :: forall a. (a -> Bool) -> [a] -> Maybe a
 
 -- | Plutus Tx version of <a>findIndex</a>.
 findIndex :: (a -> Bool) -> [a] -> Maybe Integer
@@ -2110,6 +2341,19 @@ sort :: Ord a => [a] -> [a]
 
 -- | Return the element in the list, if there is precisely one.
 uniqueElement :: [a] -> Maybe a
+
+-- | Cons each element of the first list to the second one in reverse order
+--   (i.e. the last element of the first list is the head of the result).
+--   
+--   <pre>
+--   revAppend xs ys === reverse xs ++ ys
+--   </pre>
+--   
+--   <pre>
+--   &gt;&gt;&gt; revAppend "abc" "de"
+--   "cbade"
+--   </pre>
+revAppend :: forall a. [a] -> [a] -> [a]
 
 -- | An opaque type representing Plutus Core ByteStrings.
 data BuiltinByteString
@@ -2147,6 +2391,15 @@ sha2_256 :: BuiltinByteString -> BuiltinByteString
 
 -- | The SHA3-256 hash of a <tt>ByteString</tt>
 sha3_256 :: BuiltinByteString -> BuiltinByteString
+
+-- | The BLAKE2B-224 hash of a <tt>ByteString</tt>
+blake2b_224 :: BuiltinByteString -> BuiltinByteString
+
+-- | The BLAKE2B-256 hash of a <tt>ByteString</tt>
+blake2b_256 :: BuiltinByteString -> BuiltinByteString
+
+-- | The KECCAK-256 hash of a <tt>ByteString</tt>
+keccak_256 :: BuiltinByteString -> BuiltinByteString
 
 -- | Ed25519 signature verification. Verify that the signature is a
 --   signature of the message by the public key. This will fail if key or
@@ -2261,6 +2514,45 @@ round :: Rational -> Integer
 --   <a>builtinDataToData</a> and <a>dataToBuiltinData</a>, but note that
 --   these will not work on-chain.
 data BuiltinData
+
+-- | Note [Wrapping the BLS12-381 types in PlutusTx]
+--   
+--   As explained in Note [Wrapping the BLS12-381 types in Plutus Core],
+--   the types exported by the Haskell bindings for the <tt>blst</tt>
+--   library are ForeignPtrs which have to be wrapped in newtypes to keep
+--   the PLC builtin machinery happy. However, there's a further
+--   complication in PlutusTx: if you try to use the newtypes directly then
+--   the plugin sees through the newtypes to the foreign pointers and fails
+--   because it doesn't know how to handle them. To avoid this we further
+--   wrap the newtypes in datatypes here. We could have done this in Plutus
+--   Core by using `data` instead of `newtype`, but then the code here
+--   dealing with BLS types and builtins doesn't look like the code for the
+--   other builtins. Because of this it seemed safer and more uniform to
+--   add the datatype wrapper here rather than in the Plutus Core code.
+data BuiltinBLS12_381_G1_Element
+bls12_381_G1_equals :: BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element -> Bool
+bls12_381_G1_add :: BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element
+bls12_381_G1_neg :: BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element
+bls12_381_G1_scalarMul :: Integer -> BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element
+bls12_381_G1_compress :: BuiltinBLS12_381_G1_Element -> BuiltinByteString
+bls12_381_G1_uncompress :: BuiltinByteString -> BuiltinBLS12_381_G1_Element
+bls12_381_G1_hashToGroup :: BuiltinByteString -> BuiltinByteString -> BuiltinBLS12_381_G1_Element
+bls12_381_G1_compressed_zero :: BuiltinByteString
+bls12_381_G1_compressed_generator :: BuiltinByteString
+data BuiltinBLS12_381_G2_Element
+bls12_381_G2_equals :: BuiltinBLS12_381_G2_Element -> BuiltinBLS12_381_G2_Element -> Bool
+bls12_381_G2_add :: BuiltinBLS12_381_G2_Element -> BuiltinBLS12_381_G2_Element -> BuiltinBLS12_381_G2_Element
+bls12_381_G2_neg :: BuiltinBLS12_381_G2_Element -> BuiltinBLS12_381_G2_Element
+bls12_381_G2_scalarMul :: Integer -> BuiltinBLS12_381_G2_Element -> BuiltinBLS12_381_G2_Element
+bls12_381_G2_compress :: BuiltinBLS12_381_G2_Element -> BuiltinByteString
+bls12_381_G2_uncompress :: BuiltinByteString -> BuiltinBLS12_381_G2_Element
+bls12_381_G2_hashToGroup :: BuiltinByteString -> BuiltinByteString -> BuiltinBLS12_381_G2_Element
+bls12_381_G2_compressed_zero :: BuiltinByteString
+bls12_381_G2_compressed_generator :: BuiltinByteString
+data BuiltinBLS12_381_MlResult
+bls12_381_millerLoop :: BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G2_Element -> BuiltinBLS12_381_MlResult
+bls12_381_mulMlResult :: BuiltinBLS12_381_MlResult -> BuiltinBLS12_381_MlResult -> BuiltinBLS12_381_MlResult
+bls12_381_finalVerify :: BuiltinBLS12_381_MlResult -> BuiltinBLS12_381_MlResult -> Bool
 fromBuiltin :: FromBuiltin arep a => arep -> a
 toBuiltin :: ToBuiltin a arep => a -> arep
 
@@ -2316,6 +2608,9 @@ show :: Show a => a -> BuiltinString
 --   Like <a>ShowS</a>, the purpose of the function type here is to turn
 --   list concatenation into function composition.
 type ShowS = [BuiltinString] -> [BuiltinString]
+
+-- | Convert a non-negative integer to individual digits.
+toDigits :: Integer -> [Integer]
 showString :: BuiltinString -> ShowS
 showSpace :: ShowS
 showCommaSpace :: ShowS
@@ -2361,6 +2656,47 @@ instance PlutusTx.Show.TH.Show PlutusTx.Builtins.Internal.BuiltinData
 instance PlutusTx.Show.TH.Show GHC.Types.Bool
 instance PlutusTx.Show.TH.Show ()
 instance PlutusTx.Show.TH.Show a => PlutusTx.Show.TH.Show [a]
+
+module PlutusTx.AsData
+
+-- | <a>asData</a> takes a datatype declaration and "backs it" by
+--   <a>BuiltinData</a>. It does this by replacing the datatype with a
+--   newtype around <a>BuiltinData</a>, and providing pattern synonyms that
+--   match the behaviour of the original datatype.
+--   
+--   Since <a>BuiltinData</a> can only contain <a>BuiltinData</a>, the
+--   pattern synonyms encode and decode all the fields using
+--   <a>toBuiltinData</a> and <a>unsafeFromBuiltinData</a>. That means that
+--   these operations are called on every pattern match or construction.
+--   This *can* be very efficient if, for example, the datatypes for the
+--   fields have also been defined with <a>asData</a>, and so have trivial
+--   conversions to/from <a>BuiltinData</a> (or have very cheap
+--   conversions, like <a>Integer</a> and <tt>ByteString</tt>). But it can
+--   be very expensive otherwise, so take care.
+--   
+--   Deriving clauses are transferred from the quoted declaration to the
+--   generated newtype declaration. Note that you may therefore need to do
+--   strange things like use <tt>deriving newtype</tt> on a data
+--   declaration.
+--   
+--   Example: <tt> $(asData [d| data Example a = Ex1 Integer | Ex2 a a
+--   deriving newtype (Eq) |] </tt> becomes @ newtype Example a = Example
+--   BuiltinData deriving newtype (Eq)
+--   
+--   pattern Ex1 :: (ToData a, UnsafeFromData a) =&gt; Integer -&gt;
+--   Example a pattern Ex1 i <a>Example (unsafeDataAsConstr -</a> ((==) 0
+--   -&gt; True, [unsafeFromBuiltinData -&gt; i])) where Ex1 i = Example
+--   (mkConstr 0 [toBuiltinData i])
+--   
+--   pattern Ex2 :: (ToData a, UnsafeFromData a) =&gt; a -&gt; a -&gt;
+--   Example a pattern Ex2 a1 a2 <a>Example (unsafeDataAsConstr -</a> ((==)
+--   1 -&gt; True, [unsafeFromBuiltinData -&gt; a1, unsafeFromBuiltinData
+--   -&gt; a2])) where Ex2 a1 a2 = Example (mkConstr 1 [toBuiltinData a1,
+--   toBuiltinData a2])
+--   
+--   {-# COMPLETE Ex1, Ex2 #-} @
+asData :: Q [Dec] -> Q [Dec]
+asDataFor :: Dec -> Q [Dec]
 
 module PlutusTx
 
@@ -2468,17 +2804,17 @@ class Lift uni a
 --   should always be derived, do not write your own instance!
 class Typeable uni (a :: k)
 makeLift :: Name -> Q [Dec]
-safeLiftCode :: (Lift uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), GEq uni, AsTypeErrorExt e uni (Provenance ()), AsFreeVariableError e, AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun)) => Version -> a -> m (CompiledCodeIn uni fun a)
+safeLiftCode :: (Lift uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), GEq uni, AsTypeErrorExt e uni (Provenance ()), AsFreeVariableError e, AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> m (CompiledCodeIn uni fun a)
 
 -- | Get a Plutus Core program corresponding to the given value as a
 --   <a>CompiledCodeIn</a>, throwing any errors that occur as exceptions
 --   and ignoring fresh names.
-liftCode :: (Lift uni a, GEq uni, ThrowableBuiltins uni fun, Typecheckable uni fun, Default (CostingPart uni fun)) => Version -> a -> CompiledCodeIn uni fun a
+liftCode :: (Lift uni a, GEq uni, ThrowableBuiltins uni fun, Typecheckable uni fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> CompiledCodeIn uni fun a
 
 -- | Get a Plutus Core program with the default version, corresponding to
 --   the given value as a <a>CompiledCodeIn</a>, throwing any errors that
 --   occur as exceptions and ignoring fresh names.
-liftCodeDef :: (Lift uni a, GEq uni, ThrowableBuiltins uni fun, Typecheckable uni fun, Default (CostingPart uni fun)) => a -> CompiledCodeIn uni fun a
+liftCodeDef :: (Lift uni a, GEq uni, ThrowableBuiltins uni fun, Typecheckable uni fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => a -> CompiledCodeIn uni fun a
 
 
 -- | A map represented as an "association list" of key-value pairs.
@@ -2496,6 +2832,7 @@ empty :: Map k v
 -- | Is the map empty?
 null :: Map k v -> Bool
 fromList :: [(k, v)] -> Map k v
+fromListSafe :: Eq k => [(k, v)] -> Map k v
 toList :: Map k v -> [(k, v)]
 
 -- | The keys of a <a>Map</a>.

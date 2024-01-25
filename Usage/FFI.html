@@ -23,6 +23,9 @@
       <meta property='og:image' content />
       <meta property='og:type' content='website' />
       <meta property='og:title' content='FFI' />
+      
+        <meta name='twitter:card' content='summary_large_image' />
+      
     
     
       <base href='/plutarch-plutus/' />
@@ -51,7 +54,7 @@
 
   
   
-  <link href='tailwind.css?instanceId=83710d14-4ebc-48e2-a0d6-7d5adbff8033' rel='stylesheet' type='text/css' />
+  <link href='tailwind.css?instanceId=a509efe6-703a-4502-bda4-eef5d3bca437' rel='stylesheet' type='text/css' />
 
   <style>
     /* Heist error element */
@@ -199,10 +202,6 @@
   
     <style>
       /* For use in sidebar.tpl, as we cannot achieve this in tailwind itself! */
-      #sidebar:hover {
-        width: auto;
-      }
-
       /* md:min-w-48  */
       @media (min-width: 768px) {
         #sidebar {
@@ -3202,7 +3201,13 @@
 </h1>
     <article class='overflow-auto'>
   <!-- What goes in this file will appear on top of note body-->
-  <div xmlhtmlRaw><details>
+  
+
+
+
+
+
+<div xmlhtmlRaw><details>
 <summary> imports </summary>
 <p>
 </div><div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>{-# OPTIONS_GHC -Wno-unused-imports #-}
@@ -3218,7 +3223,21 @@ import PlutusTx.Builtins.Internal qualified as PlutusTx
 import Generics.SOP qualified as SOP
 import Data.Default (def)</code></pre></div><div xmlhtmlRaw></p>
 </details>
-</div><h1 id='interoperability-with-plutustx' class='pb-2 mb-2 text-5xl font-bold text-center'>Interoperability with PlutusTx</h1>
+</div>
+    <h1 id='interoperability-with-plutustx' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Interoperability with PlutusTx
+  
+  <a href='Usage/FFI.html#interoperability-with-plutustx'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
       
     <p class='mb-3'>
@@ -3252,7 +3271,21 @@ doubleUseInPlutarch = doubleImported # 21</code></pre></div>
     <p class='mb-3'>
       Note how Plutarch type <code class='py-0.5 px-0.5 bg-gray-100'>PInteger :--&gt; PInteger</code> corresponds to Haskell function type <code class='py-0.5 px-0.5 bg-gray-100'>Integer -&gt; Integer</code>. If the types didn’t correspond, the <code class='py-0.5 px-0.5 bg-gray-100'>foreignExport</code> and <code class='py-0.5 px-0.5 bg-gray-100'>foreignImport</code> applications wouldn’t compile. The following table shows the correspondence between the two universes of types:
     </p>
-  <table class='mb-3'><thead><tr class='border-b-2 border-t-2 border-gray-300'><th class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'>Plutarch</th><th class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'>Haskell</th></tr></thead><tbody><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>pa :--&gt; pb</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>a -&gt; b</code></td></tr><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>PTxList pa</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>[a]</code></td></tr><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>PTxMaybe pa</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>Maybe a</code></td></tr><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>PInteger</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>Integer</code></td></tr><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>PBool</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>BuiltinBool</code></td></tr><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>PString</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>BuiltinString</code></td></tr><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>PByteString</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>BuiltinByteString</code></td></tr><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>PBuiltinData</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>Data</code></td></tr><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>PUnit</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>BuiltinUnit</code></td></tr><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>PDelayed pa</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>Delayed a</code></td></tr></tbody></table><h2 id='user-defined-types' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>User-defined types</h2>
+  <table class='mb-3'><thead><tr class='border-b-2 border-t-2 border-gray-300'><th class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'>Plutarch</th><th class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'>Haskell</th></tr></thead><tbody><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>pa :--&gt; pb</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>a -&gt; b</code></td></tr><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>PTxList pa</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>[a]</code></td></tr><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>PTxMaybe pa</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>Maybe a</code></td></tr><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>PInteger</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>Integer</code></td></tr><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>PBool</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>BuiltinBool</code></td></tr><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>PString</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>BuiltinString</code></td></tr><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>PByteString</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>BuiltinByteString</code></td></tr><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>PBuiltinData</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>Data</code></td></tr><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>PUnit</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>BuiltinUnit</code></td></tr><tr class='border-b-2 border-t-2 border-gray-300'><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>PDelayed pa</code></td><td class='py-2 px-2 align-top border-r-2 border-l-2 border-gray-300'><code class='py-0.5 px-0.5 bg-gray-100'>Delayed a</code></td></tr></tbody></table>
+    <h2 id='user-defined-types' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  User-defined types
+  
+  <a href='Usage/FFI.html#user-defined-types'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
     <p class='mb-3'>
       When it comes to user-defined types, you have a choice of passing their values encoded as <code class='py-0.5 px-0.5 bg-gray-100'>Data</code> or directly. In the latter case, you’ll have to declare your type twice with two kinds: as a Haskell <code class='py-0.5 px-0.5 bg-gray-100'>Type</code> and as a Plutarch <code class='py-0.5 px-0.5 bg-gray-100'>PType</code>. Furthermore, both types must be instances of <code class='py-0.5 px-0.5 bg-gray-100'>SOP.Generic</code>, as in this example:
     </p>
@@ -3284,7 +3317,6 @@ instance DerivePlutusType PSampleRecord where type DPTStrat _ = PlutusTypeScott<
       This technique can be used for most data types, but it doesn’t cover recursive types (such as lists) nor data types with nullary constructors (such as <code class='py-0.5 px-0.5 bg-gray-100'>Maybe</code>). To interface with these two common Haskell types, use <code class='py-0.5 px-0.5 bg-gray-100'>PTxMaybe</code> and <code class='py-0.5 px-0.5 bg-gray-100'>PTxList</code> types from <code class='py-0.5 px-0.5 bg-gray-100'>Plutarch.FFI</code>. The module also exports the means to convert between these special purpose types and the regular Plutarch <code class='py-0.5 px-0.5 bg-gray-100'>PMaybe</code> and <code class='py-0.5 px-0.5 bg-gray-100'>PList</code>.
     </p>
   
-
   <!-- What goes in this file will appear below the note body-->
 </article>
     <div class='flex flex-col lg:flex-row lg:space-x-2'>
@@ -3341,7 +3373,7 @@ instance DerivePlutusType PSampleRecord where type DPTStrat _ = PlutusTypeScott<
     </a>
   </div>
   <div>
-    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.4.0'>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.11.0'>
       <img class='w-6 h-6 hover:text-blue-700' src='_emanote-static/emanote-logo.svg' />
     </a>
   </div>

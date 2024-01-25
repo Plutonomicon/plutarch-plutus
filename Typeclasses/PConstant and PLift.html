@@ -23,6 +23,9 @@
       <meta property='og:image' content />
       <meta property='og:type' content='website' />
       <meta property='og:title' content='PConstant and PLift' />
+      
+        <meta name='twitter:card' content='summary_large_image' />
+      
     
     
       <base href='/plutarch-plutus/' />
@@ -51,7 +54,7 @@
 
   
   
-  <link href='tailwind.css?instanceId=83710d14-4ebc-48e2-a0d6-7d5adbff8033' rel='stylesheet' type='text/css' />
+  <link href='tailwind.css?instanceId=a509efe6-703a-4502-bda4-eef5d3bca437' rel='stylesheet' type='text/css' />
 
   <style>
     /* Heist error element */
@@ -199,10 +202,6 @@
   
     <style>
       /* For use in sidebar.tpl, as we cannot achieve this in tailwind itself! */
-      #sidebar:hover {
-        width: auto;
-      }
-
       /* md:min-w-48  */
       @media (min-width: 768px) {
         #sidebar {
@@ -3202,7 +3201,13 @@
 </h1>
     <article class='overflow-auto'>
   <!-- What goes in this file will appear on top of note body-->
-  <div xmlhtmlRaw><details>
+  
+
+
+
+
+
+<div xmlhtmlRaw><details>
 <summary> imports </summary>
 <p>
 </div><div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>{-# OPTIONS_GHC -Wno-redundant-constraints #-}
@@ -3212,7 +3217,21 @@ import Plutarch.Prelude
 import PlutusLedgerApi.V1.Contexts (ScriptPurpose (Minting))
 import Plutarch.Api.V1.Contexts (PScriptPurpose)</code></pre></div><div xmlhtmlRaw></p>
 </details>
-</div><h1 id='pconstant--plift' class='pb-2 mb-2 text-5xl font-bold text-center'><code class='py-0.5 px-0.5 bg-gray-100'>PConstant</code> & <code class='py-0.5 px-0.5 bg-gray-100'>PLift</code></h1>
+</div>
+    <h1 id='pconstant--plift' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  <code class='py-0.5 px-0.5 bg-gray-100'>PConstant</code> & <code class='py-0.5 px-0.5 bg-gray-100'>PLift</code>
+  
+  <a href='Typeclasses/PConstant%20and%20PLift.html#pconstant--plift'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       These two closely tied together typeclasses establish a bridge between a Plutarch level type (that is represented as a builtin type, i.e. <a href='https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'><code class='py-0.5 px-0.5 bg-gray-100'>DefaultUni</code></a>) and its corresponding <a href='Concepts/Haskell%20Synonym.html' class='text-blue-600 mavenLinkBold hover:underline'>Haskell synonym</a>. The gory details of these two are not too useful to users, but you can read all about it if you want at <a href='DEVGUIDE.html#pconstant-and-plift' class='text-blue-600 mavenLinkBold hover:underline'>Developers’ corner</a>.
     </p>
@@ -3259,7 +3278,21 @@ Minting "be"</code></pre></div>
     <p class='mb-3'>
       It’s simply the <code class='py-0.5 px-0.5 bg-gray-100'>PAsData</code> building cousin of <code class='py-0.5 px-0.5 bg-gray-100'>pconstant</code>!
     </p>
-  <h2 id='implementing-pconstant--plift' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Implementing <code class='py-0.5 px-0.5 bg-gray-100'>PConstant</code> & <code class='py-0.5 px-0.5 bg-gray-100'>PLift</code></h2>
+  
+    <h2 id='implementing-pconstant--plift' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  Implementing <code class='py-0.5 px-0.5 bg-gray-100'>PConstant</code> & <code class='py-0.5 px-0.5 bg-gray-100'>PLift</code>
+  
+  <a href='Typeclasses/PConstant%20and%20PLift.html#implementing-pconstant--plift'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
     <p class='mb-3'>
       If your custom Plutarch type is represented by a builtin type under the hood (i.e. not <a href='Concepts/Data%20and%20Scott%20encoding.html#scott-encoding' class='text-blue-600 mavenLinkBold hover:underline'>Scott encoded</a> - rather one of the <a href='https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'><code class='py-0.5 px-0.5 bg-gray-100'>DefaultUni</code></a> types)
     </p>
@@ -3460,7 +3493,21 @@ deriving via
         </li>
       
     </ul>
-  <h2 id='implementing-pconstant--plift-for-types-with-type-variables-generic-types' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Implementing <code class='py-0.5 px-0.5 bg-gray-100'>PConstant</code> & <code class='py-0.5 px-0.5 bg-gray-100'>PLift</code> for types with type variables (generic types)</h2>
+  
+    <h2 id='implementing-pconstant--plift-for-types-with-type-variables-generic-types' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  Implementing <code class='py-0.5 px-0.5 bg-gray-100'>PConstant</code> & <code class='py-0.5 px-0.5 bg-gray-100'>PLift</code> for types with type variables (generic types)
+  
+  <a href='Typeclasses/PConstant%20and%20PLift.html#implementing-pconstant--plift-for-types-with-type-variables-generic-types'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
     <p class='mb-3'>
       If your Plutarch type and its Haskell synonym are generic types (e.g. <code class='py-0.5 px-0.5 bg-gray-100'>PMaybeData a</code>) - the implementation gets a tad more difficult. In particular, you need to constrain the generic type variables to also have the relevant instance.
     </p>
@@ -3507,7 +3554,6 @@ deriving via
   (DerivePConstantViaData (Maybe a) (PMaybeData (PConstanted a)))
   instance
     PConstantData a =&gt; PConstantDecl (Maybe a)</code></pre></div>
-
   <!-- What goes in this file will appear below the note body-->
 </article>
     <div class='flex flex-col lg:flex-row lg:space-x-2'>
@@ -3655,7 +3701,7 @@ deriving via
     </a>
   </div>
   <div>
-    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.4.0'>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.11.0'>
       <img class='w-6 h-6 hover:text-blue-700' src='_emanote-static/emanote-logo.svg' />
     </a>
   </div>

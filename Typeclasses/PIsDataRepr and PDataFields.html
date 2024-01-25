@@ -23,6 +23,9 @@
       <meta property='og:image' content />
       <meta property='og:type' content='website' />
       <meta property='og:title' content='PIsDataRepr and PDataFields' />
+      
+        <meta name='twitter:card' content='summary_large_image' />
+      
     
     
       <base href='/plutarch-plutus/' />
@@ -51,7 +54,7 @@
 
   
   
-  <link href='tailwind.css?instanceId=83710d14-4ebc-48e2-a0d6-7d5adbff8033' rel='stylesheet' type='text/css' />
+  <link href='tailwind.css?instanceId=a509efe6-703a-4502-bda4-eef5d3bca437' rel='stylesheet' type='text/css' />
 
   <style>
     /* Heist error element */
@@ -199,10 +202,6 @@
   
     <style>
       /* For use in sidebar.tpl, as we cannot achieve this in tailwind itself! */
-      #sidebar:hover {
-        width: auto;
-      }
-
       /* md:min-w-48  */
       @media (min-width: 768px) {
         #sidebar {
@@ -3202,7 +3201,13 @@
 </h1>
     <article class='overflow-auto'>
   <!-- What goes in this file will appear on top of note body-->
-  <div xmlhtmlRaw><details>
+  
+
+
+
+
+
+<div xmlhtmlRaw><details>
 <summary> imports </summary>
 <p>
 </div><div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>{-# LANGUAGE QualifiedDo #-}
@@ -3219,7 +3224,21 @@ import PlutusLedgerApi.V1.Interval (interval)
 import qualified PlutusTx
 import Plutarch.Docs.Run (evalWithArgsT)</code></pre></div><div xmlhtmlRaw></p>
 </details>
-</div><h1 id='plutustype-via-plutustypedata--pdatafields' class='pb-2 mb-2 text-5xl font-bold text-center'><code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code> via <code class='py-0.5 px-0.5 bg-gray-100'>PlutusTypeData</code> & <code class='py-0.5 px-0.5 bg-gray-100'>PDataFields</code></h1>
+</div>
+    <h1 id='plutustype-via-plutustypedata--pdatafields' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code> via <code class='py-0.5 px-0.5 bg-gray-100'>PlutusTypeData</code> & <code class='py-0.5 px-0.5 bg-gray-100'>PDataFields</code>
+  
+  <a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#plutustype-via-plutustypedata--pdatafields'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       Deriving <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code> with <code class='py-0.5 px-0.5 bg-gray-100'>DPTStrat PlutusTypeData</code> allows for easily constructing <em>and</em> deconstructing <code class='py-0.5 px-0.5 bg-gray-100'>Constr</code> <a href='https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'><code class='py-0.5 px-0.5 bg-gray-100'>BuiltinData</code>/<code class='py-0.5 px-0.5 bg-gray-100'>Data</code></a> values. It allows fully type safe matching on <a href='Concepts/Data%20and%20Scott%20encoding.html' class='text-blue-600 mavenLinkBold hover:underline'><code class='py-0.5 px-0.5 bg-gray-100'>Data</code> encoded</a> values, without embedding type information within the generated script - unlike PlutusTx. <code class='py-0.5 px-0.5 bg-gray-100'>PDataFields</code>, on top of that, allows for ergonomic field access.
     </p>
@@ -3354,7 +3373,21 @@ res = foo `evalWithArgsT` [PlutusTx.toData mockCtx]
     </p>
   
     </blockquote>
-  <h2 id='all-about-extracting-fields' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>All about extracting fields</h2>
+  
+    <h2 id='all-about-extracting-fields' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  All about extracting fields
+  
+  <a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#all-about-extracting-fields'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
     <p class='mb-3'>
       We caught a glimpse of field extraction in the example above, thanks to <code class='py-0.5 px-0.5 bg-gray-100'>pfield</code>. However, that barely touched the surface.
     </p>
@@ -3428,7 +3461,21 @@ foo' = plam $ \ctx' -&gt; P.do
     </p>
   
     </blockquote>
-  <h3 id='alternatives-to-overloadedrecorddot' class='mt-6 mb-2 text-3xl font-bold text-gray-700'>Alternatives to <code class='py-0.5 px-0.5 bg-gray-100'>OverloadedRecordDot</code></h3>
+  
+    <h3 id='alternatives-to-overloadedrecorddot' class='group mt-6 mb-4 font-bold text-gray-700 text-3xl'>
+      
+  Alternatives to <code class='py-0.5 px-0.5 bg-gray-100'>OverloadedRecordDot</code>
+  
+  <a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#alternatives-to-overloadedrecorddot'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h3>
+  
     <p class='mb-3'>
       If <code class='py-0.5 px-0.5 bg-gray-100'>OverloadedRecordDot</code> is not available, you can also try using the <a href='https://hackage.haskell.org/package/record-dot-preprocessor' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>record dot preprocessor plugin</a>.
     </p>
@@ -3436,7 +3483,21 @@ foo' = plam $ \ctx' -&gt; P.do
     <p class='mb-3'>
       If you don’t want to use either, you can simply use <code class='py-0.5 px-0.5 bg-gray-100'>getField</code>. In fact, <code class='py-0.5 px-0.5 bg-gray-100'>ctx.purpose</code> above just translates to <code class='py-0.5 px-0.5 bg-gray-100'>getField @"purpose" ctx</code>. Nothing magical there!
     </p>
-  <h2 id='all-about-constructing-data-values' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>All about constructing data values</h2>
+  
+    <h2 id='all-about-constructing-data-values' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  All about constructing data values
+  
+  <a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#all-about-constructing-data-values'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
     <p class='mb-3'>
       We learned about type safe matching (through <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code>) as well as type safe field access (through <code class='py-0.5 px-0.5 bg-gray-100'>PDataFields</code>) - how about construction? You can derive <a href='Typeclasses/PlutusType%2C%20PCon%2C%20and%20PMatch.html' class='text-blue-600 mavenLinkBold hover:underline'><code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code></a>, using a data representation by using <code class='py-0.5 px-0.5 bg-gray-100'>DPTStrat _ = PlutusTypeData</code> and <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code> bestows the ability to not only <em>deconstruct</em>, but also <strong>construct</strong> values - you can do that just as easily!
     </p>
@@ -3481,7 +3542,21 @@ purpose = pcon $ PMinting fields
     <p class='mb-3'>
       Now that we have <code class='py-0.5 px-0.5 bg-gray-100'>fields</code>, we can use it with <code class='py-0.5 px-0.5 bg-gray-100'>PMinting</code> to build a <code class='py-0.5 px-0.5 bg-gray-100'>PScriptPurpose s</code> and feed it to <code class='py-0.5 px-0.5 bg-gray-100'>pcon</code> - we’re done!
     </p>
-  <h2 id='implementing-pisdata-and-friends' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Implementing <code class='py-0.5 px-0.5 bg-gray-100'>PIsData</code> and friends</h2>
+  
+    <h2 id='implementing-pisdata-and-friends' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  Implementing <code class='py-0.5 px-0.5 bg-gray-100'>PIsData</code> and friends
+  
+  <a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#implementing-pisdata-and-friends'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
     <p class='mb-3'>
       Implementing these is rather simple with generic deriving. All you need is a well formed type using <code class='py-0.5 px-0.5 bg-gray-100'>PDataRecord</code>. For example, suppose you wanted to implement <code class='py-0.5 px-0.5 bg-gray-100'>PIsData</code> for the Plutarch version of this Haskell type:
     </p>
@@ -3583,7 +3658,6 @@ instance DerivePlutusType PFoo where type DPTStrat _ = PlutusTypeData</code></pr
       Just an extra <code class='py-0.5 px-0.5 bg-gray-100'>PDataFields</code> derivation compared to the sum type usage!
     </p>
   
-
   <!-- What goes in this file will appear below the note body-->
 </article>
     <div class='flex flex-col lg:flex-row lg:space-x-2'>
@@ -3811,7 +3885,7 @@ instance DerivePlutusType PFoo where type DPTStrat _ = PlutusTypeData</code></pr
     </a>
   </div>
   <div>
-    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.4.0'>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.11.0'>
       <img class='w-6 h-6 hover:text-blue-700' src='_emanote-static/emanote-logo.svg' />
     </a>
   </div>

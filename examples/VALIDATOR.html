@@ -23,6 +23,9 @@
       <meta property='og:image' content />
       <meta property='og:type' content='website' />
       <meta property='og:title' content='VALIDATOR' />
+      
+        <meta name='twitter:card' content='summary_large_image' />
+      
     
     
       <base href='/plutarch-plutus/' />
@@ -51,7 +54,7 @@
 
   
   
-  <link href='tailwind.css?instanceId=83710d14-4ebc-48e2-a0d6-7d5adbff8033' rel='stylesheet' type='text/css' />
+  <link href='tailwind.css?instanceId=a509efe6-703a-4502-bda4-eef5d3bca437' rel='stylesheet' type='text/css' />
 
   <style>
     /* Heist error element */
@@ -199,10 +202,6 @@
   
     <style>
       /* For use in sidebar.tpl, as we cannot achieve this in tailwind itself! */
-      #sidebar:hover {
-        width: auto;
-      }
-
       /* md:min-w-48  */
       @media (min-width: 768px) {
         #sidebar {
@@ -3202,7 +3201,13 @@
 </h1>
     <article class='overflow-auto'>
   <!-- What goes in this file will appear on top of note body-->
-  <div xmlhtmlRaw><details>
+  
+
+
+
+
+
+<div xmlhtmlRaw><details>
 <summary> imports </summary>
 <p>
 </div><div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>{-# LANGUAGE QualifiedDo #-}
@@ -3257,7 +3262,21 @@ Examples of validators and minting policies written in Plutarch.
     </p>
   
     </blockquote>
-  <h1 id='validator-that-always-succeeds' class='pb-2 mb-2 text-5xl font-bold text-center'>Validator that always succeeds</h1><div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>alwaysSucceeds :: Term s (PAsData PDatum :--&gt; PAsData PRedeemer :--&gt; PAsData PScriptContext :--&gt; PUnit)
+  
+    <h1 id='validator-that-always-succeeds' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Validator that always succeeds
+  
+  <a href='examples/VALIDATOR.html#validator-that-always-succeeds'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>alwaysSucceeds :: Term s (PAsData PDatum :--&gt; PAsData PRedeemer :--&gt; PAsData PScriptContext :--&gt; PUnit)
 alwaysSucceeds = plam $ \_datm _redm _ctx -&gt; pconstant ()</code></pre></div>
     <p class='mb-3'>
       All the arguments are ignored.
@@ -3269,7 +3288,21 @@ alwaysSucceeds = plam $ \_datm _redm _ctx -&gt; pconstant ()</code></pre></div>
   <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>res' :: Either Text (Script, ExBudget, [Text])
 res' = alwaysSucceeds `evalWithArgsT` [PlutusTx.toData (), PlutusTx.toData (), PlutusTx.toData ()]
 -- &gt;&gt;&gt; res'
--- Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf unit ()))))</code></pre></div><h1 id='validator-that-always-fails' class='pb-2 mb-2 text-5xl font-bold text-center'>Validator that always fails</h1><div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>alwaysFails :: Term s (PAsData PDatum :--&gt; PAsData PRedeemer :--&gt; PAsData PScriptContext :--&gt; PUnit)
+-- Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf unit ()))))</code></pre></div>
+    <h1 id='validator-that-always-fails' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Validator that always fails
+  
+  <a href='examples/VALIDATOR.html#validator-that-always-fails'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>alwaysFails :: Term s (PAsData PDatum :--&gt; PAsData PRedeemer :--&gt; PAsData PScriptContext :--&gt; PUnit)
 alwaysFails = plam $ \_datm _redm _ctx -&gt; perror</code></pre></div>
     <p class='mb-3'>
       Similar to the example above.
@@ -3281,7 +3314,21 @@ alwaysFails = plam $ \_datm _redm _ctx -&gt; perror</code></pre></div>
   <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>res :: Either Text (Script, ExBudget, [Text])
 res = alwaysFails `evalWithArgsT` [PlutusTx.toData (), PlutusTx.toData (), PlutusTx.toData ()]
 -- &gt;&gt;&gt; res 
--- Left (EvaluationError [] "(CekEvaluationFailure,Nothing)")</code></pre></div><h1 id='validator-that-checks-whether-a-value-is-present-within-signatories' class='pb-2 mb-2 text-5xl font-bold text-center'>Validator that checks whether a value is present within signatories</h1><div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>
+-- Left (EvaluationError [] "(CekEvaluationFailure,Nothing)")</code></pre></div>
+    <h1 id='validator-that-checks-whether-a-value-is-present-within-signatories' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Validator that checks whether a value is present within signatories
+  
+  <a href='examples/VALIDATOR.html#validator-that-checks-whether-a-value-is-present-within-signatories'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>
 checkSignatory :: Term s (PPubKeyHash :--&gt; PAsData PDatum :--&gt; PAsData PRedeemer :--&gt; PAsData PScriptContext :--&gt; PUnit)
 checkSignatory = plam $ \ph _ _ ctx' -&gt; P.do
   ctx &lt;- pletFields @["txInfo", "purpose"] ctx'
@@ -3338,12 +3385,25 @@ mockCtx =
     (Spending (TxOutRef "" 1))
 
 &gt; evalWithArgsT (checkSignatory # pubKeyHash) [PlutusTx.toData (), PlutusTx.toData (), PlutusTx.toData mockCtx]
-Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf unit ()))))</code></pre></div><h1 id='using-custom-datumredeemer-in-your-validator' class='pb-2 mb-2 text-5xl font-bold text-center'>Using custom datum/redeemer in your Validator</h1>
+Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf unit ()))))</code></pre></div>
+    <h1 id='using-custom-datumredeemer-in-your-validator' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Using custom datum/redeemer in your Validator
+  
+  <a href='examples/VALIDATOR.html#using-custom-datumredeemer-in-your-validator'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       All you have to do is <a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#implementing-pisdatarepr-and-friends' class='text-blue-600 mavenLinkBold hover:underline'>implement <code class='py-0.5 px-0.5 bg-gray-100'>PIsDataRepr</code> and friends</a> for your custom datum/redeemer and you can use it just like <code class='py-0.5 px-0.5 bg-gray-100'>PScriptContext</code> in your validators!
     </p>
   
-
   <!-- What goes in this file will appear below the note body-->
 </article>
     <div class='flex flex-col lg:flex-row lg:space-x-2'>
@@ -3400,7 +3460,7 @@ Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf unit ()))))</co
     </a>
   </div>
   <div>
-    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.4.0'>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.11.0'>
       <img class='w-6 h-6 hover:text-blue-700' src='_emanote-static/emanote-logo.svg' />
     </a>
   </div>

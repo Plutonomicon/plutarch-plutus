@@ -6,7 +6,50 @@
 --   
 --   Interface to the Plutus scripting support for the Cardano ledger.
 @package plutus-ledger-api
-@version 1.7.0.1
+@version 1.20.0.0
+
+module Codec.CBOR.Extras
+
+-- | Newtype to provide <a>Serialise</a> instances for types with a
+--   <tt>Flat</tt> instance that just encodes the flat-serialized value as
+--   a CBOR bytestring
+newtype SerialiseViaFlat a
+SerialiseViaFlat :: a -> SerialiseViaFlat a
+decodeViaFlat :: Get a -> Decoder s a
+
+-- | Similar to <a>DeserialiseFailure</a>, with the difference that plain
+--   string reason messages are turned into the datatype:
+--   <a>DeserialiseFailureReason</a>.
+data DeserialiseFailureInfo
+DeserialiseFailureInfo :: ByteOffset -> DeserialiseFailureReason -> DeserialiseFailureInfo
+[dfOffset] :: DeserialiseFailureInfo -> ByteOffset
+[dfReason] :: DeserialiseFailureInfo -> DeserialiseFailureReason
+
+-- | The reason of the cbor failure as a datatype, not as a plain string.
+data DeserialiseFailureReason
+
+-- | Not enough input provided
+EndOfInput :: DeserialiseFailureReason
+
+-- | The bytes inside the input are malformed.
+ExpectedBytes :: DeserialiseFailureReason
+
+-- | A failure reason we (plutus) are not aware of, use whatever message
+--   that <tt>cborg</tt> returns.
+OtherReason :: String -> DeserialiseFailureReason
+
+-- | The errors returned by <tt>cborg</tt> are plain strings (untyped).
+--   With this function we try to map onto datatypes, those cborg error
+--   messages that we are interested in.
+--   
+--   Currently we are only interested in error messages returned by the
+--   <a>decodeBytes</a> decoder; see <a>scriptCBORDecoder</a>.
+readDeserialiseFailureInfo :: DeserialiseFailure -> DeserialiseFailureInfo
+instance GHC.Show.Show Codec.CBOR.Extras.DeserialiseFailureReason
+instance GHC.Classes.Eq Codec.CBOR.Extras.DeserialiseFailureReason
+instance GHC.Show.Show Codec.CBOR.Extras.DeserialiseFailureInfo
+instance GHC.Classes.Eq Codec.CBOR.Extras.DeserialiseFailureInfo
+instance Flat.Class.Flat a => Codec.Serialise.Class.Serialise (Codec.CBOR.Extras.SerialiseViaFlat a)
 
 
 -- | This module contains the code for handling the various kinds of
@@ -19,42 +62,39 @@
 --   </ul>
 module PlutusLedgerApi.Common.Versions
 
--- | This represents the Cardano protocol version, with its major and minor
---   components. This relies on careful understanding between us and the
---   ledger as to what this means.
-data ProtocolVersion
-ProtocolVersion :: Int -> Int -> ProtocolVersion
-
--- | the major component
-[pvMajor] :: ProtocolVersion -> Int
-
--- | the minor component
-[pvMinor] :: ProtocolVersion -> Int
+-- | This represents the major component of the Cardano protocol version.
+--   The ledger can only supply the major component of the protocol
+--   version, not the minor component, and Plutus should only need to care
+--   about the major component anyway. This relies on careful understanding
+--   between us and the ledger as to what this means.
+newtype MajorProtocolVersion
+MajorProtocolVersion :: Int -> MajorProtocolVersion
+[getMajorProtocolVersion] :: MajorProtocolVersion -> Int
 
 -- | Shelley era was introduced in protocol version 2.0
-shelleyPV :: ProtocolVersion
+shelleyPV :: MajorProtocolVersion
 
 -- | Allegra era was introduced in protocol version 3.0
-allegraPV :: ProtocolVersion
+allegraPV :: MajorProtocolVersion
 
 -- | Mary era was introduced in protocol version 4.0
-maryPV :: ProtocolVersion
+maryPV :: MajorProtocolVersion
 
 -- | Alonzo era was introduced in protocol version 5.0
-alonzoPV :: ProtocolVersion
+alonzoPV :: MajorProtocolVersion
 
 -- | Vasil era was introduced in protocol version 7.0
-vasilPV :: ProtocolVersion
+vasilPV :: MajorProtocolVersion
 
 -- | Protocol version 8.0 was the Valentine intra-era HF
-valentinePV :: ProtocolVersion
+valentinePV :: MajorProtocolVersion
 
 -- | Conway era was introduced in protocol version 9.0
-conwayPV :: ProtocolVersion
+conwayPV :: MajorProtocolVersion
 
 -- | The set of protocol versions that are "known", i.e. that have been
 --   released and have actual differences associated with them.
-knownPVs :: Set ProtocolVersion
+knownPVs :: Set MajorProtocolVersion
 
 -- | This is a placeholder for when we don't yet know what protocol version
 --   will be used for something. It's a very high protocol version that
@@ -63,7 +103,7 @@ knownPVs :: Set ProtocolVersion
 --   We should not assign names to future protocol versions until it's
 --   confirmed that they are correct, otherwise we could accidentally
 --   associate something with the wrong protocol version.
-futurePV :: ProtocolVersion
+futurePV :: MajorProtocolVersion
 
 -- | The Plutus ledger language. These are entirely different script
 --   languages from the ledger's perspective, which on our side are
@@ -93,41 +133,41 @@ Version :: Natural -> Natural -> Natural -> Version
 
 -- | Query the protocol version that a specific Plutus ledger language was
 --   first introduced in.
-ledgerLanguageIntroducedIn :: PlutusLedgerLanguage -> ProtocolVersion
+ledgerLanguageIntroducedIn :: PlutusLedgerLanguage -> MajorProtocolVersion
 
 -- | Which Plutus language versions are available in the given
---   <a>ProtocolVersion</a>?
+--   <a>MajorProtocolVersion</a>?
 --   
 --   See Note [New builtins/language versions and protocol versions]
-ledgerLanguagesAvailableIn :: ProtocolVersion -> Set PlutusLedgerLanguage
+ledgerLanguagesAvailableIn :: MajorProtocolVersion -> Set PlutusLedgerLanguage
 
 -- | A map indicating which Plutus Core versions were introduced in which
---   <a>ProtocolVersion</a> and <a>PlutusLedgerLanguage</a>. Each version
---   should appear at most once.
+--   <a>MajorProtocolVersion</a> and <a>PlutusLedgerLanguage</a>. Each
+--   version should appear at most once.
 --   
 --   This <b>must</b> be updated when new versions are added. See Note [New
 --   builtins/language versions and protocol versions]
-plcVersionsIntroducedIn :: Map (PlutusLedgerLanguage, ProtocolVersion) (Set Version)
+plcVersionsIntroducedIn :: Map (PlutusLedgerLanguage, MajorProtocolVersion) (Set Version)
 
 -- | Which Plutus Core language versions are available in the given
---   <a>PlutusLedgerLanguage</a> and <a>ProtocolVersion</a>?
+--   <a>PlutusLedgerLanguage</a> and <a>MajorProtocolVersion</a>?
 --   
 --   See Note [New builtins/language versions and protocol versions]
-plcVersionsAvailableIn :: PlutusLedgerLanguage -> ProtocolVersion -> Set Version
+plcVersionsAvailableIn :: PlutusLedgerLanguage -> MajorProtocolVersion -> Set Version
 
 -- | A map indicating which builtin functions were introduced in which
---   <a>ProtocolVersion</a>. Each builtin function should appear at most
---   once.
+--   <a>MajorProtocolVersion</a>. Each builtin function should appear at
+--   most once.
 --   
 --   This <b>must</b> be updated when new builtins are added. See Note [New
 --   builtins/language versions and protocol versions]
-builtinsIntroducedIn :: Map (PlutusLedgerLanguage, ProtocolVersion) (Set DefaultFun)
+builtinsIntroducedIn :: Map (PlutusLedgerLanguage, MajorProtocolVersion) (Set DefaultFun)
 
 -- | Which builtin functions are available in the given given
---   <a>PlutusLedgerLanguage</a> and <a>ProtocolVersion</a>?
+--   <a>PlutusLedgerLanguage</a> and <a>MajorProtocolVersion</a>?
 --   
 --   See Note [New builtins/language versions and protocol versions]
-builtinsAvailableIn :: PlutusLedgerLanguage -> ProtocolVersion -> Set DefaultFun
+builtinsAvailableIn :: PlutusLedgerLanguage -> MajorProtocolVersion -> Set DefaultFun
 instance GHC.Enum.Bounded PlutusLedgerApi.Common.Versions.PlutusLedgerLanguage
 instance GHC.Enum.Enum PlutusLedgerApi.Common.Versions.PlutusLedgerLanguage
 instance GHC.Generics.Generic PlutusLedgerApi.Common.Versions.PlutusLedgerLanguage
@@ -144,6 +184,18 @@ module PlutusLedgerApi.Common
 -- | Scripts to the ledger are serialised bytestrings.
 type SerialisedScript = ShortByteString
 
+-- | A Plutus script ready to be evaluated on-chain, via
+--   <tt>evaluateScriptRestricting</tt>.
+data ScriptForEvaluation
+
+-- | Get a <a>SerialisedScript</a> from a <a>ScriptForEvaluation</a>.
+--   <i>O(1)</i>.
+serialisedScript :: ScriptForEvaluation -> SerialisedScript
+
+-- | Get a <a>ScriptNamedDeBruijn</a> from a <a>ScriptForEvaluation</a>.
+--   <i>O(1)</i>.
+deserialisedScript :: ScriptForEvaluation -> ScriptNamedDeBruijn
+
 -- | Turns a program which was compiled using the 'PlutusTx' toolchain into
 --   a binary format that is understood by the network and can be stored
 --   on-chain.
@@ -153,6 +205,12 @@ serialiseCompiledCode :: forall a. CompiledCode a -> SerialisedScript
 --   format that is understood by the network and can be stored on-chain.
 serialiseUPLC :: Program DeBruijn DefaultUni DefaultFun () -> SerialisedScript
 
+-- | The deserialization from a serialised script into a
+--   <a>ScriptForEvaluation</a>, ready to be evaluated on-chain. Called
+--   inside phase-1 validation (i.e., deserialisation error is a phase-1
+--   error).
+deserialiseScript :: forall m. MonadError ScriptDecodeError m => PlutusLedgerLanguage -> MajorProtocolVersion -> SerialisedScript -> m ScriptForEvaluation
+
 -- | Deserialises a <a>SerialisedScript</a> back into an AST. Does *not* do
 --   ledger-language-version-specific checks like for allowable builtins.
 uncheckedDeserialiseUPLC :: SerialisedScript -> Program DeBruijn DefaultUni DefaultFun ()
@@ -161,41 +219,35 @@ uncheckedDeserialiseUPLC :: SerialisedScript -> Program DeBruijn DefaultUni Defa
 data ScriptDecodeError
 
 -- | an error from the underlying CBOR/serialise library
-CBORDeserialiseError :: !DeserialiseFailure -> ScriptDecodeError
+CBORDeserialiseError :: !DeserialiseFailureInfo -> ScriptDecodeError
 
 -- | Script was successfully parsed, but more (runaway) bytes encountered
 --   after script's position
 RemainderError :: !ByteString -> ScriptDecodeError
 
 -- | the plutus version of the given script is not enabled yet
-LedgerLanguageNotAvailableError :: !PlutusLedgerLanguage -> !ProtocolVersion -> !ProtocolVersion -> ScriptDecodeError
+LedgerLanguageNotAvailableError :: !PlutusLedgerLanguage -> !MajorProtocolVersion -> !MajorProtocolVersion -> ScriptDecodeError
 
 -- | the script's ledger language
 [sdeAffectedLang] :: ScriptDecodeError -> !PlutusLedgerLanguage
 
--- | the protocol version that will first introduce/enable the ledger
+-- | the major protocol version that will first introduce/enable the ledger
 --   language
-[sdeIntroPv] :: ScriptDecodeError -> !ProtocolVersion
+[sdeIntroPv] :: ScriptDecodeError -> !MajorProtocolVersion
 
 -- | the current protocol version
-[sdeThisPv] :: ScriptDecodeError -> !ProtocolVersion
-PlutusCoreLanguageNotAvailableError :: !Version -> !ProtocolVersion -> ScriptDecodeError
+[sdeThisPv] :: ScriptDecodeError -> !MajorProtocolVersion
+PlutusCoreLanguageNotAvailableError :: !Version -> !MajorProtocolVersion -> ScriptDecodeError
 
 -- | the script's Plutus Core language version
 [sdeAffectedVersion] :: ScriptDecodeError -> !Version
 
 -- | the current protocol version
-[sdeThisPv] :: ScriptDecodeError -> !ProtocolVersion
+[sdeThisPv] :: ScriptDecodeError -> !MajorProtocolVersion
 
--- | Check if a <tt>Script</tt> is "valid" according to a protocol version.
---   At the moment this means "deserialises correctly", which in particular
---   implies that it is (almost certainly) an encoded script and the script
---   does not mention any builtins unavailable in the given protocol
---   version.
---   
---   Note: Parameterized over the ledger-plutus-version since the builtins
---   allowed (during decoding) differs.
-assertScriptWellFormed :: MonadError ScriptDecodeError m => PlutusLedgerLanguage -> ProtocolVersion -> SerialisedScript -> m ()
+-- | A script with named de-bruijn indices.
+newtype ScriptNamedDeBruijn
+ScriptNamedDeBruijn :: Program NamedDeBruijn DefaultUni DefaultFun () -> ScriptNamedDeBruijn
 
 -- | Evaluates a script, returning the minimum budget that the script would
 --   need to evaluate successfully. This will take as long as the script
@@ -205,7 +257,7 @@ assertScriptWellFormed :: MonadError ScriptDecodeError m => PlutusLedgerLanguage
 --   
 --   Note: Parameterized over the ledger-plutus-version since the builtins
 --   allowed (during decoding) differs.
-evaluateScriptCounting :: PlutusLedgerLanguage -> ProtocolVersion -> VerboseMode -> EvaluationContext -> SerialisedScript -> [Data] -> (LogOutput, Either EvaluationError ExBudget)
+evaluateScriptCounting :: PlutusLedgerLanguage -> MajorProtocolVersion -> VerboseMode -> EvaluationContext -> ScriptForEvaluation -> [Data] -> (LogOutput, Either EvaluationError ExBudget)
 
 -- | Evaluates a script, with a cost model and a budget that restricts how
 --   many resources it can use according to the cost model. Also returns
@@ -218,11 +270,11 @@ evaluateScriptCounting :: PlutusLedgerLanguage -> ProtocolVersion -> VerboseMode
 --   Note: Parameterized over the <tt>LedgerPlutusVersion</tt> since 1. The
 --   builtins allowed (during decoding) differ, and 2. The Plutus language
 --   versions allowed differ.
-evaluateScriptRestricting :: PlutusLedgerLanguage -> ProtocolVersion -> VerboseMode -> EvaluationContext -> ExBudget -> SerialisedScript -> [Data] -> (LogOutput, Either EvaluationError ExBudget)
+evaluateScriptRestricting :: PlutusLedgerLanguage -> MajorProtocolVersion -> VerboseMode -> EvaluationContext -> ExBudget -> ScriptForEvaluation -> [Data] -> (LogOutput, Either EvaluationError ExBudget)
 
 -- | Evaluate a fully-applied term using the CEK machine. Useful for
 --   mimicking the behaviour of the on-chain evaluator.
-evaluateTerm :: ExBudgetMode cost DefaultUni DefaultFun -> ProtocolVersion -> VerboseMode -> EvaluationContext -> Term NamedDeBruijn DefaultUni DefaultFun () -> (Either (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun) (Term NamedDeBruijn DefaultUni DefaultFun ()), cost, [Text])
+evaluateTerm :: ExBudgetMode cost DefaultUni DefaultFun -> MajorProtocolVersion -> VerboseMode -> EvaluationContext -> Term NamedDeBruijn DefaultUni DefaultFun () -> (Either (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun) (Term NamedDeBruijn DefaultUni DefaultFun ()), cost, [Text])
 
 -- | A simple toggle indicating whether or not we should accumulate logs
 --   during script execution.
@@ -269,17 +321,14 @@ ExBudget :: ExCPU -> ExMemory -> ExBudget
 [exBudgetCPU] :: ExBudget -> ExCPU
 [exBudgetMemory] :: ExBudget -> ExMemory
 
--- | This represents the Cardano protocol version, with its major and minor
---   components. This relies on careful understanding between us and the
---   ledger as to what this means.
-data ProtocolVersion
-ProtocolVersion :: Int -> Int -> ProtocolVersion
-
--- | the major component
-[pvMajor] :: ProtocolVersion -> Int
-
--- | the minor component
-[pvMinor] :: ProtocolVersion -> Int
+-- | This represents the major component of the Cardano protocol version.
+--   The ledger can only supply the major component of the protocol
+--   version, not the minor component, and Plutus should only need to care
+--   about the major component anyway. This relies on careful understanding
+--   between us and the ledger as to what this means.
+newtype MajorProtocolVersion
+MajorProtocolVersion :: Int -> MajorProtocolVersion
+[getMajorProtocolVersion] :: MajorProtocolVersion -> Int
 
 -- | The Plutus ledger language. These are entirely different script
 --   languages from the ledger's perspective, which on our side are
@@ -308,34 +357,34 @@ Version :: Natural -> Natural -> Natural -> Version
 [_versionPatch] :: Version -> Natural
 
 -- | A map indicating which builtin functions were introduced in which
---   <a>ProtocolVersion</a>. Each builtin function should appear at most
---   once.
+--   <a>MajorProtocolVersion</a>. Each builtin function should appear at
+--   most once.
 --   
 --   This <b>must</b> be updated when new builtins are added. See Note [New
 --   builtins/language versions and protocol versions]
-builtinsIntroducedIn :: Map (PlutusLedgerLanguage, ProtocolVersion) (Set DefaultFun)
+builtinsIntroducedIn :: Map (PlutusLedgerLanguage, MajorProtocolVersion) (Set DefaultFun)
 
 -- | Which builtin functions are available in the given given
---   <a>PlutusLedgerLanguage</a> and <a>ProtocolVersion</a>?
+--   <a>PlutusLedgerLanguage</a> and <a>MajorProtocolVersion</a>?
 --   
 --   See Note [New builtins/language versions and protocol versions]
-builtinsAvailableIn :: PlutusLedgerLanguage -> ProtocolVersion -> Set DefaultFun
+builtinsAvailableIn :: PlutusLedgerLanguage -> MajorProtocolVersion -> Set DefaultFun
 
 -- | Query the protocol version that a specific Plutus ledger language was
 --   first introduced in.
-ledgerLanguageIntroducedIn :: PlutusLedgerLanguage -> ProtocolVersion
+ledgerLanguageIntroducedIn :: PlutusLedgerLanguage -> MajorProtocolVersion
 
 -- | Which Plutus language versions are available in the given
---   <a>ProtocolVersion</a>?
+--   <a>MajorProtocolVersion</a>?
 --   
 --   See Note [New builtins/language versions and protocol versions]
-ledgerLanguagesAvailableIn :: ProtocolVersion -> Set PlutusLedgerLanguage
+ledgerLanguagesAvailableIn :: MajorProtocolVersion -> Set PlutusLedgerLanguage
 type CostModelParams = Map Text Integer
 
 -- | Untags the plutus version from the typed cost model parameters and
 --   returns their raw textual form (internally used by
 --   CostModelInterface).
-toCostModelParams :: IsParamName k => [(k, Integer)] -> CostModelParams
+toCostModelParams :: IsParamName p => [(p, Integer)] -> CostModelParams
 assertWellFormedCostModelParams :: MonadError CostModelApplyError m => CostModelParams -> m ()
 
 -- | A parameter name for different plutus versions.
@@ -345,11 +394,16 @@ assertWellFormedCostModelParams :: MonadError CostModelApplyError m => CostModel
 --   
 --   A valid parameter name has to be enumeration, bounded, ordered, and
 --   prettyprintable to a "lower-Kebab" string.
-class IsParamName a
+class (Enum a, Bounded a) => IsParamName a
 
--- | Take the raw textual form for a given typed-by-plutus-version cost
---   model parameter
-showParamName :: IsParamName a => a -> String
+-- | Produce the raw textual form for a given typed-by-plutus-version cost
+--   model parameter Any implementation *must be* an injective function.
+--   The <a>GIsParamName</a> generic implementation guarantees injectivity.
+showParamName :: IsParamName a => a -> Text
+
+-- | default implementation that inverts the showParamName operation (not
+--   very efficient)
+readParamName :: IsParamName a => Text -> Maybe a
 
 -- | A Generic wrapper for use with deriving via
 data GenericParamName a
@@ -373,8 +427,8 @@ newtype EvaluationContext
 EvaluationContext :: DefaultMachineParameters -> EvaluationContext
 [machineParameters] :: EvaluationContext -> DefaultMachineParameters
 
--- | Create an <a>EvaluationContext</a> for a given plutus-builtins'
---   version.
+-- | Create an <a>EvaluationContext</a> for a given builtin semantics
+--   variant.
 --   
 --   The input is a <a>Map</a> of <a>Text</a>s to cost integer values (aka
 --   <a>CostModelParams</a>, <a>CostModel</a>) See Note [Inlining meanings
@@ -383,19 +437,18 @@ EvaluationContext :: DefaultMachineParameters -> EvaluationContext
 --   IMPORTANT: The evaluation context of every Plutus version must be
 --   recreated upon a protocol update with the updated cost model
 --   parameters.
-mkDynEvaluationContext :: MonadError CostModelApplyError m => BuiltinVersion DefaultFun -> CostModelParams -> m EvaluationContext
-toMachineParameters :: ProtocolVersion -> EvaluationContext -> DefaultMachineParameters
+mkDynEvaluationContext :: MonadError CostModelApplyError m => BuiltinSemanticsVariant DefaultFun -> CostModelParams -> m EvaluationContext
+toMachineParameters :: MajorProtocolVersion -> EvaluationContext -> DefaultMachineParameters
 
 -- | Shared helper for the evaluation functions:
 --   <a>evaluateScriptCounting</a> and <a>evaluateScriptRestricting</a>,
 --   
---   Given a <a>SerialisedScript</a>:
+--   Given a <a>ScriptForEvaluation</a>:
 --   
---   1) deserialises to a plutus <a>Term</a> and checks its ast version 2)
---   applies the term to a list of <a>Data</a> arguments (e.g. Datum,
---   Redeemer, <tt>ScriptContext</tt>) 3) checks that the applied-term is
---   well-scoped 4) returns the applied-term
-mkTermToEvaluate :: MonadError EvaluationError m => PlutusLedgerLanguage -> ProtocolVersion -> SerialisedScript -> [Data] -> m (Term NamedDeBruijn DefaultUni DefaultFun ())
+--   1) applies the term to a list of <a>Data</a> arguments (e.g. Datum,
+--   Redeemer, <tt>ScriptContext</tt>) 2) checks that the applied-term is
+--   well-scoped 3) returns the applied-term
+mkTermToEvaluate :: MonadError EvaluationError m => PlutusLedgerLanguage -> MajorProtocolVersion -> ScriptForEvaluation -> [Data] -> m (Term NamedDeBruijn DefaultUni DefaultFun ())
 
 
 -- | A type for intervals and associated functions.
@@ -779,8 +832,13 @@ data EvaluationContext
 
 -- | Build the <a>EvaluationContext</a>.
 --   
---   The input is a list of integer values passed from the ledger and are
---   expected to appear in correct order.
+--   The input is a list of cost model parameters (which are integer
+--   values) passed from the ledger.
+--   
+--   IMPORTANT: the cost model parameters <b>MUST</b> appear in the correct
+--   order, matching the names in <a>ParamName</a>. If the parameters are
+--   supplied in the wrong order then script cost calculations will be
+--   incorrect.
 --   
 --   IMPORTANT: The evaluation context of every Plutus version must be
 --   recreated upon a protocol update with the updated cost model
@@ -788,7 +846,7 @@ data EvaluationContext
 mkEvaluationContext :: (MonadError CostModelApplyError m, MonadWriter [CostModelApplyWarn] m) => [Integer] -> m EvaluationContext
 type CostModelParams = Map Text Integer
 assertWellFormedCostModelParams :: MonadError CostModelApplyError m => CostModelParams -> m ()
-toMachineParameters :: ProtocolVersion -> EvaluationContext -> DefaultMachineParameters
+toMachineParameters :: MajorProtocolVersion -> EvaluationContext -> DefaultMachineParameters
 data () => CostModelApplyError
 CMUnknownParamError :: !Text -> CostModelApplyError
 CMInternalReadError :: CostModelApplyError
@@ -1069,8 +1127,13 @@ data EvaluationContext
 
 -- | Build the <a>EvaluationContext</a>.
 --   
---   The input is a list of integer values passed from the ledger and are
---   expected to appear in correct order.
+--   The input is a list of cost model parameters (which are integer
+--   values) passed from the ledger.
+--   
+--   IMPORTANT: the cost model parameters <b>MUST</b> appear in the correct
+--   order, matching the names in <a>ParamName</a>. If the parameters are
+--   supplied in the wrong order then script cost calculations will be
+--   incorrect.
 --   
 --   IMPORTANT: The evaluation context of every Plutus version must be
 --   recreated upon a protocol update with the updated cost model
@@ -1078,7 +1141,7 @@ data EvaluationContext
 mkEvaluationContext :: (MonadError CostModelApplyError m, MonadWriter [CostModelApplyWarn] m) => [Integer] -> m EvaluationContext
 type CostModelParams = Map Text Integer
 assertWellFormedCostModelParams :: MonadError CostModelApplyError m => CostModelParams -> m ()
-toMachineParameters :: ProtocolVersion -> EvaluationContext -> DefaultMachineParameters
+toMachineParameters :: MajorProtocolVersion -> EvaluationContext -> DefaultMachineParameters
 data () => CostModelApplyError
 CMUnknownParamError :: !Text -> CostModelApplyError
 CMInternalReadError :: CostModelApplyError
@@ -1276,6 +1339,50 @@ CekConstrCost'exBudgetCPU :: ParamName
 CekConstrCost'exBudgetMemory :: ParamName
 CekCaseCost'exBudgetCPU :: ParamName
 CekCaseCost'exBudgetMemory :: ParamName
+Bls12_381_G1_add'cpu'arguments :: ParamName
+Bls12_381_G1_add'memory'arguments :: ParamName
+Bls12_381_G1_compress'cpu'arguments :: ParamName
+Bls12_381_G1_compress'memory'arguments :: ParamName
+Bls12_381_G1_equal'cpu'arguments :: ParamName
+Bls12_381_G1_equal'memory'arguments :: ParamName
+Bls12_381_G1_hashToGroup'cpu'arguments'intercept :: ParamName
+Bls12_381_G1_hashToGroup'cpu'arguments'slope :: ParamName
+Bls12_381_G1_hashToGroup'memory'arguments :: ParamName
+Bls12_381_G1_neg'cpu'arguments :: ParamName
+Bls12_381_G1_neg'memory'arguments :: ParamName
+Bls12_381_G1_scalarMul'cpu'arguments'intercept :: ParamName
+Bls12_381_G1_scalarMul'cpu'arguments'slope :: ParamName
+Bls12_381_G1_scalarMul'memory'arguments :: ParamName
+Bls12_381_G1_uncompress'cpu'arguments :: ParamName
+Bls12_381_G1_uncompress'memory'arguments :: ParamName
+Bls12_381_G2_add'cpu'arguments :: ParamName
+Bls12_381_G2_add'memory'arguments :: ParamName
+Bls12_381_G2_compress'cpu'arguments :: ParamName
+Bls12_381_G2_compress'memory'arguments :: ParamName
+Bls12_381_G2_equal'cpu'arguments :: ParamName
+Bls12_381_G2_equal'memory'arguments :: ParamName
+Bls12_381_G2_hashToGroup'cpu'arguments'intercept :: ParamName
+Bls12_381_G2_hashToGroup'cpu'arguments'slope :: ParamName
+Bls12_381_G2_hashToGroup'memory'arguments :: ParamName
+Bls12_381_G2_neg'cpu'arguments :: ParamName
+Bls12_381_G2_neg'memory'arguments :: ParamName
+Bls12_381_G2_scalarMul'cpu'arguments'intercept :: ParamName
+Bls12_381_G2_scalarMul'cpu'arguments'slope :: ParamName
+Bls12_381_G2_scalarMul'memory'arguments :: ParamName
+Bls12_381_G2_uncompress'cpu'arguments :: ParamName
+Bls12_381_G2_uncompress'memory'arguments :: ParamName
+Bls12_381_finalVerify'cpu'arguments :: ParamName
+Bls12_381_finalVerify'memory'arguments :: ParamName
+Bls12_381_millerLoop'cpu'arguments :: ParamName
+Bls12_381_millerLoop'memory'arguments :: ParamName
+Bls12_381_mulMlResult'cpu'arguments :: ParamName
+Bls12_381_mulMlResult'memory'arguments :: ParamName
+Keccak_256'cpu'arguments'intercept :: ParamName
+Keccak_256'cpu'arguments'slope :: ParamName
+Keccak_256'memory'arguments :: ParamName
+Blake2b_224'cpu'arguments'intercept :: ParamName
+Blake2b_224'cpu'arguments'slope :: ParamName
+Blake2b_224'memory'arguments :: ParamName
 
 -- | Given an ordered list of parameter values, tag them with their
 --   parameter names. If the passed parameter values are more than
@@ -1302,8 +1409,13 @@ data EvaluationContext
 
 -- | Build the <a>EvaluationContext</a>.
 --   
---   The input is a list of integer values passed from the ledger and are
---   expected to appear in correct order.
+--   The input is a list of cost model parameters (which are integer
+--   values) passed from the ledger.
+--   
+--   IMPORTANT: the cost model parameters <b>MUST</b> appear in the correct
+--   order, matching the names in <a>ParamName</a>. If the parameters are
+--   supplied in the wrong order then script cost calculations will be
+--   incorrect.
 --   
 --   IMPORTANT: The evaluation context of every Plutus version must be
 --   recreated upon a protocol update with the updated cost model
@@ -1311,7 +1423,7 @@ data EvaluationContext
 mkEvaluationContext :: (MonadError CostModelApplyError m, MonadWriter [CostModelApplyWarn] m) => [Integer] -> m EvaluationContext
 type CostModelParams = Map Text Integer
 assertWellFormedCostModelParams :: MonadError CostModelApplyError m => CostModelParams -> m ()
-toMachineParameters :: ProtocolVersion -> EvaluationContext -> DefaultMachineParameters
+toMachineParameters :: MajorProtocolVersion -> EvaluationContext -> DefaultMachineParameters
 data () => CostModelApplyError
 CMUnknownParamError :: !Text -> CostModelApplyError
 CMInternalReadError :: CostModelApplyError
@@ -1430,11 +1542,7 @@ assetClassValueOf :: Value -> AssetClass -> Integer
 
 -- | The <a>Value</a> type represents a collection of amounts of different
 --   currencies. We can think of <a>Value</a> as a vector space whose
---   dimensions are currencies. To create a value of <a>Value</a>, we need
---   to specify a currency. This can be done using <a>adaValueOf</a>. To
---   get the ada dimension of <a>Value</a> we use <a>fromValue</a>. Plutus
---   contract authors will be able to define modules similar to <a>Ada</a>
---   for their own currencies.
+--   dimensions are currencies.
 --   
 --   Operations on currencies are usually implemented <i>pointwise</i>.
 --   That is, we apply the operation to the quantities for each currency in
@@ -1460,6 +1568,12 @@ singleton :: CurrencySymbol -> TokenName -> Integer -> Value
 
 -- | Get the quantity of the given currency in the <a>Value</a>.
 valueOf :: Value -> CurrencySymbol -> TokenName -> Integer
+
+-- | A <a>Value</a> containing the given quantity of Lovelace.
+lovelaceValue :: Lovelace -> Value
+
+-- | Get the quantity of Lovelace in the <a>Value</a>.
+lovelaceValueOf :: Value -> Lovelace
 scale :: Module s v => s -> v -> v
 
 -- | The list of <a>CurrencySymbol</a>s of a <a>Value</a>.
@@ -1488,9 +1602,9 @@ lt :: Value -> Value -> Bool
 -- | Check whether a <a>Value</a> is zero.
 isZero :: Value -> Bool
 
--- | Split a value into its positive and negative parts. The first element
---   of the tuple contains the negative parts of the value, the second
---   element contains the positive parts.
+-- | Split a <a>Value</a> into its positive and negative parts. The first
+--   element of the tuple contains the negative parts of the <a>Value</a>,
+--   the second element contains the positive parts.
 --   
 --   <pre>
 --   negate (fst (split a)) <tt>plus</tt> (snd (split a)) == a
@@ -1498,8 +1612,15 @@ isZero :: Value -> Bool
 split :: Value -> (Value, Value)
 unionWith :: (Integer -> Integer -> Integer) -> Value -> Value -> Value
 
--- | Convert a value to a simple list, keeping only the non-zero amounts.
+-- | Convert a <a>Value</a> to a simple list, keeping only the non-zero
+--   amounts. Note that the result isn't sorted, meaning <tt>v1 == v2</tt>
+--   doesn't generally imply <tt>flattenValue v1 == flattenValue v2</tt>.
 flattenValue :: Value -> [(CurrencySymbol, TokenName, Integer)]
+newtype Lovelace
+Lovelace :: Integer -> Lovelace
+[getLovelace] :: Lovelace -> Integer
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Value.Lovelace
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Value.Lovelace
 instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Value.Value
 instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Value.Value
 instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Value.AssetClass
@@ -1552,6 +1673,23 @@ instance Control.DeepSeq.NFData PlutusLedgerApi.V1.Value.Value
 instance GHC.Show.Show PlutusLedgerApi.V1.Value.Value
 instance Data.Data.Data PlutusLedgerApi.V1.Value.Value
 instance GHC.Generics.Generic PlutusLedgerApi.V1.Value.Value
+instance PlutusTx.Show.TH.Show PlutusLedgerApi.V1.Value.Lovelace
+instance PlutusTx.Numeric.AdditiveGroup PlutusLedgerApi.V1.Value.Lovelace
+instance PlutusTx.Numeric.AdditiveMonoid PlutusLedgerApi.V1.Value.Lovelace
+instance PlutusTx.Numeric.AdditiveSemigroup PlutusLedgerApi.V1.Value.Lovelace
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Value.Lovelace
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Value.Lovelace
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Value.Lovelace
+instance PlutusTx.Ord.Ord PlutusLedgerApi.V1.Value.Lovelace
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Value.Lovelace
+instance GHC.Enum.Enum PlutusLedgerApi.V1.Value.Lovelace
+instance GHC.Real.Real PlutusLedgerApi.V1.Value.Lovelace
+instance GHC.Num.Num PlutusLedgerApi.V1.Value.Lovelace
+instance GHC.Show.Show PlutusLedgerApi.V1.Value.Lovelace
+instance GHC.Classes.Ord PlutusLedgerApi.V1.Value.Lovelace
+instance GHC.Classes.Eq PlutusLedgerApi.V1.Value.Lovelace
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Value.Lovelace
+instance GHC.Generics.Generic PlutusLedgerApi.V1.Value.Lovelace
 instance PlutusTx.Numeric.AdditiveSemigroup PlutusLedgerApi.V1.Value.Value
 instance PlutusTx.Numeric.AdditiveMonoid PlutusLedgerApi.V1.Value.Value
 instance PlutusTx.Numeric.AdditiveGroup PlutusLedgerApi.V1.Value.Value
@@ -1599,7 +1737,10 @@ Datum :: BuiltinData -> Datum
 newtype Context
 Context :: BuiltinData -> Context
 
--- | Script runtime representation of a <tt>Digest SHA256</tt>.
+-- | Type representing the <i>BLAKE2b-256</i> hash of a datum. 32 bytes.
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>.
 newtype DatumHash
 DatumHash :: BuiltinByteString -> DatumHash
 
@@ -1611,7 +1752,10 @@ DatumHash :: BuiltinByteString -> DatumHash
 newtype RedeemerHash
 RedeemerHash :: BuiltinByteString -> RedeemerHash
 
--- | Script runtime representation of a <tt>Digest SHA256</tt>.
+-- | Type representing the <i>BLAKE2b-224</i> hash of a script. 28 bytes.
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>.
 newtype ScriptHash
 ScriptHash :: BuiltinByteString -> ScriptHash
 [getScriptHash] :: ScriptHash -> BuiltinByteString
@@ -2443,6 +2587,18 @@ module PlutusLedgerApi.V1
 -- | Scripts to the ledger are serialised bytestrings.
 type SerialisedScript = ShortByteString
 
+-- | A Plutus script ready to be evaluated on-chain, via
+--   <tt>evaluateScriptRestricting</tt>.
+data ScriptForEvaluation
+
+-- | Get a <a>SerialisedScript</a> from a <a>ScriptForEvaluation</a>.
+--   <i>O(1)</i>.
+serialisedScript :: ScriptForEvaluation -> SerialisedScript
+
+-- | Get a <a>ScriptNamedDeBruijn</a> from a <a>ScriptForEvaluation</a>.
+--   <i>O(1)</i>.
+deserialisedScript :: ScriptForEvaluation -> ScriptNamedDeBruijn
+
 -- | Turns a program which was compiled using the 'PlutusTx' toolchain into
 --   a binary format that is understood by the network and can be stored
 --   on-chain.
@@ -2452,16 +2608,15 @@ serialiseCompiledCode :: forall a. CompiledCode a -> SerialisedScript
 --   format that is understood by the network and can be stored on-chain.
 serialiseUPLC :: Program DeBruijn DefaultUni DefaultFun () -> SerialisedScript
 
+-- | The deserialization from a serialised script into a
+--   <a>ScriptForEvaluation</a>, ready to be evaluated on-chain. Called
+--   inside phase-1 validation (i.e., deserialisation error is a phase-1
+--   error).
+deserialiseScript :: forall m. MonadError ScriptDecodeError m => MajorProtocolVersion -> SerialisedScript -> m ScriptForEvaluation
+
 -- | Deserialises a <a>SerialisedScript</a> back into an AST. Does *not* do
 --   ledger-language-version-specific checks like for allowable builtins.
 uncheckedDeserialiseUPLC :: SerialisedScript -> Program DeBruijn DefaultUni DefaultFun ()
-
--- | Check if a <tt>Script</tt> is "valid" according to a protocol version.
---   At the moment this means "deserialises correctly", which in particular
---   implies that it is (almost certainly) an encoded script and the script
---   does not mention any builtins unavailable in the given protocol
---   version.
-assertScriptWellFormed :: MonadError ScriptDecodeError m => ProtocolVersion -> SerialisedScript -> m ()
 
 -- | Evaluates a script, with a cost model and a budget that restricts how
 --   many resources it can use according to the cost model. Also returns
@@ -2470,26 +2625,23 @@ assertScriptWellFormed :: MonadError ScriptDecodeError m => ProtocolVersion -> S
 --   Can be used to calculate budgets for scripts, but even in this case
 --   you must give a limit to guard against scripts that run for a long
 --   time or loop.
-evaluateScriptRestricting :: ProtocolVersion -> VerboseMode -> EvaluationContext -> ExBudget -> SerialisedScript -> [Data] -> (LogOutput, Either EvaluationError ExBudget)
+evaluateScriptRestricting :: MajorProtocolVersion -> VerboseMode -> EvaluationContext -> ExBudget -> ScriptForEvaluation -> [Data] -> (LogOutput, Either EvaluationError ExBudget)
 
 -- | Evaluates a script, returning the minimum budget that the script would
 --   need to evaluate successfully. This will take as long as the script
 --   takes, if you need to limit the execution time of the script also, you
 --   can use <a>evaluateScriptRestricting</a>, which also returns the used
 --   budget.
-evaluateScriptCounting :: ProtocolVersion -> VerboseMode -> EvaluationContext -> SerialisedScript -> [Data] -> (LogOutput, Either EvaluationError ExBudget)
+evaluateScriptCounting :: MajorProtocolVersion -> VerboseMode -> EvaluationContext -> ScriptForEvaluation -> [Data] -> (LogOutput, Either EvaluationError ExBudget)
 
--- | This represents the Cardano protocol version, with its major and minor
---   components. This relies on careful understanding between us and the
---   ledger as to what this means.
-data ProtocolVersion
-ProtocolVersion :: Int -> Int -> ProtocolVersion
-
--- | the major component
-[pvMajor] :: ProtocolVersion -> Int
-
--- | the minor component
-[pvMinor] :: ProtocolVersion -> Int
+-- | This represents the major component of the Cardano protocol version.
+--   The ledger can only supply the major component of the protocol
+--   version, not the minor component, and Plutus should only need to care
+--   about the major component anyway. This relies on careful understanding
+--   between us and the ledger as to what this means.
+newtype MajorProtocolVersion
+MajorProtocolVersion :: Int -> MajorProtocolVersion
+[getMajorProtocolVersion] :: MajorProtocolVersion -> Int
 
 -- | A simple toggle indicating whether or not we should accumulate logs
 --   during script execution.
@@ -2516,6 +2668,7 @@ ExCPU :: CostingInteger -> ExCPU
 newtype () => ExMemory
 ExMemory :: CostingInteger -> ExMemory
 data () => SatInt
+fromSatInt :: Num a => SatInt -> a
 
 -- | An opaque type that contains all the static parameters that the
 --   evaluator needs to evaluate a script. This is so that they can be
@@ -2525,8 +2678,13 @@ data EvaluationContext
 
 -- | Build the <a>EvaluationContext</a>.
 --   
---   The input is a list of integer values passed from the ledger and are
---   expected to appear in correct order.
+--   The input is a list of cost model parameters (which are integer
+--   values) passed from the ledger.
+--   
+--   IMPORTANT: the cost model parameters <b>MUST</b> appear in the correct
+--   order, matching the names in <a>ParamName</a>. If the parameters are
+--   supplied in the wrong order then script cost calculations will be
+--   incorrect.
 --   
 --   IMPORTANT: The evaluation context of every Plutus version must be
 --   recreated upon a protocol update with the updated cost model
@@ -2792,11 +2950,7 @@ ScriptCredential :: ScriptHash -> Credential
 
 -- | The <a>Value</a> type represents a collection of amounts of different
 --   currencies. We can think of <a>Value</a> as a vector space whose
---   dimensions are currencies. To create a value of <a>Value</a>, we need
---   to specify a currency. This can be done using <a>adaValueOf</a>. To
---   get the ada dimension of <a>Value</a> we use <a>fromValue</a>. Plutus
---   contract authors will be able to define modules similar to <a>Ada</a>
---   for their own currencies.
+--   dimensions are currencies.
 --   
 --   Operations on currencies are usually implemented <i>pointwise</i>.
 --   That is, we apply the operation to the quantities for each currency in
@@ -2850,6 +3004,9 @@ adaSymbol :: CurrencySymbol
 
 -- | The <a>TokenName</a> of the <tt>Ada</tt> currency.
 adaToken :: TokenName
+newtype Lovelace
+Lovelace :: Integer -> Lovelace
+[getLovelace] :: Lovelace -> Integer
 
 -- | POSIX time is measured as the number of <i>milliseconds</i> since
 --   1970-01-01T00:00:00Z. This is not the same as Haskell's
@@ -3029,7 +3186,10 @@ strictLowerBound :: a -> LowerBound a
 --   than the input value.
 strictUpperBound :: a -> UpperBound a
 
--- | Script runtime representation of a <tt>Digest SHA256</tt>.
+-- | Type representing the <i>BLAKE2b-224</i> hash of a script. 28 bytes.
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>.
 newtype ScriptHash
 ScriptHash :: BuiltinByteString -> ScriptHash
 [getScriptHash] :: ScriptHash -> BuiltinByteString
@@ -3054,7 +3214,10 @@ newtype Datum
 Datum :: BuiltinData -> Datum
 [getDatum] :: Datum -> BuiltinData
 
--- | Script runtime representation of a <tt>Digest SHA256</tt>.
+-- | Type representing the <i>BLAKE2b-256</i> hash of a datum. 32 bytes.
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>.
 newtype DatumHash
 DatumHash :: BuiltinByteString -> DatumHash
 data () => Data
@@ -3064,7 +3227,7 @@ List :: [Data] -> Data
 I :: Integer -> Data
 B :: ByteString -> Data
 data () => BuiltinData
-BuiltinData :: Data -> BuiltinData
+BuiltinData :: ~Data -> BuiltinData
 class () => ToData a
 toBuiltinData :: ToData a => a -> BuiltinData
 class () => FromData a
@@ -3098,38 +3261,50 @@ CostModelParameterMismatch :: EvaluationError
 data ScriptDecodeError
 
 -- | an error from the underlying CBOR/serialise library
-CBORDeserialiseError :: !DeserialiseFailure -> ScriptDecodeError
+CBORDeserialiseError :: !DeserialiseFailureInfo -> ScriptDecodeError
 
 -- | Script was successfully parsed, but more (runaway) bytes encountered
 --   after script's position
 RemainderError :: !ByteString -> ScriptDecodeError
 
 -- | the plutus version of the given script is not enabled yet
-LedgerLanguageNotAvailableError :: !PlutusLedgerLanguage -> !ProtocolVersion -> !ProtocolVersion -> ScriptDecodeError
+LedgerLanguageNotAvailableError :: !PlutusLedgerLanguage -> !MajorProtocolVersion -> !MajorProtocolVersion -> ScriptDecodeError
 
 -- | the script's ledger language
 [sdeAffectedLang] :: ScriptDecodeError -> !PlutusLedgerLanguage
 
--- | the protocol version that will first introduce/enable the ledger
+-- | the major protocol version that will first introduce/enable the ledger
 --   language
-[sdeIntroPv] :: ScriptDecodeError -> !ProtocolVersion
+[sdeIntroPv] :: ScriptDecodeError -> !MajorProtocolVersion
 
 -- | the current protocol version
-[sdeThisPv] :: ScriptDecodeError -> !ProtocolVersion
-PlutusCoreLanguageNotAvailableError :: !Version -> !ProtocolVersion -> ScriptDecodeError
+[sdeThisPv] :: ScriptDecodeError -> !MajorProtocolVersion
+PlutusCoreLanguageNotAvailableError :: !Version -> !MajorProtocolVersion -> ScriptDecodeError
 
 -- | the script's Plutus Core language version
 [sdeAffectedVersion] :: ScriptDecodeError -> !Version
 
 -- | the current protocol version
-[sdeThisPv] :: ScriptDecodeError -> !ProtocolVersion
+[sdeThisPv] :: ScriptDecodeError -> !MajorProtocolVersion
 
 
--- | The interface to Plutus V3 for the ledger.
-module PlutusLedgerApi.V3
+-- | The interface to Plutus V2 for the ledger.
+module PlutusLedgerApi.V2
 
 -- | Scripts to the ledger are serialised bytestrings.
 type SerialisedScript = ShortByteString
+
+-- | A Plutus script ready to be evaluated on-chain, via
+--   <tt>evaluateScriptRestricting</tt>.
+data ScriptForEvaluation
+
+-- | Get a <a>SerialisedScript</a> from a <a>ScriptForEvaluation</a>.
+--   <i>O(1)</i>.
+serialisedScript :: ScriptForEvaluation -> SerialisedScript
+
+-- | Get a <a>ScriptNamedDeBruijn</a> from a <a>ScriptForEvaluation</a>.
+--   <i>O(1)</i>.
+deserialisedScript :: ScriptForEvaluation -> ScriptNamedDeBruijn
 
 -- | Turns a program which was compiled using the 'PlutusTx' toolchain into
 --   a binary format that is understood by the network and can be stored
@@ -3140,16 +3315,15 @@ serialiseCompiledCode :: forall a. CompiledCode a -> SerialisedScript
 --   format that is understood by the network and can be stored on-chain.
 serialiseUPLC :: Program DeBruijn DefaultUni DefaultFun () -> SerialisedScript
 
+-- | The deserialization from a serialised script into a
+--   <a>ScriptForEvaluation</a>, ready to be evaluated on-chain. Called
+--   inside phase-1 validation (i.e., deserialisation error is a phase-1
+--   error).
+deserialiseScript :: forall m. MonadError ScriptDecodeError m => MajorProtocolVersion -> SerialisedScript -> m ScriptForEvaluation
+
 -- | Deserialises a <a>SerialisedScript</a> back into an AST. Does *not* do
 --   ledger-language-version-specific checks like for allowable builtins.
 uncheckedDeserialiseUPLC :: SerialisedScript -> Program DeBruijn DefaultUni DefaultFun ()
-
--- | Check if a <tt>Script</tt> is "valid" according to a protocol version.
---   At the moment this means "deserialises correctly", which in particular
---   implies that it is (almost certainly) an encoded script and the script
---   does not mention any builtins unavailable in the given protocol
---   version.
-assertScriptWellFormed :: MonadError ScriptDecodeError m => ProtocolVersion -> SerialisedScript -> m ()
 
 -- | Evaluates a script, with a cost model and a budget that restricts how
 --   many resources it can use according to the cost model. Also returns
@@ -3158,26 +3332,23 @@ assertScriptWellFormed :: MonadError ScriptDecodeError m => ProtocolVersion -> S
 --   Can be used to calculate budgets for scripts, but even in this case
 --   you must give a limit to guard against scripts that run for a long
 --   time or loop.
-evaluateScriptRestricting :: ProtocolVersion -> VerboseMode -> EvaluationContext -> ExBudget -> SerialisedScript -> [Data] -> (LogOutput, Either EvaluationError ExBudget)
+evaluateScriptRestricting :: MajorProtocolVersion -> VerboseMode -> EvaluationContext -> ExBudget -> ScriptForEvaluation -> [Data] -> (LogOutput, Either EvaluationError ExBudget)
 
 -- | Evaluates a script, returning the minimum budget that the script would
 --   need to evaluate successfully. This will take as long as the script
 --   takes, if you need to limit the execution time of the script also, you
 --   can use <a>evaluateScriptRestricting</a>, which also returns the used
 --   budget.
-evaluateScriptCounting :: ProtocolVersion -> VerboseMode -> EvaluationContext -> SerialisedScript -> [Data] -> (LogOutput, Either EvaluationError ExBudget)
+evaluateScriptCounting :: MajorProtocolVersion -> VerboseMode -> EvaluationContext -> ScriptForEvaluation -> [Data] -> (LogOutput, Either EvaluationError ExBudget)
 
--- | This represents the Cardano protocol version, with its major and minor
---   components. This relies on careful understanding between us and the
---   ledger as to what this means.
-data ProtocolVersion
-ProtocolVersion :: Int -> Int -> ProtocolVersion
-
--- | the major component
-[pvMajor] :: ProtocolVersion -> Int
-
--- | the minor component
-[pvMinor] :: ProtocolVersion -> Int
+-- | This represents the major component of the Cardano protocol version.
+--   The ledger can only supply the major component of the protocol
+--   version, not the minor component, and Plutus should only need to care
+--   about the major component anyway. This relies on careful understanding
+--   between us and the ledger as to what this means.
+newtype MajorProtocolVersion
+MajorProtocolVersion :: Int -> MajorProtocolVersion
+[getMajorProtocolVersion] :: MajorProtocolVersion -> Int
 
 -- | A simple toggle indicating whether or not we should accumulate logs
 --   during script execution.
@@ -3204,6 +3375,7 @@ ExCPU :: CostingInteger -> ExCPU
 newtype () => ExMemory
 ExMemory :: CostingInteger -> ExMemory
 data () => SatInt
+fromSatInt :: Num a => SatInt -> a
 
 -- | An opaque type that contains all the static parameters that the
 --   evaluator needs to evaluate a script. This is so that they can be
@@ -3213,8 +3385,1238 @@ data EvaluationContext
 
 -- | Build the <a>EvaluationContext</a>.
 --   
---   The input is a list of integer values passed from the ledger and are
---   expected to appear in correct order.
+--   The input is a list of cost model parameters (which are integer
+--   values) passed from the ledger.
+--   
+--   IMPORTANT: the cost model parameters <b>MUST</b> appear in the correct
+--   order, matching the names in <a>ParamName</a>. If the parameters are
+--   supplied in the wrong order then script cost calculations will be
+--   incorrect.
+--   
+--   IMPORTANT: The evaluation context of every Plutus version must be
+--   recreated upon a protocol update with the updated cost model
+--   parameters.
+mkEvaluationContext :: (MonadError CostModelApplyError m, MonadWriter [CostModelApplyWarn] m) => [Integer] -> m EvaluationContext
+
+-- | The enumeration of all possible cost model parameter names for this
+--   language version.
+--   
+--   IMPORTANT: The order of appearance of the data constructors here
+--   matters. DO NOT REORDER. See Note [Quotation marks in cost model
+--   parameter constructors] See Note [Cost model parameters from the
+--   ledger's point of view]
+data ParamName
+AddInteger'cpu'arguments'intercept :: ParamName
+AddInteger'cpu'arguments'slope :: ParamName
+AddInteger'memory'arguments'intercept :: ParamName
+AddInteger'memory'arguments'slope :: ParamName
+AppendByteString'cpu'arguments'intercept :: ParamName
+AppendByteString'cpu'arguments'slope :: ParamName
+AppendByteString'memory'arguments'intercept :: ParamName
+AppendByteString'memory'arguments'slope :: ParamName
+AppendString'cpu'arguments'intercept :: ParamName
+AppendString'cpu'arguments'slope :: ParamName
+AppendString'memory'arguments'intercept :: ParamName
+AppendString'memory'arguments'slope :: ParamName
+BData'cpu'arguments :: ParamName
+BData'memory'arguments :: ParamName
+Blake2b_256'cpu'arguments'intercept :: ParamName
+Blake2b_256'cpu'arguments'slope :: ParamName
+Blake2b_256'memory'arguments :: ParamName
+CekApplyCost'exBudgetCPU :: ParamName
+CekApplyCost'exBudgetMemory :: ParamName
+CekBuiltinCost'exBudgetCPU :: ParamName
+CekBuiltinCost'exBudgetMemory :: ParamName
+CekConstCost'exBudgetCPU :: ParamName
+CekConstCost'exBudgetMemory :: ParamName
+CekDelayCost'exBudgetCPU :: ParamName
+CekDelayCost'exBudgetMemory :: ParamName
+CekForceCost'exBudgetCPU :: ParamName
+CekForceCost'exBudgetMemory :: ParamName
+CekLamCost'exBudgetCPU :: ParamName
+CekLamCost'exBudgetMemory :: ParamName
+CekStartupCost'exBudgetCPU :: ParamName
+CekStartupCost'exBudgetMemory :: ParamName
+CekVarCost'exBudgetCPU :: ParamName
+CekVarCost'exBudgetMemory :: ParamName
+ChooseData'cpu'arguments :: ParamName
+ChooseData'memory'arguments :: ParamName
+ChooseList'cpu'arguments :: ParamName
+ChooseList'memory'arguments :: ParamName
+ChooseUnit'cpu'arguments :: ParamName
+ChooseUnit'memory'arguments :: ParamName
+ConsByteString'cpu'arguments'intercept :: ParamName
+ConsByteString'cpu'arguments'slope :: ParamName
+ConsByteString'memory'arguments'intercept :: ParamName
+ConsByteString'memory'arguments'slope :: ParamName
+ConstrData'cpu'arguments :: ParamName
+ConstrData'memory'arguments :: ParamName
+DecodeUtf8'cpu'arguments'intercept :: ParamName
+DecodeUtf8'cpu'arguments'slope :: ParamName
+DecodeUtf8'memory'arguments'intercept :: ParamName
+DecodeUtf8'memory'arguments'slope :: ParamName
+DivideInteger'cpu'arguments'constant :: ParamName
+DivideInteger'cpu'arguments'model'arguments'intercept :: ParamName
+DivideInteger'cpu'arguments'model'arguments'slope :: ParamName
+DivideInteger'memory'arguments'intercept :: ParamName
+DivideInteger'memory'arguments'minimum :: ParamName
+DivideInteger'memory'arguments'slope :: ParamName
+EncodeUtf8'cpu'arguments'intercept :: ParamName
+EncodeUtf8'cpu'arguments'slope :: ParamName
+EncodeUtf8'memory'arguments'intercept :: ParamName
+EncodeUtf8'memory'arguments'slope :: ParamName
+EqualsByteString'cpu'arguments'constant :: ParamName
+EqualsByteString'cpu'arguments'intercept :: ParamName
+EqualsByteString'cpu'arguments'slope :: ParamName
+EqualsByteString'memory'arguments :: ParamName
+EqualsData'cpu'arguments'intercept :: ParamName
+EqualsData'cpu'arguments'slope :: ParamName
+EqualsData'memory'arguments :: ParamName
+EqualsInteger'cpu'arguments'intercept :: ParamName
+EqualsInteger'cpu'arguments'slope :: ParamName
+EqualsInteger'memory'arguments :: ParamName
+EqualsString'cpu'arguments'constant :: ParamName
+EqualsString'cpu'arguments'intercept :: ParamName
+EqualsString'cpu'arguments'slope :: ParamName
+EqualsString'memory'arguments :: ParamName
+FstPair'cpu'arguments :: ParamName
+FstPair'memory'arguments :: ParamName
+HeadList'cpu'arguments :: ParamName
+HeadList'memory'arguments :: ParamName
+IData'cpu'arguments :: ParamName
+IData'memory'arguments :: ParamName
+IfThenElse'cpu'arguments :: ParamName
+IfThenElse'memory'arguments :: ParamName
+IndexByteString'cpu'arguments :: ParamName
+IndexByteString'memory'arguments :: ParamName
+LengthOfByteString'cpu'arguments :: ParamName
+LengthOfByteString'memory'arguments :: ParamName
+LessThanByteString'cpu'arguments'intercept :: ParamName
+LessThanByteString'cpu'arguments'slope :: ParamName
+LessThanByteString'memory'arguments :: ParamName
+LessThanEqualsByteString'cpu'arguments'intercept :: ParamName
+LessThanEqualsByteString'cpu'arguments'slope :: ParamName
+LessThanEqualsByteString'memory'arguments :: ParamName
+LessThanEqualsInteger'cpu'arguments'intercept :: ParamName
+LessThanEqualsInteger'cpu'arguments'slope :: ParamName
+LessThanEqualsInteger'memory'arguments :: ParamName
+LessThanInteger'cpu'arguments'intercept :: ParamName
+LessThanInteger'cpu'arguments'slope :: ParamName
+LessThanInteger'memory'arguments :: ParamName
+ListData'cpu'arguments :: ParamName
+ListData'memory'arguments :: ParamName
+MapData'cpu'arguments :: ParamName
+MapData'memory'arguments :: ParamName
+MkCons'cpu'arguments :: ParamName
+MkCons'memory'arguments :: ParamName
+MkNilData'cpu'arguments :: ParamName
+MkNilData'memory'arguments :: ParamName
+MkNilPairData'cpu'arguments :: ParamName
+MkNilPairData'memory'arguments :: ParamName
+MkPairData'cpu'arguments :: ParamName
+MkPairData'memory'arguments :: ParamName
+ModInteger'cpu'arguments'constant :: ParamName
+ModInteger'cpu'arguments'model'arguments'intercept :: ParamName
+ModInteger'cpu'arguments'model'arguments'slope :: ParamName
+ModInteger'memory'arguments'intercept :: ParamName
+ModInteger'memory'arguments'minimum :: ParamName
+ModInteger'memory'arguments'slope :: ParamName
+MultiplyInteger'cpu'arguments'intercept :: ParamName
+MultiplyInteger'cpu'arguments'slope :: ParamName
+MultiplyInteger'memory'arguments'intercept :: ParamName
+MultiplyInteger'memory'arguments'slope :: ParamName
+NullList'cpu'arguments :: ParamName
+NullList'memory'arguments :: ParamName
+QuotientInteger'cpu'arguments'constant :: ParamName
+QuotientInteger'cpu'arguments'model'arguments'intercept :: ParamName
+QuotientInteger'cpu'arguments'model'arguments'slope :: ParamName
+QuotientInteger'memory'arguments'intercept :: ParamName
+QuotientInteger'memory'arguments'minimum :: ParamName
+QuotientInteger'memory'arguments'slope :: ParamName
+RemainderInteger'cpu'arguments'constant :: ParamName
+RemainderInteger'cpu'arguments'model'arguments'intercept :: ParamName
+RemainderInteger'cpu'arguments'model'arguments'slope :: ParamName
+RemainderInteger'memory'arguments'intercept :: ParamName
+RemainderInteger'memory'arguments'minimum :: ParamName
+RemainderInteger'memory'arguments'slope :: ParamName
+SerialiseData'cpu'arguments'intercept :: ParamName
+SerialiseData'cpu'arguments'slope :: ParamName
+SerialiseData'memory'arguments'intercept :: ParamName
+SerialiseData'memory'arguments'slope :: ParamName
+Sha2_256'cpu'arguments'intercept :: ParamName
+Sha2_256'cpu'arguments'slope :: ParamName
+Sha2_256'memory'arguments :: ParamName
+Sha3_256'cpu'arguments'intercept :: ParamName
+Sha3_256'cpu'arguments'slope :: ParamName
+Sha3_256'memory'arguments :: ParamName
+SliceByteString'cpu'arguments'intercept :: ParamName
+SliceByteString'cpu'arguments'slope :: ParamName
+SliceByteString'memory'arguments'intercept :: ParamName
+SliceByteString'memory'arguments'slope :: ParamName
+SndPair'cpu'arguments :: ParamName
+SndPair'memory'arguments :: ParamName
+SubtractInteger'cpu'arguments'intercept :: ParamName
+SubtractInteger'cpu'arguments'slope :: ParamName
+SubtractInteger'memory'arguments'intercept :: ParamName
+SubtractInteger'memory'arguments'slope :: ParamName
+TailList'cpu'arguments :: ParamName
+TailList'memory'arguments :: ParamName
+Trace'cpu'arguments :: ParamName
+Trace'memory'arguments :: ParamName
+UnBData'cpu'arguments :: ParamName
+UnBData'memory'arguments :: ParamName
+UnConstrData'cpu'arguments :: ParamName
+UnConstrData'memory'arguments :: ParamName
+UnIData'cpu'arguments :: ParamName
+UnIData'memory'arguments :: ParamName
+UnListData'cpu'arguments :: ParamName
+UnListData'memory'arguments :: ParamName
+UnMapData'cpu'arguments :: ParamName
+UnMapData'memory'arguments :: ParamName
+VerifyEcdsaSecp256k1Signature'cpu'arguments :: ParamName
+VerifyEcdsaSecp256k1Signature'memory'arguments :: ParamName
+VerifyEd25519Signature'cpu'arguments'intercept :: ParamName
+VerifyEd25519Signature'cpu'arguments'slope :: ParamName
+VerifyEd25519Signature'memory'arguments :: ParamName
+VerifySchnorrSecp256k1Signature'cpu'arguments'intercept :: ParamName
+VerifySchnorrSecp256k1Signature'cpu'arguments'slope :: ParamName
+VerifySchnorrSecp256k1Signature'memory'arguments :: ParamName
+data () => CostModelApplyError
+CMUnknownParamError :: !Text -> CostModelApplyError
+CMInternalReadError :: CostModelApplyError
+CMInternalWriteError :: !String -> CostModelApplyError
+CMTooFewParamsError :: !Int -> !Int -> CostModelApplyError
+[cmTooFewExpected] :: CostModelApplyError -> !Int
+[cmTooFewActual] :: CostModelApplyError -> !Int
+type CostModelParams = Map Text Integer
+assertWellFormedCostModelParams :: MonadError CostModelApplyError m => CostModelParams -> m ()
+
+-- | The context that the currently-executing script can access.
+data ScriptContext
+ScriptContext :: TxInfo -> ScriptPurpose -> ScriptContext
+
+-- | information about the transaction the currently-executing script is
+--   included in
+[scriptContextTxInfo] :: ScriptContext -> TxInfo
+
+-- | the purpose of the currently-executing script
+[scriptContextPurpose] :: ScriptContext -> ScriptPurpose
+
+-- | Purpose of the script that is currently running
+data ScriptPurpose
+Minting :: CurrencySymbol -> ScriptPurpose
+Spending :: TxOutRef -> ScriptPurpose
+Rewarding :: StakingCredential -> ScriptPurpose
+Certifying :: DCert -> ScriptPurpose
+data () => BuiltinByteString
+toBuiltin :: ToBuiltin a arep => a -> arep
+fromBuiltin :: FromBuiltin arep a => arep -> a
+newtype LedgerBytes
+LedgerBytes :: BuiltinByteString -> LedgerBytes
+[getLedgerBytes] :: LedgerBytes -> BuiltinByteString
+
+-- | Lift a Haskell bytestring to the Plutus abstraction <a>LedgerBytes</a>
+fromBytes :: ByteString -> LedgerBytes
+
+-- | A representation of the ledger DCert. Some information is digested,
+--   and not included
+data DCert
+DCertDelegRegKey :: StakingCredential -> DCert
+DCertDelegDeRegKey :: StakingCredential -> DCert
+DCertDelegDelegate :: StakingCredential -> PubKeyHash -> DCert
+
+-- | A digest of the PoolParams
+DCertPoolRegister :: PubKeyHash -> PubKeyHash -> DCert
+
+-- | The retirement certificate and the Epoch in which the retirement will
+--   take place
+DCertPoolRetire :: PubKeyHash -> Integer -> DCert
+
+-- | A really terse Digest
+DCertGenesis :: DCert
+
+-- | Another really terse Digest
+DCertMir :: DCert
+
+-- | Staking credential used to assign rewards.
+data StakingCredential
+
+-- | The staking hash is the <a>Credential</a> required to unlock a
+--   transaction output. Either a public key credential (<a>PubKeyHash</a>)
+--   or a script credential (<a>ScriptHash</a>). Both are hashed with
+--   <i>BLAKE2b-244</i>. 28 byte.
+StakingHash :: Credential -> StakingCredential
+
+-- | The certificate pointer, constructed by the given slot number,
+--   transaction and certificate indices. NB: The fields should really be
+--   all <tt>Word64</tt>, as they are implemented in <tt>Word64</tt>, but
+--   <a>Integer</a> is our only integral type so we need to use it instead.
+StakingPtr :: Integer -> Integer -> Integer -> StakingCredential
+
+-- | Credentials required to unlock a transaction output.
+data Credential
+
+-- | The transaction that spends this output must be signed by the private
+--   key. See <a>PubKeyHash</a>.
+PubKeyCredential :: PubKeyHash -> Credential
+
+-- | The transaction that spends this output must include the validator
+--   script and be accepted by the validator. See <a>ScriptHash</a>.
+ScriptCredential :: ScriptHash -> Credential
+
+-- | The <a>Value</a> type represents a collection of amounts of different
+--   currencies. We can think of <a>Value</a> as a vector space whose
+--   dimensions are currencies.
+--   
+--   Operations on currencies are usually implemented <i>pointwise</i>.
+--   That is, we apply the operation to the quantities for each currency in
+--   turn. So when we add two <a>Value</a>s the resulting <a>Value</a> has,
+--   for each currency, the sum of the quantities of <i>that particular</i>
+--   currency in the argument <a>Value</a>. The effect of this is that the
+--   currencies in the <a>Value</a> are "independent", and are operated on
+--   separately.
+--   
+--   Whenever we need to get the quantity of a currency in a <a>Value</a>
+--   where there is no explicit quantity of that currency in the
+--   <a>Value</a>, then the quantity is taken to be zero.
+--   
+--   There is no 'Ord Value' instance since <a>Value</a> is only a partial
+--   order, so <a>compare</a> can't do the right thing in some cases.
+newtype Value
+Value :: Map CurrencySymbol (Map TokenName Integer) -> Value
+[getValue] :: Value -> Map CurrencySymbol (Map TokenName Integer)
+
+-- | ByteString representing the currency, hashed with <i>BLAKE2b-224</i>.
+--   It is empty for <tt>Ada</tt>, 28 bytes for <tt>MintingPolicyHash</tt>.
+--   Forms an <a>AssetClass</a> along with <a>TokenName</a>. A <a>Value</a>
+--   is a map from <a>CurrencySymbol</a>'s to a map from <a>TokenName</a>
+--   to an <a>Integer</a>.
+--   
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>.
+newtype CurrencySymbol
+CurrencySymbol :: BuiltinByteString -> CurrencySymbol
+[unCurrencySymbol] :: CurrencySymbol -> BuiltinByteString
+
+-- | ByteString of a name of a token. Shown as UTF-8 string when possible.
+--   Should be no longer than 32 bytes, empty for Ada. Forms an
+--   <a>AssetClass</a> along with a <a>CurrencySymbol</a>.
+--   
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>.
+newtype TokenName
+TokenName :: BuiltinByteString -> TokenName
+[unTokenName] :: TokenName -> BuiltinByteString
+
+-- | Make a <a>Value</a> containing only the given quantity of the given
+--   currency.
+singleton :: CurrencySymbol -> TokenName -> Integer -> Value
+unionWith :: (Integer -> Integer -> Integer) -> Value -> Value -> Value
+
+-- | The <a>CurrencySymbol</a> of the <tt>Ada</tt> currency.
+adaSymbol :: CurrencySymbol
+
+-- | The <a>TokenName</a> of the <tt>Ada</tt> currency.
+adaToken :: TokenName
+newtype Lovelace
+Lovelace :: Integer -> Lovelace
+[getLovelace] :: Lovelace -> Integer
+
+-- | POSIX time is measured as the number of <i>milliseconds</i> since
+--   1970-01-01T00:00:00Z. This is not the same as Haskell's
+--   <a>POSIXTime</a>
+newtype POSIXTime
+POSIXTime :: Integer -> POSIXTime
+[getPOSIXTime] :: POSIXTime -> Integer
+
+-- | An <a>Interval</a> of <a>POSIXTime</a>s.
+type POSIXTimeRange = Interval POSIXTime
+
+-- | An address may contain two credentials, the payment credential and
+--   optionally a <a>StakingCredential</a>.
+data Address
+Address :: Credential -> Maybe StakingCredential -> Address
+
+-- | the payment credential
+[addressCredential] :: Address -> Credential
+
+-- | the staking credential
+[addressStakingCredential] :: Address -> Maybe StakingCredential
+
+-- | The hash of a public key. This is frequently used to identify the
+--   public key, rather than the key itself. Hashed with
+--   <i>BLAKE2b-224</i>. 28 bytes.
+--   
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>.
+newtype PubKeyHash
+PubKeyHash :: BuiltinByteString -> PubKeyHash
+[getPubKeyHash] :: PubKeyHash -> BuiltinByteString
+
+-- | A transaction ID, i.e. the hash of a transaction. Hashed with
+--   BLAKE2b-256. 32 byte.
+--   
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>.
+newtype TxId
+TxId :: BuiltinByteString -> TxId
+[getTxId] :: TxId -> BuiltinByteString
+
+-- | A pending transaction. This is the view as seen by validator scripts,
+--   so some details are stripped out.
+data TxInfo
+TxInfo :: [TxInInfo] -> [TxInInfo] -> [TxOut] -> Value -> Value -> [DCert] -> Map StakingCredential Integer -> POSIXTimeRange -> [PubKeyHash] -> Map ScriptPurpose Redeemer -> Map DatumHash Datum -> TxId -> TxInfo
+
+-- | Transaction inputs; cannot be an empty list
+[txInfoInputs] :: TxInfo -> [TxInInfo]
+
+-- | <i>Added in V2:</i> Transaction reference inputs
+[txInfoReferenceInputs] :: TxInfo -> [TxInInfo]
+
+-- | Transaction outputs
+[txInfoOutputs] :: TxInfo -> [TxOut]
+
+-- | The fee paid by this transaction.
+[txInfoFee] :: TxInfo -> Value
+
+-- | The <a>Value</a> minted by this transaction.
+[txInfoMint] :: TxInfo -> Value
+
+-- | Digests of certificates included in this transaction
+[txInfoDCert] :: TxInfo -> [DCert]
+
+-- | Withdrawals <i>V1-&gt;V2</i>: changed from assoc list to a
+--   <a>AssocMap</a>
+[txInfoWdrl] :: TxInfo -> Map StakingCredential Integer
+
+-- | The valid range for the transaction.
+[txInfoValidRange] :: TxInfo -> POSIXTimeRange
+
+-- | Signatures provided with the transaction, attested that they all
+--   signed the tx
+[txInfoSignatories] :: TxInfo -> [PubKeyHash]
+
+-- | <i>Added in V2:</i> a table of redeemers attached to the transaction
+[txInfoRedeemers] :: TxInfo -> Map ScriptPurpose Redeemer
+
+-- | The lookup table of datums attached to the transaction
+--   <i>V1-&gt;V2</i>: changed from assoc list to a <a>AssocMap</a>
+[txInfoData] :: TxInfo -> Map DatumHash Datum
+
+-- | Hash of the pending transaction body (i.e. transaction excluding
+--   witnesses)
+[txInfoId] :: TxInfo -> TxId
+
+-- | A transaction output, consisting of a target address, a value,
+--   optionally a datum/datum hash, and optionally a reference script.
+data TxOut
+TxOut :: Address -> Value -> OutputDatum -> Maybe ScriptHash -> TxOut
+[txOutAddress] :: TxOut -> Address
+[txOutValue] :: TxOut -> Value
+[txOutDatum] :: TxOut -> OutputDatum
+[txOutReferenceScript] :: TxOut -> Maybe ScriptHash
+
+-- | A reference to a transaction output. This is a pair of a transaction
+--   ID (<a>TxId</a>), and an index indicating which of the outputs of that
+--   transaction we are referring to.
+data TxOutRef
+TxOutRef :: TxId -> Integer -> TxOutRef
+
+-- | The transaction ID.
+[txOutRefId] :: TxOutRef -> TxId
+
+-- | Index into the referenced transaction's outputs
+[txOutRefIdx] :: TxOutRef -> Integer
+
+-- | An input of a pending transaction.
+data TxInInfo
+TxInInfo :: TxOutRef -> TxOut -> TxInInfo
+[txInInfoOutRef] :: TxInInfo -> TxOutRef
+[txInInfoResolved] :: TxInInfo -> TxOut
+
+-- | The datum attached to an output: either nothing; a datum hash; or the
+--   datum itself (an "inline datum").
+data OutputDatum
+NoOutputDatum :: OutputDatum
+OutputDatumHash :: DatumHash -> OutputDatum
+OutputDatum :: Datum -> OutputDatum
+
+-- | An interval of <tt>a</tt>s.
+--   
+--   The interval may be either closed or open at either end, meaning that
+--   the endpoints may or may not be included in the interval.
+--   
+--   The interval can also be unbounded on either side.
+--   
+--   The <a>Eq</a> instance gives equality of the intervals, not structural
+--   equality. There is no <a>Ord</a> instance, but <a>contains</a> gives a
+--   partial order.
+--   
+--   Note that some of the functions on <a>Interval</a> rely on <a>Enum</a>
+--   in order to handle non-inclusive endpoints. For this reason, it may
+--   not be safe to use <a>Interval</a>s with non-inclusive endpoints on
+--   types whose <a>Enum</a> instances have partial methods.
+data Interval a
+Interval :: LowerBound a -> UpperBound a -> Interval a
+[ivFrom] :: Interval a -> LowerBound a
+[ivTo] :: Interval a -> UpperBound a
+
+-- | A set extended with a positive and negative infinity.
+data Extended a
+NegInf :: Extended a
+Finite :: a -> Extended a
+PosInf :: Extended a
+
+-- | Whether a bound is inclusive or not.
+type Closure = Bool
+
+-- | The upper bound of an interval.
+data UpperBound a
+UpperBound :: Extended a -> Closure -> UpperBound a
+
+-- | The lower bound of an interval.
+data LowerBound a
+LowerBound :: Extended a -> Closure -> LowerBound a
+
+-- | An <a>Interval</a> that covers every slot. In math. notation [-∞,+∞]
+always :: Interval a
+
+-- | <tt>from a</tt> is an <a>Interval</a> that includes all values that
+--   are greater than or equal to <tt>a</tt>. In math. notation: [a,+∞]
+from :: a -> Interval a
+
+-- | <tt>to a</tt> is an <a>Interval</a> that includes all values that are
+--   smaller than or equal to <tt>a</tt>. In math. notation: [-∞,a]
+to :: a -> Interval a
+
+-- | Construct a lower bound from a value.
+--   
+--   The resulting bound includes all values that are equal or greater than
+--   the input value.
+lowerBound :: a -> LowerBound a
+
+-- | Construct an upper bound from a value.
+--   
+--   The resulting bound includes all values that are equal or smaller than
+--   the input value.
+upperBound :: a -> UpperBound a
+
+-- | Construct a strict lower bound from a value.
+--   
+--   The resulting bound includes all values that are (strictly) greater
+--   than the input value.
+strictLowerBound :: a -> LowerBound a
+
+-- | Construct a strict upper bound from a value.
+--   
+--   The resulting bound includes all values that are (strictly) smaller
+--   than the input value.
+strictUpperBound :: a -> UpperBound a
+data () => Map k v
+fromList :: [(k, v)] -> Map k v
+
+-- | Type representing the <i>BLAKE2b-224</i> hash of a script. 28 bytes.
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>.
+newtype ScriptHash
+ScriptHash :: BuiltinByteString -> ScriptHash
+[getScriptHash] :: ScriptHash -> BuiltinByteString
+
+-- | <a>Redeemer</a> is a wrapper around <tt>Data</tt> values that are used
+--   as redeemers in transaction inputs.
+newtype Redeemer
+Redeemer :: BuiltinData -> Redeemer
+[getRedeemer] :: Redeemer -> BuiltinData
+
+-- | Type representing the <i>BLAKE2b-256</i> hash of a redeemer. 32 bytes.
+--   
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>.
+newtype RedeemerHash
+RedeemerHash :: BuiltinByteString -> RedeemerHash
+
+-- | <a>Datum</a> is a wrapper around <tt>Data</tt> values which are used
+--   as data in transaction outputs.
+newtype Datum
+Datum :: BuiltinData -> Datum
+[getDatum] :: Datum -> BuiltinData
+
+-- | Type representing the <i>BLAKE2b-256</i> hash of a datum. 32 bytes.
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>.
+newtype DatumHash
+DatumHash :: BuiltinByteString -> DatumHash
+data () => Data
+Constr :: Integer -> [Data] -> Data
+Map :: [(Data, Data)] -> Data
+List :: [Data] -> Data
+I :: Integer -> Data
+B :: ByteString -> Data
+data () => BuiltinData
+BuiltinData :: ~Data -> BuiltinData
+class () => ToData a
+toBuiltinData :: ToData a => a -> BuiltinData
+class () => FromData a
+fromBuiltinData :: FromData a => BuiltinData -> Maybe a
+class () => UnsafeFromData a
+unsafeFromBuiltinData :: UnsafeFromData a => BuiltinData -> a
+toData :: ToData a => a -> Data
+fromData :: FromData a => Data -> Maybe a
+dataToBuiltinData :: Data -> BuiltinData
+builtinDataToData :: BuiltinData -> Data
+
+-- | Errors that can be thrown when evaluating a Plutus script.
+data EvaluationError
+
+-- | An error from the evaluator itself
+CekError :: !CekEvaluationException NamedDeBruijn DefaultUni DefaultFun -> EvaluationError
+
+-- | An error in the pre-evaluation step of converting from de-Bruijn
+--   indices
+DeBruijnError :: !FreeVariableError -> EvaluationError
+
+-- | A deserialisation error TODO: make this error more informative when we
+--   have more information about what went wrong
+CodecError :: !ScriptDecodeError -> EvaluationError
+
+-- | An error indicating that the cost model parameters didn't match what
+--   we expected
+CostModelParameterMismatch :: EvaluationError
+
+-- | An error that occurred during script deserialization.
+data ScriptDecodeError
+
+-- | an error from the underlying CBOR/serialise library
+CBORDeserialiseError :: !DeserialiseFailureInfo -> ScriptDecodeError
+
+-- | Script was successfully parsed, but more (runaway) bytes encountered
+--   after script's position
+RemainderError :: !ByteString -> ScriptDecodeError
+
+-- | the plutus version of the given script is not enabled yet
+LedgerLanguageNotAvailableError :: !PlutusLedgerLanguage -> !MajorProtocolVersion -> !MajorProtocolVersion -> ScriptDecodeError
+
+-- | the script's ledger language
+[sdeAffectedLang] :: ScriptDecodeError -> !PlutusLedgerLanguage
+
+-- | the major protocol version that will first introduce/enable the ledger
+--   language
+[sdeIntroPv] :: ScriptDecodeError -> !MajorProtocolVersion
+
+-- | the current protocol version
+[sdeThisPv] :: ScriptDecodeError -> !MajorProtocolVersion
+PlutusCoreLanguageNotAvailableError :: !Version -> !MajorProtocolVersion -> ScriptDecodeError
+
+-- | the script's Plutus Core language version
+[sdeAffectedVersion] :: ScriptDecodeError -> !Version
+
+-- | the current protocol version
+[sdeThisPv] :: ScriptDecodeError -> !MajorProtocolVersion
+
+module PlutusLedgerApi.V3.Contexts
+newtype ColdCommitteeCredential
+ColdCommitteeCredential :: Credential -> ColdCommitteeCredential
+newtype HotCommitteeCredential
+HotCommitteeCredential :: Credential -> HotCommitteeCredential
+newtype DRepCredential
+DRepCredential :: Credential -> DRepCredential
+data DRep
+DRep :: DRepCredential -> DRep
+DRepAlwaysAbstain :: DRep
+DRepAlwaysNoConfidence :: DRep
+data Delegatee
+DelegStake :: PubKeyHash -> Delegatee
+DelegVote :: DRep -> Delegatee
+DelegStakeVote :: PubKeyHash -> DRep -> Delegatee
+data TxCert
+
+-- | Register staking credential with an optional deposit amount
+TxCertRegStaking :: Credential -> Maybe Lovelace -> TxCert
+
+-- | Un-Register staking credential with an optional refund amount
+TxCertUnRegStaking :: Credential -> Maybe Lovelace -> TxCert
+
+-- | Delegate staking credential to a Delegatee
+TxCertDelegStaking :: Credential -> Delegatee -> TxCert
+
+-- | Register and delegate staking credential to a Delegatee in one
+--   certificate. Noter that deposit is mandatory.
+TxCertRegDeleg :: Credential -> Delegatee -> Lovelace -> TxCert
+
+-- | Register a DRep with a deposit value. The optional anchor is omitted.
+TxCertRegDRep :: DRepCredential -> Lovelace -> TxCert
+
+-- | Update a DRep. The optional anchor is omitted.
+TxCertUpdateDRep :: DRepCredential -> TxCert
+
+-- | UnRegister a DRep with mandatory refund value
+TxCertUnRegDRep :: DRepCredential -> Lovelace -> TxCert
+
+-- | A digest of the PoolParams
+TxCertPoolRegister :: PubKeyHash -> PubKeyHash -> TxCert
+
+-- | The retirement certificate and the Epoch in which the retirement will
+--   take place
+TxCertPoolRetire :: PubKeyHash -> Integer -> TxCert
+
+-- | Authorize a Hot credential for a specific Committee member's cold
+--   credential
+TxCertAuthHotCommittee :: ColdCommitteeCredential -> HotCommitteeCredential -> TxCert
+TxCertResignColdCommittee :: ColdCommitteeCredential -> TxCert
+data Voter
+CommitteeVoter :: HotCommitteeCredential -> Voter
+DRepVoter :: DRepCredential -> Voter
+StakePoolVoter :: PubKeyHash -> Voter
+
+-- | A vote. The optional anchor is omitted.
+data Vote
+VoteNo :: Vote
+VoteYes :: Vote
+Abstain :: Vote
+
+-- | Similar to TxOutRef, but for GovActions
+data GovernanceActionId
+GovernanceActionId :: TxId -> Integer -> GovernanceActionId
+[gaidTxId] :: GovernanceActionId -> TxId
+[gaidGovActionIx] :: GovernanceActionId -> Integer
+data Committee
+Committee :: Map ColdCommitteeCredential Integer -> Rational -> Committee
+
+-- | Committee members with epoch number when each of them expires
+[committeeMembers] :: Committee -> Map ColdCommitteeCredential Integer
+
+-- | Quorum of the committee that is necessary for a successful vote
+[committeeQuorum] :: Committee -> Rational
+
+-- | A constitution. The optional anchor is omitted.
+newtype Constitution
+Constitution :: Maybe ScriptHash -> Constitution
+[constitutionScript] :: Constitution -> Maybe ScriptHash
+data ProtocolVersion
+ProtocolVersion :: Integer -> Integer -> ProtocolVersion
+[pvMajor] :: ProtocolVersion -> Integer
+[pvMinor] :: ProtocolVersion -> Integer
+
+-- | A Plutus Data object containing proposed parameter changes. The Data
+--   object contains a <tt>Map</tt> with one entry per changed parameter,
+--   from the parameter name to the new value. Unchanged parameters are not
+--   included.
+newtype ChangedParameters
+ChangedParameters :: BuiltinData -> ChangedParameters
+[getChangedParameters] :: ChangedParameters -> BuiltinData
+data GovernanceAction
+
+-- | Hash of the constitution script
+ParameterChange :: Maybe GovernanceActionId -> ChangedParameters -> Maybe ScriptHash -> GovernanceAction
+
+-- | proposal to update protocol version
+HardForkInitiation :: Maybe GovernanceActionId -> ProtocolVersion -> GovernanceAction
+
+-- | Hash of the constitution script
+TreasuryWithdrawals :: Map Credential Lovelace -> Maybe ScriptHash -> GovernanceAction
+NoConfidence :: Maybe GovernanceActionId -> GovernanceAction
+UpdateCommittee :: Maybe GovernanceActionId -> [ColdCommitteeCredential] -> Map ColdCommitteeCredential Integer -> Rational -> GovernanceAction
+NewConstitution :: Maybe GovernanceActionId -> Constitution -> GovernanceAction
+InfoAction :: GovernanceAction
+
+-- | A proposal procedure. The optional anchor is omitted.
+data ProposalProcedure
+ProposalProcedure :: Lovelace -> Credential -> GovernanceAction -> ProposalProcedure
+[ppDeposit] :: ProposalProcedure -> Lovelace
+[ppReturnAddr] :: ProposalProcedure -> Credential
+[ppGovernanceAction] :: ProposalProcedure -> GovernanceAction
+data ScriptPurpose
+Minting :: CurrencySymbol -> ScriptPurpose
+Spending :: TxOutRef -> ScriptPurpose
+Rewarding :: Credential -> ScriptPurpose
+Certifying :: Integer -> TxCert -> ScriptPurpose
+Voting :: Voter -> ScriptPurpose
+Proposing :: Integer -> ProposalProcedure -> ScriptPurpose
+
+-- | TxInfo for PlutusV3
+data TxInfo
+TxInfo :: [TxInInfo] -> [TxInInfo] -> [TxOut] -> Lovelace -> Value -> [TxCert] -> Map Credential Lovelace -> POSIXTimeRange -> [PubKeyHash] -> Map ScriptPurpose Redeemer -> Map DatumHash Datum -> TxId -> Map Voter (Map GovernanceActionId Vote) -> [ProposalProcedure] -> Maybe Lovelace -> Maybe Lovelace -> TxInfo
+[txInfoInputs] :: TxInfo -> [TxInInfo]
+[txInfoReferenceInputs] :: TxInfo -> [TxInInfo]
+[txInfoOutputs] :: TxInfo -> [TxOut]
+[txInfoFee] :: TxInfo -> Lovelace
+[txInfoMint] :: TxInfo -> Value
+[txInfoTxCerts] :: TxInfo -> [TxCert]
+[txInfoWdrl] :: TxInfo -> Map Credential Lovelace
+[txInfoValidRange] :: TxInfo -> POSIXTimeRange
+[txInfoSignatories] :: TxInfo -> [PubKeyHash]
+[txInfoRedeemers] :: TxInfo -> Map ScriptPurpose Redeemer
+[txInfoData] :: TxInfo -> Map DatumHash Datum
+[txInfoId] :: TxInfo -> TxId
+[txInfoVotes] :: TxInfo -> Map Voter (Map GovernanceActionId Vote)
+[txInfoProposalProcedures] :: TxInfo -> [ProposalProcedure]
+[txInfoCurrentTreasuryAmount] :: TxInfo -> Maybe Lovelace
+[txInfoTreasuryDonation] :: TxInfo -> Maybe Lovelace
+
+-- | The context that the currently-executing script can access.
+data ScriptContext
+ScriptContext :: TxInfo -> ScriptPurpose -> ScriptContext
+
+-- | information about the transaction the currently-executing script is
+--   included in
+[scriptContextTxInfo] :: ScriptContext -> TxInfo
+
+-- | the purpose of the currently-executing script
+[scriptContextPurpose] :: ScriptContext -> ScriptPurpose
+
+-- | Find the input currently being validated.
+findOwnInput :: ScriptContext -> Maybe TxInInfo
+
+-- | Find the data corresponding to a data hash, if there is one
+findDatum :: DatumHash -> TxInfo -> Maybe Datum
+
+-- | Find the hash of a datum, if it is part of the pending transaction's
+--   hashes
+findDatumHash :: Datum -> TxInfo -> Maybe DatumHash
+
+-- | Given a UTXO reference and a transaction (<a>TxInfo</a>), resolve it
+--   to one of the transaction's inputs (<tt>TxInInfo</tt>).
+--   
+--   Note: this only searches the true transaction inputs and not the
+--   referenced transaction inputs.
+findTxInByTxOutRef :: TxOutRef -> TxInfo -> Maybe TxInInfo
+
+-- | Find the indices of all the outputs that pay to the same script
+--   address we are currently spending from, if any.
+findContinuingOutputs :: ScriptContext -> [Integer]
+
+-- | Get all the outputs that pay to the same script address we are
+--   currently spending from, if any.
+getContinuingOutputs :: ScriptContext -> [TxOut]
+
+-- | Check if a transaction was signed by the given public key.
+txSignedBy :: TxInfo -> PubKeyHash -> Bool
+
+-- | Get the values paid to a public key address by a pending transaction.
+pubKeyOutputsAt :: PubKeyHash -> TxInfo -> [Value]
+
+-- | Get the total value paid to a public key address by a pending
+--   transaction.
+valuePaidTo :: TxInfo -> PubKeyHash -> Value
+
+-- | Get the total value of inputs spent by this transaction.
+valueSpent :: TxInfo -> Value
+
+-- | Get the total value of outputs produced by this transaction.
+valueProduced :: TxInfo -> Value
+
+-- | The <tt>CurrencySymbol</tt> of the current validator script.
+ownCurrencySymbol :: ScriptContext -> CurrencySymbol
+
+-- | Check if the pending transaction spends a specific transaction output
+--   (identified by the hash of a transaction and an index into that
+--   transactions' outputs)
+spendsOutput :: TxInfo -> TxId -> Integer -> Bool
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Contexts.ScriptContext
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Contexts.ScriptContext
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Contexts.ScriptContext
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.ScriptContext
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.ScriptContext
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Contexts.TxInfo
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Contexts.TxInfo
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Contexts.TxInfo
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.TxInfo
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.TxInfo
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Contexts.ScriptPurpose
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Contexts.ScriptPurpose
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Contexts.ScriptPurpose
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.ScriptPurpose
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.ScriptPurpose
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Contexts.ProposalProcedure
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Contexts.ProposalProcedure
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Contexts.ProposalProcedure
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.ProposalProcedure
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.ProposalProcedure
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Contexts.GovernanceAction
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Contexts.GovernanceAction
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Contexts.GovernanceAction
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.GovernanceAction
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.GovernanceAction
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.ChangedParameters
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.ChangedParameters
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Contexts.ProtocolVersion
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Contexts.ProtocolVersion
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Contexts.ProtocolVersion
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.ProtocolVersion
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.ProtocolVersion
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Contexts.Constitution
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Contexts.Constitution
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Contexts.Constitution
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.Constitution
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.Constitution
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Contexts.Committee
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Contexts.Committee
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Contexts.Committee
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.Committee
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.Committee
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Contexts.GovernanceActionId
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Contexts.GovernanceActionId
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Contexts.GovernanceActionId
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.GovernanceActionId
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.GovernanceActionId
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Contexts.Vote
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Contexts.Vote
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Contexts.Vote
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.Vote
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.Vote
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Contexts.Voter
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Contexts.Voter
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Contexts.Voter
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.Voter
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.Voter
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Contexts.TxCert
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Contexts.TxCert
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Contexts.TxCert
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.TxCert
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.TxCert
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Contexts.Delegatee
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Contexts.Delegatee
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Contexts.Delegatee
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.Delegatee
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.Delegatee
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Contexts.DRep
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Contexts.DRep
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Contexts.DRep
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.DRep
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.DRep
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.DRepCredential
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.DRepCredential
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.HotCommitteeCredential
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.HotCommitteeCredential
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.ColdCommitteeCredential
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Contexts.ColdCommitteeCredential
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Contexts.ColdCommitteeCredential
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Contexts.ColdCommitteeCredential
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Contexts.ColdCommitteeCredential
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V3.Contexts.ColdCommitteeCredential
+instance GHC.Show.Show PlutusLedgerApi.V3.Contexts.ColdCommitteeCredential
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Contexts.ColdCommitteeCredential
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Contexts.ColdCommitteeCredential
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Contexts.ColdCommitteeCredential
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Contexts.HotCommitteeCredential
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Contexts.HotCommitteeCredential
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Contexts.HotCommitteeCredential
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V3.Contexts.HotCommitteeCredential
+instance GHC.Show.Show PlutusLedgerApi.V3.Contexts.HotCommitteeCredential
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Contexts.HotCommitteeCredential
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Contexts.HotCommitteeCredential
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Contexts.HotCommitteeCredential
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Contexts.DRepCredential
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Contexts.DRepCredential
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Contexts.DRepCredential
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V3.Contexts.DRepCredential
+instance GHC.Show.Show PlutusLedgerApi.V3.Contexts.DRepCredential
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Contexts.DRepCredential
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Contexts.DRepCredential
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Contexts.DRepCredential
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Contexts.DRep
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Contexts.DRep
+instance GHC.Show.Show PlutusLedgerApi.V3.Contexts.DRep
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Contexts.DRep
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Contexts.Delegatee
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Contexts.Delegatee
+instance GHC.Show.Show PlutusLedgerApi.V3.Contexts.Delegatee
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Contexts.Delegatee
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Contexts.TxCert
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Contexts.TxCert
+instance GHC.Show.Show PlutusLedgerApi.V3.Contexts.TxCert
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Contexts.TxCert
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Contexts.Voter
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Contexts.Voter
+instance GHC.Show.Show PlutusLedgerApi.V3.Contexts.Voter
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Contexts.Voter
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Contexts.Vote
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Contexts.Vote
+instance GHC.Show.Show PlutusLedgerApi.V3.Contexts.Vote
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Contexts.Vote
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Contexts.GovernanceActionId
+instance GHC.Show.Show PlutusLedgerApi.V3.Contexts.GovernanceActionId
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Contexts.GovernanceActionId
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Contexts.Committee
+instance GHC.Show.Show PlutusLedgerApi.V3.Contexts.Committee
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Contexts.Committee
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Contexts.Constitution
+instance GHC.Show.Show PlutusLedgerApi.V3.Contexts.Constitution
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Contexts.Constitution
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Contexts.ProtocolVersion
+instance GHC.Show.Show PlutusLedgerApi.V3.Contexts.ProtocolVersion
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Contexts.ProtocolVersion
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Contexts.ChangedParameters
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Contexts.ChangedParameters
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Contexts.ChangedParameters
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Contexts.ChangedParameters
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V3.Contexts.ChangedParameters
+instance GHC.Classes.Ord PlutusLedgerApi.V3.Contexts.ChangedParameters
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Contexts.ChangedParameters
+instance GHC.Show.Show PlutusLedgerApi.V3.Contexts.ChangedParameters
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Contexts.ChangedParameters
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Contexts.GovernanceAction
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Contexts.GovernanceAction
+instance GHC.Show.Show PlutusLedgerApi.V3.Contexts.GovernanceAction
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Contexts.GovernanceAction
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Contexts.ProposalProcedure
+instance GHC.Show.Show PlutusLedgerApi.V3.Contexts.ProposalProcedure
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Contexts.ProposalProcedure
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Contexts.ScriptPurpose
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Contexts.ScriptPurpose
+instance GHC.Show.Show PlutusLedgerApi.V3.Contexts.ScriptPurpose
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Contexts.ScriptPurpose
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Contexts.TxInfo
+instance GHC.Show.Show PlutusLedgerApi.V3.Contexts.TxInfo
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Contexts.TxInfo
+instance GHC.Show.Show PlutusLedgerApi.V3.Contexts.ScriptContext
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Contexts.ScriptContext
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Contexts.ScriptContext
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Contexts.ScriptContext
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V3.Contexts.ScriptContext
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Contexts.TxInfo
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V3.Contexts.TxInfo
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V3.Contexts.ScriptPurpose
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Contexts.ProposalProcedure
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V3.Contexts.ProposalProcedure
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V3.Contexts.GovernanceAction
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Contexts.ProtocolVersion
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V3.Contexts.ProtocolVersion
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Contexts.Constitution
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V3.Contexts.Constitution
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Contexts.Committee
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V3.Contexts.Committee
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Contexts.GovernanceActionId
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V3.Contexts.GovernanceActionId
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V3.Contexts.Vote
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V3.Contexts.Voter
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V3.Contexts.TxCert
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V3.Contexts.Delegatee
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V3.Contexts.DRep
+
+
+-- | The interface to Plutus V3 for the ledger.
+module PlutusLedgerApi.V3
+
+-- | Scripts to the ledger are serialised bytestrings.
+type SerialisedScript = ShortByteString
+
+-- | A Plutus script ready to be evaluated on-chain, via
+--   <tt>evaluateScriptRestricting</tt>.
+data ScriptForEvaluation
+
+-- | Get a <a>SerialisedScript</a> from a <a>ScriptForEvaluation</a>.
+--   <i>O(1)</i>.
+serialisedScript :: ScriptForEvaluation -> SerialisedScript
+
+-- | Get a <a>ScriptNamedDeBruijn</a> from a <a>ScriptForEvaluation</a>.
+--   <i>O(1)</i>.
+deserialisedScript :: ScriptForEvaluation -> ScriptNamedDeBruijn
+
+-- | Turns a program which was compiled using the 'PlutusTx' toolchain into
+--   a binary format that is understood by the network and can be stored
+--   on-chain.
+serialiseCompiledCode :: forall a. CompiledCode a -> SerialisedScript
+
+-- | Turns a program's AST (most likely manually constructed) into a binary
+--   format that is understood by the network and can be stored on-chain.
+serialiseUPLC :: Program DeBruijn DefaultUni DefaultFun () -> SerialisedScript
+
+-- | The deserialization from a serialised script into a
+--   <a>ScriptForEvaluation</a>, ready to be evaluated on-chain. Called
+--   inside phase-1 validation (i.e., deserialisation error is a phase-1
+--   error).
+deserialiseScript :: forall m. MonadError ScriptDecodeError m => MajorProtocolVersion -> SerialisedScript -> m ScriptForEvaluation
+
+-- | Deserialises a <a>SerialisedScript</a> back into an AST. Does *not* do
+--   ledger-language-version-specific checks like for allowable builtins.
+uncheckedDeserialiseUPLC :: SerialisedScript -> Program DeBruijn DefaultUni DefaultFun ()
+
+-- | Evaluates a script, with a cost model and a budget that restricts how
+--   many resources it can use according to the cost model. Also returns
+--   the budget that was actually used.
+--   
+--   Can be used to calculate budgets for scripts, but even in this case
+--   you must give a limit to guard against scripts that run for a long
+--   time or loop.
+evaluateScriptRestricting :: MajorProtocolVersion -> VerboseMode -> EvaluationContext -> ExBudget -> ScriptForEvaluation -> [Data] -> (LogOutput, Either EvaluationError ExBudget)
+
+-- | Evaluates a script, returning the minimum budget that the script would
+--   need to evaluate successfully. This will take as long as the script
+--   takes, if you need to limit the execution time of the script also, you
+--   can use <a>evaluateScriptRestricting</a>, which also returns the used
+--   budget.
+evaluateScriptCounting :: MajorProtocolVersion -> VerboseMode -> EvaluationContext -> ScriptForEvaluation -> [Data] -> (LogOutput, Either EvaluationError ExBudget)
+newtype ColdCommitteeCredential
+ColdCommitteeCredential :: Credential -> ColdCommitteeCredential
+newtype HotCommitteeCredential
+HotCommitteeCredential :: Credential -> HotCommitteeCredential
+newtype DRepCredential
+DRepCredential :: Credential -> DRepCredential
+data DRep
+DRep :: DRepCredential -> DRep
+DRepAlwaysAbstain :: DRep
+DRepAlwaysNoConfidence :: DRep
+data Delegatee
+DelegStake :: PubKeyHash -> Delegatee
+DelegVote :: DRep -> Delegatee
+DelegStakeVote :: PubKeyHash -> DRep -> Delegatee
+data TxCert
+
+-- | Register staking credential with an optional deposit amount
+TxCertRegStaking :: Credential -> Maybe Lovelace -> TxCert
+
+-- | Un-Register staking credential with an optional refund amount
+TxCertUnRegStaking :: Credential -> Maybe Lovelace -> TxCert
+
+-- | Delegate staking credential to a Delegatee
+TxCertDelegStaking :: Credential -> Delegatee -> TxCert
+
+-- | Register and delegate staking credential to a Delegatee in one
+--   certificate. Noter that deposit is mandatory.
+TxCertRegDeleg :: Credential -> Delegatee -> Lovelace -> TxCert
+
+-- | Register a DRep with a deposit value. The optional anchor is omitted.
+TxCertRegDRep :: DRepCredential -> Lovelace -> TxCert
+
+-- | Update a DRep. The optional anchor is omitted.
+TxCertUpdateDRep :: DRepCredential -> TxCert
+
+-- | UnRegister a DRep with mandatory refund value
+TxCertUnRegDRep :: DRepCredential -> Lovelace -> TxCert
+
+-- | A digest of the PoolParams
+TxCertPoolRegister :: PubKeyHash -> PubKeyHash -> TxCert
+
+-- | The retirement certificate and the Epoch in which the retirement will
+--   take place
+TxCertPoolRetire :: PubKeyHash -> Integer -> TxCert
+
+-- | Authorize a Hot credential for a specific Committee member's cold
+--   credential
+TxCertAuthHotCommittee :: ColdCommitteeCredential -> HotCommitteeCredential -> TxCert
+TxCertResignColdCommittee :: ColdCommitteeCredential -> TxCert
+data Voter
+CommitteeVoter :: HotCommitteeCredential -> Voter
+DRepVoter :: DRepCredential -> Voter
+StakePoolVoter :: PubKeyHash -> Voter
+
+-- | A vote. The optional anchor is omitted.
+data Vote
+VoteNo :: Vote
+VoteYes :: Vote
+Abstain :: Vote
+
+-- | Similar to TxOutRef, but for GovActions
+data GovernanceActionId
+GovernanceActionId :: TxId -> Integer -> GovernanceActionId
+[gaidTxId] :: GovernanceActionId -> TxId
+[gaidGovActionIx] :: GovernanceActionId -> Integer
+data Committee
+Committee :: Map ColdCommitteeCredential Integer -> Rational -> Committee
+
+-- | Committee members with epoch number when each of them expires
+[committeeMembers] :: Committee -> Map ColdCommitteeCredential Integer
+
+-- | Quorum of the committee that is necessary for a successful vote
+[committeeQuorum] :: Committee -> Rational
+
+-- | A constitution. The optional anchor is omitted.
+newtype Constitution
+Constitution :: Maybe ScriptHash -> Constitution
+[constitutionScript] :: Constitution -> Maybe ScriptHash
+data ProtocolVersion
+ProtocolVersion :: Integer -> Integer -> ProtocolVersion
+[pvMajor] :: ProtocolVersion -> Integer
+[pvMinor] :: ProtocolVersion -> Integer
+data GovernanceAction
+
+-- | Hash of the constitution script
+ParameterChange :: Maybe GovernanceActionId -> ChangedParameters -> Maybe ScriptHash -> GovernanceAction
+
+-- | proposal to update protocol version
+HardForkInitiation :: Maybe GovernanceActionId -> ProtocolVersion -> GovernanceAction
+
+-- | Hash of the constitution script
+TreasuryWithdrawals :: Map Credential Lovelace -> Maybe ScriptHash -> GovernanceAction
+NoConfidence :: Maybe GovernanceActionId -> GovernanceAction
+UpdateCommittee :: Maybe GovernanceActionId -> [ColdCommitteeCredential] -> Map ColdCommitteeCredential Integer -> Rational -> GovernanceAction
+NewConstitution :: Maybe GovernanceActionId -> Constitution -> GovernanceAction
+InfoAction :: GovernanceAction
+
+-- | A Plutus Data object containing proposed parameter changes. The Data
+--   object contains a <tt>Map</tt> with one entry per changed parameter,
+--   from the parameter name to the new value. Unchanged parameters are not
+--   included.
+newtype ChangedParameters
+ChangedParameters :: BuiltinData -> ChangedParameters
+[getChangedParameters] :: ChangedParameters -> BuiltinData
+
+-- | A proposal procedure. The optional anchor is omitted.
+data ProposalProcedure
+ProposalProcedure :: Lovelace -> Credential -> GovernanceAction -> ProposalProcedure
+[ppDeposit] :: ProposalProcedure -> Lovelace
+[ppReturnAddr] :: ProposalProcedure -> Credential
+[ppGovernanceAction] :: ProposalProcedure -> GovernanceAction
+
+-- | This represents the major component of the Cardano protocol version.
+--   The ledger can only supply the major component of the protocol
+--   version, not the minor component, and Plutus should only need to care
+--   about the major component anyway. This relies on careful understanding
+--   between us and the ledger as to what this means.
+newtype MajorProtocolVersion
+MajorProtocolVersion :: Int -> MajorProtocolVersion
+[getMajorProtocolVersion] :: MajorProtocolVersion -> Int
+
+-- | A simple toggle indicating whether or not we should accumulate logs
+--   during script execution.
+data VerboseMode
+
+-- | accumulate all traces
+Verbose :: VerboseMode
+
+-- | don't accumulate anything
+Quiet :: VerboseMode
+
+-- | The type of the executed script's accumulated log output: a list of
+--   <a>Text</a>.
+--   
+--   It will be an empty list if the <a>VerboseMode</a> is set to
+--   <a>Quiet</a>.
+type LogOutput = [Text]
+data () => ExBudget
+ExBudget :: ExCPU -> ExMemory -> ExBudget
+[exBudgetCPU] :: ExBudget -> ExCPU
+[exBudgetMemory] :: ExBudget -> ExMemory
+newtype () => ExCPU
+ExCPU :: CostingInteger -> ExCPU
+newtype () => ExMemory
+ExMemory :: CostingInteger -> ExMemory
+data () => SatInt
+fromSatInt :: Num a => SatInt -> a
+
+-- | An opaque type that contains all the static parameters that the
+--   evaluator needs to evaluate a script. This is so that they can be
+--   computed once and cached, rather than being recomputed on every
+--   evaluation.
+data EvaluationContext
+
+-- | Build the <a>EvaluationContext</a>.
+--   
+--   The input is a list of cost model parameters (which are integer
+--   values) passed from the ledger.
+--   
+--   IMPORTANT: the cost model parameters <b>MUST</b> appear in the correct
+--   order, matching the names in <a>ParamName</a>. If the parameters are
+--   supplied in the wrong order then script cost calculations will be
+--   incorrect.
 --   
 --   IMPORTANT: The evaluation context of every Plutus version must be
 --   recreated upon a protocol update with the updated cost model
@@ -3408,6 +4810,50 @@ CekConstrCost'exBudgetCPU :: ParamName
 CekConstrCost'exBudgetMemory :: ParamName
 CekCaseCost'exBudgetCPU :: ParamName
 CekCaseCost'exBudgetMemory :: ParamName
+Bls12_381_G1_add'cpu'arguments :: ParamName
+Bls12_381_G1_add'memory'arguments :: ParamName
+Bls12_381_G1_compress'cpu'arguments :: ParamName
+Bls12_381_G1_compress'memory'arguments :: ParamName
+Bls12_381_G1_equal'cpu'arguments :: ParamName
+Bls12_381_G1_equal'memory'arguments :: ParamName
+Bls12_381_G1_hashToGroup'cpu'arguments'intercept :: ParamName
+Bls12_381_G1_hashToGroup'cpu'arguments'slope :: ParamName
+Bls12_381_G1_hashToGroup'memory'arguments :: ParamName
+Bls12_381_G1_neg'cpu'arguments :: ParamName
+Bls12_381_G1_neg'memory'arguments :: ParamName
+Bls12_381_G1_scalarMul'cpu'arguments'intercept :: ParamName
+Bls12_381_G1_scalarMul'cpu'arguments'slope :: ParamName
+Bls12_381_G1_scalarMul'memory'arguments :: ParamName
+Bls12_381_G1_uncompress'cpu'arguments :: ParamName
+Bls12_381_G1_uncompress'memory'arguments :: ParamName
+Bls12_381_G2_add'cpu'arguments :: ParamName
+Bls12_381_G2_add'memory'arguments :: ParamName
+Bls12_381_G2_compress'cpu'arguments :: ParamName
+Bls12_381_G2_compress'memory'arguments :: ParamName
+Bls12_381_G2_equal'cpu'arguments :: ParamName
+Bls12_381_G2_equal'memory'arguments :: ParamName
+Bls12_381_G2_hashToGroup'cpu'arguments'intercept :: ParamName
+Bls12_381_G2_hashToGroup'cpu'arguments'slope :: ParamName
+Bls12_381_G2_hashToGroup'memory'arguments :: ParamName
+Bls12_381_G2_neg'cpu'arguments :: ParamName
+Bls12_381_G2_neg'memory'arguments :: ParamName
+Bls12_381_G2_scalarMul'cpu'arguments'intercept :: ParamName
+Bls12_381_G2_scalarMul'cpu'arguments'slope :: ParamName
+Bls12_381_G2_scalarMul'memory'arguments :: ParamName
+Bls12_381_G2_uncompress'cpu'arguments :: ParamName
+Bls12_381_G2_uncompress'memory'arguments :: ParamName
+Bls12_381_finalVerify'cpu'arguments :: ParamName
+Bls12_381_finalVerify'memory'arguments :: ParamName
+Bls12_381_millerLoop'cpu'arguments :: ParamName
+Bls12_381_millerLoop'memory'arguments :: ParamName
+Bls12_381_mulMlResult'cpu'arguments :: ParamName
+Bls12_381_mulMlResult'memory'arguments :: ParamName
+Keccak_256'cpu'arguments'intercept :: ParamName
+Keccak_256'cpu'arguments'slope :: ParamName
+Keccak_256'memory'arguments :: ParamName
+Blake2b_224'cpu'arguments'intercept :: ParamName
+Blake2b_224'cpu'arguments'slope :: ParamName
+Blake2b_224'memory'arguments :: ParamName
 data () => CostModelApplyError
 CMUnknownParamError :: !Text -> CostModelApplyError
 CMInternalReadError :: CostModelApplyError
@@ -3428,13 +4874,13 @@ ScriptContext :: TxInfo -> ScriptPurpose -> ScriptContext
 
 -- | the purpose of the currently-executing script
 [scriptContextPurpose] :: ScriptContext -> ScriptPurpose
-
--- | Purpose of the script that is currently running
 data ScriptPurpose
 Minting :: CurrencySymbol -> ScriptPurpose
 Spending :: TxOutRef -> ScriptPurpose
-Rewarding :: StakingCredential -> ScriptPurpose
-Certifying :: DCert -> ScriptPurpose
+Rewarding :: Credential -> ScriptPurpose
+Certifying :: Integer -> TxCert -> ScriptPurpose
+Voting :: Voter -> ScriptPurpose
+Proposing :: Integer -> ProposalProcedure -> ScriptPurpose
 data () => BuiltinByteString
 toBuiltin :: ToBuiltin a arep => a -> arep
 fromBuiltin :: FromBuiltin arep a => arep -> a
@@ -3444,26 +4890,6 @@ LedgerBytes :: BuiltinByteString -> LedgerBytes
 
 -- | Lift a Haskell bytestring to the Plutus abstraction <a>LedgerBytes</a>
 fromBytes :: ByteString -> LedgerBytes
-
--- | A representation of the ledger DCert. Some information is digested,
---   and not included
-data DCert
-DCertDelegRegKey :: StakingCredential -> DCert
-DCertDelegDeRegKey :: StakingCredential -> DCert
-DCertDelegDelegate :: StakingCredential -> PubKeyHash -> DCert
-
--- | A digest of the PoolParams
-DCertPoolRegister :: PubKeyHash -> PubKeyHash -> DCert
-
--- | The retirement certificate and the Epoch in which the retirement will
---   take place
-DCertPoolRetire :: PubKeyHash -> Integer -> DCert
-
--- | A really terse Digest
-DCertGenesis :: DCert
-
--- | Another really terse Digest
-DCertMir :: DCert
 
 -- | Staking credential used to assign rewards.
 data StakingCredential
@@ -3493,11 +4919,7 @@ ScriptCredential :: ScriptHash -> Credential
 
 -- | The <a>Value</a> type represents a collection of amounts of different
 --   currencies. We can think of <a>Value</a> as a vector space whose
---   dimensions are currencies. To create a value of <a>Value</a>, we need
---   to specify a currency. This can be done using <a>adaValueOf</a>. To
---   get the ada dimension of <a>Value</a> we use <a>fromValue</a>. Plutus
---   contract authors will be able to define modules similar to <a>Ada</a>
---   for their own currencies.
+--   dimensions are currencies.
 --   
 --   Operations on currencies are usually implemented <i>pointwise</i>.
 --   That is, we apply the operation to the quantities for each currency in
@@ -3551,6 +4973,9 @@ adaSymbol :: CurrencySymbol
 
 -- | The <a>TokenName</a> of the <tt>Ada</tt> currency.
 adaToken :: TokenName
+newtype Lovelace
+Lovelace :: Integer -> Lovelace
+[getLovelace] :: Lovelace -> Integer
 
 -- | POSIX time is measured as the number of <i>milliseconds</i> since
 --   1970-01-01T00:00:00Z. This is not the same as Haskell's
@@ -3594,50 +5019,25 @@ newtype TxId
 TxId :: BuiltinByteString -> TxId
 [getTxId] :: TxId -> BuiltinByteString
 
--- | A pending transaction. This is the view as seen by validator scripts,
---   so some details are stripped out.
+-- | TxInfo for PlutusV3
 data TxInfo
-TxInfo :: [TxInInfo] -> [TxInInfo] -> [TxOut] -> Value -> Value -> [DCert] -> Map StakingCredential Integer -> POSIXTimeRange -> [PubKeyHash] -> Map ScriptPurpose Redeemer -> Map DatumHash Datum -> TxId -> TxInfo
-
--- | Transaction inputs; cannot be an empty list
+TxInfo :: [TxInInfo] -> [TxInInfo] -> [TxOut] -> Lovelace -> Value -> [TxCert] -> Map Credential Lovelace -> POSIXTimeRange -> [PubKeyHash] -> Map ScriptPurpose Redeemer -> Map DatumHash Datum -> TxId -> Map Voter (Map GovernanceActionId Vote) -> [ProposalProcedure] -> Maybe Lovelace -> Maybe Lovelace -> TxInfo
 [txInfoInputs] :: TxInfo -> [TxInInfo]
-
--- | <i>Added in V2:</i> Transaction reference inputs
 [txInfoReferenceInputs] :: TxInfo -> [TxInInfo]
-
--- | Transaction outputs
 [txInfoOutputs] :: TxInfo -> [TxOut]
-
--- | The fee paid by this transaction.
-[txInfoFee] :: TxInfo -> Value
-
--- | The <a>Value</a> minted by this transaction.
+[txInfoFee] :: TxInfo -> Lovelace
 [txInfoMint] :: TxInfo -> Value
-
--- | Digests of certificates included in this transaction
-[txInfoDCert] :: TxInfo -> [DCert]
-
--- | Withdrawals <i>V1-&gt;V2</i>: changed from assoc list to a
---   <a>AssocMap</a>
-[txInfoWdrl] :: TxInfo -> Map StakingCredential Integer
-
--- | The valid range for the transaction.
+[txInfoTxCerts] :: TxInfo -> [TxCert]
+[txInfoWdrl] :: TxInfo -> Map Credential Lovelace
 [txInfoValidRange] :: TxInfo -> POSIXTimeRange
-
--- | Signatures provided with the transaction, attested that they all
---   signed the tx
 [txInfoSignatories] :: TxInfo -> [PubKeyHash]
-
--- | <i>Added in V2:</i> a table of redeemers attached to the transaction
 [txInfoRedeemers] :: TxInfo -> Map ScriptPurpose Redeemer
-
--- | The lookup table of datums attached to the transaction
---   <i>V1-&gt;V2</i>: changed from assoc list to a <a>AssocMap</a>
 [txInfoData] :: TxInfo -> Map DatumHash Datum
-
--- | Hash of the pending transaction body (i.e. transaction excluding
---   witnesses)
 [txInfoId] :: TxInfo -> TxId
+[txInfoVotes] :: TxInfo -> Map Voter (Map GovernanceActionId Vote)
+[txInfoProposalProcedures] :: TxInfo -> [ProposalProcedure]
+[txInfoCurrentTreasuryAmount] :: TxInfo -> Maybe Lovelace
+[txInfoTreasuryDonation] :: TxInfo -> Maybe Lovelace
 
 -- | A transaction output, consisting of a target address, a value,
 --   optionally a datum/datum hash, and optionally a reference script.
@@ -3744,10 +5144,17 @@ strictLowerBound :: a -> LowerBound a
 --   The resulting bound includes all values that are (strictly) smaller
 --   than the input value.
 strictUpperBound :: a -> UpperBound a
+data () => Rational
+ratio :: Integer -> Integer -> Maybe Rational
+fromGHC :: Rational -> Rational
+toGHC :: Rational -> Rational
 data () => Map k v
 fromList :: [(k, v)] -> Map k v
 
--- | Script runtime representation of a <tt>Digest SHA256</tt>.
+-- | Type representing the <i>BLAKE2b-224</i> hash of a script. 28 bytes.
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>.
 newtype ScriptHash
 ScriptHash :: BuiltinByteString -> ScriptHash
 [getScriptHash] :: ScriptHash -> BuiltinByteString
@@ -3772,7 +5179,10 @@ newtype Datum
 Datum :: BuiltinData -> Datum
 [getDatum] :: Datum -> BuiltinData
 
--- | Script runtime representation of a <tt>Digest SHA256</tt>.
+-- | Type representing the <i>BLAKE2b-256</i> hash of a datum. 32 bytes.
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>.
 newtype DatumHash
 DatumHash :: BuiltinByteString -> DatumHash
 data () => Data
@@ -3782,7 +5192,7 @@ List :: [Data] -> Data
 I :: Integer -> Data
 B :: ByteString -> Data
 data () => BuiltinData
-BuiltinData :: Data -> BuiltinData
+BuiltinData :: ~Data -> BuiltinData
 class () => ToData a
 toBuiltinData :: ToData a => a -> BuiltinData
 class () => FromData a
@@ -3816,742 +5226,28 @@ CostModelParameterMismatch :: EvaluationError
 data ScriptDecodeError
 
 -- | an error from the underlying CBOR/serialise library
-CBORDeserialiseError :: !DeserialiseFailure -> ScriptDecodeError
+CBORDeserialiseError :: !DeserialiseFailureInfo -> ScriptDecodeError
 
 -- | Script was successfully parsed, but more (runaway) bytes encountered
 --   after script's position
 RemainderError :: !ByteString -> ScriptDecodeError
 
 -- | the plutus version of the given script is not enabled yet
-LedgerLanguageNotAvailableError :: !PlutusLedgerLanguage -> !ProtocolVersion -> !ProtocolVersion -> ScriptDecodeError
+LedgerLanguageNotAvailableError :: !PlutusLedgerLanguage -> !MajorProtocolVersion -> !MajorProtocolVersion -> ScriptDecodeError
 
 -- | the script's ledger language
 [sdeAffectedLang] :: ScriptDecodeError -> !PlutusLedgerLanguage
 
--- | the protocol version that will first introduce/enable the ledger
+-- | the major protocol version that will first introduce/enable the ledger
 --   language
-[sdeIntroPv] :: ScriptDecodeError -> !ProtocolVersion
+[sdeIntroPv] :: ScriptDecodeError -> !MajorProtocolVersion
 
 -- | the current protocol version
-[sdeThisPv] :: ScriptDecodeError -> !ProtocolVersion
-PlutusCoreLanguageNotAvailableError :: !Version -> !ProtocolVersion -> ScriptDecodeError
+[sdeThisPv] :: ScriptDecodeError -> !MajorProtocolVersion
+PlutusCoreLanguageNotAvailableError :: !Version -> !MajorProtocolVersion -> ScriptDecodeError
 
 -- | the script's Plutus Core language version
 [sdeAffectedVersion] :: ScriptDecodeError -> !Version
 
 -- | the current protocol version
-[sdeThisPv] :: ScriptDecodeError -> !ProtocolVersion
-
-
--- | The interface to Plutus V2 for the ledger.
-module PlutusLedgerApi.V2
-
--- | Scripts to the ledger are serialised bytestrings.
-type SerialisedScript = ShortByteString
-
--- | Turns a program which was compiled using the 'PlutusTx' toolchain into
---   a binary format that is understood by the network and can be stored
---   on-chain.
-serialiseCompiledCode :: forall a. CompiledCode a -> SerialisedScript
-
--- | Turns a program's AST (most likely manually constructed) into a binary
---   format that is understood by the network and can be stored on-chain.
-serialiseUPLC :: Program DeBruijn DefaultUni DefaultFun () -> SerialisedScript
-
--- | Deserialises a <a>SerialisedScript</a> back into an AST. Does *not* do
---   ledger-language-version-specific checks like for allowable builtins.
-uncheckedDeserialiseUPLC :: SerialisedScript -> Program DeBruijn DefaultUni DefaultFun ()
-
--- | Check if a <tt>Script</tt> is "valid" according to a protocol version.
---   At the moment this means "deserialises correctly", which in particular
---   implies that it is (almost certainly) an encoded script and the script
---   does not mention any builtins unavailable in the given protocol
---   version.
-assertScriptWellFormed :: MonadError ScriptDecodeError m => ProtocolVersion -> SerialisedScript -> m ()
-
--- | Evaluates a script, with a cost model and a budget that restricts how
---   many resources it can use according to the cost model. Also returns
---   the budget that was actually used.
---   
---   Can be used to calculate budgets for scripts, but even in this case
---   you must give a limit to guard against scripts that run for a long
---   time or loop.
-evaluateScriptRestricting :: ProtocolVersion -> VerboseMode -> EvaluationContext -> ExBudget -> SerialisedScript -> [Data] -> (LogOutput, Either EvaluationError ExBudget)
-
--- | Evaluates a script, returning the minimum budget that the script would
---   need to evaluate successfully. This will take as long as the script
---   takes, if you need to limit the execution time of the script also, you
---   can use <a>evaluateScriptRestricting</a>, which also returns the used
---   budget.
-evaluateScriptCounting :: ProtocolVersion -> VerboseMode -> EvaluationContext -> SerialisedScript -> [Data] -> (LogOutput, Either EvaluationError ExBudget)
-
--- | This represents the Cardano protocol version, with its major and minor
---   components. This relies on careful understanding between us and the
---   ledger as to what this means.
-data ProtocolVersion
-ProtocolVersion :: Int -> Int -> ProtocolVersion
-
--- | the major component
-[pvMajor] :: ProtocolVersion -> Int
-
--- | the minor component
-[pvMinor] :: ProtocolVersion -> Int
-
--- | A simple toggle indicating whether or not we should accumulate logs
---   during script execution.
-data VerboseMode
-
--- | accumulate all traces
-Verbose :: VerboseMode
-
--- | don't accumulate anything
-Quiet :: VerboseMode
-
--- | The type of the executed script's accumulated log output: a list of
---   <a>Text</a>.
---   
---   It will be an empty list if the <a>VerboseMode</a> is set to
---   <a>Quiet</a>.
-type LogOutput = [Text]
-data () => ExBudget
-ExBudget :: ExCPU -> ExMemory -> ExBudget
-[exBudgetCPU] :: ExBudget -> ExCPU
-[exBudgetMemory] :: ExBudget -> ExMemory
-newtype () => ExCPU
-ExCPU :: CostingInteger -> ExCPU
-newtype () => ExMemory
-ExMemory :: CostingInteger -> ExMemory
-data () => SatInt
-
--- | An opaque type that contains all the static parameters that the
---   evaluator needs to evaluate a script. This is so that they can be
---   computed once and cached, rather than being recomputed on every
---   evaluation.
-data EvaluationContext
-
--- | Build the <a>EvaluationContext</a>.
---   
---   The input is a list of integer values passed from the ledger and are
---   expected to appear in correct order.
---   
---   IMPORTANT: The evaluation context of every Plutus version must be
---   recreated upon a protocol update with the updated cost model
---   parameters.
-mkEvaluationContext :: (MonadError CostModelApplyError m, MonadWriter [CostModelApplyWarn] m) => [Integer] -> m EvaluationContext
-
--- | The enumeration of all possible cost model parameter names for this
---   language version.
---   
---   IMPORTANT: The order of appearance of the data constructors here
---   matters. DO NOT REORDER. See Note [Quotation marks in cost model
---   parameter constructors] See Note [Cost model parameters from the
---   ledger's point of view]
-data ParamName
-AddInteger'cpu'arguments'intercept :: ParamName
-AddInteger'cpu'arguments'slope :: ParamName
-AddInteger'memory'arguments'intercept :: ParamName
-AddInteger'memory'arguments'slope :: ParamName
-AppendByteString'cpu'arguments'intercept :: ParamName
-AppendByteString'cpu'arguments'slope :: ParamName
-AppendByteString'memory'arguments'intercept :: ParamName
-AppendByteString'memory'arguments'slope :: ParamName
-AppendString'cpu'arguments'intercept :: ParamName
-AppendString'cpu'arguments'slope :: ParamName
-AppendString'memory'arguments'intercept :: ParamName
-AppendString'memory'arguments'slope :: ParamName
-BData'cpu'arguments :: ParamName
-BData'memory'arguments :: ParamName
-Blake2b_256'cpu'arguments'intercept :: ParamName
-Blake2b_256'cpu'arguments'slope :: ParamName
-Blake2b_256'memory'arguments :: ParamName
-CekApplyCost'exBudgetCPU :: ParamName
-CekApplyCost'exBudgetMemory :: ParamName
-CekBuiltinCost'exBudgetCPU :: ParamName
-CekBuiltinCost'exBudgetMemory :: ParamName
-CekConstCost'exBudgetCPU :: ParamName
-CekConstCost'exBudgetMemory :: ParamName
-CekDelayCost'exBudgetCPU :: ParamName
-CekDelayCost'exBudgetMemory :: ParamName
-CekForceCost'exBudgetCPU :: ParamName
-CekForceCost'exBudgetMemory :: ParamName
-CekLamCost'exBudgetCPU :: ParamName
-CekLamCost'exBudgetMemory :: ParamName
-CekStartupCost'exBudgetCPU :: ParamName
-CekStartupCost'exBudgetMemory :: ParamName
-CekVarCost'exBudgetCPU :: ParamName
-CekVarCost'exBudgetMemory :: ParamName
-ChooseData'cpu'arguments :: ParamName
-ChooseData'memory'arguments :: ParamName
-ChooseList'cpu'arguments :: ParamName
-ChooseList'memory'arguments :: ParamName
-ChooseUnit'cpu'arguments :: ParamName
-ChooseUnit'memory'arguments :: ParamName
-ConsByteString'cpu'arguments'intercept :: ParamName
-ConsByteString'cpu'arguments'slope :: ParamName
-ConsByteString'memory'arguments'intercept :: ParamName
-ConsByteString'memory'arguments'slope :: ParamName
-ConstrData'cpu'arguments :: ParamName
-ConstrData'memory'arguments :: ParamName
-DecodeUtf8'cpu'arguments'intercept :: ParamName
-DecodeUtf8'cpu'arguments'slope :: ParamName
-DecodeUtf8'memory'arguments'intercept :: ParamName
-DecodeUtf8'memory'arguments'slope :: ParamName
-DivideInteger'cpu'arguments'constant :: ParamName
-DivideInteger'cpu'arguments'model'arguments'intercept :: ParamName
-DivideInteger'cpu'arguments'model'arguments'slope :: ParamName
-DivideInteger'memory'arguments'intercept :: ParamName
-DivideInteger'memory'arguments'minimum :: ParamName
-DivideInteger'memory'arguments'slope :: ParamName
-EncodeUtf8'cpu'arguments'intercept :: ParamName
-EncodeUtf8'cpu'arguments'slope :: ParamName
-EncodeUtf8'memory'arguments'intercept :: ParamName
-EncodeUtf8'memory'arguments'slope :: ParamName
-EqualsByteString'cpu'arguments'constant :: ParamName
-EqualsByteString'cpu'arguments'intercept :: ParamName
-EqualsByteString'cpu'arguments'slope :: ParamName
-EqualsByteString'memory'arguments :: ParamName
-EqualsData'cpu'arguments'intercept :: ParamName
-EqualsData'cpu'arguments'slope :: ParamName
-EqualsData'memory'arguments :: ParamName
-EqualsInteger'cpu'arguments'intercept :: ParamName
-EqualsInteger'cpu'arguments'slope :: ParamName
-EqualsInteger'memory'arguments :: ParamName
-EqualsString'cpu'arguments'constant :: ParamName
-EqualsString'cpu'arguments'intercept :: ParamName
-EqualsString'cpu'arguments'slope :: ParamName
-EqualsString'memory'arguments :: ParamName
-FstPair'cpu'arguments :: ParamName
-FstPair'memory'arguments :: ParamName
-HeadList'cpu'arguments :: ParamName
-HeadList'memory'arguments :: ParamName
-IData'cpu'arguments :: ParamName
-IData'memory'arguments :: ParamName
-IfThenElse'cpu'arguments :: ParamName
-IfThenElse'memory'arguments :: ParamName
-IndexByteString'cpu'arguments :: ParamName
-IndexByteString'memory'arguments :: ParamName
-LengthOfByteString'cpu'arguments :: ParamName
-LengthOfByteString'memory'arguments :: ParamName
-LessThanByteString'cpu'arguments'intercept :: ParamName
-LessThanByteString'cpu'arguments'slope :: ParamName
-LessThanByteString'memory'arguments :: ParamName
-LessThanEqualsByteString'cpu'arguments'intercept :: ParamName
-LessThanEqualsByteString'cpu'arguments'slope :: ParamName
-LessThanEqualsByteString'memory'arguments :: ParamName
-LessThanEqualsInteger'cpu'arguments'intercept :: ParamName
-LessThanEqualsInteger'cpu'arguments'slope :: ParamName
-LessThanEqualsInteger'memory'arguments :: ParamName
-LessThanInteger'cpu'arguments'intercept :: ParamName
-LessThanInteger'cpu'arguments'slope :: ParamName
-LessThanInteger'memory'arguments :: ParamName
-ListData'cpu'arguments :: ParamName
-ListData'memory'arguments :: ParamName
-MapData'cpu'arguments :: ParamName
-MapData'memory'arguments :: ParamName
-MkCons'cpu'arguments :: ParamName
-MkCons'memory'arguments :: ParamName
-MkNilData'cpu'arguments :: ParamName
-MkNilData'memory'arguments :: ParamName
-MkNilPairData'cpu'arguments :: ParamName
-MkNilPairData'memory'arguments :: ParamName
-MkPairData'cpu'arguments :: ParamName
-MkPairData'memory'arguments :: ParamName
-ModInteger'cpu'arguments'constant :: ParamName
-ModInteger'cpu'arguments'model'arguments'intercept :: ParamName
-ModInteger'cpu'arguments'model'arguments'slope :: ParamName
-ModInteger'memory'arguments'intercept :: ParamName
-ModInteger'memory'arguments'minimum :: ParamName
-ModInteger'memory'arguments'slope :: ParamName
-MultiplyInteger'cpu'arguments'intercept :: ParamName
-MultiplyInteger'cpu'arguments'slope :: ParamName
-MultiplyInteger'memory'arguments'intercept :: ParamName
-MultiplyInteger'memory'arguments'slope :: ParamName
-NullList'cpu'arguments :: ParamName
-NullList'memory'arguments :: ParamName
-QuotientInteger'cpu'arguments'constant :: ParamName
-QuotientInteger'cpu'arguments'model'arguments'intercept :: ParamName
-QuotientInteger'cpu'arguments'model'arguments'slope :: ParamName
-QuotientInteger'memory'arguments'intercept :: ParamName
-QuotientInteger'memory'arguments'minimum :: ParamName
-QuotientInteger'memory'arguments'slope :: ParamName
-RemainderInteger'cpu'arguments'constant :: ParamName
-RemainderInteger'cpu'arguments'model'arguments'intercept :: ParamName
-RemainderInteger'cpu'arguments'model'arguments'slope :: ParamName
-RemainderInteger'memory'arguments'intercept :: ParamName
-RemainderInteger'memory'arguments'minimum :: ParamName
-RemainderInteger'memory'arguments'slope :: ParamName
-SerialiseData'cpu'arguments'intercept :: ParamName
-SerialiseData'cpu'arguments'slope :: ParamName
-SerialiseData'memory'arguments'intercept :: ParamName
-SerialiseData'memory'arguments'slope :: ParamName
-Sha2_256'cpu'arguments'intercept :: ParamName
-Sha2_256'cpu'arguments'slope :: ParamName
-Sha2_256'memory'arguments :: ParamName
-Sha3_256'cpu'arguments'intercept :: ParamName
-Sha3_256'cpu'arguments'slope :: ParamName
-Sha3_256'memory'arguments :: ParamName
-SliceByteString'cpu'arguments'intercept :: ParamName
-SliceByteString'cpu'arguments'slope :: ParamName
-SliceByteString'memory'arguments'intercept :: ParamName
-SliceByteString'memory'arguments'slope :: ParamName
-SndPair'cpu'arguments :: ParamName
-SndPair'memory'arguments :: ParamName
-SubtractInteger'cpu'arguments'intercept :: ParamName
-SubtractInteger'cpu'arguments'slope :: ParamName
-SubtractInteger'memory'arguments'intercept :: ParamName
-SubtractInteger'memory'arguments'slope :: ParamName
-TailList'cpu'arguments :: ParamName
-TailList'memory'arguments :: ParamName
-Trace'cpu'arguments :: ParamName
-Trace'memory'arguments :: ParamName
-UnBData'cpu'arguments :: ParamName
-UnBData'memory'arguments :: ParamName
-UnConstrData'cpu'arguments :: ParamName
-UnConstrData'memory'arguments :: ParamName
-UnIData'cpu'arguments :: ParamName
-UnIData'memory'arguments :: ParamName
-UnListData'cpu'arguments :: ParamName
-UnListData'memory'arguments :: ParamName
-UnMapData'cpu'arguments :: ParamName
-UnMapData'memory'arguments :: ParamName
-VerifyEcdsaSecp256k1Signature'cpu'arguments :: ParamName
-VerifyEcdsaSecp256k1Signature'memory'arguments :: ParamName
-VerifyEd25519Signature'cpu'arguments'intercept :: ParamName
-VerifyEd25519Signature'cpu'arguments'slope :: ParamName
-VerifyEd25519Signature'memory'arguments :: ParamName
-VerifySchnorrSecp256k1Signature'cpu'arguments'intercept :: ParamName
-VerifySchnorrSecp256k1Signature'cpu'arguments'slope :: ParamName
-VerifySchnorrSecp256k1Signature'memory'arguments :: ParamName
-data () => CostModelApplyError
-CMUnknownParamError :: !Text -> CostModelApplyError
-CMInternalReadError :: CostModelApplyError
-CMInternalWriteError :: !String -> CostModelApplyError
-CMTooFewParamsError :: !Int -> !Int -> CostModelApplyError
-[cmTooFewExpected] :: CostModelApplyError -> !Int
-[cmTooFewActual] :: CostModelApplyError -> !Int
-type CostModelParams = Map Text Integer
-assertWellFormedCostModelParams :: MonadError CostModelApplyError m => CostModelParams -> m ()
-
--- | The context that the currently-executing script can access.
-data ScriptContext
-ScriptContext :: TxInfo -> ScriptPurpose -> ScriptContext
-
--- | information about the transaction the currently-executing script is
---   included in
-[scriptContextTxInfo] :: ScriptContext -> TxInfo
-
--- | the purpose of the currently-executing script
-[scriptContextPurpose] :: ScriptContext -> ScriptPurpose
-
--- | Purpose of the script that is currently running
-data ScriptPurpose
-Minting :: CurrencySymbol -> ScriptPurpose
-Spending :: TxOutRef -> ScriptPurpose
-Rewarding :: StakingCredential -> ScriptPurpose
-Certifying :: DCert -> ScriptPurpose
-data () => BuiltinByteString
-toBuiltin :: ToBuiltin a arep => a -> arep
-fromBuiltin :: FromBuiltin arep a => arep -> a
-newtype LedgerBytes
-LedgerBytes :: BuiltinByteString -> LedgerBytes
-[getLedgerBytes] :: LedgerBytes -> BuiltinByteString
-
--- | Lift a Haskell bytestring to the Plutus abstraction <a>LedgerBytes</a>
-fromBytes :: ByteString -> LedgerBytes
-
--- | A representation of the ledger DCert. Some information is digested,
---   and not included
-data DCert
-DCertDelegRegKey :: StakingCredential -> DCert
-DCertDelegDeRegKey :: StakingCredential -> DCert
-DCertDelegDelegate :: StakingCredential -> PubKeyHash -> DCert
-
--- | A digest of the PoolParams
-DCertPoolRegister :: PubKeyHash -> PubKeyHash -> DCert
-
--- | The retirement certificate and the Epoch in which the retirement will
---   take place
-DCertPoolRetire :: PubKeyHash -> Integer -> DCert
-
--- | A really terse Digest
-DCertGenesis :: DCert
-
--- | Another really terse Digest
-DCertMir :: DCert
-
--- | Staking credential used to assign rewards.
-data StakingCredential
-
--- | The staking hash is the <a>Credential</a> required to unlock a
---   transaction output. Either a public key credential (<a>PubKeyHash</a>)
---   or a script credential (<a>ScriptHash</a>). Both are hashed with
---   <i>BLAKE2b-244</i>. 28 byte.
-StakingHash :: Credential -> StakingCredential
-
--- | The certificate pointer, constructed by the given slot number,
---   transaction and certificate indices. NB: The fields should really be
---   all <tt>Word64</tt>, as they are implemented in <tt>Word64</tt>, but
---   <a>Integer</a> is our only integral type so we need to use it instead.
-StakingPtr :: Integer -> Integer -> Integer -> StakingCredential
-
--- | Credentials required to unlock a transaction output.
-data Credential
-
--- | The transaction that spends this output must be signed by the private
---   key. See <a>PubKeyHash</a>.
-PubKeyCredential :: PubKeyHash -> Credential
-
--- | The transaction that spends this output must include the validator
---   script and be accepted by the validator. See <a>ScriptHash</a>.
-ScriptCredential :: ScriptHash -> Credential
-
--- | The <a>Value</a> type represents a collection of amounts of different
---   currencies. We can think of <a>Value</a> as a vector space whose
---   dimensions are currencies. To create a value of <a>Value</a>, we need
---   to specify a currency. This can be done using <a>adaValueOf</a>. To
---   get the ada dimension of <a>Value</a> we use <a>fromValue</a>. Plutus
---   contract authors will be able to define modules similar to <a>Ada</a>
---   for their own currencies.
---   
---   Operations on currencies are usually implemented <i>pointwise</i>.
---   That is, we apply the operation to the quantities for each currency in
---   turn. So when we add two <a>Value</a>s the resulting <a>Value</a> has,
---   for each currency, the sum of the quantities of <i>that particular</i>
---   currency in the argument <a>Value</a>. The effect of this is that the
---   currencies in the <a>Value</a> are "independent", and are operated on
---   separately.
---   
---   Whenever we need to get the quantity of a currency in a <a>Value</a>
---   where there is no explicit quantity of that currency in the
---   <a>Value</a>, then the quantity is taken to be zero.
---   
---   There is no 'Ord Value' instance since <a>Value</a> is only a partial
---   order, so <a>compare</a> can't do the right thing in some cases.
-newtype Value
-Value :: Map CurrencySymbol (Map TokenName Integer) -> Value
-[getValue] :: Value -> Map CurrencySymbol (Map TokenName Integer)
-
--- | ByteString representing the currency, hashed with <i>BLAKE2b-224</i>.
---   It is empty for <tt>Ada</tt>, 28 bytes for <tt>MintingPolicyHash</tt>.
---   Forms an <a>AssetClass</a> along with <a>TokenName</a>. A <a>Value</a>
---   is a map from <a>CurrencySymbol</a>'s to a map from <a>TokenName</a>
---   to an <a>Integer</a>.
---   
---   This is a simple type without any validation, <b>use with caution</b>.
---   You may want to add checks for its invariants. See the <a>Shelley
---   ledger specification</a>.
-newtype CurrencySymbol
-CurrencySymbol :: BuiltinByteString -> CurrencySymbol
-[unCurrencySymbol] :: CurrencySymbol -> BuiltinByteString
-
--- | ByteString of a name of a token. Shown as UTF-8 string when possible.
---   Should be no longer than 32 bytes, empty for Ada. Forms an
---   <a>AssetClass</a> along with a <a>CurrencySymbol</a>.
---   
---   This is a simple type without any validation, <b>use with caution</b>.
---   You may want to add checks for its invariants. See the <a>Shelley
---   ledger specification</a>.
-newtype TokenName
-TokenName :: BuiltinByteString -> TokenName
-[unTokenName] :: TokenName -> BuiltinByteString
-
--- | Make a <a>Value</a> containing only the given quantity of the given
---   currency.
-singleton :: CurrencySymbol -> TokenName -> Integer -> Value
-unionWith :: (Integer -> Integer -> Integer) -> Value -> Value -> Value
-
--- | The <a>CurrencySymbol</a> of the <tt>Ada</tt> currency.
-adaSymbol :: CurrencySymbol
-
--- | The <a>TokenName</a> of the <tt>Ada</tt> currency.
-adaToken :: TokenName
-
--- | POSIX time is measured as the number of <i>milliseconds</i> since
---   1970-01-01T00:00:00Z. This is not the same as Haskell's
---   <a>POSIXTime</a>
-newtype POSIXTime
-POSIXTime :: Integer -> POSIXTime
-[getPOSIXTime] :: POSIXTime -> Integer
-
--- | An <a>Interval</a> of <a>POSIXTime</a>s.
-type POSIXTimeRange = Interval POSIXTime
-
--- | An address may contain two credentials, the payment credential and
---   optionally a <a>StakingCredential</a>.
-data Address
-Address :: Credential -> Maybe StakingCredential -> Address
-
--- | the payment credential
-[addressCredential] :: Address -> Credential
-
--- | the staking credential
-[addressStakingCredential] :: Address -> Maybe StakingCredential
-
--- | The hash of a public key. This is frequently used to identify the
---   public key, rather than the key itself. Hashed with
---   <i>BLAKE2b-224</i>. 28 bytes.
---   
---   This is a simple type without any validation, <b>use with caution</b>.
---   You may want to add checks for its invariants. See the <a>Shelley
---   ledger specification</a>.
-newtype PubKeyHash
-PubKeyHash :: BuiltinByteString -> PubKeyHash
-[getPubKeyHash] :: PubKeyHash -> BuiltinByteString
-
--- | A transaction ID, i.e. the hash of a transaction. Hashed with
---   BLAKE2b-256. 32 byte.
---   
---   This is a simple type without any validation, <b>use with caution</b>.
---   You may want to add checks for its invariants. See the <a>Shelley
---   ledger specification</a>.
-newtype TxId
-TxId :: BuiltinByteString -> TxId
-[getTxId] :: TxId -> BuiltinByteString
-
--- | A pending transaction. This is the view as seen by validator scripts,
---   so some details are stripped out.
-data TxInfo
-TxInfo :: [TxInInfo] -> [TxInInfo] -> [TxOut] -> Value -> Value -> [DCert] -> Map StakingCredential Integer -> POSIXTimeRange -> [PubKeyHash] -> Map ScriptPurpose Redeemer -> Map DatumHash Datum -> TxId -> TxInfo
-
--- | Transaction inputs; cannot be an empty list
-[txInfoInputs] :: TxInfo -> [TxInInfo]
-
--- | <i>Added in V2:</i> Transaction reference inputs
-[txInfoReferenceInputs] :: TxInfo -> [TxInInfo]
-
--- | Transaction outputs
-[txInfoOutputs] :: TxInfo -> [TxOut]
-
--- | The fee paid by this transaction.
-[txInfoFee] :: TxInfo -> Value
-
--- | The <a>Value</a> minted by this transaction.
-[txInfoMint] :: TxInfo -> Value
-
--- | Digests of certificates included in this transaction
-[txInfoDCert] :: TxInfo -> [DCert]
-
--- | Withdrawals <i>V1-&gt;V2</i>: changed from assoc list to a
---   <a>AssocMap</a>
-[txInfoWdrl] :: TxInfo -> Map StakingCredential Integer
-
--- | The valid range for the transaction.
-[txInfoValidRange] :: TxInfo -> POSIXTimeRange
-
--- | Signatures provided with the transaction, attested that they all
---   signed the tx
-[txInfoSignatories] :: TxInfo -> [PubKeyHash]
-
--- | <i>Added in V2:</i> a table of redeemers attached to the transaction
-[txInfoRedeemers] :: TxInfo -> Map ScriptPurpose Redeemer
-
--- | The lookup table of datums attached to the transaction
---   <i>V1-&gt;V2</i>: changed from assoc list to a <a>AssocMap</a>
-[txInfoData] :: TxInfo -> Map DatumHash Datum
-
--- | Hash of the pending transaction body (i.e. transaction excluding
---   witnesses)
-[txInfoId] :: TxInfo -> TxId
-
--- | A transaction output, consisting of a target address, a value,
---   optionally a datum/datum hash, and optionally a reference script.
-data TxOut
-TxOut :: Address -> Value -> OutputDatum -> Maybe ScriptHash -> TxOut
-[txOutAddress] :: TxOut -> Address
-[txOutValue] :: TxOut -> Value
-[txOutDatum] :: TxOut -> OutputDatum
-[txOutReferenceScript] :: TxOut -> Maybe ScriptHash
-
--- | A reference to a transaction output. This is a pair of a transaction
---   ID (<a>TxId</a>), and an index indicating which of the outputs of that
---   transaction we are referring to.
-data TxOutRef
-TxOutRef :: TxId -> Integer -> TxOutRef
-
--- | The transaction ID.
-[txOutRefId] :: TxOutRef -> TxId
-
--- | Index into the referenced transaction's outputs
-[txOutRefIdx] :: TxOutRef -> Integer
-
--- | An input of a pending transaction.
-data TxInInfo
-TxInInfo :: TxOutRef -> TxOut -> TxInInfo
-[txInInfoOutRef] :: TxInInfo -> TxOutRef
-[txInInfoResolved] :: TxInInfo -> TxOut
-
--- | The datum attached to an output: either nothing; a datum hash; or the
---   datum itself (an "inline datum").
-data OutputDatum
-NoOutputDatum :: OutputDatum
-OutputDatumHash :: DatumHash -> OutputDatum
-OutputDatum :: Datum -> OutputDatum
-
--- | An interval of <tt>a</tt>s.
---   
---   The interval may be either closed or open at either end, meaning that
---   the endpoints may or may not be included in the interval.
---   
---   The interval can also be unbounded on either side.
---   
---   The <a>Eq</a> instance gives equality of the intervals, not structural
---   equality. There is no <a>Ord</a> instance, but <a>contains</a> gives a
---   partial order.
---   
---   Note that some of the functions on <a>Interval</a> rely on <a>Enum</a>
---   in order to handle non-inclusive endpoints. For this reason, it may
---   not be safe to use <a>Interval</a>s with non-inclusive endpoints on
---   types whose <a>Enum</a> instances have partial methods.
-data Interval a
-Interval :: LowerBound a -> UpperBound a -> Interval a
-[ivFrom] :: Interval a -> LowerBound a
-[ivTo] :: Interval a -> UpperBound a
-
--- | A set extended with a positive and negative infinity.
-data Extended a
-NegInf :: Extended a
-Finite :: a -> Extended a
-PosInf :: Extended a
-
--- | Whether a bound is inclusive or not.
-type Closure = Bool
-
--- | The upper bound of an interval.
-data UpperBound a
-UpperBound :: Extended a -> Closure -> UpperBound a
-
--- | The lower bound of an interval.
-data LowerBound a
-LowerBound :: Extended a -> Closure -> LowerBound a
-
--- | An <a>Interval</a> that covers every slot. In math. notation [-∞,+∞]
-always :: Interval a
-
--- | <tt>from a</tt> is an <a>Interval</a> that includes all values that
---   are greater than or equal to <tt>a</tt>. In math. notation: [a,+∞]
-from :: a -> Interval a
-
--- | <tt>to a</tt> is an <a>Interval</a> that includes all values that are
---   smaller than or equal to <tt>a</tt>. In math. notation: [-∞,a]
-to :: a -> Interval a
-
--- | Construct a lower bound from a value.
---   
---   The resulting bound includes all values that are equal or greater than
---   the input value.
-lowerBound :: a -> LowerBound a
-
--- | Construct an upper bound from a value.
---   
---   The resulting bound includes all values that are equal or smaller than
---   the input value.
-upperBound :: a -> UpperBound a
-
--- | Construct a strict lower bound from a value.
---   
---   The resulting bound includes all values that are (strictly) greater
---   than the input value.
-strictLowerBound :: a -> LowerBound a
-
--- | Construct a strict upper bound from a value.
---   
---   The resulting bound includes all values that are (strictly) smaller
---   than the input value.
-strictUpperBound :: a -> UpperBound a
-data () => Map k v
-fromList :: [(k, v)] -> Map k v
-
--- | Script runtime representation of a <tt>Digest SHA256</tt>.
-newtype ScriptHash
-ScriptHash :: BuiltinByteString -> ScriptHash
-[getScriptHash] :: ScriptHash -> BuiltinByteString
-
--- | <a>Redeemer</a> is a wrapper around <tt>Data</tt> values that are used
---   as redeemers in transaction inputs.
-newtype Redeemer
-Redeemer :: BuiltinData -> Redeemer
-[getRedeemer] :: Redeemer -> BuiltinData
-
--- | Type representing the <i>BLAKE2b-256</i> hash of a redeemer. 32 bytes.
---   
---   This is a simple type without any validation, <b>use with caution</b>.
---   You may want to add checks for its invariants. See the <a>Shelley
---   ledger specification</a>.
-newtype RedeemerHash
-RedeemerHash :: BuiltinByteString -> RedeemerHash
-
--- | <a>Datum</a> is a wrapper around <tt>Data</tt> values which are used
---   as data in transaction outputs.
-newtype Datum
-Datum :: BuiltinData -> Datum
-[getDatum] :: Datum -> BuiltinData
-
--- | Script runtime representation of a <tt>Digest SHA256</tt>.
-newtype DatumHash
-DatumHash :: BuiltinByteString -> DatumHash
-data () => Data
-Constr :: Integer -> [Data] -> Data
-Map :: [(Data, Data)] -> Data
-List :: [Data] -> Data
-I :: Integer -> Data
-B :: ByteString -> Data
-data () => BuiltinData
-BuiltinData :: Data -> BuiltinData
-class () => ToData a
-toBuiltinData :: ToData a => a -> BuiltinData
-class () => FromData a
-fromBuiltinData :: FromData a => BuiltinData -> Maybe a
-class () => UnsafeFromData a
-unsafeFromBuiltinData :: UnsafeFromData a => BuiltinData -> a
-toData :: ToData a => a -> Data
-fromData :: FromData a => Data -> Maybe a
-dataToBuiltinData :: Data -> BuiltinData
-builtinDataToData :: BuiltinData -> Data
-
--- | Errors that can be thrown when evaluating a Plutus script.
-data EvaluationError
-
--- | An error from the evaluator itself
-CekError :: !CekEvaluationException NamedDeBruijn DefaultUni DefaultFun -> EvaluationError
-
--- | An error in the pre-evaluation step of converting from de-Bruijn
---   indices
-DeBruijnError :: !FreeVariableError -> EvaluationError
-
--- | A deserialisation error TODO: make this error more informative when we
---   have more information about what went wrong
-CodecError :: !ScriptDecodeError -> EvaluationError
-
--- | An error indicating that the cost model parameters didn't match what
---   we expected
-CostModelParameterMismatch :: EvaluationError
-
--- | An error that occurred during script deserialization.
-data ScriptDecodeError
-
--- | an error from the underlying CBOR/serialise library
-CBORDeserialiseError :: !DeserialiseFailure -> ScriptDecodeError
-
--- | Script was successfully parsed, but more (runaway) bytes encountered
---   after script's position
-RemainderError :: !ByteString -> ScriptDecodeError
-
--- | the plutus version of the given script is not enabled yet
-LedgerLanguageNotAvailableError :: !PlutusLedgerLanguage -> !ProtocolVersion -> !ProtocolVersion -> ScriptDecodeError
-
--- | the script's ledger language
-[sdeAffectedLang] :: ScriptDecodeError -> !PlutusLedgerLanguage
-
--- | the protocol version that will first introduce/enable the ledger
---   language
-[sdeIntroPv] :: ScriptDecodeError -> !ProtocolVersion
-
--- | the current protocol version
-[sdeThisPv] :: ScriptDecodeError -> !ProtocolVersion
-PlutusCoreLanguageNotAvailableError :: !Version -> !ProtocolVersion -> ScriptDecodeError
-
--- | the script's Plutus Core language version
-[sdeAffectedVersion] :: ScriptDecodeError -> !Version
-
--- | the current protocol version
-[sdeThisPv] :: ScriptDecodeError -> !ProtocolVersion
+[sdeThisPv] :: ScriptDecodeError -> !MajorProtocolVersion

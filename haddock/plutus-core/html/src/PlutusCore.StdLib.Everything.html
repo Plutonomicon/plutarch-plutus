@@ -60,7 +60,9 @@ forall (uni :: * -&gt; *) fun.
 String -&gt; Type TyName uni () -&gt; PlcFsTree uni fun
 </span><a href="PlutusCore.FsTree.html#plcTypeFile"><span class="hs-identifier hs-var">plcTypeFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Bool&quot;</span></span><span>       </span><span class="annot"><span class="annottext">Type TyName DefaultUni ()
-forall (uni :: * -&gt; *). Includes uni Bool =&gt; Type TyName uni ()
+forall (uni :: * -&gt; *) tyname.
+HasTypeLevel uni Bool =&gt;
+Type tyname uni ()
 </span><a href="PlutusCore.StdLib.Data.Bool.html#bool"><span class="hs-identifier hs-var">bool</span></a></span><span>
 </span><span id="line-38"></span><span>                  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
 -&gt; Term TyName Name DefaultUni DefaultFun ()
@@ -69,8 +71,8 @@ forall (uni :: * -&gt; *) fun.
 String -&gt; Term TyName Name uni fun () -&gt; PlcFsTree uni fun
 </span><a href="PlutusCore.FsTree.html#plcTermFile"><span class="hs-identifier hs-var">plcTermFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;True&quot;</span></span><span>       </span><span class="annot"><span class="annottext">Term TyName Name DefaultUni DefaultFun ()
-forall (term :: * -&gt; *) (uni :: * -&gt; *) fun.
-(TermLike term TyName Name uni fun, Includes uni Bool) =&gt;
+forall (term :: * -&gt; *) tyname name (uni :: * -&gt; *) fun.
+(TermLike term tyname name uni fun, HasTermLevel uni Bool) =&gt;
 term ()
 </span><a href="PlutusCore.StdLib.Data.Bool.html#true"><span class="hs-identifier hs-var">true</span></a></span><span>
 </span><span id="line-39"></span><span>                  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
@@ -80,8 +82,8 @@ forall (uni :: * -&gt; *) fun.
 String -&gt; Term TyName Name uni fun () -&gt; PlcFsTree uni fun
 </span><a href="PlutusCore.FsTree.html#plcTermFile"><span class="hs-identifier hs-var">plcTermFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;False&quot;</span></span><span>      </span><span class="annot"><span class="annottext">Term TyName Name DefaultUni DefaultFun ()
-forall (term :: * -&gt; *) (uni :: * -&gt; *) fun.
-(TermLike term TyName Name uni fun, Includes uni Bool) =&gt;
+forall (term :: * -&gt; *) tyname name (uni :: * -&gt; *) fun.
+(TermLike term tyname name uni fun, HasTermLevel uni Bool) =&gt;
 term ()
 </span><a href="PlutusCore.StdLib.Data.Bool.html#false"><span class="hs-identifier hs-var">false</span></a></span><span>
 </span><span id="line-40"></span><span>                  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
@@ -92,8 +94,8 @@ String -&gt; Term TyName Name uni fun () -&gt; PlcFsTree uni fun
 </span><a href="PlutusCore.FsTree.html#plcTermFile"><span class="hs-identifier hs-var">plcTermFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;IfThenElse&quot;</span></span><span> </span><span class="annot"><span class="annottext">Term TyName Name DefaultUni DefaultFun ()
 forall (term :: * -&gt; *) (uni :: * -&gt; *).
-(TermLike term TyName Name uni DefaultFun, Includes uni Bool,
- Includes uni ()) =&gt;
+(TermLike term TyName Name uni DefaultFun,
+ HasTypeAndTermLevel uni Bool, HasTypeAndTermLevel uni ()) =&gt;
 term ()
 </span><a href="PlutusCore.StdLib.Data.Bool.html#ifThenElse"><span class="hs-identifier hs-var">ifThenElse</span></a></span><span>
 </span><span id="line-41"></span><span>                  </span><span class="hs-special">]</span><span>
@@ -174,7 +176,7 @@ String -&gt; Type TyName uni () -&gt; PlcFsTree uni fun
 -&gt; Type TyName DefaultUni ()
 -&gt; FsTree (PlcEntity DefaultUni DefaultFun)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">RecursiveType DefaultUni Any () -&gt; Type TyName DefaultUni ()
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">RecursiveType DefaultUni Any () -&gt; Type TyName DefaultUni ()
 forall (uni :: * -&gt; *) fun ann.
 RecursiveType uni fun ann -&gt; Type TyName uni ann
 </span><a href="PlutusCore.StdLib.Type.html#_recursiveType"><span class="hs-identifier hs-var">_recursiveType</span></a></span><span> </span><span class="annot"><span class="annottext">RecursiveType DefaultUni Any ()
@@ -213,7 +215,7 @@ String -&gt; Term TyName Name uni fun () -&gt; PlcFsTree uni fun
 -&gt; Term TyName Name DefaultUni DefaultFun ()
 -&gt; FsTree (PlcEntity DefaultUni DefaultFun)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
 -&gt; Term TyName Name DefaultUni DefaultFun ()
 -&gt; Term TyName Name DefaultUni DefaultFun ()
 forall (term :: * -&gt; *) (uni :: * -&gt; *) fun.
@@ -240,7 +242,7 @@ String -&gt; Type TyName uni () -&gt; PlcFsTree uni fun
 </span><a href="PlutusCore.FsTree.html#plcTypeFile"><span class="hs-identifier hs-var">plcTypeFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;integer&quot;</span></span><span>     </span><span class="annot"><span class="annottext">Type TyName DefaultUni ()
 forall (uni :: * -&gt; *) tyname.
-Includes uni Integer =&gt;
+HasTypeLevel uni Integer =&gt;
 Type tyname uni ()
 </span><a href="PlutusCore.StdLib.Data.Integer.html#integer"><span class="hs-identifier hs-var">integer</span></a></span><span>
 </span><span id="line-57"></span><span>                  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
@@ -250,8 +252,9 @@ forall (uni :: * -&gt; *) fun.
 String -&gt; Term TyName Name uni fun () -&gt; PlcFsTree uni fun
 </span><a href="PlutusCore.FsTree.html#plcTermFile"><span class="hs-identifier hs-var">plcTermFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;SuccInteger&quot;</span></span><span> </span><span class="annot"><span class="annottext">Term TyName Name DefaultUni DefaultFun ()
-forall (term :: * -&gt; *) (uni :: * -&gt; *).
-(TermLike term TyName Name uni DefaultFun, Includes uni Integer) =&gt;
+forall (term :: * -&gt; *) tyname (uni :: * -&gt; *).
+(TermLike term tyname Name uni DefaultFun,
+ HasTypeAndTermLevel uni Integer) =&gt;
 term ()
 </span><a href="PlutusCore.StdLib.Data.Integer.html#succInteger"><span class="hs-identifier hs-var">succInteger</span></a></span><span>
 </span><span id="line-58"></span><span>                  </span><span class="hs-special">]</span><span>
@@ -268,7 +271,9 @@ forall (uni :: * -&gt; *) fun.
 String -&gt; Type TyName uni () -&gt; PlcFsTree uni fun
 </span><a href="PlutusCore.FsTree.html#plcTypeFile"><span class="hs-identifier hs-var">plcTypeFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Pair&quot;</span></span><span>    </span><span class="annot"><span class="annottext">Type TyName DefaultUni ()
-forall (uni :: * -&gt; *). Contains uni (,) =&gt; Type TyName uni ()
+forall (uni :: * -&gt; *) tyname.
+HasTypeLevel uni (,) =&gt;
+Type tyname uni ()
 </span><a href="PlutusCore.StdLib.Data.Pair.html#pair"><span class="hs-identifier hs-var">pair</span></a></span><span>
 </span><span id="line-61"></span><span>                  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
 -&gt; Term TyName Name DefaultUni DefaultFun ()
@@ -277,8 +282,8 @@ forall (uni :: * -&gt; *) fun.
 String -&gt; Term TyName Name uni fun () -&gt; PlcFsTree uni fun
 </span><a href="PlutusCore.FsTree.html#plcTermFile"><span class="hs-identifier hs-var">plcTermFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Fst&quot;</span></span><span>     </span><span class="annot"><span class="annottext">Term TyName Name DefaultUni DefaultFun ()
-forall (term :: * -&gt; *).
-TermLike term TyName Name DefaultUni DefaultFun =&gt;
+forall (term :: * -&gt; *) tyname name.
+TermLike term tyname name DefaultUni DefaultFun =&gt;
 term ()
 </span><a href="PlutusCore.StdLib.Data.Pair.html#fstPair"><span class="hs-identifier hs-var">Builtin.fstPair</span></a></span><span>
 </span><span id="line-62"></span><span>                  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
@@ -288,8 +293,8 @@ forall (uni :: * -&gt; *) fun.
 String -&gt; Term TyName Name uni fun () -&gt; PlcFsTree uni fun
 </span><a href="PlutusCore.FsTree.html#plcTermFile"><span class="hs-identifier hs-var">plcTermFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Snd&quot;</span></span><span>     </span><span class="annot"><span class="annottext">Term TyName Name DefaultUni DefaultFun ()
-forall (term :: * -&gt; *).
-TermLike term TyName Name DefaultUni DefaultFun =&gt;
+forall (term :: * -&gt; *) tyname name.
+TermLike term tyname name DefaultUni DefaultFun =&gt;
 term ()
 </span><a href="PlutusCore.StdLib.Data.Pair.html#sndPair"><span class="hs-identifier hs-var">Builtin.sndPair</span></a></span><span>
 </span><span id="line-63"></span><span>                  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
@@ -317,7 +322,9 @@ forall (uni :: * -&gt; *) fun.
 String -&gt; Type TyName uni () -&gt; PlcFsTree uni fun
 </span><a href="PlutusCore.FsTree.html#plcTypeFile"><span class="hs-identifier hs-var">plcTypeFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;List&quot;</span></span><span>      </span><span class="annot"><span class="annottext">Type TyName DefaultUni ()
-forall (uni :: * -&gt; *). Contains uni [] =&gt; Type TyName uni ()
+forall (uni :: * -&gt; *) tyname.
+HasTypeLevel uni [] =&gt;
+Type tyname uni ()
 </span><a href="PlutusCore.StdLib.Data.List.html#list"><span class="hs-identifier hs-var">list</span></a></span><span>
 </span><span id="line-67"></span><span>                  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
 -&gt; Term TyName Name DefaultUni DefaultFun ()
@@ -366,7 +373,9 @@ forall (uni :: * -&gt; *) fun.
 String -&gt; Type TyName uni () -&gt; PlcFsTree uni fun
 </span><a href="PlutusCore.FsTree.html#plcTypeFile"><span class="hs-identifier hs-var">plcTypeFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Data&quot;</span></span><span>     </span><span class="annot"><span class="annottext">Type TyName DefaultUni ()
-forall (uni :: * -&gt; *). Contains uni Data =&gt; Type TyName uni ()
+forall (uni :: * -&gt; *) tyname.
+HasTypeLevel uni Data =&gt;
+Type tyname uni ()
 </span><a href="PlutusCore.StdLib.Data.Data.html#dataTy"><span class="hs-identifier hs-var">dataTy</span></a></span><span>
 </span><span id="line-73"></span><span>                  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
 -&gt; Term TyName Name DefaultUni DefaultFun ()
@@ -458,8 +467,9 @@ String -&gt; Term TyName Name uni fun () -&gt; PlcFsTree uni fun
 </span><a href="PlutusCore.FsTree.html#plcTermFile"><span class="hs-identifier hs-var">plcTermFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;EnumFromTo&quot;</span></span><span> </span><span class="annot"><span class="annottext">Term TyName Name DefaultUni DefaultFun ()
 forall (term :: * -&gt; *) (uni :: * -&gt; *).
-(TermLike term TyName Name uni DefaultFun, Includes uni Integer,
- Includes uni (), Includes uni Bool) =&gt;
+(TermLike term TyName Name uni DefaultFun,
+ HasTypeAndTermLevel uni Integer, HasTypeAndTermLevel uni (),
+ HasTypeAndTermLevel uni Bool) =&gt;
 term ()
 </span><a href="PlutusCore.StdLib.Data.ScottList.html#enumFromTo"><span class="hs-identifier hs-var">Scott.enumFromTo</span></a></span><span>
 </span><span id="line-83"></span><span>                  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
@@ -470,7 +480,8 @@ String -&gt; Term TyName Name uni fun () -&gt; PlcFsTree uni fun
 </span><a href="PlutusCore.FsTree.html#plcTermFile"><span class="hs-identifier hs-var">plcTermFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Sum&quot;</span></span><span>        </span><span class="annot"><span class="annottext">Term TyName Name DefaultUni DefaultFun ()
 forall (term :: * -&gt; *) (uni :: * -&gt; *).
-(TermLike term TyName Name uni DefaultFun, Includes uni Integer) =&gt;
+(TermLike term TyName Name uni DefaultFun,
+ HasTypeAndTermLevel uni Integer) =&gt;
 term ()
 </span><a href="PlutusCore.StdLib.Data.ScottList.html#sum"><span class="hs-identifier hs-var">Scott.sum</span></a></span><span>
 </span><span id="line-84"></span><span>                  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
@@ -481,7 +492,8 @@ String -&gt; Term TyName Name uni fun () -&gt; PlcFsTree uni fun
 </span><a href="PlutusCore.FsTree.html#plcTermFile"><span class="hs-identifier hs-var">plcTermFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Product&quot;</span></span><span>    </span><span class="annot"><span class="annottext">Term TyName Name DefaultUni DefaultFun ()
 forall (term :: * -&gt; *) (uni :: * -&gt; *).
-(TermLike term TyName Name uni DefaultFun, Includes uni Integer) =&gt;
+(TermLike term TyName Name uni DefaultFun,
+ HasTypeAndTermLevel uni Integer) =&gt;
 term ()
 </span><a href="PlutusCore.StdLib.Data.ScottList.html#product"><span class="hs-identifier hs-var">Scott.product</span></a></span><span>
 </span><span id="line-85"></span><span>                  </span><span class="hs-special">]</span><span>
@@ -552,7 +564,8 @@ String -&gt; Term TyName Name uni fun () -&gt; PlcFsTree uni fun
 </span><a href="PlutusCore.FsTree.html#plcTermFile"><span class="hs-identifier hs-var">plcTermFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;NatToInteger&quot;</span></span><span> </span><span class="annot"><span class="annottext">Term TyName Name DefaultUni DefaultFun ()
 forall (term :: * -&gt; *) (uni :: * -&gt; *).
-(TermLike term TyName Name uni DefaultFun, Includes uni Integer) =&gt;
+(TermLike term TyName Name uni DefaultFun,
+ HasTypeAndTermLevel uni Integer) =&gt;
 term ()
 </span><a href="PlutusCore.StdLib.Data.Nat.html#natToInteger"><span class="hs-identifier hs-var">natToInteger</span></a></span><span>
 </span><span id="line-93"></span><span>                  </span><span class="hs-special">]</span><span>
@@ -607,7 +620,9 @@ forall (uni :: * -&gt; *) fun.
 String -&gt; Type TyName uni () -&gt; PlcFsTree uni fun
 </span><a href="PlutusCore.FsTree.html#plcTypeFile"><span class="hs-identifier hs-var">plcTypeFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Unit&quot;</span></span><span>    </span><span class="annot"><span class="annottext">Type TyName DefaultUni ()
-forall (uni :: * -&gt; *). Includes uni () =&gt; Type TyName uni ()
+forall (uni :: * -&gt; *) tyname.
+HasTypeLevel uni () =&gt;
+Type tyname uni ()
 </span><a href="PlutusCore.StdLib.Data.Unit.html#unit"><span class="hs-keyword hs-var">unit</span></a></span><span>
 </span><span id="line-101"></span><span>                  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
 -&gt; Term TyName Name DefaultUni DefaultFun ()
@@ -616,8 +631,8 @@ forall (uni :: * -&gt; *) fun.
 String -&gt; Term TyName Name uni fun () -&gt; PlcFsTree uni fun
 </span><a href="PlutusCore.FsTree.html#plcTermFile"><span class="hs-identifier hs-var">plcTermFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Unitval&quot;</span></span><span> </span><span class="annot"><span class="annottext">Term TyName Name DefaultUni DefaultFun ()
-forall (term :: * -&gt; *) (uni :: * -&gt; *) fun.
-(TermLike term TyName Name uni fun, Includes uni ()) =&gt;
+forall (term :: * -&gt; *) tyname name (uni :: * -&gt; *) fun.
+(TermLike term tyname name uni fun, HasTermLevel uni ()) =&gt;
 term ()
 </span><a href="PlutusCore.StdLib.Data.Unit.html#unitval"><span class="hs-identifier hs-var">unitval</span></a></span><span>
 </span><span id="line-102"></span><span>                  </span><span class="hs-special">]</span><span>
@@ -651,7 +666,7 @@ String -&gt; Type TyName uni () -&gt; PlcFsTree uni fun
 -&gt; Type TyName DefaultUni ()
 -&gt; FsTree (PlcEntity DefaultUni DefaultFun)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Type TyName DefaultUni ()
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Type TyName DefaultUni ()
 forall (uni :: * -&gt; *). Int -&gt; Type TyName uni ()
 </span><a href="PlutusCore.StdLib.Meta.Data.Tuple.html#prodN"><span class="hs-identifier hs-var">prodN</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">2</span></span><span>
@@ -666,7 +681,7 @@ String -&gt; Term TyName Name uni fun () -&gt; PlcFsTree uni fun
 -&gt; Term TyName Name DefaultUni DefaultFun ()
 -&gt; FsTree (PlcEntity DefaultUni DefaultFun)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Term TyName Name DefaultUni DefaultFun ()
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Term TyName Name DefaultUni DefaultFun ()
 forall (term :: * -&gt; *) (uni :: * -&gt; *) fun.
 TermLike term TyName Name uni fun =&gt;
 Int -&gt; Int -&gt; term ()
@@ -684,7 +699,7 @@ String -&gt; Term TyName Name uni fun () -&gt; PlcFsTree uni fun
 -&gt; Term TyName Name DefaultUni DefaultFun ()
 -&gt; FsTree (PlcEntity DefaultUni DefaultFun)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Term TyName Name DefaultUni DefaultFun ()
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Term TyName Name DefaultUni DefaultFun ()
 forall (term :: * -&gt; *) (uni :: * -&gt; *) fun.
 TermLike term TyName Name uni fun =&gt;
 Int -&gt; Int -&gt; term ()
@@ -702,7 +717,7 @@ String -&gt; Term TyName Name uni fun () -&gt; PlcFsTree uni fun
 -&gt; Term TyName Name DefaultUni DefaultFun ()
 -&gt; FsTree (PlcEntity DefaultUni DefaultFun)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Term TyName Name DefaultUni DefaultFun ()
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Term TyName Name DefaultUni DefaultFun ()
 forall (term :: * -&gt; *) (uni :: * -&gt; *) fun.
 TermLike term TyName Name uni fun =&gt;
 Int -&gt; term ()

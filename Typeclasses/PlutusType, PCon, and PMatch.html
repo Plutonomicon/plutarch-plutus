@@ -23,6 +23,9 @@
       <meta property='og:image' content />
       <meta property='og:type' content='website' />
       <meta property='og:title' content='PlutusType, PCon, and PMatch' />
+      
+        <meta name='twitter:card' content='summary_large_image' />
+      
     
     
       <base href='/plutarch-plutus/' />
@@ -51,7 +54,7 @@
 
   
   
-  <link href='tailwind.css?instanceId=83710d14-4ebc-48e2-a0d6-7d5adbff8033' rel='stylesheet' type='text/css' />
+  <link href='tailwind.css?instanceId=a509efe6-703a-4502-bda4-eef5d3bca437' rel='stylesheet' type='text/css' />
 
   <style>
     /* Heist error element */
@@ -199,10 +202,6 @@
   
     <style>
       /* For use in sidebar.tpl, as we cannot achieve this in tailwind itself! */
-      #sidebar:hover {
-        width: auto;
-      }
-
       /* md:min-w-48  */
       @media (min-width: 768px) {
         #sidebar {
@@ -3202,14 +3201,34 @@
 </h1>
     <article class='overflow-auto'>
   <!-- What goes in this file will appear on top of note body-->
-  <div xmlhtmlRaw><details>
+  
+
+
+
+
+
+<div xmlhtmlRaw><details>
 <summary> imports </summary>
 <p>
 </div><div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>{-# OPTIONS_GHC -Wno-redundant-constraints #-}
 module Plutarch.Docs.PlutusTypePConAndPMatch (PMyType(..), PMyTypeData(..)) where 
 import Plutarch.Prelude</code></pre></div><div xmlhtmlRaw></p>
 </details>
-</div><h1 id='plutustype' class='pb-2 mb-2 text-5xl font-bold text-center'><code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code></h1>
+</div>
+    <h1 id='plutustype' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code>
+  
+  <a href='Typeclasses/PlutusType%2C%20PCon%2C%20and%20PMatch.html#plutustype'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code> is the primary typeclass that determines the underlying representation for a Plutarch type. It lets you construct and deconstruct Plutus Core constants from a Plutarch type’s constructors (possibly containing other Plutarch terms).
     </p>
@@ -3252,7 +3271,21 @@ import Plutarch.Prelude</code></pre></div><div xmlhtmlRaw></p>
     <p class='mb-3'>
       This is quite useful when working with <code class='py-0.5 px-0.5 bg-gray-100'>newtype</code>s. Notice how <code class='py-0.5 px-0.5 bg-gray-100'>PCurrencySymbol</code>, for example, is simply a newtype to a <code class='py-0.5 px-0.5 bg-gray-100'>PByteString</code>. Its <code class='py-0.5 px-0.5 bg-gray-100'>PInner</code> is also <code class='py-0.5 px-0.5 bg-gray-100'>PByteString</code>. To be able to use functions that operate on <code class='py-0.5 px-0.5 bg-gray-100'>PByteString</code>s with your <code class='py-0.5 px-0.5 bg-gray-100'>PCurrencySymbol</code>, you can simply take out the <code class='py-0.5 px-0.5 bg-gray-100'>PByteString</code> using <code class='py-0.5 px-0.5 bg-gray-100'>pto</code>!
     </p>
-  <h2 id='implementing-plutustype-for-your-own-types-scott-encoding' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Implementing <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code> for your own types (Scott Encoding)</h2>
+  
+    <h2 id='implementing-plutustype-for-your-own-types-scott-encoding' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  Implementing <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code> for your own types (Scott Encoding)
+  
+  <a href='Typeclasses/PlutusType%2C%20PCon%2C%20and%20PMatch.html#implementing-plutustype-for-your-own-types-scott-encoding'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
     <p class='mb-3'>
       If you want to represent your data type with <a href='Concepts/Data%20and%20Scott%20encoding.html#scott-encoding' class='text-blue-600 mavenLinkBold hover:underline'>Scott encoding</a> (and therefore don’t need to make it <code class='py-0.5 px-0.5 bg-gray-100'>Data</code> encoded), you should simply derive it generically:
     </p>
@@ -3270,7 +3303,21 @@ instance DerivePlutusType (PMyType a b) where type DPTStrat _ = PlutusTypeScott<
     </p>
   
     </blockquote>
-  <h2 id='implementing-plutustype-for-your-own-types-data-encoding' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Implementing <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code> for your own types (<code class='py-0.5 px-0.5 bg-gray-100'>Data</code> Encoding)</h2>
+  
+    <h2 id='implementing-plutustype-for-your-own-types-data-encoding' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  Implementing <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code> for your own types (<code class='py-0.5 px-0.5 bg-gray-100'>Data</code> Encoding)
+  
+  <a href='Typeclasses/PlutusType%2C%20PCon%2C%20and%20PMatch.html#implementing-plutustype-for-your-own-types-data-encoding'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
     <p class='mb-3'>
       If your type is supposed to be represented using <a href='Concepts/Data%20and%20Scott%20encoding.html#data-encoding' class='text-blue-600 mavenLinkBold hover:underline'><code class='py-0.5 px-0.5 bg-gray-100'>Data</code> encoding</a> instead, you can derive <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code> via <code class='py-0.5 px-0.5 bg-gray-100'>PlutusTypeData</code>:
     </p>
@@ -3280,12 +3327,25 @@ instance DerivePlutusType (PMyType a b) where type DPTStrat _ = PlutusTypeScott<
   deriving stock Generic
   deriving anyclass (PlutusType)
 
-instance DerivePlutusType (PMyTypeData a b) where type DPTStrat _ = PlutusTypeData</code></pre></div><h2 id='implementing-plutustype-for-your-own-types-newtype' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Implementing <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code> for your own types (<code class='py-0.5 px-0.5 bg-gray-100'>newtype</code>)</h2>
+instance DerivePlutusType (PMyTypeData a b) where type DPTStrat _ = PlutusTypeData</code></pre></div>
+    <h2 id='implementing-plutustype-for-your-own-types-newtype' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  Implementing <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code> for your own types (<code class='py-0.5 px-0.5 bg-gray-100'>newtype</code>)
+  
+  <a href='Typeclasses/PlutusType%2C%20PCon%2C%20and%20PMatch.html#implementing-plutustype-for-your-own-types-newtype'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
     <p class='mb-3'>
       See: <a href='Usage/Deriving%20for%20newtypes.html' class='text-blue-600 mavenLinkBold hover:underline'><code class='py-0.5 px-0.5 bg-gray-100'>DPTStrat PlutusTypeNewtype</code></a>.
     </p>
   
-
   <!-- What goes in this file will appear below the note body-->
 </article>
     <div class='flex flex-col lg:flex-row lg:space-x-2'>
@@ -3505,7 +3565,7 @@ instance DerivePlutusType (PMyTypeData a b) where type DPTStrat _ = PlutusTypeDa
     </a>
   </div>
   <div>
-    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.4.0'>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.11.0'>
       <img class='w-6 h-6 hover:text-blue-700' src='_emanote-static/emanote-logo.svg' />
     </a>
   </div>

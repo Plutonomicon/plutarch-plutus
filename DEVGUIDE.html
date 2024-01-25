@@ -23,6 +23,9 @@
       <meta property='og:image' content />
       <meta property='og:type' content='website' />
       <meta property='og:title' content='DEVGUIDE' />
+      
+        <meta name='twitter:card' content='summary_large_image' />
+      
     
     
       <base href='/plutarch-plutus/' />
@@ -51,7 +54,7 @@
 
   
   
-  <link href='tailwind.css?instanceId=83710d14-4ebc-48e2-a0d6-7d5adbff8033' rel='stylesheet' type='text/css' />
+  <link href='tailwind.css?instanceId=a509efe6-703a-4502-bda4-eef5d3bca437' rel='stylesheet' type='text/css' />
 
   <style>
     /* Heist error element */
@@ -199,10 +202,6 @@
   
     <style>
       /* For use in sidebar.tpl, as we cannot achieve this in tailwind itself! */
-      #sidebar:hover {
-        width: auto;
-      }
-
       /* md:min-w-48  */
       @media (min-width: 768px) {
         #sidebar {
@@ -3190,6 +3189,12 @@
     <article class='overflow-auto'>
   <!-- What goes in this file will appear on top of note body-->
   
+
+
+
+
+
+
     <p class='mb-3'>
       Looking to contribute to Plutarch? Looking for functionalities that are not currently provided by Plutarch from a safe interface? You’ve come to the right place!
     </p>
@@ -3268,7 +3273,21 @@
       
     </ul>
   <div xmlhtmlRaw></details>
-</div><h1 id='code-style' class='pb-2 mb-2 text-5xl font-bold text-center'>Code Style</h1>
+</div>
+    <h1 id='code-style' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Code Style
+  
+  <a href='DEVGUIDE.html#code-style'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       You should generally follow the <a href='https://github.com/mlabs-haskell/styleguide' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>MLabs style guide</a>, credit to <a href='https://github.com/kozross' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>@Koz Ross</a>.
     </p>
@@ -3288,15 +3307,57 @@
         </li>
       
     </ul>
-  <h1 id='pre-commit-checks' class='pb-2 mb-2 text-5xl font-bold text-center'>Pre-commit checks</h1>
+  
+    <h1 id='pre-commit-checks' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Pre-commit checks
+  
+  <a href='DEVGUIDE.html#pre-commit-checks'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       Remember to run <code class='py-0.5 px-0.5 bg-gray-100'>./bin/format</code> to format your code and <code class='py-0.5 px-0.5 bg-gray-100'>cabal test</code>, alongside <code class='py-0.5 px-0.5 bg-gray-100'>cabal test -f development</code>, to make sure all the tests pass prior to making a PR!
     </p>
-  <h1 id='updating-changelog' class='pb-2 mb-2 text-5xl font-bold text-center'>Updating Changelog</h1>
+  
+    <h1 id='updating-changelog' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Updating Changelog
+  
+  <a href='DEVGUIDE.html#updating-changelog'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       If your PR makes a change to some user facing functionality - please summarize the change(s) and add it to <code class='py-0.5 px-0.5 bg-gray-100'>CHANGELOG.md</code>.
     </p>
-  <h1 id='targeting-branch-for-pr' class='pb-2 mb-2 text-5xl font-bold text-center'>Targeting branch for PR</h1>
+  
+    <h1 id='targeting-branch-for-pr' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Targeting branch for PR
+  
+  <a href='DEVGUIDE.html#targeting-branch-for-pr'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       More often than not, you’ll be making PRs directly to <code class='py-0.5 px-0.5 bg-gray-100'>master</code>.
     </p>
@@ -3304,7 +3365,21 @@
     <p class='mb-3'>
       However, sometimes, there is a release cycle going on and the state of the repository is in flux. There will usually be a <code class='py-0.5 px-0.5 bg-gray-100'>master &lt;- staging</code> PR open during this time. As long as the <code class='py-0.5 px-0.5 bg-gray-100'>staging</code> PR is open, you should base most new branches on top of it and merge back into it. Bug fixes, for bugs present in <code class='py-0.5 px-0.5 bg-gray-100'>master</code>, are exempt from this requirement.
     </p>
-  <h1 id='concepts' class='pb-2 mb-2 text-5xl font-bold text-center'>Concepts</h1>
+  
+    <h1 id='concepts' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Concepts
+  
+  <a href='DEVGUIDE.html#concepts'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       Even if certain functionalities are absent from the public facing API - you can always implement them using functions like <code class='py-0.5 px-0.5 bg-gray-100'>punsafeConstant</code> and <code class='py-0.5 px-0.5 bg-gray-100'>punsafeBuiltin</code> - these allow you to walk the lines between Plutus core and Plutarch.
     </p>
@@ -3336,7 +3411,21 @@
     <p class='mb-3'>
       Parts of the <a href='https://github.com/Plutonomicon/pluto/blob/main/GUIDE.md' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>Pluto guide</a> may also prove useful.
     </p>
-  <h2 id='plutus-core-constants-unsafe' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Plutus Core constants (UNSAFE)</h2>
+  
+    <h2 id='plutus-core-constants-unsafe' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  Plutus Core constants (UNSAFE)
+  
+  <a href='DEVGUIDE.html#plutus-core-constants-unsafe'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
     <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
       
     <p class='mb-3'>
@@ -3397,7 +3486,21 @@ foo = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniBool</code></pre></
     <p class='mb-3'>
       Of course, we represent Plutus core booleans as <code class='py-0.5 px-0.5 bg-gray-100'>Term s PBool</code> in Plutarch - so that’s its type!
     </p>
-  <h2 id='plutus-core-builtin-functions' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Plutus core builtin functions</h2>
+  
+    <h2 id='plutus-core-builtin-functions' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  Plutus core builtin functions
+  
+  <a href='DEVGUIDE.html#plutus-core-builtin-functions'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
     <p class='mb-3'>
       This is what you will be wrangling with the most. Builtin functions are going to be the foundation of <em>everything</em> you do. And the documentation on them is….. sparse.
     </p>
@@ -3450,7 +3553,21 @@ pchooseList = pforce $ pforce $ punsafeBuiltin PLC.ChooseList</code></pre></div>
     <p class='mb-3'>
       We have a <a href='https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-functions.md' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>Plutus Core builtin functions reference</a> for everything you need to know about them. Including types, usage, and forcing.
     </p>
-  <h2 id='working-with-builtindatadatapdata' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Working with BuiltinData/Data/PData</h2>
+  
+    <h2 id='working-with-builtindatadatapdata' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  Working with BuiltinData/Data/PData
+  
+  <a href='DEVGUIDE.html#working-with-builtindatadatapdata'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
     <p class='mb-3'>
       Most of the time, you’ll be working with <code class='py-0.5 px-0.5 bg-gray-100'>BuiltinData</code>/<code class='py-0.5 px-0.5 bg-gray-100'>Data</code> - this is the type of the arguments that will be passed onto your script from the outside. This is the type of the datum, the redeemer and the script context. This is also the type of arguments you will be able to pass to a <code class='py-0.5 px-0.5 bg-gray-100'>Script</code>.
     </p>
@@ -3462,11 +3579,53 @@ pchooseList = pforce $ pforce $ punsafeBuiltin PLC.ChooseList</code></pre></div>
     <p class='mb-3'>
       If you want to work with <code class='py-0.5 px-0.5 bg-gray-100'>BuiltinData</code> directly however, which you may have to do during developing Plutarch, you can find all that you need to know at <a href='https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>Plutonomicon</a>.
     </p>
-  <h2 id='pconstant-and-plift' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'><code class='py-0.5 px-0.5 bg-gray-100'>PConstant</code> and <code class='py-0.5 px-0.5 bg-gray-100'>PLift</code></h2>
+  
+    <h2 id='pconstant-and-plift' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  <code class='py-0.5 px-0.5 bg-gray-100'>PConstant</code> and <code class='py-0.5 px-0.5 bg-gray-100'>PLift</code>
+  
+  <a href='DEVGUIDE.html#pconstant-and-plift'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
     <p class='mb-3'>
       TODO
     </p>
-  <h1 id='lower-level-examples' class='pb-2 mb-2 text-5xl font-bold text-center'>Lower Level Examples</h1><h2 id='extracting-txinfoinputs-from-scriptcontext-manually-untyped' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Extracting <code class='py-0.5 px-0.5 bg-gray-100'>txInfoInputs</code> from <code class='py-0.5 px-0.5 bg-gray-100'>ScriptContext</code> manually (UNTYPED)</h2>
+  
+    <h1 id='lower-level-examples' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Lower Level Examples
+  
+  <a href='DEVGUIDE.html#lower-level-examples'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
+    <h2 id='extracting-txinfoinputs-from-scriptcontext-manually-untyped' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  Extracting <code class='py-0.5 px-0.5 bg-gray-100'>txInfoInputs</code> from <code class='py-0.5 px-0.5 bg-gray-100'>ScriptContext</code> manually (UNTYPED)
+  
+  <a href='DEVGUIDE.html#extracting-txinfoinputs-from-scriptcontext-manually-untyped'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
     <p class='mb-3'>
       Here’s a quick refresher on what <code class='py-0.5 px-0.5 bg-gray-100'>ScriptContext</code> looks like:
     </p>
@@ -3609,7 +3768,21 @@ Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf list (data) [Co
     <p class='mb-3'>
       There’s just one element in <code class='py-0.5 px-0.5 bg-gray-100'>txInfoInputs</code> in this example, and there it is. Of course <code class='py-0.5 px-0.5 bg-gray-100'>TxInInfo</code>, the element type of this list, also gets translated to a <code class='py-0.5 px-0.5 bg-gray-100'>Constr</code> data with further fields. And that’s what you see above.
     </p>
-  <h1 id='useful-links' class='pb-2 mb-2 text-5xl font-bold text-center'>Useful Links</h1>
+  
+    <h1 id='useful-links' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Useful Links
+  
+  <a href='DEVGUIDE.html#useful-links'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <ul class='my-3 ml-6 space-y-1 list-disc'>
       
         <li>
@@ -3641,7 +3814,21 @@ Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf list (data) [Co
         </li>
       
     </ul>
-  <h1 id='how-to-build-docs' class='pb-2 mb-2 text-5xl font-bold text-center'>How to build docs</h1>
+  
+    <h1 id='how-to-build-docs' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  How to build docs
+  
+  <a href='DEVGUIDE.html#how-to-build-docs'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       To run the docs locally from the Git working copy (useful when editing them),
     </p>
@@ -3654,7 +3841,6 @@ Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf list (data) [Co
       To run the docs directly without cloning the Git repo,
     </p>
   <div class='py-0.5 mb-3 text-sm'><pre><code class='sh-session language-sh-session'>nix run github:Plutonomicon/plutarch#website</code></pre></div>
-
   <!-- What goes in this file will appear below the note body-->
 </article>
     <div class='flex flex-col lg:flex-row lg:space-x-2'>
@@ -3726,7 +3912,7 @@ Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf list (data) [Co
     </a>
   </div>
   <div>
-    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.4.0'>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.11.0'>
       <img class='w-6 h-6 hover:text-blue-700' src='_emanote-static/emanote-logo.svg' />
     </a>
   </div>

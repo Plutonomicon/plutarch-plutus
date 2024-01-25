@@ -23,6 +23,9 @@
       <meta property='og:image' content />
       <meta property='og:type' content='website' />
       <meta property='og:title' content='Data and Scott encoding' />
+      
+        <meta name='twitter:card' content='summary_large_image' />
+      
     
     
       <base href='/plutarch-plutus/' />
@@ -51,7 +54,7 @@
 
   
   
-  <link href='tailwind.css?instanceId=83710d14-4ebc-48e2-a0d6-7d5adbff8033' rel='stylesheet' type='text/css' />
+  <link href='tailwind.css?instanceId=a509efe6-703a-4502-bda4-eef5d3bca437' rel='stylesheet' type='text/css' />
 
   <style>
     /* Heist error element */
@@ -199,10 +202,6 @@
   
     <style>
       /* For use in sidebar.tpl, as we cannot achieve this in tailwind itself! */
-      #sidebar:hover {
-        width: auto;
-      }
-
       /* md:min-w-48  */
       @media (min-width: 768px) {
         #sidebar {
@@ -3202,7 +3201,13 @@
 </h1>
     <article class='overflow-auto'>
   <!-- What goes in this file will appear on top of note body-->
-  <div xmlhtmlRaw><details>
+  
+
+
+
+
+
+<div xmlhtmlRaw><details>
 <summary> imports </summary>
 <p>
 </div><div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>{-# LANGUAGE RankNTypes #-}
@@ -3210,7 +3215,21 @@ module Plutarch.Docs.DataAndScottEncoding (nothing, just, foo) where
 
 import Prelude (Integer, (+))</code></pre></div><div xmlhtmlRaw></p>
 </details>
-</div><h1 id='data-encoding-and-scott-encoding' class='pb-2 mb-2 text-5xl font-bold text-center'>Data encoding and Scott encoding</h1>
+</div>
+    <h1 id='data-encoding-and-scott-encoding' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Data encoding and Scott encoding
+  
+  <a href='Concepts/Data%20and%20Scott%20encoding.html#data-encoding-and-scott-encoding'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
     <p class='mb-3'>
       In Plutus Core, there are really two (conflicting) ways to represent non-trivial ADTs: <a href='https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:Data' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'><code class='py-0.5 px-0.5 bg-gray-100'>Constr</code></a> data encoding, or Scott encoding. You should use only one of these representations for your non-trivial types.
     </p>
@@ -3222,7 +3241,21 @@ import Prelude (Integer, (+))</code></pre></div><div xmlhtmlRaw></p>
     </p>
   
     </blockquote>
-  <h2 id='data-encoding' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Data encoding</h2>
+  
+    <h2 id='data-encoding' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  Data encoding
+  
+  <a href='Concepts/Data%20and%20Scott%20encoding.html#data-encoding'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
     <p class='mb-3'>
       <code class='py-0.5 px-0.5 bg-gray-100'>Constr</code> data is essentially a sum-of-products representation. However, it can only contain other <code class='py-0.5 px-0.5 bg-gray-100'>Data</code> values (not necessarily just <code class='py-0.5 px-0.5 bg-gray-100'>Constr</code> data, could be <code class='py-0.5 px-0.5 bg-gray-100'>I</code> data, <code class='py-0.5 px-0.5 bg-gray-100'>B</code> data etc.) as its fields. Plutus Core famously lacks the ability to represent functions using this encoding, and thus <code class='py-0.5 px-0.5 bg-gray-100'>Constr</code> encoded values simply cannot contain functions.
     </p>
@@ -3238,7 +3271,21 @@ import Prelude (Integer, (+))</code></pre></div><div xmlhtmlRaw></p>
     <p class='mb-3'>
       With that said, <code class='py-0.5 px-0.5 bg-gray-100'>Data</code> encoding is <em>ubiquitous</em> on the chain. It’s the encoding used by the ledger api types, it’s the type of the arguments that can be passed to a script on the chain etc. As a result, your datums and redeemers <em>must</em> use data encoding.
     </p>
-  <h2 id='scott-encoding' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Scott encoding</h2>
+  
+    <h2 id='scott-encoding' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  Scott encoding
+  
+  <a href='Concepts/Data%20and%20Scott%20encoding.html#scott-encoding'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
     <p class='mb-3'>
       On the opposite (and conflicting) end, is Scott encoding. <a href='https://crypto.stanford.edu/~blynn/compiler/scott.html' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>The internet</a> can explain Scott encoding way better than I can. But I’ll be demonstrating Scott encoding with an example anyway.
     </p>
@@ -3291,7 +3338,6 @@ foo (\_ n -&gt; n)
       This is the same recipe followed in the implementation of <code class='py-0.5 px-0.5 bg-gray-100'>PMaybe</code>. See its <a href='Typeclasses/PlutusType%2C%20PCon%2C%20and%20PMatch.html' class='text-blue-600 mavenLinkBold hover:underline'>PlutusType impl</a>!
     </p>
   
-
   <!-- What goes in this file will appear below the note body-->
 </article>
     <div class='flex flex-col lg:flex-row lg:space-x-2'>
@@ -3526,7 +3572,7 @@ foo (\_ n -&gt; n)
     </a>
   </div>
   <div>
-    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.4.0'>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.11.0'>
       <img class='w-6 h-6 hover:text-blue-700' src='_emanote-static/emanote-logo.svg' />
     </a>
   </div>

@@ -99,7 +99,7 @@
 </span><span id="line-99"></span><span>
 </span><span id="line-100"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Api.Internal.Hashing.html"><span class="hs-identifier">Plutarch.Api.Internal.Hashing</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Api.Internal.Hashing.html#hashData"><span class="hs-identifier">hashData</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Api.Internal.Hashing.html#hashScriptWithPrefix"><span class="hs-identifier">hashScriptWithPrefix</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-101"></span><span>
-</span><span id="line-102"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Coerce.html"><span class="hs-identifier">Data.Coerce</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier">coerce</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-102"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Coerce.html"><span class="hs-identifier">Data.Coerce</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier">coerce</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-103"></span><span>
 </span><span id="line-104"></span><span class="hs-comment">-- On-chain Script Types</span><span>
 </span><span id="line-105"></span><span>
@@ -115,10 +115,10 @@
 </span><span id="line-112"></span><span id="datumHash"><span class="annot"><span class="annottext">datumHash :: Datum -&gt; DatumHash
 </span><a href="Plutarch.Api.V1.html#datumHash"><span class="hs-identifier hs-var hs-var">datumHash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; DatumHash
 forall a b. Coercible @Type a b =&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; DatumHash)
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; DatumHash)
 -&gt; (Datum -&gt; BuiltinByteString) -&gt; Datum -&gt; DatumHash
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Datum -&gt; BuiltinByteString
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Datum -&gt; BuiltinByteString
 forall a. ToData a =&gt; a -&gt; BuiltinByteString
 </span><a href="Plutarch.Api.V1.html#dataHash"><span class="hs-identifier hs-var">dataHash</span></a></span><span>
 </span><span id="line-113"></span><span>
@@ -127,21 +127,21 @@ forall a. ToData a =&gt; a -&gt; BuiltinByteString
 </span><span id="line-116"></span><span id="redeemerHash"><span class="annot"><span class="annottext">redeemerHash :: Redeemer -&gt; RedeemerHash
 </span><a href="Plutarch.Api.V1.html#redeemerHash"><span class="hs-identifier hs-var hs-var">redeemerHash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; RedeemerHash
 forall a b. Coercible @Type a b =&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; RedeemerHash)
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; RedeemerHash)
 -&gt; (Redeemer -&gt; BuiltinByteString) -&gt; Redeemer -&gt; RedeemerHash
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Redeemer -&gt; BuiltinByteString
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Redeemer -&gt; BuiltinByteString
 forall a. ToData a =&gt; a -&gt; BuiltinByteString
 </span><a href="Plutarch.Api.V1.html#dataHash"><span class="hs-identifier hs-var">dataHash</span></a></span><span>
 </span><span id="line-117"></span><span>
 </span><span id="line-118"></span><span class="annot"><span class="hs-comment">-- | Hash the data encoded representation of given argument.</span></span><span>
-</span><span id="line-119"></span><span id="local-6989586621679778905"><span class="annot"><a href="Plutarch.Api.V1.html#dataHash"><span class="hs-identifier hs-type">dataHash</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.ToData</span></span><span> </span><span class="annot"><a href="#local-6989586621679778905"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679778905"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.BuiltinByteString</span></span></span><span>
+</span><span id="line-119"></span><span id="local-6989586621679782103"><span class="annot"><a href="Plutarch.Api.V1.html#dataHash"><span class="hs-identifier hs-type">dataHash</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.ToData</span></span><span> </span><span class="annot"><a href="#local-6989586621679782103"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679782103"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.BuiltinByteString</span></span></span><span>
 </span><span id="line-120"></span><span id="dataHash"><span class="annot"><span class="annottext">dataHash :: forall a. ToData a =&gt; a -&gt; BuiltinByteString
 </span><a href="Plutarch.Api.V1.html#dataHash"><span class="hs-identifier hs-var hs-var">dataHash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Data -&gt; BuiltinByteString
 </span><a href="Plutarch.Api.Internal.Hashing.html#hashData"><span class="hs-identifier hs-var">hashData</span></a></span><span> </span><span class="annot"><span class="annottext">(Data -&gt; BuiltinByteString)
 -&gt; (a -&gt; Data) -&gt; a -&gt; BuiltinByteString
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Data
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Data
 forall a. ToData a =&gt; a -&gt; Data
 </span><span class="hs-identifier hs-var">Plutus.toData</span></span><span>
 </span><span id="line-121"></span><span>

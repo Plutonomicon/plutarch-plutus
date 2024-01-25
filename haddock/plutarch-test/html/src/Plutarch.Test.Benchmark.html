@@ -10,8 +10,8 @@
 </span><span id="line-10"></span><span>
 </span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Aeson</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ToJSON</span></span><span class="hs-special">)</span><span>
 </span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString.Short</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">SBS</span></span><span>
-</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/Data.Int.html"><span class="hs-identifier">Data.Int</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Int.html#Int64"><span class="hs-identifier">Int64</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Int.html"><span class="hs-identifier">Data.Int</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Int.html#Int64"><span class="hs-identifier">Int64</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Script</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Script</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">unScript</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusLedgerApi.Common</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">serialiseUPLC</span></span><span class="hs-special">)</span><span>
 </span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusLedgerApi.V1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ExBudget</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ExBudget</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">ExCPU</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">ExMemory</span></span><span class="hs-special">)</span><span>
@@ -27,7 +27,7 @@
 </span><a href="Plutarch.Test.Benchmark.html#%24sel%3AscriptSizeBytes%3ABenchmark"><span class="hs-identifier hs-var hs-var">scriptSizeBytes</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Test.Benchmark.html#ScriptSizeBytes"><span class="hs-identifier hs-type">ScriptSizeBytes</span></a></span><span>
 </span><span id="line-25"></span><span>  </span><span class="annot"><span class="hs-comment">-- ^ Size of Plutus script in bytes</span></span><span>
 </span><span id="line-26"></span><span>  </span><span class="hs-special">}</span><span>
-</span><span id="line-27"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679211988"><span id="local-6989586621679211998"><span id="local-6989586621679212002"><span class="annot"><span class="annottext">Int -&gt; Benchmark -&gt; ShowS
+</span><span id="line-27"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679213960"><span id="local-6989586621679213970"><span id="local-6989586621679213974"><span class="annot"><span class="annottext">Int -&gt; Benchmark -&gt; ShowS
 [Benchmark] -&gt; ShowS
 Benchmark -&gt; String
 (Int -&gt; Benchmark -&gt; ShowS)
@@ -42,7 +42,7 @@ $cshow :: Benchmark -&gt; String
 show :: Benchmark -&gt; String
 $cshowList :: [Benchmark] -&gt; ShowS
 showList :: [Benchmark] -&gt; ShowS
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679212006"><span id="local-6989586621679212008"><span class="annot"><span class="annottext">(forall x. Benchmark -&gt; Rep Benchmark x)
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679213978"><span id="local-6989586621679213980"><span class="annot"><span class="annottext">(forall x. Benchmark -&gt; Rep Benchmark x)
 -&gt; (forall x. Rep Benchmark x -&gt; Benchmark) -&gt; Generic Benchmark
 forall x. Rep Benchmark x -&gt; Benchmark
 forall x. Benchmark -&gt; Rep Benchmark x
@@ -52,21 +52,24 @@ $cfrom :: forall x. Benchmark -&gt; Rep Benchmark x
 from :: forall x. Benchmark -&gt; Rep Benchmark x
 $cto :: forall x. Rep Benchmark x -&gt; Benchmark
 to :: forall x. Rep Benchmark x -&gt; Benchmark
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-28"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679212012"><span id="local-6989586621679212019"><span id="local-6989586621679212022"><span id="local-6989586621679212025"><span class="annot"><span class="annottext">[Benchmark] -&gt; Encoding
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679213984"><span id="local-6989586621679213991"><span id="local-6989586621679213994"><span id="local-6989586621679213997"><span id="local-6989586621679214000"><span class="annot"><span class="annottext">[Benchmark] -&gt; Encoding
 [Benchmark] -&gt; Value
+Benchmark -&gt; Bool
 Benchmark -&gt; Encoding
 Benchmark -&gt; Value
 (Benchmark -&gt; Value)
 -&gt; (Benchmark -&gt; Encoding)
 -&gt; ([Benchmark] -&gt; Value)
 -&gt; ([Benchmark] -&gt; Encoding)
+-&gt; (Benchmark -&gt; Bool)
 -&gt; ToJSON Benchmark
 forall a.
 (a -&gt; Value)
 -&gt; (a -&gt; Encoding)
 -&gt; ([a] -&gt; Value)
 -&gt; ([a] -&gt; Encoding)
+-&gt; (a -&gt; Bool)
 -&gt; ToJSON a
 $ctoJSON :: Benchmark -&gt; Value
 toJSON :: Benchmark -&gt; Value
@@ -76,19 +79,21 @@ $ctoJSONList :: [Benchmark] -&gt; Value
 toJSONList :: [Benchmark] -&gt; Value
 $ctoEncodingList :: [Benchmark] -&gt; Encoding
 toEncodingList :: [Benchmark] -&gt; Encoding
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span><span class="hs-special">)</span><span>
+$comitField :: Benchmark -&gt; Bool
+omitField :: Benchmark -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-29"></span><span>
 </span><span id="line-30"></span><span class="annot"><a href="Plutarch.Test.Benchmark.html#mkBenchmark"><span class="hs-identifier hs-type">mkBenchmark</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Benchmark.html#ScriptSizeBytes"><span class="hs-identifier hs-type">ScriptSizeBytes</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Benchmark.html#Benchmark"><span class="hs-identifier hs-type">Benchmark</span></a></span><span>
 </span><span id="line-31"></span><span id="mkBenchmark"><span class="annot"><span class="annottext">mkBenchmark :: ExBudget -&gt; ScriptSizeBytes -&gt; Benchmark
-</span><a href="Plutarch.Test.Benchmark.html#mkBenchmark"><span class="hs-identifier hs-var hs-var">mkBenchmark</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span> </span><span id="local-6989586621679212141"><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621679212141"><span class="hs-identifier hs-var">cpu</span></a></span></span><span> </span><span id="local-6989586621679212142"><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621679212142"><span class="hs-identifier hs-var">mem</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExMemory -&gt; ScriptSizeBytes -&gt; Benchmark
+</span><a href="Plutarch.Test.Benchmark.html#mkBenchmark"><span class="hs-identifier hs-var hs-var">mkBenchmark</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span> </span><span id="local-6989586621679214119"><span class="annot"><span class="annottext">ExCPU
+</span><a href="#local-6989586621679214119"><span class="hs-identifier hs-var">cpu</span></a></span></span><span> </span><span id="local-6989586621679214120"><span class="annot"><span class="annottext">ExMemory
+</span><a href="#local-6989586621679214120"><span class="hs-identifier hs-var">mem</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExMemory -&gt; ScriptSizeBytes -&gt; Benchmark
 </span><a href="Plutarch.Test.Benchmark.html#Benchmark"><span class="hs-identifier hs-var">Benchmark</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621679212141"><span class="hs-identifier hs-var">cpu</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621679212142"><span class="hs-identifier hs-var">mem</span></a></span><span>
+</span><a href="#local-6989586621679214119"><span class="hs-identifier hs-var">cpu</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory
+</span><a href="#local-6989586621679214120"><span class="hs-identifier hs-var">mem</span></a></span><span>
 </span><span id="line-32"></span><span>
-</span><span id="line-33"></span><span class="hs-keyword">newtype</span><span> </span><span id="ScriptSizeBytes"><span class="annot"><a href="Plutarch.Test.Benchmark.html#ScriptSizeBytes"><span class="hs-identifier hs-var">ScriptSizeBytes</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ScriptSizeBytes"><span class="annot"><a href="Plutarch.Test.Benchmark.html#ScriptSizeBytes"><span class="hs-identifier hs-var">ScriptSizeBytes</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Int.html#Int64"><span class="hs-identifier hs-type">Int64</span></a></span><span>
-</span><span id="line-34"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679212145"><span id="local-6989586621679212149"><span class="annot"><span class="annottext">ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool
+</span><span id="line-33"></span><span class="hs-keyword">newtype</span><span> </span><span id="ScriptSizeBytes"><span class="annot"><a href="Plutarch.Test.Benchmark.html#ScriptSizeBytes"><span class="hs-identifier hs-var">ScriptSizeBytes</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ScriptSizeBytes"><span class="annot"><a href="Plutarch.Test.Benchmark.html#ScriptSizeBytes"><span class="hs-identifier hs-var">ScriptSizeBytes</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Int.html#Int64"><span class="hs-identifier hs-type">Int64</span></a></span><span>
+</span><span id="line-34"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679214123"><span id="local-6989586621679214127"><span class="annot"><span class="annottext">ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool
 (ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool)
 -&gt; (ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool)
 -&gt; Eq ScriptSizeBytes
@@ -97,7 +102,7 @@ $c== :: ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool
 == :: ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool
 $c/= :: ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool
 /= :: ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool
-</span><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679212156"><span id="local-6989586621679212160"><span id="local-6989586621679212163"><span id="local-6989586621679212167"><span id="local-6989586621679212170"><span id="local-6989586621679212173"><span id="local-6989586621679212176"><span class="annot"><span class="annottext">Eq ScriptSizeBytes
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679214134"><span id="local-6989586621679214138"><span id="local-6989586621679214141"><span id="local-6989586621679214145"><span id="local-6989586621679214148"><span id="local-6989586621679214151"><span id="local-6989586621679214154"><span class="annot"><span class="annottext">Eq ScriptSizeBytes
 Eq ScriptSizeBytes =&gt;
 (ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Ordering)
 -&gt; (ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool)
@@ -134,7 +139,7 @@ $cmax :: ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; ScriptSizeBytes
 max :: ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; ScriptSizeBytes
 $cmin :: ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; ScriptSizeBytes
 min :: ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; ScriptSizeBytes
-</span><a href="../../../ghc-9.6.3/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679212180"><span id="local-6989586621679212185"><span id="local-6989586621679212188"><span class="annot"><span class="annottext">Int -&gt; ScriptSizeBytes -&gt; ShowS
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679214158"><span id="local-6989586621679214163"><span id="local-6989586621679214166"><span class="annot"><span class="annottext">Int -&gt; ScriptSizeBytes -&gt; ShowS
 [ScriptSizeBytes] -&gt; ShowS
 ScriptSizeBytes -&gt; String
 (Int -&gt; ScriptSizeBytes -&gt; ShowS)
@@ -149,7 +154,7 @@ $cshow :: ScriptSizeBytes -&gt; String
 show :: ScriptSizeBytes -&gt; String
 $cshowList :: [ScriptSizeBytes] -&gt; ShowS
 showList :: [ScriptSizeBytes] -&gt; ShowS
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679212191"><span id="local-6989586621679212193"><span class="annot"><span class="annottext">(forall x. ScriptSizeBytes -&gt; Rep ScriptSizeBytes x)
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679214169"><span id="local-6989586621679214171"><span class="annot"><span class="annottext">(forall x. ScriptSizeBytes -&gt; Rep ScriptSizeBytes x)
 -&gt; (forall x. Rep ScriptSizeBytes x -&gt; ScriptSizeBytes)
 -&gt; Generic ScriptSizeBytes
 forall x. Rep ScriptSizeBytes x -&gt; ScriptSizeBytes
@@ -160,8 +165,8 @@ $cfrom :: forall x. ScriptSizeBytes -&gt; Rep ScriptSizeBytes x
 from :: forall x. ScriptSizeBytes -&gt; Rep ScriptSizeBytes x
 $cto :: forall x. Rep ScriptSizeBytes x -&gt; ScriptSizeBytes
 to :: forall x. Rep ScriptSizeBytes x -&gt; ScriptSizeBytes
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-35"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679212196"><span id="local-6989586621679212200"><span id="local-6989586621679212204"><span id="local-6989586621679212208"><span id="local-6989586621679212212"><span id="local-6989586621679212216"><span id="local-6989586621679212220"><span class="annot"><span class="annottext">Integer -&gt; ScriptSizeBytes
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679214174"><span id="local-6989586621679214178"><span id="local-6989586621679214182"><span id="local-6989586621679214186"><span id="local-6989586621679214190"><span id="local-6989586621679214194"><span id="local-6989586621679214198"><span class="annot"><span class="annottext">Integer -&gt; ScriptSizeBytes
 ScriptSizeBytes -&gt; ScriptSizeBytes
 ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; ScriptSizeBytes
 (ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; ScriptSizeBytes)
@@ -195,20 +200,23 @@ $csignum :: ScriptSizeBytes -&gt; ScriptSizeBytes
 signum :: ScriptSizeBytes -&gt; ScriptSizeBytes
 $cfromInteger :: Integer -&gt; ScriptSizeBytes
 fromInteger :: Integer -&gt; ScriptSizeBytes
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Num.html#Num"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Num</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679212226"><span id="local-6989586621679212231"><span id="local-6989586621679212235"><span id="local-6989586621679212239"><span class="annot"><span class="annottext">[ScriptSizeBytes] -&gt; Encoding
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Num.html#Num"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Num</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679214204"><span id="local-6989586621679214209"><span id="local-6989586621679214213"><span id="local-6989586621679214217"><span id="local-6989586621679214221"><span class="annot"><span class="annottext">[ScriptSizeBytes] -&gt; Encoding
 [ScriptSizeBytes] -&gt; Value
+ScriptSizeBytes -&gt; Bool
 ScriptSizeBytes -&gt; Encoding
 ScriptSizeBytes -&gt; Value
 (ScriptSizeBytes -&gt; Value)
 -&gt; (ScriptSizeBytes -&gt; Encoding)
 -&gt; ([ScriptSizeBytes] -&gt; Value)
 -&gt; ([ScriptSizeBytes] -&gt; Encoding)
+-&gt; (ScriptSizeBytes -&gt; Bool)
 -&gt; ToJSON ScriptSizeBytes
 forall a.
 (a -&gt; Value)
 -&gt; (a -&gt; Encoding)
 -&gt; ([a] -&gt; Value)
 -&gt; ([a] -&gt; Encoding)
+-&gt; (a -&gt; Bool)
 -&gt; ToJSON a
 $ctoJSON :: ScriptSizeBytes -&gt; Value
 toJSON :: ScriptSizeBytes -&gt; Value
@@ -218,7 +226,9 @@ $ctoJSONList :: [ScriptSizeBytes] -&gt; Value
 toJSONList :: [ScriptSizeBytes] -&gt; Value
 $ctoEncodingList :: [ScriptSizeBytes] -&gt; Encoding
 toEncodingList :: [ScriptSizeBytes] -&gt; Encoding
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span><span class="hs-special">)</span><span>
+$comitField :: ScriptSizeBytes -&gt; Bool
+omitField :: ScriptSizeBytes -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-36"></span><span>
 </span><span id="line-37"></span><span class="annot"><a href="Plutarch.Test.Benchmark.html#serialiseScriptShort"><span class="hs-identifier hs-type">serialiseScriptShort</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Script</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SBS.ShortByteString</span></span><span>
 </span><span id="line-38"></span><span id="serialiseScriptShort"><span class="annot"><span class="annottext">serialiseScriptShort :: Script -&gt; ShortByteString
@@ -228,7 +238,7 @@ toEncodingList :: [ScriptSizeBytes] -&gt; Encoding
 -&gt; Script
 -&gt; ShortByteString
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Script -&gt; Program DeBruijn DefaultUni DefaultFun ()
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Script -&gt; Program DeBruijn DefaultUni DefaultFun ()
 </span><span class="hs-identifier hs-var">unScript</span></span><span>
 </span><span id="line-39"></span><span>
 </span><span id="line-40"></span><span class="annot"><a href="Plutarch.Test.Benchmark.html#scriptSize"><span class="hs-identifier hs-type">scriptSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Script</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Benchmark.html#ScriptSizeBytes"><span class="hs-identifier hs-type">ScriptSizeBytes</span></a></span><span>
@@ -237,14 +247,14 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="Plutarch.Test.Benchmark.html#ScriptSizeBytes"><span class="hs-identifier hs-var">ScriptSizeBytes</span></a></span><span> </span><span class="annot"><span class="annottext">(Int64 -&gt; ScriptSizeBytes)
 -&gt; (Script -&gt; Int64) -&gt; Script -&gt; ScriptSizeBytes
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int64
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int64
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Real.html#fromIntegral"><span class="hs-identifier hs-var">fromIntegral</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int64) -&gt; (Script -&gt; Int) -&gt; Script -&gt; Int64
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Real.html#fromIntegral"><span class="hs-identifier hs-var">fromIntegral</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int64) -&gt; (Script -&gt; Int) -&gt; Script -&gt; Int64
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ShortByteString -&gt; Int
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ShortByteString -&gt; Int
 </span><span class="hs-identifier hs-var">SBS.length</span></span><span> </span><span class="annot"><span class="annottext">(ShortByteString -&gt; Int)
 -&gt; (Script -&gt; ShortByteString) -&gt; Script -&gt; Int
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.3/html/libraries/base-4.18.1.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Script -&gt; ShortByteString
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Script -&gt; ShortByteString
 </span><a href="Plutarch.Test.Benchmark.html#serialiseScriptShort"><span class="hs-identifier hs-var">serialiseScriptShort</span></a></span><span>
 </span><span id="line-42"></span></pre></body></html>

@@ -23,6 +23,9 @@
       <meta property='og:image' content />
       <meta property='og:type' content='website' />
       <meta property='og:title' content='GenericProgramming' />
+      
+        <meta name='twitter:card' content='summary_large_image' />
+      
     
     
       <base href='/plutarch-plutus/' />
@@ -51,7 +54,7 @@
 
   
   
-  <link href='tailwind.css?instanceId=83710d14-4ebc-48e2-a0d6-7d5adbff8033' rel='stylesheet' type='text/css' />
+  <link href='tailwind.css?instanceId=a509efe6-703a-4502-bda4-eef5d3bca437' rel='stylesheet' type='text/css' />
 
   <style>
     /* Heist error element */
@@ -199,10 +202,6 @@
   
     <style>
       /* For use in sidebar.tpl, as we cannot achieve this in tailwind itself! */
-      #sidebar:hover {
-        width: auto;
-      }
-
       /* md:min-w-48  */
       @media (min-width: 768px) {
         #sidebar {
@@ -3202,7 +3201,13 @@
 </h1>
     <article class='overflow-auto'>
   <!-- What goes in this file will appear on top of note body-->
-  <div xmlhtmlRaw><details>
+  
+
+
+
+
+
+<div xmlhtmlRaw><details>
 <summary> imports </summary>
 <p>
 </div><div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>{-# OPTIONS_GHC -Wno-redundant-constraints #-}
@@ -3212,19 +3217,103 @@ import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Builtin (pforgetData, pasConstr, pconstrBuiltin)
 import Plutarch.Unsafe (punsafeCoerce)</code></pre></div><div xmlhtmlRaw></p>
 </details>
-</div><h1 id='generic-programming-over-plutarch-types' class='pb-2 mb-2 text-5xl font-bold text-center'>Generic programming over Plutarch types</h1><h2 id='prerequisites' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Prerequisites</h2><h3 id='term' class='mt-6 mb-2 text-3xl font-bold text-gray-700'><code class='py-0.5 px-0.5 bg-gray-100'>Term</code></h3>
+</div>
+    <h1 id='generic-programming-over-plutarch-types' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Generic programming over Plutarch types
+  
+  <a href='Concepts/GenericProgramming.html#generic-programming-over-plutarch-types'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
+    <h2 id='prerequisites' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  Prerequisites
+  
+  <a href='Concepts/GenericProgramming.html#prerequisites'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
+    <h3 id='term' class='group mt-6 mb-4 font-bold text-gray-700 text-3xl'>
+      
+  <code class='py-0.5 px-0.5 bg-gray-100'>Term</code>
+  
+  <a href='Concepts/GenericProgramming.html#term'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h3>
+  
     <p class='mb-3'>
       A <code class='py-0.5 px-0.5 bg-gray-100'>Term</code> or <code class='py-0.5 px-0.5 bg-gray-100'>ClosedTerm</code> represents Plutus Lambda Calculus expression in Plutarch world. Allows for additional checks and safety compared to UPLC. See more: <a href='https://github.com/Plutonomicon/plutarch-plutus/blob/master/docs/Introduction/Plutarch%20Terms.md' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>Plutarch Terms</a>.
     </p>
-  <h3 id='data-and-scott-encoding' class='mt-6 mb-2 text-3xl font-bold text-gray-700'>Data and Scott encoding</h3>
+  
+    <h3 id='data-and-scott-encoding' class='group mt-6 mb-4 font-bold text-gray-700 text-3xl'>
+      
+  Data and Scott encoding
+  
+  <a href='Concepts/GenericProgramming.html#data-and-scott-encoding'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h3>
+  
     <p class='mb-3'>
       Datatypes can be encoded using Scott and <code class='py-0.5 px-0.5 bg-gray-100'>Data</code> encoding. These concepts are well explained in Plutonomicon: <a href='https://github.com/Plutonomicon/plutarch-plutus/blob/master/docs/Concepts/Data%20and%20Scott%20encoding.md#data-encoding' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>Data encoding</a> and <a href='https://github.com/Plutonomicon/plutarch-plutus/blob/master/docs/Concepts/Data%20and%20Scott%20encoding.md#scott-encoding' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>Scott encoding</a>.
     </p>
-  <h3 id='anyclass-deriving-strategy' class='mt-6 mb-2 text-3xl font-bold text-gray-700'><code class='py-0.5 px-0.5 bg-gray-100'>anyclass</code> deriving strategy</h3>
+  
+    <h3 id='anyclass-deriving-strategy' class='group mt-6 mb-4 font-bold text-gray-700 text-3xl'>
+      
+  <code class='py-0.5 px-0.5 bg-gray-100'>anyclass</code> deriving strategy
+  
+  <a href='Concepts/GenericProgramming.html#anyclass-deriving-strategy'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h3>
+  
     <p class='mb-3'>
       <code class='py-0.5 px-0.5 bg-gray-100'>anyclass</code> derivation strategy uses default implementation of given typeclass to derive an instance of it. Usually depends that given datatype derives <code class='py-0.5 px-0.5 bg-gray-100'>Generic</code> typeclass also or some other too.
     </p>
-  <h3 id='generics-sop' class='mt-6 mb-2 text-3xl font-bold text-gray-700'>generics-sop</h3>
+  
+    <h3 id='generics-sop' class='group mt-6 mb-4 font-bold text-gray-700 text-3xl'>
+      
+  generics-sop
+  
+  <a href='Concepts/GenericProgramming.html#generics-sop'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h3>
+  
     <p class='mb-3'>
       A really good introduction to <code class='py-0.5 px-0.5 bg-gray-100'>generics-sop</code> by the maker of the library, Andres Löh, can be found <a href='https://www.youtube.com/watch?v=pwnrfREbhWY' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>in this YouTube video recorded at the 2020 ZuriHac</a>
     </p>
@@ -3277,7 +3366,21 @@ type Rep a = SOP I (Code a)</code></pre></div>
     <p class='mb-3'>
       This mechanism allows for generic programming over Haskell types and Plutarch types
     </p>
-  <h2 id='intro' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Intro</h2>
+  
+    <h2 id='intro' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  Intro
+  
+  <a href='Concepts/GenericProgramming.html#intro'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
     <p class='mb-3'>
       As Plutarch is an eDSL in Haskell, it does not allow us to work on Plutus-level variables directly. Manipulating ADTs can be done in terms of <code class='py-0.5 px-0.5 bg-gray-100'>pcon</code> and <code class='py-0.5 px-0.5 bg-gray-100'>pmatch</code> which belong to a class called <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code>.
     </p>
@@ -3391,7 +3494,21 @@ instance PIsData a =&gt; PlutusType (PMaybeData a) where
           (g PDNothing)
           perror
         )
-</code></pre></div><h3 id='generic-derivation-of-pconpmatch' class='mt-6 mb-2 text-3xl font-bold text-gray-700'>Generic derivation of PCon/PMatch</h3>
+</code></pre></div>
+    <h3 id='generic-derivation-of-pconpmatch' class='group mt-6 mb-4 font-bold text-gray-700 text-3xl'>
+      
+  Generic derivation of PCon/PMatch
+  
+  <a href='Concepts/GenericProgramming.html#generic-derivation-of-pconpmatch'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h3>
+  
     <p class='mb-3'>
       The mechanism of <code class='py-0.5 px-0.5 bg-gray-100'>PlutusType</code> derivation relies heavily on generic representation of ADT as sum-of-products. Very high level overview: For <code class='py-0.5 px-0.5 bg-gray-100'>pmatch</code>:
     </p>
@@ -3423,12 +3540,25 @@ instance PIsData a =&gt; PlutusType (PMaybeData a) where
         </li>
       
     </ul>
-  <h2 id='recommended-patterns-when-working-with-pconpmatch' class='mt-6 mb-4 text-4xl font-bold text-gray-700 border-b-2'>Recommended patterns when working with pcon/pmatch</h2>
+  
+    <h2 id='recommended-patterns-when-working-with-pconpmatch' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+      
+  Recommended patterns when working with pcon/pmatch
+  
+  <a href='Concepts/GenericProgramming.html#recommended-patterns-when-working-with-pconpmatch'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h2>
+  
     <p class='mb-3'>
       <a href='https://github.com/Plutonomicon/plutarch/blob/master/docs/Tricks/Prefer%20matching%20on%20pmatch%20result%20immediately.md' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>Tricks - Prefer matching on pmatch result immediately</a> <a href='https://github.com/Plutonomicon/plutarch/blob/master/docs/Typeclasses/PlutusType,%20PCon,%20and%20PMatch.md' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>Typeclasses - PlutusType, PCon, and PMatch - derive instances automatically</a>
     </p>
   
-
   <!-- What goes in this file will appear below the note body-->
 </article>
     <div class='flex flex-col lg:flex-row lg:space-x-2'>
@@ -3463,7 +3593,7 @@ instance PIsData a =&gt; PlutusType (PMaybeData a) where
     </a>
   </div>
   <div>
-    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.4.0'>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.11.0'>
       <img class='w-6 h-6 hover:text-blue-700' src='_emanote-static/emanote-logo.svg' />
     </a>
   </div>
