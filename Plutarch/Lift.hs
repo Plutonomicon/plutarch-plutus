@@ -42,6 +42,7 @@ import PlutusCore.Builtin (KnownTypeError, readKnownConstant)
 import PlutusCore.Evaluation.Machine.Exception (_UnliftingErrorE)
 import PlutusTx (BuiltinData, Data, builtinDataToData, dataToBuiltinData)
 import PlutusTx.Builtins.Class (FromBuiltin, ToBuiltin, fromBuiltin, toBuiltin)
+import Universe (Includes)
 import UntypedPlutusCore qualified as UPLC
 
 {- |
@@ -69,7 +70,7 @@ These laws must be upheld for the sake of soundness of the type system.
 -}
 class
   ( PUnsafeLiftDecl (PConstanted h)
-  , PLC.DefaultUni `PLC.Includes` PConstantRepr h
+  , PLC.DefaultUni `Includes` PConstantRepr h
   ) =>
   PConstantDecl (h :: Type)
   where
@@ -143,7 +144,7 @@ represented by a builtin UPLC type that is /not/ @Data@.
 newtype DerivePConstantDirect (h :: Type) (p :: PType) = DerivePConstantDirect h
 
 instance
-  (PLift p, PLC.DefaultUni `PLC.Includes` h) =>
+  (PLift p, PLC.DefaultUni `Includes` h) =>
   PConstantDecl (DerivePConstantDirect h p)
   where
   type PConstantRepr (DerivePConstantDirect h p) = h

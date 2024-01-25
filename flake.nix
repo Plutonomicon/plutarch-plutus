@@ -48,14 +48,15 @@
               overlays = [
                 haskell-nix.overlay
                 iohk-nix.overlays.crypto
+                iohk-nix.overlays.haskell-nix-crypto
               ];
               inherit (haskell-nix) config;
             };
           project = pkgs.haskell-nix.cabalProject' {
             src = ./.;
-            compiler-nix-name = "ghc963";
+            compiler-nix-name = "ghc964";
             # NOTE(bladyjoker): Follow https://github.com/input-output-hk/plutus/blob/master/cabal.project
-            index-state = "2023-11-26T21:52:49Z";
+            index-state = "2024-01-16T11:00:00Z";
             inputMap = {
               "https://input-output-hk.github.io/cardano-haskell-packages" = CHaP;
             };
