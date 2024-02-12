@@ -65,6 +65,8 @@ import Plutarch (
   PlutusTypeNewtype,
   S,
   Term,
+  TermCont,
+  hashOpenTerm,
   pcon,
   pdelay,
   perror,
@@ -75,6 +77,9 @@ import Plutarch (
   pmatch,
   popaque,
   pto,
+  runTermCont,
+  tcont,
+  unTermCont,
   (#),
   (#$),
   type (:-->),
@@ -127,7 +132,6 @@ import Plutarch.Lift (
   pconstantToRepr,
  )
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
-import Plutarch.TermCont (TermCont, hashOpenTerm, runTermCont, tcont, unTermCont)
 import Plutarch.Trace (ptraceError)
 import Plutarch.TryFrom (PSubtype, PSubtype', PSubtypeRelation (PNoSubtypeRelation, PSubtypeRelation), PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
 import Plutarch.Unit (PUnit (PUnit))

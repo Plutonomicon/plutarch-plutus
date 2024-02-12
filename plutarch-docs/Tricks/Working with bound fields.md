@@ -8,7 +8,6 @@ module Plutarch.Docs.WorkingWithBoundFields (foo, foo', coreValidator) where
 import Plutarch.Prelude
 import Plutarch.DataRepr (HRec, HRecOf, PDataFields, PMemberFields)
 import Plutarch.Api.V1 (PTxInfo, PScriptContext)
-import Plutarch.Extra.TermCont (pmatchC)
 ```
 
 </p>

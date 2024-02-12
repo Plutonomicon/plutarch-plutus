@@ -3,7 +3,7 @@
 <p>
 
 ```haskell
-module Plutarch.Docs.Run (applyArguments, evalT, evalSerialize, evalWithArgsT, evalWithArgsT') where 
+module Plutarch.Docs.Run (applyArguments, evalT, evalSerialize, evalWithArgsT, evalWithArgsT') where
 import Data.Bifunctor (first)
 import Data.ByteString.Short (ShortByteString)
 import Data.Default (def)
@@ -12,7 +12,7 @@ import Plutarch (ClosedTerm, compile)
 import Plutarch.Script (Script (Script, unScript), serialiseScript)
 import Plutarch.Evaluate (evalScript)
 import PlutusLedgerApi.V1 (Data, ExBudget)
-import PlutusCore.MkPlc (mkIterApp, mkConstant)
+import PlutusCore.MkPlc (mkIterAppNoAnn, mkConstant)
 import UntypedPlutusCore (DeBruijn, DefaultFun, DefaultUni, Program, progTerm)
 import Control.Lens.Combinators (over)
 ```
@@ -106,7 +106,7 @@ I often use these helper functions to test Plutarch quickly:
 applyArguments :: Script -> [Data] -> Script
 applyArguments (Script p) args =
     let termArgs = mkConstant () <$> args
-        applied t = mkIterApp () t termArgs
+        applied t = mkIterAppNoAnn t termArgs
     in Script $ over progTerm applied p
 
 evalSerialize :: ClosedTerm a -> Either Text ShortByteString

@@ -48,7 +48,6 @@ import Plutarch.TryFrom (
 import Plutarch.ApiSpec (invalidContext1, validContext0)
 import Plutarch.Reducible (Reduce)
 
-import Plutarch.Extra.TermCont
 import Test.Hspec
 
 spec :: Spec
