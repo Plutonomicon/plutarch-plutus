@@ -83,7 +83,7 @@
 </span><a href="PlutusTx.Coverage.html#_covLocStartCol"><span class="hs-identifier hs-var hs-var">_covLocStartCol</span></a></span></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span>
 </span><span id="line-80"></span><span>                     </span><span class="hs-special">,</span><span> </span><span id="_covLocEndCol"><span class="annot"><span class="annottext">CovLoc -&gt; Int
 </span><a href="PlutusTx.Coverage.html#_covLocEndCol"><span class="hs-identifier hs-var hs-var">_covLocEndCol</span></a></span></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-special">}</span><span>
-</span><span id="line-81"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679700915"><span id="local-6989586621679700925"><span id="local-6989586621679700933"><span id="local-6989586621679700937"><span id="local-6989586621679700940"><span id="local-6989586621679700943"><span id="local-6989586621679700946"><span class="annot"><span class="annottext">Eq CovLoc
+</span><span id="line-81"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679700907"><span id="local-6989586621679700917"><span id="local-6989586621679700925"><span id="local-6989586621679700929"><span id="local-6989586621679700932"><span id="local-6989586621679700935"><span id="local-6989586621679700938"><span class="annot"><span class="annottext">Eq CovLoc
 Eq CovLoc =&gt;
 (CovLoc -&gt; CovLoc -&gt; Ordering)
 -&gt; (CovLoc -&gt; CovLoc -&gt; Bool)
@@ -120,7 +120,7 @@ $cmax :: CovLoc -&gt; CovLoc -&gt; CovLoc
 max :: CovLoc -&gt; CovLoc -&gt; CovLoc
 $cmin :: CovLoc -&gt; CovLoc -&gt; CovLoc
 min :: CovLoc -&gt; CovLoc -&gt; CovLoc
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679700951"><span id="local-6989586621679700961"><span class="annot"><span class="annottext">CovLoc -&gt; CovLoc -&gt; Bool
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679700943"><span id="local-6989586621679700953"><span class="annot"><span class="annottext">CovLoc -&gt; CovLoc -&gt; Bool
 (CovLoc -&gt; CovLoc -&gt; Bool)
 -&gt; (CovLoc -&gt; CovLoc -&gt; Bool) -&gt; Eq CovLoc
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -128,7 +128,7 @@ $c== :: CovLoc -&gt; CovLoc -&gt; Bool
 == :: CovLoc -&gt; CovLoc -&gt; Bool
 $c/= :: CovLoc -&gt; CovLoc -&gt; Bool
 /= :: CovLoc -&gt; CovLoc -&gt; Bool
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679700966"><span id="local-6989586621679700977"><span id="local-6989586621679700981"><span class="annot"><span class="annottext">Int -&gt; CovLoc -&gt; ShowS
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679700958"><span id="local-6989586621679700969"><span id="local-6989586621679700973"><span class="annot"><span class="annottext">Int -&gt; CovLoc -&gt; ShowS
 [CovLoc] -&gt; ShowS
 CovLoc -&gt; String
 (Int -&gt; CovLoc -&gt; ShowS)
@@ -141,7 +141,7 @@ $cshow :: CovLoc -&gt; String
 show :: CovLoc -&gt; String
 $cshowList :: [CovLoc] -&gt; ShowS
 showList :: [CovLoc] -&gt; ShowS
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679700986"><span id="local-6989586621679700990"><span id="local-6989586621679700993"><span id="local-6989586621679701017"><span class="annot"><span class="annottext">ReadPrec [CovLoc]
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679700978"><span id="local-6989586621679700982"><span id="local-6989586621679700985"><span id="local-6989586621679701009"><span class="annot"><span class="annottext">ReadPrec [CovLoc]
 ReadPrec CovLoc
 Int -&gt; ReadS CovLoc
 ReadS [CovLoc]
@@ -161,7 +161,7 @@ $creadPrec :: ReadPrec CovLoc
 readPrec :: ReadPrec CovLoc
 $creadListPrec :: ReadPrec [CovLoc]
 readListPrec :: ReadPrec [CovLoc]
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Read.html#Read"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></a></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701022"><span id="local-6989586621679701024"><span class="annot"><span class="annottext">(forall x. CovLoc -&gt; Rep CovLoc x)
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Read.html#Read"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></a></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701014"><span id="local-6989586621679701016"><span class="annot"><span class="annottext">(forall x. CovLoc -&gt; Rep CovLoc x)
 -&gt; (forall x. Rep CovLoc x -&gt; CovLoc) -&gt; Generic CovLoc
 forall x. Rep CovLoc x -&gt; CovLoc
 forall x. CovLoc -&gt; Rep CovLoc x
@@ -172,7 +172,7 @@ from :: forall x. CovLoc -&gt; Rep CovLoc x
 $cto :: forall x. Rep CovLoc x -&gt; CovLoc
 to :: forall x. Rep CovLoc x -&gt; CovLoc
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-82"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679701028"><span id="local-6989586621679701035"><span id="local-6989586621679701041"><span id="local-6989586621679701044"><span class="annot"><span class="annottext">[CovLoc] -&gt; Encoding
+</span><span id="line-82"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679701020"><span id="local-6989586621679701027"><span id="local-6989586621679701033"><span id="local-6989586621679701036"><span class="annot"><span class="annottext">[CovLoc] -&gt; Encoding
 CovLoc -&gt; Encoding
 (CovLoc -&gt; Encoding)
 -&gt; (forall s. Decoder s CovLoc)
@@ -196,7 +196,7 @@ encodeList :: [CovLoc] -&gt; Encoding
 $cdecodeList :: forall s. Decoder s [CovLoc]
 decodeList :: forall s. Decoder s [CovLoc]
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Serialise</span></span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-83"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679701098"><span id="local-6989586621679701104"><span id="local-6989586621679701109"><span class="annot"><span class="annottext">Get CovLoc
+</span><span id="line-83"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679701090"><span id="local-6989586621679701096"><span id="local-6989586621679701101"><span class="annot"><span class="annottext">Get CovLoc
 CovLoc -&gt; Encoding
 CovLoc -&gt; Int -&gt; Int
 (CovLoc -&gt; Encoding)
@@ -209,12 +209,12 @@ decode :: Get CovLoc
 $csize :: CovLoc -&gt; Int -&gt; Int
 size :: CovLoc -&gt; Int -&gt; Int
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Flat</span></span></span></span></span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AsSerialize</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CovLoc"><span class="hs-identifier hs-type">CovLoc</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-84"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679701116"><span class="annot"><span class="annottext">CovLoc -&gt; ()
+</span><span id="line-84"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679701108"><span class="annot"><span class="annottext">CovLoc -&gt; ()
 (CovLoc -&gt; ()) -&gt; NFData CovLoc
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: CovLoc -&gt; ()
 rnf :: CovLoc -&gt; ()
-</span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701145"><span id="local-6989586621679701152"><span id="local-6989586621679701155"><span id="local-6989586621679701158"><span id="local-6989586621679701161"><span class="annot"><span class="annottext">[CovLoc] -&gt; Encoding
+</span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701137"><span id="local-6989586621679701144"><span id="local-6989586621679701147"><span id="local-6989586621679701150"><span id="local-6989586621679701153"><span class="annot"><span class="annottext">[CovLoc] -&gt; Encoding
 [CovLoc] -&gt; Value
 CovLoc -&gt; Bool
 CovLoc -&gt; Encoding
@@ -242,7 +242,7 @@ $ctoEncodingList :: [CovLoc] -&gt; Encoding
 toEncodingList :: [CovLoc] -&gt; Encoding
 $comitField :: CovLoc -&gt; Bool
 omitField :: CovLoc -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701307"><span id="local-6989586621679701314"><span id="local-6989586621679701317"><span class="annot"><span class="annottext">Maybe CovLoc
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701299"><span id="local-6989586621679701306"><span id="local-6989586621679701309"><span class="annot"><span class="annottext">Maybe CovLoc
 Value -&gt; Parser [CovLoc]
 Value -&gt; Parser CovLoc
 (Value -&gt; Parser CovLoc)
@@ -260,45 +260,45 @@ omittedField :: Maybe CovLoc
 </span><span id="line-85"></span><span>
 </span><span id="line-86"></span><span id="covLocFile"><span id="covLocStartLine"><span id="covLocEndLine"><span id="covLocStartCol"><span id="covLocEndCol"><span class="hs-identifier">makeLenses</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">CovLoc</span></span></span></span></span></span><span>
 </span><span id="line-87"></span><span>
-</span><span id="line-88"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679701460"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CovLoc"><span class="hs-identifier hs-type">CovLoc</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-89"></span><span>  </span><span id="local-6989586621679701480"><span class="annot"><span class="annottext">pretty :: forall ann. CovLoc -&gt; Doc ann
-</span><a href="#local-6989586621679701480"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusTx.Coverage.html#CovLoc"><span class="hs-identifier hs-type">CovLoc</span></a></span><span> </span><span id="local-6989586621679701482"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679701482"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span id="local-6989586621679701483"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679701483"><span class="hs-identifier hs-var">l1</span></a></span></span><span> </span><span id="local-6989586621679701484"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679701484"><span class="hs-identifier hs-var">l2</span></a></span></span><span> </span><span id="local-6989586621679701485"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679701485"><span class="hs-identifier hs-var">c1</span></a></span></span><span> </span><span id="local-6989586621679701486"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679701486"><span class="hs-identifier hs-var">c2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-88"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679701452"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CovLoc"><span class="hs-identifier hs-type">CovLoc</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-89"></span><span>  </span><span id="local-6989586621679701472"><span class="annot"><span class="annottext">pretty :: forall ann. CovLoc -&gt; Doc ann
+</span><a href="#local-6989586621679701472"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusTx.Coverage.html#CovLoc"><span class="hs-identifier hs-type">CovLoc</span></a></span><span> </span><span id="local-6989586621679701474"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679701474"><span class="hs-identifier hs-var">file</span></a></span></span><span> </span><span id="local-6989586621679701475"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679701475"><span class="hs-identifier hs-var">l1</span></a></span></span><span> </span><span id="local-6989586621679701476"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679701476"><span class="hs-identifier hs-var">l2</span></a></span></span><span> </span><span id="local-6989586621679701477"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679701477"><span class="hs-identifier hs-var">c1</span></a></span></span><span> </span><span id="local-6989586621679701478"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679701478"><span class="hs-identifier hs-var">c2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-90"></span><span>    </span><span class="annot"><span class="annottext">[Doc ann] -&gt; Doc ann
 forall a. Monoid a =&gt; [a] -&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#mconcat"><span class="hs-identifier hs-var">mconcat</span></a></span><span> </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">String -&gt; Doc ann
 forall ann. String -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679701482"><span class="hs-identifier hs-var">file</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Doc ann
+</span><a href="#local-6989586621679701474"><span class="hs-identifier hs-var">file</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;:&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Doc ann
 forall ann. Int -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679701483"><span class="hs-identifier hs-var">l1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Doc ann
+</span><a href="#local-6989586621679701475"><span class="hs-identifier hs-var">l1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;,&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Doc ann
 forall ann. Int -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679701485"><span class="hs-identifier hs-var">c1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Doc ann
+</span><a href="#local-6989586621679701477"><span class="hs-identifier hs-var">c1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;-&quot;</span></span><span class="hs-special">,</span><span>  </span><span class="annot"><span class="annottext">Int -&gt; Doc ann
 forall ann. Int -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679701484"><span class="hs-identifier hs-var">l2</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Doc ann
+</span><a href="#local-6989586621679701476"><span class="hs-identifier hs-var">l2</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;,&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Doc ann
 forall ann. Int -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679701486"><span class="hs-identifier hs-var">c2</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621679701478"><span class="hs-identifier hs-var">c2</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-91"></span><span>
 </span><span id="line-92"></span><span class="hs-keyword">data</span><span> </span><span id="CoverageAnnotation"><span class="annot"><a href="PlutusTx.Coverage.html#CoverageAnnotation"><span class="hs-identifier hs-var">CoverageAnnotation</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="CoverLocation"><span class="annot"><a href="PlutusTx.Coverage.html#CoverLocation"><span class="hs-identifier hs-var">CoverLocation</span></a></span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CovLoc"><span class="hs-identifier hs-type">CovLoc</span></a></span><span>
 </span><span id="line-93"></span><span>                        </span><span class="hs-glyph">|</span><span> </span><span id="CoverBool"><span class="annot"><a href="PlutusTx.Coverage.html#CoverBool"><span class="hs-identifier hs-var">CoverBool</span></a></span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CovLoc"><span class="hs-identifier hs-type">CovLoc</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Bool"><span class="hs-identifier hs-type">Bool</span></a></span><span>
-</span><span id="line-94"></span><span>                        </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679701493"><span id="local-6989586621679701499"><span id="local-6989586621679701504"><span id="local-6989586621679701507"><span id="local-6989586621679701510"><span id="local-6989586621679701513"><span id="local-6989586621679701516"><span class="annot"><span class="annottext">Eq CoverageAnnotation
+</span><span id="line-94"></span><span>                        </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679701485"><span id="local-6989586621679701491"><span id="local-6989586621679701496"><span id="local-6989586621679701499"><span id="local-6989586621679701502"><span id="local-6989586621679701505"><span id="local-6989586621679701508"><span class="annot"><span class="annottext">Eq CoverageAnnotation
 Eq CoverageAnnotation =&gt;
 (CoverageAnnotation -&gt; CoverageAnnotation -&gt; Ordering)
 -&gt; (CoverageAnnotation -&gt; CoverageAnnotation -&gt; Bool)
@@ -335,7 +335,7 @@ $cmax :: CoverageAnnotation -&gt; CoverageAnnotation -&gt; CoverageAnnotation
 max :: CoverageAnnotation -&gt; CoverageAnnotation -&gt; CoverageAnnotation
 $cmin :: CoverageAnnotation -&gt; CoverageAnnotation -&gt; CoverageAnnotation
 min :: CoverageAnnotation -&gt; CoverageAnnotation -&gt; CoverageAnnotation
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701519"><span id="local-6989586621679701525"><span class="annot"><span class="annottext">CoverageAnnotation -&gt; CoverageAnnotation -&gt; Bool
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701511"><span id="local-6989586621679701517"><span class="annot"><span class="annottext">CoverageAnnotation -&gt; CoverageAnnotation -&gt; Bool
 (CoverageAnnotation -&gt; CoverageAnnotation -&gt; Bool)
 -&gt; (CoverageAnnotation -&gt; CoverageAnnotation -&gt; Bool)
 -&gt; Eq CoverageAnnotation
@@ -344,7 +344,7 @@ $c== :: CoverageAnnotation -&gt; CoverageAnnotation -&gt; Bool
 == :: CoverageAnnotation -&gt; CoverageAnnotation -&gt; Bool
 $c/= :: CoverageAnnotation -&gt; CoverageAnnotation -&gt; Bool
 /= :: CoverageAnnotation -&gt; CoverageAnnotation -&gt; Bool
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701528"><span id="local-6989586621679701536"><span id="local-6989586621679701540"><span class="annot"><span class="annottext">Int -&gt; CoverageAnnotation -&gt; ShowS
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701520"><span id="local-6989586621679701528"><span id="local-6989586621679701532"><span class="annot"><span class="annottext">Int -&gt; CoverageAnnotation -&gt; ShowS
 [CoverageAnnotation] -&gt; ShowS
 CoverageAnnotation -&gt; String
 (Int -&gt; CoverageAnnotation -&gt; ShowS)
@@ -359,7 +359,7 @@ $cshow :: CoverageAnnotation -&gt; String
 show :: CoverageAnnotation -&gt; String
 $cshowList :: [CoverageAnnotation] -&gt; ShowS
 showList :: [CoverageAnnotation] -&gt; ShowS
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701543"><span id="local-6989586621679701546"><span id="local-6989586621679701549"><span id="local-6989586621679701562"><span class="annot"><span class="annottext">ReadPrec [CoverageAnnotation]
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701535"><span id="local-6989586621679701538"><span id="local-6989586621679701541"><span id="local-6989586621679701554"><span class="annot"><span class="annottext">ReadPrec [CoverageAnnotation]
 ReadPrec CoverageAnnotation
 Int -&gt; ReadS CoverageAnnotation
 ReadS [CoverageAnnotation]
@@ -379,7 +379,7 @@ $creadPrec :: ReadPrec CoverageAnnotation
 readPrec :: ReadPrec CoverageAnnotation
 $creadListPrec :: ReadPrec [CoverageAnnotation]
 readListPrec :: ReadPrec [CoverageAnnotation]
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Read.html#Read"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></a></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701565"><span id="local-6989586621679701567"><span class="annot"><span class="annottext">(forall x. CoverageAnnotation -&gt; Rep CoverageAnnotation x)
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Read.html#Read"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></a></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701557"><span id="local-6989586621679701559"><span class="annot"><span class="annottext">(forall x. CoverageAnnotation -&gt; Rep CoverageAnnotation x)
 -&gt; (forall x. Rep CoverageAnnotation x -&gt; CoverageAnnotation)
 -&gt; Generic CoverageAnnotation
 forall x. Rep CoverageAnnotation x -&gt; CoverageAnnotation
@@ -391,7 +391,7 @@ from :: forall x. CoverageAnnotation -&gt; Rep CoverageAnnotation x
 $cto :: forall x. Rep CoverageAnnotation x -&gt; CoverageAnnotation
 to :: forall x. Rep CoverageAnnotation x -&gt; CoverageAnnotation
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-95"></span><span>                        </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679701570"><span id="local-6989586621679701577"><span id="local-6989586621679701583"><span id="local-6989586621679701586"><span class="annot"><span class="annottext">[CoverageAnnotation] -&gt; Encoding
+</span><span id="line-95"></span><span>                        </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679701562"><span id="local-6989586621679701569"><span id="local-6989586621679701575"><span id="local-6989586621679701578"><span class="annot"><span class="annottext">[CoverageAnnotation] -&gt; Encoding
 CoverageAnnotation -&gt; Encoding
 (CoverageAnnotation -&gt; Encoding)
 -&gt; (forall s. Decoder s CoverageAnnotation)
@@ -415,7 +415,7 @@ encodeList :: [CoverageAnnotation] -&gt; Encoding
 $cdecodeList :: forall s. Decoder s [CoverageAnnotation]
 decodeList :: forall s. Decoder s [CoverageAnnotation]
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Serialise</span></span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-96"></span><span>                        </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679701621"><span id="local-6989586621679701626"><span id="local-6989586621679701631"><span class="annot"><span class="annottext">Get CoverageAnnotation
+</span><span id="line-96"></span><span>                        </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679701613"><span id="local-6989586621679701618"><span id="local-6989586621679701623"><span class="annot"><span class="annottext">Get CoverageAnnotation
 CoverageAnnotation -&gt; Encoding
 CoverageAnnotation -&gt; Int -&gt; Int
 (CoverageAnnotation -&gt; Encoding)
@@ -430,12 +430,12 @@ decode :: Get CoverageAnnotation
 $csize :: CoverageAnnotation -&gt; Int -&gt; Int
 size :: CoverageAnnotation -&gt; Int -&gt; Int
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Flat</span></span></span></span></span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AsSerialize</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageAnnotation"><span class="hs-identifier hs-type">CoverageAnnotation</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-97"></span><span>                        </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679701637"><span class="annot"><span class="annottext">CoverageAnnotation -&gt; ()
+</span><span id="line-97"></span><span>                        </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679701629"><span class="annot"><span class="annottext">CoverageAnnotation -&gt; ()
 (CoverageAnnotation -&gt; ()) -&gt; NFData CoverageAnnotation
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: CoverageAnnotation -&gt; ()
 rnf :: CoverageAnnotation -&gt; ()
-</span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701656"><span id="local-6989586621679701663"><span id="local-6989586621679701666"><span id="local-6989586621679701669"><span id="local-6989586621679701672"><span class="annot"><span class="annottext">[CoverageAnnotation] -&gt; Encoding
+</span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701648"><span id="local-6989586621679701655"><span id="local-6989586621679701658"><span id="local-6989586621679701661"><span id="local-6989586621679701664"><span class="annot"><span class="annottext">[CoverageAnnotation] -&gt; Encoding
 [CoverageAnnotation] -&gt; Value
 CoverageAnnotation -&gt; Bool
 CoverageAnnotation -&gt; Encoding
@@ -463,7 +463,7 @@ $ctoEncodingList :: [CoverageAnnotation] -&gt; Encoding
 toEncodingList :: [CoverageAnnotation] -&gt; Encoding
 $comitField :: CoverageAnnotation -&gt; Bool
 omitField :: CoverageAnnotation -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701747"><span id="local-6989586621679701754"><span id="local-6989586621679701757"><span class="annot"><span class="annottext">Maybe CoverageAnnotation
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701739"><span id="local-6989586621679701746"><span id="local-6989586621679701749"><span class="annot"><span class="annottext">Maybe CoverageAnnotation
 Value -&gt; Parser [CoverageAnnotation]
 Value -&gt; Parser CoverageAnnotation
 (Value -&gt; Parser CoverageAnnotation)
@@ -479,7 +479,7 @@ $cparseJSONList :: Value -&gt; Parser [CoverageAnnotation]
 parseJSONList :: Value -&gt; Parser [CoverageAnnotation]
 $comittedField :: Maybe CoverageAnnotation
 omittedField :: Maybe CoverageAnnotation
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">FromJSON</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701825"><span id="local-6989586621679701830"><span class="annot"><span class="annottext">ToJSONKeyFunction [CoverageAnnotation]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">FromJSON</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701817"><span id="local-6989586621679701822"><span class="annot"><span class="annottext">ToJSONKeyFunction [CoverageAnnotation]
 ToJSONKeyFunction CoverageAnnotation
 ToJSONKeyFunction CoverageAnnotation
 -&gt; ToJSONKeyFunction [CoverageAnnotation]
@@ -490,7 +490,7 @@ $ctoJSONKey :: ToJSONKeyFunction CoverageAnnotation
 toJSONKey :: ToJSONKeyFunction CoverageAnnotation
 $ctoJSONKeyList :: ToJSONKeyFunction [CoverageAnnotation]
 toJSONKeyList :: ToJSONKeyFunction [CoverageAnnotation]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">ToJSONKey</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701835"><span id="local-6989586621679701840"><span class="annot"><span class="annottext">FromJSONKeyFunction [CoverageAnnotation]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">ToJSONKey</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701827"><span id="local-6989586621679701832"><span class="annot"><span class="annottext">FromJSONKeyFunction [CoverageAnnotation]
 FromJSONKeyFunction CoverageAnnotation
 FromJSONKeyFunction CoverageAnnotation
 -&gt; FromJSONKeyFunction [CoverageAnnotation]
@@ -503,21 +503,21 @@ $cfromJSONKeyList :: FromJSONKeyFunction [CoverageAnnotation]
 fromJSONKeyList :: FromJSONKeyFunction [CoverageAnnotation]
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">FromJSONKey</span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-98"></span><span>
-</span><span id="line-99"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679701846"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageAnnotation"><span class="hs-identifier hs-type">CoverageAnnotation</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-100"></span><span>  </span><span id="local-6989586621679701854"><span class="annot"><span class="annottext">pretty :: forall ann. CoverageAnnotation -&gt; Doc ann
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusTx.Coverage.html#CoverLocation"><span class="hs-identifier hs-type">CoverLocation</span></a></span><span> </span><span id="local-6989586621679701855"><span class="annot"><span class="annottext">CovLoc
-</span><a href="#local-6989586621679701855"><span class="hs-identifier hs-var">loc</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CovLoc -&gt; Doc ann
+</span><span id="line-99"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679701838"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageAnnotation"><span class="hs-identifier hs-type">CoverageAnnotation</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-100"></span><span>  </span><span id="local-6989586621679701846"><span class="annot"><span class="annottext">pretty :: forall ann. CoverageAnnotation -&gt; Doc ann
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusTx.Coverage.html#CoverLocation"><span class="hs-identifier hs-type">CoverLocation</span></a></span><span> </span><span id="local-6989586621679701847"><span class="annot"><span class="annottext">CovLoc
+</span><a href="#local-6989586621679701847"><span class="hs-identifier hs-var">loc</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CovLoc -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. CovLoc -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">CovLoc
-</span><a href="#local-6989586621679701855"><span class="hs-identifier hs-var">loc</span></a></span><span>
-</span><span id="line-101"></span><span>  </span><span class="annot"><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusTx.Coverage.html#CoverBool"><span class="hs-identifier hs-type">CoverBool</span></a></span><span> </span><span id="local-6989586621679701856"><span class="annot"><span class="annottext">CovLoc
-</span><a href="#local-6989586621679701856"><span class="hs-identifier hs-var">loc</span></a></span></span><span> </span><span id="local-6989586621679701857"><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679701857"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CovLoc -&gt; Doc ann
+</span><a href="#local-6989586621679701847"><span class="hs-identifier hs-var">loc</span></a></span><span>
+</span><span id="line-101"></span><span>  </span><span class="annot"><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusTx.Coverage.html#CoverBool"><span class="hs-identifier hs-type">CoverBool</span></a></span><span> </span><span id="local-6989586621679701848"><span class="annot"><span class="annottext">CovLoc
+</span><a href="#local-6989586621679701848"><span class="hs-identifier hs-var">loc</span></a></span></span><span> </span><span id="local-6989586621679701849"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679701849"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CovLoc -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. CovLoc -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">CovLoc
-</span><a href="#local-6989586621679701856"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
+</span><a href="#local-6989586621679701848"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 </span><span class="hs-operator hs-var">&lt;+&gt;</span></span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;=&quot;</span></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
@@ -526,13 +526,13 @@ forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Bool -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679701857"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><a href="#local-6989586621679701849"><span class="hs-identifier hs-var">b</span></a></span><span>
 </span><span id="line-102"></span><span>
 </span><span id="line-103"></span><span class="hs-keyword">data</span><span> </span><span id="Metadata"><span class="annot"><a href="PlutusTx.Coverage.html#Metadata"><span class="hs-identifier hs-var">Metadata</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ApplicationHeadSymbol"><span class="annot"><a href="PlutusTx.Coverage.html#ApplicationHeadSymbol"><span class="hs-identifier hs-var">ApplicationHeadSymbol</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#String"><span class="hs-identifier hs-type">String</span></a></span><span>
 </span><span id="line-104"></span><span>              </span><span class="hs-glyph">|</span><span> </span><span id="IgnoredAnnotation"><span class="annot"><a href="PlutusTx.Coverage.html#IgnoredAnnotation"><span class="hs-identifier hs-var">IgnoredAnnotation</span></a></span></span><span>
 </span><span id="line-105"></span><span>                </span><span class="hs-comment">-- ^ Location that is not interesting to cover. This is not generated by the</span><span>
 </span><span id="line-106"></span><span>                </span><span class="hs-comment">--   compiler, but can be added later using `addCoverageMetadata`.</span><span>
-</span><span id="line-107"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679701865"><span id="local-6989586621679701869"><span id="local-6989586621679701873"><span id="local-6989586621679701876"><span id="local-6989586621679701879"><span id="local-6989586621679701882"><span id="local-6989586621679701885"><span class="annot"><span class="annottext">Eq Metadata
+</span><span id="line-107"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679701857"><span id="local-6989586621679701861"><span id="local-6989586621679701865"><span id="local-6989586621679701868"><span id="local-6989586621679701871"><span id="local-6989586621679701874"><span id="local-6989586621679701877"><span class="annot"><span class="annottext">Eq Metadata
 Eq Metadata =&gt;
 (Metadata -&gt; Metadata -&gt; Ordering)
 -&gt; (Metadata -&gt; Metadata -&gt; Bool)
@@ -569,7 +569,7 @@ $cmax :: Metadata -&gt; Metadata -&gt; Metadata
 max :: Metadata -&gt; Metadata -&gt; Metadata
 $cmin :: Metadata -&gt; Metadata -&gt; Metadata
 min :: Metadata -&gt; Metadata -&gt; Metadata
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701888"><span id="local-6989586621679701892"><span class="annot"><span class="annottext">Metadata -&gt; Metadata -&gt; Bool
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701880"><span id="local-6989586621679701884"><span class="annot"><span class="annottext">Metadata -&gt; Metadata -&gt; Bool
 (Metadata -&gt; Metadata -&gt; Bool)
 -&gt; (Metadata -&gt; Metadata -&gt; Bool) -&gt; Eq Metadata
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -577,7 +577,7 @@ $c== :: Metadata -&gt; Metadata -&gt; Bool
 == :: Metadata -&gt; Metadata -&gt; Bool
 $c/= :: Metadata -&gt; Metadata -&gt; Bool
 /= :: Metadata -&gt; Metadata -&gt; Bool
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701895"><span id="local-6989586621679701900"><span id="local-6989586621679701904"><span class="annot"><span class="annottext">Int -&gt; Metadata -&gt; ShowS
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701887"><span id="local-6989586621679701892"><span id="local-6989586621679701896"><span class="annot"><span class="annottext">Int -&gt; Metadata -&gt; ShowS
 [Metadata] -&gt; ShowS
 Metadata -&gt; String
 (Int -&gt; Metadata -&gt; ShowS)
@@ -590,7 +590,7 @@ $cshow :: Metadata -&gt; String
 show :: Metadata -&gt; String
 $cshowList :: [Metadata] -&gt; ShowS
 showList :: [Metadata] -&gt; ShowS
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701907"><span id="local-6989586621679701909"><span class="annot"><span class="annottext">(forall x. Metadata -&gt; Rep Metadata x)
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701899"><span id="local-6989586621679701901"><span class="annot"><span class="annottext">(forall x. Metadata -&gt; Rep Metadata x)
 -&gt; (forall x. Rep Metadata x -&gt; Metadata) -&gt; Generic Metadata
 forall x. Rep Metadata x -&gt; Metadata
 forall x. Metadata -&gt; Rep Metadata x
@@ -601,7 +601,7 @@ from :: forall x. Metadata -&gt; Rep Metadata x
 $cto :: forall x. Rep Metadata x -&gt; Metadata
 to :: forall x. Rep Metadata x -&gt; Metadata
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-108"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679701912"><span id="local-6989586621679701919"><span id="local-6989586621679701925"><span id="local-6989586621679701928"><span class="annot"><span class="annottext">[Metadata] -&gt; Encoding
+</span><span id="line-108"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679701904"><span id="local-6989586621679701911"><span id="local-6989586621679701917"><span id="local-6989586621679701920"><span class="annot"><span class="annottext">[Metadata] -&gt; Encoding
 Metadata -&gt; Encoding
 (Metadata -&gt; Encoding)
 -&gt; (forall s. Decoder s Metadata)
@@ -625,7 +625,7 @@ encodeList :: [Metadata] -&gt; Encoding
 $cdecodeList :: forall s. Decoder s [Metadata]
 decodeList :: forall s. Decoder s [Metadata]
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Serialise</span></span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-109"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679701954"><span id="local-6989586621679701959"><span id="local-6989586621679701964"><span class="annot"><span class="annottext">Get Metadata
+</span><span id="line-109"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679701946"><span id="local-6989586621679701951"><span id="local-6989586621679701956"><span class="annot"><span class="annottext">Get Metadata
 Metadata -&gt; Encoding
 Metadata -&gt; Int -&gt; Int
 (Metadata -&gt; Encoding)
@@ -638,12 +638,12 @@ decode :: Get Metadata
 $csize :: Metadata -&gt; Int -&gt; Int
 size :: Metadata -&gt; Int -&gt; Int
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Flat</span></span></span></span></span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AsSerialize</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#Metadata"><span class="hs-identifier hs-type">Metadata</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-110"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679701970"><span class="annot"><span class="annottext">Metadata -&gt; ()
+</span><span id="line-110"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679701962"><span class="annot"><span class="annottext">Metadata -&gt; ()
 (Metadata -&gt; ()) -&gt; NFData Metadata
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: Metadata -&gt; ()
 rnf :: Metadata -&gt; ()
-</span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701986"><span id="local-6989586621679701993"><span id="local-6989586621679701996"><span id="local-6989586621679701999"><span id="local-6989586621679702002"><span class="annot"><span class="annottext">[Metadata] -&gt; Encoding
+</span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679701978"><span id="local-6989586621679701985"><span id="local-6989586621679701988"><span id="local-6989586621679701991"><span id="local-6989586621679701994"><span class="annot"><span class="annottext">[Metadata] -&gt; Encoding
 [Metadata] -&gt; Value
 Metadata -&gt; Bool
 Metadata -&gt; Encoding
@@ -671,7 +671,7 @@ $ctoEncodingList :: [Metadata] -&gt; Encoding
 toEncodingList :: [Metadata] -&gt; Encoding
 $comitField :: Metadata -&gt; Bool
 omitField :: Metadata -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702065"><span id="local-6989586621679702072"><span id="local-6989586621679702075"><span class="annot"><span class="annottext">Maybe Metadata
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702057"><span id="local-6989586621679702064"><span id="local-6989586621679702067"><span class="annot"><span class="annottext">Maybe Metadata
 Value -&gt; Parser [Metadata]
 Value -&gt; Parser Metadata
 (Value -&gt; Parser Metadata)
@@ -689,15 +689,15 @@ $comittedField :: Maybe Metadata
 omittedField :: Maybe Metadata
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">FromJSON</span></span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-111"></span><span>
-</span><span id="line-112"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679702126"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#Metadata"><span class="hs-identifier hs-type">Metadata</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-113"></span><span>  </span><span id="local-6989586621679702130"><span class="annot"><span class="annottext">pretty :: forall ann. Metadata -&gt; Doc ann
+</span><span id="line-112"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679702118"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#Metadata"><span class="hs-identifier hs-type">Metadata</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-113"></span><span>  </span><span id="local-6989586621679702122"><span class="annot"><span class="annottext">pretty :: forall ann. Metadata -&gt; Doc ann
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Metadata -&gt; Doc ann
 forall a ann. Show a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">viaShow</span></span><span>
 </span><span id="line-114"></span><span>
 </span><span id="line-115"></span><span class="hs-keyword">newtype</span><span> </span><span id="CoverageMetadata"><span class="annot"><a href="PlutusTx.Coverage.html#CoverageMetadata"><span class="hs-identifier hs-var">CoverageMetadata</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="CoverageMetadata"><span class="annot"><a href="PlutusTx.Coverage.html#CoverageMetadata"><span class="hs-identifier hs-var">CoverageMetadata</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="_metadataSet"><span class="annot"><span class="annottext">CoverageMetadata -&gt; Set Metadata
 </span><a href="PlutusTx.Coverage.html#_metadataSet"><span class="hs-identifier hs-var hs-var">_metadataSet</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#Metadata"><span class="hs-identifier hs-type">Metadata</span></a></span><span> </span><span class="hs-special">}</span><span>
-</span><span id="line-116"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702138"><span id="local-6989586621679702143"><span id="local-6989586621679702147"><span id="local-6989586621679702151"><span id="local-6989586621679702154"><span id="local-6989586621679702157"><span id="local-6989586621679702160"><span class="annot"><span class="annottext">Eq CoverageMetadata
+</span><span id="line-116"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702130"><span id="local-6989586621679702135"><span id="local-6989586621679702139"><span id="local-6989586621679702143"><span id="local-6989586621679702146"><span id="local-6989586621679702149"><span id="local-6989586621679702152"><span class="annot"><span class="annottext">Eq CoverageMetadata
 Eq CoverageMetadata =&gt;
 (CoverageMetadata -&gt; CoverageMetadata -&gt; Ordering)
 -&gt; (CoverageMetadata -&gt; CoverageMetadata -&gt; Bool)
@@ -734,7 +734,7 @@ $cmax :: CoverageMetadata -&gt; CoverageMetadata -&gt; CoverageMetadata
 max :: CoverageMetadata -&gt; CoverageMetadata -&gt; CoverageMetadata
 $cmin :: CoverageMetadata -&gt; CoverageMetadata -&gt; CoverageMetadata
 min :: CoverageMetadata -&gt; CoverageMetadata -&gt; CoverageMetadata
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702163"><span id="local-6989586621679702168"><span class="annot"><span class="annottext">CoverageMetadata -&gt; CoverageMetadata -&gt; Bool
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702155"><span id="local-6989586621679702160"><span class="annot"><span class="annottext">CoverageMetadata -&gt; CoverageMetadata -&gt; Bool
 (CoverageMetadata -&gt; CoverageMetadata -&gt; Bool)
 -&gt; (CoverageMetadata -&gt; CoverageMetadata -&gt; Bool)
 -&gt; Eq CoverageMetadata
@@ -743,7 +743,7 @@ $c== :: CoverageMetadata -&gt; CoverageMetadata -&gt; Bool
 == :: CoverageMetadata -&gt; CoverageMetadata -&gt; Bool
 $c/= :: CoverageMetadata -&gt; CoverageMetadata -&gt; Bool
 /= :: CoverageMetadata -&gt; CoverageMetadata -&gt; Bool
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702171"><span id="local-6989586621679702177"><span id="local-6989586621679702181"><span class="annot"><span class="annottext">Int -&gt; CoverageMetadata -&gt; ShowS
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702163"><span id="local-6989586621679702169"><span id="local-6989586621679702173"><span class="annot"><span class="annottext">Int -&gt; CoverageMetadata -&gt; ShowS
 [CoverageMetadata] -&gt; ShowS
 CoverageMetadata -&gt; String
 (Int -&gt; CoverageMetadata -&gt; ShowS)
@@ -758,7 +758,7 @@ $cshow :: CoverageMetadata -&gt; String
 show :: CoverageMetadata -&gt; String
 $cshowList :: [CoverageMetadata] -&gt; ShowS
 showList :: [CoverageMetadata] -&gt; ShowS
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702184"><span id="local-6989586621679702186"><span class="annot"><span class="annottext">(forall x. CoverageMetadata -&gt; Rep CoverageMetadata x)
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702176"><span id="local-6989586621679702178"><span class="annot"><span class="annottext">(forall x. CoverageMetadata -&gt; Rep CoverageMetadata x)
 -&gt; (forall x. Rep CoverageMetadata x -&gt; CoverageMetadata)
 -&gt; Generic CoverageMetadata
 forall x. Rep CoverageMetadata x -&gt; CoverageMetadata
@@ -770,7 +770,7 @@ from :: forall x. CoverageMetadata -&gt; Rep CoverageMetadata x
 $cto :: forall x. Rep CoverageMetadata x -&gt; CoverageMetadata
 to :: forall x. Rep CoverageMetadata x -&gt; CoverageMetadata
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-117"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702189"><span id="local-6989586621679702196"><span id="local-6989586621679702202"><span id="local-6989586621679702205"><span class="annot"><span class="annottext">[CoverageMetadata] -&gt; Encoding
+</span><span id="line-117"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702181"><span id="local-6989586621679702188"><span id="local-6989586621679702194"><span id="local-6989586621679702197"><span class="annot"><span class="annottext">[CoverageMetadata] -&gt; Encoding
 CoverageMetadata -&gt; Encoding
 (CoverageMetadata -&gt; Encoding)
 -&gt; (forall s. Decoder s CoverageMetadata)
@@ -793,12 +793,12 @@ $cencodeList :: [CoverageMetadata] -&gt; Encoding
 encodeList :: [CoverageMetadata] -&gt; Encoding
 $cdecodeList :: forall s. Decoder s [CoverageMetadata]
 decodeList :: forall s. Decoder s [CoverageMetadata]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Serialise</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702223"><span class="annot"><span class="annottext">CoverageMetadata -&gt; ()
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Serialise</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702215"><span class="annot"><span class="annottext">CoverageMetadata -&gt; ()
 (CoverageMetadata -&gt; ()) -&gt; NFData CoverageMetadata
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: CoverageMetadata -&gt; ()
 rnf :: CoverageMetadata -&gt; ()
-</span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702236"><span id="local-6989586621679702243"><span id="local-6989586621679702246"><span id="local-6989586621679702249"><span id="local-6989586621679702252"><span class="annot"><span class="annottext">[CoverageMetadata] -&gt; Encoding
+</span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702228"><span id="local-6989586621679702235"><span id="local-6989586621679702238"><span id="local-6989586621679702241"><span id="local-6989586621679702244"><span class="annot"><span class="annottext">[CoverageMetadata] -&gt; Encoding
 [CoverageMetadata] -&gt; Value
 CoverageMetadata -&gt; Bool
 CoverageMetadata -&gt; Encoding
@@ -826,7 +826,7 @@ $ctoEncodingList :: [CoverageMetadata] -&gt; Encoding
 toEncodingList :: [CoverageMetadata] -&gt; Encoding
 $comitField :: CoverageMetadata -&gt; Bool
 omitField :: CoverageMetadata -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702301"><span id="local-6989586621679702308"><span id="local-6989586621679702311"><span class="annot"><span class="annottext">Maybe CoverageMetadata
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702293"><span id="local-6989586621679702300"><span id="local-6989586621679702303"><span class="annot"><span class="annottext">Maybe CoverageMetadata
 Value -&gt; Parser [CoverageMetadata]
 Value -&gt; Parser CoverageMetadata
 (Value -&gt; Parser CoverageMetadata)
@@ -843,7 +843,7 @@ parseJSONList :: Value -&gt; Parser [CoverageMetadata]
 $comittedField :: Maybe CoverageMetadata
 omittedField :: Maybe CoverageMetadata
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">FromJSON</span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-118"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702354"><span id="local-6989586621679702360"><span id="local-6989586621679702367"><span class="annot"><span class="annottext">NonEmpty CoverageMetadata -&gt; CoverageMetadata
+</span><span id="line-118"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702346"><span id="local-6989586621679702352"><span id="local-6989586621679702359"><span class="annot"><span class="annottext">NonEmpty CoverageMetadata -&gt; CoverageMetadata
 CoverageMetadata -&gt; CoverageMetadata -&gt; CoverageMetadata
 (CoverageMetadata -&gt; CoverageMetadata -&gt; CoverageMetadata)
 -&gt; (NonEmpty CoverageMetadata -&gt; CoverageMetadata)
@@ -863,7 +863,7 @@ $csconcat :: NonEmpty CoverageMetadata -&gt; CoverageMetadata
 sconcat :: NonEmpty CoverageMetadata -&gt; CoverageMetadata
 $cstimes :: forall b. Integral b =&gt; b -&gt; CoverageMetadata -&gt; CoverageMetadata
 stimes :: forall b. Integral b =&gt; b -&gt; CoverageMetadata -&gt; CoverageMetadata
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702378"><span id="local-6989586621679702384"><span id="local-6989586621679702389"><span class="annot"><span class="annottext">Semigroup CoverageMetadata
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702370"><span id="local-6989586621679702376"><span id="local-6989586621679702381"><span class="annot"><span class="annottext">Semigroup CoverageMetadata
 CoverageMetadata
 Semigroup CoverageMetadata =&gt;
 CoverageMetadata
@@ -882,7 +882,7 @@ mappend :: CoverageMetadata -&gt; CoverageMetadata -&gt; CoverageMetadata
 $cmconcat :: [CoverageMetadata] -&gt; CoverageMetadata
 mconcat :: [CoverageMetadata] -&gt; CoverageMetadata
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monoid</span></a></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-119"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679702396"><span id="local-6989586621679702401"><span id="local-6989586621679702406"><span class="annot"><span class="annottext">Get CoverageMetadata
+</span><span id="line-119"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679702388"><span id="local-6989586621679702393"><span id="local-6989586621679702398"><span class="annot"><span class="annottext">Get CoverageMetadata
 CoverageMetadata -&gt; Encoding
 CoverageMetadata -&gt; Int -&gt; Int
 (CoverageMetadata -&gt; Encoding)
@@ -900,10 +900,10 @@ size :: CoverageMetadata -&gt; Int -&gt; Int
 </span><span id="line-120"></span><span>
 </span><span id="line-121"></span><span id="metadataSet"><span class="hs-identifier">makeLenses</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">CoverageMetadata</span></span><span>
 </span><span id="line-122"></span><span>
-</span><span id="line-123"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679702419"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageMetadata"><span class="hs-identifier hs-type">CoverageMetadata</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-124"></span><span>  </span><span id="local-6989586621679702423"><span class="annot"><span class="annottext">pretty :: forall ann. CoverageMetadata -&gt; Doc ann
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageMetadata"><span class="hs-identifier hs-type">CoverageMetadata</span></a></span><span> </span><span id="local-6989586621679702424"><span class="annot"><span class="annottext">Set Metadata
-</span><a href="#local-6989586621679702424"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Doc ann] -&gt; Doc ann
+</span><span id="line-123"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679702411"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageMetadata"><span class="hs-identifier hs-type">CoverageMetadata</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-124"></span><span>  </span><span id="local-6989586621679702415"><span class="annot"><span class="annottext">pretty :: forall ann. CoverageMetadata -&gt; Doc ann
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageMetadata"><span class="hs-identifier hs-type">CoverageMetadata</span></a></span><span> </span><span id="local-6989586621679702416"><span class="annot"><span class="annottext">Set Metadata
+</span><a href="#local-6989586621679702416"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Doc ann] -&gt; Doc ann
 forall ann. [Doc ann] -&gt; Doc ann
 </span><span class="hs-identifier hs-var">vsep</span></span><span> </span><span class="annot"><span class="annottext">([Doc ann] -&gt; Doc ann)
 -&gt; (Set Metadata -&gt; [Doc ann]) -&gt; Set Metadata -&gt; Doc ann
@@ -921,13 +921,13 @@ forall a. Set a -&gt; [a]
 </span><span class="hs-identifier hs-var">Set.toList</span></span><span> </span><span class="annot"><span class="annottext">(Set Metadata -&gt; Doc ann) -&gt; Set Metadata -&gt; Doc ann
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Set Metadata
-</span><a href="#local-6989586621679702424"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><a href="#local-6989586621679702416"><span class="hs-identifier hs-var">s</span></a></span><span>
 </span><span id="line-125"></span><span>
 </span><span id="line-126"></span><span class="hs-comment">-- | This type keeps track of all coverage annotations and where they have been inserted / what</span><span>
 </span><span id="line-127"></span><span class="hs-comment">-- annotations are expected to be found when executing a piece of code.</span><span>
 </span><span id="line-128"></span><span class="hs-keyword">data</span><span> </span><span id="CoverageIndex"><span class="annot"><a href="PlutusTx.Coverage.html#CoverageIndex"><span class="hs-identifier hs-var">CoverageIndex</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="CoverageIndex"><span class="annot"><a href="PlutusTx.Coverage.html#CoverageIndex"><span class="hs-identifier hs-var">CoverageIndex</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="_coverageMetadata"><span class="annot"><span class="annottext">CoverageIndex -&gt; Map CoverageAnnotation CoverageMetadata
 </span><a href="PlutusTx.Coverage.html#_coverageMetadata"><span class="hs-identifier hs-var hs-var">_coverageMetadata</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Map</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageAnnotation"><span class="hs-identifier hs-type">CoverageAnnotation</span></a></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageMetadata"><span class="hs-identifier hs-type">CoverageMetadata</span></a></span><span> </span><span class="hs-special">}</span><span>
-</span><span id="line-129"></span><span>                      </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702434"><span id="local-6989586621679702440"><span id="local-6989586621679702445"><span id="local-6989586621679702449"><span id="local-6989586621679702452"><span id="local-6989586621679702455"><span id="local-6989586621679702458"><span class="annot"><span class="annottext">Eq CoverageIndex
+</span><span id="line-129"></span><span>                      </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702426"><span id="local-6989586621679702432"><span id="local-6989586621679702437"><span id="local-6989586621679702441"><span id="local-6989586621679702444"><span id="local-6989586621679702447"><span id="local-6989586621679702450"><span class="annot"><span class="annottext">Eq CoverageIndex
 Eq CoverageIndex =&gt;
 (CoverageIndex -&gt; CoverageIndex -&gt; Ordering)
 -&gt; (CoverageIndex -&gt; CoverageIndex -&gt; Bool)
@@ -964,7 +964,7 @@ $cmax :: CoverageIndex -&gt; CoverageIndex -&gt; CoverageIndex
 max :: CoverageIndex -&gt; CoverageIndex -&gt; CoverageIndex
 $cmin :: CoverageIndex -&gt; CoverageIndex -&gt; CoverageIndex
 min :: CoverageIndex -&gt; CoverageIndex -&gt; CoverageIndex
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702461"><span id="local-6989586621679702467"><span class="annot"><span class="annottext">CoverageIndex -&gt; CoverageIndex -&gt; Bool
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702453"><span id="local-6989586621679702459"><span class="annot"><span class="annottext">CoverageIndex -&gt; CoverageIndex -&gt; Bool
 (CoverageIndex -&gt; CoverageIndex -&gt; Bool)
 -&gt; (CoverageIndex -&gt; CoverageIndex -&gt; Bool) -&gt; Eq CoverageIndex
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -972,7 +972,7 @@ $c== :: CoverageIndex -&gt; CoverageIndex -&gt; Bool
 == :: CoverageIndex -&gt; CoverageIndex -&gt; Bool
 $c/= :: CoverageIndex -&gt; CoverageIndex -&gt; Bool
 /= :: CoverageIndex -&gt; CoverageIndex -&gt; Bool
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702470"><span id="local-6989586621679702477"><span id="local-6989586621679702481"><span class="annot"><span class="annottext">Int -&gt; CoverageIndex -&gt; ShowS
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702462"><span id="local-6989586621679702469"><span id="local-6989586621679702473"><span class="annot"><span class="annottext">Int -&gt; CoverageIndex -&gt; ShowS
 [CoverageIndex] -&gt; ShowS
 CoverageIndex -&gt; String
 (Int -&gt; CoverageIndex -&gt; ShowS)
@@ -987,7 +987,7 @@ $cshow :: CoverageIndex -&gt; String
 show :: CoverageIndex -&gt; String
 $cshowList :: [CoverageIndex] -&gt; ShowS
 showList :: [CoverageIndex] -&gt; ShowS
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702484"><span id="local-6989586621679702486"><span class="annot"><span class="annottext">(forall x. CoverageIndex -&gt; Rep CoverageIndex x)
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702476"><span id="local-6989586621679702478"><span class="annot"><span class="annottext">(forall x. CoverageIndex -&gt; Rep CoverageIndex x)
 -&gt; (forall x. Rep CoverageIndex x -&gt; CoverageIndex)
 -&gt; Generic CoverageIndex
 forall x. Rep CoverageIndex x -&gt; CoverageIndex
@@ -999,7 +999,7 @@ from :: forall x. CoverageIndex -&gt; Rep CoverageIndex x
 $cto :: forall x. Rep CoverageIndex x -&gt; CoverageIndex
 to :: forall x. Rep CoverageIndex x -&gt; CoverageIndex
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-130"></span><span>                      </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702489"><span id="local-6989586621679702496"><span id="local-6989586621679702502"><span id="local-6989586621679702505"><span class="annot"><span class="annottext">[CoverageIndex] -&gt; Encoding
+</span><span id="line-130"></span><span>                      </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702481"><span id="local-6989586621679702488"><span id="local-6989586621679702494"><span id="local-6989586621679702497"><span class="annot"><span class="annottext">[CoverageIndex] -&gt; Encoding
 CoverageIndex -&gt; Encoding
 (CoverageIndex -&gt; Encoding)
 -&gt; (forall s. Decoder s CoverageIndex)
@@ -1023,7 +1023,7 @@ encodeList :: [CoverageIndex] -&gt; Encoding
 $cdecodeList :: forall s. Decoder s [CoverageIndex]
 decodeList :: forall s. Decoder s [CoverageIndex]
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Serialise</span></span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-131"></span><span>                      </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679702523"><span id="local-6989586621679702528"><span id="local-6989586621679702533"><span class="annot"><span class="annottext">Get CoverageIndex
+</span><span id="line-131"></span><span>                      </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679702515"><span id="local-6989586621679702520"><span id="local-6989586621679702525"><span class="annot"><span class="annottext">Get CoverageIndex
 CoverageIndex -&gt; Encoding
 CoverageIndex -&gt; Int -&gt; Int
 (CoverageIndex -&gt; Encoding)
@@ -1038,12 +1038,12 @@ decode :: Get CoverageIndex
 $csize :: CoverageIndex -&gt; Int -&gt; Int
 size :: CoverageIndex -&gt; Int -&gt; Int
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Flat</span></span></span></span></span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AsSerialize</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageIndex"><span class="hs-identifier hs-type">CoverageIndex</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-132"></span><span>                      </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702539"><span class="annot"><span class="annottext">CoverageIndex -&gt; ()
+</span><span id="line-132"></span><span>                      </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702531"><span class="annot"><span class="annottext">CoverageIndex -&gt; ()
 (CoverageIndex -&gt; ()) -&gt; NFData CoverageIndex
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: CoverageIndex -&gt; ()
 rnf :: CoverageIndex -&gt; ()
-</span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702553"><span id="local-6989586621679702560"><span id="local-6989586621679702563"><span id="local-6989586621679702566"><span id="local-6989586621679702569"><span class="annot"><span class="annottext">[CoverageIndex] -&gt; Encoding
+</span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702545"><span id="local-6989586621679702552"><span id="local-6989586621679702555"><span id="local-6989586621679702558"><span id="local-6989586621679702561"><span class="annot"><span class="annottext">[CoverageIndex] -&gt; Encoding
 [CoverageIndex] -&gt; Value
 CoverageIndex -&gt; Bool
 CoverageIndex -&gt; Encoding
@@ -1071,7 +1071,7 @@ $ctoEncodingList :: [CoverageIndex] -&gt; Encoding
 toEncodingList :: [CoverageIndex] -&gt; Encoding
 $comitField :: CoverageIndex -&gt; Bool
 omitField :: CoverageIndex -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702617"><span id="local-6989586621679702624"><span id="local-6989586621679702627"><span class="annot"><span class="annottext">Maybe CoverageIndex
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702609"><span id="local-6989586621679702616"><span id="local-6989586621679702619"><span class="annot"><span class="annottext">Maybe CoverageIndex
 Value -&gt; Parser [CoverageIndex]
 Value -&gt; Parser CoverageIndex
 (Value -&gt; Parser CoverageIndex)
@@ -1163,11 +1163,11 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageMetadata -&gt; Set Metadata
 </span><a href="PlutusTx.Coverage.html#_metadataSet"><span class="hs-identifier hs-var">_metadataSet</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-142"></span><span>
-</span><span id="line-143"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679702694"><span id="local-6989586621679702698"><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-type">Semigroup</span></a></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageIndex"><span class="hs-identifier hs-type">CoverageIndex</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-144"></span><span>  </span><span id="local-6989586621679702704"><span class="annot"><span class="annottext">CoverageIndex
-</span><a href="#local-6989586621679702704"><span class="hs-identifier hs-var">ci</span></a></span></span><span> </span><span id="local-6989586621679702705"><span class="annot"><span class="annottext">&lt;&gt; :: CoverageIndex -&gt; CoverageIndex -&gt; CoverageIndex
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></a></span></span><span> </span><span id="local-6989586621679702706"><span class="annot"><span class="annottext">CoverageIndex
-</span><a href="#local-6989586621679702706"><span class="hs-identifier hs-var">ci'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Map CoverageAnnotation CoverageMetadata -&gt; CoverageIndex
+</span><span id="line-143"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679702686"><span id="local-6989586621679702690"><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-type">Semigroup</span></a></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageIndex"><span class="hs-identifier hs-type">CoverageIndex</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-144"></span><span>  </span><span id="local-6989586621679702696"><span class="annot"><span class="annottext">CoverageIndex
+</span><a href="#local-6989586621679702696"><span class="hs-identifier hs-var">ci</span></a></span></span><span> </span><span id="local-6989586621679702697"><span class="annot"><span class="annottext">&lt;&gt; :: CoverageIndex -&gt; CoverageIndex -&gt; CoverageIndex
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></a></span></span><span> </span><span id="local-6989586621679702698"><span class="annot"><span class="annottext">CoverageIndex
+</span><a href="#local-6989586621679702698"><span class="hs-identifier hs-var">ci'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Map CoverageAnnotation CoverageMetadata -&gt; CoverageIndex
 </span><a href="PlutusTx.Coverage.html#CoverageIndex"><span class="hs-identifier hs-var">CoverageIndex</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(CoverageMetadata -&gt; CoverageMetadata -&gt; CoverageMetadata)
 -&gt; Map CoverageAnnotation CoverageMetadata
 -&gt; Map CoverageAnnotation CoverageMetadata
@@ -1177,28 +1177,28 @@ forall k a. Ord k =&gt; (a -&gt; a -&gt; a) -&gt; Map k a -&gt; Map k a -&gt; Ma
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">(&lt;&gt;)</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CoverageIndex -&gt; Map CoverageAnnotation CoverageMetadata
 </span><a href="PlutusTx.Coverage.html#_coverageMetadata"><span class="hs-identifier hs-var">_coverageMetadata</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageIndex
-</span><a href="#local-6989586621679702704"><span class="hs-identifier hs-var">ci</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CoverageIndex -&gt; Map CoverageAnnotation CoverageMetadata
+</span><a href="#local-6989586621679702696"><span class="hs-identifier hs-var">ci</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CoverageIndex -&gt; Map CoverageAnnotation CoverageMetadata
 </span><a href="PlutusTx.Coverage.html#_coverageMetadata"><span class="hs-identifier hs-var">_coverageMetadata</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageIndex
-</span><a href="#local-6989586621679702706"><span class="hs-identifier hs-var">ci'</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679702698"><span class="hs-identifier hs-var">ci'</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-145"></span><span>
-</span><span id="line-146"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679702712"><span id="local-6989586621679702716"><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-type">Monoid</span></a></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageIndex"><span class="hs-identifier hs-type">CoverageIndex</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-147"></span><span>  </span><span id="local-6989586621679702718"><span class="annot"><span class="annottext">mempty :: CoverageIndex
+</span><span id="line-146"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679702704"><span id="local-6989586621679702708"><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-type">Monoid</span></a></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageIndex"><span class="hs-identifier hs-type">CoverageIndex</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-147"></span><span>  </span><span id="local-6989586621679702710"><span class="annot"><span class="annottext">mempty :: CoverageIndex
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Map CoverageAnnotation CoverageMetadata -&gt; CoverageIndex
 </span><a href="PlutusTx.Coverage.html#CoverageIndex"><span class="hs-identifier hs-var">CoverageIndex</span></a></span><span> </span><span class="annot"><span class="annottext">Map CoverageAnnotation CoverageMetadata
 forall k a. Map k a
 </span><span class="hs-identifier hs-var">Map.empty</span></span><span>
 </span><span id="line-148"></span><span>
 </span><span id="line-149"></span><span class="annot"><span class="hs-comment">-- | Include a location coverage annotation in the index</span></span><span>
-</span><span id="line-150"></span><span id="local-6989586621679700815"><span class="annot"><a href="PlutusTx.Coverage.html#addLocationToCoverageIndex"><span class="hs-identifier hs-type">addLocationToCoverageIndex</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadWriter</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageIndex"><span class="hs-identifier hs-type">CoverageIndex</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679700815"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CovLoc"><span class="hs-identifier hs-type">CovLoc</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679700815"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageAnnotation"><span class="hs-identifier hs-type">CoverageAnnotation</span></a></span></span><span>
+</span><span id="line-150"></span><span id="local-6989586621679700807"><span class="annot"><a href="PlutusTx.Coverage.html#addLocationToCoverageIndex"><span class="hs-identifier hs-type">addLocationToCoverageIndex</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadWriter</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageIndex"><span class="hs-identifier hs-type">CoverageIndex</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679700807"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CovLoc"><span class="hs-identifier hs-type">CovLoc</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679700807"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageAnnotation"><span class="hs-identifier hs-type">CoverageAnnotation</span></a></span></span><span>
 </span><span id="line-151"></span><span id="addLocationToCoverageIndex"><span class="annot"><span class="annottext">addLocationToCoverageIndex :: forall (m :: * -&gt; *).
 MonadWriter CoverageIndex m =&gt;
 CovLoc -&gt; m CoverageAnnotation
-</span><a href="PlutusTx.Coverage.html#addLocationToCoverageIndex"><span class="hs-identifier hs-var hs-var">addLocationToCoverageIndex</span></a></span></span><span> </span><span id="local-6989586621679702729"><span class="annot"><span class="annottext">CovLoc
-</span><a href="#local-6989586621679702729"><span class="hs-identifier hs-var">src</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-152"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679702730"><span class="annot"><span class="annottext">ann :: CoverageAnnotation
-</span><a href="#local-6989586621679702730"><span class="hs-identifier hs-var hs-var">ann</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CovLoc -&gt; CoverageAnnotation
+</span><a href="PlutusTx.Coverage.html#addLocationToCoverageIndex"><span class="hs-identifier hs-var hs-var">addLocationToCoverageIndex</span></a></span></span><span> </span><span id="local-6989586621679702721"><span class="annot"><span class="annottext">CovLoc
+</span><a href="#local-6989586621679702721"><span class="hs-identifier hs-var">src</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-152"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679702722"><span class="annot"><span class="annottext">ann :: CoverageAnnotation
+</span><a href="#local-6989586621679702722"><span class="hs-identifier hs-var hs-var">ann</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CovLoc -&gt; CoverageAnnotation
 </span><a href="PlutusTx.Coverage.html#CoverLocation"><span class="hs-identifier hs-var">CoverLocation</span></a></span><span> </span><span class="annot"><span class="annottext">CovLoc
-</span><a href="#local-6989586621679702729"><span class="hs-identifier hs-var">src</span></a></span><span>
+</span><a href="#local-6989586621679702721"><span class="hs-identifier hs-var">src</span></a></span><span>
 </span><span id="line-153"></span><span>  </span><span class="annot"><span class="annottext">CoverageIndex -&gt; m ()
 forall w (m :: * -&gt; *). MonadWriter w m =&gt; w -&gt; m ()
 </span><span class="hs-identifier hs-var">tell</span></span><span> </span><span class="annot"><span class="annottext">(CoverageIndex -&gt; m ()) -&gt; CoverageIndex -&gt; m ()
@@ -1211,29 +1211,29 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 -&gt; CoverageMetadata -&gt; Map CoverageAnnotation CoverageMetadata
 forall k a. k -&gt; a -&gt; Map k a
 </span><span class="hs-identifier hs-var">Map.singleton</span></span><span> </span><span class="annot"><span class="annottext">CoverageAnnotation
-</span><a href="#local-6989586621679702730"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageMetadata
+</span><a href="#local-6989586621679702722"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageMetadata
 forall a. Monoid a =&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var">mempty</span></a></span><span>
 </span><span id="line-154"></span><span>  </span><span class="annot"><span class="annottext">CoverageAnnotation -&gt; m CoverageAnnotation
 forall a. a -&gt; m a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageAnnotation
-</span><a href="#local-6989586621679702730"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621679702722"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-155"></span><span>
 </span><span id="line-156"></span><span class="annot"><span class="hs-comment">-- | Include a boolean coverage annotation in the index</span></span><span>
-</span><span id="line-157"></span><span id="local-6989586621679700825"><span class="annot"><a href="PlutusTx.Coverage.html#addBoolCaseToCoverageIndex"><span class="hs-identifier hs-type">addBoolCaseToCoverageIndex</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadWriter</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageIndex"><span class="hs-identifier hs-type">CoverageIndex</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679700825"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CovLoc"><span class="hs-identifier hs-type">CovLoc</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Bool"><span class="hs-identifier hs-type">Bool</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageMetadata"><span class="hs-identifier hs-type">CoverageMetadata</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679700825"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageAnnotation"><span class="hs-identifier hs-type">CoverageAnnotation</span></a></span></span><span>
+</span><span id="line-157"></span><span id="local-6989586621679700817"><span class="annot"><a href="PlutusTx.Coverage.html#addBoolCaseToCoverageIndex"><span class="hs-identifier hs-type">addBoolCaseToCoverageIndex</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadWriter</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageIndex"><span class="hs-identifier hs-type">CoverageIndex</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679700817"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CovLoc"><span class="hs-identifier hs-type">CovLoc</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Bool"><span class="hs-identifier hs-type">Bool</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageMetadata"><span class="hs-identifier hs-type">CoverageMetadata</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679700817"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageAnnotation"><span class="hs-identifier hs-type">CoverageAnnotation</span></a></span></span><span>
 </span><span id="line-158"></span><span id="addBoolCaseToCoverageIndex"><span class="annot"><span class="annottext">addBoolCaseToCoverageIndex :: forall (m :: * -&gt; *).
 MonadWriter CoverageIndex m =&gt;
 CovLoc -&gt; Bool -&gt; CoverageMetadata -&gt; m CoverageAnnotation
-</span><a href="PlutusTx.Coverage.html#addBoolCaseToCoverageIndex"><span class="hs-identifier hs-var hs-var">addBoolCaseToCoverageIndex</span></a></span></span><span> </span><span id="local-6989586621679702739"><span class="annot"><span class="annottext">CovLoc
-</span><a href="#local-6989586621679702739"><span class="hs-identifier hs-var">src</span></a></span></span><span> </span><span id="local-6989586621679702740"><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679702740"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span id="local-6989586621679702741"><span class="annot"><span class="annottext">CoverageMetadata
-</span><a href="#local-6989586621679702741"><span class="hs-identifier hs-var">meta</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-159"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679702742"><span class="annot"><span class="annottext">ann :: CoverageAnnotation
-</span><a href="#local-6989586621679702742"><span class="hs-identifier hs-var hs-var">ann</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CovLoc -&gt; Bool -&gt; CoverageAnnotation
+</span><a href="PlutusTx.Coverage.html#addBoolCaseToCoverageIndex"><span class="hs-identifier hs-var hs-var">addBoolCaseToCoverageIndex</span></a></span></span><span> </span><span id="local-6989586621679702731"><span class="annot"><span class="annottext">CovLoc
+</span><a href="#local-6989586621679702731"><span class="hs-identifier hs-var">src</span></a></span></span><span> </span><span id="local-6989586621679702732"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679702732"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span id="local-6989586621679702733"><span class="annot"><span class="annottext">CoverageMetadata
+</span><a href="#local-6989586621679702733"><span class="hs-identifier hs-var">meta</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-159"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679702734"><span class="annot"><span class="annottext">ann :: CoverageAnnotation
+</span><a href="#local-6989586621679702734"><span class="hs-identifier hs-var hs-var">ann</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CovLoc -&gt; Bool -&gt; CoverageAnnotation
 </span><a href="PlutusTx.Coverage.html#boolCaseCoverageAnn"><span class="hs-identifier hs-var">boolCaseCoverageAnn</span></a></span><span> </span><span class="annot"><span class="annottext">CovLoc
-</span><a href="#local-6989586621679702739"><span class="hs-identifier hs-var">src</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679702740"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><a href="#local-6989586621679702731"><span class="hs-identifier hs-var">src</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679702732"><span class="hs-identifier hs-var">b</span></a></span><span>
 </span><span id="line-160"></span><span>  </span><span class="annot"><span class="annottext">CoverageIndex -&gt; m ()
 forall w (m :: * -&gt; *). MonadWriter w m =&gt; w -&gt; m ()
 </span><span class="hs-identifier hs-var">tell</span></span><span> </span><span class="annot"><span class="annottext">(CoverageIndex -&gt; m ()) -&gt; CoverageIndex -&gt; m ()
@@ -1243,22 +1243,22 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 -&gt; CoverageMetadata -&gt; Map CoverageAnnotation CoverageMetadata
 forall k a. k -&gt; a -&gt; Map k a
 </span><span class="hs-identifier hs-var">Map.singleton</span></span><span> </span><span class="annot"><span class="annottext">CoverageAnnotation
-</span><a href="#local-6989586621679702742"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageMetadata
-</span><a href="#local-6989586621679702741"><span class="hs-identifier hs-var">meta</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679702734"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageMetadata
+</span><a href="#local-6989586621679702733"><span class="hs-identifier hs-var">meta</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-161"></span><span>  </span><span class="annot"><span class="annottext">CoverageAnnotation -&gt; m CoverageAnnotation
 forall a. a -&gt; m a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageAnnotation
-</span><a href="#local-6989586621679702742"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621679702734"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-162"></span><span>
 </span><span id="line-163"></span><span class="annot"><span class="hs-comment">-- | Add metadata to a coverage annotation. Does nothing if the annotation is not in the index.</span></span><span>
 </span><span id="line-164"></span><span class="annot"><a href="PlutusTx.Coverage.html#addCoverageMetadata"><span class="hs-identifier hs-type">addCoverageMetadata</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageAnnotation"><span class="hs-identifier hs-type">CoverageAnnotation</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#Metadata"><span class="hs-identifier hs-type">Metadata</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageIndex"><span class="hs-identifier hs-type">CoverageIndex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageIndex"><span class="hs-identifier hs-type">CoverageIndex</span></a></span><span>
 </span><span id="line-165"></span><span id="addCoverageMetadata"><span class="annot"><span class="annottext">addCoverageMetadata :: CoverageAnnotation -&gt; Metadata -&gt; CoverageIndex -&gt; CoverageIndex
-</span><a href="PlutusTx.Coverage.html#addCoverageMetadata"><span class="hs-identifier hs-var hs-var">addCoverageMetadata</span></a></span></span><span> </span><span id="local-6989586621679702744"><span class="annot"><span class="annottext">CoverageAnnotation
-</span><a href="#local-6989586621679702744"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621679702745"><span class="annot"><span class="annottext">Metadata
-</span><a href="#local-6989586621679702745"><span class="hs-identifier hs-var">meta</span></a></span></span><span> </span><span id="local-6989586621679702746"><span class="annot"><span class="annottext">CoverageIndex
-</span><a href="#local-6989586621679702746"><span class="hs-identifier hs-var">idx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CoverageIndex
-</span><a href="#local-6989586621679702746"><span class="hs-identifier hs-var">idx</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageIndex -&gt; (CoverageIndex -&gt; CoverageIndex) -&gt; CoverageIndex
+</span><a href="PlutusTx.Coverage.html#addCoverageMetadata"><span class="hs-identifier hs-var hs-var">addCoverageMetadata</span></a></span></span><span> </span><span id="local-6989586621679702736"><span class="annot"><span class="annottext">CoverageAnnotation
+</span><a href="#local-6989586621679702736"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621679702737"><span class="annot"><span class="annottext">Metadata
+</span><a href="#local-6989586621679702737"><span class="hs-identifier hs-var">meta</span></a></span></span><span> </span><span id="local-6989586621679702738"><span class="annot"><span class="annottext">CoverageIndex
+</span><a href="#local-6989586621679702738"><span class="hs-identifier hs-var">idx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CoverageIndex
+</span><a href="#local-6989586621679702738"><span class="hs-identifier hs-var">idx</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageIndex -&gt; (CoverageIndex -&gt; CoverageIndex) -&gt; CoverageIndex
 forall a b. a -&gt; (a -&gt; b) -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Function.html#%26"><span class="hs-operator hs-var">&amp;</span></a></span><span> </span><span class="annot"><span class="annottext">(Map CoverageAnnotation CoverageMetadata
  -&gt; Identity (Map CoverageAnnotation CoverageMetadata))
@@ -1281,7 +1281,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall m. At m =&gt; Index m -&gt; Lens' m (Maybe (IxValue m))
 </span><span class="hs-identifier hs-var">at</span></span><span> </span><span class="annot"><span class="annottext">Index (Map CoverageAnnotation CoverageMetadata)
 CoverageAnnotation
-</span><a href="#local-6989586621679702744"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">((Maybe CoverageMetadata -&gt; Identity (Maybe CoverageMetadata))
+</span><a href="#local-6989586621679702736"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">((Maybe CoverageMetadata -&gt; Identity (Maybe CoverageMetadata))
  -&gt; Map CoverageAnnotation CoverageMetadata
  -&gt; Identity (Map CoverageAnnotation CoverageMetadata))
 -&gt; ((Set Metadata -&gt; Identity (Set Metadata))
@@ -1313,21 +1313,21 @@ forall s t a b. ASetter s t a b -&gt; (a -&gt; b) -&gt; s -&gt; t
 </span><span class="hs-operator hs-var">%~</span></span><span> </span><span class="annot"><span class="annottext">Metadata -&gt; Set Metadata -&gt; Set Metadata
 forall a. Ord a =&gt; a -&gt; Set a -&gt; Set a
 </span><span class="hs-identifier hs-var">Set.insert</span></span><span> </span><span class="annot"><span class="annottext">Metadata
-</span><a href="#local-6989586621679702745"><span class="hs-identifier hs-var">meta</span></a></span><span>
+</span><a href="#local-6989586621679702737"><span class="hs-identifier hs-var">meta</span></a></span><span>
 </span><span id="line-166"></span><span>
 </span><span id="line-167"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#boolCaseCoverageAnn"><span class="hs-pragma hs-type">boolCaseCoverageAnn</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-168"></span><span class="annot"><a href="PlutusTx.Coverage.html#boolCaseCoverageAnn"><span class="hs-identifier hs-type">boolCaseCoverageAnn</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CovLoc"><span class="hs-identifier hs-type">CovLoc</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Bool"><span class="hs-identifier hs-type">Bool</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageAnnotation"><span class="hs-identifier hs-type">CoverageAnnotation</span></a></span><span>
 </span><span id="line-169"></span><span id="boolCaseCoverageAnn"><span class="annot"><span class="annottext">boolCaseCoverageAnn :: CovLoc -&gt; Bool -&gt; CoverageAnnotation
-</span><a href="PlutusTx.Coverage.html#boolCaseCoverageAnn"><span class="hs-identifier hs-var hs-var">boolCaseCoverageAnn</span></a></span></span><span> </span><span id="local-6989586621679702752"><span class="annot"><span class="annottext">CovLoc
-</span><a href="#local-6989586621679702752"><span class="hs-identifier hs-var">src</span></a></span></span><span> </span><span id="local-6989586621679702753"><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679702753"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CovLoc -&gt; Bool -&gt; CoverageAnnotation
+</span><a href="PlutusTx.Coverage.html#boolCaseCoverageAnn"><span class="hs-identifier hs-var hs-var">boolCaseCoverageAnn</span></a></span></span><span> </span><span id="local-6989586621679702744"><span class="annot"><span class="annottext">CovLoc
+</span><a href="#local-6989586621679702744"><span class="hs-identifier hs-var">src</span></a></span></span><span> </span><span id="local-6989586621679702745"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679702745"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CovLoc -&gt; Bool -&gt; CoverageAnnotation
 </span><a href="PlutusTx.Coverage.html#CoverBool"><span class="hs-identifier hs-var">CoverBool</span></a></span><span> </span><span class="annot"><span class="annottext">CovLoc
-</span><a href="#local-6989586621679702752"><span class="hs-identifier hs-var">src</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679702753"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><a href="#local-6989586621679702744"><span class="hs-identifier hs-var">src</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679702745"><span class="hs-identifier hs-var">b</span></a></span><span>
 </span><span id="line-170"></span><span>
 </span><span id="line-171"></span><span class="hs-keyword">newtype</span><span> </span><span id="CoverageData"><span class="annot"><a href="PlutusTx.Coverage.html#CoverageData"><span class="hs-identifier hs-var">CoverageData</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="CoverageData"><span class="annot"><a href="PlutusTx.Coverage.html#CoverageData"><span class="hs-identifier hs-var">CoverageData</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="_coveredAnnotations"><span class="annot"><span class="annottext">CoverageData -&gt; Set CoverageAnnotation
 </span><a href="PlutusTx.Coverage.html#_coveredAnnotations"><span class="hs-identifier hs-var hs-var">_coveredAnnotations</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageAnnotation"><span class="hs-identifier hs-type">CoverageAnnotation</span></a></span><span> </span><span class="hs-special">}</span><span>
-</span><span id="line-172"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702760"><span id="local-6989586621679702763"><span id="local-6989586621679702766"><span id="local-6989586621679702770"><span id="local-6989586621679702773"><span id="local-6989586621679702776"><span id="local-6989586621679702779"><span class="annot"><span class="annottext">Eq CoverageData
+</span><span id="line-172"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702752"><span id="local-6989586621679702755"><span id="local-6989586621679702758"><span id="local-6989586621679702762"><span id="local-6989586621679702765"><span id="local-6989586621679702768"><span id="local-6989586621679702771"><span class="annot"><span class="annottext">Eq CoverageData
 Eq CoverageData =&gt;
 (CoverageData -&gt; CoverageData -&gt; Ordering)
 -&gt; (CoverageData -&gt; CoverageData -&gt; Bool)
@@ -1364,7 +1364,7 @@ $cmax :: CoverageData -&gt; CoverageData -&gt; CoverageData
 max :: CoverageData -&gt; CoverageData -&gt; CoverageData
 $cmin :: CoverageData -&gt; CoverageData -&gt; CoverageData
 min :: CoverageData -&gt; CoverageData -&gt; CoverageData
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702782"><span id="local-6989586621679702786"><span class="annot"><span class="annottext">CoverageData -&gt; CoverageData -&gt; Bool
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702774"><span id="local-6989586621679702778"><span class="annot"><span class="annottext">CoverageData -&gt; CoverageData -&gt; Bool
 (CoverageData -&gt; CoverageData -&gt; Bool)
 -&gt; (CoverageData -&gt; CoverageData -&gt; Bool) -&gt; Eq CoverageData
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -1372,7 +1372,7 @@ $c== :: CoverageData -&gt; CoverageData -&gt; Bool
 == :: CoverageData -&gt; CoverageData -&gt; Bool
 $c/= :: CoverageData -&gt; CoverageData -&gt; Bool
 /= :: CoverageData -&gt; CoverageData -&gt; Bool
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702789"><span id="local-6989586621679702794"><span id="local-6989586621679702798"><span class="annot"><span class="annottext">Int -&gt; CoverageData -&gt; ShowS
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702781"><span id="local-6989586621679702786"><span id="local-6989586621679702790"><span class="annot"><span class="annottext">Int -&gt; CoverageData -&gt; ShowS
 [CoverageData] -&gt; ShowS
 CoverageData -&gt; String
 (Int -&gt; CoverageData -&gt; ShowS)
@@ -1387,7 +1387,7 @@ $cshow :: CoverageData -&gt; String
 show :: CoverageData -&gt; String
 $cshowList :: [CoverageData] -&gt; ShowS
 showList :: [CoverageData] -&gt; ShowS
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702801"><span id="local-6989586621679702803"><span class="annot"><span class="annottext">(forall x. CoverageData -&gt; Rep CoverageData x)
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702793"><span id="local-6989586621679702795"><span class="annot"><span class="annottext">(forall x. CoverageData -&gt; Rep CoverageData x)
 -&gt; (forall x. Rep CoverageData x -&gt; CoverageData)
 -&gt; Generic CoverageData
 forall x. Rep CoverageData x -&gt; CoverageData
@@ -1399,7 +1399,7 @@ from :: forall x. CoverageData -&gt; Rep CoverageData x
 $cto :: forall x. Rep CoverageData x -&gt; CoverageData
 to :: forall x. Rep CoverageData x -&gt; CoverageData
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-173"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702806"><span id="local-6989586621679702810"><span id="local-6989586621679702816"><span class="annot"><span class="annottext">NonEmpty CoverageData -&gt; CoverageData
+</span><span id="line-173"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702798"><span id="local-6989586621679702802"><span id="local-6989586621679702808"><span class="annot"><span class="annottext">NonEmpty CoverageData -&gt; CoverageData
 CoverageData -&gt; CoverageData -&gt; CoverageData
 (CoverageData -&gt; CoverageData -&gt; CoverageData)
 -&gt; (NonEmpty CoverageData -&gt; CoverageData)
@@ -1417,7 +1417,7 @@ $csconcat :: NonEmpty CoverageData -&gt; CoverageData
 sconcat :: NonEmpty CoverageData -&gt; CoverageData
 $cstimes :: forall b. Integral b =&gt; b -&gt; CoverageData -&gt; CoverageData
 stimes :: forall b. Integral b =&gt; b -&gt; CoverageData -&gt; CoverageData
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702825"><span id="local-6989586621679702829"><span id="local-6989586621679702833"><span class="annot"><span class="annottext">Semigroup CoverageData
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702817"><span id="local-6989586621679702821"><span id="local-6989586621679702825"><span class="annot"><span class="annottext">Semigroup CoverageData
 CoverageData
 Semigroup CoverageData =&gt;
 CoverageData
@@ -1436,12 +1436,12 @@ mappend :: CoverageData -&gt; CoverageData -&gt; CoverageData
 $cmconcat :: [CoverageData] -&gt; CoverageData
 mconcat :: [CoverageData] -&gt; CoverageData
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monoid</span></a></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-174"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702837"><span class="annot"><span class="annottext">CoverageData -&gt; ()
+</span><span id="line-174"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702829"><span class="annot"><span class="annottext">CoverageData -&gt; ()
 (CoverageData -&gt; ()) -&gt; NFData CoverageData
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: CoverageData -&gt; ()
 rnf :: CoverageData -&gt; ()
-</span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702849"><span id="local-6989586621679702856"><span id="local-6989586621679702859"><span id="local-6989586621679702862"><span id="local-6989586621679702865"><span class="annot"><span class="annottext">[CoverageData] -&gt; Encoding
+</span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702841"><span id="local-6989586621679702848"><span id="local-6989586621679702851"><span id="local-6989586621679702854"><span id="local-6989586621679702857"><span class="annot"><span class="annottext">[CoverageData] -&gt; Encoding
 [CoverageData] -&gt; Value
 CoverageData -&gt; Bool
 CoverageData -&gt; Encoding
@@ -1469,7 +1469,7 @@ $ctoEncodingList :: [CoverageData] -&gt; Encoding
 toEncodingList :: [CoverageData] -&gt; Encoding
 $comitField :: CoverageData -&gt; Bool
 omitField :: CoverageData -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702911"><span id="local-6989586621679702918"><span id="local-6989586621679702921"><span class="annot"><span class="annottext">Maybe CoverageData
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702903"><span id="local-6989586621679702910"><span id="local-6989586621679702913"><span class="annot"><span class="annottext">Maybe CoverageData
 Value -&gt; Parser [CoverageData]
 Value -&gt; Parser CoverageData
 (Value -&gt; Parser CoverageData)
@@ -1493,7 +1493,7 @@ omittedField :: Maybe CoverageData
 </span><a href="PlutusTx.Coverage.html#_coverageIndex"><span class="hs-identifier hs-var hs-var">_coverageIndex</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageIndex"><span class="hs-identifier hs-type">CoverageIndex</span></a></span><span>
 </span><span id="line-179"></span><span>                                     </span><span class="hs-special">,</span><span> </span><span id="_coverageData"><span class="annot"><span class="annottext">CoverageReport -&gt; CoverageData
 </span><a href="PlutusTx.Coverage.html#_coverageData"><span class="hs-identifier hs-var hs-var">_coverageData</span></a></span></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageData"><span class="hs-identifier hs-type">CoverageData</span></a></span><span> </span><span class="hs-special">}</span><span>
-</span><span id="line-180"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702972"><span id="local-6989586621679702976"><span id="local-6989586621679702980"><span id="local-6989586621679702984"><span id="local-6989586621679702987"><span id="local-6989586621679702990"><span id="local-6989586621679702993"><span class="annot"><span class="annottext">Eq CoverageReport
+</span><span id="line-180"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679702964"><span id="local-6989586621679702968"><span id="local-6989586621679702972"><span id="local-6989586621679702976"><span id="local-6989586621679702979"><span id="local-6989586621679702982"><span id="local-6989586621679702985"><span class="annot"><span class="annottext">Eq CoverageReport
 Eq CoverageReport =&gt;
 (CoverageReport -&gt; CoverageReport -&gt; Ordering)
 -&gt; (CoverageReport -&gt; CoverageReport -&gt; Bool)
@@ -1530,7 +1530,7 @@ $cmax :: CoverageReport -&gt; CoverageReport -&gt; CoverageReport
 max :: CoverageReport -&gt; CoverageReport -&gt; CoverageReport
 $cmin :: CoverageReport -&gt; CoverageReport -&gt; CoverageReport
 min :: CoverageReport -&gt; CoverageReport -&gt; CoverageReport
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702996"><span id="local-6989586621679703000"><span class="annot"><span class="annottext">CoverageReport -&gt; CoverageReport -&gt; Bool
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702988"><span id="local-6989586621679702992"><span class="annot"><span class="annottext">CoverageReport -&gt; CoverageReport -&gt; Bool
 (CoverageReport -&gt; CoverageReport -&gt; Bool)
 -&gt; (CoverageReport -&gt; CoverageReport -&gt; Bool) -&gt; Eq CoverageReport
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -1538,7 +1538,7 @@ $c== :: CoverageReport -&gt; CoverageReport -&gt; Bool
 == :: CoverageReport -&gt; CoverageReport -&gt; Bool
 $c/= :: CoverageReport -&gt; CoverageReport -&gt; Bool
 /= :: CoverageReport -&gt; CoverageReport -&gt; Bool
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679703003"><span id="local-6989586621679703008"><span id="local-6989586621679703012"><span class="annot"><span class="annottext">Int -&gt; CoverageReport -&gt; ShowS
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679702995"><span id="local-6989586621679703000"><span id="local-6989586621679703004"><span class="annot"><span class="annottext">Int -&gt; CoverageReport -&gt; ShowS
 [CoverageReport] -&gt; ShowS
 CoverageReport -&gt; String
 (Int -&gt; CoverageReport -&gt; ShowS)
@@ -1553,7 +1553,7 @@ $cshow :: CoverageReport -&gt; String
 show :: CoverageReport -&gt; String
 $cshowList :: [CoverageReport] -&gt; ShowS
 showList :: [CoverageReport] -&gt; ShowS
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679703015"><span id="local-6989586621679703017"><span class="annot"><span class="annottext">(forall x. CoverageReport -&gt; Rep CoverageReport x)
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679703007"><span id="local-6989586621679703009"><span class="annot"><span class="annottext">(forall x. CoverageReport -&gt; Rep CoverageReport x)
 -&gt; (forall x. Rep CoverageReport x -&gt; CoverageReport)
 -&gt; Generic CoverageReport
 forall x. Rep CoverageReport x -&gt; CoverageReport
@@ -1565,12 +1565,12 @@ from :: forall x. CoverageReport -&gt; Rep CoverageReport x
 $cto :: forall x. Rep CoverageReport x -&gt; CoverageReport
 to :: forall x. Rep CoverageReport x -&gt; CoverageReport
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-181"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679703020"><span class="annot"><span class="annottext">CoverageReport -&gt; ()
+</span><span id="line-181"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679703012"><span class="annot"><span class="annottext">CoverageReport -&gt; ()
 (CoverageReport -&gt; ()) -&gt; NFData CoverageReport
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: CoverageReport -&gt; ()
 rnf :: CoverageReport -&gt; ()
-</span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679703035"><span id="local-6989586621679703042"><span id="local-6989586621679703045"><span id="local-6989586621679703048"><span id="local-6989586621679703051"><span class="annot"><span class="annottext">[CoverageReport] -&gt; Encoding
+</span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679703027"><span id="local-6989586621679703034"><span id="local-6989586621679703037"><span id="local-6989586621679703040"><span id="local-6989586621679703043"><span class="annot"><span class="annottext">[CoverageReport] -&gt; Encoding
 [CoverageReport] -&gt; Value
 CoverageReport -&gt; Bool
 CoverageReport -&gt; Encoding
@@ -1598,7 +1598,7 @@ $ctoEncodingList :: [CoverageReport] -&gt; Encoding
 toEncodingList :: [CoverageReport] -&gt; Encoding
 $comitField :: CoverageReport -&gt; Bool
 omitField :: CoverageReport -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679703115"><span id="local-6989586621679703122"><span id="local-6989586621679703125"><span class="annot"><span class="annottext">Maybe CoverageReport
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679703107"><span id="local-6989586621679703114"><span id="local-6989586621679703117"><span class="annot"><span class="annottext">Maybe CoverageReport
 Value -&gt; Parser [CoverageReport]
 Value -&gt; Parser CoverageReport
 (Value -&gt; Parser CoverageReport)
@@ -1618,32 +1618,32 @@ omittedField :: Maybe CoverageReport
 </span><span id="line-182"></span><span>
 </span><span id="line-183"></span><span id="coverageData"><span id="coverageIndex"><span class="hs-identifier">makeLenses</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">CoverageReport</span></span></span><span>
 </span><span id="line-184"></span><span>
-</span><span id="line-185"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679703189"><span id="local-6989586621679703193"><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-type">Semigroup</span></a></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageReport"><span class="hs-identifier hs-type">CoverageReport</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-186"></span><span>  </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageReport"><span class="hs-identifier hs-type">CoverageReport</span></a></span><span> </span><span id="local-6989586621679703199"><span class="annot"><span class="annottext">CoverageIndex
-</span><a href="#local-6989586621679703199"><span class="hs-identifier hs-var">i1</span></a></span></span><span> </span><span id="local-6989586621679703200"><span class="annot"><span class="annottext">CoverageData
-</span><a href="#local-6989586621679703200"><span class="hs-identifier hs-var">d1</span></a></span></span><span> </span><span id="local-6989586621679703201"><span class="annot"><span class="annottext">&lt;&gt; :: CoverageReport -&gt; CoverageReport -&gt; CoverageReport
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></a></span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageReport"><span class="hs-identifier hs-type">CoverageReport</span></a></span><span> </span><span id="local-6989586621679703202"><span class="annot"><span class="annottext">CoverageIndex
-</span><a href="#local-6989586621679703202"><span class="hs-identifier hs-var">i2</span></a></span></span><span> </span><span id="local-6989586621679703203"><span class="annot"><span class="annottext">CoverageData
-</span><a href="#local-6989586621679703203"><span class="hs-identifier hs-var">d2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CoverageIndex -&gt; CoverageData -&gt; CoverageReport
+</span><span id="line-185"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679703181"><span id="local-6989586621679703185"><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-type">Semigroup</span></a></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageReport"><span class="hs-identifier hs-type">CoverageReport</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-186"></span><span>  </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageReport"><span class="hs-identifier hs-type">CoverageReport</span></a></span><span> </span><span id="local-6989586621679703191"><span class="annot"><span class="annottext">CoverageIndex
+</span><a href="#local-6989586621679703191"><span class="hs-identifier hs-var">i1</span></a></span></span><span> </span><span id="local-6989586621679703192"><span class="annot"><span class="annottext">CoverageData
+</span><a href="#local-6989586621679703192"><span class="hs-identifier hs-var">d1</span></a></span></span><span> </span><span id="local-6989586621679703193"><span class="annot"><span class="annottext">&lt;&gt; :: CoverageReport -&gt; CoverageReport -&gt; CoverageReport
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></a></span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageReport"><span class="hs-identifier hs-type">CoverageReport</span></a></span><span> </span><span id="local-6989586621679703194"><span class="annot"><span class="annottext">CoverageIndex
+</span><a href="#local-6989586621679703194"><span class="hs-identifier hs-var">i2</span></a></span></span><span> </span><span id="local-6989586621679703195"><span class="annot"><span class="annottext">CoverageData
+</span><a href="#local-6989586621679703195"><span class="hs-identifier hs-var">d2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CoverageIndex -&gt; CoverageData -&gt; CoverageReport
 </span><a href="PlutusTx.Coverage.html#CoverageReport"><span class="hs-identifier hs-var">CoverageReport</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CoverageIndex
-</span><a href="#local-6989586621679703199"><span class="hs-identifier hs-var">i1</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageIndex -&gt; CoverageIndex -&gt; CoverageIndex
+</span><a href="#local-6989586621679703191"><span class="hs-identifier hs-var">i1</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageIndex -&gt; CoverageIndex -&gt; CoverageIndex
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageIndex
-</span><a href="#local-6989586621679703202"><span class="hs-identifier hs-var">i2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CoverageData
-</span><a href="#local-6989586621679703200"><span class="hs-identifier hs-var">d1</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageData -&gt; CoverageData -&gt; CoverageData
+</span><a href="#local-6989586621679703194"><span class="hs-identifier hs-var">i2</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CoverageData
+</span><a href="#local-6989586621679703192"><span class="hs-identifier hs-var">d1</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageData -&gt; CoverageData -&gt; CoverageData
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageData
-</span><a href="#local-6989586621679703203"><span class="hs-identifier hs-var">d2</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679703195"><span class="hs-identifier hs-var">d2</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-187"></span><span>
-</span><span id="line-188"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679703209"><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-type">Monoid</span></a></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageReport"><span class="hs-identifier hs-type">CoverageReport</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-189"></span><span>  </span><span id="local-6989586621679703214"><span class="annot"><span class="annottext">mempty :: CoverageReport
+</span><span id="line-188"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679703201"><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-type">Monoid</span></a></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageReport"><span class="hs-identifier hs-type">CoverageReport</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-189"></span><span>  </span><span id="local-6989586621679703206"><span class="annot"><span class="annottext">mempty :: CoverageReport
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CoverageIndex -&gt; CoverageData -&gt; CoverageReport
 </span><a href="PlutusTx.Coverage.html#CoverageReport"><span class="hs-identifier hs-var">CoverageReport</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageIndex
 forall a. Monoid a =&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var">mempty</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageData
 forall a. Monoid a =&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var">mempty</span></a></span><span>
-</span><span id="line-190"></span><span>  </span><span id="local-6989586621679703216"><span class="annot"><span class="annottext">mappend :: CoverageReport -&gt; CoverageReport -&gt; CoverageReport
+</span><span id="line-190"></span><span>  </span><span id="local-6989586621679703208"><span class="annot"><span class="annottext">mappend :: CoverageReport -&gt; CoverageReport -&gt; CoverageReport
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#mappend"><span class="hs-identifier hs-var hs-var hs-var hs-var">mappend</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CoverageReport -&gt; CoverageReport -&gt; CoverageReport
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">(&lt;&gt;)</span></a></span><span>
@@ -1671,10 +1671,10 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a. Read a =&gt; String -&gt; Maybe a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Text.Read.html#readMaybe"><span class="hs-identifier hs-var">readMaybe</span></a></span><span>
 </span><span id="line-194"></span><span>
-</span><span id="line-195"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679703222"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageReport"><span class="hs-identifier hs-type">CoverageReport</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-196"></span><span>  </span><span id="local-6989586621679703254"><span class="annot"><span class="annottext">pretty :: forall ann. CoverageReport -&gt; Doc ann
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span id="local-6989586621679703255"><span class="annot"><span class="annottext">CoverageReport
-</span><a href="#local-6989586621679703255"><span class="hs-identifier hs-var">report</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-195"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679703214"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusTx.Coverage.html#CoverageReport"><span class="hs-identifier hs-type">CoverageReport</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-196"></span><span>  </span><span id="local-6989586621679703246"><span class="annot"><span class="annottext">pretty :: forall ann. CoverageReport -&gt; Doc ann
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span id="local-6989586621679703247"><span class="annot"><span class="annottext">CoverageReport
+</span><a href="#local-6989586621679703247"><span class="hs-identifier hs-var">report</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-197"></span><span>    </span><span class="annot"><span class="annottext">[Doc ann] -&gt; Doc ann
 forall ann. [Doc ann] -&gt; Doc ann
 </span><span class="hs-identifier hs-var">vsep</span></span><span> </span><span class="annot"><span class="annottext">([Doc ann] -&gt; Doc ann) -&gt; [Doc ann] -&gt; Doc ann
@@ -1694,7 +1694,7 @@ forall ann. [Doc ann] -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. CoverageAnnotation -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">CoverageAnnotation
-</span><a href="#local-6989586621679703257"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; [Doc ann]
+</span><a href="#local-6989586621679703249"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; [Doc ann]
 forall a. a -&gt; [a] -&gt; [a]
 </span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#%3A"><span class="hs-glyph hs-var">:</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Metadata -&gt; Doc ann) -&gt; [Metadata] -&gt; [Doc ann]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
@@ -1724,20 +1724,20 @@ forall (t :: * -&gt; *) m a.
 -&gt; Maybe CoverageMetadata -&gt; [Doc ann]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageAnnotation -&gt; Maybe CoverageMetadata
-</span><a href="#local-6989586621679703258"><span class="hs-identifier hs-var">metadata</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageAnnotation
-</span><a href="#local-6989586621679703257"><span class="hs-identifier hs-var">ann</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-199"></span><span>           </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679703257"><span class="annot"><span class="annottext">CoverageAnnotation
-</span><a href="#local-6989586621679703257"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Set CoverageAnnotation -&gt; [CoverageAnnotation]
+</span><a href="#local-6989586621679703250"><span class="hs-identifier hs-var">metadata</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageAnnotation
+</span><a href="#local-6989586621679703249"><span class="hs-identifier hs-var">ann</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-199"></span><span>           </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679703249"><span class="annot"><span class="annottext">CoverageAnnotation
+</span><a href="#local-6989586621679703249"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Set CoverageAnnotation -&gt; [CoverageAnnotation]
 forall a. Set a -&gt; [a]
 </span><span class="hs-identifier hs-var">Set.toList</span></span><span> </span><span class="annot"><span class="annottext">(Set CoverageAnnotation -&gt; [CoverageAnnotation])
 -&gt; Set CoverageAnnotation -&gt; [CoverageAnnotation]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Set CoverageAnnotation
-</span><a href="#local-6989586621679703259"><span class="hs-identifier hs-var">allAnns</span></a></span><span> </span><span class="annot"><span class="annottext">Set CoverageAnnotation
+</span><a href="#local-6989586621679703251"><span class="hs-identifier hs-var">allAnns</span></a></span><span> </span><span class="annot"><span class="annottext">Set CoverageAnnotation
 -&gt; Set CoverageAnnotation -&gt; Set CoverageAnnotation
 forall a. Ord a =&gt; Set a -&gt; Set a -&gt; Set a
 </span><span class="hs-operator hs-var">`Set.intersection`</span></span><span> </span><span class="annot"><span class="annottext">Set CoverageAnnotation
-</span><a href="#local-6989586621679703261"><span class="hs-identifier hs-var">coveredAnns</span></a></span><span> </span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[Doc ann] -&gt; [Doc ann] -&gt; [Doc ann]
+</span><a href="#local-6989586621679703253"><span class="hs-identifier hs-var">coveredAnns</span></a></span><span> </span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[Doc ann] -&gt; [Doc ann] -&gt; [Doc ann]
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span>
 </span><span id="line-200"></span><span>           </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Doc ann
@@ -1761,7 +1761,7 @@ forall a. Set a -&gt; [a]
 -&gt; Set CoverageAnnotation -&gt; [Doc ann]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Set CoverageAnnotation
-</span><a href="#local-6989586621679703262"><span class="hs-identifier hs-var">uncoveredAnns</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Doc ann] -&gt; [Doc ann] -&gt; [Doc ann]
+</span><a href="#local-6989586621679703254"><span class="hs-identifier hs-var">uncoveredAnns</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Doc ann] -&gt; [Doc ann] -&gt; [Doc ann]
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span>
 </span><span id="line-202"></span><span>           </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Doc ann
@@ -1785,15 +1785,15 @@ forall a. Set a -&gt; [a]
 -&gt; Set CoverageAnnotation -&gt; [Doc ann]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Set CoverageAnnotation
-</span><a href="#local-6989586621679703263"><span class="hs-identifier hs-var">ignoredAnns</span></a></span><span> </span><span class="annot"><span class="annottext">Set CoverageAnnotation
+</span><a href="#local-6989586621679703255"><span class="hs-identifier hs-var">ignoredAnns</span></a></span><span> </span><span class="annot"><span class="annottext">Set CoverageAnnotation
 -&gt; Set CoverageAnnotation -&gt; Set CoverageAnnotation
 forall a. Ord a =&gt; Set a -&gt; Set a -&gt; Set a
 </span><span class="hs-operator hs-var">Set.\\</span></span><span> </span><span class="annot"><span class="annottext">Set CoverageAnnotation
-</span><a href="#local-6989586621679703261"><span class="hs-identifier hs-var">coveredAnns</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679703253"><span class="hs-identifier hs-var">coveredAnns</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-204"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-205"></span><span>      </span><span id="local-6989586621679703259"><span class="annot"><span class="annottext">allAnns :: Set CoverageAnnotation
-</span><a href="#local-6989586621679703259"><span class="hs-identifier hs-var hs-var">allAnns</span></a></span></span><span>       </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CoverageReport
-</span><a href="#local-6989586621679703255"><span class="hs-identifier hs-var">report</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageReport
+</span><span id="line-205"></span><span>      </span><span id="local-6989586621679703251"><span class="annot"><span class="annottext">allAnns :: Set CoverageAnnotation
+</span><a href="#local-6989586621679703251"><span class="hs-identifier hs-var hs-var">allAnns</span></a></span></span><span>       </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CoverageReport
+</span><a href="#local-6989586621679703247"><span class="hs-identifier hs-var">report</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageReport
 -&gt; Getting
      (Set CoverageAnnotation) CoverageReport (Set CoverageAnnotation)
 -&gt; Set CoverageAnnotation
@@ -1814,9 +1814,9 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 -&gt; CoverageIndex -&gt; Const (Set CoverageAnnotation) CoverageIndex
 Getter CoverageIndex (Set CoverageAnnotation)
 </span><a href="PlutusTx.Coverage.html#coverageAnnotations"><span class="hs-identifier hs-var">coverageAnnotations</span></a></span><span>
-</span><span id="line-206"></span><span>      </span><span id="local-6989586621679703261"><span class="annot"><span class="annottext">coveredAnns :: Set CoverageAnnotation
-</span><a href="#local-6989586621679703261"><span class="hs-identifier hs-var hs-var">coveredAnns</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CoverageReport
-</span><a href="#local-6989586621679703255"><span class="hs-identifier hs-var">report</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageReport
+</span><span id="line-206"></span><span>      </span><span id="local-6989586621679703253"><span class="annot"><span class="annottext">coveredAnns :: Set CoverageAnnotation
+</span><a href="#local-6989586621679703253"><span class="hs-identifier hs-var hs-var">coveredAnns</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CoverageReport
+</span><a href="#local-6989586621679703247"><span class="hs-identifier hs-var">report</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageReport
 -&gt; Getting
      (Set CoverageAnnotation) CoverageReport (Set CoverageAnnotation)
 -&gt; Set CoverageAnnotation
@@ -1837,9 +1837,9 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 -&gt; CoverageData -&gt; Const (Set CoverageAnnotation) CoverageData
 Iso' CoverageData (Set CoverageAnnotation)
 </span><a href="PlutusTx.Coverage.html#coveredAnnotations"><span class="hs-identifier hs-var">coveredAnnotations</span></a></span><span>
-</span><span id="line-207"></span><span>      </span><span id="local-6989586621679703263"><span class="annot"><span class="annottext">ignoredAnns :: Set CoverageAnnotation
-</span><a href="#local-6989586621679703263"><span class="hs-identifier hs-var hs-var">ignoredAnns</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CoverageReport
-</span><a href="#local-6989586621679703255"><span class="hs-identifier hs-var">report</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageReport
+</span><span id="line-207"></span><span>      </span><span id="local-6989586621679703255"><span class="annot"><span class="annottext">ignoredAnns :: Set CoverageAnnotation
+</span><a href="#local-6989586621679703255"><span class="hs-identifier hs-var hs-var">ignoredAnns</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CoverageReport
+</span><a href="#local-6989586621679703247"><span class="hs-identifier hs-var">report</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageReport
 -&gt; Getting
      (Set CoverageAnnotation) CoverageReport (Set CoverageAnnotation)
 -&gt; Set CoverageAnnotation
@@ -1860,27 +1860,27 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 -&gt; CoverageIndex -&gt; Const (Set CoverageAnnotation) CoverageIndex
 Getter CoverageIndex (Set CoverageAnnotation)
 </span><a href="PlutusTx.Coverage.html#ignoredAnnotations"><span class="hs-identifier hs-var">ignoredAnnotations</span></a></span><span>
-</span><span id="line-208"></span><span>      </span><span id="local-6989586621679703262"><span class="annot"><span class="annottext">uncoveredAnns :: Set CoverageAnnotation
-</span><a href="#local-6989586621679703262"><span class="hs-identifier hs-var hs-var">uncoveredAnns</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set CoverageAnnotation
-</span><a href="#local-6989586621679703259"><span class="hs-identifier hs-var">allAnns</span></a></span><span> </span><span class="annot"><span class="annottext">Set CoverageAnnotation
+</span><span id="line-208"></span><span>      </span><span id="local-6989586621679703254"><span class="annot"><span class="annottext">uncoveredAnns :: Set CoverageAnnotation
+</span><a href="#local-6989586621679703254"><span class="hs-identifier hs-var hs-var">uncoveredAnns</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set CoverageAnnotation
+</span><a href="#local-6989586621679703251"><span class="hs-identifier hs-var">allAnns</span></a></span><span> </span><span class="annot"><span class="annottext">Set CoverageAnnotation
 -&gt; Set CoverageAnnotation -&gt; Set CoverageAnnotation
 forall a. Ord a =&gt; Set a -&gt; Set a -&gt; Set a
 </span><span class="hs-operator hs-var">Set.\\</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Set CoverageAnnotation
-</span><a href="#local-6989586621679703261"><span class="hs-identifier hs-var">coveredAnns</span></a></span><span> </span><span class="annot"><span class="annottext">Set CoverageAnnotation
+</span><a href="#local-6989586621679703253"><span class="hs-identifier hs-var">coveredAnns</span></a></span><span> </span><span class="annot"><span class="annottext">Set CoverageAnnotation
 -&gt; Set CoverageAnnotation -&gt; Set CoverageAnnotation
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Set CoverageAnnotation
-</span><a href="#local-6989586621679703263"><span class="hs-identifier hs-var">ignoredAnns</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679703255"><span class="hs-identifier hs-var">ignoredAnns</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-209"></span><span>
-</span><span id="line-210"></span><span>      </span><span id="local-6989586621679703258"><span class="annot"><span class="annottext">metadata :: CoverageAnnotation -&gt; Maybe CoverageMetadata
-</span><a href="#local-6989586621679703258"><span class="hs-identifier hs-var hs-var">metadata</span></a></span></span><span> </span><span id="local-6989586621679703266"><span class="annot"><span class="annottext">CoverageAnnotation
-</span><a href="#local-6989586621679703266"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CoverageAnnotation
+</span><span id="line-210"></span><span>      </span><span id="local-6989586621679703250"><span class="annot"><span class="annottext">metadata :: CoverageAnnotation -&gt; Maybe CoverageMetadata
+</span><a href="#local-6989586621679703250"><span class="hs-identifier hs-var hs-var">metadata</span></a></span></span><span> </span><span id="local-6989586621679703258"><span class="annot"><span class="annottext">CoverageAnnotation
+</span><a href="#local-6989586621679703258"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CoverageAnnotation
 -&gt; Map CoverageAnnotation CoverageMetadata
 -&gt; Maybe CoverageMetadata
 forall k a. Ord k =&gt; k -&gt; Map k a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Map.lookup</span></span><span> </span><span class="annot"><span class="annottext">CoverageAnnotation
-</span><a href="#local-6989586621679703266"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CoverageReport
-</span><a href="#local-6989586621679703255"><span class="hs-identifier hs-var">report</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageReport
+</span><a href="#local-6989586621679703258"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CoverageReport
+</span><a href="#local-6989586621679703247"><span class="hs-identifier hs-var">report</span></a></span><span> </span><span class="annot"><span class="annottext">CoverageReport
 -&gt; Getting
      (Map CoverageAnnotation CoverageMetadata)
      CoverageReport

@@ -45,14 +45,14 @@
 </span><span id="line-45"></span><span>
 </span><span id="line-46"></span><span class="hs-comment">-- | Construct an 'ExBudgetMode' out of a function returning a value of the budgeting state type.</span><span>
 </span><span id="line-47"></span><span class="hs-comment">-- The value then gets added to the current state via @(&lt;&gt;)@.</span><span>
-</span><span id="line-48"></span><span id="local-6989586621681497776"><span id="local-6989586621681497777"><span id="local-6989586621681497780"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#monoidalBudgeting"><span class="hs-identifier hs-type">monoidalBudgeting</span></a></span><span>
-</span><span id="line-49"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-type">Monoid</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497776"><span class="hs-identifier hs-type">cost</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#ExBudgetCategory"><span class="hs-identifier hs-type">ExBudgetCategory</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497777"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExBudget"><span class="hs-identifier hs-type">ExBudget</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681497776"><span class="hs-identifier hs-type">cost</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#ExBudgetMode"><span class="hs-identifier hs-type">ExBudgetMode</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497776"><span class="hs-identifier hs-type">cost</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497780"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497777"><span class="hs-identifier hs-type">fun</span></a></span></span></span></span><span>
+</span><span id="line-48"></span><span id="local-6989586621681497768"><span id="local-6989586621681497769"><span id="local-6989586621681497772"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#monoidalBudgeting"><span class="hs-identifier hs-type">monoidalBudgeting</span></a></span><span>
+</span><span id="line-49"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-type">Monoid</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497768"><span class="hs-identifier hs-type">cost</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#ExBudgetCategory"><span class="hs-identifier hs-type">ExBudgetCategory</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497769"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExBudget"><span class="hs-identifier hs-type">ExBudget</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681497768"><span class="hs-identifier hs-type">cost</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#ExBudgetMode"><span class="hs-identifier hs-type">ExBudgetMode</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497768"><span class="hs-identifier hs-type">cost</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497772"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497769"><span class="hs-identifier hs-type">fun</span></a></span></span></span></span><span>
 </span><span id="line-50"></span><span id="monoidalBudgeting"><span class="annot"><span class="annottext">monoidalBudgeting :: forall cost fun (uni :: * -&gt; *).
 Monoid cost =&gt;
 (ExBudgetCategory fun -&gt; ExBudget -&gt; cost)
 -&gt; ExBudgetMode cost uni fun
-</span><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#monoidalBudgeting"><span class="hs-identifier hs-var hs-var">monoidalBudgeting</span></a></span></span><span> </span><span id="local-6989586621681498113"><span class="annot"><span class="annottext">ExBudgetCategory fun -&gt; ExBudget -&gt; cost
-</span><a href="#local-6989586621681498113"><span class="hs-identifier hs-var">toCost</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall s. ST s (ExBudgetInfo cost uni fun s))
+</span><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#monoidalBudgeting"><span class="hs-identifier hs-var hs-var">monoidalBudgeting</span></a></span></span><span> </span><span id="local-6989586621681498105"><span class="annot"><span class="annottext">ExBudgetCategory fun -&gt; ExBudget -&gt; cost
+</span><a href="#local-6989586621681498105"><span class="hs-identifier hs-var">toCost</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall s. ST s (ExBudgetInfo cost uni fun s))
 -&gt; ExBudgetMode cost uni fun
 forall cost (uni :: * -&gt; *) fun.
 (forall s. ST s (ExBudgetInfo cost uni fun s))
@@ -63,22 +63,22 @@ forall cost (uni :: * -&gt; *) fun.
 -&gt; ExBudgetMode cost uni fun
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-51"></span><span>    </span><span id="local-6989586621681498122"><span class="annot"><span class="annottext">STRef s cost
-</span><a href="#local-6989586621681498122"><span class="hs-identifier hs-var">costRef</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">cost -&gt; ST s (STRef s cost)
+</span><span id="line-51"></span><span>    </span><span id="local-6989586621681498114"><span class="annot"><span class="annottext">STRef s cost
+</span><a href="#local-6989586621681498114"><span class="hs-identifier hs-var">costRef</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">cost -&gt; ST s (STRef s cost)
 forall a s. a -&gt; ST s (STRef s a)
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.STRef.html#newSTRef"><span class="hs-identifier hs-var">newSTRef</span></a></span><span> </span><span class="annot"><span class="annottext">cost
 forall a. Monoid a =&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var">mempty</span></a></span><span>
-</span><span id="line-52"></span><span>    </span><span id="local-6989586621681498124"><span class="annot"><span class="annottext">STRef s ExBudget
-</span><a href="#local-6989586621681498124"><span class="hs-identifier hs-var">budgetRef</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ExBudget -&gt; ST s (STRef s ExBudget)
+</span><span id="line-52"></span><span>    </span><span id="local-6989586621681498116"><span class="annot"><span class="annottext">STRef s ExBudget
+</span><a href="#local-6989586621681498116"><span class="hs-identifier hs-var">budgetRef</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ExBudget -&gt; ST s (STRef s ExBudget)
 forall a s. a -&gt; ST s (STRef s a)
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.STRef.html#newSTRef"><span class="hs-identifier hs-var">newSTRef</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget
 forall a. Monoid a =&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var">mempty</span></a></span><span>
-</span><span id="line-53"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621681498129"><span class="annot"><span class="annottext">spend :: ExBudgetCategory fun -&gt; ExBudget -&gt; CekM uni fun s ()
-</span><a href="#local-6989586621681498129"><span class="hs-identifier hs-var hs-var">spend</span></a></span></span><span> </span><span id="local-6989586621681498130"><span class="annot"><span class="annottext">ExBudgetCategory fun
-</span><a href="#local-6989586621681498130"><span class="hs-identifier hs-var">key</span></a></span></span><span> </span><span id="local-6989586621681498131"><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621681498131"><span class="hs-identifier hs-var">budgetToSpend</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ST s () -&gt; CekM uni fun s ()
+</span><span id="line-53"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621681498121"><span class="annot"><span class="annottext">spend :: ExBudgetCategory fun -&gt; ExBudget -&gt; CekM uni fun s ()
+</span><a href="#local-6989586621681498121"><span class="hs-identifier hs-var hs-var">spend</span></a></span></span><span> </span><span id="local-6989586621681498122"><span class="annot"><span class="annottext">ExBudgetCategory fun
+</span><a href="#local-6989586621681498122"><span class="hs-identifier hs-var">key</span></a></span></span><span> </span><span id="local-6989586621681498123"><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621681498123"><span class="hs-identifier hs-var">budgetToSpend</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ST s () -&gt; CekM uni fun s ()
 forall (uni :: * -&gt; *) fun s a. ST s a -&gt; CekM uni fun s a
 </span><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#CekM"><span class="hs-identifier hs-var">CekM</span></a></span><span> </span><span class="annot"><span class="annottext">(ST s () -&gt; CekM uni fun s ()) -&gt; ST s () -&gt; CekM uni fun s ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -86,21 +86,21 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span id="line-54"></span><span>            </span><span class="annot"><span class="annottext">STRef s cost -&gt; (cost -&gt; cost) -&gt; ST s ()
 forall s a. STRef s a -&gt; (a -&gt; a) -&gt; ST s ()
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.STRef.html#modifySTRef%27"><span class="hs-identifier hs-var">modifySTRef'</span></a></span><span> </span><span class="annot"><span class="annottext">STRef s cost
-</span><a href="#local-6989586621681498122"><span class="hs-identifier hs-var">costRef</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">cost -&gt; cost -&gt; cost
+</span><a href="#local-6989586621681498114"><span class="hs-identifier hs-var">costRef</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">cost -&gt; cost -&gt; cost
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudgetCategory fun -&gt; ExBudget -&gt; cost
-</span><a href="#local-6989586621681498113"><span class="hs-identifier hs-var">toCost</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudgetCategory fun
-</span><a href="#local-6989586621681498130"><span class="hs-identifier hs-var">key</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621681498131"><span class="hs-identifier hs-var">budgetToSpend</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621681498105"><span class="hs-identifier hs-var">toCost</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudgetCategory fun
+</span><a href="#local-6989586621681498122"><span class="hs-identifier hs-var">key</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621681498123"><span class="hs-identifier hs-var">budgetToSpend</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-55"></span><span>            </span><span class="annot"><span class="annottext">STRef s ExBudget -&gt; (ExBudget -&gt; ExBudget) -&gt; ST s ()
 forall s a. STRef s a -&gt; (a -&gt; a) -&gt; ST s ()
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.STRef.html#modifySTRef%27"><span class="hs-identifier hs-var">modifySTRef'</span></a></span><span> </span><span class="annot"><span class="annottext">STRef s ExBudget
-</span><a href="#local-6989586621681498124"><span class="hs-identifier hs-var">budgetRef</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ExBudget -&gt; ExBudget -&gt; ExBudget
+</span><a href="#local-6989586621681498116"><span class="hs-identifier hs-var">budgetRef</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ExBudget -&gt; ExBudget -&gt; ExBudget
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621681498131"><span class="hs-identifier hs-var">budgetToSpend</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-56"></span><span>        </span><span id="local-6989586621681498134"><span class="annot"><span class="annottext">spender :: CekBudgetSpender uni fun s
-</span><a href="#local-6989586621681498134"><span class="hs-identifier hs-var hs-var">spender</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ExBudgetCategory fun -&gt; ExBudget -&gt; CekM uni fun s ())
+</span><a href="#local-6989586621681498123"><span class="hs-identifier hs-var">budgetToSpend</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-56"></span><span>        </span><span id="local-6989586621681498126"><span class="annot"><span class="annottext">spender :: CekBudgetSpender uni fun s
+</span><a href="#local-6989586621681498126"><span class="hs-identifier hs-var hs-var">spender</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ExBudgetCategory fun -&gt; ExBudget -&gt; CekM uni fun s ())
 -&gt; CekBudgetSpender uni fun s
 forall (uni :: * -&gt; *) fun s.
 (ExBudgetCategory fun -&gt; ExBudget -&gt; CekM uni fun s ())
@@ -108,17 +108,17 @@ forall (uni :: * -&gt; *) fun s.
 </span><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#CekBudgetSpender"><span class="hs-identifier hs-var">CekBudgetSpender</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudgetCategory fun -&gt; ExBudget -&gt; CekM uni fun s ()
 forall {uni :: * -&gt; *} {fun}.
 ExBudgetCategory fun -&gt; ExBudget -&gt; CekM uni fun s ()
-</span><a href="#local-6989586621681498129"><span class="hs-identifier hs-var">spend</span></a></span><span>
-</span><span id="line-57"></span><span>        </span><span id="local-6989586621681498136"><span class="annot"><span class="annottext">cumulative :: ST s ExBudget
-</span><a href="#local-6989586621681498136"><span class="hs-identifier hs-var hs-var">cumulative</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">STRef s ExBudget -&gt; ST s ExBudget
+</span><a href="#local-6989586621681498121"><span class="hs-identifier hs-var">spend</span></a></span><span>
+</span><span id="line-57"></span><span>        </span><span id="local-6989586621681498128"><span class="annot"><span class="annottext">cumulative :: ST s ExBudget
+</span><a href="#local-6989586621681498128"><span class="hs-identifier hs-var hs-var">cumulative</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">STRef s ExBudget -&gt; ST s ExBudget
 forall s a. STRef s a -&gt; ST s a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.STRef.html#readSTRef"><span class="hs-identifier hs-var">readSTRef</span></a></span><span> </span><span class="annot"><span class="annottext">STRef s ExBudget
-</span><a href="#local-6989586621681498124"><span class="hs-identifier hs-var">budgetRef</span></a></span><span>
-</span><span id="line-58"></span><span>        </span><span id="local-6989586621681498138"><span class="annot"><span class="annottext">final :: ST s cost
-</span><a href="#local-6989586621681498138"><span class="hs-identifier hs-var hs-var">final</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">STRef s cost -&gt; ST s cost
+</span><a href="#local-6989586621681498116"><span class="hs-identifier hs-var">budgetRef</span></a></span><span>
+</span><span id="line-58"></span><span>        </span><span id="local-6989586621681498130"><span class="annot"><span class="annottext">final :: ST s cost
+</span><a href="#local-6989586621681498130"><span class="hs-identifier hs-var hs-var">final</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">STRef s cost -&gt; ST s cost
 forall s a. STRef s a -&gt; ST s a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.STRef.html#readSTRef"><span class="hs-identifier hs-var">readSTRef</span></a></span><span> </span><span class="annot"><span class="annottext">STRef s cost
-</span><a href="#local-6989586621681498122"><span class="hs-identifier hs-var">costRef</span></a></span><span>
+</span><a href="#local-6989586621681498114"><span class="hs-identifier hs-var">costRef</span></a></span><span>
 </span><span id="line-59"></span><span>    </span><span class="annot"><span class="annottext">ExBudgetInfo cost uni fun s -&gt; ST s (ExBudgetInfo cost uni fun s)
 forall a. a -&gt; ST s a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
@@ -133,13 +133,13 @@ CekBudgetSpender uni fun s
 -&gt; ST s cost -&gt; ST s ExBudget -&gt; ExBudgetInfo cost uni fun s
 </span><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#ExBudgetInfo"><span class="hs-identifier hs-var">ExBudgetInfo</span></a></span><span> </span><span class="annot"><span class="annottext">CekBudgetSpender uni fun s
 forall {uni :: * -&gt; *}. CekBudgetSpender uni fun s
-</span><a href="#local-6989586621681498134"><span class="hs-identifier hs-var">spender</span></a></span><span> </span><span class="annot"><span class="annottext">ST s cost
-</span><a href="#local-6989586621681498138"><span class="hs-identifier hs-var">final</span></a></span><span> </span><span class="annot"><span class="annottext">ST s ExBudget
-</span><a href="#local-6989586621681498136"><span class="hs-identifier hs-var">cumulative</span></a></span><span>
+</span><a href="#local-6989586621681498126"><span class="hs-identifier hs-var">spender</span></a></span><span> </span><span class="annot"><span class="annottext">ST s cost
+</span><a href="#local-6989586621681498130"><span class="hs-identifier hs-var">final</span></a></span><span> </span><span class="annot"><span class="annottext">ST s ExBudget
+</span><a href="#local-6989586621681498128"><span class="hs-identifier hs-var">cumulative</span></a></span><span>
 </span><span id="line-60"></span><span>
 </span><span id="line-61"></span><span class="annot"><span class="hs-comment">-- | For calculating the cost of execution by counting up using the 'Monoid' instance of 'ExBudget'.</span></span><span>
 </span><span id="line-62"></span><span class="hs-keyword">newtype</span><span> </span><span id="CountingSt"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CountingSt"><span class="hs-identifier hs-var">CountingSt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="CountingSt"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CountingSt"><span class="hs-identifier hs-var">CountingSt</span></a></span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExBudget"><span class="hs-identifier hs-type">ExBudget</span></a></span><span>
-</span><span id="line-63"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498143"><span id="local-6989586621681498147"><span class="annot"><span class="annottext">CountingSt -&gt; CountingSt -&gt; Bool
+</span><span id="line-63"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498135"><span id="local-6989586621681498139"><span class="annot"><span class="annottext">CountingSt -&gt; CountingSt -&gt; Bool
 (CountingSt -&gt; CountingSt -&gt; Bool)
 -&gt; (CountingSt -&gt; CountingSt -&gt; Bool) -&gt; Eq CountingSt
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -147,7 +147,7 @@ $c== :: CountingSt -&gt; CountingSt -&gt; Bool
 == :: CountingSt -&gt; CountingSt -&gt; Bool
 $c/= :: CountingSt -&gt; CountingSt -&gt; Bool
 /= :: CountingSt -&gt; CountingSt -&gt; Bool
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498152"><span id="local-6989586621681498158"><span id="local-6989586621681498162"><span class="annot"><span class="annottext">Int -&gt; CountingSt -&gt; ShowS
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498144"><span id="local-6989586621681498150"><span id="local-6989586621681498154"><span class="annot"><span class="annottext">Int -&gt; CountingSt -&gt; ShowS
 [CountingSt] -&gt; ShowS
 CountingSt -&gt; String
 (Int -&gt; CountingSt -&gt; ShowS)
@@ -163,7 +163,7 @@ show :: CountingSt -&gt; String
 $cshowList :: [CountingSt] -&gt; ShowS
 showList :: [CountingSt] -&gt; ShowS
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-64"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498166"><span id="local-6989586621681498170"><span id="local-6989586621681498176"><span class="annot"><span class="annottext">NonEmpty CountingSt -&gt; CountingSt
+</span><span id="line-64"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498158"><span id="local-6989586621681498162"><span id="local-6989586621681498168"><span class="annot"><span class="annottext">NonEmpty CountingSt -&gt; CountingSt
 CountingSt -&gt; CountingSt -&gt; CountingSt
 (CountingSt -&gt; CountingSt -&gt; CountingSt)
 -&gt; (NonEmpty CountingSt -&gt; CountingSt)
@@ -181,7 +181,7 @@ $csconcat :: NonEmpty CountingSt -&gt; CountingSt
 sconcat :: NonEmpty CountingSt -&gt; CountingSt
 $cstimes :: forall b. Integral b =&gt; b -&gt; CountingSt -&gt; CountingSt
 stimes :: forall b. Integral b =&gt; b -&gt; CountingSt -&gt; CountingSt
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498186"><span id="local-6989586621681498190"><span id="local-6989586621681498194"><span class="annot"><span class="annottext">Semigroup CountingSt
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498178"><span id="local-6989586621681498182"><span id="local-6989586621681498186"><span class="annot"><span class="annottext">Semigroup CountingSt
 CountingSt
 Semigroup CountingSt =&gt;
 CountingSt
@@ -199,17 +199,17 @@ $cmappend :: CountingSt -&gt; CountingSt -&gt; CountingSt
 mappend :: CountingSt -&gt; CountingSt -&gt; CountingSt
 $cmconcat :: [CountingSt] -&gt; CountingSt
 mconcat :: [CountingSt] -&gt; CountingSt
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monoid</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498199"><span id="local-6989586621681498201"><span id="local-6989586621681498206"><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="annot"><a href="#local-6989586621681498199"><span class="hs-identifier hs-type">config</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498212"><span class="annot"><span class="annottext">CountingSt -&gt; ()
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monoid</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498191"><span id="local-6989586621681498193"><span id="local-6989586621681498198"><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="annot"><a href="#local-6989586621681498191"><span class="hs-identifier hs-type">config</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498204"><span class="annot"><span class="annottext">CountingSt -&gt; ()
 (CountingSt -&gt; ()) -&gt; NFData CountingSt
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: CountingSt -&gt; ()
 rnf :: CountingSt -&gt; ()
 </span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">)</span><span>
 </span><span id="line-65"></span><span>
-</span><span id="line-66"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681498220"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CountingSt"><span class="hs-identifier hs-type">CountingSt</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-67"></span><span>    </span><span id="local-6989586621681498230"><span class="annot"><span class="annottext">pretty :: forall ann. CountingSt -&gt; Doc ann
-</span><a href="#local-6989586621681498230"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CountingSt"><span class="hs-identifier hs-type">CountingSt</span></a></span><span> </span><span id="local-6989586621681498232"><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621681498232"><span class="hs-identifier hs-var">budget</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
+</span><span id="line-66"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681498212"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CountingSt"><span class="hs-identifier hs-type">CountingSt</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-67"></span><span>    </span><span id="local-6989586621681498222"><span class="annot"><span class="annottext">pretty :: forall ann. CountingSt -&gt; Doc ann
+</span><a href="#local-6989586621681498222"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CountingSt"><span class="hs-identifier hs-type">CountingSt</span></a></span><span> </span><span id="local-6989586621681498224"><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621681498224"><span class="hs-identifier hs-var">budget</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann
 </span><span class="hs-identifier hs-var">parens</span></span><span> </span><span class="annot"><span class="annottext">(Doc ann -&gt; Doc ann) -&gt; Doc ann -&gt; Doc ann
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -220,14 +220,14 @@ forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. ExBudget -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621681498232"><span class="hs-identifier hs-var">budget</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
+</span><a href="#local-6989586621681498224"><span class="hs-identifier hs-var">budget</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann
 forall ann. Doc ann
 </span><span class="hs-identifier hs-var">line</span></span><span>
 </span><span id="line-68"></span><span>
 </span><span id="line-69"></span><span class="annot"><span class="hs-comment">-- | For calculating the cost of execution.</span></span><span>
-</span><span id="line-70"></span><span id="local-6989586621681497857"><span id="local-6989586621681497858"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#counting"><span class="hs-identifier hs-type">counting</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#ExBudgetMode"><span class="hs-identifier hs-type">ExBudgetMode</span></a></span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CountingSt"><span class="hs-identifier hs-type">CountingSt</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497857"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497858"><span class="hs-identifier hs-type">fun</span></a></span></span></span><span>
+</span><span id="line-70"></span><span id="local-6989586621681497849"><span id="local-6989586621681497850"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#counting"><span class="hs-identifier hs-type">counting</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#ExBudgetMode"><span class="hs-identifier hs-type">ExBudgetMode</span></a></span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CountingSt"><span class="hs-identifier hs-type">CountingSt</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497849"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497850"><span class="hs-identifier hs-type">fun</span></a></span></span></span><span>
 </span><span id="line-71"></span><span id="counting"><span class="annot"><span class="annottext">counting :: forall (uni :: * -&gt; *) fun. ExBudgetMode CountingSt uni fun
 </span><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#counting"><span class="hs-identifier hs-var hs-var">counting</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ExBudgetCategory fun -&gt; ExBudget -&gt; CountingSt)
 -&gt; ExBudgetMode CountingSt uni fun
@@ -248,8 +248,8 @@ forall a b. a -&gt; b -&gt; a
 </span><span id="line-72"></span><span>
 </span><span id="line-73"></span><span class="hs-comment">-- | For a detailed report on what costs how much + the same overall budget that 'Counting' gives.</span><span>
 </span><span id="line-74"></span><span class="hs-comment">-- The (derived) 'Monoid' instance of 'CekExTally' is the main piece of the machinery.</span><span>
-</span><span id="line-75"></span><span class="hs-keyword">newtype</span><span> </span><span id="CekExTally"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CekExTally"><span class="hs-identifier hs-var">CekExTally</span></a></span></span><span> </span><span id="local-6989586621681497994"><span class="annot"><a href="#local-6989586621681497994"><span class="hs-identifier hs-type">fun</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="CekExTally"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CekExTally"><span class="hs-identifier hs-var">CekExTally</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">MonoidalHashMap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#ExBudgetCategory"><span class="hs-identifier hs-type">ExBudgetCategory</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497994"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExBudget"><span class="hs-identifier hs-type">ExBudget</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-76"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498241"><span id="local-6989586621681498247"><span class="annot"><span class="annottext">CekExTally fun -&gt; CekExTally fun -&gt; Bool
+</span><span id="line-75"></span><span class="hs-keyword">newtype</span><span> </span><span id="CekExTally"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CekExTally"><span class="hs-identifier hs-var">CekExTally</span></a></span></span><span> </span><span id="local-6989586621681497986"><span class="annot"><a href="#local-6989586621681497986"><span class="hs-identifier hs-type">fun</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="CekExTally"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CekExTally"><span class="hs-identifier hs-var">CekExTally</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">MonoidalHashMap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#ExBudgetCategory"><span class="hs-identifier hs-type">ExBudgetCategory</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497986"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExBudget"><span class="hs-identifier hs-type">ExBudget</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-76"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498233"><span id="local-6989586621681498239"><span class="annot"><span class="annottext">CekExTally fun -&gt; CekExTally fun -&gt; Bool
 (CekExTally fun -&gt; CekExTally fun -&gt; Bool)
 -&gt; (CekExTally fun -&gt; CekExTally fun -&gt; Bool)
 -&gt; Eq (CekExTally fun)
@@ -259,7 +259,7 @@ $c== :: forall fun. Eq fun =&gt; CekExTally fun -&gt; CekExTally fun -&gt; Bool
 == :: CekExTally fun -&gt; CekExTally fun -&gt; Bool
 $c/= :: forall fun. Eq fun =&gt; CekExTally fun -&gt; CekExTally fun -&gt; Bool
 /= :: CekExTally fun -&gt; CekExTally fun -&gt; Bool
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498252"><span id="local-6989586621681498254"><span class="annot"><span class="annottext">(forall x. CekExTally fun -&gt; Rep (CekExTally fun) x)
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498244"><span id="local-6989586621681498246"><span class="annot"><span class="annottext">(forall x. CekExTally fun -&gt; Rep (CekExTally fun) x)
 -&gt; (forall x. Rep (CekExTally fun) x -&gt; CekExTally fun)
 -&gt; Generic (CekExTally fun)
 forall x. Rep (CekExTally fun) x -&gt; CekExTally fun
@@ -272,7 +272,7 @@ $cfrom :: forall fun x. CekExTally fun -&gt; Rep (CekExTally fun) x
 from :: forall x. CekExTally fun -&gt; Rep (CekExTally fun) x
 $cto :: forall fun x. Rep (CekExTally fun) x -&gt; CekExTally fun
 to :: forall x. Rep (CekExTally fun) x -&gt; CekExTally fun
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498259"><span id="local-6989586621681498266"><span id="local-6989586621681498270"><span class="annot"><span class="annottext">Int -&gt; CekExTally fun -&gt; ShowS
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498251"><span id="local-6989586621681498258"><span id="local-6989586621681498262"><span class="annot"><span class="annottext">Int -&gt; CekExTally fun -&gt; ShowS
 [CekExTally fun] -&gt; ShowS
 CekExTally fun -&gt; String
 (Int -&gt; CekExTally fun -&gt; ShowS)
@@ -291,7 +291,7 @@ show :: CekExTally fun -&gt; String
 $cshowList :: forall fun. Show fun =&gt; [CekExTally fun] -&gt; ShowS
 showList :: [CekExTally fun] -&gt; ShowS
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-77"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498275"><span id="local-6989586621681498282"><span id="local-6989586621681498290"><span class="annot"><span class="annottext">NonEmpty (CekExTally fun) -&gt; CekExTally fun
+</span><span id="line-77"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498267"><span id="local-6989586621681498274"><span id="local-6989586621681498282"><span class="annot"><span class="annottext">NonEmpty (CekExTally fun) -&gt; CekExTally fun
 CekExTally fun -&gt; CekExTally fun -&gt; CekExTally fun
 (CekExTally fun -&gt; CekExTally fun -&gt; CekExTally fun)
 -&gt; (NonEmpty (CekExTally fun) -&gt; CekExTally fun)
@@ -324,7 +324,7 @@ $cstimes :: forall fun b.
 (Hashable fun, Integral b) =&gt;
 b -&gt; CekExTally fun -&gt; CekExTally fun
 stimes :: forall b. Integral b =&gt; b -&gt; CekExTally fun -&gt; CekExTally fun
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498332"><span id="local-6989586621681498339"><span id="local-6989586621681498345"><span class="annot"><span class="annottext">Semigroup (CekExTally fun)
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498324"><span id="local-6989586621681498331"><span id="local-6989586621681498337"><span class="annot"><span class="annottext">Semigroup (CekExTally fun)
 CekExTally fun
 Semigroup (CekExTally fun) =&gt;
 CekExTally fun
@@ -350,22 +350,22 @@ CekExTally fun -&gt; CekExTally fun -&gt; CekExTally fun
 mappend :: CekExTally fun -&gt; CekExTally fun -&gt; CekExTally fun
 $cmconcat :: forall fun. Hashable fun =&gt; [CekExTally fun] -&gt; CekExTally fun
 mconcat :: [CekExTally fun] -&gt; CekExTally fun
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monoid</span></a></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">GenericSemigroupMonoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CekExTally"><span class="hs-identifier hs-type">CekExTally</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497994"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-78"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498384"><span class="annot"><span class="annottext">CekExTally fun -&gt; ()
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monoid</span></a></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">GenericSemigroupMonoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CekExTally"><span class="hs-identifier hs-type">CekExTally</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497986"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-78"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498376"><span class="annot"><span class="annottext">CekExTally fun -&gt; ()
 (CekExTally fun -&gt; ()) -&gt; NFData (CekExTally fun)
 forall fun. NFData fun =&gt; CekExTally fun -&gt; ()
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: forall fun. NFData fun =&gt; CekExTally fun -&gt; ()
 rnf :: CekExTally fun -&gt; ()
 </span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">)</span><span>
-</span><span id="line-79"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498400"><span id="local-6989586621681498404"><span id="local-6989586621681498410"><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="annot"><a href="#local-6989586621681498400"><span class="hs-identifier hs-type">config</span></a></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">IgnorePrettyConfig</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CekExTally"><span class="hs-identifier hs-type">CekExTally</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497994"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-79"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498392"><span id="local-6989586621681498396"><span id="local-6989586621681498402"><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="annot"><a href="#local-6989586621681498392"><span class="hs-identifier hs-type">config</span></a></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">IgnorePrettyConfig</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CekExTally"><span class="hs-identifier hs-type">CekExTally</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497986"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-80"></span><span>
-</span><span id="line-81"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681497930"><span id="local-6989586621681498420"><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-type">Show</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497930"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-type">Ord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497930"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CekExTally"><span class="hs-identifier hs-type">CekExTally</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497930"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-82"></span><span>    </span><span id="local-6989586621681498435"><span class="annot"><span class="annottext">pretty :: forall ann. CekExTally fun -&gt; Doc ann
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CekExTally"><span class="hs-identifier hs-type">CekExTally</span></a></span><span> </span><span id="local-6989586621681498436"><span class="annot"><span class="annottext">MonoidalHashMap (ExBudgetCategory fun) ExBudget
-</span><a href="#local-6989586621681498436"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-83"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621681498441"><span class="annot"><span class="annottext">om :: Map (ExBudgetCategory fun) ExBudget
-</span><a href="#local-6989586621681498441"><span class="hs-identifier hs-var hs-var">om</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(ExBudgetCategory fun, ExBudget)]
+</span><span id="line-81"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681497922"><span id="local-6989586621681498412"><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-type">Show</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497922"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-type">Ord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497922"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CekExTally"><span class="hs-identifier hs-type">CekExTally</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497922"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-82"></span><span>    </span><span id="local-6989586621681498427"><span class="annot"><span class="annottext">pretty :: forall ann. CekExTally fun -&gt; Doc ann
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CekExTally"><span class="hs-identifier hs-type">CekExTally</span></a></span><span> </span><span id="local-6989586621681498428"><span class="annot"><span class="annottext">MonoidalHashMap (ExBudgetCategory fun) ExBudget
+</span><a href="#local-6989586621681498428"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-83"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621681498433"><span class="annot"><span class="annottext">om :: Map (ExBudgetCategory fun) ExBudget
+</span><a href="#local-6989586621681498433"><span class="hs-identifier hs-var hs-var">om</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(ExBudgetCategory fun, ExBudget)]
 -&gt; Map (ExBudgetCategory fun) ExBudget
 forall k a. Ord k =&gt; [(k, a)] -&gt; Map k a
 </span><span class="hs-identifier hs-var">Map.fromList</span></span><span> </span><span class="annot"><span class="annottext">([(ExBudgetCategory fun, ExBudget)]
@@ -377,7 +377,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 -&gt; [(ExBudgetCategory fun, ExBudget)]
 forall k a. MonoidalHashMap k a -&gt; [(k, a)]
 </span><span class="hs-identifier hs-var">HashMap.toList</span></span><span> </span><span class="annot"><span class="annottext">MonoidalHashMap (ExBudgetCategory fun) ExBudget
-</span><a href="#local-6989586621681498436"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><a href="#local-6989586621681498428"><span class="hs-identifier hs-var">m</span></a></span><span>
 </span><span id="line-84"></span><span>        </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann
 </span><span class="hs-identifier hs-var">parens</span></span><span> </span><span class="annot"><span class="annottext">(Doc ann -&gt; Doc ann) -&gt; Doc ann -&gt; Doc ann
@@ -411,13 +411,13 @@ forall a b.
 forall i (f :: * -&gt; *) a b.
 FunctorWithIndex i f =&gt;
 (i -&gt; a -&gt; b) -&gt; f a -&gt; f b
-</span><span class="hs-identifier hs-var">imap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621681498447"><span class="annot"><span class="annottext">ExBudgetCategory fun
-</span><a href="#local-6989586621681498447"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621681498448"><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621681498448"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ExBudgetCategory fun -&gt; Doc ann
+</span><span class="hs-identifier hs-var">imap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621681498439"><span class="annot"><span class="annottext">ExBudgetCategory fun
+</span><a href="#local-6989586621681498439"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621681498440"><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621681498440"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ExBudgetCategory fun -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. ExBudgetCategory fun -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">ExBudgetCategory fun
-</span><a href="#local-6989586621681498447"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
+</span><a href="#local-6989586621681498439"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 </span><span class="hs-operator hs-var">&lt;+&gt;</span></span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;causes&quot;</span></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
@@ -428,11 +428,11 @@ forall ann. Doc ann -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. ExBudget -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621681498448"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Map (ExBudgetCategory fun) ExBudget
-</span><a href="#local-6989586621681498441"><span class="hs-identifier hs-var">om</span></a></span><span>
+</span><a href="#local-6989586621681498440"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Map (ExBudgetCategory fun) ExBudget
+</span><a href="#local-6989586621681498433"><span class="hs-identifier hs-var">om</span></a></span><span>
 </span><span id="line-86"></span><span>
-</span><span id="line-87"></span><span class="hs-keyword">data</span><span> </span><span id="TallyingSt"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#TallyingSt"><span class="hs-identifier hs-var">TallyingSt</span></a></span></span><span> </span><span id="local-6989586621681497993"><span class="annot"><a href="#local-6989586621681497993"><span class="hs-identifier hs-type">fun</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="TallyingSt"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#TallyingSt"><span class="hs-identifier hs-var">TallyingSt</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CekExTally"><span class="hs-identifier hs-type">CekExTally</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497993"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExBudget"><span class="hs-identifier hs-type">ExBudget</span></a></span><span>
-</span><span id="line-88"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498452"><span id="local-6989586621681498456"><span class="annot"><span class="annottext">TallyingSt fun -&gt; TallyingSt fun -&gt; Bool
+</span><span id="line-87"></span><span class="hs-keyword">data</span><span> </span><span id="TallyingSt"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#TallyingSt"><span class="hs-identifier hs-var">TallyingSt</span></a></span></span><span> </span><span id="local-6989586621681497985"><span class="annot"><a href="#local-6989586621681497985"><span class="hs-identifier hs-type">fun</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="TallyingSt"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#TallyingSt"><span class="hs-identifier hs-var">TallyingSt</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#CekExTally"><span class="hs-identifier hs-type">CekExTally</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497985"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExBudget"><span class="hs-identifier hs-type">ExBudget</span></a></span><span>
+</span><span id="line-88"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498444"><span id="local-6989586621681498448"><span class="annot"><span class="annottext">TallyingSt fun -&gt; TallyingSt fun -&gt; Bool
 (TallyingSt fun -&gt; TallyingSt fun -&gt; Bool)
 -&gt; (TallyingSt fun -&gt; TallyingSt fun -&gt; Bool)
 -&gt; Eq (TallyingSt fun)
@@ -442,7 +442,7 @@ $c== :: forall fun. Eq fun =&gt; TallyingSt fun -&gt; TallyingSt fun -&gt; Bool
 == :: TallyingSt fun -&gt; TallyingSt fun -&gt; Bool
 $c/= :: forall fun. Eq fun =&gt; TallyingSt fun -&gt; TallyingSt fun -&gt; Bool
 /= :: TallyingSt fun -&gt; TallyingSt fun -&gt; Bool
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498461"><span id="local-6989586621681498466"><span id="local-6989586621681498470"><span class="annot"><span class="annottext">Int -&gt; TallyingSt fun -&gt; ShowS
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498453"><span id="local-6989586621681498458"><span id="local-6989586621681498462"><span class="annot"><span class="annottext">Int -&gt; TallyingSt fun -&gt; ShowS
 [TallyingSt fun] -&gt; ShowS
 TallyingSt fun -&gt; String
 (Int -&gt; TallyingSt fun -&gt; ShowS)
@@ -460,7 +460,7 @@ $cshow :: forall fun. Show fun =&gt; TallyingSt fun -&gt; String
 show :: TallyingSt fun -&gt; String
 $cshowList :: forall fun. Show fun =&gt; [TallyingSt fun] -&gt; ShowS
 showList :: [TallyingSt fun] -&gt; ShowS
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498473"><span id="local-6989586621681498475"><span class="annot"><span class="annottext">(forall x. TallyingSt fun -&gt; Rep (TallyingSt fun) x)
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498465"><span id="local-6989586621681498467"><span class="annot"><span class="annottext">(forall x. TallyingSt fun -&gt; Rep (TallyingSt fun) x)
 -&gt; (forall x. Rep (TallyingSt fun) x -&gt; TallyingSt fun)
 -&gt; Generic (TallyingSt fun)
 forall x. Rep (TallyingSt fun) x -&gt; TallyingSt fun
@@ -474,7 +474,7 @@ from :: forall x. TallyingSt fun -&gt; Rep (TallyingSt fun) x
 $cto :: forall fun x. Rep (TallyingSt fun) x -&gt; TallyingSt fun
 to :: forall x. Rep (TallyingSt fun) x -&gt; TallyingSt fun
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-89"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498479"><span id="local-6989586621681498485"><span id="local-6989586621681498493"><span class="annot"><span class="annottext">NonEmpty (TallyingSt fun) -&gt; TallyingSt fun
+</span><span id="line-89"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498471"><span id="local-6989586621681498477"><span id="local-6989586621681498485"><span class="annot"><span class="annottext">NonEmpty (TallyingSt fun) -&gt; TallyingSt fun
 TallyingSt fun -&gt; TallyingSt fun -&gt; TallyingSt fun
 (TallyingSt fun -&gt; TallyingSt fun -&gt; TallyingSt fun)
 -&gt; (NonEmpty (TallyingSt fun) -&gt; TallyingSt fun)
@@ -507,7 +507,7 @@ $cstimes :: forall fun b.
 (Hashable fun, Integral b) =&gt;
 b -&gt; TallyingSt fun -&gt; TallyingSt fun
 stimes :: forall b. Integral b =&gt; b -&gt; TallyingSt fun -&gt; TallyingSt fun
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498533"><span id="local-6989586621681498539"><span id="local-6989586621681498545"><span class="annot"><span class="annottext">Semigroup (TallyingSt fun)
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498525"><span id="local-6989586621681498531"><span id="local-6989586621681498537"><span class="annot"><span class="annottext">Semigroup (TallyingSt fun)
 TallyingSt fun
 Semigroup (TallyingSt fun) =&gt;
 TallyingSt fun
@@ -533,21 +533,21 @@ TallyingSt fun -&gt; TallyingSt fun -&gt; TallyingSt fun
 mappend :: TallyingSt fun -&gt; TallyingSt fun -&gt; TallyingSt fun
 $cmconcat :: forall fun. Hashable fun =&gt; [TallyingSt fun] -&gt; TallyingSt fun
 mconcat :: [TallyingSt fun] -&gt; TallyingSt fun
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monoid</span></a></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">GenericSemigroupMonoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#TallyingSt"><span class="hs-identifier hs-type">TallyingSt</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497993"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-90"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498587"><span class="annot"><span class="annottext">TallyingSt fun -&gt; ()
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monoid</span></a></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">GenericSemigroupMonoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#TallyingSt"><span class="hs-identifier hs-type">TallyingSt</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497985"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-90"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498579"><span class="annot"><span class="annottext">TallyingSt fun -&gt; ()
 (TallyingSt fun -&gt; ()) -&gt; NFData (TallyingSt fun)
 forall fun. NFData fun =&gt; TallyingSt fun -&gt; ()
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: forall fun. NFData fun =&gt; TallyingSt fun -&gt; ()
 rnf :: TallyingSt fun -&gt; ()
 </span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">)</span><span>
-</span><span id="line-91"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498602"><span id="local-6989586621681498606"><span id="local-6989586621681498611"><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="annot"><a href="#local-6989586621681498602"><span class="hs-identifier hs-type">config</span></a></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">IgnorePrettyConfig</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#TallyingSt"><span class="hs-identifier hs-type">TallyingSt</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497993"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-91"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498594"><span id="local-6989586621681498598"><span id="local-6989586621681498603"><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="annot"><a href="#local-6989586621681498594"><span class="hs-identifier hs-type">config</span></a></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">IgnorePrettyConfig</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#TallyingSt"><span class="hs-identifier hs-type">TallyingSt</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497985"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-92"></span><span>
-</span><span id="line-93"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681497981"><span id="local-6989586621681498621"><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-type">Show</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497981"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-type">Ord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497981"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#TallyingSt"><span class="hs-identifier hs-type">TallyingSt</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497981"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-94"></span><span>    </span><span id="local-6989586621681498632"><span class="annot"><span class="annottext">pretty :: forall ann. TallyingSt fun -&gt; Doc ann
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#TallyingSt"><span class="hs-identifier hs-type">TallyingSt</span></a></span><span> </span><span id="local-6989586621681498633"><span class="annot"><span class="annottext">CekExTally fun
-</span><a href="#local-6989586621681498633"><span class="hs-identifier hs-var">tally</span></a></span></span><span> </span><span id="local-6989586621681498634"><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621681498634"><span class="hs-identifier hs-var">budget</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
+</span><span id="line-93"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681497973"><span id="local-6989586621681498613"><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-type">Show</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497973"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-type">Ord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497973"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#TallyingSt"><span class="hs-identifier hs-type">TallyingSt</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497973"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-94"></span><span>    </span><span id="local-6989586621681498624"><span class="annot"><span class="annottext">pretty :: forall ann. TallyingSt fun -&gt; Doc ann
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#TallyingSt"><span class="hs-identifier hs-type">TallyingSt</span></a></span><span> </span><span id="local-6989586621681498625"><span class="annot"><span class="annottext">CekExTally fun
+</span><a href="#local-6989586621681498625"><span class="hs-identifier hs-var">tally</span></a></span></span><span> </span><span id="local-6989586621681498626"><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621681498626"><span class="hs-identifier hs-var">budget</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann
 </span><span class="hs-identifier hs-var">parens</span></span><span> </span><span class="annot"><span class="annottext">(Doc ann -&gt; Doc ann) -&gt; Doc ann -&gt; Doc ann
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -560,7 +560,7 @@ forall (t :: * -&gt; *) m. (Foldable t, Monoid m) =&gt; t m -&gt; m
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. CekExTally fun -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">CekExTally fun
-</span><a href="#local-6989586621681498633"><span class="hs-identifier hs-var">tally</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Doc ann
+</span><a href="#local-6989586621681498625"><span class="hs-identifier hs-var">tally</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Doc ann
 forall ann. Doc ann
 </span><span class="hs-identifier hs-var">line</span></span><span>
 </span><span id="line-96"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Doc ann
@@ -568,7 +568,7 @@ forall ann. Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. ExBudget -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621681498634"><span class="hs-identifier hs-var">budget</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Doc ann
+</span><a href="#local-6989586621681498626"><span class="hs-identifier hs-var">budget</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Doc ann
 forall ann. Doc ann
 </span><span class="hs-identifier hs-var">line</span></span><span>
 </span><span id="line-97"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Doc ann
@@ -576,7 +576,7 @@ forall ann. Doc ann
 </span><span id="line-98"></span><span>        </span><span class="hs-special">]</span><span>
 </span><span id="line-99"></span><span>
 </span><span id="line-100"></span><span class="annot"><span class="hs-comment">-- | For a detailed report on what costs how much + the same overall budget that 'Counting' gives.</span></span><span>
-</span><span id="line-101"></span><span id="local-6989586621681497989"><span id="local-6989586621681497990"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#tallying"><span class="hs-identifier hs-type">tallying</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Hashable</span></span><span> </span><span class="annot"><a href="#local-6989586621681497989"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#ExBudgetMode"><span class="hs-identifier hs-type">ExBudgetMode</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#TallyingSt"><span class="hs-identifier hs-type">TallyingSt</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497989"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621681497990"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497989"><span class="hs-identifier hs-type">fun</span></a></span></span></span><span>
+</span><span id="line-101"></span><span id="local-6989586621681497981"><span id="local-6989586621681497982"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#tallying"><span class="hs-identifier hs-type">tallying</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Hashable</span></span><span> </span><span class="annot"><a href="#local-6989586621681497981"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#ExBudgetMode"><span class="hs-identifier hs-type">ExBudgetMode</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#TallyingSt"><span class="hs-identifier hs-type">TallyingSt</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497981"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621681497982"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681497981"><span class="hs-identifier hs-type">fun</span></a></span></span></span><span>
 </span><span id="line-102"></span><span id="tallying"><span class="annot"><span class="annottext">tallying :: forall fun (uni :: * -&gt; *).
 Hashable fun =&gt;
 ExBudgetMode (TallyingSt fun) uni fun
@@ -592,9 +592,9 @@ Monoid cost =&gt;
 -&gt; (ExBudgetCategory fun -&gt; ExBudget -&gt; TallyingSt fun)
 -&gt; ExBudgetMode (TallyingSt fun) uni fun
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681498641"><span class="annot"><span class="annottext">ExBudgetCategory fun
-</span><a href="#local-6989586621681498641"><span class="hs-identifier hs-var">key</span></a></span></span><span> </span><span id="local-6989586621681498642"><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621681498642"><span class="hs-identifier hs-var">budgetToSpend</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681498633"><span class="annot"><span class="annottext">ExBudgetCategory fun
+</span><a href="#local-6989586621681498633"><span class="hs-identifier hs-var">key</span></a></span></span><span> </span><span id="local-6989586621681498634"><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621681498634"><span class="hs-identifier hs-var">budgetToSpend</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-104"></span><span>        </span><span class="annot"><span class="annottext">CekExTally fun -&gt; ExBudget -&gt; TallyingSt fun
 forall fun. CekExTally fun -&gt; ExBudget -&gt; TallyingSt fun
 </span><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#TallyingSt"><span class="hs-identifier hs-var">TallyingSt</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">MonoidalHashMap (ExBudgetCategory fun) ExBudget -&gt; CekExTally fun
@@ -608,12 +608,12 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 -&gt; ExBudget -&gt; MonoidalHashMap (ExBudgetCategory fun) ExBudget
 forall k a. (Eq k, Hashable k) =&gt; k -&gt; a -&gt; MonoidalHashMap k a
 </span><span class="hs-identifier hs-var">singleton</span></span><span> </span><span class="annot"><span class="annottext">ExBudgetCategory fun
-</span><a href="#local-6989586621681498641"><span class="hs-identifier hs-var">key</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621681498642"><span class="hs-identifier hs-var">budgetToSpend</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621681498642"><span class="hs-identifier hs-var">budgetToSpend</span></a></span><span>
+</span><a href="#local-6989586621681498633"><span class="hs-identifier hs-var">key</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621681498634"><span class="hs-identifier hs-var">budgetToSpend</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621681498634"><span class="hs-identifier hs-var">budgetToSpend</span></a></span><span>
 </span><span id="line-105"></span><span>
 </span><span id="line-106"></span><span class="hs-keyword">newtype</span><span> </span><span id="RestrictingSt"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#RestrictingSt"><span class="hs-identifier hs-var">RestrictingSt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="RestrictingSt"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#RestrictingSt"><span class="hs-identifier hs-var">RestrictingSt</span></a></span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExRestrictingBudget"><span class="hs-identifier hs-type">ExRestrictingBudget</span></a></span><span>
-</span><span id="line-107"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498646"><span id="local-6989586621681498650"><span class="annot"><span class="annottext">RestrictingSt -&gt; RestrictingSt -&gt; Bool
+</span><span id="line-107"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498638"><span id="local-6989586621681498642"><span class="annot"><span class="annottext">RestrictingSt -&gt; RestrictingSt -&gt; Bool
 (RestrictingSt -&gt; RestrictingSt -&gt; Bool)
 -&gt; (RestrictingSt -&gt; RestrictingSt -&gt; Bool) -&gt; Eq RestrictingSt
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -621,7 +621,7 @@ $c== :: RestrictingSt -&gt; RestrictingSt -&gt; Bool
 == :: RestrictingSt -&gt; RestrictingSt -&gt; Bool
 $c/= :: RestrictingSt -&gt; RestrictingSt -&gt; Bool
 /= :: RestrictingSt -&gt; RestrictingSt -&gt; Bool
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498654"><span id="local-6989586621681498659"><span id="local-6989586621681498663"><span class="annot"><span class="annottext">Int -&gt; RestrictingSt -&gt; ShowS
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498646"><span id="local-6989586621681498651"><span id="local-6989586621681498655"><span class="annot"><span class="annottext">Int -&gt; RestrictingSt -&gt; ShowS
 [RestrictingSt] -&gt; ShowS
 RestrictingSt -&gt; String
 (Int -&gt; RestrictingSt -&gt; ShowS)
@@ -637,7 +637,7 @@ show :: RestrictingSt -&gt; String
 $cshowList :: [RestrictingSt] -&gt; ShowS
 showList :: [RestrictingSt] -&gt; ShowS
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-108"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498666"><span id="local-6989586621681498671"><span id="local-6989586621681498677"><span class="annot"><span class="annottext">NonEmpty RestrictingSt -&gt; RestrictingSt
+</span><span id="line-108"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498658"><span id="local-6989586621681498663"><span id="local-6989586621681498669"><span class="annot"><span class="annottext">NonEmpty RestrictingSt -&gt; RestrictingSt
 RestrictingSt -&gt; RestrictingSt -&gt; RestrictingSt
 (RestrictingSt -&gt; RestrictingSt -&gt; RestrictingSt)
 -&gt; (NonEmpty RestrictingSt -&gt; RestrictingSt)
@@ -655,7 +655,7 @@ $csconcat :: NonEmpty RestrictingSt -&gt; RestrictingSt
 sconcat :: NonEmpty RestrictingSt -&gt; RestrictingSt
 $cstimes :: forall b. Integral b =&gt; b -&gt; RestrictingSt -&gt; RestrictingSt
 stimes :: forall b. Integral b =&gt; b -&gt; RestrictingSt -&gt; RestrictingSt
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498686"><span id="local-6989586621681498691"><span id="local-6989586621681498695"><span class="annot"><span class="annottext">Semigroup RestrictingSt
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498678"><span id="local-6989586621681498683"><span id="local-6989586621681498687"><span class="annot"><span class="annottext">Semigroup RestrictingSt
 RestrictingSt
 Semigroup RestrictingSt =&gt;
 RestrictingSt
@@ -673,18 +673,18 @@ $cmappend :: RestrictingSt -&gt; RestrictingSt -&gt; RestrictingSt
 mappend :: RestrictingSt -&gt; RestrictingSt -&gt; RestrictingSt
 $cmconcat :: [RestrictingSt] -&gt; RestrictingSt
 mconcat :: [RestrictingSt] -&gt; RestrictingSt
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monoid</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498700"><span class="annot"><span class="annottext">RestrictingSt -&gt; ()
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monoid</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681498692"><span class="annot"><span class="annottext">RestrictingSt -&gt; ()
 (RestrictingSt -&gt; ()) -&gt; NFData RestrictingSt
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: RestrictingSt -&gt; ()
 rnf :: RestrictingSt -&gt; ()
 </span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">)</span><span>
-</span><span id="line-109"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498705"><span id="local-6989586621681498707"><span id="local-6989586621681498714"><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="annot"><a href="#local-6989586621681498705"><span class="hs-identifier hs-type">config</span></a></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-109"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681498697"><span id="local-6989586621681498699"><span id="local-6989586621681498706"><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="annot"><a href="#local-6989586621681498697"><span class="hs-identifier hs-type">config</span></a></span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-110"></span><span>
-</span><span id="line-111"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681498724"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#RestrictingSt"><span class="hs-identifier hs-type">RestrictingSt</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-112"></span><span>    </span><span id="local-6989586621681498730"><span class="annot"><span class="annottext">pretty :: forall ann. RestrictingSt -&gt; Doc ann
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#RestrictingSt"><span class="hs-identifier hs-type">RestrictingSt</span></a></span><span> </span><span id="local-6989586621681498731"><span class="annot"><span class="annottext">ExRestrictingBudget
-</span><a href="#local-6989586621681498731"><span class="hs-identifier hs-var">budget</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
+</span><span id="line-111"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681498716"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#RestrictingSt"><span class="hs-identifier hs-type">RestrictingSt</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-112"></span><span>    </span><span id="local-6989586621681498722"><span class="annot"><span class="annottext">pretty :: forall ann. RestrictingSt -&gt; Doc ann
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#RestrictingSt"><span class="hs-identifier hs-type">RestrictingSt</span></a></span><span> </span><span id="local-6989586621681498723"><span class="annot"><span class="annottext">ExRestrictingBudget
+</span><a href="#local-6989586621681498723"><span class="hs-identifier hs-var">budget</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann
 </span><span class="hs-identifier hs-var">parens</span></span><span> </span><span class="annot"><span class="annottext">(Doc ann -&gt; Doc ann) -&gt; Doc ann -&gt; Doc ann
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -695,23 +695,23 @@ forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. ExRestrictingBudget -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">ExRestrictingBudget
-</span><a href="#local-6989586621681498731"><span class="hs-identifier hs-var">budget</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
+</span><a href="#local-6989586621681498723"><span class="hs-identifier hs-var">budget</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann
 forall ann. Doc ann
 </span><span class="hs-identifier hs-var">line</span></span><span>
 </span><span id="line-113"></span><span>
 </span><span id="line-114"></span><span class="annot"><span class="hs-comment">-- | For execution, to avoid overruns.</span></span><span>
-</span><span id="line-115"></span><span id="local-6989586621681498013"><span id="local-6989586621681498014"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#restricting"><span class="hs-identifier hs-type">restricting</span></a></span><span>
-</span><span id="line-116"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Pretty.PrettyConst.html#ThrowableBuiltins"><span class="hs-identifier hs-type">ThrowableBuiltins</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681498013"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681498014"><span class="hs-identifier hs-type">fun</span></a></span><span>
-</span><span id="line-117"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExRestrictingBudget"><span class="hs-identifier hs-type">ExRestrictingBudget</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#ExBudgetMode"><span class="hs-identifier hs-type">ExBudgetMode</span></a></span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#RestrictingSt"><span class="hs-identifier hs-type">RestrictingSt</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681498013"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681498014"><span class="hs-identifier hs-type">fun</span></a></span></span></span><span>
+</span><span id="line-115"></span><span id="local-6989586621681498005"><span id="local-6989586621681498006"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#restricting"><span class="hs-identifier hs-type">restricting</span></a></span><span>
+</span><span id="line-116"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Pretty.PrettyConst.html#ThrowableBuiltins"><span class="hs-identifier hs-type">ThrowableBuiltins</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681498005"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681498006"><span class="hs-identifier hs-type">fun</span></a></span><span>
+</span><span id="line-117"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExRestrictingBudget"><span class="hs-identifier hs-type">ExRestrictingBudget</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#ExBudgetMode"><span class="hs-identifier hs-type">ExBudgetMode</span></a></span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#RestrictingSt"><span class="hs-identifier hs-type">RestrictingSt</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681498005"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681498006"><span class="hs-identifier hs-type">fun</span></a></span></span></span><span>
 </span><span id="line-118"></span><span id="restricting"><span class="annot"><span class="annottext">restricting :: forall (uni :: * -&gt; *) fun.
 ThrowableBuiltins uni fun =&gt;
 ExRestrictingBudget -&gt; ExBudgetMode RestrictingSt uni fun
-</span><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#restricting"><span class="hs-identifier hs-var hs-var">restricting</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExRestrictingBudget"><span class="hs-identifier hs-type">ExRestrictingBudget</span></a></span><span> </span><span id="local-6989586621681498741"><span class="annot"><span class="annottext">initB :: ExBudget
-</span><a href="#local-6989586621681498741"><span class="hs-identifier hs-var">initB</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExBudget"><span class="hs-identifier hs-type">ExBudget</span></a></span><span> </span><span id="local-6989586621681498742"><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621681498742"><span class="hs-identifier hs-var">cpuInit</span></a></span></span><span> </span><span id="local-6989586621681498743"><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621681498743"><span class="hs-identifier hs-var">memInit</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall s. ST s (ExBudgetInfo RestrictingSt uni fun s))
+</span><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#restricting"><span class="hs-identifier hs-var hs-var">restricting</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExRestrictingBudget"><span class="hs-identifier hs-type">ExRestrictingBudget</span></a></span><span> </span><span id="local-6989586621681498733"><span class="annot"><span class="annottext">initB :: ExBudget
+</span><a href="#local-6989586621681498733"><span class="hs-identifier hs-var">initB</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExBudget"><span class="hs-identifier hs-type">ExBudget</span></a></span><span> </span><span id="local-6989586621681498734"><span class="annot"><span class="annottext">ExCPU
+</span><a href="#local-6989586621681498734"><span class="hs-identifier hs-var">cpuInit</span></a></span></span><span> </span><span id="local-6989586621681498735"><span class="annot"><span class="annottext">ExMemory
+</span><a href="#local-6989586621681498735"><span class="hs-identifier hs-var">memInit</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall s. ST s (ExBudgetInfo RestrictingSt uni fun s))
 -&gt; ExBudgetMode RestrictingSt uni fun
 forall cost (uni :: * -&gt; *) fun.
 (forall s. ST s (ExBudgetInfo cost uni fun s))
@@ -726,21 +726,21 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span id="line-120"></span><span>    </span><span class="hs-comment">--</span><span>
 </span><span id="line-121"></span><span>    </span><span class="hs-comment">-- If we don't specify the element type then GHC has difficulty inferring it, but it's</span><span>
 </span><span id="line-122"></span><span>    </span><span class="hs-comment">-- annoying to specify the monad, since it refers to the 's' which is not in scope.</span><span>
-</span><span id="line-123"></span><span>    </span><span id="local-6989586621681498760"><span class="annot"><span class="annottext">MutablePrimArray (PrimState (ST s)) SatInt
-</span><a href="#local-6989586621681498760"><span class="hs-identifier hs-var">ref</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a.
+</span><span id="line-123"></span><span>    </span><span id="local-6989586621681498752"><span class="annot"><span class="annottext">MutablePrimArray (PrimState (ST s)) SatInt
+</span><a href="#local-6989586621681498752"><span class="hs-identifier hs-var">ref</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a.
 (PrimMonad m, Prim a) =&gt;
 Int -&gt; m (MutablePrimArray (PrimState m) a)
 </span><span class="hs-identifier hs-var">newPrimArray</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-identifier hs-type">SatInt</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">2</span></span><span>
 </span><span id="line-124"></span><span>    </span><span class="hs-keyword">let</span><span>
-</span><span id="line-125"></span><span>        </span><span id="local-6989586621681498764"><span class="annot"><span class="annottext">cpuIx :: Int
-</span><a href="#local-6989586621681498764"><span class="hs-identifier hs-var hs-var">cpuIx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span id="line-125"></span><span>        </span><span id="local-6989586621681498756"><span class="annot"><span class="annottext">cpuIx :: Int
+</span><a href="#local-6989586621681498756"><span class="hs-identifier hs-var hs-var">cpuIx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span>
-</span><span id="line-126"></span><span>        </span><span id="local-6989586621681498766"><span class="annot"><span class="annottext">memIx :: Int
-</span><a href="#local-6989586621681498766"><span class="hs-identifier hs-var hs-var">memIx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span id="line-126"></span><span>        </span><span id="local-6989586621681498758"><span class="annot"><span class="annottext">memIx :: Int
+</span><a href="#local-6989586621681498758"><span class="hs-identifier hs-var hs-var">memIx</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span>
-</span><span id="line-127"></span><span>        </span><span id="local-6989586621681498775"><span class="annot"><span class="annottext">readCpu :: ST s ExCPU
-</span><a href="#local-6989586621681498775"><span class="hs-identifier hs-var hs-var">readCpu</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall a b. Coercible a b =&gt; a -&gt; b
+</span><span id="line-127"></span><span>        </span><span id="local-6989586621681498767"><span class="annot"><span class="annottext">readCpu :: ST s ExCPU
+</span><a href="#local-6989586621681498767"><span class="hs-identifier hs-var hs-var">readCpu</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall a b. Coercible a b =&gt; a -&gt; b
 forall a b. Coercible a b =&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExCPU"><span class="hs-identifier hs-type">ExCPU</span></a></span><span> </span><span class="annot"><span class="annottext">(SatInt -&gt; ExCPU) -&gt; ST s SatInt -&gt; ST s ExCPU
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
@@ -749,25 +749,25 @@ forall a (m :: * -&gt; *).
 (Prim a, PrimMonad m) =&gt;
 MutablePrimArray (PrimState m) a -&gt; Int -&gt; m a
 </span><span class="hs-identifier hs-var">readPrimArray</span></span><span> </span><span class="annot"><span class="annottext">MutablePrimArray (PrimState (ST s)) SatInt
-</span><a href="#local-6989586621681498760"><span class="hs-identifier hs-var">ref</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621681498764"><span class="hs-identifier hs-var">cpuIx</span></a></span><span>
-</span><span id="line-128"></span><span>        </span><span id="local-6989586621681498798"><span class="annot"><span class="annottext">writeCpu :: a -&gt; m ()
-</span><a href="#local-6989586621681498798"><span class="hs-identifier hs-var hs-var">writeCpu</span></a></span></span><span> </span><span id="local-6989586621681498799"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621681498799"><span class="hs-identifier hs-var">cpu</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MutablePrimArray (PrimState m) SatInt -&gt; Int -&gt; SatInt -&gt; m ()
+</span><a href="#local-6989586621681498752"><span class="hs-identifier hs-var">ref</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621681498756"><span class="hs-identifier hs-var">cpuIx</span></a></span><span>
+</span><span id="line-128"></span><span>        </span><span id="local-6989586621681498790"><span class="annot"><span class="annottext">writeCpu :: a -&gt; m ()
+</span><a href="#local-6989586621681498790"><span class="hs-identifier hs-var hs-var">writeCpu</span></a></span></span><span> </span><span id="local-6989586621681498791"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621681498791"><span class="hs-identifier hs-var">cpu</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MutablePrimArray (PrimState m) SatInt -&gt; Int -&gt; SatInt -&gt; m ()
 forall a (m :: * -&gt; *).
 (Prim a, PrimMonad m) =&gt;
 MutablePrimArray (PrimState m) a -&gt; Int -&gt; a -&gt; m ()
 </span><span class="hs-identifier hs-var">writePrimArray</span></span><span> </span><span class="annot"><span class="annottext">MutablePrimArray (PrimState m) SatInt
 MutablePrimArray (PrimState (ST s)) SatInt
-</span><a href="#local-6989586621681498760"><span class="hs-identifier hs-var">ref</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621681498764"><span class="hs-identifier hs-var">cpuIx</span></a></span><span> </span><span class="annot"><span class="annottext">(SatInt -&gt; m ()) -&gt; SatInt -&gt; m ()
+</span><a href="#local-6989586621681498752"><span class="hs-identifier hs-var">ref</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621681498756"><span class="hs-identifier hs-var">cpuIx</span></a></span><span> </span><span class="annot"><span class="annottext">(SatInt -&gt; m ()) -&gt; SatInt -&gt; m ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; SatInt
 forall a b. Coercible a b =&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621681498799"><span class="hs-identifier hs-var">cpu</span></a></span><span>
-</span><span id="line-129"></span><span>        </span><span id="local-6989586621681498808"><span class="annot"><span class="annottext">readMem :: ST s ExMemory
-</span><a href="#local-6989586621681498808"><span class="hs-identifier hs-var hs-var">readMem</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall a b. Coercible a b =&gt; a -&gt; b
+</span><a href="#local-6989586621681498791"><span class="hs-identifier hs-var">cpu</span></a></span><span>
+</span><span id="line-129"></span><span>        </span><span id="local-6989586621681498800"><span class="annot"><span class="annottext">readMem :: ST s ExMemory
+</span><a href="#local-6989586621681498800"><span class="hs-identifier hs-var hs-var">readMem</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall a b. Coercible a b =&gt; a -&gt; b
 forall a b. Coercible a b =&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExMemory"><span class="hs-identifier hs-type">ExMemory</span></a></span><span> </span><span class="annot"><span class="annottext">(SatInt -&gt; ExMemory) -&gt; ST s SatInt -&gt; ST s ExMemory
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
@@ -776,66 +776,66 @@ forall a (m :: * -&gt; *).
 (Prim a, PrimMonad m) =&gt;
 MutablePrimArray (PrimState m) a -&gt; Int -&gt; m a
 </span><span class="hs-identifier hs-var">readPrimArray</span></span><span> </span><span class="annot"><span class="annottext">MutablePrimArray (PrimState (ST s)) SatInt
-</span><a href="#local-6989586621681498760"><span class="hs-identifier hs-var">ref</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621681498766"><span class="hs-identifier hs-var">memIx</span></a></span><span>
-</span><span id="line-130"></span><span>        </span><span id="local-6989586621681498826"><span class="annot"><span class="annottext">writeMem :: a -&gt; m ()
-</span><a href="#local-6989586621681498826"><span class="hs-identifier hs-var hs-var">writeMem</span></a></span></span><span> </span><span id="local-6989586621681498827"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621681498827"><span class="hs-identifier hs-var">mem</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MutablePrimArray (PrimState m) SatInt -&gt; Int -&gt; SatInt -&gt; m ()
+</span><a href="#local-6989586621681498752"><span class="hs-identifier hs-var">ref</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621681498758"><span class="hs-identifier hs-var">memIx</span></a></span><span>
+</span><span id="line-130"></span><span>        </span><span id="local-6989586621681498818"><span class="annot"><span class="annottext">writeMem :: a -&gt; m ()
+</span><a href="#local-6989586621681498818"><span class="hs-identifier hs-var hs-var">writeMem</span></a></span></span><span> </span><span id="local-6989586621681498819"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621681498819"><span class="hs-identifier hs-var">mem</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MutablePrimArray (PrimState m) SatInt -&gt; Int -&gt; SatInt -&gt; m ()
 forall a (m :: * -&gt; *).
 (Prim a, PrimMonad m) =&gt;
 MutablePrimArray (PrimState m) a -&gt; Int -&gt; a -&gt; m ()
 </span><span class="hs-identifier hs-var">writePrimArray</span></span><span> </span><span class="annot"><span class="annottext">MutablePrimArray (PrimState m) SatInt
 MutablePrimArray (PrimState (ST s)) SatInt
-</span><a href="#local-6989586621681498760"><span class="hs-identifier hs-var">ref</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621681498766"><span class="hs-identifier hs-var">memIx</span></a></span><span> </span><span class="annot"><span class="annottext">(SatInt -&gt; m ()) -&gt; SatInt -&gt; m ()
+</span><a href="#local-6989586621681498752"><span class="hs-identifier hs-var">ref</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621681498758"><span class="hs-identifier hs-var">memIx</span></a></span><span> </span><span class="annot"><span class="annottext">(SatInt -&gt; m ()) -&gt; SatInt -&gt; m ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; SatInt
 forall a b. Coercible a b =&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621681498827"><span class="hs-identifier hs-var">mem</span></a></span><span>
+</span><a href="#local-6989586621681498819"><span class="hs-identifier hs-var">mem</span></a></span><span>
 </span><span id="line-131"></span><span>
 </span><span id="line-132"></span><span>    </span><span class="annot"><span class="annottext">ExCPU -&gt; ST s ()
 forall {a} {m :: * -&gt; *}.
 (Coercible a SatInt, PrimState m ~ PrimState (ST s),
  PrimMonad m) =&gt;
 a -&gt; m ()
-</span><a href="#local-6989586621681498798"><span class="hs-identifier hs-var">writeCpu</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621681498742"><span class="hs-identifier hs-var">cpuInit</span></a></span><span>
+</span><a href="#local-6989586621681498790"><span class="hs-identifier hs-var">writeCpu</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU
+</span><a href="#local-6989586621681498734"><span class="hs-identifier hs-var">cpuInit</span></a></span><span>
 </span><span id="line-133"></span><span>    </span><span class="annot"><span class="annottext">ExMemory -&gt; ST s ()
 forall {a} {m :: * -&gt; *}.
 (Coercible a SatInt, PrimState m ~ PrimState (ST s),
  PrimMonad m) =&gt;
 a -&gt; m ()
-</span><a href="#local-6989586621681498826"><span class="hs-identifier hs-var">writeMem</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621681498743"><span class="hs-identifier hs-var">memInit</span></a></span><span>
+</span><a href="#local-6989586621681498818"><span class="hs-identifier hs-var">writeMem</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory
+</span><a href="#local-6989586621681498735"><span class="hs-identifier hs-var">memInit</span></a></span><span>
 </span><span id="line-134"></span><span>    </span><span class="hs-keyword">let</span><span>
-</span><span id="line-135"></span><span>        </span><span id="local-6989586621681498874"><span class="annot"><span class="annottext">spend :: p -&gt; ExBudget -&gt; CekM uni fun s ()
-</span><a href="#local-6989586621681498874"><span class="hs-identifier hs-var hs-var">spend</span></a></span></span><span> </span><span class="annot"><span class="annottext">p
-</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExBudget"><span class="hs-identifier hs-type">ExBudget</span></a></span><span> </span><span id="local-6989586621681498875"><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621681498875"><span class="hs-identifier hs-var">cpuToSpend</span></a></span></span><span> </span><span id="local-6989586621681498876"><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621681498876"><span class="hs-identifier hs-var">memToSpend</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-136"></span><span>            </span><span id="local-6989586621681498877"><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621681498877"><span class="hs-identifier hs-var">cpuLeft</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ST s ExCPU -&gt; CekM uni fun s ExCPU
+</span><span id="line-135"></span><span>        </span><span id="local-6989586621681498866"><span class="annot"><span class="annottext">spend :: p -&gt; ExBudget -&gt; CekM uni fun s ()
+</span><a href="#local-6989586621681498866"><span class="hs-identifier hs-var hs-var">spend</span></a></span></span><span> </span><span class="annot"><span class="annottext">p
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExBudget"><span class="hs-identifier hs-type">ExBudget</span></a></span><span> </span><span id="local-6989586621681498867"><span class="annot"><span class="annottext">ExCPU
+</span><a href="#local-6989586621681498867"><span class="hs-identifier hs-var">cpuToSpend</span></a></span></span><span> </span><span id="local-6989586621681498868"><span class="annot"><span class="annottext">ExMemory
+</span><a href="#local-6989586621681498868"><span class="hs-identifier hs-var">memToSpend</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-136"></span><span>            </span><span id="local-6989586621681498869"><span class="annot"><span class="annottext">ExCPU
+</span><a href="#local-6989586621681498869"><span class="hs-identifier hs-var">cpuLeft</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ST s ExCPU -&gt; CekM uni fun s ExCPU
 forall (uni :: * -&gt; *) fun s a. ST s a -&gt; CekM uni fun s a
 </span><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#CekM"><span class="hs-identifier hs-var">CekM</span></a></span><span> </span><span class="annot"><span class="annottext">ST s ExCPU
-</span><a href="#local-6989586621681498775"><span class="hs-identifier hs-var">readCpu</span></a></span><span>
-</span><span id="line-137"></span><span>            </span><span id="local-6989586621681498878"><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621681498878"><span class="hs-identifier hs-var">memLeft</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ST s ExMemory -&gt; CekM uni fun s ExMemory
+</span><a href="#local-6989586621681498767"><span class="hs-identifier hs-var">readCpu</span></a></span><span>
+</span><span id="line-137"></span><span>            </span><span id="local-6989586621681498870"><span class="annot"><span class="annottext">ExMemory
+</span><a href="#local-6989586621681498870"><span class="hs-identifier hs-var">memLeft</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ST s ExMemory -&gt; CekM uni fun s ExMemory
 forall (uni :: * -&gt; *) fun s a. ST s a -&gt; CekM uni fun s a
 </span><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#CekM"><span class="hs-identifier hs-var">CekM</span></a></span><span> </span><span class="annot"><span class="annottext">ST s ExMemory
-</span><a href="#local-6989586621681498808"><span class="hs-identifier hs-var">readMem</span></a></span><span>
-</span><span id="line-138"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621681498880"><span class="annot"><span class="annottext">cpuLeft' :: ExCPU
-</span><a href="#local-6989586621681498880"><span class="hs-identifier hs-var hs-var">cpuLeft'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621681498877"><span class="hs-identifier hs-var">cpuLeft</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExCPU -&gt; ExCPU
+</span><a href="#local-6989586621681498800"><span class="hs-identifier hs-var">readMem</span></a></span><span>
+</span><span id="line-138"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621681498872"><span class="annot"><span class="annottext">cpuLeft' :: ExCPU
+</span><a href="#local-6989586621681498872"><span class="hs-identifier hs-var hs-var">cpuLeft'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU
+</span><a href="#local-6989586621681498869"><span class="hs-identifier hs-var">cpuLeft</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExCPU -&gt; ExCPU
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Num.html#-"><span class="hs-glyph hs-var">-</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621681498875"><span class="hs-identifier hs-var">cpuToSpend</span></a></span><span>
-</span><span id="line-139"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621681498882"><span class="annot"><span class="annottext">memLeft' :: ExMemory
-</span><a href="#local-6989586621681498882"><span class="hs-identifier hs-var hs-var">memLeft'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621681498878"><span class="hs-identifier hs-var">memLeft</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory -&gt; ExMemory -&gt; ExMemory
+</span><a href="#local-6989586621681498867"><span class="hs-identifier hs-var">cpuToSpend</span></a></span><span>
+</span><span id="line-139"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621681498874"><span class="annot"><span class="annottext">memLeft' :: ExMemory
+</span><a href="#local-6989586621681498874"><span class="hs-identifier hs-var hs-var">memLeft'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExMemory
+</span><a href="#local-6989586621681498870"><span class="hs-identifier hs-var">memLeft</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory -&gt; ExMemory -&gt; ExMemory
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Num.html#-"><span class="hs-glyph hs-var">-</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621681498876"><span class="hs-identifier hs-var">memToSpend</span></a></span><span>
+</span><a href="#local-6989586621681498868"><span class="hs-identifier hs-var">memToSpend</span></a></span><span>
 </span><span id="line-140"></span><span>            </span><span class="hs-comment">-- Note that even if we throw an out-of-budget error, we still need to record</span><span>
 </span><span id="line-141"></span><span>            </span><span class="hs-comment">-- what the final state was.</span><span>
 </span><span id="line-142"></span><span>            </span><span class="annot"><span class="annottext">ST s () -&gt; CekM uni fun s ()
@@ -847,8 +847,8 @@ forall {a} {m :: * -&gt; *}.
 (Coercible a SatInt, PrimState m ~ PrimState (ST s),
  PrimMonad m) =&gt;
 a -&gt; m ()
-</span><a href="#local-6989586621681498798"><span class="hs-identifier hs-var">writeCpu</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621681498880"><span class="hs-identifier hs-var">cpuLeft'</span></a></span><span>
+</span><a href="#local-6989586621681498790"><span class="hs-identifier hs-var">writeCpu</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU
+</span><a href="#local-6989586621681498872"><span class="hs-identifier hs-var">cpuLeft'</span></a></span><span>
 </span><span id="line-143"></span><span>            </span><span class="annot"><span class="annottext">ST s () -&gt; CekM uni fun s ()
 forall (uni :: * -&gt; *) fun s a. ST s a -&gt; CekM uni fun s a
 </span><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#CekM"><span class="hs-identifier hs-var">CekM</span></a></span><span> </span><span class="annot"><span class="annottext">(ST s () -&gt; CekM uni fun s ()) -&gt; ST s () -&gt; CekM uni fun s ()
@@ -858,28 +858,28 @@ forall {a} {m :: * -&gt; *}.
 (Coercible a SatInt, PrimState m ~ PrimState (ST s),
  PrimMonad m) =&gt;
 a -&gt; m ()
-</span><a href="#local-6989586621681498826"><span class="hs-identifier hs-var">writeMem</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621681498882"><span class="hs-identifier hs-var">memLeft'</span></a></span><span>
+</span><a href="#local-6989586621681498818"><span class="hs-identifier hs-var">writeMem</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory
+</span><a href="#local-6989586621681498874"><span class="hs-identifier hs-var">memLeft'</span></a></span><span>
 </span><span id="line-144"></span><span>            </span><span class="annot"><span class="annottext">Bool -&gt; CekM uni fun s () -&gt; CekM uni fun s ()
 forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#when"><span class="hs-identifier hs-var">when</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621681498880"><span class="hs-identifier hs-var">cpuLeft'</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExCPU -&gt; Bool
+</span><a href="#local-6989586621681498872"><span class="hs-identifier hs-var">cpuLeft'</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExCPU -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#%3C"><span class="hs-operator hs-var">&lt;</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU
 </span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#%7C%7C"><span class="hs-operator hs-var">||</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621681498882"><span class="hs-identifier hs-var">memLeft'</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory -&gt; ExMemory -&gt; Bool
+</span><a href="#local-6989586621681498874"><span class="hs-identifier hs-var">memLeft'</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory -&gt; ExMemory -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#%3C"><span class="hs-operator hs-var">&lt;</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory
 </span><span class="hs-number">0</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(CekM uni fun s () -&gt; CekM uni fun s ())
 -&gt; CekM uni fun s () -&gt; CekM uni fun s ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-145"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621681498885"><span class="annot"><span class="annottext">budgetLeft :: ExBudget
-</span><a href="#local-6989586621681498885"><span class="hs-identifier hs-var hs-var">budgetLeft</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExMemory -&gt; ExBudget
+</span><span id="line-145"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621681498877"><span class="annot"><span class="annottext">budgetLeft :: ExBudget
+</span><a href="#local-6989586621681498877"><span class="hs-identifier hs-var hs-var">budgetLeft</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExMemory -&gt; ExBudget
 </span><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExBudget"><span class="hs-identifier hs-var">ExBudget</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621681498880"><span class="hs-identifier hs-var">cpuLeft'</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621681498882"><span class="hs-identifier hs-var">memLeft'</span></a></span><span>
+</span><a href="#local-6989586621681498872"><span class="hs-identifier hs-var">cpuLeft'</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory
+</span><a href="#local-6989586621681498874"><span class="hs-identifier hs-var">memLeft'</span></a></span><span>
 </span><span id="line-146"></span><span>                </span><span class="annot"><span class="annottext">AReview
   (EvaluationError CekUserError (MachineError fun))
   (EvaluationError CekUserError (MachineError fun))
@@ -914,12 +914,12 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget -&gt; ExRestrictingBudget
 </span><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExRestrictingBudget"><span class="hs-identifier hs-var">ExRestrictingBudget</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621681498885"><span class="hs-identifier hs-var">budgetLeft</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621681498877"><span class="hs-identifier hs-var">budgetLeft</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-148"></span><span>                    </span><span class="annot"><span class="annottext">Maybe (Term NamedDeBruijn uni fun ())
 forall a. Maybe a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span>
-</span><span id="line-149"></span><span>        </span><span id="local-6989586621681498897"><span class="annot"><span class="annottext">spender :: CekBudgetSpender uni fun s
-</span><a href="#local-6989586621681498897"><span class="hs-identifier hs-var hs-var">spender</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ExBudgetCategory fun -&gt; ExBudget -&gt; CekM uni fun s ())
+</span><span id="line-149"></span><span>        </span><span id="local-6989586621681498889"><span class="annot"><span class="annottext">spender :: CekBudgetSpender uni fun s
+</span><a href="#local-6989586621681498889"><span class="hs-identifier hs-var hs-var">spender</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ExBudgetCategory fun -&gt; ExBudget -&gt; CekM uni fun s ())
 -&gt; CekBudgetSpender uni fun s
 forall (uni :: * -&gt; *) fun s.
 (ExBudgetCategory fun -&gt; ExBudget -&gt; CekM uni fun s ())
@@ -929,34 +929,34 @@ forall {uni :: * -&gt; *} {fun} {p}.
 (Everywhere uni PrettyConst, Typeable uni, Typeable fun,
  Pretty fun, Closed uni, PrettyParens (SomeTypeIn uni)) =&gt;
 p -&gt; ExBudget -&gt; CekM uni fun s ()
-</span><a href="#local-6989586621681498874"><span class="hs-identifier hs-var">spend</span></a></span><span>
-</span><span id="line-150"></span><span>        </span><span id="local-6989586621681498901"><span class="annot"><span class="annottext">remaining :: ST s ExBudget
-</span><a href="#local-6989586621681498901"><span class="hs-identifier hs-var hs-var">remaining</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExMemory -&gt; ExBudget
+</span><a href="#local-6989586621681498866"><span class="hs-identifier hs-var">spend</span></a></span><span>
+</span><span id="line-150"></span><span>        </span><span id="local-6989586621681498893"><span class="annot"><span class="annottext">remaining :: ST s ExBudget
+</span><a href="#local-6989586621681498893"><span class="hs-identifier hs-var hs-var">remaining</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExMemory -&gt; ExBudget
 </span><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExBudget"><span class="hs-identifier hs-var">ExBudget</span></a></span><span> </span><span class="annot"><span class="annottext">(ExCPU -&gt; ExMemory -&gt; ExBudget)
 -&gt; ST s ExCPU -&gt; ST s (ExMemory -&gt; ExBudget)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">ST s ExCPU
-</span><a href="#local-6989586621681498775"><span class="hs-identifier hs-var">readCpu</span></a></span><span> </span><span class="annot"><span class="annottext">ST s (ExMemory -&gt; ExBudget) -&gt; ST s ExMemory -&gt; ST s ExBudget
+</span><a href="#local-6989586621681498767"><span class="hs-identifier hs-var">readCpu</span></a></span><span> </span><span class="annot"><span class="annottext">ST s (ExMemory -&gt; ExBudget) -&gt; ST s ExMemory -&gt; ST s ExBudget
 forall a b. ST s (a -&gt; b) -&gt; ST s a -&gt; ST s b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">ST s ExMemory
-</span><a href="#local-6989586621681498808"><span class="hs-identifier hs-var">readMem</span></a></span><span>
-</span><span id="line-151"></span><span>        </span><span id="local-6989586621681498907"><span class="annot"><span class="annottext">cumulative :: ST s ExBudget
-</span><a href="#local-6989586621681498907"><span class="hs-identifier hs-var hs-var">cumulative</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-152"></span><span>            </span><span id="local-6989586621681498908"><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621681498908"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ST s ExBudget
-</span><a href="#local-6989586621681498901"><span class="hs-identifier hs-var">remaining</span></a></span><span>
+</span><a href="#local-6989586621681498800"><span class="hs-identifier hs-var">readMem</span></a></span><span>
+</span><span id="line-151"></span><span>        </span><span id="local-6989586621681498899"><span class="annot"><span class="annottext">cumulative :: ST s ExBudget
+</span><a href="#local-6989586621681498899"><span class="hs-identifier hs-var hs-var">cumulative</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-152"></span><span>            </span><span id="local-6989586621681498900"><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621681498900"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ST s ExBudget
+</span><a href="#local-6989586621681498893"><span class="hs-identifier hs-var">remaining</span></a></span><span>
 </span><span id="line-153"></span><span>            </span><span class="annot"><span class="annottext">ExBudget -&gt; ST s ExBudget
 forall a. a -&gt; ST s a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(ExBudget -&gt; ST s ExBudget) -&gt; ExBudget -&gt; ST s ExBudget
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621681498741"><span class="hs-identifier hs-var">initB</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget -&gt; ExBudget -&gt; ExBudget
+</span><a href="#local-6989586621681498733"><span class="hs-identifier hs-var">initB</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget -&gt; ExBudget -&gt; ExBudget
 </span><a href="PlutusCore.Evaluation.Machine.ExBudget.html#minusExBudget"><span class="hs-operator hs-var">`minusExBudget`</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621681498908"><span class="hs-identifier hs-var">r</span></a></span><span>
-</span><span id="line-154"></span><span>        </span><span id="local-6989586621681498911"><span class="annot"><span class="annottext">final :: ST s RestrictingSt
-</span><a href="#local-6989586621681498911"><span class="hs-identifier hs-var hs-var">final</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExRestrictingBudget -&gt; RestrictingSt
+</span><a href="#local-6989586621681498900"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-154"></span><span>        </span><span id="local-6989586621681498903"><span class="annot"><span class="annottext">final :: ST s RestrictingSt
+</span><a href="#local-6989586621681498903"><span class="hs-identifier hs-var hs-var">final</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExRestrictingBudget -&gt; RestrictingSt
 </span><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#RestrictingSt"><span class="hs-identifier hs-var">RestrictingSt</span></a></span><span> </span><span class="annot"><span class="annottext">(ExRestrictingBudget -&gt; RestrictingSt)
 -&gt; (ExBudget -&gt; ExRestrictingBudget) -&gt; ExBudget -&gt; RestrictingSt
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
@@ -964,7 +964,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="PlutusCore.Evaluation.Machine.ExBudget.html#ExRestrictingBudget"><span class="hs-identifier hs-var">ExRestrictingBudget</span></a></span><span> </span><span class="annot"><span class="annottext">(ExBudget -&gt; RestrictingSt) -&gt; ST s ExBudget -&gt; ST s RestrictingSt
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">ST s ExBudget
-</span><a href="#local-6989586621681498901"><span class="hs-identifier hs-var">remaining</span></a></span><span>
+</span><a href="#local-6989586621681498893"><span class="hs-identifier hs-var">remaining</span></a></span><span>
 </span><span id="line-155"></span><span>    </span><span class="annot"><span class="annottext">ExBudgetInfo RestrictingSt uni fun s
 -&gt; ST s (ExBudgetInfo RestrictingSt uni fun s)
 forall a. a -&gt; ST s a
@@ -982,12 +982,12 @@ forall cost (uni :: * -&gt; *) fun s.
 CekBudgetSpender uni fun s
 -&gt; ST s cost -&gt; ST s ExBudget -&gt; ExBudgetInfo cost uni fun s
 </span><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#ExBudgetInfo"><span class="hs-identifier hs-var">ExBudgetInfo</span></a></span><span> </span><span class="annot"><span class="annottext">CekBudgetSpender uni fun s
-</span><a href="#local-6989586621681498897"><span class="hs-identifier hs-var">spender</span></a></span><span> </span><span class="annot"><span class="annottext">ST s RestrictingSt
-</span><a href="#local-6989586621681498911"><span class="hs-identifier hs-var">final</span></a></span><span> </span><span class="annot"><span class="annottext">ST s ExBudget
-</span><a href="#local-6989586621681498907"><span class="hs-identifier hs-var">cumulative</span></a></span><span>
+</span><a href="#local-6989586621681498889"><span class="hs-identifier hs-var">spender</span></a></span><span> </span><span class="annot"><span class="annottext">ST s RestrictingSt
+</span><a href="#local-6989586621681498903"><span class="hs-identifier hs-var">final</span></a></span><span> </span><span class="annot"><span class="annottext">ST s ExBudget
+</span><a href="#local-6989586621681498899"><span class="hs-identifier hs-var">cumulative</span></a></span><span>
 </span><span id="line-156"></span><span>
 </span><span id="line-157"></span><span class="annot"><span class="hs-comment">-- | 'restricting' instantiated at 'enormousBudget'.</span></span><span>
-</span><span id="line-158"></span><span id="local-6989586621681498097"><span id="local-6989586621681498098"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#restrictingEnormous"><span class="hs-identifier hs-type">restrictingEnormous</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Pretty.PrettyConst.html#ThrowableBuiltins"><span class="hs-identifier hs-type">ThrowableBuiltins</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681498097"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681498098"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#ExBudgetMode"><span class="hs-identifier hs-type">ExBudgetMode</span></a></span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#RestrictingSt"><span class="hs-identifier hs-type">RestrictingSt</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681498097"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681498098"><span class="hs-identifier hs-type">fun</span></a></span></span></span><span>
+</span><span id="line-158"></span><span id="local-6989586621681498089"><span id="local-6989586621681498090"><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#restrictingEnormous"><span class="hs-identifier hs-type">restrictingEnormous</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Pretty.PrettyConst.html#ThrowableBuiltins"><span class="hs-identifier hs-type">ThrowableBuiltins</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681498089"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681498090"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.Internal.html#ExBudgetMode"><span class="hs-identifier hs-type">ExBudgetMode</span></a></span><span> </span><span class="annot"><a href="UntypedPlutusCore.Evaluation.Machine.Cek.ExBudgetMode.html#RestrictingSt"><span class="hs-identifier hs-type">RestrictingSt</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681498089"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681498090"><span class="hs-identifier hs-type">fun</span></a></span></span></span><span>
 </span><span id="line-159"></span><span id="restrictingEnormous"><span class="annot"><span class="annottext">restrictingEnormous :: forall (uni :: * -&gt; *) fun.
 ThrowableBuiltins uni fun =&gt;
 ExBudgetMode RestrictingSt uni fun

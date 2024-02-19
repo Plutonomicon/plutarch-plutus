@@ -62,10 +62,10 @@
 </span><span id="line-62"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Test.Hspec</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Expectation</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">expectationFailure</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">shouldBe</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">shouldSatisfy</span></span><span class="hs-special">)</span><span>
 </span><span id="line-63"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Test.Tasty.HUnit</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">assertFailure</span></span><span class="hs-special">)</span><span>
 </span><span id="line-64"></span><span>
-</span><span id="line-65"></span><span id="local-6989586621679216475"><span class="annot"><a href="Plutarch.Test.html#comp"><span class="hs-identifier hs-type">comp</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216475"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Scripts.Script</span></span></span><span>
+</span><span id="line-65"></span><span id="local-6989586621679216467"><span class="annot"><a href="Plutarch.Test.html#comp"><span class="hs-identifier hs-type">comp</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216467"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Scripts.Script</span></span></span><span>
 </span><span id="line-66"></span><span id="comp"><span class="annot"><span class="annottext">comp :: forall (a :: PType). ClosedTerm a -&gt; Script
-</span><a href="Plutarch.Test.html#comp"><span class="hs-identifier hs-var hs-var">comp</span></a></span></span><span> </span><span id="local-6989586621679216716"><span class="annot"><span class="annottext">ClosedTerm a
-</span><a href="#local-6989586621679216716"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Script)
+</span><a href="Plutarch.Test.html#comp"><span class="hs-identifier hs-var hs-var">comp</span></a></span></span><span> </span><span id="local-6989586621679216708"><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679216708"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Script)
 -&gt; (Script -&gt; Script) -&gt; Either Text Script -&gt; Script
 forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Either.html#either"><span class="hs-identifier hs-var">either</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Script
@@ -83,48 +83,48 @@ forall (a :: PType). Config -&gt; ClosedTerm a -&gt; Either Text Script
 </span><span class="hs-identifier hs-var">tracingMode</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TracingMode
 </span><span class="hs-identifier hs-var">DetTracing</span></span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s a
 ClosedTerm a
-</span><a href="#local-6989586621679216716"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><a href="#local-6989586621679216708"><span class="hs-identifier hs-var">t</span></a></span><span>
 </span><span id="line-67"></span><span>
 </span><span id="line-68"></span><span class="annot"><span class="hs-comment">{- |
     Like `shouldBe` but but for Plutarch terms
 -}</span></span><span>
-</span><span id="line-71"></span><span id="local-6989586621679216497"><span id="local-6989586621679216498"><span class="annot"><a href="Plutarch.Test.html#pshouldBe"><span class="hs-identifier hs-type">pshouldBe</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216497"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216498"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Expectation</span></span></span></span><span>
+</span><span id="line-71"></span><span id="local-6989586621679216489"><span id="local-6989586621679216490"><span class="annot"><a href="Plutarch.Test.html#pshouldBe"><span class="hs-identifier hs-type">pshouldBe</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216489"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216490"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Expectation</span></span></span></span><span>
 </span><span id="line-72"></span><span id="pshouldBe"><span class="annot"><span class="annottext">pshouldBe :: forall (a :: PType) (b :: PType).
 ClosedTerm a -&gt; ClosedTerm b -&gt; Expectation
-</span><a href="Plutarch.Test.html#pshouldBe"><span class="hs-identifier hs-var hs-var">pshouldBe</span></a></span></span><span> </span><span id="local-6989586621679216832"><span class="annot"><span class="annottext">ClosedTerm a
-</span><a href="#local-6989586621679216832"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679216833"><span class="annot"><span class="annottext">ClosedTerm b
-</span><a href="#local-6989586621679216833"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-73"></span><span>  </span><span id="local-6989586621679216834"><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679216834"><span class="hs-identifier hs-var">p1</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Script -&gt; IO Script
-</span><a href="#local-6989586621679216835"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="annot"><span class="annottext">(Script -&gt; IO Script) -&gt; Script -&gt; IO Script
+</span><a href="Plutarch.Test.html#pshouldBe"><span class="hs-identifier hs-var hs-var">pshouldBe</span></a></span></span><span> </span><span id="local-6989586621679216824"><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679216824"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679216825"><span class="annot"><span class="annottext">ClosedTerm b
+</span><a href="#local-6989586621679216825"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-73"></span><span>  </span><span id="local-6989586621679216826"><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679216826"><span class="hs-identifier hs-var">p1</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Script -&gt; IO Script
+</span><a href="#local-6989586621679216827"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="annot"><span class="annottext">(Script -&gt; IO Script) -&gt; Script -&gt; IO Script
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ClosedTerm a -&gt; Script
 forall (a :: PType). ClosedTerm a -&gt; Script
 </span><a href="Plutarch.Test.html#comp"><span class="hs-identifier hs-var">comp</span></a></span><span> </span><span class="annot"><span class="annottext">Term s a
 ClosedTerm a
-</span><a href="#local-6989586621679216832"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-74"></span><span>  </span><span id="local-6989586621679216836"><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679216836"><span class="hs-identifier hs-var">p2</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Script -&gt; IO Script
-</span><a href="#local-6989586621679216835"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="annot"><span class="annottext">(Script -&gt; IO Script) -&gt; Script -&gt; IO Script
+</span><a href="#local-6989586621679216824"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-74"></span><span>  </span><span id="local-6989586621679216828"><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679216828"><span class="hs-identifier hs-var">p2</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Script -&gt; IO Script
+</span><a href="#local-6989586621679216827"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="annot"><span class="annottext">(Script -&gt; IO Script) -&gt; Script -&gt; IO Script
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ClosedTerm b -&gt; Script
 forall (a :: PType). ClosedTerm a -&gt; Script
 </span><a href="Plutarch.Test.html#comp"><span class="hs-identifier hs-var">comp</span></a></span><span> </span><span class="annot"><span class="annottext">Term s b
 ClosedTerm b
-</span><a href="#local-6989586621679216833"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><a href="#local-6989586621679216825"><span class="hs-identifier hs-var">y</span></a></span><span>
 </span><span id="line-75"></span><span>  </span><span class="annot"><span class="annottext">Script -&gt; Script -&gt; Expectation
 </span><a href="Plutarch.Test.html#pscriptShouldBe"><span class="hs-identifier hs-var">pscriptShouldBe</span></a></span><span> </span><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679216834"><span class="hs-identifier hs-var">p1</span></a></span><span> </span><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679216836"><span class="hs-identifier hs-var">p2</span></a></span><span>
+</span><a href="#local-6989586621679216826"><span class="hs-identifier hs-var">p1</span></a></span><span> </span><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679216828"><span class="hs-identifier hs-var">p2</span></a></span><span>
 </span><span id="line-76"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-77"></span><span>    </span><span class="annot"><a href="#local-6989586621679216835"><span class="hs-identifier hs-type">eval</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Scripts.Script</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#IO"><span class="hs-identifier hs-type">IO</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Scripts.Script</span></span><span>
-</span><span id="line-78"></span><span>    </span><span id="local-6989586621679216835"><span class="annot"><span class="annottext">eval :: Script -&gt; IO Script
-</span><a href="#local-6989586621679216835"><span class="hs-identifier hs-var hs-var">eval</span></a></span></span><span> </span><span id="local-6989586621679216838"><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679216838"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Script -&gt; (Either EvalError Script, ExBudget, [Text])
+</span><span id="line-77"></span><span>    </span><span class="annot"><a href="#local-6989586621679216827"><span class="hs-identifier hs-type">eval</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Scripts.Script</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#IO"><span class="hs-identifier hs-type">IO</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Scripts.Script</span></span><span>
+</span><span id="line-78"></span><span>    </span><span id="local-6989586621679216827"><span class="annot"><span class="annottext">eval :: Script -&gt; IO Script
+</span><a href="#local-6989586621679216827"><span class="hs-identifier hs-var hs-var">eval</span></a></span></span><span> </span><span id="local-6989586621679216830"><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679216830"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Script -&gt; (Either EvalError Script, ExBudget, [Text])
 </span><span class="hs-identifier hs-var">evalScript</span></span><span> </span><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679216838"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-79"></span><span>      </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679216839"><span class="annot"><span class="annottext">EvalError
-</span><a href="#local-6989586621679216839"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679216830"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-79"></span><span>      </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679216831"><span class="annot"><span class="annottext">EvalError
+</span><a href="#local-6989586621679216831"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
 </span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; IO Script
 forall a. HasCallStack =&gt; String -&gt; IO a
@@ -136,34 +136,34 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError
-</span><a href="#local-6989586621679216839"><span class="hs-identifier hs-var">e</span></a></span><span>
-</span><span id="line-80"></span><span>      </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621679216841"><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679216841"><span class="hs-identifier hs-var">x'</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679216831"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-80"></span><span>      </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621679216833"><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679216833"><span class="hs-identifier hs-var">x'</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
 </span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Script -&gt; IO Script
 forall a. a -&gt; IO a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679216841"><span class="hs-identifier hs-var">x'</span></a></span><span>
+</span><a href="#local-6989586621679216833"><span class="hs-identifier hs-var">x'</span></a></span><span>
 </span><span id="line-81"></span><span>
 </span><span id="line-82"></span><span class="annot"><span class="hs-comment">{- |
   Like `pshouldBe` but on `Script`
 -}</span></span><span>
 </span><span id="line-85"></span><span class="annot"><a href="Plutarch.Test.html#pscriptShouldBe"><span class="hs-identifier hs-type">pscriptShouldBe</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Scripts.Script</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Scripts.Script</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Expectation</span></span><span>
 </span><span id="line-86"></span><span id="pscriptShouldBe"><span class="annot"><span class="annottext">pscriptShouldBe :: Script -&gt; Script -&gt; Expectation
-</span><a href="Plutarch.Test.html#pscriptShouldBe"><span class="hs-identifier hs-var hs-var">pscriptShouldBe</span></a></span></span><span> </span><span id="local-6989586621679216842"><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679216842"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679216843"><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679216843"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Plutarch.Test.html#pscriptShouldBe"><span class="hs-identifier hs-var hs-var">pscriptShouldBe</span></a></span></span><span> </span><span id="local-6989586621679216834"><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679216834"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679216835"><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679216835"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-87"></span><span>  </span><span class="annot"><span class="annottext">Script -&gt; String
 </span><span class="hs-identifier hs-var">printScript</span></span><span> </span><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679216842"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; Expectation
+</span><a href="#local-6989586621679216834"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; Expectation
 forall a. (HasCallStack, Show a, Eq a) =&gt; a -&gt; a -&gt; Expectation
 </span><span class="hs-operator hs-var">`shouldBe`</span></span><span> </span><span class="annot"><span class="annottext">Script -&gt; String
 </span><span class="hs-identifier hs-var">printScript</span></span><span> </span><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679216843"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><a href="#local-6989586621679216835"><span class="hs-identifier hs-var">y</span></a></span><span>
 </span><span id="line-88"></span><span>
 </span><span id="line-89"></span><span class="annot"><span class="hs-comment">-- | Like `@?=` but for Plutarch terms</span></span><span>
-</span><span id="line-90"></span><span id="local-6989586621679216844"><span id="local-6989586621679216845"><span class="annot"><a href="Plutarch.Test.html#%23%40%3F%3D"><span class="hs-operator hs-type">(#@?=)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216844"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216845"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Expectation</span></span></span></span><span>
+</span><span id="line-90"></span><span id="local-6989586621679216836"><span id="local-6989586621679216837"><span class="annot"><a href="Plutarch.Test.html#%23%40%3F%3D"><span class="hs-operator hs-type">(#@?=)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216836"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216837"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Expectation</span></span></span></span><span>
 </span><span id="line-91"></span><span id="%23%40%3F%3D"><span class="annot"><span class="annottext">#@?= :: forall (a :: PType) (b :: PType).
 ClosedTerm a -&gt; ClosedTerm b -&gt; Expectation
 </span><a href="Plutarch.Test.html#%23%40%3F%3D"><span class="hs-operator hs-var hs-var">(#@?=)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ClosedTerm a -&gt; ClosedTerm b -&gt; Expectation
@@ -172,12 +172,12 @@ ClosedTerm a -&gt; ClosedTerm b -&gt; Expectation
 </span><a href="Plutarch.Test.html#pshouldBe"><span class="hs-identifier hs-var">pshouldBe</span></a></span><span>
 </span><span id="line-92"></span><span>
 </span><span id="line-93"></span><span class="annot"><span class="hs-comment">-- | Asserts the term to be true</span></span><span>
-</span><span id="line-94"></span><span id="local-6989586621679216605"><span class="annot"><a href="Plutarch.Test.html#passert"><span class="hs-identifier hs-type">passert</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216605"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Expectation</span></span></span><span>
+</span><span id="line-94"></span><span id="local-6989586621679216597"><span class="annot"><a href="Plutarch.Test.html#passert"><span class="hs-identifier hs-type">passert</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216597"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Expectation</span></span></span><span>
 </span><span id="line-95"></span><span id="passert"><span class="annot"><span class="annottext">passert :: forall (a :: PType). ClosedTerm a -&gt; Expectation
-</span><a href="Plutarch.Test.html#passert"><span class="hs-identifier hs-var hs-var">passert</span></a></span></span><span> </span><span id="local-6989586621679216846"><span class="annot"><span class="annottext">ClosedTerm a
-</span><a href="#local-6989586621679216846"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s a
+</span><a href="Plutarch.Test.html#passert"><span class="hs-identifier hs-var hs-var">passert</span></a></span></span><span> </span><span id="local-6989586621679216838"><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679216838"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s a
 ClosedTerm a
-</span><a href="#local-6989586621679216846"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">ClosedTerm a -&gt; ClosedTerm PBool -&gt; Expectation
+</span><a href="#local-6989586621679216838"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">ClosedTerm a -&gt; ClosedTerm PBool -&gt; Expectation
 forall (a :: PType) (b :: PType).
 ClosedTerm a -&gt; ClosedTerm b -&gt; Expectation
 </span><a href="Plutarch.Test.html#%23%40%3F%3D"><span class="hs-operator hs-var">#@?=</span></a></span><span> </span><span class="annot"><span class="annottext">PBool s -&gt; Term s PBool
@@ -187,12 +187,12 @@ forall (s :: S). PBool s
 </span><span class="hs-identifier hs-var">PTrue</span></span><span>
 </span><span id="line-96"></span><span>
 </span><span id="line-97"></span><span class="annot"><span class="hs-comment">-- | Asserts the term to be false</span></span><span>
-</span><span id="line-98"></span><span id="local-6989586621679216849"><span class="annot"><a href="Plutarch.Test.html#passertNot"><span class="hs-identifier hs-type">passertNot</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216849"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Expectation</span></span></span><span>
+</span><span id="line-98"></span><span id="local-6989586621679216841"><span class="annot"><a href="Plutarch.Test.html#passertNot"><span class="hs-identifier hs-type">passertNot</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216841"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Expectation</span></span></span><span>
 </span><span id="line-99"></span><span id="passertNot"><span class="annot"><span class="annottext">passertNot :: forall (a :: PType). ClosedTerm a -&gt; Expectation
-</span><a href="Plutarch.Test.html#passertNot"><span class="hs-identifier hs-var hs-var">passertNot</span></a></span></span><span> </span><span id="local-6989586621679216850"><span class="annot"><span class="annottext">ClosedTerm a
-</span><a href="#local-6989586621679216850"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s a
+</span><a href="Plutarch.Test.html#passertNot"><span class="hs-identifier hs-var hs-var">passertNot</span></a></span></span><span> </span><span id="local-6989586621679216842"><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679216842"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s a
 ClosedTerm a
-</span><a href="#local-6989586621679216850"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">ClosedTerm a -&gt; ClosedTerm PBool -&gt; Expectation
+</span><a href="#local-6989586621679216842"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">ClosedTerm a -&gt; ClosedTerm PBool -&gt; Expectation
 forall (a :: PType) (b :: PType).
 ClosedTerm a -&gt; ClosedTerm b -&gt; Expectation
 </span><a href="Plutarch.Test.html#%23%40%3F%3D"><span class="hs-operator hs-var">#@?=</span></a></span><span> </span><span class="annot"><span class="annottext">PBool s -&gt; Term s PBool
@@ -202,10 +202,10 @@ forall (s :: S). PBool s
 </span><span class="hs-identifier hs-var">PFalse</span></span><span>
 </span><span id="line-100"></span><span>
 </span><span id="line-101"></span><span class="annot"><span class="hs-comment">-- | Asserts the term evaluates successfully without failing</span></span><span>
-</span><span id="line-102"></span><span id="local-6989586621679216852"><span class="annot"><a href="Plutarch.Test.html#psucceeds"><span class="hs-identifier hs-type">psucceeds</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216852"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Expectation</span></span></span><span>
+</span><span id="line-102"></span><span id="local-6989586621679216844"><span class="annot"><a href="Plutarch.Test.html#psucceeds"><span class="hs-identifier hs-type">psucceeds</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216844"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Expectation</span></span></span><span>
 </span><span id="line-103"></span><span id="psucceeds"><span class="annot"><span class="annottext">psucceeds :: forall (a :: PType). ClosedTerm a -&gt; Expectation
-</span><a href="Plutarch.Test.html#psucceeds"><span class="hs-identifier hs-var hs-var">psucceeds</span></a></span></span><span> </span><span id="local-6989586621679216856"><span class="annot"><span class="annottext">ClosedTerm a
-</span><a href="#local-6989586621679216856"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Plutarch.Test.html#psucceeds"><span class="hs-identifier hs-var hs-var">psucceeds</span></a></span></span><span> </span><span id="local-6989586621679216848"><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679216848"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-104"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Script -&gt; (Either EvalError Script, ExBudget, [Text])
 </span><span class="hs-identifier hs-var">evalScript</span></span><span> </span><span class="annot"><span class="annottext">(Script -&gt; (Either EvalError Script, ExBudget, [Text]))
 -&gt; Script -&gt; (Either EvalError Script, ExBudget, [Text])
@@ -214,7 +214,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall (a :: PType). ClosedTerm a -&gt; Script
 </span><a href="Plutarch.Test.html#comp"><span class="hs-identifier hs-var">comp</span></a></span><span> </span><span class="annot"><span class="annottext">Term s a
 ClosedTerm a
-</span><a href="#local-6989586621679216856"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679216848"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-105"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError
 </span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
 </span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
@@ -231,10 +231,10 @@ forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-107"></span><span>
 </span><span id="line-108"></span><span class="annot"><span class="hs-comment">-- | Asserts the term evaluates without success</span></span><span>
-</span><span id="line-109"></span><span id="local-6989586621679216857"><span class="annot"><a href="Plutarch.Test.html#pfails"><span class="hs-identifier hs-type">pfails</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216857"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Expectation</span></span></span><span>
+</span><span id="line-109"></span><span id="local-6989586621679216849"><span class="annot"><a href="Plutarch.Test.html#pfails"><span class="hs-identifier hs-type">pfails</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216849"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Expectation</span></span></span><span>
 </span><span id="line-110"></span><span id="pfails"><span class="annot"><span class="annottext">pfails :: forall (a :: PType). ClosedTerm a -&gt; Expectation
-</span><a href="Plutarch.Test.html#pfails"><span class="hs-identifier hs-var hs-var">pfails</span></a></span></span><span> </span><span id="local-6989586621679216861"><span class="annot"><span class="annottext">ClosedTerm a
-</span><a href="#local-6989586621679216861"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><a href="Plutarch.Test.html#pfails"><span class="hs-identifier hs-var hs-var">pfails</span></a></span></span><span> </span><span id="local-6989586621679216853"><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679216853"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-111"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Script -&gt; (Either EvalError Script, ExBudget, [Text])
 </span><span class="hs-identifier hs-var">evalScript</span></span><span> </span><span class="annot"><span class="annottext">(Script -&gt; (Either EvalError Script, ExBudget, [Text]))
 -&gt; Script -&gt; (Either EvalError Script, ExBudget, [Text])
@@ -243,7 +243,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall (a :: PType). ClosedTerm a -&gt; Script
 </span><a href="Plutarch.Test.html#comp"><span class="hs-identifier hs-var">comp</span></a></span><span> </span><span class="annot"><span class="annottext">Term s a
 ClosedTerm a
-</span><a href="#local-6989586621679216861"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679216853"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-112"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError
 </span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
 </span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
@@ -270,61 +270,61 @@ String -&gt; Expectation
 -}</span></span><span>
 </span><span id="line-124"></span><span class="annot"><a href="Plutarch.Test.html#psatisfyWithinBenchmark"><span class="hs-identifier hs-type">psatisfyWithinBenchmark</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Test.Benchmark.html#Benchmark"><span class="hs-identifier hs-type">Benchmark</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Benchmark.html#Benchmark"><span class="hs-identifier hs-type">Benchmark</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Expectation</span></span><span>
 </span><span id="line-125"></span><span id="psatisfyWithinBenchmark"><span class="annot"><span class="annottext">psatisfyWithinBenchmark :: Benchmark -&gt; Benchmark -&gt; Expectation
-</span><a href="Plutarch.Test.html#psatisfyWithinBenchmark"><span class="hs-identifier hs-var hs-var">psatisfyWithinBenchmark</span></a></span></span><span> </span><span id="local-6989586621679216862"><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679216862"><span class="hs-identifier hs-var">bench</span></a></span></span><span> </span><span id="local-6989586621679216863"><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679216863"><span class="hs-identifier hs-var">maxBudget</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><a href="Plutarch.Test.html#psatisfyWithinBenchmark"><span class="hs-identifier hs-var hs-var">psatisfyWithinBenchmark</span></a></span></span><span> </span><span id="local-6989586621679216854"><span class="annot"><span class="annottext">Benchmark
+</span><a href="#local-6989586621679216854"><span class="hs-identifier hs-var">bench</span></a></span></span><span> </span><span id="local-6989586621679216855"><span class="annot"><span class="annottext">Benchmark
+</span><a href="#local-6989586621679216855"><span class="hs-identifier hs-var">maxBudget</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-126"></span><span>  </span><span class="annot"><span class="annottext">Benchmark -&gt; (Benchmark -&gt; Bool) -&gt; Expectation
 forall a. (HasCallStack, Show a) =&gt; a -&gt; (a -&gt; Bool) -&gt; Expectation
 </span><span class="hs-identifier hs-var">shouldSatisfy</span></span><span> </span><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679216862"><span class="hs-identifier hs-var">bench</span></a></span><span> </span><span class="annot"><span class="annottext">((Benchmark -&gt; Bool) -&gt; Expectation)
+</span><a href="#local-6989586621679216854"><span class="hs-identifier hs-var">bench</span></a></span><span> </span><span class="annot"><span class="annottext">((Benchmark -&gt; Bool) -&gt; Expectation)
 -&gt; (Benchmark -&gt; Bool) -&gt; Expectation
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">Benchmark
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-127"></span><span>    </span><span class="annot"><span class="annottext">Benchmark -&gt; ExCPU
 </span><a href="Plutarch.Test.Benchmark.html#%24sel%3AexBudgetCPU%3ABenchmark"><span class="hs-identifier hs-var">exBudgetCPU</span></a></span><span> </span><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679216862"><span class="hs-identifier hs-var">bench</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExCPU -&gt; Bool
+</span><a href="#local-6989586621679216854"><span class="hs-identifier hs-var">bench</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExCPU -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Benchmark -&gt; ExCPU
 </span><a href="Plutarch.Test.Benchmark.html#%24sel%3AexBudgetCPU%3ABenchmark"><span class="hs-identifier hs-var">exBudgetCPU</span></a></span><span> </span><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679216863"><span class="hs-identifier hs-var">maxBudget</span></a></span><span>
+</span><a href="#local-6989586621679216855"><span class="hs-identifier hs-var">maxBudget</span></a></span><span>
 </span><span id="line-128"></span><span>  </span><span class="annot"><span class="annottext">Benchmark -&gt; (Benchmark -&gt; Bool) -&gt; Expectation
 forall a. (HasCallStack, Show a) =&gt; a -&gt; (a -&gt; Bool) -&gt; Expectation
 </span><span class="hs-identifier hs-var">shouldSatisfy</span></span><span> </span><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679216862"><span class="hs-identifier hs-var">bench</span></a></span><span> </span><span class="annot"><span class="annottext">((Benchmark -&gt; Bool) -&gt; Expectation)
+</span><a href="#local-6989586621679216854"><span class="hs-identifier hs-var">bench</span></a></span><span> </span><span class="annot"><span class="annottext">((Benchmark -&gt; Bool) -&gt; Expectation)
 -&gt; (Benchmark -&gt; Bool) -&gt; Expectation
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">Benchmark
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-129"></span><span>    </span><span class="annot"><span class="annottext">Benchmark -&gt; ExMemory
 </span><a href="Plutarch.Test.Benchmark.html#%24sel%3AexBudgetMemory%3ABenchmark"><span class="hs-identifier hs-var">exBudgetMemory</span></a></span><span> </span><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679216862"><span class="hs-identifier hs-var">bench</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory -&gt; ExMemory -&gt; Bool
+</span><a href="#local-6989586621679216854"><span class="hs-identifier hs-var">bench</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory -&gt; ExMemory -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Benchmark -&gt; ExMemory
 </span><a href="Plutarch.Test.Benchmark.html#%24sel%3AexBudgetMemory%3ABenchmark"><span class="hs-identifier hs-var">exBudgetMemory</span></a></span><span> </span><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679216863"><span class="hs-identifier hs-var">maxBudget</span></a></span><span>
+</span><a href="#local-6989586621679216855"><span class="hs-identifier hs-var">maxBudget</span></a></span><span>
 </span><span id="line-130"></span><span>  </span><span class="annot"><span class="annottext">Benchmark -&gt; (Benchmark -&gt; Bool) -&gt; Expectation
 forall a. (HasCallStack, Show a) =&gt; a -&gt; (a -&gt; Bool) -&gt; Expectation
 </span><span class="hs-identifier hs-var">shouldSatisfy</span></span><span> </span><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679216862"><span class="hs-identifier hs-var">bench</span></a></span><span> </span><span class="annot"><span class="annottext">((Benchmark -&gt; Bool) -&gt; Expectation)
+</span><a href="#local-6989586621679216854"><span class="hs-identifier hs-var">bench</span></a></span><span> </span><span class="annot"><span class="annottext">((Benchmark -&gt; Bool) -&gt; Expectation)
 -&gt; (Benchmark -&gt; Bool) -&gt; Expectation
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">Benchmark
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-131"></span><span>    </span><span class="annot"><span class="annottext">Benchmark -&gt; ScriptSizeBytes
 </span><a href="Plutarch.Test.Benchmark.html#%24sel%3AscriptSizeBytes%3ABenchmark"><span class="hs-identifier hs-var">scriptSizeBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679216862"><span class="hs-identifier hs-var">bench</span></a></span><span> </span><span class="annot"><span class="annottext">ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool
+</span><a href="#local-6989586621679216854"><span class="hs-identifier hs-var">bench</span></a></span><span> </span><span class="annot"><span class="annottext">ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Benchmark -&gt; ScriptSizeBytes
 </span><a href="Plutarch.Test.Benchmark.html#%24sel%3AscriptSizeBytes%3ABenchmark"><span class="hs-identifier hs-var">scriptSizeBytes</span></a></span><span> </span><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679216863"><span class="hs-identifier hs-var">maxBudget</span></a></span><span>
+</span><a href="#local-6989586621679216855"><span class="hs-identifier hs-var">maxBudget</span></a></span><span>
 </span><span id="line-132"></span><span>
 </span><span id="line-133"></span><span class="annot"><span class="hs-comment">-- | Asserts that the term evaluates successfully with the given trace sequence</span></span><span>
-</span><span id="line-134"></span><span id="local-6989586621679216624"><span class="annot"><a href="Plutarch.Test.html#ptraces"><span class="hs-identifier hs-type">ptraces</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216624"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Expectation</span></span></span><span>
+</span><span id="line-134"></span><span id="local-6989586621679216616"><span class="annot"><a href="Plutarch.Test.html#ptraces"><span class="hs-identifier hs-type">ptraces</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216616"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Expectation</span></span></span><span>
 </span><span id="line-135"></span><span id="ptraces"><span class="annot"><span class="annottext">ptraces :: forall (a :: PType). ClosedTerm a -&gt; [Text] -&gt; Expectation
-</span><a href="Plutarch.Test.html#ptraces"><span class="hs-identifier hs-var hs-var">ptraces</span></a></span></span><span> </span><span id="local-6989586621679216875"><span class="annot"><span class="annottext">ClosedTerm a
-</span><a href="#local-6989586621679216875"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679216876"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679216876"><span class="hs-identifier hs-var">develTraces</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Plutarch.Test.html#ptraces"><span class="hs-identifier hs-var hs-var">ptraces</span></a></span></span><span> </span><span id="local-6989586621679216867"><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679216867"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679216868"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679216868"><span class="hs-identifier hs-var">develTraces</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-136"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Script -&gt; (Either EvalError Script, ExBudget, [Text])
 </span><span class="hs-identifier hs-var">evalScript</span></span><span> </span><span class="annot"><span class="annottext">(Script -&gt; (Either EvalError Script, ExBudget, [Text]))
 -&gt; Script -&gt; (Either EvalError Script, ExBudget, [Text])
@@ -333,7 +333,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall (a :: PType). ClosedTerm a -&gt; Script
 </span><a href="Plutarch.Test.html#comp"><span class="hs-identifier hs-var">comp</span></a></span><span> </span><span class="annot"><span class="annottext">Term s a
 ClosedTerm a
-</span><a href="#local-6989586621679216875"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679216867"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-137"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError
 </span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
 </span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
@@ -343,23 +343,23 @@ String -&gt; Expectation
 </span><span class="hs-string">&quot;Term failed to evaluate&quot;</span></span><span>
 </span><span id="line-138"></span><span>    </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="annot"><span class="annottext">Script
 </span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679216877"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679216877"><span class="hs-identifier hs-var">traceLog</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679216869"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679216869"><span class="hs-identifier hs-var">traceLog</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-139"></span><span>      </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679216877"><span class="hs-identifier hs-var">traceLog</span></a></span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; [Text] -&gt; Expectation
+</span><a href="#local-6989586621679216869"><span class="hs-identifier hs-var">traceLog</span></a></span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; [Text] -&gt; Expectation
 forall a. (HasCallStack, Show a, Eq a) =&gt; a -&gt; a -&gt; Expectation
 </span><span class="hs-operator hs-var">`shouldBe`</span></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679216876"><span class="hs-identifier hs-var">develTraces</span></a></span><span>
+</span><a href="#local-6989586621679216868"><span class="hs-identifier hs-var">develTraces</span></a></span><span>
 </span><span id="line-140"></span><span>
 </span><span id="line-141"></span><span class="annot"><span class="hs-comment">-- | Test that the Plutarch program evaluates to the given term</span></span><span>
-</span><span id="line-142"></span><span id="local-6989586621679216627"><span id="local-6989586621679216628"><span class="annot"><a href="Plutarch.Test.html#%40%3D%3D"><span class="hs-operator hs-type">(@==)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216627"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216628"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#TermExpectation"><span class="hs-identifier hs-type">TermExpectation</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679216627"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
+</span><span id="line-142"></span><span id="local-6989586621679216619"><span id="local-6989586621679216620"><span class="annot"><a href="Plutarch.Test.html#%40%3D%3D"><span class="hs-operator hs-type">(@==)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216619"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679216620"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#TermExpectation"><span class="hs-identifier hs-type">TermExpectation</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679216619"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
 </span><span id="line-143"></span><span id="%40%3D%3D"><span class="annot"><span class="annottext">@== :: forall (a :: PType) (b :: PType).
 ClosedTerm a -&gt; ClosedTerm b -&gt; TermExpectation a
-</span><a href="Plutarch.Test.html#%40%3D%3D"><span class="hs-operator hs-var hs-var">(@==)</span></a></span></span><span> </span><span id="local-6989586621679216878"><span class="annot"><span class="annottext">ClosedTerm a
-</span><a href="#local-6989586621679216878"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679216879"><span class="annot"><span class="annottext">ClosedTerm b
-</span><a href="#local-6989586621679216879"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s a
+</span><a href="Plutarch.Test.html#%40%3D%3D"><span class="hs-operator hs-var hs-var">(@==)</span></a></span></span><span> </span><span id="local-6989586621679216870"><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679216870"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679216871"><span class="annot"><span class="annottext">ClosedTerm b
+</span><a href="#local-6989586621679216871"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s a
 ClosedTerm a
-</span><a href="#local-6989586621679216878"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679216870"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">ClosedTerm a
 -&gt; ((ClosedTerm a, Script, Benchmark) -&gt; Expectation)
 -&gt; TermExpectation a
 forall (a :: PType).
@@ -367,15 +367,15 @@ ClosedTerm a
 -&gt; ((ClosedTerm a, Script, Benchmark) -&gt; Expectation)
 -&gt; TermExpectation a
 </span><a href="Plutarch.Test.Golden.html#%40%3A-%3E"><span class="hs-operator hs-var">@:-&gt;</span></a></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="annottext">ClosedTerm a
-</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679216880"><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679216880"><span class="hs-identifier hs-var">script</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Benchmark
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679216872"><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679216872"><span class="hs-identifier hs-var">script</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Benchmark
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679216880"><span class="hs-identifier hs-var">script</span></a></span><span> </span><span class="annot"><span class="annottext">Script -&gt; Script -&gt; Expectation
+</span><a href="#local-6989586621679216872"><span class="hs-identifier hs-var">script</span></a></span><span> </span><span class="annot"><span class="annottext">Script -&gt; Script -&gt; Expectation
 </span><a href="Plutarch.Test.html#pscriptShouldBe"><span class="hs-operator hs-var">`pscriptShouldBe`</span></a></span><span> </span><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679216881"><span class="hs-identifier hs-var">xScript</span></a></span><span>
+</span><a href="#local-6989586621679216873"><span class="hs-identifier hs-var">xScript</span></a></span><span>
 </span><span id="line-144"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-145"></span><span>    </span><span id="local-6989586621679216881"><span class="annot"><span class="annottext">xScript :: Script
-</span><a href="#local-6989586621679216881"><span class="hs-identifier hs-var hs-var">xScript</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Script, Benchmark) -&gt; Script
+</span><span id="line-145"></span><span>    </span><span id="local-6989586621679216873"><span class="annot"><span class="annottext">xScript :: Script
+</span><a href="#local-6989586621679216873"><span class="hs-identifier hs-var hs-var">xScript</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Script, Benchmark) -&gt; Script
 forall a b. (a, b) -&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Tuple.html#fst"><span class="hs-identifier hs-var">fst</span></a></span><span> </span><span class="annot"><span class="annottext">((Script, Benchmark) -&gt; Script)
 -&gt; (Script -&gt; (Script, Benchmark)) -&gt; Script -&gt; Script
@@ -387,7 +387,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall (a :: PType). ClosedTerm a -&gt; Script
 </span><a href="Plutarch.Test.html#comp"><span class="hs-identifier hs-var">comp</span></a></span><span> </span><span class="annot"><span class="annottext">Term s b
 ClosedTerm b
-</span><a href="#local-6989586621679216879"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><a href="#local-6989586621679216871"><span class="hs-identifier hs-var">x</span></a></span><span>
 </span><span id="line-146"></span><span>
 </span><span id="line-147"></span><span class="hs-keyword">infixr</span><span> </span><span class="hs-number">1</span><span> </span><span class="annot"><a href="Plutarch.Test.html#%40%3D%3D"><span class="hs-operator hs-type">@==</span></a></span><span>
 </span><span id="line-148"></span></pre></body></html>

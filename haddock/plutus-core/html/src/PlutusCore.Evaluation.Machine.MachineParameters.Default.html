@@ -55,18 +55,18 @@ inlining).
 </span><span id="line-55"></span><span class="hs-comment">--</span><span>
 </span><span id="line-56"></span><span class="hs-comment">-- This function is expensive, so its result needs to be cached if it's going to be used multiple</span><span>
 </span><span id="line-57"></span><span class="hs-comment">-- times.</span><span>
-</span><span id="line-58"></span><span id="local-6989586621681500188"><span class="annot"><a href="PlutusCore.Evaluation.Machine.MachineParameters.Default.html#mkMachineParametersFor"><span class="hs-identifier hs-type">mkMachineParametersFor</span></a></span><span>
-</span><span id="line-59"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadError</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelApplyError"><span class="hs-identifier hs-type">CostModelApplyError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681500188"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-58"></span><span id="local-6989586621681500180"><span class="annot"><a href="PlutusCore.Evaluation.Machine.MachineParameters.Default.html#mkMachineParametersFor"><span class="hs-identifier hs-type">mkMachineParametersFor</span></a></span><span>
+</span><span id="line-59"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadError</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelApplyError"><span class="hs-identifier hs-type">CostModelApplyError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681500180"><span class="hs-identifier hs-type">m</span></a></span><span>
 </span><span id="line-60"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Builtin.Meaning.html#BuiltinSemanticsVariant"><span class="hs-identifier hs-type">BuiltinSemanticsVariant</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Default.Builtins.html#DefaultFun"><span class="hs-identifier hs-type">DefaultFun</span></a></span><span>
 </span><span id="line-61"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelParams"><span class="hs-identifier hs-type">CostModelParams</span></a></span><span>
-</span><span id="line-62"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681500188"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.MachineParameters.Default.html#DefaultMachineParameters"><span class="hs-identifier hs-type">DefaultMachineParameters</span></a></span></span><span>
+</span><span id="line-62"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681500180"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.MachineParameters.Default.html#DefaultMachineParameters"><span class="hs-identifier hs-type">DefaultMachineParameters</span></a></span></span><span>
 </span><span id="line-63"></span><span id="mkMachineParametersFor"><span class="annot"><span class="annottext">mkMachineParametersFor :: forall (m :: * -&gt; *).
 MonadError CostModelApplyError m =&gt;
 BuiltinSemanticsVariant DefaultFun
 -&gt; CostModelParams -&gt; m DefaultMachineParameters
-</span><a href="PlutusCore.Evaluation.Machine.MachineParameters.Default.html#mkMachineParametersFor"><span class="hs-identifier hs-var hs-var">mkMachineParametersFor</span></a></span></span><span> </span><span id="local-6989586621681500341"><span class="annot"><span class="annottext">BuiltinSemanticsVariant DefaultFun
-</span><a href="#local-6989586621681500341"><span class="hs-identifier hs-var">semvar</span></a></span></span><span> </span><span id="local-6989586621681500342"><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681500342"><span class="hs-identifier hs-var">newCMP</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="PlutusCore.Evaluation.Machine.MachineParameters.Default.html#mkMachineParametersFor"><span class="hs-identifier hs-var hs-var">mkMachineParametersFor</span></a></span></span><span> </span><span id="local-6989586621681500333"><span class="annot"><span class="annottext">BuiltinSemanticsVariant DefaultFun
+</span><a href="#local-6989586621681500333"><span class="hs-identifier hs-var">semvar</span></a></span></span><span> </span><span id="local-6989586621681500334"><span class="annot"><span class="annottext">CostModelParams
+</span><a href="#local-6989586621681500334"><span class="hs-identifier hs-var">newCMP</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-64"></span><span>    </span><span class="annot"><span class="annottext">(BuiltinSemanticsVariant DefaultFun
  -&gt; CostModel CekMachineCosts BuiltinCostModel
  -&gt; DefaultMachineParameters)
@@ -84,7 +84,7 @@ BuiltinSemanticsVariant fun
 -&gt; CostModel machinecosts builtincosts
 -&gt; MachineParameters machinecosts fun val
 </span><a href="PlutusCore.Evaluation.Machine.MachineParameters.html#mkMachineParameters"><span class="hs-identifier hs-var">mkMachineParameters</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinSemanticsVariant DefaultFun
-</span><a href="#local-6989586621681500341"><span class="hs-identifier hs-var">semvar</span></a></span><span> </span><span class="annot"><span class="annottext">(CostModel CekMachineCosts BuiltinCostModel
+</span><a href="#local-6989586621681500333"><span class="hs-identifier hs-var">semvar</span></a></span><span> </span><span class="annot"><span class="annottext">(CostModel CekMachineCosts BuiltinCostModel
  -&gt; DefaultMachineParameters)
 -&gt; m (CostModel CekMachineCosts BuiltinCostModel)
 -&gt; m DefaultMachineParameters
@@ -101,7 +101,7 @@ CostModel evaluatorcosts builtincosts
 -&gt; CostModelParams -&gt; m (CostModel evaluatorcosts builtincosts)
 </span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#applyCostModelParams"><span class="hs-identifier hs-var">applyCostModelParams</span></a></span><span> </span><span class="annot"><span class="annottext">CostModel CekMachineCosts BuiltinCostModel
 </span><a href="PlutusCore.Evaluation.Machine.ExBudgetingDefaults.html#defaultCekCostModel"><span class="hs-identifier hs-var">defaultCekCostModel</span></a></span><span> </span><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681500342"><span class="hs-identifier hs-var">newCMP</span></a></span><span>
+</span><a href="#local-6989586621681500334"><span class="hs-identifier hs-var">newCMP</span></a></span><span>
 </span><span id="line-66"></span><span class="hs-comment">-- Not marking this function with @INLINE@, since at this point everything we wanted to be inlined</span><span>
 </span><span id="line-67"></span><span class="hs-comment">-- is inlined and there's zero reason to duplicate thousands and thousands of lines of Core down</span><span>
 </span><span id="line-68"></span><span class="hs-comment">-- the line.</span><span>

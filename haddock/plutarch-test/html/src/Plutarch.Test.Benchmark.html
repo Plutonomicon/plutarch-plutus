@@ -27,7 +27,7 @@
 </span><a href="Plutarch.Test.Benchmark.html#%24sel%3AscriptSizeBytes%3ABenchmark"><span class="hs-identifier hs-var hs-var">scriptSizeBytes</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Test.Benchmark.html#ScriptSizeBytes"><span class="hs-identifier hs-type">ScriptSizeBytes</span></a></span><span>
 </span><span id="line-25"></span><span>  </span><span class="annot"><span class="hs-comment">-- ^ Size of Plutus script in bytes</span></span><span>
 </span><span id="line-26"></span><span>  </span><span class="hs-special">}</span><span>
-</span><span id="line-27"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679213960"><span id="local-6989586621679213970"><span id="local-6989586621679213974"><span class="annot"><span class="annottext">Int -&gt; Benchmark -&gt; ShowS
+</span><span id="line-27"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679213952"><span id="local-6989586621679213962"><span id="local-6989586621679213966"><span class="annot"><span class="annottext">Int -&gt; Benchmark -&gt; ShowS
 [Benchmark] -&gt; ShowS
 Benchmark -&gt; String
 (Int -&gt; Benchmark -&gt; ShowS)
@@ -42,7 +42,7 @@ $cshow :: Benchmark -&gt; String
 show :: Benchmark -&gt; String
 $cshowList :: [Benchmark] -&gt; ShowS
 showList :: [Benchmark] -&gt; ShowS
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679213978"><span id="local-6989586621679213980"><span class="annot"><span class="annottext">(forall x. Benchmark -&gt; Rep Benchmark x)
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679213970"><span id="local-6989586621679213972"><span class="annot"><span class="annottext">(forall x. Benchmark -&gt; Rep Benchmark x)
 -&gt; (forall x. Rep Benchmark x -&gt; Benchmark) -&gt; Generic Benchmark
 forall x. Rep Benchmark x -&gt; Benchmark
 forall x. Benchmark -&gt; Rep Benchmark x
@@ -53,7 +53,7 @@ from :: forall x. Benchmark -&gt; Rep Benchmark x
 $cto :: forall x. Rep Benchmark x -&gt; Benchmark
 to :: forall x. Rep Benchmark x -&gt; Benchmark
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-28"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679213984"><span id="local-6989586621679213991"><span id="local-6989586621679213994"><span id="local-6989586621679213997"><span id="local-6989586621679214000"><span class="annot"><span class="annottext">[Benchmark] -&gt; Encoding
+</span><span id="line-28"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679213976"><span id="local-6989586621679213983"><span id="local-6989586621679213986"><span id="local-6989586621679213989"><span id="local-6989586621679213992"><span class="annot"><span class="annottext">[Benchmark] -&gt; Encoding
 [Benchmark] -&gt; Value
 Benchmark -&gt; Bool
 Benchmark -&gt; Encoding
@@ -85,15 +85,15 @@ omitField :: Benchmark -&gt; Bool
 </span><span id="line-29"></span><span>
 </span><span id="line-30"></span><span class="annot"><a href="Plutarch.Test.Benchmark.html#mkBenchmark"><span class="hs-identifier hs-type">mkBenchmark</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Benchmark.html#ScriptSizeBytes"><span class="hs-identifier hs-type">ScriptSizeBytes</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Benchmark.html#Benchmark"><span class="hs-identifier hs-type">Benchmark</span></a></span><span>
 </span><span id="line-31"></span><span id="mkBenchmark"><span class="annot"><span class="annottext">mkBenchmark :: ExBudget -&gt; ScriptSizeBytes -&gt; Benchmark
-</span><a href="Plutarch.Test.Benchmark.html#mkBenchmark"><span class="hs-identifier hs-var hs-var">mkBenchmark</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span> </span><span id="local-6989586621679214119"><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621679214119"><span class="hs-identifier hs-var">cpu</span></a></span></span><span> </span><span id="local-6989586621679214120"><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621679214120"><span class="hs-identifier hs-var">mem</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExMemory -&gt; ScriptSizeBytes -&gt; Benchmark
+</span><a href="Plutarch.Test.Benchmark.html#mkBenchmark"><span class="hs-identifier hs-var hs-var">mkBenchmark</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span> </span><span id="local-6989586621679214111"><span class="annot"><span class="annottext">ExCPU
+</span><a href="#local-6989586621679214111"><span class="hs-identifier hs-var">cpu</span></a></span></span><span> </span><span id="local-6989586621679214112"><span class="annot"><span class="annottext">ExMemory
+</span><a href="#local-6989586621679214112"><span class="hs-identifier hs-var">mem</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExMemory -&gt; ScriptSizeBytes -&gt; Benchmark
 </span><a href="Plutarch.Test.Benchmark.html#Benchmark"><span class="hs-identifier hs-var">Benchmark</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621679214119"><span class="hs-identifier hs-var">cpu</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621679214120"><span class="hs-identifier hs-var">mem</span></a></span><span>
+</span><a href="#local-6989586621679214111"><span class="hs-identifier hs-var">cpu</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory
+</span><a href="#local-6989586621679214112"><span class="hs-identifier hs-var">mem</span></a></span><span>
 </span><span id="line-32"></span><span>
 </span><span id="line-33"></span><span class="hs-keyword">newtype</span><span> </span><span id="ScriptSizeBytes"><span class="annot"><a href="Plutarch.Test.Benchmark.html#ScriptSizeBytes"><span class="hs-identifier hs-var">ScriptSizeBytes</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ScriptSizeBytes"><span class="annot"><a href="Plutarch.Test.Benchmark.html#ScriptSizeBytes"><span class="hs-identifier hs-var">ScriptSizeBytes</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Int.html#Int64"><span class="hs-identifier hs-type">Int64</span></a></span><span>
-</span><span id="line-34"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679214123"><span id="local-6989586621679214127"><span class="annot"><span class="annottext">ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool
+</span><span id="line-34"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679214115"><span id="local-6989586621679214119"><span class="annot"><span class="annottext">ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool
 (ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool)
 -&gt; (ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool)
 -&gt; Eq ScriptSizeBytes
@@ -102,7 +102,7 @@ $c== :: ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool
 == :: ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool
 $c/= :: ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool
 /= :: ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679214134"><span id="local-6989586621679214138"><span id="local-6989586621679214141"><span id="local-6989586621679214145"><span id="local-6989586621679214148"><span id="local-6989586621679214151"><span id="local-6989586621679214154"><span class="annot"><span class="annottext">Eq ScriptSizeBytes
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679214126"><span id="local-6989586621679214130"><span id="local-6989586621679214133"><span id="local-6989586621679214137"><span id="local-6989586621679214140"><span id="local-6989586621679214143"><span id="local-6989586621679214146"><span class="annot"><span class="annottext">Eq ScriptSizeBytes
 Eq ScriptSizeBytes =&gt;
 (ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Ordering)
 -&gt; (ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; Bool)
@@ -139,7 +139,7 @@ $cmax :: ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; ScriptSizeBytes
 max :: ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; ScriptSizeBytes
 $cmin :: ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; ScriptSizeBytes
 min :: ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; ScriptSizeBytes
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679214158"><span id="local-6989586621679214163"><span id="local-6989586621679214166"><span class="annot"><span class="annottext">Int -&gt; ScriptSizeBytes -&gt; ShowS
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679214150"><span id="local-6989586621679214155"><span id="local-6989586621679214158"><span class="annot"><span class="annottext">Int -&gt; ScriptSizeBytes -&gt; ShowS
 [ScriptSizeBytes] -&gt; ShowS
 ScriptSizeBytes -&gt; String
 (Int -&gt; ScriptSizeBytes -&gt; ShowS)
@@ -154,7 +154,7 @@ $cshow :: ScriptSizeBytes -&gt; String
 show :: ScriptSizeBytes -&gt; String
 $cshowList :: [ScriptSizeBytes] -&gt; ShowS
 showList :: [ScriptSizeBytes] -&gt; ShowS
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679214169"><span id="local-6989586621679214171"><span class="annot"><span class="annottext">(forall x. ScriptSizeBytes -&gt; Rep ScriptSizeBytes x)
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679214161"><span id="local-6989586621679214163"><span class="annot"><span class="annottext">(forall x. ScriptSizeBytes -&gt; Rep ScriptSizeBytes x)
 -&gt; (forall x. Rep ScriptSizeBytes x -&gt; ScriptSizeBytes)
 -&gt; Generic ScriptSizeBytes
 forall x. Rep ScriptSizeBytes x -&gt; ScriptSizeBytes
@@ -166,7 +166,7 @@ from :: forall x. ScriptSizeBytes -&gt; Rep ScriptSizeBytes x
 $cto :: forall x. Rep ScriptSizeBytes x -&gt; ScriptSizeBytes
 to :: forall x. Rep ScriptSizeBytes x -&gt; ScriptSizeBytes
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-35"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679214174"><span id="local-6989586621679214178"><span id="local-6989586621679214182"><span id="local-6989586621679214186"><span id="local-6989586621679214190"><span id="local-6989586621679214194"><span id="local-6989586621679214198"><span class="annot"><span class="annottext">Integer -&gt; ScriptSizeBytes
+</span><span id="line-35"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679214166"><span id="local-6989586621679214170"><span id="local-6989586621679214174"><span id="local-6989586621679214178"><span id="local-6989586621679214182"><span id="local-6989586621679214186"><span id="local-6989586621679214190"><span class="annot"><span class="annottext">Integer -&gt; ScriptSizeBytes
 ScriptSizeBytes -&gt; ScriptSizeBytes
 ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; ScriptSizeBytes
 (ScriptSizeBytes -&gt; ScriptSizeBytes -&gt; ScriptSizeBytes)
@@ -200,7 +200,7 @@ $csignum :: ScriptSizeBytes -&gt; ScriptSizeBytes
 signum :: ScriptSizeBytes -&gt; ScriptSizeBytes
 $cfromInteger :: Integer -&gt; ScriptSizeBytes
 fromInteger :: Integer -&gt; ScriptSizeBytes
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Num.html#Num"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Num</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679214204"><span id="local-6989586621679214209"><span id="local-6989586621679214213"><span id="local-6989586621679214217"><span id="local-6989586621679214221"><span class="annot"><span class="annottext">[ScriptSizeBytes] -&gt; Encoding
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Num.html#Num"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Num</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679214196"><span id="local-6989586621679214201"><span id="local-6989586621679214205"><span id="local-6989586621679214209"><span id="local-6989586621679214213"><span class="annot"><span class="annottext">[ScriptSizeBytes] -&gt; Encoding
 [ScriptSizeBytes] -&gt; Value
 ScriptSizeBytes -&gt; Bool
 ScriptSizeBytes -&gt; Encoding

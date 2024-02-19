@@ -458,8 +458,8 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span id="line-93"></span><span>            </span><span class="annot"><span class="annottext">(ExtensionFun -&gt; FsTree (PlcEntity DefaultUni ExtensionFun))
 -&gt; [ExtensionFun] -&gt; [FsTree (PlcEntity DefaultUni ExtensionFun)]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#map"><span class="hs-identifier hs-var">map</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621681486528"><span class="annot"><span class="annottext">ExtensionFun
-</span><a href="#local-6989586621681486528"><span class="hs-identifier hs-var">fun</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#map"><span class="hs-identifier hs-var">map</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621681486520"><span class="annot"><span class="annottext">ExtensionFun
+</span><a href="#local-6989586621681486520"><span class="hs-identifier hs-var">fun</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String
 -&gt; Term TyName Name DefaultUni ExtensionFun ()
 -&gt; FsTree (PlcEntity DefaultUni ExtensionFun)
 forall (uni :: * -&gt; *) fun.
@@ -467,7 +467,7 @@ String -&gt; Term TyName Name uni fun () -&gt; PlcFsTree uni fun
 </span><a href="PlutusCore.FsTree.html#plcTermFile"><span class="hs-identifier hs-var">plcTermFile</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ExtensionFun -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">ExtensionFun
-</span><a href="#local-6989586621681486528"><span class="hs-identifier hs-var">fun</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Term TyName Name DefaultUni ExtensionFun ()
+</span><a href="#local-6989586621681486520"><span class="hs-identifier hs-var">fun</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Term TyName Name DefaultUni ExtensionFun ()
  -&gt; FsTree (PlcEntity DefaultUni ExtensionFun))
 -&gt; Term TyName Name DefaultUni ExtensionFun ()
 -&gt; FsTree (PlcEntity DefaultUni ExtensionFun)
@@ -479,7 +479,7 @@ forall (term :: * -&gt; *) tyname name (uni :: * -&gt; *) fun ann.
 TermLike term tyname name uni fun =&gt;
 ann -&gt; fun -&gt; term ann
 </span><a href="PlutusCore.MkPlc.html#builtin"><span class="hs-identifier hs-var">builtin</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ExtensionFun
-</span><a href="#local-6989586621681486528"><span class="hs-identifier hs-var">fun</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[ExtensionFun]
+</span><a href="#local-6989586621681486520"><span class="hs-identifier hs-var">fun</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[ExtensionFun]
 forall a. (Enum a, Bounded a) =&gt; [a]
 </span><span class="hs-identifier hs-var">enumerate</span></span><span>
 </span><span id="line-94"></span><span>        </span><span class="hs-special">]</span><span>
