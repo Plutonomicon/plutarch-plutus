@@ -54,7 +54,7 @@
 
   
   
-  <link href='tailwind.css?instanceId=8055af1c-bbde-45b6-a40c-bd3ada1b7741' rel='stylesheet' type='text/css' />
+  <link href='tailwind.css?instanceId=a47d6dd6-8ef5-4b03-8000-fd8d8564595d' rel='stylesheet' type='text/css' />
 
   <style>
     /* Heist error element */
@@ -111,6 +111,10 @@
       margin-left: 0.5em;
     }
 
+    a.--ema-toc:not(.toc-item-active) {
+      background-color: #ffffff !important;
+    }
+
     /* External link icon */
     a[data-linkicon=""]::after {
       content: ""
@@ -120,7 +124,12 @@
       content: ""
     }
 
+    a[data-linkicon="external"] {
+      padding-right: 24px;
+    }
+
     a[data-linkicon="external"]::after {
+      margin-right: -24px;
       content: url('data:image/svg+xml,\
       <svg xmlns="http://www.w3.org/2000/svg" height="0.7em" viewBox="0 0 20 20"> \
         <g style="stroke:gray;stroke-width:1"> \
@@ -3192,14 +3201,17 @@
   </div>
 </nav>
           <!-- Main body column -->
-          <div class='flex-1 w-full overflow-x-auto bg-white'>
+          <div class='flex-1 w-full bg-white'>
   <main class='px-4 py-4'>
     <h1 class='flex items-end justify-center mb-4 p-3 bg-blue-100 text-5xl font-extrabold text-black rounded'>
   <a class='z-40 tracking-tighter '>
     Data and Scott encoding
   </a>
 </h1>
-    <article class='overflow-auto'>
+    
+      <div class='md:grid md:gap-4 md:grid-cols-8'>
+        <div class='md:col-span-6'>
+          <article class='overflow-auto'>
   <!-- What goes in this file will appear on top of note body-->
   
 
@@ -3220,7 +3232,7 @@ import Prelude (Integer, (+))</code></pre></div><div xmlhtmlRaw></p>
       
   Data encoding and Scott encoding
   
-  <a href='Concepts/Data%20and%20Scott%20encoding.html#data-encoding-and-scott-encoding'>
+  <a href='Concepts/Data%20and%20Scott%20encoding.html#data-encoding-and-scott-encoding' class='--ema-anchor'>
     <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
         <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
         <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
@@ -3242,11 +3254,11 @@ import Prelude (Integer, (+))</code></pre></div><div xmlhtmlRaw></p>
   
     </blockquote>
   
-    <h2 id='data-encoding' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+    <h2 id='data-encoding' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl'>
       
   Data encoding
   
-  <a href='Concepts/Data%20and%20Scott%20encoding.html#data-encoding'>
+  <a href='Concepts/Data%20and%20Scott%20encoding.html#data-encoding' class='--ema-anchor'>
     <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
         <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
         <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
@@ -3272,11 +3284,11 @@ import Prelude (Integer, (+))</code></pre></div><div xmlhtmlRaw></p>
       With that said, <code class='py-0.5 px-0.5 bg-gray-100'>Data</code> encoding is <em>ubiquitous</em> on the chain. It’s the encoding used by the ledger api types, it’s the type of the arguments that can be passed to a script on the chain etc. As a result, your datums and redeemers <em>must</em> use data encoding.
     </p>
   
-    <h2 id='scott-encoding' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+    <h2 id='scott-encoding' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl'>
       
   Scott encoding
   
-  <a href='Concepts/Data%20and%20Scott%20encoding.html#scott-encoding'>
+  <a href='Concepts/Data%20and%20Scott%20encoding.html#scott-encoding' class='--ema-anchor'>
     <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
         <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
         <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
@@ -3340,6 +3352,106 @@ foo (\_ n -&gt; n)
   
   <!-- What goes in this file will appear below the note body-->
 </article>
+        </div>
+        <div class='hidden md:block md:col-span-2 md:border-l'>
+          <nav id='toc' class='hidden leading-relaxed md:block md:sticky md:top-0 md:max-h-screen md:overflow-y-auto'>
+  <div class='text-gray-600 text-sm -mt-2'>
+    
+        <ul class='ml-2'>
+          
+            <li class='whitespace-nowrap truncate mt-2' title='Data encoding and Scott encoding'>
+              <a href='Concepts/Data%20and%20Scott%20encoding.html#data-encoding-and-scott-encoding' class='--ema-toc bg-blue-200 rounded-md p-0.5'>
+                Data encoding and Scott encoding
+              </a>
+              
+        <ul class='ml-2'>
+          
+            <li class='whitespace-nowrap truncate mt-2' title='Data encoding'>
+              <a href='Concepts/Data%20and%20Scott%20encoding.html#data-encoding' class='--ema-toc bg-blue-200 rounded-md p-0.5'>
+                Data encoding
+              </a>
+              
+        <ul class='ml-2'>
+          
+        </ul>
+      
+            </li>
+          
+            <li class='whitespace-nowrap truncate mt-2' title='Scott encoding'>
+              <a href='Concepts/Data%20and%20Scott%20encoding.html#scott-encoding' class='--ema-toc bg-blue-200 rounded-md p-0.5'>
+                Scott encoding
+              </a>
+              
+        <ul class='ml-2'>
+          
+        </ul>
+      
+            </li>
+          
+        </ul>
+      
+            </li>
+          
+        </ul>
+      
+  </div>
+  <script>
+    // Highlight the TOC, based from https://stackoverflow.com/a/75346369
+    // TODO: We should get rid of JavaScript! See https://github.com/srid/emanote/issues/520
+    function highlightTOC() {
+      // Grab the toc links
+      const links = document.querySelectorAll("ul > li > a.--ema-toc");
+
+      // Find the matching anchors in the document body
+      const sections = [];
+      links.forEach((link) => {
+        let found = {};
+        for (section of document.querySelectorAll("a.--ema-anchor")) {
+          if (link.href == section.href) {
+            found = section;
+            break;
+          }
+        }
+        sections.push(found);
+      });
+
+      // Current toc link is marked with the following class
+      const mark = "toc-item-active";
+
+      // Set window scroll handler to update the toc mark.
+      window.onscroll = () => {
+        // Remove previous mark
+        links.forEach((link) => {
+          link.classList.remove(mark);
+        });
+
+        // Mark the link of the section that is in view, starting from the end
+        let marked = false;
+        for (var i = sections.length - 1; i >= 0; i--) {
+          if (window.scrollY > sections[i].offsetTop - 80) {
+            links[i].classList.add(mark);
+            marked = true;
+            break;
+          }
+        }
+
+        // Special case for the first and last section which might not reach the top
+        if (!marked && window.scrollY > 0) {
+          let i = 0;
+          if ((window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight) {
+            // We are at the bottom
+            i = links.length - 1
+          }
+          links[i].classList.add(mark);
+        }
+      };
+    }
+    highlightTOC();
+  </script>
+</nav>
+        </div>
+      </div>
+      
     <div class='flex flex-col lg:flex-row lg:space-x-2'>
       
       
@@ -3554,7 +3666,6 @@ foo (\_ n -&gt; n)
 </div>
         </div>
         
-
       <footer class='flex items-center justify-center mt-2 mb-8 space-x-4 text-center text-gray-800'>
   
   <div>
@@ -3572,7 +3683,7 @@ foo (\_ n -&gt; n)
     </a>
   </div>
   <div>
-    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.13.0'>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.17.0'>
       <img class='w-6 h-6 hover:text-blue-700' src='_emanote-static/emanote-logo.svg' />
     </a>
   </div>

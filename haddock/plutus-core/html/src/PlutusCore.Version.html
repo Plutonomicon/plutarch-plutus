@@ -46,7 +46,7 @@ change what tools would need to do to process scripts.
 </span><a href="PlutusCore.Version.html#_versionMajor"><span class="hs-identifier hs-var hs-var">_versionMajor</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-bignum-1.3/src/GHC.Num.Natural.html#Natural"><span class="hs-identifier hs-type">Natural</span></a></span><span class="hs-special">,</span><span> </span><span id="_versionMinor"><span class="annot"><span class="annottext">Version -&gt; Natural
 </span><a href="PlutusCore.Version.html#_versionMinor"><span class="hs-identifier hs-var hs-var">_versionMinor</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-bignum-1.3/src/GHC.Num.Natural.html#Natural"><span class="hs-identifier hs-type">Natural</span></a></span><span class="hs-special">,</span><span> </span><span id="_versionPatch"><span class="annot"><span class="annottext">Version -&gt; Natural
 </span><a href="PlutusCore.Version.html#_versionPatch"><span class="hs-identifier hs-var hs-var">_versionPatch</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-bignum-1.3/src/GHC.Num.Natural.html#Natural"><span class="hs-identifier hs-type">Natural</span></a></span><span> </span><span class="hs-special">}</span><span>
-</span><span id="line-46"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681384836"><span id="local-6989586621681384842"><span class="annot"><span class="annottext">Version -&gt; Version -&gt; Bool
+</span><span id="line-46"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681384844"><span id="local-6989586621681384850"><span class="annot"><span class="annottext">Version -&gt; Version -&gt; Bool
 (Version -&gt; Version -&gt; Bool)
 -&gt; (Version -&gt; Version -&gt; Bool) -&gt; Eq Version
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -54,7 +54,7 @@ $c== :: Version -&gt; Version -&gt; Bool
 == :: Version -&gt; Version -&gt; Bool
 $c/= :: Version -&gt; Version -&gt; Bool
 /= :: Version -&gt; Version -&gt; Bool
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681384847"><span id="local-6989586621681384855"><span id="local-6989586621681384859"><span class="annot"><span class="annottext">Int -&gt; Version -&gt; ShowS
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681384855"><span id="local-6989586621681384863"><span id="local-6989586621681384867"><span class="annot"><span class="annottext">Int -&gt; Version -&gt; ShowS
 [Version] -&gt; ShowS
 Version -&gt; String
 (Int -&gt; Version -&gt; ShowS)
@@ -67,7 +67,7 @@ $cshow :: Version -&gt; String
 show :: Version -&gt; String
 $cshowList :: [Version] -&gt; ShowS
 showList :: [Version] -&gt; ShowS
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681384863"><span id="local-6989586621681384865"><span class="annot"><span class="annottext">(forall x. Version -&gt; Rep Version x)
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681384871"><span id="local-6989586621681384873"><span class="annot"><span class="annottext">(forall x. Version -&gt; Rep Version x)
 -&gt; (forall x. Rep Version x -&gt; Version) -&gt; Generic Version
 forall x. Rep Version x -&gt; Version
 forall x. Version -&gt; Rep Version x
@@ -78,12 +78,12 @@ from :: forall x. Version -&gt; Rep Version x
 $cto :: forall x. Rep Version x -&gt; Version
 to :: forall x. Rep Version x -&gt; Version
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-47"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681384869"><span class="annot"><span class="annottext">Version -&gt; ()
+</span><span id="line-47"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681384877"><span class="annot"><span class="annottext">Version -&gt; ()
 (Version -&gt; ()) -&gt; NFData Version
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: Version -&gt; ()
 rnf :: Version -&gt; ()
-</span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681384891"><span id="local-6989586621681384898"><span class="annot"><span class="annottext">Eq Version
+</span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681384899"><span id="local-6989586621681384906"><span class="annot"><span class="annottext">Eq Version
 Eq Version =&gt;
 (Int -&gt; Version -&gt; Int) -&gt; (Version -&gt; Int) -&gt; Hashable Version
 Int -&gt; Version -&gt; Int
@@ -99,32 +99,32 @@ hash :: Version -&gt; Int
 </span><span id="line-50"></span><span>
 </span><span id="line-51"></span><span class="hs-comment">-- This is probably what the derived version would do, but better to be explicit since it's</span><span>
 </span><span id="line-52"></span><span class="hs-comment">-- important</span><span>
-</span><span id="line-53"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681384938"><span id="local-6989586621681384941"><span id="local-6989586621681384944"><span id="local-6989586621681384947"><span id="local-6989586621681384950"><span id="local-6989586621681384953"><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-type">Ord</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Version.html#Version"><span class="hs-identifier hs-type">Version</span></a></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-54"></span><span>  </span><span id="local-6989586621681384963"><span class="annot"><span class="annottext">compare :: Version -&gt; Version -&gt; Ordering
-</span><a href="#local-6989586621681384963"><span class="hs-identifier hs-var hs-var hs-var hs-var">compare</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Version.html#Version"><span class="hs-identifier hs-type">Version</span></a></span><span> </span><span id="local-6989586621681384965"><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681384965"><span class="hs-identifier hs-var">major1</span></a></span></span><span> </span><span id="local-6989586621681384966"><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681384966"><span class="hs-identifier hs-var">minor1</span></a></span></span><span> </span><span id="local-6989586621681384967"><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681384967"><span class="hs-identifier hs-var">patch1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Version.html#Version"><span class="hs-identifier hs-type">Version</span></a></span><span> </span><span id="local-6989586621681384968"><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681384968"><span class="hs-identifier hs-var">major2</span></a></span></span><span> </span><span id="local-6989586621681384969"><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681384969"><span class="hs-identifier hs-var">minor2</span></a></span></span><span> </span><span id="local-6989586621681384970"><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681384970"><span class="hs-identifier hs-var">patch2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-53"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681384946"><span id="local-6989586621681384949"><span id="local-6989586621681384952"><span id="local-6989586621681384955"><span id="local-6989586621681384958"><span id="local-6989586621681384961"><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-type">Ord</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Version.html#Version"><span class="hs-identifier hs-type">Version</span></a></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-54"></span><span>  </span><span id="local-6989586621681384971"><span class="annot"><span class="annottext">compare :: Version -&gt; Version -&gt; Ordering
+</span><a href="#local-6989586621681384971"><span class="hs-identifier hs-var hs-var hs-var hs-var">compare</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Version.html#Version"><span class="hs-identifier hs-type">Version</span></a></span><span> </span><span id="local-6989586621681384973"><span class="annot"><span class="annottext">Natural
+</span><a href="#local-6989586621681384973"><span class="hs-identifier hs-var">major1</span></a></span></span><span> </span><span id="local-6989586621681384974"><span class="annot"><span class="annottext">Natural
+</span><a href="#local-6989586621681384974"><span class="hs-identifier hs-var">minor1</span></a></span></span><span> </span><span id="local-6989586621681384975"><span class="annot"><span class="annottext">Natural
+</span><a href="#local-6989586621681384975"><span class="hs-identifier hs-var">patch1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Version.html#Version"><span class="hs-identifier hs-type">Version</span></a></span><span> </span><span id="local-6989586621681384976"><span class="annot"><span class="annottext">Natural
+</span><a href="#local-6989586621681384976"><span class="hs-identifier hs-var">major2</span></a></span></span><span> </span><span id="local-6989586621681384977"><span class="annot"><span class="annottext">Natural
+</span><a href="#local-6989586621681384977"><span class="hs-identifier hs-var">minor2</span></a></span></span><span> </span><span id="local-6989586621681384978"><span class="annot"><span class="annottext">Natural
+</span><a href="#local-6989586621681384978"><span class="hs-identifier hs-var">patch2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-55"></span><span>    </span><span class="annot"><span class="annottext">Natural -&gt; Natural -&gt; Ordering
 forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#compare"><span class="hs-identifier hs-var">compare</span></a></span><span> </span><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681384965"><span class="hs-identifier hs-var">major1</span></a></span><span> </span><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681384968"><span class="hs-identifier hs-var">major2</span></a></span><span> </span><span class="annot"><span class="annottext">Ordering -&gt; Ordering -&gt; Ordering
+</span><a href="#local-6989586621681384973"><span class="hs-identifier hs-var">major1</span></a></span><span> </span><span class="annot"><span class="annottext">Natural
+</span><a href="#local-6989586621681384976"><span class="hs-identifier hs-var">major2</span></a></span><span> </span><span class="annot"><span class="annottext">Ordering -&gt; Ordering -&gt; Ordering
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Natural -&gt; Natural -&gt; Ordering
 forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#compare"><span class="hs-identifier hs-var">compare</span></a></span><span> </span><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681384966"><span class="hs-identifier hs-var">minor1</span></a></span><span> </span><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681384969"><span class="hs-identifier hs-var">minor2</span></a></span><span> </span><span class="annot"><span class="annottext">Ordering -&gt; Ordering -&gt; Ordering
+</span><a href="#local-6989586621681384974"><span class="hs-identifier hs-var">minor1</span></a></span><span> </span><span class="annot"><span class="annottext">Natural
+</span><a href="#local-6989586621681384977"><span class="hs-identifier hs-var">minor2</span></a></span><span> </span><span class="annot"><span class="annottext">Ordering -&gt; Ordering -&gt; Ordering
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Natural -&gt; Natural -&gt; Ordering
 forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
 </span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#compare"><span class="hs-identifier hs-var">compare</span></a></span><span> </span><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681384967"><span class="hs-identifier hs-var">patch1</span></a></span><span> </span><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681384970"><span class="hs-identifier hs-var">patch2</span></a></span><span>
+</span><a href="#local-6989586621681384975"><span class="hs-identifier hs-var">patch1</span></a></span><span> </span><span class="annot"><span class="annottext">Natural
+</span><a href="#local-6989586621681384978"><span class="hs-identifier hs-var">patch2</span></a></span><span>
 </span><span id="line-56"></span><span>
 </span><span id="line-57"></span><span class="annot"><span class="hs-comment">-- | The first version of Plutus Core supported by this library.</span></span><span>
 </span><span id="line-58"></span><span class="annot"><a href="PlutusCore.Version.html#firstVersion"><span class="hs-identifier hs-type">firstVersion</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Version.html#Version"><span class="hs-identifier hs-type">Version</span></a></span><span>
@@ -166,16 +166,16 @@ forall a. Ord a =&gt; [a] -&gt; Set a
 </span><a href="PlutusCore.Version.html#plcVersion100"><span class="hs-identifier hs-var">plcVersion100</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Version
 </span><a href="PlutusCore.Version.html#plcVersion110"><span class="hs-identifier hs-var">plcVersion110</span></a></span><span> </span><span class="hs-special">]</span><span>
 </span><span id="line-77"></span><span>
-</span><span id="line-78"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681384974"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusCore.Version.html#Version"><span class="hs-identifier hs-type">Version</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-79"></span><span>    </span><span id="local-6989586621681384990"><span class="annot"><span class="annottext">pretty :: forall ann. Version -&gt; Doc ann
-</span><a href="#local-6989586621681384990"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Version.html#Version"><span class="hs-identifier hs-type">Version</span></a></span><span> </span><span id="local-6989586621681384992"><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681384992"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621681384993"><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681384993"><span class="hs-identifier hs-var">j</span></a></span></span><span> </span><span id="local-6989586621681384994"><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681384994"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Natural -&gt; Doc ann
+</span><span id="line-78"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681384982"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusCore.Version.html#Version"><span class="hs-identifier hs-type">Version</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-79"></span><span>    </span><span id="local-6989586621681384998"><span class="annot"><span class="annottext">pretty :: forall ann. Version -&gt; Doc ann
+</span><a href="#local-6989586621681384998"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Version.html#Version"><span class="hs-identifier hs-type">Version</span></a></span><span> </span><span id="local-6989586621681385000"><span class="annot"><span class="annottext">Natural
+</span><a href="#local-6989586621681385000"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621681385001"><span class="annot"><span class="annottext">Natural
+</span><a href="#local-6989586621681385001"><span class="hs-identifier hs-var">j</span></a></span></span><span> </span><span id="local-6989586621681385002"><span class="annot"><span class="annottext">Natural
+</span><a href="#local-6989586621681385002"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Natural -&gt; Doc ann
 forall ann. Natural -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681384992"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
+</span><a href="#local-6989586621681385000"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;.&quot;</span></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
@@ -184,7 +184,7 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 forall ann. Natural -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681384993"><span class="hs-identifier hs-var">j</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
+</span><a href="#local-6989586621681385001"><span class="hs-identifier hs-var">j</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;.&quot;</span></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
@@ -193,5 +193,5 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 forall ann. Natural -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681384994"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><a href="#local-6989586621681385002"><span class="hs-identifier hs-var">k</span></a></span><span>
 </span><span id="line-80"></span></pre></body></html>

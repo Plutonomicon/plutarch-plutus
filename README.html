@@ -54,7 +54,7 @@
 
   
   
-  <link href='tailwind.css?instanceId=8055af1c-bbde-45b6-a40c-bd3ada1b7741' rel='stylesheet' type='text/css' />
+  <link href='tailwind.css?instanceId=a47d6dd6-8ef5-4b03-8000-fd8d8564595d' rel='stylesheet' type='text/css' />
 
   <style>
     /* Heist error element */
@@ -111,6 +111,10 @@
       margin-left: 0.5em;
     }
 
+    a.--ema-toc:not(.toc-item-active) {
+      background-color: #ffffff !important;
+    }
+
     /* External link icon */
     a[data-linkicon=""]::after {
       content: ""
@@ -120,7 +124,12 @@
       content: ""
     }
 
+    a[data-linkicon="external"] {
+      padding-right: 24px;
+    }
+
     a[data-linkicon="external"]::after {
+      margin-right: -24px;
       content: url('data:image/svg+xml,\
       <svg xmlns="http://www.w3.org/2000/svg" height="0.7em" viewBox="0 0 20 20"> \
         <g style="stroke:gray;stroke-width:1"> \
@@ -3179,14 +3188,17 @@
   </div>
 </nav>
           <!-- Main body column -->
-          <div class='flex-1 w-full overflow-x-auto bg-white'>
+          <div class='flex-1 w-full bg-white'>
   <main class='px-4 py-4'>
     <h1 class='flex items-end justify-center mb-4 p-3 bg-blue-100 text-5xl font-extrabold text-black rounded'>
   <a class='z-40 tracking-tighter '>
     README
   </a>
 </h1>
-    <article class='overflow-auto'>
+    
+      <div class='md:grid md:gap-4 md:grid-cols-8'>
+        <div class='md:col-span-6'>
+          <article class='overflow-auto'>
   <!-- What goes in this file will appear on top of note body-->
   
 
@@ -3274,7 +3286,7 @@
       
   Overview
   
-  <a href='README.html#overview'>
+  <a href='README.html#overview' class='--ema-anchor'>
     <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
         <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
         <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
@@ -3284,11 +3296,11 @@
 
     </h1>
   
-    <h2 id='compiling-and-running' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+    <h2 id='compiling-and-running' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl'>
       
   Compiling and Running
   
-  <a href='README.html#compiling-and-running'>
+  <a href='README.html#compiling-and-running' class='--ema-anchor'>
     <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
         <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
         <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
@@ -3310,11 +3322,11 @@
       
     </ul>
   
-    <h2 id='introduction-and-basic-syntax' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+    <h2 id='introduction-and-basic-syntax' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl'>
       
   Introduction and Basic Syntax
   
-  <a href='README.html#introduction-and-basic-syntax'>
+  <a href='README.html#introduction-and-basic-syntax' class='--ema-anchor'>
     <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
         <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
         <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
@@ -3400,11 +3412,11 @@
       
     </ul>
   
-    <h2 id='practical-usage' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+    <h2 id='practical-usage' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl'>
       
   Practical Usage
   
-  <a href='README.html#practical-usage'>
+  <a href='README.html#practical-usage' class='--ema-anchor'>
     <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
         <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
         <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
@@ -3470,11 +3482,11 @@
       
     </ul>
   
-    <h2 id='concepts' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+    <h2 id='concepts' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl'>
       
   Concepts
   
-  <a href='README.html#concepts'>
+  <a href='README.html#concepts' class='--ema-anchor'>
     <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
         <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
         <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
@@ -3528,11 +3540,11 @@
       
     </ul>
   
-    <h2 id='typeclasses' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+    <h2 id='typeclasses' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl'>
       
   Typeclasses
   
-  <a href='README.html#typeclasses'>
+  <a href='README.html#typeclasses' class='--ema-anchor'>
     <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
         <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
         <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
@@ -3650,11 +3662,11 @@
       
     </ul>
   
-    <h2 id='working-with-types' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl border-b-2'>
+    <h2 id='working-with-types' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl'>
       
   Working with Types
   
-  <a href='README.html#working-with-types'>
+  <a href='README.html#working-with-types' class='--ema-anchor'>
     <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
         <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
         <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
@@ -3724,7 +3736,7 @@
       
   Examples
   
-  <a href='README.html#examples'>
+  <a href='README.html#examples' class='--ema-anchor'>
     <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
         <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
         <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
@@ -3754,7 +3766,7 @@
       
   Rules of thumb, Tips, and Tricks
   
-  <a href='README.html#rules-of-thumb-tips-and-tricks'>
+  <a href='README.html#rules-of-thumb-tips-and-tricks' class='--ema-anchor'>
     <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
         <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
         <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
@@ -3828,7 +3840,7 @@
       
   Common Issues and Troubleshooting
   
-  <a href='README.html#common-issues-and-troubleshooting'>
+  <a href='README.html#common-issues-and-troubleshooting' class='--ema-anchor'>
     <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
         <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
         <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
@@ -3882,7 +3894,7 @@
       
   Useful Links
   
-  <a href='README.html#useful-links'>
+  <a href='README.html#useful-links' class='--ema-anchor'>
     <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
         <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
         <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
@@ -3902,6 +3914,194 @@
   
   <!-- What goes in this file will appear below the note body-->
 </article>
+        </div>
+        <div class='hidden md:block md:col-span-2 md:border-l'>
+          <nav id='toc' class='hidden leading-relaxed md:block md:sticky md:top-0 md:max-h-screen md:overflow-y-auto'>
+  <div class='text-gray-600 text-sm -mt-2'>
+    
+        <ul class='ml-2'>
+          
+            <li class='whitespace-nowrap truncate mt-2' title='Overview'>
+              <a href='README.html#overview' class='--ema-toc bg-blue-200 rounded-md p-0.5'>
+                Overview
+              </a>
+              
+        <ul class='ml-2'>
+          
+            <li class='whitespace-nowrap truncate mt-2' title='Compiling and Running'>
+              <a href='README.html#compiling-and-running' class='--ema-toc bg-blue-200 rounded-md p-0.5'>
+                Compiling and Running
+              </a>
+              
+        <ul class='ml-2'>
+          
+        </ul>
+      
+            </li>
+          
+            <li class='whitespace-nowrap truncate mt-2' title='Introduction and Basic Syntax'>
+              <a href='README.html#introduction-and-basic-syntax' class='--ema-toc bg-blue-200 rounded-md p-0.5'>
+                Introduction and Basic Syntax
+              </a>
+              
+        <ul class='ml-2'>
+          
+        </ul>
+      
+            </li>
+          
+            <li class='whitespace-nowrap truncate mt-2' title='Practical Usage'>
+              <a href='README.html#practical-usage' class='--ema-toc bg-blue-200 rounded-md p-0.5'>
+                Practical Usage
+              </a>
+              
+        <ul class='ml-2'>
+          
+        </ul>
+      
+            </li>
+          
+            <li class='whitespace-nowrap truncate mt-2' title='Concepts'>
+              <a href='README.html#concepts' class='--ema-toc bg-blue-200 rounded-md p-0.5'>
+                Concepts
+              </a>
+              
+        <ul class='ml-2'>
+          
+        </ul>
+      
+            </li>
+          
+            <li class='whitespace-nowrap truncate mt-2' title='Typeclasses'>
+              <a href='README.html#typeclasses' class='--ema-toc bg-blue-200 rounded-md p-0.5'>
+                Typeclasses
+              </a>
+              
+        <ul class='ml-2'>
+          
+        </ul>
+      
+            </li>
+          
+            <li class='whitespace-nowrap truncate mt-2' title='Working with Types'>
+              <a href='README.html#working-with-types' class='--ema-toc bg-blue-200 rounded-md p-0.5'>
+                Working with Types
+              </a>
+              
+        <ul class='ml-2'>
+          
+        </ul>
+      
+            </li>
+          
+        </ul>
+      
+            </li>
+          
+            <li class='whitespace-nowrap truncate mt-2' title='Examples'>
+              <a href='README.html#examples' class='--ema-toc bg-blue-200 rounded-md p-0.5'>
+                Examples
+              </a>
+              
+        <ul class='ml-2'>
+          
+        </ul>
+      
+            </li>
+          
+            <li class='whitespace-nowrap truncate mt-2' title='Rules of thumb, Tips, and Tricks'>
+              <a href='README.html#rules-of-thumb-tips-and-tricks' class='--ema-toc bg-blue-200 rounded-md p-0.5'>
+                Rules of thumb, Tips, and Tricks
+              </a>
+              
+        <ul class='ml-2'>
+          
+        </ul>
+      
+            </li>
+          
+            <li class='whitespace-nowrap truncate mt-2' title='Common Issues and Troubleshooting'>
+              <a href='README.html#common-issues-and-troubleshooting' class='--ema-toc bg-blue-200 rounded-md p-0.5'>
+                Common Issues and Troubleshooting
+              </a>
+              
+        <ul class='ml-2'>
+          
+        </ul>
+      
+            </li>
+          
+            <li class='whitespace-nowrap truncate mt-2' title='Useful Links'>
+              <a href='README.html#useful-links' class='--ema-toc bg-blue-200 rounded-md p-0.5'>
+                Useful Links
+              </a>
+              
+        <ul class='ml-2'>
+          
+        </ul>
+      
+            </li>
+          
+        </ul>
+      
+  </div>
+  <script>
+    // Highlight the TOC, based from https://stackoverflow.com/a/75346369
+    // TODO: We should get rid of JavaScript! See https://github.com/srid/emanote/issues/520
+    function highlightTOC() {
+      // Grab the toc links
+      const links = document.querySelectorAll("ul > li > a.--ema-toc");
+
+      // Find the matching anchors in the document body
+      const sections = [];
+      links.forEach((link) => {
+        let found = {};
+        for (section of document.querySelectorAll("a.--ema-anchor")) {
+          if (link.href == section.href) {
+            found = section;
+            break;
+          }
+        }
+        sections.push(found);
+      });
+
+      // Current toc link is marked with the following class
+      const mark = "toc-item-active";
+
+      // Set window scroll handler to update the toc mark.
+      window.onscroll = () => {
+        // Remove previous mark
+        links.forEach((link) => {
+          link.classList.remove(mark);
+        });
+
+        // Mark the link of the section that is in view, starting from the end
+        let marked = false;
+        for (var i = sections.length - 1; i >= 0; i--) {
+          if (window.scrollY > sections[i].offsetTop - 80) {
+            links[i].classList.add(mark);
+            marked = true;
+            break;
+          }
+        }
+
+        // Special case for the first and last section which might not reach the top
+        if (!marked && window.scrollY > 0) {
+          let i = 0;
+          if ((window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight) {
+            // We are at the bottom
+            i = links.length - 1
+          }
+          links[i].classList.add(mark);
+        }
+      };
+    }
+    highlightTOC();
+  </script>
+</nav>
+        </div>
+      </div>
+      
     <div class='flex flex-col lg:flex-row lg:space-x-2'>
       
       
@@ -3998,7 +4198,6 @@
 </div>
         </div>
         
-
       <footer class='flex items-center justify-center mt-2 mb-8 space-x-4 text-center text-gray-800'>
   
   <div>
@@ -4016,7 +4215,7 @@
     </a>
   </div>
   <div>
-    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.13.0'>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.17.0'>
       <img class='w-6 h-6 hover:text-blue-700' src='_emanote-static/emanote-logo.svg' />
     </a>
   </div>

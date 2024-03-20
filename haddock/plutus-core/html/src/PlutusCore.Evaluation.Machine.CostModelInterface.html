@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="local-6989586621681495247"><span id="local-6989586621681495248"><span id="local-6989586621681495249"><span id="local-6989586621681495250"><span id="local-6989586621681495251"></span></span></span></span></span><span class="hs-comment">-- editorconfig-checker-disable-file</span><span>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="local-6989586621681495255"><span id="local-6989586621681495256"><span id="local-6989586621681495257"><span id="local-6989586621681495258"><span id="local-6989586621681495259"></span></span></span></span></span><span class="hs-comment">-- editorconfig-checker-disable-file</span><span>
 </span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE DeriveAnyClass     #-}</span><span>
 </span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE DeriveDataTypeable #-}</span><span>
 </span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE LambdaCase         #-}</span><span>
@@ -150,30 +150,30 @@ See Note [Cost model parameters]
 </span><span id="line-150"></span><span>
 </span><span id="line-151"></span><span class="hs-comment">-- See Note [Cost model parameters]</span><span>
 </span><span id="line-152"></span><span class="annot"><span class="hs-comment">-- | Extract the model parameters from a model.</span></span><span>
-</span><span id="line-153"></span><span id="local-6989586621681494985"><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#extractParams"><span class="hs-identifier hs-type">extractParams</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681494985"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681494985"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelParams"><span class="hs-identifier hs-type">CostModelParams</span></a></span></span><span>
+</span><span id="line-153"></span><span id="local-6989586621681494993"><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#extractParams"><span class="hs-identifier hs-type">extractParams</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681494993"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681494993"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelParams"><span class="hs-identifier hs-type">CostModelParams</span></a></span></span><span>
 </span><span id="line-154"></span><span id="extractParams"><span class="annot"><span class="annottext">extractParams :: forall a. ToJSON a =&gt; a -&gt; Maybe CostModelParams
-</span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#extractParams"><span class="hs-identifier hs-var hs-var">extractParams</span></a></span></span><span> </span><span id="local-6989586621681495259"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621681495259"><span class="hs-identifier hs-var">cm</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">a -&gt; Value
+</span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#extractParams"><span class="hs-identifier hs-var hs-var">extractParams</span></a></span></span><span> </span><span id="local-6989586621681495267"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621681495267"><span class="hs-identifier hs-var">cm</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">a -&gt; Value
 forall a. ToJSON a =&gt; a -&gt; Value
 </span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621681495259"><span class="hs-identifier hs-var">cm</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-155"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Object</span></span><span> </span><span id="local-6989586621681495262"><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681495262"><span class="hs-identifier hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621681495267"><span class="hs-identifier hs-var">cm</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-155"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Object</span></span><span> </span><span id="local-6989586621681495270"><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621681495270"><span class="hs-identifier hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-156"></span><span>        </span><span class="hs-keyword">let</span><span>
-</span><span id="line-157"></span><span>            </span><span id="local-6989586621681495265"><span class="annot"><span class="annottext">flattened :: HashMap Text Value
-</span><a href="#local-6989586621681495265"><span class="hs-identifier hs-var hs-var">flattened</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Object -&gt; HashMap Text Value
+</span><span id="line-157"></span><span>            </span><span id="local-6989586621681495273"><span class="annot"><span class="annottext">flattened :: HashMap Text Value
+</span><a href="#local-6989586621681495273"><span class="hs-identifier hs-var hs-var">flattened</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Object -&gt; HashMap Text Value
 </span><a href="Data.Aeson.Flatten.html#objToHm"><span class="hs-identifier hs-var">objToHm</span></a></span><span> </span><span class="annot"><span class="annottext">(Object -&gt; HashMap Text Value) -&gt; Object -&gt; HashMap Text Value
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Object -&gt; Object
 </span><a href="Data.Aeson.Flatten.html#flattenObject"><span class="hs-identifier hs-var">flattenObject</span></a></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;-&quot;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681495262"><span class="hs-identifier hs-var">o</span></a></span><span>
-</span><span id="line-158"></span><span>            </span><span id="local-6989586621681495282"><span class="annot"><span class="annottext">usingCostingIntegers :: HashMap Text Integer
-</span><a href="#local-6989586621681495282"><span class="hs-identifier hs-var hs-var">usingCostingIntegers</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Value -&gt; Maybe Integer)
+</span><a href="#local-6989586621681495270"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><span id="line-158"></span><span>            </span><span id="local-6989586621681495290"><span class="annot"><span class="annottext">usingCostingIntegers :: HashMap Text Integer
+</span><a href="#local-6989586621681495290"><span class="hs-identifier hs-var hs-var">usingCostingIntegers</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Value -&gt; Maybe Integer)
 -&gt; HashMap Text Value -&gt; HashMap Text Integer
 forall v1 v2 k. (v1 -&gt; Maybe v2) -&gt; HashMap k v1 -&gt; HashMap k v2
-</span><span class="hs-identifier hs-var">HM.mapMaybe</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Number</span></span><span> </span><span id="local-6989586621681495285"><span class="annot"><span class="annottext">Scientific
-</span><a href="#local-6989586621681495285"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Maybe Integer
+</span><span class="hs-identifier hs-var">HM.mapMaybe</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Number</span></span><span> </span><span id="local-6989586621681495293"><span class="annot"><span class="annottext">Scientific
+</span><a href="#local-6989586621681495293"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Maybe Integer
 forall a. a -&gt; Maybe a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-var">Just</span></a></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Maybe Integer) -&gt; Integer -&gt; Maybe Integer
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -181,14 +181,14 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall b. Integral b =&gt; Scientific -&gt; b
 forall a b. (RealFrac a, Integral b) =&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Real.html#ceiling"><span class="hs-identifier hs-var">ceiling</span></a></span><span> </span><span class="annot"><span class="annottext">Scientific
-</span><a href="#local-6989586621681495285"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">;</span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621681495293"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">;</span><span> </span><span class="annot"><span class="annottext">Value
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe Integer
 forall a. Maybe a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span> </span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">HashMap Text Value
-</span><a href="#local-6989586621681495265"><span class="hs-identifier hs-var">flattened</span></a></span><span>
+</span><a href="#local-6989586621681495273"><span class="hs-identifier hs-var">flattened</span></a></span><span>
 </span><span id="line-159"></span><span>            </span><span class="hs-comment">-- ^ Only (the contents of) the &quot;Just&quot; values are retained in the output map.</span><span>
-</span><span id="line-160"></span><span>            </span><span id="local-6989586621681495289"><span class="annot"><span class="annottext">mapified :: CostModelParams
-</span><a href="#local-6989586621681495289"><span class="hs-identifier hs-var hs-var">mapified</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(Text, Integer)] -&gt; CostModelParams
+</span><span id="line-160"></span><span>            </span><span id="local-6989586621681495297"><span class="annot"><span class="annottext">mapified :: CostModelParams
+</span><a href="#local-6989586621681495297"><span class="hs-identifier hs-var hs-var">mapified</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(Text, Integer)] -&gt; CostModelParams
 forall k a. Ord k =&gt; [(k, a)] -&gt; Map k a
 </span><span class="hs-identifier hs-var">Map.fromList</span></span><span> </span><span class="annot"><span class="annottext">([(Text, Integer)] -&gt; CostModelParams)
 -&gt; [(Text, Integer)] -&gt; CostModelParams
@@ -196,11 +196,11 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">HashMap Text Integer -&gt; [(Text, Integer)]
 forall k v. HashMap k v -&gt; [(k, v)]
 </span><span class="hs-identifier hs-var">HM.toList</span></span><span> </span><span class="annot"><span class="annottext">HashMap Text Integer
-</span><a href="#local-6989586621681495282"><span class="hs-identifier hs-var">usingCostingIntegers</span></a></span><span>
+</span><a href="#local-6989586621681495290"><span class="hs-identifier hs-var">usingCostingIntegers</span></a></span><span>
 </span><span id="line-161"></span><span>        </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">CostModelParams -&gt; Maybe CostModelParams
 forall a. a -&gt; Maybe a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-var">Just</span></a></span><span> </span><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681495289"><span class="hs-identifier hs-var">mapified</span></a></span><span>
+</span><a href="#local-6989586621681495297"><span class="hs-identifier hs-var">mapified</span></a></span><span>
 </span><span id="line-162"></span><span>    </span><span class="annot"><span class="annottext">Value
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe CostModelParams
 forall a. Maybe a
@@ -219,7 +219,7 @@ forall a. Maybe a
 </span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#cmTooFewExpected"><span class="hs-identifier hs-var hs-var">cmTooFewExpected</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-glyph">!</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">,</span><span> </span><span id="cmTooFewActual"><span class="annot"><span class="annottext">CostModelApplyError -&gt; Int
 </span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#cmTooFewActual"><span class="hs-identifier hs-var hs-var">cmTooFewActual</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-glyph">!</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-special">}</span><span>
 </span><span id="line-174"></span><span>      </span><span class="annot"><span class="hs-comment">-- ^ See Note [Cost model parameters from the ledger's point of view]</span></span><span>
-</span><span id="line-175"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681495299"><span id="local-6989586621681495309"><span class="annot"><span class="annottext">CostModelApplyError -&gt; CostModelApplyError -&gt; Bool
+</span><span id="line-175"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681495307"><span id="local-6989586621681495317"><span class="annot"><span class="annottext">CostModelApplyError -&gt; CostModelApplyError -&gt; Bool
 (CostModelApplyError -&gt; CostModelApplyError -&gt; Bool)
 -&gt; (CostModelApplyError -&gt; CostModelApplyError -&gt; Bool)
 -&gt; Eq CostModelApplyError
@@ -228,7 +228,7 @@ $c== :: CostModelApplyError -&gt; CostModelApplyError -&gt; Bool
 == :: CostModelApplyError -&gt; CostModelApplyError -&gt; Bool
 $c/= :: CostModelApplyError -&gt; CostModelApplyError -&gt; Bool
 /= :: CostModelApplyError -&gt; CostModelApplyError -&gt; Bool
-</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681495315"><span id="local-6989586621681495329"><span id="local-6989586621681495333"><span class="annot"><span class="annottext">Int -&gt; CostModelApplyError -&gt; ShowS
+</span><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681495323"><span id="local-6989586621681495337"><span id="local-6989586621681495341"><span class="annot"><span class="annottext">Int -&gt; CostModelApplyError -&gt; ShowS
 [CostModelApplyError] -&gt; ShowS
 CostModelApplyError -&gt; String
 (Int -&gt; CostModelApplyError -&gt; ShowS)
@@ -243,7 +243,7 @@ $cshow :: CostModelApplyError -&gt; String
 show :: CostModelApplyError -&gt; String
 $cshowList :: [CostModelApplyError] -&gt; ShowS
 showList :: [CostModelApplyError] -&gt; ShowS
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681495338"><span id="local-6989586621681495340"><span class="annot"><span class="annottext">(forall x. CostModelApplyError -&gt; Rep CostModelApplyError x)
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681495346"><span id="local-6989586621681495348"><span class="annot"><span class="annottext">(forall x. CostModelApplyError -&gt; Rep CostModelApplyError x)
 -&gt; (forall x. Rep CostModelApplyError x -&gt; CostModelApplyError)
 -&gt; Generic CostModelApplyError
 forall x. Rep CostModelApplyError x -&gt; CostModelApplyError
@@ -254,7 +254,7 @@ $cfrom :: forall x. CostModelApplyError -&gt; Rep CostModelApplyError x
 from :: forall x. CostModelApplyError -&gt; Rep CostModelApplyError x
 $cto :: forall x. Rep CostModelApplyError x -&gt; CostModelApplyError
 to :: forall x. Rep CostModelApplyError x -&gt; CostModelApplyError
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681495346"><span id="local-6989586621681495356"><span id="local-6989586621681495363"><span id="local-6989586621681495365"><span id="local-6989586621681495367"><span id="local-6989586621681495373"><span id="local-6989586621681495378"><span id="local-6989586621681495381"><span id="local-6989586621681495384"><span id="local-6989586621681495387"><span id="local-6989586621681495390"><span id="local-6989586621681495393"><span id="local-6989586621681495398"><span id="local-6989586621681495403"><span class="annot"><span class="annottext">Typeable CostModelApplyError
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681495354"><span id="local-6989586621681495364"><span id="local-6989586621681495371"><span id="local-6989586621681495373"><span id="local-6989586621681495375"><span id="local-6989586621681495381"><span id="local-6989586621681495386"><span id="local-6989586621681495389"><span id="local-6989586621681495392"><span id="local-6989586621681495395"><span id="local-6989586621681495398"><span id="local-6989586621681495401"><span id="local-6989586621681495406"><span id="local-6989586621681495411"><span class="annot"><span class="annottext">Typeable CostModelApplyError
 Typeable CostModelApplyError =&gt;
 (forall (c :: * -&gt; *).
  (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
@@ -451,7 +451,7 @@ MonadPlus m =&gt;
 (forall d. Data d =&gt; d -&gt; m d)
 -&gt; CostModelApplyError -&gt; m CostModelApplyError
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Data.html#Data"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Data</span></a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-176"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681495414"><span id="local-6989586621681495418"><span id="local-6989586621681495421"><span class="annot"><span class="annottext">Show CostModelApplyError
+</span><span id="line-176"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681495422"><span id="local-6989586621681495426"><span id="local-6989586621681495429"><span class="annot"><span class="annottext">Show CostModelApplyError
 Typeable CostModelApplyError
 (Typeable CostModelApplyError, Show CostModelApplyError) =&gt;
 (CostModelApplyError -&gt; SomeException)
@@ -471,12 +471,12 @@ $cfromException :: SomeException -&gt; Maybe CostModelApplyError
 fromException :: SomeException -&gt; Maybe CostModelApplyError
 $cdisplayException :: CostModelApplyError -&gt; String
 displayException :: CostModelApplyError -&gt; String
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Exception.Type.html#Exception"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Exception</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681495425"><span class="annot"><span class="annottext">CostModelApplyError -&gt; ()
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Exception.Type.html#Exception"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Exception</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681495433"><span class="annot"><span class="annottext">CostModelApplyError -&gt; ()
 (CostModelApplyError -&gt; ()) -&gt; NFData CostModelApplyError
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: CostModelApplyError -&gt; ()
 rnf :: CostModelApplyError -&gt; ()
-</span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681495462"><span id="local-6989586621681495466"><span id="local-6989586621681495472"><span class="annot"><span class="annottext">Context -&gt; CostModelApplyError -&gt; IO (Maybe ThunkInfo)
+</span><a href="../../../ghc-9.6.4/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681495470"><span id="local-6989586621681495474"><span id="local-6989586621681495480"><span class="annot"><span class="annottext">Context -&gt; CostModelApplyError -&gt; IO (Maybe ThunkInfo)
 Proxy CostModelApplyError -&gt; String
 (Context -&gt; CostModelApplyError -&gt; IO (Maybe ThunkInfo))
 -&gt; (Context -&gt; CostModelApplyError -&gt; IO (Maybe ThunkInfo))
@@ -505,10 +505,10 @@ showTypeOf :: Proxy CostModelApplyError -&gt; String
     See Note [Cost model parameters from the ledger's point of view]
     -}</span></span><span>
 </span><span id="line-185"></span><span>
-</span><span id="line-186"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681495529"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelApplyError"><span class="hs-identifier hs-type">CostModelApplyError</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-187"></span><span>    </span><span id="local-6989586621681495548"><span class="annot"><span class="annottext">pretty :: forall ann. CostModelApplyError -&gt; Doc ann
-</span><a href="#local-6989586621681495548"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Doc ann
-</span><a href="#local-6989586621681495550"><span class="hs-identifier hs-var">preamble</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
+</span><span id="line-186"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681495537"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelApplyError"><span class="hs-identifier hs-type">CostModelApplyError</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-187"></span><span>    </span><span id="local-6989586621681495556"><span class="annot"><span class="annottext">pretty :: forall ann. CostModelApplyError -&gt; Doc ann
+</span><a href="#local-6989586621681495556"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Doc ann
+</span><a href="#local-6989586621681495558"><span class="hs-identifier hs-var">preamble</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 </span><span class="hs-operator hs-var">&lt;+&gt;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Doc ann -&gt; Doc ann)
 -&gt; (CostModelApplyError -&gt; Doc ann)
@@ -516,28 +516,28 @@ forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 -&gt; Doc ann
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-188"></span><span>        </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CMUnknownParamError"><span class="hs-identifier hs-type">CMUnknownParamError</span></a></span><span> </span><span id="local-6989586621681495553"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621681495553"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Doc ann
+</span><span id="line-188"></span><span>        </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CMUnknownParamError"><span class="hs-identifier hs-type">CMUnknownParamError</span></a></span><span> </span><span id="local-6989586621681495561"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621681495561"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;Unknown cost model parameter:&quot;</span></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 </span><span class="hs-operator hs-var">&lt;+&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Doc ann
 forall ann. Text -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621681495553"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><a href="#local-6989586621681495561"><span class="hs-identifier hs-var">k</span></a></span><span>
 </span><span id="line-189"></span><span>        </span><span class="annot"><span class="annottext">CostModelApplyError
 </span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CMInternalReadError"><span class="hs-identifier hs-var">CMInternalReadError</span></a></span><span>      </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;Internal problem occurred upon reading the given cost model parameteres&quot;</span></span><span>
-</span><span id="line-190"></span><span>        </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CMInternalWriteError"><span class="hs-identifier hs-type">CMInternalWriteError</span></a></span><span> </span><span id="local-6989586621681495554"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621681495554"><span class="hs-identifier hs-var">str</span></a></span></span><span>     </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Doc ann
+</span><span id="line-190"></span><span>        </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CMInternalWriteError"><span class="hs-identifier hs-type">CMInternalWriteError</span></a></span><span> </span><span id="local-6989586621681495562"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621681495562"><span class="hs-identifier hs-var">str</span></a></span></span><span>     </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;Internal problem occurred upon generating the applied cost model parameters with JSON error:&quot;</span></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 </span><span class="hs-operator hs-var">&lt;+&gt;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Doc ann
 forall ann. String -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621681495554"><span class="hs-identifier hs-var">str</span></a></span><span>
-</span><span id="line-191"></span><span>        </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CMTooFewParamsError"><span class="hs-identifier hs-type">CMTooFewParamsError</span></a></span><span class="hs-special">{</span><span id="local-6989586621681495555"><span id="local-6989586621681495556"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621681495562"><span class="hs-identifier hs-var">str</span></a></span><span>
+</span><span id="line-191"></span><span>        </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CMTooFewParamsError"><span class="hs-identifier hs-type">CMTooFewParamsError</span></a></span><span class="hs-special">{</span><span id="local-6989586621681495563"><span id="local-6989586621681495564"><span class="annot"><span class="annottext">Int
 cmTooFewExpected :: CostModelApplyError -&gt; Int
 cmTooFewActual :: CostModelApplyError -&gt; Int
 cmTooFewExpected :: Int
@@ -549,7 +549,7 @@ forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Int -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621681495555"><span class="hs-identifier hs-var">cmTooFewExpected</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
+</span><a href="#local-6989586621681495563"><span class="hs-identifier hs-var">cmTooFewExpected</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 </span><span class="hs-operator hs-var">&lt;+&gt;</span></span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;but got&quot;</span></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
@@ -558,22 +558,22 @@ forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Int -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621681495556"><span class="hs-identifier hs-var">cmTooFewActual</span></a></span><span>
+</span><a href="#local-6989586621681495564"><span class="hs-identifier hs-var">cmTooFewActual</span></a></span><span>
 </span><span id="line-192"></span><span>      </span><span class="hs-keyword">where</span><span>
-</span><span id="line-193"></span><span>          </span><span id="local-6989586621681495550"><span class="annot"><span class="annottext">preamble :: Doc ann
-</span><a href="#local-6989586621681495550"><span class="hs-identifier hs-var hs-var">preamble</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Doc ann
+</span><span id="line-193"></span><span>          </span><span id="local-6989586621681495558"><span class="annot"><span class="annottext">preamble :: Doc ann
+</span><a href="#local-6989586621681495558"><span class="hs-identifier hs-var hs-var">preamble</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;applyParams error:&quot;</span></span><span>
 </span><span id="line-194"></span><span>
-</span><span id="line-195"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681495560"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelApplyWarn"><span class="hs-identifier hs-type">CostModelApplyWarn</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-196"></span><span>    </span><span id="local-6989586621681495567"><span class="annot"><span class="annottext">pretty :: forall ann. CostModelApplyWarn -&gt; Doc ann
+</span><span id="line-195"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681495568"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelApplyWarn"><span class="hs-identifier hs-type">CostModelApplyWarn</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-196"></span><span>    </span><span id="local-6989586621681495575"><span class="annot"><span class="annottext">pretty :: forall ann. CostModelApplyWarn -&gt; Doc ann
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Doc ann
-</span><a href="#local-6989586621681495568"><span class="hs-identifier hs-var">preamble</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
+</span><a href="#local-6989586621681495576"><span class="hs-identifier hs-var">preamble</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 </span><span class="hs-operator hs-var">&lt;+&gt;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Doc ann -&gt; Doc ann)
 -&gt; (CostModelApplyWarn -&gt; Doc ann) -&gt; CostModelApplyWarn -&gt; Doc ann
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-197"></span><span>        </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CMTooManyParamsWarn"><span class="hs-identifier hs-type">CMTooManyParamsWarn</span></a></span><span class="hs-special">{</span><span id="local-6989586621681495569"><span id="local-6989586621681495570"><span class="annot"><span class="annottext">Int
+</span><span id="line-197"></span><span>        </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CMTooManyParamsWarn"><span class="hs-identifier hs-type">CMTooManyParamsWarn</span></a></span><span class="hs-special">{</span><span id="local-6989586621681495577"><span id="local-6989586621681495578"><span class="annot"><span class="annottext">Int
 cmTooManyExpected :: CostModelApplyWarn -&gt; Int
 cmTooManyActual :: CostModelApplyWarn -&gt; Int
 cmTooManyExpected :: Int
@@ -585,7 +585,7 @@ forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Int -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621681495569"><span class="hs-identifier hs-var">cmTooManyExpected</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
+</span><a href="#local-6989586621681495577"><span class="hs-identifier hs-var">cmTooManyExpected</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 </span><span class="hs-operator hs-var">&lt;+&gt;</span></span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;but got&quot;</span></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
@@ -594,32 +594,32 @@ forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Int -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621681495570"><span class="hs-identifier hs-var">cmTooManyActual</span></a></span><span>
+</span><a href="#local-6989586621681495578"><span class="hs-identifier hs-var">cmTooManyActual</span></a></span><span>
 </span><span id="line-198"></span><span>      </span><span class="hs-keyword">where</span><span>
-</span><span id="line-199"></span><span>          </span><span id="local-6989586621681495568"><span class="annot"><span class="annottext">preamble :: Doc ann
-</span><a href="#local-6989586621681495568"><span class="hs-identifier hs-var hs-var">preamble</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Doc ann
+</span><span id="line-199"></span><span>          </span><span id="local-6989586621681495576"><span class="annot"><span class="annottext">preamble :: Doc ann
+</span><a href="#local-6989586621681495576"><span class="hs-identifier hs-var hs-var">preamble</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;applyParams warn:&quot;</span></span><span>
 </span><span id="line-200"></span><span>
 </span><span id="line-201"></span><span class="hs-comment">-- See Note [Cost model parameters]</span><span>
 </span><span id="line-202"></span><span class="annot"><span class="hs-comment">-- | Update a model by overwriting the parameters with the given ones.</span></span><span>
-</span><span id="line-203"></span><span id="local-6989586621681495141"><span id="local-6989586621681495143"><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#applyParams"><span class="hs-identifier hs-type">applyParams</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495141"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495141"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadError</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelApplyError"><span class="hs-identifier hs-type">CostModelApplyError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495143"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-204"></span><span>            </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681495141"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-203"></span><span id="local-6989586621681495149"><span id="local-6989586621681495151"><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#applyParams"><span class="hs-identifier hs-type">applyParams</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495149"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495149"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadError</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelApplyError"><span class="hs-identifier hs-type">CostModelApplyError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495151"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-204"></span><span>            </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681495149"><span class="hs-identifier hs-type">a</span></a></span><span>
 </span><span id="line-205"></span><span>            </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelParams"><span class="hs-identifier hs-type">CostModelParams</span></a></span><span>
-</span><span id="line-206"></span><span>            </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681495143"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495141"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
+</span><span id="line-206"></span><span>            </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681495151"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495149"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
 </span><span id="line-207"></span><span id="applyParams"><span class="annot"><span class="annottext">applyParams :: forall a (m :: * -&gt; *).
 (FromJSON a, ToJSON a, MonadError CostModelApplyError m) =&gt;
 a -&gt; CostModelParams -&gt; m a
-</span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#applyParams"><span class="hs-identifier hs-var hs-var">applyParams</span></a></span></span><span> </span><span id="local-6989586621681495592"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621681495592"><span class="hs-identifier hs-var">cm</span></a></span></span><span> </span><span id="local-6989586621681495593"><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681495593"><span class="hs-identifier hs-var">params</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">a -&gt; Value
+</span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#applyParams"><span class="hs-identifier hs-var hs-var">applyParams</span></a></span></span><span> </span><span id="local-6989586621681495600"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621681495600"><span class="hs-identifier hs-var">cm</span></a></span></span><span> </span><span id="local-6989586621681495601"><span class="annot"><span class="annottext">CostModelParams
+</span><a href="#local-6989586621681495601"><span class="hs-identifier hs-var">params</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">a -&gt; Value
 forall a. ToJSON a =&gt; a -&gt; Value
 </span><span class="hs-identifier hs-var">toJSON</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621681495592"><span class="hs-identifier hs-var">cm</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-208"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Object</span></span><span> </span><span id="local-6989586621681495594"><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681495594"><span class="hs-identifier hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621681495600"><span class="hs-identifier hs-var">cm</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-208"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Object</span></span><span> </span><span id="local-6989586621681495602"><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621681495602"><span class="hs-identifier hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-209"></span><span>        </span><span class="hs-keyword">let</span><span>
-</span><span id="line-210"></span><span>            </span><span id="local-6989586621681495600"><span class="annot"><span class="annottext">usingScientific :: Map Text Value
-</span><a href="#local-6989586621681495600"><span class="hs-identifier hs-var hs-var">usingScientific</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Value) -&gt; CostModelParams -&gt; Map Text Value
+</span><span id="line-210"></span><span>            </span><span id="local-6989586621681495608"><span class="annot"><span class="annottext">usingScientific :: Map Text Value
+</span><a href="#local-6989586621681495608"><span class="hs-identifier hs-var hs-var">usingScientific</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Value) -&gt; CostModelParams -&gt; Map Text Value
 forall a b. (a -&gt; b) -&gt; Map Text a -&gt; Map Text b
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Scientific -&gt; Value
@@ -629,11 +629,11 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Scientific
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Real.html#fromIntegral"><span class="hs-identifier hs-var">fromIntegral</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681495593"><span class="hs-identifier hs-var">params</span></a></span><span>
-</span><span id="line-211"></span><span>            </span><span id="local-6989586621681495602"><span class="annot"><span class="annottext">flattened :: Map Text Value
-</span><a href="#local-6989586621681495602"><span class="hs-identifier hs-var hs-var">flattened</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">HashMap Text Value -&gt; Map Text Value
+</span><a href="#local-6989586621681495601"><span class="hs-identifier hs-var">params</span></a></span><span>
+</span><span id="line-211"></span><span>            </span><span id="local-6989586621681495610"><span class="annot"><span class="annottext">flattened :: Map Text Value
+</span><a href="#local-6989586621681495610"><span class="hs-identifier hs-var hs-var">flattened</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">HashMap Text Value -&gt; Map Text Value
 forall {a}. HashMap Text a -&gt; Map Text a
-</span><a href="#local-6989586621681495603"><span class="hs-identifier hs-var">fromHash</span></a></span><span> </span><span class="annot"><span class="annottext">(HashMap Text Value -&gt; Map Text Value)
+</span><a href="#local-6989586621681495611"><span class="hs-identifier hs-var">fromHash</span></a></span><span> </span><span class="annot"><span class="annottext">(HashMap Text Value -&gt; Map Text Value)
 -&gt; HashMap Text Value -&gt; Map Text Value
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; HashMap Text Value
@@ -642,12 +642,12 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Object -&gt; Object
 </span><a href="Data.Aeson.Flatten.html#flattenObject"><span class="hs-identifier hs-var">flattenObject</span></a></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;-&quot;</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681495594"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><a href="#local-6989586621681495602"><span class="hs-identifier hs-var">o</span></a></span><span>
 </span><span id="line-212"></span><span>        </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-213"></span><span>            </span><span class="hs-comment">-- this is where the overwriting happens</span><span>
 </span><span id="line-214"></span><span>            </span><span class="hs-comment">-- fail when key is in params (left) but not in the model (right)</span><span>
-</span><span id="line-215"></span><span>            </span><span id="local-6989586621681495604"><span class="annot"><span class="annottext">Map Text Value
-</span><a href="#local-6989586621681495604"><span class="hs-identifier hs-var">merged</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">WhenMissing m Text Value Value
+</span><span id="line-215"></span><span>            </span><span id="local-6989586621681495612"><span class="annot"><span class="annottext">Map Text Value
+</span><a href="#local-6989586621681495612"><span class="hs-identifier hs-var">merged</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">WhenMissing m Text Value Value
 -&gt; WhenMissing m Text Value Value
 -&gt; WhenMatched m Text Value Value Value
 -&gt; Map Text Value
@@ -663,7 +663,7 @@ WhenMissing f k a c
 -&gt; f (Map k c)
 </span><span class="hs-identifier hs-var">Map.mergeA</span></span><span> </span><span class="annot"><span class="annottext">WhenMissing m Text Value Value
 forall {x} {y}. WhenMissing m Text x y
-</span><a href="#local-6989586621681495606"><span class="hs-identifier hs-var">failMissing</span></a></span><span> </span><span class="annot"><span class="annottext">WhenMissing m Text Value Value
+</span><a href="#local-6989586621681495614"><span class="hs-identifier hs-var">failMissing</span></a></span><span> </span><span class="annot"><span class="annottext">WhenMissing m Text Value Value
 forall (f :: * -&gt; *) k x. Applicative f =&gt; WhenMissing f k x x
 </span><span class="hs-identifier hs-var">Map.preserveMissing</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Text -&gt; Value -&gt; Value -&gt; Value)
 -&gt; WhenMatched m Text Value Value Value
@@ -672,11 +672,11 @@ Applicative f =&gt;
 (k -&gt; x -&gt; y -&gt; z) -&gt; WhenMatched f k x y z
 </span><span class="hs-identifier hs-var">Map.zipWithMatched</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Value -&gt; Value -&gt; Value
 forall {p} {p} {p}. p -&gt; p -&gt; p -&gt; p
-</span><a href="#local-6989586621681495609"><span class="hs-identifier hs-var">leftBiased</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Map Text Value
-</span><a href="#local-6989586621681495600"><span class="hs-identifier hs-var">usingScientific</span></a></span><span> </span><span class="annot"><span class="annottext">Map Text Value
-</span><a href="#local-6989586621681495602"><span class="hs-identifier hs-var">flattened</span></a></span><span>
-</span><span id="line-216"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621681495611"><span class="annot"><span class="annottext">unflattened :: Object
-</span><a href="#local-6989586621681495611"><span class="hs-identifier hs-var hs-var">unflattened</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Object -&gt; Object
+</span><a href="#local-6989586621681495617"><span class="hs-identifier hs-var">leftBiased</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Map Text Value
+</span><a href="#local-6989586621681495608"><span class="hs-identifier hs-var">usingScientific</span></a></span><span> </span><span class="annot"><span class="annottext">Map Text Value
+</span><a href="#local-6989586621681495610"><span class="hs-identifier hs-var">flattened</span></a></span><span>
+</span><span id="line-216"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621681495619"><span class="annot"><span class="annottext">unflattened :: Object
+</span><a href="#local-6989586621681495619"><span class="hs-identifier hs-var hs-var">unflattened</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Object -&gt; Object
 </span><a href="Data.Aeson.Flatten.html#unflattenObject"><span class="hs-identifier hs-var">unflattenObject</span></a></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;-&quot;</span></span><span> </span><span class="annot"><span class="annottext">(Object -&gt; Object) -&gt; Object -&gt; Object
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -685,28 +685,28 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Map Text Value -&gt; HashMap Text Value
 forall {v}. Map Text v -&gt; HashMap Text v
-</span><a href="#local-6989586621681495614"><span class="hs-identifier hs-var">toHash</span></a></span><span> </span><span class="annot"><span class="annottext">Map Text Value
-</span><a href="#local-6989586621681495604"><span class="hs-identifier hs-var">merged</span></a></span><span>
+</span><a href="#local-6989586621681495622"><span class="hs-identifier hs-var">toHash</span></a></span><span> </span><span class="annot"><span class="annottext">Map Text Value
+</span><a href="#local-6989586621681495612"><span class="hs-identifier hs-var">merged</span></a></span><span>
 </span><span id="line-217"></span><span>            </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Value -&gt; Result a
 forall a. FromJSON a =&gt; Value -&gt; Result a
 </span><span class="hs-identifier hs-var">fromJSON</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Object -&gt; Value
 </span><span class="hs-identifier hs-var">Object</span></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681495611"><span class="hs-identifier hs-var">unflattened</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-218"></span><span>                </span><span class="annot"><span class="hs-identifier hs-type">Success</span></span><span> </span><span id="local-6989586621681495617"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621681495617"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">a -&gt; m a
+</span><a href="#local-6989586621681495619"><span class="hs-identifier hs-var">unflattened</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-218"></span><span>                </span><span class="annot"><span class="hs-identifier hs-type">Success</span></span><span> </span><span id="local-6989586621681495625"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621681495625"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">a -&gt; m a
 forall a. a -&gt; m a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621681495617"><span class="hs-identifier hs-var">a</span></a></span><span>
-</span><span id="line-219"></span><span>                </span><span class="annot"><span class="hs-identifier hs-type">Error</span></span><span> </span><span id="local-6989586621681495619"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621681495619"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">CostModelApplyError -&gt; m a
+</span><a href="#local-6989586621681495625"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-219"></span><span>                </span><span class="annot"><span class="hs-identifier hs-type">Error</span></span><span> </span><span id="local-6989586621681495627"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621681495627"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">CostModelApplyError -&gt; m a
 forall a. CostModelApplyError -&gt; m a
 forall e (m :: * -&gt; *) a. MonadError e m =&gt; e -&gt; m a
 </span><span class="hs-identifier hs-var">throwError</span></span><span> </span><span class="annot"><span class="annottext">(CostModelApplyError -&gt; m a) -&gt; CostModelApplyError -&gt; m a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; CostModelApplyError
 </span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CMInternalWriteError"><span class="hs-identifier hs-var">CMInternalWriteError</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621681495619"><span class="hs-identifier hs-var">str</span></a></span><span>
+</span><a href="#local-6989586621681495627"><span class="hs-identifier hs-var">str</span></a></span><span>
 </span><span id="line-220"></span><span>    </span><span class="annot"><span class="annottext">Value
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">CostModelApplyError -&gt; m a
 forall a. CostModelApplyError -&gt; m a
@@ -714,8 +714,8 @@ forall e (m :: * -&gt; *) a. MonadError e m =&gt; e -&gt; m a
 </span><span class="hs-identifier hs-var">throwError</span></span><span> </span><span class="annot"><span class="annottext">CostModelApplyError
 </span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CMInternalReadError"><span class="hs-identifier hs-var">CMInternalReadError</span></a></span><span>
 </span><span id="line-221"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-222"></span><span>    </span><span id="local-6989586621681495614"><span class="annot"><span class="annottext">toHash :: Map Text v -&gt; HashMap Text v
-</span><a href="#local-6989586621681495614"><span class="hs-identifier hs-var hs-var">toHash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(Text, v)] -&gt; HashMap Text v
+</span><span id="line-222"></span><span>    </span><span id="local-6989586621681495622"><span class="annot"><span class="annottext">toHash :: Map Text v -&gt; HashMap Text v
+</span><a href="#local-6989586621681495622"><span class="hs-identifier hs-var hs-var">toHash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(Text, v)] -&gt; HashMap Text v
 forall k v. (Eq k, Hashable k) =&gt; [(k, v)] -&gt; HashMap k v
 </span><span class="hs-identifier hs-var">HM.fromList</span></span><span> </span><span class="annot"><span class="annottext">([(Text, v)] -&gt; HashMap Text v)
 -&gt; (Map Text v -&gt; [(Text, v)]) -&gt; Map Text v -&gt; HashMap Text v
@@ -723,8 +723,8 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Map Text v -&gt; [(Text, v)]
 forall k a. Map k a -&gt; [(k, a)]
 </span><span class="hs-identifier hs-var">Map.toList</span></span><span>
-</span><span id="line-223"></span><span>    </span><span id="local-6989586621681495603"><span class="annot"><span class="annottext">fromHash :: HashMap Text a -&gt; Map Text a
-</span><a href="#local-6989586621681495603"><span class="hs-identifier hs-var hs-var">fromHash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(Text, a)] -&gt; Map Text a
+</span><span id="line-223"></span><span>    </span><span id="local-6989586621681495611"><span class="annot"><span class="annottext">fromHash :: HashMap Text a -&gt; Map Text a
+</span><a href="#local-6989586621681495611"><span class="hs-identifier hs-var hs-var">fromHash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(Text, a)] -&gt; Map Text a
 forall k a. Ord k =&gt; [(k, a)] -&gt; Map k a
 </span><span class="hs-identifier hs-var">Map.fromList</span></span><span> </span><span class="annot"><span class="annottext">([(Text, a)] -&gt; Map Text a)
 -&gt; (HashMap Text a -&gt; [(Text, a)]) -&gt; HashMap Text a -&gt; Map Text a
@@ -733,31 +733,31 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall k v. HashMap k v -&gt; [(k, v)]
 </span><span class="hs-identifier hs-var">HM.toList</span></span><span>
 </span><span id="line-224"></span><span>    </span><span class="hs-comment">-- fail when field missing</span><span>
-</span><span id="line-225"></span><span>    </span><span id="local-6989586621681495606"><span class="annot"><span class="annottext">failMissing :: WhenMissing m Text x y
-</span><a href="#local-6989586621681495606"><span class="hs-identifier hs-var hs-var">failMissing</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; x -&gt; m y) -&gt; WhenMissing m Text x y
+</span><span id="line-225"></span><span>    </span><span id="local-6989586621681495614"><span class="annot"><span class="annottext">failMissing :: WhenMissing m Text x y
+</span><a href="#local-6989586621681495614"><span class="hs-identifier hs-var hs-var">failMissing</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; x -&gt; m y) -&gt; WhenMissing m Text x y
 forall (f :: * -&gt; *) k x y.
 Applicative f =&gt;
 (k -&gt; x -&gt; f y) -&gt; WhenMissing f k x y
 </span><span class="hs-identifier hs-var">Map.traverseMissing</span></span><span> </span><span class="annot"><span class="annottext">((Text -&gt; x -&gt; m y) -&gt; WhenMissing m Text x y)
 -&gt; (Text -&gt; x -&gt; m y) -&gt; WhenMissing m Text x y
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span> </span><span id="local-6989586621681495636"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621681495636"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621681495637"><span class="annot"><span class="annottext">x
-</span><a href="#local-6989586621681495637"><span class="hs-identifier hs-var">_v</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">CostModelApplyError -&gt; m y
+</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span> </span><span id="local-6989586621681495644"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621681495644"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621681495645"><span class="annot"><span class="annottext">x
+</span><a href="#local-6989586621681495645"><span class="hs-identifier hs-var">_v</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">CostModelApplyError -&gt; m y
 forall a. CostModelApplyError -&gt; m a
 forall e (m :: * -&gt; *) a. MonadError e m =&gt; e -&gt; m a
 </span><span class="hs-identifier hs-var">throwError</span></span><span> </span><span class="annot"><span class="annottext">(CostModelApplyError -&gt; m y) -&gt; CostModelApplyError -&gt; m y
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; CostModelApplyError
 </span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CMUnknownParamError"><span class="hs-identifier hs-var">CMUnknownParamError</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621681495636"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><a href="#local-6989586621681495644"><span class="hs-identifier hs-var">k</span></a></span><span>
 </span><span id="line-226"></span><span>    </span><span class="hs-comment">-- left-biased merging when key found in both maps</span><span>
-</span><span id="line-227"></span><span>    </span><span id="local-6989586621681495609"><span class="annot"><span class="annottext">leftBiased :: p -&gt; p -&gt; p -&gt; p
-</span><a href="#local-6989586621681495609"><span class="hs-identifier hs-var hs-var">leftBiased</span></a></span></span><span> </span><span id="local-6989586621681495638"><span class="annot"><span class="annottext">p
-</span><a href="#local-6989586621681495638"><span class="hs-identifier hs-var">_k</span></a></span></span><span> </span><span id="local-6989586621681495639"><span class="annot"><span class="annottext">p
-</span><a href="#local-6989586621681495639"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621681495640"><span class="annot"><span class="annottext">p
-</span><a href="#local-6989586621681495640"><span class="hs-identifier hs-var">_r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">p
-</span><a href="#local-6989586621681495639"><span class="hs-identifier hs-var">l</span></a></span><span>
+</span><span id="line-227"></span><span>    </span><span id="local-6989586621681495617"><span class="annot"><span class="annottext">leftBiased :: p -&gt; p -&gt; p -&gt; p
+</span><a href="#local-6989586621681495617"><span class="hs-identifier hs-var hs-var">leftBiased</span></a></span></span><span> </span><span id="local-6989586621681495646"><span class="annot"><span class="annottext">p
+</span><a href="#local-6989586621681495646"><span class="hs-identifier hs-var">_k</span></a></span></span><span> </span><span id="local-6989586621681495647"><span class="annot"><span class="annottext">p
+</span><a href="#local-6989586621681495647"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621681495648"><span class="annot"><span class="annottext">p
+</span><a href="#local-6989586621681495648"><span class="hs-identifier hs-var">_r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">p
+</span><a href="#local-6989586621681495647"><span class="hs-identifier hs-var">l</span></a></span><span>
 </span><span id="line-228"></span><span>
 </span><span id="line-229"></span><span>
 </span><span id="line-230"></span><span class="annot"><span class="hs-comment">-- | Parameters for a machine step model and a builtin evaluation model bundled together.</span></span><span>
@@ -773,35 +773,35 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span id="line-238"></span><span class="hs-comment">-- see item 5 of Note [Cost model parameters].</span><span>
 </span><span id="line-239"></span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#splitParams"><span class="hs-identifier hs-type">splitParams</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelParams"><span class="hs-identifier hs-type">CostModelParams</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#SplitCostModelParams"><span class="hs-identifier hs-type">SplitCostModelParams</span></a></span><span>
 </span><span id="line-240"></span><span id="splitParams"><span class="annot"><span class="annottext">splitParams :: Text -&gt; CostModelParams -&gt; SplitCostModelParams
-</span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#splitParams"><span class="hs-identifier hs-var hs-var">splitParams</span></a></span></span><span> </span><span id="local-6989586621681495645"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621681495645"><span class="hs-identifier hs-var">prefix</span></a></span></span><span> </span><span id="local-6989586621681495646"><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681495646"><span class="hs-identifier hs-var">params</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-241"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621681495647"><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681495647"><span class="hs-identifier hs-var">machineparams</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681495648"><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681495648"><span class="hs-identifier hs-var">builtinparams</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Integer -&gt; Bool)
+</span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#splitParams"><span class="hs-identifier hs-var hs-var">splitParams</span></a></span></span><span> </span><span id="local-6989586621681495653"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621681495653"><span class="hs-identifier hs-var">prefix</span></a></span></span><span> </span><span id="local-6989586621681495654"><span class="annot"><span class="annottext">CostModelParams
+</span><a href="#local-6989586621681495654"><span class="hs-identifier hs-var">params</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-241"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621681495655"><span class="annot"><span class="annottext">CostModelParams
+</span><a href="#local-6989586621681495655"><span class="hs-identifier hs-var">machineparams</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681495656"><span class="annot"><span class="annottext">CostModelParams
+</span><a href="#local-6989586621681495656"><span class="hs-identifier hs-var">builtinparams</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Integer -&gt; Bool)
 -&gt; CostModelParams -&gt; (CostModelParams, CostModelParams)
 forall k a. (k -&gt; a -&gt; Bool) -&gt; Map k a -&gt; (Map k a, Map k a)
-</span><span class="hs-identifier hs-var">Map.partitionWithKey</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621681495650"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621681495650"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-identifier hs-var">Map.partitionWithKey</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621681495658"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621681495658"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Bool
 </span><span class="hs-identifier hs-var">Text.isPrefixOf</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621681495645"><span class="hs-identifier hs-var">prefix</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621681495650"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681495646"><span class="hs-identifier hs-var">params</span></a></span><span>
+</span><a href="#local-6989586621681495653"><span class="hs-identifier hs-var">prefix</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621681495658"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">CostModelParams
+</span><a href="#local-6989586621681495654"><span class="hs-identifier hs-var">params</span></a></span><span>
 </span><span id="line-242"></span><span>    </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">CostModelParams -&gt; CostModelParams -&gt; SplitCostModelParams
 </span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#SplitCostModelParams"><span class="hs-identifier hs-var">SplitCostModelParams</span></a></span><span> </span><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681495647"><span class="hs-identifier hs-var">machineparams</span></a></span><span> </span><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681495648"><span class="hs-identifier hs-var">builtinparams</span></a></span><span>
+</span><a href="#local-6989586621681495655"><span class="hs-identifier hs-var">machineparams</span></a></span><span> </span><span class="annot"><span class="annottext">CostModelParams
+</span><a href="#local-6989586621681495656"><span class="hs-identifier hs-var">builtinparams</span></a></span><span>
 </span><span id="line-243"></span><span>
 </span><span id="line-244"></span><span class="annot"><span class="hs-comment">-- | Given a CostModel, produce a single map containing the parameters from both components</span></span><span>
-</span><span id="line-245"></span><span id="local-6989586621681495195"><span id="local-6989586621681495196"><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#extractCostModelParams"><span class="hs-identifier hs-type">extractCostModelParams</span></a></span><span>
-</span><span id="line-246"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495195"><span class="hs-identifier hs-type">machinecosts</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495196"><span class="hs-identifier hs-type">builtincosts</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-247"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.MachineParameters.html#CostModel"><span class="hs-identifier hs-type">CostModel</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495195"><span class="hs-identifier hs-type">machinecosts</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495196"><span class="hs-identifier hs-type">builtincosts</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelParams"><span class="hs-identifier hs-type">CostModelParams</span></a></span></span></span><span>
+</span><span id="line-245"></span><span id="local-6989586621681495203"><span id="local-6989586621681495204"><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#extractCostModelParams"><span class="hs-identifier hs-type">extractCostModelParams</span></a></span><span>
+</span><span id="line-246"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495203"><span class="hs-identifier hs-type">machinecosts</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495204"><span class="hs-identifier hs-type">builtincosts</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-247"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.MachineParameters.html#CostModel"><span class="hs-identifier hs-type">CostModel</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495203"><span class="hs-identifier hs-type">machinecosts</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495204"><span class="hs-identifier hs-type">builtincosts</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelParams"><span class="hs-identifier hs-type">CostModelParams</span></a></span></span></span><span>
 </span><span id="line-248"></span><span id="extractCostModelParams"><span class="annot"><span class="annottext">extractCostModelParams :: forall machinecosts builtincosts.
 (ToJSON machinecosts, ToJSON builtincosts) =&gt;
 CostModel machinecosts builtincosts -&gt; Maybe CostModelParams
-</span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#extractCostModelParams"><span class="hs-identifier hs-var hs-var">extractCostModelParams</span></a></span></span><span> </span><span id="local-6989586621681495661"><span class="annot"><span class="annottext">CostModel machinecosts builtincosts
-</span><a href="#local-6989586621681495661"><span class="hs-identifier hs-var">model</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-comment">-- this is using the applicative instance of Maybe</span><span>
+</span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#extractCostModelParams"><span class="hs-identifier hs-var hs-var">extractCostModelParams</span></a></span></span><span> </span><span id="local-6989586621681495669"><span class="annot"><span class="annottext">CostModel machinecosts builtincosts
+</span><a href="#local-6989586621681495669"><span class="hs-identifier hs-var">model</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-comment">-- this is using the applicative instance of Maybe</span><span>
 </span><span id="line-249"></span><span>    </span><span class="annot"><span class="annottext">CostModelParams -&gt; CostModelParams -&gt; CostModelParams
 forall k a. Ord k =&gt; Map k a -&gt; Map k a -&gt; Map k a
 </span><span class="hs-identifier hs-var">Map.union</span></span><span> </span><span class="annot"><span class="annottext">(CostModelParams -&gt; CostModelParams -&gt; CostModelParams)
@@ -814,7 +814,7 @@ forall a. ToJSON a =&gt; a -&gt; Maybe CostModelParams
 forall machinecosts builtincosts.
 CostModel machinecosts builtincosts -&gt; machinecosts
 </span><a href="PlutusCore.Evaluation.Machine.MachineParameters.html#_machineCostModel"><span class="hs-identifier hs-var">_machineCostModel</span></a></span><span> </span><span class="annot"><span class="annottext">CostModel machinecosts builtincosts
-</span><a href="#local-6989586621681495661"><span class="hs-identifier hs-var">model</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Maybe (CostModelParams -&gt; CostModelParams)
+</span><a href="#local-6989586621681495669"><span class="hs-identifier hs-var">model</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Maybe (CostModelParams -&gt; CostModelParams)
 -&gt; Maybe CostModelParams -&gt; Maybe CostModelParams
 forall a b. Maybe (a -&gt; b) -&gt; Maybe a -&gt; Maybe b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
@@ -824,7 +824,7 @@ forall a. ToJSON a =&gt; a -&gt; Maybe CostModelParams
 forall machinecosts builtincosts.
 CostModel machinecosts builtincosts -&gt; builtincosts
 </span><a href="PlutusCore.Evaluation.Machine.MachineParameters.html#_builtinCostModel"><span class="hs-identifier hs-var">_builtinCostModel</span></a></span><span> </span><span class="annot"><span class="annottext">CostModel machinecosts builtincosts
-</span><a href="#local-6989586621681495661"><span class="hs-identifier hs-var">model</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621681495669"><span class="hs-identifier hs-var">model</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-250"></span><span>
 </span><span id="line-251"></span><span class="hs-comment">-- | Given a set of cost model parameters, split it into two parts according to</span><span>
 </span><span id="line-252"></span><span class="hs-comment">-- some prefix and use those parts to update the components of a cost model.</span><span>
@@ -836,12 +836,12 @@ CostModel machinecosts builtincosts -&gt; builtincosts
    undocumented implementation choice in Aeson though (other JSON decoders (for
    other languages) seem to vary in how unknown fields are handled), so let's be
    explicit. -}</span><span>
-</span><span id="line-261"></span><span id="local-6989586621681495211"><span id="local-6989586621681495212"><span id="local-6989586621681495213"><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#applySplitCostModelParams"><span class="hs-identifier hs-type">applySplitCostModelParams</span></a></span><span>
-</span><span id="line-262"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495211"><span class="hs-identifier hs-type">evaluatorcosts</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495212"><span class="hs-identifier hs-type">builtincosts</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495211"><span class="hs-identifier hs-type">evaluatorcosts</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495212"><span class="hs-identifier hs-type">builtincosts</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadError</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelApplyError"><span class="hs-identifier hs-type">CostModelApplyError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495213"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-261"></span><span id="local-6989586621681495219"><span id="local-6989586621681495220"><span id="local-6989586621681495221"><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#applySplitCostModelParams"><span class="hs-identifier hs-type">applySplitCostModelParams</span></a></span><span>
+</span><span id="line-262"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495219"><span class="hs-identifier hs-type">evaluatorcosts</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495220"><span class="hs-identifier hs-type">builtincosts</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495219"><span class="hs-identifier hs-type">evaluatorcosts</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495220"><span class="hs-identifier hs-type">builtincosts</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadError</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelApplyError"><span class="hs-identifier hs-type">CostModelApplyError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495221"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-263"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text.Text</span></span><span>
-</span><span id="line-264"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.MachineParameters.html#CostModel"><span class="hs-identifier hs-type">CostModel</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495211"><span class="hs-identifier hs-type">evaluatorcosts</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495212"><span class="hs-identifier hs-type">builtincosts</span></a></span><span>
+</span><span id="line-264"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.MachineParameters.html#CostModel"><span class="hs-identifier hs-type">CostModel</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495219"><span class="hs-identifier hs-type">evaluatorcosts</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495220"><span class="hs-identifier hs-type">builtincosts</span></a></span><span>
 </span><span id="line-265"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelParams"><span class="hs-identifier hs-type">CostModelParams</span></a></span><span>
-</span><span id="line-266"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681495213"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Evaluation.Machine.MachineParameters.html#CostModel"><span class="hs-identifier hs-type">CostModel</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495211"><span class="hs-identifier hs-type">evaluatorcosts</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495212"><span class="hs-identifier hs-type">builtincosts</span></a></span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-266"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681495221"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Evaluation.Machine.MachineParameters.html#CostModel"><span class="hs-identifier hs-type">CostModel</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495219"><span class="hs-identifier hs-type">evaluatorcosts</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495220"><span class="hs-identifier hs-type">builtincosts</span></a></span><span class="hs-special">)</span></span></span></span><span>
 </span><span id="line-267"></span><span id="applySplitCostModelParams"><span class="annot"><span class="annottext">applySplitCostModelParams :: forall evaluatorcosts builtincosts (m :: * -&gt; *).
 (FromJSON evaluatorcosts, FromJSON builtincosts,
  ToJSON evaluatorcosts, ToJSON builtincosts,
@@ -850,16 +850,16 @@ Text
 -&gt; CostModel evaluatorcosts builtincosts
 -&gt; CostModelParams
 -&gt; m (CostModel evaluatorcosts builtincosts)
-</span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#applySplitCostModelParams"><span class="hs-identifier hs-var hs-var">applySplitCostModelParams</span></a></span></span><span> </span><span id="local-6989586621681495683"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621681495683"><span class="hs-identifier hs-var">prefix</span></a></span></span><span> </span><span id="local-6989586621681495684"><span class="annot"><span class="annottext">CostModel evaluatorcosts builtincosts
-</span><a href="#local-6989586621681495684"><span class="hs-identifier hs-var">model</span></a></span></span><span> </span><span id="local-6989586621681495685"><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681495685"><span class="hs-identifier hs-var">params</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-268"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#SplitCostModelParams"><span class="hs-identifier hs-type">SplitCostModelParams</span></a></span><span> </span><span id="local-6989586621681495686"><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681495686"><span class="hs-identifier hs-var">machineparams</span></a></span></span><span> </span><span id="local-6989586621681495687"><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681495687"><span class="hs-identifier hs-var">builtinparams</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; CostModelParams -&gt; SplitCostModelParams
+</span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#applySplitCostModelParams"><span class="hs-identifier hs-var hs-var">applySplitCostModelParams</span></a></span></span><span> </span><span id="local-6989586621681495691"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621681495691"><span class="hs-identifier hs-var">prefix</span></a></span></span><span> </span><span id="local-6989586621681495692"><span class="annot"><span class="annottext">CostModel evaluatorcosts builtincosts
+</span><a href="#local-6989586621681495692"><span class="hs-identifier hs-var">model</span></a></span></span><span> </span><span id="local-6989586621681495693"><span class="annot"><span class="annottext">CostModelParams
+</span><a href="#local-6989586621681495693"><span class="hs-identifier hs-var">params</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-268"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#SplitCostModelParams"><span class="hs-identifier hs-type">SplitCostModelParams</span></a></span><span> </span><span id="local-6989586621681495694"><span class="annot"><span class="annottext">CostModelParams
+</span><a href="#local-6989586621681495694"><span class="hs-identifier hs-var">machineparams</span></a></span></span><span> </span><span id="local-6989586621681495695"><span class="annot"><span class="annottext">CostModelParams
+</span><a href="#local-6989586621681495695"><span class="hs-identifier hs-var">builtinparams</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; CostModelParams -&gt; SplitCostModelParams
 </span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#splitParams"><span class="hs-identifier hs-var">splitParams</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621681495683"><span class="hs-identifier hs-var">prefix</span></a></span><span> </span><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681495685"><span class="hs-identifier hs-var">params</span></a></span><span>
+</span><a href="#local-6989586621681495691"><span class="hs-identifier hs-var">prefix</span></a></span><span> </span><span class="annot"><span class="annottext">CostModelParams
+</span><a href="#local-6989586621681495693"><span class="hs-identifier hs-var">params</span></a></span><span>
 </span><span id="line-269"></span><span>    </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">evaluatorcosts
 -&gt; builtincosts -&gt; CostModel evaluatorcosts builtincosts
 forall machinecosts builtincosts.
@@ -877,8 +877,8 @@ a -&gt; CostModelParams -&gt; m a
 forall machinecosts builtincosts.
 CostModel machinecosts builtincosts -&gt; machinecosts
 </span><a href="PlutusCore.Evaluation.Machine.MachineParameters.html#_machineCostModel"><span class="hs-identifier hs-var">_machineCostModel</span></a></span><span> </span><span class="annot"><span class="annottext">CostModel evaluatorcosts builtincosts
-</span><a href="#local-6989586621681495684"><span class="hs-identifier hs-var">model</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681495686"><span class="hs-identifier hs-var">machineparams</span></a></span><span>
+</span><a href="#local-6989586621681495692"><span class="hs-identifier hs-var">model</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">CostModelParams
+</span><a href="#local-6989586621681495694"><span class="hs-identifier hs-var">machineparams</span></a></span><span>
 </span><span id="line-270"></span><span>                 </span><span class="annot"><span class="annottext">m (builtincosts -&gt; CostModel evaluatorcosts builtincosts)
 -&gt; m builtincosts -&gt; m (CostModel evaluatorcosts builtincosts)
 forall a b. m (a -&gt; b) -&gt; m a -&gt; m b
@@ -891,17 +891,17 @@ a -&gt; CostModelParams -&gt; m a
 forall machinecosts builtincosts.
 CostModel machinecosts builtincosts -&gt; builtincosts
 </span><a href="PlutusCore.Evaluation.Machine.MachineParameters.html#_builtinCostModel"><span class="hs-identifier hs-var">_builtinCostModel</span></a></span><span> </span><span class="annot"><span class="annottext">CostModel evaluatorcosts builtincosts
-</span><a href="#local-6989586621681495684"><span class="hs-identifier hs-var">model</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681495687"><span class="hs-identifier hs-var">builtinparams</span></a></span><span>
+</span><a href="#local-6989586621681495692"><span class="hs-identifier hs-var">model</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">CostModelParams
+</span><a href="#local-6989586621681495695"><span class="hs-identifier hs-var">builtinparams</span></a></span><span>
 </span><span id="line-271"></span><span>
 </span><span id="line-272"></span><span class="hs-comment">-- | Update a CostModel for the CEK machine with a given set of parameters.</span><span>
 </span><span id="line-273"></span><span class="hs-comment">-- Note that this is costly. See [here](https://github.com/input-output-hk/plutus/issues/4962).</span><span>
 </span><span id="line-274"></span><span class="hs-comment">-- Callers are recommended to call this once and cache the results.</span><span>
-</span><span id="line-275"></span><span id="local-6989586621681495219"><span id="local-6989586621681495220"><span id="local-6989586621681495221"><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#applyCostModelParams"><span class="hs-identifier hs-type">applyCostModelParams</span></a></span><span>
-</span><span id="line-276"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495219"><span class="hs-identifier hs-type">evaluatorcosts</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495220"><span class="hs-identifier hs-type">builtincosts</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495219"><span class="hs-identifier hs-type">evaluatorcosts</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495220"><span class="hs-identifier hs-type">builtincosts</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadError</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelApplyError"><span class="hs-identifier hs-type">CostModelApplyError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495221"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-277"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.MachineParameters.html#CostModel"><span class="hs-identifier hs-type">CostModel</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495219"><span class="hs-identifier hs-type">evaluatorcosts</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495220"><span class="hs-identifier hs-type">builtincosts</span></a></span><span>
+</span><span id="line-275"></span><span id="local-6989586621681495227"><span id="local-6989586621681495228"><span id="local-6989586621681495229"><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#applyCostModelParams"><span class="hs-identifier hs-type">applyCostModelParams</span></a></span><span>
+</span><span id="line-276"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495227"><span class="hs-identifier hs-type">evaluatorcosts</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495228"><span class="hs-identifier hs-type">builtincosts</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495227"><span class="hs-identifier hs-type">evaluatorcosts</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="#local-6989586621681495228"><span class="hs-identifier hs-type">builtincosts</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadError</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelApplyError"><span class="hs-identifier hs-type">CostModelApplyError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495229"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-277"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.MachineParameters.html#CostModel"><span class="hs-identifier hs-type">CostModel</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495227"><span class="hs-identifier hs-type">evaluatorcosts</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495228"><span class="hs-identifier hs-type">builtincosts</span></a></span><span>
 </span><span id="line-278"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelParams"><span class="hs-identifier hs-type">CostModelParams</span></a></span><span>
-</span><span id="line-279"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681495221"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Evaluation.Machine.MachineParameters.html#CostModel"><span class="hs-identifier hs-type">CostModel</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495219"><span class="hs-identifier hs-type">evaluatorcosts</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495220"><span class="hs-identifier hs-type">builtincosts</span></a></span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-279"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681495229"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Evaluation.Machine.MachineParameters.html#CostModel"><span class="hs-identifier hs-type">CostModel</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495227"><span class="hs-identifier hs-type">evaluatorcosts</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681495228"><span class="hs-identifier hs-type">builtincosts</span></a></span><span class="hs-special">)</span></span></span></span><span>
 </span><span id="line-280"></span><span id="applyCostModelParams"><span class="annot"><span class="annottext">applyCostModelParams :: forall evaluatorcosts builtincosts (m :: * -&gt; *).
 (FromJSON evaluatorcosts, FromJSON builtincosts,
  ToJSON evaluatorcosts, ToJSON builtincosts,
