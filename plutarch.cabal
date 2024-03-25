@@ -77,6 +77,7 @@ library
     Plutarch.Api.V1.Interval
     Plutarch.Api.V1.Maybe
     Plutarch.Api.V1.Scripts
+    Plutarch.Api.V1.These
     Plutarch.Api.V1.Time
     Plutarch.Api.V1.Tuple
     Plutarch.Api.V1.Tx
@@ -132,6 +133,7 @@ library
     Plutarch.Show
     Plutarch.String
     Plutarch.TermCont
+    Plutarch.These
     Plutarch.Trace
     Plutarch.TryFrom
     Plutarch.Unit
