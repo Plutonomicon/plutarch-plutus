@@ -83,8 +83,12 @@
           inherit (flake) devShells;
           emanote = {
             sites.plutarch-docs = {
-              layers = [ ./plutarch-docs ];
-              layersString = [ "./plutarch-docs" ];
+              layers = [
+                {
+                  path = ./plutarch-docs;
+                  pathString = "./plutarch-docs";
+                }
+              ];
               baseUrl = "/plutarch-plutus/";
             };
           };
