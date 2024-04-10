@@ -35,7 +35,7 @@ viacon = let currSym = pcon $ PCurrencySymbol $ phexByteStr "f1e301"
 
 The semantics are both are the same. But the former (`pconstant`) compiles to a constant term directly. Whereas the latter compiles to some code that _builds_ the constant during Plutus Core runtime.
 
-To better visual this, we can look at the generated UPLC for `viaconstant` compared to `viacon`:
+To better visualize this, we can look at the generated UPLC for `viaconstant` compared to `viacon`:
 
 ```
 ghci> fromRight' $ Plutarch.compile (Config NoTracing) viaconstant
