@@ -70,7 +70,7 @@ common deps
   build-depends:
     , base
     , plutarch
-    , plutarch-api
+    , plutarch-ledger-api
     , plutus-ledger-api
     , plutus-tx
 

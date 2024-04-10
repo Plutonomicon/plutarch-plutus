@@ -6,7 +6,7 @@
 {-# LANGUAGE QualifiedDo #-}
 
 module Plutarch.Docs.QDo (f) where
-import Plutarch.Api
+import Plutarch.LedgerApi
 import qualified Plutarch.Monadic as P
 import Plutarch.Prelude
 

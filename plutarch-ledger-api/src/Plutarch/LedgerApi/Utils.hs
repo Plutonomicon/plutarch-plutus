@@ -3,7 +3,7 @@
 {- | Useful tools that aren't part of the Plutarch API per se, but get used in
 multiple places.
 -}
-module Plutarch.Api.Utils (
+module Plutarch.LedgerApi.Utils (
   Mret (..),
 ) where
 

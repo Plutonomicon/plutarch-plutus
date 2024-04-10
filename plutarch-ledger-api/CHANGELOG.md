@@ -1,8 +1,14 @@
-# Changelog for `plutarch-api-v2`
+# Changelog for `plutarch-ledger-api-v2`
 
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## 3.0.0 -- 10-04-2024
+
+### Modified
+
+* `plutarch-api` is renamed to `plutarch-ledger-api`, and any modules `Plutarch.Api.*` is renamed to `Plutarch.LedgerApi.*`
 
 ## 2.1.1 -- 22-01-2024
 

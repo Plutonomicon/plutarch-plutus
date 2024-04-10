@@ -110,8 +110,8 @@ executable plutarch-test
     , hspec
     , hspec-hedgehog
     , plutarch
-    , plutarch-api
     , plutarch-extra
+    , plutarch-ledger-api
     , plutarch-test
     , plutus-core
     , plutus-ledger-api

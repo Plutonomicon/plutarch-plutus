@@ -7,7 +7,7 @@
 module Plutarch.Docs.PDataFields (foo, foo', res, mockCtx, purpose, Vehicle (..), PVehicle (..), PVehicle' (..), PFoo (..), test) where
 
 import Plutarch.Prelude
-import Plutarch.Api (PScriptContext, PScriptPurpose (PSpending, PMinting, PRewarding, PCertifying), PCurrencySymbol)
+import Plutarch.LedgerApi (PScriptContext, PScriptPurpose (PSpending, PMinting, PRewarding, PCertifying), PCurrencySymbol)
 import Plutarch.DataRepr (PDataFields)
 import qualified Plutarch.Monadic as P
 import PlutusLedgerApi.V1 (TxInfo (TxInfo), POSIXTime(POSIXTime), ScriptPurpose (Minting), ScriptContext (ScriptContext))

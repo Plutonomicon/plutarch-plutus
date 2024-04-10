@@ -10,7 +10,7 @@ The 'Value.PValue', 'AssocMap.PMap' and 'Interval.PInterval'-related
 functionality can be found in other modules, as these clash with the
 Plutarch prelude. These should be imported qualified.
 -}
-module Plutarch.Api (
+module Plutarch.LedgerApi (
   -- * Contexts
   PScriptContext (..),
   PTxInfo (..),
@@ -108,15 +108,15 @@ import Data.ByteArray (convert)
 import Data.ByteString (ByteString, toStrict)
 import Data.ByteString.Short (fromShort)
 import Data.Coerce (coerce)
-import Plutarch.Api.AssocMap qualified as AssocMap
-import Plutarch.Api.Interval qualified as Interval
-import Plutarch.Api.Utils (Mret)
-import Plutarch.Api.Value qualified as Value
 import Plutarch.Builtin (pasConstr, pforgetData)
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
  )
+import Plutarch.LedgerApi.AssocMap qualified as AssocMap
+import Plutarch.LedgerApi.Interval qualified as Interval
+import Plutarch.LedgerApi.Utils (Mret)
+import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),

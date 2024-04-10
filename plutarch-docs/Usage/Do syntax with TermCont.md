@@ -4,7 +4,7 @@
 
 ```haskell
 module Plutarch.Docs.TermCont (test, testC, foo) where
-import Plutarch.Api
+import Plutarch.LedgerApi
 import Plutarch.Prelude hiding (pmatchC, ptraceC)
 ```
 

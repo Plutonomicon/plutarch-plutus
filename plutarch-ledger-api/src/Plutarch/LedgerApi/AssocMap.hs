@@ -6,7 +6,7 @@
 {- | This module is designed to be imported qualified, as many of its
 identifiers clash with the Plutarch prelude.
 -}
-module Plutarch.Api.AssocMap (
+module Plutarch.LedgerApi.AssocMap (
   -- * Types
   PMap (..),
   KeyGuarantees (..),
@@ -81,7 +81,6 @@ import Data.Bifunctor (bimap)
 import Data.Foldable (foldl')
 import Data.Proxy (Proxy (Proxy))
 import Data.Traversable (for)
-import Plutarch.Api.Utils (Mret)
 import Plutarch.Bool (PSBool (PSFalse, PSTrue), psfalse, pstrue)
 import Plutarch.Builtin (
   pasMap,
@@ -92,6 +91,7 @@ import Plutarch.Builtin (
  )
 import Plutarch.Internal (punsafeBuiltin)
 import Plutarch.Internal.Witness (witness)
+import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
   PConstantDecl,
   PConstantRepr,
