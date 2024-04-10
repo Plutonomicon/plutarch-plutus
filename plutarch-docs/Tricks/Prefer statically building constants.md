@@ -35,6 +35,16 @@ viacon = let currSym = pcon $ PCurrencySymbol $ phexByteStr "f1e301"
 
 The semantics are both are the same. But the former (`pconstant`) compiles to a constant term directly. Whereas the latter compiles to some code that _builds_ the constant during Plutus Core runtime.
 
+To better visual this, we can look at the generated UPLC for `viaconstant` compared to `viacon`:
+
+```
+ghci> fromRight' $ Plutarch.compile (Config NoTracing) viaconstant
+Script {unScript = Program {_progAnn = (), _progVer = Version {_versionMajor = 1, _versionMinor = 0, _versionPatch = 0}, _progTerm = Constant () (Some (ValueOf DefaultUniData (Constr 0 [B "\241\227\SOH"])))}}
+
+ghci> fromRight' $ Plutarch.compile (Config NoTracing) viacon
+Script {unScript = Program {_progAnn = (), _progVer = Version {_versionMajor = 1, _versionMinor = 0, _versionPatch = 0}, _progTerm = Apply () (Apply () (Builtin () ConstrData) (Constant () (Some (ValueOf DefaultUniInteger 0)))) (Apply () (Apply () (Force () (Builtin () MkCons)) (Apply () (Builtin () BData) (Constant () (Some (ValueOf DefaultUniByteString "\241\227\SOH"))))) (Constant () (Some (ValueOf (DefaultUniApply DefaultUniProtoList DefaultUniData) []))))}}
+```
+
 > Aside: Remember that Haskell runtime is actually compile-time for Plutarch! Even if you have a dynamically computed variable in the Haskell world, it's still a _constant_ in the Plutarch world. So you can use it just as well as an argument to `pconstant`!
 
 Whenever you need to build a Plutarch term of type `a`, from a Haskell value, use `pconstant`. Whenever you need to build a Plutarch term of type `PAsData a`, use `pconstantData`!
