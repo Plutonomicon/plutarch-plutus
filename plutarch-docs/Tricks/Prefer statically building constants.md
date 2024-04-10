@@ -3,11 +3,10 @@
 <p>
 
 ```haskell
-module Plutarch.Docs.PreferStaticallyBuilding (viacon, viaconstant) where 
+module Plutarch.Docs.PreferStaticallyBuilding (viacon, viaconstant) where
 
 import Plutarch.Prelude
-import Plutarch.Api.V1.Contexts (PScriptPurpose (PMinting))
-import Plutarch.Api.V1.Value (PCurrencySymbol (PCurrencySymbol))
+import Plutarch.LedgerApi (PScriptPurpose (PMinting), PCurrencySymbol (PCurrencySymbol))
 import PlutusLedgerApi.V1 (ScriptPurpose (Minting))
 
 ```

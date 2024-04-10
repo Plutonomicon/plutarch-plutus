@@ -1,11 +1,9 @@
 module Plutarch.Extra.ApiSpec (spec) where
 
-import Plutarch.Extra.Api
-import Plutarch.Prelude
-
-import Plutarch.Api.V1 (PScriptPurpose (PSpending))
 import Plutarch.ApiSpec (d0DatValue, inp, validContext0, validOutputs0)
+import Plutarch.LedgerApi
 import Plutarch.Maybe (pfromJust)
+import Plutarch.Prelude
 import Plutarch.Test
 import Test.Hspec
 

@@ -1,6 +1,6 @@
 cabal-version: 3.0
-name:          plutarch-api
-version:       2.1.0
+name:          plutarch-ledger-api
+version:       3.0.0
 
 common common-lang
   default-language:   Haskell2010
@@ -45,10 +45,11 @@ common common-lang
 library
   import:          common-lang
   exposed-modules:
-    Plutarch.Api
-    Plutarch.Api.AssocMap
-    Plutarch.Api.Utils
-    Plutarch.Api.Value
+    Plutarch.LedgerApi
+    Plutarch.LedgerApi.AssocMap
+    Plutarch.LedgerApi.Interval
+    Plutarch.LedgerApi.Utils
+    Plutarch.LedgerApi.Value
 
   build-depends:
     , bytestring

@@ -25,23 +25,18 @@ import Data.ByteString.Short (fromShort)
 import Data.Coerce (coerce)
 import Data.Text (Text)
 import Data.Text.Encoding qualified as TE
-
-import PlutusLedgerApi.V1 qualified as Plutus
-
-import Plutarch.Api.V1 (
-  PMintingPolicy,
-  PScriptContext,
-  PStakeValidator,
-  PValidator,
-  scriptHash,
- )
-import Plutarch.Api.V1.Crypto (PPubKeyHash)
 import Plutarch.Builtin (pasByteStr)
 import Plutarch.Crypto (pverifyEd25519Signature)
+import Plutarch.LedgerApi (
+  PPubKeyHash,
+  PScriptContext,
+  scriptHash,
+ )
 import Plutarch.Prelude
 import Plutarch.Script (Script, serialiseScript)
 import Plutarch.Test
 import Plutarch.Test.Golden (compileD)
+import PlutusLedgerApi.V1 qualified as Plutus
 import Test.Hspec
 
 spec :: Spec
@@ -129,7 +124,7 @@ adminPubKeyHash = "cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f"
 authValidatorCompiled :: Script
 authValidatorCompiled = compileD authValidatorTerm
 
-authValidatorTerm :: ClosedTerm PValidator
+authValidatorTerm :: ClosedTerm (PData :--> PData :--> PScriptContext :--> POpaque)
 authValidatorTerm =
   plam $ \datum redeemer ctx ->
     authorizedValidator
@@ -146,7 +141,7 @@ authValidatorHash = scriptHash authValidatorCompiled
 authPolicyCompiled :: Script
 authPolicyCompiled = compileD authPolicyTerm
 
-authPolicyTerm :: ClosedTerm PMintingPolicy
+authPolicyTerm :: ClosedTerm (PData :--> PScriptContext :--> POpaque)
 authPolicyTerm =
   plam $ \redeemer ctx ->
     authorizedPolicy
@@ -163,7 +158,7 @@ authPolicySymbol =
 authStakeValidatorCompiled :: Script
 authStakeValidatorCompiled = compileD authStakeValidatorTerm
 
-authStakeValidatorTerm :: ClosedTerm PStakeValidator
+authStakeValidatorTerm :: ClosedTerm (PData :--> PScriptContext :--> POpaque)
 authStakeValidatorTerm =
   plam $ \redeemer ctx ->
     authorizedStakeValidator

@@ -4,9 +4,8 @@
 
 ```haskell
 module Plutarch.Docs.TermCont (test, testC, foo) where
-import Plutarch.Api.V1.Contexts
+import Plutarch.LedgerApi
 import Plutarch.Prelude hiding (pmatchC, ptraceC)
-
 ```
 
 </p>

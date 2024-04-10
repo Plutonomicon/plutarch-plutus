@@ -1,15 +1,16 @@
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE RoleAnnotations #-}
+{-# LANGUAGE ViewPatterns #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 {- | = Note
 
-The 'Value.PValue' and 'AssocMap.PMap'-related functionality can be found in
-other modules, as these clash with the Plutarch prelude. These should be
-imported qualified.
+The 'Value.PValue', 'AssocMap.PMap' and 'Interval.PInterval'-related
+functionality can be found in other modules, as these clash with the
+Plutarch prelude. These should be imported qualified.
 -}
-module Plutarch.Api (
+module Plutarch.LedgerApi (
   -- * Contexts
   PScriptContext (..),
   PTxInfo (..),
@@ -69,10 +70,10 @@ module Plutarch.Api (
   PPosixTime (..),
 
   -- * Interval
-  PInterval (..),
-  PLowerBound (..),
-  PUpperBound (..),
-  PExtended (..),
+  Interval.PInterval (..),
+  Interval.PLowerBound (..),
+  Interval.PUpperBound (..),
+  Interval.PExtended (..),
 
   -- * Crypto
 
@@ -85,6 +86,15 @@ module Plutarch.Api (
 
   -- ** Types
   PMaybeData (..),
+
+  -- ** Utilities
+  pfromDJust,
+  pisDJust,
+  pmaybeData,
+  pdjust,
+  pdnothing,
+  pmaybeToMaybeData,
+  passertPDJust,
 ) where
 
 import Codec.Serialise (serialise)
@@ -98,14 +108,15 @@ import Data.ByteArray (convert)
 import Data.ByteString (ByteString, toStrict)
 import Data.ByteString.Short (fromShort)
 import Data.Coerce (coerce)
-import Plutarch.Api.AssocMap qualified as AssocMap
-import Plutarch.Api.Utils (Mret)
-import Plutarch.Api.Value qualified as Value
 import Plutarch.Builtin (pasConstr, pforgetData)
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
  )
+import Plutarch.LedgerApi.AssocMap qualified as AssocMap
+import Plutarch.LedgerApi.Interval qualified as Interval
+import Plutarch.LedgerApi.Utils (Mret)
+import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
@@ -179,7 +190,7 @@ newtype PTxInfo (s :: S)
                , "mint" ':= Value.PValue 'AssocMap.Sorted 'Value.NoGuarantees -- value minted by transaction
                , "dcert" ':= PBuiltinList PDCert -- Digests of certificates included in this transaction
                , "wdrl" ':= AssocMap.PMap 'AssocMap.Unsorted PStakingCredential PInteger -- Staking withdrawals
-               , "validRange" ':= PInterval PPosixTime
+               , "validRange" ':= Interval.PInterval PPosixTime
                , "signatories" ':= PBuiltinList (PAsData PPubKeyHash)
                , "redeemers" ':= AssocMap.PMap 'AssocMap.Unsorted PScriptPurpose PRedeemer
                , "datums" ':= AssocMap.PMap 'AssocMap.Unsorted PDatumHash PDatum
@@ -682,56 +693,6 @@ instance PTryFrom PData (PAsData PPosixTime) where
     pure (punsafeCoerce wrapped, pcon $ PPosixTime unwrapped)
 
 -- | @since 2.0.0
-newtype PInterval (a :: S -> Type) (s :: S)
-  = PInterval
-      ( Term
-          s
-          ( PDataRecord
-              '[ "from" ':= PLowerBound a
-               , "to" ':= PUpperBound a
-               ]
-          )
-      )
-  deriving stock
-    ( -- | @since 2.0.0
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
-    , -- | @since 2.0.0
-      PIsData
-    , -- | @since 2.0.0
-      PDataFields
-    , -- | @since 2.0.0
-      PEq
-    , -- | @since 2.0.0
-      PPartialOrd
-    , -- | @since 2.0.0
-      POrd
-    , -- | @since 2.0.0
-      PShow
-    )
-
--- | @since 2.0.0
-instance DerivePlutusType (PInterval a) where
-  type DPTStrat _ = PlutusTypeData
-
--- | @since 2.0.0
-instance
-  PLiftData a =>
-  PUnsafeLiftDecl (PInterval a)
-  where
-  type PLifted (PInterval a) = (Plutus.Interval (PLifted a))
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData (Plutus.Interval a) (PInterval (PConstanted a)))
-  instance
-    PConstantData a =>
-    PConstantDecl (Plutus.Interval a)
-
--- | @since 2.0.0
 newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
   deriving stock
     ( -- | @since 2.0.0
@@ -1056,134 +1017,6 @@ instance PTryFrom PData (PAsData PScriptHash) where
     pure (punsafeCoerce opq, pcon . PScriptHash $ unwrapped)
 
 -- | @since 2.0.0
-newtype PUpperBound (a :: S -> Type) (s :: S)
-  = PUpperBound
-      ( Term
-          s
-          ( PDataRecord
-              '[ "_0" ':= PExtended a
-               , "_1" ':= PBool
-               ]
-          )
-      )
-  deriving stock
-    ( -- | @since 2.0.0
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
-    , -- | @since 2.0.0
-      PIsData
-    , -- | @since 2.0.0
-      PDataFields
-    , -- | @since 2.0.0
-      PEq
-    , -- | @since 2.0.0
-      PPartialOrd
-    , -- | @since 2.0.0
-      POrd
-    , -- | @since 2.0.0
-      PShow
-    )
-
--- | @since 2.0.0
-instance DerivePlutusType (PUpperBound a) where
-  type DPTStrat _ = PlutusTypeData
-
--- | @since 2.0.0
-instance
-  PLiftData a =>
-  PUnsafeLiftDecl (PUpperBound a)
-  where
-  type PLifted (PUpperBound a) = (Plutus.UpperBound (PLifted a))
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData (Plutus.UpperBound a) (PUpperBound (PConstanted a)))
-  instance
-    PConstantData a =>
-    PConstantDecl (Plutus.UpperBound a)
-
--- | @since 2.0.0
-data PExtended (a :: S -> Type) (s :: S)
-  = PNegInf (Term s (PDataRecord '[]))
-  | PFinite (Term s (PDataRecord '["_0" ':= a]))
-  | PPosInf (Term s (PDataRecord '[]))
-  deriving stock
-    ( -- | @since 2.0.0
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
-    , -- | @since 2.0.0
-      PIsData
-    , -- | @since 2.0.0
-      PEq
-    , -- | @since 2.0.0
-      PPartialOrd
-    , -- | @since 2.0.0
-      POrd
-    , -- | @since 2.0.0
-      PShow
-    )
-
--- | @since 2.0.0
-instance DerivePlutusType (PExtended a) where
-  type DPTStrat _ = PlutusTypeData
-
--- | @since 2.0.0
-newtype PLowerBound (a :: S -> Type) (s :: S)
-  = PLowerBound
-      ( Term
-          s
-          ( PDataRecord
-              '[ "_0" ':= PExtended a
-               , "_1" ':= PBool
-               ]
-          )
-      )
-  deriving stock
-    ( -- | @since 2.0.0
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
-    , -- | @since 2.0.0
-      PIsData
-    , -- | @since 2.0.0
-      PDataFields
-    , -- | @since 2.0.0
-      PEq
-    , -- | @since 2.0.0
-      PPartialOrd
-    , -- | @since 2.0.0
-      POrd
-    , -- | @since 2.0.0
-      PShow
-    )
-
--- | @since 2.0.0
-instance DerivePlutusType (PLowerBound a) where
-  type DPTStrat _ = PlutusTypeData
-
--- | @since 2.0.0
-instance
-  PLiftData a =>
-  PUnsafeLiftDecl (PLowerBound a)
-  where
-  type PLifted (PLowerBound a) = (Plutus.LowerBound (PLifted a))
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData (Plutus.LowerBound a) (PLowerBound (PConstanted a)))
-  instance
-    PConstantData a =>
-    PConstantDecl (Plutus.LowerBound a)
-
--- | @since 2.0.0
 datumHash :: Plutus.Datum -> Plutus.DatumHash
 datumHash = coerce . dataHash
 
@@ -1284,21 +1117,105 @@ pfindOwnInput = phoistAcyclic $
   pparseDatum @MyType # datumHash #$ pfield @"datums" # txinfo
   @
 
-  @since 2.1.0
+  @since 2.1.2
 -}
 pparseDatum ::
   forall (a :: S -> Type) (s :: S).
   PTryFrom PData (PAsData a) =>
-  Term s (PDatumHash :--> PBuiltinList (PAsData (PBuiltinPair (PAsData PDatumHash) (PAsData PDatum))) :--> PMaybe (PAsData a))
+  Term s (PDatumHash :--> AssocMap.PMap 'AssocMap.Unsorted PDatumHash PDatum :--> PMaybe (PAsData a))
 pparseDatum = phoistAcyclic $ plam $ \dh datums ->
-  pmatch (pfind # (matches # dh) # datums) $ \case
+  pmatch (AssocMap.plookup # dh # datums) $ \case
     PNothing -> pcon PNothing
-    PJust datumTuple -> pcon . PJust . ptryFromData . pforgetData $ psndBuiltin # pfromData datumTuple
-  where
-    matches ::
-      forall (s' :: S).
-      Term s' (PDatumHash :--> PAsData (PBuiltinPair (PAsData PDatumHash) (PAsData PDatum)) :--> PBool)
-    matches = phoistAcyclic $ plam $ \a ab -> a #== pfromData (pfstBuiltin # pfromData ab)
+    PJust datum -> pcon . PJust $ ptryFrom (pto datum) fst
+
+{- | Extracts the element out of a 'PDJust' and throws an error if its
+argument is 'PDNothing'.
+
+@since 2.1.1
+-}
+pfromDJust ::
+  forall (a :: PType) (s :: S).
+  PIsData a =>
+  Term s (PMaybeData a :--> a)
+pfromDJust = phoistAcyclic $
+  plam $ \t -> pmatch t $ \case
+    PDNothing _ -> ptraceError "pfromDJust: found PDNothing"
+    PDJust x -> pfromData $ pfield @"_0" # x
+
+{- | Yield 'PTrue' if a given 'PMaybeData' is of the form @'PDJust' _@.
+
+@since 2.1.1
+-}
+pisDJust ::
+  forall (a :: PType) (s :: S).
+  Term s (PMaybeData a :--> PBool)
+pisDJust = phoistAcyclic $
+  plam $ \x -> pmatch x $ \case
+    PDJust _ -> pconstant True
+    _ -> pconstant False
+
+{- | Special version of 'pmaybe' that works with 'PMaybeData'.
+
+@since 2.1.1
+-}
+pmaybeData ::
+  forall (a :: PType) (b :: PType) (s :: S).
+  PIsData a =>
+  Term s (b :--> (a :--> b) :--> PMaybeData a :--> b)
+pmaybeData = phoistAcyclic $
+  plam $ \d f m -> pmatch m $
+    \case
+      PDJust x -> f #$ pfield @"_0" # x
+      _ -> d
+
+{- | Construct a 'PDJust' value.
+
+@since 2.1.1
+-}
+pdjust ::
+  forall (a :: PType) (s :: S).
+  PIsData a =>
+  Term s (a :--> PMaybeData a)
+pdjust = phoistAcyclic $
+  plam $
+    \x -> pcon $ PDJust $ pdcons @"_0" # pdata x #$ pdnil
+
+{- | Construct a 'PDNothing' value.
+
+@since 2.1.1
+-}
+pdnothing ::
+  forall (a :: PType) (s :: S).
+  Term s (PMaybeData a)
+pdnothing = phoistAcyclic $ pcon $ PDNothing pdnil
+
+{- | Construct a 'PMaybeData' given a 'PMaybe'. Could be useful if you want to
+"lift" from 'PMaybe' to 'Maybe'.
+
+@since 2.1.1
+-}
+pmaybeToMaybeData ::
+  forall (a :: PType) (s :: S).
+  PIsData a =>
+  Term s (PMaybe a :--> PMaybeData a)
+pmaybeToMaybeData = phoistAcyclic $
+  plam $ \t -> pmatch t $ \case
+    PNothing -> pcon $ PDNothing pdnil
+    PJust x -> pcon $ PDJust $ pdcons @"_0" # pdata x # pdnil
+
+{- | Extract the value stored in a 'PMaybeData' container. If there's no value,
+throw an error with the given message.
+
+@since 2.1.1
+-}
+passertPDJust ::
+  forall (a :: PType) (s :: S).
+  PIsData a =>
+  Term s (PString :--> PMaybeData a :--> a)
+passertPDJust = phoistAcyclic $
+  plam $ \emsg mv' -> pmatch mv' $ \case
+    PDJust ((pfield @"_0" #) -> v) -> v
+    _ -> ptraceError emsg
 
 -- Helpers
 
@@ -1353,10 +1270,3 @@ pmaybeLT whenBothNothing ltF = phoistAcyclic $
             $ pconstant whenBothNothing
         )
       $ pconstant True
-
-ptryFromData ::
-  forall (a :: S -> Type) (s :: S).
-  PTryFrom PData (PAsData a) =>
-  Term s PData ->
-  Term s (PAsData a)
-ptryFromData x = ptryFrom @(PAsData a) x fst

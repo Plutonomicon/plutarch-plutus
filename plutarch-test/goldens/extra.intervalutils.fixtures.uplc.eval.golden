@@ -3,15 +3,9 @@ constants.always (program
    (Constr 0
       [ Constr 0 [Constr 0 [], Constr 1 []]
       , Constr 0 [Constr 2 [], Constr 1 []] ]))
-constants.never (program
-   1.0.0
-   (Constr 0
-      [ Constr 0 [Constr 2 [], Constr 1 []]
-      , Constr 0 [Constr 0 [], Constr 1 []] ]))
 contains.in interval (program 1.0.0 True)
 contains.out interval (program 1.0.0 False)
 contains.always (program 1.0.0 True)
-contains.never (program 1.0.0 False)
 member.[b,c], a < b (program 1.0.0 False)
 member.[b,c], a = b (program 1.0.0 True)
 member.[b,c], a > b, a < c (program 1.0.0 True)

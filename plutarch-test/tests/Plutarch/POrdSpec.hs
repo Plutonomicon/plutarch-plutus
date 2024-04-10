@@ -5,6 +5,15 @@ module Plutarch.POrdSpec (spec) where
 
 import Data.ByteString (ByteString)
 
+import Plutarch.LedgerApi (PAddress, PCredential (PPubKeyCredential, PScriptCredential), PMaybeData)
+import Plutarch.Lift (
+  DerivePConstantViaNewtype (DerivePConstantViaNewtype),
+  PConstantDecl,
+  PUnsafeLiftDecl (PLifted),
+ )
+import Plutarch.Prelude
+import Plutarch.SpecTypes (PTriplet (PTriplet), Triplet (Triplet))
+import Plutarch.Test
 import PlutusLedgerApi.V1 (
   Address (Address),
   Credential (PubKeyCredential, ScriptCredential),
@@ -14,22 +23,9 @@ import PlutusLedgerApi.V1 (
  )
 import PlutusTx qualified
 import PlutusTx.Builtins qualified as PlutusTx
-
-import Test.QuickCheck.Instances ()
-
-import Test.Tasty.QuickCheck (Arbitrary, arbitrary, oneof, property)
-
-import Plutarch.Api.V1 (PAddress, PCredential (PPubKeyCredential, PScriptCredential), PMaybeData)
-import Plutarch.Lift (
-  DerivePConstantViaNewtype (DerivePConstantViaNewtype),
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
-import Plutarch.Prelude
-
-import Plutarch.SpecTypes (PTriplet (PTriplet), Triplet (Triplet))
-import Plutarch.Test
 import Test.Hspec (Spec, describe, shouldBe, specify)
+import Test.QuickCheck.Instances ()
+import Test.Tasty.QuickCheck (Arbitrary, arbitrary, oneof, property)
 
 spec :: Spec
 spec = do

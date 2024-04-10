@@ -8,17 +8,20 @@ term (program
                   , Constr 0
                       [ Constr 0 [Constr 1 [B #a1], Constr 1 []]
                       , Map []
-                      , Constr 0 [B #d0] ] ] ]
+                      , Constr 1 [B #d0]
+                      , Constr 1 [] ] ] ]
+          , List []
           , List []
           , Map []
           , Map [(B #c0, Map [(B #736f6d65746f6b656e, I 1)])]
           , List []
-          , List []
+          , Map []
           , Constr 0
               [ Constr 0 [Constr 0 [], Constr 1 []]
               , Constr 0 [Constr 2 [], Constr 1 []] ]
           , List [B #ab01fe235c, B #123014, B #abcdef]
-          , List []
+          , Map []
+          , Map []
           , Constr 0 [B #b0] ]
       , Constr 1 [Constr 0 [Constr 0 [B #a0], I 0]] ]))
 get.txInfo (program
@@ -32,17 +35,20 @@ get.txInfo (program
                      , Constr 0
                          [ Constr 0 [Constr 1 [B #a1], Constr 1 []]
                          , Map []
-                         , Constr 0 [B #d0] ] ] ]
+                         , Constr 1 [B #d0]
+                         , Constr 1 [] ] ] ]
+             , List []
              , List []
              , Map []
              , Map [(B #c0, Map [(B #736f6d65746f6b656e, I 1)])]
              , List []
-             , List []
+             , Map []
              , Constr 0
                  [ Constr 0 [Constr 0 [], Constr 1 []]
                  , Constr 0 [Constr 2 [], Constr 1 []] ]
              , List [B #ab01fe235c, B #123014, B #abcdef]
-             , List []
+             , Map []
+             , Map []
              , Constr 0 [B #b0] ]
          , Constr 1 [Constr 0 [Constr 0 [B #a0], I 0]] ])))
 get.mint (program
@@ -51,7 +57,7 @@ get.mint (program
        (\i0 ->
           (\i0 ->
              (\i0 ->
-                (\i0 -> i3 ((\i0 -> i3 (i3 (i3 i1))) (i4 i1)))
+                (\i0 -> i3 ((\i0 -> i3 (i3 (i3 (i3 i1)))) (i4 i1)))
                   ((\i0 -> i3 (i4 i1))
                      (Constr 0
                         [ Constr 0
@@ -62,17 +68,20 @@ get.mint (program
                                         [ Constr 0
                                             [Constr 1 [B #a1], Constr 1 []]
                                         , Map []
-                                        , Constr 0 [B #d0] ] ] ]
+                                        , Constr 1 [B #d0]
+                                        , Constr 1 [] ] ] ]
+                            , List []
                             , List []
                             , Map []
                             , Map [(B #c0, Map [(B #736f6d65746f6b656e, I 1)])]
                             , List []
-                            , List []
+                            , Map []
                             , Constr 0
                                 [ Constr 0 [Constr 0 [], Constr 1 []]
                                 , Constr 0 [Constr 2 [], Constr 1 []] ]
                             , List [B #ab01fe235c, B #123014, B #abcdef]
-                            , List []
+                            , Map []
+                            , Map []
                             , Constr 0 [B #b0] ]
                         , Constr 1 [Constr 0 [Constr 0 [B #a0], I 0]] ])))
                (force tailList))
@@ -112,18 +121,21 @@ get.credentials (program
                                            [ Constr 0
                                                [Constr 1 [B #a1], Constr 1 []]
                                            , Map []
-                                           , Constr 0 [B #d0] ] ] ]
+                                           , Constr 1 [B #d0]
+                                           , Constr 1 [] ] ] ]
+                               , List []
                                , List []
                                , Map []
                                , Map
                                    [(B #c0, Map [(B #736f6d65746f6b656e, I 1)])]
                                , List []
-                               , List []
+                               , Map []
                                , Constr 0
                                    [ Constr 0 [Constr 0 [], Constr 1 []]
                                    , Constr 0 [Constr 2 [], Constr 1 []] ]
                                , List [B #ab01fe235c, B #123014, B #abcdef]
-                               , List []
+                               , Map []
+                               , Map []
                                , Constr 0 [B #b0] ]
                            , Constr 1 [Constr 0 [Constr 0 [B #a0], I 0]] ]))))
                (force tailList))
@@ -187,7 +199,9 @@ get.sym (program
                                                 ((\i0 ->
                                                     i10
                                                       ((\i0 ->
-                                                          i10 (i10 (i10 i1)))
+                                                          i10
+                                                            (i10
+                                                               (i10 (i10 i1))))
                                                          (i11 i1)))
                                                    ((\i0 -> i10 (i11 i1))
                                                       (Constr 0
@@ -206,8 +220,11 @@ get.sym (program
                                                                                  [  ] ]
                                                                          , Map
                                                                              []
-                                                                         , Constr 0
-                                                                             [ B #d0 ] ] ] ]
+                                                                         , Constr 1
+                                                                             [ B #d0 ]
+                                                                         , Constr 1
+                                                                             [  ] ] ] ]
+                                                             , List []
                                                              , List []
                                                              , Map []
                                                              , Map
@@ -216,7 +233,7 @@ get.sym (program
                                                                      [ ( B #736f6d65746f6b656e
                                                                      , I 1 ) ] ) ]
                                                              , List []
-                                                             , List []
+                                                             , Map []
                                                              , Constr 0
                                                                  [ Constr 0
                                                                      [ Constr 0
@@ -232,7 +249,8 @@ get.sym (program
                                                                  [ B #ab01fe235c
                                                                  , B #123014
                                                                  , B #abcdef ]
-                                                             , List []
+                                                             , Map []
+                                                             , Map []
                                                              , Constr 0
                                                                  [B #b0] ]
                                                          , Constr 1

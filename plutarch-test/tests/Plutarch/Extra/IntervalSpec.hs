@@ -1,7 +1,11 @@
 module Plutarch.Extra.IntervalSpec (spec) where
 
-import Plutarch.Api.V1.Interval (PInterval)
-import Plutarch.Extra.Interval (
+import Hedgehog (Property, PropertyT, assert, forAll, property)
+import Hedgehog.Gen qualified as Gen (int, list)
+import Hedgehog.Internal.Property (propertyTest)
+import Hedgehog.Range qualified as Range (constantBounded, singleton)
+import Plutarch.LedgerApi (PInterval)
+import Plutarch.LedgerApi.Interval (
   pafter,
   palways,
   pbefore,
@@ -11,16 +15,10 @@ import Plutarch.Extra.Interval (
   pintersection,
   pinterval,
   pmember,
-  pnever,
   psingleton,
   pto,
  )
 import Plutarch.Prelude hiding (psingleton, pto)
-
-import Hedgehog (Property, PropertyT, assert, forAll, property)
-import Hedgehog.Gen qualified as Gen (int, list)
-import Hedgehog.Internal.Property (propertyTest)
-import Hedgehog.Range qualified as Range (constantBounded, singleton)
 import Plutarch.Test (passert, passertNot, pgoldenSpec, psucceeds, (@->), (@\), (@|))
 import Test.Hspec (Spec, describe, it)
 import Test.Hspec.Hedgehog (hedgehog)
@@ -42,12 +40,10 @@ spec = do
       pgoldenSpec $ do
         "constants" @\ do
           "always" @| palways @PInteger @-> psucceeds
-          "never" @| pnever @PInteger @-> psucceeds
         "contains" @\ do
           "in interval" @| pcontains # i2 # i4 @-> passert
           "out interval" @| pcontains # i4 # i2 @-> passertNot
           "always" @| pcontains # palways @PInteger # i1 @-> passert
-          "never" @| pcontains # pnever @PInteger # i1 @-> passertNot
         "member" @\ do
           "[b,c], a < b" @| pmember # pconstantData 1 # i3 @-> passertNot
           "[b,c], a = b" @| pmember # pconstantData 2 # i3 @-> passert
@@ -77,8 +73,6 @@ spec = do
         $ prop_member
     describe "always" $ do
       it "always contains everything" . hedgehog . propertyTest $ prop_always
-    describe "never" $ do
-      it "never contains nothing" . hedgehog . propertyTest $ prop_never
     describe "hull" $ do
       it "hull of a and b contains a and b" . hedgehog . propertyTest $
         prop_hull
@@ -123,11 +117,6 @@ prop_always :: Property
 prop_always = property $ do
   [a, b] <- genIntegerList 2
   assert $ checkAlways a b
-
-prop_never :: Property
-prop_never = property $ do
-  [a, b] <- genIntegerList 2
-  assert $ checkNever a b
 
 prop_hull :: Property
 prop_hull = property $ do
@@ -175,12 +164,6 @@ checkMember a b c = actual == expected
 
 checkAlways :: Integer -> Integer -> Bool
 checkAlways a b = plift $ pcontains # palways # i
-  where
-    i :: Term s (PInterval PInteger)
-    i = mkInterval a b
-
-checkNever :: Integer -> Integer -> Bool
-checkNever a b = not (plift $ pcontains # pnever # i)
   where
     i :: Term s (PInterval PInteger)
     i = mkInterval a b

@@ -55,7 +55,8 @@ do.succeeds (program
                                                                            (i11
                                                                               (i11
                                                                                  (i11
-                                                                                    i1)))))))
+                                                                                    (i11
+                                                                                       i1))))))))
                                                                (i11 i1)))
                                                          (i8 i4))))
                                                 (delay ())
@@ -79,17 +80,20 @@ do.succeeds (program
                                         [ Constr 0
                                             [Constr 1 [B #a1], Constr 1 []]
                                         , Map []
-                                        , Constr 0 [B #d0] ] ] ]
+                                        , Constr 1 [B #d0]
+                                        , Constr 1 [] ] ] ]
+                            , List []
                             , List []
                             , Map []
                             , Map [(B #c0, Map [(B #736f6d65746f6b656e, I 1)])]
                             , List []
-                            , List []
+                            , Map []
                             , Constr 0
                                 [ Constr 0 [Constr 0 [], Constr 1 []]
                                 , Constr 0 [Constr 2 [], Constr 1 []] ]
                             , List [B #ab01fe235c, B #123014, B #abcdef]
-                            , List []
+                            , Map []
+                            , Map []
                             , Constr 0 [B #b0] ]
                         , Constr 1 [Constr 0 [Constr 0 [B #a0], I 0]] ]))
                   (force ifThenElse))
@@ -154,7 +158,8 @@ do.fails (program
                                                                            (i11
                                                                               (i11
                                                                                  (i11
-                                                                                    i1)))))))
+                                                                                    (i11
+                                                                                       i1))))))))
                                                                (i11 i1)))
                                                          (i8 i4))))
                                                 (delay ())
@@ -178,17 +183,20 @@ do.fails (program
                                         [ Constr 0
                                             [Constr 1 [B #a1], Constr 1 []]
                                         , Map []
-                                        , Constr 0 [B #d0] ] ] ]
+                                        , Constr 1 [B #d0]
+                                        , Constr 1 [] ] ] ]
+                            , List []
                             , List []
                             , Map []
                             , Map [(B #c0, Map [(B #736f6d65746f6b656e, I 1)])]
                             , List []
-                            , List []
+                            , Map []
                             , Constr 0
                                 [ Constr 0 [Constr 0 [], Constr 1 []]
                                 , Constr 0 [Constr 2 [], Constr 1 []] ]
                             , List [B #ab01fe235c, B #123014, B #abcdef]
-                            , List []
+                            , Map []
+                            , Map []
                             , Constr 0 [B #b0] ]
                         , Constr 1 [Constr 0 [Constr 0 [B #a0], I 0]] ]))
                   (force ifThenElse))

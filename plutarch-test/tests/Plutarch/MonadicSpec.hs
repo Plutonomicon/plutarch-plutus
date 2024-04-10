@@ -4,7 +4,8 @@
 module Plutarch.MonadicSpec (spec) where
 
 import Control.Monad.Trans.Cont (cont, runCont)
-import Plutarch.Api.V1 (
+import Plutarch.ApiSpec qualified as ApiSpec
+import Plutarch.LedgerApi (
   PAddress (PAddress),
   PCredential,
   PMaybeData,
@@ -13,12 +14,11 @@ import Plutarch.Api.V1 (
   PScriptPurpose (PSpending),
   PStakingCredential,
  )
-import Plutarch.ApiSpec qualified as ApiSpec
 import Plutarch.List (pconvertLists)
 import Plutarch.Monadic qualified as P
 import Plutarch.Prelude
 import Plutarch.Test
-import PlutusLedgerApi.V1
+import PlutusLedgerApi.V2
 import Test.Hspec
 
 spec :: Spec

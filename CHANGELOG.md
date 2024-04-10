@@ -1,8 +1,14 @@
 # Revision history for plutarch
 
-# 1.5.0
+# 1.5.0 - 26-01-2024
 
-- Bump `plutus-core` and `plutus-ledger-api` to `1.20.0.0`
+## Changed
+
+*  Bump `plutus-core` and `plutus-ledger-api` to `1.20.0.0`
+
+## Removed
+
+* `Plutarch.LedgerApi`, plus all submodules, as these are now under `plutarch-ledger-api`
 
 # 1.4.0
 
