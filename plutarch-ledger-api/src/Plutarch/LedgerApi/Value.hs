@@ -11,7 +11,7 @@
  can be only one token name for the Ada currency symbol, and they don't check
  whether it matches 'Plutus.adaToken'.
 -}
-module Plutarch.Api.Value (
+module Plutarch.LedgerApi.Value (
   -- * Types
   PValue (PValue),
   PCurrencySymbol (PCurrencySymbol),
@@ -58,9 +58,9 @@ module Plutarch.Api.Value (
   pisAdaOnlyValue,
 ) where
 
-import Plutarch.Api.AssocMap qualified as AssocMap
-import Plutarch.Api.Utils (Mret)
 import Plutarch.Bool (pand', pif')
+import Plutarch.LedgerApi.AssocMap qualified as AssocMap
+import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),

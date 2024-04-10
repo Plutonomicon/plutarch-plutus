@@ -3,7 +3,7 @@
 {- | This module is meant to be imported qualified, as some of its identifiers
 clash with the Plutarch prelude, as well as other parts of the Plutarch API.
 -}
-module Plutarch.Api.Interval (
+module Plutarch.LedgerApi.Interval (
   -- * Types
   PInterval (..),
   PLowerBound (..),

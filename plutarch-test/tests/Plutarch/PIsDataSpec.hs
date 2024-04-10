@@ -8,9 +8,9 @@ import Data.Text.Encoding (encodeUtf8)
 import Data.Functor.Compose (Compose (Compose))
 import Data.SOP (NS (S, Z))
 import Data.String (fromString)
-import Plutarch.Api
 import Plutarch.Builtin (pforgetData, ppairDataBuiltin)
 import Plutarch.DataRepr (PDataSum (PDataSum))
+import Plutarch.LedgerApi
 import Plutarch.Lift (PLifted)
 import Plutarch.Prelude
 import Plutarch.SpecTypes (PTriplet (PTriplet))

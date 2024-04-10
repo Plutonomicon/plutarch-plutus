@@ -25,13 +25,13 @@ import Data.ByteString.Short (fromShort)
 import Data.Coerce (coerce)
 import Data.Text (Text)
 import Data.Text.Encoding qualified as TE
-import Plutarch.Api (
+import Plutarch.Builtin (pasByteStr)
+import Plutarch.Crypto (pverifyEd25519Signature)
+import Plutarch.LedgerApi (
   PPubKeyHash,
   PScriptContext,
   scriptHash,
  )
-import Plutarch.Builtin (pasByteStr)
-import Plutarch.Crypto (pverifyEd25519Signature)
 import Plutarch.Prelude
 import Plutarch.Script (Script, serialiseScript)
 import Plutarch.Test

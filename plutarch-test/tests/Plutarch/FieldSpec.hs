@@ -2,8 +2,8 @@
 
 module Plutarch.FieldSpec (spec) where
 
-import Plutarch.Api (PAddress (PAddress))
 import Plutarch.Builtin (ppairDataBuiltin)
+import Plutarch.LedgerApi (PAddress (PAddress))
 import Plutarch.Prelude
 import Plutarch.SpecTypes (PTriplet)
 import Plutarch.Test

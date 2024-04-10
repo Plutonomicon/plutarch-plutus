@@ -5,7 +5,7 @@ module Plutarch.POrdSpec (spec) where
 
 import Data.ByteString (ByteString)
 
-import Plutarch.Api (PAddress, PCredential (PPubKeyCredential, PScriptCredential), PMaybeData)
+import Plutarch.LedgerApi (PAddress, PCredential (PPubKeyCredential, PScriptCredential), PMaybeData)
 import Plutarch.Lift (
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
   PConstantDecl,

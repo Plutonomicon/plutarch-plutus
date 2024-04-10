@@ -8,7 +8,7 @@
 
 ## Removed
 
-* `Plutarch.Api`, plus all submodules, as these are now under `plutarch-api`
+* `Plutarch.LedgerApi`, plus all submodules, as these are now under `plutarch-ledger-api`
 
 # 1.4.0
 

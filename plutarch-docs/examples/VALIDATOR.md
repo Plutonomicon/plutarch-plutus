@@ -8,7 +8,7 @@
 module Plutarch.Docs.ValidatorExample (alwaysSucceeds, checkSignatory, res', res, alwaysFails) where
 
 import Plutarch.Prelude
-import Plutarch.Api (PDatum, PRedeemer, PScriptContext, PPubKeyHash, PScriptPurpose(PSpending))
+import Plutarch.LedgerApi (PDatum, PRedeemer, PScriptContext, PPubKeyHash, PScriptPurpose(PSpending))
 import Plutarch.Docs.Run (evalWithArgsT)
 import Plutarch.Script (Script)
 import qualified PlutusTx

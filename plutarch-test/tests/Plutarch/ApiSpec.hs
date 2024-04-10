@@ -20,7 +20,8 @@ import Data.Bifunctor (bimap)
 import Data.ByteString (ByteString)
 import Data.String (fromString)
 import Numeric (showHex)
-import Plutarch.Api (
+import Plutarch.Builtin (pasConstr, pforgetData)
+import Plutarch.LedgerApi (
   AmountGuarantees (NoGuarantees, NonZero, Positive),
   PCredential,
   PCurrencySymbol,
@@ -33,14 +34,13 @@ import Plutarch.Api (
   PTxInfo,
   PValue,
  )
-import Plutarch.Api.AssocMap (
+import Plutarch.LedgerApi.AssocMap (
   Commutativity (..),
   KeyGuarantees (..),
   psortedMapFromFoldable,
  )
-import Plutarch.Api.AssocMap qualified as AssocMap
-import Plutarch.Api.Value qualified as PValue
-import Plutarch.Builtin (pasConstr, pforgetData)
+import Plutarch.LedgerApi.AssocMap qualified as AssocMap
+import Plutarch.LedgerApi.Value qualified as PValue
 import Plutarch.Lift (PConstanted, PLifted, PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude
 import Plutarch.Test
