@@ -54,7 +54,7 @@
 
   
   
-  <link href='tailwind.css?instanceId=3f5a53d6-a6fa-4317-a19e-fdc2df22744b' rel='stylesheet' type='text/css' />
+  <link href='tailwind.css?instanceId=9573fbd9-a6b9-40bd-b236-912816f906f9' rel='stylesheet' type='text/css' />
 
   <style>
     /* Heist error element */
@@ -3320,7 +3320,19 @@
           <a href='Run.html#evaluation' class='text-blue-600 mavenLinkBold hover:underline'>Evaluation</a>
         </li>
       
+        <li>
+          Nix binary cache is recommended. Otherwise nix will build from GHC itself.
+        </li>
+      
     </ul>
+  
+    <p class='mb-3'>
+      Use Plutonomicon binary cache via cachix: <a href='https://plutonomicon.cachix.org' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>https://plutonomicon.cachix.org</a>
+    </p>
+  
+    <p class='mb-3'>
+      DO NOT add your user to <code class='py-0.5 px-0.5 bg-gray-100'>trusted-users</code> as <code class='py-0.5 px-0.5 bg-gray-100'>cachix use</code> suggests because this is <a href='https://nixos.org/manual/nix/stable/command-ref/conf-file.html#conf-trusted-users' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>insecure</a>.
+    </p>
   
     <h2 id='introduction-and-basic-syntax' class='group mt-6 mb-4 font-bold text-gray-700 text-4xl'>
       
