@@ -27,6 +27,12 @@ The Plutarch guide is your one-stop shop for getting up to speed on Plutarch!
 
 - [Common Extensions and GHC options](./Run.md#common-extensions-and-ghc-options)
 - [Evaluation](./Run.md#evaluation)
+- Nix binary cache is recommended. Otherwise nix will build from GHC itself.
+
+Use Plutonomicon binary cache via cachix: https://plutonomicon.cachix.org
+
+DO NOT add your user to `trusted-users` as `cachix use` suggests because this is
+[insecure](https://nixos.org/manual/nix/stable/command-ref/conf-file.html#conf-trusted-users).
 
 ## Introduction and Basic Syntax
 
