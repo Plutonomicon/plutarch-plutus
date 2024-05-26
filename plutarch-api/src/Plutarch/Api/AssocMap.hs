@@ -107,7 +107,7 @@ import Plutarch.Prelude qualified as PPrelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusCore qualified as PLC
-import PlutusLedgerApi.V2 qualified as Plutus
+import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.AssocMap qualified as PlutusMap
 import Prelude hiding (pred)
 

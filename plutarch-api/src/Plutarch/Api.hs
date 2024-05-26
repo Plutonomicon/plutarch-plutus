@@ -50,9 +50,7 @@ module Plutarch.Api (
   Value.AmountGuarantees (..),
   Value.PCurrencySymbol (..),
   Value.PTokenName (..),
-
-  -- * DCert
-  PDCert (..),
+  Value.PLovelace (..),
 
   -- * Assoc map
 
@@ -74,6 +72,20 @@ module Plutarch.Api (
   Interval.PLowerBound (..),
   Interval.PUpperBound (..),
   Interval.PExtended (..),
+
+  -- * CIP-1694
+  PTxCert (..),
+  PDelegatee (..),
+  PDRepCredential (..),
+  PColdCommitteeCredential (..),
+  PHotCommitteeCredential (..),
+  PDRep (..),
+  PVoter (..),
+  PGovernanceActionId (..),
+  PVote (..),
+  PProposalProcedure (..),
+  PGovernanceAction (..),
+  PChangedParameters (..),
 
   -- * Crypto
 
@@ -130,7 +142,7 @@ import Plutarch.Script (Script (unScript))
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common (serialiseUPLC)
-import PlutusLedgerApi.V2 qualified as Plutus
+import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.Prelude qualified as PlutusTx
 
 -- | @since 2.0.0
@@ -175,9 +187,44 @@ deriving via
   instance
     PConstantDecl Plutus.ScriptContext
 
+-- | @since 2.2.0
+data PTxCert (s :: S)
+  = PTxCertRegStaking (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PMaybeData Value.PLovelace]))
+  | PTxCertUnRegStaking (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PMaybeData Value.PLovelace]))
+  | PTxCertDelegStaking (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PDelegatee]))
+  | PTxCertRegDeleg (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PDelegatee, "_2" ':= Value.PLovelace]))
+  | PTxCertRegDRep (Term s (PDataRecord '["_0" ':= PDRepCredential, "_1" ':= Value.PLovelace]))
+  | PTxCertUpdateDRep (Term s (PDataRecord '["_0" ':= PDRepCredential]))
+  | PTxCertUnRegDRep (Term s (PDataRecord '["_0" ':= PDRepCredential, "_1" ':= Value.PLovelace]))
+  | PTxCertPoolRegister (Term s (PDataRecord '["_0" ':= PPubKeyHash, "_1" ':= PPubKeyHash]))
+  | PTxCertPoolRetire (Term s (PDataRecord '["_0" ':= PPubKeyHash, "_1" ':= PInteger]))
+  | PTxCertAuthHotCommittee (Term s (PDataRecord '["_0" ':= PColdCommitteeCredential, "_1" ':= PHotCommitteeCredential]))
+  | PTxCertResignColdCommittee (Term s (PDataRecord '["_0" ':= PColdCommitteeCredential]))
+
+-- | @since 2.2.0
+data PDelegatee (s :: S)
+  = PDelegStake (Term s (PDataRecord '["_0" ':= PPubKeyHash]))
+  | PDelegVote (Term s (PDataRecord '["_0" ':= PDRep]))
+  | PDelegStakeVote (Term s (PDataRecord '["_0" ':= PPubKeyHash, "_1" ':= PDRep]))
+
+-- | @since 2.2.0
+newtype PDRepCredential (s :: S) = PDRepCredential (Term s PCredential)
+
+-- | @since 2.2.0
+newtype PColdCommitteeCredential (s :: S) = PColdCommitteeCredential (Term s PCredential)
+
+-- | @since 2.2.0
+newtype PHotCommitteeCredential (s :: S) = PHotCommitteeCredential (Term s PCredential)
+
+-- | @since 2.2.0
+data PDRep (s :: S)
+  = PDRep (Term s (PDataRecord '["_0" ':= PDRepCredential]))
+  | PDRepAlwaysAbstain (Term s (PDataRecord '[]))
+  | PDRepAlwaysNoConfidence (Term s (PDataRecord '[]))
+
 -- A pending transaction. This is the view as seen by a validator script.
 --
--- @since 2.0.0
+-- @since 2.2.0
 newtype PTxInfo (s :: S)
   = PTxInfo
       ( Term
@@ -188,13 +235,17 @@ newtype PTxInfo (s :: S)
                , "outputs" ':= PBuiltinList PTxOut
                , "fee" ':= Value.PValue 'AssocMap.Sorted 'Value.Positive
                , "mint" ':= Value.PValue 'AssocMap.Sorted 'Value.NoGuarantees -- value minted by transaction
-               , "dcert" ':= PBuiltinList PDCert -- Digests of certificates included in this transaction
+               , "txCerts" ':= PBuiltinList PTxCert
                , "wdrl" ':= AssocMap.PMap 'AssocMap.Unsorted PStakingCredential PInteger -- Staking withdrawals
                , "validRange" ':= Interval.PInterval PPosixTime
                , "signatories" ':= PBuiltinList (PAsData PPubKeyHash)
                , "redeemers" ':= AssocMap.PMap 'AssocMap.Unsorted PScriptPurpose PRedeemer
-               , "datums" ':= AssocMap.PMap 'AssocMap.Unsorted PDatumHash PDatum
+               , "data" ':= AssocMap.PMap 'AssocMap.Unsorted PDatumHash PDatum
                , "id" ':= PTxId -- hash of the pending transaction
+               , "votes" ':= AssocMap.PMap 'AssocMap.Unsorted PVoter (AssocMap.PMap 'AssocMap.Unsorted PGovernanceActionId PVote)
+               , "proposalProcedures" ':= PBuiltinList PProposalProcedure
+               , "currentTreasuryAmount" ':= PMaybeData Value.PLovelace
+               , "treasuryDonation" ':= PMaybeData Value.PLovelace
                ]
           )
       )
@@ -215,6 +266,65 @@ newtype PTxInfo (s :: S)
       PShow
     )
 
+-- | @since 2.2.0
+data PVote (s :: S)
+  = PVoteYes (Term s (PDataRecord '[]))
+  | PVoteNo (Term s (PDataRecord '[]))
+  | PAbstain (Term s (PDataRecord '[]))
+
+-- | @since 2.2.0
+newtype PProposalProcedure (s :: S)
+  = PProposalProcedure
+      ( Term
+          s
+          ( PDataRecord
+              '[ "deposit" ':= Value.PLovelace
+               , "returnAddr" ':= PCredential
+               , "governanceAction" ':= PGovernanceAction
+               ]
+          )
+      )
+
+-- | @since 2.2.0
+data PGovernanceAction (s :: S)
+  = PParameterChange (Term s (PDataRecord '["_0" ':= PMaybeData PGovernanceActionId, "_1" ':= PChangedParameters, "_2" ':= PMaybeData PScriptHash]))
+  | PHardForkInitiation (Term s (PDataRecord '["_0" ':= PMaybeData PGovernanceActionId, "_1" ':= PProtocolVersion]))
+  | PTreasuryWithdrawals (Term s (PDataRecord '["_0" ':= AssocMap.PMap 'AssocMap.Unsorted PCredential Value.PLovelace, "_1" ':= PMaybeData PScriptHash]))
+  | PNoConfidence (Term s (PDataRecord '["_0" ':= PMaybeData PGovernanceActionId]))
+  | PUpdateCommittee
+      ( Term
+          s
+          ( PDataRecord
+              '[ "_0" ':= PMaybeData PGovernanceActionId
+               , "_1" ':= PBuiltinList PColdCommitteeCredential
+               , "_2" ':= AssocMap.PMap 'AssocMap.Unsorted PColdCommitteeCredential PInteger
+               , "_3" ':= PRationalData
+               ]
+          )
+      )
+  | PNewConstitution (Term s (PDataRecord '["_0" ':= PMaybeData PGovernanceActionId, "_1" ':= PConstitution]))
+  | PInfoAction (Term s (PDataRecord '[]))
+
+-- TODO: Be careful with PTryFrom for this. It's not really Data, it's a map!
+
+-- | @since 2.2.0
+newtype PChangedParameters (s :: S)
+  = PChangedParameters (Term s PData)
+
+-- | @since 2.2.0
+newtype PProtocolVersion (s :: S)
+  = PProtocolVersion (Term s (PDataRecord '["major" ':= PInteger, "minor" ':= PInteger]))
+
+-- | @since 2.2.0
+data PVoter (s :: S)
+  = PCommitteeVoter (Term s (PDataRecord '["_0" ':= PHotCommitteeCredential]))
+  | PDRepVoter (Term s (PDataRecord '["_0" ':= PDRepCredential]))
+  | PStakePoolVoter (Term s (PDataRecord '["_0" ':= PPubKeyHash]))
+
+-- | @since 2.2.0
+newtype PGovernanceActionId (s :: S)
+  = PGovernanceActionId (Term s (PDataRecord '["txId" ':= PTxId, "govActionIx" ':= PInteger]))
+
 -- | @since 2.0.0
 instance DerivePlutusType PTxInfo where
   type DPTStrat _ = PlutusTypeData
@@ -229,12 +339,14 @@ deriving via
   instance
     PConstantDecl Plutus.TxInfo
 
--- | @since 2.0.0
+-- | @since 2.2.0
 data PScriptPurpose (s :: S)
   = PMinting (Term s (PDataRecord '["_0" ':= Value.PCurrencySymbol]))
   | PSpending (Term s (PDataRecord '["_0" ':= PTxOutRef]))
   | PRewarding (Term s (PDataRecord '["_0" ':= PStakingCredential]))
-  | PCertifying (Term s (PDataRecord '["_0" ':= PDCert]))
+  | PCertifying (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PTxCert]))
+  | PVoting (Term s (PDataRecord '["_0" ':= PVoter]))
+  | PProposing (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PProposalProcedure]))
   deriving stock
     ( -- | @since 2.0.0
       Generic
@@ -495,56 +607,6 @@ newtype PRedeemerHash (s :: S) = PRedeemerHash (Term s PByteString)
 -}
 scriptHash :: Script -> Plutus.ScriptHash
 scriptHash = hashScriptWithPrefix "\x02"
-
--- | @since 2.0.0
-data PDCert (s :: S)
-  = PDCertDelegRegKey (Term s (PDataRecord '["_0" ':= PStakingCredential]))
-  | PDCertDelegDeRegKey (Term s (PDataRecord '["_0" ':= PStakingCredential]))
-  | PDCertDelegDelegate
-      ( Term
-          s
-          ( PDataRecord
-              '[ "_0" ':= PStakingCredential
-               , "_1" ':= PPubKeyHash
-               ]
-          )
-      )
-  | PDCertPoolRegister (Term s (PDataRecord '["_0" ':= PPubKeyHash, "_1" ':= PPubKeyHash]))
-  | PDCertPoolRetire (Term s (PDataRecord '["_0" ':= PPubKeyHash, "_1" ':= PInteger]))
-  | PDCertGenesis (Term s (PDataRecord '[]))
-  | PDCertMir (Term s (PDataRecord '[]))
-  deriving stock
-    ( -- | @since 2.0.0
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
-    , -- | @since 2.0.0
-      PIsData
-    , -- | @since 2.0.0
-      PEq
-    , -- | @since 2.0.0
-      PPartialOrd
-    , -- | @since 2.0.0
-      POrd
-    , -- | @since 2.0.0
-      PShow
-    )
-
--- | @since 2.0.0
-instance DerivePlutusType PDCert where
-  type DPTStrat _ = PlutusTypeData
-
--- | @since 2.0.0
-instance PUnsafeLiftDecl PDCert where
-  type PLifted PDCert = Plutus.DCert
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData Plutus.DCert PDCert)
-  instance
-    PConstantDecl Plutus.DCert
 
 -- | @since 2.0.0
 data PCredential (s :: S)

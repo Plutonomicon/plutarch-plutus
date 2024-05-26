@@ -13,10 +13,11 @@
 -}
 module Plutarch.Api.Value (
   -- * Types
-  PValue (PValue),
-  PCurrencySymbol (PCurrencySymbol),
-  PTokenName (PTokenName),
-  AmountGuarantees (NoGuarantees, NonZero, Positive),
+  PValue (..),
+  PCurrencySymbol (..),
+  PTokenName (..),
+  AmountGuarantees (..),
+  PLovelace (..),
 
   -- * Functions
 
@@ -72,8 +73,41 @@ import Plutarch.List qualified as List
 import Plutarch.Prelude hiding (psingleton)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
-import PlutusLedgerApi.V2 qualified as Plutus
+import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.Prelude qualified as PlutusTx
+
+-- | @since 2.2.0
+newtype PLovelace (s :: S) = PLovelace (Term s PInteger)
+  deriving stock
+    ( -- | @since 2.2.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 2.2.0
+      PlutusType
+    , -- | @since 2.2.0
+      PIsData
+    , -- | @since 2.2.0
+      PEq
+    , -- | @since 2.2.0
+      PPartialOrd
+    , -- | @since 2.2.0
+      PShow
+    )
+
+-- | @since 2.2.0
+instance DerivePlutusType PLovelace where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since 2.2.0
+instance PUnsafeLiftDecl PLovelace where
+  type PLifted PLovelace = Plutus.Lovelace
+
+-- | @since 2.2.0
+deriving via
+  (DerivePConstantViaBuiltin Plutus.Lovelace PLovelace PInteger)
+  instance
+    PConstantDecl Plutus.Lovelace
 
 -- | @since 2.0.0
 newtype PTokenName (s :: S) = PTokenName (Term s PByteString)

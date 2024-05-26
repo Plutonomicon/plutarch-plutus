@@ -40,7 +40,7 @@ import Plutarch.Lift (
   PUnsafeLiftDecl (PLifted),
  )
 import Plutarch.Prelude hiding (psingleton, pto)
-import PlutusLedgerApi.V2 qualified as Plutus
+import PlutusLedgerApi.V3 qualified as Plutus
 
 -- | @since 2.0.0
 newtype PInterval (a :: S -> Type) (s :: S)
