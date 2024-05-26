@@ -6,6 +6,7 @@ module Plutarch.Evaluate (
   E.evalScript',
   E.EvalError,
   evalTerm,
+  evalTermNoEmit,
 ) where
 
 import Plutarch.Internal.Evaluate qualified as E
@@ -26,6 +27,20 @@ evalTerm config term =
     Right script ->
       let (s, b, t) = E.evalScriptHuge script
        in Right (fromScript <$> s, b, t)
+    Left a -> Left a
+  where
+    fromScript :: Script -> ClosedTerm a
+    fromScript (Script script) =
+      Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm script) []
+
+evalTermNoEmit ::
+  Config ->
+  ClosedTerm a ->
+  Either Text (Either E.NoEmitEvaluateError (ClosedTerm a))
+evalTermNoEmit config term =
+  case compile config term of
+    Right script ->
+      Right $ fromScript <$> E.evalScriptNoEmit script
     Left a -> Left a
   where
     fromScript :: Script -> ClosedTerm a
