@@ -12,7 +12,7 @@ module Plutarch.Evaluate (
 import Plutarch.Internal.Evaluate qualified as E
 
 import Data.Text (Text)
-import Plutarch.Internal (ClosedTerm, Config, RawTerm (RCompiled), Term (..), TermResult (TermResult), compile)
+import Plutarch.Internal (ClosedTerm, Config (Config), RawTerm (RCompiled), Term (..), TermResult (TermResult), TracingMode (NoTracing), compile)
 import Plutarch.Script (Script (Script))
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
 import UntypedPlutusCore qualified as UPLC
@@ -34,11 +34,10 @@ evalTerm config term =
       Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm script) []
 
 evalTermNoEmit ::
-  Config ->
   ClosedTerm a ->
   Either Text (Either E.NoEmitEvaluateError (ClosedTerm a))
-evalTermNoEmit config term =
-  case compile config term of
+evalTermNoEmit term =
+  case compile (Config NoTracing) term of
     Right script ->
       Right $ fromScript <$> E.evalScriptNoEmit script
     Left a -> Left a
