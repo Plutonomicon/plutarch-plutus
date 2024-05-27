@@ -30,7 +30,10 @@ hashBlake2b_224 = _plutusHashWith Blake2b_224
 hashBlake2b_256 :: ByteString -> PlutusTx.BuiltinByteString
 hashBlake2b_256 = _plutusHashWith Blake2b_256
 
--- | Hash a Script with the given version prefix
+{- | Hash a Script with the given version prefix
+Valid prefixes (as of PlutusV2) are a single byte "01" for PlutusV1
+and "02" for PlutusV2
+-}
 hashScriptWithPrefix :: ByteString -> Script -> Plutus.ScriptHash
 hashScriptWithPrefix prefix scr =
   Plutus.ScriptHash
