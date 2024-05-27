@@ -28,8 +28,8 @@ Consider the snippet:
 ```haskell
 test :: Term s (PScriptPurpose :--> PUnit)
 test = plam $ \x -> pmatch x $ \case
-  PSpending _ -> ptrace "matched spending script purpose" $ pconstant ()
-  _ -> ptraceError "pattern match failure"
+  PSpending _ -> ptraceInfo "matched spending script purpose" $ pconstant ()
+  _ -> ptraceInfoError "pattern match failure"
 ```
 
 That's rather ugly! [`pmatch`](./../Typeclasses/PlutusType,%20PCon,%20and%20PMatch.md) takes in a continuation as its second argument. Can we make this a bit more ergonomic?
@@ -38,13 +38,13 @@ That's rather ugly! [`pmatch`](./../Typeclasses/PlutusType,%20PCon,%20and%20PMat
 pmatchC :: PlutusType a => Term s a -> TermCont s (a s)
 pmatchC = tcont . pmatch
 
-ptraceC :: Term s PString -> TermCont s ()
-ptraceC s = tcont $ \f -> ptrace s (f ())
+ptraceInfoC :: Term s PString -> TermCont s ()
+ptraceInfoC s = tcont $ \f -> ptraceInfo s (f ())
 
 testC :: Term s (PScriptPurpose :--> PUnit)
 testC = plam $ \x -> unTermCont $ do
   PSpending _ <- pmatchC x
-  ptraceC "matched spending script purpose"
+  ptraceInfoC "matched spending script purpose"
   pure $ pconstant ()
 ```
 

@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Plutarch.TraceSpec (spec) where
 
 import Plutarch.Prelude

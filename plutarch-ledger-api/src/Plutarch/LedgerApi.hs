@@ -689,7 +689,7 @@ instance PTryFrom PData (PAsData PPosixTime) where
   ptryFrom' opq = runTermCont $ do
     (wrapped :: Term s (PAsData PInteger), unwrapped :: Term s PInteger) <-
       tcont $ ptryFrom @(PAsData PInteger) opq
-    tcont $ \f -> pif (0 #<= unwrapped) (f ()) (ptraceError "ptryFrom(POSIXTime): must be positive")
+    tcont $ \f -> pif (0 #<= unwrapped) (f ()) (ptraceInfoError "ptryFrom(POSIXTime): must be positive")
     pure (punsafeCoerce wrapped, pcon $ PPosixTime unwrapped)
 
 -- | @since 2.0.0
@@ -736,7 +736,7 @@ instance PTryFrom PData (PAsData PPubKeyHash) where
       pif
         (plengthBS # unwrapped #== 28)
         (f ())
-        (ptraceError "ptryFrom(PPubKeyHash): must be 28 bytes long")
+        (ptraceInfoError "ptryFrom(PPubKeyHash): must be 28 bytes long")
     pure (punsafeCoerce opq, pcon . PPubKeyHash $ unwrapped)
 
 -- | @since 2.0.0
@@ -807,14 +807,14 @@ instance PTryFrom PData (PAsData PTxId) where
   ptryFrom' opq = runTermCont $ do
     opq' <- tcont . plet $ pasConstr # opq
     tcont $ \f ->
-      pif (pfstBuiltin # opq' #== 0) (f ()) $ ptraceError "ptryFrom(TxId): invalid constructor id"
+      pif (pfstBuiltin # opq' #== 0) (f ()) $ ptraceInfoError "ptryFrom(TxId): invalid constructor id"
     flds <- tcont . plet $ psndBuiltin # opq'
     let dataBs = phead # flds
     tcont $ \f ->
-      pif (pnil #== ptail # flds) (f ()) $ ptraceError "ptryFrom(TxId): constructor fields len > 1"
+      pif (pnil #== ptail # flds) (f ()) $ ptraceInfoError "ptryFrom(TxId): constructor fields len > 1"
     unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) dataBs snd
     tcont $ \f ->
-      pif (plengthBS # unwrapped #== 32) (f ()) $ ptraceError "ptryFrom(TxId): must be 32 bytes long"
+      pif (plengthBS # unwrapped #== 32) (f ()) $ ptraceInfoError "ptryFrom(TxId): must be 32 bytes long"
     pure (punsafeCoerce opq, unwrapped)
 
 {- | Reference to a transaction output, with an index referencing which exact
@@ -1013,7 +1013,7 @@ instance PTryFrom PData (PAsData PScriptHash) where
       pif
         (plengthBS # unwrapped #== 28)
         (f ())
-        (ptraceError "ptryFrom(PScriptHash): must be 28 bytes long")
+        (ptraceInfoError "ptryFrom(PScriptHash): must be 28 bytes long")
     pure (punsafeCoerce opq, pcon . PScriptHash $ unwrapped)
 
 -- | @since 2.0.0
@@ -1048,7 +1048,7 @@ redeemerHash = coerce . dataHash
           outputs = pfield @"outputs" # (getField @"txInfo" ctx)
       pure $ pgetContinuingOutputs # inputs # outputs # outRef
     _ ->
-      pure $ ptraceError "not a spending tx"
+      pure $ ptraceInfoError "not a spending tx"
   @
 
   @since 2.1.0
@@ -1064,7 +1064,7 @@ pgetContinuingOutputs = phoistAcyclic $
             outAddr = pfield @"address" # resolved
         pfilter # (matches # outAddr) # outputs
       PNothing ->
-        ptraceError "can't get any continuing outputs"
+        ptraceInfoError "can't get any continuing outputs"
   where
     matches ::
       forall (s' :: S).
@@ -1087,7 +1087,7 @@ pgetContinuingOutputs = phoistAcyclic $
           inputs = pfield @"inputs" # (getField @"txInfo" ctx)
       pure $ pfindOwnInput # inputs # outRef
     _ ->
-      pure $ ptraceError "not a spending tx"
+      pure $ ptraceInfoError "not a spending tx"
   @
 
   @since 2.1.0
@@ -1139,7 +1139,7 @@ pfromDJust ::
   Term s (PMaybeData a :--> a)
 pfromDJust = phoistAcyclic $
   plam $ \t -> pmatch t $ \case
-    PDNothing _ -> ptraceError "pfromDJust: found PDNothing"
+    PDNothing _ -> ptraceInfoError "pfromDJust: found PDNothing"
     PDJust x -> pfromData $ pfield @"_0" # x
 
 {- | Yield 'PTrue' if a given 'PMaybeData' is of the form @'PDJust' _@.
@@ -1215,7 +1215,7 @@ passertPDJust ::
 passertPDJust = phoistAcyclic $
   plam $ \emsg mv' -> pmatch mv' $ \case
     PDJust ((pfield @"_0" #) -> v) -> v
-    _ -> ptraceError emsg
+    _ -> ptraceInfoError emsg
 
 -- Helpers
 

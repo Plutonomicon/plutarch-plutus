@@ -26,7 +26,7 @@ pfromJust ::
   Term s (PMaybe a :--> a)
 pfromJust = phoistAcyclic $
   plam $ \t -> pmatch t $ \case
-    PNothing -> ptraceError "pfromJust: found PNothing"
+    PNothing -> ptraceInfoError "pfromJust: found PNothing"
     PJust x -> x
 
 -- | Extracts the element out of a 'PJust' and throws a custom error if it's given a 'PNothing'.
@@ -37,7 +37,7 @@ ptraceIfNothing ::
   Term s (PMaybe a) ->
   Term s a
 ptraceIfNothing err t = pmatch t $ \case
-  PNothing -> ptraceError err
+  PNothing -> ptraceInfoError err
   PJust x -> x
 
 -- | Yields true if the given 'PMaybe' value is of form @'PJust' _@.
@@ -95,4 +95,4 @@ passertPJust :: forall (a :: PType) (s :: S). Term s (PString :--> PMaybe a :-->
 passertPJust = phoistAcyclic $
   plam $ \emsg mv' -> pmatch mv' $ \case
     PJust v -> v
-    _ -> ptraceError emsg
+    _ -> ptraceInfoError emsg

@@ -143,7 +143,7 @@ spec = do
                       ( pcon $
                           PValue.PValue
                             ( AssocMap.punionResolvingCollisionsWith Commutative
-                                # plam (\_ _ -> ptraceError "unexpected collision")
+                                # plam (\_ _ -> ptraceInfoError "unexpected collision")
                                 # pto (getEnclosedTerm v)
                                 # (AssocMap.pdifference # pto pmintOtherSymbol # pto (getEnclosedTerm v))
                             )
@@ -655,7 +655,7 @@ checkSignatoryCont = plam $ \ph ctx' ->
               -- Signature not present.
               perror
       _ ->
-        ptraceError "checkSignatoryCont: not a spending tx"
+        ptraceInfoError "checkSignatoryCont: not a spending tx"
 
 -- | `checkSignatory` implemented using `runTermCont`
 checkSignatoryTermCont :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
@@ -672,7 +672,7 @@ checkSignatoryTermCont = plam $ \ph ctx' -> unTermCont $ do
           -- Signature not present.
           perror
     _ ->
-      pure $ ptraceError "checkSignatoryCont: not a spending tx"
+      pure $ ptraceInfoError "checkSignatoryCont: not a spending tx"
 
 getFields :: Term s (PData :--> PBuiltinList PData)
 getFields = phoistAcyclic $ plam $ \addr -> psndBuiltin #$ pasConstr # addr
