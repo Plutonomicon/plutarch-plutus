@@ -1,4 +1,5 @@
 {-# LANGUAGE RoleAnnotations #-}
+{-# LANGUAGE ViewPatterns #-}
 
 module Plutarch.Internal (
   -- | \$hoisted
@@ -31,8 +32,11 @@ module Plutarch.Internal (
   S (SI),
   PType,
   pthrow,
-  Config (..),
+  Config (NoTracing, Tracing),
   TracingMode (..),
+  LogLevel (..),
+  tracingMode,
+  logLevel,
   pgetConfig,
   TermMonad (..),
   (#),
@@ -44,10 +48,10 @@ import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
 import Crypto.Hash.IO (HashAlgorithm)
 import Data.ByteString qualified as BS
-import Data.Default (Default (def))
 import Data.Kind (Type)
 import Data.List (foldl', groupBy, sortOn)
 import Data.Map.Lazy qualified as M
+import Data.Monoid (Last (Last))
 import Data.Set qualified as S
 import Data.String (fromString)
 import Data.Text (Text)
@@ -150,18 +154,127 @@ data S = SI
 -- | Shorthand for Plutarch types.
 type PType = S -> Type
 
-newtype Config = Config
-  { tracingMode :: TracingMode
-  }
+{- | How to trace.
 
-data TracingMode = NoTracing | DetTracing | DoTracing | DoTracingAndBinds
+@since 1.6.0
+-}
+data TracingMode = DetTracing | DoTracing | DoTracingAndBinds
+  deriving stock
+    ( -- | @since 1.6.0
+      Eq
+    , -- | @since 1.6.0
+      Show
+    )
 
--- | Default is to be efficient
-instance Default Config where
-  def =
-    Config
-      { tracingMode = NoTracing
-      }
+{- | We have a linear order of generality, so this instance reflects it:
+\'smaller\' values are more specific. Generality is in the following order,
+from least to most general:
+
+1. @DetTracing@
+2. @DoTracing@
+3. @DoTracingAndBinds@
+
+@since 1.6.0
+-}
+instance Ord TracingMode where
+  -- Note: We write this by hand so someone re-ordering or adding 'arms' won't
+  -- silently break this.
+  tm1 <= tm2 = case tm1 of
+    DetTracing -> True
+    DoTracing -> case tm2 of
+      DetTracing -> False
+      _ -> True
+    DoTracingAndBinds -> case tm2 of
+      DoTracingAndBinds -> True
+      _ -> False
+
+{- | More general tracing supersedes less general.
+
+@since 1.6.0
+-}
+instance Semigroup TracingMode where
+  (<>) = max
+
+{- | What logging level we want to use.
+
+@since 1.6.0
+-}
+data LogLevel = LogInfo | LogDebug
+  deriving stock
+    ( -- | @since 1.6.0
+      Eq
+    , -- | @since 1.6.0
+      Show
+    )
+
+{- | We have a linear order of generality, so this instance reflects it:
+@LogDebug@ is more general than @LogInfo@.
+
+@since 1.6.0
+-}
+instance Ord LogLevel where
+  -- Note: We write this by hand so someone re-ordering or adding 'arms' won't
+  -- silently break this.
+  ll1 <= ll2 = case ll1 of
+    LogInfo -> True
+    LogDebug -> case ll2 of
+      LogDebug -> True
+      _ -> False
+
+{- | More general logging supersedes less general.
+
+@since 1.6.0
+-}
+instance Semigroup LogLevel where
+  (<>) = max
+
+{- | Configuration for Plutarch scripts at compile time. This indicates whether
+we want to trace, and if so, under what log level and mode.
+
+@since 1.6.0
+-}
+newtype Config = Config (Last (LogLevel, TracingMode))
+  deriving
+    ( -- | @since 1.6.0
+      Semigroup
+    , -- | @since 1.6.0
+      Monoid
+    )
+    via (Last (LogLevel, TracingMode))
+
+{- | If the config indicates that we want to trace, get its mode.
+
+@since 1.6.0
+-}
+tracingMode :: Config -> Maybe TracingMode
+tracingMode (Config (Last x)) = snd <$> x
+
+{- | If the config indicates that we want to trace, get its log level.
+
+@since 1.6.0
+-}
+logLevel :: Config -> Maybe LogLevel
+logLevel (Config (Last x)) = fst <$> x
+
+{- | Pattern for the config that does no tracing (also the default).
+
+@since 1.6.0
+-}
+pattern NoTracing :: Config
+pattern NoTracing <- Config (Last Nothing)
+  where
+    NoTracing = Config (Last Nothing)
+
+{- | Pattern for a tracing config, with both its log level and mode.
+
+@since 1.6.0
+-}
+pattern Tracing :: LogLevel -> TracingMode -> Config
+pattern Tracing ll tm <- Config (Last (Just (ll, tm)))
+  where
+    Tracing ll tm = Config (Last (Just (ll, tm)))
+
+{-# COMPLETE NoTracing, Tracing #-}
 
 newtype TermMonad m = TermMonad {runTermMonad :: ReaderT Config (Either Text) m}
   deriving newtype (Functor, Applicative, Monad)

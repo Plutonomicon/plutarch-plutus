@@ -1,5 +1,39 @@
 # Revision history for plutarch
 
+# 1.6.0 - 27-05-2024
+
+## Added
+
+* `ptraceInfo` and `ptraceDebug`, which allow tracing only when a particular log
+  level is active.
+* `logLevel` to get the `LogLevel` of a `Config`.
+* `LogLevel` to indicate what level of logging we'd like to run with.
+* `ptraceInfoShowId`, `ptraceInfoError`, `ptraceInfoIfTrue`, `ptraceInfoIfFalse`
+  (and similar for `Debug`), mirroring the deprecated originals, but with the
+  logging level included.
+
+## Changed
+
+* `ptrace`, `ptraceShowId`, `ptraceError`, `ptraceIfTrue` and `ptraceIfFalse`
+  are now synonyms of `ptraceInfo` (and similar), and also deprecated.
+* `Config` now includes a `LogLevel` as well as a `TracingMode`. 
+* `Config` now has pattern synonyms to make it look like a sum type with two
+  arms: `NoTracing` which indicates that we do not trace, and `Tracing` which
+  contains a `TracingMode` and a `LogLevel`.
+* `TracingMode` no longer includes `NoTracing`, as this has been superseded by
+  the new `Config`.
+* `tracingMode` now returns in a `Maybe`.
+* `Config` is now a `Semigroup` and a `Monoid`, with the second mimicking the
+  semantics of its old `Default` instance.
+* `TracingMode` is now a `Semigroup` based on generality.
+* `TracingMode` is now an `Ord` based on generality.
+* `TracingMode` now has `Eq` and `Show` instances.
+
+## Removed
+
+* `Default` instance for `Config`.
+* `data-default` direct dependency.
+
 # 1.5.0 - 26-01-2024
 
 ## Changed

@@ -55,7 +55,7 @@ import Plutarch.Pair (PPair (PPair))
 import Plutarch.Positive (PPositive, ptryPositive)
 import Plutarch.Show (PShow, pshow, pshow')
 import Plutarch.TermCont (tcont, unTermCont)
-import Plutarch.Trace (ptraceError)
+import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 
@@ -128,7 +128,7 @@ instance PTryFrom PData (PAsData PRational) where
   ptryFrom' opq = runTermCont $ do
     (_, ld) <- tcont $ ptryFrom @(PAsData (PBuiltinList PData)) opq
     ratTail <- tcont . plet $ ptail # ld
-    tcont $ \f -> pif (ptail # ratTail #== pnil) (f ()) $ ptraceError "ptryFrom(PRational): data list length should be 2"
+    tcont $ \f -> pif (ptail # ratTail #== pnil) (f ()) $ ptraceInfoError "ptryFrom(PRational): data list length should be 2"
     (_, denm) <- tcont $ ptryFrom @(PAsData PInteger) $ phead # ratTail
     res <- tcont . plet $ ptryPositive # denm
     pure (punsafeCoerce opq, res)
