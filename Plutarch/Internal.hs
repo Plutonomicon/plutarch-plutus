@@ -241,6 +241,12 @@ newtype Config = Config (Last (LogLevel, TracingMode))
       Monoid
     )
     via (Last (LogLevel, TracingMode))
+  deriving stock
+    ( -- | @since 1.6.0
+      Eq
+    , -- | @since 1.6.0
+      Show
+    )
 
 {- | If the config indicates that we want to trace, get its mode.
 
