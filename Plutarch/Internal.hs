@@ -47,6 +47,14 @@ import Control.Monad.Reader (ReaderT (ReaderT), ask, runReaderT)
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
 import Crypto.Hash.IO (HashAlgorithm)
+import Data.Aeson (
+  FromJSON (parseJSON),
+  ToJSON (toEncoding, toJSON),
+  object,
+  pairs,
+  withText,
+  (.=),
+ )
 import Data.ByteString qualified as BS
 import Data.Kind (Type)
 import Data.List (foldl', groupBy, sortOn)
@@ -55,6 +63,7 @@ import Data.Monoid (Last (Last))
 import Data.Set qualified as S
 import Data.String (fromString)
 import Data.Text (Text)
+import Data.Text qualified as Text
 import Flat.Run qualified as F
 import GHC.Stack (HasCallStack, callStack, prettyCallStack)
 import GHC.Word (Word64)
@@ -203,6 +212,30 @@ instance Pretty TracingMode where
     DoTracing -> "DoTracing"
     DoTracingAndBinds -> "DoTracingAndBinds"
 
+-- | @since 1.6.0
+instance ToJSON TracingMode where
+  {-# INLINEABLE toJSON #-}
+  toJSON =
+    toJSON @Text . \case
+      DetTracing -> "DetTracing"
+      DoTracing -> "DoTracing"
+      DoTracingAndBinds -> "DoTracingAndBinds"
+  {-# INLINEABLE toEncoding #-}
+  toEncoding =
+    toEncoding @Text . \case
+      DetTracing -> "DetTracing"
+      DoTracing -> "DoTracing"
+      DoTracingAndBinds -> "DoTracingAndBinds"
+
+-- | @since 1.6.0
+instance FromJSON TracingMode where
+  {-# INLINEABLE parseJSON #-}
+  parseJSON = withText "TracingMode" $ \case
+    "DetTracing" -> pure DetTracing
+    "DoTracing" -> pure DoTracing
+    "DoTracingAndBinds" -> pure DoTracingAndBinds
+    x -> fail $ "Not a valid encoding: " <> Text.unpack x
+
 {- | What logging level we want to use.
 
 @since 1.6.0
@@ -242,6 +275,27 @@ instance Pretty LogLevel where
     LogInfo -> "LogInfo"
     LogDebug -> "LogDebug"
 
+-- | @since 1.6.0
+instance ToJSON LogLevel where
+  {-# INLINEABLE toJSON #-}
+  toJSON =
+    toJSON @Text . \case
+      LogInfo -> "LogInfo"
+      LogDebug -> "LogDebug"
+  {-# INLINEABLE toEncoding #-}
+  toEncoding =
+    toEncoding @Text . \case
+      LogInfo -> "LogInfo"
+      LogDebug -> "LogDebug"
+
+-- | @since 1.6.0
+instance FromJSON LogLevel where
+  {-# INLINEABLE parseJSON #-}
+  parseJSON = withText "LogLevel" $ \case
+    "LogInfo" -> pure LogInfo
+    "LogDebug" -> pure LogDebug
+    x -> fail $ "Not a valid encoding: " <> Text.unpack x
+
 {- | Configuration for Plutarch scripts at compile time. This indicates whether
 we want to trace, and if so, under what log level and mode.
 
@@ -267,6 +321,28 @@ instance Pretty Config where
   pretty (Config (Last x)) = case x of
     Nothing -> "NoTracing"
     Just (ll, tm) -> "Tracing " <+> pretty ll <+> pretty tm
+
+-- | @since 1.6.0
+instance ToJSON Config where
+  -- We serialize Config as if it were a sum type for consistency. We also label
+  -- its fields (when present).
+  {-# INLINEABLE toJSON #-}
+  toJSON =
+    object . \case
+      NoTracing -> ["tag" .= (0 :: Int)]
+      Tracing ll tm ->
+        [ "tag" .= (1 :: Int)
+        , "logLevel" .= ll
+        , "tracingMode" .= tm
+        ]
+  {-# INLINEABLE toEncoding #-}
+  toEncoding =
+    pairs . \case
+      NoTracing -> "tag" .= (0 :: Int)
+      Tracing ll tm ->
+        ("tag" .= (1 :: Int))
+          <> ("logLevel" .= ll)
+          <> ("tracingMode" .= tm)
 
 {- | If the config indicates that we want to trace, get its mode.
 

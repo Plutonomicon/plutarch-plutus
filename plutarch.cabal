@@ -123,6 +123,7 @@ library
     Plutarch.Unsafe
 
   build-depends:
+    , aeson
     , base               >=4.9     && <5
     , bytestring
     , constraints
