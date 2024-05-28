@@ -11,7 +11,8 @@
 * `ptraceInfoShowId`, `ptraceInfoError`, `ptraceInfoIfTrue`, `ptraceInfoIfFalse`
   (and similar for `Debug`), mirroring the deprecated originals, but with the
   logging level included.
-* `Eq` and `Show` instances for `Config`.
+* `Eq`, `Show` and `Pretty` instances for `Config`.
+* `Pretty` instance for `TracingMode`.
 
 ## Changed
 

@@ -63,6 +63,7 @@ import Plutarch.Script (Script (Script))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
+import Prettyprinter (Pretty (pretty), (<+>))
 import UntypedPlutusCore qualified as UPLC
 
 {- $hoisted
@@ -195,6 +196,13 @@ instance Ord TracingMode where
 instance Semigroup TracingMode where
   (<>) = max
 
+-- | @since 1.6.0
+instance Pretty TracingMode where
+  pretty = \case
+    DetTracing -> "DetTracing"
+    DoTracing -> "DoTracing"
+    DoTracingAndBinds -> "DoTracingAndBinds"
+
 {- | What logging level we want to use.
 
 @since 1.6.0
@@ -228,6 +236,12 @@ instance Ord LogLevel where
 instance Semigroup LogLevel where
   (<>) = max
 
+-- | @since 1.6.0
+instance Pretty LogLevel where
+  pretty = \case
+    LogInfo -> "LogInfo"
+    LogDebug -> "LogDebug"
+
 {- | Configuration for Plutarch scripts at compile time. This indicates whether
 we want to trace, and if so, under what log level and mode.
 
@@ -247,6 +261,12 @@ newtype Config = Config (Last (LogLevel, TracingMode))
     , -- | @since 1.6.0
       Show
     )
+
+-- | @since 1.6.0
+instance Pretty Config where
+  pretty (Config (Last x)) = case x of
+    Nothing -> "NoTracing"
+    Just (ll, tm) -> "Tracing " <+> pretty ll <+> pretty tm
 
 {- | If the config indicates that we want to trace, get its mode.
 
