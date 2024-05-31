@@ -54,6 +54,10 @@ common c
     UnliftedNewtypes
     ViewPatterns
 
+  build-depends:
+    , base  >=4.9 && <5
+    , text
+
   ghc-options:
     -Weverything -Wno-unused-do-bind -Wno-missing-kind-signatures
     -Wno-partial-type-signatures -Werror -Wno-implicit-prelude
@@ -124,7 +128,6 @@ library
 
   build-depends:
     , aeson
-    , base               >=4.9     && <5
     , bytestring
     , constraints
     , containers
@@ -139,4 +142,15 @@ library
     , prettyprinter
     , random
     , sop-core
-    , text
+
+test-suite tests
+  import:         c
+  type:           exitcode-stdio-1.0
+  main-is:        Main.hs
+  build-depends:
+    , plutarch
+    , tasty
+    , tasty-hunit
+
+  ghc-options:    -O2 -threaded -rtsopts -with-rtsopts=-N
+  hs-source-dirs: test

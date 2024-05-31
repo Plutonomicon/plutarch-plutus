@@ -152,7 +152,6 @@ executable plutarch-test
     Plutarch.ShowSpec
     Plutarch.SpecTypes
     Plutarch.StringSpec
-    Plutarch.TraceSpec
     Plutarch.TryFromSpec
     Plutarch.UnitSpec
     Plutarch.UPLCSpec
