@@ -69,6 +69,14 @@
 
 - Added `DerivePConstantViaBuiltin`, deprecating `DerivePConstantViaNewtype`.
 
+- `PThese`: Include new `PThese` data type. 
+  
+  Started by: [#355](https://github.com/Plutonomicon/plutarch/pull/355)
+
+- `PTheseData`: Include new `PTheseData` data type.
+
+  Started by: [#355](https://github.com/Plutonomicon/plutarch/pull/355)
+
 - `TermCont`: Parametrize by result type; add `MonadFail` instance; etc.
 
   Also, export from `Plutarch.TermCont`, and then from `Plutarch.Prelude` (TermCont is no longer exported by `Plutarch.Internal`).
