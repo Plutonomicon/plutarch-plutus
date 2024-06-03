@@ -113,11 +113,11 @@ deriving via
 -- | @since 2.0.0
 instance PTryFrom PData (PAsData PTokenName) where
   type PTryFromExcess PData (PAsData PTokenName) = Mret PTokenName
-  ptryFrom' opq = runTermCont $ do
-    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
-    tcont $ \f ->
-      pif (plengthBS # unwrapped #<= 32) (f ()) (ptraceInfoError "ptryFrom(TokenName): must be at most 32 Bytes long")
-    pure (punsafeCoerce opq, pcon . PTokenName $ unwrapped)
+  ptryFrom' opq x f = ptryFrom' @_ @(PAsData PByteString) opq x $ \_ unwrapped ->
+    pif
+      (plengthBS # unwrapped #<= 32)
+      (f (punsafeCoerce opq) (pcon . PTokenName $ unwrapped))
+      (ptraceInfoError "ptryFrom(TokenName): must be at most 32 bytes long")
 
 -- | @since 2.0.0
 newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
@@ -147,12 +147,12 @@ instance DerivePlutusType PCurrencySymbol where
 -- | @since 2.0.0
 instance PTryFrom PData (PAsData PCurrencySymbol) where
   type PTryFromExcess PData (PAsData PCurrencySymbol) = Mret PCurrencySymbol
-  ptryFrom' opq = runTermCont $ do
-    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
-    len <- tcont . plet $ plengthBS # unwrapped
-    tcont $ \f ->
-      pif (len #== 0 #|| len #== 28) (f ()) (ptraceInfoError "ptryFrom(CurrencySymbol): must be 28 bytes long or empty")
-    pure (punsafeCoerce opq, pcon . PCurrencySymbol $ unwrapped)
+  ptryFrom' opq x f = ptryFrom' @_ @(PAsData PByteString) opq x $ \_ unwrapped ->
+    plet (plengthBS # unwrapped) $ \len ->
+      pif
+        (len #== 0 #|| len #== 28)
+        (f (punsafeCoerce opq) (pcon . PCurrencySymbol $ unwrapped))
+        (ptraceInfoError "ptryFrom(CurrencySymbol): must be 28 bytes long or empty")
 
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PCurrencySymbol where
@@ -344,34 +344,30 @@ instance PTryFrom PData (PAsData (PValue 'AssocMap.Sorted 'NoGuarantees))
 -- | @since 2.0.0
 instance PTryFrom PData (PAsData (PValue 'AssocMap.Sorted 'Positive)) where
   type PTryFromExcess PData (PAsData (PValue 'AssocMap.Sorted 'Positive)) = Mret (PValue 'AssocMap.Sorted 'Positive)
-  ptryFrom' opq = runTermCont $ do
-    (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Sorted 'NoGuarantees)) opq
-    unwrapped <- tcont . plet . papp passertPositive . pfromData $ opq'
-    pure (punsafeCoerce opq, unwrapped)
+  ptryFrom' opq x f = ptryFrom' @_ @(PAsData (PValue 'AssocMap.Sorted 'NoGuarantees)) opq x $ \opq' _ ->
+    plet (papp passertPositive . pfromData $ opq') $ \unwrapped ->
+      f (punsafeCoerce opq) unwrapped
 
 -- | @since 2.0.0
 instance PTryFrom PData (PAsData (PValue 'AssocMap.Unsorted 'Positive)) where
   type PTryFromExcess PData (PAsData (PValue 'AssocMap.Unsorted 'Positive)) = Mret (PValue 'AssocMap.Unsorted 'Positive)
-  ptryFrom' opq = runTermCont $ do
-    (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Unsorted 'NoGuarantees)) opq
-    unwrapped <- tcont . plet . papp passertPositive . pfromData $ opq'
-    pure (punsafeCoerce opq, unwrapped)
+  ptryFrom' opq x f = ptryFrom' @_ @(PAsData (PValue 'AssocMap.Unsorted 'NoGuarantees)) opq x $ \opq' _ ->
+    plet (papp passertPositive . pfromData $ opq') $ \unwrapped ->
+      f (punsafeCoerce opq) unwrapped
 
 -- | @since 2.0.0
 instance PTryFrom PData (PAsData (PValue 'AssocMap.Sorted 'NonZero)) where
   type PTryFromExcess PData (PAsData (PValue 'AssocMap.Sorted 'NonZero)) = Mret (PValue 'AssocMap.Sorted 'NonZero)
-  ptryFrom' opq = runTermCont $ do
-    (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Sorted 'NoGuarantees)) opq
-    unwrapped <- tcont . plet . papp passertNonZero . pfromData $ opq'
-    pure (punsafeCoerce opq, unwrapped)
+  ptryFrom' opq x f = ptryFrom' @_ @(PAsData (PValue 'AssocMap.Sorted 'NoGuarantees)) opq x $ \opq' _ ->
+    plet (papp passertNonZero . pfromData $ opq') $ \unwrapped ->
+      f (punsafeCoerce opq) unwrapped
 
 -- | @since 2.1.1
 instance PTryFrom PData (PAsData (PValue 'AssocMap.Unsorted 'NonZero)) where
   type PTryFromExcess PData (PAsData (PValue 'AssocMap.Unsorted 'NonZero)) = Mret (PValue 'AssocMap.Unsorted 'NonZero)
-  ptryFrom' opq = runTermCont $ do
-    (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Unsorted 'NoGuarantees)) opq
-    unwrapped <- tcont . plet . papp passertNonZero . pfromData $ opq'
-    pure (punsafeCoerce opq, unwrapped)
+  ptryFrom' opq x f = ptryFrom' @_ @(PAsData (PValue 'AssocMap.Unsorted 'NoGuarantees)) opq x $ \opq' _ ->
+    plet (papp passertNonZero . pfromData $ opq') $ \unwrapped ->
+      f (punsafeCoerce opq) unwrapped
 
 {- | \'Forget\' that a 'Value' has an only-positive guarantee.
 
