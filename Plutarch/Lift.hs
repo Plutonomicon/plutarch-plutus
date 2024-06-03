@@ -47,8 +47,8 @@ import Plutarch.Internal (
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
 import Plutarch.Script (unScript)
 import PlutusCore qualified as PLC
-import PlutusCore.Builtin (KnownTypeError, readKnownConstant)
-import PlutusCore.Evaluation.Machine.Exception (_UnliftingErrorE)
+import PlutusCore.Builtin (BuiltinError, readKnownConstant)
+import PlutusCore.Evaluation.Machine.Exception (_UnliftingError)
 import PlutusTx (BuiltinData, Data, builtinDataToData, dataToBuiltinData)
 import PlutusTx.Builtins.Class (FromBuiltin, ToBuiltin, fromBuiltin, toBuiltin)
 import Universe (Includes)
@@ -112,7 +112,7 @@ pconstant x = punsafeConstantInternal $ PLC.someValue @(PConstantRepr (PLifted p
 -}
 data LiftError
   = LiftError_EvalError EvalError
-  | LiftError_KnownTypeError KnownTypeError
+  | LiftError_KnownTypeError BuiltinError
   | LiftError_FromRepr
   | LiftError_CompilationError Text
   deriving stock (Eq)
@@ -138,7 +138,7 @@ plift prog = case plift' (Tracing LogInfo DoTracing) prog of
   Right x -> x
   Left LiftError_FromRepr -> error "plift failed: pconstantFromRepr returned 'Nothing'"
   Left (LiftError_KnownTypeError e) ->
-    let unliftErrMaybe = e ^? _UnliftingErrorE
+    let unliftErrMaybe = e ^? _UnliftingError
      in error $
           "plift failed: incorrect type: "
             <> maybe "absurd evaluation failure" show unliftErrMaybe

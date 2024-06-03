@@ -136,7 +136,7 @@ library
     , generics-sop
     , lens
     , mtl
-    , plutus-core        >=1.7.0.0
+    , plutus-core        >=1.23.0.0
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter
