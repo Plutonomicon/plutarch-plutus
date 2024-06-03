@@ -64,10 +64,3 @@ ptraceDebug ::
 ptraceDebug msg x = pgetConfig $ \case
   Tracing LogDebug _ -> pforce $ ptrace' # msg # pdelay x
   _ -> x
-
-{-
--- | Trace the given message before evaluating the argument.
-ptrace :: Term s PString -> Term s a -> Term s a
-ptrace s a = pgetConfig \c -> case tracingMode c of
-  NoTracing -> a
-  _ -> pforce $ ptrace' # s # pdelay a -}
