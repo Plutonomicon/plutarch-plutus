@@ -133,7 +133,16 @@ import Plutarch.Lift (
  )
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.Trace (ptraceInfoError)
-import Plutarch.TryFrom (PSubtype, PSubtype', PSubtypeRelation (PNoSubtypeRelation, PSubtypeRelation), PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
+import Plutarch.TryFrom (
+  PSubtype,
+  PSubtype',
+  PSubtypeRelation (PNoSubtypeRelation, PSubtypeRelation),
+  PTryFrom,
+  PTryFromExcess,
+  ptryFrom',
+  ptryFromInfo,
+  pupcast,
+ )
 import Plutarch.Unit (PUnit (PUnit))
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V1 qualified as Ledger
@@ -648,13 +657,12 @@ class Helper2 (b :: PSubtypeRelation) a where
 
 instance PTryFrom PData (PAsData a) => Helper2 'PNoSubtypeRelation a where
   type Helper2Excess 'PNoSubtypeRelation a = PTryFromExcess PData (PAsData a)
-  ptryFromData' _ = ptryFrom'
+  ptryFromData' _ x f = ptryFromInfo x "failed to convert in Helper2" (curry f)
 
 instance PTryFrom PData a => Helper2 'PSubtypeRelation a where
   type Helper2Excess 'PSubtypeRelation a = PTryFromExcess PData a
-  ptryFromData' _ x = runTermCont $ do
-    (y, exc) <- tcont $ ptryFrom @a @PData x
-    pure (punsafeCoerce y, exc)
+  ptryFromData' _ x f = ptryFromInfo @a @PData x "PSubtypeRelation Helper2 failed" $ \y exc ->
+    f (punsafeCoerce y, exc)
 
 -- We could have a more advanced instance but it's not needed really.
 newtype ExcessForField (b :: PSubtypeRelation) (a :: PType) (s :: S) = ExcessForField (Term s (PAsData a), Reduce (Helper2Excess b a s))
@@ -662,11 +670,8 @@ newtype ExcessForField (b :: PSubtypeRelation) (a :: PType) (s :: S) = ExcessFor
 
 instance PTryFrom (PBuiltinList PData) (PDataRecord '[]) where
   type PTryFromExcess (PBuiltinList PData) (PDataRecord '[]) = HRecP '[]
-  ptryFrom' opq = runTermCont $ do
-    _ <-
-      tcont . plet . pforce $
-        pchooseListBuiltin # opq # pdelay (pcon PUnit) # pdelay (ptraceInfoError "ptryFrom(PDataRecord[]): list is longer than zero")
-    pure (pdnil, HRecGeneric HNil)
+  ptryFrom' opq _ f = plet (pforce $ pchooseListBuiltin # opq # pdelay (pcon PUnit) # pdelay (ptraceInfoError "ptryFrom(PDataRecord[]): list is longer than zero")) $ \_ ->
+    f pdnil (HRecGeneric HNil)
 
 type family UnHRecP (x :: PType) :: [(Symbol, PType)] where
   UnHRecP (HRecP as) = as
@@ -684,12 +689,11 @@ instance
         ( '(name, ExcessForField (PSubtype' PData pty) pty)
             ': UnHRecP (PTryFromExcess (PBuiltinList PData) (PDataRecord as))
         )
-  ptryFrom' opq = runTermCont $ do
-    h <- tcont $ plet $ phead # opq
-    hv <- tcont $ ptryFromData' (Proxy @(PSubtype' PData pty)) h
-    t <- tcont $ plet $ ptail # opq
-    tv <- tcont $ ptryFrom @(PDataRecord as) @(PBuiltinList PData) t
-    pure (punsafeCoerce opq, HRecGeneric (HCons (Labeled hv) (coerce $ snd tv)))
+  ptryFrom' opq _ f = plet (phead # opq) $ \h ->
+    ptryFromData' (Proxy @(PSubtype' PData pty)) h $ \hv ->
+      plet (ptail # opq) $ \t ->
+        ptryFromInfo @(PDataRecord as) @(PBuiltinList PData) t "failed to decode in PDataRecord" $ \_ tv2 ->
+          f (punsafeCoerce opq) (HRecGeneric (HCons (Labeled hv) (coerce tv2)))
 
 newtype Helper a b s = Helper (Reduce (a s), Reduce (b s)) deriving stock (Generic)
 
@@ -702,10 +706,8 @@ instance
   type
     PTryFromExcess PData (PAsData (PDataRecord as)) =
       Helper (Flip Term (PDataRecord as)) (PTryFromExcess (PBuiltinList PData) (PDataRecord as))
-  ptryFrom' opq = runTermCont $ do
-    l <- snd <$> tcont (ptryFrom @(PAsData (PBuiltinList PData)) opq)
-    r <- tcont $ ptryFrom @(PDataRecord as) l
-    pure (punsafeCoerce opq, r)
+  ptryFrom' opq _ f = ptryFromInfo @(PAsData (PBuiltinList PData)) opq "helper failed" $ \_ l ->
+    ptryFromInfo @(PDataRecord as) l "helper failed 2" $ curry (f (punsafeCoerce opq))
 
 class SumValidation (n :: Nat) (sum :: [[PLabeledType]]) where
   validateSum :: Proxy n -> Proxy sum -> Term s PInteger -> Term s (PBuiltinList PData) -> Term s POpaque
@@ -721,10 +723,7 @@ instance
   validateSum _ _ constr fields =
     pif
       (fromInteger (natVal $ Proxy @n) #== constr)
-      ( unTermCont $ do
-          _ <- tcont $ ptryFrom @(PDataRecord x) fields
-          pure $ popaque $ pcon PUnit
-      )
+      (ptryFromInfo @(PDataRecord x) fields "SumValidation failed" $ \_ _ -> popaque $ pcon PUnit)
       (validateSum (Proxy @(n + 1)) (Proxy @xs) constr fields)
 
 instance SumValidation n '[] where
@@ -732,18 +731,16 @@ instance SumValidation n '[] where
 
 instance SumValidation 0 ys => PTryFrom PData (PDataSum ys) where
   type PTryFromExcess _ _ = Const ()
-  ptryFrom' opq = runTermCont $ do
-    x <- tcont $ plet $ pasConstr # opq
-    constr <- tcont $ plet $ pfstBuiltin # x
-    fields <- tcont $ plet $ psndBuiltin # x
-    _ <- tcont $ plet $ validateSum (Proxy @0) (Proxy @ys) constr fields
-    pure (punsafeCoerce opq, ())
+  ptryFrom' opq _ f = plet (pasConstr # opq) $ \x ->
+    plet (pfstBuiltin # x) $ \constr ->
+      plet (psndBuiltin # x) $ \fields ->
+        plet (validateSum (Proxy @0) (Proxy @ys) constr fields) $ \_ ->
+          f (punsafeCoerce opq) ()
 
 instance PTryFrom PData (PDataSum ys) => PTryFrom PData (PAsData (PDataSum ys)) where
   type PTryFromExcess _ _ = Const ()
-  ptryFrom' x = runTermCont $ do
-    (y, exc) <- tcont $ ptryFrom x
-    pure (pdata y, exc)
+  ptryFrom' x _ f = ptryFromInfo x "PDataSum failed" $ \y exc ->
+    f (pdata y) exc
 
 -- | Annotates a shown field with a label.
 showWithLabel ::

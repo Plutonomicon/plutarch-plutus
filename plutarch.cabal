@@ -116,7 +116,6 @@ library
     Plutarch.Script
     Plutarch.Show
     Plutarch.String
-    Plutarch.Subtype
     Plutarch.TermCont
     Plutarch.Trace
     Plutarch.TryFrom

@@ -1,4 +1,7 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+-- ptryFromC uses ptryFrom, but is deprecated itself, but GHC can't figure that
+-- out.
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Plutarch.TermCont (
   TC.hashOpenTerm,
@@ -13,25 +16,31 @@ module Plutarch.TermCont (
   pguardC,
   pguardC',
   ptryFromC,
+  ptryFromInfoC,
+  ptryFromDebugC,
 ) where
 
+import Data.Kind (Type)
 import Plutarch.Bool (PBool, pif)
-import Plutarch.Internal (Term, plet)
-import Plutarch.Internal.PlutusType (PlutusType, pmatch)
-import Plutarch.String (PString)
-import Plutarch.Trace (ptraceInfo, ptraceInfoError)
-
 import Plutarch.DataRepr (HRec, PDataFields, PFields, pletFields)
 import Plutarch.DataRepr.Internal.Field (
   BindFields,
   Bindings,
   BoundTerms,
  )
+import Plutarch.Internal (S, Term, plet)
+import Plutarch.Internal.PlutusType (PlutusType, pmatch)
 import Plutarch.Internal.TermCont
-import Plutarch.Reducible (Reduce)
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess), ptryFrom)
-
 import Plutarch.Internal.TermCont qualified as TC
+import Plutarch.Reducible (Reduce)
+import Plutarch.String (PString)
+import Plutarch.Trace (ptraceInfo, ptraceInfoError)
+import Plutarch.TryFrom (
+  PTryFrom (PTryFromExcess),
+  ptryFrom,
+  ptryFromDebug,
+  ptryFromInfo,
+ )
 
 -- | Like `plet` but works in a `TermCont` monad
 pletC :: Term s a -> TermCont s (Term s a)
@@ -95,6 +104,35 @@ is42 = plam $ \i -> unTermCont $ do
 pguardC' :: Term s a -> Term s PBool -> TermCont @a s ()
 pguardC' r cond = tcont $ \f -> pif cond (f ()) r
 
--- | 'TermCont' producing version of 'ptryFrom'.
+{-# DEPRECATED ptryFromC "Use ptryFromInfoC or ptryFromDebugC" #-}
+
+{- | 'TermCont' producing version of 'ptryFrom'.
+
+@since 1.5.0
+-}
 ptryFromC :: forall b r a s. PTryFrom a b => Term s a -> TermCont @r s (Term s b, Reduce (PTryFromExcess a b s))
 ptryFromC = tcont . ptryFrom
+
+{- | 'TermCont' version of 'ptryFromInfo'.
+
+@since 1.6.0
+-}
+ptryFromInfoC ::
+  forall (b :: S -> Type) (r :: S -> Type) (a :: S -> Type) (s :: S).
+  PTryFrom a b =>
+  Term s a ->
+  Term s PString ->
+  TermCont @r s (Term s b, Reduce (PTryFromExcess a b s))
+ptryFromInfoC x msg = tcont $ \cb -> ptryFromInfo x msg (curry cb)
+
+{- | 'TermCont' version of 'ptryFromDebug'.
+
+@since 1.6.0
+-}
+ptryFromDebugC ::
+  forall (b :: S -> Type) (r :: S -> Type) (a :: S -> Type) (s :: S).
+  PTryFrom a b =>
+  Term s a ->
+  Term s PString ->
+  TermCont @r s (Term s b, Reduce (PTryFromExcess a b s))
+ptryFromDebugC x msg = tcont $ \cb -> ptryFromDebug x msg (curry cb)
