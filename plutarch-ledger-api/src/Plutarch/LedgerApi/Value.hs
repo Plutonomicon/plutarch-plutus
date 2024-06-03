@@ -116,7 +116,7 @@ instance PTryFrom PData (PAsData PTokenName) where
   ptryFrom' opq = runTermCont $ do
     unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
     tcont $ \f ->
-      pif (plengthBS # unwrapped #<= 32) (f ()) (ptraceError "ptryFrom(TokenName): must be at most 32 Bytes long")
+      pif (plengthBS # unwrapped #<= 32) (f ()) (ptraceInfoError "ptryFrom(TokenName): must be at most 32 Bytes long")
     pure (punsafeCoerce opq, pcon . PTokenName $ unwrapped)
 
 -- | @since 2.0.0
@@ -151,7 +151,7 @@ instance PTryFrom PData (PAsData PCurrencySymbol) where
     unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
     len <- tcont . plet $ plengthBS # unwrapped
     tcont $ \f ->
-      pif (len #== 0 #|| len #== 28) (f ()) (ptraceError "ptryFrom(CurrencySymbol): must be 28 bytes long or empty")
+      pif (len #== 0 #|| len #== 28) (f ()) (ptraceInfoError "ptryFrom(CurrencySymbol): must be 28 bytes long or empty")
     pure (punsafeCoerce opq, pcon . PCurrencySymbol $ unwrapped)
 
 -- | @since 2.0.0
@@ -478,7 +478,7 @@ passertPositive = phoistAcyclic $
           # pto value
       )
       (punsafeDowncast $ pto value)
-      (ptraceError "Negative amount in Value")
+      (ptraceInfoError "Negative amount in Value")
 
 {- | Construct a constant singleton 'PValue' containing only the given
 positive quantity of the given currency.
@@ -689,7 +689,7 @@ passertSorted = phoistAcyclic $
             )
           # pto value
       )
-      (ptraceError "Abnormal Value")
+      (ptraceInfoError "Abnormal Value")
       . pcon
       . PValue
       $ AssocMap.passertSorted #$ punsafeCoerce
@@ -756,7 +756,7 @@ passertNonZero ::
   ( forall (s :: S). Term s (PValue kg ag :--> PValue kg 'NonZero)
   )
 passertNonZero = plam $ \val ->
-  pif (outer #$ pto . pto $ val) (punsafeCoerce val) (ptraceError "Zero amount in Value")
+  pif (outer #$ pto . pto $ val) (punsafeCoerce val) (ptraceInfoError "Zero amount in Value")
   where
     outer ::
       forall (s' :: S) (k :: AssocMap.KeyGuarantees).

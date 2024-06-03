@@ -32,7 +32,7 @@ import Plutarch (
  )
 import Plutarch.Num (PNum (pfromInteger, (#-)))
 import Plutarch.TermCont (tcont)
-import Plutarch.Trace (ptraceError)
+import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 
 newtype PPositive s = PPositive (Term s PInteger)
@@ -79,6 +79,6 @@ ptryPositive = phoistAcyclic $
   plam $ \i ->
     pif
       (i #<= 0)
-      (ptraceError $ "ptryPositive: building with non positive: " <> pshow i)
+      (ptraceInfoError $ "ptryPositive: building with non positive: " <> pshow i)
       $ pcon
       $ PPositive i

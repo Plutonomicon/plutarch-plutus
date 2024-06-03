@@ -1,6 +1,6 @@
 cabal-version:      3.0
 name:               plutarch
-version:            1.5.0
+version:            1.6.0
 author:
   Las Safin <me@las.rs>, Koz Ross <koz@mlabs.city>, Seungheon Oh <seungheon.oh@mlabs.city>
 
@@ -53,6 +53,10 @@ common c
     UnliftedFFITypes
     UnliftedNewtypes
     ViewPatterns
+
+  build-depends:
+    , base  >=4.9 && <5
+    , text
 
   ghc-options:
     -Weverything -Wno-unused-do-bind -Wno-missing-kind-signatures
@@ -123,12 +127,11 @@ library
     Plutarch.Unsafe
 
   build-depends:
-    , base               >=4.9     && <5
+    , aeson
     , bytestring
     , constraints
     , containers
     , cryptonite
-    , data-default
     , flat
     , generics-sop
     , lens
@@ -139,4 +142,15 @@ library
     , prettyprinter
     , random
     , sop-core
-    , text
+
+test-suite tests
+  import:         c
+  type:           exitcode-stdio-1.0
+  main-is:        Main.hs
+  build-depends:
+    , plutarch
+    , tasty
+    , tasty-hunit
+
+  ghc-options:    -O2 -threaded -rtsopts -with-rtsopts=-N
+  hs-source-dirs: test

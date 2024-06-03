@@ -82,7 +82,7 @@ import Plutarch.String (PString)
 
 import Data.Kind
 import Plutarch.Show (PShow (pshow'), pshow)
-import Plutarch.Trace (ptraceError)
+import Plutarch.Trace (ptraceInfoError)
 
 data PList (a :: PType) (s :: S)
   = PSCons (Term s a) (Term s (PList a))
@@ -429,7 +429,7 @@ pelemAt = phoistAcyclic $
   plam $ \n xs ->
     pif
       (n #< 0)
-      (ptraceError "pelemAt: negative index")
+      (ptraceInfoError "pelemAt: negative index")
       (pelemAt' # n # xs)
 
 -- | / O(n) /. like `pelemAt` but doesn't fail on negative indexes

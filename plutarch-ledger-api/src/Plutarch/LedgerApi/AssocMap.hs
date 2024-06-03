@@ -244,7 +244,7 @@ passertSorted =
                   plam $ \badKey ->
                     pif
                       (badKey # k)
-                      (ptraceError "unsorted map")
+                      (ptraceInfoError "unsorted map")
                       (self # xs # plam (#< k))
             )
             -- this is actually the empty map so we can
@@ -1493,4 +1493,4 @@ passertPJust :: forall (a :: PType) (s :: S). Term s (PString :--> PMaybe a :-->
 passertPJust = phoistAcyclic $
   plam $ \emsg mv' -> pmatch mv' $ \case
     PJust v -> v
-    _ -> ptraceError emsg
+    _ -> ptraceInfoError emsg

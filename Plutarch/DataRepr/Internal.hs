@@ -132,7 +132,7 @@ import Plutarch.Lift (
   pconstantToRepr,
  )
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
-import Plutarch.Trace (ptraceError)
+import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PSubtype, PSubtype', PSubtypeRelation (PNoSubtypeRelation, PSubtypeRelation), PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
 import Plutarch.Unit (PUnit (PUnit))
 import Plutarch.Unsafe (punsafeCoerce)
@@ -665,7 +665,7 @@ instance PTryFrom (PBuiltinList PData) (PDataRecord '[]) where
   ptryFrom' opq = runTermCont $ do
     _ <-
       tcont . plet . pforce $
-        pchooseListBuiltin # opq # pdelay (pcon PUnit) # pdelay (ptraceError "ptryFrom(PDataRecord[]): list is longer than zero")
+        pchooseListBuiltin # opq # pdelay (pcon PUnit) # pdelay (ptraceInfoError "ptryFrom(PDataRecord[]): list is longer than zero")
     pure (pdnil, HRecGeneric HNil)
 
 type family UnHRecP (x :: PType) :: [(Symbol, PType)] where
@@ -728,7 +728,7 @@ instance
       (validateSum (Proxy @(n + 1)) (Proxy @xs) constr fields)
 
 instance SumValidation n '[] where
-  validateSum _ _ _ _ = ptraceError "reached end of sum while still not having found the constructor"
+  validateSum _ _ _ _ = ptraceInfoError "reached end of sum while still not having found the constructor"
 
 instance SumValidation 0 ys => PTryFrom PData (PDataSum ys) where
   type PTryFromExcess _ _ = Const ()

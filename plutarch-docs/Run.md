@@ -6,7 +6,6 @@
 module Plutarch.Docs.Run (applyArguments, evalT, evalSerialize, evalWithArgsT, evalWithArgsT') where
 import Data.Bifunctor (first)
 import Data.ByteString.Short (ShortByteString)
-import Data.Default (def)
 import Data.Text (Text, pack)
 import Plutarch (ClosedTerm, compile)
 import Plutarch.Script (Script (Script, unScript), serialiseScript)
@@ -117,7 +116,7 @@ evalT x = evalWithArgsT x []
 
 evalWithArgsT :: ClosedTerm a -> [Data] -> Either Text (Script, ExBudget, [Text])
 evalWithArgsT x args = do
-  cmp <- compile def x
+  cmp <- compile mempty x
   let (escr, budg, trc) = evalScript $ applyArguments cmp args
   scr <- first (pack . show) escr
   pure (scr, budg, trc)

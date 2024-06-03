@@ -11,18 +11,18 @@ module Plutarch.Internal.TermCont (
 import Data.Kind (Type)
 import Data.String (fromString)
 import Plutarch.Internal (
+  Config (Tracing),
   Dig,
   PType,
   S,
   Term (Term),
+  TracingMode (DetTracing),
   asRawTerm,
   getTerm,
   hashRawTerm,
   pgetConfig,
-  tracingMode,
-  pattern DetTracing,
  )
-import Plutarch.Trace (ptraceError)
+import Plutarch.Trace (ptraceInfoError)
 
 newtype TermCont :: forall (r :: PType). S -> Type -> Type where
   TermCont :: forall r s a. {runTermCont :: (a -> Term s r) -> Term s r} -> TermCont @r s a
@@ -48,9 +48,11 @@ instance Monad (TermCont s) where
 
 instance MonadFail (TermCont s) where
   fail s = TermCont $ \_ ->
-    pgetConfig \c -> case tracingMode c of
-      DetTracing -> ptraceError "Pattern matching failure in TermCont"
-      _ -> ptraceError $ fromString s
+    pgetConfig $ \case
+      -- Note: This currently works because DetTracing is the most specific
+      -- tracing mode.
+      Tracing _ DetTracing -> ptraceInfoError "Pattern matching failure in TermCont"
+      _ -> ptraceInfoError $ fromString s
 
 tcont :: ((a -> Term s r) -> Term s r) -> TermCont @r s a
 tcont = TermCont

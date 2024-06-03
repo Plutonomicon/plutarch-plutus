@@ -34,7 +34,16 @@ import Data.Coerce (Coercible, coerce)
 import Data.Kind (Constraint, Type)
 import Data.Text (Text)
 import GHC.Stack (HasCallStack)
-import Plutarch.Internal (ClosedTerm, Config (Config, tracingMode), PType, Term, compile, punsafeConstantInternal, pattern DoTracing)
+import Plutarch.Internal (
+  ClosedTerm,
+  Config (Tracing),
+  LogLevel (LogInfo),
+  PType,
+  Term,
+  TracingMode (DoTracing),
+  compile,
+  punsafeConstantInternal,
+ )
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
 import Plutarch.Script (unScript)
 import PlutusCore qualified as PLC
@@ -125,7 +134,7 @@ plift' config prog = case compile config prog of
 
 -- | Like `plift'` but throws on failure.
 plift :: forall p. (HasCallStack, PLift p) => ClosedTerm p -> PLifted p
-plift prog = case plift' (Config {tracingMode = DoTracing}) prog of
+plift prog = case plift' (Tracing LogInfo DoTracing) prog of
   Right x -> x
   Left LiftError_FromRepr -> error "plift failed: pconstantFromRepr returned 'Nothing'"
   Left (LiftError_KnownTypeError e) ->

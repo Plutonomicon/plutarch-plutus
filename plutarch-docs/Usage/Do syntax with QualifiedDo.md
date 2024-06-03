@@ -26,7 +26,7 @@ The `Plutarch.Monadic` module exports `>>=`, `>>`, and `fail` functions suitable
 f :: Term s (PScriptPurpose :--> PUnit)
 f = plam $ \x -> P.do
   PSpending _ <- pmatch x
-  ptrace "matched spending script purpose"
+  ptraceInfo "matched spending script purpose"
   pconstant ()
 ```
 

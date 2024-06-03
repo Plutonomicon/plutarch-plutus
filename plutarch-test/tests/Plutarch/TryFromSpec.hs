@@ -291,7 +291,7 @@ instance DerivePlutusType PNatural where type DPTStrat _ = PlutusTypeNewtype
 
 -- | partial
 pmkNatural :: Term s (PInteger :--> PNatural)
-pmkNatural = plam $ \i -> pif (i #< 0) (ptraceError "could not make natural") (pcon $ PMkNatural i)
+pmkNatural = plam $ \i -> pif (i #< 0) (ptraceInfoError "could not make natural") (pcon $ PMkNatural i)
 
 newtype Flip f b a = Flip (f a b)
   deriving stock (Generic)
