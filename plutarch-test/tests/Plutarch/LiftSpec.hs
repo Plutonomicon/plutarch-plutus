@@ -1,7 +1,7 @@
 module Plutarch.LiftSpec (spec) where
 
 import Data.Text (Text)
-import Plutarch.Api ()
+import Plutarch.LedgerApi ()
 import Plutarch.Lift (PLifted)
 import Plutarch.Prelude
 import Plutarch.Test

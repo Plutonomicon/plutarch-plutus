@@ -34,7 +34,7 @@ See the [`plutarch-test`](./plutarch-test) for testing and golden files containi
 Read the [Plutarch guide](./plutarch-docs/README.md) to get started!
 
 # Contributing
-Contributions are more than welcome! Alongside the [User guide](#usage) above, you may also find the [Developers' guide](./docs/DEVGUIDE.md) useful for understanding the codebase.
+Contributions are more than welcome! Alongside the [User guide](#usage) above, you may also find the [Developers' guide](https://plutonomicon.github.io/plutarch-plutus/DEVGUIDE.html) useful for understanding the codebase.
 
 ## Developer communication channels
 

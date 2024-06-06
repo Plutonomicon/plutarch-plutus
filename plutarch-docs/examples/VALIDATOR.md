@@ -5,12 +5,10 @@
 ```haskell
 {-# LANGUAGE QualifiedDo #-}
 {-# LANGUAGE OverloadedRecordDot #-}
-module Plutarch.Docs.ValidatorExample (alwaysSucceeds, checkSignatory, res', res, alwaysFails) where 
+module Plutarch.Docs.ValidatorExample (alwaysSucceeds, checkSignatory, res', res, alwaysFails) where
 
 import Plutarch.Prelude
-import Plutarch.Api.V1 (PDatum, PRedeemer, PScriptContext)
-import Plutarch.Api.V1.Crypto (PPubKeyHash)
-import Plutarch.Api.V1.Contexts (PScriptPurpose(PSpending))
+import Plutarch.LedgerApi (PDatum, PRedeemer, PScriptContext, PPubKeyHash, PScriptPurpose(PSpending))
 import Plutarch.Docs.Run (evalWithArgsT)
 import Plutarch.Script (Script)
 import qualified PlutusTx
@@ -39,7 +37,7 @@ alwaysSucceeds :: Term s (PAsData PDatum :--> PAsData PRedeemer :--> PAsData PSc
 alwaysSucceeds = plam $ \_datm _redm _ctx -> pconstant ()
 ```
 
-All the arguments are ignored. 
+All the arguments are ignored.
 
 Execution:
 
@@ -64,7 +62,7 @@ Execution:
 ```haskell
 res :: Either Text (Script, ExBudget, [Text])
 res = alwaysFails `evalWithArgsT` [PlutusTx.toData (), PlutusTx.toData (), PlutusTx.toData ()]
--- >>> res 
+-- >>> res
 -- Left (EvaluationError [] "(CekEvaluationFailure,Nothing)")
 ```
 

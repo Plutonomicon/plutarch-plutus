@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Changed
 
 * `ApiSpec`, `FieldSpec`, `IntervalSpec`, `LiftSpec`, `MaybeSpec` `PIsDataSpec`, 
-  `POrdSpec`, `PlutusTypeSpec` and `ScriptsSpec` use `plutarch-api` definitions
+  `POrdSpec`, `PlutusTypeSpec` and `ScriptsSpec` use `plutarch-ledger-api` definitions
 
 ### Removed
 

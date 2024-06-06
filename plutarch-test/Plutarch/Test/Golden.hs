@@ -46,7 +46,13 @@ import Test.Hspec.Golden
 import Data.List.NonEmpty qualified as NE
 import Data.Set (Set)
 import Data.Set qualified as S
-import Plutarch (Config (Config, tracingMode), compile, printScript, pattern DetTracing)
+import Plutarch (
+  Config (Tracing),
+  LogLevel (LogInfo),
+  TracingMode (DetTracing),
+  compile,
+  printScript,
+ )
 import Plutarch.Evaluate (evalScript)
 import Plutarch.Prelude
 import Plutarch.Script (Script)
@@ -275,10 +281,10 @@ evalScriptAlwaysWithBenchmark script =
   let (res, exbudget, _traces) = evalScript script
       bench = mkBenchmark exbudget (scriptSize script)
    in ( case res of
-          Left _ -> either (error "not supposed to fail") id $ compile (Config {tracingMode = DetTracing}) perror
+          Left _ -> either (error "not supposed to fail") id $ compile (Tracing LogInfo DetTracing) perror
           Right x -> x
       , bench
       )
 
 compileD :: ClosedTerm a -> Scripts.Script
-compileD t = either (error . T.unpack) id $ compile (Config {tracingMode = DetTracing}) t
+compileD t = either (error . T.unpack) id $ compile (Tracing LogInfo DetTracing) t

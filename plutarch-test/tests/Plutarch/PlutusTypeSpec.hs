@@ -4,13 +4,13 @@ module Plutarch.PlutusTypeSpec (spec) where
 
 import Data.Functor.Compose (Compose (Compose))
 import Data.SOP.NS (NS (S, Z))
-import Plutarch.Api (
+import Plutarch.Builtin (pasByteStr, pasConstr)
+import Plutarch.DataRepr (PDataSum (PDataSum))
+import Plutarch.LedgerApi (
   PAddress (PAddress),
   PCredential (PPubKeyCredential, PScriptCredential),
   PScriptPurpose (PCertifying, PMinting, PRewarding, PSpending),
  )
-import Plutarch.Builtin (pasByteStr, pasConstr)
-import Plutarch.DataRepr (PDataSum (PDataSum))
 import Plutarch.Prelude
 import Plutarch.Test
 import Plutarch.Unit ()
@@ -271,7 +271,7 @@ deconstrSpec = do
 -- | Make sure the target of 'pmatch' is only evaluated once.
 pmatchTargetEval :: PlutusType p => ClosedTerm p -> Expectation
 pmatchTargetEval target =
-  pmatch (ptrace (pconstant tag) target) (\x -> plet (pcon x) $ \_ -> pconstant ())
+  pmatch (ptraceInfo (pconstant tag) target) (\x -> plet (pcon x) $ \_ -> pconstant ())
     `ptraces` replicate 1 tag
   where
     tag = "evaluating"

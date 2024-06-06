@@ -20,7 +20,8 @@ import Data.Bifunctor (bimap)
 import Data.ByteString (ByteString)
 import Data.String (fromString)
 import Numeric (showHex)
-import Plutarch.Api (
+import Plutarch.Builtin (pasConstr, pforgetData)
+import Plutarch.LedgerApi (
   AmountGuarantees (NoGuarantees, NonZero, Positive),
   PCredential,
   PCurrencySymbol,
@@ -33,14 +34,13 @@ import Plutarch.Api (
   PTxInfo,
   PValue,
  )
-import Plutarch.Api.AssocMap (
+import Plutarch.LedgerApi.AssocMap (
   Commutativity (..),
   KeyGuarantees (..),
   psortedMapFromFoldable,
  )
-import Plutarch.Api.AssocMap qualified as AssocMap
-import Plutarch.Api.Value qualified as PValue
-import Plutarch.Builtin (pasConstr, pforgetData)
+import Plutarch.LedgerApi.AssocMap qualified as AssocMap
+import Plutarch.LedgerApi.Value qualified as PValue
 import Plutarch.Lift (PConstanted, PLifted, PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude
 import Plutarch.Test
@@ -143,7 +143,7 @@ spec = do
                       ( pcon $
                           PValue.PValue
                             ( AssocMap.punionResolvingCollisionsWith Commutative
-                                # plam (\_ _ -> ptraceError "unexpected collision")
+                                # plam (\_ _ -> ptraceInfoError "unexpected collision")
                                 # pto (getEnclosedTerm v)
                                 # (AssocMap.pdifference # pto pmintOtherSymbol # pto (getEnclosedTerm v))
                             )
@@ -655,7 +655,7 @@ checkSignatoryCont = plam $ \ph ctx' ->
               -- Signature not present.
               perror
       _ ->
-        ptraceError "checkSignatoryCont: not a spending tx"
+        ptraceInfoError "checkSignatoryCont: not a spending tx"
 
 -- | `checkSignatory` implemented using `runTermCont`
 checkSignatoryTermCont :: Term s (PPubKeyHash :--> PScriptContext :--> PUnit)
@@ -672,7 +672,7 @@ checkSignatoryTermCont = plam $ \ph ctx' -> unTermCont $ do
           -- Signature not present.
           perror
     _ ->
-      pure $ ptraceError "checkSignatoryCont: not a spending tx"
+      pure $ ptraceInfoError "checkSignatoryCont: not a spending tx"
 
 getFields :: Term s (PData :--> PBuiltinList PData)
 getFields = phoistAcyclic $ plam $ \addr -> psndBuiltin #$ pasConstr # addr

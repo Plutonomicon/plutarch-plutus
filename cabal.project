@@ -15,3 +15,4 @@ packages:
 
 benchmarks: true
 tests: true
+test-show-details: direct

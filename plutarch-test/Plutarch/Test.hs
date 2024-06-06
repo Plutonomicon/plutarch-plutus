@@ -37,7 +37,15 @@ module Plutarch.Test (
 import Data.Text (Text)
 import Data.Text qualified as T
 
-import Plutarch (ClosedTerm, Config (Config, tracingMode), compile, pcon, printScript, pattern DetTracing)
+import Plutarch (
+  ClosedTerm,
+  Config (Tracing),
+  LogLevel (LogInfo),
+  TracingMode (DetTracing),
+  compile,
+  pcon,
+  printScript,
+ )
 import Plutarch.Bool (PBool (PFalse, PTrue))
 import Plutarch.Evaluate (evalScript)
 import Plutarch.Script qualified as Scripts
@@ -63,7 +71,7 @@ import Test.Hspec (Expectation, expectationFailure, shouldBe, shouldSatisfy)
 import Test.Tasty.HUnit (assertFailure)
 
 comp :: ClosedTerm a -> Scripts.Script
-comp t = either (error . T.unpack) id $ compile (Config {tracingMode = DetTracing}) t
+comp t = either (error . T.unpack) id $ compile (Tracing LogInfo DetTracing) t
 
 {- |
     Like `shouldBe` but but for Plutarch terms

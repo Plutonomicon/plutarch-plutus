@@ -10,9 +10,6 @@
       pre-commit = {
         settings = {
           src = ./.;
-          settings = {
-            ormolu.cabalDefaultExtensions = true;
-          };
 
           hooks = {
             nixpkgs-fmt.enable = true;
@@ -24,11 +21,14 @@
               enable = true;
               excludes = [ "\.lhs" ];
             };
+            ormolu = {
+              settings.cabalDefaultExtensions = true;
+            };
             hlint.enable = true;
 
             typos = {
               enable = true;
-              excludes = [ "\.golden" ];
+              excludes = [ "\.golden" "fourmolu.yaml" ];
             };
 
             yamllint.enable = true;

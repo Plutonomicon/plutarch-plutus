@@ -110,8 +110,8 @@ executable plutarch-test
     , hspec
     , hspec-hedgehog
     , plutarch
-    , plutarch-api
     , plutarch-extra
+    , plutarch-ledger-api
     , plutarch-test
     , plutus-core
     , plutus-ledger-api
@@ -152,7 +152,6 @@ executable plutarch-test
     Plutarch.ShowSpec
     Plutarch.SpecTypes
     Plutarch.StringSpec
-    Plutarch.TraceSpec
     Plutarch.TryFromSpec
     Plutarch.UnitSpec
     Plutarch.UPLCSpec

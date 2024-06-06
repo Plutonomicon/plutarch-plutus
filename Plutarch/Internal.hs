@@ -1,4 +1,5 @@
 {-# LANGUAGE RoleAnnotations #-}
+{-# LANGUAGE ViewPatterns #-}
 
 module Plutarch.Internal (
   -- | \$hoisted
@@ -31,8 +32,11 @@ module Plutarch.Internal (
   S (SI),
   PType,
   pthrow,
-  Config (..),
+  Config (NoTracing, Tracing),
   TracingMode (..),
+  LogLevel (..),
+  tracingMode,
+  logLevel,
   pgetConfig,
   TermMonad (..),
   (#),
@@ -43,14 +47,23 @@ import Control.Monad.Reader (ReaderT (ReaderT), ask, runReaderT)
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
 import Crypto.Hash.IO (HashAlgorithm)
+import Data.Aeson (
+  FromJSON (parseJSON),
+  ToJSON (toEncoding, toJSON),
+  object,
+  pairs,
+  withText,
+  (.=),
+ )
 import Data.ByteString qualified as BS
-import Data.Default (Default (def))
 import Data.Kind (Type)
 import Data.List (foldl', groupBy, sortOn)
 import Data.Map.Lazy qualified as M
+import Data.Monoid (Last (Last))
 import Data.Set qualified as S
 import Data.String (fromString)
 import Data.Text (Text)
+import Data.Text qualified as Text
 import Flat.Run qualified as F
 import GHC.Stack (HasCallStack, callStack, prettyCallStack)
 import GHC.Word (Word64)
@@ -59,6 +72,7 @@ import Plutarch.Script (Script (Script))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
+import Prettyprinter (Pretty (pretty), (<+>))
 import UntypedPlutusCore qualified as UPLC
 
 {- $hoisted
@@ -150,18 +164,219 @@ data S = SI
 -- | Shorthand for Plutarch types.
 type PType = S -> Type
 
-newtype Config = Config
-  { tracingMode :: TracingMode
-  }
+{- | How to trace.
 
-data TracingMode = NoTracing | DetTracing | DoTracing | DoTracingAndBinds
+@since 1.6.0
+-}
+data TracingMode = DetTracing | DoTracing | DoTracingAndBinds
+  deriving stock
+    ( -- | @since 1.6.0
+      Eq
+    , -- | @since 1.6.0
+      Show
+    )
 
--- | Default is to be efficient
-instance Default Config where
-  def =
-    Config
-      { tracingMode = NoTracing
-      }
+{- | We have a linear order of generality, so this instance reflects it:
+\'smaller\' values are more specific. Generality is in the following order,
+from least to most general:
+
+1. @DetTracing@
+2. @DoTracing@
+3. @DoTracingAndBinds@
+
+@since 1.6.0
+-}
+instance Ord TracingMode where
+  -- Note: We write this by hand so someone re-ordering or adding 'arms' won't
+  -- silently break this.
+  tm1 <= tm2 = case tm1 of
+    DetTracing -> True
+    DoTracing -> case tm2 of
+      DetTracing -> False
+      _ -> True
+    DoTracingAndBinds -> case tm2 of
+      DoTracingAndBinds -> True
+      _ -> False
+
+{- | More general tracing supersedes less general.
+
+@since 1.6.0
+-}
+instance Semigroup TracingMode where
+  (<>) = max
+
+-- | @since 1.6.0
+instance Pretty TracingMode where
+  pretty = \case
+    DetTracing -> "DetTracing"
+    DoTracing -> "DoTracing"
+    DoTracingAndBinds -> "DoTracingAndBinds"
+
+-- | @since 1.6.0
+instance ToJSON TracingMode where
+  {-# INLINEABLE toJSON #-}
+  toJSON =
+    toJSON @Text . \case
+      DetTracing -> "DetTracing"
+      DoTracing -> "DoTracing"
+      DoTracingAndBinds -> "DoTracingAndBinds"
+  {-# INLINEABLE toEncoding #-}
+  toEncoding =
+    toEncoding @Text . \case
+      DetTracing -> "DetTracing"
+      DoTracing -> "DoTracing"
+      DoTracingAndBinds -> "DoTracingAndBinds"
+
+-- | @since 1.6.0
+instance FromJSON TracingMode where
+  {-# INLINEABLE parseJSON #-}
+  parseJSON = withText "TracingMode" $ \case
+    "DetTracing" -> pure DetTracing
+    "DoTracing" -> pure DoTracing
+    "DoTracingAndBinds" -> pure DoTracingAndBinds
+    x -> fail $ "Not a valid encoding: " <> Text.unpack x
+
+{- | What logging level we want to use.
+
+@since 1.6.0
+-}
+data LogLevel = LogInfo | LogDebug
+  deriving stock
+    ( -- | @since 1.6.0
+      Eq
+    , -- | @since 1.6.0
+      Show
+    )
+
+{- | We have a linear order of generality, so this instance reflects it:
+@LogDebug@ is more general than @LogInfo@.
+
+@since 1.6.0
+-}
+instance Ord LogLevel where
+  -- Note: We write this by hand so someone re-ordering or adding 'arms' won't
+  -- silently break this.
+  ll1 <= ll2 = case ll1 of
+    LogInfo -> True
+    LogDebug -> case ll2 of
+      LogDebug -> True
+      _ -> False
+
+{- | More general logging supersedes less general.
+
+@since 1.6.0
+-}
+instance Semigroup LogLevel where
+  (<>) = max
+
+-- | @since 1.6.0
+instance Pretty LogLevel where
+  pretty = \case
+    LogInfo -> "LogInfo"
+    LogDebug -> "LogDebug"
+
+-- | @since 1.6.0
+instance ToJSON LogLevel where
+  {-# INLINEABLE toJSON #-}
+  toJSON =
+    toJSON @Text . \case
+      LogInfo -> "LogInfo"
+      LogDebug -> "LogDebug"
+  {-# INLINEABLE toEncoding #-}
+  toEncoding =
+    toEncoding @Text . \case
+      LogInfo -> "LogInfo"
+      LogDebug -> "LogDebug"
+
+-- | @since 1.6.0
+instance FromJSON LogLevel where
+  {-# INLINEABLE parseJSON #-}
+  parseJSON = withText "LogLevel" $ \case
+    "LogInfo" -> pure LogInfo
+    "LogDebug" -> pure LogDebug
+    x -> fail $ "Not a valid encoding: " <> Text.unpack x
+
+{- | Configuration for Plutarch scripts at compile time. This indicates whether
+we want to trace, and if so, under what log level and mode.
+
+@since 1.6.0
+-}
+newtype Config = Config (Last (LogLevel, TracingMode))
+  deriving
+    ( -- | @since 1.6.0
+      Semigroup
+    , -- | @since 1.6.0
+      Monoid
+    )
+    via (Last (LogLevel, TracingMode))
+  deriving stock
+    ( -- | @since 1.6.0
+      Eq
+    , -- | @since 1.6.0
+      Show
+    )
+
+-- | @since 1.6.0
+instance Pretty Config where
+  pretty (Config (Last x)) = case x of
+    Nothing -> "NoTracing"
+    Just (ll, tm) -> "Tracing " <+> pretty ll <+> pretty tm
+
+-- | @since 1.6.0
+instance ToJSON Config where
+  -- We serialize Config as if it were a sum type for consistency. We also label
+  -- its fields (when present).
+  {-# INLINEABLE toJSON #-}
+  toJSON =
+    object . \case
+      NoTracing -> ["tag" .= (0 :: Int)]
+      Tracing ll tm ->
+        [ "tag" .= (1 :: Int)
+        , "logLevel" .= ll
+        , "tracingMode" .= tm
+        ]
+  {-# INLINEABLE toEncoding #-}
+  toEncoding =
+    pairs . \case
+      NoTracing -> "tag" .= (0 :: Int)
+      Tracing ll tm ->
+        ("tag" .= (1 :: Int))
+          <> ("logLevel" .= ll)
+          <> ("tracingMode" .= tm)
+
+{- | If the config indicates that we want to trace, get its mode.
+
+@since 1.6.0
+-}
+tracingMode :: Config -> Maybe TracingMode
+tracingMode (Config (Last x)) = snd <$> x
+
+{- | If the config indicates that we want to trace, get its log level.
+
+@since 1.6.0
+-}
+logLevel :: Config -> Maybe LogLevel
+logLevel (Config (Last x)) = fst <$> x
+
+{- | Pattern for the config that does no tracing (also the default).
+
+@since 1.6.0
+-}
+pattern NoTracing :: Config
+pattern NoTracing <- Config (Last Nothing)
+  where
+    NoTracing = Config (Last Nothing)
+
+{- | Pattern for a tracing config, with both its log level and mode.
+
+@since 1.6.0
+-}
+pattern Tracing :: LogLevel -> TracingMode -> Config
+pattern Tracing ll tm <- Config (Last (Just (ll, tm)))
+  where
+    Tracing ll tm = Config (Last (Just (ll, tm)))
+
+{-# COMPLETE NoTracing, Tracing #-}
 
 newtype TermMonad m = TermMonad {runTermMonad :: ReaderT Config (Either Text) m}
   deriving newtype (Functor, Applicative, Monad)

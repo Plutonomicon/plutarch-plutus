@@ -19,7 +19,7 @@ import Plutarch.Bool (PBool, pif)
 import Plutarch.Internal (Term, plet)
 import Plutarch.Internal.PlutusType (PlutusType, pmatch)
 import Plutarch.String (PString)
-import Plutarch.Trace (ptrace, ptraceError)
+import Plutarch.Trace (ptraceInfo, ptraceInfoError)
 
 import Plutarch.DataRepr (HRec, PDataFields, PFields, pletFields)
 import Plutarch.DataRepr.Internal.Field (
@@ -65,7 +65,7 @@ foo = unTermCont $ do
 @
 -}
 ptraceC :: Term s PString -> TermCont s ()
-ptraceC s = tcont $ \f -> ptrace s (f ())
+ptraceC s = tcont $ \f -> ptraceInfo s (f ())
 
 {- | Trace a message and raise error if 'cond' is false. Otherwise, continue.
 
@@ -79,7 +79,7 @@ onlyAllow42 = plam $ \i -> unTermCont $ do
 @
 -}
 pguardC :: Term s PString -> Term s PBool -> TermCont s ()
-pguardC s cond = tcont $ \f -> pif cond (f ()) $ ptraceError s
+pguardC s cond = tcont $ \f -> pif cond (f ()) $ ptraceInfoError s
 
 {- | Stop computation and return given term if 'cond' is false. Otherwise, continue.
 

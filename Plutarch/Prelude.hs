@@ -133,11 +133,23 @@ module Plutarch.Prelude (
   -- * Tracing
   PShow,
   pshow,
+  ptraceInfo,
+  ptraceDebug,
+  ptraceInfoShowId,
+  ptraceInfoIfFalse,
+  ptraceInfoIfTrue,
+  ptraceInfoError,
+  ptraceDebugShowId,
+  ptraceDebugIfFalse,
+  ptraceDebugIfTrue,
+  ptraceDebugError,
+
+  -- ** Deprecated
   ptrace,
   ptraceShowId,
+  ptraceError,
   ptraceIfFalse,
   ptraceIfTrue,
-  ptraceError,
 
   -- * Cryptographic hashes and signatures
   psha2_256,

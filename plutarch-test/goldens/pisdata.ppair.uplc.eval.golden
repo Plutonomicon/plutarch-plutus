@@ -1,2 +1,2 @@
-simple (program 1.0.0 (#01, #4141))
-scriptcredential (program 1.0.0 (#d8799f4141ff, #d87a9f4182ff))
+simple (program 1.0.0 (I 1, B #41))
+scriptcredential (program 1.0.0 (Constr 0 [B #41], Constr 1 [B #82]))

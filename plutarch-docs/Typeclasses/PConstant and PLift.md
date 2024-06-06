@@ -5,10 +5,10 @@
 ```haskell
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 {-# LANGUAGE UndecidableInstances #-}
-module Plutarch.Docs.PConstantAndPLift (b, purp) where 
+module Plutarch.Docs.PConstantAndPLift (b, purp) where
 import Plutarch.Prelude
 import PlutusLedgerApi.V1.Contexts (ScriptPurpose (Minting))
-import Plutarch.Api.V1.Contexts (PScriptPurpose)
+import Plutarch.LedgerApi (PScriptPurpose)
 ```
 
 </p>
@@ -16,11 +16,11 @@ import Plutarch.Api.V1.Contexts (PScriptPurpose)
 
 # `PConstant` & `PLift`
 
-These two closely tied together typeclasses establish a bridge between a Plutarch level type (that is represented 
-as a builtin type, i.e. 
-[`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)) 
-and its corresponding [Haskell synonym](./../Concepts/Haskell%20Synonym.md). The gory details of these 
-two are not too useful to users, but you can read all about it if you want at 
+These two closely tied together typeclasses establish a bridge between a Plutarch level type (that is represented
+as a builtin type, i.e.
+[`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni))
+and its corresponding [Haskell synonym](./../Concepts/Haskell%20Synonym.md). The gory details of these
+two are not too useful to users, but you can read all about it if you want at
 [Developers' corner](../DEVGUIDE.md#pconstant-and-plift).
 
 What's more important, are the abilities that `PConstant`/`PLift` instances have:
@@ -39,12 +39,12 @@ type PLifted :: PType -> Type
 type PConstanted :: Type -> PType
 ```
 
-These are meant to be inverse type families of each other. In particular, `PLifted p` represents the Haskell synonym 
-of the Plutarch type, `p`. Similarly, `PConstanted h` represents the Plutarch type corresponding to the Haskell type, 
+These are meant to be inverse type families of each other. In particular, `PLifted p` represents the Haskell synonym
+of the Plutarch type, `p`. Similarly, `PConstanted h` represents the Plutarch type corresponding to the Haskell type,
 `h`.
 
-`pconstant` lets you build a Plutarch value from its corresponding Haskell synonym. For example, the Haskell synonym 
-of [`PBool`](./../Types/PBool.md) is 
+`pconstant` lets you build a Plutarch value from its corresponding Haskell synonym. For example, the Haskell synonym
+of [`PBool`](./../Types/PBool.md) is
 [`Bool`](https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Bool.html#t:Bool).
 
 ```haskell
@@ -76,22 +76,22 @@ It's simply the `PAsData` building cousin of `pconstant`!
 
 ## Implementing `PConstant` & `PLift`
 
-If your custom Plutarch type is represented by a builtin type under the hood 
-(i.e. not [Scott encoded](./../Concepts/Data%20and%20Scott%20encoding.md#scott-encoding) - rather one of the 
-[`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni) types) 
+If your custom Plutarch type is represented by a builtin type under the hood
+(i.e. not [Scott encoded](./../Concepts/Data%20and%20Scott%20encoding.md#scott-encoding) - rather one of the
+[`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni) types)
 - you can implement `PLift` for it by using the provided machinery.
 
 This comes in three flavors:
 
-- Plutarch type represented **directly** by a builtin type that **is not** `Data` (`DefaultUniData`) 
+- Plutarch type represented **directly** by a builtin type that **is not** `Data` (`DefaultUniData`)
   ==> `DerivePConstantDirect`
 
   *Ex:* `PInteger` is directly represented as a builtin integer.
 
-- Plutarch type represented **indirectly** by a builtin type that **is not** `Data` (`DefaultUniData`) 
+- Plutarch type represented **indirectly** by a builtin type that **is not** `Data` (`DefaultUniData`)
   ==> `DerivePConstantViaNewtype`
 
-  *Ex:* `PPubKeyHash` is a newtype to a `PByteString`, and `PByteString` is _directly_ represented as a 
+  *Ex:* `PPubKeyHash` is a newtype to a `PByteString`, and `PByteString` is _directly_ represented as a
   `BuiltingBytestring`.
 
 - Plutarch type represented by `Data`, i.e. [data encoded](./../Concepts/Data%20and%20Scott%20encoding.md#data-encoding)
@@ -99,9 +99,9 @@ This comes in three flavors:
 
   *Ex:* `PScriptPurpose` is represented as a `Data` value. It is synonymous to `ScriptPurpose` from the Plutus Ledger API
 
-Whichever path you need to go down, there is one common part- implementing `PLift`, or rather `PUnsafeLiftDecl`. See, 
-`PLift` is actually just a type synonym to `PUnsafeLiftDecl` (with a bit more machinery). Essentially an empty 
-typeclass with an associated type family that provides insight on the relationship between a Plutarch type and its 
+Whichever path you need to go down, there is one common part- implementing `PLift`, or rather `PUnsafeLiftDecl`. See,
+`PLift` is actually just a type synonym to `PUnsafeLiftDecl` (with a bit more machinery). Essentially an empty
+typeclass with an associated type family that provides insight on the relationship between a Plutarch type and its
 Haskell synonym.
 
 ```hs
@@ -131,7 +131,7 @@ Some examples:
   instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
   ```
 
-Now, let's get to implementing `PConstant` for the Haskell synonym, via the three methods. 
+Now, let's get to implementing `PConstant` for the Haskell synonym, via the three methods.
 The first of which is `DerivePConstantDirect`:
 
 ```hs
@@ -179,8 +179,8 @@ data PScriptPurpose (s :: S)
   | PRewarding (Term s (PDataRecord '["_0" ':= PStakingCredential]))
   | PCertifying (Term s (PDataRecord '["_0" ':= PDCert]))
 
-deriving via 
-  (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose) 
+deriving via
+  (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose)
   instance PConstantDecl Plutus.ScriptPurpose
 ```
 

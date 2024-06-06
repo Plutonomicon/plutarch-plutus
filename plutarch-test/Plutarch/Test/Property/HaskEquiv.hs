@@ -37,7 +37,12 @@ import Plutarch.Script (Script (Script, unScript))
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
 import PlutusCore.Evaluation.Machine.ExMemory (ExCPU (ExCPU), ExMemory (ExMemory))
 
-import Plutarch (Config (Config, tracingMode), compile, pattern DetTracing)
+import Plutarch (
+  Config (Tracing),
+  LogLevel (LogInfo),
+  TracingMode (DetTracing),
+  compile,
+ )
 import Plutarch.Evaluate (EvalError, evalScript')
 import Plutarch.Prelude
 import Plutarch.Test.Property.Marshal (Marshal (marshal))
@@ -175,7 +180,7 @@ pshouldBe x y =
     _ -> assert False
 
 run :: ClosedTerm h -> (Either EvalError Script, ExBudget, [Text])
-run t = evalScriptHugeBudget $ either (error . T.unpack) id $ compile (Config {tracingMode = DetTracing}) t
+run t = evalScriptHugeBudget $ either (error . T.unpack) id $ compile (Tracing LogInfo DetTracing) t
 
 {- | A more suitable version of `evalScript` geared towards property tests that
   can use lots of resources

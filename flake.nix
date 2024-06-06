@@ -56,7 +56,7 @@
             src = ./.;
             compiler-nix-name = "ghc964";
             # NOTE(bladyjoker): Follow https://github.com/input-output-hk/plutus/blob/master/cabal.project
-            index-state = "2024-01-16T11:00:00Z";
+            index-state = "2024-03-24T00:00:00Z";
             inputMap = {
               "https://input-output-hk.github.io/cardano-haskell-packages" = CHaP;
             };
@@ -83,8 +83,12 @@
           inherit (flake) devShells;
           emanote = {
             sites.plutarch-docs = {
-              layers = [ ./plutarch-docs ];
-              layersString = [ "./plutarch-docs" ];
+              layers = [
+                {
+                  path = ./plutarch-docs;
+                  pathString = "./plutarch-docs";
+                }
+              ];
               baseUrl = "/plutarch-plutus/";
             };
           };
