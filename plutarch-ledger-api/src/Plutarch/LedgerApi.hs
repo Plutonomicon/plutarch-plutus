@@ -187,7 +187,7 @@ deriving via
   instance
     PConstantDecl Plutus.ScriptContext
 
--- | @since 2.2.0
+-- | @since 3.1.0
 data PTxCert (s :: S)
   = PTxCertRegStaking (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PMaybeData Value.PLovelace]))
   | PTxCertUnRegStaking (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PMaybeData Value.PLovelace]))
@@ -201,22 +201,22 @@ data PTxCert (s :: S)
   | PTxCertAuthHotCommittee (Term s (PDataRecord '["_0" ':= PColdCommitteeCredential, "_1" ':= PHotCommitteeCredential]))
   | PTxCertResignColdCommittee (Term s (PDataRecord '["_0" ':= PColdCommitteeCredential]))
 
--- | @since 2.2.0
+-- | @since 3.1.0
 data PDelegatee (s :: S)
   = PDelegStake (Term s (PDataRecord '["_0" ':= PPubKeyHash]))
   | PDelegVote (Term s (PDataRecord '["_0" ':= PDRep]))
   | PDelegStakeVote (Term s (PDataRecord '["_0" ':= PPubKeyHash, "_1" ':= PDRep]))
 
--- | @since 2.2.0
+-- | @since 3.1.0
 newtype PDRepCredential (s :: S) = PDRepCredential (Term s PCredential)
 
--- | @since 2.2.0
+-- | @since 3.1.0
 newtype PColdCommitteeCredential (s :: S) = PColdCommitteeCredential (Term s PCredential)
 
--- | @since 2.2.0
+-- | @since 3.1.0
 newtype PHotCommitteeCredential (s :: S) = PHotCommitteeCredential (Term s PCredential)
 
--- | @since 2.2.0
+-- | @since 3.1.0
 data PDRep (s :: S)
   = PDRep (Term s (PDataRecord '["_0" ':= PDRepCredential]))
   | PDRepAlwaysAbstain (Term s (PDataRecord '[]))
@@ -224,7 +224,7 @@ data PDRep (s :: S)
 
 -- A pending transaction. This is the view as seen by a validator script.
 --
--- @since 2.2.0
+-- @since 3.1.0
 newtype PTxInfo (s :: S)
   = PTxInfo
       ( Term
@@ -266,13 +266,13 @@ newtype PTxInfo (s :: S)
       PShow
     )
 
--- | @since 2.2.0
+-- | @since 3.1.0
 data PVote (s :: S)
   = PVoteYes (Term s (PDataRecord '[]))
   | PVoteNo (Term s (PDataRecord '[]))
   | PAbstain (Term s (PDataRecord '[]))
 
--- | @since 2.2.0
+-- | @since 3.1.0
 newtype PProposalProcedure (s :: S)
   = PProposalProcedure
       ( Term
@@ -285,7 +285,7 @@ newtype PProposalProcedure (s :: S)
           )
       )
 
--- | @since 2.2.0
+-- | @since 3.1.0
 data PGovernanceAction (s :: S)
   = PParameterChange (Term s (PDataRecord '["_0" ':= PMaybeData PGovernanceActionId, "_1" ':= PChangedParameters, "_2" ':= PMaybeData PScriptHash]))
   | PHardForkInitiation (Term s (PDataRecord '["_0" ':= PMaybeData PGovernanceActionId, "_1" ':= PProtocolVersion]))
@@ -307,21 +307,21 @@ data PGovernanceAction (s :: S)
 
 -- TODO: Be careful with PTryFrom for this. It's not really Data, it's a map!
 
--- | @since 2.2.0
+-- | @since 3.1.0
 newtype PChangedParameters (s :: S)
   = PChangedParameters (Term s PData)
 
--- | @since 2.2.0
+-- | @since 3.1.0
 newtype PProtocolVersion (s :: S)
   = PProtocolVersion (Term s (PDataRecord '["major" ':= PInteger, "minor" ':= PInteger]))
 
--- | @since 2.2.0
+-- | @since 3.1.0
 data PVoter (s :: S)
   = PCommitteeVoter (Term s (PDataRecord '["_0" ':= PHotCommitteeCredential]))
   | PDRepVoter (Term s (PDataRecord '["_0" ':= PDRepCredential]))
   | PStakePoolVoter (Term s (PDataRecord '["_0" ':= PPubKeyHash]))
 
--- | @since 2.2.0
+-- | @since 3.1.0
 newtype PGovernanceActionId (s :: S)
   = PGovernanceActionId (Term s (PDataRecord '["txId" ':= PTxId, "govActionIx" ':= PInteger]))
 
@@ -339,7 +339,7 @@ deriving via
   instance
     PConstantDecl Plutus.TxInfo
 
--- | @since 2.2.0
+-- | @since 3.1.0
 data PScriptPurpose (s :: S)
   = PMinting (Term s (PDataRecord '["_0" ':= Value.PCurrencySymbol]))
   | PSpending (Term s (PDataRecord '["_0" ':= PTxOutRef]))
