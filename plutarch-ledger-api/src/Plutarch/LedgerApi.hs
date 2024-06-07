@@ -86,6 +86,7 @@ module Plutarch.LedgerApi (
   PProposalProcedure (..),
   PGovernanceAction (..),
   PChangedParameters (..),
+  PConstitution (..),
 
   -- * Crypto
 
@@ -98,6 +99,7 @@ module Plutarch.LedgerApi (
 
   -- ** Types
   PMaybeData (..),
+  PRationalData (..),
 
   -- ** Utilities
   pfromDJust,
@@ -107,6 +109,7 @@ module Plutarch.LedgerApi (
   pdnothing,
   pmaybeToMaybeData,
   passertPDJust,
+  prationalFromData,
 ) where
 
 import Codec.Serialise (serialise)
@@ -136,11 +139,13 @@ import Plutarch.Lift (
   PUnsafeLiftDecl (PLifted),
  )
 import Plutarch.Num (PNum)
+import Plutarch.Positive (PPositive)
 import Plutarch.Prelude
 import Plutarch.Reducible (Reduce)
 import Plutarch.Script (Script (unScript))
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce)
+import Plutarch.Unsafe qualified as Unsafe
 import PlutusLedgerApi.Common (serialiseUPLC)
 import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.Prelude qualified as PlutusTx
@@ -200,27 +205,195 @@ data PTxCert (s :: S)
   | PTxCertPoolRetire (Term s (PDataRecord '["_0" ':= PPubKeyHash, "_1" ':= PInteger]))
   | PTxCertAuthHotCommittee (Term s (PDataRecord '["_0" ':= PColdCommitteeCredential, "_1" ':= PHotCommitteeCredential]))
   | PTxCertResignColdCommittee (Term s (PDataRecord '["_0" ':= PColdCommitteeCredential]))
+  deriving stock
+    ( -- | @since 3.1.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.1.0
+      PlutusType
+    , -- | @since 3.1.0
+      PIsData
+    , -- | @since 3.1.0
+      PEq
+    , -- | @since 3.1.0
+      PShow
+    )
+
+-- | @since 3.1.0
+instance DerivePlutusType PTxCert where
+  type DPTStrat _ = PlutusTypeData
+
+-- | @since 3.1.0
+instance PUnsafeLiftDecl PTxCert where
+  type PLifted _ = Plutus.TxCert
+
+-- | @since 3.1.0
+deriving via
+  (DerivePConstantViaData Plutus.TxCert PTxCert)
+  instance
+    PConstantDecl Plutus.TxCert
 
 -- | @since 3.1.0
 data PDelegatee (s :: S)
   = PDelegStake (Term s (PDataRecord '["_0" ':= PPubKeyHash]))
   | PDelegVote (Term s (PDataRecord '["_0" ':= PDRep]))
   | PDelegStakeVote (Term s (PDataRecord '["_0" ':= PPubKeyHash, "_1" ':= PDRep]))
+  deriving stock
+    ( -- | @since 3.1.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.1.0
+      PlutusType
+    , -- | @since 3.1.0
+      PIsData
+    , -- | @since 3.1.0
+      PEq
+    , -- | @since 3.1.0
+      PShow
+    )
+
+-- | @since 3.1.0
+instance DerivePlutusType PDelegatee where
+  type DPTStrat _ = PlutusTypeData
+
+-- | @since 3.1.0
+instance PUnsafeLiftDecl PDelegatee where
+  type PLifted _ = Plutus.Delegatee
+
+-- | @since 3.1.0
+deriving via
+  (DerivePConstantViaData Plutus.Delegatee PDelegatee)
+  instance
+    PConstantDecl Plutus.Delegatee
 
 -- | @since 3.1.0
 newtype PDRepCredential (s :: S) = PDRepCredential (Term s PCredential)
+  deriving stock
+    ( -- | @since 3.1.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.1.0
+      PlutusType
+    , -- | @since 3.1.0
+      PIsData
+    , -- | @since 3.1.0
+      PEq
+    , -- | @since 3.1.0
+      PShow
+    )
+
+-- | @since 3.1.0
+instance DerivePlutusType PDRepCredential where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since 3.1.0
+instance PUnsafeLiftDecl PDRepCredential where
+  type PLifted PDRepCredential = Plutus.DRepCredential
+
+-- | @since 3.1.0
+deriving via
+  (DerivePConstantViaNewtype Plutus.DRepCredential PDRepCredential PCredential)
+  instance
+    PConstantDecl Plutus.DRepCredential
 
 -- | @since 3.1.0
 newtype PColdCommitteeCredential (s :: S) = PColdCommitteeCredential (Term s PCredential)
+  deriving stock
+    ( -- | @since 3.1.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.1.0
+      PlutusType
+    , -- | @since 3.1.0
+      PIsData
+    , -- | @since 3.1.0
+      PEq
+    , -- | @since 3.1.0
+      PShow
+    )
+
+-- | @since 3.1.0
+instance DerivePlutusType PColdCommitteeCredential where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since 3.1.0
+instance PUnsafeLiftDecl PColdCommitteeCredential where
+  type PLifted PColdCommitteeCredential = Plutus.ColdCommitteeCredential
+
+-- | @since 3.1.0
+deriving via
+  (DerivePConstantViaNewtype Plutus.ColdCommitteeCredential PColdCommitteeCredential PCredential)
+  instance
+    PConstantDecl Plutus.ColdCommitteeCredential
 
 -- | @since 3.1.0
 newtype PHotCommitteeCredential (s :: S) = PHotCommitteeCredential (Term s PCredential)
+  deriving stock
+    ( -- | @since 3.1.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.1.0
+      PlutusType
+    , -- | @since 3.1.0
+      PIsData
+    , -- | @since 3.1.0
+      PEq
+    , -- | @since 3.1.0
+      PShow
+    )
+
+-- | @since 3.1.0
+instance DerivePlutusType PHotCommitteeCredential where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since 3.1.0
+instance PUnsafeLiftDecl PHotCommitteeCredential where
+  type PLifted PHotCommitteeCredential = Plutus.HotCommitteeCredential
+
+-- | @since 3.1.0
+deriving via
+  (DerivePConstantViaNewtype Plutus.HotCommitteeCredential PHotCommitteeCredential PCredential)
+  instance
+    PConstantDecl Plutus.HotCommitteeCredential
 
 -- | @since 3.1.0
 data PDRep (s :: S)
   = PDRep (Term s (PDataRecord '["_0" ':= PDRepCredential]))
   | PDRepAlwaysAbstain (Term s (PDataRecord '[]))
   | PDRepAlwaysNoConfidence (Term s (PDataRecord '[]))
+  deriving stock
+    ( -- | @since 3.1.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.1.0
+      PlutusType
+    , -- | @since 3.1.0
+      PIsData
+    , -- | @since 3.1.0
+      PEq
+    , -- | @since 3.1.0
+      PShow
+    )
+
+-- | @since 3.1.0
+instance DerivePlutusType PDRep where
+  type DPTStrat _ = PlutusTypeData
+
+-- | @since 3.1.0
+instance PUnsafeLiftDecl PDRep where
+  type PLifted _ = Plutus.DRep
+
+-- | @since 3.1.0
+deriving via
+  (DerivePConstantViaData Plutus.DRep PDRep)
+  instance
+    PConstantDecl Plutus.DRep
 
 -- A pending transaction. This is the view as seen by a validator script.
 --
@@ -266,11 +439,53 @@ newtype PTxInfo (s :: S)
       PShow
     )
 
+-- | @since 2.0.0
+instance DerivePlutusType PTxInfo where
+  type DPTStrat _ = PlutusTypeData
+
+-- | @since 2.0.0
+instance PUnsafeLiftDecl PTxInfo where
+  type PLifted _ = Plutus.TxInfo
+
+-- | @since 2.0.0
+deriving via
+  (DerivePConstantViaData Plutus.TxInfo PTxInfo)
+  instance
+    PConstantDecl Plutus.TxInfo
+
 -- | @since 3.1.0
 data PVote (s :: S)
   = PVoteYes (Term s (PDataRecord '[]))
   | PVoteNo (Term s (PDataRecord '[]))
   | PAbstain (Term s (PDataRecord '[]))
+  deriving stock
+    ( -- | @since 3.1.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.1.0
+      PlutusType
+    , -- | @since 3.1.0
+      PIsData
+    , -- | @since 3.1.0
+      PEq
+    , -- | @since 3.1.0
+      PShow
+    )
+
+-- | @since 3.1.0
+instance DerivePlutusType PVote where
+  type DPTStrat _ = PlutusTypeData
+
+-- | @since 3.1.0
+instance PUnsafeLiftDecl PVote where
+  type PLifted _ = Plutus.Vote
+
+-- | @since 3.1.0
+deriving via
+  (DerivePConstantViaData Plutus.Vote PVote)
+  instance
+    PConstantDecl Plutus.Vote
 
 -- | @since 3.1.0
 newtype PProposalProcedure (s :: S)
@@ -284,6 +499,70 @@ newtype PProposalProcedure (s :: S)
                ]
           )
       )
+  deriving stock
+    ( -- | @since 3.1.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.1.0
+      PlutusType
+    , -- | @since 3.1.0
+      PIsData
+    , -- | @since 3.1.0
+      PDataFields
+    , -- | @since 3.1.0
+      PEq
+    , -- | @since 3.1.0
+      PShow
+    )
+
+-- | @since 3.1.0
+instance DerivePlutusType PProposalProcedure where
+  type DPTStrat _ = PlutusTypeData
+
+-- | @since 3.1.0
+instance PUnsafeLiftDecl PProposalProcedure where
+  type PLifted _ = Plutus.ProposalProcedure
+
+-- | @since 3.1.0
+deriving via
+  (DerivePConstantViaData Plutus.ProposalProcedure PProposalProcedure)
+  instance
+    PConstantDecl Plutus.ProposalProcedure
+
+{- | A constitution, omitting the optional anchor.
+
+@since 3.1.0
+-}
+newtype PConstitution (s :: S) = PConstitution (Term s (PMaybeData PScriptHash))
+  deriving stock
+    ( -- | @since 3.1.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.1.0
+      PlutusType
+    , -- | @since 3.1.0
+      PIsData
+    , -- | @since 3.1.0
+      PEq
+    , -- | @since 3.1.0
+      PShow
+    )
+
+-- | @since 3.1.0
+instance DerivePlutusType PConstitution where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since 3.1.0
+instance PUnsafeLiftDecl PConstitution where
+  type PLifted PConstitution = Plutus.Constitution
+
+-- | @since 3.1.0
+deriving via
+  (DerivePConstantViaNewtype Plutus.Constitution PConstitution (PMaybeData PScriptHash))
+  instance
+    PConstantDecl Plutus.Constitution
 
 -- | @since 3.1.0
 data PGovernanceAction (s :: S)
@@ -304,40 +583,168 @@ data PGovernanceAction (s :: S)
       )
   | PNewConstitution (Term s (PDataRecord '["_0" ':= PMaybeData PGovernanceActionId, "_1" ':= PConstitution]))
   | PInfoAction (Term s (PDataRecord '[]))
+  deriving stock
+    ( -- | @since 3.1.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.1.0
+      PlutusType
+    , -- | @since 3.1.0
+      PIsData
+    , -- | @since 3.1.0
+      PEq
+    , -- | @since 3.1.0
+      PShow
+    )
+
+-- | @since 3.1.0
+instance DerivePlutusType PGovernanceAction where
+  type DPTStrat _ = PlutusTypeData
+
+-- | @since 3.1.0
+instance PUnsafeLiftDecl PGovernanceAction where
+  type PLifted _ = Plutus.GovernanceAction
+
+-- | @since 3.1.0
+deriving via
+  (DerivePConstantViaData Plutus.GovernanceAction PGovernanceAction)
+  instance
+    PConstantDecl Plutus.GovernanceAction
 
 -- TODO: Be careful with PTryFrom for this. It's not really Data, it's a map!
 
 -- | @since 3.1.0
 newtype PChangedParameters (s :: S)
   = PChangedParameters (Term s PData)
+  deriving stock
+    ( -- | @since 3.1.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.1.0
+      PlutusType
+    , -- | @since 3.1.0
+      PIsData
+    , -- | @since 3.1.0
+      PEq
+    , -- | @since 3.1.0
+      PShow
+    )
+
+-- | @since 3.1.0
+instance DerivePlutusType PChangedParameters where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since 3.1.0
+instance PUnsafeLiftDecl PChangedParameters where
+  type PLifted PChangedParameters = Plutus.ChangedParameters
+
+-- | @since 3.1.0
+deriving via
+  (DerivePConstantViaBuiltin Plutus.ChangedParameters PChangedParameters PData)
+  instance
+    PConstantDecl Plutus.ChangedParameters
 
 -- | @since 3.1.0
 newtype PProtocolVersion (s :: S)
   = PProtocolVersion (Term s (PDataRecord '["major" ':= PInteger, "minor" ':= PInteger]))
+  deriving stock
+    ( -- | @since 3.1.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.1.0
+      PlutusType
+    , -- | @since 3.1.0
+      PIsData
+    , -- | @since 3.1.0
+      PDataFields
+    , -- | @since 3.1.0
+      PEq
+    , -- | @since 3.1.0
+      PShow
+    )
+
+-- | @since 3.1.0
+instance DerivePlutusType PProtocolVersion where
+  type DPTStrat _ = PlutusTypeData
+
+-- | @since 3.1.0
+instance PUnsafeLiftDecl PProtocolVersion where
+  type PLifted _ = Plutus.ProtocolVersion
+
+-- | @since 3.1.0
+deriving via
+  (DerivePConstantViaData Plutus.ProtocolVersion PProtocolVersion)
+  instance
+    PConstantDecl Plutus.ProtocolVersion
 
 -- | @since 3.1.0
 data PVoter (s :: S)
   = PCommitteeVoter (Term s (PDataRecord '["_0" ':= PHotCommitteeCredential]))
   | PDRepVoter (Term s (PDataRecord '["_0" ':= PDRepCredential]))
   | PStakePoolVoter (Term s (PDataRecord '["_0" ':= PPubKeyHash]))
+  deriving stock
+    ( -- | @since 3.1.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.1.0
+      PlutusType
+    , -- | @since 3.1.0
+      PIsData
+    , -- | @since 3.1.0
+      PEq
+    , -- | @since 3.1.0
+      PShow
+    )
+
+-- | @since 3.1.0
+instance DerivePlutusType PVoter where
+  type DPTStrat _ = PlutusTypeData
+
+-- | @since 3.1.0
+instance PUnsafeLiftDecl PVoter where
+  type PLifted _ = Plutus.Voter
+
+-- | @since 3.1.0
+deriving via
+  (DerivePConstantViaData Plutus.Voter PVoter)
+  instance
+    PConstantDecl Plutus.Voter
 
 -- | @since 3.1.0
 newtype PGovernanceActionId (s :: S)
   = PGovernanceActionId (Term s (PDataRecord '["txId" ':= PTxId, "govActionIx" ':= PInteger]))
+  deriving stock
+    ( -- | @since 2.0.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 2.0.0
+      PlutusType
+    , -- | @since 2.0.0
+      PIsData
+    , -- | @since 2.0.0
+      PEq
+    , -- | @since 2.0.0
+      PShow
+    )
 
 -- | @since 2.0.0
-instance DerivePlutusType PTxInfo where
+instance DerivePlutusType PGovernanceActionId where
   type DPTStrat _ = PlutusTypeData
 
 -- | @since 2.0.0
-instance PUnsafeLiftDecl PTxInfo where
-  type PLifted _ = Plutus.TxInfo
+instance PUnsafeLiftDecl PGovernanceActionId where
+  type PLifted PGovernanceActionId = Plutus.GovernanceActionId
 
 -- | @since 2.0.0
 deriving via
-  (DerivePConstantViaData Plutus.TxInfo PTxInfo)
+  (DerivePConstantViaData Plutus.GovernanceActionId PGovernanceActionId)
   instance
-    PConstantDecl Plutus.TxInfo
+    PConstantDecl Plutus.GovernanceActionId
 
 -- | @since 3.1.0
 data PScriptPurpose (s :: S)
@@ -1279,7 +1686,107 @@ passertPDJust = phoistAcyclic $
     PDJust ((pfield @"_0" #) -> v) -> v
     _ -> ptraceInfoError emsg
 
+{- | A Rational type that corresponds to the data encoding used by 'Plutus.Rational'.
+
+@since 3.1.0
+-}
+newtype PRationalData s
+  = PRationalData
+      ( Term
+          s
+          ( PDataRecord
+              '[ "numerator" ':= PInteger
+               , "denominator" ':= PPositive
+               ]
+          )
+      )
+  deriving stock
+    ( -- | @since 3.1.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.1.0
+      PlutusType
+    , -- | @since 3.1.0
+      PIsData
+    , -- | @since 3.1.0
+      PDataFields
+    , -- | @since 3.1.0
+      PEq
+    , -- | @since 3.1.0
+      PShow
+    )
+
+-- | @since 3.1.0
+instance PPartialOrd PRationalData where
+  (#<=) = liftCompareOp (#<=)
+  (#<) = liftCompareOp (#<)
+
+-- | @since 3.1.0
+instance POrd PRationalData
+
+-- | @since 3.1.0
+instance DerivePlutusType PRationalData where
+  type DPTStrat _ = PlutusTypeData
+
+-- | @since 3.1.0
+instance PUnsafeLiftDecl PRationalData where type PLifted PRationalData = Plutus.Rational
+
+-- | @since 3.1.0
+deriving via (DerivePConstantViaData Plutus.Rational PRationalData) instance PConstantDecl Plutus.Rational
+
+-- | @since 3.1.0
+instance PTryFrom PData PRationalData where
+  type PTryFromExcess PData PRationalData = Flip Term PPositive
+  ptryFrom' opq cont = ptryFrom @(PAsData PRationalData) opq (cont . first Unsafe.punsafeCoerce)
+
+{- | This instance produces a verified positive denominator as the excess output.
+
+@since 3.1.0
+-}
+instance PTryFrom PData (PAsData PRationalData) where
+  type PTryFromExcess PData (PAsData PRationalData) = Flip Term PPositive
+  ptryFrom' opq = runTermCont $ do
+    opq' <- pletC $ pasConstr # opq
+    pguardC "ptryFrom(PRationalData): invalid constructor id" $ pfstBuiltin # opq' #== 0
+    flds <- pletC $ psndBuiltin # opq'
+    _numr <- pletC $ ptryFrom @(PAsData PInteger) (phead # flds) snd
+    ratTail <- pletC $ ptail # flds
+    denm <- pletC $ ptryFrom @(PAsData PPositive) (phead # ratTail) snd
+    pguardC "ptryFrom(PRationalData): constructor fields len > 2" $ ptail # ratTail #== pnil
+    pure (Unsafe.punsafeCoerce opq, denm)
+
+-- | @since 3.1.0
+prationalFromData :: ClosedTerm (PRationalData :--> PRational)
+prationalFromData = phoistAcyclic $
+  plam $ \x -> unTermCont $ do
+    l <- pletFieldsC @'["numerator", "denominator"] x
+    pure . pcon $ PRational (getField @"numerator" l) (getField @"denominator" l)
+
 -- Helpers
+
+liftCompareOp ::
+  forall (s :: S).
+  (forall (s' :: S). Term s' PInteger -> Term s' PInteger -> Term s' PBool) ->
+  Term s PRationalData ->
+  Term s PRationalData ->
+  Term s PBool
+liftCompareOp f x y = phoistAcyclic (plam go) # x # y
+  where
+    go ::
+      forall (s' :: S).
+      Term s' PRationalData ->
+      Term s' PRationalData ->
+      Term s' PBool
+    go l r = unTermCont $ do
+      l' <- pletFieldsC @'["numerator", "denominator"] l
+      r' <- pletFieldsC @'["numerator", "denominator"] r
+      let ln = pfromData $ getField @"numerator" l'
+      let ld = pfromData $ getField @"denominator" l'
+      let rn = pfromData $ getField @"numerator" r'
+      let rd = pfromData $ getField @"denominator" r'
+      pure $ f (ln * pto rd) (rn * pto ld)
+newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 
 hashScriptWithPrefix :: ByteString -> Script -> Plutus.ScriptHash
 hashScriptWithPrefix prefix scr =
