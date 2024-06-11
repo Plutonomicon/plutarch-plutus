@@ -29,7 +29,6 @@ import Plutarch (
   plet,
   pmatch,
   pto,
-  runTermCont,
   (#),
   (#$),
   type (:-->),
@@ -56,7 +55,7 @@ import Plutarch.Positive (PPositive, ptryPositive)
 import Plutarch.Show (PShow, pshow, pshow')
 import Plutarch.TermCont (tcont, unTermCont)
 import Plutarch.Trace (ptraceInfoError)
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
+import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFromInfo)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 
 class PFractional (a :: PType) where
@@ -125,13 +124,15 @@ newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 -- | NOTE: This instance produces a verified 'PPositive' as the excess output.
 instance PTryFrom PData (PAsData PRational) where
   type PTryFromExcess PData (PAsData PRational) = Flip Term PPositive
-  ptryFrom' opq = runTermCont $ do
-    (_, ld) <- tcont $ ptryFrom @(PAsData (PBuiltinList PData)) opq
-    ratTail <- tcont . plet $ ptail # ld
-    tcont $ \f -> pif (ptail # ratTail #== pnil) (f ()) $ ptraceInfoError "ptryFrom(PRational): data list length should be 2"
-    (_, denm) <- tcont $ ptryFrom @(PAsData PInteger) $ phead # ratTail
-    res <- tcont . plet $ ptryPositive # denm
-    pure (punsafeCoerce opq, res)
+  ptryFrom' opq _ f = ptryFromInfo @(PAsData (PBuiltinList PData)) opq "could not get list for PRational" $ \_ ld ->
+    plet (ptail # ld) $ \ratTail ->
+      pif
+        (ptail # ratTail #== pnil)
+        ( ptryFromInfo @(PAsData PInteger) (phead # ratTail) "could not get denominator" $ \_ denm ->
+            plet (ptryPositive # denm) $ \res ->
+              f (punsafeCoerce opq) res
+        )
+        (ptraceInfoError "ptryFrom(PRational): data list length should be 2")
 
 instance PPartialOrd PRational where
   l' #<= r' =

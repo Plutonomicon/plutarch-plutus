@@ -1,6 +1,9 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
+-- Needed to preserve invariants on PTryFrom PData (PAsData (PBuiltinList
+-- (PAsData a))) and PTryFrom PData (PAsData (PBuiltinPair a b))
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
 
 module Plutarch.Builtin (
   PData,
@@ -47,7 +50,6 @@ import Plutarch (
   PlutusTypeNewtype,
   S,
   Term,
-  TermCont (runTermCont),
   pcon,
   pdelay,
   pfix,
@@ -57,8 +59,6 @@ import Plutarch (
   plet,
   pmatch,
   pto,
-  tcont,
-  unTermCont,
   (#),
   (#$),
   type (:-->),
@@ -100,7 +100,15 @@ import Plutarch.List (
  )
 import Plutarch.Show (PShow (pshow'), pshow)
 import Plutarch.String (PString)
-import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast, pupcastF)
+import Plutarch.TryFrom (
+  PSubtype,
+  PTryFrom,
+  PTryFromExcess,
+  ptryFrom',
+  ptryFromInfo,
+  pupcast,
+  pupcastF,
+ )
 import Plutarch.Unit (PUnit)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeDowncast)
 import PlutusCore qualified as PLC
@@ -488,15 +496,13 @@ newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 
 instance PTryFrom PData (PAsData PInteger) where
   type PTryFromExcess PData (PAsData PInteger) = Flip Term PInteger
-  ptryFrom' opq = runTermCont $ do
-    ver <- tcont $ plet (pasInt # opq)
-    pure (punsafeCoerce opq, ver)
+  ptryFrom' opq _ f = plet (pasInt # opq) $ \opq' ->
+    f (punsafeCoerce opq) opq'
 
 instance PTryFrom PData (PAsData PByteString) where
   type PTryFromExcess PData (PAsData PByteString) = Flip Term PByteString
-  ptryFrom' opq = runTermCont $ do
-    ver <- tcont $ plet (pasByteStr # opq)
-    pure (punsafeCoerce opq, ver)
+  ptryFrom' opq _ f = plet (pasByteStr # opq) $ \opq' ->
+    f (punsafeCoerce opq) opq'
 
 {- |
     This verifies a list to be indeed a list but doesn't recover the inner data
@@ -507,9 +513,8 @@ instance PTryFrom PData (PAsData PByteString) where
 -- TODO: add the excess inner type list
 instance PTryFrom PData (PAsData (PBuiltinList PData)) where
   type PTryFromExcess PData (PAsData (PBuiltinList PData)) = Flip Term (PBuiltinList PData)
-  ptryFrom' opq = runTermCont $ do
-    ver <- tcont $ plet (pasList # opq)
-    pure (punsafeCoerce opq, ver)
+  ptryFrom' opq _ f = plet (pasList # opq) $ \opq' ->
+    f (punsafeCoerce opq) opq'
 
 {- |
     Recover a `PBuiltinList (PAsData a)`
@@ -521,16 +526,11 @@ instance
   PTryFrom PData (PAsData (PBuiltinList (PAsData a)))
   where
   type PTryFromExcess PData (PAsData (PBuiltinList (PAsData a))) = Flip Term (PBuiltinList (PAsData a))
-  ptryFrom' opq = runTermCont $ do
-    let lst :: Term _ (PBuiltinList PData)
-        lst = pasList # opq
-        verify :: Term _ (PData :--> PAsData a)
-        verify = plam $ \e ->
-          unTermCont $ do
-            (wrapped, _) <- tcont $ ptryFrom @(PAsData a) $ e
-            pure wrapped
-    ver <- tcont $ plet $ pmap # verify # lst
-    pure (punsafeCoerce opq, ver)
+  ptryFrom' opq _ f = plet (pmap # verify # (pasList # opq)) $ \opq' ->
+    f (punsafeCoerce opq) opq'
+    where
+      verify :: forall (s :: S). Term s (PData :--> PAsData a)
+      verify = plam $ \x -> ptryFromInfo @(PAsData a) x "failed to verify" const
 
 {- |
     Recover a `PAsData (PBuiltinPair a b)`
@@ -546,21 +546,18 @@ instance
   PTryFrom PData (PAsData (PBuiltinPair a b))
   where
   type PTryFromExcess PData (PAsData (PBuiltinPair a b)) = Flip Term (PBuiltinPair a b)
-  ptryFrom' opq = runTermCont $ do
-    tup <- tcont $ plet (pfromData $ punsafeCoerce opq)
-    let fst' :: Term _ a
-        fst' = unTermCont $ fst <$> tcont (ptryFrom @a $ pforgetData $ pfstBuiltin # tup)
-        snd' :: Term _ b
-        snd' = unTermCont $ fst <$> tcont (ptryFrom @b $ pforgetData $ psndBuiltin # tup)
-    ver <- tcont $ plet $ ppairDataBuiltin # fst' # snd'
-    pure (punsafeCoerce opq, ver)
+  ptryFrom' opq _ f = plet (pfromData $ punsafeCoerce opq) $ \tup ->
+    let fst' = ptryFromInfo @a (pforgetData $ pfstBuiltin # tup) "failed to get fst" const
+        snd' = ptryFromInfo @b (pforgetData $ psndBuiltin # tup) "failed to get snd" const
+     in plet (ppairDataBuiltin # fst' # snd') $ \opq' ->
+          f (punsafeCoerce opq) opq'
 
 ----------------------- other utility functions -----------------------------------------
 
 instance PTryFrom PData (PAsData PData) where
   type PTryFromExcess PData (PAsData PData) = Const ()
-  ptryFrom' opq = runTermCont $ pure (pdata opq, ())
+  ptryFrom' opq _ f = f (pdata opq) ()
 
 instance PTryFrom PData PData where
   type PTryFromExcess PData PData = Const ()
-  ptryFrom' opq f = f (opq, ())
+  ptryFrom' opq _ f = f opq ()

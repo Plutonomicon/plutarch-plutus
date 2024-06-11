@@ -104,7 +104,7 @@ import Plutarch.Lift (
 import Plutarch.List qualified as List
 import Plutarch.Prelude hiding (pall, pany, pmap, pnull, psingleton, pzipWith)
 import Plutarch.Prelude qualified as PPrelude
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
+import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFromInfo)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusCore qualified as PLC
 import PlutusLedgerApi.V2 qualified as Plutus
@@ -183,18 +183,17 @@ instance
   PTryFrom PData (PAsData (PMap 'Unsorted k v))
   where
   type PTryFromExcess PData (PAsData (PMap 'Unsorted k v)) = Mret (PMap 'Unsorted k v)
-  ptryFrom' opq = runTermCont $ do
-    opq' <- tcont . plet $ pasMap # opq
-    unwrapped <- tcont . plet $ List.pmap # ptryFromPair # opq'
-    pure (punsafeCoerce opq, pcon . PMap $ unwrapped)
+  ptryFrom' opq _ f = plet (pasMap # opq) $ \opq' ->
+    plet (List.pmap # ptryFromPair # opq') $ \unwrapped ->
+      f (punsafeCoerce opq) (pcon . PMap $ unwrapped)
     where
       ptryFromPair ::
         forall (s :: S).
         Term s (PBuiltinPair PData PData :--> PBuiltinPair (PAsData k) (PAsData v))
       ptryFromPair = plam $ \p ->
-        ppairDataBuiltin
-          # ptryFrom (pfstBuiltin # p) fst
-          # ptryFrom (psndBuiltin # p) fst
+        ptryFromInfo (pfstBuiltin # p) "Could not get first" $ \fst' _ ->
+          ptryFromInfo (psndBuiltin # p) "Could not get second" $ \snd' _ ->
+            ppairDataBuiltin # fst' # snd'
 
 -- | @since 2.0.0
 instance
@@ -207,10 +206,9 @@ instance
   PTryFrom PData (PAsData (PMap 'Sorted k v))
   where
   type PTryFromExcess PData (PAsData (PMap 'Sorted k v)) = Mret (PMap 'Sorted k v)
-  ptryFrom' opq = runTermCont $ do
-    (opq', _) <- tcont $ ptryFrom @(PAsData (PMap 'Unsorted k v)) opq
-    unwrapped <- tcont $ plet . papp passertSorted . pfromData $ opq'
-    pure (punsafeCoerce opq, unwrapped)
+  ptryFrom' opq x f = ptryFrom' @_ @(PAsData (PMap 'Unsorted k v)) opq x $ \opq' _ ->
+    plet (papp passertSorted . pfromData $ opq') $ \unwrapped ->
+      f (punsafeCoerce opq) unwrapped
 
 -- | @since 2.0.0
 data Commutativity = Commutative | NonCommutative

@@ -103,7 +103,6 @@ import Crypto.Hash (
   Blake2b_256 (Blake2b_256),
   hashWith,
  )
-import Data.Bifunctor (first)
 import Data.ByteArray (convert)
 import Data.ByteString (ByteString, toStrict)
 import Data.ByteString.Short (fromShort)
@@ -125,9 +124,8 @@ import Plutarch.Lift (
  )
 import Plutarch.Num (PNum)
 import Plutarch.Prelude
-import Plutarch.Reducible (Reduce)
 import Plutarch.Script (Script (unScript))
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
+import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFromInfo)
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common (serialiseUPLC)
 import PlutusLedgerApi.V2 qualified as Plutus
@@ -681,16 +679,11 @@ deriving via
 -- | @since 2.0.0
 instance PTryFrom PData (PAsData PPosixTime) where
   type PTryFromExcess PData (PAsData PPosixTime) = Mret PPosixTime
-  ptryFrom' ::
-    forall (s :: S) (r :: S -> Type).
-    Term s PData ->
-    ((Term s (PAsData PPosixTime), Reduce (PTryFromExcess PData (PAsData PPosixTime) s)) -> Term s r) ->
-    Term s r
-  ptryFrom' opq = runTermCont $ do
-    (wrapped :: Term s (PAsData PInteger), unwrapped :: Term s PInteger) <-
-      tcont $ ptryFrom @(PAsData PInteger) opq
-    tcont $ \f -> pif (0 #<= unwrapped) (f ()) (ptraceInfoError "ptryFrom(POSIXTime): must be positive")
-    pure (punsafeCoerce wrapped, pcon $ PPosixTime unwrapped)
+  ptryFrom' opq x f = ptryFrom' @_ @(PAsData PInteger) opq x $ \wrapped unwrapped ->
+    pif
+      (0 #<= unwrapped)
+      (f (punsafeCoerce wrapped) (pcon $ PPosixTime unwrapped))
+      (ptraceInfoError "ptryFrom(PosixTime): must be positive")
 
 -- | @since 2.0.0
 newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
@@ -730,14 +723,11 @@ deriving via
 -- | @since 2.0.0
 instance PTryFrom PData (PAsData PPubKeyHash) where
   type PTryFromExcess PData (PAsData PPubKeyHash) = Mret PPubKeyHash
-  ptryFrom' opq = runTermCont $ do
-    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
-    tcont $ \f ->
-      pif
-        (plengthBS # unwrapped #== 28)
-        (f ())
-        (ptraceInfoError "ptryFrom(PPubKeyHash): must be 28 bytes long")
-    pure (punsafeCoerce opq, pcon . PPubKeyHash $ unwrapped)
+  ptryFrom' opq x f = ptryFrom' @_ @(PAsData PByteString) opq x $ \_ unwrapped ->
+    pif
+      (plengthBS # unwrapped #== 28)
+      (f (punsafeCoerce opq) (pcon . PPubKeyHash $ unwrapped))
+      (ptraceInfoError "ptryFrom(PPubKeyHash): must be 28 bytes long")
 
 -- | @since 2.0.0
 newtype PubKey = PubKey
@@ -799,23 +789,27 @@ deriving via
 -- | @since 2.0.0
 instance PTryFrom PData PTxId where
   type PTryFromExcess PData PTxId = Mret PByteString
-  ptryFrom' opq cont = ptryFrom @(PAsData PTxId) opq (cont . first punsafeCoerce)
+  ptryFrom' opq x cont = ptryFrom' @_ @(PAsData PTxId) opq x (cont . punsafeCoerce)
 
 -- | @since 2.0.0
 instance PTryFrom PData (PAsData PTxId) where
   type PTryFromExcess PData (PAsData PTxId) = Mret PByteString
-  ptryFrom' opq = runTermCont $ do
-    opq' <- tcont . plet $ pasConstr # opq
-    tcont $ \f ->
-      pif (pfstBuiltin # opq' #== 0) (f ()) $ ptraceInfoError "ptryFrom(TxId): invalid constructor id"
-    flds <- tcont . plet $ psndBuiltin # opq'
-    let dataBs = phead # flds
-    tcont $ \f ->
-      pif (pnil #== ptail # flds) (f ()) $ ptraceInfoError "ptryFrom(TxId): constructor fields len > 1"
-    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) dataBs snd
-    tcont $ \f ->
-      pif (plengthBS # unwrapped #== 32) (f ()) $ ptraceInfoError "ptryFrom(TxId): must be 32 bytes long"
-    pure (punsafeCoerce opq, unwrapped)
+  ptryFrom' opq x f = plet (pasConstr # opq) $ \opq' ->
+    pif
+      (pfstBuiltin # opq' #== 0)
+      ( plet (psndBuiltin # opq') $ \flds ->
+          let dataBs = phead # flds
+           in pif
+                (pnil #== ptail # flds)
+                ( ptryFrom' @_ @(PAsData PByteString) dataBs x $ \_ unwrapped ->
+                    pif
+                      (plengthBS # unwrapped #== 32)
+                      (f (punsafeCoerce opq) unwrapped)
+                      (ptraceInfoError "ptryFrom(TxId): must be 32 bytes long")
+                )
+                (ptraceInfoError "ptryFrom(TxId): constructor fields len > 1")
+      )
+      (ptraceInfoError "ptryFrom(TxId): invalid constructor id")
 
 {- | Reference to a transaction output, with an index referencing which exact
 output we mean.
@@ -1007,14 +1001,11 @@ deriving via
 -- | @since 2.0.0
 instance PTryFrom PData (PAsData PScriptHash) where
   type PTryFromExcess PData (PAsData PScriptHash) = Mret PScriptHash
-  ptryFrom' opq = runTermCont $ do
-    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
-    tcont $ \f ->
-      pif
-        (plengthBS # unwrapped #== 28)
-        (f ())
-        (ptraceInfoError "ptryFrom(PScriptHash): must be 28 bytes long")
-    pure (punsafeCoerce opq, pcon . PScriptHash $ unwrapped)
+  ptryFrom' opq x f = ptryFrom' @_ @(PAsData PByteString) opq x $ \_ unwrapped ->
+    pif
+      (plengthBS # unwrapped #== 28)
+      (f (punsafeCoerce opq) (pcon . PScriptHash $ unwrapped))
+      (ptraceInfoError "ptryFrom(PScriptHash): must be 28 bytes long")
 
 -- | @since 2.0.0
 datumHash :: Plutus.Datum -> Plutus.DatumHash
@@ -1126,7 +1117,7 @@ pparseDatum ::
 pparseDatum = phoistAcyclic $ plam $ \dh datums ->
   pmatch (AssocMap.plookup # dh # datums) $ \case
     PNothing -> pcon PNothing
-    PJust datum -> pcon . PJust $ ptryFrom (pto datum) fst
+    PJust datum -> pcon . PJust $ ptryFromInfo (pto datum) "could not parse datum" const
 
 {- | Extracts the element out of a 'PDJust' and throws an error if its
 argument is 'PDNothing'.

@@ -11,16 +11,18 @@ module Plutarch.TryFrom (
   pupcast,
   pupcastF,
   pdowncastF,
+  ptryFromInfo,
+  ptryFromDebug,
 ) where
 
-import Data.Kind (Constraint)
+import Data.Kind (Constraint, Type)
 import Data.Proxy (Proxy (Proxy))
-
-import Plutarch.Internal (PType, Term, punsafeCoerce)
+import Plutarch.Internal (PType, S, Term, punsafeCoerce)
 import Plutarch.Internal.PlutusType (PContravariant, PCovariant, PInner)
 import Plutarch.Internal.Witness (witness)
-
 import Plutarch.Reducible (Reduce)
+import Plutarch.String (PString)
+import Plutarch.Trace (ptraceDebugError, ptraceInfoError)
 
 import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 
@@ -69,16 +71,59 @@ type family PSubtype (a :: PType) (b :: PType) :: Constraint where
 and a way to go from @a@ to @b@.
 Laws:
 - @(punsafeCoerce . fst) <$> tcont (ptryFrom x) ≡ pure x@
+
+@since 1.5.0
 -}
 class PSubtype a b => PTryFrom (a :: PType) (b :: PType) where
   type PTryFromExcess a b :: PType
   type PTryFromExcess a b = PTryFromExcess a (PInner b)
-  ptryFrom' :: forall s r. Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
-  default ptryFrom' :: forall s r. (PTryFrom a (PInner b), PTryFromExcess a b ~ PTryFromExcess a (PInner b)) => Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
-  ptryFrom' opq f = ptryFrom @(PInner b) @a opq \(inn, exc) -> f (punsafeCoerce inn, exc)
 
-ptryFrom :: forall b a s r. PTryFrom a b => Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
-ptryFrom = ptryFrom'
+  -- | @since 1.6.0
+  ptryFrom' ::
+    forall (s :: S) (r :: S -> Type).
+    Term s a ->
+    Term s r ->
+    (Term s b -> Reduce (PTryFromExcess a b s) -> Term s r) ->
+    Term s r
+  default ptryFrom' ::
+    forall (s :: S) (r :: S -> Type).
+    (PTryFrom a (PInner b), PTryFromExcess a b ~ PTryFromExcess a (PInner b)) =>
+    Term s a ->
+    Term s r ->
+    (Term s b -> Reduce (PTryFromExcess a b s) -> Term s r) ->
+    Term s r
+  ptryFrom' opq _ f = ptryFrom @(PInner b) @a opq (\(inn, exc) -> f (punsafeCoerce inn) exc)
+
+{-# DEPRECATED ptryFrom "Use ptryFromInfo or ptryFromDebug" #-}
+
+-- | @since 1.5.0
+ptryFrom ::
+  forall (b :: S -> Type) (a :: S -> Type) (s :: S) (r :: S -> Type).
+  PTryFrom a b =>
+  Term s a ->
+  ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) ->
+  Term s r
+ptryFrom x f = ptryFrom' x (ptraceInfoError "ptryFrom failed") (curry f)
+
+-- | @since 1.6.0
+ptryFromInfo ::
+  forall (b :: S -> Type) (a :: S -> Type) (s :: S) (r :: S -> Type).
+  PTryFrom a b =>
+  Term s a ->
+  Term s PString ->
+  (Term s b -> Reduce (PTryFromExcess a b s) -> Term s r) ->
+  Term s r
+ptryFromInfo x msg = ptryFrom' x (ptraceInfoError msg)
+
+-- | @since 1.6.0
+ptryFromDebug ::
+  forall (b :: S -> Type) (a :: S -> Type) (s :: S) (r :: S -> Type).
+  PTryFrom a b =>
+  Term s a ->
+  Term s PString ->
+  (Term s b -> Reduce (PTryFromExcess a b s) -> Term s r) ->
+  Term s r
+ptryFromDebug x msg = ptryFrom' x (ptraceDebugError msg)
 
 pupcast :: forall a b s. PSubtype a b => Term s b -> Term s a
 pupcast = let _ = witness (Proxy @(PSubtype a b)) in punsafeCoerce
