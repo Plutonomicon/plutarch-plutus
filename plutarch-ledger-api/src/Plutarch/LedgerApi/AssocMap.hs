@@ -109,6 +109,7 @@ import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusCore qualified as PLC
 import PlutusLedgerApi.V2 qualified as Plutus
 import PlutusTx.AssocMap qualified as PlutusMap
+import PlutusTx.Eq qualified as PlutusTx
 import Prelude hiding (pred)
 
 -- TODO: Rename this, because this is actually a _sorting_ guarantee!
@@ -150,7 +151,8 @@ instance PEq (PMap 'Sorted k v) where
 
 -- | @since 2.0.0
 instance
-  ( PLiftData k
+  ( PlutusTx.Eq (PLifted k)
+  , PLiftData k
   , PLiftData v
   , Ord (PLifted k)
   ) =>
@@ -160,7 +162,8 @@ instance
 
 -- | @since 2.0.0
 instance
-  ( PConstantData k
+  ( PlutusTx.Eq k
+  , PConstantData k
   , PConstantData v
   , Ord k
   ) =>
@@ -169,7 +172,7 @@ instance
   type PConstantRepr (PlutusMap.Map k v) = [(Plutus.Data, Plutus.Data)]
   type PConstanted (PlutusMap.Map k v) = PMap 'Unsorted (PConstanted k) (PConstanted v)
   pconstantToRepr m = bimap Plutus.toData Plutus.toData <$> PlutusMap.toList m
-  pconstantFromRepr m = fmap PlutusMap.fromList $
+  pconstantFromRepr m = fmap PlutusMap.safeFromList $
     for m $ \(x, y) -> do
       x' <- Plutus.fromData x
       y' <- Plutus.fromData y

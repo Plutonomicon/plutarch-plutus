@@ -64,7 +64,7 @@ instance Arbitrary CurrencySymbol where
 
 instance Arbitrary Value where
   arbitrary =
-    (\a -> Value . PlutusMap.fromList . sortOn fst . zip a)
+    (\a -> Value . PlutusMap.safeFromList . sortOn fst . zip a)
       <$> currSyms
       <*> listOf1 arbitraryTokMap
     where
@@ -73,7 +73,7 @@ instance Arbitrary Value where
       -- List of unique currency symbols.
       currSyms = nub <$> listOf1 (arbitrary @CurrencySymbol)
       arbitraryTokMap =
-        (\a -> PlutusMap.fromList . sortOn fst . zip a)
+        (\a -> PlutusMap.safeFromList . sortOn fst . zip a)
           <$> tokNames
           <*> listOf1 (oneof [getPositive @Integer <$> arbitrary, getNegative @Integer <$> arbitrary])
 

@@ -47,7 +47,7 @@ import Plutarch.Test
 import Plutarch.Test.Property.Gen ()
 import PlutusLedgerApi.V1.Interval qualified as Interval
 import PlutusLedgerApi.V1.Value qualified as Value
-import PlutusLedgerApi.V2 hiding (fromList)
+import PlutusLedgerApi.V2
 import PlutusTx.AssocMap qualified as PlutusMap
 import PlutusTx.Monoid (inv)
 import Test.Hspec
@@ -694,7 +694,7 @@ mkCtx outs l = pconstant (ScriptContext (info' outs l) purpose)
     info' :: [TxOut] -> [(DatumHash, Datum)] -> TxInfo
     info' outs dat =
       info
-        { txInfoData = PlutusMap.fromList dat
+        { txInfoData = PlutusMap.safeFromList dat
         , txInfoOutputs = outs
         }
 
