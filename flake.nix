@@ -56,7 +56,7 @@
             src = ./.;
             compiler-nix-name = "ghc964";
             # NOTE(bladyjoker): Follow https://github.com/input-output-hk/plutus/blob/master/cabal.project
-            index-state = "2024-03-24T00:00:00Z";
+            index-state = "2024-06-04T19:23:27Z";
             inputMap = {
               "https://input-output-hk.github.io/cardano-haskell-packages" = CHaP;
             };

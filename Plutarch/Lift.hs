@@ -47,10 +47,9 @@ import Plutarch.Internal (
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
 import Plutarch.Script (unScript)
 import PlutusCore qualified as PLC
-import PlutusCore.Builtin (BuiltinError, readKnownConstant)
-import PlutusCore.Evaluation.Machine.Exception (_UnliftingError)
+import PlutusCore.Builtin (BuiltinError, readKnownConstant, _UnliftingEvaluationError)
 import PlutusTx (BuiltinData, Data, builtinDataToData, dataToBuiltinData)
-import PlutusTx.Builtins.Class (FromBuiltin, ToBuiltin, fromBuiltin, toBuiltin)
+import PlutusTx.Builtins.HasBuiltin (FromBuiltin, HasFromBuiltin, HasToBuiltin, ToBuiltin, fromBuiltin, toBuiltin)
 import Universe (Includes)
 import UntypedPlutusCore qualified as UPLC
 
@@ -138,7 +137,7 @@ plift prog = case plift' (Tracing LogInfo DoTracing) prog of
   Right x -> x
   Left LiftError_FromRepr -> error "plift failed: pconstantFromRepr returned 'Nothing'"
   Left (LiftError_KnownTypeError e) ->
-    let unliftErrMaybe = e ^? _UnliftingError
+    let unliftErrMaybe = e ^? _UnliftingEvaluationError
      in error $
           "plift failed: incorrect type: "
             <> maybe "absurd evaluation failure" show unliftErrMaybe
@@ -223,10 +222,10 @@ class FromBuiltin' arep a | arep -> a where
   fromBuiltin' :: arep -> a
 
 -- FIXME this overlappable instance is nonsense and disregards the fundep
-instance {-# OVERLAPPABLE #-} ToBuiltin a arep => ToBuiltin' a arep where
+instance {-# OVERLAPPABLE #-} (HasToBuiltin a, arep ~ ToBuiltin a) => ToBuiltin' a arep where
   toBuiltin' = toBuiltin
 
-instance {-# OVERLAPPABLE #-} FromBuiltin arep a => FromBuiltin' arep a where
+instance {-# OVERLAPPABLE #-} (HasFromBuiltin arep, a ~ FromBuiltin arep) => FromBuiltin' arep a where
   fromBuiltin' = fromBuiltin
 
 instance ToBuiltin' Data BuiltinData where

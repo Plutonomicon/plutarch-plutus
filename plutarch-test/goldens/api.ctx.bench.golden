@@ -1,7 +1,7 @@
-term {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":145}
-get.txInfo {"exBudgetCPU":460976,"exBudgetMemory":1496,"scriptSizeBytes":154}
-get.mint {"exBudgetCPU":1684580,"exBudgetMemory":5620,"scriptSizeBytes":184}
-get.credentials {"exBudgetCPU":4834417,"exBudgetMemory":15200,"scriptSizeBytes":247}
-get.sym {"exBudgetCPU":10626963,"exBudgetMemory":31355,"scriptSizeBytes":346}
-ScriptPurpose.literal {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":48}
-ScriptPurpose.decode {"exBudgetCPU":1247652,"exBudgetMemory":3498,"scriptSizeBytes":74}
+term {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":145}
+get.txInfo {"exBudgetCPU":457830,"exBudgetMemory":1496,"scriptSizeBytes":154}
+get.mint {"exBudgetCPU":1658212,"exBudgetMemory":5620,"scriptSizeBytes":184}
+get.credentials {"exBudgetCPU":4397239,"exBudgetMemory":15200,"scriptSizeBytes":247}
+get.sym {"exBudgetCPU":9044756,"exBudgetMemory":31355,"scriptSizeBytes":346}
+ScriptPurpose.literal {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":48}
+ScriptPurpose.decode {"exBudgetCPU":964957,"exBudgetMemory":3498,"scriptSizeBytes":74}
