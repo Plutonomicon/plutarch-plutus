@@ -14,6 +14,7 @@ module Plutarch.LedgerApi (
   -- * Contexts
   PScriptContext (..),
   PTxInfo (..),
+  PScriptInfo (..),
   PScriptPurpose (..),
 
   -- * Tx
@@ -87,6 +88,7 @@ module Plutarch.LedgerApi (
   PGovernanceAction (..),
   PChangedParameters (..),
   PConstitution (..),
+  PCommittee (..),
 
   -- * Crypto
 
@@ -123,7 +125,7 @@ import Data.ByteArray (convert)
 import Data.ByteString (ByteString, toStrict)
 import Data.ByteString.Short (fromShort)
 import Data.Coerce (coerce)
-import Plutarch.Builtin (pasConstr, pforgetData)
+import Plutarch.Builtin (pasConstr, pasMap, pforgetData)
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
@@ -149,6 +151,87 @@ import Plutarch.Unsafe qualified as Unsafe
 import PlutusLedgerApi.Common (serialiseUPLC)
 import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.Prelude qualified as PlutusTx
+
+-- TODO: Investigate what guarantees this provides on the Map, if any
+
+-- | @since 3.1.0
+newtype PCommittee (s :: S)
+  = PCommittee
+      ( Term
+          s
+          ( PDataRecord
+              '[ "committeeMembers" ':= AssocMap.PMap 'AssocMap.Unsorted PColdCommitteeCredential PInteger
+               , "committeeQuorum" ':= PRationalData
+               ]
+          )
+      )
+  deriving stock
+    ( -- | @since 3.1.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.1.0
+      PlutusType
+    , -- | @since 3.1.0
+      PIsData
+    , -- | @since 3.1.0
+      PDataFields
+    , -- | @since 3.1.0
+      PEq
+    , -- | @since 3.1.0
+      PShow
+    )
+
+-- | @since 3.1.0
+instance DerivePlutusType PCommittee where
+  type DPTStrat _ = PlutusTypeData
+
+-- | @since 3.1.0
+instance PUnsafeLiftDecl PCommittee where
+  type PLifted _ = Plutus.Committee
+
+-- | @since 3.1.0
+deriving via
+  (DerivePConstantViaData Plutus.Committee PCommittee)
+  instance
+    PConstantDecl Plutus.Committee
+
+-- | @since 3.1.0
+data PScriptInfo (s :: S)
+  = PMintingScript (Term s (PDataRecord '["_0" ':= Value.PCurrencySymbol]))
+  | PSpendingScript (Term s (PDataRecord '["_0" ':= PTxOutRef, "_1" ':= PMaybeData PDatum]))
+  | PRewardingScript (Term s (PDataRecord '["_0" ':= PCredential]))
+  | PCertifyingScript (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PTxCert]))
+  | PVotingScript (Term s (PDataRecord '["_0" ':= PVoter]))
+  | PProposingScript (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PProposalProcedure]))
+  deriving stock
+    ( -- | @since 3.1.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.1.0
+      PlutusType
+    , -- | @since 3.1.0
+      PIsData
+    , -- | @since 3.1.0
+      PEq
+    , -- | @since 3.1.0
+      PShow
+    )
+
+-- | @since 3.1.0
+instance DerivePlutusType PScriptInfo where
+  type DPTStrat _ = PlutusTypeData
+
+-- | @since 3.1.0
+instance PUnsafeLiftDecl PScriptInfo where
+  type PLifted _ = Plutus.ScriptInfo
+
+-- | @since 3.1.0
+deriving via
+  (DerivePConstantViaData Plutus.ScriptInfo PScriptInfo)
+  instance
+    PConstantDecl Plutus.ScriptInfo
 
 -- | @since 2.0.0
 newtype PScriptContext (s :: S)
@@ -612,8 +695,6 @@ deriving via
   instance
     PConstantDecl Plutus.GovernanceAction
 
--- TODO: Be careful with PTryFrom for this. It's not really Data, it's a map!
-
 -- | @since 3.1.0
 newtype PChangedParameters (s :: S)
   = PChangedParameters (Term s PData)
@@ -645,6 +726,15 @@ deriving via
   (DerivePConstantViaBuiltin Plutus.ChangedParameters PChangedParameters PData)
   instance
     PConstantDecl Plutus.ChangedParameters
+
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData PChangedParameters) where
+  type PTryFromExcess PData (PAsData PChangedParameters) = Mret (PBuiltinList (PBuiltinPair PData PData))
+  {-# INLINEABLE ptryFrom' #-}
+  -- We have to verify that we really have a Map here.
+  ptryFrom' opq = runTermCont $ do
+    ver <- tcont $ plet (pasMap # opq)
+    pure (punsafeCoerce opq, ver)
 
 -- | @since 3.1.0
 newtype PProtocolVersion (s :: S)
@@ -746,14 +836,17 @@ deriving via
   instance
     PConstantDecl Plutus.GovernanceActionId
 
--- | @since 3.1.0
+-- | @since 2.0.0
 data PScriptPurpose (s :: S)
   = PMinting (Term s (PDataRecord '["_0" ':= Value.PCurrencySymbol]))
   | PSpending (Term s (PDataRecord '["_0" ':= PTxOutRef]))
-  | PRewarding (Term s (PDataRecord '["_0" ':= PStakingCredential]))
+  | -- | @since 3.1.0
+    PRewarding (Term s (PDataRecord '["_0" ':= PCredential]))
   | PCertifying (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PTxCert]))
-  | PVoting (Term s (PDataRecord '["_0" ':= PVoter]))
-  | PProposing (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PProposalProcedure]))
+  | -- | @since 3.1.0
+    PVoting (Term s (PDataRecord '["_0" ':= PVoter]))
+  | -- | @since 3.1.0
+    PProposing (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PProposalProcedure]))
   deriving stock
     ( -- | @since 2.0.0
       Generic
