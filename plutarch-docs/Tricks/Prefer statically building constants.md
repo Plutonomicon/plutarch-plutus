@@ -7,7 +7,7 @@ module Plutarch.Docs.PreferStaticallyBuilding (viacon, viaconstant) where
 
 import Plutarch.Prelude
 import Plutarch.LedgerApi (PScriptPurpose (PMinting), PCurrencySymbol (PCurrencySymbol))
-import PlutusLedgerApi.V1 (ScriptPurpose (Minting))
+import PlutusLedgerApi.V3 (ScriptPurpose (Minting))
 
 ```
 

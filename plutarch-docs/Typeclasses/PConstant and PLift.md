@@ -7,7 +7,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Plutarch.Docs.PConstantAndPLift (b, purp) where
 import Plutarch.Prelude
-import PlutusLedgerApi.V1.Contexts (ScriptPurpose (Minting))
+import PlutusLedgerApi.V3 (ScriptPurpose (Minting))
 import Plutarch.LedgerApi (PScriptPurpose)
 ```
 

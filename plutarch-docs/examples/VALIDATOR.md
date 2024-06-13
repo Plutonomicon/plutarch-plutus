@@ -8,7 +8,8 @@
 module Plutarch.Docs.ValidatorExample (alwaysSucceeds, checkSignatory, res', res, alwaysFails) where
 
 import Plutarch.Prelude
-import Plutarch.LedgerApi (PDatum, PRedeemer, PScriptContext, PPubKeyHash, PScriptPurpose(PSpending))
+import Plutarch.LedgerApi (PDatum, PRedeemer, PScriptContext, PPubKeyHash, 
+  PScriptInfo(PSpendingScript))
 import Plutarch.Docs.Run (evalWithArgsT)
 import Plutarch.Script (Script)
 import qualified PlutusTx
@@ -72,8 +73,8 @@ res = alwaysFails `evalWithArgsT` [PlutusTx.toData (), PlutusTx.toData (), Plutu
 
 checkSignatory :: Term s (PPubKeyHash :--> PAsData PDatum :--> PAsData PRedeemer :--> PAsData PScriptContext :--> PUnit)
 checkSignatory = plam $ \ph _ _ ctx' -> P.do
-  ctx <- pletFields @["txInfo", "purpose"] ctx'
-  PSpending _ <- pmatch ctx.purpose
+  ctx <- pletFields @["txInfo", "scriptInfo"] ctx'
+  PSpendingScript _ <- pmatch ctx.scriptInfo
   let signatories = pfield @"signatories" # ctx.txInfo
   pif
     (pelem # pdata ph # pfromData signatories)
