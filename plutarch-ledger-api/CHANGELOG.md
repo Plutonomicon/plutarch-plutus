@@ -34,6 +34,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
       `data` to match upstream definitions
     * `PScriptPurpose` has two new constructors, and `PCertifying` has different
       fields
+    * `PTxId` now guarantees 32 byte length
+    * `PTxInfo`'s `mint` field now ensures that no zero entries are included
+    * `PScriptContext` lost the `purpose` field, but gained `redeemer` and 
+       `scriptInfo` fields
+* `PRedeemerHash` now has the same type classes instantiated as `PDatumHash` did
 
 ### Removed
 
