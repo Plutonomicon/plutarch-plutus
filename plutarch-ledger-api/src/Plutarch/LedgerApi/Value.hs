@@ -76,8 +76,10 @@ import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.Prelude qualified as PlutusTx
 
+import Plutarch.Builtin (PDataNewType)
+
 -- | @since 2.2.0
-newtype PLovelace (s :: S) = PLovelace (Term s PInteger)
+newtype PLovelace (s :: S) = PLovelace (Term s (PDataNewType PInteger))
   deriving stock
     ( -- | @since 2.2.0
       Generic
@@ -93,6 +95,7 @@ newtype PLovelace (s :: S) = PLovelace (Term s PInteger)
       PPartialOrd
     , -- | @since 2.2.0
       PShow
+    , PTryFrom PData
     )
 
 -- | @since 2.2.0

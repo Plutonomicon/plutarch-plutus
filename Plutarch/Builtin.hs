@@ -28,6 +28,7 @@ module Plutarch.Builtin (
   ppairDataBuiltin,
   pchooseListBuiltin,
   pchooseData,
+  PDataNewType,
 ) where
 
 import Data.Functor.Const (Const)
@@ -63,7 +64,7 @@ import Plutarch (
   (#$),
   type (:-->),
  )
-import Plutarch.Bool (PBool (..), PEq, pif, pif', (#&&), (#==))
+import Plutarch.Bool (PBool (..), PEq, POrd, PPartialOrd, pif, pif', (#&&), (#<), (#<=), (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal.PlutusType (pcon', pmatch')
@@ -564,3 +565,37 @@ instance PTryFrom PData (PAsData PData) where
 instance PTryFrom PData PData where
   type PTryFromExcess PData PData = Const ()
   ptryFrom' opq f = f (opq, ())
+
+newtype PDataNewType (a :: PType) (s :: S) = PDataNewType (Term s (PAsData a))
+  deriving stock (Generic)
+
+instance PlutusType (PDataNewType a) where
+  type PInner (PDataNewType a) = PData
+  pcon' (PDataNewType a) = pforgetData a
+  pmatch' x' f = f (PDataNewType (punsafeCoerce x'))
+
+instance PIsData (PDataNewType a) where
+  pfromDataImpl = punsafeCoerce
+  pdataImpl = punsafeCoerce
+
+instance PEq (PDataNewType a) where
+  a #== b = pto a #== pto b
+
+instance (PIsData a, PPartialOrd a) => PPartialOrd (PDataNewType a) where
+  a #<= b =
+    pmatch a \(PDataNewType a') ->
+      pmatch b \(PDataNewType b') ->
+        pfromData a' #<= pfromData b'
+  a #< b =
+    pmatch a \(PDataNewType a') ->
+      pmatch b \(PDataNewType b') ->
+        pfromData a' #< pfromData b'
+
+instance (PIsData a, PPartialOrd a) => POrd (PDataNewType a)
+
+instance (PIsData a, PShow a) => PShow (PDataNewType a) where
+  pshow' x t =
+    pmatch t \(PDataNewType t') -> pshow' x $ pfromData t'
+
+instance (PIsData a, PTryFrom PData (PAsData a)) => PTryFrom PData (PDataNewType a)
+instance PTryFrom PData (PAsData (PDataNewType a))
