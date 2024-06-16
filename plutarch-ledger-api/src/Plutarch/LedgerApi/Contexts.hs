@@ -80,6 +80,8 @@ newtype PColdCommitteeCredential (s :: S) = PColdCommitteeCredential (Term s PCr
       PEq
     , -- | @since 3.1.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 3.1.0
@@ -97,6 +99,9 @@ deriving via
     PConstantDecl Plutus.ColdCommitteeCredential
 
 -- | @since 3.1.0
+instance PTryFrom PData (PAsData PColdCommitteeCredential)
+
+-- | @since 3.1.0
 newtype PHotCommitteeCredential (s :: S) = PHotCommitteeCredential (Term s PCredential)
   deriving stock
     ( -- | @since 3.1.0
@@ -111,6 +116,8 @@ newtype PHotCommitteeCredential (s :: S) = PHotCommitteeCredential (Term s PCred
       PEq
     , -- | @since 3.1.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 3.1.0
@@ -128,6 +135,9 @@ deriving via
     PConstantDecl Plutus.HotCommitteeCredential
 
 -- | @since 3.1.0
+instance PTryFrom PData (PAsData PHotCommitteeCredential)
+
+-- | @since 3.1.0
 newtype PDRepCredential (s :: S) = PDRepCredential (Term s PCredential)
   deriving stock
     ( -- | @since 3.1.0
@@ -142,6 +152,8 @@ newtype PDRepCredential (s :: S) = PDRepCredential (Term s PCredential)
       PEq
     , -- | @since 3.1.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 3.1.0
@@ -157,6 +169,9 @@ deriving via
   (DerivePConstantViaNewtype Plutus.DRepCredential PDRepCredential PCredential)
   instance
     PConstantDecl Plutus.DRepCredential
+
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData PDRepCredential)
 
 -- | @since 3.1.0
 data PDRep (s :: S)
@@ -176,6 +191,8 @@ data PDRep (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 3.1.0
@@ -191,6 +208,9 @@ deriving via
   (DerivePConstantViaData Plutus.DRep PDRep)
   instance
     PConstantDecl Plutus.DRep
+
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData PDRep)
 
 -- | @since 3.1.0
 data PDelegatee (s :: S)
@@ -210,6 +230,8 @@ data PDelegatee (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 3.1.0
@@ -227,14 +249,17 @@ deriving via
     PConstantDecl Plutus.Delegatee
 
 -- | @since 3.1.0
+instance PTryFrom PData (PAsData PDelegatee)
+
+-- | @since 3.1.0
 data PTxCert (s :: S)
-  = PTxCertRegStaking (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PMaybeData Value.PLovelace]))
-  | PTxCertUnRegStaking (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PMaybeData Value.PLovelace]))
+  = PTxCertRegStaking (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PMaybeData (PAsData Value.PLovelace)]))
+  | PTxCertUnRegStaking (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PMaybeData (PAsData Value.PLovelace)]))
   | PTxCertDelegStaking (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PDelegatee]))
-  | PTxCertRegDeleg (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PDelegatee, "_2" ':= Value.PLovelace]))
-  | PTxCertRegDRep (Term s (PDataRecord '["_0" ':= PDRepCredential, "_1" ':= Value.PLovelace]))
+  | PTxCertRegDeleg (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PDelegatee, "_2" ':= PAsData Value.PLovelace]))
+  | PTxCertRegDRep (Term s (PDataRecord '["_0" ':= PDRepCredential, "_1" ':= PAsData Value.PLovelace]))
   | PTxCertUpdateDRep (Term s (PDataRecord '["_0" ':= PDRepCredential]))
-  | PTxCertUnRegDRep (Term s (PDataRecord '["_0" ':= PDRepCredential, "_1" ':= Value.PLovelace]))
+  | PTxCertUnRegDRep (Term s (PDataRecord '["_0" ':= PDRepCredential, "_1" ':= PAsData Value.PLovelace]))
   | PTxCertPoolRegister (Term s (PDataRecord '["_0" ':= PPubKeyHash, "_1" ':= PPubKeyHash]))
   | PTxCertPoolRetire (Term s (PDataRecord '["_0" ':= PPubKeyHash, "_1" ':= PInteger]))
   | PTxCertAuthHotCommittee (Term s (PDataRecord '["_0" ':= PColdCommitteeCredential, "_1" ':= PHotCommitteeCredential]))
@@ -269,6 +294,9 @@ deriving via
     PConstantDecl Plutus.TxCert
 
 -- | @since 3.1.0
+instance PTryFrom PData (PAsData PTxCert)
+
+-- | @since 3.1.0
 data PVoter (s :: S)
   = PCommitteeVoter (Term s (PDataRecord '["_0" ':= PHotCommitteeCredential]))
   | PDRepVoter (Term s (PDataRecord '["_0" ':= PDRepCredential]))
@@ -286,6 +314,8 @@ data PVoter (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 3.1.0
@@ -301,6 +331,9 @@ deriving via
   (DerivePConstantViaData Plutus.Voter PVoter)
   instance
     PConstantDecl Plutus.Voter
+
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData PVoter)
 
 -- | @since 3.1.0
 data PVote (s :: S)

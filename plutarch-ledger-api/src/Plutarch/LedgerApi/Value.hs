@@ -109,6 +109,9 @@ deriving via
   instance
     PConstantDecl Plutus.Lovelace
 
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData PLovelace)
+
 -- | @since 2.0.0
 newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
   deriving stock
