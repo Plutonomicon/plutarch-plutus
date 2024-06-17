@@ -60,6 +60,7 @@ module Plutarch.LedgerApi.Value (
 ) where
 
 import Plutarch.Bool (pand', pif')
+import Plutarch.Builtin (PDataNewtype (PDataNewtype))
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
@@ -76,10 +77,8 @@ import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.Prelude qualified as PlutusTx
 
-import Plutarch.Builtin (PDataNewType)
-
 -- | @since 2.2.0
-newtype PLovelace (s :: S) = PLovelace (Term s (PDataNewType PInteger))
+newtype PLovelace (s :: S) = PLovelace (Term s (PDataNewtype PInteger))
   deriving stock
     ( -- | @since 2.2.0
       Generic
@@ -95,7 +94,8 @@ newtype PLovelace (s :: S) = PLovelace (Term s (PDataNewType PInteger))
       PPartialOrd
     , -- | @since 2.2.0
       PShow
-    , PTryFrom PData
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 2.2.0
@@ -116,7 +116,7 @@ deriving via
 instance PTryFrom PData (PAsData PLovelace)
 
 -- | @since 2.0.0
-newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
+newtype PTokenName (s :: S) = PTokenName (Term s (PDataNewtype PByteString))
   deriving stock
     ( -- | @since 2.0.0
       Generic
@@ -150,17 +150,26 @@ deriving via
   instance
     PConstantDecl Plutus.TokenName
 
+-- | @since 3.1.0
+instance PTryFrom PData PTokenName where
+  type PTryFromExcess PData PTokenName = Mret PTokenName
+  ptryFrom' opq = runTermCont $ do
+    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
+    tcont $ \f ->
+      pif (plengthBS # unwrapped #<= 32) (f ()) (ptraceInfoError "ptryFrom(TokenName): must be at most 32 bytes long")
+    pure (punsafeCoerce opq, pcon . PTokenName . pcon . PDataNewtype . pdata $ unwrapped)
+
 -- | @since 2.0.0
 instance PTryFrom PData (PAsData PTokenName) where
   type PTryFromExcess PData (PAsData PTokenName) = Mret PTokenName
   ptryFrom' opq = runTermCont $ do
     unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
     tcont $ \f ->
-      pif (plengthBS # unwrapped #<= 32) (f ()) (ptraceInfoError "ptryFrom(TokenName): must be at most 32 Bytes long")
-    pure (punsafeCoerce opq, pcon . PTokenName $ unwrapped)
+      pif (plengthBS # unwrapped #<= 32) (f ()) (ptraceInfoError "ptryFrom(TokenName): must be at most 32 bytes long")
+    pure (punsafeCoerce opq, pcon . PTokenName . pcon . PDataNewtype . pdata $ unwrapped)
 
 -- | @since 2.0.0
-newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
+newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s (PDataNewtype PByteString))
   deriving stock
     ( -- | @since 2.0.0
       Generic
@@ -184,6 +193,19 @@ newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
 instance DerivePlutusType PCurrencySymbol where
   type DPTStrat _ = PlutusTypeNewtype
 
+-- | @since 3.1.0
+instance PTryFrom PData PCurrencySymbol where
+  type PTryFromExcess PData PCurrencySymbol = Mret PCurrencySymbol
+  ptryFrom' opq = runTermCont $ do
+    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
+    len <- tcont . plet $ plengthBS # unwrapped
+    tcont $ \f ->
+      pif
+        (len #== 0 #|| len #== 28)
+        (f ())
+        (ptraceInfoError "ptryFrom(CurrencySymbol): must be 28 bytes long or empty")
+    pure (punsafeCoerce opq, pcon . PCurrencySymbol . pcon . PDataNewtype . pdata $ unwrapped)
+
 -- | @since 2.0.0
 instance PTryFrom PData (PAsData PCurrencySymbol) where
   type PTryFromExcess PData (PAsData PCurrencySymbol) = Mret PCurrencySymbol
@@ -192,7 +214,7 @@ instance PTryFrom PData (PAsData PCurrencySymbol) where
     len <- tcont . plet $ plengthBS # unwrapped
     tcont $ \f ->
       pif (len #== 0 #|| len #== 28) (f ()) (ptraceInfoError "ptryFrom(CurrencySymbol): must be 28 bytes long or empty")
-    pure (punsafeCoerce opq, pcon . PCurrencySymbol $ unwrapped)
+    pure (punsafeCoerce opq, pcon . PCurrencySymbol . pcon . PDataNewtype . pdata $ unwrapped)
 
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PCurrencySymbol where

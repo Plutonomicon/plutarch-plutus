@@ -5,6 +5,7 @@ module Plutarch.LedgerApi.Crypto (
   PPubKeyHash (..),
 ) where
 
+import Plutarch.Builtin (PDataNewtype (PDataNewtype))
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
@@ -17,7 +18,7 @@ import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V3 qualified as Plutus
 
 -- | @since 2.0.0
-newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
+newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s (PDataNewtype PByteString))
   deriving stock
     ( -- | @since 2.0.0
       Generic
@@ -51,6 +52,18 @@ deriving via
   instance
     PConstantDecl Plutus.PubKeyHash
 
+-- | @since 3.1.0
+instance PTryFrom PData PPubKeyHash where
+  type PTryFromExcess PData PPubKeyHash = Mret PPubKeyHash
+  ptryFrom' opq = runTermCont $ do
+    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
+    tcont $ \f ->
+      pif
+        (plengthBS # unwrapped #== 28)
+        (f ())
+        (ptraceInfoError "ptryFrom(PPubKeyHash): must be 28 bytes long")
+    pure (punsafeCoerce opq, pcon . PPubKeyHash . pcon . PDataNewtype . pdata $ unwrapped)
+
 -- | @since 2.0.0
 instance PTryFrom PData (PAsData PPubKeyHash) where
   type PTryFromExcess PData (PAsData PPubKeyHash) = Mret PPubKeyHash
@@ -61,4 +74,4 @@ instance PTryFrom PData (PAsData PPubKeyHash) where
         (plengthBS # unwrapped #== 28)
         (f ())
         (ptraceInfoError "ptryFrom(PPubKeyHash): must be 28 bytes long")
-    pure (punsafeCoerce opq, pcon . PPubKeyHash $ unwrapped)
+    pure (punsafeCoerce opq, pcon . PPubKeyHash . pcon . PDataNewtype . pdata $ unwrapped)

@@ -9,6 +9,7 @@ module Plutarch.LedgerApi.Tx (
   POutputDatum (..),
 ) where
 
+import Plutarch.Builtin (PDataNewtype (PDataNewtype))
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
@@ -32,7 +33,7 @@ import PlutusLedgerApi.V3 qualified as Plutus
 
 @since 3.1.0
 -}
-newtype PTxId (s :: S) = PTxId (Term s PByteString)
+newtype PTxId (s :: S) = PTxId (Term s (PDataNewtype PByteString))
   deriving stock
     ( -- | @since 2.0.0
       Generic
@@ -67,6 +68,18 @@ deriving via
     PConstantDecl Plutus.TxId
 
 -- | @since 3.1.0
+instance PTryFrom PData PTxId where
+  type PTryFromExcess PData PTxId = Mret PTxId
+  ptryFrom' opq = runTermCont $ do
+    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
+    tcont $ \f ->
+      pif
+        (plengthBS # unwrapped #== 32)
+        (f ())
+        (ptraceInfoError "ptryFrom(PTxId): must be 32 bytes long")
+    pure (punsafeCoerce opq, pcon . PTxId . pcon . PDataNewtype . pdata $ unwrapped)
+
+-- | @since 3.1.0
 instance PTryFrom PData (PAsData PTxId) where
   type PTryFromExcess PData (PAsData PTxId) = Mret PTxId
   ptryFrom' opq = runTermCont $ do
@@ -76,7 +89,7 @@ instance PTryFrom PData (PAsData PTxId) where
         (plengthBS # unwrapped #== 32)
         (f ())
         (ptraceInfoError "ptryFrom(PTxId): must be 32 bytes long")
-    pure (punsafeCoerce opq, pcon . PTxId $ unwrapped)
+    pure (punsafeCoerce opq, pcon . PTxId . pcon . PDataNewtype . pdata $ unwrapped)
 
 {- | Reference to a transaction output, with an index referencing which exact
 output we mean.
@@ -130,6 +143,9 @@ deriving via
   instance
     PConstantDecl Plutus.TxOutRef
 
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData PTxOutRef)
+
 -- | @since 2.0.0
 newtype PTxOut (s :: S)
   = PTxOut
@@ -158,6 +174,8 @@ newtype PTxOut (s :: S)
       PEq
     , -- | @since 2.0.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 2.0.0
@@ -173,6 +191,9 @@ deriving via
   (DerivePConstantViaData Plutus.TxOut PTxOut)
   instance
     PConstantDecl Plutus.TxOut
+
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData PTxOut)
 
 -- | @since 2.0.0
 data POutputDatum (s :: S)
@@ -194,6 +215,8 @@ data POutputDatum (s :: S)
       PEq
     , -- | @since 2.0.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 2.0.0
@@ -209,3 +232,6 @@ deriving via
   (DerivePConstantViaData Plutus.OutputDatum POutputDatum)
   instance
     PConstantDecl Plutus.OutputDatum
+
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData POutputDatum)

@@ -22,11 +22,11 @@ module Plutarch.LedgerApi.Contexts (
   PTxInInfo (..),
   PTxInfo (..),
   PScriptContext (..),
-  pfindOwnInput,
+  -- TODO: Add these
+  -- pfindOwnInput,
   pfindDatum,
   pfindDatumHash,
-  pfindTxInByTxOutRef,
-  -- TODO: Add these
+  -- pfindTxInByTxOutRef,
   --  pfindContinuingInputs,
   --  pgetContinuingInputs,
   --  ptxSignedBy,
@@ -277,6 +277,8 @@ data PTxCert (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 3.1.0
@@ -353,6 +355,8 @@ data PVote (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 3.1.0
@@ -370,36 +374,44 @@ deriving via
     PConstantDecl Plutus.Vote
 
 -- | @since 3.1.0
+instance PTryFrom PData (PAsData PVote)
+
+-- | @since 3.1.0
 newtype PGovernanceActionId (s :: S)
   = PGovernanceActionId (Term s (PDataRecord '["txId" ':= PTxId, "govActionIx" ':= PInteger]))
   deriving stock
-    ( -- | @since 2.0.0
+    ( -- | @since 3.1.0
       Generic
     )
   deriving anyclass
-    ( -- | @since 2.0.0
+    ( -- | @since 3.1.0
       PlutusType
-    , -- | @since 2.0.0
+    , -- | @since 3.1.0
       PIsData
-    , -- | @since 2.0.0
+    , -- | @since 3.1.0
       PEq
-    , -- | @since 2.0.0
+    , -- | @since 3.1.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
--- | @since 2.0.0
+-- | @since 3.1.0
 instance DerivePlutusType PGovernanceActionId where
   type DPTStrat _ = PlutusTypeData
 
--- | @since 2.0.0
+-- | @since 3.1.0
 instance PUnsafeLiftDecl PGovernanceActionId where
   type PLifted PGovernanceActionId = Plutus.GovernanceActionId
 
--- | @since 2.0.0
+-- | @since 3.1.0
 deriving via
   (DerivePConstantViaData Plutus.GovernanceActionId PGovernanceActionId)
   instance
     PConstantDecl Plutus.GovernanceActionId
+
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData PGovernanceActionId)
 
 -- TODO: Investigate what guarantees this provides on the Map, if any
 
@@ -429,6 +441,8 @@ newtype PCommittee (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 3.1.0
@@ -444,6 +458,9 @@ deriving via
   (DerivePConstantViaData Plutus.Committee PCommittee)
   instance
     PConstantDecl Plutus.Committee
+
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData PCommittee)
 
 {- | A constitution, omitting the optional anchor.
 
@@ -463,6 +480,8 @@ newtype PConstitution (s :: S) = PConstitution (Term s (PMaybeData PScriptHash))
       PEq
     , -- | @since 3.1.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 3.1.0
@@ -478,6 +497,9 @@ deriving via
   (DerivePConstantViaNewtype Plutus.Constitution PConstitution (PMaybeData PScriptHash))
   instance
     PConstantDecl Plutus.Constitution
+
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData PConstitution)
 
 -- | @since 3.1.0
 newtype PProtocolVersion (s :: S)
@@ -497,6 +519,8 @@ newtype PProtocolVersion (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 3.1.0
@@ -514,6 +538,9 @@ deriving via
     PConstantDecl Plutus.ProtocolVersion
 
 -- | @since 3.1.0
+instance PTryFrom PData (PAsData PProtocolVersion)
+
+-- | @since 3.1.0
 newtype PChangedParameters (s :: S)
   = PChangedParameters (Term s PData)
   deriving stock
@@ -529,6 +556,8 @@ newtype PChangedParameters (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 3.1.0
@@ -546,6 +575,9 @@ deriving via
     PConstantDecl Plutus.ChangedParameters
 
 -- | @since 3.1.0
+instance PTryFrom PData (PAsData PChangedParameters)
+
+-- | @since 3.1.0
 data PGovernanceAction (s :: S)
   = PParameterChange (Term s (PDataRecord '["_0" ':= PMaybeData PGovernanceActionId, "_1" ':= PChangedParameters, "_2" ':= PMaybeData PScriptHash]))
   | PHardForkInitiation (Term s (PDataRecord '["_0" ':= PMaybeData PGovernanceActionId, "_1" ':= PProtocolVersion]))
@@ -556,7 +588,7 @@ data PGovernanceAction (s :: S)
           s
           ( PDataRecord
               '[ "_0" ':= PMaybeData PGovernanceActionId
-               , "_1" ':= PBuiltinList PColdCommitteeCredential
+               , "_1" ':= PBuiltinList (PAsData PColdCommitteeCredential)
                , "_2" ':= AssocMap.PMap 'AssocMap.Unsorted PColdCommitteeCredential PInteger
                , "_3" ':= PRationalData
                ]
@@ -577,6 +609,8 @@ data PGovernanceAction (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 3.1.0
@@ -592,6 +626,9 @@ deriving via
   (DerivePConstantViaData Plutus.GovernanceAction PGovernanceAction)
   instance
     PConstantDecl Plutus.GovernanceAction
+
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData PGovernanceAction)
 
 -- | @since 3.1.0
 newtype PProposalProcedure (s :: S)
@@ -620,6 +657,8 @@ newtype PProposalProcedure (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 3.1.0
@@ -635,6 +674,9 @@ deriving via
   (DerivePConstantViaData Plutus.ProposalProcedure PProposalProcedure)
   instance
     PConstantDecl Plutus.ProposalProcedure
+
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData PProposalProcedure)
 
 -- | @since 2.0.0
 data PScriptPurpose (s :: S)
@@ -660,6 +702,8 @@ data PScriptPurpose (s :: S)
       PEq
     , -- | @since 2.0.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 2.0.0
@@ -675,6 +719,9 @@ deriving via
   (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose)
   instance
     PConstantDecl Plutus.ScriptPurpose
+
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData PScriptPurpose)
 
 -- | @since 3.1.0
 data PScriptInfo (s :: S)
@@ -697,6 +744,8 @@ data PScriptInfo (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 3.1.0
@@ -712,6 +761,9 @@ deriving via
   (DerivePConstantViaData Plutus.ScriptInfo PScriptInfo)
   instance
     PConstantDecl Plutus.ScriptInfo
+
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData PScriptInfo)
 
 {- | An input of the pending transaction.
 
@@ -742,6 +794,8 @@ newtype PTxInInfo (s :: S)
       PEq
     , -- | @since 2.0.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 2.0.0
@@ -758,6 +812,9 @@ deriving via
   instance
     PConstantDecl Plutus.TxInInfo
 
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData PTxInInfo)
+
 -- A pending transaction. This is the view as seen by a validator script.
 --
 -- @since 3.1.0
@@ -766,12 +823,12 @@ newtype PTxInfo (s :: S)
       ( Term
           s
           ( PDataRecord
-              '[ "inputs" ':= PBuiltinList PTxInInfo
-               , "referenceInputs" ':= PBuiltinList PTxInInfo
-               , "outputs" ':= PBuiltinList PTxOut
+              '[ "inputs" ':= PBuiltinList (PAsData PTxInInfo)
+               , "referenceInputs" ':= PBuiltinList (PAsData PTxInInfo)
+               , "outputs" ':= PBuiltinList (PAsData PTxOut)
                , "fee" ':= Value.PValue 'AssocMap.Sorted 'Value.Positive
                , "mint" ':= Value.PValue 'AssocMap.Sorted 'Value.NonZero -- value minted by transaction
-               , "txCerts" ':= PBuiltinList PTxCert
+               , "txCerts" ':= PBuiltinList (PAsData PTxCert)
                , "wdrl" ':= AssocMap.PMap 'AssocMap.Unsorted PStakingCredential PInteger -- Staking withdrawals
                , "validRange" ':= Interval.PInterval PPosixTime
                , "signatories" ':= PBuiltinList (PAsData PPubKeyHash)
@@ -779,7 +836,7 @@ newtype PTxInfo (s :: S)
                , "data" ':= AssocMap.PMap 'AssocMap.Unsorted PDatumHash PDatum
                , "id" ':= PTxId -- hash of the pending transaction
                , "votes" ':= AssocMap.PMap 'AssocMap.Unsorted PVoter (AssocMap.PMap 'AssocMap.Unsorted PGovernanceActionId PVote)
-               , "proposalProcedures" ':= PBuiltinList PProposalProcedure
+               , "proposalProcedures" ':= PBuiltinList (PAsData PProposalProcedure)
                , "currentTreasuryAmount" ':= PMaybeData Value.PLovelace
                , "treasuryDonation" ':= PMaybeData Value.PLovelace
                ]
@@ -800,6 +857,8 @@ newtype PTxInfo (s :: S)
       PEq
     , -- | @since 2.0.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 2.0.0
@@ -815,6 +874,9 @@ deriving via
   (DerivePConstantViaData Plutus.TxInfo PTxInfo)
   instance
     PConstantDecl Plutus.TxInfo
+
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData PTxInfo)
 
 -- | @since 3.1.0
 newtype PScriptContext (s :: S)
@@ -843,6 +905,8 @@ newtype PScriptContext (s :: S)
       PEq
     , -- | @since 2.0.0
       PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
     )
 
 -- | @since 2.0.0
@@ -859,37 +923,8 @@ deriving via
   instance
     PConstantDecl Plutus.ScriptContext
 
-{- | Find the input currently being validated.
-
-@since 3.1.0
--}
-pfindOwnInput ::
-  forall (s :: S).
-  Term s (PScriptContext :--> PMaybe PTxInInfo)
-pfindOwnInput = phoistAcyclic $ plam $ \sc ->
-  pletFields @["txInfo", "scriptInfo"] sc $ \sc' ->
-    pmatch (getField @"scriptInfo" sc') $ \case
-      PSpendingScript ss ->
-        let outRef = pfield @"_0" # ss
-            -- This binding is needed to deal with the typelevel slurry (and
-            -- resulting inference mess) that is PDataRecord. Don't remove it.
-            --
-            -- Koz
-            txI = getField @"txInfo" sc'
-            inputs = pfield @"inputs" # txI
-         in pfind # (matches # outRef) # inputs
-      _ -> pcon PNothing
-  where
-    matches ::
-      forall (s' :: S).
-      Term
-        s'
-        ( PAsData PTxOutRef
-            :--> PTxInInfo
-            :--> PBool
-        )
-    matches = phoistAcyclic $ plam $ \outRef' inInfo ->
-      outRef' #== (pfield @"outRef" # inInfo)
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData PScriptContext)
 
 {- | Find the datum corresponding to a datum hash, if there is one.
 
@@ -926,31 +961,3 @@ pfindDatumHash = phoistAcyclic $ plam $ \d txI ->
         )
     matches = phoistAcyclic $ plam $ \needle p ->
       needle #== pfromData (psndBuiltin # p)
-
-{- | Given a UTxO reference and a transaction ('PTxInfo'), resolve it to one of
-the transaction's inputs ('PTxInInfo').
-
-= Note
-
-This only searches \'true\' transaction inputs, and not referenced
-transaction inputs.
-
-@since 3.1.0
--}
-pfindTxInByTxOutRef ::
-  forall (s :: S).
-  Term s (PTxOutRef :--> PTxInfo :--> PMaybe PTxInInfo)
-pfindTxInByTxOutRef = phoistAcyclic $ plam $ \outref tinfo ->
-  let infoInputs = pfield @"inputs" # tinfo
-   in pfind # (matches # outref) # infoInputs
-  where
-    matches ::
-      forall (s' :: S).
-      Term
-        s'
-        ( PTxOutRef
-            :--> PTxInInfo
-            :--> PBool
-        )
-    matches = phoistAcyclic $ plam $ \needle inInfo ->
-      needle #== pfield @"outRef" # inInfo
