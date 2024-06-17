@@ -6,6 +6,7 @@
 module Plutarch.Docs.PreferStaticallyBuilding (viacon, viaconstant) where
 
 import Plutarch.Prelude
+import Plutarch.Builtin (PDataNewtype (PDataNewtype))
 import Plutarch.LedgerApi (PScriptPurpose (PMinting), PCurrencySymbol (PCurrencySymbol))
 import PlutusLedgerApi.V3 (ScriptPurpose (Minting))
 
@@ -28,7 +29,7 @@ viaconstant = pconstant (Minting "f1e301")
 -- (or)
 
 viacon :: Term s PScriptPurpose
-viacon = let currSym = pcon $ PCurrencySymbol $ phexByteStr "f1e301"
+viacon = let currSym = pcon . PCurrencySymbol . pcon . PDataNewtype . pdata $ phexByteStr "f1e301"
  in pcon $ PMinting $ pdcons # pdata currSym # pdnil
 ```
 
