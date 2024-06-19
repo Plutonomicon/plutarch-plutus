@@ -54,7 +54,7 @@ import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.Positive (PPositive, ptryPositive)
 import Plutarch.Show (PShow, pshow, pshow')
-import Plutarch.TermCont (tcont, unTermCont)
+import Plutarch.TermCont (pguardC, tcont, unTermCont)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
@@ -237,7 +237,11 @@ instance PFractional PRational where
     phoistAcyclic $
       plam $ \x ->
         pmatch x $ \(PRational xn xd) ->
-          pcon $ PRational (pto xd) $ ptryPositive # xn
+          pif (xn #== 0) (ptraceInfoError "precip: attempts to construct reciprocal of zero") $
+            pif
+              (xn #< 0)
+              (pcon $ PRational (pnegate #$ pto xd) $ ptryPositive #$ pnegate # xn)
+              (pcon $ PRational (pto xd) $ ptryPositive # xn)
 
   -- TODO (Optimize): Could this be optimized with an impl in terms of `#*`.
   x' #/ y' =
@@ -245,8 +249,14 @@ instance PFractional PRational where
       ( plam $ \x y -> unTermCont $ do
           PRational xn xd <- tcont $ pmatch x
           PRational yn yd <- tcont $ pmatch y
-          denm <- tcont . plet $ ptryPositive #$ pto xd * yn
-          pure $ preduce #$ pcon $ PRational (xn * pto yd) denm
+          denm <- tcont . plet $ pto xd * yn
+          pguardC "Cannot divide by zero" $ denm #== 0
+          pure $
+            preduce
+              #$ pif
+                (denm #< 0)
+                (pcon $ PRational (pnegate #$ xn * pto yd) (ptryPositive #$ pnegate # denm))
+                (pcon $ PRational (xn * pto yd) (ptryPositive # denm))
       )
       # x'
       # y'
