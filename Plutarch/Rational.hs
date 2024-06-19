@@ -34,7 +34,7 @@ import Plutarch (
   (#$),
   type (:-->),
  )
-import Plutarch.Bool (PEq, POrd, PPartialOrd, pif, (#<), (#<=), (#==))
+import Plutarch.Bool (PEq, POrd, PPartialOrd, pif, pnot, (#<), (#<=), (#==))
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
@@ -250,7 +250,7 @@ instance PFractional PRational where
           PRational xn xd <- tcont $ pmatch x
           PRational yn yd <- tcont $ pmatch y
           denm <- tcont . plet $ pto xd * yn
-          pguardC "Cannot divide by zero" $ denm #== 0
+          pguardC "Cannot divide by zero" $ pnot #$ denm #== 0
           pure $
             preduce
               #$ pif
