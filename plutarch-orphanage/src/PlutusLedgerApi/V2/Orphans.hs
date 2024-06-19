@@ -20,7 +20,6 @@ import Data.Word (Word32)
 import PlutusCore.Data qualified as PLC
 import PlutusLedgerApi.QuickCheck.Utils (
   fromAsWord64,
-  fromNonAdaCurrencySymbol,
   unSizedByteString,
  )
 import PlutusLedgerApi.V1.Interval qualified as Interval
@@ -322,10 +321,11 @@ in generating the Ada symbol in your case.
 instance Arbitrary PLA.CurrencySymbol where
   {-# INLINEABLE arbitrary #-}
   arbitrary =
-    frequency
-      [ (1, pure . PLA.CurrencySymbol . PlutusTx.toBuiltin @ByteString $ "")
-      , (maxBound, fromNonAdaCurrencySymbol <$> arbitrary)
-      ]
+    PLA.CurrencySymbol . PlutusTx.toBuiltin @ByteString
+      <$> frequency
+        [ (1, pure "")
+        , (maxBound, unSizedByteString @28 <$> arbitrary)
+        ]
 
 -- | @since 1.0.0
 deriving via PlutusTx.BuiltinByteString instance CoArbitrary PLA.CurrencySymbol
