@@ -79,13 +79,10 @@ instance Function PLA.LedgerBytes where
 
 @since 1.0.0
 -}
-instance Arbitrary PLA.PubKeyHash where
-  {-# INLINEABLE arbitrary #-}
-  arbitrary =
-    PLA.PubKeyHash . PlutusTx.toBuiltin @ByteString . unSizedByteString @28 <$> arbitrary
+deriving via Blake2b244Hash instance Arbitrary PLA.PubKeyHash
 
 -- | @since 1.0.0
-deriving via PlutusTx.BuiltinByteString instance CoArbitrary PLA.PubKeyHash
+deriving via Blake2b244Hash instance CoArbitrary PLA.PubKeyHash
 
 -- | @since 1.0.0
 instance Function PLA.PubKeyHash where
@@ -96,10 +93,10 @@ instance Function PLA.PubKeyHash where
 
 @since 1.0.0
 -}
-deriving via PLA.PubKeyHash instance Arbitrary PLA.ScriptHash
+deriving via Blake2b244Hash instance Arbitrary PLA.ScriptHash
 
 -- | @since 1.0.0
-deriving via PLA.PubKeyHash instance CoArbitrary PLA.ScriptHash
+deriving via Blake2b244Hash instance CoArbitrary PLA.ScriptHash
 
 -- | @since 1.0.0
 instance Function PLA.ScriptHash where
@@ -306,10 +303,10 @@ in generating the Ada symbol in your case.
 instance Arbitrary PLA.CurrencySymbol where
   {-# INLINEABLE arbitrary #-}
   arbitrary =
-    PLA.CurrencySymbol . PlutusTx.toBuiltin @ByteString
+    PLA.CurrencySymbol
       <$> frequency
         [ (1, pure "")
-        , (maxBound, unSizedByteString @28 <$> arbitrary)
+        , (maxBound, getBlake2b244Hash <$> arbitrary)
         ]
 
 -- | @since 1.0.0
@@ -1254,3 +1251,21 @@ instance Function PLC.Data where
         Right (Right (Left (ix, dats))) -> PLC.Constr ix dats
         Right (Right (Right (Left ell))) -> PLC.List ell
         Right (Right (Right (Right kvs))) -> PLC.Map kvs
+
+-- Helpers
+
+-- Wrapper for BLAKE2b-244 hashes for convenience.
+newtype Blake2b244Hash = Blake2b244Hash PlutusTx.BuiltinByteString
+  deriving (Eq, Ord) via PlutusTx.BuiltinByteString
+  deriving stock (Show)
+
+-- No shrinker, as it doesn't make much sense to.
+instance Arbitrary Blake2b244Hash where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary =
+    Blake2b244Hash . PlutusTx.toBuiltin @ByteString . unSizedByteString @28 <$> arbitrary
+
+deriving via PlutusTx.BuiltinByteString instance CoArbitrary Blake2b244Hash
+
+getBlake2b244Hash :: Blake2b244Hash -> PlutusTx.BuiltinByteString
+getBlake2b244Hash = coerce
