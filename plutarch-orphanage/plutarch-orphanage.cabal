@@ -54,7 +54,6 @@ library
     PlutusLedgerApi.V2.Orphans
 
   build-depends:
-    , base16-bytestring
     , bytestring
     , containers
     , plutus-core           >=1.29.0.0

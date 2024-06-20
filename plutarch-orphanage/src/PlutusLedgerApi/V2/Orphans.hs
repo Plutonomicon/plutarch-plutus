@@ -13,7 +13,6 @@ module PlutusLedgerApi.V2.Orphans () where
 import Control.Monad (guard)
 import Data.ByteString (ByteString)
 import Data.ByteString qualified as BS
-import Data.ByteString.Base16 qualified as Base16
 import Data.Coerce (coerce)
 import Data.Set qualified as Set
 import Data.Word (Word32)
@@ -65,22 +64,8 @@ instance Function PlutusTx.BuiltinByteString where
   {-# INLINEABLE function #-}
   function = functionMap PlutusTx.fromBuiltin (PlutusTx.toBuiltin @ByteString)
 
-{- | Base-16 encoded bytestring.
-
-@since 1.0.0
--}
-instance Arbitrary PLA.LedgerBytes where
-  {-# INLINEABLE arbitrary #-}
-  arbitrary = PLA.LedgerBytes . PlutusTx.toBuiltin @ByteString . Base16.encode <$> arbitrary
-  {-# INLINEABLE shrink #-}
-  -- We use the lenient strategy here, as it's not possible for us to ever end
-  -- up with anything that wasn't base-16 to begin with.
-  shrink =
-    fmap (PLA.LedgerBytes . PlutusTx.toBuiltin @ByteString . Base16.encode)
-      . shrink
-      . Base16.decodeLenient
-      . PlutusTx.fromBuiltin
-      . coerce @PLA.LedgerBytes @PlutusTx.BuiltinByteString
+-- | @since 1.0.0
+deriving via PlutusTx.BuiltinByteString instance Arbitrary PLA.LedgerBytes
 
 -- | @since 1.0.0
 deriving via PlutusTx.BuiltinByteString instance CoArbitrary PLA.LedgerBytes
