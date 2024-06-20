@@ -454,17 +454,14 @@ instance Function PLA.Address where
       outOf :: (PLA.Credential, Maybe PLA.StakingCredential) -> PLA.Address
       outOf (cred, scred) = PLA.Address cred scred
 
-{- | As this type is a hash, we don't shrink it.
+{- | BLAKE2b-256 hash (32 bytes) of a transaction ID.
 
 @since 1.0.0
 -}
-instance Arbitrary PLA.TxId where
-  {-# INLINEABLE arbitrary #-}
-  arbitrary =
-    PLA.TxId . PlutusTx.toBuiltin @ByteString . unSizedByteString @32 <$> arbitrary
+deriving via Blake2b256Hash instance Arbitrary PLA.TxId
 
 -- | @since 1.0.0
-deriving via PlutusTx.BuiltinByteString instance CoArbitrary PLA.TxId
+deriving via Blake2b256Hash instance CoArbitrary PLA.TxId
 
 -- | @since 1.0.0
 instance Function PLA.TxId where
@@ -598,14 +595,11 @@ instance Function PLA.Datum where
   {-# INLINEABLE function #-}
   function = functionMap coerce PLA.Datum
 
--- Note: This works because TxId and DatumHash are the same hash type, with the
--- same length.
+-- | @since 1.0.0
+deriving via Blake2b256Hash instance Arbitrary PLA.DatumHash
 
 -- | @since 1.0.0
-deriving via PLA.TxId instance Arbitrary PLA.DatumHash
-
--- | @since 1.0.0
-deriving via PLA.TxId instance CoArbitrary PLA.DatumHash
+deriving via Blake2b256Hash instance CoArbitrary PLA.DatumHash
 
 -- | @since 1.0.0
 instance Function PLA.DatumHash where
@@ -1269,3 +1263,16 @@ deriving via PlutusTx.BuiltinByteString instance CoArbitrary Blake2b244Hash
 
 getBlake2b244Hash :: Blake2b244Hash -> PlutusTx.BuiltinByteString
 getBlake2b244Hash = coerce
+
+-- Wrapper for BLAKE2b-256 hashes for convenience.
+newtype Blake2b256Hash = Blake2b256Hash PlutusTx.BuiltinByteString
+  deriving (Eq, Ord) via PlutusTx.BuiltinByteString
+  deriving stock (Show)
+
+-- No shrinker, as it doesn't make much sense to.
+instance Arbitrary Blake2b256Hash where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary =
+    Blake2b256Hash . PlutusTx.toBuiltin @ByteString . unSizedByteString @32 <$> arbitrary
+
+deriving via PlutusTx.BuiltinByteString instance CoArbitrary Blake2b256Hash
