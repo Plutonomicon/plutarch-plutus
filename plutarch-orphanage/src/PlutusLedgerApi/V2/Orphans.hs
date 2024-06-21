@@ -8,7 +8,15 @@
 -- via-derivable, because Function relies on an opaque type which we can't
 -- coerce through, we have to do this by hand.
 
-module PlutusLedgerApi.V2.Orphans () where
+module PlutusLedgerApi.V2.Orphans (
+  -- * Specialized Value wrappers
+  FeeValue (..),
+  getFeeValue,
+  NonAdaValue (..),
+  getNonAdaValue,
+  UTxOValue (..),
+  getUtxoValue,
+) where
 
 import Control.Monad (guard)
 import Data.ByteString (ByteString)
@@ -22,6 +30,7 @@ import PlutusLedgerApi.QuickCheck.Utils (
   unSizedByteString,
  )
 import PlutusLedgerApi.V1.Interval qualified as Interval
+import PlutusLedgerApi.V1.Value qualified as Value
 import PlutusLedgerApi.V2 qualified as PLA
 import PlutusTx.AssocMap qualified as AssocMap
 import PlutusTx.Builtins qualified as Builtins
@@ -32,11 +41,14 @@ import Test.QuickCheck (
   CoArbitrary (coarbitrary),
   Function (function),
   Gen,
+  NonEmptyList (NonEmpty),
   NonNegative (NonNegative),
+  Positive (Positive),
   chooseBoundedIntegral,
   chooseInt,
   frequency,
   functionMap,
+  getNonEmpty,
   getNonNegative,
   oneof,
   resize,
@@ -295,9 +307,6 @@ ensure that the Ada symbol is covered by your tests, you need to make
 dedicated tests for this. For this reason, we also don't shrink into the Ada
 symbol (indeed, we don't shrink at all).
 
-You may also want to look at 'NonAdaCurrencySymbol' if you're not interested
-in generating the Ada symbol in your case.
-
 @since 1.0.0
 -}
 instance Arbitrary PLA.CurrencySymbol where
@@ -319,12 +328,12 @@ instance Function PLA.CurrencySymbol where
 
 {- | This instance can generate the Ada token name, with faithful odds. It is
 limited to generating printable ASCII names, rather than the full UTF-8
-range. See 'PlutusLedgerApi.QuickCheck.Utils.NonAdaTokenName' documentation
-for an explanation of why we chose to do this. We also shrink into the Ada
-token name: bear this in mind.
+range. We did this for two reasons:
 
-If you don't want to generate (or shrink into) the Ada token name, consider
-using 'PlutusLedgerApi.QuickCheck.Utils.NonAdaTokenName' instead.
+1. For testing purposes, we should prioritize readability, hence our choice
+   of a textual representation; and
+2. It is difficult to work within the size limit (32 bytes) when generating
+   UTF-8.
 
 @since 1.0.0
 -}
@@ -394,7 +403,161 @@ instance (Function k, Function v) => Function (AssocMap.Map k v) where
   {-# INLINEABLE function #-}
   function = functionMap AssocMap.toList AssocMap.unsafeFromList
 
--- TODO: We should probably treat Ada values differently?
+{- | A 'PLA.Value' containing only Ada, suitable for fees. Furthermore, the
+Ada quantity is non-negative.
+
+= Note
+
+This is designed to act as a modifier, and thus, we expose the constructor
+even though it preserves invariants. If you use the constructor directly,
+be /very/ certain that the Value being wrapped satisfies the invariants
+described above: failing to do so means all guarantees of this type are off
+the table.
+
+@since 1.0.0
+-}
+newtype FeeValue = FeeValue PLA.Value
+  deriving
+    ( -- | @since 1.0.0
+      Eq
+    )
+    via PLA.Value
+  deriving stock
+    ( -- | @since 1.0.0
+      Show
+    )
+
+-- | @since 1.0.0
+instance Arbitrary FeeValue where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary = FeeValue . PLA.singleton PLA.adaSymbol PLA.adaToken . getNonNegative <$> arbitrary
+  {-# INLINEABLE shrink #-}
+  shrink (FeeValue v) =
+    FeeValue . PLA.singleton PLA.adaSymbol PLA.adaToken <$> do
+      let adaAmount = Value.valueOf v PLA.adaSymbol PLA.adaToken
+      NonNegative adaAmount' <- shrink (NonNegative adaAmount)
+      pure adaAmount'
+
+-- | @since 1.0.0
+deriving via PLA.Value instance CoArbitrary FeeValue
+
+-- | @since 1.0.0
+instance Function FeeValue where
+  {-# INLINEABLE function #-}
+  function = functionMap coerce FeeValue
+
+-- | @since 1.0.0
+getFeeValue :: FeeValue -> PLA.Value
+getFeeValue = coerce
+
+{- | A 'PLA.Value' that contains no Ada.
+
+= Note
+
+This is designed to act as a modifier, and thus, we expose the constructor
+even though it preserves invariants. If you use the constructor directly,
+be /very/ certain that the Value being wrapped satisfies the invariants
+described above: failing to do so means all guarantees of this type are off
+the table.
+
+@since 1.0.0
+-}
+newtype NonAdaValue = NonAdaValue PLA.Value
+  deriving
+    ( -- | @since 1.0.0
+      Eq
+    )
+    via PLA.Value
+  deriving stock
+    ( -- | @since 1.0.0
+      Show
+    )
+
+-- | @since 1.0.0
+instance Arbitrary NonAdaValue where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary =
+    NonAdaValue <$> do
+      -- Generate a set of currency symbols that aren't Ada
+      keySet <- Set.fromList <$> liftArbitrary (PLA.CurrencySymbol . getBlake2b244Hash <$> arbitrary)
+      let keyList = Set.toList keySet
+      -- For each key, generate a set of token name keys that aren't Ada
+      keyVals <- traverse mkInner keyList
+      pure . foldMap (\(cs, vals) -> foldMap (uncurry (Value.singleton cs)) vals) $ keyVals
+    where
+      mkInner :: PLA.CurrencySymbol -> Gen (PLA.CurrencySymbol, [(PLA.TokenName, Integer)])
+      mkInner cs =
+        (cs,) . Set.toList . Set.fromList . getNonEmpty <$> liftArbitrary ((,) <$> genNonAdaTokenName <*> arbitrary)
+      genNonAdaTokenName :: Gen PLA.TokenName
+      genNonAdaTokenName = fmap (PLA.TokenName . PlutusTx.toBuiltin @ByteString . BS.pack) . sized $ \size -> do
+        len <- resize size . chooseInt $ (1, 32)
+        vectorOf len . chooseBoundedIntegral $ (33, 126)
+  {-# INLINEABLE shrink #-}
+  -- Since we can't shrink keys anyway, we just borrow the stock shrinker
+  shrink (NonAdaValue v) = NonAdaValue <$> shrink v
+
+-- | @since 1.0.0
+deriving via PLA.Value instance CoArbitrary NonAdaValue
+
+-- | @since 1.0.0
+instance Function NonAdaValue where
+  {-# INLINEABLE function #-}
+  function = functionMap coerce NonAdaValue
+
+-- | @since 1.0.0
+getNonAdaValue :: NonAdaValue -> PLA.Value
+getNonAdaValue = coerce
+
+{- | A Value with positive Ada, suitable for 'PLA.TxOut'.
+
+= Note
+
+This is designed to act as a modifier, and thus, we expose the constructor
+even though it preserves invariants. If you use the constructor directly,
+be /very/ certain that the Value being wrapped satisfies the invariants
+described above: failing to do so means all guarantees of this type are off
+the table.
+
+@since 1.0.0
+-}
+newtype UTxOValue = UTxOValue PLA.Value
+  deriving
+    ( -- | @since 1.0.0
+      Eq
+    )
+    via PLA.Value
+  deriving stock
+    ( -- | @since 1.0.0
+      Show
+    )
+
+-- | @since 1.0.0
+instance Arbitrary UTxOValue where
+  {-# INLINEABLE arbitrary #-}
+  -- Generate a NonAdaValue, then force a positive Ada value into it.
+  arbitrary =
+    UTxOValue <$> do
+      NonAdaValue v <- arbitrary
+      Positive adaQuantity <- arbitrary
+      pure $ v <> Value.singleton "" "" adaQuantity
+  {-# INLINEABLE shrink #-}
+  shrink (UTxOValue v) =
+    UTxOValue <$> do
+      v' <- shrink v
+      guard (Value.valueOf v' "" "" > 0)
+      pure v'
+
+-- | @since 1.0.0
+deriving via PLA.Value instance CoArbitrary UTxOValue
+
+-- | @since 1.0.0
+instance Function UTxOValue where
+  {-# INLINEABLE function #-}
+  function = functionMap coerce UTxOValue
+
+-- | @since 1.0.0
+getUtxoValue :: UTxOValue -> PLA.Value
+getUtxoValue = coerce
 
 {- | This is the most general possible instance for 'PLA.Value'. In particular,
 this can have zero values, and does not treat the Ada symbol or token name
@@ -967,12 +1130,16 @@ instance Arbitrary PLA.TxOut where
   arbitrary =
     PLA.TxOut
       <$> arbitrary
-      <*> arbitrary
+      <*> (getUtxoValue <$> arbitrary)
       <*> arbitrary
       <*> arbitrary
   {-# INLINEABLE shrink #-}
   shrink (PLA.TxOut addr val od msh) =
-    PLA.TxOut <$> shrink addr <*> shrink val <*> shrink od <*> shrink msh
+    PLA.TxOut
+      <$> shrink addr
+      <*> (getUtxoValue <$> shrink (UTxOValue val))
+      <*> shrink od
+      <*> shrink msh
 
 -- | @since 1.0.0
 instance CoArbitrary PLA.TxOut where
@@ -1015,33 +1182,33 @@ instance Function PLA.TxInInfo where
 instance Arbitrary PLA.TxInfo where
   {-# INLINEABLE arbitrary #-}
   arbitrary =
-    PLA.TxInfo
+    PLA.TxInfo . getNonEmpty
       <$> arbitrary
+      <*> (getNonEmpty <$> arbitrary)
+      <*> arbitrary
+      <*> (getFeeValue <$> arbitrary)
+      <*> (getNonAdaValue <$> arbitrary)
       <*> arbitrary
       <*> arbitrary
       <*> arbitrary
-      <*> arbitrary
-      <*> arbitrary
-      <*> arbitrary
-      <*> arbitrary
-      <*> arbitrary
+      <*> (Set.toList <$> arbitrary)
       <*> arbitrary
       <*> arbitrary
       <*> arbitrary
   {-# INLINEABLE shrink #-}
   shrink (PLA.TxInfo ins routs outs fee mint dcert wdrl validRange sigs reds dats tid) =
-    PLA.TxInfo
-      <$> shrink ins
-      <*> shrink routs
+    PLA.TxInfo . getNonEmpty
+      <$> shrink (NonEmpty ins)
+      <*> (getNonEmpty <$> shrink (NonEmpty routs))
       <*> shrink outs
-      <*> shrink fee
-      <*> shrink mint
+      <*> (getFeeValue <$> shrink (FeeValue fee))
+      <*> (getNonAdaValue <$> shrink (NonAdaValue mint))
       <*> shrink dcert
       <*> shrink wdrl
       <*>
       -- Ranges don't shrink anyway
       pure validRange
-      <*> shrink sigs
+      <*> (Set.toList <$> shrink (Set.fromList sigs))
       <*> shrink reds
       <*> shrink dats
       <*> shrink tid
@@ -1276,3 +1443,17 @@ instance Arbitrary Blake2b256Hash where
     Blake2b256Hash . PlutusTx.toBuiltin @ByteString . unSizedByteString @32 <$> arbitrary
 
 deriving via PlutusTx.BuiltinByteString instance CoArbitrary Blake2b256Hash
+
+-- This is frankly a bizarre omission
+instance Arbitrary1 NonEmptyList where
+  {-# INLINEABLE liftArbitrary #-}
+  liftArbitrary genInner =
+    NonEmpty <$> do
+      x <- genInner
+      xs <- liftArbitrary genInner
+      pure $ x : xs
+  {-# INLINEABLE liftShrink #-}
+  liftShrink shrinkInner (NonEmpty ell) =
+    NonEmpty <$> case ell of
+      [] -> []
+      (x : xs) -> (:) <$> shrinkInner x <*> liftShrink shrinkInner xs
