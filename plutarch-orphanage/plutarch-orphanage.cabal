@@ -52,6 +52,14 @@ library
   exposed-modules:
     PlutusLedgerApi.QuickCheck.Utils
     PlutusLedgerApi.V2.Orphans
+    PlutusLedgerApi.V3.Orphans
+
+  other-modules:
+    PlutusLedgerApi.Orphans.Common
+    PlutusLedgerApi.V1.Orphans.Credential
+    PlutusLedgerApi.V1.Orphans.Crypto
+    PlutusLedgerApi.V1.Orphans.Scripts
+    PlutusLedgerApi.V1.Orphans.Value
 
   build-depends:
     , bytestring

@@ -8,6 +8,7 @@
 -- via-derivable, because Function relies on an opaque type which we can't
 -- coerce through, we have to do this by hand.
 
+-- | QuickCheck orphans (plus a few helpers) for V2 Plutus ledger API types.
 module PlutusLedgerApi.V2.Orphans (
   -- * Specialized Value wrappers
   FeeValue (..),
@@ -25,15 +26,20 @@ import Data.Coerce (coerce)
 import Data.Set qualified as Set
 import Data.Word (Word32)
 import PlutusCore.Data qualified as PLC
+import PlutusLedgerApi.Orphans.Common (
+  Blake2b256Hash (Blake2b256Hash),
+  getBlake2b244Hash,
+ )
 import PlutusLedgerApi.QuickCheck.Utils (
   fromAsWord64,
-  unSizedByteString,
  )
 import PlutusLedgerApi.V1.Interval qualified as Interval
+import PlutusLedgerApi.V1.Orphans.Credential ()
+import PlutusLedgerApi.V1.Orphans.Scripts ()
+import PlutusLedgerApi.V1.Orphans.Value ()
 import PlutusLedgerApi.V1.Value qualified as Value
 import PlutusLedgerApi.V2 qualified as PLA
 import PlutusTx.AssocMap qualified as AssocMap
-import PlutusTx.Builtins qualified as Builtins
 import PlutusTx.Prelude qualified as PlutusTx
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
@@ -60,23 +66,6 @@ import Test.QuickCheck (
 import Test.QuickCheck.Instances.ByteString ()
 
 -- | @since 1.0.0
-instance Arbitrary PlutusTx.BuiltinByteString where
-  {-# INLINEABLE arbitrary #-}
-  arbitrary = PlutusTx.toBuiltin @ByteString <$> arbitrary
-  {-# INLINEABLE shrink #-}
-  shrink = fmap (PlutusTx.toBuiltin @ByteString) . shrink . PlutusTx.fromBuiltin
-
--- | @since 1.0.0
-instance CoArbitrary PlutusTx.BuiltinByteString where
-  {-# INLINEABLE coarbitrary #-}
-  coarbitrary = coarbitrary . PlutusTx.fromBuiltin
-
--- | @since 1.0.0
-instance Function PlutusTx.BuiltinByteString where
-  {-# INLINEABLE function #-}
-  function = functionMap PlutusTx.fromBuiltin (PlutusTx.toBuiltin @ByteString)
-
--- | @since 1.0.0
 deriving via PlutusTx.BuiltinByteString instance Arbitrary PLA.LedgerBytes
 
 -- | @since 1.0.0
@@ -86,68 +75,6 @@ deriving via PlutusTx.BuiltinByteString instance CoArbitrary PLA.LedgerBytes
 instance Function PLA.LedgerBytes where
   {-# INLINEABLE function #-}
   function = functionMap coerce PLA.LedgerBytes
-
-{- | BLAKE2b-244 hash. This does not shrink.
-
-@since 1.0.0
--}
-deriving via Blake2b244Hash instance Arbitrary PLA.PubKeyHash
-
--- | @since 1.0.0
-deriving via Blake2b244Hash instance CoArbitrary PLA.PubKeyHash
-
--- | @since 1.0.0
-instance Function PLA.PubKeyHash where
-  {-# INLINEABLE function #-}
-  function = functionMap coerce PLA.PubKeyHash
-
-{- | BLAKE2b-244 hash. This does not shrink.
-
-@since 1.0.0
--}
-deriving via Blake2b244Hash instance Arbitrary PLA.ScriptHash
-
--- | @since 1.0.0
-deriving via Blake2b244Hash instance CoArbitrary PLA.ScriptHash
-
--- | @since 1.0.0
-instance Function PLA.ScriptHash where
-  {-# INLINEABLE function #-}
-  function = functionMap coerce PLA.ScriptHash
-
-{- | As 'PLA.Credential' is just a wrapper around a hash with a tag, shrinking
-this type doesn't make much sense. Therefore we don't do it.
-
-@since 1.0.0
--}
-instance Arbitrary PLA.Credential where
-  {-# INLINEABLE arbitrary #-}
-  arbitrary =
-    oneof
-      [ PLA.PubKeyCredential <$> arbitrary
-      , PLA.ScriptCredential <$> arbitrary
-      ]
-
--- | @since 1.0.0
-instance CoArbitrary PLA.Credential where
-  {-# INLINEABLE coarbitrary #-}
-  coarbitrary = \case
-    PLA.PubKeyCredential pkh -> variant (0 :: Int) . coarbitrary pkh
-    PLA.ScriptCredential sh -> variant (1 :: Int) . coarbitrary sh
-
--- | @since 1.0.0
-instance Function PLA.Credential where
-  {-# INLINEABLE function #-}
-  function = functionMap into outOf
-    where
-      into :: PLA.Credential -> Either PLA.PubKeyHash PLA.ScriptHash
-      into = \case
-        PLA.PubKeyCredential pkh -> Left pkh
-        PLA.ScriptCredential sh -> Right sh
-      outOf :: Either PLA.PubKeyHash PLA.ScriptHash -> PLA.Credential
-      outOf = \case
-        Left pkh -> PLA.PubKeyCredential pkh
-        Right sh -> PLA.ScriptCredential sh
 
 -- | @since 1.0.0
 instance Arbitrary PLA.StakingCredential where
@@ -286,17 +213,6 @@ instance Function PLA.DCert where
         Just (Just (Right (Right (Left (sc, pkh))))) -> PLA.DCertDelegDelegate sc pkh
         Just (Just (Right (Right (Right (Left (pkh, pkh')))))) -> PLA.DCertPoolRegister pkh pkh'
         Just (Just (Right (Right (Right (Right (pkh, e)))))) -> PLA.DCertPoolRetire pkh e
-
--- | @since 1.0.0
-deriving via Integer instance Arbitrary PLA.Lovelace
-
--- | @since 1.0.0
-deriving via Integer instance CoArbitrary PLA.Lovelace
-
--- | @since 1.0.0
-instance Function PLA.Lovelace where
-  {-# INLINEABLE function #-}
-  function = functionMap coerce PLA.Lovelace
 
 {- | A 'CurrencySymbol' is either a BLAKE2b-244 hash or empty (representing the
 Ada symbol). In a fully-fair generator, this makes it vanishingly unlikely
@@ -630,155 +546,6 @@ deriving via Blake2b256Hash instance CoArbitrary PLA.TxId
 instance Function PLA.TxId where
   {-# INLINEABLE function #-}
   function = functionMap coerce PLA.TxId
-
-{- | This is a very general instance, able to produce 'PlutusTx.BuiltinData' of
-basically any shape. You probably want something more focused than this.
-
-@since 1.0.0
--}
-instance Arbitrary PlutusTx.BuiltinData where
-  {-# INLINEABLE arbitrary #-}
-  arbitrary = sized $ \originalSize -> go originalSize originalSize
-    where
-      -- We have to track our original size (for contents) as well as a
-      -- possibly-reduced size (for structure) separately. If we don't do this,
-      -- 'leaf' data may end up being far smaller than it should be, biasing the
-      -- generator.
-      go :: Int -> Int -> Gen PlutusTx.BuiltinData
-      go originalSize currentSize
-        | currentSize <= 0 = oneof [genB originalSize, genI originalSize]
-        | otherwise =
-            oneof
-              [ genB originalSize
-              , genI originalSize
-              , genConstr originalSize currentSize
-              , genList originalSize currentSize
-              , genMap originalSize currentSize
-              ]
-      genB :: Int -> Gen PlutusTx.BuiltinData
-      genB size = Builtins.mkB <$> resize size arbitrary
-      genI :: Int -> Gen PlutusTx.BuiltinData
-      genI size = Builtins.mkI <$> resize size arbitrary
-      genConstr :: Int -> Int -> Gen PlutusTx.BuiltinData
-      genConstr contentSize structureSize =
-        Builtins.mkConstr
-          <$> resize contentSize (getNonNegative <$> arbitrary)
-          <*> resize structureSize (liftArbitrary . go contentSize $ structureSize `quot` 2)
-      genList :: Int -> Int -> Gen PlutusTx.BuiltinData
-      genList contentSize structureSize =
-        Builtins.mkList <$> resize structureSize (liftArbitrary . go contentSize $ structureSize `quot` 2)
-      genMap :: Int -> Int -> Gen PlutusTx.BuiltinData
-      genMap contentSize structureSize = do
-        let newStructureSize = structureSize `quot` 2
-        Builtins.mkMap <$> resize structureSize (liftArbitrary $ (,) <$> go contentSize newStructureSize <*> go contentSize newStructureSize)
-  {-# INLINEABLE shrink #-}
-  shrink dat =
-    Builtins.matchData
-      dat
-      shrinkConstr
-      shrinkMap
-      shrinkList
-      (fmap (Builtins.mkI . getNonNegative) . shrink . NonNegative)
-      (fmap Builtins.mkB . shrink)
-    where
-      shrinkConstr :: Integer -> [PlutusTx.BuiltinData] -> [PlutusTx.BuiltinData]
-      shrinkConstr ix dats = do
-        NonNegative ix' <- shrink (NonNegative ix)
-        dats' <- shrink dats
-        pure . Builtins.mkConstr ix' $ dats'
-      shrinkMap :: [(PlutusTx.BuiltinData, PlutusTx.BuiltinData)] -> [PlutusTx.BuiltinData]
-      shrinkMap kvs = Builtins.mkMap <$> shrink kvs
-      shrinkList :: [PlutusTx.BuiltinData] -> [PlutusTx.BuiltinData]
-      shrinkList ell = Builtins.mkList <$> shrink ell
-
--- | @since 1.0.0
-instance CoArbitrary PlutusTx.BuiltinData where
-  {-# INLINEABLE coarbitrary #-}
-  coarbitrary dat =
-    Builtins.matchData
-      dat
-      (\ix dats -> variant (0 :: Int) . coarbitrary ix . coarbitrary dats)
-      (\kvs -> variant (1 :: Int) . coarbitrary kvs)
-      (\ell -> variant (2 :: Int) . coarbitrary ell)
-      (\i -> variant (3 :: Int) . coarbitrary i)
-      (\bs -> variant (4 :: Int) . coarbitrary bs)
-
--- | @since 1.0.0
-instance Function PlutusTx.BuiltinData where
-  {-# INLINEABLE function #-}
-  function = functionMap into outOf
-    where
-      into ::
-        PlutusTx.BuiltinData ->
-        Either
-          (Integer, [PlutusTx.BuiltinData])
-          ( Either
-              [(PlutusTx.BuiltinData, PlutusTx.BuiltinData)]
-              ( Either
-                  [PlutusTx.BuiltinData]
-                  ( Either Integer PlutusTx.BuiltinByteString
-                  )
-              )
-          )
-      into dat =
-        Builtins.matchData
-          dat
-          (\ix -> Left . (ix,))
-          (Right . Left)
-          (Right . Right . Left)
-          (Right . Right . Right . Left)
-          (Right . Right . Right . Right)
-      outOf ::
-        Either
-          (Integer, [PlutusTx.BuiltinData])
-          ( Either
-              [(PlutusTx.BuiltinData, PlutusTx.BuiltinData)]
-              ( Either
-                  [PlutusTx.BuiltinData]
-                  ( Either Integer PlutusTx.BuiltinByteString
-                  )
-              )
-          ) ->
-        PlutusTx.BuiltinData
-      outOf = \case
-        Left (ix, dats) -> Builtins.mkConstr ix dats
-        Right (Left kvs) -> Builtins.mkMap kvs
-        Right (Right (Left ell)) -> Builtins.mkList ell
-        Right (Right (Right (Left i))) -> Builtins.mkI i
-        Right (Right (Right (Right bs))) -> Builtins.mkB bs
-
--- | @since 1.0.0
-deriving via PlutusTx.BuiltinData instance Arbitrary PLA.Datum
-
--- | @since 1.0.0
-deriving via PlutusTx.BuiltinData instance CoArbitrary PLA.Datum
-
--- | @since 1.0.0
-instance Function PLA.Datum where
-  {-# INLINEABLE function #-}
-  function = functionMap coerce PLA.Datum
-
--- | @since 1.0.0
-deriving via Blake2b256Hash instance Arbitrary PLA.DatumHash
-
--- | @since 1.0.0
-deriving via Blake2b256Hash instance CoArbitrary PLA.DatumHash
-
--- | @since 1.0.0
-instance Function PLA.DatumHash where
-  {-# INLINEABLE function #-}
-  function = functionMap coerce PLA.DatumHash
-
--- | @since 1.0.0
-deriving via PlutusTx.BuiltinData instance Arbitrary PLA.Redeemer
-
--- | @since 1.0.0
-deriving via PlutusTx.BuiltinData instance CoArbitrary PLA.Redeemer
-
--- | @since 1.0.0
-instance Function PLA.Redeemer where
-  {-# INLINEABLE function #-}
-  function = functionMap coerce PLA.Redeemer
 
 -- | @since 1.0.0
 instance Arbitrary PLA.TxOutRef where
@@ -1292,17 +1059,6 @@ instance Function PLA.ScriptContext where
   {-# INLINEABLE function #-}
   function = functionMap (\(PLA.ScriptContext txi purpose) -> (txi, purpose)) (uncurry PLA.ScriptContext)
 
--- | @since 1.0.0
-deriving via PLA.DatumHash instance Arbitrary PLA.RedeemerHash
-
--- | @since 1.0.0
-deriving via PLA.DatumHash instance CoArbitrary PLA.RedeemerHash
-
--- | @since 1.0.0
-instance Function PLA.RedeemerHash where
-  {-# INLINEABLE function #-}
-  function = functionMap coerce PLA.RedeemerHash
-
 {- | This is a very general instance, able to produce 'PLC.Data' of basically
 any shape. You probably want something more focused than this.
 
@@ -1414,35 +1170,6 @@ instance Function PLC.Data where
         Right (Right (Right (Right kvs))) -> PLC.Map kvs
 
 -- Helpers
-
--- Wrapper for BLAKE2b-244 hashes for convenience.
-newtype Blake2b244Hash = Blake2b244Hash PlutusTx.BuiltinByteString
-  deriving (Eq, Ord) via PlutusTx.BuiltinByteString
-  deriving stock (Show)
-
--- No shrinker, as it doesn't make much sense to.
-instance Arbitrary Blake2b244Hash where
-  {-# INLINEABLE arbitrary #-}
-  arbitrary =
-    Blake2b244Hash . PlutusTx.toBuiltin @ByteString . unSizedByteString @28 <$> arbitrary
-
-deriving via PlutusTx.BuiltinByteString instance CoArbitrary Blake2b244Hash
-
-getBlake2b244Hash :: Blake2b244Hash -> PlutusTx.BuiltinByteString
-getBlake2b244Hash = coerce
-
--- Wrapper for BLAKE2b-256 hashes for convenience.
-newtype Blake2b256Hash = Blake2b256Hash PlutusTx.BuiltinByteString
-  deriving (Eq, Ord) via PlutusTx.BuiltinByteString
-  deriving stock (Show)
-
--- No shrinker, as it doesn't make much sense to.
-instance Arbitrary Blake2b256Hash where
-  {-# INLINEABLE arbitrary #-}
-  arbitrary =
-    Blake2b256Hash . PlutusTx.toBuiltin @ByteString . unSizedByteString @32 <$> arbitrary
-
-deriving via PlutusTx.BuiltinByteString instance CoArbitrary Blake2b256Hash
 
 -- This is frankly a bizarre omission
 instance Arbitrary1 NonEmptyList where
