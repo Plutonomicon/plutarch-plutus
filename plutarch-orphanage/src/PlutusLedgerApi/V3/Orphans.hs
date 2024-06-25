@@ -877,43 +877,32 @@ instance Arbitrary PLA.TxInfo where
     tDonation <- arbitrary
     pure . PLA.TxInfo ins routs outs fee mint cert wdrl valid sigs reds dats tid votes pps currT $ tDonation
   {-# INLINEABLE shrink #-}
-  shrink = _
+  shrink (PLA.TxInfo ins routs outs fee mint cert wdrl valid sigs reds dats tid votes pps currT tDonation) = do
+    ins' <- shrink ins
+    routs' <- shrink routs
+    outs' <- shrink outs
+    fee' <- shrink fee
+    mint' <- shrink mint
+    cert' <- shrink cert
+    wdrl' <- shrink wdrl
+    valid' <- shrink valid
+    sigs' <- shrink sigs
+    reds' <- shrink reds
+    dats' <- shrink dats
+    tid' <- shrink tid
+    votes' <- shrink votes
+    pps' <- shrink pps
+    currT' <- shrink currT
+    tDonation' <- shrink tDonation
+    pure . PLA.TxInfo ins' routs' outs' fee' mint' cert' wdrl' valid' sigs' reds' dats' tid' votes' pps' currT' $ tDonation'
 
--- Helpers
-
--- An odd omission
-deriving via PLA.Credential instance Ord PLA.ColdCommitteeCredential
-
--- Needed because otherwise, deriving an instance for TxInfo is impossible.
--- Arguably this is actually a bug on IOG's side, as the corresponding Cardano
--- types _do_ have Ord instances.
-
--- | @since 1.0.1
-deriving stock instance Ord PLA.HotCommitteeCredential
-
--- | @since 1.0.1
-deriving stock instance Ord PLA.DRepCredential
-
--- | @since 1.0.1
-deriving stock instance Ord PLA.Voter
-
--- | @since 1.0.1
-deriving stock instance Ord PLA.GovernanceActionId
-
--- | @since 1.0.1
-deriving stock instance Ord PLA.DRep
+-- TODO: CoArbitrary, Function
+-- TODO: Invariants?
 
 -- | @since 1.0.1
-deriving stock instance Ord PLA.Delegatee
-
--- | @since 1.0.1
-deriving stock instance Ord PLA.TxCert
-
--- | @since 1.0.1
-deriving stock instance Ord PLA.GovernanceAction
-
--- | @since 1.0.1
-deriving stock instance Ord PLA.ProposalProcedure
-
--- | @since 1.0.1
-deriving stock instance Ord PLA.ScriptPurpose
+instance Arbitrary PLA.ScriptContext where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary = PLA.ScriptContext <$> arbitrary <*> arbitrary <*> arbitrary
+  {-# INLINEABLE shrink #-}
+  shrink (PLA.ScriptContext tinfo red sinfo) =
+    PLA.ScriptContext <$> shrink tinfo <*> shrink red <*> shrink sinfo

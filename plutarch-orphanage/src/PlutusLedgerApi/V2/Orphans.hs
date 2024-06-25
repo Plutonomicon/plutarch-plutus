@@ -537,10 +537,3 @@ instance Function PLC.Data where
         Right (Right (Left (ix, dats))) -> PLC.Constr ix dats
         Right (Right (Right (Left ell))) -> PLC.List ell
         Right (Right (Right (Right kvs))) -> PLC.Map kvs
-
--- Needed because otherwise, deriving an instance for TxInfo is impossible.
--- Arguably this is actually a bug on IOG's side, as the corresponding Cardano
--- type _does_ have an Ord instance.
-
--- | @since 1.0.0
-deriving stock instance Ord PLA.ScriptPurpose
