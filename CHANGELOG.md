@@ -1,5 +1,12 @@
 # Revision history for plutarch
 
+# 1.8.0 - 24-06-2024
+
+## Changed
+
+* Bumped `plutus-core` version to `1.30.0.0`
+
+
 # 1.7.0 - 11-06-2024
 
 ## Added
