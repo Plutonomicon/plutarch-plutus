@@ -1,6 +1,6 @@
 cabal-version:      3.0
 name:               plutarch
-version:            1.7.0
+version:            1.8.0
 author:
   Las Safin <me@las.rs>, Koz Ross <koz@mlabs.city>, Seungheon Oh <seungheon.oh@mlabs.city>
 
@@ -136,7 +136,7 @@ library
     , generics-sop
     , lens
     , mtl
-    , plutus-core        >=1.29.0.0
+    , plutus-core        >=1.30.0.0
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter
