@@ -9,11 +9,14 @@ module PlutusLedgerApi.Orphans.Common (
 
 import Data.ByteString (ByteString)
 import Data.Coerce (coerce)
+import Data.Set qualified as Set
 import PlutusLedgerApi.QuickCheck.Utils (unSizedByteString)
+import PlutusTx.AssocMap qualified as AssocMap
 import PlutusTx.Builtins qualified as Builtins
 import PlutusTx.Prelude qualified as PlutusTx
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
+  Arbitrary1 (liftArbitrary, liftShrink),
   CoArbitrary (coarbitrary),
   Function (function),
   Gen,
@@ -193,3 +196,44 @@ instance Function PlutusTx.BuiltinData where
         Right (Right (Left ell)) -> Builtins.mkList ell
         Right (Right (Right (Left i))) -> Builtins.mkI i
         Right (Right (Right (Right bs))) -> Builtins.mkB bs
+
+{- | This generates well-defined maps: specifically, there are no duplicate
+keys. To ensure that this is preserved, we do not shrink keys: we only drop
+whole entries, or shrink values associated with keys.
+
+In order to make this instance even moderately efficient, we require an 'Ord'
+constraint on keys. In practice, this isn't a significant limitation, as
+basically all Plutus types have such an instance.
+
+@since 1.0.0
+-}
+instance (Arbitrary k, Ord k) => Arbitrary1 (AssocMap.Map k) where
+  {-# INLINEABLE liftArbitrary #-}
+  liftArbitrary genVal =
+    AssocMap.unsafeFromList <$> do
+      -- First, generate a Set of keys to ensure no duplication
+      keyList <- Set.toList <$> arbitrary
+      -- Then generate a value for each
+      traverse (\key -> (key,) <$> genVal) keyList
+  {-# INLINEABLE liftShrink #-}
+  liftShrink shrinkVal aMap =
+    AssocMap.unsafeFromList <$> do
+      let asList = AssocMap.toList aMap
+      liftShrink (\(key, val) -> (key,) <$> shrinkVal val) asList
+
+-- | @since 1.0.0
+instance (Arbitrary k, Arbitrary v, Ord k) => Arbitrary (AssocMap.Map k v) where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary = liftArbitrary arbitrary
+  {-# INLINEABLE shrink #-}
+  shrink = liftShrink shrink
+
+-- | @since 1.0.0
+instance (CoArbitrary k, CoArbitrary v) => CoArbitrary (AssocMap.Map k v) where
+  {-# INLINEABLE coarbitrary #-}
+  coarbitrary = coarbitrary . AssocMap.toList
+
+-- | @since 1.0.0
+instance (Function k, Function v) => Function (AssocMap.Map k v) where
+  {-# INLINEABLE function #-}
+  function = functionMap AssocMap.toList AssocMap.unsafeFromList

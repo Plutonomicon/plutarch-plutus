@@ -56,10 +56,14 @@ library
 
   other-modules:
     PlutusLedgerApi.Orphans.Common
+    PlutusLedgerApi.V1.Orphans.Address
     PlutusLedgerApi.V1.Orphans.Credential
     PlutusLedgerApi.V1.Orphans.Crypto
+    PlutusLedgerApi.V1.Orphans.Interval
     PlutusLedgerApi.V1.Orphans.Scripts
+    PlutusLedgerApi.V1.Orphans.Time
     PlutusLedgerApi.V1.Orphans.Value
+    PlutusLedgerApi.V2.Orphans.Tx
 
   build-depends:
     , bytestring
