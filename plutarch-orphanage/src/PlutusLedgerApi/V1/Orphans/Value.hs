@@ -31,6 +31,7 @@ import Test.QuickCheck (
   functionMap,
   getNonEmpty,
   resize,
+  scale,
   sized,
   vectorOf,
  )
@@ -157,7 +158,7 @@ instance Arbitrary NonAdaValue where
       keySet <- Set.fromList <$> liftArbitrary (PLA.CurrencySymbol . getBlake2b244Hash <$> arbitrary)
       let keyList = Set.toList keySet
       -- For each key, generate a set of token name keys that aren't Ada
-      keyVals <- traverse mkInner keyList
+      keyVals <- traverse (scale (`quot` 8) . mkInner) keyList
       pure . foldMap (\(cs, vals) -> foldMap (uncurry (Value.singleton cs)) vals) $ keyVals
     where
       mkInner :: PLA.CurrencySymbol -> Gen (PLA.CurrencySymbol, [(PLA.TokenName, Integer)])
@@ -191,7 +192,7 @@ specially.
 -}
 instance Arbitrary PLA.Value where
   {-# INLINEABLE arbitrary #-}
-  arbitrary = PLA.Value <$> arbitrary
+  arbitrary = PLA.Value <$> liftArbitrary (scale (`quot` 4) arbitrary)
   {-# INLINEABLE shrink #-}
   shrink = fmap PLA.Value . shrink . PLA.getValue
 

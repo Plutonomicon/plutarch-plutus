@@ -9,6 +9,7 @@ module PlutusLedgerApi.Orphans.Common (
 
 import Data.ByteString (ByteString)
 import Data.Coerce (coerce)
+import Data.Kind (Type)
 import Data.Set qualified as Set
 import PlutusLedgerApi.QuickCheck.Utils (unSizedByteString)
 import PlutusTx.AssocMap qualified as AssocMap
@@ -25,7 +26,7 @@ import Test.QuickCheck (
   getNonNegative,
   liftArbitrary,
   oneof,
-  resize,
+  scale,
   sized,
   variant,
  )
@@ -88,39 +89,29 @@ basically any shape. You probably want something more focused than this.
 -}
 instance Arbitrary PlutusTx.BuiltinData where
   {-# INLINEABLE arbitrary #-}
-  arbitrary = sized $ \originalSize -> go originalSize originalSize
+  arbitrary = sized $ \size -> go size
     where
-      -- We have to track our original size (for contents) as well as a
-      -- possibly-reduced size (for structure) separately. If we don't do this,
-      -- 'leaf' data may end up being far smaller than it should be, biasing the
-      -- generator.
-      go :: Int -> Int -> Gen PlutusTx.BuiltinData
-      go originalSize currentSize
-        | currentSize <= 0 = oneof [genB originalSize, genI originalSize]
-        | otherwise =
-            oneof
-              [ genB originalSize
-              , genI originalSize
-              , genConstr originalSize currentSize
-              , genList originalSize currentSize
-              , genMap originalSize currentSize
-              ]
-      genB :: Int -> Gen PlutusTx.BuiltinData
-      genB size = Builtins.mkB <$> resize size arbitrary
-      genI :: Int -> Gen PlutusTx.BuiltinData
-      genI size = Builtins.mkI <$> resize size arbitrary
-      genConstr :: Int -> Int -> Gen PlutusTx.BuiltinData
-      genConstr contentSize structureSize =
-        Builtins.mkConstr
-          <$> resize contentSize (getNonNegative <$> arbitrary)
-          <*> resize structureSize (liftArbitrary . go contentSize $ structureSize `quot` 2)
-      genList :: Int -> Int -> Gen PlutusTx.BuiltinData
-      genList contentSize structureSize =
-        Builtins.mkList <$> resize structureSize (liftArbitrary . go contentSize $ structureSize `quot` 2)
-      genMap :: Int -> Int -> Gen PlutusTx.BuiltinData
-      genMap contentSize structureSize = do
-        let newStructureSize = structureSize `quot` 2
-        Builtins.mkMap <$> resize structureSize (liftArbitrary $ (,) <$> go contentSize newStructureSize <*> go contentSize newStructureSize)
+      scaleDown :: forall (a :: Type). Gen a -> Gen a
+      scaleDown = scale (`quot` 4)
+      go :: Int -> Gen PlutusTx.BuiltinData
+      go size
+        | size <= 0 = oneof [genB, genI]
+        | otherwise = oneof [genB, genI, genConstr, genList, genMap]
+      genB :: Gen PlutusTx.BuiltinData
+      genB = Builtins.mkB <$> arbitrary
+      genI :: Gen PlutusTx.BuiltinData
+      genI = Builtins.mkI <$> arbitrary
+      genConstr :: Gen PlutusTx.BuiltinData
+      genConstr =
+        Builtins.mkConstr . getNonNegative
+          <$> arbitrary
+          <*> scaleDown (liftArbitrary arbitrary)
+      genList :: Gen PlutusTx.BuiltinData
+      genList =
+        Builtins.mkList <$> scaleDown (liftArbitrary arbitrary)
+      genMap :: Gen PlutusTx.BuiltinData
+      genMap =
+        Builtins.mkMap <$> scaleDown (liftArbitrary ((,) <$> arbitrary <*> arbitrary))
   {-# INLINEABLE shrink #-}
   shrink dat =
     Builtins.matchData

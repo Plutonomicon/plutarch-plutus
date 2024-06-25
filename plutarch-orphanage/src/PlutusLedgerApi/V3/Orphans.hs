@@ -4,6 +4,7 @@ module PlutusLedgerApi.V3.Orphans () where
 
 import Control.Monad (guard)
 import Data.Coerce (coerce)
+import Data.Set qualified as Set
 import PlutusLedgerApi.Orphans.Common (
   Blake2b256Hash (Blake2b256Hash),
  )
@@ -22,7 +23,6 @@ import Test.QuickCheck (
   Arbitrary1 (liftArbitrary, liftShrink),
   CoArbitrary (coarbitrary),
   Function (function),
-  Gen,
   NonNegative (NonNegative),
   Positive (Positive),
   chooseInt,
@@ -536,13 +536,10 @@ random values. Does not shrink.
 instance Arbitrary PLA.ChangedParameters where
   {-# INLINEABLE arbitrary #-}
   arbitrary =
-    PLA.ChangedParameters . Builtins.mkMap <$> liftArbitrary go
-    where
-      go :: Gen (PLA.BuiltinData, PLA.BuiltinData)
-      go =
-        (,) . Builtins.mkI . fromIntegral
-          <$> chooseInt (0, 33)
-          <*> arbitrary
+    PLA.ChangedParameters . Builtins.mkMap <$> do
+      keyList <- liftArbitrary (chooseInt (0, 33))
+      let keySet = Set.fromList keyList
+      traverse (\k -> (Builtins.mkI . fromIntegral $ k,) <$> arbitrary) . Set.toList $ keySet
 
 -- | @since 1.0.1
 deriving via PlutusTx.BuiltinData instance CoArbitrary PLA.ChangedParameters
