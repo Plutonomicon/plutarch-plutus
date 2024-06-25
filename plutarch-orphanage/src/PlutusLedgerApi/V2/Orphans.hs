@@ -805,13 +805,6 @@ instance Function PLA.TxOutRef where
       outOf :: (PLA.TxId, Integer) -> PLA.TxOutRef
       outOf (txi, ix) = PLA.TxOutRef txi ix
 
--- Needed because otherwise, deriving an instance for TxInfo is impossible.
--- Arguably this is actually a bug on IOG's side, as the corresponding Cardano
--- type _does_ have an Ord instance.
-
--- | @since 1.0.0
-deriving stock instance Ord PLA.ScriptPurpose
-
 -- | @since 1.0.0
 instance Arbitrary PLA.ScriptPurpose where
   {-# INLINEABLE arbitrary #-}
