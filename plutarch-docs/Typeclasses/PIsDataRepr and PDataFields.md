@@ -7,13 +7,33 @@
 module Plutarch.Docs.PDataFields (foo, foo', res, mockCtx, purpose, Vehicle (..), PVehicle (..), PVehicle' (..), PFoo (..), test) where
 
 import Plutarch.Prelude
-import Plutarch.LedgerApi (PScriptContext, PScriptPurpose (PSpending, PMinting, PRewarding, PCertifying), PCurrencySymbol)
+import Plutarch.LedgerApi (
+  PScriptContext, 
+  PScriptPurpose (PMinting),
+  PScriptInfo (
+    PSpendingScript, 
+    PMintingScript, 
+    PRewardingScript, 
+    PCertifyingScript,
+    PVotingScript,
+    PProposingScript
+    ), 
+    PCurrencySymbol
+  )
 import Plutarch.DataRepr (PDataFields)
 import qualified Plutarch.Monadic as P
-import PlutusLedgerApi.V1 (TxInfo (TxInfo), POSIXTime(POSIXTime), ScriptPurpose (Minting), ScriptContext (ScriptContext))
+import PlutusLedgerApi.V3 (
+  TxInfo (TxInfo), 
+  POSIXTime(POSIXTime), 
+  ScriptContext (ScriptContext),
+  ScriptInfo (MintingScript),
+  Redeemer (Redeemer)
+  )
 import PlutusLedgerApi.V1.Value (CurrencySymbol (CurrencySymbol))
 import PlutusLedgerApi.V1.Interval (interval)
 import qualified PlutusTx
+import qualified PlutusTx.AssocMap as AssocMap
+import qualified PlutusTx.Builtins as Builtins
 import Plutarch.Docs.Run (evalWithArgsT)
 ```
 
@@ -38,12 +58,14 @@ For example, `PScriptContext` - which is the Plutarch synonym to [`ScriptContext
 ```haskell
 foo :: Term s (PScriptContext :--> PString)
 foo = plam $ \ctx -> P.do
-  purpose <- pmatch $ pfield @"purpose" # ctx
-  case purpose of
-    PMinting _ -> "It's minting!"
-    PSpending _ -> "It's spending!"
-    PRewarding _ -> "It's rewarding!"
-    PCertifying _ -> "It's certifying!"
+  scriptInfo <- pmatch $ pfield @"scriptInfo" # ctx
+  case scriptInfo of 
+    PMintingScript _ -> "It's minting!"
+    PSpendingScript _ -> "It's spending!"
+    PRewardingScript _ -> "It's rewarding!"
+    PCertifyingScript _ -> "It's certifying!"
+    PVotingScript _ -> "It's voting!"
+    PProposingScript _ -> "It's proposing!"
 ```
 
 > Note: The above snippet uses GHC 9 features (`QualifiedDo`). Be sure to check out [Do syntax with `TermCont`](./../Usage/Do%20syntax%20with%20TermCont.md).
@@ -107,18 +129,25 @@ mockCtx :: ScriptContext
 mockCtx =
   ScriptContext
     (TxInfo
-      mempty
-      mempty
-      mempty
-      mempty
-      mempty
-      mempty
-      (interval (POSIXTime 1) (POSIXTime 2))
-      mempty
-      mempty
-      ""
+      mempty -- inputs
+      mempty -- reference inputs
+      mempty -- outputs
+      0 -- fee
+      mempty -- mint
+      mempty -- certs
+      AssocMap.empty -- withdrawals
+      (interval (POSIXTime 1) (POSIXTime 2)) -- valid range
+      mempty -- signatories
+      AssocMap.empty -- redeemers
+      AssocMap.empty -- data
+      "" -- id
+      AssocMap.empty -- votes
+      mempty -- proposal procedures
+      Nothing -- current treasury amount
+      Nothing -- current treasury donation
     )
-    (Minting (CurrencySymbol ""))
+    (Redeemer . Builtins.mkI $ 0)
+    (MintingScript (CurrencySymbol ""))
 
 res :: Either _ _
 res = foo `evalWithArgsT` [PlutusTx.toData mockCtx]
@@ -142,11 +171,11 @@ Each has its own purpose. However, `pletFields` is arguably the most general pur
 ```haskell
 foo' :: Term s (PScriptContext :--> PUnit)
 foo' = plam $ \ctx' -> P.do
-  ctx <- pletFields @["txInfo", "purpose"] ctx'
+  ctx <- pletFields @["txInfo", "scriptInfo"] ctx'
   let
-    _purpose = ctx.purpose
+    _scriptInfo = ctx.scriptInfo
     _txInfo = ctx.txInfo
-  -- <use purpose and txInfo here>
+  -- <use scriptInfo and txInfo here>
   pconstant ()
 ```
 

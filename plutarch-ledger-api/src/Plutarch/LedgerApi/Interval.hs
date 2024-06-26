@@ -40,7 +40,7 @@ import Plutarch.Lift (
   PUnsafeLiftDecl (PLifted),
  )
 import Plutarch.Prelude hiding (psingleton, pto)
-import PlutusLedgerApi.V2 qualified as Plutus
+import PlutusLedgerApi.V3 qualified as Plutus
 
 -- | @since 2.0.0
 newtype PInterval (a :: S -> Type) (s :: S)
@@ -92,6 +92,12 @@ deriving via
     PConstantData a =>
     PConstantDecl (Plutus.Interval a)
 
+-- | @since 3.1.0
+instance PTryFrom PData a => PTryFrom PData (PInterval a)
+
+-- | @since 3.1.0
+instance PTryFrom PData a => PTryFrom PData (PAsData (PInterval a))
+
 -- | @since 2.0.0
 newtype PLowerBound (a :: S -> Type) (s :: S)
   = PLowerBound
@@ -141,6 +147,12 @@ deriving via
   instance
     PConstantData a =>
     PConstantDecl (Plutus.LowerBound a)
+
+-- | @since 3.1.0
+instance PTryFrom PData a => PTryFrom PData (PLowerBound a)
+
+-- | @since 3.1.0
+instance PTryFrom PData a => PTryFrom PData (PAsData (PLowerBound a))
 
 -- | @since 2.0.0
 newtype PUpperBound (a :: S -> Type) (s :: S)
@@ -192,6 +204,12 @@ deriving via
     PConstantData a =>
     PConstantDecl (Plutus.UpperBound a)
 
+-- | @since 3.1.0
+instance PTryFrom PData a => PTryFrom PData (PUpperBound a)
+
+-- | @since 3.1.0
+instance PTryFrom PData a => PTryFrom PData (PAsData (PUpperBound a))
+
 -- | @since 2.0.0
 data PExtended (a :: S -> Type) (s :: S)
   = PNegInf (Term s (PDataRecord '[]))
@@ -219,6 +237,26 @@ data PExtended (a :: S -> Type) (s :: S)
 -- | @since 2.0.0
 instance DerivePlutusType (PExtended a) where
   type DPTStrat _ = PlutusTypeData
+
+-- | @since 3.1.0
+instance
+  PLiftData a =>
+  PUnsafeLiftDecl (PExtended a)
+  where
+  type PLifted (PExtended a) = Plutus.Extended (PLifted a)
+
+-- | @since 3.1.0
+deriving via
+  (DerivePConstantViaData (Plutus.Extended a) (PExtended (PConstanted a)))
+  instance
+    PConstantData a =>
+    PConstantDecl (Plutus.Extended a)
+
+-- | @since 3.1.0
+instance PTryFrom PData a => PTryFrom PData (PExtended a)
+
+-- | @since 3.1.0
+instance PTryFrom PData a => PTryFrom PData (PAsData (PExtended a))
 
 {- | Check if a value is inside the given interval.
 

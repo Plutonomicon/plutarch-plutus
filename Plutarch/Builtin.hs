@@ -28,6 +28,7 @@ module Plutarch.Builtin (
   ppairDataBuiltin,
   pchooseListBuiltin,
   pchooseData,
+  PDataNewtype (..),
 ) where
 
 import Data.Functor.Const (Const)
@@ -63,7 +64,19 @@ import Plutarch (
   (#$),
   type (:-->),
  )
-import Plutarch.Bool (PBool (..), PEq, pif, pif', (#&&), (#==))
+import Plutarch.Bool (
+  PBool (..),
+  PEq,
+  POrd,
+  PPartialOrd,
+  pif,
+  pif',
+  (#&&),
+  (#<),
+  (#<=),
+  (#==),
+  (#||),
+ )
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal.PlutusType (pcon', pmatch')
@@ -100,6 +113,7 @@ import Plutarch.List (
  )
 import Plutarch.Show (PShow (pshow'), pshow)
 import Plutarch.String (PString)
+import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast, pupcastF)
 import Plutarch.Unit (PUnit)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeDowncast)
@@ -564,3 +578,69 @@ instance PTryFrom PData (PAsData PData) where
 instance PTryFrom PData PData where
   type PTryFromExcess PData PData = Const ()
   ptryFrom' opq f = f (opq, ())
+
+-- | @since 1.7.0
+newtype PDataNewtype (a :: PType) (s :: S) = PDataNewtype (Term s (PAsData a))
+  deriving stock
+    ( -- | @since 1.7.0
+      Generic
+    )
+
+-- | @since 1.7.0
+instance PlutusType (PDataNewtype a) where
+  type PInner (PDataNewtype a) = PData
+  pcon' (PDataNewtype a) = pforgetData a
+  pmatch' x' f = f (PDataNewtype (punsafeCoerce x'))
+
+-- | @since 1.7.0
+instance PIsData (PDataNewtype a) where
+  pfromDataImpl = punsafeCoerce
+  pdataImpl = punsafeCoerce
+
+-- | @since 1.7.0
+instance PEq (PDataNewtype a) where
+  a #== b = pto a #== pto b
+
+-- | @since 1.7.0
+instance (PIsData a, PPartialOrd a) => PPartialOrd (PDataNewtype a) where
+  a #<= b =
+    pmatch a \(PDataNewtype a') ->
+      pmatch b \(PDataNewtype b') ->
+        pfromData a' #<= pfromData b'
+  a #< b =
+    pmatch a \(PDataNewtype a') ->
+      pmatch b \(PDataNewtype b') ->
+        pfromData a' #< pfromData b'
+
+-- | @since 1.7.0
+instance (PIsData a, PPartialOrd a) => POrd (PDataNewtype a)
+
+-- | @since 1.7.0
+instance (PIsData a, PShow a) => PShow (PDataNewtype a) where
+  pshow' x t =
+    pmatch t \(PDataNewtype t') -> pshow' x $ pfromData t'
+
+-- | @since 1.7.0
+instance (PIsData a, PTryFrom PData (PAsData a)) => PTryFrom PData (PDataNewtype a)
+
+-- | @since 1.7.0
+instance PTryFrom PData (PAsData (PDataNewtype a))
+
+-- | @since 1.7.0
+instance PTryFrom PData (PAsData PBool) where
+  type PTryFromExcess PData (PAsData PBool) = Const ()
+  ptryFrom' opq = runTermCont $ do
+    asConstr <- tcont . plet $ pasConstr # opq
+    let ix = pfstBuiltin # asConstr
+    tcont $ \f ->
+      pif
+        (ix #== 0 #|| ix #== 1)
+        (f ())
+        (ptraceInfoError "PTryFrom(PAsData PBool): invalid constructor tag")
+    let dat = psndBuiltin # asConstr
+    tcont $ \f ->
+      pif
+        (pnull # dat)
+        (f ())
+        (ptraceInfoError "PTryFrom(PAsData PBool): non-empty constructor list")
+    pure (punsafeCoerce opq, ())

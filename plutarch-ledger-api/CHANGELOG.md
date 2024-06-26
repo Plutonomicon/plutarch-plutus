@@ -4,6 +4,78 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 3.1.0 -- 07-06-2024
+
+### Added
+
+* Corresponding types to `PlutusLedgerApi.V3` new types:
+    * `PTxCert`
+    * `PLovelace`
+    * `PDelegatee`
+    * `PDRepCredential`
+    * `PColdCommitteeCredential`
+    * `PHotCommitteeCredential`
+    * `PDRep`
+    * `PVoter`
+    * `PGovernanceActionId`
+    * `PVote`
+    * `PProposalProcedure`
+    * `PGovernanceAction`
+    * `PChangedParameters`
+    * `PProposalProcedure`
+    * `PScriptInfo`
+    * `PCommittee`
+* `PRationalData`, originally from `plutarch-extra`
+* `PTryFrom` instances:
+    * `PTryFrom PData (PAsData PLovelace)`
+    * `PTryFrom PData PCurrencySymbol`
+    * `PTryFrom PData PScriptHash`
+    * `PTryFrom PData PTxId`
+    * `PTryFrom PData (PAsData PTxId)`
+    * `PTryFrom PData PTxOutRef`
+    * `PTryFrom PData (PAsData PTxOutRef)`
+    * `PTryFrom PData PDatumHash` instance
+    * `PTryFrom PData (PAsData PDatumHash)`
+    * `PTryFrom PData POutputDatum`
+    * `PTryFrom PData (PAsData POutputDatum)`
+    * `PTryFrom PData PTxInfo`
+    * `PTryFrom PData (PAsData PTxInfo)`
+    * `PTryFrom PData a => PTryFrom PData (PInterval a)`
+    * `PTryFrom PData a => PTryFrom PData (PAsData (PInterval a))`
+    * `PTryFrom PData a => PTryFrom PData (PLowerBound a)`
+    * `PTryFrom PData a => PTryFrom PData (PAsData (PLowerBound a))`
+    * `PTryFrom PData a => PTryFrom PData (PUpperBound a)`
+    * `PTryFrom PData a => PTryFrom PData (PAsData (PUpperBound a))`
+    * `PTryFrom PData a => PTryFrom PData (PExtended a)`
+    * `PTryFrom PData a => PTryFrom PData (PAsData (PExtended a))`
+    * `PTryFrom PData PRedeemer`
+    * `PTryFrom PData (PAsData PRedeemer)`
+    * `PTryFrom PData PPosixTime`
+    * `PTryFrom PData PScriptContext`
+    * `PTryFrom PData (PAsData PScriptContext)`
+    * `PTryFrom PData PPubKeyHash`
+    * `PTryFrom PData PTokenName`
+* `PUnsafeLiftDecl (PExtended a)` instance
+* `PConstantDecl (Extended a)` instance
+* `PBoolData`, corresponding to PlutusTx's `Bool`
+
+### Modified
+
+* `Plutarch.Api` now targets V3 types and functionality (replacing V2):
+    * `PTxInfo` now has new fields, as well as the `datum` field being renamed
+      `data` to match upstream definitions
+    * `PScriptPurpose` has two new constructors, and `PCertifying` has different
+      fields
+    * `PTxId` now guarantees 32 byte length
+    * `PTxInfo`'s `mint` field now ensures that no zero entries are included
+    * `PScriptContext` lost the `purpose` field, but gained `redeemer` and 
+       `scriptInfo` fields
+* `PRedeemerHash` now has the same type classes instantiated as `PDatumHash` did
+
+### Removed
+
+* `PDCert`, as V3 no longer supports it
+
 ## 3.0.0 -- 10-04-2024
 
 ### Modified

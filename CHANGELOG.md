@@ -9,6 +9,11 @@
 
 # 1.7.0 - 11-06-2024
 
+## Added
+
+* `PDataNewtype` derivation aid
+* `PTryFrom PData PBool` instance
+
 ## Changed
 
 * Bumped `plutus-core` version to `1.29.0.0`

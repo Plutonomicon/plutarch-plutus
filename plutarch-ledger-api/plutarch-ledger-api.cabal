@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name:          plutarch-ledger-api
-version:       3.0.0
+version:       3.1.0
 
 common common-lang
   default-language:   Haskell2010
@@ -42,6 +42,17 @@ common common-lang
     TypeOperators
     UndecidableInstances
 
+common test-lang
+  import:        common-lang
+  ghc-options:   -O2 -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+    , plutarch
+    , plutarch-ledger-api
+    , plutus-ledger-api
+    , QuickCheck
+    , tasty
+    , tasty-quickcheck
+
 library
   import:          common-lang
   exposed-modules:
@@ -50,6 +61,15 @@ library
     Plutarch.LedgerApi.Interval
     Plutarch.LedgerApi.Utils
     Plutarch.LedgerApi.Value
+
+  other-modules:
+    Plutarch.LedgerApi.Address
+    Plutarch.LedgerApi.Contexts
+    Plutarch.LedgerApi.Credential
+    Plutarch.LedgerApi.Crypto
+    Plutarch.LedgerApi.Scripts
+    Plutarch.LedgerApi.Time
+    Plutarch.LedgerApi.Tx
 
   build-depends:
     , bytestring
@@ -62,3 +82,10 @@ library
     , serialise
 
   hs-source-dirs:  src
+
+test-suite tests
+  import:         test-lang
+  type:           exitcode-stdio-1.0
+  main-is:        Main.hs
+  build-depends:  plutarch-orphanage
+  hs-source-dirs: test

@@ -5,7 +5,14 @@ module Plutarch.POrdSpec (spec) where
 
 import Data.ByteString (ByteString)
 
-import Plutarch.LedgerApi (PAddress, PCredential (PPubKeyCredential, PScriptCredential), PMaybeData)
+import Plutarch.Builtin (PDataNewtype (PDataNewtype))
+import Plutarch.LedgerApi (
+  PAddress,
+  PCredential (PPubKeyCredential, PScriptCredential),
+  PMaybeData,
+  PPubKeyHash (PPubKeyHash),
+  PScriptHash (PScriptHash),
+ )
 import Plutarch.Lift (
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
   PConstantDecl,
@@ -167,11 +174,23 @@ _pmatchHelperCred f cred1 cred2 = unTermCont $ do
   y <- tcont $ pmatch cred2
   pure $ case (x, y) of
     (PPubKeyCredential a, PPubKeyCredential b) ->
-      pto (pfromData $ pfield @"_0" # a) `f` pto (pfromData $ pfield @"_0" # b)
+      let a' = pfromData $ pfield @"_0" # a
+          b' = pfromData $ pfield @"_0" # b
+       in pmatch a' $ \(PPubKeyHash a'') ->
+            pmatch b' $ \(PPubKeyHash b'') ->
+              pmatch a'' $ \(PDataNewtype a''') ->
+                pmatch b'' $ \(PDataNewtype b''') ->
+                  f (pfromData a''') (pfromData b''')
     (PPubKeyCredential _, PScriptCredential _) -> pconstant True
     (PScriptCredential _, PPubKeyCredential _) -> pconstant False
     (PScriptCredential a, PScriptCredential b) ->
-      pto (pfromData $ pfield @"_0" # a) `f` pto (pfromData $ pfield @"_0" # b)
+      let a' = pfield @"_0" # a
+          b' = pfield @"_0" # b
+       in pmatch a' $ \(PScriptHash a'') ->
+            pmatch b' $ \(PScriptHash b'') ->
+              pmatch a'' $ \(PDataNewtype a''') ->
+                pmatch b'' $ \(PDataNewtype b''') ->
+                  f (pfromData a''') (pfromData b''')
 
 ltCred :: Term s PCredential -> Term s PCredential -> Term s PBool
 ltCred = _pmatchHelperCred (#<)

@@ -13,10 +13,11 @@
 -}
 module Plutarch.LedgerApi.Value (
   -- * Types
-  PValue (PValue),
-  PCurrencySymbol (PCurrencySymbol),
-  PTokenName (PTokenName),
-  AmountGuarantees (NoGuarantees, NonZero, Positive),
+  PValue (..),
+  PCurrencySymbol (..),
+  PTokenName (..),
+  AmountGuarantees (..),
+  PLovelace (..),
 
   -- * Functions
 
@@ -59,10 +60,11 @@ module Plutarch.LedgerApi.Value (
 ) where
 
 import Plutarch.Bool (pand', pif')
+import Plutarch.Builtin (PDataNewtype (PDataNewtype))
+import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
-  DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
   PConstantDecl,
   PLifted,
@@ -72,11 +74,49 @@ import Plutarch.List qualified as List
 import Plutarch.Prelude hiding (psingleton)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
-import PlutusLedgerApi.V2 qualified as Plutus
+import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.Prelude qualified as PlutusTx
 
+-- | @since 2.2.0
+newtype PLovelace (s :: S) = PLovelace (Term s (PDataNewtype PInteger))
+  deriving stock
+    ( -- | @since 2.2.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 2.2.0
+      PlutusType
+    , -- | @since 2.2.0
+      PIsData
+    , -- | @since 2.2.0
+      PEq
+    , -- | @since 2.2.0
+      PPartialOrd
+    , -- | @since 2.2.0
+      PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
+    )
+
+-- | @since 2.2.0
+instance DerivePlutusType PLovelace where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since 2.2.0
+instance PUnsafeLiftDecl PLovelace where
+  type PLifted PLovelace = Plutus.Lovelace
+
+-- | @since 2.2.0
+deriving via
+  (DerivePConstantViaData Plutus.Lovelace PLovelace)
+  instance
+    PConstantDecl Plutus.Lovelace
+
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData PLovelace)
+
 -- | @since 2.0.0
-newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
+newtype PTokenName (s :: S) = PTokenName (Term s (PDataNewtype PByteString))
   deriving stock
     ( -- | @since 2.0.0
       Generic
@@ -106,9 +146,18 @@ instance PUnsafeLiftDecl PTokenName where
 
 -- | @since 2.0.0
 deriving via
-  (DerivePConstantViaBuiltin Plutus.TokenName PTokenName PByteString)
+  (DerivePConstantViaData Plutus.TokenName PTokenName)
   instance
     PConstantDecl Plutus.TokenName
+
+-- | @since 3.1.0
+instance PTryFrom PData PTokenName where
+  type PTryFromExcess PData PTokenName = Mret PTokenName
+  ptryFrom' opq = runTermCont $ do
+    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
+    tcont $ \f ->
+      pif (plengthBS # unwrapped #<= 32) (f ()) (ptraceInfoError "ptryFrom(TokenName): must be at most 32 bytes long")
+    pure (punsafeCoerce opq, pcon . PTokenName . pcon . PDataNewtype . pdata $ unwrapped)
 
 -- | @since 2.0.0
 instance PTryFrom PData (PAsData PTokenName) where
@@ -116,11 +165,11 @@ instance PTryFrom PData (PAsData PTokenName) where
   ptryFrom' opq = runTermCont $ do
     unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
     tcont $ \f ->
-      pif (plengthBS # unwrapped #<= 32) (f ()) (ptraceInfoError "ptryFrom(TokenName): must be at most 32 Bytes long")
-    pure (punsafeCoerce opq, pcon . PTokenName $ unwrapped)
+      pif (plengthBS # unwrapped #<= 32) (f ()) (ptraceInfoError "ptryFrom(TokenName): must be at most 32 bytes long")
+    pure (punsafeCoerce opq, pcon . PTokenName . pcon . PDataNewtype . pdata $ unwrapped)
 
 -- | @since 2.0.0
-newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
+newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s (PDataNewtype PByteString))
   deriving stock
     ( -- | @since 2.0.0
       Generic
@@ -144,6 +193,19 @@ newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
 instance DerivePlutusType PCurrencySymbol where
   type DPTStrat _ = PlutusTypeNewtype
 
+-- | @since 3.1.0
+instance PTryFrom PData PCurrencySymbol where
+  type PTryFromExcess PData PCurrencySymbol = Mret PCurrencySymbol
+  ptryFrom' opq = runTermCont $ do
+    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
+    len <- tcont . plet $ plengthBS # unwrapped
+    tcont $ \f ->
+      pif
+        (len #== 0 #|| len #== 28)
+        (f ())
+        (ptraceInfoError "ptryFrom(CurrencySymbol): must be 28 bytes long or empty")
+    pure (punsafeCoerce opq, pcon . PCurrencySymbol . pcon . PDataNewtype . pdata $ unwrapped)
+
 -- | @since 2.0.0
 instance PTryFrom PData (PAsData PCurrencySymbol) where
   type PTryFromExcess PData (PAsData PCurrencySymbol) = Mret PCurrencySymbol
@@ -152,7 +214,7 @@ instance PTryFrom PData (PAsData PCurrencySymbol) where
     len <- tcont . plet $ plengthBS # unwrapped
     tcont $ \f ->
       pif (len #== 0 #|| len #== 28) (f ()) (ptraceInfoError "ptryFrom(CurrencySymbol): must be 28 bytes long or empty")
-    pure (punsafeCoerce opq, pcon . PCurrencySymbol $ unwrapped)
+    pure (punsafeCoerce opq, pcon . PCurrencySymbol . pcon . PDataNewtype . pdata $ unwrapped)
 
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PCurrencySymbol where
@@ -160,7 +222,7 @@ instance PUnsafeLiftDecl PCurrencySymbol where
 
 -- | @since 2.0.0
 deriving via
-  (DerivePConstantViaBuiltin Plutus.CurrencySymbol PCurrencySymbol PByteString)
+  (DerivePConstantViaData Plutus.CurrencySymbol PCurrencySymbol)
   instance
     PConstantDecl Plutus.CurrencySymbol
 
