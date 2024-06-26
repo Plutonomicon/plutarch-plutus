@@ -6,9 +6,9 @@ module Plutarch.LedgerApi.Crypto (
 ) where
 
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
+import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
-  DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   PConstantDecl,
   PUnsafeLiftDecl (PLifted),
  )
@@ -48,7 +48,7 @@ instance PUnsafeLiftDecl PPubKeyHash where
 
 -- | @since 2.0.0
 deriving via
-  (DerivePConstantViaBuiltin Plutus.PubKeyHash PPubKeyHash PByteString)
+  (DerivePConstantViaData Plutus.PubKeyHash PPubKeyHash)
   instance
     PConstantDecl Plutus.PubKeyHash
 

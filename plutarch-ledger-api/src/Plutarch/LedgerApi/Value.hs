@@ -61,10 +61,10 @@ module Plutarch.LedgerApi.Value (
 
 import Plutarch.Bool (pand', pif')
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
+import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
-  DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   DerivePConstantViaNewtype (DerivePConstantViaNewtype),
   PConstantDecl,
   PLifted,
@@ -108,7 +108,7 @@ instance PUnsafeLiftDecl PLovelace where
 
 -- | @since 2.2.0
 deriving via
-  (DerivePConstantViaBuiltin Plutus.Lovelace PLovelace PInteger)
+  (DerivePConstantViaData Plutus.Lovelace PLovelace)
   instance
     PConstantDecl Plutus.Lovelace
 
@@ -146,7 +146,7 @@ instance PUnsafeLiftDecl PTokenName where
 
 -- | @since 2.0.0
 deriving via
-  (DerivePConstantViaBuiltin Plutus.TokenName PTokenName PByteString)
+  (DerivePConstantViaData Plutus.TokenName PTokenName)
   instance
     PConstantDecl Plutus.TokenName
 
@@ -222,7 +222,7 @@ instance PUnsafeLiftDecl PCurrencySymbol where
 
 -- | @since 2.0.0
 deriving via
-  (DerivePConstantViaBuiltin Plutus.CurrencySymbol PCurrencySymbol PByteString)
+  (DerivePConstantViaData Plutus.CurrencySymbol PCurrencySymbol)
   instance
     PConstantDecl Plutus.CurrencySymbol
 

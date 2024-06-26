@@ -10,6 +10,7 @@ module Plutarch.LedgerApi.Scripts (
 ) where
 
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
+import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
@@ -52,7 +53,7 @@ instance PUnsafeLiftDecl PScriptHash where
 
 -- | @since 2.0.0
 deriving via
-  (DerivePConstantViaBuiltin Plutus.ScriptHash PScriptHash PByteString)
+  (DerivePConstantViaData Plutus.ScriptHash PScriptHash)
   instance
     PConstantDecl Plutus.ScriptHash
 
@@ -149,7 +150,7 @@ instance PUnsafeLiftDecl PDatumHash where
 
 -- | @since 2.0.0
 deriving via
-  (DerivePConstantViaBuiltin Plutus.DatumHash PDatumHash PByteString)
+  (DerivePConstantViaData Plutus.DatumHash PDatumHash)
   instance
     PConstantDecl Plutus.DatumHash
 
@@ -225,7 +226,7 @@ instance PUnsafeLiftDecl PRedeemerHash where
 
 -- | @since 3.1.0
 deriving via
-  (DerivePConstantViaBuiltin Plutus.RedeemerHash PRedeemerHash PByteString)
+  (DerivePConstantViaData Plutus.RedeemerHash PRedeemerHash)
   instance
     PConstantDecl Plutus.RedeemerHash
 

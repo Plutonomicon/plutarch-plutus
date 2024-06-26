@@ -20,7 +20,6 @@ import Plutarch.LedgerApi.Scripts (PDatum, PDatumHash, PScriptHash)
 import Plutarch.LedgerApi.Utils (Mret, PMaybeData)
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Lift (
-  DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
   PConstantDecl,
   PUnsafeLiftDecl (PLifted),
  )
@@ -63,7 +62,7 @@ instance PUnsafeLiftDecl PTxId where
 
 -- | @since 3.1.0
 deriving via
-  (DerivePConstantViaBuiltin Plutus.TxId PTxId PByteString)
+  (DerivePConstantViaData Plutus.TxId PTxId)
   instance
     PConstantDecl Plutus.TxId
 
