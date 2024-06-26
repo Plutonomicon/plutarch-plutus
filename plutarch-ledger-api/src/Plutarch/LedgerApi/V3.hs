@@ -10,7 +10,7 @@ The 'Value.PValue', 'AssocMap.PMap' and 'Interval.PInterval'-related
 functionality can be found in other modules, as these clash with the
 Plutarch prelude. These should be imported qualified.
 -}
-module Plutarch.LedgerApi (
+module Plutarch.LedgerApi.V3 (
   -- * Contexts
   Contexts.PScriptContext (..),
   Contexts.PTxInfo (..),
