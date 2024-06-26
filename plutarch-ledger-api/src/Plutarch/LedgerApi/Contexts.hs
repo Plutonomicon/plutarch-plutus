@@ -466,7 +466,7 @@ instance PTryFrom PData (PAsData PCommittee)
 
 @since 3.1.0
 -}
-newtype PConstitution (s :: S) = PConstitution (Term s (PMaybeData PScriptHash))
+newtype PConstitution (s :: S) = PConstitution (Term s (PDataRecord '["_0" := PMaybeData PScriptHash]))
   deriving stock
     ( -- | @since 3.1.0
       Generic
@@ -486,7 +486,7 @@ newtype PConstitution (s :: S) = PConstitution (Term s (PMaybeData PScriptHash))
 
 -- | @since 3.1.0
 instance DerivePlutusType PConstitution where
-  type DPTStrat _ = PlutusTypeNewtype
+  type DPTStrat _ = PlutusTypeData
 
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PConstitution where
@@ -494,7 +494,7 @@ instance PUnsafeLiftDecl PConstitution where
 
 -- | @since 3.1.0
 deriving via
-  (DerivePConstantViaNewtype Plutus.Constitution PConstitution (PMaybeData PScriptHash))
+  (DerivePConstantViaData Plutus.Constitution PConstitution)
   instance
     PConstantDecl Plutus.Constitution
 
