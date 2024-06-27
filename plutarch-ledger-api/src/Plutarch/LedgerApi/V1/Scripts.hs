@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 -- Mirrors the equivalent V1 module in plutus-ledger-api
-module Plutarch.LedgerApi.Scripts (
+module Plutarch.LedgerApi.V1.Scripts (
   PScriptHash (..),
   PDatum (..),
   PRedeemer (..),

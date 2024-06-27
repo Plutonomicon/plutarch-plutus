@@ -125,15 +125,15 @@ import Data.ByteArray (convert)
 import Data.ByteString (ByteString, toStrict)
 import Data.ByteString.Short (fromShort)
 import Data.Coerce (coerce)
-import Plutarch.LedgerApi.Address qualified as Address
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Contexts qualified as Contexts
-import Plutarch.LedgerApi.Credential qualified as Credential
-import Plutarch.LedgerApi.Crypto qualified as Crypto
 import Plutarch.LedgerApi.Interval qualified as Interval
-import Plutarch.LedgerApi.Scripts qualified as Scripts
-import Plutarch.LedgerApi.Time qualified as Time
 import Plutarch.LedgerApi.Utils qualified as Utils
+import Plutarch.LedgerApi.V1.Address qualified as Address
+import Plutarch.LedgerApi.V1.Credential qualified as Credential
+import Plutarch.LedgerApi.V1.Crypto qualified as Crypto
+import Plutarch.LedgerApi.V1.Scripts qualified as Scripts
+import Plutarch.LedgerApi.V1.Time qualified as Time
 import Plutarch.LedgerApi.V1.Tx qualified as V1Tx
 import Plutarch.LedgerApi.V3.Tx qualified as V3Tx
 import Plutarch.LedgerApi.Value qualified as Value

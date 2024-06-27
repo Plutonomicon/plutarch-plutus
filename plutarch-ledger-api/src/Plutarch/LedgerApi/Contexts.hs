@@ -43,17 +43,17 @@ import Plutarch.DataRepr (
   PDataFields,
  )
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
-import Plutarch.LedgerApi.Credential (PCredential, PStakingCredential)
-import Plutarch.LedgerApi.Crypto (PPubKeyHash)
 import Plutarch.LedgerApi.Interval qualified as Interval
-import Plutarch.LedgerApi.Scripts (
+import Plutarch.LedgerApi.Utils (PMaybeData, PRationalData)
+import Plutarch.LedgerApi.V1.Credential (PCredential, PStakingCredential)
+import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
+import Plutarch.LedgerApi.V1.Scripts (
   PDatum,
   PDatumHash,
   PRedeemer,
   PScriptHash,
  )
-import Plutarch.LedgerApi.Time (PPosixTime)
-import Plutarch.LedgerApi.Utils (PMaybeData, PRationalData)
+import Plutarch.LedgerApi.V1.Time (PPosixTime)
 import Plutarch.LedgerApi.V1.Tx (PTxId, PTxOutRef)
 import Plutarch.LedgerApi.V3.Tx (PTxOut)
 import Plutarch.LedgerApi.Value qualified as Value

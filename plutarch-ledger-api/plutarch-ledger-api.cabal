@@ -64,12 +64,13 @@ library
     Plutarch.LedgerApi.Value
 
   other-modules:
-    Plutarch.LedgerApi.Address
     Plutarch.LedgerApi.Contexts
-    Plutarch.LedgerApi.Credential
-    Plutarch.LedgerApi.Crypto
-    Plutarch.LedgerApi.Scripts
-    Plutarch.LedgerApi.Time
+    Plutarch.LedgerApi.V1.Address
+    Plutarch.LedgerApi.V1.Credential
+    Plutarch.LedgerApi.V1.Crypto
+    Plutarch.LedgerApi.V1.DCert
+    Plutarch.LedgerApi.V1.Scripts
+    Plutarch.LedgerApi.V1.Time
     Plutarch.LedgerApi.V1.Tx
     Plutarch.LedgerApi.V3.Tx
 

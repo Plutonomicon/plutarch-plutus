@@ -44,49 +44,53 @@ main = do
         "V1"
         [ testGroup
             "PUnsafeLiftDecl"
-            [ punsafeLiftDeclLaw @PlutarchV3.PAddress
-            , punsafeLiftDeclLaw @PlutarchV3.PCredential
-            , punsafeLiftDeclLaw @PlutarchV3.PStakingCredential
-            , punsafeLiftDeclLaw @PlutarchV3.PPubKeyHash
+            [ punsafeLiftDeclLaw @PlutarchV1.PAddress
+            , punsafeLiftDeclLaw @PlutarchV1.PCredential
+            , punsafeLiftDeclLaw @PlutarchV1.PStakingCredential
+            , punsafeLiftDeclLaw @PlutarchV1.PPubKeyHash
             , -- We only care about POSIXTime intervals, so we don't test anything
               -- else
-              punsafeLiftDeclLaw @PlutarchV3.PPosixTime
-            , punsafeLiftDeclLaw @(PlutarchV3.PExtended PlutarchV3.PPosixTime)
-            , punsafeLiftDeclLaw @(PlutarchV3.PLowerBound PlutarchV3.PPosixTime)
-            , punsafeLiftDeclLaw @(PlutarchV3.PUpperBound PlutarchV3.PPosixTime)
-            , punsafeLiftDeclLaw @(PlutarchV3.PInterval PlutarchV3.PPosixTime)
-            , punsafeLiftDeclLaw @PlutarchV3.PScriptHash
-            , punsafeLiftDeclLaw @PlutarchV3.PDatum
-            , punsafeLiftDeclLaw @PlutarchV3.PRedeemer
-            , punsafeLiftDeclLaw @PlutarchV3.PDatumHash
-            , punsafeLiftDeclLaw @PlutarchV3.PRedeemerHash
-            , punsafeLiftDeclLaw @PlutarchV3.PCurrencySymbol
-            , punsafeLiftDeclLaw @PlutarchV3.PTokenName
-            , punsafeLiftDeclLaw @PlutarchV3.PLovelace
+              punsafeLiftDeclLaw @PlutarchV1.PPosixTime
+            , punsafeLiftDeclLaw @(PlutarchV1.PExtended PlutarchV1.PPosixTime)
+            , punsafeLiftDeclLaw @(PlutarchV1.PLowerBound PlutarchV1.PPosixTime)
+            , punsafeLiftDeclLaw @(PlutarchV1.PUpperBound PlutarchV1.PPosixTime)
+            , punsafeLiftDeclLaw @(PlutarchV1.PInterval PlutarchV1.PPosixTime)
+            , punsafeLiftDeclLaw @PlutarchV1.PScriptHash
+            , punsafeLiftDeclLaw @PlutarchV1.PDatum
+            , punsafeLiftDeclLaw @PlutarchV1.PRedeemer
+            , punsafeLiftDeclLaw @PlutarchV1.PDatumHash
+            , punsafeLiftDeclLaw @PlutarchV1.PRedeemerHash
+            , punsafeLiftDeclLaw @PlutarchV1.PCurrencySymbol
+            , punsafeLiftDeclLaw @PlutarchV1.PTokenName
+            , punsafeLiftDeclLaw @PlutarchV1.PLovelace
             , -- TODO: This is definitely not correct. At the very least, the
               -- generator for Value _can_ produce zeroes!
-              punsafeLiftDeclLaw @(PlutarchV3.PValue PlutarchV3.Unsorted PlutarchV3.NonZero)
+              punsafeLiftDeclLaw @(PlutarchV1.PValue PlutarchV1.Unsorted PlutarchV1.NonZero)
+            , punsafeLiftDeclLaw @PlutarchV1.PDCert
+            , punsafeLiftDeclLaw @PlutarchV1.PTxId
             ]
         , testGroup
             "PIsData"
-            [ pIsDataLaws @PlutarchV3.PAddress
-            , pIsDataLaws @PlutarchV3.PCredential
-            , pIsDataLaws @PlutarchV3.PStakingCredential
-            , pIsDataLaws @PlutarchV3.PPubKeyHash
-            , pIsDataLaws @PlutarchV3.PPosixTime
-            , pIsDataLaws @(PlutarchV3.PExtended PlutarchV3.PPosixTime)
-            , pIsDataLaws @(PlutarchV3.PLowerBound PlutarchV3.PPosixTime)
-            , pIsDataLaws @(PlutarchV3.PUpperBound PlutarchV3.PPosixTime)
-            , pIsDataLaws @(PlutarchV3.PInterval PlutarchV3.PPosixTime)
-            , pIsDataLaws @PlutarchV3.PScriptHash
-            , pIsDataLaws @PlutarchV3.PDatum
-            , pIsDataLaws @PlutarchV3.PRedeemer
-            , pIsDataLaws @PlutarchV3.PDatumHash
-            , pIsDataLaws @PlutarchV3.PRedeemerHash
-            , pIsDataLaws @PlutarchV3.PCurrencySymbol
-            , pIsDataLaws @PlutarchV3.PTokenName
-            , pIsDataLaws @PlutarchV3.PLovelace
-            , pIsDataLaws @(PlutarchV3.PValue PlutarchV3.Unsorted PlutarchV3.NonZero)
+            [ pIsDataLaws @PlutarchV1.PAddress
+            , pIsDataLaws @PlutarchV1.PCredential
+            , pIsDataLaws @PlutarchV1.PStakingCredential
+            , pIsDataLaws @PlutarchV1.PPubKeyHash
+            , pIsDataLaws @PlutarchV1.PPosixTime
+            , pIsDataLaws @(PlutarchV1.PExtended PlutarchV1.PPosixTime)
+            , pIsDataLaws @(PlutarchV1.PLowerBound PlutarchV1.PPosixTime)
+            , pIsDataLaws @(PlutarchV1.PUpperBound PlutarchV1.PPosixTime)
+            , pIsDataLaws @(PlutarchV1.PInterval PlutarchV1.PPosixTime)
+            , pIsDataLaws @PlutarchV1.PScriptHash
+            , pIsDataLaws @PlutarchV1.PDatum
+            , pIsDataLaws @PlutarchV1.PRedeemer
+            , pIsDataLaws @PlutarchV1.PDatumHash
+            , pIsDataLaws @PlutarchV1.PRedeemerHash
+            , pIsDataLaws @PlutarchV1.PCurrencySymbol
+            , pIsDataLaws @PlutarchV1.PTokenName
+            , pIsDataLaws @PlutarchV1.PLovelace
+            , pIsDataLaws @(PlutarchV1.PValue PlutarchV1.Unsorted PlutarchV1.NonZero)
+            , pIsDataLaws @PlutarchV1.PDCert
+            , pIsDataLaws @PlutarchV1.PTxId
             ]
         ]
     , testGroup
@@ -113,7 +117,7 @@ main = do
             , punsafeLiftDeclLaw @PlutarchV3.PTxInInfo
             , adjustOption fewerTests $ punsafeLiftDeclLaw @PlutarchV3.PTxInfo
             , adjustOption fewerTests $ punsafeLiftDeclLaw @PlutarchV3.PScriptContext
-            , punsafeLiftDeclLaw @PlutarchV1.PTxId
+            , punsafeLiftDeclLaw @PlutarchV3.PTxId
             , punsafeLiftDeclLaw @PlutarchV3.PTxOutRef
             , punsafeLiftDeclLaw @PlutarchV3.PTxOut
             , punsafeLiftDeclLaw @PlutarchV3.POutputDatum
