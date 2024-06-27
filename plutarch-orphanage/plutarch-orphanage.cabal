@@ -1,6 +1,6 @@
 cabal-version:      3.0
 name:               plutarch-orphanage
-version:            1.0.1
+version:            1.0.2
 author:
   Koz Ross <koz@mlabs.city>, Seungheon Oh <seungheon.oh@mlabs.city>
 
@@ -62,6 +62,7 @@ library
     PlutusLedgerApi.V1.Orphans.Interval
     PlutusLedgerApi.V1.Orphans.Scripts
     PlutusLedgerApi.V1.Orphans.Time
+    PlutusLedgerApi.V1.Orphans.Tx
     PlutusLedgerApi.V1.Orphans.Value
     PlutusLedgerApi.V2.Orphans.Tx
 

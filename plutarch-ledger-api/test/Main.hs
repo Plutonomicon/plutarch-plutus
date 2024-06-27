@@ -6,6 +6,7 @@ import Data.Kind (Type)
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Plutarch.Builtin (pforgetData)
 import Plutarch.Internal (punsafeCoerce)
+import Plutarch.LedgerApi.V1 qualified as PlutarchV1
 import Plutarch.LedgerApi.V3 qualified as PlutarchV3
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude (
@@ -17,6 +18,7 @@ import Plutarch.Prelude (
   pfromData,
   plift,
  )
+import PlutusLedgerApi.V2.Orphans ()
 import PlutusLedgerApi.V3 qualified as PlutusV3
 import PlutusLedgerApi.V3.Orphans ()
 import Test.QuickCheck (
@@ -111,7 +113,7 @@ main = do
             , punsafeLiftDeclLaw @PlutarchV3.PTxInInfo
             , adjustOption fewerTests $ punsafeLiftDeclLaw @PlutarchV3.PTxInfo
             , adjustOption fewerTests $ punsafeLiftDeclLaw @PlutarchV3.PScriptContext
-            , punsafeLiftDeclLaw @PlutarchV3.PTxId
+            , punsafeLiftDeclLaw @PlutarchV1.PTxId
             , punsafeLiftDeclLaw @PlutarchV3.PTxOutRef
             , punsafeLiftDeclLaw @PlutarchV3.PTxOut
             , punsafeLiftDeclLaw @PlutarchV3.POutputDatum

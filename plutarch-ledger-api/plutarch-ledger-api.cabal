@@ -59,6 +59,7 @@ library
     Plutarch.LedgerApi.AssocMap
     Plutarch.LedgerApi.Interval
     Plutarch.LedgerApi.Utils
+    Plutarch.LedgerApi.V1
     Plutarch.LedgerApi.V3
     Plutarch.LedgerApi.Value
 
@@ -69,7 +70,8 @@ library
     Plutarch.LedgerApi.Crypto
     Plutarch.LedgerApi.Scripts
     Plutarch.LedgerApi.Time
-    Plutarch.LedgerApi.Tx
+    Plutarch.LedgerApi.V1.Tx
+    Plutarch.LedgerApi.V3.Tx
 
   build-depends:
     , bytestring

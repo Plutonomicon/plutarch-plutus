@@ -22,9 +22,6 @@ import Data.ByteString (ByteString)
 import Data.Coerce (coerce)
 import Data.Set qualified as Set
 import PlutusCore.Data qualified as PLC
-import PlutusLedgerApi.Orphans.Common (
-  Blake2b256Hash (Blake2b256Hash),
- )
 import PlutusLedgerApi.QuickCheck.Utils (
   fromAsWord64,
  )
@@ -33,6 +30,7 @@ import PlutusLedgerApi.V1.Orphans.Credential ()
 import PlutusLedgerApi.V1.Orphans.Interval ()
 import PlutusLedgerApi.V1.Orphans.Scripts ()
 import PlutusLedgerApi.V1.Orphans.Time ()
+import PlutusLedgerApi.V1.Orphans.Tx ()
 import PlutusLedgerApi.V1.Orphans.Value qualified as Value
 import PlutusLedgerApi.V1.Value qualified as Value
 import PlutusLedgerApi.V2 qualified as PLA
@@ -209,20 +207,6 @@ instance Function FeeValue where
 -- | @since 1.0.0
 getFeeValue :: FeeValue -> PLA.Value
 getFeeValue = coerce
-
-{- | BLAKE2b-256 hash (32 bytes) of a transaction ID.
-
-@since 1.0.0
--}
-deriving via Blake2b256Hash instance Arbitrary PLA.TxId
-
--- | @since 1.0.0
-deriving via Blake2b256Hash instance CoArbitrary PLA.TxId
-
--- | @since 1.0.0
-instance Function PLA.TxId where
-  {-# INLINEABLE function #-}
-  function = functionMap coerce PLA.TxId
 
 -- | @since 1.0.0
 instance Arbitrary PLA.TxOutRef where
