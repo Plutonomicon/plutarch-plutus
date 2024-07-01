@@ -1,12 +1,9 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
--- Mirrors the equivalent V3 module in plutus-ledger-api, with some V2 stuff as
--- well
-module Plutarch.LedgerApi.Tx (
+-- Mirrors the equivalent V1 module in plutus-ledger-api
+module Plutarch.LedgerApi.V1.Tx (
   PTxId (..),
   PTxOutRef (..),
-  PTxOut (..),
-  POutputDatum (..),
 ) where
 
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
@@ -14,11 +11,7 @@ import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
  )
-import Plutarch.LedgerApi.Address (PAddress)
-import Plutarch.LedgerApi.AssocMap qualified as AssocMap
-import Plutarch.LedgerApi.Scripts (PDatum, PDatumHash, PScriptHash)
-import Plutarch.LedgerApi.Utils (Mret, PMaybeData)
-import Plutarch.LedgerApi.Value qualified as Value
+import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
   PConstantDecl,
   PUnsafeLiftDecl (PLifted),
@@ -26,7 +19,7 @@ import Plutarch.Lift (
 import Plutarch.Prelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce)
-import PlutusLedgerApi.V3 qualified as Plutus
+import PlutusLedgerApi.V1 qualified as Plutus
 
 {- | Hashed with @BLAKE2b-256@.
 
@@ -144,93 +137,3 @@ deriving via
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PTxOutRef)
-
--- | @since 2.0.0
-newtype PTxOut (s :: S)
-  = PTxOut
-      ( Term
-          s
-          ( PDataRecord
-              '[ "address" ':= PAddress
-               , "value" ':= Value.PValue 'AssocMap.Sorted 'Value.Positive
-               , "datum" ':= POutputDatum
-               , "referenceScript" ':= PMaybeData PScriptHash
-               ]
-          )
-      )
-  deriving stock
-    ( -- | @since 2.0.0
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
-    , -- | @since 2.0.0
-      PIsData
-    , -- | @since 2.0.0
-      PDataFields
-    , -- | @since 2.0.0
-      PEq
-    , -- | @since 2.0.0
-      PShow
-    , -- | @since 3.1.0
-      PTryFrom PData
-    )
-
--- | @since 2.0.0
-instance DerivePlutusType PTxOut where
-  type DPTStrat _ = PlutusTypeData
-
--- | @since 2.0.0
-instance PUnsafeLiftDecl PTxOut where
-  type PLifted PTxOut = Plutus.TxOut
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData Plutus.TxOut PTxOut)
-  instance
-    PConstantDecl Plutus.TxOut
-
--- | @since 3.1.0
-instance PTryFrom PData (PAsData PTxOut)
-
--- | @since 2.0.0
-data POutputDatum (s :: S)
-  = PNoOutputDatum (Term s (PDataRecord '[]))
-  | POutputDatumHash (Term s (PDataRecord '["datumHash" ':= PDatumHash]))
-  | -- | Inline datum as per
-    -- [CIP-0032](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0032/README.md)
-    POutputDatum (Term s (PDataRecord '["outputDatum" ':= PDatum]))
-  deriving stock
-    ( -- | @since 2.0.0
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
-    , -- | @since 2.0.0
-      PIsData
-    , -- | @since 2.0.0
-      PEq
-    , -- | @since 2.0.0
-      PShow
-    , -- | @since 3.1.0
-      PTryFrom PData
-    )
-
--- | @since 2.0.0
-instance DerivePlutusType POutputDatum where
-  type DPTStrat _ = PlutusTypeData
-
--- | @since 2.0.0
-instance PUnsafeLiftDecl POutputDatum where
-  type PLifted POutputDatum = Plutus.OutputDatum
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData Plutus.OutputDatum POutputDatum)
-  instance
-    PConstantDecl Plutus.OutputDatum
-
--- | @since 3.1.0
-instance PTryFrom PData (PAsData POutputDatum)

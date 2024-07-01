@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 3.1.1 -- 27-06-2024
+
+### Added
+
+* V1 API support
+* V2 API support
+
+### Changed
+
+* `Plutarch.LedgerApi` is now `Plutarch.LedgerApi.V3`
+
 ## 3.1.0 -- 07-06-2024
 
 ### Added

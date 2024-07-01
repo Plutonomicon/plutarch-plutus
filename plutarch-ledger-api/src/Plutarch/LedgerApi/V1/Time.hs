@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 -- Mirrors the equivalent V1 module in plutus-ledger-api
-module Plutarch.LedgerApi.Time (
+module Plutarch.LedgerApi.V1.Time (
   PPosixTime (..),
 ) where
 
@@ -17,7 +17,7 @@ import Plutarch.Prelude
 import Plutarch.Reducible (Reduce)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce)
-import PlutusLedgerApi.V3 qualified as Plutus
+import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 2.0.0
 newtype PPosixTime (s :: S) = PPosixTime (Term s (PDataNewtype PInteger))

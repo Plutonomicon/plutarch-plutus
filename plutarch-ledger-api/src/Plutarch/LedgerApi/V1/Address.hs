@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 -- Mirrors the equivalent V1 module in plutus-ledger-api
-module Plutarch.LedgerApi.Address (
+module Plutarch.LedgerApi.V1.Address (
   PAddress (..),
 ) where
 
@@ -9,14 +9,14 @@ import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
  )
-import Plutarch.LedgerApi.Credential (PCredential, PStakingCredential)
 import Plutarch.LedgerApi.Utils (PMaybeData)
+import Plutarch.LedgerApi.V1.Credential (PCredential, PStakingCredential)
 import Plutarch.Lift (
   PConstantDecl,
   PUnsafeLiftDecl (PLifted),
  )
 import Plutarch.Prelude
-import PlutusLedgerApi.V3 qualified as Plutus
+import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 2.0.0
 newtype PAddress (s :: S)

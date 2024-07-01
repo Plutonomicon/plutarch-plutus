@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 -- Mirrors the equivalent V1 module in plutus-ledger-api
-module Plutarch.LedgerApi.Crypto (
+module Plutarch.LedgerApi.V1.Crypto (
   PPubKeyHash (..),
 ) where
 
@@ -15,7 +15,7 @@ import Plutarch.Lift (
 import Plutarch.Prelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce)
-import PlutusLedgerApi.V3 qualified as Plutus
+import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 2.0.0
 newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s (PDataNewtype PByteString))

@@ -27,7 +27,7 @@ import Data.Text (Text)
 import Data.Text.Encoding qualified as TE
 import Plutarch.Builtin (pasByteStr)
 import Plutarch.Crypto (pverifyEd25519Signature)
-import Plutarch.LedgerApi (
+import Plutarch.LedgerApi.V3 (
   PPubKeyHash,
   PScriptContext,
   scriptHash,

@@ -5,7 +5,7 @@
 ```haskell
 module Plutarch.Docs.PreferMatchingOnResult (this, this') where
 import Plutarch.Prelude
-import Plutarch.LedgerApi (
+import Plutarch.LedgerApi.V3 (
   PScriptPurpose (
     PSpending, 
     PMinting, 

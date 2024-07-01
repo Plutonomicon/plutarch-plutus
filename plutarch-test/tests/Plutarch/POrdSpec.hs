@@ -6,10 +6,10 @@ module Plutarch.POrdSpec (spec) where
 import Data.ByteString (ByteString)
 
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
-import Plutarch.LedgerApi (
+import Plutarch.LedgerApi.Utils (PMaybeData)
+import Plutarch.LedgerApi.V1 (
   PAddress,
   PCredential (PPubKeyCredential, PScriptCredential),
-  PMaybeData,
   PPubKeyHash (PPubKeyHash),
   PScriptHash (PScriptHash),
  )

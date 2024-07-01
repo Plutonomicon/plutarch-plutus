@@ -8,7 +8,7 @@
 module Plutarch.Docs.PConstantAndPLift (b, purp) where
 import Plutarch.Prelude
 import PlutusLedgerApi.V3 (ScriptPurpose (Minting))
-import Plutarch.LedgerApi (PScriptPurpose)
+import Plutarch.LedgerApi.V3 (PScriptPurpose)
 ```
 
 </p>

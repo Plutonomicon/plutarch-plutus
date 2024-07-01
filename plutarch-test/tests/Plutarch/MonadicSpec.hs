@@ -3,10 +3,10 @@
 module Plutarch.MonadicSpec (spec) where
 
 import Control.Monad.Trans.Cont (cont, runCont)
-import Plutarch.LedgerApi (
+import Plutarch.LedgerApi.Utils (PMaybeData)
+import Plutarch.LedgerApi.V1 (
   PAddress (PAddress),
   PCredential,
-  PMaybeData,
   PStakingCredential,
  )
 import Plutarch.List (pconvertLists)
