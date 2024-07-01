@@ -68,6 +68,7 @@ main = do
               punsafeLiftDeclLaw @(PlutarchV1.PValue PlutarchV1.Unsorted PlutarchV1.NonZero)
             , punsafeLiftDeclLaw @PlutarchV1.PDCert
             , punsafeLiftDeclLaw @PlutarchV1.PTxId
+            , adjustOption fewerTests $ punsafeLiftDeclLaw @PlutarchV1.PTxInfo
             ]
         , testGroup
             "PIsData"
@@ -91,6 +92,7 @@ main = do
             , pIsDataLaws @(PlutarchV1.PValue PlutarchV1.Unsorted PlutarchV1.NonZero)
             , pIsDataLaws @PlutarchV1.PDCert
             , pIsDataLaws @PlutarchV1.PTxId
+            , adjustOption fewerTests $ pIsDataLaws @PlutarchV1.PTxInfo
             ]
         ]
     , testGroup
@@ -155,10 +157,10 @@ main = do
     moreTests :: QuickCheckTests -> QuickCheckTests
     moreTests = max 10_000
     -- Currently, the TxInfo and ScriptContext generators run like treacle, so
-    -- to keep the test times manageable, we cap to 500.
+    -- to keep the test times manageable, we cap to 250.
     -- TODO: Fix those.
     fewerTests :: QuickCheckTests -> QuickCheckTests
-    fewerTests = const 500
+    fewerTests = const 250
 
 -- Properties
 

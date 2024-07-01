@@ -5,6 +5,8 @@ module PlutusLedgerApi.V1.Orphans.Value (
   getUtxoValue,
   NonAdaValue (..),
   getNonAdaValue,
+  FeeValue (..),
+  getFeeValue,
 ) where
 
 import Control.Monad (guard)
@@ -24,12 +26,14 @@ import Test.QuickCheck (
   Function (function),
   Gen,
   NonEmptyList (NonEmpty),
+  NonNegative (NonNegative),
   Positive (Positive),
   chooseBoundedIntegral,
   chooseInt,
   frequency,
   functionMap,
   getNonEmpty,
+  getNonNegative,
   resize,
   scale,
   sized,
@@ -258,3 +262,50 @@ instance Arbitrary1 NonEmptyList where
     NonEmpty <$> case ell of
       [] -> []
       (x : xs) -> (:) <$> shrinkInner x <*> liftShrink shrinkInner xs
+
+{- | A 'PLA.Value' containing only Ada, suitable for fees. Furthermore, the
+Ada quantity is non-negative.
+
+= Note
+
+This is designed to act as a modifier, and thus, we expose the constructor
+even though it preserves invariants. If you use the constructor directly,
+be /very/ certain that the Value being wrapped satisfies the invariants
+described above: failing to do so means all guarantees of this type are off
+the table.
+
+@since 1.0.0
+-}
+newtype FeeValue = FeeValue PLA.Value
+  deriving
+    ( -- | @since 1.0.0
+      Eq
+    )
+    via PLA.Value
+  deriving stock
+    ( -- | @since 1.0.0
+      Show
+    )
+
+-- | @since 1.0.0
+instance Arbitrary FeeValue where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary = FeeValue . PLA.singleton PLA.adaSymbol PLA.adaToken . getNonNegative <$> arbitrary
+  {-# INLINEABLE shrink #-}
+  shrink (FeeValue v) =
+    FeeValue . PLA.singleton PLA.adaSymbol PLA.adaToken <$> do
+      let adaAmount = Value.valueOf v PLA.adaSymbol PLA.adaToken
+      NonNegative adaAmount' <- shrink (NonNegative adaAmount)
+      pure adaAmount'
+
+-- | @since 1.0.0
+deriving via PLA.Value instance CoArbitrary FeeValue
+
+-- | @since 1.0.0
+instance Function FeeValue where
+  {-# INLINEABLE function #-}
+  function = functionMap coerce FeeValue
+
+-- | @since 1.0.0
+getFeeValue :: FeeValue -> PLA.Value
+getFeeValue = coerce
