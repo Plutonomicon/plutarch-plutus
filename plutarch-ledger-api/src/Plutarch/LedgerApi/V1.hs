@@ -1,6 +1,9 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.LedgerApi.V1 (
+  -- * Contexts
+  PScriptPurpose (..),
+  PScriptContext (..),
   DCert.PDCert (..),
   Credential.PCredential (..),
   Credential.PStakingCredential (..),
@@ -9,7 +12,6 @@ module Plutarch.LedgerApi.V1 (
   PTxOut (..),
   PTxInInfo (..),
   Tx.PTxOutRef (..),
-  PScriptPurpose (..),
   Crypto.PPubKeyHash (..),
   Time.PPosixTime (..),
   Interval.PExtended (..),
@@ -239,3 +241,42 @@ deriving via
 
 -- | @since 3.1.1
 instance PTryFrom PData (PAsData PTxInfo)
+
+-- | @since 3.1.1
+newtype PScriptContext (s :: S)
+  = PScriptContext (Term s (PDataRecord '["txInfo" ':= PTxInfo, "purpose" ':= PScriptPurpose]))
+  deriving stock
+    ( -- | @since 3.1.1
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.1.1
+      PlutusType
+    , -- | @since 3.1.1
+      PIsData
+    , -- | @since 3.1.1
+      PDataFields
+    , -- | @since 3.1.1
+      PEq
+    , -- | @since 3.1.1
+      PShow
+    , -- | @since 3.1.1
+      PTryFrom PData
+    )
+
+-- | @since 3.1.1
+instance DerivePlutusType PScriptContext where
+  type DPTStrat _ = PlutusTypeData
+
+-- | @since 3.1.1
+instance PUnsafeLiftDecl PScriptContext where
+  type PLifted _ = Plutus.ScriptContext
+
+-- | @since 3.1.1
+deriving via
+  (DerivePConstantViaData Plutus.ScriptContext PScriptContext)
+  instance
+    PConstantDecl Plutus.ScriptContext
+
+-- | @since 3.1.1
+instance PTryFrom PData (PAsData PScriptContext)

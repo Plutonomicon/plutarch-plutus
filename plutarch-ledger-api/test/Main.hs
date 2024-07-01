@@ -18,6 +18,7 @@ import Plutarch.Prelude (
   pfromData,
   plift,
  )
+import PlutusLedgerApi.V1.Orphans ()
 import PlutusLedgerApi.V2.Orphans ()
 import PlutusLedgerApi.V3 qualified as PlutusV3
 import PlutusLedgerApi.V3.Orphans ()
@@ -69,6 +70,7 @@ main = do
             , punsafeLiftDeclLaw @PlutarchV1.PDCert
             , punsafeLiftDeclLaw @PlutarchV1.PTxId
             , adjustOption fewerTests $ punsafeLiftDeclLaw @PlutarchV1.PTxInfo
+            , adjustOption fewerTests $ punsafeLiftDeclLaw @PlutarchV1.PScriptContext
             ]
         , testGroup
             "PIsData"
@@ -93,6 +95,7 @@ main = do
             , pIsDataLaws @PlutarchV1.PDCert
             , pIsDataLaws @PlutarchV1.PTxId
             , adjustOption fewerTests $ pIsDataLaws @PlutarchV1.PTxInfo
+            , adjustOption fewerTests $ pIsDataLaws @PlutarchV1.PScriptContext
             ]
         ]
     , testGroup
