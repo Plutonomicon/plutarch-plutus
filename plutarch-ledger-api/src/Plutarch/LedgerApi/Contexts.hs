@@ -55,7 +55,7 @@ import Plutarch.LedgerApi.V1.Scripts (
  )
 import Plutarch.LedgerApi.V1.Time (PPosixTime)
 import Plutarch.LedgerApi.V1.Tx (PTxId, PTxOutRef)
-import Plutarch.LedgerApi.V3.Tx (PTxOut)
+import Plutarch.LedgerApi.V2.Tx (PTxOut)
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),

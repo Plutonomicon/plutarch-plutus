@@ -1,9 +1,9 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
--- Mirrors the equivalent V3 module in plutus-ledger-api
-module Plutarch.LedgerApi.V3.Tx (
-  PTxOut (..),
+-- Mirrors the equivalent V2 module in plutus-ledger-api
+module Plutarch.LedgerApi.V2.Tx (
   POutputDatum (..),
+  PTxOut (..),
 ) where
 
 import Plutarch.DataRepr (
@@ -20,7 +20,48 @@ import Plutarch.Lift (
   PUnsafeLiftDecl (PLifted),
  )
 import Plutarch.Prelude
-import PlutusLedgerApi.V3 qualified as Plutus
+import PlutusLedgerApi.V2 qualified as Plutus
+
+-- | @since 2.0.0
+data POutputDatum (s :: S)
+  = PNoOutputDatum (Term s (PDataRecord '[]))
+  | POutputDatumHash (Term s (PDataRecord '["datumHash" ':= PDatumHash]))
+  | -- | Inline datum as per
+    -- [CIP-0032](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0032/README.md)
+    POutputDatum (Term s (PDataRecord '["outputDatum" ':= PDatum]))
+  deriving stock
+    ( -- | @since 2.0.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 2.0.0
+      PlutusType
+    , -- | @since 2.0.0
+      PIsData
+    , -- | @since 2.0.0
+      PEq
+    , -- | @since 2.0.0
+      PShow
+    , -- | @since 3.1.0
+      PTryFrom PData
+    )
+
+-- | @since 2.0.0
+instance DerivePlutusType POutputDatum where
+  type DPTStrat _ = PlutusTypeData
+
+-- | @since 2.0.0
+instance PUnsafeLiftDecl POutputDatum where
+  type PLifted POutputDatum = Plutus.OutputDatum
+
+-- | @since 2.0.0
+deriving via
+  (DerivePConstantViaData Plutus.OutputDatum POutputDatum)
+  instance
+    PConstantDecl Plutus.OutputDatum
+
+-- | @since 3.1.0
+instance PTryFrom PData (PAsData POutputDatum)
 
 -- | @since 2.0.0
 newtype PTxOut (s :: S)
@@ -70,44 +111,3 @@ deriving via
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PTxOut)
-
--- | @since 2.0.0
-data POutputDatum (s :: S)
-  = PNoOutputDatum (Term s (PDataRecord '[]))
-  | POutputDatumHash (Term s (PDataRecord '["datumHash" ':= PDatumHash]))
-  | -- | Inline datum as per
-    -- [CIP-0032](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0032/README.md)
-    POutputDatum (Term s (PDataRecord '["outputDatum" ':= PDatum]))
-  deriving stock
-    ( -- | @since 2.0.0
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
-    , -- | @since 2.0.0
-      PIsData
-    , -- | @since 2.0.0
-      PEq
-    , -- | @since 2.0.0
-      PShow
-    , -- | @since 3.1.0
-      PTryFrom PData
-    )
-
--- | @since 2.0.0
-instance DerivePlutusType POutputDatum where
-  type DPTStrat _ = PlutusTypeData
-
--- | @since 2.0.0
-instance PUnsafeLiftDecl POutputDatum where
-  type PLifted POutputDatum = Plutus.OutputDatum
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData Plutus.OutputDatum POutputDatum)
-  instance
-    PConstantDecl Plutus.OutputDatum
-
--- | @since 3.1.0
-instance PTryFrom PData (PAsData POutputDatum)

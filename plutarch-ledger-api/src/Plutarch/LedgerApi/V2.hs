@@ -1,8 +1,8 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Plutarch.LedgerApi.V1 (
+module Plutarch.LedgerApi.V2 (
   -- * Contexts
-  PScriptPurpose (..),
+  V1.PScriptPurpose (..),
   PScriptContext (..),
 
   -- * Certificates
@@ -37,12 +37,13 @@ module Plutarch.LedgerApi.V1 (
 
   -- * Transactions
   Address.PAddress (..),
-  Tx.PTxId (..),
-  PTxOut (..),
-  PTxInInfo (..),
-  Tx.PTxOutRef (..),
   Crypto.PPubKeyHash (..),
+  V1Tx.PTxId (..),
   PTxInfo (..),
+  V2Tx.PTxOut (..),
+  V1Tx.PTxOutRef (..),
+  PTxInInfo (..),
+  V2Tx.POutputDatum (..),
 
   -- * Helpers
   AssocMap.PMap (..),
@@ -50,10 +51,6 @@ module Plutarch.LedgerApi.V1 (
   AssocMap.Commutativity (..),
 ) where
 
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Interval qualified as Interval
 import Plutarch.LedgerApi.V1.Address qualified as Address
@@ -62,60 +59,23 @@ import Plutarch.LedgerApi.V1.Crypto qualified as Crypto
 import Plutarch.LedgerApi.V1.DCert qualified as DCert
 import Plutarch.LedgerApi.V1.Scripts qualified as Scripts
 import Plutarch.LedgerApi.V1.Time qualified as Time
-import Plutarch.LedgerApi.V1.Tx qualified as Tx
+import Plutarch.LedgerApi.V1.Tx qualified as V1Tx
+import Plutarch.LedgerApi.V2.Tx qualified as V2Tx
 import Plutarch.LedgerApi.Value qualified as Value
+
+-- TODO: Cleaner factoring
+
+import Plutarch.DataRepr (
+  DerivePConstantViaData (DerivePConstantViaData),
+  PDataFields,
+ )
+import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.Lift (
   PConstantDecl,
   PUnsafeLiftDecl (PLifted),
  )
 import Plutarch.Prelude
-import PlutusLedgerApi.V1 qualified as Plutus
-
--- | @since 3.1.1
-newtype PTxOut (s :: S)
-  = PTxOut
-      ( Term
-          s
-          ( PDataRecord
-              '[ "address" ':= Address.PAddress
-               , "value" ':= Value.PValue 'AssocMap.Sorted 'Value.Positive
-               , "datumHash" ':= Scripts.PDatumHash
-               ]
-          )
-      )
-  deriving stock
-    ( -- | @since 3.1.1
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since 3.1.1
-      PlutusType
-    , -- | @since 3.1.1
-      PIsData
-    , -- | @since 3.1.1
-      PEq
-    , -- | @since 3.1.1
-      PShow
-    , -- | @since 3.1.1
-      PTryFrom PData
-    )
-
--- | @since 3.1.1
-instance DerivePlutusType PTxOut where
-  type DPTStrat _ = PlutusTypeData
-
--- | @since 3.1.1
-instance PUnsafeLiftDecl PTxOut where
-  type PLifted PTxOut = Plutus.TxOut
-
--- | @since 3.1.1
-deriving via
-  (DerivePConstantViaData Plutus.TxOut PTxOut)
-  instance
-    PConstantDecl Plutus.TxOut
-
--- | @since 3.1.1
-instance PTryFrom PData (PAsData PTxOut)
+import PlutusLedgerApi.V2 qualified as Plutus
 
 -- | @since 3.1.1
 newtype PTxInInfo (s :: S)
@@ -123,8 +83,8 @@ newtype PTxInInfo (s :: S)
       ( Term
           s
           ( PDataRecord
-              '[ "outRef" ':= Tx.PTxOutRef
-               , "resolved" ':= PTxOut
+              '[ "outRef" ':= V1Tx.PTxOutRef
+               , "resolved" ':= V2Tx.PTxOut
                ]
           )
       )
@@ -137,6 +97,8 @@ newtype PTxInInfo (s :: S)
       PlutusType
     , -- | @since 3.1.1
       PIsData
+    , -- | @since 3.1.1
+      PDataFields
     , -- | @since 3.1.1
       PEq
     , -- | @since 3.1.1
@@ -163,62 +125,23 @@ deriving via
 instance PTryFrom PData (PAsData PTxInInfo)
 
 -- | @since 3.1.1
-data PScriptPurpose (s :: S)
-  = PMinting (Term s (PDataRecord '["_0" ':= Value.PCurrencySymbol]))
-  | PSpending (Term s (PDataRecord '["_0" ':= Tx.PTxOutRef]))
-  | PRewarding (Term s (PDataRecord '["_0" ':= Credential.PStakingCredential]))
-  | PCertifying (Term s (PDataRecord '["_0" ':= DCert.PDCert]))
-  deriving stock
-    ( -- | @since 3.1.1
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since 3.1.1
-      PlutusType
-    , -- | @since 3.1.1
-      PIsData
-    , -- | @since 3.1.1
-      PEq
-    , -- | @since 3.1.1
-      PShow
-    , -- | @since 3.1.1
-      PTryFrom PData
-    )
-
--- | @since 3.1.1
-instance DerivePlutusType PScriptPurpose where
-  type DPTStrat _ = PlutusTypeData
-
--- | @since 3.1.1
-instance PUnsafeLiftDecl PScriptPurpose where
-  type PLifted PScriptPurpose = Plutus.ScriptPurpose
-
--- | @since 3.1.1
-deriving via
-  (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose)
-  instance
-    PConstantDecl Plutus.ScriptPurpose
-
--- | @since 3.1.1
-instance PTryFrom PData (PAsData PScriptPurpose)
-
--- | @since 3.1.1
 newtype PTxInfo (s :: S)
   = PTxInfo
       ( Term
           s
           ( PDataRecord
               '[ "inputs" ':= PBuiltinList (PAsData PTxInInfo)
-               , "outputs" ':= PBuiltinList (PAsData PTxOut)
+               , "referenceInputs" ':= PBuiltinList (PAsData PTxInInfo)
+               , "outputs" ':= PBuiltinList (PAsData V2Tx.PTxOut)
                , "fee" ':= Value.PValue 'AssocMap.Sorted 'Value.Positive
-               , "mint" ':= Value.PValue 'AssocMap.Sorted 'Value.NonZero -- value minted by transaction
-               , "dCert" ':= PBuiltinList (PAsData DCert.PDCert)
+               , "mint" ':= Value.PValue 'AssocMap.Sorted 'Value.NoGuarantees -- value minted by transaction
+               , "dcert" ':= PBuiltinList (PAsData DCert.PDCert)
                , "wdrl" ':= AssocMap.PMap 'AssocMap.Unsorted Credential.PStakingCredential PInteger -- Staking withdrawals
                , "validRange" ':= Interval.PInterval Time.PPosixTime
                , "signatories" ':= PBuiltinList (PAsData Crypto.PPubKeyHash)
-               , "redeemers" ':= AssocMap.PMap 'AssocMap.Unsorted PScriptPurpose Scripts.PRedeemer
+               , "redeemers" ':= AssocMap.PMap 'AssocMap.Unsorted V1.PScriptPurpose Scripts.PRedeemer
                , "data" ':= AssocMap.PMap 'AssocMap.Unsorted Scripts.PDatumHash Scripts.PDatum
-               , "id" ':= Tx.PTxId -- hash of the pending transaction
+               , "id" ':= V1Tx.PTxId -- hash of the pending transaction
                ]
           )
       )
@@ -260,7 +183,7 @@ instance PTryFrom PData (PAsData PTxInfo)
 
 -- | @since 3.1.1
 newtype PScriptContext (s :: S)
-  = PScriptContext (Term s (PDataRecord '["txInfo" ':= PTxInfo, "purpose" ':= PScriptPurpose]))
+  = PScriptContext (Term s (PDataRecord '["txInfo" ':= PTxInfo, "purpose" ':= V1.PScriptPurpose]))
   deriving stock
     ( -- | @since 3.1.1
       Generic

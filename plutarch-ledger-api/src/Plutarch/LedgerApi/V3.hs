@@ -21,10 +21,10 @@ module Plutarch.LedgerApi.V3 (
 
   -- ** Types
   V1Tx.PTxOutRef (..),
-  V3Tx.PTxOut (..),
+  V2Tx.PTxOut (..),
   V1Tx.PTxId (..),
   Contexts.PTxInInfo (..),
-  V3Tx.POutputDatum (..),
+  V2Tx.POutputDatum (..),
 
   -- ** Functions
   pgetContinuingOutputs,
@@ -135,7 +135,7 @@ import Plutarch.LedgerApi.V1.Crypto qualified as Crypto
 import Plutarch.LedgerApi.V1.Scripts qualified as Scripts
 import Plutarch.LedgerApi.V1.Time qualified as Time
 import Plutarch.LedgerApi.V1.Tx qualified as V1Tx
-import Plutarch.LedgerApi.V3.Tx qualified as V3Tx
+import Plutarch.LedgerApi.V2.Tx qualified as V2Tx
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Prelude
 import Plutarch.Script (Script (unScript))
@@ -212,9 +212,9 @@ pgetContinuingOutputs ::
   Term
     s
     ( PBuiltinList Contexts.PTxInInfo
-        :--> PBuiltinList V3Tx.PTxOut
+        :--> PBuiltinList V2Tx.PTxOut
         :--> V1Tx.PTxOutRef
-        :--> PBuiltinList V3Tx.PTxOut
+        :--> PBuiltinList V2Tx.PTxOut
     )
 pgetContinuingOutputs = phoistAcyclic $
   plam $ \inputs outputs outRef ->
@@ -228,7 +228,7 @@ pgetContinuingOutputs = phoistAcyclic $
   where
     matches ::
       forall (s' :: S).
-      Term s' (Address.PAddress :--> V3Tx.PTxOut :--> PBool)
+      Term s' (Address.PAddress :--> V2Tx.PTxOut :--> PBool)
     matches = phoistAcyclic $
       plam $ \adr txOut ->
         adr #== pfield @"address" # txOut

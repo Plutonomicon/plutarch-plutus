@@ -7,6 +7,7 @@ import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Plutarch.Builtin (pforgetData)
 import Plutarch.Internal (punsafeCoerce)
 import Plutarch.LedgerApi.V1 qualified as PlutarchV1
+import Plutarch.LedgerApi.V2 qualified as PlutarchV2
 import Plutarch.LedgerApi.V3 qualified as PlutarchV3
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude (
@@ -96,6 +97,27 @@ main = do
             , pIsDataLaws @PlutarchV1.PTxId
             , adjustOption fewerTests $ pIsDataLaws @PlutarchV1.PTxInfo
             , adjustOption fewerTests $ pIsDataLaws @PlutarchV1.PScriptContext
+            ]
+        ]
+    , testGroup
+        "V2"
+        [ testGroup
+            "PUnsafeLiftDecl"
+            [ punsafeLiftDeclLaw @PlutarchV2.PTxId
+            , punsafeLiftDeclLaw @PlutarchV2.PTxOut
+            , adjustOption fewerTests $ punsafeLiftDeclLaw @PlutarchV2.PTxInfo
+            , punsafeLiftDeclLaw @PlutarchV2.PTxInInfo
+            , punsafeLiftDeclLaw @PlutarchV2.POutputDatum
+            , adjustOption fewerTests $ punsafeLiftDeclLaw @PlutarchV2.PScriptContext
+            ]
+        , testGroup
+            "PIsData"
+            [ pIsDataLaws @PlutarchV2.PTxId
+            , pIsDataLaws @PlutarchV2.PTxOut
+            , adjustOption fewerTests $ pIsDataLaws @PlutarchV2.PTxInfo
+            , pIsDataLaws @PlutarchV2.PTxInInfo
+            , pIsDataLaws @PlutarchV2.POutputDatum
+            , adjustOption fewerTests $ pIsDataLaws @PlutarchV2.PScriptContext
             ]
         ]
     , testGroup
