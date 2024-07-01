@@ -65,7 +65,6 @@ library
     Plutarch.LedgerApi.Value
 
   other-modules:
-    Plutarch.LedgerApi.Contexts
     Plutarch.LedgerApi.V1.Address
     Plutarch.LedgerApi.V1.Credential
     Plutarch.LedgerApi.V1.Crypto
@@ -74,6 +73,7 @@ library
     Plutarch.LedgerApi.V1.Time
     Plutarch.LedgerApi.V1.Tx
     Plutarch.LedgerApi.V2.Tx
+    Plutarch.LedgerApi.V3.Contexts
 
   build-depends:
     , bytestring

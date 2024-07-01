@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 -- Mirrors the equivalent V3 module in plutus-ledger-api
-module Plutarch.LedgerApi.Contexts (
+module Plutarch.LedgerApi.V3.Contexts (
   PColdCommitteeCredential (..),
   PHotCommitteeCredential (..),
   PDRepCredential (..),

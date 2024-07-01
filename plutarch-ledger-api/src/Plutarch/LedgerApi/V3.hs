@@ -126,7 +126,6 @@ import Data.ByteString (ByteString, toStrict)
 import Data.ByteString.Short (fromShort)
 import Data.Coerce (coerce)
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
-import Plutarch.LedgerApi.Contexts qualified as Contexts
 import Plutarch.LedgerApi.Interval qualified as Interval
 import Plutarch.LedgerApi.Utils qualified as Utils
 import Plutarch.LedgerApi.V1.Address qualified as Address
@@ -136,6 +135,7 @@ import Plutarch.LedgerApi.V1.Scripts qualified as Scripts
 import Plutarch.LedgerApi.V1.Time qualified as Time
 import Plutarch.LedgerApi.V1.Tx qualified as V1Tx
 import Plutarch.LedgerApi.V2.Tx qualified as V2Tx
+import Plutarch.LedgerApi.V3.Contexts qualified as Contexts
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Prelude
 import Plutarch.Script (Script (unScript))
