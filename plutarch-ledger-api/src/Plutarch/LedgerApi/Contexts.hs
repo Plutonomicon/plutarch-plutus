@@ -827,7 +827,7 @@ newtype PTxInfo (s :: S)
                , "referenceInputs" ':= PBuiltinList (PAsData PTxInInfo)
                , "outputs" ':= PBuiltinList (PAsData PTxOut)
                , "fee" ':= Value.PLovelace
-               , "mint" ':= Value.PValue 'AssocMap.Sorted 'Value.NonZero -- value minted by transaction
+               , "mint" ':= Value.PValue 'AssocMap.Sorted 'Value.NoGuarantees -- value minted by transaction
                , "txCerts" ':= PBuiltinList (PAsData PTxCert)
                , "wdrl" ':= AssocMap.PMap 'AssocMap.Unsorted PCredential Value.PLovelace -- Staking withdrawals
                , "validRange" ':= Interval.PInterval PPosixTime

@@ -9,13 +9,12 @@
 
 -- | QuickCheck orphans (plus a few helpers) for V2 Plutus ledger API types.
 module PlutusLedgerApi.V2.Orphans (
-  -- * Specialized Value wrappers
-  FeeValue (..),
-  getFeeValue,
   Value.NonAdaValue (..),
   Value.getNonAdaValue,
   Value.UTxOValue (..),
   Value.getUtxoValue,
+  Value.FeeValue (..),
+  Value.getFeeValue,
 ) where
 
 import Data.ByteString (ByteString)
@@ -34,7 +33,6 @@ import PlutusLedgerApi.V1.Orphans.Interval ()
 import PlutusLedgerApi.V1.Orphans.Scripts ()
 import PlutusLedgerApi.V1.Orphans.Time ()
 import PlutusLedgerApi.V1.Orphans.Value qualified as Value
-import PlutusLedgerApi.V1.Value qualified as Value
 import PlutusLedgerApi.V2 qualified as PLA
 import PlutusLedgerApi.V2.Orphans.Tx ()
 import PlutusTx.AssocMap qualified as AssocMap
@@ -163,53 +161,6 @@ instance Function PLA.DCert where
         Just (Just (Right (Right (Right (Left (pkh, pkh')))))) -> PLA.DCertPoolRegister pkh pkh'
         Just (Just (Right (Right (Right (Right (pkh, e)))))) -> PLA.DCertPoolRetire pkh e
 
-{- | A 'PLA.Value' containing only Ada, suitable for fees. Furthermore, the
-Ada quantity is non-negative.
-
-= Note
-
-This is designed to act as a modifier, and thus, we expose the constructor
-even though it preserves invariants. If you use the constructor directly,
-be /very/ certain that the Value being wrapped satisfies the invariants
-described above: failing to do so means all guarantees of this type are off
-the table.
-
-@since 1.0.0
--}
-newtype FeeValue = FeeValue PLA.Value
-  deriving
-    ( -- | @since 1.0.0
-      Eq
-    )
-    via PLA.Value
-  deriving stock
-    ( -- | @since 1.0.0
-      Show
-    )
-
--- | @since 1.0.0
-instance Arbitrary FeeValue where
-  {-# INLINEABLE arbitrary #-}
-  arbitrary = FeeValue . PLA.singleton PLA.adaSymbol PLA.adaToken . getNonNegative <$> arbitrary
-  {-# INLINEABLE shrink #-}
-  shrink (FeeValue v) =
-    FeeValue . PLA.singleton PLA.adaSymbol PLA.adaToken <$> do
-      let adaAmount = Value.valueOf v PLA.adaSymbol PLA.adaToken
-      NonNegative adaAmount' <- shrink (NonNegative adaAmount)
-      pure adaAmount'
-
--- | @since 1.0.0
-deriving via PLA.Value instance CoArbitrary FeeValue
-
--- | @since 1.0.0
-instance Function FeeValue where
-  {-# INLINEABLE function #-}
-  function = functionMap coerce FeeValue
-
--- | @since 1.0.0
-getFeeValue :: FeeValue -> PLA.Value
-getFeeValue = coerce
-
 {- | BLAKE2b-256 hash (32 bytes) of a transaction ID.
 
 @since 1.0.0
@@ -322,7 +273,7 @@ instance Arbitrary PLA.TxInfo where
       <$> arbitrary
       <*> (getNonEmpty <$> arbitrary)
       <*> arbitrary
-      <*> (getFeeValue <$> arbitrary)
+      <*> (Value.getFeeValue <$> arbitrary)
       <*> (Value.getNonAdaValue <$> arbitrary)
       <*> arbitrary
       <*> arbitrary
@@ -335,9 +286,9 @@ instance Arbitrary PLA.TxInfo where
   shrink (PLA.TxInfo ins routs outs fee mint dcert wdrl validRange sigs reds dats tid) =
     PLA.TxInfo . getNonEmpty
       <$> shrink (NonEmpty ins)
-      <*> (getNonEmpty <$> shrink (NonEmpty routs))
-      <*> shrink outs
-      <*> (getFeeValue <$> shrink (FeeValue fee))
+      <*> shrink routs
+      <*> (getNonEmpty <$> shrink (NonEmpty outs))
+      <*> (Value.getFeeValue <$> shrink (Value.FeeValue fee))
       <*> (Value.getNonAdaValue <$> shrink (Value.NonAdaValue mint))
       <*> shrink dcert
       <*> shrink wdrl
