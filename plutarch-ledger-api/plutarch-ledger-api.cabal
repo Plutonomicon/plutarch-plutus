@@ -87,5 +87,8 @@ test-suite tests
   import:         test-lang
   type:           exitcode-stdio-1.0
   main-is:        Main.hs
-  build-depends:  plutarch-orphanage
+  build-depends:
+    , plutarch-orphanage
+    , prettyprinter
+
   hs-source-dirs: test

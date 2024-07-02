@@ -11,6 +11,7 @@ import Control.Monad (guard)
 import Data.ByteString (ByteString)
 import Data.ByteString qualified as BS
 import Data.Coerce (coerce)
+import Data.List (sortOn)
 import Data.Set qualified as Set
 import PlutusLedgerApi.Orphans.Common (getBlake2b244Hash)
 import PlutusLedgerApi.V1 qualified as PLA
@@ -75,7 +76,7 @@ instance Function PLA.CurrencySymbol where
   {-# INLINEABLE function #-}
   function = functionMap coerce PLA.CurrencySymbol
 
-{- | A Value with positive Ada, suitable for 'PLA.TxOut'.
+{- | A sorted Value with positive Ada, suitable for 'PLA.TxOut'.
 
 = Note
 
@@ -85,7 +86,7 @@ be /very/ certain that the Value being wrapped satisfies the invariants
 described above: failing to do so means all guarantees of this type are off
 the table.
 
-@since 1.0.0
+@since 1.0.1
 -}
 newtype UTxOValue = UTxOValue PLA.Value
   deriving
@@ -101,15 +102,21 @@ newtype UTxOValue = UTxOValue PLA.Value
 -- | @since 1.0.0
 instance Arbitrary UTxOValue where
   {-# INLINEABLE arbitrary #-}
-  -- Generate a NonAdaValue, then force a positive Ada value into it.
   arbitrary =
     UTxOValue <$> do
       NonAdaValue v <- arbitrary
       Positive adaQuantity <- arbitrary
-      pure $ v <> Value.singleton "" "" adaQuantity
+      -- Ensure everything is sorted by keys
+      let adaValue = Value.singleton "" "" adaQuantity
+      let vAsAssocs = Value.getValue v
+      let adaValueAsAssocs = Value.getValue adaValue
+      let combined = AssocMap.toList vAsAssocs <> AssocMap.toList adaValueAsAssocs
+      let sorted = sortOn fst . fmap (fmap (AssocMap.unsafeFromList . sortOn fst . AssocMap.toList)) $ combined
+      pure . Value.Value . AssocMap.unsafeFromList $ sorted
   {-# INLINEABLE shrink #-}
   shrink (UTxOValue v) =
     UTxOValue <$> do
+      -- We preserve ordering, as we don't shrink keys, only drop them
       v' <- shrink v
       guard (Value.valueOf v' "" "" > 0)
       pure v'

@@ -43,7 +43,7 @@ import Plutarch.DataRepr (
   PDataFields,
  )
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
-import Plutarch.LedgerApi.Credential (PCredential, PStakingCredential)
+import Plutarch.LedgerApi.Credential (PCredential)
 import Plutarch.LedgerApi.Crypto (PPubKeyHash)
 import Plutarch.LedgerApi.Interval qualified as Interval
 import Plutarch.LedgerApi.Scripts (
@@ -253,7 +253,7 @@ instance PTryFrom PData (PAsData PDelegatee)
 
 -- | @since 3.1.0
 data PTxCert (s :: S)
-  = PTxCertRegStaking (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PMaybeData Value.PCurrencySymbol]))
+  = PTxCertRegStaking (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PMaybeData Value.PLovelace]))
   | PTxCertUnRegStaking (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PMaybeData Value.PLovelace]))
   | PTxCertDelegStaking (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PDelegatee]))
   | PTxCertRegDeleg (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PDelegatee, "_2" ':= Value.PLovelace]))
@@ -826,10 +826,10 @@ newtype PTxInfo (s :: S)
               '[ "inputs" ':= PBuiltinList (PAsData PTxInInfo)
                , "referenceInputs" ':= PBuiltinList (PAsData PTxInInfo)
                , "outputs" ':= PBuiltinList (PAsData PTxOut)
-               , "fee" ':= Value.PValue 'AssocMap.Sorted 'Value.Positive
+               , "fee" ':= Value.PLovelace
                , "mint" ':= Value.PValue 'AssocMap.Sorted 'Value.NonZero -- value minted by transaction
                , "txCerts" ':= PBuiltinList (PAsData PTxCert)
-               , "wdrl" ':= AssocMap.PMap 'AssocMap.Unsorted PStakingCredential PInteger -- Staking withdrawals
+               , "wdrl" ':= AssocMap.PMap 'AssocMap.Unsorted PCredential Value.PLovelace -- Staking withdrawals
                , "validRange" ':= Interval.PInterval PPosixTime
                , "signatories" ':= PBuiltinList (PAsData PPubKeyHash)
                , "redeemers" ':= AssocMap.PMap 'AssocMap.Unsorted PScriptPurpose PRedeemer
