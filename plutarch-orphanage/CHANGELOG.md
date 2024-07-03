@@ -8,7 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-* Orphan instances for V1 ledger types
+* Orphan instances for V1 and V2 ledger types
+
+### Changed
+
+* `UTxOValue` now ensures sortedness
 
 ## 1.0.1 -- 24-06-2024
 

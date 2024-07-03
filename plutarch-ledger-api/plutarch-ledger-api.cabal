@@ -66,6 +66,7 @@ library
 
   other-modules:
     Plutarch.LedgerApi.V1.Address
+    Plutarch.LedgerApi.V1.Contexts
     Plutarch.LedgerApi.V1.Credential
     Plutarch.LedgerApi.V1.Crypto
     Plutarch.LedgerApi.V1.DCert
@@ -74,6 +75,7 @@ library
     Plutarch.LedgerApi.V1.Tx
     Plutarch.LedgerApi.V2.Tx
     Plutarch.LedgerApi.V3.Contexts
+    Plutarch.LedgerApi.V3.Tx
 
   build-depends:
     , bytestring

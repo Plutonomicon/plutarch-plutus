@@ -20,9 +20,9 @@ module Plutarch.LedgerApi.V3 (
   -- * Tx
 
   -- ** Types
-  V1Tx.PTxOutRef (..),
+  V3Tx.PTxOutRef (..),
   V2Tx.PTxOut (..),
-  V1Tx.PTxId (..),
+  V3Tx.PTxId (..),
   Contexts.PTxInInfo (..),
   V2Tx.POutputDatum (..),
 
@@ -133,9 +133,9 @@ import Plutarch.LedgerApi.V1.Credential qualified as Credential
 import Plutarch.LedgerApi.V1.Crypto qualified as Crypto
 import Plutarch.LedgerApi.V1.Scripts qualified as Scripts
 import Plutarch.LedgerApi.V1.Time qualified as Time
-import Plutarch.LedgerApi.V1.Tx qualified as V1Tx
 import Plutarch.LedgerApi.V2.Tx qualified as V2Tx
 import Plutarch.LedgerApi.V3.Contexts qualified as Contexts
+import Plutarch.LedgerApi.V3.Tx qualified as V3Tx
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Prelude
 import Plutarch.Script (Script (unScript))
@@ -213,7 +213,7 @@ pgetContinuingOutputs ::
     s
     ( PBuiltinList Contexts.PTxInInfo
         :--> PBuiltinList V2Tx.PTxOut
-        :--> V1Tx.PTxOutRef
+        :--> V3Tx.PTxOutRef
         :--> PBuiltinList V2Tx.PTxOut
     )
 pgetContinuingOutputs = phoistAcyclic $
@@ -257,7 +257,7 @@ pfindOwnInput ::
   Term
     s
     ( PBuiltinList Contexts.PTxInInfo
-        :--> V1Tx.PTxOutRef
+        :--> V3Tx.PTxOutRef
         :--> PMaybe Contexts.PTxInInfo
     )
 pfindOwnInput = phoistAcyclic $
@@ -266,7 +266,7 @@ pfindOwnInput = phoistAcyclic $
   where
     matches ::
       forall (s' :: S).
-      Term s' (V1Tx.PTxOutRef :--> Contexts.PTxInInfo :--> PBool)
+      Term s' (V3Tx.PTxOutRef :--> Contexts.PTxInInfo :--> PBool)
     matches = phoistAcyclic $
       plam $ \outref txininfo ->
         outref #== pfield @"outRef" # txininfo

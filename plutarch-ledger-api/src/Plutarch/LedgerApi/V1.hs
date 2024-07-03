@@ -2,7 +2,7 @@
 
 module Plutarch.LedgerApi.V1 (
   -- * Contexts
-  PScriptPurpose (..),
+  Contexts.PScriptPurpose (..),
   PScriptContext (..),
 
   -- * Certificates
@@ -57,6 +57,7 @@ import Plutarch.DataRepr (
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Interval qualified as Interval
 import Plutarch.LedgerApi.V1.Address qualified as Address
+import Plutarch.LedgerApi.V1.Contexts qualified as Contexts
 import Plutarch.LedgerApi.V1.Credential qualified as Credential
 import Plutarch.LedgerApi.V1.Crypto qualified as Crypto
 import Plutarch.LedgerApi.V1.DCert qualified as DCert
@@ -163,46 +164,6 @@ deriving via
 instance PTryFrom PData (PAsData PTxInInfo)
 
 -- | @since 3.1.1
-data PScriptPurpose (s :: S)
-  = PMinting (Term s (PDataRecord '["_0" ':= Value.PCurrencySymbol]))
-  | PSpending (Term s (PDataRecord '["_0" ':= Tx.PTxOutRef]))
-  | PRewarding (Term s (PDataRecord '["_0" ':= Credential.PStakingCredential]))
-  | PCertifying (Term s (PDataRecord '["_0" ':= DCert.PDCert]))
-  deriving stock
-    ( -- | @since 3.1.1
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since 3.1.1
-      PlutusType
-    , -- | @since 3.1.1
-      PIsData
-    , -- | @since 3.1.1
-      PEq
-    , -- | @since 3.1.1
-      PShow
-    , -- | @since 3.1.1
-      PTryFrom PData
-    )
-
--- | @since 3.1.1
-instance DerivePlutusType PScriptPurpose where
-  type DPTStrat _ = PlutusTypeData
-
--- | @since 3.1.1
-instance PUnsafeLiftDecl PScriptPurpose where
-  type PLifted PScriptPurpose = Plutus.ScriptPurpose
-
--- | @since 3.1.1
-deriving via
-  (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose)
-  instance
-    PConstantDecl Plutus.ScriptPurpose
-
--- | @since 3.1.1
-instance PTryFrom PData (PAsData PScriptPurpose)
-
--- | @since 3.1.1
 newtype PTxInfo (s :: S)
   = PTxInfo
       ( Term
@@ -216,7 +177,7 @@ newtype PTxInfo (s :: S)
                , "wdrl" ':= AssocMap.PMap 'AssocMap.Unsorted Credential.PStakingCredential PInteger -- Staking withdrawals
                , "validRange" ':= Interval.PInterval Time.PPosixTime
                , "signatories" ':= PBuiltinList (PAsData Crypto.PPubKeyHash)
-               , "redeemers" ':= AssocMap.PMap 'AssocMap.Unsorted PScriptPurpose Scripts.PRedeemer
+               , "redeemers" ':= AssocMap.PMap 'AssocMap.Unsorted Contexts.PScriptPurpose Scripts.PRedeemer
                , "data" ':= AssocMap.PMap 'AssocMap.Unsorted Scripts.PDatumHash Scripts.PDatum
                , "id" ':= Tx.PTxId -- hash of the pending transaction
                ]
@@ -260,7 +221,7 @@ instance PTryFrom PData (PAsData PTxInfo)
 
 -- | @since 3.1.1
 newtype PScriptContext (s :: S)
-  = PScriptContext (Term s (PDataRecord '["txInfo" ':= PTxInfo, "purpose" ':= PScriptPurpose]))
+  = PScriptContext (Term s (PDataRecord '["txInfo" ':= PTxInfo, "purpose" ':= Contexts.PScriptPurpose]))
   deriving stock
     ( -- | @since 3.1.1
       Generic

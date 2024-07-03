@@ -96,7 +96,7 @@ be /very/ certain that the Value being wrapped satisfies the invariants
 described above: failing to do so means all guarantees of this type are off
 the table.
 
-@since 1.0.1
+@since 1.0.2
 -}
 newtype UTxOValue = UTxOValue PLA.Value
   deriving
@@ -109,7 +109,7 @@ newtype UTxOValue = UTxOValue PLA.Value
       Show
     )
 
--- | @since 1.0.0
+-- | @since 1.0.2
 instance Arbitrary UTxOValue where
   {-# INLINEABLE arbitrary #-}
   arbitrary =

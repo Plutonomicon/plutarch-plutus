@@ -2,7 +2,7 @@
 
 module Plutarch.LedgerApi.V2 (
   -- * Contexts
-  V1.PScriptPurpose (..),
+  Contexts.PScriptPurpose (..),
   PScriptContext (..),
 
   -- * Certificates
@@ -51,9 +51,14 @@ module Plutarch.LedgerApi.V2 (
   AssocMap.Commutativity (..),
 ) where
 
+import Plutarch.DataRepr (
+  DerivePConstantViaData (DerivePConstantViaData),
+  PDataFields,
+ )
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Interval qualified as Interval
 import Plutarch.LedgerApi.V1.Address qualified as Address
+import Plutarch.LedgerApi.V1.Contexts qualified as Contexts
 import Plutarch.LedgerApi.V1.Credential qualified as Credential
 import Plutarch.LedgerApi.V1.Crypto qualified as Crypto
 import Plutarch.LedgerApi.V1.DCert qualified as DCert
@@ -62,14 +67,6 @@ import Plutarch.LedgerApi.V1.Time qualified as Time
 import Plutarch.LedgerApi.V1.Tx qualified as V1Tx
 import Plutarch.LedgerApi.V2.Tx qualified as V2Tx
 import Plutarch.LedgerApi.Value qualified as Value
-
--- TODO: Cleaner factoring
-
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
-import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.Lift (
   PConstantDecl,
   PUnsafeLiftDecl (PLifted),
@@ -139,7 +136,7 @@ newtype PTxInfo (s :: S)
                , "wdrl" ':= AssocMap.PMap 'AssocMap.Unsorted Credential.PStakingCredential PInteger -- Staking withdrawals
                , "validRange" ':= Interval.PInterval Time.PPosixTime
                , "signatories" ':= PBuiltinList (PAsData Crypto.PPubKeyHash)
-               , "redeemers" ':= AssocMap.PMap 'AssocMap.Unsorted V1.PScriptPurpose Scripts.PRedeemer
+               , "redeemers" ':= AssocMap.PMap 'AssocMap.Unsorted Contexts.PScriptPurpose Scripts.PRedeemer
                , "data" ':= AssocMap.PMap 'AssocMap.Unsorted Scripts.PDatumHash Scripts.PDatum
                , "id" ':= V1Tx.PTxId -- hash of the pending transaction
                ]
@@ -183,7 +180,7 @@ instance PTryFrom PData (PAsData PTxInfo)
 
 -- | @since 3.1.1
 newtype PScriptContext (s :: S)
-  = PScriptContext (Term s (PDataRecord '["txInfo" ':= PTxInfo, "purpose" ':= V1.PScriptPurpose]))
+  = PScriptContext (Term s (PDataRecord '["txInfo" ':= PTxInfo, "purpose" ':= Contexts.PScriptPurpose]))
   deriving stock
     ( -- | @since 3.1.1
       Generic
