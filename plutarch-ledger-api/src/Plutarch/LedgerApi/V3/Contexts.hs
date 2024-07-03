@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 -- Mirrors the equivalent V3 module in plutus-ledger-api
-module Plutarch.LedgerApi.Contexts (
+module Plutarch.LedgerApi.V3.Contexts (
   PColdCommitteeCredential (..),
   PHotCommitteeCredential (..),
   PDRepCredential (..),
@@ -43,18 +43,19 @@ import Plutarch.DataRepr (
   PDataFields,
  )
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
-import Plutarch.LedgerApi.Credential (PCredential)
-import Plutarch.LedgerApi.Crypto (PPubKeyHash)
 import Plutarch.LedgerApi.Interval qualified as Interval
-import Plutarch.LedgerApi.Scripts (
+import Plutarch.LedgerApi.Utils (PMaybeData, PRationalData)
+import Plutarch.LedgerApi.V1.Credential (PCredential)
+import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
+import Plutarch.LedgerApi.V1.Scripts (
   PDatum,
   PDatumHash,
   PRedeemer,
   PScriptHash,
  )
-import Plutarch.LedgerApi.Time (PPosixTime)
-import Plutarch.LedgerApi.Tx (PTxId, PTxOut, PTxOutRef)
-import Plutarch.LedgerApi.Utils (PMaybeData, PRationalData)
+import Plutarch.LedgerApi.V1.Time (PPosixTime)
+import Plutarch.LedgerApi.V1.Tx (PTxId, PTxOutRef)
+import Plutarch.LedgerApi.V2.Tx (PTxOut)
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),

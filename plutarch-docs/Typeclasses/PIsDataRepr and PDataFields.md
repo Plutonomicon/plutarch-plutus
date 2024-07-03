@@ -7,7 +7,7 @@
 module Plutarch.Docs.PDataFields (foo, foo', res, mockCtx, purpose, Vehicle (..), PVehicle (..), PVehicle' (..), PFoo (..), test) where
 
 import Plutarch.Prelude
-import Plutarch.LedgerApi (
+import Plutarch.LedgerApi.V3 (
   PScriptContext, 
   PScriptPurpose (PMinting),
   PScriptInfo (

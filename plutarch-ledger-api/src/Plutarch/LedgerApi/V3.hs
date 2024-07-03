@@ -10,7 +10,7 @@ The 'Value.PValue', 'AssocMap.PMap' and 'Interval.PInterval'-related
 functionality can be found in other modules, as these clash with the
 Plutarch prelude. These should be imported qualified.
 -}
-module Plutarch.LedgerApi (
+module Plutarch.LedgerApi.V3 (
   -- * Contexts
   Contexts.PScriptContext (..),
   Contexts.PTxInfo (..),
@@ -20,11 +20,11 @@ module Plutarch.LedgerApi (
   -- * Tx
 
   -- ** Types
-  Tx.PTxOutRef (..),
-  Tx.PTxOut (..),
-  Tx.PTxId (..),
+  V1Tx.PTxOutRef (..),
+  V2Tx.PTxOut (..),
+  V1Tx.PTxId (..),
   Contexts.PTxInInfo (..),
-  Tx.POutputDatum (..),
+  V2Tx.POutputDatum (..),
 
   -- ** Functions
   pgetContinuingOutputs,
@@ -125,16 +125,17 @@ import Data.ByteArray (convert)
 import Data.ByteString (ByteString, toStrict)
 import Data.ByteString.Short (fromShort)
 import Data.Coerce (coerce)
-import Plutarch.LedgerApi.Address qualified as Address
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
-import Plutarch.LedgerApi.Contexts qualified as Contexts
-import Plutarch.LedgerApi.Credential qualified as Credential
-import Plutarch.LedgerApi.Crypto qualified as Crypto
 import Plutarch.LedgerApi.Interval qualified as Interval
-import Plutarch.LedgerApi.Scripts qualified as Scripts
-import Plutarch.LedgerApi.Time qualified as Time
-import Plutarch.LedgerApi.Tx qualified as Tx
 import Plutarch.LedgerApi.Utils qualified as Utils
+import Plutarch.LedgerApi.V1.Address qualified as Address
+import Plutarch.LedgerApi.V1.Credential qualified as Credential
+import Plutarch.LedgerApi.V1.Crypto qualified as Crypto
+import Plutarch.LedgerApi.V1.Scripts qualified as Scripts
+import Plutarch.LedgerApi.V1.Time qualified as Time
+import Plutarch.LedgerApi.V1.Tx qualified as V1Tx
+import Plutarch.LedgerApi.V2.Tx qualified as V2Tx
+import Plutarch.LedgerApi.V3.Contexts qualified as Contexts
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Prelude
 import Plutarch.Script (Script (unScript))
@@ -208,7 +209,13 @@ redeemerHash = coerce . dataHash
 -}
 pgetContinuingOutputs ::
   forall (s :: S).
-  Term s (PBuiltinList Contexts.PTxInInfo :--> PBuiltinList Tx.PTxOut :--> Tx.PTxOutRef :--> PBuiltinList Tx.PTxOut)
+  Term
+    s
+    ( PBuiltinList Contexts.PTxInInfo
+        :--> PBuiltinList V2Tx.PTxOut
+        :--> V1Tx.PTxOutRef
+        :--> PBuiltinList V2Tx.PTxOut
+    )
 pgetContinuingOutputs = phoistAcyclic $
   plam $ \inputs outputs outRef ->
     pmatch (pfindOwnInput # inputs # outRef) $ \case
@@ -221,7 +228,7 @@ pgetContinuingOutputs = phoistAcyclic $
   where
     matches ::
       forall (s' :: S).
-      Term s' (Address.PAddress :--> Tx.PTxOut :--> PBool)
+      Term s' (Address.PAddress :--> V2Tx.PTxOut :--> PBool)
     matches = phoistAcyclic $
       plam $ \adr txOut ->
         adr #== pfield @"address" # txOut
@@ -247,14 +254,19 @@ pgetContinuingOutputs = phoistAcyclic $
 -}
 pfindOwnInput ::
   forall (s :: S).
-  Term s (PBuiltinList Contexts.PTxInInfo :--> Tx.PTxOutRef :--> PMaybe Contexts.PTxInInfo)
+  Term
+    s
+    ( PBuiltinList Contexts.PTxInInfo
+        :--> V1Tx.PTxOutRef
+        :--> PMaybe Contexts.PTxInInfo
+    )
 pfindOwnInput = phoistAcyclic $
   plam $ \inputs outRef ->
     pfind # (matches # outRef) # inputs
   where
     matches ::
       forall (s' :: S).
-      Term s' (Tx.PTxOutRef :--> Contexts.PTxInInfo :--> PBool)
+      Term s' (V1Tx.PTxOutRef :--> Contexts.PTxInInfo :--> PBool)
     matches = phoistAcyclic $
       plam $ \outref txininfo ->
         outref #== pfield @"outRef" # txininfo

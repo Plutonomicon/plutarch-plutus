@@ -7,7 +7,7 @@ module Plutarch.Docs.WorkingWithBoundFields (foo, foo', coreValidator) where
 
 import Plutarch.Prelude
 import Plutarch.DataRepr (HRec, HRecOf, PDataFields, PMemberFields)
-import Plutarch.LedgerApi (PTxInfo, PScriptContext)
+import Plutarch.LedgerApi.V3 (PTxInfo, PScriptContext)
 ```
 
 </p>
