@@ -6,7 +6,9 @@ import Data.Kind (Type)
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Plutarch.Builtin (pforgetData)
 import Plutarch.Internal (punsafeCoerce)
-import Plutarch.LedgerApi qualified as PlutarchLA
+import Plutarch.LedgerApi.V1 qualified as PlutarchV1
+import Plutarch.LedgerApi.V2 qualified as PlutarchV2
+import Plutarch.LedgerApi.V3 qualified as PlutarchV3
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude (
   PAsData,
@@ -17,7 +19,9 @@ import Plutarch.Prelude (
   pfromData,
   plift,
  )
-import PlutusLedgerApi.V3 qualified as PlutusLA
+import PlutusLedgerApi.V1.Orphans ()
+import PlutusLedgerApi.V2.Orphans ()
+import PlutusLedgerApi.V3 qualified as PlutusV3
 import PlutusLedgerApi.V3.Orphans ()
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
@@ -42,106 +46,135 @@ main = do
         "V1"
         [ testGroup
             "PUnsafeLiftDecl"
-            [ punsafeLiftDeclLaw @PlutarchLA.PAddress
-            , punsafeLiftDeclLaw @PlutarchLA.PCredential
-            , punsafeLiftDeclLaw @PlutarchLA.PStakingCredential
-            , punsafeLiftDeclLaw @PlutarchLA.PPubKeyHash
+            [ punsafeLiftDeclLaw @PlutarchV1.PAddress
+            , punsafeLiftDeclLaw @PlutarchV1.PCredential
+            , punsafeLiftDeclLaw @PlutarchV1.PStakingCredential
+            , punsafeLiftDeclLaw @PlutarchV1.PPubKeyHash
             , -- We only care about POSIXTime intervals, so we don't test anything
               -- else
-              punsafeLiftDeclLaw @PlutarchLA.PPosixTime
-            , punsafeLiftDeclLaw @(PlutarchLA.PExtended PlutarchLA.PPosixTime)
-            , punsafeLiftDeclLaw @(PlutarchLA.PLowerBound PlutarchLA.PPosixTime)
-            , punsafeLiftDeclLaw @(PlutarchLA.PUpperBound PlutarchLA.PPosixTime)
-            , punsafeLiftDeclLaw @(PlutarchLA.PInterval PlutarchLA.PPosixTime)
-            , punsafeLiftDeclLaw @PlutarchLA.PScriptHash
-            , punsafeLiftDeclLaw @PlutarchLA.PDatum
-            , punsafeLiftDeclLaw @PlutarchLA.PRedeemer
-            , punsafeLiftDeclLaw @PlutarchLA.PDatumHash
-            , punsafeLiftDeclLaw @PlutarchLA.PRedeemerHash
-            , punsafeLiftDeclLaw @PlutarchLA.PCurrencySymbol
-            , punsafeLiftDeclLaw @PlutarchLA.PTokenName
-            , punsafeLiftDeclLaw @PlutarchLA.PLovelace
+              punsafeLiftDeclLaw @PlutarchV1.PPosixTime
+            , punsafeLiftDeclLaw @(PlutarchV1.PExtended PlutarchV1.PPosixTime)
+            , punsafeLiftDeclLaw @(PlutarchV1.PLowerBound PlutarchV1.PPosixTime)
+            , punsafeLiftDeclLaw @(PlutarchV1.PUpperBound PlutarchV1.PPosixTime)
+            , punsafeLiftDeclLaw @(PlutarchV1.PInterval PlutarchV1.PPosixTime)
+            , punsafeLiftDeclLaw @PlutarchV1.PScriptHash
+            , punsafeLiftDeclLaw @PlutarchV1.PDatum
+            , punsafeLiftDeclLaw @PlutarchV1.PRedeemer
+            , punsafeLiftDeclLaw @PlutarchV1.PDatumHash
+            , punsafeLiftDeclLaw @PlutarchV1.PRedeemerHash
+            , punsafeLiftDeclLaw @PlutarchV1.PCurrencySymbol
+            , punsafeLiftDeclLaw @PlutarchV1.PTokenName
+            , punsafeLiftDeclLaw @PlutarchV1.PLovelace
             , -- TODO: This is definitely not correct. At the very least, the
               -- generator for Value _can_ produce zeroes!
-              punsafeLiftDeclLaw @(PlutarchLA.PValue PlutarchLA.Unsorted PlutarchLA.NonZero)
+              punsafeLiftDeclLaw @(PlutarchV1.PValue PlutarchV1.Unsorted PlutarchV1.NonZero)
+            , punsafeLiftDeclLaw @PlutarchV1.PDCert
+            , punsafeLiftDeclLaw @PlutarchV1.PTxId
+            , adjustOption fewerTests $ punsafeLiftDeclLaw @PlutarchV1.PTxInfo
+            , adjustOption fewerTests $ punsafeLiftDeclLaw @PlutarchV1.PScriptContext
             ]
         , testGroup
             "PIsData"
-            [ pIsDataLaws @PlutarchLA.PAddress
-            , pIsDataLaws @PlutarchLA.PCredential
-            , pIsDataLaws @PlutarchLA.PStakingCredential
-            , pIsDataLaws @PlutarchLA.PPubKeyHash
-            , pIsDataLaws @PlutarchLA.PPosixTime
-            , pIsDataLaws @(PlutarchLA.PExtended PlutarchLA.PPosixTime)
-            , pIsDataLaws @(PlutarchLA.PLowerBound PlutarchLA.PPosixTime)
-            , pIsDataLaws @(PlutarchLA.PUpperBound PlutarchLA.PPosixTime)
-            , pIsDataLaws @(PlutarchLA.PInterval PlutarchLA.PPosixTime)
-            , pIsDataLaws @PlutarchLA.PScriptHash
-            , pIsDataLaws @PlutarchLA.PDatum
-            , pIsDataLaws @PlutarchLA.PRedeemer
-            , pIsDataLaws @PlutarchLA.PDatumHash
-            , pIsDataLaws @PlutarchLA.PRedeemerHash
-            , pIsDataLaws @PlutarchLA.PCurrencySymbol
-            , pIsDataLaws @PlutarchLA.PTokenName
-            , pIsDataLaws @PlutarchLA.PLovelace
-            , pIsDataLaws @(PlutarchLA.PValue PlutarchLA.Unsorted PlutarchLA.NonZero)
+            [ pIsDataLaws @PlutarchV1.PAddress
+            , pIsDataLaws @PlutarchV1.PCredential
+            , pIsDataLaws @PlutarchV1.PStakingCredential
+            , pIsDataLaws @PlutarchV1.PPubKeyHash
+            , pIsDataLaws @PlutarchV1.PPosixTime
+            , pIsDataLaws @(PlutarchV1.PExtended PlutarchV1.PPosixTime)
+            , pIsDataLaws @(PlutarchV1.PLowerBound PlutarchV1.PPosixTime)
+            , pIsDataLaws @(PlutarchV1.PUpperBound PlutarchV1.PPosixTime)
+            , pIsDataLaws @(PlutarchV1.PInterval PlutarchV1.PPosixTime)
+            , pIsDataLaws @PlutarchV1.PScriptHash
+            , pIsDataLaws @PlutarchV1.PDatum
+            , pIsDataLaws @PlutarchV1.PRedeemer
+            , pIsDataLaws @PlutarchV1.PDatumHash
+            , pIsDataLaws @PlutarchV1.PRedeemerHash
+            , pIsDataLaws @PlutarchV1.PCurrencySymbol
+            , pIsDataLaws @PlutarchV1.PTokenName
+            , pIsDataLaws @PlutarchV1.PLovelace
+            , pIsDataLaws @(PlutarchV1.PValue PlutarchV1.Unsorted PlutarchV1.NonZero)
+            , pIsDataLaws @PlutarchV1.PDCert
+            , pIsDataLaws @PlutarchV1.PTxId
+            , adjustOption fewerTests $ pIsDataLaws @PlutarchV1.PTxInfo
+            , adjustOption fewerTests $ pIsDataLaws @PlutarchV1.PScriptContext
+            ]
+        ]
+    , testGroup
+        "V2"
+        [ testGroup
+            "PUnsafeLiftDecl"
+            [ punsafeLiftDeclLaw @PlutarchV2.PTxId
+            , punsafeLiftDeclLaw @PlutarchV2.PTxOut
+            , adjustOption fewerTests $ punsafeLiftDeclLaw @PlutarchV2.PTxInfo
+            , punsafeLiftDeclLaw @PlutarchV2.PTxInInfo
+            , punsafeLiftDeclLaw @PlutarchV2.POutputDatum
+            , adjustOption fewerTests $ punsafeLiftDeclLaw @PlutarchV2.PScriptContext
+            ]
+        , testGroup
+            "PIsData"
+            [ pIsDataLaws @PlutarchV2.PTxId
+            , pIsDataLaws @PlutarchV2.PTxOut
+            , adjustOption fewerTests $ pIsDataLaws @PlutarchV2.PTxInfo
+            , pIsDataLaws @PlutarchV2.PTxInInfo
+            , pIsDataLaws @PlutarchV2.POutputDatum
+            , adjustOption fewerTests $ pIsDataLaws @PlutarchV2.PScriptContext
             ]
         ]
     , testGroup
         "V3"
         [ testGroup
             "PUnsafeLiftDecl"
-            [ punsafeLiftDeclLaw @PlutarchLA.PColdCommitteeCredential
-            , punsafeLiftDeclLaw @PlutarchLA.PHotCommitteeCredential
-            , punsafeLiftDeclLaw @PlutarchLA.PDRepCredential
-            , punsafeLiftDeclLaw @PlutarchLA.PDRep
-            , punsafeLiftDeclLaw @PlutarchLA.PDelegatee
-            , punsafeLiftDeclLaw @PlutarchLA.PTxCert
-            , punsafeLiftDeclLaw @PlutarchLA.PVoter
-            , punsafeLiftDeclLaw @PlutarchLA.PVote
-            , punsafeLiftDeclLaw @PlutarchLA.PGovernanceActionId
-            , punsafeLiftDeclLaw @PlutarchLA.PCommittee
-            , punsafeLiftDeclLaw @PlutarchLA.PConstitution
-            , punsafeLiftDeclLaw @PlutarchLA.PProtocolVersion
-            , punsafeLiftDeclLaw @PlutarchLA.PChangedParameters
-            , punsafeLiftDeclLaw @PlutarchLA.PGovernanceAction
-            , punsafeLiftDeclLaw @PlutarchLA.PProposalProcedure
-            , punsafeLiftDeclLaw @PlutarchLA.PScriptPurpose
-            , punsafeLiftDeclLaw @PlutarchLA.PScriptInfo
-            , punsafeLiftDeclLaw @PlutarchLA.PTxInInfo
-            , adjustOption fewerTests $ punsafeLiftDeclLaw @PlutarchLA.PTxInfo
-            , adjustOption fewerTests $ punsafeLiftDeclLaw @PlutarchLA.PScriptContext
-            , punsafeLiftDeclLaw @PlutarchLA.PTxId
-            , punsafeLiftDeclLaw @PlutarchLA.PTxOutRef
-            , punsafeLiftDeclLaw @PlutarchLA.PTxOut
-            , punsafeLiftDeclLaw @PlutarchLA.POutputDatum
+            [ punsafeLiftDeclLaw @PlutarchV3.PColdCommitteeCredential
+            , punsafeLiftDeclLaw @PlutarchV3.PHotCommitteeCredential
+            , punsafeLiftDeclLaw @PlutarchV3.PDRepCredential
+            , punsafeLiftDeclLaw @PlutarchV3.PDRep
+            , punsafeLiftDeclLaw @PlutarchV3.PDelegatee
+            , punsafeLiftDeclLaw @PlutarchV3.PTxCert
+            , punsafeLiftDeclLaw @PlutarchV3.PVoter
+            , punsafeLiftDeclLaw @PlutarchV3.PVote
+            , punsafeLiftDeclLaw @PlutarchV3.PGovernanceActionId
+            , punsafeLiftDeclLaw @PlutarchV3.PCommittee
+            , punsafeLiftDeclLaw @PlutarchV3.PConstitution
+            , punsafeLiftDeclLaw @PlutarchV3.PProtocolVersion
+            , punsafeLiftDeclLaw @PlutarchV3.PChangedParameters
+            , punsafeLiftDeclLaw @PlutarchV3.PGovernanceAction
+            , punsafeLiftDeclLaw @PlutarchV3.PProposalProcedure
+            , punsafeLiftDeclLaw @PlutarchV3.PScriptPurpose
+            , punsafeLiftDeclLaw @PlutarchV3.PScriptInfo
+            , punsafeLiftDeclLaw @PlutarchV3.PTxInInfo
+            , adjustOption fewerTests $ punsafeLiftDeclLaw @PlutarchV3.PTxInfo
+            , adjustOption fewerTests $ punsafeLiftDeclLaw @PlutarchV3.PScriptContext
+            , punsafeLiftDeclLaw @PlutarchV3.PTxId
+            , punsafeLiftDeclLaw @PlutarchV3.PTxOutRef
+            , punsafeLiftDeclLaw @PlutarchV3.PTxOut
+            , punsafeLiftDeclLaw @PlutarchV3.POutputDatum
             ]
         , testGroup
             "PIsData"
-            [ pIsDataLaws @PlutarchLA.PColdCommitteeCredential
-            , pIsDataLaws @PlutarchLA.PHotCommitteeCredential
-            , pIsDataLaws @PlutarchLA.PDRepCredential
-            , pIsDataLaws @PlutarchLA.PDRep
-            , pIsDataLaws @PlutarchLA.PDelegatee
-            , pIsDataLaws @PlutarchLA.PTxCert
-            , pIsDataLaws @PlutarchLA.PVoter
-            , pIsDataLaws @PlutarchLA.PVote
-            , pIsDataLaws @PlutarchLA.PGovernanceActionId
-            , pIsDataLaws @PlutarchLA.PCommittee
-            , pIsDataLaws @PlutarchLA.PConstitution
-            , pIsDataLaws @PlutarchLA.PProtocolVersion
-            , pIsDataLaws @PlutarchLA.PChangedParameters
-            , pIsDataLaws @PlutarchLA.PGovernanceAction
-            , pIsDataLaws @PlutarchLA.PProposalProcedure
-            , pIsDataLaws @PlutarchLA.PScriptPurpose
-            , pIsDataLaws @PlutarchLA.PScriptInfo
-            , pIsDataLaws @PlutarchLA.PTxInInfo
-            , adjustOption fewerTests $ pIsDataLaws @PlutarchLA.PTxInfo
-            , adjustOption fewerTests $ pIsDataLaws @PlutarchLA.PScriptContext
-            , pIsDataLaws @PlutarchLA.PTxId
-            , pIsDataLaws @PlutarchLA.PTxOutRef
-            , pIsDataLaws @PlutarchLA.PTxOut
-            , pIsDataLaws @PlutarchLA.POutputDatum
+            [ pIsDataLaws @PlutarchV3.PColdCommitteeCredential
+            , pIsDataLaws @PlutarchV3.PHotCommitteeCredential
+            , pIsDataLaws @PlutarchV3.PDRepCredential
+            , pIsDataLaws @PlutarchV3.PDRep
+            , pIsDataLaws @PlutarchV3.PDelegatee
+            , pIsDataLaws @PlutarchV3.PTxCert
+            , pIsDataLaws @PlutarchV3.PVoter
+            , pIsDataLaws @PlutarchV3.PVote
+            , pIsDataLaws @PlutarchV3.PGovernanceActionId
+            , pIsDataLaws @PlutarchV3.PCommittee
+            , pIsDataLaws @PlutarchV3.PConstitution
+            , pIsDataLaws @PlutarchV3.PProtocolVersion
+            , pIsDataLaws @PlutarchV3.PChangedParameters
+            , pIsDataLaws @PlutarchV3.PGovernanceAction
+            , pIsDataLaws @PlutarchV3.PProposalProcedure
+            , pIsDataLaws @PlutarchV3.PScriptPurpose
+            , pIsDataLaws @PlutarchV3.PScriptInfo
+            , pIsDataLaws @PlutarchV3.PTxInInfo
+            , adjustOption fewerTests $ pIsDataLaws @PlutarchV3.PTxInfo
+            , adjustOption fewerTests $ pIsDataLaws @PlutarchV3.PScriptContext
+            , pIsDataLaws @PlutarchV3.PTxId
+            , pIsDataLaws @PlutarchV3.PTxOutRef
+            , pIsDataLaws @PlutarchV3.PTxOut
+            , pIsDataLaws @PlutarchV3.POutputDatum
             ]
         ]
     ]
@@ -149,10 +182,10 @@ main = do
     moreTests :: QuickCheckTests -> QuickCheckTests
     moreTests = max 10_000
     -- Currently, the TxInfo and ScriptContext generators run like treacle, so
-    -- to keep the test times manageable, we cap to 500.
+    -- to keep the test times manageable, we cap to 250.
     -- TODO: Fix those.
     fewerTests :: QuickCheckTests -> QuickCheckTests
-    fewerTests = const 500
+    fewerTests = const 250
 
 -- Properties
 
@@ -184,7 +217,7 @@ pIsDataLaws ::
   , PIsData a
   , Eq (PLifted a)
   , Typeable a
-  , PlutusLA.ToData (PLifted a)
+  , PlutusV3.ToData (PLifted a)
   ) =>
   TestTree
 pIsDataLaws =
@@ -208,12 +241,12 @@ pIsDataLaws =
       testProperty "plift . pforgetData . pdata . pconstant = toData"
         . forAllShrinkShow arbitrary shrink show
         $ \(x :: PLifted a) ->
-          plift (pforgetData . pdata . pconstant $ x) === PlutusLA.toData x
+          plift (pforgetData . pdata . pconstant $ x) === PlutusV3.toData x
     coerceProp :: TestTree
     coerceProp =
       testProperty coerceName
         . forAllShrinkShow arbitrary shrink show
         $ \(x :: PLifted a) ->
-          plift (pfromData . punsafeCoerce @_ @_ @(PAsData a) . pconstant . PlutusLA.toData $ x) === x
+          plift (pfromData . punsafeCoerce @_ @_ @(PAsData a) . pconstant . PlutusV3.toData $ x) === x
     coerceName :: String
     coerceName = "plift . pfromData . punsafeCoerce @(PAsData " <> groupName <> ") . pconstant . toData = id"

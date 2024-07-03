@@ -4,8 +4,8 @@ import Hedgehog (Property, PropertyT, assert, forAll, property)
 import Hedgehog.Gen qualified as Gen (int, list)
 import Hedgehog.Internal.Property (propertyTest)
 import Hedgehog.Range qualified as Range (constantBounded, singleton)
-import Plutarch.LedgerApi (PInterval)
 import Plutarch.LedgerApi.Interval (
+  PInterval,
   pafter,
   palways,
   pbefore,

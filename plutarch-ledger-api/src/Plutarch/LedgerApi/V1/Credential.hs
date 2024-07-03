@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 -- Mirrors the equivalent V1 module in plutus-ledger api
-module Plutarch.LedgerApi.Credential (
+module Plutarch.LedgerApi.V1.Credential (
   PCredential (..),
   PStakingCredential (..),
 ) where
@@ -9,14 +9,14 @@ module Plutarch.LedgerApi.Credential (
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
  )
-import Plutarch.LedgerApi.Crypto (PPubKeyHash)
-import Plutarch.LedgerApi.Scripts (PScriptHash)
+import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
+import Plutarch.LedgerApi.V1.Scripts (PScriptHash)
 import Plutarch.Lift (
   PConstantDecl,
   PUnsafeLiftDecl (PLifted),
  )
 import Plutarch.Prelude
-import PlutusLedgerApi.V3 qualified as Plutus
+import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 2.0.0
 data PCredential (s :: S)

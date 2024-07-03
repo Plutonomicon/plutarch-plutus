@@ -1,6 +1,6 @@
 cabal-version:      3.0
 name:               plutarch-orphanage
-version:            1.0.0
+version:            1.0.2
 author:
   Koz Ross <koz@mlabs.city>, Seungheon Oh <seungheon.oh@mlabs.city>
 
@@ -51,24 +51,29 @@ library
   import:          lang
   exposed-modules:
     PlutusLedgerApi.QuickCheck.Utils
+    PlutusLedgerApi.V1.Orphans
     PlutusLedgerApi.V2.Orphans
     PlutusLedgerApi.V3.Orphans
 
   other-modules:
     PlutusLedgerApi.Orphans.Common
     PlutusLedgerApi.V1.Orphans.Address
+    PlutusLedgerApi.V1.Orphans.Contexts
     PlutusLedgerApi.V1.Orphans.Credential
     PlutusLedgerApi.V1.Orphans.Crypto
+    PlutusLedgerApi.V1.Orphans.DCert
     PlutusLedgerApi.V1.Orphans.Interval
     PlutusLedgerApi.V1.Orphans.Scripts
     PlutusLedgerApi.V1.Orphans.Time
+    PlutusLedgerApi.V1.Orphans.Tx
     PlutusLedgerApi.V1.Orphans.Value
+    PlutusLedgerApi.V2.Orphans.Contexts
     PlutusLedgerApi.V2.Orphans.Tx
 
   build-depends:
     , bytestring
     , containers
-    , plutus-core           >=1.29.0.0
+    , plutus-core           >=1.30.0.0
     , plutus-ledger-api
     , plutus-tx
     , QuickCheck
