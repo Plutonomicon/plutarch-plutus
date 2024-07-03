@@ -12,6 +12,7 @@ import PlutusLedgerApi.V1.Orphans.Credential ()
 import PlutusLedgerApi.V1.Orphans.Interval ()
 import PlutusLedgerApi.V1.Orphans.Time ()
 import PlutusLedgerApi.V1.Orphans.Value ()
+import PlutusLedgerApi.V1.Orphans.Value qualified as Value
 import PlutusLedgerApi.V2.Orphans.Tx ()
 import PlutusLedgerApi.V3 qualified as PLA
 import PlutusTx.AssocMap qualified as AssocMap
@@ -23,11 +24,13 @@ import Test.QuickCheck (
   Arbitrary1 (liftArbitrary, liftShrink),
   CoArbitrary (coarbitrary),
   Function (function),
+  NonEmptyList (NonEmpty),
   NonNegative (NonNegative),
   Positive (Positive),
   chooseInt,
   elements,
   functionMap,
+  getNonEmpty,
   getNonNegative,
   getPositive,
   oneof,
@@ -856,15 +859,15 @@ instance Arbitrary PLA.TxInInfo where
 instance Arbitrary PLA.TxInfo where
   {-# INLINEABLE arbitrary #-}
   arbitrary = do
-    ins <- arbitrary
+    ins <- getNonEmpty <$> arbitrary
     routs <- arbitrary
-    outs <- arbitrary
+    outs <- getNonEmpty <$> arbitrary
     fee <- arbitrary
-    mint <- arbitrary
+    mint <- Value.getNonAdaValue <$> arbitrary
     cert <- arbitrary
     wdrl <- arbitrary
     valid <- arbitrary
-    sigs <- arbitrary
+    sigs <- Set.toList <$> arbitrary
     reds <- arbitrary
     dats <- arbitrary
     tid <- arbitrary
@@ -875,11 +878,11 @@ instance Arbitrary PLA.TxInfo where
     pure . PLA.TxInfo ins routs outs fee mint cert wdrl valid sigs reds dats tid votes pps currT $ tDonation
   {-# INLINEABLE shrink #-}
   shrink (PLA.TxInfo ins routs outs fee mint cert wdrl valid sigs reds dats tid votes pps currT tDonation) = do
-    ins' <- shrink ins
+    NonEmpty ins' <- shrink (NonEmpty ins)
     routs' <- shrink routs
-    outs' <- shrink outs
+    NonEmpty outs' <- shrink (NonEmpty outs)
     fee' <- shrink fee
-    mint' <- shrink mint
+    (Value.NonAdaValue mint') <- shrink (Value.NonAdaValue mint)
     cert' <- shrink cert
     wdrl' <- shrink wdrl
     valid' <- shrink valid
@@ -894,7 +897,6 @@ instance Arbitrary PLA.TxInfo where
     pure . PLA.TxInfo ins' routs' outs' fee' mint' cert' wdrl' valid' sigs' reds' dats' tid' votes' pps' currT' $ tDonation'
 
 -- TODO: CoArbitrary, Function
--- TODO: Invariants?
 
 -- | @since 1.0.1
 instance Arbitrary PLA.ScriptContext where

@@ -9,13 +9,12 @@
 
 -- | QuickCheck orphans (plus a few helpers) for V2 Plutus ledger API types.
 module PlutusLedgerApi.V2.Orphans (
-  -- * Specialized Value wrappers
-  Value.FeeValue (..),
-  Value.getFeeValue,
   Value.NonAdaValue (..),
   Value.getNonAdaValue,
   Value.UTxOValue (..),
   Value.getUtxoValue,
+  Value.FeeValue (..),
+  Value.getFeeValue,
 ) where
 
 import Data.ByteString (ByteString)

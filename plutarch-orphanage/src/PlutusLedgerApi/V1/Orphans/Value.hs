@@ -1,12 +1,13 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module PlutusLedgerApi.V1.Orphans.Value (
+  -- * Specialized Value wrappers
+  FeeValue (..),
+  getFeeValue,
   UTxOValue (..),
   getUtxoValue,
   NonAdaValue (..),
   getNonAdaValue,
-  FeeValue (..),
-  getFeeValue,
 ) where
 
 import Control.Monad (guard)
@@ -34,6 +35,7 @@ import Test.QuickCheck (
   functionMap,
   getNonEmpty,
   getNonNegative,
+  getPositive,
   resize,
   scale,
   sized,
@@ -79,7 +81,12 @@ instance Function PLA.CurrencySymbol where
   {-# INLINEABLE function #-}
   function = functionMap coerce PLA.CurrencySymbol
 
-{- | A Value with positive Ada, suitable for 'PLA.TxOut'.
+{- | A 'PLA.Value' suitable for 'PLA.TxOut'. Specifically:
+
+* The `PLA.Value` is sorted by both keys (meaning 'PLA.CurrencySymbol' and
+  'PLA.TokenName');
+* There exists an Ada amount; and
+* All amounts are positive.
 
 = Note
 
@@ -89,7 +96,7 @@ be /very/ certain that the Value being wrapped satisfies the invariants
 described above: failing to do so means all guarantees of this type are off
 the table.
 
-@since 1.0.0
+@since 1.0.2
 -}
 newtype UTxOValue = UTxOValue PLA.Value
   deriving
@@ -102,21 +109,49 @@ newtype UTxOValue = UTxOValue PLA.Value
       Show
     )
 
--- | @since 1.0.0
+-- | @since 1.0.2
 instance Arbitrary UTxOValue where
   {-# INLINEABLE arbitrary #-}
-  -- Generate a NonAdaValue, then force a positive Ada value into it.
   arbitrary =
     UTxOValue <$> do
-      NonAdaValue v <- arbitrary
       Positive adaQuantity <- arbitrary
-      pure $ v <> Value.singleton "" "" adaQuantity
+      -- Set of non-Ada currency symbols
+      csSet <- Set.fromList <$> liftArbitrary (PLA.CurrencySymbol . getBlake2b244Hash <$> arbitrary)
+      let cses = Set.toList csSet
+      -- For each key, generate a set of token names that aren't Ada, and a
+      -- positive value
+      table <- traverse (scale (`quot` 8) . mkInner) cses
+      -- Jam the Ada value in there
+      let table' = (Value.adaSymbol, [(Value.adaToken, adaQuantity)]) : table
+      pure . Value.Value . AssocMap.unsafeFromList . fmap (fmap AssocMap.unsafeFromList) $ table'
+    where
+      mkInner :: PLA.CurrencySymbol -> Gen (PLA.CurrencySymbol, [(PLA.TokenName, Integer)])
+      mkInner cs =
+        (cs,) <$> do
+          -- Set of non-Ada token names
+          tnSet <- Set.fromList <$> liftArbitrary genNonAdaTokenName
+          let asList = Set.toList tnSet
+          traverse (\tn -> (tn,) . getPositive <$> arbitrary) asList
+      genNonAdaTokenName :: Gen PLA.TokenName
+      genNonAdaTokenName =
+        PLA.TokenName . PlutusTx.toBuiltin @ByteString . BS.pack <$> do
+          len <- chooseInt (1, 32)
+          -- ASCII printable range
+          vectorOf len . chooseBoundedIntegral $ (33, 126)
   {-# INLINEABLE shrink #-}
-  shrink (UTxOValue v) =
-    UTxOValue <$> do
-      v' <- shrink v
-      guard (Value.valueOf v' "" "" > 0)
-      pure v'
+  shrink (UTxOValue (Value.Value v)) =
+    UTxOValue . Value.Value <$> do
+      -- To ensure we don't break anything, we shrink in only two ways:
+      --
+      -- 1. Dropping keys (outer or inner)
+      -- 2. Shrinking amounts
+      --
+      -- To make this a bit easier on ourselves, we first 'unpack' the Value
+      -- completely, shrink the resulting (nested) list, then 'repack'. As neither
+      -- of these changes affect order or uniqueness, we're safe.
+      let asList = fmap AssocMap.toList <$> AssocMap.toList v
+      shrunk <- liftShrink (\(cs, inner) -> (cs,) <$> liftShrink (\(tn, amount) -> (tn,) . getPositive <$> shrink (Positive amount)) inner) asList
+      pure . AssocMap.unsafeFromList . fmap (fmap AssocMap.unsafeFromList) $ shrunk
 
 -- | @since 1.0.0
 deriving via PLA.Value instance CoArbitrary UTxOValue

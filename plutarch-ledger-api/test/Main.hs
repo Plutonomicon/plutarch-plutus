@@ -12,17 +12,23 @@ import Plutarch.LedgerApi.V3 qualified as PlutarchV3
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude (
   PAsData,
+  PData,
   PIsData,
+  PTryFrom,
   S,
   pconstant,
   pdata,
   pfromData,
   plift,
+  ptryFrom,
  )
+import PlutusLedgerApi.V1 qualified as PlutusLA
 import PlutusLedgerApi.V1.Orphans ()
 import PlutusLedgerApi.V2.Orphans ()
 import PlutusLedgerApi.V3 qualified as PlutusV3
 import PlutusLedgerApi.V3.Orphans ()
+import Prettyprinter (Pretty (pretty), layoutCompact)
+import Prettyprinter.Render.String (renderString)
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
   forAllShrinkShow,
@@ -119,6 +125,29 @@ main = do
             , pIsDataLaws @PlutarchV2.POutputDatum
             , adjustOption fewerTests $ pIsDataLaws @PlutarchV2.PScriptContext
             ]
+        , adjustOption slightlyFewerTests $
+            testGroup
+              "PTryFrom"
+              [ ptryFromLaws @PlutarchV2.PAddress
+              , ptryFromLaws @PlutarchV2.PCredential
+              , ptryFromLaws @PlutarchV2.PStakingCredential
+              , ptryFromLaws @PlutarchV2.PPubKeyHash
+              , ptryFromLaws @PlutarchV2.PPosixTime
+              , ptryFromLaws @(PlutarchV2.PExtended PlutarchV2.PPosixTime)
+              , ptryFromLaws @(PlutarchV2.PLowerBound PlutarchV2.PPosixTime)
+              , ptryFromLaws @(PlutarchV2.PUpperBound PlutarchV2.PPosixTime)
+              , ptryFromLaws @(PlutarchV2.PInterval PlutarchV2.PPosixTime)
+              , ptryFromLaws @PlutarchV2.PScriptHash
+              , ptryFromLaws @PlutarchV2.PDatum
+              , ptryFromLaws @PlutarchV2.PRedeemer
+              , ptryFromLaws @PlutarchV2.PDatumHash
+              , ptryFromLaws @PlutarchV2.PRedeemerHash
+              , ptryFromLaws @PlutarchV2.PCurrencySymbol
+              , ptryFromLaws @PlutarchV2.PTokenName
+              , ptryFromLaws @PlutarchV2.PLovelace
+              -- , ptryFromLaws @(PlutarchLA.PValue PlutarchLA.Unsorted PlutarchLA.NonZero)
+              -- Need PAsData handler because Plutarch is special
+              ]
         ]
     , testGroup
         "V3"
@@ -176,6 +205,34 @@ main = do
             , pIsDataLaws @PlutarchV3.PTxOut
             , pIsDataLaws @PlutarchV3.POutputDatum
             ]
+        , adjustOption slightlyFewerTests $
+            testGroup
+              "PTryFrom"
+              [ ptryFromLaws @PlutarchV3.PColdCommitteeCredential
+              , ptryFromLaws @PlutarchV3.PHotCommitteeCredential
+              , ptryFromLaws @PlutarchV3.PDRepCredential
+              , ptryFromLaws @PlutarchV3.PDRep
+              , ptryFromLaws @PlutarchV3.PDelegatee
+              , ptryFromLaws @PlutarchV3.PTxCert
+              , ptryFromLaws @PlutarchV3.PVoter
+              , ptryFromLaws @PlutarchV3.PVote
+              , ptryFromLaws @PlutarchV3.PGovernanceActionId
+              , ptryFromLaws @PlutarchV3.PCommittee
+              , ptryFromLaws @PlutarchV3.PConstitution
+              , ptryFromLaws @PlutarchV3.PProtocolVersion
+              , ptryFromLaws @PlutarchV3.PChangedParameters
+              , ptryFromLaws @PlutarchV3.PGovernanceAction
+              , ptryFromLaws @PlutarchV3.PProposalProcedure
+              , ptryFromLaws @PlutarchV3.PScriptPurpose
+              , ptryFromLaws @PlutarchV3.PScriptInfo
+              , ptryFromLaws @PlutarchV3.PTxInInfo
+              , adjustOption fewerTests $ ptryFromLaws @PlutarchV3.PTxInfo
+              , adjustOption fewerTests $ ptryFromLaws @PlutarchV3.PScriptContext
+              , ptryFromLaws @PlutarchV3.PTxId
+              , ptryFromLaws @PlutarchV3.PTxOutRef
+              , ptryFromLaws @PlutarchV3.PTxOut
+              , ptryFromLaws @PlutarchV3.POutputDatum
+              ]
         ]
     ]
   where
@@ -186,6 +243,9 @@ main = do
     -- TODO: Fix those.
     fewerTests :: QuickCheckTests -> QuickCheckTests
     fewerTests = const 250
+    -- PTryFrom tests run slow too
+    slightlyFewerTests :: QuickCheckTests -> QuickCheckTests
+    slightlyFewerTests = (`quot` 2)
 
 -- Properties
 
@@ -250,3 +310,30 @@ pIsDataLaws =
           plift (pfromData . punsafeCoerce @_ @_ @(PAsData a) . pconstant . PlutusV3.toData $ x) === x
     coerceName :: String
     coerceName = "plift . pfromData . punsafeCoerce @(PAsData " <> groupName <> ") . pconstant . toData = id"
+
+ptryFromLaws ::
+  forall (a :: S -> Type).
+  ( Arbitrary (PLifted a)
+  , Show (PLifted a)
+  , PUnsafeLiftDecl a
+  , Eq (PLifted a)
+  , Typeable a
+  , PTryFrom PData a
+  , PlutusLA.ToData (PLifted a)
+  , Pretty (PLifted a)
+  ) =>
+  TestTree
+ptryFromLaws = testGroup groupName [pDataAgreementProp]
+  where
+    groupName :: String
+    groupName = tyConName . typeRepTyCon $ typeRep @a
+    pDataAgreementProp :: TestTree
+    pDataAgreementProp = testProperty "can parse toData of original"
+      . forAllShrinkShow arbitrary shrink prettyShow
+      $ \(x :: PLifted a) ->
+        plift (ptryFrom @a (pconstant . PlutusLA.toData $ x) fst) === x
+
+-- Helpers
+
+prettyShow :: forall (a :: Type). Pretty a => a -> String
+prettyShow = renderString . layoutCompact . pretty

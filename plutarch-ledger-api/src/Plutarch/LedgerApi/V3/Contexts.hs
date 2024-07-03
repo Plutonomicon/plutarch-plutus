@@ -45,7 +45,7 @@ import Plutarch.DataRepr (
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Interval qualified as Interval
 import Plutarch.LedgerApi.Utils (PMaybeData, PRationalData)
-import Plutarch.LedgerApi.V1.Credential (PCredential, PStakingCredential)
+import Plutarch.LedgerApi.V1.Credential (PCredential)
 import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
 import Plutarch.LedgerApi.V1.Scripts (
   PDatum,
@@ -54,8 +54,8 @@ import Plutarch.LedgerApi.V1.Scripts (
   PScriptHash,
  )
 import Plutarch.LedgerApi.V1.Time (PPosixTime)
-import Plutarch.LedgerApi.V1.Tx (PTxId, PTxOutRef)
 import Plutarch.LedgerApi.V2.Tx (PTxOut)
+import Plutarch.LedgerApi.V3.Tx (PTxId, PTxOutRef)
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
@@ -254,7 +254,7 @@ instance PTryFrom PData (PAsData PDelegatee)
 
 -- | @since 3.1.0
 data PTxCert (s :: S)
-  = PTxCertRegStaking (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PMaybeData Value.PCurrencySymbol]))
+  = PTxCertRegStaking (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PMaybeData Value.PLovelace]))
   | PTxCertUnRegStaking (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PMaybeData Value.PLovelace]))
   | PTxCertDelegStaking (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PDelegatee]))
   | PTxCertRegDeleg (Term s (PDataRecord '["_0" ':= PCredential, "_1" ':= PDelegatee, "_2" ':= Value.PLovelace]))
@@ -827,10 +827,10 @@ newtype PTxInfo (s :: S)
               '[ "inputs" ':= PBuiltinList (PAsData PTxInInfo)
                , "referenceInputs" ':= PBuiltinList (PAsData PTxInInfo)
                , "outputs" ':= PBuiltinList (PAsData PTxOut)
-               , "fee" ':= Value.PValue 'AssocMap.Sorted 'Value.Positive
-               , "mint" ':= Value.PValue 'AssocMap.Sorted 'Value.NonZero -- value minted by transaction
+               , "fee" ':= Value.PLovelace
+               , "mint" ':= Value.PValue 'AssocMap.Sorted 'Value.NoGuarantees -- value minted by transaction
                , "txCerts" ':= PBuiltinList (PAsData PTxCert)
-               , "wdrl" ':= AssocMap.PMap 'AssocMap.Unsorted PStakingCredential PInteger -- Staking withdrawals
+               , "wdrl" ':= AssocMap.PMap 'AssocMap.Unsorted PCredential Value.PLovelace -- Staking withdrawals
                , "validRange" ':= Interval.PInterval PPosixTime
                , "signatories" ':= PBuiltinList (PAsData PPubKeyHash)
                , "redeemers" ':= AssocMap.PMap 'AssocMap.Unsorted PScriptPurpose PRedeemer

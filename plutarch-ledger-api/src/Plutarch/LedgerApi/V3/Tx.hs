@@ -1,11 +1,11 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
--- Mirrors the equivalent V1 module in plutus-ledger-api
-module Plutarch.LedgerApi.V1.Tx (
+module Plutarch.LedgerApi.V3.Tx (
   PTxId (..),
   PTxOutRef (..),
 ) where
 
+import Plutarch.Builtin (PDataNewtype (PDataNewtype))
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
@@ -18,13 +18,13 @@ import Plutarch.Lift (
 import Plutarch.Prelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce)
-import PlutusLedgerApi.V1 qualified as Plutus
+import PlutusLedgerApi.V3 qualified as Plutus
 
 {- | Hashed with @BLAKE2b-256@.
 
 @since 3.1.0
 -}
-newtype PTxId (s :: S) = PTxId (Term s (PDataRecord '["_0" ':= PByteString]))
+newtype PTxId (s :: S) = PTxId (Term s (PDataNewtype PByteString))
   deriving stock
     ( -- | @since 2.0.0
       Generic
@@ -46,7 +46,7 @@ newtype PTxId (s :: S) = PTxId (Term s (PDataRecord '["_0" ':= PByteString]))
 
 -- | @since 3.1.0
 instance DerivePlutusType PTxId where
-  type DPTStrat _ = PlutusTypeData
+  type DPTStrat _ = PlutusTypeNewtype
 
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PTxId where
@@ -68,7 +68,7 @@ instance PTryFrom PData PTxId where
         (plengthBS # unwrapped #== 32)
         (f ())
         (ptraceInfoError "ptryFrom(PTxId): must be 32 bytes long")
-    pure (punsafeCoerce opq, pcon . PTxId $ pdcons # pdata unwrapped # pdnil)
+    pure (punsafeCoerce opq, pcon . PTxId . pcon . PDataNewtype . pdata $ unwrapped)
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PTxId) where
@@ -80,13 +80,9 @@ instance PTryFrom PData (PAsData PTxId) where
         (plengthBS # unwrapped #== 32)
         (f ())
         (ptraceInfoError "ptryFrom(PTxId): must be 32 bytes long")
-    pure (punsafeCoerce opq, pcon . PTxId $ pdcons # pdata unwrapped # pdnil)
+    pure (punsafeCoerce opq, pcon . PTxId . pcon . PDataNewtype . pdata $ unwrapped)
 
-{- | Reference to a transaction output, with an index referencing which exact
-output we mean.
-
-@since 2.0.0
--}
+-- | @since 3.1.0
 newtype PTxOutRef (s :: S)
   = PTxOutRef
       ( Term
@@ -98,37 +94,37 @@ newtype PTxOutRef (s :: S)
           )
       )
   deriving stock
-    ( -- | @since 2.0.0
+    ( -- | @since 3.1.0
       Generic
     )
   deriving anyclass
-    ( -- | @since 2.0.0
+    ( -- | @since 3.1.0
       PlutusType
-    , -- | @since 2.0.0
+    , -- | @since 3.1.0
       PIsData
-    , -- | @since 2.0.0
+    , -- | @since 3.1.0
       PDataFields
-    , -- | @since 2.0.0
+    , -- | @since 3.1.0
       PEq
-    , -- | @since 2.0.0
+    , -- | @since 3.1.0
       PPartialOrd
-    , -- | @since 2.0.0
+    , -- | @since 3.1.0
       POrd
-    , -- | @since 2.0.0
+    , -- | @since 3.1.0
       PTryFrom PData
-    , -- | @since 2.0.0
+    , -- | @since 3.1.0
       PShow
     )
 
--- | @since 2.0.0
+-- | @since 3.1.0
 instance DerivePlutusType PTxOutRef where
   type DPTStrat _ = PlutusTypeData
 
--- | @since 2.0.0
+-- | @since 3.1.0
 instance PUnsafeLiftDecl PTxOutRef where
   type PLifted PTxOutRef = Plutus.TxOutRef
 
--- | @since 2.0.0
+-- | @since 3.1.0
 deriving via
   (DerivePConstantViaData Plutus.TxOutRef PTxOutRef)
   instance
