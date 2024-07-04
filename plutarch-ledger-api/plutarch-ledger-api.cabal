@@ -93,6 +93,11 @@ test-suite tests
   import:         test-lang
   type:           exitcode-stdio-1.0
   main-is:        Main.hs
+  other-modules:
+    Laws
+    Utils
+    V1
+
   build-depends:
     , plutarch-orphanage
     , prettyprinter

@@ -2,8 +2,8 @@
 
 module Main (main) where
 
+{-
 import Data.Kind (Type)
-import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Plutarch.Builtin (pforgetData)
 import Plutarch.Internal (punsafeCoerce)
 import Plutarch.LedgerApi.V1 qualified as PlutarchV1
@@ -42,11 +42,25 @@ import Type.Reflection (
   typeRep,
   typeRepTyCon,
  )
+-}
+
+import GHC.IO.Encoding (setLocaleEncoding, utf8)
+import Test.Tasty (adjustOption, defaultMain, testGroup)
+import Test.Tasty.QuickCheck (QuickCheckTests)
+import V1 qualified
 
 main :: IO ()
 main = do
   -- Pre-emptively avoid encoding issues
   setLocaleEncoding utf8
+  defaultMain . adjustOption moreTests . testGroup "Laws" $
+    [ V1.tests
+    ]
+  where
+    moreTests :: QuickCheckTests -> QuickCheckTests
+    moreTests = max 10_000
+
+{-
   defaultMain . adjustOption moreTests . testGroup "Laws" $
     [ testGroup
         "V1"
@@ -337,3 +351,4 @@ ptryFromLaws = testGroup groupName [pDataAgreementProp]
 
 prettyShow :: forall (a :: Type). Pretty a => a -> String
 prettyShow = renderString . layoutCompact . pretty
+-}
