@@ -97,6 +97,7 @@ test-suite tests
     Laws
     Utils
     V1
+    V2
 
   build-depends:
     , plutarch-orphanage

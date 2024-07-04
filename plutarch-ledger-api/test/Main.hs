@@ -48,6 +48,7 @@ import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Test.Tasty (adjustOption, defaultMain, testGroup)
 import Test.Tasty.QuickCheck (QuickCheckTests)
 import V1 qualified
+import V2 qualified
 
 main :: IO ()
 main = do
@@ -55,6 +56,7 @@ main = do
   setLocaleEncoding utf8
   defaultMain . adjustOption moreTests . testGroup "Laws" $
     [ V1.tests
+    , V2.tests
     ]
   where
     moreTests :: QuickCheckTests -> QuickCheckTests
