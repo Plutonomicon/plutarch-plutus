@@ -3,7 +3,11 @@ module V1 (tests) where
 import Plutarch.LedgerApi.V1 qualified as PLA
 import PlutusLedgerApi.V1.Orphans ()
 import Test.Tasty (TestTree, adjustOption, testGroup)
-import Utils (checkLedgerProperties, fewerTests)
+import Utils (
+  checkLedgerProperties,
+  checkLedgerPropertiesValue,
+  fewerTests,
+ )
 
 tests :: TestTree
 tests =
@@ -35,5 +39,6 @@ tests =
     , checkLedgerProperties @PLA.PTxOutRef
     , checkLedgerProperties @PLA.PPubKeyHash
     , adjustOption (fewerTests 16) $ checkLedgerProperties @PLA.PTxInfo
+    , checkLedgerPropertiesValue
     -- TODO: PValue, PMap
     ]

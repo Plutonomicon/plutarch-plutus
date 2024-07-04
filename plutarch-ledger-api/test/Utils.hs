@@ -1,12 +1,18 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE PolyKinds #-}
 
-module Utils (checkLedgerProperties, fewerTests) where
+module Utils (
+  checkLedgerProperties,
+  checkLedgerPropertiesValue,
+  fewerTests,
+) where
 
-import Laws (pisDataLaws, ptryFromLaws, punsafeLiftDeclLaws)
+import Laws (pisDataLaws, ptryFromLaws, ptryFromLawsValue, punsafeLiftDeclLaws)
+import Plutarch.LedgerApi.V1 qualified as PLA
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude
 import PlutusLedgerApi.Common qualified as Plutus
+import PlutusLedgerApi.V1.Orphans ()
 import Prettyprinter (Pretty)
 import Test.QuickCheck (Arbitrary)
 import Test.Tasty (TestTree, testGroup)
@@ -39,6 +45,16 @@ checkLedgerProperties =
       typeName @(S -> Type) @a
         <> " <-> "
         <> typeName @Type @(PLifted a)
+
+-- This is an ugly kludge because PValue doesn't have a direct PData conversion,
+-- and bringing one in would break too much other stuff to be worth it.
+checkLedgerPropertiesValue :: TestTree
+checkLedgerPropertiesValue =
+  testGroup "PValue" . mconcat $
+    [ punsafeLiftDeclLaws @(PLA.PValue PLA.Unsorted PLA.NoGuarantees) "PValue <-> Value"
+    , pisDataLaws @(PLA.PValue PLA.Unsorted PLA.NoGuarantees) "PValue"
+    , ptryFromLawsValue
+    ]
 
 fewerTests :: QuickCheckTests -> QuickCheckTests -> QuickCheckTests
 fewerTests divisor = (`quot` divisor)
