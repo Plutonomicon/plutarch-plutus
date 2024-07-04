@@ -5,6 +5,7 @@ import PlutusLedgerApi.V1.Orphans ()
 import Test.Tasty (TestTree, adjustOption, testGroup)
 import Utils (
   checkLedgerProperties,
+  checkLedgerPropertiesAssocMap,
   checkLedgerPropertiesValue,
   fewerTests,
  )
@@ -40,5 +41,5 @@ tests =
     , checkLedgerProperties @PLA.PPubKeyHash
     , adjustOption (fewerTests 16) $ checkLedgerProperties @PLA.PTxInfo
     , checkLedgerPropertiesValue
-    -- TODO: PValue, PMap
+    , checkLedgerPropertiesAssocMap
     ]

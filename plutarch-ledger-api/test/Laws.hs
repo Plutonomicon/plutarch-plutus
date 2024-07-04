@@ -6,6 +6,7 @@ module Laws (
   pisDataLaws,
   ptryFromLaws,
   ptryFromLawsValue,
+  ptryFromLawsAssocMap,
 ) where
 
 import Plutarch.Builtin (pforgetData)
@@ -16,6 +17,7 @@ import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common qualified as Plutus
 import PlutusLedgerApi.V1 qualified as PLA
 import PlutusLedgerApi.V1.Orphans ()
+import PlutusTx.AssocMap qualified as AssocMap
 import Prettyprinter (Pretty (pretty), defaultLayoutOptions, layoutPretty)
 import Prettyprinter.Render.String (renderString)
 import Test.QuickCheck (
@@ -114,6 +116,17 @@ ptryFromLawsValue = [pDataAgreementProp]
       . forAllShrinkShow arbitrary shrink prettyShow
       $ \(v :: PLA.Value) ->
         plift (pfromData . ptryFrom @(PAsData (V1.PValue V1.Unsorted V1.NoGuarantees)) (pconstant . Plutus.toData $ v) $ fst) === v
+
+-- Same as before
+ptryFromLawsAssocMap :: [TestTree]
+ptryFromLawsAssocMap = [pDataAgreementProp]
+  where
+    pDataAgreementProp :: TestTree
+    pDataAgreementProp = testProperty "can parse toData of original"
+      . forAllShrinkShow arbitrary shrink prettyShow
+      $ \(v :: AssocMap.Map Integer Integer) ->
+        plift (pfromData . ptryFrom @(PAsData (V1.PMap V1.Unsorted PInteger PInteger)) (pconstant . Plutus.toData $ v) $ fst)
+          === v
 
 -- Helpers
 

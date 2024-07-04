@@ -102,6 +102,7 @@ test-suite tests
 
   build-depends:
     , plutarch-orphanage
+    , plutus-tx
     , prettyprinter
 
   hs-source-dirs: test

@@ -4,10 +4,17 @@
 module Utils (
   checkLedgerProperties,
   checkLedgerPropertiesValue,
+  checkLedgerPropertiesAssocMap,
   fewerTests,
 ) where
 
-import Laws (pisDataLaws, ptryFromLaws, ptryFromLawsValue, punsafeLiftDeclLaws)
+import Laws (
+  pisDataLaws,
+  ptryFromLaws,
+  ptryFromLawsAssocMap,
+  ptryFromLawsValue,
+  punsafeLiftDeclLaws,
+ )
 import Plutarch.LedgerApi.V1 qualified as PLA
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude
@@ -54,6 +61,15 @@ checkLedgerPropertiesValue =
     [ punsafeLiftDeclLaws @(PLA.PValue PLA.Unsorted PLA.NoGuarantees) "PValue <-> Value"
     , pisDataLaws @(PLA.PValue PLA.Unsorted PLA.NoGuarantees) "PValue"
     , ptryFromLawsValue
+    ]
+
+-- Same as above
+checkLedgerPropertiesAssocMap :: TestTree
+checkLedgerPropertiesAssocMap =
+  testGroup "PMap" . mconcat $
+    [ punsafeLiftDeclLaws @(PLA.PMap PLA.Unsorted PInteger PInteger) "PMap <-> AssocMap.Map"
+    , pisDataLaws @(PLA.PMap PLA.Unsorted PInteger PInteger) "PMap"
+    , ptryFromLawsAssocMap
     ]
 
 fewerTests :: QuickCheckTests -> QuickCheckTests -> QuickCheckTests
