@@ -7,6 +7,7 @@ import Laws (pisDataLaws, ptryFromLaws, punsafeLiftDeclLaws)
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude
 import PlutusLedgerApi.Common qualified as Plutus
+import Prettyprinter (Pretty)
 import Test.QuickCheck (Arbitrary)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck (QuickCheckTests)
@@ -23,6 +24,7 @@ checkLedgerProperties ::
   , PIsData a
   , Plutus.ToData (PLifted a)
   , Typeable (PLifted a)
+  , Pretty (PLifted a)
   ) =>
   TestTree
 checkLedgerProperties =

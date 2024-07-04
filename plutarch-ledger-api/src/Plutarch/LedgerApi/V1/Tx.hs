@@ -6,6 +6,7 @@ module Plutarch.LedgerApi.V1.Tx (
   PTxOutRef (..),
 ) where
 
+import Plutarch.Builtin (pasConstr)
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
@@ -62,25 +63,55 @@ deriving via
 instance PTryFrom PData PTxId where
   type PTryFromExcess PData PTxId = Mret PTxId
   ptryFrom' opq = runTermCont $ do
-    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
+    unwrapped <- tcont . plet $ pasConstr # opq
+    let ix = pfstBuiltin # unwrapped
     tcont $ \f ->
       pif
-        (plengthBS # unwrapped #== 32)
+        (ix #== 0)
+        (f ())
+        (ptraceInfoError "ptryFrom(PTxId): constructor index must be 0")
+    let inner = psndBuiltin # unwrapped
+    let h = phead # inner
+    let t = ptail # inner
+    tcont $ \f ->
+      pif
+        (pnull # t)
+        (f ())
+        (ptraceInfoError "ptryFrom(PTxId): must have exactly 1 field")
+    unwrapped' <- tcont . plet $ ptryFrom @(PAsData PByteString) h snd
+    tcont $ \f ->
+      pif
+        (plengthBS # unwrapped' #== 32)
         (f ())
         (ptraceInfoError "ptryFrom(PTxId): must be 32 bytes long")
-    pure (punsafeCoerce opq, pcon . PTxId $ pdcons # pdata unwrapped # pdnil)
+    pure (punsafeCoerce opq, pcon . PTxId $ pdcons # pdata unwrapped' # pdnil)
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PTxId) where
   type PTryFromExcess PData (PAsData PTxId) = Mret PTxId
   ptryFrom' opq = runTermCont $ do
-    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
+    unwrapped <- tcont . plet $ pasConstr # opq
+    let ix = pfstBuiltin # unwrapped
     tcont $ \f ->
       pif
-        (plengthBS # unwrapped #== 32)
+        (ix #== 0)
+        (f ())
+        (ptraceInfoError "ptryFrom(PTxId): constructor index must be 0")
+    let inner = psndBuiltin # unwrapped
+    let h = phead # inner
+    let t = ptail # inner
+    tcont $ \f ->
+      pif
+        (pnull # t)
+        (f ())
+        (ptraceInfoError "ptryFrom(PTxId): must have exactly 1 field")
+    unwrapped' <- tcont . plet $ ptryFrom @(PAsData PByteString) h snd
+    tcont $ \f ->
+      pif
+        (plengthBS # unwrapped' #== 32)
         (f ())
         (ptraceInfoError "ptryFrom(PTxId): must be 32 bytes long")
-    pure (punsafeCoerce opq, pcon . PTxId $ pdcons # pdata unwrapped # pdnil)
+    pure (punsafeCoerce opq, pcon . PTxId $ pdcons # pdata unwrapped' # pdnil)
 
 {- | Reference to a transaction output, with an index referencing which exact
 output we mean.

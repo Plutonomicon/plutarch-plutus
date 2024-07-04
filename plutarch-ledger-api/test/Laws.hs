@@ -12,6 +12,8 @@ import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common qualified as Plutus
+import Prettyprinter (Pretty (pretty), defaultLayoutOptions, layoutPretty)
+import Prettyprinter.Render.String (renderString)
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
   forAllShrinkShow,
@@ -27,11 +29,12 @@ punsafeLiftDeclLaws ::
   , Eq (PLifted a)
   , Show (PLifted a)
   , Arbitrary (PLifted a)
+  , Pretty (PLifted a)
   ) =>
   String ->
   [TestTree]
 punsafeLiftDeclLaws propName =
-  [ testProperty propName . forAllShrinkShow arbitrary shrink show $ \(x :: PLifted a) ->
+  [ testProperty propName . forAllShrinkShow arbitrary shrink prettyShow $ \(x :: PLifted a) ->
       plift (pconstant x) === x
   ]
 
@@ -46,6 +49,7 @@ pisDataLaws ::
   , PIsData a
   , Eq (PLifted a)
   , Plutus.ToData (PLifted a)
+  , Pretty (PLifted a)
   ) =>
   String ->
   [TestTree]
@@ -58,19 +62,19 @@ pisDataLaws tyName =
     fromToProp :: TestTree
     fromToProp =
       testProperty "pfromData . pdata = id"
-        . forAllShrinkShow arbitrary shrink show
+        . forAllShrinkShow arbitrary shrink prettyShow
         $ \(x :: PLifted a) ->
           plift (pfromData . pdata . pconstant $ x) === x
     toDataProp :: TestTree
     toDataProp =
       testProperty "plift . pforgetData . pdata . pconstant = toData"
-        . forAllShrinkShow arbitrary shrink show
+        . forAllShrinkShow arbitrary shrink prettyShow
         $ \(x :: PLifted a) ->
           plift (pforgetData . pdata . pconstant $ x) === Plutus.toData x
     coerceProp :: TestTree
     coerceProp =
       testProperty coerceName
-        . forAllShrinkShow arbitrary shrink show
+        . forAllShrinkShow arbitrary shrink prettyShow
         $ \(x :: PLifted a) ->
           plift (pfromData . punsafeCoerce @_ @_ @(PAsData a) . pconstant . Plutus.toData $ x) === x
     coerceName :: String
@@ -85,12 +89,18 @@ ptryFromLaws ::
   , Eq (PLifted a)
   , PTryFrom PData a
   , Plutus.ToData (PLifted a)
+  , Pretty (PLifted a)
   ) =>
   [TestTree]
 ptryFromLaws = [pDataAgreementProp]
   where
     pDataAgreementProp :: TestTree
     pDataAgreementProp = testProperty "can parse toData of original"
-      . forAllShrinkShow arbitrary shrink show
+      . forAllShrinkShow arbitrary shrink prettyShow
       $ \(x :: PLifted a) ->
         plift (ptryFrom @a (pconstant . Plutus.toData $ x) fst) === x
+
+-- Helpers
+
+prettyShow :: forall (a :: Type). Pretty a => a -> String
+prettyShow = renderString . layoutPretty defaultLayoutOptions . pretty

@@ -34,6 +34,6 @@ tests =
     , adjustOption (fewerTests 4) $ checkLedgerProperties @PLA.PTxInInfo
     , checkLedgerProperties @PLA.PTxOutRef
     , checkLedgerProperties @PLA.PPubKeyHash
-    , adjustOption (fewerTests 4) $ checkLedgerProperties @PLA.PTxInfo
+    , adjustOption (fewerTests 16) $ checkLedgerProperties @PLA.PTxInfo
     -- TODO: PValue, PMap
     ]

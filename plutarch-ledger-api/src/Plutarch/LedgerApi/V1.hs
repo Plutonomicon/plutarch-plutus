@@ -174,11 +174,10 @@ newtype PTxInfo (s :: S)
                , "fee" ':= Value.PValue 'AssocMap.Sorted 'Value.Positive
                , "mint" ':= Value.PValue 'AssocMap.Sorted 'Value.NonZero -- value minted by transaction
                , "dCert" ':= PBuiltinList (PAsData DCert.PDCert)
-               , "wdrl" ':= AssocMap.PMap 'AssocMap.Unsorted Credential.PStakingCredential PInteger -- Staking withdrawals
+               , "wdrl" ':= PBuiltinList (PAsData (PBuiltinPair (PAsData Credential.PStakingCredential) (PAsData PInteger))) -- Staking withdrawals
                , "validRange" ':= Interval.PInterval Time.PPosixTime
                , "signatories" ':= PBuiltinList (PAsData Crypto.PPubKeyHash)
-               , "redeemers" ':= AssocMap.PMap 'AssocMap.Unsorted Contexts.PScriptPurpose Scripts.PRedeemer
-               , "data" ':= AssocMap.PMap 'AssocMap.Unsorted Scripts.PDatumHash Scripts.PDatum
+               , "data" ':= PBuiltinList (PAsData (PBuiltinPair (PAsData Scripts.PDatumHash) (PAsData Scripts.PDatum)))
                , "id" ':= Tx.PTxId -- hash of the pending transaction
                ]
           )

@@ -8,6 +8,8 @@ module PlutusLedgerApi.V1.Orphans.Value (
   getUtxoValue,
   NonAdaValue (..),
   getNonAdaValue,
+  MintValue (..),
+  getMintValue,
 ) where
 
 import Control.Monad (guard)
@@ -27,14 +29,14 @@ import Test.QuickCheck (
   Function (function),
   Gen,
   NonEmptyList (NonEmpty),
-  NonNegative (NonNegative),
+  NonZero (NonZero),
   Positive (Positive),
   chooseBoundedIntegral,
   chooseInt,
   frequency,
   functionMap,
   getNonEmpty,
-  getNonNegative,
+  getNonZero,
   getPositive,
   resize,
   scale,
@@ -299,7 +301,7 @@ instance Arbitrary1 NonEmptyList where
       (x : xs) -> (:) <$> shrinkInner x <*> liftShrink shrinkInner xs
 
 {- | A 'PLA.Value' containing only Ada, suitable for fees. Furthermore, the
-Ada quantity is non-negative.
+Ada quantity is positive.
 
 = Note
 
@@ -325,12 +327,12 @@ newtype FeeValue = FeeValue PLA.Value
 -- | @since 1.0.0
 instance Arbitrary FeeValue where
   {-# INLINEABLE arbitrary #-}
-  arbitrary = FeeValue . PLA.singleton PLA.adaSymbol PLA.adaToken . getNonNegative <$> arbitrary
+  arbitrary = FeeValue . PLA.singleton PLA.adaSymbol PLA.adaToken . getPositive <$> arbitrary
   {-# INLINEABLE shrink #-}
   shrink (FeeValue v) =
     FeeValue . PLA.singleton PLA.adaSymbol PLA.adaToken <$> do
       let adaAmount = Value.valueOf v PLA.adaSymbol PLA.adaToken
-      NonNegative adaAmount' <- shrink (NonNegative adaAmount)
+      Positive adaAmount' <- shrink (Positive adaAmount)
       pure adaAmount'
 
 -- | @since 1.0.0
@@ -344,3 +346,76 @@ instance Function FeeValue where
 -- | @since 1.0.0
 getFeeValue :: FeeValue -> PLA.Value
 getFeeValue = coerce
+
+{- | Similar to 'NonAdaValue', but also does not have nonzero amounts.
+
+= Note
+
+This is designed to act as a modifier, and thus, we expose the constructor
+even though it preserves invariants. If you use the constructor directly,
+be /very/ certain that the Value being wrapped satisfies the invariants
+described above: failing to do so means all guarantees of this type are off
+the table.
+
+@since 1.0.3
+-}
+newtype MintValue = MintValue PLA.Value
+  deriving
+    ( -- | @since 1.0.3
+      Eq
+    )
+    via PLA.Value
+  deriving stock
+    ( -- | @since 1.0.3
+      Show
+    )
+
+-- | @since 1.0.3
+instance Arbitrary MintValue where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary =
+    MintValue <$> do
+      -- Generate a set of currency symbols that aren't Ada
+      keySet <- Set.fromList <$> liftArbitrary (PLA.CurrencySymbol . getBlake2b244Hash <$> arbitrary)
+      let keyList = Set.toList keySet
+      -- For each key, generate a set of token name keys that aren't Ada
+      keyVals <- traverse (scale (`quot` 8) . mkInner) keyList
+      pure . foldMap (\(cs, vals) -> foldMap (uncurry (Value.singleton cs)) vals) $ keyVals
+    where
+      mkInner :: PLA.CurrencySymbol -> Gen (PLA.CurrencySymbol, [(PLA.TokenName, Integer)])
+      mkInner cs =
+        (cs,)
+          . Set.toList
+          . Set.fromList
+          . getNonEmpty
+          <$> liftArbitrary ((,) <$> genNonAdaTokenName <*> (getNonZero <$> arbitrary))
+      genNonAdaTokenName :: Gen PLA.TokenName
+      genNonAdaTokenName = fmap (PLA.TokenName . PlutusTx.toBuiltin @ByteString . BS.pack) . sized $ \size -> do
+        len <- resize size . chooseInt $ (1, 32)
+        vectorOf len . chooseBoundedIntegral $ (33, 126)
+  {-# INLINEABLE shrink #-}
+  shrink (MintValue (Value.Value v)) =
+    MintValue . Value.Value <$> do
+      -- To ensure we don't break anything, we shrink in only two ways:
+      --
+      -- 1. Dropping keys (outer or inner)
+      -- 2. Shrinking amounts
+      --
+      -- To make this a bit easier on ourselves, we first 'unpack' the Value
+      -- completely, shrink the resulting (nested) list, then 'repack'. As neither
+      -- of these changes affect order or uniqueness, we're safe.
+      let asList = fmap AssocMap.toList <$> AssocMap.toList v
+      shrunk <- liftShrink (\(cs, inner) -> (cs,) <$> liftShrink (\(tn, amount) -> (tn,) . getNonZero <$> shrink (NonZero amount)) inner) asList
+      pure . AssocMap.unsafeFromList . fmap (fmap AssocMap.unsafeFromList) $ shrunk
+
+-- | @since 1.0.3
+deriving via PLA.Value instance CoArbitrary MintValue
+
+-- | @since 1.0.3
+instance Function MintValue where
+  {-# INLINEABLE function #-}
+  function = functionMap coerce MintValue
+
+-- | @since 1.0.3
+getMintValue :: MintValue -> Value.Value
+getMintValue = coerce
