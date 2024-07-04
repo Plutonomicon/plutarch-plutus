@@ -49,6 +49,7 @@ import Test.Tasty (adjustOption, defaultMain, testGroup)
 import Test.Tasty.QuickCheck (QuickCheckTests)
 import V1 qualified
 import V2 qualified
+import V3 qualified
 
 main :: IO ()
 main = do
@@ -57,6 +58,7 @@ main = do
   defaultMain . adjustOption moreTests . testGroup "Laws" $
     [ V1.tests
     , V2.tests
+    , V3.tests
     ]
   where
     moreTests :: QuickCheckTests -> QuickCheckTests
