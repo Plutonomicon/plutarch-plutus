@@ -49,7 +49,7 @@ instance Arbitrary PLA.TxInfo where
       <$> arbitrary -- inputs
       <*> (getNonEmpty <$> arbitrary) -- outputs
       <*> (Value.getFeeValue <$> arbitrary) -- fee
-      <*> (Value.getNonAdaValue <$> arbitrary) -- mint
+      <*> (Value.getMintValue <$> arbitrary) -- mint
       <*> arbitrary -- dcert
       <*> arbitrary -- withdrawals
       <*> arbitrary -- valid time range
@@ -61,7 +61,7 @@ instance Arbitrary PLA.TxInfo where
     NonEmpty ins' <- shrink (NonEmpty ins)
     NonEmpty outs' <- shrink (NonEmpty outs)
     Value.FeeValue fee' <- shrink (Value.FeeValue fee)
-    Value.NonAdaValue mint' <- shrink (Value.NonAdaValue mint)
+    Value.MintValue mint' <- shrink (Value.MintValue mint)
     dcert' <- shrink dcert
     wdrl' <- shrink wdrl
     validRange' <- shrink validRange

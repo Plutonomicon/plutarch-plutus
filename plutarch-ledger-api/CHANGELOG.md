@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 3.2.0 -- 05-07-2024
+
+### Changed
+
+* The default 'lift' for `Value` is now `PValue Unsorted NoGuarantees`
+
 ## 3.1.1 -- 27-06-2024
 
 ### Added

@@ -251,15 +251,15 @@ type role PValue nominal nominal nominal
 instance DerivePlutusType (PValue keys amounts) where
   type DPTStrat _ = PlutusTypeNewtype
 
--- | @since 2.0.0
-instance PUnsafeLiftDecl (PValue 'AssocMap.Unsorted 'NonZero) where
-  type PLifted (PValue 'AssocMap.Unsorted 'NonZero) = Plutus.Value
+-- | @since 3.2.0
+instance PUnsafeLiftDecl (PValue 'AssocMap.Unsorted 'NoGuarantees) where
+  type PLifted (PValue 'AssocMap.Unsorted 'NoGuarantees) = Plutus.Value
 
--- | @since 2.0.0
+-- | @since 3.2.0
 deriving via
   ( DerivePConstantViaNewtype
       Plutus.Value
-      (PValue 'AssocMap.Unsorted 'NonZero)
+      (PValue 'AssocMap.Unsorted 'NoGuarantees)
       (AssocMap.PMap 'AssocMap.Unsorted PCurrencySymbol (AssocMap.PMap 'AssocMap.Unsorted PTokenName PInteger))
   )
   instance
