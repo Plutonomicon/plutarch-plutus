@@ -38,6 +38,7 @@ module Plutarch.LedgerApi.V3.Contexts (
   --  pspendsOutput
 ) where
 
+import Plutarch.Builtin (PDataNewtype (PDataNewtype))
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
@@ -947,10 +948,11 @@ pfindDatumHash ::
   Term s (PDatum :--> PTxInfo :--> PMaybe PDatumHash)
 pfindDatumHash = phoistAcyclic $ plam $ \d txI ->
   let infoData = pfield @"data" # txI
-   in pmatch infoData $ \(AssocMap.PMap ell) ->
-        pmatch (pfind # (matches # d) # ell) $ \case
-          PNothing -> pcon PNothing
-          PJust p -> pcon . PJust . pfromData $ pfstBuiltin # p
+   in pmatch infoData $ \(AssocMap.PMap inner) ->
+        pmatch inner $ \(PDataNewtype ell) ->
+          pmatch (pfind # (matches # d) #$ pmap # plam pfromData # pfromData ell) $ \case
+            PNothing -> pcon PNothing
+            PJust p -> pcon . PJust . pfromData $ pfstBuiltin # p
   where
     matches ::
       forall (s' :: S).

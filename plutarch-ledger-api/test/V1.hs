@@ -1,12 +1,11 @@
 module V1 (tests) where
 
 import Plutarch.LedgerApi.V1 qualified as PLA
+import Plutarch.Prelude (PInteger)
 import PlutusLedgerApi.V1.Orphans ()
 import Test.Tasty (TestTree, adjustOption, testGroup)
 import Utils (
   checkLedgerProperties,
-  checkLedgerPropertiesAssocMap,
-  checkLedgerPropertiesValue,
   fewerTests,
  )
 
@@ -40,6 +39,8 @@ tests =
     , checkLedgerProperties @PLA.PTxOutRef
     , checkLedgerProperties @PLA.PPubKeyHash
     , adjustOption (fewerTests 16) $ checkLedgerProperties @PLA.PTxInfo
-    , checkLedgerPropertiesValue
-    , checkLedgerPropertiesAssocMap
+    , checkLedgerProperties @(PLA.PValue PLA.Unsorted PLA.NoGuarantees)
+    , checkLedgerProperties @(PLA.PMap PLA.Unsorted PInteger PInteger)
+    --    , checkLedgerPropertiesValue
+    --    , checkLedgerPropertiesAssocMap
     ]
