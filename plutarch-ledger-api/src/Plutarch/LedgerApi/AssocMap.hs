@@ -105,7 +105,6 @@ import Plutarch.Lift (
 import Plutarch.List qualified as List
 import Plutarch.Prelude hiding (pall, pany, pmap, pnull, psingleton, pzipWith)
 import Plutarch.Prelude qualified as PPrelude
-import Plutarch.Show (PShow (pshow'))
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusCore qualified as PLC
@@ -135,7 +134,7 @@ newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S)
 
 -- | @since 2.0.0
 instance DerivePlutusType (PMap keysort k v) where
-  type DPTStrat _ = PlutusTypeData
+  type DPTStrat _ = PlutusTypeNewtype
 
 -- | @since 2.0.0
 instance PIsData (PMap keysort k v) where
@@ -466,7 +465,7 @@ pnull = plam (\m -> List.pnull # intoList m)
 -}
 pmap ::
   forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
-  (PIsData a, PIsData b) =>
+  (PIsData k, PIsData a, PIsData b) =>
   Term s ((a :--> b) :--> PMap g k a :--> PMap g k b)
 pmap = phoistAcyclic $
   plam $
@@ -496,10 +495,11 @@ pmapWithKey = phoistAcyclic $ plam $ \f m ->
 
 {- | As 'pmap', but over Data representations.
 
-@since 2.0.0
+@since 3.2.1
 -}
 pmapData ::
   forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
+  (PIsData k, PIsData a) =>
   Term s ((PAsData a :--> PAsData b) :--> PMap g k a :--> PMap g k b)
 pmapData = phoistAcyclic $
   plam $ \f m ->
@@ -1209,10 +1209,10 @@ pzipWithData ::
     )
 pzipWithData (SomeMergeHandler mh@(MergeHandler _ _ rightPresent)) =
   plam $ \x y ->
-    _ $ zipMerge rightPresent (zipMergeInsert mh) # intoList x # intoList y
+    pcon . PMap . pcon . PDataNewtype . pdata . (List.pmap # plam pdata #) $ zipMerge rightPresent (zipMergeInsert mh) # intoList x # intoList y
 pzipWithData (SomeMergeHandlerCommutative mh@(MergeHandlerCommutative _ onePresent)) =
   plam $ \x y ->
-    _ $ zipMergeCommutative onePresent (zipMergeInsertCommutative mh) # intoList x # intoList y
+    pcon . PMap . pcon . PDataNewtype . pdata . (List.pmap # plam pdata #) $ zipMergeCommutative onePresent (zipMergeInsertCommutative mh) # intoList x # intoList y
 
 mergeHandlerOnData ::
   forall (s :: S) (k :: PType) (v :: PType).

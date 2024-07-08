@@ -657,13 +657,23 @@ plovelaceValueOf ::
   Term s (PValue 'AssocMap.Sorted v :--> PInteger)
 plovelaceValueOf = phoistAcyclic $
   plam $ \value ->
-    pmatch (pto $ pto value) $ \case
-      PNil -> 0
-      PCons x _ ->
-        pif'
-          # (pfstBuiltin # x #== padaSymbolData)
-          # pfromData (psndBuiltin #$ phead #$ pto $ pfromData $ psndBuiltin # x)
-          # 0
+    pmatch value $ \(PValue inner) ->
+      pmatch inner $ \(AssocMap.PMap m) ->
+        pmatch m $ \(PDataNewtype innerM) ->
+          pmatch (pfromData innerM) $ \case
+            PNil -> 0
+            PCons x _ ->
+              pif'
+                # (pfstBuiltin # pfromData x #== padaSymbolData)
+                # pmatch
+                  (pfromData (psndBuiltin # pfromData x))
+                  ( \(AssocMap.PMap adaMap) ->
+                      pmatch adaMap $ \(PDataNewtype innerAdaMap) ->
+                        pmatch (pfromData innerAdaMap) $ \case
+                          PNil -> 0
+                          PCons y _ -> pfromData $ psndBuiltin # pfromData y
+                  )
+                # 0
 
 {- | Combine two 'PValue's, taking the tokens from the left only, if a
 currency occurs on both sides.
@@ -766,9 +776,12 @@ pisAdaOnlyValue ::
   Term s (PValue 'AssocMap.Sorted 'Positive :--> PBool)
 pisAdaOnlyValue = phoistAcyclic $
   plam $ \value ->
-    pmatch (pto $ pto value) $ \case
-      PNil -> pcon PTrue
-      PCons x xs -> pand' # (pnull # xs) # (pfstBuiltin # x #== padaSymbolData)
+    pmatch value $ \(PValue inner) ->
+      pmatch inner $ \(AssocMap.PMap m) ->
+        pmatch m $ \(PDataNewtype ell) ->
+          pmatch (pfromData ell) $ \case
+            PNil -> pcon PTrue
+            PCons x xs -> pand' # (pnull # xs) # (pfstBuiltin # pfromData x #== padaSymbolData)
 
 {- | Strip all non-Ada from a 'PValue'.
 
@@ -779,13 +792,16 @@ padaOnlyValue ::
   Term s (PValue 'AssocMap.Sorted v :--> PValue 'AssocMap.Sorted v)
 padaOnlyValue = phoistAcyclic $
   plam $ \value ->
-    pmatch (pto $ pto value) $ \case
-      PNil -> value
-      PCons x _ ->
-        pif'
-          # (pfstBuiltin # x #== padaSymbolData)
-          # pcon (PValue $ pcon $ AssocMap.PMap $ List.psingleton # x)
-          # pcon (PValue AssocMap.pempty)
+    pmatch value $ \(PValue inner) ->
+      pmatch inner $ \(AssocMap.PMap m) ->
+        pmatch m $ \(PDataNewtype ell) ->
+          pmatch (pfromData ell) $ \case
+            PNil -> value
+            PCons x _ ->
+              pif'
+                # (pfstBuiltin # pfromData x #== padaSymbolData)
+                # pcon (PValue . pcon . AssocMap.PMap . pcon . PDataNewtype . pdata $ List.psingleton # x)
+                # pcon (PValue AssocMap.pempty)
 
 {- | Strip all Ada from a 'PValue'.
 
@@ -796,9 +812,16 @@ pnoAdaValue ::
   Term s (PValue 'AssocMap.Sorted v :--> PValue 'AssocMap.Sorted v)
 pnoAdaValue = phoistAcyclic $
   plam $ \value ->
-    pmatch (pto $ pto value) $ \case
-      PNil -> value
-      PCons x xs -> pif' # (pfstBuiltin # x #== padaSymbolData) # pcon (PValue $ pcon $ AssocMap.PMap xs) # value
+    pmatch value $ \(PValue inner) ->
+      pmatch inner $ \(AssocMap.PMap m) ->
+        pmatch m $ \(PDataNewtype ell) ->
+          pmatch (pfromData ell) $ \case
+            PNil -> value
+            PCons x xs ->
+              pif'
+                # (pfstBuiltin # pfromData x #== padaSymbolData)
+                # pcon (PValue . pcon . AssocMap.PMap . pcon . PDataNewtype . pdata $ xs)
+                # value
 
 -- Helpers
 
@@ -818,14 +841,30 @@ passertNonZero ::
   ( forall (s :: S). Term s (PValue kg ag :--> PValue kg 'NonZero)
   )
 passertNonZero = plam $ \val ->
-  pif (outer #$ pto . pto $ val) (punsafeCoerce val) (ptraceInfoError "Zero amount in Value")
+  pif
+    ( pmatch val $ \(PValue inner') ->
+        pmatch inner' $ \(AssocMap.PMap m) ->
+          pmatch m $ \(PDataNewtype ell) ->
+            outer #$ List.pmap # plam pfromData # pfromData ell
+    )
+    (punsafeCoerce val)
+    (ptraceInfoError "Zero amount in Value")
   where
     outer ::
       forall (s' :: S) (k :: AssocMap.KeyGuarantees).
       Term s' (PBuiltinList (PBuiltinPair (PAsData PCurrencySymbol) (PAsData (AssocMap.PMap k PTokenName PInteger))) :--> PBool)
     outer = pfix #$ plam $ \self m ->
       pmatch m $ \case
-        PCons x xs -> inner # (pto . pfromData $ psndBuiltin # x) #&& self # xs
+        PCons x xs ->
+          inner
+            # pmatch
+              (pfromData $ psndBuiltin # x)
+              ( \(AssocMap.PMap m') ->
+                  pmatch m' $ \(PDataNewtype ell) ->
+                    List.pmap # plam pfromData # pfromData ell
+              )
+            #&& self
+            # xs -- (pto . pfromData $ psndBuiltin # x) #&& self # xs
         PNil -> pcon PTrue
     inner :: ClosedTerm (PBuiltinList (PBuiltinPair (PAsData PTokenName) (PAsData PInteger)) :--> PBool)
     inner = pfix #$ plam $ \self m ->
