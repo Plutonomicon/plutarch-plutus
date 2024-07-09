@@ -65,7 +65,6 @@ import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
-  DerivePConstantViaNewtype (DerivePConstantViaNewtype),
   PConstantDecl,
   PLifted,
   PUnsafeLiftDecl,
@@ -257,10 +256,9 @@ instance PUnsafeLiftDecl (PValue 'AssocMap.Unsorted 'NoGuarantees) where
 
 -- | @since 3.2.0
 deriving via
-  ( DerivePConstantViaNewtype
+  ( DerivePConstantViaData
       Plutus.Value
       (PValue 'AssocMap.Unsorted 'NoGuarantees)
-      (AssocMap.PMap 'AssocMap.Unsorted PCurrencySymbol (AssocMap.PMap 'AssocMap.Unsorted PTokenName PInteger))
   )
   instance
     PConstantDecl Plutus.Value
