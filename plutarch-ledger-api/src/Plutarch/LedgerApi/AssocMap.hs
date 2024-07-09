@@ -87,7 +87,7 @@ import Data.Proxy (Proxy (Proxy))
 import Plutarch.Bool (PSBool (PSFalse, PSTrue), psfalse, pstrue)
 import Plutarch.Builtin (
   PDataNewtype (PDataNewtype),
-  --  pasMap,
+  pasMap,
   --  pdataImpl,
   --  pforgetData,
   --  pfromDataImpl,
@@ -204,19 +204,18 @@ instance
   where
   type PTryFromExcess PData (PAsData (PMap 'Unsorted k v)) = Mret (PMap 'Unsorted k v)
   ptryFrom' opq = runTermCont $ do
-    -- opq' <- tcont . plet $ pasMap # opq
-    -- unwrapped <- tcont . plet $ List.pmap # ptryFromPair # opq'
-    pure (punsafeCoerce opq, pcon . PMap . pcon . PDataNewtype . pdata $ pconstant [])
-
--- where
---   ptryFromPair ::
---     forall (s :: S).
---     Term s (PBuiltinPair PData PData :--> PAsData (PBuiltinPair (PAsData k) (PAsData v)))
---   ptryFromPair = plam $ \p ->
---     pdata $
---       ppairDataBuiltin
---         # ptryFrom (pfstBuiltin # p) fst
---         # ptryFrom (psndBuiltin # p) fst
+    opq' <- tcont . plet $ pasMap # opq
+    unwrapped <- tcont . plet $ List.pmap # ptryFromPair # opq'
+    pure (punsafeCoerce opq, pcon . PMap . pcon . PDataNewtype . pdata $ unwrapped)
+    where
+      ptryFromPair ::
+        forall (s :: S).
+        Term s (PBuiltinPair PData PData :--> PAsData (PBuiltinPair (PAsData k) (PAsData v)))
+      ptryFromPair = plam $ \p ->
+        pdata $
+          ppairDataBuiltin
+            # ptryFrom (pfstBuiltin # p) fst
+            # ptryFrom (psndBuiltin # p) fst
 
 -- | @since 3.2.1
 instance
@@ -227,19 +226,18 @@ instance
   where
   type PTryFromExcess PData (PMap 'Unsorted k v) = Mret (PMap 'Unsorted k v)
   ptryFrom' opq = runTermCont $ do
-    -- opq' <- tcont . plet $ pasMap # opq
-    -- unwrapped <- tcont . plet $ List.pmap # ptryFromPair # opq'
-    pure (punsafeCoerce opq, pcon . PMap . pcon . PDataNewtype . pdata $ pconstant [])
-
--- where
---   ptryFromPair ::
---     forall (s :: S).
---     Term s (PBuiltinPair PData PData :--> PAsData (PBuiltinPair (PAsData k) (PAsData v)))
---   ptryFromPair = plam $ \p ->
---     pdata $
---       ppairDataBuiltin
---         # ptryFrom (pfstBuiltin # p) fst
---         # ptryFrom (psndBuiltin # p) fst
+    opq' <- tcont . plet $ pasMap # opq
+    unwrapped <- tcont . plet $ List.pmap # ptryFromPair # opq'
+    pure (punsafeCoerce opq, pcon . PMap . pcon . PDataNewtype . pdata $ unwrapped)
+    where
+      ptryFromPair ::
+        forall (s :: S).
+        Term s (PBuiltinPair PData PData :--> PAsData (PBuiltinPair (PAsData k) (PAsData v)))
+      ptryFromPair = plam $ \p ->
+        pdata $
+          ppairDataBuiltin
+            # ptryFrom (pfstBuiltin # p) fst
+            # ptryFrom (psndBuiltin # p) fst
 
 -- | @since 2.0.0
 instance
