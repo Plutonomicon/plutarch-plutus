@@ -77,38 +77,43 @@ module Plutarch.LedgerApi.AssocMap (
   pkeys,
 ) where
 
-import Data.Bifunctor (bimap)
+import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
+
+-- import Data.Bifunctor (bimap)
 import Data.Foldable (foldl')
 import Data.Proxy (Proxy (Proxy))
-import Data.Traversable (for)
+
+-- import Data.Traversable (for)
 import Plutarch.Bool (PSBool (PSFalse, PSTrue), psfalse, pstrue)
 import Plutarch.Builtin (
   PDataNewtype (PDataNewtype),
-  pasMap,
-  pdataImpl,
-  pforgetData,
-  pfromDataImpl,
+  --  pasMap,
+  --  pdataImpl,
+  --  pforgetData,
+  --  pfromDataImpl,
   ppairDataBuiltin,
  )
-import Plutarch.Internal (punsafeBuiltin)
+
+-- import Plutarch.Internal (punsafeBuiltin)
 import Plutarch.Internal.Witness (witness)
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
   PConstantDecl,
-  PConstantRepr,
+  --  PConstantRepr,
   PConstanted,
   PLifted,
   PUnsafeLiftDecl,
-  pconstantFromRepr,
-  pconstantToRepr,
+  --  pconstantFromRepr,
+  --  pconstantToRepr,
  )
 import Plutarch.List qualified as List
 import Plutarch.Prelude hiding (pall, pany, pmap, pnull, psingleton, pzipWith)
 import Plutarch.Prelude qualified as PPrelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
-import PlutusCore qualified as PLC
-import PlutusLedgerApi.V3 qualified as Plutus
+
+-- import PlutusCore qualified as PLC
+-- import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.AssocMap qualified as PlutusMap
 import PlutusTx.Eq qualified as PlutusTx
 import Prelude hiding (pred)
@@ -130,16 +135,17 @@ newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S)
       PlutusType
     , -- | @since 2.0.0
       PShow
+    , PIsData
     )
 
 -- | @since 2.0.0
 instance DerivePlutusType (PMap keysort k v) where
   type DPTStrat _ = PlutusTypeNewtype
 
--- | @since 2.0.0
-instance PIsData (PMap keysort k v) where
-  pfromDataImpl x = punsafeCoerce $ pasMap # pforgetData x
-  pdataImpl x = punsafeBuiltin PLC.MapData # x
+-- -- | @since 2.0.0
+-- instance PIsData (PMap keysort k v) where
+--   pfromDataImpl x = punsafeCoerce $ pasMap # pforgetData x
+--   pdataImpl x = punsafeBuiltin PLC.MapData # x
 
 -- | @since 2.0.0
 instance PEq (PMap 'Sorted k v) where
@@ -162,22 +168,32 @@ instance
   type PLifted (PMap 'Unsorted k v) = PlutusMap.Map (PLifted k) (PLifted v)
 
 -- | @since 2.0.0
-instance
-  ( PlutusTx.Eq k
-  , PConstantData k
-  , PConstantData v
-  , Ord k
-  ) =>
-  PConstantDecl (PlutusMap.Map k v)
-  where
-  type PConstantRepr (PlutusMap.Map k v) = [(Plutus.Data, Plutus.Data)]
-  type PConstanted (PlutusMap.Map k v) = PMap 'Unsorted (PConstanted k) (PConstanted v)
-  pconstantToRepr m = bimap Plutus.toData Plutus.toData <$> PlutusMap.toList m
-  pconstantFromRepr m = fmap PlutusMap.safeFromList $
-    for m $ \(x, y) -> do
-      x' <- Plutus.fromData x
-      y' <- Plutus.fromData y
-      Just (x', y')
+deriving via
+  (DerivePConstantViaData (PlutusMap.Map k v) (PMap 'Unsorted (PConstanted k) (PConstanted v)))
+  instance
+    ( PlutusTx.Eq k
+    , PConstantData k
+    , PConstantData v
+    , Ord k
+    ) =>
+    PConstantDecl (PlutusMap.Map k v)
+
+-- instance
+--   ( PlutusTx.Eq k
+--   , PConstantData k
+--   , PConstantData v
+--   , Ord k
+--   ) =>
+--   PConstantDecl (PlutusMap.Map k v)
+--   where
+--   type PConstantRepr (PlutusMap.Map k v) = [(Plutus.Data, Plutus.Data)]
+--   type PConstanted (PlutusMap.Map k v) = PMap 'Unsorted (PConstanted k) (PConstanted v)
+--   pconstantToRepr m = bimap Plutus.toData Plutus.toData <$> PlutusMap.toList m
+--   pconstantFromRepr m = fmap PlutusMap.safeFromList $
+--     for m $ \(x, y) -> do
+--       x' <- Plutus.fromData x
+--       y' <- Plutus.fromData y
+--       Just (x', y')
 
 -- | @since 2.0.0
 instance
@@ -188,18 +204,19 @@ instance
   where
   type PTryFromExcess PData (PAsData (PMap 'Unsorted k v)) = Mret (PMap 'Unsorted k v)
   ptryFrom' opq = runTermCont $ do
-    opq' <- tcont . plet $ pasMap # opq
-    unwrapped <- tcont . plet $ List.pmap # ptryFromPair # opq'
-    pure (punsafeCoerce opq, pcon . PMap . pcon . PDataNewtype . pdata $ unwrapped)
-    where
-      ptryFromPair ::
-        forall (s :: S).
-        Term s (PBuiltinPair PData PData :--> PAsData (PBuiltinPair (PAsData k) (PAsData v)))
-      ptryFromPair = plam $ \p ->
-        pdata $
-          ppairDataBuiltin
-            # ptryFrom (pfstBuiltin # p) fst
-            # ptryFrom (psndBuiltin # p) fst
+    -- opq' <- tcont . plet $ pasMap # opq
+    -- unwrapped <- tcont . plet $ List.pmap # ptryFromPair # opq'
+    pure (punsafeCoerce opq, pcon . PMap . pcon . PDataNewtype . pdata $ pconstant [])
+
+-- where
+--   ptryFromPair ::
+--     forall (s :: S).
+--     Term s (PBuiltinPair PData PData :--> PAsData (PBuiltinPair (PAsData k) (PAsData v)))
+--   ptryFromPair = plam $ \p ->
+--     pdata $
+--       ppairDataBuiltin
+--         # ptryFrom (pfstBuiltin # p) fst
+--         # ptryFrom (psndBuiltin # p) fst
 
 -- | @since 3.2.1
 instance
@@ -210,18 +227,19 @@ instance
   where
   type PTryFromExcess PData (PMap 'Unsorted k v) = Mret (PMap 'Unsorted k v)
   ptryFrom' opq = runTermCont $ do
-    opq' <- tcont . plet $ pasMap # opq
-    unwrapped <- tcont . plet $ List.pmap # ptryFromPair # opq'
-    pure (punsafeCoerce opq, pcon . PMap . pcon . PDataNewtype . pdata $ unwrapped)
-    where
-      ptryFromPair ::
-        forall (s :: S).
-        Term s (PBuiltinPair PData PData :--> PAsData (PBuiltinPair (PAsData k) (PAsData v)))
-      ptryFromPair = plam $ \p ->
-        pdata $
-          ppairDataBuiltin
-            # ptryFrom (pfstBuiltin # p) fst
-            # ptryFrom (psndBuiltin # p) fst
+    -- opq' <- tcont . plet $ pasMap # opq
+    -- unwrapped <- tcont . plet $ List.pmap # ptryFromPair # opq'
+    pure (punsafeCoerce opq, pcon . PMap . pcon . PDataNewtype . pdata $ pconstant [])
+
+-- where
+--   ptryFromPair ::
+--     forall (s :: S).
+--     Term s (PBuiltinPair PData PData :--> PAsData (PBuiltinPair (PAsData k) (PAsData v)))
+--   ptryFromPair = plam $ \p ->
+--     pdata $
+--       ppairDataBuiltin
+--         # ptryFrom (pfstBuiltin # p) fst
+--         # ptryFrom (psndBuiltin # p) fst
 
 -- | @since 2.0.0
 instance
