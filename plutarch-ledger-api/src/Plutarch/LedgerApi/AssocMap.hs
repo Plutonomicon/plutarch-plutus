@@ -87,7 +87,7 @@ import Data.Proxy (Proxy (Proxy))
 import Plutarch.Bool (PSBool (PSFalse, PSTrue), psfalse, pstrue)
 import Plutarch.Builtin (
   PDataNewtype (PDataNewtype),
-  pasMap,
+  --  pasMap,
   --  pdataImpl,
   --  pforgetData,
   --  pfromDataImpl,
@@ -137,6 +137,9 @@ newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S)
       PShow
     , PIsData
     )
+
+instance (PIsData k, PIsData v, PTryFrom PData (PAsData k), PTryFrom PData (PAsData v)) => PTryFrom PData (PMap 'Unsorted k v)
+instance (PIsData k, PIsData v, PTryFrom PData (PAsData k), PTryFrom PData (PAsData v)) => PTryFrom PData (PAsData (PMap 'Unsorted k v))
 
 -- | @since 2.0.0
 instance DerivePlutusType (PMap keysort k v) where
@@ -195,7 +198,7 @@ deriving via
 --       y' <- Plutus.fromData y
 --       Just (x', y')
 
--- | @since 2.0.0
+{- | @since 2.0.0
 instance
   ( PTryFrom PData (PAsData k)
   , PTryFrom PData (PAsData v)
@@ -216,28 +219,29 @@ instance
           ppairDataBuiltin
             # ptryFrom (pfstBuiltin # p) fst
             # ptryFrom (psndBuiltin # p) fst
+-}
 
--- | @since 3.2.1
-instance
-  ( PTryFrom PData (PAsData k)
-  , PTryFrom PData (PAsData v)
-  ) =>
-  PTryFrom PData (PMap 'Unsorted k v)
-  where
-  type PTryFromExcess PData (PMap 'Unsorted k v) = Mret (PMap 'Unsorted k v)
-  ptryFrom' opq = runTermCont $ do
-    opq' <- tcont . plet $ pasMap # opq
-    unwrapped <- tcont . plet $ List.pmap # ptryFromPair # opq'
-    pure (punsafeCoerce opq, pcon . PMap . pcon . PDataNewtype . pdata $ unwrapped)
-    where
-      ptryFromPair ::
-        forall (s :: S).
-        Term s (PBuiltinPair PData PData :--> PAsData (PBuiltinPair (PAsData k) (PAsData v)))
-      ptryFromPair = plam $ \p ->
-        pdata $
-          ppairDataBuiltin
-            # ptryFrom (pfstBuiltin # p) fst
-            # ptryFrom (psndBuiltin # p) fst
+-- -- | @since 3.2.1
+-- instance
+--   ( PTryFrom PData (PAsData k)
+--   , PTryFrom PData (PAsData v)
+--   ) =>
+--   PTryFrom PData (PMap 'Unsorted k v)
+--   where
+--   type PTryFromExcess PData (PMap 'Unsorted k v) = Mret (PMap 'Unsorted k v)
+--   ptryFrom' opq = runTermCont $ do
+--     opq' <- tcont . plet $ pasMap # opq
+--     unwrapped <- tcont . plet $ List.pmap # ptryFromPair # opq'
+--     pure (punsafeCoerce opq, pcon . PMap . pcon . PDataNewtype . pdata $ unwrapped)
+--     where
+--       ptryFromPair ::
+--         forall (s :: S).
+--         Term s (PBuiltinPair PData PData :--> PAsData (PBuiltinPair (PAsData k) (PAsData v)))
+--       ptryFromPair = plam $ \p ->
+--         pdata $
+--           ppairDataBuiltin
+--             # ptryFrom (pfstBuiltin # p) fst
+--             # ptryFrom (psndBuiltin # p) fst
 
 -- | @since 2.0.0
 instance

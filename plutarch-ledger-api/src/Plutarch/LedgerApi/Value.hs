@@ -231,7 +231,7 @@ data AmountGuarantees = NoGuarantees | NonZero | Positive
 
 -- | @since 3.2.1
 newtype PValue (keys :: AssocMap.KeyGuarantees) (amounts :: AmountGuarantees) (s :: S)
-  = PValue (Term s (PDataNewtype (AssocMap.PMap keys PCurrencySymbol (AssocMap.PMap keys PTokenName PInteger))))
+  = PValue (Term s (AssocMap.PMap keys PCurrencySymbol (AssocMap.PMap keys PTokenName PInteger)))
   deriving stock
     ( -- | @since 2.0.0
       Generic
@@ -336,11 +336,8 @@ instance PEq (PValue 'AssocMap.Sorted 'NoGuarantees) where
       # (AssocMap.pall # plam (#== 0))
       -- While '(-)' is not commutative, we don't need that property here.
       -- TODO benchmark with '(==)'
-      # pmatch
-        (punionResolvingCollisionsWith AssocMap.Commutative # plam (-) # a # b)
-        ( \(PValue v) ->
-            pmatch v $ \(PDataNewtype inner) -> pfromData inner
-        )
+      #$ pto
+      $ punionResolvingCollisionsWith AssocMap.Commutative # plam (-) # a # b
 
 -- | @since 2.0.0
 instance Semigroup (Term s (PValue 'AssocMap.Sorted 'Positive)) where
@@ -377,14 +374,14 @@ instance
   Semigroup (Term s (PValue 'AssocMap.Sorted normalization)) =>
   Monoid (Term s (PValue 'AssocMap.Sorted normalization))
   where
-  mempty = pcon . PValue . pcon . PDataNewtype . pdata $ AssocMap.pempty
+  mempty = pcon . PValue $ AssocMap.pempty
 
 -- | @since 2.0.0
 instance
   PlutusTx.Semigroup (Term s (PValue 'AssocMap.Sorted normalization)) =>
   PlutusTx.Monoid (Term s (PValue 'AssocMap.Sorted normalization))
   where
-  mempty = pcon . PValue . pcon . PDataNewtype . pdata $ AssocMap.pempty
+  mempty = pcon . PValue $ AssocMap.pempty
 
 -- | @since 2.0.0
 instance
@@ -531,7 +528,7 @@ punionResolvingCollisionsWith ::
     )
 punionResolvingCollisionsWith commutativity = phoistAcyclic $
   plam $ \combine x y ->
-    pcon . PValue . pcon . PDataNewtype . pdata $
+    pcon . PValue $
       AssocMap.punionResolvingCollisionsWith commutativity
         # plam (\x' y' -> AssocMap.punionResolvingCollisionsWith commutativity # combine # x' # y')
         # toAssocs x
@@ -546,7 +543,7 @@ pnormalize ::
   Term s (PValue 'AssocMap.Sorted any :--> PValue 'AssocMap.Sorted 'NonZero)
 pnormalize = phoistAcyclic $
   plam $ \value ->
-    pcon . PValue . pcon . PDataNewtype . pdata $
+    pcon . PValue $
       AssocMap.pmapMaybe # plam normalizeTokenMap # toAssocs value
   where
     normalizeTokenMap ::
@@ -598,7 +595,7 @@ pconstantPositiveSingleton ::
 pconstantPositiveSingleton symbol token amount
   | plift amount == 0 = mempty
   | plift amount < 0 = error "Negative amount"
-  | otherwise = pcon . PValue . pcon . PDataNewtype . pdata $ AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount
+  | otherwise = pcon . PValue $ AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount
 
 {- | The 'PCurrencySymbol' of the Ada currency.
 
@@ -646,7 +643,7 @@ psingleton = phoistAcyclic $
     pif
       (amount #== 0)
       mempty
-      (pcon . PValue . pcon . PDataNewtype . pdata $ AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount)
+      (pcon . PValue $ AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount)
 
 {- | Construct a singleton 'PValue' containing only the given quantity of the
  given currency, taking data-encoded parameters.
@@ -667,7 +664,7 @@ psingletonData = phoistAcyclic $
     pif
       (amount #== zeroData)
       mempty
-      ( pcon . PValue . pcon . PDataNewtype . pdata $
+      ( pcon . PValue $
           ( AssocMap.psingletonData
               # symbol
               #$ pdata
@@ -731,7 +728,7 @@ pleftBiasedCurrencyUnion ::
 pleftBiasedCurrencyUnion = phoistAcyclic $
   plam $
     \x y ->
-      pcon . PValue . pcon . PDataNewtype . pdata $
+      pcon . PValue $
         AssocMap.pleftBiasedUnion # toAssocs x # toAssocs y
 
 {- | Combine two 'PValue's, taking the tokens from the left only, if a token name
@@ -752,7 +749,7 @@ pleftBiasedTokenUnion ::
     )
 pleftBiasedTokenUnion = phoistAcyclic $
   plam $ \x y ->
-    pcon . PValue . pcon . PDataNewtype . pdata $
+    pcon . PValue $
       AssocMap.punionResolvingCollisionsWith AssocMap.NonCommutative
         # plam (\x' y' -> AssocMap.pleftBiasedUnion # x' # y')
         # toAssocs x
@@ -776,7 +773,7 @@ punionResolvingCollisionsWithData ::
     )
 punionResolvingCollisionsWithData commutativity = phoistAcyclic $
   plam $ \combine x y ->
-    pcon . PValue . pcon . PDataNewtype . pdata $
+    pcon . PValue $
       AssocMap.punionResolvingCollisionsWith commutativity
         # plam (\x' y' -> AssocMap.punionResolvingCollisionsWithData commutativity # combine # x' # y')
         # toAssocs x
@@ -806,9 +803,6 @@ passertSorted = phoistAcyclic $
       (ptraceInfoError "Abnormal Value")
       . pcon
       . PValue
-      . pcon
-      . PDataNewtype
-      . pdata
       $ AssocMap.passertSorted #$ punsafeCoerce
       $ toAssocs value
 
@@ -843,8 +837,8 @@ padaOnlyValue = phoistAcyclic $
           PCons x _ ->
             pif'
               # (pfstBuiltin # pfromData x #== padaSymbolData)
-              # pcon (PValue . pcon . PDataNewtype . pdata . pcon . AssocMap.PMap . pcon . PDataNewtype . pdata $ List.psingleton # x)
-              # pcon (PValue . pcon . PDataNewtype . pdata $ AssocMap.pempty)
+              # pcon (PValue . pcon . AssocMap.PMap . pcon . PDataNewtype . pdata $ List.psingleton # x)
+              # pcon (PValue AssocMap.pempty)
 
 {- | Strip all Ada from a 'PValue'.
 
@@ -862,7 +856,7 @@ pnoAdaValue = phoistAcyclic $
           PCons x xs ->
             pif'
               # (pfstBuiltin # pfromData x #== padaSymbolData)
-              # pcon (PValue . pcon . PDataNewtype . pdata . pcon . AssocMap.PMap . pcon . PDataNewtype . pdata $ xs)
+              # pcon (PValue . pcon . AssocMap.PMap . pcon . PDataNewtype . pdata $ xs)
               # value
 
 -- Helpers
@@ -876,7 +870,7 @@ pmapAmounts ::
   Term s ((PInteger :--> PInteger) :--> PValue k a :--> PValue k 'NoGuarantees)
 pmapAmounts = phoistAcyclic $
   plam $
-    \f v -> pcon $ PValue . pcon . PDataNewtype . pdata $ AssocMap.pmap # plam (AssocMap.pmap # f #) # toAssocs v
+    \f v -> pcon $ PValue $ AssocMap.pmap # plam (AssocMap.pmap # f #) # toAssocs v
 
 passertNonZero ::
   forall (kg :: AssocMap.KeyGuarantees) (ag :: AmountGuarantees).
@@ -917,6 +911,4 @@ toAssocs ::
   forall (sort :: AssocMap.KeyGuarantees) (a :: AmountGuarantees) (s :: S).
   Term s (PValue sort a) ->
   Term s (AssocMap.PMap sort PCurrencySymbol (AssocMap.PMap sort PTokenName PInteger))
-toAssocs val = pmatch val $ \(PValue v) ->
-  pmatch v $ \(PDataNewtype inner) ->
-    pfromData inner
+toAssocs = pto

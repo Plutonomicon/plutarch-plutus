@@ -79,7 +79,7 @@ newtype PTxOut (s :: S)
           s
           ( PDataRecord
               '[ "address" ':= Address.PAddress
-               , "value" ':= Value.PValue 'AssocMap.Sorted 'Value.Positive
+               , "value" ':= Value.PValue 'AssocMap.Unsorted 'Value.NoGuarantees
                , "datumHash" ':= Scripts.PDatumHash
                ]
           )
