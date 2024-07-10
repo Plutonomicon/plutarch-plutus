@@ -91,7 +91,7 @@ This comes in three flavors:
 - Plutarch type represented **indirectly** by a builtin type that **is not** `Data` (`DefaultUniData`)
   ==> `DerivePConstantViaNewtype`
 
-  *Ex:* `PPubKeyHash` is a newtype to a `PByteString`, and `PByteString` is _directly_ represented as a
+  *Ex:* `PPubKeyHash` is a newtype to a `PDataNewtype PByteString`, and `PByteString` is _directly_ represented as a
   `BuiltingBytestring`.
 
 - Plutarch type represented by `Data`, i.e. [data encoded](./../Concepts/Data%20and%20Scott%20encoding.md#data-encoding)
