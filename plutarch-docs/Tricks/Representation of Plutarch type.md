@@ -21,5 +21,5 @@ Now, let's discuss patterns of data declarations and what representation they _s
 - If it's a representationally equal wrapper (think Haskell `newtype`) to a term containing a Plutarch type - it should have the 
   same representation as that underlying Plutarch type.
 
-  e.g. `newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s (PDataNewtype PByteString))` is just represented as `PByteString`. This is ensured 
+  e.g. `newtype PPositive (s :: S) = PPositive (Term s PInteger)` is just represented as `PInteger`. This is ensured 
   by deriving `PlutusType` with [`DPTStrat _ = PlutusTypeNewtype`](./../Usage/Deriving%20for%20newtypes.md).
