@@ -31,8 +31,10 @@ import Plutarch.Bool (PBool, PEq, pif, pif', (#<), (#==))
 import Plutarch.ByteString (PByteString, pconsBS, pindexBS, plengthBS, psliceBS)
 import Plutarch.Integer (PInteger, PIntegral (pquot, prem))
 import Plutarch.Internal (
+  Config (NoTracing),
   Term,
   perror,
+  pgetConfig,
   phoistAcyclic,
   plet,
   punsafeCoerce,
@@ -58,9 +60,19 @@ class PShow t where
   default pshow' :: (PGeneric t, PlutusType t, All2 PShow (PCode t)) => Bool -> Term s t -> Term s PString
   pshow' wrap x = gpshow wrap # x
 
--- | Return the string representation of a Plutarch value
+{- | Return the string representation of a Plutarch value.
+
+= Important note
+
+Use this in preference to @pshow'@ whenever possible. We use some additional
+logic to avoid compiling (potentially very expensive) 'PShow' code into
+traces when tracing is disabled in this function, which will not be used if
+you write code using @pshow'@ instead.
+-}
 pshow :: PShow a => Term s a -> Term s PString
-pshow = pshow' False
+pshow t = pgetConfig $ \case
+  NoTracing -> pconstant ""
+  _ -> pshow' False t
 
 instance PShow PString where
   pshow' _ x = pshowStr # x
