@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 3.2.1 -- 11-07-2024
+
+### Changed
+
+* `Plutarch.LedgerApi.Utils` identifiers are now re-exported from V1 and V2 as
+  well
+
 ## 3.2.0 -- 05-07-2024
 
 ### Changed

@@ -1,7 +1,6 @@
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE RoleAnnotations #-}
-{-# LANGUAGE ViewPatterns #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 {- | = Note
@@ -105,13 +104,13 @@ module Plutarch.LedgerApi.V3 (
   Utils.PRationalData (..),
 
   -- ** Utilities
-  pfromDJust,
-  pisDJust,
-  pmaybeData,
-  pdjust,
-  pdnothing,
-  pmaybeToMaybeData,
-  passertPDJust,
+  Utils.pfromDJust,
+  Utils.pisDJust,
+  Utils.pmaybeData,
+  Utils.pdjust,
+  Utils.pdnothing,
+  Utils.pmaybeToMaybeData,
+  Utils.passertPDJust,
   Utils.prationalFromData,
 ) where
 
@@ -292,95 +291,6 @@ pparseDatum = phoistAcyclic $ plam $ \dh datums ->
   pmatch (AssocMap.plookup # dh # datums) $ \case
     PNothing -> pcon PNothing
     PJust datum -> pcon . PJust $ ptryFrom (pto datum) fst
-
-{- | Extracts the element out of a 'PDJust' and throws an error if its
-argument is 'PDNothing'.
-
-@since 2.1.1
--}
-pfromDJust ::
-  forall (a :: PType) (s :: S).
-  PIsData a =>
-  Term s (Utils.PMaybeData a :--> a)
-pfromDJust = phoistAcyclic $
-  plam $ \t -> pmatch t $ \case
-    Utils.PDNothing _ -> ptraceInfoError "pfromDJust: found PDNothing"
-    Utils.PDJust x -> pfromData $ pfield @"_0" # x
-
-{- | Yield 'PTrue' if a given 'PMaybeData' is of the form @'PDJust' _@.
-
-@since 2.1.1
--}
-pisDJust ::
-  forall (a :: PType) (s :: S).
-  Term s (Utils.PMaybeData a :--> PBool)
-pisDJust = phoistAcyclic $
-  plam $ \x -> pmatch x $ \case
-    Utils.PDJust _ -> pconstant True
-    _ -> pconstant False
-
-{- | Special version of 'pmaybe' that works with 'PMaybeData'.
-
-@since 2.1.1
--}
-pmaybeData ::
-  forall (a :: PType) (b :: PType) (s :: S).
-  PIsData a =>
-  Term s (b :--> (a :--> b) :--> Utils.PMaybeData a :--> b)
-pmaybeData = phoistAcyclic $
-  plam $ \d f m -> pmatch m $
-    \case
-      Utils.PDJust x -> f #$ pfield @"_0" # x
-      _ -> d
-
-{- | Construct a 'PDJust' value.
-
-@since 2.1.1
--}
-pdjust ::
-  forall (a :: PType) (s :: S).
-  PIsData a =>
-  Term s (a :--> Utils.PMaybeData a)
-pdjust = phoistAcyclic $
-  plam $
-    \x -> pcon $ Utils.PDJust $ pdcons @"_0" # pdata x #$ pdnil
-
-{- | Construct a 'PDNothing' value.
-
-@since 2.1.1
--}
-pdnothing ::
-  forall (a :: PType) (s :: S).
-  Term s (Utils.PMaybeData a)
-pdnothing = phoistAcyclic $ pcon $ Utils.PDNothing pdnil
-
-{- | Construct a 'PMaybeData' given a 'PMaybe'. Could be useful if you want to
-"lift" from 'PMaybe' to 'Maybe'.
-
-@since 2.1.1
--}
-pmaybeToMaybeData ::
-  forall (a :: PType) (s :: S).
-  PIsData a =>
-  Term s (PMaybe a :--> Utils.PMaybeData a)
-pmaybeToMaybeData = phoistAcyclic $
-  plam $ \t -> pmatch t $ \case
-    PNothing -> pcon $ Utils.PDNothing pdnil
-    PJust x -> pcon $ Utils.PDJust $ pdcons @"_0" # pdata x # pdnil
-
-{- | Extract the value stored in a 'PMaybeData' container. If there's no value,
-throw an error with the given message.
-
-@since 2.1.1
--}
-passertPDJust ::
-  forall (a :: PType) (s :: S).
-  PIsData a =>
-  Term s (PString :--> Utils.PMaybeData a :--> a)
-passertPDJust = phoistAcyclic $
-  plam $ \emsg mv' -> pmatch mv' $ \case
-    Utils.PDJust ((pfield @"_0" #) -> v) -> v
-    _ -> ptraceInfoError emsg
 
 -- Helpers
 
