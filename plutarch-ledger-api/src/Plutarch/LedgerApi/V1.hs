@@ -48,6 +48,22 @@ module Plutarch.LedgerApi.V1 (
   AssocMap.PMap (..),
   AssocMap.KeyGuarantees (..),
   AssocMap.Commutativity (..),
+
+  -- * Utilities
+
+  -- ** Types
+  Utils.PMaybeData (..),
+  Utils.PRationalData (..),
+
+  -- ** Utilities
+  Utils.pfromDJust,
+  Utils.pisDJust,
+  Utils.pmaybeData,
+  Utils.pdjust,
+  Utils.pdnothing,
+  Utils.pmaybeToMaybeData,
+  Utils.passertPDJust,
+  Utils.prationalFromData,
 ) where
 
 import Plutarch.DataRepr (
@@ -56,6 +72,7 @@ import Plutarch.DataRepr (
  )
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Interval qualified as Interval
+import Plutarch.LedgerApi.Utils qualified as Utils
 import Plutarch.LedgerApi.V1.Address qualified as Address
 import Plutarch.LedgerApi.V1.Contexts qualified as Contexts
 import Plutarch.LedgerApi.V1.Credential qualified as Credential
