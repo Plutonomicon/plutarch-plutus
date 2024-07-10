@@ -31,7 +31,7 @@ in development mode, these functions basically do nothing.
 
 # Important note
 
-Use of `PShow` is strongly discouraged in any tracing code (and any code in
-general). This uses a lot of resources onchain, and can easily exhaust script
+Use of `PShow` is strongly discouraged in any production on-chain scripts. 
+This uses a lot of resources onchain, and can easily exhaust script
 limits unless done carefully. In general, only resort to `PShow` if you
 absolutely have to: otherwise, prefer static strings as outputs.
