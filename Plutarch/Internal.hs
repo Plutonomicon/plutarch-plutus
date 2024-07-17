@@ -52,7 +52,9 @@ import Data.Aeson (
   ToJSON (toEncoding, toJSON),
   object,
   pairs,
+  withObject,
   withText,
+  (.:),
   (.=),
  )
 import Data.ByteString qualified as BS
@@ -343,6 +345,14 @@ instance ToJSON Config where
         ("tag" .= (1 :: Int))
           <> ("logLevel" .= ll)
           <> ("tracingMode" .= tm)
+
+-- | @since 1.6.0
+instance FromJSON Config where
+  parseJSON = withObject "Config" $ \v ->
+    v .: "tag" >>= \(tag :: Int) -> case tag of
+      0 -> return NoTracing
+      1 -> Tracing <$> v .: "logLevel" <*> v .: "tracingMode"
+      _ -> fail "Invalid tag"
 
 {- | If the config indicates that we want to trace, get its mode.
 
