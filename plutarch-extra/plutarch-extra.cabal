@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name:          plutarch-extra
-version:       1.4.0
+version:       1.8.1
 
 common c
   default-language:   Haskell2010
@@ -32,6 +32,7 @@ common c
     GeneralisedNewtypeDeriving
     HexFloatLiterals
     ImplicitPrelude
+    ImportQualifiedPost
     InstanceSigs
     KindSignatures
     LambdaCase
@@ -65,19 +66,25 @@ common c
     -Wincomplete-record-updates -Wmissing-deriving-strategies
     -Wno-name-shadowing -Wunused-foralls -fprint-explicit-foralls
     -fprint-explicit-kinds -Wno-unrecognised-warning-flags
+    -Wno-missing-export-lists
 
 common deps
   build-depends:
     , base
+    , bytestring
+    , containers
     , plutarch
     , plutarch-ledger-api
+    , plutus-core
     , plutus-ledger-api
     , plutus-tx
+    , text
 
 library
   import:          c, deps
   exposed-modules:
     Plutarch.Extra
     Plutarch.Extra.ByteString
+    Plutarch.Extra.ErrorCode
     Plutarch.Extra.List
     Plutarch.Extra.Maybe
