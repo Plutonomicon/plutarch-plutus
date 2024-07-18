@@ -71,8 +71,6 @@ common c
 common deps
   build-depends:
     , base
-    , bytestring
-    , containers
     , plutarch
     , plutarch-ledger-api
     , plutus-core
