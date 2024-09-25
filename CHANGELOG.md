@@ -6,6 +6,7 @@
 * Cryptographic hashing utilities:- `pripemd_160`, `pkeccak_256`, and `pblake2b_224` to `Plutarch.Crypto`
 * PlutusV3 BLS primitives to `Plutarch.BLS`
 * PlutusV3 Bitwise primitives to `Plutarch.Bitwise`
+* `unsafeEvalTerm`  to `Plutarch.Evaluate`
 
 ## Changed
 * Bumped `plutus-core` version to `1.33.0.0`
