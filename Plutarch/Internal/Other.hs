@@ -22,11 +22,11 @@ import Plutarch.Internal.PlutusType (
   pmatch',
  )
 import Plutarch.Script (Script (Script))
-import PlutusCore.Pretty (prettyPlcReadableDebug)
+import PlutusCore.Pretty (prettyPlcReadableSimple)
 
 -- | Prettyprint a compiled Script via the PLC pretty printer
 printScript :: Script -> String
-printScript = show . prettyPlcReadableDebug . (\(Script s) -> s)
+printScript = show . prettyPlcReadableSimple . (\(Script s) -> s)
 
 {- | Prettyprint a Term via the PLC pretty printer
 

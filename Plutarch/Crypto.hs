@@ -2,7 +2,10 @@ module Plutarch.Crypto (
   -- ** from V1
   psha2_256,
   psha3_256,
+  pblake2b_224,
   pblake2b_256,
+  pkeccak_256,
+  pripemd_160,
   pverifySignature,
   pverifyEd25519Signature,
 
@@ -29,9 +32,21 @@ psha2_256 = punsafeBuiltin PLC.Sha2_256
 psha3_256 :: Term s (PByteString :--> PByteString)
 psha3_256 = punsafeBuiltin PLC.Sha3_256
 
+-- | Hash a 'PByteString' using Blake2B-224.
+pblake2b_224 :: Term s (PByteString :--> PByteString)
+pblake2b_224 = punsafeBuiltin PLC.Blake2b_224
+
 -- | Hash a 'PByteString' using Blake2B-256.
 pblake2b_256 :: Term s (PByteString :--> PByteString)
 pblake2b_256 = punsafeBuiltin PLC.Blake2b_256
+
+-- | Hash a 'PByteString' using Keccak-256.
+pkeccak_256 :: Term s (PByteString :--> PByteString)
+pkeccak_256 = punsafeBuiltin PLC.Keccak_256
+
+-- | Hash a 'PByteString' using Ripemd_160.
+pripemd_160 :: Term s (PByteString :--> PByteString)
+pripemd_160 = punsafeBuiltin PLC.Ripemd_160
 
 -- | Verify the signature against the public key and message.
 pverifySignature :: Term s (PByteString :--> PByteString :--> PByteString :--> PBool)

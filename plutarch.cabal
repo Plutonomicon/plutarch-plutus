@@ -1,8 +1,8 @@
 cabal-version:      3.0
 name:               plutarch
-version:            1.8.1
+version:            1.8.2
 author:
-  Las Safin <me@las.rs>, Koz Ross <koz@mlabs.city>, Seungheon Oh <seungheon.oh@mlabs.city>
+  Las Safin <me@las.rs>, Koz Ross <koz@mlabs.city>, Seungheon Oh <seungheon.oh@mlabs.city>, Philip DiSarro <philipdisarro@gmail.com>
 
 license:            MIT
 extra-source-files: README.md
@@ -73,6 +73,8 @@ library
   import:          c
   exposed-modules:
     Plutarch
+    Plutarch.Bitwise
+    Plutarch.BLS
     Plutarch.Bool
     Plutarch.Builtin
     Plutarch.ByteString
@@ -136,7 +138,7 @@ library
     , generics-sop
     , lens
     , mtl
-    , plutus-core        >=1.30.0.0
+    , plutus-core        >=1.33.0.0
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter

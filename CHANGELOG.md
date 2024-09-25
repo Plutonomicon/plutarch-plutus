@@ -1,5 +1,17 @@
 # Revision history for plutarch
 
+# 1.8.2 - 25-09-2024
+
+## Added
+* Cryptographic hashing utilities:- `pripemd_160`, `pkeccak_256`, and `pblake2b_224` to `Plutarch.Crypto`
+* PlutusV3 BLS primitives to `Plutarch.BLS`
+* PlutusV3 Bitwise primitives to `Plutarch.Bitwise`
+
+## Changed
+* Bumped `plutus-core` version to `1.33.0.0`
+* Updated getArity mapping to handle the new builtins in `Plutarch.Internal`
+* Updated `printScript` in `Plutarch.Internal.Other` to new PlutusCore version.
+
 # 1.8.1 - 11-07-2024
 
 ## Added
