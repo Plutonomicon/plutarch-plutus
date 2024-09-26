@@ -1,6 +1,6 @@
 # Revision history for plutarch
 
-# 1.8.2 - 25-09-2024
+# 1.9.0 - 25-09-2024
 
 ## Added
 * Cryptographic hashing utilities:- `pripemd_160`, `pkeccak_256`, and `pblake2b_224` to `Plutarch.Crypto`

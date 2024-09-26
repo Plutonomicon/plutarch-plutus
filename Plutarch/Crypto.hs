@@ -32,7 +32,10 @@ psha2_256 = punsafeBuiltin PLC.Sha2_256
 psha3_256 :: Term s (PByteString :--> PByteString)
 psha3_256 = punsafeBuiltin PLC.Sha3_256
 
--- | Hash a 'PByteString' using Blake2B-224.
+{- | Hash a 'PByteString' using Blake2B-224.
+
+@since 1.9.0
+-}
 pblake2b_224 :: Term s (PByteString :--> PByteString)
 pblake2b_224 = punsafeBuiltin PLC.Blake2b_224
 
@@ -40,11 +43,17 @@ pblake2b_224 = punsafeBuiltin PLC.Blake2b_224
 pblake2b_256 :: Term s (PByteString :--> PByteString)
 pblake2b_256 = punsafeBuiltin PLC.Blake2b_256
 
--- | Hash a 'PByteString' using Keccak-256.
+{- | Hash a 'PByteString' using Keccak-256.
+
+@since 1.9.0
+-}
 pkeccak_256 :: Term s (PByteString :--> PByteString)
 pkeccak_256 = punsafeBuiltin PLC.Keccak_256
 
--- | Hash a 'PByteString' using Ripemd_160.
+{- | Hash a 'PByteString' using Ripemd_160.
+
+@since 1.9.0
+-}
 pripemd_160 :: Term s (PByteString :--> PByteString)
 pripemd_160 = punsafeBuiltin PLC.Ripemd_160
 
