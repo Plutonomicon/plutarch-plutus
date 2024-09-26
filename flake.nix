@@ -20,7 +20,7 @@
     iohk-nix.url = "github:input-output-hk/iohk-nix";
     iohk-nix.inputs.nixpkgs.follows = "haskell-nix/nixpkgs";
 
-    CHaP.url = "github:input-output-hk/cardano-haskell-packages?ref=repo";
+    CHaP.url = "github:IntersectMBO/cardano-haskell-packages?ref=repo";
     CHaP.flake = false;
 
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
@@ -54,11 +54,11 @@
             };
           project = pkgs.haskell-nix.cabalProject' {
             src = ./.;
-            compiler-nix-name = "ghc964";
+            compiler-nix-name = "ghc965";
             # NOTE(bladyjoker): Follow https://github.com/input-output-hk/plutus/blob/master/cabal.project
-            index-state = "2024-06-17T12:18:52Z";
+            index-state = "2024-09-01T16:18:12Z";
             inputMap = {
-              "https://input-output-hk.github.io/cardano-haskell-packages" = CHaP;
+              "https://chap.intersectmbo.org/" = CHaP;
             };
             shell = {
               withHoogle = true;

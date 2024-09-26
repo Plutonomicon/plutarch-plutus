@@ -6,6 +6,7 @@ module Plutarch.Evaluate (
   E.evalScript',
   E.EvalError,
   evalTerm,
+  unsafeEvalTerm,
   applyArguments,
 ) where
 
@@ -42,6 +43,43 @@ evalTerm config term =
     fromScript :: Script -> ClosedTerm a
     fromScript (Script script) =
       Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm script) []
+
+{- | Compile and evaluate a ClosedTerm
+Useful for pre-evaluating terms so that they can be used as constants in
+an onchain script. Consider the following:
+ _________________________________________________________________________
+     term :: Term _ PInteger
+     term = unsafeEvalTerm NoTracing foo
+
+     foo :: Term s PInteger
+     foo = (pconstant 1 #+ pconstant 5) #* pconstant 3
+
+     bar :: Term s (PInteger :--> PInteger)
+     bar = plam \x ->
+       x + foo
+
+     bar2 :: Term s (PInteger :--> PInteger)
+     bar2 = plam \x ->
+       x + term
+
+
+    PI.compile PI.NoTracing bar
+    Right (Script {unScript = Program {_progAnn = (), _progVer = Version {_versionMajor = 1, _versionMinor = 0, _versionPatch = 0}, _progTerm = LamAbs () (DeBruijn {dbnIndex = 0}) (Apply () (Apply () (Builtin () AddInteger) (Var () (DeBruijn {dbnIndex = 1}))) (Apply () (Apply () (Builtin () MultiplyInteger) (Apply () (Apply () (Builtin () AddInteger) (Constant () (Some (ValueOf DefaultUniInteger 1)))) (Constant () (Some (ValueOf DefaultUniInteger 5))))) (Constant () (Some (ValueOf DefaultUniInteger 3)))))}})
+    PI.compile PI.NoTracing bar2
+    Right (Script {unScript = Program {_progAnn = (), _progVer = Version {_versionMajor = 1, _versionMinor = 0, _versionPatch = 0}, _progTerm = LamAbs () (DeBruijn {dbnIndex = 0}) (Apply () (Apply () (Builtin () AddInteger) (Var () (DeBruijn {dbnIndex = 1}))) (Constant () (Some (ValueOf DefaultUniInteger 18))))}})
+ _________________________________________________________________________
+
+In bar, foo is an unevaluated term and thus must be evaluated. In bar2, foo has been
+pre-evaluated with `unsafeEvalTerm` and thus appears as a constant.
+
+Error if the compilation or evaluation fails.
+-}
+unsafeEvalTerm :: Config -> ClosedTerm a -> ClosedTerm a
+unsafeEvalTerm c t = extractResult $ evalTerm c t
+  where
+    extractResult :: Either Text (Either E.EvalError (ClosedTerm a), ExBudget, [Text]) -> ClosedTerm a
+    extractResult (Right (Right term, _, _)) = term
+    extractResult _ = error "unsafeEvalTerm: failed to evaluate or compile the term."
 
 {- | Given a compiled 'Script' representing a function that takes arguments, and
 a list of those 'Data'-encoded arguments, produce a new script with those
