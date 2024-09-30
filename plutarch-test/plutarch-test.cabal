@@ -127,7 +127,6 @@ executable plutarch-test
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
     Plutarch.EitherSpec
-    Plutarch.Extra.ByteStringSpec
     Plutarch.Extra.IntervalSpec
     Plutarch.Extra.ListSpec
     Plutarch.FieldSpec

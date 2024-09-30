@@ -2,17 +2,27 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Plutarch.String (PString, pfromText, pencodeUtf8, pdecodeUtf8) where
+module Plutarch.String (
+  -- * Type
+  PString,
+  -- Functions
+  pisHexDigit,
+  pfromText,
+  pencodeUtf8,
+  pdecodeUtf8,
+) where
 
 import Data.String (IsString, fromString)
 import Data.Text (Text)
 import Data.Text qualified as Text
 import GHC.Generics (Generic)
-import Plutarch.Bool (PEq, (#==))
+import Plutarch.Bool (PBool, PEq, (#&&), (#<=), (#==), (#||))
 import Plutarch.ByteString (PByteString)
-import Plutarch.Internal (Term, (#), (:-->))
+import Plutarch.Integer (PInteger)
+import Plutarch.Internal (S, Term, phoistAcyclic, (#), (:-->))
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque)
+import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
@@ -59,3 +69,18 @@ pencodeUtf8 = punsafeBuiltin PLC.EncodeUtf8
 -- | Decode a 'PByteString' using UTF-8.
 pdecodeUtf8 :: Term s (PByteString :--> PString)
 pdecodeUtf8 = punsafeBuiltin PLC.DecodeUtf8
+
+{- | Verify if the given argument is the ASCII encoding of a hex digit. This
+includes specifically the following ASCII ranges (inclusively):
+
+* 48-54 (digits 0 through 9)
+* 65-70 (upper-case A through upper-case F)
+* 97-102 (lower-case a through lower-case f)
+
+@since WIP
+-}
+pisHexDigit :: forall (s :: S). Term s (PInteger :--> PBool)
+pisHexDigit = phoistAcyclic $ plam $ \c ->
+  (c #<= 57 #&& 48 #<= c)
+    #|| (c #<= 70 #&& 65 #<= c)
+    #|| (c #<= 102 #&& 97 #<= c)

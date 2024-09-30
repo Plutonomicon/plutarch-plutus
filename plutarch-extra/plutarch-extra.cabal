@@ -78,6 +78,5 @@ library
   import:          c, deps
   exposed-modules:
     Plutarch.Extra
-    Plutarch.Extra.ByteString
     Plutarch.Extra.List
     Plutarch.Extra.Maybe
