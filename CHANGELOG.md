@@ -1,5 +1,11 @@
 # Revision history for plutarch
 
+# WIP 
+
+## Added
+
+* `pallBS` to `Plutarch.ByteString`
+
 # 1.9.0 - 25-09-2024
 
 ## Added

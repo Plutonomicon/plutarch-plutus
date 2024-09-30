@@ -1,20 +1,26 @@
 module Main (main) where
 
+import Control.Monad (unless, when)
+import Data.Char (ord)
 import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text qualified as Text
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Plutarch (
-  Config (Tracing),
+  Config (NoTracing, Tracing),
   LogLevel (LogDebug, LogInfo),
   TracingMode (DoTracing),
  )
+import Plutarch.ByteString (pallBS)
 import Plutarch.Evaluate (evalTerm)
 import Plutarch.Prelude (
+  PBool,
   PUnit,
   S,
   Term,
   pconstant,
+  plam,
+  plift,
   ptraceDebug,
   ptraceDebugError,
   ptraceDebugIfFalse,
@@ -25,6 +31,8 @@ import Plutarch.Prelude (
   ptraceInfoIfFalse,
   ptraceInfoIfTrue,
   ptraceInfoShowId,
+  (#),
+  (#==),
  )
 import Test.Tasty (defaultMain, testGroup)
 import Test.Tasty.HUnit (assertEqual, assertFailure, testCase)
@@ -34,6 +42,16 @@ main = do
   setLocaleEncoding utf8
   defaultMain . testGroup "Plutarch" $
     [ testGroup
+        "PByteString"
+        [ testGroup
+            "pallBS"
+            [ testCase "predicate matching all entries works" . isTrue $
+                (pallBS # plam (#== pconstant (toInteger . ord $ 'a')) # pconstant "aaaaaaaaaa")
+            , testCase "predicate missing one case fails" . isFalse $
+                (pallBS # plam (#== pconstant (toInteger . ord $ 'a')) # pconstant "aaaaaaaaab")
+            ]
+        ]
+    , testGroup
         "tracing"
         [ testCase "ptraceInfo traces at info level"
             . traces LogInfo (ptraceInfo "foo" (pconstant ()))
@@ -133,3 +151,21 @@ traces ::
 traces ll comp expected = case evalTerm (Tracing ll DoTracing) comp of
   Left err -> assertFailure $ "Did not compile: " <> Text.unpack err
   Right (_, _, logs) -> assertEqual "" expected logs
+
+isTrue ::
+  (forall (s :: S). Term s PBool) ->
+  IO ()
+isTrue comp = case evalTerm NoTracing comp of
+  Left err -> assertFailure $ "Did not compile: " <> Text.unpack err
+  Right (res, _, _) -> case res of
+    Left err -> assertFailure $ "Execution errored: " <> show err
+    Right t -> unless (plift t) (assertFailure "is false")
+
+isFalse ::
+  (forall (s :: S). Term s PBool) ->
+  IO ()
+isFalse comp = case evalTerm NoTracing comp of
+  Left err -> assertFailure $ "Did not compile: " <> Text.unpack err
+  Right (res, _, _) -> case res of
+    Left err -> assertFailure $ "Execution errored: " <> show err
+    Right t -> when (plift t) (assertFailure "is true")

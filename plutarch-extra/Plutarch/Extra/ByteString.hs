@@ -1,21 +1,6 @@
-module Plutarch.Extra.ByteString (pallBS, pisHexDigit) where
+module Plutarch.Extra.ByteString (pisHexDigit) where
 
 import Plutarch.Prelude
-
-pallBS :: Term s ((PInteger :--> PBool) :--> PByteString :--> PBool)
-pallBS = phoistAcyclic $
-  plam $ \f str -> plet (plengthBS # str) $ \ln ->
-    let helper :: Term _ (PInteger :--> PBool)
-        helper = pfix #$ plam $ \self i ->
-          pif
-            (i #< ln)
-            ( pif
-                (f #$ pindexBS # str # i)
-                (self # (i + 1))
-                (pcon PFalse)
-            )
-            (pcon PTrue)
-     in helper # 0
 
 pisHexDigit :: Term s (PInteger :--> PBool)
 pisHexDigit = phoistAcyclic $
