@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## WIP
+
+### Added
+
+* `PCountable` instance for `PPosixTime`
+
 ## 3.2.1 -- 11-07-2024
 
 ### Changed

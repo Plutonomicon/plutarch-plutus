@@ -7,6 +7,7 @@
 * PlutusV3 BLS primitives to `Plutarch.BLS`
 * PlutusV3 Bitwise primitives to `Plutarch.Bitwise`
 * `unsafeEvalTerm`  to `Plutarch.Evaluate`
+* `PCountable` and `PEnumerable` type classes in `Plutarch.Enum`
 
 ## Changed
 * Bumped `plutus-core` version to `1.33.0.0`
