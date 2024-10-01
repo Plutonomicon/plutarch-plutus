@@ -66,6 +66,8 @@ module Plutarch.LedgerApi.V3 (
 
   -- * Time
   Time.PPosixTime (..),
+  Time.pposixTime,
+  Time.unPPosixTime,
 
   -- * Interval
   Interval.PInterval (..),
