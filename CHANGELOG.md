@@ -8,6 +8,14 @@
 * `pisHexDigit` to `Plutarch.String` (originally from `plutarch-extra`)
 * `preverse` and `pcheckSorted` to `Plutarch.List` (originally from
   `plutarch-extra`)
+* `ptraceIfNothing`, `pisJust`, `pmaybe`, `pfromMaybe`, `pjust`, `pnothing`,
+  `pAssertPJust` to `Plutarch.Maybe` (originally from `plutarch-extra`)
+* `pexpectJustC` to `Plutarch.TermCont` (originally from `plutarch-extra`)
+
+## Removed
+
+* `plutarch-extra`, as all its functionality has been folded into Plutarch
+  itself
 
 # 1.9.0 - 25-09-2024
 

@@ -13,25 +13,26 @@ module Plutarch.TermCont (
   pguardC,
   pguardC',
   ptryFromC,
+  pexpectJustC,
 ) where
 
+import Data.Kind (Type)
 import Plutarch.Bool (PBool, pif)
-import Plutarch.Internal (Term, plet)
-import Plutarch.Internal.PlutusType (PlutusType, pmatch)
-import Plutarch.String (PString)
-import Plutarch.Trace (ptraceInfo, ptraceInfoError)
-
 import Plutarch.DataRepr (HRec, PDataFields, PFields, pletFields)
 import Plutarch.DataRepr.Internal.Field (
   BindFields,
   Bindings,
   BoundTerms,
  )
-import Plutarch.Internal.TermCont
-import Plutarch.Reducible (Reduce)
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess), ptryFrom)
-
+import Plutarch.Internal (S, Term, plet)
+import Plutarch.Internal.PlutusType (PlutusType, pmatch)
+import Plutarch.Internal.TermCont (TermCont, tcont)
 import Plutarch.Internal.TermCont qualified as TC
+import Plutarch.Maybe (PMaybe (PJust, PNothing))
+import Plutarch.Reducible (Reduce)
+import Plutarch.String (PString)
+import Plutarch.Trace (ptraceInfo, ptraceInfoError)
+import Plutarch.TryFrom (PTryFrom (PTryFromExcess), ptryFrom)
 
 -- | Like `plet` but works in a `TermCont` monad
 pletC :: Term s a -> TermCont s (Term s a)
@@ -98,3 +99,17 @@ pguardC' r cond = tcont $ \f -> pif cond (f ()) r
 -- | 'TermCont' producing version of 'ptryFrom'.
 ptryFromC :: forall b r a s. PTryFrom a b => Term s a -> TermCont @r s (Term s b, Reduce (PTryFromExcess a b s))
 ptryFromC = tcont . ptryFrom
+
+{- | Escape with a particular value on expecting 'PJust'. For use in monadic context.
+
+@since WIP
+-}
+pexpectJustC ::
+  forall (a :: S -> Type) (r :: S -> Type) (s :: S).
+  Term s r ->
+  Term s (PMaybe a) ->
+  TermCont @r s (Term s a)
+pexpectJustC escape ma = tcont $ \f ->
+  pmatch ma $ \case
+    PJust v -> f v
+    PNothing -> escape
