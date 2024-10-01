@@ -78,5 +78,4 @@ library
   import:          c, deps
   exposed-modules:
     Plutarch.Extra
-    Plutarch.Extra.List
     Plutarch.Extra.Maybe

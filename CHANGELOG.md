@@ -6,6 +6,8 @@
 
 * `pallBS` to `Plutarch.ByteString` (originally from `plutarch-extra')
 * `pisHexDigit` to `Plutarch.String` (originally from `plutarch-extra`)
+* `preverse` and `pcheckSorted` to `Plutarch.List` (originally from
+  `plutarch-extra`)
 
 # 1.9.0 - 25-09-2024
 
