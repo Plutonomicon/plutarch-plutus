@@ -20,8 +20,10 @@
     iohk-nix.url = "github:input-output-hk/iohk-nix";
     iohk-nix.inputs.nixpkgs.follows = "haskell-nix/nixpkgs";
 
-    CHaP.url = "github:IntersectMBO/cardano-haskell-packages?ref=repo";
-    CHaP.flake = false;
+    CHaP = {
+      url = "github:intersectmbo/cardano-haskell-packages?ref=repo";
+      flake = false;
+    };
 
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
