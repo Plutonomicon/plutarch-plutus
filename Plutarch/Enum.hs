@@ -25,8 +25,8 @@ discrete linear orders with no maximal element.
 = Laws
 
 1. @x /= psuccessor x@
-2. @y < x@ @=@ @x >= psuccessor y@
-3. @x < psuccessor y@ @=@ @y >= x@
+2. @y < x@ @=@ @psuccessor y <= x@
+3. @x < psuccessor y@ @=@ @x <= y@
 
 If you define 'psuccessorN', you must also ensure the following hold; the
 default implementation ensures this.
