@@ -1,14 +1,24 @@
 # Revision history for plutarch
 
+# WIP
+
+## Added
+
+* `Optimization` type to indicate whether to optimize compiled UPLC
+* `NoTracingOptimize` option for `Config` to indicate that we want no tracing
+  with optimization of UPLC
+
 # 1.9.0 - 25-09-2024
 
 ## Added
+
 * Cryptographic hashing utilities:- `pripemd_160`, `pkeccak_256`, and `pblake2b_224` to `Plutarch.Crypto`
 * PlutusV3 BLS primitives to `Plutarch.BLS`
 * PlutusV3 Bitwise primitives to `Plutarch.Bitwise`
 * `unsafeEvalTerm`  to `Plutarch.Evaluate`
 
 ## Changed
+
 * Bumped `plutus-core` version to `1.33.0.0`
 * Updated getArity mapping to handle the new builtins in `Plutarch.Internal`
 * Updated `printScript` in `Plutarch.Internal.Other` to new PlutusCore version.

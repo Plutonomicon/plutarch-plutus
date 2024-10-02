@@ -7,7 +7,7 @@ module Plutarch.Internal.Trace (
 
 import Data.Kind (Type)
 import Plutarch.Internal (
-  Config (NoTracing, Tracing),
+  Config (NoTracing, NoTracingOptimize, Tracing),
   LogLevel (LogDebug),
   S,
   Term,
@@ -37,6 +37,7 @@ ptraceInfo ::
   Term s a
 ptraceInfo msg x = pgetConfig $ \case
   NoTracing -> x
+  NoTracingOptimize -> x
   Tracing _ _ -> pforce $ ptrace' # msg # pdelay x
 
 {- | Backward compatibility synonym for 'ptraceInfo'.

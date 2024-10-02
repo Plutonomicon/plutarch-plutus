@@ -32,11 +32,13 @@ module Plutarch.Internal (
   S (SI),
   PType,
   pthrow,
-  Config (NoTracing, Tracing),
+  Config (NoTracing, NoTracingOptimize, Tracing),
   TracingMode (..),
   LogLevel (..),
+  Optimization (..),
   tracingMode,
   logLevel,
+  optimization,
   pgetConfig,
   TermMonad (..),
   (#),
@@ -61,7 +63,6 @@ import Data.ByteString qualified as BS
 import Data.Kind (Type)
 import Data.List (foldl', groupBy, sortOn)
 import Data.Map.Lazy qualified as M
-import Data.Monoid (Last (Last))
 import Data.Set qualified as S
 import Data.String (fromString)
 import Data.Text (Text)
@@ -298,19 +299,60 @@ instance FromJSON LogLevel where
     "LogDebug" -> pure LogDebug
     x -> fail $ "Not a valid encoding: " <> Text.unpack x
 
+{- | Whether to optimize generated UPLC or not.
+
+@since WIP
+-}
+data Optimization = NoOptimization | Optimization
+  deriving stock
+    ( -- | @since WIP
+      Eq
+    , -- | @since WIP
+      Show
+    , -- | @since WIP
+      Ord
+    )
+
+{- | Optimization on supersedes optimization off.
+
+@since WIP
+-}
+instance Semigroup Optimization where
+  (<>) = max
+
+-- | @since WIP
+instance Pretty Optimization where
+  pretty = \case
+    NoOptimization -> "No optimization"
+    Optimization -> "Optimization"
+
+-- | @since WIP
+instance ToJSON Optimization where
+  {-# INLINEABLE toJSON #-}
+  toJSON =
+    toJSON @Text . \case
+      NoOptimization -> "NoOptimization"
+      Optimization -> "Optimization"
+  {-# INLINEABLE toEncoding #-}
+  toEncoding =
+    toEncoding @Text . \case
+      NoOptimization -> "NoOptimization"
+      Optimization -> "Optimization"
+
+-- | @since WIP
+instance FromJSON Optimization where
+  {-# INLINEABLE parseJSON #-}
+  parseJSON = withText "Optimization" $ \case
+    "NoOptimization" -> pure NoOptimization
+    "Optimization" -> pure Optimization
+    x -> fail $ "Not a valid encoding: " <> Text.unpack x
+
 {- | Configuration for Plutarch scripts at compile time. This indicates whether
 we want to trace, and if so, under what log level and mode.
 
 @since 1.6.0
 -}
-newtype Config = Config (Last (LogLevel, TracingMode))
-  deriving
-    ( -- | @since 1.6.0
-      Semigroup
-    , -- | @since 1.6.0
-      Monoid
-    )
-    via (Last (LogLevel, TracingMode))
+newtype Config = Config (Either Optimization (LogLevel, TracingMode))
   deriving stock
     ( -- | @since 1.6.0
       Eq
@@ -319,10 +361,26 @@ newtype Config = Config (Last (LogLevel, TracingMode))
     )
 
 -- | @since 1.6.0
+instance Semigroup Config where
+  x <> y = case x of
+    NoTracing -> y
+    NoTracingOptimize -> case y of
+      Tracing _ _ -> y
+      _ -> x
+    Tracing ll tm -> case y of
+      Tracing ll' tm' -> Tracing (ll <> ll') (tm <> tm')
+      _ -> y
+
+-- | @since 1.6.0
+instance Monoid Config where
+  mempty = NoTracing
+
+-- | @since 1.6.0
 instance Pretty Config where
-  pretty (Config (Last x)) = case x of
-    Nothing -> "NoTracing"
-    Just (ll, tm) -> "Tracing " <+> pretty ll <+> pretty tm
+  pretty = \case
+    NoTracing -> "NoTracing"
+    NoTracingOptimize -> "NoTracingOptimize"
+    Tracing ll tm -> "Tracing " <+> pretty ll <+> pretty tm
 
 -- | @since 1.6.0
 instance ToJSON Config where
@@ -337,21 +395,26 @@ instance ToJSON Config where
         , "logLevel" .= ll
         , "tracingMode" .= tm
         ]
+      NoTracingOptimize -> ["tag" .= (2 :: Int)]
   {-# INLINEABLE toEncoding #-}
   toEncoding =
     pairs . \case
       NoTracing -> "tag" .= (0 :: Int)
       Tracing ll tm ->
-        ("tag" .= (1 :: Int))
-          <> ("logLevel" .= ll)
-          <> ("tracingMode" .= tm)
+        ( "tag" .= (1 :: Int)
+            <> ("logLevel" .= ll)
+            <> ("tracingMode" .= tm)
+        )
+      NoTracingOptimize -> "tag" .= (2 :: Int)
 
 -- | @since 1.6.0
 instance FromJSON Config where
+  {-# INLINEABLE parseJSON #-}
   parseJSON = withObject "Config" $ \v ->
     v .: "tag" >>= \(tag :: Int) -> case tag of
-      0 -> return NoTracing
+      0 -> pure NoTracing
       1 -> Tracing <$> v .: "logLevel" <*> v .: "tracingMode"
+      2 -> pure NoTracingOptimize
       _ -> fail "Invalid tag"
 
 {- | If the config indicates that we want to trace, get its mode.
@@ -359,34 +422,57 @@ instance FromJSON Config where
 @since 1.6.0
 -}
 tracingMode :: Config -> Maybe TracingMode
-tracingMode (Config (Last x)) = snd <$> x
+tracingMode (Config x) = case x of
+  Left _ -> Nothing
+  Right (_, tm) -> pure tm
 
 {- | If the config indicates that we want to trace, get its log level.
 
 @since 1.6.0
 -}
 logLevel :: Config -> Maybe LogLevel
-logLevel (Config (Last x)) = fst <$> x
+logLevel (Config x) = case x of
+  Left _ -> Nothing
+  Right (ll, _) -> pure ll
 
-{- | Pattern for the config that does no tracing (also the default).
+{- | What optimization does the config perform?
+
+@since WIP
+-}
+optimization :: Config -> Optimization
+optimization (Config x) = case x of
+  Left opt -> opt
+  Right _ -> NoOptimization
+
+{- | Pattern for the config that does no tracing or optimization (also the default).
 
 @since 1.6.0
 -}
 pattern NoTracing :: Config
-pattern NoTracing <- Config (Last Nothing)
+pattern NoTracing <- Config (Left NoOptimization)
   where
-    NoTracing = Config (Last Nothing)
+    NoTracing = Config (Left NoOptimization)
 
-{- | Pattern for a tracing config, with both its log level and mode.
+{- | Pattern for the config that does no tracing, but optimizes.
+
+@since WIP
+-}
+pattern NoTracingOptimize :: Config
+pattern NoTracingOptimize <- Config (Left Optimization)
+  where
+    NoTracingOptimize = Config (Left Optimization)
+
+{- | Pattern for a tracing config, with both its log level and mode. This does
+not optimize.
 
 @since 1.6.0
 -}
 pattern Tracing :: LogLevel -> TracingMode -> Config
-pattern Tracing ll tm <- Config (Last (Just (ll, tm)))
+pattern Tracing ll tm <- Config (Right (ll, tm))
   where
-    Tracing ll tm = Config (Last (Just (ll, tm)))
+    Tracing ll tm = Config (Right (ll, tm))
 
-{-# COMPLETE NoTracing, Tracing #-}
+{-# COMPLETE NoTracing, NoTracingOptimize, Tracing #-}
 
 newtype TermMonad m = TermMonad {runTermMonad :: ReaderT Config (Either Text) m}
   deriving newtype (Functor, Applicative, Monad)

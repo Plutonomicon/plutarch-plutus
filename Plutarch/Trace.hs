@@ -24,7 +24,7 @@ module Plutarch.Trace (
 import Data.Kind (Type)
 import Plutarch.Bool (PBool, pif)
 import Plutarch.Internal (
-  Config (NoTracing, Tracing),
+  Config (NoTracing, NoTracingOptimize, Tracing),
   LogLevel (LogDebug, LogInfo),
   S,
   Term,
@@ -48,6 +48,7 @@ ptraceInfoShowId ::
   Term s a
 ptraceInfoShowId x = pgetConfig $ \case
   NoTracing -> x
+  NoTracingOptimize -> x
   Tracing _ _ -> ptraceInfo (pshow x) x
 
 {- | Synonym for 'ptraceInfoShowId'.
@@ -142,6 +143,7 @@ ptraceDebugIfTrue ::
   Term s PBool
 ptraceDebugIfTrue msg x = pgetConfig $ \case
   NoTracing -> x
+  NoTracingOptimize -> x
   Tracing ll _ -> case ll of
     LogInfo -> x
     LogDebug -> plet x $ \x' -> pif x' (ptrace' # msg # x') x'
@@ -182,6 +184,7 @@ ptraceDebugIfFalse ::
   Term s PBool
 ptraceDebugIfFalse msg x = pgetConfig $ \case
   NoTracing -> x
+  NoTracingOptimize -> x
   Tracing ll _ -> case ll of
     LogInfo -> x
     LogDebug -> plet x $ \x' -> pif x' x' (ptrace' # msg # x')
