@@ -8,6 +8,11 @@
 * `NoTracingOptimize` option for `Config` to indicate that we want no tracing
   with optimization of UPLC
 
+## Changed
+
+* Compiling scripts now uses `simplifyProgram` when requested to perform
+  optimizations
+
 # 1.9.0 - 25-09-2024
 
 ## Added

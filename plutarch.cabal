@@ -134,6 +134,7 @@ library
     , constraints
     , containers
     , cryptonite
+    , data-default
     , flat
     , generics-sop
     , lens

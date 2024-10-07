@@ -1,4 +1,3 @@
-{-# LANGUAGE RoleAnnotations #-}
 {-# LANGUAGE ViewPatterns #-}
 
 module Plutarch.Internal (
@@ -60,6 +59,7 @@ import Data.Aeson (
   (.=),
  )
 import Data.ByteString qualified as BS
+import Data.Default (def)
 import Data.Kind (Type)
 import Data.List (foldl', groupBy, sortOn)
 import Data.Map.Lazy qualified as M
@@ -831,7 +831,25 @@ compile' t =
 -- | Compile a (closed) Plutus Term to a usable script
 compile :: Config -> ClosedTerm a -> Either Text Script
 compile config t = case asClosedRawTerm t of
-  TermMonad (ReaderT t') -> Script . UPLC.Program () uplcVersion . compile' <$> t' config
+  TermMonad (ReaderT t') -> do
+    configured <- t' config
+    let compiled = compile' configured
+    case optimization config of
+      Optimization -> do
+        case go compiled of
+          Left err -> Left . Text.pack . show $ err
+          Right simplified -> pure . Script $ simplified
+      NoOptimization -> pure . Script . UPLC.Program () uplcVersion $ compiled
+  where
+    go ::
+      UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
+      Either (PLC.Error UPLC.DefaultUni UPLC.DefaultFun ()) (UPLC.Program DeBruijn UPLC.DefaultUni UPLC.DefaultFun ())
+    go compiled = PLC.runQuoteT $ do
+      unDB <- UPLC.unDeBruijnTerm . UPLC.termMapNames UPLC.fakeNameDeBruijn $ compiled
+      let asProgram = UPLC.Program () uplcVersion unDB
+      UPLC.Program () _ simplified <- UPLC.simplifyProgram UPLC.defaultSimplifyOpts def asProgram
+      debruijnd <- UPLC.deBruijnTerm simplified
+      pure . UPLC.Program () uplcVersion . UPLC.termMapNames UPLC.unNameDeBruijn $ debruijnd
 
 hashTerm :: Config -> ClosedTerm a -> Either Text Dig
 hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTerm t 0) config
