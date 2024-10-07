@@ -1,5 +1,25 @@
 # Revision history for plutarch
 
+# WIP
+
+## Added
+
+* `PByte` type as a limited Plutarch-level equivalent to `Word8`
+* `PLogicSemantics`, and construction functions, to help use of logical 
+   `PByteString` operations
+* `pandBS`, `porBS`, `pxorBS`, mirroring CIP-122 operations
+* `pzeroesBS`, `ponesBS`, `preplicateBS`, as wrappers for CIP-122's
+  `ReplicateByte`
+
+## Changed
+
+* `pconsBS` now takes a `PByte` argument instead of a `PInteger` one
+* `pindexBS` now returns a `PByte` instead of a `PInteger`
+
+## Removed
+
+* `pbyteStr` (as it's deprecated)
+
 # 1.9.0 - 25-09-2024
 
 ## Added

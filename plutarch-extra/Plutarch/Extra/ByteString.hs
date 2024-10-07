@@ -2,7 +2,7 @@ module Plutarch.Extra.ByteString (pallBS, pisHexDigit) where
 
 import Plutarch.Prelude
 
-pallBS :: Term s ((PInteger :--> PBool) :--> PByteString :--> PBool)
+pallBS :: Term s ((PByte :--> PBool) :--> PByteString :--> PBool)
 pallBS = phoistAcyclic $
   plam $ \f str -> plet (plengthBS # str) $ \ln ->
     let helper :: Term _ (PInteger :--> PBool)

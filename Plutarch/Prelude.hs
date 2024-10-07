@@ -53,12 +53,36 @@ module Plutarch.Prelude (
   (#||),
 
   -- * Bytestrings and bytestring utilities
+
+  -- ** Types
   PByteString,
-  phexByteStr,
+  PByte,
+  PLogicOpSemantics,
+
+  -- ** Functions
+
+  -- *** Construction
+  ppadding,
+  ptruncation,
+  pzeroesBS,
+  ponesBS,
+  preplicateBS,
+
+  -- *** Byte-oriented
+  pandBS,
+  porBS,
+  pxorBS,
   pconsBS,
   psliceBS,
   plengthBS,
   pindexBS,
+
+  -- *** Conversion
+  pbyteToInteger,
+  pintegerToByte,
+
+  -- *** Other
+  phexByteStr,
 
   -- * String and string utilities
   PString,
