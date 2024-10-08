@@ -21,7 +21,7 @@
     iohk-nix.inputs.nixpkgs.follows = "haskell-nix/nixpkgs";
 
     CHaP = {
-      url = "github:intersectmbo/cardano-haskell-packages?ref=repo";
+      url = "github:input-output-hk/cardano-haskell-packages?ref=repo";
       flake = false;
     };
 
@@ -60,7 +60,7 @@
             # NOTE(bladyjoker): Follow https://github.com/input-output-hk/plutus/blob/master/cabal.project
             index-state = "2024-09-01T16:18:12Z";
             inputMap = {
-              "https://chap.intersectmbo.org/" = CHaP;
+              "https://input-output-hk.github.io/cardano-haskell-packages" = CHaP;
             };
             shell = {
               withHoogle = true;
