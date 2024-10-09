@@ -1,31 +1,31 @@
 iterateN.lam program
   1.0.0
-  (\   ->
+  (\!0 !0 !0 ->
      force
        (force ifThenElse
-          (equalsInteger  0)
-          (delay )
+          (equalsInteger !3 0)
+          (delay !1)
           (delay
-             ((\ ->
-                 (\ ->
-                    (\    ->
+             ((\!0 ->
+                 (\!0 ->
+                    (\!0 !0 !0 !0 ->
                        force
                          (force ifThenElse
-                            (equalsInteger  0)
-                            (delay )
-                            (delay ( (subtractInteger  1)  ( )))))
-                      (\ ->   ))
-                   (\ ->
-                      (\    ->
+                            (equalsInteger !3 0)
+                            (delay !1)
+                            (delay (!4 (subtractInteger !3 1) !2 (!2 !1)))))
+                      (\!0 -> !2 !2 !1))
+                   (\!0 ->
+                      (\!0 !0 !0 !0 ->
                          force
                            (force ifThenElse
-                              (equalsInteger  0)
-                              (delay )
-                              (delay ( (subtractInteger  1)  ( )))))
-                        (\ ->   ))
-                   )
-                (subtractInteger  1)
-
-                ( )))))
+                              (equalsInteger !3 0)
+                              (delay !1)
+                              (delay (!4 (subtractInteger !3 1) !2 (!2 !1)))))
+                        (\!0 -> !2 !2 !1))
+                   !1)
+                (subtractInteger !3 1)
+                !2
+                (!2 !1)))))
 iterateN.app.succ program 1.0.0 10
 iterateN.app.double program 1.0.0 1024

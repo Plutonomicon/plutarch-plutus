@@ -16,8 +16,8 @@ pfoldl.empty-primed program 1.0.0 True
 elemAt.elemAt_3_[1..10] program 1.0.0 4
 elemAt.elemAt_0_[1..10] program 1.0.0 1
 elemAt.elemAt_9_[1..10] program 1.0.0 10
-find.find_(==3)_[1..4] program 1.0.0 (\  ->  3)
-find.find_(==5)_[1..4] program 1.0.0 (\  -> force )
+find.find_(==3)_[1..4] program 1.0.0 (\!0 !0 -> !2 3)
+find.find_(==5)_[1..4] program 1.0.0 (\!0 !0 -> force !1)
 x1+x2.builtin program 1.0.0 3
 x1+x2.pmatch program 1.0.0 3
 uncons.ChooseList program 1.0.0 [2,3,4,5]

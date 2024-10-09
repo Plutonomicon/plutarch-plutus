@@ -1,248 +1,264 @@
 allandhexdigit.allas program
   1.0.0
-  ((\ ->
-      (\  ->
-         (\ ->
-            (\ -> (\ ->  (\ ->   )) (\ ->  (\ ->   )))
-              (\  ->
+  ((\!0 ->
+      (\!0 !0 ->
+         (\!0 ->
+            (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
+              (\!0 !0 ->
                  force
-                   (
-                      (lessThanInteger  )
+                   (!6
+                      (lessThanInteger !1 !3)
                       (delay
                          (force
-                            (
-                               ( (indexByteString  ))
-                               (delay ( (addInteger  1)))
+                            (!6
+                               (!5 (indexByteString !4 !1))
+                               (delay (!2 (addInteger !1 1)))
                                (delay False))))
                       (delay True)))
               0)
-           (lengthOfByteString ))
-        (\ -> equalsInteger  97)
+           (lengthOfByteString !1))
+        (\!0 -> equalsInteger !1 97)
         #61616161616161616161616161)
      (force ifThenElse))
 allandhexdigit.not all as program
   1.0.0
-  ((\ ->
-      (\  ->
-         (\ ->
-            (\ -> (\ ->  (\ ->   )) (\ ->  (\ ->   )))
-              (\  ->
+  ((\!0 ->
+      (\!0 !0 ->
+         (\!0 ->
+            (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
+              (\!0 !0 ->
                  force
-                   (
-                      (lessThanInteger  )
+                   (!6
+                      (lessThanInteger !1 !3)
                       (delay
                          (force
-                            (
-                               ( (indexByteString  ))
-                               (delay ( (addInteger  1)))
+                            (!6
+                               (!5 (indexByteString !4 !1))
+                               (delay (!2 (addInteger !1 1)))
                                (delay False))))
                       (delay True)))
               0)
-           (lengthOfByteString ))
-        (\ -> equalsInteger  97)
+           (lengthOfByteString !1))
+        (\!0 -> equalsInteger !1 97)
         #616161616161626161616161)
      (force ifThenElse))
 allandhexdigit.allhex program
   1.0.0
-  ((\ ->
-      (\ ->
-         (\ ->
-            (\ ->
-               (\ ->
-                  (\  ->
-                     (\ ->
-                        (\ -> (\ ->  (\ ->   )) (\ ->  (\ ->   )))
-                          (\  ->
+  ((\!0 ->
+      (\!0 ->
+         (\!0 ->
+            (\!0 ->
+               (\!0 ->
+                  (\!0 !0 ->
+                     (\!0 ->
+                        (\!0 ->
+                           (\!0 -> !2 (\!0 -> !2 !2 !1))
+                             (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                          (\!0 !0 ->
                              force
-                               (
-                                  (lessThanInteger  )
+                               (!9
+                                  (lessThanInteger !1 !3)
                                   (delay
                                      (force
-                                        (
-                                           ( (indexByteString  ))
-                                           (delay ( (addInteger  1)))
+                                        (!9
+                                           (!5 (indexByteString !4 !1))
+                                           (delay (!2 (addInteger !1 1)))
                                            (delay False))))
                                   (delay True)))
                           0)
-                       (lengthOfByteString ))
-                    (\ ->
+                       (lengthOfByteString !1))
+                    (\!0 ->
                        force
-                         (
+                         (!2
                             (force
-                               (
-                                  (lessThanEqualsInteger  57)
-                                  (delay (lessThanEqualsInteger 48 ))))
+                               (!4
+                                  (lessThanEqualsInteger !1 57)
+                                  (delay (lessThanEqualsInteger 48 !1))))
                             (delay
                                (force
-                                  (
+                                  (!2
                                      (force
-                                        (
-                                           (lessThanEqualsInteger  70)
-                                           (delay (lessThanEqualsInteger 65 ))))
+                                        (!4
+                                           (lessThanEqualsInteger !1 70)
+                                           (delay
+                                              (lessThanEqualsInteger 65 !1))))
                                      (delay
                                         (force
-                                           (
-                                              (lessThanEqualsInteger  102)
+                                           (!4
+                                              (lessThanEqualsInteger !1 102)
                                               (delay
                                                  (lessThanEqualsInteger
                                                     97
-                                                    ))))))))))
+                                                    !1))))))))))
                     #3561376331386561653837373864313533343466)
-                 (\ ->   ))
+                 (\!0 -> !4 !1 !2))
               (delay True))
-           (\  ->    ))
+           (\!0 !0 -> !3 !2 !1 !4))
         (force ifThenElse))
      (delay False))
 allandhexdigit.notallhex program
   1.0.0
-  ((\ ->
-      (\ ->
-         (\ ->
-            (\ ->
-               (\ ->
-                  (\  ->
-                     (\ ->
-                        (\ -> (\ ->  (\ ->   )) (\ ->  (\ ->   )))
-                          (\  ->
+  ((\!0 ->
+      (\!0 ->
+         (\!0 ->
+            (\!0 ->
+               (\!0 ->
+                  (\!0 !0 ->
+                     (\!0 ->
+                        (\!0 ->
+                           (\!0 -> !2 (\!0 -> !2 !2 !1))
+                             (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                          (\!0 !0 ->
                              force
-                               (
-                                  (lessThanInteger  )
+                               (!9
+                                  (lessThanInteger !1 !3)
                                   (delay
                                      (force
-                                        (
-                                           ( (indexByteString  ))
-                                           (delay ( (addInteger  1)))
+                                        (!9
+                                           (!5 (indexByteString !4 !1))
+                                           (delay (!2 (addInteger !1 1)))
                                            (delay False))))
                                   (delay True)))
                           0)
-                       (lengthOfByteString ))
-                    (\ ->
+                       (lengthOfByteString !1))
+                    (\!0 ->
                        force
-                         (
+                         (!2
                             (force
-                               (
-                                  (lessThanEqualsInteger  57)
-                                  (delay (lessThanEqualsInteger 48 ))))
+                               (!4
+                                  (lessThanEqualsInteger !1 57)
+                                  (delay (lessThanEqualsInteger 48 !1))))
                             (delay
                                (force
-                                  (
+                                  (!2
                                      (force
-                                        (
-                                           (lessThanEqualsInteger  70)
-                                           (delay (lessThanEqualsInteger 65 ))))
+                                        (!4
+                                           (lessThanEqualsInteger !1 70)
+                                           (delay
+                                              (lessThanEqualsInteger 65 !1))))
                                      (delay
                                         (force
-                                           (
-                                              (lessThanEqualsInteger  102)
+                                           (!4
+                                              (lessThanEqualsInteger !1 102)
                                               (delay
                                                  (lessThanEqualsInteger
                                                     97
-                                                    ))))))))))
+                                                    !1))))))))))
                     #3561376331386561653837373867313533343466)
-                 (\ ->   ))
+                 (\!0 -> !4 !1 !2))
               (delay True))
-           (\  ->    ))
+           (\!0 !0 -> !3 !2 !1 !4))
         (force ifThenElse))
      (delay False))
 allandhexdigit.pisHexDigit program
   1.0.0
-  ((\ ->
-      (\ ->
-         (\ ->
-            (\ ->
-               (\ ->
-                  (\ ->
-                     (\ ->
-                         (\  ->  (\  -> force ( ( ) (delay ( )))) (delay True)))
-                       (\ ->
+  ((\!0 ->
+      (\!0 ->
+         (\!0 ->
+            (\!0 ->
+               (\!0 ->
+                  (\!0 ->
+                     (\!0 ->
+                        !7
+                          (\!0 !0 ->
+                             !1
+                               (\!0 !0 -> force (!8 (!5 !2) (delay (!4 !1))))
+                               (delay True)))
+                       (\!0 ->
                           force
-                            (
+                            (!2
                                (force
-                                  (
-                                     (lessThanEqualsInteger  57)
-                                     (delay (lessThanEqualsInteger 48 ))))
+                                  (!4
+                                     (lessThanEqualsInteger !1 57)
+                                     (delay (lessThanEqualsInteger 48 !1))))
                                (delay
                                   (force
-                                     (
+                                     (!2
                                         (force
-                                           (
-                                              (lessThanEqualsInteger  70)
+                                           (!4
+                                              (lessThanEqualsInteger !1 70)
                                               (delay
-                                                 (lessThanEqualsInteger 65 ))))
+                                                 (lessThanEqualsInteger
+                                                    65
+                                                    !1))))
                                         (delay
                                            (force
-                                              (
-                                                 (lessThanEqualsInteger  102)
+                                              (!4
+                                                 (lessThanEqualsInteger !1 102)
                                                  (delay
                                                     (lessThanEqualsInteger
                                                        97
-                                                       ))))))))))
-                       (
-                          (\  ->
+                                                       !1))))))))))
+                       (!6
+                          (\!0 !0 ->
                              force
                                (force (force chooseList)
-
-                                  (delay (\  -> force ))
+                                  !1
+                                  (delay (\!0 !0 -> force !1))
                                   (delay
-                                     ((\    ->   )
-                                        (force headList )
-                                        ( (force tailList ))))))
+                                     ((\!0 !0 !0 !0 -> !2 !4 !3)
+                                        (force headList !1)
+                                        (!2 (force tailList !1))))))
                           [49,50,51,52,53,54,55,56,57,48,97,98,99,100,101,102]))
-                    (\ ->   ))
+                    (\!0 -> !4 !1 !2))
                  (delay True))
-              (\  ->    ))
+              (\!0 !0 -> !3 !2 !1 !4))
            (force ifThenElse))
         (delay False))
-     (\ -> (\ ->  (\ ->   )) (\ ->  (\ ->   ))))
+     (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
 allandhexdigit.pisNoneHexDigit program
   1.0.0
-  ((\ ->
-      (\ ->
-         (\ ->
-            (\ ->
-               (\ ->
-                  (\ ->
-                     (\ ->
-
-                          (\  ->
-                              (\  -> force ( ( ) (delay ( )))) (delay False)))
-                       (\ ->
+  ((\!0 ->
+      (\!0 ->
+         (\!0 ->
+            (\!0 ->
+               (\!0 ->
+                  (\!0 ->
+                     (\!0 ->
+                        !7
+                          (\!0 !0 ->
+                             !1
+                               (\!0 !0 -> force (!6 (!5 !2) (delay (!4 !1))))
+                               (delay False)))
+                       (\!0 ->
                           force
-                            (
+                            (!2
                                (force
-                                  (
-                                     (lessThanEqualsInteger  57)
-                                     (delay (lessThanEqualsInteger 48 ))))
+                                  (!4
+                                     (lessThanEqualsInteger !1 57)
+                                     (delay (lessThanEqualsInteger 48 !1))))
                                (delay
                                   (force
-                                     (
+                                     (!2
                                         (force
-                                           (
-                                              (lessThanEqualsInteger  70)
+                                           (!4
+                                              (lessThanEqualsInteger !1 70)
                                               (delay
-                                                 (lessThanEqualsInteger 65 ))))
+                                                 (lessThanEqualsInteger
+                                                    65
+                                                    !1))))
                                         (delay
                                            (force
-                                              (
-                                                 (lessThanEqualsInteger  102)
+                                              (!4
+                                                 (lessThanEqualsInteger !1 102)
                                                  (delay
                                                     (lessThanEqualsInteger
                                                        97
-                                                       ))))))))))
-                       (
-                          (\  ->
+                                                       !1))))))))))
+                       (!6
+                          (\!0 !0 ->
                              force
                                (force (force chooseList)
-
-                                  (delay (\  -> force ))
+                                  !1
+                                  (delay (\!0 !0 -> force !1))
                                   (delay
-                                     ((\    ->   )
-                                        (force headList )
-                                        ( (force tailList ))))))
+                                     ((\!0 !0 !0 !0 -> !2 !4 !3)
+                                        (force headList !1)
+                                        (!2 (force tailList !1))))))
                           [103,104,105,107,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,32,33,64,35,36,37,94,38,42,40,41,91,93,123,125,96,126]))
-                    (\ ->   ))
+                    (\!0 -> !4 !1 !2))
                  (delay True))
-              (\  ->    ))
+              (\!0 !0 -> !3 !2 !1 !4))
            (force ifThenElse))
         (delay False))
-     (\ -> (\ ->  (\ ->   )) (\ ->  (\ ->   ))))
+     (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))

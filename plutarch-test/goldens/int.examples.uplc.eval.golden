@@ -1,102 +1,114 @@
-add1 program 1.0.0 (\  -> addInteger (addInteger  ) 1)
-add1Hoisted program 1.0.0 (\  -> addInteger (addInteger  ) 1)
+add1 program 1.0.0 (\!0 !0 -> addInteger (addInteger !2 !1) 1)
+add1Hoisted program 1.0.0 (\!0 !0 -> addInteger (addInteger !2 !1) 1)
 example1 program 1.0.0 55
-example2 program 1.0.0 (\ ->  (\ -> addInteger  1) (\ -> subtractInteger  1))
+example2 program 1.0.0 (\!0 -> !1 (\!0 -> addInteger !1 1) (\!0 -> subtractInteger !1 1))
 fib.lam program
   1.0.0
-  (\ ->
+  (\!0 ->
      force
        (force ifThenElse
-          (equalsInteger  0)
+          (equalsInteger !1 0)
           (delay 0)
           (delay
              (force
                 (force ifThenElse
-                   (equalsInteger  1)
+                   (equalsInteger !1 1)
                    (delay 1)
                    (delay
                       (addInteger
-                         ((\ ->
-                             (\ ->
-                                (\  ->
+                         ((\!0 ->
+                             (\!0 ->
+                                (\!0 !0 ->
                                    force
                                      (force ifThenElse
-                                        (equalsInteger  0)
+                                        (equalsInteger !1 0)
                                         (delay 0)
                                         (delay
                                            (force
                                               (force ifThenElse
-                                                 (equalsInteger  1)
+                                                 (equalsInteger !1 1)
                                                  (delay 1)
                                                  (delay
                                                     (addInteger
-                                                       ( (subtractInteger  1))
-                                                       (
+                                                       (!2
                                                           (subtractInteger
-
+                                                             !1
+                                                             1))
+                                                       (!2
+                                                          (subtractInteger
+                                                             !1
                                                              2)))))))))
-                                  (\ ->   ))
-                               (\ ->
-                                  (\  ->
+                                  (\!0 -> !2 !2 !1))
+                               (\!0 ->
+                                  (\!0 !0 ->
                                      force
                                        (force ifThenElse
-                                          (equalsInteger  0)
+                                          (equalsInteger !1 0)
                                           (delay 0)
                                           (delay
                                              (force
                                                 (force ifThenElse
-                                                   (equalsInteger  1)
+                                                   (equalsInteger !1 1)
                                                    (delay 1)
                                                    (delay
                                                       (addInteger
-                                                         ( (subtractInteger  1))
-                                                         (
+                                                         (!2
                                                             (subtractInteger
-
+                                                               !1
+                                                               1))
+                                                         (!2
+                                                            (subtractInteger
+                                                               !1
                                                                2)))))))))
-                                    (\ ->   ))
-                               )
-                            (subtractInteger  1))
-                         ((\ ->
-                             (\ ->
-                                (\  ->
+                                    (\!0 -> !2 !2 !1))
+                               !1)
+                            (subtractInteger !1 1))
+                         ((\!0 ->
+                             (\!0 ->
+                                (\!0 !0 ->
                                    force
                                      (force ifThenElse
-                                        (equalsInteger  0)
+                                        (equalsInteger !1 0)
                                         (delay 0)
                                         (delay
                                            (force
                                               (force ifThenElse
-                                                 (equalsInteger  1)
+                                                 (equalsInteger !1 1)
                                                  (delay 1)
                                                  (delay
                                                     (addInteger
-                                                       ( (subtractInteger  1))
-                                                       (
+                                                       (!2
                                                           (subtractInteger
-
+                                                             !1
+                                                             1))
+                                                       (!2
+                                                          (subtractInteger
+                                                             !1
                                                              2)))))))))
-                                  (\ ->   ))
-                               (\ ->
-                                  (\  ->
+                                  (\!0 -> !2 !2 !1))
+                               (\!0 ->
+                                  (\!0 !0 ->
                                      force
                                        (force ifThenElse
-                                          (equalsInteger  0)
+                                          (equalsInteger !1 0)
                                           (delay 0)
                                           (delay
                                              (force
                                                 (force ifThenElse
-                                                   (equalsInteger  1)
+                                                   (equalsInteger !1 1)
                                                    (delay 1)
                                                    (delay
                                                       (addInteger
-                                                         ( (subtractInteger  1))
-                                                         (
+                                                         (!2
                                                             (subtractInteger
-
+                                                               !1
+                                                               1))
+                                                         (!2
+                                                            (subtractInteger
+                                                               !1
                                                                2)))))))))
-                                    (\ ->   ))
-                               )
-                            (subtractInteger  2)))))))))
+                                    (\!0 -> !2 !2 !1))
+                               !1)
+                            (subtractInteger !1 2)))))))))
 fib.app.9 program 1.0.0 34
-uglyDouble program 1.0.0 (\ -> addInteger  )
+uglyDouble program 1.0.0 (\!0 -> addInteger !1 !1)

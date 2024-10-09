@@ -1,58 +1,68 @@
 normal program
   1.0.0
-  ((\ -> (\ ->  (\ ->   )) (\ ->  (\ ->   )))
-     (\  ->
+  ((\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
+     (\!0 !0 ->
         force
           (force (force chooseList)
-
-             (delay (\  -> force ))
-             (delay ((\    ->   ) (force headList ) ( (force tailList ))))))
+             !1
+             (delay (\!0 !0 -> force !1))
+             (delay
+                ((\!0 !0 !0 !0 -> !2 !4 !3)
+                   (force headList !1)
+                   (!2 (force tailList !1))))))
      [1,2,3,4,5,6,7,8,9,10]
-     (\  ->  (\  -> ) (delay error))
+     (\!0 !0 -> !1 (\!0 !0 -> !1) (delay error))
      (delay error))
 do program
   1.0.0
-  ((\ ->
-      (\ ->
-         (\ -> (\ ->  (\ ->   )) (\ ->  (\ ->   )))
-           (\  ->
+  ((\!0 ->
+      (\!0 ->
+         (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
+           (\!0 !0 ->
               force
                 (force (force chooseList)
-
-                   (delay (\  -> force ))
+                   !1
+                   (delay (\!0 !0 -> force !1))
                    (delay
-                      ((\    ->   ) (force headList ) ( (force tailList ))))))
+                      ((\!0 !0 !0 !0 -> !2 !4 !3)
+                         (force headList !1)
+                         (!2 (force tailList !1))))))
            [1,2,3,4,5,6,7,8,9,10]
-           (\  ->  (\  -> ) (delay (force (  (delay error)))))
-           (delay (force (  (delay error)))))
+           (\!0 !0 -> !1 (\!0 !0 -> !1) (delay (force (!3 !4 (delay error)))))
+           (delay (force (!1 !2 (delay error)))))
         (force trace))
      "Pattern matching failure in QualifiedDo syntax")
 cont program
   1.0.0
-  ((\ -> (\ ->  (\ ->   )) (\ ->  (\ ->   )))
-     (\  ->
+  ((\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
+     (\!0 !0 ->
         force
           (force (force chooseList)
-
-             (delay (\  -> force ))
-             (delay ((\    ->   ) (force headList ) ( (force tailList ))))))
+             !1
+             (delay (\!0 !0 -> force !1))
+             (delay
+                ((\!0 !0 !0 !0 -> !2 !4 !3)
+                   (force headList !1)
+                   (!2 (force tailList !1))))))
      [1,2,3,4,5,6,7,8,9,10]
-     (\  ->  (\  -> ) (delay error))
+     (\!0 !0 -> !1 (\!0 !0 -> !1) (delay error))
      (delay error))
 termcont program
   1.0.0
-  ((\ ->
-      (\ ->
-         (\ -> (\ ->  (\ ->   )) (\ ->  (\ ->   )))
-           (\  ->
+  ((\!0 ->
+      (\!0 ->
+         (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
+           (\!0 !0 ->
               force
                 (force (force chooseList)
-
-                   (delay (\  -> force ))
+                   !1
+                   (delay (\!0 !0 -> force !1))
                    (delay
-                      ((\    ->   ) (force headList ) ( (force tailList ))))))
+                      ((\!0 !0 !0 !0 -> !2 !4 !3)
+                         (force headList !1)
+                         (!2 (force tailList !1))))))
            [1,2,3,4,5,6,7,8,9,10]
-           (\  ->  (\  -> ) (delay (force (  (delay error)))))
-           (delay (force (  (delay error)))))
+           (\!0 !0 -> !1 (\!0 !0 -> !1) (delay (force (!3 !4 (delay error)))))
+           (delay (force (!1 !2 (delay error)))))
         (force trace))
      "Pattern matching failure in TermCont")

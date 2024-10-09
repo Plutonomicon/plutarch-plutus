@@ -1,6 +1,13 @@
 reverse.reverse_[1..5] program
   1.0.0
-  (\  ->  5 (\  ->  4 (\  ->  3 (\  ->  2 (\  ->  1 (\  -> force ))))))
+  (\!0 !0 ->
+     !2
+       5
+       (\!0 !0 ->
+          !2
+            4
+            (\!0 !0 ->
+               !2 3 (\!0 !0 -> !2 2 (\!0 !0 -> !2 1 (\!0 !0 -> force !1))))))
 isSorted.[1..10] program 1.0.0 True
 isSorted.reverse_[1..10] program 1.0.0 True
-isSorted.reverse_[] program 1.0.0 (\  -> force )
+isSorted.reverse_[] program 1.0.0 (\!0 !0 -> force !1)
