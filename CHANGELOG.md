@@ -11,6 +11,7 @@
 * `ptraceIfNothing`, `pisJust`, `pmaybe`, `pfromMaybe`, `pjust`, `pnothing`,
   `pAssertPJust` to `Plutarch.Maybe` (originally from `plutarch-extra`)
 * `pexpectJustC` to `Plutarch.TermCont` (originally from `plutarch-extra`)
+* `PCountable` and `PEnumerable` type classes, as well as instances
 
 ## Removed
 
