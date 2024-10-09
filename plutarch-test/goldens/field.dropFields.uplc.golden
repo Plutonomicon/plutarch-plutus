@@ -1,18 +1,18 @@
-lam (program
-   1.0.0
-   ((\i0 ->
-       (\i0 i0 ->
-          (\i0 -> addInteger (unIData (i3 i1)) (unIData (i3 (i4 i1))))
-            (i3 (i3 (i3 (i3 (i3 (i3 (i3 (i3 i1)))))))))
-         (force headList))
-      (force tailList)))
-app (program
-   1.0.0
-   ((\i0 ->
-       (\i0 ->
-          (\i0 ->
-             (\i0 -> addInteger (unIData (i3 i1)) (unIData (i3 (i4 i1))))
-               (i3 (i3 (i3 (i3 (i3 (i3 (i3 (i3 i1)))))))))
-            [I 0, I 1, I 2, I 3, I 4, I 5, I 6, I 7, I 8, I 9])
-         (force headList))
-      (force tailList)))
+lam program
+  1.0.0
+  ((\!0 ->
+      (\!0 !0 ->
+         (\!0 -> addInteger (unIData (!3 !1)) (unIData (!3 (!4 !1))))
+           (!3 (!3 (!3 (!3 (!3 (!3 (!3 (!3 !1)))))))))
+        (force headList))
+     (force tailList))
+app program
+  1.0.0
+  ((\!0 ->
+      (\!0 ->
+         (\!0 ->
+            (\!0 -> addInteger (unIData (!3 !1)) (unIData (!3 (!4 !1))))
+              (!3 (!3 (!3 (!3 (!3 (!3 (!3 (!3 !1)))))))))
+           [I 0, I 1, I 2, I 3, I 4, I 5, I 6, I 7, I 8, I 9])
+        (force headList))
+     (force tailList))

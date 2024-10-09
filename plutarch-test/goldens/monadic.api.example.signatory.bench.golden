@@ -1,2 +1,0 @@
-do.succeeds {"exBudgetCPU":5658435,"exBudgetMemory":16241,"scriptSizeBytes":351}
-do.fails {"exBudgetCPU":9425890,"exBudgetMemory":21101,"scriptSizeBytes":347}

@@ -1,1 +1,0 @@
-0 (program 1.0.0 (\i0 -> force (force sndPair) (unConstrData i1)))
