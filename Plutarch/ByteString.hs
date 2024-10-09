@@ -3,13 +3,17 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.ByteString (
+  -- * Type
   PByteString,
+
+  -- * Functions
   phexByteStr,
   pbyteStr,
   pconsBS,
   psliceBS,
   plengthBS,
   pindexBS,
+  pallBS,
 ) where
 
 import Data.ByteString (ByteString)
@@ -18,12 +22,22 @@ import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
-import Plutarch.Bool (PEq, POrd, PPartialOrd, (#<), (#<=), (#==))
+import Plutarch.Bool (
+  PBool (PFalse, PTrue),
+  PEq,
+  POrd,
+  PPartialOrd,
+  pif,
+  (#<),
+  (#<=),
+  (#==),
+ )
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal (Term, (#), (:-->))
+import Plutarch.Internal (S, Term, phoistAcyclic, plet, (#), (#$), (:-->))
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Other (POpaque)
-import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
+import Plutarch.Internal.Other (POpaque, pfix)
+import Plutarch.Internal.PLam (plam)
+import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType, pcon)
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,
@@ -73,10 +87,6 @@ phexByteStr = pconstant . BS.pack . f
 pbyteStr :: ByteString -> Term s PByteString
 pbyteStr = pconstant
 
------------------------------------------------------------
--- The following functions should be import qualified. --
------------------------------------------------------------
-
 -- | Prepend a byte, represented by a non negative 'PInteger', to a 'PBytestring'.
 pconsBS :: Term s (PInteger :--> PByteString :--> PByteString)
 pconsBS = punsafeBuiltin PLC.ConsByteString
@@ -95,6 +105,35 @@ plengthBS = punsafeBuiltin PLC.LengthOfByteString
 -- | 'PByteString' indexing function.
 pindexBS :: Term s (PByteString :--> PInteger :--> PInteger)
 pindexBS = punsafeBuiltin PLC.IndexByteString
+
+{- | Verify that the given predicate holds for every byte in the argument.
+
+@since WIP
+-}
+pallBS ::
+  forall (s :: S).
+  Term s ((PInteger :--> PBool) :--> PByteString :--> PBool)
+pallBS = phoistAcyclic $ plam $ \p bs ->
+  plet (plengthBS # bs) $ \len ->
+    go p len bs # 0
+  where
+    go ::
+      forall (s' :: S).
+      Term s' (PInteger :--> PBool) ->
+      Term s' PInteger ->
+      Term s' PByteString ->
+      Term s' (PInteger :--> PBool)
+    go p len bs = pfix #$ plam $ \self ix ->
+      pif
+        (ix #< len)
+        ( pif
+            (p #$ pindexBS # bs # ix)
+            (self # (ix + 1))
+            (pcon PFalse)
+        )
+        (pcon PTrue)
+
+-- Helpers
 
 hexDigitToWord8 :: HasCallStack => Char -> Word8
 hexDigitToWord8 = f . toLower
