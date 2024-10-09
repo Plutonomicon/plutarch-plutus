@@ -72,6 +72,7 @@ module Plutarch.Prelude (
   pandBS,
   porBS,
   pxorBS,
+  pcomplementBS,
   pconsBS,
   psliceBS,
   plengthBS,

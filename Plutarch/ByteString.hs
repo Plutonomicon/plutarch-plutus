@@ -22,6 +22,7 @@ module Plutarch.ByteString (
   pandBS,
   porBS,
   pxorBS,
+  pcomplementBS,
   pconsBS,
   psliceBS,
   plengthBS,
@@ -242,6 +243,16 @@ pxorBS ::
   Term s (PLogicOpSemantics :--> PByteString :--> PByteString :--> PByteString)
 pxorBS = phoistAcyclic $ plam $ \sem bs1 bs2 -> pmatch sem $ \(PLogicOpSemantics b) ->
   punsafeBuiltin PLC.XorByteString # b # bs1 # bs2
+
+{- | Perform the logical complement of a 'PByteString', as per
+[CIP-122](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#bitwiselogicalcomplement).
+
+@since WIP
+-}
+pcomplementBS ::
+  forall (s :: S).
+  Term s (PByteString :--> PByteString)
+pcomplementBS = phoistAcyclic $ plam $ \bs -> punsafeBuiltin PLC.ComplementByteString # bs
 
 {- | Construct a 'PByteString' of the specified length (0 if negative)
 consisting entirely of zero bytes.
