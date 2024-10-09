@@ -1,32 +1,32 @@
-eq.true.nothing (program
-   1.0.0
-   ((\i0 i0 ->
-       i2
-         (\i0 -> i2 (\i0 -> equalsInteger i2 i1) (delay False))
-         (delay (i1 (\i0 -> False) (delay True))))
-      (\i0 i0 -> force i1)
-      (\i0 i0 -> force i1)))
-eq.true.just (program
-   1.0.0
-   ((\i0 i0 ->
-       i2
-         (\i0 -> i2 (\i0 -> equalsInteger i2 i1) (delay False))
-         (delay (i1 (\i0 -> False) (delay True))))
-      ((\i0 i0 i0 -> i2 i3) 42)
-      ((\i0 i0 i0 -> i2 i3) 42)))
-eq.false.nothing-just (program
-   1.0.0
-   ((\i0 i0 ->
-       i2
-         (\i0 -> i2 (\i0 -> equalsInteger i2 i1) (delay False))
-         (delay (i1 (\i0 -> False) (delay True))))
-      (\i0 i0 -> force i1)
-      ((\i0 i0 i0 -> i2 i3) 42)))
-eq.false.just-just (program
-   1.0.0
-   ((\i0 i0 ->
-       i2
-         (\i0 -> i2 (\i0 -> equalsInteger i2 i1) (delay False))
-         (delay (i1 (\i0 -> False) (delay True))))
-      ((\i0 i0 i0 -> i2 i3) 24)
-      ((\i0 i0 i0 -> i2 i3) 42)))
+eq.true.nothing program
+  1.0.0
+  ((\!0 !0 ->
+      !2
+        (\!0 -> !2 (\!0 -> equalsInteger !2 !1) (delay False))
+        (delay (!1 (\!0 -> False) (delay True))))
+     (\!0 !0 -> force !1)
+     (\!0 !0 -> force !1))
+eq.true.just program
+  1.0.0
+  ((\!0 !0 ->
+      !2
+        (\!0 -> !2 (\!0 -> equalsInteger !2 !1) (delay False))
+        (delay (!1 (\!0 -> False) (delay True))))
+     ((\!0 !0 !0 -> !2 !3) 42)
+     ((\!0 !0 !0 -> !2 !3) 42))
+eq.false.nothing-just program
+  1.0.0
+  ((\!0 !0 ->
+      !2
+        (\!0 -> !2 (\!0 -> equalsInteger !2 !1) (delay False))
+        (delay (!1 (\!0 -> False) (delay True))))
+     (\!0 !0 -> force !1)
+     ((\!0 !0 !0 -> !2 !3) 42))
+eq.false.just-just program
+  1.0.0
+  ((\!0 !0 ->
+      !2
+        (\!0 -> !2 (\!0 -> equalsInteger !2 !1) (delay False))
+        (delay (!1 (\!0 -> False) (delay True))))
+     ((\!0 !0 !0 -> !2 !3) 24)
+     ((\!0 !0 !0 -> !2 !3) 42))

@@ -1,4 +1,0 @@
-swap.A (program 1.0.0 (\i0 i0 -> force i1))
-swap.B (program 1.0.0 (\i0 i0 -> force i2))
-scottenc.PMaybe (program 1.0.0 42)
-scottenc.PPair (program 1.0.0 "Universe")
