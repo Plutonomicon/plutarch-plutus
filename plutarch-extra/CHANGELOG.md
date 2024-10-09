@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 1.8.1 -- 07-17-2024
+
+### Added
+
+* Add `Plutarch.Extra.ErrorCode` which includes utilities to codify trace messages
+
+
 ## 1.8.0 -- 07-06-2024
 
 ### Removed
