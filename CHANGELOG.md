@@ -4,6 +4,13 @@
 
 ## Added
 
+* `pallBS` to `Plutarch.ByteString` (originally from `plutarch-extra')
+* `pisHexDigit` to `Plutarch.String` (originally from `plutarch-extra`)
+* `preverse` and `pcheckSorted` to `Plutarch.List` (originally from
+  `plutarch-extra`)
+* `ptraceIfNothing`, `pisJust`, `pmaybe`, `pfromMaybe`, `pjust`, `pnothing`,
+  `pAssertPJust` to `Plutarch.Maybe` (originally from `plutarch-extra`)
+* `pexpectJustC` to `Plutarch.TermCont` (originally from `plutarch-extra`)
 * `PByte` type as a limited Plutarch-level equivalent to `Word8`
 * `PLogicSemantics`, and construction functions, to help use of logical 
    `PByteString` operations
@@ -18,6 +25,8 @@
 
 ## Removed
 
+* `plutarch-extra`, as all its functionality has been folded into Plutarch
+  itself
 * `pbyteStr` (as it's deprecated)
 
 # 1.9.0 - 25-09-2024

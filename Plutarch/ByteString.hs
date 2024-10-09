@@ -18,6 +18,7 @@ module Plutarch.ByteString (
   preplicateBS,
 
   -- ** Byte-oriented
+  pallBS,
   pandBS,
   porBS,
   pxorBS,
@@ -54,9 +55,18 @@ import Plutarch.Bool (
   (#||),
  )
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal (S, Term, perror, phoistAcyclic, (#), (:-->))
+import Plutarch.Internal (
+  S,
+  Term,
+  perror,
+  phoistAcyclic,
+  plet,
+  (#),
+  (#$),
+  (:-->),
+ )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Other (POpaque)
+import Plutarch.Internal.Other (POpaque, pfix)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   DPTStrat,
@@ -331,6 +341,35 @@ index. Will crash if given an out-of-bounds index.
 -}
 pindexBS :: Term s (PByteString :--> PInteger :--> PByte)
 pindexBS = punsafeBuiltin PLC.IndexByteString
+
+{- | Verify that the given predicate holds for every byte in the argument.
+
+@since WIP
+-}
+pallBS ::
+  forall (s :: S).
+  Term s ((PByte :--> PBool) :--> PByteString :--> PBool)
+pallBS = phoistAcyclic $ plam $ \p bs ->
+  plet (plengthBS # bs) $ \len ->
+    go p len bs # 0
+  where
+    go ::
+      forall (s' :: S).
+      Term s' (PByte :--> PBool) ->
+      Term s' PInteger ->
+      Term s' PByteString ->
+      Term s' (PInteger :--> PBool)
+    go p len bs = pfix #$ plam $ \self ix ->
+      pif
+        (ix #< len)
+        ( pif
+            (p #$ pindexBS # bs # ix)
+            (self # (ix + 1))
+            (pcon PFalse)
+        )
+        (pcon PTrue)
+
+-- Helpers
 
 hexDigitToWord8 :: HasCallStack => Char -> Word8
 hexDigitToWord8 = f . toLower

@@ -110,7 +110,6 @@ executable plutarch-test
     , hspec
     , hspec-hedgehog
     , plutarch
-    , plutarch-extra
     , plutarch-ledger-api
     , plutarch-test
     , plutus-core
@@ -127,9 +126,7 @@ executable plutarch-test
     Plutarch.BoolSpec
     Plutarch.ByteStringSpec
     Plutarch.EitherSpec
-    Plutarch.Extra.ByteStringSpec
     Plutarch.Extra.IntervalSpec
-    Plutarch.Extra.ListSpec
     Plutarch.FieldSpec
     Plutarch.IntegerSpec
     Plutarch.ListSpec
