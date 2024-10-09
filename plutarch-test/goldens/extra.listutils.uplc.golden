@@ -1,88 +1,57 @@
-reverse.reverse_[1..5] (program
-   1.0.0
-   ((\i0 ->
-       (\i0 ->
-          (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))
-            (\i0 i0 i0 -> i1 (\i0 i0 -> i5 (i6 i4 i2) i1) (delay i2)))
-         (\i0 i0 -> i3 i1 i2)
-         (\i0 i0 -> force i1)
-         (i1 1 (i1 2 (i1 3 (i1 4 (i1 5 (\i0 i0 -> force i1)))))))
-      (\i0 i0 i0 i0 -> i2 i4 i3)))
-isSorted.[1..10] (program
-   1.0.0
-   ((\i0 ->
-       (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))
-         (\i0 i0 ->
-            i1
-              (\i0 i0 ->
-                 i1
-                   (\i0 i0 ->
-                      force
-                        ((\i0 i0 -> force ifThenElse i2 i1 (delay False))
-                           (lessThanEqualsInteger i4 i2)
-                           (delay (i6 i3))))
+reverse.reverse_[1..5] program
+  1.0.0
+  ((\ ->
+      (\ ->
+         (\ -> (\ ->  (\ ->   )) (\ ->  (\ ->   )))
+           (\   ->  (\  ->  (  ) ) (delay )))
+        (\  ->   )
+        (\  -> force )
+        ( 1 ( 2 ( 3 ( 4 ( 5 (\  -> force )))))))
+     (\    ->   ))
+isSorted.[1..10] program
+  1.0.0
+  ((\ ->
+      (\ -> (\ ->  (\ ->   )) (\ ->  (\ ->   )))
+        (\  ->
+
+             (\  ->
+
+                  (\  ->
+                     force
+                       ((\  -> force ifThenElse   (delay False))
+                          (lessThanEqualsInteger  )
+                          (delay ( ))))
+                  (delay True))
+             (delay True))
+        ( 1 ( 2 ( 3 ( 4 ( 5 ( 6 ( 7 ( 8 ( 9 ( 10 (\  -> force ))))))))))))
+     (\    ->   ))
+isSorted.reverse_[1..10] program
+  1.0.0
+  ((\ ->
+      (\ ->
+         (\ ->   False True)
+           ((\ -> (\ ->  (\ ->   )) (\ ->  (\ ->   )))
+              (\  ->
+
+                   (\  ->
+
+                        (\  ->
+                           force
+                             ((\  ->    (delay False))
+                                (lessThanEqualsInteger  )
+                                (delay ( ))))
+                        (delay True))
                    (delay True))
-              (delay True))
-         (i1
-            1
-            (i1
-               2
-               (i1
-                  3
-                  (i1
-                     4
-                     (i1
-                        5
-                        (i1
-                           6
-                           (i1
-                              7
-                              (i1 8 (i1 9 (i1 10 (\i0 i0 -> force i1))))))))))))
-      (\i0 i0 i0 i0 -> i2 i4 i3)))
-isSorted.reverse_[1..10] (program
-   1.0.0
-   ((\i0 ->
-       (\i0 ->
-          (\i0 -> i2 i1 False True)
-            ((\i0 ->
-                (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))
-               (\i0 i0 ->
-                  i1
-                    (\i0 i0 ->
-                       i1
-                         (\i0 i0 ->
-                            force
-                              ((\i0 i0 -> i9 i2 i1 (delay False))
-                                 (lessThanEqualsInteger i4 i2)
-                                 (delay (i6 i3))))
-                         (delay True))
-                    (delay True))
-               (i2
-                  10
-                  (i2
-                     9
-                     (i2
-                        8
-                        (i2
-                           7
-                           (i2
-                              6
-                              (i2
-                                 5
-                                 (i2
-                                    4
-                                    (i2
-                                       3
-                                       (i2
-                                          2
-                                          (i2 1 (\i0 i0 -> force i1)))))))))))))
-         (force ifThenElse))
-      (\i0 i0 i0 i0 -> i2 i4 i3)))
-isSorted.reverse_[] (program
-   1.0.0
-   ((\i0 ->
-       (\i0 -> (\i0 -> i2 (\i0 -> i2 i2 i1)) (\i0 -> i2 (\i0 -> i2 i2 i1)))
-         (\i0 i0 i0 -> i1 (\i0 i0 -> i5 (i6 i4 i2) i1) (delay i2)))
-      (\i0 i0 i0 i0 -> i2 i3 i4)
-      (\i0 i0 -> force i1)
-      (\i0 i0 -> force i1)))
+              (
+                 10
+                 ( 9 ( 8 ( 7 ( 6 ( 5 ( 4 ( 3 ( 2 ( 1 (\  -> force )))))))))))))
+        (force ifThenElse))
+     (\    ->   ))
+isSorted.reverse_[] program
+  1.0.0
+  ((\ ->
+      (\ -> (\ ->  (\ ->   )) (\ ->  (\ ->   )))
+        (\   ->  (\  ->  (  ) ) (delay )))
+     (\    ->   )
+     (\  -> force )
+     (\  -> force ))

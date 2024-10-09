@@ -1,32 +1,32 @@
-eq.true.nothing (program
-   1.0.0
-   ((\i0 i0 ->
-       i2
-         (\i0 -> i2 (\i0 -> equalsInteger i2 i1) (delay False))
-         (delay (i1 (\i0 -> False) (delay True))))
-      (\i0 i0 -> force i1)
-      (\i0 i0 -> force i1)))
-eq.true.just (program
-   1.0.0
-   ((\i0 i0 ->
-       i2
-         (\i0 -> i2 (\i0 -> equalsInteger i2 i1) (delay False))
-         (delay (i1 (\i0 -> False) (delay True))))
-      ((\i0 i0 i0 -> i2 i3) 42)
-      ((\i0 i0 i0 -> i2 i3) 42)))
-eq.false.nothing-just (program
-   1.0.0
-   ((\i0 i0 ->
-       i2
-         (\i0 -> i2 (\i0 -> equalsInteger i2 i1) (delay False))
-         (delay (i1 (\i0 -> False) (delay True))))
-      (\i0 i0 -> force i1)
-      ((\i0 i0 i0 -> i2 i3) 42)))
-eq.false.just-just (program
-   1.0.0
-   ((\i0 i0 ->
-       i2
-         (\i0 -> i2 (\i0 -> equalsInteger i2 i1) (delay False))
-         (delay (i1 (\i0 -> False) (delay True))))
-      ((\i0 i0 i0 -> i2 i3) 24)
-      ((\i0 i0 i0 -> i2 i3) 42)))
+eq.true.nothing program
+  1.0.0
+  ((\  ->
+
+        (\ ->  (\ -> equalsInteger  ) (delay False))
+        (delay ( (\ -> False) (delay True))))
+     (\  -> force )
+     (\  -> force ))
+eq.true.just program
+  1.0.0
+  ((\  ->
+
+        (\ ->  (\ -> equalsInteger  ) (delay False))
+        (delay ( (\ -> False) (delay True))))
+     ((\   ->  ) 42)
+     ((\   ->  ) 42))
+eq.false.nothing-just program
+  1.0.0
+  ((\  ->
+
+        (\ ->  (\ -> equalsInteger  ) (delay False))
+        (delay ( (\ -> False) (delay True))))
+     (\  -> force )
+     ((\   ->  ) 42))
+eq.false.just-just program
+  1.0.0
+  ((\  ->
+
+        (\ ->  (\ -> equalsInteger  ) (delay False))
+        (delay ( (\ -> False) (delay True))))
+     ((\   ->  ) 24)
+     ((\   ->  ) 42))

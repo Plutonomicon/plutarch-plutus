@@ -60,7 +60,7 @@
             # NOTE(bladyjoker): Follow https://github.com/input-output-hk/plutus/blob/master/cabal.project
             index-state = "2024-10-01T16:18:12Z";
             inputMap = {
-              "https://chap.intersectmbo.org" = CHaP;
+              "https://chap.intersectmbo.org/" = CHaP;
             };
             shell = {
               withHoogle = true;

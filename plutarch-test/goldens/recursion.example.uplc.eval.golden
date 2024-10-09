@@ -1,31 +1,31 @@
-iterateN.lam (program
-   1.0.0
-   (\i0 i0 i0 ->
-      force
-        (force ifThenElse
-           (equalsInteger i3 0)
-           (delay i1)
-           (delay
-              ((\i0 ->
-                  (\i0 ->
-                     (\i0 i0 i0 i0 ->
-                        force
-                          (force ifThenElse
-                             (equalsInteger i3 0)
-                             (delay i1)
-                             (delay (i4 (subtractInteger i3 1) i2 (i2 i1)))))
-                       (\i0 -> i2 i2 i1))
-                    (\i0 ->
-                       (\i0 i0 i0 i0 ->
-                          force
-                            (force ifThenElse
-                               (equalsInteger i3 0)
-                               (delay i1)
-                               (delay (i4 (subtractInteger i3 1) i2 (i2 i1)))))
-                         (\i0 -> i2 i2 i1))
-                    i1)
-                 (subtractInteger i3 1)
-                 i2
-                 (i2 i1))))))
-iterateN.app.succ (program 1.0.0 10)
-iterateN.app.double (program 1.0.0 1024)
+iterateN.lam program
+  1.0.0
+  (\   ->
+     force
+       (force ifThenElse
+          (equalsInteger  0)
+          (delay )
+          (delay
+             ((\ ->
+                 (\ ->
+                    (\    ->
+                       force
+                         (force ifThenElse
+                            (equalsInteger  0)
+                            (delay )
+                            (delay ( (subtractInteger  1)  ( )))))
+                      (\ ->   ))
+                   (\ ->
+                      (\    ->
+                         force
+                           (force ifThenElse
+                              (equalsInteger  0)
+                              (delay )
+                              (delay ( (subtractInteger  1)  ( )))))
+                        (\ ->   ))
+                   )
+                (subtractInteger  1)
+
+                ( )))))
+iterateN.app.succ program 1.0.0 10
+iterateN.app.double program 1.0.0 1024
