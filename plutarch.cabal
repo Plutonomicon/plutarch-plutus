@@ -151,6 +151,7 @@ test-suite tests
   type:           exitcode-stdio-1.0
   main-is:        Main.hs
   build-depends:
+    , bytestring
     , plutarch
     , tasty
     , tasty-hunit

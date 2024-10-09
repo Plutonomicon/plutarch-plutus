@@ -46,6 +46,12 @@ module Plutarch.List (
   -- * Special Folds
   pall,
   pany,
+
+  -- * Modification
+  preverse,
+
+  -- * Predicates
+  pcheckSorted,
 ) where
 
 import Numeric.Natural (Natural)
@@ -73,7 +79,17 @@ import Plutarch (
   (#$),
   type (:-->),
  )
-import Plutarch.Bool (PBool (PFalse, PTrue), PEq, pif, (#&&), (#<), (#==), (#||))
+import Plutarch.Bool (
+  PBool (PFalse, PTrue),
+  PEq,
+  POrd,
+  pif,
+  (#&&),
+  (#<),
+  (#<=),
+  (#==),
+  (#||),
+ )
 import Plutarch.Integer (PInteger)
 import Plutarch.Lift (pconstant)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
@@ -453,4 +469,34 @@ pfind = phoistAcyclic $
             (self # f # ys)
       )
       (pcon PNothing)
+      xs
+
+{- | / O(n) /. Reverse a list-like structure.
+
+@since WIP
+-}
+preverse ::
+  forall (l :: (S -> Type) -> S -> Type) (a :: S -> Type) (s :: S).
+  PIsListLike l a =>
+  Term s (l a :--> l a)
+preverse = phoistAcyclic $ pfoldl # plam (\xs x -> pcons # x # xs) # pnil
+
+{- | / O(n) /. Checks if a list-list structure is sorted.
+
+@since WIP
+-}
+pcheckSorted ::
+  forall (l :: (S -> Type) -> S -> Type) (a :: S -> Type) (s :: S).
+  (PIsListLike l a, POrd a) =>
+  Term s (l a :--> PBool)
+pcheckSorted =
+  pfix #$ plam $ \self xs ->
+    pelimList
+      ( \x1 xs ->
+          pelimList
+            (\x2 _ -> x1 #<= x2 #&& (self # xs))
+            (pcon PTrue)
+            xs
+      )
+      (pcon PTrue)
       xs
