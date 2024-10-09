@@ -1,2 +1,0 @@
-do.succeeds (program 1.0.0 ())
-do.fails (program 1.0.0 error)
