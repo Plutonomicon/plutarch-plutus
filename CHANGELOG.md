@@ -1,6 +1,6 @@
 # Revision history for plutarch
 
-# WIP 
+# WIP
 
 ## Added
 
@@ -14,11 +14,27 @@
   `pAssertPJust` to `Plutarch.Maybe` (originally from `plutarch-extra`)
 * `pexpectJustC` to `Plutarch.TermCont` (originally from `plutarch-extra`)
 * `PCountable` and `PEnumerable` type classes, as well as instances
+* `PByte` type as a limited Plutarch-level equivalent to `Word8`
+* `PLogicSemantics`, and construction functions, to help use of logical 
+   `PByteString` operations
+* `pandBS`, `porBS`, `pxorBS`, `pcomplementBS` mirroring CIP-122 operations
+* `pzeroesBS`, `ponesBS`, `preplicateBS`, as wrappers for CIP-122's
+  `ReplicateByte`
+
+## Changed
+
+* `pconsBS` now takes a `PByte` argument instead of a `PInteger` one
+* `pindexBS` now returns a `PByte` instead of a `PInteger`
 
 ## Removed
 
 * `plutarch-extra`, as all its functionality has been folded into Plutarch
   itself
+* `pbyteStr` (as it's deprecated)
+* `pandByteString`, `porByteString`, `pxorByteString`, `preplicateByte`,
+  `pcomplementByteString` from
+  `Plutarch.Bitwise`, as these are superseded by more typesafe operations in
+  `Plutarch.ByteString`
 
 # 1.9.0 - 25-09-2024
 

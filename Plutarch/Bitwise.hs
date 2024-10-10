@@ -5,13 +5,8 @@ module Plutarch.Bitwise (
   protateByteString,
   pcountSetBits,
   pfindFirstSetBit,
-  pandByteString,
-  porByteString,
-  pxorByteString,
-  pcomplementByteString,
   preadBit,
   pwriteBits,
-  preplicateByte,
   pexpModInteger,
 ) where
 
@@ -98,68 +93,11 @@ pfindFirstSetBit = punsafeBuiltin PLC.FindFirstSetBit
 LOGICAL
 -}
 
-{- | Perform logical AND on two 'PByteString' arguments, as described in
-[CIP-122](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#bitwiselogicaland).
-
-The first argument indicates whether padding semantics should be used or not;
-if 'False', truncation semantics will be used instead.
-
-= See also
-
-* [Padding and truncation
-semantics](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#padding-versus-truncation-semantics)
-* [Bit indexing
-scheme](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#bit-indexing-scheme)
-@since 1.9.0
--}
-pandByteString :: Term s (PBool :--> PByteString :--> PByteString :--> PByteString)
-pandByteString = punsafeBuiltin PLC.AndByteString
-
-{- | Perform logical OR on two 'PByteString' arguments, as described
-[here](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#bitwiselogicalor).
-
-The first argument indicates whether padding semantics should be used or not;
-if 'False', truncation semantics will be used instead.
-
-= See also
-
-* [Padding and truncation
-semantics](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#padding-versus-truncation-semantics)
-* [Bit indexing
-scheme](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#bit-indexing-scheme)
-@since 1.9.0
--}
-porByteString :: Term s (PBool :--> PByteString :--> PByteString :--> PByteString)
-porByteString = punsafeBuiltin PLC.OrByteString
-
-{- | Perform logical XOR on two 'PByteString' arguments, as described
-[here](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#bitwiselogicalxor).
-
-The first argument indicates whether padding semantics should be used or not;
-if 'False', truncation semantics will be used instead.
-
-= See also
-
-* [Padding and truncation
-semantics](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#padding-versus-truncation-semantics)
-* [Bit indexing
-scheme](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#bit-indexing-scheme)
-@since 1.9.0
--}
-pxorByteString :: Term s (PBool :--> PByteString :--> PByteString :--> PByteString)
-pxorByteString = punsafeBuiltin PLC.XorByteString
-
-pcomplementByteString :: Term s (PByteString :--> PByteString)
-pcomplementByteString = punsafeBuiltin PLC.ComplementByteString
-
 preadBit :: Term s (PByteString :--> PInteger :--> PBool)
 preadBit = punsafeBuiltin PLC.ReadBit
 
 pwriteBits :: Term s (PByteString :--> PBuiltinList PInteger :--> PBuiltinList PBool :--> PByteString)
 pwriteBits = punsafeBuiltin PLC.WriteBits
-
-preplicateByte :: Term s (PInteger :--> PInteger :--> PByteString)
-preplicateByte = punsafeBuiltin PLC.ReplicateByte
 
 pexpModInteger :: Term s (PInteger :--> PInteger :--> PInteger :--> PInteger)
 pexpModInteger = punsafeBuiltin PLC.ExpModInteger

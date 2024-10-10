@@ -18,7 +18,7 @@ spec = do
     "plengthByteStr" @| (plengthBS # phexByteStr "012f") #== 2 @-> passert
     "pconsBS"
       @| ( let xs = phexByteStr "48fCd1"
-            in (plengthBS #$ pconsBS # 91 # xs) #== (1 + plengthBS # xs)
+            in (plengthBS #$ pconsBS # pconstant 91 # xs) #== (1 + plengthBS # xs)
          )
       @-> passert
     "pindexByteStr"
