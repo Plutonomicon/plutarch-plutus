@@ -8,12 +8,11 @@ import Test.QuickCheck (
   Arbitrary,
   CoArbitrary,
   Function (function),
-  NonNegative (NonNegative),
   functionMap,
  )
 
 -- | @since 1.0.0
-deriving via (NonNegative Integer) instance Arbitrary PLA.POSIXTime
+deriving via Integer instance Arbitrary PLA.POSIXTime
 
 -- | @since 1.0.0
 deriving via Integer instance CoArbitrary PLA.POSIXTime
