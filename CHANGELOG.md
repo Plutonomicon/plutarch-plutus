@@ -13,6 +13,7 @@
 * `ptraceIfNothing`, `pisJust`, `pmaybe`, `pfromMaybe`, `pjust`, `pnothing`,
   `pAssertPJust` to `Plutarch.Maybe` (originally from `plutarch-extra`)
 * `pexpectJustC` to `Plutarch.TermCont` (originally from `plutarch-extra`)
+* `PCountable` and `PEnumerable` type classes, as well as instances
 * `PByte` type as a limited Plutarch-level equivalent to `Word8`
 * `PLogicSemantics`, and construction functions, to help use of logical 
    `PByteString` operations
@@ -42,6 +43,7 @@
 * PlutusV3 BLS primitives to `Plutarch.BLS`
 * PlutusV3 Bitwise primitives to `Plutarch.Bitwise`
 * `unsafeEvalTerm`  to `Plutarch.Evaluate`
+* `PCountable` and `PEnumerable` type classes in `Plutarch.Enum`
 
 ## Changed
 * Bumped `plutus-core` version to `1.33.0.0`
