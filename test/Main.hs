@@ -2,7 +2,6 @@ module Main (main) where
 
 import Control.Monad (unless, when)
 import Data.ByteString (ByteString)
-import Data.Char (ord)
 import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text qualified as Text
@@ -13,7 +12,7 @@ import Plutarch (
   LogLevel (LogDebug, LogInfo),
   TracingMode (DoTracing),
  )
-import Plutarch.ByteString (pallBS)
+import Plutarch.ByteString (pallBS, pbyteToInteger)
 import Plutarch.Evaluate (evalTerm)
 import Plutarch.Lift (PLifted, PUnsafeLiftDecl)
 import Plutarch.List (pcheckSorted, preverse)
@@ -58,19 +57,19 @@ main = do
         [ testGroup
             "pallBS"
             [ testCase "predicate matching all entries works" . isTrue $
-                (pallBS # plam (#== pconstant (toInteger . ord $ 'a')) # pconstant "aaaaaaaaaa")
+                (pallBS # plam (#== pconstant 97) # pconstant "aaaaaaaaaa")
             , testCase "predicate missing one case fails" . isFalse $
-                (pallBS # plam (#== pconstant (toInteger . ord $ 'a')) # pconstant "aaaaaaaaab")
+                (pallBS # plam (#== pconstant 97) # pconstant "aaaaaaaaab")
             ]
         , after AllSucceed "pallBS" . testGroup "pisHexDigit" $
             [ testCase "numbers are hex digits" . isTrue $
-                (pallBS # pisHexDigit # pconstant "0123456789")
+                (pallBS # plam (\x -> pisHexDigit #$ pbyteToInteger # x) # pconstant "0123456789")
             , testCase "A-F are hex digits" . isTrue $
-                (pallBS # pisHexDigit # pconstant "ABCDEF")
+                (pallBS # plam (\x -> pisHexDigit #$ pbyteToInteger # x) # pconstant "ABCDEF")
             , testCase "a-f are hex digits" . isTrue $
-                (pallBS # pisHexDigit # pconstant "abcdef")
+                (pallBS # plam (\x -> pisHexDigit #$ pbyteToInteger # x) # pconstant "abcdef")
             , testCase "no other ASCII code is a hex digit" . isTrue $
-                (pallBS # plam (\x -> pnot #$ pisHexDigit # x) # pconstant nonHexAscii)
+                (pallBS # plam (\x -> pnot #$ pisHexDigit #$ pbyteToInteger # x) # pconstant nonHexAscii)
             ]
         ]
     , testGroup

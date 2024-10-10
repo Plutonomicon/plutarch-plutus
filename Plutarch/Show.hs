@@ -28,7 +28,16 @@ import Generics.SOP (
  )
 import Generics.SOP.GGP (gdatatypeInfo)
 import Plutarch.Bool (PBool, PEq, pif, pif', (#<), (#==))
-import Plutarch.ByteString (PByteString, pconsBS, pindexBS, plengthBS, psliceBS)
+import Plutarch.ByteString (
+  PByte,
+  PByteString,
+  pbyteToInteger,
+  pconsBS,
+  pindexBS,
+  plengthBS,
+  psliceBS,
+  punsafeIntegerToByte,
+ )
 import Plutarch.Integer (PInteger, PIntegral (pquot, prem))
 import Plutarch.Internal (
   Term,
@@ -84,8 +93,8 @@ instance PShow PString where
                   escapeSlash :: Term _ PInteger = 92 -- `\`
                   rec_ = pconsBS # x #$ self # xs
                in pif
-                    (x #== doubleQuote)
-                    (pconsBS # escapeSlash # rec_)
+                    (x #== (punsafeIntegerToByte # doubleQuote))
+                    (pconsBS # (punsafeIntegerToByte # escapeSlash) # rec_)
                     rec_
 
 instance PShow PBool where
@@ -138,12 +147,13 @@ instance PShow PByteString where
             # pconstant @PString ""
             #$ plam
             $ \x xs -> showByte # x <> self # xs
-      showByte :: Term s (PInteger :--> PString)
+      showByte :: Term s (PByte :--> PString)
       showByte = phoistAcyclic $
-        plam $ \n ->
-          plet (pquot # n # 16) $ \a ->
-            plet (prem # n # 16) $ \b ->
-              showNibble # a <> showNibble # b
+        plam $ \n' ->
+          plet (pbyteToInteger # n') $ \n ->
+            plet (pquot # n # 16) $ \a ->
+              plet (prem # n # 16) $ \b ->
+                showNibble # a <> showNibble # b
       showNibble :: Term s (PInteger :--> PString)
       showNibble = phoistAcyclic $
         plam $ \n ->
@@ -159,7 +169,7 @@ pelimBS ::
     s
     ( PByteString
         :--> a -- If bytestring is empty
-        :--> (PInteger :--> PByteString :--> a) -- If bytestring is non-empty
+        :--> (PByte :--> PByteString :--> a) -- If bytestring is non-empty
         :--> a
     )
 pelimBS = phoistAcyclic $
