@@ -45,8 +45,8 @@ module Plutarch.Prelude (
   -- * Booleans and boolean functions
   PBool (..),
   PEq ((#==)),
-  PPartialOrd ((#<=), (#<)),
-  POrd,
+  PPartialOrd (..),
+  POrd (..),
   pif,
   pnot,
   (#&&),

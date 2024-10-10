@@ -4,6 +4,8 @@
 
 ## Added
 
+* `pmax` and `pmin` as new methods of `POrd`
+* `#>` and `#>=` as new methods of `PPartialOrd`
 * `pallBS` to `Plutarch.ByteString` (originally from `plutarch-extra')
 * `pisHexDigit` to `Plutarch.String` (originally from `plutarch-extra`)
 * `preverse` and `pcheckSorted` to `Plutarch.List` (originally from
