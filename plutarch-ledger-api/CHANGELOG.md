@@ -9,6 +9,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 * `PCountable` instance for `PPosixTime`
+* `pposixTime` and `unPPosixTime`, to construct and deconstruct `PPosixTime`
+  more conveniently
+
+### Changed
+
+* `PPosixTime` now permits negative values as a result of its operations
+
+### Fixed
+
+* Bug in `PNum` instance for `PPosixTime`, where `#*` was implemented as `#+
+  instead
 
 ## 3.2.1 -- 11-07-2024
 

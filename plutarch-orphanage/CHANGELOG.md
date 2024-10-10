@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## WIP
+
+### Changed
+
+* `Arbitrary` instance for `POSIXTime` can now generate negative values as well.
+  This does not affect `Interval POSIXTime`'s instance, as the formation rules
+  assume non-negative interval endpoints.
+
 ## 1.0.3 -- 04-07-2024
 
 ### Added

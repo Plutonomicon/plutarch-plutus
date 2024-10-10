@@ -2,7 +2,12 @@
 
 -- Mirrors the equivalent V1 module in plutus-ledger-api
 module Plutarch.LedgerApi.V1.Time (
+  -- * Type
   PPosixTime (..),
+
+  -- * Functions
+  pposixTime,
+  unPPosixTime,
 ) where
 
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
@@ -52,68 +57,35 @@ instance PCountable PPosixTime where
 
 -- | @since 2.0.0
 instance PIntegral PPosixTime where
+  {-# INLINEABLE pdiv #-}
   pdiv = phoistAcyclic $ plam $ \t1 t2 ->
-    pmatch t1 $ \(PPosixTime t1') ->
-      pmatch t2 $ \(PPosixTime t2') ->
-        pmatch t1' $ \(PDataNewtype t1'') ->
-          pmatch t2' $ \(PDataNewtype t2'') ->
-            pcon . PPosixTime . pcon . PDataNewtype . pdata $ pdiv # pfromData t1'' # pfromData t2''
+    pposixTime (pdiv # unPPosixTime t1 # unPPosixTime t2)
+  {-# INLINEABLE pmod #-}
   pmod = phoistAcyclic $ plam $ \t1 t2 ->
-    pmatch t1 $ \(PPosixTime t1') ->
-      pmatch t2 $ \(PPosixTime t2') ->
-        pmatch t1' $ \(PDataNewtype t1'') ->
-          pmatch t2' $ \(PDataNewtype t2'') ->
-            pcon . PPosixTime . pcon . PDataNewtype . pdata $ pmod # pfromData t1'' # pfromData t2''
+    pposixTime (pmod # unPPosixTime t1 # unPPosixTime t2)
+  {-# INLINEABLE pquot #-}
   pquot = phoistAcyclic $ plam $ \t1 t2 ->
-    pmatch t1 $ \(PPosixTime t1') ->
-      pmatch t2 $ \(PPosixTime t2') ->
-        pmatch t1' $ \(PDataNewtype t1'') ->
-          pmatch t2' $ \(PDataNewtype t2'') ->
-            pcon . PPosixTime . pcon . PDataNewtype . pdata $ pquot # pfromData t1'' # pfromData t2''
+    pposixTime (pquot # unPPosixTime t1 # unPPosixTime t2)
+  {-# INLINEABLE prem #-}
   prem = phoistAcyclic $ plam $ \t1 t2 ->
-    pmatch t1 $ \(PPosixTime t1') ->
-      pmatch t2 $ \(PPosixTime t2') ->
-        pmatch t1' $ \(PDataNewtype t1'') ->
-          pmatch t2' $ \(PDataNewtype t2'') ->
-            pcon . PPosixTime . pcon . PDataNewtype . pdata $ pquot # pfromData t1'' # pfromData t2''
+    pposixTime (prem # unPPosixTime t1 # unPPosixTime t2)
 
 -- | @since 2.0.0
 instance PNum PPosixTime where
-  t1 #* t2 =
-    pmatch t1 $ \(PPosixTime t1') ->
-      pmatch t2 $ \(PPosixTime t2') ->
-        pmatch t1' $ \(PDataNewtype t1'') ->
-          pmatch t2' $ \(PDataNewtype t2'') ->
-            pcon . PPosixTime . pcon . PDataNewtype . pdata $ pfromData t1'' #+ pfromData t2''
-  t1 #+ t2 =
-    pmatch t1 $ \(PPosixTime t1') ->
-      pmatch t2 $ \(PPosixTime t2') ->
-        pmatch t1' $ \(PDataNewtype t1'') ->
-          pmatch t2' $ \(PDataNewtype t2'') ->
-            pcon . PPosixTime . pcon . PDataNewtype . pdata $ pfromData t1'' #+ pfromData t2''
-  t1 #- t2 =
-    pmatch t1 $ \(PPosixTime t1') ->
-      pmatch t2 $ \(PPosixTime t2') ->
-        pmatch t1' $ \(PDataNewtype t1'') ->
-          pmatch t2' $ \(PDataNewtype t2'') ->
-            plet (pfromData t1'' #- pfromData t2'') $ \res ->
-              pif
-                (0 #<= res)
-                (pcon . PPosixTime . pcon . PDataNewtype . pdata $ res)
-                (ptraceInfoError "PPosixTime subtraction gave a negative value")
-  pabs = phoistAcyclic $ plam id
-  pfromInteger i
-    | i < 0 = ptraceInfoError "Cannot make PPosixTime from a negative value"
-    | otherwise = pcon . PPosixTime . pcon . PDataNewtype . pdata . pconstant $ i
-  pnegate = phoistAcyclic $ plam $ \_ -> ptraceInfoError "PPosixTime can't be negative"
-  psignum = phoistAcyclic $ plam $ \t ->
-    pmatch t $ \(PPosixTime t') ->
-      pmatch t' $ \(PDataNewtype t'') ->
-        pcon . PPosixTime . pcon . PDataNewtype . pdata $
-          pif
-            (pfromData t'' #== 0)
-            0
-            1
+  {-# INLINEABLE (#*) #-}
+  t1 #* t2 = pposixTime (unPPosixTime t1 #* unPPosixTime t2)
+  {-# INLINEABLE (#+) #-}
+  t1 #+ t2 = pposixTime (unPPosixTime t1 #+ unPPosixTime t2)
+  {-# INLINEABLE (#-) #-}
+  t1 #- t2 = pposixTime (unPPosixTime t1 #- unPPosixTime t2)
+  {-# INLINEABLE pabs #-}
+  pabs = phoistAcyclic $ plam $ \t -> pposixTime (pabs # unPPosixTime t)
+  {-# INLINEABLE pfromInteger #-}
+  pfromInteger = pposixTime . pconstant
+  {-# INLINEABLE pnegate #-}
+  pnegate = phoistAcyclic $ plam $ \t -> pposixTime (pnegate # unPPosixTime t)
+  {-# INLINEABLE psignum #-}
+  psignum = phoistAcyclic $ plam $ \t -> pposixTime (psignum # unPPosixTime t)
 
 -- | @since 2.0.0
 instance DerivePlutusType PPosixTime where
@@ -140,8 +112,7 @@ instance PTryFrom PData PPosixTime where
   ptryFrom' opq = runTermCont $ do
     (wrapped :: Term s (PAsData PInteger), unwrapped :: Term s PInteger) <-
       tcont $ ptryFrom @(PAsData PInteger) opq
-    tcont $ \f -> pif (0 #<= unwrapped) (f ()) (ptraceInfoError "ptryFrom(POSIXTime): must be positive")
-    pure (punsafeCoerce wrapped, pcon . PPosixTime . pcon . PDataNewtype . pdata $ unwrapped)
+    pure (punsafeCoerce wrapped, pposixTime unwrapped)
 
 -- | @since 2.0.0
 instance PTryFrom PData (PAsData PPosixTime) where
@@ -154,5 +125,22 @@ instance PTryFrom PData (PAsData PPosixTime) where
   ptryFrom' opq = runTermCont $ do
     (wrapped :: Term s (PAsData PInteger), unwrapped :: Term s PInteger) <-
       tcont $ ptryFrom @(PAsData PInteger) opq
-    tcont $ \f -> pif (0 #<= unwrapped) (f ()) (ptraceInfoError "ptryFrom(POSIXTime): must be positive")
-    pure (punsafeCoerce wrapped, pcon . PPosixTime . pcon . PDataNewtype . pdata $ unwrapped)
+    pure (punsafeCoerce wrapped, pposixTime unwrapped)
+
+{- | Construct a 'PPosixTime' from a 'PInteger'. Same as using the constructor,
+but a lot shorter.
+
+@since WIP
+-}
+pposixTime :: forall (s :: S). Term s PInteger -> Term s PPosixTime
+pposixTime = pcon . PPosixTime . pcon . PDataNewtype . pdata
+
+{- | Unwrap a 'PPosixTime' to get a 'PInteger'. Same as using 'pmatch', but a
+lot shorter. Also unwraps the @Data@ encoding.
+
+@since WIP
+-}
+unPPosixTime :: forall (s :: S). Term s PPosixTime -> Term s PInteger
+unPPosixTime t = pmatch t $ \(PPosixTime t') ->
+  pmatch t' $ \(PDataNewtype t'') ->
+    pfromData t''
