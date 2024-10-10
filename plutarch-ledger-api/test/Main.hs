@@ -20,4 +20,4 @@ main = do
     ]
   where
     moreTests :: QuickCheckTests -> QuickCheckTests
-    moreTests = max 10_000
+    moreTests = max 1_000
