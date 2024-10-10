@@ -13,6 +13,7 @@ import Test.QuickCheck (
   Function (function),
   frequency,
   functionMap,
+  getNonNegative,
   oneof,
   variant,
  )
@@ -167,7 +168,7 @@ instance Arbitrary (PLA.Interval PLA.POSIXTime) where
       frequency
         [ (1, pure PLA.NegInf)
         , (1, pure PLA.PosInf)
-        , (epochSize, PLA.Finite <$> arbitrary)
+        , (epochSize, PLA.Finite . getNonNegative <$> arbitrary)
         ]
     case lowerBound of
       -- With a finite lower bound, it makes sense to talk about an upper one
@@ -179,7 +180,7 @@ instance Arbitrary (PLA.Interval PLA.POSIXTime) where
         whatUpper <-
           frequency
             [ (1, pure . Left $ PLA.PosInf)
-            , (epochSize, Right <$> arbitrary)
+            , (epochSize, Right . getNonNegative <$> arbitrary)
             ]
         case whatUpper of
           -- If we have an infinite upper bound, we know it will be open.
@@ -215,7 +216,7 @@ instance Arbitrary (PLA.Interval PLA.POSIXTime) where
         upperBound <-
           frequency
             [ (1, pure PLA.PosInf)
-            , (epochSize, PLA.Finite <$> arbitrary)
+            , (epochSize, PLA.Finite . getNonNegative <$> arbitrary)
             ]
         case upperBound of
           -- With a finite upper bound, we just choose a closure and move on.
