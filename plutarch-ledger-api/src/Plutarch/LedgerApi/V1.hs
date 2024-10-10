@@ -21,6 +21,8 @@ module Plutarch.LedgerApi.V1 (
 
   -- * Time
   Time.PPosixTime (..),
+  Time.pposixTime,
+  Time.unPPosixTime,
 
   -- * Intervals
   Interval.PExtended (..),
