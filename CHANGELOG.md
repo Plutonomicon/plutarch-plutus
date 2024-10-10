@@ -16,16 +16,29 @@
 * `Optimization` type to indicate whether to optimize compiled UPLC
 * `NoTracingOptimize` option for `Config` to indicate that we want no tracing
   with optimization of UPLC
+* `PByte` type as a limited Plutarch-level equivalent to `Word8`
+* `PLogicSemantics`, and construction functions, to help use of logical 
+   `PByteString` operations
+* `pandBS`, `porBS`, `pxorBS`, `pcomplementBS` mirroring CIP-122 operations
+* `pzeroesBS`, `ponesBS`, `preplicateBS`, as wrappers for CIP-122's
+  `ReplicateByte`
 
 ## Changed
 
 * Compiling scripts now uses `simplifyProgram` when requested to perform
   optimizations
+* `pconsBS` now takes a `PByte` argument instead of a `PInteger` one
+* `pindexBS` now returns a `PByte` instead of a `PInteger`
 
 ## Removed
 
 * `plutarch-extra`, as all its functionality has been folded into Plutarch
   itself
+* `pbyteStr` (as it's deprecated)
+* `pandByteString`, `porByteString`, `pxorByteString`, `preplicateByte`,
+  `pcomplementByteString` from
+  `Plutarch.Bitwise`, as these are superseded by more typesafe operations in
+  `Plutarch.ByteString`
 
 # 1.9.0 - 25-09-2024
 
