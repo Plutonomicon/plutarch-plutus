@@ -18,12 +18,15 @@ module Plutarch.LedgerApi.Interval (
   pto,
   palways,
   pinterval,
+  pinclusiveLowerBound,
+  pinclusiveUpperBound,
 
   -- ** Queries
   pmember,
   pcontains,
   pbefore,
   pafter,
+  pisEmpty,
 
   -- ** Transformation
   phull,
@@ -34,6 +37,10 @@ import Plutarch.Bool (pif')
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
+ )
+import Plutarch.Enum (
+  PCountable (psuccessor),
+  PEnumerable (ppredecessor),
  )
 import Plutarch.Lift (
   PConstantDecl (PConstanted),
@@ -121,14 +128,22 @@ newtype PLowerBound (a :: S -> Type) (s :: S)
     , -- | @since 2.0.0
       PDataFields
     , -- | @since 2.0.0
-      PEq
-    , -- | @since 2.0.0
-      PPartialOrd
-    , -- | @since 2.0.0
       POrd
     , -- | @since 2.0.0
       PShow
     )
+
+-- | @since WIP
+instance (PIsData a, PCountable a) => PEq (PLowerBound a) where
+  {-# INLINEABLE (#==) #-}
+  lb1 #== lb2 = (pinclusiveLowerBound # lb1) #== (pinclusiveLowerBound # lb2)
+
+-- | @since WIP
+instance (PIsData a, PCountable a) => PPartialOrd (PLowerBound a) where
+  {-# INLINEABLE (#<=) #-}
+  lb1 #<= lb2 = (pinclusiveLowerBound # lb1) #<= (pinclusiveLowerBound # lb2)
+  {-# INLINEABLE (#<) #-}
+  lb1 #< lb2 = (pinclusiveLowerBound # lb1) #< (pinclusiveLowerBound # lb2)
 
 -- | @since 2.0.0
 instance DerivePlutusType (PLowerBound a) where
@@ -177,14 +192,22 @@ newtype PUpperBound (a :: S -> Type) (s :: S)
     , -- | @since 2.0.0
       PDataFields
     , -- | @since 2.0.0
-      PEq
-    , -- | @since 2.0.0
-      PPartialOrd
-    , -- | @since 2.0.0
       POrd
     , -- | @since 2.0.0
       PShow
     )
+
+-- | @since WIP
+instance (PIsData a, PEnumerable a) => PEq (PUpperBound a) where
+  {-# INLINEABLE (#==) #-}
+  ub1 #== ub2 = (pinclusiveUpperBound # ub1) #== (pinclusiveUpperBound # ub2)
+
+-- | @since WIP
+instance (PIsData a, PEnumerable a) => PPartialOrd (PUpperBound a) where
+  {-# INLINEABLE (#<=) #-}
+  ub1 #<= ub2 = (pinclusiveUpperBound # ub1) #<= (pinclusiveUpperBound # ub2)
+  {-# INLINEABLE (#<) #-}
+  ub1 #< ub2 = (pinclusiveUpperBound # ub1) #< (pinclusiveUpperBound # ub2)
 
 -- | @since 2.0.0
 instance DerivePlutusType (PUpperBound a) where
@@ -260,11 +283,11 @@ instance PTryFrom PData a => PTryFrom PData (PAsData (PExtended a))
 
 {- | Check if a value is inside the given interval.
 
-@since 2.1.1
+@since WIP
 -}
 pmember ::
   forall (a :: S -> Type) (s :: S).
-  (POrd a, PIsData a) =>
+  (PIsData a, PEnumerable a) =>
   Term
     s
     ( PAsData a
@@ -273,10 +296,112 @@ pmember ::
     )
 pmember = phoistAcyclic $ plam $ \x i -> pcontains # i # (psingleton # x)
 
-{- | @'pcontains' # x # y@ is true if the interval @y@ is entirely contained in @a@.
+{- | Check if a 'PInterval' is empty.
 
-@since 2.1.1
+@since WIP
 -}
+pisEmpty ::
+  forall (a :: S -> Type) (s :: S).
+  (PIsData a, PEnumerable a) =>
+  Term s (PInterval a :--> PBool)
+pisEmpty = phoistAcyclic $ plam $ \i -> unTermCont $ do
+  unpacked <- tcont $ pletFields @'["from", "to"] i
+  let lowerBound = getField @"from" unpacked
+  let upperBound = getField @"to" unpacked
+  let inclusiveLowerBound = pinclusiveLowerBound # lowerBound
+  let inclusiveUpperBound = pinclusiveUpperBound # upperBound
+  pure $ inclusiveLowerBound #> inclusiveUpperBound
+
+{- | Turn a 'PLowerBound' into a single inclusive bounding value.
+
+@since WIP
+-}
+pinclusiveLowerBound ::
+  forall (a :: S -> Type) (s :: S).
+  (PIsData a, PCountable a) =>
+  Term s (PLowerBound a :--> PExtended a)
+pinclusiveLowerBound = phoistAcyclic $ plam $ \lb -> unTermCont $ do
+  unpacked <- tcont $ pletFields @'["_0", "_1"] lb
+  let extended = getField @"_0" unpacked
+  let closure = getField @"_1" unpacked
+  pure $
+    pif
+      closure
+      -- We are already closed
+      extended
+      ( pmatch extended $ \case
+          -- Open at a finite value, get its successor
+          PFinite t -> pletFields @'["_0"] t $ \unpackedT ->
+            pcon . PFinite $ pdcons # pdata (psuccessor # getField @"_0" unpackedT) # pdnil
+          -- We have an infinity, who cares
+          _ -> extended
+      )
+
+{- | Turn a 'PUpperBound' into a single inclusive bounding value.
+
+@since WIP
+-}
+pinclusiveUpperBound ::
+  forall (a :: S -> Type) (s :: S).
+  (PIsData a, PEnumerable a) =>
+  Term s (PUpperBound a :--> PExtended a)
+pinclusiveUpperBound = phoistAcyclic $ plam $ \ub -> unTermCont $ do
+  unpacked <- tcont $ pletFields @'["_0", "_1"] ub
+  let extended = getField @"_0" unpacked
+  let closure = getField @"_1" unpacked
+  pure $
+    pif
+      closure
+      -- We are already closed
+      extended
+      ( pmatch extended $ \case
+          -- Open at a finite value, get its predecessor
+          PFinite t -> pletFields @'["_0"] t $ \unpackedT ->
+            pcon . PFinite $ pdcons # pdata (ppredecessor # getField @"_0" unpackedT) # pdnil
+          -- We have an infinity, who cares
+          _ -> extended
+      )
+
+{- | @'pcontains' # i1 # i2@ is true if @i2@ is entirely contained in @i1@: more
+specifically, if for any @s@, if @'pmember' # s # i2@, then @'pmember' # s #
+i1@.
+
+@since WIP
+-}
+pcontains ::
+  forall (a :: S -> Type) (s :: S).
+  (PIsData a, PEnumerable a) =>
+  Term
+    s
+    ( PInterval a
+        :--> PInterval a
+        :--> PBool
+    )
+pcontains = phoistAcyclic $ plam $ \i1 i2 ->
+  pif
+    (pisEmpty # i2)
+    (pcon PTrue) -- the empty interval is in everything
+    ( pif
+        (pisEmpty # i1)
+        (pcon PFalse) -- the empty interval contains nothing
+        (go i1 i2)
+    )
+  where
+    go ::
+      forall (s' :: S).
+      Term s' (PInterval a) ->
+      Term s' (PInterval a) ->
+      Term s' PBool
+    go i1 i2 = unTermCont $ do
+      unpackedI1 <- tcont $ pletFields @'["from", "to"] i1
+      unpackedI2 <- tcont $ pletFields @'["from", "to"] i2
+      let l1 = pfromData $ getField @"from" unpackedI1
+      let l2 = getField @"from" unpackedI2
+      let u1 = pfromData $ getField @"to" unpackedI1
+      let u2 = getField @"to" unpackedI2
+      pure $ (l1 #<= l2) #&& (u2 #<= u1)
+
+{-
 pcontains ::
   forall (a :: S -> Type) (s :: S).
   (POrd a, PIsData a) =>
@@ -295,6 +420,7 @@ pcontains = phoistAcyclic $
     let lowerY = getField @"from" y
     let upperY = getField @"to" y
     pure $ leqP # (lToE # lowerX) # (lToE # lowerY) #&& leqP # (uToE # upperY) # (uToE # upperX)
+-}
 
 {- | Given @x@, create the interval @[x, x]@.
 

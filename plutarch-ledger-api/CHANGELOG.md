@@ -8,18 +8,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-* `PCountable` instance for `PPosixTime`
+* `PCountable` and `PEnumerable` instances for `PPosixTime`
 * `pposixTime` and `unPPosixTime`, to construct and deconstruct `PPosixTime`
   more conveniently
+* `pisEmpty`, `pinclusiveLowerBound`, `pinclusiveUpperBound` to `Interval`
 
 ### Changed
 
 * `PPosixTime` now permits negative values as a result of its operations
+* `PEq`, `PPartialOrd` and `POrd` for `PLowerBound` and `PUpperBound` match the
+  semantics of `plutus-ledger-api`'s equivalents for these types
 
 ### Fixed
 
 * Bug in `PNum` instance for `PPosixTime`, where `#*` was implemented as `#+
   instead
+* `pcontains` bug where open intervals would not be handled correctly (see [this
+  issue](https://github.com/Plutonomicon/plutarch-plutus/issues/705))
 
 ## 3.2.1 -- 11-07-2024
 
