@@ -86,6 +86,7 @@ library
     Plutarch.DataRepr.Internal.HList
     Plutarch.DataRepr.Internal.HList.Utils
     Plutarch.Either
+    Plutarch.Enum
     Plutarch.Evaluate
     Plutarch.FFI
     Plutarch.Integer
