@@ -1,3 +1,4 @@
+{-# LANGUAGE RoleAnnotations #-}
 {-# LANGUAGE ViewPatterns #-}
 
 module Plutarch.Internal (
@@ -21,6 +22,7 @@ module Plutarch.Internal (
   punsafeConstant,
   punsafeConstantInternal,
   compile,
+  compileOptimized,
   compile',
   ClosedTerm,
   Dig,
@@ -31,13 +33,11 @@ module Plutarch.Internal (
   S (SI),
   PType,
   pthrow,
-  Config (NoTracing, NoTracingOptimize, Tracing),
+  Config (NoTracing, Tracing),
   TracingMode (..),
   LogLevel (..),
-  Optimization (..),
   tracingMode,
   logLevel,
-  optimization,
   pgetConfig,
   TermMonad (..),
   (#),
@@ -45,6 +45,7 @@ module Plutarch.Internal (
 ) where
 
 import Control.Monad.Reader (ReaderT (ReaderT), ask, runReaderT)
+import Control.Monad.State.Strict (evalStateT)
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
 import Crypto.Hash.IO (HashAlgorithm)
@@ -63,6 +64,7 @@ import Data.Default (def)
 import Data.Kind (Type)
 import Data.List (foldl', groupBy, sortOn)
 import Data.Map.Lazy qualified as M
+import Data.Monoid (Last (Last))
 import Data.Set qualified as S
 import Data.String (fromString)
 import Data.Text (Text)
@@ -74,6 +76,7 @@ import Plutarch.Internal.Evaluate (evalScript, uplcVersion)
 import Plutarch.Script (Script (Script))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
+import PlutusCore.Compiler.Types (initUPLCSimplifierTrace)
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
 import Prettyprinter (Pretty (pretty), (<+>))
 import UntypedPlutusCore qualified as UPLC
@@ -299,60 +302,19 @@ instance FromJSON LogLevel where
     "LogDebug" -> pure LogDebug
     x -> fail $ "Not a valid encoding: " <> Text.unpack x
 
-{- | Whether to optimize generated UPLC or not.
-
-@since WIP
--}
-data Optimization = NoOptimization | Optimization
-  deriving stock
-    ( -- | @since WIP
-      Eq
-    , -- | @since WIP
-      Show
-    , -- | @since WIP
-      Ord
-    )
-
-{- | Optimization on supersedes optimization off.
-
-@since WIP
--}
-instance Semigroup Optimization where
-  (<>) = max
-
--- | @since WIP
-instance Pretty Optimization where
-  pretty = \case
-    NoOptimization -> "No optimization"
-    Optimization -> "Optimization"
-
--- | @since WIP
-instance ToJSON Optimization where
-  {-# INLINEABLE toJSON #-}
-  toJSON =
-    toJSON @Text . \case
-      NoOptimization -> "NoOptimization"
-      Optimization -> "Optimization"
-  {-# INLINEABLE toEncoding #-}
-  toEncoding =
-    toEncoding @Text . \case
-      NoOptimization -> "NoOptimization"
-      Optimization -> "Optimization"
-
--- | @since WIP
-instance FromJSON Optimization where
-  {-# INLINEABLE parseJSON #-}
-  parseJSON = withText "Optimization" $ \case
-    "NoOptimization" -> pure NoOptimization
-    "Optimization" -> pure Optimization
-    x -> fail $ "Not a valid encoding: " <> Text.unpack x
-
 {- | Configuration for Plutarch scripts at compile time. This indicates whether
 we want to trace, and if so, under what log level and mode.
 
 @since 1.6.0
 -}
-newtype Config = Config (Either Optimization (LogLevel, TracingMode))
+newtype Config = Config (Last (LogLevel, TracingMode))
+  deriving
+    ( -- | @since 1.6.0
+      Semigroup
+    , -- | @since 1.6.0
+      Monoid
+    )
+    via (Last (LogLevel, TracingMode))
   deriving stock
     ( -- | @since 1.6.0
       Eq
@@ -361,26 +323,10 @@ newtype Config = Config (Either Optimization (LogLevel, TracingMode))
     )
 
 -- | @since 1.6.0
-instance Semigroup Config where
-  x <> y = case x of
-    NoTracing -> y
-    NoTracingOptimize -> case y of
-      Tracing _ _ -> y
-      _ -> x
-    Tracing ll tm -> case y of
-      Tracing ll' tm' -> Tracing (ll <> ll') (tm <> tm')
-      _ -> y
-
--- | @since 1.6.0
-instance Monoid Config where
-  mempty = NoTracing
-
--- | @since 1.6.0
 instance Pretty Config where
-  pretty = \case
-    NoTracing -> "NoTracing"
-    NoTracingOptimize -> "NoTracingOptimize"
-    Tracing ll tm -> "Tracing " <+> pretty ll <+> pretty tm
+  pretty (Config (Last x)) = case x of
+    Nothing -> "NoTracing"
+    Just (ll, tm) -> "Tracing " <+> pretty ll <+> pretty tm
 
 -- | @since 1.6.0
 instance ToJSON Config where
@@ -395,26 +341,21 @@ instance ToJSON Config where
         , "logLevel" .= ll
         , "tracingMode" .= tm
         ]
-      NoTracingOptimize -> ["tag" .= (2 :: Int)]
   {-# INLINEABLE toEncoding #-}
   toEncoding =
     pairs . \case
       NoTracing -> "tag" .= (0 :: Int)
       Tracing ll tm ->
-        ( "tag" .= (1 :: Int)
-            <> ("logLevel" .= ll)
-            <> ("tracingMode" .= tm)
-        )
-      NoTracingOptimize -> "tag" .= (2 :: Int)
+        ("tag" .= (1 :: Int))
+          <> ("logLevel" .= ll)
+          <> ("tracingMode" .= tm)
 
 -- | @since 1.6.0
 instance FromJSON Config where
-  {-# INLINEABLE parseJSON #-}
   parseJSON = withObject "Config" $ \v ->
     v .: "tag" >>= \(tag :: Int) -> case tag of
-      0 -> pure NoTracing
+      0 -> return NoTracing
       1 -> Tracing <$> v .: "logLevel" <*> v .: "tracingMode"
-      2 -> pure NoTracingOptimize
       _ -> fail "Invalid tag"
 
 {- | If the config indicates that we want to trace, get its mode.
@@ -422,57 +363,34 @@ instance FromJSON Config where
 @since 1.6.0
 -}
 tracingMode :: Config -> Maybe TracingMode
-tracingMode (Config x) = case x of
-  Left _ -> Nothing
-  Right (_, tm) -> pure tm
+tracingMode (Config (Last x)) = snd <$> x
 
 {- | If the config indicates that we want to trace, get its log level.
 
 @since 1.6.0
 -}
 logLevel :: Config -> Maybe LogLevel
-logLevel (Config x) = case x of
-  Left _ -> Nothing
-  Right (ll, _) -> pure ll
+logLevel (Config (Last x)) = fst <$> x
 
-{- | What optimization does the config perform?
-
-@since WIP
--}
-optimization :: Config -> Optimization
-optimization (Config x) = case x of
-  Left opt -> opt
-  Right _ -> NoOptimization
-
-{- | Pattern for the config that does no tracing or optimization (also the default).
+{- | Pattern for the config that does no tracing (also the default).
 
 @since 1.6.0
 -}
 pattern NoTracing :: Config
-pattern NoTracing <- Config (Left NoOptimization)
+pattern NoTracing <- Config (Last Nothing)
   where
-    NoTracing = Config (Left NoOptimization)
+    NoTracing = Config (Last Nothing)
 
-{- | Pattern for the config that does no tracing, but optimizes.
-
-@since WIP
--}
-pattern NoTracingOptimize :: Config
-pattern NoTracingOptimize <- Config (Left Optimization)
-  where
-    NoTracingOptimize = Config (Left Optimization)
-
-{- | Pattern for a tracing config, with both its log level and mode. This does
-not optimize.
+{- | Pattern for a tracing config, with both its log level and mode.
 
 @since 1.6.0
 -}
 pattern Tracing :: LogLevel -> TracingMode -> Config
-pattern Tracing ll tm <- Config (Right (ll, tm))
+pattern Tracing ll tm <- Config (Last (Just (ll, tm)))
   where
-    Tracing ll tm = Config (Right (ll, tm))
+    Tracing ll tm = Config (Last (Just (ll, tm)))
 
-{-# COMPLETE NoTracing, NoTracingOptimize, Tracing #-}
+{-# COMPLETE NoTracing, Tracing #-}
 
 newtype TermMonad m = TermMonad {runTermMonad :: ReaderT Config (Either Text) m}
   deriving newtype (Functor, Applicative, Monad)
@@ -831,25 +749,33 @@ compile' t =
 -- | Compile a (closed) Plutus Term to a usable script
 compile :: Config -> ClosedTerm a -> Either Text Script
 compile config t = case asClosedRawTerm t of
+  TermMonad (ReaderT t') -> Script . UPLC.Program () uplcVersion . compile' <$> t' config
+
+{- | As 'compile', but performs UPLC optimizations. Furthermore, this will
+always elide tracing (as if with 'NoTracing').
+
+@since WIP
+-}
+compileOptimized ::
+  forall (a :: S -> Type).
+  (forall (s :: S). Term s a) ->
+  Either Text Script
+compileOptimized t = case asClosedRawTerm t of
   TermMonad (ReaderT t') -> do
-    configured <- t' config
+    configured <- t' NoTracing
     let compiled = compile' configured
-    case optimization config of
-      Optimization -> do
-        case go compiled of
-          Left err -> Left . Text.pack . show $ err
-          Right simplified -> pure . Script $ simplified
-      NoOptimization -> pure . Script . UPLC.Program () uplcVersion $ compiled
+    case go compiled of
+      Left err -> Left . Text.pack . show $ err
+      Right simplified -> pure . Script . UPLC.Program () uplcVersion $ simplified
   where
     go ::
       UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
-      Either (PLC.Error UPLC.DefaultUni UPLC.DefaultFun ()) (UPLC.Program DeBruijn UPLC.DefaultUni UPLC.DefaultFun ())
-    go compiled = PLC.runQuoteT $ do
+      Either (PLC.Error UPLC.DefaultUni UPLC.DefaultFun ()) (UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ())
+    go compiled = flip evalStateT initUPLCSimplifierTrace . PLC.runQuoteT $ do
       unDB <- UPLC.unDeBruijnTerm . UPLC.termMapNames UPLC.fakeNameDeBruijn $ compiled
-      let asProgram = UPLC.Program () uplcVersion unDB
-      UPLC.Program () _ simplified <- UPLC.simplifyProgram UPLC.defaultSimplifyOpts def asProgram
+      simplified <- UPLC.simplifyTerm UPLC.defaultSimplifyOpts def unDB
       debruijnd <- UPLC.deBruijnTerm simplified
-      pure . UPLC.Program () uplcVersion . UPLC.termMapNames UPLC.unNameDeBruijn $ debruijnd
+      pure . UPLC.termMapNames UPLC.unNameDeBruijn $ debruijnd
 
 hashTerm :: Config -> ClosedTerm a -> Either Text Dig
 hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTerm t 0) config

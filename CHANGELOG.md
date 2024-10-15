@@ -13,9 +13,6 @@
 * `ptraceIfNothing`, `pisJust`, `pmaybe`, `pfromMaybe`, `pjust`, `pnothing`,
   `pAssertPJust` to `Plutarch.Maybe` (originally from `plutarch-extra`)
 * `pexpectJustC` to `Plutarch.TermCont` (originally from `plutarch-extra`)
-* `Optimization` type to indicate whether to optimize compiled UPLC
-* `NoTracingOptimize` option for `Config` to indicate that we want no tracing
-  with optimization of UPLC
 * `PCountable` and `PEnumerable` type classes, as well as instances
 * `PByte` type as a limited Plutarch-level equivalent to `Word8`
 * `PLogicSemantics`, and construction functions, to help use of logical 
@@ -23,11 +20,10 @@
 * `pandBS`, `porBS`, `pxorBS`, `pcomplementBS` mirroring CIP-122 operations
 * `pzeroesBS`, `ponesBS`, `preplicateBS`, as wrappers for CIP-122's
   `ReplicateByte`
+* `compileOptimized` in `Plutarch.Internal`, to optimize the generated UPLC
 
 ## Changed
 
-* Compiling scripts now uses `simplifyProgram` when requested to perform
-  optimizations
 * `pconsBS` now takes a `PByte` argument instead of a `PInteger` one
 * `pindexBS` now returns a `PByte` instead of a `PInteger`
 
