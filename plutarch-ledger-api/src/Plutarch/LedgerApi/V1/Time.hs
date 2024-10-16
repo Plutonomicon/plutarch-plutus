@@ -12,6 +12,10 @@ module Plutarch.LedgerApi.V1.Time (
 
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
 import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
+import Plutarch.Enum (
+  PCountable (psuccessor, psuccessorN),
+  PEnumerable (ppredecessor, ppredecessorN),
+ )
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
   PConstantDecl,
@@ -44,6 +48,24 @@ newtype PPosixTime (s :: S) = PPosixTime (Term s (PDataNewtype PInteger))
     , -- | @since 2.0.0
       PShow
     )
+
+-- | @since WIP
+instance PCountable PPosixTime where
+  {-# INLINEABLE psuccessor #-}
+  psuccessor = phoistAcyclic $ plam (+ 1)
+  {-# INLINEABLE psuccessorN #-}
+  psuccessorN = phoistAcyclic $ plam $ \p t ->
+    let p' = pcon . PPosixTime . pcon . PDataNewtype . pdata . pto $ p
+     in p' + t
+
+-- | @since WIP
+instance PEnumerable PPosixTime where
+  {-# INLINEABLE ppredecessor #-}
+  ppredecessor = phoistAcyclic $ plam (\t -> t - 1)
+  {-# INLINEABLE ppredecessorN #-}
+  ppredecessorN = phoistAcyclic $ plam $ \p t ->
+    let p' = pcon . PPosixTime . pcon . PDataNewtype . pdata . pto $ p
+     in p' - t
 
 -- | @since 2.0.0
 instance PIntegral PPosixTime where
