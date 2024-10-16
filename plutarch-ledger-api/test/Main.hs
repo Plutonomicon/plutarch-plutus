@@ -3,6 +3,7 @@
 module Main (main) where
 
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
+import Regressions qualified
 import Test.Tasty (adjustOption, defaultMain, testGroup)
 import Test.Tasty.QuickCheck (QuickCheckTests)
 import V1 qualified
@@ -13,10 +14,14 @@ main :: IO ()
 main = do
   -- Pre-emptively avoid encoding issues
   setLocaleEncoding utf8
-  defaultMain . adjustOption moreTests . testGroup "Laws" $
-    [ V1.tests
-    , V2.tests
-    , V3.tests
+  defaultMain . adjustOption moreTests . testGroup "Tests" $
+    [ testGroup
+        "Laws"
+        [ V1.tests
+        , V2.tests
+        , V3.tests
+        ]
+    , testGroup "Regressions" Regressions.tests
     ]
   where
     moreTests :: QuickCheckTests -> QuickCheckTests
