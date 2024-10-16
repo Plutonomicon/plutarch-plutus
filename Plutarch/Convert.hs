@@ -10,8 +10,8 @@ module Plutarch.Convert (
   pmostSignificantFirst,
   pmostSignificantLast,
   pbyteStringToInteger,
-  punsafeIntegerToByteString,
-  punsafeIntegerToByteStringSized,
+  integerToByteString,
+  integerToByteStringSized,
 ) where
 
 import GHC.Generics (Generic)
@@ -87,7 +87,7 @@ pbyteStringToInteger = plam $ \e bs -> pmatch e $ \(PEndianness e') ->
 
 {- | Convert a (non-negative) 'PInteger' into a 'PByteString'. This will produce
 a result of the minimal size required: if you want to specify a size, use
-'punsafeIntegerToByteStringSized'. For details, see
+'integerToByteStringSized'. For details, see
 [CIP-121](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121#builtinintegertobytestring).
 
 = Note
@@ -95,22 +95,27 @@ a result of the minimal size required: if you want to specify a size, use
 This conversion is unsafe, as it will error when given a non-negative
 integer.
 -}
-punsafeIntegerToByteString ::
+integerToByteString ::
   forall (s :: S).
   Term s (PEndianness :--> PInteger :--> PByteString)
-punsafeIntegerToByteString = plam $ \e i -> pmatch e $ \(PEndianness e') ->
+integerToByteString = plam $ \e i -> pmatch e $ \(PEndianness e') ->
   punsafeBuiltin PLC.IntegerToByteString # e' # (0 :: Term s PInteger) # i
 
-{- | As 'punsafeIntegerToByteString', but allows specifying a required size.
+{- | As 'punsafeIntegerToByteString', but allows specifying a required size. If
+a size larger than the minimum is specified, the result will be padded with zero
+bytes, positioned according to the endianness argument.
+
+For more details, see [CIP-121](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121#builtinintegertobytestring).
 
 = Note
 
 This conversion is unsafe. In addition to the reasons for
 'punsafeIntegerToByteString' being unsafe, this will also error if the
-requested size is too large (currently 8192 is the limit).
+requested size is too large (currently 8192 is the limit) or too small to fit
+the specified 'PInteger'.
 -}
-punsafeIntegerToByteStringSized ::
+integerToByteStringSized ::
   forall (s :: S).
   Term s (PEndianness :--> PPositive :--> PInteger :--> PByteString)
-punsafeIntegerToByteStringSized = plam $ \e len i -> pmatch e $ \(PEndianness e') ->
+integerToByteStringSized = plam $ \e len i -> pmatch e $ \(PEndianness e') ->
   punsafeBuiltin PLC.IntegerToByteString # e' # pto len # i
