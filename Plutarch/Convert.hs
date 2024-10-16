@@ -27,7 +27,6 @@ import Plutarch.Internal.PlutusType (
   DerivePlutusType,
   PlutusType,
   pcon,
-  pmatch,
  )
 import Plutarch.Positive (PPositive)
 import Plutarch.Unsafe (punsafeBuiltin)
@@ -81,9 +80,10 @@ pmostSignificantLast = pcon . PEndianness . pcon $ PFalse
 -}
 pbyteStringToInteger ::
   forall (s :: S).
-  Term s (PEndianness :--> PByteString :--> PInteger)
-pbyteStringToInteger = plam $ \e bs -> pmatch e $ \(PEndianness e') ->
-  punsafeBuiltin PLC.ByteStringToInteger # e' # bs
+  Term s PEndianness ->
+  Term s (PByteString :--> PInteger)
+pbyteStringToInteger e = plam $ \bs ->
+  punsafeBuiltin PLC.ByteStringToInteger # pto e # bs
 
 {- | Convert a (non-negative) 'PInteger' into a 'PByteString'. This will produce
 a result of the minimal size required: if you want to specify a size, use
@@ -97,9 +97,10 @@ integer.
 -}
 integerToByteString ::
   forall (s :: S).
-  Term s (PEndianness :--> PInteger :--> PByteString)
-integerToByteString = plam $ \e i -> pmatch e $ \(PEndianness e') ->
-  punsafeBuiltin PLC.IntegerToByteString # e' # (0 :: Term s PInteger) # i
+  Term s PEndianness ->
+  Term s (PInteger :--> PByteString)
+integerToByteString e = plam $ \i ->
+  punsafeBuiltin PLC.IntegerToByteString # pto e # (0 :: Term s PInteger) # i
 
 {- | As 'punsafeIntegerToByteString', but allows specifying a required size. If
 a size larger than the minimum is specified, the result will be padded with zero
@@ -116,6 +117,7 @@ the specified 'PInteger'.
 -}
 integerToByteStringSized ::
   forall (s :: S).
-  Term s (PEndianness :--> PPositive :--> PInteger :--> PByteString)
-integerToByteStringSized = plam $ \e len i -> pmatch e $ \(PEndianness e') ->
-  punsafeBuiltin PLC.IntegerToByteString # e' # pto len # i
+  Term s PEndianness ->
+  Term s (PPositive :--> PInteger :--> PByteString)
+integerToByteStringSized e = plam \len i ->
+  punsafeBuiltin PLC.IntegerToByteString # pto e # pto len # i
