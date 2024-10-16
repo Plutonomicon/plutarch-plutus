@@ -377,50 +377,33 @@ pcontains ::
         :--> PInterval a
         :--> PBool
     )
-pcontains = phoistAcyclic $ plam $ \i1 i2 ->
-  pif
-    (pisEmpty # i2)
-    (pcon PTrue) -- the empty interval is in everything
-    ( pif
-        (pisEmpty # i1)
-        (pcon PFalse) -- the empty interval contains nothing
-        (go i1 i2)
-    )
-  where
-    go ::
-      forall (s' :: S).
-      Term s' (PInterval a) ->
-      Term s' (PInterval a) ->
-      Term s' PBool
-    go i1 i2 = unTermCont $ do
-      unpackedI1 <- tcont $ pletFields @'["from", "to"] i1
-      unpackedI2 <- tcont $ pletFields @'["from", "to"] i2
-      let l1 = pfromData $ getField @"from" unpackedI1
-      let l2 = getField @"from" unpackedI2
-      let u1 = pfromData $ getField @"to" unpackedI1
-      let u2 = getField @"to" unpackedI2
-      pure $ (l1 #<= l2) #&& (u2 #<= u1)
-
-{-
-pcontains ::
-  forall (a :: S -> Type) (s :: S).
-  (POrd a, PIsData a) =>
-  Term
-    s
-    ( PInterval a
-        :--> PInterval a
-        :--> PBool
-    )
-pcontains = phoistAcyclic $
-  plam $ \x' y' -> unTermCont $ do
-    x <- tcont $ pletFields @'["from", "to"] x'
-    y <- tcont $ pletFields @'["from", "to"] y'
-    let lowerX = getField @"from" x
-    let upperX = getField @"to" x
-    let lowerY = getField @"from" y
-    let upperY = getField @"to" y
-    pure $ leqP # (lToE # lowerX) # (lToE # lowerY) #&& leqP # (uToE # upperY) # (uToE # upperX)
--}
+pcontains = phoistAcyclic $ plam $ \i1 i2 -> unTermCont $ do
+  unpackedI1 <- tcont $ pletFields @'["from", "to"] i1
+  unpackedI2 <- tcont $ pletFields @'["from", "to"] i2
+  let l1 = pfromData $ getField @"from" unpackedI1
+  let l2 = getField @"from" unpackedI2
+  let u1 = pfromData $ getField @"to" unpackedI1
+  let u2 = getField @"to" unpackedI2
+  -- Note: This manually inlines `pisEmpty` to avoid redundant unpacking.
+  let ilb2 = pinclusiveLowerBound # l2
+  let iub2 = pinclusiveUpperBound # u2
+  pure $
+    pif
+      (ilb2 #> iub2)
+      -- i2 is empty, so therefore it must be contained in i1
+      (pcon PTrue)
+      ( unTermCont $ do
+          let ilb1 = pinclusiveLowerBound # l1
+          let iub1 = pinclusiveUpperBound # u1
+          pure $
+            pif
+              (ilb1 #> iub1)
+              -- i1 is empty, so therefore it cannot contain
+              -- anything
+              (pcon PFalse)
+              -- Neither interval is empty, so compare bounds
+              ((l1 #<= l2) #&& (u2 #<= u1))
+      )
 
 {- | Given @x@, create the interval @[x, x]@.
 
