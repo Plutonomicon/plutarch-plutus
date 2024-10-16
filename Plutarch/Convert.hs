@@ -10,8 +10,8 @@ module Plutarch.Convert (
   pmostSignificantFirst,
   pmostSignificantLast,
   pbyteStringToInteger,
-  integerToByteString,
-  integerToByteStringSized,
+  pintegerToByteString,
+  pintegerToByteStringSized,
 ) where
 
 import GHC.Generics (Generic)
@@ -87,7 +87,7 @@ pbyteStringToInteger e = plam $ \bs ->
 
 {- | Convert a (non-negative) 'PInteger' into a 'PByteString'. This will produce
 a result of the minimal size required: if you want to specify a size, use
-'integerToByteStringSized'. For details, see
+'pintegerToByteStringSized'. For details, see
 [CIP-121](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121#builtinintegertobytestring).
 
 = Note
@@ -95,14 +95,14 @@ a result of the minimal size required: if you want to specify a size, use
 This conversion is unsafe, as it will error when given a non-negative
 integer.
 -}
-integerToByteString ::
+pintegerToByteString ::
   forall (s :: S).
   Term s PEndianness ->
   Term s (PInteger :--> PByteString)
-integerToByteString e = plam $ \i ->
+pintegerToByteString e = plam $ \i ->
   punsafeBuiltin PLC.IntegerToByteString # pto e # (0 :: Term s PInteger) # i
 
-{- | As 'punsafeIntegerToByteString', but allows specifying a required size. If
+{- | As 'pintegerToByteString', but allows specifying a required size. If
 a size larger than the minimum is specified, the result will be padded with zero
 bytes, positioned according to the endianness argument.
 
@@ -115,9 +115,9 @@ This conversion is unsafe. In addition to the reasons for
 requested size is too large (currently 8192 is the limit) or too small to fit
 the specified 'PInteger'.
 -}
-integerToByteStringSized ::
+pintegerToByteStringSized ::
   forall (s :: S).
   Term s PEndianness ->
   Term s (PPositive :--> PInteger :--> PByteString)
-integerToByteStringSized e = plam \len i ->
+pintegerToByteStringSized e = plam \len i ->
   punsafeBuiltin PLC.IntegerToByteString # pto e # pto len # i
