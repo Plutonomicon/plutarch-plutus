@@ -21,6 +21,7 @@
 * `pzeroesBS`, `ponesBS`, `preplicateBS`, as wrappers for CIP-122's
   `ReplicateByte`
 * Conversion primitive wrappers in `Plutarch.Conversion`
+* `compileOptimized` in `Plutarch.Internal`, to optimize the generated UPLC
 
 ## Changed
 
@@ -42,6 +43,7 @@
 # 1.9.0 - 25-09-2024
 
 ## Added
+
 * Cryptographic hashing utilities:- `pripemd_160`, `pkeccak_256`, and `pblake2b_224` to `Plutarch.Crypto`
 * PlutusV3 BLS primitives to `Plutarch.BLS`
 * PlutusV3 Bitwise primitives to `Plutarch.Bitwise`
@@ -49,6 +51,7 @@
 * `PCountable` and `PEnumerable` type classes in `Plutarch.Enum`
 
 ## Changed
+
 * Bumped `plutus-core` version to `1.33.0.0`
 * Updated getArity mapping to handle the new builtins in `Plutarch.Internal`
 * Updated `printScript` in `Plutarch.Internal.Other` to new PlutusCore version.

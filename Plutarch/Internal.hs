@@ -22,6 +22,7 @@ module Plutarch.Internal (
   punsafeConstant,
   punsafeConstantInternal,
   compile,
+  compileOptimized,
   compile',
   ClosedTerm,
   Dig,
@@ -44,6 +45,7 @@ module Plutarch.Internal (
 ) where
 
 import Control.Monad.Reader (ReaderT (ReaderT), ask, runReaderT)
+import Control.Monad.State.Strict (evalStateT)
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
 import Crypto.Hash.IO (HashAlgorithm)
@@ -58,6 +60,7 @@ import Data.Aeson (
   (.=),
  )
 import Data.ByteString qualified as BS
+import Data.Default (def)
 import Data.Kind (Type)
 import Data.List (foldl', groupBy, sortOn)
 import Data.Map.Lazy qualified as M
@@ -73,6 +76,7 @@ import Plutarch.Internal.Evaluate (evalScript, uplcVersion)
 import Plutarch.Script (Script (Script))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
+import PlutusCore.Compiler.Types (initUPLCSimplifierTrace)
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
 import Prettyprinter (Pretty (pretty), (<+>))
 import UntypedPlutusCore qualified as UPLC
@@ -746,6 +750,32 @@ compile' t =
 compile :: Config -> ClosedTerm a -> Either Text Script
 compile config t = case asClosedRawTerm t of
   TermMonad (ReaderT t') -> Script . UPLC.Program () uplcVersion . compile' <$> t' config
+
+{- | As 'compile', but performs UPLC optimizations. Furthermore, this will
+always elide tracing (as if with 'NoTracing').
+
+@since WIP
+-}
+compileOptimized ::
+  forall (a :: S -> Type).
+  (forall (s :: S). Term s a) ->
+  Either Text Script
+compileOptimized t = case asClosedRawTerm t of
+  TermMonad (ReaderT t') -> do
+    configured <- t' NoTracing
+    let compiled = compile' configured
+    case go compiled of
+      Left err -> Left . Text.pack . show $ err
+      Right simplified -> pure . Script . UPLC.Program () uplcVersion $ simplified
+  where
+    go ::
+      UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
+      Either (PLC.Error UPLC.DefaultUni UPLC.DefaultFun ()) (UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ())
+    go compiled = flip evalStateT initUPLCSimplifierTrace . PLC.runQuoteT $ do
+      unDB <- UPLC.unDeBruijnTerm . UPLC.termMapNames UPLC.fakeNameDeBruijn $ compiled
+      simplified <- UPLC.simplifyTerm UPLC.defaultSimplifyOpts def unDB
+      debruijnd <- UPLC.deBruijnTerm simplified
+      pure . UPLC.termMapNames UPLC.unNameDeBruijn $ debruijnd
 
 hashTerm :: Config -> ClosedTerm a -> Either Text Dig
 hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTerm t 0) config
