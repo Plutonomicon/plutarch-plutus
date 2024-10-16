@@ -16,7 +16,7 @@ import Test.Tasty.HUnit (assertEqual, testCase)
 
 tests :: [TestTree]
 tests =
-  [ testCase "705" $ do
+  [ testCase "Issue 705 (pcontains)" $ do
       let i1 = Interval (LowerBound (Finite (120 :: POSIXTime)) True) . UpperBound (Finite 129) $ False
       let i2 = Interval (LowerBound (Finite 120) True) . UpperBound (Finite 129) $ True
       let expected = Interval.contains i2 i1
