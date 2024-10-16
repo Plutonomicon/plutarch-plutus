@@ -19,6 +19,7 @@
 * `pandBS`, `porBS`, `pxorBS`, `pcomplementBS` mirroring CIP-122 operations
 * `pzeroesBS`, `ponesBS`, `preplicateBS`, as wrappers for CIP-122's
   `ReplicateByte`
+* Conversion primitive wrappers in `Plutarch.Conversion`
 
 ## Changed
 
@@ -34,6 +35,8 @@
   `pcomplementByteString` from
   `Plutarch.Bitwise`, as these are superseded by more typesafe operations in
   `Plutarch.ByteString`
+* `pintegerToByteString` and `pbyteStringToInteger` from `Plutarch.Bitwise`, as
+  these are superseded by more typesafe operations in `Plutarch.Conversion`
 
 # 1.9.0 - 25-09-2024
 
