@@ -78,6 +78,7 @@ library
     Plutarch.Bool
     Plutarch.Builtin
     Plutarch.ByteString
+    Plutarch.Convert
     Plutarch.Crypto
     Plutarch.DataRepr
     Plutarch.DataRepr.Internal
