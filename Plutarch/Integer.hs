@@ -2,11 +2,21 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Plutarch.Integer (PInteger, PIntegral (..)) where
+module Plutarch.Integer (
+  -- * Type
+  PInteger,
+
+  -- * Type class
+  PIntegral (..),
+
+  -- * Functions
+  pexpModInteger,
+) where
 
 import GHC.Generics (Generic)
 import Plutarch.Bool (PEq, POrd, PPartialOrd, pif, (#<), (#<=), (#==))
 import Plutarch.Internal (
+  S,
   Term,
   phoistAcyclic,
   (#),
@@ -81,3 +91,20 @@ instance PNum PInteger where
         (-1)
         1
   pfromInteger = pconstant
+
+{- | Performs modulo exponentiation. More precisely, @pexpModInteger b e m@
+performs @b@ to the power of @e@, modulo @m@. The result is always
+non-negative.
+
+= Note
+
+This will error if the modulus is zero. When given a negative exponent, this
+will try to find a modular multiplicative inverse, and will error if none
+exists.
+
+@since WIP
+-}
+pexpModInteger ::
+  forall (s :: S).
+  Term s (PInteger :--> PInteger :--> PInteger :--> PInteger)
+pexpModInteger = punsafeBuiltin PLC.ExpModInteger

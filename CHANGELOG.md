@@ -22,23 +22,23 @@
   `ReplicateByte`
 * Conversion primitive wrappers in `Plutarch.Conversion`
 * `compileOptimized` in `Plutarch.Internal`, to optimize the generated UPLC
+* `PBitString` and associated functionality for CIP-122 and CIP-123 operations
+  on bits, in `Plutarch.BitString`
 
 ## Changed
 
 * `pconsBS` now takes a `PByte` argument instead of a `PInteger` one
 * `pindexBS` now returns a `PByte` instead of a `PInteger`
+* `pexpModInteger` is now in `Plutarch.Integer`
 
 ## Removed
 
 * `plutarch-extra`, as all its functionality has been folded into Plutarch
   itself
 * `pbyteStr` (as it's deprecated)
-* `pandByteString`, `porByteString`, `pxorByteString`, `preplicateByte`,
-  `pcomplementByteString` from
-  `Plutarch.Bitwise`, as these are superseded by more typesafe operations in
-  `Plutarch.ByteString`
-* `pintegerToByteString` and `pbyteStringToInteger` from `Plutarch.Bitwise`, as
-  these are superseded by more typesafe operations in `Plutarch.Conversion`
+* `Plutarch.Bitwise` module, as its functionality has been superseded by more
+  type-safe operations in `Plutarch.ByteString`, `Plutarch.BitString` and
+  `Plutarch.Convert`
 
 # 1.9.0 - 25-09-2024
 

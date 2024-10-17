@@ -73,7 +73,7 @@ library
   import:          c
   exposed-modules:
     Plutarch
-    Plutarch.Bitwise
+    Plutarch.BitString
     Plutarch.BLS
     Plutarch.Bool
     Plutarch.Builtin
@@ -141,7 +141,7 @@ library
     , generics-sop
     , lens
     , mtl
-    , plutus-core        >=1.33.0.0
+    , plutus-core        >=1.36.0.0
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter
