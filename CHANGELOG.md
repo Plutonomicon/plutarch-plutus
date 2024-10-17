@@ -20,6 +20,7 @@
 * `pandBS`, `porBS`, `pxorBS`, `pcomplementBS` mirroring CIP-122 operations
 * `pzeroesBS`, `ponesBS`, `preplicateBS`, as wrappers for CIP-122's
   `ReplicateByte`
+* Conversion primitive wrappers in `Plutarch.Conversion`
 * `compileOptimized` in `Plutarch.Internal`, to optimize the generated UPLC
 * `PBitString` and associated functionality for CIP-122 and CIP-123 operations
   on bits, in `Plutarch.BitString`
