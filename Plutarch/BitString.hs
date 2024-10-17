@@ -75,7 +75,7 @@ instance DerivePlutusType PBitString where
 @since WIP
 -}
 preadBit :: forall (s :: S). Term s (PBitString :--> PInteger :--> PBool)
-preadBit = plam $ \bs i -> punsafeBuiltin PLC.ReadBit # pto bs # i
+preadBit = punsafeBuiltin PLC.ReadBit
 
 {- | Given a list of positions, set the bits at those positions.
 
@@ -103,7 +103,7 @@ pclearBits = plam $ \bs ixes -> punsafeBuiltin PLC.WriteBits # pto bs # ixes # p
 @since WIP
 -}
 pshift :: forall (s :: S). Term s (PBitString :--> PInteger :--> PBitString)
-pshift = plam $ \bs i -> punsafeBuiltin PLC.ShiftByteString # pto bs # i
+pshift = punsafeBuiltin PLC.ShiftByteString
 
 {- | Performs a rotation, as per
 [CIP-123](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0123/README.md#bitwiserotate).
@@ -111,7 +111,7 @@ pshift = plam $ \bs i -> punsafeBuiltin PLC.ShiftByteString # pto bs # i
 @since WIP
 -}
 protate :: forall (s :: S). Term s (PBitString :--> PInteger :--> PBitString)
-protate = plam $ \bs i -> punsafeBuiltin PLC.RotateByteString # pto bs # i
+protate = punsafeBuiltin PLC.RotateByteString
 
 {- | Counts the number of set bits, as per
 [CIP-123](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0123/README.md#countsetbits).
@@ -119,7 +119,7 @@ protate = plam $ \bs i -> punsafeBuiltin PLC.RotateByteString # pto bs # i
 @since WIP
 -}
 pcountSetBits :: forall (s :: S). Term s (PBitString :--> PInteger)
-pcountSetBits = plam $ \bs -> punsafeBuiltin PLC.CountSetBits # pto bs
+pcountSetBits = punsafeBuiltin PLC.CountSetBits
 
 {- | Finds the index of the first set bit, as per
 [CIP-123](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0123/README.md#findfirstsetbit).
@@ -131,7 +131,7 @@ This returns @-1@ if the argument is either empty, or contains no set bits.
 @since WIP
 -}
 pfindFirstSetBit' :: forall (s :: S). Term s (PBitString :--> PInteger)
-pfindFirstSetBit' = plam $ \bs -> punsafeBuiltin PLC.FindFirstSetBit # pto bs
+pfindFirstSetBit' = punsafeBuiltin PLC.FindFirstSetBit
 
 {- | As @pfindFirstSetBit'@, but produces 'PNothing' if the argument is empty,
 or contains no set bits.
