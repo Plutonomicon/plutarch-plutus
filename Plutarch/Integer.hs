@@ -107,4 +107,4 @@ exists.
 pexpModInteger ::
   forall (s :: S).
   Term s (PInteger :--> PInteger :--> PInteger :--> PInteger)
-pexpModInteger = plam $ \b e m -> punsafeBuiltin PLC.ExpModInteger # b # e # m
+pexpModInteger = punsafeBuiltin PLC.ExpModInteger

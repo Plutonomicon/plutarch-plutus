@@ -4,8 +4,7 @@ module Plutarch.BitString (
 
   -- * Functions
   preadBit,
-  psetBits,
-  pclearBits,
+  pwriteBits,
   pshift,
   protate,
   pcountSetBits,
@@ -35,7 +34,6 @@ import Plutarch.Internal.PlutusType (
   PlutusType,
   pcon,
  )
-import Plutarch.Lift (pconstant)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import PlutusCore qualified as PLC
 
@@ -87,15 +85,14 @@ entails from the CIP-122 description apply.
 
 @since WIP
 -}
-psetBits :: forall (s :: S). Term s (PBitString :--> PBuiltinList PInteger :--> PBitString)
-psetBits = plam $ \bs ixes -> punsafeBuiltin PLC.WriteBits # pto bs # ixes # pconstant True
 
-{- | As 'psetBits', but clears the bits instead.
+{- | Sets bits, as per
+[CIP-122](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#writebits).
 
 @since WIP
 -}
-pclearBits :: forall (s :: S). Term s (PBitString :--> PBuiltinList PInteger :--> PBitString)
-pclearBits = plam $ \bs ixes -> punsafeBuiltin PLC.WriteBits # pto bs # ixes # pconstant False
+pwriteBits :: forall (s :: S). Term s (PBitString :--> PBuiltinList PInteger :--> PBool :--> PBitString)
+pwriteBits = punsafeBuiltin PLC.WriteBits
 
 {- | Performs a shift, as per
 [CIP-123](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0123/README.md#bitwiseshift).
