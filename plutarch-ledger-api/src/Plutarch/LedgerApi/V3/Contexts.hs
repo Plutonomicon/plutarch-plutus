@@ -818,7 +818,7 @@ instance PTryFrom PData (PAsData PTxInInfo)
 
 -- A pending transaction. This is the view as seen by a validator script.
 --
--- @since 3.1.0
+-- @since WIP
 newtype PTxInfo (s :: S)
   = PTxInfo
       ( Term
@@ -828,7 +828,7 @@ newtype PTxInfo (s :: S)
                , "referenceInputs" ':= PBuiltinList (PAsData PTxInInfo)
                , "outputs" ':= PBuiltinList (PAsData PTxOut)
                , "fee" ':= Value.PLovelace
-               , "mint" ':= Value.PValue 'AssocMap.Sorted 'Value.NoGuarantees -- value minted by transaction
+               , "mint" ':= Value.PValue 'AssocMap.Sorted 'Value.NonZero -- value minted by transaction
                , "txCerts" ':= PBuiltinList (PAsData PTxCert)
                , "wdrl" ':= AssocMap.PMap 'AssocMap.Unsorted PCredential Value.PLovelace -- Staking withdrawals
                , "validRange" ':= Interval.PInterval PPosixTime
