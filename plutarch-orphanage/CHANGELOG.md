@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+* `V3` version of `MintValue` that does not include zero Ada
 * QuickCheck type class instances for `AssetClass`
 
 ### Changed
@@ -15,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 * `Arbitrary` instance for `POSIXTime` can now generate negative values as well.
   This does not affect `Interval POSIXTime`'s instance, as the formation rules
   assume non-negative interval endpoints.
+* `V1.MintValue` and `V1.NonAdaValue` generators now include zero Ada entry
 
 ## 1.0.3 -- 04-07-2024
 
