@@ -1,6 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE RankNTypes #-}
 
 module Laws (
   punsafeLiftDeclLaws,
@@ -9,7 +8,6 @@ module Laws (
   ptryFromLawsValue,
   ptryFromLawsAssocMap,
   pcountableLaws,
-  pcountableLawsVia,
   penumerableLaws,
 ) where
 
@@ -140,41 +138,29 @@ pcountableLaws ::
   forall (a :: S -> Type).
   ( PCountable a
   , Arbitrary (PLifted a)
+  , Pretty (PLifted a)
   , Eq (PLifted a)
   , Show (PLifted a)
   , PUnsafeLiftDecl a
   ) =>
   [TestTree]
-pcountableLaws = pcountableLawsVia @(PLifted a) pconstant plift
-
-pcountableLawsVia ::
-  forall (input :: Type) (output :: Type) (plutarch :: S -> Type).
-  ( PCountable plutarch
-  , Arbitrary input
-  , Eq output
-  , Show input
-  , Show output
-  ) =>
-  (input -> ClosedTerm plutarch) ->
-  (ClosedTerm plutarch -> output) ->
-  [TestTree]
-pcountableLawsVia mkInput mkOutput =
-  [ testProperty "x /= psuccessor x" . forAllShrinkShow arbitrary shrink show $
-      \(x :: input) ->
-        mkOutput (psuccessor # mkInput x) =/= mkOutput (mkInput x)
-  , testProperty "y < x = psuccessor y <= x" . forAllShrinkShow arbitrary shrink show $
-      \(x :: input, y :: input) ->
-        plift (mkInput y #< mkInput x) === plift ((psuccessor # mkInput y) #<= mkInput x)
-  , testProperty "x < psuccessor y = x <= y" . forAllShrinkShow arbitrary shrink show $
-      \(x :: input, y :: input) ->
-        plift (mkInput x #< (psuccessor # mkInput y)) === plift (mkInput x #<= mkInput y)
-  , testProperty "psuccessorN 1 /= psuccessor" . forAllShrinkShow arbitrary shrink show $
-      \(x :: input) ->
-        mkOutput (psuccessorN # 1 # mkInput x) === mkOutput (psuccessor # mkInput x)
+pcountableLaws =
+  [ testProperty "x /= psuccessor x" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a) ->
+        plift (psuccessor # pconstant x) =/= x
+  , testProperty "y < x = psuccessor y <= x" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a, y :: PLifted a) ->
+        plift (pconstant y #< pconstant x) === plift ((psuccessor # pconstant y) #<= pconstant x)
+  , testProperty "x < psuccessor y = x <= y" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a, y :: PLifted a) ->
+        plift (pconstant x #< (psuccessor # pconstant y)) === plift (pconstant x #<= pconstant y)
+  , testProperty "psuccessorN 1 /= psuccessor" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a) ->
+        plift (psuccessorN # 1 # pconstant x) === plift (psuccessor # pconstant x)
   , testProperty "psuccessorN n . psuccessorN m = psuccessorN (n + m)" . forAllShrinkShow arbitrary shrink show $
-      \(x :: input, n :: Positive Integer, m :: Positive Integer) ->
-        mkOutput (psuccessorN # pfromInteger (getPositive n) # (psuccessorN # pfromInteger (getPositive m) # mkInput x))
-          === mkOutput (psuccessorN # (pfromInteger (getPositive n) + pfromInteger (getPositive m)) # mkInput x)
+      \(x :: PLifted a, n :: Positive Integer, m :: Positive Integer) ->
+        plift (psuccessorN # pfromInteger (getPositive n) # (psuccessorN # pfromInteger (getPositive m) # pconstant x))
+          === plift (psuccessorN # (pfromInteger (getPositive n) + pfromInteger (getPositive m)) # pconstant x)
   ]
 
 penumerableLaws ::

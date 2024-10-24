@@ -1,22 +1,17 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE RankNTypes #-}
 
 module Utils (
   checkLedgerProperties,
   checkLedgerPropertiesValue,
   checkLedgerPropertiesAssocMap,
   checkLedgerPropertiesPCountable,
-  checkLedgerPropertiesPCountableVia,
   checkLedgerPropertiesPEnumerable,
-  fromPPositive,
-  toPPositive,
   fewerTests,
 ) where
 
 import Laws (
   pcountableLaws,
-  pcountableLawsVia,
   penumerableLaws,
   pisDataLaws,
   ptryFromLaws,
@@ -27,13 +22,11 @@ import Laws (
 import Plutarch.Enum (PCountable, PEnumerable)
 import Plutarch.LedgerApi.V1 qualified as PLA
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
-import Plutarch.Num (PNum (pfromInteger))
-import Plutarch.Positive (PPositive)
 import Plutarch.Prelude
 import PlutusLedgerApi.Common qualified as Plutus
 import PlutusLedgerApi.V1.Orphans ()
 import Prettyprinter (Pretty)
-import Test.QuickCheck (Arbitrary, Positive (getPositive))
+import Test.QuickCheck (Arbitrary)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck (QuickCheckTests)
 import Type.Reflection (Typeable, tyConName, typeRep, typeRepTyCon)
@@ -89,33 +82,13 @@ checkLedgerPropertiesPCountable ::
   ( Typeable a
   , PCountable a
   , Arbitrary (PLifted a)
+  , Pretty (PLifted a)
   , Eq (PLifted a)
   , Show (PLifted a)
   , PUnsafeLiftDecl a
   ) =>
   TestTree
 checkLedgerPropertiesPCountable = testGroup (typeName @(S -> Type) @a) (pcountableLaws @a)
-
-checkLedgerPropertiesPCountableVia ::
-  forall (input :: Type) (output :: Type) (plutarch :: S -> Type).
-  ( Typeable plutarch
-  , PCountable plutarch
-  , Arbitrary input
-  , Show input
-  , Eq output
-  , Show output
-  ) =>
-  (input -> ClosedTerm plutarch) ->
-  (ClosedTerm plutarch -> output) ->
-  TestTree
-checkLedgerPropertiesPCountableVia mkInput mkOutput =
-  testGroup (typeName @(S -> Type) @plutarch) (pcountableLawsVia mkInput mkOutput)
-
-toPPositive :: Positive Integer -> ClosedTerm PPositive
-toPPositive = pfromInteger . getPositive
-
-fromPPositive :: ClosedTerm PPositive -> Integer
-fromPPositive t = plift $ pto t
 
 checkLedgerPropertiesPEnumerable ::
   forall (a :: S -> Type).
