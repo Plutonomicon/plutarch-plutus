@@ -8,9 +8,12 @@ import Utils (
   checkLedgerProperties,
   checkLedgerPropertiesAssocMap,
   checkLedgerPropertiesPCountable,
+  checkLedgerPropertiesPCountableVia,
   checkLedgerPropertiesPEnumerable,
   checkLedgerPropertiesValue,
   fewerTests,
+  fromPPositive,
+  toPPositive,
  )
 
 tests :: TestTree
@@ -49,7 +52,7 @@ tests =
         "PCountable"
         [ checkLedgerPropertiesPCountable @PInteger
         , checkLedgerPropertiesPCountable @PLA.PPosixTime
-        -- , checkLedgerPropertiesPCountable @PPositive -- TODO: Figure out PLifted PPositive
+        , checkLedgerPropertiesPCountableVia toPPositive fromPPositive
         ]
     , testGroup
         "PEnumerable"
