@@ -154,7 +154,7 @@ pcountableLaws =
   , testProperty "x < psuccessor y = x <= y" . forAllShrinkShow arbitrary shrink prettyShow $
       \(x :: PLifted a, y :: PLifted a) ->
         plift (pconstant x #< (psuccessor # pconstant y)) === plift (pconstant x #<= pconstant y)
-  , testProperty "psuccessorN 1 /= psuccessor" . forAllShrinkShow arbitrary shrink prettyShow $
+  , testProperty "psuccessorN 1 = psuccessor" . forAllShrinkShow arbitrary shrink prettyShow $
       \(x :: PLifted a) ->
         plift (psuccessorN # 1 # pconstant x) === plift (psuccessor # pconstant x)
   , testProperty "psuccessorN n . psuccessorN m = psuccessorN (n + m)" . forAllShrinkShow arbitrary shrink show $
@@ -180,7 +180,7 @@ penumerableLaws =
   , testProperty "psuccessor . ppredecessor = id" . forAllShrinkShow arbitrary shrink prettyShow $
       \(x :: PLifted a) ->
         plift (psuccessor #$ ppredecessor # pconstant x) === plift (pconstant x)
-  , testProperty "ppredecessorN 1 /= ppredecessor" . forAllShrinkShow arbitrary shrink prettyShow $
+  , testProperty "ppredecessorN 1 = ppredecessor" . forAllShrinkShow arbitrary shrink prettyShow $
       \(x :: PLifted a) ->
         plift (ppredecessorN # 1 # pconstant x) === plift (ppredecessor # pconstant x)
   , testProperty "ppredecessorN n . ppredecessorN m = ppredecessorN (n + m)" . forAllShrinkShow arbitrary shrink show $
