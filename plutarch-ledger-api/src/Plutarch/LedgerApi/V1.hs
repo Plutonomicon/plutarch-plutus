@@ -182,7 +182,7 @@ deriving via
 -- | @since 3.1.1
 instance PTryFrom PData (PAsData PTxInInfo)
 
--- | @since 3.1.1
+-- | @since WIP
 newtype PTxInfo (s :: S)
   = PTxInfo
       ( Term

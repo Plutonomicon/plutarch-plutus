@@ -818,7 +818,7 @@ instance PTryFrom PData (PAsData PTxInInfo)
 
 -- A pending transaction. This is the view as seen by a validator script.
 --
--- @since 3.1.0
+-- @since WIP
 newtype PTxInfo (s :: S)
   = PTxInfo
       ( Term
