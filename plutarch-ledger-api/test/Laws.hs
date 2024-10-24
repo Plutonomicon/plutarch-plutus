@@ -15,7 +15,7 @@ import Plutarch.Builtin (pforgetData)
 import Plutarch.Enum (PCountable (psuccessor, psuccessorN), PEnumerable (ppredecessor, ppredecessorN))
 import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
-import Plutarch.Num (PNum (pfromInteger))
+import Plutarch.Positive (Positive)
 import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common qualified as Plutus
@@ -26,7 +26,6 @@ import Prettyprinter (Pretty (pretty), defaultLayoutOptions, layoutPretty)
 import Prettyprinter.Render.String (renderString)
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
-  Positive (getPositive),
   forAllShrinkShow,
   (=/=),
   (===),
@@ -158,9 +157,9 @@ pcountableLaws =
       \(x :: PLifted a) ->
         plift (psuccessorN # 1 # pconstant x) === plift (psuccessor # pconstant x)
   , testProperty "psuccessorN n . psuccessorN m = psuccessorN (n + m)" . forAllShrinkShow arbitrary shrink show $
-      \(x :: PLifted a, n :: Positive Integer, m :: Positive Integer) ->
-        plift (psuccessorN # pfromInteger (getPositive n) # (psuccessorN # pfromInteger (getPositive m) # pconstant x))
-          === plift (psuccessorN # (pfromInteger (getPositive n) + pfromInteger (getPositive m)) # pconstant x)
+      \(x :: PLifted a, n :: Positive, m :: Positive) ->
+        plift (psuccessorN # pconstant n # (psuccessorN # pconstant m # pconstant x))
+          === plift (psuccessorN # (pconstant n + pconstant m) # pconstant x)
   ]
 
 penumerableLaws ::
@@ -184,9 +183,9 @@ penumerableLaws =
       \(x :: PLifted a) ->
         plift (ppredecessorN # 1 # pconstant x) === plift (ppredecessor # pconstant x)
   , testProperty "ppredecessorN n . ppredecessorN m = ppredecessorN (n + m)" . forAllShrinkShow arbitrary shrink show $
-      \(x :: PLifted a, n :: Positive Integer, m :: Positive Integer) ->
-        plift (ppredecessorN # pfromInteger (getPositive n) # (ppredecessorN # pfromInteger (getPositive m) # pconstant x))
-          === plift (ppredecessorN # (pfromInteger (getPositive n) + pfromInteger (getPositive m)) # pconstant x)
+      \(x :: PLifted a, n :: Positive, m :: Positive) ->
+        plift (ppredecessorN # pconstant n # (ppredecessorN # pconstant m # pconstant x))
+          === plift (ppredecessorN # (pconstant n + pconstant m) # pconstant x)
   ]
 
 -- Helpers
