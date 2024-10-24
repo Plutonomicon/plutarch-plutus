@@ -12,9 +12,9 @@ import PlutusLedgerApi.V1.Orphans.Credential ()
 import PlutusLedgerApi.V1.Orphans.Interval ()
 import PlutusLedgerApi.V1.Orphans.Time ()
 import PlutusLedgerApi.V1.Orphans.Value ()
-import PlutusLedgerApi.V1.Orphans.Value qualified as Value
 import PlutusLedgerApi.V2.Orphans.Tx ()
 import PlutusLedgerApi.V3 qualified as PLA
+import PlutusLedgerApi.V3.Orphans.Value qualified as Value
 import PlutusTx.AssocMap qualified as AssocMap
 import PlutusTx.Builtins qualified as Builtins
 import PlutusTx.Prelude qualified as PlutusTx
@@ -863,7 +863,7 @@ instance Arbitrary PLA.TxInfo where
     routs <- arbitrary
     outs <- getNonEmpty <$> arbitrary
     fee <- arbitrary
-    mint <- Value.getNonAdaValue <$> arbitrary
+    mint <- Value.getMintValue <$> arbitrary
     cert <- arbitrary
     wdrl <- arbitrary
     valid <- arbitrary
@@ -882,7 +882,7 @@ instance Arbitrary PLA.TxInfo where
     routs' <- shrink routs
     NonEmpty outs' <- shrink (NonEmpty outs)
     fee' <- shrink fee
-    (Value.NonAdaValue mint') <- shrink (Value.NonAdaValue mint)
+    (Value.MintValue mint') <- shrink (Value.MintValue mint)
     cert' <- shrink cert
     wdrl' <- shrink wdrl
     valid' <- shrink valid

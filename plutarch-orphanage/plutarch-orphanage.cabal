@@ -69,6 +69,7 @@ library
     PlutusLedgerApi.V1.Orphans.Value
     PlutusLedgerApi.V2.Orphans.Contexts
     PlutusLedgerApi.V2.Orphans.Tx
+    PlutusLedgerApi.V3.Orphans.Value
 
   build-depends:
     , bytestring

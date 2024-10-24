@@ -50,7 +50,7 @@ instance Arbitrary PLA.TxInfo where
       <*> arbitrary -- reference inputs
       <*> (getNonEmpty <$> arbitrary) -- outputs
       <*> (Value.getFeeValue <$> arbitrary) -- fee
-      <*> (Value.getNonAdaValue <$> arbitrary) -- mint
+      <*> (Value.getMintValue <$> arbitrary) -- mint
       <*> arbitrary -- dcert
       <*> arbitrary -- withdrawals
       <*> arbitrary -- valid range
