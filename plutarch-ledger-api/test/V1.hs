@@ -1,6 +1,7 @@
 module V1 (tests) where
 
 import Plutarch.LedgerApi.V1 qualified as PLA
+import Plutarch.LedgerApi.Value as Value
 import PlutusLedgerApi.V1.Orphans ()
 import Test.Tasty (TestTree, adjustOption, testGroup)
 import Utils (
@@ -42,4 +43,5 @@ tests =
     , adjustOption (fewerTests 16) $ checkLedgerProperties @PLA.PTxInfo
     , checkLedgerPropertiesValue
     , checkLedgerPropertiesAssocMap
+    , checkLedgerProperties @Value.PAssetClass
     ]
