@@ -1,11 +1,26 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Plutarch.Positive (PPositive, ppositive, ptryPositive) where
+module Plutarch.Positive (
+  PPositive,
+  ppositive,
+  ptryPositive,
+  Positive,
+  mkPositive,
+) where
 
+import Data.Coerce (coerce)
 import Data.Functor.Const (Const)
 import Data.Text (pack)
 import GHC.Generics (Generic)
+import Prettyprinter (Pretty)
+import Test.QuickCheck (
+  Arbitrary,
+  CoArbitrary,
+  Function (function),
+  functionMap,
+ )
+import Test.QuickCheck qualified as QuickCheck
 
 import Plutarch.Bool (PEq, POrd, PPartialOrd, pif, (#<=))
 import Plutarch.Builtin (PAsData, PData, PIsData, pdata)
@@ -30,6 +45,7 @@ import Plutarch (
   (#$),
   type (:-->),
  )
+import Plutarch.Lift (DerivePConstantDirect (DerivePConstantDirect), PConstantDecl, PUnsafeLiftDecl (PLifted))
 import Plutarch.Num (PNum (pfromInteger, (#-)))
 import Plutarch.TermCont (tcont)
 import Plutarch.Trace (ptraceInfoError)
@@ -63,6 +79,12 @@ instance PTryFrom PData (PAsData PPositive) where
     resData <- tcont . plet $ pdata res
     pure (resData, res)
 
+-- | @since WIP
+instance PUnsafeLiftDecl PPositive where type PLifted PPositive = Positive
+
+-- | @since WIP
+deriving via (DerivePConstantDirect Integer PPositive) instance PConstantDecl Positive
+
 -- | Build a 'PPositive' from a 'PInteger'. Yields 'PNothing' if argument is zero.
 ppositive :: Term s (PInteger :--> PMaybe PPositive)
 ppositive = phoistAcyclic $
@@ -82,3 +104,27 @@ ptryPositive = phoistAcyclic $
       (ptraceInfoError $ "ptryPositive: building with non positive: " <> pshow i)
       $ pcon
       $ PPositive i
+
+-- | @since WIP
+newtype Positive = UnsafeMkPositive {getPositive :: Integer}
+  deriving stock (Show, Eq, Ord)
+
+-- | @since WIP
+deriving via (QuickCheck.Positive Integer) instance Arbitrary Positive
+
+-- | @since WIP
+deriving via Integer instance CoArbitrary Positive
+
+-- | @since WIP
+instance Function Positive where
+  {-# INLINEABLE function #-}
+  function = functionMap @Integer coerce coerce
+
+-- | @since WIP
+deriving via Integer instance Pretty Positive
+
+-- | @since WIP
+mkPositive :: Integer -> Maybe Positive
+mkPositive n
+  | n > 0 = Just $ UnsafeMkPositive n
+  | otherwise = Nothing

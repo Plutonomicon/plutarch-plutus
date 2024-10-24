@@ -2,6 +2,7 @@ module V1 (tests) where
 
 import Plutarch.Integer (PInteger)
 import Plutarch.LedgerApi.V1 qualified as PLA
+import Plutarch.Positive (PPositive)
 import PlutusLedgerApi.V1.Orphans ()
 import Test.Tasty (TestTree, adjustOption, testGroup)
 import Utils (
@@ -49,7 +50,7 @@ tests =
         "PCountable"
         [ checkLedgerPropertiesPCountable @PInteger
         , checkLedgerPropertiesPCountable @PLA.PPosixTime
-        -- , checkLedgerPropertiesPCountable @PPositive -- TODO: Figure out PLifted PPositive
+        , checkLedgerPropertiesPCountable @PPositive
         ]
     , testGroup
         "PEnumerable"
