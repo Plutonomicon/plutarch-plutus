@@ -191,7 +191,7 @@ newtype PTxInfo (s :: S)
               '[ "inputs" ':= PBuiltinList (PAsData PTxInInfo)
                , "outputs" ':= PBuiltinList (PAsData PTxOut)
                , "fee" ':= Value.PValue 'AssocMap.Sorted 'Value.Positive
-               , "mint" ':= Value.PValue 'AssocMap.Sorted 'Value.NonZero -- value minted by transaction
+               , "mint" ':= Value.PValue 'AssocMap.Sorted 'Value.NoGuarantees -- value minted by transaction
                , "dCert" ':= PBuiltinList (PAsData DCert.PDCert)
                , "wdrl" ':= PBuiltinList (PAsData (PBuiltinPair (PAsData Credential.PStakingCredential) (PAsData PInteger))) -- Staking withdrawals
                , "validRange" ':= Interval.PInterval Time.PPosixTime

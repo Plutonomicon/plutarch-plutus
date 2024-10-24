@@ -167,7 +167,7 @@ instance Function UTxOValue where
 getUtxoValue :: UTxOValue -> PLA.Value
 getUtxoValue = coerce
 
-{- | A 'PLA.Value' that contains no Ada.
+{- | A 'PLA.Value' that contains zero Ada.
 
 = Note
 
@@ -200,7 +200,10 @@ instance Arbitrary NonAdaValue where
       let keyList = Set.toList keySet
       -- For each key, generate a set of token name keys that aren't Ada
       keyVals <- traverse (scale (`quot` 8) . mkInner) keyList
-      pure . foldMap (\(cs, vals) -> foldMap (uncurry (Value.singleton cs)) vals) $ keyVals
+      pure
+        . withZeroAda
+        . foldMap (\(cs, vals) -> foldMap (uncurry (Value.singleton cs)) vals)
+        $ keyVals
     where
       mkInner :: PLA.CurrencySymbol -> Gen (PLA.CurrencySymbol, [(PLA.TokenName, Integer)])
       mkInner cs =
@@ -211,7 +214,7 @@ instance Arbitrary NonAdaValue where
         vectorOf len . chooseBoundedIntegral $ (33, 126)
   {-# INLINEABLE shrink #-}
   -- Since we can't shrink keys anyway, we just borrow the stock shrinker
-  shrink (NonAdaValue v) = NonAdaValue <$> shrink v
+  shrink (NonAdaValue v) = NonAdaValue . withZeroAda <$> shrink v
 
 -- | @since 1.0.0
 deriving via PLA.Value instance CoArbitrary NonAdaValue
@@ -380,7 +383,10 @@ instance Arbitrary MintValue where
       let keyList = Set.toList keySet
       -- For each key, generate a set of token name keys that aren't Ada
       keyVals <- traverse (scale (`quot` 8) . mkInner) keyList
-      pure . foldMap (\(cs, vals) -> foldMap (uncurry (Value.singleton cs)) vals) $ keyVals
+      pure
+        . withZeroAda
+        . foldMap (\(cs, vals) -> foldMap (uncurry (Value.singleton cs)) vals)
+        $ keyVals
     where
       mkInner :: PLA.CurrencySymbol -> Gen (PLA.CurrencySymbol, [(PLA.TokenName, Integer)])
       mkInner cs =
@@ -395,7 +401,7 @@ instance Arbitrary MintValue where
         vectorOf len . chooseBoundedIntegral $ (33, 126)
   {-# INLINEABLE shrink #-}
   shrink (MintValue (Value.Value v)) =
-    MintValue . Value.Value <$> do
+    MintValue . withZeroAda . Value.Value <$> do
       -- To ensure we don't break anything, we shrink in only two ways:
       --
       -- 1. Dropping keys (outer or inner)
@@ -419,3 +425,6 @@ instance Function MintValue where
 -- | @since 1.0.3
 getMintValue :: MintValue -> Value.Value
 getMintValue = coerce
+
+withZeroAda :: Value.Value -> Value.Value
+withZeroAda = (Value.singleton Value.adaSymbol Value.adaToken 0 <>)

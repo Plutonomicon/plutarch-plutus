@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 * `PPosixTime` now permits negative values as a result of its operations
 * `PEq`, `PPartialOrd` and `POrd` for `PLowerBound` and `PUpperBound` match the
   semantics of `plutus-ledger-api`'s equivalents for these types
+* `V3.PTxInfo.mint` now has `NonZero` guarantee
+* `V1.PTxInfo.mint` now has `NoGuarantees` guarantee
 
 ### Fixed
 
