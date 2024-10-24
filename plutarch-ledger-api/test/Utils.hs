@@ -11,13 +11,9 @@ module Utils (
 ) where
 
 import Laws (
-  lessThanEqPSuccessorLessThanOrEq,
-  lessThanPSuccessorEqLessThanOrEq,
+  pcountableLaws,
   penumerableLaws,
   pisDataLaws,
-  psuccessorNAdd,
-  psuccessorNOneEqPSuccessor,
-  psuccesssorNotEqSelf,
   ptryFromLaws,
   ptryFromLawsAssocMap,
   ptryFromLawsValue,
@@ -92,15 +88,7 @@ checkLedgerPropertiesPCountable ::
   , PUnsafeLiftDecl a
   ) =>
   TestTree
-checkLedgerPropertiesPCountable =
-  testGroup
-    (typeName @(S -> Type) @a)
-    [ psuccesssorNotEqSelf @a
-    , lessThanEqPSuccessorLessThanOrEq @a
-    , lessThanPSuccessorEqLessThanOrEq @a
-    , psuccessorNOneEqPSuccessor @a
-    , psuccessorNAdd @a
-    ]
+checkLedgerPropertiesPCountable = testGroup (typeName @(S -> Type) @a) (pcountableLaws @a)
 
 checkLedgerPropertiesPEnumerable ::
   forall (a :: S -> Type).

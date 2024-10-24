@@ -7,11 +7,7 @@ module Laws (
   ptryFromLaws,
   ptryFromLawsValue,
   ptryFromLawsAssocMap,
-  psuccesssorNotEqSelf,
-  lessThanEqPSuccessorLessThanOrEq,
-  lessThanPSuccessorEqLessThanOrEq,
-  psuccessorNOneEqPSuccessor,
-  psuccessorNAdd,
+  pcountableLaws,
   penumerableLaws,
 ) where
 
@@ -138,7 +134,7 @@ ptryFromLawsAssocMap = [pDataAgreementProp]
         plift (pfromData . ptryFrom @(PAsData (V1.PMap V1.Unsorted PInteger PInteger)) (pconstant . Plutus.toData $ v) $ fst)
           === v
 
-psuccesssorNotEqSelf ::
+pcountableLaws ::
   forall (a :: S -> Type).
   ( PCountable a
   , Arbitrary (PLifted a)
@@ -147,67 +143,25 @@ psuccesssorNotEqSelf ::
   , Show (PLifted a)
   , PUnsafeLiftDecl a
   ) =>
-  TestTree
-psuccesssorNotEqSelf =
-  testProperty "x /= psuccessor x" . forAllShrinkShow arbitrary shrink prettyShow $
-    \(x :: PLifted a) ->
-      plift (psuccessor # pconstant x) =/= x
-
-lessThanEqPSuccessorLessThanOrEq ::
-  forall (a :: S -> Type).
-  ( PCountable a
-  , Arbitrary (PLifted a)
-  , Pretty (PLifted a)
-  , PUnsafeLiftDecl a
-  ) =>
-  TestTree
-lessThanEqPSuccessorLessThanOrEq =
-  testProperty "y < x = psuccessor y <= x" . forAllShrinkShow arbitrary shrink prettyShow $
-    \(x :: PLifted a, y :: PLifted a) ->
-      plift (pconstant y #< pconstant x) === plift ((psuccessor # pconstant y) #<= pconstant x)
-
-lessThanPSuccessorEqLessThanOrEq ::
-  forall (a :: S -> Type).
-  ( PCountable a
-  , Arbitrary (PLifted a)
-  , Pretty (PLifted a)
-  , PUnsafeLiftDecl a
-  ) =>
-  TestTree
-lessThanPSuccessorEqLessThanOrEq =
-  testProperty "x < psuccessor y = x <= y" . forAllShrinkShow arbitrary shrink prettyShow $
-    \(x :: PLifted a, y :: PLifted a) ->
-      plift (pconstant x #< (psuccessor # pconstant y)) === plift (pconstant x #<= pconstant y)
-
-psuccessorNOneEqPSuccessor ::
-  forall (a :: S -> Type).
-  ( PCountable a
-  , Arbitrary (PLifted a)
-  , Pretty (PLifted a)
-  , Eq (PLifted a)
-  , Show (PLifted a)
-  , PUnsafeLiftDecl a
-  ) =>
-  TestTree
-psuccessorNOneEqPSuccessor =
-  testProperty "psuccessorN 1 /= psuccessor" . forAllShrinkShow arbitrary shrink prettyShow $
-    \(x :: PLifted a) ->
-      plift (psuccessorN # 1 # pconstant x) === plift (psuccessor # pconstant x)
-
-psuccessorNAdd ::
-  forall (a :: S -> Type).
-  ( PCountable a
-  , Arbitrary (PLifted a)
-  , Eq (PLifted a)
-  , Show (PLifted a)
-  , PUnsafeLiftDecl a
-  ) =>
-  TestTree
-psuccessorNAdd =
-  testProperty "psuccessorN n . psuccessorN m = psuccessorN (n + m)" . forAllShrinkShow arbitrary shrink show $
-    \(x :: PLifted a, n :: Positive Integer, m :: Positive Integer) ->
-      plift (psuccessorN # pfromInteger (getPositive n) # (psuccessorN # pfromInteger (getPositive m) # pconstant x))
-        === plift (psuccessorN # (pfromInteger (getPositive n) + pfromInteger (getPositive m)) # pconstant x)
+  [TestTree]
+pcountableLaws =
+  [ testProperty "x /= psuccessor x" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a) ->
+        plift (psuccessor # pconstant x) =/= x
+  , testProperty "y < x = psuccessor y <= x" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a, y :: PLifted a) ->
+        plift (pconstant y #< pconstant x) === plift ((psuccessor # pconstant y) #<= pconstant x)
+  , testProperty "x < psuccessor y = x <= y" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a, y :: PLifted a) ->
+        plift (pconstant x #< (psuccessor # pconstant y)) === plift (pconstant x #<= pconstant y)
+  , testProperty "psuccessorN 1 /= psuccessor" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a) ->
+        plift (psuccessorN # 1 # pconstant x) === plift (psuccessor # pconstant x)
+  , testProperty "psuccessorN n . psuccessorN m = psuccessorN (n + m)" . forAllShrinkShow arbitrary shrink show $
+      \(x :: PLifted a, n :: Positive Integer, m :: Positive Integer) ->
+        plift (psuccessorN # pfromInteger (getPositive n) # (psuccessorN # pfromInteger (getPositive m) # pconstant x))
+          === plift (psuccessorN # (pfromInteger (getPositive n) + pfromInteger (getPositive m)) # pconstant x)
+  ]
 
 penumerableLaws ::
   forall (a :: S -> Type).
