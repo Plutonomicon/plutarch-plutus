@@ -145,6 +145,7 @@ library
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter
+    , QuickCheck
     , random
     , sop-core
 
