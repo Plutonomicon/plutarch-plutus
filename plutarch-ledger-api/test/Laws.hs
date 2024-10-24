@@ -12,10 +12,11 @@ module Laws (
   lessThanPSuccessorEqLessThanOrEq,
   psuccessorNOneEqPSuccessor,
   psuccessorNAdd,
+  penumerableLaws,
 ) where
 
 import Plutarch.Builtin (pforgetData)
-import Plutarch.Enum (PCountable (psuccessor), psuccessorN)
+import Plutarch.Enum (PCountable (psuccessor, psuccessorN), PEnumerable (ppredecessor, ppredecessorN))
 import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Num (PNum (pfromInteger))
@@ -207,6 +208,32 @@ psuccessorNAdd =
     \(x :: PLifted a, n :: Positive Integer, m :: Positive Integer) ->
       plift (psuccessorN # pfromInteger (getPositive n) # (psuccessorN # pfromInteger (getPositive m) # pconstant x))
         === plift (psuccessorN # (pfromInteger (getPositive n) + pfromInteger (getPositive m)) # pconstant x)
+
+penumerableLaws ::
+  forall (a :: S -> Type).
+  ( PEnumerable a
+  , Arbitrary (PLifted a)
+  , Pretty (PLifted a)
+  , Eq (PLifted a)
+  , Show (PLifted a)
+  , PUnsafeLiftDecl a
+  ) =>
+  [TestTree]
+penumerableLaws =
+  [ testProperty "ppredecessor . psuccessor = id" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a) ->
+        plift (ppredecessor #$ psuccessor # pconstant x) === plift (pconstant x)
+  , testProperty "psuccessor . ppredecessor = id" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a) ->
+        plift (psuccessor #$ ppredecessor # pconstant x) === plift (pconstant x)
+  , testProperty "ppredecessorN 1 /= ppredecessor" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a) ->
+        plift (ppredecessorN # 1 # pconstant x) === plift (ppredecessor # pconstant x)
+  , testProperty "ppredecessorN n . ppredecessorN m = ppredecessorN (n + m)" . forAllShrinkShow arbitrary shrink show $
+      \(x :: PLifted a, n :: Positive Integer, m :: Positive Integer) ->
+        plift (ppredecessorN # pfromInteger (getPositive n) # (ppredecessorN # pfromInteger (getPositive m) # pconstant x))
+          === plift (ppredecessorN # (pfromInteger (getPositive n) + pfromInteger (getPositive m)) # pconstant x)
+  ]
 
 -- Helpers
 

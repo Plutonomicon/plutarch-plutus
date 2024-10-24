@@ -8,6 +8,7 @@ import Utils (
   checkLedgerProperties,
   checkLedgerPropertiesAssocMap,
   checkLedgerPropertiesPCountable,
+  checkLedgerPropertiesPEnumerable,
   checkLedgerPropertiesValue,
   fewerTests,
  )
@@ -49,5 +50,10 @@ tests =
         [ checkLedgerPropertiesPCountable @PInteger
         , checkLedgerPropertiesPCountable @PLA.PPosixTime
         -- , checkLedgerPropertiesPCountable @PPositive -- TODO: Figure out PLifted PPositive
+        ]
+    , testGroup
+        "PEnumerable"
+        [ checkLedgerPropertiesPEnumerable @PInteger
+        , checkLedgerPropertiesPEnumerable @PLA.PPosixTime
         ]
     ]

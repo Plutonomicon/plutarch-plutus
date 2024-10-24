@@ -65,7 +65,7 @@ instance PEnumerable PPosixTime where
   {-# INLINEABLE ppredecessorN #-}
   ppredecessorN = phoistAcyclic $ plam $ \p t ->
     let p' = pcon . PPosixTime . pcon . PDataNewtype . pdata . pto $ p
-     in p' - t
+     in t - p'
 
 -- | @since 2.0.0
 instance PIntegral PPosixTime where

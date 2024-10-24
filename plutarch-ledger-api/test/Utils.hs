@@ -6,12 +6,14 @@ module Utils (
   checkLedgerPropertiesValue,
   checkLedgerPropertiesAssocMap,
   checkLedgerPropertiesPCountable,
+  checkLedgerPropertiesPEnumerable,
   fewerTests,
 ) where
 
 import Laws (
   lessThanEqPSuccessorLessThanOrEq,
   lessThanPSuccessorEqLessThanOrEq,
+  penumerableLaws,
   pisDataLaws,
   psuccessorNAdd,
   psuccessorNOneEqPSuccessor,
@@ -21,7 +23,7 @@ import Laws (
   ptryFromLawsValue,
   punsafeLiftDeclLaws,
  )
-import Plutarch.Enum (PCountable)
+import Plutarch.Enum (PCountable, PEnumerable)
 import Plutarch.LedgerApi.V1 qualified as PLA
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude
@@ -99,6 +101,19 @@ checkLedgerPropertiesPCountable =
     , psuccessorNOneEqPSuccessor @a
     , psuccessorNAdd @a
     ]
+
+checkLedgerPropertiesPEnumerable ::
+  forall (a :: S -> Type).
+  ( Typeable a
+  , PEnumerable a
+  , Arbitrary (PLifted a)
+  , Pretty (PLifted a)
+  , Eq (PLifted a)
+  , Show (PLifted a)
+  , PUnsafeLiftDecl a
+  ) =>
+  TestTree
+checkLedgerPropertiesPEnumerable = testGroup (typeName @(S -> Type) @a) (penumerableLaws @a)
 
 fewerTests :: QuickCheckTests -> QuickCheckTests -> QuickCheckTests
 fewerTests divisor = (`quot` divisor)

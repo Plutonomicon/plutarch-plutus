@@ -83,7 +83,7 @@ with no maximal or minimal element.
 
 = Laws
 
-1. @ppredecessor . psuccessor x@ @=@ @psuccessor . ppredecessor@ @=@ @id@
+1. @ppredecessor . psuccessor@ @=@ @psuccessor . ppredecessor@ @=@ @id@
 
 If you define 'ppredecessorN', you must also ensure the following hold; the
 default implementation ensures this.
