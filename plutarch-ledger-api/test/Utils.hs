@@ -5,16 +5,23 @@ module Utils (
   checkLedgerProperties,
   checkLedgerPropertiesValue,
   checkLedgerPropertiesAssocMap,
+  checkLedgerPropertiesPCountable,
   fewerTests,
 ) where
 
 import Laws (
+  lessThanEqPSuccessorLessThanOrEq,
+  lessThanPSuccessorEqLessThanOrEq,
   pisDataLaws,
+  psuccessorNAdd,
+  psuccessorNOneEqPSuccessor,
+  psuccesssorNotEqSelf,
   ptryFromLaws,
   ptryFromLawsAssocMap,
   ptryFromLawsValue,
   punsafeLiftDeclLaws,
  )
+import Plutarch.Enum (PCountable)
 import Plutarch.LedgerApi.V1 qualified as PLA
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude
@@ -70,6 +77,27 @@ checkLedgerPropertiesAssocMap =
     [ punsafeLiftDeclLaws @(PLA.PMap PLA.Unsorted PInteger PInteger) "PMap <-> AssocMap.Map"
     , pisDataLaws @(PLA.PMap PLA.Unsorted PInteger PInteger) "PMap"
     , ptryFromLawsAssocMap
+    ]
+
+checkLedgerPropertiesPCountable ::
+  forall (a :: S -> Type).
+  ( Typeable a
+  , PCountable a
+  , Arbitrary (PLifted a)
+  , Pretty (PLifted a)
+  , Eq (PLifted a)
+  , Show (PLifted a)
+  , PUnsafeLiftDecl a
+  ) =>
+  TestTree
+checkLedgerPropertiesPCountable =
+  testGroup
+    (typeName @(S -> Type) @a)
+    [ psuccesssorNotEqSelf @a
+    , lessThanEqPSuccessorLessThanOrEq @a
+    , lessThanPSuccessorEqLessThanOrEq @a
+    , psuccessorNOneEqPSuccessor @a
+    , psuccessorNAdd @a
     ]
 
 fewerTests :: QuickCheckTests -> QuickCheckTests -> QuickCheckTests

@@ -1,11 +1,13 @@
 module V1 (tests) where
 
+import Plutarch.Integer (PInteger)
 import Plutarch.LedgerApi.V1 qualified as PLA
 import PlutusLedgerApi.V1.Orphans ()
 import Test.Tasty (TestTree, adjustOption, testGroup)
 import Utils (
   checkLedgerProperties,
   checkLedgerPropertiesAssocMap,
+  checkLedgerPropertiesPCountable,
   checkLedgerPropertiesValue,
   fewerTests,
  )
@@ -42,4 +44,10 @@ tests =
     , adjustOption (fewerTests 16) $ checkLedgerProperties @PLA.PTxInfo
     , checkLedgerPropertiesValue
     , checkLedgerPropertiesAssocMap
+    , testGroup
+        "PCountable"
+        [ checkLedgerPropertiesPCountable @PInteger
+        , checkLedgerPropertiesPCountable @PLA.PPosixTime
+        -- , checkLedgerPropertiesPCountable @PPositive -- TODO: Figure out PLifted PPositive
+        ]
     ]
