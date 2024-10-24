@@ -44,6 +44,22 @@ import Test.QuickCheck (
   vectorOf,
  )
 
+-- | @since WIP
+deriving via (Value.CurrencySymbol, Value.TokenName) instance Arbitrary Value.AssetClass
+
+-- | @since WIP
+deriving via (Value.CurrencySymbol, Value.TokenName) instance CoArbitrary Value.AssetClass
+
+-- | @since WIP
+instance Function Value.AssetClass where
+  {-# INLINEABLE function #-}
+  function = functionMap into outOf
+    where
+      into :: Value.AssetClass -> (Value.CurrencySymbol, Value.TokenName)
+      into = coerce
+      outOf :: (Value.CurrencySymbol, Value.TokenName) -> Value.AssetClass
+      outOf = coerce
+
 -- | @since 1.0.0
 deriving via Integer instance Arbitrary PLA.Lovelace
 

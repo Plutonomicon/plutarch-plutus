@@ -18,6 +18,7 @@ module Plutarch.LedgerApi.Value (
   PTokenName (..),
   AmountGuarantees (..),
   PLovelace (..),
+  PAssetClass (..),
 
   -- * Functions
 
@@ -74,6 +75,7 @@ import Plutarch.List qualified as List
 import Plutarch.Prelude hiding (psingleton)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
+import PlutusLedgerApi.V1.Value qualified as PlutusValue
 import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.Prelude qualified as PlutusTx
 
@@ -434,6 +436,73 @@ instance PTryFrom PData (PAsData (PValue 'AssocMap.Unsorted 'NonZero)) where
     (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Unsorted 'NoGuarantees)) opq
     unwrapped <- tcont . plet . papp passertNonZero . pfromData $ opq'
     pure (punsafeCoerce opq, unwrapped)
+
+-- | @since WIP
+newtype PAssetClass (s :: S) = PAssetClass (Term s (PDataNewtype (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName))))
+  deriving stock
+    ( -- | @since WIP
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since WIP
+      PlutusType
+    , -- | @since WIP
+      PIsData
+    , -- | @since WIP
+      PEq
+    , -- | @since WIP
+      PShow
+    , -- | @since WIP
+      PTryFrom PData
+    , -- | @since WIP
+      POrd
+    )
+
+-- | @since WIP
+instance PPartialOrd PAssetClass where
+  {-# INLINEABLE (#<=) #-}
+  ac1 #<= ac2 = pmatch ac1 $ \(PAssetClass ac1') ->
+    pmatch ac2 $ \(PAssetClass ac2') ->
+      pmatch ac1' $ \(PDataNewtype pair1) ->
+        pmatch ac2' $ \(PDataNewtype pair2) ->
+          plet (pfromData $ pfstBuiltin # pfromData pair1) $ \fst1 ->
+            plet (pfromData $ pfstBuiltin # pfromData pair2) $ \fst2 ->
+              (fst1 #< fst2)
+                #|| ( (fst1 #== fst2)
+                        #&& let snd1 = pfromData $ psndBuiltin # pfromData pair1
+                                snd2 = pfromData $ psndBuiltin # pfromData pair2
+                             in snd1 #<= snd2
+                    )
+  {-# INLINEABLE (#<) #-}
+  ac1 #< ac2 = pmatch ac1 $ \(PAssetClass ac1') ->
+    pmatch ac2 $ \(PAssetClass ac2') ->
+      pmatch ac1' $ \(PDataNewtype pair1) ->
+        pmatch ac2' $ \(PDataNewtype pair2) ->
+          plet (pfromData $ pfstBuiltin # pfromData pair1) $ \fst1 ->
+            plet (pfromData $ pfstBuiltin # pfromData pair2) $ \fst2 ->
+              (fst1 #< fst2)
+                #|| ( (fst1 #== fst2)
+                        #&& let snd1 = pfromData $ psndBuiltin # pfromData pair1
+                                snd2 = pfromData $ psndBuiltin # pfromData pair2
+                             in snd1 #< snd2
+                    )
+
+-- | @since WIP
+instance DerivePlutusType PAssetClass where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+instance PUnsafeLiftDecl PAssetClass where
+  type PLifted PAssetClass = PlutusValue.AssetClass
+
+-- | @since WIP
+deriving via
+  (DerivePConstantViaData PlutusValue.AssetClass PAssetClass)
+  instance
+    PConstantDecl PlutusValue.AssetClass
+
+-- | @since WIP
+instance PTryFrom PData (PAsData PAssetClass)
 
 {- | \'Forget\' that a 'Value' has an only-positive guarantee.
 
