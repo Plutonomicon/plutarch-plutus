@@ -20,6 +20,7 @@ import Plutarch.Test.Suite.Plutarch.Recursion qualified as Recursion
 import Plutarch.Test.Suite.Plutarch.Show qualified as Show
 import Plutarch.Test.Suite.Plutarch.String qualified as String
 import Plutarch.Test.Suite.Plutarch.Unit qualified as Unit
+import Plutarch.Test.Suite.Plutarch.Uplc qualified as Uplc
 import Plutarch.Test.Suite.PlutarchLedgerApi.Regressions qualified as Regressions
 import Plutarch.Test.Suite.PlutarchLedgerApi.V1 qualified as V1
 import Plutarch.Test.Suite.PlutarchLedgerApi.V2 qualified as V2
@@ -62,6 +63,7 @@ main = do
         , Show.tests
         , String.tests
         , Unit.tests
+        , Uplc.tests
         ]
     , testGroup
         "PlutarchLedgerApi"
