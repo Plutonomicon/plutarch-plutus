@@ -1,9 +1,10 @@
-module V2 (tests) where
+module Plutarch.Test.Suite.PlutarchLedgerApi.V2 (tests) where
 
 import Plutarch.LedgerApi.V2 qualified as PLA
+import Plutarch.Test.Laws (checkLedgerProperties)
+import Plutarch.Test.Utils (fewerTests)
 import PlutusLedgerApi.V2.Orphans ()
 import Test.Tasty (TestTree, adjustOption, testGroup)
-import Utils (checkLedgerProperties, fewerTests)
 
 tests :: TestTree
 tests =

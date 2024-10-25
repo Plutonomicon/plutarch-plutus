@@ -1,4 +1,4 @@
-module Regressions (tests) where
+module Plutarch.Test.Suite.PlutarchLedgerApi.Regressions (tests) where
 
 import Plutarch.LedgerApi.Interval (PInterval, pcontains)
 import Plutarch.LedgerApi.V1 (PPosixTime)

@@ -1,14 +1,19 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE PolyKinds #-}
 
-module Laws (
+module Plutarch.Test.Laws (
   punsafeLiftDeclLaws,
   pisDataLaws,
   ptryFromLaws,
-  ptryFromLawsValue,
-  ptryFromLawsAssocMap,
   pcountableLaws,
   penumerableLaws,
+  ptryFromLawsValue,
+  ptryFromLawsAssocMap,
+  checkLedgerPropertiesValue,
+  checkLedgerPropertiesAssocMap,
+  checkLedgerProperties,
+  checkLedgerPropertiesPCountable,
+  checkLedgerPropertiesPEnumerable,
 ) where
 
 import Plutarch.Builtin (pforgetData)
@@ -30,8 +35,9 @@ import Test.QuickCheck (
   (=/=),
   (===),
  )
-import Test.Tasty (TestTree)
+import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
+import Type.Reflection (Typeable, tyConName, typeRep, typeRepTyCon)
 
 -- plift . pconstant = id
 punsafeLiftDeclLaws ::
@@ -133,6 +139,25 @@ ptryFromLawsAssocMap = [pDataAgreementProp]
         plift (pfromData . ptryFrom @(PAsData (V1.PMap V1.Unsorted PInteger PInteger)) (pconstant . Plutus.toData $ v) $ fst)
           === v
 
+-- This is an ugly kludge because PValue doesn't have a direct PData conversion,
+-- and bringing one in would break too much other stuff to be worth it.
+checkLedgerPropertiesValue :: TestTree
+checkLedgerPropertiesValue =
+  testGroup "PValue" . mconcat $
+    [ punsafeLiftDeclLaws @(V1.PValue V1.Unsorted V1.NoGuarantees) "PValue <-> Value"
+    , pisDataLaws @(V1.PValue V1.Unsorted V1.NoGuarantees) "PValue"
+    , ptryFromLawsValue
+    ]
+
+-- Same as above
+checkLedgerPropertiesAssocMap :: TestTree
+checkLedgerPropertiesAssocMap =
+  testGroup "PMap" . mconcat $
+    [ punsafeLiftDeclLaws @(V1.PMap V1.Unsorted PInteger PInteger) "PMap <-> AssocMap.Map"
+    , pisDataLaws @(V1.PMap V1.Unsorted PInteger PInteger) "PMap"
+    , ptryFromLawsAssocMap
+    ]
+
 pcountableLaws ::
   forall (a :: S -> Type).
   ( PCountable a
@@ -188,7 +213,63 @@ penumerableLaws =
           === plift (ppredecessorN # (pconstant n + pconstant m) # pconstant x)
   ]
 
+checkLedgerProperties ::
+  forall (a :: S -> Type).
+  ( Typeable a
+  , PUnsafeLiftDecl a
+  , PTryFrom PData a
+  , Eq (PLifted a)
+  , Show (PLifted a)
+  , Arbitrary (PLifted a)
+  , PIsData a
+  , Plutus.ToData (PLifted a)
+  , Typeable (PLifted a)
+  , Pretty (PLifted a)
+  ) =>
+  TestTree
+checkLedgerProperties =
+  testGroup (typeName @(S -> Type) @a) . mconcat $
+    [ punsafeLiftDeclLaws @a punsafeLiftDeclLawsName
+    , pisDataLaws @a (typeName @(S -> Type) @a)
+    , ptryFromLaws @a
+    ]
+  where
+    punsafeLiftDeclLawsName :: String
+    punsafeLiftDeclLawsName =
+      typeName @(S -> Type) @a
+        <> " <-> "
+        <> typeName @Type @(PLifted a)
+
+checkLedgerPropertiesPCountable ::
+  forall (a :: S -> Type).
+  ( Typeable a
+  , PCountable a
+  , Arbitrary (PLifted a)
+  , Pretty (PLifted a)
+  , Eq (PLifted a)
+  , Show (PLifted a)
+  , PUnsafeLiftDecl a
+  ) =>
+  TestTree
+checkLedgerPropertiesPCountable = testGroup (typeName @(S -> Type) @a) (pcountableLaws @a)
+
+checkLedgerPropertiesPEnumerable ::
+  forall (a :: S -> Type).
+  ( Typeable a
+  , PEnumerable a
+  , Arbitrary (PLifted a)
+  , Pretty (PLifted a)
+  , Eq (PLifted a)
+  , Show (PLifted a)
+  , PUnsafeLiftDecl a
+  ) =>
+  TestTree
+checkLedgerPropertiesPEnumerable = testGroup (typeName @(S -> Type) @a) (penumerableLaws @a)
+
 -- Helpers
 
 prettyShow :: forall (a :: Type). Pretty a => a -> String
 prettyShow = renderString . layoutPretty defaultLayoutOptions . pretty
+
+typeName :: forall k (a :: k). Typeable a => String
+typeName = tyConName . typeRepTyCon $ typeRep @a
