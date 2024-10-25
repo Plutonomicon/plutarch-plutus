@@ -113,6 +113,7 @@ test-suite tests
     Plutarch.Test.Suite.Plutarch.POrd
     Plutarch.Test.Suite.Plutarch.Rational
     Plutarch.Test.Suite.Plutarch.Recursion
+    Plutarch.Test.Suite.Plutarch.Scripts
     Plutarch.Test.Suite.Plutarch.Show
     Plutarch.Test.Suite.Plutarch.String
     Plutarch.Test.Suite.Plutarch.Unit
@@ -123,6 +124,7 @@ test-suite tests
     Plutarch.Test.Suite.PlutarchLedgerApi.V3
 
   build-depends:
+    , base16-bytestring
     , bytestring
     , plutarch
     , plutarch-ledger-api
@@ -133,6 +135,7 @@ test-suite tests
     , plutus-tx
     , prettyprinter
     , QuickCheck
+    , serialise
     , tasty
     , tasty-hunit
     , tasty-quickcheck

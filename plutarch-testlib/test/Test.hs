@@ -17,6 +17,7 @@ import Plutarch.Test.Suite.Plutarch.POrd qualified as POrd
 import Plutarch.Test.Suite.Plutarch.Pair qualified as Pair
 import Plutarch.Test.Suite.Plutarch.Rational qualified as Rational
 import Plutarch.Test.Suite.Plutarch.Recursion qualified as Recursion
+import Plutarch.Test.Suite.Plutarch.Scripts qualified as Scripts
 import Plutarch.Test.Suite.Plutarch.Show qualified as Show
 import Plutarch.Test.Suite.Plutarch.String qualified as String
 import Plutarch.Test.Suite.Plutarch.Unit qualified as Unit
@@ -60,6 +61,7 @@ main = do
         , POrd.tests
         , Rational.tests
         , Recursion.tests
+        , Scripts.tests
         , Show.tests
         , String.tests
         , Unit.tests
