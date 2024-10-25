@@ -107,6 +107,7 @@ test-suite tests
     Plutarch.Test.Suite.Plutarch.Integer
     Plutarch.Test.Suite.Plutarch.List
     Plutarch.Test.Suite.Plutarch.Maybe
+    Plutarch.Test.Suite.Plutarch.Monadic
     Plutarch.Test.Suite.PlutarchLedgerApi.Regressions
     Plutarch.Test.Suite.PlutarchLedgerApi.V1
     Plutarch.Test.Suite.PlutarchLedgerApi.V2
@@ -126,5 +127,6 @@ test-suite tests
     , tasty
     , tasty-hunit
     , tasty-quickcheck
+    , transformers
 
   hs-source-dirs: test

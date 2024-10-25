@@ -11,6 +11,7 @@ import Plutarch.Test.Suite.Plutarch.Field qualified as Field
 import Plutarch.Test.Suite.Plutarch.Integer qualified as Integer
 import Plutarch.Test.Suite.Plutarch.List qualified as List
 import Plutarch.Test.Suite.Plutarch.Maybe qualified as Maybe
+import Plutarch.Test.Suite.Plutarch.Monadic qualified as Monadic
 import Plutarch.Test.Suite.PlutarchLedgerApi.Regressions qualified as Regressions
 import Plutarch.Test.Suite.PlutarchLedgerApi.V1 qualified as V1
 import Plutarch.Test.Suite.PlutarchLedgerApi.V2 qualified as V2
@@ -44,6 +45,7 @@ main = do
         , Integer.tests
         , List.tests
         , Maybe.tests
+        , Monadic.tests
         ]
     , testGroup
         "PlutarchLedgerApi"
