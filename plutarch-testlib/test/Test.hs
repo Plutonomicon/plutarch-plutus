@@ -21,6 +21,7 @@ import Plutarch.Test.Suite.Plutarch.Recursion qualified as Recursion
 import Plutarch.Test.Suite.Plutarch.Scripts qualified as Scripts
 import Plutarch.Test.Suite.Plutarch.Show qualified as Show
 import Plutarch.Test.Suite.Plutarch.String qualified as String
+import Plutarch.Test.Suite.Plutarch.Tracing qualified as Tracing
 import Plutarch.Test.Suite.Plutarch.TryFrom qualified as TryFrom
 import Plutarch.Test.Suite.Plutarch.Unit qualified as Unit
 import Plutarch.Test.Suite.Plutarch.Uplc qualified as Uplc
@@ -70,6 +71,7 @@ main = do
         , Uplc.tests
         , TryFrom.tests
         , Interval.tests
+        , Tracing.tests
         ]
     , testGroup
         "PlutarchLedgerApi"

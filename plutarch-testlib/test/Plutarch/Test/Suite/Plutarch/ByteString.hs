@@ -1,8 +1,13 @@
 module Plutarch.Test.Suite.Plutarch.ByteString (tests) where
 
+import Data.ByteString (ByteString)
 import Data.ByteString qualified as BS
+import GHC.Exts (fromList)
+import Plutarch.ByteString (pallBS)
 import Plutarch.Prelude
-import Plutarch.Test.Golden (goldenAssertEqual, goldenEval, goldenGroup, plutarchGolden)
+import Plutarch.String (pisHexDigit)
+import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)
+import Plutarch.Test.Unit (testEvalEqual)
 import Test.Tasty (TestTree, testGroup)
 
 {-# HLINT ignore tests "Monoid law, left identity" #-}
@@ -19,17 +24,17 @@ tests =
             ( let a :: [String] = ["42", "ab", "df", "c9"]
                in pconstant @PByteString (BS.pack $ fmap readByte a) #== phexByteStr (concat a)
             )
-        , goldenAssertEqual "plengthByteStr" ((plengthBS # phexByteStr "012f") #== 2) (pcon PTrue)
+        , goldenEvalEqual "plengthByteStr" ((plengthBS # phexByteStr "012f") #== 2) (pcon PTrue)
         , goldenEval
             "pconsBS"
             ( let xs = phexByteStr "48fCd1"
                in (plengthBS #$ pconsBS # pconstant 91 # xs) #== (1 + plengthBS # xs)
             )
-        , goldenAssertEqual
+        , goldenEvalEqual
             "pindexByteStr"
             (pindexBS # phexByteStr "4102af" # 1)
             (pconstant @PByte 0x02)
-        , goldenAssertEqual
+        , goldenEvalEqual
             "psliceByteStr"
             (psliceBS # 2 # 3 # phexByteStr "4102afde5b2a")
             (phexByteStr "afde5b")
@@ -38,7 +43,7 @@ tests =
               s2 = phexByteStr "34"
            in goldenGroup
                 "semigroup"
-                [ goldenAssertEqual "concats" (s1 <> s2) (phexByteStr "1234")
+                [ goldenEvalEqual "concats" (s1 <> s2) (phexByteStr "1234")
                 , goldenGroup
                     "laws"
                     [ goldenEval "id.1" ((mempty <> s1) #== s1)
@@ -46,7 +51,54 @@ tests =
                     ]
                 ]
         ]
+    , testGroup
+        "Unit tests"
+        [ testGroup
+            "pallBS"
+            [ testEvalEqual
+                "predicate matching all entries works"
+                (pallBS # plam (#== pconstant 97) # pconstant "aaaaaaaaaa")
+                (pcon PTrue)
+            , testEvalEqual
+                "predicate missing one case fails"
+                (pallBS # plam (#== pconstant 97) # pconstant "aaaaaaaaab")
+                (pcon PFalse)
+            ]
+        , testGroup
+            "pisHexDigit"
+            [ testEvalEqual
+                "numbers are hex digits"
+                (pallBS # plam (\x -> pisHexDigit #$ pbyteToInteger # x) # pconstant "0123456789")
+                (pcon PTrue)
+            , testEvalEqual
+                "A-F are hex digits"
+                (pallBS # plam (\x -> pisHexDigit #$ pbyteToInteger # x) # pconstant "ABCDEF")
+                (pcon PTrue)
+            , testEvalEqual
+                "a-f are hex digits"
+                (pallBS # plam (\x -> pisHexDigit #$ pbyteToInteger # x) # pconstant "abcdef")
+                (pcon PTrue)
+            , testEvalEqual
+                "no other ASCII code is a hex digit"
+                (pallBS # plam (\x -> pnot #$ pisHexDigit #$ pbyteToInteger # x) # pconstant nonHexAscii)
+                (pcon PTrue)
+            ]
+        ]
     ]
 
 readByte :: Num a => String -> a
 readByte a = fromInteger $ read $ "0x" <> a
+
+nonHexAscii :: ByteString
+nonHexAscii =
+  -- All codes up to, but not including, the first digit
+  fromList [0, 1 .. 47]
+    <>
+    -- Between digits to upper-case
+    fromList [58, 59 .. 64]
+    <>
+    -- Between upper-case and lower-case
+    fromList [71, 72 .. 96]
+    <>
+    -- After lower-case
+    fromList [103 .. 127]

@@ -2,7 +2,7 @@ module Plutarch.Test.Suite.Plutarch.Uplc (tests) where
 
 import Plutarch.Internal (punsafeConstantInternal)
 import Plutarch.Prelude
-import Plutarch.Test.Golden (goldenAssertFail, goldenEval, goldenGroup, plutarchGolden)
+import Plutarch.Test.Golden (goldenEval, goldenEvalFail, goldenGroup, plutarchGolden)
 import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
 import Test.Tasty (TestTree, testGroup)
@@ -21,7 +21,7 @@ tests =
                       PLC.ValueOf (PLC.DefaultUniApply PLC.DefaultUniProtoList PLC.DefaultUniInteger) [1]
                in pforce (punsafeBuiltin PLC.MkCons) # (2 :: Term _ PInteger) # l
             )
-        , goldenAssertFail
+        , goldenEvalFail
             "fails:True:[1]"
             ( let l :: Term _ (PBuiltinList POpaque) =
                     punsafeConstantInternal . PLC.Some $
@@ -39,14 +39,14 @@ tests =
                   )
                   (1, 2)
             )
-        , goldenAssertFail
+        , goldenEvalFail
             "fails:MkPair-1-2"
             (punsafeBuiltin PLC.MkPairData # (1 :: Term _ PInteger) # (2 :: Term _ PInteger))
         ]
     , plutarchGolden
         "uplc-misc"
         "misc"
-        [ goldenAssertFail "perror" perror
+        [ goldenEvalFail "perror" perror
         , goldenGroup
             "laziness"
             [ goldenEval "f.d" (pforce . pdelay $ (0 :: Term s PInteger))

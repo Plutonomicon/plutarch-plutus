@@ -3,8 +3,8 @@ module Plutarch.Test.Golden (
   plutarchGolden,
   goldenGroup,
   goldenEval,
-  goldenAssertEqual,
-  goldenAssertFail,
+  goldenEvalEqual,
+  goldenEvalFail,
 ) where
 
 import Data.Aeson (ToJSON (toEncoding, toJSON), encode, object, pairs, (.=))
@@ -64,11 +64,11 @@ goldenGroup = GoldenTestTree
 goldenEval :: TestName -> ClosedTerm a -> GoldenTestTree
 goldenEval = GoldenTestTreeEval
 
-goldenAssertEqual :: TestName -> ClosedTerm a -> ClosedTerm a -> GoldenTestTree
-goldenAssertEqual = GoldenTestTreeEvalAssertEqual
+goldenEvalEqual :: TestName -> ClosedTerm a -> ClosedTerm a -> GoldenTestTree
+goldenEvalEqual = GoldenTestTreeEvalAssertEqual
 
-goldenAssertFail :: TestName -> ClosedTerm a -> GoldenTestTree
-goldenAssertFail = GoldenTestTreeEvalFail
+goldenEvalFail :: TestName -> ClosedTerm a -> GoldenTestTree
+goldenEvalFail = GoldenTestTreeEvalFail
 
 mkFailed :: TestName -> (e -> String) -> Either e a -> Either (TestTree, [(TestName, Benchmark)]) a
 mkFailed name showErr = either (Left . (,[]) . singleTest name . FailedTest . showErr) Right

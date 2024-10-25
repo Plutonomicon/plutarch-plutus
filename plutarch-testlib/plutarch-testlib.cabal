@@ -86,6 +86,7 @@ library
     , tagged
     , tasty
     , tasty-golden
+    , tasty-hunit
     , tasty-quickcheck
     , text
 
@@ -93,6 +94,7 @@ library
     Plutarch.Test.Golden
     Plutarch.Test.Laws
     Plutarch.Test.SpecTypes
+    Plutarch.Test.Unit
     Plutarch.Test.Utils
 
 test-suite tests
@@ -117,6 +119,7 @@ test-suite tests
     Plutarch.Test.Suite.Plutarch.Scripts
     Plutarch.Test.Suite.Plutarch.Show
     Plutarch.Test.Suite.Plutarch.String
+    Plutarch.Test.Suite.Plutarch.Tracing
     Plutarch.Test.Suite.Plutarch.TryFrom
     Plutarch.Test.Suite.Plutarch.Unit
     Plutarch.Test.Suite.Plutarch.Uplc

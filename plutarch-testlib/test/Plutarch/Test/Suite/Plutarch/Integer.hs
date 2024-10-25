@@ -2,7 +2,7 @@ module Plutarch.Test.Suite.Plutarch.Integer (tests) where
 
 import Plutarch
 import Plutarch.Prelude
-import Plutarch.Test.Golden (goldenAssertEqual, goldenEval, goldenGroup, plutarchGolden)
+import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)
 import Test.Tasty (TestTree, testGroup)
 
 tests :: TestTree
@@ -21,7 +21,7 @@ tests =
             [ goldenEval "lam" fib
             , goldenGroup
                 "app"
-                [ goldenAssertEqual "9" (fib # 9) (pconstant 34)
+                [ goldenEvalEqual "9" (fib # 9) (pconstant 34)
                 ]
             ]
         , goldenEval "uglyDouble" uglyDouble

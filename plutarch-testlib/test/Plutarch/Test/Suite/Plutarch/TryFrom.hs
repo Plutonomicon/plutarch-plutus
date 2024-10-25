@@ -9,7 +9,7 @@ import Plutarch.Builtin (
  )
 import Plutarch.Prelude
 import Plutarch.Reducible (Reduce)
-import Plutarch.Test.Golden (goldenAssertEqual, goldenAssertFail, goldenEval, goldenGroup, plutarchGolden)
+import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenEvalFail, goldenGroup, plutarchGolden)
 import Plutarch.TryFrom (
   PTryFromExcess,
   ptryFrom',
@@ -32,63 +32,63 @@ tests =
         "data-verif"
         [ goldenGroup
             "erroneous"
-            [ goldenAssertFail
+            [ goldenEvalFail
                 "(String, Integer) /= (String, String)"
                 ( checkDeep
                     @(PBuiltinPair (PAsData PInteger) (PAsData PByteString))
                     @(PBuiltinPair (PAsData PByteString) (PAsData PByteString))
                     (pdata $ ppairDataBuiltin # pdata (pconstant "foo") # pdata (pconstant "bar"))
                 )
-            , goldenAssertFail
+            , goldenEvalFail
                 "[String] /= [Integer]"
                 ( checkDeep
                     @(PBuiltinList (PAsData PByteString))
                     @(PBuiltinList (PAsData PInteger))
                     (pdata $ (pcons # pdata (pconstant 3)) #$ (psingleton # pdata (pconstant 4)))
                 )
-            , goldenAssertFail
+            , goldenEvalFail
                 "A { test := Integer, test2 := Integer } /= { test := String, test2 := Integer }"
                 ( checkDeep
                     @(PDataRecord (("foo" ':= PInteger) ': ("bar" ':= PInteger) ': '[]))
                     @(PDataRecord (("foo" ':= PByteString) ': ("bar" ':= PInteger) ': '[]))
                     (pdata (pdcons @"foo" # pdata (pconstant "baz") #$ pdcons @"bar" # pdata (pconstant 42) # pdnil))
                 )
-            , goldenAssertFail
+            , goldenEvalFail
                 "PDataSum constr 2"
                 ( checkDeep
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString]])
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
                     (punsafeCoerce $ pconstant $ Constr 1 [PlutusTx.I 5, B "foo"])
                 )
-            , goldenAssertFail
+            , goldenEvalFail
                 "PDataSum wrong record type"
                 ( checkDeep
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PByteString, "b4" ':= PByteString]])
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
                     (punsafeCoerce $ pconstant $ Constr 2 [PlutusTx.I 5, B "foo"])
                 )
-            , goldenAssertFail
+            , goldenEvalFail
                 "[ByteString] (with length == 2) /= PRational"
                 ( checkDeep
                     @PRational
                     @(PBuiltinList (PAsData PByteString))
                     (pdata $ pcons # pdata (phexByteStr "41") #$ pcons # pdata (phexByteStr "2b") # pnil)
                 )
-            , goldenAssertFail
+            , goldenEvalFail
                 "[Integer] (with length == 0) /= PRational"
                 ( checkDeep
                     @PRational
                     @(PBuiltinList (PAsData PInteger))
                     (pdata pnil)
                 )
-            , goldenAssertFail
+            , goldenEvalFail
                 "[Integer] (with length == 3) /= PRational"
                 ( checkDeep
                     @PRational
                     @(PBuiltinList (PAsData PInteger))
                     (pdata $ pcons # pconstantData 42 #$ pcons # pconstantData 7 #$ pcons # pconstantData 0 # pnil)
                 )
-            , goldenAssertFail
+            , goldenEvalFail
                 "[Integer] (with length == 2, with 0 denominator) /= PRational"
                 ( checkDeep
                     @PRational
@@ -161,7 +161,7 @@ tests =
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
                     (punsafeCoerce $ pconstant $ Constr 1 [PlutusTx.I 5, B "foo"])
                 )
-            , goldenAssertEqual
+            , goldenEvalEqual
                 "recover PWrapInt"
                 ( pconstant 42
                     #== unTermCont (snd <$> tcont (ptryFrom @(PAsData PWrapInt) (pforgetData $ pdata $ pconstant @PInteger 42)))
@@ -189,14 +189,14 @@ tests =
             "removing the data wrapper"
             [ goldenGroup
                 "erroneous"
-                [ goldenAssertFail
+                [ goldenEvalFail
                     "(String, Integer) /= (String, String)"
                     ( checkDeepUnwrap
                         @(PBuiltinPair (PAsData PByteString) (PAsData PByteString))
                         @(PBuiltinPair (PAsData PInteger) (PAsData PByteString))
                         (pdata $ ppairDataBuiltin # pdata (pconstant 42) # pdata (pconstant "bar"))
                     )
-                , goldenAssertFail
+                , goldenEvalFail
                     "[String] /= [Integer]"
                     ( checkDeepUnwrap
                         @(PBuiltinList (PAsData PInteger))
@@ -237,14 +237,14 @@ tests =
                         @(PDataRecord '["_0" ':= PDataRecord '["_1" ':= PInteger]])
                         (pdata $ pdcons # pdata (pdcons # pdata (pconstant 42) # pdnil) # pdnil)
                     )
-                , goldenAssertFail
+                , goldenEvalFail
                     "fails"
                     ( checkDeep
                         @(PDataRecord '["_0" ':= PDataRecord '["_1" ':= PByteString]])
                         @(PDataRecord '["_0" ':= PDataRecord '["_1" ':= PInteger]])
                         (pdata $ pdcons # pdata (pdcons # pdata (pconstant 42) # pdnil) # pdnil)
                     )
-                , goldenAssertEqual
+                , goldenEvalEqual
                     "sample usage contains the right value"
                     ( pconstant 42
                         #== theField

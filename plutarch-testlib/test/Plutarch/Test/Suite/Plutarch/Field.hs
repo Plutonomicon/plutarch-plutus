@@ -5,7 +5,7 @@ module Plutarch.Test.Suite.Plutarch.Field (tests) where
 import Plutarch.Builtin (ppairDataBuiltin)
 import Plutarch.LedgerApi.V1 (PAddress (PAddress))
 import Plutarch.Prelude
-import Plutarch.Test.Golden (goldenAssertEqual, goldenEval, goldenGroup, plutarchGolden)
+import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)
 import Plutarch.Test.SpecTypes (PTriplet)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
@@ -29,22 +29,22 @@ tests =
                 , goldenEval "getY" getY
                 , goldenEval "tripYZ" tripYZ
                 ]
-            , goldenAssertEqual "tripSum.A" (tripSum # tripA) (pconstant 1000)
-            , goldenAssertEqual "tripSum.B" (tripSum # tripB) (pconstant 100)
-            , goldenAssertEqual "tripSum.C" (tripSum # tripC) (pconstant 10)
-            , goldenAssertEqual "tripYZ=tripZY" tripYZ tripZY
+            , goldenEvalEqual "tripSum.A" (tripSum # tripA) (pconstant 1000)
+            , goldenEvalEqual "tripSum.B" (tripSum # tripB) (pconstant 100)
+            , goldenEvalEqual "tripSum.C" (tripSum # tripC) (pconstant 10)
+            , goldenEvalEqual "tripYZ=tripZY" tripYZ tripZY
             ]
         , plutarchGolden
             "rangeFields"
             "field.rangeFields"
             [ goldenEval "lam" rangeFields
-            , goldenAssertEqual "app" (rangeFields # someFields) (pconstant 11)
+            , goldenEvalEqual "app" (rangeFields # someFields) (pconstant 11)
             ]
         , plutarchGolden
             "dropFields"
             "field.dropFields"
             [ goldenEval "lam" dropFields
-            , goldenAssertEqual "app" (dropFields # someFields) (pconstant 17)
+            , goldenEvalEqual "app" (dropFields # someFields) (pconstant 17)
             ]
         , plutarchGolden
             "pletFields"
@@ -52,20 +52,20 @@ tests =
             [ goldenGroup
                 "letSomeFields"
                 [ goldenEval "lam" letSomeFields
-                , goldenAssertEqual "order" letSomeFields letSomeFields'
-                , goldenAssertEqual "app" (letSomeFields # someFields) (pconstant 14)
+                , goldenEvalEqual "order" letSomeFields letSomeFields'
+                , goldenEvalEqual "app" (letSomeFields # someFields) (pconstant 14)
                 ]
             , goldenGroup
                 "nFields"
                 [ goldenEval "lam" nFields
-                , goldenAssertEqual "app" (nFields # someFields) (pconstant 1)
+                , goldenEvalEqual "app" (nFields # someFields) (pconstant 1)
                 ]
             ]
         , plutarchGolden
             "other"
             "field.other"
-            [ goldenAssertEqual "by" by (pconstant 10)
-            , goldenAssertEqual "dotPlus" dotPlus (pconstant 19010)
+            [ goldenEvalEqual "by" by (pconstant 10)
+            , goldenEvalEqual "dotPlus" dotPlus (pconstant 19010)
             ]
         , plutarchGolden
             "data"

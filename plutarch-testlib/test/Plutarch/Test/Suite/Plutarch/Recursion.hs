@@ -7,7 +7,7 @@ import Plutarch.Bool (pif, (#==))
 import Plutarch.Integer (PInteger)
 
 import Plutarch.Lift (pconstant)
-import Plutarch.Test.Golden (goldenAssertEqual, goldenEval, goldenGroup, plutarchGolden)
+import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)
 import Test.Tasty (TestTree, testGroup)
 
 tests :: TestTree
@@ -22,11 +22,11 @@ tests =
             [ goldenEval "lam" iterateN
             , goldenGroup
                 "app"
-                [ goldenAssertEqual
+                [ goldenEvalEqual
                     "succ"
                     (iterateN # 10 # succ # 0)
                     (pconstant @PInteger 10)
-                , goldenAssertEqual
+                , goldenEvalEqual
                     "double"
                     (iterateN # 10 # double # 1)
                     (pconstant @PInteger 1024)

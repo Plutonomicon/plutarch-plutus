@@ -15,7 +15,7 @@ import Plutarch.LedgerApi.Interval (
   pto,
  )
 import Plutarch.Prelude hiding (psingleton, pto)
-import Plutarch.Test.Golden (goldenAssertEqual, goldenEval, goldenGroup, plutarchGolden)
+import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)
 import Plutarch.Test.Utils (fewerTests)
 import Test.Tasty (TestTree, adjustOption, testGroup)
 import Test.Tasty.QuickCheck (arbitrary, forAllShrinkShow, shrink, testProperty)
@@ -33,33 +33,33 @@ tests =
             ]
         , goldenGroup
             "contains"
-            [ goldenAssertEqual "in interval" (pcontains # i2 # i4) (pcon PTrue)
-            , goldenAssertEqual "out interval" (pcontains # i4 # i2) (pcon PFalse)
-            , goldenAssertEqual "always" (pcontains # palways @PInteger # i1) (pcon PTrue)
+            [ goldenEvalEqual "in interval" (pcontains # i2 # i4) (pcon PTrue)
+            , goldenEvalEqual "out interval" (pcontains # i4 # i2) (pcon PFalse)
+            , goldenEvalEqual "always" (pcontains # palways @PInteger # i1) (pcon PTrue)
             ]
         , goldenGroup
             "member"
-            [ goldenAssertEqual "[b,c], a < b" (pmember # pconstantData 1 # i3) (pcon PFalse)
-            , goldenAssertEqual "[b,c], a = b" (pmember # pconstantData 2 # i3) (pcon PTrue)
-            , goldenAssertEqual "[b,c], a > b, a < c" (pmember # pconstantData 3 # i3) (pcon PTrue)
-            , goldenAssertEqual "[b,c], a = c" (pmember # pconstantData 4 # i3) (pcon PTrue)
-            , goldenAssertEqual "[b,c], a > c" (pmember # pconstantData 5 # i3) (pcon PFalse)
+            [ goldenEvalEqual "[b,c], a < b" (pmember # pconstantData 1 # i3) (pcon PFalse)
+            , goldenEvalEqual "[b,c], a = b" (pmember # pconstantData 2 # i3) (pcon PTrue)
+            , goldenEvalEqual "[b,c], a > b, a < c" (pmember # pconstantData 3 # i3) (pcon PTrue)
+            , goldenEvalEqual "[b,c], a = c" (pmember # pconstantData 4 # i3) (pcon PTrue)
+            , goldenEvalEqual "[b,c], a > c" (pmember # pconstantData 5 # i3) (pcon PFalse)
             ]
         , let theHull :: Term s (PInterval PInteger)
               theHull = phull # (psingleton # pconstantData 3) # (psingleton # pconstantData 5)
            in goldenGroup
                 "hull"
-                [ goldenAssertEqual "hull 3 5 contains 3 5" (pcontains # theHull # i2) (pcon PTrue)
-                , goldenAssertEqual "2 not member of hull 3 5" (pmember # pconstantData 2 # theHull) (pcon PFalse)
-                , goldenAssertEqual "6 not member of hull 3 5" (pmember # pconstantData 6 # theHull) (pcon PFalse)
+                [ goldenEvalEqual "hull 3 5 contains 3 5" (pcontains # theHull # i2) (pcon PTrue)
+                , goldenEvalEqual "2 not member of hull 3 5" (pmember # pconstantData 2 # theHull) (pcon PFalse)
+                , goldenEvalEqual "6 not member of hull 3 5" (pmember # pconstantData 6 # theHull) (pcon PFalse)
                 ]
         , goldenGroup
             "intersection"
-            [ goldenAssertEqual
+            [ goldenEvalEqual
                 "intersection [2,4] [3,5] contains [3,4]"
                 (pcontains # (pintersection # i3 # i2) # i5)
                 (pcon PTrue)
-            , goldenAssertEqual
+            , goldenEvalEqual
                 "intersection [3,5] [2,4] contains [3,4]"
                 (pcontains # (pintersection # i2 # i3) # i5)
                 (pcon PTrue)
