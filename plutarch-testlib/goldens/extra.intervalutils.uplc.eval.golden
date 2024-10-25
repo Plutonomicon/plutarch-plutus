@@ -13,5 +13,5 @@ member.[b,c], a > c program 1.0.0 False
 hull.hull 3 5 contains 3 5 program 1.0.0 True
 hull.2 not member of hull 3 5 program 1.0.0 False
 hull.6 not member of hull 3 5 program 1.0.0 False
-intersection.intesection [2,4] [3,5] contains [3,4] program 1.0.0 True
-intersection.intesection [3,5] [2,4] contains [3,4] program 1.0.0 True
+intersection.intersection [2,4] [3,5] contains [3,4] program 1.0.0 True
+intersection.intersection [3,5] [2,4] contains [3,4] program 1.0.0 True

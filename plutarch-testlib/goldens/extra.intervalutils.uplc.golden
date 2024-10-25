@@ -3501,7 +3501,7 @@ hull.6 not member of hull 3 5 program
                                                                                                      !2))
                                                                                                (!26
                                                                                                   !2))
-                                                                                            (I 2)
+                                                                                            (I 6)
                                                                                             ((\!0
                                                                                                !0 ->
                                                                                                 (\!0 ->
@@ -3983,7 +3983,7 @@ hull.6 not member of hull 3 5 program
            (Constr 1 []))
         (force mkCons))
      [])
-intersection.intesection [2,4] [3,5] contains [3,4] program
+intersection.intersection [2,4] [3,5] contains [3,4] program
   1.0.0
   ((\!0 ->
       (\!0 ->
@@ -4562,7 +4562,7 @@ intersection.intesection [2,4] [3,5] contains [3,4] program
            [])
         (I 3))
      (I 4))
-intersection.intesection [3,5] [2,4] contains [3,4] program
+intersection.intersection [3,5] [2,4] contains [3,4] program
   1.0.0
   ((\!0 ->
       (\!0 ->

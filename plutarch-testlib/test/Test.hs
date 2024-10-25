@@ -9,6 +9,7 @@ import Plutarch.Test.Suite.Plutarch.ByteString qualified as ByteString
 import Plutarch.Test.Suite.Plutarch.Either qualified as Either
 import Plutarch.Test.Suite.Plutarch.Field qualified as Field
 import Plutarch.Test.Suite.Plutarch.Integer qualified as Integer
+import Plutarch.Test.Suite.Plutarch.Interval qualified as Interval
 import Plutarch.Test.Suite.Plutarch.List qualified as List
 import Plutarch.Test.Suite.Plutarch.Maybe qualified as Maybe
 import Plutarch.Test.Suite.Plutarch.Monadic qualified as Monadic
@@ -68,6 +69,7 @@ main = do
         , Unit.tests
         , Uplc.tests
         , TryFrom.tests
+        , Interval.tests
         ]
     , testGroup
         "PlutarchLedgerApi"
