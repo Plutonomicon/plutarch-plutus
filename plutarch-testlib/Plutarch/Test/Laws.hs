@@ -15,6 +15,7 @@ module Plutarch.Test.Laws (
   checkLedgerPropertiesPCountable,
   checkLedgerPropertiesPEnumerable,
   checkHaskellEquivalent,
+  ordHaskellEquivalents,
 ) where
 
 import Plutarch.Builtin (pforgetData)
@@ -23,13 +24,13 @@ import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.Lift (PConstantDecl (PConstanted), PUnsafeLiftDecl (PLifted))
 import Plutarch.Positive (Positive)
 import Plutarch.Prelude
+import Plutarch.Test.Utils (instanceOfType, prettyShow, typeName)
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common qualified as Plutus
 import PlutusLedgerApi.V1 qualified as PLA
 import PlutusLedgerApi.V1.Orphans ()
 import PlutusTx.AssocMap qualified as AssocMap
-import Prettyprinter (Pretty (pretty), defaultLayoutOptions, layoutPretty)
-import Prettyprinter.Render.String (renderString)
+import Prettyprinter (Pretty)
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
   Property,
@@ -39,7 +40,7 @@ import Test.QuickCheck (
  )
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
-import Type.Reflection (Typeable, tyConName, typeRep, typeRepTyCon)
+import Type.Reflection (Typeable)
 
 -- plift . pconstant = id
 punsafeLiftDeclLaws ::
@@ -286,10 +287,36 @@ checkHaskellEquivalent goHaskell goPlutarch =
   forAllShrinkShow arbitrary shrink show $
     \(input :: haskellInput) -> goHaskell input === plift (goPlutarch # pconstant input)
 
--- Helpers
-
-prettyShow :: forall (a :: Type). Pretty a => a -> String
-prettyShow = renderString . layoutPretty defaultLayoutOptions . pretty
-
-typeName :: forall k (a :: k). Typeable a => String
-typeName = tyConName . typeRepTyCon $ typeRep @a
+ordHaskellEquivalents ::
+  forall (haskellInput :: Type).
+  ( Typeable haskellInput
+  , Typeable (PConstanted haskellInput)
+  , Ord haskellInput
+  , haskellInput ~ PLifted (PConstanted haskellInput)
+  , PPartialOrd (PConstanted haskellInput)
+  , PConstantDecl haskellInput
+  , Show haskellInput
+  , Arbitrary haskellInput
+  ) =>
+  TestTree
+ordHaskellEquivalents =
+  testGroup
+    ( mconcat
+        [ instanceOfType @Type @haskellInput "Ord"
+        , " <-> "
+        , instanceOfType @(S -> Type) @(PConstanted haskellInput) "POrd"
+        ]
+    )
+    [ testProperty "== = #==" $
+        checkHaskellEquivalent @(haskellInput, haskellInput) @Bool
+          (uncurry (==))
+          (plam $ \pair -> (pfstBuiltin # pair) #== (psndBuiltin # pair))
+    , testProperty "< = #<" $
+        checkHaskellEquivalent @(haskellInput, haskellInput) @Bool
+          (uncurry (<))
+          (plam $ \pair -> (pfstBuiltin # pair) #< (psndBuiltin # pair))
+    , testProperty "<= = #<=" $
+        checkHaskellEquivalent @(haskellInput, haskellInput) @Bool
+          (uncurry (<=))
+          (plam $ \pair -> (pfstBuiltin # pair) #<= (psndBuiltin # pair))
+    ]

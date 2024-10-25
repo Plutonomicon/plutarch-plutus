@@ -1,4 +1,5 @@
 module Plutarch.Test.Golden (
+  GoldenTestTree,
   plutarchGolden,
   goldenGroup,
   goldenEval,

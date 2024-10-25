@@ -13,6 +13,7 @@ import Plutarch.Test.Suite.Plutarch.List qualified as List
 import Plutarch.Test.Suite.Plutarch.Maybe qualified as Maybe
 import Plutarch.Test.Suite.Plutarch.Monadic qualified as Monadic
 import Plutarch.Test.Suite.Plutarch.PLam qualified as PLam
+import Plutarch.Test.Suite.Plutarch.POrd qualified as POrd
 import Plutarch.Test.Suite.Plutarch.Pair qualified as Pair
 import Plutarch.Test.Suite.PlutarchLedgerApi.Regressions qualified as Regressions
 import Plutarch.Test.Suite.PlutarchLedgerApi.V1 qualified as V1
@@ -50,6 +51,7 @@ main = do
         , Monadic.tests
         , Pair.tests
         , PLam.tests
+        , POrd.tests
         ]
     , testGroup
         "PlutarchLedgerApi"
