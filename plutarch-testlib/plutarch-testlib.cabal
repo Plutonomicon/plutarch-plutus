@@ -106,6 +106,7 @@ test-suite tests
     Plutarch.Test.Suite.Plutarch.Field
     Plutarch.Test.Suite.Plutarch.Integer
     Plutarch.Test.Suite.Plutarch.List
+    Plutarch.Test.Suite.Plutarch.Maybe
     Plutarch.Test.Suite.PlutarchLedgerApi.Regressions
     Plutarch.Test.Suite.PlutarchLedgerApi.V1
     Plutarch.Test.Suite.PlutarchLedgerApi.V2
