@@ -1,3 +1,4 @@
+-- | Utilities for unit testing plutarch terms
 module Plutarch.Test.Unit (
   testCompileFail,
   testEval,
@@ -51,7 +52,13 @@ testCompileFail name term = testCase name $ do
 {- | Assert that term compiled and evaluated without errors and matches the expected value
 note that comparison is done on AST level, not by `Eq` or `PEq`
 -}
-testEvalEqual :: TestName -> ClosedTerm a -> ClosedTerm a -> TestTree
+testEvalEqual ::
+  TestName ->
+  -- | Actual
+  ClosedTerm a ->
+  -- | Expected
+  ClosedTerm a ->
+  TestTree
 testEvalEqual name term expectedTerm = testCase name $ do
   compiledTerm <- case compile NoTracing term of
     Left err -> assertFailure $ "Failed to compile: " <> Text.unpack err
@@ -67,7 +74,7 @@ testEvalEqual name term expectedTerm = testCase name $ do
     (Right evaluatedTerm, _, _) -> pure evaluatedTerm
   assertEqual "" (printScript evaluatedExpected) (printScript evaluatedTerm)
 
-{- | Assert that term compiled (with specified tracing level and `DetTracing`) and evaluated
+{- | Assert that term compiled (with specified tracing level and `TracingMode.DetTracing`) and evaluated
 without errors produced traces that match expected value. Note that this succeeds even if script
 evaluated to error if traces still match
 -}

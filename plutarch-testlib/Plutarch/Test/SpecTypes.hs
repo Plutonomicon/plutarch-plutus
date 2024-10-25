@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UndecidableInstances #-}
 
+-- | Dummy types used in tests
 module Plutarch.Test.SpecTypes (Triplet (..), PTriplet (..)) where
 
 import PlutusTx qualified
@@ -16,6 +17,7 @@ import Plutarch.Lift (
 import Plutarch.Prelude
 import Test.Tasty.QuickCheck (Arbitrary, arbitrary)
 
+-- | Tuple of three elements of the same type
 data Triplet a = Triplet a a a
   deriving stock (Show, Eq, Ord)
 

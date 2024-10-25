@@ -60,22 +60,14 @@ common lang
     -Wno-unrecognised-warning-flags -Wno-unrecognised-pragmas
     -Wno-operator-whitespace -Wno-unticked-promoted-constructors
     -fprint-equality-relations -fprint-explicit-kinds
-    -fprint-explicit-foralls -Wno-unused-packages
+    -fprint-explicit-foralls
 
 library
   import:          lang
   build-depends:
     , aeson
     , bytestring
-    , constraints
-    , containers
-    , cryptonite
-    , data-default
     , filepath
-    , flat
-    , generics-sop
-    , lens
-    , mtl
     , plutarch
     , plutarch-ledger-api
     , plutarch-orphanage
@@ -83,7 +75,6 @@ library
     , plutus-tx
     , prettyprinter
     , QuickCheck
-    , tagged
     , tasty
     , tasty-golden
     , tasty-hunit
@@ -101,6 +92,7 @@ test-suite tests
   import:         lang
   type:           exitcode-stdio-1.0
   main-is:        Test.hs
+  hs-source-dirs: test
   other-modules:
     Plutarch.Test.Suite.Plutarch.Bool
     Plutarch.Test.Suite.Plutarch.ByteString
@@ -138,13 +130,9 @@ test-suite tests
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
-    , prettyprinter
-    , QuickCheck
     , serialise
     , tasty
     , tasty-hunit
     , tasty-quickcheck
     , text
     , transformers
-
-  hs-source-dirs: test

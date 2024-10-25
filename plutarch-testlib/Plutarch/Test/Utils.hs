@@ -14,6 +14,7 @@ import Prettyprinter.Render.String (renderString)
 import Test.Tasty.QuickCheck (QuickCheckTests)
 import Type.Reflection (TypeRep, Typeable, tyConName, typeRep, typeRepTyCon, pattern App)
 
+-- | Decrease number of quickcheck tests by specified factor
 fewerTests :: QuickCheckTests -> QuickCheckTests -> QuickCheckTests
 fewerTests divisor = (`quot` divisor)
 
@@ -34,5 +35,10 @@ typeName' isTopLevel rep =
       | not isTopLevel = "(" <> s <> ")"
       | otherwise = s
 
-instanceOfType :: forall k (a :: k). Typeable a => String -> String
+instanceOfType ::
+  forall k (a :: k).
+  Typeable a =>
+  -- | Instance name
+  String ->
+  String
 instanceOfType instanceName = instanceName <> " " <> typeName' False (typeRep @a)

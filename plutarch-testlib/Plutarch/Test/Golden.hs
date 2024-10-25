@@ -1,3 +1,7 @@
+{- | Utilities for golden testing
+
+To regenerate golden tests it is enough to remove @./goldens@ directory and rerun tests
+-}
 module Plutarch.Test.Golden (
   GoldenTestTree,
   plutarchGolden,
@@ -13,7 +17,6 @@ import Data.ByteString.Lazy (ByteString)
 import Data.ByteString.Lazy.Char8 qualified as LBS
 import Data.ByteString.Short qualified as Short
 import Data.Int (Int64)
-import Data.Tagged (Tagged (Tagged))
 import Data.Text (Text)
 import Data.Text qualified as Text
 import Data.Text.Encoding qualified as Encoding
@@ -26,17 +29,39 @@ import PlutusLedgerApi.V1 (ExBudget (ExBudget), ExCPU, ExMemory)
 import System.FilePath ((</>))
 import Test.Tasty (TestName, TestTree, testGroup)
 import Test.Tasty.Golden (goldenVsString)
-import Test.Tasty.Providers (IsTest (run, testOptions), singleTest, testFailed, testPassed)
+import Test.Tasty.HUnit (assertEqual, assertFailure, testCase)
 
+-- | Opaque type representing tree of golden tests
 data GoldenTestTree where
   GoldenTestTree :: TestName -> [GoldenTestTree] -> GoldenTestTree
   GoldenTestTreeEval :: TestName -> ClosedTerm a -> GoldenTestTree
   GoldenTestTreeEvalFail :: TestName -> ClosedTerm a -> GoldenTestTree
   GoldenTestTreeEvalAssertEqual :: TestName -> ClosedTerm a -> ClosedTerm a -> GoldenTestTree
 
-plutarchGolden :: TestName -> FilePath -> [GoldenTestTree] -> TestTree
+{- | Convert tree of golden tests into standard Tasty `TestTree`, capturing results produced
+by nested golden tests
+-}
+plutarchGolden ::
+  TestName ->
+  -- | Base file name of golden file path.
+  --
+  -- e.g. @"foo"@ will result in goldens:
+  --
+  -- * @.//goldens//foo.bench.golden@ - With execution units and size
+  --
+  -- * @.//goldens//foo.uplc.eval.golden@ - With AST after evaluation
+  --
+  -- * @.//goldens//foo.uplc.golden@ - With AST before evaluation
+  FilePath ->
+  [GoldenTestTree] ->
+  TestTree
 plutarchGolden topName goldenPath tests = testGroup topName testsWithGoldens
   where
+    -- Implementation note: Because we want to collect all Benchmarks created by nested tests
+    -- we cannot use plain TestTree for these (without hacks like passing some MVars around)
+    -- so we have out own GoldenTestTree that when being converted to TestTree will execute
+    -- all terms and collect the results
+
     (tests', benchmarks') = unzip $ map mkTest tests
     benchmarks = mconcat benchmarks'
     goldenTests =
@@ -58,20 +83,35 @@ plutarchGolden topName goldenPath tests = testGroup topName testsWithGoldens
       ]
     testsWithGoldens = goldenTests <> tests'
 
+{- | Like `Test.Tasty.testGroup` but for golden tests
+
+Goldens in the group will be prefixed by the group name
+-}
 goldenGroup :: TestName -> [GoldenTestTree] -> GoldenTestTree
 goldenGroup = GoldenTestTree
 
+-- | Like `Plutarch.Test.Unit.testEval` but will append to goldens created by enclosing `plutarchGolden`
 goldenEval :: TestName -> ClosedTerm a -> GoldenTestTree
 goldenEval = GoldenTestTreeEval
 
-goldenEvalEqual :: TestName -> ClosedTerm a -> ClosedTerm a -> GoldenTestTree
+-- | Like `Plutarch.Test.Unit.testEvalEqual` but will append to goldens created by enclosing `plutarchGolden`
+goldenEvalEqual ::
+  TestName ->
+  -- | Actual value
+  ClosedTerm a ->
+  -- | Expected value
+  ClosedTerm a ->
+  GoldenTestTree
 goldenEvalEqual = GoldenTestTreeEvalAssertEqual
 
+-- | Like `Plutarch.Test.Unit.testEvalFail` but will append to goldens created by enclosing `plutarchGolden`
 goldenEvalFail :: TestName -> ClosedTerm a -> GoldenTestTree
 goldenEvalFail = GoldenTestTreeEvalFail
 
+-- Internals
+
 mkFailed :: TestName -> (e -> String) -> Either e a -> Either (TestTree, [(TestName, Benchmark)]) a
-mkFailed name showErr = either (Left . (,[]) . singleTest name . FailedTest . showErr) Right
+mkFailed name showErr = either (Left . (,[]) . testCase name . assertFailure . showErr) Right
 
 mkTest :: GoldenTestTree -> (TestTree, [(TestName, Benchmark)])
 mkTest (GoldenTestTree name tests) = (testGroup name tests', benchmarks)
@@ -81,13 +121,13 @@ mkTest (GoldenTestTree name tests) = (testGroup name tests', benchmarks)
 mkTest (GoldenTestTreeEval name term) = either id id $ do
   benchmark <- mkFailed name Text.unpack $ benchmarkTerm term
   _ <- mkFailed name show $ result benchmark
-  pure (singleTest name PassedTest, [(name, benchmark)])
+  pure (testCase name (pure ()), [(name, benchmark)])
 mkTest (GoldenTestTreeEvalFail name term) = either id id $ do
   benchmark <- mkFailed name Text.unpack $ benchmarkTerm term
   pure $ case result benchmark of
-    Left _ -> (singleTest name PassedTest, [(name, benchmark)])
+    Left _ -> (testCase name (pure ()), [(name, benchmark)])
     Right _ ->
-      ( singleTest name $ FailedTest "Script did not terminate with error as expected"
+      ( testCase name $ assertFailure "Script did not terminate with error as expected"
       , [(name, benchmark)]
       )
 mkTest (GoldenTestTreeEvalAssertEqual name term expected) = either id id $ do
@@ -96,39 +136,9 @@ mkTest (GoldenTestTreeEvalAssertEqual name term expected) = either id id $ do
   actual <- mkFailed name show $ result termBenchmark
   expected <- mkFailed name show $ result expectedBenchmark
   pure
-    ( singleTest name $ ScriptEqualTest actual expected
+    ( testCase name $ assertEqual "" (printScript expected) (printScript actual)
     , [(name, termBenchmark)]
     )
-
-data PassedTest = PassedTest
-
-instance IsTest PassedTest where
-  testOptions = Tagged []
-  run _ _ _ = pure $ testPassed ""
-
-newtype FailedTest = FailedTest String
-
-instance IsTest FailedTest where
-  testOptions = Tagged []
-  run _ (FailedTest msg) _ = pure $ testFailed msg
-
-data ScriptEqualTest = ScriptEqualTest Script Script
-
-instance IsTest ScriptEqualTest where
-  testOptions = Tagged []
-  run _ (ScriptEqualTest actualScript expectedScript) _ =
-    if actualScript' == expectedScript'
-      then pure $ testPassed ""
-      else
-        pure $
-          testFailed $
-            unlines
-              [ "Expected: " <> expectedScript'
-              , "     Got: " <> actualScript'
-              ]
-    where
-      actualScript' = printScript actualScript
-      expectedScript' = printScript expectedScript
 
 benchmarkTerm :: ClosedTerm a -> Either Text Benchmark
 benchmarkTerm term = do
