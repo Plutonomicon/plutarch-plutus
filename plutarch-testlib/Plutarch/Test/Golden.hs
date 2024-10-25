@@ -9,13 +9,13 @@ module Plutarch.Test.Golden (
 import Data.Aeson (ToJSON (toEncoding, toJSON), encode, object, pairs, (.=))
 import Data.Bifunctor (first)
 import Data.ByteString.Lazy (ByteString)
-import Data.ByteString.Lazy.Char8 qualified as Char8
 import Data.ByteString.Lazy.Char8 qualified as LBS
 import Data.ByteString.Short qualified as Short
 import Data.Int (Int64)
 import Data.Tagged (Tagged (Tagged))
 import Data.Text (Text)
 import Data.Text qualified as Text
+import Data.Text.Encoding qualified as Encoding
 import Plutarch (ClosedTerm, Config (Tracing), LogLevel (LogInfo), Script, TracingMode (DetTracing), compile)
 import Plutarch.Evaluate (EvalError, evalScript)
 import Plutarch.Internal.Other (printScript)
@@ -176,7 +176,7 @@ mkBenchmarkValue go =
     . map
       ( \(testName, benchmark) ->
           mconcat
-            [ Char8.pack testName
+            [ encodeStringUtf8 testName
             , " "
             , go benchmark
             ]
@@ -186,7 +186,10 @@ mkBenchGoldenValue :: [(TestName, Benchmark)] -> ByteString
 mkBenchGoldenValue = mkBenchmarkValue (encode . PerfBenchmark)
 
 mkUplcEvalGoldenValue :: [(TestName, Benchmark)] -> ByteString
-mkUplcEvalGoldenValue = mkBenchmarkValue (either (const "program 1.0.0 error") (Char8.pack . printScript) . result)
+mkUplcEvalGoldenValue = mkBenchmarkValue (either (const "program 1.0.0 error") (encodeStringUtf8 . printScript) . result)
 
 mkUplcGoldenValue :: [(TestName, Benchmark)] -> ByteString
-mkUplcGoldenValue = mkBenchmarkValue (Char8.pack . printScript . unevaluated)
+mkUplcGoldenValue = mkBenchmarkValue (encodeStringUtf8 . printScript . unevaluated)
+
+encodeStringUtf8 :: String -> ByteString
+encodeStringUtf8 = LBS.fromStrict . Encoding.encodeUtf8 . Text.pack
