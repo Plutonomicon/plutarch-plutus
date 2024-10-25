@@ -5,11 +5,7 @@ import Plutarch.LedgerApi.Utils (pmaybeToMaybeData)
 import Plutarch.List (pconvertLists, pfoldl')
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenAssertEqual, goldenAssertFail, goldenEval, goldenGroup, plutarchGolden)
-import Test.QuickCheck (
-  Arbitrary (arbitrary, shrink),
-  forAllShrinkShow,
-  (===),
- )
+import Plutarch.Test.Laws (checkHaskellEquivalent)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
 
@@ -96,8 +92,10 @@ tests =
         ]
     , testGroup
         "Properties"
-        [ testProperty "pfindEquiv" . forAllShrinkShow arbitrary shrink show $
-            \(lst :: [Integer]) -> find even lst === plift (pmaybeToMaybeData #$ pfind # peven # pconstant lst)
+        [ testProperty "pfindEquiv" $
+            checkHaskellEquivalent
+              (find @[] @Integer even)
+              (plam $ \lst -> pmaybeToMaybeData #$ pfind # peven # lst)
         ]
     ]
 

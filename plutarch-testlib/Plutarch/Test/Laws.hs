@@ -14,12 +14,13 @@ module Plutarch.Test.Laws (
   checkLedgerProperties,
   checkLedgerPropertiesPCountable,
   checkLedgerPropertiesPEnumerable,
+  checkHaskellEquivalent,
 ) where
 
 import Plutarch.Builtin (pforgetData)
 import Plutarch.Enum (PCountable (psuccessor, psuccessorN), PEnumerable (ppredecessor, ppredecessorN))
 import Plutarch.LedgerApi.V1 qualified as V1
-import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
+import Plutarch.Lift (PConstantDecl (PConstanted), PUnsafeLiftDecl (PLifted))
 import Plutarch.Positive (Positive)
 import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeCoerce)
@@ -31,6 +32,7 @@ import Prettyprinter (Pretty (pretty), defaultLayoutOptions, layoutPretty)
 import Prettyprinter.Render.String (renderString)
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
+  Property,
   forAllShrinkShow,
   (=/=),
   (===),
@@ -265,6 +267,24 @@ checkLedgerPropertiesPEnumerable ::
   ) =>
   TestTree
 checkLedgerPropertiesPEnumerable = testGroup (typeName @(S -> Type) @a) (penumerableLaws @a)
+
+checkHaskellEquivalent ::
+  forall (haskellInput :: Type) (haskellOutput :: Type).
+  ( haskellInput ~ PLifted (PConstanted haskellInput)
+  , PConstantDecl haskellInput
+  , Show haskellInput
+  , Arbitrary haskellInput
+  , haskellOutput ~ PLifted (PConstanted haskellOutput)
+  , PConstantDecl haskellOutput
+  , Show haskellOutput
+  , Eq haskellOutput
+  ) =>
+  (haskellInput -> haskellOutput) ->
+  ClosedTerm (PConstanted haskellInput :--> PConstanted haskellOutput) ->
+  Property
+checkHaskellEquivalent goHaskell goPlutarch =
+  forAllShrinkShow arbitrary shrink show $
+    \(input :: haskellInput) -> goHaskell input === plift (goPlutarch # pconstant input)
 
 -- Helpers
 
