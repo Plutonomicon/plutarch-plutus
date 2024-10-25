@@ -112,6 +112,7 @@ test-suite tests
     Plutarch.Test.Suite.Plutarch.PLam
     Plutarch.Test.Suite.Plutarch.POrd
     Plutarch.Test.Suite.Plutarch.Rational
+    Plutarch.Test.Suite.Plutarch.Recursion
     Plutarch.Test.Suite.PlutarchLedgerApi.Regressions
     Plutarch.Test.Suite.PlutarchLedgerApi.V1
     Plutarch.Test.Suite.PlutarchLedgerApi.V2
