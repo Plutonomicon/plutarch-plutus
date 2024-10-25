@@ -116,6 +116,7 @@ test-suite tests
     Plutarch.Test.Suite.Plutarch.Scripts
     Plutarch.Test.Suite.Plutarch.Show
     Plutarch.Test.Suite.Plutarch.String
+    Plutarch.Test.Suite.Plutarch.TryFrom
     Plutarch.Test.Suite.Plutarch.Unit
     Plutarch.Test.Suite.Plutarch.Uplc
     Plutarch.Test.Suite.PlutarchLedgerApi.Regressions
