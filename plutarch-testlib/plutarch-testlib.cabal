@@ -92,6 +92,7 @@ library
   exposed-modules:
     Plutarch.Test.Golden
     Plutarch.Test.Laws
+    Plutarch.Test.SpecTypes
     Plutarch.Test.Utils
 
 test-suite tests
@@ -102,6 +103,7 @@ test-suite tests
     Plutarch.Test.Suite.Plutarch.Bool
     Plutarch.Test.Suite.Plutarch.ByteString
     Plutarch.Test.Suite.Plutarch.Either
+    Plutarch.Test.Suite.Plutarch.Field
     Plutarch.Test.Suite.PlutarchLedgerApi.Regressions
     Plutarch.Test.Suite.PlutarchLedgerApi.V1
     Plutarch.Test.Suite.PlutarchLedgerApi.V2
@@ -113,6 +115,7 @@ test-suite tests
     , plutarch-ledger-api
     , plutarch-orphanage
     , plutarch-testlib
+    , plutus-core
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter

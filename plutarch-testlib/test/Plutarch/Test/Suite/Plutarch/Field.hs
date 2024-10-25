@@ -1,84 +1,120 @@
 {-# LANGUAGE OverloadedRecordDot #-}
 
-module Plutarch.FieldSpec (spec) where
+module Plutarch.Test.Suite.Plutarch.Field (tests) where
 
 import Plutarch.Builtin (ppairDataBuiltin)
 import Plutarch.LedgerApi.V1 (PAddress (PAddress))
 import Plutarch.Prelude
-import Plutarch.SpecTypes (PTriplet)
-import Plutarch.Test
+import Plutarch.Test.Golden (goldenAssertEqual, goldenEval, goldenGroup, plutarchGolden)
+import Plutarch.Test.SpecTypes (PTriplet)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
 import PlutusLedgerApi.V1.Address (Address (Address))
 import PlutusLedgerApi.V1.Credential (Credential (PubKeyCredential))
 import PlutusTx qualified
-import Test.Hspec
-import Test.Tasty.HUnit
+import Test.Tasty (TestTree, testGroup)
 
-spec :: Spec
-spec = describe "field" $ do
-  -- example: Trips
-  describe "trips" . pgoldenSpec $ do
-    -- compilation
-    "lam" @\ do
-      "tripSum" @| tripSum
-      "getY" @| getY
-      "tripYZ" @| tripYZ
-    "tripSum" @\ do
-      "A" @| tripSum # tripA @-> \p ->
-        plift p @?= 1000
-      "B" @| tripSum # tripB @-> \p ->
-        plift p @?= 100
-      "C" @| tripSum # tripC @-> \p ->
-        plift p @?= 10
-    "tripYZ=tripZY" @| tripZY @== tripYZ
-  -- rangeFields
-  describe "rangeFields" . pgoldenSpec $ do
-    -- compilation
-    "lam" @| rangeFields
-    "app" @| rangeFields # someFields @-> \p -> plift p @?= 11
-  -- dropFields
-  describe "dropFields" . pgoldenSpec $ do
-    -- compilation
-    "lam" @| dropFields
-    "app" @| dropFields # someFields @-> \p -> plift p @?= 17
-  -- pletFields
-  describe "pletFields" . pgoldenSpec $ do
-    -- compilation
-    "letSomeFields" @\ do
-      "lam" @| letSomeFields
-      "order" @| letSomeFields' @== letSomeFields
-      "app" @| letSomeFields # someFields @-> \p -> plift p @?= 14
-    "nFields" @\ do
-      "lam" @| nFields
-      "app" @| nFields # someFields @-> \p -> plift p @?= 1
-  describe "other" . pgoldenSpec $ do
-    "by" @| by @-> \p -> plift p @?= 10
-    "dotPlus" @| dotPlus @-> \p -> plift p @?= 19010
-  describe "data" . pgoldenSpec $ do
-    "pmatch-pfield" @\ do
-      -- These two should ideally have the exact same efficiency.
-      "pmatch" @\ do
-        "newtype"
-          @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
-              in pmatch addr $ \(PAddress addrFields) ->
-                  pletFields @'["credential", "stakingCredential"] addrFields $ \y ->
-                    ppairDataBuiltin # getField @"credential" y # getField @"stakingCredential" y
-      "pfield" @\ do
-        "newtype"
-          @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
-              in pletFields @'["credential", "stakingCredential"] addr $ \y ->
-                  ppairDataBuiltin # getField @"credential" y # getField @"stakingCredential" y
-    "pfield-pletFields" @\ do
-      "pfield" @\ do
-        "single"
-          @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
-              in pfromData $ pfield @"credential" # addr
-      "pletFields" @\ do
-        "single"
-          @| let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
-              in pletFields @'["credential"] addr $ \y ->
-                  pfromData $ getField @"credential" y
+tests :: TestTree
+tests =
+  testGroup
+    "Field"
+    [ testGroup
+        "Goldens"
+        [ plutarchGolden
+            "Trips"
+            "field.trips"
+            [ goldenGroup
+                "lam"
+                [ goldenEval "tripSum" tripSum
+                , goldenEval "getY" getY
+                , goldenEval "tripYZ" tripYZ
+                ]
+            , goldenAssertEqual "tripSum.A" (tripSum # tripA) (pconstant 1000)
+            , goldenAssertEqual "tripSum.B" (tripSum # tripB) (pconstant 100)
+            , goldenAssertEqual "tripSum.C" (tripSum # tripC) (pconstant 10)
+            , goldenAssertEqual "tripYZ=tripZY" tripYZ tripZY
+            ]
+        , plutarchGolden
+            "rangeFields"
+            "field.rangeFields"
+            [ goldenEval "lam" rangeFields
+            , goldenAssertEqual "app" (rangeFields # someFields) (pconstant 11)
+            ]
+        , plutarchGolden
+            "dropFields"
+            "field.dropFields"
+            [ goldenEval "lam" dropFields
+            , goldenAssertEqual "app" (dropFields # someFields) (pconstant 17)
+            ]
+        , plutarchGolden
+            "pletFields"
+            "field.pletFields"
+            [ goldenGroup
+                "letSomeFields"
+                [ goldenEval "lam" letSomeFields
+                , goldenAssertEqual "order" letSomeFields letSomeFields'
+                , goldenAssertEqual "app" (letSomeFields # someFields) (pconstant 14)
+                ]
+            , goldenGroup
+                "nFields"
+                [ goldenEval "lam" nFields
+                , goldenAssertEqual "app" (nFields # someFields) (pconstant 1)
+                ]
+            ]
+        , plutarchGolden
+            "other"
+            "field.other"
+            [ goldenAssertEqual "by" by (pconstant 10)
+            , goldenAssertEqual "dotPlus" dotPlus (pconstant 19010)
+            ]
+        , plutarchGolden
+            "data"
+            "field.data"
+            [ goldenGroup
+                "pmatch-pfield"
+                [ goldenGroup
+                    "pmatch"
+                    [ goldenEval
+                        "newtype"
+                        ( let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+                           in pmatch addr $ \(PAddress addrFields) ->
+                                pletFields @'["credential", "stakingCredential"] addrFields $ \y ->
+                                  ppairDataBuiltin # getField @"credential" y # getField @"stakingCredential" y
+                        )
+                    ]
+                , goldenGroup
+                    "pfield"
+                    [ goldenEval
+                        "newtype"
+                        ( let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+                           in pletFields @'["credential", "stakingCredential"] addr $ \y ->
+                                ppairDataBuiltin # getField @"credential" y # getField @"stakingCredential" y
+                        )
+                    ]
+                ]
+            , goldenGroup
+                "pfield-pletFields"
+                [ goldenGroup
+                    "pfield"
+                    [ goldenEval
+                        "single"
+                        ( let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+                           in pfromData $ pfield @"credential" # addr
+                        )
+                    ]
+                , goldenGroup
+                    "pletFields"
+                    [ goldenEval
+                        "single"
+                        ( let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+                           in pletFields @'["credential"] addr $ \y ->
+                                pfromData $ getField @"credential" y
+                        )
+                    ]
+                ]
+            ]
+        ]
+    ]
 
 --------------------------------------------------------------------------------
 
@@ -196,7 +232,7 @@ someFields :: Term s (PDataRecord SomeFields)
 someFields =
   punsafeCoerce $
     pconstant $
-      fmap (PlutusTx.toData @Integer) [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+      fmap (PlutusTx.toData @Integer) ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9] :: [Integer])
 
 {- |
   We can also bind over a 'PDataRecord' directly.
