@@ -114,6 +114,7 @@ test-suite tests
     Plutarch.Test.Suite.Plutarch.Rational
     Plutarch.Test.Suite.Plutarch.Recursion
     Plutarch.Test.Suite.Plutarch.Show
+    Plutarch.Test.Suite.Plutarch.String
     Plutarch.Test.Suite.PlutarchLedgerApi.Regressions
     Plutarch.Test.Suite.PlutarchLedgerApi.V1
     Plutarch.Test.Suite.PlutarchLedgerApi.V2
