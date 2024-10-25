@@ -65,11 +65,13 @@ common lang
 library
   import:          lang
   build-depends:
+    , aeson
     , bytestring
     , constraints
     , containers
     , cryptonite
     , data-default
+    , filepath
     , flat
     , generics-sop
     , lens
@@ -81,10 +83,14 @@ library
     , plutus-tx
     , prettyprinter
     , QuickCheck
+    , tagged
     , tasty
+    , tasty-golden
     , tasty-quickcheck
+    , text
 
   exposed-modules:
+    Plutarch.Test.Golden
     Plutarch.Test.Laws
     Plutarch.Test.Utils
 
@@ -93,6 +99,7 @@ test-suite tests
   type:           exitcode-stdio-1.0
   main-is:        Test.hs
   other-modules:
+    Plutarch.Test.Suite.Plutarch.Bool
     Plutarch.Test.Suite.PlutarchLedgerApi.Regressions
     Plutarch.Test.Suite.PlutarchLedgerApi.V1
     Plutarch.Test.Suite.PlutarchLedgerApi.V2
