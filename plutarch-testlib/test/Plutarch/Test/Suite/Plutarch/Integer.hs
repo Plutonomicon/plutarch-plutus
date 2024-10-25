@@ -1,26 +1,32 @@
-module Plutarch.IntegerSpec (spec) where
+module Plutarch.Test.Suite.Plutarch.Integer (tests) where
 
 import Plutarch
 import Plutarch.Prelude
-import Plutarch.Test
-import Test.Hspec
+import Plutarch.Test.Golden (goldenAssertEqual, goldenEval, goldenGroup, plutarchGolden)
+import Test.Tasty (TestTree, testGroup)
 
-spec :: Spec
-spec = do
-  describe "int" $ do
-    describe "examples" $ do
-      pgoldenSpec $ do
-        "add1" @| add1
-        "add1Hoisted" @| add1Hoisted
-        "example1" @| example1
-        "example2" @| example2
-        "fib" @\ do
-          "lam" @| fib
-          "app" @\ do
-            "9" @| fib # 9 @:-> \(p, _script, bench) -> do
-              p `pshouldBe` (34 :: Term _ PInteger)
-              bench `psatisfyWithinBenchmark` Benchmark 1_000_000_000 1_000_000 100
-        "uglyDouble" @| uglyDouble
+tests :: TestTree
+tests =
+  testGroup
+    "Integer"
+    [ plutarchGolden
+        "Goldens"
+        "int.examples"
+        [ goldenEval "add1" add1
+        , goldenEval "add1Hoisted" add1Hoisted
+        , goldenEval "example1" example1
+        , goldenEval "example2" example2
+        , goldenGroup
+            "fib"
+            [ goldenEval "lam" fib
+            , goldenGroup
+                "app"
+                [ goldenAssertEqual "9" (fib # 9) (pconstant 34)
+                ]
+            ]
+        , goldenEval "uglyDouble" uglyDouble
+        ]
+    ]
 
 add1 :: Term s (PInteger :--> PInteger :--> PInteger)
 add1 = plam $ \x y -> x + y + 1

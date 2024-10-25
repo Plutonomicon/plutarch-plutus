@@ -104,6 +104,7 @@ test-suite tests
     Plutarch.Test.Suite.Plutarch.ByteString
     Plutarch.Test.Suite.Plutarch.Either
     Plutarch.Test.Suite.Plutarch.Field
+    Plutarch.Test.Suite.Plutarch.Integer
     Plutarch.Test.Suite.PlutarchLedgerApi.Regressions
     Plutarch.Test.Suite.PlutarchLedgerApi.V1
     Plutarch.Test.Suite.PlutarchLedgerApi.V2
