@@ -5,6 +5,7 @@ import Plutarch.Integer (PInteger)
 import Plutarch.Positive (PPositive)
 import Plutarch.Test.Laws (checkLedgerPropertiesPCountable, checkLedgerPropertiesPEnumerable)
 import Plutarch.Test.Suite.Plutarch.Bool qualified as Bool
+import Plutarch.Test.Suite.Plutarch.ByteString qualified as ByteString
 import Plutarch.Test.Suite.PlutarchLedgerApi.Regressions qualified as Regressions
 import Plutarch.Test.Suite.PlutarchLedgerApi.V1 qualified as V1
 import Plutarch.Test.Suite.PlutarchLedgerApi.V2 qualified as V2
@@ -32,6 +33,7 @@ main = do
                 ]
             ]
         , Bool.tests
+        , ByteString.tests
         ]
     , testGroup
         "PlutarchLedgerApi"
