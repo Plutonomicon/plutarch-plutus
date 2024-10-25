@@ -101,6 +101,7 @@ test-suite tests
   other-modules:
     Plutarch.Test.Suite.Plutarch.Bool
     Plutarch.Test.Suite.Plutarch.ByteString
+    Plutarch.Test.Suite.Plutarch.Either
     Plutarch.Test.Suite.PlutarchLedgerApi.Regressions
     Plutarch.Test.Suite.PlutarchLedgerApi.V1
     Plutarch.Test.Suite.PlutarchLedgerApi.V2
