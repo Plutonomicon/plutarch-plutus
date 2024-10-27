@@ -1,7 +1,7 @@
 module Plutarch.Test.Suite.PlutarchLedgerApi.V1 (tests) where
 
 import Plutarch.LedgerApi.V1 qualified as PLA
-import Plutarch.LedgerApi.Value as Value
+import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Test.Laws (
   checkLedgerProperties,
   checkLedgerPropertiesAssocMap,
@@ -9,6 +9,7 @@ import Plutarch.Test.Laws (
   checkLedgerPropertiesPEnumerable,
   checkLedgerPropertiesValue,
  )
+import Plutarch.Test.Suite.PlutarchLedgerApi.V1.Interval qualified as Interval
 import Plutarch.Test.Utils (fewerTests)
 import PlutusLedgerApi.V1.Orphans ()
 import Test.Tasty (TestTree, adjustOption, testGroup)
@@ -26,11 +27,13 @@ tests =
     , checkLedgerProperties @PLA.PCurrencySymbol
     , checkLedgerProperties @PLA.PTokenName
     , checkLedgerProperties @PLA.PPosixTime
+    , checkLedgerPropertiesPCountable @PLA.PPosixTime
+    , checkLedgerPropertiesPEnumerable @PLA.PPosixTime
     , -- We only care about intervals of PPosixTime, so we don't check anything else
       checkLedgerProperties @(PLA.PExtended PLA.PPosixTime)
     , checkLedgerProperties @(PLA.PLowerBound PLA.PPosixTime)
     , checkLedgerProperties @(PLA.PUpperBound PLA.PPosixTime)
-    , checkLedgerProperties @(PLA.PInterval PLA.PPosixTime)
+    , Interval.tests
     , checkLedgerProperties @PLA.PDatum
     , checkLedgerProperties @PLA.PRedeemer
     , checkLedgerProperties @PLA.PDatumHash
@@ -46,12 +49,4 @@ tests =
     , checkLedgerPropertiesValue
     , checkLedgerPropertiesAssocMap
     , checkLedgerProperties @Value.PAssetClass
-    , testGroup
-        "PCountable"
-        [ checkLedgerPropertiesPCountable @PLA.PPosixTime
-        ]
-    , testGroup
-        "PEnumerable"
-        [ checkLedgerPropertiesPEnumerable @PLA.PPosixTime
-        ]
     ]

@@ -24,7 +24,7 @@ import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.Lift (PConstantDecl (PConstanted), PUnsafeLiftDecl (PLifted))
 import Plutarch.Positive (Positive)
 import Plutarch.Prelude
-import Plutarch.Test.Utils (instanceOfType, prettyShow, typeName)
+import Plutarch.Test.Utils (instanceOfType, prettyShow, typeName, typeName')
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common qualified as Plutus
 import PlutusLedgerApi.V1 qualified as PLA
@@ -40,7 +40,7 @@ import Test.QuickCheck (
  )
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
-import Type.Reflection (Typeable)
+import Type.Reflection (Typeable, typeRep)
 
 -- plift . pconstant = id
 punsafeLiftDeclLaws ::
@@ -231,9 +231,9 @@ checkLedgerProperties ::
   ) =>
   TestTree
 checkLedgerProperties =
-  testGroup (typeName @(S -> Type) @a) . mconcat $
+  testGroup (instanceOfType @(S -> Type) @a "Ledger Laws") . mconcat $
     [ punsafeLiftDeclLaws @a punsafeLiftDeclLawsName
-    , pisDataLaws @a (typeName @(S -> Type) @a)
+    , pisDataLaws @a (typeName' False (typeRep @a)) -- it'll get wrapped in PAsData so not top level
     , ptryFromLaws @a
     ]
   where
@@ -254,7 +254,8 @@ checkLedgerPropertiesPCountable ::
   , PUnsafeLiftDecl a
   ) =>
   TestTree
-checkLedgerPropertiesPCountable = testGroup (typeName @(S -> Type) @a) (pcountableLaws @a)
+checkLedgerPropertiesPCountable =
+  testGroup (instanceOfType @(S -> Type) @a "PCountable") (pcountableLaws @a)
 
 checkLedgerPropertiesPEnumerable ::
   forall (a :: S -> Type).
@@ -267,7 +268,8 @@ checkLedgerPropertiesPEnumerable ::
   , PUnsafeLiftDecl a
   ) =>
   TestTree
-checkLedgerPropertiesPEnumerable = testGroup (typeName @(S -> Type) @a) (penumerableLaws @a)
+checkLedgerPropertiesPEnumerable =
+  testGroup (instanceOfType @(S -> Type) @a "PEnumerable") (penumerableLaws @a)
 
 checkHaskellEquivalent ::
   forall (haskellInput :: Type) (haskellOutput :: Type).

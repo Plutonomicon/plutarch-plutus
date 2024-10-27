@@ -1,4 +1,4 @@
-module Plutarch.Test.Suite.Plutarch.Interval (tests) where
+module Plutarch.Test.Suite.PlutarchLedgerApi.V1.Interval (tests) where
 
 import Plutarch.LedgerApi.Interval (
   PInterval,
@@ -14,8 +14,10 @@ import Plutarch.LedgerApi.Interval (
   psingleton,
   pto,
  )
+import Plutarch.LedgerApi.V1 (PPosixTime)
 import Plutarch.Prelude hiding (psingleton, pto)
 import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)
+import Plutarch.Test.Laws (checkLedgerProperties)
 import Plutarch.Test.Utils (fewerTests)
 import Test.Tasty (TestTree, adjustOption, testGroup)
 import Test.Tasty.QuickCheck (arbitrary, forAllShrinkShow, shrink, testProperty)
@@ -65,6 +67,7 @@ tests =
                 (pcon PTrue)
             ]
         ]
+    , checkLedgerProperties @(PInterval PPosixTime)
     , adjustOption (fewerTests 4) $
         testGroup
           "Properties"

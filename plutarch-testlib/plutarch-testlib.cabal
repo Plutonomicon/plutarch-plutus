@@ -91,6 +91,7 @@ library
 test-suite tests
   import:         lang
   type:           exitcode-stdio-1.0
+  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
   main-is:        Test.hs
   hs-source-dirs: test
   other-modules:
@@ -99,13 +100,13 @@ test-suite tests
     Plutarch.Test.Suite.Plutarch.Either
     Plutarch.Test.Suite.Plutarch.Field
     Plutarch.Test.Suite.Plutarch.Integer
-    Plutarch.Test.Suite.Plutarch.Interval
     Plutarch.Test.Suite.Plutarch.List
     Plutarch.Test.Suite.Plutarch.Maybe
     Plutarch.Test.Suite.Plutarch.Monadic
     Plutarch.Test.Suite.Plutarch.Pair
     Plutarch.Test.Suite.Plutarch.PLam
     Plutarch.Test.Suite.Plutarch.POrd
+    Plutarch.Test.Suite.Plutarch.Positive
     Plutarch.Test.Suite.Plutarch.Rational
     Plutarch.Test.Suite.Plutarch.Recursion
     Plutarch.Test.Suite.Plutarch.Scripts
@@ -117,6 +118,7 @@ test-suite tests
     Plutarch.Test.Suite.Plutarch.Uplc
     Plutarch.Test.Suite.PlutarchLedgerApi.Regressions
     Plutarch.Test.Suite.PlutarchLedgerApi.V1
+    Plutarch.Test.Suite.PlutarchLedgerApi.V1.Interval
     Plutarch.Test.Suite.PlutarchLedgerApi.V2
     Plutarch.Test.Suite.PlutarchLedgerApi.V3
 

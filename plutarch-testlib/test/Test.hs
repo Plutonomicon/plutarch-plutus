@@ -1,21 +1,18 @@
 module Main (main) where
 
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
-import Plutarch.Integer (PInteger)
-import Plutarch.Positive (PPositive)
-import Plutarch.Test.Laws (checkLedgerPropertiesPCountable, checkLedgerPropertiesPEnumerable)
 import Plutarch.Test.Suite.Plutarch.Bool qualified as Bool
 import Plutarch.Test.Suite.Plutarch.ByteString qualified as ByteString
 import Plutarch.Test.Suite.Plutarch.Either qualified as Either
 import Plutarch.Test.Suite.Plutarch.Field qualified as Field
 import Plutarch.Test.Suite.Plutarch.Integer qualified as Integer
-import Plutarch.Test.Suite.Plutarch.Interval qualified as Interval
 import Plutarch.Test.Suite.Plutarch.List qualified as List
 import Plutarch.Test.Suite.Plutarch.Maybe qualified as Maybe
 import Plutarch.Test.Suite.Plutarch.Monadic qualified as Monadic
 import Plutarch.Test.Suite.Plutarch.PLam qualified as PLam
 import Plutarch.Test.Suite.Plutarch.POrd qualified as POrd
 import Plutarch.Test.Suite.Plutarch.Pair qualified as Pair
+import Plutarch.Test.Suite.Plutarch.Positive qualified as Positive
 import Plutarch.Test.Suite.Plutarch.Rational qualified as Rational
 import Plutarch.Test.Suite.Plutarch.Recursion qualified as Recursion
 import Plutarch.Test.Suite.Plutarch.Scripts qualified as Scripts
@@ -39,19 +36,7 @@ main = do
   defaultMain . adjustOption moreTests . testGroup "Tests" $
     [ testGroup
         "Plutarch"
-        [ testGroup
-            "Laws"
-            [ testGroup
-                "PCountable"
-                [ checkLedgerPropertiesPCountable @PInteger
-                , checkLedgerPropertiesPCountable @PPositive
-                ]
-            , testGroup
-                "PEnumerable"
-                [ checkLedgerPropertiesPEnumerable @PInteger
-                ]
-            ]
-        , Bool.tests
+        [ Bool.tests
         , ByteString.tests
         , Either.tests
         , Field.tests
@@ -59,19 +44,19 @@ main = do
         , List.tests
         , Maybe.tests
         , Monadic.tests
-        , Pair.tests
         , PLam.tests
         , POrd.tests
+        , Pair.tests
+        , Positive.tests
         , Rational.tests
         , Recursion.tests
         , Scripts.tests
         , Show.tests
         , String.tests
+        , Tracing.tests
+        , TryFrom.tests
         , Unit.tests
         , Uplc.tests
-        , TryFrom.tests
-        , Interval.tests
-        , Tracing.tests
         ]
     , testGroup
         "PlutarchLedgerApi"

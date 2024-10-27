@@ -3,6 +3,7 @@ module Plutarch.Test.Suite.Plutarch.Integer (tests) where
 import Plutarch
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)
+import Plutarch.Test.Laws (checkLedgerPropertiesPCountable, checkLedgerPropertiesPEnumerable)
 import Test.Tasty (TestTree, testGroup)
 
 tests :: TestTree
@@ -26,6 +27,8 @@ tests =
             ]
         , goldenEval "uglyDouble" uglyDouble
         ]
+    , checkLedgerPropertiesPCountable @PInteger
+    , checkLedgerPropertiesPEnumerable @PInteger
     ]
 
 add1 :: Term s (PInteger :--> PInteger :--> PInteger)

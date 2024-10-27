@@ -6,6 +6,7 @@ module Plutarch.Test.Utils (
   prettyShow,
   typeName,
   instanceOfType,
+  typeName',
 ) where
 
 import Data.Kind (Type)
@@ -24,7 +25,11 @@ prettyShow = renderString . layoutPretty defaultLayoutOptions . pretty
 typeName :: forall k (a :: k). Typeable a => String
 typeName = typeName' True (typeRep @a)
 
-typeName' :: Bool -> TypeRep k -> String
+typeName' ::
+  -- | Wrap in parentheses if contains space
+  Bool ->
+  TypeRep k ->
+  String
 typeName' isTopLevel rep =
   case rep of
     App lhs rhs -> wrap (typeName' False lhs <> " " <> typeName' False rhs)
