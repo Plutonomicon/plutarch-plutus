@@ -67,10 +67,10 @@ testEvalEqual name term expectedTerm = testCase name $ do
     (Left err, _, _) -> assertFailure $ "Failed to eval: " <> show err
     (Right evaluatedTerm, _, _) -> pure evaluatedTerm
   compiledExpected <- case compile NoTracing expectedTerm of
-    Left err -> assertFailure $ "Failed to compile: " <> Text.unpack err
+    Left err -> assertFailure $ "Failed to compile expected value: " <> Text.unpack err
     Right compiledTerm -> pure compiledTerm
   evaluatedExpected <- case evalScript compiledExpected of
-    (Left err, _, _) -> assertFailure $ "Failed to eval: " <> show err
+    (Left err, _, _) -> assertFailure $ "Failed to eval expected value: " <> show err
     (Right evaluatedTerm, _, _) -> pure evaluatedTerm
   assertEqual "" (printScript evaluatedExpected) (printScript evaluatedTerm)
 

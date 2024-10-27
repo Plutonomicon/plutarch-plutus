@@ -60,7 +60,9 @@ plutarchGolden topName goldenPath tests = testGroup topName testsWithGoldens
     -- Implementation note: Because we want to collect all Benchmarks created by nested tests
     -- we cannot use plain TestTree for these (without hacks like passing some MVars around)
     -- so we have out own GoldenTestTree that when being converted to TestTree will execute
-    -- all terms and collect the results
+    -- all terms and collect the results. Additionally this ensures that goldens remain the same
+    -- when using `--pattern` to filter tests because even though assertions won't run the
+    -- scripts will still be evaluated
 
     (tests', benchmarks') = unzip $ map mkTest tests
     benchmarks = mconcat benchmarks'
