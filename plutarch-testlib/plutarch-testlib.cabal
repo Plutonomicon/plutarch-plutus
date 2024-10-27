@@ -84,6 +84,7 @@ library
   exposed-modules:
     Plutarch.Test.Golden
     Plutarch.Test.Laws
+    Plutarch.Test.QuickCheck
     Plutarch.Test.SpecTypes
     Plutarch.Test.Unit
     Plutarch.Test.Utils
