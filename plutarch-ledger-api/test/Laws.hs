@@ -7,11 +7,15 @@ module Laws (
   ptryFromLaws,
   ptryFromLawsValue,
   ptryFromLawsAssocMap,
+  pcountableLaws,
+  penumerableLaws,
 ) where
 
 import Plutarch.Builtin (pforgetData)
+import Plutarch.Enum (PCountable (psuccessor, psuccessorN), PEnumerable (ppredecessor, ppredecessorN))
 import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
+import Plutarch.Positive (Positive)
 import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common qualified as Plutus
@@ -23,6 +27,7 @@ import Prettyprinter.Render.String (renderString)
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
   forAllShrinkShow,
+  (=/=),
   (===),
  )
 import Test.Tasty (TestTree)
@@ -127,6 +132,61 @@ ptryFromLawsAssocMap = [pDataAgreementProp]
       $ \(v :: AssocMap.Map Integer Integer) ->
         plift (pfromData . ptryFrom @(PAsData (V1.PMap V1.Unsorted PInteger PInteger)) (pconstant . Plutus.toData $ v) $ fst)
           === v
+
+pcountableLaws ::
+  forall (a :: S -> Type).
+  ( PCountable a
+  , Arbitrary (PLifted a)
+  , Pretty (PLifted a)
+  , Eq (PLifted a)
+  , Show (PLifted a)
+  , PUnsafeLiftDecl a
+  ) =>
+  [TestTree]
+pcountableLaws =
+  [ testProperty "x /= psuccessor x" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a) ->
+        plift (psuccessor # pconstant x) =/= x
+  , testProperty "y < x = psuccessor y <= x" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a, y :: PLifted a) ->
+        plift (pconstant y #< pconstant x) === plift ((psuccessor # pconstant y) #<= pconstant x)
+  , testProperty "x < psuccessor y = x <= y" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a, y :: PLifted a) ->
+        plift (pconstant x #< (psuccessor # pconstant y)) === plift (pconstant x #<= pconstant y)
+  , testProperty "psuccessorN 1 = psuccessor" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a) ->
+        plift (psuccessorN # 1 # pconstant x) === plift (psuccessor # pconstant x)
+  , testProperty "psuccessorN n . psuccessorN m = psuccessorN (n + m)" . forAllShrinkShow arbitrary shrink show $
+      \(x :: PLifted a, n :: Positive, m :: Positive) ->
+        plift (psuccessorN # pconstant n # (psuccessorN # pconstant m # pconstant x))
+          === plift (psuccessorN # (pconstant n + pconstant m) # pconstant x)
+  ]
+
+penumerableLaws ::
+  forall (a :: S -> Type).
+  ( PEnumerable a
+  , Arbitrary (PLifted a)
+  , Pretty (PLifted a)
+  , Eq (PLifted a)
+  , Show (PLifted a)
+  , PUnsafeLiftDecl a
+  ) =>
+  [TestTree]
+penumerableLaws =
+  [ testProperty "ppredecessor . psuccessor = id" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a) ->
+        plift (ppredecessor #$ psuccessor # pconstant x) === plift (pconstant x)
+  , testProperty "psuccessor . ppredecessor = id" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a) ->
+        plift (psuccessor #$ ppredecessor # pconstant x) === plift (pconstant x)
+  , testProperty "ppredecessorN 1 = ppredecessor" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a) ->
+        plift (ppredecessorN # 1 # pconstant x) === plift (ppredecessor # pconstant x)
+  , testProperty "ppredecessorN n . ppredecessorN m = ppredecessorN (n + m)" . forAllShrinkShow arbitrary shrink show $
+      \(x :: PLifted a, n :: Positive, m :: Positive) ->
+        plift (ppredecessorN # pconstant n # (ppredecessorN # pconstant m # pconstant x))
+          === plift (ppredecessorN # (pconstant n + pconstant m) # pconstant x)
+  ]
 
 -- Helpers
 

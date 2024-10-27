@@ -6,7 +6,7 @@
 
 * `pmax` and `pmin` as new methods of `POrd`
 * `#>` and `#>=` as new methods of `PPartialOrd`
-* `pallBS` to `Plutarch.ByteString` (originally from `plutarch-extra')
+* `pallBS` to `Plutarch.ByteString` (originally from `plutarch-extra`)
 * `pisHexDigit` to `Plutarch.String` (originally from `plutarch-extra`)
 * `preverse` and `pcheckSorted` to `Plutarch.List` (originally from
   `plutarch-extra`)
@@ -25,6 +25,9 @@
 * `PBitString` and associated functionality for CIP-122 and CIP-123 operations
   on bits, in `Plutarch.BitString`
 * `PEitherData`, a `Data`-encoded counterpart to `PEither`, plus some functions
+* `Positive` type in `Plutarch.Positive` that is Haskell level equivalent of
+  `PPositive`
+* `PUnsafeLiftDecl` and `PConstantDecl` instances for `PPositive`
 
 ## Changed
 
@@ -40,6 +43,10 @@
 * `Plutarch.Bitwise` module, as its functionality has been superseded by more
   type-safe operations in `Plutarch.ByteString`, `Plutarch.BitString` and
   `Plutarch.Convert`
+
+### Fixed
+
+* Bug in `ppredecessorN` for `PPosixTime` where order of subtraction was flipped
 
 # 1.9.0 - 25-09-2024
 

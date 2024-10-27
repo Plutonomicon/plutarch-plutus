@@ -1,12 +1,16 @@
 module V1 (tests) where
 
+import Plutarch.Integer (PInteger)
 import Plutarch.LedgerApi.V1 qualified as PLA
 import Plutarch.LedgerApi.Value as Value
+import Plutarch.Positive (PPositive)
 import PlutusLedgerApi.V1.Orphans ()
 import Test.Tasty (TestTree, adjustOption, testGroup)
 import Utils (
   checkLedgerProperties,
   checkLedgerPropertiesAssocMap,
+  checkLedgerPropertiesPCountable,
+  checkLedgerPropertiesPEnumerable,
   checkLedgerPropertiesValue,
   fewerTests,
  )
@@ -44,4 +48,15 @@ tests =
     , checkLedgerPropertiesValue
     , checkLedgerPropertiesAssocMap
     , checkLedgerProperties @Value.PAssetClass
+    , testGroup
+        "PCountable"
+        [ checkLedgerPropertiesPCountable @PInteger
+        , checkLedgerPropertiesPCountable @PLA.PPosixTime
+        , checkLedgerPropertiesPCountable @PPositive
+        ]
+    , testGroup
+        "PEnumerable"
+        [ checkLedgerPropertiesPEnumerable @PInteger
+        , checkLedgerPropertiesPEnumerable @PLA.PPosixTime
+        ]
     ]
