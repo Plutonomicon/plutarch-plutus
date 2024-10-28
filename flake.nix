@@ -118,18 +118,7 @@
             '';
           };
 
-          checks = flake.checks // {
-            plutarch-test = pkgs.stdenv.mkDerivation
-              {
-                name = "plutarch-test";
-                src = ./plutarch-test;
-                nativeBuildInputs = [ flake.packages."plutarch-test:exe:plutarch-test" ];
-                buildPhase = ''
-                  plutarch-test
-                  touch $out
-                '';
-              };
-          };
+          inherit (flake) checks;
         };
     };
 }
