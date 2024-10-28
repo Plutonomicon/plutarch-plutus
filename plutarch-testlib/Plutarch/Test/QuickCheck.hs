@@ -16,7 +16,10 @@ import Test.Tasty.QuickCheck (
   (===),
  )
 
--- | Like `Plutarch.Test.Unit.testEvalFail` but generate terms
+{- | Like `Plutarch.Test.Unit.testEvalFail` but generate terms
+
+@since WIP
+-}
 propEvalFail ::
   (Arbitrary a, Show a) =>
   TestName ->
@@ -29,7 +32,10 @@ propEvalFail name mkTerm =
       FailedToEvaluate _ _ -> property True
       Evaluated script _ -> counterexample ("Evaluated, but expected failure: " <> script) False
 
--- | Like `Plutarch.Test.Unit.testCompileFail` but generate terms
+{- | Like `Plutarch.Test.Unit.testCompileFail` but generate terms
+
+@since WIP
+-}
 propCompileFail ::
   (Arbitrary a, Show a) =>
   TestName ->
@@ -42,7 +48,10 @@ propCompileFail name mkTerm =
       FailedToEvaluate err _ -> counterexample ("Failed to evaluate: " <> show err) False
       Evaluated script _ -> counterexample ("Evaluated, but expected failure: " <> script) False
 
--- | Like `Plutarch.Test.Unit.testEvalEqual` but generate terms
+{- | Like `Plutarch.Test.Unit.testEvalEqual` but generate terms
+
+@since WIP
+-}
 propEvalEqual ::
   (Arbitrary a, Show a) =>
   TestName ->

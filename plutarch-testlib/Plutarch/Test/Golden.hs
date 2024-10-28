@@ -31,7 +31,10 @@ import Test.Tasty (TestName, TestTree, testGroup)
 import Test.Tasty.Golden (goldenVsString)
 import Test.Tasty.HUnit (assertEqual, assertFailure, testCase)
 
--- | Opaque type representing tree of golden tests
+{- | Opaque type representing tree of golden tests
+
+@since WIP
+-}
 data GoldenTestTree where
   GoldenTestTree :: TestName -> [GoldenTestTree] -> GoldenTestTree
   GoldenTestTreeEval :: TestName -> ClosedTerm a -> GoldenTestTree
@@ -40,6 +43,8 @@ data GoldenTestTree where
 
 {- | Convert tree of golden tests into standard Tasty `TestTree`, capturing results produced
 by nested golden tests
+
+@since WIP
 -}
 plutarchGolden ::
   TestName ->
@@ -88,15 +93,23 @@ plutarchGolden topName goldenPath tests = testGroup topName testsWithGoldens
 {- | Like `Test.Tasty.testGroup` but for golden tests
 
 Goldens in the group will be prefixed by the group name
+
+@since WIP
 -}
 goldenGroup :: TestName -> [GoldenTestTree] -> GoldenTestTree
 goldenGroup = GoldenTestTree
 
--- | Like `Plutarch.Test.Unit.testEval` but will append to goldens created by enclosing `plutarchGolden`
+{- | Like `Plutarch.Test.Unit.testEval` but will append to goldens created by enclosing `plutarchGolden`
+
+@since WIP
+-}
 goldenEval :: TestName -> ClosedTerm a -> GoldenTestTree
 goldenEval = GoldenTestTreeEval
 
--- | Like `Plutarch.Test.Unit.testEvalEqual` but will append to goldens created by enclosing `plutarchGolden`
+{- | Like `Plutarch.Test.Unit.testEvalEqual` but will append to goldens created by enclosing `plutarchGolden`
+
+@since WIP
+-}
 goldenEvalEqual ::
   TestName ->
   -- | Actual value
@@ -106,7 +119,10 @@ goldenEvalEqual ::
   GoldenTestTree
 goldenEvalEqual = GoldenTestTreeEvalAssertEqual
 
--- | Like `Plutarch.Test.Unit.testEvalFail` but will append to goldens created by enclosing `plutarchGolden`
+{- | Like `Plutarch.Test.Unit.testEvalFail` but will append to goldens created by enclosing `plutarchGolden`
+
+@since WIP
+-}
 goldenEvalFail :: TestName -> ClosedTerm a -> GoldenTestTree
 goldenEvalFail = GoldenTestTreeEvalFail
 

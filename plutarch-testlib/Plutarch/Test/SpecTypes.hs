@@ -17,7 +17,10 @@ import Plutarch.Lift (
 import Plutarch.Prelude
 import Test.Tasty.QuickCheck (Arbitrary, arbitrary)
 
--- | Tuple of three elements of the same type
+{- | Tuple of three elements of the same type
+
+@since WIP
+-}
 data Triplet a = Triplet a a a
   deriving stock (Show, Eq, Ord)
 
@@ -26,6 +29,8 @@ data Triplet a = Triplet a a a
 
   With an appropriate instance of 'PIsDataRepr', we can automatically
   derive 'PDataFields'.
+
+@since WIP
 -}
 newtype PTriplet (a :: PType) (s :: S)
   = PTriplet
@@ -41,17 +46,21 @@ newtype PTriplet (a :: PType) (s :: S)
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PDataFields)
 
+-- | @since WIP
 instance DerivePlutusType (PTriplet a) where type DPTStrat _ = PlutusTypeData
 
 PlutusTx.makeIsDataIndexed ''Triplet [('Triplet, 0)]
 
+-- | @since WIP
 instance PLiftData a => PUnsafeLiftDecl (PTriplet a) where
   type PLifted (PTriplet a) = Triplet (PLifted a)
 
+-- | @since WIP
 deriving via
   (DerivePConstantViaData (Triplet a) (PTriplet (PConstanted a)))
   instance
     PConstantData a => PConstantDecl (Triplet a)
 
+-- | @since WIP
 instance Arbitrary a => Arbitrary (Triplet a) where
   arbitrary = Triplet <$> arbitrary <*> arbitrary <*> arbitrary

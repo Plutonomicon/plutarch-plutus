@@ -2,13 +2,6 @@
 {-# LANGUAGE PolyKinds #-}
 
 module Plutarch.Test.Laws (
-  punsafeLiftDeclLaws,
-  pisDataLaws,
-  ptryFromLaws,
-  pcountableLaws,
-  penumerableLaws,
-  ptryFromLawsValue,
-  ptryFromLawsAssocMap,
   checkLedgerPropertiesValue,
   checkLedgerPropertiesAssocMap,
   checkLedgerProperties,
@@ -41,6 +34,204 @@ import Test.QuickCheck (
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
 import Type.Reflection (Typeable, typeRep)
+
+{- | Like `checkLedgerProperties` but specialized to `PValue`
+
+This is an ugly kludge because PValue doesn't have a direct PData conversion,
+and bringing one in would break too much other stuff to be worth it.
+
+@since
+-}
+checkLedgerPropertiesValue :: TestTree
+checkLedgerPropertiesValue =
+  testGroup "PValue" . mconcat $
+    [ punsafeLiftDeclLaws @(V1.PValue V1.Unsorted V1.NoGuarantees) "PValue <-> Value"
+    , pisDataLaws @(V1.PValue V1.Unsorted V1.NoGuarantees) "PValue"
+    , ptryFromLawsValue
+    ]
+
+{- | Like `checkLedgerProperties` but specialized to `PMap`
+
+Same as above
+
+@since
+-}
+checkLedgerPropertiesAssocMap :: TestTree
+checkLedgerPropertiesAssocMap =
+  testGroup "PMap" . mconcat $
+    [ punsafeLiftDeclLaws @(V1.PMap V1.Unsorted PInteger PInteger) "PMap <-> AssocMap.Map"
+    , pisDataLaws @(V1.PMap V1.Unsorted PInteger PInteger) "PMap"
+    , ptryFromLawsAssocMap
+    ]
+
+-- | @since
+checkLedgerProperties ::
+  forall (a :: S -> Type).
+  ( Typeable a
+  , PUnsafeLiftDecl a
+  , PTryFrom PData a
+  , Eq (PLifted a)
+  , Show (PLifted a)
+  , Arbitrary (PLifted a)
+  , PIsData a
+  , Plutus.ToData (PLifted a)
+  , Typeable (PLifted a)
+  , Pretty (PLifted a)
+  ) =>
+  TestTree
+checkLedgerProperties =
+  testGroup (instanceOfType @(S -> Type) @a "Ledger Laws") . mconcat $
+    [ punsafeLiftDeclLaws @a punsafeLiftDeclLawsName
+    , pisDataLaws @a (typeName' False (typeRep @a)) -- it'll get wrapped in PAsData so not top level
+    , ptryFromLaws @a
+    ]
+  where
+    punsafeLiftDeclLawsName :: String
+    punsafeLiftDeclLawsName =
+      typeName @(S -> Type) @a
+        <> " <-> "
+        <> typeName @Type @(PLifted a)
+
+-- | @since
+checkLedgerPropertiesPCountable ::
+  forall (a :: S -> Type).
+  ( Typeable a
+  , PCountable a
+  , Arbitrary (PLifted a)
+  , Pretty (PLifted a)
+  , Eq (PLifted a)
+  , Show (PLifted a)
+  , PUnsafeLiftDecl a
+  ) =>
+  TestTree
+checkLedgerPropertiesPCountable =
+  testGroup (instanceOfType @(S -> Type) @a "PCountable") (pcountableLaws @a)
+
+-- | @since
+checkLedgerPropertiesPEnumerable ::
+  forall (a :: S -> Type).
+  ( Typeable a
+  , PEnumerable a
+  , Arbitrary (PLifted a)
+  , Pretty (PLifted a)
+  , Eq (PLifted a)
+  , Show (PLifted a)
+  , PUnsafeLiftDecl a
+  ) =>
+  TestTree
+checkLedgerPropertiesPEnumerable =
+  testGroup (instanceOfType @(S -> Type) @a "PEnumerable") (penumerableLaws @a)
+
+-- | @since
+checkHaskellEquivalent ::
+  forall (haskellInput :: Type) (haskellOutput :: Type).
+  ( haskellInput ~ PLifted (PConstanted haskellInput)
+  , PConstantDecl haskellInput
+  , Show haskellInput
+  , Arbitrary haskellInput
+  , haskellOutput ~ PLifted (PConstanted haskellOutput)
+  , PConstantDecl haskellOutput
+  , Show haskellOutput
+  , Eq haskellOutput
+  ) =>
+  (haskellInput -> haskellOutput) ->
+  ClosedTerm (PConstanted haskellInput :--> PConstanted haskellOutput) ->
+  Property
+checkHaskellEquivalent goHaskell goPlutarch =
+  forAllShrinkShow arbitrary shrink show $
+    \(input :: haskellInput) -> goHaskell input === plift (goPlutarch # pconstant input)
+
+-- | @since
+ordHaskellEquivalents ::
+  forall (haskellInput :: Type).
+  ( Typeable haskellInput
+  , Typeable (PConstanted haskellInput)
+  , Ord haskellInput
+  , haskellInput ~ PLifted (PConstanted haskellInput)
+  , PPartialOrd (PConstanted haskellInput)
+  , PConstantDecl haskellInput
+  , Show haskellInput
+  , Arbitrary haskellInput
+  ) =>
+  TestTree
+ordHaskellEquivalents =
+  testGroup
+    ( mconcat
+        [ instanceOfType @Type @haskellInput "Ord"
+        , " <-> "
+        , instanceOfType @(S -> Type) @(PConstanted haskellInput) "POrd"
+        ]
+    )
+    [ testProperty "== = #==" $
+        checkHaskellEquivalent @(haskellInput, haskellInput) @Bool
+          (uncurry (==))
+          (plam $ \pair -> (pfstBuiltin # pair) #== (psndBuiltin # pair))
+    , testProperty "< = #<" $
+        checkHaskellEquivalent @(haskellInput, haskellInput) @Bool
+          (uncurry (<))
+          (plam $ \pair -> (pfstBuiltin # pair) #< (psndBuiltin # pair))
+    , testProperty "<= = #<=" $
+        checkHaskellEquivalent @(haskellInput, haskellInput) @Bool
+          (uncurry (<=))
+          (plam $ \pair -> (pfstBuiltin # pair) #<= (psndBuiltin # pair))
+    ]
+
+-- Internal
+
+pcountableLaws ::
+  forall (a :: S -> Type).
+  ( PCountable a
+  , Arbitrary (PLifted a)
+  , Pretty (PLifted a)
+  , Eq (PLifted a)
+  , Show (PLifted a)
+  , PUnsafeLiftDecl a
+  ) =>
+  [TestTree]
+pcountableLaws =
+  [ testProperty "x /= psuccessor x" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a) ->
+        plift (psuccessor # pconstant x) =/= x
+  , testProperty "y < x = psuccessor y <= x" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a, y :: PLifted a) ->
+        plift (pconstant y #< pconstant x) === plift ((psuccessor # pconstant y) #<= pconstant x)
+  , testProperty "x < psuccessor y = x <= y" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a, y :: PLifted a) ->
+        plift (pconstant x #< (psuccessor # pconstant y)) === plift (pconstant x #<= pconstant y)
+  , testProperty "psuccessorN 1 = psuccessor" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a) ->
+        plift (psuccessorN # 1 # pconstant x) === plift (psuccessor # pconstant x)
+  , testProperty "psuccessorN n . psuccessorN m = psuccessorN (n + m)" . forAllShrinkShow arbitrary shrink show $
+      \(x :: PLifted a, n :: Positive, m :: Positive) ->
+        plift (psuccessorN # pconstant n # (psuccessorN # pconstant m # pconstant x))
+          === plift (psuccessorN # (pconstant n + pconstant m) # pconstant x)
+  ]
+
+penumerableLaws ::
+  forall (a :: S -> Type).
+  ( PEnumerable a
+  , Arbitrary (PLifted a)
+  , Pretty (PLifted a)
+  , Eq (PLifted a)
+  , Show (PLifted a)
+  , PUnsafeLiftDecl a
+  ) =>
+  [TestTree]
+penumerableLaws =
+  [ testProperty "ppredecessor . psuccessor = id" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a) ->
+        plift (ppredecessor #$ psuccessor # pconstant x) === plift (pconstant x)
+  , testProperty "psuccessor . ppredecessor = id" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a) ->
+        plift (psuccessor #$ ppredecessor # pconstant x) === plift (pconstant x)
+  , testProperty "ppredecessorN 1 = ppredecessor" . forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: PLifted a) ->
+        plift (ppredecessorN # 1 # pconstant x) === plift (ppredecessor # pconstant x)
+  , testProperty "ppredecessorN n . ppredecessorN m = ppredecessorN (n + m)" . forAllShrinkShow arbitrary shrink show $
+      \(x :: PLifted a, n :: Positive, m :: Positive) ->
+        plift (ppredecessorN # pconstant n # (ppredecessorN # pconstant m # pconstant x))
+          === plift (ppredecessorN # (pconstant n + pconstant m) # pconstant x)
+  ]
 
 -- plift . pconstant = id
 punsafeLiftDeclLaws ::
@@ -141,184 +332,3 @@ ptryFromLawsAssocMap = [pDataAgreementProp]
       $ \(v :: AssocMap.Map Integer Integer) ->
         plift (pfromData . ptryFrom @(PAsData (V1.PMap V1.Unsorted PInteger PInteger)) (pconstant . Plutus.toData $ v) $ fst)
           === v
-
--- This is an ugly kludge because PValue doesn't have a direct PData conversion,
--- and bringing one in would break too much other stuff to be worth it.
-checkLedgerPropertiesValue :: TestTree
-checkLedgerPropertiesValue =
-  testGroup "PValue" . mconcat $
-    [ punsafeLiftDeclLaws @(V1.PValue V1.Unsorted V1.NoGuarantees) "PValue <-> Value"
-    , pisDataLaws @(V1.PValue V1.Unsorted V1.NoGuarantees) "PValue"
-    , ptryFromLawsValue
-    ]
-
--- Same as above
-checkLedgerPropertiesAssocMap :: TestTree
-checkLedgerPropertiesAssocMap =
-  testGroup "PMap" . mconcat $
-    [ punsafeLiftDeclLaws @(V1.PMap V1.Unsorted PInteger PInteger) "PMap <-> AssocMap.Map"
-    , pisDataLaws @(V1.PMap V1.Unsorted PInteger PInteger) "PMap"
-    , ptryFromLawsAssocMap
-    ]
-
-pcountableLaws ::
-  forall (a :: S -> Type).
-  ( PCountable a
-  , Arbitrary (PLifted a)
-  , Pretty (PLifted a)
-  , Eq (PLifted a)
-  , Show (PLifted a)
-  , PUnsafeLiftDecl a
-  ) =>
-  [TestTree]
-pcountableLaws =
-  [ testProperty "x /= psuccessor x" . forAllShrinkShow arbitrary shrink prettyShow $
-      \(x :: PLifted a) ->
-        plift (psuccessor # pconstant x) =/= x
-  , testProperty "y < x = psuccessor y <= x" . forAllShrinkShow arbitrary shrink prettyShow $
-      \(x :: PLifted a, y :: PLifted a) ->
-        plift (pconstant y #< pconstant x) === plift ((psuccessor # pconstant y) #<= pconstant x)
-  , testProperty "x < psuccessor y = x <= y" . forAllShrinkShow arbitrary shrink prettyShow $
-      \(x :: PLifted a, y :: PLifted a) ->
-        plift (pconstant x #< (psuccessor # pconstant y)) === plift (pconstant x #<= pconstant y)
-  , testProperty "psuccessorN 1 = psuccessor" . forAllShrinkShow arbitrary shrink prettyShow $
-      \(x :: PLifted a) ->
-        plift (psuccessorN # 1 # pconstant x) === plift (psuccessor # pconstant x)
-  , testProperty "psuccessorN n . psuccessorN m = psuccessorN (n + m)" . forAllShrinkShow arbitrary shrink show $
-      \(x :: PLifted a, n :: Positive, m :: Positive) ->
-        plift (psuccessorN # pconstant n # (psuccessorN # pconstant m # pconstant x))
-          === plift (psuccessorN # (pconstant n + pconstant m) # pconstant x)
-  ]
-
-penumerableLaws ::
-  forall (a :: S -> Type).
-  ( PEnumerable a
-  , Arbitrary (PLifted a)
-  , Pretty (PLifted a)
-  , Eq (PLifted a)
-  , Show (PLifted a)
-  , PUnsafeLiftDecl a
-  ) =>
-  [TestTree]
-penumerableLaws =
-  [ testProperty "ppredecessor . psuccessor = id" . forAllShrinkShow arbitrary shrink prettyShow $
-      \(x :: PLifted a) ->
-        plift (ppredecessor #$ psuccessor # pconstant x) === plift (pconstant x)
-  , testProperty "psuccessor . ppredecessor = id" . forAllShrinkShow arbitrary shrink prettyShow $
-      \(x :: PLifted a) ->
-        plift (psuccessor #$ ppredecessor # pconstant x) === plift (pconstant x)
-  , testProperty "ppredecessorN 1 = ppredecessor" . forAllShrinkShow arbitrary shrink prettyShow $
-      \(x :: PLifted a) ->
-        plift (ppredecessorN # 1 # pconstant x) === plift (ppredecessor # pconstant x)
-  , testProperty "ppredecessorN n . ppredecessorN m = ppredecessorN (n + m)" . forAllShrinkShow arbitrary shrink show $
-      \(x :: PLifted a, n :: Positive, m :: Positive) ->
-        plift (ppredecessorN # pconstant n # (ppredecessorN # pconstant m # pconstant x))
-          === plift (ppredecessorN # (pconstant n + pconstant m) # pconstant x)
-  ]
-
-checkLedgerProperties ::
-  forall (a :: S -> Type).
-  ( Typeable a
-  , PUnsafeLiftDecl a
-  , PTryFrom PData a
-  , Eq (PLifted a)
-  , Show (PLifted a)
-  , Arbitrary (PLifted a)
-  , PIsData a
-  , Plutus.ToData (PLifted a)
-  , Typeable (PLifted a)
-  , Pretty (PLifted a)
-  ) =>
-  TestTree
-checkLedgerProperties =
-  testGroup (instanceOfType @(S -> Type) @a "Ledger Laws") . mconcat $
-    [ punsafeLiftDeclLaws @a punsafeLiftDeclLawsName
-    , pisDataLaws @a (typeName' False (typeRep @a)) -- it'll get wrapped in PAsData so not top level
-    , ptryFromLaws @a
-    ]
-  where
-    punsafeLiftDeclLawsName :: String
-    punsafeLiftDeclLawsName =
-      typeName @(S -> Type) @a
-        <> " <-> "
-        <> typeName @Type @(PLifted a)
-
-checkLedgerPropertiesPCountable ::
-  forall (a :: S -> Type).
-  ( Typeable a
-  , PCountable a
-  , Arbitrary (PLifted a)
-  , Pretty (PLifted a)
-  , Eq (PLifted a)
-  , Show (PLifted a)
-  , PUnsafeLiftDecl a
-  ) =>
-  TestTree
-checkLedgerPropertiesPCountable =
-  testGroup (instanceOfType @(S -> Type) @a "PCountable") (pcountableLaws @a)
-
-checkLedgerPropertiesPEnumerable ::
-  forall (a :: S -> Type).
-  ( Typeable a
-  , PEnumerable a
-  , Arbitrary (PLifted a)
-  , Pretty (PLifted a)
-  , Eq (PLifted a)
-  , Show (PLifted a)
-  , PUnsafeLiftDecl a
-  ) =>
-  TestTree
-checkLedgerPropertiesPEnumerable =
-  testGroup (instanceOfType @(S -> Type) @a "PEnumerable") (penumerableLaws @a)
-
-checkHaskellEquivalent ::
-  forall (haskellInput :: Type) (haskellOutput :: Type).
-  ( haskellInput ~ PLifted (PConstanted haskellInput)
-  , PConstantDecl haskellInput
-  , Show haskellInput
-  , Arbitrary haskellInput
-  , haskellOutput ~ PLifted (PConstanted haskellOutput)
-  , PConstantDecl haskellOutput
-  , Show haskellOutput
-  , Eq haskellOutput
-  ) =>
-  (haskellInput -> haskellOutput) ->
-  ClosedTerm (PConstanted haskellInput :--> PConstanted haskellOutput) ->
-  Property
-checkHaskellEquivalent goHaskell goPlutarch =
-  forAllShrinkShow arbitrary shrink show $
-    \(input :: haskellInput) -> goHaskell input === plift (goPlutarch # pconstant input)
-
-ordHaskellEquivalents ::
-  forall (haskellInput :: Type).
-  ( Typeable haskellInput
-  , Typeable (PConstanted haskellInput)
-  , Ord haskellInput
-  , haskellInput ~ PLifted (PConstanted haskellInput)
-  , PPartialOrd (PConstanted haskellInput)
-  , PConstantDecl haskellInput
-  , Show haskellInput
-  , Arbitrary haskellInput
-  ) =>
-  TestTree
-ordHaskellEquivalents =
-  testGroup
-    ( mconcat
-        [ instanceOfType @Type @haskellInput "Ord"
-        , " <-> "
-        , instanceOfType @(S -> Type) @(PConstanted haskellInput) "POrd"
-        ]
-    )
-    [ testProperty "== = #==" $
-        checkHaskellEquivalent @(haskellInput, haskellInput) @Bool
-          (uncurry (==))
-          (plam $ \pair -> (pfstBuiltin # pair) #== (psndBuiltin # pair))
-    , testProperty "< = #<" $
-        checkHaskellEquivalent @(haskellInput, haskellInput) @Bool
-          (uncurry (<))
-          (plam $ \pair -> (pfstBuiltin # pair) #< (psndBuiltin # pair))
-    , testProperty "<= = #<=" $
-        checkHaskellEquivalent @(haskellInput, haskellInput) @Bool
-          (uncurry (<=))
-          (plam $ \pair -> (pfstBuiltin # pair) #<= (psndBuiltin # pair))
-    ]
