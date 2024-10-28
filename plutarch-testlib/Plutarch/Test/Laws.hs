@@ -40,7 +40,7 @@ import Type.Reflection (Typeable, typeRep)
 This is an ugly kludge because PValue doesn't have a direct PData conversion,
 and bringing one in would break too much other stuff to be worth it.
 
-@since
+@since WIP
 -}
 checkLedgerPropertiesValue :: TestTree
 checkLedgerPropertiesValue =
@@ -54,7 +54,7 @@ checkLedgerPropertiesValue =
 
 Same as above
 
-@since
+@since WIP
 -}
 checkLedgerPropertiesAssocMap :: TestTree
 checkLedgerPropertiesAssocMap =
@@ -64,7 +64,7 @@ checkLedgerPropertiesAssocMap =
     , ptryFromLawsAssocMap
     ]
 
--- | @since
+-- | @since WIP
 checkLedgerProperties ::
   forall (a :: S -> Type).
   ( Typeable a
@@ -92,7 +92,7 @@ checkLedgerProperties =
         <> " <-> "
         <> typeName @Type @(PLifted a)
 
--- | @since
+-- | @since WIP
 checkLedgerPropertiesPCountable ::
   forall (a :: S -> Type).
   ( Typeable a
@@ -107,7 +107,7 @@ checkLedgerPropertiesPCountable ::
 checkLedgerPropertiesPCountable =
   testGroup (instanceOfType @(S -> Type) @a "PCountable") (pcountableLaws @a)
 
--- | @since
+-- | @since WIP
 checkLedgerPropertiesPEnumerable ::
   forall (a :: S -> Type).
   ( Typeable a
@@ -122,7 +122,7 @@ checkLedgerPropertiesPEnumerable ::
 checkLedgerPropertiesPEnumerable =
   testGroup (instanceOfType @(S -> Type) @a "PEnumerable") (penumerableLaws @a)
 
--- | @since
+-- | @since WIP
 checkHaskellEquivalent ::
   forall (haskellInput :: Type) (haskellOutput :: Type).
   ( haskellInput ~ PLifted (PConstanted haskellInput)
@@ -141,7 +141,7 @@ checkHaskellEquivalent goHaskell goPlutarch =
   forAllShrinkShow arbitrary shrink show $
     \(input :: haskellInput) -> goHaskell input === plift (goPlutarch # pconstant input)
 
--- | @since
+-- | @since WIP
 ordHaskellEquivalents ::
   forall (haskellInput :: Type).
   ( Typeable haskellInput
