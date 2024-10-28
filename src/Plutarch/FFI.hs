@@ -35,9 +35,10 @@ import Plutarch.Bool (PBool, PEq, (#==))
 import Plutarch.Builtin (PData)
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Builtin (POpaque)
 import Plutarch.Internal.Generic (PCode)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Other (POpaque, pto)
+import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   DPTStrat,

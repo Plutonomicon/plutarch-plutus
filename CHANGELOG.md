@@ -27,12 +27,15 @@
 * `Positive` type in `Plutarch.Positive` that is Haskell level equivalent of
   `PPositive`
 * `PUnsafeLiftDecl` and `PConstantDecl` instances for `PPositive`
+* `Plutarch.Internal.Builtin`, containing all types and functions that are
+  essential to define anything in Plutarch
 
 ## Changed
 
 * `pconsBS` now takes a `PByte` argument instead of a `PInteger` one
 * `pindexBS` now returns a `PByte` instead of a `PInteger`
 * `pexpModInteger` is now in `Plutarch.Integer`
+* `POpaque` and `pfix` moved to `Plutarch.Internal.Builtin`
 
 ## Removed
 

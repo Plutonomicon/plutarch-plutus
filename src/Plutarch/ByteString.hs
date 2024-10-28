@@ -56,8 +56,8 @@ import Plutarch.Bool (
   (#||),
  )
 import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Builtin (POpaque, pfix)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Other (POpaque, pfix)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   DPTStrat,

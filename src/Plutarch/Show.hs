@@ -39,10 +39,8 @@ import Plutarch.ByteString (
   punsafeIntegerToByte,
  )
 import Plutarch.Integer (PInteger, PIntegral (pquot, prem))
+import Plutarch.Internal.Builtin (pfix)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
-import Plutarch.Internal.Other (
-  pfix,
- )
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PlutusType, pmatch)
 import Plutarch.Internal.Term (

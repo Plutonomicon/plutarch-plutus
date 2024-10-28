@@ -28,9 +28,9 @@ module Plutarch (
   PO.printScript,
   PL.pinl,
   PO.pto,
-  PO.pfix,
-  PO.POpaque (PO.POpaque),
-  PO.popaque,
+  PB.pfix,
+  PB.POpaque (PB.POpaque),
+  PB.popaque,
   PL.plam,
   PT.TermCont (TermCont),
   PT.hashOpenTerm,
@@ -58,6 +58,7 @@ module Plutarch (
   PP.PVariant',
 ) where
 
+import Plutarch.Internal.Builtin qualified as PB
 import Plutarch.Internal.Newtype qualified as PN
 import Plutarch.Internal.Other qualified as PO
 import Plutarch.Internal.PLam qualified as PL
