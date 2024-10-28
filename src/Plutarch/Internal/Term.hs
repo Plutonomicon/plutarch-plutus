@@ -19,7 +19,6 @@ module Plutarch.Internal.Term (
   perror,
   punsafeCoerce,
   punsafeBuiltin,
-  punsafeConstant,
   punsafeConstantInternal,
   compile,
   compileOptimized,
@@ -631,10 +630,6 @@ punsafeCoerce (Term x) = Term x
 
 punsafeBuiltin :: UPLC.DefaultFun -> Term s a
 punsafeBuiltin f = Term \_ -> pure $ mkTermRes $ RBuiltin f
-
-{-# DEPRECATED punsafeConstant "Use `pconstant` instead." #-}
-punsafeConstant :: Some (ValueOf PLC.DefaultUni) -> Term s a
-punsafeConstant = punsafeConstantInternal
 
 punsafeConstantInternal :: Some (ValueOf PLC.DefaultUni) -> Term s a
 punsafeConstantInternal c = Term \_ ->

@@ -1,7 +1,6 @@
 module Plutarch.Unsafe (
   PI.punsafeBuiltin,
   PI.punsafeCoerce,
-  PI.punsafeConstant,
   punsafeDowncast,
 ) where
 

@@ -7,7 +7,6 @@ module Plutarch.String (
   PString,
   -- Functions
   pisHexDigit,
-  pfromText,
   pencodeUtf8,
   pdecodeUtf8,
 ) where
@@ -43,12 +42,6 @@ instance DerivePlutusType PString where type DPTStrat _ = PlutusTypeNewtype
 
 instance PUnsafeLiftDecl PString where type PLifted PString = Text
 deriving via (DerivePConstantDirect Text PString) instance PConstantDecl Text
-
-{-# DEPRECATED pfromText "Use `pconstant` instead." #-}
-
--- | Create a PString from 'Text'
-pfromText :: Text.Text -> Term s PString
-pfromText = pconstant
 
 instance IsString (Term s PString) where
   fromString = pconstant . Text.pack

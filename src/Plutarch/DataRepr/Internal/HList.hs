@@ -8,10 +8,6 @@ module Plutarch.DataRepr.Internal.HList (
   HRecGeneric (HRecGeneric),
   Labeled (Labeled, unLabeled),
 
-  -- * Field indexing functions
-  hrecField,
-  hrecField',
-
   -- * Type families
   type IndexList,
   type IndexLabel,
@@ -55,20 +51,6 @@ indexHRec (HCons x _) Here = unLabeled x
 indexHRec (HCons _ xs) (There i) = indexHRec xs i
 indexHRec HNil impossible = case impossible of {}
 
-{- |
-  Index a HList with a field in a provided list of fields.
-
-  >>> xs = HRec @["x", "y", "z"] (HCons 1 (HCons 2 (HCons 3 HNil)))
-  >>> hrecField @"y" @["x", "y", "z"] xs
-  >>> 2
--}
-hrecField' ::
-  forall name a as.
-  ElemOf name a as =>
-  HRec as ->
-  a
-hrecField' xs = indexHRec xs $ elemOf @name @a @as
-
 ---------- Internal utils
 
 {- |
@@ -104,26 +86,6 @@ instance
   elemOf :: Elem '(name, a) (b ': as)
   elemOf = There (elemOf @name @a @as)
 
-{- |
-  Index a `HRec` with a field in a provided list of data fields.
-  Implicitly unwraps `PAsData a` to `a` when necessary.
-
-  >>> xs = HRec @["x", "y", "z"] (HCons 1 (HCons 2 (HCons 3 HNil)))
-  >>> hrecField @"y" @["x", "y", "z"] xs
-  >>> 2
--}
-hrecField ::
-  forall name c as a b s.
-  ( ElemOf name a as
-  , Term s (PAsData b) ~ a
-  , PFromDataable b c
-  ) =>
-  HRec as ->
-  Term s c
-hrecField xs =
-  pmaybeFromAsData @b @c $ hrecField' @name xs
-{-# DEPRECATED hrecField "please use getField from GHC.Records" #-}
-
 ---------- HasField instances
 instance
   forall name c as a b s.
@@ -148,3 +110,38 @@ instance
   HasField name (HRecGeneric as) a
   where
   getField (HRecGeneric x) = hrecField' @name x
+
+-- Helpers
+
+{- |
+  Index a `HRec` with a field in a provided list of data fields.
+  Implicitly unwraps `PAsData a` to `a` when necessary.
+
+  >>> xs = HRec @["x", "y", "z"] (HCons 1 (HCons 2 (HCons 3 HNil)))
+  >>> hrecField @"y" @["x", "y", "z"] xs
+  >>> 2
+-}
+hrecField ::
+  forall name c as a b s.
+  ( ElemOf name a as
+  , Term s (PAsData b) ~ a
+  , PFromDataable b c
+  ) =>
+  HRec as ->
+  Term s c
+hrecField xs =
+  pmaybeFromAsData @b @c $ hrecField' @name xs
+
+{- |
+  Index a HList with a field in a provided list of fields.
+
+  >>> xs = HRec @["x", "y", "z"] (HCons 1 (HCons 2 (HCons 3 HNil)))
+  >>> hrecField @"y" @["x", "y", "z"] xs
+  >>> 2
+-}
+hrecField' ::
+  forall name a as.
+  ElemOf name a as =>
+  HRec as ->
+  a
+hrecField' xs = indexHRec xs $ elemOf @name @a @as

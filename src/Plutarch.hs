@@ -22,8 +22,6 @@ module Plutarch (
   PP.PInner,
   PP.pcon,
   PP.pmatch,
-  PP.PCon,
-  PP.PMatch,
   PPR.prettyTerm,
   PPR.prettyScript,
   PO.printTerm,

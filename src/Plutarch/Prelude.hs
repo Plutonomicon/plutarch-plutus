@@ -26,8 +26,6 @@ module Plutarch.Prelude (
   PlutusTypeScott,
   PlutusTypeNewtype,
   PlutusTypeData,
-  PCon,
-  PMatch,
   pcon,
   pmatch,
   PForall (PForall),
@@ -169,17 +167,9 @@ module Plutarch.Prelude (
   ptraceDebugIfTrue,
   ptraceDebugError,
 
-  -- ** Deprecated
-  ptrace,
-  ptraceShowId,
-  ptraceError,
-  ptraceIfFalse,
-  ptraceIfTrue,
-
   -- * Cryptographic hashes and signatures
   psha2_256,
   psha3_256,
-  pverifySignature,
 
   -- * Conversion between Plutarch terms and Haskell types
   pconstant,

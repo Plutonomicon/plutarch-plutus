@@ -42,6 +42,9 @@
 * `Plutarch.Bitwise` module, as its functionality has been superseded by more
   type-safe operations in `Plutarch.ByteString`, `Plutarch.BitString` and
   `Plutarch.Convert`
+* `punsafeConstant`, `pdataLiteral`, `ptrace`, `ptraceShowId`, `ptraceError`,
+  `ptraceIfTrue`, `ptraceIfFalse`, `PCon`, `PMatch`, `ptrace`, `hrecField` due 
+  to deprecation
 
 ### Fixed
 

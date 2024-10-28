@@ -16,7 +16,6 @@ module Plutarch.Builtin (
   pasByteStr,
   PBuiltinPair,
   PBuiltinList (..),
-  pdataLiteral,
   PIsData (..),
   pdata,
   pfromData,
@@ -313,10 +312,6 @@ pasByteStr = punsafeBuiltin PLC.UnBData
 -- | Serialise any builtin data to its cbor represented by a builtin bytestring
 pserialiseData :: Term s (PData :--> PByteString)
 pserialiseData = punsafeBuiltin PLC.SerialiseData
-
-{-# DEPRECATED pdataLiteral "Use `pconstant` instead." #-}
-pdataLiteral :: Data -> Term s PData
-pdataLiteral = pconstant
 
 newtype PAsData (a :: PType) (s :: S) = PAsData (Term s a)
 

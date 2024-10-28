@@ -6,8 +6,6 @@
 module Plutarch.Internal.PlutusType (
   PlutusType,
   PlutusTypeStratConstraint,
-  PCon,
-  PMatch,
   pcon',
   pmatch',
   pmatch,
@@ -70,11 +68,6 @@ class PlutusType (a :: PType) where
   -- FIXME buggy GHC, needs AllowAmbiguousTypes
   default pmatch' :: DerivePlutusType a => forall s b. Term s (PInner a) -> (a s -> Term s b) -> Term s b
   pmatch' = derivedPMatch
-
-{-# DEPRECATED PCon "Use PlutusType" #-}
-type PCon = PlutusType
-{-# DEPRECATED PMatch "Use PlutusType" #-}
-type PMatch = PlutusType
 
 -- | Construct a Plutarch Term via a Haskell datatype
 pcon :: PlutusType a => a s -> Term s a
