@@ -211,6 +211,8 @@ import Plutarch.Crypto
 import Plutarch.DataRepr
 import Plutarch.Either
 import Plutarch.Integer
+import Plutarch.Internal.Builtin
+import Plutarch.Internal.Eq
 import Plutarch.Lift
 import Plutarch.List
 import Plutarch.Maybe

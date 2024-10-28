@@ -13,13 +13,12 @@ module Plutarch.BitString (
 ) where
 
 import GHC.Generics (Generic)
-import Plutarch.Bool (PBool, PEq, POrd, PPartialOrd, pif, (#<))
+import Plutarch.Bool (POrd, PPartialOrd, (#<))
 import Plutarch.Builtin (PBuiltinList)
 import Plutarch.ByteString (PByteString)
-import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Builtin (PBool, PInteger, pif, plam, pto)
+import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Other (pto)
-import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
   PlutusType,

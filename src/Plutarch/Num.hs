@@ -2,7 +2,7 @@
 
 module Plutarch.Num (PNum (..)) where
 
-import Plutarch.Internal.Other (pto)
+import Plutarch.Internal.Builtin (pto)
 import Plutarch.Internal.PlutusType (PInner)
 import Plutarch.Internal.Term (
   PType,

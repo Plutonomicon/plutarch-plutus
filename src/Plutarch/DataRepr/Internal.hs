@@ -84,7 +84,7 @@ import Plutarch (
   (#$),
   type (:-->),
  )
-import Plutarch.Bool (PBool, PEq, POrd, PPartialOrd, pif, (#<), (#<=), (#==))
+import Plutarch.Bool (POrd, PPartialOrd, (#<), (#<=))
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
@@ -108,7 +108,8 @@ import Plutarch.DataRepr.Internal.HList (
   type Drop,
   type IndexList,
  )
-import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Builtin (PBool, PInteger, PString, pif)
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
@@ -132,15 +133,13 @@ import Plutarch.Lift (
   pconstantToRepr,
  )
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
+import Plutarch.Reducible (NoReduce, Reduce)
+import Plutarch.Show (PShow (pshow'))
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PSubtype, PSubtype', PSubtypeRelation (PNoSubtypeRelation, PSubtypeRelation), PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
 import Plutarch.Unit (PUnit (PUnit))
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V1 qualified as Ledger
-
-import Plutarch.Reducible (NoReduce, Reduce)
-import Plutarch.Show (PShow (pshow'))
-import Plutarch.String (PString)
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is
  `PBuiltinList PData`.

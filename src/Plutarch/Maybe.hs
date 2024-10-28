@@ -35,10 +35,10 @@ import Plutarch (
   (#),
   type (:-->),
  )
-import Plutarch.Bool (PBool, PEq)
+import Plutarch.Internal.Builtin (PBool, PString)
+import Plutarch.Internal.Eq (PEq)
 import Plutarch.Lift (pconstant)
 import Plutarch.Show (PShow)
-import Plutarch.String (PString)
 import Plutarch.Trace (ptraceInfoError)
 
 -- | Plutus Maybe type, with Scott-encoded repr

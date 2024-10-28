@@ -15,12 +15,16 @@ module Plutarch.Convert (
 ) where
 
 import GHC.Generics (Generic)
-import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, PPartialOrd)
+import Plutarch.Bool (POrd, PPartialOrd)
 import Plutarch.ByteString (PByteString)
-import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Builtin (
+  PBool (PFalse, PTrue),
+  PInteger,
+  plam,
+  pto,
+ )
+import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Other (pto)
-import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   DPTStrat,
   DerivePlutusType,

@@ -31,15 +31,12 @@ import Generics.SOP.Type.Metadata (
   ConstructorName,
   DatatypeInfo (ADT, Newtype),
  )
-import Plutarch.Bool (PBool, PEq, (#==))
 import Plutarch.Builtin (PData)
 import Plutarch.ByteString (PByteString)
-import Plutarch.Integer (PInteger)
-import Plutarch.Internal.Builtin (POpaque)
+import Plutarch.Internal.Builtin (PBool, PInteger, POpaque, PString, plam, pto)
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Generic (PCode)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Other (pto)
-import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   DPTStrat,
   DerivePlutusType,
@@ -70,7 +67,6 @@ import Plutarch.List (PList, PListLike (PElemConstraint, pcons, pelimList, pnil)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Script (Script (Script))
 import Plutarch.Show (PShow)
-import Plutarch.String (PString)
 import Plutarch.Unit (PUnit)
 import PlutusTx.Builtins.Internal (BuiltinBool, BuiltinByteString, BuiltinData, BuiltinUnit)
 import PlutusTx.Code (CompiledCode, CompiledCodeIn (DeserializedCode), getPlc)

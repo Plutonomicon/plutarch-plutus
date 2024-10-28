@@ -56,6 +56,7 @@ module Plutarch.List (
 
 import Numeric.Natural (Natural)
 
+import Data.Kind (Constraint, Type)
 import GHC.Generics (Generic)
 import Plutarch (
   ClosedTerm,
@@ -80,23 +81,22 @@ import Plutarch (
   type (:-->),
  )
 import Plutarch.Bool (
-  PBool (PFalse, PTrue),
-  PEq,
   POrd,
-  pif,
-  (#&&),
   (#<),
   (#<=),
-  (#==),
+ )
+import Plutarch.Internal.Builtin (
+  PBool (PFalse, PTrue),
+  PInteger,
+  PString,
+  pif,
+  (#&&),
   (#||),
  )
-import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Lift (pconstant)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Pair (PPair (PPair))
-import Plutarch.String (PString)
-
-import Data.Kind
 import Plutarch.Show (PShow (pshow'), pshow)
 import Plutarch.Trace (ptraceInfoError)
 

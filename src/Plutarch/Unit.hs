@@ -5,7 +5,9 @@
 module Plutarch.Unit (PUnit (..)) where
 
 import Plutarch (Term, pcon, plet)
-import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, PPartialOrd, (#<), (#<=), (#==))
+import Plutarch.Bool (POrd, PPartialOrd, (#<), (#<=))
+import Plutarch.Internal.Builtin (PBool (PFalse, PTrue))
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon', pmatch')
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),

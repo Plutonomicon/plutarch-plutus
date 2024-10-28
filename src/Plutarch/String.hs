@@ -3,51 +3,28 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.String (
-  -- * Type
-  PString,
   -- Functions
   pisHexDigit,
   pencodeUtf8,
   pdecodeUtf8,
 ) where
 
-import Data.String (IsString, fromString)
-import Data.Text (Text)
 import Data.Text qualified as Text
-import GHC.Generics (Generic)
-import Plutarch.Bool (PBool, PEq, (#&&), (#<=), (#==), (#||))
+import Plutarch.Bool ((#<=))
 import Plutarch.ByteString (PByteString)
-import Plutarch.Integer (PInteger)
-import Plutarch.Internal.Builtin (POpaque)
-import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
-import Plutarch.Internal.Term (S, Term, phoistAcyclic, (#), (:-->))
-import Plutarch.Lift (
-  DerivePConstantDirect (DerivePConstantDirect),
-  PConstantDecl,
-  PLifted,
-  PUnsafeLiftDecl,
-  pconstant,
+import Plutarch.Integer ()
+import Plutarch.Internal.Builtin (
+  PBool,
+  PInteger,
+  PString,
+  plam,
+  (#&&),
+  (#||),
  )
+import Plutarch.Internal.Term (S, Term, phoistAcyclic, (#), (:-->))
+import Plutarch.Lift (pconstant)
 import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
-
--- | Plutus 'BuiltinString' values
-newtype PString s = PString (Term s POpaque)
-  deriving stock (Generic)
-  deriving anyclass (PlutusType)
-
-instance DerivePlutusType PString where type DPTStrat _ = PlutusTypeNewtype
-
-instance PUnsafeLiftDecl PString where type PLifted PString = Text
-deriving via (DerivePConstantDirect Text PString) instance PConstantDecl Text
-
-instance IsString (Term s PString) where
-  fromString = pconstant . Text.pack
-
-instance PEq PString where
-  x #== y = punsafeBuiltin PLC.EqualsString # x # y
 
 instance Semigroup (Term s PString) where
   x <> y = punsafeBuiltin PLC.AppendString # x # y

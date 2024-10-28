@@ -1,10 +1,10 @@
 module Plutarch.Internal.Trace (
   ptraceInfo,
   ptraceDebug,
-  ptrace',
 ) where
 
 import Data.Kind (Type)
+import Plutarch.Internal.Builtin (PString, pbuiltinTrace)
 import Plutarch.Internal.Term (
   Config (NoTracing, Tracing),
   LogLevel (LogDebug),
@@ -13,16 +13,8 @@ import Plutarch.Internal.Term (
   pdelay,
   pforce,
   pgetConfig,
-  phoistAcyclic,
   (#),
-  type (:-->),
  )
-import {-# SOURCE #-} Plutarch.String (PString)
-import Plutarch.Unsafe (punsafeBuiltin)
-import PlutusCore qualified as PLC
-
-ptrace' :: Term s (PString :--> a :--> a)
-ptrace' = phoistAcyclic $ pforce $ punsafeBuiltin PLC.Trace
 
 {- | Trace the given message at the info level before evaluating the given
 argument.
@@ -36,7 +28,7 @@ ptraceInfo ::
   Term s a
 ptraceInfo msg x = pgetConfig $ \case
   NoTracing -> x
-  Tracing _ _ -> pforce $ ptrace' # msg # pdelay x
+  Tracing _ _ -> pforce $ pbuiltinTrace # msg # pdelay x
 
 {- | Trace the given message at the debug level before evaluating the given
 argument.
@@ -49,5 +41,5 @@ ptraceDebug ::
   Term s a ->
   Term s a
 ptraceDebug msg x = pgetConfig $ \case
-  Tracing LogDebug _ -> pforce $ ptrace' # msg # pdelay x
+  Tracing LogDebug _ -> pforce $ pbuiltinTrace # msg # pdelay x
   _ -> x

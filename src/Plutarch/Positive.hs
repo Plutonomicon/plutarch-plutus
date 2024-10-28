@@ -13,22 +13,6 @@ import Data.Coerce (coerce)
 import Data.Functor.Const (Const)
 import Data.Text (pack)
 import GHC.Generics (Generic)
-import Prettyprinter (Pretty)
-import Test.QuickCheck (
-  Arbitrary,
-  CoArbitrary,
-  Function (function),
-  functionMap,
- )
-import Test.QuickCheck qualified as QuickCheck
-
-import Plutarch.Bool (PEq, POrd, PPartialOrd, pif, (#<=))
-import Plutarch.Builtin (PAsData, PData, PIsData, pdata)
-import Plutarch.Integer (PInteger, PIntegral)
-
-import Plutarch.Maybe (PMaybe (PJust, PNothing))
-import Plutarch.Show (PShow, pshow)
-
 import Plutarch (
   DerivePlutusType (DPTStrat),
   PlutusType,
@@ -45,11 +29,26 @@ import Plutarch (
   (#$),
   type (:-->),
  )
+import Plutarch.Bool (POrd, PPartialOrd, (#<=))
+import Plutarch.Builtin (PAsData, PData, PIsData, pdata)
+import Plutarch.Integer (PIntegral)
+import Plutarch.Internal.Builtin (PInteger, pif)
+import Plutarch.Internal.Eq (PEq)
 import Plutarch.Lift (DerivePConstantDirect (DerivePConstantDirect), PConstantDecl, PUnsafeLiftDecl (PLifted))
+import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Num (PNum (pfromInteger, (#-)))
+import Plutarch.Show (PShow, pshow)
 import Plutarch.TermCont (tcont)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
+import Prettyprinter (Pretty)
+import Test.QuickCheck (
+  Arbitrary,
+  CoArbitrary,
+  Function (function),
+  functionMap,
+ )
+import Test.QuickCheck qualified as QuickCheck
 
 newtype PPositive s = PPositive (Term s PInteger)
   deriving stock (Generic)

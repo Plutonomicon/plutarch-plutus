@@ -35,7 +35,9 @@
 * `pconsBS` now takes a `PByte` argument instead of a `PInteger` one
 * `pindexBS` now returns a `PByte` instead of a `PInteger`
 * `pexpModInteger` is now in `Plutarch.Integer`
-* `POpaque` and `pfix` moved to `Plutarch.Internal.Builtin`
+* `POpaque`, `pfix` and `pto` moved to `Plutarch.Internal.Builtin`
+* `pif'` is now `pbuiltinIfThenElse`
+* `ptrace'` is now `pbuiltinTrace`
 
 ## Removed
 

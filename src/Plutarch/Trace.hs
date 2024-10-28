@@ -15,7 +15,7 @@ module Plutarch.Trace (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Bool (PBool, pif)
+import Plutarch.Internal.Builtin (PBool, PString, pbuiltinTrace, pif)
 import Plutarch.Internal.Term (
   Config (NoTracing, Tracing),
   LogLevel (LogDebug, LogInfo),
@@ -26,9 +26,8 @@ import Plutarch.Internal.Term (
   plet,
   (#),
  )
-import Plutarch.Internal.Trace (ptrace', ptraceDebug, ptraceInfo)
+import Plutarch.Internal.Trace (ptraceDebug, ptraceInfo)
 import Plutarch.Show (PShow, pshow)
-import Plutarch.String (PString)
 
 {- | Like Haskell's @traceShowId@ but for Plutarch, at the info level.
 
@@ -87,7 +86,7 @@ ptraceInfoIfTrue ::
   Term s PBool
 ptraceInfoIfTrue msg x = pgetConfig $ \case
   NoTracing -> x
-  _ -> plet x $ \x' -> pif x' (ptrace' # msg # x') x'
+  _ -> plet x $ \x' -> pif x' (pbuiltinTrace # msg # x') x'
 
 {- | Trace the given message at the debug level if the argument is true.
 
@@ -102,7 +101,7 @@ ptraceDebugIfTrue msg x = pgetConfig $ \case
   NoTracing -> x
   Tracing ll _ -> case ll of
     LogInfo -> x
-    LogDebug -> plet x $ \x' -> pif x' (ptrace' # msg # x') x'
+    LogDebug -> plet x $ \x' -> pif x' (pbuiltinTrace # msg # x') x'
 
 {- | Trace the given message at the info level if the argument is false.
 
@@ -115,7 +114,7 @@ ptraceInfoIfFalse ::
   Term s PBool
 ptraceInfoIfFalse msg x = pgetConfig $ \case
   NoTracing -> x
-  _ -> plet x $ \x' -> pif x' x' (ptrace' # msg # x')
+  _ -> plet x $ \x' -> pif x' x' (pbuiltinTrace # msg # x')
 
 {- | Trace the given message at the debug level if the argument is false.
 
@@ -130,4 +129,4 @@ ptraceDebugIfFalse msg x = pgetConfig $ \case
   NoTracing -> x
   Tracing ll _ -> case ll of
     LogInfo -> x
-    LogDebug -> plet x $ \x' -> pif x' x' (ptrace' # msg # x')
+    LogDebug -> plet x $ \x' -> pif x' x' (pbuiltinTrace # msg # x')

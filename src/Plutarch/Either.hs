@@ -10,7 +10,7 @@ import Plutarch (
   S,
   Term,
  )
-import Plutarch.Bool (PEq)
+import Plutarch.Internal.Eq (PEq)
 import Plutarch.Show (PShow)
 
 data PEither (a :: PType) (b :: PType) (s :: S)

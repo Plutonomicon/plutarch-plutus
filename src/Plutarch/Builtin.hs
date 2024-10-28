@@ -64,20 +64,22 @@ import Plutarch (
   type (:-->),
  )
 import Plutarch.Bool (
-  PBool (..),
-  PEq,
   POrd,
   PPartialOrd,
-  pif,
-  pif',
-  (#&&),
   (#<),
   (#<=),
-  (#==),
-  (#||),
  )
 import Plutarch.ByteString (PByteString)
-import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Builtin (
+  PBool,
+  PInteger,
+  PString,
+  pbuiltinIfThenElse,
+  pif,
+  (#&&),
+  (#||),
+ )
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.PlutusType (pcon', pmatch')
 import Plutarch.Internal.Witness (witness)
 import Plutarch.Lift (
@@ -111,7 +113,6 @@ import Plutarch.List (
   ptail,
  )
 import Plutarch.Show (PShow (pshow'), pshow)
-import Plutarch.String (PString)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast, pupcastF)
 import Plutarch.Unit (PUnit)
@@ -415,7 +416,7 @@ instance PIsData PBool where
       toData :: Term s PBool -> Term s PData
       toData b =
         punsafeBuiltin PLC.ConstrData
-          # (pif' # b # 1 # (0 :: Term s PInteger))
+          # (pbuiltinIfThenElse # b # 1 # (0 :: Term s PInteger))
           # nil
 
       nil :: Term s (PBuiltinList PData)

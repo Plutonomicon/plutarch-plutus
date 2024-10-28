@@ -26,12 +26,12 @@ module Plutarch (
   PPR.prettyScript,
   PO.printTerm,
   PO.printScript,
-  PL.pinl,
-  PO.pto,
+  PB.pinl,
+  PB.pto,
   PB.pfix,
   PB.POpaque (PB.POpaque),
   PB.popaque,
-  PL.plam,
+  PB.plam,
   PT.TermCont (TermCont),
   PT.hashOpenTerm,
   PT.runTermCont,
@@ -61,7 +61,6 @@ module Plutarch (
 import Plutarch.Internal.Builtin qualified as PB
 import Plutarch.Internal.Newtype qualified as PN
 import Plutarch.Internal.Other qualified as PO
-import Plutarch.Internal.PLam qualified as PL
 import Plutarch.Internal.PlutusType qualified as PP
 import Plutarch.Internal.Quantification qualified as PQ
 import Plutarch.Internal.ScottEncoding qualified as PS

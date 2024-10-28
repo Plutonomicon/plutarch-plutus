@@ -3,50 +3,24 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Integer (
-  -- * Type
-  PInteger,
-
   -- * Type class
   PIntegral (..),
-
-  -- * Functions
-  pexpModInteger,
 ) where
 
-import GHC.Generics (Generic)
-import Plutarch.Bool (PEq, POrd, PPartialOrd, pif, (#<), (#<=), (#==))
-import Plutarch.Internal.Builtin (POpaque)
-import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Other (pto)
-import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PInner, PlutusType)
+import Plutarch.Bool (POrd, PPartialOrd, (#<), (#<=))
+import Plutarch.Internal.Builtin (PInteger, pif, plam, pto)
+import Plutarch.Internal.Eq ((#==))
+import Plutarch.Internal.PlutusType (PInner)
 import Plutarch.Internal.Term (
-  S,
   Term,
   phoistAcyclic,
   (#),
   (:-->),
  )
-import Plutarch.Lift (
-  DerivePConstantDirect (DerivePConstantDirect),
-  PConstantDecl,
-  PLifted,
-  PUnsafeLiftDecl,
-  pconstant,
- )
+import Plutarch.Lift (pconstant)
 import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
 import Plutarch.Unsafe (punsafeBuiltin, punsafeDowncast)
 import PlutusCore qualified as PLC
-
--- | Plutus BuiltinInteger
-newtype PInteger s = PInteger (Term s POpaque)
-  deriving stock (Generic)
-  deriving anyclass (PlutusType)
-
-instance DerivePlutusType PInteger where type DPTStrat _ = PlutusTypeNewtype
-
-instance PUnsafeLiftDecl PInteger where type PLifted PInteger = Integer
-deriving via (DerivePConstantDirect Integer PInteger) instance PConstantDecl Integer
 
 class PIntegral a where
   pdiv :: Term s (a :--> a :--> a)
@@ -67,9 +41,6 @@ instance PIntegral PInteger where
   pmod = punsafeBuiltin PLC.ModInteger
   pquot = punsafeBuiltin PLC.QuotientInteger
   prem = punsafeBuiltin PLC.RemainderInteger
-
-instance PEq PInteger where
-  x #== y = punsafeBuiltin PLC.EqualsInteger # x # y
 
 instance PPartialOrd PInteger where
   x #<= y = punsafeBuiltin PLC.LessThanEqualsInteger # x # y
@@ -92,20 +63,3 @@ instance PNum PInteger where
         (-1)
         1
   pfromInteger = pconstant
-
-{- | Performs modulo exponentiation. More precisely, @pexpModInteger b e m@
-performs @b@ to the power of @e@, modulo @m@. The result is always
-non-negative.
-
-= Note
-
-This will error if the modulus is zero. When given a negative exponent, this
-will try to find a modular multiplicative inverse, and will error if none
-exists.
-
-@since WIP
--}
-pexpModInteger ::
-  forall (s :: S).
-  Term s (PInteger :--> PInteger :--> PInteger :--> PInteger)
-pexpModInteger = punsafeBuiltin PLC.ExpModInteger

@@ -34,7 +34,7 @@ import Plutarch (
   (#$),
   type (:-->),
  )
-import Plutarch.Bool (PEq, POrd, PPartialOrd, pif, pnot, (#<), (#<=), (#==))
+import Plutarch.Bool (POrd, PPartialOrd, (#<), (#<=))
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
@@ -47,7 +47,9 @@ import Plutarch.Builtin (
   pforgetData,
   pfromDataImpl,
  )
-import Plutarch.Integer (PInteger, PIntegral (pquot), pdiv, pmod)
+import Plutarch.Integer (PIntegral (pquot), pdiv, pmod)
+import Plutarch.Internal.Builtin (PInteger, pif, pnot)
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Lift (pconstant)
 import Plutarch.List (pcons, phead, pnil, ptail)
 import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))

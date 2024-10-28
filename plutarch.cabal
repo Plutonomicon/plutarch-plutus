@@ -92,11 +92,11 @@ library
     Plutarch.FFI
     Plutarch.Integer
     Plutarch.Internal.Builtin
+    Plutarch.Internal.Eq
     Plutarch.Internal.Evaluate
     Plutarch.Internal.Generic
     Plutarch.Internal.Newtype
     Plutarch.Internal.Other
-    Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType
     Plutarch.Internal.PrettyStack
     Plutarch.Internal.Quantification

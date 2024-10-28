@@ -27,7 +27,7 @@ import Generics.SOP (
   hmap,
  )
 import Generics.SOP.GGP (gdatatypeInfo)
-import Plutarch.Bool (PBool, PEq, pif, pif', (#<), (#==))
+import Plutarch.Bool ((#<))
 import Plutarch.ByteString (
   PByte,
   PByteString,
@@ -38,10 +38,18 @@ import Plutarch.ByteString (
   psliceBS,
   punsafeIntegerToByte,
  )
-import Plutarch.Integer (PInteger, PIntegral (pquot, prem))
-import Plutarch.Internal.Builtin (pfix)
+import Plutarch.Integer (PIntegral (pquot, prem))
+import Plutarch.Internal.Builtin (
+  PBool,
+  PInteger,
+  PString,
+  pbuiltinIfThenElse,
+  pfix,
+  pif,
+  plam,
+ )
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
-import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PlutusType, pmatch)
 import Plutarch.Internal.Term (
   Term,
@@ -54,7 +62,7 @@ import Plutarch.Internal.Term (
   (:-->),
  )
 import Plutarch.Lift (pconstant)
-import Plutarch.String (PString, pdecodeUtf8, pencodeUtf8)
+import Plutarch.String (pdecodeUtf8, pencodeUtf8)
 
 class PShow t where
   -- | Return the string representation of a Plutarch value
@@ -230,4 +238,6 @@ productGroup wrap sep = \case
  Works for all types.
 -}
 pshowAndErr :: Term s a -> Term s b
-pshowAndErr x = punsafeCoerce $ pindexBS # punsafeCoerce (pif' # punsafeCoerce x # x # x) # 0
+pshowAndErr x =
+  punsafeCoerce $
+    pindexBS # punsafeCoerce (pbuiltinIfThenElse # punsafeCoerce x # x # x) # 0
