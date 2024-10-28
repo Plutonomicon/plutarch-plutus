@@ -11,7 +11,7 @@ module Plutarch.DataRepr.Internal.HList.Utils (
 
 import Data.Kind (Type)
 import GHC.TypeLits (
-  ErrorMessage (Text),
+  ErrorMessage (Text, (:$$:), (:<>:)),
   Nat,
   Symbol,
   TypeError,
@@ -36,6 +36,11 @@ type family IndexList (n :: Nat) (l :: [k]) :: k where
 -- | Indexing list of labeled pairs by label
 type IndexLabel :: Symbol -> [(Symbol, Type)] -> Type
 type family IndexLabel name as where
+  IndexLabel name '[] =
+    TypeError
+      ( 'Text "Invalid field name `" ':<>: 'Text name ':<>: 'Text "`"
+          ':$$: 'Text "Consider adding it to `pletFields` list"
+      )
   IndexLabel name ('(name, a) ': _) = a
   IndexLabel name (_ ': as) = IndexLabel name as
 
