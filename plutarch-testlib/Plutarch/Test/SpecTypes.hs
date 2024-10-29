@@ -15,6 +15,7 @@ import Plutarch.Lift (
   PUnsafeLiftDecl (PLifted),
  )
 import Plutarch.Prelude
+import Prettyprinter (Pretty (pretty), (<+>))
 import Test.Tasty.QuickCheck (Arbitrary, arbitrary)
 
 {- | Tuple of three elements of the same type
@@ -23,6 +24,9 @@ import Test.Tasty.QuickCheck (Arbitrary, arbitrary)
 -}
 data Triplet a = Triplet a a a
   deriving stock (Show, Eq, Ord)
+
+instance Pretty a => Pretty (Triplet a) where
+  pretty (Triplet x y z) = pretty x <+> pretty y <+> pretty z
 
 {- |
   We can defined a data-type using PDataRecord, with labeled fields.

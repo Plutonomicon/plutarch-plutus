@@ -4,15 +4,16 @@
 module Plutarch.Test.Utils (
   fewerTests,
   prettyShow,
+  prettyEquals,
   typeName,
   instanceOfType,
   typeName',
 ) where
 
 import Data.Kind (Type)
-import Prettyprinter (Pretty (pretty), defaultLayoutOptions, layoutPretty)
+import Prettyprinter (Pretty (pretty), defaultLayoutOptions, layoutPretty, (<+>))
 import Prettyprinter.Render.String (renderString)
-import Test.Tasty.QuickCheck (QuickCheckTests)
+import Test.Tasty.QuickCheck (Property, QuickCheckTests, counterexample)
 import Type.Reflection (TypeRep, Typeable, tyConName, typeRep, typeRepTyCon, pattern App)
 
 -- | Decrease number of quickcheck tests by specified factor
@@ -21,6 +22,16 @@ fewerTests divisor = (`quot` divisor)
 
 prettyShow :: forall (a :: Type). Pretty a => a -> String
 prettyShow = renderString . layoutPretty defaultLayoutOptions . pretty
+
+prettyEquals :: (Eq a, Pretty a) => a -> a -> Property
+prettyEquals x y =
+  counterexample
+    (renderString $ layoutPretty defaultLayoutOptions (pretty x <+> interpret res <+> pretty y))
+    res
+  where
+    res = x == y
+    interpret True = " == "
+    interpret False = " /= "
 
 typeName :: forall k (a :: k). Typeable a => String
 typeName = typeName' True (typeRep @a)

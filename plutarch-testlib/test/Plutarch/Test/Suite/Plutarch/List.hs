@@ -5,7 +5,7 @@ import Plutarch.LedgerApi.Utils (pmaybeToMaybeData)
 import Plutarch.List (pcheckSorted, pconvertLists, pfoldl', preverse)
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenEvalFail, goldenGroup, plutarchGolden)
-import Plutarch.Test.Laws (checkHaskellEquivalent)
+import Plutarch.Test.QuickCheck (checkHaskellEquivalent)
 import Plutarch.Test.Unit (testEvalEqual)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)

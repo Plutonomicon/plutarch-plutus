@@ -1,5 +1,7 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE PolyKinds #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Test.Laws (
   checkLedgerPropertiesValue,
@@ -7,16 +9,19 @@ module Plutarch.Test.Laws (
   checkLedgerProperties,
   checkLedgerPropertiesPCountable,
   checkLedgerPropertiesPEnumerable,
-  checkHaskellEquivalent,
   ordHaskellEquivalents,
 ) where
 
 import Plutarch.Builtin (pforgetData)
 import Plutarch.Enum (PCountable (psuccessor, psuccessorN), PEnumerable (ppredecessor, ppredecessorN))
 import Plutarch.LedgerApi.V1 qualified as V1
-import Plutarch.Lift (PConstantDecl (PConstanted), PUnsafeLiftDecl (PLifted))
+import Plutarch.Lift (
+  PConstantDecl (PConstanted),
+  PUnsafeLiftDecl (PLifted),
+ )
 import Plutarch.Positive (Positive)
 import Plutarch.Prelude
+import Plutarch.Test.QuickCheck (checkHaskellEquivalent2)
 import Plutarch.Test.Utils (instanceOfType, prettyShow, typeName, typeName')
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common qualified as Plutus
@@ -26,7 +31,6 @@ import PlutusTx.AssocMap qualified as AssocMap
 import Prettyprinter (Pretty)
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
-  Property,
   forAllShrinkShow,
   (=/=),
   (===),
@@ -123,25 +127,6 @@ checkLedgerPropertiesPEnumerable =
   testGroup (instanceOfType @(S -> Type) @a "PEnumerable") (penumerableLaws @a)
 
 -- | @since WIP
-checkHaskellEquivalent ::
-  forall (haskellInput :: Type) (haskellOutput :: Type).
-  ( haskellInput ~ PLifted (PConstanted haskellInput)
-  , PConstantDecl haskellInput
-  , Show haskellInput
-  , Arbitrary haskellInput
-  , haskellOutput ~ PLifted (PConstanted haskellOutput)
-  , PConstantDecl haskellOutput
-  , Show haskellOutput
-  , Eq haskellOutput
-  ) =>
-  (haskellInput -> haskellOutput) ->
-  ClosedTerm (PConstanted haskellInput :--> PConstanted haskellOutput) ->
-  Property
-checkHaskellEquivalent goHaskell goPlutarch =
-  forAllShrinkShow arbitrary shrink show $
-    \(input :: haskellInput) -> goHaskell input === plift (goPlutarch # pconstant input)
-
--- | @since WIP
 ordHaskellEquivalents ::
   forall (haskellInput :: Type).
   ( Typeable haskellInput
@@ -150,7 +135,7 @@ ordHaskellEquivalents ::
   , haskellInput ~ PLifted (PConstanted haskellInput)
   , PPartialOrd (PConstanted haskellInput)
   , PConstantDecl haskellInput
-  , Show haskellInput
+  , Pretty haskellInput
   , Arbitrary haskellInput
   ) =>
   TestTree
@@ -162,18 +147,9 @@ ordHaskellEquivalents =
         , instanceOfType @(S -> Type) @(PConstanted haskellInput) "POrd"
         ]
     )
-    [ testProperty "== = #==" $
-        checkHaskellEquivalent @(haskellInput, haskellInput) @Bool
-          (uncurry (==))
-          (plam $ \pair -> (pfstBuiltin # pair) #== (psndBuiltin # pair))
-    , testProperty "< = #<" $
-        checkHaskellEquivalent @(haskellInput, haskellInput) @Bool
-          (uncurry (<))
-          (plam $ \pair -> (pfstBuiltin # pair) #< (psndBuiltin # pair))
-    , testProperty "<= = #<=" $
-        checkHaskellEquivalent @(haskellInput, haskellInput) @Bool
-          (uncurry (<=))
-          (plam $ \pair -> (pfstBuiltin # pair) #<= (psndBuiltin # pair))
+    [ testProperty "== = #==" $ checkHaskellEquivalent2 ((==) @haskellInput) (plam (#==))
+    , testProperty "< = #<" $ checkHaskellEquivalent2 ((<) @haskellInput) (plam (#<))
+    , testProperty "<= = #<=" $ checkHaskellEquivalent2 ((<=) @haskellInput) (plam (#<=))
     ]
 
 -- Internal

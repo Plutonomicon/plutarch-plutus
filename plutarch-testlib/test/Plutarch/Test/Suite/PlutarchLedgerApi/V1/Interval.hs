@@ -10,6 +10,7 @@ import Plutarch.LedgerApi.Interval (
   phull,
   pintersection,
   pinterval,
+  pisEmpty,
   pmember,
   psingleton,
   pto,
@@ -18,7 +19,21 @@ import Plutarch.LedgerApi.V1 (PPosixTime)
 import Plutarch.Prelude hiding (psingleton, pto)
 import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkLedgerProperties)
+import Plutarch.Test.QuickCheck (checkHaskellEquivalent, checkHaskellEquivalent2)
 import Plutarch.Test.Utils (fewerTests)
+import PlutusLedgerApi.V1 (POSIXTime)
+import PlutusLedgerApi.V1.Interval (
+  after,
+  before,
+  contains,
+  from,
+  hull,
+  intersection,
+  isEmpty,
+  member,
+  singleton,
+  to,
+ )
 import Test.Tasty (TestTree, adjustOption, testGroup)
 import Test.Tasty.QuickCheck (arbitrary, forAllShrinkShow, shrink, testProperty)
 
@@ -109,6 +124,31 @@ tests =
               "after"
               [ testProperty "a is after [b, c] iff c < a" $
                   forAllShrinkShow arbitrary shrink show checkAfter
+              ]
+          , testGroup
+              "Haskell equivalents"
+              [ testProperty "contains = pcontains" $
+                  checkHaskellEquivalent2 (contains @POSIXTime) pcontains
+              , testProperty "member = pmember" $
+                  checkHaskellEquivalent2
+                    (member @POSIXTime)
+                    (plam $ \value interval -> pmember # pdata value # interval)
+              , testProperty "intersection = pintersection" $
+                  checkHaskellEquivalent2 (intersection @POSIXTime) pintersection
+              , testProperty "hull = phull" $
+                  checkHaskellEquivalent2 (hull @POSIXTime) phull
+              , testProperty "before = pbefore" $
+                  checkHaskellEquivalent2 (before @POSIXTime) pbefore
+              , testProperty "after = pafter" $
+                  checkHaskellEquivalent2 (after @POSIXTime) pafter
+              , testProperty "isEmpty = pisEmpty" $
+                  checkHaskellEquivalent (isEmpty @POSIXTime) pisEmpty
+              , testProperty "singleton = psingleton" $
+                  checkHaskellEquivalent (singleton @POSIXTime) (plam $ \t -> psingleton # pdata t)
+              , testProperty "from = pfrom" $
+                  checkHaskellEquivalent (from @POSIXTime) (plam $ \t -> pfrom # pdata t)
+              , testProperty "to = pto" $
+                  checkHaskellEquivalent (to @POSIXTime) (plam $ \t -> pto # pdata t)
               ]
           ]
     ]
