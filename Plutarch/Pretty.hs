@@ -1,10 +1,11 @@
 {-# LANGUAGE PatternSynonyms #-}
 
-module Plutarch.Pretty (prettyTerm, prettyTerm', prettyScript) where
+module Plutarch.Pretty (prettyTerm, prettyTermAndCost, prettyTerm', prettyScript) where
 
 import Control.Monad.Reader (ReaderT (runReaderT))
 import Control.Monad.ST (runST)
 import Control.Monad.State (MonadState (get, put), StateT (runStateT), modify, modify')
+import Data.ByteString.Short qualified as SBS
 import Data.Foldable (fold)
 import Data.Functor (($>), (<&>))
 import Data.Text (Text)
@@ -16,9 +17,12 @@ import System.Random.Stateful (mkStdGen, newSTGenM)
 import Prettyprinter ((<+>))
 import Prettyprinter qualified as PP
 
+import Plutarch.Evaluate (evalTerm)
 import Plutarch.Internal (ClosedTerm, Config, compile)
 import Plutarch.Script (Script (unScript))
 import PlutusCore qualified as PLC
+import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
+import PlutusLedgerApi.Common (serialiseUPLC)
 import UntypedPlutusCore (
   DeBruijn (DeBruijn),
   DefaultFun,
@@ -214,6 +218,20 @@ To achieve better prettification, certain AST structures are given special handl
 -}
 prettyTerm :: Config -> ClosedTerm a -> PP.Doc ()
 prettyTerm conf x = either (error . Txt.unpack) id $ prettyTerm' conf x
+
+prettyTermAndCost :: forall a. Config -> ClosedTerm a -> PP.Doc ()
+prettyTermAndCost conf x =
+  let
+    pp = either (error . Txt.unpack) id $ prettyTerm' conf x
+    (_, ExBudget cpu mem, _) = either (error . Txt.unpack) id $ evalTerm @a conf x
+    scriptSize =
+      SBS.length $
+        serialiseUPLC $
+          unScript $
+            either (error . Txt.unpack) id $
+              compile conf x
+   in
+    pp <> "\n" <> "CPU: " <> PP.pretty cpu <> "\nMEM: " <> PP.pretty mem <> "\nSIZE: " <> PP.pretty scriptSize
 
 -- | Non-partial 'prettyTerm'.
 prettyTerm' :: Config -> ClosedTerm p -> Either Text (PP.Doc ())
