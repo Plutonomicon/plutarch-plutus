@@ -789,8 +789,8 @@ gtE' ::
   PExtended a s ->
   Term s PBool
 gtE' x = \case
-  PNegInf _ -> pconstant False
-  PPosInf _ -> pconstant True
+  PNegInf _ -> pconstant True
+  PPosInf _ -> pconstant False
   PFinite r ->
     let y = pfield @"_0" # r
      in y #< x

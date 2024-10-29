@@ -10,6 +10,7 @@ import Plutarch.LedgerApi.Interval (
   phull,
   pintersection,
   pinterval,
+  pisEmpty,
   pmember,
   psingleton,
   pto,
@@ -18,10 +19,10 @@ import Plutarch.LedgerApi.V1 (PPosixTime)
 import Plutarch.Prelude hiding (psingleton, pto)
 import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkLedgerProperties)
-import Plutarch.Test.QuickCheck (checkHaskellEquivalent2)
+import Plutarch.Test.QuickCheck (checkHaskellEquivalent, checkHaskellEquivalent2)
 import Plutarch.Test.Utils (fewerTests)
 import PlutusLedgerApi.V1 (POSIXTime)
-import PlutusLedgerApi.V1.Interval (contains, hull, intersection, member)
+import PlutusLedgerApi.V1.Interval (after, before, contains, hull, intersection, isEmpty, member)
 import Test.Tasty (TestTree, adjustOption, testGroup)
 import Test.Tasty.QuickCheck (arbitrary, forAllShrinkShow, shrink, testProperty)
 
@@ -125,6 +126,12 @@ tests =
                   checkHaskellEquivalent2 (intersection @POSIXTime) pintersection
               , testProperty "hull = phull" $
                   checkHaskellEquivalent2 (hull @POSIXTime) phull
+              , testProperty "before = pbefore" $
+                  checkHaskellEquivalent2 (before @POSIXTime) pbefore
+              , testProperty "after = pafter" $
+                  checkHaskellEquivalent2 (after @POSIXTime) pafter
+              , testProperty "isEmpty = pisEmpty" $
+                  checkHaskellEquivalent (isEmpty @POSIXTime) pisEmpty
               ]
           ]
     ]
