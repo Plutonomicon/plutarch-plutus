@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-unused-imports #-}
 -- This needs to go later
 {-# OPTIONS_GHC -Wwarn #-}
 
@@ -9,11 +10,14 @@ module Plutarch.Rework where
 
 import Generics.SOP
 
--- import GHC.TypeLits
+import GHC.TypeLits
+
+import Data.Functor.Compose
 
 import Data.Kind (Type)
 import Data.Proxy
 import Plutarch.Builtin
+import Plutarch.DataRepr.Internal
 import Plutarch.Prelude
 import Plutarch.Unsafe
 
@@ -89,105 +93,133 @@ pdataReprToData (PDataStructure (PStructure xs)) =
 pdataStructureAsData :: Term s (PDataStructure struct) -> Term s PData
 pdataStructureAsData = punsafeCoerce
 
--- data Handler out xs where
---   HandlerNil
---   HandlerCons :: (forall s. Term s PData -> Term s b) -> Handler out xs -> Handler out (x ': xs)
+type FAZ = '[PInteger, PInteger, PInteger]
 
--- First integer is for indexing constr index
--- Second function is the handler itself
+faz :: Term s (PBuiltinList PData)
+faz =
+  let
+    a, b, c :: Term s PData
+    a = pforgetData $ pdata $ pconstant (1 :: Integer)
+    b = pforgetData $ pdata $ pconstant (2 :: Integer)
+    c = pforgetData $ pdata $ pconstant (4 :: Integer)
+   in
+    pconsBuiltin # a #$ pconsBuiltin # b #$ pconsBuiltin # c # pconstant []
 
--- data HandlerBuilder b s cs where
---   HandlerBuilderNil :: HandlerBuilder b s '[]
---   HandlerBuilderCons ::
---     Integer ->
---     ((PDataStructure struct s -> Term s b) -> (Term s (PBuiltinList PData) -> Term s b)) ->
---     HandlerBuilder b s (c ': cs)
--- data HandlerBuilder b s cs =
---   HandlerBuilder (Term s (PDataStructure cs) -> Term s b)
+-- pdataFromFoo :: Term s (PBuiltinList PData) -> (PRecord struct s -> Term s b) -> Term s b
+-- pdataFromFoo = unH $ para_SList (H $ const $ pconstant []) undefined
 
--- data A b s cs = A {i :: Integer, unA :: (PDataStructure cs s -> Term s b) -> HandlerBuilder b s cs}
+-- $> import Plutarch.Pretty
 
-newtype H s struct = H {unH :: forall r. (PRecord struct s -> Term s r) -> Term s r}
+-- $> prettyTermAndCost mempty $ precordFromDataFancy @FAZ faz (\(PRecord (x :* _y :* _z :* _)) ->  x + x)
 
-pdataFrom :: Foo struct => Term s (PBuiltinList PData) -> (PRecord struct s -> Term s b) -> Term s b
-pdataFrom x f = plet x $ \y -> pdataFrom' y f
+-- $> PI.compile mempty $ plam $ \(x :: Term s PInteger) (y :: Term s PInteger) (z :: Term s PInteger) -> x + y + z
 
-class Foo struct where
-  pdataFrom' :: Term s (PBuiltinList PData) -> (PRecord struct s -> Term s b) -> Term s b
+-- $> prettyTermAndCost mempty $ precordFromDataFancy @FAZ faz (\(PRecord (_x :* _y :* _z :* _)) ->  pconstant (5 :: Integer))
 
-instance (PIsData x, Foo xs) => Foo (x ': xs) where
-  pdataFrom' ds =
+newtype H s struct = H {unH :: forall r. Term s (PBuiltinList PData) -> (PRecord struct s -> Term s r) -> Term s r}
+
+-- Note, this binds all fields to plet, need optimization
+precordFromDataFancy :: forall (struct :: [S -> Type]) b s. All PIsData struct => Term s (PBuiltinList PData) -> (PRecord struct s -> Term s b) -> Term s b
+precordFromDataFancy x f =
+  let
+    go :: forall y ys. PIsData y => H s ys -> H s (y ': ys)
+    go (H rest) = H $ \ds cps ->
+      let
+        tail = ptail # ds
+        parsed = pfromData @y $ punsafeCoerce $ phead # ds
+       in
+        rest tail $ \(PRecord rest') ->
+          plet parsed $
+            \parsed' ->
+              cps $ PRecord $ parsed' :* rest'
+    record = unH $ cpara_SList (Proxy @PIsData) (H $ \_ cps -> cps $ PRecord Nil) go
+   in
+    plet x (`record` f)
+
+-- This would be supposedly faster when record is large. Otherwise, spamming plet increases cost for small record.
+precordFromDataFancy' :: forall (struct :: [S -> Type]) b s. All PIsData struct => Term s (PBuiltinList PData) -> (PRecord struct s -> Term s b) -> Term s b
+precordFromDataFancy' x f =
+  let
+    go :: forall y ys. PIsData y => H s ys -> H s (y ': ys)
+    go (H rest) = H $ \ds cps ->
+      let
+        tail = ptail # ds
+        parsed = pfromData @y $ punsafeCoerce $ phead # ds
+       in
+        plet tail $ \tail' -> rest tail' $ \(PRecord rest') -> plet parsed $ \parsed' -> cps $ PRecord $ parsed' :* rest'
+    record = unH $ cpara_SList (Proxy @PIsData) (H $ \_ cps -> cps $ PRecord Nil) go
+   in
+    plet x (`record` f)
+
+-- -- $> prettyTermAndCost mempty $ hello
+--
+-- -- $> prettyTermAndCost mempty $ world
+
+-- type MyRepr = '[ '[PInteger], '[PByteString], '[PInteger, PInteger]]
+
+-- world :: forall s. Term s PInteger
+-- world =
+--   let
+--     a :: Term s (PDataSum '[ '["foo" ':= PInteger], '["foo" ':= PByteString], '["foo" ':= PInteger, "bar" ':= PInteger]])
+--     a = punsafeCoerce $ pdataStructureAsData $ pdataReprToData test2
+--     handler :: PDataSum _ s -> Term s PInteger
+--     handler (PDataSum (Z x)) = pconstant (1 :: Integer)
+--     handler (PDataSum (S (Z x))) = pconstant (1 :: Integer)
+--     handler _ = pconstant (2 :: Integer)
+--   in pmatch a handler
+
+-- hello =
+--   let
+--     handler (PStructure (SOP (Z x))) = pconstant (1 :: Integer)
+--     handler _ = pconstant (2 :: Integer)
+--   in pStructureFromDataFancy @MyRepr (pdataStructureAsData $ pdataReprToData test2) handler
+
+-- pStructureFromDataFancy :: forall (struct :: [[S -> Type]]) b s. All2 PIsData struct => Term s PData -> (PStructure struct s -> Term s b) -> Term s b
+-- pStructureFromDataFancy x f = undefined
+
+-- newtype HR s struct = HR {unHR :: forall r. Integer -> Term s PInteger -> Term s (PBuiltinList PData) -> (PStructure struct s -> Term s r) -> Term s r}
+
+-- pStructureFromDataFancy :: forall (struct :: [[S -> Type]]) b s. All2 PIsData struct => Term s PData -> (PStructure struct s -> Term s b) -> Term s b
+-- pStructureFromDataFancy x f =
+--   let
+--     go :: forall y ys. All PIsData y => HR s ys -> HR s (y ': ys)
+--     go (HR rest) = HR $ \i idx ds cps ->
+--       let
+--         bar = precordFromDataFancy @y ds
+--         foo =
+--           pif
+--             (pconstant i #== idx)
+--             (bar $ \(PRecord bar') -> cps $ PStructure $ SOP $ Z bar')
+--             (rest (i + 1) idx ds (\(PStructure (SOP sop)) -> cps $ PStructure $ SOP $ S sop))
+--        in
+--         foo
+--    in
+--     unTermCont $ do
+--       x' <- pletC $ pasConstr # x
+--       idx <- pletC $ pfstBuiltin # x'
+--       ds <- pletC $ psndBuiltin # x'
+
+--       pure $ (unHR $ cpara_SList (Proxy @(All PIsData)) (HR $ \_ _ _ _ -> perror) go) 0 idx ds f
+
+pdataFrom :: PRecordFromData struct => Term s (PBuiltinList PData) -> (PRecord struct s -> Term s b) -> Term s b
+pdataFrom x f = plet x $ \y -> precordFromData' y f
+
+class PRecordFromData struct where
+  precordFromData' :: Term s (PBuiltinList PData) -> (PRecord struct s -> Term s b) -> Term s b
+
+instance (PIsData x, PRecordFromData xs) => PRecordFromData (x ': xs) where
+  precordFromData' ds =
     let
       x = pfromData @x $ punsafeCoerce $ phead # ds
-      rest = pdataFrom' @xs $ ptail # ds
+      rest = precordFromData' @xs $ ptail # ds
      in
       \f -> rest (\(PRecord rest') -> plet x $ \x' -> f (PRecord (x' :* rest')))
 
-instance Foo '[] where
-  pdataFrom' _ f = f $ PRecord Nil
+instance PRecordFromData '[] where
+  precordFromData' _ f = f $ PRecord Nil
 
 data HandlerBuilder b s cs where
   HandlerBuilder :: Integer -> (PDataStructure cs s -> Term s b) -> (Term s b) -> HandlerBuilder b s (c ': cs)
-
--- pdataReprFromData
---   :: forall (struct :: [[S->Type]]) b (s :: S)
---    . (All2 PDataRepresentable struct, All2 PIsData struct, SListI struct)
---   => Term s (PDataStructure struct) -> (PDataStructure struct s -> Term s b) -> Term s b
--- pdataReprFromData (pdataStructureAsData -> x) f = unTermCont $ do
---   constr <- pletC $ pasConstr # x
---   idx <- pletC $ pfstBuiltin # constr
-
---   let
---     idx = pfstBuiltin # constr
---     d = psndBuiltin # constr
-
---     -- rewrap (PDataStructure (PStructure (SOP x))) = PDataStructure (PStructure (SOP (S x)))
-
---     -- foo :: SListI struct => HandlerBuilder b s struct
---     -- foo =
---     --   para_SList
---     --   @struct
---     --   (HandlerBuilderNil)
---     --   (\(HandlerBuilderCons i prevf) ->
---     --      let
---     --        go :: Term s (PBuiltinList PData) -> Term s b
---     --        go ds =
---     --          pif (idx #== pconstant i)
---     --            (f $ PDataStructure $ PStructure $ SOP $ undefined)
---     --            (prevf (\(PDataStructure (PStructure (SOP x))) -> f $ PDataStructure $ PStructure $ SOP $ S x) ds)
---     --      in HandlerBuilderCons (i + 1) go
---     --      )
-
---     -- foo :: HandlerBuilder b s struct
---     -- foo =
---     --   para_SList
---     --   @struct
---     --   (HandlerBuilder 0 (const perror) perror)
---     --   (\(HandlerBuilder i f' prev) ->
---     --      HandlerBuilder (i+1) (\(PDataStructure (PStructure (SOP z))) -> f' $ PDataStructure $ PStructure $ SOP $ S z) $
---     --        pif (pconstant i #== idx)
---     --          undefined
---     --          prev
---     --      )
-
---     -- foo :: A b s struct
---     -- foo =
---     --   para_SList
---     --   @struct
---     --   (A 0 $ const $ HandlerBuilder (const perror))
---     --   (\(A i prev) -> A (i + 1) $ \f' -> HandlerBuilder $ \ds ->
---     --      let
---     --        -- conv :: NP (Term s) y
---     --        -- conv = undefined
---     --        go f' ds = undefined
---     --      in pif (pconstant i #== idx)
---     --           (undefined)
---     --           (prev )
---     --      )
-
---   -- pure $ f $ (PDataStructure (PStructure $ SOP $ foo 0))
-
---   undefined
 
 class ReprFromData (struct :: [[S -> Type]]) where
   preprFromData' :: Term s (PAsData (PStructure struct)) -> PStructure struct s

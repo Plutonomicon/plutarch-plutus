@@ -116,6 +116,27 @@ data RawTerm
   | RHoisted HoistedTerm
   deriving stock (Show)
 
+purgeUnused :: RawTerm -> RawTerm
+purgeUnused = undefined
+  where
+    decLam (RVar x) = RVar (x - 1)
+    decLam (RLamAbs arity rt) = undefined
+    decLam (RApply rt [rts]) = undefined
+    decLam (RForce rt) = undefined
+    decLam (RDelay rt) = undefined
+    decLam x = x
+
+    cntUsed t (RVar x) = if t == x then 1 else 0
+    cntUsed t (RLamAbs x rt) = undefined
+    cntUsed t (RApply rt [rts]) = undefined
+    cntUsed t (RForce rt) = undefined
+    cntUsed t (RDelay rt) = undefined
+    cntUsed t (RConstant _) = 0
+    cntUsed t (RBuiltin _) = 0
+    cntUsed t (RCompiled _) = 0 -- I'm assuming all compiled terms are closed
+    cntUsed t RError = 0
+    cntUsed t (RHoisted _) = 0 -- I'm assuming all hoisted terms are closed
+
 addHashIndex :: forall alg. HashAlgorithm alg => Integer -> Context alg -> Context alg
 addHashIndex i = flip hashUpdate ((fromString $ show i) :: BS.ByteString)
 
@@ -167,7 +188,7 @@ to "forget" the `s`.
 -}
 data S = SI
 
--- | Shorthand for Plutarch types.
+-- | Shorthand for PlutaTrch types.
 type PType = S -> Type
 
 {- | How to trace.
