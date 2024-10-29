@@ -46,6 +46,7 @@
 ### Fixed
 
 * Bug in `ppredecessorN` for `PPosixTime` where order of subtraction was flipped
+* Bugs in `pintersection` and `phull` that assigned wrong open/close bounds
 
 # 1.9.0 - 25-09-2024
 

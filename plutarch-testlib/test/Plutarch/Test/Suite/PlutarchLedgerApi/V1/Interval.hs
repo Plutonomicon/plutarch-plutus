@@ -20,7 +20,7 @@ import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchG
 import Plutarch.Test.Laws (checkHaskellEquivalentN, checkLedgerProperties)
 import Plutarch.Test.Utils (fewerTests)
 import PlutusLedgerApi.V1 (POSIXTime)
-import PlutusLedgerApi.V1.Interval (contains, intersection, member)
+import PlutusLedgerApi.V1.Interval (contains, hull, intersection, member)
 import Test.Tasty (TestTree, adjustOption, testGroup)
 import Test.Tasty.QuickCheck (arbitrary, forAllShrinkShow, shrink, testProperty)
 
@@ -122,6 +122,8 @@ tests =
                     (plam $ \value interval -> pmember # pdata value # interval)
               , testProperty "intersection = pintersection" $
                   checkHaskellEquivalentN (intersection @POSIXTime) pintersection
+              , testProperty "hull = phull" $
+                  checkHaskellEquivalentN (hull @POSIXTime) phull
               ]
           ]
     ]
