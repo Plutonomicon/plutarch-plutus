@@ -1,8 +1,8 @@
 module Plutarch.MaybeSpec (spec) where
 
 import Plutarch
-import Plutarch.Bool (PEq ((#==)))
-import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Builtin (PInteger)
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Test
 import Test.Hspec

@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 * `pisEmpty`, `pinclusiveLowerBound`, `pinclusiveUpperBound` to `Interval`
 * `PAssetClass` in `LedgerApi.Value`, parallelling `AssetClass` from
   `plutus-ledger-api`
+* `PSBool`, `pstrue` and `psfalse` to `Utils` (originally from `Plutarch.Bool`)
 
 ### Changed
 

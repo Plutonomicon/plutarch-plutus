@@ -53,6 +53,7 @@
   `ptraceIfTrue`, `ptraceIfFalse`, `PCon`, `PMatch`, `ptrace`, `hrecField` due 
   to deprecation
 * `Plutarch.String` as it no longer contained anything useful
+* `Plutarch.Bool`, as it no longer contained anything useful
 
 ### Fixed
 

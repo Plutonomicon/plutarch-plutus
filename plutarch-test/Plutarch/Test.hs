@@ -46,8 +46,8 @@ import Plutarch (
   pcon,
   printScript,
  )
-import Plutarch.Bool (PBool (PFalse, PTrue))
 import Plutarch.Evaluate (evalScript)
+import Plutarch.Internal.Builtin (PBool (PFalse, PTrue))
 import Plutarch.Script qualified as Scripts
 import Plutarch.Test.Benchmark (
   Benchmark (Benchmark, exBudgetCPU, exBudgetMemory, scriptSizeBytes),

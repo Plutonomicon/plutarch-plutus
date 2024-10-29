@@ -1,6 +1,6 @@
 module Plutarch.BoolSpec (spec) where
 
-import Plutarch.Bool (pand, por)
+import Plutarch.Internal.Builtin (pand, por)
 import Plutarch.Prelude
 import Plutarch.Test
 import Test.Hspec

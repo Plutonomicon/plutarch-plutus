@@ -11,6 +11,7 @@ module Plutarch.LedgerApi.Utils (
   Mret (..),
   PMaybeData (..),
   PRationalData (..),
+  PSBool (..),
 
   -- * Functions
 
@@ -25,6 +26,10 @@ module Plutarch.LedgerApi.Utils (
 
   -- ** PRationalData
   prationalFromData,
+
+  -- ** PSBool
+  pstrue,
+  psfalse,
 ) where
 
 import Data.Bifunctor (first)
@@ -33,6 +38,7 @@ import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
  )
+import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Lift (
   PConstantDecl (PConstanted),
   PUnsafeLiftDecl (PLifted),
@@ -42,6 +48,32 @@ import Plutarch.Prelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V3 qualified as Plutus
+
+{- | Scott-encoded bool.
+
+@since WIP
+-}
+data PSBool (s :: S)
+  = PSTrue
+  | PSFalse
+  deriving stock
+    ( -- | @since WIP
+      Eq
+    , -- | @since WIP
+      Ord
+    , -- | @since WIP
+      Show
+    )
+
+-- | @since WIP
+instance PlutusType PSBool where
+  type PInner PSBool = PForall PSBoolRaw
+  pcon' PSTrue = pcon $ PForall $ pcon $ PSBoolRaw $ plam const
+  pcon' PSFalse = pcon $ PForall $ pcon $ PSBoolRaw $ plam (const id)
+  pmatch' x' f =
+    pmatch x' $ \(PForall raw) ->
+      pmatch raw $ \(PSBoolRaw x) ->
+        pforce $ x # pdelay (f PSTrue) # pdelay (f PSFalse)
 
 {- | 'Term', but with its type arguments flipped. This is a useful helper for
 defining 'PTryFrom' instances.
@@ -194,6 +226,20 @@ prationalFromData = phoistAcyclic $
     l <- pletFieldsC @'["numerator", "denominator"] x
     pure . pcon $ PRational (getField @"numerator" l) (getField @"denominator" l)
 
+{- | Helper to make Scott-encoded true.
+
+@since WIP
+-}
+pstrue :: forall (s :: S). Term s PSBool
+pstrue = pcon PSTrue
+
+{- | Helper to make Scott-encoded false.
+
+@since WIP
+-}
+psfalse :: forall (s :: S). Term s PSBool
+psfalse = pcon PSFalse
+
 {- | Extracts the element out of a 'PDJust' and throws an error if its
 argument is 'PDNothing'.
 
@@ -341,3 +387,10 @@ liftCompareOp f x y = phoistAcyclic (plam go) # x # y
       let rn = pfromData $ getField @"numerator" r'
       let rd = pfromData $ getField @"denominator" r'
       pure $ f (ln * pto rd) (rn * pto ld)
+
+newtype PSBoolRaw (a :: PType) (s :: S) = PSBoolRaw (Term s (a :--> a :--> a))
+
+instance PlutusType (PSBoolRaw a) where
+  type PInner (PSBoolRaw a) = a :--> a :--> a
+  pcon' (PSBoolRaw x) = x
+  pmatch' x f = f (PSBoolRaw x)

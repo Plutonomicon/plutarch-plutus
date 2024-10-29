@@ -1,14 +1,12 @@
 module Plutarch.RecursionSpec (spec) where
 
-import Prelude hiding (succ)
-
 import Plutarch
-import Plutarch.Bool (pif, (#==))
-import Plutarch.Integer (PInteger)
-
+import Plutarch.Internal.Builtin (PInteger, pif)
+import Plutarch.Internal.Eq ((#==))
 import Plutarch.Lift (pconstant)
 import Plutarch.Test
 import Test.Hspec
+import Prelude hiding (succ)
 
 spec :: Spec
 spec = do

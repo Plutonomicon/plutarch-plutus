@@ -75,7 +75,6 @@ library
     Plutarch
     Plutarch.BitString
     Plutarch.BLS
-    Plutarch.Bool
     Plutarch.Builtin
     Plutarch.ByteString
     Plutarch.Convert
