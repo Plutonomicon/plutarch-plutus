@@ -4,8 +4,8 @@ import Data.List (find)
 import Plutarch.LedgerApi.Utils (pmaybeToMaybeData)
 import Plutarch.List (pcheckSorted, pconvertLists, pfoldl', preverse)
 import Plutarch.Prelude
+import Plutarch.Test.Equivalent (checkHaskellEquivalentN)
 import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenEvalFail, goldenGroup, plutarchGolden)
-import Plutarch.Test.Laws (checkHaskellEquivalent)
 import Plutarch.Test.Unit (testEvalEqual)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
@@ -131,7 +131,7 @@ tests =
     , testGroup
         "Properties"
         [ testProperty "find <-> pfind" $
-            checkHaskellEquivalent
+            checkHaskellEquivalentN
               (find @[] @Integer even)
               (plam $ \lst -> pmaybeToMaybeData #$ pfind # peven # lst)
         ]

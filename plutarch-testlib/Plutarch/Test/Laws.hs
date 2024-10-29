@@ -9,23 +9,20 @@ module Plutarch.Test.Laws (
   checkLedgerProperties,
   checkLedgerPropertiesPCountable,
   checkLedgerPropertiesPEnumerable,
-  checkHaskellEquivalent,
-  checkHaskellEquivalentN,
   ordHaskellEquivalents,
 ) where
 
-import GHC.TypeError (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 import Plutarch.Builtin (pforgetData)
 import Plutarch.Enum (PCountable (psuccessor, psuccessorN), PEnumerable (ppredecessor, ppredecessorN))
 import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.Lift (
-  DerivePConstantViaNewtype (DerivePConstantViaNewtype),
   PConstantDecl (PConstanted),
   PUnsafeLiftDecl (PLifted),
  )
 import Plutarch.Positive (Positive)
 import Plutarch.Prelude
-import Plutarch.Test.Utils (instanceOfType, prettyEquals, prettyShow, typeName, typeName')
+import Plutarch.Test.Equivalent (checkHaskellEquivalentN)
+import Plutarch.Test.Utils (instanceOfType, prettyShow, typeName, typeName')
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common qualified as Plutus
 import PlutusLedgerApi.V1 qualified as PLA
@@ -34,7 +31,6 @@ import PlutusTx.AssocMap qualified as AssocMap
 import Prettyprinter (Pretty)
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
-  Property,
   forAllShrinkShow,
   (=/=),
   (===),
@@ -129,138 +125,6 @@ checkLedgerPropertiesPEnumerable ::
   TestTree
 checkLedgerPropertiesPEnumerable =
   testGroup (instanceOfType @(S -> Type) @a "PEnumerable") (penumerableLaws @a)
-
--- Solo from base has no `Arbitrary` instance
-newtype QcSolo a = QcSolo a
-  deriving newtype (Show, Eq, Pretty, Arbitrary)
-
-newtype PQcSolo (a :: S -> Type) s = PQcSolo (Term s a)
-  deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PIntegral, PShow)
-
-instance DerivePlutusType (PQcSolo a) where type DPTStrat _ = PlutusTypeNewtype
-
-instance
-  (PUnsafeLiftDecl a, PConstanted (PLifted a) ~ a, PConstanted (QcSolo (PLifted a)) ~ PQcSolo a) =>
-  PUnsafeLiftDecl (PQcSolo a)
-  where
-  type PLifted (PQcSolo a) = QcSolo (PLifted a)
-
-deriving via
-  (DerivePConstantViaNewtype (QcSolo a) (PQcSolo (PConstanted a)) (PConstanted a))
-  instance
-    PConstant a => PConstantDecl (QcSolo a)
-
-type family ToPlutarchFunction f where
-  ToPlutarchFunction (a -> b -> c) = PConstanted a :--> ToPlutarchFunction (b -> c)
-  ToPlutarchFunction (a -> b) = PConstanted a :--> PConstanted b
-  ToPlutarchFunction a = TypeError (Text "Not a function: " :<>: ShowType a)
-
-type family FunctionArgumentsToTuple f where
-  FunctionArgumentsToTuple (a -> (b -> c)) = (a, FunctionArgumentsToTuple (b -> c))
-  FunctionArgumentsToTuple (a -> _) = QcSolo a
-
-type family FunctionResult f where
-  FunctionResult (_ -> (b -> c)) = FunctionResult (b -> c)
-  FunctionResult (_ -> b) = b
-
-class ApplyTupleArgs f where
-  applyTupleArgs :: f -> FunctionArgumentsToTuple f -> FunctionResult f
-
-instance
-  ( f ~ (a -> c -> d)
-  , b ~ (c -> d)
-  , FunctionResult b ~ FunctionResult (a -> b)
-  , FunctionArgumentsToTuple f ~ (a, rest)
-  , FunctionArgumentsToTuple b ~ rest
-  , ApplyTupleArgs b
-  ) =>
-  ApplyTupleArgs (a -> c -> d)
-  where
-  applyTupleArgs f (a, rest) = applyTupleArgs (f a) rest
-
-instance
-  {-# OVERLAPPABLE #-}
-  ( f ~ (a -> b)
-  , FunctionArgumentsToTuple f ~ QcSolo a
-  , FunctionResult f ~ b
-  ) =>
-  ApplyTupleArgs (a -> b)
-  where
-  applyTupleArgs f (QcSolo a) = f a
-
-type family PFunctionArgumentsToTuple (f :: S -> Type) :: S -> Type where
-  PFunctionArgumentsToTuple (a :--> (b :--> c)) =
-    PBuiltinPair a (PFunctionArgumentsToTuple (b :--> c))
-  PFunctionArgumentsToTuple (a :--> _) = PQcSolo a
-
-type family PFunctionResult (f :: S -> Type) where
-  PFunctionResult (_ :--> (b :--> c)) = PFunctionResult (b :--> c)
-  PFunctionResult (_ :--> b) = b
-
-class PApplyTupleArgs (f :: S -> Type) where
-  papplyTupleArgs :: Term s f -> Term s (PFunctionArgumentsToTuple f) -> Term s (PFunctionResult f)
-
-instance
-  {-# OVERLAPPABLE #-}
-  ( f ~ (a :--> b)
-  , PFunctionArgumentsToTuple f ~ PQcSolo a
-  , PFunctionResult f ~ b
-  ) =>
-  PApplyTupleArgs f
-  where
-  papplyTupleArgs f args = f # pto args
-
-instance
-  ( f ~ (a :--> c :--> d)
-  , b ~ (c :--> d)
-  , PFunctionResult b ~ PFunctionResult (c :--> d)
-  , PFunctionArgumentsToTuple f ~ PBuiltinPair a rest
-  , PApplyTupleArgs b
-  ) =>
-  PApplyTupleArgs (a :--> c :--> d)
-  where
-  papplyTupleArgs f args = papplyTupleArgs (f # (pfstBuiltin # args)) (psndBuiltin # args)
-
--- | @since WIP
-checkHaskellEquivalentN ::
-  forall f.
-  ( Arbitrary (FunctionArgumentsToTuple f)
-  , Pretty (FunctionArgumentsToTuple f)
-  , Pretty (FunctionResult f)
-  , Eq (FunctionResult f)
-  , ApplyTupleArgs f
-  , PApplyTupleArgs (ToPlutarchFunction f)
-  , PLifted (PFunctionResult (ToPlutarchFunction f)) ~ FunctionResult f
-  , FunctionArgumentsToTuple f ~ PLifted (PFunctionArgumentsToTuple (ToPlutarchFunction f))
-  , PUnsafeLiftDecl (PFunctionArgumentsToTuple (ToPlutarchFunction f))
-  , PUnsafeLiftDecl (PFunctionResult (ToPlutarchFunction f))
-  ) =>
-  f ->
-  ClosedTerm (ToPlutarchFunction f) ->
-  Property
-checkHaskellEquivalentN goHaskell goPlutarch =
-  forAllShrinkShow arbitrary shrink prettyShow $
-    \input -> applyTupleArgs goHaskell input `prettyEquals` plift (papplyTupleArgs goPlutarch (pconstant input))
-
--- | @since WIP
-checkHaskellEquivalent ::
-  forall (haskellInput :: Type) (haskellOutput :: Type).
-  ( haskellInput ~ PLifted (PConstanted haskellInput)
-  , PConstantDecl haskellInput
-  , Show haskellInput
-  , Arbitrary haskellInput
-  , haskellOutput ~ PLifted (PConstanted haskellOutput)
-  , PConstantDecl haskellOutput
-  , Show haskellOutput
-  , Eq haskellOutput
-  ) =>
-  (haskellInput -> haskellOutput) ->
-  ClosedTerm (PConstanted haskellInput :--> PConstanted haskellOutput) ->
-  Property
-checkHaskellEquivalent goHaskell goPlutarch =
-  forAllShrinkShow arbitrary shrink show $
-    \(input :: haskellInput) -> goHaskell input === plift (goPlutarch # pconstant input)
 
 -- | @since WIP
 ordHaskellEquivalents ::
