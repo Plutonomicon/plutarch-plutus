@@ -38,6 +38,8 @@
 * `POpaque`, `pfix` and `pto` moved to `Plutarch.Internal.Builtin`
 * `pif'` is now `pbuiltinIfThenElse`
 * `ptrace'` is now `pbuiltinTrace`
+* `pencodeUtf8` and `pdecodeUtf8` are now `pbuiltinEncodeUtf8` and
+  `pbuiltinDecodeUtf8`
 
 ## Removed
 
@@ -50,6 +52,7 @@
 * `punsafeConstant`, `pdataLiteral`, `ptrace`, `ptraceShowId`, `ptraceError`,
   `ptraceIfTrue`, `ptraceIfFalse`, `PCon`, `PMatch`, `ptrace`, `hrecField` due 
   to deprecation
+* `Plutarch.String` as it no longer contained anything useful
 
 ### Fixed
 

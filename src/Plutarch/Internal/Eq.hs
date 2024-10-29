@@ -19,8 +19,10 @@ import Generics.SOP (
  )
 import Plutarch.Internal.Builtin (
   PBool (PFalse, PTrue),
+  PByteString,
   PInteger,
   PString,
+  pbuiltinEqualsByteString,
   pbuiltinEqualsInteger,
   pbuiltinEqualsString,
   pbuiltinIfThenElse,
@@ -78,6 +80,11 @@ instance PEq PBool where
 instance PEq PString where
   {-# INLINEABLE (#==) #-}
   x #== y = pbuiltinEqualsString # x # y
+
+-- | @since WIP
+instance PEq PByteString where
+  {-# INLINEABLE (#==) #-}
+  x #== y = pbuiltinEqualsByteString # x # y
 
 -- Helpers
 

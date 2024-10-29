@@ -40,9 +40,9 @@ import Plutarch.Bool (
   (#<),
   (#<=),
  )
-import Plutarch.ByteString (PByteString)
 import Plutarch.Internal.Builtin (
   PBool,
+  PByteString,
   PInteger,
   PString,
   pbuiltinIfThenElse,

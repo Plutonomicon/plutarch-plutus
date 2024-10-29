@@ -9,6 +9,7 @@ module Plutarch.Internal.Builtin (
   PInteger (..),
   PBool (..),
   PString (..),
+  PByteString (..),
 
   -- * Functions
 
@@ -41,6 +42,19 @@ module Plutarch.Internal.Builtin (
 
   -- ** PString
   pbuiltinEqualsString,
+  pbuiltinAppendString,
+  pbuiltinEncodeUtf8,
+  pbuiltinDecodeUtf8,
+
+  -- ** PByteString
+  pbuiltinAppendByteString,
+  pbuiltinConsByteString,
+  pbuiltinSliceByteString,
+  pbuiltinLengthOfByteString,
+  pbuiltinIndexByteString,
+  pbuiltinEqualsByteString,
+  pbuiltinLessThanByteString,
+  pbuiltinLessThanEqualsByteString,
 
   -- ** Other
   pfix,
@@ -50,6 +64,7 @@ module Plutarch.Internal.Builtin (
   pinl,
 ) where
 
+import Data.ByteString (ByteString)
 import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text qualified as Text
@@ -198,6 +213,44 @@ deriving via
 instance IsString (Term s PString) where
   {-# INLINEABLE fromString #-}
   fromString = pconstant . Text.pack
+
+-- | @since WIP
+instance Semigroup (Term s PString) where
+  {-# INLINEABLE (<>) #-}
+  x <> y = pbuiltinAppendString # x # y
+
+-- | @since WIP
+instance Monoid (Term s PString) where
+  {-# INLINEABLE mempty #-}
+  mempty = pconstant ""
+
+{- | A Plutus bytestring.
+
+@since WIP
+-}
+newtype PByteString (s :: S) = PByteString (Term s POpaque)
+  deriving stock
+    ( -- | @since WIP
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since WIP
+      PlutusType
+    )
+
+-- | @since WIP
+instance DerivePlutusType PByteString where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+instance PUnsafeLiftDecl PByteString where
+  type PLifted PByteString = ByteString
+
+-- | @since WIP
+deriving via
+  (DerivePConstantDirect ByteString PByteString)
+  instance
+    PConstantDecl ByteString
 
 {- | Forget the type of a term.
 
@@ -457,3 +510,69 @@ pbuiltinEqualsString ::
   forall (s :: S).
   Term s (PString :--> PString :--> PBool)
 pbuiltinEqualsString = punsafeBuiltin PLC.EqualsString
+
+-- | @since WIP
+pbuiltinAppendByteString ::
+  forall (s :: S).
+  Term s (PByteString :--> PByteString :--> PByteString)
+pbuiltinAppendByteString = punsafeBuiltin PLC.AppendByteString
+
+-- | @since WIP
+pbuiltinConsByteString ::
+  forall (s :: S).
+  Term s (PInteger :--> PByteString :--> PByteString)
+pbuiltinConsByteString = punsafeBuiltin PLC.ConsByteString
+
+-- | @since WIP
+pbuiltinSliceByteString ::
+  forall (s :: S).
+  Term s (PInteger :--> PInteger :--> PByteString :--> PByteString)
+pbuiltinSliceByteString = punsafeBuiltin PLC.SliceByteString
+
+-- | @since WIP
+pbuiltinLengthOfByteString ::
+  forall (s :: S).
+  Term s (PByteString :--> PInteger)
+pbuiltinLengthOfByteString = punsafeBuiltin PLC.LengthOfByteString
+
+-- | @since WIP
+pbuiltinIndexByteString ::
+  forall (s :: S).
+  Term s (PByteString :--> PInteger :--> PInteger)
+pbuiltinIndexByteString = punsafeBuiltin PLC.IndexByteString
+
+-- | @since WIP
+pbuiltinEqualsByteString ::
+  forall (s :: S).
+  Term s (PByteString :--> PByteString :--> PBool)
+pbuiltinEqualsByteString = punsafeBuiltin PLC.EqualsByteString
+
+-- | @since WIP
+pbuiltinLessThanByteString ::
+  forall (s :: S).
+  Term s (PByteString :--> PByteString :--> PBool)
+pbuiltinLessThanByteString = punsafeBuiltin PLC.LessThanByteString
+
+-- | @since WIP
+pbuiltinLessThanEqualsByteString ::
+  forall (s :: S).
+  Term s (PByteString :--> PByteString :--> PBool)
+pbuiltinLessThanEqualsByteString = punsafeBuiltin PLC.LessThanEqualsByteString
+
+-- | @since WIP
+pbuiltinAppendString ::
+  forall (s :: S).
+  Term s (PString :--> PString :--> PString)
+pbuiltinAppendString = punsafeBuiltin PLC.AppendString
+
+-- | @since WIP
+pbuiltinEncodeUtf8 ::
+  forall (s :: S).
+  Term s (PString :--> PByteString)
+pbuiltinEncodeUtf8 = punsafeBuiltin PLC.EncodeUtf8
+
+-- | @since WIP
+pbuiltinDecodeUtf8 ::
+  forall (s :: S).
+  Term s (PByteString :--> PString)
+pbuiltinDecodeUtf8 = punsafeBuiltin PLC.DecodeUtf8

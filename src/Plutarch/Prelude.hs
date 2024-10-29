@@ -85,8 +85,8 @@ module Plutarch.Prelude (
 
   -- * String and string utilities
   PString,
-  pencodeUtf8,
-  pdecodeUtf8,
+  pbuiltinEncodeUtf8,
+  pbuiltinDecodeUtf8,
 
   -- * Unit type and utilities
   PUnit (..),
@@ -219,7 +219,6 @@ import Plutarch.Maybe
 import Plutarch.Pair
 import Plutarch.Rational
 import Plutarch.Show
-import Plutarch.String
 import Plutarch.TermCont
 import Plutarch.Trace
 import Plutarch.TryFrom

@@ -15,8 +15,14 @@ module Plutarch.BitString (
 import GHC.Generics (Generic)
 import Plutarch.Bool (POrd, PPartialOrd, (#<))
 import Plutarch.Builtin (PBuiltinList)
-import Plutarch.ByteString (PByteString)
-import Plutarch.Internal.Builtin (PBool, PInteger, pif, plam, pto)
+import Plutarch.Internal.Builtin (
+  PBool,
+  PByteString,
+  PInteger,
+  pif,
+  plam,
+  pto,
+ )
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.PlutusType (

@@ -18,10 +18,12 @@ import Plutarch.Lift (PLifted, PUnsafeLiftDecl)
 import Plutarch.List (pcheckSorted, preverse)
 import Plutarch.Prelude (
   PBool,
+  PInteger,
   PUnit,
   S,
   Term,
   pconstant,
+  phoistAcyclic,
   plam,
   plift,
   pnot,
@@ -37,9 +39,12 @@ import Plutarch.Prelude (
   ptraceInfoShowId,
   (#),
   (#$),
+  (#&&),
+  (#<=),
   (#==),
+  (#||),
+  (:-->),
  )
-import Plutarch.String (pisHexDigit)
 import Test.Tasty (
   DependencyType (AllSucceed),
   after,
@@ -245,3 +250,9 @@ nonHexAscii =
     <>
     -- After lower-case
     fromList [103 .. 127]
+
+pisHexDigit :: forall (s :: S). Term s (PInteger :--> PBool)
+pisHexDigit = phoistAcyclic $ plam $ \c ->
+  (c #<= 57 #&& 48 #<= c)
+    #|| (c #<= 70 #&& 65 #<= c)
+    #|| (c #<= 102 #&& 97 #<= c)

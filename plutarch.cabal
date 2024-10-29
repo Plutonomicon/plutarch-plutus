@@ -124,7 +124,6 @@ library
     Plutarch.Reducible
     Plutarch.Script
     Plutarch.Show
-    Plutarch.String
     Plutarch.TermCont
     Plutarch.Trace
     Plutarch.TryFrom

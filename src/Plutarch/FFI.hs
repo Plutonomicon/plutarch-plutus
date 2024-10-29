@@ -32,8 +32,15 @@ import Generics.SOP.Type.Metadata (
   DatatypeInfo (ADT, Newtype),
  )
 import Plutarch.Builtin (PData)
-import Plutarch.ByteString (PByteString)
-import Plutarch.Internal.Builtin (PBool, PInteger, POpaque, PString, plam, pto)
+import Plutarch.Internal.Builtin (
+  PBool,
+  PByteString,
+  PInteger,
+  POpaque,
+  PString,
+  plam,
+  pto,
+ )
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Generic (PCode)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)

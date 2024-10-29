@@ -30,7 +30,6 @@ import Generics.SOP.GGP (gdatatypeInfo)
 import Plutarch.Bool ((#<))
 import Plutarch.ByteString (
   PByte,
-  PByteString,
   pbyteToInteger,
   pconsBS,
   pindexBS,
@@ -41,8 +40,11 @@ import Plutarch.ByteString (
 import Plutarch.Integer (PIntegral (pquot, prem))
 import Plutarch.Internal.Builtin (
   PBool,
+  PByteString,
   PInteger,
   PString,
+  pbuiltinDecodeUtf8,
+  pbuiltinEncodeUtf8,
   pbuiltinIfThenElse,
   pfix,
   pif,
@@ -62,7 +64,6 @@ import Plutarch.Internal.Term (
   (:-->),
  )
 import Plutarch.Lift (pconstant)
-import Plutarch.String (pdecodeUtf8, pencodeUtf8)
 
 class PShow t where
   -- | Return the string representation of a Plutarch value
@@ -83,7 +84,7 @@ instance PShow PString where
       pshowStr :: Term s (PString :--> PString)
       pshowStr = phoistAcyclic $
         plam $ \s ->
-          "\"" <> (pdecodeUtf8 #$ pshowUtf8Bytes #$ pencodeUtf8 # s) <> "\""
+          "\"" <> (pbuiltinDecodeUtf8 #$ pshowUtf8Bytes #$ pbuiltinEncodeUtf8 # s) <> "\""
       pshowUtf8Bytes :: Term s (PByteString :--> PByteString)
       pshowUtf8Bytes = phoistAcyclic $
         pfix #$ plam $ \self bs ->

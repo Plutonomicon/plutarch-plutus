@@ -16,9 +16,9 @@ module Plutarch.Convert (
 
 import GHC.Generics (Generic)
 import Plutarch.Bool (POrd, PPartialOrd)
-import Plutarch.ByteString (PByteString)
 import Plutarch.Internal.Builtin (
   PBool (PFalse, PTrue),
+  PByteString,
   PInteger,
   plam,
   pto,

@@ -13,8 +13,7 @@ module Plutarch.Crypto (
   pverifySchnorrSecp256k1Signature,
 ) where
 
-import Plutarch.ByteString (PByteString)
-import Plutarch.Internal.Builtin (PBool)
+import Plutarch.Internal.Builtin (PBool, PByteString)
 import Plutarch.Internal.Term (Term, (:-->))
 import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC

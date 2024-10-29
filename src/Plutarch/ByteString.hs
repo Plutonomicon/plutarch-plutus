@@ -5,7 +5,6 @@
 module Plutarch.ByteString (
   -- * Types
   PByte,
-  PByteString,
   PLogicOpSemantics,
 
   -- * Functions
@@ -38,7 +37,6 @@ module Plutarch.ByteString (
 ) where
 
 import Data.Bits (toIntegralSized)
-import Data.ByteString (ByteString)
 import Data.ByteString qualified as BS
 import Data.Char (toLower)
 import Data.Word (Word8)
@@ -53,6 +51,7 @@ import Plutarch.Bool (
 import Plutarch.Integer ()
 import Plutarch.Internal.Builtin (
   PBool (PFalse, PTrue),
+  PByteString,
   PInteger,
   POpaque,
   pfix,
@@ -80,7 +79,6 @@ import Plutarch.Internal.Term (
   (:-->),
  )
 import Plutarch.Lift (
-  DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl (PConstantRepr, PConstanted, pconstantFromRepr, pconstantToRepr),
   PLifted,
   PUnsafeLiftDecl,
@@ -88,19 +86,6 @@ import Plutarch.Lift (
  )
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
-
--- | Plutus 'BuiltinByteString'
-newtype PByteString s = PByteString (Term s POpaque)
-  deriving stock (Generic)
-  deriving anyclass (PlutusType)
-
-instance DerivePlutusType PByteString where type DPTStrat _ = PlutusTypeNewtype
-
-instance PUnsafeLiftDecl PByteString where type PLifted PByteString = ByteString
-deriving via (DerivePConstantDirect ByteString PByteString) instance PConstantDecl ByteString
-
-instance PEq PByteString where
-  x #== y = punsafeBuiltin PLC.EqualsByteString # x # y
 
 instance PPartialOrd PByteString where
   x #<= y = punsafeBuiltin PLC.LessThanEqualsByteString # x # y
