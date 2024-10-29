@@ -33,6 +33,7 @@ module Plutarch.LedgerApi.Interval (
   pintersection,
 ) where
 
+import Plutarch.Bool (pif')
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
@@ -661,7 +662,7 @@ minLower = phoistAcyclic $
       pif
         (pfromData xt #< pfromData yt)
         x'
-        (pif (pfromData yt #< pfromData xt) y' (pif xc x' y'))
+        (pif (pfromData yt #< pfromData xt) y' (pif' # xc # x' # y'))
 
 maxLower ::
   forall (a :: S -> Type) (s :: S).
@@ -680,7 +681,7 @@ maxLower = phoistAcyclic $
       pif
         (pfromData xt #< pfromData yt)
         y'
-        (pif (pfromData yt #< pfromData xt) x' (pif xc y' x'))
+        (pif (pfromData yt #< pfromData xt) x' (pif' # xc # y' # x'))
 
 minUpper ::
   forall (a :: S -> Type) (s :: S).
@@ -699,7 +700,7 @@ minUpper = phoistAcyclic $
       pif
         (pfromData xt #< pfromData yt)
         x'
-        (pif (pfromData yt #< pfromData xt) y' (pif xc y' x'))
+        (pif (pfromData yt #< pfromData xt) y' (pif' # xc # y' # x'))
 
 maxUpper ::
   forall (a :: S -> Type) (s :: S).
@@ -718,7 +719,7 @@ maxUpper = phoistAcyclic $
       pif
         (pfromData xt #< pfromData yt)
         y'
-        (pif (pfromData yt #< pfromData xt) x' (pif xc x' y'))
+        (pif (pfromData yt #< pfromData xt) x' (pif' # xc # x' # y'))
 
 -- value < endpoint
 pbefore' ::
