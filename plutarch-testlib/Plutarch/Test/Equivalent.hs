@@ -3,7 +3,7 @@
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Plutarch.Test.Equivalent (checkHaskellEquivalentN) where
+module Plutarch.Test.Equivalent (checkHaskellEquivalent) where
 
 import GHC.TypeError (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 import Plutarch.Lift (
@@ -28,8 +28,7 @@ All Haskell arguments must have `PLifted` Plutarch equivalent.
 
  @since WIP
 -}
-checkHaskellEquivalentN ::
-  forall f.
+checkHaskellEquivalent ::
   forall (f :: Type).
   ( Arbitrary (FunctionArgumentsToTuple f)
   , Pretty (FunctionArgumentsToTuple f)
@@ -45,7 +44,7 @@ checkHaskellEquivalentN ::
   f ->
   ClosedTerm (ToPlutarchFunction f) ->
   Property
-checkHaskellEquivalentN goHaskell goPlutarch =
+checkHaskellEquivalent goHaskell goPlutarch =
   forAllShrinkShow arbitrary shrink prettyShow $
     \input -> applyTupleArgs goHaskell input `prettyEquals` plift (papplyTupleArgs goPlutarch (pconstant input))
 
