@@ -14,8 +14,7 @@ module Plutarch.Crypto (
 ) where
 
 import Plutarch.Internal.Builtin (PBool, PByteString)
-import Plutarch.Internal.Term (Term, (:-->))
-import Plutarch.Unsafe (punsafeBuiltin)
+import Plutarch.Internal.Term (Term, punsafeBuiltin, (:-->))
 import PlutusCore qualified as PLC
 
 -- | Hash a 'PByteString' using SHA-256.

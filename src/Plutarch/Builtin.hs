@@ -44,6 +44,7 @@ import Plutarch.Internal.Builtin (
   pif,
   plam,
   pto,
+  punsafeDowncast,
   (#&&),
   (#||),
  )
@@ -77,6 +78,8 @@ import Plutarch.Internal.Term (
   pforce,
   phoistAcyclic,
   plet,
+  punsafeBuiltin,
+  punsafeCoerce,
   (#),
   (#$),
   (:-->),
@@ -117,7 +120,6 @@ import Plutarch.Show (PShow (pshow'), pshow)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast, pupcastF)
 import Plutarch.Unit (PUnit)
-import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeDowncast)
 import PlutusCore qualified as PLC
 import PlutusTx (Data (Constr), ToData)
 import PlutusTx qualified

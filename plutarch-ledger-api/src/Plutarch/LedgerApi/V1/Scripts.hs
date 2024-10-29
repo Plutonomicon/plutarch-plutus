@@ -11,6 +11,7 @@ module Plutarch.LedgerApi.V1.Scripts (
 
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
 import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
+import Plutarch.Internal.Term (punsafeCoerce)
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
@@ -19,7 +20,6 @@ import Plutarch.Lift (
  )
 import Plutarch.Prelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
-import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V3 qualified as Plutus
 
 -- | @since 2.0.0

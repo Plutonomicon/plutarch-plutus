@@ -11,6 +11,7 @@ import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
  )
+import Plutarch.Internal.Term (punsafeCoerce)
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
   PConstantDecl,
@@ -18,7 +19,6 @@ import Plutarch.Lift (
  )
 import Plutarch.Prelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
-import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V1 qualified as Plutus
 
 {- | Hashed with @BLAKE2b-256@.

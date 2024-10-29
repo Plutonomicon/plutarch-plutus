@@ -28,7 +28,6 @@ import Plutarch.Builtin (
   pforgetData,
   pfromDataImpl,
  )
-import Plutarch.Integer (PIntegral (pquot), pdiv, pmod)
 import Plutarch.Internal.Builtin (
   PInteger,
   pfix,
@@ -36,8 +35,22 @@ import Plutarch.Internal.Builtin (
   plam,
   pnot,
   pto,
+  punsafeDowncast,
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.Numeric (
+  PIntegral (pquot),
+  PNum,
+  pabs,
+  pdiv,
+  pfromInteger,
+  pmod,
+  pnegate,
+  psignum,
+  (#*),
+  (#+),
+  (#-),
+ )
 import Plutarch.Internal.Ord (POrd, PPartialOrd, (#<), (#<=))
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
@@ -51,20 +64,19 @@ import Plutarch.Internal.Term (
   Term,
   phoistAcyclic,
   plet,
+  punsafeCoerce,
   (#),
   (#$),
   (:-->),
  )
 import Plutarch.Lift (pconstant)
 import Plutarch.List (pcons, phead, pnil, ptail)
-import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.Positive (PPositive, ptryPositive)
 import Plutarch.Show (PShow, pshow, pshow')
 import Plutarch.TermCont (pguardC, runTermCont, tcont, unTermCont)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
-import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 
 class PFractional (a :: S -> Type) where
   (#/) :: Term s a -> Term s a -> Term s a

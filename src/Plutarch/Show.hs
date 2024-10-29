@@ -36,7 +36,6 @@ import Plutarch.ByteString (
   psliceBS,
   punsafeIntegerToByte,
  )
-import Plutarch.Integer (PIntegral (pquot, prem))
 import Plutarch.Internal.Builtin (
   PBool,
   PByteString,
@@ -51,6 +50,7 @@ import Plutarch.Internal.Builtin (
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
+import Plutarch.Internal.Numeric (pquot, prem)
 import Plutarch.Internal.Ord ((#<))
 import Plutarch.Internal.PlutusType (PlutusType, pmatch)
 import Plutarch.Internal.Term (

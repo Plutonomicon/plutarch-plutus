@@ -88,7 +88,8 @@ import Plutarch.Builtin (
   pfromDataImpl,
   ppairDataBuiltin,
  )
-import Plutarch.Internal.Term (punsafeBuiltin)
+import Plutarch.Internal.Builtin (punsafeDowncast)
+import Plutarch.Internal.Term (punsafeBuiltin, punsafeCoerce)
 import Plutarch.Internal.Witness (witness)
 import Plutarch.LedgerApi.Utils (
   Mret,
@@ -109,7 +110,6 @@ import Plutarch.List qualified as List
 import Plutarch.Prelude hiding (pall, pany, pmap, pnull, psingleton, pzipWith)
 import Plutarch.Prelude qualified as PPrelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
-import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusCore qualified as PLC
 import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.AssocMap qualified as PlutusMap

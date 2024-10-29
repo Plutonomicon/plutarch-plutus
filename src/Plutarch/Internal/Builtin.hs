@@ -62,6 +62,7 @@ module Plutarch.Internal.Builtin (
   pbuiltinTrace,
   plam,
   pinl,
+  punsafeDowncast,
 ) where
 
 import Data.ByteString (ByteString)
@@ -251,6 +252,16 @@ deriving via
   (DerivePConstantDirect ByteString PByteString)
   instance
     PConstantDecl ByteString
+
+-- | @since WIP
+instance Semigroup (Term s PByteString) where
+  {-# INLINEABLE (<>) #-}
+  x <> y = pbuiltinAppendByteString # x # y
+
+-- | @since WIP
+instance Monoid (Term s PByteString) where
+  {-# INLINEABLE mempty #-}
+  mempty = pconstant ""
 
 {- | Forget the type of a term.
 
@@ -576,3 +587,10 @@ pbuiltinDecodeUtf8 ::
   forall (s :: S).
   Term s (PByteString :--> PString)
 pbuiltinDecodeUtf8 = punsafeBuiltin PLC.DecodeUtf8
+
+-- | @since WIP
+punsafeDowncast ::
+  forall (a :: S -> Type) (s :: S).
+  Term s (PInner a) ->
+  Term s a
+punsafeDowncast = punsafeCoerce

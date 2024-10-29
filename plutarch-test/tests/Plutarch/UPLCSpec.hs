@@ -2,10 +2,9 @@ module Plutarch.UPLCSpec (spec) where
 
 import PlutusCore qualified as PLC
 
-import Plutarch.Internal.Term (punsafeConstantInternal)
+import Plutarch.Internal.Term (punsafeBuiltin, punsafeConstantInternal)
 import Plutarch.Prelude
 import Plutarch.Test
-import Plutarch.Unsafe (punsafeBuiltin)
 import Test.Hspec
 
 spec :: Spec

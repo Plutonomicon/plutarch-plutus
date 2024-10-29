@@ -89,12 +89,12 @@ library
     Plutarch.Enum
     Plutarch.Evaluate
     Plutarch.FFI
-    Plutarch.Integer
     Plutarch.Internal.Builtin
     Plutarch.Internal.Eq
     Plutarch.Internal.Evaluate
     Plutarch.Internal.Generic
     Plutarch.Internal.Newtype
+    Plutarch.Internal.Numeric
     Plutarch.Internal.Ord
     Plutarch.Internal.Other
     Plutarch.Internal.PlutusType
@@ -110,7 +110,6 @@ library
     Plutarch.List
     Plutarch.Maybe
     Plutarch.Monadic
-    Plutarch.Num
     Plutarch.Pair
     Plutarch.Positive
     Plutarch.Prelude
@@ -128,7 +127,6 @@ library
     Plutarch.Trace
     Plutarch.TryFrom
     Plutarch.Unit
-    Plutarch.Unsafe
 
   build-depends:
     , aeson

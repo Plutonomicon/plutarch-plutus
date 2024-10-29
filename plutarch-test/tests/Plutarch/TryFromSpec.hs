@@ -7,16 +7,14 @@ import Plutarch.Builtin (
   pforgetData,
   ppairDataBuiltin,
  )
+import Plutarch.Internal.Builtin (punsafeDowncast)
+import Plutarch.Internal.Term (punsafeCoerce)
 import Plutarch.Prelude
 import Plutarch.Reducible (Reduce)
 import Plutarch.Test
 import Plutarch.TryFrom (
   PTryFromExcess,
   ptryFrom',
- )
-import Plutarch.Unsafe (
-  punsafeCoerce,
-  punsafeDowncast,
  )
 import PlutusTx (
   Data (B, Constr, I),

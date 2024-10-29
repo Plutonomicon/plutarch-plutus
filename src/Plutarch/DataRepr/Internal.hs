@@ -114,6 +114,7 @@ import Plutarch.Internal.Term (
   pforce,
   phoistAcyclic,
   plet,
+  punsafeCoerce,
   (#),
   (#$),
   (:-->),
@@ -141,9 +142,17 @@ import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.Reducible (NoReduce, Reduce)
 import Plutarch.Show (PShow (pshow'))
 import Plutarch.Trace (ptraceInfoError)
-import Plutarch.TryFrom (PSubtype, PSubtype', PSubtypeRelation (PNoSubtypeRelation, PSubtypeRelation), PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
+import Plutarch.TryFrom (
+  PSubtype,
+  PSubtype',
+  PSubtypeRelation (PNoSubtypeRelation, PSubtypeRelation),
+  PTryFrom,
+  PTryFromExcess,
+  ptryFrom,
+  ptryFrom',
+  pupcast,
+ )
 import Plutarch.Unit (PUnit (PUnit))
-import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V1 qualified as Ledger
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is

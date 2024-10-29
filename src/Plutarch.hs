@@ -66,7 +66,6 @@ import Plutarch.Internal.Quantification qualified as PQ
 import Plutarch.Internal.ScottEncoding qualified as PS
 import Plutarch.Internal.Term qualified as PI
 import Plutarch.Internal.TermCont qualified as PT
-import Plutarch.Num ()
 import Plutarch.Pretty qualified as PPR
 
 -- import orphan instances

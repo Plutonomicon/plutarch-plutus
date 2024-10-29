@@ -1,11 +1,10 @@
 module Plutarch.PLamSpec (spec) where
 
 import Data.ByteString (ByteString)
-import PlutusCore qualified as PLC
-
+import Plutarch.Internal.Term (punsafeBuiltin)
 import Plutarch.Prelude
 import Plutarch.Test
-import Plutarch.Unsafe (punsafeBuiltin)
+import PlutusCore qualified as PLC
 import Test.Hspec
 
 spec :: Spec

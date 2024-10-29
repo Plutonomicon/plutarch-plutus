@@ -39,6 +39,7 @@ import Plutarch.DataRepr (
   PDataFields,
  )
 import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
+import Plutarch.Internal.Term (punsafeCoerce)
 import Plutarch.Lift (
   PConstantDecl (PConstanted),
   PUnsafeLiftDecl (PLifted),
@@ -46,7 +47,6 @@ import Plutarch.Lift (
 import Plutarch.Positive (PPositive)
 import Plutarch.Prelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
-import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V3 qualified as Plutus
 
 {- | Scott-encoded bool.

@@ -13,11 +13,11 @@ module Laws (
 
 import Plutarch.Builtin (pforgetData)
 import Plutarch.Enum (PCountable (psuccessor, psuccessorN), PEnumerable (ppredecessor, ppredecessorN))
+import Plutarch.Internal.Term (punsafeCoerce)
 import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Positive (Positive)
 import Plutarch.Prelude
-import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common qualified as Plutus
 import PlutusLedgerApi.V1 qualified as PLA
 import PlutusLedgerApi.V1.Orphans ()

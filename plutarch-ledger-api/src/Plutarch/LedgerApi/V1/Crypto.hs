@@ -7,6 +7,7 @@ module Plutarch.LedgerApi.V1.Crypto (
 
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
 import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
+import Plutarch.Internal.Term (punsafeCoerce)
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
   PConstantDecl,
@@ -14,7 +15,6 @@ import Plutarch.Lift (
  )
 import Plutarch.Prelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
-import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 2.0.0

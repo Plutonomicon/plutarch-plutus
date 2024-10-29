@@ -31,9 +31,14 @@ import Plutarch.Internal.PlutusType (
   PlutusType,
   pcon,
  )
-import Plutarch.Internal.Term (S, Term, (#), (:-->))
+import Plutarch.Internal.Term (
+  S,
+  Term,
+  punsafeBuiltin,
+  (#),
+  (:-->),
+ )
 import Plutarch.Positive (PPositive)
-import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
 
 {- | Type designating whether a conversion should be most-significant-first or

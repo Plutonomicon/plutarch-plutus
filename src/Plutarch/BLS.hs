@@ -32,7 +32,7 @@ import Plutarch.Internal.Builtin (PBool, PByteString, PInteger, POpaque)
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
-import Plutarch.Internal.Term (Term, (#), (:-->))
+import Plutarch.Internal.Term (Term, punsafeBuiltin, (#), (:-->))
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,
@@ -40,7 +40,6 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
   pconstant,
  )
-import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
 import PlutusCore.Crypto.BLS12_381.G1 qualified as BLS12_381.G1
 import PlutusCore.Crypto.BLS12_381.G2 qualified as BLS12_381.G2

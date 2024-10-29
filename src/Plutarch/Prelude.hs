@@ -209,9 +209,9 @@ import Plutarch.ByteString
 import Plutarch.Crypto
 import Plutarch.DataRepr
 import Plutarch.Either
-import Plutarch.Integer
 import Plutarch.Internal.Builtin
 import Plutarch.Internal.Eq
+import Plutarch.Internal.Numeric
 import Plutarch.Internal.Ord
 import Plutarch.Lift
 import Plutarch.List

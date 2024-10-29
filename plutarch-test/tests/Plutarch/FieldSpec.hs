@@ -3,11 +3,11 @@
 module Plutarch.FieldSpec (spec) where
 
 import Plutarch.Builtin (ppairDataBuiltin)
+import Plutarch.Internal.Term (punsafeBuiltin, punsafeCoerce)
 import Plutarch.LedgerApi.V1 (PAddress (PAddress))
 import Plutarch.Prelude
 import Plutarch.SpecTypes (PTriplet)
 import Plutarch.Test
-import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
 import PlutusLedgerApi.V1.Address (Address (Address))
 import PlutusLedgerApi.V1.Credential (Credential (PubKeyCredential))

@@ -42,12 +42,14 @@ import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
-import Plutarch.Integer ()
 import Plutarch.Internal.Builtin (
   PBool (PFalse, PTrue),
   PByteString,
   PInteger,
   POpaque,
+  pbuiltinEqualsInteger,
+  pbuiltinLessThanEqualsInteger,
+  pbuiltinLessThanInteger,
   pfix,
   pif,
   plam,
@@ -55,6 +57,7 @@ import Plutarch.Internal.Builtin (
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Numeric ()
 import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
 import Plutarch.Internal.PlutusType (
   DPTStrat,
@@ -69,6 +72,8 @@ import Plutarch.Internal.Term (
   perror,
   phoistAcyclic,
   plet,
+  punsafeBuiltin,
+  punsafeCoerce,
   (#),
   (#$),
   (:-->),
@@ -79,14 +84,7 @@ import Plutarch.Lift (
   PUnsafeLiftDecl,
   pconstant,
  )
-import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
-
-instance Semigroup (Term s PByteString) where
-  x <> y = punsafeBuiltin PLC.AppendByteString # x # y
-
-instance Monoid (Term s PByteString) where
-  mempty = pconstant BS.empty
 
 {- | A Plutarch-level representation of bytes.
 
@@ -129,14 +127,14 @@ instance PConstantDecl Word8 where
 -- | @since WIP
 instance PEq PByte where
   {-# INLINEABLE (#==) #-}
-  x #== y = punsafeBuiltin PLC.EqualsInteger # x # y
+  x #== y = pbuiltinEqualsInteger # punsafeCoerce x # punsafeCoerce y
 
 -- | @since WIP
 instance PPartialOrd PByte where
   {-# INLINEABLE (#<=) #-}
-  x #<= y = punsafeBuiltin PLC.LessThanEqualsInteger # x # y
+  x #<= y = pbuiltinLessThanEqualsInteger # punsafeCoerce x # punsafeCoerce y
   {-# INLINEABLE (#<) #-}
-  x #< y = punsafeBuiltin PLC.LessThanInteger # x # y
+  x #< y = pbuiltinLessThanInteger # punsafeCoerce x # punsafeCoerce y
 
 -- | @since WIP
 instance POrd PByte
