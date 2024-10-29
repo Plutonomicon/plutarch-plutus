@@ -15,6 +15,7 @@ module Plutarch.Builtin (
   pconstrBuiltin,
   pasByteStr,
   PBuiltinPair,
+  pconsBuiltin,
   PBuiltinList (..),
   pdataLiteral,
   PIsData (..),
