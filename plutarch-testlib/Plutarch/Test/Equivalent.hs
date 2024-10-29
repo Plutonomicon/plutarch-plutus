@@ -6,20 +6,12 @@
 module Plutarch.Test.Equivalent (checkHaskellEquivalent) where
 
 import GHC.TypeError (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
-import Plutarch.Lift (
-  DerivePConstantViaNewtype (DerivePConstantViaNewtype),
-  PConstantDecl (PConstanted),
-  PUnsafeLiftDecl (PLifted),
- )
+import Plutarch.Lift (PConstantDecl (PConstanted), PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude
 import Plutarch.Test.Utils (prettyEquals, prettyShow)
 import PlutusLedgerApi.V1.Orphans ()
 import Prettyprinter (Pretty)
-import Test.QuickCheck (
-  Arbitrary (arbitrary, shrink),
-  Property,
-  forAllShrinkShow,
- )
+import Test.QuickCheck (Arbitrary (arbitrary, shrink), Property, forAllShrinkShow)
 
 {- | Check that given Haskell and Plutarch functions produce the same output for the same input.
 It works for functions with any number of arguments
