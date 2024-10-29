@@ -82,7 +82,6 @@ library
     , text
 
   exposed-modules:
-    Plutarch.Test.Equivalent
     Plutarch.Test.Golden
     Plutarch.Test.Laws
     Plutarch.Test.QuickCheck

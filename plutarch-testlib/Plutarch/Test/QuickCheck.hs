@@ -1,12 +1,22 @@
-module Plutarch.Test.QuickCheck (propEvalFail, propCompileFail, propEvalEqual) where
+module Plutarch.Test.QuickCheck (
+  propEvalFail,
+  propCompileFail,
+  propEvalEqual,
+  checkHaskellEquivalent,
+  checkHaskellEquivalent2,
+) where
 
 import Data.Text qualified as Text
 import Plutarch (Config (NoTracing))
+import Plutarch.Lift (PConstantDecl (PConstanted), PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude
 import Plutarch.Test.Unit (TermResult (Evaluated, FailedToCompile, FailedToEvaluate), evalTermResult)
+import Plutarch.Test.Utils (prettyEquals, prettyShow)
+import Prettyprinter (Pretty)
 import Test.Tasty (TestName, TestTree)
 import Test.Tasty.QuickCheck (
   Arbitrary,
+  Property,
   arbitrary,
   counterexample,
   forAllShrinkShow,
@@ -69,3 +79,46 @@ propEvalEqual name mkTerm mkExpected =
         FailedToCompile err -> counterexample ("Failed to compile expected term: " <> Text.unpack err) False
         FailedToEvaluate err _ -> counterexample ("Failed to evaluate expected term: " <> show err) False
         Evaluated expected _ -> actual === expected
+
+-- | @since WIP
+checkHaskellEquivalent ::
+  forall (haskellInput :: Type) (haskellOutput :: Type).
+  ( haskellInput ~ PLifted (PConstanted haskellInput)
+  , PConstantDecl haskellInput
+  , Show haskellInput
+  , Arbitrary haskellInput
+  , haskellOutput ~ PLifted (PConstanted haskellOutput)
+  , PConstantDecl haskellOutput
+  , Show haskellOutput
+  , Eq haskellOutput
+  ) =>
+  (haskellInput -> haskellOutput) ->
+  ClosedTerm (PConstanted haskellInput :--> PConstanted haskellOutput) ->
+  Property
+checkHaskellEquivalent goHaskell goPlutarch =
+  forAllShrinkShow arbitrary shrink show $
+    \(input :: haskellInput) -> goHaskell input === plift (goPlutarch # pconstant input)
+
+-- | @since WIP
+checkHaskellEquivalent2 ::
+  forall (haskellInput1 :: Type) (haskellInput2 :: Type) (haskellOutput :: Type).
+  ( haskellInput1 ~ PLifted (PConstanted haskellInput1)
+  , PConstantDecl haskellInput1
+  , Pretty haskellInput1
+  , Arbitrary haskellInput1
+  , haskellInput2 ~ PLifted (PConstanted haskellInput2)
+  , PConstantDecl haskellInput2
+  , Pretty haskellInput2
+  , Arbitrary haskellInput2
+  , haskellOutput ~ PLifted (PConstanted haskellOutput)
+  , PConstantDecl haskellOutput
+  , Pretty haskellOutput
+  , Eq haskellOutput
+  ) =>
+  (haskellInput1 -> haskellInput2 -> haskellOutput) ->
+  ClosedTerm (PConstanted haskellInput1 :--> PConstanted haskellInput2 :--> PConstanted haskellOutput) ->
+  Property
+checkHaskellEquivalent2 goHaskell goPlutarch =
+  forAllShrinkShow arbitrary shrink prettyShow $
+    \(input1 :: haskellInput1, input2 :: haskellInput2) ->
+      goHaskell input1 input2 `prettyEquals` plift (goPlutarch # pconstant input1 # pconstant input2)

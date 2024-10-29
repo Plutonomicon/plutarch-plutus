@@ -21,7 +21,7 @@ import Plutarch.Lift (
  )
 import Plutarch.Positive (Positive)
 import Plutarch.Prelude
-import Plutarch.Test.Equivalent (checkHaskellEquivalent)
+import Plutarch.Test.QuickCheck (checkHaskellEquivalent2)
 import Plutarch.Test.Utils (instanceOfType, prettyShow, typeName, typeName')
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common qualified as Plutus
@@ -147,9 +147,9 @@ ordHaskellEquivalents =
         , instanceOfType @(S -> Type) @(PConstanted haskellInput) "POrd"
         ]
     )
-    [ testProperty "== = #==" $ checkHaskellEquivalent ((==) @haskellInput) (plam (#==))
-    , testProperty "< = #<" $ checkHaskellEquivalent ((<) @haskellInput) (plam (#<))
-    , testProperty "<= = #<=" $ checkHaskellEquivalent ((<=) @haskellInput) (plam (#<=))
+    [ testProperty "== = #==" $ checkHaskellEquivalent2 ((==) @haskellInput) (plam (#==))
+    , testProperty "< = #<" $ checkHaskellEquivalent2 ((<) @haskellInput) (plam (#<))
+    , testProperty "<= = #<=" $ checkHaskellEquivalent2 ((<=) @haskellInput) (plam (#<=))
     ]
 
 -- Internal

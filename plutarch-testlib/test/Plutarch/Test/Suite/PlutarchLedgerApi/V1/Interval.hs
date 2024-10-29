@@ -16,9 +16,9 @@ import Plutarch.LedgerApi.Interval (
  )
 import Plutarch.LedgerApi.V1 (PPosixTime)
 import Plutarch.Prelude hiding (psingleton, pto)
-import Plutarch.Test.Equivalent (checkHaskellEquivalent)
 import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkLedgerProperties)
+import Plutarch.Test.QuickCheck (checkHaskellEquivalent2)
 import Plutarch.Test.Utils (fewerTests)
 import PlutusLedgerApi.V1 (POSIXTime)
 import PlutusLedgerApi.V1.Interval (contains, hull, intersection, member)
@@ -116,15 +116,15 @@ tests =
           , testGroup
               "Haskell equivalents"
               [ testProperty "contains = pcontains" $
-                  checkHaskellEquivalent (contains @POSIXTime) pcontains
+                  checkHaskellEquivalent2 (contains @POSIXTime) pcontains
               , testProperty "member = pmember" $
-                  checkHaskellEquivalent
+                  checkHaskellEquivalent2
                     (member @POSIXTime)
                     (plam $ \value interval -> pmember # pdata value # interval)
               , testProperty "intersection = pintersection" $
-                  checkHaskellEquivalent (intersection @POSIXTime) pintersection
+                  checkHaskellEquivalent2 (intersection @POSIXTime) pintersection
               , testProperty "hull = phull" $
-                  checkHaskellEquivalent (hull @POSIXTime) phull
+                  checkHaskellEquivalent2 (hull @POSIXTime) phull
               ]
           ]
     ]
