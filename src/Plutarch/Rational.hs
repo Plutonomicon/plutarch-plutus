@@ -13,27 +13,9 @@ module Plutarch.Rational (
   PFractional (..),
 ) where
 
+import Data.Kind (Type)
 import Data.Ratio (denominator, numerator)
 import GHC.Generics (Generic)
-import Plutarch (
-  DPTStrat,
-  DerivePlutusType,
-  PType,
-  PlutusType,
-  PlutusTypeScott,
-  Term,
-  pcon,
-  pfix,
-  phoistAcyclic,
-  plam,
-  plet,
-  pmatch,
-  pto,
-  runTermCont,
-  (#),
-  (#$),
-  type (:-->),
- )
 import Plutarch.Bool (POrd, PPartialOrd, (#<), (#<=))
 import Plutarch.Builtin (
   PAsData,
@@ -48,20 +30,43 @@ import Plutarch.Builtin (
   pfromDataImpl,
  )
 import Plutarch.Integer (PIntegral (pquot), pdiv, pmod)
-import Plutarch.Internal.Builtin (PInteger, pif, pnot)
+import Plutarch.Internal.Builtin (
+  PInteger,
+  pfix,
+  pif,
+  plam,
+  pnot,
+  pto,
+ )
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.PlutusType (
+  DerivePlutusType (DPTStrat),
+  PlutusType,
+  pcon,
+  pmatch,
+ )
+import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Term (
+  S,
+  Term,
+  phoistAcyclic,
+  plet,
+  (#),
+  (#$),
+  (:-->),
+ )
 import Plutarch.Lift (pconstant)
 import Plutarch.List (pcons, phead, pnil, ptail)
 import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.Positive (PPositive, ptryPositive)
 import Plutarch.Show (PShow, pshow, pshow')
-import Plutarch.TermCont (pguardC, tcont, unTermCont)
+import Plutarch.TermCont (pguardC, runTermCont, tcont, unTermCont)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 
-class PFractional (a :: PType) where
+class PFractional (a :: S -> Type) where
   (#/) :: Term s a -> Term s a -> Term s a
   precip :: Term s (a :--> a)
   pfromRational :: Term s (PRational :--> a)

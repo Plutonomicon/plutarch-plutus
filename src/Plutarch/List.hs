@@ -54,32 +54,9 @@ module Plutarch.List (
   pcheckSorted,
 ) where
 
-import Numeric.Natural (Natural)
-
 import Data.Kind (Constraint, Type)
 import GHC.Generics (Generic)
-import Plutarch (
-  ClosedTerm,
-  DPTStrat,
-  DerivePlutusType,
-  PDelayed,
-  PType,
-  PlutusType,
-  PlutusTypeScott,
-  S,
-  Term,
-  pcon,
-  pdelay,
-  perror,
-  pfix,
-  phoistAcyclic,
-  plam,
-  plet,
-  pmatch,
-  (#),
-  (#$),
-  type (:-->),
- )
+import Numeric.Natural (Natural)
 import Plutarch.Bool (
   POrd,
   (#<),
@@ -89,18 +66,39 @@ import Plutarch.Internal.Builtin (
   PBool (PFalse, PTrue),
   PInteger,
   PString,
+  pfix,
   pif,
+  plam,
   (#&&),
   (#||),
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.PlutusType (
+  DerivePlutusType (DPTStrat),
+  PlutusType,
+  pcon,
+  pmatch,
+ )
+import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Term (
+  PDelayed,
+  S,
+  Term,
+  pdelay,
+  perror,
+  phoistAcyclic,
+  plet,
+  (#),
+  (#$),
+  (:-->),
+ )
 import Plutarch.Lift (pconstant)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.Show (PShow (pshow'), pshow)
 import Plutarch.Trace (ptraceInfoError)
 
-data PList (a :: PType) (s :: S)
+data PList (a :: S -> Type) (s :: S)
   = PSCons (Term s a) (Term s (PList a))
   | PSNil
   deriving stock (Generic)
@@ -137,8 +135,8 @@ instance PEq a => PEq (PList a) where
 type PIsListLike list a = (PListLike list, PElemConstraint list a)
 
 -- | Plutarch types that behave like lists.
-class PListLike (list :: PType -> PType) where
-  type PElemConstraint list (a :: PType) :: Constraint
+class PListLike (list :: (S -> Type) -> S -> Type) where
+  type PElemConstraint list (a :: S -> Type) :: Constraint
 
   -- | Canonical eliminator for list-likes.
   pelimList ::
@@ -256,7 +254,7 @@ ptryIndex n xs = phead # pdrop n xs
 pdrop :: PIsListLike list a => Natural -> Term s (list a) -> Term s (list a)
 pdrop n xs = pdrop' n # xs
   where
-    pdrop' :: PIsListLike list a => Natural -> ClosedTerm (list a :--> list a)
+    pdrop' :: PIsListLike list a => Natural -> (forall (s :: S). Term s (list a :--> list a))
     pdrop' 0 = plam id
     pdrop' 1 = ptail
     pdrop' n' = phoistAcyclic $ plam $ \x -> ptail #$ pdrop' (n' - 1) # x

@@ -31,38 +31,9 @@ module Plutarch.Builtin (
 ) where
 
 import Data.Functor.Const (Const)
+import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Generics (Generic)
-import Plutarch (
-  DPTStrat,
-  DerivePlutusType,
-  PContravariant',
-  PCovariant,
-  PCovariant',
-  PInner,
-  PType,
-  PVariant,
-  PVariant',
-  PlutusType,
-  PlutusTypeNewtype,
-  S,
-  Term,
-  TermCont (runTermCont),
-  pcon,
-  pdelay,
-  pfix,
-  pforce,
-  phoistAcyclic,
-  plam,
-  plet,
-  pmatch,
-  pto,
-  tcont,
-  unTermCont,
-  (#),
-  (#$),
-  type (:-->),
- )
 import Plutarch.Bool (
   POrd,
   PPartialOrd,
@@ -75,12 +46,42 @@ import Plutarch.Internal.Builtin (
   PInteger,
   PString,
   pbuiltinIfThenElse,
+  pfix,
   pif,
+  plam,
+  pto,
   (#&&),
   (#||),
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.PlutusType (pcon', pmatch')
+import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.PlutusType (
+  DerivePlutusType (DPTStrat),
+  PCovariant,
+  PVariant,
+  PlutusType (
+    PContravariant',
+    PCovariant',
+    PInner,
+    PVariant'
+  ),
+  pcon,
+  pcon',
+  pmatch,
+  pmatch',
+ )
+import Plutarch.Internal.Term (
+  S,
+  Term,
+  pdelay,
+  pforce,
+  phoistAcyclic,
+  plet,
+  (#),
+  (#$),
+  (:-->),
+ )
+import Plutarch.Internal.TermCont (runTermCont, tcont, unTermCont)
 import Plutarch.Internal.Witness (witness)
 import Plutarch.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
@@ -122,7 +123,7 @@ import PlutusTx (Data (Constr), ToData)
 import PlutusTx qualified
 
 -- | Plutus 'BuiltinPair'
-newtype PBuiltinPair (a :: PType) (b :: PType) (s :: S) = PBuiltinPair (Term s (PBuiltinPair a b))
+newtype PBuiltinPair (a :: S -> Type) (b :: S -> Type) (s :: S) = PBuiltinPair (Term s (PBuiltinPair a b))
 
 instance PlutusType (PBuiltinPair a b) where
   type PInner (PBuiltinPair a b) = PBuiltinPair a b
@@ -159,7 +160,7 @@ ppairDataBuiltin :: Term s (PAsData a :--> PAsData b :--> PBuiltinPair (PAsData 
 ppairDataBuiltin = punsafeBuiltin PLC.MkPairData
 
 -- | Plutus 'BuiltinList'
-data PBuiltinList (a :: PType) (s :: S)
+data PBuiltinList (a :: S -> Type) (s :: S)
   = PCons (Term s a) (Term s (PBuiltinList a))
   | PNil
 
@@ -216,12 +217,12 @@ instance PListLike PBuiltinList where
   ptail = ptailBuiltin
   pnull = pnullBuiltin
 
-type family F (a :: PType) :: Bool where
+type family F (a :: S -> Type) :: Bool where
   F PData = 'True
   F (PAsData _) = 'True
   F _ = 'False
 
-class Fc (x :: Bool) (a :: PType) where
+class Fc (x :: Bool) (a :: S -> Type) where
   fc :: Proxy x -> Term s (PBuiltinList a) -> Term s (PBuiltinList a) -> Term s PBool
 
 instance (PLift a, PEq a) => Fc 'False a where
@@ -314,9 +315,9 @@ pasByteStr = punsafeBuiltin PLC.UnBData
 pserialiseData :: Term s (PData :--> PByteString)
 pserialiseData = punsafeBuiltin PLC.SerialiseData
 
-newtype PAsData (a :: PType) (s :: S) = PAsData (Term s a)
+newtype PAsData (a :: S -> Type) (s :: S) = PAsData (Term s a)
 
-type family IfSameThenData (a :: PType) (b :: PType) :: PType where
+type family IfSameThenData (a :: S -> Type) (b :: S -> Type) :: S -> Type where
   IfSameThenData a a = PData
   IfSameThenData _ b = PAsData b
 
@@ -329,7 +330,7 @@ instance PIsData a => PlutusType (PAsData a) where
   pmatch' t f = f (PAsData $ pfromData $ punsafeCoerce t)
 
 type role PAsDataLifted nominal
-data PAsDataLifted (a :: PType)
+data PAsDataLifted (a :: S -> Type)
 
 instance PConstantDecl (PAsDataLifted a) where
   type PConstantRepr (PAsDataLifted a) = Data
@@ -347,15 +348,30 @@ pforgetData = punsafeCoerce
 {- | Like 'pforgetData', except it works for complex types.
  Equivalent to 'pupcastF'.
 -}
-pforgetData' :: forall a (p :: PType -> PType) s. PCovariant p => Proxy p -> Term s (p (PAsData a)) -> Term s (p PData)
+pforgetData' ::
+  forall a (p :: (S -> Type) -> S -> Type) s.
+  PCovariant p =>
+  Proxy p ->
+  Term s (p (PAsData a)) ->
+  Term s (p PData)
 pforgetData' _ = let _ = witness (Proxy @(PCovariant p)) in punsafeCoerce
 
 -- | Inverse of 'pforgetData''.
-prememberData :: forall (p :: PType -> PType) s. PVariant p => Proxy p -> Term s (p PData) -> Term s (p (PAsData PData))
+prememberData ::
+  forall (p :: (S -> Type) -> S -> Type) s.
+  PVariant p =>
+  Proxy p ->
+  Term s (p PData) ->
+  Term s (p (PAsData PData))
 prememberData Proxy = let _ = witness (Proxy @(PVariant p)) in punsafeCoerce
 
 -- | Like 'prememberData' but generalised.
-prememberData' :: forall a (p :: PType -> PType) s. (PSubtype PData a, PVariant p) => Proxy p -> Term s (p a) -> Term s (p (PAsData a))
+prememberData' ::
+  forall a (p :: (S -> Type) -> S -> Type) s.
+  (PSubtype PData a, PVariant p) =>
+  Proxy p ->
+  Term s (p a) ->
+  Term s (p (PAsData a))
 prememberData' Proxy = let _ = witness (Proxy @(PSubtype PData a, PVariant p)) in punsafeCoerce
 
 {- | Laws:
@@ -381,14 +397,16 @@ instance PIsData PData where
   pfromDataImpl = pupcast
   pdataImpl = id
 
-instance forall (a :: PType). PSubtype PData a => PIsData (PBuiltinList a) where
+instance forall (a :: S -> Type). PSubtype PData a => PIsData (PBuiltinList a) where
   pfromDataImpl x = punsafeCoerce $ pasList # pforgetData x
   pdataImpl x = plistData # pupcastF @PData @a (Proxy @PBuiltinList) x
 
 newtype Helper2 f a s = Helper2 (Term s (PAsData (f a)))
   deriving stock (Generic)
   deriving anyclass (PlutusType)
-instance DerivePlutusType (Helper2 f a) where type DPTStrat _ = PlutusTypeNewtype
+
+instance DerivePlutusType (Helper2 f a) where
+  type DPTStrat _ = PlutusTypeNewtype
 
 instance PIsData PInteger where
   pfromDataImpl x = pasInt # pforgetData x
@@ -576,7 +594,7 @@ instance PTryFrom PData PData where
   ptryFrom' opq f = f (opq, ())
 
 -- | @since 1.7.0
-newtype PDataNewtype (a :: PType) (s :: S) = PDataNewtype (Term s (PAsData a))
+newtype PDataNewtype (a :: S -> Type) (s :: S) = PDataNewtype (Term s (PAsData a))
   deriving stock
     ( -- | @since 1.7.0
       Generic

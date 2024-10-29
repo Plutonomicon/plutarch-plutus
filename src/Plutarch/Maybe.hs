@@ -21,22 +21,16 @@ module Plutarch.Maybe (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-import Plutarch (
-  DPTStrat,
-  DerivePlutusType,
-  PlutusType,
-  PlutusTypeScott,
-  S,
-  Term,
-  pcon,
-  phoistAcyclic,
-  plam,
-  pmatch,
-  (#),
-  type (:-->),
- )
-import Plutarch.Internal.Builtin (PBool, PString)
+import Plutarch.Internal.Builtin (PBool, PString, plam)
 import Plutarch.Internal.Eq (PEq)
+import Plutarch.Internal.PlutusType (
+  DerivePlutusType (DPTStrat),
+  PlutusType,
+  pcon,
+  pmatch,
+ )
+import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Term (S, Term, phoistAcyclic, (#), (:-->))
 import Plutarch.Lift (pconstant)
 import Plutarch.Show (PShow)
 import Plutarch.Trace (ptraceInfoError)
@@ -48,7 +42,8 @@ data PMaybe (a :: S -> Type) (s :: S)
   deriving stock (Generic)
   deriving anyclass (PlutusType, PEq, PShow)
 
-instance DerivePlutusType (PMaybe a) where type DPTStrat _ = PlutusTypeScott
+instance DerivePlutusType (PMaybe a) where
+  type DPTStrat _ = PlutusTypeScott
 
 -- | Extracts the element out of a 'PJust' and throws an error if its argument is 'PNothing'.
 pfromJust ::

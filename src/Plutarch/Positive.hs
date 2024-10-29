@@ -13,32 +13,31 @@ import Data.Coerce (coerce)
 import Data.Functor.Const (Const)
 import Data.Text (pack)
 import GHC.Generics (Generic)
-import Plutarch (
-  DerivePlutusType (DPTStrat),
-  PlutusType,
-  PlutusTypeNewtype,
-  Term,
-  TermCont (runTermCont),
-  pcon,
-  phoistAcyclic,
-  plam,
-  plet,
-  pthrow,
-  pto,
-  (#),
-  (#$),
-  type (:-->),
- )
 import Plutarch.Bool (POrd, PPartialOrd, (#<=))
 import Plutarch.Builtin (PAsData, PData, PIsData, pdata)
 import Plutarch.Integer (PIntegral)
-import Plutarch.Internal.Builtin (PInteger, pif)
+import Plutarch.Internal.Builtin (PInteger, pif, plam, pto)
 import Plutarch.Internal.Eq (PEq)
+import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.PlutusType (
+  DerivePlutusType (DPTStrat),
+  PlutusType,
+  pcon,
+ )
+import Plutarch.Internal.Term (
+  Term,
+  phoistAcyclic,
+  plet,
+  pthrow,
+  (#),
+  (#$),
+  (:-->),
+ )
 import Plutarch.Lift (DerivePConstantDirect (DerivePConstantDirect), PConstantDecl, PUnsafeLiftDecl (PLifted))
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Num (PNum (pfromInteger, (#-)))
 import Plutarch.Show (PShow, pshow)
-import Plutarch.TermCont (tcont)
+import Plutarch.TermCont (runTermCont, tcont)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Prettyprinter (Pretty)
