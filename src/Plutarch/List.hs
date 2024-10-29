@@ -57,11 +57,6 @@ module Plutarch.List (
 import Data.Kind (Constraint, Type)
 import GHC.Generics (Generic)
 import Numeric.Natural (Natural)
-import Plutarch.Bool (
-  POrd,
-  (#<),
-  (#<=),
- )
 import Plutarch.Internal.Builtin (
   PBool (PFalse, PTrue),
   PInteger,
@@ -73,6 +68,7 @@ import Plutarch.Internal.Builtin (
   (#||),
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.Ord (POrd, (#<), (#<=))
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
   PlutusType,

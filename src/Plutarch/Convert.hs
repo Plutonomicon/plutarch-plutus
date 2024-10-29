@@ -15,7 +15,6 @@ module Plutarch.Convert (
 ) where
 
 import GHC.Generics (Generic)
-import Plutarch.Bool (POrd, PPartialOrd)
 import Plutarch.Internal.Builtin (
   PBool (PFalse, PTrue),
   PByteString,
@@ -25,6 +24,7 @@ import Plutarch.Internal.Builtin (
  )
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Ord (POrd, PPartialOrd)
 import Plutarch.Internal.PlutusType (
   DPTStrat,
   DerivePlutusType,

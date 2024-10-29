@@ -42,12 +42,6 @@ import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
-import Plutarch.Bool (
-  POrd,
-  PPartialOrd,
-  (#<),
-  (#<=),
- )
 import Plutarch.Integer ()
 import Plutarch.Internal.Builtin (
   PBool (PFalse, PTrue),
@@ -61,6 +55,7 @@ import Plutarch.Internal.Builtin (
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
 import Plutarch.Internal.PlutusType (
   DPTStrat,
   DerivePlutusType,
@@ -86,12 +81,6 @@ import Plutarch.Lift (
  )
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
-
-instance PPartialOrd PByteString where
-  x #<= y = punsafeBuiltin PLC.LessThanEqualsByteString # x # y
-  x #< y = punsafeBuiltin PLC.LessThanByteString # x # y
-
-instance POrd PByteString
 
 instance Semigroup (Term s PByteString) where
   x <> y = punsafeBuiltin PLC.AppendByteString # x # y

@@ -60,9 +60,9 @@ module Plutarch.LedgerApi.Value (
   pisAdaOnlyValue,
 ) where
 
-import Plutarch.Bool (pand', pif')
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
 import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
+import Plutarch.Internal.Builtin (pand', pbuiltinIfThenElse)
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
@@ -729,7 +729,7 @@ plovelaceValueOf = phoistAcyclic $
     pmatch (pto $ pto value) $ \case
       PNil -> 0
       PCons x _ ->
-        pif'
+        pbuiltinIfThenElse
           # (pfstBuiltin # x #== padaSymbolData)
           # pfromData (psndBuiltin #$ phead #$ pto $ pfromData $ psndBuiltin # x)
           # 0
@@ -851,7 +851,7 @@ padaOnlyValue = phoistAcyclic $
     pmatch (pto $ pto value) $ \case
       PNil -> value
       PCons x _ ->
-        pif'
+        pbuiltinIfThenElse
           # (pfstBuiltin # x #== padaSymbolData)
           # pcon (PValue $ pcon $ AssocMap.PMap $ List.psingleton # x)
           # pcon (PValue AssocMap.pempty)
@@ -867,7 +867,8 @@ pnoAdaValue = phoistAcyclic $
   plam $ \value ->
     pmatch (pto $ pto value) $ \case
       PNil -> value
-      PCons x xs -> pif' # (pfstBuiltin # x #== padaSymbolData) # pcon (PValue $ pcon $ AssocMap.PMap xs) # value
+      PCons x xs ->
+        pbuiltinIfThenElse # (pfstBuiltin # x #== padaSymbolData) # pcon (PValue $ pcon $ AssocMap.PMap xs) # value
 
 -- Helpers
 

@@ -33,7 +33,6 @@ module Plutarch.LedgerApi.Interval (
   pintersection,
 ) where
 
-import Plutarch.Bool (pif')
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
@@ -42,6 +41,7 @@ import Plutarch.Enum (
   PCountable (psuccessor),
   PEnumerable (ppredecessor),
  )
+import Plutarch.Internal.Builtin (pbuiltinIfThenElse)
 import Plutarch.Lift (
   PConstantDecl (PConstanted),
   PUnsafeLiftDecl (PLifted),
@@ -744,7 +744,7 @@ minP ::
         :--> PDataRecord '["_0" ':= PExtended a, "_1" ':= PBool]
         :--> PDataRecord '["_0" ':= PExtended a, "_1" ':= PBool]
     )
-minP = phoistAcyclic $ plam $ \x y -> pif' # (leqP # x # y) # x # y
+minP = phoistAcyclic $ plam $ \x y -> pbuiltinIfThenElse # (leqP # x # y) # x # y
 
 maxP ::
   forall (a :: S -> Type) (s :: S).
@@ -755,7 +755,7 @@ maxP ::
         :--> PDataRecord '["_0" ':= PExtended a, "_1" ':= PBool]
         :--> PDataRecord '["_0" ':= PExtended a, "_1" ':= PBool]
     )
-maxP = phoistAcyclic $ plam $ \x y -> pif' # (leqP # x # y) # y # x
+maxP = phoistAcyclic $ plam $ \x y -> pbuiltinIfThenElse # (leqP # x # y) # y # x
 
 -- value < endpoint
 pbefore' ::

@@ -7,9 +7,9 @@ module Plutarch.Integer (
   PIntegral (..),
 ) where
 
-import Plutarch.Bool (POrd, PPartialOrd, (#<), (#<=))
 import Plutarch.Internal.Builtin (PInteger, pif, plam, pto)
 import Plutarch.Internal.Eq ((#==))
+import Plutarch.Internal.Ord ((#<=))
 import Plutarch.Internal.PlutusType (PInner)
 import Plutarch.Internal.Term (
   Term,
@@ -41,12 +41,6 @@ instance PIntegral PInteger where
   pmod = punsafeBuiltin PLC.ModInteger
   pquot = punsafeBuiltin PLC.QuotientInteger
   prem = punsafeBuiltin PLC.RemainderInteger
-
-instance PPartialOrd PInteger where
-  x #<= y = punsafeBuiltin PLC.LessThanEqualsInteger # x # y
-  x #< y = punsafeBuiltin PLC.LessThanInteger # x # y
-
-instance POrd PInteger
 
 instance PNum PInteger where
   x #+ y = punsafeBuiltin PLC.AddInteger # x # y

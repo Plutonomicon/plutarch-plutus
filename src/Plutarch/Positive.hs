@@ -13,12 +13,12 @@ import Data.Coerce (coerce)
 import Data.Functor.Const (Const)
 import Data.Text (pack)
 import GHC.Generics (Generic)
-import Plutarch.Bool (POrd, PPartialOrd, (#<=))
 import Plutarch.Builtin (PAsData, PData, PIsData, pdata)
 import Plutarch.Integer (PIntegral)
 import Plutarch.Internal.Builtin (PInteger, pif, plam, pto)
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Ord (POrd, PPartialOrd, (#<=))
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
   PlutusType,

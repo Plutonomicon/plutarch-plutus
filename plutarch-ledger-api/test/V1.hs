@@ -1,6 +1,6 @@
 module V1 (tests) where
 
-import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Builtin (PInteger)
 import Plutarch.LedgerApi.V1 qualified as PLA
 import Plutarch.LedgerApi.Value as Value
 import Plutarch.Positive (PPositive)

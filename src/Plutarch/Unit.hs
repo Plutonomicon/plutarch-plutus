@@ -4,9 +4,9 @@
 
 module Plutarch.Unit (PUnit (..)) where
 
-import Plutarch.Bool (POrd, PPartialOrd, (#<), (#<=))
 import Plutarch.Internal.Builtin (PBool (PFalse, PTrue))
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.Ord (POrd, PPartialOrd, (#<), (#<=))
 import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon, pcon', pmatch')
 import Plutarch.Internal.Term (Term, plet)
 import Plutarch.Lift (

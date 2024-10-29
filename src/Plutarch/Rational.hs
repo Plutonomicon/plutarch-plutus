@@ -16,7 +16,6 @@ module Plutarch.Rational (
 import Data.Kind (Type)
 import Data.Ratio (denominator, numerator)
 import GHC.Generics (Generic)
-import Plutarch.Bool (POrd, PPartialOrd, (#<), (#<=))
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
@@ -39,6 +38,7 @@ import Plutarch.Internal.Builtin (
   pto,
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.Ord (POrd, PPartialOrd, (#<), (#<=))
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
   PlutusType,

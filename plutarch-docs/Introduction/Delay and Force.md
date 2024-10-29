@@ -3,9 +3,9 @@
 <p>
 
 ```haskell
-module Plutarch.Docs.DelayAndForce (hif, pif') where 
+module Plutarch.Docs.DelayAndForce (hif, pbuiltinIfThenElse) where 
 import Plutarch.Prelude
-import Plutarch.Bool (pif')
+import Plutarch.Internal.Builtin (pbuiltinIfThenElse)
 ```
 
 </p>
@@ -17,13 +17,16 @@ Plutarch, like UPLC, is strict by default; this is in contrast to Haskell, which
 
 This behavior may be undesirable. For example, it is usually unwanted to evaluate both the `then` and `else` branches of an `if` function, for efficiency reasons.
 
-The Plutarch level function `pif'` is naturally strict in its arguments, so it does exactly that. For the purpose of this chapter we take `pif'` as a given, and create the lazy version `pif` based on that.
+The Plutarch-level function `pbuiltinIfThenElse` is naturally strict in its
+arguments, so it does exactly that. For the purposes of this chapter, we take
+`pbuiltinIfThenElse` as a given, and create the lazy `pif` based on that.
 
-> Note: The example below does not correspond to the actual implementations of `pif` or `pif'`. It is for pedagogic purposes only.
+> Note: The example below does not correspond to the actual implementations of
+> `pif` or `pbuiltinIfThenElse`. It is for pedagogic purposes only.
 
 ```hs
 -- | Strict if-then-else.
-pif' :: Term s (PBool :--> a :--> a :--> a)
+pbuiltinIfThenElse :: Term s (PBool :--> a :--> a :--> a)
 ```
 
 To prevent evaluation of a term when it gets used as an argument in a function application, we can use `pdelay` to mark the argument term as delayed. On the type-level, it wraps the `PType` tag of a `Term`, as can be seen in its type signature.
@@ -43,7 +46,7 @@ We now have the tools needed to create the lazy `pif` based on `pif'`:
 ```haskell
 -- | Utilizing Haskell level functions with `pdelay` and `pforce` to have lazy wrapper around `pif`.
 hif :: Term s PBool -> Term s a -> Term s a -> Term s a
-hif cond whenTrue whenFalse = pforce $ pif' # cond # pdelay whenTrue # pdelay whenFalse
+hif cond whenTrue whenFalse = pforce $ pbuiltinIfThenElse # cond # pdelay whenTrue # pdelay whenFalse
 ```
 
 A word of caution: Calling `pforce` on the same delayed term in multiple different places can lead to duplicate evaluation of the term. Users familiar with Haskell's handling of laziness -- where forcing a thunk twice never duplicates computation -- should note that UPLC behaves differently.

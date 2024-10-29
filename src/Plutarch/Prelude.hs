@@ -204,7 +204,6 @@ import Data.Kind (Type)
 import GHC.Generics (Generic)
 import GHC.Records (getField)
 import Plutarch
-import Plutarch.Bool
 import Plutarch.Builtin
 import Plutarch.ByteString
 import Plutarch.Crypto
@@ -213,6 +212,7 @@ import Plutarch.Either
 import Plutarch.Integer
 import Plutarch.Internal.Builtin
 import Plutarch.Internal.Eq
+import Plutarch.Internal.Ord
 import Plutarch.Lift
 import Plutarch.List
 import Plutarch.Maybe
