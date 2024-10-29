@@ -48,30 +48,6 @@ checkHaskellEquivalent goHaskell goPlutarch =
   forAllShrinkShow arbitrary shrink prettyShow $
     \input -> applyTupleArgs goHaskell input `prettyEquals` plift (papplyTupleArgs goPlutarch (pconstant input))
 
--- * Helper data types
-
--- | Like `Data.Tuple.Solo` but with `Arbitrary` instance and Plutarch equivalent of `PQcSolo`
-newtype QcSolo a = QcSolo a
-  deriving newtype (Show, Eq, Pretty, Arbitrary)
-
--- | Plutarch equivalent of `QcSolo`
-newtype PQcSolo (a :: S -> Type) s = PQcSolo (Term s a)
-  deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PIntegral, PShow)
-
-instance DerivePlutusType (PQcSolo a) where type DPTStrat _ = PlutusTypeNewtype
-
-instance
-  (PUnsafeLiftDecl a, PConstanted (PLifted a) ~ a, PConstanted (QcSolo (PLifted a)) ~ PQcSolo a) =>
-  PUnsafeLiftDecl (PQcSolo a)
-  where
-  type PLifted (PQcSolo a) = QcSolo (PLifted a)
-
-deriving via
-  (DerivePConstantViaNewtype (QcSolo a) (PQcSolo (PConstanted a)) (PConstanted a))
-  instance
-    PConstant a => PConstantDecl (QcSolo a)
-
 -- * Haskell level
 
 type family ToPlutarchFunction f where
@@ -82,7 +58,7 @@ type family ToPlutarchFunction f where
 -- | Convert function arguments to a nested tuple (e.g. from @(a -> b -> c -> d)@ to @(a, (b, (c, d)))@ )
 type family FunctionArgumentsToTuple f where
   FunctionArgumentsToTuple (a -> (b -> c)) = (a, FunctionArgumentsToTuple (b -> c))
-  FunctionArgumentsToTuple (a -> _) = QcSolo a
+  FunctionArgumentsToTuple (a -> _) = a
 
 -- | Get final result of the function (e.g. result of @(a -> b -> c -> d)@ is @d@)
 type family FunctionResult f where
@@ -108,12 +84,12 @@ instance
 instance
   {-# OVERLAPPABLE #-}
   ( f ~ (a -> b)
-  , FunctionArgumentsToTuple f ~ QcSolo a
+  , FunctionArgumentsToTuple f ~ a
   , FunctionResult f ~ b
   ) =>
   ApplyTupleArgs (a -> b)
   where
-  applyTupleArgs f (QcSolo a) = f a
+  applyTupleArgs f = f
 
 -- * Plutarch level
 
@@ -121,7 +97,7 @@ instance
 type family PFunctionArgumentsToTuple (f :: S -> Type) :: S -> Type where
   PFunctionArgumentsToTuple (a :--> (b :--> c)) =
     PBuiltinPair a (PFunctionArgumentsToTuple (b :--> c))
-  PFunctionArgumentsToTuple (a :--> _) = PQcSolo a
+  PFunctionArgumentsToTuple (a :--> _) = a
 
 -- | Like `FunctionResult` but on Plutarch level
 type family PFunctionResult (f :: S -> Type) where
@@ -135,12 +111,12 @@ class PApplyTupleArgs (f :: S -> Type) where
 instance
   {-# OVERLAPPABLE #-}
   ( f ~ (a :--> b)
-  , PFunctionArgumentsToTuple f ~ PQcSolo a
+  , PFunctionArgumentsToTuple f ~ a
   , PFunctionResult f ~ b
   ) =>
   PApplyTupleArgs f
   where
-  papplyTupleArgs f args = f # pto args
+  papplyTupleArgs f args = f # args
 
 instance
   ( f ~ (a :--> c :--> d)
