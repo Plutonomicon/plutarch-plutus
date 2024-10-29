@@ -85,19 +85,19 @@ checkHaskellEquivalent ::
   forall (haskellInput :: Type) (haskellOutput :: Type).
   ( haskellInput ~ PLifted (PConstanted haskellInput)
   , PConstantDecl haskellInput
-  , Show haskellInput
+  , Pretty haskellInput
   , Arbitrary haskellInput
   , haskellOutput ~ PLifted (PConstanted haskellOutput)
   , PConstantDecl haskellOutput
-  , Show haskellOutput
+  , Pretty haskellOutput
   , Eq haskellOutput
   ) =>
   (haskellInput -> haskellOutput) ->
   ClosedTerm (PConstanted haskellInput :--> PConstanted haskellOutput) ->
   Property
 checkHaskellEquivalent goHaskell goPlutarch =
-  forAllShrinkShow arbitrary shrink show $
-    \(input :: haskellInput) -> goHaskell input === plift (goPlutarch # pconstant input)
+  forAllShrinkShow arbitrary shrink prettyShow $
+    \(input :: haskellInput) -> goHaskell input `prettyEquals` plift (goPlutarch # pconstant input)
 
 -- | @since WIP
 checkHaskellEquivalent2 ::
