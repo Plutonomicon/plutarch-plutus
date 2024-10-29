@@ -22,7 +22,18 @@ import Plutarch.Test.Laws (checkLedgerProperties)
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent, checkHaskellEquivalent2)
 import Plutarch.Test.Utils (fewerTests)
 import PlutusLedgerApi.V1 (POSIXTime)
-import PlutusLedgerApi.V1.Interval (after, before, contains, hull, intersection, isEmpty, member)
+import PlutusLedgerApi.V1.Interval (
+  after,
+  before,
+  contains,
+  from,
+  hull,
+  intersection,
+  isEmpty,
+  member,
+  singleton,
+  to,
+ )
 import Test.Tasty (TestTree, adjustOption, testGroup)
 import Test.Tasty.QuickCheck (arbitrary, forAllShrinkShow, shrink, testProperty)
 
@@ -132,6 +143,12 @@ tests =
                   checkHaskellEquivalent2 (after @POSIXTime) pafter
               , testProperty "isEmpty = pisEmpty" $
                   checkHaskellEquivalent (isEmpty @POSIXTime) pisEmpty
+              , testProperty "singleton = psingleton" $
+                  checkHaskellEquivalent (singleton @POSIXTime) (plam $ \t -> psingleton # pdata t)
+              , testProperty "from = pfrom" $
+                  checkHaskellEquivalent (from @POSIXTime) (plam $ \t -> pfrom # pdata t)
+              , testProperty "to = pto" $
+                  checkHaskellEquivalent (to @POSIXTime) (plam $ \t -> pto # pdata t)
               ]
           ]
     ]
