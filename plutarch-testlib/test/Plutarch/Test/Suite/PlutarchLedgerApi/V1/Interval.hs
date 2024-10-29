@@ -17,8 +17,10 @@ import Plutarch.LedgerApi.Interval (
 import Plutarch.LedgerApi.V1 (PPosixTime)
 import Plutarch.Prelude hiding (psingleton, pto)
 import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)
-import Plutarch.Test.Laws (checkLedgerProperties)
+import Plutarch.Test.Laws (checkHaskellEquivalentN, checkLedgerProperties)
 import Plutarch.Test.Utils (fewerTests)
+import PlutusLedgerApi.V1 (POSIXTime)
+import PlutusLedgerApi.V1.Interval (contains, intersection, member)
 import Test.Tasty (TestTree, adjustOption, testGroup)
 import Test.Tasty.QuickCheck (arbitrary, forAllShrinkShow, shrink, testProperty)
 
@@ -109,6 +111,17 @@ tests =
               "after"
               [ testProperty "a is after [b, c] iff c < a" $
                   forAllShrinkShow arbitrary shrink show checkAfter
+              ]
+          , testGroup
+              "Haskell equivalents"
+              [ testProperty "contains = pcontains" $
+                  checkHaskellEquivalentN (contains @POSIXTime) pcontains
+              , testProperty "member = pmember" $
+                  checkHaskellEquivalentN
+                    (member @POSIXTime)
+                    (plam $ \value interval -> pmember # pdata value # interval)
+              , testProperty "intersection = pintersection" $
+                  checkHaskellEquivalentN (intersection @POSIXTime) pintersection
               ]
           ]
     ]
