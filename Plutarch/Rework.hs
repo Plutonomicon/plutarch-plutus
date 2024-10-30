@@ -48,7 +48,7 @@ findOccurrence targetHash t = TermCont $ \f -> unTermCont $ do
     go (RApply rt rts) = go rt + sum (go <$> rts)
     go (RForce rt) = go rt
     go (RDelay rt) = go rt
-    go (RHoisted (HoistedTerm hash _)) = if hash == targetHash then 1 else 0
+    go (RPlaceHolder hash) = if hash == targetHash then 1 else 0
     go _ = 0
 
   pure $ f (go rt)
@@ -70,7 +70,7 @@ hasErrorTerm t = TermCont $ \f -> unTermCont $ do
 createPlaceholder :: Term s a -> TermCont s (Dig, Term s a)
 createPlaceholder t = do
   (hash :: Dig) <- hashOpenTerm t
-  pure (hash, Term $ const $ pure $ TermResult (RHoisted (HoistedTerm hash RError)) [])
+  pure (hash, Term $ const $ pure $ TermResult (RPlaceHolder hash) [])
 
 pletSmart :: Term s a -> (Term s a -> Term s b) -> Term s b
 pletSmart t f = unTermCont $ do
@@ -193,7 +193,9 @@ pmatchDataStruct (punsafeCoerce -> x) f = unTermCont $ do
     groupedHandlers =
       sortBy (\g1 g2 -> length (fst g1) `compare` length (fst g2)) $
         (\g -> (fst <$> g, fst $ snd $ head g))
-          <$> groupBy (\x1 x2 -> snd (snd x1) == snd (snd x2)) handlersWithHash
+          <$> groupBy
+            (\x1 x2 -> snd (snd x1) == snd (snd x2))
+            (sortBy (\(_, (_, h1)) (_, (_, h2)) -> h1 `compare` h2) handlersWithHash)
 
   pure $
     let
@@ -209,7 +211,6 @@ pmatchDataStruct (punsafeCoerce -> x) f = unTermCont $ do
       -- This one builds if one per every entry
       buildIfs :: [Integer] -> Term s b -> (Term s b -> Term s b)
       buildIfs [] _ = id
-      buildIfs [_] t = const t
       buildIfs (i : is) t =
         buildIfs is t . pif (fromInteger i #== idx) t
 
@@ -286,10 +287,10 @@ hello :: forall s. Term s PInteger
 hello =
   let
     handler :: PStruct MyRepr s -> Term s PInteger
-    handler (PStruct (SOP (Z _x))) = pconstant (1 :: Integer)
+    handler (PStruct (SOP (Z _x))) = pconstant (2 :: Integer)
     handler (PStruct (SOP (S (Z _x)))) = pconstant (1 :: Integer)
-    handler (PStruct (SOP (S (S (Z (_x :* _y :* Nil)))))) = 2
-    handler (PStruct (SOP (S (S (S (Z (_x :* _y :* Nil))))))) = 2
+    handler (PStruct (SOP (S (S (Z (_x :* _y :* Nil)))))) = 1
+    handler (PStruct (SOP (S (S (S (Z (_x :* _y :* Nil))))))) = 1
     handler _ = undefined
    in
     pmatchDataStruct @MyRepr (pconDataStruct test) handler

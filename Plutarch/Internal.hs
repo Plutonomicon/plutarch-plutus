@@ -115,6 +115,7 @@ data RawTerm
   | RCompiled UTerm
   | RError
   | RHoisted HoistedTerm
+  | RPlaceHolder Dig
   deriving stock (Show)
 
 addHashIndex :: forall alg. HashAlgorithm alg => Integer -> Context alg -> Context alg
@@ -145,7 +146,8 @@ hashRawTerm' (RConstant x) = addHashIndex 5 . flip hashUpdate (F.flat x)
 hashRawTerm' (RBuiltin x) = addHashIndex 6 . flip hashUpdate (F.flat x)
 hashRawTerm' RError = addHashIndex 7
 hashRawTerm' (RHoisted (HoistedTerm hash _)) = addHashIndex 8 . flip hashUpdate hash
-hashRawTerm' (RCompiled code) = addHashIndex 9 . flip hashUpdate (hashUTerm @alg code hashInit)
+hashRawTerm' (RPlaceHolder hash) = addHashIndex 9 . flip hashUpdate hash
+hashRawTerm' (RCompiled code) = addHashIndex 10 . flip hashUpdate (hashUTerm @alg code hashInit)
 
 hashRawTerm :: RawTerm -> Dig
 hashRawTerm t = hashFinalize . hashRawTerm' t $ hashInit
@@ -697,6 +699,7 @@ rawTermToUPLC m l (RForce t) = UPLC.Force () (rawTermToUPLC m l t)
 rawTermToUPLC _ _ (RBuiltin f) = UPLC.Builtin () f
 rawTermToUPLC _ _ (RConstant c) = UPLC.Constant () c
 rawTermToUPLC _ _ (RCompiled code) = code
+rawTermToUPLC _ _ (RPlaceHolder _) = UPLC.Error ()
 rawTermToUPLC _ _ RError = UPLC.Error ()
 -- rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted
 rawTermToUPLC m l (RHoisted hoisted) = m hoisted l -- UPLC.Var () . DeBruijn . Index $ l - m hoisted
