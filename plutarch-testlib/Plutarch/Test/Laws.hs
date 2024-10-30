@@ -10,6 +10,8 @@ module Plutarch.Test.Laws (
   checkLedgerPropertiesPCountable,
   checkLedgerPropertiesPEnumerable,
   ordHaskellEquivalents,
+  checkHaskellNumEquivalent,
+  checkHaskellIntegralEquivalent,
 ) where
 
 import Plutarch.Builtin (pforgetData)
@@ -19,10 +21,11 @@ import Plutarch.Lift (
   PConstantDecl (PConstanted),
   PUnsafeLiftDecl (PLifted),
  )
+import Plutarch.Num (PNum (pabs, pnegate, psignum, (#*), (#+), (#-)))
 import Plutarch.Positive (Positive)
 import Plutarch.Prelude
-import Plutarch.Test.QuickCheck (checkHaskellEquivalent2)
-import Plutarch.Test.Utils (instanceOfType, prettyShow, typeName, typeName')
+import Plutarch.Test.QuickCheck (checkHaskellEquivalent, checkHaskellEquivalent2)
+import Plutarch.Test.Utils (instanceOfType, prettyEquals, prettyShow, typeName, typeName')
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common qualified as Plutus
 import PlutusLedgerApi.V1 qualified as PLA
@@ -31,11 +34,12 @@ import PlutusTx.AssocMap qualified as AssocMap
 import Prettyprinter (Pretty)
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
+  NonZero (getNonZero),
   forAllShrinkShow,
   (=/=),
   (===),
  )
-import Test.Tasty (TestTree, testGroup)
+import Test.Tasty (TestName, TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
 import Type.Reflection (Typeable, typeRep)
 
@@ -152,7 +156,83 @@ ordHaskellEquivalents =
     , testProperty "<= = #<=" $ checkHaskellEquivalent2 ((<=) @haskellInput) (plam (#<=))
     ]
 
+-- | @since WIP
+checkHaskellIntegralEquivalent ::
+  forall (haskellInput :: Type).
+  ( Typeable haskellInput
+  , Typeable (PConstanted haskellInput)
+  , Integral haskellInput
+  , haskellInput ~ PLifted (PConstanted haskellInput)
+  , PIntegral (PConstanted haskellInput)
+  , PConstantDecl haskellInput
+  , Pretty haskellInput
+  , Arbitrary haskellInput
+  ) =>
+  TestTree
+checkHaskellIntegralEquivalent =
+  testGroup
+    ( mconcat
+        [ instanceOfType @Type @haskellInput "Integral"
+        , " <-> "
+        , instanceOfType @(S -> Type) @(PConstanted haskellInput) "PIntegral"
+        ]
+    )
+    [ testIntegralEquivalent @haskellInput "div = pdiv" div pdiv
+    , testIntegralEquivalent @haskellInput "mod = pmod" mod pmod
+    , testIntegralEquivalent @haskellInput "quot = pquot" quot pquot
+    , testIntegralEquivalent @haskellInput "rem = prem" rem prem
+    ]
+
+checkHaskellNumEquivalent ::
+  forall (haskellInput :: Type).
+  ( Typeable haskellInput
+  , Typeable (PConstanted haskellInput)
+  , Num haskellInput
+  , Eq haskellInput
+  , haskellInput ~ PLifted (PConstanted haskellInput)
+  , PNum (PConstanted haskellInput)
+  , PConstantDecl haskellInput
+  , Pretty haskellInput
+  , Arbitrary haskellInput
+  ) =>
+  TestTree
+checkHaskellNumEquivalent =
+  testGroup
+    ( mconcat
+        [ instanceOfType @Type @haskellInput "Num"
+        , " <-> "
+        , instanceOfType @(S -> Type) @(PConstanted haskellInput) "PNum"
+        ]
+    )
+    [ testProperty "+ = #+" $ checkHaskellEquivalent2 @haskellInput (+) (plam (#+))
+    , testProperty "- = #-" $ checkHaskellEquivalent2 @haskellInput (-) (plam (#-))
+    , testProperty "* = #*" $ checkHaskellEquivalent2 @haskellInput (*) (plam (#*))
+    , testProperty "negate = pnegate" $ checkHaskellEquivalent @haskellInput negate pnegate
+    , testProperty "abs = pabs" $ checkHaskellEquivalent @haskellInput abs pabs
+    , testProperty "signum = psignum" $ checkHaskellEquivalent @haskellInput signum psignum
+    ]
+
 -- Internal
+
+-- | @since WIP
+testIntegralEquivalent ::
+  forall (a :: Type).
+  ( Integral a
+  , Arbitrary a
+  , Pretty a
+  , a ~ PLifted (PConstanted a)
+  , PConstantDecl a
+  ) =>
+  TestName ->
+  (a -> a -> a) ->
+  ClosedTerm (PConstanted a :--> PConstanted a :--> PConstanted a) ->
+  TestTree
+testIntegralEquivalent name goHaskell goPlutarch =
+  testProperty name $
+    forAllShrinkShow arbitrary shrink prettyShow $
+      \(input1 :: haskellInput, input2 :: NonZero haskellInput) ->
+        goHaskell input1 (getNonZero input2)
+          `prettyEquals` plift (goPlutarch # pconstant input1 # pconstant (getNonZero input2))
 
 pcountableLaws ::
   forall (a :: S -> Type).

@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
+
 module Plutarch.Test.QuickCheck (
   propEvalFail,
   propCompileFail,
@@ -16,6 +18,11 @@ import Prettyprinter (Pretty)
 import Test.Tasty (TestName, TestTree)
 import Test.Tasty.QuickCheck (
   Arbitrary,
+  Negative (Negative),
+  NonNegative (NonNegative),
+  NonPositive (NonPositive),
+  NonZero (NonZero),
+  Positive (Positive),
   Property,
   arbitrary,
   counterexample,
@@ -122,3 +129,20 @@ checkHaskellEquivalent2 goHaskell goPlutarch =
   forAllShrinkShow arbitrary shrink prettyShow $
     \(input1 :: haskellInput1, input2 :: haskellInput2) ->
       goHaskell input1 input2 `prettyEquals` plift (goPlutarch # pconstant input1 # pconstant input2)
+
+-- * Orphans
+
+-- | @since WIP
+deriving newtype instance Pretty a => Pretty (Positive a)
+
+-- | @since WIP
+deriving newtype instance Pretty a => Pretty (Negative a)
+
+-- | @since WIP
+deriving newtype instance Pretty a => Pretty (NonZero a)
+
+-- | @since WIP
+deriving newtype instance Pretty a => Pretty (NonNegative a)
+
+-- | @since WIP
+deriving newtype instance Pretty a => Pretty (NonPositive a)
