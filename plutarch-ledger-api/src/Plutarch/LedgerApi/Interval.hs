@@ -477,8 +477,8 @@ phull = phoistAcyclic $
     let upperX = getField @"to" x
     let lowerY = getField @"from" y
     let upperY = getField @"to" y
-    let lower = pcon $ PLowerBound $ minP # (lToE # lowerX) # (lToE # lowerY)
-    let upper = pcon $ PUpperBound $ maxP # (uToE # upperX) # (uToE # upperY)
+    let lower = minLower # lowerX # lowerY
+    let upper = maxUpper # upperX # upperY
     pure $ pinterval' # pdata lower # pdata upper
 
 {- | @'pintersection' i1 i2@ gives the largest interval that is contained in
@@ -503,8 +503,8 @@ pintersection = phoistAcyclic $
     let upperX = getField @"to" x
     let lowerY = getField @"from" y
     let upperY = getField @"to" y
-    let lower = pcon $ PLowerBound $ maxP # (lToE # lowerX) # (lToE # lowerY)
-    let upper = pcon $ PUpperBound $ minP # (uToE # upperX) # (uToE # upperY)
+    let lower = maxLower # lowerX # lowerY
+    let upper = minUpper # upperX # upperY
     pure $ pinterval' # pdata lower # pdata upper
 
 {- | @'before' x i@ is true if @x@ is earlier than the start of @i@.
@@ -612,71 +612,6 @@ pinterval' = phoistAcyclic $
           # upper
           # pdnil
 
-leqP ::
-  forall (a :: S -> Type) (s :: S).
-  (PIsData a, POrd a) =>
-  Term
-    s
-    ( PDataRecord '["_0" ':= PExtended a, "_1" ':= PBool]
-        :--> PDataRecord '["_0" ':= PExtended a, "_1" ':= PBool]
-        :--> PBool
-    )
-leqP = phoistAcyclic $
-  plam $ \x' y' -> unTermCont $ do
-    x <- tcont $ pletFields @'["_0", "_1"] x'
-    y <- tcont $ pletFields @'["_0", "_1"] y'
-    let xt = getField @"_0" x
-    let yt = getField @"_0" y
-    let xc = getField @"_1" x
-    let yc = getField @"_1" y
-    pure $
-      pif
-        (xc #&& yc #|| (pnot # xc) #&& (pnot # yc))
-        (leqE # xt # yt)
-        (ltE # xt # yt)
-
-leqE ::
-  forall (a :: S -> Type) (s :: S).
-  (POrd a, PIsData a) =>
-  Term
-    s
-    ( PExtended a
-        :--> PExtended a
-        :--> PBool
-    )
-leqE = phoistAcyclic $ plam $ \x y -> ltE # x # y #|| eqE # x # y
-
-ltE ::
-  forall (a :: S -> Type) (s :: S).
-  (POrd a, PIsData a) =>
-  Term
-    s
-    ( PExtended a
-        :--> PExtended a
-        :--> PBool
-    )
-ltE = phoistAcyclic $ plam $ \x y -> pmatch x (cont y)
-  where
-    cont ::
-      forall (s' :: S).
-      Term s' (PExtended a) ->
-      PExtended a s' ->
-      Term s' PBool
-    cont y' = \case
-      PNegInf _ -> pconstant True
-      PPosInf _ -> pmatch y' isPosInf
-      PFinite l ->
-        let z = pfromData $ pfield @"_0" # l
-         in pmatch y' (ltE' z)
-
-isPosInf ::
-  forall (a :: S -> Type) (s :: S).
-  PExtended a s ->
-  Term s PBool
-isPosInf = \case
-  PPosInf _ -> pconstant True
-  _ -> pconstant False
-
 ltE' ::
   forall (a :: S -> Type) (s :: S).
   (POrd a, PIsData a) =>
@@ -698,31 +633,6 @@ uToE ::
   Term s (PUpperBound a :--> PDataRecord '["_0" ':= PExtended a, "_1" ':= PBool])
 uToE = phoistAcyclic $ plam $ \x -> pmatch x (\(PUpperBound a) -> a)
 
-eqE ::
-  forall (a :: S -> Type) (s :: S).
-  (PEq a, PIsData a) =>
-  Term
-    s
-    ( PExtended a
-        :--> PExtended a
-        :--> PBool
-    )
-eqE = phoistAcyclic $
-  plam $ \x y ->
-    let cont x' = case x' of
-          PNegInf _ -> pmatch y isNegInf
-          PPosInf _ -> pmatch y isPosInf
-          PFinite l -> pmatch y (eqE' (pfield @"_0" # l))
-     in pmatch x cont
-
-isNegInf ::
-  forall (a :: S -> Type) (s :: S).
-  PExtended a s ->
-  Term s PBool
-isNegInf = \case
-  PNegInf _ -> pconstant True
-  _ -> pconstant False
-
 eqE' ::
   forall (a :: S -> Type) (s :: S).
   (PEq a, PIsData a) =>
@@ -735,27 +645,81 @@ eqE' a y' = case y' of
     pure $ a #== b
   _ -> pconstant False
 
-minP ::
+minLower ::
   forall (a :: S -> Type) (s :: S).
   (PIsData a, POrd a) =>
   Term
     s
-    ( PDataRecord '["_0" ':= PExtended a, "_1" ':= PBool]
-        :--> PDataRecord '["_0" ':= PExtended a, "_1" ':= PBool]
-        :--> PDataRecord '["_0" ':= PExtended a, "_1" ':= PBool]
-    )
-minP = phoistAcyclic $ plam $ \x y -> pif' # (leqP # x # y) # x # y
+    (PLowerBound a :--> PLowerBound a :--> PLowerBound a)
+minLower = phoistAcyclic $
+  plam $ \x' y' -> unTermCont $ do
+    x <- tcont $ pletFields @'["_0", "_1"] (lToE # x')
+    y <- tcont $ pletFields @'["_0", "_1"] (lToE # y')
+    let xt = getField @"_0" x
+    let yt = getField @"_0" y
+    let xc = getField @"_1" x
+    pure $
+      pif
+        (pfromData xt #< pfromData yt)
+        x'
+        (pif (pfromData yt #< pfromData xt) y' (pif' # xc # x' # y'))
 
-maxP ::
+maxLower ::
   forall (a :: S -> Type) (s :: S).
   (PIsData a, POrd a) =>
   Term
     s
-    ( PDataRecord '["_0" ':= PExtended a, "_1" ':= PBool]
-        :--> PDataRecord '["_0" ':= PExtended a, "_1" ':= PBool]
-        :--> PDataRecord '["_0" ':= PExtended a, "_1" ':= PBool]
-    )
-maxP = phoistAcyclic $ plam $ \x y -> pif' # (leqP # x # y) # y # x
+    (PLowerBound a :--> PLowerBound a :--> PLowerBound a)
+maxLower = phoistAcyclic $
+  plam $ \x' y' -> unTermCont $ do
+    x <- tcont $ pletFields @'["_0", "_1"] (lToE # x')
+    y <- tcont $ pletFields @'["_0", "_1"] (lToE # y')
+    let xt = getField @"_0" x
+    let yt = getField @"_0" y
+    let xc = getField @"_1" x
+    pure $
+      pif
+        (pfromData xt #< pfromData yt)
+        y'
+        (pif (pfromData yt #< pfromData xt) x' (pif' # xc # y' # x'))
+
+minUpper ::
+  forall (a :: S -> Type) (s :: S).
+  (PIsData a, POrd a) =>
+  Term
+    s
+    (PUpperBound a :--> PUpperBound a :--> PUpperBound a)
+minUpper = phoistAcyclic $
+  plam $ \x' y' -> unTermCont $ do
+    x <- tcont $ pletFields @'["_0", "_1"] (uToE # x')
+    y <- tcont $ pletFields @'["_0", "_1"] (uToE # y')
+    let xt = getField @"_0" x
+    let yt = getField @"_0" y
+    let xc = getField @"_1" x
+    pure $
+      pif
+        (pfromData xt #< pfromData yt)
+        x'
+        (pif (pfromData yt #< pfromData xt) y' (pif' # xc # y' # x'))
+
+maxUpper ::
+  forall (a :: S -> Type) (s :: S).
+  (PIsData a, POrd a) =>
+  Term
+    s
+    (PUpperBound a :--> PUpperBound a :--> PUpperBound a)
+maxUpper = phoistAcyclic $
+  plam $ \x' y' -> unTermCont $ do
+    x <- tcont $ pletFields @'["_0", "_1"] (uToE # x')
+    y <- tcont $ pletFields @'["_0", "_1"] (uToE # y')
+    let xt = getField @"_0" x
+    let yt = getField @"_0" y
+    let xc = getField @"_1" x
+    pure $
+      pif
+        (pfromData xt #< pfromData yt)
+        y'
+        (pif (pfromData yt #< pfromData xt) x' (pif' # xc # x' # y'))
 
 -- value < endpoint
 pbefore' ::
@@ -825,8 +789,8 @@ gtE' ::
   PExtended a s ->
   Term s PBool
 gtE' x = \case
-  PNegInf _ -> pconstant False
-  PPosInf _ -> pconstant True
+  PNegInf _ -> pconstant True
+  PPosInf _ -> pconstant False
   PFinite r ->
     let y = pfield @"_0" # r
      in y #< x

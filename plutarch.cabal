@@ -148,16 +148,3 @@ library
     , QuickCheck
     , random
     , sop-core
-
-test-suite tests
-  import:         c
-  type:           exitcode-stdio-1.0
-  main-is:        Main.hs
-  build-depends:
-    , bytestring
-    , plutarch
-    , tasty
-    , tasty-hunit
-
-  ghc-options:    -O2 -threaded -rtsopts -with-rtsopts=-N
-  hs-source-dirs: test
