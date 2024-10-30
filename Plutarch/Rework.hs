@@ -53,6 +53,20 @@ findOccurrence targetHash t = TermCont $ \f -> unTermCont $ do
 
   pure $ f (go rt)
 
+hasErrorTerm :: Term s a -> TermCont s Bool
+hasErrorTerm t = TermCont $ \f -> unTermCont $ do
+  rt <- getRawTerm t
+  let
+    go (RLamAbs _ rt) = go rt
+    go (RApply rt rts) = go rt || any go rts
+    go (RForce rt) = go rt
+    go (RDelay rt) = go rt
+    go (RHoisted (HoistedTerm _ rt)) = go rt
+    go RError = True
+    go _ = False
+
+  pure $ f (go rt)
+
 createPlaceholder :: Term s a -> TermCont s (Dig, Term s a)
 createPlaceholder t = do
   (hash :: Dig) <- hashOpenTerm t
@@ -60,13 +74,14 @@ createPlaceholder t = do
 
 pletSmart :: Term s a -> (Term s a -> Term s b) -> Term s b
 pletSmart t f = unTermCont $ do
+  hasError <- hasErrorTerm t
   (hash, placeholder) <- createPlaceholder t
 
   occurrences <-
     findOccurrence hash $ f placeholder
 
   pure $ case occurrences of
-    0 -> f perror
+    0 -> if hasError then plet t f else f t
     1 -> f t
     _ -> plet t f
 
@@ -273,8 +288,8 @@ hello =
     handler :: PStruct MyRepr s -> Term s PInteger
     handler (PStruct (SOP (Z _x))) = pconstant (1 :: Integer)
     handler (PStruct (SOP (S (Z _x)))) = pconstant (1 :: Integer)
-    handler (PStruct (SOP (S (S (Z (_x :* _y :* Nil)))))) = 1
-    handler (PStruct (SOP (S (S (S (Z (_x :* _y :* Nil))))))) = 1
+    handler (PStruct (SOP (S (S (Z (_x :* _y :* Nil)))))) = 2
+    handler (PStruct (SOP (S (S (S (Z (_x :* _y :* Nil))))))) = 2
     handler _ = undefined
    in
     pmatchDataStruct @MyRepr (pconDataStruct test) handler
