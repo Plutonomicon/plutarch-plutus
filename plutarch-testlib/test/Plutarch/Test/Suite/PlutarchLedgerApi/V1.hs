@@ -6,16 +6,15 @@ import Plutarch.Prelude
 import Plutarch.Test.Laws (
   checkHaskellIntegralEquivalent,
   checkHaskellNumEquivalent,
+  checkHaskellOrdEquivalent,
   checkLedgerProperties,
   checkLedgerPropertiesAssocMap,
   checkLedgerPropertiesPCountable,
   checkLedgerPropertiesPEnumerable,
   checkLedgerPropertiesValue,
-  ordHaskellEquivalents,
  )
 import Plutarch.Test.Suite.PlutarchLedgerApi.V1.Interval qualified as Interval
 import Plutarch.Test.Utils (fewerTests, typeName)
-import PlutusLedgerApi.V1 (Extended, LowerBound, POSIXTime, UpperBound)
 import PlutusLedgerApi.V1.Orphans ()
 import Test.Tasty (TestTree, adjustOption, testGroup)
 
@@ -35,24 +34,24 @@ tests =
         (typeName @(S -> Type) @PLA.PPosixTime)
         [ checkLedgerPropertiesPCountable @PLA.PPosixTime
         , checkLedgerPropertiesPEnumerable @PLA.PPosixTime
-        , checkHaskellNumEquivalent @POSIXTime
-        , checkHaskellIntegralEquivalent @POSIXTime
+        , checkHaskellNumEquivalent @PLA.PPosixTime
+        , checkHaskellIntegralEquivalent @PLA.PPosixTime
         , checkLedgerProperties @PLA.PPosixTime
         ]
     , -- We only care about intervals of PPosixTime, so we don't check anything else
       testGroup
         (typeName @(S -> Type) @(PLA.PExtended PLA.PPosixTime))
-        [ ordHaskellEquivalents @(Extended POSIXTime)
+        [ checkHaskellOrdEquivalent @(PLA.PExtended PLA.PPosixTime)
         , checkLedgerProperties @(PLA.PExtended PLA.PPosixTime)
         ]
     , testGroup
         (typeName @(S -> Type) @(PLA.PLowerBound PLA.PPosixTime))
-        [ ordHaskellEquivalents @(LowerBound POSIXTime)
+        [ checkHaskellOrdEquivalent @(PLA.PLowerBound PLA.PPosixTime)
         , checkLedgerProperties @(PLA.PLowerBound PLA.PPosixTime)
         ]
     , testGroup
         (typeName @(S -> Type) @(PLA.PUpperBound PLA.PPosixTime))
-        [ ordHaskellEquivalents @(UpperBound POSIXTime)
+        [ checkHaskellOrdEquivalent @(PLA.PUpperBound PLA.PPosixTime)
         , checkLedgerProperties @(PLA.PUpperBound PLA.PPosixTime)
         ]
     , Interval.tests

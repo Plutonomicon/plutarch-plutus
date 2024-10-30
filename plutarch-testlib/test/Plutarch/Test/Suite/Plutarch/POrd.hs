@@ -4,19 +4,18 @@ module Plutarch.Test.Suite.Plutarch.POrd (tests) where
 
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
 import Plutarch.LedgerApi.V1 (
+  PAddress,
   PCredential (PPubKeyCredential, PScriptCredential),
+  PMaybeData,
   PPubKeyHash (PPubKeyHash),
   PScriptHash (PScriptHash),
  )
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude
 import Plutarch.Test.Golden (GoldenTestTree, goldenEvalEqual, goldenGroup, plutarchGolden)
-import Plutarch.Test.Laws (ordHaskellEquivalents)
+import Plutarch.Test.Laws (checkHaskellOrdEquivalent)
 import Plutarch.Test.SpecTypes (PTriplet (PTriplet), Triplet (Triplet))
-import PlutusLedgerApi.V1 (
-  Address,
-  Credential (PubKeyCredential, ScriptCredential),
- )
+import PlutusLedgerApi.V1 (Credential (PubKeyCredential, ScriptCredential))
 import Test.Tasty (TestTree, testGroup)
 
 tests :: TestTree
@@ -60,10 +59,10 @@ tests =
         ]
     , testGroup
         "Haskell Equivalence"
-        [ ordHaskellEquivalents @Bool
-        , ordHaskellEquivalents @(Maybe Integer)
-        , ordHaskellEquivalents @(Triplet Integer)
-        , ordHaskellEquivalents @Address
+        [ checkHaskellOrdEquivalent @PBool
+        , checkHaskellOrdEquivalent @(PMaybeData PInteger)
+        , checkHaskellOrdEquivalent @(PTriplet PInteger)
+        , checkHaskellOrdEquivalent @PAddress
         ]
     ]
 
