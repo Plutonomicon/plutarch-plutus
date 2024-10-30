@@ -10,6 +10,8 @@ module Plutarch.Rework where
 
 import Generics.SOP
 
+import Generics.SOP qualified as SOP
+
 import GHC.TypeLits
 
 import Data.Functor.Compose
@@ -19,6 +21,7 @@ import Data.Kind (Type)
 import Data.List (groupBy, sortBy)
 import Data.Proxy
 import Data.Text qualified as Text
+import GHC.Generics qualified as GHC
 import Plutarch
 import Plutarch.Builtin
 import Plutarch.DataRepr.Internal
@@ -26,8 +29,8 @@ import Plutarch.Internal
 import Plutarch.Prelude
 import Plutarch.Unsafe
 
-newtype PStruct (struct :: [[S -> Type]]) (s :: S) = PStruct (SOP (Term s) struct)
-newtype PRec (struct :: [S -> Type]) (s :: S) = PRec (NP (Term s) struct)
+newtype PStruct (struct :: [[S -> Type]]) (s :: S) = PStruct {unPStruct :: SOP (Term s) struct}
+newtype PRec (struct :: [S -> Type]) (s :: S) = PRec {unPRec :: NP (Term s) struct}
 
 ----------------------------------------------------------------------Smart plet
 pdataStructureAsData :: Term s (PDataStruct struct) -> Term s PData
@@ -236,6 +239,12 @@ data PScottRec (struct :: [S -> Type]) (s :: S) where
 
 class PScottRepresentable (a :: S -> Type)
 
+pconScottStruct :: PStruct struct s -> Term s (PScottStruct struct)
+pconScottStruct = undefined
+
+pmatchScottStruct :: forall struct r s. Term s (PScottStruct struct) -> (PStruct struct s -> Term s r) -> Term s r
+pmatchScottStruct = undefined
+
 data PSOPStruct (struct :: [[S -> Type]]) (s :: S) where
   PSOPStruct :: All2 PSOPRepresentable struct => PStruct struct s -> PSOPStruct struct s
 
@@ -257,7 +266,9 @@ import Debug.Trace
 <$
 -}
 
--- $> prettyTermAndCost mempty $ hello
+-- $> prettyTermAndCost mempty $ matchTestData
+
+-- $> plift $ matchTestData
 
 -- $> prettyTermAndCost mempty $ world
 
@@ -265,11 +276,45 @@ import Debug.Trace
 
 -- $> prettyTermAndCost mempty $ pmatchDataRec @FAZ faz (\(PRec (_x :* _y :* _z :* _)) ->  pconstant (5 :: Integer))
 
-type MyRepr = '[ '[PInteger], '[PByteString], '[PInteger, PInteger], '[PInteger, PInteger]]
-type MyNestedRepr = '[ '[PStruct MyRepr], '[PByteString], '[PInteger, PInteger]]
+type family UnTermRec (struct :: [Type]) :: [S -> Type] where
+  UnTermRec '[] = '[]
+  UnTermRec (Term _ a ': rest) = a ': UnTermRec rest
+
+type family UnTermStruct' (struct :: [[Type]]) :: [[S -> Type]] where
+  UnTermStruct' '[] = '[]
+  UnTermStruct' (x ': rest) = UnTermRec x ': UnTermStruct' rest
+
+type UnTermStruct x = UnTermStruct' (Code (x (forall s. s)))
+
+data MyReprTy s
+  = A (Term s PInteger)
+  | B (Term s PByteString)
+  | C (Term s PInteger) (Term s PInteger)
+  | D (Term s PInteger) (Term s PInteger)
+  deriving stock (GHC.Generic)
+instance SOP.Generic (MyReprTy s)
+
+type MyRepr = UnTermStruct MyReprTy
 
 test :: PStruct MyRepr s
-test = PStruct (SOP (S $ S $ Z ((pconstant 10 :: Term s PInteger) :* (pconstant 12 :: Term s PInteger) :* Nil)))
+test = PStruct $ hcoerce $ from $ D 10 10
+
+testData :: Term s (PDataStruct MyRepr)
+testData = pconDataStruct test
+
+testScott :: Term s (PScottStruct MyRepr)
+testScott = pconScottStruct test
+
+handler :: MyReprTy s -> Term s PInteger
+handler (C _x _y) = 1
+handler (D x y) = x + x + y
+handler _ = 0
+
+matchTestData :: Term s PInteger
+matchTestData = pmatchDataStruct @MyRepr testData (handler . to . hcoerce . unPStruct)
+
+matchTestScott :: Term s PInteger
+matchTestScott = pmatchScottStruct @MyRepr testScott (handler . to . hcoerce . unPStruct)
 
 world :: forall s. Term s PInteger
 world =
@@ -277,23 +322,12 @@ world =
     a :: Term s (PDataSum '[ '["foo" ':= PInteger], '["foo" ':= PByteString], '["foo" ':= PInteger, "pgo" ':= PInteger]])
     a = punsafeCoerce $ pdataStructureAsData $ pconDataStruct test
     handler :: PDataSum _ s -> Term s PInteger
-    handler (PDataSum (Z _x)) = pconstant (1 :: Integer)
-    handler (PDataSum (S (Z _x))) = pconstant (3 :: Integer)
+    handler (PDataSum (Z _x)) = pconstant (2 :: Integer)
+    handler (PDataSum (S (Z _x))) = pconstant (1 :: Integer)
+    handler (PDataSum (S (S (Z _x)))) = pconstant (1 :: Integer)
     handler _ = pconstant (2 :: Integer)
    in
     pmatch a handler
-
-hello :: forall s. Term s PInteger
-hello =
-  let
-    handler :: PStruct MyRepr s -> Term s PInteger
-    handler (PStruct (SOP (Z _x))) = pconstant (2 :: Integer)
-    handler (PStruct (SOP (S (Z _x)))) = pconstant (1 :: Integer)
-    handler (PStruct (SOP (S (S (Z (_x :* _y :* Nil)))))) = 1
-    handler (PStruct (SOP (S (S (S (Z (_x :* _y :* Nil))))))) = 1
-    handler _ = undefined
-   in
-    pmatchDataStruct @MyRepr (pconDataStruct test) handler
 
 type FAZ = '[PInteger, PInteger, PInteger]
 
