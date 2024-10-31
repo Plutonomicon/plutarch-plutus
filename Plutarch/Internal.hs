@@ -146,8 +146,8 @@ hashRawTerm' (RConstant x) = addHashIndex 5 . flip hashUpdate (F.flat x)
 hashRawTerm' (RBuiltin x) = addHashIndex 6 . flip hashUpdate (F.flat x)
 hashRawTerm' RError = addHashIndex 7
 hashRawTerm' (RHoisted (HoistedTerm hash _)) = addHashIndex 8 . flip hashUpdate hash
-hashRawTerm' (RPlaceHolder hash) = addHashIndex 9 . flip hashUpdate hash
-hashRawTerm' (RCompiled code) = addHashIndex 10 . flip hashUpdate (hashUTerm @alg code hashInit)
+hashRawTerm' (RCompiled code) = addHashIndex 9 . flip hashUpdate (hashUTerm @alg code hashInit)
+hashRawTerm' (RPlaceHolder hash) = addHashIndex 10 . flip hashUpdate hash
 
 hashRawTerm :: RawTerm -> Dig
 hashRawTerm t = hashFinalize . hashRawTerm' t $ hashInit
