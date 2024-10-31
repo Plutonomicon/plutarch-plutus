@@ -34,6 +34,7 @@
 * `pconsBS` now takes a `PByte` argument instead of a `PInteger` one
 * `pindexBS` now returns a `PByte` instead of a `PInteger`
 * `pexpModInteger` is now in `Plutarch.Integer`
+* `PMaybeData` no longer uses `PDataRecord`
 
 ## Removed
 
