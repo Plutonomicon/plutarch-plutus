@@ -24,6 +24,7 @@
 * `compileOptimized` in `Plutarch.Internal`, to optimize the generated UPLC
 * `PBitString` and associated functionality for CIP-122 and CIP-123 operations
   on bits, in `Plutarch.BitString`
+* `PEitherData`, a `Data`-encoded counterpart to `PEither`, plus some functions
 * `Positive` type in `Plutarch.Positive` that is Haskell level equivalent of
   `PPositive`
 * `PUnsafeLiftDecl` and `PConstantDecl` instances for `PPositive`
