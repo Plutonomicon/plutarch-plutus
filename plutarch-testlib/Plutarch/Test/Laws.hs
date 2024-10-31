@@ -9,20 +9,20 @@ module Plutarch.Test.Laws (
   checkLedgerProperties,
   checkLedgerPropertiesPCountable,
   checkLedgerPropertiesPEnumerable,
-  ordHaskellEquivalents,
+  checkHaskellOrdEquivalent,
+  checkHaskellNumEquivalent,
+  checkHaskellIntegralEquivalent,
 ) where
 
 import Plutarch.Builtin (pforgetData)
 import Plutarch.Enum (PCountable (psuccessor, psuccessorN), PEnumerable (ppredecessor, ppredecessorN))
 import Plutarch.LedgerApi.V1 qualified as V1
-import Plutarch.Lift (
-  PConstantDecl (PConstanted),
-  PUnsafeLiftDecl (PLifted),
- )
+import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
+import Plutarch.Num (PNum (pabs, pnegate, psignum, (#*), (#+), (#-)))
 import Plutarch.Positive (Positive)
 import Plutarch.Prelude
-import Plutarch.Test.QuickCheck (checkHaskellEquivalent2)
-import Plutarch.Test.Utils (instanceOfType, prettyShow, typeName, typeName')
+import Plutarch.Test.QuickCheck (checkHaskellEquivalent, checkHaskellEquivalent2)
+import Plutarch.Test.Utils (instanceOfType, prettyEquals, prettyShow, typeName, typeName')
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common qualified as Plutus
 import PlutusLedgerApi.V1 qualified as PLA
@@ -31,11 +31,12 @@ import PlutusTx.AssocMap qualified as AssocMap
 import Prettyprinter (Pretty)
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
+  NonZero (getNonZero),
   forAllShrinkShow,
   (=/=),
   (===),
  )
-import Test.Tasty (TestTree, testGroup)
+import Test.Tasty (TestName, TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
 import Type.Reflection (Typeable, typeRep)
 
@@ -127,32 +128,105 @@ checkLedgerPropertiesPEnumerable =
   testGroup (instanceOfType @(S -> Type) @a "PEnumerable") (penumerableLaws @a)
 
 -- | @since WIP
-ordHaskellEquivalents ::
-  forall (haskellInput :: Type).
-  ( Typeable haskellInput
-  , Typeable (PConstanted haskellInput)
-  , Ord haskellInput
-  , haskellInput ~ PLifted (PConstanted haskellInput)
-  , PPartialOrd (PConstanted haskellInput)
-  , PConstantDecl haskellInput
-  , Pretty haskellInput
-  , Arbitrary haskellInput
+checkHaskellOrdEquivalent ::
+  forall (plutarchInput :: S -> Type).
+  ( PUnsafeLiftDecl plutarchInput
+  , Pretty (PLifted plutarchInput)
+  , Arbitrary (PLifted plutarchInput)
+  , Typeable (PLifted plutarchInput)
+  , Ord (PLifted plutarchInput)
+  , Typeable plutarchInput
+  , PPartialOrd plutarchInput
   ) =>
   TestTree
-ordHaskellEquivalents =
+checkHaskellOrdEquivalent =
   testGroup
     ( mconcat
-        [ instanceOfType @Type @haskellInput "Ord"
+        [ instanceOfType @Type @(PLifted plutarchInput) "Ord"
         , " <-> "
-        , instanceOfType @(S -> Type) @(PConstanted haskellInput) "POrd"
+        , instanceOfType @(S -> Type) @plutarchInput "POrd"
         ]
     )
-    [ testProperty "== = #==" $ checkHaskellEquivalent2 ((==) @haskellInput) (plam (#==))
-    , testProperty "< = #<" $ checkHaskellEquivalent2 ((<) @haskellInput) (plam (#<))
-    , testProperty "<= = #<=" $ checkHaskellEquivalent2 ((<=) @haskellInput) (plam (#<=))
+    [ testProperty "== = #==" $ checkHaskellEquivalent2 ((==) @(PLifted plutarchInput)) (plam (#==))
+    , testProperty "< = #<" $ checkHaskellEquivalent2 ((<) @(PLifted plutarchInput)) (plam (#<))
+    , testProperty "<= = #<=" $ checkHaskellEquivalent2 ((<=) @(PLifted plutarchInput)) (plam (#<=))
+    ]
+
+-- | @since WIP
+checkHaskellIntegralEquivalent ::
+  forall (plutarchInput :: S -> Type).
+  ( PUnsafeLiftDecl plutarchInput
+  , Pretty (PLifted plutarchInput)
+  , Arbitrary (PLifted plutarchInput)
+  , Typeable (PLifted plutarchInput)
+  , Integral (PLifted plutarchInput)
+  , Typeable plutarchInput
+  , PIntegral plutarchInput
+  ) =>
+  TestTree
+checkHaskellIntegralEquivalent =
+  testGroup
+    ( mconcat
+        [ instanceOfType @Type @(PLifted plutarchInput) "Integral"
+        , " <-> "
+        , instanceOfType @(S -> Type) @plutarchInput "PIntegral"
+        ]
+    )
+    [ testIntegralEquivalent @plutarchInput "div = pdiv" div pdiv
+    , testIntegralEquivalent @plutarchInput "mod = pmod" mod pmod
+    , testIntegralEquivalent @plutarchInput "quot = pquot" quot pquot
+    , testIntegralEquivalent @plutarchInput "rem = prem" rem prem
+    ]
+
+checkHaskellNumEquivalent ::
+  forall (plutarchInput :: S -> Type).
+  ( PUnsafeLiftDecl plutarchInput
+  , Pretty (PLifted plutarchInput)
+  , Arbitrary (PLifted plutarchInput)
+  , Eq (PLifted plutarchInput)
+  , Typeable (PLifted plutarchInput)
+  , Num (PLifted plutarchInput)
+  , Typeable plutarchInput
+  , PNum plutarchInput
+  ) =>
+  TestTree
+checkHaskellNumEquivalent =
+  testGroup
+    ( mconcat
+        [ instanceOfType @Type @(PLifted plutarchInput) "Num"
+        , " <-> "
+        , instanceOfType @(S -> Type) @plutarchInput "PNum"
+        ]
+    )
+    [ testProperty "+ = #+" $ checkHaskellEquivalent2 @plutarchInput (+) (plam (#+))
+    , testProperty "- = #-" $ checkHaskellEquivalent2 @plutarchInput (-) (plam (#-))
+    , testProperty "* = #*" $ checkHaskellEquivalent2 @plutarchInput (*) (plam (#*))
+    , testProperty "negate = pnegate" $ checkHaskellEquivalent @plutarchInput negate pnegate
+    , testProperty "abs = pabs" $ checkHaskellEquivalent @plutarchInput abs pabs
+    , testProperty "signum = psignum" $ checkHaskellEquivalent @plutarchInput signum psignum
     ]
 
 -- Internal
+
+-- | @since WIP
+testIntegralEquivalent ::
+  forall (plutarchInput :: S -> Type).
+  ( Arbitrary (PLifted plutarchInput)
+  , Pretty (PLifted plutarchInput)
+  , Eq (PLifted plutarchInput)
+  , PUnsafeLiftDecl plutarchInput
+  , Num (PLifted plutarchInput)
+  ) =>
+  TestName ->
+  (PLifted plutarchInput -> PLifted plutarchInput -> PLifted plutarchInput) ->
+  ClosedTerm (plutarchInput :--> plutarchInput :--> plutarchInput) ->
+  TestTree
+testIntegralEquivalent name goHaskell goPlutarch =
+  testProperty name $
+    forAllShrinkShow arbitrary shrink prettyShow $
+      \(input1 :: PLifted plutarchInput, input2 :: NonZero (PLifted plutarchInput)) ->
+        goHaskell input1 (getNonZero input2)
+          `prettyEquals` plift (goPlutarch # pconstant input1 # pconstant (getNonZero input2))
 
 pcountableLaws ::
   forall (a :: S -> Type).
