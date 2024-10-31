@@ -3,6 +3,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-unused-imports #-}
+{-# OPTIONS_GHC -Wno-unused-local-binds #-}
 -- This needs to go later
 {-# OPTIONS_GHC -Wwarn #-}
 
@@ -21,6 +22,7 @@ import Data.Kind (Type)
 import Data.List (groupBy, sortBy)
 import Data.Proxy
 import Data.Text qualified as Text
+import Data.Void
 import GHC.Generics qualified as GHC
 import Plutarch
 import Plutarch.Builtin
@@ -238,9 +240,49 @@ data PScottRec (struct :: [S -> Type]) (s :: S) where
   PScottRec :: All PScottRepresentable struct => PRec struct s -> PScottRec struct s
 
 class PScottRepresentable (a :: S -> Type)
+instance PScottRepresentable a
+
+type family ScottRecTy' r (struct :: [S -> Type]) where
+  ScottRecTy' r '[] = r
+  ScottRecTy' r (x ': xs) = x :--> ScottRecTy' r xs
+
+type family ScottStructTy' r (structure :: [[S -> Type]]) where
+  ScottStructTy' r '[] = r
+  ScottStructTy' r (x ': xs) = ScottRecTy' r x :--> ScottStructTy' r xs
+
+type ScottRecTy s r x = Term s (ScottRecTy' r x :--> r)
+
+-- $> prettyTermAndCost mempty $ pconScottRec (PRec Nil)
+
+newtype CSR r s struct = CSR {unCSR :: NP (Term s) struct -> Term s (ScottRecTy' r struct) -> Term s r}
+
+pconScottRec ::
+  forall (struct :: [S -> Type]) (s :: S).
+  All PScottRepresentable struct =>
+  PRec struct s ->
+  Term s (PScottRec struct)
+pconScottRec (PRec xs) =
+  let
+    go :: forall r s y ys. CSR r s ys -> CSR r s (y ': ys)
+    go (CSR rest) = CSR $ \np f ->
+      case np of d :* ds -> rest ds (f # d)
+
+    foo :: ScottRecTy s _ struct
+    foo = plam $ unCSR (para_SList (CSR $ const id) go) xs
+   in
+    punsafeCoerce foo
+
+-- -- $> :k! ScottRecTy r '[PInteger, PByteString,a ]
+
+newtype SR s struct = SR {unSr :: Integer -> (PStruct struct s -> Term s (PScottStruct struct))}
 
 pconScottStruct :: PStruct struct s -> Term s (PScottStruct struct)
-pconScottStruct = undefined
+pconScottStruct (PStruct xs) =
+  undefined
+    let
+      idx = toInteger $ hindex xs
+     in
+      undefined
 
 pmatchScottStruct :: forall struct r s. Term s (PScottStruct struct) -> (PStruct struct s -> Term s r) -> Term s r
 pmatchScottStruct = undefined
@@ -263,18 +305,30 @@ import Prelude
 import Generics.SOP
 import Plutarch.Prelude
 import Debug.Trace
+import Plutarch.Maybe
+import Plutarch.Internal.Generic
 <$
 -}
+
+ccc :: PMaybe PInteger s -> Term s PInteger
+ccc (PJust a) = a + 2
+ccc _ = 1
+
+-- $> prettyTermAndCost mempty $ baz
+
+-- $> prettyTermAndCost mempty $ pjust #$ pconstant @PInteger 5
+
+-- $> compile mempty $ flip pmatch ccc $ pjust #$ pconstant @PInteger 5
 
 -- $> prettyTermAndCost mempty $ matchTestData
 
 -- $> plift $ matchTestData
 
--- $> prettyTermAndCost mempty $ world
+-- -- $> prettyTermAndCost mempty $ world
 
--- $> prettyTermAndCost mempty $ pmatchDataRec @FAZ faz (\(PRec (x :* y :* _z :* _)) ->  x + x + y)
+-- -- $> prettyTermAndCost mempty $ pmatchDataRec @FAZ faz (\(PRec (x :* y :* _z :* _)) ->  x + x + y)
 
--- $> prettyTermAndCost mempty $ pmatchDataRec @FAZ faz (\(PRec (_x :* _y :* _z :* _)) ->  pconstant (5 :: Integer))
+-- -- $> prettyTermAndCost mempty $ pmatchDataRec @FAZ faz (\(PRec (_x :* _y :* _z :* _)) ->  pconstant (5 :: Integer))
 
 type family UnTermRec (struct :: [Type]) :: [S -> Type] where
   UnTermRec '[] = '[]
@@ -284,37 +338,46 @@ type family UnTermStruct' (struct :: [[Type]]) :: [[S -> Type]] where
   UnTermStruct' '[] = '[]
   UnTermStruct' (x ': rest) = UnTermRec x ': UnTermStruct' rest
 
-type UnTermStruct x = UnTermStruct' (Code (x (forall s. s)))
+type UnTermStruct x = UnTermStruct' (Code x)
 
-data MyReprTy s
-  = A (Term s PInteger)
-  | B (Term s PByteString)
+data MyPMaybe s a
+  = MyJust (Term s a)
+  | MyNothing
   | C (Term s PInteger) (Term s PInteger)
   | D (Term s PInteger) (Term s PInteger)
   deriving stock (GHC.Generic)
-instance SOP.Generic (MyReprTy s)
+instance SOP.Generic (MyPMaybe s a)
 
-type MyRepr = UnTermStruct MyReprTy
+type S' = forall s. s
 
-test :: PStruct MyRepr s
-test = PStruct $ hcoerce $ from $ D 10 10
+type MyPMaybeRepr a = UnTermStruct (MyPMaybe S' a)
 
-testData :: Term s (PDataStruct MyRepr)
+test :: PStruct (MyPMaybeRepr PInteger) s
+test = PStruct $ hcoerce $ from $ MyJust (10 :: Term s PInteger)
+
+testData :: Term s (PDataStruct (MyPMaybeRepr PInteger))
 testData = pconDataStruct test
 
-testScott :: Term s (PScottStruct MyRepr)
+testScott :: Term s (PScottStruct (MyPMaybeRepr PInteger))
 testScott = pconScottStruct test
 
-handler :: MyReprTy s -> Term s PInteger
-handler (C _x _y) = 1
-handler (D x y) = x + x + y
-handler _ = 0
+handler :: MyPMaybe s PInteger -> Term s PInteger
+handler (MyJust x) = 1 + x
+handler MyNothing = 0
+handler _ = 2
 
 matchTestData :: Term s PInteger
-matchTestData = pmatchDataStruct @MyRepr testData (handler . to . hcoerce . unPStruct)
+matchTestData = pmatchDataStruct @(MyPMaybeRepr PInteger) testData (handler . to . hcoerce . unPStruct)
 
 matchTestScott :: Term s PInteger
-matchTestScott = pmatchScottStruct @MyRepr testScott (handler . to . hcoerce . unPStruct)
+matchTestScott = pmatchScottStruct @(MyPMaybeRepr PInteger) testScott (handler . to . hcoerce . unPStruct)
+
+conversion ::
+  forall {struct :: [[S -> Type]]} (s :: S).
+  (All SListI struct, All2 PIsData struct) =>
+  Term s (PScottStruct struct) ->
+  Term s (PDataStruct struct)
+conversion x = pmatchScottStruct x pconDataStruct
 
 world :: forall s. Term s PInteger
 world =
@@ -333,3 +396,9 @@ type FAZ = '[PInteger, PInteger, PInteger]
 
 faz :: Term s (PDataRec FAZ)
 faz = pconDataRec $ PRec (pconstant (1 :: Integer) :* pconstant (2 :: Integer) :* pconstant (4 :: Integer) :* Nil)
+
+baz' :: Term s (PScottRec FAZ)
+baz' = pconScottRec $ PRec (pconstant (1 :: Integer) :* pconstant (2 :: Integer) :* pconstant (4 :: Integer) :* Nil)
+
+baz :: Term s (PScottRec '[])
+baz = pconScottRec $ PRec Nil
