@@ -1,0 +1,30 @@
+erroneous.(String, Integer) /= (String, String) {"exBudgetCPU":1073502,"exBudgetMemory":612,"scriptSizeBytes":123}
+erroneous.[String] /= [Integer] {"exBudgetCPU":471493,"exBudgetMemory":388,"scriptSizeBytes":101}
+erroneous.A { test := Integer, test2 := Integer } /= { test := String, test2 := Integer } {"exBudgetCPU":334985,"exBudgetMemory":356,"scriptSizeBytes":153}
+erroneous.PDataSum constr 2 {"exBudgetCPU":496455,"exBudgetMemory":230,"scriptSizeBytes":222}
+erroneous.PDataSum wrong record type {"exBudgetCPU":624837,"exBudgetMemory":232,"scriptSizeBytes":282}
+erroneous.[ByteString] (with length == 2) /= PRational {"exBudgetCPU":1645212,"exBudgetMemory":486,"scriptSizeBytes":510}
+erroneous.[Integer] (with length == 0) /= PRational {"exBudgetCPU":141548,"exBudgetMemory":196,"scriptSizeBytes":472}
+erroneous.[Integer] (with length == 3) /= PRational {"exBudgetCPU":1650812,"exBudgetMemory":422,"scriptSizeBytes":517}
+erroneous.[Integer] (with length == 2, with 0 denominator) /= PRational {"exBudgetCPU":8524073,"exBudgetMemory":20520,"scriptSizeBytes":503}
+working.(String, String) == (String, String) {"exBudgetCPU":4159141,"exBudgetMemory":14428,"scriptSizeBytes":123}
+working.[String] == [String] {"exBudgetCPU":3917533,"exBudgetMemory":16904,"scriptSizeBytes":114}
+working.[Integer] (with length == 2) == PRational {"exBudgetCPU":6332850,"exBudgetMemory":23384,"scriptSizeBytes":652}
+working.A { test := Integer, test2 := Integer } == { test := Integer, test2 := Integer } {"exBudgetCPU":2420489,"exBudgetMemory":9876,"scriptSizeBytes":147}
+working.A { test := Integer, test2 := Integer } == [Integer] {"exBudgetCPU":2420489,"exBudgetMemory":9876,"scriptSizeBytes":147}
+working.A { test := String, test2 := Integer } == { test := String, test2 := Integer } {"exBudgetCPU":2459655,"exBudgetMemory":10176,"scriptSizeBytes":153}
+working.PDataSum constr 0 {"exBudgetCPU":2588463,"exBudgetMemory":10722,"scriptSizeBytes":282}
+working.PDataSum constr 1 {"exBudgetCPU":2908845,"exBudgetMemory":11924,"scriptSizeBytes":282}
+working.recover PWrapInt {"exBudgetCPU":232476,"exBudgetMemory":1065,"scriptSizeBytes":15}
+recovering a record partially vs completely.partially {"exBudgetCPU":2359513,"exBudgetMemory":9644,"scriptSizeBytes":149}
+recovering a record partially vs completely.completely {"exBudgetCPU":2459655,"exBudgetMemory":10176,"scriptSizeBytes":153}
+removing the data wrapper.erroneous.(String, Integer) /= (String, String) {"exBudgetCPU":1077016,"exBudgetMemory":612,"scriptSizeBytes":117}
+removing the data wrapper.erroneous.[String] /= [Integer] {"exBudgetCPU":463863,"exBudgetMemory":388,"scriptSizeBytes":114}
+removing the data wrapper.working.(String, String) == (String, String) {"exBudgetCPU":4159141,"exBudgetMemory":14428,"scriptSizeBytes":123}
+removing the data wrapper.working.[String] == [String] {"exBudgetCPU":3917533,"exBudgetMemory":16904,"scriptSizeBytes":114}
+removing the data wrapper.partial checks.check whole structure {"exBudgetCPU":138589279,"exBudgetMemory":531268,"scriptSizeBytes":1524}
+removing the data wrapper.partial checks.check structure partly {"exBudgetCPU":39715889,"exBudgetMemory":145544,"scriptSizeBytes":1494}
+removing the data wrapper.recovering a nested record.succeeds {"exBudgetCPU":2931778,"exBudgetMemory":12008,"scriptSizeBytes":167}
+removing the data wrapper.recovering a nested record.fails {"exBudgetCPU":466135,"exBudgetMemory":420,"scriptSizeBytes":167}
+removing the data wrapper.recovering a nested record.sample usage contains the right value {"exBudgetCPU":2596384,"exBudgetMemory":10849,"scriptSizeBytes":157}
+example2.recovering a record succeeds {"exBudgetCPU":3599177,"exBudgetMemory":14942,"scriptSizeBytes":366}

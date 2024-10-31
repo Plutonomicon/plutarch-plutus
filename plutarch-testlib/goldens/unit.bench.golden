@@ -1,0 +1,5 @@
+pcon {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":6}
+pmatch {"exBudgetCPU":64100,"exBudgetMemory":500,"scriptSizeBytes":8}
+compare.== {"exBudgetCPU":112100,"exBudgetMemory":800,"scriptSizeBytes":10}
+compare.< {"exBudgetCPU":112100,"exBudgetMemory":800,"scriptSizeBytes":10}
+compare.<= {"exBudgetCPU":112100,"exBudgetMemory":800,"scriptSizeBytes":10}

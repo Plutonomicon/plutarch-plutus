@@ -1,15 +1,17 @@
 {-# LANGUAGE PatternSynonyms #-}
 
-module Plutarch.Pretty (prettyTerm, prettyTerm', prettyScript) where
+module Plutarch.Pretty (prettyTerm, prettyTermAndCost, prettyTerm', prettyScript) where
 
 import Control.Monad.Reader (ReaderT (runReaderT))
 import Control.Monad.ST (runST)
 import Control.Monad.State (MonadState (get, put), StateT (runStateT), modify, modify')
+import Data.ByteString.Short qualified as SBS
 import Data.Foldable (fold)
 import Data.Functor (($>), (<&>))
 import Data.Text (Text)
 import Data.Text qualified as Txt
 import Data.Traversable (for)
+import Plutarch.Evaluate (evalTerm)
 import Plutarch.Internal.Term (ClosedTerm, Config, compile)
 import Plutarch.Pretty.Internal.BuiltinConstant (prettyConstant)
 import Plutarch.Pretty.Internal.Config (indentWidth)
@@ -34,6 +36,8 @@ import Plutarch.Pretty.Internal.Types (
  )
 import Plutarch.Script (Script (unScript))
 import PlutusCore qualified as PLC
+import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
+import PlutusLedgerApi.Common (serialiseUPLC)
 import Prettyprinter ((<+>))
 import Prettyprinter qualified as PP
 import System.Random.Stateful (mkStdGen, newSTGenM)
@@ -210,6 +214,24 @@ To achieve better prettification, certain AST structures are given special handl
 -}
 prettyTerm :: Config -> ClosedTerm a -> PP.Doc ()
 prettyTerm conf x = either (error . Txt.unpack) id $ prettyTerm' conf x
+
+{- | Same as `prettyTerm` but also includes the execution budget and script size
+
+@since WIP
+-}
+prettyTermAndCost :: forall a. Config -> ClosedTerm a -> PP.Doc ()
+prettyTermAndCost conf x =
+  let
+    pp = either (error . Txt.unpack) id $ prettyTerm' conf x
+    (_, ExBudget cpu mem, _) = either (error . Txt.unpack) id $ evalTerm @a conf x
+    scriptSize =
+      SBS.length $
+        serialiseUPLC $
+          unScript $
+            either (error . Txt.unpack) id $
+              compile conf x
+   in
+    pp <> "\n" <> "CPU: " <> PP.pretty cpu <> "\nMEM: " <> PP.pretty mem <> "\nSIZE: " <> PP.pretty scriptSize
 
 -- | Non-partial 'prettyTerm'.
 prettyTerm' :: Config -> ClosedTerm p -> Either Text (PP.Doc ())
