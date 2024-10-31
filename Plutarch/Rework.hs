@@ -18,13 +18,16 @@ import GHC.TypeLits
 
 import Data.Functor.Compose
 
+import Control.Arrow
 import Control.Monad.Reader
+import Data.Coerce
 import Data.Kind (Type)
 import Data.List (groupBy, sortBy)
 import Data.Proxy
 import Data.Text qualified as Text
 import Data.Void
 import GHC.Generics qualified as GHC
+import GHC.Word (Word64)
 import Plutarch
 import Plutarch.Builtin
 import Plutarch.DataRepr.Internal
@@ -78,18 +81,21 @@ createPlaceholder t = do
   (hash :: Dig) <- hashOpenTerm t
   pure (hash, Term $ const $ pure $ TermResult (RPlaceHolder hash) [])
 
+-- This needs more thoughts
 pletSmart :: Term s a -> (Term s a -> Term s b) -> Term s b
-pletSmart t f = unTermCont $ do
-  hasError <- hasErrorTerm t
-  (hash, placeholder) <- createPlaceholder t
+pletSmart = plet
 
-  occurrences <-
-    findOccurrence hash $ f placeholder
+-- unTermCont $ do
+-- hasError <- hasErrorTerm t
+-- (hash, placeholder) <- createPlaceholder t
 
-  pure $ case occurrences of
-    0 -> if hasError then plet t f else f t
-    1 -> f t
-    _ -> plet t f
+-- occurrences <-
+--   findOccurrence hash $ f placeholder
+
+-- pure $ case occurrences of
+--   0 -> if hasError then plet t f else f t
+--   1 -> f t
+--   _ -> plet t f
 
 pletSmartC :: Term s a -> TermCont s (Term s a)
 pletSmartC = tcont . pletSmart
@@ -311,8 +317,6 @@ pconScottRec ::
   Term s (PScottRec struct)
 pconScottRec (PRec xs) = punsafeCoerce $ plam $ flip pappL' xs
 
-newtype SMR = SMR {unMSR :: ()}
-
 pmatchScottRec ::
   forall (struct :: [S -> Type]) (r :: S -> Type) (s :: S).
   All PScottRepresentable struct =>
@@ -324,8 +328,6 @@ pmatchScottRec xs f = punsafeCoerce xs # plamL' (f . PRec)
 ---------------------------
 
 -- PScottStruct struct <~> Term s (ScottFn (ScottList struct r)) :--> Term s r)
-
--- $> :k! ScottFn (ScottList '[ '[PInteger, PInteger], '[], '[PInteger]] r) r
 
 newtype GPCon' s r as = GPCon' {unGPCon' :: NP (Term s) (ScottList as r) -> PStruct as s -> Term s r}
 
@@ -362,6 +364,8 @@ gpmatch' = unGPMatch' $ cpara_SList (Proxy @SListI) (GPMatch' (const Nil)) \(GPM
 pmatchScottStruct :: forall struct r s. (SListI (ScottList struct r), SListI2 struct) => Term s (PScottStruct struct) -> (PStruct struct s -> Term s r) -> Term s r
 pmatchScottStruct xs f = pappL (punsafeCoerce xs) (gpmatch' f)
 
+----------------------------------------------------------------------
+
 data PSOPStruct (struct :: [[S -> Type]]) (s :: S) where
   PSOPStruct :: All2 PSOPRepresentable struct => PStruct struct s -> PSOPStruct struct s
 
@@ -369,6 +373,89 @@ data PSOPRec (struct :: [S -> Type]) (s :: S) where
   PSOPRec :: All PSOPRepresentable struct => PRec struct s -> PSOPRec struct s
 
 class PSOPRepresentable (a :: S -> Type)
+
+type family PHandlerTy r (struct :: [S -> Type]) :: S -> Type where
+  PHandlerTy r '[] = r
+  PHandlerTy r (x ': xs) = x :--> PHandlerTy r xs
+
+type family PCaseTy r (struct :: [[S -> Type]]) :: [S -> Type] where
+  PCaseTy _ '[] = '[]
+  PCaseTy r (x ': xs) = PHandlerTy r x ': PCaseTy r xs
+
+pconSOPRec ::
+  forall (struct :: [S -> Type]) (s :: S). SListI struct => PRec struct s -> Term s (PSOPRec struct)
+pconSOPRec (PRec xs) = Term $ \i -> do
+  ts <- hcollapse <$> htraverse' (\x -> K . (getTerm &&& getDeps) <$> asRawTerm x i) xs
+  let
+    term = RConstr 0 $ fst <$> ts
+    deps = mconcat $ snd <$> ts
+  pure $ TermResult term deps
+
+newtype MSR s r struct = MSR {unMSR :: (PRec struct s -> Term s r) -> Term s (PHandlerTy r struct)}
+
+sopHandler ::
+  forall (struct :: [S -> Type]) (r :: S -> Type) (s :: S). SListI struct => (PRec struct s -> Term s r) -> Term s (PHandlerTy r struct)
+sopHandler f =
+  let
+    go :: MSR s r ys -> MSR s r (y ': ys)
+    go (MSR rest) = MSR $ \f ->
+      plam $ \x -> rest $ \(PRec rest') -> f $ PRec (x :* rest')
+
+    handler :: Term s (PHandlerTy r struct)
+    handler = unMSR (para_SList (MSR $ \f -> f $ PRec Nil) go) f
+   in
+    handler
+
+pmatchSOPRec ::
+  forall (struct :: [S -> Type]) (r :: S -> Type) (s :: S). SListI struct => Term s (PSOPRec struct) -> (PRec struct s -> Term s r) -> Term s r
+pmatchSOPRec xs f = Term $ \i -> do
+  (term, deps) <- (getTerm &&& getDeps) <$> asRawTerm xs i
+  (handlerTerm, handlerDeps) <- (getTerm &&& getDeps) <$> asRawTerm (sopHandler f) i
+  pure $ TermResult (RCase term (pure handlerTerm)) (deps <> handlerDeps)
+
+pconSOPStruct ::
+  forall (struct :: [[S -> Type]]) (s :: S). SListI2 struct => PStruct struct s -> Term s (PSOPStruct struct)
+pconSOPStruct (PStruct xs) = Term $ \i -> do
+  ts <- hcollapse <$> htraverse' (\x -> K . (getTerm &&& getDeps) <$> asRawTerm x i) xs
+  let
+    idx = hindex xs
+    term = RConstr (fromIntegral idx) $ fst <$> ts
+    deps = mconcat $ snd <$> ts
+  pure $ TermResult term deps
+
+newtype MSS s r struct = MSS {unMSS :: (PStruct struct s -> Term s r) -> NP (Term s) (PCaseTy r struct)}
+
+pmatchSOPStruct ::
+  forall (struct :: [[S -> Type]]) (r :: S -> Type) (s :: S).
+  (SListI2 struct, SListI (PCaseTy r struct)) =>
+  Term s (PSOPStruct struct) ->
+  (PStruct struct s -> Term s r) ->
+  Term s r
+pmatchSOPStruct xs h = Term $ \i -> do
+  (term, deps) <- (getTerm &&& getDeps) <$> asRawTerm xs i
+
+  let
+    go :: forall y ys r s. SListI y => MSS s r ys -> MSS s r (y ': ys)
+    go (MSS rest) = MSS $ \f ->
+      let
+        handler = sopHandler (\(PRec x) -> f $ PStruct $ SOP $ Z x)
+        f' (PStruct (SOP x)) = f $ PStruct $ SOP $ S x
+       in
+        handler :* rest f'
+
+    handlers' :: NP (Term s) (PCaseTy r struct)
+    handlers' = unMSS (cpara_SList (Proxy @SListI) (MSS $ const Nil) go) h
+
+  handlers <- hcollapse <$> htraverse' (\x -> K . (getTerm &&& getDeps) <$> asRawTerm x i) handlers'
+  let
+    handlerTerms = fst <$> handlers
+    handlerDeps = mconcat $ snd <$> handlers
+
+  pure $ TermResult (RCase term handlerTerms) (deps <> handlerDeps)
+
+-- $> prettyTermAndCost mempty $ matchTestSOP
+
+-- $> plift $ matchTestSOP
 
 ----------------------------------------------------------------------
 
@@ -384,10 +471,6 @@ import Plutarch.Maybe
 import Plutarch.Internal.Generic
 <$
 -}
-
-ccc :: PMaybe PInteger s -> Term s PInteger
-ccc (PJust a) = a + 2
-ccc _ = 1
 
 -- -- $> plift $ bazMatch
 --
@@ -422,7 +505,8 @@ data MyPMaybe s a
   | MyNothing
   | C (Term s PInteger) (Term s PInteger)
   | D (Term s PInteger) (Term s PInteger)
-  | E
+  | E (Term s PInteger) (Term s PBool)
+  | F
   deriving stock (GHC.Generic)
 instance SOP.Generic (MyPMaybe s a)
 
@@ -431,7 +515,7 @@ type S' = forall s. s
 type MyPMaybeRepr a = UnTermStruct (MyPMaybe S' a)
 
 test :: PStruct (MyPMaybeRepr PInteger) s
-test = PStruct $ hcoerce $ from $ MyJust (10 :: Term s PInteger)
+test = PStruct $ hcoerce $ from $ MyJust (10 :: Term s PInteger) -- (pconstant False)
 
 testData :: Term s (PDataStruct (MyPMaybeRepr PInteger))
 testData = pconDataStruct test
@@ -439,9 +523,13 @@ testData = pconDataStruct test
 testScott :: Term s (PScottStruct (MyPMaybeRepr PInteger))
 testScott = pconScottStruct test
 
+testSOP :: Term s (PSOPStruct (MyPMaybeRepr PInteger))
+testSOP = pconSOPStruct test
+
 handler :: MyPMaybe s PInteger -> Term s PInteger
 handler (MyJust x) = 1 + x
-handler MyNothing = 0
+handler MyNothing = 123
+handler (C x y) = x + y + x
 handler _ = perror
 
 matchTestData :: Term s PInteger
@@ -449,6 +537,9 @@ matchTestData = pmatchDataStruct @(MyPMaybeRepr PInteger) testData (handler . to
 
 matchTestScott :: Term s PInteger
 matchTestScott = pmatchScottStruct @(MyPMaybeRepr PInteger) testScott (handler . to . hcoerce . unPStruct)
+
+matchTestSOP :: Term s PInteger
+matchTestSOP = pmatchSOPStruct @(MyPMaybeRepr PInteger) testSOP (handler . to . hcoerce . unPStruct)
 
 conversion ::
   forall {struct :: [[S -> Type]]} (s :: S).
@@ -483,6 +574,12 @@ baz' = pconScottRec $ PRec Nil
 
 baz :: Term s (PScottRec FAZ)
 baz = pconScottRec $ PRec (pconstant (1 :: Integer) :* pconstant (2 :: Integer) :* pconstant (4 :: Integer) :* Nil)
+
+sopRec :: Term s (PSOPRec FAZ)
+sopRec = pconSOPRec $ PRec (pconstant (1 :: Integer) :* pconstant (2 :: Integer) :* pconstant (4 :: Integer) :* Nil)
+
+sopMatch :: Term s PInteger
+sopMatch = pmatchSOPRec sopRec (\(PRec (x :* y :* z :* Nil)) -> x + x + y + z)
 
 bazMatch' :: Term s PInteger
 bazMatch' = pmatchScottRec baz' $ const 1

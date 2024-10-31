@@ -150,6 +150,7 @@ library
     , QuickCheck
     , random
     , sop-core
+    , vector
 
 test-suite tests
   import:         c
