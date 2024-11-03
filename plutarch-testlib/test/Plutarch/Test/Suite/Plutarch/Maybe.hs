@@ -1,8 +1,8 @@
 module Plutarch.Test.Suite.Plutarch.Maybe (tests) where
 
-import Plutarch (pcon)
 import Plutarch.Internal.Builtin (PBool (PFalse, PTrue), PInteger)
 import Plutarch.Internal.Eq ((#==))
+import Plutarch.Internal.PlutusType (pcon)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Test.Golden (goldenEvalEqual, goldenGroup, plutarchGolden)
 import Test.Tasty (TestTree, testGroup)

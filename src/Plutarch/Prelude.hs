@@ -203,7 +203,6 @@ import Prelude ()
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import GHC.Records (getField)
-import Plutarch
 import Plutarch.Builtin
 import Plutarch.ByteString
 import Plutarch.Crypto
@@ -211,8 +210,13 @@ import Plutarch.DataRepr
 import Plutarch.Either
 import Plutarch.Internal.Builtin
 import Plutarch.Internal.Eq
+import Plutarch.Internal.Newtype
 import Plutarch.Internal.Numeric
 import Plutarch.Internal.Ord
+import Plutarch.Internal.PlutusType
+import Plutarch.Internal.Quantification
+import Plutarch.Internal.ScottEncoding
+import Plutarch.Internal.Term
 import Plutarch.Lift
 import Plutarch.List
 import Plutarch.Maybe

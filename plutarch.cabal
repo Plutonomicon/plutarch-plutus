@@ -72,7 +72,6 @@ common c
 library
   import:          c
   exposed-modules:
-    Plutarch
     Plutarch.BitString
     Plutarch.BLS
     Plutarch.Builtin

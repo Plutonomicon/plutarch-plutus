@@ -16,15 +16,14 @@ module Plutarch.Test.Laws (
 
 import Plutarch.Builtin (pforgetData)
 import Plutarch.Enum (PCountable (psuccessor, psuccessorN), PEnumerable (ppredecessor, ppredecessorN))
+import Plutarch.Internal.Numeric (PNum (pabs, pnegate, psignum, (#*), (#+), (#-)))
 import Plutarch.Internal.Term (punsafeCoerce)
 import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
-import Plutarch.Num (PNum (pabs, pnegate, psignum, (#*), (#+), (#-)))
 import Plutarch.Positive (Positive)
 import Plutarch.Prelude
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent, checkHaskellEquivalent2)
 import Plutarch.Test.Utils (instanceOfType, prettyEquals, prettyShow, typeName, typeName')
-import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common qualified as Plutus
 import PlutusLedgerApi.V1 qualified as PLA
 import PlutusLedgerApi.V1.Orphans ()

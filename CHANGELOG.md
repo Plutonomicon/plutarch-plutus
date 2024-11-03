@@ -57,6 +57,7 @@
 * `Plutarch.Bool`, as it no longer contained anything useful
 * `Plutarch.Num`, `Plutarch.Integer`, as they were unified into a new module
 * `Plutarch.Unsafe`, as it no longer contained anything useful
+* `Plutarch` module, as it was generally useless
 
 ### Fixed
 

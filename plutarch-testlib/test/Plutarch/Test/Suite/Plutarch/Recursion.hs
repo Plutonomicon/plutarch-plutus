@@ -1,13 +1,13 @@
 module Plutarch.Test.Suite.Plutarch.Recursion (tests) where
 
-import Prelude hiding (succ)
-
-import Plutarch
-import Plutarch.Internal.Builtin (PInteger, pif)
+import Plutarch.Internal.Builtin (PInteger, pfix, pif, plam)
 import Plutarch.Internal.Eq ((#==))
+import Plutarch.Internal.Numeric ()
+import Plutarch.Internal.Term (Term, (#), (#$), (:-->))
 import Plutarch.Lift (pconstant)
 import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)
 import Test.Tasty (TestTree, testGroup)
+import Prelude hiding (succ)
 
 tests :: TestTree
 tests =

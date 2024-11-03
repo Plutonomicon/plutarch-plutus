@@ -7,7 +7,7 @@ module Plutarch.Docs.Run (applyArguments, evalT, evalSerialize, evalWithArgsT, e
 import Data.Bifunctor (first)
 import Data.ByteString.Short (ShortByteString)
 import Data.Text (Text, pack)
-import Plutarch (ClosedTerm, compile)
+import Plutarch.Internal.Term (ClosedTerm, compile)
 import Plutarch.Script (Script (unScript), serialiseScript)
 import Plutarch.Evaluate (evalScript, applyArguments)
 import PlutusLedgerApi.V1 (Data, ExBudget)

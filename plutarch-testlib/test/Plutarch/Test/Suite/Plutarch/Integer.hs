@@ -1,6 +1,5 @@
 module Plutarch.Test.Suite.Plutarch.Integer (tests) where
 
-import Plutarch
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkLedgerPropertiesPCountable, checkLedgerPropertiesPEnumerable)
