@@ -41,6 +41,7 @@
 * `ptrace'` is now `pbuiltinTrace`
 * `pencodeUtf8` and `pdecodeUtf8` are now `pbuiltinEncodeUtf8` and
   `pbuiltinDecodeUtf8`
+* `PMaybeData` no longer uses `PDataRecord`
 
 ## Removed
 

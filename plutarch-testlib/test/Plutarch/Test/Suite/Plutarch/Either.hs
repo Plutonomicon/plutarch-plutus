@@ -1,7 +1,11 @@
 module Plutarch.Test.Suite.Plutarch.Either (tests) where
 
+import Plutarch.Either (PEitherData)
+import Plutarch.LedgerApi.V1 (PPosixTime)
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEvalEqual, goldenGroup, plutarchGolden)
+import Plutarch.Test.Laws (checkLedgerProperties)
+import Plutarch.TryFrom ()
 import Test.Tasty (TestTree, testGroup)
 
 tests :: TestTree
@@ -25,5 +29,9 @@ tests =
                 , goldenEvalEqual "right-right" (pcon @(PEither PInteger PInteger) (PRight 24) #== pcon (PRight 42)) (pcon PFalse)
                 ]
             ]
+        ]
+    , testGroup
+        "PEitherData"
+        [ checkLedgerProperties @(PEitherData PPosixTime PPosixTime)
         ]
     ]

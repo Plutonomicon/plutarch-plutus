@@ -1,6 +1,5 @@
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE ViewPatterns #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 {- | Useful tools that aren't part of the Plutarch API per se, but get used in
@@ -33,7 +32,12 @@ module Plutarch.LedgerApi.Utils (
 ) where
 
 import Data.Bifunctor (first)
-import Plutarch.Builtin (pasConstr, pforgetData)
+import Plutarch.Builtin (
+  PIsData (pdataImpl, pfromDataImpl),
+  pasConstr,
+  pconstrBuiltin,
+  pforgetData,
+ )
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
@@ -100,28 +104,43 @@ newtype Mret (a :: S -> Type) (s :: S) = Mret (Term s a)
       Generic
     )
 
--- | @since 2.0.0
+-- | @since WIP
 data PMaybeData (a :: S -> Type) (s :: S)
-  = PDJust (Term s (PDataRecord '["_0" ':= a]))
-  | PDNothing (Term s (PDataRecord '[]))
+  = PDJust (Term s (PAsData a))
+  | PDNothing
   deriving stock
     ( -- | @since 2.0.0
       Generic
     )
   deriving anyclass
     ( -- | @since 2.0.0
-      PlutusType
-    , -- | @since 2.0.0
-      PIsData
-    , -- | @since 2.0.0
       PEq
     , -- | @since 2.0.0
       PShow
     )
 
--- | @since 2.0.0
-instance DerivePlutusType (PMaybeData a) where
-  type DPTStrat _ = PlutusTypeData
+-- | @since WIP
+instance PlutusType (PMaybeData a) where
+  type PInner (PMaybeData a) = PData
+  {-# INLINEABLE pcon' #-}
+  pcon' = \case
+    PDJust t ->
+      pforgetData $ pconstrBuiltin # 0 #$ pcons # pforgetData t # pnil
+    PDNothing ->
+      pforgetData $ pconstrBuiltin # 1 # pnil
+  {-# INLINEABLE pmatch' #-}
+  pmatch' t f = plet (pasConstr # t) $ \asConstr ->
+    pif
+      ((pfstBuiltin # asConstr) #== 1)
+      (f PDNothing)
+      (f . PDJust . punsafeCoerce $ phead #$ psndBuiltin # asConstr)
+
+-- | @since WIP
+instance PIsData (PMaybeData a) where
+  {-# INLINEABLE pdataImpl #-}
+  pdataImpl = pto
+  {-# INLINEABLE pfromDataImpl #-}
+  pfromDataImpl = punsafeCoerce
 
 -- | @since 2.0.0
 instance PTryFrom PData a => PTryFrom PData (PMaybeData a)
@@ -139,15 +158,45 @@ deriving via
   instance
     PConstantData a => PConstantDecl (Maybe a)
 
--- Have to manually write this instance because the constructor id ordering is screwed for 'Maybe'....
+-- | @since 2.0.0
+instance (PIsData a, PPartialOrd a) => PPartialOrd (PMaybeData a) where
+  {-# INLINEABLE (#<=) #-}
+  t1 #<= t2 = pmatch t1 $ \case
+    PDNothing -> pcon PTrue
+    PDJust t1' -> pmatch t2 $ \case
+      PDNothing -> pcon PFalse
+      PDJust t2' -> pfromData t1' #<= pfromData t2'
+  {-# INLINEABLE (#<) #-}
+  t1 #< t2 = pmatch t1 $ \case
+    PDNothing -> pmatch t2 $ \case
+      PDNothing -> pcon PFalse
+      PDJust _ -> pcon PTrue
+    PDJust t1' -> pmatch t2 $ \case
+      PDNothing -> pcon PFalse
+      PDJust t2' -> pfromData t1' #< pfromData t2'
 
 -- | @since 2.0.0
-instance (PIsData a, POrd a) => PPartialOrd (PMaybeData a) where
-  x #< y = pmaybeLT False (#<) # x # y
-  x #<= y = pmaybeLT True (#<=) # x # y
-
--- | @since 2.0.0
-instance (PIsData a, POrd a) => POrd (PMaybeData a)
+instance (PIsData a, PPartialOrd a) => POrd (PMaybeData a) where
+  {-# INLINEABLE pmin #-}
+  pmin t1 t2 = pmatch t1 $ \case
+    PDNothing -> t1
+    PDJust t1' -> pmatch t2 $ \case
+      PDNothing -> t2
+      PDJust t2' ->
+        pif
+          (pfromData t1' #< pfromData t2')
+          t1
+          t2
+  {-# INLINEABLE pmax #-}
+  pmax t1 t2 = pmatch t1 $ \case
+    PDNothing -> t2
+    PDJust t1' -> pmatch t2 $ \case
+      PDNothing -> t1
+      PDJust t2' ->
+        pif
+          (pfromData t1' #< pfromData t2')
+          t2
+          t1
 
 {- | A Rational type that corresponds to the data encoding used by 'Plutus.Rational'.
 
@@ -251,8 +300,8 @@ pfromDJust ::
   Term s (PMaybeData a :--> a)
 pfromDJust = phoistAcyclic $
   plam $ \t -> pmatch t $ \case
-    PDNothing _ -> ptraceInfoError "pfromDJust: found PDNothing"
-    PDJust x -> pfromData $ pfield @"_0" # x
+    PDNothing -> ptraceInfoError "pfromDJust: found PDNothing"
+    PDJust x -> pfromData x
 
 {- | Yield 'PTrue' if a given 'PMaybeData' is of the form @'PDJust' _@.
 
@@ -277,7 +326,7 @@ pmaybeData ::
 pmaybeData = phoistAcyclic $
   plam $ \d f m -> pmatch m $
     \case
-      PDJust x -> f #$ pfield @"_0" # x
+      PDJust x -> f # pfromData x
       _ -> d
 
 {- | Construct a 'PDJust' value.
@@ -290,7 +339,7 @@ pdjust ::
   Term s (a :--> PMaybeData a)
 pdjust = phoistAcyclic $
   plam $
-    \x -> pcon $ PDJust $ pdcons @"_0" # pdata x #$ pdnil
+    \x -> pcon . PDJust . pdata $ x
 
 {- | Construct a 'PDNothing' value.
 
@@ -299,7 +348,7 @@ pdjust = phoistAcyclic $
 pdnothing ::
   forall (a :: PType) (s :: S).
   Term s (PMaybeData a)
-pdnothing = phoistAcyclic $ pcon $ PDNothing pdnil
+pdnothing = pcon PDNothing
 
 {- | Construct a 'PMaybeData' given a 'PMaybe'. Could be useful if you want to
 "lift" from 'PMaybe' to 'Maybe'.
@@ -312,8 +361,8 @@ pmaybeToMaybeData ::
   Term s (PMaybe a :--> PMaybeData a)
 pmaybeToMaybeData = phoistAcyclic $
   plam $ \t -> pmatch t $ \case
-    PNothing -> pcon $ PDNothing pdnil
-    PJust x -> pcon $ PDJust $ pdcons @"_0" # pdata x # pdnil
+    PNothing -> pcon PDNothing
+    PJust x -> pcon . PDJust . pdata $ x
 
 {- | Extract the value stored in a 'PMaybeData' container. If there's no value,
 throw an error with the given message.
@@ -325,46 +374,11 @@ passertPDJust ::
   PIsData a =>
   Term s (PString :--> PMaybeData a :--> a)
 passertPDJust = phoistAcyclic $
-  plam $ \emsg mv' -> pmatch mv' $ \case
-    PDJust ((pfield @"_0" #) -> v) -> v
-    _ -> ptraceInfoError emsg
+  plam $ \emsg t -> pmatch t $ \case
+    PDJust t' -> pfromData t'
+    PDNothing -> ptraceInfoError emsg
 
 -- Helpers
-
-pmaybeLT ::
-  forall (a :: S -> Type) (s :: S).
-  Bool ->
-  ( forall (s' :: S) (rec_ :: [PLabeledType]).
-    rec_ ~ '["_0" ':= a] =>
-    Term s' (PDataRecord rec_) ->
-    Term s' (PDataRecord rec_) ->
-    Term s' PBool
-  ) ->
-  Term s (PMaybeData a :--> PMaybeData a :--> PBool)
-pmaybeLT whenBothNothing ltF = phoistAcyclic $
-  plam $ \x y -> unTermCont $ do
-    a <- tcont . plet $ pasConstr #$ pforgetData $ pdata x
-    b <- tcont . plet $ pasConstr #$ pforgetData $ pdata y
-    cid1 <- tcont . plet $ pfstBuiltin # a
-    cid2 <- tcont . plet $ pfstBuiltin # b
-    pure
-      $ pif
-        (cid1 #< cid2)
-        (pconstant False)
-      $ pif
-        (cid1 #== cid2)
-        {- Some hand optimization here: usually, the fields would be 'plet'ed here if using 'POrd' derivation
-          machinery. However, in this case - there's no need for the fields for the 'Nothing' case.
-
-          Would be nice if this could be done on the auto derivation case....
-        -}
-        ( pif
-            (cid1 #== 0)
-            (ltF (punsafeCoerce $ psndBuiltin # a) (punsafeCoerce $ psndBuiltin # b))
-            -- Both are 'Nothing'. Let caller choose answer.
-            $ pconstant whenBothNothing
-        )
-      $ pconstant True
 
 liftCompareOp ::
   forall (s :: S).
