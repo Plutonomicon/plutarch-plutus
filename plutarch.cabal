@@ -73,7 +73,6 @@ library
   import:          c
   exposed-modules:
     Plutarch.BitString
-    Plutarch.BLS
     Plutarch.Builtin
     Plutarch.ByteString
     Plutarch.Convert

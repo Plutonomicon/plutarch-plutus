@@ -18,10 +18,14 @@ import Generics.SOP (
   hcollapse,
  )
 import Plutarch.Internal.Builtin (
+  PBLS12_381_G1_Element,
+  PBLS12_381_G2_Element,
   PBool (PFalse, PTrue),
   PByteString,
   PInteger,
   PString,
+  pbuiltinBls12_381_G1_equal,
+  pbuiltinBls12_381_G2_equal,
   pbuiltinEqualsByteString,
   pbuiltinEqualsInteger,
   pbuiltinEqualsString,
@@ -64,6 +68,16 @@ class PEq (a :: S -> Type) where
         gpeq (gpfrom x') (gpfrom y')
 
 infix 4 #==
+
+-- | @since WIP
+instance PEq PBLS12_381_G1_Element where
+  {-# INLINEABLE (#==) #-}
+  x #== y = pbuiltinBls12_381_G1_equal # x # y
+
+-- | @since WIP
+instance PEq PBLS12_381_G2_Element where
+  {-# INLINEABLE (#==) #-}
+  x #== y = pbuiltinBls12_381_G2_equal # x # y
 
 -- | @since WIP
 instance PEq PInteger where
