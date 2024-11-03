@@ -23,6 +23,7 @@ import Plutarch.Test.Suite.Plutarch.TryFrom qualified as TryFrom
 import Plutarch.Test.Suite.Plutarch.Unit qualified as Unit
 import Plutarch.Test.Suite.Plutarch.Uplc qualified as Uplc
 import Plutarch.Test.Suite.PlutarchLedgerApi.Regressions qualified as Regressions
+import Plutarch.Test.Suite.PlutarchLedgerApi.Utils qualified as Utils
 import Plutarch.Test.Suite.PlutarchLedgerApi.V1 qualified as V1
 import Plutarch.Test.Suite.PlutarchLedgerApi.V2 qualified as V2
 import Plutarch.Test.Suite.PlutarchLedgerApi.V3 qualified as V3
@@ -62,7 +63,8 @@ main = do
         "PlutarchLedgerApi"
         [ testGroup
             "Laws"
-            [ V1.tests
+            [ Utils.tests
+            , V1.tests
             , V2.tests
             , V3.tests
             ]
