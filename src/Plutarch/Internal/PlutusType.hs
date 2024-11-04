@@ -29,6 +29,7 @@ import Data.Kind (Constraint, Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 import Generics.SOP (All2)
+import Plutarch.Builtin.Opaque (POpaque (POpaque))
 import Plutarch.Internal.Generic (PCode)
 import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
 import Plutarch.Internal.Term (PType, Term, plam', plet, punsafeCoerce, (#), (:-->) (PLam))
@@ -117,3 +118,12 @@ instance PlutusType (PFix f) where
   type PInner (PFix f) = f (PFix f)
   pcon' (PFix x) = x
   pmatch' x f = f (PFix x)
+
+-- | @since WIP
+instance PlutusType POpaque where
+  type PInner POpaque = POpaque
+  type PCovariant' POpaque = ()
+  type PContravariant' POpaque = ()
+  type PVariant' POpaque = ()
+  pcon' (POpaque x) = x
+  pmatch' x f = f (POpaque x)

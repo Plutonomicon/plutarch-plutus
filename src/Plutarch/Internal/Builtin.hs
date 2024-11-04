@@ -5,7 +5,6 @@
 -- | Types and functions that are integral to Plutarch, or primitive to UPLC.
 module Plutarch.Internal.Builtin (
   -- * Types
-  POpaque (..),
   PInteger (..),
   PBool (..),
   PString (..),
@@ -15,9 +14,6 @@ module Plutarch.Internal.Builtin (
   PBLS12_381_MlResult (..),
 
   -- * Functions
-
-  -- ** POpaque
-  popaque,
 
   -- ** PInteger
   pbuiltinAddInteger,
@@ -94,14 +90,12 @@ import Data.Text qualified as Text
 import GHC.Exts (IsString (fromString))
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack, callStack, withFrozenCallStack)
+import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
   PlutusType (
-    PContravariant',
-    PCovariant',
     PInner,
-    PVariant',
     pcon',
     pmatch'
   ),
@@ -136,20 +130,6 @@ import PlutusCore qualified as PLC
 import PlutusCore.Crypto.BLS12_381.G1 qualified as BLS12_381_G1
 import PlutusCore.Crypto.BLS12_381.G2 qualified as BLS12_381_G2
 import PlutusCore.Crypto.BLS12_381.Pairing qualified as Pairing
-
--- An arbitrary term whose type is unknown.
---
--- @since WIP
-newtype POpaque (s :: S) = POpaque (Term s POpaque)
-
--- | @since WIP
-instance PlutusType POpaque where
-  type PInner POpaque = POpaque
-  type PCovariant' POpaque = ()
-  type PContravariant' POpaque = ()
-  type PVariant' POpaque = ()
-  pcon' (POpaque x) = x
-  pmatch' x f = f (POpaque x)
 
 {- | A Plutus integer.
 
@@ -374,16 +354,6 @@ deriving via
   (DerivePConstantDirect Pairing.MlResult PBLS12_381_MlResult)
   instance
     PConstantDecl Pairing.MlResult
-
-{- | Forget the type of a term.
-
-@since WIP
--}
-popaque ::
-  forall (a :: S -> Type) (s :: S).
-  Term s a ->
-  Term s POpaque
-popaque = punsafeCoerce
 
 {- |
   Fixpoint recursion. Used to encode recursive functions.

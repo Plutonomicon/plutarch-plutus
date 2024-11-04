@@ -236,6 +236,7 @@ import Data.Kind (Type)
 import GHC.Generics (Generic)
 import GHC.Records (getField)
 import Plutarch.Builtin
+import Plutarch.Builtin.Opaque (POpaque (..))
 import Plutarch.ByteString
 import Plutarch.Crypto
 import Plutarch.DataRepr
@@ -262,3 +263,13 @@ import Plutarch.Trace
 import Plutarch.TryFrom
 import Plutarch.Unit
 import Prelude ()
+
+{- | Forget the type of a term.
+
+@since WIP
+-}
+popaque ::
+  forall (a :: S -> Type) (s :: S).
+  Term s a ->
+  Term s POpaque
+popaque = punsafeCoerce

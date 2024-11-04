@@ -72,6 +72,7 @@ import Plutarch.Builtin (
   pfstBuiltin,
   psndBuiltin,
  )
+import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.DataRepr.Internal.HList (
   HRec (HCons, HNil),
   HRecGeneric (HRecGeneric),
@@ -82,11 +83,9 @@ import Plutarch.DataRepr.Internal.HList (
 import Plutarch.Internal.Builtin (
   PBool,
   PInteger,
-  POpaque,
   PString,
   pif,
   plam,
-  popaque,
   pto,
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
@@ -737,7 +736,7 @@ instance
       (fromInteger (natVal $ Proxy @n) #== constr)
       ( unTermCont $ do
           _ <- tcont $ ptryFrom @(PDataRecord x) fields
-          pure $ popaque $ pcon PUnit
+          pure $ punsafeCoerce $ pcon PUnit
       )
       (validateSum (Proxy @(n + 1)) (Proxy @xs) constr fields)
 
