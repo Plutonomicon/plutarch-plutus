@@ -1,6 +1,6 @@
 module Plutarch.Test.Suite.Plutarch.Uplc (tests) where
 
-import Plutarch.Internal.Term (punsafeBuiltin, punsafeConstantInternal)
+import Plutarch.Internal.Term (punsafeConstantInternal)
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenEvalFail, goldenGroup, plutarchGolden)
 import PlutusCore qualified as PLC

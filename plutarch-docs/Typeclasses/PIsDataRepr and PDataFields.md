@@ -20,7 +20,6 @@ import Plutarch.LedgerApi.V3 (
     ), 
     PCurrencySymbol
   )
-import Plutarch.DataRepr (PDataFields)
 import qualified Plutarch.Monadic as P
 import PlutusLedgerApi.V3 (
   TxInfo (TxInfo), 

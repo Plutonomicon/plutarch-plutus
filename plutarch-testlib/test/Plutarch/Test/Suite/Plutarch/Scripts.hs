@@ -10,12 +10,6 @@ import Data.Text qualified as Text
 import Data.Text.Encoding qualified as Encoding
 import Plutarch.Builtin (pasByteStr)
 import Plutarch.Crypto (pverifyEd25519Signature)
-import Plutarch.Internal.Term (
-  Config (Tracing),
-  LogLevel (LogInfo),
-  TracingMode (DetTracing),
-  compile,
- )
 import Plutarch.LedgerApi.V3 (
   PPubKeyHash,
   PScriptContext,

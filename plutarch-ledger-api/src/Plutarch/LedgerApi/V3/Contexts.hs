@@ -38,10 +38,6 @@ module Plutarch.LedgerApi.V3.Contexts (
   --  pspendsOutput
 ) where
 
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Interval qualified as Interval
 import Plutarch.LedgerApi.Utils (PMaybeData, PRationalData)
@@ -57,12 +53,6 @@ import Plutarch.LedgerApi.V1.Time (PPosixTime)
 import Plutarch.LedgerApi.V2.Tx (PTxOut)
 import Plutarch.LedgerApi.V3.Tx (PTxId, PTxOutRef)
 import Plutarch.LedgerApi.Value qualified as Value
-import Plutarch.Lift (
-  DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
-  DerivePConstantViaNewtype (DerivePConstantViaNewtype),
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
 import PlutusLedgerApi.V3 qualified as Plutus
 

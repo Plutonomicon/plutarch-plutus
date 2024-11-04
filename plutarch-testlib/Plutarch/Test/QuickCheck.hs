@@ -9,9 +9,7 @@ module Plutarch.Test.QuickCheck (
 ) where
 
 import Data.Text qualified as Text
-import Plutarch.Internal.Term (Config (NoTracing))
-import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
-import Plutarch.Prelude
+import Plutarch.Prelude hiding (Positive)
 import Plutarch.Test.Unit (TermResult (Evaluated, FailedToCompile, FailedToEvaluate), evalTermResult)
 import Plutarch.Test.Utils (prettyEquals, prettyShow)
 import Prettyprinter (Pretty)

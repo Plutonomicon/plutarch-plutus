@@ -2,7 +2,6 @@
 
 module Plutarch.Test.Suite.Plutarch.POrd (tests) where
 
-import Plutarch.Builtin (PDataNewtype (PDataNewtype))
 import Plutarch.LedgerApi.V1 (
   PAddress,
   PCredential (PPubKeyCredential, PScriptCredential),
@@ -10,7 +9,6 @@ import Plutarch.LedgerApi.V1 (
   PPubKeyHash (PPubKeyHash),
   PScriptHash (PScriptHash),
  )
-import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude
 import Plutarch.Test.Golden (GoldenTestTree, goldenEvalEqual, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkHaskellOrdEquivalent)

@@ -1,7 +1,6 @@
 module Plutarch.Test.Suite.Plutarch.PLam (tests) where
 
 import Data.ByteString (ByteString)
-import Plutarch.Internal.Term (punsafeBuiltin)
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import PlutusCore qualified as PLC

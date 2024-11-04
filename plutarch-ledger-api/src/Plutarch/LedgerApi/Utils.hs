@@ -38,19 +38,7 @@ import Plutarch.Builtin (
   pconstrBuiltin,
   pforgetData,
  )
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
-import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
-import Plutarch.Internal.Term (punsafeCoerce)
-import Plutarch.Lift (
-  PConstantDecl (PConstanted),
-  PUnsafeLiftDecl (PLifted),
- )
-import Plutarch.Positive (PPositive)
 import Plutarch.Prelude
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import PlutusLedgerApi.V3 qualified as Plutus
 
 {- | Scott-encoded bool.

@@ -68,10 +68,6 @@ module Plutarch.LedgerApi.V1 (
   Utils.prationalFromData,
 ) where
 
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Interval qualified as Interval
 import Plutarch.LedgerApi.Utils qualified as Utils
@@ -84,10 +80,6 @@ import Plutarch.LedgerApi.V1.Scripts qualified as Scripts
 import Plutarch.LedgerApi.V1.Time qualified as Time
 import Plutarch.LedgerApi.V1.Tx qualified as Tx
 import Plutarch.LedgerApi.Value qualified as Value
-import Plutarch.Lift (
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
 import PlutusLedgerApi.V1 qualified as Plutus
 

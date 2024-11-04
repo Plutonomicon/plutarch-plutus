@@ -3,7 +3,6 @@
 module Plutarch.Test.Suite.Plutarch.Field (tests) where
 
 import Plutarch.Builtin (ppairDataBuiltin)
-import Plutarch.Internal.Term (punsafeBuiltin, punsafeCoerce)
 import Plutarch.LedgerApi.V1 (PAddress (PAddress))
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)

@@ -13,12 +13,6 @@ import Data.Text (Text)
 import Data.Text qualified as Text
 import Plutarch.Evaluate (EvalError, evalScript)
 import Plutarch.Internal.Other (printScript)
-import Plutarch.Internal.Term (
-  Config (NoTracing, Tracing),
-  LogLevel (LogDebug),
-  TracingMode (DetTracing),
-  compile,
- )
 import Plutarch.Prelude
 import Test.Tasty (TestName, TestTree)
 import Test.Tasty.HUnit (assertEqual, assertFailure, testCase)

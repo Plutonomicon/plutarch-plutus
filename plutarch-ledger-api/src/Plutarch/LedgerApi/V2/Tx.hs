@@ -6,19 +6,11 @@ module Plutarch.LedgerApi.V2.Tx (
   PTxOut (..),
 ) where
 
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (PMaybeData)
 import Plutarch.LedgerApi.V1.Address (PAddress)
 import Plutarch.LedgerApi.V1.Scripts (PDatum, PDatumHash, PScriptHash)
 import Plutarch.LedgerApi.Value qualified as Value
-import Plutarch.Lift (
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
 import PlutusLedgerApi.V2 qualified as Plutus
 

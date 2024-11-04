@@ -7,18 +7,8 @@ module Plutarch.LedgerApi.V1.Tx (
 ) where
 
 import Plutarch.Builtin (pasConstr)
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
-import Plutarch.Internal.Term (punsafeCoerce)
 import Plutarch.LedgerApi.Utils (Mret)
-import Plutarch.Lift (
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import PlutusLedgerApi.V1 qualified as Plutus
 
 {- | Hashed with @BLAKE2b-256@.

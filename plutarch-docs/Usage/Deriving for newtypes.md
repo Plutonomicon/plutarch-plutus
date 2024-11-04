@@ -8,7 +8,6 @@
 
 module Plutarch.Docs.DerivingForNewtype (PPubKeyHash'(..), PPubKeyHash(..)) where 
 import Plutarch.Prelude
-import Plutarch.Builtin (PDataNewtype)
 ```
 
 </p>

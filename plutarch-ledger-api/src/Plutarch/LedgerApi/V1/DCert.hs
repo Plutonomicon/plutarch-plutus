@@ -5,15 +5,8 @@ module Plutarch.LedgerApi.V1.DCert (
   PDCert (..),
 ) where
 
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
- )
 import Plutarch.LedgerApi.V1.Credential (PStakingCredential)
 import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
-import Plutarch.Lift (
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
 import PlutusLedgerApi.V1 qualified as Plutus
 

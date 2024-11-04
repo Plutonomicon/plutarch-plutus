@@ -10,24 +10,9 @@ module Plutarch.LedgerApi.V1.Time (
   unPPosixTime,
 ) where
 
-import Plutarch.Builtin (PDataNewtype (PDataNewtype))
-import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
-import Plutarch.Enum (
-  PCountable (psuccessor, psuccessorN),
-  PEnumerable (ppredecessor, ppredecessorN),
- )
-import Plutarch.Internal.Numeric (
-  PNum (pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-)),
- )
-import Plutarch.Internal.Term (punsafeCoerce)
 import Plutarch.LedgerApi.Utils (Mret)
-import Plutarch.Lift (
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
 import Plutarch.Reducible (Reduce)
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 2.0.0

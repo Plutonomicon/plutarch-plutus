@@ -6,15 +6,8 @@ module Plutarch.LedgerApi.V1.Credential (
   PStakingCredential (..),
 ) where
 
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
- )
 import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
 import Plutarch.LedgerApi.V1.Scripts (PScriptHash)
-import Plutarch.Lift (
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
 import PlutusLedgerApi.V1 qualified as Plutus
 

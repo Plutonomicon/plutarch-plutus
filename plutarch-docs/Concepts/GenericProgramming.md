@@ -6,9 +6,7 @@
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 module Plutarch.Docs.PMatch (Tree(..), swap, TreeRepr) where 
 import Plutarch.Prelude
-import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Builtin (pforgetData, pasConstr, pconstrBuiltin)
-import Plutarch.Internal.Term (punsafeCoerce)
 ```
 
 </p>

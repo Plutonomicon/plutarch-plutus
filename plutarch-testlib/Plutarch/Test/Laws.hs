@@ -15,12 +15,7 @@ module Plutarch.Test.Laws (
 ) where
 
 import Plutarch.Builtin (pforgetData)
-import Plutarch.Enum (PCountable (psuccessor, psuccessorN), PEnumerable (ppredecessor, ppredecessorN))
-import Plutarch.Internal.Numeric (PNum (pabs, pnegate, psignum, (#*), (#+), (#-)))
-import Plutarch.Internal.Term (punsafeCoerce)
 import Plutarch.LedgerApi.V1 qualified as V1
-import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
-import Plutarch.Positive (Positive)
 import Plutarch.Prelude
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent, checkHaskellEquivalent2)
 import Plutarch.Test.Utils (instanceOfType, prettyEquals, prettyShow, typeName, typeName')

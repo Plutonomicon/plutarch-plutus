@@ -60,21 +60,11 @@ module Plutarch.LedgerApi.Value (
   pisAdaOnlyValue,
 ) where
 
-import Plutarch.Builtin (PDataNewtype (PDataNewtype))
-import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
-import Plutarch.Internal.Builtin (pand', pbuiltinIfThenElse, punsafeDowncast)
-import Plutarch.Internal.Term (punsafeCoerce)
+import Plutarch.Internal.Builtin (pbuiltinIfThenElse)
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (Mret)
-import Plutarch.Lift (
-  DerivePConstantViaNewtype (DerivePConstantViaNewtype),
-  PConstantDecl,
-  PLifted,
-  PUnsafeLiftDecl,
- )
 import Plutarch.List qualified as List
 import Plutarch.Prelude hiding (psingleton)
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import PlutusLedgerApi.V1.Value qualified as PlutusValue
 import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.Prelude qualified as PlutusTx

@@ -5,16 +5,8 @@ module Plutarch.LedgerApi.V1.Crypto (
   PPubKeyHash (..),
 ) where
 
-import Plutarch.Builtin (PDataNewtype (PDataNewtype))
-import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
-import Plutarch.Internal.Term (punsafeCoerce)
 import Plutarch.LedgerApi.Utils (Mret)
-import Plutarch.Lift (
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 2.0.0

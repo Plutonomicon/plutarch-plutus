@@ -20,19 +20,29 @@ module Plutarch.Prelude (
   Type,
   S,
   PType,
-  PlutusType (PInner),
+  PlutusType (..),
   DerivePlutusType,
   DPTStrat,
   PlutusTypeScott,
   PlutusTypeNewtype,
   PlutusTypeData,
+  PUnsafeLiftDecl (..),
+  PConstantDecl (..),
   pcon,
   pmatch,
   PForall (PForall),
 
-  -- * Integers and integer utilities
+  -- * Numerical type classes
+  PNum (..),
+  PIntegral (..),
+
+  -- * Integral types
   PInteger,
-  PIntegral (pdiv, pmod, pquot, prem),
+  PPositive,
+  ppositive,
+  ptryPositive,
+  Positive,
+  mkPositive,
 
   -- * Rational numbers and utilities
   PRational (PRational),
@@ -49,6 +59,8 @@ module Plutarch.Prelude (
   pnot,
   (#&&),
   (#||),
+  pand',
+  por',
 
   -- * Bytestrings and bytestring utilities
 
@@ -144,6 +156,7 @@ module Plutarch.Prelude (
   PAsData,
 
   -- * DataRepr and related functions
+  PDataFields,
   PDataRecord,
   PDataSum,
   PLabeledType ((:=)),
@@ -193,12 +206,31 @@ module Plutarch.Prelude (
   ptryFromC,
   pupcast,
   ptryFrom,
-  PTryFrom,
+  PTryFrom (..),
   PSubtype,
   Generic,
-) where
 
-import Prelude ()
+  -- * Derivation helpers
+  DerivePConstantViaData (..),
+  DerivePConstantViaNewtype (..),
+  DerivePConstantViaBuiltin (..),
+  PDataNewtype (..),
+
+  -- * Compilation
+  Config (..),
+  LogLevel (..),
+  TracingMode (..),
+  compile,
+
+  -- * Enumerable and countable
+  PCountable (..),
+  PEnumerable (..),
+
+  -- * Unsafe operations
+  punsafeCoerce,
+  punsafeBuiltin,
+  punsafeDowncast,
+) where
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
@@ -208,6 +240,7 @@ import Plutarch.ByteString
 import Plutarch.Crypto
 import Plutarch.DataRepr
 import Plutarch.Either
+import Plutarch.Enum
 import Plutarch.Internal.Builtin
 import Plutarch.Internal.Eq
 import Plutarch.Internal.Newtype
@@ -221,9 +254,11 @@ import Plutarch.Lift
 import Plutarch.List
 import Plutarch.Maybe
 import Plutarch.Pair
+import Plutarch.Positive
 import Plutarch.Rational
 import Plutarch.Show
 import Plutarch.TermCont
 import Plutarch.Trace
 import Plutarch.TryFrom
 import Plutarch.Unit
+import Prelude ()

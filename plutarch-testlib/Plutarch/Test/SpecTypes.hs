@@ -4,17 +4,8 @@
 -- | Dummy types used in tests
 module Plutarch.Test.SpecTypes (Triplet (..), PTriplet (..)) where
 
-import PlutusTx qualified
-
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
-import Plutarch.Lift (
-  PConstantDecl (PConstanted),
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
+import PlutusTx qualified
 import Prettyprinter (Pretty (pretty), (<+>))
 import Test.Tasty.QuickCheck (Arbitrary, arbitrary)
 
