@@ -33,6 +33,7 @@ import Generics.SOP.Type.Metadata (
  )
 import Plutarch.Builtin (PData)
 import Plutarch.Builtin.Opaque (POpaque)
+import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Builtin (
   PBool,
   PByteString,
@@ -74,7 +75,6 @@ import Plutarch.List (PList, PListLike (PElemConstraint, pcons, pelimList, pnil)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Script (Script (Script))
 import Plutarch.Show (PShow)
-import Plutarch.Unit (PUnit)
 import PlutusTx.Builtins.Internal (BuiltinBool, BuiltinByteString, BuiltinData, BuiltinUnit)
 import PlutusTx.Code (CompiledCode, CompiledCodeIn (DeserializedCode), getPlc)
 import PlutusTx.Prelude (BuiltinString)

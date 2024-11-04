@@ -73,6 +73,7 @@ import Plutarch.Builtin (
   psndBuiltin,
  )
 import Plutarch.Builtin.Opaque (POpaque)
+import Plutarch.Builtin.Unit (PUnit (PUnit))
 import Plutarch.DataRepr.Internal.HList (
   HRec (HCons, HNil),
   HRecGeneric (HRecGeneric),
@@ -151,7 +152,6 @@ import Plutarch.TryFrom (
   ptryFrom',
   pupcast,
  )
-import Plutarch.Unit (PUnit (PUnit))
 import PlutusLedgerApi.V1 qualified as Ledger
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is

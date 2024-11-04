@@ -34,6 +34,7 @@ import Data.Coerce (Coercible, coerce)
 import Data.Kind (Constraint, Type)
 import Data.Text (Text)
 import GHC.Stack (HasCallStack)
+import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
 import Plutarch.Internal.Term (
   ClosedTerm,
@@ -249,3 +250,16 @@ instance
   type PConstanted (DerivePConstantViaBuiltin h p p') = p
   pconstantToRepr x = pconstantToRepr @(PLifted p') $ fromBuiltin' (coerce x :: h')
   pconstantFromRepr x = coerce (toBuiltin' <$> pconstantFromRepr @(PLifted p') x :: Maybe h')
+
+-- | @since WIP
+instance PUnsafeLiftDecl PUnit where
+  type PLifted PUnit = ()
+
+-- | @since WIP
+instance PConstantDecl () where
+  type PConstantRepr () = ()
+  type PConstanted () = PUnit
+  {-# INLINEABLE pconstantToRepr #-}
+  pconstantToRepr = coerce
+  {-# INLINEABLE pconstantFromRepr #-}
+  pconstantFromRepr = Just . coerce

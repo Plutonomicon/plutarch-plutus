@@ -34,6 +34,7 @@ import Data.Functor.Const (Const)
 import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Generics (Generic)
+import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Builtin (
   PBool,
   PByteString,
@@ -119,7 +120,6 @@ import Plutarch.List (
 import Plutarch.Show (PShow (pshow'), pshow)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast, pupcastF)
-import Plutarch.Unit (PUnit)
 import PlutusCore qualified as PLC
 import PlutusTx (Data (Constr), ToData)
 import PlutusTx qualified

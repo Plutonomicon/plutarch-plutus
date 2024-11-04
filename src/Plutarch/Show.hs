@@ -27,6 +27,7 @@ import Generics.SOP (
   hmap,
  )
 import Generics.SOP.GGP (gdatatypeInfo)
+import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.ByteString (
   PByte,
   pbyteToInteger,
@@ -103,6 +104,11 @@ instance PShow PString where
                     (x #== (punsafeIntegerToByte # doubleQuote))
                     (pconsBS # (punsafeIntegerToByte # escapeSlash) # rec_)
                     rec_
+
+-- | @since WIP
+instance PShow PUnit where
+  {-# INLINEABLE pshow' #-}
+  pshow' _ x = plet x (const "()")
 
 instance PShow PBool where
   pshow' _ x = pshowBool # x

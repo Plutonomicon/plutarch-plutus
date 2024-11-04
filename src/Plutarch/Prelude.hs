@@ -237,6 +237,7 @@ import GHC.Generics (Generic)
 import GHC.Records (getField)
 import Plutarch.Builtin
 import Plutarch.Builtin.Opaque (POpaque (..))
+import Plutarch.Builtin.Unit (PUnit (..))
 import Plutarch.ByteString
 import Plutarch.Crypto
 import Plutarch.DataRepr
@@ -261,7 +262,6 @@ import Plutarch.Show
 import Plutarch.TermCont
 import Plutarch.Trace
 import Plutarch.TryFrom
-import Plutarch.Unit
 import Prelude ()
 
 {- | Forget the type of a term.

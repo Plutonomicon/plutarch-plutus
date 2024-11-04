@@ -75,6 +75,7 @@ library
     Plutarch.BitString
     Plutarch.Builtin
     Plutarch.Builtin.Opaque
+    Plutarch.Builtin.Unit
     Plutarch.ByteString
     Plutarch.Convert
     Plutarch.Crypto
@@ -125,7 +126,6 @@ library
     Plutarch.TermCont
     Plutarch.Trace
     Plutarch.TryFrom
-    Plutarch.Unit
 
   build-depends:
     , aeson

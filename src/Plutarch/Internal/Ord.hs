@@ -4,8 +4,9 @@ module Plutarch.Internal.Ord (
   POrd (..),
 ) where
 
+import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Builtin (
-  PBool,
+  PBool (PFalse, PTrue),
   PByteString,
   PInteger,
   pbuiltinIfThenElse,
@@ -17,8 +18,14 @@ import Plutarch.Internal.Builtin (
   pto,
  )
 import Plutarch.Internal.Eq (PEq)
-import Plutarch.Internal.PlutusType (PInner)
-import Plutarch.Internal.Term (S, Term, (#), (#$))
+import Plutarch.Internal.PlutusType (PInner, pcon)
+import Plutarch.Internal.Term (
+  S,
+  Term,
+  plet,
+  (#),
+  (#$),
+ )
 import Plutarch.Lift (pconstant)
 
 {- | Partial ordering relation.
@@ -107,6 +114,20 @@ instance PPartialOrd PBool where
 
 -- | @since WIP
 instance POrd PBool
+
+-- | @since WIP
+instance PPartialOrd PUnit where
+  {-# INLINEABLE (#<=) #-}
+  x #<= y = plet x $ \_ ->
+    plet y $ \_ ->
+      pcon PTrue
+  {-# INLINEABLE (#<) #-}
+  x #< y = plet x $ \_ ->
+    plet y $ \_ ->
+      pcon PFalse
+
+-- | @since WIP
+instance POrd PUnit
 
 -- | @since WIP
 instance PPartialOrd PInteger where

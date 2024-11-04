@@ -30,10 +30,12 @@ import Data.Proxy (Proxy (Proxy))
 import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 import Generics.SOP (All2)
 import Plutarch.Builtin.Opaque (POpaque (POpaque))
+import Plutarch.Builtin.Unit (PUnit (PUnit))
 import Plutarch.Internal.Generic (PCode)
 import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
 import Plutarch.Internal.Term (PType, Term, plam', plet, punsafeCoerce, (#), (:-->) (PLam))
 import Plutarch.Internal.Witness (witness)
+import Plutarch.Lift (pconstant)
 
 class PlutusTypeStrat (strategy :: Type) where
   type PlutusTypeStratConstraint strategy :: PType -> Constraint
@@ -125,5 +127,15 @@ instance PlutusType POpaque where
   type PCovariant' POpaque = ()
   type PContravariant' POpaque = ()
   type PVariant' POpaque = ()
+  {-# INLINEABLE pcon' #-}
   pcon' (POpaque x) = x
+  {-# INLINEABLE pmatch' #-}
   pmatch' x f = f (POpaque x)
+
+-- | @since WIP
+instance PlutusType PUnit where
+  type PInner PUnit = PUnit
+  {-# INLINEABLE pcon' #-}
+  pcon' _ = pconstant ()
+  {-# INLINEABLE pmatch' #-}
+  pmatch' x f = plet x $ \_ -> f PUnit
