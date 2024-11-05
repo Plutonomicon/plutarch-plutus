@@ -11,7 +11,7 @@ module Plutarch.Test.Unit (
 
 import Data.Text (Text)
 import Data.Text qualified as Text
-import Plutarch.Evaluate (EvalError, evalScript)
+import Plutarch.Evaluate (EvalError, evalScriptUnlimited)
 import Plutarch.Internal.Other (printScript)
 import Plutarch.Prelude
 import Test.Tasty (TestName, TestTree)
@@ -97,6 +97,6 @@ evalTermResult config term =
   case compile config term of
     Left err -> FailedToCompile err
     Right compiledTerm ->
-      case evalScript compiledTerm of
+      case evalScriptUnlimited compiledTerm of
         (Left err, _, traces) -> FailedToEvaluate err traces
         (Right evaluated, _, traces) -> Evaluated (printScript evaluated) traces
