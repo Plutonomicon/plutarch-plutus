@@ -332,13 +332,13 @@ instance PIsData a => PlutusType (PAsData a) where
   pmatch' t f = f (PAsData $ pfromData $ punsafeCoerce t)
 
 type role PAsDataLifted nominal
-data PAsDataLifted (a :: S -> Type)
+newtype PAsDataLifted (a :: S -> Type) = PAsDataLifted Data
 
 instance PConstantDecl (PAsDataLifted a) where
   type PConstantRepr (PAsDataLifted a) = Data
   type PConstanted (PAsDataLifted a) = PAsData a
-  pconstantToRepr = \case {}
-  pconstantFromRepr _ = Nothing
+  pconstantToRepr (PAsDataLifted d) = d
+  pconstantFromRepr d = Just (PAsDataLifted d)
 
 instance PUnsafeLiftDecl (PAsData a) where type PLifted (PAsData a) = PAsDataLifted a
 

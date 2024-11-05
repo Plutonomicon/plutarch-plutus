@@ -7,7 +7,8 @@ import Plutarch.LedgerApi.Utils (pmaybeToMaybeData)
 import Plutarch.Maybe (pjust, pmaybe, pnothing)
 import Plutarch.Prelude
 import Plutarch.Test.Laws (checkLedgerPropertiesAssocMap)
-import Plutarch.Test.QuickCheck (checkHaskellEquivalent2, propEval)
+import Plutarch.Test.QuickCheck (checkHaskellEquivalent2, propEval, pattern PFn3)
+import Plutarch.Test.Unit (testEval)
 import Plutarch.Test.Utils (fewerTests, prettyEquals, prettyShow)
 import PlutusLedgerApi.V1.Orphans (UnsortedAssocMap, getUnsortedAssocMap)
 import PlutusTx.AssocMap qualified as PlutusMap
@@ -20,7 +21,8 @@ tests :: TestTree
 tests =
   testGroup
     "AssocMap"
-    [ checkLedgerPropertiesAssocMap
+    [ testEval "FIXME" $ pconstant (plift (pdata (pconstant (42 :: Integer))))
+    , checkLedgerPropertiesAssocMap
     , propEval "Ledger AssocMap is sorted (sanity check for punsafeCoerce below)" $
         \(m :: PlutusMap.Map Integer Integer) -> AssocMap.passertSorted # pconstant m
     , adjustOption (fewerTests 16) $ -- TODO: More
@@ -50,11 +52,11 @@ tests =
           (plam $ \k v -> AssocMap.pforgetSorted $ AssocMap.psingleton # k # v)
     , testProperty "foldl . toList = pfoldlWithKey" $
         forAllShrinkShow arbitrary shrink show $
-          \(a :: Integer, m :: PlutusMap.Map Integer Integer) ->
-            foldl (\acc (k, v) -> acc + k + v) a (PlutusMap.toList m)
+          \(a :: Integer, PFn3 fh fp, m :: PlutusMap.Map Integer Integer) ->
+            foldl (\acc (k, v) -> fh acc k v) a (PlutusMap.toList m)
               `prettyEquals` plift
                 ( AssocMap.pfoldlWithKey
-                    # plam (\acc k v -> acc + k + v)
+                    # fp
                     # pconstant a
                     # (AssocMap.passertSorted # pconstant m)
                 )
@@ -75,7 +77,7 @@ tests =
         checkHaskellSortedPMapEquivalent2
           PlutusMap.delete
           (plam (\k m -> AssocMap.pforgetSorted $ AssocMap.pdelete # k # m))
-    , testProperty "unionWith (+) = punionResolvingCollisionsWith Commutative (plam #+)" $
+    , testProperty "unionWith (+) = punionResolvingCollisionsWith Commutative (plam (#+))" $
         forAllShrinkShow arbitrary shrink show $
           \(m1 :: PlutusMap.Map Integer Integer, m2 :: PlutusMap.Map Integer Integer) ->
             PlutusMap.unionWith (+) m1 m2
@@ -87,7 +89,7 @@ tests =
                       # punsafeCoerce (pconstant m1)
                       # punsafeCoerce (pconstant m2)
                 )
-    , testProperty "unionWith (-) = punionResolvingCollisionsWith NonCommutative (plam #-)" $
+    , testProperty "unionWith (-) = punionResolvingCollisionsWith NonCommutative (plam (#-))" $
         forAllShrinkShow arbitrary shrink show $
           \(m1 :: PlutusMap.Map Integer Integer, m2 :: PlutusMap.Map Integer Integer) ->
             PlutusMap.unionWith (-) m1 m2
