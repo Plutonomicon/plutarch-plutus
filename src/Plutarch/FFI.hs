@@ -32,12 +32,12 @@ import Generics.SOP.Type.Metadata (
   DatatypeInfo (ADT, Newtype),
  )
 import Plutarch.Builtin (PData)
+import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Builtin (
-  PBool,
   PByteString,
-  PInteger,
   PString,
   plam,
   pto,

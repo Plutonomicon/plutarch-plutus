@@ -34,13 +34,15 @@ import Data.Functor.Const (Const)
 import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Generics (Generic)
+import Plutarch.Builtin.Bool (
+  PBool,
+  pbuiltinIfThenElse,
+ )
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Builtin (
-  PBool,
   PByteString,
-  PInteger,
   PString,
-  pbuiltinIfThenElse,
   pfix,
   pif,
   plam,

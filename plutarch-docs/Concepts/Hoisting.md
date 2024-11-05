@@ -6,7 +6,7 @@
 module Plutarch.Docs.Hoisting (hor, (#||)) where 
 
 import Plutarch.Prelude hiding ((#||))
-import Plutarch.Internal.Builtin (pbuiltinIfThenElse)
+import Plutarch.Builtin.Bool (pbuiltinIfThenElse)
 ```
 
 </p>

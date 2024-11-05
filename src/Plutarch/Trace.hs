@@ -15,7 +15,8 @@ module Plutarch.Trace (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Internal.Builtin (PBool, PString, pbuiltinTrace, pif)
+import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Internal.Builtin (PString, pbuiltinTrace, pif)
 import Plutarch.Internal.Show (PShow, pshow)
 import Plutarch.Internal.Term (
   Config (NoTracing, Tracing),

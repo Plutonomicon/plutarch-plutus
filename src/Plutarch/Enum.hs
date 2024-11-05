@@ -5,7 +5,8 @@ module Plutarch.Enum (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Internal.Builtin (PInteger, pfix, pif, plam, pto)
+import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Internal.Builtin (pfix, pif, plam, pto)
 import Plutarch.Internal.Eq ((#==))
 import Plutarch.Internal.Ord (POrd)
 import Plutarch.Internal.Term (

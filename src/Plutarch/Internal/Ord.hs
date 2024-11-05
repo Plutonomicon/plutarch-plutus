@@ -4,16 +4,20 @@ module Plutarch.Internal.Ord (
   POrd (..),
 ) where
 
-import Plutarch.Builtin.Unit (PUnit)
-import Plutarch.Internal.Builtin (
+import Plutarch.Builtin.Bool (
   PBool (PFalse, PTrue),
-  PByteString,
-  PInteger,
   pbuiltinIfThenElse,
-  pbuiltinLessThanByteString,
-  pbuiltinLessThanEqualsByteString,
+ )
+import Plutarch.Builtin.Integer (
+  PInteger,
   pbuiltinLessThanEqualsInteger,
   pbuiltinLessThanInteger,
+ )
+import Plutarch.Builtin.Unit (PUnit)
+import Plutarch.Internal.Builtin (
+  PByteString,
+  pbuiltinLessThanByteString,
+  pbuiltinLessThanEqualsByteString,
   pnot,
   pto,
  )

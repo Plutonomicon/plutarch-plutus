@@ -42,14 +42,16 @@ import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
-import Plutarch.Builtin.Opaque (POpaque)
-import Plutarch.Internal.Builtin (
-  PBool (PFalse, PTrue),
-  PByteString,
+import Plutarch.Builtin.Bool (PBool (PFalse, PTrue))
+import Plutarch.Builtin.Integer (
   PInteger,
   pbuiltinEqualsInteger,
   pbuiltinLessThanEqualsInteger,
   pbuiltinLessThanInteger,
+ )
+import Plutarch.Builtin.Opaque (POpaque)
+import Plutarch.Internal.Builtin (
+  PByteString,
   pfix,
   pif,
   plam,

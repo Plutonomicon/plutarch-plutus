@@ -28,8 +28,8 @@ import Plutarch.Builtin (
   pforgetData,
   pfromDataImpl,
  )
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Builtin (
-  PInteger,
   pfix,
   pif,
   plam,

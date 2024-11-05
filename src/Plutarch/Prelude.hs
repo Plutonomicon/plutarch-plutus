@@ -236,6 +236,8 @@ import Data.Kind (Type)
 import GHC.Generics (Generic)
 import GHC.Records (getField)
 import Plutarch.Builtin
+import Plutarch.Builtin.Bool (PBool (..))
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (POpaque (..))
 import Plutarch.Builtin.Unit (PUnit (..))
 import Plutarch.ByteString

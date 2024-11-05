@@ -5,7 +5,7 @@
 ```haskell
 module Plutarch.Docs.DelayAndForce (hif, pbuiltinIfThenElse) where 
 import Plutarch.Prelude
-import Plutarch.Internal.Builtin (pbuiltinIfThenElse)
+import Plutarch.Builtin.Bool (pbuiltinIfThenElse)
 ```
 
 </p>

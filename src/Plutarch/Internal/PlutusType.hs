@@ -25,16 +25,29 @@ module Plutarch.Internal.PlutusType (
   PContravariant',
 ) where
 
+import Data.Coerce (coerce)
 import Data.Kind (Constraint, Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 import Generics.SOP (All2)
+import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pbuiltinIfThenElse)
+import Plutarch.Builtin.Integer (PInteger (PInteger))
 import Plutarch.Builtin.Opaque (POpaque (POpaque))
 import Plutarch.Builtin.Unit (PUnit (PUnit))
 import Plutarch.Internal.Generic (PCode)
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
-import Plutarch.Internal.Term (PType, Term, plam', plet, punsafeCoerce, (#), (:-->) (PLam))
+import Plutarch.Internal.Term (
+  PType,
+  Term,
+  pdelay,
+  pforce,
+  plam',
+  plet,
+  punsafeCoerce,
+  (#),
+  (:-->) (PLam),
+ )
 import Plutarch.Internal.Witness (witness)
 
 class PlutusTypeStrat (strategy :: Type) where
@@ -139,3 +152,23 @@ instance PlutusType PUnit where
   pcon' _ = pconstant ()
   {-# INLINEABLE pmatch' #-}
   pmatch' x f = plet x $ \_ -> f PUnit
+
+-- | @since WIP
+instance PlutusType PBool where
+  type PInner PBool = PBool
+  {-# INLINEABLE pcon' #-}
+  pcon' = \case
+    PTrue -> pconstant True
+    PFalse -> pconstant False
+  {-# INLINEABLE pmatch' #-}
+  pmatch' b f =
+    pforce $
+      pbuiltinIfThenElse # b # pdelay (f PTrue) # pdelay (f PFalse)
+
+-- | @since WIP
+instance PlutusType PInteger where
+  type PInner PInteger = POpaque
+  {-# INLINEABLE pcon' #-}
+  pcon' = coerce
+  {-# INLINEABLE pmatch' #-}
+  pmatch' t f = f (PInteger t)

@@ -27,6 +27,8 @@ import Generics.SOP (
   hmap,
  )
 import Generics.SOP.GGP (gdatatypeInfo)
+import Plutarch.Builtin.Bool (PBool, pbuiltinIfThenElse)
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.ByteString (
   PByte,
@@ -38,13 +40,10 @@ import Plutarch.ByteString (
   punsafeIntegerToByte,
  )
 import Plutarch.Internal.Builtin (
-  PBool,
   PByteString,
-  PInteger,
   PString,
   pbuiltinDecodeUtf8,
   pbuiltinEncodeUtf8,
-  pbuiltinIfThenElse,
   pfix,
   pif,
   plam,

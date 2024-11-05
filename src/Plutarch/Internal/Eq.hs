@@ -17,20 +17,21 @@ import Generics.SOP (
   hcliftA2,
   hcollapse,
  )
+import Plutarch.Builtin.Bool (
+  PBool (PFalse, PTrue),
+  pbuiltinIfThenElse,
+ )
+import Plutarch.Builtin.Integer (PInteger, pbuiltinEqualsInteger)
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Builtin (
   PBLS12_381_G1_Element,
   PBLS12_381_G2_Element,
-  PBool (PFalse, PTrue),
   PByteString,
-  PInteger,
   PString,
   pbuiltinBls12_381_G1_equal,
   pbuiltinBls12_381_G2_equal,
   pbuiltinEqualsByteString,
-  pbuiltinEqualsInteger,
   pbuiltinEqualsString,
-  pbuiltinIfThenElse,
   pnot,
   (#&&),
  )

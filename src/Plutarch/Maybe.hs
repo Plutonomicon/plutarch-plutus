@@ -21,7 +21,8 @@ module Plutarch.Maybe (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-import Plutarch.Internal.Builtin (PBool, PString, plam)
+import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Internal.Builtin (PString, plam)
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.PlutusType (

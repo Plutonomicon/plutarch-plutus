@@ -7,7 +7,7 @@ module Plutarch.Internal.Numeric (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Internal.Builtin (
+import Plutarch.Builtin.Integer (
   PInteger,
   pbuiltinAddInteger,
   pbuiltinDivideInteger,
@@ -16,6 +16,8 @@ import Plutarch.Internal.Builtin (
   pbuiltinQuotientInteger,
   pbuiltinRemainderInteger,
   pbuiltinSubtractInteger,
+ )
+import Plutarch.Internal.Builtin (
   pif,
   plam,
   pto,

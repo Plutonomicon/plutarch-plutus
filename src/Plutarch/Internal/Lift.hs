@@ -34,6 +34,8 @@ import Data.Coerce (Coercible, coerce)
 import Data.Kind (Constraint, Type)
 import Data.Text (Text)
 import GHC.Stack (HasCallStack)
+import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
 import Plutarch.Internal.Term (
@@ -259,6 +261,32 @@ instance PUnsafeLiftDecl PUnit where
 instance PConstantDecl () where
   type PConstantRepr () = ()
   type PConstanted () = PUnit
+  {-# INLINEABLE pconstantToRepr #-}
+  pconstantToRepr = coerce
+  {-# INLINEABLE pconstantFromRepr #-}
+  pconstantFromRepr = Just . coerce
+
+-- | @since WIP
+instance PUnsafeLiftDecl PBool where
+  type PLifted PBool = Bool
+
+-- | @since WIP
+instance PConstantDecl Bool where
+  type PConstantRepr Bool = Bool
+  type PConstanted Bool = PBool
+  {-# INLINEABLE pconstantToRepr #-}
+  pconstantToRepr = coerce
+  {-# INLINEABLE pconstantFromRepr #-}
+  pconstantFromRepr = Just . coerce
+
+-- | @since WIP
+instance PUnsafeLiftDecl PInteger where
+  type PLifted PInteger = Integer
+
+-- | @since WIP
+instance PConstantDecl Integer where
+  type PConstantRepr Integer = Integer
+  type PConstanted Integer = PInteger
   {-# INLINEABLE pconstantToRepr #-}
   pconstantToRepr = coerce
   {-# INLINEABLE pconstantFromRepr #-}

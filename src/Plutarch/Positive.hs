@@ -14,7 +14,8 @@ import Data.Functor.Const (Const)
 import Data.Text (pack)
 import GHC.Generics (Generic)
 import Plutarch.Builtin (PAsData, PData, PIsData, pdata)
-import Plutarch.Internal.Builtin (PInteger, pif, plam, pto)
+import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Internal.Builtin (pif, plam, pto)
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Lift (
   DerivePConstantDirect (DerivePConstantDirect),

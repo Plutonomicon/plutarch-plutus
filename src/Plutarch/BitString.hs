@@ -14,10 +14,10 @@ module Plutarch.BitString (
 
 import GHC.Generics (Generic)
 import Plutarch.Builtin (PBuiltinList)
+import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Builtin (
-  PBool,
   PByteString,
-  PInteger,
   pif,
   plam,
   pto,

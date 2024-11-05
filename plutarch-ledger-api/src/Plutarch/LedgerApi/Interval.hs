@@ -33,7 +33,7 @@ module Plutarch.LedgerApi.Interval (
   pintersection,
 ) where
 
-import Plutarch.Internal.Builtin (pbuiltinIfThenElse)
+import Plutarch.Builtin.Bool (pbuiltinIfThenElse)
 import Plutarch.Prelude hiding (psingleton, pto)
 import PlutusLedgerApi.V3 qualified as Plutus
 

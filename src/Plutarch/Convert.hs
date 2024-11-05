@@ -15,10 +15,10 @@ module Plutarch.Convert (
 ) where
 
 import GHC.Generics (Generic)
+import Plutarch.Builtin.Bool (PBool (PFalse, PTrue))
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Builtin (
-  PBool (PFalse, PTrue),
   PByteString,
-  PInteger,
   plam,
   pto,
  )

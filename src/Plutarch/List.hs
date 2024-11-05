@@ -57,9 +57,9 @@ module Plutarch.List (
 import Data.Kind (Constraint, Type)
 import GHC.Generics (Generic)
 import Numeric.Natural (Natural)
+import Plutarch.Builtin.Bool (PBool (PFalse, PTrue))
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Builtin (
-  PBool (PFalse, PTrue),
-  PInteger,
   PString,
   pfix,
   pif,

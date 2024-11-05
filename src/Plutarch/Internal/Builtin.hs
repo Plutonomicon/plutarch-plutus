@@ -5,8 +5,6 @@
 -- | Types and functions that are integral to Plutarch, or primitive to UPLC.
 module Plutarch.Internal.Builtin (
   -- * Types
-  PInteger (..),
-  PBool (..),
   PString (..),
   PByteString (..),
   PBLS12_381_G1_Element (..),
@@ -16,17 +14,6 @@ module Plutarch.Internal.Builtin (
   -- * Functions
 
   -- ** PInteger
-  pbuiltinAddInteger,
-  pbuiltinSubtractInteger,
-  pbuiltinMultiplyInteger,
-  pbuiltinDivideInteger,
-  pbuiltinQuotientInteger,
-  pbuiltinRemainderInteger,
-  pbuiltinModInteger,
-  pbuiltinExpModInteger,
-  pbuiltinEqualsInteger,
-  pbuiltinLessThanInteger,
-  pbuiltinLessThanEqualsInteger,
 
   -- ** PBool
   pnot,
@@ -37,7 +24,6 @@ module Plutarch.Internal.Builtin (
   (#&&),
   (#||),
   pif,
-  pbuiltinIfThenElse,
 
   -- ** PString
   pbuiltinEqualsString,
@@ -90,6 +76,8 @@ import Data.Text qualified as Text
 import GHC.Exts (IsString (fromString))
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack, callStack, withFrozenCallStack)
+import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pbuiltinIfThenElse)
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Internal.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
@@ -100,11 +88,7 @@ import Plutarch.Internal.Lift (
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
-  PlutusType (
-    PInner,
-    pcon',
-    pmatch'
-  ),
+  PlutusType (PInner),
   pcon,
   pmatch,
  )
@@ -130,62 +114,6 @@ import PlutusCore qualified as PLC
 import PlutusCore.Crypto.BLS12_381.G1 qualified as BLS12_381_G1
 import PlutusCore.Crypto.BLS12_381.G2 qualified as BLS12_381_G2
 import PlutusCore.Crypto.BLS12_381.Pairing qualified as Pairing
-
-{- | A Plutus integer.
-
-@since WIP
--}
-newtype PInteger (s :: S) = PInteger (Term s POpaque)
-  deriving stock
-    ( -- | @since WIP
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since WIP
-      PlutusType
-    )
-
--- | @since WIP
-instance DerivePlutusType PInteger where
-  type DPTStrat _ = PlutusTypeNewtype
-
--- | @since WIP
-instance PUnsafeLiftDecl PInteger where
-  type PLifted PInteger = Integer
-
--- | @since WIP
-deriving via
-  (DerivePConstantDirect Integer PInteger)
-  instance
-    PConstantDecl Integer
-
-{- | A Plutus boolean.
-
-@since WIP
--}
-data PBool (s :: S) = PTrue | PFalse
-  deriving stock
-    ( -- | @since WIP
-      Show
-    )
-
--- | @since WIP
-instance PUnsafeLiftDecl PBool where
-  type PLifted PBool = Bool
-
--- | @since WIP
-deriving via
-  (DerivePConstantDirect Bool PBool)
-  instance
-    PConstantDecl Bool
-
--- | @since WIP
-instance PlutusType PBool where
-  type PInner PBool = PBool
-  pcon' PTrue = pconstant True
-  pcon' PFalse = pconstant False
-  pmatch' b f =
-    pforce $ pbuiltinIfThenElse # b # pdelay (f PTrue) # pdelay (f PFalse)
 
 {- | A Plutus string.
 
@@ -391,76 +319,6 @@ pfix = phoistAcyclic $
 pto :: Term s a -> Term s (PInner a)
 pto = punsafeCoerce
 
--- | @since WIP
-pbuiltinAddInteger ::
-  forall (s :: S).
-  Term s (PInteger :--> PInteger :--> PInteger)
-pbuiltinAddInteger = punsafeBuiltin PLC.AddInteger
-
--- | @since WIP
-pbuiltinSubtractInteger ::
-  forall (s :: S).
-  Term s (PInteger :--> PInteger :--> PInteger)
-pbuiltinSubtractInteger = punsafeBuiltin PLC.SubtractInteger
-
--- | @since WIP
-pbuiltinMultiplyInteger ::
-  forall (s :: S).
-  Term s (PInteger :--> PInteger :--> PInteger)
-pbuiltinMultiplyInteger = punsafeBuiltin PLC.MultiplyInteger
-
--- | @since WIP
-pbuiltinDivideInteger ::
-  forall (s :: S).
-  Term s (PInteger :--> PInteger :--> PInteger)
-pbuiltinDivideInteger = punsafeBuiltin PLC.DivideInteger
-
--- | @since WIP
-pbuiltinQuotientInteger ::
-  forall (s :: S).
-  Term s (PInteger :--> PInteger :--> PInteger)
-pbuiltinQuotientInteger = punsafeBuiltin PLC.QuotientInteger
-
--- | @since WIP
-pbuiltinRemainderInteger ::
-  forall (s :: S).
-  Term s (PInteger :--> PInteger :--> PInteger)
-pbuiltinRemainderInteger = punsafeBuiltin PLC.RemainderInteger
-
--- | @since WIP
-pbuiltinModInteger ::
-  forall (s :: S).
-  Term s (PInteger :--> PInteger :--> PInteger)
-pbuiltinModInteger = punsafeBuiltin PLC.ModInteger
-
--- | @since WIP
-pbuiltinExpModInteger ::
-  forall (s :: S).
-  Term s (PInteger :--> PInteger :--> PInteger :--> PInteger)
-pbuiltinExpModInteger = punsafeBuiltin PLC.ExpModInteger
-
-{- | A strict if-then-else; both branches get evaluated regardless. Emits
-slightly less code than 'pif'.
-
-@since WIP
--}
-pbuiltinIfThenElse ::
-  forall (a :: S -> Type) (s :: S).
-  Term s (PBool :--> a :--> a :--> a)
-pbuiltinIfThenElse = phoistAcyclic $ pforce $ punsafeBuiltin PLC.IfThenElse
-
--- | @since WIP
-pbuiltinLessThanInteger ::
-  forall (s :: S).
-  Term s (PInteger :--> PInteger :--> PBool)
-pbuiltinLessThanInteger = punsafeBuiltin PLC.LessThanInteger
-
--- | @since WIP
-pbuiltinLessThanEqualsInteger ::
-  forall (s :: S).
-  Term s (PInteger :--> PInteger :--> PBool)
-pbuiltinLessThanEqualsInteger = punsafeBuiltin PLC.LessThanEqualsInteger
-
 {- | A lazy if-then-else.
 
 @since WIP
@@ -591,12 +449,6 @@ por' ::
   Term s (PBool :--> PBool :--> PBool)
 por' = phoistAcyclic $ plam $ \x y ->
   pbuiltinIfThenElse # x # x # y
-
--- | @since WIP
-pbuiltinEqualsInteger ::
-  forall (s :: S).
-  Term s (PInteger :--> PInteger :--> PBool)
-pbuiltinEqualsInteger = punsafeBuiltin PLC.EqualsInteger
 
 -- | @since WIP
 pbuiltinEqualsString ::

@@ -60,7 +60,7 @@ module Plutarch.LedgerApi.Value (
   pisAdaOnlyValue,
 ) where
 
-import Plutarch.Internal.Builtin (pbuiltinIfThenElse)
+import Plutarch.Builtin.Bool (pbuiltinIfThenElse)
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.List qualified as List
