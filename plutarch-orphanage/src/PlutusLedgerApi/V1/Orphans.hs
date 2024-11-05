@@ -1,7 +1,8 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module PlutusLedgerApi.V1.Orphans () where
+module PlutusLedgerApi.V1.Orphans (UnsortedAssocMap, getUnsortedAssocMap) where
 
+import PlutusLedgerApi.Orphans.Common (UnsortedAssocMap, getUnsortedAssocMap)
 import PlutusLedgerApi.V1 qualified as PLA
 import PlutusLedgerApi.V1.Orphans.Address ()
 import PlutusLedgerApi.V1.Orphans.Contexts ()
