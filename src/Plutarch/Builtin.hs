@@ -50,6 +50,19 @@ import Plutarch.Internal.Builtin (
   (#||),
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.Lift (
+  DerivePConstantDirect (DerivePConstantDirect),
+  PConstant,
+  PConstantDecl,
+  PConstantRepr,
+  PConstanted,
+  PLift,
+  PLifted,
+  PUnsafeLiftDecl,
+  pconstant,
+  pconstantFromRepr,
+  pconstantToRepr,
+ )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Ord (
   POrd,
@@ -72,6 +85,7 @@ import Plutarch.Internal.PlutusType (
   pmatch,
   pmatch',
  )
+import Plutarch.Internal.Show (PShow (pshow'), pshow)
 import Plutarch.Internal.Term (
   S,
   Term,
@@ -87,19 +101,6 @@ import Plutarch.Internal.Term (
  )
 import Plutarch.Internal.TermCont (runTermCont, tcont, unTermCont)
 import Plutarch.Internal.Witness (witness)
-import Plutarch.Lift (
-  DerivePConstantDirect (DerivePConstantDirect),
-  PConstant,
-  PConstantDecl,
-  PConstantRepr,
-  PConstanted,
-  PLift,
-  PLifted,
-  PUnsafeLiftDecl,
-  pconstant,
-  pconstantFromRepr,
-  pconstantToRepr,
- )
 import Plutarch.List (
   PListLike (
     PElemConstraint,
@@ -117,7 +118,6 @@ import Plutarch.List (
   pshowList,
   ptail,
  )
-import Plutarch.Show (PShow (pshow'), pshow)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast, pupcastF)
 import PlutusCore qualified as PLC

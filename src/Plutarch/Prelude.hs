@@ -245,20 +245,29 @@ import Plutarch.Either
 import Plutarch.Enum
 import Plutarch.Internal.Builtin
 import Plutarch.Internal.Eq
+import Plutarch.Internal.Lift (
+  DerivePConstantViaBuiltin (..),
+  DerivePConstantViaNewtype (..),
+  PConstant,
+  PConstantDecl (..),
+  PLift,
+  PUnsafeLiftDecl (..),
+  pconstant,
+  plift,
+ )
 import Plutarch.Internal.Newtype
 import Plutarch.Internal.Numeric
 import Plutarch.Internal.Ord
 import Plutarch.Internal.PlutusType
 import Plutarch.Internal.Quantification
 import Plutarch.Internal.ScottEncoding
+import Plutarch.Internal.Show (PShow (..), pshow)
 import Plutarch.Internal.Term
-import Plutarch.Lift
 import Plutarch.List
 import Plutarch.Maybe
 import Plutarch.Pair
 import Plutarch.Positive
 import Plutarch.Rational
-import Plutarch.Show
 import Plutarch.TermCont
 import Plutarch.Trace
 import Plutarch.TryFrom

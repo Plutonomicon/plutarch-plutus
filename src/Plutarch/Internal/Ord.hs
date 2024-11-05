@@ -18,6 +18,7 @@ import Plutarch.Internal.Builtin (
   pto,
  )
 import Plutarch.Internal.Eq (PEq)
+import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.PlutusType (PInner, pcon)
 import Plutarch.Internal.Term (
   S,
@@ -26,7 +27,6 @@ import Plutarch.Internal.Term (
   (#),
   (#$),
  )
-import Plutarch.Lift (pconstant)
 
 {- | Partial ordering relation.
 

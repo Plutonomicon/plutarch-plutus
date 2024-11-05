@@ -54,6 +54,7 @@ import Plutarch.Internal.PlutusType (
  )
 import Plutarch.Internal.Quantification (PForall (PForall))
 import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Show (PShow)
 import Plutarch.Internal.Term (
   ClosedTerm,
   Config,
@@ -74,7 +75,6 @@ import Plutarch.Internal.Witness (witness)
 import Plutarch.List (PList, PListLike (PElemConstraint, pcons, pelimList, pnil), pconvertLists, plistEquals)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Script (Script (Script))
-import Plutarch.Show (PShow)
 import PlutusTx.Builtins.Internal (BuiltinBool, BuiltinByteString, BuiltinData, BuiltinUnit)
 import PlutusTx.Code (CompiledCode, CompiledCodeIn (DeserializedCode), getPlc)
 import PlutusTx.Prelude (BuiltinString)

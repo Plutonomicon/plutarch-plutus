@@ -32,10 +32,10 @@ import Generics.SOP (All2)
 import Plutarch.Builtin.Opaque (POpaque (POpaque))
 import Plutarch.Builtin.Unit (PUnit (PUnit))
 import Plutarch.Internal.Generic (PCode)
+import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
 import Plutarch.Internal.Term (PType, Term, plam', plet, punsafeCoerce, (#), (:-->) (PLam))
 import Plutarch.Internal.Witness (witness)
-import Plutarch.Lift (pconstant)
 
 class PlutusTypeStrat (strategy :: Type) where
   type PlutusTypeStratConstraint strategy :: PType -> Constraint

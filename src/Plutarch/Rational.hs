@@ -38,6 +38,7 @@ import Plutarch.Internal.Builtin (
   punsafeDowncast,
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Numeric (
   PIntegral (pquot),
   PNum,
@@ -59,6 +60,7 @@ import Plutarch.Internal.PlutusType (
   pmatch,
  )
 import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Show (PShow, pshow, pshow')
 import Plutarch.Internal.Term (
   S,
   Term,
@@ -69,11 +71,9 @@ import Plutarch.Internal.Term (
   (#$),
   (:-->),
  )
-import Plutarch.Lift (pconstant)
 import Plutarch.List (pcons, phead, pnil, ptail)
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.Positive (PPositive, ptryPositive)
-import Plutarch.Show (PShow, pshow, pshow')
 import Plutarch.TermCont (pguardC, runTermCont, tcont, unTermCont)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)

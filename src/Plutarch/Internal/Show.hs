@@ -1,4 +1,4 @@
-module Plutarch.Show (
+module Plutarch.Internal.Show (
   PShow (pshow'),
   pshow,
   pshowAndErr,
@@ -51,6 +51,7 @@ import Plutarch.Internal.Builtin (
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
+import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Numeric (pquot, prem)
 import Plutarch.Internal.Ord ((#<))
 import Plutarch.Internal.PlutusType (PlutusType, pmatch)
@@ -64,7 +65,6 @@ import Plutarch.Internal.Term (
   (#$),
   (:-->),
  )
-import Plutarch.Lift (pconstant)
 
 class PShow t where
   -- | Return the string representation of a Plutarch value

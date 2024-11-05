@@ -91,6 +91,17 @@ import Plutarch.Internal.Builtin (
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
+import Plutarch.Internal.Lift (
+  PConstant,
+  PConstantDecl,
+  PConstantRepr,
+  PConstanted,
+  PLift,
+  PLifted,
+  pconstant,
+  pconstantFromRepr,
+  pconstantToRepr,
+ )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Ord (POrd, PPartialOrd, (#<), (#<=))
 import Plutarch.Internal.PlutusType (
@@ -106,6 +117,7 @@ import Plutarch.Internal.PlutusType (
   pmatch,
   pmatch',
  )
+import Plutarch.Internal.Show (PShow (pshow'))
 import Plutarch.Internal.Term (
   Dig,
   Term,
@@ -127,20 +139,8 @@ import Plutarch.Internal.TermCont (
   tcont,
   unTermCont,
  )
-import Plutarch.Lift (
-  PConstant,
-  PConstantDecl,
-  PConstantRepr,
-  PConstanted,
-  PLift,
-  PLifted,
-  pconstant,
-  pconstantFromRepr,
-  pconstantToRepr,
- )
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.Reducible (NoReduce, Reduce)
-import Plutarch.Show (PShow (pshow'))
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (
   PSubtype,

@@ -44,6 +44,10 @@ import Plutarch.DataRepr.Internal (
  )
 import Plutarch.Internal.Builtin (PBool (PFalse, PTrue), pif, plam, pto)
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.Lift (
+  PConstantDecl (PConstanted),
+  PUnsafeLiftDecl (PLifted),
+ )
 import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
@@ -52,6 +56,7 @@ import Plutarch.Internal.PlutusType (
   pmatch,
  )
 import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Show (PShow)
 import Plutarch.Internal.Term (
   S,
   Term,
@@ -62,9 +67,7 @@ import Plutarch.Internal.Term (
   (#$),
   (:-->),
  )
-import Plutarch.Lift (PConstantDecl (PConstanted), PUnsafeLiftDecl (PLifted))
 import Plutarch.List (pcons, phead, pnil)
-import Plutarch.Show (PShow)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom)
 

@@ -68,6 +68,7 @@ import Plutarch.Internal.Builtin (
   (#||),
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Ord (POrd, (#<), (#<=))
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
@@ -76,6 +77,7 @@ import Plutarch.Internal.PlutusType (
   pmatch,
  )
 import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Show (PShow (pshow'), pshow)
 import Plutarch.Internal.Term (
   PDelayed,
   S,
@@ -88,10 +90,8 @@ import Plutarch.Internal.Term (
   (#$),
   (:-->),
  )
-import Plutarch.Lift (pconstant)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Pair (PPair (PPair))
-import Plutarch.Show (PShow (pshow'), pshow)
 import Plutarch.Trace (ptraceInfoError)
 
 data PList (a :: S -> Type) (s :: S)

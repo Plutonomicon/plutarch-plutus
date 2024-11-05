@@ -16,6 +16,7 @@ module Plutarch.Trace (
 
 import Data.Kind (Type)
 import Plutarch.Internal.Builtin (PBool, PString, pbuiltinTrace, pif)
+import Plutarch.Internal.Show (PShow, pshow)
 import Plutarch.Internal.Term (
   Config (NoTracing, Tracing),
   LogLevel (LogDebug, LogInfo),
@@ -27,7 +28,6 @@ import Plutarch.Internal.Term (
   (#),
  )
 import Plutarch.Internal.Trace (ptraceDebug, ptraceInfo)
-import Plutarch.Show (PShow, pshow)
 
 {- | Like Haskell's @traceShowId@ but for Plutarch, at the info level.
 

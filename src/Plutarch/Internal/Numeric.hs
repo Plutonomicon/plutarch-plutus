@@ -22,6 +22,7 @@ import Plutarch.Internal.Builtin (
   punsafeDowncast,
  )
 import Plutarch.Internal.Eq ((#==))
+import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Ord ((#<=))
 import Plutarch.Internal.PlutusType (PInner)
 import Plutarch.Internal.Term (
@@ -32,7 +33,6 @@ import Plutarch.Internal.Term (
   (#),
   (:-->),
  )
-import Plutarch.Lift (pconstant)
 
 {- | An analogue to 'Num' in Haskell. It is essentially equally lawless;
 whatever \'laws\' apply to 'Num' should also apply to this type class's

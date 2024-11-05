@@ -93,6 +93,7 @@ library
     Plutarch.Internal.Eq
     Plutarch.Internal.Evaluate
     Plutarch.Internal.Generic
+    Plutarch.Internal.Lift
     Plutarch.Internal.Newtype
     Plutarch.Internal.Numeric
     Plutarch.Internal.Ord
@@ -101,12 +102,12 @@ library
     Plutarch.Internal.PrettyStack
     Plutarch.Internal.Quantification
     Plutarch.Internal.ScottEncoding
+    Plutarch.Internal.Show
     Plutarch.Internal.Term
     Plutarch.Internal.TermCont
     Plutarch.Internal.Trace
     Plutarch.Internal.TypeFamily
     Plutarch.Internal.Witness
-    Plutarch.Lift
     Plutarch.List
     Plutarch.Maybe
     Plutarch.Monadic
@@ -122,7 +123,6 @@ library
     Plutarch.Rational
     Plutarch.Reducible
     Plutarch.Script
-    Plutarch.Show
     Plutarch.TermCont
     Plutarch.Trace
     Plutarch.TryFrom

@@ -56,6 +56,12 @@ import Plutarch.Internal.Builtin (
   (#||),
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.Lift (
+  PConstantDecl (PConstantRepr, PConstanted, pconstantFromRepr, pconstantToRepr),
+  PLifted,
+  PUnsafeLiftDecl,
+  pconstant,
+ )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Numeric ()
 import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
@@ -77,12 +83,6 @@ import Plutarch.Internal.Term (
   (#),
   (#$),
   (:-->),
- )
-import Plutarch.Lift (
-  PConstantDecl (PConstantRepr, PConstanted, pconstantFromRepr, pconstantToRepr),
-  PLifted,
-  PUnsafeLiftDecl,
-  pconstant,
  )
 import PlutusCore qualified as PLC
 

@@ -23,6 +23,7 @@ import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Plutarch.Internal.Builtin (PBool, PString, plam)
 import Plutarch.Internal.Eq (PEq)
+import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
   PlutusType,
@@ -30,9 +31,8 @@ import Plutarch.Internal.PlutusType (
   pmatch,
  )
 import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Show (PShow)
 import Plutarch.Internal.Term (S, Term, phoistAcyclic, (#), (:-->))
-import Plutarch.Lift (pconstant)
-import Plutarch.Show (PShow)
 import Plutarch.Trace (ptraceInfoError)
 
 -- | Plutus Maybe type, with Scott-encoded repr

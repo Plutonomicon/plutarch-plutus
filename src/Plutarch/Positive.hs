@@ -16,6 +16,11 @@ import GHC.Generics (Generic)
 import Plutarch.Builtin (PAsData, PData, PIsData, pdata)
 import Plutarch.Internal.Builtin (PInteger, pif, plam, pto)
 import Plutarch.Internal.Eq (PEq)
+import Plutarch.Internal.Lift (
+  DerivePConstantDirect (DerivePConstantDirect),
+  PConstantDecl,
+  PUnsafeLiftDecl (PLifted),
+ )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Numeric (PIntegral, PNum (pfromInteger, (#-)))
 import Plutarch.Internal.Ord (POrd, PPartialOrd, (#<=))
@@ -24,6 +29,7 @@ import Plutarch.Internal.PlutusType (
   PlutusType,
   pcon,
  )
+import Plutarch.Internal.Show (PShow, pshow)
 import Plutarch.Internal.Term (
   Term,
   phoistAcyclic,
@@ -33,9 +39,7 @@ import Plutarch.Internal.Term (
   (#$),
   (:-->),
  )
-import Plutarch.Lift (DerivePConstantDirect (DerivePConstantDirect), PConstantDecl, PUnsafeLiftDecl (PLifted))
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
-import Plutarch.Show (PShow, pshow)
 import Plutarch.TermCont (runTermCont, tcont)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)

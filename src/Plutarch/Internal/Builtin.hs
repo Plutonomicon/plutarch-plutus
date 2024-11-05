@@ -91,6 +91,12 @@ import GHC.Exts (IsString (fromString))
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack, callStack, withFrozenCallStack)
 import Plutarch.Builtin.Opaque (POpaque)
+import Plutarch.Internal.Lift (
+  DerivePConstantDirect (DerivePConstantDirect),
+  PConstantDecl,
+  PUnsafeLiftDecl (PLifted),
+  pconstant,
+ )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
@@ -119,12 +125,6 @@ import Plutarch.Internal.Term (
   punsafeConstantInternal,
   (#),
   (:-->),
- )
-import Plutarch.Lift (
-  DerivePConstantDirect (DerivePConstantDirect),
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
-  pconstant,
  )
 import PlutusCore qualified as PLC
 import PlutusCore.Crypto.BLS12_381.G1 qualified as BLS12_381_G1

@@ -2,9 +2,9 @@ module Plutarch.Test.Suite.Plutarch.Show (tests) where
 
 import Data.String (IsString (fromString))
 import Data.Text qualified as Text
+import Plutarch.Internal.Show (pshowAndErr)
 import Plutarch.List (pconvertLists)
 import Plutarch.Prelude
-import Plutarch.Show (pshowAndErr)
 import Plutarch.Test.Golden (goldenEvalEqual, goldenEvalFail, goldenGroup, plutarchGolden)
 import Test.Tasty (TestTree, testGroup)
 
