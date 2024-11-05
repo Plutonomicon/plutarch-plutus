@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Test.QuickCheck (
+  propEval,
   propEvalFail,
   propCompileFail,
   propEvalEqual,
@@ -84,6 +85,18 @@ propEvalEqual name mkTerm mkExpected =
         FailedToCompile err -> counterexample ("Failed to compile expected term: " <> Text.unpack err) False
         FailedToEvaluate err _ -> counterexample ("Failed to evaluate expected term: " <> show err) False
         Evaluated expected _ -> actual === expected
+
+{- | Like `Plutarch.Test.Unit.testEval` but generate terms
+
+@since WIP
+-}
+propEval :: (Arbitrary a, Show a) => TestName -> (a -> ClosedTerm b) -> TestTree
+propEval name mkTerm =
+  testProperty name $ forAllShrinkShow arbitrary shrink show $ \(input :: a) ->
+    case evalTermResult NoTracing (mkTerm input) of
+      FailedToCompile err -> counterexample ("Failed to compile: " <> Text.unpack err) False
+      FailedToEvaluate err _ -> counterexample ("Failed to evaluate: " <> show err) False
+      Evaluated _ _ -> property True
 
 -- | @since WIP
 checkHaskellEquivalent ::

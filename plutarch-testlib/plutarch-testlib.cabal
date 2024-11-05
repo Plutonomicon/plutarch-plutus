@@ -117,6 +117,7 @@ test-suite tests
     Plutarch.Test.Suite.Plutarch.TryFrom
     Plutarch.Test.Suite.Plutarch.Unit
     Plutarch.Test.Suite.Plutarch.Uplc
+    Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap
     Plutarch.Test.Suite.PlutarchLedgerApi.Regressions
     Plutarch.Test.Suite.PlutarchLedgerApi.Utils
     Plutarch.Test.Suite.PlutarchLedgerApi.V1
@@ -134,6 +135,8 @@ test-suite tests
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
+    , prettyprinter
+    , QuickCheck
     , serialise
     , tasty
     , tasty-hunit
