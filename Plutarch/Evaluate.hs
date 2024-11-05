@@ -4,6 +4,7 @@ module Plutarch.Evaluate (
   E.evalScript,
   E.evalScriptHuge,
   E.evalScript',
+  E.evalScriptUnlimited,
   E.EvalError,
   evalTerm,
   unsafeEvalTerm,
