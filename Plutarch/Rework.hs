@@ -1,8 +1,10 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE UndecidableSuperClasses #-}
 {-# OPTIONS_GHC -Wno-unused-imports #-}
 {-# OPTIONS_GHC -Wno-unused-local-binds #-}
 -- This needs to go later
@@ -11,6 +13,8 @@
 module Plutarch.Rework where
 
 import Generics.SOP
+
+import Generics.SOP.Constraint
 
 import Generics.SOP qualified as SOP
 
@@ -26,21 +30,22 @@ import Data.List (groupBy, sortBy)
 import Data.Proxy
 import Data.Text qualified as Text
 import Data.Void
+import GHC.Exts (Any)
 import GHC.Generics qualified as GHC
 import GHC.Word (Word64)
 import Plutarch
 import Plutarch.Builtin
 import Plutarch.DataRepr.Internal
 import Plutarch.Internal
+import Plutarch.Internal.PlutusType (pcon', pmatch')
 import Plutarch.Prelude
+import Plutarch.Reducible
 import Plutarch.Unsafe
+
+import PlutusLedgerApi.V3 qualified as PLA
 
 newtype PStruct (struct :: [[S -> Type]]) (s :: S) = PStruct {unPStruct :: SOP (Term s) struct}
 newtype PRec (struct :: [S -> Type]) (s :: S) = PRec {unPRec :: NP (Term s) struct}
-
-----------------------------------------------------------------------Smart plet
-pdataStructureAsData :: Term s (PDataStruct struct) -> Term s PData
-pdataStructureAsData = punsafeCoerce
 
 getRawTerm :: Term s a -> TermCont s RawTerm
 getRawTerm t = TermCont $ \f ->
@@ -83,34 +88,48 @@ createPlaceholder t = do
 
 -- This needs more thoughts
 pletSmart :: Term s a -> (Term s a -> Term s b) -> Term s b
-pletSmart = plet
+pletSmart t f = unTermCont $ do
+  hasError <- hasErrorTerm t
+  (hash, placeholder) <- createPlaceholder t
 
--- unTermCont $ do
--- hasError <- hasErrorTerm t
--- (hash, placeholder) <- createPlaceholder t
+  occurrences <-
+    findOccurrence hash $ f placeholder
 
--- occurrences <-
---   findOccurrence hash $ f placeholder
-
--- pure $ case occurrences of
---   0 -> if hasError then plet t f else f t
---   1 -> f t
---   _ -> plet t f
+  pure $ case occurrences of
+    0 -> if hasError then plet t f else f t
+    1 -> f t
+    _ -> plet t f
 
 pletSmartC :: Term s a -> TermCont s (Term s a)
 pletSmartC = tcont . pletSmart
 
 ----------------------------------------------------------------------PDataStruct
-data PDataStruct (struct :: [[S -> Type]]) (s :: S) where
-  PDataStruct :: (All2 PDataRepresentable struct, All2 PIsData struct) => PStruct struct s -> PDataStruct struct s
 
-data PDataRec (struct :: [S -> Type]) (s :: S) where
-  PDataRec :: (All PDataRepresentable struct, All PIsData struct) => PRec struct s -> PDataRec struct s
+-- TODO: PIsData should really check if type's inner is PData
+newtype PDataStruct (struct :: [[S -> Type]]) (s :: S) = PDataStruct {unPDataStruct :: PStruct struct s}
+
+newtype PDataRec (struct :: [S -> Type]) (s :: S) = PDataRec {unPDataRec :: PRec struct s}
 
 class PDataRepresentable (a :: S -> Type)
 instance PDataRepresentable (PDataStruct struct)
 instance PDataRepresentable PInteger
 instance PDataRepresentable PByteString
+
+instance (SListI2 struct, All2 PIsData struct) => PlutusType (PDataStruct struct) where
+  type PInner (PDataStruct struct) = PData
+  type PCovariant' (PDataStruct struct) = ()
+  type PContravariant' (PDataStruct struct) = ()
+  type PVariant' (PDataStruct struct) = ()
+  pcon' (PDataStruct x) = punsafeCoerce $ pconDataStruct x
+  pmatch' x f = pmatchDataStruct (punsafeCoerce x) (f . PDataStruct)
+
+instance (SListI struct, All PIsData struct) => PlutusType (PDataRec struct) where
+  type PInner (PDataRec struct) = PData
+  type PCovariant' (PDataRec struct) = ()
+  type PContravariant' (PDataRec struct) = ()
+  type PVariant' (PDataRec struct) = ()
+  pcon' (PDataRec x) = punsafeCoerce $ pconDataRec x
+  pmatch' x f = pmatchDataRec (punsafeCoerce x) (f . PDataRec)
 
 pconDataRec ::
   forall (struct :: [S -> Type]) (s :: S).
@@ -120,7 +139,7 @@ pconDataRec ::
 pconDataRec (PRec xs) =
   let
     collapesdData = hcollapse $ hcmap (Proxy @PIsData) (K . pforgetData . pdata) xs
-    builtinList = foldr (\x xs -> pconsBuiltin # x # xs) (pconstant []) collapesdData
+    builtinList = plistData #$ foldr (\x xs -> pconsBuiltin # x # xs) (pconstant []) collapesdData
    in
     punsafeCoerce builtinList
 
@@ -145,7 +164,7 @@ pmatchDataRec ::
   Term s (PDataRec struct) ->
   (PRec struct s -> Term s b) ->
   Term s b
-pmatchDataRec (punsafeCoerce -> x) f =
+pmatchDataRec ((pasList #) . punsafeCoerce -> x) f =
   let
     go :: forall y ys. PIsData y => H s ys -> H s (y ': ys)
     go (H rest) = H $ \ds cps ->
@@ -154,10 +173,10 @@ pmatchDataRec (punsafeCoerce -> x) f =
         parsed = pfromData @y $ punsafeCoerce $ phead # ds
        in
         rest tail $ \(PRec rest') ->
-          pletSmart parsed $ \parsed' -> cps $ PRec $ parsed' :* rest'
+          cps $ PRec $ parsed :* rest'
     record = unH $ cpara_SList (Proxy @PIsData) (H $ \_ cps -> cps $ PRec Nil) go
    in
-    pletSmart x (`record` f)
+    plet x (`record` f)
 
 newtype StructureHandler s r struct = StructureHandler
   { unSBR ::
@@ -174,9 +193,9 @@ pmatchDataStruct ::
   (PStruct struct s -> Term s b) ->
   Term s b
 pmatchDataStruct (punsafeCoerce -> x) f = unTermCont $ do
-  x' <- pletSmartC $ pasConstr # x
-  idx <- pletSmartC $ pfstBuiltin # x'
-  ds <- pletSmartC $ psndBuiltin # x'
+  x' <- pletC $ pasConstr # x
+  idx <- pletC $ pfstBuiltin # x'
+  ds <- pletC $ psndBuiltin # x'
 
   let
     go :: forall y ys. All PIsData y => StructureHandler s b ys -> StructureHandler s b (y ': ys)
@@ -243,14 +262,37 @@ pmatchDataStruct (punsafeCoerce -> x) f = unTermCont $ do
 
 ----------------------------------------------------------------------
 
-data PScottStruct (struct :: [[S -> Type]]) (s :: S) where
-  PScottStruct :: All2 PScottRepresentable struct => PStruct struct s -> PScottStruct struct s
+newtype PScottStruct (struct :: [[S -> Type]]) (s :: S) = PScottStruct {unPScottStruct :: PStruct struct s}
+newtype PScottRec (struct :: [S -> Type]) (s :: S) = PScottRec {unPScottRec :: PRec struct s}
 
-data PScottRec (struct :: [S -> Type]) (s :: S) where
-  PScottRec :: All PScottRepresentable struct => PRec struct s -> PScottRec struct s
+newtype PScottStructInner a r s = PScottStructInner (Term s (ScottFn (ScottList a r) r))
+newtype PScottRecInner a r s = PScottRecInner (Term s (ScottFn a r))
 
 class PScottRepresentable (a :: S -> Type)
 instance PScottRepresentable a
+
+-- What whatever unholy reason, quantification on constrain only works if like this
+class SListI (ScottList struct r) => PScottStructConstraint' struct r
+instance SListI (ScottList struct r) => PScottStructConstraint' struct r
+
+class (SListI struct, forall r. PScottStructConstraint' struct r) => PScottStructConstraint struct
+instance (SListI struct, forall r. PScottStructConstraint' struct r) => PScottStructConstraint struct
+
+instance forall struct. (SListI2 struct, PScottStructConstraint struct) => PlutusType (PScottStruct struct) where
+  type PInner (PScottStruct struct) = PForall (PScottStructInner struct)
+  type PCovariant' (PScottStruct struct) = ()
+  type PContravariant' (PScottStruct struct) = ()
+  type PVariant' (PScottStruct struct) = ()
+  pcon' (PScottStruct x) = punsafeCoerce $ pconScottStruct @struct x
+  pmatch' x f = pmatchScottStruct @struct (punsafeCoerce x) (f . PScottStruct)
+
+instance SListI struct => PlutusType (PScottRec struct) where
+  type PInner (PScottRec struct) = PForall (PScottRecInner struct)
+  type PCovariant' (PScottRec struct) = ()
+  type PContravariant' (PScottRec struct) = ()
+  type PVariant' (PScottRec struct) = ()
+  pcon' (PScottRec x) = punsafeCoerce $ pconScottRec x
+  pmatch' x f = pmatchScottRec (punsafeCoerce x) (f . PScottRec)
 
 --------------------------------------------------------------------------------------
 
@@ -297,8 +339,7 @@ newtype PLetL s r as = PLetL {unPLetL :: NP (Term s) as -> (NP (Term s) as -> Te
 pletL' :: SListI as => NP (Term s) as -> (NP (Term s) as -> Term s r) -> Term s r
 pletL' = unPLetL $ para_SList
   (PLetL \Nil f -> f Nil)
-  \(PLetL prev) -> PLetL \(x :* xs) f -> pletSmart x \x' ->
-    -- TODO: pletSmart
+  \(PLetL prev) -> PLetL \(x :* xs) f -> plet x \x' ->
     prev xs (\xs' -> f (x' :* xs'))
 
 pletL :: All SListI as => SOP (Term s) as -> (SOP (Term s) as -> Term s r) -> Term s r
@@ -312,14 +353,14 @@ pletL (SOP (S xs)) f = pletL (SOP xs) \(SOP xs') -> f (SOP $ S xs')
 -- Note, we don't have to use delay unit here because when value is unit, that will be the only branch that will get run.
 pconScottRec ::
   forall (struct :: [S -> Type]) (s :: S).
-  All PScottRepresentable struct =>
+  SListI struct =>
   PRec struct s ->
   Term s (PScottRec struct)
 pconScottRec (PRec xs) = punsafeCoerce $ plam $ flip pappL' xs
 
 pmatchScottRec ::
   forall (struct :: [S -> Type]) (r :: S -> Type) (s :: S).
-  All PScottRepresentable struct =>
+  SListI struct =>
   Term s (PScottRec struct) ->
   (PRec struct s -> Term s r) ->
   Term s r
@@ -342,11 +383,11 @@ gpcon' = unGPCon' $
 
 pconScottStruct ::
   forall (struct :: [[S -> Type]]) (r :: S -> Type) (s :: S).
-  ( SListI (ScottList struct r)
-  , SListI2 struct
+  ( SListI2 struct
+  , SListI (ScottList struct r)
   ) =>
   PStruct struct s ->
-  Term s (PScottStruct struct)
+  Term s (ScottFn (ScottList struct r) r :--> r)
 pconScottStruct (PStruct xs) =
   pletL xs \(SOP fields) ->
     punsafeCoerce $ plamL \args -> (gpcon' args (PStruct $ SOP fields) :: Term s r)
@@ -361,19 +402,46 @@ gpmatch' ::
 gpmatch' = unGPMatch' $ cpara_SList (Proxy @SListI) (GPMatch' (const Nil)) \(GPMatch' prev) -> GPMatch' \f ->
   plamL (\args -> f (PStruct $ SOP $ Z args)) :* prev (\(PStruct (SOP x)) -> f (PStruct $ SOP (S x)))
 
-pmatchScottStruct :: forall struct r s. (SListI (ScottList struct r), SListI2 struct) => Term s (PScottStruct struct) -> (PStruct struct s -> Term s r) -> Term s r
+pmatchScottStruct ::
+  forall struct r s.
+  ( PScottStructConstraint struct
+  , SListI2 struct
+  ) =>
+  Term s (PScottStruct struct) ->
+  (PStruct struct s -> Term s r) ->
+  Term s r
 pmatchScottStruct xs f = pappL (punsafeCoerce xs) (gpmatch' f)
 
 ----------------------------------------------------------------------
 
-data PSOPStruct (struct :: [[S -> Type]]) (s :: S) where
-  PSOPStruct :: All2 PSOPRepresentable struct => PStruct struct s -> PSOPStruct struct s
-
-data PSOPRec (struct :: [S -> Type]) (s :: S) where
-  PSOPRec :: All PSOPRepresentable struct => PRec struct s -> PSOPRec struct s
+newtype PSOPStruct (struct :: [[S -> Type]]) (s :: S) = PSOPStruct {unPSOPStruct :: PStruct struct s}
+newtype PSOPRec (struct :: [S -> Type]) (s :: S) = PSOPRec {unPSOPRec :: PRec struct s}
 
 class PSOPRepresentable (a :: S -> Type)
 
+class SListI (PCaseTy r struct) => PSOPStructConstraint' struct r
+instance SListI (PCaseTy r struct) => PSOPStructConstraint' struct r
+
+class (SListI struct, forall r. PSOPStructConstraint' struct r) => PSOPStructConstraint struct
+instance (SListI struct, forall r. PSOPStructConstraint' struct r) => PSOPStructConstraint struct
+
+instance (SListI2 struct, PSOPStructConstraint struct) => PlutusType (PSOPStruct struct) where
+  type PInner (PSOPStruct struct) = POpaque
+  type PCovariant' (PSOPStruct struct) = ()
+  type PContravariant' (PSOPStruct struct) = ()
+  type PVariant' (PSOPStruct struct) = ()
+  pcon' (PSOPStruct x) = punsafeCoerce $ pconSOPStruct x
+  pmatch' x f = pmatchSOPStruct (punsafeCoerce x) (f . PSOPStruct)
+
+instance SListI struct => PlutusType (PSOPRec struct) where
+  type PInner (PSOPRec struct) = POpaque
+  type PCovariant' (PSOPRec struct) = ()
+  type PContravariant' (PSOPRec struct) = ()
+  type PVariant' (PSOPRec struct) = ()
+  pcon' (PSOPRec x) = punsafeCoerce $ pconSOPRec x
+  pmatch' x f = pmatchSOPRec (punsafeCoerce x) (f . PSOPRec)
+
+-- Take struct first for consistency
 type family PHandlerTy r (struct :: [S -> Type]) :: S -> Type where
   PHandlerTy r '[] = r
   PHandlerTy r (x ': xs) = x :--> PHandlerTy r xs
@@ -415,7 +483,7 @@ pmatchSOPRec xs f = Term $ \i -> do
 
 pconSOPStruct ::
   forall (struct :: [[S -> Type]]) (s :: S). SListI2 struct => PStruct struct s -> Term s (PSOPStruct struct)
-pconSOPStruct (PStruct xs) = Term $ \i -> do
+pconSOPStruct (PStruct xs') = pletL xs' $ \xs -> Term $ \i -> do
   ts <- hcollapse <$> htraverse' (\x -> K . (getTerm &&& getDeps) <$> asRawTerm x i) xs
   let
     idx = hindex xs
@@ -427,7 +495,7 @@ newtype MSS s r struct = MSS {unMSS :: (PStruct struct s -> Term s r) -> NP (Ter
 
 pmatchSOPStruct ::
   forall (struct :: [[S -> Type]]) (r :: S -> Type) (s :: S).
-  (SListI2 struct, SListI (PCaseTy r struct)) =>
+  (SListI2 struct, PSOPStructConstraint struct) =>
   Term s (PSOPStruct struct) ->
   (PStruct struct s -> Term s r) ->
   Term s r
@@ -453,9 +521,146 @@ pmatchSOPStruct xs h = Term $ \i -> do
 
   pure $ TermResult (RCase term handlerTerms) (deps <> handlerDeps)
 
--- $> prettyTermAndCost mempty $ matchTestSOP
+-- -- $> prettyTermAndCost mempty $ matchTestSOP
+--
+-- -- $> plift $ matchTestSOP
 
--- $> plift $ matchTestSOP
+---------------------------------------------------------------------- Structs, Derive via
+
+class
+  ( SOP.Generic (a s)
+  , AllZipN @Type (Prod SOP) (LiftedCoercible I (Term s)) (Code (a s)) struct
+  , AllZipN @Type (Prod SOP) (LiftedCoercible (Term s) I) struct (Code (a s))
+  ) =>
+  StructSameRepr s a struct
+instance
+  ( SOP.Generic (a s)
+  , AllZipN @Type (Prod SOP) (LiftedCoercible I (Term s)) (Code (a s)) struct
+  , AllZipN @Type (Prod SOP) (LiftedCoercible (Term s) I) struct (Code (a s))
+  ) =>
+  StructSameRepr s a struct
+
+newtype DeriveAsDataStruct (a :: S -> Type) s = DeriveAsDataStruct {unDeriveDataStruct :: a s}
+
+instance
+  forall (a :: S -> Type) (struct :: [[S -> Type]]).
+  ( SOP.Generic (a Any)
+  , struct ~ UnTermStruct (a Any)
+  , All2 PIsData struct
+  , SListI2 struct
+  , forall s. StructSameRepr s a struct
+  ) =>
+  PlutusType (DeriveAsDataStruct a)
+  where
+  type PInner (DeriveAsDataStruct a) = PDataStruct (UnTermStruct (a Any))
+  type PCovariant' _ = ()
+  type PContravariant' _ = ()
+  type PVariant' _ = ()
+  pcon' (DeriveAsDataStruct x) = pcon @(PDataStruct (UnTermStruct (a Any))) $ PDataStruct $ PStruct $ hcoerce $ from x
+  pmatch' x f = pmatch @(PDataStruct (UnTermStruct (a Any))) x (f . DeriveAsDataStruct . to . hcoerce . unPStruct . unPDataStruct)
+
+newtype DeriveAsScottStruct (a :: S -> Type) s = DeriveAsScottStruct {unDeriveScottStruct :: a s}
+
+instance
+  forall (a :: S -> Type) (struct :: [[S -> Type]]).
+  ( SOP.Generic (a Any)
+  , struct ~ UnTermStruct (a Any)
+  , SListI2 struct
+  , forall s. StructSameRepr s a struct
+  , PScottStructConstraint struct
+  ) =>
+  PlutusType (DeriveAsScottStruct a)
+  where
+  type PInner (DeriveAsScottStruct a) = PScottStruct (UnTermStruct (a Any))
+  type PCovariant' _ = ()
+  type PContravariant' _ = ()
+  type PVariant' _ = ()
+  pcon' (DeriveAsScottStruct x) = pcon @(PScottStruct (UnTermStruct (a Any))) $ PScottStruct $ PStruct $ hcoerce $ from x
+  pmatch' x f = pmatch @(PScottStruct (UnTermStruct (a Any))) x (f . DeriveAsScottStruct . to . hcoerce . unPStruct . unPScottStruct)
+
+newtype DeriveAsSOPStruct (a :: S -> Type) s = DeriveAsSOPStruct {unDeriveSOPStruct :: a s}
+
+instance
+  forall (a :: S -> Type) (struct :: [[S -> Type]]).
+  ( SOP.Generic (a Any)
+  , struct ~ UnTermStruct (a Any)
+  , SListI2 struct
+  , forall s. StructSameRepr s a struct
+  , PSOPStructConstraint struct
+  ) =>
+  PlutusType (DeriveAsSOPStruct a)
+  where
+  type PInner (DeriveAsSOPStruct a) = PSOPStruct (UnTermStruct (a Any))
+  type PCovariant' _ = ()
+  type PContravariant' _ = ()
+  type PVariant' _ = ()
+  pcon' (DeriveAsSOPStruct x) = pcon @(PSOPStruct (UnTermStruct (a Any))) $ PSOPStruct $ PStruct $ hcoerce $ from x
+  pmatch' x f = pmatch @(PSOPStruct (UnTermStruct (a Any))) x (f . DeriveAsSOPStruct . to . hcoerce . unPStruct . unPSOPStruct)
+
+---------------------------------------------------------------------- Recs, Derive via
+
+newtype DeriveAsDataRec (a :: S -> Type) s = DeriveAsDataRec {unDeriveDataRec :: a s}
+
+instance
+  forall (a :: S -> Type) (struct' :: [Type]) (struct :: [S -> Type]).
+  ( SOP.Generic (a Any)
+  , '[struct'] ~ Code (a Any)
+  , struct ~ UnTermRec struct'
+  , All PIsData struct
+  , SListI struct
+  , forall s. StructSameRepr s a '[struct]
+  ) =>
+  PlutusType (DeriveAsDataRec a)
+  where
+  type PInner (DeriveAsDataRec a) = PDataRec (UnTermRec (Head (Code (a Any))))
+  type PCovariant' _ = ()
+  type PContravariant' _ = ()
+  type PVariant' _ = ()
+  pcon' (DeriveAsDataRec x) =
+    pcon $ PDataRec $ PRec $ unZ $ unSOP $ hcoerce $ from x
+  pmatch' x f = pmatch x (f . DeriveAsDataRec . to . hcoerce . SOP . (Z @_ @_ @'[]) . unPRec . unPDataRec)
+
+newtype DeriveAsScottRec (a :: S -> Type) s = DeriveAsScottRec {unDerivsScottRec :: a s}
+
+instance
+  forall (a :: S -> Type) (struct' :: [Type]) (struct :: [S -> Type]).
+  ( SOP.Generic (a Any)
+  , '[struct'] ~ Code (a Any)
+  , struct ~ UnTermRec struct'
+  , All PIsData struct
+  , SListI struct
+  , forall s. StructSameRepr s a '[struct]
+  ) =>
+  PlutusType (DeriveAsScottRec a)
+  where
+  type PInner (DeriveAsScottRec a) = PScottRec (UnTermRec (Head (Code (a Any))))
+  type PCovariant' _ = ()
+  type PContravariant' _ = ()
+  type PVariant' _ = ()
+  pcon' (DeriveAsScottRec x) =
+    pcon $ PScottRec $ PRec $ unZ $ unSOP $ hcoerce $ from x
+  pmatch' x f = pmatch x (f . DeriveAsScottRec . to . hcoerce . SOP . (Z @_ @_ @'[]) . unPRec . unPScottRec)
+
+newtype DeriveAsSOPRec (a :: S -> Type) s = DeriveAsSOPRec {unDerivsSOPRec :: a s}
+
+instance
+  forall (a :: S -> Type) (struct' :: [Type]) (struct :: [S -> Type]).
+  ( SOP.Generic (a Any)
+  , '[struct'] ~ Code (a Any)
+  , struct ~ UnTermRec struct'
+  , All PIsData struct
+  , SListI struct
+  , forall s. StructSameRepr s a '[struct]
+  ) =>
+  PlutusType (DeriveAsSOPRec a)
+  where
+  type PInner (DeriveAsSOPRec a) = PSOPRec (UnTermRec (Head (Code (a Any))))
+  type PCovariant' _ = ()
+  type PContravariant' _ = ()
+  type PVariant' _ = ()
+  pcon' (DeriveAsSOPRec x) =
+    pcon $ PSOPRec $ PRec $ unZ $ unSOP $ hcoerce $ from x
+  pmatch' x f = pmatch x (f . DeriveAsSOPRec . to . hcoerce . SOP . (Z @_ @_ @'[]) . unPRec . unPSOPRec)
 
 ----------------------------------------------------------------------
 
@@ -468,21 +673,31 @@ import Generics.SOP
 import Plutarch.Prelude
 import Debug.Trace
 import Plutarch.Maybe
+import Plutarch.Reducible
 import Plutarch.Internal.Generic
+import GHC.Exts (Any)
 <$
 -}
 
--- -- $> plift $ bazMatch
+---- $> :t from
 --
--- -- $> prettyTermAndCost mempty $ bazMatch
+-- -- $> prettyTermAndCost mempty $ matchTestSOP
 
--- $> prettyTermAndCost mempty $ fun
+-- -- $> prettyTermAndCost mempty $ plam $ flip pmatchSOPStruct (handler . to . hcoerce . unPStruct)
+--
+-- -- $> prettyTermAndCost mempty $ plam $ flip pmatchScottStruct (handler . to . hcoerce . unPStruct)
+--
+-- -- $> plift $ fun
 
--- $> plift $ fun
+-- -- $> prettyTermAndCost mempty $ pmatchScottStruct (pmatchDataStruct testData pconScottStruct) (handler . to . hcoerce . unPStruct)
 
--- $> prettyTermAndCost mempty $ matchTestScott
+-- -- $> prettyTermAndCost mempty $ pmatchSOPStruct (pmatchDataStruct testData pconSOPStruct) (handler . to . hcoerce . unPStruct)
 
--- $> plift $ matchTestData
+-- -- $> prettyTermAndCost mempty $ pmatchDataStruct testData pconScottStruct
+--
+-- -- $> prettyTermAndCost mempty $ pmatchDataStruct testData pconSOPStruct
+--
+-- -- $> plift $ matchTestData
 
 -- -- $> prettyTermAndCost mempty $ world
 
@@ -500,89 +715,143 @@ type family UnTermStruct' (struct :: [[Type]]) :: [[S -> Type]] where
 
 type UnTermStruct x = UnTermStruct' (Code x)
 
-data MyPMaybe s a
-  = MyJust (Term s a)
-  | MyNothing
+data MyPMaybe' a s
+  = MyJust' (Term s a)
+  | MyNothing'
   | C (Term s PInteger) (Term s PInteger)
   | D (Term s PInteger) (Term s PInteger)
   | E (Term s PInteger) (Term s PBool)
-  | F
+  | AA
+  | BB
+  | CC
+  | DD
+  | EE
   deriving stock (GHC.Generic)
-instance SOP.Generic (MyPMaybe s a)
+instance SOP.Generic (MyPMaybe' s a)
 
-type S' = forall s. s
+data MyPMaybe a s
+  = MyPJust (Term s a) (Term s a) (Term s a) (Term s a)
+  | MyPNothing
+  deriving stock (GHC.Generic)
+instance SOP.Generic (MyPMaybe a s)
 
-type MyPMaybeRepr a = UnTermStruct (MyPMaybe S' a)
+deriving via
+  DeriveAsDataStruct (MyPMaybe a)
+  instance
+    PIsData a => PlutusType (MyPMaybe a)
 
-test :: PStruct (MyPMaybeRepr PInteger) s
-test = PStruct $ hcoerce $ from $ MyJust (10 :: Term s PInteger) -- (pconstant False)
+data MyPRecord a s = MyPRecord {myrec'a :: Term s a, myrec'b :: Term s a}
+  deriving stock (GHC.Generic)
+instance SOP.Generic (MyPRecord a s)
 
-testData :: Term s (PDataStruct (MyPMaybeRepr PInteger))
-testData = pconDataStruct test
-
-testScott :: Term s (PScottStruct (MyPMaybeRepr PInteger))
-testScott = pconScottStruct test
-
-testSOP :: Term s (PSOPStruct (MyPMaybeRepr PInteger))
-testSOP = pconSOPStruct test
-
-handler :: MyPMaybe s PInteger -> Term s PInteger
-handler (MyJust x) = 1 + x
-handler MyNothing = 123
-handler (C x y) = x + y + x
-handler _ = perror
-
-matchTestData :: Term s PInteger
-matchTestData = pmatchDataStruct @(MyPMaybeRepr PInteger) testData (handler . to . hcoerce . unPStruct)
-
-matchTestScott :: Term s PInteger
-matchTestScott = pmatchScottStruct @(MyPMaybeRepr PInteger) testScott (handler . to . hcoerce . unPStruct)
-
-matchTestSOP :: Term s PInteger
-matchTestSOP = pmatchSOPStruct @(MyPMaybeRepr PInteger) testSOP (handler . to . hcoerce . unPStruct)
-
-conversion ::
-  forall {struct :: [[S -> Type]]} (s :: S).
-  (SListI (ScottList struct (PDataStruct struct)), SListI2 struct, All2 PIsData struct) =>
-  Term s (PScottStruct struct) ->
-  Term s (PDataStruct struct)
-conversion x = pmatchScottStruct x pconDataStruct
+deriving via
+  DeriveAsDataRec (MyPRecord a)
+  instance
+    PIsData a => PlutusType (MyPRecord a)
 
 fun :: Term s PInteger
-fun = pmatchDataStruct @(MyPMaybeRepr PInteger) (conversion testScott) (handler . to . hcoerce . unPStruct)
+fun = unTermCont $ do
+  myRec <- pmatchC $ pcon $ MyPRecord (pconstant @PInteger 10) (pconstant 20)
 
-world :: forall s. Term s PInteger
-world =
+  pure $ myRec.myrec'a + myRec.myrec'b + 10
+
+fun' :: Term s PInteger
+fun' = unTermCont $ do
+  myRec <- pmatchC $ pcon $ MyPRecord (pconstant @PInteger 10) (pconstant 20)
+  a <- pletC myRec.myrec'a
+
+  pure $ a + a + 10
+
+fun'' :: Term s PInteger
+fun'' = unTermCont $ do
   let
-    a :: Term s (PDataSum '[ '["foo" ':= PInteger], '["foo" ':= PByteString], '["foo" ':= PInteger, "pgo" ':= PInteger]])
-    a = punsafeCoerce $ pdataStructureAsData $ pconDataStruct test
-    handler :: PDataSum _ s -> Term s PInteger
-    handler (PDataSum (Z _x)) = pconstant (2 :: Integer)
-    handler (PDataSum (S (Z _x))) = pconstant (1 :: Integer)
-    handler (PDataSum (S (S (Z _x)))) = pconstant (1 :: Integer)
-    handler _ = pconstant (2 :: Integer)
-   in
-    pmatch a handler
+    someData :: Term s PData
+    someData = pconstant $ PLA.List [PLA.I 1, PLA.I 2, PLA.I 3, PLA.I 100]
 
-type FAZ = '[PInteger, PInteger, PInteger]
+  PDataRec (PRec (a :* b :* c :* Nil)) <-
+    pmatchC @(PDataRec '[PInteger, PInteger, PInteger]) $
+      punsafeCoerce someData
 
-faz :: Term s (PDataRec FAZ)
-faz = pconDataRec $ PRec (pconstant (1 :: Integer) :* pconstant (2 :: Integer) :* pconstant (4 :: Integer) :* Nil)
+  pure $ a + b + c
 
-baz' :: Term s (PScottRec '[])
-baz' = pconScottRec $ PRec Nil
+-- $> prettyTermAndCost mempty $ fun''
 
-baz :: Term s (PScottRec FAZ)
-baz = pconScottRec $ PRec (pconstant (1 :: Integer) :* pconstant (2 :: Integer) :* pconstant (4 :: Integer) :* Nil)
+-- $> prettyTermAndCost mempty $ pmatch (pcon @(MyPMaybe PInteger) $ MyPJust 1 2 3 4) (const perror)
 
-sopRec :: Term s (PSOPRec FAZ)
-sopRec = pconSOPRec $ PRec (pconstant (1 :: Integer) :* pconstant (2 :: Integer) :* pconstant (4 :: Integer) :* Nil)
+-- $> :t pcon1 $ MyJust' (10 :: Term s PInteger)
 
-sopMatch :: Term s PInteger
-sopMatch = pmatchSOPRec sopRec (\(PRec (x :* y :* z :* Nil)) -> x + x + y + z)
+-- type F' :: S -> Type
+-- newtype F' (s :: S) = F' (NoReduce (PMaybe PInteger s)) deriving stock GHC.Generic
 
-bazMatch' :: Term s PInteger
-bazMatch' = pmatchScottRec baz' $ const 1
+-- test :: PStruct (MyPMaybeRepr PInteger) s
+-- test = PStruct $ hcoerce $ from $ MyJust' (10 :: Term s PInteger) -- (pconstant False)
 
-bazMatch :: Term s PInteger
-bazMatch = pmatchScottRec baz (\(PRec (x :* y :* z :* Nil)) -> pmatchScottRec baz (\_ -> x + x + y + z))
+-- testData :: Term s (PDataStruct (MyPMaybeRepr PInteger))
+-- testData = pconDataStruct test
+
+-- -- testScott :: Term s (PScottStruct (MyPMaybeRepr PInteger))
+-- -- testScott = pconScottStruct test
+
+-- testSOP :: Term s (PSOPStruct (MyPMaybeRepr PInteger))
+-- testSOP = pconSOPStruct test
+
+handler :: MyPMaybe' PInteger s -> Term s PInteger
+handler (MyJust' x) = 1 + x
+handler MyNothing' = 123
+handler (C x _y) = x + 1
+handler _ = perror
+
+-- matchTestData :: Term s PInteger
+-- matchTestData = pmatchDataStruct @(MyPMaybeRepr PInteger) testData (handler . to . hcoerce . unPStruct)
+
+-- -- matchTestScott :: Term s PInteger
+-- -- matchTestScott = pmatchScottStruct @(MyPMaybeRepr PInteger) testScott (handler . to . hcoerce . unPStruct)
+
+-- matchTestSOP :: Term s PInteger
+-- matchTestSOP = pmatch (pcon (PSOPStruct test)) (handler . to . hcoerce . unPStruct . unPSOPStruct)
+
+-- -- conversion ::
+-- --   forall {struct :: [[S -> Type]]} (s :: S).
+-- --   (SListI (ScottList struct (PDataStruct struct)), SListI2 struct, All2 PIsData struct) =>
+-- --   Term s (PScottStruct struct) ->
+-- --   Term s (PDataStruct struct)
+-- -- conversion x = pmatchScottStruct x pconDataStruct
+
+-- -- fun :: Term s PInteger
+-- -- fun = pmatchDataStruct @(MyPMaybeRepr PInteger) (conversion testScott) (handler . to . hcoerce . unPStruct)
+
+-- world :: forall s. Term s PInteger
+-- world =
+--   let
+--     a :: Term s (PDataSum '[ '["foo" ':= PInteger], '["foo" ':= PByteString], '["foo" ':= PInteger, "pgo" ':= PInteger]])
+--     a = punsafeCoerce $ punsafeCoerce $ pconDataStruct test
+--     handler :: PDataSum _ s -> Term s PInteger
+--     handler (PDataSum (Z _x)) = pconstant (2 :: Integer)
+--     handler (PDataSum (S (Z _x))) = pconstant (1 :: Integer)
+--     handler (PDataSum (S (S (Z _x)))) = pconstant (1 :: Integer)
+--     handler _ = pconstant (2 :: Integer)
+--    in
+--     pmatch a handler
+
+-- type FAZ = '[PInteger, PInteger, PInteger]
+
+-- faz :: Term s (PDataRec FAZ)
+-- faz = pconDataRec $ PRec (pconstant (1 :: Integer) :* pconstant (2 :: Integer) :* pconstant (4 :: Integer) :* Nil)
+
+-- baz' :: Term s (PScottRec '[])
+-- baz' = pconScottRec $ PRec Nil
+
+-- baz :: Term s (PScottRec FAZ)
+-- baz = pconScottRec $ PRec (pconstant (1 :: Integer) :* pconstant (2 :: Integer) :* pconstant (4 :: Integer) :* Nil)
+
+-- sopRec :: Term s (PSOPRec FAZ)
+-- sopRec = pconSOPRec $ PRec (pconstant (1 :: Integer) :* pconstant (2 :: Integer) :* pconstant (4 :: Integer) :* Nil)
+
+-- sopMatch :: Term s PInteger
+-- sopMatch = pmatchSOPRec sopRec (\(PRec (x :* y :* z :* Nil)) -> x + x + y + z)
+
+-- bazMatch' :: Term s PInteger
+-- bazMatch' = pmatchScottRec baz' $ const 1
+
+-- bazMatch :: Term s PInteger
+-- bazMatch = pmatchScottRec baz (\(PRec (x :* y :* z :* Nil)) -> pmatchScottRec baz (\_ -> x + x + y + z))
