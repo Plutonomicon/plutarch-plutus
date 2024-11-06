@@ -1,6 +1,7 @@
 module Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap (tests) where
 
 import Data.Bifunctor (bimap)
+import Debug.Trace (traceShow)
 import Plutarch.LedgerApi.AssocMap (KeyGuarantees (Sorted, Unsorted), PMap)
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (pmaybeToMaybeData)
@@ -60,6 +61,14 @@ tests =
                     # pconstant a
                     # (AssocMap.passertSorted # pconstant m)
                 )
+    , testProperty "FIXME2" $
+        forAllShrinkShow arbitrary shrink show $
+          \(f@(PFn3 (fh :: Integer -> Integer -> Integer -> Integer) fp), a :: Integer, b :: Integer, c :: Integer) ->
+            traceShow
+              f
+              ( fh a b c
+                  `prettyEquals` plift (fp # pconstant 0 # pconstant 0 # pconstant 0)
+              )
     , testProperty "all = pall" $
         checkHaskellUnsortedPMapEquivalent (PlutusMap.all even) (AssocMap.pall # peven)
     , testProperty "any = pany" $

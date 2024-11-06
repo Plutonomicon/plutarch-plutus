@@ -211,74 +211,66 @@ pattern PFn3 ::
   PFun (xh, (yh, zh)) (PBuiltinPair (PAsData xp) (PAsData (PBuiltinPair (PAsData yp) (PAsData zp)))) r
 pattern PFn3 fh fp <- (applyPFun3 -> (fp, fh))
 
--- TODO: Figure out shrinking
--- NOTE: Doesn't work because covered input set is different
--- instance
---   forall (ah :: Type) (ap :: S -> Type) (c :: Type).
---   ( Arbitrary ah
---   , CoArbitrary ah
---   , Function ah
---   , Eq ah
---   , ap ~ PAsData (PConstanted ah)
---   , PEq ap
---   , PLifted (PConstanted ah) ~ ah
---   , PConstantDecl ah
---   , PIsData (PConstanted ah)
---   , Arbitrary c
---   , CoArbitrary c
---   , Function c
---   , PConstantDecl c
---   , PLifted (PConstanted c) ~ c
---   ) =>
---   Arbitrary (PFun ah ap c)
---   where
---   arbitrary = do
---     fun@(Fun qcF@(_, def, _) _) <- arbitrary
---     inputs <- arbitrary
---     let
---       Fn f = fun
---       table = map (\x -> (plift (pdata (pconstant x)), f x)) inputs
---     pure $
---       PFun
---         (plookupDef # pconstant def # pconstant table)
---         (Fun qcF f)
+instance
+  forall (ah :: Type) (ap :: S -> Type) (c :: Type).
+  ( Arbitrary ah
+  , CoArbitrary ah
+  , Function ah
+  , Eq ah
+  , ap ~ PAsData (PConstanted ah)
+  , PEq ap
+  , PLifted (PConstanted ah) ~ ah
+  , PConstantDecl ah
+  , PIsData (PConstanted ah)
+  , Arbitrary c
+  , CoArbitrary c
+  , Function c
+  , PConstantDecl c
+  , PLifted (PConstanted c) ~ c
+  ) =>
+  Arbitrary (PFun ah ap c)
+  where
+  arbitrary = do
+    undefined
 
--- instance
---   {-# OVERLAPPING #-}
---   forall (ah :: Type) (x :: Type) (y :: Type) (ap :: S -> Type) (xp :: S -> Type) (yp :: S -> Type) (r :: Type).
---   ( Arbitrary ah
---   , CoArbitrary ah
---   , Function ah
---   , Eq ah
---   , (x, y) ~ ah
---   , ap ~ PConstanted ah
---   , PEq ap
---   , PLifted (PConstanted ah) ~ ah
---   , PConstantDecl ah
---   , Arbitrary r
---   , CoArbitrary r
---   , Function r
---   , PConstantDecl r
---   , PLifted (PConstanted r) ~ r
---   , xp ~ PConstanted x
---   , PIsData xp
---   , PUnsafeLiftDecl xp
---   , yp ~ PConstanted y
---   , PIsData yp
---   , PUnsafeLiftDecl yp
---   ) =>
---   Arbitrary (PFun (x, y) (PBuiltinPair (PAsData xp) (PAsData yp)) r)
---   where
---   arbitrary = do
---     fun@(Fun qcF@(_, def, _) _) <- arbitrary
---     inputs <- arbitrary
---     let
---       Fn f = fun
---       table = map (\a@(x, y) -> ((plift (pdata (pconstant x)), plift (pdata (pconstant y))), f a)) inputs
---     pure $
---       PFun
---         (plookupDef # pconstant def # pconstant table)
---         (Fun qcF f)
+-- fun@(Fun qcF@(_, def, _) _) <- arbitrary
+-- inputs <- arbitrary
+-- let
+--   Fn f = fun
+--   table = map (\x -> (plift (pdata (pconstant x)), f x)) inputs
+-- pure $
+--   PFun
+--     (plookupDef # pconstant def # pconstant table)
+--     (Fun qcF f)
+
+instance
+  {-# OVERLAPPING #-}
+  forall (ah :: Type) (x :: Type) (y :: Type) (ap :: S -> Type) (xp :: S -> Type) (yp :: S -> Type) (r :: Type).
+  ( Arbitrary ah
+  , CoArbitrary ah
+  , Function ah
+  , Eq ah
+  , (x, y) ~ ah
+  , ap ~ PConstanted ah
+  , PEq ap
+  , PLifted (PConstanted ah) ~ ah
+  , PConstantDecl ah
+  , Arbitrary r
+  , CoArbitrary r
+  , Function r
+  , PConstantDecl r
+  , PLifted (PConstanted r) ~ r
+  , xp ~ PConstanted x
+  , PIsData xp
+  , PUnsafeLiftDecl xp
+  , yp ~ PConstanted y
+  , PIsData yp
+  , PUnsafeLiftDecl yp
+  ) =>
+  Arbitrary (PFun (x, y) (PBuiltinPair (PAsData xp) (PAsData yp)) r)
+  where
+  arbitrary = do
+    undefined
 
 instance
   {-# OVERLAPPING #-}
