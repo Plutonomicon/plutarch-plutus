@@ -11,16 +11,17 @@ module Plutarch.Internal.Lift (
   pconstant,
   plift,
 
-  -- * Derivation helpers
-  toPlutarchDefaultUni,
-  fromPlutarchDefaultUni,
-  toPlutarchData,
-  fromPlutarchData,
+  -- * Deriving vias
+  DeriveBuiltinPLiftable,
+  DeriveDataPLiftable,
 ) where
 
 import Data.Kind (Type)
+import Data.Proxy (Proxy (Proxy))
 import Data.Text (Text)
 import Data.Text qualified as Text
+import GHC.Generics (Generic)
+import Plutarch.Builtin (PData)
 import Plutarch.Internal (
   Config (Tracing),
   LogLevel (LogInfo),
@@ -31,8 +32,12 @@ import Plutarch.Internal (
   punsafeConstantInternal,
  )
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
-import Plutarch.Internal.PlutusType (PlutusType)
+import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Other (POpaque)
+import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PInner, PlutusType)
+import Plutarch.Internal.Witness (witness)
 import Plutarch.Script (Script (Script))
+import Plutarch.Unsafe (punsafeCoerce)
 import PlutusCore qualified as PLC
 import PlutusCore.Builtin (BuiltinError, readKnownConstant)
 import PlutusCore.Data qualified as PLCData
@@ -100,10 +105,15 @@ laws.
 
 @since WIP
 -}
+newtype PLifted a s = PLifted (Term s POpaque)
+
+unPLifted :: PLifted a s -> Term s a
+unPLifted (PLifted t) = punsafeCoerce t
+
 class PlutusType a => PLiftable (a :: S -> Type) where
   type AsHaskell a :: Type
-  toPlutarch :: forall (s :: S). AsHaskell a -> Term s a
-  fromPlutarch :: (forall (s :: S). Term s a) -> Either LiftError (AsHaskell a)
+  toPlutarch :: forall (s :: S). AsHaskell a -> PLifted a s
+  fromPlutarch :: (forall (s :: S). PLifted a s) -> Either LiftError (AsHaskell a)
 
 {- | Backwards-compatible synonym for 'toPlutarch'.
 
@@ -114,7 +124,7 @@ pconstant ::
   PLiftable a =>
   AsHaskell a ->
   Term s a
-pconstant = toPlutarch
+pconstant = punsafeCoerce . unPLifted . toPlutarch @a
 
 {- | Backwards-compatible functionality similar to 'fromPlutarch', but
 transforms any 'LiftError' into an error message.
@@ -126,7 +136,7 @@ plift ::
   PLiftable a =>
   (forall (s :: S). Term s a) ->
   AsHaskell a
-plift t = case fromPlutarch t of
+plift t = case fromPlutarch (PLifted @a (punsafeCoerce t)) of
   Left err ->
     error $
       "plift failed: "
@@ -137,69 +147,72 @@ plift t = case fromPlutarch t of
            )
   Right res -> res
 
-{- | \'Cookbook\' definition of 'toPlutarch' for a type whose Haskell equivalent
-is part of the Plutus universe. Use together with 'fromPlutarchDefaultUni' to
-define an instance.
+newtype DeriveBuiltinPLiftable (a :: S -> Type) (h :: Type) (s :: S) = DeriveBuiltinPLiftable (a s)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType)
 
-@since WIP
--}
-toPlutarchDefaultUni ::
-  forall (a :: S -> Type) (r :: Type) (s :: S).
-  PLC.DefaultUni `Includes` r =>
-  r ->
-  Term s a
-toPlutarchDefaultUni x = punsafeConstantInternal $ PLC.someValue @r @PLC.DefaultUni $ x
+instance DerivePlutusType (DeriveBuiltinPLiftable a h) where type DPTStrat _ = PlutusTypeNewtype
 
-{- | \'Cookbook\' definition of 'fromPlutarch' for a type whose Haskell
-equivalent is part of the Plutus universe. Use together with
-'toPlutarchDefaultUni' to define an instance.
+instance
+  ( PlutusType a
+  , PLC.DefaultUni `Includes` h
+  ) =>
+  PLiftable (DeriveBuiltinPLiftable a h)
+  where
+  type AsHaskell (DeriveBuiltinPLiftable a h) = h
+  toPlutarch =
+    let _ = witness (Proxy @(PlutusType a))
+     in PLifted . punsafeConstantInternal . PLC.someValue @h @PLC.DefaultUni
+  fromPlutarch t =
+    case compile (Tracing LogInfo DoTracing) (unPLifted t) of
+      Left err -> Left . CouldNotCompile $ err
+      Right compiled -> case evalScriptHuge compiled of
+        (evaluated, _, _) -> case evaluated of
+          Left err -> Left . CouldNotEvaluate $ err
+          Right (Script (UPLC.Program _ _ term)) -> case readKnownConstant term of
+            Left err -> Left . TypeError $ err
+            Right res -> pure res
 
-@since WIP
--}
-fromPlutarchDefaultUni ::
-  forall (a :: S -> Type) (r :: Type).
-  PLC.DefaultUni `Includes` r =>
-  (forall (s :: S). Term s a) ->
-  Either LiftError r
-fromPlutarchDefaultUni t = case compile (Tracing LogInfo DoTracing) t of
-  Left err -> Left . CouldNotCompile $ err
-  Right compiled -> case evalScriptHuge compiled of
-    (evaluated, _, _) -> case evaluated of
-      Left err -> Left . CouldNotEvaluate $ err
-      Right (Script (UPLC.Program _ _ term)) -> case readKnownConstant term of
-        Left err -> Left . TypeError $ err
-        Right res -> pure res
+newtype DeriveDataPLiftable (a :: S -> Type) (h :: Type) (s :: S) = DeriveDataPLiftable (a s)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType)
 
-{- | \'Cookbook\' definition of 'toPlutarch' for a type whose Haskell equivalent
-is @Data@ encoded. Use together with 'fromPlutarchData' to define an
-instance.
+instance DerivePlutusType (DeriveDataPLiftable a h) where type DPTStrat _ = PlutusTypeNewtype
 
-@since WIP
--}
-toPlutarchData ::
-  forall (a :: S -> Type) (r :: Type) (s :: S).
-  PTx.ToData r =>
-  r ->
-  Term s a
-toPlutarchData x =
-  punsafeConstantInternal $ PLC.someValue @PLCData.Data @PLC.DefaultUni $ PTx.toData x
+-- Technically can use `PLiftable` instance of PData to remove duplication
+instance
+  ( PlutusType a
+  , PInner a ~ PData
+  , PTx.ToData h
+  , PTx.UnsafeFromData h
+  , PLC.DefaultUni `Includes` h
+  ) =>
+  PLiftable (DeriveDataPLiftable a h)
+  where
+  type AsHaskell (DeriveDataPLiftable a h) = h
+  toPlutarch =
+    let _ = witness (Proxy @(PlutusType a))
+     in PLifted . punsafeConstantInternal . PLC.someValue @PLCData.Data @PLC.DefaultUni . PTx.toData
+  fromPlutarch t =
+    case compile (Tracing LogInfo DoTracing) (unPLifted t) of
+      Left err -> Left . CouldNotCompile $ err
+      Right compiled -> case evalScriptHuge compiled of
+        (evaluated, _, _) -> case evaluated of
+          Left err -> Left . CouldNotEvaluate $ err
+          Right (Script (UPLC.Program _ _ term)) -> case readKnownConstant term of
+            Left err -> Left . TypeError $ err
+            Right res -> pure . unsafeFromData $ res
 
-{- | \'Cookbook\' definition of 'fromPlutarch' for a type whose Haskell
-equivalent is @Data@ encoded. Use together with 'toPlutarchData' to define an
-instance.
+---------------------------------------------------------------------- Little tests
 
-@since WIP
--}
-fromPlutarchData ::
-  forall (a :: S -> Type) (r :: Type).
-  PTx.UnsafeFromData r =>
-  (forall (s :: S). Term s a) ->
-  Either LiftError r
-fromPlutarchData t = case compile (Tracing LogInfo DoTracing) t of
-  Left err -> Left . CouldNotCompile $ err
-  Right compiled -> case evalScriptHuge compiled of
-    (evaluated, _, _) -> case evaluated of
-      Left err -> Left . CouldNotEvaluate $ err
-      Right (Script (UPLC.Program _ _ term)) -> case readKnownConstant term of
-        Left err -> Left . TypeError $ err
-        Right res -> pure . unsafeFromData $ res
+-- data MyPInteger (s :: S) =
+--   MyPInteger (Term s POpaque)
+--   deriving stock (Generic)
+--   deriving anyclass (PlutusType)
+
+-- instance DerivePlutusType MyPInteger where type DPTStrat _ = PlutusTypeNewtype
+
+-- deriving via DeriveBuiltinPLiftable MyPInteger Integer instance PLiftable MyPInteger
+
+-- deriving via DeriveBuiltinPLiftable PInteger Integer instance PLiftable PInteger
+-- deriving via DeriveDataPLiftable (PAsData PInteger) Integer instance PLiftable (PAsData PInteger)

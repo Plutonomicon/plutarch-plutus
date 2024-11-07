@@ -41,6 +41,7 @@ import Plutarch (
   PCovariant,
   PCovariant',
   PInner,
+  POpaque,
   PType,
   PVariant,
   PVariant',
@@ -322,6 +323,7 @@ newtype PAsData (a :: PType) (s :: S) = PAsData (Term s a)
 
 type family IfSameThenData (a :: PType) (b :: PType) :: PType where
   IfSameThenData a a = PData
+  IfSameThenData _ POpaque = PData
   IfSameThenData _ b = PAsData b
 
 instance PIsData a => PlutusType (PAsData a) where
