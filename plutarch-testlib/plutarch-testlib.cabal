@@ -92,7 +92,8 @@ library
 test-suite tests
   import:         lang
   type:           exitcode-stdio-1.0
-  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
+
+  -- ghc-options:    -threaded -rtsopts -with-rtsopts=-N
   main-is:        Test.hs
   hs-source-dirs: test
   other-modules:
@@ -134,6 +135,7 @@ test-suite tests
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
+    , QuickCheck
     , serialise
     , tasty
     , tasty-hunit

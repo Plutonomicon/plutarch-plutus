@@ -17,4 +17,5 @@ packages:
 
 benchmarks: true
 tests: true
+profiling: true
 test-show-details: direct
