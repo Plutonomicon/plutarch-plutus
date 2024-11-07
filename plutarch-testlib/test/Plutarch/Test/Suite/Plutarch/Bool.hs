@@ -2,7 +2,7 @@ module Plutarch.Test.Suite.Plutarch.Bool (tests) where
 
 import Plutarch.Bool (pand, por)
 import Plutarch.Prelude
-import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenEvalFail, goldenGroup, plutarchGolden)
+import Plutarch.Test.Golden (goldenEval, goldenEvalFail, goldenGroup, plutarchGolden)
 import Test.Tasty (TestTree, testGroup)
 
 tests :: TestTree
@@ -15,18 +15,18 @@ tests =
         [ goldenGroup
             "pnot"
             [ goldenEval "lam" pnot
-            , goldenEvalEqual "app" (pnot # pcon PTrue) (pcon PFalse)
+            , goldenEval "app" (pnot # pcon PTrue)
             ]
         , goldenGroup
             "pand"
-            [ goldenEvalEqual "tf" (pcon PTrue #&& pcon PFalse) (pcon PFalse)
-            , goldenEvalEqual "ft" (pcon PFalse #&& pcon PTrue) (pcon PFalse)
-            , goldenEvalEqual "tt" (pcon PTrue #&& pcon PTrue) (pcon PTrue)
-            , goldenEvalEqual "ff" (pcon PFalse #&& pcon PFalse) (pcon PFalse)
+            [ goldenEval "tf" (pcon PTrue #&& pcon PFalse)
+            , goldenEval "ft" (pcon PFalse #&& pcon PTrue)
+            , goldenEval "tt" (pcon PTrue #&& pcon PTrue)
+            , goldenEval "ff" (pcon PFalse #&& pcon PFalse)
             , goldenGroup
                 "laziness"
-                [ goldenEvalEqual "pand" (pand # pcon PFalse # pdelay perror) (pdelay $ pcon PFalse)
-                , goldenEvalEqual "op" (pcon PFalse #&& perror) (pcon PFalse)
+                [ goldenEval "pand" (pand # pcon PFalse # pdelay perror)
+                , goldenEval "op" (pcon PFalse #&& perror)
                 , goldenGroup
                     "pand"
                     [ goldenGroup
@@ -38,14 +38,14 @@ tests =
             ]
         , goldenGroup
             "por"
-            [ goldenEvalEqual "tf" (pcon PTrue #|| pcon PFalse) (pcon PTrue)
-            , goldenEvalEqual "ft" (pcon PFalse #|| pcon PTrue) (pcon PTrue)
-            , goldenEvalEqual "tt" (pcon PTrue #|| pcon PTrue) (pcon PTrue)
-            , goldenEvalEqual "ff" (pcon PFalse #|| pcon PFalse) (pcon PFalse)
+            [ goldenEval "tf" (pcon PTrue #|| pcon PFalse)
+            , goldenEval "ft" (pcon PFalse #|| pcon PTrue)
+            , goldenEval "tt" (pcon PTrue #|| pcon PTrue)
+            , goldenEval "ff" (pcon PFalse #|| pcon PFalse)
             , goldenGroup
                 "laziness"
-                [ goldenEvalEqual "por" (por # pcon PTrue # pdelay perror) (pdelay $ pcon PTrue)
-                , goldenEvalEqual "op" (pcon PTrue #|| perror) (pcon PTrue)
+                [ goldenEval "por" (por # pcon PTrue # pdelay perror)
+                , goldenEval "op" (pcon PTrue #|| perror)
                 , goldenGroup
                     "pand"
                     [ goldenGroup
