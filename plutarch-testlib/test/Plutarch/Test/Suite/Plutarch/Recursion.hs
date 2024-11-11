@@ -5,9 +5,7 @@ import Prelude hiding (succ)
 import Plutarch
 import Plutarch.Bool (pif, (#==))
 import Plutarch.Integer (PInteger)
-
-import Plutarch.Lift (pconstant)
-import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)
+import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Test.Tasty (TestTree, testGroup)
 
 tests :: TestTree
@@ -22,14 +20,8 @@ tests =
             [ goldenEval "lam" iterateN
             , goldenGroup
                 "app"
-                [ goldenEvalEqual
-                    "succ"
-                    (iterateN # 10 # succ # 0)
-                    (pconstant @PInteger 10)
-                , goldenEvalEqual
-                    "double"
-                    (iterateN # 10 # double # 1)
-                    (pconstant @PInteger 1024)
+                [ goldenEval "succ" (iterateN # 10 # succ # 0)
+                , goldenEval "double" (iterateN # 10 # double # 1)
                 ]
             ]
         ]

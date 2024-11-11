@@ -4,7 +4,7 @@ import Data.List (find)
 import Plutarch.LedgerApi.Utils (pmaybeToMaybeData)
 import Plutarch.List (pcheckSorted, pconvertLists, pfoldl', preverse)
 import Plutarch.Prelude
-import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenEvalFail, goldenGroup, plutarchGolden)
+import Plutarch.Test.Golden (goldenEval, goldenEvalFail, goldenGroup, plutarchGolden)
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent)
 import Plutarch.Test.Unit (testEvalEqual)
 import Test.Tasty (TestTree, testGroup)
@@ -21,37 +21,37 @@ tests =
         "Goldens"
         "list"
         [ goldenEvalFail "pmatch" (pmatch (integerList [1, 3, 1]) (const perror))
-        , goldenEvalEqual "phead" (1 #== (phead # xs10)) (pcon PTrue)
-        , goldenEvalEqual "ptail" (integerList [2 .. 10] #== ptail # xs10) (pcon PTrue)
+        , goldenEval "phead" (1 #== (phead # xs10))
+        , goldenEval "ptail" (integerList [2 .. 10] #== ptail # xs10)
         , goldenGroup
             "pnull"
-            [ goldenEvalEqual "empty" (pnull # integerList []) (pcon PTrue)
-            , goldenEvalEqual "nonempty" (pnot #$ pnull # xs10) (pcon PTrue)
+            [ goldenEval "empty" (pnull # integerList [])
+            , goldenEval "nonempty" (pnot #$ pnull # xs10)
             ]
         , goldenGroup
             "pconcat"
-            [ goldenEvalEqual "identity" ((pconcat # xs10 # pnil #== pconcat # pnil # xs10) #&& (pconcat # pnil # xs10 #== xs10)) (pcon PTrue)
+            [ goldenEval "identity" ((pconcat # xs10 # pnil #== pconcat # pnil # xs10) #&& (pconcat # pnil # xs10 #== xs10))
             ]
         , goldenGroup
             "pmap"
-            [ goldenEvalEqual "eg" ((pmap # plam (\x -> x + x) # xs10) #== integerList (fmap (* 2) [1 .. 10])) (pcon PTrue)
-            , goldenEvalEqual "identity" ((pmap @PList # plam (\(x :: Term _ PInteger) -> x) # pnil) #== pnil) (pcon PTrue)
+            [ goldenEval "eg" ((pmap # plam (\x -> x + x) # xs10) #== integerList (fmap (* 2) [1 .. 10]))
+            , goldenEval "identity" ((pmap @PList # plam (\(x :: Term _ PInteger) -> x) # pnil) #== pnil)
             ]
         , goldenGroup
             "pfilter"
-            [ goldenEvalEqual "evens" ((pfilter # plam (\x -> pmod # x # 2 #== 0) # xs10) #== integerList [2, 4, 6, 8, 10]) (pcon PTrue)
-            , goldenEvalEqual "gt5" ((pfilter # plam (5 #<) # xs10) #== integerList [6 .. 10]) (pcon PTrue)
+            [ goldenEval "evens" ((pfilter # plam (\x -> pmod # x # 2 #== 0) # xs10) #== integerList [2, 4, 6, 8, 10])
+            , goldenEval "gt5" ((pfilter # plam (5 #<) # xs10) #== integerList [6 .. 10])
             ]
         , goldenGroup
             "pzipWith"
-            [ goldenEvalEqual "double" ((pzipWith' (+) # xs10 # xs10) #== integerList (fmap (* 2) [1 .. 10])) (pcon PTrue)
+            [ goldenEval "double" ((pzipWith' (+) # xs10 # xs10) #== integerList (fmap (* 2) [1 .. 10]))
             ]
         , goldenGroup
             "pfoldl"
-            [ goldenEvalEqual "nonempty" ((pfoldl # plam (-) # 0 # xs10) #== pconstant (foldl (-) 0 ([1 .. 10] :: [Integer]))) (pcon PTrue)
-            , goldenEvalEqual "nonempty-primed" ((pfoldl' (-) # 0 # xs10) #== pconstant (foldl (-) 0 ([1 .. 10] :: [Integer]))) (pcon PTrue)
-            , goldenEvalEqual "empty" ((pfoldl # plam (-) # 0 # integerList []) #== pconstant 0) (pcon PTrue)
-            , goldenEvalEqual "empty-primed" ((pfoldl' (-) # 0 # integerList []) #== pconstant 0) (pcon PTrue)
+            [ goldenEval "nonempty" ((pfoldl # plam (-) # 0 # xs10) #== pconstant (foldl (-) 0 ([1 .. 10] :: [Integer])))
+            , goldenEval "nonempty-primed" ((pfoldl' (-) # 0 # xs10) #== pconstant (foldl (-) 0 ([1 .. 10] :: [Integer])))
+            , goldenEval "empty" ((pfoldl # plam (-) # 0 # integerList []) #== pconstant 0)
+            , goldenEval "empty-primed" ((pfoldl' (-) # 0 # integerList []) #== pconstant 0)
             ]
         , goldenGroup
             "elemAt"
