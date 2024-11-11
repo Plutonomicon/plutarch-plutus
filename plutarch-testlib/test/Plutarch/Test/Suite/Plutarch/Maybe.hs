@@ -1,11 +1,12 @@
 module Plutarch.Test.Suite.Plutarch.Maybe (tests) where
 
-import Plutarch (pcon)
-import Plutarch.Bool (PEq ((#==)))
-import Plutarch.Integer (PInteger)
-import Plutarch.Maybe (PMaybe (PJust, PNothing))
+import Plutarch.LedgerApi.Utils (PMaybeData, pmaybeDataToMaybe, pmaybeToMaybeData)
+import Plutarch.Maybe (pmapMaybe)
+import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
+import Plutarch.Test.QuickCheck (checkHaskellEquivalent, propEvalEqual)
 import Test.Tasty (TestTree, testGroup)
+import Test.Tasty.QuickCheck (testProperty)
 
 tests :: TestTree
 tests =
@@ -28,4 +29,15 @@ tests =
                 ]
             ]
         ]
+    , propEvalEqual
+        "pmaybeToMaybeData . pmaybeDataToMaybe = id"
+        (\(m :: Maybe Integer) -> pmaybeToMaybeData #$ pmaybeDataToMaybe # pconstant m)
+        (\(m :: Maybe Integer) -> pconstant m)
+    , testProperty "fmap = pmapMaybe" $
+        checkHaskellEquivalent @(PMaybeData PInteger) @(PMaybeData PBool)
+          (fmap even)
+          (plam $ \m -> pmaybeToMaybeData #$ pmapMaybe # peven #$ pmaybeDataToMaybe # m)
     ]
+
+peven :: Term s (PInteger :--> PBool)
+peven = plam $ \n -> pmod # n # 2 #== 0

@@ -99,7 +99,6 @@ executable plutarch-docs
     Plutarch.Docs.PreferStaticallyBuilding
     Plutarch.Docs.PString
     Plutarch.Docs.PTryFrom
-    Plutarch.Docs.PTuple
     Plutarch.Docs.PUnit
     Plutarch.Docs.QDo
     Plutarch.Docs.RaiseErrs

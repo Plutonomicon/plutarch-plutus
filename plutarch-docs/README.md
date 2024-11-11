@@ -113,7 +113,6 @@ The [Types section](./Types.md) discusses the core types of Plutarch.
 - [`PBuiltinList`](./Types/PBuiltinList.md)
 - [`PList`](./Types/PList.md)
 - [`PBuiltinPair`](./Types/PBuiltinPair.md)
-- [`PTuple`](./Types/PTuple.md)
 - [`PAsData`](./Types/PAsData.md)
 - [`PDataSum` & `PDataRecord`](./Types/PDataSum%20and%20PDataRecord.md)
 - [`PData`](./Types/PData.md)

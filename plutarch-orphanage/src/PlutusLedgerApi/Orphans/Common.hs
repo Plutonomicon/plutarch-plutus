@@ -5,6 +5,8 @@ module PlutusLedgerApi.Orphans.Common (
   Blake2b244Hash (..),
   getBlake2b256Hash,
   getBlake2b244Hash,
+  UnsortedAssocMap,
+  getUnsortedAssocMap,
 ) where
 
 import Data.ByteString (ByteString)
@@ -12,6 +14,7 @@ import Data.Coerce (coerce)
 import Data.Kind (Type)
 import Data.Set qualified as Set
 import PlutusLedgerApi.QuickCheck.Utils (unSizedByteString)
+import PlutusPrelude (Pretty)
 import PlutusTx.AssocMap qualified as AssocMap
 import PlutusTx.Builtins qualified as Builtins
 import PlutusTx.Prelude qualified as PlutusTx
@@ -27,6 +30,7 @@ import Test.QuickCheck (
   liftArbitrary,
   oneof,
   scale,
+  shuffle,
   sized,
   variant,
  )
@@ -228,3 +232,44 @@ instance (CoArbitrary k, CoArbitrary v) => CoArbitrary (AssocMap.Map k v) where
 instance (Function k, Function v) => Function (AssocMap.Map k v) where
   {-# INLINEABLE function #-}
   function = functionMap AssocMap.toList AssocMap.unsafeFromList
+
+-- | @since WIP
+newtype UnsortedAssocMap k v = UnsortedAssocMap (AssocMap.Map k v)
+  deriving newtype (Show, Eq, Ord, Pretty)
+
+-- | @since WIP
+instance (Arbitrary k, Ord k) => Arbitrary1 (UnsortedAssocMap k) where
+  {-# INLINEABLE liftArbitrary #-}
+  liftArbitrary genVal =
+    UnsortedAssocMap . AssocMap.unsafeFromList <$> do
+      keyList <- Set.toList <$> arbitrary
+      unsortedKeyList <- shuffle keyList
+      traverse (\key -> (key,) <$> genVal) unsortedKeyList
+
+  {-# INLINEABLE liftShrink #-}
+  liftShrink shrinkVal (UnsortedAssocMap aMap) =
+    UnsortedAssocMap . AssocMap.unsafeFromList <$> do
+      let asList = AssocMap.toList aMap
+      liftShrink (\(key, val) -> (key,) <$> shrinkVal val) asList
+
+-- | @since WIP
+instance (Arbitrary k, Arbitrary v, Ord k) => Arbitrary (UnsortedAssocMap k v) where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary = liftArbitrary arbitrary
+
+  {-# INLINEABLE shrink #-}
+  shrink = liftShrink shrink
+
+-- | @since WIP
+instance (CoArbitrary k, CoArbitrary v) => CoArbitrary (UnsortedAssocMap k v) where
+  {-# INLINEABLE coarbitrary #-}
+  coarbitrary (UnsortedAssocMap aMap) = coarbitrary aMap
+
+-- | @since WIP
+instance (Function k, Function v) => Function (UnsortedAssocMap k v) where
+  {-# INLINEABLE function #-}
+  function = functionMap @(AssocMap.Map k v) coerce coerce
+
+-- | @since WIP
+getUnsortedAssocMap :: UnsortedAssocMap k v -> AssocMap.Map k v
+getUnsortedAssocMap = coerce

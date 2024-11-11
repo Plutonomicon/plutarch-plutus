@@ -18,7 +18,7 @@ import Plutarch (
   compile,
   printScript,
  )
-import Plutarch.Evaluate (EvalError, evalScript)
+import Plutarch.Evaluate (EvalError, evalScriptUnlimited)
 import Plutarch.Prelude
 import Test.Tasty (TestName, TestTree)
 import Test.Tasty.HUnit (assertEqual, assertFailure, testCase)
@@ -103,6 +103,6 @@ evalTermResult config term =
   case compile config term of
     Left err -> FailedToCompile err
     Right compiledTerm ->
-      case evalScript compiledTerm of
+      case evalScriptUnlimited compiledTerm of
         (Left err, _, traces) -> FailedToEvaluate err traces
         (Right evaluated, _, traces) -> Evaluated (printScript evaluated) traces

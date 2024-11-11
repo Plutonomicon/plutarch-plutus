@@ -10,7 +10,6 @@ This section describes the fundamental, commonly used Plutarch types.
 - [`PBuiltinList`](./Types/PBuiltinList.md)
 - [`PList`](./Types/PList.md)
 - [`PBuiltinPair`](./Types/PBuiltinPair.md)
-- [`PTuple`](./Types/PTuple.md)
 - [`PAsData`](./Types/PAsData.md)
 - [`PDataSum` & `PDataRecord`](./Types/PDataSum%20and%20PDataRecord.md)
 - [`PData`](./Types/PData.md)
