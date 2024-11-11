@@ -20,7 +20,7 @@ import Plutarch.Prelude hiding (psingleton, pto)
 import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkLedgerProperties)
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent, checkHaskellEquivalent2)
-import Plutarch.Test.Utils (fewerTests)
+import Plutarch.Test.Utils (fewerTests, precompileTerm)
 import PlutusLedgerApi.V1 (POSIXTime)
 import PlutusLedgerApi.V1.Interval (
   after,
@@ -174,17 +174,20 @@ checkMember a b c = actual == expected
     i :: Term s (PInterval PInteger)
     i = mkInterval b c
 
-    actual = plift $ pmember # pconstantData a # i
+    actual = plift $ precompileTerm pmember # pconstantData a # i
     expected = (min b c <= a) && (a <= max b c)
 
+pcontains' :: ClosedTerm (PInterval PInteger :--> PInterval PInteger :--> PBool)
+pcontains' = precompileTerm pcontains
+
 checkAlways :: Integer -> Integer -> Bool
-checkAlways a b = plift $ pcontains # palways # i
+checkAlways a b = plift $ pcontains' # palways # i
   where
     i :: Term s (PInterval PInteger)
     i = mkInterval a b
 
 checkHull :: Integer -> Integer -> Integer -> Integer -> Bool
-checkHull a b c d = plift $ (pcontains # i3 # i1) #&& (pcontains # i3 # i2)
+checkHull a b c d = plift $ (pcontains' # i3 # i1) #&& (pcontains' # i3 # i2)
   where
     i1 :: Term s (PInterval PInteger)
     i1 = mkInterval a b
@@ -193,10 +196,10 @@ checkHull a b c d = plift $ (pcontains # i3 # i1) #&& (pcontains # i3 # i2)
     i2 = mkInterval c d
 
     i3 :: Term s (PInterval PInteger)
-    i3 = phull # i1 # i2
+    i3 = precompileTerm phull # i1 # i2
 
 checkIntersection :: Integer -> Integer -> Integer -> Integer -> Bool
-checkIntersection a b c d = plift $ (pcontains # i1 # i3) #&& (pcontains # i2 # i3)
+checkIntersection a b c d = plift $ (pcontains' # i1 # i3) #&& (pcontains' # i2 # i3)
   where
     i1 :: Term s (PInterval PInteger)
     i1 = mkInterval a b
@@ -205,7 +208,7 @@ checkIntersection a b c d = plift $ (pcontains # i1 # i3) #&& (pcontains # i2 # 
     i2 = mkInterval c d
 
     i3 :: Term s (PInterval PInteger)
-    i3 = pintersection # i1 # i2
+    i3 = precompileTerm pintersection # i1 # i2
 
 checkBoundedContains :: Integer -> Integer -> Integer -> Integer -> Bool
 checkBoundedContains a b c d = actual == expected
@@ -219,7 +222,7 @@ checkBoundedContains a b c d = actual == expected
     expected = (min a b <= min c d) && (max c d <= max a b)
 
     actual' :: ClosedTerm PBool
-    actual' = pcontains # i1 # i2
+    actual' = pcontains' # i1 # i2
     actual = plift actual'
 
 checkUnboundedUpperContains :: Integer -> Integer -> Integer -> Bool
@@ -234,7 +237,7 @@ checkUnboundedUpperContains a b c = actual == expected
     expected = a <= min b c
 
     actual' :: ClosedTerm PBool
-    actual' = pcontains # i1 # i2
+    actual' = pcontains' # i1 # i2
     actual = plift actual'
 
 checkUnboundedLowerContains :: Integer -> Integer -> Integer -> Bool
@@ -249,7 +252,7 @@ checkUnboundedLowerContains a b c = actual == expected
     expected = a >= max b c
 
     actual' :: ClosedTerm PBool
-    actual' = pcontains # i1 # i2
+    actual' = pcontains' # i1 # i2
     actual = plift actual'
 
 checkBefore :: Integer -> Integer -> Integer -> Bool
@@ -262,7 +265,7 @@ checkBefore a b c = actual == expected
     expected = a < min b c
 
     actual' :: ClosedTerm PBool
-    actual' = pbefore # pconstant a # i
+    actual' = precompileTerm pbefore # pconstant a # i
     actual = plift actual'
 
 checkAfter :: Integer -> Integer -> Integer -> Bool
@@ -275,7 +278,7 @@ checkAfter a b c = actual == expected
     expected = max b c < a
 
     actual' :: ClosedTerm PBool
-    actual' = pafter # pconstant a # i
+    actual' = precompileTerm pafter # pconstant a # i
     actual = plift actual'
 
 mkInterval :: forall s. Integer -> Integer -> Term s (PInterval PInteger)

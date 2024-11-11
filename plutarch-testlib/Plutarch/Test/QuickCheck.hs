@@ -109,7 +109,7 @@ propEvalEqualH name preProcess mkTerm mkExpected =
       \(input :: PLifted a) -> plift (pfun # pconstant (preProcess input)) `prettyEquals` mkExpected input
   where
     pfun :: ClosedTerm (b :--> c)
-    pfun = precompileTerm NoTracing mkTerm
+    pfun = precompileTerm mkTerm
 
 -- | @since WIP
 checkHaskellEquivalent ::
@@ -126,7 +126,10 @@ checkHaskellEquivalent ::
   Property
 checkHaskellEquivalent goHaskell goPlutarch =
   forAllShrinkShow arbitrary shrink prettyShow $
-    \(input :: PLifted haskellInput) -> goHaskell input `prettyEquals` plift (goPlutarch # pconstant input)
+    \(input :: PLifted haskellInput) -> goHaskell input `prettyEquals` plift (pfun # pconstant input)
+  where
+    pfun :: ClosedTerm (plutarchInput :--> plutarchOutput)
+    pfun = precompileTerm goPlutarch
 
 -- | @since WIP
 checkHaskellEquivalent2 ::
@@ -147,7 +150,10 @@ checkHaskellEquivalent2 ::
 checkHaskellEquivalent2 goHaskell goPlutarch =
   forAllShrinkShow arbitrary shrink prettyShow $
     \(input1 :: PLifted haskellInput1, input2 :: PLifted haskellInput2) ->
-      goHaskell input1 input2 `prettyEquals` plift (goPlutarch # pconstant input1 # pconstant input2)
+      goHaskell input1 input2 `prettyEquals` plift (pfun # pconstant input1 # pconstant input2)
+  where
+    pfun :: ClosedTerm (plutarchInput1 :--> plutarchInput2 :--> plutarchOutput)
+    pfun = precompileTerm goPlutarch
 
 -- * Orphans
 

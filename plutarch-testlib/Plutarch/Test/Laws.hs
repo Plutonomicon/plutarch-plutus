@@ -22,7 +22,7 @@ import Plutarch.Num (PNum (pabs, pnegate, psignum, (#*), (#+), (#-)))
 import Plutarch.Positive (Positive)
 import Plutarch.Prelude
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent, checkHaskellEquivalent2, propEvalEqualH)
-import Plutarch.Test.Utils (instanceOfType, prettyEquals, prettyShow, typeName, typeName')
+import Plutarch.Test.Utils (instanceOfType, precompileTerm, prettyEquals, prettyShow, typeName, typeName')
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common qualified as Plutus
 import PlutusLedgerApi.V1 qualified as PLA
@@ -144,9 +144,12 @@ checkHaskellOrdEquivalent =
         , instanceOfType @(S -> Type) @plutarchInput "POrd"
         ]
     )
-    [ testProperty "== = #==" $ checkHaskellEquivalent2 ((==) @(PLifted plutarchInput)) (plam (#==))
-    , testProperty "< = #<" $ checkHaskellEquivalent2 ((<) @(PLifted plutarchInput)) (plam (#<))
-    , testProperty "<= = #<=" $ checkHaskellEquivalent2 ((<=) @(PLifted plutarchInput)) (plam (#<=))
+    [ testProperty "== = #==" $
+        checkHaskellEquivalent2 ((==) @(PLifted plutarchInput)) (precompileTerm $ plam (#==))
+    , testProperty "< = #<" $
+        checkHaskellEquivalent2 ((<) @(PLifted plutarchInput)) (precompileTerm $ plam (#<))
+    , testProperty "<= = #<=" $
+        checkHaskellEquivalent2 ((<=) @(PLifted plutarchInput)) (precompileTerm $ plam (#<=))
     ]
 
 -- | @since WIP

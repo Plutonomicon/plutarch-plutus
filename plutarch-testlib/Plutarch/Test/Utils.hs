@@ -11,7 +11,7 @@ module Plutarch.Test.Utils (
   precompileTerm,
 ) where
 
-import Plutarch.Internal (Config, RawTerm (RCompiled), Term (Term), TermResult (TermResult), compile)
+import Plutarch.Internal (Config (NoTracing), RawTerm (RCompiled), Term (Term), TermResult (TermResult), compile)
 import Plutarch.Prelude
 import Plutarch.Script (Script (Script))
 import Prettyprinter (Pretty (pretty), defaultLayoutOptions, layoutPretty, (<+>))
@@ -63,9 +63,10 @@ instanceOfType ::
   String
 instanceOfType instanceName = instanceName <> " " <> typeName' False (typeRep @a)
 
-precompileTerm :: forall (p :: S -> Type). Config -> ClosedTerm p -> ClosedTerm p
-precompileTerm config t =
-  case compile config t of
+-- | @since WIP
+precompileTerm :: forall (p :: S -> Type). ClosedTerm p -> ClosedTerm p
+precompileTerm t =
+  case compile NoTracing t of
     Left err -> error $ "precompileTerm: failed to compile: " <> show err
     Right script -> unsafeTermFromScript script
 
