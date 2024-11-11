@@ -8,13 +8,17 @@ module Plutarch.Test.Utils (
   typeName,
   instanceOfType,
   typeName',
+  precompileTerm,
 ) where
 
-import Data.Kind (Type)
+import Plutarch.Internal (Config, RawTerm (RCompiled), Term (Term), TermResult (TermResult), compile)
+import Plutarch.Prelude
+import Plutarch.Script (Script (Script))
 import Prettyprinter (Pretty (pretty), defaultLayoutOptions, layoutPretty, (<+>))
 import Prettyprinter.Render.String (renderString)
 import Test.Tasty.QuickCheck (Property, QuickCheckTests, counterexample)
 import Type.Reflection (TypeRep, Typeable, tyConName, typeRep, typeRepTyCon, pattern App)
+import UntypedPlutusCore (Program (_progTerm))
 
 -- | Decrease number of quickcheck tests by specified factor
 fewerTests :: QuickCheckTests -> QuickCheckTests -> QuickCheckTests
@@ -58,3 +62,13 @@ instanceOfType ::
   String ->
   String
 instanceOfType instanceName = instanceName <> " " <> typeName' False (typeRep @a)
+
+precompileTerm :: forall (p :: S -> Type). Config -> ClosedTerm p -> ClosedTerm p
+precompileTerm config t =
+  case compile config t of
+    Left err -> error $ "precompileTerm: failed to compile: " <> show err
+    Right script -> unsafeTermFromScript script
+
+unsafeTermFromScript :: forall (p :: S -> Type). Script -> ClosedTerm p
+unsafeTermFromScript (Script script) =
+  Term $ const $ pure $ TermResult (RCompiled $ _progTerm script) []

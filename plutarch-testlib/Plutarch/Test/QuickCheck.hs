@@ -4,6 +4,7 @@ module Plutarch.Test.QuickCheck (
   propEvalFail,
   propCompileFail,
   propEvalEqual,
+  propEvalEqualH,
   checkHaskellEquivalent,
   checkHaskellEquivalent2,
 ) where
@@ -13,7 +14,7 @@ import Plutarch (Config (NoTracing))
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude
 import Plutarch.Test.Unit (TermResult (Evaluated, FailedToCompile, FailedToEvaluate), evalTermResult)
-import Plutarch.Test.Utils (prettyEquals, prettyShow)
+import Plutarch.Test.Utils (precompileTerm, prettyEquals, prettyShow)
 import Prettyprinter (Pretty)
 import Test.Tasty (TestName, TestTree)
 import Test.Tasty.QuickCheck (
@@ -86,6 +87,29 @@ propEvalEqual name mkTerm mkExpected =
         FailedToCompile err -> counterexample ("Failed to compile expected term: " <> Text.unpack err) False
         FailedToEvaluate err _ -> counterexample ("Failed to evaluate expected term: " <> show err) False
         Evaluated expected _ -> actual === expected
+
+-- | @since WIP
+propEvalEqualH ::
+  forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type).
+  ( Pretty (PLifted a)
+  , Arbitrary (PLifted a)
+  , PUnsafeLiftDecl b
+  , PUnsafeLiftDecl c
+  , Pretty (PLifted c)
+  , Eq (PLifted c)
+  ) =>
+  TestName ->
+  (PLifted a -> PLifted b) ->
+  ClosedTerm (b :--> c) ->
+  (PLifted a -> PLifted c) ->
+  TestTree
+propEvalEqualH name preProcess mkTerm mkExpected =
+  testProperty name $
+    forAllShrinkShow arbitrary shrink prettyShow $
+      \(input :: PLifted a) -> plift (pfun # pconstant (preProcess input)) `prettyEquals` mkExpected input
+  where
+    pfun :: ClosedTerm (b :--> c)
+    pfun = precompileTerm NoTracing mkTerm
 
 -- | @since WIP
 checkHaskellEquivalent ::
