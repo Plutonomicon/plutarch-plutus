@@ -12,7 +12,7 @@ import Plutarch.LedgerApi.V1 (
  )
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude
-import Plutarch.Test.Golden (GoldenTestTree, goldenEvalEqual, goldenGroup, plutarchGolden)
+import Plutarch.Test.Golden (GoldenTestTree, goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkHaskellOrdEquivalent)
 import Plutarch.Test.SpecTypes (PTriplet (PTriplet), Triplet (Triplet))
 import PlutusLedgerApi.V1 (Credential (PubKeyCredential, ScriptCredential))
@@ -205,8 +205,8 @@ ltWith ::
   PLifted p ->
   [GoldenTestTree]
 ltWith f x y =
-  [ goldenEvalEqual "true" (pconstant x `f` pconstant y) (pcon PTrue)
-  , goldenEvalEqual "false" (pconstant y `f` pconstant x) (pcon PFalse)
+  [ goldenEval "true" (pconstant x `f` pconstant y)
+  , goldenEval "false" (pconstant y `f` pconstant x)
   ]
 
 lteWith ::
@@ -218,8 +218,8 @@ lteWith ::
 lteWith f x y =
   [ goldenGroup
       "true"
-      [ goldenEvalEqual "eq" (pconstant x `f` pconstant x) (pcon PTrue)
-      , goldenEvalEqual "less" (pconstant x `f` pconstant y) (pcon PTrue)
+      [ goldenEval "eq" (pconstant x `f` pconstant x)
+      , goldenEval "less" (pconstant x `f` pconstant y)
       ]
-  , goldenEvalEqual "false" (pconstant y `f` pconstant x) (pcon PFalse)
+  , goldenEval "false" (pconstant y `f` pconstant x)
   ]

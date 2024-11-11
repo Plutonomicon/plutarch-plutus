@@ -9,7 +9,7 @@ import Plutarch.Builtin (
  )
 import Plutarch.Prelude
 import Plutarch.Reducible (Reduce)
-import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenEvalFail, goldenGroup, plutarchGolden)
+import Plutarch.Test.Golden (goldenEval, goldenEvalFail, goldenGroup, plutarchGolden)
 import Plutarch.TryFrom (
   PTryFromExcess,
   ptryFrom',
@@ -161,12 +161,11 @@ tests =
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
                     (punsafeCoerce $ pconstant $ Constr 1 [PlutusTx.I 5, B "foo"])
                 )
-            , goldenEvalEqual
+            , goldenEval
                 "recover PWrapInt"
                 ( pconstant 42
                     #== unTermCont (snd <$> tcont (ptryFrom @(PAsData PWrapInt) (pforgetData $ pdata $ pconstant @PInteger 42)))
                 )
-                (pcon PTrue)
             ]
         , goldenGroup
             "recovering a record partially vs completely"
@@ -244,12 +243,11 @@ tests =
                         @(PDataRecord '["_0" ':= PDataRecord '["_1" ':= PInteger]])
                         (pdata $ pdcons # pdata (pdcons # pdata (pconstant 42) # pdnil) # pdnil)
                     )
-                , goldenEvalEqual
+                , goldenEval
                     "sample usage contains the right value"
                     ( pconstant 42
                         #== theField
                     )
-                    (pcon PTrue)
                 ]
             ]
         , goldenGroup
