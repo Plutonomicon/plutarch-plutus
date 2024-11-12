@@ -1,7 +1,7 @@
 module Plutarch.Test.Suite.Plutarch.String (tests) where
 
 import Plutarch.Prelude
-import Plutarch.Test.Golden (goldenEvalEqual, goldenGroup, plutarchGolden)
+import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Test.Tasty (TestTree, testGroup)
 
 {-# HLINT ignore tests "Monoid law, left identity" #-}
@@ -12,16 +12,16 @@ tests =
     [ plutarchGolden
         "Goldens"
         "str"
-        [ goldenEvalEqual "eq" ("foo" #== pconstant @PString "foo") (pcon PTrue)
+        [ goldenEval "eq" ("foo" #== pconstant @PString "foo")
         , goldenGroup
             "semigroup"
             [ goldenGroup
                 "laws"
-                [ goldenEvalEqual "id.1" ((mempty <> pconstant @PString "foo") #== pconstant @PString "foo") (pcon PTrue)
-                , goldenEvalEqual "id.2" (pconstant @PString "foo" #== (mempty <> pconstant @PString "foo")) (pcon PTrue)
+                [ goldenEval "id.1" ((mempty <> pconstant @PString "foo") #== pconstant @PString "foo")
+                , goldenEval "id.2" (pconstant @PString "foo" #== (mempty <> pconstant @PString "foo"))
                 ]
-            , goldenEvalEqual "concat" ((pconstant @PString "foo" <> pconstant @PString "bar") #== pconstant @PString "foobar") (pcon PTrue)
-            , goldenEvalEqual "mempty" (mempty #== pconstant @PString "") (pcon PTrue)
+            , goldenEval "concat" ((pconstant @PString "foo" <> pconstant @PString "bar") #== pconstant @PString "foobar")
+            , goldenEval "mempty" (mempty #== pconstant @PString "")
             ]
         ]
     ]

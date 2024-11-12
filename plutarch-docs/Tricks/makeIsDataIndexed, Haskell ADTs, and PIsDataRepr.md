@@ -41,10 +41,10 @@ newtype PTxInfo (s :: S)
                , "fee" ':= PValue
                , "mint" ':= PValue
                , "dcert" ':= PBuiltinList (PAsData PDCert)
-               , "wdrl" ':= PBuiltinList (PAsData (PTuple PStakingCredential PInteger))
+               , "wdrl" ':= PBuiltinList (PAsData (PBuiltinPair (PAsData PStakingCredential) (PInteger)))
                , "validRange" ':= PPOSIXTimeRange
                , "signatories" ':= PBuiltinList (PAsData PPubKeyHash)
-               , "datums" ':= PBuiltinList (PAsData (PTuple PDatumHash PDatum))
+               , "datums" ':= PBuiltinList (PAsData (PBuiltinPair (PAsData PDatumHash) (PAsData PDatum)))
                , "id" ':= PTxId
                ]
           )

@@ -663,9 +663,6 @@ pdelete = rebuildAtKey # plam id
 {- | Zip two 'PMap's, using the given potentially non-commutative value merge
  function for key collisions, and different values for the sides.
 
- Use `pzipWithDefault` if your merge function is commutative for better
- performance.
-
  @since 2.1.1
 -}
 pzipWithDefaults ::

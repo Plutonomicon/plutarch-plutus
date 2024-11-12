@@ -22,6 +22,7 @@ import Plutarch.Test.Suite.Plutarch.Tracing qualified as Tracing
 import Plutarch.Test.Suite.Plutarch.TryFrom qualified as TryFrom
 import Plutarch.Test.Suite.Plutarch.Unit qualified as Unit
 import Plutarch.Test.Suite.Plutarch.Uplc qualified as Uplc
+import Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap qualified as AssocMap
 import Plutarch.Test.Suite.PlutarchLedgerApi.Regressions qualified as Regressions
 import Plutarch.Test.Suite.PlutarchLedgerApi.Utils qualified as Utils
 import Plutarch.Test.Suite.PlutarchLedgerApi.V1 qualified as V1
@@ -64,6 +65,7 @@ main = do
         [ testGroup
             "Laws"
             [ Utils.tests
+            , AssocMap.tests
             , V1.tests
             , V2.tests
             , V3.tests

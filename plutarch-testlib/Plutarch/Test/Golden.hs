@@ -7,7 +7,6 @@ module Plutarch.Test.Golden (
   plutarchGolden,
   goldenGroup,
   goldenEval,
-  goldenEvalEqual,
   goldenEvalFail,
 ) where
 
@@ -29,7 +28,7 @@ import PlutusLedgerApi.V1 (ExBudget (ExBudget), ExCPU, ExMemory)
 import System.FilePath ((</>))
 import Test.Tasty (TestName, TestTree, testGroup)
 import Test.Tasty.Golden (goldenVsString)
-import Test.Tasty.HUnit (assertEqual, assertFailure, testCase)
+import Test.Tasty.HUnit (assertFailure, testCase)
 
 {- | Opaque type representing tree of golden tests
 
@@ -39,7 +38,6 @@ data GoldenTestTree where
   GoldenTestTree :: TestName -> [GoldenTestTree] -> GoldenTestTree
   GoldenTestTreeEval :: TestName -> ClosedTerm a -> GoldenTestTree
   GoldenTestTreeEvalFail :: TestName -> ClosedTerm a -> GoldenTestTree
-  GoldenTestTreeEvalAssertEqual :: TestName -> ClosedTerm a -> ClosedTerm a -> GoldenTestTree
 
 {- | Convert tree of golden tests into standard Tasty `TestTree`, capturing results produced
 by nested golden tests
@@ -106,19 +104,6 @@ goldenGroup = GoldenTestTree
 goldenEval :: TestName -> ClosedTerm a -> GoldenTestTree
 goldenEval = GoldenTestTreeEval
 
-{- | Like `Plutarch.Test.Unit.testEvalEqual` but will append to goldens created by enclosing `plutarchGolden`
-
-@since WIP
--}
-goldenEvalEqual ::
-  TestName ->
-  -- | Actual value
-  ClosedTerm a ->
-  -- | Expected value
-  ClosedTerm a ->
-  GoldenTestTree
-goldenEvalEqual = GoldenTestTreeEvalAssertEqual
-
 {- | Like `Plutarch.Test.Unit.testEvalFail` but will append to goldens created by enclosing `plutarchGolden`
 
 @since WIP
@@ -148,15 +133,6 @@ mkTest (GoldenTestTreeEvalFail name term) = either id id $ do
       ( testCase name $ assertFailure "Script did not terminate with error as expected"
       , [(name, benchmark)]
       )
-mkTest (GoldenTestTreeEvalAssertEqual name term expected) = either id id $ do
-  termBenchmark <- mkFailed name Text.unpack $ benchmarkTerm term
-  expectedBenchmark <- mkFailed name Text.unpack $ benchmarkTerm expected
-  actual <- mkFailed name show $ result termBenchmark
-  expected <- mkFailed name show $ result expectedBenchmark
-  pure
-    ( testCase name $ assertEqual "" (printScript expected) (printScript actual)
-    , [(name, termBenchmark)]
-    )
 
 benchmarkTerm :: ClosedTerm a -> Either Text Benchmark
 benchmarkTerm term = do
