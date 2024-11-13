@@ -3,7 +3,7 @@
 <p>
 
 ```haskell
-module Plutarch.Docs.Introduction (hf) where 
+module Plutarch.Docs.Introduction (hf) where
 import Plutarch.Prelude
 ```
 
@@ -94,18 +94,18 @@ The remainder of this document cover the bridge between Haskell and Plutarch at 
 
 Sections:-
 
-- [Untyped Plutus Core (UPLC)](./Introduction/Untyped%20Plutus%20Core.md)
-- [Plutarch Types](./Introduction/Plutarch%20Types.md)
-- [Plutarch `Term`s](./Introduction/Plutarch%20Terms.md)
-  - [Plutarch Constant `Term`s](./Introduction/Plutarch%20Terms/Plutarch%20Constants.md)
-    - [Static building of constant `Term`s with `pconstant`](./Introduction/Plutarch%20Terms/Plutarch%20Constants.md#static-building-of-constant-terms-with-pconstant)
-    - [Dynamic building of constant `Term`s with `pcon`](./Introduction/Plutarch%20Terms/Plutarch%20Constants.md#dynamic-building-of-constant-terms-with-pcon)
-    - [Overloaded literals](./Introduction/Plutarch%20Terms/Plutarch%20Constants.md#overloaded-literals)
-    - [Helper functions](./Introduction/Plutarch%20Terms/Plutarch%20Constants.md#helper-functions)
-  - [Lambdas; Plutarch-level Function `Term`s.](./Introduction/Plutarch%20Terms/Plutarch%20Lambdas.md#lambdas-plutarch-level-function-terms)
-    - [Function Application](./Introduction/Plutarch%20Terms/Plutarch%20Lambdas.md#function-application)
-- [Pattern matching constant `Term`s with `pmatch`.](./Introduction/Pattern%20matching.md)
-- [Strictness and Laziness; Delayed Terms and Forcing](./Introduction/Delay%20and%20Force.md)
+- [Untyped Plutus Core (UPLC)](./Introduction/UntypedPlutusCore.md)
+- [Plutarch Types](./Introduction/PlutarchTypes.md)
+- [Plutarch `Term`s](./Introduction/PlutarchTerms.md)
+  - [Plutarch Constant `Term`s](./Introduction/PlutarchTerms/PlutarchConstants.md)
+    - [Static building of constant `Term`s with `pconstant`](./Introduction/PlutarchTerms/PlutarchConstants.md#static-building-of-constant-terms-with-pconstant)
+    - [Dynamic building of constant `Term`s with `pcon`](./Introduction/PlutarchTerms/PlutarchConstants.md#dynamic-building-of-constant-terms-with-pcon)
+    - [Overloaded literals](./Introduction/PlutarchTerms/PlutarchConstants.md#overloaded-literals)
+    - [Helper functions](./Introduction/PlutarchTerms/PlutarchConstants.md#helper-functions)
+  - [Lambdas; Plutarch-level Function `Term`s.](./Introduction/PlutarchTerms/PlutarchLambdas.md#lambdas-plutarch-level-function-terms)
+    - [Function Application](./Introduction/PlutarchTerms/PlutarchLambdas.md#function-application)
+- [Pattern matching constant `Term`s with `pmatch`.](./Introduction/Patternmatching.md)
+- [Strictness and Laziness; Delayed Terms and Forcing](./Introduction/DelayandForce.md)
 
 # References
 

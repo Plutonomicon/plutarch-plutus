@@ -1,1 +1,1 @@
-../../../Usage/Deriving with generics.md
+../../../src/Usage/Deriving with generics.md

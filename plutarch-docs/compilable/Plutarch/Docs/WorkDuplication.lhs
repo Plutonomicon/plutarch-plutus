@@ -1,1 +1,1 @@
-../../../Tricks/Don't duplicate work.md
+../../../src/Tricks/Don't duplicate work.md

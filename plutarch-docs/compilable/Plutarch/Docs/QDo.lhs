@@ -1,1 +1,1 @@
-../../../Usage/Do syntax with QualifiedDo.md
+../../../src/Usage/Do syntax with QualifiedDo.md

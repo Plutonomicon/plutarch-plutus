@@ -1,1 +1,1 @@
-../../../examples/BASIC.md
+../../../src/examples/BASIC.md

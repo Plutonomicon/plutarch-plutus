@@ -1,1 +1,1 @@
-../../../Tricks/Prefer statically building constants.md
+../../../src/Tricks/Prefer statically building constants.md
