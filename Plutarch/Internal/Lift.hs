@@ -66,7 +66,12 @@ data LiftError
     CouldNotCompile Text
   | -- | @Data@ encoding was invalid for our type
     CouldNotDecodeData
-  deriving stock (Eq)
+  deriving stock
+    ( -- | @since WIP
+      Eq
+    , -- | @since WIP
+      Show
+    )
 
 {- | Indicates that the given Plutarch type has an equivalent in Haskell (and
 Plutus by extension), and we have the ability to move between them.
