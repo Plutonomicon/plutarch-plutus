@@ -28,6 +28,8 @@
 * `Positive` type in `Plutarch.Positive` that is Haskell level equivalent of
   `PPositive`
 * `PUnsafeLiftDecl` and `PConstantDecl` instances for `PPositive`
+* `evalScriptUnlimited` to `Plutarch.Evaluate` as unrestricted version of `evalScript`
+* `pmapMaybe` to `Plutarch.Maybe`
 
 ## Changed
 

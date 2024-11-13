@@ -428,7 +428,6 @@ instance PIsData PBool where
       nil :: Term s (PBuiltinList PData)
       nil = pnil
 
--- | NB: `PAsData (PBuiltinPair (PAsData a) (PAsData b))` and `PAsData (PTuple a b)` have the same representation.
 instance PIsData (PBuiltinPair (PAsData a) (PAsData b)) where
   pfromDataImpl x = f # x
     where

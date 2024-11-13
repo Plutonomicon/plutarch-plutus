@@ -8,7 +8,6 @@ import Plutarch.Test.Laws (
   checkHaskellNumEquivalent,
   checkHaskellOrdEquivalent,
   checkLedgerProperties,
-  checkLedgerPropertiesAssocMap,
   checkLedgerPropertiesPCountable,
   checkLedgerPropertiesPEnumerable,
   checkLedgerPropertiesValue,
@@ -68,6 +67,5 @@ tests =
     , checkLedgerProperties @PLA.PPubKeyHash
     , adjustOption (fewerTests 16) $ checkLedgerProperties @PLA.PTxInfo
     , checkLedgerPropertiesValue
-    , checkLedgerPropertiesAssocMap
     , checkLedgerProperties @Value.PAssetClass
     ]

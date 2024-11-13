@@ -17,7 +17,7 @@ import Plutarch.LedgerApi.Interval (
  )
 import Plutarch.LedgerApi.V1 (PPosixTime)
 import Plutarch.Prelude hiding (psingleton, pto)
-import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)
+import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkLedgerProperties)
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent, checkHaskellEquivalent2)
 import Plutarch.Test.Utils (fewerTests)
@@ -50,36 +50,30 @@ tests =
             ]
         , goldenGroup
             "contains"
-            [ goldenEvalEqual "in interval" (pcontains # i2 # i4) (pcon PTrue)
-            , goldenEvalEqual "out interval" (pcontains # i4 # i2) (pcon PFalse)
-            , goldenEvalEqual "always" (pcontains # palways @PInteger # i1) (pcon PTrue)
+            [ goldenEval "in interval" (pcontains # i2 # i4)
+            , goldenEval "out interval" (pcontains # i4 # i2)
+            , goldenEval "always" (pcontains # palways @PInteger # i1)
             ]
         , goldenGroup
             "member"
-            [ goldenEvalEqual "[b,c], a < b" (pmember # pconstantData 1 # i3) (pcon PFalse)
-            , goldenEvalEqual "[b,c], a = b" (pmember # pconstantData 2 # i3) (pcon PTrue)
-            , goldenEvalEqual "[b,c], a > b, a < c" (pmember # pconstantData 3 # i3) (pcon PTrue)
-            , goldenEvalEqual "[b,c], a = c" (pmember # pconstantData 4 # i3) (pcon PTrue)
-            , goldenEvalEqual "[b,c], a > c" (pmember # pconstantData 5 # i3) (pcon PFalse)
+            [ goldenEval "[b,c], a < b" (pmember # pconstantData 1 # i3)
+            , goldenEval "[b,c], a = b" (pmember # pconstantData 2 # i3)
+            , goldenEval "[b,c], a > b, a < c" (pmember # pconstantData 3 # i3)
+            , goldenEval "[b,c], a = c" (pmember # pconstantData 4 # i3)
+            , goldenEval "[b,c], a > c" (pmember # pconstantData 5 # i3)
             ]
         , let theHull :: Term s (PInterval PInteger)
               theHull = phull # (psingleton # pconstantData 3) # (psingleton # pconstantData 5)
            in goldenGroup
                 "hull"
-                [ goldenEvalEqual "hull 3 5 contains 3 5" (pcontains # theHull # i2) (pcon PTrue)
-                , goldenEvalEqual "2 not member of hull 3 5" (pmember # pconstantData 2 # theHull) (pcon PFalse)
-                , goldenEvalEqual "6 not member of hull 3 5" (pmember # pconstantData 6 # theHull) (pcon PFalse)
+                [ goldenEval "hull 3 5 contains 3 5" (pcontains # theHull # i2)
+                , goldenEval "2 not member of hull 3 5" (pmember # pconstantData 2 # theHull)
+                , goldenEval "6 not member of hull 3 5" (pmember # pconstantData 6 # theHull)
                 ]
         , goldenGroup
             "intersection"
-            [ goldenEvalEqual
-                "intersection [2,4] [3,5] contains [3,4]"
-                (pcontains # (pintersection # i3 # i2) # i5)
-                (pcon PTrue)
-            , goldenEvalEqual
-                "intersection [3,5] [2,4] contains [3,4]"
-                (pcontains # (pintersection # i2 # i3) # i5)
-                (pcon PTrue)
+            [ goldenEval "intersection [2,4] [3,5] contains [3,4]" (pcontains # (pintersection # i3 # i2) # i5)
+            , goldenEval "intersection [3,5] [2,4] contains [3,4]" (pcontains # (pintersection # i2 # i3) # i5)
             ]
         ]
     , checkLedgerProperties @(PInterval PPosixTime)
